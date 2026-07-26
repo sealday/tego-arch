@@ -37,7 +37,7 @@
 | ID | Depends on | Reciprocal adjacency | Terminal cases |
 | --- | --- | --- | --- |
 | QA-00 | FND-02 | QA-01, QA-02, QA-03 | `/cases/microsoft-multi-agent-reference-architecture` |
-| QA-01 | FND-02, QA-00 | QA-00, QA-02 | `/cases/aws-cell-shuffle-sharding` |
+| QA-01 | FND-02, QA-00 | QA-00, QA-02, MTH-03, REL-02 | `/cases/aws-cell-shuffle-sharding` |
 | QA-02 | QA-00, QA-01 | QA-00, QA-01, QA-03 | `/cases/aws-cell-shuffle-sharding`, `/cases/temporal-saga-durable-execution` |
 | QA-03 | QA-00, QA-01 | QA-00, QA-02 | `/cases/apache-kafka-consumer-groups`, `/cases/cloudflare-durable-objects-workerd` |
 
@@ -45,6 +45,7 @@
 - `content/paths/04-reliability-state.mdx`: add QA-02 before reliability tactics/cases.
 - `content/paths/03-distributed-systems.mdx`: add QA-03 before throughput/backpressure cases.
 - Delete the now-published QA-00 override from `data/topic-relations.json`; published front matter becomes authoritative.
+- Preserve the existing MTH-03 ↔ QA-01 and REL-02 ↔ QA-01 reverse edges; add reciprocal QA-00/01/02/03 edges without deleting either established relationship.
 
 ---
 
@@ -52,7 +53,6 @@
 
 **Files:**
 - Create: `tests/g006-batch1-content.test.mjs`
-- Modify: `tests/g005-batch3-content.test.mjs`
 
 **Interfaces:**
 - Consumes: `readContentDocuments`, `findMarkdownHeadings`, canonical backlog/ledger/generated manifest.
@@ -80,37 +80,20 @@ const images = new Map([
 ]);
 ```
 
-Assert exact files/slugs, `content_type: quality-attribute`, `priority: P0`, `review_policy: quarterly-version-sensitive`, exact nine H2, 3–5 questions, the relationship table above, visible parent/adjacent/case links, exact image paths, governed illustration citations, two independent domains, one eligible primary, and all three path links. Do not inspect QA backlog checkbox state in this content test.
+Split assertions into named subtests for QA-00/01 content and architecture path, QA-02/03 content and their paths, and raster/ledger integration. Assert exact files/slugs, metadata, nine H2, 3–5 questions, the relationship table, visible links, governed evidence, and path links. Do not inspect backlog checkbox state.
 
-- [ ] **Step 2: Add the QA-01 deliberate-hash RED**
-
-In `tests/g005-batch3-content.test.mjs`, isolate QA-01 from `immutableFiles`, retain every other immutable hash, and set:
-
-```js
-const preBatchQa01Hash =
-  'd95a8299ed2b25e51007c0f0970b2d95698051e079e146da36c1c77d4612df2b';
-```
-
-This pre-batch hash must pass before editing QA-01, fail after the deliberate revision, and then be replaced once with the literal reviewed SHA-256 emitted by:
-
-```bash
-shasum -a 256 content/quality-attributes/qa-01-scenario-writing.mdx
-```
-
-No other preservation hash may change.
-
-- [ ] **Step 3: Observe RED**
+- [ ] **Step 2: Observe RED**
 
 ```bash
 node --test tests/g006-batch1-content.test.mjs tests/g005-batch3-content.test.mjs
 ```
 
-Expected: FAIL because QA-00/02/03, their images, reciprocal graph, paths, and governed citations do not exist; the pre-batch QA-01 hash assertion itself is initially PASS.
+Expected: FAIL because QA-00/02/03, raster integration, reciprocal graph, paths, and governed citations do not exist.
 
-- [ ] **Step 4: Commit RED**
+- [ ] **Step 3: Commit RED**
 
 ```bash
-git add tests/g006-batch1-content.test.mjs tests/g005-batch3-content.test.mjs
+git add tests/g006-batch1-content.test.mjs
 git commit -m "test: define g006 quality attribute batch1"
 ```
 
@@ -171,32 +154,50 @@ git commit -m "data: govern g006 quality attribute sources"
 - Modify: `content/quality-attributes/qa-01-scenario-writing.mdx`
 - Modify: `data/topic-relations.json`
 - Modify: `content/paths/01-architecture-thinking.mdx`
+- Modify: `tests/g005-batch3-content.test.mjs`
 
 **Interfaces:**
 - Produces: QA-00 model boundary and a reciprocal QA-00 ↔ QA-01 ↔ QA-02 graph.
 - Preserves: QA-01 six-field scenario and all source-backed boundary wording.
 
-- [ ] **Step 1: Write both articles to the contract**
+- [ ] **Step 1: Prove the pre-batch QA-01 hash is GREEN**
 
-QA-00 must treat ISO/IEC 25010:2023 as a naming/index boundary, not a copied taxonomy or universal priority order; separate product qualities from Tego Arch operational analysis lenses. QA-01 must retain the six H3 fields, add visible QA-00/QA-02 links, and explain scenario → tactic → signal without claiming that a percentage alone is a scenario.
-
-- [ ] **Step 2: Close the path gap and relation override**
-
-Delete only `QA-00` from `data/topic-relations.json`. In `content/paths/01-architecture-thinking.mdx`, replace both “QA-00 gap” statements and add QA-00 before QA-01 in the order/checkpoint.
-
-- [ ] **Step 3: Run focused content tests**
+Isolate QA-01 from `immutableFiles` without changing any unrelated hash and assert the existing literal `d95a8299ed2b25e51007c0f0970b2d95698051e079e146da36c1c77d4612df2b`.
 
 ```bash
-node --test tests/g006-batch1-content.test.mjs tests/content-validation.test.mjs tests/content-relations.test.mjs
+node --test tests/g005-batch3-content.test.mjs
+```
+
+Expected: PASS before QA-01 changes.
+
+- [ ] **Step 2: Write QA-00, revise QA-01, and close relations**
+
+QA-00 treats ISO/IEC 25010:2023 as a naming/index boundary, not a copied taxonomy or priority order. QA-01 retains six H3 fields, MTH-03/REL-02 adjacency, adds QA-00/QA-02 reciprocal links, and explains scenario → tactic → signal. Delete only the QA-00 override; replace both path gap statements with QA-00 → QA-01.
+
+- [ ] **Step 3: Observe old-hash RED, then pin reviewed bytes**
+
+```bash
+node --test tests/g005-batch3-content.test.mjs
+qa01_hash=$(shasum -a 256 content/quality-attributes/qa-01-scenario-writing.mdx | awk '{print $1}')
+printf '%s\n' "$qa01_hash"
+```
+
+Expected: first command FAILS only on the old QA-01 hash while semantic assertions and unrelated hashes pass. Replace only that literal with `$qa01_hash`, preserving semantic assertions.
+
+- [ ] **Step 4: Run Task 3 GREEN**
+
+```bash
+node --test tests/g005-batch3-content.test.mjs
+node --test --test-name-pattern='QA-00|QA-01|architecture path' tests/g006-batch1-content.test.mjs
 npm run validate:content
 ```
 
-After editing QA-01, run `node --test tests/g005-batch3-content.test.mjs` once and observe the old literal hash FAIL while its semantic/schema assertions remain PASS. Remaining Batch 1 failures refer only to QA-02/03 and raster registration.
+Expected: all Task 3 tests PASS; no failing hash crosses the commit boundary.
 
-- [ ] **Step 4: Commit**
+- [ ] **Step 5: Commit**
 
 ```bash
-git add content/quality-attributes/qa-00-overview.mdx content/quality-attributes/qa-01-scenario-writing.mdx data/topic-relations.json content/paths/01-architecture-thinking.mdx
+git add content/quality-attributes/qa-00-overview.mdx content/quality-attributes/qa-01-scenario-writing.mdx data/topic-relations.json content/paths/01-architecture-thinking.mdx tests/g005-batch3-content.test.mjs
 git commit -m "feat: publish quality model and scenario foundation"
 ```
 
@@ -222,11 +223,12 @@ Use one original scenario with workload shape, concurrency, service time, throug
 - [ ] **Step 3: Add paths and run focused tests**
 
 ```bash
-node --test tests/g006-batch1-content.test.mjs tests/learning-path.test.mjs
+node --test --test-name-pattern='QA-02|QA-03|reliability path|distributed path' tests/g006-batch1-content.test.mjs
+node --test tests/learning-path.test.mjs
 npm run validate:content
 ```
 
-Expected: article/path assertions PASS; raster and illustration-ledger gates remain RED. The deliberate QA-01 old-hash failure remains until Task 6 pins the reviewed bytes.
+Expected: all Task 4 tests PASS; raster subtests remain outside this targeted run.
 
 - [ ] **Step 4: Commit**
 
@@ -253,11 +255,11 @@ Brief: reader judgment “质量模型命名关注点，业务场景决定优先
 
 - [ ] **Step 2: Generate QA-02 visual**
 
-Brief: reader judgment “恢复成功必须同时满足服务、时间和数据边界”; state/recovery map; nodes `正常`, `故障`, `失效`, `隔离`, `恢复`, `核对`, `人工终态`; edges normal→fault→failure, failure→isolate→recover, recover→normal only after verification, unknown outcome→reconcile→human terminal. Boundaries `RTO` and `RPO`; title `从故障到可验证恢复`.
+Brief: reader judgment “故障可能被隔离，也可能传播；恢复完成仍需验证结果”; state/recovery map; nodes `正常`, `故障`, `隔离成功`, `故障传播`, `自动解决`, `恢复验证`, `结果未知`, `核对`, `人工终态`; branch normal→fault→isolated or propagated, isolated→automatic resolution→verification, propagated→service failure→recovery, unknown result→reconcile→automatic resolution or human terminal. Boundaries `RTO` and `RPO`; title `从故障到可验证恢复`. Do not imply every fault becomes a failure or every recovery can be automated.
 
 - [ ] **Step 3: Generate QA-03 visual**
 
-Brief: reader judgment “负载越过容量拐点后，尾延迟和队列先于吞吐崩溃”; layered load/saturation flow; nodes `请求负载`, `并发`, `服务时间`, `队列`, `吞吐`, `p50`, `p99`, `拒绝`, `饱和`; normal blue path, orange knee, red overload branch; title `容量边界不是平均延迟`. No invented numeric thresholds.
+Brief: explicitly labeled `说明性模型`; reader judgment “容量边界要同时观察吞吐平台、尾延迟、队列与拒绝”; load/saturation model with `请求负载`, `并发`, `服务时间`, `队列`, `吞吐平台`, `p50`, `p99`, `拒绝`, `饱和`; normal path, orange knee, throughput plateau, and a separate rejection branch. Title `容量边界不是平均延迟`. No invented thresholds and no claim that overload inevitably collapses throughput.
 
 - [ ] **Step 4: Perform visual QA and register**
 
@@ -268,7 +270,8 @@ Add three ledger sources with local locator, `source_kind: original-illustration
 - [ ] **Step 5: Validate and commit**
 
 ```bash
-node --test tests/g006-batch1-content.test.mjs tests/source-governance-data.test.mjs
+node --test --test-name-pattern='raster|illustration' tests/g006-batch1-content.test.mjs
+node --test tests/source-governance-data.test.mjs
 npm run validate:content
 git add static/img/illustrations/qa-*.png content/quality-attributes/qa-00-overview.mdx content/quality-attributes/qa-02-reliability-availability-recoverability.mdx content/quality-attributes/qa-03-performance-latency-throughput-capacity.mdx data/source-ledger.json
 git commit -m "feat: illustrate g006 quality attribute boundaries"
@@ -279,36 +282,28 @@ Expected: image existence, dimensions, MDX embedding, rights, and ledger gates P
 ### Task 6: Complete the Stage A implementation without closing backlog rows
 
 **Files:**
-- Modify: `tests/g005-batch3-content.test.mjs`
+- Modify: `tests/project-status.test.mjs`
+- Modify: `tests/content-review-health.test.mjs`
 - Generate: `src/generated/*.json`
 
 **Interfaces:**
-- Produces: reviewed QA-01 hash and fresh generated manifest/index/source/status projections while all four QA backlog rows remain unchecked.
+- Produces: Stage A count expectations and fresh generated manifest/index/source/status projections while all four QA backlog rows remain unchecked.
 
-- [ ] **Step 1: Pin the intentional QA-01 hash after observing RED**
+- [ ] **Step 1: Update Stage A count expectations**
 
-First run the preservation test against the revised article and retain its old-hash failure output:
-
-```bash
-node --test tests/g005-batch3-content.test.mjs
-```
-
-Expected: FAIL only because QA-01 no longer equals `d95a8299ed2b25e51007c0f0970b2d95698051e079e146da36c1c77d4612df2b`; semantic QA-01 assertions and every unrelated immutable hash PASS.
-
-Then calculate the reviewed bytes:
+Set real-input expectations in both test files to 59 documents and 402 sources; keep `completed_topics: 11` in `tests/project-status.test.mjs`.
 
 ```bash
-qa01_hash=$(shasum -a 256 content/quality-attributes/qa-01-scenario-writing.mdx | awk '{print $1}')
-printf '%s\n' "$qa01_hash"
+node --test tests/project-status.test.mjs tests/content-review-health.test.mjs
 ```
 
-Replace only the old QA-01 literal with `$qa01_hash`, rerun the test GREEN, and retain all semantic assertions so the hash update cannot conceal content-contract regression.
+Expected: PASS with 11 completed topics, 59 documents, and 402 sources.
 
 - [ ] **Step 2: Generate and run full Stage A verification**
 
 ```bash
 npm run generate:content
-node --test tests/g006-batch1-content.test.mjs tests/g005-batch3-content.test.mjs
+node --test tests/g006-batch1-content.test.mjs tests/g005-batch3-content.test.mjs tests/project-status.test.mjs tests/content-review-health.test.mjs
 npm run verify
 node -e "const s=require('./src/generated/project-status.json'); if(s.completed_topics!==11||s.content_documents!==59||s.governed_sources!==402) process.exit(1)"
 git diff --check
@@ -320,7 +315,7 @@ Expected: all gates PASS; QA-00 through QA-03 are still `[ ]`; generated project
 - [ ] **Step 3: Commit implementation closure**
 
 ```bash
-git add tests/g005-batch3-content.test.mjs src/generated
+git add tests/project-status.test.mjs tests/content-review-health.test.mjs src/generated
 git commit -m "feat: complete g006 quality attributes batch1"
 ```
 
@@ -330,6 +325,7 @@ git commit -m "feat: complete g006 quality attributes batch1"
 - Create: `docs/reviews/g006-batch1.md`
 - Create in Stage B: `tests/g006-batch1-deployment.test.mjs`
 - Modify in Stage B: `docs/content-backlog.md`, `docs/reviews/g006-batch1.md`
+- Modify in Stage B: `tests/project-status.test.mjs`
 - Generate in Stage B: `src/generated/*.json`
 
 **Interfaces:**
@@ -368,15 +364,15 @@ Expected: RED because the review has no literal deployment closure and all four 
 
 - [ ] **Step 5: Backfill evidence, check rows, and regenerate Stage B**
 
-Write the observed literal Stage A SHA, Pages run ID/URL, live date/routes/assets/viewports into `docs/reviews/g006-batch1.md` and the four QA rows, then change only QA-00 through QA-03 to `[x]`. Keep G006 current and QA-04 through QA-10 unchecked.
+Write the observed literal Stage A SHA, Pages run ID/URL, live date/routes/assets/viewports into the review and four QA rows, then check only QA-00 through QA-03. Change the real-input `completed_topics` expectation in `tests/project-status.test.mjs` from 11 to 15; keep 59/402 unchanged, G006 current, and QA-04 through QA-10 unchecked.
 
 ```bash
 npm run generate:content
-node --test tests/g006-batch1-deployment.test.mjs tests/g006-batch1-content.test.mjs
+node --test tests/g006-batch1-deployment.test.mjs tests/g006-batch1-content.test.mjs tests/project-status.test.mjs tests/content-review-health.test.mjs
 npm run check:content
 node -e "const s=require('./src/generated/project-status.json'); if(s.completed_topics!==15||s.content_documents!==59||s.governed_sources!==402) process.exit(1)"
 git diff --check
-git add tests/g006-batch1-deployment.test.mjs docs/content-backlog.md docs/reviews/g006-batch1.md src/generated
+git add tests/g006-batch1-deployment.test.mjs tests/project-status.test.mjs docs/content-backlog.md docs/reviews/g006-batch1.md src/generated
 git commit -m "docs: record g006 quality attributes deployment"
 git push origin HEAD:main
 ```
