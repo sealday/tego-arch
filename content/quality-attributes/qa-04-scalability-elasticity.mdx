@@ -32,6 +32,7 @@ adjacent_topics:
   - QA-03
   - QA-06
   - QA-07
+  - QA-08
 related_cases:
   - /cases/aws-cell-shuffle-sharding
   - /cases/cloudflare-durable-objects-workerd
@@ -140,7 +141,7 @@ flowchart LR
 
 ## 相邻质量属性
 
-[QA-03 性能与容量](/quality-attributes/qa-03)提供负载和饱和测量；[QA-06 可维护性](/quality-attributes/qa-06)约束扩缩策略变更的影响半径；[QA-07 兼容性](/quality-attributes/qa-07)约束新旧分区路由与客户端迁移。
+[QA-03 性能与容量](/quality-attributes/qa-03)提供负载和饱和测量；[QA-06 可维护性](/quality-attributes/qa-06)约束扩缩策略变更的影响半径；[QA-07 兼容性](/quality-attributes/qa-07)约束新旧分区路由与客户端迁移；[QA-08 可运维性](/quality-attributes/qa-08)要求扩缩动作可诊断、可停止并验证用户恢复。
 
 [AWS Cell 与 Shuffle Sharding](/cases/aws-cell-shuffle-sharding)可检查故障域和 scale unit。[Cloudflare Durable Objects + workerd](/cases/cloudflare-durable-objects-workerd)可检查状态位置与单键串行边界。案例机制不能替代当前系统的容量测试。
 

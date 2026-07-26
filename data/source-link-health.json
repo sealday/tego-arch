@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-07-24T13:46:27.480Z",
+  "generated_at": "2026-07-26T21:41:46.575Z",
   "results": [
     {
       "transport_locator": "https://a2a-protocol.org/latest/",
@@ -1699,6 +1699,44 @@
           "outcome": "healthy",
           "final_transport_locator": "https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions",
           "http_status": 206,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final",
+      "source_ids": [
+        "src-nist-sp800-160v1r1"
+      ],
+      "last_attempt": {
+        "at": "2026-07-26T21:41:46.575Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final",
+        "http_status": 200,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-07-26T21:41:46.575Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final",
+        "http_status": 200,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-07-26T21:39:31.776Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final",
+          "http_status": 200,
+          "login_wall_detected": false
+        },
+        {
+          "at": "2026-07-26T21:41:46.575Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final",
+          "http_status": 200,
           "login_wall_detected": false
         }
       ],
@@ -9139,6 +9177,50 @@
           "outcome": "healthy",
           "final_transport_locator": "https://docs.yjs.dev/getting-started/working-with-shared-types",
           "http_status": 200,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://doi.org/10.6028/NIST.CSWP.01162020",
+      "source_ids": [
+        "src-nist-privacy-framework-1"
+      ],
+      "last_attempt": {
+        "at": "2026-07-26T21:41:46.575Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.01162020.pdf",
+        "http_status": 206,
+        "login_wall_detected": false,
+        "redirects": [
+          {
+            "status": 302,
+            "from": "https://doi.org/10.6028/NIST.CSWP.01162020",
+            "to": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.01162020.pdf"
+          }
+        ]
+      },
+      "last_success": {
+        "at": "2026-07-26T21:41:46.575Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.01162020.pdf",
+        "http_status": 206,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-07-26T21:39:31.776Z",
+          "outcome": "redirect-changed",
+          "final_transport_locator": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.01162020.pdf",
+          "http_status": 200,
+          "login_wall_detected": false
+        },
+        {
+          "at": "2026-07-26T21:41:46.575Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.01162020.pdf",
+          "http_status": 206,
           "login_wall_detected": false
         }
       ],
@@ -26968,6 +27050,82 @@
       "review_status": "healthy"
     },
     {
+      "transport_locator": "https://opentelemetry.io/docs/concepts/observability-primer/",
+      "source_ids": [
+        "src-opentelemetry-observability-primer"
+      ],
+      "last_attempt": {
+        "at": "2026-07-26T21:41:46.575Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://opentelemetry.io/docs/concepts/observability-primer/",
+        "http_status": 206,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-07-26T21:41:46.575Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://opentelemetry.io/docs/concepts/observability-primer/",
+        "http_status": 206,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-07-26T21:39:31.776Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://opentelemetry.io/docs/concepts/observability-primer/",
+          "http_status": 206,
+          "login_wall_detected": false
+        },
+        {
+          "at": "2026-07-26T21:41:46.575Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://opentelemetry.io/docs/concepts/observability-primer/",
+          "http_status": 206,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://psas.scripts.mit.edu/home/get_file.php?name=STPA_handbook.pdf",
+      "source_ids": [
+        "src-stpa-handbook-2018"
+      ],
+      "last_attempt": {
+        "at": "2026-07-26T21:41:46.575Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://psas.scripts.mit.edu/home/get_file.php?name=STPA_handbook.pdf",
+        "http_status": 200,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-07-26T21:41:46.575Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://psas.scripts.mit.edu/home/get_file.php?name=STPA_handbook.pdf",
+        "http_status": 200,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-07-26T21:39:31.776Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://psas.scripts.mit.edu/home/get_file.php?name=STPA_handbook.pdf",
+          "http_status": 200,
+          "login_wall_detected": false
+        },
+        {
+          "at": "2026-07-26T21:41:46.575Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://psas.scripts.mit.edu/home/get_file.php?name=STPA_handbook.pdf",
+          "http_status": 200,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
       "transport_locator": "https://release-1-20.docs.kubeedge.io/blog/release-v1.20",
       "source_ids": [
         "src-release-1-20-30aaa40728e3"
@@ -28330,6 +28488,44 @@
       "review_status": "healthy"
     },
     {
+      "transport_locator": "https://sre.google/sre-book/managing-incidents/",
+      "source_ids": [
+        "src-sre-managing-incidents"
+      ],
+      "last_attempt": {
+        "at": "2026-07-26T21:41:46.575Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://sre.google/sre-book/managing-incidents/",
+        "http_status": 206,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-07-26T21:41:46.575Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://sre.google/sre-book/managing-incidents/",
+        "http_status": 206,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-07-26T21:39:31.776Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://sre.google/sre-book/managing-incidents/",
+          "http_status": 206,
+          "login_wall_detected": false
+        },
+        {
+          "at": "2026-07-26T21:41:46.575Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://sre.google/sre-book/managing-incidents/",
+          "http_status": 206,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
       "transport_locator": "https://sre.google/sre-book/monitoring-distributed-systems/",
       "source_ids": [
         "src-sre-monitoring-distributed-systems"
@@ -28738,6 +28934,44 @@
           "outcome": "healthy",
           "final_transport_locator": "https://www.erlang.org/doc/system/sup_princ.html",
           "http_status": 206,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://www.faa.gov/documentLibrary/media/Order/FAA_Order_8040.4C.pdf",
+      "source_ids": [
+        "src-faa-order-8040-4c"
+      ],
+      "last_attempt": {
+        "at": "2026-07-26T21:41:46.575Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www.faa.gov/documentLibrary/media/Order/FAA_Order_8040.4C.pdf",
+        "http_status": 200,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-07-26T21:41:46.575Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www.faa.gov/documentLibrary/media/Order/FAA_Order_8040.4C.pdf",
+        "http_status": 200,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-07-26T21:39:31.776Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://www.faa.gov/documentLibrary/media/Order/FAA_Order_8040.4C.pdf",
+          "http_status": 200,
+          "login_wall_detected": false
+        },
+        {
+          "at": "2026-07-26T21:41:46.575Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://www.faa.gov/documentLibrary/media/Order/FAA_Order_8040.4C.pdf",
+          "http_status": 200,
           "login_wall_detected": false
         }
       ],

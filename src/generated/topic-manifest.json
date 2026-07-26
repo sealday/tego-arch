@@ -1666,7 +1666,8 @@
       "adjacent_topics": [
         "QA-00",
         "QA-01",
-        "QA-03"
+        "QA-03",
+        "QA-08"
       ],
       "primary_sources": [
         "https://sre.google/sre-book/availability-table/"
@@ -1734,7 +1735,8 @@
       "adjacent_topics": [
         "QA-03",
         "QA-06",
-        "QA-07"
+        "QA-07",
+        "QA-08"
       ],
       "primary_sources": [
         "https://learn.microsoft.com/en-us/azure/well-architected/performance-efficiency/scale-partition"
@@ -3368,69 +3370,6 @@
       "pattern_group": null
     },
     {
-      "id": "QA-05",
-      "type": "quality-attribute",
-      "title": "安全、隐私与信任边界",
-      "slug": "/quality-attributes/qa-05",
-      "priority": "P1",
-      "status": {
-        "scope": "backlog-projection",
-        "value": "pending",
-        "source": "docs/content-backlog.md"
-      },
-      "dependencies": [],
-      "adjacent_topics": [],
-      "primary_sources": [],
-      "related_cases": [],
-      "related_questions": [],
-      "reviewed_at": null,
-      "review_policy": null,
-      "published": false,
-      "pattern_group": null
-    },
-    {
-      "id": "QA-08",
-      "type": "quality-attribute",
-      "title": "可操作性与可观测性",
-      "slug": "/quality-attributes/qa-08",
-      "priority": "P1",
-      "status": {
-        "scope": "backlog-projection",
-        "value": "pending",
-        "source": "docs/content-backlog.md"
-      },
-      "dependencies": [],
-      "adjacent_topics": [],
-      "primary_sources": [],
-      "related_cases": [],
-      "related_questions": [],
-      "reviewed_at": null,
-      "review_policy": null,
-      "published": false,
-      "pattern_group": null
-    },
-    {
-      "id": "QA-09",
-      "type": "quality-attribute",
-      "title": "安全性（Safety）与物理风险",
-      "slug": "/quality-attributes/qa-09",
-      "priority": "P1",
-      "status": {
-        "scope": "backlog-projection",
-        "value": "pending",
-        "source": "docs/content-backlog.md"
-      },
-      "dependencies": [],
-      "adjacent_topics": [],
-      "primary_sources": [],
-      "related_cases": [],
-      "related_questions": [],
-      "reviewed_at": null,
-      "review_policy": null,
-      "published": false,
-      "pattern_group": null
-    },
-    {
       "id": "QST-03",
       "type": "question",
       "title": "模块化单体还是微服务",
@@ -3962,6 +3901,40 @@
       "presentation": {}
     },
     {
+      "id": "QA-05",
+      "type": "quality-attribute",
+      "title": "安全、隐私与信任边界",
+      "slug": "/quality-attributes/qa-05",
+      "priority": "P1",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "pending",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "QA-00",
+        "QA-01"
+      ],
+      "adjacent_topics": [
+        "QA-07",
+        "QA-08",
+        "QA-09"
+      ],
+      "primary_sources": [
+        "https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final"
+      ],
+      "related_cases": [
+        "/cases/cloudflare-durable-objects-workerd",
+        "/cases/microsoft-multi-agent-reference-architecture"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-07-27",
+      "review_policy": "quarterly-version-sensitive",
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
+    },
+    {
       "id": "MTH-05",
       "type": "method",
       "title": "风险风暴与事前验尸",
@@ -4027,6 +4000,38 @@
       "presentation": {}
     },
     {
+      "id": "QA-09",
+      "type": "quality-attribute",
+      "title": "Safety、物理风险与控制约束",
+      "slug": "/quality-attributes/qa-09",
+      "priority": "P1",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "pending",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "QA-00",
+        "QA-02"
+      ],
+      "adjacent_topics": [
+        "QA-05",
+        "QA-08"
+      ],
+      "primary_sources": [
+        "https://www.faa.gov/documentLibrary/media/Order/FAA_Order_8040.4C.pdf"
+      ],
+      "related_cases": [
+        "/cases/kubeedge-cloud-edge-autonomy"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-07-27",
+      "review_policy": "quarterly-version-sensitive",
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
+    },
+    {
       "id": "QA-06",
       "type": "quality-attribute",
       "title": "可维护性、可修改性与可测试性",
@@ -4060,6 +4065,42 @@
       "presentation": {}
     },
     {
+      "id": "QA-08",
+      "type": "quality-attribute",
+      "title": "可运维性、可观测性与事件闭环",
+      "slug": "/quality-attributes/qa-08",
+      "priority": "P1",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "pending",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "QA-00",
+        "QA-02",
+        "QA-04"
+      ],
+      "adjacent_topics": [
+        "QA-02",
+        "QA-04",
+        "QA-05",
+        "QA-09"
+      ],
+      "primary_sources": [
+        "https://opentelemetry.io/docs/concepts/observability-primer/"
+      ],
+      "related_cases": [
+        "/cases/aws-cell-shuffle-sharding",
+        "/cases/openai-agents-sdk"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-07-27",
+      "review_policy": "quarterly-version-sensitive",
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
+    },
+    {
       "id": "QA-07",
       "type": "quality-attribute",
       "title": "兼容性、互操作与版本迁移",
@@ -4077,6 +4118,7 @@
       ],
       "adjacent_topics": [
         "QA-04",
+        "QA-05",
         "QA-06"
       ],
       "primary_sources": [
