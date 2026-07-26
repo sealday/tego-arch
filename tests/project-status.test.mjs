@@ -53,6 +53,43 @@ test('requires one exact durable-story baseline', () => {
   }
 });
 
+test('rejects a valid declaration followed by a malformed duplicate label', () => {
+  for (const duplicate of [
+    '- **持久故事进度：** 已完成很多故事。',
+    '- **当前持久故事：** G006。',
+  ]) {
+    assert.throws(
+      () => parseDurableStoryStatus(`${declarations}\n${duplicate}`),
+      /exactly one durable story progress and current story declaration/u,
+    );
+  }
+});
+
+test('rejects a valid declaration followed by a contradictory duplicate', () => {
+  for (const duplicate of [
+    '- **持久故事进度：** 已完成 `4 / 20`；最近完成 `G004`。',
+    '- **当前持久故事：** `G007`。',
+  ]) {
+    assert.throws(
+      () => parseDurableStoryStatus(`${declarations}\n${duplicate}`),
+      /exactly one durable story progress and current story declaration/u,
+    );
+  }
+});
+
+test('reports an exact-format error for a unique malformed declaration', () => {
+  assert.throws(
+    () =>
+      parseDurableStoryStatus(
+        declarations.replace(
+          '- **当前持久故事：** `G006`。',
+          '- **当前持久故事：** G006。',
+        ),
+      ),
+    /exact durable story declaration format/u,
+  );
+});
+
 test('rejects malformed canonical collections', () => {
   const input = {
     backlogSource: declarations,
