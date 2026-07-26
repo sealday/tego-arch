@@ -323,9 +323,9 @@ const ids = new Set([
   'src-sre-managing-incidents',
   'src-faa-order-8040-4c',
   'src-stpa-handbook-2018',
-  'src-atlas-qa05-data-trust-boundaries',
-  'src-atlas-qa08-operability-recovery-loop',
-  'src-atlas-qa09-safety-control-loop',
+  'src-atlas-qa05-data-trust-boundaries-8d53f1c92a64',
+  'src-atlas-qa08-operability-recovery-loop-6b1e9d42c7f5',
+  'src-atlas-qa09-safety-control-loop-c4a7e83b1d96',
 ]);
 const ledger = JSON.parse(await readFile('src/generated/source-ledger.json', 'utf8'));
 const found = [];
