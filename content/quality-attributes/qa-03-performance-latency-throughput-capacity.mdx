@@ -32,6 +32,7 @@ depends_on:
 adjacent_topics:
   - QA-00
   - QA-02
+  - QA-04
 related_cases:
   - /cases/apache-kafka-consumer-groups
   - /cases/cloudflare-durable-objects-workerd
@@ -128,7 +129,7 @@ flowchart LR
 
 ## 相邻质量属性
 
-[QA-00](/quality-attributes/qa-00)限定模型与证据边界，[QA-02](/quality-attributes/qa-02)说明过载如何变成 failure 和恢复问题。性能策略还会影响成本、一致性和可修改性，不能只以单一延迟指标排序。
+[QA-00](/quality-attributes/qa-00)限定模型与证据边界，[QA-02](/quality-attributes/qa-02)说明过载如何变成 failure 和恢复问题，[QA-04 可扩展性与弹性](/quality-attributes/qa-04)进一步检查增加或释放容量的控制边界。性能策略还会影响成本、一致性和可修改性，不能只以单一延迟指标排序。
 
 [Apache Kafka Consumer Groups](/cases/apache-kafka-consumer-groups)可用于检查分区、积压和再均衡；[Cloudflare Durable Objects + workerd](/cases/cloudflare-durable-objects-workerd)可用于检查状态位置与请求串行化。案例机制必须回到本系统的 workload 和容量包络验证。
 

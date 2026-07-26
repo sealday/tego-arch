@@ -46,16 +46,19 @@ tags:
 ## 推荐学习顺序
 
 1. 先读[性能、延迟、吞吐与容量](/quality-attributes/qa-03)，明确负载、尾延迟、队列、拒绝与饱和边界。
-2. 沿一次跨服务写入标出状态所有者和网络边界。
-3. 分别推演超时、重复、乱序与部分完成。
-4. 为重试、去重、补偿和重放指定唯一责任方。
-5. 用案例比较同步调用、消息、事件历史和 CRDT 的不同保证。
+2. 再读[可扩展性、弹性与扩缩容](/quality-attributes/qa-04)，区分 scale unit、弹性动作、瓶颈和重分区边界。
+3. 沿一次跨服务写入标出状态所有者和网络边界。
+4. 分别推演超时、重复、乱序与部分完成。
+5. 为重试、去重、补偿和重放指定唯一责任方。
+6. 用案例比较同步调用、消息、事件历史和 CRDT 的不同保证。
 
 ## 必读起点
 
 [Designing Data-Intensive Applications](https://dataintensive.net/) 从可靠性、可扩展性和可维护性出发，建立数据系统、复制、分区、事务与流处理的共同基础。
 
 [性能、延迟、吞吐与容量](/quality-attributes/qa-03)给出 workload、throughput、延迟分位数和 capacity 的测量边界，避免把组件扩容直接等同于性能目标。
+
+[可扩展性、弹性与扩缩容](/quality-attributes/qa-04)把 demand、scale unit、扩缩控制延迟、瓶颈与 repartitioning 放进同一验证流程。
 
 [Azure Architecture Center 的 Retry pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/retry) 说明网络或服务瞬时故障与超时会触发重试，而重试可能重复执行操作，因此必须明确重试责任并把幂等性纳入失败窗口设计。
 

@@ -86,7 +86,7 @@ const relationships = new Map([
   [
     'QA-03',
     {
-      adjacent: ['QA-00', 'QA-02'],
+      adjacent: ['QA-00', 'QA-02', 'QA-04'],
       dependsOn: ['QA-00', 'QA-01'],
       relatedCases: [
         '/cases/apache-kafka-consumer-groups',

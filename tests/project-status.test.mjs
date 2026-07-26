@@ -136,8 +136,8 @@ test('projects the real repository status without rewriting historical evidence'
       schema_version: 1,
       durable_stories: {completed: 5, total: 20, current: 'G006'},
       completed_topics: 15,
-      content_documents: 59,
-      governed_sources: 402,
+      content_documents: 62,
+      governed_sources: 409,
       sources: {
         durable_stories: 'docs/content-backlog.md',
         completed_topics: 'docs/content-backlog.md',

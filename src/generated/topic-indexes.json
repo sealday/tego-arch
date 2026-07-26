@@ -720,27 +720,6 @@
   ],
   "quality-attribute": [
     {
-      "id": "QA-04",
-      "type": "quality-attribute",
-      "title": "可扩展性与弹性",
-      "slug": "/quality-attributes/qa-04",
-      "priority": "P0",
-      "status": {
-        "scope": "backlog-projection",
-        "value": "pending",
-        "source": "docs/content-backlog.md"
-      },
-      "dependencies": [],
-      "adjacent_topics": [],
-      "primary_sources": [],
-      "related_cases": [],
-      "related_questions": [],
-      "reviewed_at": null,
-      "review_policy": null,
-      "published": false,
-      "pattern_group": null
-    },
-    {
       "id": "QA-00",
       "type": "quality-attribute",
       "title": "质量属性总览",
@@ -857,7 +836,8 @@
       ],
       "adjacent_topics": [
         "QA-00",
-        "QA-02"
+        "QA-02",
+        "QA-04"
       ],
       "primary_sources": [
         "https://sre.google/sre-book/handling-overload/"
@@ -874,52 +854,44 @@
       "presentation": {}
     },
     {
+      "id": "QA-04",
+      "type": "quality-attribute",
+      "title": "可扩展性、弹性与扩缩容",
+      "slug": "/quality-attributes/qa-04",
+      "priority": "P0",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "pending",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "QA-00",
+        "QA-03"
+      ],
+      "adjacent_topics": [
+        "QA-03",
+        "QA-06",
+        "QA-07"
+      ],
+      "primary_sources": [
+        "https://learn.microsoft.com/en-us/azure/well-architected/performance-efficiency/scale-partition"
+      ],
+      "related_cases": [
+        "/cases/aws-cell-shuffle-sharding",
+        "/cases/cloudflare-durable-objects-workerd"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-07-27",
+      "review_policy": "quarterly-version-sensitive",
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
+    },
+    {
       "id": "QA-05",
       "type": "quality-attribute",
       "title": "安全、隐私与信任边界",
       "slug": "/quality-attributes/qa-05",
-      "priority": "P1",
-      "status": {
-        "scope": "backlog-projection",
-        "value": "pending",
-        "source": "docs/content-backlog.md"
-      },
-      "dependencies": [],
-      "adjacent_topics": [],
-      "primary_sources": [],
-      "related_cases": [],
-      "related_questions": [],
-      "reviewed_at": null,
-      "review_policy": null,
-      "published": false,
-      "pattern_group": null
-    },
-    {
-      "id": "QA-06",
-      "type": "quality-attribute",
-      "title": "可维护性、可修改性与可测试性",
-      "slug": "/quality-attributes/qa-06",
-      "priority": "P1",
-      "status": {
-        "scope": "backlog-projection",
-        "value": "pending",
-        "source": "docs/content-backlog.md"
-      },
-      "dependencies": [],
-      "adjacent_topics": [],
-      "primary_sources": [],
-      "related_cases": [],
-      "related_questions": [],
-      "reviewed_at": null,
-      "review_policy": null,
-      "published": false,
-      "pattern_group": null
-    },
-    {
-      "id": "QA-07",
-      "type": "quality-attribute",
-      "title": "兼容性、互操作性与版本演进",
-      "slug": "/quality-attributes/qa-07",
       "priority": "P1",
       "status": {
         "scope": "backlog-projection",
@@ -977,6 +949,73 @@
       "review_policy": null,
       "published": false,
       "pattern_group": null
+    },
+    {
+      "id": "QA-06",
+      "type": "quality-attribute",
+      "title": "可维护性、可修改性与可测试性",
+      "slug": "/quality-attributes/qa-06",
+      "priority": "P1",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "pending",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "QA-00",
+        "QA-04"
+      ],
+      "adjacent_topics": [
+        "QA-04",
+        "QA-07"
+      ],
+      "primary_sources": [
+        "https://www.sei.cmu.edu/library/maintainability/"
+      ],
+      "related_cases": [
+        "/cases/micro-frontends-single-spa",
+        "/cases/openai-agents-sdk"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-07-27",
+      "review_policy": "quarterly-version-sensitive",
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
+    },
+    {
+      "id": "QA-07",
+      "type": "quality-attribute",
+      "title": "兼容性、互操作与版本迁移",
+      "slug": "/quality-attributes/qa-07",
+      "priority": "P1",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "pending",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "QA-00",
+        "QA-04",
+        "QA-06"
+      ],
+      "adjacent_topics": [
+        "QA-04",
+        "QA-06"
+      ],
+      "primary_sources": [
+        "https://spec.openapis.org/oas/v3.1.1.html"
+      ],
+      "related_cases": [
+        "/cases/google-adk-a2a",
+        "/cases/micro-frontends-single-spa"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-07-27",
+      "review_policy": "quarterly-version-sensitive",
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
     },
     {
       "id": "QA-10",

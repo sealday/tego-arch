@@ -1536,6 +1536,50 @@
       ]
     },
     {
+      "id": "src-azure-waf-scale-partition",
+      "canonical_locator": "https://learn.microsoft.com/en-us/azure/well-architected/performance-efficiency/scale-partition",
+      "transport_locator": "https://learn.microsoft.com/en-us/azure/well-architected/performance-efficiency/scale-partition",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Architecture strategies for optimizing scaling and partitioning",
+      "author_or_org": "Stephen Sumner / Microsoft",
+      "published_at": "2023-11-15",
+      "registered_at": "2026-07-27",
+      "checked_at": "2026-07-27",
+      "version": "Microsoft Azure Well-Architected Framework PE:05; source metadata ms.date 2023-11-15; checked on 2026-07-27",
+      "source_kind": "vendor-reference-architecture",
+      "tier": "first-party",
+      "allowed_evidence_roles": [
+        "definition",
+        "implementation"
+      ],
+      "license": "CC-BY-4.0",
+      "license_scope": "The named MicrosoftDocs/well-architected documentation page covered by the repository CC BY 4.0 LICENSE; trademarks, linked works, code, media, and third-party assets excluded",
+      "license_evidence_url": "https://github.com/MicrosoftDocs/well-architected/blob/main/LICENSE",
+      "license_evidence_note": "The live page links to MicrosoftDocs/well-architected as its source, and that official repository's LICENSE is Creative Commons Attribution 4.0 International.",
+      "license_family_id": "explicit:well-architected-docs",
+      "license_family_grouping": "explicit:well-architected-docs",
+      "family_grouping_evidence_url": "https://github.com/MicrosoftDocs/well-architected/blob/main/LICENSE",
+      "copyright_policy": "vendor-claims-separated",
+      "usage_boundary": "Documents Microsoft's scale-unit, scaling, bottleneck, flapping, and partitioning guidance; it does not independently prove workload scalability, linear throughput, successful repartitioning, or suitability.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://learn.microsoft.com/en-us/azure/well-architected/performance-efficiency/scale-partition",
+      "expected_final_approved_at": "2026-07-27",
+      "expected_final_approval_note": "Reviewed canonical HTTPS transport and official repository license evidence on 2026-07-27.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://learn.microsoft.com/en-us/azure/well-architected/performance-efficiency/scale-partition",
+          "status": "healthy",
+          "last_attempt_at": "2026-07-26T19:41:58.105Z",
+          "last_success_at": "2026-07-26T19:41:58.105Z",
+          "http_status": 206,
+          "final_transport_locator": "https://learn.microsoft.com/en-us/azure/well-architected/performance-efficiency/scale-partition"
+        }
+      ]
+    },
+    {
       "id": "src-c4model-abstractions",
       "canonical_locator": "https://c4model.com/abstractions",
       "transport_locator": "https://c4model.com/abstractions",
@@ -16296,6 +16340,137 @@
       ]
     },
     {
+      "id": "src-google-aip-180",
+      "canonical_locator": "https://google.aip.dev/180",
+      "transport_locator": "https://google.aip.dev/180",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "AIP-180: Backwards compatibility",
+      "author_or_org": "Google API Improvement Proposals",
+      "published_at": "2019-07-23",
+      "registered_at": "2026-07-27",
+      "checked_at": "2026-07-27",
+      "version": "Approved AIP-180, created 2019-07-23, changelog reviewed through 2025-10-21; checked on 2026-07-27",
+      "source_kind": "standard",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "method"
+      ],
+      "license": "CC-BY-4.0",
+      "license_scope": "The named AIP page under its footer CC BY 4.0 notice; code samples, Google trademarks, linked works, media, and third-party material excluded",
+      "license_evidence_url": "https://google.aip.dev/180",
+      "license_evidence_note": "The official AIP-180 page footer states that, except as otherwise noted, page content is licensed under CC BY 4.0 and code samples under Apache 2.0.",
+      "license_family_id": "https://google.aip.dev/180",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "adapt-with-attribution",
+      "usage_boundary": "Defines Google's source, wire, and semantic compatibility guidance; it is indicative rather than exhaustive and does not prove compatibility for non-Google APIs.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://google.aip.dev/180",
+      "expected_final_approved_at": "2026-07-27",
+      "expected_final_approval_note": "Reviewed canonical permalink, approval metadata, changelog boundary, and literal footer license notice on 2026-07-27.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://google.aip.dev/180",
+          "status": "healthy",
+          "last_attempt_at": "2026-07-26T19:41:58.105Z",
+          "last_success_at": "2026-07-26T19:41:58.105Z",
+          "http_status": 206,
+          "final_transport_locator": "https://google.aip.dev/180"
+        }
+      ]
+    },
+    {
+      "id": "src-google-aip-185",
+      "canonical_locator": "https://google.aip.dev/185",
+      "transport_locator": "https://google.aip.dev/185",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "AIP-185: API Versioning",
+      "author_or_org": "Google API Improvement Proposals",
+      "published_at": "2024-10-22",
+      "registered_at": "2026-07-27",
+      "checked_at": "2026-07-27",
+      "version": "Approved AIP-185, created and updated 2024-10-22; checked on 2026-07-27",
+      "source_kind": "standard",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "learning"
+      ],
+      "license": "CC-BY-4.0",
+      "license_scope": "The named AIP page under its footer CC BY 4.0 notice; code samples, Google trademarks, linked works, media, and third-party material excluded",
+      "license_evidence_url": "https://google.aip.dev/185",
+      "license_evidence_note": "The official AIP-185 page footer states that, except as otherwise noted, page content is licensed under CC BY 4.0 and code samples under Apache 2.0.",
+      "license_family_id": "https://google.aip.dev/185",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "adapt-with-attribution",
+      "usage_boundary": "Provides Google API versioning and deprecation guidance for learning; it does not prescribe a universal migration period or guarantee compatibility.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://google.aip.dev/185",
+      "expected_final_approved_at": "2026-07-27",
+      "expected_final_approval_note": "Reviewed canonical permalink, approval metadata, version date, and literal footer license notice on 2026-07-27.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://google.aip.dev/185",
+          "status": "healthy",
+          "last_attempt_at": "2026-07-26T19:41:58.105Z",
+          "last_success_at": "2026-07-26T19:41:58.105Z",
+          "http_status": 206,
+          "final_transport_locator": "https://google.aip.dev/185"
+        }
+      ]
+    },
+    {
+      "id": "src-google-cloud-waf-elasticity",
+      "canonical_locator": "https://docs.cloud.google.com/architecture/framework/performance-optimization/elasticity",
+      "transport_locator": "https://docs.cloud.google.com/architecture/framework/performance-optimization/elasticity",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Take advantage of elasticity",
+      "author_or_org": "Google Cloud",
+      "published_at": "2024-12-06",
+      "registered_at": "2026-07-27",
+      "checked_at": "2026-07-27",
+      "version": "Google Cloud Architecture Framework page last updated 2024-12-06 UTC; checked on 2026-07-27",
+      "source_kind": "vendor-reference-architecture",
+      "tier": "first-party",
+      "allowed_evidence_roles": [
+        "comparison",
+        "implementation"
+      ],
+      "license": "CC-BY-4.0",
+      "license_scope": "The named page under its footer CC BY 4.0 notice; code samples, Google trademarks, linked works, media, and third-party material excluded",
+      "license_evidence_url": "https://docs.cloud.google.com/architecture/framework/performance-optimization/elasticity",
+      "license_evidence_note": "The official page footer states that, except as otherwise noted, page content is licensed under CC BY 4.0 and code samples under Apache 2.0.",
+      "license_family_id": "https://docs.cloud.google.com/architecture/framework/performance-optimization/elasticity",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "vendor-claims-separated",
+      "usage_boundary": "Documents Google Cloud's elasticity guidance and vendor framing; it does not establish universal control thresholds, demand satisfaction, linear scaling, or portability.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://docs.cloud.google.com/architecture/framework/performance-optimization/elasticity",
+      "expected_final_approved_at": "2026-07-27",
+      "expected_final_approval_note": "Reviewed canonical HTTPS transport and literal page-footer license notice on 2026-07-27.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://docs.cloud.google.com/architecture/framework/performance-optimization/elasticity",
+          "status": "healthy",
+          "last_attempt_at": "2026-07-26T19:41:58.105Z",
+          "last_success_at": "2026-07-26T19:41:58.105Z",
+          "http_status": 200,
+          "final_transport_locator": "https://docs.cloud.google.com/architecture/framework/performance-optimization/elasticity"
+        }
+      ]
+    },
+    {
       "id": "src-hbr-081d06c5edff",
       "canonical_locator": "https://hbr.org/2007/09/performing-a-project-premortem",
       "transport_locator": "https://hbr.org/2007/09/performing-a-project-premortem",
@@ -18227,6 +18402,93 @@
       ]
     },
     {
+      "id": "src-oas-3-1-1",
+      "canonical_locator": "https://spec.openapis.org/oas/v3.1.1.html",
+      "transport_locator": "https://spec.openapis.org/oas/v3.1.1.html",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "OpenAPI Specification v3.1.1",
+      "author_or_org": "OpenAPI Initiative",
+      "published_at": "2024-10-24",
+      "registered_at": "2026-07-27",
+      "checked_at": "2026-07-27",
+      "version": "OpenAPI Specification 3.1.1, published 2024-10-24; checked on 2026-07-27",
+      "source_kind": "standard",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "runtime-fact"
+      ],
+      "license": "Apache-2.0",
+      "license_scope": "OpenAPI Specification v3.1.1 under its explicit Apache License 2.0 notice; linked specifications, trademarks, examples with separate notices, and third-party material excluded",
+      "license_evidence_url": "https://spec.openapis.org/oas/v3.1.1.html",
+      "license_evidence_note": "Section 1.1 of the official published specification explicitly licenses the document under the Apache License, Version 2.0.",
+      "license_family_id": "https://spec.openapis.org/oas/v3.1.1.html",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Defines OAS 3.1.1 syntax and contract; it does not demonstrate implementation conformance, wire behavior, business compatibility, or semantic interoperability.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://spec.openapis.org/oas/v3.1.1.html",
+      "expected_final_approved_at": "2026-07-27",
+      "expected_final_approval_note": "Reviewed immutable published-version HTTPS transport and in-document Apache-2.0 notice on 2026-07-27.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://spec.openapis.org/oas/v3.1.1.html",
+          "status": "healthy",
+          "last_attempt_at": "2026-07-26T19:41:58.105Z",
+          "last_success_at": "2026-07-26T19:41:58.105Z",
+          "http_status": 206,
+          "final_transport_locator": "https://spec.openapis.org/oas/v3.1.1.html"
+        }
+      ]
+    },
+    {
+      "id": "src-oas-index",
+      "canonical_locator": "https://spec.openapis.org/oas/",
+      "transport_locator": "https://spec.openapis.org/oas/",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "OpenAPI Specification versions and schema iterations",
+      "author_or_org": "OpenAPI Initiative",
+      "published_at": null,
+      "registered_at": "2026-07-27",
+      "checked_at": "2026-07-27",
+      "version": "Official OpenAPI Specification publication index checked on 2026-07-27",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "learning"
+      ],
+      "license": "Apache-2.0",
+      "license_scope": "The official OAS publication index under its page-footer Apache 2.0 notice; linked specifications, schemas, themes, marks, and third-party material excluded",
+      "license_evidence_url": "https://spec.openapis.org/oas/",
+      "license_evidence_note": "The official publication index footer states that the work is licensed under the Apache 2.0 License.",
+      "license_family_id": "https://spec.openapis.org/oas/",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Provides navigation to published OAS versions and schema iterations; it does not prove that schemas catch every violation or that any implementation conforms.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://spec.openapis.org/oas/",
+      "expected_final_approved_at": "2026-07-27",
+      "expected_final_approval_note": "Reviewed canonical publication-index HTTPS transport and literal page-footer license notice on 2026-07-27.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://spec.openapis.org/oas/",
+          "status": "healthy",
+          "last_attempt_at": "2026-07-26T19:41:58.105Z",
+          "last_success_at": "2026-07-26T19:41:58.105Z",
+          "http_status": 206,
+          "final_transport_locator": "https://spec.openapis.org/oas/"
+        }
+      ]
+    },
+    {
       "id": "src-openai-6c059f59453b",
       "canonical_locator": "https://openai.github.io/openai-agents-python/multi_agent/",
       "transport_locator": "https://openai.github.io/openai-agents-python/multi_agent/",
@@ -18999,6 +19261,50 @@
           "last_success_at": "2026-07-24T12:13:42.427Z",
           "http_status": 200,
           "final_transport_locator": "https://www.sei.cmu.edu/training/software-architecture-principles-practices/"
+        }
+      ]
+    },
+    {
+      "id": "src-sei-maintainability-2020",
+      "canonical_locator": "https://www.sei.cmu.edu/library/maintainability/",
+      "transport_locator": "https://www.sei.cmu.edu/library/maintainability/",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Maintainability",
+      "author_or_org": "Rick Kazman, Phil Bianco, James Ivers, and John Klein / Carnegie Mellon Software Engineering Institute",
+      "published_at": "2020-12-01",
+      "registered_at": "2026-07-27",
+      "checked_at": "2026-07-27",
+      "version": "SEI Report CMU/SEI-2020-TR-006, DOI 10.1184/R1/12954908, published 2020-12-01; page checked on 2026-07-27",
+      "source_kind": "paper",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "method"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named SEI report landing page and bibliographic facts only; report text, PDF, figures, linked works, marks, and third-party material excluded from reuse",
+      "license_evidence_url": "https://www.sei.cmu.edu/legal/",
+      "license_evidence_note": "SEI's official terms retain intellectual-property rights and prohibit republication without permission; Atlas uses bibliographic facts, links, and original factual summaries only.",
+      "license_family_id": "https://www.sei.cmu.edu/library/maintainability/",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports definitions and the report's architecture-analysis method for maintainability scenarios; it does not supply a universal test-coverage threshold or prove a system is maintainable.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://www.sei.cmu.edu/library/maintainability/",
+      "expected_final_approved_at": "2026-07-27",
+      "expected_final_approval_note": "Reviewed canonical SEI report metadata, DOI, authorship, publication date, and official legal terms on 2026-07-27.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://www.sei.cmu.edu/library/maintainability/",
+          "status": "healthy",
+          "last_attempt_at": "2026-07-26T19:41:58.105Z",
+          "last_success_at": "2026-07-26T19:41:58.105Z",
+          "http_status": 200,
+          "final_transport_locator": "https://www.sei.cmu.edu/library/maintainability/"
         }
       ]
     },
@@ -27010,6 +27316,194 @@
           "manifest_primary": false,
           "usage_mode": "facts-summary",
           "attribution_note": "Chapter 6 - Monitoring Distributed Systems, Google SRE Book",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/quality-attributes/qa-04-scalability-elasticity.mdx": {
+      "title": "可扩展性、弹性与扩缩容",
+      "slug": "/quality-attributes/qa-04",
+      "reviewed_at": "2026-07-27",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-azure-waf-scale-partition",
+          "citation_url": "https://learn.microsoft.com/en-us/azure/well-architected/performance-efficiency/scale-partition",
+          "roles": [
+            "definition",
+            "implementation"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Architecture strategies for optimizing scaling and partitioning, Stephen Sumner / Microsoft",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-github-432a30aa96cb",
+          "citation_url": "https://github.com/mehdihadeli/awesome-software-architecture",
+          "roles": [
+            "learning"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "navigation-only",
+          "attribution_note": "Awesome Software Architecture, Mehdi Hadeli and contributors",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-google-cloud-waf-elasticity",
+          "citation_url": "https://docs.cloud.google.com/architecture/framework/performance-optimization/elasticity",
+          "roles": [
+            "comparison",
+            "implementation"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Take advantage of elasticity, Google Cloud",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/quality-attributes/qa-06-maintainability-modifiability-testability.mdx": {
+      "title": "可维护性、可修改性与可测试性",
+      "slug": "/quality-attributes/qa-06",
+      "reviewed_at": "2026-07-27",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-github-432a30aa96cb",
+          "citation_url": "https://github.com/mehdihadeli/awesome-software-architecture",
+          "roles": [
+            "learning"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "navigation-only",
+          "attribution_note": "Awesome Software Architecture, Mehdi Hadeli and contributors",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-iso-11f3b103e932",
+          "citation_url": "https://www.iso.org/standard/78176.html",
+          "roles": [
+            "definition",
+            "comparison"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "ISO/IEC 25010:2023, International Organization for Standardization",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-sei-maintainability-2020",
+          "citation_url": "https://www.sei.cmu.edu/library/maintainability/",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Maintainability, Rick Kazman, Phil Bianco, James Ivers, and John Klein / Carnegie Mellon Software Engineering Institute",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/quality-attributes/qa-07-compatibility-interoperability-versioning.mdx": {
+      "title": "兼容性、互操作与版本迁移",
+      "slug": "/quality-attributes/qa-07",
+      "reviewed_at": "2026-07-27",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-github-432a30aa96cb",
+          "citation_url": "https://github.com/mehdihadeli/awesome-software-architecture",
+          "roles": [
+            "learning"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "navigation-only",
+          "attribution_note": "Awesome Software Architecture, Mehdi Hadeli and contributors",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-google-aip-180",
+          "citation_url": "https://google.aip.dev/180",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "AIP-180: Backwards compatibility, Google API Improvement Proposals",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-google-aip-185",
+          "citation_url": "https://google.aip.dev/185",
+          "roles": [
+            "learning"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "AIP-185: API Versioning, Google API Improvement Proposals",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-oas-3-1-1",
+          "citation_url": "https://spec.openapis.org/oas/v3.1.1.html",
+          "roles": [
+            "definition",
+            "runtime-fact"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "OpenAPI Specification v3.1.1, OpenAPI Initiative",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-oas-index",
+          "citation_url": "https://spec.openapis.org/oas/",
+          "roles": [
+            "learning"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "OpenAPI Specification versions and schema iterations, OpenAPI Initiative",
           "modification_note": null,
           "excerpt": null,
           "quotation_reviewed": false
