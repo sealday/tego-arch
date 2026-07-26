@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "durable_stories": {
+    "completed": 5,
+    "total": 20,
+    "current": "G006"
+  },
+  "completed_topics": 11,
+  "content_documents": 56,
+  "governed_sources": 394,
+  "sources": {
+    "durable_stories": "docs/content-backlog.md",
+    "completed_topics": "docs/content-backlog.md",
+    "content_documents": "content/**/*.{md,mdx}",
+    "governed_sources": "data/source-ledger.json"
+  }
+}

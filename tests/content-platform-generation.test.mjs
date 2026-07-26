@@ -236,6 +236,8 @@ async function withRepositoryFixture(run) {
       writeFile(
         path.join(root, 'docs/content-backlog.md'),
         [
+          '- **持久故事进度：** 已完成 `5 / 20`；最近完成 `G005`。',
+          '- **当前持久故事：** `G006`。',
           '- [x] **FND-01 P0｜Example concept**。',
           '- [x] **FND-02 P0｜Adjacent concept**。',
           '- [ ] **DDD-01 P0｜General Pattern**。',
@@ -389,6 +391,7 @@ test('builds all artifacts from one validated snapshot', async () => {
       generatedPaths.patternGroups,
       generatedPaths.caseSeries,
       generatedPaths.caseCatalog,
+      generatedPaths.projectStatus,
     ]);
     assert.match(
       first[generatedPaths.sourceLedger],
@@ -409,6 +412,19 @@ test('builds all artifacts from one validated snapshot', async () => {
         ],
       },
     );
+    assert.deepEqual(JSON.parse(first[generatedPaths.projectStatus]), {
+      schema_version: 1,
+      durable_stories: {completed: 5, total: 20, current: 'G006'},
+      completed_topics: 2,
+      content_documents: 3,
+      governed_sources: 1,
+      sources: {
+        durable_stories: 'docs/content-backlog.md',
+        completed_topics: 'docs/content-backlog.md',
+        content_documents: 'content/**/*.{md,mdx}',
+        governed_sources: 'data/source-ledger.json',
+      },
+    });
     assert.equal(
       first[generatedPaths.sourceLedger],
       serializePublicSourceLedger(
@@ -791,6 +807,7 @@ test('recovers idempotently after an interrupted replacement', async () => {
       'case-series.json',
       'manifest.json',
       'pattern-groups.json',
+      'project-status.json',
       'source-ledger.json',
       'topic-indexes.json',
       'topic-manifest.json',

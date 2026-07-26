@@ -162,7 +162,7 @@
 
 .fieldNote dl div {
   display: grid;
-  grid-template-columns: 4rem minmax(0, 1fr);
+  grid-template-columns: 5.5rem minmax(0, 1fr);
   gap: 0.8rem;
   border-top: 1px solid var(--atlas-line);
   padding: 0.7rem 0;
@@ -178,6 +178,13 @@
 .fieldNote dd {
   margin: 0;
   color: var(--atlas-ink-soft);
+}
+
+.statusNote {
+  margin: 1rem 0 0;
+  color: var(--atlas-muted);
+  font-size: 0.72rem;
+  line-height: 1.6;
 }
 
 .featuredSection,

@@ -11,6 +11,7 @@ import {
   secondCollectionCases,
   seriesLabels,
 } from '@site/src/data/caseCatalog';
+import projectStatus from '@site/src/generated/project-status.json';
 import styles from './index.module.css';
 
 const homepageSeries = new Set(
@@ -96,24 +97,37 @@ function Hero(): ReactNode {
             </div>
           </div>
 
-          <aside className={styles.fieldNote} aria-label="本期研究范围">
-            <p className={styles.fieldNoteLabel}>FIELD NOTE · 001</p>
-            <Heading as="h2">首期问题</Heading>
-            <blockquote>当多个 Agent 一起工作时，控制权究竟在哪里？</blockquote>
+          <aside className={styles.fieldNote} aria-label="项目进度">
+            <p className={styles.fieldNoteLabel}>PROJECT STATUS</p>
+            <Heading as="h2">持续内化进度</Heading>
             <dl>
               <div>
-                <dt>样本</dt>
-                <dd>18 个跨生态案例</dd>
+                <dt>持久故事</dt>
+                <dd>
+                  {projectStatus.durable_stories.completed} /{' '}
+                  {projectStatus.durable_stories.total}
+                </dd>
               </div>
               <div>
-                <dt>观察轴</dt>
-                <dd>控制 · 状态 · 协议 · 生产化</dd>
+                <dt>已完成主题</dt>
+                <dd>{projectStatus.completed_topics}</dd>
               </div>
               <div>
-                <dt>证据</dt>
-                <dd>官方源码、规范与文档</dd>
+                <dt>内容文档</dt>
+                <dd>{projectStatus.content_documents}</dd>
+              </div>
+              <div>
+                <dt>治理来源</dt>
+                <dd>{projectStatus.governed_sources}</dd>
+              </div>
+              <div>
+                <dt>当前故事</dt>
+                <dd>{projectStatus.durable_stories.current}</dd>
               </div>
             </dl>
+            <p className={styles.statusNote}>
+              任务状态只在 <code>docs/content-backlog.md</code> 维护。
+            </p>
           </aside>
         </div>
       </div>

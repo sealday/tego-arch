@@ -27,6 +27,7 @@ import {
   parseSourceLedger,
   validateSourceGovernance,
 } from './source-ledger.mjs';
+import {buildProjectStatus} from './project-status.mjs';
 import {
   mergePublicLedgerHealth,
   validateLinkHealthCacheStructure,
@@ -41,6 +42,7 @@ export const generatedPaths = {
   patternGroups: 'src/generated/pattern-groups.json',
   caseSeries: 'src/generated/case-series.json',
   caseCatalog: 'src/generated/case-catalog.json',
+  projectStatus: 'src/generated/project-status.json',
 };
 
 const stageRelativePath = 'src/generated/.content-platform-stage';
@@ -378,6 +380,12 @@ export async function buildContentArtifacts(root) {
       }),
     ),
   };
+  const projectStatus = buildProjectStatus({
+    backlogSource,
+    topics: parsedBacklog.topics,
+    documents: validation.documents,
+    ledger: parsedLedger.ledger,
+  });
   return {
     [generatedPaths.sourceLedger]: serializePublicSourceLedger(
       mergePublicLedgerHealth(governance.governedLedger, linkHealthCache),
@@ -388,6 +396,7 @@ export async function buildContentArtifacts(root) {
     [generatedPaths.patternGroups]: `${JSON.stringify(publicPatternGroups, null, 2)}\n`,
     [generatedPaths.caseSeries]: `${JSON.stringify(caseSeriesRegistry.registry, null, 2)}\n`,
     [generatedPaths.caseCatalog]: serializeCaseCatalog(caseCatalog),
+    [generatedPaths.projectStatus]: `${JSON.stringify(projectStatus, null, 2)}\n`,
   };
 }
 
