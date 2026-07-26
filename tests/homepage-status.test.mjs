@@ -38,3 +38,34 @@ test('renders canonical project status only from the generated projection', asyn
   assert.doesNotMatch(homepage, /const projectStatus\s*=/u);
   assert.doesNotMatch(homepage, /to=["']\/status|href=["']\/status/u);
 });
+
+test('introduces the complete architecture knowledge map to experienced developers', async () => {
+  const homepage = await readFile(
+    new URL('../src/pages/index.tsx', import.meta.url),
+    'utf8',
+  );
+
+  assert.match(
+    homepage,
+    /为有开发经验、第一次系统学习架构的工程师/u,
+  );
+  assert.match(homepage, /从真实系统、成熟方法与可核验的证据出发/u);
+  for (const subject of [
+    '概念',
+    '质量属性',
+    '方法',
+    '模式',
+    '架构风格',
+    '真实案例',
+  ]) {
+    assert.match(homepage, new RegExp(subject, 'u'));
+  }
+  assert.match(homepage, /浏览架构案例/u);
+  assert.match(homepage, /五步读懂一个软件架构主题/u);
+  assert.doesNotMatch(homepage, /浏览首发案例/u);
+  assert.doesNotMatch(homepage, /五步读透一个多智能体系统/u);
+  assert.doesNotMatch(
+    homepage,
+    /description="[^"]*AI 多智能体系统的控制权/u,
+  );
+});

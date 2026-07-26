@@ -83,13 +83,13 @@ function Hero(): ReactNode {
         <div className={styles.heroGrid}>
           <div className={styles.heroCopy}>
             <p className={styles.kicker}>Tego Arch · 软件架构知识图谱</p>
-            <Heading as="h1">从真实项目中，读懂智能体如何协作。</Heading>
+            <Heading as="h1">从真实系统与证据出发，系统学习软件架构。</Heading>
             <p className={styles.lede}>
-              用统一问题拆解控制权、上下文、状态与生产边界。这里不是框架榜单，而是一册持续生长、可回到源码核验的中文架构笔记。
+              为有开发经验、第一次系统学习架构的工程师，从真实系统、成熟方法与可核验的证据出发，串联概念、质量属性、方法、模式、架构风格与真实案例。
             </p>
             <div className={styles.heroActions}>
               <Link className={styles.primaryAction} to="/cases">
-                浏览首发案例 <span aria-hidden="true">→</span>
+                浏览架构案例 <span aria-hidden="true">→</span>
               </Link>
               <Link className={styles.secondaryAction} to="/paths">
                 按学习路径开始
@@ -139,7 +139,7 @@ export default function Home(): ReactNode {
   return (
     <Layout
       title="Tego Arch"
-      description="从真实开源项目与官方资料中学习 AI 多智能体系统的控制权、状态、协议与生产化设计。">
+      description="为有开发经验、第一次系统学习架构的工程师，从真实系统、成熟方法与可核验证据中学习概念、质量属性、方法、模式、架构风格与真实案例。">
       <Hero />
       <main>
         <section className={styles.featuredSection} aria-labelledby="featured-cases-title">
@@ -206,8 +206,8 @@ export default function Home(): ReactNode {
             <SectionHeading
               id="learning-path-title"
               eyebrow="READING PROTOCOL"
-              title="五步读透一个多智能体系统"
-              description="不从名词表开始。从一个可以验证的问题出发，沿控制流进入源码，再回到工程决策。"
+              title="五步读懂一个软件架构主题"
+              description="不从名词表开始。从一个可验证的问题出发，追踪边界、控制、状态与质量属性，再回到证据和工程决策。"
             />
             <ol className={styles.learningSteps}>
               {learningSteps.map(([title, description], index) => (
