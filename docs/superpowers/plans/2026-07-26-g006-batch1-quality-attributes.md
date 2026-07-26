@@ -20,7 +20,7 @@
 - New remote sources require complete license fields and reviewed `data/source-link-health.json` entries; original local illustrations use `LicenseRef-Atlas-Original`, `original-atlas`, and no remote cache entry.
 - No new dependencies, no custom domain, and no changes to the canonical `/tego-arch/` base.
 - All implementation follows RED → observed failure → minimal GREEN → targeted regression → commit.
-- Stage A deploys implementation/review; Stage B records literal Stage A SHA/run/live evidence.
+- Stage A deploys implementation/review while QA-00 through QA-03 remain unchecked; Stage B adds a deployment-closure RED, records literal Stage A SHA/run/live evidence, checks the four rows, and regenerates status.
 - G006 remains current after Batch 1; do not run `omx ultragoal checkpoint`.
 
 ## Article Contract
@@ -56,7 +56,7 @@
 
 **Interfaces:**
 - Consumes: `readContentDocuments`, `findMarkdownHeadings`, canonical backlog/ledger/generated manifest.
-- Produces: exact four-topic metadata, structure, relationship, evidence, image, path, and completion gates.
+- Produces: exact four-topic metadata, structure, relationship, evidence, image, and path gates; it does not assert backlog completion before deployment.
 
 - [ ] **Step 1: Create the failing Batch 1 test**
 
@@ -80,7 +80,7 @@ const images = new Map([
 ]);
 ```
 
-Assert exact files/slugs, `content_type: quality-attribute`, `priority: P0`, `review_policy: quarterly-version-sensitive`, exact nine H2, 3–5 questions, the relationship table above, visible parent/adjacent/case links, exact image paths, governed illustration citations, two independent domains, one eligible primary, four checked backlog rows, and all three path links.
+Assert exact files/slugs, `content_type: quality-attribute`, `priority: P0`, `review_policy: quarterly-version-sensitive`, exact nine H2, 3–5 questions, the relationship table above, visible parent/adjacent/case links, exact image paths, governed illustration citations, two independent domains, one eligible primary, and all three path links. Do not inspect QA backlog checkbox state in this content test.
 
 - [ ] **Step 2: Add the QA-01 deliberate-hash RED**
 
@@ -105,7 +105,7 @@ No other preservation hash may change.
 node --test tests/g006-batch1-content.test.mjs tests/g005-batch3-content.test.mjs
 ```
 
-Expected: FAIL because QA-00/02/03, their images, reciprocal graph, completion rows, and final QA-01 hash do not exist.
+Expected: FAIL because QA-00/02/03, their images, reciprocal graph, paths, and governed citations do not exist; the pre-batch QA-01 hash assertion itself is initially PASS.
 
 - [ ] **Step 4: Commit RED**
 
@@ -140,14 +140,13 @@ Use facts-summary only; do not copy ISO tables, SEI prose, SRE diagrams, or sour
 
 - [ ] **Step 2: Add reviewed cache entries**
 
-Run bounded checks for only the five new transports, then add their literal reviewed outcomes to `data/source-link-health.json`; do not refresh unrelated cache rows.
+Generate a complete temporary live result with the existing CLI, then extract and merge only the five new transport entries into `data/source-link-health.json`. Preserve every pre-existing canonical cache entry and its bytes/order.
 
 ```bash
-npm run check:links:live -- --only https://www.sei.cmu.edu/library/quality-attributes/ --output /tmp/g006-sei.json
-npm run check:links:live -- --only-origin https://sre.google --output /tmp/g006-sre.json
+npm run check:links:live -- --output /tmp/g006-live-cache.json
 ```
 
-Expected: each cited new transport has one policy-compatible reviewed result; auth/redirect facts are recorded rather than normalized away.
+Expected: the temporary file covers the complete canonical ledger. Copy the literal results whose `transport_locator` equals one of the five locators above; do not replace the canonical cache wholesale. Each new transport has one policy-compatible reviewed result, and auth/redirect facts remain literal.
 
 - [ ] **Step 3: Validate governance**
 
@@ -192,7 +191,7 @@ node --test tests/g006-batch1-content.test.mjs tests/content-validation.test.mjs
 npm run validate:content
 ```
 
-Expected: remaining failures refer only to QA-02/03, raster registration, backlog completion, and the intentional QA-01 hash.
+After editing QA-01, run `node --test tests/g005-batch3-content.test.mjs` once and observe the old literal hash FAIL while its semantic/schema assertions remain PASS. Remaining Batch 1 failures refer only to QA-02/03 and raster registration.
 
 - [ ] **Step 4: Commit**
 
@@ -227,7 +226,7 @@ node --test tests/g006-batch1-content.test.mjs tests/learning-path.test.mjs
 npm run validate:content
 ```
 
-Expected: article/path assertions PASS; raster, ledger, backlog, and QA-01 hash gates remain RED.
+Expected: article/path assertions PASS; raster and illustration-ledger gates remain RED. The deliberate QA-01 old-hash failure remains until Task 6 pins the reviewed bytes.
 
 - [ ] **Step 4: Commit**
 
@@ -277,53 +276,61 @@ git commit -m "feat: illustrate g006 quality attribute boundaries"
 
 Expected: image existence, dimensions, MDX embedding, rights, and ledger gates PASS.
 
-### Task 6: Close the canonical batch and generated projections
+### Task 6: Complete the Stage A implementation without closing backlog rows
 
 **Files:**
-- Modify: `docs/content-backlog.md`
 - Modify: `tests/g005-batch3-content.test.mjs`
 - Generate: `src/generated/*.json`
 
 **Interfaces:**
-- Produces: four checked topic rows and fresh generated manifest/index/source/status projections.
+- Produces: reviewed QA-01 hash and fresh generated manifest/index/source/status projections while all four QA backlog rows remain unchecked.
 
-- [ ] **Step 1: Check only QA-00 through QA-03**
+- [ ] **Step 1: Pin the intentional QA-01 hash after observing RED**
 
-Set the four backlog rows to `[x]` with implementation/review pending deployment wording; leave QA-04 through QA-10 unchanged and keep `G006` current.
+First run the preservation test against the revised article and retain its old-hash failure output:
 
-- [ ] **Step 2: Pin the intentional QA-01 hash**
+```bash
+node --test tests/g005-batch3-content.test.mjs
+```
+
+Expected: FAIL only because QA-01 no longer equals `d95a8299ed2b25e51007c0f0970b2d95698051e079e146da36c1c77d4612df2b`; semantic QA-01 assertions and every unrelated immutable hash PASS.
+
+Then calculate the reviewed bytes:
 
 ```bash
 qa01_hash=$(shasum -a 256 content/quality-attributes/qa-01-scenario-writing.mdx | awk '{print $1}')
 printf '%s\n' "$qa01_hash"
 ```
 
-Replace the sentinel in `tests/g005-batch3-content.test.mjs` with that literal hash and confirm every other immutable hash is unchanged.
+Replace only the old QA-01 literal with `$qa01_hash`, rerun the test GREEN, and retain all semantic assertions so the hash update cannot conceal content-contract regression.
 
-- [ ] **Step 3: Generate and run full verification**
+- [ ] **Step 2: Generate and run full Stage A verification**
 
 ```bash
 npm run generate:content
 node --test tests/g006-batch1-content.test.mjs tests/g005-batch3-content.test.mjs
 npm run verify
+node -e "const s=require('./src/generated/project-status.json'); if(s.completed_topics!==11||s.content_documents!==59||s.governed_sources!==402) process.exit(1)"
 git diff --check
 test ! -e src/generated/.content-platform-stage
 ```
 
-Expected: all gates PASS; generated project status reflects 15 completed topics, 59 content documents, and the actual governed-source count produced by the ledger.
+Expected: all gates PASS; QA-00 through QA-03 are still `[ ]`; generated project status is exactly 11 completed topics, 59 content documents, and 402 governed sources (394 baseline + 5 remote + 3 illustrations).
 
-- [ ] **Step 4: Commit closure**
+- [ ] **Step 3: Commit implementation closure**
 
 ```bash
-git add docs/content-backlog.md tests/g005-batch3-content.test.mjs src/generated
-git commit -m "feat: close g006 quality attributes batch1"
+git add tests/g005-batch3-content.test.mjs src/generated
+git commit -m "feat: complete g006 quality attributes batch1"
 ```
 
 ### Task 7: Independent review and two-stage publication
 
 **Files:**
 - Create: `docs/reviews/g006-batch1.md`
-- Modify in Stage B only: `docs/content-backlog.md`
+- Create in Stage B: `tests/g006-batch1-deployment.test.mjs`
+- Modify in Stage B: `docs/content-backlog.md`, `docs/reviews/g006-batch1.md`
+- Generate in Stage B: `src/generated/*.json`
 
 **Interfaces:**
 - Produces: editorial/factual/copyright/render approval and exact Stage A deployment evidence.
@@ -349,20 +356,34 @@ gh run list --repo sealday/tego-arch --workflow deploy.yml --branch main --limit
 
 Select the run whose `headSha` exactly equals `$stage_a_sha`, watch it to `completed/success`, then smoke `/quality-attributes/qa-00` through `/qa-03`, all three PNGs, the three affected paths, CSS/JS, desktop/mobile overflow, console, and reciprocal navigation.
 
-- [ ] **Step 4: Backfill Stage A evidence as Stage B**
+- [ ] **Step 4: Add the Stage B deployment-closure RED**
 
-Write the literal Stage A SHA, Pages run ID/URL, live date/routes/assets/viewports into the four backlog rows and `docs/reviews/g006-batch1.md`; do not complete G006 or checkpoint.
+After the successful Stage A live smoke, create `tests/g006-batch1-deployment.test.mjs`. It must extract the full 40-character Stage A SHA, numeric Pages run ID, matching run URL, and live date from `docs/reviews/g006-batch1.md`; assert the SHA names a local commit; reject `pending`/template evidence; and require every QA-00 through QA-03 backlog row to be `[x]` and contain that extracted SHA, run ID/URL, and its canonical live route.
 
 ```bash
+node --test tests/g006-batch1-deployment.test.mjs
+```
+
+Expected: RED because the review has no literal deployment closure and all four backlog rows remain unchecked.
+
+- [ ] **Step 5: Backfill evidence, check rows, and regenerate Stage B**
+
+Write the observed literal Stage A SHA, Pages run ID/URL, live date/routes/assets/viewports into `docs/reviews/g006-batch1.md` and the four QA rows, then change only QA-00 through QA-03 to `[x]`. Keep G006 current and QA-04 through QA-10 unchecked.
+
+```bash
+npm run generate:content
+node --test tests/g006-batch1-deployment.test.mjs tests/g006-batch1-content.test.mjs
 npm run check:content
-node --test tests/g006-batch1-content.test.mjs
+node -e "const s=require('./src/generated/project-status.json'); if(s.completed_topics!==15||s.content_documents!==59||s.governed_sources!==402) process.exit(1)"
 git diff --check
-git add docs/content-backlog.md docs/reviews/g006-batch1.md
+git add tests/g006-batch1-deployment.test.mjs docs/content-backlog.md docs/reviews/g006-batch1.md src/generated
 git commit -m "docs: record g006 quality attributes deployment"
 git push origin HEAD:main
 ```
 
-- [ ] **Step 5: Verify Stage B**
+Expected: deployment-closure test GREEN from actual observed evidence; generated status is exactly 15 completed topics, 59 documents, and 402 sources.
+
+- [ ] **Step 6: Verify Stage B**
 
 Wait for the exact Stage B SHA to reach Pages `completed/success`; repeat canonical live smoke and finish with:
 
