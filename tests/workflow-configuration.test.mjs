@@ -104,6 +104,16 @@ test('pins every GitHub action and uploads the live report even on failure', asy
   assert.match(linkHealth, /if-no-files-found: error/);
 });
 
+test('checks out complete history before verifying immutable deployment evidence', async () => {
+  const deploy = await readWorkflow(deployUrl);
+
+  assert.match(
+    deploy,
+    /      - name: Check out repository\n        uses: actions\/checkout@[0-9a-f]{40} # v4\n        with:\n          fetch-depth: 0/,
+    'deploy verification must fetch complete Git history so recorded evidence commits remain resolvable',
+  );
+});
+
 test('always builds and uploads the monthly content review reports', async () => {
   const linkHealth = await readWorkflow(linkHealthUrl);
 
