@@ -93,7 +93,13 @@ SDK、OAS、wire payload、业务规则和迁移状态共同受影响。
 
 ## 架构策略
 
-迁移按本站原创状态流推进，任何阶段失败都回到可兼容状态：
+先看本站原创插图中的三层检查与右侧版本流：source、wire、semantics 分别验证旧端与新端，互操作边界另查协议和行为；迁移失败则进入 breaking-change 分支。
+
+![分层检查源码、传输与语义兼容以及版本迁移边界](/img/illustrations/qa-07-compatibility-version-migration.png)
+
+*图：接口形状相同不等于语义兼容；移除旧版本前还要验证互操作行为与迁移证据。*
+
+插图不把共享 OAS、transport 或 version label 当成语义兼容保证。迁移按以下本站原创状态流推进，任何阶段失败都回到可兼容状态：
 
 ```mermaid
 flowchart LR

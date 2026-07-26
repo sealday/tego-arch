@@ -1174,6 +1174,102 @@
       "expected_final_approval_note": "Original atlas illustration approved after text, plateau and rejection topology, illustrative scope, originality, crop-safety, and responsive QA"
     },
     {
+      "id": "src-atlas-qa04-demand-capacity-ed17b00c2893",
+      "canonical_locator": "/img/illustrations/qa-04-demand-capacity-scaling.png",
+      "transport_locator": "/img/illustrations/qa-04-demand-capacity-scaling.png",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Demand, capacity, bounded scaling, repartitioning, and bottleneck illustration — Tego Arch maintainers",
+      "author_or_org": "Tego Arch maintainers",
+      "published_at": null,
+      "registered_at": "2026-07-27",
+      "checked_at": "2026-07-27",
+      "version": "Original PNG generated, center-cropped to 16:9, and QA-checked on 2026-07-27",
+      "source_kind": "original-illustration",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "illustration"
+      ],
+      "license": "LicenseRef-Atlas-Original",
+      "license_scope": "The named demand, measured capacity, bounded scaling control, repartitioning, observation delay, cooldown, and singleton bottleneck illustration only",
+      "license_evidence_url": "https://github.com/sealday/tego-arch/blob/main/static/img/illustrations/qa-04-demand-capacity-scaling.png",
+      "license_evidence_note": "The image was generated with the built-in image tool from a project-authored brief with no reference images; original-illustration coverage is limited to the named PNG.",
+      "license_family_id": "/img/illustrations/qa-04-demand-capacity-scaling.png",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "original-atlas",
+      "usage_boundary": "Explains how demand reaches measured capacity, bounded scaling, repartitioning, and a separate singleton bottleneck; it does not establish factual claims, set thresholds, guarantee demand satisfaction or linear throughput, or assert successful repartitioning.",
+      "link_policy": null,
+      "expected_final_transport_locator": "/img/illustrations/qa-04-demand-capacity-scaling.png",
+      "expected_final_approved_at": "2026-07-27",
+      "expected_final_approval_note": "Original atlas illustration approved after text, branch and loop topology, non-guarantee scope, originality, crop-safety, and responsive QA"
+    },
+    {
+      "id": "src-atlas-qa06-change-blast-radius-a0b9f7da9e27",
+      "canonical_locator": "/img/illustrations/qa-06-change-blast-radius-verification.png",
+      "transport_locator": "/img/illustrations/qa-06-change-blast-radius-verification.png",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Change blast radius, targeted tests, runtime verification, and containment illustration — Tego Arch maintainers",
+      "author_or_org": "Tego Arch maintainers",
+      "published_at": null,
+      "registered_at": "2026-07-27",
+      "checked_at": "2026-07-27",
+      "version": "Original PNG generated, center-cropped to 16:9, and QA-checked on 2026-07-27",
+      "source_kind": "original-illustration",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "illustration"
+      ],
+      "license": "LicenseRef-Atlas-Original",
+      "license_scope": "The named change stimulus, contract or module, dependency blast radius, targeted tests, runtime verification, unverified impact, and rollback or containment illustration only",
+      "license_evidence_url": "https://github.com/sealday/tego-arch/blob/main/static/img/illustrations/qa-06-change-blast-radius-verification.png",
+      "license_evidence_note": "The image was generated with the built-in image tool from a project-authored brief with no reference images; original-illustration coverage is limited to the named PNG.",
+      "license_family_id": "/img/illustrations/qa-06-change-blast-radius-verification.png",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "original-atlas",
+      "usage_boundary": "Explains that a change crosses dependency, targeted-test, runtime-verification, and containment boundaries; it does not establish factual claims, prescribe a universal coverage threshold, or guarantee that smaller modules are maintainable.",
+      "link_policy": null,
+      "expected_final_transport_locator": "/img/illustrations/qa-06-change-blast-radius-verification.png",
+      "expected_final_approved_at": "2026-07-27",
+      "expected_final_approval_note": "Original atlas illustration approved after text, evidence-gate topology, tests-versus-runtime boundary, originality, crop-safety, and responsive QA"
+    },
+    {
+      "id": "src-atlas-qa07-compatibility-migration-3a08b4d4f6ce",
+      "canonical_locator": "/img/illustrations/qa-07-compatibility-version-migration.png",
+      "transport_locator": "/img/illustrations/qa-07-compatibility-version-migration.png",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Source, wire, semantic compatibility, interoperability, and version migration illustration — Tego Arch maintainers",
+      "author_or_org": "Tego Arch maintainers",
+      "published_at": null,
+      "registered_at": "2026-07-27",
+      "checked_at": "2026-07-27",
+      "version": "Original PNG generated, center-cropped to 16:9, and QA-checked on 2026-07-27",
+      "source_kind": "original-illustration",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "illustration"
+      ],
+      "license": "LicenseRef-Atlas-Original",
+      "license_scope": "The named source, wire, and semantic compatibility layers, old and new endpoint checks, interoperability boundary, version migration, removal, and breaking-change illustration only",
+      "license_evidence_url": "https://github.com/sealday/tego-arch/blob/main/static/img/illustrations/qa-07-compatibility-version-migration.png",
+      "license_evidence_note": "The image was generated with the built-in image tool from a project-authored brief with no reference images; original-illustration coverage is limited to the named PNG.",
+      "license_family_id": "/img/illustrations/qa-07-compatibility-version-migration.png",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "original-atlas",
+      "usage_boundary": "Explains layered compatibility checks, a separate interoperability boundary, and an additive-to-removal migration with a breaking-change branch; it does not establish factual claims or guarantee semantic compatibility from a shared OAS, transport, or version label.",
+      "link_policy": null,
+      "expected_final_transport_locator": "/img/illustrations/qa-07-compatibility-version-migration.png",
+      "expected_final_approved_at": "2026-07-27",
+      "expected_final_approval_note": "Original atlas illustration approved after exact layer labels, migration and breaking-change topology, non-guarantee scope, originality, crop-safety, and responsive QA"
+    },
+    {
       "id": "src-atlas-roadmap-756462618489",
       "canonical_locator": "/img/paths/software-architecture-learning-roadmap.png",
       "transport_locator": "/img/paths/software-architecture-learning-roadmap.png",
@@ -22867,6 +22963,19 @@
       ],
       "citations": [
         {
+          "source_id": "src-atlas-qa04-demand-capacity-ed17b00c2893",
+          "citation_url": "/img/illustrations/qa-04-demand-capacity-scaling.png",
+          "roles": [
+            "illustration"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "original-illustration",
+          "attribution_note": "Demand, capacity, bounded scaling, repartitioning, and bottleneck illustration, Tego Arch maintainers",
+          "modification_note": "Generated with the built-in image tool from a project-authored brief, with no reference images, then QA-reviewed and center-cropped in an original systems-map composition that separates bounded scale control, repartitioning, observation delay, cooldown, and a singleton bottleneck without asserting thresholds or guarantees.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
           "source_id": "src-azure-waf-scale-partition",
           "citation_url": "https://learn.microsoft.com/en-us/azure/well-architected/performance-efficiency/scale-partition",
           "roles": [
@@ -22919,6 +23028,19 @@
       ],
       "citations": [
         {
+          "source_id": "src-atlas-qa06-change-blast-radius-a0b9f7da9e27",
+          "citation_url": "/img/illustrations/qa-06-change-blast-radius-verification.png",
+          "roles": [
+            "illustration"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "original-illustration",
+          "attribution_note": "Change blast radius, targeted tests, runtime verification, and containment illustration, Tego Arch maintainers",
+          "modification_note": "Generated with the built-in image tool from a project-authored brief, with no reference images, then QA-reviewed and center-cropped in an original change-scenario composition that distinguishes targeted test results from runtime verification and routes unverified impact to rollback or containment.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
           "source_id": "src-sei-maintainability-2020",
           "citation_url": "https://www.sei.cmu.edu/library/maintainability/",
           "roles": [
@@ -22970,6 +23092,19 @@
         "illustration-rights"
       ],
       "citations": [
+        {
+          "source_id": "src-atlas-qa07-compatibility-migration-3a08b4d4f6ce",
+          "citation_url": "/img/illustrations/qa-07-compatibility-version-migration.png",
+          "roles": [
+            "illustration"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "original-illustration",
+          "attribution_note": "Source, wire, semantic compatibility, interoperability, and version migration illustration, Tego Arch maintainers",
+          "modification_note": "Generated with the built-in image tool from a project-authored brief, with no reference images, then QA-reviewed and center-cropped in an original layered composition that separates source, wire, and semantic checks from interoperability and shows additive, deprecation, migration, removal, and breaking-change paths.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
         {
           "source_id": "src-oas-3-1-1",
           "citation_url": "https://spec.openapis.org/oas/v3.1.1.html",

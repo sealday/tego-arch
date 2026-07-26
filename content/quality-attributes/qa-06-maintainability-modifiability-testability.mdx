@@ -95,7 +95,13 @@ API 合同、规则模块、订单适配器与审计事件受到检查。
 
 ## 架构策略
 
-先从 changed contract 建立依赖图，再用 contract tests 锁定新旧消费者的可观察行为。本站原创流程把“测试通过”和“生产验证”分开：
+先从 changed contract 建立依赖图，再用 contract tests 锁定新旧消费者的可观察行为。先看本站原创插图中的证据门：定向测试之后仍要跨过运行验证，任何未验证影响都不能被绿色测试吞掉。
+
+![追踪合同变化的依赖半径、定向测试与运行验证](/img/illustrations/qa-06-change-blast-radius-verification.png)
+
+*图：测试通过与生产验证是两道不同证据门；未验证影响必须进入遏制或回滚分支。*
+
+插图不提供通用覆盖率门槛，也不声称模块更小就自动可维护。以下本站原创流程精确区分依赖半径、测试、运行验证和 containment：
 
 ```mermaid
 flowchart LR

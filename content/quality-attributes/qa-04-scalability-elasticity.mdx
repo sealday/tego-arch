@@ -98,7 +98,13 @@ related_questions: []
 
 ## 架构策略
 
-先观察 demand、完成 throughput、queue 和依赖余量，再决定 scale-out。本站原创控制环把 bottleneck 与 partition 分支显式分开：
+先观察 demand、完成 throughput、queue 和依赖余量，再决定 scale-out。先看本站原创插图中的分叉：扩展单元可以进入受控扩缩或分区重排，singleton 与共享依赖则形成独立上限。
+
+![辨认需求、容量、扩缩控制、分区与共享瓶颈边界](/img/illustrations/qa-04-demand-capacity-scaling.png)
+
+*图：扩缩控制只能调整已有容量；共享瓶颈、观察延迟与重分区风险仍需独立验证。*
+
+插图只负责定向，不证明自动扩缩已经满足需求、吞吐线性增长或重分区成功。以下本站原创控制环保留 bottleneck、partition、观察延迟和 cooldown 的精确关系：
 
 ```mermaid
 flowchart LR
