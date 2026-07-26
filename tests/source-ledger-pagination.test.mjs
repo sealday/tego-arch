@@ -7,7 +7,7 @@ import {fileURLToPath} from 'node:url';
 
 const root = new URL('../', import.meta.url);
 const rootPath = fileURLToPath(root);
-const baseUrl = '/agentic-architecture-atlas/';
+const baseUrl = '/tego-arch/';
 const pluginUrl = new URL(
   '../plugins/source-ledger-pages/index.mjs',
   import.meta.url,
