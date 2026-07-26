@@ -22,9 +22,14 @@ const fixtureById = new Map([
   ['MOD-02', ['modeling', 'modeling/mod-02-c4-context-container.mdx']],
   ['QA-01', ['quality-attribute', 'quality-attributes/qa-01-scenario-writing.mdx']],
 ]);
-const incompleteFixtureIds = [...fixtureById.keys()].filter(
-  (id) => id !== 'MTH-03',
-);
+const fixtureCompletionById = new Map([
+  ['PR-01', false],
+  ['REL-02', false],
+  ['STY-00', false],
+  ['MTH-03', true],
+  ['MOD-02', false],
+  ['QA-01', true],
+]);
 const g005ClosureRoutes = new Map([
   ['FND-04', '/concepts/fnd-04'],
   ['FND-05', '/concepts/fnd-05'],
@@ -93,15 +98,15 @@ test('publishes one production fixture for each independent knowledge contract',
   assert.deepEqual(validation.errors, []);
 });
 
-test('does not infer backlog completion for fixtures outside the G005 closure', async () => {
+test('projects each fixture completion state from its explicit closure', async () => {
   const backlogSource = await readFile(
     fileURLToPath(new URL('../docs/content-backlog.md', import.meta.url)),
     'utf8',
   );
   const parsed = parseBacklogTopics(backlogSource, 'docs/content-backlog.md');
   assert.deepEqual(parsed.errors, []);
-  for (const id of incompleteFixtureIds) {
-    assert.equal(parsed.topics.find((topic) => topic.id === id)?.complete, false, id);
+  for (const [id, complete] of fixtureCompletionById) {
+    assert.equal(parsed.topics.find((topic) => topic.id === id)?.complete, complete, id);
   }
 });
 
