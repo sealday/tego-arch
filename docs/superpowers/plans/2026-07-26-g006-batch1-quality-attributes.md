@@ -119,7 +119,7 @@ https://sre.google/sre-book/monitoring-distributed-systems/
 https://sre.google/sre-book/handling-overload/
 ```
 
-Use facts-summary only; do not copy ISO tables, SEI prose, SRE diagrams, or source composition. Record checked version/date, author, tier, evidence roles, exact license evidence/scope, copyright policy, usage boundary, and expected final transport. Use distinct stable `src-sei-quality-attributes-*` / `src-sre-*` IDs following existing ledger conventions.
+Use facts-summary only; do not copy ISO tables, SEI prose, SRE diagrams, or source composition. Record checked version/date, author, tier, evidence roles, exact license evidence/scope, copyright policy, usage boundary, and expected final transport. Use stable IDs `src-sei-quality-attributes`, `src-sre-availability-table`, `src-sre-addressing-cascading-failures`, `src-sre-monitoring-distributed-systems`, and `src-sre-handling-overload`.
 
 - [ ] **Step 2: Add reviewed cache entries**
 
@@ -153,6 +153,7 @@ git commit -m "data: govern g006 quality attribute sources"
 - Create: `content/quality-attributes/qa-00-overview.mdx`
 - Modify: `content/quality-attributes/qa-01-scenario-writing.mdx`
 - Modify: `data/topic-relations.json`
+- Modify: `data/source-ledger.json`
 - Modify: `content/paths/01-architecture-thinking.mdx`
 - Modify: `tests/g005-batch3-content.test.mjs`
 
@@ -172,7 +173,7 @@ Expected: PASS before QA-01 changes.
 
 - [ ] **Step 2: Write QA-00, revise QA-01, and close relations**
 
-QA-00 treats ISO/IEC 25010:2023 as a naming/index boundary, not a copied taxonomy or priority order. QA-01 retains six H3 fields, MTH-03/REL-02 adjacency, adds QA-00/QA-02 reciprocal links, and explains scenario → tactic → signal. Delete only the QA-00 override; replace both path gap statements with QA-00 → QA-01.
+QA-00 treats ISO/IEC 25010:2023 as a naming/index boundary, not a copied taxonomy or priority order. In its ledger document entry cite `src-iso-11f3b103e932` (`roles: ["definition"]`, `usage_mode: "facts-summary"`, the sole `manifest_primary: true`) and independent-domain `src-sei-quality-attributes` (`roles: ["definition", "learning"]`, same usage mode, `manifest_primary: false`). QA-01 retains six H3 fields, MTH-03/REL-02 adjacency, adds QA-00/QA-02 reciprocal links, and explains scenario → tactic → signal. Delete only the QA-00 override; replace both path gap statements with QA-00 → QA-01.
 
 - [ ] **Step 3: Observe old-hash RED, then pin reviewed bytes**
 
@@ -189,15 +190,16 @@ Expected: first command FAILS only on the old QA-01 hash while semantic assertio
 ```bash
 node --test tests/g005-batch3-content.test.mjs
 node --test --test-name-pattern='QA-00|QA-01|architecture path' tests/g006-batch1-content.test.mjs
+node --test tests/source-governance-data.test.mjs
 npm run validate:content
 ```
 
-Expected: all Task 3 tests PASS; no failing hash crosses the commit boundary.
+Expected: all Task 3 source/content tests PASS; QA-00 and its remote citations commit together, with two governed domains and exactly one manifest primary; no failing hash crosses the commit boundary.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add content/quality-attributes/qa-00-overview.mdx content/quality-attributes/qa-01-scenario-writing.mdx data/topic-relations.json content/paths/01-architecture-thinking.mdx tests/g005-batch3-content.test.mjs
+git add content/quality-attributes/qa-00-overview.mdx content/quality-attributes/qa-01-scenario-writing.mdx data/topic-relations.json data/source-ledger.json content/paths/01-architecture-thinking.mdx tests/g005-batch3-content.test.mjs
 git commit -m "feat: publish quality model and scenario foundation"
 ```
 
@@ -206,6 +208,7 @@ git commit -m "feat: publish quality model and scenario foundation"
 **Files:**
 - Create: `content/quality-attributes/qa-02-reliability-availability-recoverability.mdx`
 - Create: `content/quality-attributes/qa-03-performance-latency-throughput-capacity.mdx`
+- Modify: `data/source-ledger.json`
 - Modify: `content/paths/04-reliability-state.mdx`
 - Modify: `content/paths/03-distributed-systems.mdx`
 
@@ -214,26 +217,27 @@ git commit -m "feat: publish quality model and scenario foundation"
 
 - [ ] **Step 1: Write QA-02**
 
-Use one original scenario that names source, stimulus, environment, artifact, response, and measure in prose/table. Distinguish fault from externally visible failure, availability from recovery, RTO from RPO, and automated recovery from unknown business outcomes requiring reconciliation or human terminal state.
+Use one original scenario that names source, stimulus, environment, artifact, response, and measure in prose/table. Distinguish fault from externally visible failure, availability from recovery, RTO from RPO, and automated recovery from unknown business outcomes requiring reconciliation or human terminal state. Its ledger document citations are `src-sre-availability-table` (`roles: ["definition"]`, `usage_mode: "facts-summary"`, sole `manifest_primary: true`), `src-sre-addressing-cascading-failures` (`roles: ["implementation"]`, same usage mode, false), and independent-domain `src-sei-quality-attributes` (`roles: ["definition"]`, same usage mode, false).
 
 - [ ] **Step 2: Write QA-03**
 
-Use one original scenario with workload shape, concurrency, service time, throughput, p50/p95/p99 latency, utilization, queue depth, rejection, and saturation. State that averages hide tails, throughput without offered load is incomplete, and capacity is a bounded operating envelope rather than a single benchmark maximum.
+Use one original scenario with workload shape, concurrency, service time, throughput, p50/p95/p99 latency, utilization, queue depth, rejection, and saturation. State that averages hide tails, throughput without offered load is incomplete, and capacity is a bounded operating envelope rather than a single benchmark maximum. Its ledger document citations are `src-sre-handling-overload` (`roles: ["implementation"]`, `usage_mode: "facts-summary"`, sole `manifest_primary: true`), `src-sre-monitoring-distributed-systems` (`roles: ["method"]`, same usage mode, false), and independent-domain `src-sei-quality-attributes` (`roles: ["definition"]`, same usage mode, false).
 
 - [ ] **Step 3: Add paths and run focused tests**
 
 ```bash
 node --test --test-name-pattern='QA-02|QA-03|reliability path|distributed path' tests/g006-batch1-content.test.mjs
 node --test tests/learning-path.test.mjs
+node --test tests/source-governance-data.test.mjs
 npm run validate:content
 ```
 
-Expected: all Task 4 tests PASS; raster subtests remain outside this targeted run.
+Expected: all Task 4 source/content tests PASS; each article and its remote citations commit together, each has at least two governed domains and exactly one manifest primary; raster subtests remain outside this targeted run.
 
 - [ ] **Step 4: Commit**
 
 ```bash
-git add content/quality-attributes/qa-02-reliability-availability-recoverability.mdx content/quality-attributes/qa-03-performance-latency-throughput-capacity.mdx content/paths/04-reliability-state.mdx content/paths/03-distributed-systems.mdx
+git add content/quality-attributes/qa-02-reliability-availability-recoverability.mdx content/quality-attributes/qa-03-performance-latency-throughput-capacity.mdx data/source-ledger.json content/paths/04-reliability-state.mdx content/paths/03-distributed-systems.mdx
 git commit -m "feat: publish reliability and performance attributes"
 ```
 
