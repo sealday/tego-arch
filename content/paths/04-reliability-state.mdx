@@ -44,14 +44,15 @@ tags:
 
 ## 推荐学习顺序
 
-1. 为长时任务列出业务状态与执行状态，并指定唯一写入者。
-2. 标出可安全重做的动作、幂等键和外部副作用。
-3. 定义超时、重试预算、取消与人工终态。
-4. 为恢复完成设计可观察的验证信号。
+1. 先读[可靠性、可用性与可恢复性](/quality-attributes/qa-02)，区分 fault、failure、RTO、RPO 与结果未知。
+2. 为长时任务列出业务状态与执行状态，并指定唯一写入者。
+3. 标出可安全重做的动作、幂等键和外部副作用。
+4. 定义超时、重试预算、取消与人工终态。
+5. 为恢复完成设计可观察的验证信号。
 
 ## 必读起点
 
-[Google SRE Workbook](https://sre.google/workbook/table-of-contents/) 的 Foundations 与 Practices 用 SLO、监控和故障响应连接设计与运行结果。
+[可靠性、可用性与可恢复性](/quality-attributes/qa-02)先建立故障、服务、数据和恢复边界。[Google SRE Workbook](https://sre.google/workbook/table-of-contents/) 的 Foundations 与 Practices 再用 SLO、监控和故障响应连接设计与运行结果。
 
 ## 查漏补缺
 

@@ -14862,6 +14862,41 @@
       "expected_final_approval_note": "Initial reviewed report transport baseline"
     },
     {
+      "id": "src-sei-quality-attributes",
+      "canonical_locator": "https://www.sei.cmu.edu/library/quality-attributes/",
+      "transport_locator": "https://www.sei.cmu.edu/library/quality-attributes/",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Quality Attributes",
+      "author_or_org": "Mario R. Barbacci; Mark H. Klein; Thomas A. Longstaff; Charles B. Weinstock / Carnegie Mellon Software Engineering Institute",
+      "published_at": "1995-12-01",
+      "registered_at": "2026-07-27",
+      "checked_at": "2026-07-27",
+      "version": "CMU/SEI-95-TR-021; official work page and linked PDF checked on 2026-07-27",
+      "source_kind": "paper",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "historical-context",
+        "learning",
+        "method"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named CMU/SEI-95-TR-021 report. The PDF grants reproduction and preparation of derivative works for internal use only when the copyright and No Warranty statements accompany them; external and commercial reuse requires permission from the SEI Licensing Agent. Linked works, trademarks, and third-party material are excluded.",
+      "license_evidence_url": "https://www.sei.cmu.edu/documents/1142/1995_005_001_16427.pdf",
+      "license_evidence_note": "The official report's copyright page identifies Carnegie Mellon University copyright (1995), internal-use permission conditions, and the external/commercial permission path. This project nevertheless uses only an original factual summary; no reproduction, adaptation, diagram, or excerpt is registered.",
+      "license_family_id": "https://www.sei.cmu.edu/library/quality-attributes/",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports the report's 1995 definitions, taxonomy, and architectural quality-attribute reasoning. It is historical methodological evidence, not a current quality-model standard, a universal taxonomy, or proof that a tactic meets a quality target. Citations must use facts-summary only.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://www.sei.cmu.edu/library/quality-attributes/",
+      "expected_final_approved_at": "2026-07-27",
+      "expected_final_approval_note": "Initial reviewed direct HTTPS transport baseline; HTTP 200 with no redirect/auth wall on 2026-07-27."
+    },
+    {
       "id": "src-single-spa-03f49f2c5ddb",
       "canonical_locator": "https://single-spa.js.org/docs/microfrontends-concept/",
       "transport_locator": "https://single-spa.js.org/docs/microfrontends-concept/",
@@ -15133,6 +15168,147 @@
       "expected_final_transport_locator": "https://sre.google/workbook/table-of-contents/",
       "expected_final_approved_at": "2026-07-24",
       "expected_final_approval_note": "Initial reviewed migration transport baseline"
+    },
+    {
+      "id": "src-sre-addressing-cascading-failures",
+      "canonical_locator": "https://sre.google/sre-book/addressing-cascading-failures/",
+      "transport_locator": "https://sre.google/sre-book/addressing-cascading-failures/",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Chapter 22 - Addressing Cascading Failures",
+      "author_or_org": "Mike Ulrich / Google",
+      "published_at": null,
+      "registered_at": "2026-07-27",
+      "checked_at": "2026-07-27",
+      "version": "Google SRE Book online edition, Chapter 22; page footer Copyright 2017 Google, Inc.; checked on 2026-07-27",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "historical-context",
+        "implementation",
+        "learning",
+        "method"
+      ],
+      "license": "CC-BY-NC-ND-4.0",
+      "license_scope": "The named Google SRE Book page within the page footer's CC BY-NC-ND 4.0 notice; Google and O'Reilly marks, linked works, code, media, and third-party material under separate notices are excluded.",
+      "license_evidence_url": "https://sre.google/sre-book/addressing-cascading-failures/",
+      "license_evidence_note": "The official chapter names Mike Ulrich as writer and its footer supplies the 2017 Google/O'Reilly CC BY-NC-ND 4.0 notice; canonical license terms: https://creativecommons.org/licenses/by-nc-nd/4.0/.",
+      "license_family_id": "https://sre.google/sre-book/addressing-cascading-failures/",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports the chapter's explanation of cascading-failure mechanisms and its dated, context-dependent prevention/recovery guidance. It is not a universal runbook, current Google policy, or evidence that a particular system will recover; use original facts summaries only.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://sre.google/sre-book/addressing-cascading-failures/",
+      "expected_final_approved_at": "2026-07-27",
+      "expected_final_approval_note": "Initial reviewed direct HTTPS transport baseline; HTTP 200 with no redirect/auth wall on 2026-07-27."
+    },
+    {
+      "id": "src-sre-availability-table",
+      "canonical_locator": "https://sre.google/sre-book/availability-table/",
+      "transport_locator": "https://sre.google/sre-book/availability-table/",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Appendix A - Availability Table",
+      "author_or_org": "Google",
+      "published_at": null,
+      "registered_at": "2026-07-27",
+      "checked_at": "2026-07-27",
+      "version": "Google SRE Book online edition, Appendix A; page footer Copyright 2017 Google, Inc.; checked on 2026-07-27",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "learning",
+        "method"
+      ],
+      "license": "CC-BY-NC-ND-4.0",
+      "license_scope": "The named Google SRE Book page within the page footer's CC BY-NC-ND 4.0 notice; Google and O'Reilly marks, linked works, code, media, and third-party material under separate notices are excluded.",
+      "license_evidence_url": "https://sre.google/sre-book/availability-table/",
+      "license_evidence_note": "The official page footer states Copyright 2017 Google, Inc., Published by O'Reilly Media, Inc., and CC BY-NC-ND 4.0. The license's canonical terms are https://creativecommons.org/licenses/by-nc-nd/4.0/.",
+      "license_family_id": "https://sre.google/sre-book/availability-table/",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports the stated availability-to-allowed-unavailability calculation assumptions and illustrative table. It does not set a service's SLO, establish a current Google operational policy, or justify copying the table; write original facts summaries only.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://sre.google/sre-book/availability-table/",
+      "expected_final_approved_at": "2026-07-27",
+      "expected_final_approval_note": "Initial reviewed direct HTTPS transport baseline; HTTP 200 with no redirect/auth wall on 2026-07-27."
+    },
+    {
+      "id": "src-sre-handling-overload",
+      "canonical_locator": "https://sre.google/sre-book/handling-overload/",
+      "transport_locator": "https://sre.google/sre-book/handling-overload/",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Chapter 21 - Handling Overload",
+      "author_or_org": "Alejandro Forero Cuervo / Google; edited by Sarah Chavis",
+      "published_at": null,
+      "registered_at": "2026-07-27",
+      "checked_at": "2026-07-27",
+      "version": "Google SRE Book online edition, Chapter 21; page footer Copyright 2017 Google, Inc.; checked on 2026-07-27",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "historical-context",
+        "implementation",
+        "learning",
+        "method"
+      ],
+      "license": "CC-BY-NC-ND-4.0",
+      "license_scope": "The named Google SRE Book page within the page footer's CC BY-NC-ND 4.0 notice; Google and O'Reilly marks, linked works, code, media, and third-party material under separate notices are excluded.",
+      "license_evidence_url": "https://sre.google/sre-book/handling-overload/",
+      "license_evidence_note": "The official chapter identifies Alejandro Forero Cuervo as writer and Sarah Chavis as editor; its footer supplies the 2017 Google/O'Reilly CC BY-NC-ND 4.0 notice; canonical license terms: https://creativecommons.org/licenses/by-nc-nd/4.0/.",
+      "license_family_id": "https://sre.google/sre-book/handling-overload/",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports the chapter's dated guidance on graceful overload handling, capacity signals, quotas, and task protection. It does not establish a general QPS/CPU formula or current Google policy, and it cannot be used as an unqualified production runbook; use original facts summaries only.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://sre.google/sre-book/handling-overload/",
+      "expected_final_approved_at": "2026-07-27",
+      "expected_final_approval_note": "Initial reviewed direct HTTPS transport baseline; HTTP 200 with no redirect/auth wall on 2026-07-27."
+    },
+    {
+      "id": "src-sre-monitoring-distributed-systems",
+      "canonical_locator": "https://sre.google/sre-book/monitoring-distributed-systems/",
+      "transport_locator": "https://sre.google/sre-book/monitoring-distributed-systems/",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Chapter 6 - Monitoring Distributed Systems",
+      "author_or_org": "Rob Ewaschuk / Google; edited by Betsy Beyer",
+      "published_at": null,
+      "registered_at": "2026-07-27",
+      "checked_at": "2026-07-27",
+      "version": "Google SRE Book online edition, Chapter 6; page footer Copyright 2017 Google, Inc.; checked on 2026-07-27",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "historical-context",
+        "learning",
+        "method"
+      ],
+      "license": "CC-BY-NC-ND-4.0",
+      "license_scope": "The named Google SRE Book page within the page footer's CC BY-NC-ND 4.0 notice; Google and O'Reilly marks, linked works, code, media, and third-party material under separate notices are excluded.",
+      "license_evidence_url": "https://sre.google/sre-book/monitoring-distributed-systems/",
+      "license_evidence_note": "The official chapter identifies Rob Ewaschuk as writer and Betsy Beyer as editor; its footer supplies the 2017 Google/O'Reilly CC BY-NC-ND 4.0 notice; canonical license terms: https://creativecommons.org/licenses/by-nc-nd/4.0/.",
+      "license_family_id": "https://sre.google/sre-book/monitoring-distributed-systems/",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports the chapter's terminology and dated monitoring/alerting guidance, including its distinction between symptom-focused paging and debugging heuristics. It does not prescribe a universal dashboard, alert threshold, or current Google policy; use original facts summaries only.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://sre.google/sre-book/monitoring-distributed-systems/",
+      "expected_final_approved_at": "2026-07-27",
+      "expected_final_approval_note": "Initial reviewed direct HTTPS transport baseline; HTTP 200 with no redirect/auth wall on 2026-07-27."
     },
     {
       "id": "src-thoughtworks-32a10834c10f",
@@ -22142,6 +22318,44 @@
       ],
       "citations": []
     },
+    "content/quality-attributes/qa-00-overview.mdx": {
+      "reviewed_at": "2026-07-27",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-iso-11f3b103e932",
+          "citation_url": "https://www.iso.org/standard/78176.html",
+          "roles": [
+            "definition"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "ISO/IEC 25010:2023, International Organization for Standardization",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-sei-quality-attributes",
+          "citation_url": "https://www.sei.cmu.edu/library/quality-attributes/",
+          "roles": [
+            "definition",
+            "learning"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Quality Attributes, Carnegie Mellon Software Engineering Institute",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
     "content/quality-attributes/qa-01-scenario-writing.mdx": {
       "reviewed_at": "2026-07-24",
       "copyright_checks": [
@@ -22157,7 +22371,7 @@
           "roles": [
             "method"
           ],
-          "manifest_primary": true,
+          "manifest_primary": false,
           "usage_mode": "facts-summary",
           "attribution_note": "Quality Attribute Workshops (QAWs), Third Edition, Carnegie Mellon Software Engineering Institute",
           "modification_note": null,
@@ -22173,6 +22387,106 @@
           "manifest_primary": true,
           "usage_mode": "facts-summary",
           "attribution_note": "ISO/IEC 25010:2023, International Organization for Standardization",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/quality-attributes/qa-02-reliability-availability-recoverability.mdx": {
+      "reviewed_at": "2026-07-27",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-sre-availability-table",
+          "citation_url": "https://sre.google/sre-book/availability-table/",
+          "roles": [
+            "definition"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Appendix A - Availability Table, Google SRE Book",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-sre-addressing-cascading-failures",
+          "citation_url": "https://sre.google/sre-book/addressing-cascading-failures/",
+          "roles": [
+            "implementation"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Chapter 22 - Addressing Cascading Failures, Google SRE Book",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-sei-quality-attributes",
+          "citation_url": "https://www.sei.cmu.edu/library/quality-attributes/",
+          "roles": [
+            "definition"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Quality Attributes, Carnegie Mellon Software Engineering Institute",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/quality-attributes/qa-03-performance-latency-throughput-capacity.mdx": {
+      "reviewed_at": "2026-07-27",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-sre-handling-overload",
+          "citation_url": "https://sre.google/sre-book/handling-overload/",
+          "roles": [
+            "implementation"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Chapter 21 - Handling Overload, Google SRE Book",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-sre-monitoring-distributed-systems",
+          "citation_url": "https://sre.google/sre-book/monitoring-distributed-systems/",
+          "roles": [
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Chapter 6 - Monitoring Distributed Systems, Google SRE Book",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-sei-quality-attributes",
+          "citation_url": "https://www.sei.cmu.edu/library/quality-attributes/",
+          "roles": [
+            "definition"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Quality Attributes, Carnegie Mellon Software Engineering Institute",
           "modification_note": null,
           "excerpt": null,
           "quotation_reviewed": false

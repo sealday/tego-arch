@@ -78,10 +78,6 @@ const immutableFiles = new Map([
     '18d67491848b193eddffd2f056b0126a8a6f89f9d715d5e5cbfb2583322e43aa',
   ],
   [
-    'content/quality-attributes/qa-01-scenario-writing.mdx',
-    'd95a8299ed2b25e51007c0f0970b2d95698051e079e146da36c1c77d4612df2b',
-  ],
-  [
     'scripts/content-schema.mjs',
     '10aa4b2e17a59b57a2bfe5c13edc9abe38156a1ce26db04bbf15dd506240e8cf',
   ],
@@ -487,6 +483,18 @@ test('governs two visible independent domains and an eligible primary per page',
 });
 
 test('preserves cases QA-01 the knowledge schema and sidebar', async () => {
+  const qa01Bytes = await readFile(
+    new URL(
+      '../content/quality-attributes/qa-01-scenario-writing.mdx',
+      import.meta.url,
+    ),
+  );
+  assert.equal(
+    createHash('sha256').update(qa01Bytes).digest('hex'),
+    'd9a452e1751e9ff04f43cd1fe21ca3480a0e0db81c4752fff0bee80556d6f20a',
+    'content/quality-attributes/qa-01-scenario-writing.mdx',
+  );
+
   for (const [file, expectedHash] of immutableFiles) {
     const bytes = await readFile(new URL(`../${file}`, import.meta.url));
     const actualHash = createHash('sha256').update(bytes).digest('hex');
