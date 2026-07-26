@@ -97,19 +97,19 @@ git add tests/g006-batch1-content.test.mjs
 git commit -m "test: define g006 quality attribute batch1"
 ```
 
-### Task 2: Govern the evidence set before writing claims
+### Task 2: Research the evidence set without changing canonical governance
 
 **Files:**
-- Modify: `data/source-ledger.json`
-- Modify: `data/source-link-health.json`
+- Read: `data/source-ledger.json`
+- Read: `data/source-link-health.json`
 
 **Interfaces:**
 - Reuses: `src-iso-11f3b103e932`, `src-sei-0547756e19ba`, `src-sre-6c547d0b7e0e`.
-- Adds: source records for SEI Quality Attributes and the exact Google SRE chapters cited by QA-02/03.
+- Produces: reviewed metadata for one SEI page and four SRE chapters; canonical registration and live cache capture wait for the task that first consumes each source.
 
-- [ ] **Step 1: Register the researched locators**
+- [ ] **Step 1: Research the exact locators**
 
-Add complete records for:
+Research:
 
 ```text
 https://www.sei.cmu.edu/library/quality-attributes/
@@ -119,33 +119,16 @@ https://sre.google/sre-book/monitoring-distributed-systems/
 https://sre.google/sre-book/handling-overload/
 ```
 
-Use facts-summary only; do not copy ISO tables, SEI prose, SRE diagrams, or source composition. Record checked version/date, author, tier, evidence roles, exact license evidence/scope, copyright policy, usage boundary, and expected final transport. Use stable IDs `src-sei-quality-attributes`, `src-sre-availability-table`, `src-sre-addressing-cascading-failures`, `src-sre-monitoring-distributed-systems`, and `src-sre-handling-overload`.
+Capture facts-summary-only metadata, checked version/date, author, tier, evidence roles, license evidence/scope, copyright policy, usage boundary, expected final transport, and stable IDs `src-sei-quality-attributes`, `src-sre-availability-table`, `src-sre-addressing-cascading-failures`, `src-sre-monitoring-distributed-systems`, and `src-sre-handling-overload`. Do not edit canonical JSON yet.
 
-- [ ] **Step 2: Add reviewed cache entries**
-
-Generate a complete temporary live result with the existing CLI, then extract and merge only the five new transport entries into `data/source-link-health.json`. Preserve every pre-existing canonical cache entry and its bytes/order.
-
-```bash
-npm run check:links:live -- --output /tmp/g006-live-cache.json
-```
-
-Expected: the temporary file covers the complete canonical ledger. Copy the literal results whose `transport_locator` equals one of the five locators above; do not replace the canonical cache wholesale. Each new transport has one policy-compatible reviewed result, and auth/redirect facts remain literal.
-
-- [ ] **Step 3: Validate governance**
+- [ ] **Step 2: Prove the unchanged baseline GREEN**
 
 ```bash
 node --test tests/source-ledger.test.mjs tests/source-link-health.test.mjs
 npm run check:links
 ```
 
-Expected: PASS with no missing, duplicate, stale, or policy-incompatible transport.
-
-- [ ] **Step 4: Commit evidence inputs**
-
-```bash
-git add data/source-ledger.json data/source-link-health.json
-git commit -m "data: govern g006 quality attribute sources"
-```
+Expected: unchanged canonical governance remains GREEN. Task 2 has no canonical diff or commit.
 
 ### Task 3: Write QA-00 and revise QA-01
 
@@ -154,11 +137,13 @@ git commit -m "data: govern g006 quality attribute sources"
 - Modify: `content/quality-attributes/qa-01-scenario-writing.mdx`
 - Modify: `data/topic-relations.json`
 - Modify: `data/source-ledger.json`
+- Modify: `data/source-link-health.json`
 - Modify: `content/paths/01-architecture-thinking.mdx`
 - Modify: `tests/g005-batch3-content.test.mjs`
 
 **Interfaces:**
 - Produces: QA-00 model boundary and a reciprocal QA-00 ↔ QA-01 ↔ QA-02 graph.
+- Adds: exactly one remote source/cache pair, `src-sei-quality-attributes`, consumed immediately by QA-00.
 - Preserves: QA-01 six-field scenario and all source-backed boundary wording.
 
 - [ ] **Step 1: Prove the pre-batch QA-01 hash is GREEN**
@@ -171,9 +156,9 @@ node --test tests/g005-batch3-content.test.mjs
 
 Expected: PASS before QA-01 changes.
 
-- [ ] **Step 2: Write QA-00, revise QA-01, and close relations**
+- [ ] **Step 2: Atomically govern and consume the SEI source**
 
-QA-00 treats ISO/IEC 25010:2023 as a naming/index boundary, not a copied taxonomy or priority order. In its ledger document entry cite `src-iso-11f3b103e932` (`roles: ["definition"]`, `usage_mode: "facts-summary"`, the sole `manifest_primary: true`) and independent-domain `src-sei-quality-attributes` (`roles: ["definition", "learning"]`, same usage mode, `manifest_primary: false`). QA-01 retains six H3 fields, MTH-03/REL-02 adjacency, adds QA-00/QA-02 reciprocal links, and explains scenario → tactic → signal. Delete only the QA-00 override; replace both path gap statements with QA-00 → QA-01.
+Add only `src-sei-quality-attributes`, then write QA-00 and its ledger citation in the same worktree state: cite `src-iso-11f3b103e932` (`roles: ["definition"]`, `usage_mode: "facts-summary"`, sole `manifest_primary: true`) plus independent-domain `src-sei-quality-attributes` (`roles: ["definition", "learning"]`, same usage mode, false). Run `npm run check:links:live -- --output /tmp/g006-task3-live-cache.json`, then merge only the SEI result into the canonical cache, preserving unrelated bytes/order. Treat ISO/IEC 25010:2023 as a naming/index boundary, not a copied taxonomy or priority order. Revise QA-01 while retaining its six fields and MTH-03/REL-02 adjacency; add QA-00/QA-02 reciprocal links, delete only the QA-00 override, and replace both path gaps with QA-00 → QA-01.
 
 - [ ] **Step 3: Observe old-hash RED, then pin reviewed bytes**
 
@@ -190,7 +175,8 @@ Expected: first command FAILS only on the old QA-01 hash while semantic assertio
 ```bash
 node --test tests/g005-batch3-content.test.mjs
 node --test --test-name-pattern='QA-00|QA-01|architecture path' tests/g006-batch1-content.test.mjs
-node --test tests/source-governance-data.test.mjs
+node --test tests/source-ledger.test.mjs tests/source-link-health.test.mjs tests/source-governance-data.test.mjs
+npm run check:links
 npm run validate:content
 ```
 
@@ -199,7 +185,7 @@ Expected: all Task 3 source/content tests PASS; QA-00 and its remote citations c
 - [ ] **Step 5: Commit**
 
 ```bash
-git add content/quality-attributes/qa-00-overview.mdx content/quality-attributes/qa-01-scenario-writing.mdx data/topic-relations.json data/source-ledger.json content/paths/01-architecture-thinking.mdx tests/g005-batch3-content.test.mjs
+git add content/quality-attributes/qa-00-overview.mdx content/quality-attributes/qa-01-scenario-writing.mdx data/topic-relations.json data/source-ledger.json data/source-link-health.json content/paths/01-architecture-thinking.mdx tests/g005-batch3-content.test.mjs
 git commit -m "feat: publish quality model and scenario foundation"
 ```
 
@@ -209,26 +195,29 @@ git commit -m "feat: publish quality model and scenario foundation"
 - Create: `content/quality-attributes/qa-02-reliability-availability-recoverability.mdx`
 - Create: `content/quality-attributes/qa-03-performance-latency-throughput-capacity.mdx`
 - Modify: `data/source-ledger.json`
+- Modify: `data/source-link-health.json`
 - Modify: `content/paths/04-reliability-state.mdx`
 - Modify: `content/paths/03-distributed-systems.mdx`
 
 **Interfaces:**
 - Produces: fault/failure/recovery/data-loss boundaries and load/latency/throughput/capacity/saturation boundaries.
+- Adds: exactly four remote SRE source/cache pairs, all consumed immediately by QA-02/03.
 
-- [ ] **Step 1: Write QA-02**
+- [ ] **Step 1: Atomically govern four SRE sources and write QA-02**
 
-Use one original scenario that names source, stimulus, environment, artifact, response, and measure in prose/table. Distinguish fault from externally visible failure, availability from recovery, RTO from RPO, and automated recovery from unknown business outcomes requiring reconciliation or human terminal state. Its ledger document citations are `src-sre-availability-table` (`roles: ["definition"]`, `usage_mode: "facts-summary"`, sole `manifest_primary: true`), `src-sre-addressing-cascading-failures` (`roles: ["implementation"]`, same usage mode, false), and independent-domain `src-sei-quality-attributes` (`roles: ["definition"]`, same usage mode, false).
+Add the four `src-sre-*` records, then write QA-02 and its citations in the same task. Use an original six-field scenario and cite `src-sre-availability-table` (`roles: ["definition"]`, `usage_mode: "facts-summary"`, sole `manifest_primary: true`), `src-sre-addressing-cascading-failures` (`roles: ["implementation"]`, same usage mode, false), and independent-domain `src-sei-quality-attributes` (`roles: ["definition"]`, same usage mode, false).
 
 - [ ] **Step 2: Write QA-03**
 
-Use one original scenario with workload shape, concurrency, service time, throughput, p50/p95/p99 latency, utilization, queue depth, rejection, and saturation. State that averages hide tails, throughput without offered load is incomplete, and capacity is a bounded operating envelope rather than a single benchmark maximum. Its ledger document citations are `src-sre-handling-overload` (`roles: ["implementation"]`, `usage_mode: "facts-summary"`, sole `manifest_primary: true`), `src-sre-monitoring-distributed-systems` (`roles: ["method"]`, same usage mode, false), and independent-domain `src-sei-quality-attributes` (`roles: ["definition"]`, same usage mode, false).
+Use one original scenario with workload shape, concurrency, service time, throughput, p50/p95/p99 latency, utilization, queue depth, rejection, and saturation. State that averages hide tails, throughput without offered load is incomplete, and capacity is a bounded operating envelope rather than a single benchmark maximum. Its ledger document citations are `src-sre-handling-overload` (`roles: ["implementation"]`, `usage_mode: "facts-summary"`, sole `manifest_primary: true`), `src-sre-monitoring-distributed-systems` (`roles: ["method"]`, same usage mode, false), and independent-domain `src-sei-quality-attributes` (`roles: ["definition"]`, same usage mode, false). Run `npm run check:links:live -- --output /tmp/g006-task4-live-cache.json`, then merge only the four SRE results into the canonical cache, preserving unrelated bytes/order.
 
 - [ ] **Step 3: Add paths and run focused tests**
 
 ```bash
 node --test --test-name-pattern='QA-02|QA-03|reliability path|distributed path' tests/g006-batch1-content.test.mjs
 node --test tests/learning-path.test.mjs
-node --test tests/source-governance-data.test.mjs
+node --test tests/source-ledger.test.mjs tests/source-link-health.test.mjs tests/source-governance-data.test.mjs
+npm run check:links
 npm run validate:content
 ```
 
@@ -237,7 +226,7 @@ Expected: all Task 4 source/content tests PASS; each article and its remote cita
 - [ ] **Step 4: Commit**
 
 ```bash
-git add content/quality-attributes/qa-02-reliability-availability-recoverability.mdx content/quality-attributes/qa-03-performance-latency-throughput-capacity.mdx data/source-ledger.json content/paths/04-reliability-state.mdx content/paths/03-distributed-systems.mdx
+git add content/quality-attributes/qa-02-reliability-availability-recoverability.mdx content/quality-attributes/qa-03-performance-latency-throughput-capacity.mdx data/source-ledger.json data/source-link-health.json content/paths/04-reliability-state.mdx content/paths/03-distributed-systems.mdx
 git commit -m "feat: publish reliability and performance attributes"
 ```
 
