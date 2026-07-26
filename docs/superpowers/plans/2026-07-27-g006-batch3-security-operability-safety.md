@@ -101,7 +101,7 @@ Expected: checkout is full-history and tier counts are exactly 376/25/4/7. This 
 - Modify: `tests/g006-batch1-content.test.mjs`, `tests/g006-batch2-content.test.mjs`
 - Modify: `content/paths/05-production-governance.mdx`, `content/paths/07-cloud-native-platform.mdx`, `content/paths/09-edge-physical-agents.mdx`, `content/paths/10-agent-platform-gateway.mdx`
 - Modify: `data/source-ledger.json`, `data/source-link-health.json`
-- Modify: `tests/project-status.test.mjs`, `tests/content-review-health.test.mjs`, `tests/source-ledger-pagination.test.mjs`, `tests/source-ledger-rendering.test.mjs`
+- Modify: `tests/project-status.test.mjs`, `tests/content-review-health.test.mjs`, `tests/source-ledger-pagination.test.mjs`, `tests/source-ledger-rendering.test.mjs`, `tests/canonical-identity.test.mjs`
 - Generate: `src/generated/*.json`
 
 **Interfaces:**
@@ -247,7 +247,7 @@ Use built-in `imagegen` with no reference image. Brief: simplified-Chinese 16:9 
 
 Inspect each original and ~720px render for exact text, topology, crop, overflow, color-independent states, and absence of extra text/logo/watermark. Register three local `tier: primary`, `source_kind: original-illustration` records with `LicenseRef-Atlas-Original`, `original-atlas`, canonical repository evidence URL, factual-claim exclusion, and no remote cache entry.
 
-Update real-input tests from 418 to 421 sources; primary tiers from 382 to 385 and totals from 418 to 421. Keep 65 documents, 18 topics, first-party/secondary/discovery tiers at 25/4/7, primary pages at 20, and first-party pages at 2.
+Update real-input tests from 418 to 421 sources; primary tiers from 382 to 385 and totals from 418 to 421. Update the exact self-authored asset count from 19 to 22. Keep 65 documents, 18 topics, first-party/secondary/discovery tiers at 25/4/7, primary pages at 20, and first-party pages at 2.
 
 - [ ] **Step 6: Generate, run full GREEN, and commit**
 
@@ -258,7 +258,7 @@ node --test tests/source-governance-data.test.mjs tests/source-ledger-pagination
 npm run verify
 node -e "const s=require('./src/generated/project-status.json'); if(s.completed_topics!==18||s.content_documents!==65||s.governed_sources!==421) process.exit(1)"
 git diff --check
-git add static/img/illustrations/qa-05-data-trust-boundaries.png static/img/illustrations/qa-08-operability-recovery-loop.png static/img/illustrations/qa-09-safety-control-loop.png content/quality-attributes/qa-05-security-privacy-trust.mdx content/quality-attributes/qa-08-operability-observability.mdx content/quality-attributes/qa-09-safety-physical-risk.mdx data/source-ledger.json tests/g006-batch3-content.test.mjs tests/project-status.test.mjs tests/content-review-health.test.mjs tests/source-ledger-pagination.test.mjs tests/source-ledger-rendering.test.mjs src/generated
+git add static/img/illustrations/qa-05-data-trust-boundaries.png static/img/illustrations/qa-08-operability-recovery-loop.png static/img/illustrations/qa-09-safety-control-loop.png content/quality-attributes/qa-05-security-privacy-trust.mdx content/quality-attributes/qa-08-operability-observability.mdx content/quality-attributes/qa-09-safety-physical-risk.mdx data/source-ledger.json tests/g006-batch3-content.test.mjs tests/project-status.test.mjs tests/content-review-health.test.mjs tests/source-ledger-pagination.test.mjs tests/source-ledger-rendering.test.mjs tests/canonical-identity.test.mjs src/generated
 git commit -m "feat: illustrate g006 quality attributes batch3"
 ```
 

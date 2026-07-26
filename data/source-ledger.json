@@ -1270,6 +1270,102 @@
       "expected_final_approval_note": "Original atlas illustration approved after exact layer labels, migration and breaking-change topology, non-guarantee scope, originality, crop-safety, and responsive QA"
     },
     {
+      "id": "src-atlas-qa05-data-trust-boundaries-8d53f1c92a64",
+      "canonical_locator": "/img/illustrations/qa-05-data-trust-boundaries.png",
+      "transport_locator": "/img/illustrations/qa-05-data-trust-boundaries.png",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Data purpose, minimum fields, trust boundaries, and lifecycle governance illustration — Tego Arch maintainers",
+      "author_or_org": "Tego Arch maintainers",
+      "published_at": null,
+      "registered_at": "2026-07-27",
+      "checked_at": "2026-07-27",
+      "version": "Original PNG generated, center-cropped to 16:9, and QA-checked on 2026-07-27",
+      "source_kind": "original-illustration",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "illustration"
+      ],
+      "license": "LicenseRef-Atlas-Original",
+      "license_scope": "The named external-subject, TB-1 identity and tenant, TB-2 purpose and integrity, TB-3 policy-version and tenant, downstream data lifecycle, retention, deletion, derived-data, and audit illustration only",
+      "license_evidence_url": "https://github.com/sealday/tego-arch/blob/main/static/img/illustrations/qa-05-data-trust-boundaries.png",
+      "license_evidence_note": "The image was generated with the built-in image tool from a project-authored brief with no reference images; original-illustration coverage is limited to the named PNG.",
+      "license_family_id": "/img/illustrations/qa-05-data-trust-boundaries.png",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "original-atlas",
+      "usage_boundary": "Explains data class, purpose, minimum fields, authorization-context rebuilding, and downstream lifecycle governance across three trust boundaries; it does not establish factual claims, prove threat completeness, represent network topology, or establish security, privacy, or compliance.",
+      "link_policy": null,
+      "expected_final_transport_locator": "/img/illustrations/qa-05-data-trust-boundaries.png",
+      "expected_final_approved_at": "2026-07-27",
+      "expected_final_approval_note": "Original atlas illustration approved after exact Chinese text, trust-boundary and lifecycle topology, non-guarantee scope, originality, crop-safety, and responsive QA"
+    },
+    {
+      "id": "src-atlas-qa08-operability-recovery-loop-6b1e9d42c7f5",
+      "canonical_locator": "/img/illustrations/qa-08-operability-recovery-loop.png",
+      "transport_locator": "/img/illustrations/qa-08-operability-recovery-loop.png",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Signals, guarded control, user-visible recovery, learning, and operational responsibility illustration — Tego Arch maintainers",
+      "author_or_org": "Tego Arch maintainers",
+      "published_at": null,
+      "registered_at": "2026-07-27",
+      "checked_at": "2026-07-27",
+      "version": "Original PNG generated, center-cropped to 16:9, and QA-checked on 2026-07-27",
+      "source_kind": "original-illustration",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "illustration"
+      ],
+      "license": "LicenseRef-Atlas-Original",
+      "license_scope": "The named user-impact, correlated-signal, monitoring, diagnosis, guarded-control, recovery-verification, incident-learning, rollback, audit, degraded-access, and responsibility-band illustration only",
+      "license_evidence_url": "https://github.com/sealday/tego-arch/blob/main/static/img/illustrations/qa-08-operability-recovery-loop.png",
+      "license_evidence_note": "The image was generated with the built-in image tool from a project-authored brief with no reference images; original-illustration coverage is limited to the named PNG.",
+      "license_family_id": "/img/illustrations/qa-08-operability-recovery-loop.png",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "original-atlas",
+      "usage_boundary": "Explains how correlated signals, guarded control, user-visible verification, learning, rollback, audit, degraded access, and named responsibilities form an operability loop; it does not establish factual claims or guarantee diagnosis, safe control, or recovery from telemetry, SLOs, or automation.",
+      "link_policy": null,
+      "expected_final_transport_locator": "/img/illustrations/qa-08-operability-recovery-loop.png",
+      "expected_final_approved_at": "2026-07-27",
+      "expected_final_approval_note": "Original atlas illustration approved after exact Chinese text, main-loop and failure-branch topology, responsibility ownership, non-guarantee scope, originality, crop-safety, and responsive QA"
+    },
+    {
+      "id": "src-atlas-qa09-safety-control-loop-c4a7e83b1d96",
+      "canonical_locator": "/img/illustrations/qa-09-safety-control-loop.png",
+      "transport_locator": "/img/illustrations/qa-09-safety-control-loop.png",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Digital decision, physical control, unsafe actions, Security, Safety, and fail-safe illustration — Tego Arch maintainers",
+      "author_or_org": "Tego Arch maintainers",
+      "published_at": null,
+      "registered_at": "2026-07-27",
+      "checked_at": "2026-07-27",
+      "version": "Original PNG generated, center-cropped to 16:9, and QA-checked on 2026-07-27",
+      "source_kind": "original-illustration",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "illustration"
+      ],
+      "license": "LicenseRef-Atlas-Original",
+      "license_scope": "The named sensor, state-estimate, decision, actuator, physical-process, feedback, operator, safety-owner, four unsafe-control-action, Security, Safety, degraded, and fail-safe illustration only",
+      "license_evidence_url": "https://github.com/sealday/tego-arch/blob/main/static/img/illustrations/qa-09-safety-control-loop.png",
+      "license_evidence_note": "The image was generated with the built-in image tool from a project-authored brief with no reference images; original-illustration coverage is limited to the named PNG.",
+      "license_family_id": "/img/illustrations/qa-09-safety-control-loop.png",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "original-atlas",
+      "usage_boundary": "Explains how digital decisions reach a physical process through feedback, unsafe-control-action, Security, Safety, degraded, and fail-safe boundaries; it does not establish factual claims, reproduce a published method figure, or prove Safety through reliability, human review, redundancy, analysis completion, risk matrices, simulation, or certification.",
+      "link_policy": null,
+      "expected_final_transport_locator": "/img/illustrations/qa-09-safety-control-loop.png",
+      "expected_final_approved_at": "2026-07-27",
+      "expected_final_approval_note": "Original atlas illustration approved after exact labels, physical-control loop and four-branch topology, Security-versus-Safety scope, originality, crop-safety, and responsive QA"
+    },
+    {
       "id": "src-atlas-roadmap-756462618489",
       "canonical_locator": "/img/paths/software-architecture-learning-roadmap.png",
       "transport_locator": "/img/paths/software-architecture-learning-roadmap.png",
@@ -24017,6 +24113,19 @@
       ],
       "citations": [
         {
+          "source_id": "src-atlas-qa05-data-trust-boundaries-8d53f1c92a64",
+          "citation_url": "/img/illustrations/qa-05-data-trust-boundaries.png",
+          "roles": [
+            "illustration"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "original-illustration",
+          "attribution_note": "Data purpose, minimum fields, trust boundaries, and lifecycle governance illustration, Tego Arch maintainers",
+          "modification_note": "Generated with the built-in image tool from a project-authored brief, with no reference images, then QA-reviewed and center-cropped in an original data-flow composition that separates three authorization-context boundaries, per-flow data purpose and minimum fields, and downstream retention, deletion, derived-data, and audit relationships without representing network topology or asserting security, privacy, or compliance.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
           "source_id": "src-nist-sp800-160v1r1",
           "citation_url": "https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final",
           "roles": [
@@ -24084,6 +24193,19 @@
       ],
       "citations": [
         {
+          "source_id": "src-atlas-qa08-operability-recovery-loop-6b1e9d42c7f5",
+          "citation_url": "/img/illustrations/qa-08-operability-recovery-loop.png",
+          "roles": [
+            "illustration"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "original-illustration",
+          "attribution_note": "Signals, guarded control, user-visible recovery, learning, and operational responsibility illustration, Tego Arch maintainers",
+          "modification_note": "Generated with the built-in image tool from a project-authored brief, with no reference images, then QA-reviewed, corrected only to remove an unintended English icon label, and center-cropped in an original recovery-loop composition that distinguishes correlated signals, guarded control, user-visible verification, incident learning, rollback and audit, degraded access, and named responsibilities without guaranteeing recovery.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
           "source_id": "src-opentelemetry-observability-primer",
           "citation_url": "https://opentelemetry.io/docs/concepts/observability-primer/",
           "roles": [
@@ -24149,6 +24271,19 @@
         "illustration-rights"
       ],
       "citations": [
+        {
+          "source_id": "src-atlas-qa09-safety-control-loop-c4a7e83b1d96",
+          "citation_url": "/img/illustrations/qa-09-safety-control-loop.png",
+          "roles": [
+            "illustration"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "original-illustration",
+          "attribution_note": "Digital decision, physical control, unsafe actions, Security, Safety, and fail-safe illustration, Tego Arch maintainers",
+          "modification_note": "Generated with the built-in image tool from a project-authored brief, with no reference images, then QA-reviewed and center-cropped in an original physical-control-loop composition that separates sensing, state estimation, decisions, actuation, feedback, four unsafe-control-action branches, Security and Safety bands, and degraded or fail-safe control without copying a published method figure or asserting Safety.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
         {
           "source_id": "src-faa-order-8040-4c",
           "citation_url": "https://www.faa.gov/documentLibrary/media/Order/FAA_Order_8040.4C.pdf",

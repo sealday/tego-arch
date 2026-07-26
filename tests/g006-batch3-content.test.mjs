@@ -60,6 +60,38 @@ const solePrimary = new Map([
   ['QA-08', 'src-opentelemetry-observability-primer'],
   ['QA-09', 'src-faa-order-8040-4c'],
 ]);
+const illustrations = new Map([
+  [
+    'QA-05',
+    {
+      path: '/img/illustrations/qa-05-data-trust-boundaries.png',
+      sourceId: 'src-atlas-qa05-data-trust-boundaries-8d53f1c92a64',
+      alt: '追踪数据目的、最小字段和授权上下文跨越三道信任边界',
+      caption:
+        '信任边界要求重建身份、租户、权限、目的与完整性约束，而不是把网络分段当作授权证明。',
+    },
+  ],
+  [
+    'QA-08',
+    {
+      path: '/img/illustrations/qa-08-operability-recovery-loop.png',
+      sourceId: 'src-atlas-qa08-operability-recovery-loop-6b1e9d42c7f5',
+      alt: '串联用户影响、关联信号、受控动作、恢复验证和事件学习',
+      caption:
+        '遥测和自动化只有进入有责任、停止、回滚、审计与用户恢复验证的闭环，才形成可运维证据。',
+    },
+  ],
+  [
+    'QA-09',
+    {
+      path: '/img/illustrations/qa-09-safety-control-loop.png',
+      sourceId: 'src-atlas-qa09-safety-control-loop-c4a7e83b1d96',
+      alt: '检查数字控制进入物理过程时的反馈、四类不安全动作和故障安全分支',
+      caption:
+        'Security、可靠性、人工复核或冗余都不能单独证明 Safety；控制动作必须结合反馈、时序、权限与运行边界验证。',
+    },
+  ],
+]);
 const pathLinks = new Map([
   ['05-production-governance.mdx', ['/quality-attributes/qa-05', '/quality-attributes/qa-08']],
   ['07-cloud-native-platform.mdx', ['/quality-attributes/qa-04', '/quality-attributes/qa-08']],
@@ -226,4 +258,60 @@ test('learning paths', async () => {
       previous = index;
     }
   }
+});
+
+test('raster assets and rights', async () => {
+  const sourceIds = new Set();
+  for (const [id, illustration] of illustrations) {
+    const image = await readFile(
+      new URL(`../static${illustration.path}`, import.meta.url),
+    );
+    assert.ok(image.length >= 24, `${id} PNG must contain an IHDR`);
+    assert.deepEqual(
+      image.subarray(0, 8),
+      Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]),
+      `${id} illustration must be PNG`,
+    );
+    const width = image.readUInt32BE(16);
+    const height = image.readUInt32BE(20);
+    assert.equal(width * 9, height * 16, `${id} PNG must be exactly 16:9`);
+
+    const body = requiredDocument(id).body;
+    assert.match(
+      body,
+      new RegExp(
+        `!\\[${illustration.alt}\\]\\(${illustration.path.replaceAll('/', '\\/')}\\)`,
+        'u',
+      ),
+      `${id} meaningful illustration alt`,
+    );
+    assert.match(
+      body,
+      new RegExp(`\\*图：${illustration.caption.replaceAll('/', '\\/')}\\*`, 'u'),
+      `${id} meaningful illustration caption`,
+    );
+
+    const citation = governedDocument(id).citations.find(
+      ({source_id: sourceId}) => sourceId === illustration.sourceId,
+    );
+    assert.ok(citation, `${id} illustration citation`);
+    assert.equal(citation.citation_url, illustration.path, id);
+    assert.deepEqual(citation.roles, ['illustration'], id);
+    assert.equal(citation.usage_mode, 'original-illustration', id);
+    assert.equal(citation.manifest_primary, false, id);
+    assert.ok(citation.modification_note?.trim(), `${id} generation note`);
+
+    const source = sourcesById.get(illustration.sourceId);
+    assert.ok(source, `${id} illustration source`);
+    assert.equal(source.canonical_locator, illustration.path, id);
+    assert.equal(source.transport_locator, illustration.path, id);
+    assert.equal(source.source_kind, 'original-illustration', id);
+    assert.equal(source.tier, 'primary', id);
+    assert.deepEqual(source.allowed_evidence_roles, ['illustration'], id);
+    assert.equal(source.license, 'LicenseRef-Atlas-Original', id);
+    assert.equal(source.copyright_policy, 'original-atlas', id);
+    assert.match(source.usage_boundary, /does not establish factual claims/iu, id);
+    sourceIds.add(source.id);
+  }
+  assert.equal(sourceIds.size, illustrations.size, 'illustration IDs must be unique');
 });
