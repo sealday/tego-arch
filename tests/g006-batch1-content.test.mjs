@@ -141,16 +141,69 @@ function sectionForHeading(body, headingText) {
   return body.slice(start === -1 ? end : start + 1, end);
 }
 
-function hasDiagramOrTable(body) {
-  if (/^ {0,3}(?:`{3,}|~{3,})mermaid\s*$/mu.test(body)) {
-    return true;
-  }
+function representationCandidates(body) {
   const lines = body.split(/\r?\n/);
-  return lines.some(
-    (line, index) =>
-      /^\s*\|.*\|\s*$/.test(line) &&
-      /^\s*\|?(?:\s*:?-{3,}:?\s*\|)+\s*$/.test(lines[index + 1] ?? ''),
-  );
+  const candidates = [];
+  const neighboringText = (
+    start,
+    end = start,
+    includeRepresentation = false,
+  ) => {
+    const before = lines
+      .slice(0, start)
+      .findLast((line) => line.trim().length > 0);
+    const after = lines
+      .slice(end + 1)
+      .find((line) => line.trim().length > 0);
+    return [
+      before,
+      ...(includeRepresentation ? lines.slice(start, end + 1) : []),
+      after,
+    ]
+      .filter(Boolean)
+      .join('\n');
+  };
+
+  for (let index = 0; index < lines.length; index += 1) {
+    if (/^ {0,3}(?:`{3,}|~{3,})mermaid\s*$/u.test(lines[index])) {
+      const delimiter = lines[index].trim().match(/^(`{3,}|~{3,})/u)?.[1];
+      const closingOffset = lines
+        .slice(index + 1)
+        .findIndex((line) => line.trim() === delimiter);
+      const end = closingOffset === -1 ? index : index + closingOffset + 1;
+      candidates.push({
+        kind: 'Mermaid',
+        labelContext: neighboringText(index, end),
+      });
+      index = end;
+      continue;
+    }
+
+    if (
+      /^\s*\|.*\|\s*$/.test(lines[index]) &&
+      /^\s*\|?(?:\s*:?-{3,}:?\s*\|)+\s*$/.test(lines[index + 1] ?? '')
+    ) {
+      let end = index + 1;
+      while (/^\s*\|.*\|\s*$/.test(lines[end + 1] ?? '')) {
+        end += 1;
+      }
+      candidates.push({
+        kind: 'table',
+        labelContext: neighboringText(index, end),
+      });
+      index = end;
+      continue;
+    }
+
+    if (/!\[[^\]]+\]\([^)]+\)/u.test(lines[index])) {
+      candidates.push({
+        kind: 'illustration',
+        labelContext: neighboringText(index, index, true),
+      });
+    }
+  }
+
+  return candidates;
 }
 
 function assertArticleContract(id) {
@@ -182,7 +235,7 @@ function assertArticleContract(id) {
   assert.deepEqual(actualH2, h2, `${id} H2 sequence`);
   const questions = sectionForHeading(document.body, '学习问题')
     .split(/\r?\n/)
-    .filter((line) => /^ {0,3}[-*+]\s+\S/.test(line));
+    .filter((line) => /^ {0,3}[-*+]\s+\S.*[?？]\s*$/u.test(line));
   assert.ok(
     questions.length >= 3 && questions.length <= 5,
     `${id} must ask 3–5 learning questions`,
@@ -197,21 +250,28 @@ function assertArticleContract(id) {
     `${id} must label site analysis`,
   );
   assert.match(visibleBody, /边界/u, `${id} must state a boundary`);
-  assert.match(
-    visibleBody,
-    /(?:失败|失效|故障)/u,
-    `${id} must state a failure mode`,
+  const failureSection = sectionForHeading(visibleBody, '权衡与失败模式');
+  assert.ok(
+    failureSection.trim().length >= 200,
+    `${id} must substantively explain tradeoffs and failure modes`,
   );
   assert.match(
-    visibleBody,
+    failureSection,
+    /(?:失败|失效|故障|反模式|反例).{0,180}(?:因为|导致|造成|后果|风险|代价|无法|不能)|(?:因为|导致|造成|后果|风险|代价|无法|不能).{0,180}(?:失败|失效|故障|反模式|反例)/su,
+    `${id} must explain a failure mode and its consequence`,
+  );
+  assert.match(
+    failureSection,
     /(?:不适用|不应|不可|不要|何时不用|禁用|非使用条件)/u,
-    `${id} must state a non-use condition`,
+    `${id} must state a non-use condition in 权衡与失败模式`,
   );
-  assert.ok(hasDiagramOrTable(visibleBody), `${id} needs a precise representation`);
-  assert.match(
-    visibleBody,
-    /(?:原创|本站(?:绘制|整理|定义)|Atlas synthesis)/iu,
-    `${id} must label its representation as original`,
+  const representations = representationCandidates(visibleBody);
+  assert.ok(representations.length > 0, `${id} needs a precise representation`);
+  assert.ok(
+    representations.some(({labelContext}) =>
+      /(?:原创|本站(?:绘制|整理|定义)|Atlas synthesis)/iu.test(labelContext),
+    ),
+    `${id} must label a detected table, Mermaid, or illustration as original`,
   );
 
   const visibleLinks = new Set(extractInternalLinks(document));
@@ -277,7 +337,11 @@ test('QA-00 and QA-01 content relations and architecture path', async () => {
   assertArticleContract('QA-01');
   assert.equal('QA-00' in topicRelations, false);
 
-  const scenarioHeadings = requiredDocument('QA-01').headings
+  const scenario = sectionForHeading(
+    requiredDocument('QA-01').body,
+    '质量属性场景',
+  );
+  const scenarioHeadings = findMarkdownHeadings(scenario)
     .filter(({level}) => level === 3)
     .map(({text}) => text);
   assert.deepEqual(scenarioHeadings, [
