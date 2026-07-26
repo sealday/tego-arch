@@ -1300,6 +1300,108 @@
       "health_checks": []
     },
     {
+      "id": "src-atlas-qa00-quality-model-aeab13a6f6bc",
+      "canonical_locator": "/img/illustrations/qa-00-quality-model-boundaries.png",
+      "transport_locator": "/img/illustrations/qa-00-quality-model-boundaries.png",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Quality model and Tego Arch lens boundary illustration — Tego Arch maintainers",
+      "author_or_org": "Tego Arch maintainers",
+      "published_at": null,
+      "registered_at": "2026-07-27",
+      "checked_at": "2026-07-27",
+      "version": "Original PNG generated, center-cropped to 16:9, and QA-checked on 2026-07-27",
+      "source_kind": "original-illustration",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "illustration"
+      ],
+      "license": "LicenseRef-Atlas-Original",
+      "license_scope": "The named quality model index and separate Tego Arch review lenses illustration only",
+      "license_evidence_url": "https://github.com/sealday/tego-arch/blob/main/static/img/illustrations/qa-00-quality-model-boundaries.png",
+      "license_evidence_note": "The image was generated with the built-in image tool from a project-authored brief for this atlas; original-illustration coverage is limited to the named PNG.",
+      "license_family_id": "/img/illustrations/qa-00-quality-model-boundaries.png",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "original-atlas",
+      "usage_boundary": "Explains that a product quality model indexes concerns while separate Tego Arch lenses support review; it does not establish factual claims, reproduce ISO classification content, or determine business priority.",
+      "link_policy": null,
+      "expected_final_transport_locator": "/img/illustrations/qa-00-quality-model-boundaries.png",
+      "expected_final_approved_at": "2026-07-27",
+      "expected_final_approval_note": "Original atlas illustration approved after text, boundary separation, originality, crop-safety, and responsive QA",
+      "health_summary": "healthy",
+      "health_checks": []
+    },
+    {
+      "id": "src-atlas-qa02-failure-recovery-631a19fdd59f",
+      "canonical_locator": "/img/illustrations/qa-02-failure-recovery-boundaries.png",
+      "transport_locator": "/img/illustrations/qa-02-failure-recovery-boundaries.png",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Fault isolation, propagation, and verifiable recovery boundary illustration — Tego Arch maintainers",
+      "author_or_org": "Tego Arch maintainers",
+      "published_at": null,
+      "registered_at": "2026-07-27",
+      "checked_at": "2026-07-27",
+      "version": "Original PNG generated, center-cropped to 16:9, and QA-checked on 2026-07-27",
+      "source_kind": "original-illustration",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "illustration"
+      ],
+      "license": "LicenseRef-Atlas-Original",
+      "license_scope": "The named fault isolation or propagation, recovery verification, result reconciliation, RTO, and RPO illustration only",
+      "license_evidence_url": "https://github.com/sealday/tego-arch/blob/main/static/img/illustrations/qa-02-failure-recovery-boundaries.png",
+      "license_evidence_note": "The image was generated with the built-in image tool from a project-authored brief for this atlas; original-illustration coverage is limited to the named PNG.",
+      "license_family_id": "/img/illustrations/qa-02-failure-recovery-boundaries.png",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "original-atlas",
+      "usage_boundary": "Explains that a fault may be isolated or propagate and that recovery still requires result verification; it does not establish factual claims, imply every fault becomes a failure, or guarantee automated recovery.",
+      "link_policy": null,
+      "expected_final_transport_locator": "/img/illustrations/qa-02-failure-recovery-boundaries.png",
+      "expected_final_approved_at": "2026-07-27",
+      "expected_final_approval_note": "Original atlas illustration approved after text, branch topology, RTO and RPO boundaries, originality, crop-safety, and responsive QA",
+      "health_summary": "healthy",
+      "health_checks": []
+    },
+    {
+      "id": "src-atlas-qa03-load-saturation-96c69a1590a0",
+      "canonical_locator": "/img/illustrations/qa-03-load-saturation-boundaries.png",
+      "transport_locator": "/img/illustrations/qa-03-load-saturation-boundaries.png",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Load, saturation, throughput plateau, and rejection boundary illustration — Tego Arch maintainers",
+      "author_or_org": "Tego Arch maintainers",
+      "published_at": null,
+      "registered_at": "2026-07-27",
+      "checked_at": "2026-07-27",
+      "version": "Original PNG generated, center-cropped to 16:9, and QA-checked on 2026-07-27",
+      "source_kind": "original-illustration",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "illustration"
+      ],
+      "license": "LicenseRef-Atlas-Original",
+      "license_scope": "The named illustrative load path, queue, throughput plateau, tail latency, saturation knee, and rejection branch illustration only",
+      "license_evidence_url": "https://github.com/sealday/tego-arch/blob/main/static/img/illustrations/qa-03-load-saturation-boundaries.png",
+      "license_evidence_note": "The image was generated with the built-in image tool from a project-authored brief for this atlas; original-illustration coverage is limited to the named PNG.",
+      "license_family_id": "/img/illustrations/qa-03-load-saturation-boundaries.png",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "original-atlas",
+      "usage_boundary": "Explains that capacity review combines throughput plateau, tail latency, queue, and rejection signals; it does not establish factual claims, set thresholds, or assert that overload inevitably collapses throughput.",
+      "link_policy": null,
+      "expected_final_transport_locator": "/img/illustrations/qa-03-load-saturation-boundaries.png",
+      "expected_final_approved_at": "2026-07-27",
+      "expected_final_approval_note": "Original atlas illustration approved after text, plateau and rejection topology, illustrative scope, originality, crop-safety, and responsive QA",
+      "health_summary": "healthy",
+      "health_checks": []
+    },
+    {
       "id": "src-atlas-roadmap-756462618489",
       "canonical_locator": "/img/paths/software-architecture-learning-roadmap.png",
       "transport_locator": "/img/paths/software-architecture-learning-roadmap.png",
@@ -26704,6 +26806,19 @@
       ],
       "citations": [
         {
+          "source_id": "src-atlas-qa00-quality-model-aeab13a6f6bc",
+          "citation_url": "/img/illustrations/qa-00-quality-model-boundaries.png",
+          "roles": [
+            "illustration"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "original-illustration",
+          "attribution_note": "Quality model and Tego Arch lens boundary illustration, Tego Arch maintainers",
+          "modification_note": "Generated with the built-in image tool from a project-authored brief, with no reference images, then QA-reviewed and center-cropped in an original comparison-board composition that separates the quality-model index from Tego Arch review lenses.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
           "source_id": "src-iso-11f3b103e932",
           "citation_url": "https://www.iso.org/standard/78176.html",
           "roles": [
@@ -26783,6 +26898,19 @@
       ],
       "citations": [
         {
+          "source_id": "src-atlas-qa02-failure-recovery-631a19fdd59f",
+          "citation_url": "/img/illustrations/qa-02-failure-recovery-boundaries.png",
+          "roles": [
+            "illustration"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "original-illustration",
+          "attribution_note": "Fault isolation, propagation, and verifiable recovery boundary illustration, Tego Arch maintainers",
+          "modification_note": "Generated with the built-in image tool from a project-authored brief, with no reference images, then QA-reviewed and center-cropped in an original state-and-recovery composition that forks isolation from propagation and distinguishes RTO, a backward-looking RPO window, and result verification.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
           "source_id": "src-sei-quality-attributes",
           "citation_url": "https://www.sei.cmu.edu/library/quality-attributes/",
           "roles": [
@@ -26834,6 +26962,19 @@
         "illustration-rights"
       ],
       "citations": [
+        {
+          "source_id": "src-atlas-qa03-load-saturation-96c69a1590a0",
+          "citation_url": "/img/illustrations/qa-03-load-saturation-boundaries.png",
+          "roles": [
+            "illustration"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "original-illustration",
+          "attribution_note": "Load, saturation, throughput plateau, and rejection boundary illustration, Tego Arch maintainers",
+          "modification_note": "Generated with the built-in image tool from a project-authored brief, with no reference images, then QA-reviewed and center-cropped in an original illustrative load-model composition that connects queue saturation to a throughput plateau, tail-latency rise, and a separate rejection branch without asserting thresholds.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
         {
           "source_id": "src-sei-quality-attributes",
           "citation_url": "https://www.sei.cmu.edu/library/quality-attributes/",
