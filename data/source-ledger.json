@@ -1281,25 +1281,25 @@
       "published_at": null,
       "registered_at": "2026-07-27",
       "checked_at": "2026-07-27",
-      "version": "Original PNG generated, center-cropped to 16:9, and QA-checked on 2026-07-27",
+      "version": "Original PNG generated, targeted-edited so TB-1, TB-2, and TB-3 each display the complete five-constraint authorization context, center-cropped to 16:9, and QA-checked on 2026-07-27",
       "source_kind": "original-illustration",
       "tier": "primary",
       "allowed_evidence_roles": [
         "illustration"
       ],
       "license": "LicenseRef-Atlas-Original",
-      "license_scope": "The named external-subject, TB-1 identity and tenant, TB-2 purpose and integrity, TB-3 policy-version and tenant, downstream data lifecycle, retention, deletion, derived-data, and audit illustration only",
+      "license_scope": "The named external-subject flow where each of TB-1, TB-2, and TB-3 independently displays identity, tenant, permission, purpose, and integrity, plus downstream data lifecycle, retention, deletion, derived-data, and audit, only",
       "license_evidence_url": "https://github.com/sealday/tego-arch/blob/main/static/img/illustrations/qa-05-data-trust-boundaries.png",
       "license_evidence_note": "The image was generated with the built-in image tool from a project-authored brief with no reference images; original-illustration coverage is limited to the named PNG.",
       "license_family_id": "/img/illustrations/qa-05-data-trust-boundaries.png",
       "license_family_grouping": "identity",
       "family_grouping_evidence_url": null,
       "copyright_policy": "original-atlas",
-      "usage_boundary": "Explains data class, purpose, minimum fields, authorization-context rebuilding, and downstream lifecycle governance across three trust boundaries; it does not establish factual claims, prove threat completeness, represent network topology, or establish security, privacy, or compliance.",
+      "usage_boundary": "Explains that each of TB-1, TB-2, and TB-3 independently rebuilds identity, tenant, permission, purpose, and integrity alongside data class, minimum fields, and downstream lifecycle governance; it does not establish factual claims, prove threat completeness, represent network topology, or establish security, privacy, or compliance.",
       "link_policy": null,
       "expected_final_transport_locator": "/img/illustrations/qa-05-data-trust-boundaries.png",
       "expected_final_approved_at": "2026-07-27",
-      "expected_final_approval_note": "Original atlas illustration approved after exact Chinese text, trust-boundary and lifecycle topology, non-guarantee scope, originality, crop-safety, and responsive QA"
+      "expected_final_approval_note": "Original atlas illustration approved after verifying that TB-1, TB-2, and TB-3 each visibly contain identity, tenant, permission, purpose, and integrity, plus lifecycle topology, non-guarantee scope, originality, crop-safety, and responsive QA"
     },
     {
       "id": "src-atlas-qa08-operability-recovery-loop-6b1e9d42c7f5",
@@ -24121,7 +24121,7 @@
           "manifest_primary": false,
           "usage_mode": "original-illustration",
           "attribution_note": "Data purpose, minimum fields, trust boundaries, and lifecycle governance illustration, Tego Arch maintainers",
-          "modification_note": "Generated with the built-in image tool from a project-authored brief, with no reference images, then QA-reviewed and center-cropped in an original data-flow composition that separates three authorization-context boundaries, per-flow data purpose and minimum fields, and downstream retention, deletion, derived-data, and audit relationships without representing network topology or asserting security, privacy, or compliance.",
+          "modification_note": "Generated with the built-in image tool from a project-authored brief, with no reference images, then targeted-edited so each of TB-1, TB-2, and TB-3 independently shows identity, tenant, permission, purpose, and integrity; QA-reviewed and center-cropped in an original data-flow composition with per-flow data purpose and minimum fields plus downstream retention, deletion, derived-data, and audit relationships, without representing network topology or asserting security, privacy, or compliance.",
           "excerpt": null,
           "quotation_reviewed": false
         },

@@ -101,7 +101,7 @@ Expected: checkout is full-history and tier counts are exactly 376/25/4/7. This 
 - Modify: `tests/g006-batch1-content.test.mjs`, `tests/g006-batch2-content.test.mjs`
 - Modify: `content/paths/05-production-governance.mdx`, `content/paths/07-cloud-native-platform.mdx`, `content/paths/09-edge-physical-agents.mdx`, `content/paths/10-agent-platform-gateway.mdx`
 - Modify: `data/source-ledger.json`, `data/source-link-health.json`
-- Modify: `tests/project-status.test.mjs`, `tests/content-review-health.test.mjs`, `tests/source-ledger-pagination.test.mjs`, `tests/source-ledger-rendering.test.mjs`, `tests/canonical-identity.test.mjs`
+- Modify: `tests/project-status.test.mjs`, `tests/content-review-health.test.mjs`, `tests/source-ledger-pagination.test.mjs`, `tests/source-ledger-rendering.test.mjs`
 - Generate: `src/generated/*.json`
 
 **Interfaces:**
@@ -215,7 +215,7 @@ Expected: full GREEN at 18/65/418 and tiers 382/25/4/7; primary/first-party pagi
 - Create: `static/img/illustrations/qa-08-operability-recovery-loop.png`
 - Create: `static/img/illustrations/qa-09-safety-control-loop.png`
 - Modify: the three Batch 3 MDX files and `data/source-ledger.json`
-- Modify: `tests/project-status.test.mjs`, `tests/content-review-health.test.mjs`, `tests/source-ledger-pagination.test.mjs`, `tests/source-ledger-rendering.test.mjs`
+- Modify: `tests/project-status.test.mjs`, `tests/content-review-health.test.mjs`, `tests/source-ledger-pagination.test.mjs`, `tests/source-ledger-rendering.test.mjs`, `tests/canonical-identity.test.mjs`
 - Generate: `src/generated/*.json`
 
 **Interfaces:**
@@ -233,7 +233,7 @@ Expected: FAIL for the three absent assets and citations.
 
 - [ ] **Step 2: Generate and inspect the QA-05 raster**
 
-Use built-in `imagegen` with no reference image. Brief: simplified-Chinese 16:9 architecture map titled `数据流、处理目的与信任边界`; subjects and external actors cross TB-1 into identity/edge, TB-2 into a tenant application, and TB-3 into queue/analytics/storage/backup. Every arrow carries data class, purpose and minimal fields; every boundary lists identity, tenant, permission, purpose and integrity claims; show retention/deletion, derived data and audit. State visually that it is an authorization/data model, not network topology. Do not reproduce OWASP/NIST figures or imply complete threat coverage/compliance.
+Use built-in `imagegen` with no reference image. Brief: simplified-Chinese 16:9 architecture map titled `数据流、处理目的与信任边界`; subjects and external actors cross TB-1 into identity/edge, TB-2 into a tenant application, and TB-3 into queue/analytics/storage/backup. Every arrow carries data class, purpose and minimal fields; each of TB-1, TB-2, and TB-3 independently displays both exact lines `身份·租户·权限` and `目的·完整性`, without splitting the five constraints across boundaries or substituting a policy-version label; show retention/deletion, derived data and audit. State visually that it is an authorization/data model, not network topology. Do not reproduce OWASP/NIST figures or imply complete threat coverage/compliance.
 
 - [ ] **Step 3: Generate and inspect the QA-08 raster**
 

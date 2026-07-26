@@ -311,6 +311,23 @@ test('raster assets and rights', async () => {
     assert.equal(source.license, 'LicenseRef-Atlas-Original', id);
     assert.equal(source.copyright_policy, 'original-atlas', id);
     assert.match(source.usage_boundary, /does not establish factual claims/iu, id);
+    if (id === 'QA-05') {
+      for (const boundary of ['TB-1', 'TB-2', 'TB-3']) {
+        assert.match(source.usage_boundary, new RegExp(boundary, 'u'), `${id} ${boundary}`);
+      }
+      for (const constraint of ['identity', 'tenant', 'permission', 'purpose', 'integrity']) {
+        assert.match(
+          source.usage_boundary,
+          new RegExp(constraint, 'u'),
+          `${id} complete ${constraint} contract`,
+        );
+      }
+      assert.doesNotMatch(
+        `${source.license_scope}\n${source.usage_boundary}\n${citation.modification_note}`,
+        /policy-version|策略版本/iu,
+        `${id} must not split policy-version into TB-3`,
+      );
+    }
     sourceIds.add(source.id);
   }
   assert.equal(sourceIds.size, illustrations.size, 'illustration IDs must be unique');
