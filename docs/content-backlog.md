@@ -163,10 +163,10 @@
 
 ### 质量属性
 
-- [ ] **QA-00 P0｜质量属性总览**：以 ISO/IEC 25010:2023 为主索引，并说明本站扩展的 operability、observability、cost 和 sustainability 视角。
-- [ ] **QA-01 P0｜质量属性场景写法**：完成六字段模板和一个从模糊口号到可测试场景的演练。
-- [ ] **QA-02 P0｜可靠性、可用性与可恢复性**：区分故障、失效、恢复目标和数据丢失边界。
-- [ ] **QA-03 P0｜性能、延迟、吞吐与容量**：区分平均值、尾延迟、并发和饱和。
+- [x] **QA-00 P0｜质量属性总览**：以 ISO/IEC 25010:2023 为主索引，并说明本站扩展的 operability、observability、cost 和 sustainability 视角。Stage A [`6d98e6f78a36f6c4abddeccb4f8fc6770a88d4c7`](https://github.com/sealday/tego-arch/commit/6d98e6f78a36f6c4abddeccb4f8fc6770a88d4c7) 已由 Pages run [`30214900439`](https://github.com/sealday/tego-arch/actions/runs/30214900439) 成功部署；2026-07-27 线上 [`/quality-attributes/qa-00`](https://sealday.github.io/tego-arch/quality-attributes/qa-00) 已完成 desktop/mobile、overflow、console 与相邻导航复核。
+- [x] **QA-01 P0｜质量属性场景写法**：完成六字段模板和一个从模糊口号到可测试场景的演练。Stage A [`6d98e6f78a36f6c4abddeccb4f8fc6770a88d4c7`](https://github.com/sealday/tego-arch/commit/6d98e6f78a36f6c4abddeccb4f8fc6770a88d4c7) 已由 Pages run [`30214900439`](https://github.com/sealday/tego-arch/actions/runs/30214900439) 成功部署；2026-07-27 线上 [`/quality-attributes/qa-01`](https://sealday.github.io/tego-arch/quality-attributes/qa-01) 已完成 desktop/mobile、overflow、console 与相邻导航复核。
+- [x] **QA-02 P0｜可靠性、可用性与可恢复性**：区分故障、失效、恢复目标和数据丢失边界。Stage A [`6d98e6f78a36f6c4abddeccb4f8fc6770a88d4c7`](https://github.com/sealday/tego-arch/commit/6d98e6f78a36f6c4abddeccb4f8fc6770a88d4c7) 已由 Pages run [`30214900439`](https://github.com/sealday/tego-arch/actions/runs/30214900439) 成功部署；2026-07-27 线上 [`/quality-attributes/qa-02`](https://sealday.github.io/tego-arch/quality-attributes/qa-02) 已完成 desktop/mobile、overflow、console 与相邻导航复核。
+- [x] **QA-03 P0｜性能、延迟、吞吐与容量**：区分平均值、尾延迟、并发和饱和。Stage A [`6d98e6f78a36f6c4abddeccb4f8fc6770a88d4c7`](https://github.com/sealday/tego-arch/commit/6d98e6f78a36f6c4abddeccb4f8fc6770a88d4c7) 已由 Pages run [`30214900439`](https://github.com/sealday/tego-arch/actions/runs/30214900439) 成功部署；2026-07-27 线上 [`/quality-attributes/qa-03`](https://sealday.github.io/tego-arch/quality-attributes/qa-03) 已完成 desktop/mobile、overflow、console 与相邻导航复核。
 - [ ] **QA-04 P0｜可扩展性与弹性**：区分规模增长、短时弹性和架构重分区。
 - [ ] **QA-05 P1｜安全、隐私与信任边界**。
 - [ ] **QA-06 P1｜可维护性、可修改性与可测试性**。

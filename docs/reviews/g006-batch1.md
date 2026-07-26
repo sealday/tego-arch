@@ -2,7 +2,7 @@
 
 - 评审日期：2026-07-27
 - 评审范围：QA-00、QA-01、QA-02、QA-03，以及三条受影响学习路径、资料库页面和三张原创 PNG。
-- 评审阶段：Task 7 Stage A，仅记录 editorial、fact、copyright、render 与本地交互证据；本记录尚不包含 Pages 部署 SHA、run 或 live-smoke 证据。
+- 评审阶段：Task 7 Stage B；保留 Stage A 的 editorial、fact、copyright、render 与本地交互证据，并补录已完成的 Pages 部署与 live-smoke 闭环。
 - 浏览器与视口：Google Chrome 150.0.7871.184；desktop `1440x1000`，mobile `390x844`。
 
 ## QA-00
@@ -89,3 +89,29 @@
 ## Stage A 结论
 
 QA-00、QA-01、QA-02、QA-03 的 editorial、fact、copyright、render 均为 PASS。Stage A review 可以提交；QA-00 至 QA-03 的 backlog 行保持未勾选，部署闭环留给后续 Stage B。
+
+## Stage A 部署与线上复核
+
+- Live-smoke date：`2026-07-27`
+- Exact Stage A SHA：`6d98e6f78a36f6c4abddeccb4f8fc6770a88d4c7`
+- GitHub Pages run：[`30214900439`](https://github.com/sealday/tego-arch/actions/runs/30214900439)
+- Exact run gate：`headSha=6d98e6f78a36f6c4abddeccb4f8fc6770a88d4c7`，`status=completed`，`conclusion=success`。
+- Canonical live base：[`https://sealday.github.io/tego-arch/`](https://sealday.github.io/tego-arch/)
+- 视口与运行时：desktop `1440x1000`、mobile `390x844`；所有复核页面均无 overflow，console warning/error 为 0，production CSS/JS 响应为 HTTP 200。
+
+### 线上路由
+
+- [`/quality-attributes/qa-00`](https://sealday.github.io/tego-arch/quality-attributes/qa-00) — HTTP 200，desktop/mobile PASS。
+- [`/quality-attributes/qa-01`](https://sealday.github.io/tego-arch/quality-attributes/qa-01) — HTTP 200，desktop/mobile PASS。
+- [`/quality-attributes/qa-02`](https://sealday.github.io/tego-arch/quality-attributes/qa-02) — HTTP 200，desktop/mobile PASS。
+- [`/quality-attributes/qa-03`](https://sealday.github.io/tego-arch/quality-attributes/qa-03) — HTTP 200，desktop/mobile PASS。
+- [`/paths/architecture-thinking`](https://sealday.github.io/tego-arch/paths/architecture-thinking)、[`/paths/distributed-systems`](https://sealday.github.io/tego-arch/paths/distributed-systems)、[`/paths/reliability-state`](https://sealday.github.io/tego-arch/paths/reliability-state) — HTTP 200，desktop/mobile PASS。
+- [`/references/primary/page/18`](https://sealday.github.io/tego-arch/references/primary/page/18) 与 [`/references/primary/page/19`](https://sealday.github.io/tego-arch/references/primary/page/19) — HTTP 200，分页点击与 browser Back PASS。
+
+### 线上图片与交互
+
+- [`qa-00-quality-model-boundaries.png`](https://sealday.github.io/tego-arch/img/illustrations/qa-00-quality-model-boundaries.png)、[`qa-02-failure-recovery-boundaries.png`](https://sealday.github.io/tego-arch/img/illustrations/qa-02-failure-recovery-boundaries.png)、[`qa-03-load-saturation-boundaries.png`](https://sealday.github.io/tego-arch/img/illustrations/qa-03-load-saturation-boundaries.png) 均为 HTTP 200、`image/png`、natural size `1664x936`。
+- 三张图在 desktop 以 `800x450` 显示，在 mobile 以 `358x201` 显示；均无裁切或溢出。
+- QA-00 → QA-01 → QA-02 → QA-03 → QA-00、三条 path → 对应 QA，以及 primary page 19 → page 18 → browser Back 的实际点击均通过；两个视口的 console warning/error 均为 0。
+
+Stage B closure — PASS：上述 exact SHA/run gate、四条 QA 路由、三张 PNG、三条学习路径、primary pages 18/19、CSS/JS、reciprocal navigation、overflow 与 console 检查均来自成功的 Stage A live smoke。
