@@ -897,7 +897,7 @@
       "priority": "P1",
       "status": {
         "scope": "backlog-projection",
-        "value": "pending",
+        "value": "complete",
         "source": "docs/content-backlog.md"
       },
       "dependencies": [
@@ -931,7 +931,7 @@
       "priority": "P1",
       "status": {
         "scope": "backlog-projection",
-        "value": "pending",
+        "value": "complete",
         "source": "docs/content-backlog.md"
       },
       "dependencies": [
@@ -996,7 +996,7 @@
       "priority": "P1",
       "status": {
         "scope": "backlog-projection",
-        "value": "pending",
+        "value": "complete",
         "source": "docs/content-backlog.md"
       },
       "dependencies": [

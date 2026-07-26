@@ -75,7 +75,7 @@ test('closes only QA-00 through QA-03 with the same deployment evidence', async 
     );
   }
 
-  for (const number of ['05', '08', '09', '10']) {
+  for (const number of ['10']) {
     assert.match(
       backlog,
       new RegExp(String.raw`^- \[ \] \*\*QA-${number} `, 'mu'),

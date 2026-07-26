@@ -84,3 +84,23 @@
 - anti-overclaim findings PASS：三篇均保留合规、威胁完整性、遥测/自动化、Safety/Security/可靠性与认证方法的禁止性边界。
 
 结论：QA-05、QA-08、QA-09 的 editorial、fact、copyright、render 均为 PASS；Stage A 评审可提交，且不改变 backlog 完成状态。
+
+## Stage A 部署与线上复核
+
+- Live-smoke date：`2026-07-27`
+- Exact Stage A SHA：`a2ca8ae4ecc2c5426432049dab2608c7df8e3f9a`
+- GitHub Pages run：[`30224008179`](https://github.com/sealday/tego-arch/actions/runs/30224008179)
+- Exact run gate：`headSha=a2ca8ae4ecc2c5426432049dab2608c7df8e3f9a`，`status=completed`，`conclusion=success`。
+- Canonical live base：[`https://sealday.github.io/tego-arch/`](https://sealday.github.io/tego-arch/)
+- 视口与运行时：desktop `1440x1000`、mobile `390x844`；所有复核页面均无 overflow，console warning/error 为 0，production CSS/JS 响应为 HTTP 200。
+- homepage status — PASS：线上首页显示 `18/65/421` 与当前故事 `G006`，和 Stage A 生成状态一致。
+
+### 线上路由、来源卡片与图片
+
+- QA-05、QA-08、QA-09、四条学习路径、`/references/primary/page/20` 与 `/references/first-party/page/2` 均在两个视口返回 HTTP 200、H1 正确且无页面级 overflow。
+- 九个来源卡片的精确 `route#source-id` 均加载唯一匹配的 `<article id="source-id">`；这些路径与“路由、来源卡片与图片”一节逐项相同。
+- 三张 `/img/illustrations/qa-*.png` 均返回 HTTP 200、`image/png`，文件字节数分别为 `1712809`、`2098531`、`1939799`；文章内显示宽度为 desktop `800px`、mobile `358px`。
+- primary page 21 返回 HTTP 404；first-party page 3 返回 HTTP 404，证明 Stage A 没有越过 `20 / 2` 的实际分页边界。
+- 每个页面使用独立浏览器上下文复核；failed CSS/JS request、console warning/error 与 page error 均为 0，`documentElement.scrollWidth === clientWidth`。
+
+Stage B closure — PASS：上述 exact SHA/run gate、三条 QA 路由、四条学习路径、三张 PNG、primary page 20、first-party page 2、九个精确来源卡片、CSS/JS、overflow 与 console 结果均来自成功的 Stage A live smoke；本阶段仅关闭 QA-05、QA-08、QA-09，QA-10 保持未完成。

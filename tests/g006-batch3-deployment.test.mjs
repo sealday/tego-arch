@@ -4,7 +4,7 @@ import {readFile} from 'node:fs/promises';
 import test from 'node:test';
 import {fileURLToPath} from 'node:url';
 
-const reviewUrl = new URL('../docs/reviews/g006-batch2.md', import.meta.url);
+const reviewUrl = new URL('../docs/reviews/g006-batch3.md', import.meta.url);
 const backlogUrl = new URL('../docs/content-backlog.md', import.meta.url);
 const workflowUrl = new URL('../.github/workflows/deploy.yml', import.meta.url);
 const repositoryRoot = fileURLToPath(new URL('../', import.meta.url));
@@ -25,7 +25,7 @@ function extractDeploymentEvidence(review) {
   return {sha, runId: run[1], runUrl: run[2], liveDate};
 }
 
-test('records the exact successful Batch 2 Stage A deployment', async () => {
+test('records the exact successful Batch 3 Stage A deployment', async () => {
   const [review, workflow] = await Promise.all([
     readFile(reviewUrl, 'utf8'),
     readFile(workflowUrl, 'utf8'),
@@ -54,27 +54,36 @@ test('records the exact successful Batch 2 Stage A deployment', async () => {
   });
 });
 
-test('records every observed Batch 2 route, asset, viewport and runtime gate', async () => {
+test('records every observed Batch 3 route, asset, source card and runtime gate', async () => {
   const review = await readFile(reviewUrl, 'utf8');
 
   for (const route of [
-    '/quality-attributes/qa-04',
-    '/quality-attributes/qa-06',
-    '/quality-attributes/qa-07',
-    '/paths/distributed-systems',
+    '/quality-attributes/qa-05',
+    '/quality-attributes/qa-08',
+    '/quality-attributes/qa-09',
+    '/paths/production-governance',
     '/paths/cloud-native-platform',
-    '/paths/module-boundaries',
+    '/paths/edge-physical-agents',
     '/paths/agent-platform-gateway',
-    '/references/primary/page/19',
+    '/references/primary/page/20',
     '/references/first-party/page/2',
+    '/references/primary#src-stpa-handbook-2018',
+    '/references/primary/page/3#src-sre-managing-incidents',
+    '/references/primary/page/5#src-faa-order-8040-4c',
+    '/references/primary/page/6#src-nist-privacy-framework-1',
+    '/references/primary/page/6#src-nist-sp800-160v1r1',
+    '/references/primary/page/7#src-opentelemetry-observability-primer',
+    '/references/primary/page/19#src-atlas-qa05-data-trust-boundaries-8d53f1c92a64',
+    '/references/primary/page/19#src-atlas-qa09-safety-control-loop-c4a7e83b1d96',
+    '/references/primary/page/20#src-atlas-qa08-operability-recovery-loop-6b1e9d42c7f5',
   ]) {
     assert.ok(review.includes(route), `review must record ${route}`);
   }
 
   for (const asset of [
-    '/img/illustrations/qa-04-demand-capacity-scaling.png',
-    '/img/illustrations/qa-06-change-blast-radius-verification.png',
-    '/img/illustrations/qa-07-compatibility-version-migration.png',
+    '/img/illustrations/qa-05-data-trust-boundaries.png',
+    '/img/illustrations/qa-08-operability-recovery-loop.png',
+    '/img/illustrations/qa-09-safety-control-loop.png',
   ]) {
     assert.ok(review.includes(asset), `review must record ${asset}`);
   }
@@ -84,18 +93,20 @@ test('records every observed Batch 2 route, asset, viewport and runtime gate', a
   assert.match(review, /console warning\/error 为 0/u);
   assert.match(review, /无 overflow/u);
   assert.match(review, /production CSS\/JS 响应为 HTTP 200/u);
-  assert.match(review, /homepage.*`15\/62\/412`.*`G006`/iu);
+  assert.match(review, /homepage.*`18\/65\/421`.*`G006`/iu);
+  assert.match(review, /primary page 21.*HTTP 404/iu);
+  assert.match(review, /first-party page 3.*HTTP 404/iu);
   assert.match(review, /Stage B closure — PASS/u);
 });
 
-test('closes only QA-04, QA-06 and QA-07 with the same deployment evidence', async () => {
+test('closes only QA-05, QA-08 and QA-09 with the same deployment evidence', async () => {
   const [review, backlog] = await Promise.all([
     readFile(reviewUrl, 'utf8'),
     readFile(backlogUrl, 'utf8'),
   ]);
   const evidence = extractDeploymentEvidence(review);
 
-  for (const number of ['04', '06', '07']) {
+  for (const number of ['05', '08', '09']) {
     const line = backlog
       .split('\n')
       .find((candidate) => candidate.includes(`**QA-${number} `));
@@ -114,11 +125,9 @@ test('closes only QA-04, QA-06 and QA-07 with the same deployment evidence', asy
     );
   }
 
-  for (const number of ['10']) {
-    assert.match(
-      backlog,
-      new RegExp(String.raw`^- \[ \] \*\*QA-${number} `, 'mu'),
-      `QA-${number} must remain unchecked`,
-    );
-  }
+  assert.match(
+    backlog,
+    /^- \[ \] \*\*QA-10 /mu,
+    'QA-10 must remain unchecked',
+  );
 });
