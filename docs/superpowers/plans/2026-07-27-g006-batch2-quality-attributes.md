@@ -68,12 +68,12 @@ All three articles also cite existing `src-github-432a30aa96cb` with `roles: ["l
 ```bash
 git fetch origin main
 test "$(git rev-parse origin/main)" = "4e0b38c790dc4d2e994250cf9c146258d4f5732a"
-test "$(git rev-parse HEAD)" = "4e0b38c790dc4d2e994250cf9c146258d4f5732a"
+test "$(git merge-base HEAD origin/main)" = "4e0b38c790dc4d2e994250cf9c146258d4f5732a"
 test -z "$(git status --short)"
 node -e "const s=require('./src/generated/project-status.json'); if(s.completed_topics!==15||s.content_documents!==59||s.governed_sources!==402||s.durable_stories.current!=='G006') process.exit(1)"
 ```
 
-Expected: every command exits 0.
+Expected: every command exits 0; local HEAD may include approved plan commits descended from the exact remote/main baseline, and those commits remain in the future Stage A history.
 
 - [ ] **Step 2: Verify full-history CI and source tiers**
 
