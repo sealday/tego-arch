@@ -38,18 +38,18 @@
 
 ## Source and Count Contract
 
-| Article | Citation | Roles / usage | Primary |
-| --- | --- | --- | --- |
-| QA-04 | `src-azure-waf-scale-partition` → `https://learn.microsoft.com/en-us/azure/well-architected/performance-efficiency/scale-partition` | `definition, implementation` / `facts-summary` | true |
-| QA-04 | `src-google-cloud-waf-elasticity` → `https://docs.cloud.google.com/architecture/framework/performance-optimization/elasticity` | `comparison, implementation` / `facts-summary` | false |
-| QA-06 | `src-sei-maintainability-2020` → `https://www.sei.cmu.edu/library/maintainability/` | `definition, method` / `facts-summary` | true |
-| QA-06 | existing `src-iso-11f3b103e932` | `definition, comparison` / `facts-summary` | false |
-| QA-07 | `src-oas-3-1-1` → `https://spec.openapis.org/oas/v3.1.1.html` | `definition, runtime-fact` / `facts-summary` | true |
-| QA-07 | `src-oas-index` → `https://spec.openapis.org/oas/` | `learning` / `facts-summary` | false |
-| QA-07 | `src-google-aip-180` → `https://google.aip.dev/180` | `definition, method` / `facts-summary` | false |
-| QA-07 | `src-google-aip-185` → `https://google.aip.dev/185` | `learning` / `facts-summary` | false |
+| Article | Citation | Source tier | Roles / usage | Manifest primary |
+| --- | --- | --- | --- | --- |
+| QA-04 | `src-azure-waf-scale-partition` → `https://learn.microsoft.com/en-us/azure/well-architected/performance-efficiency/scale-partition` | first-party | `definition, implementation` / `facts-summary` | true |
+| QA-04 | `src-google-cloud-waf-elasticity` → `https://docs.cloud.google.com/architecture/framework/performance-optimization/elasticity` | first-party | `comparison, implementation` / `facts-summary` | false |
+| QA-06 | `src-sei-maintainability-2020` → `https://www.sei.cmu.edu/library/maintainability/` | primary | `definition, method` / `facts-summary` | true |
+| QA-06 | existing `src-iso-11f3b103e932` | primary | `definition, comparison` / `facts-summary` | false |
+| QA-07 | `src-oas-3-1-1` → `https://spec.openapis.org/oas/v3.1.1.html` | primary | `definition, runtime-fact` / `facts-summary` | true |
+| QA-07 | `src-oas-index` → `https://spec.openapis.org/oas/` | primary | `learning` / `facts-summary` | false |
+| QA-07 | `src-google-aip-180` → `https://google.aip.dev/180` | primary | `definition, method` / `facts-summary` | false |
+| QA-07 | `src-google-aip-185` → `https://google.aip.dev/185` | primary | `learning` / `facts-summary` | false |
 
-All three articles also cite existing `src-github-432a30aa96cb` with `roles: ["learning"]`, `usage_mode: "navigation-only"`, and `manifest_primary: false`; this reuse adds no source count and supports only navigation to original materials. The seven new remote records are all `tier: primary`; three local original-illustration records are also `tier: primary`. Therefore documents become `59 + 3 = 62`; sources progress `402 + 7 = 409`, then `409 + 3 = 412`; tiers progress `368/23/4/7 → 375/23/4/7 → 378/23/4/7`. With page size 20, final primary pages are `ceil(378 / 20) = 19`, so the primary page count remains 19 rather than being guessed.
+All three articles also cite existing `src-github-432a30aa96cb` with `roles: ["learning"]`, `usage_mode: "navigation-only"`, and `manifest_primary: false`; this reuse adds no source count and supports only navigation to original materials. Of the seven new remote records, Azure WAF and Google Cloud WAF are `tier: first-party` with `source_kind: vendor-reference-architecture`; the SEI, OAS, and Google AIP records are the five new `tier: primary` records. Three local original-illustration records are also `tier: primary`. Therefore documents become `59 + 3 = 62`; sources progress `402 + 7 = 409`, then `409 + 3 = 412`; tiers progress `368/23/4/7 → 373/25/4/7 → 376/25/4/7`. With page size 20, final primary pages are `ceil(376 / 20) = 19` and first-party pages are `ceil(25 / 20) = 2`, so neither page count changes.
 
 ---
 
@@ -128,7 +128,7 @@ Expected: FAIL only for absent QA-04/06/07 articles, citations, reciprocal edges
 
 - [ ] **Step 3: Register and consume exactly seven remote sources**
 
-Add the seven records from the source contract with literal checked version/date, author, `tier: primary`, allowed roles, license evidence/scope, copyright policy, claim boundary, stable transport, and no adapted source composition. Add article document citations in the same worktree state; each article has the exact sole primary listed above and at least two independent domains. Add the existing Awesome citation to all three articles only as navigation-only learning evidence.
+Add the seven records from the source contract with literal checked version/date, author, allowed roles, license evidence/scope, copyright policy, claim boundary, stable transport, and no adapted source composition. Set Azure WAF and Google Cloud WAF to `tier: first-party`, `source_kind: vendor-reference-architecture`; set the other five to `tier: primary` with their exact official source kinds. Add article document citations in the same worktree state; each article has the exact sole manifest primary listed above and at least two independent domains. First-party remains eligible for QA-04's sole manifest primary. Add the existing Awesome citation to all three articles only as navigation-only learning evidence.
 
 ```bash
 npm run check:links:live -- --output /tmp/g006-batch2-live-cache.json
@@ -148,7 +148,7 @@ Create all three files before modifying QA-03 and before generation. Add visible
 
 - [ ] **Step 5: Update intermediate hard-coded counts and generate**
 
-Update real-input expectations to 15 topics, 62 documents, 409 sources. In pagination/rendering tests set tiers to 375/23/4/7, total cards/IDs to 409, and retain primary page count 19 because `ceil(375/20)=19`.
+Update real-input expectations to 15 topics, 62 documents, 409 sources. In pagination/rendering tests set tiers to 373/25/4/7 and total cards/IDs to 409; retain primary pages 19 because `ceil(373/20)=19` and first-party pages 2 because `ceil(25/20)=2`.
 
 ```bash
 npm run generate:content
@@ -168,7 +168,7 @@ git add tests/g006-batch2-content.test.mjs tests/g006-batch1-content.test.mjs co
 git commit -m "feat: publish g006 quality attributes batch2"
 ```
 
-Expected: full GREEN at 15/62/409; no dangling relationship, unused new source, or failing count test crosses the commit.
+Expected: full GREEN at 15/62/409 and tiers 373/25/4/7; primary/first-party pagination remains 19/2, with no dangling relationship, unused new source, or failing count test crossing the commit.
 
 ### Task 3: Add three original raster illustrations and final count gates
 
@@ -182,7 +182,7 @@ Expected: full GREEN at 15/62/409; no dangling relationship, unused new source, 
 - Generate: `src/generated/*.json`
 
 **Interfaces:**
-- Produces: one built-in-imagegen PNG and one non-primary illustration citation per article; final Stage A counts 15/62/412 and tiers 378/23/4/7.
+- Produces: one built-in-imagegen PNG and one non-primary illustration citation per article; final Stage A counts 15/62/412 and tiers 376/25/4/7.
 
 - [ ] **Step 1: Extend raster/asset tests and observe RED**
 
@@ -210,7 +210,7 @@ Use built-in `imagegen` with no reference image. Brief: simplified-Chinese 16:9 
 
 Inspect each original and ~720px render for exact text, topology, crop, overflow, color-independent states, and absence of extra text/logo/watermark. Register three local `tier: primary`, `source_kind: original-illustration` records with `LicenseRef-Atlas-Original`, `original-atlas`, canonical repository evidence URL, factual-claim exclusion, and no remote cache entry.
 
-Update real-input tests from 409 to 412 sources; pagination/rendering tiers from 375 to 378 primary and totals from 409 to 412. Keep 62 documents, 15 topics, other tiers 23/4/7, and primary pages 19 because `ceil(378/20)=19`.
+Update real-input tests from 409 to 412 sources; pagination/rendering primary tiers from 373 to 376 and totals from 409 to 412. Keep 62 documents, 15 topics, first-party/secondary/discovery tiers at 25/4/7, primary pages 19 because `ceil(376/20)=19`, and first-party pages 2 because `ceil(25/20)=2`.
 
 - [ ] **Step 6: Generate, run full GREEN, and commit**
 
@@ -225,7 +225,7 @@ git add static/img/illustrations/qa-*.png content/quality-attributes/qa-*.mdx da
 git commit -m "feat: illustrate g006 quality attributes batch2"
 ```
 
-Expected: all gates PASS at 15/62/412; primary pagination remains exactly 19.
+Expected: all gates PASS at 15/62/412 and tiers 376/25/4/7; primary/first-party pagination remains exactly 19/2.
 
 ### Task 4: Perform independent review and deploy exact Stage A
 
@@ -267,7 +267,7 @@ git push origin HEAD:main
 gh run list --repo sealday/tego-arch --workflow deploy.yml --branch main --limit 30 --json databaseId,headSha,status,conclusion,url
 ```
 
-Select only the run whose `headSha` equals `$stage_a_sha`; wait for `completed/success`. Smoke the three articles, four affected paths, three PNGs, `/references/primary/page/19`, CSS/JS assets, desktop/mobile overflow, console, reciprocal navigation, and visible 15/62/412 homepage status. Do not accept a newer run, branch head, or local preview as Stage A evidence.
+Select only the run whose `headSha` equals `$stage_a_sha`; wait for `completed/success`. Smoke the three articles, four affected paths, three PNGs, `/references/primary/page/19`, `/references/first-party/page/2`, CSS/JS assets, desktop/mobile overflow, console, reciprocal navigation, and visible 15/62/412 homepage status. Do not accept a newer run, branch head, or local preview as Stage A evidence.
 
 ### Task 5: Close only Batch 2 with literal post-live evidence
 
@@ -314,7 +314,7 @@ git push origin HEAD:main
 gh run list --repo sealday/tego-arch --workflow deploy.yml --branch main --limit 30 --json databaseId,headSha,status,conclusion,url
 ```
 
-Select only `headSha=$stage_b_sha`; wait for `completed/success`. Repeat all canonical route/asset/viewports/console/overflow checks and confirm homepage status 18/62/412, G006 current, QA-04/06/07 checked, QA-05 unchecked, and `/references/primary/page/19` present with no page 20.
+Select only `headSha=$stage_b_sha`; wait for `completed/success`. Repeat all canonical route/asset/viewports/console/overflow checks and confirm homepage status 18/62/412, G006 current, QA-04/06/07 checked, QA-05 unchecked, `/references/primary/page/19` present with no page 20, and `/references/first-party/page/2` present with no page 3.
 
 - [ ] **Step 4: Final full-history and cleanliness proof**
 
