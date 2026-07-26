@@ -5517,7 +5517,7 @@
         "src-google-cloud-waf-elasticity"
       ],
       "last_attempt": {
-        "at": "2026-07-26T19:41:58.105Z",
+        "at": "2026-07-26T19:57:11.793Z",
         "outcome": "healthy",
         "final_transport_locator": "https://docs.cloud.google.com/architecture/framework/performance-optimization/elasticity",
         "http_status": 200,
@@ -5525,7 +5525,7 @@
         "redirects": []
       },
       "last_success": {
-        "at": "2026-07-26T19:41:58.105Z",
+        "at": "2026-07-26T19:57:11.793Z",
         "outcome": "healthy",
         "final_transport_locator": "https://docs.cloud.google.com/architecture/framework/performance-optimization/elasticity",
         "http_status": 200,
@@ -5534,6 +5534,20 @@
       "attempt_history": [
         {
           "at": "2026-07-26T19:41:58.105Z",
+          "outcome": "error",
+          "final_transport_locator": null,
+          "http_status": null,
+          "login_wall_detected": false
+        },
+        {
+          "at": "2026-07-26T19:45:13.108Z",
+          "outcome": "error",
+          "final_transport_locator": null,
+          "http_status": null,
+          "login_wall_detected": false
+        },
+        {
+          "at": "2026-07-26T19:57:11.793Z",
           "outcome": "healthy",
           "final_transport_locator": "https://docs.cloud.google.com/architecture/framework/performance-optimization/elasticity",
           "http_status": 200,

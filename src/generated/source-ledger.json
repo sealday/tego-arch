@@ -16463,8 +16463,8 @@
         {
           "transport_locator": "https://docs.cloud.google.com/architecture/framework/performance-optimization/elasticity",
           "status": "healthy",
-          "last_attempt_at": "2026-07-26T19:41:58.105Z",
-          "last_success_at": "2026-07-26T19:41:58.105Z",
+          "last_attempt_at": "2026-07-26T19:57:11.793Z",
+          "last_success_at": "2026-07-26T19:57:11.793Z",
           "http_status": 200,
           "final_transport_locator": "https://docs.cloud.google.com/architecture/framework/performance-optimization/elasticity"
         }
