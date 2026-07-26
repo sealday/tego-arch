@@ -21,7 +21,7 @@ const redirectStatuses = new Set([301, 302, 303, 307, 308]);
 const transientResponseStatuses = new Set([429, 502, 503, 504]);
 const transientRetryDelayMs = 250;
 const userAgent =
-  'Mozilla/5.0 (compatible; AgenticArchitectureAtlasLinkCheck/1.0; +https://github.com/sealday/agentic-architecture-atlas)';
+  'Mozilla/5.0 (compatible; TegoArchLinkCheck/1.0; +https://github.com/sealday/tego-arch)';
 
 function transportLocator(locator) {
   const value = new URL(locator);

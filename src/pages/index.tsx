@@ -81,7 +81,7 @@ function Hero(): ReactNode {
       <div className="container">
         <div className={styles.heroGrid}>
           <div className={styles.heroCopy}>
-            <p className={styles.kicker}>AI 多智能体 · 架构研究档案</p>
+            <p className={styles.kicker}>Tego Arch · 软件架构知识图谱</p>
             <Heading as="h1">从真实项目中，读懂智能体如何协作。</Heading>
             <p className={styles.lede}>
               用统一问题拆解控制权、上下文、状态与生产边界。这里不是框架榜单，而是一册持续生长、可回到源码核验的中文架构笔记。
@@ -124,7 +124,7 @@ function Hero(): ReactNode {
 export default function Home(): ReactNode {
   return (
     <Layout
-      title="AI 多智能体架构案例图谱"
+      title="Tego Arch"
       description="从真实开源项目与官方资料中学习 AI 多智能体系统的控制权、状态、协议与生产化设计。">
       <Hero />
       <main>
@@ -252,7 +252,7 @@ export default function Home(): ReactNode {
               <div className={styles.contributionActions}>
                 <Link
                   className={styles.primaryAction}
-                  href="https://github.com/sealday/agentic-architecture-atlas">
+                  href="https://github.com/sealday/tego-arch">
                   在 GitHub 参与 <span aria-hidden="true">↗</span>
                 </Link>
                 <Link className={styles.secondaryAction} to="/intro">

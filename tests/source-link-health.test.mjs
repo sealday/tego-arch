@@ -352,7 +352,7 @@ test('follows bounded HTTPS redirects and records every hop', async () => {
   );
   assert.ok(
     userAgents.every((userAgent) =>
-      userAgent?.includes('AgenticArchitectureAtlasLinkCheck/1.0'),
+      userAgent?.includes('TegoArchLinkCheck/1.0'),
     ),
     `Link checker User-Agent must retain product identity: ${userAgents.join(', ')}`,
   );

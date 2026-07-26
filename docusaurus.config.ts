@@ -2,11 +2,11 @@ import {themes as prismThemes} from 'prism-react-renderer';
 import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
-const repositoryUrl = 'https://github.com/sealday/agentic-architecture-atlas';
+const repositoryUrl = 'https://github.com/sealday/tego-arch';
 
 const config: Config = {
-  title: 'Agentic Architecture Atlas',
-  tagline: '从真实项目中学习 AI 智能体如何协作',
+  title: 'Tego Arch',
+  tagline: '软件架构知识图谱',
   favicon: 'img/favicon.ico',
 
   future: {
@@ -14,9 +14,9 @@ const config: Config = {
   },
 
   url: 'https://sealday.github.io',
-  baseUrl: '/agentic-architecture-atlas/',
+  baseUrl: '/tego-arch/',
   organizationName: 'sealday',
-  projectName: 'agentic-architecture-atlas',
+  projectName: 'tego-arch',
   trailingSlash: false,
   onBrokenLinks: 'throw',
 
@@ -53,7 +53,7 @@ const config: Config = {
       respectPrefersColorScheme: true,
     },
     navbar: {
-      title: 'Agentic Architecture Atlas',
+      title: 'Tego Arch',
       items: [
         {to: '/', label: '首页', position: 'left'},
         {to: '/cases', label: '案例库', position: 'left'},
@@ -88,7 +88,7 @@ const config: Config = {
           items: [{label: 'GitHub', href: repositoryUrl}],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} Agentic Architecture Atlas. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Tego Arch. Built with Docusaurus.`,
     },
     prism: {
       theme: prismThemes.github,
