@@ -1,109 +1,161 @@
 <mxfile host="app.diagrams.net" modified="2026-07-27T00:00:00.000Z" agent="Codex" version="29.6.6" type="device">
   <diagram id="mod-02-c4" name="Context → Container">
-    <mxGraphModel dx="1200" dy="760" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="760" math="0" shadow="0">
+    <mxGraphModel dx="1200" dy="840" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="840" math="0" shadow="0">
       <root>
         <mxCell id="0"/>
         <mxCell id="1" parent="0"/>
 
-        <mxCell id="canvas" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F6F1E7;strokeColor=none;" vertex="1" parent="1">
-          <mxGeometry x="0" y="0" width="1200" height="760" as="geometry"/>
+        <mxCell id="canvas" value="" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#F6F1E7;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="0" y="0" width="1200" height="840" as="geometry"/>
         </mxCell>
 
-        <mxCell id="context-panel" value="" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#FBF8F1;strokeColor=#B9B1A5;strokeWidth=2;" vertex="1" parent="1">
-          <mxGeometry x="60" y="60" width="1080" height="275" as="geometry"/>
+        <mxCell id="context-panel" value="" style="rounded=1;arcSize=12;whiteSpace=wrap;html=0;fillColor=#FBF8F1;strokeColor=#B9B1A5;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="56" y="54" width="1088" height="290" as="geometry"/>
         </mxCell>
-        <mxCell id="context-title" value="Context：费用申报系统边界" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=22;fontStyle=1;fontColor=#263238;" vertex="1" parent="1">
-          <mxGeometry x="90" y="82" width="360" height="32" as="geometry"/>
+        <mxCell id="context-title" value="Context：费用申报系统边界" style="text;html=0;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=24;fontStyle=1;fontColor=#263238;" vertex="1" parent="1">
+          <mxGeometry x="88" y="74" width="390" height="34" as="geometry"/>
         </mxCell>
-        <mxCell id="context-note" value="只表达系统与边界外参与者的关系" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=13;fontColor=#6C6861;" vertex="1" parent="1">
-          <mxGeometry x="90" y="116" width="320" height="24" as="geometry"/>
-        </mxCell>
-
-        <mxCell id="employee" value="员工" style="rounded=1;arcSize=16;whiteSpace=wrap;html=1;fillColor=#ECE8E1;strokeColor=#77716A;strokeWidth=2;fontColor=#263238;fontSize=18;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="105" y="180" width="180" height="86" as="geometry"/>
-        </mxCell>
-        <mxCell id="employee-type" value="PERSON" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontStyle=1;fontColor=#77716A;" vertex="1" parent="1">
-          <mxGeometry x="145" y="244" width="100" height="18" as="geometry"/>
+        <mxCell id="context-note" value="只表达系统与边界外参与者的关系，不表达调用先后" style="text;html=0;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=14;fontColor=#6C6861;" vertex="1" parent="1">
+          <mxGeometry x="88" y="108" width="430" height="24" as="geometry"/>
         </mxCell>
 
-        <mxCell id="expense-system-boundary" value="" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#405D6B;strokeWidth=2;dashed=1;dashPattern=5 5;" vertex="1" parent="1">
-          <mxGeometry x="455" y="145" width="290" height="150" as="geometry"/>
+        <mxCell id="employee" value="员工" style="rounded=1;arcSize=16;whiteSpace=wrap;html=0;fillColor=#ECE8E1;strokeColor=#77716A;strokeWidth=2;fontColor=#263238;fontSize=18;fontStyle=1;verticalAlign=top;spacingTop=25;" vertex="1" parent="1">
+          <mxGeometry x="105" y="172" width="190" height="110" as="geometry"/>
         </mxCell>
-        <mxCell id="expense-system" value="费用申报系统" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#405D6B;strokeColor=#304854;strokeWidth=2;fontColor=#FFFFFF;fontSize=20;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="480" y="170" width="240" height="100" as="geometry"/>
-        </mxCell>
-        <mxCell id="expense-system-type" value="SYSTEM OF INTEREST" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontStyle=1;fontColor=#DCE7EA;" vertex="1" parent="1">
-          <mxGeometry x="510" y="238" width="180" height="20" as="geometry"/>
+        <mxCell id="employee-type" value="PERSON" style="text;html=0;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=10;fontStyle=1;fontColor=#77716A;" vertex="1" parent="1">
+          <mxGeometry x="145" y="232" width="110" height="22" as="geometry"/>
         </mxCell>
 
-        <mxCell id="bank-context" value="银行支付服务" style="rounded=1;arcSize=16;whiteSpace=wrap;html=1;fillColor=#ECE8E1;strokeColor=#77716A;strokeWidth=2;fontColor=#263238;fontSize=18;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="895" y="180" width="200" height="86" as="geometry"/>
+        <mxCell id="expense-system-boundary" value="" style="rounded=1;arcSize=12;whiteSpace=wrap;html=0;fillColor=none;strokeColor=#405D6B;strokeWidth=2;dashed=1;dashPattern=5 5;" vertex="1" parent="1">
+          <mxGeometry x="455" y="142" width="290" height="166" as="geometry"/>
         </mxCell>
-        <mxCell id="bank-context-type" value="EXTERNAL SYSTEM" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontStyle=1;fontColor=#77716A;" vertex="1" parent="1">
-          <mxGeometry x="935" y="244" width="120" height="18" as="geometry"/>
+        <mxCell id="expense-system" value="费用申报系统" style="rounded=1;arcSize=14;whiteSpace=wrap;html=0;fillColor=#405D6B;strokeColor=#304854;strokeWidth=2;fontColor=#FFFFFF;fontSize=18;fontStyle=1;verticalAlign=top;spacingTop=27;" vertex="1" parent="1">
+          <mxGeometry x="480" y="165" width="240" height="118" as="geometry"/>
+        </mxCell>
+        <mxCell id="expense-system-type" value="SYSTEM OF INTEREST" style="text;html=0;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=10;fontStyle=1;fontColor=#DCE7EA;" vertex="1" parent="1">
+          <mxGeometry x="505" y="230" width="190" height="22" as="geometry"/>
         </mxCell>
 
-        <mxCell id="edge-employee-system" value="提交费用" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#263238;strokeWidth=2;endArrow=block;endFill=1;fontSize=13;fontColor=#55514B;labelBackgroundColor=#FBF8F1;" edge="1" parent="1" source="employee" target="expense-system">
+        <mxCell id="bank-context" value="银行支付服务" style="rounded=1;arcSize=16;whiteSpace=wrap;html=0;fillColor=#ECE8E1;strokeColor=#77716A;strokeWidth=2;fontColor=#263238;fontSize=18;fontStyle=1;verticalAlign=top;spacingTop=25;" vertex="1" parent="1">
+          <mxGeometry x="895" y="172" width="200" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="bank-context-type" value="EXTERNAL SYSTEM" style="text;html=0;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=10;fontStyle=1;fontColor=#77716A;" vertex="1" parent="1">
+          <mxGeometry x="930" y="232" width="130" height="22" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="edge-employee-system" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#263238;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="employee" target="expense-system">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="edge-system-bank" value="请求付款" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#263238;strokeWidth=2;endArrow=block;endFill=1;fontSize=13;fontColor=#55514B;labelBackgroundColor=#FBF8F1;" edge="1" parent="1" source="expense-system" target="bank-context">
+        <mxCell id="label-employee-system" value="提交费用" style="text;html=0;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#55514B;" vertex="1" parent="1">
+          <mxGeometry x="342" y="181" width="80" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge-system-bank" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#263238;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="expense-system" target="bank-context">
           <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="label-system-bank" value="请求付款" style="text;html=0;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#55514B;" vertex="1" parent="1">
+          <mxGeometry x="772" y="181" width="80" height="24" as="geometry"/>
         </mxCell>
 
-        <mxCell id="zoom-link" value="展开目标系统" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#A34A3A;strokeWidth=3;dashed=1;dashPattern=5 5;endArrow=block;endFill=1;fontSize=13;fontStyle=1;fontColor=#A34A3A;labelBackgroundColor=#F6F1E7;" edge="1" parent="1" source="expense-system" target="container-boundary">
+        <mxCell id="zoom-link" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#A34A3A;strokeWidth=3;dashed=1;dashPattern=5 5;endArrow=block;endFill=1;" edge="1" parent="1" source="expense-system" target="container-boundary">
           <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="zoom-label" value="展开目标系统" style="text;html=0;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#A34A3A;" vertex="1" parent="1">
+          <mxGeometry x="626" y="348" width="110" height="24" as="geometry"/>
         </mxCell>
 
-        <mxCell id="container-panel" value="" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#FBF8F1;strokeColor=#B9B1A5;strokeWidth=2;" vertex="1" parent="1">
-          <mxGeometry x="60" y="420" width="1080" height="280" as="geometry"/>
+        <mxCell id="container-panel" value="" style="rounded=1;arcSize=12;whiteSpace=wrap;html=0;fillColor=#FBF8F1;strokeColor=#B9B1A5;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="56" y="414" width="1088" height="386" as="geometry"/>
         </mxCell>
-        <mxCell id="container-title" value="Container：展开费用申报系统" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=22;fontStyle=1;fontColor=#263238;" vertex="1" parent="1">
-          <mxGeometry x="90" y="442" width="390" height="32" as="geometry"/>
+        <mxCell id="container-title" value="Container：展开费用申报系统" style="text;html=0;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=24;fontStyle=1;fontColor=#263238;" vertex="1" parent="1">
+          <mxGeometry x="88" y="434" width="420" height="34" as="geometry"/>
         </mxCell>
-        <mxCell id="container-note" value="边界内只放真实的可运行或存储单元" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=13;fontColor=#6C6861;" vertex="1" parent="1">
-          <mxGeometry x="90" y="476" width="340" height="24" as="geometry"/>
-        </mxCell>
-
-        <mxCell id="container-boundary" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#EEF3ED;strokeColor=#64806B;strokeWidth=2;dashed=1;dashPattern=6 4;" vertex="1" parent="1">
-          <mxGeometry x="255" y="510" width="675" height="155" as="geometry"/>
-        </mxCell>
-        <mxCell id="owned-boundary-label" value="费用申报系统内部" style="text;html=1;strokeColor=none;fillColor=#EEF3ED;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=12;fontStyle=1;fontColor=#55705D;" vertex="1" parent="1">
-          <mxGeometry x="280" y="518" width="150" height="22" as="geometry"/>
+        <mxCell id="container-note" value="边界内只放真实的可运行或存储单元，外部依赖仍留在边界外" style="text;html=0;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=14;fontColor=#6C6861;" vertex="1" parent="1">
+          <mxGeometry x="88" y="468" width="500" height="24" as="geometry"/>
         </mxCell>
 
-        <mxCell id="employee-container" value="员工" style="rounded=1;arcSize=16;whiteSpace=wrap;html=1;fillColor=#ECE8E1;strokeColor=#77716A;strokeWidth=2;fontColor=#263238;fontSize=17;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="85" y="558" width="135" height="72" as="geometry"/>
+        <mxCell id="container-boundary" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=0;fillColor=#EEF3ED;strokeColor=#64806B;strokeWidth=2;dashed=1;dashPattern=6 4;" vertex="1" parent="1">
+          <mxGeometry x="245" y="505" width="680" height="280" as="geometry"/>
         </mxCell>
-        <mxCell id="web-app" value="Web 应用" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#D9E5DA;strokeColor=#64806B;strokeWidth=2;fontColor=#263238;fontSize=17;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="290" y="558" width="150" height="72" as="geometry"/>
-        </mxCell>
-        <mxCell id="expense-api" value="申报 API" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#D9E5DA;strokeColor=#64806B;strokeWidth=2;fontColor=#263238;fontSize=17;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="490" y="558" width="150" height="72" as="geometry"/>
-        </mxCell>
-        <mxCell id="expense-db" value="申报数据库" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#E8E1CF;strokeColor=#8B7855;strokeWidth=2;fontColor=#263238;fontSize=16;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="705" y="535" width="155" height="76" as="geometry"/>
-        </mxCell>
-        <mxCell id="payment-worker" value="支付任务执行器" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#D9E5DA;strokeColor=#64806B;strokeWidth=2;fontColor=#263238;fontSize=16;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="705" y="620" width="175" height="72" as="geometry"/>
-        </mxCell>
-        <mxCell id="bank-container" value="银行支付服务" style="rounded=1;arcSize=16;whiteSpace=wrap;html=1;fillColor=#ECE8E1;strokeColor=#77716A;strokeWidth=2;fontColor=#263238;fontSize=17;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="980" y="620" width="145" height="72" as="geometry"/>
+        <mxCell id="owned-boundary-label" value="费用申报系统内部" style="text;html=0;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=12;fontStyle=1;fontColor=#55705D;" vertex="1" parent="1">
+          <mxGeometry x="270" y="509" width="150" height="22" as="geometry"/>
         </mxCell>
 
-        <mxCell id="edge-employee-web" value="使用" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#263238;strokeWidth=2;endArrow=block;endFill=1;fontSize=12;fontColor=#55514B;labelBackgroundColor=#FBF8F1;" edge="1" parent="1" source="employee-container" target="web-app">
+        <mxCell id="employee-container" value="员工" style="rounded=1;arcSize=16;whiteSpace=wrap;html=0;fillColor=#ECE8E1;strokeColor=#77716A;strokeWidth=2;fontColor=#263238;fontSize=18;fontStyle=1;verticalAlign=top;spacingTop=22;" vertex="1" parent="1">
+          <mxGeometry x="65" y="535" width="140" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="employee-container-type" value="PERSON" style="text;html=0;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=10;fontStyle=1;fontColor=#77716A;" vertex="1" parent="1">
+          <mxGeometry x="90" y="588" width="90" height="22" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="web-app" value="Web 应用" style="rounded=1;arcSize=14;whiteSpace=wrap;html=0;fillColor=#D9E5DA;strokeColor=#64806B;strokeWidth=2;fontColor=#263238;fontSize=18;fontStyle=1;verticalAlign=top;spacingTop=22;" vertex="1" parent="1">
+          <mxGeometry x="270" y="535" width="160" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="web-app-type" value="CONTAINER" style="text;html=0;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=10;fontStyle=1;fontColor=#55705D;" vertex="1" parent="1">
+          <mxGeometry x="305" y="588" width="90" height="22" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="expense-api" value="申报 API" style="rounded=1;arcSize=14;whiteSpace=wrap;html=0;fillColor=#D9E5DA;strokeColor=#64806B;strokeWidth=2;fontColor=#263238;fontSize=18;fontStyle=1;verticalAlign=top;spacingTop=22;" vertex="1" parent="1">
+          <mxGeometry x="530" y="535" width="160" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="expense-api-type" value="CONTAINER" style="text;html=0;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=10;fontStyle=1;fontColor=#55705D;" vertex="1" parent="1">
+          <mxGeometry x="565" y="588" width="90" height="22" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="expense-db" value="申报数据库" style="shape=cylinder3;whiteSpace=wrap;html=0;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#E8E1CF;strokeColor=#8B7855;strokeWidth=2;fontColor=#263238;fontSize=18;fontStyle=1;verticalAlign=top;spacingTop=29;" vertex="1" parent="1">
+          <mxGeometry x="745" y="525" width="155" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="expense-db-type" value="DATA STORE" style="text;html=0;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=10;fontStyle=1;fontColor=#7A6849;" vertex="1" parent="1">
+          <mxGeometry x="777" y="588" width="91" height="22" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="payment-worker" value="支付任务执行器" style="rounded=1;arcSize=14;whiteSpace=wrap;html=0;fillColor=#D9E5DA;strokeColor=#64806B;strokeWidth=2;fontColor=#263238;fontSize=18;fontStyle=1;verticalAlign=top;spacingTop=22;" vertex="1" parent="1">
+          <mxGeometry x="700" y="685" width="190" height="86" as="geometry"/>
+        </mxCell>
+        <mxCell id="payment-worker-type" value="CONTAINER" style="text;html=0;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=10;fontStyle=1;fontColor=#55705D;" vertex="1" parent="1">
+          <mxGeometry x="750" y="739" width="90" height="22" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="bank-container" value="银行支付服务" style="rounded=1;arcSize=16;whiteSpace=wrap;html=0;fillColor=#ECE8E1;strokeColor=#77716A;strokeWidth=2;fontColor=#263238;fontSize=18;fontStyle=1;verticalAlign=top;spacingTop=22;" vertex="1" parent="1">
+          <mxGeometry x="990" y="685" width="150" height="86" as="geometry"/>
+        </mxCell>
+        <mxCell id="bank-container-type" value="EXTERNAL" style="text;html=0;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=10;fontStyle=1;fontColor=#77716A;" vertex="1" parent="1">
+          <mxGeometry x="1020" y="739" width="90" height="22" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="edge-employee-web" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#263238;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="employee-container" target="web-app">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="edge-web-api" value="提交申报" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#263238;strokeWidth=2;endArrow=block;endFill=1;fontSize=12;fontColor=#55514B;labelBackgroundColor=#EEF3ED;" edge="1" parent="1" source="web-app" target="expense-api">
+        <mxCell id="label-employee-web" value="使用" style="text;html=0;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#55514B;" vertex="1" parent="1">
+          <mxGeometry x="218" y="536" width="40" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge-web-api" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#263238;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="web-app" target="expense-api">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="edge-api-db" value="读写" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#263238;strokeWidth=2;endArrow=block;endFill=1;fontSize=12;fontColor=#55514B;labelBackgroundColor=#EEF3ED;" edge="1" parent="1" source="expense-api" target="expense-db">
+        <mxCell id="label-web-api" value="提交申报" style="text;html=0;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#55514B;" vertex="1" parent="1">
+          <mxGeometry x="443" y="536" width="65" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge-api-db" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#263238;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="expense-api" target="expense-db">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="edge-api-worker" value="创建支付任务" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#263238;strokeWidth=2;endArrow=block;endFill=1;fontSize=12;fontColor=#55514B;labelBackgroundColor=#EEF3ED;" edge="1" parent="1" source="expense-api" target="payment-worker">
+        <mxCell id="label-api-db" value="读写" style="text;html=0;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#55514B;" vertex="1" parent="1">
+          <mxGeometry x="699" y="536" width="40" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge-api-worker" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#263238;strokeWidth=2;endArrow=block;endFill=1;exitX=0.94;exitY=1;entryX=0.05;entryY=0;" edge="1" parent="1" source="expense-api" target="payment-worker">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="680" y="670"/>
+              <mxPoint x="715" y="670"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="label-api-worker" value="创建支付任务" style="text;html=0;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#55514B;" vertex="1" parent="1">
+          <mxGeometry x="556" y="635" width="108" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge-worker-bank" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#263238;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="payment-worker" target="bank-container">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="edge-worker-bank" value="请求付款" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#263238;strokeWidth=2;endArrow=block;endFill=1;fontSize=12;fontColor=#55514B;labelBackgroundColor=#FBF8F1;" edge="1" parent="1" source="payment-worker" target="bank-container">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="label-worker-bank" value="请求付款" style="text;html=0;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#55514B;" vertex="1" parent="1">
+          <mxGeometry x="908" y="686" width="65" height="24" as="geometry"/>
         </mxCell>
       </root>
     </mxGraphModel>

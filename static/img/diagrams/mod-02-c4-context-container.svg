@@ -1,11 +1,11 @@
 <svg
   xmlns="http://www.w3.org/2000/svg"
-  viewBox="0 0 1200 760"
+  viewBox="0 0 1200 840"
   role="img"
   aria-labelledby="diagram-title diagram-description"
 >
   <title id="diagram-title">费用申报系统的 C4 Context 与 Container 映射</title>
-  <desc id="diagram-description">上半部分展示员工、费用申报系统和外部银行的 Context 关系，下半部分展开 Web 应用、申报 API、申报数据库和支付任务执行器；箭头只表示关系。</desc>
+  <desc id="diagram-description">上半部分展示员工、费用申报系统和外部银行的 Context 关系，下半部分展开 Web 应用、申报 API、申报数据库和支付任务执行器；关系标签与连续箭头分离，箭头只表示关系。</desc>
   <defs>
     <filter id="soft-shadow" x="-20%" y="-20%" width="140%" height="150%">
       <feDropShadow dx="0" dy="5" stdDeviation="8" flood-color="#263238" flood-opacity=".09"/>
@@ -28,88 +28,80 @@
       .node-type { font-size: 10px; font-weight: 700; letter-spacing: 1.2px; }
       .inverse-title { fill: #fff; }
       .inverse-type { fill: #dce7ea; }
-      .relation { font-size: 13px; font-weight: 650; fill: #55514b; }
-      .badge { font-size: 11px; font-weight: 760; letter-spacing: .6px; }
+      .edge-label { font-size: 13px; font-weight: 650; fill: #55514b; }
+      .zoom-label { fill: #a34a3a; }
+      .badge { font-size: 12px; font-weight: 760; letter-spacing: .6px; fill: #55705d; }
     </style>
   </defs>
 
-  <path d="M0 0H1200V760H0Z" fill="#F6F1E7"/>
+  <path d="M0 0H1200V840H0Z" fill="#F6F1E7"/>
 
   <path d="M80 54H1120Q1144 54 1144 78V320Q1144 344 1120 344H80Q56 344 56 320V78Q56 54 80 54Z" fill="#FBF8F1" stroke="#B9B1A5" stroke-width="2" filter="url(#soft-shadow)"/>
   <text x="88" y="98" class="section-title">Context：费用申报系统边界</text>
   <text x="88" y="126" class="section-note">只表达系统与边界外参与者的关系，不表达调用先后</text>
 
-  <path d="M105 180Q105 165 120 165H280Q295 165 295 180V258Q295 273 280 273H120Q105 273 105 258Z" fill="#ECE8E1" stroke="#77716A" stroke-width="2"/>
+  <path d="M105 188Q105 172 121 172H279Q295 172 295 188V266Q295 282 279 282H121Q105 282 105 266Z" fill="#ECE8E1" stroke="#77716A" stroke-width="2"/>
   <text x="200" y="211" text-anchor="middle" class="node-title">员工</text>
   <text x="200" y="244" text-anchor="middle" class="node-type" fill="#77716A">PERSON</text>
 
-  <path d="M455 145Q455 133 467 133H733Q745 133 745 145V290Q745 302 733 302H467Q455 302 455 290Z" fill="none" stroke="#405D6B" stroke-width="2.5" stroke-dasharray="8 7"/>
-  <path d="M480 178Q480 162 496 162H704Q720 162 720 178V260Q720 276 704 276H496Q480 276 480 260Z" fill="#405D6B" stroke="#304854" stroke-width="2"/>
-  <text x="600" y="211" text-anchor="middle" class="node-title inverse-title">费用申报系统</text>
-  <text x="600" y="245" text-anchor="middle" class="node-type inverse-type">SYSTEM OF INTEREST</text>
+  <path d="M455 154Q455 142 467 142H733Q745 142 745 154V296Q745 308 733 308H467Q455 308 455 296Z" fill="none" stroke="#405D6B" stroke-width="2.5" stroke-dasharray="8 7"/>
+  <path d="M480 181Q480 165 496 165H704Q720 165 720 181V267Q720 283 704 283H496Q480 283 480 267Z" fill="#405D6B" stroke="#304854" stroke-width="2"/>
+  <text x="600" y="208" text-anchor="middle" class="node-title inverse-title">费用申报系统</text>
+  <text x="600" y="242" text-anchor="middle" class="node-type inverse-type">SYSTEM OF INTEREST</text>
 
-  <path d="M895 180Q895 165 910 165H1080Q1095 165 1095 180V258Q1095 273 1080 273H910Q895 273 895 258Z" fill="#ECE8E1" stroke="#77716A" stroke-width="2"/>
+  <path d="M895 188Q895 172 911 172H1079Q1095 172 1095 188V266Q1095 282 1079 282H911Q895 282 895 266Z" fill="#ECE8E1" stroke="#77716A" stroke-width="2"/>
   <text x="995" y="211" text-anchor="middle" class="node-title">银行支付服务</text>
   <text x="995" y="244" text-anchor="middle" class="node-type" fill="#77716A">EXTERNAL SYSTEM</text>
 
-  <path d="M296 219H470" fill="none" stroke="#263238" stroke-width="2.4" marker-end="url(#arrow-ink)"/>
-  <path d="M730 219H885" fill="none" stroke="#263238" stroke-width="2.4" marker-end="url(#arrow-ink)"/>
-  <path d="M342 199H422Q431 199 431 208V230Q431 239 422 239H342Q333 239 333 230V208Q333 199 342 199Z" fill="#FBF8F1"/>
-  <text x="382" y="224" text-anchor="middle" class="relation">提交费用</text>
-  <path d="M774 199H850Q859 199 859 208V230Q859 239 850 239H774Q765 239 765 230V208Q765 199 774 199Z" fill="#FBF8F1"/>
-  <text x="812" y="224" text-anchor="middle" class="relation">请求付款</text>
+  <path d="M296 227H470" fill="none" stroke="#263238" stroke-width="2.4" marker-end="url(#arrow-ink)"/>
+  <path d="M730 227H885" fill="none" stroke="#263238" stroke-width="2.4" marker-end="url(#arrow-ink)"/>
+  <text x="382" y="202" text-anchor="middle" class="edge-label" data-clearance="8">提交费用</text>
+  <text x="812" y="202" text-anchor="middle" class="edge-label" data-clearance="8">请求付款</text>
 
-  <path d="M600 303V406" fill="none" stroke="#A34A3A" stroke-width="3" stroke-dasharray="8 7" marker-end="url(#arrow-brick)"/>
-  <path d="M622 342H744Q754 342 754 352V378Q754 388 744 388H622Q612 388 612 378V352Q612 342 622 342Z" fill="#F6F1E7" stroke="#D7B6AE"/>
-  <text x="683" y="371" text-anchor="middle" class="relation" fill="#A34A3A">展开目标系统</text>
+  <path d="M600 309V404" fill="none" stroke="#A34A3A" stroke-width="3" stroke-dasharray="8 7" marker-end="url(#arrow-brick)"/>
+  <text x="626" y="365" class="edge-label zoom-label" data-clearance="8">展开目标系统</text>
 
-  <path d="M80 416H1120Q1144 416 1144 440V704Q1144 728 1120 728H80Q56 728 56 704V440Q56 416 80 416Z" fill="#FBF8F1" stroke="#B9B1A5" stroke-width="2" filter="url(#soft-shadow)"/>
-  <text x="88" y="460" class="section-title">Container：展开费用申报系统</text>
-  <text x="88" y="488" class="section-note">边界内只放真实的可运行或存储单元，外部依赖仍留在边界外</text>
+  <path d="M80 414H1120Q1144 414 1144 438V776Q1144 800 1120 800H80Q56 800 56 776V438Q56 414 80 414Z" fill="#FBF8F1" stroke="#B9B1A5" stroke-width="2" filter="url(#soft-shadow)"/>
+  <text x="88" y="458" class="section-title">Container：展开费用申报系统</text>
+  <text x="88" y="486" class="section-note">边界内只放真实的可运行或存储单元，外部依赖仍留在边界外</text>
 
-  <path d="M260 506Q250 506 250 516V694Q250 704 260 704H918Q928 704 928 694V516Q928 506 918 506Z" fill="#EEF3ED" stroke="#64806B" stroke-width="2.5" stroke-dasharray="9 7"/>
-  <path d="M278 495H410Q420 495 420 505V523Q420 533 410 533H278Q268 533 268 523V505Q268 495 278 495Z" fill="#EEF3ED"/>
-  <text x="344" y="520" text-anchor="middle" class="badge" fill="#55705D">费用申报系统内部</text>
+  <path d="M257 505H913Q925 505 925 517V773Q925 785 913 785H257Q245 785 245 773V517Q245 505 257 505Z" fill="#EEF3ED" stroke="#64806B" stroke-width="2.5" stroke-dasharray="9 7"/>
+  <text x="270" y="526" class="badge">费用申报系统内部</text>
 
-  <path d="M75 574Q75 560 89 560H211Q225 560 225 574V640Q225 654 211 654H89Q75 654 75 640Z" fill="#ECE8E1" stroke="#77716A" stroke-width="2"/>
-  <text x="150" y="598" text-anchor="middle" class="node-title">员工</text>
-  <text x="150" y="630" text-anchor="middle" class="node-type" fill="#77716A">PERSON</text>
+  <path d="M65 549Q65 535 79 535H191Q205 535 205 549V611Q205 625 191 625H79Q65 625 65 611Z" fill="#ECE8E1" stroke="#77716A" stroke-width="2"/>
+  <text x="135" y="571" text-anchor="middle" class="node-title">员工</text>
+  <text x="135" y="600" text-anchor="middle" class="node-type" fill="#77716A">PERSON</text>
 
-  <path d="M290 574Q290 560 304 560H426Q440 560 440 574V640Q440 654 426 654H304Q290 654 290 640Z" fill="#D9E5DA" stroke="#64806B" stroke-width="2"/>
-  <text x="365" y="600" text-anchor="middle" class="node-title">Web 应用</text>
-  <text x="365" y="631" text-anchor="middle" class="node-type" fill="#55705D">CONTAINER</text>
+  <path d="M270 549Q270 535 284 535H416Q430 535 430 549V611Q430 625 416 625H284Q270 625 270 611Z" fill="#D9E5DA" stroke="#64806B" stroke-width="2"/>
+  <text x="350" y="571" text-anchor="middle" class="node-title">Web 应用</text>
+  <text x="350" y="600" text-anchor="middle" class="node-type" fill="#55705D">CONTAINER</text>
 
-  <path d="M490 574Q490 560 504 560H626Q640 560 640 574V640Q640 654 626 654H504Q490 654 490 640Z" fill="#D9E5DA" stroke="#64806B" stroke-width="2"/>
-  <text x="565" y="600" text-anchor="middle" class="node-title">申报 API</text>
-  <text x="565" y="631" text-anchor="middle" class="node-type" fill="#55705D">CONTAINER</text>
+  <path d="M530 549Q530 535 544 535H676Q690 535 690 549V611Q690 625 676 625H544Q530 625 530 611Z" fill="#D9E5DA" stroke="#64806B" stroke-width="2"/>
+  <text x="610" y="571" text-anchor="middle" class="node-title">申报 API</text>
+  <text x="610" y="600" text-anchor="middle" class="node-type" fill="#55705D">CONTAINER</text>
 
-  <path d="M705 549C705 535 740 524 783 524S861 535 861 549V596C861 610 826 621 783 621S705 610 705 596Z" fill="#E8E1CF" stroke="#8B7855" stroke-width="2"/>
-  <path d="M705 549C705 563 740 574 783 574S861 563 861 549" fill="none" stroke="#8B7855" stroke-width="2"/>
-  <text x="783" y="586" text-anchor="middle" class="node-title">申报数据库</text>
-  <text x="783" y="607" text-anchor="middle" class="node-type" fill="#7A6849">DATA STORE</text>
+  <path d="M745 550C745 536 780 525 823 525S900 536 900 550V610C900 624 866 635 823 635S745 624 745 610Z" fill="#E8E1CF" stroke="#8B7855" stroke-width="2"/>
+  <path d="M745 550C745 564 780 575 823 575S900 564 900 550" fill="none" stroke="#8B7855" stroke-width="2"/>
+  <text x="823" y="570" text-anchor="middle" class="node-title">申报数据库</text>
+  <text x="823" y="600" text-anchor="middle" class="node-type" fill="#7A6849">DATA STORE</text>
 
-  <path d="M705 646Q705 632 719 632H866Q880 632 880 646V692Q880 706 866 706H719Q705 706 705 692Z" fill="#D9E5DA" stroke="#64806B" stroke-width="2"/>
-  <text x="792" y="660" text-anchor="middle" class="node-title">支付任务执行器</text>
-  <text x="792" y="690" text-anchor="middle" class="node-type" fill="#55705D">CONTAINER</text>
+  <path d="M700 699Q700 685 714 685H876Q890 685 890 699V757Q890 771 876 771H714Q700 771 700 757Z" fill="#D9E5DA" stroke="#64806B" stroke-width="2"/>
+  <text x="795" y="721" text-anchor="middle" class="node-title">支付任务执行器</text>
+  <text x="795" y="750" text-anchor="middle" class="node-type" fill="#55705D">CONTAINER</text>
 
-  <path d="M968 646Q968 632 982 632H1111Q1125 632 1125 646V692Q1125 706 1111 706H982Q968 706 968 692Z" fill="#ECE8E1" stroke="#77716A" stroke-width="2"/>
-  <text x="1046" y="660" text-anchor="middle" class="node-title">银行支付服务</text>
-  <text x="1046" y="690" text-anchor="middle" class="node-type" fill="#77716A">EXTERNAL</text>
+  <path d="M990 699Q990 685 1004 685H1126Q1140 685 1140 699V757Q1140 771 1126 771H1004Q990 771 990 757Z" fill="#ECE8E1" stroke="#77716A" stroke-width="2"/>
+  <text x="1065" y="721" text-anchor="middle" class="node-title">银行支付服务</text>
+  <text x="1065" y="750" text-anchor="middle" class="node-type" fill="#77716A">EXTERNAL</text>
 
-  <path d="M226 607H280" fill="none" stroke="#263238" stroke-width="2.2" marker-end="url(#arrow-ink)"/>
-  <path d="M441 607H480" fill="none" stroke="#263238" stroke-width="2.2" marker-end="url(#arrow-ink)"/>
-  <path d="M641 588H694" fill="none" stroke="#263238" stroke-width="2.2" marker-end="url(#arrow-ink)"/>
-  <path d="M565 655V670Q565 678 573 678H695" fill="none" stroke="#263238" stroke-width="2.2" marker-end="url(#arrow-ink)"/>
-  <path d="M881 669H958" fill="none" stroke="#263238" stroke-width="2.2" marker-end="url(#arrow-ink)"/>
+  <path d="M206 580H260" fill="none" stroke="#263238" stroke-width="2.2" marker-end="url(#arrow-ink)"/>
+  <path d="M431 580H520" fill="none" stroke="#263238" stroke-width="2.2" marker-end="url(#arrow-ink)"/>
+  <path d="M691 580H735" fill="none" stroke="#263238" stroke-width="2.2" marker-end="url(#arrow-ink)"/>
+  <path d="M680 626V670H715V675" fill="none" stroke="#263238" stroke-width="2.2" marker-end="url(#arrow-ink)"/>
+  <path d="M891 728H980" fill="none" stroke="#263238" stroke-width="2.2" marker-end="url(#arrow-ink)"/>
 
-  <path d="M228 578H273Q281 578 281 586V605Q281 613 273 613H228Q220 613 220 605V586Q220 578 228 578Z" fill="#FBF8F1"/>
-  <text x="251" y="601" text-anchor="middle" class="relation">使用</text>
-  <path d="M435 578H495Q503 578 503 586V605Q503 613 495 613H435Q427 613 427 605V586Q427 578 435 578Z" fill="#EEF3ED"/>
-  <text x="465" y="601" text-anchor="middle" class="relation">提交申报</text>
-  <path d="M650 559H688Q696 559 696 567V586Q696 594 688 594H650Q642 594 642 586V567Q642 559 650 559Z" fill="#EEF3ED"/>
-  <text x="669" y="582" text-anchor="middle" class="relation">读写</text>
-  <path d="M563 649H670Q678 649 678 657V676Q678 684 670 684H563Q555 684 555 676V657Q555 649 563 649Z" fill="#EEF3ED"/>
-  <text x="617" y="672" text-anchor="middle" class="relation">创建支付任务</text>
-  <path d="M884 640H956Q964 640 964 648V667Q964 675 956 675H884Q876 675 876 667V648Q876 640 884 640Z" fill="#FBF8F1"/>
-  <text x="920" y="663" text-anchor="middle" class="relation">请求付款</text>
+  <text x="238" y="556" text-anchor="middle" class="edge-label" data-clearance="8">使用</text>
+  <text x="475" y="556" text-anchor="middle" class="edge-label" data-clearance="8">提交申报</text>
+  <text x="715" y="556" text-anchor="middle" class="edge-label" data-clearance="8">读写</text>
+  <text x="610" y="654" text-anchor="middle" class="edge-label" data-clearance="8">创建支付任务</text>
+  <text x="940" y="704" text-anchor="middle" class="edge-label" data-clearance="8">请求付款</text>
 </svg>
