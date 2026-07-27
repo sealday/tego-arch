@@ -85,8 +85,10 @@ used by the paired artifacts; it deliberately rejects DTD/DOCTYPE and does not
 claim full XML conformance. It enforces the supported XML 1.0 character and
 comment constraints. Text under non-rendered definition containers, hidden by
 SVG presentation/ARIA attributes (including `visibility:collapse`), or
-unpainted because its effective fill is `none` and stroke is absent/`none`
-cannot satisfy a required label. Visible labels are assembled through a
+unpainted because neither its effective fill nor stroke has nonzero paint
+opacity cannot satisfy a required label. Fill and stroke paint are evaluated
+independently, including inherited `fill-opacity` and `stroke-opacity`.
+Visible labels are assembled through a
 visibility-aware descendant walk, so a hidden `<tspan>` contributes no text;
 the supported paint resolution covers inline styles, presentation attributes,
 and inheritance.

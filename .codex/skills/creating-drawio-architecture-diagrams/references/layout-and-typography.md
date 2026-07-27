@@ -31,6 +31,10 @@ and edge stroke width, then compare the conservative visible label bounds on
 that terminal axis. A node-clearance pass does not imply an arrow-clearance
 pass.
 
+For node and boundary clearance, use the visible stroke envelope: expand the
+shape bounds by half the actual stroke width. When a label is inside a boundary,
+measure to the boundary stroke's inner edge rather than its centerline.
+
 ## Layout sequence
 
 Use this order:

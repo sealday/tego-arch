@@ -8,4 +8,8 @@
   <text style="fill: none; stroke: none">Styled unpainted</text>
   <text fill="none" stroke="#111">Stroked text</text>
   <g fill="none"><text style="fill: #111">Overridden fill</text></g>
+  <text fill="none" fill-opacity="0" stroke="#111" stroke-opacity="1">Stroke survives zero fill opacity</text>
+  <text fill="#111" stroke="#111" stroke-opacity="0">Fill survives zero stroke opacity</text>
+  <g stroke="#111" stroke-opacity="0"><text fill="none">Zero stroke unpainted</text></g>
+  <text fill="#111" fill-opacity="0" stroke="#111" stroke-opacity="0">Both transparent</text>
 </svg>

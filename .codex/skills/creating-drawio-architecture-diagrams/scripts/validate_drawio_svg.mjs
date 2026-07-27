@@ -396,6 +396,12 @@ function presentationState(element, parentState) {
       '1',
     ),
     stroke: inheritedPresentationValue(element, parentState, 'stroke', 'none'),
+    'stroke-opacity': inheritedPresentationValue(
+      element,
+      parentState,
+      'stroke-opacity',
+      '1',
+    ),
     visibility: inheritedPresentationValue(
       element,
       parentState,
@@ -415,11 +421,15 @@ function hidesSvgSubtree(element) {
 }
 
 function paintsText(state) {
+  const fillIsPainted =
+    state.fill !== 'none' && !isZeroOpacity(state['fill-opacity']);
+  const strokeIsPainted =
+    state.stroke !== 'none' && !isZeroOpacity(state['stroke-opacity']);
+
   return (
     state.visibility !== 'hidden' &&
     state.visibility !== 'collapse' &&
-    !isZeroOpacity(state['fill-opacity']) &&
-    (state.fill !== 'none' || state.stroke !== 'none')
+    (fillIsPainted || strokeIsPainted)
   );
 }
 

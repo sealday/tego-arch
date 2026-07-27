@@ -171,7 +171,16 @@ function rectangleDistance(first, second) {
   return Math.hypot(horizontal, vertical);
 }
 
-function boundaryDistance(label, boundary) {
+function expandedRectangle(rectangle, expansion) {
+  return {
+    bottom: rectangle.bottom + expansion,
+    left: rectangle.left - expansion,
+    right: rectangle.right + expansion,
+    top: rectangle.top - expansion,
+  };
+}
+
+function boundaryStrokeDistance(label, boundary, strokeWidth) {
   const labelInsideBoundary =
     label.left >= boundary.left &&
     label.right <= boundary.right &&
@@ -179,15 +188,19 @@ function boundaryDistance(label, boundary) {
     label.bottom <= boundary.bottom;
 
   if (labelInsideBoundary) {
+    const halfStroke = strokeWidth / 2;
     return Math.min(
-      label.left - boundary.left,
-      boundary.right - label.right,
-      label.top - boundary.top,
-      boundary.bottom - label.bottom,
+      label.left - (boundary.left + halfStroke),
+      boundary.right - halfStroke - label.right,
+      label.top - (boundary.top + halfStroke),
+      boundary.bottom - halfStroke - label.bottom,
     );
   }
 
-  return rectangleDistance(label, boundary);
+  return rectangleDistance(
+    label,
+    expandedRectangle(boundary, strokeWidth / 2),
+  );
 }
 
 function segmentDistance(label, start, end) {
@@ -541,17 +554,23 @@ test('keeps all eight relationship labels clear of real markers, strokes, nodes,
     styleProperty(svg, 'edge-label', 'font-size'),
   );
   const nodeBounds = new Map(
-    [...svg.matchAll(/<g\b[^>]*data-node-id="([^"]+)"[^>]*data-node-bounds="([^"]+)"/gu)].map(
-      ([, id, bounds]) => {
+    [...svg.matchAll(/<g\b[^>]*data-node-id="([^"]+)"[^>]*data-node-bounds="([^"]+)"[^>]*>([\s\S]*?)<\/g>/gu)].map(
+      ([, id, bounds, contents]) => {
         const [x, y, width, height] = bounds.split(/\s+/u).map(Number);
+        const outlineTag =
+          contents.match(/<path\b[^>]*\bstroke-width="[^"]+"/u)?.[0] ?? '';
+        const halfStroke = Number(xmlAttribute(outlineTag, 'stroke-width')) / 2;
         return [
           id,
-          {
-            bottom: y + height,
-            left: x,
-            right: x + width,
-            top: y,
-          },
+          expandedRectangle(
+            {
+              bottom: y + height,
+              left: x,
+              right: x + width,
+              top: y,
+            },
+            halfStroke,
+          ),
         ];
       },
     ),
@@ -568,6 +587,13 @@ test('keeps all eight relationship labels clear of real markers, strokes, nodes,
     right: boundaryX + Number(xmlAttribute(boundaryGeometry, 'width')),
     top: boundaryY,
   };
+  const boundaryTag =
+    svg.match(
+      /<path\b(?=[^>]*\bfill="#EEF3ED")(?=[^>]*\bstroke-dasharray="9 7")[^>]*>/u,
+    )?.[0] ?? '';
+  const boundaryStrokeWidth = Number(
+    xmlAttribute(boundaryTag, 'stroke-width'),
+  );
   const relationIds = [
     'edge-employee-system',
     'edge-system-bank',
@@ -624,11 +650,13 @@ test('keeps all eight relationship labels clear of real markers, strokes, nodes,
         projectedInterval(marker.points, marker.axis),
       ) * renderedScale;
     const strokeClearance =
-      Math.min(
-        ...connectorPoints.slice(1).map((point, index) =>
-          segmentDistance(labelBounds, connectorPoints[index], point),
-        ),
-      ) * renderedScale;
+      (Math.min(
+          ...connectorPoints.slice(1).map((point, index) =>
+            segmentDistance(labelBounds, connectorPoints[index], point),
+          ),
+        ) -
+        Number(xmlAttribute(connectorTag, 'stroke-width')) / 2) *
+      renderedScale;
     const sourceId = xmlAttribute(connectorTag, 'data-source');
     const targetId = xmlAttribute(connectorTag, 'data-target');
     const clearanceTargets = [
@@ -661,7 +689,11 @@ test('keeps all eight relationship labels clear of real markers, strokes, nodes,
     for (const [targetId, targetBounds] of clearanceTargets) {
       const authoredClearance =
         targetId === 'container-boundary'
-          ? boundaryDistance(labelBounds, targetBounds)
+          ? boundaryStrokeDistance(
+              labelBounds,
+              targetBounds,
+              boundaryStrokeWidth,
+            )
           : rectangleDistance(labelBounds, targetBounds);
       const renderedClearance = authoredClearance * renderedScale;
 

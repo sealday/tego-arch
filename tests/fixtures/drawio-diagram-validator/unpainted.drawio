@@ -7,4 +7,8 @@
   <mxCell id="styled" value="Styled unpainted" vertex="1" parent="1"/>
   <mxCell id="stroked" value="Stroked text" vertex="1" parent="1"/>
   <mxCell id="overridden" value="Overridden fill" vertex="1" parent="1"/>
+  <mxCell id="zero-fill" value="Stroke survives zero fill opacity" vertex="1" parent="1"/>
+  <mxCell id="zero-stroke-visible-fill" value="Fill survives zero stroke opacity" vertex="1" parent="1"/>
+  <mxCell id="zero-stroke" value="Zero stroke unpainted" vertex="1" parent="1"/>
+  <mxCell id="both-transparent" value="Both transparent" vertex="1" parent="1"/>
 </root></mxGraphModel></diagram></mxfile>

@@ -61,7 +61,7 @@
 
   <path data-edge-id="edge-employee-system" data-source="employee" data-target="expense-system" d="M296 265H450" fill="none" stroke="#263238" stroke-width="2.4" marker-end="url(#arrow-ink)"/>
   <path data-edge-id="edge-system-bank" data-source="expense-system" data-target="bank-context" d="M741 265H900" fill="none" stroke="#263238" stroke-width="2.4" marker-end="url(#arrow-ink)"/>
-  <text x="359" y="220" text-anchor="middle" class="edge-label" data-edge-id="edge-employee-system" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12">提交费用</text>
+  <text x="360" y="220" text-anchor="middle" class="edge-label" data-edge-id="edge-employee-system" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12">提交费用</text>
   <text x="810" y="220" text-anchor="middle" class="edge-label" data-edge-id="edge-system-bank" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12">请求付款</text>
 
   <path d="M80 470H1120Q1144 470 1144 494V1086Q1144 1110 1120 1110H80Q56 1110 56 1086V494Q56 470 80 470Z" fill="#FBF8F1" stroke="#B9B1A5" stroke-width="2" filter="url(#soft-shadow)"/>
@@ -116,9 +116,9 @@
   <path data-edge-id="edge-api-worker" data-source="expense-api" data-target="payment-worker" d="M665 841V870H620V985H640" fill="none" stroke="#263238" stroke-width="2.2" marker-end="url(#arrow-ink)"/>
   <path data-edge-id="edge-worker-bank" data-source="payment-worker" data-target="bank-container" d="M911 985H925" fill="none" stroke="#263238" stroke-width="2.2" marker-end="url(#arrow-ink)"/>
 
-  <text x="262" y="735" text-anchor="middle" class="edge-label" data-edge-id="edge-employee-web" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12">使用</text>
-  <text x="427" y="646" text-anchor="middle" class="edge-label" data-edge-id="edge-web-api" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12">提交申报</text>
-  <text x="645" y="646" text-anchor="middle" class="edge-label" data-edge-id="edge-api-db" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12">读写</text>
+  <text x="262.25" y="735" text-anchor="middle" class="edge-label" data-edge-id="edge-employee-web" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12">使用</text>
+  <text x="427" y="647.25" text-anchor="middle" class="edge-label" data-edge-id="edge-web-api" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12">提交申报</text>
+  <text x="645" y="647.25" text-anchor="middle" class="edge-label" data-edge-id="edge-api-db" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12">读写</text>
   <text x="520" y="885" text-anchor="middle" class="edge-label" data-edge-id="edge-api-worker" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12">创建支付任务</text>
   <text x="1022" y="875" text-anchor="middle" class="edge-label" data-edge-id="edge-worker-bank" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12">请求付款</text>
 </svg>

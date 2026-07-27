@@ -180,27 +180,38 @@ test('rejects labels inside non-rendered SVG definition containers', () => {
   }
 });
 
-test('rejects text that has neither an effective fill nor a stroke', () => {
-  const labels = [
+test('evaluates effective fill and stroke paint independently', () => {
+  const unpaintedLabels = [
     'Direct unpainted',
     'Inherited unpainted',
     'Styled unpainted',
+    'Zero stroke unpainted',
+    'Both transparent',
+  ];
+  const paintedLabels = [
+    'Stroked text',
+    'Overridden fill',
+    'Stroke survives zero fill opacity',
+    'Fill survives zero stroke opacity',
   ];
   const result = runValidator(
     'unpainted.drawio',
     'unpainted.svg',
-    ...[...labels, 'Stroked text', 'Overridden fill'].flatMap((label) => [
-      '--label',
-      label,
+    ...[...unpaintedLabels, ...paintedLabels].flatMap((label) => [
+      '--label', label,
     ]),
   );
 
   assert.equal(result.status, 1);
-  for (const label of labels) {
+  for (const label of unpaintedLabels) {
     assert.match(result.stderr, new RegExp(`Required label "${label}"`, 'u'));
   }
-  assert.doesNotMatch(result.stderr, /Required label "Stroked text"/u);
-  assert.doesNotMatch(result.stderr, /Required label "Overridden fill"/u);
+  for (const label of paintedLabels) {
+    assert.doesNotMatch(
+      result.stderr,
+      new RegExp(`Required label "${label}"`, 'u'),
+    );
+  }
 });
 
 test('excludes hidden descendant text from a visible parent label', () => {
