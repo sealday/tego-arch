@@ -4,8 +4,8 @@ slug: /principles/pr-01
 content_type: principle
 status: reviewed
 difficulty: beginner
-analyzed_at: 2026-07-24
-source_cutoff: 2026-07-24
+analyzed_at: 2026-07-27
+source_cutoff: 2026-07-27
 confidence: high
 domains:
   - software-architecture
@@ -22,6 +22,9 @@ topic_id: PR-01
 priority: P0
 depends_on: []
 adjacent_topics:
+  - PR-02
+  - PR-03
+  - PR-04
   - STY-00
 related_cases:
   - /cases/micro-frontends-single-spa
@@ -40,7 +43,7 @@ related_questions: []
 
 ## 要保护的性质
 
-模块应隐藏那些未来可能改变、且不应迫使使用者同步改变的决策，例如存储布局、缓存策略或第三方协议映射。稳定接口表达使用者需要的能力；实现细节仍可替换。这个判断源自 Parnas 以“困难设计决策”组织模块的论证，而不是从语言可见性规则反推架构。
+**来源事实：** Parnas 以“困难设计决策”而不是处理步骤组织模块。由此可把模块应隐藏的对象理解为未来可能改变、且不应迫使使用者同步改变的决策，例如存储布局、缓存策略或第三方协议映射。**推断：** 稳定接口应表达使用者需要的能力，让实现细节仍可替换，而不能从语言可见性规则反推架构。
 
 ## 冲突与适用上下文
 
@@ -62,7 +65,7 @@ flowchart LR
   L["泄漏：调用方拼接 ledger_v3 表名"] -.绕过边界.-> S
 ```
 
-检查结论是：`settle` 把意图交给所有者，表名泄漏却让调用方共同承担布局变化。
+**本站分析：** `settle` 把意图交给所有者，表名泄漏却让调用方共同承担布局变化。
 
 ## 误用与反原则
 
@@ -74,7 +77,7 @@ flowchart LR
 
 ## 相邻原则
 
-[架构风格比较框架](/styles/sty-00)把边界、数据所有权和部署单元放到同一尺度。信息隐藏回答“变化由谁承担”，风格比较再回答“这个边界需要什么连接器与故障隔离”。
+[高内聚与低耦合](/principles/pr-02)检查决策泄漏会沿哪些变化、运行、数据和团队关系传播；[单一职责与关注点分离](/principles/pr-03)判断决策应由哪个责任主体拥有；[依赖倒置、控制反转与依赖注入](/principles/pr-04)进一步约束策略和细节之间的源代码依赖方向。[架构风格比较框架](/styles/sty-00)则把边界、数据所有权和部署单元放到同一尺度。信息隐藏回答“变化由谁承担”，其他原则再回答传播、责任与依赖如何约束。
 
 ## 说明性场景
 

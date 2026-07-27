@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-07-26T21:41:46.575Z",
+  "generated_at": "2026-07-27T08:01:54.477Z",
   "results": [
     {
       "transport_locator": "https://a2a-protocol.org/latest/",
@@ -1479,6 +1479,37 @@
           "outcome": "healthy",
           "final_transport_locator": "https://builder.aws.com/content/3F06NpJ8YeoIGP8VHTw4n81pFn8/workload-isolation-using-shuffle-sharding",
           "http_status": 200,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://blog.cleancoder.com/uncle-bob/2014/05/08/SingleReponsibilityPrinciple.html",
+      "source_ids": [
+        "src-cleancoder-srp-2014"
+      ],
+      "last_attempt": {
+        "at": "2026-07-27T08:01:54.477Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://blog.cleancoder.com/uncle-bob/2014/05/08/SingleReponsibilityPrinciple.html",
+        "http_status": 206,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-07-27T08:01:54.477Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://blog.cleancoder.com/uncle-bob/2014/05/08/SingleReponsibilityPrinciple.html",
+        "http_status": 206,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-07-27T08:01:54.477Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://blog.cleancoder.com/uncle-bob/2014/05/08/SingleReponsibilityPrinciple.html",
+          "http_status": 206,
           "login_wall_detected": false
         }
       ],
@@ -6992,6 +7023,37 @@
           "at": "2026-07-24T12:13:42.427Z",
           "outcome": "healthy",
           "final_transport_locator": "https://docs.newapi.pro/zh/docs/guide/feature-guide/admin/group",
+          "http_status": 200,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://docs.oracle.com/javase/tutorial/java/IandI/subclasses.html",
+      "source_ids": [
+        "src-oracle-java-inheritance"
+      ],
+      "last_attempt": {
+        "at": "2026-07-27T08:01:54.477Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://docs.oracle.com/javase/tutorial/java/IandI/subclasses.html",
+        "http_status": 200,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-07-27T08:01:54.477Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://docs.oracle.com/javase/tutorial/java/IandI/subclasses.html",
+        "http_status": 200,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-07-27T08:01:54.477Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://docs.oracle.com/javase/tutorial/java/IandI/subclasses.html",
           "http_status": 200,
           "login_wall_detected": false
         }
@@ -24740,6 +24802,37 @@
       "review_status": "healthy"
     },
     {
+      "transport_locator": "https://ieeexplore.ieee.org/document/5388187/",
+      "source_ids": [
+        "src-ibm-structured-design-1974"
+      ],
+      "last_attempt": {
+        "at": "2026-07-27T08:01:54.477Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://ieeexplore.ieee.org/document/5388187/",
+        "http_status": 202,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-07-27T08:01:54.477Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://ieeexplore.ieee.org/document/5388187/",
+        "http_status": 202,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-07-27T08:01:54.477Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://ieeexplore.ieee.org/document/5388187/",
+          "http_status": 202,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
       "transport_locator": "https://kafka.apache.org/43/configuration/broker-configs/",
       "source_ids": [
         "src-kafka-580ea02caa84"
@@ -26603,6 +26696,37 @@
       "review_status": "healthy"
     },
     {
+      "transport_locator": "https://martinfowler.com/articles/injection.html",
+      "source_ids": [
+        "src-fowler-injection-2004"
+      ],
+      "last_attempt": {
+        "at": "2026-07-27T08:01:54.477Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://martinfowler.com/articles/injection.html",
+        "http_status": 206,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-07-27T08:01:54.477Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://martinfowler.com/articles/injection.html",
+        "http_status": 206,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-07-27T08:01:54.477Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://martinfowler.com/articles/injection.html",
+          "http_status": 206,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
       "transport_locator": "https://martinfowler.com/articles/micro-frontends.html",
       "source_ids": [
         "src-martinfowler-0ec749cd01b8"
@@ -27896,6 +28020,37 @@
       "review_status": "healthy"
     },
     {
+      "transport_locator": "https://search.worldcat.org/title/Design-patterns-:-elements-of-reusable-object-oriented-software/oclc/31169738",
+      "source_ids": [
+        "src-gof-design-patterns-1994"
+      ],
+      "last_attempt": {
+        "at": "2026-07-27T08:01:54.477Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://search.worldcat.org/title/Design-patterns-:-elements-of-reusable-object-oriented-software/oclc/31169738",
+        "http_status": 200,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-07-27T08:01:54.477Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://search.worldcat.org/title/Design-patterns-:-elements-of-reusable-object-oriented-software/oclc/31169738",
+        "http_status": 200,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-07-27T08:01:54.477Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://search.worldcat.org/title/Design-patterns-:-elements-of-reusable-object-oriented-software/oclc/31169738",
+          "http_status": 200,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
       "transport_locator": "https://single-spa.js.org/docs/api/",
       "source_ids": [
         "src-single-spa-e413a44ee5ff"
@@ -28718,6 +28873,37 @@
           "at": "2026-07-24T12:44:40.442Z",
           "outcome": "healthy",
           "final_transport_locator": "https://swehb.nasa.gov/spaces/SWEHBVD/pages/102695632/7.07%2B-%2BSoftware%2BArchitecture%2BDescription",
+          "http_status": 200,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://web.archive.org/web/20110714224327/http://www.objectmentor.com/resources/articles/dip.pdf",
+      "source_ids": [
+        "src-objectmentor-dip"
+      ],
+      "last_attempt": {
+        "at": "2026-07-27T08:01:54.477Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://web.archive.org/web/20110714224327/http://www.objectmentor.com/resources/articles/dip.pdf",
+        "http_status": 200,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-07-27T08:01:54.477Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://web.archive.org/web/20110714224327/http://www.objectmentor.com/resources/articles/dip.pdf",
+        "http_status": 200,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-07-27T08:01:54.477Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://web.archive.org/web/20110714224327/http://www.objectmentor.com/resources/articles/dip.pdf",
           "http_status": 200,
           "login_wall_detected": false
         }

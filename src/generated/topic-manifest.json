@@ -809,6 +809,9 @@
       },
       "dependencies": [],
       "adjacent_topics": [
+        "PR-02",
+        "PR-03",
+        "PR-04",
         "STY-00"
       ],
       "primary_sources": [
@@ -818,95 +821,11 @@
         "/cases/micro-frontends-single-spa"
       ],
       "related_questions": [],
-      "reviewed_at": "2026-07-24",
+      "reviewed_at": "2026-07-27",
       "review_policy": null,
       "published": true,
       "pattern_group": null,
       "presentation": {}
-    },
-    {
-      "id": "PR-02",
-      "type": "principle",
-      "title": "高内聚与低耦合",
-      "slug": "/principles/pr-02",
-      "priority": "P0",
-      "status": {
-        "scope": "backlog-projection",
-        "value": "pending",
-        "source": "docs/content-backlog.md"
-      },
-      "dependencies": [],
-      "adjacent_topics": [],
-      "primary_sources": [],
-      "related_cases": [],
-      "related_questions": [],
-      "reviewed_at": null,
-      "review_policy": null,
-      "published": false,
-      "pattern_group": null
-    },
-    {
-      "id": "PR-03",
-      "type": "principle",
-      "title": "单一职责与关注点分离",
-      "slug": "/principles/pr-03",
-      "priority": "P0",
-      "status": {
-        "scope": "backlog-projection",
-        "value": "pending",
-        "source": "docs/content-backlog.md"
-      },
-      "dependencies": [],
-      "adjacent_topics": [],
-      "primary_sources": [],
-      "related_cases": [],
-      "related_questions": [],
-      "reviewed_at": null,
-      "review_policy": null,
-      "published": false,
-      "pattern_group": null
-    },
-    {
-      "id": "PR-04",
-      "type": "principle",
-      "title": "依赖倒置、控制反转与依赖注入",
-      "slug": "/principles/pr-04",
-      "priority": "P0",
-      "status": {
-        "scope": "backlog-projection",
-        "value": "pending",
-        "source": "docs/content-backlog.md"
-      },
-      "dependencies": [],
-      "adjacent_topics": [],
-      "primary_sources": [],
-      "related_cases": [],
-      "related_questions": [],
-      "reviewed_at": null,
-      "review_policy": null,
-      "published": false,
-      "pattern_group": null
-    },
-    {
-      "id": "PR-05",
-      "type": "principle",
-      "title": "组合优于继承",
-      "slug": "/principles/pr-05",
-      "priority": "P0",
-      "status": {
-        "scope": "backlog-projection",
-        "value": "pending",
-        "source": "docs/content-backlog.md"
-      },
-      "dependencies": [],
-      "adjacent_topics": [],
-      "primary_sources": [],
-      "related_cases": [],
-      "related_questions": [],
-      "reviewed_at": null,
-      "review_policy": null,
-      "published": false,
-      "pattern_group": null
     },
     {
       "id": "PR-06",
@@ -1449,6 +1368,133 @@
       "related_questions": [],
       "reviewed_at": "2026-07-24",
       "review_policy": "quarterly-version-sensitive",
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
+    },
+    {
+      "id": "PR-02",
+      "type": "principle",
+      "title": "高内聚与低耦合",
+      "slug": "/principles/pr-02",
+      "priority": "P0",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "pending",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "PR-01"
+      ],
+      "adjacent_topics": [
+        "PR-01",
+        "PR-03",
+        "PR-05"
+      ],
+      "primary_sources": [
+        "https://ieeexplore.ieee.org/document/5388187/"
+      ],
+      "related_cases": [
+        "/cases/micro-frontends-single-spa"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-07-27",
+      "review_policy": null,
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
+    },
+    {
+      "id": "PR-03",
+      "type": "principle",
+      "title": "单一职责与关注点分离",
+      "slug": "/principles/pr-03",
+      "priority": "P0",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "pending",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "PR-01"
+      ],
+      "adjacent_topics": [
+        "PR-01",
+        "PR-02",
+        "PR-05"
+      ],
+      "primary_sources": [
+        "https://dl.acm.org/doi/10.1145/361598.361623"
+      ],
+      "related_cases": [
+        "/cases/litellm-virtual-keys-governance"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-07-27",
+      "review_policy": null,
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
+    },
+    {
+      "id": "PR-04",
+      "type": "principle",
+      "title": "依赖倒置、控制反转与依赖注入",
+      "slug": "/principles/pr-04",
+      "priority": "P0",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "pending",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "PR-01"
+      ],
+      "adjacent_topics": [
+        "PR-01",
+        "PR-05"
+      ],
+      "primary_sources": [
+        "https://web.archive.org/web/20110714224327/http://www.objectmentor.com/resources/articles/dip.pdf"
+      ],
+      "related_cases": [
+        "/cases/openai-agents-sdk"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-07-27",
+      "review_policy": null,
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
+    },
+    {
+      "id": "PR-05",
+      "type": "principle",
+      "title": "组合优于继承",
+      "slug": "/principles/pr-05",
+      "priority": "P0",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "pending",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "PR-01"
+      ],
+      "adjacent_topics": [
+        "PR-02",
+        "PR-03",
+        "PR-04"
+      ],
+      "primary_sources": [
+        "https://search.worldcat.org/title/Design-patterns-:-elements-of-reusable-object-oriented-software/oclc/31169738"
+      ],
+      "related_cases": [
+        "/cases/kubernetes-reconciliation-loop"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-07-27",
+      "review_policy": null,
       "published": true,
       "pattern_group": null,
       "presentation": {}

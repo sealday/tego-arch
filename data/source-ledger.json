@@ -16163,6 +16163,211 @@
       "expected_final_transport_locator": "https://www.thoughtworks.com/en-us/insights/articles/fitness-function-driven-development",
       "expected_final_approved_at": "2026-07-24",
       "expected_final_approval_note": "Reviewed canonical Thoughtworks article transport baseline"
+    },
+    {
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "registered_at": "2026-07-27",
+      "checked_at": "2026-07-27",
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "link_policy": "stable",
+      "expected_final_approved_at": "2026-07-27",
+      "expected_final_approval_note": "Reviewed canonical transport, authorship, version, and rights boundary on 2026-07-27.",
+      "id": "src-cleancoder-srp-2014",
+      "canonical_locator": "https://blog.cleancoder.com/uncle-bob/2014/05/08/SingleReponsibilityPrinciple.html",
+      "transport_locator": "https://blog.cleancoder.com/uncle-bob/2014/05/08/SingleReponsibilityPrinciple.html",
+      "title": "The Single Responsibility Principle",
+      "author_or_org": "Robert C. Martin",
+      "published_at": "2014-05-08",
+      "version": "Author essay published 2014-05-08; page checked 2026-07-27",
+      "source_kind": "independent-blog",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "historical-context",
+        "learning"
+      ],
+      "license_scope": "The named author essay and factual metadata only; prose, examples, site assets, and linked material excluded",
+      "license_evidence_url": "https://blog.cleancoder.com/",
+      "license_evidence_note": "No reusable license was identified on the checked author site; Atlas uses attribution, link, and original factual summary only.",
+      "usage_boundary": "Supports Martin's clarification that responsibility is tied to people/roles and reasons for change; it does not make class size or method count an SRP test.",
+      "license_family_id": "https://blog.cleancoder.com/uncle-bob/2014/05/08/SingleReponsibilityPrinciple.html",
+      "expected_final_transport_locator": "https://blog.cleancoder.com/uncle-bob/2014/05/08/SingleReponsibilityPrinciple.html"
+    },
+    {
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "registered_at": "2026-07-27",
+      "checked_at": "2026-07-27",
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "link_policy": "stable",
+      "expected_final_approved_at": "2026-07-27",
+      "expected_final_approval_note": "Reviewed canonical transport, authorship, version, and rights boundary on 2026-07-27.",
+      "id": "src-fowler-injection-2004",
+      "canonical_locator": "https://martinfowler.com/articles/injection.html",
+      "transport_locator": "https://martinfowler.com/articles/injection.html",
+      "title": "Inversion of Control Containers and the Dependency Injection pattern",
+      "author_or_org": "Martin Fowler",
+      "published_at": "2004-01-23",
+      "version": "Author article dated 2004-01-23; page checked 2026-07-27",
+      "source_kind": "independent-blog",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "comparison",
+        "implementation",
+        "learning"
+      ],
+      "license_scope": "The named article and factual metadata only; prose, code, diagrams, and linked works excluded",
+      "license_evidence_url": "https://martinfowler.com/aboutMe.html",
+      "license_evidence_note": "No license authorizing republication of the article was found; Atlas uses attribution, link, and original factual summary only.",
+      "usage_boundary": "Supports distinctions among IoC, Dependency Injection, Service Locator, and configuration; it does not equate DI containers with DIP compliance.",
+      "license_family_id": "https://martinfowler.com/articles/injection.html",
+      "expected_final_transport_locator": "https://martinfowler.com/articles/injection.html"
+    },
+    {
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "registered_at": "2026-07-27",
+      "checked_at": "2026-07-27",
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "link_policy": "stable",
+      "expected_final_approved_at": "2026-07-27",
+      "expected_final_approval_note": "Reviewed canonical transport, authorship, version, and rights boundary on 2026-07-27.",
+      "id": "src-gof-design-patterns-1994",
+      "canonical_locator": "https://search.worldcat.org/title/Design-patterns-:-elements-of-reusable-object-oriented-software/oclc/31169738",
+      "transport_locator": "https://search.worldcat.org/title/Design-patterns-:-elements-of-reusable-object-oriented-software/oclc/31169738",
+      "title": "Design Patterns: Elements of Reusable Object-Oriented Software",
+      "author_or_org": "Erich Gamma, Richard Helm, Ralph Johnson, and John Vlissides",
+      "published_at": "1994-10-31",
+      "version": "Addison-Wesley first edition bibliographic record; Google Books page checked 2026-07-27",
+      "source_kind": "textbook",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "historical-context",
+        "learning"
+      ],
+      "license_scope": "Bibliographic facts and named book only; book text, catalog structure, diagrams, code, and previews excluded",
+      "license_evidence_url": "https://search.worldcat.org/title/Design-patterns-:-elements-of-reusable-object-oriented-software/oclc/31169738",
+      "license_evidence_note": "The commercial book record provides no reusable license; Atlas uses bibliographic facts, attribution, and original summary only.",
+      "usage_boundary": "Supports the historical design guidance to favor object composition over class inheritance and its stated tradeoff context; it does not prohibit inheritance.",
+      "license_family_id": "https://search.worldcat.org/title/Design-patterns-:-elements-of-reusable-object-oriented-software/oclc/31169738",
+      "expected_final_transport_locator": "https://search.worldcat.org/title/Design-patterns-:-elements-of-reusable-object-oriented-software/oclc/31169738"
+    },
+    {
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "registered_at": "2026-07-27",
+      "checked_at": "2026-07-27",
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "link_policy": "stable",
+      "expected_final_approved_at": "2026-07-27",
+      "expected_final_approval_note": "Reviewed DOI identity, resolved IEEE transport, authorship, version, and rights boundary on 2026-07-27.",
+      "id": "src-ibm-structured-design-1974",
+      "canonical_locator": "https://ieeexplore.ieee.org/document/5388187/",
+      "transport_locator": "https://ieeexplore.ieee.org/document/5388187/",
+      "title": "Structured Design",
+      "author_or_org": "Wayne P. Stevens, Glenford J. Myers, and Larry L. Constantine / IBM",
+      "published_at": "1974-05-01",
+      "version": "IBM Systems Journal 13(2), pp. 115–139, DOI 10.1147/sj.132.0115; DOI checked 2026-07-27",
+      "source_kind": "paper",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "historical-context",
+        "learning"
+      ],
+      "license_scope": "Bibliographic facts and the named paper only; article prose, figures, tables, and third-party material excluded",
+      "license_evidence_url": "https://ieeexplore.ieee.org/document/5388187/",
+      "license_evidence_note": "The IEEE/IBM record exposes bibliographic metadata but no reusable license; Atlas uses the link, facts, and original summary only.",
+      "usage_boundary": "Supports the historical treatment of module strength/cohesion and coupling in structured design; it does not establish a universal numeric maintainability score.",
+      "license_family_id": "https://ieeexplore.ieee.org/document/5388187/",
+      "expected_final_transport_locator": "https://ieeexplore.ieee.org/document/5388187/"
+    },
+    {
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "registered_at": "2026-07-27",
+      "checked_at": "2026-07-27",
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "link_policy": "stable",
+      "expected_final_approved_at": "2026-07-27",
+      "expected_final_approval_note": "Reviewed canonical transport, authorship, version, and rights boundary on 2026-07-27.",
+      "id": "src-objectmentor-dip",
+      "canonical_locator": "https://web.archive.org/web/20110714224327/http://www.objectmentor.com/resources/articles/dip.pdf",
+      "transport_locator": "https://web.archive.org/web/20110714224327/http://www.objectmentor.com/resources/articles/dip.pdf",
+      "title": "The Dependency Inversion Principle",
+      "author_or_org": "Robert C. Martin / Object Mentor",
+      "published_at": null,
+      "version": "Archived Object Mentor article snapshot 2011-07-14; transport checked 2026-07-27",
+      "source_kind": "paper",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "historical-context",
+        "learning"
+      ],
+      "license_scope": "Bibliographic facts and named archived article only; PDF prose, diagrams, examples, and marks excluded",
+      "license_evidence_url": "https://web.archive.org/web/20110714224327/http://www.objectmentor.com/resources/articles/dip.pdf",
+      "license_evidence_note": "The archived PDF presents no reusable license; Atlas uses attribution, link, and original summary only.",
+      "usage_boundary": "Supports DIP's policy/detail dependency direction; it does not show that use of an interface or DI container alone satisfies DIP.",
+      "license_family_id": "https://web.archive.org/web/20110714224327/http://www.objectmentor.com/resources/articles/dip.pdf",
+      "expected_final_transport_locator": "https://web.archive.org/web/20110714224327/http://www.objectmentor.com/resources/articles/dip.pdf"
+    },
+    {
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "registered_at": "2026-07-27",
+      "checked_at": "2026-07-27",
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "link_policy": "stable",
+      "expected_final_approved_at": "2026-07-27",
+      "expected_final_approval_note": "Reviewed canonical transport, authorship, version, and rights boundary on 2026-07-27.",
+      "id": "src-oracle-java-inheritance",
+      "canonical_locator": "https://docs.oracle.com/javase/tutorial/java/IandI/subclasses.html",
+      "transport_locator": "https://docs.oracle.com/javase/tutorial/java/IandI/subclasses.html",
+      "title": "Inheritance",
+      "author_or_org": "Oracle",
+      "published_at": null,
+      "version": "Java Tutorials inheritance page for JDK 8-era material; checked 2026-07-27",
+      "source_kind": "official-docs",
+      "tier": "first-party",
+      "allowed_evidence_roles": [
+        "definition",
+        "implementation",
+        "learning"
+      ],
+      "license_scope": "The named Oracle tutorial page and factual API/language mechanics only; prose, code samples, images, and linked material excluded",
+      "license_evidence_url": "https://www.oracle.com/legal/copyright.html",
+      "license_evidence_note": "Oracle retains copyright in the documentation; Atlas uses links, language facts, and original summary only.",
+      "usage_boundary": "Supports Java inheritance mechanics and superclass/subclass state and behavior relationships; it does not establish composition as universally superior.",
+      "license_family_id": "https://docs.oracle.com/javase/tutorial/java/IandI/subclasses.html",
+      "expected_final_transport_locator": "https://docs.oracle.com/javase/tutorial/java/IandI/subclasses.html"
     }
   ],
   "documents": {
@@ -23090,7 +23295,7 @@
       "citations": []
     },
     "content/principles/pr-01-information-hiding.mdx": {
-      "reviewed_at": "2026-07-24",
+      "reviewed_at": "2026-07-27",
       "copyright_checks": [
         "original-structure",
         "quotation-boundary",
@@ -24501,6 +24706,162 @@
           "manifest_primary": false,
           "usage_mode": "navigation-only",
           "attribution_note": "Awesome Software Architecture, Mehdi Hadeli and contributors",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/principles/pr-02-cohesion-coupling.mdx": {
+      "reviewed_at": "2026-07-27",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-ibm-structured-design-1974",
+          "citation_url": "https://ieeexplore.ieee.org/document/5388187/",
+          "roles": [
+            "definition",
+            "historical-context"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Structured Design, Stevens, Myers, and Constantine / IBM",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-sei-maintainability-2020",
+          "citation_url": "https://www.sei.cmu.edu/library/maintainability/",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Maintainability, Carnegie Mellon Software Engineering Institute",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/principles/pr-03-single-responsibility-separation-of-concerns.mdx": {
+      "reviewed_at": "2026-07-27",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-acm-96e876360753",
+          "citation_url": "https://dl.acm.org/doi/10.1145/361598.361623",
+          "roles": [
+            "definition",
+            "historical-context"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "On the Criteria To Be Used in Decomposing Systems into Modules, D. L. Parnas / ACM",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-cleancoder-srp-2014",
+          "citation_url": "https://blog.cleancoder.com/uncle-bob/2014/05/08/SingleReponsibilityPrinciple.html",
+          "roles": [
+            "definition",
+            "learning"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "The Single Responsibility Principle, Robert C. Martin",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/principles/pr-04-dip-ioc-dependency-injection.mdx": {
+      "reviewed_at": "2026-07-27",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-objectmentor-dip",
+          "citation_url": "https://web.archive.org/web/20110714224327/http://www.objectmentor.com/resources/articles/dip.pdf",
+          "roles": [
+            "definition",
+            "historical-context"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "The Dependency Inversion Principle, Robert C. Martin / Object Mentor",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-fowler-injection-2004",
+          "citation_url": "https://martinfowler.com/articles/injection.html",
+          "roles": [
+            "comparison",
+            "implementation"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Inversion of Control Containers and the Dependency Injection pattern, Martin Fowler",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/principles/pr-05-composition-over-inheritance.mdx": {
+      "reviewed_at": "2026-07-27",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-gof-design-patterns-1994",
+          "citation_url": "https://search.worldcat.org/title/Design-patterns-:-elements-of-reusable-object-oriented-software/oclc/31169738",
+          "roles": [
+            "definition",
+            "historical-context"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Design Patterns, Gamma, Helm, Johnson, and Vlissides",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-oracle-java-inheritance",
+          "citation_url": "https://docs.oracle.com/javase/tutorial/java/IandI/subclasses.html",
+          "roles": [
+            "definition",
+            "implementation"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Inheritance, Oracle Java Tutorials",
           "modification_note": null,
           "excerpt": null,
           "quotation_reviewed": false
