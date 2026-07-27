@@ -90,3 +90,46 @@ invalidate the visual RED result.
 - Reserve a connector-free label lane and define numeric clearance.
 - Size nodes from text before routing edges.
 - Separate deterministic file checks from browser visual QA.
+
+## Forward-test result
+
+The GREEN test used a fresh-context agent with read-only access to the new
+skill and the two raw artifacts. It received only:
+
+> Use `$creating-drawio-architecture-diagrams` at
+> `.codex/skills/creating-drawio-architecture-diagrams` to propose a concrete
+> revision of:
+>
+> - `diagrams/mod-02-c4-context-container.drawio`
+> - `static/img/diagrams/mod-02-c4-context-container.svg`
+>
+> Preserve semantics and paired files. Return the layout rules, validation
+> steps, and visual defects identified from the SVG geometry.
+
+The final forward test explicitly covered all four baseline misses:
+
+1. It diagnosed every main opaque relation-label background as erasing its
+   connector, measured label/node overlaps, and proposed connector-free lanes.
+2. It reported the lower title/type baseline and bottom-clearance geometry,
+   including the database's `21px` baseline separation and approximately
+   `12px` visible bottom clearance.
+3. It ran the deterministic validator successfully, quoted
+   `Validated mod-02-c4-context-container`, and stated that this proves
+   pair/accessibility/declared-label checks rather than rendered geometry.
+4. It required real-browser review at desktop `1440x1000` and mobile
+   `390x844`, with connector continuity, containment, text readability,
+   cropping, dimensions, HTTP, console, and overflow checks.
+
+It also returned every numeric layout threshold without receiving those values
+in the test prompt: node padding of `16px` horizontal and `14px` vertical;
+`22px` title/type baseline separation; `14px` text-to-bottom clearance; and
+edge-label clearances of `8px` from strokes, `16px` from arrows, and `12px`
+from nodes. It preserved the Context-to-Container semantics and identified
+source/published drift in notes, role labels, panels, boundaries, and nodes.
+
+Two minimal wording refinements were made during GREEN. The completion contract
+now requires reporting every numeric layout threshold after an initial probe
+omitted the node/text values. The workflow now requires measured lower-node
+baselines and bottom clearance after a second probe listed the thresholds but
+did not explicitly report the current lower-node crowding. A fresh final probe
+then satisfied the complete contract.

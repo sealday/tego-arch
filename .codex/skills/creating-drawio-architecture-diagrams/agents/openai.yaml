@@ -1,0 +1,4 @@
+interface:
+  display_name: "Draw.io 架构图"
+  short_description: "创建并验收 Tego Arch Draw.io 架构图"
+  default_prompt: "Use $creating-drawio-architecture-diagrams to create or revise a paired Draw.io and SVG architecture diagram for this article."
