@@ -49,3 +49,11 @@ test('accepts an accessible paired diagram and required labels', () => {
   assert.equal(result.status, 0);
   assert.match(result.stdout, /Validated valid/u);
 });
+
+test('rejects expected elements nested below wrapper roots', () => {
+  const result = runValidator('wrapped.drawio', 'wrapped.svg');
+
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /XML rooted at mxfile/u);
+  assert.match(result.stderr, /XML rooted at svg/u);
+});

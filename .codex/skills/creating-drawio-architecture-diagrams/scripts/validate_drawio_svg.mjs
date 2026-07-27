@@ -40,6 +40,24 @@ function rootTag(xml, tagName) {
   return xml.match(new RegExp(`<${tagName}\\b[^>]*>`, 'u'))?.[0] ?? '';
 }
 
+function documentRootTag(xml, tagName) {
+  let document = xml.replace(/^\uFEFF/u, '');
+
+  while (true) {
+    document = document.trimStart();
+    const preamble =
+      document.match(/^(?:<\?xml(?:\s[^?]*)?\?>|<!--[\s\S]*?-->)/u)?.[0] ?? '';
+    if (!preamble) {
+      break;
+    }
+    document = document.slice(preamble.length);
+  }
+
+  document = document.trimStart();
+  const tag = rootTag(document, tagName);
+  return tag && document.startsWith(tag) ? tag : '';
+}
+
 function attribute(tag, name) {
   const match = tag.match(
     new RegExp(`\\b${name}\\s*=\\s*(?:"([^"]*)"|'([^']*)')`, 'u'),
@@ -100,7 +118,7 @@ async function validatePair({drawioPath, svgPath, labels}) {
     errors.push('Draw.io and SVG must have a matching slug');
   }
 
-  const mxfileTag = rootTag(drawio, 'mxfile');
+  const mxfileTag = documentRootTag(drawio, 'mxfile');
   if (drawio && (!mxfileTag || !drawio.includes('</mxfile>'))) {
     errors.push('Draw.io source must be XML rooted at mxfile');
   }
@@ -111,7 +129,7 @@ async function validatePair({drawioPath, svgPath, labels}) {
     errors.push('Draw.io must not contain HTML in mxCell.value');
   }
 
-  const svgTag = rootTag(svg, 'svg');
+  const svgTag = documentRootTag(svg, 'svg');
   if (svg && (!svgTag || !svg.includes('</svg>'))) {
     errors.push('Published SVG must be XML rooted at svg');
   }
