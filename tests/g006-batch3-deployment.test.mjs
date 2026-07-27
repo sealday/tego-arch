@@ -127,7 +127,7 @@ test('closes only QA-05, QA-08 and QA-09 with the same deployment evidence', asy
 
   assert.match(
     backlog,
-    /^- \[ \] \*\*QA-10 /mu,
-    'QA-10 must remain unchecked',
+    /^- \[x\] \*\*QA-10 /mu,
+    'QA-10 must be closed by the later final G006 deployment',
   );
 });

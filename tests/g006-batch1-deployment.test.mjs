@@ -75,11 +75,9 @@ test('closes only QA-00 through QA-03 with the same deployment evidence', async 
     );
   }
 
-  for (const number of ['10']) {
-    assert.match(
-      backlog,
-      new RegExp(String.raw`^- \[ \] \*\*QA-${number} `, 'mu'),
-      `QA-${number} must remain unchecked`,
-    );
-  }
+  assert.match(
+    backlog,
+    /^- \[x\] \*\*QA-10 /mu,
+    'QA-10 must be closed by the later final G006 deployment',
+  );
 });

@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
   "durable_stories": {
-    "completed": 5,
+    "completed": 6,
     "total": 20,
-    "current": "G006"
+    "current": "G007"
   },
-  "completed_topics": 21,
+  "completed_topics": 22,
   "content_documents": 66,
   "governed_sources": 424,
   "sources": {

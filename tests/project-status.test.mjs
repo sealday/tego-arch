@@ -12,8 +12,8 @@ import {
 import {parseSourceLedger} from '../scripts/source-ledger.mjs';
 
 const declarations = [
-  '- **持久故事进度：** 已完成 `5 / 20`；最近完成 `G005`。',
-  '- **当前持久故事：** `G006`。',
+  '- **持久故事进度：** 已完成 `6 / 20`；最近完成 `G006`。',
+  '- **当前持久故事：** `G007`。',
 ].join('\n');
 
 test('builds status from canonical input collections', () => {
@@ -29,7 +29,7 @@ test('builds status from canonical input collections', () => {
 
   assert.deepEqual(status, {
     schema_version: 1,
-    durable_stories: {completed: 5, total: 20, current: 'G006'},
+    durable_stories: {completed: 6, total: 20, current: 'G007'},
     completed_topics: 1,
     content_documents: 2,
     governed_sources: 3,
@@ -46,7 +46,7 @@ test('requires one exact durable-story baseline', () => {
   for (const invalid of [
     '',
     `${declarations}\n${declarations}`,
-    declarations.replace('5 / 20', '6 / 20'),
+    declarations.replace('6 / 20', '7 / 20'),
     declarations.replace('G006', 'G007'),
   ]) {
     assert.throws(() => parseDurableStoryStatus(invalid), /durable story/u);
@@ -82,7 +82,7 @@ test('reports an exact-format error for a unique malformed declaration', () => {
     () =>
       parseDurableStoryStatus(
         declarations.replace(
-          '- **当前持久故事：** `G006`。',
+          '- **当前持久故事：** `G007`。',
           '- **当前持久故事：** G006。',
         ),
       ),
@@ -134,8 +134,8 @@ test('projects the real repository status without rewriting historical evidence'
     }),
     {
       schema_version: 1,
-      durable_stories: {completed: 5, total: 20, current: 'G006'},
-      completed_topics: 21,
+      durable_stories: {completed: 6, total: 20, current: 'G007'},
+      completed_topics: 22,
       content_documents: 66,
       governed_sources: 424,
       sources: {

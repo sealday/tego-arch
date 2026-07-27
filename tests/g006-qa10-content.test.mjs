@@ -52,6 +52,8 @@ test('closes reciprocal links and source governance', () => {
   assert.ok(extractSources(document).includes('https://sci.greensoftware.foundation/'));
 });
 
-test('closes QA-10 in the backlog only after implementation', () => {
-  assert.match(backlog, /^- \[ \] \*\*QA-10 /mu);
+test('closes QA-10 after the exact successful deployment', () => {
+  assert.match(backlog, /^- \[x\] \*\*QA-10 /mu);
+  assert.match(backlog, /8a2f4408945919643f71a0aae48e009b537de377/u);
+  assert.match(backlog, /30243000249/u);
 });

@@ -154,7 +154,7 @@ test('articles and deterministic representations', () => {
     assert.equal(topicsById.get(id)?.slug, slug);
   }
   assert.equal(documentsById.has('QA-10'), true);
-  assert.match(backlog, /^- \[ \] \*\*QA-10 /mu, 'QA-10 remains unchecked until its closure evidence exists');
+  assert.match(backlog, /^- \[x\] \*\*QA-10 /mu, 'QA-10 is closed by the final G006 deployment');
 });
 
 test('security privacy and safety boundaries', () => {

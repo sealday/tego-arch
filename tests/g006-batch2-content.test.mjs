@@ -199,7 +199,7 @@ test('articles and deterministic representations', () => {
   }
 
   assert.equal(documentsById.has('QA-10'), true, 'QA-10 is published by the final G006 batch');
-  assert.match(backlog, /^- \[ \] \*\*QA-10 /mu, 'QA-10 remains unchecked until deployment closure');
+  assert.match(backlog, /^- \[x\] \*\*QA-10 /mu, 'QA-10 is closed by the final G006 deployment');
 });
 
 test('reciprocal relationships', () => {
