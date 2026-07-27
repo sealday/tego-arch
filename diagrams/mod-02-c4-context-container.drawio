@@ -43,24 +43,21 @@
           <mxGeometry x="930" y="232" width="130" height="22" as="geometry"/>
         </mxCell>
 
-        <mxCell id="edge-employee-system" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#263238;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="employee" target="expense-system">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="edge-employee-system" value="提交费用" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#263238;strokeWidth=2;endArrow=block;endFill=1;fontSize=13;fontStyle=1;fontColor=#55514B;" edge="1" parent="1" source="employee" target="expense-system">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-26" as="offset"/>
+          </mxGeometry>
         </mxCell>
-        <mxCell id="label-employee-system" value="提交费用" style="text;html=0;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#55514B;" vertex="1" parent="1">
-          <mxGeometry x="342" y="181" width="80" height="24" as="geometry"/>
-        </mxCell>
-        <mxCell id="edge-system-bank" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#263238;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="expense-system" target="bank-context">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-        <mxCell id="label-system-bank" value="请求付款" style="text;html=0;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#55514B;" vertex="1" parent="1">
-          <mxGeometry x="772" y="181" width="80" height="24" as="geometry"/>
+        <mxCell id="edge-system-bank" value="请求付款" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#263238;strokeWidth=2;endArrow=block;endFill=1;fontSize=13;fontStyle=1;fontColor=#55514B;" edge="1" parent="1" source="expense-system" target="bank-context">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-26" as="offset"/>
+          </mxGeometry>
         </mxCell>
 
-        <mxCell id="zoom-link" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#A34A3A;strokeWidth=3;dashed=1;dashPattern=5 5;endArrow=block;endFill=1;" edge="1" parent="1" source="expense-system" target="container-boundary">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-        <mxCell id="zoom-label" value="展开目标系统" style="text;html=0;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#A34A3A;" vertex="1" parent="1">
-          <mxGeometry x="626" y="348" width="110" height="24" as="geometry"/>
+        <mxCell id="zoom-link" value="展开目标系统" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#A34A3A;strokeWidth=3;dashed=1;dashPattern=5 5;endArrow=block;endFill=1;fontSize=13;fontStyle=1;fontColor=#A34A3A;exitX=0.5;exitY=1;entryX=0.52;entryY=0;" edge="1" parent="1" source="expense-system" target="container-boundary">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="72" y="0" as="offset"/>
+          </mxGeometry>
         </mxCell>
 
         <mxCell id="container-panel" value="" style="rounded=1;arcSize=12;whiteSpace=wrap;html=0;fillColor=#FBF8F1;strokeColor=#B9B1A5;strokeWidth=2;" vertex="1" parent="1">
@@ -74,7 +71,7 @@
         </mxCell>
 
         <mxCell id="container-boundary" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=0;fillColor=#EEF3ED;strokeColor=#64806B;strokeWidth=2;dashed=1;dashPattern=6 4;" vertex="1" parent="1">
-          <mxGeometry x="245" y="505" width="680" height="280" as="geometry"/>
+          <mxGeometry x="245" y="505" width="670" height="280" as="geometry"/>
         </mxCell>
         <mxCell id="owned-boundary-label" value="费用申报系统内部" style="text;html=0;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=12;fontStyle=1;fontColor=#55705D;" vertex="1" parent="1">
           <mxGeometry x="270" y="509" width="150" height="22" as="geometry"/>
@@ -109,53 +106,47 @@
         </mxCell>
 
         <mxCell id="payment-worker" value="支付任务执行器" style="rounded=1;arcSize=14;whiteSpace=wrap;html=0;fillColor=#D9E5DA;strokeColor=#64806B;strokeWidth=2;fontColor=#263238;fontSize=18;fontStyle=1;verticalAlign=top;spacingTop=22;" vertex="1" parent="1">
-          <mxGeometry x="700" y="685" width="190" height="86" as="geometry"/>
+          <mxGeometry x="690" y="685" width="190" height="86" as="geometry"/>
         </mxCell>
         <mxCell id="payment-worker-type" value="CONTAINER" style="text;html=0;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=10;fontStyle=1;fontColor=#55705D;" vertex="1" parent="1">
-          <mxGeometry x="750" y="739" width="90" height="22" as="geometry"/>
+          <mxGeometry x="740" y="739" width="90" height="22" as="geometry"/>
         </mxCell>
 
         <mxCell id="bank-container" value="银行支付服务" style="rounded=1;arcSize=16;whiteSpace=wrap;html=0;fillColor=#ECE8E1;strokeColor=#77716A;strokeWidth=2;fontColor=#263238;fontSize=18;fontStyle=1;verticalAlign=top;spacingTop=22;" vertex="1" parent="1">
-          <mxGeometry x="990" y="685" width="150" height="86" as="geometry"/>
+          <mxGeometry x="1010" y="685" width="130" height="86" as="geometry"/>
         </mxCell>
         <mxCell id="bank-container-type" value="EXTERNAL" style="text;html=0;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=10;fontStyle=1;fontColor=#77716A;" vertex="1" parent="1">
-          <mxGeometry x="1020" y="739" width="90" height="22" as="geometry"/>
+          <mxGeometry x="1030" y="739" width="90" height="22" as="geometry"/>
         </mxCell>
 
-        <mxCell id="edge-employee-web" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#263238;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="employee-container" target="web-app">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-        <mxCell id="label-employee-web" value="使用" style="text;html=0;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#55514B;" vertex="1" parent="1">
-          <mxGeometry x="218" y="536" width="40" height="24" as="geometry"/>
-        </mxCell>
-        <mxCell id="edge-web-api" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#263238;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="web-app" target="expense-api">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-        <mxCell id="label-web-api" value="提交申报" style="text;html=0;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#55514B;" vertex="1" parent="1">
-          <mxGeometry x="443" y="536" width="65" height="24" as="geometry"/>
-        </mxCell>
-        <mxCell id="edge-api-db" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#263238;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="expense-api" target="expense-db">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-        <mxCell id="label-api-db" value="读写" style="text;html=0;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#55514B;" vertex="1" parent="1">
-          <mxGeometry x="699" y="536" width="40" height="24" as="geometry"/>
-        </mxCell>
-        <mxCell id="edge-api-worker" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#263238;strokeWidth=2;endArrow=block;endFill=1;exitX=0.94;exitY=1;entryX=0.05;entryY=0;" edge="1" parent="1" source="expense-api" target="payment-worker">
+        <mxCell id="edge-employee-web" value="使用" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#263238;strokeWidth=2;endArrow=block;endFill=1;fontSize=13;fontStyle=1;fontColor=#55514B;" edge="1" parent="1" source="employee-container" target="web-app">
           <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="680" y="670"/>
-              <mxPoint x="715" y="670"/>
-            </Array>
+            <mxPoint x="0" y="-25" as="offset"/>
           </mxGeometry>
         </mxCell>
-        <mxCell id="label-api-worker" value="创建支付任务" style="text;html=0;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#55514B;" vertex="1" parent="1">
-          <mxGeometry x="556" y="635" width="108" height="24" as="geometry"/>
+        <mxCell id="edge-web-api" value="提交申报" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#263238;strokeWidth=2;endArrow=block;endFill=1;fontSize=13;fontStyle=1;fontColor=#55514B;" edge="1" parent="1" source="web-app" target="expense-api">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-25" as="offset"/>
+          </mxGeometry>
         </mxCell>
-        <mxCell id="edge-worker-bank" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#263238;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="payment-worker" target="bank-container">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="edge-api-db" value="读写" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#263238;strokeWidth=2;endArrow=block;endFill=1;fontSize=13;fontStyle=1;fontColor=#55514B;" edge="1" parent="1" source="expense-api" target="expense-db">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-25" as="offset"/>
+          </mxGeometry>
         </mxCell>
-        <mxCell id="label-worker-bank" value="请求付款" style="text;html=0;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=13;fontStyle=1;fontColor=#55514B;" vertex="1" parent="1">
-          <mxGeometry x="908" y="686" width="65" height="24" as="geometry"/>
+        <mxCell id="edge-api-worker" value="创建支付任务" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#263238;strokeWidth=2;endArrow=block;endFill=1;fontSize=13;fontStyle=1;fontColor=#55514B;exitX=0.94;exitY=1;entryX=0.1;entryY=0;" edge="1" parent="1" source="expense-api" target="payment-worker">
+          <mxGeometry x="-0.55" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="680" y="670"/>
+              <mxPoint x="709" y="670"/>
+            </Array>
+            <mxPoint x="-8" y="-18" as="offset"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge-worker-bank" value="请求付款" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#263238;strokeWidth=2;endArrow=block;endFill=1;fontSize=13;fontStyle=1;fontColor=#55514B;" edge="1" parent="1" source="payment-worker" target="bank-container">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-25" as="offset"/>
+          </mxGeometry>
         </mxCell>
       </root>
     </mxGraphModel>
