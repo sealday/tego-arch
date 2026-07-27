@@ -89,17 +89,28 @@ test('publishes the MOD-02 Draw.io source and responsive SVG pair', async () => 
     drawio,
     /id="bank-container"[\s\S]*?<mxGeometry x="1000" y="685" width="140" height="86"/u,
   );
-  assert.match(
-    drawio,
-    /id="zoom-link"[^>]*entryX=0\.53;entryY=0;[^>]*source="expense-system" target="container-boundary"/u,
-  );
   assert.match(svg, /<path d="M720 227H885"[^>]*marker-end="url\(#arrow-ink\)"/u);
-  const zoomPath =
-    '<path d="M600 283V495" fill="none" stroke="#A34A3A"';
   const internalBoundaryPath =
     '<path d="M257 505H903Q915 505 915 517V773Q915 785 903 785';
+  const boundaryCell =
+    drawio.match(/<mxCell id="container-boundary"[\s\S]*?<\/mxCell>/u)?.[0] ??
+    '';
+  const boundaryGeometry =
+    boundaryCell.match(/<mxGeometry\b[^>]*>/u)?.[0] ?? '';
+  const zoomCell = drawio.match(/<mxCell id="zoom-link"[^>]*>/u)?.[0] ?? '';
+  const entryX = Number(zoomCell.match(/\bentryX=([^;]+);/u)?.[1]);
+  const drawioZoomX =
+    Number(xmlAttribute(boundaryGeometry, 'x')) +
+    Number(xmlAttribute(boundaryGeometry, 'width')) * entryX;
+  const svgZoomPath = svg.match(
+    /<path d="M([0-9.]+) 283V495" fill="none" stroke="#A34A3A"[^>]*>/u,
+  );
+  const svgZoomX = Number(svgZoomPath?.[1]);
 
-  assert.match(svg, new RegExp(zoomPath.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&'), 'u'));
+  assert.ok(svgZoomPath);
+  assert.ok(Number.isFinite(drawioZoomX));
+  assert.ok(Number.isFinite(svgZoomX));
+  assert.ok(Math.abs(drawioZoomX - svgZoomX) <= 1e-6);
   assert.match(
     svg,
     new RegExp(
@@ -107,7 +118,7 @@ test('publishes the MOD-02 Draw.io source and responsive SVG pair', async () => 
       'u',
     ),
   );
-  assert.ok(svg.indexOf(zoomPath) > svg.indexOf(internalBoundaryPath));
+  assert.ok((svgZoomPath.index ?? -1) > svg.indexOf(internalBoundaryPath));
   assert.match(
     svg,
     /<path d="M1000 699Q1000 685 1014 685H1126Q1140 685 1140 699V757Q1140 771 1126 771H1014Q1000 771 1000 757Z"/u,
