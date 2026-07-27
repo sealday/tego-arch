@@ -5,6 +5,7 @@ import test from 'node:test';
 const pagePath = '../content/modeling/mod-02-c4-context-container.mdx';
 const drawioPath = '../diagrams/mod-02-c4-context-container.drawio';
 const svgPath = '../static/img/diagrams/mod-02-c4-context-container.svg';
+const cssPath = '../src/css/custom.css';
 
 function source(relativePath) {
   return readFile(new URL(relativePath, import.meta.url), 'utf8');
@@ -18,10 +19,15 @@ test('publishes the MOD-02 Draw.io source and responsive SVG pair', async () => 
     page,
     /!\[[^\]]+\]\(\/img\/diagrams\/mod-02-c4-context-container\.svg\)/u,
   );
+  assert.match(
+    page,
+    /<div className="architecture-diagram-scroll">[\s\S]*mod-02-c4-context-container\.svg[\s\S]*<\/div>/u,
+  );
 
-  const [drawio, svg] = await Promise.all([
+  const [drawio, svg, css] = await Promise.all([
     source(drawioPath),
     source(svgPath),
+    source(cssPath),
   ]);
 
   assert.match(drawio, /<mxfile\b/u);
@@ -31,6 +37,14 @@ test('publishes the MOD-02 Draw.io source and responsive SVG pair', async () => 
   const svgRoot = svg.match(/<svg\b[^>]*>/u)?.[0] ?? '';
   assert.doesNotMatch(svgRoot, /\bwidth=/u);
   assert.doesNotMatch(svgRoot, /\bheight=/u);
+  assert.match(
+    css,
+    /\.architecture-diagram-scroll\s*\{[^}]*overflow-x:\s*auto;/su,
+  );
+  assert.match(
+    css,
+    /\.architecture-diagram-scroll img\s*\{[^}]*width:\s*50rem;[^}]*max-width:\s*none;/su,
+  );
 
   for (const label of [
     'Context：费用申报系统边界',
