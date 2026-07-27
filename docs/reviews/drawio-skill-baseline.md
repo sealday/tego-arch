@@ -133,3 +133,36 @@ omitted the node/text values. The workflow now requires measured lower-node
 baselines and bottom clearance after a second probe listed the thresholds but
 did not explicitly report the current lower-node crowding. A fresh final probe
 then satisfied the complete contract.
+
+## Review-fix forward test
+
+A blocking review found that the first GREEN contract did not require an
+actual `800px` desktop measurement, treated the MOD-02 route/labels and “lower
+nodes” too universally, and did not distinguish planned browser QA from
+completed QA.
+
+The skill now requires each task to define its `<article-route>`,
+`<required-label>` list, and `<measured-node>` list. MOD-02 remains only a
+worked example. Artifact-changing runs must return actual measured browser
+PASS/FAIL evidence; proposal-only/read-only runs must return `NOT RUN` plus the
+exact planned checks.
+
+One fresh-context read-only probe received the same neutral artifact prompt as
+the original forward test. It independently returned:
+
+- article route `/modeling/mod-02`;
+- the full semantic label list used in its validator command;
+- geometry measurements for all nine node instances, rather than a universal
+  “lower nodes” category;
+- browser QA status `NOT RUN`;
+- planned desktop `1440x1000` assertion
+  `image.getBoundingClientRect().width === 800`;
+- planned mobile `390x844` assertions
+  `wrapper.scrollWidth > wrapper.clientWidth` and document
+  `scrollWidth === clientWidth`;
+- planned HTTP, console, non-zero SVG, label visibility, connector continuity,
+  cropping, boundary, and rendered node-geometry checks.
+
+The probe also ran the deterministic validator and honestly reported its four
+semantic-sync errors for the unchanged pair instead of presenting a planned
+GREEN result as completed evidence.

@@ -12,14 +12,17 @@ Readable topology outranks decoration. Preserve the architectural meaning first;
 ## Required workflow
 
 1. For every create or revise task, read [references/layout-and-typography.md](references/layout-and-typography.md) before proposing geometry.
-2. Inventory the current nodes, boundaries, relationships, labels, reading direction, and claims that the article does not make.
+2. Inventory the current nodes, boundaries, relationships, labels, reading direction, and claims that the article does not make. Define the affected article route, semantic labels required in both files, and every node whose geometry must be measured.
 3. Before saving or embedding, read [references/repository-integration.md](references/repository-integration.md).
 4. Keep the editable Draw.io source and published SVG semantically synchronized: the same slug, nodes, boundaries, relationships, direction, and wording. Update both when any semantic element changes.
 5. Run the bundled validator. Treat it as deterministic pair/accessibility validation, not proof of visual clearance.
-6. For existing diagrams, report lower-node title/type baseline coordinates and
-   text-to-bottom clearance; passing a numeric minimum does not replace rendered
-   legibility judgment.
-7. Render the affected article in a real browser and inspect both desktop and mobile views. Check label lanes, text clearance, connector continuity, containment, cropping, overflow, and legibility.
+6. For existing diagrams, report title/type baseline coordinates and
+   text-to-edge clearance for every node identified for geometry measurement;
+   passing a numeric minimum does not replace rendered legibility judgment.
+7. For artifact-changing work, render the affected article in a real browser
+   and record measured desktop/mobile PASS/FAIL evidence. For proposal-only or
+   read-only work, report browser QA as `NOT RUN` and list the exact route,
+   viewports, measurements, and checks that the changing run must perform.
 
 ## Completion contract
 
@@ -30,13 +33,21 @@ Return:
 - layout rules applied, including every numeric node, text, stroke, arrow, and
   node-clearance threshold from the required layout reference;
 - validator command and complete output;
-- desktop and mobile viewport sizes plus a PASS/FAIL visual verdict and observed defects.
+- browser QA status: measured `PASS`/`FAIL` for artifact-changing work or
+  `NOT RUN` for proposal-only/read-only work;
+- desktop `1440x1000` rendered SVG width: measured exactly `800px`, or the
+  planned exact `800px` assertion when status is `NOT RUN`;
+- mobile `390x844` measurements proving diagram-wrapper local horizontal scroll
+  and no document-level overflow, or those exact planned assertions when status
+  is `NOT RUN`;
+- observed defects and the parameterized article route, required labels, and
+  measured nodes used for validation.
 
 ## Common mistakes
 
 | Mistake | Required correction |
 | --- | --- |
 | Opaque label background erases a connector | Reserve a connector-free label lane and apply the reference clearances. |
-| Lower title/type baselines or bottom text look crowded | Measure and report the baselines and bottom clearance; size text and node before routing. |
+| A node's title/type baselines or edge clearance look crowded | Measure that named node's baselines and edge clearance; size text and node before routing. |
 | Draw.io and SVG merely coexist but geometrically or semantically drift | Revise and compare the pair together. |
-| Passing file tests are treated as visual proof | State what the validator covers, then perform real desktop/mobile browser QA. |
+| Planned browser QA is presented as completed | Use `NOT RUN` for read-only work; only artifact-changing runs may report measured PASS/FAIL. |
