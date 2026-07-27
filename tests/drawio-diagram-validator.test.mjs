@@ -57,3 +57,58 @@ test('rejects expected elements nested below wrapper roots', () => {
   assert.match(result.stderr, /XML rooted at mxfile/u);
   assert.match(result.stderr, /XML rooted at svg/u);
 });
+
+test('rejects malformed XML with mismatched closing tags', () => {
+  const result = runValidator('malformed.drawio', 'malformed.svg');
+
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /well-formed XML/u);
+});
+
+test('requires labels in Draw.io cell values and visible SVG text', () => {
+  const result = runValidator(
+    'hidden.drawio',
+    'hidden.svg',
+    '--label',
+    'Hidden architecture label',
+  );
+
+  assert.equal(result.status, 1);
+  assert.match(
+    result.stderr,
+    /Required label "Hidden architecture label" must appear as a Draw\.io mxCell\.value and visible SVG text/u,
+  );
+});
+
+test('compares decoded Draw.io and visible SVG labels', () => {
+  const result = runValidator(
+    'escaped.drawio',
+    'escaped.svg',
+    '--label',
+    'Payments & Claims',
+  );
+
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /Validated escaped/u);
+});
+
+test('rejects data-role when the exact SVG role attribute is absent', () => {
+  const result = runValidator('data-role.drawio', 'data-role.svg');
+
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /accessible title and description/u);
+});
+
+test('rejects unknown options', () => {
+  const result = runValidator('valid.drawio', 'valid.svg', '--unknown');
+
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /Unknown option: --unknown/u);
+});
+
+test('rejects a dangling label option', () => {
+  const result = runValidator('valid.drawio', 'valid.svg', '--label');
+
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /--label requires a value/u);
+});

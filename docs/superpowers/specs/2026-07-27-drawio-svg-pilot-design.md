@@ -74,7 +74,7 @@ the Docusaurus production build.
 ## Local preview acceptance
 
 Start the built site or Docusaurus development server from the isolated
-worktree. Inspect `/modeling/c4-context-container` at desktop and narrow mobile
+worktree. Inspect `/modeling/mod-02` at desktop and narrow mobile
 widths. Accept the pilot only when:
 
 - the SVG loads without console errors;

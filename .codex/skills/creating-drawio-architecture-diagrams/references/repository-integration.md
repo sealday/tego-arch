@@ -40,16 +40,22 @@ Articles embed the published SVG by its `/img/diagrams/` public path, never the
 Draw.io source. Keep the image inside the responsive horizontal-scroll wrapper:
 
 ```mdx
-<div className="architecture-diagram-scroll">
+<div
+  className="architecture-diagram-scroll"
+  role="region"
+  aria-label="<concise diagram navigation label>"
+  tabIndex={0}
+>
 
 ![<concise purpose-oriented alt text>](/img/diagrams/<slug>.svg)
 
 </div>
 ```
 
-The wrapper is required because its image remains 50rem wide and scrolls
-horizontally on narrow screens instead of being compressed until labels become
-unreadable.
+The labeled, focusable region is required because its image remains 50rem wide
+and scrolls horizontally on narrow screens instead of being compressed until
+labels become unreadable. Give it visible `:focus-visible` styling so keyboard
+users can identify the locally scrollable region.
 
 ## Deterministic validation
 
@@ -70,9 +76,10 @@ worked example:
 node --test tests/drawio-svg-pilot.test.mjs tests/drawio-diagram-validator.test.mjs
 ```
 
-These checks prove pairing, XML shape, responsive embedding, accessibility
-metadata, and declared label presence. They do not prove rendered text or
-connector clearance.
+These checks prove pairing, well-formed XML shape, responsive embedding,
+accessibility metadata, and exact declared-label presence in Draw.io
+`mxCell.value` attributes and visible SVG `<text>` elements. They do not prove
+rendered text or connector clearance.
 
 ## Desktop and mobile browser QA
 
@@ -94,7 +101,12 @@ the affected SVG image and its `.architecture-diagram-scroll` wrapper.
 
 At desktop, record the rendered SVG width from
 `image.getBoundingClientRect().width` and require exactly `800px`; the `50rem`
-CSS declaration or viewport size alone is not evidence.
+CSS declaration or viewport size alone is not evidence. Calculate the final
+render scale from that width and the SVG `viewBox`, then record each measured
+node's rendered title/type baseline coordinates, baseline gap, visible
+text-to-node clearances, and each relationship label's visible clearance from
+its stroke, arrow, and neighboring nodes. Outer image dimensions alone are not
+geometry evidence.
 
 At mobile, record:
 
@@ -104,11 +116,13 @@ document.documentElement.scrollWidth === document.documentElement.clientWidth
 ```
 
 The first assertion proves horizontal overflow stays local and scrollable; the
-second proves the document itself does not overflow. At both viewports also
-verify HTTP 200, no console errors, non-zero SVG dimensions, every
-`<required-label>` visible, readable text, uninterrupted connectors, clear
-boundaries, and no cropping. Measure baseline and edge clearance for every
-`<measured-node>`.
+second proves the document itself does not overflow. Focus the wrapper with the
+keyboard, verify its visible focus indicator, use keyboard horizontal scrolling,
+and confirm `scrollLeft` changes while document width remains fixed. At both
+viewports also verify HTTP 200, no console errors, non-zero SVG dimensions,
+every `<required-label>` visible, readable text, uninterrupted connectors,
+clear boundaries, and no cropping. Measure baseline and edge clearance for
+every `<measured-node>` in final rendered CSS pixels.
 
 For artifact-changing work, perform these checks and record the actual values
 with separate desktop/mobile `PASS` or `FAIL` verdicts. For proposal-only or

@@ -8,6 +8,8 @@ const pagePath = '../content/modeling/mod-02-c4-context-container.mdx';
 const drawioPath = '../diagrams/mod-02-c4-context-container.drawio';
 const svgPath = '../static/img/diagrams/mod-02-c4-context-container.svg';
 const cssPath = '../src/css/custom.css';
+const pilotDesignPath =
+  '../docs/superpowers/specs/2026-07-27-drawio-svg-pilot-design.md';
 const validatorPath = fileURLToPath(
   new URL(
     '../.codex/skills/creating-drawio-architecture-diagrams/scripts/validate_drawio_svg.mjs',
@@ -20,7 +22,89 @@ function source(relativePath) {
 }
 
 function xmlAttribute(tag, name) {
-  return tag.match(new RegExp(`\\b${name}="([^"]*)"`, 'u'))?.[1] ?? '';
+  return (
+    tag.match(
+      new RegExp(
+        `(?:^|\\s)${name.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&')}="([^"]*)"`,
+        'u',
+      ),
+    )?.[1] ?? ''
+  );
+}
+
+function styleProperty(svg, className, property) {
+  const rule =
+    svg.match(
+      new RegExp(
+        `\\.${className.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&')}\\s*\\{([^}]*)\\}`,
+        'u',
+      ),
+    )?.[1] ?? '';
+  return (
+    rule.match(
+      new RegExp(
+        `(?:^|;)\\s*${property.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&')}\\s*:\\s*([^;]+)`,
+        'u',
+      ),
+    )?.[1]?.trim() ?? ''
+  );
+}
+
+function numericStyle(style, name) {
+  return Number(
+    style.match(
+      new RegExp(
+        `(?:^|;)${name.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&')}=([^;]+)`,
+        'u',
+      ),
+    )?.[1],
+  );
+}
+
+function drawioCellTag(drawio, id) {
+  return (
+    drawio.match(
+      new RegExp(
+        `<mxCell\\b[^>]*\\bid="${id.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&')}"[^>]*>`,
+        'u',
+      ),
+    )?.[0] ?? ''
+  );
+}
+
+function drawioCellBlock(drawio, id) {
+  return (
+    drawio.match(
+      new RegExp(
+        `<mxCell\\b[^>]*\\bid="${id.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&')}"[^>]*>[\\s\\S]*?<\\/mxCell>`,
+        'u',
+      ),
+    )?.[0] ?? ''
+  );
+}
+
+function relativeLuminance(hex) {
+  const channels = hex
+    .slice(1)
+    .match(/../gu)
+    .map((channel) => Number.parseInt(channel, 16) / 255)
+    .map((channel) =>
+      channel <= 0.04045
+        ? channel / 12.92
+        : ((channel + 0.055) / 1.055) ** 2.4,
+    );
+  return (
+    channels[0] * 0.2126 + channels[1] * 0.7152 + channels[2] * 0.0722
+  );
+}
+
+function contrastRatio(foreground, background) {
+  const foregroundLuminance = relativeLuminance(foreground);
+  const backgroundLuminance = relativeLuminance(background);
+  return (
+    (Math.max(foregroundLuminance, backgroundLuminance) + 0.05) /
+    (Math.min(foregroundLuminance, backgroundLuminance) + 0.05)
+  );
 }
 
 test('publishes the MOD-02 Draw.io source and responsive SVG pair', async () => {
@@ -33,7 +117,7 @@ test('publishes the MOD-02 Draw.io source and responsive SVG pair', async () => 
   );
   assert.match(
     page,
-    /<div className="architecture-diagram-scroll">[\s\S]*mod-02-c4-context-container\.svg[\s\S]*<\/div>/u,
+    /<div className="architecture-diagram-scroll"[^>]*>[\s\S]*mod-02-c4-context-container\.svg[\s\S]*<\/div>/u,
   );
 
   const [drawio, svg, css] = await Promise.all([
@@ -45,13 +129,13 @@ test('publishes the MOD-02 Draw.io source and responsive SVG pair', async () => 
   assert.match(drawio, /<mxfile\b/u);
   assert.match(drawio, /<diagram\b[^>]*name="Context → Container"/u);
   assert.match(svg, /<svg\b/u);
-  assert.match(svg, /\bviewBox="0 0 1200 840"/u);
+  assert.match(svg, /\bviewBox="0 0 1200 1160"/u);
   const svgRoot = svg.match(/<svg\b[^>]*>/u)?.[0] ?? '';
   assert.doesNotMatch(svgRoot, /\bwidth=/u);
   assert.doesNotMatch(svgRoot, /\bheight=/u);
   assert.doesNotMatch(svg, /class="edge-label-background"/u);
   assert.match(svg, /class="edge-label"/u);
-  assert.match(svg, /data-clearance="8"/u);
+  assert.match(svg, /data-stroke-clearance-css="8"/u);
   assert.match(drawio, /html=0/u);
   assert.doesNotMatch(drawio, /html=1/u);
   assert.doesNotMatch(drawio, /labelBackgroundColor=/u);
@@ -62,6 +146,14 @@ test('publishes the MOD-02 Draw.io source and responsive SVG pair', async () => 
   assert.match(
     css,
     /\.architecture-diagram-scroll img\s*\{[^}]*width:\s*50rem;[^}]*max-width:\s*none;/su,
+  );
+  assert.match(
+    page,
+    /<div className="architecture-diagram-scroll" role="region" aria-label="[^"]+" tabIndex=\{0\}>/u,
+  );
+  assert.match(
+    css,
+    /\.theme-doc-markdown \.architecture-diagram-scroll:focus-visible\s*\{[^}]*outline:/su,
   );
 
   const majorLabels = [
@@ -81,92 +173,6 @@ test('publishes the MOD-02 Draw.io source and responsive SVG pair', async () => 
     assert.match(svg, new RegExp(label, 'u'));
   }
 
-  assert.match(
-    drawio,
-    /id="container-boundary"[\s\S]*?<mxGeometry x="245" y="505" width="670" height="280"/u,
-  );
-  assert.match(
-    drawio,
-    /id="bank-container"[\s\S]*?<mxGeometry x="1000" y="685" width="140" height="86"/u,
-  );
-  assert.match(svg, /<path d="M720 227H885"[^>]*marker-end="url\(#arrow-ink\)"/u);
-  const internalBoundaryPath =
-    '<path d="M257 505H903Q915 505 915 517V773Q915 785 903 785';
-  const boundaryCell =
-    drawio.match(/<mxCell id="container-boundary"[\s\S]*?<\/mxCell>/u)?.[0] ??
-    '';
-  const boundaryGeometry =
-    boundaryCell.match(/<mxGeometry\b[^>]*>/u)?.[0] ?? '';
-  const zoomCell = drawio.match(/<mxCell id="zoom-link"[^>]*>/u)?.[0] ?? '';
-  const entryX = Number(zoomCell.match(/\bentryX=([^;]+);/u)?.[1]);
-  const drawioZoomX =
-    Number(xmlAttribute(boundaryGeometry, 'x')) +
-    Number(xmlAttribute(boundaryGeometry, 'width')) * entryX;
-  const svgZoomPath = svg.match(
-    /<path d="M([0-9.]+) 283V495" fill="none" stroke="#A34A3A"[^>]*>/u,
-  );
-  const svgZoomX = Number(svgZoomPath?.[1]);
-
-  assert.ok(svgZoomPath);
-  assert.ok(Number.isFinite(drawioZoomX));
-  assert.ok(Number.isFinite(svgZoomX));
-  assert.ok(Math.abs(drawioZoomX - svgZoomX) <= 1e-6);
-  assert.match(
-    svg,
-    new RegExp(
-      internalBoundaryPath.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&'),
-      'u',
-    ),
-  );
-  assert.ok((svgZoomPath.index ?? -1) > svg.indexOf(internalBoundaryPath));
-  assert.match(
-    svg,
-    /<path d="M1000 699Q1000 685 1014 685H1126Q1140 685 1140 699V757Q1140 771 1126 771H1014Q1000 771 1000 757Z"/u,
-  );
-  assert.match(svg, /<path d="M881 728H990"[^>]*marker-end="url\(#arrow-ink\)"/u);
-  assert.match(
-    svg,
-    /<text x="955" y="704"[^>]*class="edge-label" data-clearance="8">请求付款<\/text>/u,
-  );
-
-  const expectedRelations = [
-    ['edge-employee-system', '提交费用', 'employee', 'expense-system'],
-    ['edge-system-bank', '请求付款', 'expense-system', 'bank-context'],
-    ['zoom-link', '展开目标系统', 'expense-system', 'container-boundary'],
-    ['edge-employee-web', '使用', 'employee-container', 'web-app'],
-    ['edge-web-api', '提交申报', 'web-app', 'expense-api'],
-    ['edge-api-db', '读写', 'expense-api', 'expense-db'],
-    ['edge-api-worker', '创建支付任务', 'expense-api', 'payment-worker'],
-    ['edge-worker-bank', '请求付款', 'payment-worker', 'bank-container'],
-  ];
-  const relationTags = drawio.match(/<mxCell\b[^>]*\bedge="1"[^>]*>/gu) ?? [];
-
-  assert.equal(relationTags.length, expectedRelations.length);
-  assert.deepEqual(
-    relationTags.map((tag) => [
-      xmlAttribute(tag, 'id'),
-      xmlAttribute(tag, 'value'),
-      xmlAttribute(tag, 'source'),
-      xmlAttribute(tag, 'target'),
-    ]),
-    expectedRelations,
-  );
-
-  const svgEdgeLabels = [
-    ...svg.matchAll(
-      /(<text\b[^>]*\bclass="[^"]*\bedge-label\b[^"]*"[^>]*>)([^<]*)<\/text>/gu,
-    ),
-  ];
-
-  assert.equal(svgEdgeLabels.length, expectedRelations.length);
-  for (const [, labelTag] of svgEdgeLabels) {
-    assert.equal(xmlAttribute(labelTag, 'data-clearance'), '8');
-  }
-  assert.deepEqual(
-    svgEdgeLabels.map(([, , label]) => label).sort(),
-    expectedRelations.map(([, value]) => value).sort(),
-  );
-
   const validator = spawnSync(
     process.execPath,
     [
@@ -179,4 +185,243 @@ test('publishes the MOD-02 Draw.io source and responsive SVG pair', async () => 
   );
 
   assert.equal(validator.status, 0, validator.stderr);
+});
+
+test('treats diagram thresholds as final CSS pixels at the 800px render width', async () => {
+  const [drawio, svg] = await Promise.all([source(drawioPath), source(svgPath)]);
+  const viewBox = xmlAttribute(svg.match(/<svg\b[^>]*>/u)?.[0] ?? '', 'viewBox')
+    .split(/\s+/u)
+    .map(Number);
+  const renderedWidth = 800;
+  const renderedScale = renderedWidth / viewBox[2];
+
+  assert.equal(renderedScale, 2 / 3);
+
+  const renderedFontThresholds = new Map([
+    ['section-note', 15],
+    ['node-title', 15],
+    ['edge-label', 15],
+    ['node-type', 10],
+    ['badge', 10],
+  ]);
+
+  for (const [className, minimumCssPixels] of renderedFontThresholds) {
+    const authoredPixels = Number.parseFloat(
+      styleProperty(svg, className, 'font-size'),
+    );
+    assert.ok(
+      authoredPixels * renderedScale >= minimumCssPixels,
+      `${className} renders at ${authoredPixels * renderedScale}px; expected at least ${minimumCssPixels}px`,
+    );
+  }
+
+  const expectedAuthoredSizes = {
+    nodeTitle: Number.parseFloat(styleProperty(svg, 'node-title', 'font-size')),
+    nodeType: Number.parseFloat(styleProperty(svg, 'node-type', 'font-size')),
+    edgeLabel: Number.parseFloat(styleProperty(svg, 'edge-label', 'font-size')),
+  };
+  const nodeIds = [
+    'employee',
+    'expense-system',
+    'bank-context',
+    'employee-container',
+    'web-app',
+    'expense-api',
+    'expense-db',
+    'payment-worker',
+    'bank-container',
+  ];
+
+  for (const nodeId of nodeIds) {
+    assert.equal(
+      numericStyle(xmlAttribute(drawioCellTag(drawio, nodeId), 'style'), 'fontSize'),
+      expectedAuthoredSizes.nodeTitle,
+      `${nodeId} title font must match the SVG authored size`,
+    );
+    assert.equal(
+      numericStyle(
+        xmlAttribute(drawioCellTag(drawio, `${nodeId}-type`), 'style'),
+        'fontSize',
+      ),
+      expectedAuthoredSizes.nodeType,
+      `${nodeId} role font must match the SVG authored size`,
+    );
+  }
+
+  for (const relationTag of drawio.match(/<mxCell\b[^>]*\bedge="1"[^>]*>/gu) ??
+    []) {
+    assert.equal(
+      numericStyle(xmlAttribute(relationTag, 'style'), 'fontSize'),
+      expectedAuthoredSizes.edgeLabel,
+    );
+  }
+});
+
+test('keeps synchronized node geometry above rendered baseline and bottom-clearance thresholds', async () => {
+  const [drawio, svg] = await Promise.all([source(drawioPath), source(svgPath)]);
+  const renderedScale = 800 / 1200;
+  const nodeIds = [
+    'employee',
+    'expense-system',
+    'bank-context',
+    'employee-container',
+    'web-app',
+    'expense-api',
+    'expense-db',
+    'payment-worker',
+    'bank-container',
+  ];
+  const groups = [
+    ...svg.matchAll(
+      /<g\b[^>]*\bdata-node-id="([^"]+)"[^>]*\bdata-node-bounds="([^"]+)"[^>]*>([\s\S]*?)<\/g>/gu,
+    ),
+  ];
+
+  assert.equal(groups.length, nodeIds.length);
+
+  for (const [, nodeId, boundsValue, contents] of groups) {
+    assert.ok(nodeIds.includes(nodeId), `unexpected measured node ${nodeId}`);
+    const bounds = boundsValue.split(/\s+/u).map(Number);
+    const titleTag =
+      contents.match(
+        /<text\b[^>]*\bdata-text-role="title"[^>]*>/u,
+      )?.[0] ?? '';
+    const typeTag =
+      contents.match(/<text\b[^>]*\bdata-text-role="type"[^>]*>/u)?.[0] ??
+      '';
+    const titleBaseline = Number(xmlAttribute(titleTag, 'y'));
+    const typeBaseline = Number(xmlAttribute(typeTag, 'y'));
+    const nodeBottom = bounds[1] + bounds[3];
+
+    assert.ok(titleTag, `${nodeId} must expose its title for rendered QA`);
+    assert.ok(typeTag, `${nodeId} must expose its role for rendered QA`);
+    assert.ok(
+      (typeBaseline - titleBaseline) * renderedScale >= 22,
+      `${nodeId} title/type baselines render too closely`,
+    );
+    assert.ok(
+      (nodeBottom - typeBaseline) * renderedScale >= 14,
+      `${nodeId} role baseline renders too close to the bottom edge`,
+    );
+
+    const drawioGeometry =
+      drawioCellBlock(drawio, nodeId).match(/<mxGeometry\b[^>]*>/u)?.[0] ?? '';
+    assert.deepEqual(
+      [
+        Number(xmlAttribute(drawioGeometry, 'x')),
+        Number(xmlAttribute(drawioGeometry, 'y')),
+        Number(xmlAttribute(drawioGeometry, 'width')),
+        Number(xmlAttribute(drawioGeometry, 'height')),
+      ],
+      bounds,
+      `${nodeId} geometry must remain synchronized`,
+    );
+  }
+});
+
+test('keeps every small role label at WCAG AA contrast on its node fill', async () => {
+  const [drawio, svg] = await Promise.all([source(drawioPath), source(svgPath)]);
+  const rolePairs = [
+    ['employee', '#55514B', '#ECE8E1'],
+    ['expense-system', '#DCE7EA', '#405D6B'],
+    ['bank-context', '#55514B', '#ECE8E1'],
+    ['employee-container', '#55514B', '#ECE8E1'],
+    ['web-app', '#55514B', '#D9E5DA'],
+    ['expense-api', '#55514B', '#D9E5DA'],
+    ['expense-db', '#55514B', '#E8E1CF'],
+    ['payment-worker', '#55514B', '#D9E5DA'],
+    ['bank-container', '#55514B', '#ECE8E1'],
+  ];
+
+  for (const [nodeId, foreground, background] of rolePairs) {
+    assert.ok(
+      contrastRatio(foreground, background) >= 4.5,
+      `${nodeId} role contrast must be at least 4.5:1`,
+    );
+    const group =
+      svg.match(
+        new RegExp(
+          `<g\\b[^>]*\\bdata-node-id="${nodeId}"[^>]*>[\\s\\S]*?<\\/g>`,
+          'u',
+        ),
+      )?.[0] ?? '';
+    const typeTag =
+      group.match(/<text\b[^>]*\bdata-text-role="type"[^>]*>/u)?.[0] ?? '';
+    const drawioTypeStyle = xmlAttribute(
+      drawioCellTag(drawio, `${nodeId}-type`),
+      'style',
+    );
+
+    assert.equal(xmlAttribute(typeTag, 'fill').toUpperCase(), foreground);
+    assert.equal(
+      drawioTypeStyle.match(/(?:^|;)fontColor=([^;]+)/u)?.[1]?.toUpperCase(),
+      foreground,
+    );
+  }
+});
+
+test('synchronizes the complete directed relation inventory by stable edge id', async () => {
+  const [drawio, svg] = await Promise.all([source(drawioPath), source(svgPath)]);
+  const expectedRelations = [
+    ['edge-employee-system', '提交费用', 'employee', 'expense-system'],
+    ['edge-system-bank', '请求付款', 'expense-system', 'bank-context'],
+    ['zoom-link', '展开目标系统', 'expense-system', 'container-boundary'],
+    ['edge-employee-web', '使用', 'employee-container', 'web-app'],
+    ['edge-web-api', '提交申报', 'web-app', 'expense-api'],
+    ['edge-api-db', '读写', 'expense-api', 'expense-db'],
+    ['edge-api-worker', '创建支付任务', 'expense-api', 'payment-worker'],
+    ['edge-worker-bank', '请求付款', 'payment-worker', 'bank-container'],
+  ];
+  const drawioRelations =
+    drawio.match(/<mxCell\b[^>]*\bedge="1"[^>]*>/gu) ?? [];
+  const svgConnectors =
+    svg.match(
+      /<path\b[^>]*\bdata-edge-id="[^"]+"[^>]*\bdata-source="[^"]+"[^>]*\bdata-target="[^"]+"[^>]*>/gu,
+    ) ?? [];
+  const svgLabels = [
+    ...svg.matchAll(
+      /(<text\b[^>]*\bclass="[^"]*\bedge-label\b[^"]*"[^>]*\bdata-edge-id="[^"]+"[^>]*>)([^<]*)<\/text>/gu,
+    ),
+  ];
+
+  assert.deepEqual(
+    drawioRelations.map((tag) => [
+      xmlAttribute(tag, 'id'),
+      xmlAttribute(tag, 'value'),
+      xmlAttribute(tag, 'source'),
+      xmlAttribute(tag, 'target'),
+    ]),
+    expectedRelations,
+  );
+  assert.equal(svgConnectors.length, expectedRelations.length);
+  assert.equal(svgLabels.length, expectedRelations.length);
+
+  const labelsByEdgeId = new Map(
+    svgLabels.map(([, tag, label]) => [xmlAttribute(tag, 'data-edge-id'), label]),
+  );
+  assert.deepEqual(
+    svgConnectors.map((tag) => [
+      xmlAttribute(tag, 'data-edge-id'),
+      labelsByEdgeId.get(xmlAttribute(tag, 'data-edge-id')),
+      xmlAttribute(tag, 'data-source'),
+      xmlAttribute(tag, 'data-target'),
+    ]),
+    expectedRelations,
+  );
+
+  for (const connector of svgConnectors) {
+    assert.match(xmlAttribute(connector, 'marker-end'), /^url\(#arrow-/u);
+  }
+  for (const [, labelTag] of svgLabels) {
+    assert.equal(xmlAttribute(labelTag, 'data-stroke-clearance-css'), '8');
+    assert.equal(xmlAttribute(labelTag, 'data-arrow-clearance-css'), '16');
+    assert.equal(xmlAttribute(labelTag, 'data-node-clearance-css'), '12');
+  }
+});
+
+test('uses the canonical MOD-02 route in the pilot design', async () => {
+  const design = await source(pilotDesignPath);
+
+  assert.match(design, /Inspect `\/modeling\/mod-02`/u);
+  assert.doesNotMatch(design, /\/modeling\/c4-context-container/u);
 });

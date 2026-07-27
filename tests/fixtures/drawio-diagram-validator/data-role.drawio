@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<mxfile>
+  <diagram name="Architecture">
+    <mxGraphModel><root>
+      <mxCell id="0"/>
+      <mxCell id="1" parent="0"/>
+      <mxCell id="node" value="Architecture" vertex="1" parent="1"/>
+    </root></mxGraphModel>
+  </diagram>
+</mxfile>

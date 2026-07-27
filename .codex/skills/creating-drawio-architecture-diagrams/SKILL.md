@@ -17,8 +17,9 @@ Readable topology outranks decoration. Preserve the architectural meaning first;
 4. Keep the editable Draw.io source and published SVG semantically synchronized: the same slug, nodes, boundaries, relationships, direction, and wording. Update both when any semantic element changes.
 5. Run the bundled validator. Treat it as deterministic pair/accessibility validation, not proof of visual clearance.
 6. For existing diagrams, report title/type baseline coordinates and
-   text-to-edge clearance for every node identified for geometry measurement;
-   passing a numeric minimum does not replace rendered legibility judgment.
+   text-to-edge clearance for every node identified for geometry measurement,
+   in final rendered CSS pixels rather than SVG authoring units; passing a
+   numeric minimum does not replace rendered legibility judgment.
 7. For artifact-changing work, render the affected article in a real browser
    and record measured desktop/mobile PASS/FAIL evidence. For proposal-only or
    read-only work, report browser QA as `NOT RUN` and list the exact route,
@@ -31,7 +32,8 @@ Return:
 - source, published SVG, and article paths;
 - assumptions and semantics deliberately preserved;
 - layout rules applied, including every numeric node, text, stroke, arrow, and
-  node-clearance threshold from the required layout reference;
+  node-clearance threshold from the required layout reference, expressed in
+  final rendered CSS pixels with the authoring-to-rendered scale recorded;
 - validator command and complete output;
 - browser QA status: measured `PASS`/`FAIL` for artifact-changing work or
   `NOT RUN` for proposal-only/read-only work;

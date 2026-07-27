@@ -1,97 +1,348 @@
 import {readFile} from 'node:fs/promises';
 import path from 'node:path';
 
+const XML_NAME = /^[A-Za-z_][A-Za-z0-9_.:-]*/u;
+const NAMED_ENTITIES = {
+  amp: '&',
+  apos: "'",
+  gt: '>',
+  lt: '<',
+  quot: '"',
+};
+const USAGE =
+  'Usage: node validate_drawio_svg.mjs <source.drawio> <published.svg> [--label <text>]...';
+
 function decodeXml(value) {
-  return value.replace(
-    /&#(?:x([0-9a-f]+)|([0-9]+));|&(lt|gt|quot|apos|amp);/giu,
-    (entity, hexadecimal, decimal, named) => {
-      if (hexadecimal) {
-        return String.fromCodePoint(Number.parseInt(hexadecimal, 16));
-      }
-      if (decimal) {
-        return String.fromCodePoint(Number.parseInt(decimal, 10));
-      }
-      return {
-        amp: '&',
-        apos: "'",
-        gt: '>',
-        lt: '<',
-        quot: '"',
-      }[named];
-    },
-  );
+  let decoded = '';
+
+  for (let index = 0; index < value.length; index += 1) {
+    if (value[index] !== '&') {
+      decoded += value[index];
+      continue;
+    }
+
+    const end = value.indexOf(';', index + 1);
+    if (end === -1) {
+      throw new Error('unterminated XML entity');
+    }
+
+    const entity = value.slice(index + 1, end);
+    let codePoint;
+
+    if (/^#x[0-9a-f]+$/iu.test(entity)) {
+      codePoint = Number.parseInt(entity.slice(2), 16);
+    } else if (/^#[0-9]+$/u.test(entity)) {
+      codePoint = Number.parseInt(entity.slice(1), 10);
+    } else if (Object.hasOwn(NAMED_ENTITIES, entity)) {
+      decoded += NAMED_ENTITIES[entity];
+      index = end;
+      continue;
+    } else {
+      throw new Error(`unsupported XML entity &${entity};`);
+    }
+
+    if (
+      !Number.isInteger(codePoint) ||
+      codePoint <= 0 ||
+      codePoint > 0x10ffff ||
+      (codePoint >= 0xd800 && codePoint <= 0xdfff)
+    ) {
+      throw new Error(`invalid XML character reference &${entity};`);
+    }
+
+    decoded += String.fromCodePoint(codePoint);
+    index = end;
+  }
+
+  return decoded;
 }
 
 function parseArgs(argv) {
+  const errors = [];
   const [drawioPath, svgPath, ...options] = argv;
   const labels = [];
 
+  if (
+    !drawioPath ||
+    !svgPath ||
+    drawioPath.startsWith('--') ||
+    svgPath.startsWith('--')
+  ) {
+    errors.push(USAGE);
+    return {drawioPath, svgPath, labels, errors};
+  }
+
   for (let index = 0; index < options.length; index += 1) {
-    if (options[index] === '--label' && options[index + 1] !== undefined) {
-      labels.push(options[index + 1]);
-      index += 1;
+    const option = options[index];
+    if (option !== '--label') {
+      errors.push(`Unknown option: ${option}`);
+      continue;
+    }
+
+    const value = options[index + 1];
+    if (value === undefined || value.startsWith('--')) {
+      errors.push('--label requires a value');
+      continue;
+    }
+
+    labels.push(value);
+    index += 1;
+  }
+
+  return {drawioPath, svgPath, labels, errors};
+}
+
+function readMarkupEnd(xml, start) {
+  let quote = '';
+
+  for (let index = start; index < xml.length; index += 1) {
+    const character = xml[index];
+    if (quote) {
+      if (character === quote) {
+        quote = '';
+      }
+    } else if (character === '"' || character === "'") {
+      quote = character;
+    } else if (character === '>') {
+      return index;
     }
   }
 
-  return {drawioPath, svgPath, labels};
+  throw new Error('unterminated XML tag');
 }
 
-function rootTag(xml, tagName) {
-  return xml.match(new RegExp(`<${tagName}\\b[^>]*>`, 'u'))?.[0] ?? '';
-}
+function parseStartTag(markup) {
+  let contents = markup.slice(1, -1);
+  let selfClosing = false;
 
-function documentRootTag(xml, tagName) {
-  let document = xml.replace(/^\uFEFF/u, '');
+  if (/\/\s*$/u.test(contents)) {
+    selfClosing = true;
+    contents = contents.replace(/\/\s*$/u, '');
+  }
 
-  while (true) {
-    document = document.trimStart();
-    const preamble =
-      document.match(/^(?:<\?xml(?:\s[^?]*)?\?>|<!--[\s\S]*?-->)/u)?.[0] ?? '';
-    if (!preamble) {
+  let cursor = 0;
+  const name = contents.match(XML_NAME)?.[0] ?? '';
+  if (!name) {
+    throw new Error('invalid XML element name');
+  }
+  cursor = name.length;
+  const attributes = new Map();
+
+  while (cursor < contents.length) {
+    const whitespace = contents.slice(cursor).match(/^\s+/u)?.[0] ?? '';
+    if (!whitespace) {
+      throw new Error(`expected whitespace after ${name}`);
+    }
+    cursor += whitespace.length;
+    if (cursor >= contents.length) {
       break;
     }
-    document = document.slice(preamble.length);
+
+    const attributeName = contents.slice(cursor).match(XML_NAME)?.[0] ?? '';
+    if (!attributeName) {
+      throw new Error(`invalid attribute on ${name}`);
+    }
+    if (attributes.has(attributeName)) {
+      throw new Error(`duplicate attribute ${attributeName} on ${name}`);
+    }
+    cursor += attributeName.length;
+    cursor += contents.slice(cursor).match(/^\s*/u)?.[0].length ?? 0;
+    if (contents[cursor] !== '=') {
+      throw new Error(`attribute ${attributeName} must have a value`);
+    }
+    cursor += 1;
+    cursor += contents.slice(cursor).match(/^\s*/u)?.[0].length ?? 0;
+
+    const quote = contents[cursor];
+    if (quote !== '"' && quote !== "'") {
+      throw new Error(`attribute ${attributeName} must be quoted`);
+    }
+    const valueStart = cursor + 1;
+    const valueEnd = contents.indexOf(quote, valueStart);
+    if (valueEnd === -1) {
+      throw new Error(`unterminated attribute ${attributeName}`);
+    }
+
+    attributes.set(
+      attributeName,
+      decodeXml(contents.slice(valueStart, valueEnd)),
+    );
+    cursor = valueEnd + 1;
   }
 
-  document = document.trimStart();
-  const tag = rootTag(document, tagName);
-  return tag && document.startsWith(tag) ? tag : '';
+  return {
+    attributes,
+    children: [],
+    content: [],
+    name,
+    selfClosing,
+  };
 }
 
-function attribute(tag, name) {
-  const match = tag.match(
-    new RegExp(`\\b${name}\\s*=\\s*(?:"([^"]*)"|'([^']*)')`, 'u'),
-  );
-  return decodeXml(match?.[1] ?? match?.[2] ?? '');
+function parseXml(source) {
+  const xml = source.replace(/^\uFEFF/u, '');
+  const stack = [];
+  let root;
+  let cursor = 0;
+
+  while (cursor < xml.length) {
+    if (xml.startsWith('<!--', cursor)) {
+      const end = xml.indexOf('-->', cursor + 4);
+      if (end === -1) {
+        throw new Error('unterminated XML comment');
+      }
+      if (xml.slice(cursor + 4, end).includes('--')) {
+        throw new Error('XML comments must not contain --');
+      }
+      cursor = end + 3;
+      continue;
+    }
+
+    if (xml.startsWith('<?', cursor)) {
+      const end = xml.indexOf('?>', cursor + 2);
+      if (end === -1) {
+        throw new Error('unterminated XML processing instruction');
+      }
+      cursor = end + 2;
+      continue;
+    }
+
+    if (xml.startsWith('<![CDATA[', cursor)) {
+      if (stack.length === 0) {
+        throw new Error('CDATA must be inside an XML element');
+      }
+      const end = xml.indexOf(']]>', cursor + 9);
+      if (end === -1) {
+        throw new Error('unterminated CDATA section');
+      }
+      stack.at(-1).content.push(xml.slice(cursor + 9, end));
+      cursor = end + 3;
+      continue;
+    }
+
+    if (xml[cursor] !== '<') {
+      const nextTag = xml.indexOf('<', cursor);
+      const end = nextTag === -1 ? xml.length : nextTag;
+      const value = xml.slice(cursor, end);
+
+      if (stack.length === 0) {
+        if (value.trim()) {
+          throw new Error('text is not allowed outside the document root');
+        }
+      } else {
+        stack.at(-1).content.push(decodeXml(value));
+      }
+      cursor = end;
+      continue;
+    }
+
+    if (xml.startsWith('</', cursor)) {
+      const end = readMarkupEnd(xml, cursor + 2);
+      const contents = xml.slice(cursor + 2, end).trim();
+      const closingName = contents.match(XML_NAME)?.[0] ?? '';
+      if (!closingName || closingName.length !== contents.length) {
+        throw new Error('invalid XML closing tag');
+      }
+      const openElement = stack.pop();
+      if (!openElement || openElement.name !== closingName) {
+        throw new Error(
+          `closing tag ${closingName} does not match ${openElement?.name ?? 'the document root'}`,
+        );
+      }
+      cursor = end + 1;
+      continue;
+    }
+
+    if (xml.startsWith('<!', cursor)) {
+      throw new Error('unsupported XML declaration');
+    }
+
+    const end = readMarkupEnd(xml, cursor + 1);
+    const element = parseStartTag(xml.slice(cursor, end + 1));
+    if (stack.length === 0) {
+      if (root) {
+        throw new Error('XML must contain exactly one document root');
+      }
+      root = element;
+    } else {
+      stack.at(-1).children.push(element);
+      stack.at(-1).content.push(element);
+    }
+    if (!element.selfClosing) {
+      stack.push(element);
+    }
+    cursor = end + 1;
+  }
+
+  if (stack.length > 0) {
+    throw new Error(`unclosed XML element ${stack.at(-1).name}`);
+  }
+  if (!root) {
+    throw new Error('XML document root is missing');
+  }
+
+  return root;
+}
+
+function elements(root, name) {
+  const matches = [];
+
+  function visit(element) {
+    if (element.name === name) {
+      matches.push(element);
+    }
+    for (const child of element.children) {
+      visit(child);
+    }
+  }
+
+  visit(root);
+  return matches;
+}
+
+function textContent(element) {
+  return element.content
+    .map((item) => (typeof item === 'string' ? item : textContent(item)))
+    .join('');
+}
+
+function normalizedLabel(value) {
+  return value.replace(/\s+/gu, ' ').trim();
 }
 
 function slug(filePath) {
   return path.basename(filePath, path.extname(filePath));
 }
 
-function hasNamedDiagram(drawio) {
-  const diagramTag = rootTag(drawio, 'diagram');
-  return Boolean(diagramTag && attribute(diagramTag, 'name').trim());
+function hasNamedDiagram(drawioRoot) {
+  return elements(drawioRoot, 'diagram').some((diagram) =>
+    diagram.attributes.get('name')?.trim(),
+  );
 }
 
-function hasHtmlCellValue(drawio) {
-  const cellTags = drawio.match(/<mxCell\b[^>]*>/gu) ?? [];
-  return cellTags.some((tag) => /<[^>]+>/u.test(attribute(tag, 'value')));
+function hasHtmlCellValue(drawioRoot) {
+  return elements(drawioRoot, 'mxCell').some((cell) =>
+    /<[^>]+>/u.test(cell.attributes.get('value') ?? ''),
+  );
 }
 
-function hasAccessibleMetadata(svg, svgTag) {
-  const title = svg.match(/<title\b[^>]*>([^<]+)<\/title>/u);
-  const description = svg.match(/<desc\b[^>]*>([^<]+)<\/desc>/u);
-  const titleId = title ? attribute(title[0], 'id') : '';
-  const descriptionId = description ? attribute(description[0], 'id') : '';
-  const labelledBy = attribute(svgTag, 'aria-labelledby').split(/\s+/u);
+function hasAccessibleMetadata(svgRoot) {
+  const titles = elements(svgRoot, 'title');
+  const descriptions = elements(svgRoot, 'desc');
+  const title = titles.find((element) => normalizedLabel(textContent(element)));
+  const description = descriptions.find((element) =>
+    normalizedLabel(textContent(element)),
+  );
+  const titleId = title?.attributes.get('id') ?? '';
+  const descriptionId = description?.attributes.get('id') ?? '';
+  const labelledBy = (svgRoot.attributes.get('aria-labelledby') ?? '')
+    .trim()
+    .split(/\s+/u);
 
   return Boolean(
-    title?.[1].trim() &&
-      description?.[1].trim() &&
-      titleId &&
+    titleId &&
       descriptionId &&
-      attribute(svgTag, 'role') === 'img' &&
+      svgRoot.attributes.get('role') === 'img' &&
       labelledBy.includes(titleId) &&
       labelledBy.includes(descriptionId),
   );
@@ -101,6 +352,8 @@ async function validatePair({drawioPath, svgPath, labels}) {
   const errors = [];
   let drawio = '';
   let svg = '';
+  let drawioRoot;
+  let svgRoot;
 
   try {
     drawio = await readFile(drawioPath, 'utf8');
@@ -118,34 +371,67 @@ async function validatePair({drawioPath, svgPath, labels}) {
     errors.push('Draw.io and SVG must have a matching slug');
   }
 
-  const mxfileTag = documentRootTag(drawio, 'mxfile');
-  if (drawio && (!mxfileTag || !drawio.includes('</mxfile>'))) {
+  if (drawio) {
+    try {
+      drawioRoot = parseXml(drawio);
+    } catch (error) {
+      errors.push(`Draw.io source must be well-formed XML: ${error.message}`);
+    }
+  }
+  if (svg) {
+    try {
+      svgRoot = parseXml(svg);
+    } catch (error) {
+      errors.push(`Published SVG must be well-formed XML: ${error.message}`);
+    }
+  }
+
+  if (drawioRoot && drawioRoot.name !== 'mxfile') {
     errors.push('Draw.io source must be XML rooted at mxfile');
   }
-  if (drawio && !hasNamedDiagram(drawio)) {
+  if (drawioRoot?.name === 'mxfile' && !hasNamedDiagram(drawioRoot)) {
     errors.push('Draw.io source must contain a named diagram page');
   }
-  if (drawio && hasHtmlCellValue(drawio)) {
+  if (drawioRoot?.name === 'mxfile' && hasHtmlCellValue(drawioRoot)) {
     errors.push('Draw.io must not contain HTML in mxCell.value');
   }
 
-  const svgTag = documentRootTag(svg, 'svg');
-  if (svg && (!svgTag || !svg.includes('</svg>'))) {
+  if (svgRoot && svgRoot.name !== 'svg') {
     errors.push('Published SVG must be XML rooted at svg');
   }
-  if (svgTag && !attribute(svgTag, 'viewBox')) {
+  if (svgRoot?.name === 'svg' && !svgRoot.attributes.get('viewBox')) {
     errors.push('SVG root must include a viewBox');
   }
-  if (svgTag && /\b(?:width|height)\s*=/u.test(svgTag)) {
+  if (
+    svgRoot?.name === 'svg' &&
+    (svgRoot.attributes.has('width') || svgRoot.attributes.has('height'))
+  ) {
     errors.push('SVG root must not include fixed root width or height');
   }
-  if (svgTag && !hasAccessibleMetadata(svg, svgTag)) {
+  if (svgRoot?.name === 'svg' && !hasAccessibleMetadata(svgRoot)) {
     errors.push('SVG must include an accessible title and description');
   }
 
+  const drawioLabels = new Set(
+    drawioRoot?.name === 'mxfile'
+      ? elements(drawioRoot, 'mxCell')
+          .map((cell) => normalizedLabel(cell.attributes.get('value') ?? ''))
+          .filter(Boolean)
+      : [],
+  );
+  const svgLabels = new Set(
+    svgRoot?.name === 'svg'
+      ? elements(svgRoot, 'text')
+          .map((text) => normalizedLabel(textContent(text)))
+          .filter(Boolean)
+      : [],
+  );
+
   for (const label of labels) {
-    if (!drawio.includes(label) || !svg.includes(label)) {
-      errors.push(`Required label "${label}" must appear in both Draw.io and SVG`);
+    if (!drawioLabels.has(label) || !svgLabels.has(label)) {
+      errors.push(
+        `Required label "${label}" must appear as a Draw.io mxCell.value and visible SVG text`,
+      );
     }
   }
 
@@ -154,10 +440,10 @@ async function validatePair({drawioPath, svgPath, labels}) {
 
 async function main() {
   const options = parseArgs(process.argv.slice(2));
-  if (!options.drawioPath || !options.svgPath) {
-    console.error(
-      'Usage: node validate_drawio_svg.mjs <source.drawio> <published.svg> [--label <text>]...',
-    );
+  if (options.errors.length > 0) {
+    for (const error of options.errors) {
+      console.error(error);
+    }
     process.exitCode = 1;
     return;
   }
