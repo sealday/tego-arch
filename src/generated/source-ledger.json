@@ -1606,6 +1606,40 @@
       "health_checks": []
     },
     {
+      "id": "src-atlas-qa10-value-cost-sustainability-boundaries",
+      "canonical_locator": "/img/illustrations/qa-10-value-cost-sustainability-boundaries.png",
+      "transport_locator": "/img/illustrations/qa-10-value-cost-sustainability-boundaries.png",
+      "query_insensitive": true,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Value, cost, quality, and sustainability boundary illustration — Tego Arch maintainers",
+      "author_or_org": "Tego Arch maintainers",
+      "published_at": null,
+      "registered_at": "2026-07-27",
+      "checked_at": "2026-07-27",
+      "version": "Original Atlas illustration generated and reviewed on 2026-07-27",
+      "source_kind": "original-illustration",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "illustration"
+      ],
+      "license": "LicenseRef-Atlas-Original",
+      "license_scope": "The named QA-10 illustration only",
+      "license_evidence_url": "https://github.com/sealday/tego-arch/blob/main/static/img/illustrations/qa-10-value-cost-sustainability-boundaries.png",
+      "license_evidence_note": "Original illustration authored for Tego Arch.",
+      "license_family_id": "/img/illustrations/qa-10-value-cost-sustainability-boundaries.png",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "original-atlas",
+      "usage_boundary": "Explains the separation of useful work, cost allocation, quality gates, and environmental impact; it does not prove cost efficiency or sustainability.",
+      "link_policy": null,
+      "expected_final_transport_locator": "/img/illustrations/qa-10-value-cost-sustainability-boundaries.png",
+      "expected_final_approved_at": "2026-07-27",
+      "expected_final_approval_note": "Original asset reviewed on 2026-07-27.",
+      "health_summary": "healthy",
+      "health_checks": []
+    },
+    {
       "id": "src-atlas-roadmap-756462618489",
       "canonical_locator": "/img/paths/software-architecture-learning-roadmap.png",
       "transport_locator": "/img/paths/software-architecture-learning-roadmap.png",
@@ -6870,6 +6904,51 @@
           "last_success_at": "2026-07-26T21:41:46.575Z",
           "http_status": 200,
           "final_transport_locator": "https://www.faa.gov/documentLibrary/media/Order/FAA_Order_8040.4C.pdf"
+        }
+      ]
+    },
+    {
+      "id": "src-finops-unit-economics",
+      "canonical_locator": "https://www.finops.org/framework/",
+      "transport_locator": "https://www.finops.org/framework/",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "FinOps Framework — Unit Economics",
+      "author_or_org": "FinOps Foundation",
+      "published_at": null,
+      "registered_at": "2026-07-27",
+      "checked_at": "2026-07-27",
+      "version": "Current FinOps Framework page checked on 2026-07-27",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "method",
+        "learning"
+      ],
+      "license": "CC-BY-4.0",
+      "license_scope": "FinOps Foundation website documentation covered by its stated Creative Commons Attribution 4.0 terms; trademarks, linked works, code, media, and third-party material excluded",
+      "license_evidence_url": "https://www.finops.org/about/",
+      "license_evidence_note": "Reviewed the named work and its license evidence on 2026-07-27.",
+      "license_family_id": "https://www.finops.org/framework/",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "adapt-with-attribution",
+      "usage_boundary": "Supports cost visibility, allocation, unit economics, and value-oriented decision boundaries; it does not establish an organization’s financial policy, savings, or universal KPI.",
+      "link_policy": "floating",
+      "expected_final_transport_locator": "https://www.finops.org/framework/",
+      "expected_final_approved_at": "2026-07-27",
+      "expected_final_approval_note": "Reviewed canonical HTTPS transport on 2026-07-27.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://www.finops.org/framework/",
+          "status": "healthy",
+          "last_attempt_at": "2026-07-27T00:00:00.000Z",
+          "last_success_at": "2026-07-27T00:00:00.000Z",
+          "http_status": 200,
+          "final_transport_locator": "https://www.finops.org/framework/"
         }
       ]
     },
@@ -16715,6 +16794,51 @@
           "last_success_at": "2026-07-26T19:57:11.793Z",
           "http_status": 200,
           "final_transport_locator": "https://docs.cloud.google.com/architecture/framework/performance-optimization/elasticity"
+        }
+      ]
+    },
+    {
+      "id": "src-green-software-sci",
+      "canonical_locator": "https://sci.greensoftware.foundation/",
+      "transport_locator": "https://sci.greensoftware.foundation/",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Software Carbon Intensity Specification",
+      "author_or_org": "Green Software Foundation",
+      "published_at": null,
+      "registered_at": "2026-07-27",
+      "checked_at": "2026-07-27",
+      "version": "SCI Specification v1.0 checked on 2026-07-27",
+      "source_kind": "standard",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "method",
+        "learning"
+      ],
+      "license": "CC-BY-4.0",
+      "license_scope": "The named SCI specification under CC BY 4.0; logos, trademarks, linked works, and third-party material excluded",
+      "license_evidence_url": "https://sci.greensoftware.foundation/",
+      "license_evidence_note": "Reviewed the named work and its license evidence on 2026-07-27.",
+      "license_family_id": "https://sci.greensoftware.foundation/",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "adapt-with-attribution",
+      "usage_boundary": "Supports the SCI measurement boundary and lifecycle concepts; it does not prove complete environmental impact, comparable supplier data, or sustainability of a system from one score.",
+      "link_policy": "floating",
+      "expected_final_transport_locator": "https://sci.greensoftware.foundation/",
+      "expected_final_approved_at": "2026-07-27",
+      "expected_final_approval_note": "Reviewed canonical HTTPS transport on 2026-07-27.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://sci.greensoftware.foundation/",
+          "status": "healthy",
+          "last_attempt_at": "2026-07-27T00:00:00.000Z",
+          "last_success_at": "2026-07-27T00:00:00.000Z",
+          "http_status": 200,
+          "final_transport_locator": "https://sci.greensoftware.foundation/"
         }
       ]
     },
@@ -28260,6 +28384,73 @@
           "manifest_primary": false,
           "usage_mode": "facts-summary",
           "attribution_note": "STPA Handbook, Leveson and Thomas",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/quality-attributes/qa-10-cost-efficiency-sustainability.mdx": {
+      "title": "成本效率与可持续性",
+      "slug": "/quality-attributes/qa-10",
+      "reviewed_at": "2026-07-27",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-atlas-qa10-value-cost-sustainability-boundaries",
+          "citation_url": "/img/illustrations/qa-10-value-cost-sustainability-boundaries.png",
+          "roles": [
+            "illustration"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "original-illustration",
+          "attribution_note": "Value, cost, quality, and sustainability boundary illustration, Tego Arch maintainers",
+          "modification_note": "Generated from a project-authored brief with no reference image, then QA-reviewed as an original composition; it does not copy an external figure or prove sustainability.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-finops-unit-economics",
+          "citation_url": "https://www.finops.org/framework/",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "FinOps Framework, FinOps Foundation",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-github-432a30aa96cb",
+          "citation_url": "https://github.com/mehdihadeli/awesome-software-architecture",
+          "roles": [
+            "learning"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "navigation-only",
+          "attribution_note": "Awesome Software Architecture, Mehdi Hadeli and contributors",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-green-software-sci",
+          "citation_url": "https://sci.greensoftware.foundation/",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Software Carbon Intensity Specification, Green Software Foundation",
           "modification_note": null,
           "excerpt": null,
           "quotation_reviewed": false

@@ -27865,6 +27865,37 @@
       "review_status": "healthy"
     },
     {
+      "transport_locator": "https://sci.greensoftware.foundation/",
+      "source_ids": [
+        "src-green-software-sci"
+      ],
+      "last_attempt": {
+        "at": "2026-07-27T00:00:00.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://sci.greensoftware.foundation/",
+        "http_status": 200,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-07-27T00:00:00.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://sci.greensoftware.foundation/",
+        "http_status": 200,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-07-27T00:00:00.000Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://sci.greensoftware.foundation/",
+          "http_status": 200,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
       "transport_locator": "https://single-spa.js.org/docs/api/",
       "source_ids": [
         "src-single-spa-e413a44ee5ff"
@@ -28971,6 +29002,37 @@
           "at": "2026-07-26T21:41:46.575Z",
           "outcome": "healthy",
           "final_transport_locator": "https://www.faa.gov/documentLibrary/media/Order/FAA_Order_8040.4C.pdf",
+          "http_status": 200,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://www.finops.org/framework/",
+      "source_ids": [
+        "src-finops-unit-economics"
+      ],
+      "last_attempt": {
+        "at": "2026-07-27T00:00:00.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www.finops.org/framework/",
+        "http_status": 200,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-07-27T00:00:00.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www.finops.org/framework/",
+        "http_status": 200,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-07-27T00:00:00.000Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://www.finops.org/framework/",
           "http_status": 200,
           "login_wall_detected": false
         }

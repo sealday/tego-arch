@@ -50,7 +50,7 @@ const relationships = new Map([
     'QA-04',
     {
       dependsOn: ['QA-00', 'QA-03'],
-      adjacent: ['QA-03', 'QA-06', 'QA-07', 'QA-08'],
+      adjacent: ['QA-03', 'QA-06', 'QA-07', 'QA-08', 'QA-10'],
       cases: [
         '/cases/aws-cell-shuffle-sharding',
         '/cases/cloudflare-durable-objects-workerd',
@@ -61,7 +61,7 @@ const relationships = new Map([
     'QA-06',
     {
       dependsOn: ['QA-00', 'QA-04'],
-      adjacent: ['QA-04', 'QA-07'],
+      adjacent: ['QA-04', 'QA-07', 'QA-10'],
       cases: [
         '/cases/micro-frontends-single-spa',
         '/cases/openai-agents-sdk',
@@ -198,8 +198,8 @@ test('articles and deterministic representations', () => {
     assert.equal(topic.slug, slug);
   }
 
-  assert.equal(documentsById.has('QA-10'), false, 'QA-10 remains absent');
-  assert.match(backlog, /^- \[ \] \*\*QA-10 /mu, 'QA-10 remains unchecked');
+  assert.equal(documentsById.has('QA-10'), true, 'QA-10 is published by the final G006 batch');
+  assert.match(backlog, /^- \[ \] \*\*QA-10 /mu, 'QA-10 remains unchecked until deployment closure');
 });
 
 test('reciprocal relationships', () => {

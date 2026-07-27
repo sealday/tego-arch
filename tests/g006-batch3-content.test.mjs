@@ -38,7 +38,7 @@ const relationships = new Map([
   }],
   ['QA-08', {
     dependsOn: ['QA-00', 'QA-02', 'QA-04'],
-    adjacent: ['QA-02', 'QA-04', 'QA-05', 'QA-09'],
+    adjacent: ['QA-02', 'QA-04', 'QA-05', 'QA-09', 'QA-10'],
     cases: ['/cases/aws-cell-shuffle-sharding', '/cases/openai-agents-sdk'],
   }],
   ['QA-09', {
@@ -153,8 +153,8 @@ test('articles and deterministic representations', () => {
     }
     assert.equal(topicsById.get(id)?.slug, slug);
   }
-  assert.equal(documentsById.has('QA-10'), false);
-  assert.match(backlog, /^- \[ \] \*\*QA-10 /mu);
+  assert.equal(documentsById.has('QA-10'), true);
+  assert.match(backlog, /^- \[ \] \*\*QA-10 /mu, 'QA-10 remains unchecked until its closure evidence exists');
 });
 
 test('security privacy and safety boundaries', () => {

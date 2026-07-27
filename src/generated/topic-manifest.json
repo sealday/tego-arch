@@ -1701,7 +1701,8 @@
       "adjacent_topics": [
         "QA-00",
         "QA-02",
-        "QA-04"
+        "QA-04",
+        "QA-10"
       ],
       "primary_sources": [
         "https://sre.google/sre-book/handling-overload/"
@@ -1736,7 +1737,8 @@
         "QA-03",
         "QA-06",
         "QA-07",
-        "QA-08"
+        "QA-08",
+        "QA-10"
       ],
       "primary_sources": [
         "https://learn.microsoft.com/en-us/azure/well-architected/performance-efficiency/scale-partition"
@@ -4048,7 +4050,8 @@
       ],
       "adjacent_topics": [
         "QA-04",
-        "QA-07"
+        "QA-07",
+        "QA-10"
       ],
       "primary_sources": [
         "https://www.sei.cmu.edu/library/maintainability/"
@@ -4084,7 +4087,8 @@
         "QA-02",
         "QA-04",
         "QA-05",
-        "QA-09"
+        "QA-09",
+        "QA-10"
       ],
       "primary_sources": [
         "https://opentelemetry.io/docs/concepts/observability-primer/"
@@ -4451,27 +4455,6 @@
       "pattern_group": null
     },
     {
-      "id": "QA-10",
-      "type": "quality-attribute",
-      "title": "成本效率与可持续性",
-      "slug": "/quality-attributes/qa-10",
-      "priority": "P2",
-      "status": {
-        "scope": "backlog-projection",
-        "value": "pending",
-        "source": "docs/content-backlog.md"
-      },
-      "dependencies": [],
-      "adjacent_topics": [],
-      "primary_sources": [],
-      "related_cases": [],
-      "related_questions": [],
-      "reviewed_at": null,
-      "review_policy": null,
-      "published": false,
-      "pattern_group": null
-    },
-    {
       "id": "QST-10",
       "type": "question",
       "title": "边缘断网自治与物理安全",
@@ -4512,6 +4495,41 @@
       "review_policy": null,
       "published": false,
       "pattern_group": null
+    },
+    {
+      "id": "QA-10",
+      "type": "quality-attribute",
+      "title": "成本效率与可持续性",
+      "slug": "/quality-attributes/qa-10",
+      "priority": "P2",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "pending",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "QA-00",
+        "QA-01"
+      ],
+      "adjacent_topics": [
+        "QA-03",
+        "QA-04",
+        "QA-06",
+        "QA-08"
+      ],
+      "primary_sources": [
+        "https://www.finops.org/framework/"
+      ],
+      "related_cases": [
+        "/cases/aws-cell-shuffle-sharding",
+        "/cases/litellm-virtual-keys-governance"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-07-27",
+      "review_policy": "quarterly-version-sensitive",
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
     },
     {
       "id": "DOC-CASE-APACHE-KAFKA-CONSUMER-GROUPS",
