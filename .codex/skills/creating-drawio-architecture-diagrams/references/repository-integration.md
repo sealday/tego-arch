@@ -76,10 +76,15 @@ worked example:
 node --test tests/drawio-svg-pilot.test.mjs tests/drawio-diagram-validator.test.mjs
 ```
 
-These checks prove pairing, well-formed XML shape, responsive embedding,
-accessibility metadata, and exact declared-label presence in Draw.io
-`mxCell.value` attributes and visible SVG `<text>` elements. They do not prove
-rendered text or connector clearance.
+These checks prove pairing, the well-formed XML subset used by this repository,
+responsive embedding, accessibility metadata, and exact declared-label
+presence in Draw.io `mxCell.value` attributes and visible SVG `<text>`
+elements. The deterministic parser supports the declarations, comments,
+processing instructions, CDATA, elements, quoted attributes, and XML entities
+used by the paired artifacts; it deliberately rejects DTD/DOCTYPE and does not
+claim full XML conformance. Text under non-rendered definition containers or
+hidden by SVG presentation/ARIA attributes cannot satisfy a required label.
+These checks do not prove rendered text or connector clearance.
 
 ## Desktop and mobile browser QA
 

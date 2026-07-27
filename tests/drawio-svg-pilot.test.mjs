@@ -32,11 +32,11 @@ function xmlAttribute(tag, name) {
   );
 }
 
-function styleProperty(svg, className, property) {
+function selectorProperty(svg, selector, property) {
   const rule =
     svg.match(
       new RegExp(
-        `\\.${className.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&')}\\s*\\{([^}]*)\\}`,
+        `${selector.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&')}\\s*\\{([^}]*)\\}`,
         'u',
       ),
     )?.[1] ?? '';
@@ -48,6 +48,10 @@ function styleProperty(svg, className, property) {
       ),
     )?.[1]?.trim() ?? ''
   );
+}
+
+function styleProperty(svg, className, property) {
+  return selectorProperty(svg, `.${className}`, property);
 }
 
 function numericStyle(style, name) {
@@ -319,25 +323,133 @@ test('keeps synchronized node geometry above rendered baseline and bottom-cleara
   }
 });
 
+test('gives the five-CJK-glyph database title at least 16 rendered pixels of horizontal padding', async () => {
+  const [drawio, svg] = await Promise.all([source(drawioPath), source(svgPath)]);
+  const renderedScale = 800 / 1200;
+  const databaseGroup =
+    svg.match(
+      /<g\b[^>]*\bdata-node-id="expense-db"[^>]*\bdata-node-bounds="([^"]+)"[^>]*>([\s\S]*?)<\/g>/u,
+    ) ?? [];
+  const bounds = (databaseGroup[1] ?? '').split(/\s+/u).map(Number);
+  const title =
+    (databaseGroup[2] ?? '').match(
+      /<text\b[^>]*\bdata-text-role="title"[^>]*>([^<]+)<\/text>/u,
+    )?.[1] ?? '';
+  const authoredFontSize = Number.parseFloat(
+    styleProperty(svg, 'node-title', 'font-size'),
+  );
+  const conservativeTitleWidth = [...title].length * authoredFontSize;
+  const renderedHorizontalPadding =
+    ((bounds[2] - conservativeTitleWidth) / 2) * renderedScale;
+
+  assert.equal([...title].length, 5);
+  assert.ok(
+    renderedHorizontalPadding >= 16,
+    `database title renders with only ${renderedHorizontalPadding}px horizontal padding per side`,
+  );
+
+  const databaseGeometry =
+    drawioCellBlock(drawio, 'expense-db').match(/<mxGeometry\b[^>]*>/u)?.[0] ??
+    '';
+  assert.equal(Number(xmlAttribute(databaseGeometry, 'width')), bounds[2]);
+});
+
+test('reserves a rendered-clearance lane for the employee-to-Web use label', async () => {
+  const [drawio, svg] = await Promise.all([source(drawioPath), source(svgPath)]);
+  const renderedScale = 800 / 1200;
+  const labelMatch =
+    svg.match(
+      /(<text\b[^>]*\bdata-edge-id="edge-employee-web"[^>]*>)([^<]+)<\/text>/u,
+    ) ?? [];
+  const labelTag = labelMatch[1] ?? '';
+  const label = labelMatch[2] ?? '';
+  const labelX = Number(xmlAttribute(labelTag, 'x'));
+  const labelBaseline = Number(xmlAttribute(labelTag, 'y'));
+  const labelFontSize = Number.parseFloat(
+    styleProperty(svg, 'edge-label', 'font-size'),
+  );
+  const labelWidth = [...label].length * labelFontSize;
+  const labelBox = {
+    bottom: labelBaseline,
+    left: labelX - labelWidth / 2,
+    right: labelX + labelWidth / 2,
+    top: labelBaseline - labelFontSize,
+  };
+  const connectorTag =
+    svg.match(
+      /<path\b[^>]*\bdata-edge-id="edge-employee-web"[^>]*>/u,
+    )?.[0] ?? '';
+  const connectorY = Number(
+    xmlAttribute(connectorTag, 'd').match(/^M[0-9.]+ ([0-9.]+)H/u)?.[1],
+  );
+  const nodeBounds = new Map(
+    [...svg.matchAll(/<g\b[^>]*data-node-id="([^"]+)"[^>]*data-node-bounds="([^"]+)"/gu)].map(
+      ([, id, bounds]) => [id, bounds.split(/\s+/u).map(Number)],
+    ),
+  );
+  const employeeBounds = nodeBounds.get('employee-container');
+  const webBounds = nodeBounds.get('web-app');
+  const boundaryGeometry =
+    drawioCellBlock(drawio, 'container-boundary').match(
+      /<mxGeometry\b[^>]*>/u,
+    )?.[0] ?? '';
+  const boundaryLeft = Number(xmlAttribute(boundaryGeometry, 'x'));
+  const clearances = {
+    arrow: (webBounds[0] - labelBox.right) * renderedScale,
+    boundary: (labelBox.left - boundaryLeft) * renderedScale,
+    employee: (labelBox.left - (employeeBounds[0] + employeeBounds[2])) *
+      renderedScale,
+    stroke: (connectorY - labelBox.bottom) * renderedScale,
+    web: (webBounds[0] - labelBox.right) * renderedScale,
+  };
+
+  assert.ok(
+    clearances.boundary >= 12,
+    `use label crosses or crowds the boundary: ${clearances.boundary}px`,
+  );
+  assert.ok(clearances.employee >= 12);
+  assert.ok(clearances.web >= 12);
+  assert.ok(clearances.stroke >= 8);
+  assert.ok(clearances.arrow >= 16);
+
+  const drawioEdge =
+    drawioCellBlock(drawio, 'edge-employee-web').match(
+      /<mxPoint\b[^>]*\bas="offset"[^>]*>/u,
+    )?.[0] ?? '';
+  const drawioLabelX =
+    ((employeeBounds[0] + employeeBounds[2] + webBounds[0]) / 2) +
+    Number(xmlAttribute(drawioEdge, 'x'));
+  const drawioLabelY =
+    connectorY + Number(xmlAttribute(drawioEdge, 'y'));
+
+  assert.equal(drawioLabelX, labelX);
+  assert.equal(drawioLabelY, labelBaseline);
+});
+
 test('keeps every small role label at WCAG AA contrast on its node fill', async () => {
   const [drawio, svg] = await Promise.all([source(drawioPath), source(svgPath)]);
+  const normalRoleColor = styleProperty(svg, 'node-type', 'fill').toUpperCase();
+  const inverseRoleColor = selectorProperty(
+    svg,
+    '.node-type.inverse-type',
+    'fill',
+  ).toUpperCase();
   const rolePairs = [
-    ['employee', '#55514B', '#ECE8E1'],
-    ['expense-system', '#DCE7EA', '#405D6B'],
-    ['bank-context', '#55514B', '#ECE8E1'],
-    ['employee-container', '#55514B', '#ECE8E1'],
-    ['web-app', '#55514B', '#D9E5DA'],
-    ['expense-api', '#55514B', '#D9E5DA'],
-    ['expense-db', '#55514B', '#E8E1CF'],
-    ['payment-worker', '#55514B', '#D9E5DA'],
-    ['bank-container', '#55514B', '#ECE8E1'],
+    ['employee', '#ECE8E1'],
+    ['expense-system', '#405D6B'],
+    ['bank-context', '#ECE8E1'],
+    ['employee-container', '#ECE8E1'],
+    ['web-app', '#D9E5DA'],
+    ['expense-api', '#D9E5DA'],
+    ['expense-db', '#E8E1CF'],
+    ['payment-worker', '#D9E5DA'],
+    ['bank-container', '#ECE8E1'],
   ];
 
-  for (const [nodeId, foreground, background] of rolePairs) {
-    assert.ok(
-      contrastRatio(foreground, background) >= 4.5,
-      `${nodeId} role contrast must be at least 4.5:1`,
-    );
+  assert.equal(normalRoleColor, '#55514B');
+  assert.equal(inverseRoleColor, '#DCE7EA');
+
+  for (const [nodeId, background] of rolePairs) {
     const group =
       svg.match(
         new RegExp(
@@ -347,12 +459,21 @@ test('keeps every small role label at WCAG AA contrast on its node fill', async 
       )?.[0] ?? '';
     const typeTag =
       group.match(/<text\b[^>]*\bdata-text-role="type"[^>]*>/u)?.[0] ?? '';
+    const classes = xmlAttribute(typeTag, 'class').split(/\s+/u);
+    const foreground = classes.includes('inverse-type')
+      ? inverseRoleColor
+      : normalRoleColor;
+
+    assert.ok(
+      contrastRatio(foreground, background) >= 4.5,
+      `${nodeId} role contrast must be at least 4.5:1`,
+    );
     const drawioTypeStyle = xmlAttribute(
       drawioCellTag(drawio, `${nodeId}-type`),
       'style',
     );
 
-    assert.equal(xmlAttribute(typeTag, 'fill').toUpperCase(), foreground);
+    assert.equal(xmlAttribute(typeTag, 'fill'), '');
     assert.equal(
       drawioTypeStyle.match(/(?:^|;)fontColor=([^;]+)/u)?.[1]?.toUpperCase(),
       foreground,

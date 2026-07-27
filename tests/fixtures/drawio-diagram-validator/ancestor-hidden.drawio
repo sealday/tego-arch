@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<mxfile><diagram name="Hidden ancestor labels"><mxGraphModel><root>
+  <mxCell id="0"/>
+  <mxCell id="1" parent="0"/>
+  <mxCell id="display" value="Ancestor display" vertex="1" parent="1"/>
+  <mxCell id="visibility" value="Ancestor visibility" vertex="1" parent="1"/>
+  <mxCell id="opacity" value="Ancestor opacity" vertex="1" parent="1"/>
+  <mxCell id="fill-opacity" value="Ancestor fill opacity" vertex="1" parent="1"/>
+  <mxCell id="aria" value="Ancestor aria" vertex="1" parent="1"/>
+</root></mxGraphModel></diagram></mxfile>

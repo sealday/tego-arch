@@ -11,6 +11,38 @@ const NAMED_ENTITIES = {
 };
 const USAGE =
   'Usage: node validate_drawio_svg.mjs <source.drawio> <published.svg> [--label <text>]...';
+const NON_RENDERED_SVG_CONTAINERS = new Set([
+  'defs',
+  'desc',
+  'metadata',
+  'symbol',
+  'title',
+]);
+
+function isAllowedXml10CodePoint(codePoint) {
+  return (
+    codePoint === 0x9 ||
+    codePoint === 0xa ||
+    codePoint === 0xd ||
+    (codePoint >= 0x20 && codePoint <= 0xd7ff) ||
+    (codePoint >= 0xe000 && codePoint <= 0xfffd) ||
+    (codePoint >= 0x10000 && codePoint <= 0x10ffff)
+  );
+}
+
+function validateRawXmlCharacters(value) {
+  for (const character of value) {
+    const codePoint = character.codePointAt(0);
+    if (!isAllowedXml10CodePoint(codePoint)) {
+      throw new Error(
+        `forbidden XML 1.0 character U+${codePoint
+          .toString(16)
+          .toUpperCase()
+          .padStart(4, '0')}`,
+      );
+    }
+  }
+}
 
 function decodeXml(value) {
   let decoded = '';
@@ -41,13 +73,10 @@ function decodeXml(value) {
       throw new Error(`unsupported XML entity &${entity};`);
     }
 
-    if (
-      !Number.isInteger(codePoint) ||
-      codePoint <= 0 ||
-      codePoint > 0x10ffff ||
-      (codePoint >= 0xd800 && codePoint <= 0xdfff)
-    ) {
-      throw new Error(`invalid XML character reference &${entity};`);
+    if (!Number.isInteger(codePoint) || !isAllowedXml10CodePoint(codePoint)) {
+      throw new Error(
+        `forbidden XML 1.0 character reference &${entity};`,
+      );
     }
 
     decoded += String.fromCodePoint(codePoint);
@@ -162,11 +191,12 @@ function parseStartTag(markup) {
     if (valueEnd === -1) {
       throw new Error(`unterminated attribute ${attributeName}`);
     }
+    const rawValue = contents.slice(valueStart, valueEnd);
+    if (rawValue.includes('<')) {
+      throw new Error('raw < is not allowed in an XML attribute');
+    }
 
-    attributes.set(
-      attributeName,
-      decodeXml(contents.slice(valueStart, valueEnd)),
-    );
+    attributes.set(attributeName, decodeXml(rawValue));
     cursor = valueEnd + 1;
   }
 
@@ -181,6 +211,7 @@ function parseStartTag(markup) {
 
 function parseXml(source) {
   const xml = source.replace(/^\uFEFF/u, '');
+  validateRawXmlCharacters(xml);
   const stack = [];
   let root;
   let cursor = 0;
@@ -224,6 +255,9 @@ function parseXml(source) {
       const nextTag = xml.indexOf('<', cursor);
       const end = nextTag === -1 ? xml.length : nextTag;
       const value = xml.slice(cursor, end);
+      if (value.includes(']]>')) {
+        throw new Error(']]> is not allowed in normal XML character data');
+      }
 
       if (stack.length === 0) {
         if (value.trim()) {
@@ -310,6 +344,71 @@ function normalizedLabel(value) {
   return value.replace(/\s+/gu, ' ').trim();
 }
 
+function inlineStyles(element) {
+  const styles = new Map();
+
+  for (const declaration of (element.attributes.get('style') ?? '').split(';')) {
+    const separator = declaration.indexOf(':');
+    if (separator === -1) {
+      continue;
+    }
+    const name = declaration.slice(0, separator).trim().toLowerCase();
+    const value = declaration
+      .slice(separator + 1)
+      .replace(/\s*!important\s*$/iu, '')
+      .trim();
+    if (name) {
+      styles.set(name, value);
+    }
+  }
+
+  return styles;
+}
+
+function presentationValue(element, name) {
+  const styles = inlineStyles(element);
+  return styles.has(name)
+    ? styles.get(name)
+    : (element.attributes.get(name) ?? '');
+}
+
+function isZeroOpacity(value) {
+  const normalized = value.trim().replace(/%$/u, '');
+  return normalized !== '' && Number(normalized) === 0;
+}
+
+function hidesSvgContent(element) {
+  return (
+    NON_RENDERED_SVG_CONTAINERS.has(element.name) ||
+    element.attributes.get('aria-hidden')?.trim().toLowerCase() === 'true' ||
+    presentationValue(element, 'display').trim().toLowerCase() === 'none' ||
+    presentationValue(element, 'visibility').trim().toLowerCase() ===
+      'hidden' ||
+    isZeroOpacity(presentationValue(element, 'opacity')) ||
+    isZeroOpacity(presentationValue(element, 'fill-opacity'))
+  );
+}
+
+function visibleSvgTextLabels(svgRoot) {
+  const labels = [];
+
+  function visit(element, hiddenByAncestor) {
+    const hidden = hiddenByAncestor || hidesSvgContent(element);
+    if (element.name === 'text' && !hidden) {
+      const label = normalizedLabel(textContent(element));
+      if (label) {
+        labels.push(label);
+      }
+    }
+    for (const child of element.children) {
+      visit(child, hidden);
+    }
+  }
+
+  visit(svgRoot, false);
+  return labels;
+}
+
 function slug(filePath) {
   return path.basename(filePath, path.extname(filePath));
 }
@@ -375,14 +474,18 @@ async function validatePair({drawioPath, svgPath, labels}) {
     try {
       drawioRoot = parseXml(drawio);
     } catch (error) {
-      errors.push(`Draw.io source must be well-formed XML: ${error.message}`);
+      errors.push(
+        `Draw.io source must be well-formed XML in the supported subset: ${error.message}`,
+      );
     }
   }
   if (svg) {
     try {
       svgRoot = parseXml(svg);
     } catch (error) {
-      errors.push(`Published SVG must be well-formed XML: ${error.message}`);
+      errors.push(
+        `Published SVG must be well-formed XML in the supported subset: ${error.message}`,
+      );
     }
   }
 
@@ -420,11 +523,7 @@ async function validatePair({drawioPath, svgPath, labels}) {
       : [],
   );
   const svgLabels = new Set(
-    svgRoot?.name === 'svg'
-      ? elements(svgRoot, 'text')
-          .map((text) => normalizedLabel(textContent(text)))
-          .filter(Boolean)
-      : [],
+    svgRoot?.name === 'svg' ? visibleSvgTextLabels(svgRoot) : [],
   );
 
   for (const label of labels) {

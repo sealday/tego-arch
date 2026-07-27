@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"
+  role="img" aria-labelledby="title desc">
+  <title id="title">Ancestor hidden labels</title>
+  <desc id="desc">Every required text node has a hidden ancestor.</desc>
+  <g style="display: none"><text>Ancestor display</text></g>
+  <g visibility="hidden"><text>Ancestor visibility</text></g>
+  <g style="opacity: 0"><text>Ancestor opacity</text></g>
+  <g fill-opacity="0"><text>Ancestor fill opacity</text></g>
+  <g aria-hidden="true"><text>Ancestor aria</text></g>
+</svg>

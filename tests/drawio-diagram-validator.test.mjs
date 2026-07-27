@@ -1,5 +1,8 @@
 import assert from 'node:assert/strict';
 import {spawnSync} from 'node:child_process';
+import {mkdtemp, readFile, rm, writeFile} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+import path from 'node:path';
 import test from 'node:test';
 import {fileURLToPath} from 'node:url';
 
@@ -15,12 +18,20 @@ const fixtureDirectory = new URL(
 );
 
 function runValidator(drawioName, svgName, ...args) {
+  return runValidatorPaths(
+    fileURLToPath(new URL(drawioName, fixtureDirectory)),
+    fileURLToPath(new URL(svgName, fixtureDirectory)),
+    ...args,
+  );
+}
+
+function runValidatorPaths(drawioPath, svgPath, ...args) {
   return spawnSync(
     process.execPath,
     [
       validatorPath,
-      fileURLToPath(new URL(drawioName, fixtureDirectory)),
-      fileURLToPath(new URL(svgName, fixtureDirectory)),
+      drawioPath,
+      svgPath,
       ...args,
     ],
     {encoding: 'utf8'},
@@ -111,4 +122,111 @@ test('rejects a dangling label option', () => {
 
   assert.equal(result.status, 1);
   assert.match(result.stderr, /--label requires a value/u);
+});
+
+test('rejects labels hidden directly by SVG presentation and ARIA attributes', () => {
+  const labels = [
+    'Direct display',
+    'Direct visibility',
+    'Direct opacity',
+    'Direct fill opacity',
+    'Direct aria',
+  ];
+  const result = runValidator(
+    'direct-hidden.drawio',
+    'direct-hidden.svg',
+    ...labels.flatMap((label) => ['--label', label]),
+  );
+
+  assert.equal(result.status, 1);
+  for (const label of labels) {
+    assert.match(result.stderr, new RegExp(`Required label "${label}"`, 'u'));
+  }
+});
+
+test('rejects labels hidden by SVG ancestor presentation and ARIA attributes', () => {
+  const labels = [
+    'Ancestor display',
+    'Ancestor visibility',
+    'Ancestor opacity',
+    'Ancestor fill opacity',
+    'Ancestor aria',
+  ];
+  const result = runValidator(
+    'ancestor-hidden.drawio',
+    'ancestor-hidden.svg',
+    ...labels.flatMap((label) => ['--label', label]),
+  );
+
+  assert.equal(result.status, 1);
+  for (const label of labels) {
+    assert.match(result.stderr, new RegExp(`Required label "${label}"`, 'u'));
+  }
+});
+
+test('rejects labels inside non-rendered SVG definition containers', () => {
+  const labels = ['Definitions label', 'Symbol label', 'Metadata label'];
+  const result = runValidator(
+    'definitions-hidden.drawio',
+    'definitions-hidden.svg',
+    ...labels.flatMap((label) => ['--label', label]),
+  );
+
+  assert.equal(result.status, 1);
+  for (const label of labels) {
+    assert.match(result.stderr, new RegExp(`Required label "${label}"`, 'u'));
+  }
+});
+
+test('rejects forbidden numeric XML 1.0 control references', () => {
+  const result = runValidator(
+    'forbidden-numeric.drawio',
+    'forbidden-numeric.svg',
+  );
+
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /forbidden XML 1\.0 character/u);
+});
+
+test('rejects raw less-than signs inside quoted XML attributes', () => {
+  const result = runValidator('raw-attribute.drawio', 'raw-attribute.svg');
+
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /raw < is not allowed in an XML attribute/u);
+});
+
+test('rejects CDATA closing sequences in normal character data', () => {
+  const result = runValidator('cdata-close.drawio', 'cdata-close.svg');
+
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /\]\]> is not allowed in normal XML character data/u);
+});
+
+test('rejects forbidden raw XML 1.0 control characters', async () => {
+  const temporaryDirectory = await mkdtemp(
+    path.join(tmpdir(), 'drawio-validator-'),
+  );
+  const drawioPath = path.join(temporaryDirectory, 'forbidden-raw.drawio');
+  const svgPath = path.join(temporaryDirectory, 'forbidden-raw.svg');
+
+  try {
+    const [drawioTemplate, svg] = await Promise.all([
+      readFile(new URL('forbidden-raw.drawio', fixtureDirectory), 'utf8'),
+      readFile(new URL('forbidden-raw.svg', fixtureDirectory), 'utf8'),
+    ]);
+    await Promise.all([
+      writeFile(
+        drawioPath,
+        drawioTemplate.replace('{{RAW_CONTROL}}', '\u0001'),
+      ),
+      writeFile(svgPath, svg),
+    ]);
+
+    const result = runValidatorPaths(drawioPath, svgPath);
+
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /forbidden XML 1\.0 character/u);
+  } finally {
+    await rm(temporaryDirectory, {force: true, recursive: true});
+  }
 });

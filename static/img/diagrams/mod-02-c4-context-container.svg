@@ -25,7 +25,8 @@
       .section-title { font-size: 36px; font-weight: 760; letter-spacing: .2px; }
       .section-note { font-size: 23px; fill: #6c6861; }
       .node-title { font-size: 24px; font-weight: 720; }
-      .node-type { font-size: 15px; font-weight: 700; letter-spacing: 1.2px; }
+      .node-type { font-size: 15px; font-weight: 700; letter-spacing: 1.2px; fill: #55514b; }
+      .node-type.inverse-type { fill: #dce7ea; }
       .inverse-title { fill: #fff; }
       .edge-label { font-size: 23px; font-weight: 650; fill: #55514b; }
       .zoom-label { fill: #a34a3a; }
@@ -42,20 +43,20 @@
   <g data-node-id="employee" data-node-bounds="65 185 230 160">
     <path d="M65 201Q65 185 81 185H279Q295 185 295 201V329Q295 345 279 345H81Q65 345 65 329Z" fill="#ECE8E1" stroke="#77716A" stroke-width="2"/>
     <text x="180" y="240" text-anchor="middle" class="node-title" data-text-role="title">员工</text>
-    <text x="180" y="282" text-anchor="middle" class="node-type" data-text-role="type" fill="#55514B">PERSON</text>
+    <text x="180" y="282" text-anchor="middle" class="node-type" data-text-role="type">PERSON</text>
   </g>
 
   <path d="M442 155H758Q770 155 770 167V353Q770 365 758 365H442Q430 365 430 353V167Q430 155 442 155Z" fill="none" stroke="#405D6B" stroke-width="2.5" stroke-dasharray="8 7"/>
   <g data-node-id="expense-system" data-node-bounds="460 180 280 170">
     <path d="M460 196Q460 180 476 180H724Q740 180 740 196V334Q740 350 724 350H476Q460 350 460 334Z" fill="#405D6B" stroke="#304854" stroke-width="2"/>
     <text x="600" y="235" text-anchor="middle" class="node-title inverse-title" data-text-role="title">费用申报系统</text>
-    <text x="600" y="277" text-anchor="middle" class="node-type" data-text-role="type" fill="#DCE7EA">SYSTEM OF INTEREST</text>
+    <text x="600" y="277" text-anchor="middle" class="node-type inverse-type" data-text-role="type">SYSTEM OF INTEREST</text>
   </g>
 
   <g data-node-id="bank-context" data-node-bounds="890 185 240 160">
     <path d="M890 201Q890 185 906 185H1114Q1130 185 1130 201V329Q1130 345 1114 345H906Q890 345 890 329Z" fill="#ECE8E1" stroke="#77716A" stroke-width="2"/>
     <text x="1010" y="240" text-anchor="middle" class="node-title" data-text-role="title">银行支付服务</text>
-    <text x="1010" y="282" text-anchor="middle" class="node-type" data-text-role="type" fill="#55514B">EXTERNAL SYSTEM</text>
+    <text x="1010" y="282" text-anchor="middle" class="node-type" data-text-role="type">EXTERNAL SYSTEM</text>
   </g>
 
   <path data-edge-id="edge-employee-system" data-source="employee" data-target="expense-system" d="M296 265H450" fill="none" stroke="#263238" stroke-width="2.4" marker-end="url(#arrow-ink)"/>
@@ -75,49 +76,49 @@
   <g data-node-id="employee-container" data-node-bounds="45 690 145 150">
     <path d="M45 704Q45 690 59 690H176Q190 690 190 704V826Q190 840 176 840H59Q45 840 45 826Z" fill="#ECE8E1" stroke="#77716A" stroke-width="2"/>
     <text x="117.5" y="745" text-anchor="middle" class="node-title" data-text-role="title">员工</text>
-    <text x="117.5" y="787" text-anchor="middle" class="node-type" data-text-role="type" fill="#55514B">PERSON</text>
+    <text x="117.5" y="787" text-anchor="middle" class="node-type" data-text-role="type">PERSON</text>
   </g>
 
-  <g data-node-id="web-app" data-node-bounds="240 690 155 150">
-    <path d="M240 704Q240 690 254 690H381Q395 690 395 704V826Q395 840 381 840H254Q240 840 240 826Z" fill="#D9E5DA" stroke="#64806B" stroke-width="2"/>
-    <text x="317.5" y="745" text-anchor="middle" class="node-title" data-text-role="title">Web 应用</text>
-    <text x="317.5" y="787" text-anchor="middle" class="node-type" data-text-role="type" fill="#55514B">CONTAINER</text>
+  <g data-node-id="web-app" data-node-bounds="315 690 155 150">
+    <path d="M315 704Q315 690 329 690H456Q470 690 470 704V826Q470 840 456 840H329Q315 840 315 826Z" fill="#D9E5DA" stroke="#64806B" stroke-width="2"/>
+    <text x="392.5" y="745" text-anchor="middle" class="node-title" data-text-role="title">Web 应用</text>
+    <text x="392.5" y="787" text-anchor="middle" class="node-type" data-text-role="type">CONTAINER</text>
   </g>
 
-  <g data-node-id="expense-api" data-node-bounds="475 690 155 150">
-    <path d="M475 704Q475 690 489 690H616Q630 690 630 704V826Q630 840 616 840H489Q475 840 475 826Z" fill="#D9E5DA" stroke="#64806B" stroke-width="2"/>
-    <text x="552.5" y="745" text-anchor="middle" class="node-title" data-text-role="title">申报 API</text>
-    <text x="552.5" y="787" text-anchor="middle" class="node-type" data-text-role="type" fill="#55514B">CONTAINER</text>
+  <g data-node-id="expense-api" data-node-bounds="525 690 155 150">
+    <path d="M525 704Q525 690 539 690H666Q680 690 680 704V826Q680 840 666 840H539Q525 840 525 826Z" fill="#D9E5DA" stroke="#64806B" stroke-width="2"/>
+    <text x="602.5" y="745" text-anchor="middle" class="node-title" data-text-role="title">申报 API</text>
+    <text x="602.5" y="787" text-anchor="middle" class="node-type" data-text-role="type">CONTAINER</text>
   </g>
 
-  <g data-node-id="expense-db" data-node-bounds="700 680 150 160">
-    <path d="M700 710C700 693 734 680 775 680S850 693 850 710V810C850 827 816 840 775 840S700 827 700 810Z" fill="#E8E1CF" stroke="#8B7855" stroke-width="2"/>
-    <path d="M700 710C700 727 734 740 775 740S850 727 850 710" fill="none" stroke="#8B7855" stroke-width="2"/>
-    <text x="775" y="735" text-anchor="middle" class="node-title" data-text-role="title">申报数据库</text>
-    <text x="775" y="777" text-anchor="middle" class="node-type" data-text-role="type" fill="#55514B">DATA STORE</text>
+  <g data-node-id="expense-db" data-node-bounds="720 680 180 160">
+    <path d="M720 710C720 693 760 680 810 680S900 693 900 710V810C900 827 860 840 810 840S720 827 720 810Z" fill="#E8E1CF" stroke="#8B7855" stroke-width="2"/>
+    <path d="M720 710C720 727 760 740 810 740S900 727 900 710" fill="none" stroke="#8B7855" stroke-width="2"/>
+    <text x="810" y="735" text-anchor="middle" class="node-title" data-text-role="title">申报数据库</text>
+    <text x="810" y="777" text-anchor="middle" class="node-type" data-text-role="type">DATA STORE</text>
   </g>
 
   <g data-node-id="payment-worker" data-node-bounds="650 910 260 150">
     <path d="M650 924Q650 910 664 910H896Q910 910 910 924V1046Q910 1060 896 1060H664Q650 1060 650 1046Z" fill="#D9E5DA" stroke="#64806B" stroke-width="2"/>
     <text x="780" y="965" text-anchor="middle" class="node-title" data-text-role="title">支付任务执行器</text>
-    <text x="780" y="1007" text-anchor="middle" class="node-type" data-text-role="type" fill="#55514B">CONTAINER</text>
+    <text x="780" y="1007" text-anchor="middle" class="node-type" data-text-role="type">CONTAINER</text>
   </g>
 
   <g data-node-id="bank-container" data-node-bounds="935 910 200 150">
     <path d="M935 924Q935 910 949 910H1121Q1135 910 1135 924V1046Q1135 1060 1121 1060H949Q935 1060 935 1046Z" fill="#ECE8E1" stroke="#77716A" stroke-width="2"/>
     <text x="1035" y="965" text-anchor="middle" class="node-title" data-text-role="title">银行支付服务</text>
-    <text x="1035" y="1007" text-anchor="middle" class="node-type" data-text-role="type" fill="#55514B">EXTERNAL</text>
+    <text x="1035" y="1007" text-anchor="middle" class="node-type" data-text-role="type">EXTERNAL</text>
   </g>
 
-  <path data-edge-id="edge-employee-web" data-source="employee-container" data-target="web-app" d="M191 765H230" fill="none" stroke="#263238" stroke-width="2.2" marker-end="url(#arrow-ink)"/>
-  <path data-edge-id="edge-web-api" data-source="web-app" data-target="expense-api" d="M396 765H465" fill="none" stroke="#263238" stroke-width="2.2" marker-end="url(#arrow-ink)"/>
-  <path data-edge-id="edge-api-db" data-source="expense-api" data-target="expense-db" d="M631 765H690" fill="none" stroke="#263238" stroke-width="2.2" marker-end="url(#arrow-ink)"/>
-  <path data-edge-id="edge-api-worker" data-source="expense-api" data-target="payment-worker" d="M615 841V885H680V900" fill="none" stroke="#263238" stroke-width="2.2" marker-end="url(#arrow-ink)"/>
+  <path data-edge-id="edge-employee-web" data-source="employee-container" data-target="web-app" d="M191 765H305" fill="none" stroke="#263238" stroke-width="2.2" marker-end="url(#arrow-ink)"/>
+  <path data-edge-id="edge-web-api" data-source="web-app" data-target="expense-api" d="M471 765H515" fill="none" stroke="#263238" stroke-width="2.2" marker-end="url(#arrow-ink)"/>
+  <path data-edge-id="edge-api-db" data-source="expense-api" data-target="expense-db" d="M681 765H710" fill="none" stroke="#263238" stroke-width="2.2" marker-end="url(#arrow-ink)"/>
+  <path data-edge-id="edge-api-worker" data-source="expense-api" data-target="payment-worker" d="M665 841V885H680V900" fill="none" stroke="#263238" stroke-width="2.2" marker-end="url(#arrow-ink)"/>
   <path data-edge-id="edge-worker-bank" data-source="payment-worker" data-target="bank-container" d="M911 985H925" fill="none" stroke="#263238" stroke-width="2.2" marker-end="url(#arrow-ink)"/>
 
-  <text x="215" y="638" text-anchor="middle" class="edge-label" data-edge-id="edge-employee-web" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12">使用</text>
-  <text x="435" y="638" text-anchor="middle" class="edge-label" data-edge-id="edge-web-api" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12">提交申报</text>
-  <text x="665" y="638" text-anchor="middle" class="edge-label" data-edge-id="edge-api-db" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12">读写</text>
+  <text x="265" y="735" text-anchor="middle" class="edge-label" data-edge-id="edge-employee-web" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12">使用</text>
+  <text x="497.5" y="638" text-anchor="middle" class="edge-label" data-edge-id="edge-web-api" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12">提交申报</text>
+  <text x="700" y="638" text-anchor="middle" class="edge-label" data-edge-id="edge-api-db" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12">读写</text>
   <text x="520" y="885" text-anchor="middle" class="edge-label" data-edge-id="edge-api-worker" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12">创建支付任务</text>
   <text x="1022" y="875" text-anchor="middle" class="edge-label" data-edge-id="edge-worker-bank" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12">请求付款</text>
 </svg>

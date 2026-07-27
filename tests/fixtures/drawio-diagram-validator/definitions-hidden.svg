@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"
+  role="img" aria-labelledby="title desc">
+  <title id="title">Definition labels</title>
+  <desc id="desc">Text in definitions is not directly rendered.</desc>
+  <defs><text>Definitions label</text></defs>
+  <symbol><text>Symbol label</text></symbol>
+  <metadata><text>Metadata label</text></metadata>
+</svg>
