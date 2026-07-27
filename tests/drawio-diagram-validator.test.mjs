@@ -128,6 +128,7 @@ test('rejects labels hidden directly by SVG presentation and ARIA attributes', (
   const labels = [
     'Direct display',
     'Direct visibility',
+    'Direct collapse',
     'Direct opacity',
     'Direct fill opacity',
     'Direct aria',
@@ -148,6 +149,7 @@ test('rejects labels hidden by SVG ancestor presentation and ARIA attributes', (
   const labels = [
     'Ancestor display',
     'Ancestor visibility',
+    'Ancestor collapse',
     'Ancestor opacity',
     'Ancestor fill opacity',
     'Ancestor aria',
@@ -176,6 +178,44 @@ test('rejects labels inside non-rendered SVG definition containers', () => {
   for (const label of labels) {
     assert.match(result.stderr, new RegExp(`Required label "${label}"`, 'u'));
   }
+});
+
+test('rejects text that has neither an effective fill nor a stroke', () => {
+  const labels = [
+    'Direct unpainted',
+    'Inherited unpainted',
+    'Styled unpainted',
+  ];
+  const result = runValidator(
+    'unpainted.drawio',
+    'unpainted.svg',
+    ...[...labels, 'Stroked text', 'Overridden fill'].flatMap((label) => [
+      '--label',
+      label,
+    ]),
+  );
+
+  assert.equal(result.status, 1);
+  for (const label of labels) {
+    assert.match(result.stderr, new RegExp(`Required label "${label}"`, 'u'));
+  }
+  assert.doesNotMatch(result.stderr, /Required label "Stroked text"/u);
+  assert.doesNotMatch(result.stderr, /Required label "Overridden fill"/u);
+});
+
+test('excludes hidden descendant text from a visible parent label', () => {
+  const result = runValidator(
+    'hidden-tspan.drawio',
+    'hidden-tspan.svg',
+    '--label',
+    'Visible hidden suffix',
+  );
+
+  assert.equal(result.status, 1);
+  assert.match(
+    result.stderr,
+    /Required label "Visible hidden suffix" must appear/u,
+  );
 });
 
 test('rejects forbidden numeric XML 1.0 control references', () => {
@@ -229,4 +269,20 @@ test('rejects forbidden raw XML 1.0 control characters', async () => {
   } finally {
     await rm(temporaryDirectory, {force: true, recursive: true});
   }
+});
+
+test('rejects XML comments containing double hyphens or ending in a hyphen', () => {
+  const doubleHyphen = runValidator(
+    'comment-double-hyphen.drawio',
+    'comment-double-hyphen.svg',
+  );
+  const trailingHyphen = runValidator(
+    'comment-trailing-hyphen.drawio',
+    'comment-trailing-hyphen.svg',
+  );
+
+  assert.equal(doubleHyphen.status, 1);
+  assert.match(doubleHyphen.stderr, /XML comments must not contain --/u);
+  assert.equal(trailingHyphen.status, 1);
+  assert.match(trailingHyphen.stderr, /XML comments must not end with -/u);
 });

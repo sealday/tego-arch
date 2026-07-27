@@ -111,6 +111,186 @@ function contrastRatio(foreground, background) {
   );
 }
 
+function parseOrthogonalPath(data) {
+  const tokens =
+    data.match(/[MHV]|-?(?:\d+(?:\.\d*)?|\.\d+)/gu) ?? [];
+  const points = [];
+  let cursor = 0;
+  let x = 0;
+  let y = 0;
+
+  while (cursor < tokens.length) {
+    const command = tokens[cursor];
+    cursor += 1;
+    if (command === 'M') {
+      x = Number(tokens[cursor]);
+      y = Number(tokens[cursor + 1]);
+      cursor += 2;
+    } else if (command === 'H') {
+      x = Number(tokens[cursor]);
+      cursor += 1;
+    } else if (command === 'V') {
+      y = Number(tokens[cursor]);
+      cursor += 1;
+    } else {
+      throw new Error(`Unsupported path command ${command}`);
+    }
+    points.push({x, y});
+  }
+
+  return points;
+}
+
+function conservativeLabelBounds(tag, label, fontSize) {
+  const x = Number(xmlAttribute(tag, 'x'));
+  const bottom = Number(xmlAttribute(tag, 'y'));
+  const width = [...label].length * fontSize;
+  const anchor = xmlAttribute(tag, 'text-anchor') || 'start';
+  const left =
+    anchor === 'middle' ? x - width / 2 : anchor === 'end' ? x - width : x;
+
+  return {
+    bottom,
+    left,
+    right: left + width,
+    top: bottom - fontSize,
+  };
+}
+
+function rectangleDistance(first, second) {
+  const horizontal = Math.max(
+    second.left - first.right,
+    first.left - second.right,
+    0,
+  );
+  const vertical = Math.max(
+    second.top - first.bottom,
+    first.top - second.bottom,
+    0,
+  );
+  return Math.hypot(horizontal, vertical);
+}
+
+function boundaryDistance(label, boundary) {
+  const labelInsideBoundary =
+    label.left >= boundary.left &&
+    label.right <= boundary.right &&
+    label.top >= boundary.top &&
+    label.bottom <= boundary.bottom;
+
+  if (labelInsideBoundary) {
+    return Math.min(
+      label.left - boundary.left,
+      boundary.right - label.right,
+      label.top - boundary.top,
+      boundary.bottom - label.bottom,
+    );
+  }
+
+  return rectangleDistance(label, boundary);
+}
+
+function segmentDistance(label, start, end) {
+  return rectangleDistance(label, {
+    bottom: Math.max(start.y, end.y),
+    left: Math.min(start.x, end.x),
+    right: Math.max(start.x, end.x),
+    top: Math.min(start.y, end.y),
+  });
+}
+
+function projectedInterval(points, axis) {
+  const values = points.map((point) => point.x * axis.x + point.y * axis.y);
+  return {maximum: Math.max(...values), minimum: Math.min(...values)};
+}
+
+function intervalGap(first, second) {
+  return Math.max(
+    second.minimum - first.maximum,
+    first.minimum - second.maximum,
+  );
+}
+
+function markerGeometry(svg, connectorTag, points) {
+  const markerId = xmlAttribute(connectorTag, 'marker-end').match(
+    /^url\(#([^)]+)\)$/u,
+  )?.[1];
+  const markerBlock =
+    svg.match(
+      new RegExp(
+        `<marker\\b[^>]*\\bid="${markerId}"[^>]*>[\\s\\S]*?<\\/marker>`,
+        'u',
+      ),
+    )?.[0] ?? '';
+  const markerTag = markerBlock.match(/<marker\b[^>]*>/u)?.[0] ?? '';
+  const markerPathTag = markerBlock.match(/<path\b[^>]*>/u)?.[0] ?? '';
+  const markerCoordinates = (
+    xmlAttribute(markerPathTag, 'd').match(
+      /-?(?:\d+(?:\.\d*)?|\.\d+)/gu,
+    ) ?? []
+  ).map(Number);
+  const markerPoints = [];
+
+  for (let index = 0; index < markerCoordinates.length; index += 2) {
+    markerPoints.push({
+      x: markerCoordinates[index],
+      y: markerCoordinates[index + 1],
+    });
+  }
+
+  const markerWidth = Number(xmlAttribute(markerTag, 'markerWidth'));
+  const markerHeight = Number(xmlAttribute(markerTag, 'markerHeight'));
+  const viewBox = (xmlAttribute(markerTag, 'viewBox') ||
+    `0 0 ${markerWidth} ${markerHeight}`)
+    .split(/\s+/u)
+    .map(Number);
+  const refX = Number(xmlAttribute(markerTag, 'refX'));
+  const refY = Number(xmlAttribute(markerTag, 'refY'));
+  const strokeWidth = Number(xmlAttribute(connectorTag, 'stroke-width'));
+  const endpoint = points.at(-1);
+  const previous = points.at(-2);
+  const magnitude = Math.hypot(
+    endpoint.x - previous.x,
+    endpoint.y - previous.y,
+  );
+  const axis = {
+    x: (endpoint.x - previous.x) / magnitude,
+    y: (endpoint.y - previous.y) / magnitude,
+  };
+  const perpendicular = {x: -axis.y, y: axis.x};
+  const viewportScaleX = markerWidth / viewBox[2];
+  const viewportScaleY = markerHeight / viewBox[3];
+  const markerUnitScale =
+    xmlAttribute(markerTag, 'markerUnits') === 'strokeWidth' ? strokeWidth : 1;
+  const scale = markerUnitScale * viewportScaleX;
+
+  assert.equal(xmlAttribute(markerTag, 'markerUnits'), 'strokeWidth');
+  assert.equal(
+    viewportScaleX,
+    viewportScaleY,
+    'marker viewBox must scale uniformly into its viewport',
+  );
+  assert.ok(markerPoints.length >= 3);
+  for (const point of markerPoints) {
+    assert.ok(point.x >= viewBox[0] && point.x <= viewBox[0] + viewBox[2]);
+    assert.ok(point.y >= viewBox[1] && point.y <= viewBox[1] + viewBox[3]);
+  }
+
+  return {
+    axis,
+    points: markerPoints.map((point) => ({
+      x:
+        endpoint.x +
+        axis.x * (point.x - refX) * scale +
+        perpendicular.x * (point.y - refY) * scale,
+      y:
+        endpoint.y +
+        axis.y * (point.x - refX) * scale +
+        perpendicular.y * (point.y - refY) * scale,
+    })),
+  };
+}
+
 test('publishes the MOD-02 Draw.io source and responsive SVG pair', async () => {
   const page = await source(pagePath);
 
@@ -354,76 +534,143 @@ test('gives the five-CJK-glyph database title at least 16 rendered pixels of hor
   assert.equal(Number(xmlAttribute(databaseGeometry, 'width')), bounds[2]);
 });
 
-test('reserves a rendered-clearance lane for the employee-to-Web use label', async () => {
+test('keeps all eight relationship labels clear of real markers, strokes, nodes, and boundaries', async () => {
   const [drawio, svg] = await Promise.all([source(drawioPath), source(svgPath)]);
   const renderedScale = 800 / 1200;
-  const labelMatch =
-    svg.match(
-      /(<text\b[^>]*\bdata-edge-id="edge-employee-web"[^>]*>)([^<]+)<\/text>/u,
-    ) ?? [];
-  const labelTag = labelMatch[1] ?? '';
-  const label = labelMatch[2] ?? '';
-  const labelX = Number(xmlAttribute(labelTag, 'x'));
-  const labelBaseline = Number(xmlAttribute(labelTag, 'y'));
   const labelFontSize = Number.parseFloat(
     styleProperty(svg, 'edge-label', 'font-size'),
   );
-  const labelWidth = [...label].length * labelFontSize;
-  const labelBox = {
-    bottom: labelBaseline,
-    left: labelX - labelWidth / 2,
-    right: labelX + labelWidth / 2,
-    top: labelBaseline - labelFontSize,
-  };
-  const connectorTag =
-    svg.match(
-      /<path\b[^>]*\bdata-edge-id="edge-employee-web"[^>]*>/u,
-    )?.[0] ?? '';
-  const connectorY = Number(
-    xmlAttribute(connectorTag, 'd').match(/^M[0-9.]+ ([0-9.]+)H/u)?.[1],
-  );
   const nodeBounds = new Map(
     [...svg.matchAll(/<g\b[^>]*data-node-id="([^"]+)"[^>]*data-node-bounds="([^"]+)"/gu)].map(
-      ([, id, bounds]) => [id, bounds.split(/\s+/u).map(Number)],
+      ([, id, bounds]) => {
+        const [x, y, width, height] = bounds.split(/\s+/u).map(Number);
+        return [
+          id,
+          {
+            bottom: y + height,
+            left: x,
+            right: x + width,
+            top: y,
+          },
+        ];
+      },
     ),
   );
-  const employeeBounds = nodeBounds.get('employee-container');
-  const webBounds = nodeBounds.get('web-app');
   const boundaryGeometry =
     drawioCellBlock(drawio, 'container-boundary').match(
       /<mxGeometry\b[^>]*>/u,
     )?.[0] ?? '';
-  const boundaryLeft = Number(xmlAttribute(boundaryGeometry, 'x'));
-  const clearances = {
-    arrow: (webBounds[0] - labelBox.right) * renderedScale,
-    boundary: (labelBox.left - boundaryLeft) * renderedScale,
-    employee: (labelBox.left - (employeeBounds[0] + employeeBounds[2])) *
-      renderedScale,
-    stroke: (connectorY - labelBox.bottom) * renderedScale,
-    web: (webBounds[0] - labelBox.right) * renderedScale,
+  const boundaryX = Number(xmlAttribute(boundaryGeometry, 'x'));
+  const boundaryY = Number(xmlAttribute(boundaryGeometry, 'y'));
+  const boundary = {
+    bottom: boundaryY + Number(xmlAttribute(boundaryGeometry, 'height')),
+    left: boundaryX,
+    right: boundaryX + Number(xmlAttribute(boundaryGeometry, 'width')),
+    top: boundaryY,
   };
+  const relationIds = [
+    'edge-employee-system',
+    'edge-system-bank',
+    'zoom-link',
+    'edge-employee-web',
+    'edge-web-api',
+    'edge-api-db',
+    'edge-api-worker',
+    'edge-worker-bank',
+  ];
+  const containerRelationIds = new Set([
+    'edge-employee-web',
+    'edge-web-api',
+    'edge-api-db',
+    'edge-api-worker',
+    'edge-worker-bank',
+  ]);
 
-  assert.ok(
-    clearances.boundary >= 12,
-    `use label crosses or crowds the boundary: ${clearances.boundary}px`,
-  );
-  assert.ok(clearances.employee >= 12);
-  assert.ok(clearances.web >= 12);
-  assert.ok(clearances.stroke >= 8);
-  assert.ok(clearances.arrow >= 16);
+  for (const edgeId of relationIds) {
+    const connectorTag =
+      svg.match(
+        new RegExp(
+          `<path\\b[^>]*\\bdata-edge-id="${edgeId}"[^>]*>`,
+          'u',
+        ),
+      )?.[0] ?? '';
+    const labelMatch =
+      svg.match(
+        new RegExp(
+          `(<text\\b[^>]*\\bdata-edge-id="${edgeId}"[^>]*>)([^<]+)<\\/text>`,
+          'u',
+        ),
+      ) ?? [];
+    const labelTag = labelMatch[1] ?? '';
+    const label = labelMatch[2] ?? '';
+    const labelBounds = conservativeLabelBounds(
+      labelTag,
+      label,
+      labelFontSize,
+    );
+    const connectorPoints = parseOrthogonalPath(
+      xmlAttribute(connectorTag, 'd'),
+    );
+    const marker = markerGeometry(svg, connectorTag, connectorPoints);
+    const labelCorners = [
+      {x: labelBounds.left, y: labelBounds.top},
+      {x: labelBounds.right, y: labelBounds.top},
+      {x: labelBounds.right, y: labelBounds.bottom},
+      {x: labelBounds.left, y: labelBounds.bottom},
+    ];
+    const arrowClearance =
+      intervalGap(
+        projectedInterval(labelCorners, marker.axis),
+        projectedInterval(marker.points, marker.axis),
+      ) * renderedScale;
+    const strokeClearance =
+      Math.min(
+        ...connectorPoints.slice(1).map((point, index) =>
+          segmentDistance(labelBounds, connectorPoints[index], point),
+        ),
+      ) * renderedScale;
+    const sourceId = xmlAttribute(connectorTag, 'data-source');
+    const targetId = xmlAttribute(connectorTag, 'data-target');
+    const clearanceTargets = [
+      [sourceId, nodeBounds.get(sourceId)],
+      [
+        targetId,
+        targetId === 'container-boundary'
+          ? boundary
+          : nodeBounds.get(targetId),
+      ],
+    ];
 
-  const drawioEdge =
-    drawioCellBlock(drawio, 'edge-employee-web').match(
-      /<mxPoint\b[^>]*\bas="offset"[^>]*>/u,
-    )?.[0] ?? '';
-  const drawioLabelX =
-    ((employeeBounds[0] + employeeBounds[2] + webBounds[0]) / 2) +
-    Number(xmlAttribute(drawioEdge, 'x'));
-  const drawioLabelY =
-    connectorY + Number(xmlAttribute(drawioEdge, 'y'));
+    if (
+      containerRelationIds.has(edgeId) &&
+      sourceId !== 'container-boundary' &&
+      targetId !== 'container-boundary'
+    ) {
+      clearanceTargets.push(['container-boundary', boundary]);
+    }
 
-  assert.equal(drawioLabelX, labelX);
-  assert.equal(drawioLabelY, labelBaseline);
+    assert.ok(
+      arrowClearance >= 16,
+      `${edgeId} has only ${arrowClearance}px of real marker clearance`,
+    );
+    assert.ok(
+      strokeClearance >= 8,
+      `${edgeId} has only ${strokeClearance}px of stroke clearance`,
+    );
+
+    for (const [targetId, targetBounds] of clearanceTargets) {
+      const authoredClearance =
+        targetId === 'container-boundary'
+          ? boundaryDistance(labelBounds, targetBounds)
+          : rectangleDistance(labelBounds, targetBounds);
+      const renderedClearance = authoredClearance * renderedScale;
+
+      assert.ok(
+        renderedClearance >= 12,
+        `${edgeId} has only ${renderedClearance}px of ${targetId} clearance`,
+      );
+    }
+  }
 });
 
 test('keeps every small role label at WCAG AA contrast on its node fill', async () => {

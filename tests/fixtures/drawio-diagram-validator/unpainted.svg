@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"
+  role="img" aria-labelledby="title desc">
+  <title id="title">Unpainted text</title>
+  <desc id="desc">Only text with an effective fill or stroke is visible.</desc>
+  <text fill="none">Direct unpainted</text>
+  <g fill="none"><text>Inherited unpainted</text></g>
+  <text style="fill: none; stroke: none">Styled unpainted</text>
+  <text fill="none" stroke="#111">Stroked text</text>
+  <g fill="none"><text style="fill: #111">Overridden fill</text></g>
+</svg>

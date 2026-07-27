@@ -5,6 +5,7 @@
   <desc id="desc">Every required text node is directly hidden.</desc>
   <text display="none">Direct display</text>
   <text style="visibility: hidden">Direct visibility</text>
+  <text visibility="collapse">Direct collapse</text>
   <text opacity="0">Direct opacity</text>
   <text style="fill-opacity: 0">Direct fill opacity</text>
   <text aria-hidden="true">Direct aria</text>

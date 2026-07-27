@@ -222,8 +222,12 @@ function parseXml(source) {
       if (end === -1) {
         throw new Error('unterminated XML comment');
       }
-      if (xml.slice(cursor + 4, end).includes('--')) {
+      const comment = xml.slice(cursor + 4, end);
+      if (comment.includes('--')) {
         throw new Error('XML comments must not contain --');
+      }
+      if (comment.endsWith('-')) {
+        throw new Error('XML comments must not end with -');
       }
       cursor = end + 3;
       continue;
@@ -377,35 +381,83 @@ function isZeroOpacity(value) {
   return normalized !== '' && Number(normalized) === 0;
 }
 
-function hidesSvgContent(element) {
+function inheritedPresentationValue(element, parentState, name, initialValue) {
+  const ownValue = presentationValue(element, name).trim().toLowerCase();
+  return ownValue || parentState?.[name] || initialValue;
+}
+
+function presentationState(element, parentState) {
+  return {
+    fill: inheritedPresentationValue(element, parentState, 'fill', 'black'),
+    'fill-opacity': inheritedPresentationValue(
+      element,
+      parentState,
+      'fill-opacity',
+      '1',
+    ),
+    stroke: inheritedPresentationValue(element, parentState, 'stroke', 'none'),
+    visibility: inheritedPresentationValue(
+      element,
+      parentState,
+      'visibility',
+      'visible',
+    ),
+  };
+}
+
+function hidesSvgSubtree(element) {
   return (
     NON_RENDERED_SVG_CONTAINERS.has(element.name) ||
     element.attributes.get('aria-hidden')?.trim().toLowerCase() === 'true' ||
     presentationValue(element, 'display').trim().toLowerCase() === 'none' ||
-    presentationValue(element, 'visibility').trim().toLowerCase() ===
-      'hidden' ||
-    isZeroOpacity(presentationValue(element, 'opacity')) ||
-    isZeroOpacity(presentationValue(element, 'fill-opacity'))
+    isZeroOpacity(presentationValue(element, 'opacity'))
   );
+}
+
+function paintsText(state) {
+  return (
+    state.visibility !== 'hidden' &&
+    state.visibility !== 'collapse' &&
+    !isZeroOpacity(state['fill-opacity']) &&
+    (state.fill !== 'none' || state.stroke !== 'none')
+  );
+}
+
+function visibleTextContent(element, state, hiddenByAncestor) {
+  const hidden = hiddenByAncestor || hidesSvgSubtree(element);
+  const textIsPainted = !hidden && paintsText(state);
+
+  return element.content
+    .map((item) => {
+      if (typeof item === 'string') {
+        return textIsPainted ? item : '';
+      }
+      const childState = presentationState(item, state);
+      return visibleTextContent(item, childState, hidden);
+    })
+    .join('');
 }
 
 function visibleSvgTextLabels(svgRoot) {
   const labels = [];
 
-  function visit(element, hiddenByAncestor) {
-    const hidden = hiddenByAncestor || hidesSvgContent(element);
+  function visit(element, parentState, hiddenByAncestor) {
+    const state = presentationState(element, parentState);
+    const hidden = hiddenByAncestor || hidesSvgSubtree(element);
     if (element.name === 'text' && !hidden) {
-      const label = normalizedLabel(textContent(element));
+      const label = normalizedLabel(
+        visibleTextContent(element, state, hiddenByAncestor),
+      );
       if (label) {
         labels.push(label);
       }
     }
     for (const child of element.children) {
-      visit(child, hidden);
+      visit(child, state, hidden);
     }
   }
 
-  visit(svgRoot, false);
+  visit(svgRoot, undefined, false);
   return labels;
 }
 

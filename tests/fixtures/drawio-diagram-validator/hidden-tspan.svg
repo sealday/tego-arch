@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"
+  role="img" aria-labelledby="title desc">
+  <title id="title">Hidden tspan</title>
+  <desc id="desc">Hidden descendant text must not satisfy a label.</desc>
+  <text>Visible <tspan display="none">hidden</tspan> suffix</text>
+</svg>

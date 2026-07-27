@@ -82,8 +82,14 @@ presence in Draw.io `mxCell.value` attributes and visible SVG `<text>`
 elements. The deterministic parser supports the declarations, comments,
 processing instructions, CDATA, elements, quoted attributes, and XML entities
 used by the paired artifacts; it deliberately rejects DTD/DOCTYPE and does not
-claim full XML conformance. Text under non-rendered definition containers or
-hidden by SVG presentation/ARIA attributes cannot satisfy a required label.
+claim full XML conformance. It enforces the supported XML 1.0 character and
+comment constraints. Text under non-rendered definition containers, hidden by
+SVG presentation/ARIA attributes (including `visibility:collapse`), or
+unpainted because its effective fill is `none` and stroke is absent/`none`
+cannot satisfy a required label. Visible labels are assembled through a
+visibility-aware descendant walk, so a hidden `<tspan>` contributes no text;
+the supported paint resolution covers inline styles, presentation attributes,
+and inheritance.
 These checks do not prove rendered text or connector clearance.
 
 ## Desktop and mobile browser QA

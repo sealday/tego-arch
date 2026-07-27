@@ -24,6 +24,13 @@ invisible selection box. Keep body and edge text at least 15 rendered CSS px and
 type/role labels at least 10 rendered CSS px. Move long explanations into the
 article, caption, or a separate note instead of shrinking node text.
 
+For arrow clearance, measure the real marker footprint rather than using the
+target node edge as a proxy. Transform the marker path or view bounds from the
+connector endpoint using its terminal direction, `refX`/`refY`, `markerUnits`,
+and edge stroke width, then compare the conservative visible label bounds on
+that terminal axis. A node-clearance pass does not imply an arrow-clearance
+pass.
+
 ## Layout sequence
 
 Use this order:
