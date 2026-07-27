@@ -54,7 +54,7 @@
           </mxGeometry>
         </mxCell>
 
-        <mxCell id="zoom-link" value="展开目标系统" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#A34A3A;strokeWidth=3;dashed=1;dashPattern=5 5;endArrow=block;endFill=1;fontSize=13;fontStyle=1;fontColor=#A34A3A;exitX=0.5;exitY=1;entryX=0.52;entryY=0;" edge="1" parent="1" source="expense-system" target="container-boundary">
+        <mxCell id="zoom-link" value="展开目标系统" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#A34A3A;strokeWidth=3;dashed=1;dashPattern=5 5;endArrow=block;endFill=1;fontSize=13;fontStyle=1;fontColor=#A34A3A;exitX=0.5;exitY=1;entryX=0.53;entryY=0;" edge="1" parent="1" source="expense-system" target="container-boundary">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="72" y="0" as="offset"/>
           </mxGeometry>
@@ -113,10 +113,10 @@
         </mxCell>
 
         <mxCell id="bank-container" value="银行支付服务" style="rounded=1;arcSize=16;whiteSpace=wrap;html=0;fillColor=#ECE8E1;strokeColor=#77716A;strokeWidth=2;fontColor=#263238;fontSize=18;fontStyle=1;verticalAlign=top;spacingTop=22;" vertex="1" parent="1">
-          <mxGeometry x="1010" y="685" width="130" height="86" as="geometry"/>
+          <mxGeometry x="1000" y="685" width="140" height="86" as="geometry"/>
         </mxCell>
         <mxCell id="bank-container-type" value="EXTERNAL" style="text;html=0;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=10;fontStyle=1;fontColor=#77716A;" vertex="1" parent="1">
-          <mxGeometry x="1030" y="739" width="90" height="22" as="geometry"/>
+          <mxGeometry x="1025" y="739" width="90" height="22" as="geometry"/>
         </mxCell>
 
         <mxCell id="edge-employee-web" value="使用" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#263238;strokeWidth=2;endArrow=block;endFill=1;fontSize=13;fontStyle=1;fontColor=#55514B;" edge="1" parent="1" source="employee-container" target="web-app">

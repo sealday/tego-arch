@@ -85,6 +85,14 @@ test('publishes the MOD-02 Draw.io source and responsive SVG pair', async () => 
     drawio,
     /id="container-boundary"[\s\S]*?<mxGeometry x="245" y="505" width="670" height="280"/u,
   );
+  assert.match(
+    drawio,
+    /id="bank-container"[\s\S]*?<mxGeometry x="1000" y="685" width="140" height="86"/u,
+  );
+  assert.match(
+    drawio,
+    /id="zoom-link"[^>]*entryX=0\.53;entryY=0;[^>]*source="expense-system" target="container-boundary"/u,
+  );
   assert.match(svg, /<path d="M720 227H885"[^>]*marker-end="url\(#arrow-ink\)"/u);
   const zoomPath =
     '<path d="M600 283V495" fill="none" stroke="#A34A3A"';
@@ -100,7 +108,11 @@ test('publishes the MOD-02 Draw.io source and responsive SVG pair', async () => 
     ),
   );
   assert.ok(svg.indexOf(zoomPath) > svg.indexOf(internalBoundaryPath));
-  assert.match(svg, /<path d="M881 728H1000"[^>]*marker-end="url\(#arrow-ink\)"/u);
+  assert.match(
+    svg,
+    /<path d="M1000 699Q1000 685 1014 685H1126Q1140 685 1140 699V757Q1140 771 1126 771H1014Q1000 771 1000 757Z"/u,
+  );
+  assert.match(svg, /<path d="M881 728H990"[^>]*marker-end="url\(#arrow-ink\)"/u);
   assert.match(
     svg,
     /<text x="955" y="704"[^>]*class="edge-label" data-clearance="8">请求付款<\/text>/u,
@@ -129,13 +141,20 @@ test('publishes the MOD-02 Draw.io source and responsive SVG pair', async () => 
     expectedRelations,
   );
 
-  const svgEdgeLabels =
-    svg.match(/<text\b[^>]*\bclass="[^"]*\bedge-label\b[^"]*"[^>]*>/gu) ?? [];
+  const svgEdgeLabels = [
+    ...svg.matchAll(
+      /(<text\b[^>]*\bclass="[^"]*\bedge-label\b[^"]*"[^>]*>)([^<]*)<\/text>/gu,
+    ),
+  ];
 
   assert.equal(svgEdgeLabels.length, expectedRelations.length);
-  for (const labelTag of svgEdgeLabels) {
+  for (const [, labelTag] of svgEdgeLabels) {
     assert.equal(xmlAttribute(labelTag, 'data-clearance'), '8');
   }
+  assert.deepEqual(
+    svgEdgeLabels.map(([, , label]) => label).sort(),
+    expectedRelations.map(([, value]) => value).sort(),
+  );
 
   const validator = spawnSync(
     process.execPath,

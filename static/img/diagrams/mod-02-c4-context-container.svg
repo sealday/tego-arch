@@ -88,15 +88,15 @@
   <text x="785" y="721" text-anchor="middle" class="node-title">支付任务执行器</text>
   <text x="785" y="750" text-anchor="middle" class="node-type" fill="#55705D">CONTAINER</text>
 
-  <path d="M1010 699Q1010 685 1024 685H1126Q1140 685 1140 699V757Q1140 771 1126 771H1024Q1010 771 1010 757Z" fill="#ECE8E1" stroke="#77716A" stroke-width="2"/>
-  <text x="1075" y="721" text-anchor="middle" class="node-title">银行支付服务</text>
-  <text x="1075" y="750" text-anchor="middle" class="node-type" fill="#77716A">EXTERNAL</text>
+  <path d="M1000 699Q1000 685 1014 685H1126Q1140 685 1140 699V757Q1140 771 1126 771H1014Q1000 771 1000 757Z" fill="#ECE8E1" stroke="#77716A" stroke-width="2"/>
+  <text x="1070" y="721" text-anchor="middle" class="node-title">银行支付服务</text>
+  <text x="1070" y="750" text-anchor="middle" class="node-type" fill="#77716A">EXTERNAL</text>
 
   <path d="M206 580H260" fill="none" stroke="#263238" stroke-width="2.2" marker-end="url(#arrow-ink)"/>
   <path d="M431 580H520" fill="none" stroke="#263238" stroke-width="2.2" marker-end="url(#arrow-ink)"/>
   <path d="M691 580H735" fill="none" stroke="#263238" stroke-width="2.2" marker-end="url(#arrow-ink)"/>
   <path d="M680 626V670H709V675" fill="none" stroke="#263238" stroke-width="2.2" marker-end="url(#arrow-ink)"/>
-  <path d="M881 728H1000" fill="none" stroke="#263238" stroke-width="2.2" marker-end="url(#arrow-ink)"/>
+  <path d="M881 728H990" fill="none" stroke="#263238" stroke-width="2.2" marker-end="url(#arrow-ink)"/>
 
   <text x="238" y="556" text-anchor="middle" class="edge-label" data-clearance="8">使用</text>
   <text x="475" y="556" text-anchor="middle" class="edge-label" data-clearance="8">提交申报</text>
