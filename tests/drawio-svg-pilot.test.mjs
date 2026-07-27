@@ -28,8 +28,9 @@ test('publishes the MOD-02 Draw.io source and responsive SVG pair', async () => 
   assert.match(drawio, /<diagram\b[^>]*name="Context → Container"/u);
   assert.match(svg, /<svg\b/u);
   assert.match(svg, /\bviewBox="0 0 1200 760"/u);
-  assert.doesNotMatch(svg, /\bwidth="\d+(?:px)?"/u);
-  assert.doesNotMatch(svg, /\bheight="\d+(?:px)?"/u);
+  const svgRoot = svg.match(/<svg\b[^>]*>/u)?.[0] ?? '';
+  assert.doesNotMatch(svgRoot, /\bwidth=/u);
+  assert.doesNotMatch(svgRoot, /\bheight=/u);
 
   for (const label of [
     'Context：费用申报系统边界',

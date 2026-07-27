@@ -48,24 +48,11 @@ Context 图回答“系统与谁协作”，Container 图回答“系统内部�
 
 ## 模型产物
 
-下面是原创的 Context→Container 两层映射，箭头只表达关系，不声称调用顺序：
+下面是本站原创的 Context→Container 两层映射。先看上层如何把目标系统与员工、外部银行分开，再沿“展开”关系检查下层的可运行与存储单元；箭头只表达关系，不声称调用顺序。
 
-```mermaid
-flowchart TB
-  subgraph Context["Context：费用申报系统边界"]
-    E["员工"] --> X["费用申报系统"]
-    X --> B["银行支付服务"]
-  end
-  subgraph Container["Container：展开费用申报系统"]
-    W["Web 应用"] --> A["申报 API"]
-    A --> D[("申报数据库")]
-    A --> Q["支付任务执行器"]
-    Q --> B2["银行支付服务"]
-  end
-  X -.展开.-> W
-```
+![从费用申报系统 Context 边界展开到 Web、API、数据库与支付任务执行器等 Container](/img/diagrams/mod-02-c4-context-container.svg)
 
-Context 层保留系统整体，Container 层只展开目标系统；外部银行仍在边界外。
+Context 层保留系统整体，Container 层只展开目标系统；外部银行仍在边界外。SVG 用视觉层级区分两个抽象层次，但不增加运行顺序、部署位置或故障切换方面的证据。
 
 ## 完成判断
 
