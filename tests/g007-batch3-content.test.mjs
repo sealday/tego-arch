@@ -89,13 +89,16 @@ const decisionContracts = new Map([
     [
       ['idempotency protects effect not bytes', '要保护的性质', /幂等保护的是受约束效果，而不是逐字节相同响应/u],
       ['retry keeps one operation identity', '机制', /同一逻辑操作的传输重试必须复用同一幂等键/u],
-      ['replay states are explicit', '机制', /in-progress、completed、rejected（包括 conflict）、expired 与 unknown/u],
       ['unknown is not failed', '机制', /未知结果不是可盲重试的失败/u],
       ['dedupe is not invariant coordination', '冲突与适用上下文', /去重不能替代共享不变量所需的所有权、条件写或串行化/u],
       ['minimal coordination is not zero', '误用与反原则', /最小协调不等于零协调/u],
       ['HTTP method is not proof', '误用与反原则', /HTTP 方法[^。；\n]*不能证明[^。；\n]*幂等/u],
       ['fresh retry key is rejected', '误用与反原则', /每次(?:传输|网络)重试生成新(?:的)?幂等键[^。；\n]*(?:破坏|错误)/u],
-      ['state distinctions are retained', '机制', /in-progress、completed、rejected（包括 conflict）、expired 与 unknown/u],
+      [
+        'success-only state is rejected',
+        '机制',
+        /只存储(?:一个)?成功(?:标志|旗标)[^。；\n]*(?:不足|不能)[^。；\n]*in-progress、completed、rejected、conflict、expired 与 unknown/u,
+      ],
       ['exactly-once is not enough', '误用与反原则', /exactly-once[^。；\n]*不能[^。；\n]*(?:幂等消费者|效果边界)/u],
       ['irreversible retries are bounded', '误用与反原则', /不可逆效果[^。；\n]*(?:无限|无界|不设上限)重试[^。；\n]*(?:补偿|对账|人工终态)/u],
       ['process-local cache is insufficient', '适用尺度', /进程内缓存[^。；\n]*不足以[^。；\n]*(?:跨实例|持久)/u],
@@ -111,8 +114,26 @@ const decisionContracts = new Map([
       ['CQRS costs are explicit', '冲突与适用上下文', /投影延迟、read-your-write、回放重建、对账与模式演化/u],
       ['simple CRUD non-use', '误用与反原则', /简单 CRUD 边界没有模型分歧证据时不采用 CQRS/u],
       ['return value does not define query', '误用与反原则', /返回值[^。；\n]*不能[^。；\n]*查询/u],
-      ['commands may return outcomes', '要保护的性质', /命令可以返回(?:标识符|ID)、(?:回执|receipt)或(?:结果|outcome)/u],
-      ['auxiliary effects use observable semantics', '要保护的性质', /(?:内部记账|bookkeeping)、(?:指标|metrics)、(?:缓存|caching|缓存填充)(?:与|、)(?:延迟加载|lazy loading)[^。；\n]*外部可观察[^。；\n]*领域语义/u],
+      [
+        'mutating value return is a CQS exception',
+        '要保护的性质',
+        /改变可观察状态[^。；\n]*返回(?:标识符|ID)、(?:回执|receipt)或(?:结果|outcome)[^。；\n]*组合操作[^。；\n]*CQS 例外/u,
+      ],
+      [
+        'strict CQS redesign separates result lookup',
+        '要保护的性质',
+        /无返回值命令[^。；\n]*独立(?:回执|结果)查询/u,
+      ],
+      [
+        'caller-observable auxiliary changes invalidate query purity',
+        '要保护的性质',
+        /调用者可观察[^。；\n]*领域(?:状态|语义)[^。；\n]*不能[^。；\n]*(?:纯查询|查询纯粹)/u,
+      ],
+      [
+        'implementation-only auxiliary effects preserve domain contract',
+        '要保护的性质',
+        /实现内部[^。；\n]*(?:记账|指标|缓存|延迟加载)[^。；\n]*不改变[^。；\n]*领域契约[^。；\n]*(?:披露|命名|说明)/u,
+      ],
     ],
   ],
 ]);
@@ -261,14 +282,14 @@ test('governs sources and visible Batch 3 relationships', () => {
   }
 });
 
-test('keeps authorization replay and responsibility decisions distinct', () => {
-  for (const [id, contracts] of decisionContracts) {
+for (const [id, contracts] of decisionContracts) {
+  test(`keeps ${id} decision boundaries distinct`, () => {
     const body = requiredDocument(id).body;
     for (const [label, heading, pattern] of contracts) {
       assert.match(section(body, heading), pattern, `${id}: ${label}`);
     }
-  }
-});
+  });
+}
 
 test('keeps every PR-09 authorization outcome independently explicit', () => {
   const mechanism = section(requiredDocument('PR-09').body, '机制');
@@ -295,5 +316,13 @@ test('defines the complete PR-10 replay contract row by row', () => {
     section(requiredDocument('PR-10').body, '要保护的性质'),
     /业务有效(?:期|窗口)[^。；\n]*不同于[^。；\n]*去重记录(?:的)?保留(?:期|窗口)/u,
     'PR-10 business validity and dedup retention are distinct',
+  );
+});
+
+test('does not misclassify a value-returning mutation as a strict CQS command', () => {
+  const boundary = section(requiredDocument('PR-11').body, '要保护的性质');
+  assert.doesNotMatch(
+    boundary,
+    /命令可以返回(?:标识符|ID)、(?:回执|receipt)或(?:结果|outcome)[^。；\n]*(?:只要[^。；\n]*改变领域状态|仍是命令)/u,
   );
 });
