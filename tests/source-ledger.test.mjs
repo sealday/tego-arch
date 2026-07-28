@@ -1067,6 +1067,22 @@ test('keeps approved checker transports separate from canonical citation identit
     /citation URL does not match source canonical or alias locator/i,
   );
 
+  const unapprovedTransport = parseSourceLedger(
+    ledger({
+      sources: [
+        {
+          ...iso,
+          transport_locator: 'https://unrelated.example/checker',
+        },
+      ],
+      documents: {},
+    }),
+  );
+  assert.match(
+    unapprovedTransport.errors.join('\n'),
+    /decoupled transport_locator.*expected_final_transport_locator/i,
+  );
+
   for (const transport_locator of [
     'http://committee.iso.org/standard/74393.html',
     'HTTPS://committee.iso.org/standard/74393.html',

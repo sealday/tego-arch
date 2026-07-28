@@ -376,6 +376,19 @@ function validateLocatorPair(
   }
 }
 
+function locatorIdentityMatches(locator, transport, queryInsensitive) {
+  const canonicalLocator = canonicalizeTransportLocator(locator);
+  const canonicalTransport = canonicalizeTransportLocator(transport);
+  if (!queryInsensitive || !isHttps(canonicalLocator)) {
+    return canonicalLocator === canonicalTransport;
+  }
+  const locatorIdentity = new URL(canonicalLocator);
+  const transportIdentity = new URL(canonicalTransport);
+  locatorIdentity.search = '';
+  transportIdentity.search = '';
+  return locatorIdentity.href === transportIdentity.href;
+}
+
 function validateAlias(alias, source, index, errors) {
   const label = `source "${source.id}" alias ${index + 1}`;
   if (!validateExactKeys(alias, aliasKeys, label, errors)) {
@@ -515,6 +528,22 @@ function validateSource(source, index, errors) {
     label,
     errors,
   );
+  try {
+    if (
+      !locatorIdentityMatches(
+        source.canonical_locator,
+        source.transport_locator,
+        source.query_insensitive,
+      ) &&
+      source.transport_locator !== source.expected_final_transport_locator
+    ) {
+      errors.push(
+        `${label}: decoupled transport_locator must equal expected_final_transport_locator`,
+      );
+    }
+  } catch {
+    // Locator-shape errors are reported by the existing pair/final validators.
+  }
   validateEnum(source.source_kind, sourceKinds, `${label}: source_kind`, errors);
   validateEnum(source.tier, sourceTiers, `${label}: tier`, errors);
   validateStringArray(
