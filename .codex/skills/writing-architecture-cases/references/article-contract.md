@@ -9,7 +9,7 @@ Read this contract before drafting or rewriting a complete architecture case. Pr
 | 1 | `## 学习问题` | Give 4–6 questions that drive the reading, prioritizing control, state, failure, boundary, and transfer. |
 | 2 | `## 一页摘要` | Establish the architecture in 2–4 short paragraphs, then use one compact table to orient the reader. |
 | 3 | `## 事实边界` | State the evidence scope and only the version boundaries that affect conclusions; defer anchor inventories. |
-| 4 | `## 架构图` | Tell readers what relationship to inspect before the visual, include the selected original raster illustration when the visual scan triggers, retain a deterministic diagram when exact topology matters, then explain one task flow after it. |
+| 4 | `## 架构图` | Tell readers what relationship to inspect, include the routed Mermaid, Draw.io + SVG, or original 位图 when the visual scan triggers, then explain one task flow after it. |
 | 5 | `## 控制权与任务流` | Trace a micro-scenario through roles, state, handoffs, failure, termination, and retry authority. |
 | 6 | `## 关键源码导读` | State the reading purpose and shortest decisive source path; separate mechanism proof from business inference. |
 | 7 | `## 架构决策与权衡` | For each decision, connect the problem, mechanism, cost, and applicability boundary. |
@@ -63,11 +63,11 @@ Introduce every table, diagram, and code block with the question it answers. Fol
 
 ## Illustration boundary
 
-Use the `illustrating-architecture-articles` skill for selected raster visuals. The image establishes orientation and makes one architectural judgment memorable; prose, Mermaid, tables, code, and evidence cards remain authoritative for exact names, topology, versions, and source claims.
+Use the `illustrating-architecture-articles` skill as the visual-format router. It must record `无需图`, `Mermaid`, `Draw.io + SVG`, or `位图` before asset work begins. Mermaid remains appropriate for small, changing, text-diffable flows; Draw.io + SVG handles publication diagrams that require deliberate geometry; 位图 establishes conceptual orientation. Prose, deterministic diagrams, tables, code, and evidence cards remain authoritative for exact names, topology, versions, and source claims.
 
 For a complete case, run the visual scan in the writing skill. When a trigger applies:
 
-- generate and embed at least one original image;
+- produce and embed the routed visual form;
 - place it after a paragraph that names what to inspect;
 - add concise purpose-oriented alt text;
 - state the conclusion or critical boundary after it;
@@ -84,11 +84,12 @@ The separate `visual-balance` result counts eligible narrative prose and weights
 | Visual form | Weight |
 | --- | ---: |
 | Markdown raster image (`png`, `jpg`, `jpeg`, `webp`) | 3.0 |
+| Markdown SVG diagram | 3.0 |
 | Mermaid fence | 1.5 |
 | Markdown table | 0.75 |
 | Non-Mermaid fenced code block | 0.25 |
 
-Its target is `max(2, eligible prose characters / 1000 × 2)`, and its score is the weighted units divided by that target, rounded and capped at 100. Eligible prose excludes front matter, fences, evidence cards, tables, headings, list items, and Markdown image syntax. A complete architecture case requires a score strictly greater than 90. Mermaid, tables, and code receive partial credit, but they do not automatically replace an explanatory raster illustration selected by the visual scan.
+Its target is `max(2, eligible prose characters / 1000 × 2)`, and its score is the weighted units divided by that target, rounded and capped at 100. Eligible prose excludes front matter, fences, evidence cards, tables, headings, list items, and Markdown image syntax. A complete architecture case requires a score strictly greater than 90. Mermaid, tables, and code receive partial credit; SVG diagrams and raster illustrations receive full credit when selected by the visual-format router.
 
 It also reports:
 

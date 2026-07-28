@@ -18,8 +18,8 @@ Run these gates in order. A later gate cannot compensate for failure in an earli
 - [ ] The opening reaches a concrete conflict or conclusion, transferable lens, and evidence scope within three short paragraphs.
 - [ ] Each section answers one main reader question; each paragraph advances one center of gravity.
 - [ ] Scenarios return to an architectural judgment; tables, diagrams, and code have a before-reading question and an after-reading conclusion.
-- [ ] The visual scan is recorded. When a trigger applies, at least one original raster illustration exists in the repository, is embedded after an inspection question, and is followed by its conclusion or boundary.
-- [ ] The illustration and any nearby Mermaid/table divide responsibilities: the raster image orients; deterministic text and diagrams preserve exact labels, topology, versions, and evidence.
+- [ ] The visual scan records `无需图`, `Mermaid`, `Draw.io + SVG`, or `位图`. When a trigger applies, the routed visual exists in the repository, is embedded after an inspection question, and is followed by its conclusion or boundary.
+- [ ] Nearby visual forms divide responsibilities: 位图 orients; deterministic text, Mermaid, Draw.io + SVG, and tables preserve exact labels, topology, versions, and evidence.
 - [ ] `COSMETIC_ONLY`: if density came from mixed concerns or source inventories, the revision changes information placement and structure rather than only wording.
 - [ ] `LOW_DENSITY_FILLER`: each lighter sentence establishes context, explains a term, bridges causality, traces flow, poses a check, or synthesizes a decision.
 
@@ -43,7 +43,7 @@ Run these gates in order. A later gate cannot compensate for failure in an earli
 - [ ] Review `duplicate-evidence-summary` and `repeated-evidence-label`; keep summaries topic-specific and let one epistemic label govern a short coherent block instead of repeating it mechanically.
 - [ ] Resolve `missing-illustrative-label` by labeling the supported micro-scenario `说明性场景` or `说明性演练`, not by inventing a story.
 - [ ] Resolve `empty-evidence-card`; review `unanchored-evidence-card` and add a source, file, symbol, version, commit, link, or other concrete anchor when the block claims to be evidence.
-- [ ] Review the `visual-balance` counts and exact weights: raster 3.0, Mermaid 1.5, table 0.75, and non-Mermaid code 0.25.
+- [ ] Review the `visual-balance` counts and exact weights: raster 3.0, SVG diagram 3.0, Mermaid 1.5, table 0.75, and non-Mermaid code 0.25.
 - [ ] Resolve `missing-visual-content`; for a complete case, resolve `low-visual-balance` until the score is strictly greater than 90.
 - [ ] Every visual added for balance teaches a supported orientation, comparison, topology, flow, or boundary; no decorative filler exists only to raise the score.
 - [ ] Remove empty setup, fake suspense, slogans, repeated conclusions, mechanical parallelism, synonym chains, and exhaustive name dumping.

@@ -1,4 +1,4 @@
 interface:
-  display_name: "架构文章手绘插图"
-  short_description: "为 Tego Arch 文章生成清晰、原创、可核验的手绘技术信息图"
-  default_prompt: "Use $illustrating-architecture-articles to create and integrate a hand-drawn architecture infographic for this article."
+  display_name: "架构文章视觉选型"
+  short_description: "为 Tego Arch 文章选择并集成 Mermaid、Draw.io 或原创位图"
+  default_prompt: "Use $illustrating-architecture-articles to decide whether this article needs no visual, Mermaid, Draw.io + SVG, or a raster illustration, then integrate the selected form."
