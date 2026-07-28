@@ -23,7 +23,7 @@ const fixtureById = new Map([
   ['QA-01', ['quality-attribute', 'quality-attributes/qa-01-scenario-writing.mdx']],
 ]);
 const fixtureCompletionById = new Map([
-  ['PR-01', false],
+  ['PR-01', true],
   ['REL-02', false],
   ['STY-00', false],
   ['MTH-03', true],
