@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<!-- Hidden architecture label -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"
+  role="img" aria-labelledby="title desc">
+  <title id="title">Hidden architecture label</title>
+  <desc id="desc">Hidden architecture label</desc>
+  <metadata>Hidden architecture label</metadata>
+  <text x="10" y="20">Visible node</text>
+</svg>

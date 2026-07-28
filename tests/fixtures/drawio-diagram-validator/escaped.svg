@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"
+  role="img" aria-labelledby="title desc">
+  <title id="title">Escaped visible label</title>
+  <desc id="desc">XML entities are decoded before label comparison.</desc>
+  <text x="10" y="20">Payments <tspan>&amp;</tspan> Claims</text>
+</svg>

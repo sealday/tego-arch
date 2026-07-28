@@ -230,6 +230,27 @@ button:focus-visible,
   -webkit-overflow-scrolling: touch;
 }
 
+.theme-doc-markdown .architecture-diagram-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  padding-bottom: 0.35rem;
+  -webkit-overflow-scrolling: touch;
+}
+
+.theme-doc-markdown .architecture-diagram-scroll:focus-visible {
+  outline: 3px solid var(--ifm-color-primary);
+  outline-offset: 4px;
+}
+
+.theme-doc-markdown .architecture-diagram-scroll img {
+  display: block;
+  width: 50rem;
+  max-width: none;
+  height: auto;
+  margin: 0;
+}
+
 .theme-doc-markdown .docusaurus-mermaid-container,
 .theme-doc-markdown .mermaid {
   max-width: 100%;
