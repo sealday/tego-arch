@@ -13,23 +13,23 @@ Write for an engineer with software experience who is meeting this architecture 
 
 For a complete case, **read `references/article-contract.md` before drafting or rewriting**. Before declaring any case complete, **read `references/review-checklist.md` and pass its four gates in order**.
 
-**REQUIRED SUB-SKILL:** Use `illustrating-architecture-articles` whenever the visual scan below selects a raster illustration.
+**REQUIRED SUB-SKILL:** Use `illustrating-architecture-articles` whenever the visual scan below finds a teaching opportunity; let it choose the visual format rather than defaulting to one renderer.
 
 ## Workflow
 
 1. State the reader's 3–5 learning questions and the judgments they should retain.
 2. Inventory every supplied fact, evidence label, source, version, path, boundary, required heading, and supported inference before editing.
 3. Design one question per section; order the visible narrative around conflict, control, state, task flow, failure, recovery, and trade-offs.
-4. Run a visual scan before drafting. Select a raster illustration when the article contains at least one of these:
+4. Run a visual scan before drafting. Route the decision through `illustrating-architecture-articles` when the article contains at least one of these:
    - a request or control path with 3+ handoffs;
    - a state loop, retry, failure branch, or recovery decision;
    - a hierarchy or ownership model with 3+ layers;
    - a comparison with 3+ aligned dimensions;
    - a central architectural judgment that benefits from a one-screen visual summary.
 
-   For a complete case, generate and integrate at least one selected illustration; do not satisfy this step with a promise, Mermaid, table, or decorative image. Keep Mermaid or tables beside it when exact labels and relationships require deterministic rendering. If no trigger applies, record `插图判定：无需位图` with the reason in the self-review.
+   For a complete case, produce and integrate the selected teaching visual; a readable Mermaid diagram, paired Draw.io + SVG asset, or original 位图 may satisfy the step when the routing criteria select it. A promise or decorative filler does not. If no trigger applies, record `插图判定：无需图` with the reason in the self-review.
 5. Draft the visible narrative without source inventories; make it independently accurate and understandable.
-6. Generate each selected illustration after its surrounding claim and topology are stable. Place it immediately after the paragraph that tells the reader what to inspect, and follow it with the conclusion or boundary it supports.
+6. Produce each selected visual after its surrounding claim and topology are stable. Place it immediately after the paragraph that tells the reader what to inspect, and follow it with the conclusion or boundary it supports.
 7. Add one labeled evidence card per verification topic for fixed versions, source seams, multi-source support, and nonessential implementation exceptions.
 8. Check density with:
 
@@ -75,7 +75,7 @@ When the task covers only an excerpt, preserve every supplied heading and eviden
 | `COSMETIC_ONLY` | Not observed; all baselines changed structure. | Reorder information layers when density is structural; sentence polish alone is not completion. |
 | `LOW_DENSITY_FILLER` | Not observed. | Every lighter sentence must establish context, explain a term, bridge causality, trace flow, pose a check, or synthesize a decision. |
 | `HIDDEN_CRITICAL_BOUNDARY` | Not observed. | Keep consequential safety, authorization, cost, irreversible-effect, version, cancellation, and recovery limits in the visible narrative. |
-| `ILLUSTRATION_SKIPPED_UNDER_PRESSURE` | A direct-to-MDX baseline explicitly omitted raster assets when the deadline was short and the user did not mention images. | Make the visual scan a required delivery step; when a trigger applies, completion requires a generated, embedded, registered, and rendered asset. |
+| `ILLUSTRATION_SKIPPED_UNDER_PRESSURE` | A direct-to-MDX baseline explicitly omitted visual work when the deadline was short and the user did not mention it. | Make the visual scan a required delivery step; when a trigger applies, completion requires a generated, embedded, registered, and rendered asset. |
 
 ## Completion
 

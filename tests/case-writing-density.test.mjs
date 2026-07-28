@@ -321,6 +321,7 @@ test('scores the Microsoft-like visual mix at 81 and warns below the completion 
   assert.deepEqual(result.visualBalance, {
     eligibleProseCharacters: 4930,
     rasterCount: 1,
+    diagramCount: 0,
     mermaidCount: 2,
     tableCount: 2,
     codeCount: 2,
@@ -359,6 +360,18 @@ const value = 1;
   assert.equal(result.visualBalance.codeCount, 1);
   assert.equal(result.visualBalance.visualUnits, 5.5);
   assert.equal(result.visualBalance.targetVisualUnits, 2);
+  assert.equal(result.visualBalance.score, 100);
+});
+
+test('counts published SVG diagrams as full explanatory visuals', () => {
+  const result = analyzeCaseText(`正文。
+
+![C4 容器图](/img/diagrams/example.drawio.svg)
+`);
+
+  assert.equal(result.visualBalance.diagramCount, 1);
+  assert.equal(result.visualBalance.rasterCount, 0);
+  assert.equal(result.visualBalance.visualUnits, 3);
   assert.equal(result.visualBalance.score, 100);
 });
 

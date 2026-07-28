@@ -245,6 +245,7 @@ function maskInlineTechnicalSyntax(value) {
 
 function visualFormCounts(lines, excluded, evidenceLines) {
   let rasterCount = 0;
+  let diagramCount = 0;
   let mermaidCount = 0;
   let tableCount = 0;
   let codeCount = 0;
@@ -257,6 +258,8 @@ function visualFormCounts(lines, excluded, evidenceLines) {
       )) {
         if (/\.(?:png|jpe?g|webp)(?:\?[^)\s]*)?$/iu.test(match[1])) {
           rasterCount += 1;
+        } else if (/\.svg(?:\?[^)\s]*)?$/iu.test(match[1])) {
+          diagramCount += 1;
         }
       }
     }
@@ -293,7 +296,7 @@ function visualFormCounts(lines, excluded, evidenceLines) {
     }
   }
 
-  return {rasterCount, mermaidCount, tableCount, codeCount};
+  return {rasterCount, diagramCount, mermaidCount, tableCount, codeCount};
 }
 
 function visualBalanceResult(paragraphs, lines, excluded, evidenceLines) {
@@ -305,6 +308,7 @@ function visualBalanceResult(paragraphs, lines, excluded, evidenceLines) {
   const counts = visualFormCounts(lines, excluded, evidenceLines);
   const visualUnits =
     counts.rasterCount * 3 +
+    counts.diagramCount * 3 +
     counts.mermaidCount * 1.5 +
     counts.tableCount * 0.75 +
     counts.codeCount * 0.25;
@@ -529,6 +533,7 @@ export function analyzeCaseText(source, options = {}) {
   ) {
     const {
       rasterCount,
+      diagramCount,
       mermaidCount,
       tableCount,
       codeCount,
@@ -536,7 +541,7 @@ export function analyzeCaseText(source, options = {}) {
       visualUnits,
     } = visualBalance;
     const hasVisualContent =
-      rasterCount + mermaidCount + tableCount + codeCount > 0;
+      rasterCount + diagramCount + mermaidCount + tableCount + codeCount > 0;
 
     if (!hasVisualContent) {
       warnings.push({
@@ -551,7 +556,7 @@ export function analyzeCaseText(source, options = {}) {
       warnings.push({
         kind: 'low-visual-balance',
         line: 1,
-        message: `Visual-balance score ${score} must be greater than ${visualBalanceThreshold}; raster=${rasterCount}, mermaid=${mermaidCount}, table=${tableCount}, code=${codeCount}, weighted units=${visualUnits}.`,
+        message: `Visual-balance score ${score} must be greater than ${visualBalanceThreshold}; raster=${rasterCount}, svg-diagram=${diagramCount}, mermaid=${mermaidCount}, table=${tableCount}, code=${codeCount}, weighted units=${visualUnits}.`,
       });
     }
   }
