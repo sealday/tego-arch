@@ -82,6 +82,31 @@ const decisionContracts = new Map([
       ['fail-safe default remains observable', '误用与反原则', /安全默认值不等于静默失败/u],
       ['defense layers require independence', '机制', /额外控制必须针对已命名威胁，并具有有意义的独立性/u],
       ['emergency access has lifecycle', '机制', /紧急权限必须有所有者、审计、过期与撤销/u],
+      [
+        'authentication is not authorization',
+        '误用与反原则',
+        /只完成认证不等于完成授权[^。\n]*知道“是谁”不能回答“能对哪个资源执行什么动作”/u,
+      ],
+      [
+        'shared control dependencies are not independent defense',
+        '误用与反原则',
+        /同一身份源、同一策略引擎或同一管理员权限[^。\n]*不构成独立防御[^。\n]*信任边界和失效模式是否相关/u,
+      ],
+      [
+        'additional controls name the asset threat boundary and residual risk',
+        '机制',
+        /授权决策先明确[^。；\n]*resource[^。；\n]*[\s\S]*额外控制必须针对已命名威胁[^。；\n]*[\s\S]*trust boundary[^|\n]*\|[^|\n]*残余风险/u,
+      ],
+      [
+        'narrow role names do not prove least privilege',
+        '机制',
+        /实际权限由资源、动作、时长与委派路径共同界定[^。；\n]*不是只看身份或角色名/u,
+      ],
+      [
+        'permanent emergency credentials require replacement lifecycle',
+        '误用与反原则',
+        /永久紧急凭证也不是可用性方案[^。\n]*短时窄权限、强审计、到期撤销并复盘/u,
+      ],
     ],
   ],
   [
@@ -114,6 +139,46 @@ const decisionContracts = new Map([
       ['CQRS costs are explicit', '冲突与适用上下文', /投影延迟、read-your-write、回放重建、对账与模式演化/u],
       ['simple CRUD non-use', '误用与反原则', /简单 CRUD 边界没有模型分歧证据时不采用 CQRS/u],
       ['return value does not define query', '误用与反原则', /返回值[^。；\n]*不能[^。；\n]*查询/u],
+      [
+        'CQS is not CQRS',
+        '机制',
+        /先保留现有模型并应用 CQS[^。；\n]*[\s\S]*只有命令规则与查询形状长期不同[^。；\n]*采用 CQRS/u,
+      ],
+      [
+        'read-heavy ratio alone does not justify CQRS',
+        '机制',
+        /模型相同，只是查询慢或读多\s*\|\s*优化单模型读取[^|\n]*\|[^|\n]*\|\s*不引入投影流水线/u,
+      ],
+      [
+        'conceptual model separation does not require separate databases',
+        '要保护的性质',
+        /CQRS 分离命令与查询责任及其模型，但不必分离物理存储/u,
+      ],
+      [
+        'eventual visibility is not hidden',
+        '误用与反原则',
+        /失败模式包括[^。；\n]*命令成功但查询长期不可见/u,
+      ],
+      [
+        'projection lag remains caller-visible',
+        '冲突与适用上下文',
+        /团队必须承担投影延迟/u,
+      ],
+      [
+        'duplicate events remain explicit',
+        '机制',
+        /采用 CQRS[^|\n]*\|[^|\n]*投影、重复事件、重建、对账、模式演化/u,
+      ],
+      [
+        'rebuild cost remains explicit',
+        '冲突与适用上下文',
+        /团队必须承担[^。；\n]*回放重建/u,
+      ],
+      [
+        'read-your-write remains explicit',
+        '冲突与适用上下文',
+        /团队必须承担[^。；\n]*read-your-write/u,
+      ],
       [
         'mutating value return is a CQS exception',
         '要保护的性质',
@@ -325,4 +390,9 @@ test('does not misclassify a value-returning mutation as a strict CQS command', 
     boundary,
     /命令可以返回(?:标识符|ID)、(?:回执|receipt)或(?:结果|outcome)[^。；\n]*(?:只要[^。；\n]*改变领域状态|仍是命令)/u,
   );
+});
+
+test('does not equate CQS with CQRS', () => {
+  const mechanism = section(requiredDocument('PR-11').body, '机制');
+  assert.doesNotMatch(mechanism, /CQS\s*(?:就是|等于|等同于)\s*CQRS/u);
 });
