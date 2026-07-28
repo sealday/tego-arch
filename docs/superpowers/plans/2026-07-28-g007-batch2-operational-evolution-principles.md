@@ -6,7 +6,7 @@
 
 **Architecture:** Each principle remains an independent MDX knowledge unit using the canonical nine-section contract. Front matter is the canonical relationship input, the source ledger governs factual provenance, generated projections are written only by the content generator, and delivery uses a test-first Stage A content commit followed by an exact-deployment-backed Stage B closure commit.
 
-**Tech Stack:** Bun command runner, Node test runner through `bun test`, MDX, Mermaid, JSON source ledger, Docusaurus 3.10.2, TypeScript 6, GitHub Pages.
+**Tech Stack:** Bun command runner for repository scripts and Bun-compatible tests, repository-native Node `--test` for suites that depend on nested `node:test` behavior, MDX, Mermaid, JSON source ledger, Docusaurus 3.10.2, TypeScript 6, GitHub Pages.
 
 ## Global Constraints
 
@@ -19,7 +19,7 @@
 - Do not manually edit files under `src/generated/`; run `bun run generate:content`.
 - During Stage A, keep PR-06 through PR-08 unchecked in `docs/content-backlog.md`.
 - Use only facts summaries for the five new all-rights-reserved source families, and reuse the existing attributed CC BY AIP-180 family; do not copy source diagrams, tables, examples, or book structure.
-- Use Bun commands for repository scripts and tests.
+- Use Bun commands for repository scripts and compatible tests. Exception: run nested `node:test` suites such as `tests/source-ledger.test.mjs` with repository-native Node `--test`; Bun 1.3.13 compatibility runs must exclude those files.
 - G007 remains in progress after this batch; do not checkpoint it.
 
 ## File Structure
@@ -241,19 +241,121 @@ test('governs sources and visible Batch 2 relationships', () => {
 Append:
 
 ```js
+const misconceptionContracts = new Map([
+  [
+    'PR-06',
+    [
+      [
+        'DRY protects authoritative knowledge rather than every similar code shape',
+        '机制',
+        /DRY 关心权威知识，不是每一段形状相似的代码/u,
+      ],
+      [
+        'YAGNI permits currently required engineering work',
+        '冲突与适用上下文',
+        /YAGNI 不禁止当前必需的重构、测试、可观测性、安全或合规工作/u,
+      ],
+      [
+        'KISS preserves inherent domain and operational complexity',
+        '冲突与适用上下文',
+        /KISS 也不构成忽略领域固有复杂度或运行复杂度的理由/u,
+      ],
+      [
+        'temporary duplication can be safer while variation is unknown',
+        '机制',
+        /在变化边界未知时，临时重复可能比错误抽象更安全/u,
+      ],
+      [
+        'shared abstractions require ownership stable change reasons and removal or reassessment',
+        '机制',
+        /共享抽象[\s\S]*明确所有者、稳定的共同变化原因，以及删除或重新评估条件/u,
+      ],
+    ],
+  ],
+  [
+    'PR-07',
+    [
+      [
+        'Fail Fast is bounded locally rather than crashing everything',
+        '要保护的性质',
+        /Fail Fast 是局部且有界的[\s\S]*并不意味着“每个异常都让整个进程崩溃”/u,
+      ],
+      [
+        'Fail Safe requires a named hazard and safe state',
+        '要保护的性质',
+        /Fail Safe 必须先命名危害与安全状态/u,
+      ],
+      [
+        'Fail Safe is not silent error swallowing',
+        '误用与反原则',
+        /把这种静默吞错叫作 Fail Safe/u,
+      ],
+      [
+        'degradation must preserve truthful semantics and visible status',
+        '机制',
+        /Graceful Degradation 必须同时保留真实语义和可见降级状态/u,
+      ],
+      [
+        'one request path can mix all three policies at different boundaries',
+        '机制',
+        /一个请求路径可以在输入验证处 Fail Fast[\s\S]*副作用边界 Fail Safe[\s\S]*Graceful Degradation/u,
+      ],
+      [
+        'AWS and SRE guidance does not define universal thresholds',
+        '冲突与适用上下文',
+        /AWS 与 Google SRE 的材料[\s\S]*不是适用于所有系统的通用阈值/u,
+      ],
+    ],
+  ],
+  [
+    'PR-08',
+    [
+      [
+        'compatibility distinguishes source wire and semantic behavior in applicable API contexts',
+        '要保护的性质',
+        /在其适用的 API 上下文中把向后兼容区分为源代码、线协议和语义行为/u,
+      ],
+      [
+        'expand migrate contract is a temporary compatibility window',
+        '要保护的性质',
+        /expand\/migrate\/contract 创建的是临时兼容窗口，不是永久双支持/u,
+      ],
+      [
+        'a replacement seam surrounds an identified volatile decision',
+        '机制',
+        /可替换接缝必须围绕一个已识别的易变决策/u,
+      ],
+      [
+        'old and new paths have separate correctness load and adoption telemetry',
+        '机制',
+        /用遥测分别辨识旧、新路径的正确性、负载和采用率/u,
+      ],
+      [
+        'old-path removal has an owner and measurable exit condition',
+        '机制',
+        /旧路径删除需要明确所有者和可测量退出条件/u,
+      ],
+      [
+        'microservices plugins flags and indirection do not automatically create evolvability',
+        '误用与反原则',
+        /微服务、插件、功能开关和间接层不会自动产生可演化性/u,
+      ],
+      [
+        'big-bang replacement is not incremental migration',
+        '误用与反原则',
+        /“大爆炸替换”不是渐进迁移/u,
+      ],
+    ],
+  ],
+]);
+
 test('keeps Batch 2 decisions distinct from their slogans', () => {
-  assert.match(
-    requiredDocument('PR-06').body,
-    /当前复杂度|未来需求证据|知识重复|同步修改|错误抽象|临时重复/u,
-  );
-  assert.match(
-    requiredDocument('PR-07').body,
-    /错误可检测|副作用|可逆|安全状态|降级|诚实|静默/u,
-  );
-  assert.match(
-    requiredDocument('PR-08').body,
-    /兼容窗口|可替换点|渐进迁移|遥测|退出条件|重新评估/u,
-  );
+  for (const [id, contracts] of misconceptionContracts) {
+    const body = requiredDocument(id).body;
+    for (const [label, heading, pattern] of contracts) {
+      assert.match(section(body, heading), pattern, `${id}: ${label}`);
+    }
+  }
 });
 ```
 
