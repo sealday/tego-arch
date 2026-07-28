@@ -54,3 +54,9 @@
 
 - The first generator run correctly rejected missing reverse adjacency edges for `QA-01`, `MTH-03`, and `MTH-04`. The task owner expanded scope for the minimal reciprocal fixes, after which generation passed.
 - Bun 1.3.13 cannot execute the existing nested `node:test` subtests in `tests/source-ledger.test.mjs` and applies a five-second default timeout to the build-backed pagination test. The repository-native Node test runner executes the same seven files successfully (64/64). A Bun rerun with `--timeout 30000` proves the other listed Bun-compatible files; the nested-subtest limitation is pre-existing and was not rewritten in this content task.
+
+## Reviewer Follow-up
+
+- Corrected Task 4 Step 8 so the required seven-file gate uses repository-native `node --test`, matching the observed 64/64 passing result.
+- Documented the optional Bun compatibility gate as the six compatible files with `--timeout 30000`, explicitly excluding `tests/source-ledger.test.mjs`; this matches the observed 42/42 passing result.
+- Kept the content validation, deterministic generation check, link-cache check, review-health check, and whitespace check unchanged.

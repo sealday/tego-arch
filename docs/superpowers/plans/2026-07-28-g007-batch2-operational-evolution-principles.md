@@ -905,13 +905,23 @@ Keep the historical `431 个来源` evidence in `tests/g007-batch1-deployment.te
 Run:
 
 ```bash
-bun test tests/g007-batch1-content.test.mjs \
+node --test tests/g007-batch1-content.test.mjs \
   tests/g007-batch2-content.test.mjs \
   tests/source-ledger.test.mjs \
   tests/project-status.test.mjs \
   tests/content-review-health.test.mjs \
   tests/source-ledger-pagination.test.mjs \
   tests/source-ledger-rendering.test.mjs
+
+# Optional Bun compatibility run. Exclude tests/source-ledger.test.mjs because
+# Bun 1.3.13 cannot execute its existing nested node:test subtests.
+bun test --timeout 30000 tests/g007-batch1-content.test.mjs \
+  tests/g007-batch2-content.test.mjs \
+  tests/project-status.test.mjs \
+  tests/content-review-health.test.mjs \
+  tests/source-ledger-pagination.test.mjs \
+  tests/source-ledger-rendering.test.mjs
+
 bun run validate:content
 bun run check:content
 bun run check:links
@@ -919,7 +929,7 @@ bun run check:reviews
 git diff --check
 ```
 
-Expected: all commands exit 0; the Batch 2 test is GREEN for the first time.
+Expected: the required seven-file Node gate passes 64/64 tests, the optional six-file Bun compatibility run passes 42/42 tests, all remaining commands exit 0, and the Batch 2 test is GREEN for the first time.
 
 - [ ] **Step 9: Commit the remaining Stage A content**
 
