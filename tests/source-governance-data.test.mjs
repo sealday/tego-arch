@@ -169,6 +169,57 @@ test('keeps Yjs documentation conservative because license.md only licenses Yjs 
   }
 });
 
+test('uses official ISO committee work pages as transport without changing governed identities or rights', async () => {
+  const {ledger} = await governedData();
+  const expected = new Map([
+    [
+      'src-iso-42010-2022',
+      {
+        canonical: 'https://www.iso.org/standard/74393.html',
+        transport: 'https://committee.iso.org/standard/74393.html',
+        title:
+          'ISO/IEC/IEEE 42010:2022 — Software, systems and enterprise — Architecture description',
+        copyrightPolicy: 'facts-and-short-quotation',
+        usageBoundary:
+          'Supports public boundaries for architecture descriptions; it does not specify architecting methods, notations, tools, formats, or architecture fitness.',
+      },
+    ],
+    [
+      'src-iso-11f3b103e932',
+      {
+        canonical: 'https://www.iso.org/standard/78176.html',
+        transport: 'https://committee.iso.org/standard/78176.html',
+        title: 'ISO/IEC 25010:2023',
+        copyrightPolicy: 'facts-and-short-quotation',
+        usageBoundary:
+          'Defines the cited protocol or standard contract in “ISO/IEC 25010:2023”; it does not demonstrate implementation conformance or production fitness.',
+      },
+    ],
+  ]);
+
+  for (const [id, identity] of expected) {
+    const source = ledger.sources.find((entry) => entry.id === id);
+    assert.ok(source, id);
+    assert.equal(source.canonical_locator, identity.canonical, id);
+    assert.equal(source.transport_locator, identity.transport, id);
+    assert.equal(
+      source.expected_final_transport_locator,
+      identity.transport,
+      id,
+    );
+    assert.equal(source.expected_final_approved_at, '2026-07-28', id);
+    assert.match(
+      source.expected_final_approval_note,
+      /repeated Cloudflare HTTP 403.*equivalent official ISO committee work page.*old www transport cache history.*transport-key migration/i,
+      id,
+    );
+    assert.equal(source.title, identity.title, id);
+    assert.equal(source.license, 'LicenseRef-Proprietary-Standard', id);
+    assert.equal(source.copyright_policy, identity.copyrightPolicy, id);
+    assert.equal(source.usage_boundary, identity.usageBoundary, id);
+  }
+});
+
 test('records LiteLLM documentation families as MIT from the official docs repository', async () => {
   const {inventory, ledger} = await governedData();
   const rows = inventory.entries.filter((entry) =>

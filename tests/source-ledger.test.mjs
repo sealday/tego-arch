@@ -629,8 +629,7 @@ test('allows query-only transport differences for query-insensitive source ident
 
   for (const invalidTransport of [
     'http://example.com/download?download=1',
-    'https://other.example.com/download?download=1',
-    'https://example.com/other?download=1',
+    'HTTPS://example.com/download?download=1',
     'https://example.com/download?download=1#fragment',
   ]) {
     const invalid = parseSourceLedger(ledger({
@@ -643,7 +642,7 @@ test('allows query-only transport differences for query-insensitive source ident
     assert.match(
       invalid.errors.join('\n'),
       /transport_locator/u,
-      `Must reject non-query transport difference: ${invalidTransport}`,
+      `Must reject non-canonical transport: ${invalidTransport}`,
     );
   }
 });
@@ -720,7 +719,7 @@ test('keeps stable source identity across citation anchors queries and locator m
   });
   assert.match(
     wrongQueryCitation.errors.join('\n'),
-    /citation URL does not match source canonical or alias transport/i,
+    /citation URL does not match source canonical or alias locator/i,
   );
 
   const migrated = {
@@ -1011,6 +1010,76 @@ test('does not treat learning indexes as factual evidence', () => {
     blogGoverned.errors.join('\n'),
     /case requires a primary\/first-party factual source/i,
   );
+});
+
+test('keeps approved checker transports separate from canonical citation identities', () => {
+  const iso = {
+    ...validSource,
+    id: 'src-iso-standard',
+    canonical_locator: 'https://www.iso.org/standard/74393.html',
+    transport_locator: 'https://committee.iso.org/standard/74393.html',
+    license_family_id: 'https://www.iso.org/standard/74393.html',
+    expected_final_transport_locator:
+      'https://committee.iso.org/standard/74393.html',
+    expected_final_approved_at: '2026-07-28',
+    expected_final_approval_note:
+      'Approved equivalent official ISO committee work-page transport',
+  };
+  const citation = {
+    ...validCitation,
+    source_id: iso.id,
+    citation_url: iso.canonical_locator,
+  };
+  const parsed = parseSourceLedger(
+    ledger({
+      sources: [iso],
+      documents: {
+        'content/cases/example.mdx': {
+          ...validDocument,
+          citations: [citation],
+        },
+      },
+    }),
+  );
+
+  assert.deepEqual(parsed.errors, []);
+  assert.equal(citationMatchesSource(iso.canonical_locator, iso), true);
+  assert.equal(citationMatchesSource(iso.transport_locator, iso), false);
+
+  const transportCitation = parseSourceLedger(
+    ledger({
+      sources: [iso],
+      documents: {
+        'content/cases/example.mdx': {
+          ...validDocument,
+          citations: [
+            {
+              ...citation,
+              citation_url: iso.transport_locator,
+            },
+          ],
+        },
+      },
+    }),
+  );
+  assert.match(
+    transportCitation.errors.join('\n'),
+    /citation URL does not match source canonical or alias locator/i,
+  );
+
+  for (const transport_locator of [
+    'http://committee.iso.org/standard/74393.html',
+    'HTTPS://committee.iso.org/standard/74393.html',
+    'https://committee.iso.org/standard/74393.html#details',
+  ]) {
+    const invalid = parseSourceLedger(
+      ledger({
+        sources: [{...iso, transport_locator}],
+        documents: {},
+      }),
+    );
+    assert.match(invalid.errors.join('\n'), /transport_locator/u);
+  }
 });
 
 test('enforces license-specific copyright policies', () => {

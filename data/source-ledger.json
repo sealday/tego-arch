@@ -13282,7 +13282,7 @@
     {
       "id": "src-iso-11f3b103e932",
       "canonical_locator": "https://www.iso.org/standard/78176.html",
-      "transport_locator": "https://www.iso.org/standard/78176.html",
+      "transport_locator": "https://committee.iso.org/standard/78176.html",
       "query_insensitive": false,
       "locator_aliases": [],
       "tombstone": null,
@@ -13314,14 +13314,14 @@
       "copyright_policy": "facts-and-short-quotation",
       "usage_boundary": "Defines the cited protocol or standard contract in “ISO/IEC 25010:2023”; it does not demonstrate implementation conformance or production fitness.",
       "link_policy": "stable",
-      "expected_final_transport_locator": "https://www.iso.org/standard/78176.html",
-      "expected_final_approved_at": "2026-07-24",
-      "expected_final_approval_note": "Initial reviewed migration transport baseline"
+      "expected_final_transport_locator": "https://committee.iso.org/standard/78176.html",
+      "expected_final_approved_at": "2026-07-28",
+      "expected_final_approval_note": "Following repeated Cloudflare HTTP 403 responses from the www transport, approved migration to the equivalent official ISO committee work page. Old www transport cache history cannot structurally remain after transport-key migration because link-health cache entries are keyed by transport locator."
     },
     {
       "id": "src-iso-42010-2022",
       "canonical_locator": "https://www.iso.org/standard/74393.html",
-      "transport_locator": "https://www.iso.org/standard/74393.html",
+      "transport_locator": "https://committee.iso.org/standard/74393.html",
       "query_insensitive": false,
       "locator_aliases": [],
       "tombstone": null,
@@ -13348,9 +13348,9 @@
       "copyright_policy": "facts-and-short-quotation",
       "usage_boundary": "Supports public boundaries for architecture descriptions; it does not specify architecting methods, notations, tools, formats, or architecture fitness.",
       "link_policy": "stable",
-      "expected_final_transport_locator": "https://www.iso.org/standard/74393.html",
-      "expected_final_approved_at": "2026-07-24",
-      "expected_final_approval_note": "Initial reviewed Edition 2 work-page transport baseline"
+      "expected_final_transport_locator": "https://committee.iso.org/standard/74393.html",
+      "expected_final_approved_at": "2026-07-28",
+      "expected_final_approval_note": "Following repeated Cloudflare HTTP 403 responses from the www transport, approved migration to the equivalent official ISO committee work page. Old www transport cache history cannot structurally remain after transport-key migration because link-health cache entries are keyed by transport locator."
     },
     {
       "id": "src-kafka-1e24e93ac008",

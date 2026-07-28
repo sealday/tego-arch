@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-07-28T10:05:05.144Z",
+  "generated_at": "2026-07-28T10:59:10.028Z",
   "results": [
     {
       "transport_locator": "https://a2a-protocol.org/latest/",
@@ -1768,6 +1768,82 @@
           "outcome": "healthy",
           "final_transport_locator": "https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions",
           "http_status": 206,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://committee.iso.org/standard/74393.html",
+      "source_ids": [
+        "src-iso-42010-2022"
+      ],
+      "last_attempt": {
+        "at": "2026-07-28T10:59:10.028Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://committee.iso.org/standard/74393.html",
+        "http_status": 200,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-07-28T10:59:10.028Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://committee.iso.org/standard/74393.html",
+        "http_status": 200,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-07-28T10:56:40.010Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://committee.iso.org/standard/74393.html",
+          "http_status": 200,
+          "login_wall_detected": false
+        },
+        {
+          "at": "2026-07-28T10:59:10.028Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://committee.iso.org/standard/74393.html",
+          "http_status": 200,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://committee.iso.org/standard/78176.html",
+      "source_ids": [
+        "src-iso-11f3b103e932"
+      ],
+      "last_attempt": {
+        "at": "2026-07-28T10:59:10.028Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://committee.iso.org/standard/78176.html",
+        "http_status": 200,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-07-28T10:59:10.028Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://committee.iso.org/standard/78176.html",
+        "http_status": 200,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-07-28T10:56:40.010Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://committee.iso.org/standard/78176.html",
+          "http_status": 200,
+          "login_wall_detected": false
+        },
+        {
+          "at": "2026-07-28T10:59:10.028Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://committee.iso.org/standard/78176.html",
+          "http_status": 200,
           "login_wall_detected": false
         }
       ],
@@ -5738,16 +5814,15 @@
         "src-google-cloud-waf-elasticity"
       ],
       "last_attempt": {
-        "at": "2026-07-28T10:05:05.144Z",
-        "outcome": "error",
-        "final_transport_locator": null,
-        "http_status": null,
+        "at": "2026-07-28T10:59:10.028Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://docs.cloud.google.com/architecture/framework/performance-optimization/elasticity",
+        "http_status": 200,
         "login_wall_detected": false,
-        "redirects": [],
-        "error": "fetch failed"
+        "redirects": []
       },
       "last_success": {
-        "at": "2026-07-28T09:50:16.450Z",
+        "at": "2026-07-28T10:59:10.028Z",
         "outcome": "healthy",
         "final_transport_locator": "https://docs.cloud.google.com/architecture/framework/performance-optimization/elasticity",
         "http_status": 200,
@@ -5788,9 +5863,23 @@
           "final_transport_locator": null,
           "http_status": null,
           "login_wall_detected": false
+        },
+        {
+          "at": "2026-07-28T10:56:40.010Z",
+          "outcome": "error",
+          "final_transport_locator": null,
+          "http_status": null,
+          "login_wall_detected": false
+        },
+        {
+          "at": "2026-07-28T10:59:10.028Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://docs.cloud.google.com/architecture/framework/performance-optimization/elasticity",
+          "http_status": 200,
+          "login_wall_detected": false
         }
       ],
-      "review_status": "stale"
+      "review_status": "healthy"
     },
     {
       "transport_locator": "https://docs.langchain.com/oss/python/langchain/multi-agent",
@@ -9557,7 +9646,7 @@
         "src-nist-privacy-framework-1"
       ],
       "last_attempt": {
-        "at": "2026-07-26T21:41:46.575Z",
+        "at": "2026-07-28T10:59:10.028Z",
         "outcome": "healthy",
         "final_transport_locator": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.01162020.pdf",
         "http_status": 206,
@@ -9571,7 +9660,7 @@
         ]
       },
       "last_success": {
-        "at": "2026-07-26T21:41:46.575Z",
+        "at": "2026-07-28T10:59:10.028Z",
         "outcome": "healthy",
         "final_transport_locator": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.01162020.pdf",
         "http_status": 206,
@@ -9587,6 +9676,20 @@
         },
         {
           "at": "2026-07-26T21:41:46.575Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.01162020.pdf",
+          "http_status": 206,
+          "login_wall_detected": false
+        },
+        {
+          "at": "2026-07-28T10:56:40.010Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.01162020.pdf",
+          "http_status": 200,
+          "login_wall_detected": false
+        },
+        {
+          "at": "2026-07-28T10:59:10.028Z",
           "outcome": "healthy",
           "final_transport_locator": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.01162020.pdf",
           "http_status": 206,
@@ -24369,16 +24472,15 @@
         "src-github-984aa02cd740"
       ],
       "last_attempt": {
-        "at": "2026-07-28T10:05:05.144Z",
-        "outcome": "error",
+        "at": "2026-07-28T10:59:10.028Z",
+        "outcome": "healthy",
         "final_transport_locator": "https://github.com/temporalio/temporal/blob/955948007cc6d9d94fa8ef484225954bd9328451/service/matching/matching_engine.go",
-        "http_status": 504,
+        "http_status": 206,
         "login_wall_detected": false,
-        "redirects": [],
-        "error": "unexpected HTTP 504"
+        "redirects": []
       },
       "last_success": {
-        "at": "2026-07-28T09:50:16.450Z",
+        "at": "2026-07-28T10:59:10.028Z",
         "outcome": "healthy",
         "final_transport_locator": "https://github.com/temporalio/temporal/blob/955948007cc6d9d94fa8ef484225954bd9328451/service/matching/matching_engine.go",
         "http_status": 206,
@@ -24452,9 +24554,23 @@
           "final_transport_locator": "https://github.com/temporalio/temporal/blob/955948007cc6d9d94fa8ef484225954bd9328451/service/matching/matching_engine.go",
           "http_status": 504,
           "login_wall_detected": false
+        },
+        {
+          "at": "2026-07-28T10:56:40.010Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://github.com/temporalio/temporal/blob/955948007cc6d9d94fa8ef484225954bd9328451/service/matching/matching_engine.go",
+          "http_status": 206,
+          "login_wall_detected": false
+        },
+        {
+          "at": "2026-07-28T10:59:10.028Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://github.com/temporalio/temporal/blob/955948007cc6d9d94fa8ef484225954bd9328451/service/matching/matching_engine.go",
+          "http_status": 206,
+          "login_wall_detected": false
         }
       ],
-      "review_status": "stale"
+      "review_status": "healthy"
     },
     {
       "transport_locator": "https://github.com/temporalio/temporal/tree/955948007cc6d9d94fa8ef484225954bd9328451",
@@ -27781,7 +27897,7 @@
         "src-nist-ir-5517"
       ],
       "last_attempt": {
-        "at": "2026-07-24T12:44:40.442Z",
+        "at": "2026-07-28T10:59:10.028Z",
         "outcome": "healthy",
         "final_transport_locator": "https://nvlpubs.nist.gov/nistpubs/Legacy/IR/nistir5517.pdf?download=1",
         "http_status": 206,
@@ -27789,7 +27905,7 @@
         "redirects": []
       },
       "last_success": {
-        "at": "2026-07-24T12:44:40.442Z",
+        "at": "2026-07-28T10:59:10.028Z",
         "outcome": "healthy",
         "final_transport_locator": "https://nvlpubs.nist.gov/nistpubs/Legacy/IR/nistir5517.pdf?download=1",
         "http_status": 206,
@@ -27805,6 +27921,20 @@
         },
         {
           "at": "2026-07-24T12:44:40.442Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://nvlpubs.nist.gov/nistpubs/Legacy/IR/nistir5517.pdf?download=1",
+          "http_status": 206,
+          "login_wall_detected": false
+        },
+        {
+          "at": "2026-07-28T10:56:40.010Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://nvlpubs.nist.gov/nistpubs/Legacy/IR/nistir5517.pdf?download=1",
+          "http_status": 200,
+          "login_wall_detected": false
+        },
+        {
+          "at": "2026-07-28T10:59:10.028Z",
           "outcome": "healthy",
           "final_transport_locator": "https://nvlpubs.nist.gov/nistpubs/Legacy/IR/nistir5517.pdf?download=1",
           "http_status": 206,
@@ -30025,187 +30155,6 @@
         }
       ],
       "review_status": "healthy"
-    },
-    {
-      "transport_locator": "https://www.iso.org/standard/74393.html",
-      "source_ids": [
-        "src-iso-42010-2022"
-      ],
-      "last_attempt": {
-        "at": "2026-07-28T10:05:05.144Z",
-        "outcome": "error",
-        "final_transport_locator": "https://www.iso.org/standard/74393.html",
-        "http_status": 403,
-        "login_wall_detected": false,
-        "redirects": [],
-        "error": "unexpected HTTP 403"
-      },
-      "last_success": {
-        "at": "2026-07-24T12:13:42.427Z",
-        "outcome": "healthy",
-        "final_transport_locator": "https://www.iso.org/standard/74393.html",
-        "http_status": 200,
-        "login_wall_detected": false
-      },
-      "attempt_history": [
-        {
-          "at": "2026-07-24T09:31:26.515Z",
-          "outcome": "healthy",
-          "final_transport_locator": "https://www.iso.org/standard/74393.html",
-          "http_status": 200,
-          "login_wall_detected": false
-        },
-        {
-          "at": "2026-07-24T09:33:11.885Z",
-          "outcome": "healthy",
-          "final_transport_locator": "https://www.iso.org/standard/74393.html",
-          "http_status": 200,
-          "login_wall_detected": false
-        },
-        {
-          "at": "2026-07-24T09:34:44.976Z",
-          "outcome": "healthy",
-          "final_transport_locator": "https://www.iso.org/standard/74393.html",
-          "http_status": 200,
-          "login_wall_detected": false
-        },
-        {
-          "at": "2026-07-24T09:38:23.088Z",
-          "outcome": "healthy",
-          "final_transport_locator": "https://www.iso.org/standard/74393.html",
-          "http_status": 200,
-          "login_wall_detected": false
-        },
-        {
-          "at": "2026-07-24T09:40:31.542Z",
-          "outcome": "healthy",
-          "final_transport_locator": "https://www.iso.org/standard/74393.html",
-          "http_status": 200,
-          "login_wall_detected": false
-        },
-        {
-          "at": "2026-07-24T12:08:08.432Z",
-          "outcome": "healthy",
-          "final_transport_locator": "https://www.iso.org/standard/74393.html",
-          "http_status": 200,
-          "login_wall_detected": false
-        },
-        {
-          "at": "2026-07-24T12:13:42.427Z",
-          "outcome": "healthy",
-          "final_transport_locator": "https://www.iso.org/standard/74393.html",
-          "http_status": 200,
-          "login_wall_detected": false
-        },
-        {
-          "at": "2026-07-28T09:50:16.450Z",
-          "outcome": "error",
-          "final_transport_locator": "https://www.iso.org/standard/74393.html",
-          "http_status": 403,
-          "login_wall_detected": false
-        },
-        {
-          "at": "2026-07-28T10:05:05.144Z",
-          "outcome": "error",
-          "final_transport_locator": "https://www.iso.org/standard/74393.html",
-          "http_status": 403,
-          "login_wall_detected": false
-        }
-      ],
-      "review_status": "stale"
-    },
-    {
-      "transport_locator": "https://www.iso.org/standard/78176.html",
-      "source_ids": [
-        "src-iso-11f3b103e932"
-      ],
-      "last_attempt": {
-        "at": "2026-07-28T10:05:05.144Z",
-        "outcome": "error",
-        "final_transport_locator": "https://www.iso.org/standard/78176.html",
-        "http_status": 403,
-        "login_wall_detected": false,
-        "redirects": [],
-        "error": "unexpected HTTP 403"
-      },
-      "last_success": {
-        "at": "2026-07-24T12:13:42.427Z",
-        "outcome": "healthy",
-        "final_transport_locator": "https://www.iso.org/standard/78176.html",
-        "http_status": 200,
-        "login_wall_detected": false
-      },
-      "attempt_history": [
-        {
-          "at": "2026-07-23T18:47:34.142Z",
-          "outcome": "healthy",
-          "final_transport_locator": "https://www.iso.org/standard/78176.html",
-          "http_status": 200
-        },
-        {
-          "at": "2026-07-23T19:07:20.118Z",
-          "outcome": "healthy",
-          "final_transport_locator": "https://www.iso.org/standard/78176.html",
-          "http_status": 200
-        },
-        {
-          "at": "2026-07-24T04:25:59.030Z",
-          "outcome": "healthy",
-          "final_transport_locator": "https://www.iso.org/standard/78176.html",
-          "http_status": 200,
-          "login_wall_detected": false
-        },
-        {
-          "at": "2026-07-24T04:30:38.887Z",
-          "outcome": "healthy",
-          "final_transport_locator": "https://www.iso.org/standard/78176.html",
-          "http_status": 200,
-          "login_wall_detected": false
-        },
-        {
-          "at": "2026-07-24T04:34:21.202Z",
-          "outcome": "healthy",
-          "final_transport_locator": "https://www.iso.org/standard/78176.html",
-          "http_status": 200,
-          "login_wall_detected": false
-        },
-        {
-          "at": "2026-07-24T04:38:11.714Z",
-          "outcome": "healthy",
-          "final_transport_locator": "https://www.iso.org/standard/78176.html",
-          "http_status": 200,
-          "login_wall_detected": false
-        },
-        {
-          "at": "2026-07-24T12:08:08.432Z",
-          "outcome": "healthy",
-          "final_transport_locator": "https://www.iso.org/standard/78176.html",
-          "http_status": 200,
-          "login_wall_detected": false
-        },
-        {
-          "at": "2026-07-24T12:13:42.427Z",
-          "outcome": "healthy",
-          "final_transport_locator": "https://www.iso.org/standard/78176.html",
-          "http_status": 200,
-          "login_wall_detected": false
-        },
-        {
-          "at": "2026-07-28T09:50:16.450Z",
-          "outcome": "error",
-          "final_transport_locator": "https://www.iso.org/standard/78176.html",
-          "http_status": 403,
-          "login_wall_detected": false
-        },
-        {
-          "at": "2026-07-28T10:05:05.144Z",
-          "outcome": "error",
-          "final_transport_locator": "https://www.iso.org/standard/78176.html",
-          "http_status": 403,
-          "login_wall_detected": false
-        }
-      ],
-      "review_status": "stale"
     },
     {
       "transport_locator": "https://www.linkedin.com/blog/engineering/distributed-systems/log-what-every-software-engineer-should-know-about-real-time-datas-unifying",

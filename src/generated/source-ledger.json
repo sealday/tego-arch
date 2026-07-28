@@ -13246,14 +13246,14 @@
       "expected_final_transport_locator": "https://github.com/temporalio/temporal/blob/955948007cc6d9d94fa8ef484225954bd9328451/service/matching/matching_engine.go",
       "expected_final_approved_at": "2026-07-24",
       "expected_final_approval_note": "Initial reviewed migration transport baseline",
-      "health_summary": "stale",
+      "health_summary": "healthy",
       "health_checks": [
         {
           "transport_locator": "https://github.com/temporalio/temporal/blob/955948007cc6d9d94fa8ef484225954bd9328451/service/matching/matching_engine.go",
-          "status": "stale",
-          "last_attempt_at": "2026-07-28T10:05:05.144Z",
-          "last_success_at": "2026-07-28T09:50:16.450Z",
-          "http_status": 504,
+          "status": "healthy",
+          "last_attempt_at": "2026-07-28T10:59:10.028Z",
+          "last_success_at": "2026-07-28T10:59:10.028Z",
+          "http_status": 206,
           "final_transport_locator": "https://github.com/temporalio/temporal/blob/955948007cc6d9d94fa8ef484225954bd9328451/service/matching/matching_engine.go"
         }
       ]
@@ -17205,15 +17205,15 @@
       "expected_final_transport_locator": "https://docs.cloud.google.com/architecture/framework/performance-optimization/elasticity",
       "expected_final_approved_at": "2026-07-27",
       "expected_final_approval_note": "Reviewed canonical HTTPS transport and literal page-footer license notice on 2026-07-27.",
-      "health_summary": "stale",
+      "health_summary": "healthy",
       "health_checks": [
         {
           "transport_locator": "https://docs.cloud.google.com/architecture/framework/performance-optimization/elasticity",
-          "status": "stale",
-          "last_attempt_at": "2026-07-28T10:05:05.144Z",
-          "last_success_at": "2026-07-28T09:50:16.450Z",
-          "http_status": null,
-          "final_transport_locator": null
+          "status": "healthy",
+          "last_attempt_at": "2026-07-28T10:59:10.028Z",
+          "last_success_at": "2026-07-28T10:59:10.028Z",
+          "http_status": 200,
+          "final_transport_locator": "https://docs.cloud.google.com/architecture/framework/performance-optimization/elasticity"
         }
       ]
     },
@@ -17356,7 +17356,7 @@
     {
       "id": "src-iso-11f3b103e932",
       "canonical_locator": "https://www.iso.org/standard/78176.html",
-      "transport_locator": "https://www.iso.org/standard/78176.html",
+      "transport_locator": "https://committee.iso.org/standard/78176.html",
       "query_insensitive": false,
       "locator_aliases": [],
       "tombstone": null,
@@ -17388,25 +17388,25 @@
       "copyright_policy": "facts-and-short-quotation",
       "usage_boundary": "Defines the cited protocol or standard contract in “ISO/IEC 25010:2023”; it does not demonstrate implementation conformance or production fitness.",
       "link_policy": "stable",
-      "expected_final_transport_locator": "https://www.iso.org/standard/78176.html",
-      "expected_final_approved_at": "2026-07-24",
-      "expected_final_approval_note": "Initial reviewed migration transport baseline",
-      "health_summary": "stale",
+      "expected_final_transport_locator": "https://committee.iso.org/standard/78176.html",
+      "expected_final_approved_at": "2026-07-28",
+      "expected_final_approval_note": "Following repeated Cloudflare HTTP 403 responses from the www transport, approved migration to the equivalent official ISO committee work page. Old www transport cache history cannot structurally remain after transport-key migration because link-health cache entries are keyed by transport locator.",
+      "health_summary": "healthy",
       "health_checks": [
         {
-          "transport_locator": "https://www.iso.org/standard/78176.html",
-          "status": "stale",
-          "last_attempt_at": "2026-07-28T10:05:05.144Z",
-          "last_success_at": "2026-07-24T12:13:42.427Z",
-          "http_status": 403,
-          "final_transport_locator": "https://www.iso.org/standard/78176.html"
+          "transport_locator": "https://committee.iso.org/standard/78176.html",
+          "status": "healthy",
+          "last_attempt_at": "2026-07-28T10:59:10.028Z",
+          "last_success_at": "2026-07-28T10:59:10.028Z",
+          "http_status": 200,
+          "final_transport_locator": "https://committee.iso.org/standard/78176.html"
         }
       ]
     },
     {
       "id": "src-iso-42010-2022",
       "canonical_locator": "https://www.iso.org/standard/74393.html",
-      "transport_locator": "https://www.iso.org/standard/74393.html",
+      "transport_locator": "https://committee.iso.org/standard/74393.html",
       "query_insensitive": false,
       "locator_aliases": [],
       "tombstone": null,
@@ -17433,18 +17433,18 @@
       "copyright_policy": "facts-and-short-quotation",
       "usage_boundary": "Supports public boundaries for architecture descriptions; it does not specify architecting methods, notations, tools, formats, or architecture fitness.",
       "link_policy": "stable",
-      "expected_final_transport_locator": "https://www.iso.org/standard/74393.html",
-      "expected_final_approved_at": "2026-07-24",
-      "expected_final_approval_note": "Initial reviewed Edition 2 work-page transport baseline",
-      "health_summary": "stale",
+      "expected_final_transport_locator": "https://committee.iso.org/standard/74393.html",
+      "expected_final_approved_at": "2026-07-28",
+      "expected_final_approval_note": "Following repeated Cloudflare HTTP 403 responses from the www transport, approved migration to the equivalent official ISO committee work page. Old www transport cache history cannot structurally remain after transport-key migration because link-health cache entries are keyed by transport locator.",
+      "health_summary": "healthy",
       "health_checks": [
         {
-          "transport_locator": "https://www.iso.org/standard/74393.html",
-          "status": "stale",
-          "last_attempt_at": "2026-07-28T10:05:05.144Z",
-          "last_success_at": "2026-07-24T12:13:42.427Z",
-          "http_status": 403,
-          "final_transport_locator": "https://www.iso.org/standard/74393.html"
+          "transport_locator": "https://committee.iso.org/standard/74393.html",
+          "status": "healthy",
+          "last_attempt_at": "2026-07-28T10:59:10.028Z",
+          "last_success_at": "2026-07-28T10:59:10.028Z",
+          "http_status": 200,
+          "final_transport_locator": "https://committee.iso.org/standard/74393.html"
         }
       ]
     },
@@ -19423,8 +19423,8 @@
         {
           "transport_locator": "https://nvlpubs.nist.gov/nistpubs/Legacy/IR/nistir5517.pdf?download=1",
           "status": "healthy",
-          "last_attempt_at": "2026-07-24T12:44:40.442Z",
-          "last_success_at": "2026-07-24T12:44:40.442Z",
+          "last_attempt_at": "2026-07-28T10:59:10.028Z",
+          "last_success_at": "2026-07-28T10:59:10.028Z",
           "http_status": 206,
           "final_transport_locator": "https://nvlpubs.nist.gov/nistpubs/Legacy/IR/nistir5517.pdf?download=1"
         }
@@ -19468,8 +19468,8 @@
         {
           "transport_locator": "https://doi.org/10.6028/NIST.CSWP.01162020",
           "status": "healthy",
-          "last_attempt_at": "2026-07-26T21:41:46.575Z",
-          "last_success_at": "2026-07-26T21:41:46.575Z",
+          "last_attempt_at": "2026-07-28T10:59:10.028Z",
+          "last_success_at": "2026-07-28T10:59:10.028Z",
           "http_status": 206,
           "final_transport_locator": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.01162020.pdf"
         }

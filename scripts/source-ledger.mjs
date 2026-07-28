@@ -303,22 +303,29 @@ export function citationMatchesSource(citationUrl, source) {
   } catch {
     return false;
   }
-  const transports = [
-    source.transport_locator,
+  const locators = [
+    source.canonical_locator,
     ...(Array.isArray(source.locator_aliases)
-      ? source.locator_aliases.map((alias) => alias?.transport_locator)
+      ? source.locator_aliases.map((alias) => alias?.locator)
       : []),
   ];
-  return transports.some((transport) => {
+  return locators.some((locator) => {
     try {
-      return transportForCitation(transport, source.query_insensitive === true) === citationTransport;
+      return transportForCitation(locator, source.query_insensitive === true) === citationTransport;
     } catch {
       return false;
     }
   });
 }
 
-function validateLocatorPair(locator, transport, queryInsensitive, label, errors) {
+function validateLocatorPair(
+  locator,
+  transport,
+  queryInsensitive,
+  label,
+  errors,
+  {allowDecoupledTransport = false} = {},
+) {
   if (!isHttps(locator) && !isLocalLocator(locator)) {
     errors.push(`${label} locator must be HTTPS or an absolute local asset path`);
     return;
@@ -355,7 +362,14 @@ function validateLocatorPair(locator, transport, queryInsensitive, label, errors
     }
     expected = expectedIdentity.href;
   }
-  if (canonicalTransport !== expected) {
+  if (
+    canonicalTransport !== expected &&
+    !(
+      allowDecoupledTransport &&
+      isHttps(expected) &&
+      isHttps(canonicalTransport)
+    )
+  ) {
     errors.push(
       `${label} transport_locator "${canonicalTransport}" is inconsistent; expected "${expected}"`,
     );
@@ -463,6 +477,7 @@ function validateSource(source, index, errors) {
     source.query_insensitive,
     label,
     errors,
+    {allowDecoupledTransport: true},
   );
   if (!Array.isArray(source.locator_aliases)) {
     errors.push(`${label}: locator_aliases must be an array`);
@@ -617,7 +632,7 @@ function validateCitation(citation, documentPath, index, sourcesById, errors) {
     return;
   }
   if (!citationMatchesSource(citation.citation_url, source)) {
-    errors.push(`${label}: citation URL does not match source canonical or alias transport`);
+    errors.push(`${label}: citation URL does not match source canonical or alias locator`);
   }
   for (const role of citation.roles ?? []) {
     if (!source.allowed_evidence_roles?.includes(role)) {
