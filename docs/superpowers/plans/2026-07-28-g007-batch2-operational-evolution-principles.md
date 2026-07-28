@@ -665,7 +665,7 @@ Run:
 bun test tests/g007-batch1-content.test.mjs tests/g007-batch2-content.test.mjs
 ```
 
-Expected: Batch 1 passes. Batch 2 advances past PR-06 and fails with `PR-07 must be published`.
+Expected: Batch 1 passes. Two Batch 2 content and relationship tests advance to `PR-07 must be published`; the publication-contract test remains RED on `PR-06 manifest publication` until Task 4 regenerates the generated projections.
 
 - [ ] **Step 7: Commit PR-06 and reciprocal relations**
 
