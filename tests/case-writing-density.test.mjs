@@ -222,6 +222,27 @@ test('does not count Markdown link destinations or inline code identifiers', () 
   );
 });
 
+test('does not count multiline JSX wrapper attributes as prose', () => {
+  const source = `正文。
+
+<div
+  className="architecture-diagram-scroll"
+  role="region"
+  aria-label="这是一个很长的架构图无障碍标签，用于说明容器可以在移动端横向滚动，但它不是文章正文"
+  tabIndex={0}
+>
+
+![架构图](/img/diagrams/example.svg)
+
+</div>
+`;
+
+  const result = analyzeCaseText(source, {sentenceLimit: 20});
+
+  assert.equal(result.warnings.some(({kind}) => kind === 'long-sentence'), false);
+  assert.equal(result.visualBalance.diagramCount, 1);
+});
+
 test('reports long paragraphs and one warning for a consecutive dense run', () => {
   const source = [
     '第一个段落包含足够多的文字来超过限制。',

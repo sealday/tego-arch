@@ -94,7 +94,7 @@ ROS 2 用 Topic、Service、Action 分开表达持续数据、短请求响应和
 
 **已证实事实**：本文只讨论 ROS 2 Jazzy Jalisco。Jazzy 于 2024-05-23 发布，支持到 2029-05；访问与源码截断日期为 2026-07-22。Rolling、Kilted、Lyrical 及其他发行版的新接口或 Executor 行为不进入本文结论。
 
-**已证实事实**：Action server 由应用决定是否接受 Goal 和 Cancel。接受 Cancel 只表示服务器会尝试取消；执行代码仍须观察取消状态、停止工作并提交 canceled 终态。
+Action server 由应用决定是否接受 Goal 和 Cancel。接受 Cancel 只表示服务器会尝试取消；执行代码仍须观察取消状态、停止工作并提交 canceled 终态。
 
 **基于证据的推断**：Preemption 因而不是 Action 自动施加的安全停止。新 Goal 到来时，应用必须选择拒绝、排队、并行，或先取消旧 Goal；在设备回执确认停稳前，不能把 Cancel Request 记成“动作已停止”。
 
@@ -145,6 +145,36 @@ flowchart LR
 
 一次任务因此会跨过三条不同路径：Topic 持续送入感知，Service 完成短查询，Action 持有长任务状态。生命周期只决定 Agent 节点是否应处理它们，独立安全链则保留最终的物理停止权。
 
+### 视觉检查点：控制合同与真实终态
+
+先沿长任务主链检查控制权。Lifecycle manager 决定节点是否参与处理，Action server 管理 goal 与 cancel，设备真实状态仍由驱动器回执和安全链确认。
+
+<div
+  className="architecture-diagram-scroll"
+  role="region"
+  aria-label="ROS 2 长任务控制合同图，可横向滚动"
+  tabIndex={0}
+>
+
+![Lifecycle manager 激活 Managed Agent，Action server 管理任务，设备真实状态由驱动器确认](/img/diagrams/ros2-task-control-contract.svg)
+
+</div>
+
+取消路径尤其不能缩写成一个状态位。接受请求后，应用仍要停止命令、等待设备回执，再提交 canceled、failed 或人工终态。
+
+<div
+  className="architecture-diagram-scroll"
+  role="region"
+  aria-label="ROS 2 取消到物理终态图，可横向滚动"
+  tabIndex={0}
+>
+
+![Cancel Request 被接受后，执行代码停止与撤销，等待设备回执后提交真实终态](/img/diagrams/ros2-cancel-physical-terminal.svg)
+
+</div>
+
+独立安全控制器仍可绕过这条软件取消链直接约束设备；Action 的成功或取消不能替代安全停机证明。
+
 ## 控制权与任务流
 
 **说明性场景｜移动机器人运送料箱到工作站。** 这是用已证实接口机制合成的控制流程，不代表真实部署或事故。
@@ -180,7 +210,7 @@ flowchart LR
 
 **已证实事实**：Executor 通过 wait set 等待 ready entity。消息留在 middleware 层，wait set 对每个队列只暴露一个 ready 标志；积压时按 ready entity 做 round-robin，而不是读取完整队列并严格 FIFO 调度。
 
-**已证实事实**：Reentrant Callback Group 允许组内与自身 callback 并行，Mutually Exclusive 禁止组内并行。前者只是许可，后者也只是进程内调度约束；实际并发仍取决于 Executor、线程、锁、其他 ready work 与 OS 调度。
+Reentrant Callback Group 允许组内与自身 callback 并行，Mutually Exclusive 禁止组内并行。前者只是许可，后者也只是进程内调度约束；实际并发仍取决于 Executor、线程、锁、其他 ready work 与 OS 调度。
 
 **基于证据的推断**：DDS depth、resource limits、callback 最坏执行时间和 Executor 线程要一起做容量规划。只把 depth 调大可能形成陈旧积压；只换成 Multi-Threaded Executor 可能把共享设备句柄变成竞态。
 
@@ -388,6 +418,6 @@ Reliable 不是统一答案。高频感知可以让新帧覆盖旧帧，低频�
 
 - [Managed nodes design](https://design.ros2.org/articles/node_lifecycle.html)：Unconfigured、Inactive、Active、Finalized、ErrorProcessing 与外部 supervisory process 的职责。
 
-**证据边界说明**：Agent 通信映射、业务 authority、细粒度授权、资源预算、幂等、Cancel fencing、独立安全回路、观测字段与恢复 runbook，属于“基于证据的推断”或“个人分析”。它们不是 ROS 2 的自动保证。
+**证据边界说明**：Agent 通信映射、业务 authority、细粒度授权、资源预算、幂等和 Cancel fencing 属于架构推断。独立安全回路、观测字段与恢复 runbook 也不是 ROS 2 的自动保证。
 
 Rolling、Kilted、Lyrical 和未固定分支源码不支持本文结论。采用本文分层设计的代价是更多显式状态、观测与恢复逻辑；只有任务语义、授权和物理停止都能被独立证明时，系统才应继续执行。

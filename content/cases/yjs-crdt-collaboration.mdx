@@ -73,9 +73,9 @@ Yjs 适合把协同工作区拆成两条数据通道：共享类型保存可合�
 
 **已证实事实**：Yjs shared types 提供 Array、Map、Text 与 XML 类数据结构，接入 `Y.Doc` 后可观察、同步和持久化。修改发生在 transaction 中；显式 transaction 可把多次本地修改合为一次通知和一个 update。普通 JSON 原地修改不会产生 Yjs 事件，可能让副本失去同步。
 
-**已证实事实**：文档变更被编码为 `Uint8Array` update。同一组有效 update 可乱序、重复应用，兼容副本收到全部 update 后收敛。state vector 表达各 client 的下一预期 clock，`encodeStateAsUpdate` 或 `diffUpdate` 可据此只交换缺失结构。
+文档变更被编码为 `Uint8Array` update。同一组有效 update 可乱序、重复应用，兼容副本收到全部 update 后收敛。state vector 表达各 client 的下一预期 clock，`encodeStateAsUpdate` 或 `diffUpdate` 可据此只交换缺失结构。
 
-**已证实事实**：provider 不属于 CRDT 合并算法。network provider 转发 update，persistence provider 保存 update；二者可接到同一个 `Y.Doc`，离线端先恢复本地内容，重连后再同步缺失变化。Awareness 独立于文档，适合在线状态与光标等跨会话无须保留的信息。
+provider 不属于 CRDT 合并算法。network provider 转发 update，persistence provider 保存 update；二者可接到同一个 `Y.Doc`，离线端先恢复本地内容，重连后再同步缺失变化。Awareness 独立于文档，适合在线状态与光标等跨会话无须保留的信息。
 
 **边界。个人分析**：update 的代数性质只属于 Yjs 文档集成，不属于模型回答、数据库写入、支付或发信。`Y.Doc.transact` 也不是跨系统事务。持久文档保存以后还要审阅的内容，Awareness 保存会过期的协作提示；权限、语义校验、审批、幂等副作用账本与审计链必须外置。
 
@@ -101,7 +101,7 @@ Yjs 适合把协同工作区拆成两条数据通道：共享类型保存可合�
 
 </details>
 
-**已证实事实**：`INTERNALS.md` 把 Yjs 核心描述为 list CRDT。插入内容由 `(clientID, clock)` 唯一标识，并借助 `origin` 与 `originRight` 排列并发插入。Map 同键条目以最后插入项为可见值，其余标记删除；删除集合随 update 传播，但不记录删除时间或删除者。
+**已证实事实**：INTERNALS.md 把 Yjs 核心描述为 list CRDT。插入内容由 `(clientID, clock)` 唯一标识，并借助 `origin` 与 `originRight` 排列并发插入。Map 同键条目以最后插入项为可见值，其余标记删除；删除集合随 update 传播，但不记录删除时间或删除者。
 
 **边界。基于证据的推断**：CRDT 的“无合并冲突”只表示算法可以决定结构结果，不表示结果没有产品冲突。比如一个 Agent 把风险等级改为“低”，另一个同时加入“必须法务审批”；Yjs 能收敛字段和文本，却无法判断二者是否矛盾。需要领域约束、审阅者、规则引擎或审批工作流决定语义。
 
@@ -147,6 +147,36 @@ flowchart LR
 **基于证据的推断**：图中的鉴权网关、业务状态机和审计账本都不是 Yjs 内置组件。它们被显式画在 CRDT 数据面之外，是为了阻止“文档已收敛”被误读为“动作已授权、事务已提交、结果已审计”。
 
 **个人分析**：Agent 的“我打算改第 3 节”只是一条协作提示。它可以减少人和其他 Agent 的重复劳动，却不能阻止一个掉线或恶意 Agent 同时写入；真正排他操作需要带租约、服务器时间、fencing token 和受信写入口的独立协调机制。Awareness 最多显示软占用，不应成为安全或一致性边界。
+
+### 视觉检查点：结构收敛与语义裁决
+
+先追踪 update 的作用范围：它从 shared types 出发，经 provider 传播并在副本中集成。到达“结构收敛”以后，权限和语义问题仍未解决。
+
+<div
+  className="architecture-diagram-scroll"
+  role="region"
+  aria-label="Yjs update 收敛边界图，可横向滚动"
+  tabIndex={0}
+>
+
+![Yjs update 从本地 shared types 经 provider 到副本收敛，之后仍需独立语义审阅](/img/diagrams/yjs-update-convergence.svg)
+
+</div>
+
+第二条路径处理离线副本。重连只恢复缺失结构，不能自动把离线产物提升为正式结果。
+
+<div
+  className="architecture-diagram-scroll"
+  role="region"
+  aria-label="Yjs 离线重连与审阅图，可横向滚动"
+  tabIndex={0}
+>
+
+![离线 Yjs 副本重连后交换 state vector 和 diff，再由业务工作流审阅提升](/img/diagrams/yjs-offline-review.svg)
+
+</div>
+
+CRDT 负责合并，业务工作流负责决定谁可以发布以及发布意味着什么。
 
 ## 控制权与任务流
 
@@ -199,9 +229,9 @@ flowchart LR
 
 </details>
 
-**已证实事实**：源码默认 `gc = true`。`INTERNALS.md` 说明删除项可丢弃内容或被替换为轻量 `GC` 对象，snapshot 则需要 state vector 与删除集合判断过去可见性。固定 `Snapshot.js` 明确拒绝从启用 GC 的 origin document 恢复 snapshot。
+**已证实事实**：源码默认 `gc = true`。INTERNALS.md 说明删除项可丢弃内容或被替换为轻量 `GC` 对象，snapshot 则需要 state vector 与删除集合判断过去可见性。固定 `Snapshot.js` 明确拒绝从启用 GC 的 origin document 恢复 snapshot。
 
-**边界。个人分析**：如果产品需要“任意时刻还原原文、查明删除者并形成法律审计”，应保留受控 checkpoint/备份与不可变审计事件，必要时对需要版本回看的文档禁用 GC 并承担增长成本。不能一边默认回收删除内容，一边事后假设 snapshot 能恢复所有历史。
+**边界。个人分析**：若产品需要随时还原原文、查明删除者并形成法律审计，就要保留受控 checkpoint/备份与不可变审计事件。需要版本回看的文档可禁用 GC，但必须承担增长成本。不能一边回收删除内容，一边假设 snapshot 能恢复所有历史。
 
 ## 架构决策与权衡
 
@@ -302,4 +332,4 @@ flowchart LR
 - [`INTERNALS.md`](https://github.com/yjs/yjs/blob/9c1994547d7bc86245a21e1a4c8319f056d05ecf/INTERNALS.md)：list CRDT、ID、插入顺序、删除集合、transaction update、state vector、snapshot 与 GC 内部边界。
 - [`THREAT_MODEL.md`](https://github.com/yjs/yjs/blob/9c1994547d7bc86245a21e1a4c8319f056d05ecf/THREAT_MODEL.md) 与 [`SECURITY.md`](https://github.com/yjs/yjs/blob/9c1994547d7bc86245a21e1a4c8319f056d05ecf/SECURITY.md)：受信写入端假设、恶意 update/DoS、应用层认证授权责任，以及固定 HEAD 与受支持稳定版本的区别。
 
-**证据边界（基于证据的推断）**：人类与 Agent 的双通道映射、文档分区、schema 发布、审计字段、资源预算、suggestion fork 提升流程和外部业务账本，是依据官方机制与威胁模型形成的架构推断，不是 Yjs 对多 Agent 平台的官方设计。快照之后的 Yjs HEAD、provider 实现与官方文档更新均不在本案例结论范围内。
+**证据边界（基于证据的推断）**：双通道映射、文档分区、schema 发布和审计字段属于架构推断。资源预算、suggestion fork 提升与外部业务账本也来自威胁模型迁移，而不是 Yjs 官方设计。快照之后的 HEAD、provider 实现与文档更新不在结论范围内。

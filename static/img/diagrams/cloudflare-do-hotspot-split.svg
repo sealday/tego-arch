@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 560" role="img" aria-labelledby="cloudflare-do-hotspot-split-title cloudflare-do-hotspot-split-desc">
+  <title id="cloudflare-do-hotspot-split-title">热点对象不会被平台自动拆分</title>
+  <desc id="cloudflare-do-hotspot-split-desc">监控先识别单对象排队与容量信号，应用控制面创建新分片并迁移键；旧对象排空后留下 tombstone 或转发信息。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 12 6 L 0 12 Z" fill="#68758A"/>
+    </marker>
+  </defs>
+  <style>
+    .diagram-title { font: 700 34px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #172033; }
+    .diagram-desc { font: 400 20px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #526078; }
+    .node-title { font: 700 22px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #172033; }
+    .node-role { font: 400 18px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #46536A; }
+  </style>
+  <rect width="1200" height="560" rx="28" fill="#FBFCFF"/>
+  <text x="40" y="62" class="diagram-title">热点对象不会被平台自动拆分</text>
+  <text x="40" y="104" class="diagram-desc">监控先识别单对象排队与容量信号，应用控制面创建新分片并迁移键；旧对象排空后留下 tombstone 或转发信息。</text>
+  <g aria-label="流程连接">
+    <path d="M 235 285 H 246" fill="none" stroke="#68758A" stroke-width="4" marker-end="url(#arrow)"/>
+    <path d="M 465 285 H 476" fill="none" stroke="#68758A" stroke-width="4" marker-end="url(#arrow)"/>
+    <path d="M 695 285 H 706" fill="none" stroke="#68758A" stroke-width="4" marker-end="url(#arrow)"/>
+    <path d="M 925 285 H 936" fill="none" stroke="#68758A" stroke-width="4" marker-end="url(#arrow)"/>
+  </g>
+  <g aria-label="流程节点">
+    <g data-node="热点信号">
+      <rect x="25" y="210" width="210" height="150" rx="18" fill="#E8F0FF" stroke="#315EAA" stroke-width="3"/>
+      <text x="130" y="267" text-anchor="middle" class="node-title"><tspan x="130" y="267">热点信号</tspan></text>
+      <text x="130" y="306" text-anchor="middle" class="node-role"><tspan x="130" y="306">排队 · overloaded</tspan> <tspan x="130" y="328">连接增长</tspan></text>
+    </g>
+    <g data-node="冻结迁移版本">
+      <rect x="255" y="210" width="210" height="150" rx="18" fill="#EAF7F1" stroke="#24745A" stroke-width="3"/>
+      <text x="360" y="267" text-anchor="middle" class="node-title"><tspan x="360" y="267">冻结迁移版本</tspan></text>
+      <text x="360" y="320" text-anchor="middle" class="node-role"><tspan x="360" y="320">shard epoch</tspan></text>
+    </g>
+    <g data-node="创建新对象">
+      <rect x="485" y="210" width="210" height="150" rx="18" fill="#FFF4DF" stroke="#9A6718" stroke-width="3"/>
+      <text x="590" y="267" text-anchor="middle" class="node-title"><tspan x="590" y="267">创建新对象</tspan></text>
+      <text x="590" y="320" text-anchor="middle" class="node-role"><tspan x="590" y="320">更小业务键</tspan></text>
+    </g>
+    <g data-node="排空旧对象">
+      <rect x="715" y="210" width="210" height="150" rx="18" fill="#F3ECFF" stroke="#6B4AA5" stroke-width="3"/>
+      <text x="820" y="267" text-anchor="middle" class="node-title"><tspan x="820" y="267">排空旧对象</tspan></text>
+      <text x="820" y="320" text-anchor="middle" class="node-role"><tspan x="820" y="320">checkpoint · receipt</tspan></text>
+    </g>
+    <g data-node="切换并保留墓碑">
+      <rect x="945" y="210" width="210" height="150" rx="18" fill="#FFECE8" stroke="#A94A3A" stroke-width="3"/>
+      <text x="1050" y="267" text-anchor="middle" class="node-title"><tspan x="1050" y="267">切换并保留墓碑</tspan></text>
+      <text x="1050" y="320" text-anchor="middle" class="node-role"><tspan x="1050" y="320">路由更新 · 防旧写</tspan></text>
+    </g>
+  </g>
+  <text x="40" y="510" class="diagram-desc">阅读方向：从左到右；每一步只扩大一种责任，不跨越下一层的控制边界。</text>
+</svg>

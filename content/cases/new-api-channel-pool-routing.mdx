@@ -142,6 +142,36 @@ flowchart TD
 
 一次任务流的关键分叉发生在错误分类之后。隔离负责改变未来候选资格，重试负责决定当前请求是否再走一轮；两者可以同时发生，但含义不同。
 
+### 视觉检查点：资格、选择与恢复
+
+先把选择过程拆成两个池。渠道池负责资格、优先级和权重；Key 池只在已选渠道内部过滤可用凭据。
+
+<div
+  className="architecture-diagram-scroll"
+  role="region"
+  aria-label="New API 两级候选池路由图，可横向滚动"
+  tabIndex={0}
+>
+
+![请求经过 Ability、优先级和权重选择渠道，再进入渠道内部 Key 池](/img/diagrams/new-api-two-stage-routing.svg)
+
+</div>
+
+错误处理也要拆成两个决定：隔离改变未来资格，重试预算只决定当前请求是否继续。
+
+<div
+  className="architecture-diagram-scroll"
+  role="region"
+  aria-label="New API 错误隔离与恢复图，可横向滚动"
+  tabIndex={0}
+>
+
+![上游错误经过分类、对象隔离和重试预算，最后进入受控检测与恢复](/img/diagrams/new-api-error-recovery.svg)
+
+</div>
+
+把两者合并成一个“失败就重试”开关，会同时破坏故障隔离和请求预算。
+
 ## 控制权与任务流
 
 **说明性场景**：请求携带分组 `team-a` 与模型 `model-x`。Ability 查询得到三条已启用渠道：A、B 的优先级相同且权重不同，C 位于下一优先级。A 是多 Key 渠道，内部有 K1、K2、K3，其中 K2 已被自动隔离。

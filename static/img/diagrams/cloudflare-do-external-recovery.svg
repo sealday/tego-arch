@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 560" role="img" aria-labelledby="cloudflare-do-external-recovery-title cloudflare-do-external-recovery-desc">
+  <title id="cloudflare-do-external-recovery-title">事务外副作用的恢复链</title>
+  <desc id="cloudflare-do-external-recovery-desc">对象先持久化操作记录，再调用外部系统；返回后重新校验状态版本，迟到结果不得覆盖取消或接管后的当前状态。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 12 6 L 0 12 Z" fill="#68758A"/>
+    </marker>
+  </defs>
+  <style>
+    .diagram-title { font: 700 34px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #172033; }
+    .diagram-desc { font: 400 20px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #526078; }
+    .node-title { font: 700 22px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #172033; }
+    .node-role { font: 400 18px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #46536A; }
+  </style>
+  <rect width="1200" height="560" rx="28" fill="#FBFCFF"/>
+  <text x="40" y="62" class="diagram-title">事务外副作用的恢复链</text>
+  <text x="40" y="104" class="diagram-desc">对象先持久化操作记录，再调用外部系统；返回后重新校验状态版本，迟到结果不得覆盖取消或接管后的当前状态。</text>
+  <g aria-label="流程连接">
+    <path d="M 235 285 H 246" fill="none" stroke="#68758A" stroke-width="4" marker-end="url(#arrow)"/>
+    <path d="M 465 285 H 476" fill="none" stroke="#68758A" stroke-width="4" marker-end="url(#arrow)"/>
+    <path d="M 695 285 H 706" fill="none" stroke="#68758A" stroke-width="4" marker-end="url(#arrow)"/>
+    <path d="M 925 285 H 936" fill="none" stroke="#68758A" stroke-width="4" marker-end="url(#arrow)"/>
+  </g>
+  <g aria-label="流程节点">
+    <g data-node="登记 PENDING">
+      <rect x="25" y="210" width="210" height="150" rx="18" fill="#E8F0FF" stroke="#315EAA" stroke-width="3"/>
+      <text x="130" y="267" text-anchor="middle" class="node-title"><tspan x="130" y="267">登记 PENDING</tspan></text>
+      <text x="130" y="306" text-anchor="middle" class="node-role"><tspan x="130" y="306">operation ID</tspan> <tspan x="130" y="328">base version</tspan></text>
+    </g>
+    <g data-node="提交持久状态">
+      <rect x="255" y="210" width="210" height="150" rx="18" fill="#EAF7F1" stroke="#24745A" stroke-width="3"/>
+      <text x="360" y="267" text-anchor="middle" class="node-title"><tspan x="360" y="267">提交持久状态</tspan></text>
+      <text x="360" y="320" text-anchor="middle" class="node-role"><tspan x="360" y="320">等待 durable write</tspan></text>
+    </g>
+    <g data-node="执行外部调用">
+      <rect x="485" y="210" width="210" height="150" rx="18" fill="#FFF4DF" stroke="#9A6718" stroke-width="3"/>
+      <text x="590" y="267" text-anchor="middle" class="node-title"><tspan x="590" y="267">执行外部调用</tspan></text>
+      <text x="590" y="320" text-anchor="middle" class="node-role"><tspan x="590" y="320">允许其他事件交错</tspan></text>
+    </g>
+    <g data-node="重读并校验">
+      <rect x="715" y="210" width="210" height="150" rx="18" fill="#F3ECFF" stroke="#6B4AA5" stroke-width="3"/>
+      <text x="820" y="267" text-anchor="middle" class="node-title"><tspan x="820" y="267">重读并校验</tspan></text>
+      <text x="820" y="320" text-anchor="middle" class="node-role"><tspan x="820" y="320">version · ownership</tspan></text>
+    </g>
+    <g data-node="落 receipt 或转人工">
+      <rect x="945" y="210" width="210" height="150" rx="18" fill="#FFECE8" stroke="#A94A3A" stroke-width="3"/>
+      <text x="1050" y="267" text-anchor="middle" class="node-title"><tspan x="1050" y="267">落 receipt 或转人工</tspan></text>
+      <text x="1050" y="320" text-anchor="middle" class="node-role"><tspan x="1050" y="320">完成 · 忽略 · 对账</tspan></text>
+    </g>
+  </g>
+  <text x="40" y="510" class="diagram-desc">阅读方向：从左到右；每一步只扩大一种责任，不跨越下一层的控制边界。</text>
+</svg>
