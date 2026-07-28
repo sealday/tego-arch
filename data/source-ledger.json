@@ -13139,10 +13139,10 @@
       "family_grouping_evidence_url": null,
       "copyright_policy": "adapt-with-attribution",
       "usage_boundary": "Defines Google's source, wire, and semantic compatibility guidance; it is indicative rather than exhaustive and does not prove compatibility for non-Google APIs.",
-      "link_policy": "stable",
+      "link_policy": "floating",
       "expected_final_transport_locator": "https://google.aip.dev/180",
-      "expected_final_approved_at": "2026-07-27",
-      "expected_final_approval_note": "Reviewed canonical permalink, approval metadata, changelog boundary, and literal footer license notice on 2026-07-27."
+      "expected_final_approved_at": "2026-07-28",
+      "expected_final_approval_note": "Reviewed the AIP-180 direct HTTPS transport, approved state, 2019-07-23 creation date, compatibility taxonomy, and CC BY 4.0 page-content footer on 2026-07-28."
     },
     {
       "id": "src-google-aip-185",
@@ -16402,6 +16402,222 @@
       "usage_boundary": "Supports Java inheritance mechanics and superclass/subclass state and behavior relationships; it does not establish composition as universally superior.",
       "license_family_id": "https://docs.oracle.com/javase/tutorial/java/IandI/subclasses.html",
       "expected_final_transport_locator": "https://docs.oracle.com/javase/tutorial/java/IandI/subclasses.html"
+    },
+    {
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "registered_at": "2026-07-28",
+      "checked_at": "2026-07-28",
+      "source_kind": "independent-blog",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "historical-context",
+        "implementation",
+        "learning",
+        "method"
+      ],
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "link_policy": "stable",
+      "expected_final_approved_at": "2026-07-28",
+      "id": "src-martin-fowler-yagni-2015",
+      "canonical_locator": "https://martinfowler.com/bliki/Yagni.html",
+      "transport_locator": "https://martinfowler.com/bliki/Yagni.html",
+      "title": "Yagni",
+      "author_or_org": "Martin Fowler",
+      "published_at": "2015-05-26",
+      "version": "Article dated 26 May 2015; page checked on 2026-07-28",
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named Martin Fowler article only; linked works, code, images, marks, and third-party material excluded",
+      "license_evidence_url": "https://martinfowler.com/bliki/Yagni.html",
+      "license_evidence_note": "The page identifies Martin Fowler and displays a Martin Fowler copyright notice but no reusable license; Atlas retains the link, facts, and original summary only.",
+      "license_family_id": "https://martinfowler.com/bliki/Yagni.html",
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "YAGNI rejects capability added now only for an assumed future need and does not reject refactoring, tests, or delivery capability. Does not prove advance work is never justified.",
+      "expected_final_transport_locator": "https://martinfowler.com/bliki/Yagni.html",
+      "expected_final_approval_note": "Reviewed the Yagni page's direct HTTPS transport, Martin Fowler byline, 26 May 2015 date, and footer copyright evidence on 2026-07-28."
+    },
+    {
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "registered_at": "2026-07-28",
+      "checked_at": "2026-07-28",
+      "source_kind": "textbook",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "historical-context",
+        "implementation",
+        "learning",
+        "method"
+      ],
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "link_policy": "stable",
+      "expected_final_approved_at": "2026-07-28",
+      "id": "src-pragprog-dry-2020",
+      "canonical_locator": "https://media.pragprog.com/titles/tpp20/dry.pdf",
+      "transport_locator": "https://media.pragprog.com/titles/tpp20/dry.pdf",
+      "title": "The Evils of Duplication",
+      "author_or_org": "Dave Thomas and Andy Hunt / Pearson",
+      "published_at": "2020-01-01",
+      "version": "The Pragmatic Programmer, 20th Anniversary Edition, The Evils of Duplication extract; Copyright 2020 Pearson Education, Inc.; PDF checked on 2026-07-28",
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "Bibliographic facts and the named Pearson book extract only; PDF prose, examples, layout, marks, and third-party material excluded",
+      "license_evidence_url": "https://media.pragprog.com/titles/tpp20/dry.pdf",
+      "license_evidence_note": "The extract visibly states Copyright 2020 Pearson Education, Inc. and All rights reserved; Atlas retains the link, facts, and original summary only.",
+      "license_family_id": "https://media.pragprog.com/titles/tpp20/dry.pdf",
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "DRY addresses duplicate authoritative knowledge or intent, not every similar syntax fragment. Does not require abstraction across distinct change reasons.",
+      "expected_final_transport_locator": "https://media.pragprog.com/titles/tpp20/dry.pdf",
+      "expected_final_approval_note": "Reviewed the Pearson PDF's direct transport, Dave Thomas and Andy Hunt authorship, 2020 copyright notice, and visible all-rights-reserved terms on 2026-07-28."
+    },
+    {
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "registered_at": "2026-07-28",
+      "checked_at": "2026-07-28",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "historical-context",
+        "implementation",
+        "learning",
+        "method"
+      ],
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "link_policy": "floating",
+      "expected_final_approved_at": "2026-07-28",
+      "id": "src-aws-rel05-bp04-fail-fast",
+      "canonical_locator": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_mitigate_interaction_failure_fail_fast.html",
+      "transport_locator": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_mitigate_interaction_failure_fail_fast.html",
+      "title": "REL05-BP04 Fail fast and limit queues",
+      "author_or_org": "Amazon Web Services",
+      "published_at": "2024-11-06",
+      "version": "AWS Well-Architected Framework Reliability Pillar best practice published 2024-11-06; page checked on 2026-07-28",
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named AWS Well-Architected best-practice page only; code, diagrams, service marks, linked works, and third-party material excluded",
+      "license_evidence_url": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_mitigate_interaction_failure_fail_fast.html",
+      "license_evidence_note": "No reusable license was established for the AWS documentation page; Atlas retains the link, facts, and original summary only.",
+      "license_family_id": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_mitigate_interaction_failure_fail_fast.html",
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "A service that cannot successfully handle a request should fail quickly and avoid unbounded stale queues. Does not mean every exception terminates the process.",
+      "expected_final_transport_locator": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_mitigate_interaction_failure_fail_fast.html",
+      "expected_final_approval_note": "Reviewed the REL05-BP04 direct AWS documentation transport, Amazon Web Services authorship, 2024-11-06 Reliability Pillar version, and documentation rights boundary on 2026-07-28."
+    },
+    {
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "registered_at": "2026-07-28",
+      "checked_at": "2026-07-28",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "historical-context",
+        "implementation",
+        "learning",
+        "method"
+      ],
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "link_policy": "floating",
+      "expected_final_approved_at": "2026-07-28",
+      "id": "src-aws-rel05-bp01-graceful-degradation",
+      "canonical_locator": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_mitigate_interaction_failure_graceful_degradation.html",
+      "transport_locator": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_mitigate_interaction_failure_graceful_degradation.html",
+      "title": "REL05-BP01 Implement graceful degradation to transform applicable hard dependencies into soft dependencies",
+      "author_or_org": "Amazon Web Services",
+      "published_at": "2024-11-06",
+      "version": "AWS Well-Architected Framework Reliability Pillar best practice published 2024-11-06; page checked on 2026-07-28",
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named AWS Well-Architected best-practice page only; code, diagrams, service marks, linked works, and third-party material excluded",
+      "license_evidence_url": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_mitigate_interaction_failure_graceful_degradation.html",
+      "license_evidence_note": "No reusable license was established for the AWS documentation page; Atlas retains the link, facts, and original summary only.",
+      "license_family_id": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_mitigate_interaction_failure_graceful_degradation.html",
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Degradation preserves named core functions with explicitly acceptable failure modes. Does not authorize misleading success or weakened integrity/security.",
+      "expected_final_transport_locator": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_mitigate_interaction_failure_graceful_degradation.html",
+      "expected_final_approval_note": "Reviewed the REL05-BP01 direct AWS documentation transport, Amazon Web Services authorship, 2024-11-06 Reliability Pillar version, and documentation rights boundary on 2026-07-28."
+    },
+    {
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "registered_at": "2026-07-28",
+      "checked_at": "2026-07-28",
+      "source_kind": "independent-blog",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "historical-context",
+        "implementation",
+        "learning",
+        "method"
+      ],
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "link_policy": "stable",
+      "expected_final_approved_at": "2026-07-28",
+      "id": "src-martin-fowler-parallel-change-2014",
+      "canonical_locator": "https://martinfowler.com/bliki/ParallelChange.html",
+      "transport_locator": "https://martinfowler.com/bliki/ParallelChange.html",
+      "title": "Parallel Change",
+      "author_or_org": "Danilo Sato / MartinFowler.com",
+      "published_at": "2014-05-13",
+      "version": "Article dated 13 May 2014; page checked on 2026-07-28",
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named MartinFowler.com article only; linked works, code, images, marks, and third-party material excluded",
+      "license_evidence_url": "https://martinfowler.com/bliki/ParallelChange.html",
+      "license_evidence_note": "The page names Danilo Sato as author and displays a Martin Fowler copyright notice but no reusable license; Atlas retains the link, facts, and original summary only.",
+      "license_family_id": "https://martinfowler.com/bliki/ParallelChange.html",
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Expand, migrate, and contract provide a compatibility window for consumer migration. Does not define a universal window length or guarantee dual-path consistency.",
+      "expected_final_transport_locator": "https://martinfowler.com/bliki/ParallelChange.html",
+      "expected_final_approval_note": "Reviewed the Parallel Change page's direct HTTPS transport, Danilo Sato byline, 13 May 2014 date, and footer copyright evidence on 2026-07-28."
+    },
+    {
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "registered_at": "2026-07-28",
+      "checked_at": "2026-07-28",
+      "source_kind": "standard",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "historical-context",
+        "implementation",
+        "learning",
+        "method"
+      ],
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "link_policy": "floating",
+      "expected_final_approved_at": "2026-07-28",
+      "id": "src-google-aip-180-backwards-compatibility",
+      "canonical_locator": "https://google.aip.dev/180",
+      "transport_locator": "https://google.aip.dev/180",
+      "title": "AIP-180: Backwards compatibility",
+      "author_or_org": "Google API Improvement Proposals",
+      "published_at": "2019-07-23",
+      "version": "AIP-180 approved page created 2019-07-23, with changelog current through 2025-10-21; checked on 2026-07-28",
+      "license": "CC-BY-4.0",
+      "license_scope": "AIP-180 page content under CC BY 4.0; separately licensed code samples, Google marks, linked works, and third-party material excluded",
+      "license_evidence_url": "https://google.aip.dev/180",
+      "license_evidence_note": "The page footer licenses page content under Creative Commons Attribution 4.0 and code samples separately under Apache 2.0; Atlas uses attributed page facts and original adaptation only.",
+      "license_family_id": "https://google.aip.dev/180",
+      "copyright_policy": "adapt-with-attribution",
+      "usage_boundary": "Backward compatibility includes source, wire, and semantic compatibility within the proposal's API context. Does not govern every internal interface or forced coordinated upgrade.",
+      "expected_final_transport_locator": "https://google.aip.dev/180",
+      "expected_final_approval_note": "Reviewed the AIP-180 direct HTTPS transport, approved state, 2019-07-23 creation date, compatibility taxonomy, and CC BY 4.0 page-content footer on 2026-07-28."
     }
   ],
   "documents": {
@@ -24910,6 +25126,180 @@
           "manifest_primary": false,
           "usage_mode": "facts-summary",
           "attribution_note": "Inheritance, Oracle Java Tutorials",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/principles/pr-06-kiss-yagni-dry.mdx": {
+      "reviewed_at": "2026-07-28",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-martin-fowler-yagni-2015",
+          "citation_url": "https://martinfowler.com/bliki/Yagni.html",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Yagni, Martin Fowler",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-pragprog-dry-2020",
+          "citation_url": "https://media.pragprog.com/titles/tpp20/dry.pdf",
+          "roles": [
+            "definition",
+            "historical-context"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "The Pragmatic Programmer, The Evils of Duplication, Dave Thomas and Andy Hunt / Pearson",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-sei-managing-technical-debt-complex-systems-2016",
+          "citation_url": "https://www.sei.cmu.edu/library/managing-technical-debt-in-complex-software-systems/",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Managing Technical Debt in Complex Software Systems, official brochure, Carnegie Mellon Software Engineering Institute",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/principles/pr-07-fail-fast-fail-safe-graceful-degradation.mdx": {
+      "reviewed_at": "2026-07-28",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-aws-rel05-bp04-fail-fast",
+          "citation_url": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_mitigate_interaction_failure_fail_fast.html",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "REL05-BP04 Fail fast and limit queues, AWS Well-Architected Framework",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-aws-rel05-bp01-graceful-degradation",
+          "citation_url": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_mitigate_interaction_failure_graceful_degradation.html",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "REL05-BP01 Implement graceful degradation to transform applicable hard dependencies into soft dependencies, AWS Well-Architected Framework",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-sre-addressing-cascading-failures",
+          "citation_url": "https://sre.google/sre-book/addressing-cascading-failures/",
+          "roles": [
+            "implementation",
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Chapter 22 - Addressing Cascading Failures, Mike Ulrich / Google",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/principles/pr-08-evolutionary-design.mdx": {
+      "reviewed_at": "2026-07-28",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-martin-fowler-parallel-change-2014",
+          "citation_url": "https://martinfowler.com/bliki/ParallelChange.html",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Parallel Change, Danilo Sato / MartinFowler.com",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-google-aip-180-backwards-compatibility",
+          "citation_url": "https://google.aip.dev/180",
+          "roles": [
+            "definition",
+            "implementation"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "AIP-180 Backwards compatibility, Google API Improvement Proposals",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-oreilly-7eb3a574d599",
+          "citation_url": "https://www.oreilly.com/library/view/building-evolutionary-architectures/9781492097532/",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Building Evolutionary Architectures, 2nd Edition, Neal Ford, Rebecca Parsons, Patrick Kua, and Pramod Sadalage / O'Reilly Media",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-martin-fowler-is-design-dead-2004",
+          "citation_url": "https://martinfowler.com/articles/designDead.html",
+          "roles": [
+            "definition",
+            "historical-context",
+            "learning"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Is Design Dead?, Martin Fowler",
           "modification_note": null,
           "excerpt": null,
           "quotation_reviewed": false

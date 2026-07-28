@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-07-28T03:53:35.257Z",
+  "generated_at": "2026-07-28T05:59:52.299Z",
   "results": [
     {
       "transport_locator": "https://a2a-protocol.org/latest/",
@@ -24621,10 +24621,11 @@
     {
       "transport_locator": "https://google.aip.dev/180",
       "source_ids": [
-        "src-google-aip-180"
+        "src-google-aip-180",
+        "src-google-aip-180-backwards-compatibility"
       ],
       "last_attempt": {
-        "at": "2026-07-26T19:41:58.105Z",
+        "at": "2026-07-28T05:59:52.299Z",
         "outcome": "healthy",
         "final_transport_locator": "https://google.aip.dev/180",
         "http_status": 206,
@@ -24632,7 +24633,7 @@
         "redirects": []
       },
       "last_success": {
-        "at": "2026-07-26T19:41:58.105Z",
+        "at": "2026-07-28T05:59:52.299Z",
         "outcome": "healthy",
         "final_transport_locator": "https://google.aip.dev/180",
         "http_status": 206,
@@ -24641,6 +24642,13 @@
       "attempt_history": [
         {
           "at": "2026-07-26T19:41:58.105Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://google.aip.dev/180",
+          "http_status": 206,
+          "login_wall_detected": false
+        },
+        {
+          "at": "2026-07-28T05:59:52.299Z",
           "outcome": "healthy",
           "final_transport_locator": "https://google.aip.dev/180",
           "http_status": 206,
@@ -30263,6 +30271,161 @@
           "outcome": "healthy",
           "final_transport_locator": "https://www.thoughtworks.com/en-us/insights/articles/fitness-function-driven-development",
           "http_status": 206,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_mitigate_interaction_failure_fail_fast.html",
+      "source_ids": [
+        "src-aws-rel05-bp04-fail-fast"
+      ],
+      "last_attempt": {
+        "at": "2026-07-28T05:59:52.299Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_mitigate_interaction_failure_fail_fast.html",
+        "http_status": 206,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-07-28T05:59:52.299Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_mitigate_interaction_failure_fail_fast.html",
+        "http_status": 206,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-07-28T05:59:52.299Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_mitigate_interaction_failure_fail_fast.html",
+          "http_status": 206,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_mitigate_interaction_failure_graceful_degradation.html",
+      "source_ids": [
+        "src-aws-rel05-bp01-graceful-degradation"
+      ],
+      "last_attempt": {
+        "at": "2026-07-28T05:59:52.299Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_mitigate_interaction_failure_graceful_degradation.html",
+        "http_status": 206,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-07-28T05:59:52.299Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_mitigate_interaction_failure_graceful_degradation.html",
+        "http_status": 206,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-07-28T05:59:52.299Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_mitigate_interaction_failure_graceful_degradation.html",
+          "http_status": 206,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://martinfowler.com/bliki/ParallelChange.html",
+      "source_ids": [
+        "src-martin-fowler-parallel-change-2014"
+      ],
+      "last_attempt": {
+        "at": "2026-07-28T05:59:52.299Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://martinfowler.com/bliki/ParallelChange.html",
+        "http_status": 206,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-07-28T05:59:52.299Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://martinfowler.com/bliki/ParallelChange.html",
+        "http_status": 206,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-07-28T05:59:52.299Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://martinfowler.com/bliki/ParallelChange.html",
+          "http_status": 206,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://martinfowler.com/bliki/Yagni.html",
+      "source_ids": [
+        "src-martin-fowler-yagni-2015"
+      ],
+      "last_attempt": {
+        "at": "2026-07-28T05:59:52.299Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://martinfowler.com/bliki/Yagni.html",
+        "http_status": 206,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-07-28T05:59:52.299Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://martinfowler.com/bliki/Yagni.html",
+        "http_status": 206,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-07-28T05:59:52.299Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://martinfowler.com/bliki/Yagni.html",
+          "http_status": 206,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://media.pragprog.com/titles/tpp20/dry.pdf",
+      "source_ids": [
+        "src-pragprog-dry-2020"
+      ],
+      "last_attempt": {
+        "at": "2026-07-28T05:59:52.299Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://media.pragprog.com/titles/tpp20/dry.pdf",
+        "http_status": 200,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-07-28T05:59:52.299Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://media.pragprog.com/titles/tpp20/dry.pdf",
+        "http_status": 200,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-07-28T05:59:52.299Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://media.pragprog.com/titles/tpp20/dry.pdf",
+          "http_status": 200,
           "login_wall_detected": false
         }
       ],
