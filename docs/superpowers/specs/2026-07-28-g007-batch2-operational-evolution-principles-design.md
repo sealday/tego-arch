@@ -2,7 +2,7 @@
 
 **Date:** 2026-07-28
 
-**Status:** Approved design, pending written-spec review
+**Status:** Written spec approved
 
 **Scope:** PR-06 through PR-08 only
 
