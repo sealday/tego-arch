@@ -16,6 +16,9 @@ import {validateContent} from '../scripts/validate-content.mjs';
 const root = fileURLToPath(new URL('../', import.meta.url));
 const fixtureById = new Map([
   ['PR-01', ['principle', 'principles/pr-01-information-hiding.mdx']],
+  ['PR-09', ['principle', 'principles/pr-09-least-privilege-fail-safe-defaults-defense-in-depth.mdx']],
+  ['PR-10', ['principle', 'principles/pr-10-idempotency-minimal-coordination.mdx']],
+  ['PR-11', ['principle', 'principles/pr-11-cqs-cqrs-read-write-separation.mdx']],
   ['REL-02', ['pattern', 'patterns/rel-02-retry-backoff-jitter.mdx']],
   ['STY-00', ['style', 'styles/sty-00-comparison-framework.mdx']],
   ['MTH-03', ['method', 'methods/mth-03-adr-lifecycle.mdx']],
@@ -24,6 +27,9 @@ const fixtureById = new Map([
 ]);
 const fixtureCompletionById = new Map([
   ['PR-01', true],
+  ['PR-09', true],
+  ['PR-10', true],
+  ['PR-11', true],
   ['REL-02', false],
   ['STY-00', false],
   ['MTH-03', true],

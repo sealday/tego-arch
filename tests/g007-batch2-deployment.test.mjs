@@ -121,7 +121,7 @@ test('closes only PR-06 through PR-08 with the same deployment evidence', () => 
       `PR-${id} manifest status must be complete`,
     );
   }
-  for (let number = 9; number <= 17; number += 1) {
+  for (let number = 12; number <= 17; number += 1) {
     const id = `PR-${String(number).padStart(2, '0')}`;
     assert.match(backlog, new RegExp(`^- \\[ \\] \\*\\*${id} `, 'mu'), `${id} pending`);
     const topic = topicsById.get(id);
@@ -148,8 +148,12 @@ test('closes only PR-06 through PR-08 with the same deployment evidence', () => 
   );
   assert.ok(
     backlog.includes(
-      `当前发布基线：** 2026-07-28 G007 Batch 2 已完成 PR-06..08，发布基线为 [\`${stageASha}\`](https://github.com/sealday/tego-arch/commit/${stageASha})，Pages run [\`${pagesRunId}\`](${pagesRunUrl})`,
+      `[\`${stageASha}\`](https://github.com/sealday/tego-arch/commit/${stageASha})`,
     ),
-    'current baseline must cross-check the literal Stage A SHA and Pages run',
+    'backlog must preserve the literal Batch 2 Stage A SHA and commit URL',
+  );
+  assert.ok(
+    backlog.includes(`Pages run [\`${pagesRunId}\`](${pagesRunUrl})`),
+    'backlog must preserve the literal Batch 2 Pages run ID and URL',
   );
 });
