@@ -72,15 +72,15 @@ Cloudflare Durable Objects（DO）把全局可寻址身份、事件循环、私�
 
 ## 一页摘要
 
-**已证实事实**：一个 Durable Object class 对应一个 namespace，每个对象有自己的 ID、活动实例和私有持久存储。`idFromName(name)` 从稳定名称得到 ID，`newUniqueId()` 生成随机 ID，`get(id)` 返回 stub；`getByName(name)` 是更短的等价入口。真正调用时才路由并懒创建。stub 是远程 client，不是对象本身，失败后应重新获取。
+**已证实事实**：一个 Durable Object class 对应一个 namespace，每个对象有自己的 ID、活动实例和私有持久存储。`idFromName(name)` 从稳定名称得到 ID，`newUniqueId()` 生成随机 ID，`get(id)` 返回 stub；getByName(name) 是更短的等价入口。真正调用时才路由并懒创建。stub 是远程 client，不是对象本身，失败后应重新获取。
 
-**已证实事实**：单个对象固有单线程，但事件可在异步边界交错。异步 storage 默认受 Input Gate 保护，同步 SQLite 不让出事件循环；`fetch()` 等非存储 I/O 会允许其他请求运行。因此“读状态 → 外呼 → 写状态”仍会竞态，长时间模型推理也不应放进 `blockConcurrencyWhile()`。
+单个对象固有单线程，但事件可在异步边界交错。异步 storage 默认受 Input Gate 保护，同步 SQLite 不让出事件循环；`fetch()` 等非存储 I/O 会允许其他请求运行。因此“读状态 → 外呼 → 写状态”仍会竞态，长时间模型推理也不应放进 `blockConcurrencyWhile()`。
 
-**已证实事实**：SQLite-backed 对象提供 SQL、同步/异步 KV、事务与 PITR。Input Gate 控制 storage await 期间的输入交错，Output Gate 延迟写入后的外发消息，直到 durable write 确认。
+SQLite-backed 对象提供 SQL、同步/异步 KV、事务与 PITR。Input Gate 控制 storage await 期间的输入交错，Output Gate 延迟写入后的外发消息，直到 durable write 确认。
 
 若写入失败，排队的外发消息会被丢弃、对象重置、调用方收到错误。这能阻止“未持久化却已宣告成功”，但不会撤销写入前已发出的 HTTP 请求，也不会把 LLM、R2、队列、付款或邮件纳入对象事务。
 
-**基于证据的推断**：Agent 平台可把 session、task 或 entity key 映射为一个协调对象，让它持有 run 状态、审批版本、WebSocket 与 alarm。alarm 至少执行一次，hibernation 会丢失普通内存；模型和工具又位于事务外。端到端恢复因此需要 operation ID、状态版本、outbox/receipt、重试预算和补偿。
+**基于证据的推断**：Agent 平台可把 session、task 或 entity key 映射为一个协调对象。对象持有 run 状态、审批版本、WebSocket 与 alarm。alarm 至少执行一次，hibernation 会丢失普通内存。模型和工具又位于事务外，因此端到端恢复还需要 operation ID、状态版本、outbox/receipt、重试预算和补偿。
 
 | 关键决策 | 推荐默认 | 原因 | 退出信号 |
 | --- | --- | --- | --- |
@@ -106,7 +106,7 @@ Cloudflare Durable Objects（DO）把全局可寻址身份、事件循环、私�
 
 </details>
 
-**已证实事实**：`workerd` 是与 Cloudflare Workers 同源的开源 JavaScript/Wasm server runtime，可用于 self-host 和本地开发。README 警告它不是 hardened sandbox。固定 `workerd.capnp` 则说明本地 Durable Objects 当前位于单个 runtime instance，并为跨 cluster 分布保留 TODO。
+**已证实事实**：`workerd` 是与 Cloudflare Workers 同源的开源 JavaScript/Wasm server runtime。它可用于 self-host 和本地开发，但 README 警告它不是 hardened sandbox。固定 `workerd.capnp` 说明本地 Durable Objects 当前位于单个 runtime instance；跨 cluster 分布仍是 TODO。
 
 **边界。已证实事实**：源码能支持 I/O gate、actor cache、SQLite、本地 ID namespace 和事件循环方面的陈述。它不能证明托管服务怎样执行全球首次放置、故障迁移、复制、法域约束或负载调度。本文也不从 local-disk 布局反推生产存储实现。
 
@@ -156,6 +156,53 @@ flowchart TB
 
 应用控制面只保存索引、shard epoch 与迁移状态，不进入每个数据请求的同步路径。热点拆分需要它显式迁移 key，平台不会自动把一个对象切开。
 
+### 视觉检查点：串行边界与外部恢复
+
+先沿左到右检查最小串行边界。只有稳定业务 key 对应的对象状态进入 Durable Object；模型、工具和队列仍在事务外。
+
+<div
+  className="architecture-diagram-scroll"
+  role="region"
+  aria-label="Durable Object 最小串行边界图，可横向滚动"
+  tabIndex={0}
+>
+
+![请求经鉴权和稳定键进入单个 Durable Object，再通过 outbox 连接事务外系统](/img/diagrams/cloudflare-do-serial-boundary.svg)
+
+</div>
+
+这张图回答“什么必须共同判定”。下一张图回答“外部调用返回时，旧结果还能不能写回”。
+
+<div
+  className="architecture-diagram-scroll"
+  role="region"
+  aria-label="Durable Object 事务外副作用恢复图，可横向滚动"
+  tabIndex={0}
+>
+
+![操作先持久化，再调用外部系统并重读版本，最后落 receipt 或转人工](/img/diagrams/cloudflare-do-external-recovery.svg)
+
+</div>
+
+恢复正确性来自持久 operation、版本复核和 receipt，不来自某个内存实例持续存活。
+
+### 视觉检查点：热点拆分
+
+单对象排队或连接持续增长时，平台不会自动把同一 ID 分裂。应用必须冻结迁移版本、创建更小的业务键并排空旧对象。
+
+<div
+  className="architecture-diagram-scroll"
+  role="region"
+  aria-label="Durable Object 热点拆分图，可横向滚动"
+  tabIndex={0}
+>
+
+![热点对象通过 shard epoch、新对象、排空和墓碑完成显式拆分](/img/diagrams/cloudflare-do-hotspot-split.svg)
+
+</div>
+
+因此对象粒度既是并发控制选择，也是未来迁移成本的选择。
+
 ## 控制权与任务流
 
 **说明性场景**：一个 Agent 任务在等待模型结果时收到取消请求，随后旧模型结果迟到。这个场景用已证实的事件交错和 storage gate 机制说明恢复设计，不代表 Cloudflare 官方事故或生产测量。
@@ -176,7 +223,9 @@ flowchart TB
 
 8. **故障恢复。** 对象没有 shutdown hook，持续写 checkpoint。遇到对象 reset、overloaded、stub error、alarm retry 或客户端重连时，先查询 durable state 与外部 receipt；不能判断时转人工。客户端使用退避、deadline 和幂等键，禁止无界重试制造热点。
 
-**基于证据的推断**：Agent task DO 的最小状态机可为 `created -> running -> waiting_external -> result_received -> validated -> completed`，另有 `cancel_requested / failed / manual_review`。每个状态转移带单调 `state_version`；外部 worker 的回调必须同时匹配 `task_id`、`operation_id`、attempt 和 base version。
+**基于证据的推断**：Agent task DO 先经历 created、running 与 waiting_external。外部结果返回后进入 result_received、validated 或 completed。异常分支包括 cancel_requested、failed 与 manual_review。
+
+每次转移都带单调 `state_version`。外部 worker 回调必须匹配 task ID、operation ID、attempt 和 base version。
 
 **个人分析**：不要在 `blockConcurrencyWhile()` 里等待模型或人类审批。它会把对象所有其他事件挡住，并受 30 秒 reset 边界影响。更稳妥的是先提交 `waiting_external`，释放事件循环，让取消、查询和其他合法更新继续处理；外部结果回来后做乐观版本检查。
 
@@ -204,11 +253,11 @@ flowchart TB
 
 </details>
 
-**已证实事实**：固定 `workerd.capnp` 说明 Durable Object ID 与稳定 namespace `uniqueKey` 关联，class name 变化不必破坏既有 storage。Cloudflare 当前托管配置则用 `exports` 对 provisioned namespace 做 create/delete/rename/transfer reconciliation。
+**已证实事实**：固定 `workerd.capnp` 说明 Durable Object ID 与稳定 namespace `uniqueKey` 关联。class name 变化不必破坏既有 storage。Cloudflare 当前托管配置使用 `exports` 管理 provisioned namespace。它会执行 create、delete、rename 或 transfer reconciliation。
 
 两个证据都说明 class lifecycle 与单个对象 ID 不是同一概念，但本地 `uniqueKey` 不是用户在 Cloudflare 控制面手工操作的迁移 API。
 
-**边界。个人分析**：源码审阅应停止在 runtime contract。Cloudflare 如何选择生产 host、维护全球 location cache、处理分区、移动底层数据或执行 namespace transfer，是公开 `workerd` 未给出的服务实现；无法从类名、local SQLite 文件名或 I/O gate 推导出来。
+**边界。个人分析**：源码审阅应停止在 runtime contract。Cloudflare 如何选择生产 host、维护全球 location cache、处理分区或移动底层数据，是公开 `workerd` 未给出的服务实现。namespace transfer 同样不能从类名、local SQLite 文件名或 I/O gate 推导出来。
 
 ## 架构决策与权衡
 
@@ -221,9 +270,9 @@ flowchart TB
 | object-per-tenant | 服务端 canonical tenant ID | quota、租户配置、全局租户协调、小型索引 | 大租户所有会话/任务共享一个热点和 10 GB/软 1,000 rps 等边界 | 最难重分片；用 tenant + bucket/resource 拆分，tenant DO 只作 directory/control plane |
 | object-per-entity / aggregate | `tenant:type:entity` | 订单、设备、文档、账号等领域 invariant | 通常最贴近真正的冲突域，可水平扩展 | 跨实体原子性不存在；需要 saga/outbox/补偿和版本化引用 |
 
-**已证实事实**：官方 limits 给单对象约 1,000 requests/s 的 soft limit，实际吞吐取决于解析、storage 和业务工作；过载后排队仍无法吸收时会返回 overloaded error。官方 reference architecture 因此建议数据面按资源一个对象横向分片，控制面只做创建、列举、删除和索引，并在需要时继续把 control plane 分片。
+**已证实事实**：官方 limits 给单对象约 1,000 requests/s 的 soft limit，实际吞吐取决于解析、storage 和业务工作；过载后排队仍无法吸收时会返回 overloaded error。官方 reference architecture 建议数据面按资源对象横向分片。控制面只做创建、列举、删除和索引，必要时自身也要分片。
 
-**基于证据的推断**：热点对象不会因达到 soft limit 自动拆成两个保持同一 ID 的协调者。重分片必须由应用实施：冻结旧对象的新写或提升 `shard_epoch`，创建目标对象，复制/checkpoint 状态，切换 directory，旧对象保留 redirect/tombstone 并拒绝旧 epoch，最后排空清理。这个流程没有跨对象事务，迁移期间应保持双版本读兼容和单一写 owner。
+**基于证据的推断**：热点对象不会因达到 soft limit 自动拆成两个保持同一 ID 的协调者。重分片必须由应用实施：冻结旧写或提升 `shard_epoch`，创建目标对象并复制 checkpoint，再切换 directory。旧对象保留 redirect/tombstone、拒绝旧 epoch，最后排空清理。这个流程没有跨对象事务，迁移期间应保持双版本读兼容和单一写 owner。
 
 **个人分析**：Agent 平台通常采用两层键更稳妥：tenant directory DO 保存 shard map、预算摘要和迁移状态；每个 session/task/entity DO 承担高频数据面。directory 不参与每条消息和每次模型 token 流，否则它会重新成为全租户瓶颈。跨对象聚合使用普通索引、队列或分析存储，不要 fan-in 到一个“全球 DO”。
 
@@ -260,17 +309,17 @@ lifecycle change 只能 `wrangler deploy`，不能 gradual rollout，rollback �
 
 </details>
 
-**安全。已证实事实**：每个对象的 attached storage 是私有的，其他对象不能直接访问。官方 Data security 说明全部 Durable Object 数据及其 metadata 都会自动静态加密，Worker / Cloudflare network node 与 Durable Object 之间的传输由 TLS/SSL 保护。
+**安全。已证实事实**：每个对象的 attached storage 是私有的，其他对象不能直接访问。官方 Data security 说明 Durable Object 数据及其 metadata 会自动静态加密。Worker、Cloudflare network node 与对象之间的传输由 TLS/SSL 保护。
 
 官方 best practices 把 Worker 放在认证、校验和响应格式层；这些平台能力不等于应用授权。
 
-**安全。个人分析**：生产系统还应限制 key 长度与基数、RPC payload、WebSocket 消息、SQL 查询、外部连接和每主体成本，并让高风险 tool credential 只在实际调用时按 tenant/action 发放。
+**安全。个人分析**：生产系统还应限制 key 长度与基数、RPC payload、WebSocket 消息、SQL 查询、外部连接和每主体成本。高风险 tool credential 只在实际调用时按 tenant/action 发放。
 
-**可靠性。已证实事实**：对象会因部署、空闲和 runtime 决策重启，没有 shutdown hook；访问 storage 的 in-flight 请求在 shutdown 时可能被停止以保持唯一性。Hibernation 会丢内存，普通 shutdown 也可能终止 WebSocket。客户端必须支持重连、恢复 token/state version 与重复结果，不能把“连接曾经建立”当交付证明。
+**可靠性。已证实事实**：对象会因部署、空闲和 runtime 决策重启，没有 shutdown hook。访问 storage 的 in-flight 请求在 shutdown 时可能被停止，以保持唯一性。Hibernation 会丢内存，普通 shutdown 也可能终止 WebSocket。客户端必须支持重连、恢复 token/state version 与重复结果，不能把“连接曾经建立”当交付证明。
 
-**可观测性。基于证据的推断**：官方图表允许按 namespace 和单个 ID/name 过滤，但业务诊断仍要记录 `tenant_hash`、`session_id/task_id`、`operation_id`、state/schema/class version、alarm retry、shard epoch、stub attempt 和 downstream receipt。聚合指标找趋势，per-object 视图找热点，审计日志解释谁获准做了什么。
+**可观测性。基于证据的推断**：官方图表允许按 namespace 和单个 ID/name 过滤。业务诊断还要记录 tenant、session/task、operation 和状态版本。alarm retry、shard epoch、stub attempt 与 downstream receipt 也应进入诊断记录。聚合指标找趋势，per-object 视图找热点，审计日志解释谁获准做了什么。
 
-**非目标。个人分析**：Durable Objects 不应被描述成自动 Agent workflow engine、模型 sandbox、全局消息队列、向量数据库、跨对象 ACID 数据库、exactly-once effect processor 或自动 rebalancer。它提供一个很强的身份寻址协调原语；任务编排、语义验证、资源授权、跨对象索引、重分片和补偿仍由应用设计。
+**非目标。个人分析**：Durable Objects 不是自动 Agent workflow engine、模型 sandbox、全局消息队列、向量数据库或跨对象 ACID 数据库。它也不自动提供 exactly-once effect 或 rebalancing。它提供的是身份寻址协调原语；任务编排、语义验证、资源授权、跨对象索引、重分片和补偿仍由应用设计。
 
 ## 可迁移经验
 
@@ -327,6 +376,6 @@ lifecycle change 只能 `wrangler deploy`，不能 gradual rollout，rollback �
 - [`cloudflare/workerd@14894eccbb339da199d772fcadd337b6d0902128`](https://github.com/cloudflare/workerd/tree/14894eccbb339da199d772fcadd337b6d0902128)：2026-07-22 核对的 HEAD，提交题为 `Release 2026-07-22`，提交时间 2026-07-22 00:59:49 UTC。
 - [`README.md`](https://github.com/cloudflare/workerd/blob/14894eccbb339da199d772fcadd337b6d0902128/README.md)、[`io-gate.h`](https://github.com/cloudflare/workerd/blob/14894eccbb339da199d772fcadd337b6d0902128/src/workerd/io/io-gate.h)、[`actor-cache.h`](https://github.com/cloudflare/workerd/blob/14894eccbb339da199d772fcadd337b6d0902128/src/workerd/io/actor-cache.h)、[`actor-sqlite.c++`](https://github.com/cloudflare/workerd/blob/14894eccbb339da199d772fcadd337b6d0902128/src/workerd/io/actor-sqlite.c%2B%2B) 与 [`workerd.capnp`](https://github.com/cloudflare/workerd/blob/14894eccbb339da199d772fcadd337b6d0902128/src/workerd/server/workerd.capnp)：runtime 定位、gate、cache、SQLite、namespace unique key、本地存储和单 runtime 边界。
 
-**证据边界说明**：Agent 会话/任务状态机、canonical key、outbox/receipt、shard epoch、tenant directory、迁移 tombstone、资源预算和人工升级是依据官方原语形成的“基于证据的推断”或“个人分析”，不是 Cloudflare 对 Agent 平台的官方承诺。
+**证据边界说明**：Agent 会话/任务状态机、canonical key 和 outbox/receipt 是架构推断。shard epoch、tenant directory 与迁移 tombstone 也来自对官方原语的迁移分析。资源预算和人工升级不是 Cloudflare 对 Agent 平台的官方承诺。
 
-Cloudflare 托管服务未公开的全球 placement/migration/storage control plane，以及 2026-07-22 之后的文档和 `workerd` 变化，均不在本案例结论范围内。
+Cloudflare 托管服务未公开的全球 placement、migration 和 storage control plane 不在结论范围内。2026-07-22 之后的文档和 `workerd` 变化也不在范围内。

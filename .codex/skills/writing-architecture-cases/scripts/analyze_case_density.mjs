@@ -39,11 +39,24 @@ function isTableDelimiter(line) {
 function excludedLineIndexes(lines) {
   const excluded = frontMatterLines(lines);
   let fence;
+  let jsxOpeningTag;
 
   for (let index = 0; index < lines.length; index += 1) {
     if (excluded.has(index)) continue;
 
-    const fenceMatch = lines[index].trim().match(/^(`{3,}|~{3,})/u);
+    const trimmed = lines[index].trim();
+    if (jsxOpeningTag) {
+      excluded.add(index);
+      if (trimmed.includes('>')) jsxOpeningTag = false;
+      continue;
+    }
+    if (/^<[A-Za-z][\w.-]*\b/u.test(trimmed) && !trimmed.includes('>')) {
+      excluded.add(index);
+      jsxOpeningTag = true;
+      continue;
+    }
+
+    const fenceMatch = trimmed.match(/^(`{3,}|~{3,})/u);
     if (fenceMatch) {
       excluded.add(index);
       const marker = fenceMatch[1][0];

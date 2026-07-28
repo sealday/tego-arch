@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2026-07-28T00:00:00.000Z" agent="Codex" version="24.7.17">
+  <diagram id="ros2-task-control-contract" name="Page-1">
+    <mxGraphModel dx="1200" dy="560" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="560" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="n0" value="Lifecycle&#xa;manager" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#E8F0FF;strokeColor=#315EAA;strokeWidth=3;fontColor=#172033;fontSize=22;fontStyle=1;verticalAlign=top;spacingTop=24;spacingLeft=10;spacingRight=10;" vertex="1" parent="1">
+          <mxGeometry x="25" y="210" width="210" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="r0" value="configure · activate" style="text;html=0;align=center;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontColor=#46536A;fontSize=18;" vertex="1" parent="1">
+          <mxGeometry x="40" y="292" width="180" height="48" as="geometry"/>
+        </mxCell>
+        <mxCell id="n1" value="Managed Agent" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#EAF7F1;strokeColor=#24745A;strokeWidth=3;fontColor=#172033;fontSize=22;fontStyle=1;verticalAlign=top;spacingTop=24;spacingLeft=10;spacingRight=10;" vertex="1" parent="1">
+          <mxGeometry x="255" y="210" width="210" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="r1" value="Inactive · Active" style="text;html=0;align=center;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontColor=#46536A;fontSize=18;" vertex="1" parent="1">
+          <mxGeometry x="270" y="292" width="180" height="48" as="geometry"/>
+        </mxCell>
+        <mxCell id="n2" value="Action server" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#FFF4DF;strokeColor=#9A6718;strokeWidth=3;fontColor=#172033;fontSize=22;fontStyle=1;verticalAlign=top;spacingTop=24;spacingLeft=10;spacingRight=10;" vertex="1" parent="1">
+          <mxGeometry x="485" y="210" width="210" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="r2" value="goal · feedback&#xa;cancel" style="text;html=0;align=center;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontColor=#46536A;fontSize=18;" vertex="1" parent="1">
+          <mxGeometry x="500" y="292" width="180" height="48" as="geometry"/>
+        </mxCell>
+        <mxCell id="n3" value="驱动器命令" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#F3ECFF;strokeColor=#6B4AA5;strokeWidth=3;fontColor=#172033;fontSize=22;fontStyle=1;verticalAlign=top;spacingTop=24;spacingLeft=10;spacingRight=10;" vertex="1" parent="1">
+          <mxGeometry x="715" y="210" width="210" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="r3" value="软件策略与 fencing" style="text;html=0;align=center;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontColor=#46536A;fontSize=18;" vertex="1" parent="1">
+          <mxGeometry x="730" y="292" width="180" height="48" as="geometry"/>
+        </mxCell>
+        <mxCell id="n4" value="设备真实状态" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#FFECE8;strokeColor=#A94A3A;strokeWidth=3;fontColor=#172033;fontSize=22;fontStyle=1;verticalAlign=top;spacingTop=24;spacingLeft=10;spacingRight=10;" vertex="1" parent="1">
+          <mxGeometry x="945" y="210" width="210" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="r4" value="完成 · 停稳 · 故障" style="text;html=0;align=center;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontColor=#46536A;fontSize=18;" vertex="1" parent="1">
+          <mxGeometry x="960" y="292" width="180" height="48" as="geometry"/>
+        </mxCell>
+        <mxCell id="e0" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#68758A;strokeWidth=3;endArrow=block;endFill=1;" edge="1" parent="1" source="n0" target="n1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#68758A;strokeWidth=3;endArrow=block;endFill=1;" edge="1" parent="1" source="n1" target="n2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#68758A;strokeWidth=3;endArrow=block;endFill=1;" edge="1" parent="1" source="n2" target="n3">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#68758A;strokeWidth=3;endArrow=block;endFill=1;" edge="1" parent="1" source="n3" target="n4">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

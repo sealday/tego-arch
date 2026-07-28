@@ -71,7 +71,7 @@ const immutableFiles = new Map([
   ],
   [
     'content/cases/kubernetes-reconciliation-loop.mdx',
-    '1d7a0e87b0858db7fc4397cca6c30d6f8ea89f721ce2149897015ca19947e5c4',
+    '3b39b919cfd9cd9eb169c7ab098db8dc326e963ec214314c9a72a30068b4a6d3',
   ],
   [
     'content/cases/microsoft-multi-agent-reference-architecture.mdx',
