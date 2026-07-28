@@ -136,7 +136,7 @@ test('records all Microsoft Learn families as CC-BY-4.0 from their official sour
     source.license_family_id.startsWith('https://learn.microsoft.com/'));
 
   assert.equal(rows.length, 2);
-  assert.equal(sources.length, 3);
+  assert.equal(sources.length, 4);
   for (const item of [...rows, ...sources]) {
     assert.equal(item.exact_license ?? item.license, 'CC-BY-4.0');
     assert.match(item.license_evidence_url, /^https:\/\/github\.com\/(?:microsoftdocs\/architecture-center|dotnet\/docs)\/blob\/main\/LICENSE$/i);

@@ -99,6 +99,7 @@ test('records the exact successful G007 Batch 2 deployment', () => {
 });
 
 test('closes only PR-06 through PR-08 with the same deployment evidence', () => {
+  const publishedBatch3Topics = new Set(['PR-09', 'PR-10', 'PR-11']);
   for (const id of ['06', '07', '08']) {
     const row = backlog
       .split(/\r?\n/u)
@@ -125,7 +126,11 @@ test('closes only PR-06 through PR-08 with the same deployment evidence', () => 
     assert.match(backlog, new RegExp(`^- \\[ \\] \\*\\*${id} `, 'mu'), `${id} pending`);
     const topic = topicsById.get(id);
     assert.ok(topic, `${id} must exist in the generated manifest`);
-    assert.equal(topic.published, false, `${id} must remain unpublished`);
+    assert.equal(
+      topic.published,
+      publishedBatch3Topics.has(id),
+      `${id} publication must match current content`,
+    );
     assert.deepEqual(
       topic.status,
       {
