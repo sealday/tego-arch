@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-07-28T05:59:52.299Z",
+  "generated_at": "2026-07-28T09:50:16.450Z",
   "results": [
     {
       "transport_locator": "https://a2a-protocol.org/latest/",
@@ -1741,7 +1741,7 @@
         "src-nist-sp800-160v1r1"
       ],
       "last_attempt": {
-        "at": "2026-07-26T21:41:46.575Z",
+        "at": "2026-07-28T09:50:16.450Z",
         "outcome": "healthy",
         "final_transport_locator": "https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final",
         "http_status": 200,
@@ -1749,7 +1749,7 @@
         "redirects": []
       },
       "last_success": {
-        "at": "2026-07-26T21:41:46.575Z",
+        "at": "2026-07-28T09:50:16.450Z",
         "outcome": "healthy",
         "final_transport_locator": "https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final",
         "http_status": 200,
@@ -1765,6 +1765,13 @@
         },
         {
           "at": "2026-07-26T21:41:46.575Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final",
+          "http_status": 200,
+          "login_wall_detected": false
+        },
+        {
+          "at": "2026-07-28T09:50:16.450Z",
           "outcome": "healthy",
           "final_transport_locator": "https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final",
           "http_status": 200,
@@ -26483,18 +26490,18 @@
         "src-learn-1abc9c267864"
       ],
       "last_attempt": {
-        "at": "2026-07-24T12:13:42.427Z",
+        "at": "2026-07-28T09:50:16.450Z",
         "outcome": "healthy",
         "final_transport_locator": "https://learn.microsoft.com/en-us/azure/architecture/patterns/retry",
-        "http_status": 200,
+        "http_status": 206,
         "login_wall_detected": false,
         "redirects": []
       },
       "last_success": {
-        "at": "2026-07-24T12:13:42.427Z",
+        "at": "2026-07-28T09:50:16.450Z",
         "outcome": "healthy",
         "final_transport_locator": "https://learn.microsoft.com/en-us/azure/architecture/patterns/retry",
-        "http_status": 200,
+        "http_status": 206,
         "login_wall_detected": false
       },
       "attempt_history": [
@@ -26550,6 +26557,13 @@
           "outcome": "healthy",
           "final_transport_locator": "https://learn.microsoft.com/en-us/azure/architecture/patterns/retry",
           "http_status": 200,
+          "login_wall_detected": false
+        },
+        {
+          "at": "2026-07-28T09:50:16.450Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://learn.microsoft.com/en-us/azure/architecture/patterns/retry",
+          "http_status": 206,
           "login_wall_detected": false
         }
       ],
@@ -30425,6 +30439,223 @@
           "outcome": "healthy",
           "final_transport_locator": "https://media.pragprog.com/titles/tpp20/dry.pdf",
           "http_status": 200,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-APIs/",
+      "source_ids": [
+        "src-aws-making-retries-safe-idempotent-apis-2020"
+      ],
+      "last_attempt": {
+        "at": "2026-07-28T09:50:16.450Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-APIs/",
+        "http_status": 200,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-07-28T09:50:16.450Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-APIs/",
+        "http_status": 200,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-07-28T09:50:16.450Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-APIs/",
+          "http_status": 200,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html",
+      "source_ids": [
+        "src-aws-rds-read-replicas"
+      ],
+      "last_attempt": {
+        "at": "2026-07-28T09:50:16.450Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html",
+        "http_status": 206,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-07-28T09:50:16.450Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html",
+        "http_status": 206,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-07-28T09:50:16.450Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html",
+          "http_status": 206,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://learn.microsoft.com/en-us/azure/architecture/patterns/cqrs",
+      "source_ids": [
+        "src-microsoft-cqrs-pattern-2025"
+      ],
+      "last_attempt": {
+        "at": "2026-07-28T09:50:16.450Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://learn.microsoft.com/en-us/azure/architecture/patterns/cqrs",
+        "http_status": 206,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-07-28T09:50:16.450Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://learn.microsoft.com/en-us/azure/architecture/patterns/cqrs",
+        "http_status": 206,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-07-28T09:50:16.450Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://learn.microsoft.com/en-us/azure/architecture/patterns/cqrs",
+          "http_status": 206,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://martinfowler.com/bliki/CommandQuerySeparation.html",
+      "source_ids": [
+        "src-martin-fowler-cqs-2005"
+      ],
+      "last_attempt": {
+        "at": "2026-07-28T09:50:16.450Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://martinfowler.com/bliki/CommandQuerySeparation.html",
+        "http_status": 206,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-07-28T09:50:16.450Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://martinfowler.com/bliki/CommandQuerySeparation.html",
+        "http_status": 206,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-07-28T09:50:16.450Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://martinfowler.com/bliki/CommandQuerySeparation.html",
+          "http_status": 206,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://martinfowler.com/bliki/CQRS.html",
+      "source_ids": [
+        "src-martin-fowler-cqrs-2011"
+      ],
+      "last_attempt": {
+        "at": "2026-07-28T09:50:16.450Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://martinfowler.com/bliki/CQRS.html",
+        "http_status": 206,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-07-28T09:50:16.450Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://martinfowler.com/bliki/CQRS.html",
+        "http_status": 206,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-07-28T09:50:16.450Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://martinfowler.com/bliki/CQRS.html",
+          "http_status": 206,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://web.mit.edu/Saltzer/www/publications/protection/",
+      "source_ids": [
+        "src-saltzer-schroeder-protection-1975"
+      ],
+      "last_attempt": {
+        "at": "2026-07-28T09:50:16.450Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://web.mit.edu/Saltzer/www/publications/protection/",
+        "http_status": 200,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-07-28T09:50:16.450Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://web.mit.edu/Saltzer/www/publications/protection/",
+        "http_status": 200,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-07-28T09:50:16.450Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://web.mit.edu/Saltzer/www/publications/protection/",
+          "http_status": 200,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://www2.eecs.berkeley.edu/Pubs/TechRpts/2015/EECS-2015-206.html",
+      "source_ids": [
+        "src-berkeley-coordination-avoidance-2015"
+      ],
+      "last_attempt": {
+        "at": "2026-07-28T09:50:16.450Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www2.eecs.berkeley.edu/Pubs/TechRpts/2015/EECS-2015-206.html",
+        "http_status": 206,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-07-28T09:50:16.450Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www2.eecs.berkeley.edu/Pubs/TechRpts/2015/EECS-2015-206.html",
+        "http_status": 206,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-07-28T09:50:16.450Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://www2.eecs.berkeley.edu/Pubs/TechRpts/2015/EECS-2015-206.html",
+          "http_status": 206,
           "login_wall_detected": false
         }
       ],
