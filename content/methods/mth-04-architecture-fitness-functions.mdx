@@ -28,6 +28,7 @@ depends_on:
 adjacent_topics:
   - MTH-03
   - MTH-06
+  - PR-08
 related_cases:
   - /cases/kubernetes-reconciliation-loop
 related_questions: []
@@ -83,7 +84,7 @@ related_questions: []
 
 ## 与其他方法的衔接
 
-[ADR 生命周期](/methods/mth-03)保存为什么选择某个目标与阈值；本方法把决定转成持续证据。反馈进入[需求到演进闭环](/methods/mth-06)，触发场景、决定或实现调整。在 [Kubernetes reconciliation loop 案例](/cases/kubernetes-reconciliation-loop)中，可以分别检查控制器依赖方向、调谐积压和恢复时间，但这些检查不能证明所有副作用都幂等。
+[ADR 生命周期](/methods/mth-03)保存为什么选择某个目标与阈值；本方法把决定转成持续证据。反馈进入[需求到演进闭环](/methods/mth-06)，触发场景、决定或实现调整。[为演化设计](/principles/pr-08)用旧、新路径的正确性、负载和采用率信号决定扩大、回退或退出兼容窗口。在 [Kubernetes reconciliation loop 案例](/cases/kubernetes-reconciliation-loop)中，可以分别检查控制器依赖方向、调谐积压和恢复时间，但这些检查不能证明所有副作用都幂等。
 
 ## 完整演练
 

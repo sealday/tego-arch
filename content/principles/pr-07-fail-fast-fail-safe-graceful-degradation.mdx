@@ -1,0 +1,99 @@
+---
+title: Fail Fast、Fail Safe 与 Graceful Degradation
+slug: /principles/pr-07
+content_type: principle
+status: reviewed
+difficulty: advanced
+analyzed_at: 2026-07-28
+source_cutoff: 2026-07-28
+confidence: high
+domains:
+  - software-architecture
+agent_patterns: []
+protocols: []
+quality_attributes:
+  - reliability
+  - safety
+  - availability
+tags:
+  - Fail Fast
+  - Fail Safe
+  - Graceful Degradation
+summary: 按错误可检测性、继续运行的危害、副作用可逆性和诚实降级能力选择故障响应。
+topic_id: PR-07
+priority: P0
+depends_on:
+  - PR-02
+adjacent_topics:
+  - PR-02
+  - PR-04
+  - QA-01
+related_cases:
+  - /cases/microsoft-multi-agent-reference-architecture
+related_questions: []
+---
+
+# Fail Fast、Fail Safe 与 Graceful Degradation
+
+Fail Fast、Fail Safe 与 Graceful Degradation 不是给整个系统贴的互斥标签，而是不同边界上的故障响应选择：尽早暴露不可处理的错误、把已命名的危害收敛到安全状态，或在语义仍真实时提供明确标记的较低服务水平。可从[原则目录](/principles)继续浏览。
+
+## 学习问题
+
+- 如何根据错误可检测性和副作用边界选择故障响应？
+- 什么条件下停止操作才是 Fail Safe，而不只是返回错误？
+- 降级结果怎样证明自己仍然诚实且可被识别？
+- 同一请求路径能否同时使用三种策略？
+
+## 要保护的性质
+
+**来源事实：** [AWS 的 Fail Fast 指南](https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_mitigate_interaction_failure_fail_fast.html)建议无法成功处理的请求尽快失败，避免无界排队继续消耗资源；[AWS 的 Graceful Degradation 指南](https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_mitigate_interaction_failure_graceful_degradation.html)讨论在适用边界把硬依赖转成软依赖，以保留明确的核心功能。**推断：** 快速失败保护错误定位和资源边界，安全失败保护危害不再扩大，优雅降级保护可用的真实能力；三者保护的性质不同。
+
+Fail Fast 是局部且有界的：它停止受影响的操作或边界，并不意味着“每个异常都让整个进程崩溃”。Fail Safe 必须先命名危害与安全状态，例如“禁止未经确认的扣款继续发生”以及“拒绝后续写入并保留人工核对记录”；没有这两个输入，就不能声称系统已经安全。
+
+## 冲突与适用上下文
+
+尽快返回错误可以缩短反馈，但在不可逆副作用之后，仅返回失败会掩盖结果不确定性；此时还要核对、补偿或进入人工终态。继续服务可以提高可用性，但若缓存内容已无法表达真实库存、权限或资金状态，返回“成功”反而扩大完整性伤害。
+
+[Google SRE 关于级联故障的章节](https://sre.google/sre-book/addressing-cascading-failures/)给出了过载、排队、重试和恢复的运行机制与应对背景。AWS 与 Google SRE 的材料在本文中只是操作指南，不是适用于所有系统的通用阈值；超时、队列长度、降级范围和恢复条件必须来自本系统的容量、风险与业务场景。
+
+## 机制
+
+先定位故障发生在哪个控制边界，再检查错误是否在副作用前可检测、继续运行的危害、副作用是否可逆、安全状态是否存在，以及替代结果能否保持诚实语义。
+
+| 判断输入 | Fail Fast | Fail Safe | Graceful Degradation |
+| --- | --- | --- | --- |
+| 错误可检测且尚无副作用 | 明确拒绝当前操作并释放资源 | 若拒绝即安全状态，则保持拒绝 | 仅在替代结果仍真实时继续 |
+| 继续运行可能造成安全、权限、资金或完整性伤害 | 停止受影响边界并暴露失败 | 转入已定义、可验证的安全状态 | 不适用，不能用可用性掩盖伤害 |
+| 副作用已经发生且不可逆 | 返回失败还需核对、补偿或人工终态 | 隔离后续动作，保护残余不变量 | 只能降级未发生的非关键能力 |
+| 依赖不可用但核心读取仍真实 | 快速拒绝依赖能力 | 保护写入和权限边界 | 标明陈旧度、缺失能力和恢复条件 |
+| 无法区分健康与降级 | 暴露不可判定状态 | 保守停止或拒绝 | 不得静默返回看似完整的结果 |
+
+**本站分析：** 一个请求路径可以在输入验证处 Fail Fast，在会造成伤害的副作用边界 Fail Safe，并对可选展示功能 Graceful Degradation。例如先拒绝无效订单，在支付终态未知时隔离重复扣款，再让推荐组件以“暂不可用”退出，而订单核对能力仍可使用。策略应贴近能观察错误、控制副作用或证明替代语义的边界。
+
+Graceful Degradation 必须同时保留真实语义和可见降级状态：响应要说明陈旧度、缺失能力、影响范围和恢复条件，监控也要区分健康与降级。否则“返回部分数据”只是静默隐藏错误。
+
+## 误用与反原则
+
+误用一是把 Fail Fast 理解成任何局部异常都终止整个进程，扩大本可隔离的故障半径。误用二是捕获异常后返回空值，并把这种静默吞错叫作 Fail Safe；若没有已命名危害、可验证安全状态和可观察记录，系统只是失去故障证据。
+
+误用三是把错误、过期或权限不完整的结果称为优雅降级。对安全、权限、资金和完整性伤害，降级不适用；可用性不能掩盖错误语义。也不应在验证、持久化、控制和展示边界统一套用一种策略。
+
+## 适用尺度
+
+函数尺度适合快速拒绝无效参数；模块尺度可隔离依赖能力并释放资源；事务或设备控制尺度必须定义安全状态、幂等与补偿；服务尺度要暴露降级标记、容量与恢复信号；跨服务链路还要控制超时、重试和排队造成的级联影响。
+
+尺度越大，单次“失败”的影响越难推断。安全关键或资金边界需要风险所有者和可验证终态；可选展示能力可以降级，但不得弱化核心写入、授权和完整性不变量。
+
+## 相邻原则
+
+[高内聚与低耦合](/principles/pr-02)揭示依赖失败如何沿运行关系传播；[依赖倒置、控制反转与依赖注入](/principles/pr-04)帮助把故障策略放在拥有控制权的政策边界；[质量属性场景写法](/quality-attributes/qa-01)用刺激、环境、响应与度量明确危害、安全状态和恢复条件。PR-07 在这些输入上选择局部故障响应，而不是给系统贴一个永久标签。
+
+## 说明性场景
+
+在 [Microsoft 多智能体参考架构案例](/cases/microsoft-multi-agent-reference-architecture)中，编排器接到一个需要读取客户资料、调用受限工具并生成解释的请求。注册表找不到被授权的工具时，编排器在调用前快速拒绝该步骤；若工具调用已返回不可判定终态，则停止后续写操作并保留审计记录，避免重复副作用；若只是解释性摘要服务不可用，则明确标记缺失能力，保留仍可核验的核心结果。
+
+这个场景没有把整个多智能体平台统一设为“快速失败”或“优雅降级”。验证、权限与副作用、可选展示分别由能证明其风险边界的组件处理，操作者还能从状态与遥测区分健康、拒绝、待核对和降级。
+
+## 来源
+
+快速拒绝与队列边界依据 [AWS REL05-BP04](https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_mitigate_interaction_failure_fail_fast.html)；适用的依赖降级依据 [AWS REL05-BP01](https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_mitigate_interaction_failure_graceful_degradation.html)；过载与级联故障背景用 [Google SRE Book 第 22 章](https://sre.google/sre-book/addressing-cascading-failures/)交叉核验。本文只做事实摘要，不复用来源的表格、示例或章节结构；决策表、场景和中文论证均为原创。

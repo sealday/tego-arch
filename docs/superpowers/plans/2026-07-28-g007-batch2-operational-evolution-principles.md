@@ -856,6 +856,21 @@ Add visible PR-07 and PR-08 links in PR-04’s `## 相邻原则`, explaining tha
 
 PR-01 and PR-05 already received PR-08 in Task 3. Confirm their visible relation text points to `/principles/pr-08`. Confirm PR-06 visibly links PR-08 and PR-08 visibly links PR-06.
 
+Because the topic manifest requires every published adjacency to be reciprocal, also add the exact reverse edges required by the new metadata:
+
+```yaml
+# QA-01 adjacent_topics
+  - PR-07
+
+# MTH-03 adjacent_topics
+  - PR-08
+
+# MTH-04 adjacent_topics
+  - PR-08
+```
+
+Add one visible reciprocal sentence in QA-01’s `## 相邻质量属性` and in MTH-03/MTH-04’s `## 与其他方法的衔接`, preserving each page’s existing argument. QA-01 uses its scenario fields to name PR-07’s hazard, safe state, and visible degradation boundary; MTH-03 records PR-08’s reassessment and supersession evidence; MTH-04 supplies PR-08’s measurable migration signals.
+
 - [ ] **Step 6: Regenerate content projections**
 
 Run:

@@ -6,8 +6,8 @@
     "current": "G007"
   },
   "completed_topics": 27,
-  "content_documents": 70,
-  "governed_sources": 431,
+  "content_documents": 73,
+  "governed_sources": 436,
   "sources": {
     "durable_stories": "docs/content-backlog.md",
     "completed_topics": "docs/content-backlog.md",

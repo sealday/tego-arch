@@ -28,6 +28,7 @@ adjacent_topics:
   - QA-02
   - MTH-03
   - REL-02
+  - PR-07
 related_cases:
   - /cases/aws-cell-shuffle-sharding
 related_questions: []
@@ -106,7 +107,7 @@ related_questions: []
 
 ## 相邻质量属性
 
-可靠性场景常与性能、安全和可审计性冲突。[质量属性总览](/quality-attributes/qa-00)提供模型边界，[可靠性、可用性与可恢复性](/quality-attributes/qa-02)继续区分故障和恢复目标。[ADR 生命周期](/methods/mth-03)可记录为什么接受某个阈值；[Retry、Backoff 与 Jitter](/patterns/rel-02)则提供一种可能策略，但只有场景允许额外延迟且副作用安全时才能使用。
+可靠性场景常与性能、安全和可审计性冲突。[质量属性总览](/quality-attributes/qa-00)提供模型边界，[可靠性、可用性与可恢复性](/quality-attributes/qa-02)继续区分故障和恢复目标。[ADR 生命周期](/methods/mth-03)可记录为什么接受某个阈值；[Retry、Backoff 与 Jitter](/patterns/rel-02)则提供一种可能策略，但只有场景允许额外延迟且副作用安全时才能使用。[Fail Fast、Fail Safe 与 Graceful Degradation](/principles/pr-07)用场景中的刺激、环境、响应与度量来命名危害、安全状态和可见降级边界。
 
 ## 说明性场景
 
