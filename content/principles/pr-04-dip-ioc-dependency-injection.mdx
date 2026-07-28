@@ -87,7 +87,7 @@ flowchart LR
 
 ## 相邻原则
 
-[信息隐藏与封装](/principles/pr-01)决定哪些低层决策不应泄漏给策略；[组合优于继承](/principles/pr-05)说明 DI 常用的对象组合为何能让策略独立替换；[Fail Fast、Fail Safe 与 Graceful Degradation](/principles/pr-07)把故障策略放在拥有正确控制权的政策边界；[为演化设计](/principles/pr-08)利用依赖方向在迁移期间替换政策与实现；[最小权限、安全默认值与纵深防御](/principles/pr-09)把政策独立性应用到运行时授权，[CQS、CQRS 与读写分离](/principles/pr-11)则把命令与查询责任的分离同注入机制区分开。DIP 约束依赖方向，组合承担运行时组装，故障与演化原则再约束边界如何响应失败和变化，不能互相替代。
+[信息隐藏与封装](/principles/pr-01)决定哪些低层决策不应泄漏给策略；[组合优于继承](/principles/pr-05)说明 DI 常用的对象组合为何能让策略独立替换；[Fail Fast、Fail Safe 与 Graceful Degradation](/principles/pr-07)把故障策略放在拥有正确控制权的边界；[为演化设计](/principles/pr-08)利用依赖方向在迁移期间替换政策与实现；[最小权限、安全默认值与纵深防御](/principles/pr-09)把政策独立性应用到运行时授权，[CQS、CQRS 与读写分离](/principles/pr-11)则把命令与查询责任的分离同注入机制区分开。DIP 约束依赖方向，组合承担运行时组装，故障与演化原则再约束边界如何响应失败和变化，不能互相替代。
 
 ## 说明性场景
 
