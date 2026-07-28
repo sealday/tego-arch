@@ -13128,6 +13128,7 @@
       "tier": "primary",
       "allowed_evidence_roles": [
         "definition",
+        "implementation",
         "method"
       ],
       "license": "CC-BY-4.0",
@@ -13138,11 +13139,11 @@
       "license_family_grouping": "identity",
       "family_grouping_evidence_url": null,
       "copyright_policy": "adapt-with-attribution",
-      "usage_boundary": "Defines Google's source, wire, and semantic compatibility guidance; it is indicative rather than exhaustive and does not prove compatibility for non-Google APIs.",
-      "link_policy": "floating",
+      "usage_boundary": "Backward compatibility includes source, wire, and semantic compatibility within the proposal's API context. Does not govern every internal interface or forced coordinated upgrade.",
+      "link_policy": "stable",
       "expected_final_transport_locator": "https://google.aip.dev/180",
-      "expected_final_approved_at": "2026-07-28",
-      "expected_final_approval_note": "Reviewed the AIP-180 direct HTTPS transport, approved state, 2019-07-23 creation date, compatibility taxonomy, and CC BY 4.0 page-content footer on 2026-07-28."
+      "expected_final_approved_at": "2026-07-27",
+      "expected_final_approval_note": "Reviewed canonical permalink, approval metadata, changelog boundary, and literal footer license notice on 2026-07-27."
     },
     {
       "id": "src-google-aip-185",
@@ -16463,7 +16464,7 @@
       "transport_locator": "https://media.pragprog.com/titles/tpp20/dry.pdf",
       "title": "The Evils of Duplication",
       "author_or_org": "Dave Thomas and Andy Hunt / Pearson",
-      "published_at": "2020-01-01",
+      "published_at": null,
       "version": "The Pragmatic Programmer, 20th Anniversary Edition, The Evils of Duplication extract; Copyright 2020 Pearson Education, Inc.; PDF checked on 2026-07-28",
       "license": "LicenseRef-All-Rights-Reserved",
       "license_scope": "Bibliographic facts and the named Pearson book extract only; PDF prose, examples, layout, marks, and third-party material excluded",
@@ -16582,42 +16583,6 @@
       "usage_boundary": "Expand, migrate, and contract provide a compatibility window for consumer migration. Does not define a universal window length or guarantee dual-path consistency.",
       "expected_final_transport_locator": "https://martinfowler.com/bliki/ParallelChange.html",
       "expected_final_approval_note": "Reviewed the Parallel Change page's direct HTTPS transport, Danilo Sato byline, 13 May 2014 date, and footer copyright evidence on 2026-07-28."
-    },
-    {
-      "query_insensitive": false,
-      "locator_aliases": [],
-      "tombstone": null,
-      "registered_at": "2026-07-28",
-      "checked_at": "2026-07-28",
-      "source_kind": "standard",
-      "tier": "primary",
-      "allowed_evidence_roles": [
-        "definition",
-        "historical-context",
-        "implementation",
-        "learning",
-        "method"
-      ],
-      "license_family_grouping": "identity",
-      "family_grouping_evidence_url": null,
-      "link_policy": "floating",
-      "expected_final_approved_at": "2026-07-28",
-      "id": "src-google-aip-180-backwards-compatibility",
-      "canonical_locator": "https://google.aip.dev/180",
-      "transport_locator": "https://google.aip.dev/180",
-      "title": "AIP-180: Backwards compatibility",
-      "author_or_org": "Google API Improvement Proposals",
-      "published_at": "2019-07-23",
-      "version": "AIP-180 approved page created 2019-07-23, with changelog current through 2025-10-21; checked on 2026-07-28",
-      "license": "CC-BY-4.0",
-      "license_scope": "AIP-180 page content under CC BY 4.0; separately licensed code samples, Google marks, linked works, and third-party material excluded",
-      "license_evidence_url": "https://google.aip.dev/180",
-      "license_evidence_note": "The page footer licenses page content under Creative Commons Attribution 4.0 and code samples separately under Apache 2.0; Atlas uses attributed page facts and original adaptation only.",
-      "license_family_id": "https://google.aip.dev/180",
-      "copyright_policy": "adapt-with-attribution",
-      "usage_boundary": "Backward compatibility includes source, wire, and semantic compatibility within the proposal's API context. Does not govern every internal interface or forced coordinated upgrade.",
-      "expected_final_transport_locator": "https://google.aip.dev/180",
-      "expected_final_approval_note": "Reviewed the AIP-180 direct HTTPS transport, approved state, 2019-07-23 creation date, compatibility taxonomy, and CC BY 4.0 page-content footer on 2026-07-28."
     }
   ],
   "documents": {
@@ -25262,7 +25227,7 @@
           "quotation_reviewed": false
         },
         {
-          "source_id": "src-google-aip-180-backwards-compatibility",
+          "source_id": "src-google-aip-180",
           "citation_url": "https://google.aip.dev/180",
           "roles": [
             "definition",

@@ -287,10 +287,10 @@ git commit -m "test: define g007 operational principle contracts"
 
 **Interfaces:**
 
-- Consumes: The existing source schema plus existing records `src-sei-managing-technical-debt-complex-systems-2016`, `src-sre-addressing-cascading-failures`, `src-oreilly-7eb3a574d599`, and `src-martin-fowler-is-design-dead-2004`.
-- Produces: Six stable source records and three pending governed document entries consumed by the MDX source sections and generator.
+- Consumes: The existing source schema plus existing records `src-sei-managing-technical-debt-complex-systems-2016`, `src-sre-addressing-cascading-failures`, `src-oreilly-7eb3a574d599`, `src-martin-fowler-is-design-dead-2004`, and `src-google-aip-180`.
+- Produces: Five new stable source records, one governed update to the existing AIP-180 source identity, and three pending governed document entries consumed by the MDX source sections and generator.
 
-- [ ] **Step 1: Audit the exact six new source transports and rights boundaries**
+- [ ] **Step 1: Audit the five new source transports and the existing AIP-180 transport and rights boundaries**
 
 Open and record the final transport, authorship, page date/version, and visible rights evidence for:
 
@@ -301,13 +301,13 @@ Open and record the final transport, authorship, page date/version, and visible 
 | `src-aws-rel05-bp04-fail-fast` | `https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_mitigate_interaction_failure_fail_fast.html` | Amazon Web Services | A service that cannot successfully handle a request should fail quickly and avoid unbounded stale queues | Does not mean every exception terminates the process |
 | `src-aws-rel05-bp01-graceful-degradation` | `https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_mitigate_interaction_failure_graceful_degradation.html` | Amazon Web Services | Degradation preserves named core functions with explicitly acceptable failure modes | Does not authorize misleading success or weakened integrity/security |
 | `src-martin-fowler-parallel-change-2014` | `https://martinfowler.com/bliki/ParallelChange.html` | Danilo Sato / MartinFowler.com | Expand, migrate, and contract provide a compatibility window for consumer migration | Does not define a universal window length or guarantee dual-path consistency |
-| `src-google-aip-180-backwards-compatibility` | `https://google.aip.dev/180` | Google API Improvement Proposals | Backward compatibility includes source, wire, and semantic compatibility within the proposal's API context | Does not govern every internal interface or forced coordinated upgrade |
+| `src-google-aip-180` | `https://google.aip.dev/180` | Google API Improvement Proposals | Backward compatibility includes source, wire, and semantic compatibility within the proposal's API context | Does not govern every internal interface or forced coordinated upgrade |
 
 All MartinFowler.com and AWS records use `LicenseRef-All-Rights-Reserved`, `copyright_policy: facts-and-short-quotation`, and original summaries only unless the live audit exposes a narrower explicit policy. The Pragmatic Programmer PDF uses its visible Pearson all-rights-reserved notice. Google AIP-180 uses `CC-BY-4.0` for page content and `adapt-with-attribution`.
 
-- [ ] **Step 2: Add the six canonical source records**
+- [ ] **Step 2: Add five canonical source records and extend the existing AIP-180 record**
 
-For every row above, add one record to `ledger.sources` with the exact ID and locator. Use:
+For each new row above except `src-google-aip-180`, add one record to `ledger.sources` with the exact ID and locator. Use:
 
 ```json
 {
@@ -335,12 +335,12 @@ For every row above, add one record to `ledger.sources` with the exact ID and lo
 Set page-specific fields as follows:
 
 - Fowler YAGNI: `published_at: "2015-05-26"`, `source_kind: "independent-blog"`, `link_policy: "stable"`, all-rights-reserved.
-- Pragmatic DRY: `published_at: "2020-01-01"`, `source_kind: "textbook"`, `link_policy: "stable"`, all-rights-reserved.
+- Pragmatic DRY: `published_at: null`, `source_kind: "textbook"`, `link_policy: "stable"`, all-rights-reserved. Retain the audited 2020 Pearson copyright year in `version` and rights evidence, not as a publication date.
 - Both AWS records: `published_at: "2024-11-06"`, `source_kind: "official-docs"`, `link_policy: "floating"`, all-rights-reserved.
 - Fowler Parallel Change: `published_at: "2014-05-13"`, `source_kind: "independent-blog"`, `link_policy: "stable"`, all-rights-reserved.
-- Google AIP-180: `published_at: "2019-07-23"`, `source_kind: "standard"`, `link_policy: "floating"`, `license: "CC-BY-4.0"`.
+- Google AIP-180: reuse the existing `src-google-aip-180` canonical identity. Add `implementation` to `allowed_evidence_roles` and narrow `usage_boundary` to the fact boundary and non-claim above; do not add another source record or alter unrelated identity/transport metadata.
 
-For each `usage_boundary`, use the exact fact boundary and non-claim in Step 1. Set `expected_final_transport_locator` to the canonical locator and write an approval note naming the exact page/date evidence checked on 2026-07-28.
+For the five new records, use the exact fact boundary and non-claim in Step 1, set `expected_final_transport_locator` to the canonical locator, and write an approval note naming the exact page/date evidence checked on 2026-07-28. For existing `src-google-aip-180`, update only the required evidence role and `usage_boundary`; retain its existing identity and transport approval metadata.
 
 - [ ] **Step 3: Add the three governed document entries**
 
@@ -457,7 +457,7 @@ Add:
         "quotation_reviewed": false
       },
       {
-        "source_id": "src-google-aip-180-backwards-compatibility",
+        "source_id": "src-google-aip-180",
         "citation_url": "https://google.aip.dev/180",
         "roles": ["definition", "implementation"],
         "manifest_primary": false,
