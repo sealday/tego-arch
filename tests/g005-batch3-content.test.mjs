@@ -18,7 +18,7 @@ const expectedMethods = new Map([
   [
     'MTH-04',
     {
-      adjacent: ['MTH-03', 'MTH-06'],
+      adjacent: ['MTH-03', 'MTH-06', 'PR-08'],
       dependsOn: ['FND-05', 'QA-01'],
       file: 'methods/mth-04-architecture-fitness-functions.mdx',
       relatedCases: ['/cases/kubernetes-reconciliation-loop'],
@@ -58,7 +58,7 @@ const reciprocalTopics = new Map([
   [
     'MTH-03',
     {
-      adjacent: ['FND-05', 'MTH-04', 'QA-01'],
+      adjacent: ['FND-05', 'MTH-04', 'QA-01', 'PR-08'],
       file: 'methods/mth-03-adr-lifecycle.mdx',
       visible: ['/concepts/fnd-05', '/methods/mth-04', '/quality-attributes/qa-01'],
     },
@@ -491,7 +491,7 @@ test('preserves cases QA-01 the knowledge schema and sidebar', async () => {
   );
   assert.equal(
     createHash('sha256').update(qa01Bytes).digest('hex'),
-    'd9a452e1751e9ff04f43cd1fe21ca3480a0e0db81c4752fff0bee80556d6f20a',
+    '4d91515d447254b1b64591d32e3ac1fa6561917c7fc6f484037ecac98bbaed25',
     'content/quality-attributes/qa-01-scenario-writing.mdx',
   );
 

@@ -67,7 +67,7 @@ const relationships = new Map([
   [
     'QA-01',
     {
-      adjacent: ['QA-00', 'QA-02', 'MTH-03', 'REL-02'],
+      adjacent: ['QA-00', 'QA-02', 'MTH-03', 'REL-02', 'PR-07'],
       dependsOn: ['FND-02', 'QA-00'],
       relatedCases: ['/cases/aws-cell-shuffle-sharding'],
     },
