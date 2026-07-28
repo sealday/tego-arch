@@ -2,7 +2,7 @@
 
 **Date:** 2026-07-28
 
-**Status:** Written spec awaiting review
+**Status:** Written spec approved
 
 **Scope:** PR-09 through PR-11 only
 
