@@ -18,7 +18,7 @@
 - Do not add visible links to unpublished PR-09 through PR-17.
 - Do not manually edit files under `src/generated/`; run `bun run generate:content`.
 - During Stage A, keep PR-06 through PR-08 unchecked in `docs/content-backlog.md`.
-- Use only facts summaries for the six new all-rights-reserved sources; do not copy source diagrams, tables, examples, or book structure.
+- Use only facts summaries for the five new all-rights-reserved source families, and reuse the existing attributed CC BY AIP-180 family; do not copy source diagrams, tables, examples, or book structure.
 - Use Bun commands for repository scripts and tests.
 - G007 remains in progress after this batch; do not checkpoint it.
 
@@ -35,8 +35,8 @@
 
 ### Modify
 
-- `data/source-ledger.json` — six new source records and three governed document entries.
-- `data/source-link-health.json` — factual observations for the six new transports.
+- `data/source-ledger.json` — five new source records, one governed extension of existing `src-google-aip-180`, and three governed document entries.
+- `data/source-link-health.json` — factual observations for six evidence transports: five new transports plus the reused AIP-180 transport.
 - `content/principles/pr-01-information-hiding.mdx` — reciprocal PR-06 and PR-08 relations.
 - `content/principles/pr-02-cohesion-coupling.mdx` — reciprocal PR-06 and PR-07 relations.
 - `content/principles/pr-04-dip-ioc-dependency-injection.mdx` — reciprocal PR-07 and PR-08 relations.
@@ -502,7 +502,7 @@ Run:
 bun run refresh:links
 ```
 
-Review every changed transport. The six new canonical locators must have a current attempt. Do not hand-author `healthy`; retain the script’s actual `healthy`, `auth-required`, `retired`, redirect, or error observation. Revert unrelated timestamp-only churn if it obscures review, while preserving any newly observed factual final-transport change.
+Review every changed transport. The five new canonical locators plus the reused `src-google-aip-180` locator must have a current attempt. Do not hand-author `healthy`; retain the script’s actual `healthy`, `auth-required`, `retired`, redirect, or error observation. Revert unrelated timestamp-only churn if it obscures review, while preserving any newly observed factual final-transport change.
 
 - [ ] **Step 5: Validate governance while preserving the content RED**
 
@@ -700,7 +700,7 @@ git commit -m "content: add simplicity and abstraction principle"
 **Interfaces:**
 
 - Consumes: Remaining governed citations and relation fixtures.
-- Produces: All three published Batch 2 pages and deterministic generated projections with 73 content documents and 437 governed sources.
+- Produces: All three published Batch 2 pages and deterministic generated projections with 73 content documents and 436 governed sources.
 
 - [ ] **Step 1: Create PR-07 with the exact metadata**
 
@@ -868,13 +868,13 @@ Expected projections:
 
 - PR-06, PR-07, and PR-08 are `published: true`;
 - `content_documents` is 73;
-- `governed_sources` is 437;
+- `governed_sources` is 436;
 - `completed_topics` remains 27 during Stage A;
 - no PR-09 through PR-17 is published.
 
 - [ ] **Step 7: Update only deterministic count fixtures**
 
-Update these current-state expectations from 70 to 73 documents and from 431 to 437 sources:
+Update these current-state expectations from 70 to 73 documents and from 431 to 436 sources:
 
 ```text
 tests/content-review-health.test.mjs
@@ -944,7 +944,7 @@ git diff --check
 git status --short --branch
 ```
 
-Expected: all tests pass; 73 content documents and 437 sources validate; typecheck and production build pass; the worktree is clean.
+Expected: all tests pass; 73 content documents and 436 sources validate; typecheck and production build pass; the worktree is clean.
 
 - [ ] **Step 2: Perform independent editorial, source, and contract review**
 
@@ -1064,7 +1064,7 @@ Update the current release baseline to:
 
 - 30 completed topics;
 - 73 content documents;
-- 437 governed sources;
+- 436 governed sources;
 - G007 still current;
 - next batch PR-09 onward.
 
@@ -1104,7 +1104,7 @@ test('records the exact successful G007 Batch 2 deployment', () => {
   assert.match(review, /desktop `1440x1000`/u);
   assert.match(review, /mobile `390x844`/u);
   assert.match(review, /73 content documents/u);
-  assert.match(review, /437 governed sources/u);
+  assert.match(review, /436 governed sources/u);
 });
 
 test('closes only PR-06 through PR-08 with the same deployment evidence', () => {
@@ -1149,9 +1149,9 @@ Expected:
 - PR-09 remains pending and unpublished;
 - `completed_topics` is 30;
 - `content_documents` is 73;
-- `governed_sources` is 437.
+- `governed_sources` is 436.
 
-Update `tests/knowledge-fixtures.test.mjs` so the principle fixture remains complete. Update the real-repository expectation in `tests/project-status.test.mjs` from 27 to 30 completed topics; keep 73 documents and 437 sources.
+Update `tests/knowledge-fixtures.test.mjs` so the principle fixture remains complete. Update the real-repository expectation in `tests/project-status.test.mjs` from 27 to 30 completed topics; keep 73 documents and 436 sources.
 
 - [ ] **Step 5: Run the complete Stage B gate**
 
