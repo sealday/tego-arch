@@ -1779,6 +1779,102 @@
       "tombstone": null,
       "registered_at": "2026-07-28",
       "checked_at": "2026-07-28",
+      "source_kind": "engineering-blog",
+      "tier": "first-party",
+      "allowed_evidence_roles": [
+        "definition",
+        "historical-context",
+        "implementation",
+        "learning",
+        "method",
+        "comparison"
+      ],
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "link_policy": "floating",
+      "expected_final_approved_at": "2026-07-28",
+      "id": "src-aws-making-retries-safe-idempotent-apis-2020",
+      "canonical_locator": "https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-APIs/",
+      "transport_locator": "https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-APIs/",
+      "title": "Making retries safe with idempotent APIs",
+      "author_or_org": "Malcolm Featonby / Amazon Web Services",
+      "published_at": null,
+      "version": "The linked PDF visibly carries Copyright 2020 Amazon Web Services, Inc. and/or its affiliates; page checked on 2026-07-28",
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named AWS Builders’ Library page and bibliographic facts only; diagrams, code, service marks, linked works, and third-party material excluded",
+      "license_evidence_url": "https://d1.awsstatic.com/builderslibrary/pdfs/making-retries-safe-with-idempotent-apis-malcolm-featonby.pdf",
+      "license_evidence_note": "The linked PDF visibly states Copyright 2020 Amazon Web Services, Inc. and/or its affiliates and All rights reserved; Atlas retains the link, facts, and original summary only.",
+      "license_family_id": "https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-APIs/",
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Uses a caller-supplied request identity and semantic equivalence to make selected mutating API retries safe within a declared contract; it does not establish universal exactly-once execution or make arbitrary external effects retry-safe.",
+      "expected_final_transport_locator": "https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-APIs/",
+      "expected_final_approval_note": "Reviewed the direct AWS HTTPS transport, Malcolm Featonby byline, linked PDF's visible 2020 copyright, and all-rights-reserved notice on 2026-07-28.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-APIs/",
+          "status": "healthy",
+          "last_attempt_at": "2026-07-28T10:05:05.144Z",
+          "last_success_at": "2026-07-28T10:05:05.144Z",
+          "http_status": 200,
+          "final_transport_locator": "https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-APIs/"
+        }
+      ]
+    },
+    {
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "registered_at": "2026-07-28",
+      "checked_at": "2026-07-28",
+      "source_kind": "official-docs",
+      "tier": "first-party",
+      "allowed_evidence_roles": [
+        "definition",
+        "historical-context",
+        "implementation",
+        "learning",
+        "method",
+        "comparison"
+      ],
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "link_policy": "floating",
+      "expected_final_approved_at": "2026-07-28",
+      "id": "src-aws-rds-read-replicas",
+      "canonical_locator": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html",
+      "transport_locator": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html",
+      "title": "Working with DB instance read replicas",
+      "author_or_org": "Amazon Web Services",
+      "published_at": null,
+      "version": "Current Amazon RDS User Guide page checked on 2026-07-28",
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named Amazon RDS documentation page and bibliographic facts only; diagrams, code, service marks, linked works, and third-party material excluded",
+      "license_evidence_url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html",
+      "license_evidence_note": "No reusable license was established for the Amazon RDS documentation page; Atlas retains the link, facts, and original summary only.",
+      "license_family_id": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html",
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Documents read-only replicas, asynchronous propagation, stale-read risk, and routing reads away from the primary; it does not create separate command/query domain models or guarantee read-your-write.",
+      "expected_final_transport_locator": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html",
+      "expected_final_approval_note": "Reviewed the direct AWS documentation HTTPS transport, Amazon Web Services authorship, current Amazon RDS User Guide page, and documentation rights boundary on 2026-07-28; no reusable license was established on the checked Amazon RDS User Guide page.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html",
+          "status": "healthy",
+          "last_attempt_at": "2026-07-28T10:05:05.144Z",
+          "last_success_at": "2026-07-28T10:05:05.144Z",
+          "http_status": 206,
+          "final_transport_locator": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html"
+        }
+      ]
+    },
+    {
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "registered_at": "2026-07-28",
+      "checked_at": "2026-07-28",
       "source_kind": "official-docs",
       "tier": "primary",
       "allowed_evidence_roles": [
@@ -1908,6 +2004,54 @@
           "last_success_at": "2026-07-26T19:41:58.105Z",
           "http_status": 206,
           "final_transport_locator": "https://learn.microsoft.com/en-us/azure/well-architected/performance-efficiency/scale-partition"
+        }
+      ]
+    },
+    {
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "registered_at": "2026-07-28",
+      "checked_at": "2026-07-28",
+      "source_kind": "paper",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "historical-context",
+        "implementation",
+        "learning",
+        "method",
+        "comparison"
+      ],
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "link_policy": "stable",
+      "expected_final_approved_at": "2026-07-28",
+      "id": "src-berkeley-coordination-avoidance-2015",
+      "canonical_locator": "https://www2.eecs.berkeley.edu/Pubs/TechRpts/2015/EECS-2015-206.html",
+      "transport_locator": "https://www2.eecs.berkeley.edu/Pubs/TechRpts/2015/EECS-2015-206.html",
+      "title": "Coordination Avoidance in Distributed Databases",
+      "author_or_org": "Peter Bailis / UC Berkeley EECS",
+      "published_at": "2015-10-30",
+      "version": "UCB/EECS-2015-206, 2015-10-30; UC Berkeley EECS record checked on 2026-07-28",
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The UC Berkeley thesis record and bibliographic facts only; figures, formalism, prototype results, examples, full text, linked works, and third-party material excluded",
+      "license_evidence_url": "https://www2.eecs.berkeley.edu/Pubs/TechRpts/2015/EECS-2015-206.html",
+      "license_evidence_note": "No reusable license was established on the UC Berkeley thesis record; Atlas retains the link, bibliographic facts, and original factual summary only.",
+      "license_family_id": "https://www2.eecs.berkeley.edu/Pubs/TechRpts/2015/EECS-2015-206.html",
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Defines coordination avoidance as using as little coordination as possible while preserving application integrity; it does not prove all workloads are coordination-free or eliminate ownership and serialization.",
+      "expected_final_transport_locator": "https://www2.eecs.berkeley.edu/Pubs/TechRpts/2015/EECS-2015-206.html",
+      "expected_final_approval_note": "Reviewed the direct UC Berkeley HTTPS transport, Peter Bailis authorship, UCB/EECS-2015-206 version dated 2015-10-30, and absence of a reusable license on 2026-07-28.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://www2.eecs.berkeley.edu/Pubs/TechRpts/2015/EECS-2015-206.html",
+          "status": "healthy",
+          "last_attempt_at": "2026-07-28T10:05:05.144Z",
+          "last_success_at": "2026-07-28T10:05:05.144Z",
+          "http_status": 206,
+          "final_transport_locator": "https://www2.eecs.berkeley.edu/Pubs/TechRpts/2015/EECS-2015-206.html"
         }
       ]
     },
@@ -4180,9 +4324,9 @@
         {
           "transport_locator": "https://docs.ros.org/en/jazzy/Concepts/Basic/About-Actions.html",
           "status": "healthy",
-          "last_attempt_at": "2026-07-24T12:13:42.427Z",
-          "last_success_at": "2026-07-24T12:13:42.427Z",
-          "http_status": 206,
+          "last_attempt_at": "2026-07-28T10:05:05.144Z",
+          "last_success_at": "2026-07-28T10:05:05.144Z",
+          "http_status": 200,
           "final_transport_locator": "https://docs.ros.org/en/jazzy/Concepts/Basic/About-Actions.html"
         }
       ]
@@ -4280,9 +4424,9 @@
         {
           "transport_locator": "https://docs.ros.org/en/jazzy/Tutorials/Advanced/Security/The-Keystore.html",
           "status": "healthy",
-          "last_attempt_at": "2026-07-24T12:13:42.427Z",
-          "last_success_at": "2026-07-24T12:13:42.427Z",
-          "http_status": 206,
+          "last_attempt_at": "2026-07-28T10:05:05.144Z",
+          "last_success_at": "2026-07-28T10:05:05.144Z",
+          "http_status": 200,
           "final_transport_locator": "https://docs.ros.org/en/jazzy/Tutorials/Advanced/Security/The-Keystore.html"
         }
       ]
@@ -4380,9 +4524,9 @@
         {
           "transport_locator": "https://docs.ros.org/en/jazzy/Releases.html",
           "status": "healthy",
-          "last_attempt_at": "2026-07-24T12:13:42.427Z",
-          "last_success_at": "2026-07-24T12:13:42.427Z",
-          "http_status": 206,
+          "last_attempt_at": "2026-07-28T10:05:05.144Z",
+          "last_success_at": "2026-07-28T10:05:05.144Z",
+          "http_status": 200,
           "final_transport_locator": "https://docs.ros.org/en/jazzy/Releases.html"
         }
       ]
@@ -4880,9 +5024,9 @@
         {
           "transport_locator": "https://docs.ros.org/en/jazzy/Concepts/Basic.html",
           "status": "healthy",
-          "last_attempt_at": "2026-07-24T12:13:42.427Z",
-          "last_success_at": "2026-07-24T12:13:42.427Z",
-          "http_status": 206,
+          "last_attempt_at": "2026-07-28T10:05:05.144Z",
+          "last_success_at": "2026-07-28T10:05:05.144Z",
+          "http_status": 200,
           "final_transport_locator": "https://docs.ros.org/en/jazzy/Concepts/Basic.html"
         }
       ]
@@ -5284,9 +5428,9 @@
         {
           "transport_locator": "https://docs.ros.org/en/jazzy/Tutorials/Advanced/Security/Access-Controls.html",
           "status": "healthy",
-          "last_attempt_at": "2026-07-24T12:13:42.427Z",
-          "last_success_at": "2026-07-24T12:13:42.427Z",
-          "http_status": 206,
+          "last_attempt_at": "2026-07-28T10:05:05.144Z",
+          "last_success_at": "2026-07-28T10:05:05.144Z",
+          "http_status": 200,
           "final_transport_locator": "https://docs.ros.org/en/jazzy/Tutorials/Advanced/Security/Access-Controls.html"
         }
       ]
@@ -5634,9 +5778,9 @@
         {
           "transport_locator": "https://docs.ros.org/en/jazzy/Concepts/Intermediate/About-Quality-of-Service-Settings.html",
           "status": "healthy",
-          "last_attempt_at": "2026-07-24T12:13:42.427Z",
-          "last_success_at": "2026-07-24T12:13:42.427Z",
-          "http_status": 206,
+          "last_attempt_at": "2026-07-28T10:05:05.144Z",
+          "last_success_at": "2026-07-28T10:05:05.144Z",
+          "http_status": 200,
           "final_transport_locator": "https://docs.ros.org/en/jazzy/Concepts/Intermediate/About-Quality-of-Service-Settings.html"
         }
       ]
@@ -5981,9 +6125,9 @@
         {
           "transport_locator": "https://docs.ros.org/en/jazzy/Releases/Release-Jazzy-Jalisco.html",
           "status": "healthy",
-          "last_attempt_at": "2026-07-24T12:13:42.427Z",
-          "last_success_at": "2026-07-24T12:13:42.427Z",
-          "http_status": 206,
+          "last_attempt_at": "2026-07-28T10:05:05.144Z",
+          "last_success_at": "2026-07-28T10:05:05.144Z",
+          "http_status": 200,
           "final_transport_locator": "https://docs.ros.org/en/jazzy/Releases/Release-Jazzy-Jalisco.html"
         }
       ]
@@ -6131,9 +6275,9 @@
         {
           "transport_locator": "https://docs.ros.org/en/jazzy/How-To-Guides/Using-callback-groups.html",
           "status": "healthy",
-          "last_attempt_at": "2026-07-24T12:13:42.427Z",
-          "last_success_at": "2026-07-24T12:13:42.427Z",
-          "http_status": 206,
+          "last_attempt_at": "2026-07-28T10:05:05.144Z",
+          "last_success_at": "2026-07-28T10:05:05.144Z",
+          "http_status": 200,
           "final_transport_locator": "https://docs.ros.org/en/jazzy/How-To-Guides/Using-callback-groups.html"
         }
       ]
@@ -6281,9 +6425,9 @@
         {
           "transport_locator": "https://docs.ros.org/en/jazzy/Concepts/Basic/Interfaces-Topics-Services-Actions.html",
           "status": "healthy",
-          "last_attempt_at": "2026-07-24T12:13:42.427Z",
-          "last_success_at": "2026-07-24T12:13:42.427Z",
-          "http_status": 206,
+          "last_attempt_at": "2026-07-28T10:05:05.144Z",
+          "last_success_at": "2026-07-28T10:05:05.144Z",
+          "http_status": 200,
           "final_transport_locator": "https://docs.ros.org/en/jazzy/Concepts/Basic/Interfaces-Topics-Services-Actions.html"
         }
       ]
@@ -6481,9 +6625,9 @@
         {
           "transport_locator": "https://docs.ros.org/en/jazzy/Concepts/Intermediate/About-Executors.html",
           "status": "healthy",
-          "last_attempt_at": "2026-07-24T12:13:42.427Z",
-          "last_success_at": "2026-07-24T12:13:42.427Z",
-          "http_status": 206,
+          "last_attempt_at": "2026-07-28T10:05:05.144Z",
+          "last_success_at": "2026-07-28T10:05:05.144Z",
+          "http_status": 200,
           "final_transport_locator": "https://docs.ros.org/en/jazzy/Concepts/Intermediate/About-Executors.html"
         }
       ]
@@ -9275,8 +9419,8 @@
         {
           "transport_locator": "https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/docs/tools.md",
           "status": "healthy",
-          "last_attempt_at": "2026-07-24T12:13:42.427Z",
-          "last_success_at": "2026-07-24T12:13:42.427Z",
+          "last_attempt_at": "2026-07-28T10:05:05.144Z",
+          "last_success_at": "2026-07-28T10:05:05.144Z",
           "http_status": 206,
           "final_transport_locator": "https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/docs/tools.md"
         }
@@ -10919,8 +11063,8 @@
         {
           "transport_locator": "https://github.com/ros2/ros2/blob/a38203a7da336eb123122bc241f53e78d2a0284f/ros2.repos",
           "status": "healthy",
-          "last_attempt_at": "2026-07-24T12:13:42.427Z",
-          "last_success_at": "2026-07-24T12:13:42.427Z",
+          "last_attempt_at": "2026-07-28T10:05:05.144Z",
+          "last_success_at": "2026-07-28T10:05:05.144Z",
           "http_status": 206,
           "final_transport_locator": "https://github.com/ros2/ros2/blob/a38203a7da336eb123122bc241f53e78d2a0284f/ros2.repos"
         }
@@ -12807,8 +12951,8 @@
         {
           "transport_locator": "https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/docs/running_agents.md",
           "status": "healthy",
-          "last_attempt_at": "2026-07-24T12:13:42.427Z",
-          "last_success_at": "2026-07-24T12:13:42.427Z",
+          "last_attempt_at": "2026-07-28T10:05:05.144Z",
+          "last_success_at": "2026-07-28T10:05:05.144Z",
           "http_status": 206,
           "final_transport_locator": "https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/docs/running_agents.md"
         }
@@ -13102,14 +13246,14 @@
       "expected_final_transport_locator": "https://github.com/temporalio/temporal/blob/955948007cc6d9d94fa8ef484225954bd9328451/service/matching/matching_engine.go",
       "expected_final_approved_at": "2026-07-24",
       "expected_final_approval_note": "Initial reviewed migration transport baseline",
-      "health_summary": "healthy",
+      "health_summary": "stale",
       "health_checks": [
         {
           "transport_locator": "https://github.com/temporalio/temporal/blob/955948007cc6d9d94fa8ef484225954bd9328451/service/matching/matching_engine.go",
-          "status": "healthy",
-          "last_attempt_at": "2026-07-24T12:13:42.427Z",
-          "last_success_at": "2026-07-24T12:13:42.427Z",
-          "http_status": 206,
+          "status": "stale",
+          "last_attempt_at": "2026-07-28T10:05:05.144Z",
+          "last_success_at": "2026-07-28T09:50:16.450Z",
+          "http_status": 504,
           "final_transport_locator": "https://github.com/temporalio/temporal/blob/955948007cc6d9d94fa8ef484225954bd9328451/service/matching/matching_engine.go"
         }
       ]
@@ -13307,8 +13451,8 @@
         {
           "transport_locator": "https://github.com/ros2/ros2/releases/tag/release-jazzy-20260618",
           "status": "healthy",
-          "last_attempt_at": "2026-07-24T12:13:42.427Z",
-          "last_success_at": "2026-07-24T12:13:42.427Z",
+          "last_attempt_at": "2026-07-28T10:05:05.144Z",
+          "last_success_at": "2026-07-28T10:05:05.144Z",
           "http_status": 206,
           "final_transport_locator": "https://github.com/ros2/ros2/releases/tag/release-jazzy-20260618"
         }
@@ -14201,8 +14345,8 @@
         {
           "transport_locator": "https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/docs/tracing.md",
           "status": "healthy",
-          "last_attempt_at": "2026-07-24T12:13:42.427Z",
-          "last_success_at": "2026-07-24T12:13:42.427Z",
+          "last_attempt_at": "2026-07-28T10:05:05.144Z",
+          "last_success_at": "2026-07-28T10:05:05.144Z",
           "http_status": 206,
           "final_transport_locator": "https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/docs/tracing.md"
         }
@@ -14951,8 +15095,8 @@
         {
           "transport_locator": "https://github.com/ros2/rclcpp/tree/53cf81e42e6530c2ed7a23489d6640966dccd083",
           "status": "healthy",
-          "last_attempt_at": "2026-07-24T12:13:42.427Z",
-          "last_success_at": "2026-07-24T12:13:42.427Z",
+          "last_attempt_at": "2026-07-28T10:05:05.144Z",
+          "last_success_at": "2026-07-28T10:05:05.144Z",
           "http_status": 206,
           "final_transport_locator": "https://github.com/ros2/rclcpp/tree/53cf81e42e6530c2ed7a23489d6640966dccd083"
         }
@@ -15545,8 +15689,8 @@
         {
           "transport_locator": "https://github.com/ros2/ros2/tree/a38203a7da336eb123122bc241f53e78d2a0284f",
           "status": "healthy",
-          "last_attempt_at": "2026-07-24T12:13:42.427Z",
-          "last_success_at": "2026-07-24T12:13:42.427Z",
+          "last_attempt_at": "2026-07-28T10:05:05.144Z",
+          "last_success_at": "2026-07-28T10:05:05.144Z",
           "http_status": 206,
           "final_transport_locator": "https://github.com/ros2/ros2/tree/a38203a7da336eb123122bc241f53e78d2a0284f"
         }
@@ -16389,8 +16533,8 @@
         {
           "transport_locator": "https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/docs/multi_agent.md",
           "status": "healthy",
-          "last_attempt_at": "2026-07-24T12:13:42.427Z",
-          "last_success_at": "2026-07-24T12:13:42.427Z",
+          "last_attempt_at": "2026-07-28T10:05:05.144Z",
+          "last_success_at": "2026-07-28T10:05:05.144Z",
           "http_status": 206,
           "final_transport_locator": "https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/docs/multi_agent.md"
         }
@@ -16439,8 +16583,8 @@
         {
           "transport_locator": "https://github.com/single-spa/single-spa/blob/297483c11265050542d7ef107d14c44936c51883/src/applications/app-errors.js",
           "status": "healthy",
-          "last_attempt_at": "2026-07-24T12:13:42.427Z",
-          "last_success_at": "2026-07-24T12:13:42.427Z",
+          "last_attempt_at": "2026-07-28T10:05:05.144Z",
+          "last_success_at": "2026-07-28T10:05:05.144Z",
           "http_status": 206,
           "final_transport_locator": "https://github.com/single-spa/single-spa/blob/297483c11265050542d7ef107d14c44936c51883/src/applications/app-errors.js"
         }
@@ -16539,8 +16683,8 @@
         {
           "transport_locator": "https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/examples/agent_patterns/agents_as_tools.py",
           "status": "healthy",
-          "last_attempt_at": "2026-07-24T12:13:42.427Z",
-          "last_success_at": "2026-07-24T12:13:42.427Z",
+          "last_attempt_at": "2026-07-28T10:05:05.144Z",
+          "last_success_at": "2026-07-28T10:05:05.144Z",
           "http_status": 206,
           "final_transport_locator": "https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/examples/agent_patterns/agents_as_tools.py"
         }
@@ -17061,15 +17205,15 @@
       "expected_final_transport_locator": "https://docs.cloud.google.com/architecture/framework/performance-optimization/elasticity",
       "expected_final_approved_at": "2026-07-27",
       "expected_final_approval_note": "Reviewed canonical HTTPS transport and literal page-footer license notice on 2026-07-27.",
-      "health_summary": "healthy",
+      "health_summary": "stale",
       "health_checks": [
         {
           "transport_locator": "https://docs.cloud.google.com/architecture/framework/performance-optimization/elasticity",
-          "status": "healthy",
-          "last_attempt_at": "2026-07-26T19:57:11.793Z",
-          "last_success_at": "2026-07-26T19:57:11.793Z",
-          "http_status": 200,
-          "final_transport_locator": "https://docs.cloud.google.com/architecture/framework/performance-optimization/elasticity"
+          "status": "stale",
+          "last_attempt_at": "2026-07-28T10:05:05.144Z",
+          "last_success_at": "2026-07-28T09:50:16.450Z",
+          "http_status": null,
+          "final_transport_locator": null
         }
       ]
     },
@@ -17111,9 +17255,9 @@
         {
           "transport_locator": "https://sci.greensoftware.foundation/",
           "status": "healthy",
-          "last_attempt_at": "2026-07-27T00:00:00.000Z",
-          "last_success_at": "2026-07-27T00:00:00.000Z",
-          "http_status": 200,
+          "last_attempt_at": "2026-07-28T10:05:05.144Z",
+          "last_success_at": "2026-07-28T10:05:05.144Z",
+          "http_status": 206,
           "final_transport_locator": "https://sci.greensoftware.foundation/"
         }
       ]
@@ -17247,14 +17391,14 @@
       "expected_final_transport_locator": "https://www.iso.org/standard/78176.html",
       "expected_final_approved_at": "2026-07-24",
       "expected_final_approval_note": "Initial reviewed migration transport baseline",
-      "health_summary": "healthy",
+      "health_summary": "stale",
       "health_checks": [
         {
           "transport_locator": "https://www.iso.org/standard/78176.html",
-          "status": "healthy",
-          "last_attempt_at": "2026-07-24T12:13:42.427Z",
+          "status": "stale",
+          "last_attempt_at": "2026-07-28T10:05:05.144Z",
           "last_success_at": "2026-07-24T12:13:42.427Z",
-          "http_status": 200,
+          "http_status": 403,
           "final_transport_locator": "https://www.iso.org/standard/78176.html"
         }
       ]
@@ -17292,14 +17436,14 @@
       "expected_final_transport_locator": "https://www.iso.org/standard/74393.html",
       "expected_final_approved_at": "2026-07-24",
       "expected_final_approval_note": "Initial reviewed Edition 2 work-page transport baseline",
-      "health_summary": "healthy",
+      "health_summary": "stale",
       "health_checks": [
         {
           "transport_locator": "https://www.iso.org/standard/74393.html",
-          "status": "healthy",
-          "last_attempt_at": "2026-07-24T12:13:42.427Z",
+          "status": "stale",
+          "last_attempt_at": "2026-07-28T10:05:05.144Z",
           "last_success_at": "2026-07-24T12:13:42.427Z",
-          "http_status": 200,
+          "http_status": 403,
           "final_transport_locator": "https://www.iso.org/standard/74393.html"
         }
       ]
@@ -18347,9 +18491,9 @@
         {
           "transport_locator": "https://learn.microsoft.com/en-us/azure/architecture/patterns/retry",
           "status": "healthy",
-          "last_attempt_at": "2026-07-24T12:13:42.427Z",
-          "last_success_at": "2026-07-24T12:13:42.427Z",
-          "http_status": 200,
+          "last_attempt_at": "2026-07-28T10:05:05.144Z",
+          "last_success_at": "2026-07-28T10:05:05.144Z",
+          "http_status": 206,
           "final_transport_locator": "https://learn.microsoft.com/en-us/azure/architecture/patterns/retry"
         }
       ]
@@ -18397,9 +18541,9 @@
         {
           "transport_locator": "https://learn.microsoft.com/en-us/dotnet/architecture/modern-web-apps-azure/common-web-application-architectures",
           "status": "healthy",
-          "last_attempt_at": "2026-07-24T12:13:42.427Z",
-          "last_success_at": "2026-07-24T12:13:42.427Z",
-          "http_status": 200,
+          "last_attempt_at": "2026-07-28T10:05:05.144Z",
+          "last_success_at": "2026-07-28T10:05:05.144Z",
+          "http_status": 206,
           "final_transport_locator": "https://learn.microsoft.com/en-us/dotnet/architecture/modern-web-apps-azure/common-web-application-architectures"
         }
       ]
@@ -18447,9 +18591,9 @@
         {
           "transport_locator": "https://learn.microsoft.com/en-us/azure/architecture/ai-ml/guide/ai-agent-design-patterns",
           "status": "healthy",
-          "last_attempt_at": "2026-07-24T12:13:42.427Z",
-          "last_success_at": "2026-07-24T12:13:42.427Z",
-          "http_status": 200,
+          "last_attempt_at": "2026-07-28T10:05:05.144Z",
+          "last_success_at": "2026-07-28T10:05:05.144Z",
+          "http_status": 206,
           "final_transport_locator": "https://learn.microsoft.com/en-us/azure/architecture/ai-ml/guide/ai-agent-design-patterns"
         }
       ]
@@ -18646,6 +18790,102 @@
           "last_success_at": "2026-07-24T12:13:42.427Z",
           "http_status": 206,
           "final_transport_locator": "https://martinfowler.com/bliki/ArchitectureDecisionRecord.html"
+        }
+      ]
+    },
+    {
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "registered_at": "2026-07-28",
+      "checked_at": "2026-07-28",
+      "source_kind": "independent-blog",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "historical-context",
+        "implementation",
+        "learning",
+        "method",
+        "comparison"
+      ],
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "link_policy": "stable",
+      "expected_final_approved_at": "2026-07-28",
+      "id": "src-martin-fowler-cqrs-2011",
+      "canonical_locator": "https://martinfowler.com/bliki/CQRS.html",
+      "transport_locator": "https://martinfowler.com/bliki/CQRS.html",
+      "title": "CQRS",
+      "author_or_org": "Martin Fowler",
+      "published_at": "2011-07-14",
+      "version": "Article dated 14 July 2011; page checked on 2026-07-28",
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named MartinFowler.com article and bibliographic facts only; diagrams, code, images, linked works, marks, and third-party material excluded",
+      "license_evidence_url": "https://martinfowler.com/bliki/CQRS.html",
+      "license_evidence_note": "The page identifies Martin Fowler and displays a Martin Fowler copyright notice but no reusable license; Atlas retains the link, facts, and original summary only.",
+      "license_family_id": "https://martinfowler.com/bliki/CQRS.html",
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "CQRS uses different conceptual models for update and display and can use one or multiple stores; it does not require event sourcing, messaging, or separate physical databases and warns of risky complexity.",
+      "expected_final_transport_locator": "https://martinfowler.com/bliki/CQRS.html",
+      "expected_final_approval_note": "Reviewed the direct MartinFowler.com HTTPS transport, Martin Fowler byline, 14 July 2011 article date, and footer copyright evidence on 2026-07-28.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://martinfowler.com/bliki/CQRS.html",
+          "status": "healthy",
+          "last_attempt_at": "2026-07-28T10:05:05.144Z",
+          "last_success_at": "2026-07-28T10:05:05.144Z",
+          "http_status": 206,
+          "final_transport_locator": "https://martinfowler.com/bliki/CQRS.html"
+        }
+      ]
+    },
+    {
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "registered_at": "2026-07-28",
+      "checked_at": "2026-07-28",
+      "source_kind": "independent-blog",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "historical-context",
+        "implementation",
+        "learning",
+        "method",
+        "comparison"
+      ],
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "link_policy": "stable",
+      "expected_final_approved_at": "2026-07-28",
+      "id": "src-martin-fowler-cqs-2005",
+      "canonical_locator": "https://martinfowler.com/bliki/CommandQuerySeparation.html",
+      "transport_locator": "https://martinfowler.com/bliki/CommandQuerySeparation.html",
+      "title": "Command Query Separation",
+      "author_or_org": "Martin Fowler",
+      "published_at": "2005-12-05",
+      "version": "Article dated 5 December 2005; page checked on 2026-07-28",
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named MartinFowler.com article and bibliographic facts only; diagrams, code, images, linked works, marks, and third-party material excluded",
+      "license_evidence_url": "https://martinfowler.com/bliki/CommandQuerySeparation.html",
+      "license_evidence_note": "The page identifies Martin Fowler and displays a Martin Fowler copyright notice but no reusable license; Atlas retains the link, facts, and original summary only.",
+      "license_family_id": "https://martinfowler.com/bliki/CommandQuerySeparation.html",
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Separates queries that return results without changing observable state from commands that change state, while acknowledging useful exceptions; it does not define CQRS or require absolute application at every method.",
+      "expected_final_transport_locator": "https://martinfowler.com/bliki/CommandQuerySeparation.html",
+      "expected_final_approval_note": "Reviewed the direct MartinFowler.com HTTPS transport, Martin Fowler byline, 5 December 2005 article date, and footer copyright evidence on 2026-07-28.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://martinfowler.com/bliki/CommandQuerySeparation.html",
+          "status": "healthy",
+          "last_attempt_at": "2026-07-28T10:05:05.144Z",
+          "last_success_at": "2026-07-28T10:05:05.144Z",
+          "http_status": 206,
+          "final_transport_locator": "https://martinfowler.com/bliki/CommandQuerySeparation.html"
         }
       ]
     },
@@ -18886,6 +19126,54 @@
           "last_success_at": "2026-07-24T12:13:42.427Z",
           "http_status": 200,
           "final_transport_locator": "https://www.microsoft.com/en-us/research/wp-content/uploads/2017/09/Kafka.pdf"
+        }
+      ]
+    },
+    {
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "registered_at": "2026-07-28",
+      "checked_at": "2026-07-28",
+      "source_kind": "vendor-reference-architecture",
+      "tier": "first-party",
+      "allowed_evidence_roles": [
+        "definition",
+        "historical-context",
+        "implementation",
+        "learning",
+        "method",
+        "comparison"
+      ],
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "link_policy": "floating",
+      "expected_final_approved_at": "2026-07-28",
+      "id": "src-microsoft-cqrs-pattern-2025",
+      "canonical_locator": "https://learn.microsoft.com/en-us/azure/architecture/patterns/cqrs",
+      "transport_locator": "https://learn.microsoft.com/en-us/azure/architecture/patterns/cqrs",
+      "title": "CQRS pattern",
+      "author_or_org": "Microsoft",
+      "published_at": "2025-02-21",
+      "version": "Azure Architecture Center page dated 2025-02-21; page and official source repository checked on 2026-07-28",
+      "license": "CC-BY-4.0",
+      "license_scope": "The named Microsoft Learn documentation page sourced from the evidenced CC BY 4.0 repository; code, trademarks, linked works, and third-party assets excluded unless separately audited",
+      "license_evidence_url": "https://github.com/microsoftdocs/architecture-center/blob/main/LICENSE",
+      "license_evidence_note": "The live page links to the official MicrosoftDocs architecture-center source repository, whose LICENSE is Creative Commons Attribution 4.0 International.",
+      "license_family_id": "https://learn.microsoft.com/en-us/azure/architecture/patterns/cqrs",
+      "copyright_policy": "vendor-claims-separated",
+      "usage_boundary": "Separates command and query models, documents shared-store and separate-store variants, eventual consistency, and unsuitable simple CRUD contexts; it does not make every read replica a CQRS architecture.",
+      "expected_final_transport_locator": "https://learn.microsoft.com/en-us/azure/architecture/patterns/cqrs",
+      "expected_final_approval_note": "Reviewed the direct Microsoft Learn HTTPS transport, Microsoft authorship, visible 2025-02-21 page date, official architecture-center source link, and CC BY 4.0 repository license on 2026-07-28.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://learn.microsoft.com/en-us/azure/architecture/patterns/cqrs",
+          "status": "healthy",
+          "last_attempt_at": "2026-07-28T10:05:05.144Z",
+          "last_success_at": "2026-07-28T10:05:05.144Z",
+          "http_status": 206,
+          "final_transport_locator": "https://learn.microsoft.com/en-us/azure/architecture/patterns/cqrs"
         }
       ]
     },
@@ -19226,8 +19514,8 @@
         {
           "transport_locator": "https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final",
           "status": "healthy",
-          "last_attempt_at": "2026-07-26T21:41:46.575Z",
-          "last_success_at": "2026-07-26T21:41:46.575Z",
+          "last_attempt_at": "2026-07-28T10:05:05.144Z",
+          "last_success_at": "2026-07-28T10:05:05.144Z",
           "http_status": 200,
           "final_transport_locator": "https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final"
         }
@@ -20129,6 +20417,54 @@
           "last_success_at": "2026-07-24T12:13:42.427Z",
           "http_status": 200,
           "final_transport_locator": "https://roadmap.sh/software-architect"
+        }
+      ]
+    },
+    {
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "registered_at": "2026-07-28",
+      "checked_at": "2026-07-28",
+      "source_kind": "paper",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "historical-context",
+        "implementation",
+        "learning",
+        "method",
+        "comparison"
+      ],
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "link_policy": "stable",
+      "expected_final_approved_at": "2026-07-28",
+      "id": "src-saltzer-schroeder-protection-1975",
+      "canonical_locator": "https://web.mit.edu/Saltzer/www/publications/protection/",
+      "transport_locator": "https://web.mit.edu/Saltzer/www/publications/protection/",
+      "title": "The Protection of Information in Computer Systems",
+      "author_or_org": "Jerome H. Saltzer and Michael D. Schroeder",
+      "published_at": null,
+      "version": "Proceedings of the IEEE, Vol. 63, No. 9, September 1975; MIT-hosted author page checked on 2026-07-28",
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The MIT-hosted author page and bibliographic facts only; embedded scans, diagrams, publisher-formatted copies, linked works, and third-party material excluded",
+      "license_evidence_url": "https://web.mit.edu/Saltzer/www/publications/protection/",
+      "license_evidence_note": "No reusable license was established on the MIT-hosted author page; Atlas retains the link, bibliographic facts, and original factual summary only.",
+      "license_family_id": "https://web.mit.edu/Saltzer/www/publications/protection/",
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Defines fail-safe defaults as permission-based access decisions and least privilege as the minimum privileges necessary to complete the job; it does not define modern IAM products or prove a deployed policy is least-privileged.",
+      "expected_final_transport_locator": "https://web.mit.edu/Saltzer/www/publications/protection/",
+      "expected_final_approval_note": "Reviewed the direct MIT HTTPS transport, Saltzer and Schroeder authorship, Proceedings of the IEEE Vol. 63 No. 9 September 1975 version, and absence of a reusable license on 2026-07-28.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://web.mit.edu/Saltzer/www/publications/protection/",
+          "status": "healthy",
+          "last_attempt_at": "2026-07-28T10:05:05.144Z",
+          "last_success_at": "2026-07-28T10:05:05.144Z",
+          "http_status": 200,
+          "final_transport_locator": "https://web.mit.edu/Saltzer/www/publications/protection/"
         }
       ]
     },
@@ -28588,6 +28924,173 @@
           "manifest_primary": false,
           "usage_mode": "facts-summary",
           "attribution_note": "Building Evolutionary Architectures, 2nd Edition, Neal Ford, Rebecca Parsons, Patrick Kua, and Pramod Sadalage / O'Reilly Media",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/principles/pr-09-least-privilege-fail-safe-defaults-defense-in-depth.mdx": {
+      "title": "最小权限、安全默认值与纵深防御",
+      "slug": "/principles/pr-09",
+      "reviewed_at": "2026-07-28",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-nist-sp800-160v1r1",
+          "citation_url": "https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "NIST SP 800-160 Vol. 1 Rev. 1, Engineering Trustworthy Secure Systems",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-saltzer-schroeder-protection-1975",
+          "citation_url": "https://web.mit.edu/Saltzer/www/publications/protection/",
+          "roles": [
+            "definition",
+            "historical-context"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "The Protection of Information in Computer Systems, Jerome H. Saltzer and Michael D. Schroeder",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/principles/pr-10-idempotency-minimal-coordination.mdx": {
+      "title": "幂等与最小协调",
+      "slug": "/principles/pr-10",
+      "reviewed_at": "2026-07-28",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-aws-making-retries-safe-idempotent-apis-2020",
+          "citation_url": "https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-APIs/",
+          "roles": [
+            "definition",
+            "implementation",
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Making retries safe with idempotent APIs, Malcolm Featonby / Amazon Web Services",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-berkeley-coordination-avoidance-2015",
+          "citation_url": "https://www2.eecs.berkeley.edu/Pubs/TechRpts/2015/EECS-2015-206.html",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Coordination Avoidance in Distributed Databases, Peter Bailis / UC Berkeley EECS",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-learn-1abc9c267864",
+          "citation_url": "https://learn.microsoft.com/en-us/azure/architecture/patterns/retry",
+          "roles": [
+            "implementation",
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Retry pattern, Azure Architecture Center",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/principles/pr-11-cqs-cqrs-read-write-separation.mdx": {
+      "title": "CQS、CQRS 与读写分离",
+      "slug": "/principles/pr-11",
+      "reviewed_at": "2026-07-28",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-aws-rds-read-replicas",
+          "citation_url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html",
+          "roles": [
+            "implementation",
+            "comparison"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Working with DB instance read replicas, Amazon RDS",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-martin-fowler-cqrs-2011",
+          "citation_url": "https://martinfowler.com/bliki/CQRS.html",
+          "roles": [
+            "definition",
+            "historical-context",
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "CQRS, Martin Fowler",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-martin-fowler-cqs-2005",
+          "citation_url": "https://martinfowler.com/bliki/CommandQuerySeparation.html",
+          "roles": [
+            "definition",
+            "historical-context"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Command Query Separation, Martin Fowler",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-microsoft-cqrs-pattern-2025",
+          "citation_url": "https://learn.microsoft.com/en-us/azure/architecture/patterns/cqrs",
+          "roles": [
+            "implementation",
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "CQRS pattern, Azure Architecture Center",
           "modification_note": null,
           "excerpt": null,
           "quotation_reviewed": false

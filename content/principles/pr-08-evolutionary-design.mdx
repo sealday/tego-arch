@@ -29,6 +29,7 @@ adjacent_topics:
   - PR-04
   - PR-05
   - PR-06
+  - PR-10
   - MTH-03
   - MTH-04
 related_cases:
@@ -96,7 +97,7 @@ flowchart LR
 
 ## 相邻原则
 
-[信息隐藏与封装](/principles/pr-01)把易变决策留在明确所有者后面；[依赖倒置、控制反转与依赖注入](/principles/pr-04)让政策与细节的依赖方向支持迁移期间替换实现；[组合优于继承](/principles/pr-05)提供可替换的组合接缝；[KISS、YAGNI 与 DRY 的张力](/principles/pr-06)限制无证据的预建扩展点。[ADR 生命周期](/methods/mth-03)记录决定的复核与替代，[架构适应度函数](/methods/mth-04)把正确性、负载、采用率与退出条件变成持续证据。
+[信息隐藏与封装](/principles/pr-01)把易变决策留在明确所有者后面；[依赖倒置、控制反转与依赖注入](/principles/pr-04)让政策与细节的依赖方向支持迁移期间替换实现；[组合优于继承](/principles/pr-05)提供可替换的组合接缝；[KISS、YAGNI 与 DRY 的张力](/principles/pr-06)限制无证据的预建扩展点。[幂等与最小协调](/principles/pr-10)要求兼容迁移与重试保持稳定操作身份和显式 unknown 结果。[ADR 生命周期](/methods/mth-03)记录决定的复核与替代，[架构适应度函数](/methods/mth-04)把正确性、负载、采用率与退出条件变成持续证据。
 
 ## 说明性场景
 

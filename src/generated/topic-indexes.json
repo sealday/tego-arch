@@ -387,48 +387,6 @@
       "presentation": {}
     },
     {
-      "id": "PR-09",
-      "type": "principle",
-      "title": "最小权限、安全默认值与纵深防御",
-      "slug": "/principles/pr-09",
-      "priority": "P0",
-      "status": {
-        "scope": "backlog-projection",
-        "value": "pending",
-        "source": "docs/content-backlog.md"
-      },
-      "dependencies": [],
-      "adjacent_topics": [],
-      "primary_sources": [],
-      "related_cases": [],
-      "related_questions": [],
-      "reviewed_at": null,
-      "review_policy": null,
-      "published": false,
-      "pattern_group": null
-    },
-    {
-      "id": "PR-10",
-      "type": "principle",
-      "title": "幂等与最小协调",
-      "slug": "/principles/pr-10",
-      "priority": "P0",
-      "status": {
-        "scope": "backlog-projection",
-        "value": "pending",
-        "source": "docs/content-backlog.md"
-      },
-      "dependencies": [],
-      "adjacent_topics": [],
-      "primary_sources": [],
-      "related_cases": [],
-      "related_questions": [],
-      "reviewed_at": null,
-      "review_policy": null,
-      "published": false,
-      "pattern_group": null
-    },
-    {
       "id": "PR-02",
       "type": "principle",
       "title": "高内聚与低耦合",
@@ -479,7 +437,8 @@
       "adjacent_topics": [
         "PR-01",
         "PR-02",
-        "PR-05"
+        "PR-05",
+        "PR-11"
       ],
       "primary_sources": [
         "https://dl.acm.org/doi/10.1145/361598.361623"
@@ -512,7 +471,9 @@
         "PR-01",
         "PR-05",
         "PR-07",
-        "PR-08"
+        "PR-08",
+        "PR-09",
+        "PR-11"
       ],
       "primary_sources": [
         "https://web.archive.org/web/20110714224327/http://www.objectmentor.com/resources/articles/dip.pdf"
@@ -613,6 +574,7 @@
         "PR-04",
         "PR-05",
         "PR-06",
+        "PR-10",
         "MTH-03",
         "MTH-04"
       ],
@@ -646,6 +608,8 @@
       "adjacent_topics": [
         "PR-02",
         "PR-04",
+        "PR-09",
+        "PR-10",
         "QA-01"
       ],
       "primary_sources": [
@@ -662,25 +626,69 @@
       "presentation": {}
     },
     {
-      "id": "PR-11",
+      "id": "PR-09",
       "type": "principle",
-      "title": "CQS、CQRS 与读写分离",
-      "slug": "/principles/pr-11",
-      "priority": "P1",
+      "title": "最小权限、安全默认值与纵深防御",
+      "slug": "/principles/pr-09",
+      "priority": "P0",
       "status": {
         "scope": "backlog-projection",
         "value": "pending",
         "source": "docs/content-backlog.md"
       },
-      "dependencies": [],
-      "adjacent_topics": [],
-      "primary_sources": [],
-      "related_cases": [],
+      "dependencies": [
+        "PR-04"
+      ],
+      "adjacent_topics": [
+        "PR-04",
+        "PR-07",
+        "PR-10"
+      ],
+      "primary_sources": [
+        "https://web.mit.edu/Saltzer/www/publications/protection/"
+      ],
+      "related_cases": [
+        "/cases/litellm-virtual-keys-governance"
+      ],
       "related_questions": [],
-      "reviewed_at": null,
+      "reviewed_at": "2026-07-28",
       "review_policy": null,
-      "published": false,
-      "pattern_group": null
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
+    },
+    {
+      "id": "PR-10",
+      "type": "principle",
+      "title": "幂等与最小协调",
+      "slug": "/principles/pr-10",
+      "priority": "P0",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "pending",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "PR-07"
+      ],
+      "adjacent_topics": [
+        "PR-07",
+        "PR-08",
+        "PR-09",
+        "PR-11"
+      ],
+      "primary_sources": [
+        "https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-APIs/"
+      ],
+      "related_cases": [
+        "/cases/temporal-saga-durable-execution"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-07-28",
+      "review_policy": null,
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
     },
     {
       "id": "PR-12",
@@ -765,6 +773,38 @@
       "review_policy": null,
       "published": false,
       "pattern_group": null
+    },
+    {
+      "id": "PR-11",
+      "type": "principle",
+      "title": "CQS、CQRS 与读写分离",
+      "slug": "/principles/pr-11",
+      "priority": "P1",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "pending",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "PR-03"
+      ],
+      "adjacent_topics": [
+        "PR-03",
+        "PR-04",
+        "PR-10"
+      ],
+      "primary_sources": [
+        "https://martinfowler.com/bliki/CQRS.html"
+      ],
+      "related_cases": [
+        "/cases/temporal-saga-durable-execution"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-07-28",
+      "review_policy": null,
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
     },
     {
       "id": "PR-16",

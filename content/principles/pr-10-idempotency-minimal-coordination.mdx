@@ -1,0 +1,106 @@
+---
+title: 幂等与最小协调
+slug: /principles/pr-10
+content_type: principle
+status: reviewed
+difficulty: advanced
+analyzed_at: 2026-07-28
+source_cutoff: 2026-07-28
+confidence: high
+domains:
+  - software-architecture
+  - distributed-systems
+agent_patterns: []
+protocols: []
+quality_attributes:
+  - reliability
+  - consistency
+  - scalability
+tags:
+  - 幂等
+  - 重试
+  - 最小协调
+summary: 用稳定操作身份、显式重放状态和共享不变量判断约束重复副作用与协调成本。
+topic_id: PR-10
+priority: P0
+depends_on:
+  - PR-07
+adjacent_topics:
+  - PR-07
+  - PR-08
+  - PR-09
+  - PR-11
+related_cases:
+  - /cases/temporal-saga-durable-execution
+related_questions: []
+---
+
+# 幂等与最小协调
+
+幂等约束同一逻辑操作被重放时受保护效果不会倍增；最小协调则追问为了维护一个已命名共享不变量，哪些参与者确实必须同步。两者共同收窄重试和并发边界，却不能互相替代。可从[原则目录](/principles)继续浏览。
+
+## 学习问题
+
+- 幂等键应标识一次传输请求，还是一次逻辑业务操作？
+- 响应丢失且副作用结果未知时，为什么不能直接重试？
+- 去重为什么不能解决两个不同命令对同一不变量的竞争？
+- 哪些不变量可以用所有权、单调性或条件写减少协调？
+
+## 要保护的性质
+
+**来源事实：** [AWS Builders’ Library 的幂等 API 文章](https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-APIs/)说明调用者提供请求身份并按语义等价判断重试的适用方式；它不证明任意外部效果都能 exactly-once。**推断：** 幂等保护的是受约束效果，而不是逐字节相同响应。返回时间戳、追踪标识或缓存头可以变化，只要语义结果不使被保护效果重复发生。
+
+幂等作用域是逻辑操作身份加上声明的有效期或保留窗口。窗口内，同一规范化意图必须复用同一身份；窗口外不能凭旧键推断安全。受保护性质应写成可核验断言，例如“一次业务扣款至多落账一次”，而不是含糊地写“接口支持重试”。
+
+## 冲突与适用上下文
+
+同一逻辑操作的重复投递与不同命令争夺共享余额是两类问题：前者可以用稳定身份和结果记录去重，后者即使每个命令都有独立幂等键，仍可能共同破坏余额不为负等不变量。去重不能替代共享不变量所需的所有权、条件写或串行化。
+
+[UC Berkeley 的协调避免研究记录](https://www2.eecs.berkeley.edu/Pubs/TechRpts/2015/EECS-2015-206.html)把目标界定为在保持应用完整性的前提下尽量少协调，而不是消灭所有协调。只有所有权、单调性、交换律、escrow 或条件写能够保持已命名不变量时，才移除对应协调；无法证明时保留最窄的同步边界。
+
+## 机制
+
+同一逻辑操作的传输重试必须复用同一幂等键，并把规范化意图的 hash、调用者、状态、结果引用和保留期限绑定在同一权威记录中。状态至少区分 in-progress、completed、conflict、expired 与 unknown。未知结果不是可盲重试的失败；`unknown` 是一等终态或恢复状态，需要查询权威结果、补偿或人工处置。
+
+以下重放矩阵为本站原创：
+
+| 重放情形 | 权威状态 | 同键处理 | 协调或终态 |
+| --- | --- | --- | --- |
+| 首次尚未开始受保护副作用 | `accepted` | 原执行者取得租约或条件写 | 其余请求返回 in-progress |
+| 首次成功但响应丢失 | `completed + result_ref` | 返回语义等价的已记录结果 | 不重复受保护效果 |
+| 副作用可能成功但完成记录缺失 | `unknown` | 禁止盲重放 | 查询权威结果、补偿或人工处置 |
+| 同键并发到达 | `in-progress` | 复用状态或返回处理中 | 不启动第二执行者 |
+| 同键不同规范化意图 | `conflict` | 拒绝 | 记录 payload hash 与调用者 |
+| 去重记录已过期 | `expired` | 不假定安全 | 新业务操作或人工核对 |
+| 不同命令竞争同一不变量 | 各有独立键 | 幂等键不能解决冲突 | 所有权、条件写、配额或串行化 |
+| 外部不可逆效果无法原子耦合 | `pending/unknown` | 稳定目标侧键与 receipt | 对账、补偿或人工终态 |
+
+**本站分析：** 接收记录与受保护副作用能原子提交时，用唯一约束或条件写建立单一执行者；不能原子耦合外部效果时，把稳定身份传到目标侧并保存 receipt。任何超时都只说明观察者没有得到结果，不能把业务结果改写成失败。
+
+## 误用与反原则
+
+最小协调不等于零协调。只加一个幂等键，却不定义规范化意图、有效窗口、并发状态和结果保存，会把冲突与过期误当成重复请求。每次网络重试生成新键同样破坏操作身份；反过来，永久复用一个键又会把新的业务操作误判为旧重放。
+
+失败模式包括首次效果成功但完成记录丢失后盲重放、同键承载不同 payload、去重记录过早过期，以及不同订单各自去重后仍超卖共享库存。对纯读取、天然无副作用计算，持久化完整去重状态通常不适用；对必须维持强共享不变量的竞争写入，只做重复抑制也不适用。
+
+协调成本包括权威状态存储、租约或条件写、保留窗口容量、结果查询、对账、补偿与人工终态处理。成本应与效果不可逆性和不变量风险匹配，而不是所有接口统一保留永久记录。
+
+## 适用尺度
+
+进程内命令可用状态机或唯一键防止重复执行；单库事务可用唯一约束和条件更新；跨服务消息要稳定传播操作身份并定义消费者去重窗口；外部支付、邮件或云资源创建则需要目标侧身份、receipt 和对账路径。尺度越大，原子边界越少，`unknown` 越必须显式。
+
+若状态完全可重算、效果可交换且重复无害，可以不建立持久去重记录。若配额、余额或唯一所有权跨命令共享，则应先命名不变量，再选择 escrow、单一所有者、条件写或串行化，不能用“幂等”掩盖协调需求。
+
+## 相邻原则
+
+[Fail Fast、Fail Safe 与 Graceful Degradation](/principles/pr-07)规定错误与降级应保持真实语义；[为演化设计](/principles/pr-08)要求兼容迁移期间保持稳定操作身份；[最小权限、安全默认值与纵深防御](/principles/pr-09)决定谁可发起效果；[CQS、CQRS 与读写分离](/principles/pr-11)区分改变状态的命令与观察恢复状态的查询。PR-10 只约束效果重放和不变量协调，不替代授权或责任模型。
+
+## 说明性场景
+
+在 [Temporal Saga 与持久执行案例](/cases/temporal-saga-durable-execution)中，一次转账 workflow 用稳定业务操作 ID 调用目标侧扣款。activity 超时后可以由运行时重放，但目标侧必须复用同一身份；若扣款可能成功而 receipt 未写回，workflow 进入 `unknown` 恢复路径，通过查询、对账或补偿决定终态。
+
+Temporal 在这里是重放与目标侧幂等的说明性证据，不是业务 exactly-once 的证明。运行时保留历史并重试 activity，不能替代支付系统对业务身份、外部 receipt、并发余额不变量和人工终态的责任。
+
+## 来源
+
+[Making retries safe with idempotent APIs](https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-APIs/)仅用于调用者身份、语义等价和重试契约的事实摘要；[Coordination Avoidance in Distributed Databases](https://www2.eecs.berkeley.edu/Pubs/TechRpts/2015/EECS-2015-206.html)仅用于“保持完整性前提下减少协调”的方法边界；[Azure Retry pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/retry)仅用于瞬时故障重试、退避和非瞬时故障边界。本文不复制来源图表、示例或分类；重放矩阵、状态划分和场景分析均为本站原创。

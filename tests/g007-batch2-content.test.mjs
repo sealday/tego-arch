@@ -36,7 +36,7 @@ const h2 = [
 const relationships = new Map([
   ['PR-06', ['PR-01', 'PR-02', 'PR-05', 'PR-08']],
   ['PR-07', ['PR-02', 'PR-04', 'PR-09', 'PR-10', 'QA-01']],
-  ['PR-08', ['PR-01', 'PR-04', 'PR-05', 'PR-06', 'MTH-03', 'MTH-04']],
+  ['PR-08', ['PR-01', 'PR-04', 'PR-05', 'PR-06', 'PR-10', 'MTH-03', 'MTH-04']],
 ]);
 const solePrimary = new Map([
   ['PR-06', 'src-martin-fowler-yagni-2015'],

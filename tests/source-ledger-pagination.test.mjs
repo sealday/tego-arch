@@ -15,13 +15,13 @@ const pluginUrl = new URL(
 const sourceLedgerCardsModule =
   'src/components/SourceLedger/SourceLedgerCards.tsx';
 const tierCounts = new Map([
-  ['primary', 399],
-  ['first-party', 26],
+  ['primary', 403],
+  ['first-party', 29],
   ['secondary', 4],
   ['discovery', 7],
 ]);
 const expectedPageCounts = new Map([
-  ['primary', 20],
+  ['primary', 21],
   ['first-party', 2],
   ['secondary', 1],
   ['discovery', 1],
@@ -242,8 +242,8 @@ test('plans complete canonical source pages in deterministic 20-card slices', as
   const canonicalIds = model
     .buildSourceLedgerSections(ledger)
     .flatMap(({sources}) => sources.map(({id}) => id));
-  assert.equal(pagedIds.length, 436);
-  assert.equal(new Set(pagedIds).size, 436);
+  assert.equal(pagedIds.length, 443);
+  assert.equal(new Set(pagedIds).size, 443);
   assert.deepEqual(pagedIds, canonicalIds);
 });
 
@@ -368,7 +368,7 @@ test('renders the overview only from plugin tier index data', async () => {
   );
 });
 
-test('keeps the paginated route component chunk isolated from the full ledger', async () => {
+test('keeps the paginated route component chunk isolated from the full ledger', {timeout: 20_000}, async () => {
   const route = '/references/primary';
   const outsidePageId = 'src-adk-0d337be13a90';
   const [chunk, ledger, pluginModule] = await Promise.all([
