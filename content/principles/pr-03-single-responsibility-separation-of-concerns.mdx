@@ -45,7 +45,7 @@ related_questions: []
 
 ## 要保护的性质
 
-**来源事实：** Parnas 用应隐藏的困难设计决策区分模块；Robert C. Martin 后来把 SRP 的“责任”解释为面向同一类人或角色的变化原因。**推断：** 一个模块是否单一职责，不能从类名、方法数量或代码行数直接得出，而要列出谁要求它改变、这些变化是否属于同一政策所有权。
+**来源事实：** Parnas 用应隐藏的困难设计决策区分模块；Dijkstra 把关注点分离描述为暂时隔离一个方面、在不否认其他方面的前提下单独推理；Robert C. Martin 后来把 SRP 的“责任”解释为面向同一类人或角色的变化原因。**推断：** 一个模块是否单一职责，不能从类名、方法数量或代码行数直接得出，而要列出谁要求它改变、这些变化是否属于同一政策所有权。
 
 要保护的是责任可归属：发生规则变化时能指出谁做决定、哪个边界实现决定、哪些消费方只依赖稳定结果。SoC 提供观察维度，SRP 决定其中哪些变化应由同一责任边界承担。
 
@@ -92,4 +92,4 @@ related_questions: []
 
 ## 来源
 
-模块应围绕隐藏决策组织的事实依据 [Parnas 模块分解论文](https://dl.acm.org/doi/10.1145/361598.361623)；责任面向人或角色而非“一个动作”的解释用 [Robert C. Martin 的 SRP 说明](https://blog.cleancoder.com/uncle-bob/2014/05/08/SingleReponsibilityPrinciple.html)交叉核验。本站不复刻原文结构，变化原因矩阵、场景和尺度判断均为原创。
+模块应围绕隐藏决策组织的事实依据 [Parnas 模块分解论文](https://dl.acm.org/doi/10.1145/361598.361623)；关注点分离的原始讨论依据 [Dijkstra 的 EWD447](https://www.cs.utexas.edu/~EWD/transcriptions/EWD04xx/EWD447.html)；责任面向人或角色而非“一个动作”的解释用 [Robert C. Martin 的 SRP 说明](https://blog.cleancoder.com/uncle-bob/2014/05/08/SingleReponsibilityPrinciple.html)交叉核验。本站仅作事实摘要，不复刻原文结构；变化原因矩阵、场景和尺度判断均为原创。
