@@ -28,7 +28,7 @@ test('records the exact successful G007 Batch 1 deployment', () => {
   assert.match(review, /431 个来源/u);
 });
 
-test('closes only PR-01 through PR-05 with the same deployment evidence', () => {
+test('preserves Batch 1 evidence with PR-09 as the next pending principle', () => {
   const [, sha] = shaMatch;
   const [, runId] = runMatch;
   for (const id of ['01', '02', '03', '04', '05']) {
