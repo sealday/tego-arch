@@ -6,6 +6,8 @@ import {fileURLToPath} from 'node:url';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const routes = ['09', '10', '11'];
+const expectedStageASha = 'c0497bbe8d1ef9d19e8ed99d69411764095f03ce';
+const expectedPagesRunId = '30356377127';
 const cssAsset =
   'https://sealday.github.io/tego-arch/assets/css/styles.9684c33a.css';
 const jsAsset =
@@ -23,21 +25,59 @@ const [review, backlog, manifest] = await Promise.all([
   ),
 ]);
 const topicsById = new Map(manifest.topics.map((topic) => [topic.id, topic]));
-const stageAShaMatch = review.match(/^Exact Stage A SHA: `([0-9a-f]{40})`$/mu);
-const pagesRunMatch = review.match(
-  /^GitHub Pages run: \[`([0-9]+)`\]\(https:\/\/github\.com\/sealday\/tego-arch\/actions\/runs\/\1\)$/mu,
-);
 
-function parseLiteralEvidence() {
-  assert.ok(stageAShaMatch, 'review must contain one literal Stage A SHA');
-  assert.ok(pagesRunMatch, 'review must contain one literal Pages run and matching URL');
+function parseLiteralEvidence(source) {
+  const stageAShaMatches = [
+    ...source.matchAll(/^Exact Stage A SHA: `([0-9a-f]{40})`$/gmu),
+  ];
+  const pagesRunMatches = [
+    ...source.matchAll(
+      /^GitHub Pages run: \[`([0-9]+)`\]\(https:\/\/github\.com\/sealday\/tego-arch\/actions\/runs\/\1\)$/gmu,
+    ),
+  ];
+  const runGateMatches = [
+    ...source.matchAll(
+      /^Exact run gate: `headSha=([0-9a-f]{40})`, `status=completed`, `conclusion=success`\.$/gmu,
+    ),
+  ];
+  assert.equal(
+    stageAShaMatches.length,
+    1,
+    'review must contain exactly one literal Stage A SHA',
+  );
+  assert.equal(
+    pagesRunMatches.length,
+    1,
+    'review must contain exactly one literal Pages run and matching URL',
+  );
+  assert.equal(
+    runGateMatches.length,
+    1,
+    'review must contain exactly one literal successful run gate',
+  );
+  assert.equal(
+    stageAShaMatches[0][1],
+    expectedStageASha,
+    'review must record the expected Stage A SHA',
+  );
+  assert.equal(
+    pagesRunMatches[0][1],
+    expectedPagesRunId,
+    'review must record the expected Pages run',
+  );
+  assert.equal(
+    runGateMatches[0][1],
+    expectedStageASha,
+    'run gate must record the expected Stage A SHA',
+  );
   return {
-    stageASha: stageAShaMatch[1],
-    pagesRunId: pagesRunMatch[1],
+    stageASha: expectedStageASha,
+    pagesRunId: expectedPagesRunId,
   };
 }
 
-function assertLiteralEvidence(source, stageASha, pagesRunId) {
+function assertLiteralEvidence(source) {
+  const {stageASha, pagesRunId} = parseLiteralEvidence(source);
   const pagesRunUrl = `https://github.com/sealday/tego-arch/actions/runs/${pagesRunId}`;
   assert.ok(source.includes(`Exact Stage A SHA: \`${stageASha}\``));
   assert.ok(
@@ -72,8 +112,8 @@ function assertLiteralEvidence(source, stageASha, pagesRunId) {
 }
 
 test('records an exact successful G007 Batch 3 deployment', () => {
-  const {stageASha, pagesRunId} = parseLiteralEvidence();
-  assertLiteralEvidence(review, stageASha, pagesRunId);
+  const {stageASha} = parseLiteralEvidence(review);
+  assertLiteralEvidence(review);
   assert.doesNotThrow(() =>
     execFileSync('git', ['cat-file', '-e', `${stageASha}^{commit}`], {
       cwd: root,
@@ -86,19 +126,28 @@ test('records an exact successful G007 Batch 3 deployment', () => {
     ['Stage B closure — PASS', 'Stage B closure — FAIL'],
   ]) {
     assert.throws(
-      () =>
-        assertLiteralEvidence(
-          review.replaceAll(literal, mutation),
-          stageASha,
-          pagesRunId,
-        ),
+      () => assertLiteralEvidence(review.replaceAll(literal, mutation)),
       {name: 'AssertionError'},
     );
   }
+  const conflictingSha = '0'.repeat(40);
+  const conflictingRunId = '30356377128';
+  const conflictingReview = [
+    review,
+    `Exact Stage A SHA: \`${conflictingSha}\``,
+    `GitHub Pages run: [\`${conflictingRunId}\`](https://github.com/sealday/tego-arch/actions/runs/${conflictingRunId})`,
+    `Exact run gate: \`headSha=${conflictingSha}\`, \`status=completed\`, \`conclusion=success\`.`,
+    '',
+  ].join('\n');
+  assert.throws(
+    () => assertLiteralEvidence(conflictingReview),
+    {name: 'AssertionError'},
+    'a second conflicting SHA/run/run-gate evidence group must be rejected',
+  );
 });
 
 test('closes only PR-09 through PR-11 and leaves PR-12 next', () => {
-  const {stageASha, pagesRunId} = parseLiteralEvidence();
+  const {stageASha, pagesRunId} = parseLiteralEvidence(review);
   const pagesRunUrl = `https://github.com/sealday/tego-arch/actions/runs/${pagesRunId}`;
   for (const id of routes) {
     const row = backlog
