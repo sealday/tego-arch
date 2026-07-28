@@ -89,10 +89,16 @@ const decisionContracts = new Map([
     [
       ['idempotency protects effect not bytes', '要保护的性质', /幂等保护的是受约束效果，而不是逐字节相同响应/u],
       ['retry keeps one operation identity', '机制', /同一逻辑操作的传输重试必须复用同一幂等键/u],
-      ['replay states are explicit', '机制', /in-progress、completed、conflict、expired 与 unknown/u],
+      ['replay states are explicit', '机制', /in-progress、completed、rejected（包括 conflict）、expired 与 unknown/u],
       ['unknown is not failed', '机制', /未知结果不是可盲重试的失败/u],
       ['dedupe is not invariant coordination', '冲突与适用上下文', /去重不能替代共享不变量所需的所有权、条件写或串行化/u],
       ['minimal coordination is not zero', '误用与反原则', /最小协调不等于零协调/u],
+      ['HTTP method is not proof', '误用与反原则', /HTTP 方法[^。；\n]*不能证明[^。；\n]*幂等/u],
+      ['fresh retry key is rejected', '误用与反原则', /每次(?:传输|网络)重试生成新(?:的)?幂等键[^。；\n]*(?:破坏|错误)/u],
+      ['state distinctions are retained', '机制', /in-progress、completed、rejected（包括 conflict）、expired 与 unknown/u],
+      ['exactly-once is not enough', '误用与反原则', /exactly-once[^。；\n]*不能[^。；\n]*(?:幂等消费者|效果边界)/u],
+      ['irreversible retries are bounded', '误用与反原则', /不可逆效果[^。；\n]*(?:无限|无界|不设上限)重试[^。；\n]*(?:补偿|对账|人工终态)/u],
+      ['process-local cache is insufficient', '适用尺度', /进程内缓存[^。；\n]*不足以[^。；\n]*(?:跨实例|持久)/u],
     ],
   ],
   [
@@ -104,9 +110,65 @@ const decisionContracts = new Map([
       ['four outcomes', '机制', /保留现有模型并应用 CQS[\s\S]*优化单模型读取[\s\S]*基础设施读写分流[\s\S]*采用 CQRS/u],
       ['CQRS costs are explicit', '冲突与适用上下文', /投影延迟、read-your-write、回放重建、对账与模式演化/u],
       ['simple CRUD non-use', '误用与反原则', /简单 CRUD 边界没有模型分歧证据时不采用 CQRS/u],
+      ['return value does not define query', '误用与反原则', /返回值[^。；\n]*不能[^。；\n]*查询/u],
+      ['commands may return outcomes', '要保护的性质', /命令可以返回(?:标识符|ID)、(?:回执|receipt)或(?:结果|outcome)/u],
+      ['auxiliary effects use observable semantics', '要保护的性质', /(?:内部记账|bookkeeping)、(?:指标|metrics)、(?:缓存|caching|缓存填充)(?:与|、)(?:延迟加载|lazy loading)[^。；\n]*外部可观察[^。；\n]*领域语义/u],
     ],
   ],
 ]);
+
+const pr09AuthorizationRows = [
+  ['explicit allow', /明确授权[^|\n]*\|\s*只发放本次操作所需能力/u],
+  ['explicit deny', /明确拒绝\s*\|\s*拒绝/u],
+  ['no-match deny', /没有匹配策略\s*\|\s*拒绝/u],
+  [
+    'evaluation or stale-identity conservative deny',
+    /策略求值失败或身份陈旧\s*\|\s*保守拒绝并标记控制故障/u,
+  ],
+  [
+    'emergency access lifecycle',
+    /紧急访问获批[^|\n]*\|\s*发放短时、窄范围能力[^|\n]*\|[^|\n]*(?:owner|所有者)[^|\n]*(?:expiry|过期)[^|\n]*\|[^|\n]*(?:审计)[^|\n]*(?:撤销)/u,
+  ],
+  [
+    'independent remaining control',
+    /一层控制失效\s*\|\s*由独立层限制剩余路径[^|\n]*\|[^|\n]*(?:trust boundary|信任边界)[^|\n]*(?:independent signal|独立信号)[^|\n]*\|[^|\n]*(?:残余风险|剩余风险)/u,
+  ],
+];
+
+const pr10ReplayRows = [
+  [
+    'success with lost response',
+    /首次成功但响应丢失[^|\n]*\|[^|\n]*(?:逻辑操作|幂等键)[^|\n]*\|[^|\n]*completed[^|\n]*result_ref[^|\n]*\|[^|\n]*(?:唯一约束|条件写|权威记录)[^|\n]*\|[^|\n]*(?:已记录|语义等价)[^|\n]*\|[^|\n]*返回(?:已记录|记录的)结果/u,
+  ],
+  [
+    'failure before protected effect',
+    /首次(?:尝试)?在受保护(?:副作用|效果)前失败[^|\n]*\|[^|\n]*(?:逻辑操作|幂等键)[^|\n]*\|[^|\n]*(?:failed-before-effect|未产生效果)[^|\n]*\|[^|\n]*(?:条件写|状态机|权威记录)[^|\n]*\|[^|\n]*(?:可重试|失败)[^|\n]*\|[^|\n]*有界重试/u,
+  ],
+  [
+    'effect with uncertain completion record',
+    /副作用可能成功但完成记录(?:缺失|不确定)[^|\n]*\|[^|\n]*(?:逻辑操作|目标侧键)[^|\n]*\|[^|\n]*unknown[^|\n]*\|[^|\n]*(?:receipt|权威结果|目标侧)[^|\n]*\|[^|\n]*(?:未知|待查)[^|\n]*\|[^|\n]*(?:补偿|人工终态|人工处置)/u,
+  ],
+  [
+    'duplicate while first attempt runs',
+    /同键(?:重复|并发).*(?:首次|第一).*(?:运行|执行)[^|\n]*\|[^|\n]*同一(?:逻辑操作|幂等键)[^|\n]*\|[^|\n]*in-progress[^|\n]*\|[^|\n]*(?:租约|条件写|单一执行者)[^|\n]*\|[^|\n]*(?:处理中|in-progress)[^|\n]*\|[^|\n]*(?:返回处理中|安全恢复|返回已记录结果)/u,
+  ],
+  [
+    'duplicate after retention expires',
+    /去重记录(?:已)?过期[^|\n]*\|[^|\n]*(?:旧幂等键|原幂等键|原逻辑操作)[^|\n]*\|[^|\n]*expired[^|\n]*\|[^|\n]*(?:权威记录|业务有效期|人工核对)[^|\n]*\|[^|\n]*(?:过期|不能判定)[^|\n]*\|[^|\n]*(?:人工核对|新业务操作)/u,
+  ],
+  [
+    'same key with different payload',
+    /同键不同(?:规范化意图|payload|载荷)[^|\n]*\|[^|\n]*同一幂等键[^|\n]*\|[^|\n]*conflict[^|\n]*\|[^|\n]*(?:payload hash|规范化意图 hash|权威记录)[^|\n]*\|[^|\n]*(?:冲突|拒绝)[^|\n]*\|[^|\n]*拒绝冲突/u,
+  ],
+  [
+    'distinct commands conflict on invariant',
+    /不同命令竞争同一不变量[^|\n]*\|[^|\n]*独立(?:幂等)?键[^|\n]*\|[^|\n]*(?:各自状态|独立状态)[^|\n]*\|[^|\n]*(?:所有权|条件写|串行化)[^|\n]*\|[^|\n]*(?:冲突|条件失败|拒绝)[^|\n]*\|[^|\n]*拒绝冲突/u,
+  ],
+  [
+    'irreversible external effect cannot commit atomically',
+    /外部不可逆效果无法原子耦合[^|\n]*\|[^|\n]*(?:目标侧键|逻辑操作)[^|\n]*\|[^|\n]*(?:pending|unknown)[^|\n]*\|[^|\n]*(?:目标侧|receipt|outbox)[^|\n]*\|[^|\n]*(?:待定|未知)[^|\n]*\|[^|\n]*(?:补偿|人工终态|人工处置)/u,
+  ],
+];
 
 const [documents, manifest, ledger] = await Promise.all([
   readContentDocuments(contentRoot),
@@ -206,4 +268,32 @@ test('keeps authorization replay and responsibility decisions distinct', () => {
       assert.match(section(body, heading), pattern, `${id}: ${label}`);
     }
   }
+});
+
+test('keeps every PR-09 authorization outcome independently explicit', () => {
+  const mechanism = section(requiredDocument('PR-09').body, '机制');
+  assert.match(
+    mechanism,
+    /\|\s*决策状态\s*\|\s*当前请求结果\s*\|\s*必需证据\s*\|\s*后续动作\s*\|/u,
+  );
+  for (const [label, pattern] of pr09AuthorizationRows) {
+    assert.match(mechanism, pattern, `PR-09 authorization matrix: ${label}`);
+  }
+});
+
+test('defines the complete PR-10 replay contract row by row', () => {
+  const mechanism = section(requiredDocument('PR-10').body, '机制');
+  assert.match(
+    mechanism,
+    /\|\s*重放情形\s*\|\s*(?:操作身份|所需身份)\s*\|\s*(?:存储状态|权威状态)\s*\|\s*协调点\s*\|\s*可观察响应(?:类别)?\s*\|\s*终态路径\s*\|/u,
+    'PR-10 replay matrix contract dimensions',
+  );
+  for (const [label, pattern] of pr10ReplayRows) {
+    assert.match(mechanism, pattern, `PR-10 replay matrix: ${label}`);
+  }
+  assert.match(
+    section(requiredDocument('PR-10').body, '要保护的性质'),
+    /业务有效(?:期|窗口)[^。；\n]*不同于[^。；\n]*去重记录(?:的)?保留(?:期|窗口)/u,
+    'PR-10 business validity and dedup retention are distinct',
+  );
 });
