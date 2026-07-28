@@ -16841,7 +16841,7 @@
       "copyright_policy": "facts-and-short-quotation",
       "usage_boundary": "Documents read-only replicas, asynchronous propagation, stale-read risk, and routing reads away from the primary; it does not create separate command/query domain models or guarantee read-your-write.",
       "expected_final_transport_locator": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html",
-      "expected_final_approval_note": "Reviewed the direct AWS documentation HTTPS transport, Amazon Web Services authorship, current Amazon RDS User Guide page, and documentation rights boundary on 2026-07-28."
+      "expected_final_approval_note": "Reviewed the direct AWS documentation HTTPS transport, Amazon Web Services authorship, current Amazon RDS User Guide page, and documentation rights boundary on 2026-07-28; no reusable license was established on the checked Amazon RDS User Guide page."
     }
   ],
   "documents": {
