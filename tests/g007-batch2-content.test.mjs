@@ -35,7 +35,7 @@ const h2 = [
 ];
 const relationships = new Map([
   ['PR-06', ['PR-01', 'PR-02', 'PR-05', 'PR-08']],
-  ['PR-07', ['PR-02', 'PR-04', 'QA-01']],
+  ['PR-07', ['PR-02', 'PR-04', 'PR-09', 'PR-10', 'QA-01']],
   ['PR-08', ['PR-01', 'PR-04', 'PR-05', 'PR-06', 'MTH-03', 'MTH-04']],
 ]);
 const solePrimary = new Map([
@@ -50,6 +50,8 @@ const routeByTopic = new Map([
   ['PR-05', '/principles/pr-05'],
   ['PR-06', '/principles/pr-06'],
   ['PR-08', '/principles/pr-08'],
+  ['PR-09', '/principles/pr-09'],
+  ['PR-10', '/principles/pr-10'],
   ['QA-01', '/quality-attributes/qa-01'],
   ['MTH-03', '/methods/mth-03'],
   ['MTH-04', '/methods/mth-04'],
@@ -242,7 +244,7 @@ test('governs sources and visible Batch 2 relationships', () => {
     }
     assert.ok([...links].some((link) => link.startsWith('/cases/')), `${id} links a case`);
     assert.equal(
-      [...links].some((link) => /^\/principles\/pr-(?:0[9]|1[0-7])$/u.test(link)),
+      [...links].some((link) => /^\/principles\/pr-1[2-7]$/u.test(link)),
       false,
       `${id} must not link unpublished principles`,
     );
