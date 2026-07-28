@@ -15,7 +15,7 @@ const pluginUrl = new URL(
 const sourceLedgerCardsModule =
   'src/components/SourceLedger/SourceLedgerCards.tsx';
 const tierCounts = new Map([
-  ['primary', 393],
+  ['primary', 394],
   ['first-party', 26],
   ['secondary', 4],
   ['discovery', 7],
@@ -242,8 +242,8 @@ test('plans complete canonical source pages in deterministic 20-card slices', as
   const canonicalIds = model
     .buildSourceLedgerSections(ledger)
     .flatMap(({sources}) => sources.map(({id}) => id));
-  assert.equal(pagedIds.length, 430);
-  assert.equal(new Set(pagedIds).size, 430);
+  assert.equal(pagedIds.length, 431);
+  assert.equal(new Set(pagedIds).size, 431);
   assert.deepEqual(pagedIds, canonicalIds);
 });
 

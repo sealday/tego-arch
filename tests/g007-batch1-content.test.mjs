@@ -86,9 +86,9 @@ test('publishes PR-01 through PR-05 with the principle contract', () => {
       /```mermaid[\s\S]*?```|^\|.+\|\n\|(?:\s*:?-{3,}:?\s*\|)+/mu,
       `${id} original representation`,
     );
-    assert.match(document.body, /来源事实|事实/u, `${id} fact label`);
-    assert.match(document.body, /推断|推论/u, `${id} inference label`);
-    assert.match(document.body, /本站分析|本站整理|本站绘制/u, `${id} site-analysis label`);
+    assert.match(document.body, /\*\*来源事实：\*\*/u, `${id} fact label`);
+    assert.match(document.body, /\*\*推断：\*\*/u, `${id} inference label`);
+    assert.match(document.body, /\*\*本站分析：\*\*/u, `${id} site-analysis label`);
     assert.match(document.body, /不应|不适用|反例|误用/u, `${id} negative boundary`);
     assert.equal(topics.get(id)?.published, true, `${id} manifest publication`);
   }
@@ -124,6 +124,11 @@ test('keeps the five concepts distinct at their decision boundaries', () => {
   assert.match(requiredDocument('PR-01').body, /设计决策|访问修饰符|private/iu);
   assert.match(requiredDocument('PR-02').body, /变化耦合|运行时耦合|数据耦合|团队耦合/u);
   assert.match(requiredDocument('PR-03').body, /变化原因|责任主体|关注点分离|一件事/u);
+  assert.ok(
+    ledger.documents['content/principles/pr-03-single-responsibility-separation-of-concerns.mdx']
+      .citations.some(({source_id}) => source_id === 'src-dijkstra-ewd447-1974'),
+    'PR-03 governs Dijkstra EWD447 as an original separation-of-concerns source',
+  );
   assert.match(requiredDocument('PR-04').body, /依赖倒置|控制反转|依赖注入|容器/u);
   assert.match(requiredDocument('PR-05').body, /多态|共享实现|状态耦合|替换成本/u);
 });
