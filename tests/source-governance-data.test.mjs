@@ -30,6 +30,7 @@ async function governedData() {
   ]);
   return {
     inventory: validateSourceLicenseInventory(inventoryMarkdown, []),
+    inventoryMarkdown,
     ledger: JSON.parse(ledgerText),
     microFrontendsBody,
   };
@@ -107,7 +108,7 @@ test('records every official-license family found by the systematic ARR audit', 
   const corrected = inventory.entries
     .map((entry) => [entry, expectedLicense(entry.source_family)])
     .filter(([, expected]) => expected !== null);
-  assert.equal(corrected.length, 117);
+  assert.equal(corrected.length, 119);
   for (const [entry, expected] of corrected) {
     assert.equal(entry.exact_license, expected, entry.source_family);
   }
@@ -128,18 +129,111 @@ test('records the known Micro Frontends author and publication date consistently
   );
 });
 
-test('records all Microsoft Learn families as CC-BY-4.0 from their official source repositories', async () => {
+test('records all Microsoft Learn families as CC-BY-4.0 from official license evidence', async () => {
   const {inventory, ledger} = await governedData();
   const rows = inventory.entries.filter((entry) =>
     entry.source_family.startsWith('https://learn.microsoft.com/'));
   const sources = ledger.sources.filter((source) =>
     source.license_family_id.startsWith('https://learn.microsoft.com/'));
 
-  assert.equal(rows.length, 2);
-  assert.equal(sources.length, 4);
+  assert.equal(rows.length, 4);
+  assert.equal(sources.length, 6);
   for (const item of [...rows, ...sources]) {
     assert.equal(item.exact_license ?? item.license, 'CC-BY-4.0');
-    assert.match(item.license_evidence_url, /^https:\/\/github\.com\/(?:microsoftdocs\/architecture-center|dotnet\/docs)\/blob\/main\/LICENSE$/i);
+    assert.match(
+      item.license_evidence_url,
+      /^https:\/\/github\.com\/(?:microsoftdocs\/architecture-center|dotnet\/docs)\/blob\/main\/LICENSE$/i,
+    );
+  }
+});
+
+test('validates the seven Batch 4 license families against mutation-sensitive evidence rules', async () => {
+  const {inventory, inventoryMarkdown, ledger} = await governedData();
+  const batchSourceIds = [
+    'src-objectmentor-ocp-1996',
+    'src-objectmentor-isp-1996',
+    'src-nilsson-ddd-patterns-2006',
+    'src-ms-ddd-oriented-microservice-persistence-ignorance',
+    'src-ms-infrastructure-persistence-layer-design',
+    'src-larman-applying-uml-patterns-3e-2004',
+    'src-larman-applying-uml-patterns-author-page',
+  ];
+  const batchSources = batchSourceIds.map((id) => {
+    const source = ledger.sources.find((entry) => entry.id === id);
+    assert.ok(source, `${id} must exist in the real source ledger`);
+    return source;
+  });
+  const batchFamilies = new Set(
+    batchSources.map((source) => source.license_family_id),
+  );
+  const batchEntries = inventory.entries.filter((entry) =>
+    batchFamilies.has(entry.source_family));
+  assert.equal(batchEntries.length, 7);
+
+  const inventoryLines = inventoryMarkdown.split(/\r?\n/u);
+  const headerIndex = inventoryLines.findIndex((line) =>
+    line.startsWith('| source_family |'));
+  assert.notEqual(headerIndex, -1);
+  const batchRows = inventoryLines.filter((line) =>
+    [...batchFamilies].some((family) => line.startsWith(`| ${family} |`)));
+  assert.equal(batchRows.length, 7);
+  const batchInventory = [
+    inventoryLines[headerIndex],
+    inventoryLines[headerIndex + 1],
+    ...batchRows,
+  ].join('\n');
+  const candidateUrls = batchEntries.flatMap((entry) => entry.current_urls);
+  const validated = validateSourceLicenseInventory(
+    batchInventory,
+    candidateUrls,
+  );
+  assert.deepEqual(validated.errors, []);
+
+  const arrSources = batchSources.filter(
+    (source) => source.license === 'LicenseRef-All-Rights-Reserved',
+  );
+  assert.equal(arrSources.length, 5);
+  const arrNotes = arrSources.map((source) => {
+    const entry = batchEntries.find(
+      (candidate) => candidate.source_family === source.license_family_id,
+    );
+    assert.ok(entry, `${source.id} must have an inventory row`);
+    assert.match(
+      entry.license_evidence_note,
+      new RegExp(source.author_or_org.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&'), 'u'),
+    );
+    assert.match(
+      entry.license_evidence_note,
+      new RegExp(entry.license_evidence_url.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&'), 'u'),
+    );
+    return entry.license_evidence_note;
+  });
+  assert.equal(new Set(arrNotes).size, 5);
+
+  const microsoftSources = batchSources.filter((source) =>
+    source.id.startsWith('src-ms-'));
+  assert.equal(microsoftSources.length, 2);
+  for (const source of microsoftSources) {
+    const entry = batchEntries.find(
+      (candidate) => candidate.source_family === source.license_family_id,
+    );
+    assert.ok(entry, `${source.id} must have an inventory row`);
+    assert.equal(
+      source.license_evidence_url,
+      'https://github.com/dotnet/docs/blob/main/LICENSE',
+    );
+    assert.equal(
+      entry.license_evidence_url,
+      'https://github.com/dotnet/docs/blob/main/LICENSE',
+    );
+    assert.notEqual(
+      source.license_evidence_url,
+      'https://learn.microsoft.com/en-us/legal/termsofuse',
+    );
+    assert.notEqual(
+      entry.license_evidence_url,
+      'https://learn.microsoft.com/en-us/legal/termsofuse',
+    );
   }
 });
 

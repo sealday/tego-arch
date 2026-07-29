@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-07-28T10:59:10.028Z",
+  "generated_at": "2026-07-29T03:53:11.595Z",
   "results": [
     {
       "transport_locator": "https://a2a-protocol.org/latest/",
@@ -27231,6 +27231,68 @@
       "review_status": "healthy"
     },
     {
+      "transport_locator": "https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/ddd-oriented-microservice",
+      "source_ids": [
+        "src-ms-ddd-oriented-microservice-persistence-ignorance"
+      ],
+      "last_attempt": {
+        "at": "2026-07-29T03:53:11.595Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/ddd-oriented-microservice",
+        "http_status": 206,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-07-29T03:53:11.595Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/ddd-oriented-microservice",
+        "http_status": 206,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-07-29T03:53:11.595Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/ddd-oriented-microservice",
+          "http_status": 206,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/infrastructure-persistence-layer-design",
+      "source_ids": [
+        "src-ms-infrastructure-persistence-layer-design"
+      ],
+      "last_attempt": {
+        "at": "2026-07-29T03:53:11.595Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/infrastructure-persistence-layer-design",
+        "http_status": 206,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-07-29T03:53:11.595Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/infrastructure-persistence-layer-design",
+        "http_status": 206,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-07-29T03:53:11.595Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/infrastructure-persistence-layer-design",
+          "http_status": 206,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
       "transport_locator": "https://learn.microsoft.com/en-us/dotnet/architecture/modern-web-apps-azure/common-web-application-architectures",
       "source_ids": [
         "src-learn-7aa0023dd3ec"
@@ -27938,6 +28000,68 @@
           "outcome": "healthy",
           "final_transport_locator": "https://nvlpubs.nist.gov/nistpubs/Legacy/IR/nistir5517.pdf?download=1",
           "http_status": 206,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://objectmentor.com/resources/articles/isp.pdf",
+      "source_ids": [
+        "src-objectmentor-isp-1996"
+      ],
+      "last_attempt": {
+        "at": "2026-07-29T03:53:11.595Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://objectmentor.com/resources/articles/isp.pdf",
+        "http_status": 200,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-07-29T03:53:11.595Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://objectmentor.com/resources/articles/isp.pdf",
+        "http_status": 200,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-07-29T03:53:11.595Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://objectmentor.com/resources/articles/isp.pdf",
+          "http_status": 200,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://objectmentor.com/resources/articles/ocp.pdf",
+      "source_ids": [
+        "src-objectmentor-ocp-1996"
+      ],
+      "last_attempt": {
+        "at": "2026-07-29T03:53:11.595Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://objectmentor.com/resources/articles/ocp.pdf",
+        "http_status": 200,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-07-29T03:53:11.595Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://objectmentor.com/resources/articles/ocp.pdf",
+        "http_status": 200,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-07-29T03:53:11.595Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://objectmentor.com/resources/articles/ocp.pdf",
+          "http_status": 200,
           "login_wall_detected": false
         }
       ],
@@ -29901,6 +30025,37 @@
       "review_status": "healthy"
     },
     {
+      "transport_locator": "https://www.craiglarman.com/wiki/index.php?title=Book_Applying_UML_and_Patterns",
+      "source_ids": [
+        "src-larman-applying-uml-patterns-author-page"
+      ],
+      "last_attempt": {
+        "at": "2026-07-29T03:53:11.595Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www.craiglarman.com/wiki/index.php?title=Book_Applying_UML_and_Patterns",
+        "http_status": 206,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-07-29T03:53:11.595Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www.craiglarman.com/wiki/index.php?title=Book_Applying_UML_and_Patterns",
+        "http_status": 206,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-07-29T03:53:11.595Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://www.craiglarman.com/wiki/index.php?title=Book_Applying_UML_and_Patterns",
+          "http_status": 206,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
       "transport_locator": "https://www.cs.utexas.edu/~EWD/transcriptions/EWD04xx/EWD447.html",
       "source_ids": [
         "src-dijkstra-ewd447-1974"
@@ -30150,6 +30305,37 @@
           "at": "2026-07-27T00:00:00.000Z",
           "outcome": "healthy",
           "final_transport_locator": "https://www.finops.org/framework/",
+          "http_status": 200,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://www.informit.com/store/applying-domain-driven-design-and-patterns-with-examples-9780321268204",
+      "source_ids": [
+        "src-nilsson-ddd-patterns-2006"
+      ],
+      "last_attempt": {
+        "at": "2026-07-29T03:53:11.595Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www.informit.com/store/applying-domain-driven-design-and-patterns-with-examples-9780321268204",
+        "http_status": 200,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-07-29T03:53:11.595Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www.informit.com/store/applying-domain-driven-design-and-patterns-with-examples-9780321268204",
+        "http_status": 200,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-07-29T03:53:11.595Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://www.informit.com/store/applying-domain-driven-design-and-patterns-with-examples-9780321268204",
           "http_status": 200,
           "login_wall_detected": false
         }
@@ -30510,6 +30696,37 @@
         }
       ],
       "review_status": "auth-required"
+    },
+    {
+      "transport_locator": "https://www.pearson.com/en-us/subject-catalog/p/Larman-Applying-UML-and-Patterns-An-Introduction-to-Object-Oriented-Analysis-and-Design-and-Iterative-Development-3rd-Edition/P200000000422/9780131489066",
+      "source_ids": [
+        "src-larman-applying-uml-patterns-3e-2004"
+      ],
+      "last_attempt": {
+        "at": "2026-07-29T03:53:11.595Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www.pearson.com/en-us/subject-catalog/p/Larman-Applying-UML-and-Patterns-An-Introduction-to-Object-Oriented-Analysis-and-Design-and-Iterative-Development-3rd-Edition/P200000000422/9780131489066",
+        "http_status": 206,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-07-29T03:53:11.595Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www.pearson.com/en-us/subject-catalog/p/Larman-Applying-UML-and-Patterns-An-Introduction-to-Object-Oriented-Analysis-and-Design-and-Iterative-Development-3rd-Edition/P200000000422/9780131489066",
+        "http_status": 206,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-07-29T03:53:11.595Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://www.pearson.com/en-us/subject-catalog/p/Larman-Applying-UML-and-Patterns-An-Introduction-to-Object-Oriented-Analysis-and-Design-and-Iterative-Development-3rd-Edition/P200000000422/9780131489066",
+          "http_status": 206,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
     },
     {
       "transport_locator": "https://www.sei.cmu.edu/library/attribute-based-architectural-styles/",
