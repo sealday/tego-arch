@@ -7,6 +7,25 @@ const linkHealthUrl = new URL(
   '../.github/workflows/link-health.yml',
   import.meta.url,
 );
+const approvedDeployActions = [
+  'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1',
+  'actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0',
+  'actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0',
+  'actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0',
+  'actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5.0.0',
+];
+const approvedLinkHealthActions = [
+  'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1',
+  'actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0',
+  'actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1',
+  'actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1',
+];
+
+function extractActionReferences(source) {
+  return [...source.matchAll(/^[ ]+uses: (?<reference>[^\n]+)$/gmu)].map(
+    (match) => match.groups.reference,
+  );
+}
 
 async function readWorkflow(url) {
   try {
@@ -40,7 +59,7 @@ function assertExactReadOnlyPermissions(source) {
 function assertContentReviewUpload(source) {
   assert.match(
     source,
-    /      - name: Upload content review report\n        if: always\(\)\n        uses: actions\/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4\n        with:\n          name: content-review-health\n          path: \|\n            \/tmp\/content-review-health\.json\n            \/tmp\/content-review-health\.md\n          if-no-files-found: error/,
+    /      - name: Upload content review report\n        if: always\(\)\n        uses: actions\/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7\.0\.1\n        with:\n          name: content-review-health\n          path: \|\n            \/tmp\/content-review-health\.json\n            \/tmp\/content-review-health\.md\n          if-no-files-found: error/,
     'workflow must include the complete content review upload block',
   );
 }
@@ -87,17 +106,38 @@ test('pins every GitHub action and uploads the live report even on failure', asy
     readWorkflow(deployUrl),
     readWorkflow(linkHealthUrl),
   ]);
-  const uses = [...`${deploy}\n${linkHealth}`.matchAll(/^[ ]+uses: ([^\s#]+)/gm)].map(
-    ([, action]) => action,
+  assert.deepEqual(extractActionReferences(deploy), approvedDeployActions);
+  assert.deepEqual(
+    extractActionReferences(linkHealth),
+    approvedLinkHealthActions,
   );
-
-  assert.ok(uses.length > 0);
-  for (const action of uses) {
-    assert.match(action, /@[0-9a-f]{40}$/);
+  assert.notDeepEqual(
+    extractActionReferences(
+      deploy.replace(
+        'actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4',
+        'actions/checkout@v7',
+      ),
+    ),
+    approvedDeployActions,
+  );
+  assert.notDeepEqual(
+    extractActionReferences(
+      linkHealth.replace(
+        'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4',
+        'actions/upload-artifact@v7',
+      ),
+    ),
+    approvedLinkHealthActions,
+  );
+  for (const reference of [
+    ...approvedDeployActions,
+    ...approvedLinkHealthActions,
+  ]) {
+    assert.match(reference, /@[0-9a-f]{40} # v[0-9]+\.[0-9]+\.[0-9]+$/u);
   }
   assert.match(
     linkHealth,
-    /- name: Upload live link report\n[ ]+if: always\(\)\n[ ]+uses: actions\/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02/,
+    /- name: Upload live link report\n[ ]+if: always\(\)\n[ ]+uses: actions\/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7\.0\.1/,
   );
   assert.match(linkHealth, /name: source-link-health-live/);
   assert.match(linkHealth, /path: \/tmp\/source-link-health-live\.json/);
@@ -109,7 +149,7 @@ test('checks out complete history before verifying immutable deployment evidence
 
   assert.match(
     deploy,
-    /      - name: Check out repository\n        uses: actions\/checkout@[0-9a-f]{40} # v4\n        with:\n          fetch-depth: 0/,
+    /      - name: Check out repository\n        uses: actions\/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7\.0\.1\n        with:\n          fetch-depth: 0/,
     'deploy verification must fetch complete Git history so recorded evidence commits remain resolvable',
   );
 });
