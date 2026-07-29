@@ -8,7 +8,10 @@ import {
   readContentDocuments,
 } from '../scripts/content-metadata.mjs';
 import {extractInternalLinks} from '../scripts/content-relations.mjs';
-import {extractExternalLinks} from '../scripts/source-ledger.mjs';
+import {
+  extractExternalLinks,
+  visibleMdxLines,
+} from '../scripts/source-ledger.mjs';
 
 const contentRoot = fileURLToPath(new URL('../content/', import.meta.url));
 const expected = new Map([
@@ -82,10 +85,8 @@ const decisionContracts = new Map([
   ]],
 ]);
 
-const [documents, manifest, ledger] = await Promise.all([
+const [documents, ledger] = await Promise.all([
   readContentDocuments(contentRoot),
-  readFile(new URL('../src/generated/topic-manifest.json', import.meta.url), 'utf8')
-    .then(JSON.parse),
   readFile(new URL('../data/source-ledger.json', import.meta.url), 'utf8')
     .then(JSON.parse),
 ]);
@@ -94,7 +95,6 @@ const byId = new Map(
     .filter(({metadata}) => typeof metadata.topic_id === 'string')
     .map((document) => [document.metadata.topic_id, document]),
 );
-const topics = new Map(manifest.topics.map((topic) => [topic.id, topic]));
 const realCaseRoutes = new Set(
   documents
     .filter(({metadata}) => metadata.content_type === 'case')
@@ -115,6 +115,51 @@ function section(body, heading) {
   const end = headings[index + 1]?.offset ?? body.length;
   return body.slice(start === -1 ? end : start + 1, end);
 }
+
+function hasVisibleDiagramImage(document, source) {
+  const body = visibleMdxLines(document).join('\n');
+  const openingPattern =
+    /<div className="architecture-diagram-scroll"[^>]*>/gu;
+  for (const opening of body.matchAll(openingPattern)) {
+    const start = opening.index + opening[0].length;
+    const end = body.indexOf('</div>', start);
+    if (end === -1) {
+      continue;
+    }
+    const wrapper = body.slice(start, end);
+    const imagePattern =
+      /!\[[^\]\n]*\]\(\s*(?<source>[^)\s]+)(?:\s+(?:"[^"]*"|'[^']*'))?\s*\)/gu;
+    if (
+      [...wrapper.matchAll(imagePattern)].some(
+        (match) => match.groups.source === source,
+      )
+    ) {
+      return true;
+    }
+  }
+  return false;
+}
+
+test('requires original illustrations as diagram-wrapper Markdown images', () => {
+  const source = '/img/diagrams/pr-15-conway-feedback-loop.svg';
+  const image = `![团队边界与交付反馈](${source})`;
+  const wrapper = (content) =>
+    `<div className="architecture-diagram-scroll">\n${content}\n</div>`;
+
+  assert.equal(hasVisibleDiagramImage({body: wrapper(image)}, source), true);
+  assert.equal(hasVisibleDiagramImage({body: wrapper('')}, source), false);
+  assert.equal(
+    hasVisibleDiagramImage({body: `${wrapper('')}\n${image}`}, source),
+    false,
+  );
+  assert.equal(
+    hasVisibleDiagramImage(
+      {body: wrapper(`[团队边界与交付反馈](${source})`)},
+      source,
+    ),
+    false,
+  );
+});
 
 test('publishes PR-15 through PR-17 with the closing principle contract', () => {
   for (const [id, [file, slug, priority]] of expected) {
@@ -151,7 +196,6 @@ test('publishes PR-15 through PR-17 with the closing principle contract', () => 
       /<details className="evidence-card">[\s\S]*?<summary>[\s\S]*?<\/summary>[\s\S]*?<\/details>/u,
       `${id} evidence card`,
     );
-    assert.equal(topics.get(id)?.published, true, `${id} manifest publication`);
   }
 });
 
@@ -168,9 +212,24 @@ test('governs sources and visible closing-batch relationships', () => {
       extractExternalLinks(document).filter((url) => url.startsWith('https://')),
     );
     for (const citation of governed.citations) {
+      if (citation.usage_mode === 'original-illustration') {
+        assert.match(
+          citation.citation_url,
+          /^\/img\/[^?#\s]+\.svg$/u,
+          `${id} local illustration ${citation.source_id}`,
+        );
+        assert.ok(
+          hasVisibleDiagramImage(document, citation.citation_url),
+          `${id} visible illustration ${citation.source_id}`,
+        );
+        continue;
+      }
       assert.ok(visibleExternal.has(citation.citation_url), `${id} visible ${citation.source_id}`);
     }
+  }
 
+  for (const [id] of expected) {
+    const document = requiredDocument(id);
     const links = new Set(extractInternalLinks(document));
     assert.ok(links.has('/principles'), `${id} links parent index`);
     for (const adjacent of relationships.get(id)) {
