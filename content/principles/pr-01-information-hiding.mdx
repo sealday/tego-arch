@@ -27,6 +27,7 @@ adjacent_topics:
   - PR-04
   - PR-06
   - PR-08
+  - PR-12
   - STY-00
 related_cases:
   - /cases/micro-frontends-single-spa
@@ -79,7 +80,7 @@ flowchart LR
 
 ## 相邻原则
 
-[高内聚与低耦合](/principles/pr-02)检查决策泄漏会沿哪些变化、运行、数据和团队关系传播；[单一职责与关注点分离](/principles/pr-03)判断决策应由哪个责任主体拥有；[依赖倒置、控制反转与依赖注入](/principles/pr-04)进一步约束策略和细节之间的源代码依赖方向。[KISS、YAGNI 与 DRY 的张力](/principles/pr-06)限制没有当前证据的推测性抽象；[演进式设计](/principles/pr-08)则在易变决策周围保留迁移接缝。[架构风格比较框架](/styles/sty-00)把边界、数据所有权和部署单元放到同一尺度。信息隐藏回答“变化由谁承担”，其他原则再回答传播、责任、依赖与演进如何约束。
+[高内聚与低耦合](/principles/pr-02)检查决策泄漏会沿哪些变化、运行、数据和团队关系传播；[单一职责与关注点分离](/principles/pr-03)判断决策应由哪个责任主体拥有；[依赖倒置、控制反转与依赖注入](/principles/pr-04)进一步约束策略和细节之间的源代码依赖方向。[KISS、YAGNI 与 DRY 的张力](/principles/pr-06)限制没有当前证据的推测性抽象；[演进式设计](/principles/pr-08)则在易变决策周围保留迁移接缝；[Open/Closed 与 Interface Segregation](/principles/pr-12)把已隐藏的可能变化进一步变成由明确所有者负责的扩展决策。[架构风格比较框架](/styles/sty-00)把边界、数据所有权和部署单元放到同一尺度。信息隐藏回答“变化由谁承担”，其他原则再回答传播、责任、依赖与演进如何约束。
 
 ## 说明性场景
 

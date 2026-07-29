@@ -29,6 +29,7 @@ adjacent_topics:
   - PR-04
   - PR-06
   - PR-08
+  - PR-12
 related_cases:
   - /cases/kubernetes-reconciliation-loop
 related_questions: []
@@ -85,7 +86,7 @@ related_questions: []
 
 ## 相邻原则
 
-[高内聚与低耦合](/principles/pr-02)用于比较两种复用机制的变化与状态耦合；[单一职责与关注点分离](/principles/pr-03)检查被组合的能力是否真的独立变化；[依赖倒置、控制反转与依赖注入](/principles/pr-04)约束组合时策略、抽象和具体实现的依赖方向。[KISS、YAGNI 与 DRY 的张力](/principles/pr-06)要求等变化边界稳定后再提取抽象；[演进式设计](/principles/pr-08)则在迁移期间使用可替换的组合接缝。
+[高内聚与低耦合](/principles/pr-02)用于比较两种复用机制的变化与状态耦合；[单一职责与关注点分离](/principles/pr-03)检查被组合的能力是否真的独立变化；[依赖倒置、控制反转与依赖注入](/principles/pr-04)约束组合时策略、抽象和具体实现的依赖方向。[KISS、YAGNI 与 DRY 的张力](/principles/pr-06)要求等变化边界稳定后再提取抽象；[演进式设计](/principles/pr-08)则在迁移期间使用可替换的组合接缝；[Open/Closed 与 Interface Segregation](/principles/pr-12)说明组合可以承载稳定扩展点，但组合机制本身不能证明扩展点确有必要。
 
 ## 说明性场景
 
