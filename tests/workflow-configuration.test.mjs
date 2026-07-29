@@ -22,7 +22,7 @@ const approvedLinkHealthActions = [
 ];
 
 function extractActionReferences(source) {
-  return [...source.matchAll(/^[ ]+uses: (?<reference>[^\n]+)$/gmu)].map(
+  return [...source.matchAll(/^[ ]+(?:- )?uses: (?<reference>[^\n]+)$/gmu)].map(
     (match) => match.groups.reference,
   );
 }
@@ -114,7 +114,7 @@ test('pins every GitHub action and uploads the live report even on failure', asy
   assert.notDeepEqual(
     extractActionReferences(
       deploy.replace(
-        'actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4',
+        'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1',
         'actions/checkout@v7',
       ),
     ),
@@ -123,7 +123,7 @@ test('pins every GitHub action and uploads the live report even on failure', asy
   assert.notDeepEqual(
     extractActionReferences(
       linkHealth.replace(
-        'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4',
+        'actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1',
         'actions/upload-artifact@v7',
       ),
     ),
