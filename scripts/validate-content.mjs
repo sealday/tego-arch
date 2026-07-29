@@ -18,7 +18,9 @@ import {
   allowedSourceKinds,
   allowedValues,
   caseRequiredFields,
+  closingPrincipleTopicIds,
   knowledgeContentTypes,
+  knowledgeHeadingContract,
   knowledgeRequiredFields,
   knowledgeTypeContracts,
   qualityAttributeScenarioHeadings,
@@ -422,9 +424,19 @@ export async function validateContent(
       validateOrderedH2Contract(
         file,
         headings,
-        knowledgeTypeContracts[type],
+        knowledgeHeadingContract(type, metadata.topic_id),
         errors,
       );
+
+      if (type === 'principle' && closingPrincipleTopicIds.has(metadata.topic_id)) {
+        validateSectionH3Contract(
+          file,
+          headings,
+          '## 可迁移经验',
+          requiredMigrationHeadings,
+          errors,
+        );
+      }
 
       if (type === 'quality-attribute') {
         validateSectionH3Contract(

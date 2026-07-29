@@ -995,6 +995,19 @@ const patternHeadings = [
   '## 来源',
 ];
 
+const closingPrincipleHeadings = [
+  '## 学习问题',
+  '## 一页摘要',
+  '## 事实边界',
+  '## 架构图',
+  '## 控制权与任务流',
+  '## 关键源码导读',
+  '## 架构决策与权衡',
+  '## 生产化分析',
+  '## 可迁移经验',
+  '## 来源',
+];
+
 test('accepts the Pattern knowledge contract and excludes the Pattern index', async () => {
   await withTempRoot(async (root) => {
     await writeMdx(
@@ -1071,6 +1084,80 @@ test('accepts all six knowledge content contracts', async () => {
 
     assert.deepEqual(result.errors, []);
   });
+});
+
+test('accepts the closing-principle contract only for PR-15 through PR-17', async () => {
+  for (const topicId of ['PR-15', 'PR-16', 'PR-17']) {
+    await withTempRoot(async (root) => {
+      await writeMdx(
+        root,
+        `principles/${topicId.toLowerCase()}.mdx`,
+        validKnowledgeFrontMatter('principle', {
+          topic_id: topicId,
+          slug: `/principles/${topicId.toLowerCase()}`,
+        }),
+        [...closingPrincipleHeadings.slice(0, -1), ...requiredMigrationHeadings, ...closingPrincipleHeadings.slice(-1)].join('\n\n'),
+      );
+
+      const result = await validateContent(root);
+
+      assert.deepEqual(result.errors, [], topicId);
+    });
+  }
+});
+
+test('rejects closing headings for a standard principle and malformed closing contracts', async () => {
+  const validClosingBody = [
+    ...closingPrincipleHeadings.slice(0, -1),
+    ...requiredMigrationHeadings,
+    ...closingPrincipleHeadings.slice(-1),
+  ];
+  const cases = [
+    {
+      topicId: 'PR-14',
+      body: validClosingBody,
+      expected: /expected exactly 9 ## 学习问题-contract H2 headings/u,
+    },
+    {
+      topicId: 'PR-15',
+      body: validClosingBody.filter((heading) => heading !== '## 架构图'),
+      expected: /expected exactly 10 ## 学习问题-contract H2 headings/u,
+    },
+    {
+      topicId: 'PR-16',
+      body: validClosingBody.filter((heading) => heading !== '### 不应照搬的部分'),
+      expected: /expected exactly 3 H3 headings under "## 可迁移经验"/u,
+    },
+    {
+      topicId: 'PR-17',
+      body: [
+        ...validClosingBody.slice(0, 9),
+        '### 不应照搬的部分',
+        '### 只能有限类比的部分',
+        '### 可直接复用的机制',
+        ...validClosingBody.slice(-1),
+      ],
+      expected: /invalid H3 sequence under "## 可迁移经验" at position 1/u,
+    },
+  ];
+
+  for (const {topicId, body, expected} of cases) {
+    await withTempRoot(async (root) => {
+      await writeMdx(
+        root,
+        `principles/${topicId.toLowerCase()}.mdx`,
+        validKnowledgeFrontMatter('principle', {
+          topic_id: topicId,
+          slug: `/principles/${topicId.toLowerCase()}`,
+        }),
+        body.join('\n\n'),
+      );
+
+      const result = await validateContent(root);
+
+      assert.match(result.errors.join('\n'), expected, topicId);
+    });
+  }
 });
 
 test('accepts either related cases or related questions and requires adjacency', async () => {

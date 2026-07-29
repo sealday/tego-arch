@@ -35,8 +35,9 @@
 - New original illustration identities are exactly:
   - `src-atlas-pr15-conway-feedback-loop`
   - `src-atlas-pr17-classification-boundaries`
-- Stage A projection is exactly 82 content documents, 458 governed sources, 36 completed topics, durable stories `6 / 20`, current G007.
-- Stage B projection is exactly 82 content documents, 458 governed sources, 39 completed topics, durable stories `7 / 20`, current G008, most recently completed G007.
+- Stage A projection is exactly 82 content documents, 457 governed sources, 36 completed topics, durable stories `6 / 20`, current G007.
+- Stage B projection is exactly 82 content documents, 457 governed sources, 39 completed topics, durable stories `7 / 20`, current G008, most recently completed G007.
+- Batch4 450 + 8 planned identities − 1 NIST canonical identity replacement = 457 unique sources; the user approved this on 2026-07-29 and no ninth source is added.
 - Historical review files, deployment tests, backlog evidence, and release counts are immutable.
 - Every task receives an independent requirements/content/test review before commit. Resolve findings and rerun its targeted gate.
 - Use Bun for ordinary repository scripts. Use `node --test` for nested suites if Bun compatibility is insufficient.
@@ -75,10 +76,10 @@
 - `tests/g007-batch2-content.test.mjs` — accept exact new PR-15/16/17 reciprocal fixtures.
 - `tests/g007-batch3-content.test.mjs` — accept exact new PR-16 reciprocal fixtures.
 - `tests/g007-batch4-content.test.mjs` — replace unpublished PR-15..17 assertions with published fixtures and exact reciprocal updates.
-- `tests/content-review-health.test.mjs` — Stage A 79→82 documents and 450→458 sources.
-- `tests/source-ledger-rendering.test.mjs` — 450→458 rendered cards and updated source-kind totals.
+- `tests/content-review-health.test.mjs` — Stage A 79→82 documents and 450→457 sources.
+- `tests/source-ledger-rendering.test.mjs` — 450→457 rendered cards and updated source-kind totals.
 - `tests/source-ledger-pagination.test.mjs` — exact tier/source/page totals after eight additions.
-- `tests/project-status.test.mjs` — Stage A 36/82/458/G007; Stage B 39/82/458/G008.
+- `tests/project-status.test.mjs` — Stage A 36/82/457/G007; Stage B 39/82/457/G008.
 - `tests/knowledge-fixtures.test.mjs` — add PR-15 through PR-17 only after Stage B.
 - `docs/content-backlog.md` — Stage B only: close PR-15 through PR-17, set `7 / 20`, recently completed G007, current G008.
 
@@ -832,7 +833,7 @@ Update real-repository expectations to:
   durable_stories: {completed: 6, total: 20, current: 'G007'},
   completed_topics: 36,
   content_documents: 82,
-  governed_sources: 458,
+  governed_sources: 457,
 }
 ```
 
@@ -1010,7 +1011,7 @@ PR-17 4/4 = parent 1 + adjacent 2 + case 1
 
 - [ ] **Step 4: Preserve Stage A evidence without closing backlog**
 
-Do not check PR-15 through PR-17 yet. Retain the exact SHA, run ID, production asset URLs, viewport measurements, source labels, click counts, test total, 82/458/36 counts, and independent review identity for Task 9.
+Do not check PR-15 through PR-17 yet. Retain the exact SHA, run ID, production asset URLs, viewport measurements, source labels, click counts, test total, 82/457/36 counts, and independent review identity for Task 9.
 
 ---
 
@@ -1044,7 +1045,7 @@ It must require:
 
 - the parsed run ID is identical in the label and URL, and the parsed SHA is identical in the SHA and run-gate lines;
 - the commit resolves with `git cat-file -e "${stage_a_sha}^{commit}"`;
-- literal `82 content documents`, `458 governed sources`, and `36 completed topics` Stage A evidence;
+- literal `82 content documents`, `457 governed sources`, and `36 completed topics` Stage A evidence;
 - full repository test total copied from the accepted Stage A run;
 - desktop/mobile, 0 warnings/errors, no document overflow, local contained overflow, 800 px diagram width, keyboard scroll/focus, and 15/15 clicks;
 - visible labels for all eight governed identities;
@@ -1090,7 +1091,7 @@ Require:
   durable_stories: {completed: 7, total: 20, current: 'G008'},
   completed_topics: 39,
   content_documents: 82,
-  governed_sources: 458,
+  governed_sources: 457,
 }
 ```
 
@@ -1163,4 +1164,4 @@ git rev-parse codex/g007-principles-batch5
 npm run verify
 ```
 
-Expected: clean worktrees, identical SHAs, and full verification PASS. Report the exact Stage A SHA/run, Stage B SHA/run, final test total, 82 documents, 458 sources, 39 completed topics, G007 complete, and G008 current.
+Expected: clean worktrees, identical SHAs, and full verification PASS. Report the exact Stage A SHA/run, Stage B SHA/run, final test total, 82 documents, 457 sources, 39 completed topics, G007 complete, and G008 current.

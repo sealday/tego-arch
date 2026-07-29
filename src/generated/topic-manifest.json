@@ -1291,7 +1291,8 @@
         "PR-06",
         "PR-07",
         "PR-12",
-        "PR-14"
+        "PR-14",
+        "PR-15"
       ],
       "primary_sources": [
         "https://ieeexplore.ieee.org/document/5388187/"
@@ -1327,7 +1328,8 @@
         "PR-11",
         "PR-12",
         "PR-13",
-        "PR-14"
+        "PR-14",
+        "PR-15"
       ],
       "primary_sources": [
         "https://dl.acm.org/doi/10.1145/361598.361623"
@@ -1469,6 +1471,8 @@
         "PR-06",
         "PR-10",
         "PR-12",
+        "PR-15",
+        "PR-17",
         "MTH-03",
         "MTH-04"
       ],
@@ -1536,6 +1540,7 @@
         "PR-04",
         "PR-09",
         "PR-10",
+        "PR-16",
         "QA-01"
       ],
       "primary_sources": [
@@ -1568,7 +1573,8 @@
       "adjacent_topics": [
         "PR-04",
         "PR-07",
-        "PR-10"
+        "PR-10",
+        "PR-16"
       ],
       "primary_sources": [
         "https://web.mit.edu/Saltzer/www/publications/protection/"
@@ -1633,7 +1639,8 @@
         "PR-07",
         "PR-08",
         "PR-09",
-        "PR-11"
+        "PR-11",
+        "PR-16"
       ],
       "primary_sources": [
         "https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-APIs/"
@@ -3400,27 +3407,6 @@
       "pattern_group": "migration"
     },
     {
-      "id": "PR-15",
-      "type": "principle",
-      "title": "Conway 定律与团队边界",
-      "slug": "/principles/pr-15",
-      "priority": "P1",
-      "status": {
-        "scope": "backlog-projection",
-        "value": "pending",
-        "source": "docs/content-backlog.md"
-      },
-      "dependencies": [],
-      "adjacent_topics": [],
-      "primary_sources": [],
-      "related_cases": [],
-      "related_questions": [],
-      "reviewed_at": null,
-      "review_policy": null,
-      "published": false,
-      "pattern_group": null
-    },
-    {
       "id": "QST-03",
       "type": "question",
       "title": "模块化单体还是微服务",
@@ -4005,13 +3991,48 @@
         "PR-02",
         "PR-03",
         "PR-04",
-        "PR-12"
+        "PR-12",
+        "PR-15",
+        "PR-17"
       ],
       "primary_sources": [
         "https://www.pearson.com/en-us/subject-catalog/p/Larman-Applying-UML-and-Patterns-An-Introduction-to-Object-Oriented-Analysis-and-Design-and-Iterative-Development-3rd-Edition/P200000000422/9780131489066"
       ],
       "related_cases": [
         "/cases/litellm-virtual-keys-governance"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-07-29",
+      "review_policy": "quarterly-version-sensitive",
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
+    },
+    {
+      "id": "PR-15",
+      "type": "principle",
+      "title": "Conway 定律与团队边界",
+      "slug": "/principles/pr-15",
+      "priority": "P1",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "pending",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "PR-02"
+      ],
+      "adjacent_topics": [
+        "PR-02",
+        "PR-03",
+        "PR-08",
+        "PR-14"
+      ],
+      "primary_sources": [
+        "https://www.melconway.com/research/committees.html"
+      ],
+      "related_cases": [
+        "/cases/micro-frontends-single-spa"
       ],
       "related_questions": [],
       "reviewed_at": "2026-07-29",
@@ -4597,48 +4618,6 @@
       "pattern_group": "integration"
     },
     {
-      "id": "PR-16",
-      "type": "principle",
-      "title": "Secure by Design",
-      "slug": "/principles/pr-16",
-      "priority": "P2",
-      "status": {
-        "scope": "backlog-projection",
-        "value": "pending",
-        "source": "docs/content-backlog.md"
-      },
-      "dependencies": [],
-      "adjacent_topics": [],
-      "primary_sources": [],
-      "related_cases": [],
-      "related_questions": [],
-      "reviewed_at": null,
-      "review_policy": null,
-      "published": false,
-      "pattern_group": null
-    },
-    {
-      "id": "PR-17",
-      "type": "principle",
-      "title": "不要重复原站的分类错误",
-      "slug": "/principles/pr-17",
-      "priority": "P2",
-      "status": {
-        "scope": "backlog-projection",
-        "value": "pending",
-        "source": "docs/content-backlog.md"
-      },
-      "dependencies": [],
-      "adjacent_topics": [],
-      "primary_sources": [],
-      "related_cases": [],
-      "related_questions": [],
-      "reviewed_at": null,
-      "review_policy": null,
-      "published": false,
-      "pattern_group": null
-    },
-    {
       "id": "QST-10",
       "type": "question",
       "title": "边缘断网自治与物理安全",
@@ -4679,6 +4658,69 @@
       "review_policy": null,
       "published": false,
       "pattern_group": null
+    },
+    {
+      "id": "PR-16",
+      "type": "principle",
+      "title": "Secure by Design",
+      "slug": "/principles/pr-16",
+      "priority": "P2",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "pending",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "PR-09"
+      ],
+      "adjacent_topics": [
+        "PR-07",
+        "PR-09",
+        "PR-10"
+      ],
+      "primary_sources": [
+        "https://www.cisa.gov/sites/default/files/2023-10/Shifting-the-Balance-of-Cybersecurity-Risk-Principles-and-Approaches-for-Secure-by-Design-Software.pdf"
+      ],
+      "related_cases": [
+        "/cases/litellm-virtual-keys-governance"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-07-29",
+      "review_policy": "quarterly-version-sensitive",
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
+    },
+    {
+      "id": "PR-17",
+      "type": "principle",
+      "title": "分类边界与纠错",
+      "slug": "/principles/pr-17",
+      "priority": "P2",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "pending",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "PR-14"
+      ],
+      "adjacent_topics": [
+        "PR-08",
+        "PR-14"
+      ],
+      "primary_sources": [
+        "https://dl.acm.org/doi/10.1145/564585.564601"
+      ],
+      "related_cases": [
+        "/cases/micro-frontends-single-spa"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-07-29",
+      "review_policy": "quarterly-version-sensitive",
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
     },
     {
       "id": "QA-10",

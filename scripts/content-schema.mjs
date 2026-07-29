@@ -117,6 +117,28 @@ export const knowledgeTypeContracts = {
   ],
 };
 
+export const closingPrincipleTopicIds = new Set(['PR-15', 'PR-16', 'PR-17']);
+
+export const closingPrincipleHeadings = [
+  '## 学习问题',
+  '## 一页摘要',
+  '## 事实边界',
+  '## 架构图',
+  '## 控制权与任务流',
+  '## 关键源码导读',
+  '## 架构决策与权衡',
+  '## 生产化分析',
+  '## 可迁移经验',
+  '## 来源',
+];
+
+export function knowledgeHeadingContract(type, topicId) {
+  if (type === 'principle' && closingPrincipleTopicIds.has(topicId)) {
+    return closingPrincipleHeadings;
+  }
+  return knowledgeTypeContracts[type];
+}
+
 export const qualityAttributeScenarioHeadings = [
   '### Source',
   '### Stimulus',

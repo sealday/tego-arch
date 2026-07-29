@@ -29,6 +29,7 @@ adjacent_topics:
   - PR-04
   - PR-09
   - PR-10
+  - PR-16
   - QA-01
 related_cases:
   - /cases/microsoft-multi-agent-reference-architecture
@@ -89,6 +90,8 @@ Graceful Degradation 必须同时保留真实语义和可见降级状态：响�
 ## 相邻原则
 
 [高内聚与低耦合](/principles/pr-02)揭示依赖失败如何沿运行关系传播；[依赖倒置、控制反转与依赖注入](/principles/pr-04)帮助把故障策略放在拥有控制权的政策边界；[质量属性场景写法](/quality-attributes/qa-01)用刺激、环境、响应与度量明确危害、安全状态和恢复条件。[最小权限、安全默认值与纵深防御](/principles/pr-09)定义策略缺失或不可用时保守的授权结果，[幂等与最小协调](/principles/pr-10)处理真实表达重试结果与 unknown 终态。PR-07 在这些输入上选择局部故障响应，而不是给系统贴一个永久标签。
+
+[Secure by Design](/principles/pr-16)把故障隔离纳入生命周期安全。
 
 ## 说明性场景
 

@@ -49,8 +49,8 @@ const h2 = [
   '来源',
 ];
 const relationships = new Map([
-  ['PR-09', ['PR-04', 'PR-07', 'PR-10']],
-  ['PR-10', ['PR-07', 'PR-08', 'PR-09', 'PR-11']],
+  ['PR-09', ['PR-04', 'PR-07', 'PR-10', 'PR-16']],
+  ['PR-10', ['PR-07', 'PR-08', 'PR-09', 'PR-11', 'PR-16']],
   ['PR-11', ['PR-03', 'PR-04', 'PR-10', 'PR-13']],
 ]);
 const routeByTopic = new Map([
@@ -62,6 +62,7 @@ const routeByTopic = new Map([
   ['PR-10', '/principles/pr-10'],
   ['PR-11', '/principles/pr-11'],
   ['PR-13', '/principles/pr-13'],
+  ['PR-16', '/principles/pr-16'],
 ]);
 const solePrimary = new Map([
   ['PR-09', 'src-saltzer-schroeder-protection-1975'],
@@ -340,11 +341,9 @@ test('governs sources and visible Batch 3 relationships', () => {
       assert.ok(links.has(routeByTopic.get(adjacent)), `${id} visibly links ${adjacent}`);
     }
     assert.ok(links.has(requiredCase.get(id)), `${id} links its required case`);
-    assert.equal(
-      [...links].some((link) => /^\/principles\/pr-1[5-7]$/u.test(link)),
-      false,
-      `${id} must not link unpublished principles`,
-    );
+    for (const adjacent of relationships.get(id).filter((topic) => /^PR-1[5-7]$/u.test(topic))) {
+      assert.equal(topics.get(adjacent)?.published, true, `${id} closing relationship is published`);
+    }
   }
 });
 

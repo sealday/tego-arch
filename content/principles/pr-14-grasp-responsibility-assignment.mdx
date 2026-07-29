@@ -30,6 +30,8 @@ adjacent_topics:
   - PR-03
   - PR-04
   - PR-12
+  - PR-15
+  - PR-17
 related_cases:
   - /cases/litellm-virtual-keys-governance
 related_questions: []
@@ -99,6 +101,10 @@ Controller 不是 god object。它也不应膨胀为上帝对象；它代表系�
 ## 相邻原则
 
 [高内聚与低耦合](/principles/pr-02)提供责任选择后的评价标准；[单一职责与关注点分离](/principles/pr-03)识别变化由哪个责任主体发起；[依赖倒置、控制反转与依赖注入](/principles/pr-04)约束选定责任之间的依赖方向；[Open/Closed 与 Interface Segregation](/principles/pr-12)要求扩展协议围绕已有变化且保持消费方内聚。GRASP 决定协作责任放在哪里，这些原则再检验边界是否稳定、必要且可承担。
+
+[Conway 定律与团队边界](/principles/pr-15)把责任分配规模化到团队层面的分工。
+
+[分类边界与纠错](/principles/pr-17)确立 GRASP 的主类别。
 
 ## 说明性场景
 

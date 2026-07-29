@@ -42,7 +42,7 @@ const h2 = [
 const relationships = new Map([
   ['PR-12', ['PR-01', 'PR-02', 'PR-03', 'PR-04', 'PR-05', 'PR-08', 'PR-14']],
   ['PR-13', ['PR-03', 'PR-04', 'PR-11']],
-  ['PR-14', ['PR-02', 'PR-03', 'PR-04', 'PR-12']],
+  ['PR-14', ['PR-02', 'PR-03', 'PR-04', 'PR-12', 'PR-15', 'PR-17']],
 ]);
 const routeByTopic = new Map([
   ['PR-01', '/principles/pr-01'],
@@ -55,6 +55,8 @@ const routeByTopic = new Map([
   ['PR-12', '/principles/pr-12'],
   ['PR-13', '/principles/pr-13'],
   ['PR-14', '/principles/pr-14'],
+  ['PR-15', '/principles/pr-15'],
+  ['PR-17', '/principles/pr-17'],
 ]);
 const solePrimary = new Map([
   ['PR-12', 'src-objectmentor-ocp-1996'],
@@ -127,12 +129,12 @@ test('publishes PR-12 through PR-14 with the principle contract', () => {
   }
 });
 
-test('projects only the published Batch 4 boundary', () => {
+test('projects the published Batch 4 and closing-principle boundary', () => {
   for (const id of expected.keys()) {
     assert.equal(topics.get(id)?.published, true, `${id} manifest publication`);
   }
   for (let number = 15; number <= 17; number += 1) {
-    assert.equal(topics.get(`PR-${number}`)?.published, false);
+    assert.equal(topics.get(`PR-${number}`)?.published, true);
   }
 });
 
@@ -166,11 +168,9 @@ test('governs every visible source and relationship', () => {
       [...links].some((link) => terminalLink.get(id).test(link)),
       `${id} links a real case or learning question`,
     );
-    assert.equal(
-      [...links].some((link) => /^\/principles\/pr-1[5-7]$/u.test(link)),
-      false,
-      `${id} must not link unpublished principles`,
-    );
+    for (const adjacent of relationships.get(id).filter((topic) => /^PR-1[5-7]$/u.test(topic))) {
+      assert.equal(topics.get(adjacent)?.published, true, `${id} closing relationship is published`);
+    }
   }
 });
 
