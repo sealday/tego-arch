@@ -814,6 +814,7 @@
         "PR-04",
         "PR-06",
         "PR-08",
+        "PR-12",
         "STY-00"
       ],
       "primary_sources": [
@@ -1288,7 +1289,9 @@
         "PR-03",
         "PR-05",
         "PR-06",
-        "PR-07"
+        "PR-07",
+        "PR-12",
+        "PR-14"
       ],
       "primary_sources": [
         "https://ieeexplore.ieee.org/document/5388187/"
@@ -1321,7 +1324,10 @@
         "PR-01",
         "PR-02",
         "PR-05",
-        "PR-11"
+        "PR-11",
+        "PR-12",
+        "PR-13",
+        "PR-14"
       ],
       "primary_sources": [
         "https://dl.acm.org/doi/10.1145/361598.361623"
@@ -1356,7 +1362,10 @@
         "PR-07",
         "PR-08",
         "PR-09",
-        "PR-11"
+        "PR-11",
+        "PR-12",
+        "PR-13",
+        "PR-14"
       ],
       "primary_sources": [
         "https://web.archive.org/web/20110714224327/http://www.objectmentor.com/resources/articles/dip.pdf"
@@ -1390,7 +1399,8 @@
         "PR-03",
         "PR-04",
         "PR-06",
-        "PR-08"
+        "PR-08",
+        "PR-12"
       ],
       "primary_sources": [
         "https://search.worldcat.org/title/Design-patterns-:-elements-of-reusable-object-oriented-software/oclc/31169738"
@@ -1458,6 +1468,7 @@
         "PR-05",
         "PR-06",
         "PR-10",
+        "PR-12",
         "MTH-03",
         "MTH-04"
       ],
@@ -3389,69 +3400,6 @@
       "pattern_group": "migration"
     },
     {
-      "id": "PR-12",
-      "type": "principle",
-      "title": "Open/Closed 与 Interface Segregation",
-      "slug": "/principles/pr-12",
-      "priority": "P1",
-      "status": {
-        "scope": "backlog-projection",
-        "value": "pending",
-        "source": "docs/content-backlog.md"
-      },
-      "dependencies": [],
-      "adjacent_topics": [],
-      "primary_sources": [],
-      "related_cases": [],
-      "related_questions": [],
-      "reviewed_at": null,
-      "review_policy": null,
-      "published": false,
-      "pattern_group": null
-    },
-    {
-      "id": "PR-13",
-      "type": "principle",
-      "title": "Persistence Ignorance",
-      "slug": "/principles/pr-13",
-      "priority": "P1",
-      "status": {
-        "scope": "backlog-projection",
-        "value": "pending",
-        "source": "docs/content-backlog.md"
-      },
-      "dependencies": [],
-      "adjacent_topics": [],
-      "primary_sources": [],
-      "related_cases": [],
-      "related_questions": [],
-      "reviewed_at": null,
-      "review_policy": null,
-      "published": false,
-      "pattern_group": null
-    },
-    {
-      "id": "PR-14",
-      "type": "principle",
-      "title": "GRASP 责任分配",
-      "slug": "/principles/pr-14",
-      "priority": "P1",
-      "status": {
-        "scope": "backlog-projection",
-        "value": "pending",
-        "source": "docs/content-backlog.md"
-      },
-      "dependencies": [],
-      "adjacent_topics": [],
-      "primary_sources": [],
-      "related_cases": [],
-      "related_questions": [],
-      "reviewed_at": null,
-      "review_policy": null,
-      "published": false,
-      "pattern_group": null
-    },
-    {
       "id": "PR-15",
       "type": "principle",
       "title": "Conway 定律与团队边界",
@@ -3914,6 +3862,42 @@
       "pattern_group": null
     },
     {
+      "id": "PR-12",
+      "type": "principle",
+      "title": "Open/Closed 与 Interface Segregation",
+      "slug": "/principles/pr-12",
+      "priority": "P1",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "pending",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "PR-01"
+      ],
+      "adjacent_topics": [
+        "PR-01",
+        "PR-02",
+        "PR-03",
+        "PR-04",
+        "PR-05",
+        "PR-08",
+        "PR-14"
+      ],
+      "primary_sources": [
+        "https://objectmentor.com/resources/articles/ocp.pdf"
+      ],
+      "related_cases": [
+        "/cases/micro-frontends-single-spa"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-07-29",
+      "review_policy": "quarterly-version-sensitive",
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
+    },
+    {
       "id": "STY-14",
       "type": "style",
       "title": "风格选择矩阵",
@@ -3955,7 +3939,8 @@
       "adjacent_topics": [
         "PR-03",
         "PR-04",
-        "PR-10"
+        "PR-10",
+        "PR-13"
       ],
       "primary_sources": [
         "https://martinfowler.com/bliki/CQRS.html"
@@ -3966,6 +3951,71 @@
       "related_questions": [],
       "reviewed_at": "2026-07-28",
       "review_policy": null,
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
+    },
+    {
+      "id": "PR-13",
+      "type": "principle",
+      "title": "Persistence Ignorance",
+      "slug": "/principles/pr-13",
+      "priority": "P1",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "pending",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "PR-03"
+      ],
+      "adjacent_topics": [
+        "PR-03",
+        "PR-04",
+        "PR-11"
+      ],
+      "primary_sources": [
+        "https://www.informit.com/store/applying-domain-driven-design-and-patterns-with-examples-9780321268204"
+      ],
+      "related_cases": [
+        "/cases/temporal-saga-durable-execution"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-07-29",
+      "review_policy": "quarterly-version-sensitive",
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
+    },
+    {
+      "id": "PR-14",
+      "type": "principle",
+      "title": "GRASP 责任分配",
+      "slug": "/principles/pr-14",
+      "priority": "P1",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "pending",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "PR-03"
+      ],
+      "adjacent_topics": [
+        "PR-02",
+        "PR-03",
+        "PR-04",
+        "PR-12"
+      ],
+      "primary_sources": [
+        "https://www.pearson.com/en-us/subject-catalog/p/Larman-Applying-UML-and-Patterns-An-Introduction-to-Object-Oriented-Analysis-and-Design-and-Iterative-Development-3rd-Edition/P200000000422/9780131489066"
+      ],
+      "related_cases": [
+        "/cases/litellm-virtual-keys-governance"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-07-29",
+      "review_policy": "quarterly-version-sensitive",
       "published": true,
       "pattern_group": null,
       "presentation": {}

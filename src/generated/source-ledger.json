@@ -18449,6 +18449,95 @@
       ]
     },
     {
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "registered_at": "2026-07-29",
+      "checked_at": "2026-07-29",
+      "source_kind": "textbook",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "historical-context",
+        "learning"
+      ],
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "link_policy": "stable",
+      "expected_final_approved_at": "2026-07-29",
+      "id": "src-larman-applying-uml-patterns-3e-2004",
+      "canonical_locator": "https://www.pearson.com/en-us/subject-catalog/p/Larman-Applying-UML-and-Patterns-An-Introduction-to-Object-Oriented-Analysis-and-Design-and-Iterative-Development-3rd-Edition/P200000000422/9780131489066",
+      "transport_locator": "https://www.pearson.com/en-us/subject-catalog/p/Larman-Applying-UML-and-Patterns-An-Introduction-to-Object-Oriented-Analysis-and-Design-and-Iterative-Development-3rd-Edition/P200000000422/9780131489066",
+      "title": "Applying UML and Patterns: An Introduction to Object-Oriented Analysis and Design and Iterative Development, 3rd edition",
+      "author_or_org": "Craig Larman / Pearson",
+      "published_at": "2004-10-20",
+      "version": "Third edition, published 2004-10-20, copyright 2005, ISBN 9780131489066; checked 2026-07-29",
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The official Pearson product record and bibliographic facts only; book text, diagrams, tables, examples, marks, previews, linked works, and third-party material excluded",
+      "license_evidence_url": "https://www.pearson.com/en-us/subject-catalog/p/Larman-Applying-UML-and-Patterns-An-Introduction-to-Object-Oriented-Analysis-and-Design-and-Iterative-Development-3rd-Edition/P200000000422/9780131489066",
+      "license_evidence_note": "The 2026-07-29 audit checked Craig Larman / Pearson’s “Applying UML and Patterns: An Introduction to Object-Oriented Analysis and Design and Iterative Development, 3rd edition” work at https://www.pearson.com/en-us/subject-catalog/p/Larman-Applying-UML-and-Patterns-An-Introduction-to-Object-Oriented-Analysis-and-Design-and-Iterative-Development-3rd-Edition/P200000000422/9780131489066 for reuse terms covering this family; no reusable license notice for that book was found. Atlas conservatively retains only the link, bibliographic facts, attribution, and original summary.",
+      "license_family_id": "https://www.pearson.com/en-us/subject-catalog/p/Larman-Applying-UML-and-Patterns-An-Introduction-to-Object-Oriented-Analysis-and-Design-and-Iterative-Development-3rd-Edition/P200000000422/9780131489066",
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports the provenance and interaction of the nine GRASP responsibility heuristics; Atlas does not copy the book's POS case, diagrams, tables, examples, or extended wording.",
+      "expected_final_transport_locator": "https://www.pearson.com/en-us/subject-catalog/p/Larman-Applying-UML-and-Patterns-An-Introduction-to-Object-Oriented-Analysis-and-Design-and-Iterative-Development-3rd-Edition/P200000000422/9780131489066",
+      "expected_final_approval_note": "The accepted 2026-07-29 refresh observed the direct Pearson HTTPS transport as healthy with HTTP 206, no redirects, and no login wall; the official publisher transport is accepted.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://www.pearson.com/en-us/subject-catalog/p/Larman-Applying-UML-and-Patterns-An-Introduction-to-Object-Oriented-Analysis-and-Design-and-Iterative-Development-3rd-Edition/P200000000422/9780131489066",
+          "status": "healthy",
+          "last_attempt_at": "2026-07-29T03:53:11.595Z",
+          "last_success_at": "2026-07-29T03:53:11.595Z",
+          "http_status": 206,
+          "final_transport_locator": "https://www.pearson.com/en-us/subject-catalog/p/Larman-Applying-UML-and-Patterns-An-Introduction-to-Object-Oriented-Analysis-and-Design-and-Iterative-Development-3rd-Edition/P200000000422/9780131489066"
+        }
+      ]
+    },
+    {
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "registered_at": "2026-07-29",
+      "checked_at": "2026-07-29",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "historical-context",
+        "learning"
+      ],
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "link_policy": "floating",
+      "expected_final_approved_at": "2026-07-29",
+      "id": "src-larman-applying-uml-patterns-author-page",
+      "canonical_locator": "https://www.craiglarman.com/wiki/index.php?title=Book_Applying_UML_and_Patterns",
+      "transport_locator": "https://www.craiglarman.com/wiki/index.php?title=Book_Applying_UML_and_Patterns",
+      "title": "Book Applying UML and Patterns",
+      "author_or_org": "Craig Larman",
+      "published_at": null,
+      "version": "Author page checked 2026-07-29",
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named author page and bibliographic facts only; page prose, images, marks, linked works, and third-party material excluded",
+      "license_evidence_url": "https://www.craiglarman.com/wiki/index.php?title=Book_Applying_UML_and_Patterns",
+      "license_evidence_note": "The 2026-07-29 audit checked Craig Larman’s “Book Applying UML and Patterns” work at https://www.craiglarman.com/wiki/index.php?title=Book_Applying_UML_and_Patterns for reuse terms covering this family; no reusable license notice for that author page was found. Atlas conservatively retains only the link, provenance, bibliographic facts, attribution, and original summary.",
+      "license_family_id": "https://www.craiglarman.com/wiki/index.php?title=Book_Applying_UML_and_Patterns",
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports author provenance and bibliographic facts for Applying UML and Patterns only; page prose, images, and linked works are not reused.",
+      "expected_final_transport_locator": "https://www.craiglarman.com/wiki/index.php?title=Book_Applying_UML_and_Patterns",
+      "expected_final_approval_note": "The 2026-07-29 live checker observed the direct Craig Larman author-page HTTPS transport as healthy with HTTP 206, no redirects, and no login wall; the official author transport is accepted.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://www.craiglarman.com/wiki/index.php?title=Book_Applying_UML_and_Patterns",
+          "status": "healthy",
+          "last_attempt_at": "2026-07-29T03:53:11.595Z",
+          "last_success_at": "2026-07-29T03:53:11.595Z",
+          "http_status": 206,
+          "final_transport_locator": "https://www.craiglarman.com/wiki/index.php?title=Book_Applying_UML_and_Patterns"
+        }
+      ]
+    },
+    {
       "id": "src-learn-1abc9c267864",
       "canonical_locator": "https://learn.microsoft.com/en-us/azure/architecture/patterns/retry",
       "transport_locator": "https://learn.microsoft.com/en-us/azure/architecture/patterns/retry",
@@ -19278,6 +19367,96 @@
       ]
     },
     {
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "registered_at": "2026-07-29",
+      "checked_at": "2026-07-29",
+      "source_kind": "official-docs",
+      "tier": "secondary",
+      "allowed_evidence_roles": [
+        "comparison",
+        "implementation",
+        "learning"
+      ],
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "link_policy": "floating",
+      "expected_final_approved_at": "2026-07-29",
+      "id": "src-ms-ddd-oriented-microservice-persistence-ignorance",
+      "canonical_locator": "https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/ddd-oriented-microservice",
+      "transport_locator": "https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/ddd-oriented-microservice",
+      "title": "Design a DDD-oriented microservice",
+      "author_or_org": "Microsoft",
+      "published_at": "2022-04-13",
+      "version": "Updated 2022-04-13; checked 2026-07-29",
+      "license": "CC-BY-4.0",
+      "license_scope": "The named Microsoft Learn documentation page as maintained in the official dotnet/docs repository under CC BY 4.0; diagrams, code, trademarks, linked works, and third-party assets excluded",
+      "license_evidence_url": "https://github.com/dotnet/docs/blob/main/LICENSE",
+      "license_evidence_note": "The official Microsoft Learn page source is maintained in dotnet/docs, whose LICENSE grants Creative Commons Attribution 4.0 International for the repository’s documentation content; Atlas limits use to attributed factual summary of the named page.",
+      "license_family_id": "https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/ddd-oriented-microservice",
+      "copyright_policy": "adapt-with-attribution",
+      "usage_boundary": "Clarifies that Persistence Ignorance does not mean ignoring persistence concerns, physical models, ORM constraints, or storage technology; diagrams and code are not reused.",
+      "expected_final_transport_locator": "https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/ddd-oriented-microservice",
+      "expected_final_approval_note": "The 2026-07-29 live checker observed the direct Microsoft Learn HTTPS transport as healthy with HTTP 206, no redirects, and no login wall; the official documentation transport is accepted.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/ddd-oriented-microservice",
+          "status": "healthy",
+          "last_attempt_at": "2026-07-29T03:53:11.595Z",
+          "last_success_at": "2026-07-29T03:53:11.595Z",
+          "http_status": 206,
+          "final_transport_locator": "https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/ddd-oriented-microservice"
+        }
+      ]
+    },
+    {
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "registered_at": "2026-07-29",
+      "checked_at": "2026-07-29",
+      "source_kind": "official-docs",
+      "tier": "secondary",
+      "allowed_evidence_roles": [
+        "comparison",
+        "implementation",
+        "learning"
+      ],
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "link_policy": "floating",
+      "expected_final_approved_at": "2026-07-29",
+      "id": "src-ms-infrastructure-persistence-layer-design",
+      "canonical_locator": "https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/infrastructure-persistence-layer-design",
+      "transport_locator": "https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/infrastructure-persistence-layer-design",
+      "title": "Design the infrastructure persistence layer",
+      "author_or_org": "Microsoft",
+      "published_at": "2023-02-21",
+      "version": "Updated 2023-02-21; checked 2026-07-29",
+      "license": "CC-BY-4.0",
+      "license_scope": "The named Microsoft Learn documentation page as maintained in the official dotnet/docs repository under CC BY 4.0; diagrams, code, trademarks, linked works, and third-party assets excluded",
+      "license_evidence_url": "https://github.com/dotnet/docs/blob/main/LICENSE",
+      "license_evidence_note": "The official Microsoft Learn page source is maintained in dotnet/docs, whose LICENSE grants Creative Commons Attribution 4.0 International for the repository’s documentation content; Atlas limits use to attributed factual summary of the named page.",
+      "license_family_id": "https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/infrastructure-persistence-layer-design",
+      "copyright_policy": "adapt-with-attribution",
+      "usage_boundary": "Supports aggregate transaction boundaries, repository trade-offs, and direct CQRS query paths; its .NET-specific guidance is not universal and its diagrams and code are not reused.",
+      "expected_final_transport_locator": "https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/infrastructure-persistence-layer-design",
+      "expected_final_approval_note": "The 2026-07-29 live checker observed the direct Microsoft Learn HTTPS transport as healthy with HTTP 206, no redirects, and no login wall; the official documentation transport is accepted.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/infrastructure-persistence-layer-design",
+          "status": "healthy",
+          "last_attempt_at": "2026-07-29T03:53:11.595Z",
+          "last_success_at": "2026-07-29T03:53:11.595Z",
+          "http_status": 206,
+          "final_transport_locator": "https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/infrastructure-persistence-layer-design"
+        }
+      ]
+    },
+    {
       "id": "src-nasa-architecture-description-vd",
       "canonical_locator": "https://nodis3.gsfc.nasa.gov/npg_img/N_PR_7150_002D_/N_PR_7150_002D__Chapter4.pdf",
       "transport_locator": "https://nodis3.gsfc.nasa.gov/npg_img/N_PR_7150_002D_/N_PR_7150_002D__Chapter4.pdf",
@@ -19365,6 +19544,51 @@
           "last_success_at": "2026-07-24T12:44:40.442Z",
           "http_status": 200,
           "final_transport_locator": "https://swehb.nasa.gov/spaces/SWEHBVD/pages/102695632/7.07%2B-%2BSoftware%2BArchitecture%2BDescription"
+        }
+      ]
+    },
+    {
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "registered_at": "2026-07-29",
+      "checked_at": "2026-07-29",
+      "source_kind": "textbook",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "historical-context",
+        "learning"
+      ],
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "link_policy": "stable",
+      "expected_final_approved_at": "2026-07-29",
+      "id": "src-nilsson-ddd-patterns-2006",
+      "canonical_locator": "https://www.informit.com/store/applying-domain-driven-design-and-patterns-with-examples-9780321268204",
+      "transport_locator": "https://www.informit.com/store/applying-domain-driven-design-and-patterns-with-examples-9780321268204",
+      "title": "Applying Domain-Driven Design and Patterns: With Examples in C# and .NET",
+      "author_or_org": "Jimmy Nilsson / Addison-Wesley Professional",
+      "published_at": "2006-05-08",
+      "version": "First edition, ISBN 9780321268204; checked 2026-07-29",
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The official InformIT product record and bibliographic facts only; book text, diagrams, tables, examples, marks, previews, linked works, and third-party material excluded",
+      "license_evidence_url": "https://www.informit.com/store/applying-domain-driven-design-and-patterns-with-examples-9780321268204",
+      "license_evidence_note": "The 2026-07-29 audit checked Jimmy Nilsson / Addison-Wesley Professional’s “Applying Domain-Driven Design and Patterns: With Examples in C# and .NET” work at https://www.informit.com/store/applying-domain-driven-design-and-patterns-with-examples-9780321268204 for reuse terms covering this family; no reusable license notice for that book was found. Atlas conservatively retains only the link, bibliographic facts, attribution, and original summary.",
+      "license_family_id": "https://www.informit.com/store/applying-domain-driven-design-and-patterns-with-examples-9780321268204",
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports the original Persistence Ignorance and POCO framing; it does not prove zero-cost database substitution, ban all mapping metadata, or authorize reuse of book material.",
+      "expected_final_transport_locator": "https://www.informit.com/store/applying-domain-driven-design-and-patterns-with-examples-9780321268204",
+      "expected_final_approval_note": "The 2026-07-29 live checker observed the direct InformIT HTTPS transport as healthy with HTTP 200, no redirects, and no login wall; the official publisher transport is accepted.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://www.informit.com/store/applying-domain-driven-design-and-patterns-with-examples-9780321268204",
+          "status": "healthy",
+          "last_attempt_at": "2026-07-29T03:53:11.595Z",
+          "last_success_at": "2026-07-29T03:53:11.595Z",
+          "http_status": 200,
+          "final_transport_locator": "https://www.informit.com/store/applying-domain-driven-design-and-patterns-with-examples-9780321268204"
         }
       ]
     },
@@ -19696,6 +19920,96 @@
           "last_success_at": "2026-07-27T08:01:54.477Z",
           "http_status": 200,
           "final_transport_locator": "https://web.archive.org/web/20110714224327/http://www.objectmentor.com/resources/articles/dip.pdf"
+        }
+      ]
+    },
+    {
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "registered_at": "2026-07-29",
+      "checked_at": "2026-07-29",
+      "source_kind": "paper",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "historical-context",
+        "learning"
+      ],
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "link_policy": "stable",
+      "expected_final_approved_at": "2026-07-29",
+      "id": "src-objectmentor-isp-1996",
+      "canonical_locator": "https://objectmentor.com/resources/articles/isp.pdf",
+      "transport_locator": "https://objectmentor.com/resources/articles/isp.pdf",
+      "title": "The Interface Segregation Principle",
+      "author_or_org": "Robert C. Martin / Object Mentor",
+      "published_at": null,
+      "version": "Original C++ Report Engineering Notebook article, 1996-08; checked 2026-07-29",
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named Object Mentor article and bibliographic facts only; PDF figures, tables, listings, examples, marks, extended prose, linked works, and third-party material excluded",
+      "license_evidence_url": "https://objectmentor.com/resources/articles/isp.pdf",
+      "license_evidence_note": "The 2026-07-29 audit checked Robert C. Martin / Object Mentor’s “The Interface Segregation Principle” work at https://objectmentor.com/resources/articles/isp.pdf for reuse terms covering this family; its Copyright (c) 1996 Object Mentor, Inc. All Rights Reserved notice grants no reusable license. Atlas conservatively retains only the link, bibliographic facts, attribution, original summary, and reviewed short quotation.",
+      "license_family_id": "https://objectmentor.com/resources/articles/isp.pdf",
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports cohesive client-specific dependency surfaces and the unwanted coupling created by fat interfaces; it does not prescribe one interface per client or prove that smaller is always better.",
+      "expected_final_transport_locator": "https://objectmentor.com/resources/articles/isp.pdf",
+      "expected_final_approval_note": "The 2026-07-29 live checker observed the direct Object Mentor ISP HTTPS transport as healthy with HTTP 200, no redirects, and no login wall; the canonical transport is accepted without archive substitution.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://objectmentor.com/resources/articles/isp.pdf",
+          "status": "healthy",
+          "last_attempt_at": "2026-07-29T03:53:11.595Z",
+          "last_success_at": "2026-07-29T03:53:11.595Z",
+          "http_status": 200,
+          "final_transport_locator": "https://objectmentor.com/resources/articles/isp.pdf"
+        }
+      ]
+    },
+    {
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "registered_at": "2026-07-29",
+      "checked_at": "2026-07-29",
+      "source_kind": "paper",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "historical-context",
+        "learning"
+      ],
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "link_policy": "stable",
+      "expected_final_approved_at": "2026-07-29",
+      "id": "src-objectmentor-ocp-1996",
+      "canonical_locator": "https://objectmentor.com/resources/articles/ocp.pdf",
+      "transport_locator": "https://objectmentor.com/resources/articles/ocp.pdf",
+      "title": "The Open-Closed Principle",
+      "author_or_org": "Robert C. Martin / Object Mentor",
+      "published_at": null,
+      "version": "Original C++ Report Engineering Notebook article, 1996-01; checked 2026-07-29",
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named Object Mentor article and bibliographic facts only; PDF figures, tables, listings, examples, marks, extended prose, linked works, and third-party material excluded",
+      "license_evidence_url": "https://objectmentor.com/resources/articles/ocp.pdf",
+      "license_evidence_note": "The 2026-07-29 audit checked Robert C. Martin / Object Mentor’s “The Open-Closed Principle” work at https://objectmentor.com/resources/articles/ocp.pdf for reuse terms covering this family; no reusable license notice for that work was found. Atlas conservatively retains only the link, bibliographic facts, attribution, original summary, and reviewed short quotation.",
+      "license_family_id": "https://objectmentor.com/resources/articles/ocp.pdf",
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports the historical Open-Closed Principle definition and strategic closure around evidenced variation; it does not prove that existing code never changes or that every conditional requires an abstraction.",
+      "expected_final_transport_locator": "https://objectmentor.com/resources/articles/ocp.pdf",
+      "expected_final_approval_note": "The 2026-07-29 live checker observed the direct Object Mentor OCP HTTPS transport as healthy with HTTP 200, no redirects, and no login wall; the canonical transport is accepted without archive substitution.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://objectmentor.com/resources/articles/ocp.pdf",
+          "status": "healthy",
+          "last_attempt_at": "2026-07-29T03:53:11.595Z",
+          "last_success_at": "2026-07-29T03:53:11.595Z",
+          "http_status": 200,
+          "final_transport_locator": "https://objectmentor.com/resources/articles/ocp.pdf"
         }
       ]
     },
@@ -29091,6 +29405,142 @@
           "manifest_primary": false,
           "usage_mode": "facts-summary",
           "attribution_note": "CQRS pattern, Azure Architecture Center",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/principles/pr-12-open-closed-interface-segregation.mdx": {
+      "title": "Open/Closed 与 Interface Segregation",
+      "slug": "/principles/pr-12",
+      "reviewed_at": "2026-07-29",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-objectmentor-isp-1996",
+          "citation_url": "https://objectmentor.com/resources/articles/isp.pdf",
+          "roles": [
+            "definition",
+            "historical-context"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "The Interface Segregation Principle, Robert C. Martin / Object Mentor",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-objectmentor-ocp-1996",
+          "citation_url": "https://objectmentor.com/resources/articles/ocp.pdf",
+          "roles": [
+            "definition",
+            "historical-context"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "The Open-Closed Principle, Robert C. Martin / Object Mentor",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/principles/pr-13-persistence-ignorance.mdx": {
+      "title": "Persistence Ignorance",
+      "slug": "/principles/pr-13",
+      "reviewed_at": "2026-07-29",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-ms-ddd-oriented-microservice-persistence-ignorance",
+          "citation_url": "https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/ddd-oriented-microservice",
+          "roles": [
+            "comparison",
+            "implementation"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Design a DDD-oriented microservice, Microsoft",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-ms-infrastructure-persistence-layer-design",
+          "citation_url": "https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/infrastructure-persistence-layer-design",
+          "roles": [
+            "comparison",
+            "implementation"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Design the infrastructure persistence layer, Microsoft",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-nilsson-ddd-patterns-2006",
+          "citation_url": "https://www.informit.com/store/applying-domain-driven-design-and-patterns-with-examples-9780321268204",
+          "roles": [
+            "definition",
+            "historical-context"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Applying Domain-Driven Design and Patterns, Jimmy Nilsson / Addison-Wesley Professional",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/principles/pr-14-grasp-responsibility-assignment.mdx": {
+      "title": "GRASP 责任分配",
+      "slug": "/principles/pr-14",
+      "reviewed_at": "2026-07-29",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-larman-applying-uml-patterns-3e-2004",
+          "citation_url": "https://www.pearson.com/en-us/subject-catalog/p/Larman-Applying-UML-and-Patterns-An-Introduction-to-Object-Oriented-Analysis-and-Design-and-Iterative-Development-3rd-Edition/P200000000422/9780131489066",
+          "roles": [
+            "definition",
+            "historical-context"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Applying UML and Patterns, 3rd edition, Craig Larman / Pearson",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-larman-applying-uml-patterns-author-page",
+          "citation_url": "https://www.craiglarman.com/wiki/index.php?title=Book_Applying_UML_and_Patterns",
+          "roles": [
+            "historical-context"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Book Applying UML and Patterns, Craig Larman",
           "modification_note": null,
           "excerpt": null,
           "quotation_reviewed": false

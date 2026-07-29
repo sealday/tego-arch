@@ -36,7 +36,7 @@ const h2 = [
 const relationships = new Map([
   ['PR-06', ['PR-01', 'PR-02', 'PR-05', 'PR-08']],
   ['PR-07', ['PR-02', 'PR-04', 'PR-09', 'PR-10', 'QA-01']],
-  ['PR-08', ['PR-01', 'PR-04', 'PR-05', 'PR-06', 'PR-10', 'MTH-03', 'MTH-04']],
+  ['PR-08', ['PR-01', 'PR-04', 'PR-05', 'PR-06', 'PR-10', 'PR-12', 'MTH-03', 'MTH-04']],
 ]);
 const solePrimary = new Map([
   ['PR-06', 'src-martin-fowler-yagni-2015'],
@@ -52,6 +52,7 @@ const routeByTopic = new Map([
   ['PR-08', '/principles/pr-08'],
   ['PR-09', '/principles/pr-09'],
   ['PR-10', '/principles/pr-10'],
+  ['PR-12', '/principles/pr-12'],
   ['QA-01', '/quality-attributes/qa-01'],
   ['MTH-03', '/methods/mth-03'],
   ['MTH-04', '/methods/mth-04'],
@@ -244,7 +245,7 @@ test('governs sources and visible Batch 2 relationships', () => {
     }
     assert.ok([...links].some((link) => link.startsWith('/cases/')), `${id} links a case`);
     assert.equal(
-      [...links].some((link) => /^\/principles\/pr-1[2-7]$/u.test(link)),
+      [...links].some((link) => /^\/principles\/pr-1[5-7]$/u.test(link)),
       false,
       `${id} must not link unpublished principles`,
     );

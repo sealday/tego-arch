@@ -30,6 +30,7 @@ adjacent_topics:
   - PR-03
   - PR-04
   - PR-10
+  - PR-13
 related_cases:
   - /cases/temporal-saga-durable-execution
 related_questions: []
@@ -93,7 +94,7 @@ CQS 不是“查询绝不执行任何指令”的字面禁令，也不由是否�
 
 ## 相邻原则
 
-[单一职责与关注点分离](/principles/pr-03)提供按变化主体划分责任的方法；[依赖倒置、控制反转与依赖注入](/principles/pr-04)让命令和查询依赖稳定政策接口，而不把 CQRS 等同于 handler 注入；[幂等与最小协调](/principles/pr-10)约束命令重试和投影重复处理。PR-11 只决定观察与改变状态的责任边界，不替代事务、不变量或重放规则。
+[单一职责与关注点分离](/principles/pr-03)提供按变化主体划分责任的方法；[依赖倒置、控制反转与依赖注入](/principles/pr-04)让命令和查询依赖稳定政策接口，而不把 CQRS 等同于 handler 注入；[幂等与最小协调](/principles/pr-10)约束命令重试和投影重复处理；[Persistence Ignorance](/principles/pr-13)提醒查询模型可以为读取形状显式优化。查询模型分离不意味着把领域持久化关注强塞进同一个模型；PR-11 只决定观察与改变状态的责任边界，不替代事务、不变量、映射或重放规则。
 
 ## 说明性场景
 

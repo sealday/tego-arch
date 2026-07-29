@@ -30,11 +30,11 @@ const h2 = [
   '来源',
 ];
 const relationships = new Map([
-  ['PR-01', ['PR-02', 'PR-03', 'PR-04', 'PR-06', 'PR-08', 'STY-00']],
-  ['PR-02', ['PR-01', 'PR-03', 'PR-05', 'PR-06', 'PR-07']],
-  ['PR-03', ['PR-01', 'PR-02', 'PR-05', 'PR-11']],
-  ['PR-04', ['PR-01', 'PR-05', 'PR-07', 'PR-08', 'PR-09', 'PR-11']],
-  ['PR-05', ['PR-02', 'PR-03', 'PR-04', 'PR-06', 'PR-08']],
+  ['PR-01', ['PR-02', 'PR-03', 'PR-04', 'PR-06', 'PR-08', 'PR-12', 'STY-00']],
+  ['PR-02', ['PR-01', 'PR-03', 'PR-05', 'PR-06', 'PR-07', 'PR-12', 'PR-14']],
+  ['PR-03', ['PR-01', 'PR-02', 'PR-05', 'PR-11', 'PR-12', 'PR-13', 'PR-14']],
+  ['PR-04', ['PR-01', 'PR-05', 'PR-07', 'PR-08', 'PR-09', 'PR-11', 'PR-12', 'PR-13', 'PR-14']],
+  ['PR-05', ['PR-02', 'PR-03', 'PR-04', 'PR-06', 'PR-08', 'PR-12']],
 ]);
 
 const [documents, manifest, ledger] = await Promise.all([
@@ -113,7 +113,7 @@ test('governs sources and reciprocal visible relationships', () => {
     }
     assert.ok([...links].some((link) => link.startsWith('/cases/')), `${id} links a case`);
     assert.equal(
-      [...links].some((link) => /^\/principles\/pr-1[2-7]$/u.test(link)),
+      [...links].some((link) => /^\/principles\/pr-1[5-7]$/u.test(link)),
       false,
       `${id} must not link unpublished principles`,
     );
