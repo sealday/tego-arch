@@ -23,6 +23,16 @@ const [review, backlog, manifest] = await Promise.all([
     .then(JSON.parse),
 ]);
 const topicsById = new Map(manifest.topics.map((topic) => [topic.id, topic]));
+const batch4Manifest = JSON.parse(
+  execFileSync(
+    'git',
+    ['show', `${expectedStageASha}:src/generated/topic-manifest.json`],
+    {cwd: root, encoding: 'utf8'},
+  ),
+);
+const batch4TopicsById = new Map(
+  batch4Manifest.topics.map((topic) => [topic.id, topic]),
+);
 
 function parseLiteralEvidence(source) {
   const shaMatches = [...source.matchAll(/^Exact Stage A SHA: `([0-9a-f]{40})`$/gmu)];
@@ -129,7 +139,7 @@ test('closes only PR-12 through PR-14 and leaves PR-15 next', () => {
   for (let number = 15; number <= 17; number += 1) {
     const id = `PR-${number}`;
     assert.match(backlog, new RegExp(`^- \\[ \\] \\*\\*${id} `, 'mu'));
-    assert.equal(topicsById.get(id)?.published, false);
+    assert.equal(batch4TopicsById.get(id)?.published, false);
   }
   assert.match(backlog, /- \*\*当前持久故事：\*\* `G007`。/u);
   assert.match(
