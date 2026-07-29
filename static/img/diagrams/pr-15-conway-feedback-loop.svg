@@ -34,8 +34,8 @@
     <text x="1050" y="342" text-anchor="middle" font-family="system-ui, sans-serif" font-size="16" fill="#36546B">观察与复核</text>
   </g>
   <g>
-    <rect x="500" y="470" width="360" height="110" rx="16" fill="#F0F3F5" stroke="#52616B" stroke-width="3"/>
-    <text x="680" y="516" text-anchor="middle" font-family="system-ui, sans-serif" font-size="24" font-weight="700" fill="#1F2A30">平台能力</text>
-    <text x="680" y="552" text-anchor="middle" font-family="system-ui, sans-serif" font-size="16" fill="#36546B">受治理的共享支撑</text>
+    <rect x="500" y="470" width="360" height="120" rx="16" fill="#F0F3F5" stroke="#52616B" stroke-width="3"/>
+    <text x="680" y="518" text-anchor="middle" font-family="system-ui, sans-serif" font-size="24" font-weight="700" fill="#1F2A30">平台能力</text>
+    <text x="680" y="554" text-anchor="middle" font-family="system-ui, sans-serif" font-size="16" fill="#36546B">受治理的共享支撑</text>
   </g>
 </svg>
