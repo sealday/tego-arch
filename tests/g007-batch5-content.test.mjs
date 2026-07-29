@@ -152,6 +152,7 @@ function withoutInlineCodeSpans(text) {
       visible += text.slice(openingStart);
       break;
     }
+    visible += ' ';
     cursor = closingStart + fenceLength;
   }
   return visible;
@@ -196,14 +197,28 @@ test('requires original illustrations as diagram-wrapper Markdown images', () =>
   const image = `![团队边界与交付反馈](${source})`;
   const wrapper = (content) =>
     `<div className="architecture-diagram-scroll">\n${content}\n</div>`;
+  const backslashes = (count) => '\\'.repeat(count);
+  const inlineCodeBodies = [1, 2, 3].map((length) => {
+    const fence = '`'.repeat(length);
+    return wrapper(`${fence}${image}${fence}`);
+  });
 
-  assert.equal(hasVisibleDiagramImage({body: wrapper(image)}, source), true);
+  const acceptedBodies = [
+    wrapper(image),
+    wrapper(`${backslashes(2)}${image}`),
+  ];
+  assert.deepEqual(
+    acceptedBodies.map((body) => hasVisibleDiagramImage({body}, source)),
+    acceptedBodies.map(() => true),
+  );
   const rejectedBodies = [
     wrapper(''),
     `${wrapper('')}\n${image}`,
     wrapper(`[团队边界与交付反馈](${source})`),
-    wrapper(`\`${image}\``),
-    wrapper(`\\${image}`),
+    ...inlineCodeBodies,
+    wrapper(`${backslashes(1)}${image}`),
+    wrapper(`${backslashes(3)}${image}`),
+    wrapper(`!\`code\`[团队边界与交付反馈](${source})`),
   ];
   assert.deepEqual(
     rejectedBodies.map((body) => hasVisibleDiagramImage({body}, source)),
