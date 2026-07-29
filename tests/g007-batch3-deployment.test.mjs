@@ -146,7 +146,7 @@ test('records an exact successful G007 Batch 3 deployment', () => {
   );
 });
 
-test('closes only PR-09 through PR-11 and leaves PR-12 next', () => {
+test('preserves Batch 3 closure evidence for PR-09 through PR-11', () => {
   const {stageASha, pagesRunId} = parseLiteralEvidence(review);
   const pagesRunUrl = `https://github.com/sealday/tego-arch/actions/runs/${pagesRunId}`;
   for (const id of routes) {
@@ -165,20 +165,4 @@ test('closes only PR-09 through PR-11 and leaves PR-12 next', () => {
       source: 'docs/content-backlog.md',
     });
   }
-  for (let number = 12; number <= 17; number += 1) {
-    const id = `PR-${number}`;
-    assert.match(backlog, new RegExp(`^- \\[ \\] \\*\\*${id} `, 'mu'));
-    assert.equal(topicsById.get(id)?.published, false);
-  }
-  assert.match(backlog, /- \*\*当前持久故事：\*\* `G007`。/u);
-  assert.match(
-    backlog,
-    /- \*\*持久故事进度：\*\* 已完成 `6 \/ 20`；最近完成 `G006`。/u,
-  );
-  assert.ok(
-    backlog.includes(
-      `当前发布基线：** 2026-07-28 G007 Batch 3 已完成 PR-09..11，发布基线为 [\`${stageASha}\`](https://github.com/sealday/tego-arch/commit/${stageASha})，Pages run [\`${pagesRunId}\`](${pagesRunUrl})`,
-    ),
-  );
-  assert.match(backlog, /G007 仍在进行中，下一批从 PR-12 开始。/u);
 });

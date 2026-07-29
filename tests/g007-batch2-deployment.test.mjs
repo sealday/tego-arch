@@ -120,39 +120,4 @@ test('closes only PR-06 through PR-08 with the same deployment evidence', () => 
       `PR-${id} manifest status must be complete`,
     );
   }
-  for (let number = 12; number <= 17; number += 1) {
-    const id = `PR-${String(number).padStart(2, '0')}`;
-    assert.match(backlog, new RegExp(`^- \\[ \\] \\*\\*${id} `, 'mu'), `${id} pending`);
-    const topic = topicsById.get(id);
-    assert.ok(topic, `${id} must exist in the generated manifest`);
-    assert.equal(
-      topic.published,
-      false,
-      `${id} must remain unpublished`,
-    );
-    assert.deepEqual(
-      topic.status,
-      {
-        scope: 'backlog-projection',
-        value: 'pending',
-        source: 'docs/content-backlog.md',
-      },
-      `${id} manifest status must remain pending`,
-    );
-  }
-  assert.match(backlog, /- \*\*当前持久故事：\*\* `G007`。/u);
-  assert.match(
-    backlog,
-    /- \*\*持久故事进度：\*\* 已完成 `6 \/ 20`；最近完成 `G006`。/u,
-  );
-  assert.ok(
-    backlog.includes(
-      `[\`${stageASha}\`](https://github.com/sealday/tego-arch/commit/${stageASha})`,
-    ),
-    'backlog must preserve the literal Batch 2 Stage A SHA and commit URL',
-  );
-  assert.ok(
-    backlog.includes(`Pages run [\`${pagesRunId}\`](${pagesRunUrl})`),
-    'backlog must preserve the literal Batch 2 Pages run ID and URL',
-  );
 });

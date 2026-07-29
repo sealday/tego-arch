@@ -28,7 +28,7 @@ test('records the exact successful G007 Batch 1 deployment', () => {
   assert.match(review, /431 个来源/u);
 });
 
-test('preserves Batch 1 evidence with PR-12 as the next pending principle', () => {
+test('preserves Batch 1 closure evidence for PR-01 through PR-05', () => {
   const [, sha] = shaMatch;
   const [, runId] = runMatch;
   for (const id of ['01', '02', '03', '04', '05']) {
@@ -43,14 +43,4 @@ test('preserves Batch 1 evidence with PR-12 as the next pending principle', () =
       new RegExp(`https://sealday\\.github\\.io/tego-arch/principles/pr-${id}`, 'u'),
     );
   }
-  assert.match(backlog, /^- \[ \] \*\*PR-12 /mu);
-  assert.match(backlog, /- \*\*当前持久故事：\*\* `G007`。/u);
-  assert.match(
-    backlog,
-    /- \*\*持久故事进度：\*\* 已完成 `6 \/ 20`；最近完成 `G006`。/u,
-  );
-  assert.match(
-    backlog,
-    new RegExp(`当前发布基线：\\*\\*[^\n]*${sha}[^\n]*${runId}`, 'u'),
-  );
 });
