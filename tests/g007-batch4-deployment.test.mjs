@@ -7,6 +7,7 @@ import {fileURLToPath} from 'node:url';
 const root = fileURLToPath(new URL('../', import.meta.url));
 const routes = ['12', '13', '14'];
 const expectedStageASha = 'bed310e71808e7c19821c6efac8b084876cfb552';
+const expectedStageBSha = '3520f4f9e469019b9f3dbf84ec3170171264174d';
 const expectedPagesRunId = '30422992605';
 const cssAsset = 'https://sealday.github.io/tego-arch/assets/css/styles.9684c33a.css';
 const jsAsset = 'https://sealday.github.io/tego-arch/assets/js/runtime~main.eef39224.js';
@@ -15,18 +16,21 @@ const governedSourceLiteral = '450 governed sources';
 const clickMatrix =
   'PR-12 `9/9 = parent 1 + adjacent 7 + case/question 1`; PR-13 `5/5 = parent 1 + adjacent 3 + case/question 1`; PR-14 `6/6 = parent 1 + adjacent 4 + case/question 1`; `20/20 total`';
 
-const [review, backlog, manifest] = await Promise.all([
-  readFile(new URL('../docs/reviews/g007-batch4.md', import.meta.url), 'utf8')
-    .catch(() => ''),
-  readFile(new URL('../docs/content-backlog.md', import.meta.url), 'utf8'),
-  readFile(new URL('../src/generated/topic-manifest.json', import.meta.url), 'utf8')
-    .then(JSON.parse),
-]);
-const topicsById = new Map(manifest.topics.map((topic) => [topic.id, topic]));
+const review = await readFile(
+  new URL('../docs/reviews/g007-batch4.md', import.meta.url),
+  'utf8',
+).catch(() => '');
+function stageBFile(path) {
+  return execFileSync('git', ['show', `${expectedStageBSha}:${path}`], {
+    cwd: root,
+    encoding: 'utf8',
+  });
+}
+const backlog = stageBFile('docs/content-backlog.md');
 const batch4Manifest = JSON.parse(
   execFileSync(
     'git',
-    ['show', `${expectedStageASha}:src/generated/topic-manifest.json`],
+    ['show', `${expectedStageBSha}:src/generated/topic-manifest.json`],
     {cwd: root, encoding: 'utf8'},
   ),
 );
@@ -120,17 +124,17 @@ test('records one exact successful G007 Batch 4 deployment', () => {
   });
 });
 
-test('closes only PR-12 through PR-14 and leaves PR-15 next', () => {
+function assertBatch4Closure(snapshotBacklog, snapshotTopicsById) {
   const {stageASha, pagesRunId} = parseLiteralEvidence(review);
   const runUrl = `https://github.com/sealday/tego-arch/actions/runs/${pagesRunId}`;
   for (const id of routes) {
-    const row = backlog.split(/\r?\n/u)
+    const row = snapshotBacklog.split(/\r?\n/u)
       .find((line) => line.startsWith(`- [x] **PR-${id} `));
     assert.ok(row, `PR-${id} must be checked`);
     assert.ok(row.includes(stageASha));
     assert.ok(row.includes(runUrl));
     assert.ok(row.includes(`https://sealday.github.io/tego-arch/principles/pr-${id}`));
-    assert.deepEqual(topicsById.get(`PR-${id}`)?.status, {
+    assert.deepEqual(snapshotTopicsById.get(`PR-${id}`)?.status, {
       scope: 'backlog-projection',
       value: 'complete',
       source: 'docs/content-backlog.md',
@@ -138,13 +142,41 @@ test('closes only PR-12 through PR-14 and leaves PR-15 next', () => {
   }
   for (let number = 15; number <= 17; number += 1) {
     const id = `PR-${number}`;
-    assert.match(backlog, new RegExp(`^- \\[ \\] \\*\\*${id} `, 'mu'));
-    assert.equal(batch4TopicsById.get(id)?.published, false);
+    assert.match(snapshotBacklog, new RegExp(`^- \\[ \\] \\*\\*${id} `, 'mu'));
+    assert.equal(snapshotTopicsById.get(id)?.published, false);
   }
-  assert.match(backlog, /- \*\*当前持久故事：\*\* `G007`。/u);
+  assert.match(snapshotBacklog, /- \*\*当前持久故事：\*\* `G007`。/u);
   assert.match(
-    backlog,
+    snapshotBacklog,
     /- \*\*持久故事进度：\*\* 已完成 `6 \/ 20`；最近完成 `G006`。/u,
   );
-  assert.match(backlog, /G007 仍在进行中，下一项为 PR-15|PR-15 为下一项/u);
+  assert.match(snapshotBacklog, /G007 仍在进行中，下一项为 PR-15|PR-15 为下一项/u);
+}
+
+test('closes only PR-12 through PR-14 and leaves PR-15 next', () => {
+  assertBatch4Closure(backlog, batch4TopicsById);
+});
+
+test('pins Batch 4 closure inputs to its immutable Stage B snapshot', async () => {
+  const source = await readFile(new URL(import.meta.url), 'utf8');
+
+  assert.match(source, /expectedStageBSha/u);
+  assert.doesNotMatch(
+    source,
+    /readFile\(new URL\('\.\.\/docs\/content-backlog\.md', import\.meta\.url\)/u,
+  );
+  assert.doesNotMatch(
+    source,
+    /new URL\('\.\.\/src\/generated\/topic-manifest\.json', import\.meta\.url\)/u,
+  );
+
+  const laterBacklog = backlog.replace(
+    '- [x] **PR-12 ',
+    '- [ ] **PR-12 ',
+  );
+  assert.throws(
+    () => assertBatch4Closure(laterBacklog, batch4TopicsById),
+    {name: 'AssertionError'},
+  );
+  assert.doesNotThrow(() => assertBatch4Closure(backlog, batch4TopicsById));
 });

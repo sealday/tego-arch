@@ -13,6 +13,11 @@
   <path d="M880 320 H950" fill="none" stroke="#B56A15" stroke-width="3" marker-end="url(#arrow-orange)"/>
   <path d="M765 400 V470" fill="none" stroke="#52616B" stroke-width="3" marker-end="url(#arrow-slate)"/>
   <path d="M500 525 H445 V400" fill="none" stroke="#52616B" stroke-width="3" marker-end="url(#arrow-slate)"/>
+  <text x="295" y="445" text-anchor="middle" font-family="system-ui, sans-serif" font-size="24" font-weight="600" fill="#17324D">约束协作</text>
+  <text x="605" y="445" text-anchor="middle" font-family="system-ui, sans-serif" font-size="24" font-weight="600" fill="#173D2D">塑造边界</text>
+  <text x="915" y="445" text-anchor="middle" font-family="system-ui, sans-serif" font-size="24" font-weight="600" fill="#53300A">产生反馈</text>
+  <text x="950" y="490" text-anchor="middle" font-family="system-ui, sans-serif" font-size="24" font-weight="600" fill="#1F2A30">提出支撑需求</text>
+  <text x="350" y="485" text-anchor="middle" font-family="system-ui, sans-serif" font-size="24" font-weight="600" fill="#1F2A30">降低认知负荷</text>
   <g>
     <rect x="50" y="240" width="210" height="160" rx="16" fill="#E8F1FF" stroke="#3568A8" stroke-width="3"/>
     <text x="155" y="306" text-anchor="middle" font-family="system-ui, sans-serif" font-size="24" font-weight="700" fill="#17324D">沟通路径</text>
