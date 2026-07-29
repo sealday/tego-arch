@@ -49,26 +49,34 @@ function runValidator(diagram) {
   );
 }
 
+function architectureDiagramWrapper(article) {
+  const opening = article.match(/<div className="architecture-diagram-scroll"[^>]*>/u);
+  if (!opening || opening.index === undefined) {
+    return null;
+  }
+  const contentStart = opening.index + opening[0].length;
+  const contentEnd = article.indexOf('</div>', contentStart);
+  if (contentEnd === -1) {
+    return null;
+  }
+  return article.slice(contentStart, contentEnd);
+}
+
 for (const diagram of diagrams) {
   test(`embeds the local architecture diagram for ${diagram.route}`, async () => {
     const article = await readFile(absolute(diagram.article), 'utf8');
     const publicSvgPath = `/${diagram.svg.replace(/^static\//u, '')}`;
     const escapedPath = publicSvgPath.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
-    const image = article.match(
+    const wrapper = architectureDiagramWrapper(article);
+
+    assert.ok(wrapper !== null, `${diagram.route} exact diagram scroll wrapper`);
+    const image = wrapper.match(
       new RegExp(`!\\[([^\\]]+)\\]\\(${escapedPath}\\)`, 'u'),
     );
 
     assert.ok(image, `${diagram.route} uses ${publicSvgPath}`);
     assert.match(image[1], purposeAlt.get(diagram.route), `${diagram.route} purpose-oriented alt`);
     assert.doesNotMatch(image[1], /(?:\.svg|diagram|架构图)$/iu);
-    assert.match(
-      article,
-      new RegExp(
-        `<div className="architecture-diagram-scroll"[^>]*>[\\s\\S]*!\\[[^\\]]+\\]\\(${escapedPath}\\)[\\s\\S]*<\\/div>`,
-        'u',
-      ),
-      `${diagram.route} exact diagram scroll wrapper`,
-    );
   });
 
   test(`publishes the accessible Draw.io and SVG pair for ${diagram.route}`, async () => {
