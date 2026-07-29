@@ -39,9 +39,9 @@
     <rect x="350" y="75" width="500" height="90" rx="16" fill="#F5F7FA" stroke="#6B7280" stroke-width="3" stroke-dasharray="8 6"/>
     <text x="600" y="130" text-anchor="middle" font-family="system-ui, sans-serif" font-size="24" font-weight="700" fill="#303846">架构原则：用于交叉阅读，不改变主归属</text>
   </g>
-  <text x="218" y="478" text-anchor="start" font-family="system-ui, sans-serif" font-size="24" font-weight="700" fill="#17324D">主归属</text>
-  <text x="613" y="478" text-anchor="start" font-family="system-ui, sans-serif" font-size="24" font-weight="700" fill="#173D2D">主归属</text>
-  <text x="1008" y="478" text-anchor="end" font-family="system-ui, sans-serif" font-size="24" font-weight="700" fill="#53300A">主归属</text>
+  <text x="225" y="478" text-anchor="start" font-family="system-ui, sans-serif" font-size="24" font-weight="700" fill="#17324D">主归属</text>
+  <text x="620" y="478" text-anchor="start" font-family="system-ui, sans-serif" font-size="24" font-weight="700" fill="#173D2D">主归属</text>
+  <text x="1015" y="478" text-anchor="start" font-family="system-ui, sans-serif" font-size="24" font-weight="700" fill="#53300A">主归属</text>
 
   <g>
     <rect x="55" y="520" width="300" height="160" rx="16" fill="#F2F7FF" stroke="#3568A8" stroke-width="3"/>
