@@ -2,6 +2,8 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import test from 'node:test';
 
+import {mergePublicLedgerHealth} from '../scripts/source-link-health.mjs';
+
 const root = new URL('../', import.meta.url);
 
 async function source(path) {
@@ -56,6 +58,23 @@ test('renders the generated source ledger instead of a hand-maintained catalog',
   );
   assert.doesNotMatch(styles, /\bheight\s*:/);
   assert.doesNotMatch(styles, /overflow\s*:\s*hidden/);
+});
+
+test('keeps the generated NIST source card aligned with runtime governance', async () => {
+  const [runtime, cache, generated] = await Promise.all([
+    source('data/source-ledger.json').then(JSON.parse),
+    source('data/source-link-health.json').then(JSON.parse),
+    generatedLedger(),
+  ]);
+  const sourceId = 'src-nist-sp-800-160-v1r1-2022';
+  const projectedSource = mergePublicLedgerHealth(runtime, cache).sources.find(
+    ({id}) => id === sourceId,
+  );
+  const generatedSource = generated.sources.find(({id}) => id === sourceId);
+
+  assert.ok(projectedSource);
+  assert.ok(generatedSource);
+  assert.deepEqual(generatedSource, projectedSource);
 });
 
 test('describes link health as a reviewed committed cache rather than real-time status', async () => {
