@@ -43,7 +43,7 @@
 
 | Article | Citation | Source tier | Roles / usage | Manifest primary |
 | --- | --- | --- | --- | --- |
-| QA-05 | `src-nist-sp800-160v1r1` → `https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final` | primary | `definition, method` / `facts-summary` | true |
+| QA-05 | `src-nist-sp-800-160-v1r1-2022` → `https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final` | primary | `definition, method` / `facts-summary` | true |
 | QA-05 | `src-nist-privacy-framework-1` → `https://doi.org/10.6028/NIST.CSWP.01162020` | primary | `definition, method, learning` / `facts-summary` | false |
 | QA-05 | existing `src-cheatsheetseries-ea079221bd09` | primary | `method, learning` / `facts-summary` | false |
 | QA-08 | `src-opentelemetry-observability-primer` → `https://opentelemetry.io/docs/concepts/observability-primer/` | primary | `definition, learning` / `facts-summary` | true |
@@ -51,7 +51,7 @@
 | QA-08 | existing `src-sre-monitoring-distributed-systems` | primary | `definition, method` / `facts-summary` | false |
 | QA-09 | `src-faa-order-8040-4c` → `https://www.faa.gov/documentLibrary/media/Order/FAA_Order_8040.4C.pdf` | primary | `definition, method` / `facts-summary` | true |
 | QA-09 | `src-stpa-handbook-2018` → `https://psas.scripts.mit.edu/home/get_file.php?name=STPA_handbook.pdf` | primary | `definition, method, learning` / `facts-summary` | false |
-| QA-09 | reuse `src-nist-sp800-160v1r1` | primary | `comparison, learning` / `facts-summary` | false |
+| QA-09 | reuse `src-nist-sp-800-160-v1r1-2022` | primary | `comparison, learning` / `facts-summary` | false |
 
 All three articles also cite existing `src-github-432a30aa96cb` only as navigation-only learning evidence after its title and usage boundary are corrected to describe the full Awesome Software Architecture repository. This discovery record adds no count. The six new remote records are primary tier; three local original-illustration records are also primary tier. Therefore documents become `62 + 3 = 65`; sources progress `412 + 6 = 418`, then `418 + 3 = 421`; tiers progress `376/25/4/7 → 382/25/4/7 → 385/25/4/7`. With page size 20, primary pages change from 19 to `ceil(385 / 20) = 20`; first-party pages stay `ceil(25 / 20) = 2`.
 
@@ -118,7 +118,7 @@ const expected = new Map([
   ['QA-09', ['quality-attributes/qa-09-safety-physical-risk.mdx', '/quality-attributes/qa-09']],
 ]);
 const solePrimary = new Map([
-  ['QA-05', 'src-nist-sp800-160v1r1'],
+  ['QA-05', 'src-nist-sp-800-160-v1r1-2022'],
   ['QA-08', 'src-opentelemetry-observability-primer'],
   ['QA-09', 'src-faa-order-8040-4c'],
 ]);
@@ -317,7 +317,7 @@ node --input-type=module - <<'NODE'
 import {readFile} from 'node:fs/promises';
 import {buildSourceLedgerPages} from './plugins/source-ledger-pages/index.mjs';
 const ids = new Set([
-  'src-nist-sp800-160v1r1',
+  'src-nist-sp-800-160-v1r1-2022',
   'src-nist-privacy-framework-1',
   'src-opentelemetry-observability-primer',
   'src-sre-managing-incidents',

@@ -5480,7 +5480,7 @@
       "locator_aliases": [],
       "tombstone": null,
       "registered_at": "2026-07-27",
-      "checked_at": "2026-07-29",
+      "checked_at": "2026-07-27",
       "tier": "primary",
       "license_family_grouping": "identity",
       "family_grouping_evidence_url": null,
@@ -13180,7 +13180,7 @@
     {
       "id": "src-google-cloud-waf-elasticity",
       "canonical_locator": "https://docs.cloud.google.com/architecture/framework/performance-optimization/elasticity",
-      "transport_locator": "https://docs.cloud.google.com/architecture/framework/performance-optimization/elasticity",
+      "transport_locator": "https://docs.cloud.google.com/architecture/framework/performance-optimization/elasticity?hl=es",
       "query_insensitive": false,
       "locator_aliases": [],
       "tombstone": null,
@@ -13188,7 +13188,7 @@
       "author_or_org": "Google Cloud",
       "published_at": "2024-12-06",
       "registered_at": "2026-07-27",
-      "checked_at": "2026-07-27",
+      "checked_at": "2026-07-29",
       "version": "Google Cloud Architecture Framework page last updated 2024-12-06 UTC; checked on 2026-07-27",
       "source_kind": "vendor-reference-architecture",
       "tier": "first-party",
@@ -13206,9 +13206,9 @@
       "copyright_policy": "vendor-claims-separated",
       "usage_boundary": "Documents Google Cloud's elasticity guidance and vendor framing; it does not establish universal control thresholds, demand satisfaction, linear scaling, or portability.",
       "link_policy": "stable",
-      "expected_final_transport_locator": "https://docs.cloud.google.com/architecture/framework/performance-optimization/elasticity",
-      "expected_final_approved_at": "2026-07-27",
-      "expected_final_approval_note": "Reviewed canonical HTTPS transport and literal page-footer license notice on 2026-07-27."
+      "expected_final_transport_locator": "https://docs.cloud.google.com/architecture/framework/performance-optimization/elasticity?hl=es",
+      "expected_final_approved_at": "2026-07-29",
+      "expected_final_approval_note": "After the canonical route alternated between a locale redirect and transient fetch failures, the bounded 2026-07-29 live check observed the exact ?hl=es Google Cloud transport as healthy with HTTP 200, no redirects, and no login wall; only this exact transport is accepted."
     },
     {
       "id": "src-green-software-sci",
@@ -14563,7 +14563,7 @@
       "author_or_org": "Model Context Protocol maintainers",
       "published_at": null,
       "registered_at": "2026-07-24",
-      "checked_at": "2026-07-24",
+      "checked_at": "2026-07-29",
       "version": "Current work/page checked on 2026-07-24",
       "source_kind": "standard",
       "tier": "primary",
@@ -14587,9 +14587,9 @@
       "copyright_policy": "adapt-with-attribution",
       "usage_boundary": "Defines the cited protocol or standard contract in “MCP introduction”; it does not demonstrate implementation conformance or production fitness.",
       "link_policy": "stable",
-      "expected_final_transport_locator": "https://modelcontextprotocol.io/docs/getting-started/intro",
-      "expected_final_approved_at": "2026-07-24",
-      "expected_final_approval_note": "Initial reviewed migration transport baseline"
+      "expected_final_transport_locator": "https://modelcontextprotocol.io/docs/2026-07-28/getting-started/intro",
+      "expected_final_approved_at": "2026-07-29",
+      "expected_final_approval_note": "The 2026-07-29 live checker observed one HTTP 307 redirect from the canonical MCP introduction route to the exact dated 2026-07-28 introduction route, followed by HTTP 200 with no login wall; only that exact expected final transport is accepted."
     },
     {
       "id": "src-nasa-architecture-description-vd",
@@ -14750,7 +14750,7 @@
       "locator_aliases": [],
       "tombstone": null,
       "registered_at": "2026-07-27",
-      "checked_at": "2026-07-27",
+      "checked_at": "2026-07-29",
       "tier": "primary",
       "license_family_grouping": "identity",
       "family_grouping_evidence_url": null,

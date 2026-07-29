@@ -48,7 +48,7 @@ const relationships = new Map([
   }],
 ]);
 const remoteIds = [
-  'src-nist-sp800-160v1r1',
+  'src-nist-sp-800-160-v1r1-2022',
   'src-nist-privacy-framework-1',
   'src-opentelemetry-observability-primer',
   'src-sre-managing-incidents',
@@ -56,7 +56,7 @@ const remoteIds = [
   'src-stpa-handbook-2018',
 ];
 const solePrimary = new Map([
-  ['QA-05', 'src-nist-sp800-160v1r1'],
+  ['QA-05', 'src-nist-sp-800-160-v1r1-2022'],
   ['QA-08', 'src-opentelemetry-observability-primer'],
   ['QA-09', 'src-faa-order-8040-4c'],
 ]);

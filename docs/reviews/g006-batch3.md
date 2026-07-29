@@ -58,7 +58,7 @@
 - `/references/primary/page/3#src-sre-managing-incidents`
 - `/references/primary/page/5#src-faa-order-8040-4c`
 - `/references/primary/page/6#src-nist-privacy-framework-1`
-- `/references/primary/page/6#src-nist-sp800-160v1r1`
+- `/references/primary/page/6#src-nist-sp-800-160-v1r1-2022`
 - `/references/primary/page/7#src-opentelemetry-observability-primer`
 - `/references/primary/page/19#src-atlas-qa05-data-trust-boundaries-8d53f1c92a64`
 - `/references/primary/page/19#src-atlas-qa09-safety-control-loop-c4a7e83b1d96`

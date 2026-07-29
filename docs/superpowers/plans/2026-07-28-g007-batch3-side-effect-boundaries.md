@@ -325,7 +325,7 @@ git commit -m "test: define g007 side-effect boundary contract"
 
 **Interfaces:**
 
-- Consumes: Existing source identities `src-nist-sp800-160v1r1` and `src-learn-1abc9c267864`, plus the current source-ledger schema.
+- Consumes: Existing source identities `src-nist-sp-800-160-v1r1-2022` and `src-learn-1abc9c267864`, plus the current source-ledger schema.
 - Produces: Seven new stable source identities and three pending governed document entries used verbatim by the MDX source sections and generated manifest.
 
 - [ ] **Step 1: Audit the exact source transports, rights evidence, and non-claims**
@@ -335,7 +335,7 @@ Open every locator and record the final transport observed on the execution date
 | Source ID | Canonical locator | Author/org | Fact boundary | Non-claim |
 | --- | --- | --- | --- | --- |
 | `src-saltzer-schroeder-protection-1975` | `https://web.mit.edu/Saltzer/www/publications/protection/` | Jerome H. Saltzer and Michael D. Schroeder | Defines fail-safe defaults as permission-based access decisions and least privilege as the minimum privileges necessary to complete the job | Does not define modern IAM products or prove a deployed policy is least-privileged |
-| `src-nist-sp800-160v1r1` | existing canonical locator | National Institute of Standards and Technology | Supports trustworthy-system treatment of least privilege, distributed privilege, and defense in depth | Does not replace system-specific threat analysis or prove controls are independent |
+| `src-nist-sp-800-160-v1r1-2022` | existing canonical locator | National Institute of Standards and Technology | Supports trustworthy-system treatment of least privilege, distributed privilege, and defense in depth | Does not replace system-specific threat analysis or prove controls are independent |
 | `src-aws-making-retries-safe-idempotent-apis-2020` | `https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-APIs/` | Malcolm Featonby / Amazon Web Services | Uses a caller-supplied request identity and semantic equivalence to make selected mutating API retries safe within a declared contract | Does not establish universal exactly-once execution or make arbitrary external effects retry-safe |
 | `src-berkeley-coordination-avoidance-2015` | `https://www2.eecs.berkeley.edu/Pubs/TechRpts/2015/EECS-2015-206.html` | Peter Bailis / UC Berkeley EECS | Defines coordination avoidance as using as little coordination as possible while preserving application integrity | Does not prove all workloads are coordination-free or eliminate ownership and serialization |
 | `src-learn-1abc9c267864` | existing canonical locator | Microsoft | Retry guidance notes possible repeated execution and the need to consider idempotency | Does not prove a particular operation is idempotent |
@@ -419,7 +419,7 @@ Add these entries to `ledger.documents`:
         "quotation_reviewed": false
       },
       {
-        "source_id": "src-nist-sp800-160v1r1",
+        "source_id": "src-nist-sp-800-160-v1r1-2022",
         "citation_url": "https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final",
         "roles": ["definition", "method"],
         "manifest_primary": false,

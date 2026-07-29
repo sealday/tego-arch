@@ -19709,7 +19709,7 @@
       "license_family_grouping": "identity",
       "family_grouping_evidence_url": null,
       "expected_final_approved_at": "2026-07-27",
-      "id": "src-nist-sp800-160v1r1",
+      "id": "src-nist-sp-800-160-v1r1-2022",
       "canonical_locator": "https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final",
       "transport_locator": "https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final",
       "title": "NIST SP 800-160 Vol. 1 Rev. 1: Engineering Trustworthy Secure Systems",
@@ -29256,7 +29256,7 @@
       ],
       "citations": [
         {
-          "source_id": "src-nist-sp800-160v1r1",
+          "source_id": "src-nist-sp-800-160-v1r1-2022",
           "citation_url": "https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final",
           "roles": [
             "definition",
@@ -29915,7 +29915,7 @@
           "quotation_reviewed": false
         },
         {
-          "source_id": "src-nist-sp800-160v1r1",
+          "source_id": "src-nist-sp-800-160-v1r1-2022",
           "citation_url": "https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final",
           "roles": [
             "definition",
@@ -30223,7 +30223,7 @@
           "quotation_reviewed": false
         },
         {
-          "source_id": "src-nist-sp800-160v1r1",
+          "source_id": "src-nist-sp-800-160-v1r1-2022",
           "citation_url": "https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final",
           "roles": [
             "comparison",
