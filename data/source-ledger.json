@@ -5480,7 +5480,7 @@
       "locator_aliases": [],
       "tombstone": null,
       "registered_at": "2026-07-27",
-      "checked_at": "2026-07-27",
+      "checked_at": "2026-07-29",
       "tier": "primary",
       "license_family_grouping": "identity",
       "family_grouping_evidence_url": null,
@@ -14754,15 +14754,15 @@
       "tier": "primary",
       "license_family_grouping": "identity",
       "family_grouping_evidence_url": null,
-      "expected_final_approved_at": "2026-07-27",
-      "id": "src-nist-sp800-160v1r1",
+      "expected_final_approved_at": "2026-07-29",
+      "id": "src-nist-sp-800-160-v1r1-2022",
       "canonical_locator": "https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final",
       "transport_locator": "https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final",
       "title": "NIST SP 800-160 Vol. 1 Rev. 1: Engineering Trustworthy Secure Systems",
-      "author_or_org": "National Institute of Standards and Technology",
+      "author_or_org": "Ron Ross, Mark Winstead, Michael McEvilley / NIST",
       "published_at": "2022-11-16",
-      "version": "Final, 2022-11-16",
-      "source_kind": "official-docs",
+      "version": "Final publication dated 2022-11-16; checked 2026-07-29",
+      "source_kind": "standard",
       "allowed_evidence_roles": [
         "comparison",
         "definition",
@@ -14775,10 +14775,10 @@
       "license_evidence_note": "NIST explains that its publications are generally U.S. Government works; separately marked third-party material is excluded.",
       "license_family_id": "https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final",
       "copyright_policy": "public-domain-with-provenance",
-      "usage_boundary": "Supports facts summaries about trustworthy secure system engineering and comparison boundaries; it does not prove system security, implementation effectiveness, Safety, or compliance.",
+      "usage_boundary": "Supports lifecycle systems security engineering, assurance, validation, verification, and risk treatment; it does not prescribe one software architecture or replace context-specific threat analysis.",
       "link_policy": "stable",
       "expected_final_transport_locator": "https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final",
-      "expected_final_approval_note": "Reviewed official NIST Final publication page transport on 2026-07-27."
+      "expected_final_approval_note": "The 2026-07-29 live checker observed the direct official NIST final-publication HTTPS transport as healthy with HTTP 200, no redirects, and no login wall; the transport is accepted."
     },
     {
       "id": "src-nygard-documenting-architecture-decisions-2011",
@@ -17079,6 +17079,242 @@
       "usage_boundary": "Supports author provenance and bibliographic facts for Applying UML and Patterns only; page prose, images, and linked works are not reused.",
       "expected_final_transport_locator": "https://www.craiglarman.com/wiki/index.php?title=Book_Applying_UML_and_Patterns",
       "expected_final_approval_note": "The 2026-07-29 live checker observed the direct Craig Larman author-page HTTPS transport as healthy with HTTP 206, no redirects, and no login wall; the official author transport is accepted."
+    },
+    {
+      "id": "src-melconway-committees-1968",
+      "canonical_locator": "https://www.melconway.com/research/committees.html",
+      "transport_locator": "https://www.melconway.com/research/committees.html",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "How Do Committees Invent?",
+      "author_or_org": "Melvin E. Conway",
+      "published_at": "1968-04-01",
+      "registered_at": "2026-07-29",
+      "checked_at": "2026-07-29",
+      "version": "Datamation article, April 1968; author-hosted transcription checked 2026-07-29",
+      "source_kind": "paper",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "historical-context",
+        "method"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named author-hosted article and bibliographic facts only; article prose, figures, marks, linked works, and third-party material excluded",
+      "license_evidence_url": "https://www.melconway.com/research/committees.html",
+      "license_evidence_note": "The 2026-07-29 audit found no reusable license notice for the named author-hosted article. Atlas retains only the link, bibliographic facts, attribution, original factual summary, and reviewed short quotation.",
+      "license_family_id": "https://www.melconway.com/research/committees.html",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports Conway's original descriptive thesis and communication-path reasoning; it does not prescribe a team topology or prove that reorganization alone changes an existing system.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://www.melconway.com/research/committees.html",
+      "expected_final_approved_at": "2026-07-29",
+      "expected_final_approval_note": "The 2026-07-29 live checker observed the direct author-hosted HTTPS transport as healthy with HTTP 206, no redirects, and no login wall; the transport is accepted."
+    },
+    {
+      "id": "src-team-topologies-organization-dynamics-2020",
+      "canonical_locator": "https://teamtopologies.com/s/Organization-Dynamics-with-Team-Topologies-Mini-book-MB80.pdf",
+      "transport_locator": "https://teamtopologies.com/all-mini-books/mini-book-organization-dynamics-with-team-topologies",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Organization Dynamics with Team Topologies",
+      "author_or_org": "Matthew Skelton and Manuel Pais / Team Topologies",
+      "published_at": "2020-07-01",
+      "registered_at": "2026-07-29",
+      "checked_at": "2026-07-29",
+      "version": "Official Team Topologies mini-book PDF published July 2020; checked 2026-07-29",
+      "source_kind": "official-docs",
+      "tier": "secondary",
+      "allowed_evidence_roles": [
+        "comparison",
+        "learning",
+        "method"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named Team Topologies mini-book and bibliographic facts only; PDF prose, diagrams, tables, examples, marks, linked works, and third-party material excluded",
+      "license_evidence_url": "https://teamtopologies.com/use-of-team-topologies-materials",
+      "license_evidence_note": "Team Topologies' official materials policy grants no broad reusable license for this mini-book. Atlas conservatively retains only the link, bibliographic facts, attribution, and original factual summary.",
+      "license_family_id": "https://teamtopologies.com/s/Organization-Dynamics-with-Team-Topologies-Mini-book-MB80.pdf",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports the Reverse Conway practice, team boundaries, cognitive load, and platform support as organizational design guidance; it is not an empirical guarantee or a universal reorganization template.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://teamtopologies.com/all-mini-books/mini-book-organization-dynamics-with-team-topologies",
+      "expected_final_approved_at": "2026-07-29",
+      "expected_final_approval_note": "After the canonical PDF produced a fetch failure, the 2026-07-29 live checker observed the official Team Topologies page for the same MB80 mini-book as healthy with HTTP 206, no redirects, and no login wall; the decoupled transport is accepted."
+    },
+    {
+      "id": "src-cisa-secure-by-design-2023",
+      "canonical_locator": "https://www.cisa.gov/sites/default/files/2023-10/Shifting-the-Balance-of-Cybersecurity-Risk-Principles-and-Approaches-for-Secure-by-Design-Software.pdf",
+      "transport_locator": "https://www.cisa.gov/sites/default/files/2023-10/Shifting-the-Balance-of-Cybersecurity-Risk-Principles-and-Approaches-for-Secure-by-Design-Software.pdf",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Shifting the Balance of Cybersecurity Risk: Principles and Approaches for Secure by Design Software",
+      "author_or_org": "CISA and international partners",
+      "published_at": "2023-10-25",
+      "registered_at": "2026-07-29",
+      "checked_at": "2026-07-29",
+      "version": "Updated joint guidance published 2023-10-25; checked 2026-07-29",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "implementation",
+        "learning",
+        "method"
+      ],
+      "license": "LicenseRef-US-Gov-Public-Domain",
+      "license_scope": "CISA-authored U.S. Government portions of the named joint guidance; international-partner contributions, marks, linked works, and separately copyrighted material excluded",
+      "license_evidence_url": "https://www.govinfo.gov/content/pkg/USCODE-2023-title17/html/USCODE-2023-title17-chap1-sec105.htm",
+      "license_evidence_note": "17 U.S.C. 105 excludes U.S. Government works from U.S. copyright protection. Atlas applies that status only to CISA-authored portions and excludes international-partner contributions and separately copyrighted material.",
+      "license_family_id": "https://www.cisa.gov/sites/default/files/2023-10/Shifting-the-Balance-of-Cybersecurity-Risk-Principles-and-Approaches-for-Secure-by-Design-Software.pdf",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "public-domain-with-provenance",
+      "usage_boundary": "Supports secure-by-design ownership, secure defaults, lifecycle tactics, and transparency expectations for software manufacturers; it does not prove that any listed tactic eliminates product risk.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://www.cisa.gov/sites/default/files/2023-10/Shifting-the-Balance-of-Cybersecurity-Risk-Principles-and-Approaches-for-Secure-by-Design-Software.pdf",
+      "expected_final_approved_at": "2026-07-29",
+      "expected_final_approval_note": "The 2026-07-29 live checker observed the direct official CISA PDF HTTPS transport as healthy with HTTP 200, no redirects, and no login wall; the transport is accepted."
+    },
+    {
+      "id": "src-gilbert-lynch-cap-2002",
+      "canonical_locator": "https://dl.acm.org/doi/10.1145/564585.564601",
+      "transport_locator": "https://groups.csail.mit.edu/tds/papers/Gilbert/Brewer6.pdf",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Brewer's Conjecture and the Feasibility of Consistent, Available, Partition-Tolerant Web Services",
+      "author_or_org": "Seth Gilbert and Nancy Lynch / ACM",
+      "published_at": "2002-06-01",
+      "registered_at": "2026-07-29",
+      "checked_at": "2026-07-29",
+      "version": "SIGACT News 33(2), June 2002; ACM DOI page checked 2026-07-29",
+      "source_kind": "paper",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "historical-context",
+        "method"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named ACM work and bibliographic facts only; paper prose, equations, figures, tables, examples, marks, linked works, and third-party material excluded",
+      "license_evidence_url": "https://dl.acm.org/doi/10.1145/564585.564601",
+      "license_evidence_note": "The 2026-07-29 audit found no reusable license notice for the named ACM work. Atlas retains only the link, bibliographic facts, attribution, original factual summary, and reviewed short quotation.",
+      "license_family_id": "doi:10.1145/564585.564601",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports the formal distributed-systems model and its stated consistency, availability, and partition assumptions; it does not support treating CAP as a general design principle or a two-of-three product slogan.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://groups.csail.mit.edu/tds/papers/Gilbert/Brewer6.pdf",
+      "expected_final_approved_at": "2026-07-29",
+      "expected_final_approval_note": "After the canonical ACM DOI returned HTTP 403, the 2026-07-29 live checker observed the MIT CSAIL author-publication PDF for the same work as healthy with HTTP 200, no redirects, and no login wall; the decoupled transport is accepted."
+    },
+    {
+      "id": "src-fowler-strangler-fig-2024",
+      "canonical_locator": "https://martinfowler.com/bliki/StranglerFigApplication.html",
+      "transport_locator": "https://martinfowler.com/bliki/StranglerFigApplication.html",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Strangler Fig",
+      "author_or_org": "Martin Fowler",
+      "published_at": "2024-08-22",
+      "registered_at": "2026-07-29",
+      "checked_at": "2026-07-29",
+      "version": "Article updated 2024-08-22; checked 2026-07-29",
+      "source_kind": "engineering-blog",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "comparison",
+        "historical-context",
+        "implementation",
+        "method"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named Martin Fowler article and bibliographic facts only; article prose, diagrams, images, examples, marks, linked works, and third-party material excluded",
+      "license_evidence_url": "https://martinfowler.com/bliki/StranglerFigApplication.html",
+      "license_evidence_note": "The 2026-07-29 audit found no reusable license notice for the named article. Atlas retains only the link, bibliographic facts, attribution, original factual summary, and reviewed short quotation.",
+      "license_family_id": "https://martinfowler.com/bliki/StranglerFigApplication.html",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports gradual legacy modernization and transitional coexistence as a migration approach; it does not make Strangler Fig an architecture principle or guarantee a low-cost migration.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://martinfowler.com/bliki/StranglerFigApplication.html",
+      "expected_final_approved_at": "2026-07-29",
+      "expected_final_approval_note": "The 2026-07-29 live checker observed the direct author-site HTTPS transport as healthy with HTTP 206, no redirects, and no login wall; the transport is accepted."
+    },
+    {
+      "id": "src-atlas-pr15-conway-feedback-loop",
+      "canonical_locator": "/img/diagrams/pr-15-conway-feedback-loop.svg",
+      "transport_locator": "/img/diagrams/pr-15-conway-feedback-loop.svg",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Conway communication and system-boundary feedback loop illustration",
+      "author_or_org": "Tego Arch maintainers",
+      "published_at": null,
+      "registered_at": "2026-07-29",
+      "checked_at": "2026-07-29",
+      "version": "Original SVG authored and QA-checked on 2026-07-29",
+      "source_kind": "original-illustration",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "illustration"
+      ],
+      "license": "LicenseRef-Atlas-Original",
+      "license_scope": "The named project-authored Conway feedback-loop diagram only",
+      "license_evidence_url": "https://github.com/sealday/tego-arch/blob/main/static/img/diagrams/pr-15-conway-feedback-loop.svg",
+      "license_evidence_note": "Project-authored Draw.io and SVG pair created for PR-15; no third-party reference image or copied composition is included.",
+      "license_family_id": "/img/diagrams/pr-15-conway-feedback-loop.svg",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "original-atlas",
+      "usage_boundary": "Explains the feedback among communication paths, team boundaries, system boundaries, delivery feedback, and platform capability; it does not prove an organizational outcome.",
+      "link_policy": null,
+      "expected_final_transport_locator": "/img/diagrams/pr-15-conway-feedback-loop.svg",
+      "expected_final_approved_at": "2026-07-29",
+      "expected_final_approval_note": "Approved project-local original illustration locator for the named PR-15 SVG."
+    },
+    {
+      "id": "src-atlas-pr17-classification-boundaries",
+      "canonical_locator": "/img/diagrams/pr-17-classification-boundaries.svg",
+      "transport_locator": "/img/diagrams/pr-17-classification-boundaries.svg",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Principle and pattern classification-boundaries illustration",
+      "author_or_org": "Tego Arch maintainers",
+      "published_at": null,
+      "registered_at": "2026-07-29",
+      "checked_at": "2026-07-29",
+      "version": "Original SVG authored and QA-checked on 2026-07-29",
+      "source_kind": "original-illustration",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "illustration"
+      ],
+      "license": "LicenseRef-Atlas-Original",
+      "license_scope": "The named project-authored classification-boundaries diagram only",
+      "license_evidence_url": "https://github.com/sealday/tego-arch/blob/main/static/img/diagrams/pr-17-classification-boundaries.svg",
+      "license_evidence_note": "Project-authored Draw.io and SVG pair created for PR-17; no third-party reference image or copied composition is included.",
+      "license_family_id": "/img/diagrams/pr-17-classification-boundaries.svg",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "original-atlas",
+      "usage_boundary": "Explains primary classification versus cross-links for CAP, Strangler Fig, and GRASP; it does not establish the source facts represented by those labels.",
+      "link_policy": null,
+      "expected_final_transport_locator": "/img/diagrams/pr-17-classification-boundaries.svg",
+      "expected_final_approved_at": "2026-07-29",
+      "expected_final_approval_note": "Approved project-local original illustration locator for the named PR-17 SVG."
     }
   ],
   "documents": {
@@ -25142,7 +25378,7 @@
           "quotation_reviewed": false
         },
         {
-          "source_id": "src-nist-sp800-160v1r1",
+          "source_id": "src-nist-sp-800-160-v1r1-2022",
           "citation_url": "https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final",
           "roles": [
             "definition",
@@ -25330,7 +25566,7 @@
           "quotation_reviewed": false
         },
         {
-          "source_id": "src-nist-sp800-160v1r1",
+          "source_id": "src-nist-sp-800-160-v1r1-2022",
           "citation_url": "https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final",
           "roles": [
             "comparison",
@@ -25791,7 +26027,7 @@
           "quotation_reviewed": false
         },
         {
-          "source_id": "src-nist-sp800-160v1r1",
+          "source_id": "src-nist-sp-800-160-v1r1-2022",
           "citation_url": "https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final",
           "roles": [
             "definition",
@@ -26053,6 +26289,176 @@
           "usage_mode": "facts-summary",
           "attribution_note": "Book Applying UML and Patterns, Craig Larman",
           "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/principles/pr-15-conway-law-team-boundaries.mdx": {
+      "reviewed_at": "2026-07-29",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-melconway-committees-1968",
+          "citation_url": "https://www.melconway.com/research/committees.html",
+          "roles": [
+            "definition",
+            "historical-context"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "How Do Committees Invent?, Melvin E. Conway",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-team-topologies-organization-dynamics-2020",
+          "citation_url": "https://teamtopologies.com/s/Organization-Dynamics-with-Team-Topologies-Mini-book-MB80.pdf",
+          "roles": [
+            "comparison",
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Organization Dynamics with Team Topologies, Matthew Skelton and Manuel Pais / Team Topologies",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-atlas-pr15-conway-feedback-loop",
+          "citation_url": "/img/diagrams/pr-15-conway-feedback-loop.svg",
+          "roles": [
+            "illustration"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "original-illustration",
+          "attribution_note": "Conway communication and system-boundary feedback loop illustration, Tego Arch maintainers",
+          "modification_note": "Created as an original Draw.io and SVG pair for PR-15 from a project-authored brief; QA-reviewed to distinguish communication paths, team boundaries, system boundaries, delivery feedback, and platform capability without claiming an organizational outcome.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/principles/pr-16-secure-by-design.mdx": {
+      "reviewed_at": "2026-07-29",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-cisa-secure-by-design-2023",
+          "citation_url": "https://www.cisa.gov/sites/default/files/2023-10/Shifting-the-Balance-of-Cybersecurity-Risk-Principles-and-Approaches-for-Secure-by-Design-Software.pdf",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Shifting the Balance of Cybersecurity Risk: Principles and Approaches for Secure by Design Software, CISA and international partners",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-nist-sp-800-160-v1r1-2022",
+          "citation_url": "https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final",
+          "roles": [
+            "comparison",
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "NIST SP 800-160 Vol. 1 Rev. 1: Engineering Trustworthy Secure Systems, Ron Ross, Mark Winstead, Michael McEvilley / NIST",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-cheatsheetseries-ea079221bd09",
+          "citation_url": "https://cheatsheetseries.owasp.org/cheatsheets/Threat_Modeling_Cheat_Sheet.html",
+          "roles": [
+            "comparison",
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Threat Modeling Cheat Sheet, OWASP Cheat Sheet Series",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/principles/pr-17-classification-boundaries.mdx": {
+      "reviewed_at": "2026-07-29",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-gilbert-lynch-cap-2002",
+          "citation_url": "https://dl.acm.org/doi/10.1145/564585.564601",
+          "roles": [
+            "definition",
+            "historical-context"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Brewer's Conjecture and the Feasibility of Consistent, Available, Partition-Tolerant Web Services, Seth Gilbert and Nancy Lynch / ACM",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-fowler-strangler-fig-2024",
+          "citation_url": "https://martinfowler.com/bliki/StranglerFigApplication.html",
+          "roles": [
+            "comparison",
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Strangler Fig, Martin Fowler",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-larman-applying-uml-patterns-3e-2004",
+          "citation_url": "https://www.pearson.com/en-us/subject-catalog/p/Larman-Applying-UML-and-Patterns-An-Introduction-to-Object-Oriented-Analysis-and-Design-and-Iterative-Development-3rd-Edition/P200000000422/9780131489066",
+          "roles": [
+            "historical-context"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Applying UML and Patterns, 3rd edition, Craig Larman / Pearson",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-atlas-pr17-classification-boundaries",
+          "citation_url": "/img/diagrams/pr-17-classification-boundaries.svg",
+          "roles": [
+            "illustration"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "original-illustration",
+          "attribution_note": "Principle and pattern classification-boundaries illustration, Tego Arch maintainers",
+          "modification_note": "Created as an original Draw.io and SVG pair for PR-17 from a project-authored brief; QA-reviewed to separate primary classification from cross-links for CAP, Strangler Fig, and GRASP without asserting the cited source facts.",
           "excerpt": null,
           "quotation_reviewed": false
         }
