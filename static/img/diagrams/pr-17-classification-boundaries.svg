@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 760" role="img" aria-labelledby="pr17-title pr17-desc">
+  <title id="pr17-title">CAP、Strangler Fig 与 GRASP 的分类边界图</title>
+  <desc id="pr17-desc">三个主题由实线箭头连接到各自主归属：分布式系统理论、迁移模式和责任分配方法；虚线连接到架构原则交叉阅读区。</desc>
+  <defs>
+    <marker id="arrow-blue" markerWidth="14" markerHeight="14" refX="11" refY="7" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L14,7 L0,14 Z" fill="#3568A8"/></marker>
+    <marker id="arrow-green" markerWidth="14" markerHeight="14" refX="11" refY="7" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L14,7 L0,14 Z" fill="#2E7D5B"/></marker>
+    <marker id="arrow-orange" markerWidth="14" markerHeight="14" refX="11" refY="7" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L14,7 L0,14 Z" fill="#B56A15"/></marker>
+    <marker id="arrow-open" markerWidth="14" markerHeight="14" refX="11" refY="7" orient="auto" markerUnits="userSpaceOnUse"><path d="M1,1 L13,7 L1,13" fill="none" stroke="#5B6675" stroke-width="2"/></marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="760" fill="#FFFFFF"/>
+  <text x="58" y="53" font-family="system-ui, sans-serif" font-size="24" font-weight="700" fill="#24415E">实线：主归属</text>
+  <text x="895" y="53" font-family="system-ui, sans-serif" font-size="24" font-weight="700" fill="#57606A">虚线：</text>
+  <text x="973" y="53" font-family="system-ui, sans-serif" font-size="24" font-weight="700" fill="#57606A">交叉关系</text>
+
+  <path d="M205 260 V520" fill="none" stroke="#3568A8" stroke-width="4" marker-end="url(#arrow-blue)"/>
+  <path d="M600 340 V520" fill="none" stroke="#2E7D5B" stroke-width="4" marker-end="url(#arrow-green)"/>
+  <path d="M995 260 V520" fill="none" stroke="#B56A15" stroke-width="4" marker-end="url(#arrow-orange)"/>
+  <path d="M205 190 V165 H350" fill="none" stroke="#5B6675" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#arrow-open)"/>
+  <path d="M600 190 V165" fill="none" stroke="#5B6675" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#arrow-open)"/>
+  <path d="M995 190 V165 H850" fill="none" stroke="#5B6675" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#arrow-open)"/>
+
+  <g>
+    <rect x="55" y="190" width="300" height="150" rx="16" fill="#E8F1FF" stroke="#3568A8" stroke-width="3"/>
+    <text x="205" y="247" text-anchor="middle" font-family="system-ui, sans-serif" font-size="28" font-weight="700" fill="#17324D">CAP</text>
+    <text x="205" y="295" text-anchor="middle" font-family="system-ui, sans-serif" font-size="24" fill="#36546B">网络模型下的保证边界</text>
+  </g>
+  <g>
+    <rect x="450" y="190" width="300" height="150" rx="16" fill="#EAF7F0" stroke="#2E7D5B" stroke-width="3"/>
+    <text x="600" y="247" text-anchor="middle" font-family="system-ui, sans-serif" font-size="28" font-weight="700" fill="#173D2D">Strangler Fig</text>
+    <text x="600" y="295" text-anchor="middle" font-family="system-ui, sans-serif" font-size="24" fill="#36546B">渐进替换与过渡架构</text>
+  </g>
+  <g>
+    <rect x="845" y="190" width="300" height="150" rx="16" fill="#FFF4E5" stroke="#B56A15" stroke-width="3"/>
+    <text x="995" y="247" text-anchor="middle" font-family="system-ui, sans-serif" font-size="28" font-weight="700" fill="#53300A">GRASP</text>
+    <text x="995" y="295" text-anchor="middle" font-family="system-ui, sans-serif" font-size="24" fill="#6B4A20">对象或模块责任分配</text>
+  </g>
+
+  <g>
+    <rect x="350" y="75" width="500" height="90" rx="16" fill="#F5F7FA" stroke="#6B7280" stroke-width="3" stroke-dasharray="8 6"/>
+    <text x="600" y="130" text-anchor="middle" font-family="system-ui, sans-serif" font-size="24" font-weight="700" fill="#303846">架构原则：用于交叉阅读，不改变主归属</text>
+  </g>
+  <text x="218" y="478" text-anchor="start" font-family="system-ui, sans-serif" font-size="24" font-weight="700" fill="#17324D">主归属</text>
+  <text x="613" y="478" text-anchor="start" font-family="system-ui, sans-serif" font-size="24" font-weight="700" fill="#173D2D">主归属</text>
+  <text x="1008" y="478" text-anchor="end" font-family="system-ui, sans-serif" font-size="24" font-weight="700" fill="#53300A">主归属</text>
+
+  <g>
+    <rect x="55" y="520" width="300" height="160" rx="16" fill="#F2F7FF" stroke="#3568A8" stroke-width="3"/>
+    <text x="205" y="582" text-anchor="middle" font-family="system-ui, sans-serif" font-size="25" font-weight="700" fill="#17324D">分布式系统理论</text>
+    <text x="205" y="634" text-anchor="middle" font-family="system-ui, sans-serif" font-size="24" fill="#36546B">可行性与取舍边界</text>
+  </g>
+  <g>
+    <rect x="450" y="520" width="300" height="160" rx="16" fill="#F0FAF4" stroke="#2E7D5B" stroke-width="3"/>
+    <text x="600" y="582" text-anchor="middle" font-family="system-ui, sans-serif" font-size="25" font-weight="700" fill="#173D2D">迁移模式</text>
+    <text x="600" y="634" text-anchor="middle" font-family="system-ui, sans-serif" font-size="24" fill="#36546B">迁移序列与过渡架构</text>
+  </g>
+  <g>
+    <rect x="845" y="520" width="300" height="160" rx="16" fill="#FFF8EF" stroke="#B56A15" stroke-width="3"/>
+    <text x="995" y="582" text-anchor="middle" font-family="system-ui, sans-serif" font-size="25" font-weight="700" fill="#53300A">责任分配方法</text>
+    <text x="995" y="634" text-anchor="middle" font-family="system-ui, sans-serif" font-size="24" fill="#6B4A20">协作责任的所有者</text>
+  </g>
+</svg>
