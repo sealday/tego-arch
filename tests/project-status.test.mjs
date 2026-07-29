@@ -12,8 +12,8 @@ import {
 import {parseSourceLedger} from '../scripts/source-ledger.mjs';
 
 const declarations = [
-  '- **持久故事进度：** 已完成 `6 / 20`；最近完成 `G006`。',
-  '- **当前持久故事：** `G007`。',
+  '- **持久故事进度：** 已完成 `7 / 20`；最近完成 `G007`。',
+  '- **当前持久故事：** `G008`。',
 ].join('\n');
 
 test('builds status from canonical input collections', () => {
@@ -29,7 +29,7 @@ test('builds status from canonical input collections', () => {
 
   assert.deepEqual(status, {
     schema_version: 1,
-    durable_stories: {completed: 6, total: 20, current: 'G007'},
+    durable_stories: {completed: 7, total: 20, current: 'G008'},
     completed_topics: 1,
     content_documents: 2,
     governed_sources: 3,
@@ -46,8 +46,8 @@ test('requires one exact durable-story baseline', () => {
   for (const invalid of [
     '',
     `${declarations}\n${declarations}`,
-    declarations.replace('6 / 20', '7 / 20'),
-    declarations.replace('G006', 'G007'),
+    declarations.replace('7 / 20', '6 / 20'),
+    declarations.replace('G007', 'G008'),
   ]) {
     assert.throws(() => parseDurableStoryStatus(invalid), /durable story/u);
   }
@@ -56,7 +56,7 @@ test('requires one exact durable-story baseline', () => {
 test('rejects a valid declaration followed by a malformed duplicate label', () => {
   for (const duplicate of [
     '- **持久故事进度：** 已完成很多故事。',
-    '- **当前持久故事：** G006。',
+    '- **当前持久故事：** G008。',
   ]) {
     assert.throws(
       () => parseDurableStoryStatus(`${declarations}\n${duplicate}`),
@@ -82,8 +82,8 @@ test('reports an exact-format error for a unique malformed declaration', () => {
     () =>
       parseDurableStoryStatus(
         declarations.replace(
-          '- **当前持久故事：** `G007`。',
-          '- **当前持久故事：** G006。',
+          '- **当前持久故事：** `G008`。',
+          '- **当前持久故事：** G008。',
         ),
       ),
     /exact durable story declaration format/u,
@@ -134,8 +134,8 @@ test('projects the real repository status without rewriting historical evidence'
     }),
     {
       schema_version: 1,
-      durable_stories: {completed: 6, total: 20, current: 'G007'},
-      completed_topics: 36,
+      durable_stories: {completed: 7, total: 20, current: 'G008'},
+      completed_topics: 39,
       content_documents: 82,
       governed_sources: 457,
       sources: {

@@ -236,8 +236,8 @@ async function withRepositoryFixture(run) {
       writeFile(
         path.join(root, 'docs/content-backlog.md'),
         [
-          '- **持久故事进度：** 已完成 `6 / 20`；最近完成 `G006`。',
-          '- **当前持久故事：** `G007`。',
+          '- **持久故事进度：** 已完成 `7 / 20`；最近完成 `G007`。',
+          '- **当前持久故事：** `G008`。',
           '- [x] **FND-01 P0｜Example concept**。',
           '- [x] **FND-02 P0｜Adjacent concept**。',
           '- [ ] **DDD-01 P0｜General Pattern**。',
@@ -414,7 +414,7 @@ test('builds all artifacts from one validated snapshot', async () => {
     );
     assert.deepEqual(JSON.parse(first[generatedPaths.projectStatus]), {
       schema_version: 1,
-      durable_stories: {completed: 6, total: 20, current: 'G007'},
+      durable_stories: {completed: 7, total: 20, current: 'G008'},
       completed_topics: 2,
       content_documents: 3,
       governed_sources: 1,

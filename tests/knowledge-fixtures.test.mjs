@@ -5,7 +5,7 @@ import {fileURLToPath} from 'node:url';
 
 import {readContentDocuments} from '../scripts/content-metadata.mjs';
 import {parseBacklogTopics} from '../scripts/backlog-topics.mjs';
-import {knowledgeTypeContracts} from '../scripts/content-schema.mjs';
+import {knowledgeHeadingContract} from '../scripts/content-schema.mjs';
 import {
   loadCaseSeriesRegistry,
   loadPatternGroupRegistry,
@@ -22,6 +22,9 @@ const fixtureById = new Map([
   ['PR-12', ['principle', 'principles/pr-12-open-closed-interface-segregation.mdx']],
   ['PR-13', ['principle', 'principles/pr-13-persistence-ignorance.mdx']],
   ['PR-14', ['principle', 'principles/pr-14-grasp-responsibility-assignment.mdx']],
+  ['PR-15', ['principle', 'principles/pr-15-conway-law-team-boundaries.mdx']],
+  ['PR-16', ['principle', 'principles/pr-16-secure-by-design.mdx']],
+  ['PR-17', ['principle', 'principles/pr-17-classification-boundaries.mdx']],
   ['REL-02', ['pattern', 'patterns/rel-02-retry-backoff-jitter.mdx']],
   ['STY-00', ['style', 'styles/sty-00-comparison-framework.mdx']],
   ['MTH-03', ['method', 'methods/mth-03-adr-lifecycle.mdx']],
@@ -36,6 +39,9 @@ const fixtureCompletionById = new Map([
   ['PR-12', true],
   ['PR-13', true],
   ['PR-14', true],
+  ['PR-15', true],
+  ['PR-16', true],
+  ['PR-17', true],
   ['REL-02', false],
   ['STY-00', false],
   ['MTH-03', true],
@@ -79,7 +85,7 @@ test('publishes one production fixture for each independent knowledge contract',
     assert.equal(document.metadata.slug, `/${type === 'quality-attribute' ? 'quality-attributes' : type === 'principle' ? 'principles' : type === 'pattern' ? 'patterns' : type === 'style' ? 'styles' : type === 'method' ? 'methods' : 'modeling'}/${id.toLowerCase()}`);
     assert.deepEqual(
       document.headings.filter(({level}) => level === 2).map(({text}) => `## ${text}`),
-      knowledgeTypeContracts[type],
+      knowledgeHeadingContract(type, id),
     );
   }
 
