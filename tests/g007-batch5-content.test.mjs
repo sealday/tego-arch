@@ -116,6 +116,55 @@ function section(body, heading) {
   return body.slice(start === -1 ? end : start + 1, end);
 }
 
+function withoutInlineCodeSpans(text) {
+  let visible = '';
+  let cursor = 0;
+  while (cursor < text.length) {
+    const openingStart = text.indexOf('`', cursor);
+    if (openingStart === -1) {
+      visible += text.slice(cursor);
+      break;
+    }
+    visible += text.slice(cursor, openingStart);
+    let openingEnd = openingStart;
+    while (text[openingEnd] === '`') {
+      openingEnd += 1;
+    }
+    const fenceLength = openingEnd - openingStart;
+    let closingStart = openingEnd;
+    while (closingStart < text.length) {
+      const candidateStart = text.indexOf('`', closingStart);
+      if (candidateStart === -1) {
+        closingStart = -1;
+        break;
+      }
+      let candidateEnd = candidateStart;
+      while (text[candidateEnd] === '`') {
+        candidateEnd += 1;
+      }
+      if (candidateEnd - candidateStart === fenceLength) {
+        closingStart = candidateStart;
+        break;
+      }
+      closingStart = candidateEnd;
+    }
+    if (closingStart === -1) {
+      visible += text.slice(openingStart);
+      break;
+    }
+    cursor = closingStart + fenceLength;
+  }
+  return visible;
+}
+
+function isBackslashEscaped(text, index) {
+  let backslashes = 0;
+  while (text[index - backslashes - 1] === '\\') {
+    backslashes += 1;
+  }
+  return backslashes % 2 === 1;
+}
+
 function hasVisibleDiagramImage(document, source) {
   const body = visibleMdxLines(document).join('\n');
   const openingPattern =
@@ -126,12 +175,14 @@ function hasVisibleDiagramImage(document, source) {
     if (end === -1) {
       continue;
     }
-    const wrapper = body.slice(start, end);
+    const wrapper = withoutInlineCodeSpans(body.slice(start, end));
     const imagePattern =
       /!\[[^\]\n]*\]\(\s*(?<source>[^)\s]+)(?:\s+(?:"[^"]*"|'[^']*'))?\s*\)/gu;
     if (
       [...wrapper.matchAll(imagePattern)].some(
-        (match) => match.groups.source === source,
+        (match) =>
+          !isBackslashEscaped(wrapper, match.index) &&
+          match.groups.source === source,
       )
     ) {
       return true;
@@ -147,17 +198,16 @@ test('requires original illustrations as diagram-wrapper Markdown images', () =>
     `<div className="architecture-diagram-scroll">\n${content}\n</div>`;
 
   assert.equal(hasVisibleDiagramImage({body: wrapper(image)}, source), true);
-  assert.equal(hasVisibleDiagramImage({body: wrapper('')}, source), false);
-  assert.equal(
-    hasVisibleDiagramImage({body: `${wrapper('')}\n${image}`}, source),
-    false,
-  );
-  assert.equal(
-    hasVisibleDiagramImage(
-      {body: wrapper(`[团队边界与交付反馈](${source})`)},
-      source,
-    ),
-    false,
+  const rejectedBodies = [
+    wrapper(''),
+    `${wrapper('')}\n${image}`,
+    wrapper(`[团队边界与交付反馈](${source})`),
+    wrapper(`\`${image}\``),
+    wrapper(`\\${image}`),
+  ];
+  assert.deepEqual(
+    rejectedBodies.map((body) => hasVisibleDiagramImage({body}, source)),
+    rejectedBodies.map(() => false),
   );
 });
 
