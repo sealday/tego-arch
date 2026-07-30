@@ -972,7 +972,7 @@ Expected: exact `headSha=STAGE_A_SHA`, `status=completed`, `conclusion=success`.
 Run:
 
 ```bash
-curl -sS -o /dev/null -w '%{http_code}\n' https://sealday.github.io/tego-arch/modeling/
+curl -sS -o /dev/null -w '%{http_code}\n' https://sealday.github.io/tego-arch/modeling
 curl -sS -o /dev/null -w '%{http_code}\n' https://sealday.github.io/tego-arch/modeling/mod-04
 curl -sS -o /dev/null -w '%{http_code}\n' https://sealday.github.io/tego-arch/cases/microsoft-multi-agent-reference-architecture
 curl -sS -o /dev/null -w '%{http_code}\n' https://sealday.github.io/tego-arch/methods/mth-03
