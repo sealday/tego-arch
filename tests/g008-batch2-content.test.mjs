@@ -56,6 +56,33 @@ function fencedBlock(body, language) {
   return match[1];
 }
 
+function markdownTableRows(body) {
+  return body
+    .split('\n')
+    .filter((line) => /^\|.+\|$/u.test(line))
+    .map((line) => line.slice(1, -1).split('|').map((cell) => cell.trim()))
+    .filter((cells) => !cells.every((cell) => /^:?-+:?$/u.test(cell)));
+}
+
+function mermaidSemanticEdges(source) {
+  const nodeLabels = new Map();
+  const edges = [];
+  for (const line of source.split('\n')) {
+    const match = line.match(
+      /^\s*([A-Z])(?:\["([^"]+)"\])?\s+.+?\s+([A-Z])(?:\["([^"]+)"\])?\s*$/u,
+    );
+    if (!match) continue;
+    const [, fromId, fromLabel, toId, toLabel] = match;
+    if (fromLabel) nodeLabels.set(fromId, fromLabel);
+    if (toLabel) nodeLabels.set(toId, toLabel);
+    edges.push([fromId, toId]);
+  }
+  return edges.map(([fromId, toId]) => [
+    nodeLabels.get(fromId),
+    nodeLabels.get(toId),
+  ]);
+}
+
 test('publishes MOD-04 as an original six-unit arc42 v9 skeleton', () => {
   const document = requiredDocument('MOD-04');
   assert.equal(
@@ -83,32 +110,36 @@ test('publishes MOD-04 as an original six-unit arc42 v9 skeleton', () => {
 test('maps all twelve arc42 problem domains without copying the template', () => {
   const document = requiredDocument('MOD-04');
   const products = section(document.body, '模型产物');
-  for (const label of [
-    'Introduction and Goals',
-    'Architecture Constraints',
-    'Context and Scope',
-    'Solution Strategy',
-    'Building Block View',
-    'Runtime View',
-    'Deployment View',
-    'Cross-cutting Concepts',
-    'Architecture Decisions',
-    'Quality Requirements',
-    'Risks and Technical Debt',
-    'Glossary',
-  ]) {
-    assert.match(products, new RegExp(label, 'u'), label);
-  }
-  for (const unit of [
-    '目标与边界',
-    '约束与权衡',
-    '静态组成',
-    '动态行为',
-    '条件性部署',
-    '质量、风险与词汇',
-  ]) {
-    assert.match(products, new RegExp(unit, 'u'), unit);
-  }
+  const rows = markdownTableRows(products);
+  assert.deepEqual(rows[0], [
+    '本站原创单元',
+    '对应 arc42 v9 问题域',
+    '核心问题',
+    '最小证据与产物',
+    '明确不证明',
+  ]);
+  const mappedDomains = new Map(
+    rows.slice(1).map(([unit, domains]) => [
+      unit,
+      domains.split('；').map((domain) => domain.replace(/^\d+ /u, '')),
+    ]),
+  );
+  assert.deepEqual(Object.fromEntries(mappedDomains), {
+    '目标与边界': ['Introduction and Goals', 'Context and Scope'],
+    '约束与权衡': [
+      'Architecture Constraints',
+      'Solution Strategy',
+      'Architecture Decisions',
+    ],
+    '静态组成': ['Building Block View', 'Cross-cutting Concepts 的结构部分'],
+    '动态行为': ['Runtime View', 'Cross-cutting Concepts 的运行部分'],
+    '条件性部署': ['Deployment View'],
+    '质量、风险与词汇': [
+      'Quality Requirements',
+      'Risks and Technical Debt',
+      'Glossary',
+    ],
+  });
   assert.equal(
     [...document.body.matchAll(/className="table-wrapper"/gu)].length,
     1,
@@ -145,19 +176,20 @@ test('renders one evidence-chain Mermaid with explicit validation gaps', () => {
   assert.equal([...document.body.matchAll(/```mermaid\n/gu)].length, 1);
   const mermaid = fencedBlock(document.body, 'mermaid');
   assert.match(mermaid, /^flowchart LR/mu);
-  for (const label of [
-    '目标与边界',
-    '约束与权衡',
-    '静态组成',
-    '动态行为',
-    '条件性部署',
-    '质量与风险',
-    '决策记录',
-    '验证证据',
-    '未知项',
-  ]) {
-    assert.match(mermaid, new RegExp(label, 'u'), label);
-  }
+  assert.deepEqual(mermaidSemanticEdges(mermaid), [
+    ['目标与边界', '约束与权衡'],
+    ['约束与权衡', '静态组成'],
+    ['静态组成', '动态行为'],
+    ['动态行为', '条件性部署'],
+    ['条件性部署', '质量与风险'],
+    ['决策记录', '约束与权衡'],
+    ['决策记录', '静态组成'],
+    ['验证证据', '动态行为'],
+    ['验证证据', '条件性部署'],
+    ['验证证据', '质量与风险'],
+    ['未知项', '静态组成'],
+    ['未知项', '条件性部署'],
+  ]);
 });
 
 test('contains one measurable local quality scenario', () => {
@@ -206,27 +238,39 @@ test('governs exact arc42 and Microsoft evidence identities', () => {
   const governed =
     ledger.documents['content/modeling/mod-04-arc42-documentation-skeleton.mdx'];
   assert.ok(governed);
+  const exactArc42Locators = new Map([
+    ['src-arc42-building-block-view-v9', 'https://docs.arc42.org/section-5/'],
+    ['src-arc42-overview-v9', 'https://arc42.org/overview'],
+    ['src-arc42-quality-requirements-v9', 'https://docs.arc42.org/section-10/'],
+    [
+      'src-arc42-template-v9-record',
+      'https://github.com/arc42/arc42-template/blob/8dff0d9b1f9640684df8c3bbcdc2ee45f989ca0f/EN/version.properties',
+    ],
+  ]);
+  const expectedCitationIds = [
+    ...exactArc42Locators.keys(),
+    'src-github-2dd3cdefac57',
+    'src-github-4d3dfe89f2a4',
+    'src-github-ccef43990f14',
+  ];
   assert.deepEqual(
     governed.citations.map(({source_id}) => source_id),
-    [
-      'src-arc42-building-block-view-v9',
-      'src-arc42-overview-v9',
-      'src-arc42-quality-requirements-v9',
-      'src-arc42-template-v9-record',
-      'src-github-2dd3cdefac57',
-      'src-github-4d3dfe89f2a4',
-      'src-github-ccef43990f14',
-    ],
+    expectedCitationIds,
   );
   const visibleExternal = new Set(extractExternalLinks(document));
   for (const citation of governed.citations) {
     assert.ok(visibleExternal.has(citation.citation_url), citation.citation_url);
   }
-  for (const sourceId of governed.citations.slice(0, 4).map(({source_id}) => source_id)) {
+  for (const [sourceId, exactLocator] of exactArc42Locators) {
     const source = ledger.sources.find(({id}) => id === sourceId);
     assert.ok(source, sourceId);
+    assert.equal(source.canonical_locator, exactLocator);
+    assert.equal(source.transport_locator, exactLocator);
     assert.equal(source.license, 'CC-BY-SA-4.0');
     assert.equal(source.copyright_policy, 'adapt-sharealike-review');
+    const citation = governed.citations.find(({source_id}) => source_id === sourceId);
+    assert.equal(citation?.citation_url, exactLocator);
+    assert.ok(visibleExternal.has(exactLocator), exactLocator);
   }
 });
 
