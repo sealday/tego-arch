@@ -297,3 +297,14 @@ test('keeps MOD-04 pending during Stage A', async () => {
   assert.match(backlog, /当前持久故事：\*\* `G008`/u);
   assert.match(backlog, /下一项[^。\n]*MOD-04/u);
 });
+
+test('keeps the slash-form modeling index HTTP-compatible', async () => {
+  const redirect = await readFile(
+    new URL('../static/modeling/index.html', import.meta.url),
+    'utf8',
+  );
+  assert.match(redirect, /<meta http-equiv="refresh" content="0; url=\.\.\/modeling">/u);
+  assert.match(redirect, /<link rel="canonical" href="\.\.\/modeling">/u);
+  assert.match(redirect, /<a href="\.\.\/modeling">/u);
+  assert.doesNotMatch(redirect, /<script\b/iu);
+});
