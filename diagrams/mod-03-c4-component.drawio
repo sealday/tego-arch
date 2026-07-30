@@ -7,6 +7,12 @@
         <mxCell id="canvas" value="" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#F6F1E7;strokeColor=none;" vertex="1" parent="1">
           <mxGeometry x="0" y="0" width="1200" height="800" as="geometry"/>
         </mxCell>
+        <mxCell id="heading" value="申报 API Component 责任边界" style="text;html=0;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=36;fontStyle=1;fontColor=#263238;" vertex="1" parent="1">
+          <mxGeometry x="44" y="28" width="720" height="48" as="geometry"/>
+        </mxCell>
+        <mxCell id="note" value="此图只展开一个申报 API Container，展示四个内部责任单元及直接依赖，不证明代码与图一致。" style="text;html=0;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=23;fontColor=#6C6861;" vertex="1" parent="1">
+          <mxGeometry x="44" y="76" width="1100" height="38" as="geometry"/>
+        </mxCell>
         <mxCell id="boundary" value="申报 API" style="rounded=1;arcSize=10;whiteSpace=wrap;html=0;fillColor=#FBF8F1;strokeColor=#405D6B;strokeWidth=3;dashed=1;dashPattern=7 5;verticalAlign=top;align=left;spacingTop=20;spacingLeft=26;fontSize=30;fontStyle=1;fontColor=#263238;" vertex="1" parent="1">
           <mxGeometry x="250" y="130" width="700" height="600" as="geometry"/>
         </mxCell>

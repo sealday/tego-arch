@@ -288,3 +288,92 @@ copied composition. Both citations are attached only to the MOD-03 document.
 - None blocking. The in-app Chrome extension timeout during the mobile viewport
   switch is recorded above; the required mobile evidence was independently
   reproduced in a fresh real Chrome process against the same production build.
+
+## Review-request fixes
+
+The review `REQUEST CHANGES` was resolved without changing the article scope or
+adding dependencies.
+
+### Semantic synchronization
+
+- Component Draw.io now contains the exact SVG title and non-claim note.
+- Deployment Draw.io now contains the exact SVG title, non-claim note, and the
+  complete four-item legend: `部署节点`, `容器实例`, `基础设施节点`, `外部系统`.
+- Deployment node type wording is unified in both formats, including
+  `基础设施节点` for the database node and `数据实例` for its deployed instance.
+- `tests/g008-batch1-diagrams.test.mjs` now defines the complete unique semantic
+  inventory for each diagram and compares the expected inventory exactly and
+  bidirectionally with both Draw.io `mxCell.value` values and visible SVG
+  `title` / `desc` / `text` values.
+
+The new regression was observed RED before the asset changes:
+
+```text
+node --test tests/g008-batch1-diagrams.test.mjs
+tests 5; pass 2; fail 3
+```
+
+The failures identified the missing Component title/note, missing Deployment
+title/note/legend and mismatched English type labels, plus absent Deployment
+boundary metadata. After the fixes the same command passed `5/5`.
+
+Both complete-inventory validator invocations also passed:
+
+```text
+Validated mod-03-c4-component
+Validated mod-03-c4-deployment
+```
+
+### Deployment geometry
+
+At the required 800px rendered width, real Chromium measurements and the
+regression test agree on these visible-stroke clearances:
+
+| Relationship | CSS px |
+| --- | ---: |
+| Database node outer stroke → production boundary inner stroke | 12.67 |
+| Production boundary outer stroke → external bank outer stroke | 13.00 |
+| External bank outer stroke → viewBox right edge | 18.00 |
+
+All are at least the 12px review threshold. The Deployment node text minima
+were 16.17px horizontal, 14.67px top, 26.67px bottom, with a 28px baseline
+gap. Connector-label minima were 17.67px to nodes, 71.20px to edge strokes,
+and 56.00px to arrow regions. Component remained above its thresholds:
+20.00px minimum horizontal node clearance, 21.11px minimum top clearance,
+29.78px minimum bottom clearance, 28px baseline gap, and connector-label
+minima of 16.71px to nodes, 14.20px to strokes, and 21.39px to arrows.
+
+### Real keyboard and responsive QA
+
+A fresh production build was served locally and inspected with real headless
+Google Chrome through bounded Chrome DevTools Protocol calls. Navigation used
+`document.readyState === "complete"` polling; every CDP call and keyboard
+traversal had a 10-second timeout. No `element.focus()` call was used.
+
+- Desktop `1440 × 1000`: HTTP 200; document width `1440 = 1440`; both wrappers
+  and images rendered at exactly 800px; both images completed loading.
+- Mobile `390 × 844`: HTTP 200; document width `390 = 390`; each wrapper was
+  `358px` wide with `scrollWidth 800`; both images completed loading with
+  non-zero natural dimensions.
+- Real forward Tab reached Component after 2 key presses and Deployment after
+  4 further key presses.
+- Real Shift+Tab reached Component again from Deployment after 4 key presses.
+- At every wrapper stop, `document.activeElement` was the expected
+  `.architecture-diagram-scroll`, `:focus-visible` was true, and the computed
+  focus outline was `solid 3px`.
+- Real ArrowRight retained the expected active element and changed Component
+  `scrollLeft 0 → 37` and Deployment `0 → 36` during the sampled smooth scroll.
+- Browser console entries and runtime exceptions: 0.
+
+### Final verification
+
+```text
+npm run verify
+tests 500; pass 500; fail 0
+Validated 84 content document(s) and 464 registered source(s).
+Content review health passed for 84 document(s) and 464 source(s).
+typecheck: PASS
+production build: PASS
+```
+
+No temporary browser automation file was retained.

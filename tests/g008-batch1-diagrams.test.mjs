@@ -10,7 +10,9 @@ const diagrams = [
     route: '/modeling/mod-03#component',
     drawio: 'diagrams/mod-03-c4-component.drawio',
     svg: 'static/img/diagrams/mod-03-c4-component.svg',
-    labels: [
+    semanticLabels: [
+      '申报 API Component 责任边界',
+      '此图只展开一个申报 API Container，展示四个内部责任单元及直接依赖，不证明代码与图一致。',
       '申报 API',
       '提交用例',
       '审批策略',
@@ -19,6 +21,15 @@ const diagrams = [
       'Web 应用',
       '申报数据库',
       '支付任务执行器',
+      'CONTAINER',
+      'COMPONENT',
+      'DATA STORE',
+      '提交请求',
+      '校验审批',
+      '创建付款任务',
+      '保存任务',
+      '读写申报',
+      '发布待执行任务',
     ],
   },
   {
@@ -26,8 +37,14 @@ const diagrams = [
     route: '/modeling/mod-03#deployment',
     drawio: 'diagrams/mod-03-c4-deployment.drawio',
     svg: 'static/img/diagrams/mod-03-c4-deployment.svg',
-    labels: [
+    semanticLabels: [
+      '费用申报系统生产环境部署视图',
+      '此图把费用申报系统的容器实例映射到生产环境节点，但不证明容量、冗余、韧性或故障切换能力。',
       '生产环境',
+      '部署节点',
+      '容器实例',
+      '基础设施节点',
+      '外部系统',
       '员工终端',
       'Web 节点',
       'API 节点',
@@ -38,6 +55,12 @@ const diagrams = [
       '申报数据库实例',
       '支付任务执行器实例',
       '外部银行',
+      '数据实例',
+      '访问页面',
+      '提交申报',
+      '读写申报',
+      '发布付款任务',
+      '发起付款',
     ],
   },
 ];
@@ -70,7 +93,7 @@ function runValidator(diagram) {
       validatorPath,
       absolute(diagram.drawio),
       absolute(diagram.svg),
-      ...diagram.labels.flatMap((label) => ['--label', label]),
+      ...diagram.semanticLabels.flatMap((label) => ['--label', label]),
     ],
     {encoding: 'utf8'},
   );
@@ -92,6 +115,36 @@ function architectureDiagramWrapperForSource(article, publicSvgPath) {
     }
   }
   return null;
+}
+
+function decodeXmlText(value) {
+  return value
+    .replace(/&quot;/gu, '"')
+    .replace(/&apos;/gu, "'")
+    .replace(/&lt;/gu, '<')
+    .replace(/&gt;/gu, '>')
+    .replace(/&amp;/gu, '&')
+    .trim();
+}
+
+function drawioTextInventory(drawio) {
+  return new Set(
+    [...drawio.matchAll(/\bvalue="([^"]*)"/gu)]
+      .map((match) => decodeXmlText(match[1]))
+      .filter(Boolean),
+  );
+}
+
+function svgTextInventory(svg) {
+  return new Set(
+    [...svg.matchAll(/<(?:title|desc|text)\b[^>]*>([^<]+)<\/(?:title|desc|text)>/gu)]
+      .map((match) => decodeXmlText(match[1]))
+      .filter(Boolean),
+  );
+}
+
+function sortedInventory(values) {
+  return [...values].sort((left, right) => left.localeCompare(right, 'zh-Hans'));
 }
 
 for (const diagram of diagrams) {
@@ -141,6 +194,17 @@ for (const diagram of diagrams) {
         'u',
       ),
     );
+    const expectedInventory = sortedInventory(new Set(diagram.semanticLabels));
+    assert.deepEqual(
+      sortedInventory(drawioTextInventory(drawio)),
+      expectedInventory,
+      `${diagram.route} complete Draw.io semantic inventory`,
+    );
+    assert.deepEqual(
+      sortedInventory(svgTextInventory(svg)),
+      expectedInventory,
+      `${diagram.route} complete SVG semantic inventory`,
+    );
 
     const validation = runValidator(diagram);
     assert.equal(
@@ -150,3 +214,50 @@ for (const diagram of diagrams) {
     );
   });
 }
+
+test('keeps the Deployment boundary and external bank visibly separated', async () => {
+  const svg = await readFile(
+    absolute('static/img/diagrams/mod-03-c4-deployment.svg'),
+    'utf8',
+  );
+  const viewBox = svg.match(/\bviewBox="0 0 ([\d.]+) ([\d.]+)"/u);
+  const boundary = svg.match(
+    /data-boundary-id="production"[^>]*data-boundary-bounds="([\d. ]+)"/u,
+  );
+  const database = svg.match(
+    /data-node-id="db-node"[^>]*data-node-bounds="([\d. ]+)"/u,
+  );
+  const bank = svg.match(
+    /data-node-id="bank"[^>]*data-node-bounds="([\d. ]+)"/u,
+  );
+
+  assert.ok(viewBox && boundary && database && bank);
+  const scale = 800 / Number(viewBox[1]);
+  const [boundaryX, , boundaryWidth] = boundary[1].split(/\s+/u).map(Number);
+  const [databaseX, , databaseWidth] = database[1].split(/\s+/u).map(Number);
+  const [bankX, , bankWidth] = bank[1].split(/\s+/u).map(Number);
+  const boundaryStroke = 3;
+  const databaseStroke = 3;
+  const bankStroke = 2;
+  const boundaryInnerRight =
+    boundaryX + boundaryWidth - boundaryStroke / 2;
+  const boundaryOuterRight =
+    boundaryX + boundaryWidth + boundaryStroke / 2;
+  const databaseOuterRight =
+    databaseX + databaseWidth + databaseStroke / 2;
+  const bankOuterLeft = bankX - bankStroke / 2;
+  const bankOuterRight = bankX + bankWidth + bankStroke / 2;
+
+  assert.ok(
+    (boundaryInnerRight - databaseOuterRight) * scale >= 12,
+    'database node to production boundary clearance',
+  );
+  assert.ok(
+    (bankOuterLeft - boundaryOuterRight) * scale >= 12,
+    'production boundary to external bank clearance',
+  );
+  assert.ok(
+    (Number(viewBox[1]) - bankOuterRight) * scale >= 12,
+    'external bank to viewBox clearance',
+  );
+});

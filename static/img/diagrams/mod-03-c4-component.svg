@@ -14,8 +14,8 @@
     </style>
   </defs>
   <path d="M0 0H1200V800H0Z" fill="#F6F1E7"/>
-  <text x="44" y="64" class="heading">Component：只展开申报 API</text>
-  <text x="44" y="102" class="note">责任边界与直接依赖；不映射类、方法或框架目录</text>
+  <text x="44" y="64" class="heading">申报 API Component 责任边界</text>
+  <text x="44" y="102" class="note">此图只展开一个申报 API Container，展示四个内部责任单元及直接依赖，不证明代码与图一致。</text>
   <path d="M264 130H936Q950 130 950 144V716Q950 730 936 730H264Q250 730 250 716V144Q250 130 264 130Z" fill="#FBF8F1" stroke="#405D6B" stroke-width="3" stroke-dasharray="11 8"/>
   <text x="280" y="178" class="boundary-title">申报 API</text>
 
