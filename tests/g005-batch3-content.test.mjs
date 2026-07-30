@@ -80,7 +80,7 @@ const immutableFiles = new Map([
   ],
   [
     'content/cases/microsoft-multi-agent-reference-architecture.mdx',
-    '18d67491848b193eddffd2f056b0126a8a6f89f9d715d5e5cbfb2583322e43aa',
+    '050147411d88f68627bc4953dffb143f27999148362241c019457b6465f25885',
   ],
   [
     'scripts/content-schema.mjs',

@@ -892,6 +892,186 @@
       ]
     },
     {
+      "id": "src-arc42-building-block-view-v9",
+      "canonical_locator": "https://docs.arc42.org/section-5/",
+      "transport_locator": "https://docs.arc42.org/section-5/",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "arc42 v9 — Building Block View",
+      "author_or_org": "arc42 contributors",
+      "published_at": null,
+      "registered_at": "2026-07-30",
+      "checked_at": "2026-07-30",
+      "version": "arc42 v9 section checked on 2026-07-30",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "learning",
+        "method"
+      ],
+      "license": "CC-BY-SA-4.0",
+      "license_scope": "The named arc42 documentation page within the official CC BY-SA 4.0 scope; linked third-party works, trademarks, code, and separately licensed media excluded",
+      "license_evidence_url": "https://arc42.org/license",
+      "license_evidence_note": "The official arc42 license page identifies arc42 documentation as CC BY-SA 4.0.",
+      "license_family_id": "https://docs.arc42.org/section-5/",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "adapt-sharealike-review",
+      "usage_boundary": "Supports a factual summary of the purpose and decomposition role of the arc42 v9 Building Block View; it does not authorize copying the official template text or prove a project decomposition is correct.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://docs.arc42.org/section-5/",
+      "expected_final_approved_at": "2026-07-30",
+      "expected_final_approval_note": "Reviewed G008 Batch 2 transport baseline",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://docs.arc42.org/section-5/",
+          "status": "healthy",
+          "last_attempt_at": "2026-07-30T11:23:03.730Z",
+          "last_success_at": "2026-07-30T11:23:03.730Z",
+          "http_status": 206,
+          "final_transport_locator": "https://docs.arc42.org/section-5/"
+        }
+      ]
+    },
+    {
+      "id": "src-arc42-overview-v9",
+      "canonical_locator": "https://arc42.org/overview",
+      "transport_locator": "https://arc42.org/overview",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "arc42 v9 — Overview",
+      "author_or_org": "arc42 contributors",
+      "published_at": null,
+      "registered_at": "2026-07-30",
+      "checked_at": "2026-07-30",
+      "version": "arc42 v9 overview checked on 2026-07-30",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "learning",
+        "method"
+      ],
+      "license": "CC-BY-SA-4.0",
+      "license_scope": "The named arc42 overview page within the official CC BY-SA 4.0 scope; linked third-party works, trademarks, code, and separately licensed media excluded",
+      "license_evidence_url": "https://arc42.org/license",
+      "license_evidence_note": "The official arc42 license page identifies arc42 documentation as CC BY-SA 4.0.",
+      "license_family_id": "https://arc42.org/overview",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "adapt-sharealike-review",
+      "usage_boundary": "Supports the arc42 v9 problem-domain overview and tailoring principle; it does not make the project’s original six-unit teaching skeleton an official arc42 template.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://arc42.org/overview",
+      "expected_final_approved_at": "2026-07-30",
+      "expected_final_approval_note": "Reviewed G008 Batch 2 transport baseline",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://arc42.org/overview",
+          "status": "healthy",
+          "last_attempt_at": "2026-07-30T11:23:03.730Z",
+          "last_success_at": "2026-07-30T11:23:03.730Z",
+          "http_status": 206,
+          "final_transport_locator": "https://arc42.org/overview"
+        }
+      ]
+    },
+    {
+      "id": "src-arc42-quality-requirements-v9",
+      "canonical_locator": "https://docs.arc42.org/section-10/",
+      "transport_locator": "https://docs.arc42.org/section-10/",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "arc42 v9 — Quality Requirements",
+      "author_or_org": "arc42 contributors",
+      "published_at": null,
+      "registered_at": "2026-07-30",
+      "checked_at": "2026-07-30",
+      "version": "arc42 v9 section checked on 2026-07-30",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "learning",
+        "method"
+      ],
+      "license": "CC-BY-SA-4.0",
+      "license_scope": "The named arc42 documentation page within the official CC BY-SA 4.0 scope; linked third-party works, trademarks, code, and separately licensed media excluded",
+      "license_evidence_url": "https://arc42.org/license",
+      "license_evidence_note": "The official arc42 license page identifies arc42 documentation as CC BY-SA 4.0.",
+      "license_family_id": "https://docs.arc42.org/section-10/",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "adapt-sharealike-review",
+      "usage_boundary": "Supports factual summary of the arc42 v9 quality overview and detailed quality-scenario role; it does not supply project-specific metrics or production commitments.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://docs.arc42.org/section-10/",
+      "expected_final_approved_at": "2026-07-30",
+      "expected_final_approval_note": "Reviewed G008 Batch 2 transport baseline",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://docs.arc42.org/section-10/",
+          "status": "healthy",
+          "last_attempt_at": "2026-07-30T11:23:03.730Z",
+          "last_success_at": "2026-07-30T11:23:03.730Z",
+          "http_status": 206,
+          "final_transport_locator": "https://docs.arc42.org/section-10/"
+        }
+      ]
+    },
+    {
+      "id": "src-arc42-template-v9-record",
+      "canonical_locator": "https://github.com/arc42/arc42-template/blob/8dff0d9b1f9640684df8c3bbcdc2ee45f989ca0f/EN/version.properties",
+      "transport_locator": "https://github.com/arc42/arc42-template/blob/8dff0d9b1f9640684df8c3bbcdc2ee45f989ca0f/EN/version.properties",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "arc42 Template v9.0 Version Record",
+      "author_or_org": "arc42 contributors",
+      "published_at": null,
+      "registered_at": "2026-07-30",
+      "checked_at": "2026-07-30",
+      "version": "arc42 v9.0, July 2025; arc42/arc42-template@8dff0d9b1f9640684df8c3bbcdc2ee45f989ca0f, EN/version.properties",
+      "source_kind": "official-repository",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "historical-context",
+        "learning"
+      ],
+      "license": "CC-BY-SA-4.0",
+      "license_scope": "The arc42 template repository content covered by its CC BY-SA 4.0 license; trademarks and separately licensed linked material excluded",
+      "license_evidence_url": "https://arc42.org/license",
+      "license_evidence_note": "The official arc42 license page identifies the templates and documentation as CC BY-SA 4.0.",
+      "license_family_id": "github:arc42/arc42-template",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "adapt-sharealike-review",
+      "usage_boundary": "Supports only the pinned v9.0 version and July 2025 release record; it does not define the meaning of every arc42 section or authorize copying the template.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://github.com/arc42/arc42-template/blob/8dff0d9b1f9640684df8c3bbcdc2ee45f989ca0f/EN/version.properties",
+      "expected_final_approved_at": "2026-07-30",
+      "expected_final_approval_note": "Reviewed G008 Batch 2 pinned version evidence",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://github.com/arc42/arc42-template/blob/8dff0d9b1f9640684df8c3bbcdc2ee45f989ca0f/EN/version.properties",
+          "status": "healthy",
+          "last_attempt_at": "2026-07-30T11:23:03.730Z",
+          "last_success_at": "2026-07-30T11:23:03.730Z",
+          "http_status": 206,
+          "final_transport_locator": "https://github.com/arc42/arc42-template/blob/8dff0d9b1f9640684df8c3bbcdc2ee45f989ca0f/EN/version.properties"
+        }
+      ]
+    },
+    {
       "id": "src-atlas-agents-guardrail-boundary-de06a6a05869",
       "canonical_locator": "/img/illustrations/openai-agents-sdk-guardrail-boundary.png",
       "transport_locator": "/img/illustrations/openai-agents-sdk-guardrail-boundary.png",
@@ -28748,6 +28928,113 @@
           "manifest_primary": false,
           "usage_mode": "facts-summary",
           "attribution_note": "C4 Model — Dynamic diagram, Simon Brown",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/modeling/mod-04-arc42-documentation-skeleton.mdx": {
+      "title": "arc42 文档骨架",
+      "slug": "/modeling/mod-04",
+      "reviewed_at": "2026-07-30",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-arc42-building-block-view-v9",
+          "citation_url": "https://docs.arc42.org/section-5/",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "arc42 v9 Building Block View, arc42 contributors",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-arc42-overview-v9",
+          "citation_url": "https://arc42.org/overview",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "arc42 v9 Overview, arc42 contributors",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-arc42-quality-requirements-v9",
+          "citation_url": "https://docs.arc42.org/section-10/",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "arc42 v9 Quality Requirements, arc42 contributors",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-arc42-template-v9-record",
+          "citation_url": "https://github.com/arc42/arc42-template/blob/8dff0d9b1f9640684df8c3bbcdc2ee45f989ca0f/EN/version.properties",
+          "roles": [
+            "historical-context"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "arc42 Template v9.0 version record, arc42 contributors",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-github-2dd3cdefac57",
+          "citation_url": "https://github.com/microsoft/multi-agent-reference-architecture/blob/ed3613b54b46b595dd223aaff8772def376a8c37/docs/reference-architecture/Reference-Architecture.md",
+          "roles": [
+            "implementation"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Reference Architecture, Microsoft",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-github-4d3dfe89f2a4",
+          "citation_url": "https://github.com/microsoft/multi-agent-reference-architecture/blob/ed3613b54b46b595dd223aaff8772def376a8c37/docs/building-blocks/Building-Blocks.md",
+          "roles": [
+            "implementation"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Building Blocks, Microsoft",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-github-ccef43990f14",
+          "citation_url": "https://github.com/microsoft/multi-agent-reference-architecture/blob/ed3613b54b46b595dd223aaff8772def376a8c37/docs/observability/Observability.md",
+          "roles": [
+            "implementation"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Observability, Microsoft",
           "modification_note": null,
           "excerpt": null,
           "quotation_reviewed": false

@@ -80,8 +80,8 @@ test('closes exactly MOD-01 through MOD-03 without closing G008', () => {
     });
   }
   assert.equal(projectStatus.completed_topics, 42);
-  assert.equal(projectStatus.content_documents, 84);
-  assert.equal(projectStatus.governed_sources, 464);
+  assert.equal(projectStatus.content_documents, 85);
+  assert.equal(projectStatus.governed_sources, 468);
   assert.deepEqual(projectStatus.durable_stories, {
     completed: 7,
     total: 20,

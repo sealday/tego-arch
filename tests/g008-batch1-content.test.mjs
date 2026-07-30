@@ -171,7 +171,7 @@ test('publishes MOD-03 with three evidence-bounded C4 views', () => {
   assert.equal(document.metadata.status, 'reviewed');
   assert.equal(document.metadata.priority, 'P0');
   assert.deepEqual(document.metadata.depends_on, ['MOD-01', 'MOD-02']);
-  assert.deepEqual(document.metadata.adjacent_topics, ['MOD-02']);
+  assert.deepEqual(document.metadata.adjacent_topics, ['MOD-02', 'MOD-04']);
   assert.deepEqual(
     document.headings.filter(({level}) => level === 2).map(({text}) => text),
     modelingHeadings,
@@ -331,8 +331,8 @@ test('projects G008 Batch 1 completion during Stage B', async () => {
     schema_version: 1,
     durable_stories: {completed: 7, total: 20, current: 'G008'},
     completed_topics: 42,
-    content_documents: 84,
-    governed_sources: 464,
+    content_documents: 85,
+    governed_sources: 468,
     sources: {
       durable_stories: 'docs/content-backlog.md',
       completed_topics: 'docs/content-backlog.md',

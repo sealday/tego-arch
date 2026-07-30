@@ -28,6 +28,7 @@ depends_on:
   - MOD-02
 adjacent_topics:
   - MOD-02
+  - MOD-04
 related_cases:
   - /cases/microsoft-multi-agent-reference-architecture
 related_questions: []
@@ -127,6 +128,8 @@ Component 只展开申报 API，四个责任单元都能用“负责什么、向
 [MOD-02 Context 与 Container](/modeling/mod-02)提供本页不可擅自改名的系统边界和可运行单元；Component 只在其中展开申报 API。若 Dynamic 暴露重试、幂等或补偿风险，应把决策写入 ADR，并用测试和追踪补证。若 Deployment 暴露容量、可用性或恢复问题，应转到相应质量属性场景，而不是继续给图添加未经验证的数字。
 
 同样的三视图分工可用于 [Microsoft multi-agent reference architecture 案例](/cases/microsoft-multi-agent-reference-architecture)，但案例中的 Agent、运行时与基础设施名称必须来自该系统自己的已审计边界，不能借用费用申报元素。
+
+[arc42 文档骨架](/modeling/mod-04)把本页的静态、运行与部署证据放回可裁剪的整体文档结构，同时保留各视图“不证明什么”的边界。
 
 ## 完整演练
 
