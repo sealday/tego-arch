@@ -49,8 +49,8 @@ const diagrams = [
     route: '/modeling/mod-03#deployment',
     drawio: 'diagrams/mod-03-c4-deployment.drawio',
     svg: 'static/img/diagrams/mod-03-c4-deployment.svg',
-    title: '费用申报系统生产环境部署视图',
-    note: '此图把费用申报系统的容器实例映射到生产环境节点，但不证明容量、冗余、韧性或故障切换能力。',
+    title: '费用申报系统 Deployment 教学演练假设拓扑',
+    note: '教学演练假设拓扑：Container 实例映射到部署节点；不代表生产事实，也不证明容量、冗余、韧性或故障切换。',
     legends: ['部署节点', '容器实例', '基础设施节点', '外部系统'],
     nodes: [
       ['employee-terminal', '员工终端', '部署节点', 'production'],
@@ -114,7 +114,7 @@ const purposeAlt = new Map([
   ],
   [
     '/modeling/mod-03#deployment',
-    /(?:容器实例|生产节点)[^。\]]*(?:映射|银行支付服务)/u,
+    /教学演练假设拓扑[^。\]]*(?:Container 实例|容器实例)[^。\]]*部署节点[^。\]]*银行支付服务/u,
   ],
 ]);
 
@@ -203,7 +203,7 @@ function sortedInventory(values) {
 
 function absolutePathBounds(pathData) {
   const tokens =
-    pathData.match(/[MHVQZ]|-?(?:\d+(?:\.\d+)?|\.\d+)/gu) ?? [];
+    pathData.match(/[MHVQCSZ]|-?(?:\d+(?:\.\d+)?|\.\d+)/gu) ?? [];
   let index = 0;
   let x = 0;
   let y = 0;
@@ -217,13 +217,20 @@ function absolutePathBounds(pathData) {
   while (index < tokens.length) {
     const command = tokens[index++];
     if (command === 'Z') continue;
-    assert.match(command, /^[MHVQ]$/u, `unsupported path command ${command}`);
+    assert.match(command, /^[MHVQCS]$/u, `unsupported path command ${command}`);
     if (command === 'M') {
       addPoint(Number(tokens[index++]), Number(tokens[index++]));
     } else if (command === 'H') {
       addPoint(Number(tokens[index++]), y);
     } else if (command === 'V') {
       addPoint(x, Number(tokens[index++]));
+    } else if (command === 'Q') {
+      addPoint(Number(tokens[index++]), Number(tokens[index++]));
+      addPoint(Number(tokens[index++]), Number(tokens[index++]));
+    } else if (command === 'C') {
+      addPoint(Number(tokens[index++]), Number(tokens[index++]));
+      addPoint(Number(tokens[index++]), Number(tokens[index++]));
+      addPoint(Number(tokens[index++]), Number(tokens[index++]));
     } else {
       addPoint(Number(tokens[index++]), Number(tokens[index++]));
       addPoint(Number(tokens[index++]), Number(tokens[index++]));
@@ -362,6 +369,92 @@ function orthogonalSegments(pathData) {
     current = next;
   }
   return segments;
+}
+
+function rectDistance(left, right) {
+  const [leftX, leftY, leftWidth, leftHeight] = left;
+  const [rightX, rightY, rightWidth, rightHeight] = right;
+  const horizontal = Math.max(
+    0,
+    leftX - (rightX + rightWidth),
+    rightX - (leftX + leftWidth),
+  );
+  const vertical = Math.max(
+    0,
+    leftY - (rightY + rightHeight),
+    rightY - (leftY + leftHeight),
+  );
+  return Math.hypot(horizontal, vertical);
+}
+
+function pointToRectBoundaryDistance([pointX, pointY], [x, y, width, height]) {
+  const right = x + width;
+  const bottom = y + height;
+  if (pointY >= y && pointY <= bottom) {
+    return Math.min(Math.abs(pointX - x), Math.abs(pointX - right));
+  }
+  if (pointX >= x && pointX <= right) {
+    return Math.min(Math.abs(pointY - y), Math.abs(pointY - bottom));
+  }
+  return Math.min(
+    Math.hypot(pointX - x, pointY - y),
+    Math.hypot(pointX - right, pointY - y),
+    Math.hypot(pointX - x, pointY - bottom),
+    Math.hypot(pointX - right, pointY - bottom),
+  );
+}
+
+function nodeBounds(svg, nodeId) {
+  const escaped = nodeId.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
+  const group =
+    svg.match(
+      new RegExp(`<g\\b[^>]*\\bdata-node-id="${escaped}"[^>]*>`, 'u'),
+    )?.[0] ?? '';
+  assert.ok(group, `${nodeId} group`);
+  const metadata = numericBounds(group, 'data-node-bounds');
+  const outline = nodeOutlineTag(svg, nodeId);
+  assert.ok(outline, `${nodeId} outline`);
+  const actual = absolutePathBounds(xmlAttribute(outline, 'd'));
+  assert.deepEqual(metadata, actual, `${nodeId} metadata matches actual outline`);
+  return actual;
+}
+
+function assertEndpointContract(svg, edgeId, sourceId, targetId, scale) {
+  const {path} = svgEdgeParts(svg, edgeId);
+  const segments = orthogonalSegments(xmlAttribute(path, 'd'));
+  assert.ok(segments.length > 0, `${edgeId} has routed segments`);
+  const [start, firstEnd] = segments[0];
+  const [terminalStart, end] = segments.at(-1);
+  const source = nodeBounds(svg, sourceId);
+  const target = nodeBounds(svg, targetId);
+  const sourceCenter = [source[0] + source[2] / 2, source[1] + source[3] / 2];
+  const targetCenter = [target[0] + target[2] / 2, target[1] + target[3] / 2];
+  const firstVector = [firstEnd[0] - start[0], firstEnd[1] - start[1]];
+  const terminalVector = [
+    end[0] - terminalStart[0],
+    end[1] - terminalStart[1],
+  ];
+
+  assert.ok(
+    pointToRectBoundaryDistance(start, source) * scale <= 4,
+    `${edgeId} source endpoint must hug its source boundary`,
+  );
+  assert.ok(
+    pointToRectBoundaryDistance(end, target) * scale <= 4,
+    `${edgeId} target endpoint must hug its target boundary`,
+  );
+  assert.ok(
+    firstVector[0] * (start[0] - sourceCenter[0]) +
+      firstVector[1] * (start[1] - sourceCenter[1]) >
+      0,
+    `${edgeId} first vector must point away from the source interior`,
+  );
+  assert.ok(
+    terminalVector[0] * (targetCenter[0] - end[0]) +
+      terminalVector[1] * (targetCenter[1] - end[1]) >
+      0,
+    `${edgeId} terminal vector must point into the target interior`,
+  );
 }
 
 function pointToSegmentDistance([pointX, pointY], [[x1, y1], [x2, y2]]) {
@@ -559,7 +652,10 @@ for (const diagram of diagrams) {
 
     assert.ok(wrapper !== null, `${diagram.route} exact diagram scroll wrapper`);
     assert.match(wrapper, /\brole="region"/u);
-    assert.match(wrapper, /\baria-label="[^"]*(?:责任边界|部署视图)[^"]*"/u);
+    assert.match(
+      wrapper,
+      /\baria-label="[^"]*(?:责任边界|部署视图|假设拓扑)[^"]*"/u,
+    );
     assert.match(wrapper, /\btabIndex=\{0\}/u);
 
     const image = wrapper.match(
@@ -695,6 +791,29 @@ test('keeps the Component task label clear of the API bottom boundary', async ()
   assert.ok(clearance >= 8, `Component label/boundary clearance ${clearance}`);
 });
 
+test('keeps corrected connector endpoints on boundaries and directed into their targets', async () => {
+  const [component, deployment] = await Promise.all([
+    readFile(absolute('static/img/diagrams/mod-03-c4-component.svg'), 'utf8'),
+    readFile(absolute('static/img/diagrams/mod-03-c4-deployment.svg'), 'utf8'),
+  ]);
+  assertEndpointContract(
+    component,
+    'edge-payment-worker',
+    'payment',
+    'worker',
+    800 / 1200,
+  );
+  for (const [edgeId, , sourceId, targetId] of diagrams[1].relations.slice(0, 3)) {
+    assertEndpointContract(
+      deployment,
+      edgeId,
+      sourceId,
+      targetId,
+      800 / 1200,
+    );
+  }
+});
+
 test('keeps every Deployment label close to its own connector with declared clearances', async () => {
   const svg = await readFile(
     absolute('static/img/diagrams/mod-03-c4-deployment.svg'),
@@ -718,6 +837,41 @@ test('keeps every Deployment label close to its own connector with declared clea
     assert.equal(xmlAttribute(label, 'data-arrow-clearance-css'), '16');
     assert.equal(xmlAttribute(label, 'data-node-clearance-css'), '12');
     assert.equal(xmlAttribute(label, 'data-max-association-css'), '60');
+  }
+});
+
+test('keeps every visible Deployment relationship label at least 12px from every other label', async () => {
+  const svg = await readFile(
+    absolute('static/img/diagrams/mod-03-c4-deployment.svg'),
+    'utf8',
+  );
+  const scale = 800 / 1200;
+  const labels = diagrams[1].relations.map(([edgeId]) => {
+    const {label} = svgEdgeParts(svg, edgeId);
+    const bounds = numericBounds(label, 'data-label-bounds');
+    assert.equal(bounds.length, 4, `${edgeId} rendered label bounds metadata`);
+    const anchorX = Number(xmlAttribute(label, 'x'));
+    const baselineY = Number(xmlAttribute(label, 'y'));
+    assert.ok(
+      Math.abs(anchorX - (bounds[0] + bounds[2] / 2)) <= 0.1,
+      `${edgeId} label bounds match its centered anchor`,
+    );
+    assert.ok(
+      baselineY >= bounds[1] && baselineY <= bounds[1] + bounds[3],
+      `${edgeId} label bounds contain its baseline`,
+    );
+    return [edgeId, bounds];
+  });
+  for (let leftIndex = 0; leftIndex < labels.length; leftIndex += 1) {
+    for (let rightIndex = leftIndex + 1; rightIndex < labels.length; rightIndex += 1) {
+      const [leftId, leftBounds] = labels[leftIndex];
+      const [rightId, rightBounds] = labels[rightIndex];
+      const clearance = rectDistance(leftBounds, rightBounds) * scale;
+      assert.ok(
+        clearance >= 12,
+        `${leftId}/${rightId} label clearance ${clearance}`,
+      );
+    }
   }
 });
 
@@ -805,5 +959,27 @@ test('detects a reversed relationship without relying on text changes', async ()
   assert.throws(
     () => assertDiagramContract(diagram, drawio, mutated),
     /SVG directed relations/u,
+  );
+});
+
+test('detects a terminal route that points away from its declared target', async () => {
+  const svg = await readFile(
+    absolute('static/img/diagrams/mod-03-c4-deployment.svg'),
+    'utf8',
+  );
+  const mutated = svg.replace(
+    'd="M421 440H435V590H445V440H457"',
+    'd="M421 440H435V590H470V440H430"',
+  );
+  assert.throws(
+    () =>
+      assertEndpointContract(
+        mutated,
+        'edge-web-api',
+        'web-instance',
+        'api-instance',
+        800 / 1200,
+      ),
+    /target endpoint|terminal vector/u,
   );
 });

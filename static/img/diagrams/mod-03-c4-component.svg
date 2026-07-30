@@ -71,6 +71,6 @@
   <text x="595" y="480" text-anchor="middle" class="edge-label" data-edge-id="edge-payment-persistence">保存任务</text>
   <path data-edge-id="edge-persistence-db" data-source="persistence" data-target="db" d="M891 585H930V290H980" fill="none" stroke="#263238" stroke-width="2.4" marker-end="url(#component-arrow)"/>
   <text x="1050" y="430" text-anchor="middle" class="edge-label" data-edge-id="edge-persistence-db">读写申报</text>
-  <path data-edge-id="edge-payment-worker" data-source="payment" data-target="worker" d="M425 661V665H1075V670" fill="none" stroke="#263238" stroke-width="2.4" marker-end="url(#component-arrow)"/>
+  <path data-edge-id="edge-payment-worker" data-source="payment" data-target="worker" d="M425 661V665H1075V661" fill="none" stroke="#263238" stroke-width="2.4" marker-end="url(#component-arrow)"/>
   <text x="750" y="710" text-anchor="middle" class="edge-label" data-edge-id="edge-payment-worker" data-boundary-clearance-css="8">发布待执行任务</text>
 </svg>

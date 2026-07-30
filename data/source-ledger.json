@@ -17525,7 +17525,7 @@
       "query_insensitive": false,
       "locator_aliases": [],
       "tombstone": null,
-      "title": "费用申报系统生产环境部署视图",
+      "title": "费用申报系统 Deployment 教学演练假设拓扑",
       "author_or_org": "Tego Arch maintainers",
       "published_at": null,
       "registered_at": "2026-07-30",
@@ -17544,7 +17544,7 @@
       "license_family_grouping": "identity",
       "family_grouping_evidence_url": null,
       "copyright_policy": "original-atlas",
-      "usage_boundary": "Original project illustration for the MOD-03 Deployment exercise; it maps instances to nodes without claiming capacity, redundancy, or failover.",
+      "usage_boundary": "Original project illustration of a teaching exercise assumption topology for MOD-03 Deployment; it maps Container instances to deployment nodes, is not a production inventory fact, and does not claim capacity, redundancy, resilience, or failover.",
       "link_policy": null,
       "expected_final_transport_locator": "/img/diagrams/mod-03-c4-deployment.svg",
       "expected_final_approved_at": "2026-07-30",
@@ -23812,8 +23812,8 @@
           ],
           "manifest_primary": false,
           "usage_mode": "original-illustration",
-          "attribution_note": "费用申报系统生产环境部署视图, Tego Arch maintainers",
-          "modification_note": "Created as an original Draw.io and SVG pair for MOD-03; the view explicitly does not claim capacity, redundancy, resilience, or failover.",
+          "attribution_note": "费用申报系统 Deployment 教学演练假设拓扑, Tego Arch maintainers",
+          "modification_note": "Created as an original Draw.io and SVG pair for the MOD-03 teaching exercise assumption topology; it is not a production inventory fact and explicitly does not claim capacity, redundancy, resilience, or failover.",
           "excerpt": null,
           "quotation_reviewed": false
         }

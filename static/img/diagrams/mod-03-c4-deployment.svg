@@ -1,21 +1,21 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1000" role="img" aria-labelledby="deployment-title deployment-description">
-  <title id="deployment-title">费用申报系统生产环境部署视图</title>
-  <desc id="deployment-description">此图把费用申报系统的容器实例映射到生产环境节点，但不证明容量、冗余、韧性或故障切换能力。</desc>
+  <title id="deployment-title">费用申报系统 Deployment 教学演练假设拓扑</title>
+  <desc id="deployment-description">教学演练假设拓扑：Container 实例映射到部署节点；不代表生产事实，也不证明容量、冗余、韧性或故障切换。</desc>
   <defs>
     <marker id="deployment-arrow" markerUnits="strokeWidth" markerWidth="10" markerHeight="10" viewBox="0 0 10 10" refX="8" refY="5" orient="auto">
       <path d="M0 0L10 5L0 10Z" fill="#263238"/>
     </marker>
     <style>
       text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;fill:#263238}
-      .heading{font-size:36px;font-weight:760}.note{font-size:23px;fill:#6c6861}
+      .heading{font-size:36px;font-weight:760}.note{font-size:21px;fill:#6c6861}
       .boundary-title{font-size:30px;font-weight:760}.node-title{font-size:24px;font-weight:720}
       .node-type{font-size:15px;font-weight:700;letter-spacing:.7px;fill:#55514b}
       .edge-label{font-size:23px;font-weight:650;fill:#55514b}.legend{font-size:18px;font-weight:650}
     </style>
   </defs>
   <path d="M0 0H1200V1000H0Z" fill="#F6F1E7"/>
-  <text x="44" y="64" class="heading">费用申报系统生产环境部署视图</text>
-  <text x="44" y="102" class="note">此图把费用申报系统的容器实例映射到生产环境节点，但不证明容量、冗余、韧性或故障切换能力。</text>
+  <text x="44" y="64" class="heading">费用申报系统 Deployment 教学演练假设拓扑</text>
+  <text x="44" y="102" class="note">教学演练假设拓扑：Container 实例映射到部署节点；不代表生产事实，也不证明容量、冗余、韧性或故障切换。</text>
   <path data-boundary-id="production" data-boundary-name="生产环境" data-boundary-bounds="10 130 960 800" d="M24 130H956Q970 130 970 144V916Q970 930 956 930H24Q10 930 10 916V144Q10 130 24 130Z" fill="#FBF8F1" stroke="#405D6B" stroke-width="3" stroke-dasharray="11 8"/>
   <text x="60" y="178" class="boundary-title">生产环境</text>
 
@@ -78,14 +78,14 @@
     <text x="1089" y="747" text-anchor="middle" class="node-type" data-text-role="type">外部系统</text>
   </g>
 
-  <path data-edge-id="edge-employee-web" data-source="employee-terminal" data-target="web-instance" d="M191 425H200V590H210V440" fill="none" stroke="#263238" stroke-width="2.4" marker-end="url(#deployment-arrow)"/>
-  <text x="110" y="565" text-anchor="middle" class="edge-label" data-edge-id="edge-employee-web" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12" data-max-association-css="60">访问页面</text>
-  <path data-edge-id="edge-web-api" data-source="web-instance" data-target="api-instance" d="M421 440H435V590H450V440" fill="none" stroke="#263238" stroke-width="2.4" marker-end="url(#deployment-arrow)"/>
-  <text x="345" y="565" text-anchor="middle" class="edge-label" data-edge-id="edge-web-api" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12" data-max-association-css="60">提交申报</text>
-  <path data-edge-id="edge-api-db" data-source="api-instance" data-target="db-instance" d="M661 440H680V590H700V440" fill="none" stroke="#263238" stroke-width="2.4" marker-end="url(#deployment-arrow)"/>
-  <text x="590" y="565" text-anchor="middle" class="edge-label" data-edge-id="edge-api-db" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12" data-max-association-css="60">读写申报</text>
-  <path data-edge-id="edge-api-task" data-source="api-instance" data-target="worker-instance" d="M560 511V710" fill="none" stroke="#263238" stroke-width="2.4" marker-end="url(#deployment-arrow)"/>
-  <text x="475" y="570" text-anchor="middle" class="edge-label" data-edge-id="edge-api-task" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12" data-max-association-css="60">发布付款任务</text>
+  <path data-edge-id="edge-employee-web" data-source="employee-terminal" data-target="web-instance" d="M191 425H200V590H205V440H217" fill="none" stroke="#263238" stroke-width="2.4" marker-end="url(#deployment-arrow)"/>
+  <text x="110" y="565" text-anchor="middle" class="edge-label" data-edge-id="edge-employee-web" data-label-bounds="64.012 542.491 91.976 27" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12" data-max-association-css="60">访问页面</text>
+  <path data-edge-id="edge-web-api" data-source="web-instance" data-target="api-instance" d="M421 440H435V590H445V440H457" fill="none" stroke="#263238" stroke-width="2.4" marker-end="url(#deployment-arrow)"/>
+  <text x="345" y="565" text-anchor="middle" class="edge-label" data-edge-id="edge-web-api" data-label-bounds="299.012 542.491 91.976 27" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12" data-max-association-css="60">提交申报</text>
+  <path data-edge-id="edge-api-db" data-source="api-instance" data-target="db-instance" d="M661 440H680V590H695V440H711" fill="none" stroke="#263238" stroke-width="2.4" marker-end="url(#deployment-arrow)"/>
+  <text x="590" y="565" text-anchor="middle" class="edge-label" data-edge-id="edge-api-db" data-label-bounds="544.012 542.491 91.976 27" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12" data-max-association-css="60">读写申报</text>
+  <path data-edge-id="edge-api-task" data-source="api-instance" data-target="worker-instance" d="M560 511V540H530V680H600V717" fill="none" stroke="#263238" stroke-width="2.4" marker-end="url(#deployment-arrow)"/>
+  <text x="445" y="620" text-anchor="middle" class="edge-label" data-edge-id="edge-api-task" data-label-bounds="376.012 597.491 137.976 27" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12" data-max-association-css="60">发布付款任务</text>
   <path data-edge-id="edge-task-bank" data-source="worker-instance" data-target="bank" d="M836 795H995" fill="none" stroke="#263238" stroke-width="2.4" marker-end="url(#deployment-arrow)"/>
-  <text x="915.5" y="850" text-anchor="middle" class="edge-label" data-edge-id="edge-task-bank" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12" data-max-association-css="60">发起付款</text>
+  <text x="915.5" y="850" text-anchor="middle" class="edge-label" data-edge-id="edge-task-bank" data-label-bounds="869.512 827.491 91.976 27" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12" data-max-association-css="60">发起付款</text>
 </svg>

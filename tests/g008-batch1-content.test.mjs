@@ -204,6 +204,35 @@ test('requires view-specific evidence and marks the expense topology as a dated 
   assert.match(inputs, /事实截止时间[^。\n]*2026-07-30/u);
   assert.match(document.body, /费用申报系统[^。\n]*教学演练假设/u);
   assert.match(document.body, /并非[^。\n]*生产拓扑事实/u);
+  assert.match(
+    document.body,
+    /数据库部署节点承载申报数据库 Container 实例/u,
+  );
+  assert.match(
+    document.body,
+    /基础设施节点[^。\n]*可选类型[^。\n]*最小教学图[^。\n]*未引入/u,
+  );
+  assert.doesNotMatch(document.body, /数据库等基础设施节点|托管数据库基础设施节点/u);
+  assert.match(document.body, /不[^。\n]*DNS[^。\n]*LB/u);
+
+  const source = ledger.sources.find(
+    ({id}) => id === 'src-atlas-mod03-c4-deployment',
+  );
+  assert.ok(source, 'MOD-03 Deployment illustration identity');
+  assert.equal(source.title, '费用申报系统 Deployment 教学演练假设拓扑');
+  assert.match(source.usage_boundary, /teaching exercise assumption topology/iu);
+  assert.match(source.usage_boundary, /not a production inventory fact/iu);
+  const citation =
+    ledger.documents[
+      'content/modeling/mod-03-c4-component-dynamic-deployment.mdx'
+    ].citations.find(
+      ({source_id}) => source_id === 'src-atlas-mod03-c4-deployment',
+    );
+  assert.equal(
+    citation.attribution_note,
+    '费用申报系统 Deployment 教学演练假设拓扑, Tego Arch maintainers',
+  );
+  assert.match(citation.modification_note, /teaching exercise assumption/iu);
 });
 
 test('locks the MOD-03 Dynamic asynchronous boundary and one minimal failure alt', () => {

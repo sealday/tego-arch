@@ -868,8 +868,8 @@ Use this brief:
 - the legend distinguishes deployment node, container instance, infrastructure node, and external system;
 - do not include replica counts, availability zones, autoscaling, capacity, or failover claims;
 - minimum published SVG viewBox width 800;
-- accessible title `费用申报系统生产环境部署视图`;
-- accessible description states that the figure maps instances to nodes without proving capacity or resilience.
+- accessible title `费用申报系统 Deployment 教学演练假设拓扑`;
+- accessible description states that the figure is a teaching-exercise assumption topology, maps Container instances to deployment nodes, is not a production inventory fact, and does not prove capacity or resilience.
 
 Create both `diagrams/mod-03-c4-deployment.drawio` and `static/img/diagrams/mod-03-c4-deployment.svg`.
 
@@ -892,9 +892,9 @@ and:
 ```mdx
 ### Deployment
 
-<div className="architecture-diagram-scroll" role="region" aria-label="费用申报系统生产环境部署视图，可横向滚动" tabIndex={0}>
+<div className="architecture-diagram-scroll" role="region" aria-label="费用申报系统 Deployment 教学演练假设拓扑，可横向滚动" tabIndex={0}>
 
-![费用申报系统容器实例到生产节点及银行支付服务的映射](/img/diagrams/mod-03-c4-deployment.svg)
+![费用申报系统教学演练假设拓扑中的 Container 实例、部署节点与银行支付服务](/img/diagrams/mod-03-c4-deployment.svg)
 
 </div>
 ```
@@ -918,8 +918,8 @@ Add two `source_kind: "original-illustration"` identities following the existing
     "id": "src-atlas-mod03-c4-deployment",
     "canonical_locator": "/img/diagrams/mod-03-c4-deployment.svg",
     "transport_locator": "/img/diagrams/mod-03-c4-deployment.svg",
-    "title": "费用申报系统生产环境部署视图",
-    "usage_boundary": "Original project illustration for the MOD-03 Deployment exercise; it maps instances to nodes without claiming capacity, redundancy, or failover."
+    "title": "费用申报系统 Deployment 教学演练假设拓扑",
+    "usage_boundary": "Original project illustration of a teaching exercise assumption topology for MOD-03 Deployment; it maps Container instances to deployment nodes, is not a production inventory fact, and does not claim capacity, redundancy, resilience, or failover."
   }
 ]
 ```
@@ -1230,7 +1230,7 @@ test('records exact successful G008 Batch 1 deployment evidence', () => {
     'C4 Model — Deployment diagram',
     'arc42',
     '申报 API Component 责任边界',
-    '费用申报系统生产环境部署视图',
+    '费用申报系统 Deployment 教学演练假设拓扑',
     'Stage B closure — PASS',
   ]) {
     assert.ok(review.includes(literal), literal);
@@ -1304,7 +1304,7 @@ Exact run gate: followed by the same SHA, status=completed, and conclusion=succe
 - contained overflow for diagrams and the MOD-01 decision table
 - keyboard scroll/focus
 - the exact passed-link numerator, the same denominator, and the word `total`
-- source labels: C4 Model; C4 Model — Diagrams; C4 Model — Notation; C4 Model — Component diagram; C4 Model — Dynamic diagram; C4 Model — Deployment diagram; arc42; 申报 API Component 责任边界; 费用申报系统生产环境部署视图
+- source labels: C4 Model; C4 Model — Diagrams; C4 Model — Notation; C4 Model — Component diagram; C4 Model — Dynamic diagram; C4 Model — Deployment diagram; arc42; 申报 API Component 责任边界; 费用申报系统 Deployment 教学演练假设拓扑
 
 ## Stage B projection
 
