@@ -1123,7 +1123,7 @@ Expected: the selected record has the exact Stage A SHA, `status=completed`, and
 Verify HTTP 200 for:
 
 ```text
-https://sealday.github.io/tego-arch/modeling/
+https://sealday.github.io/tego-arch/modeling
 https://sealday.github.io/tego-arch/modeling/mod-01
 https://sealday.github.io/tego-arch/modeling/mod-02
 https://sealday.github.io/tego-arch/modeling/mod-03
