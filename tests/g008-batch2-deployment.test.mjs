@@ -3,6 +3,9 @@ import {execFileSync} from 'node:child_process';
 import {readFile} from 'node:fs/promises';
 import test from 'node:test';
 
+const expectedStageASha = 'ef04cdbc84c2303c115855f571e061262cdbba5f';
+const expectedPagesRunId = '30543389172';
+
 const [review, backlog, manifest, projectStatus] = await Promise.all([
   readFile(new URL('../docs/reviews/g008-batch2.md', import.meta.url), 'utf8')
     .catch(() => ''),
@@ -15,35 +18,44 @@ const [review, backlog, manifest, projectStatus] = await Promise.all([
 const topicsById = new Map(manifest.topics.map((topic) => [topic.id, topic]));
 
 function parseEvidence(source) {
-  const sha = source.match(/^Exact Stage A SHA: `([0-9a-f]{40})`$/mu)?.[1];
-  const run = source.match(
-    /^GitHub Pages run: \[`([0-9]+)`\]\(https:\/\/github\.com\/sealday\/tego-arch\/actions\/runs\/\1\)$/mu,
-  )?.[1];
-  const gate = source.match(
-    /^Exact run gate: `headSha=([0-9a-f]{40})`, `status=completed`, `conclusion=success`\.$/mu,
-  )?.[1];
-  assert.ok(sha, 'review must contain one exact Stage A SHA');
-  assert.ok(run, 'review must contain one exact Pages run');
-  assert.equal(gate, sha, 'run gate must use the Stage A SHA');
+  const shaMatches = [...source.matchAll(
+    /^Exact Stage A SHA: `([0-9a-f]{40})`$/gmu,
+  )];
+  const runMatches = [...source.matchAll(
+    /^GitHub Pages run: \[`([0-9]+)`\]\(https:\/\/github\.com\/sealday\/tego-arch\/actions\/runs\/\1\)$/gmu,
+  )];
+  const gateMatches = [...source.matchAll(
+    /^Exact run gate: `headSha=([0-9a-f]{40})`, `status=completed`, `conclusion=success`\.$/gmu,
+  )];
+  assert.equal(shaMatches.length, 1, 'review must contain exactly one Stage A SHA');
+  assert.equal(runMatches.length, 1, 'review must contain exactly one Pages run');
+  assert.equal(gateMatches.length, 1, 'review must contain exactly one run gate');
+  const sha = shaMatches[0][1];
+  const run = runMatches[0][1];
+  const gate = gateMatches[0][1];
+  assert.equal(sha, expectedStageASha, 'review must use the G008 Batch 2 Stage A SHA');
+  assert.equal(run, expectedPagesRunId, 'review must use the G008 Batch 2 Pages run');
+  assert.equal(gate, expectedStageASha, 'run gate must use the G008 Batch 2 Stage A SHA');
   return {sha, run};
 }
 
-test('records exact successful G008 Batch 2 deployment evidence', () => {
-  const {sha} = parseEvidence(review);
-  assert.doesNotThrow(() =>
-    execFileSync('git', ['cat-file', '-e', `${sha}^{commit}`], {stdio: 'pipe'}),
-  );
+function assertDeploymentEvidence(source) {
+  const {sha} = parseEvidence(source);
   for (const literal of [
     '85 content documents',
     '468 governed sources',
     '42 completed topics',
     'desktop `1440x1000`',
     'mobile `390x844`',
+    'HTTP canonical routes: 5 / 5',
+    'canonical modeling route: `/modeling`',
     'Mermaid: 1 / 1',
     'mapping table: 1 / 1',
     'source labels: 7 / 7',
+    'relation clicks: 20 / 20',
     '0 warnings / 0 errors',
     'no document overflow',
+    'contained horizontal overflow for the mapping table',
     'keyboard scroll/focus',
     '43 completed topics',
     '7 / 20',
@@ -51,8 +63,81 @@ test('records exact successful G008 Batch 2 deployment evidence', () => {
     'next MOD-05',
     'Stage B closure — PASS',
   ]) {
-    assert.ok(review.includes(literal), literal);
+    assert.ok(source.includes(literal), literal);
   }
+  return sha;
+}
+
+function currentReleaseBaseline(source) {
+  const baselines = source
+    .split(/\r?\n/u)
+    .filter((line) => line.startsWith('- **当前发布基线：**'));
+  assert.equal(baselines.length, 1, 'backlog must contain exactly one current release baseline');
+  return baselines[0];
+}
+
+function assertCurrentReleaseState(source) {
+  const baseline = currentReleaseBaseline(source);
+  assert.match(baseline, /G008 仍在进行中/u);
+  assert.match(baseline, /下一项为 MOD-05/u);
+  assert.doesNotMatch(baseline, /G008 已完成/u);
+  assert.doesNotMatch(baseline, /最近完成 `?G008`?/u);
+}
+
+test('records exact successful G008 Batch 2 deployment evidence', () => {
+  const sha = assertDeploymentEvidence(review);
+  assert.doesNotThrow(() =>
+    execFileSync('git', ['cat-file', '-e', `${sha}^{commit}`], {stdio: 'pipe'}),
+  );
+});
+
+test('rejects stale duplicate incomplete or terminal closure evidence', () => {
+  const batch1Review = review
+    .replaceAll(expectedStageASha, 'f3d0576a3d04ff1e9ecf7511da1c6c6e6f30aa72')
+    .replaceAll(expectedPagesRunId, '30529090957');
+  assert.throws(() => assertDeploymentEvidence(batch1Review), {
+    name: 'AssertionError',
+  });
+
+  for (const duplicate of [
+    `Exact Stage A SHA: \`${expectedStageASha}\``,
+    `GitHub Pages run: [\`${expectedPagesRunId}\`](https://github.com/sealday/tego-arch/actions/runs/${expectedPagesRunId})`,
+    `Exact run gate: \`headSha=${expectedStageASha}\`, \`status=completed\`, \`conclusion=success\`.`,
+  ]) {
+    assert.throws(() => assertDeploymentEvidence(`${review}\n${duplicate}\n`), {
+      name: 'AssertionError',
+    });
+  }
+
+  for (const literal of [
+    'HTTP canonical routes: 5 / 5',
+    'canonical modeling route: `/modeling`',
+    'relation clicks: 20 / 20',
+    'contained horizontal overflow for the mapping table',
+  ]) {
+    assert.throws(
+      () => assertDeploymentEvidence(review.replace(`- ${literal}\n`, '')),
+      {name: 'AssertionError'},
+    );
+  }
+
+  for (const terminal of [
+    'G008 已完成，下一项为 MOD-05',
+    '最近完成 `G008`，下一项为 MOD-05',
+  ]) {
+    assert.throws(
+      () => assertCurrentReleaseState(
+        backlog.replace('G008 仍在进行中，下一项为 MOD-05', terminal),
+      ),
+      {name: 'AssertionError'},
+    );
+  }
+  assert.throws(
+    () => assertCurrentReleaseState(
+      `${backlog}\n- **当前发布基线：** duplicate\n`,
+    ),
+    {name: 'AssertionError'},
+  );
 });
 
 test('closes exactly MOD-04 without closing G008', () => {
@@ -82,7 +167,7 @@ test('closes exactly MOD-04 without closing G008', () => {
     total: 20,
     current: 'G008',
   });
+  assertCurrentReleaseState(backlog);
   assert.match(backlog, /当前持久故事：\*\* `G008`/u);
-  assert.match(backlog, /下一项[^。\n]*MOD-05/u);
   assert.doesNotMatch(backlog, /最近完成 `G008`/u);
 });
