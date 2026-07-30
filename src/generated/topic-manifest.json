@@ -390,27 +390,6 @@
       "presentation": {}
     },
     {
-      "id": "MOD-03",
-      "type": "modeling",
-      "title": "C4 Component、Dynamic 与 Deployment",
-      "slug": "/modeling/mod-03",
-      "priority": "P0",
-      "status": {
-        "scope": "backlog-projection",
-        "value": "pending",
-        "source": "docs/content-backlog.md"
-      },
-      "dependencies": [],
-      "adjacent_topics": [],
-      "primary_sources": [],
-      "related_cases": [],
-      "related_questions": [],
-      "reviewed_at": null,
-      "review_policy": null,
-      "published": false,
-      "pattern_group": null
-    },
-    {
       "id": "MOD-04",
       "type": "modeling",
       "title": "arc42 文档骨架",
@@ -1617,6 +1596,7 @@
       ],
       "adjacent_topics": [
         "MOD-01",
+        "MOD-03",
         "STY-00"
       ],
       "primary_sources": [
@@ -1697,6 +1677,37 @@
       ],
       "related_questions": [],
       "reviewed_at": "2026-07-24",
+      "review_policy": null,
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
+    },
+    {
+      "id": "MOD-03",
+      "type": "modeling",
+      "title": "C4 Component、Dynamic 与 Deployment",
+      "slug": "/modeling/mod-03",
+      "priority": "P0",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "pending",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "MOD-01",
+        "MOD-02"
+      ],
+      "adjacent_topics": [
+        "MOD-02"
+      ],
+      "primary_sources": [
+        "https://c4model.com/diagrams/component"
+      ],
+      "related_cases": [
+        "/cases/microsoft-multi-agent-reference-architecture"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-07-30",
       "review_policy": null,
       "published": true,
       "pattern_group": null,

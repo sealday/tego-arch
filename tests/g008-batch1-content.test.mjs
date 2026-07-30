@@ -96,3 +96,63 @@ test('governs MOD-01 sources and reciprocal navigation', () => {
     assert.ok(visibleExternal.has(citation.citation_url));
   }
 });
+
+test('publishes MOD-03 with three evidence-bounded C4 views', () => {
+  const document = requiredDocument('MOD-03');
+  assert.equal(
+    document.file,
+    'modeling/mod-03-c4-component-dynamic-deployment.mdx',
+  );
+  assert.equal(document.metadata.slug, '/modeling/mod-03');
+  assert.equal(document.metadata.content_type, 'modeling');
+  assert.equal(document.metadata.status, 'reviewed');
+  assert.equal(document.metadata.priority, 'P0');
+  assert.deepEqual(document.metadata.depends_on, ['MOD-01', 'MOD-02']);
+  assert.deepEqual(document.metadata.adjacent_topics, ['MOD-02']);
+  assert.deepEqual(
+    document.headings.filter(({level}) => level === 2).map(({text}) => text),
+    modelingHeadings,
+  );
+
+  const products = section(document.body, '模型产物');
+  for (const label of [
+    'Component',
+    'Dynamic',
+    'Deployment',
+    '提交用例',
+    '审批策略',
+    '付款编排',
+    '持久化端口',
+  ]) {
+    assert.match(products, new RegExp(label, 'u'), label);
+  }
+  assert.match(products, /```mermaid[\s\S]*?sequenceDiagram/u);
+  assert.match(document.body, /Component[^。；\n]*(?:不证明|不能证明)[^。；\n]*代码/u);
+  assert.match(document.body, /Dynamic[^。；\n]*(?:不等于|不证明)[^。；\n]*(?:性能|追踪)/u);
+  assert.match(document.body, /Deployment[^。；\n]*(?:不证明|不能证明)[^。；\n]*(?:容量|故障切换)/u);
+});
+
+test('keeps MOD-02 and MOD-03 reciprocal and governed', () => {
+  const mod02 = requiredDocument('MOD-02');
+  const mod03 = requiredDocument('MOD-03');
+  assert.ok(extractInternalLinks(mod02).includes('/modeling/mod-03'));
+  assert.ok(extractInternalLinks(mod03).includes('/modeling/mod-02'));
+  assert.ok(mod02.metadata.adjacent_topics.includes('MOD-03'));
+  assert.ok(mod03.metadata.adjacent_topics.includes('MOD-02'));
+
+  const governed = ledger.documents[
+    'content/modeling/mod-03-c4-component-dynamic-deployment.mdx'
+  ];
+  assert.ok(governed);
+  for (const sourceId of [
+    'src-c4model-component-diagram',
+    'src-c4model-dynamic-diagram',
+    'src-c4model-deployment-diagram',
+    'src-arc42-8b346f00707f',
+  ]) {
+    assert.ok(
+      governed.citations.some(({source_id}) => source_id === sourceId),
+      sourceId,
+    );
+  }
+});

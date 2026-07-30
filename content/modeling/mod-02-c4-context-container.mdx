@@ -24,6 +24,7 @@ depends_on:
   - MOD-01
 adjacent_topics:
   - MOD-01
+  - MOD-03
   - STY-00
 related_cases:
   - /cases/microsoft-multi-agent-reference-architecture
@@ -70,7 +71,7 @@ Context 层保留系统整体，Container 层只展开目标系统；外部银�
 
 ## 与其他模型的衔接
 
-[架构风格比较框架](/styles/sty-00)帮助解释容器为何采用某种连接器与数据边界；部署图补物理节点和冗余；动态视图补关键场景的时间顺序；ADR 记录为什么选择这些边界。模型之间应共享名称，但不互相冒充。
+[Component、Dynamic 与 Deployment](/modeling/mod-03)继续使用本页的费用申报系统元素名，分别补申报 API 内部责任、关键场景时间顺序与生产实例落点。[架构风格比较框架](/styles/sty-00)帮助解释容器为何采用某种连接器与数据边界；ADR 记录为什么选择这些边界。模型之间应共享名称，但不互相冒充。
 
 ## 完整演练
 

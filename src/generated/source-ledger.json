@@ -2169,6 +2169,96 @@
       ]
     },
     {
+      "id": "src-c4model-component-diagram",
+      "canonical_locator": "https://c4model.com/diagrams/component",
+      "transport_locator": "https://c4model.com/diagrams/component",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "C4 Model — Component diagram",
+      "author_or_org": "Simon Brown",
+      "published_at": null,
+      "registered_at": "2026-07-30",
+      "checked_at": "2026-07-30",
+      "version": "Current component diagram page checked on 2026-07-30",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "learning",
+        "method"
+      ],
+      "license": "CC-BY-4.0",
+      "license_scope": "C4 Model site content covered by the CC BY 4.0 footer; trademarks, linked works, code, media, and third-party assets excluded",
+      "license_evidence_url": "https://c4model.com/",
+      "license_evidence_note": "The official C4 Model site footer identifies its content as CC BY 4.0; this record covers factual summary of the named diagram page with attribution.",
+      "license_family_id": "https://c4model.com/diagrams/component",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "adapt-with-attribution",
+      "usage_boundary": "Defines the scope, elements, audience, and optional nature of a C4 Component diagram; it does not prove code conformance.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://c4model.com/diagrams/component",
+      "expected_final_approved_at": "2026-07-30",
+      "expected_final_approval_note": "Reviewed G008 Batch 1 transport baseline",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://c4model.com/diagrams/component",
+          "status": "healthy",
+          "last_attempt_at": "2026-07-30T05:20:11.000Z",
+          "last_success_at": "2026-07-30T05:20:11.000Z",
+          "http_status": 200,
+          "final_transport_locator": "https://c4model.com/diagrams/component"
+        }
+      ]
+    },
+    {
+      "id": "src-c4model-deployment-diagram",
+      "canonical_locator": "https://c4model.com/diagrams/deployment",
+      "transport_locator": "https://c4model.com/diagrams/deployment",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "C4 Model — Deployment diagram",
+      "author_or_org": "Simon Brown",
+      "published_at": null,
+      "registered_at": "2026-07-30",
+      "checked_at": "2026-07-30",
+      "version": "Current deployment diagram page checked on 2026-07-30",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "learning",
+        "method"
+      ],
+      "license": "CC-BY-4.0",
+      "license_scope": "C4 Model site content covered by the CC BY 4.0 footer; trademarks, linked works, code, media, and third-party assets excluded",
+      "license_evidence_url": "https://c4model.com/",
+      "license_evidence_note": "The official C4 Model site footer identifies its content as CC BY 4.0; this record covers factual summary of the named diagram page with attribution.",
+      "license_family_id": "https://c4model.com/diagrams/deployment",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "adapt-with-attribution",
+      "usage_boundary": "Defines deployment nodes, instances, infrastructure nodes, and environment scope; it does not prove capacity or resilience.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://c4model.com/diagrams/deployment",
+      "expected_final_approved_at": "2026-07-30",
+      "expected_final_approval_note": "Reviewed G008 Batch 1 transport baseline",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://c4model.com/diagrams/deployment",
+          "status": "healthy",
+          "last_attempt_at": "2026-07-30T05:20:11.000Z",
+          "last_success_at": "2026-07-30T05:20:11.000Z",
+          "http_status": 200,
+          "final_transport_locator": "https://c4model.com/diagrams/deployment"
+        }
+      ]
+    },
+    {
       "id": "src-c4model-diagrams",
       "canonical_locator": "https://c4model.com/diagrams",
       "transport_locator": "https://c4model.com/diagrams",
@@ -2210,6 +2300,51 @@
           "last_success_at": "2026-07-30T05:20:11.000Z",
           "http_status": 200,
           "final_transport_locator": "https://c4model.com/diagrams"
+        }
+      ]
+    },
+    {
+      "id": "src-c4model-dynamic-diagram",
+      "canonical_locator": "https://c4model.com/diagrams/dynamic",
+      "transport_locator": "https://c4model.com/diagrams/dynamic",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "C4 Model — Dynamic diagram",
+      "author_or_org": "Simon Brown",
+      "published_at": null,
+      "registered_at": "2026-07-30",
+      "checked_at": "2026-07-30",
+      "version": "Current dynamic diagram page checked on 2026-07-30",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "learning",
+        "method"
+      ],
+      "license": "CC-BY-4.0",
+      "license_scope": "C4 Model site content covered by the CC BY 4.0 footer; trademarks, linked works, code, media, and third-party assets excluded",
+      "license_evidence_url": "https://c4model.com/",
+      "license_evidence_note": "The official C4 Model site footer identifies its content as CC BY 4.0; this record covers factual summary of the named diagram page with attribution.",
+      "license_family_id": "https://c4model.com/diagrams/dynamic",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "adapt-with-attribution",
+      "usage_boundary": "Defines scenario-level runtime collaboration and its sparing use; it does not provide production tracing or performance evidence.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://c4model.com/diagrams/dynamic",
+      "expected_final_approved_at": "2026-07-30",
+      "expected_final_approval_note": "Reviewed G008 Batch 1 transport baseline",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://c4model.com/diagrams/dynamic",
+          "status": "healthy",
+          "last_attempt_at": "2026-07-30T05:20:11.000Z",
+          "last_success_at": "2026-07-30T05:20:11.000Z",
+          "http_status": 200,
+          "final_transport_locator": "https://c4model.com/diagrams/dynamic"
         }
       ]
     },
@@ -28450,6 +28585,75 @@
           "manifest_primary": true,
           "usage_mode": "facts-summary",
           "attribution_note": "C4 Model, Simon Brown",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/modeling/mod-03-c4-component-dynamic-deployment.mdx": {
+      "title": "C4 Component、Dynamic 与 Deployment",
+      "slug": "/modeling/mod-03",
+      "reviewed_at": "2026-07-30",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-arc42-8b346f00707f",
+          "citation_url": "https://arc42.org/",
+          "roles": [
+            "method",
+            "learning"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "arc42, arc42 contributors",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-c4model-component-diagram",
+          "citation_url": "https://c4model.com/diagrams/component",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "C4 Model — Component diagram, Simon Brown",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-c4model-deployment-diagram",
+          "citation_url": "https://c4model.com/diagrams/deployment",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "C4 Model — Deployment diagram, Simon Brown",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-c4model-dynamic-diagram",
+          "citation_url": "https://c4model.com/diagrams/dynamic",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "C4 Model — Dynamic diagram, Simon Brown",
           "modification_note": null,
           "excerpt": null,
           "quotation_reviewed": false
