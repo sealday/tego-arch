@@ -81,7 +81,8 @@ test('publishes MOD-04 as an original six-unit arc42 v9 skeleton', () => {
 });
 
 test('maps all twelve arc42 problem domains without copying the template', () => {
-  const products = section(requiredDocument('MOD-04').body, '模型产物');
+  const document = requiredDocument('MOD-04');
+  const products = section(document.body, '模型产物');
   for (const label of [
     'Introduction and Goals',
     'Architecture Constraints',
@@ -108,6 +109,10 @@ test('maps all twelve arc42 problem domains without copying the template', () =>
   ]) {
     assert.match(products, new RegExp(unit, 'u'), unit);
   }
+  assert.equal(
+    [...document.body.matchAll(/className="table-wrapper"/gu)].length,
+    1,
+  );
   assert.match(products, /className="table-wrapper"/u);
   assert.match(products, /aria-label="arc42 v9 六单元映射表，可横向滚动"/u);
   assert.match(products, /tabIndex=\{0\}/u);
@@ -136,7 +141,9 @@ test('keeps evidence classes and non-proof boundaries explicit', () => {
 });
 
 test('renders one evidence-chain Mermaid with explicit validation gaps', () => {
-  const mermaid = fencedBlock(requiredDocument('MOD-04').body, 'mermaid');
+  const document = requiredDocument('MOD-04');
+  assert.equal([...document.body.matchAll(/```mermaid\n/gu)].length, 1);
+  const mermaid = fencedBlock(document.body, 'mermaid');
   assert.match(mermaid, /^flowchart LR/mu);
   for (const label of [
     '目标与边界',
