@@ -312,7 +312,7 @@ test('governs exact arc42 and Microsoft evidence identities', () => {
   }
 });
 
-test('keeps MOD-04 pending during Stage A', async () => {
+test('projects G008 Batch 2 completion during Stage B', async () => {
   const [status, backlog] = await Promise.all([
     readFile(new URL('../src/generated/project-status.json', import.meta.url), 'utf8')
       .then(JSON.parse),
@@ -321,7 +321,7 @@ test('keeps MOD-04 pending during Stage A', async () => {
   assert.deepEqual(status, {
     schema_version: 1,
     durable_stories: {completed: 7, total: 20, current: 'G008'},
-    completed_topics: 42,
+    completed_topics: 43,
     content_documents: 85,
     governed_sources: 468,
     sources: {
@@ -331,7 +331,6 @@ test('keeps MOD-04 pending during Stage A', async () => {
       governed_sources: 'data/source-ledger.json',
     },
   });
-  assert.match(backlog, /^- \[ \] \*\*MOD-04 /mu);
-  assert.match(backlog, /当前持久故事：\*\* `G008`/u);
-  assert.match(backlog, /下一项[^。\n]*MOD-04/u);
+  assert.match(backlog, /^- \[x\] \*\*MOD-04 /mu);
+  assert.match(backlog, /下一项[^。\n]*MOD-05/u);
 });

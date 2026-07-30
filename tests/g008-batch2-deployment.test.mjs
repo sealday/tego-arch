@@ -4,7 +4,7 @@ import {readFile} from 'node:fs/promises';
 import test from 'node:test';
 
 const [review, backlog, manifest, projectStatus] = await Promise.all([
-  readFile(new URL('../docs/reviews/g008-batch1.md', import.meta.url), 'utf8')
+  readFile(new URL('../docs/reviews/g008-batch2.md', import.meta.url), 'utf8')
     .catch(() => ''),
   readFile(new URL('../docs/content-backlog.md', import.meta.url), 'utf8'),
   readFile(new URL('../src/generated/topic-manifest.json', import.meta.url), 'utf8')
@@ -28,56 +28,51 @@ function parseEvidence(source) {
   return {sha, run};
 }
 
-test('records exact successful G008 Batch 1 deployment evidence', () => {
+test('records exact successful G008 Batch 2 deployment evidence', () => {
   const {sha} = parseEvidence(review);
   assert.doesNotThrow(() =>
     execFileSync('git', ['cat-file', '-e', `${sha}^{commit}`], {stdio: 'pipe'}),
   );
   for (const literal of [
-    '84 content documents',
-    '464 governed sources',
-    '39 completed topics',
+    '85 content documents',
+    '468 governed sources',
+    '42 completed topics',
     'desktop `1440x1000`',
     'mobile `390x844`',
+    'Mermaid: 1 / 1',
+    'mapping table: 1 / 1',
+    'source labels: 7 / 7',
     '0 warnings / 0 errors',
     'no document overflow',
     'keyboard scroll/focus',
-    '42 completed topics',
+    '43 completed topics',
     '7 / 20',
     'current G008',
-    'next MOD-04',
-    'C4 Model',
-    'C4 Model — Diagrams',
-    'C4 Model — Notation',
-    'C4 Model — Component diagram',
-    'C4 Model — Dynamic diagram',
-    'C4 Model — Deployment diagram',
-    'arc42',
-    '申报 API Component 责任边界',
-    '费用申报系统 Deployment 教学演练假设拓扑',
+    'next MOD-05',
     'Stage B closure — PASS',
   ]) {
     assert.ok(review.includes(literal), literal);
   }
 });
 
-test('closes exactly MOD-01 through MOD-03 without closing G008', () => {
+test('closes exactly MOD-04 without closing G008', () => {
   const {sha, run} = parseEvidence(review);
-  for (const id of ['MOD-01', 'MOD-02', 'MOD-03']) {
-    const row = backlog
-      .split(/\r?\n/u)
-      .find((line) => line.startsWith(`- [x] **${id} `));
-    assert.ok(row, `${id} checked`);
-    assert.ok(row.includes(sha), `${id} Stage A SHA`);
-    assert.ok(
-      row.includes(`https://github.com/sealday/tego-arch/actions/runs/${run}`),
-      `${id} Pages run`,
-    );
-    assert.deepEqual(topicsById.get(id)?.status, {
-      scope: 'backlog-projection',
-      value: 'complete',
-      source: 'docs/content-backlog.md',
-    });
+  const row = backlog
+    .split(/\r?\n/u)
+    .find((line) => line.startsWith('- [x] **MOD-04 '));
+  assert.ok(row, 'MOD-04 checked');
+  assert.ok(row.includes(sha), 'MOD-04 Stage A SHA');
+  assert.ok(
+    row.includes(`https://github.com/sealday/tego-arch/actions/runs/${run}`),
+    'MOD-04 Pages run',
+  );
+  assert.deepEqual(topicsById.get('MOD-04')?.status, {
+    scope: 'backlog-projection',
+    value: 'complete',
+    source: 'docs/content-backlog.md',
+  });
+  for (const id of ['MOD-05', 'MOD-06', 'MOD-07', 'MOD-08', 'MOD-09', 'MOD-10', 'MOD-11', 'MOD-12', 'MOD-13']) {
+    assert.equal(topicsById.get(id)?.status.value, 'pending', id);
   }
   assert.equal(projectStatus.completed_topics, 43);
   assert.equal(projectStatus.content_documents, 85);
@@ -88,6 +83,6 @@ test('closes exactly MOD-01 through MOD-03 without closing G008', () => {
     current: 'G008',
   });
   assert.match(backlog, /当前持久故事：\*\* `G008`/u);
-  assert.match(backlog, /下一项[^。\n]*MOD-04/u);
+  assert.match(backlog, /下一项[^。\n]*MOD-05/u);
   assert.doesNotMatch(backlog, /最近完成 `G008`/u);
 });
