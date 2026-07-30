@@ -1034,7 +1034,7 @@ Run:
 
 ```bash
 node --test tests/drawio-svg-pilot.test.mjs --test-name-pattern='MOD-02|canonical MOD-02'
-node .codex/skills/creating-drawio-architecture-diagrams/scripts/validate_drawio_svg.mjs diagrams/mod-02-c4-context-container.drawio static/img/diagrams/mod-02-c4-context-container.svg --label 员工 --label 费用申报系统 --label Web --label API --label 数据库 --label 支付任务执行器 --label 外部银行
+node .codex/skills/creating-drawio-architecture-diagrams/scripts/validate_drawio_svg.mjs diagrams/mod-02-c4-context-container.drawio static/img/diagrams/mod-02-c4-context-container.svg --label 'Context：费用申报系统边界' --label 'Container：展开费用申报系统' --label 员工 --label 费用申报系统 --label 银行支付服务 --label 'Web 应用' --label '申报 API' --label 申报数据库 --label 支付任务执行器
 ```
 
 Expected: PASS. If both pass and browser QA later finds no defect, do not change the MOD-02 diagram or prose beyond the navigation already added.
