@@ -321,7 +321,7 @@ test('keeps MOD-02 and MOD-03 reciprocal and governed', () => {
   );
 });
 
-test('keeps G008 Batch 1 pending during Stage A', async () => {
+test('projects G008 Batch 1 completion during Stage B', async () => {
   const [status, backlog] = await Promise.all([
     readFile(new URL('../src/generated/project-status.json', import.meta.url), 'utf8')
       .then(JSON.parse),
@@ -330,7 +330,7 @@ test('keeps G008 Batch 1 pending during Stage A', async () => {
   assert.deepEqual(status, {
     schema_version: 1,
     durable_stories: {completed: 7, total: 20, current: 'G008'},
-    completed_topics: 39,
+    completed_topics: 42,
     content_documents: 84,
     governed_sources: 464,
     sources: {
@@ -341,6 +341,6 @@ test('keeps G008 Batch 1 pending during Stage A', async () => {
     },
   });
   for (const id of ['MOD-01', 'MOD-02', 'MOD-03']) {
-    assert.match(backlog, new RegExp(`^- \\[ \\] \\*\\*${id} `, 'mu'));
+    assert.match(backlog, new RegExp(`^- \\[x\\] \\*\\*${id} `, 'mu'));
   }
 });

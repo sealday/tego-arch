@@ -45,7 +45,7 @@ const fixtureCompletionById = new Map([
   ['REL-02', false],
   ['STY-00', false],
   ['MTH-03', true],
-  ['MOD-02', false],
+  ['MOD-02', true],
   ['QA-01', true],
 ]);
 const g005ClosureRoutes = new Map([
