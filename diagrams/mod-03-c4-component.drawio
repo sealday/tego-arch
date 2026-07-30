@@ -13,7 +13,7 @@
         <mxCell id="note" value="此图只展开一个申报 API Container，展示四个内部责任单元及直接依赖，不证明代码与图一致。" style="text;html=0;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=23;fontColor=#6C6861;" vertex="1" parent="1">
           <mxGeometry x="44" y="76" width="1100" height="38" as="geometry"/>
         </mxCell>
-        <mxCell id="boundary" value="申报 API" style="rounded=1;arcSize=10;whiteSpace=wrap;html=0;fillColor=#FBF8F1;strokeColor=#405D6B;strokeWidth=3;dashed=1;dashPattern=7 5;verticalAlign=top;align=left;spacingTop=20;spacingLeft=26;fontSize=30;fontStyle=1;fontColor=#263238;" vertex="1" parent="1">
+        <mxCell id="boundary" value="申报 API" data-boundary-name="申报 API" style="rounded=1;arcSize=10;whiteSpace=wrap;html=0;fillColor=#FBF8F1;strokeColor=#405D6B;strokeWidth=3;dashed=1;dashPattern=7 5;verticalAlign=top;align=left;spacingTop=20;spacingLeft=26;fontSize=30;fontStyle=1;fontColor=#263238;" vertex="1" parent="1">
           <mxGeometry x="250" y="130" width="700" height="600" as="geometry"/>
         </mxCell>
         <mxCell id="web" value="Web 应用" style="rounded=1;arcSize=14;whiteSpace=wrap;html=0;fillColor=#ECE8E1;strokeColor=#77716A;strokeWidth=2;fontSize=24;fontStyle=1;verticalAlign=top;spacingTop=35;" vertex="1" parent="1">
@@ -22,25 +22,25 @@
         <mxCell id="web-type" value="CONTAINER" style="text;html=0;strokeColor=none;fillColor=none;fontSize=16;fontStyle=1;align=center;" vertex="1" parent="1">
           <mxGeometry x="55" y="350" width="130" height="30" as="geometry"/>
         </mxCell>
-        <mxCell id="submit" value="提交用例" style="rounded=1;arcSize=14;whiteSpace=wrap;html=0;fillColor=#D9E5DA;strokeColor=#64806B;strokeWidth=2;fontSize=24;fontStyle=1;verticalAlign=top;spacingTop=35;" vertex="1" parent="1">
+        <mxCell id="submit" value="提交用例" data-boundary-id="boundary" style="rounded=1;arcSize=14;whiteSpace=wrap;html=0;fillColor=#D9E5DA;strokeColor=#64806B;strokeWidth=2;fontSize=24;fontStyle=1;verticalAlign=top;spacingTop=35;" vertex="1" parent="1">
           <mxGeometry x="310" y="240" width="230" height="150" as="geometry"/>
         </mxCell>
         <mxCell id="submit-type" value="COMPONENT" style="text;html=0;strokeColor=none;fillColor=none;fontSize=16;fontStyle=1;align=center;" vertex="1" parent="1">
           <mxGeometry x="350" y="320" width="150" height="30" as="geometry"/>
         </mxCell>
-        <mxCell id="policy" value="审批策略" style="rounded=1;arcSize=14;whiteSpace=wrap;html=0;fillColor=#D9E5DA;strokeColor=#64806B;strokeWidth=2;fontSize=24;fontStyle=1;verticalAlign=top;spacingTop=35;" vertex="1" parent="1">
+        <mxCell id="policy" value="审批策略" data-boundary-id="boundary" style="rounded=1;arcSize=14;whiteSpace=wrap;html=0;fillColor=#D9E5DA;strokeColor=#64806B;strokeWidth=2;fontSize=24;fontStyle=1;verticalAlign=top;spacingTop=35;" vertex="1" parent="1">
           <mxGeometry x="660" y="240" width="230" height="150" as="geometry"/>
         </mxCell>
         <mxCell id="policy-type" value="COMPONENT" style="text;html=0;strokeColor=none;fillColor=none;fontSize=16;fontStyle=1;align=center;" vertex="1" parent="1">
           <mxGeometry x="700" y="320" width="150" height="30" as="geometry"/>
         </mxCell>
-        <mxCell id="payment" value="付款编排" style="rounded=1;arcSize=14;whiteSpace=wrap;html=0;fillColor=#D9E5DA;strokeColor=#64806B;strokeWidth=2;fontSize=24;fontStyle=1;verticalAlign=top;spacingTop=35;" vertex="1" parent="1">
+        <mxCell id="payment" value="付款编排" data-boundary-id="boundary" style="rounded=1;arcSize=14;whiteSpace=wrap;html=0;fillColor=#D9E5DA;strokeColor=#64806B;strokeWidth=2;fontSize=24;fontStyle=1;verticalAlign=top;spacingTop=35;" vertex="1" parent="1">
           <mxGeometry x="310" y="510" width="230" height="150" as="geometry"/>
         </mxCell>
         <mxCell id="payment-type" value="COMPONENT" style="text;html=0;strokeColor=none;fillColor=none;fontSize=16;fontStyle=1;align=center;" vertex="1" parent="1">
           <mxGeometry x="350" y="590" width="150" height="30" as="geometry"/>
         </mxCell>
-        <mxCell id="persistence" value="持久化端口" style="rounded=1;arcSize=14;whiteSpace=wrap;html=0;fillColor=#D9E5DA;strokeColor=#64806B;strokeWidth=2;fontSize=24;fontStyle=1;verticalAlign=top;spacingTop=35;" vertex="1" parent="1">
+        <mxCell id="persistence" value="持久化端口" data-boundary-id="boundary" style="rounded=1;arcSize=14;whiteSpace=wrap;html=0;fillColor=#D9E5DA;strokeColor=#64806B;strokeWidth=2;fontSize=24;fontStyle=1;verticalAlign=top;spacingTop=35;" vertex="1" parent="1">
           <mxGeometry x="660" y="510" width="230" height="150" as="geometry"/>
         </mxCell>
         <mxCell id="persistence-type" value="COMPONENT" style="text;html=0;strokeColor=none;fillColor=none;fontSize=16;fontStyle=1;align=center;" vertex="1" parent="1">
