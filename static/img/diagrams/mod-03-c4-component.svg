@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-labelledby="component-title component-description">
+  <title id="component-title">申报 API Component 责任边界</title>
+  <desc id="component-description">此图只展开一个申报 API Container，展示四个内部责任单元及直接依赖，不证明代码与图一致。</desc>
+  <defs>
+    <marker id="component-arrow" markerUnits="strokeWidth" markerWidth="10" markerHeight="10" viewBox="0 0 10 10" refX="8" refY="5" orient="auto">
+      <path d="M0 0L10 5L0 10Z" fill="#263238"/>
+    </marker>
+    <style>
+      text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;fill:#263238}
+      .heading{font-size:36px;font-weight:760}.note{font-size:23px;fill:#6c6861}
+      .boundary-title{font-size:30px;font-weight:760}.node-title{font-size:24px;font-weight:720}
+      .node-type{font-size:16px;font-weight:700;letter-spacing:1px;fill:#55514b}
+      .edge-label{font-size:23px;font-weight:650;fill:#55514b}
+    </style>
+  </defs>
+  <path d="M0 0H1200V800H0Z" fill="#F6F1E7"/>
+  <text x="44" y="64" class="heading">Component：只展开申报 API</text>
+  <text x="44" y="102" class="note">责任边界与直接依赖；不映射类、方法或框架目录</text>
+  <path d="M264 130H936Q950 130 950 144V716Q950 730 936 730H264Q250 730 250 716V144Q250 130 264 130Z" fill="#FBF8F1" stroke="#405D6B" stroke-width="3" stroke-dasharray="11 8"/>
+  <text x="280" y="178" class="boundary-title">申报 API</text>
+
+  <g data-node-id="web" data-node-bounds="30 270 180 150">
+    <path d="M44 270H196Q210 270 210 284V406Q210 420 196 420H44Q30 420 30 406V284Q30 270 44 270Z" fill="#ECE8E1" stroke="#77716A" stroke-width="2"/>
+    <text x="120" y="325" text-anchor="middle" class="node-title" data-text-role="title">Web 应用</text>
+    <text x="120" y="367" text-anchor="middle" class="node-type" data-text-role="type">CONTAINER</text>
+  </g>
+  <g data-node-id="submit" data-node-bounds="310 240 230 150">
+    <path d="M324 240H526Q540 240 540 254V376Q540 390 526 390H324Q310 390 310 376V254Q310 240 324 240Z" fill="#D9E5DA" stroke="#64806B" stroke-width="2"/>
+    <text x="425" y="295" text-anchor="middle" class="node-title" data-text-role="title">提交用例</text>
+    <text x="425" y="337" text-anchor="middle" class="node-type" data-text-role="type">COMPONENT</text>
+  </g>
+  <g data-node-id="policy" data-node-bounds="660 240 230 150">
+    <path d="M674 240H876Q890 240 890 254V376Q890 390 876 390H674Q660 390 660 376V254Q660 240 674 240Z" fill="#D9E5DA" stroke="#64806B" stroke-width="2"/>
+    <text x="775" y="295" text-anchor="middle" class="node-title" data-text-role="title">审批策略</text>
+    <text x="775" y="337" text-anchor="middle" class="node-type" data-text-role="type">COMPONENT</text>
+  </g>
+  <g data-node-id="payment" data-node-bounds="310 510 230 150">
+    <path d="M324 510H526Q540 510 540 524V646Q540 660 526 660H324Q310 660 310 646V524Q310 510 324 510Z" fill="#D9E5DA" stroke="#64806B" stroke-width="2"/>
+    <text x="425" y="565" text-anchor="middle" class="node-title" data-text-role="title">付款编排</text>
+    <text x="425" y="607" text-anchor="middle" class="node-type" data-text-role="type">COMPONENT</text>
+  </g>
+  <g data-node-id="persistence" data-node-bounds="660 510 230 150">
+    <path d="M674 510H876Q890 510 890 524V646Q890 660 876 660H674Q660 660 660 646V524Q660 510 674 510Z" fill="#D9E5DA" stroke="#64806B" stroke-width="2"/>
+    <text x="775" y="565" text-anchor="middle" class="node-title" data-text-role="title">持久化端口</text>
+    <text x="775" y="607" text-anchor="middle" class="node-type" data-text-role="type">COMPONENT</text>
+  </g>
+  <g data-node-id="db" data-node-bounds="990 205 180 170">
+    <path d="M990 235C990 218 1030 205 1080 205S1170 218 1170 235V345C1170 362 1130 375 1080 375S990 362 990 345Z" fill="#E8E1CF" stroke="#8B7855" stroke-width="2"/>
+    <path d="M990 235C990 252 1030 265 1080 265S1170 252 1170 235" fill="none" stroke="#8B7855" stroke-width="2"/>
+    <text x="1080" y="285" text-anchor="middle" class="node-title" data-text-role="title">申报数据库</text>
+    <text x="1080" y="327" text-anchor="middle" class="node-type" data-text-role="type">DATA STORE</text>
+  </g>
+  <g data-node-id="worker" data-node-bounds="960 510 230 150">
+    <path d="M974 510H1176Q1190 510 1190 524V646Q1190 660 1176 660H974Q960 660 960 646V524Q960 510 974 510Z" fill="#ECE8E1" stroke="#77716A" stroke-width="2"/>
+    <text x="1075" y="565" text-anchor="middle" class="node-title" data-text-role="title">支付任务执行器</text>
+    <text x="1075" y="607" text-anchor="middle" class="node-type" data-text-role="type">CONTAINER</text>
+  </g>
+
+  <path data-edge-id="web-submit" d="M211 345H300" fill="none" stroke="#263238" stroke-width="2.4" marker-end="url(#component-arrow)"/>
+  <text x="255" y="210" text-anchor="middle" class="edge-label" data-edge-id="web-submit">提交请求</text>
+  <path data-edge-id="submit-policy" d="M541 315H650" fill="none" stroke="#263238" stroke-width="2.4" marker-end="url(#component-arrow)"/>
+  <text x="595" y="205" text-anchor="middle" class="edge-label" data-edge-id="submit-policy">校验审批</text>
+  <path data-edge-id="submit-payment" d="M425 391V500" fill="none" stroke="#263238" stroke-width="2.4" marker-end="url(#component-arrow)"/>
+  <text x="530" y="452" text-anchor="middle" class="edge-label" data-edge-id="submit-payment">创建付款任务</text>
+  <path data-edge-id="payment-persistence" d="M541 585H650" fill="none" stroke="#263238" stroke-width="2.4" marker-end="url(#component-arrow)"/>
+  <text x="595" y="480" text-anchor="middle" class="edge-label" data-edge-id="payment-persistence">保存任务</text>
+  <path data-edge-id="persistence-db" d="M891 585H930V290H980" fill="none" stroke="#263238" stroke-width="2.4" marker-end="url(#component-arrow)"/>
+  <text x="1050" y="430" text-anchor="middle" class="edge-label" data-edge-id="persistence-db">读写申报</text>
+  <path data-edge-id="payment-worker" d="M425 661V680H1075V670" fill="none" stroke="#263238" stroke-width="2.4" marker-end="url(#component-arrow)"/>
+  <text x="750" y="725" text-anchor="middle" class="edge-label" data-edge-id="payment-worker">发布待执行任务</text>
+</svg>

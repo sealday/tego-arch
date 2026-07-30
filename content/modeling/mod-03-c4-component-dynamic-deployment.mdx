@@ -62,7 +62,13 @@ related_questions: []
 
 ## 模型产物
 
-### Component：申报 API 的责任边界
+### Component
+
+<div className="architecture-diagram-scroll" role="region" aria-label="申报 API Component 责任边界，可横向滚动" tabIndex={0}>
+
+![申报 API 内部四个责任单元及其直接容器依赖](/img/diagrams/mod-03-c4-component.svg)
+
+</div>
 
 Component 范围仅限 `申报 API`。内部只有 `提交用例`、`审批策略`、`付款编排` 与 `持久化端口`：提交用例协调一次提交，审批策略判断是否允许付款，付款编排创建待执行任务，持久化端口隔离申报数据库接口。Component 是可选视图，只有责任、接口或变更所有权确实需要评审时才创建；如果 Container 级说明已经足够，就不维护它。Component 不证明代码与图一致，也不能替代代码、依赖和所有权检查。
 
@@ -92,9 +98,15 @@ sequenceDiagram
 
 交互顺序仅表达这一次场景的相对先后，不承诺线程、消息协议或耗时。Dynamic 不等于性能报告或生产追踪，也不证明真实调用一定按图发生；性能、追踪与失败证据仍来自运行系统。
 
-### Deployment：一个生产环境
+### Deployment
 
-Deployment 位置先保留为文字，Task 3 再提供原创资产。视图只命名“生产环境”：部署节点表示承载边界，节点中的 `Web 应用`、`申报 API` 与 `支付任务执行器` 是 Container 实例，托管数据库服务是承载申报数据库的基础设施节点，`外部银行` 仍在系统边界之外。不要把实例、节点和基础设施画成同一种盒子。
+<div className="architecture-diagram-scroll" role="region" aria-label="费用申报系统生产环境部署视图，可横向滚动" tabIndex={0}>
+
+![费用申报系统容器实例到生产节点及外部银行的映射](/img/diagrams/mod-03-c4-deployment.svg)
+
+</div>
+
+视图只命名“生产环境”：部署节点表示承载边界，节点中的 `Web 应用`、`申报 API` 与 `支付任务执行器` 是 Container 实例，托管数据库服务是承载申报数据库的基础设施节点，`外部银行` 仍在系统边界之外。不要把实例、节点和基础设施画成同一种盒子。
 
 Deployment 不证明容量或故障切换能力，也不能仅凭多实例图形声称高可用；容量、故障切换和恢复能力需要配置、测试与生产观测支持。
 

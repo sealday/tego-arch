@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1000" role="img" aria-labelledby="deployment-title deployment-description">
+  <title id="deployment-title">费用申报系统生产环境部署视图</title>
+  <desc id="deployment-description">此图把费用申报系统的容器实例映射到生产环境节点，但不证明容量、冗余、韧性或故障切换能力。</desc>
+  <defs>
+    <marker id="deployment-arrow" markerUnits="strokeWidth" markerWidth="10" markerHeight="10" viewBox="0 0 10 10" refX="8" refY="5" orient="auto">
+      <path d="M0 0L10 5L0 10Z" fill="#263238"/>
+    </marker>
+    <style>
+      text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;fill:#263238}
+      .heading{font-size:36px;font-weight:760}.note{font-size:23px;fill:#6c6861}
+      .boundary-title{font-size:30px;font-weight:760}.node-title{font-size:24px;font-weight:720}
+      .node-type{font-size:15px;font-weight:700;letter-spacing:.7px;fill:#55514b}
+      .edge-label{font-size:23px;font-weight:650;fill:#55514b}.legend{font-size:18px;font-weight:650}
+    </style>
+  </defs>
+  <path d="M0 0H1200V1000H0Z" fill="#F6F1E7"/>
+  <text x="44" y="64" class="heading">Deployment：实例映射到生产节点</text>
+  <text x="44" y="102" class="note">只表达落点，不声明副本数、容量、可用区、扩缩容或故障切换</text>
+  <path d="M24 130H976Q990 130 990 144V916Q990 930 976 930H24Q10 930 10 916V144Q10 130 24 130Z" fill="#FBF8F1" stroke="#405D6B" stroke-width="3" stroke-dasharray="11 8"/>
+  <text x="60" y="178" class="boundary-title">生产环境</text>
+
+  <g aria-label="图例">
+    <rect x="310" y="151" width="28" height="22" rx="4" fill="#F0EDE7" stroke="#77716A" stroke-width="3"/><text x="348" y="170" class="legend">部署节点</text>
+    <rect x="455" y="151" width="28" height="22" rx="4" fill="#D9E5DA" stroke="#64806B" stroke-width="2"/><text x="493" y="170" class="legend">容器实例</text>
+    <rect x="610" y="151" width="28" height="22" rx="4" fill="#F2E9D6" stroke="#8B7855" stroke-width="3"/><text x="648" y="170" class="legend">基础设施节点</text>
+    <rect x="815" y="151" width="28" height="22" rx="4" fill="#ECE8E1" stroke="#77716A" stroke-width="2"/><text x="853" y="170" class="legend">外部系统</text>
+  </g>
+
+  <g data-node-id="employee-terminal" data-node-bounds="20 300 210 170">
+    <path d="M34 300H216Q230 300 230 314V456Q230 470 216 470H34Q20 470 20 456V314Q20 300 34 300Z" fill="#ECE8E1" stroke="#77716A" stroke-width="3"/>
+    <text x="125" y="355" text-anchor="middle" class="node-title" data-text-role="title">员工终端</text>
+    <text x="125" y="397" text-anchor="middle" class="node-type" data-text-role="type">DEPLOYMENT NODE</text>
+  </g>
+  <g data-node-id="web-node" data-node-bounds="240 270 250 250">
+    <path d="M254 270H476Q490 270 490 284V506Q490 520 476 520H254Q240 520 240 506V284Q240 270 254 270Z" fill="#F0EDE7" stroke="#77716A" stroke-width="3"/>
+    <text x="365" y="315" text-anchor="middle" class="node-title" data-text-role="title">Web 节点</text>
+    <text x="365" y="357" text-anchor="middle" class="node-type" data-text-role="type">DEPLOYMENT NODE</text>
+  </g>
+  <g data-node-id="web-instance" data-node-bounds="250 370 230 140">
+    <path d="M262 370H468Q480 370 480 382V498Q480 510 468 510H262Q250 510 250 498V382Q250 370 262 370Z" fill="#D9E5DA" stroke="#64806B" stroke-width="2"/>
+    <text x="365" y="425" text-anchor="middle" class="node-title" data-text-role="title">Web 应用实例</text>
+    <text x="365" y="467" text-anchor="middle" class="node-type" data-text-role="type">CONTAINER INSTANCE</text>
+  </g>
+  <g data-node-id="api-node" data-node-bounds="500 270 250 250">
+    <path d="M514 270H736Q750 270 750 284V506Q750 520 736 520H514Q500 520 500 506V284Q500 270 514 270Z" fill="#F0EDE7" stroke="#77716A" stroke-width="3"/>
+    <text x="625" y="315" text-anchor="middle" class="node-title" data-text-role="title">API 节点</text>
+    <text x="625" y="357" text-anchor="middle" class="node-type" data-text-role="type">DEPLOYMENT NODE</text>
+  </g>
+  <g data-node-id="api-instance" data-node-bounds="510 370 230 140">
+    <path d="M522 370H728Q740 370 740 382V498Q740 510 728 510H522Q510 510 510 498V382Q510 370 522 370Z" fill="#D9E5DA" stroke="#64806B" stroke-width="2"/>
+    <text x="625" y="425" text-anchor="middle" class="node-title" data-text-role="title">申报 API 实例</text>
+    <text x="625" y="467" text-anchor="middle" class="node-type" data-text-role="type">CONTAINER INSTANCE</text>
+  </g>
+  <g data-node-id="db-node" data-node-bounds="760 270 230 250">
+    <path d="M774 270H976Q990 270 990 284V506Q990 520 976 520H774Q760 520 760 506V284Q760 270 774 270Z" fill="#F2E9D6" stroke="#8B7855" stroke-width="3"/>
+    <text x="875" y="315" text-anchor="middle" class="node-title" data-text-role="title">数据库节点</text>
+    <text x="875" y="357" text-anchor="middle" class="node-type" data-text-role="type">INFRASTRUCTURE</text>
+  </g>
+  <g data-node-id="db-instance" data-node-bounds="765 370 220 140">
+    <path d="M765 395C765 381 815 370 875 370S985 381 985 395V485C985 499 935 510 875 510S765 499 765 485Z" fill="#E8E1CF" stroke="#8B7855" stroke-width="2"/>
+    <path d="M765 395C765 409 815 420 875 420S985 409 985 395" fill="none" stroke="#8B7855" stroke-width="2"/>
+    <text x="875" y="425" text-anchor="middle" class="node-title" data-text-role="title">申报数据库实例</text>
+    <text x="875" y="467" text-anchor="middle" class="node-type" data-text-role="type">DATA INSTANCE</text>
+  </g>
+  <g data-node-id="task-node" data-node-bounds="550 610 300 280">
+    <path d="M564 610H836Q850 610 850 624V876Q850 890 836 890H564Q550 890 550 876V624Q550 610 564 610Z" fill="#F0EDE7" stroke="#77716A" stroke-width="3"/>
+    <text x="700" y="655" text-anchor="middle" class="node-title" data-text-role="title">任务执行节点</text>
+    <text x="700" y="697" text-anchor="middle" class="node-type" data-text-role="type">DEPLOYMENT NODE</text>
+  </g>
+  <g data-node-id="worker-instance" data-node-bounds="565 720 270 150">
+    <path d="M577 720H823Q835 720 835 732V858Q835 870 823 870H577Q565 870 565 858V732Q565 720 577 720Z" fill="#D9E5DA" stroke="#64806B" stroke-width="2"/>
+    <text x="700" y="775" text-anchor="middle" class="node-title" data-text-role="title">支付任务执行器实例</text>
+    <text x="700" y="817" text-anchor="middle" class="node-type" data-text-role="type">CONTAINER INSTANCE</text>
+  </g>
+  <g data-node-id="bank" data-node-bounds="990 650 210 150">
+    <path d="M1004 650H1186Q1200 650 1200 664V786Q1200 800 1186 800H1004Q990 800 990 786V664Q990 650 1004 650Z" fill="#ECE8E1" stroke="#77716A" stroke-width="2"/>
+    <text x="1095" y="705" text-anchor="middle" class="node-title" data-text-role="title">外部银行</text>
+    <text x="1095" y="747" text-anchor="middle" class="node-type" data-text-role="type">EXTERNAL SYSTEM</text>
+  </g>
+
+  <path data-edge-id="employee-web" d="M231 425H240" fill="none" stroke="#263238" stroke-width="2.4" marker-end="url(#deployment-arrow)"/>
+  <text x="230" y="220" text-anchor="middle" class="edge-label" data-edge-id="employee-web">访问页面</text>
+  <path data-edge-id="web-api" d="M481 440H500" fill="none" stroke="#263238" stroke-width="2.4" marker-end="url(#deployment-arrow)"/>
+  <text x="495" y="220" text-anchor="middle" class="edge-label" data-edge-id="web-api">提交申报</text>
+  <path data-edge-id="api-db" d="M741 440H760" fill="none" stroke="#263238" stroke-width="2.4" marker-end="url(#deployment-arrow)"/>
+  <text x="745" y="570" text-anchor="middle" class="edge-label" data-edge-id="api-db">读写申报</text>
+  <path data-edge-id="api-task" d="M625 511V710" fill="none" stroke="#263238" stroke-width="2.4" marker-end="url(#deployment-arrow)"/>
+  <text x="875" y="575" text-anchor="middle" class="edge-label" data-edge-id="api-task">发布付款任务</text>
+  <path data-edge-id="task-bank" d="M836 795H990" fill="none" stroke="#263238" stroke-width="2.4" marker-end="url(#deployment-arrow)"/>
+  <text x="1080" y="600" text-anchor="middle" class="edge-label" data-edge-id="task-bank">发起付款</text>
+</svg>

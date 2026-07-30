@@ -187,6 +187,20 @@ test('keeps MOD-02 and MOD-03 reciprocal and governed', () => {
         usage_mode: 'facts-summary',
         manifest_primary: false,
       },
+      {
+        source_id: 'src-atlas-mod03-c4-component',
+        citation_url: '/img/diagrams/mod-03-c4-component.svg',
+        roles: ['illustration'],
+        usage_mode: 'original-illustration',
+        manifest_primary: false,
+      },
+      {
+        source_id: 'src-atlas-mod03-c4-deployment',
+        citation_url: '/img/diagrams/mod-03-c4-deployment.svg',
+        roles: ['illustration'],
+        usage_mode: 'original-illustration',
+        manifest_primary: false,
+      },
     ],
   );
 });

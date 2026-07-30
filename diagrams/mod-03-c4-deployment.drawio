@@ -1,0 +1,81 @@
+<mxfile host="app.diagrams.net" modified="2026-07-30T00:00:00.000Z" agent="Codex" version="29.6.6" type="device">
+  <diagram id="mod-03-deployment" name="Deployment">
+    <mxGraphModel dx="1200" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="canvas" value="" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#F6F1E7;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="0" y="0" width="1200" height="1000" as="geometry"/>
+        </mxCell>
+        <mxCell id="production" value="生产环境" style="rounded=1;arcSize=10;whiteSpace=wrap;html=0;fillColor=#FBF8F1;strokeColor=#405D6B;strokeWidth=3;dashed=1;dashPattern=7 5;verticalAlign=top;align=left;spacingTop=20;spacingLeft=26;fontSize=30;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="10" y="130" width="980" height="800" as="geometry"/>
+        </mxCell>
+        <mxCell id="employee-terminal" value="员工终端" style="rounded=1;arcSize=12;whiteSpace=wrap;html=0;fillColor=#ECE8E1;strokeColor=#77716A;strokeWidth=3;fontSize=24;fontStyle=1;verticalAlign=top;spacingTop=30;" vertex="1" parent="1">
+          <mxGeometry x="20" y="300" width="210" height="170" as="geometry"/>
+        </mxCell>
+        <mxCell id="employee-terminal-type" value="DEPLOYMENT NODE" style="text;html=0;strokeColor=none;fillColor=none;fontSize=15;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="50" y="378" width="150" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="web-node" value="Web 节点" style="rounded=1;arcSize=12;whiteSpace=wrap;html=0;fillColor=#F0EDE7;strokeColor=#77716A;strokeWidth=3;fontSize=24;fontStyle=1;verticalAlign=top;spacingTop=22;" vertex="1" parent="1">
+          <mxGeometry x="240" y="270" width="250" height="250" as="geometry"/>
+        </mxCell>
+        <mxCell id="web-node-type" value="DEPLOYMENT NODE" style="text;html=0;strokeColor=none;fillColor=none;fontSize=15;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="290" y="338" width="150" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="web-instance" value="Web 应用实例" style="rounded=1;arcSize=12;whiteSpace=wrap;html=0;fillColor=#D9E5DA;strokeColor=#64806B;strokeWidth=2;fontSize=24;fontStyle=1;verticalAlign=top;spacingTop=28;" vertex="1" parent="1">
+          <mxGeometry x="250" y="370" width="230" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="web-instance-type" value="CONTAINER INSTANCE" style="text;html=0;strokeColor=none;fillColor=none;fontSize=15;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="290" y="447" width="150" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="api-node" value="API 节点" style="rounded=1;arcSize=12;whiteSpace=wrap;html=0;fillColor=#F0EDE7;strokeColor=#77716A;strokeWidth=3;fontSize=24;fontStyle=1;verticalAlign=top;spacingTop=22;" vertex="1" parent="1">
+          <mxGeometry x="500" y="270" width="250" height="250" as="geometry"/>
+        </mxCell>
+        <mxCell id="api-node-type" value="DEPLOYMENT NODE" style="text;html=0;strokeColor=none;fillColor=none;fontSize=15;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="550" y="338" width="150" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="api-instance" value="申报 API 实例" style="rounded=1;arcSize=12;whiteSpace=wrap;html=0;fillColor=#D9E5DA;strokeColor=#64806B;strokeWidth=2;fontSize=24;fontStyle=1;verticalAlign=top;spacingTop=28;" vertex="1" parent="1">
+          <mxGeometry x="510" y="370" width="230" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="api-instance-type" value="CONTAINER INSTANCE" style="text;html=0;strokeColor=none;fillColor=none;fontSize=15;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="550" y="447" width="150" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="db-node" value="数据库节点" style="rounded=1;arcSize=12;whiteSpace=wrap;html=0;fillColor=#F2E9D6;strokeColor=#8B7855;strokeWidth=3;fontSize=24;fontStyle=1;verticalAlign=top;spacingTop=22;" vertex="1" parent="1">
+          <mxGeometry x="760" y="270" width="230" height="250" as="geometry"/>
+        </mxCell>
+        <mxCell id="db-node-type" value="INFRASTRUCTURE NODE" style="text;html=0;strokeColor=none;fillColor=none;fontSize=15;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="800" y="338" width="150" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="db-instance" value="申报数据库实例" style="shape=cylinder3;whiteSpace=wrap;html=0;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#E8E1CF;strokeColor=#8B7855;strokeWidth=2;fontSize=24;fontStyle=1;verticalAlign=top;spacingTop=28;" vertex="1" parent="1">
+          <mxGeometry x="765" y="370" width="220" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="db-instance-type" value="DATA INSTANCE" style="text;html=0;strokeColor=none;fillColor=none;fontSize=15;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="815" y="447" width="120" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="task-node" value="任务执行节点" style="rounded=1;arcSize=12;whiteSpace=wrap;html=0;fillColor=#F0EDE7;strokeColor=#77716A;strokeWidth=3;fontSize=24;fontStyle=1;verticalAlign=top;spacingTop=22;" vertex="1" parent="1">
+          <mxGeometry x="550" y="610" width="300" height="280" as="geometry"/>
+        </mxCell>
+        <mxCell id="task-node-type" value="DEPLOYMENT NODE" style="text;html=0;strokeColor=none;fillColor=none;fontSize=15;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="625" y="678" width="150" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="worker-instance" value="支付任务执行器实例" style="rounded=1;arcSize=12;whiteSpace=wrap;html=0;fillColor=#D9E5DA;strokeColor=#64806B;strokeWidth=2;fontSize=24;fontStyle=1;verticalAlign=top;spacingTop=28;" vertex="1" parent="1">
+          <mxGeometry x="565" y="720" width="270" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="worker-instance-type" value="CONTAINER INSTANCE" style="text;html=0;strokeColor=none;fillColor=none;fontSize=15;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="625" y="797" width="150" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="bank" value="外部银行" style="rounded=1;arcSize=14;whiteSpace=wrap;html=0;fillColor=#ECE8E1;strokeColor=#77716A;strokeWidth=2;fontSize=24;fontStyle=1;verticalAlign=top;spacingTop=35;" vertex="1" parent="1">
+          <mxGeometry x="990" y="650" width="210" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="bank-type" value="EXTERNAL SYSTEM" style="text;html=0;strokeColor=none;fillColor=none;fontSize=15;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="1020" y="730" width="150" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge-employee-web" value="访问页面" style="edgeStyle=orthogonalEdgeStyle;html=0;strokeColor=#263238;strokeWidth=2;endArrow=block;endFill=1;fontSize=23;fontStyle=1;" edge="1" parent="1" source="employee-terminal" target="web-instance"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="edge-web-api" value="提交申报" style="edgeStyle=orthogonalEdgeStyle;html=0;strokeColor=#263238;strokeWidth=2;endArrow=block;endFill=1;fontSize=23;fontStyle=1;" edge="1" parent="1" source="web-instance" target="api-instance"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="edge-api-db" value="读写申报" style="edgeStyle=orthogonalEdgeStyle;html=0;strokeColor=#263238;strokeWidth=2;endArrow=block;endFill=1;fontSize=23;fontStyle=1;" edge="1" parent="1" source="api-instance" target="db-instance"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="edge-api-task" value="发布付款任务" style="edgeStyle=orthogonalEdgeStyle;html=0;strokeColor=#263238;strokeWidth=2;endArrow=block;endFill=1;fontSize=23;fontStyle=1;" edge="1" parent="1" source="api-instance" target="worker-instance"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="edge-task-bank" value="发起付款" style="edgeStyle=orthogonalEdgeStyle;html=0;strokeColor=#263238;strokeWidth=2;endArrow=block;endFill=1;fontSize=23;fontStyle=1;" edge="1" parent="1" source="worker-instance" target="bank"><mxGeometry relative="1" as="geometry"/></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
