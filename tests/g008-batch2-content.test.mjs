@@ -141,10 +141,25 @@ test('maps all twelve arc42 problem domains without copying the template', () =>
     ],
   });
   assert.equal(
-    [...document.body.matchAll(/className="table-wrapper"/gu)].length,
+    [
+      ...document.body.matchAll(
+        /className="table-wrapper(?: [^"]*)?"/gu,
+      ),
+    ].length,
     1,
   );
-  assert.match(products, /className="table-wrapper"/u);
+  assert.equal(
+    [
+      ...document.body.matchAll(
+        /className="table-wrapper table-wrapper--mapping"/gu,
+      ),
+    ].length,
+    1,
+  );
+  assert.match(
+    products,
+    /className="table-wrapper table-wrapper--mapping"/u,
+  );
   assert.match(products, /aria-label="arc42 v9 六单元映射表，可横向滚动"/u);
   assert.match(products, /tabIndex=\{0\}/u);
 });

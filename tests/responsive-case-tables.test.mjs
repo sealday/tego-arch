@@ -45,3 +45,15 @@ test('gives direct-child Markdown tables a local horizontal scroll boundary', as
   assert.equal(declarations.get('-webkit-overflow-scrolling'), 'touch');
   assert.doesNotMatch(css, /body\s*\{[^}]*overflow-x\s*:\s*hidden/s);
 });
+
+test('keeps mapping tables wider than their focused scroll region', async () => {
+  const css = await readFile(new URL('../src/css/custom.css', import.meta.url), 'utf8');
+  const declarations = declarationsFor(
+    css,
+    '.theme-doc-markdown .table-wrapper--mapping > table',
+  );
+
+  assert.ok(declarations, 'mapping tables need real horizontal overflow');
+  assert.equal(declarations.get('width'), 'max-content');
+  assert.equal(declarations.get('min-width'), '64rem');
+});

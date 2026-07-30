@@ -230,6 +230,11 @@ button:focus-visible,
   -webkit-overflow-scrolling: touch;
 }
 
+.theme-doc-markdown .table-wrapper--mapping > table {
+  width: max-content;
+  min-width: 64rem;
+}
+
 .theme-doc-markdown .architecture-diagram-scroll {
   max-width: 100%;
   overflow-x: auto;
