@@ -1575,6 +1575,40 @@
       "expected_final_approval_note": "Initial reviewed transport baseline"
     },
     {
+      "id": "src-c4model-diagrams",
+      "canonical_locator": "https://c4model.com/diagrams",
+      "transport_locator": "https://c4model.com/diagrams",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "C4 Model — Diagrams",
+      "author_or_org": "Simon Brown",
+      "published_at": null,
+      "registered_at": "2026-07-30",
+      "checked_at": "2026-07-30",
+      "version": "Current diagrams page checked on 2026-07-30",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "learning",
+        "method"
+      ],
+      "license": "CC-BY-4.0",
+      "license_scope": "C4 Model site content covered by the CC BY 4.0 footer; trademarks, linked works, code, media, and third-party assets excluded",
+      "license_evidence_url": "https://c4model.com/",
+      "license_evidence_note": "The official C4 Model site footer identifies its content as CC BY 4.0; this record covers factual summary of the diagrams page with attribution.",
+      "license_family_id": "https://c4model.com/diagrams",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "adapt-with-attribution",
+      "usage_boundary": "Defines the official C4 diagram set and recommendation boundary; it does not prove that every diagram is needed for a specific system.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://c4model.com/diagrams",
+      "expected_final_approved_at": "2026-07-30",
+      "expected_final_approval_note": "Reviewed G008 Batch 1 transport baseline"
+    },
+    {
       "id": "src-c4model-f5342a5e8659",
       "canonical_locator": "https://c4model.com/",
       "transport_locator": "https://c4model.com/",
@@ -1612,6 +1646,40 @@
       "expected_final_transport_locator": "https://c4model.com/",
       "expected_final_approved_at": "2026-07-24",
       "expected_final_approval_note": "Initial reviewed migration transport baseline"
+    },
+    {
+      "id": "src-c4model-notation",
+      "canonical_locator": "https://c4model.com/diagrams/notation",
+      "transport_locator": "https://c4model.com/diagrams/notation",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "C4 Model — Notation",
+      "author_or_org": "Simon Brown",
+      "published_at": null,
+      "registered_at": "2026-07-30",
+      "checked_at": "2026-07-30",
+      "version": "Current notation page checked on 2026-07-30",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "learning",
+        "method"
+      ],
+      "license": "CC-BY-4.0",
+      "license_scope": "C4 Model site content covered by the CC BY 4.0 footer; trademarks, linked works, code, media, and third-party assets excluded",
+      "license_evidence_url": "https://c4model.com/",
+      "license_evidence_note": "The official C4 Model site footer identifies its content as CC BY 4.0; this record covers factual summary of the notation page with attribution.",
+      "license_family_id": "https://c4model.com/diagrams/notation",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "adapt-with-attribution",
+      "usage_boundary": "Defines self-describing notation and diagram-key guidance; it does not mandate one visual style or certify diagram readability.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://c4model.com/diagrams/notation",
+      "expected_final_approved_at": "2026-07-30",
+      "expected_final_approval_note": "Reviewed G008 Batch 1 transport baseline"
     },
     {
       "id": "src-cheatsheetseries-ea079221bd09",
@@ -23400,6 +23468,59 @@
         "illustration-rights"
       ],
       "citations": []
+    },
+    "content/modeling/mod-01-model-selection-overview.mdx": {
+      "reviewed_at": "2026-07-30",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-c4model-diagrams",
+          "citation_url": "https://c4model.com/diagrams",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "C4 Model — Diagrams, Simon Brown",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-c4model-notation",
+          "citation_url": "https://c4model.com/diagrams/notation",
+          "roles": [
+            "method",
+            "learning"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "C4 Model — Notation, Simon Brown",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-arc42-8b346f00707f",
+          "citation_url": "https://arc42.org/",
+          "roles": [
+            "method",
+            "learning"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "arc42, arc42 contributors",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
     },
     "content/modeling/mod-02-c4-context-container.mdx": {
       "reviewed_at": "2026-07-24",

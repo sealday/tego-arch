@@ -20,8 +20,10 @@ tags:
 summary: 用 Context 和 Container 明确系统边界、参与者、职责和可部署单元，避免图示伪精确。
 topic_id: MOD-02
 priority: P0
-depends_on: []
+depends_on:
+  - MOD-01
 adjacent_topics:
+  - MOD-01
   - STY-00
 related_cases:
   - /cases/microsoft-multi-agent-reference-architecture
@@ -30,7 +32,7 @@ related_questions: []
 
 # C4 Context 与 Container
 
-Context 图回答“系统与谁协作”，Container 图回答“系统内部有哪些可运行或存储单元”。它们用于沟通静态边界，不是运行时序列或部署证明。[建模目录](/modeling)提供其他模型入口。
+Context 图回答“系统与谁协作”，Container 图回答“系统内部有哪些可运行或存储单元”。它们用于沟通静态边界，不是运行时序列或部署证明。[建模总览](/modeling/mod-01)先按评审问题选择模型，[建模目录](/modeling)提供其他模型入口。
 
 ## 学习问题
 

@@ -2027,6 +2027,68 @@
       "review_status": "healthy"
     },
     {
+      "transport_locator": "https://c4model.com/diagrams",
+      "source_ids": [
+        "src-c4model-diagrams"
+      ],
+      "last_attempt": {
+        "at": "2026-07-30T05:20:11.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://c4model.com/diagrams",
+        "http_status": 200,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-07-30T05:20:11.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://c4model.com/diagrams",
+        "http_status": 200,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-07-30T05:20:11.000Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://c4model.com/diagrams",
+          "http_status": 200,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://c4model.com/diagrams/notation",
+      "source_ids": [
+        "src-c4model-notation"
+      ],
+      "last_attempt": {
+        "at": "2026-07-30T05:20:11.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://c4model.com/diagrams/notation",
+        "http_status": 200,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-07-30T05:20:11.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://c4model.com/diagrams/notation",
+        "http_status": 200,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-07-30T05:20:11.000Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://c4model.com/diagrams/notation",
+          "http_status": 200,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
       "transport_locator": "https://cheatsheetseries.owasp.org/cheatsheets/Threat_Modeling_Cheat_Sheet.html",
       "source_ids": [
         "src-cheatsheetseries-ea079221bd09"

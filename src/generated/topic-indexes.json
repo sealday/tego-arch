@@ -1523,56 +1523,6 @@
   ],
   "modeling": [
     {
-      "id": "MOD-01",
-      "type": "modeling",
-      "title": "建模总览",
-      "slug": "/modeling/mod-01",
-      "priority": "P0",
-      "status": {
-        "scope": "backlog-projection",
-        "value": "pending",
-        "source": "docs/content-backlog.md"
-      },
-      "dependencies": [],
-      "adjacent_topics": [],
-      "primary_sources": [],
-      "related_cases": [],
-      "related_questions": [],
-      "reviewed_at": null,
-      "review_policy": null,
-      "published": false,
-      "pattern_group": null
-    },
-    {
-      "id": "MOD-02",
-      "type": "modeling",
-      "title": "C4 Context 与 Container",
-      "slug": "/modeling/mod-02",
-      "priority": "P0",
-      "status": {
-        "scope": "backlog-projection",
-        "value": "pending",
-        "source": "docs/content-backlog.md"
-      },
-      "dependencies": [],
-      "adjacent_topics": [
-        "STY-00"
-      ],
-      "primary_sources": [
-        "https://arc42.org/",
-        "https://c4model.com/"
-      ],
-      "related_cases": [
-        "/cases/microsoft-multi-agent-reference-architecture"
-      ],
-      "related_questions": [],
-      "reviewed_at": "2026-07-24",
-      "review_policy": null,
-      "published": true,
-      "pattern_group": null,
-      "presentation": {}
-    },
-    {
       "id": "MOD-03",
       "type": "modeling",
       "title": "C4 Component、Dynamic 与 Deployment",
@@ -1676,6 +1626,68 @@
       "review_policy": null,
       "published": false,
       "pattern_group": null
+    },
+    {
+      "id": "MOD-01",
+      "type": "modeling",
+      "title": "建模总览",
+      "slug": "/modeling/mod-01",
+      "priority": "P0",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "pending",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "FND-03"
+      ],
+      "adjacent_topics": [
+        "MOD-02"
+      ],
+      "primary_sources": [
+        "https://c4model.com/diagrams"
+      ],
+      "related_cases": [
+        "/cases/microsoft-multi-agent-reference-architecture"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-07-30",
+      "review_policy": null,
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
+    },
+    {
+      "id": "MOD-02",
+      "type": "modeling",
+      "title": "C4 Context 与 Container",
+      "slug": "/modeling/mod-02",
+      "priority": "P0",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "pending",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "MOD-01"
+      ],
+      "adjacent_topics": [
+        "MOD-01",
+        "STY-00"
+      ],
+      "primary_sources": [
+        "https://arc42.org/",
+        "https://c4model.com/"
+      ],
+      "related_cases": [
+        "/cases/microsoft-multi-agent-reference-architecture"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-07-24",
+      "review_policy": null,
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
     },
     {
       "id": "MOD-08",
