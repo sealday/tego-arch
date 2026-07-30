@@ -367,6 +367,22 @@ export function validateLinkHealthCacheStructure(ledger, cache) {
       );
     }
   }
+  const latestAttemptAt = cache.results
+    .map((entry) => entry?.last_attempt?.at)
+    .filter(
+      (value) =>
+        typeof value === 'string' && !Number.isNaN(Date.parse(value)),
+    )
+    .reduce(
+      (latest, value) =>
+        Date.parse(value) > Date.parse(latest) ? value : latest,
+      cache.generated_at,
+    );
+  if (Date.parse(cache.generated_at) < Date.parse(latestAttemptAt)) {
+    errors.push(
+      'data/source-link-health.json: generated_at must not be older than latest last_attempt.at',
+    );
+  }
   return {errors: errors.sort((left, right) => left.localeCompare(right, 'en'))};
 }
 

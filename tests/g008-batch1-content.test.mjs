@@ -144,15 +144,49 @@ test('keeps MOD-02 and MOD-03 reciprocal and governed', () => {
     'content/modeling/mod-03-c4-component-dynamic-deployment.mdx'
   ];
   assert.ok(governed);
-  for (const sourceId of [
-    'src-c4model-component-diagram',
-    'src-c4model-dynamic-diagram',
-    'src-c4model-deployment-diagram',
-    'src-arc42-8b346f00707f',
-  ]) {
-    assert.ok(
-      governed.citations.some(({source_id}) => source_id === sourceId),
-      sourceId,
-    );
-  }
+  assert.deepEqual(
+    governed.citations.map(({
+      source_id,
+      citation_url,
+      roles,
+      usage_mode,
+      manifest_primary,
+    }) => ({
+      source_id,
+      citation_url,
+      roles,
+      usage_mode,
+      manifest_primary,
+    })),
+    [
+      {
+        source_id: 'src-c4model-component-diagram',
+        citation_url: 'https://c4model.com/diagrams/component',
+        roles: ['definition', 'method'],
+        usage_mode: 'facts-summary',
+        manifest_primary: true,
+      },
+      {
+        source_id: 'src-c4model-dynamic-diagram',
+        citation_url: 'https://c4model.com/diagrams/dynamic',
+        roles: ['definition', 'method'],
+        usage_mode: 'facts-summary',
+        manifest_primary: false,
+      },
+      {
+        source_id: 'src-c4model-deployment-diagram',
+        citation_url: 'https://c4model.com/diagrams/deployment',
+        roles: ['definition', 'method'],
+        usage_mode: 'facts-summary',
+        manifest_primary: false,
+      },
+      {
+        source_id: 'src-arc42-8b346f00707f',
+        citation_url: 'https://arc42.org/',
+        roles: ['method', 'learning'],
+        usage_mode: 'facts-summary',
+        manifest_primary: false,
+      },
+    ],
+  );
 });

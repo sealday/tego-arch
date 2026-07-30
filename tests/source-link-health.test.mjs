@@ -148,6 +148,17 @@ test('validates complete transport-deduplicated link-health cache coverage', () 
   );
 });
 
+test('rejects a cache generated before its latest recorded attempt', () => {
+  const governed = ledger([source('a', 'https://example.com/a')]);
+  const cache = cacheFor(governed);
+  cache.generated_at = '2026-07-23T23:59:59.999Z';
+
+  assert.match(
+    validateLinkHealthCacheStructure(governed, cache).errors.join('\n'),
+    /generated_at must not be older than latest last_attempt\.at/u,
+  );
+});
+
 test('checks cited aliases but excludes uncited superseded aliases', () => {
   const governedSource = source('migrated', 'https://example.com/current', 'stable', {
     locator_aliases: [
