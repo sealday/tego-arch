@@ -457,6 +457,41 @@ function assertEndpointContract(svg, edgeId, sourceId, targetId, scale) {
   );
 }
 
+function assertLabelPairClearance(diagram, svg, minimumCss = 12) {
+  const scale = 800 / 1200;
+  const labels = diagram.relations.map(([edgeId]) => {
+    const {label} = svgEdgeParts(svg, edgeId);
+    const bounds = numericBounds(label, 'data-label-bounds');
+    assert.equal(bounds.length, 4, `${edgeId} rendered label bounds metadata`);
+    const anchorX = Number(xmlAttribute(label, 'x'));
+    const baselineY = Number(xmlAttribute(label, 'y'));
+    assert.ok(
+      Math.abs(anchorX - (bounds[0] + bounds[2] / 2)) <= 0.1,
+      `${edgeId} label bounds match its centered anchor`,
+    );
+    assert.ok(
+      baselineY >= bounds[1] && baselineY <= bounds[1] + bounds[3],
+      `${edgeId} label bounds contain its baseline`,
+    );
+    return [edgeId, bounds];
+  });
+  for (let leftIndex = 0; leftIndex < labels.length; leftIndex += 1) {
+    for (
+      let rightIndex = leftIndex + 1;
+      rightIndex < labels.length;
+      rightIndex += 1
+    ) {
+      const [leftId, leftBounds] = labels[leftIndex];
+      const [rightId, rightBounds] = labels[rightIndex];
+      const clearance = rectDistance(leftBounds, rightBounds) * scale;
+      assert.ok(
+        clearance >= minimumCss,
+        `${leftId}/${rightId} label clearance ${clearance}`,
+      );
+    }
+  }
+}
+
 function pointToSegmentDistance([pointX, pointY], [[x1, y1], [x2, y2]]) {
   if (x1 === x2) {
     return Math.hypot(
@@ -840,38 +875,10 @@ test('keeps every Deployment label close to its own connector with declared clea
   }
 });
 
-test('keeps every visible Deployment relationship label at least 12px from every other label', async () => {
-  const svg = await readFile(
-    absolute('static/img/diagrams/mod-03-c4-deployment.svg'),
-    'utf8',
-  );
-  const scale = 800 / 1200;
-  const labels = diagrams[1].relations.map(([edgeId]) => {
-    const {label} = svgEdgeParts(svg, edgeId);
-    const bounds = numericBounds(label, 'data-label-bounds');
-    assert.equal(bounds.length, 4, `${edgeId} rendered label bounds metadata`);
-    const anchorX = Number(xmlAttribute(label, 'x'));
-    const baselineY = Number(xmlAttribute(label, 'y'));
-    assert.ok(
-      Math.abs(anchorX - (bounds[0] + bounds[2] / 2)) <= 0.1,
-      `${edgeId} label bounds match its centered anchor`,
-    );
-    assert.ok(
-      baselineY >= bounds[1] && baselineY <= bounds[1] + bounds[3],
-      `${edgeId} label bounds contain its baseline`,
-    );
-    return [edgeId, bounds];
-  });
-  for (let leftIndex = 0; leftIndex < labels.length; leftIndex += 1) {
-    for (let rightIndex = leftIndex + 1; rightIndex < labels.length; rightIndex += 1) {
-      const [leftId, leftBounds] = labels[leftIndex];
-      const [rightId, rightBounds] = labels[rightIndex];
-      const clearance = rectDistance(leftBounds, rightBounds) * scale;
-      assert.ok(
-        clearance >= 12,
-        `${leftId}/${rightId} label clearance ${clearance}`,
-      );
-    }
+test('keeps every visible relationship label at least 12px from every other label in both diagrams', async () => {
+  for (const diagram of diagrams) {
+    const svg = await readFile(absolute(diagram.svg), 'utf8');
+    assertLabelPairClearance(diagram, svg);
   }
 });
 
@@ -981,5 +988,23 @@ test('detects a terminal route that points away from its declared target', async
         800 / 1200,
       ),
     /target endpoint|terminal vector/u,
+  );
+});
+
+test('detects Component relationship label bounds that collapse the reviewed pair clearance', async () => {
+  const diagram = diagrams[0];
+  const svg = await readFile(absolute(diagram.svg), 'utf8');
+  const mutated = svg.replace(
+    'data-label-bounds="461.012 409.5 137.976 27"',
+    'data-label-bounds="461.012 429.5 137.976 27"',
+  );
+  assert.notEqual(
+    mutated,
+    svg,
+    'reviewed Component label bounds mutation applied',
+  );
+  assert.throws(
+    () => assertLabelPairClearance(diagram, mutated),
+    /edge-submit-payment\/edge-payment-persistence label clearance/u,
   );
 });

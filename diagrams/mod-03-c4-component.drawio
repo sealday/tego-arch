@@ -68,7 +68,9 @@
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
         <mxCell id="edge-submit-payment" value="创建付款任务" style="edgeStyle=orthogonalEdgeStyle;html=0;strokeColor=#263238;strokeWidth=2;endArrow=block;endFill=1;fontSize=23;fontStyle=1;" edge="1" parent="1" source="submit" target="payment">
-          <mxGeometry relative="1" as="geometry"/>
+          <mxGeometry x="0" y="0" relative="1" as="geometry">
+            <mxPoint x="105" y="-13.5" as="offset"/>
+          </mxGeometry>
         </mxCell>
         <mxCell id="edge-payment-persistence" value="保存任务" style="edgeStyle=orthogonalEdgeStyle;html=0;strokeColor=#263238;strokeWidth=2;endArrow=block;endFill=1;fontSize=23;fontStyle=1;" edge="1" parent="1" source="payment" target="persistence">
           <mxGeometry relative="1" as="geometry"/>

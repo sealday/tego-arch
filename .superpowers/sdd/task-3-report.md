@@ -8,9 +8,9 @@ the single current record for the Component and Deployment asset pairs.
 ## Final files and hashes
 
 ```text
-43099b02286013a641231ff8c06efa0d7446a71f21a91208eca57dab55226b00  diagrams/mod-03-c4-component.drawio
+c30e0214429898889a6f608f66cfe0f3db6dada58e1ed8651874361fa365f38e  diagrams/mod-03-c4-component.drawio
 409eef69c1d593893b4578737d13854985522cc33365eee10eae83f37ff8289f  diagrams/mod-03-c4-deployment.drawio
-835c9aff892a48450e43d447a0db3ec9f9ece4b5250798635cb9259e9a745f10  static/img/diagrams/mod-03-c4-component.svg
+4f259512e089721a65ab341d6dbf892c06d7bf647eec330284a842e7505afcac  static/img/diagrams/mod-03-c4-component.svg
 58a2ac087a0945dc049a8cbad4e862f2ccf858d573c30870cc8430096763f420  static/img/diagrams/mod-03-c4-deployment.svg
 ```
 
@@ -42,6 +42,8 @@ Both SVGs use a `1200`-unit viewBox and render at `800px`.
   approaches the worker upward from below.
 - The Component task label has boundary `9.33px`, stroke `14.20px`, arrow
   `156.76px`, and node `18.33px` clearance.
+- Component relationship-label pairwise clearance has a `14.00px` minimum,
+  occurring at the reviewed `创建付款任务 / 保存任务` pair.
 - Deployment `edge-employee-web`, `edge-web-api`, and `edge-api-db` start
   `0.67px` from their source boundaries and end `2.00px` from their target
   boundaries. All terminal vectors are `[0.67, 0]`; target-interior dot
@@ -80,5 +82,5 @@ Final screenshots:
 ## Verification
 
 - Both bundled Draw.io/SVG validators: PASS.
-- `node --test tests/g008-batch1-diagrams.test.mjs`: `15/15` PASS.
+- `node --test tests/g008-batch1-diagrams.test.mjs`: `16/16` PASS.
 - Full verification is recorded in `task-5-report.md`.

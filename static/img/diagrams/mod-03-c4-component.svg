@@ -62,15 +62,15 @@
   </g>
 
   <path data-edge-id="edge-web-submit" data-source="web" data-target="submit" d="M211 345H300" fill="none" stroke="#263238" stroke-width="2.4" marker-end="url(#component-arrow)"/>
-  <text x="255" y="210" text-anchor="middle" class="edge-label" data-edge-id="edge-web-submit">提交请求</text>
+  <text x="255" y="210" text-anchor="middle" class="edge-label" data-edge-id="edge-web-submit" data-label-bounds="209.004 187.5 91.992 27">提交请求</text>
   <path data-edge-id="edge-submit-policy" data-source="submit" data-target="policy" d="M541 315H650" fill="none" stroke="#263238" stroke-width="2.4" marker-end="url(#component-arrow)"/>
-  <text x="595" y="205" text-anchor="middle" class="edge-label" data-edge-id="edge-submit-policy">校验审批</text>
+  <text x="595" y="205" text-anchor="middle" class="edge-label" data-edge-id="edge-submit-policy" data-label-bounds="549.004 182.5 91.992 27">校验审批</text>
   <path data-edge-id="edge-submit-payment" data-source="submit" data-target="payment" d="M425 391V500" fill="none" stroke="#263238" stroke-width="2.4" marker-end="url(#component-arrow)"/>
-  <text x="530" y="452" text-anchor="middle" class="edge-label" data-edge-id="edge-submit-payment">创建付款任务</text>
+  <text x="530" y="432" text-anchor="middle" class="edge-label" data-edge-id="edge-submit-payment" data-label-bounds="461.012 409.5 137.976 27">创建付款任务</text>
   <path data-edge-id="edge-payment-persistence" data-source="payment" data-target="persistence" d="M541 585H650" fill="none" stroke="#263238" stroke-width="2.4" marker-end="url(#component-arrow)"/>
-  <text x="595" y="480" text-anchor="middle" class="edge-label" data-edge-id="edge-payment-persistence">保存任务</text>
+  <text x="595" y="480" text-anchor="middle" class="edge-label" data-edge-id="edge-payment-persistence" data-label-bounds="549.004 457.5 91.992 27">保存任务</text>
   <path data-edge-id="edge-persistence-db" data-source="persistence" data-target="db" d="M891 585H930V290H980" fill="none" stroke="#263238" stroke-width="2.4" marker-end="url(#component-arrow)"/>
-  <text x="1050" y="430" text-anchor="middle" class="edge-label" data-edge-id="edge-persistence-db">读写申报</text>
+  <text x="1050" y="430" text-anchor="middle" class="edge-label" data-edge-id="edge-persistence-db" data-label-bounds="1004.004 407.5 91.992 27">读写申报</text>
   <path data-edge-id="edge-payment-worker" data-source="payment" data-target="worker" d="M425 661V665H1075V661" fill="none" stroke="#263238" stroke-width="2.4" marker-end="url(#component-arrow)"/>
-  <text x="750" y="710" text-anchor="middle" class="edge-label" data-edge-id="edge-payment-worker" data-boundary-clearance-css="8">发布待执行任务</text>
+  <text x="750" y="710" text-anchor="middle" class="edge-label" data-edge-id="edge-payment-worker" data-label-bounds="669.516 687.5 160.968 27" data-boundary-clearance-css="8">发布待执行任务</text>
 </svg>

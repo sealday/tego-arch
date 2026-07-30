@@ -29,17 +29,31 @@ The five failures covered:
 - missing rendered label-bounds metadata and pairwise label clearance;
 - structured Draw.io/SVG teaching-assumption text drift.
 
+The final visual re-review then extended the label-pair contract from
+Deployment to both diagrams and added a mutation for the reviewed Component
+pair. Its RED was:
+
+```text
+node --test tests/g008-batch1-diagrams.test.mjs
+tests 16
+pass 14
+fail 2
+```
+
+The failures proved that Component lacked rendered label bounds and that the
+`创建付款任务 / 保存任务` regression mutation was not yet enforceable.
+
 Final targeted GREEN:
 
 ```text
 node --test tests/g008-batch1-content.test.mjs tests/g008-batch1-diagrams.test.mjs
-tests 24
-pass 24
+tests 25
+pass 25
 fail 0
 
 node --test tests/g008-batch1-diagrams.test.mjs
-tests 15
-pass 15
+tests 16
+pass 16
 fail 0
 ```
 
@@ -78,8 +92,8 @@ from the declared target.
   paths and node geometry.
 - The same contracts require the first vector to leave the source interior and
   the terminal vector to point into the target interior.
-- Every Deployment relationship label carries final rendered bounds; every
-  visible label pair must retain at least `12px` clearance.
+- Every relationship label in both diagrams carries final rendered bounds;
+  every visible label pair must retain at least `12px` clearance.
 - Deployment labels retain `stroke >= 8`, `arrow >= 16`, `node >= 12`, and
   `association <= 60`; the Component task label retains
   `boundary >= 8`.
@@ -112,8 +126,12 @@ three Deployment arrows approach their targets horizontally from the left.
 | `edge-api-task` | 9.87 | 77.01 | 24.01 | 56.67 |
 | `edge-task-bank` | 20.87 | 23.92 | 13.00 | 36.67 |
 
-- minimum label-to-label clearance: `18.67px`;
+- Deployment minimum label-to-label clearance: `18.67px`;
 - `读写申报 / 发布付款任务` clearance: `27.37px`;
+- Component minimum label-to-label clearance:
+  `创建付款任务 / 保存任务 = 14.00px`;
+- Component label minimum stroke, arrow, and node clearances:
+  `14.20px`, `41.47px`, and `13.00px`;
 - Component task label: boundary `9.33px`, stroke `14.20px`, arrow
   `156.76px`, node `18.33px`, association `30.00px`.
 
@@ -166,9 +184,9 @@ Final exact-width screenshots:
 Final asset hashes:
 
 ```text
-43099b02286013a641231ff8c06efa0d7446a71f21a91208eca57dab55226b00  diagrams/mod-03-c4-component.drawio
+c30e0214429898889a6f608f66cfe0f3db6dada58e1ed8651874361fa365f38e  diagrams/mod-03-c4-component.drawio
 409eef69c1d593893b4578737d13854985522cc33365eee10eae83f37ff8289f  diagrams/mod-03-c4-deployment.drawio
-835c9aff892a48450e43d447a0db3ec9f9ece4b5250798635cb9259e9a745f10  static/img/diagrams/mod-03-c4-component.svg
+4f259512e089721a65ab341d6dbf892c06d7bf647eec330284a842e7505afcac  static/img/diagrams/mod-03-c4-component.svg
 58a2ac087a0945dc049a8cbad4e862f2ccf858d573c30870cc8430096763f420  static/img/diagrams/mod-03-c4-deployment.svg
 ```
 
@@ -183,7 +201,7 @@ Validated mod-03-c4-deployment
 
 Fresh full `npm run verify` passed:
 
-- Node tests: `515 / 515`;
+- Node tests: `516 / 516`;
 - content validation: `84` documents / `464` governed sources;
 - generated-content, link-health, and review-health checks: PASS;
 - TypeScript typecheck: PASS;
