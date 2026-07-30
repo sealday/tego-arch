@@ -802,6 +802,28 @@ const diagrams = [
 ];
 ```
 
+Unlike the G007 helper, do not return only the first diagram wrapper because MOD-03 contains two SVGs. Implement:
+
+```js
+function architectureDiagramWrapperForSource(article, publicSvgPath) {
+  const openings = article.matchAll(
+    /<div className="architecture-diagram-scroll"[^>]*>/gu,
+  );
+  for (const opening of openings) {
+    const contentStart = opening.index + opening[0].length;
+    const contentEnd = article.indexOf('</div>', contentStart);
+    if (contentEnd === -1) {
+      continue;
+    }
+    const wrapper = article.slice(opening.index, contentEnd + '</div>'.length);
+    if (wrapper.includes(`](${publicSvgPath})`)) {
+      return wrapper;
+    }
+  }
+  return null;
+}
+```
+
 For each entry, assert:
 
 - the article embeds the exact public SVG inside an `architecture-diagram-scroll` wrapper;
