@@ -67,20 +67,26 @@ function markdownTableRows(body) {
 function mermaidSemanticEdges(source) {
   const nodeLabels = new Map();
   const edges = [];
-  for (const line of source.split('\n')) {
+  const edgePattern =
+    /^\s*([A-Z][A-Z0-9_]*)(?:\["([^"]+)"\])?\s+(-->|-\.[^\n]+\.->)\s+([A-Z][A-Z0-9_]*)(?:\["([^"]+)"\])?\s*$/u;
+  for (const line of source.split('\n').slice(1)) {
+    if (!line.trim()) continue;
     const match = line.match(
-      /^\s*([A-Z])(?:\["([^"]+)"\])?\s+.+?\s+([A-Z])(?:\["([^"]+)"\])?\s*$/u,
+      edgePattern,
     );
-    if (!match) continue;
-    const [, fromId, fromLabel, toId, toLabel] = match;
+    assert.ok(match, `invalid Mermaid edge: ${line.trim()}`);
+    const [, fromId, fromLabel, , toId, toLabel] = match;
     if (fromLabel) nodeLabels.set(fromId, fromLabel);
     if (toLabel) nodeLabels.set(toId, toLabel);
     edges.push([fromId, toId]);
   }
-  return edges.map(([fromId, toId]) => [
-    nodeLabels.get(fromId),
-    nodeLabels.get(toId),
-  ]);
+  return edges.map(([fromId, toId]) => {
+    const fromLabel = nodeLabels.get(fromId);
+    const toLabel = nodeLabels.get(toId);
+    assert.ok(fromLabel, `missing Mermaid label for ${fromId}`);
+    assert.ok(toLabel, `missing Mermaid label for ${toId}`);
+    return `${fromLabel} -> ${toLabel}`;
+  });
 }
 
 test('publishes MOD-04 as an original six-unit arc42 v9 skeleton', () => {
@@ -118,28 +124,33 @@ test('maps all twelve arc42 problem domains without copying the template', () =>
     '最小证据与产物',
     '明确不证明',
   ]);
-  const mappedDomains = new Map(
-    rows.slice(1).map(([unit, domains]) => [
-      unit,
-      domains.split('；').map((domain) => domain.replace(/^\d+ /u, '')),
-    ]),
+  const dataRows = rows.slice(1);
+  assert.equal(rows.length, 7, 'mapping table must contain one header and six rows');
+  assert.equal(dataRows.length, 6);
+  assert.equal(new Set(dataRows.map(([unit]) => unit)).size, 6);
+  assert.deepEqual(
+    dataRows.map(([unit, mappedDomains]) => [unit, mappedDomains]),
+    [
+      ['目标与边界', '1 Introduction and Goals；3 Context and Scope'],
+      [
+        '约束与权衡',
+        '2 Architecture Constraints；4 Solution Strategy；9 Architecture Decisions',
+      ],
+      [
+        '静态组成',
+        '5 Building Block View；8 Cross-cutting Concepts 的结构部分',
+      ],
+      [
+        '动态行为',
+        '6 Runtime View；8 Cross-cutting Concepts 的运行部分',
+      ],
+      ['条件性部署', '7 Deployment View'],
+      [
+        '质量、风险与词汇',
+        '10 Quality Requirements；11 Risks and Technical Debt；12 Glossary',
+      ],
+    ],
   );
-  assert.deepEqual(Object.fromEntries(mappedDomains), {
-    '目标与边界': ['Introduction and Goals', 'Context and Scope'],
-    '约束与权衡': [
-      'Architecture Constraints',
-      'Solution Strategy',
-      'Architecture Decisions',
-    ],
-    '静态组成': ['Building Block View', 'Cross-cutting Concepts 的结构部分'],
-    '动态行为': ['Runtime View', 'Cross-cutting Concepts 的运行部分'],
-    '条件性部署': ['Deployment View'],
-    '质量、风险与词汇': [
-      'Quality Requirements',
-      'Risks and Technical Debt',
-      'Glossary',
-    ],
-  });
   assert.equal(
     [
       ...document.body.matchAll(
@@ -191,20 +202,32 @@ test('renders one evidence-chain Mermaid with explicit validation gaps', () => {
   assert.equal([...document.body.matchAll(/```mermaid\n/gu)].length, 1);
   const mermaid = fencedBlock(document.body, 'mermaid');
   assert.match(mermaid, /^flowchart LR/mu);
-  assert.deepEqual(mermaidSemanticEdges(mermaid), [
-    ['目标与边界', '约束与权衡'],
-    ['约束与权衡', '静态组成'],
-    ['静态组成', '动态行为'],
-    ['动态行为', '条件性部署'],
-    ['条件性部署', '质量与风险'],
-    ['决策记录', '约束与权衡'],
-    ['决策记录', '静态组成'],
-    ['验证证据', '动态行为'],
-    ['验证证据', '条件性部署'],
-    ['验证证据', '质量与风险'],
-    ['未知项', '静态组成'],
-    ['未知项', '条件性部署'],
-  ]);
+  const expectedEdges = [
+    '目标与边界 -> 约束与权衡',
+    '约束与权衡 -> 静态组成',
+    '静态组成 -> 动态行为',
+    '动态行为 -> 条件性部署',
+    '条件性部署 -> 质量与风险',
+    '决策记录 -> 约束与权衡',
+    '决策记录 -> 静态组成',
+    '验证证据 -> 动态行为',
+    '验证证据 -> 条件性部署',
+    '验证证据 -> 质量与风险',
+    '未知项 -> 静态组成',
+    '未知项 -> 条件性部署',
+  ].sort();
+  const actualEdges = mermaidSemanticEdges(mermaid);
+  assert.equal(actualEdges.length, 12);
+  assert.equal(new Set(actualEdges).size, 12);
+  assert.deepEqual([...actualEdges].sort(), expectedEdges);
+
+  const [declaration, ...edgeLines] = mermaid.split('\n');
+  const reordered = [declaration, ...edgeLines.reverse()].join('\n');
+  assert.deepEqual(mermaidSemanticEdges(reordered).sort(), expectedEdges);
+  assert.throws(
+    () => mermaidSemanticEdges(mermaid.replace(' --> ', ' ==> ')),
+    /invalid Mermaid edge/u,
+  );
 });
 
 test('contains one measurable local quality scenario', () => {
