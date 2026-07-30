@@ -58,9 +58,14 @@ const reciprocalTopics = new Map([
   [
     'MTH-03',
     {
-      adjacent: ['FND-05', 'MTH-04', 'QA-01', 'PR-08'],
+      adjacent: ['FND-05', 'MTH-04', 'QA-01', 'PR-08', 'MOD-01'],
       file: 'methods/mth-03-adr-lifecycle.mdx',
-      visible: ['/concepts/fnd-05', '/methods/mth-04', '/quality-attributes/qa-01'],
+      visible: [
+        '/concepts/fnd-05',
+        '/methods/mth-04',
+        '/quality-attributes/qa-01',
+        '/modeling/mod-01',
+      ],
     },
   ],
 ]);
@@ -491,7 +496,7 @@ test('preserves cases QA-01 the knowledge schema and sidebar', async () => {
   );
   assert.equal(
     createHash('sha256').update(qa01Bytes).digest('hex'),
-    '4d91515d447254b1b64591d32e3ac1fa6561917c7fc6f484037ecac98bbaed25',
+    'd28a6ddea6ba88c89f636eb77bd5284a6c28010ba9c6785ac0edd0d944e40cfe',
     'content/quality-attributes/qa-01-scenario-writing.mdx',
   );
 

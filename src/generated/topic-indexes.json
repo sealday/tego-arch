@@ -994,7 +994,8 @@
         "QA-02",
         "MTH-03",
         "REL-02",
-        "PR-07"
+        "PR-07",
+        "MOD-01"
       ],
       "primary_sources": [
         "https://www.iso.org/standard/78176.html"
@@ -1406,7 +1407,8 @@
         "FND-05",
         "MTH-04",
         "QA-01",
-        "PR-08"
+        "PR-08",
+        "MOD-01"
       ],
       "primary_sources": [
         "https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions",
@@ -1621,7 +1623,9 @@
         "FND-03"
       ],
       "adjacent_topics": [
-        "MOD-02"
+        "MOD-02",
+        "QA-01",
+        "MTH-03"
       ],
       "primary_sources": [
         "https://c4model.com/diagrams"

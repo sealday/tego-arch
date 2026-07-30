@@ -16,6 +16,9 @@
         <mxCell id="boundary" value="申报 API" data-boundary-name="申报 API" style="rounded=1;arcSize=10;whiteSpace=wrap;html=0;fillColor=#FBF8F1;strokeColor=#405D6B;strokeWidth=3;dashed=1;dashPattern=7 5;verticalAlign=top;align=left;spacingTop=20;spacingLeft=26;fontSize=30;fontStyle=1;fontColor=#263238;" vertex="1" parent="1">
           <mxGeometry x="250" y="130" width="700" height="600" as="geometry"/>
         </mxCell>
+        <mxCell id="legend-component" value="Component" style="rounded=1;arcSize=12;whiteSpace=wrap;html=0;fillColor=#D9E5DA;strokeColor=#64806B;strokeWidth=2;fontSize=17;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="520" y="145" width="125" height="34" as="geometry"/></mxCell>
+        <mxCell id="legend-container" value="Container" style="rounded=1;arcSize=12;whiteSpace=wrap;html=0;fillColor=#ECE8E1;strokeColor=#77716A;strokeWidth=2;fontSize=17;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="665" y="145" width="115" height="34" as="geometry"/></mxCell>
+        <mxCell id="legend-data-store" value="Data Store" style="shape=cylinder3;whiteSpace=wrap;html=0;boundedLbl=1;backgroundOutline=1;size=8;fillColor=#E8E1CF;strokeColor=#8B7855;strokeWidth=2;fontSize=17;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="800" y="145" width="120" height="34" as="geometry"/></mxCell>
         <mxCell id="web" value="Web 应用" style="rounded=1;arcSize=14;whiteSpace=wrap;html=0;fillColor=#ECE8E1;strokeColor=#77716A;strokeWidth=2;fontSize=24;fontStyle=1;verticalAlign=top;spacingTop=35;" vertex="1" parent="1">
           <mxGeometry x="30" y="270" width="180" height="150" as="geometry"/>
         </mxCell>
@@ -74,7 +77,10 @@
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
         <mxCell id="edge-payment-worker" value="发布待执行任务" style="edgeStyle=orthogonalEdgeStyle;html=0;strokeColor=#263238;strokeWidth=2;endArrow=block;endFill=1;fontSize=23;fontStyle=1;" edge="1" parent="1" source="payment" target="worker">
-          <mxGeometry relative="1" as="geometry"/>
+          <mxGeometry x="0" y="0" relative="1" as="geometry">
+            <Array as="points"><mxPoint x="425" y="665"/><mxPoint x="1075" y="665"/></Array>
+            <mxPoint x="0" y="45" as="offset"/>
+          </mxGeometry>
         </mxCell>
       </root>
     </mxGraphModel>

@@ -15,7 +15,7 @@
 - Scope is exactly MOD-01, MOD-02, and MOD-03. Do not add MOD-04 or later G008 content.
 - Do not add dependencies and do not lower the Node.js engine below `>=24.0`.
 - MOD-02 is an audit-style closure: retain its current prose and diagram unless a failing contract proves a specific defect.
-- Reuse the expense-reporting system and the exact names `员工`, `费用申报系统`, `Web 应用`, `申报 API`, `申报数据库`, `支付任务执行器`, and `外部银行`.
+- Reuse the expense-reporting system and the exact names `员工`, `费用申报系统`, `Web 应用`, `申报 API`, `申报数据库`, `支付任务执行器`, and `银行支付服务`; the canonical MOD-02 diagram is authoritative for this external-system name across every Batch 1 view.
 - MOD-03 Component scope is the single `申报 API` container and exactly four responsibility units: `提交用例`, `审批策略`, `付款编排`, and `持久化端口`.
 - MOD-01 uses one Mermaid decision map and one model-selection table.
 - MOD-03 uses one Mermaid sequence plus two separate Draw.io/SVG pairs; never compress all three views into one multi-panel image.
@@ -360,7 +360,7 @@ flowchart TD
 
 ## 完整演练
 
-费用申报系统评审先问“员工、系统和外部银行的边界是否清楚”，因此选择 Context；再问“责任落在哪些可运行或存储单元”，因此选择 Container。审批顺序改用 Dynamic，生产实例映射改用 Deployment，数据身份与约束留给数据模型，选择原因写入 ADR。结果不是一张万能图，而是一组按问题展开的最小证据。
+费用申报系统评审先问“员工、系统和银行支付服务的边界是否清楚”，因此选择 Context；再问“责任落在哪些可运行或存储单元”，因此选择 Container。审批顺序改用 Dynamic，生产实例映射改用 Deployment，数据身份与约束留给数据模型，选择原因写入 ADR。结果不是一张万能图，而是一组按问题展开的最小证据。
 
 ## 来源
 
@@ -680,7 +680,7 @@ sequenceDiagram
   participant Policy as 审批策略
   participant Payment as 付款编排
   participant Worker as 支付任务执行器
-  participant Bank as 外部银行
+  participant Bank as 银行支付服务
 
   Employee->>Web: 提交已审批费用
   Web->>Submit: 提交付款请求
@@ -796,7 +796,7 @@ const diagrams = [
       '申报 API 实例',
       '申报数据库实例',
       '支付任务执行器实例',
-      '外部银行',
+      '银行支付服务',
     ],
   },
 ];
@@ -864,7 +864,7 @@ Use this brief:
 - one boundary titled `生产环境`;
 - deployment nodes: `员工终端`, `Web 节点`, `API 节点`, `数据库节点`, `任务执行节点`;
 - instances: `Web 应用实例`, `申报 API 实例`, `申报数据库实例`, `支付任务执行器实例`;
-- `外部银行` remains outside the production-environment boundary;
+- `银行支付服务` remains outside the production-environment boundary;
 - the legend distinguishes deployment node, container instance, infrastructure node, and external system;
 - do not include replica counts, availability zones, autoscaling, capacity, or failover claims;
 - minimum published SVG viewBox width 800;
@@ -894,7 +894,7 @@ and:
 
 <div className="architecture-diagram-scroll" role="region" aria-label="费用申报系统生产环境部署视图，可横向滚动" tabIndex={0}>
 
-![费用申报系统容器实例到生产节点及外部银行的映射](/img/diagrams/mod-03-c4-deployment.svg)
+![费用申报系统容器实例到生产节点及银行支付服务的映射](/img/diagrams/mod-03-c4-deployment.svg)
 
 </div>
 ```

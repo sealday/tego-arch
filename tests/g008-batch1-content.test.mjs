@@ -50,6 +50,14 @@ function section(body, heading) {
   return body.slice(start === -1 ? end : start + 1, end);
 }
 
+function fencedBlock(body, language) {
+  const match = body.match(
+    new RegExp(`\`\`\`${language}\\n([\\s\\S]*?)\\n\`\`\``, 'u'),
+  );
+  assert.ok(match, `missing ${language} fenced block`);
+  return match[1];
+}
+
 test('publishes MOD-01 as the six-question model-selection router', () => {
   const document = requiredDocument('MOD-01');
   assert.equal(document.file, 'modeling/mod-01-model-selection-overview.mdx');
@@ -58,7 +66,11 @@ test('publishes MOD-01 as the six-question model-selection router', () => {
   assert.equal(document.metadata.status, 'reviewed');
   assert.equal(document.metadata.priority, 'P0');
   assert.deepEqual(document.metadata.depends_on, ['FND-03']);
-  assert.deepEqual(document.metadata.adjacent_topics, ['MOD-02']);
+  assert.deepEqual(document.metadata.adjacent_topics, [
+    'MOD-02',
+    'QA-01',
+    'MTH-03',
+  ]);
   assert.deepEqual(
     document.headings.filter(({level}) => level === 2).map(({text}) => text),
     modelingHeadings,
@@ -68,6 +80,29 @@ test('publishes MOD-01 as the six-question model-selection router', () => {
   }
   assert.match(document.body, /```mermaid[\s\S]*?flowchart/u);
   assert.match(document.body, /\| 问题类别 \| 首选产物 \| 主要证明 \| 明确不证明 \|/u);
+});
+
+test('puts a concise non-proof boundary on every MOD-01 Mermaid exit', () => {
+  const mermaid = fencedBlock(requiredDocument('MOD-01').body, 'mermaid');
+  assert.match(mermaid, /^flowchart TD/mu);
+  const exits = [
+    ['PM', '问题空间模型', '内部结构'],
+    ['SM', '结构模型', '运行顺序'],
+    ['BM', '行为模型', '静态所有权'],
+    ['DM', '数据模型', '流程完整'],
+    ['EM', '部署模型', '容量容灾'],
+    ['RM', '决策记录', '运行事实'],
+  ];
+  for (const [id, model, boundary] of exits) {
+    assert.match(
+      mermaid,
+      new RegExp(
+        `^\\s*\\w+\\s+-->\\s+${id}\\["${model}<br\\/>不证明：${boundary}"\\]$`,
+        'mu',
+      ),
+      `${model} exit boundary`,
+    );
+  }
 });
 
 test('governs MOD-01 sources and reciprocal navigation', () => {
@@ -95,6 +130,34 @@ test('governs MOD-01 sources and reciprocal navigation', () => {
   for (const citation of governed.citations) {
     assert.ok(visibleExternal.has(citation.citation_url));
   }
+});
+
+test('keeps reciprocal MOD-01 adjacency and visible backlinks with QA-01 and MTH-03', () => {
+  const mod01 = requiredDocument('MOD-01');
+  const qa01 = requiredDocument('QA-01');
+  const mth03 = requiredDocument('MTH-03');
+  assert.deepEqual(mod01.metadata.adjacent_topics, [
+    'MOD-02',
+    'QA-01',
+    'MTH-03',
+  ]);
+  assert.deepEqual(qa01.metadata.adjacent_topics, [
+    'QA-00',
+    'QA-02',
+    'MTH-03',
+    'REL-02',
+    'PR-07',
+    'MOD-01',
+  ]);
+  assert.deepEqual(mth03.metadata.adjacent_topics, [
+    'FND-05',
+    'MTH-04',
+    'QA-01',
+    'PR-08',
+    'MOD-01',
+  ]);
+  assert.ok(extractInternalLinks(qa01).includes('/modeling/mod-01'));
+  assert.ok(extractInternalLinks(mth03).includes('/modeling/mod-01'));
 });
 
 test('publishes MOD-03 with three evidence-bounded C4 views', () => {
@@ -130,6 +193,30 @@ test('publishes MOD-03 with three evidence-bounded C4 views', () => {
   assert.match(document.body, /Component[^。；\n]*(?:不证明|不能证明)[^。；\n]*代码/u);
   assert.match(document.body, /Dynamic[^。；\n]*(?:不等于|不证明)[^。；\n]*(?:性能|追踪)/u);
   assert.match(document.body, /Deployment[^。；\n]*(?:不证明|不能证明)[^。；\n]*(?:容量|故障切换)/u);
+});
+
+test('requires view-specific evidence and marks the expense topology as a dated teaching assumption', () => {
+  const document = requiredDocument('MOD-03');
+  const inputs = section(document.body, '建模目标与输入');
+  assert.match(inputs, /Component[^。\n]*代码[^。\n]*依赖[^。\n]*所有权/u);
+  assert.match(inputs, /Dynamic[^。\n]*用例[^。\n]*测试[^。\n]*追踪/u);
+  assert.match(inputs, /Deployment[^。\n]*环境清单[^。\n]*配置[^。\n]*观测/u);
+  assert.match(inputs, /事实截止时间[^。\n]*2026-07-30/u);
+  assert.match(document.body, /费用申报系统[^。\n]*教学演练假设/u);
+  assert.match(document.body, /并非[^。\n]*生产拓扑事实/u);
+});
+
+test('locks the MOD-03 Dynamic asynchronous boundary and one minimal failure alt', () => {
+  const mermaid = fencedBlock(requiredDocument('MOD-03').body, 'mermaid');
+  assert.match(mermaid, /^sequenceDiagram/mu);
+  assert.match(
+    mermaid,
+    /^\s*Payment-->>Worker: 发布待执行任务（异步边界）$/mu,
+  );
+  assert.match(mermaid, /^\s*alt 银行受理$/mu);
+  assert.match(mermaid, /^\s*else 银行拒绝$/mu);
+  assert.match(mermaid, /^\s*Bank-->>Worker: 返回拒绝结果$/mu);
+  assert.doesNotMatch(mermaid, /重试|补偿/u);
 });
 
 test('keeps MOD-02 and MOD-03 reciprocal and governed', () => {

@@ -24,6 +24,8 @@ depends_on:
   - FND-03
 adjacent_topics:
   - MOD-02
+  - QA-01
+  - MTH-03
 related_cases:
   - /cases/microsoft-multi-agent-reference-architecture
 related_questions: []
@@ -57,12 +59,12 @@ flowchart TD
   Q --> D["实体身份、关系与约束"]
   Q --> E["实例、节点、环境与基础设施"]
   Q --> R["选择原因、约束、风险与复核条件"]
-  P --> PM["问题空间模型"]
-  S --> SM["结构模型"]
-  B --> BM["行为模型"]
-  D --> DM["数据模型"]
-  E --> EM["部署模型"]
-  R --> RM["决策记录"]
+  P --> PM["问题空间模型<br/>不证明：内部结构"]
+  S --> SM["结构模型<br/>不证明：运行顺序"]
+  B --> BM["行为模型<br/>不证明：静态所有权"]
+  D --> DM["数据模型<br/>不证明：流程完整"]
+  E --> EM["部署模型<br/>不证明：容量容灾"]
+  R --> RM["决策记录<br/>不证明：运行事实"]
 ```
 
 | 问题类别 | 首选产物 | 主要证明 | 明确不证明 |
@@ -88,7 +90,7 @@ flowchart TD
 
 ## 完整演练
 
-费用申报系统评审先问“员工、系统和外部银行的边界是否清楚”，因此选择 Context；再问“责任落在哪些可运行或存储单元”，因此选择 Container。审批顺序改用 Dynamic，生产实例映射改用 Deployment，数据身份与约束留给数据模型，选择原因写入 ADR。结果不是一张万能图，而是一组按问题展开的最小证据；同样的选择顺序可用于 [Microsoft multi-agent reference architecture 案例](/cases/microsoft-multi-agent-reference-architecture)，但模型仍需由该系统的事实证据支撑。
+费用申报系统评审先问“员工、系统和银行支付服务的边界是否清楚”，因此选择 Context；再问“责任落在哪些可运行或存储单元”，因此选择 Container。审批顺序改用 Dynamic，生产实例映射改用 Deployment，数据身份与约束留给数据模型，选择原因写入 ADR。结果不是一张万能图，而是一组按问题展开的最小证据；同样的选择顺序可用于 [Microsoft multi-agent reference architecture 案例](/cases/microsoft-multi-agent-reference-architecture)，但模型仍需由该系统的事实证据支撑。
 
 ## 来源
 

@@ -5,7 +5,7 @@
   aria-labelledby="diagram-title diagram-description"
 >
   <title id="diagram-title">费用申报系统的 C4 Context 与 Container 映射</title>
-  <desc id="diagram-description">上半部分展示员工、费用申报系统和外部银行的 Context 关系，下半部分展开 Web 应用、申报 API、申报数据库和支付任务执行器；关系标签与连续箭头分离，箭头只表示关系。</desc>
+  <desc id="diagram-description">上半部分展示员工、费用申报系统和银行支付服务的 Context 关系，下半部分展开 Web 应用、申报 API、申报数据库和支付任务执行器；关系标签与连续箭头分离，箭头只表示关系。</desc>
   <defs>
     <filter id="soft-shadow" x="-20%" y="-20%" width="140%" height="150%">
       <feDropShadow dx="0" dy="5" stdDeviation="8" flood-color="#263238" flood-opacity=".09"/>

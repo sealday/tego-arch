@@ -4,6 +4,16 @@ import {readFile} from 'node:fs/promises';
 import test from 'node:test';
 import {fileURLToPath} from 'node:url';
 
+const mod02CanonicalSvg =
+  'static/img/diagrams/mod-02-c4-context-container.svg';
+const mod02CanonicalSource = await readFile(
+  new URL(`../${mod02CanonicalSvg}`, import.meta.url),
+  'utf8',
+);
+const canonicalExternalSystem = canonicalExternalSystemName(
+  mod02CanonicalSource,
+);
+
 const diagrams = [
   {
     article: 'content/modeling/mod-03-c4-component-dynamic-deployment.mdx',
@@ -12,7 +22,7 @@ const diagrams = [
     svg: 'static/img/diagrams/mod-03-c4-component.svg',
     title: '申报 API Component 责任边界',
     note: '此图只展开一个申报 API Container，展示四个内部责任单元及直接依赖，不证明代码与图一致。',
-    legends: [],
+    legends: ['Component', 'Container', 'Data Store'],
     nodes: [
       ['web', 'Web 应用', 'CONTAINER', null],
       ['submit', '提交用例', 'COMPONENT', 'boundary'],
@@ -48,11 +58,11 @@ const diagrams = [
       ['web-instance', 'Web 应用实例', '容器实例', 'production'],
       ['api-node', 'API 节点', '部署节点', 'production'],
       ['api-instance', '申报 API 实例', '容器实例', 'production'],
-      ['db-node', '数据库节点', '基础设施节点', 'production'],
-      ['db-instance', '申报数据库实例', '数据实例', 'production'],
+      ['db-node', '数据库节点', '部署节点', 'production'],
+      ['db-instance', '申报数据库实例', '容器实例', 'production'],
       ['task-node', '任务执行节点', '部署节点', 'production'],
       ['worker-instance', '支付任务执行器实例', '容器实例', 'production'],
-      ['bank', '外部银行', '外部系统', null],
+      ['bank', canonicalExternalSystem, '外部系统', null],
     ],
     boundaries: [
       [
@@ -104,7 +114,7 @@ const purposeAlt = new Map([
   ],
   [
     '/modeling/mod-03#deployment',
-    /(?:容器实例|生产节点)[^。\]]*(?:映射|外部银行)/u,
+    /(?:容器实例|生产节点)[^。\]]*(?:映射|银行支付服务)/u,
   ],
 ]);
 
@@ -173,6 +183,18 @@ function svgTextInventory(svg) {
   return [...svg.matchAll(/<text\b[^>]*>([^<]+)<\/text>/gu)]
       .map((match) => decodeXmlText(match[1]))
       .filter(Boolean);
+}
+
+function canonicalExternalSystemName(svg) {
+  const group =
+    svg.match(
+      /<g\b[^>]*\bdata-node-id="bank-context"[^>]*>([\s\S]*?)<\/g>/u,
+    )?.[1] ?? '';
+  const title = group.match(
+    /<text\b[^>]*\bdata-text-role="title"[^>]*>([^<]+)<\/text>/u,
+  )?.[1];
+  assert.ok(title, 'MOD-02 canonical external-system title');
+  return decodeXmlText(title);
 }
 
 function sortedInventory(values) {
@@ -294,6 +316,65 @@ function deploymentClearanceContract(svg) {
     bankToViewBox:
       (Number(viewBox[1]) - (bankX + bankWidth + bankStroke / 2)) * scale,
   };
+}
+
+function svgEdgeParts(svg, edgeId) {
+  const escaped = edgeId.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
+  const path =
+    svg.match(
+      new RegExp(
+        `<path\\b(?=[^>]*\\bdata-edge-id="${escaped}")[^>]*>`,
+        'u',
+      ),
+    )?.[0] ?? '';
+  const label =
+    svg.match(
+      new RegExp(
+        `<text\\b(?=[^>]*\\bdata-edge-id="${escaped}")[^>]*>`,
+        'u',
+      ),
+    )?.[0] ?? '';
+  assert.ok(path && label, `${edgeId} path and label`);
+  return {path, label};
+}
+
+function orthogonalSegments(pathData) {
+  const tokens = pathData.match(/[MHV]|-?(?:\d+(?:\.\d+)?|\.\d+)/gu) ?? [];
+  const segments = [];
+  let index = 0;
+  let current = null;
+  while (index < tokens.length) {
+    const command = tokens[index++];
+    let next;
+    if (command === 'M') {
+      next = [Number(tokens[index++]), Number(tokens[index++])];
+      current = next;
+      continue;
+    }
+    assert.ok(current, 'path starts with M');
+    if (command === 'H') {
+      next = [Number(tokens[index++]), current[1]];
+    } else {
+      assert.equal(command, 'V', `unsupported path command ${command}`);
+      next = [current[0], Number(tokens[index++])];
+    }
+    segments.push([current, next]);
+    current = next;
+  }
+  return segments;
+}
+
+function pointToSegmentDistance([pointX, pointY], [[x1, y1], [x2, y2]]) {
+  if (x1 === x2) {
+    return Math.hypot(
+      pointX - x1,
+      pointY - Math.max(Math.min(pointY, Math.max(y1, y2)), Math.min(y1, y2)),
+    );
+  }
+  return Math.hypot(
+    pointX - Math.max(Math.min(pointX, Math.max(x1, x2)), Math.min(x1, x2)),
+    pointY - y1,
+  );
 }
 
 function drawioCellTag(drawio, id) {
@@ -456,6 +537,19 @@ function assertDiagramContract(diagram, drawio, svg) {
   );
 }
 
+function assertLegendCoversNodeTypes(diagram) {
+  assert.ok(diagram.legends.length > 0, `${diagram.route} non-empty legend`);
+  const normalizedLegend = new Set(
+    diagram.legends.map((label) => label.toLocaleUpperCase('en-US')),
+  );
+  for (const [, title, type] of diagram.nodes) {
+    assert.ok(
+      normalizedLegend.has(type.toLocaleUpperCase('en-US')),
+      `${diagram.route} legend covers ${title} type ${type}`,
+    );
+  }
+}
+
 for (const diagram of diagrams) {
   test(`embeds the local architecture diagram for ${diagram.route}`, async () => {
     const article = await readFile(absolute(diagram.article), 'utf8');
@@ -514,6 +608,7 @@ for (const diagram of diagrams) {
       ),
     );
     assertDiagramContract(diagram, drawio, svg);
+    assertLegendCoversNodeTypes(diagram);
 
     const validation = runValidator(diagram);
     assert.equal(
@@ -522,6 +617,36 @@ for (const diagram of diagrams) {
       `${diagram.route} validator\n${validation.stdout}${validation.stderr}`,
     );
   });
+}
+
+test('derives the MOD-03 external-system name from the canonical MOD-02 graph', async () => {
+  const [canonicalSvg, article, drawio, svg] = await Promise.all([
+    readFile(absolute(mod02CanonicalSvg), 'utf8'),
+    readFile(
+      absolute('content/modeling/mod-03-c4-component-dynamic-deployment.mdx'),
+      'utf8',
+    ),
+    readFile(absolute('diagrams/mod-03-c4-deployment.drawio'), 'utf8'),
+    readFile(absolute('static/img/diagrams/mod-03-c4-deployment.svg'), 'utf8'),
+  ]);
+  const canonicalName = canonicalExternalSystemName(canonicalSvg);
+  const deployment = diagrams[1];
+  assert.equal(
+    deployment.nodes.find(([id]) => id === 'bank')?.[1],
+    canonicalName,
+  );
+  assertDiagramContract(deployment, drawio, svg);
+  assert.match(article, new RegExp(canonicalName, 'u'));
+  assert.match(
+    fencedMermaid(article),
+    new RegExp(`participant Bank as ${canonicalName}`, 'u'),
+  );
+});
+
+function fencedMermaid(article) {
+  const match = article.match(/```mermaid\n([\s\S]*?)\n```/u);
+  assert.ok(match, 'MOD-03 Mermaid block');
+  return match[1];
 }
 
 test('keeps the Deployment boundary and external bank visibly separated', async () => {
@@ -542,6 +667,58 @@ test('keeps the Deployment boundary and external bank visibly separated', async 
     clearances.bankToViewBox >= 12,
     'external bank to viewBox clearance',
   );
+});
+
+test('keeps the Component task label clear of the API bottom boundary', async () => {
+  const svg = await readFile(
+    absolute('static/img/diagrams/mod-03-c4-component.svg'),
+    'utf8',
+  );
+  const boundary =
+    svg.match(/<path\b[^>]*\bdata-boundary-id="boundary"[^>]*>/u)?.[0] ?? '';
+  const {label} = svgEdgeParts(svg, 'edge-payment-worker');
+  const [, , , boundaryHeight] = numericBounds(
+    boundary,
+    'data-boundary-bounds',
+  );
+  const [, boundaryY] = numericBounds(boundary, 'data-boundary-bounds');
+  const boundaryStroke = Number(xmlAttribute(boundary, 'stroke-width'));
+  const labelBaseline = Number(xmlAttribute(label, 'y'));
+  const scale = 800 / 1200;
+  const conservativeLabelBottom = labelBaseline + 5;
+  const clearance =
+    (boundaryY +
+      boundaryHeight -
+      boundaryStroke / 2 -
+      conservativeLabelBottom) *
+    scale;
+  assert.ok(clearance >= 8, `Component label/boundary clearance ${clearance}`);
+});
+
+test('keeps every Deployment label close to its own connector with declared clearances', async () => {
+  const svg = await readFile(
+    absolute('static/img/diagrams/mod-03-c4-deployment.svg'),
+    'utf8',
+  );
+  const scale = 800 / 1200;
+  for (const [edgeId] of diagrams[1].relations) {
+    const {path, label} = svgEdgeParts(svg, edgeId);
+    const anchor = [
+      Number(xmlAttribute(label, 'x')),
+      Number(xmlAttribute(label, 'y')),
+    ];
+    const association =
+      Math.min(
+        ...orthogonalSegments(xmlAttribute(path, 'd')).map((segment) =>
+          pointToSegmentDistance(anchor, segment),
+        ),
+      ) * scale;
+    assert.ok(association <= 60, `${edgeId} association ${association}`);
+    assert.equal(xmlAttribute(label, 'data-stroke-clearance-css'), '8');
+    assert.equal(xmlAttribute(label, 'data-arrow-clearance-css'), '16');
+    assert.equal(xmlAttribute(label, 'data-node-clearance-css'), '12');
+    assert.equal(xmlAttribute(label, 'data-max-association-css'), '60');
+  }
 });
 
 test('rejects Deployment metadata that drifts from actual path geometry', async () => {

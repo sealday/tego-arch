@@ -69,7 +69,7 @@ const expectedTopics = new Map([
   [
     'MTH-03',
     {
-      adjacent: ['FND-05', 'MTH-04', 'QA-01', 'PR-08'],
+      adjacent: ['FND-05', 'MTH-04', 'QA-01', 'PR-08', 'MOD-01'],
       contentType: 'method',
       dependsOn: ['QA-01'],
       file: 'methods/mth-03-adr-lifecycle.mdx',

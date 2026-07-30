@@ -53,13 +53,13 @@
         <mxCell id="db-node" value="数据库节点" data-boundary-id="production" style="rounded=1;arcSize=12;whiteSpace=wrap;html=0;fillColor=#F2E9D6;strokeColor=#8B7855;strokeWidth=3;fontSize=24;fontStyle=1;verticalAlign=top;spacingTop=22;" vertex="1" parent="1">
           <mxGeometry x="700" y="270" width="248" height="250" as="geometry"/>
         </mxCell>
-        <mxCell id="db-node-type" value="基础设施节点" style="text;html=0;strokeColor=none;fillColor=none;fontSize=15;fontStyle=1;align=center;" vertex="1" parent="1">
+        <mxCell id="db-node-type" value="部署节点" style="text;html=0;strokeColor=none;fillColor=none;fontSize=15;fontStyle=1;align=center;" vertex="1" parent="1">
           <mxGeometry x="764" y="338" width="120" height="30" as="geometry"/>
         </mxCell>
         <mxCell id="db-instance" value="申报数据库实例" data-boundary-id="production" style="shape=cylinder3;whiteSpace=wrap;html=0;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#E8E1CF;strokeColor=#8B7855;strokeWidth=2;fontSize=24;fontStyle=1;verticalAlign=top;spacingTop=28;" vertex="1" parent="1">
           <mxGeometry x="714" y="370" width="220" height="140" as="geometry"/>
         </mxCell>
-        <mxCell id="db-instance-type" value="数据实例" style="text;html=0;strokeColor=none;fillColor=none;fontSize=15;fontStyle=1;align=center;" vertex="1" parent="1">
+        <mxCell id="db-instance-type" value="容器实例" style="text;html=0;strokeColor=none;fillColor=none;fontSize=15;fontStyle=1;align=center;" vertex="1" parent="1">
           <mxGeometry x="764" y="447" width="120" height="30" as="geometry"/>
         </mxCell>
         <mxCell id="task-node" value="任务执行节点" data-boundary-id="production" style="rounded=1;arcSize=12;whiteSpace=wrap;html=0;fillColor=#F0EDE7;strokeColor=#77716A;strokeWidth=3;fontSize=24;fontStyle=1;verticalAlign=top;spacingTop=22;" vertex="1" parent="1">
@@ -74,17 +74,17 @@
         <mxCell id="worker-instance-type" value="容器实例" style="text;html=0;strokeColor=none;fillColor=none;fontSize=15;fontStyle=1;align=center;" vertex="1" parent="1">
           <mxGeometry x="625" y="797" width="150" height="30" as="geometry"/>
         </mxCell>
-        <mxCell id="bank" value="外部银行" style="rounded=1;arcSize=14;whiteSpace=wrap;html=0;fillColor=#ECE8E1;strokeColor=#77716A;strokeWidth=2;fontSize=24;fontStyle=1;verticalAlign=top;spacingTop=35;" vertex="1" parent="1">
-          <mxGeometry x="992" y="650" width="180" height="150" as="geometry"/>
+        <mxCell id="bank" value="银行支付服务" style="rounded=1;arcSize=14;whiteSpace=wrap;html=0;fillColor=#ECE8E1;strokeColor=#77716A;strokeWidth=2;fontSize=22.5;fontStyle=1;verticalAlign=top;spacingTop=35;" vertex="1" parent="1">
+          <mxGeometry x="998" y="650" width="182" height="150" as="geometry"/>
         </mxCell>
         <mxCell id="bank-type" value="外部系统" style="text;html=0;strokeColor=none;fillColor=none;fontSize=15;fontStyle=1;align=center;" vertex="1" parent="1">
-          <mxGeometry x="1022" y="730" width="120" height="30" as="geometry"/>
+          <mxGeometry x="1029" y="730" width="120" height="30" as="geometry"/>
         </mxCell>
-        <mxCell id="edge-employee-web" value="访问页面" style="edgeStyle=orthogonalEdgeStyle;html=0;strokeColor=#263238;strokeWidth=2;endArrow=block;endFill=1;fontSize=23;fontStyle=1;" edge="1" parent="1" source="employee-terminal" target="web-instance"><mxGeometry relative="1" as="geometry"/></mxCell>
-        <mxCell id="edge-web-api" value="提交申报" style="edgeStyle=orthogonalEdgeStyle;html=0;strokeColor=#263238;strokeWidth=2;endArrow=block;endFill=1;fontSize=23;fontStyle=1;" edge="1" parent="1" source="web-instance" target="api-instance"><mxGeometry relative="1" as="geometry"/></mxCell>
-        <mxCell id="edge-api-db" value="读写申报" style="edgeStyle=orthogonalEdgeStyle;html=0;strokeColor=#263238;strokeWidth=2;endArrow=block;endFill=1;fontSize=23;fontStyle=1;" edge="1" parent="1" source="api-instance" target="db-instance"><mxGeometry relative="1" as="geometry"/></mxCell>
-        <mxCell id="edge-api-task" value="发布付款任务" style="edgeStyle=orthogonalEdgeStyle;html=0;strokeColor=#263238;strokeWidth=2;endArrow=block;endFill=1;fontSize=23;fontStyle=1;" edge="1" parent="1" source="api-instance" target="worker-instance"><mxGeometry relative="1" as="geometry"/></mxCell>
-        <mxCell id="edge-task-bank" value="发起付款" style="edgeStyle=orthogonalEdgeStyle;html=0;strokeColor=#263238;strokeWidth=2;endArrow=block;endFill=1;fontSize=23;fontStyle=1;" edge="1" parent="1" source="worker-instance" target="bank"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="edge-employee-web" value="访问页面" style="edgeStyle=orthogonalEdgeStyle;html=0;strokeColor=#263238;strokeWidth=2;endArrow=block;endFill=1;fontSize=23;fontStyle=1;" edge="1" parent="1" source="employee-terminal" target="web-instance"><mxGeometry x="0" y="0" relative="1" as="geometry"><Array as="points"><mxPoint x="200" y="590"/><mxPoint x="210" y="590"/></Array><mxPoint x="-95" y="-25" as="offset"/></mxGeometry></mxCell>
+        <mxCell id="edge-web-api" value="提交申报" style="edgeStyle=orthogonalEdgeStyle;html=0;strokeColor=#263238;strokeWidth=2;endArrow=block;endFill=1;fontSize=23;fontStyle=1;" edge="1" parent="1" source="web-instance" target="api-instance"><mxGeometry x="0" y="0" relative="1" as="geometry"><Array as="points"><mxPoint x="435" y="590"/><mxPoint x="450" y="590"/></Array><mxPoint x="-97.5" y="-25" as="offset"/></mxGeometry></mxCell>
+        <mxCell id="edge-api-db" value="读写申报" style="edgeStyle=orthogonalEdgeStyle;html=0;strokeColor=#263238;strokeWidth=2;endArrow=block;endFill=1;fontSize=23;fontStyle=1;" edge="1" parent="1" source="api-instance" target="db-instance"><mxGeometry x="0" y="0" relative="1" as="geometry"><Array as="points"><mxPoint x="680" y="590"/><mxPoint x="700" y="590"/></Array><mxPoint x="-100" y="-25" as="offset"/></mxGeometry></mxCell>
+        <mxCell id="edge-api-task" value="发布付款任务" style="edgeStyle=orthogonalEdgeStyle;html=0;strokeColor=#263238;strokeWidth=2;endArrow=block;endFill=1;fontSize=23;fontStyle=1;" edge="1" parent="1" source="api-instance" target="worker-instance"><mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint x="-85" y="-40" as="offset"/></mxGeometry></mxCell>
+        <mxCell id="edge-task-bank" value="发起付款" style="edgeStyle=orthogonalEdgeStyle;html=0;strokeColor=#263238;strokeWidth=2;endArrow=block;endFill=1;fontSize=23;fontStyle=1;" edge="1" parent="1" source="worker-instance" target="bank"><mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint x="-1.5" y="55" as="offset"/></mxGeometry></mxCell>
       </root>
     </mxGraphModel>
   </diagram>
