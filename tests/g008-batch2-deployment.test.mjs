@@ -76,12 +76,27 @@ function currentReleaseBaseline(source) {
   return baselines[0];
 }
 
-function assertCurrentReleaseState(source) {
+function g008Batch2BaselineSegment(source) {
   const baseline = currentReleaseBaseline(source);
-  assert.match(baseline, /G008 仍在进行中/u);
-  assert.match(baseline, /下一项为 MOD-05/u);
-  assert.doesNotMatch(baseline, /G008 已完成/u);
-  assert.doesNotMatch(baseline, /最近完成 `?G008`?/u);
+  const starts = [...baseline.matchAll(
+    /(?:2026-07-30 )?G008 Batch 2 已完成 MOD-04/gu,
+  )];
+  const ends = [...baseline.matchAll(/此前 G008 Batch 1/gu)];
+  assert.equal(starts.length, 1, 'current baseline must contain one G008 Batch 2 segment');
+  assert.equal(ends.length, 1, 'current baseline must contain one G008 Batch 1 history marker');
+  assert.ok(
+    starts[0].index < ends[0].index,
+    'G008 Batch 2 segment must precede G008 Batch 1 history',
+  );
+  return baseline.slice(starts[0].index, ends[0].index);
+}
+
+function assertCurrentReleaseState(source) {
+  const batch2 = g008Batch2BaselineSegment(source);
+  assert.match(batch2, /G008 仍在进行中/u);
+  assert.match(batch2, /下一项为 MOD-05/u);
+  assert.doesNotMatch(batch2, /G008 已完成/u);
+  assert.doesNotMatch(batch2, /最近完成 `?G008`?/u);
 }
 
 test('records exact successful G008 Batch 2 deployment evidence', () => {
@@ -138,6 +153,12 @@ test('rejects stale duplicate incomplete or terminal closure evidence', () => {
     ),
     {name: 'AssertionError'},
   );
+
+  const futureBacklog = backlog.replace(
+    '- **当前发布基线：** ',
+    '- **当前发布基线：** 2026-08-01 G008 已完成，当前持久故事为 G009。此前 G008 Batch 2 历史完成基线为：',
+  );
+  assert.doesNotThrow(() => assertCurrentReleaseState(futureBacklog));
 });
 
 test('closes exactly MOD-04 without closing G008', () => {
