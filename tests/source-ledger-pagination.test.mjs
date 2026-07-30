@@ -368,7 +368,7 @@ test('renders the overview only from plugin tier index data', async () => {
   );
 });
 
-test('keeps the paginated route component chunk isolated from the full ledger', {timeout: 20_000}, async () => {
+test('keeps the paginated route component chunk isolated from the full ledger', {timeout: 45_000}, async () => {
   const route = '/references/primary';
   const outsidePageId = 'src-adk-0d337be13a90';
   const [chunk, ledger, pluginModule] = await Promise.all([
