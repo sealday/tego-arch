@@ -53,14 +53,10 @@
 
 Use exactly these four article sources:
 
-1. Existing `src-ibm-ida-logical-data-model-9-1-1`  
-   `https://www.ibm.com/docs/en/ida/9.1.1?topic=modeling-logical-data-models`
-2. New `src-mermaid-er-diagram-11-16-0`  
-   `https://github.com/mermaid-js/mermaid/blob/mermaid%4011.16.0/packages/mermaid/src/docs/syntax/entityRelationshipDiagram.md`
-3. Existing `src-postgresql-18-constraints`  
-   `https://www.postgresql.org/docs/18/ddl-constraints.html`
-4. New `src-postgresql-18-range-types`  
-   `https://www.postgresql.org/docs/18/rangetypes.html`
+1. Existing `src-ibm-ida-logical-data-model-9-1-1`: `https://www.ibm.com/docs/en/ida/9.1.1?topic=modeling-logical-data-models`
+2. New `src-mermaid-er-diagram-11-16-0`: `https://github.com/mermaid-js/mermaid/blob/mermaid%4011.16.0/packages/mermaid/src/docs/syntax/entityRelationshipDiagram.md`
+3. Existing `src-postgresql-18-constraints`: `https://www.postgresql.org/docs/18/ddl-constraints.html`
+4. New `src-postgresql-18-range-types`: `https://www.postgresql.org/docs/18/rangetypes.html`
 
 IBM supports DBMS-independent logical entities, identifiers, relationships, and constraints. Mermaid supports only the pinned rendering syntax and cardinality markers. PostgreSQL supports only the named constraint/range mechanisms. None of these sources establishes the expense-claim domain rules.
 
