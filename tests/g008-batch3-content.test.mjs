@@ -22,6 +22,44 @@ const modelingHeadings = [
   '完整演练',
   '来源',
 ];
+const requiredSources = new Map([
+  [
+    'src-sap-powerdesigner-data-modeling-16-7-sp10',
+    'https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2bf926e1b1014a7c7c75eb751dd6e.html',
+  ],
+  [
+    'src-sap-powerdesigner-physical-model-16-7-sp10',
+    'https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2e0646e1b1014b15599cfaffb4f4a.html',
+  ],
+  [
+    'src-ibm-ida-logical-data-model-9-1-1',
+    'https://www.ibm.com/docs/en/ida/9.1.1?topic=modeling-logical-data-models',
+  ],
+  [
+    'src-postgresql-18-constraints',
+    'https://www.postgresql.org/docs/current/ddl-constraints.html',
+  ],
+  [
+    'src-postgresql-18-indexes',
+    'https://www.postgresql.org/docs/current/indexes.html',
+  ],
+]);
+const expectedMappingRows = [
+  ['层次', '回答的问题', '费用申报示例', '新增决定', '明确不证明'],
+  ['概念模型', '业务中有哪些事物与词义', '员工、费用申报、审批、付款', '概念边界与业务关系', '实体键、基数、表结构或流程顺序'],
+  ['逻辑模型', '实体如何识别、关联并受约束', 'Employee、ExpenseClaim、Approval、PaymentInstruction', '唯一标识、属性、关系、基数与业务约束', 'SQL 表已设计或查询性能达标'],
+  ['可移植关系模式', '逻辑实体如何映射为关系结构', 'employee、expense_claim、approval、payment_instruction', '表、PK/FK、唯一性、类型族和索引候选', '严格意义上的 DBMS 物理模型或可部署 schema'],
+  ['PostgreSQL 18 物理实现切片', '平台如何落实约束与访问路径', 'PostgreSQL 约束、类型与索引类别', '实际约束类别、类型选择和索引候选', '完整生产 DDL、容量、迁移安全或性能结果'],
+];
+const expectedMermaid = `flowchart LR
+  C["业务概念"] -->|映射并澄清词义| L["逻辑实体"]
+  L -->|加入身份、关系与约束| R["可移植关系模式"]
+  R -->|选择 PostgreSQL 18| P["物理实现切片"]
+  P -->|需要迁移与运行证据| V["验证缺口"]
+  A["本站教学假设"] -.标注字段、键与索引.-> L
+  A -.标注表与类型候选.-> R
+  U["未知项"] -.保留查询与容量事实.-> P
+  U -.保留性能与迁移结果.-> V`;
 const [documents, ledger] = await Promise.all([
   readContentDocuments(contentRoot),
   readFile(new URL('../data/source-ledger.json', import.meta.url), 'utf8')
@@ -58,7 +96,7 @@ function markdownTableRows(body) {
 
 function fencedBlock(body, language) {
   const matches = [...body.matchAll(
-    new RegExp(`\\\`\\\`\\\`${language}\\n([\\s\\S]*?)\\n\\\`\\\`\\\``, 'gu'),
+    new RegExp(`\`\`\`${language}\\n([\\s\\S]*?)\\n\`\`\``, 'gu'),
   )];
   assert.equal(matches.length, 1, `expected exactly one ${language} block`);
   return matches[0][1];
@@ -119,4 +157,46 @@ test('uses only published relationships and leaves MOD-06 unlinked', () => {
   }
   assert.equal(links.has('/modeling/mod-06'), false);
   assert.match(document.body, /MOD-06[^。\n]*尚未发布/u);
+});
+
+test('locks the single mapping table and Mermaid topology', () => {
+  const artifacts = section(requiredDocument('MOD-05').body, '模型产物');
+  assert.equal(
+    [...artifacts.matchAll(/table-wrapper--mapping/gu)].length,
+    1,
+    'expected exactly one primary mapping table',
+  );
+  assert.deepEqual(markdownTableRows(artifacts), expectedMappingRows);
+
+  const mermaid = fencedBlock(artifacts, 'mermaid');
+  assert.equal(mermaid, expectedMermaid);
+  assert.equal(
+    mermaid.split('\n').filter((line) => /(?:-->|-\.)(?:[^>]*->)?/u.test(line)).length,
+    8,
+  );
+});
+
+test('governs exactly the five visible MOD-05 official sources', () => {
+  const document = requiredDocument('MOD-05');
+  assert.deepEqual(
+    extractExternalLinks(document),
+    [...requiredSources.values()],
+  );
+
+  const review = ledger.documents[
+    'content/modeling/mod-05-conceptual-logical-physical-data-model.mdx'
+  ];
+  assert.ok(review, 'MOD-05 ledger review must exist');
+  assert.deepEqual(
+    review.citations.map(({source_id, citation_url}) => [
+      source_id,
+      citation_url,
+    ]),
+    [...requiredSources],
+  );
+
+  const governedSources = ledger.sources
+    .filter(({id}) => requiredSources.has(id))
+    .map(({id, canonical_locator}) => [id, canonical_locator]);
+  assert.deepEqual(governedSources, [...requiredSources]);
 });

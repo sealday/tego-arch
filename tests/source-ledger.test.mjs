@@ -1190,6 +1190,36 @@ test('accepts the governed PostgreSQL documentation license family', () => {
   assert.deepEqual(parsed.errors, []);
 });
 
+test('permits reviewed attributed PostgreSQL adapted text', () => {
+  const canonical = 'https://www.postgresql.org/docs/current/ddl-constraints.html';
+  const source = sourceFixture('src-postgresql-adapted-text', {
+    canonical_locator: canonical,
+    transport_locator: canonical,
+    allowed_evidence_roles: ['implementation'],
+    license: 'PostgreSQL',
+    license_family_id: 'https://www.postgresql.org/docs/current/',
+    copyright_policy: 'adapt-with-attribution',
+    expected_final_transport_locator: canonical,
+  });
+  const citation = citationFixture(source, {
+    roles: ['implementation'],
+    usage_mode: 'adapted-text',
+    attribution_note: 'PostgreSQL 18 Constraints, PostgreSQL Global Development Group',
+    modification_note: 'Condensed and translated for the governed teaching example',
+    quotation_reviewed: true,
+  });
+  const parsed = parseSourceLedger(ledger({
+    sources: [source],
+    documents: {
+      'content/cases/example.mdx': {
+        ...validDocument,
+        citations: [citation],
+      },
+    },
+  }));
+  assert.deepEqual(parsed.errors, []);
+});
+
 test('keeps vendor claims and illustration rights explicit', () => {
   const vendor = sourceFixture('src-vendor-claim', {
     source_kind: 'vendor-reference-architecture',

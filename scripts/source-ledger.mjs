@@ -138,6 +138,7 @@ function expectedLicenseFamily(source) {
 const explicitAdaptLicenses = new Set([
   'CC-BY-4.0',
   'CC-BY-SA-4.0',
+  'PostgreSQL',
   'LicenseRef-US-Gov-Public-Domain',
   'LicenseRef-Atlas-Original',
 ]);
