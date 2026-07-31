@@ -814,7 +814,7 @@ Require HTTP 200 for:
 /modeling/mod-04
 /principles/pr-13
 /cases/temporal-saga-durable-execution
-/sources
+/references
 ```
 
 Record 6/6 results.
