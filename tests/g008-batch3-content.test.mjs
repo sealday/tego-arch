@@ -22,26 +22,51 @@ const modelingHeadings = [
   '完整演练',
   '来源',
 ];
-const requiredSources = new Map([
+const expectedSourceGovernance = new Map([
   [
     'src-sap-powerdesigner-data-modeling-16-7-sp10',
-    'https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2bf926e1b1014a7c7c75eb751dd6e.html',
+    {
+      canonical_locator: 'https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2bf926e1b1014a7c7c75eb751dd6e.html',
+      expected_final_transport_locator: 'https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2bf926e1b1014a7c7c75eb751dd6e.html',
+      license: 'LicenseRef-All-Rights-Reserved',
+      copyright_policy: 'facts-and-short-quotation',
+    },
   ],
   [
     'src-sap-powerdesigner-physical-model-16-7-sp10',
-    'https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2e0646e1b1014b15599cfaffb4f4a.html',
+    {
+      canonical_locator: 'https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2e0646e1b1014b15599cfaffb4f4a.html',
+      expected_final_transport_locator: 'https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2e0646e1b1014b15599cfaffb4f4a.html',
+      license: 'LicenseRef-All-Rights-Reserved',
+      copyright_policy: 'facts-and-short-quotation',
+    },
   ],
   [
     'src-ibm-ida-logical-data-model-9-1-1',
-    'https://www.ibm.com/docs/en/ida/9.1.1?topic=modeling-logical-data-models',
+    {
+      canonical_locator: 'https://www.ibm.com/docs/en/ida/9.1.1?topic=modeling-logical-data-models',
+      expected_final_transport_locator: 'https://www.ibm.com/docs/en/ida/9.1.1?topic=modeling-logical-data-models',
+      license: 'LicenseRef-All-Rights-Reserved',
+      copyright_policy: 'facts-and-short-quotation',
+    },
   ],
   [
     'src-postgresql-18-constraints',
-    'https://www.postgresql.org/docs/current/ddl-constraints.html',
+    {
+      canonical_locator: 'https://www.postgresql.org/docs/current/ddl-constraints.html',
+      expected_final_transport_locator: 'https://www.postgresql.org/docs/current/ddl-constraints.html',
+      license: 'PostgreSQL',
+      copyright_policy: 'adapt-with-attribution',
+    },
   ],
   [
     'src-postgresql-18-indexes',
-    'https://www.postgresql.org/docs/current/indexes.html',
+    {
+      canonical_locator: 'https://www.postgresql.org/docs/current/indexes.html',
+      expected_final_transport_locator: 'https://www.postgresql.org/docs/current/indexes.html',
+      license: 'PostgreSQL',
+      copyright_policy: 'adapt-with-attribution',
+    },
   ],
 ]);
 const expectedMappingRows = [
@@ -170,6 +195,56 @@ function assertDataModelBoundaries(source) {
   assert.doesNotMatch(source, /可移植关系模式就是已验证物理模型/u);
   assert.doesNotMatch(source, /生产事实/u);
   assert.doesNotMatch(source, /索引保证性能/u);
+}
+
+function assertSourceGovernance(source) {
+  const expected = expectedSourceGovernance.get(source.id);
+  assert.ok(expected, `unexpected governed source: ${source.id}`);
+  assert.deepEqual(
+    {
+      canonical_locator: source.canonical_locator,
+      expected_final_transport_locator:
+        source.expected_final_transport_locator,
+      license: source.license,
+      copyright_policy: source.copyright_policy,
+    },
+    expected,
+  );
+}
+
+function healthObservation(observation) {
+  assert.ok(observation, 'missing link-health observation');
+  return {
+    at: observation.at,
+    outcome: observation.outcome,
+    final_transport_locator: observation.final_transport_locator,
+    http_status: observation.http_status,
+    login_wall_detected: observation.login_wall_detected,
+  };
+}
+
+function assertStableSourceHealth(sourceId, result) {
+  const expected = expectedSourceGovernance.get(sourceId);
+  assert.ok(expected, `unexpected stable source: ${sourceId}`);
+  assert.ok(result, `${sourceId} link health`);
+  assert.deepEqual(result.source_ids, [sourceId]);
+  assert.equal(result.transport_locator, expected.canonical_locator);
+  assert.equal(result.review_status, 'healthy');
+  assert.equal(result.last_attempt?.outcome, 'healthy');
+  assert.ok(
+    Number.isInteger(result.last_attempt?.http_status) &&
+      result.last_attempt.http_status >= 200 &&
+      result.last_attempt.http_status < 300,
+    `${sourceId} current result must be 2xx`,
+  );
+  assert.equal(
+    result.last_attempt.final_transport_locator,
+    expected.expected_final_transport_locator,
+  );
+  assert.deepEqual(
+    healthObservation(result.last_success),
+    healthObservation(result.last_attempt),
+  );
 }
 
 test('publishes MOD-05 as one progressive expense-claim data model', () => {
@@ -305,7 +380,8 @@ test('governs exactly the five visible MOD-05 official sources', () => {
   const document = requiredDocument('MOD-05');
   assert.deepEqual(
     extractExternalLinks(document),
-    [...requiredSources.values()],
+    [...expectedSourceGovernance.values()]
+      .map(({canonical_locator}) => canonical_locator),
   );
 
   const review = ledger.documents[
@@ -317,7 +393,11 @@ test('governs exactly the five visible MOD-05 official sources', () => {
       source_id,
       citation_url,
     ]),
-    [...requiredSources],
+    [...expectedSourceGovernance]
+      .map(([sourceId, {canonical_locator}]) => [
+        sourceId,
+        canonical_locator,
+      ]),
   );
   assert.deepEqual(
     review.citations
@@ -331,36 +411,29 @@ test('governs exactly the five visible MOD-05 official sources', () => {
   );
 
   const governedSources = ledger.sources
-    .filter(({id}) => requiredSources.has(id));
-  assert.deepEqual(
-    governedSources.map(({id, canonical_locator}) => [id, canonical_locator]),
-    [...requiredSources],
-  );
+    .filter(({id}) => expectedSourceGovernance.has(id));
+  assert.equal(governedSources.length, expectedSourceGovernance.size);
   for (const source of governedSources) {
+    assertSourceGovernance(source);
     assert.ok(document.body.includes(source.canonical_locator), source.id);
-    if (source.author_or_org === 'SAP' || source.author_or_org === 'IBM') {
-      assert.equal(source.license, 'LicenseRef-All-Rights-Reserved');
-      assert.equal(source.copyright_policy, 'facts-and-short-quotation');
-    } else {
-      assert.equal(source.license, 'PostgreSQL');
-      assert.equal(source.copyright_policy, 'adapt-with-attribution');
-    }
   }
-  const acceptedOutcomes = new Set(['healthy', 'auth-required', 'retired']);
-  for (const sourceId of requiredSources.keys()) {
-    const result = linkHealth.results.find(({source_ids}) =>
+  const authorDerivedFalsePositive = {
+    ...governedSources.find(({id}) => id === 'src-postgresql-18-indexes'),
+    author_or_org: 'SAP',
+    license: 'LicenseRef-All-Rights-Reserved',
+    copyright_policy: 'facts-and-short-quotation',
+  };
+  assert.throws(
+    () => assertSourceGovernance(authorDerivedFalsePositive),
+    {name: 'AssertionError'},
+  );
+
+  for (const sourceId of expectedSourceGovernance.keys()) {
+    const results = linkHealth.results.filter(({source_ids}) =>
       source_ids.includes(sourceId)
     );
-    assert.ok(result, `${sourceId} link health`);
-    assert.ok(
-      acceptedOutcomes.has(result.last_attempt?.outcome),
-      `${sourceId} accepted current result`,
-    );
-    assert.equal(result.last_success?.outcome, result.last_attempt.outcome);
-    assert.equal(
-      result.last_success?.final_transport_locator,
-      result.last_attempt.final_transport_locator,
-    );
+    assert.equal(results.length, 1, `${sourceId} exact link-health association`);
+    assertStableSourceHealth(sourceId, results[0]);
   }
   assert.equal(ledger.sources.length, 473);
 });
@@ -381,4 +454,44 @@ test('projects the exact G008 Batch 3 Stage A repository state', () => {
   });
   assert.match(backlog, /^- \[ \] \*\*MOD-05 /mu);
   assert.match(backlog, /下一项[^。\n]*MOD-05/u);
+});
+
+test('rejects policy-incompatible stable-source health mutations', () => {
+  const sourceId = 'src-sap-powerdesigner-data-modeling-16-7-sp10';
+  const stableResult = structuredClone(
+    linkHealth.results.find(({source_ids}) =>
+      source_ids.includes(sourceId)
+    ),
+  );
+  const authRequired = structuredClone(stableResult);
+  authRequired.review_status = 'auth-required';
+  authRequired.last_attempt.outcome = 'auth-required';
+  authRequired.last_attempt.http_status = 401;
+  authRequired.last_success.outcome = 'auth-required';
+  authRequired.last_success.http_status = 401;
+
+  const extraAssociation = structuredClone(stableResult);
+  extraAssociation.source_ids.push('src-postgresql-18-indexes');
+
+  const redirectOnly = structuredClone(stableResult);
+  redirectOnly.last_attempt.http_status = 302;
+  redirectOnly.last_success.http_status = 302;
+
+  const finalLocatorDrift = structuredClone(stableResult);
+  finalLocatorDrift.last_attempt.final_transport_locator =
+    'https://example.com/drift';
+  finalLocatorDrift.last_success.final_transport_locator =
+    'https://example.com/drift';
+
+  for (const invalidResult of [
+    authRequired,
+    extraAssociation,
+    redirectOnly,
+    finalLocatorDrift,
+  ]) {
+    assert.throws(
+      () => assertStableSourceHealth(sourceId, invalidResult),
+      {name: 'AssertionError'},
+    );
+  }
 });
