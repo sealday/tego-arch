@@ -91,6 +91,7 @@ function g008Batch2HistoricalSegment(source) {
 
 function assertBatch2HistoricalClosure(source) {
   const batch2 = g008Batch2HistoricalSegment(source);
+  assert.match(batch2, /G008 Batch 2 已完成 MOD-04/u);
   assert.match(batch2, new RegExp(expectedStageASha, 'u'));
   assert.match(batch2, new RegExp(expectedPagesRunId, 'u'));
   assert.match(batch2, /Stage A 为 42 个已完成主题/u);
@@ -144,6 +145,15 @@ test('rejects stale duplicate incomplete or rewritten historical closure evidenc
     );
   }
 
+  assert.throws(
+    () => assertBatch2HistoricalClosure(
+      backlog.replace(
+        'G008 Batch 2 已完成 MOD-04',
+        'G008 Batch 2 已完成 MOD-05',
+      ),
+    ),
+    {name: 'AssertionError'},
+  );
   assert.throws(
     () => assertBatch2HistoricalClosure(
       backlog.replace(
