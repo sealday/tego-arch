@@ -636,11 +636,11 @@ test('governs exactly the five visible MOD-05 official sources', () => {
   assert.equal(ledger.sources.length, 473);
 });
 
-test('projects the exact G008 Batch 3 Stage A repository state', () => {
+test('projects the exact G008 Batch 3 Stage B repository state', () => {
   assert.deepEqual(status, {
     schema_version: 1,
     durable_stories: {completed: 7, total: 20, current: 'G008'},
-    completed_topics: 43,
+    completed_topics: 44,
     content_documents: 86,
     governed_sources: 473,
     sources: {
@@ -650,8 +650,8 @@ test('projects the exact G008 Batch 3 Stage A repository state', () => {
       governed_sources: 'data/source-ledger.json',
     },
   });
-  assert.match(backlog, /^- \[ \] \*\*MOD-05 /mu);
-  assert.match(backlog, /下一项[^。\n]*MOD-05/u);
+  assert.match(backlog, /^- \[x\] \*\*MOD-05 /mu);
+  assert.match(backlog, /下一项[^。\n]*MOD-06/u);
 });
 
 test('rejects policy-incompatible stable-source health mutations', () => {

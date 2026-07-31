@@ -177,10 +177,10 @@ test('closes exactly MOD-04 without closing G008', () => {
     value: 'complete',
     source: 'docs/content-backlog.md',
   });
-  for (const id of ['MOD-05', 'MOD-06', 'MOD-07', 'MOD-08', 'MOD-09', 'MOD-10', 'MOD-11', 'MOD-12', 'MOD-13']) {
+  for (const id of ['MOD-06', 'MOD-07', 'MOD-08', 'MOD-09', 'MOD-10', 'MOD-11', 'MOD-12', 'MOD-13']) {
     assert.equal(topicsById.get(id)?.status.value, 'pending', id);
   }
-  assert.equal(projectStatus.completed_topics, 43);
+  assert.equal(projectStatus.completed_topics, 44);
   assert.equal(projectStatus.content_documents, 86);
   assert.equal(projectStatus.governed_sources, 473);
   assert.deepEqual(projectStatus.durable_stories, {
