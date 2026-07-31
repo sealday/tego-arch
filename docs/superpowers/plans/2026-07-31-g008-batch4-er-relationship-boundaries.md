@@ -174,7 +174,7 @@ test('publishes MOD-06 with the approved scope and metadata', () => {
   assert.equal(document.metadata.status, 'reviewed');
   assert.equal(document.metadata.priority, 'P0');
   assert.deepEqual(document.metadata.depends_on, ['MOD-05']);
-  assert.deepEqual(document.metadata.adjacent_topics, ['MOD-01', 'PR-13']);
+  assert.deepEqual(document.metadata.adjacent_topics, ['MOD-01', 'MOD-05', 'PR-13']);
   assert.deepEqual(document.metadata.related_cases, [
     '/cases/temporal-saga-durable-execution',
   ]);
@@ -236,6 +236,7 @@ depends_on:
   - MOD-05
 adjacent_topics:
   - MOD-01
+  - MOD-05
   - PR-13
 related_cases:
   - /cases/temporal-saga-durable-execution
@@ -559,7 +560,7 @@ Add `src-mermaid-er-diagram-11-16-0` to `data/source-ledger.json`:
   "license_scope": "The named Mermaid 11.16.0 documentation source within the evidenced MIT repository scope; trademarks, linked works, embedded quotations, and third-party material excluded",
   "license_evidence_url": "https://github.com/mermaid-js/mermaid/blob/mermaid%4011.16.0/LICENSE",
   "license_evidence_note": "The immutable Mermaid 11.16.0 repository tag includes the MIT license; Tego Arch uses only pinned syntax facts and an original diagram.",
-  "license_family_id": "https://github.com/mermaid-js/mermaid/tree/mermaid%4011.16.0",
+  "license_family_id": "github:mermaid-js/mermaid",
   "license_family_grouping": "identity",
   "family_grouping_evidence_url": null,
   "copyright_policy": "facts-and-short-quotation",

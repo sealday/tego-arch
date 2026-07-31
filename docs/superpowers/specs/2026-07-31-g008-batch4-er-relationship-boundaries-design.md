@@ -304,6 +304,7 @@ depends_on:
   - MOD-05
 adjacent_topics:
   - MOD-01
+  - MOD-05
   - PR-13
 related_cases:
   - /cases/temporal-saga-durable-execution
