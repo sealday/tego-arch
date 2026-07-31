@@ -38,6 +38,25 @@ related_cases:
 related_questions: []
 ---
 
+export const handleHorizontalArrowKey = (event) => {
+  const direction = event.key === 'ArrowRight'
+    ? 1
+    : event.key === 'ArrowLeft'
+      ? -1
+      : 0;
+  if (direction === 0) return;
+
+  const region = event.currentTarget;
+  if (region.scrollWidth <= region.clientWidth) return;
+
+  event.preventDefault();
+  const nextScrollLeft = region.scrollLeft + direction * 40;
+  region.scrollLeft = Math.min(
+    region.scrollWidth - region.clientWidth,
+    Math.max(0, nextScrollLeft),
+  );
+};
+
 # ER 模型与关系边界
 
 ## 学习问题
@@ -69,7 +88,7 @@ related_questions: []
 
 ## 模型产物
 
-<div className="diagram-wrapper" role="region" aria-label="费用申报 ER 教学模型，可横向滚动" tabIndex={0}>
+<div className="diagram-wrapper" role="region" aria-label="费用申报 ER 教学模型，可横向滚动" tabIndex={0} onKeyDown={handleHorizontalArrowKey}>
 
 ```mermaid
 erDiagram
@@ -117,7 +136,7 @@ erDiagram
 
 六个实体分别用 `employeeId`、`orgUnitId`、`assignmentId`、`claimId`、`approvalId` 和 `paymentInstructionId` 保持稳定指向。稳定技术身份与员工号、组织代码、审批步骤唯一性和付款幂等键明确不同：后者可能改变、复用或只在特定作用域中唯一，技术身份也不能自动证明这些业务唯一性。
 
-<div className="table-wrapper table-wrapper--mapping" role="region" aria-label="实体身份与关系边界决策表，可横向滚动" tabIndex={0}>
+<div className="table-wrapper table-wrapper--mapping" role="region" aria-label="实体身份与关系边界决策表，可横向滚动" tabIndex={0} onKeyDown={handleHorizontalArrowKey}>
 
 | 类别 | 判断问题 | 费用申报示例 | 边界 |
 | --- | --- | --- | --- |
@@ -130,7 +149,7 @@ erDiagram
 
 这些分类由当前费用申报语境决定，不是对所有系统都固定的答案。基数同时包含关系两端的下界和上界，不能只写“一对多”；每项教学基数都必须通过业务规则与生命周期反例验证。
 
-<div className="table-wrapper table-wrapper--mapping" role="region" aria-label="ER 约束覆盖边界表，可横向滚动" tabIndex={0}>
+<div className="table-wrapper table-wrapper--mapping" role="region" aria-label="ER 约束覆盖边界表，可横向滚动" tabIndex={0} onKeyDown={handleHorizontalArrowKey}>
 
 | 规则 | ER 图 | 主要表达位置 | 仍需验证 |
 | --- | --- | --- | --- |

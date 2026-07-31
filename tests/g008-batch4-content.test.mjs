@@ -158,6 +158,23 @@ test('separates identity decisions from graph-external constraint evidence', () 
   }
 });
 
+test('makes every MOD-06 overflow region explicitly keyboard-scrollable', () => {
+  const body = requiredDocument('MOD-06').body;
+  assert.match(
+    body,
+    /const handleHorizontalArrowKey = \(event\) => \{/u,
+  );
+  assert.match(body, /scrollWidth <= region\.clientWidth/u);
+  assert.match(body, /event\.key === 'ArrowRight'/u);
+  assert.match(body, /event\.key === 'ArrowLeft'/u);
+  assert.match(body, /region\.scrollLeft = Math\.min/u);
+  assert.match(body, /Math\.max\(0, nextScrollLeft\)/u);
+  assert.equal(
+    [...body.matchAll(/onKeyDown=\{handleHorizontalArrowKey\}/gu)].length,
+    3,
+  );
+});
+
 test('defines effective-dated relationship history without claiming bitemporal storage', () => {
   const body = requiredDocument('MOD-06').body;
   for (const pattern of [
