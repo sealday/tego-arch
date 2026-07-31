@@ -1594,7 +1594,7 @@
       "primary_sources": [
         "https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2bf926e1b1014a7c7c75eb751dd6e.html",
         "https://www.ibm.com/docs/en/ida/9.1.1?topic=modeling-logical-data-models",
-        "https://www.postgresql.org/docs/current/ddl-constraints.html"
+        "https://www.postgresql.org/docs/18/ddl-constraints.html"
       ],
       "related_cases": [
         "/cases/temporal-saga-durable-execution"

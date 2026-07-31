@@ -243,6 +243,7 @@ related_questions: []
 - 这是 SAP 产品方法，不是通用标准；
 - 只做原创意译和链接；
 - 不复制段落、表格、图、截图、符号或页面布局。
+- 文末按 SAP 商标指南标注 SAP 和 SAP PowerDesigner；该标注不表示 SAP 赞助或认可。
 
 ### 7.2 IBM InfoSphere Data Architect 9.1.1 / 9.1.2
 
@@ -257,6 +258,7 @@ related_questions: []
 - 版本较旧，只用于稳定概念和映射证据；
 - 不用于推断当前 DBMS 功能；
 - 只做原创意译和链接。
+- 文末按 IBM 商标信息标注 IBM 和 InfoSphere；该标注不表示 IBM 赞助或认可。
 
 ### 7.3 PostgreSQL 18
 
@@ -265,16 +267,23 @@ related_questions: []
 - CHECK、NOT NULL、UNIQUE、PK、FK 等平台约束；
 - 索引带来查询收益，也有写入和维护成本。
 
+固定版本证据：
+
+- `https://www.postgresql.org/docs/18/ddl-constraints.html`
+- `https://www.postgresql.org/docs/18/indexes.html`
+- 许可证家族仅接受 `https://www.postgresql.org/docs/18/`。
+
 边界：
 
 - PostgreSQL 文档不定义三层数据模型；
 - PostgreSQL 行为不得泛化为所有关系数据库；
+- 文档只支持 PostgreSQL 18 约束与索引机制；费用申报规则、类型选择和索引候选均为本站教学决定；
 - 不复制完整文档或示例 DDL；
 - 若直接改编文档内容，必须遵循 PostgreSQL License；本页优先采用原创说明。
 
 ### 7.4 原创性
 
-三层决策表、Mermaid、费用申报实体与字段、关系模式和物理切片均为本站原创教学材料。不得复用厂商商标、logo、产品截图或官方图。
+三层决策表、Mermaid、费用申报实体与字段、约束、类型选择、索引候选、关系模式和物理切片均为本站原创教学材料。厂商商标仅作指称并按要求归属，不得复用 logo、产品截图或官方图。
 
 ## 8. 视觉与响应式
 

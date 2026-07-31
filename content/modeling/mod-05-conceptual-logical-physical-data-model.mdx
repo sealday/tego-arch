@@ -49,7 +49,7 @@ related_questions: []
 
 ## 建模目标与输入
 
-[MOD-02 Context/Container](/modeling/mod-02)只为本文提供费用申报系统的边界和词汇：员工提交申报，系统组织审批，并向银行支付服务发起付款。MOD-02 的图仍是系统边界与“银行支付服务”名称的权威；本文出现的实体、字段、键、关系模式和索引均是本站原创的教学假设，不是 MOD-02 已经证明的事实，也不是某个真实组织的生产设计。
+[MOD-02 Context/Container](/modeling/mod-02)只为本文提供费用申报系统的边界和词汇：员工提交申报，系统组织审批，并向银行支付服务发起付款。MOD-02 的图仍是系统边界与“银行支付服务”名称的权威；本文出现的实体、字段、键、约束、类型选择、关系模式和索引均是本站原创的教学假设，不是 MOD-02 已经证明的事实，也不是某个真实组织的生产设计。
 
 输入包括业务词汇、身份需求、金额与币种语义、关系基数、唯一性、不变量、主要查询假设、目标 DBMS 版本和仍待验证的容量事实。先标出事实、教学决定与未知项，再从业务概念逐层细化，避免以现有数据库倒推业务含义。
 
@@ -82,7 +82,7 @@ related_questions: []
 
 可移植关系模式把四个逻辑实体映射为 `employee`、`expense_claim`、`approval` 和 `payment_instruction`。它可以表达主键、外键、唯一性、非空性、类型族和索引候选，但可移植关系模式不是严格意义上的完整物理模型，更不是普遍接受或已经验证的 PDM。
 
-PostgreSQL 18 物理实现切片讨论 PK、FK、UNIQUE、CHECK、NOT NULL、类型选择和索引候选，不给出完整 DDL。稳定标识可选择适合边界的标量类型；金额应选择避免二进制浮点误差且明确精度的数值类型；状态和币种是否使用文本、受约束域或引用表，需要随演进和治理要求决定。面向员工与状态的申报检索、待处理审批和付款幂等查找可以提出索引候选，但索引候选不证明性能：仍需查询分布、数据基数、写入成本和测量结果。
+PostgreSQL 18 物理实现切片讨论 PK、FK、UNIQUE、CHECK、NOT NULL、类型选择和索引候选，不给出完整 DDL。其中，费用申报约束、类型选择和索引候选均是本站原创的教学决定；PostgreSQL 18 官方文档只支持相应约束与索引机制行为，不支持费用申报领域规则。稳定标识可选择适合边界的标量类型；金额使用避免二进制浮点误差且明确精度的数值类型，是本站教学决定和待验证要求，不是 Constraints 或 Indexes 文档对本领域的结论；状态和币种是否使用文本、受约束域或引用表，也需要随演进和治理要求决定。面向员工与状态的申报检索、待处理审批和付款幂等查找可以提出索引候选，但索引候选不证明性能：仍需查询分布、数据基数、写入成本和测量结果。
 
 ```mermaid
 flowchart LR
@@ -102,7 +102,7 @@ flowchart LR
 
 四层使用相同业务词汇且每项新增决定能回到上一层；概念层没有表和键，逻辑层没有 DBMS 选择；关系模式明确标注为可移植映射；PostgreSQL 18 切片覆盖 PK、FK、UNIQUE、CHECK、NOT NULL、类型选择和索引候选，同时明确它不是生产 schema，也不是可部署 schema。
 
-评审者还应能指出哪些字段、键和索引来自本站原创教学假设，哪些约束由 PostgreSQL 官方文档支持，哪些查询分布、基数、写入成本、容量、迁移和性能结果仍未知。缺少这些运行证据时，停止于“候选”而不是宣称模型完成。
+评审者还应能指出哪些字段、键、费用申报约束、类型选择和索引候选来自本站原创教学假设，哪些 PostgreSQL 机制行为由官方文档支持，以及哪些查询分布、基数、写入成本、容量、迁移和性能结果仍未知。官方文档不支持本文的费用申报领域规则；缺少这些运行证据时，停止于“候选”而不是宣称模型完成。
 
 ## 常见失败
 
@@ -126,4 +126,8 @@ MOD-06 尚未发布；未来由它继续承接 ER、基数与历史细节，本�
 
 ## 来源
 
-概念、逻辑和物理层次的产品方法边界参考 [Getting Started with Data Modeling — SAP PowerDesigner 16.7 SP10](https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2bf926e1b1014a7c7c75eb751dd6e.html)与 [Physical Data Models — SAP PowerDesigner 16.7 SP10](https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2e0646e1b1014b15599cfaffb4f4a.html)；DBMS 无关的逻辑实体、标识、关系和约束参考 [Logical Data Models — IBM InfoSphere Data Architect 9.1.1](https://www.ibm.com/docs/en/ida/9.1.1?topic=modeling-logical-data-models)。PostgreSQL 18 实现边界依据官方 [Constraints](https://www.postgresql.org/docs/current/ddl-constraints.html)与 [Indexes](https://www.postgresql.org/docs/current/indexes.html)文档。本文不复用来源图表、表格或章节结构；四层费用申报示例、映射表、关系图和全部具体模式决定均为本站原创教学表达，不把任何产品方法表述为普遍标准。
+概念、逻辑和物理层次的产品方法边界参考 [Getting Started with Data Modeling — SAP PowerDesigner 16.7 SP10](https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2bf926e1b1014a7c7c75eb751dd6e.html)与 [Physical Data Models — SAP PowerDesigner 16.7 SP10](https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2e0646e1b1014b15599cfaffb4f4a.html)；DBMS 无关的逻辑实体、标识、关系和约束参考 [Logical Data Models — IBM InfoSphere Data Architect 9.1.1](https://www.ibm.com/docs/en/ida/9.1.1?topic=modeling-logical-data-models)。PostgreSQL 18 实现边界依据官方 [Constraints](https://www.postgresql.org/docs/18/ddl-constraints.html)与 [Indexes](https://www.postgresql.org/docs/18/indexes.html)文档。本文不复用来源图表、表格或章节结构；四层费用申报示例、映射表、关系图和全部具体模式决定均为本站原创教学表达，不把任何产品方法表述为普遍标准。
+
+SAP 和 SAP PowerDesigner 是 SAP SE 或其关联公司在德国及其他国家/地区的商标或注册商标。
+
+IBM 和 InfoSphere 是 International Business Machines Corporation 在美国和/或其他国家/地区的商标或注册商标。

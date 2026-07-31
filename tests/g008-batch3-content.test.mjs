@@ -26,49 +26,175 @@ const expectedSourceGovernance = new Map([
   [
     'src-sap-powerdesigner-data-modeling-16-7-sp10',
     {
+      title: 'Getting Started with Data Modeling — SAP PowerDesigner 16.7 SP10',
+      author_or_org: 'SAP',
+      published_at: null,
+      version: 'SAP PowerDesigner 16.7 SP10 documentation checked on 2026-07-31',
       canonical_locator: 'https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2bf926e1b1014a7c7c75eb751dd6e.html',
+      transport_locator: 'https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2bf926e1b1014a7c7c75eb751dd6e.html',
       expected_final_transport_locator: 'https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2bf926e1b1014a7c7c75eb751dd6e.html',
+      allowed_evidence_roles: ['definition', 'learning', 'method'],
       license: 'LicenseRef-All-Rights-Reserved',
+      license_scope: 'Facts and the named SAP PowerDesigner documentation page only; prose, figures, tables, screenshots, product UI, logos, linked works, and third-party material excluded; named trademarks require the article-end attribution and are not licensed for reuse',
+      license_evidence_url: 'https://www.sap.com/about/legal/trademark.html',
+      license_evidence_note: 'SAP trademark guidelines require an end-of-document attribution for named SAP marks; Tego Arch uses textual references, links, original factual summaries, and the required attribution only.',
+      license_family_id: 'https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2bf926e1b1014a7c7c75eb751dd6e.html',
+      license_family_grouping: 'identity',
+      family_grouping_evidence_url: null,
       copyright_policy: 'facts-and-short-quotation',
+      usage_boundary: 'Supports the named PowerDesigner abstraction or physical-model concept only; it is a product method, not a universal data-modeling standard, and the required trademark attribution does not imply SAP sponsorship or endorsement.',
+      expected_final_approval_note: 'Reviewed G008 Batch 3 SAP documentation transport, all-rights-reserved boundary, and required trademark attribution',
     },
   ],
   [
     'src-sap-powerdesigner-physical-model-16-7-sp10',
     {
+      title: 'Physical Data Models — SAP PowerDesigner 16.7 SP10',
+      author_or_org: 'SAP',
+      published_at: null,
+      version: 'SAP PowerDesigner 16.7 SP10 documentation checked on 2026-07-31',
       canonical_locator: 'https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2e0646e1b1014b15599cfaffb4f4a.html',
+      transport_locator: 'https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2e0646e1b1014b15599cfaffb4f4a.html',
       expected_final_transport_locator: 'https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2e0646e1b1014b15599cfaffb4f4a.html',
+      allowed_evidence_roles: ['definition', 'learning', 'method'],
       license: 'LicenseRef-All-Rights-Reserved',
+      license_scope: 'Facts and the named SAP PowerDesigner documentation page only; prose, figures, tables, screenshots, product UI, logos, linked works, and third-party material excluded; named trademarks require the article-end attribution and are not licensed for reuse',
+      license_evidence_url: 'https://www.sap.com/about/legal/trademark.html',
+      license_evidence_note: 'SAP trademark guidelines require an end-of-document attribution for named SAP marks; Tego Arch uses textual references, links, original factual summaries, and the required attribution only.',
+      license_family_id: 'https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2e0646e1b1014b15599cfaffb4f4a.html',
+      license_family_grouping: 'identity',
+      family_grouping_evidence_url: null,
       copyright_policy: 'facts-and-short-quotation',
+      usage_boundary: 'Supports the named PowerDesigner abstraction or physical-model concept only; it is a product method, not a universal data-modeling standard, and the required trademark attribution does not imply SAP sponsorship or endorsement.',
+      expected_final_approval_note: 'Reviewed G008 Batch 3 SAP documentation transport, all-rights-reserved boundary, and required trademark attribution',
     },
   ],
   [
     'src-ibm-ida-logical-data-model-9-1-1',
     {
+      title: 'Logical Data Models — IBM InfoSphere Data Architect 9.1.1',
+      author_or_org: 'IBM',
+      published_at: null,
+      version: 'IBM InfoSphere Data Architect 9.1.1 documentation checked on 2026-07-31',
       canonical_locator: 'https://www.ibm.com/docs/en/ida/9.1.1?topic=modeling-logical-data-models',
+      transport_locator: 'https://www.ibm.com/docs/en/ida/9.1.1?topic=modeling-logical-data-models',
       expected_final_transport_locator: 'https://www.ibm.com/docs/en/ida/9.1.1?topic=modeling-logical-data-models',
+      allowed_evidence_roles: ['definition', 'learning', 'method'],
       license: 'LicenseRef-All-Rights-Reserved',
+      license_scope: 'Facts and the named IBM documentation page only; prose, figures, tables, screenshots, product UI, logos, linked works, and third-party material excluded; IBM and InfoSphere trademark references require attribution and are not licensed for reuse',
+      license_evidence_url: 'https://www.ibm.com/legal/copyright-trademark',
+      license_evidence_note: 'IBM copyright and trademark information identifies IBM and InfoSphere as IBM trademarks and requires attribution on the page or in the legal section; Tego Arch uses textual references, links, original factual summaries, and the required attribution only.',
+      license_family_id: 'https://www.ibm.com/docs/en/ida/9.1.1?topic=modeling-logical-data-models',
+      license_family_grouping: 'identity',
+      family_grouping_evidence_url: null,
       copyright_policy: 'facts-and-short-quotation',
+      usage_boundary: 'Supports DBMS-independent logical entities, identifiers, relationships, and constraints; it does not establish current DBMS behavior, and the trademark attribution does not imply IBM sponsorship or endorsement.',
+      expected_final_approval_note: 'Reviewed G008 Batch 3 IBM documentation transport, all-rights-reserved boundary, and required trademark attribution',
     },
   ],
   [
     'src-postgresql-18-constraints',
     {
-      canonical_locator: 'https://www.postgresql.org/docs/current/ddl-constraints.html',
-      expected_final_transport_locator: 'https://www.postgresql.org/docs/current/ddl-constraints.html',
+      title: 'PostgreSQL 18 — Constraints',
+      author_or_org: 'PostgreSQL Global Development Group',
+      published_at: '2025-09-25',
+      version: 'PostgreSQL 18 documentation checked on 2026-07-31',
+      canonical_locator: 'https://www.postgresql.org/docs/18/ddl-constraints.html',
+      transport_locator: 'https://www.postgresql.org/docs/18/ddl-constraints.html',
+      expected_final_transport_locator: 'https://www.postgresql.org/docs/18/ddl-constraints.html',
+      allowed_evidence_roles: ['definition', 'implementation', 'learning'],
       license: 'PostgreSQL',
+      license_scope: 'The named PostgreSQL 18 documentation page under the PostgreSQL License; trademarks, linked works, and separately licensed third-party material excluded',
+      license_evidence_url: 'https://www.postgresql.org/about/licence/',
+      license_evidence_note: 'The official PostgreSQL license page permits use, copy, modification, and distribution subject to its copyright and permission notice.',
+      license_family_id: 'https://www.postgresql.org/docs/18/',
+      license_family_grouping: 'identity',
+      family_grouping_evidence_url: null,
       copyright_policy: 'adapt-with-attribution',
+      usage_boundary: 'Supports PostgreSQL 18 constraint mechanism behavior only; it does not define the conceptual/logical/physical taxonomy, expense-domain rules, type choices, or application performance.',
+      expected_final_approval_note: 'Reviewed G008 Batch 3 PostgreSQL 18 pinned documentation transport and license boundary',
     },
   ],
   [
     'src-postgresql-18-indexes',
     {
-      canonical_locator: 'https://www.postgresql.org/docs/current/indexes.html',
-      expected_final_transport_locator: 'https://www.postgresql.org/docs/current/indexes.html',
+      title: 'PostgreSQL 18 — Indexes',
+      author_or_org: 'PostgreSQL Global Development Group',
+      published_at: '2025-09-25',
+      version: 'PostgreSQL 18 documentation checked on 2026-07-31',
+      canonical_locator: 'https://www.postgresql.org/docs/18/indexes.html',
+      transport_locator: 'https://www.postgresql.org/docs/18/indexes.html',
+      expected_final_transport_locator: 'https://www.postgresql.org/docs/18/indexes.html',
+      allowed_evidence_roles: ['definition', 'implementation', 'learning'],
       license: 'PostgreSQL',
+      license_scope: 'The named PostgreSQL 18 documentation page under the PostgreSQL License; trademarks, linked works, and separately licensed third-party material excluded',
+      license_evidence_url: 'https://www.postgresql.org/about/licence/',
+      license_evidence_note: 'The official PostgreSQL license page permits use, copy, modification, and distribution subject to its copyright and permission notice.',
+      license_family_id: 'https://www.postgresql.org/docs/18/',
+      license_family_grouping: 'identity',
+      family_grouping_evidence_url: null,
       copyright_policy: 'adapt-with-attribution',
+      usage_boundary: 'Supports PostgreSQL 18 index mechanism behavior only; it does not define the conceptual/logical/physical taxonomy, expense-domain rules, type choices, or application performance.',
+      expected_final_approval_note: 'Reviewed G008 Batch 3 PostgreSQL 18 pinned documentation transport and license boundary',
     },
   ],
 ]);
+const expectedCitations = new Map([
+  ['src-sap-powerdesigner-data-modeling-16-7-sp10', {
+    citation_url: 'https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2bf926e1b1014a7c7c75eb751dd6e.html',
+    roles: ['definition', 'method'],
+    manifest_primary: true,
+    usage_mode: 'facts-summary',
+    attribution_note: 'Getting Started with Data Modeling, SAP PowerDesigner 16.7 SP10',
+    modification_note: null,
+    excerpt: null,
+    quotation_reviewed: false,
+  }],
+  ['src-sap-powerdesigner-physical-model-16-7-sp10', {
+    citation_url: 'https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2e0646e1b1014b15599cfaffb4f4a.html',
+    roles: ['definition', 'method'],
+    manifest_primary: false,
+    usage_mode: 'facts-summary',
+    attribution_note: 'Physical Data Models, SAP PowerDesigner 16.7 SP10',
+    modification_note: null,
+    excerpt: null,
+    quotation_reviewed: false,
+  }],
+  ['src-ibm-ida-logical-data-model-9-1-1', {
+    citation_url: 'https://www.ibm.com/docs/en/ida/9.1.1?topic=modeling-logical-data-models',
+    roles: ['definition', 'method'],
+    manifest_primary: true,
+    usage_mode: 'facts-summary',
+    attribution_note: 'Logical data models, IBM InfoSphere Data Architect 9.1.1',
+    modification_note: null,
+    excerpt: null,
+    quotation_reviewed: false,
+  }],
+  ['src-postgresql-18-constraints', {
+    citation_url: 'https://www.postgresql.org/docs/18/ddl-constraints.html',
+    roles: ['implementation'],
+    manifest_primary: true,
+    usage_mode: 'facts-summary',
+    attribution_note: 'PostgreSQL 18 Constraints, PostgreSQL Global Development Group',
+    modification_note: null,
+    excerpt: null,
+    quotation_reviewed: false,
+  }],
+  ['src-postgresql-18-indexes', {
+    citation_url: 'https://www.postgresql.org/docs/18/indexes.html',
+    roles: ['implementation'],
+    manifest_primary: false,
+    usage_mode: 'facts-summary',
+    attribution_note: 'PostgreSQL 18 Indexes, PostgreSQL Global Development Group',
+    modification_note: null,
+    excerpt: null,
+    quotation_reviewed: false,
+  }],
+]);
+const sapTrademarkNotice =
+  'SAP 和 SAP PowerDesigner 是 SAP SE 或其关联公司在德国及其他国家/地区的商标或注册商标。';
+const ibmTrademarkNotice =
+  'IBM 和 InfoSphere 是 International Business Machines Corporation 在美国和/或其他国家/地区的商标或注册商标。';
 const expectedMappingRows = [
   ['层次', '回答的问题', '费用申报示例', '新增决定', '明确不证明'],
   ['概念模型', '业务中有哪些事物与词义', '员工、费用申报、审批、付款', '概念边界与业务关系', '实体键、基数、表结构或流程顺序'],
@@ -126,6 +252,8 @@ function fencedBlock(body, language) {
 }
 
 function parseMermaidEdges(source) {
+  const [header, ...edgeLines] = source.split('\n');
+  assert.equal(header, 'flowchart LR');
   const nodeLabels = new Map();
   for (const match of source.matchAll(/\b([A-Za-z][\w-]*)\["([^"]+)"\]/gu)) {
     const [, id, label] = match;
@@ -137,7 +265,7 @@ function parseMermaidEdges(source) {
   const edges = [];
   const edgePattern =
     /^\s*([A-Za-z][\w-]*)(?:\["([^"]+)"\])?\s+(?:(-->)(?:\|([^|\n]+)\|)?|(-\.(.+?)\.->))\s+([A-Za-z][\w-]*)(?:\["([^"]+)"\])?\s*$/u;
-  for (const line of source.split('\n').slice(1).filter((value) => value.trim())) {
+  for (const line of edgeLines.filter((value) => value.trim())) {
     const match = line.match(edgePattern);
     assert.ok(match, `illegal Mermaid edge: ${line.trim()}`);
     const [
@@ -145,9 +273,9 @@ function parseMermaidEdges(source) {
       fromId,
       fromLabel,
       solidConnector,
-      ,
+      solidLabel,
       dottedConnector,
-      ,
+      dottedLabel,
       toId,
       toLabel,
     ] = match;
@@ -160,7 +288,12 @@ function parseMermaidEdges(source) {
     }
     assert.ok(nodeLabels.has(fromId), `unresolved Mermaid node: ${fromId}`);
     assert.ok(nodeLabels.has(toId), `unresolved Mermaid node: ${toId}`);
-    edges.push(`${nodeLabels.get(fromId)} -> ${nodeLabels.get(toId)}`);
+    const connectorKind = solidConnector === '-->' ? 'solid' : 'dotted';
+    const connectorLabel = solidLabel ?? dottedLabel ?? '';
+    edges.push(
+      `${connectorKind}|${connectorLabel}|` +
+      `${nodeLabels.get(fromId)} -> ${nodeLabels.get(toId)}`,
+    );
   }
   assert.equal(new Set(edges).size, edges.length, 'duplicate Mermaid edge');
   return edges.sort();
@@ -168,14 +301,14 @@ function parseMermaidEdges(source) {
 
 function assertMermaidSemantics(source) {
   const expectedEdges = [
-    '业务概念 -> 逻辑实体',
-    '逻辑实体 -> 可移植关系模式',
-    '可移植关系模式 -> 物理实现切片',
-    '物理实现切片 -> 验证缺口',
-    '本站教学假设 -> 逻辑实体',
-    '本站教学假设 -> 可移植关系模式',
-    '未知项 -> 物理实现切片',
-    '未知项 -> 验证缺口',
+    'solid|映射并澄清词义|业务概念 -> 逻辑实体',
+    'solid|加入身份、关系与约束|逻辑实体 -> 可移植关系模式',
+    'solid|选择 PostgreSQL 18|可移植关系模式 -> 物理实现切片',
+    'solid|需要迁移与运行证据|物理实现切片 -> 验证缺口',
+    'dotted|标注字段、键与索引|本站教学假设 -> 逻辑实体',
+    'dotted|标注表与类型候选|本站教学假设 -> 可移植关系模式',
+    'dotted|保留查询与容量事实|未知项 -> 物理实现切片',
+    'dotted|保留性能与迁移结果|未知项 -> 验证缺口',
   ].sort();
   assert.deepEqual(parseMermaidEdges(source), expectedEdges);
 }
@@ -195,21 +328,53 @@ function assertDataModelBoundaries(source) {
   assert.doesNotMatch(source, /可移植关系模式就是已验证物理模型/u);
   assert.doesNotMatch(source, /生产事实/u);
   assert.doesNotMatch(source, /索引保证性能/u);
+  assert.match(
+    source,
+    /约束、类型选择和索引候选[^。\n]*本站原创[^。\n]*教学决定/u,
+  );
+  assert.match(
+    source,
+    /PostgreSQL 18 官方文档[^。\n]*机制行为[^。\n]*不支持[^。\n]*费用申报领域规则/u,
+  );
+  assert.match(
+    source,
+    /金额[^。\n]*数值类型[^。\n]*本站教学决定[^。\n]*验证/u,
+  );
 }
 
 function assertSourceGovernance(source) {
   const expected = expectedSourceGovernance.get(source.id);
   assert.ok(expected, `unexpected governed source: ${source.id}`);
   assert.deepEqual(
-    {
-      canonical_locator: source.canonical_locator,
-      expected_final_transport_locator:
-        source.expected_final_transport_locator,
-      license: source.license,
-      copyright_policy: source.copyright_policy,
-    },
+    Object.fromEntries(
+      Object.keys(expected).map((field) => [field, source[field]]),
+    ),
     expected,
   );
+}
+
+function assertCitationGovernance(citation) {
+  const expected = expectedCitations.get(citation.source_id);
+  assert.ok(expected, `unexpected citation: ${citation.source_id}`);
+  assert.deepEqual(
+    Object.fromEntries(
+      Object.keys(expected).map((field) => [field, citation[field]]),
+    ),
+    expected,
+  );
+}
+
+function mutatedValue(value) {
+  if (Array.isArray(value)) {
+    return value.slice(1);
+  }
+  if (value === null) {
+    return 'https://example.com/unapproved';
+  }
+  if (typeof value === 'boolean') {
+    return !value;
+  }
+  return `${value}-drift`;
 }
 
 function healthObservation(observation) {
@@ -289,6 +454,8 @@ test('keeps terminology and evidence boundaries mutation-sensitive', () => {
     ),
     body.replace('本站原创的教学假设', '生产事实'),
     body.replace('索引候选不证明性能', '索引保证性能'),
+    body.replace('本站原创的教学决定', 'PostgreSQL 官方结论'),
+    body.replace('不支持费用申报领域规则', '支持费用申报领域规则'),
   ]) {
     assert.throws(
       () => assertDataModelBoundaries(forbiddenMutation),
@@ -353,15 +520,15 @@ test('parses the exact Mermaid edge multiset independent of line order', () => {
 
   const lines = mermaid.split('\n');
   assert.doesNotThrow(() =>
-    assertMermaidSemantics(
-      mermaid.replace('-->|映射并澄清词义|', '-->'),
-    )
-  );
-  assert.doesNotThrow(() =>
     assertMermaidSemantics([lines[0], ...lines.slice(1).reverse()].join('\n'))
   );
   for (const invalidMutation of [
+    mermaid.replace('flowchart LR', 'flowchart TD'),
     mermaid.replace('-->', '==>'),
+    mermaid.replace(
+      '-.标注字段、键与索引.->',
+      '-->|标注字段、键与索引|',
+    ),
     `${mermaid}\n${lines[1]}`,
     lines.filter((_, index) => index !== 1).join('\n'),
   ]) {
@@ -389,15 +556,8 @@ test('governs exactly the five visible MOD-05 official sources', () => {
   ];
   assert.ok(review, 'MOD-05 ledger review must exist');
   assert.deepEqual(
-    review.citations.map(({source_id, citation_url}) => [
-      source_id,
-      citation_url,
-    ]),
-    [...expectedSourceGovernance]
-      .map(([sourceId, {canonical_locator}]) => [
-        sourceId,
-        canonical_locator,
-      ]),
+    review.citations.map(({source_id}) => source_id),
+    [...expectedCitations.keys()],
   );
   assert.deepEqual(
     review.citations
@@ -416,16 +576,38 @@ test('governs exactly the five visible MOD-05 official sources', () => {
   for (const source of governedSources) {
     assertSourceGovernance(source);
     assert.ok(document.body.includes(source.canonical_locator), source.id);
+    const expected = expectedSourceGovernance.get(source.id);
+    for (const field of Object.keys(expected)) {
+      assert.throws(
+        () => assertSourceGovernance({
+          ...source,
+          [field]: mutatedValue(source[field]),
+        }),
+        {name: 'AssertionError'},
+        `${source.id}.${field}`,
+      );
+    }
   }
-  const authorDerivedFalsePositive = {
-    ...governedSources.find(({id}) => id === 'src-postgresql-18-indexes'),
-    author_or_org: 'SAP',
-    license: 'LicenseRef-All-Rights-Reserved',
-    copyright_policy: 'facts-and-short-quotation',
-  };
-  assert.throws(
-    () => assertSourceGovernance(authorDerivedFalsePositive),
-    {name: 'AssertionError'},
+  for (const citation of review.citations) {
+    assertCitationGovernance(citation);
+    const expected = expectedCitations.get(citation.source_id);
+    for (const field of Object.keys(expected)) {
+      assert.throws(
+        () => assertCitationGovernance({
+          ...citation,
+          [field]: mutatedValue(citation[field]),
+        }),
+        {name: 'AssertionError'},
+        `${citation.source_id}.${field}`,
+      );
+    }
+  }
+  assert.equal(
+    document.body.trimEnd().endsWith(
+      `${sapTrademarkNotice}\n\n${ibmTrademarkNotice}`,
+    ),
+    true,
+    'SAP and IBM trademark notices must close the article',
   );
 
   for (const sourceId of expectedSourceGovernance.keys()) {

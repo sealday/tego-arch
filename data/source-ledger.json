@@ -17691,18 +17691,18 @@
         "method"
       ],
       "license": "LicenseRef-All-Rights-Reserved",
-      "license_scope": "Facts and the named SAP PowerDesigner documentation page only; prose, figures, tables, screenshots, product UI, trademarks, linked works, and third-party material excluded",
-      "license_evidence_url": "https://www.sap.com/about/legal/copyright.html",
-      "license_evidence_note": "SAP's copyright notice does not grant an open reuse license; Tego Arch uses links and original factual summaries only.",
+      "license_scope": "Facts and the named SAP PowerDesigner documentation page only; prose, figures, tables, screenshots, product UI, logos, linked works, and third-party material excluded; named trademarks require the article-end attribution and are not licensed for reuse",
+      "license_evidence_url": "https://www.sap.com/about/legal/trademark.html",
+      "license_evidence_note": "SAP trademark guidelines require an end-of-document attribution for named SAP marks; Tego Arch uses textual references, links, original factual summaries, and the required attribution only.",
       "license_family_id": "https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2bf926e1b1014a7c7c75eb751dd6e.html",
       "license_family_grouping": "identity",
       "family_grouping_evidence_url": null,
       "copyright_policy": "facts-and-short-quotation",
-      "usage_boundary": "Supports the named PowerDesigner abstraction or physical-model concept only; it is a product method, not a universal data-modeling standard.",
+      "usage_boundary": "Supports the named PowerDesigner abstraction or physical-model concept only; it is a product method, not a universal data-modeling standard, and the required trademark attribution does not imply SAP sponsorship or endorsement.",
       "link_policy": "stable",
       "expected_final_transport_locator": "https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2bf926e1b1014a7c7c75eb751dd6e.html",
       "expected_final_approved_at": "2026-07-31",
-      "expected_final_approval_note": "Reviewed G008 Batch 3 SAP documentation transport and all-rights-reserved boundary"
+      "expected_final_approval_note": "Reviewed G008 Batch 3 SAP documentation transport, all-rights-reserved boundary, and required trademark attribution"
     },
     {
       "id": "src-sap-powerdesigner-physical-model-16-7-sp10",
@@ -17725,18 +17725,18 @@
         "method"
       ],
       "license": "LicenseRef-All-Rights-Reserved",
-      "license_scope": "Facts and the named SAP PowerDesigner documentation page only; prose, figures, tables, screenshots, product UI, trademarks, linked works, and third-party material excluded",
-      "license_evidence_url": "https://www.sap.com/about/legal/copyright.html",
-      "license_evidence_note": "SAP's copyright notice does not grant an open reuse license; Tego Arch uses links and original factual summaries only.",
+      "license_scope": "Facts and the named SAP PowerDesigner documentation page only; prose, figures, tables, screenshots, product UI, logos, linked works, and third-party material excluded; named trademarks require the article-end attribution and are not licensed for reuse",
+      "license_evidence_url": "https://www.sap.com/about/legal/trademark.html",
+      "license_evidence_note": "SAP trademark guidelines require an end-of-document attribution for named SAP marks; Tego Arch uses textual references, links, original factual summaries, and the required attribution only.",
       "license_family_id": "https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2e0646e1b1014b15599cfaffb4f4a.html",
       "license_family_grouping": "identity",
       "family_grouping_evidence_url": null,
       "copyright_policy": "facts-and-short-quotation",
-      "usage_boundary": "Supports the named PowerDesigner abstraction or physical-model concept only; it is a product method, not a universal data-modeling standard.",
+      "usage_boundary": "Supports the named PowerDesigner abstraction or physical-model concept only; it is a product method, not a universal data-modeling standard, and the required trademark attribution does not imply SAP sponsorship or endorsement.",
       "link_policy": "stable",
       "expected_final_transport_locator": "https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2e0646e1b1014b15599cfaffb4f4a.html",
       "expected_final_approved_at": "2026-07-31",
-      "expected_final_approval_note": "Reviewed G008 Batch 3 SAP documentation transport and all-rights-reserved boundary"
+      "expected_final_approval_note": "Reviewed G008 Batch 3 SAP documentation transport, all-rights-reserved boundary, and required trademark attribution"
     },
     {
       "id": "src-ibm-ida-logical-data-model-9-1-1",
@@ -17759,23 +17759,23 @@
         "method"
       ],
       "license": "LicenseRef-All-Rights-Reserved",
-      "license_scope": "Facts and the named IBM documentation page only; prose, figures, tables, screenshots, product UI, trademarks, linked works, and third-party material excluded",
-      "license_evidence_url": "https://www.ibm.com/legal/terms",
-      "license_evidence_note": "IBM's website terms do not grant an open documentation reuse license; Tego Arch uses links and original factual summaries only.",
+      "license_scope": "Facts and the named IBM documentation page only; prose, figures, tables, screenshots, product UI, logos, linked works, and third-party material excluded; IBM and InfoSphere trademark references require attribution and are not licensed for reuse",
+      "license_evidence_url": "https://www.ibm.com/legal/copyright-trademark",
+      "license_evidence_note": "IBM copyright and trademark information identifies IBM and InfoSphere as IBM trademarks and requires attribution on the page or in the legal section; Tego Arch uses textual references, links, original factual summaries, and the required attribution only.",
       "license_family_id": "https://www.ibm.com/docs/en/ida/9.1.1?topic=modeling-logical-data-models",
       "license_family_grouping": "identity",
       "family_grouping_evidence_url": null,
       "copyright_policy": "facts-and-short-quotation",
-      "usage_boundary": "Supports DBMS-independent logical entities, identifiers, relationships, and constraints; it does not establish current DBMS behavior.",
+      "usage_boundary": "Supports DBMS-independent logical entities, identifiers, relationships, and constraints; it does not establish current DBMS behavior, and the trademark attribution does not imply IBM sponsorship or endorsement.",
       "link_policy": "stable",
       "expected_final_transport_locator": "https://www.ibm.com/docs/en/ida/9.1.1?topic=modeling-logical-data-models",
       "expected_final_approved_at": "2026-07-31",
-      "expected_final_approval_note": "Reviewed G008 Batch 3 IBM documentation transport and all-rights-reserved boundary"
+      "expected_final_approval_note": "Reviewed G008 Batch 3 IBM documentation transport, all-rights-reserved boundary, and required trademark attribution"
     },
     {
       "id": "src-postgresql-18-constraints",
-      "canonical_locator": "https://www.postgresql.org/docs/current/ddl-constraints.html",
-      "transport_locator": "https://www.postgresql.org/docs/current/ddl-constraints.html",
+      "canonical_locator": "https://www.postgresql.org/docs/18/ddl-constraints.html",
+      "transport_locator": "https://www.postgresql.org/docs/18/ddl-constraints.html",
       "query_insensitive": false,
       "locator_aliases": [],
       "tombstone": null,
@@ -17784,7 +17784,7 @@
       "published_at": "2025-09-25",
       "registered_at": "2026-07-31",
       "checked_at": "2026-07-31",
-      "version": "PostgreSQL 18 current documentation checked on 2026-07-31",
+      "version": "PostgreSQL 18 documentation checked on 2026-07-31",
       "source_kind": "official-docs",
       "tier": "primary",
       "allowed_evidence_roles": [
@@ -17793,23 +17793,23 @@
         "learning"
       ],
       "license": "PostgreSQL",
-      "license_scope": "The named PostgreSQL documentation page under the PostgreSQL License; trademarks, linked works, and separately licensed third-party material excluded",
+      "license_scope": "The named PostgreSQL 18 documentation page under the PostgreSQL License; trademarks, linked works, and separately licensed third-party material excluded",
       "license_evidence_url": "https://www.postgresql.org/about/licence/",
       "license_evidence_note": "The official PostgreSQL license page permits use, copy, modification, and distribution subject to its copyright and permission notice.",
-      "license_family_id": "https://www.postgresql.org/docs/current/",
+      "license_family_id": "https://www.postgresql.org/docs/18/",
       "license_family_grouping": "identity",
       "family_grouping_evidence_url": null,
       "copyright_policy": "adapt-with-attribution",
-      "usage_boundary": "Supports PostgreSQL 18 constraint or index behavior only; it does not define the conceptual/logical/physical three-layer taxonomy or prove application performance.",
+      "usage_boundary": "Supports PostgreSQL 18 constraint mechanism behavior only; it does not define the conceptual/logical/physical taxonomy, expense-domain rules, type choices, or application performance.",
       "link_policy": "stable",
-      "expected_final_transport_locator": "https://www.postgresql.org/docs/current/ddl-constraints.html",
+      "expected_final_transport_locator": "https://www.postgresql.org/docs/18/ddl-constraints.html",
       "expected_final_approved_at": "2026-07-31",
-      "expected_final_approval_note": "Reviewed G008 Batch 3 PostgreSQL 18 documentation transport and license boundary"
+      "expected_final_approval_note": "Reviewed G008 Batch 3 PostgreSQL 18 pinned documentation transport and license boundary"
     },
     {
       "id": "src-postgresql-18-indexes",
-      "canonical_locator": "https://www.postgresql.org/docs/current/indexes.html",
-      "transport_locator": "https://www.postgresql.org/docs/current/indexes.html",
+      "canonical_locator": "https://www.postgresql.org/docs/18/indexes.html",
+      "transport_locator": "https://www.postgresql.org/docs/18/indexes.html",
       "query_insensitive": false,
       "locator_aliases": [],
       "tombstone": null,
@@ -17818,7 +17818,7 @@
       "published_at": "2025-09-25",
       "registered_at": "2026-07-31",
       "checked_at": "2026-07-31",
-      "version": "PostgreSQL 18 current documentation checked on 2026-07-31",
+      "version": "PostgreSQL 18 documentation checked on 2026-07-31",
       "source_kind": "official-docs",
       "tier": "primary",
       "allowed_evidence_roles": [
@@ -17827,18 +17827,18 @@
         "learning"
       ],
       "license": "PostgreSQL",
-      "license_scope": "The named PostgreSQL documentation page under the PostgreSQL License; trademarks, linked works, and separately licensed third-party material excluded",
+      "license_scope": "The named PostgreSQL 18 documentation page under the PostgreSQL License; trademarks, linked works, and separately licensed third-party material excluded",
       "license_evidence_url": "https://www.postgresql.org/about/licence/",
       "license_evidence_note": "The official PostgreSQL license page permits use, copy, modification, and distribution subject to its copyright and permission notice.",
-      "license_family_id": "https://www.postgresql.org/docs/current/",
+      "license_family_id": "https://www.postgresql.org/docs/18/",
       "license_family_grouping": "identity",
       "family_grouping_evidence_url": null,
       "copyright_policy": "adapt-with-attribution",
-      "usage_boundary": "Supports PostgreSQL 18 constraint or index behavior only; it does not define the conceptual/logical/physical three-layer taxonomy or prove application performance.",
+      "usage_boundary": "Supports PostgreSQL 18 index mechanism behavior only; it does not define the conceptual/logical/physical taxonomy, expense-domain rules, type choices, or application performance.",
       "link_policy": "stable",
-      "expected_final_transport_locator": "https://www.postgresql.org/docs/current/indexes.html",
+      "expected_final_transport_locator": "https://www.postgresql.org/docs/18/indexes.html",
       "expected_final_approved_at": "2026-07-31",
-      "expected_final_approval_note": "Reviewed G008 Batch 3 PostgreSQL 18 documentation transport and license boundary"
+      "expected_final_approval_note": "Reviewed G008 Batch 3 PostgreSQL 18 pinned documentation transport and license boundary"
     }
   ],
   "documents": {
@@ -17895,7 +17895,7 @@
         },
         {
           "source_id": "src-postgresql-18-constraints",
-          "citation_url": "https://www.postgresql.org/docs/current/ddl-constraints.html",
+          "citation_url": "https://www.postgresql.org/docs/18/ddl-constraints.html",
           "roles": [
             "implementation"
           ],
@@ -17908,7 +17908,7 @@
         },
         {
           "source_id": "src-postgresql-18-indexes",
-          "citation_url": "https://www.postgresql.org/docs/current/indexes.html",
+          "citation_url": "https://www.postgresql.org/docs/18/indexes.html",
           "roles": [
             "implementation"
           ],

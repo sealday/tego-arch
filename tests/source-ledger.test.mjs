@@ -1177,12 +1177,12 @@ test('enforces license-specific copyright policies', () => {
 });
 
 test('accepts the governed PostgreSQL documentation license family', () => {
-  const canonical = 'https://www.postgresql.org/docs/current/ddl-constraints.html';
+  const canonical = 'https://www.postgresql.org/docs/18/ddl-constraints.html';
   const source = sourceFixture('src-postgresql-family', {
     canonical_locator: canonical,
     transport_locator: canonical,
     license: 'PostgreSQL',
-    license_family_id: 'https://www.postgresql.org/docs/current/',
+    license_family_id: 'https://www.postgresql.org/docs/18/',
     copyright_policy: 'adapt-with-attribution',
     expected_final_transport_locator: canonical,
   });
@@ -1190,14 +1190,67 @@ test('accepts the governed PostgreSQL documentation license family', () => {
   assert.deepEqual(parsed.errors, []);
 });
 
+test('rejects PostgreSQL documentation license-family near misses', () => {
+  const nearMisses = [
+    [
+      'https://www.postgresql.org/docs/ddl-constraints.html',
+      'https://www.postgresql.org/docs/',
+    ],
+    [
+      'https://www.postgresql.org/docs/current/ddl-constraints.html',
+      'https://www.postgresql.org/docs/current/',
+    ],
+    [
+      'https://www.postgresql.org/docs/19/ddl-constraints.html',
+      'https://www.postgresql.org/docs/19/',
+    ],
+    [
+      'https://postgresql.org/docs/18/ddl-constraints.html',
+      'https://postgresql.org/docs/18/',
+    ],
+    [
+      'https://docs.postgresql.org/docs/18/ddl-constraints.html',
+      'https://docs.postgresql.org/docs/18/',
+    ],
+    [
+      'https://www.postgresql.org/docs/18/ddl-constraints.html',
+      'https://www.postgresql.org/docs/18/',
+      'MIT',
+    ],
+  ];
+  for (const [index, [
+    canonical_locator,
+    license_family_id,
+    license = 'PostgreSQL',
+  ]] of nearMisses.entries()) {
+    const source = sourceFixture(
+      `src-postgresql-near-miss-${index}`,
+      {
+        canonical_locator,
+        transport_locator: canonical_locator,
+        license,
+        license_family_id,
+        copyright_policy: 'adapt-with-attribution',
+        expected_final_transport_locator: canonical_locator,
+      },
+    );
+    const parsed = parseSourceLedger(ledger({sources: [source], documents: {}}));
+    assert.match(
+      parsed.errors.join('\n'),
+      /license_family_id/u,
+      `${license} ${canonical_locator}`,
+    );
+  }
+});
+
 test('permits reviewed attributed PostgreSQL adapted text', () => {
-  const canonical = 'https://www.postgresql.org/docs/current/ddl-constraints.html';
+  const canonical = 'https://www.postgresql.org/docs/18/ddl-constraints.html';
   const source = sourceFixture('src-postgresql-adapted-text', {
     canonical_locator: canonical,
     transport_locator: canonical,
     allowed_evidence_roles: ['implementation'],
     license: 'PostgreSQL',
-    license_family_id: 'https://www.postgresql.org/docs/current/',
+    license_family_id: 'https://www.postgresql.org/docs/18/',
     copyright_policy: 'adapt-with-attribution',
     expected_final_transport_locator: canonical,
   });

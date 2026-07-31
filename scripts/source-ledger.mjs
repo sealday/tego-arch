@@ -125,9 +125,9 @@ function expectedLicenseFamily(source) {
     const url = new URL(source.canonical_locator);
     if (
       url.hostname.toLowerCase() === 'www.postgresql.org' &&
-      url.pathname.startsWith('/docs/current/')
+      url.pathname.startsWith('/docs/18/')
     ) {
-      return 'https://www.postgresql.org/docs/current/';
+      return 'https://www.postgresql.org/docs/18/';
     }
   } catch {
     // Locator-shape validation reports malformed canonical locators.

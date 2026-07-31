@@ -344,11 +344,11 @@ const requiredSources = new Map([
   ],
   [
     'src-postgresql-18-constraints',
-    'https://www.postgresql.org/docs/current/ddl-constraints.html',
+    'https://www.postgresql.org/docs/18/ddl-constraints.html',
   ],
   [
     'src-postgresql-18-indexes',
-    'https://www.postgresql.org/docs/current/indexes.html',
+    'https://www.postgresql.org/docs/18/indexes.html',
   ],
 ]);
 ```
@@ -380,12 +380,12 @@ Use the following per-family fields:
     "source_kind": "official-docs",
     "allowed_evidence_roles": ["definition", "learning", "method"],
     "license": "LicenseRef-All-Rights-Reserved",
-    "license_scope": "Facts and the named SAP PowerDesigner documentation page only; prose, figures, tables, screenshots, product UI, trademarks, linked works, and third-party material excluded",
-    "license_evidence_url": "https://www.sap.com/about/legal/copyright.html",
-    "license_evidence_note": "SAP's copyright notice does not grant an open reuse license; Tego Arch uses links and original factual summaries only.",
+    "license_scope": "Facts and the named SAP PowerDesigner documentation page only; prose, figures, tables, screenshots, product UI, logos, linked works, and third-party material excluded; named trademarks require the article-end attribution and are not licensed for reuse",
+    "license_evidence_url": "https://www.sap.com/about/legal/trademark.html",
+    "license_evidence_note": "SAP trademark guidelines require an end-of-document attribution for named SAP marks; Tego Arch uses textual references, links, original factual summaries, and the required attribution only.",
     "copyright_policy": "facts-and-short-quotation",
-    "expected_final_approval_note": "Reviewed G008 Batch 3 SAP documentation transport and all-rights-reserved boundary",
-    "usage_boundary": "Supports the named PowerDesigner abstraction or physical-model concept only; it is a product method, not a universal data-modeling standard."
+    "expected_final_approval_note": "Reviewed G008 Batch 3 SAP documentation transport, all-rights-reserved boundary, and required trademark attribution",
+    "usage_boundary": "Supports the named PowerDesigner abstraction or physical-model concept only; it is a product method, not a universal data-modeling standard, and the required trademark attribution does not imply SAP sponsorship or endorsement."
   },
   "ibm": {
     "author_or_org": "IBM",
@@ -393,26 +393,26 @@ Use the following per-family fields:
     "source_kind": "official-docs",
     "allowed_evidence_roles": ["definition", "learning", "method"],
     "license": "LicenseRef-All-Rights-Reserved",
-    "license_scope": "Facts and the named IBM documentation page only; prose, figures, tables, screenshots, product UI, trademarks, linked works, and third-party material excluded",
-    "license_evidence_url": "https://www.ibm.com/legal/terms",
-    "license_evidence_note": "IBM's website terms do not grant an open documentation reuse license; Tego Arch uses links and original factual summaries only.",
+    "license_scope": "Facts and the named IBM documentation page only; prose, figures, tables, screenshots, product UI, logos, linked works, and third-party material excluded; IBM and InfoSphere trademark references require attribution and are not licensed for reuse",
+    "license_evidence_url": "https://www.ibm.com/legal/copyright-trademark",
+    "license_evidence_note": "IBM copyright and trademark information identifies IBM and InfoSphere as IBM trademarks and requires attribution on the page or in the legal section; Tego Arch uses textual references, links, original factual summaries, and the required attribution only.",
     "copyright_policy": "facts-and-short-quotation",
-    "expected_final_approval_note": "Reviewed G008 Batch 3 IBM documentation transport and all-rights-reserved boundary",
-    "usage_boundary": "Supports DBMS-independent logical entities, identifiers, relationships, and constraints; it does not establish current DBMS behavior."
+    "expected_final_approval_note": "Reviewed G008 Batch 3 IBM documentation transport, all-rights-reserved boundary, and required trademark attribution",
+    "usage_boundary": "Supports DBMS-independent logical entities, identifiers, relationships, and constraints; it does not establish current DBMS behavior, and the trademark attribution does not imply IBM sponsorship or endorsement."
   },
   "postgresql": {
     "author_or_org": "PostgreSQL Global Development Group",
-    "version": "PostgreSQL 18 current documentation checked on 2026-07-31",
+    "version": "PostgreSQL 18 documentation checked on 2026-07-31",
     "source_kind": "official-docs",
     "allowed_evidence_roles": ["definition", "implementation", "learning"],
     "license": "PostgreSQL",
-    "license_scope": "The named PostgreSQL documentation page under the PostgreSQL License; trademarks, linked works, and separately licensed third-party material excluded",
+    "license_scope": "The named PostgreSQL 18 documentation page under the PostgreSQL License; trademarks, linked works, and separately licensed third-party material excluded",
     "license_evidence_url": "https://www.postgresql.org/about/licence/",
     "license_evidence_note": "The official PostgreSQL license page permits use, copy, modification, and distribution subject to its copyright and permission notice.",
     "copyright_policy": "adapt-with-attribution",
-    "expected_final_approval_note": "Reviewed G008 Batch 3 PostgreSQL 18 documentation transport and license boundary",
-    "license_family_id": "https://www.postgresql.org/docs/current/",
-    "usage_boundary": "Supports PostgreSQL 18 constraint or index behavior only; it does not define the conceptual/logical/physical three-layer taxonomy or prove application performance."
+    "expected_final_approval_note": "Reviewed G008 Batch 3 PostgreSQL 18 pinned documentation transport and license boundary",
+    "license_family_id": "https://www.postgresql.org/docs/18/",
+    "usage_boundary": "Set per source: constraint or index mechanism behavior only; neither source defines the conceptual/logical/physical taxonomy, expense-domain rules, type choices, or application performance."
   }
 }
 ```
@@ -426,8 +426,8 @@ Use these exact titles and identity fields:
 | `src-sap-powerdesigner-data-modeling-16-7-sp10` | `Getting Started with Data Modeling — SAP PowerDesigner 16.7 SP10` | `https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2bf926e1b1014a7c7c75eb751dd6e.html` | `null` |
 | `src-sap-powerdesigner-physical-model-16-7-sp10` | `Physical Data Models — SAP PowerDesigner 16.7 SP10` | `https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2e0646e1b1014b15599cfaffb4f4a.html` | `null` |
 | `src-ibm-ida-logical-data-model-9-1-1` | `Logical Data Models — IBM InfoSphere Data Architect 9.1.1` | `https://www.ibm.com/docs/en/ida/9.1.1?topic=modeling-logical-data-models` | `null` |
-| `src-postgresql-18-constraints` | `PostgreSQL 18 — Constraints` | `https://www.postgresql.org/docs/current/` | `2025-09-25` |
-| `src-postgresql-18-indexes` | `PostgreSQL 18 — Indexes` | `https://www.postgresql.org/docs/current/` | `2025-09-25` |
+| `src-postgresql-18-constraints` | `PostgreSQL 18 — Constraints` | `https://www.postgresql.org/docs/18/` | `2025-09-25` |
+| `src-postgresql-18-indexes` | `PostgreSQL 18 — Indexes` | `https://www.postgresql.org/docs/18/` | `2025-09-25` |
 
 PostgreSQL 18 GA was released on 2025-09-25. Do not use a documentation crawl date as `published_at`.
 
@@ -480,7 +480,7 @@ Add `data/source-ledger.json.documents["content/modeling/mod-05-conceptual-logic
     },
     {
       "source_id": "src-postgresql-18-constraints",
-      "citation_url": "https://www.postgresql.org/docs/current/ddl-constraints.html",
+      "citation_url": "https://www.postgresql.org/docs/18/ddl-constraints.html",
       "roles": ["implementation"],
       "manifest_primary": true,
       "usage_mode": "facts-summary",
@@ -491,7 +491,7 @@ Add `data/source-ledger.json.documents["content/modeling/mod-05-conceptual-logic
     },
     {
       "source_id": "src-postgresql-18-indexes",
-      "citation_url": "https://www.postgresql.org/docs/current/indexes.html",
+      "citation_url": "https://www.postgresql.org/docs/18/indexes.html",
       "roles": ["implementation"],
       "manifest_primary": false,
       "usage_mode": "facts-summary",
@@ -504,7 +504,12 @@ Add `data/source-ledger.json.documents["content/modeling/mod-05-conceptual-logic
 }
 ```
 
-The article's `## 来源` section must visibly link all five exact citation URLs.
+The article's `## 来源` section must visibly link all five exact citation URLs. The article end must also contain these exact notices:
+
+- `SAP 和 SAP PowerDesigner 是 SAP SE 或其关联公司在德国及其他国家/地区的商标或注册商标。`
+- `IBM 和 InfoSphere 是 International Business Machines Corporation 在美国和/或其他国家/地区的商标或注册商标。`
+
+The PostgreSQL citations support mechanism behavior only. Expense-claim constraints, type choices, and index candidates must remain visibly labeled as original teaching decisions.
 
 - [ ] **Step 8: Add visible reciprocal navigation**
 

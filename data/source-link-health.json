@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-07-31T03:38:30.783Z",
+  "generated_at": "2026-07-31T05:55:52.000Z",
   "results": [
     {
       "transport_locator": "https://a2a-protocol.org/latest/",
@@ -37227,62 +37227,62 @@
       "review_status": "healthy"
     },
     {
-      "transport_locator": "https://www.postgresql.org/docs/current/ddl-constraints.html",
+      "transport_locator": "https://www.postgresql.org/docs/18/ddl-constraints.html",
       "source_ids": [
         "src-postgresql-18-constraints"
       ],
       "last_attempt": {
-        "at": "2026-07-31T03:38:30.783Z",
+        "at": "2026-07-31T05:55:52.000Z",
         "outcome": "healthy",
-        "final_transport_locator": "https://www.postgresql.org/docs/current/ddl-constraints.html",
-        "http_status": 206,
+        "final_transport_locator": "https://www.postgresql.org/docs/18/ddl-constraints.html",
+        "http_status": 200,
         "login_wall_detected": false,
         "redirects": []
       },
       "last_success": {
-        "at": "2026-07-31T03:38:30.783Z",
+        "at": "2026-07-31T05:55:52.000Z",
         "outcome": "healthy",
-        "final_transport_locator": "https://www.postgresql.org/docs/current/ddl-constraints.html",
-        "http_status": 206,
+        "final_transport_locator": "https://www.postgresql.org/docs/18/ddl-constraints.html",
+        "http_status": 200,
         "login_wall_detected": false
       },
       "attempt_history": [
         {
-          "at": "2026-07-31T03:38:30.783Z",
+          "at": "2026-07-31T05:55:52.000Z",
           "outcome": "healthy",
-          "final_transport_locator": "https://www.postgresql.org/docs/current/ddl-constraints.html",
-          "http_status": 206,
+          "final_transport_locator": "https://www.postgresql.org/docs/18/ddl-constraints.html",
+          "http_status": 200,
           "login_wall_detected": false
         }
       ],
       "review_status": "healthy"
     },
     {
-      "transport_locator": "https://www.postgresql.org/docs/current/indexes.html",
+      "transport_locator": "https://www.postgresql.org/docs/18/indexes.html",
       "source_ids": [
         "src-postgresql-18-indexes"
       ],
       "last_attempt": {
-        "at": "2026-07-31T03:38:30.783Z",
+        "at": "2026-07-31T05:55:52.000Z",
         "outcome": "healthy",
-        "final_transport_locator": "https://www.postgresql.org/docs/current/indexes.html",
-        "http_status": 206,
+        "final_transport_locator": "https://www.postgresql.org/docs/18/indexes.html",
+        "http_status": 200,
         "login_wall_detected": false,
         "redirects": []
       },
       "last_success": {
-        "at": "2026-07-31T03:38:30.783Z",
+        "at": "2026-07-31T05:55:52.000Z",
         "outcome": "healthy",
-        "final_transport_locator": "https://www.postgresql.org/docs/current/indexes.html",
-        "http_status": 206,
+        "final_transport_locator": "https://www.postgresql.org/docs/18/indexes.html",
+        "http_status": 200,
         "login_wall_detected": false
       },
       "attempt_history": [
         {
-          "at": "2026-07-31T03:38:30.783Z",
+          "at": "2026-07-31T05:55:52.000Z",
           "outcome": "healthy",
-          "final_transport_locator": "https://www.postgresql.org/docs/current/indexes.html",
-          "http_status": 206,
+          "final_transport_locator": "https://www.postgresql.org/docs/18/indexes.html",
+          "http_status": 200,
           "login_wall_detected": false
         }
       ],
