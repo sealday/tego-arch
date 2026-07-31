@@ -254,7 +254,7 @@ function fencedBlock(body, language) {
   return matches[0][1];
 }
 
-function parseMermaidEdges(source) {
+function parseMermaidGraph(source) {
   const [header, ...edgeLines] = source.split('\n');
   assert.equal(header, 'flowchart LR');
   const nodeLabels = new Map();
@@ -295,31 +295,60 @@ function parseMermaidEdges(source) {
     const connectorLabel = solidLabel ?? dottedLabel ?? '';
     edges.push(
       `${connectorKind}|${connectorLabel}|` +
-      `${nodeLabels.get(fromId)} -> ${nodeLabels.get(toId)}`,
+      `${fromId} -> ${toId}`,
     );
   }
   assert.equal(new Set(edges).size, edges.length, 'duplicate Mermaid edge');
-  return edges.sort();
+  return {
+    nodes: Object.fromEntries([...nodeLabels.entries()].sort()),
+    edges,
+  };
 }
 
 function assertMermaidSemantics(source) {
+  const expectedNodes = {
+    A: '本站教学假设',
+    C: '业务概念<br/>员工 · 费用申报 · 审批 · 付款',
+    L: '逻辑实体<br/>Employee · ExpenseClaim · Approval · PaymentInstruction',
+    P: 'PostgreSQL 18 物理决定<br/>PK / FK / UNIQUE / CHECK / NOT NULL<br/>类型选择 · 索引候选',
+    R: '可移植关系表<br/>employee · expense_claim · approval · payment_instruction',
+    U: '未知项',
+    V: '验证缺口<br/>迁移窗口 · 回填与回滚<br/>查询分布 · 写入竞争 · 完整性与运行测量',
+  };
   const expectedEdges = [
-    'solid|映射并澄清词义|业务概念 -> 逻辑实体',
-    'solid|加入身份、关系与约束|逻辑实体 -> 可移植关系模式',
-    'solid|选择 PostgreSQL 18|可移植关系模式 -> 物理实现切片',
-    'solid|需要迁移与运行证据|物理实现切片 -> 验证缺口',
-    'dotted|标注字段、键与索引|本站教学假设 -> 逻辑实体',
-    'dotted|标注表与类型候选|本站教学假设 -> 可移植关系模式',
-    'dotted|保留查询与容量事实|未知项 -> 物理实现切片',
-    'dotted|保留性能与迁移结果|未知项 -> 验证缺口',
+    'solid|映射业务词义|C -> L',
+    'solid|映射为关系结构|L -> R',
+    'solid|加入 PostgreSQL 18 决定|R -> P',
+    'solid|保留迁移与运行验证|P -> V',
+    'dotted|标注字段、键与约束|A -> L',
+    'dotted|标注类型与索引候选|A -> P',
+    'dotted|保留查询、写入与完整性事实|U -> R',
+    'dotted|保留性能与迁移结果|U -> V',
   ].sort();
-  assert.deepEqual(parseMermaidEdges(source), expectedEdges);
+  const graph = parseMermaidGraph(source);
+  assert.deepEqual(graph.nodes, expectedNodes);
+  assert.deepEqual(new Set(graph.edges), new Set(expectedEdges));
 }
 
 function assertMappingWording(source) {
-  assert.match(source, /映射并澄清词义/u);
+  assert.match(source, /映射业务词义/u);
   assert.doesNotMatch(source, /先执行/u);
   assert.match(source, /箭头表示层次间映射或新增决定，不表示运行时序/u);
+}
+
+function assertRequiredInputs(source) {
+  const inputs = section(source, '建模目标与输入');
+  assert.match(inputs, /身份、生命周期、时间与金额语义/u);
+  assert.match(inputs, /数据保留、审计、权限与迁移约束/u);
+  assert.match(inputs, /可验证的查询、写入和完整性要求/u);
+  assert.match(inputs, /本站原创的教学假设/u);
+}
+
+function assertRequiredFailures(source) {
+  const failures = section(source, '常见失败');
+  assert.match(failures, /把逻辑模型画成流程[^。\n]*运行顺序/u);
+  assert.match(failures, /从 C4 或 arc42[^。\n]*生产 schema/u);
+  assert.match(failures, /忽略金额、时间、身份、历史和迁移语义/u);
 }
 
 function assertDataModelBoundaries(source) {
@@ -399,6 +428,8 @@ function assertStableSourceHealth(sourceId, result) {
   assert.equal(result.transport_locator, expected.canonical_locator);
   assert.equal(result.review_status, 'healthy');
   assert.equal(result.last_attempt?.outcome, 'healthy');
+  assert.equal(result.last_attempt?.login_wall_detected, false);
+  assert.equal(result.last_success?.login_wall_detected, false);
   assert.ok(
     Number.isInteger(result.last_attempt?.http_status) &&
       result.last_attempt.http_status >= 200 &&
@@ -449,6 +480,8 @@ test('publishes MOD-05 as one progressive expense-claim data model', () => {
 test('keeps terminology and evidence boundaries mutation-sensitive', () => {
   const body = requiredDocument('MOD-05').body;
   assertDataModelBoundaries(body);
+  assertRequiredInputs(body);
+  assertRequiredFailures(body);
 
   for (const forbiddenMutation of [
     body.replace(
@@ -463,6 +496,28 @@ test('keeps terminology and evidence boundaries mutation-sensitive', () => {
     assert.throws(
       () => assertDataModelBoundaries(forbiddenMutation),
       {name: 'AssertionError'},
+    );
+  }
+  for (const missingInput of [
+    '身份、生命周期、时间与金额语义',
+    '数据保留、审计、权限与迁移约束',
+    '可验证的查询、写入和完整性要求',
+  ]) {
+    assert.throws(
+      () => assertRequiredInputs(body.replace(missingInput, '未定义输入')),
+      {name: 'AssertionError'},
+      missingInput,
+    );
+  }
+  for (const missingFailure of [
+    '把逻辑模型画成流程',
+    '从 C4 或 arc42',
+    '忽略金额、时间、身份、历史和迁移语义',
+  ]) {
+    assert.throws(
+      () => assertRequiredFailures(body.replace(missingFailure, '忽略失败模式')),
+      {name: 'AssertionError'},
+      missingFailure,
     );
   }
 });
@@ -529,8 +584,18 @@ test('parses the exact Mermaid edge multiset independent of line order', () => {
     mermaid.replace('flowchart LR', 'flowchart TD'),
     mermaid.replace('-->', '==>'),
     mermaid.replace(
-      '-.标注字段、键与索引.->',
-      '-->|标注字段、键与索引|',
+      '-.标注字段、键与约束.->',
+      '-->|标注字段、键与约束|',
+    ),
+    mermaid.replace('员工 · 费用申报 · 审批 · 付款', '费用申报'),
+    mermaid.replace('PaymentInstruction', 'Payment'),
+    mermaid.replace('payment_instruction', 'payment'),
+    mermaid.replace('PK / FK / UNIQUE / CHECK / NOT NULL', 'PK / FK'),
+    mermaid.replace('迁移窗口 · 回填与回滚', '待验证'),
+    mermaid.replace('映射为关系结构', '随后创建表'),
+    mermaid.replace(
+      'A -.标注类型与索引候选.-> P',
+      'A -.标注类型与索引候选.-> R',
     ),
     `${mermaid}\n${lines[1]}`,
     lines.filter((_, index) => index !== 1).join('\n'),
@@ -541,7 +606,7 @@ test('parses the exact Mermaid edge multiset independent of line order', () => {
     );
   }
   assert.throws(
-    () => assertMappingWording(body.replace('映射并澄清词义', '先执行')),
+    () => assertMappingWording(body.replace('映射业务词义', '先执行')),
     {name: 'AssertionError'},
   );
 });
@@ -681,11 +746,16 @@ test('rejects policy-incompatible stable-source health mutations', () => {
   finalLocatorDrift.last_success.final_transport_locator =
     'https://example.com/drift';
 
+  const loginWall = structuredClone(stableResult);
+  loginWall.last_attempt.login_wall_detected = true;
+  loginWall.last_success.login_wall_detected = true;
+
   for (const invalidResult of [
     authRequired,
     extraAssociation,
     redirectOnly,
     finalLocatorDrift,
+    loginWall,
   ]) {
     assert.throws(
       () => assertStableSourceHealth(sourceId, invalidResult),

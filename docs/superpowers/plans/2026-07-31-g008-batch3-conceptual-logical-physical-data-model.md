@@ -256,12 +256,14 @@ related_questions: []
 Write the nine required H2 sections in the exact schema order. The prose must implement these concrete statements:
 
 - MOD-02 supplies only boundary and vocabulary; the MOD-05 schema is an original teaching assumption.
+- Inputs cover identity, lifecycle, time, and amount semantics; retention, audit, permissions, and migration constraints; and verifiable query, write, and integrity requirements.
 - Conceptual model contains employee, expense claim, approval, and payment concepts without tables or keys.
 - Logical model adds stable identity, attributes, relationship cardinality, currency/amount semantics, uniqueness, and business constraints without selecting a DBMS.
 - Portable relational schema maps to `employee`, `expense_claim`, `approval`, and `payment_instruction`, but is not a universally accepted or validated PDM.
 - PostgreSQL 18 slice discusses PK, FK, UNIQUE, CHECK, NOT NULL, type choice, and index candidates without complete DDL.
 - Index candidates do not prove performance; query distribution, cardinality, write cost, and measurements remain required.
 - Temporal Event History is not the business ledger or relational schema.
+- Common failures include drawing the logical model as runtime flow, inferring production schema from C4 or arc42, and ignoring amount, time, identity, history, or migration semantics.
 - MOD-06 is unpublished and receives ER/cardinality/history detail later without a link.
 
 - [ ] **Step 4: Add the single mapping table and single Mermaid**
@@ -281,17 +283,17 @@ Inside `## 模型产物`, add exactly this table header and four rows:
 </div>
 ```
 
-Add exactly this semantic Mermaid topology, allowing wording polish but not edge changes:
+Add exactly this design-aligned semantic Mermaid topology; node inventory, connector kind, edge label, and endpoint identity are fixed:
 
 ```mermaid
 flowchart LR
-  C["业务概念"] -->|映射并澄清词义| L["逻辑实体"]
-  L -->|加入身份、关系与约束| R["可移植关系模式"]
-  R -->|选择 PostgreSQL 18| P["物理实现切片"]
-  P -->|需要迁移与运行证据| V["验证缺口"]
-  A["本站教学假设"] -.标注字段、键与索引.-> L
-  A -.标注表与类型候选.-> R
-  U["未知项"] -.保留查询与容量事实.-> P
+  C["业务概念<br/>员工 · 费用申报 · 审批 · 付款"] -->|映射业务词义| L["逻辑实体<br/>Employee · ExpenseClaim · Approval · PaymentInstruction"]
+  L -->|映射为关系结构| R["可移植关系表<br/>employee · expense_claim · approval · payment_instruction"]
+  R -->|加入 PostgreSQL 18 决定| P["PostgreSQL 18 物理决定<br/>PK / FK / UNIQUE / CHECK / NOT NULL<br/>类型选择 · 索引候选"]
+  P -->|保留迁移与运行验证| V["验证缺口<br/>迁移窗口 · 回填与回滚<br/>查询分布 · 写入竞争 · 完整性与运行测量"]
+  A["本站教学假设"] -.标注字段、键与约束.-> L
+  A -.标注类型与索引候选.-> P
+  U["未知项"] -.保留查询、写入与完整性事实.-> R
   U -.保留性能与迁移结果.-> V
 ```
 
@@ -621,18 +623,18 @@ test('renders one exact four-layer mapping table', () => {
 
 - [ ] **Step 2: Add a strict Mermaid semantic parser and edge contract**
 
-Use a parser that accepts only legal `-->` or labeled dotted connectors, resolves all node labels, compares a sorted edge multiset, rejects duplicate edges, and ignores source-line order. Assert this exact semantic inventory:
+Use a parser that accepts only legal `-->` or labeled dotted connectors, resolves and compares the exact node-label inventory, compares a sorted edge multiset including connector kind and edge label, rejects duplicate edges, and ignores source-line order. Assert this exact edge inventory:
 
 ```js
 const expectedEdges = [
-  '业务概念 -> 逻辑实体',
-  '逻辑实体 -> 可移植关系模式',
-  '可移植关系模式 -> 物理实现切片',
-  '物理实现切片 -> 验证缺口',
-  '本站教学假设 -> 逻辑实体',
-  '本站教学假设 -> 可移植关系模式',
-  '未知项 -> 物理实现切片',
-  '未知项 -> 验证缺口',
+  'solid|映射业务词义|C -> L',
+  'solid|映射为关系结构|L -> R',
+  'solid|加入 PostgreSQL 18 决定|R -> P',
+  'solid|保留迁移与运行验证|P -> V',
+  'dotted|标注字段、键与约束|A -> L',
+  'dotted|标注类型与索引候选|A -> P',
+  'dotted|保留查询、写入与完整性事实|U -> R',
+  'dotted|保留性能与迁移结果|U -> V',
 ].sort();
 ```
 
@@ -642,7 +644,8 @@ The test must prove:
 - replacing one connector with `==>` fails;
 - duplicating one edge fails;
 - deleting one edge fails;
-- changing `映射并澄清词义` to a runtime verb such as `先执行` fails a separate wording assertion.
+- changing a node inventory item, connector kind, edge label, or endpoint fails;
+- changing `映射业务词义` to a runtime verb such as `先执行` fails a separate wording assertion.
 
 - [ ] **Step 3: Add terminology and non-overclaim mutation tests**
 

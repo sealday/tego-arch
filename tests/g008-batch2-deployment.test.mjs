@@ -76,27 +76,35 @@ function currentReleaseBaseline(source) {
   return baselines[0];
 }
 
-function g008Batch2BaselineSegment(source) {
+function g008Batch2HistoricalSegment(source) {
   const baseline = currentReleaseBaseline(source);
-  const starts = [...baseline.matchAll(
-    /(?:2026-07-30 )?G008 Batch 2 已完成 MOD-04/gu,
-  )];
+  const starts = [...baseline.matchAll(/此前 G008 Batch 2 历史完成基线为：/gu)];
   const ends = [...baseline.matchAll(/此前 G008 Batch 1/gu)];
-  assert.equal(starts.length, 1, 'current baseline must contain one G008 Batch 2 segment');
+  assert.equal(starts.length, 1, 'baseline must contain one G008 Batch 2 history marker');
   assert.equal(ends.length, 1, 'current baseline must contain one G008 Batch 1 history marker');
   assert.ok(
     starts[0].index < ends[0].index,
-    'G008 Batch 2 segment must precede G008 Batch 1 history',
+    'G008 Batch 2 history must precede G008 Batch 1 history',
   );
   return baseline.slice(starts[0].index, ends[0].index);
 }
 
-function assertCurrentReleaseState(source) {
-  const batch2 = g008Batch2BaselineSegment(source);
+function assertBatch2HistoricalClosure(source) {
+  const batch2 = g008Batch2HistoricalSegment(source);
+  assert.match(batch2, new RegExp(expectedStageASha, 'u'));
+  assert.match(batch2, new RegExp(expectedPagesRunId, 'u'));
+  assert.match(batch2, /Stage A 为 42 个已完成主题/u);
+  assert.match(batch2, /Stage B closure 投影为 43 个已完成主题/u);
   assert.match(batch2, /G008 仍在进行中/u);
   assert.match(batch2, /下一项为 MOD-05/u);
   assert.doesNotMatch(batch2, /G008 已完成/u);
   assert.doesNotMatch(batch2, /最近完成 `?G008`?/u);
+}
+
+function assertLiveReleaseState(source) {
+  const baseline = currentReleaseBaseline(source);
+  assert.match(baseline, /^-\s\*\*当前发布基线：\*\* 2026-07-31 G008 Batch 3 已完成 MOD-05/u);
+  assert.match(baseline, /G008 仍在进行中，下一项为 MOD-06/u);
 }
 
 test('records exact successful G008 Batch 2 deployment evidence', () => {
@@ -106,7 +114,7 @@ test('records exact successful G008 Batch 2 deployment evidence', () => {
   );
 });
 
-test('rejects stale duplicate incomplete or terminal closure evidence', () => {
+test('rejects stale duplicate incomplete or rewritten historical closure evidence', () => {
   const batch1Review = review
     .replaceAll(expectedStageASha, 'f3d0576a3d04ff1e9ecf7511da1c6c6e6f30aa72')
     .replaceAll(expectedPagesRunId, '30529090957');
@@ -136,32 +144,24 @@ test('rejects stale duplicate incomplete or terminal closure evidence', () => {
     );
   }
 
-  for (const terminal of [
-    'G008 已完成，下一项为 MOD-05',
-    '最近完成 `G008`，下一项为 MOD-05',
-  ]) {
-    assert.throws(
-      () => assertCurrentReleaseState(
-        backlog.replace('G008 仍在进行中，下一项为 MOD-05', terminal),
-      ),
-      {name: 'AssertionError'},
-    );
-  }
   assert.throws(
-    () => assertCurrentReleaseState(
+    () => assertBatch2HistoricalClosure(
+      backlog.replace(
+        'Stage B closure 投影为 43 个已完成主题，持久故事进度仍为 `7 / 20`，G008 仍在进行中，下一项为 MOD-05。',
+        'Stage B closure 投影为 44 个已完成主题，持久故事进度仍为 `7 / 20`，G008 仍在进行中，下一项为 MOD-06。',
+      ),
+    ),
+    {name: 'AssertionError'},
+  );
+  assert.throws(
+    () => assertBatch2HistoricalClosure(
       `${backlog}\n- **当前发布基线：** duplicate\n`,
     ),
     {name: 'AssertionError'},
   );
-
-  const futureBacklog = backlog.replace(
-    '- **当前发布基线：** ',
-    '- **当前发布基线：** 2026-08-01 G008 已完成，当前持久故事为 G009。此前 G008 Batch 2 历史完成基线为：',
-  );
-  assert.doesNotThrow(() => assertCurrentReleaseState(futureBacklog));
 });
 
-test('closes exactly MOD-04 without closing G008', () => {
+test('preserves Batch 2 closure history separately from the live projection', () => {
   const {sha, run} = parseEvidence(review);
   const row = backlog
     .split(/\r?\n/u)
@@ -177,6 +177,7 @@ test('closes exactly MOD-04 without closing G008', () => {
     value: 'complete',
     source: 'docs/content-backlog.md',
   });
+  assert.equal(topicsById.get('MOD-05')?.status.value, 'complete');
   for (const id of ['MOD-06', 'MOD-07', 'MOD-08', 'MOD-09', 'MOD-10', 'MOD-11', 'MOD-12', 'MOD-13']) {
     assert.equal(topicsById.get(id)?.status.value, 'pending', id);
   }
@@ -188,7 +189,8 @@ test('closes exactly MOD-04 without closing G008', () => {
     total: 20,
     current: 'G008',
   });
-  assertCurrentReleaseState(backlog);
+  assertBatch2HistoricalClosure(backlog);
+  assertLiveReleaseState(backlog);
   assert.match(backlog, /当前持久故事：\*\* `G008`/u);
   assert.doesNotMatch(backlog, /最近完成 `G008`/u);
 });
