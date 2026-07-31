@@ -795,7 +795,8 @@
         "PR-03",
         "PR-04",
         "PR-11",
-        "MOD-05"
+        "MOD-05",
+        "MOD-06"
       ],
       "primary_sources": [
         "https://www.informit.com/store/applying-domain-driven-design-and-patterns-with-examples-9780321268204"
@@ -1526,27 +1527,6 @@
   ],
   "modeling": [
     {
-      "id": "MOD-06",
-      "type": "modeling",
-      "title": "ER 模型与关系边界",
-      "slug": "/modeling/mod-06",
-      "priority": "P0",
-      "status": {
-        "scope": "backlog-projection",
-        "value": "pending",
-        "source": "docs/content-backlog.md"
-      },
-      "dependencies": [],
-      "adjacent_topics": [],
-      "primary_sources": [],
-      "related_cases": [],
-      "related_questions": [],
-      "reviewed_at": null,
-      "review_policy": null,
-      "published": false,
-      "pattern_group": null
-    },
-    {
       "id": "MOD-07",
       "type": "modeling",
       "title": "UML 选图指南",
@@ -1583,6 +1563,7 @@
       ],
       "adjacent_topics": [
         "MOD-02",
+        "MOD-06",
         "QA-01",
         "MTH-03"
       ],
@@ -1648,6 +1629,7 @@
       ],
       "adjacent_topics": [
         "MOD-04",
+        "MOD-06",
         "PR-13"
       ],
       "primary_sources": [
@@ -1693,6 +1675,40 @@
       "related_questions": [],
       "reviewed_at": "2026-07-30",
       "review_policy": null,
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
+    },
+    {
+      "id": "MOD-06",
+      "type": "modeling",
+      "title": "ER 模型与关系边界",
+      "slug": "/modeling/mod-06",
+      "priority": "P0",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "pending",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "MOD-05"
+      ],
+      "adjacent_topics": [
+        "MOD-01",
+        "MOD-05",
+        "PR-13"
+      ],
+      "primary_sources": [
+        "https://github.com/mermaid-js/mermaid/blob/mermaid%4011.16.0/packages/mermaid/src/docs/syntax/entityRelationshipDiagram.md",
+        "https://www.ibm.com/docs/en/ida/9.1.1?topic=modeling-logical-data-models",
+        "https://www.postgresql.org/docs/18/ddl-constraints.html"
+      ],
+      "related_cases": [
+        "/cases/temporal-saga-durable-execution"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-07-31",
+      "review_policy": "quarterly-version-sensitive",
       "published": true,
       "pattern_group": null,
       "presentation": {}

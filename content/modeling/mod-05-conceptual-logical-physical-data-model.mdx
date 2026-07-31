@@ -30,6 +30,7 @@ depends_on:
   - MOD-01
 adjacent_topics:
   - MOD-04
+  - MOD-06
   - PR-13
 related_cases:
   - /cases/temporal-saga-durable-execution
@@ -116,7 +117,7 @@ flowchart LR
 
 [MOD-04 arc42 文档骨架](/modeling/mod-04)可以把本页的层次、假设与验证缺口纳入架构证据；[Persistence Ignorance](/principles/pr-13)帮助区分领域含义与关系、PostgreSQL 实现决定。[Temporal Saga 与持久执行案例](/cases/temporal-saga-durable-execution)中的 Temporal Event History 是控制面恢复记录，不是业务账本，也不是本文的关系模式；业务身份和关系约束仍需单独建模。
 
-MOD-06 尚未发布；未来由它继续承接 ER、基数与历史细节，本文不创建尚未有效的链接。
+[MOD-06 ER 模型与关系边界](/modeling/mod-06)进一步深化实体身份、关系基数、图外约束和带有效期的关系历史。
 
 ## 完整演练
 

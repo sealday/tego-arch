@@ -89,7 +89,11 @@ test('publishes MOD-06 with the approved scope and metadata', () => {
   assert.equal(document.metadata.status, 'reviewed');
   assert.equal(document.metadata.priority, 'P0');
   assert.deepEqual(document.metadata.depends_on, ['MOD-05']);
-  assert.deepEqual(document.metadata.adjacent_topics, ['MOD-01', 'PR-13']);
+  assert.deepEqual(document.metadata.adjacent_topics, [
+    'MOD-01',
+    'MOD-05',
+    'PR-13',
+  ]);
   assert.deepEqual(document.metadata.related_cases, [
     '/cases/temporal-saga-durable-execution',
   ]);
@@ -172,4 +176,73 @@ test('defines effective-dated relationship history without claiming bitemporal s
   }
   assert.match(body, /不(?:是|包含)[^。\n]*双时态/u);
   assert.match(body, /不(?:是|采用)[^。\n]*Event Sourcing/u);
+});
+
+test('governs the exact pinned MOD-06 source set', () => {
+  const document = requiredDocument('MOD-06');
+  const links = new Set(extractExternalLinks(document));
+  const requiredSources = new Map([
+    [
+      'src-ibm-ida-logical-data-model-9-1-1',
+      'https://www.ibm.com/docs/en/ida/9.1.1?topic=modeling-logical-data-models',
+    ],
+    [
+      'src-mermaid-er-diagram-11-16-0',
+      'https://github.com/mermaid-js/mermaid/blob/mermaid%4011.16.0/packages/mermaid/src/docs/syntax/entityRelationshipDiagram.md',
+    ],
+    [
+      'src-postgresql-18-constraints',
+      'https://www.postgresql.org/docs/18/ddl-constraints.html',
+    ],
+    [
+      'src-postgresql-18-range-types',
+      'https://www.postgresql.org/docs/18/rangetypes.html',
+    ],
+  ]);
+  for (const [id, locator] of requiredSources) {
+    const source = ledger.sources.find((candidate) => candidate.id === id);
+    assert.ok(source, id);
+    assert.equal(source.canonical_locator, locator);
+    assert.equal(source.transport_locator, locator);
+    assert.equal(source.tier, 'primary');
+    assert.equal(source.checked_at, '2026-07-31');
+    assert.ok(links.has(locator), locator);
+  }
+  assert.match(document.body, /Mermaid[^。\n]*11\.16\.0/u);
+  assert.match(document.body, /PostgreSQL 18/u);
+  assert.match(document.body, /Mermaid[^。\n]*(?:语法|渲染工具)[^。\n]*(?:不是|不作为)[^。\n]*(?:理论|标准)/u);
+  assert.match(document.body, /官方文档[^。\n]*不支持[^。\n]*费用申报/u);
+});
+
+test('publishes only the approved MOD-06 relationships and reciprocal links', () => {
+  const document = requiredDocument('MOD-06');
+  const links = new Set(extractInternalLinks(document));
+  for (const slug of [
+    '/modeling',
+    '/modeling/mod-01',
+    '/modeling/mod-02',
+    '/modeling/mod-05',
+    '/principles/pr-13',
+    '/cases/temporal-saga-durable-execution',
+  ]) {
+    assert.ok(links.has(slug), slug);
+  }
+  for (const slug of ['/modeling/mod-07', '/modeling/mod-08']) {
+    assert.equal(links.has(slug), false, slug);
+  }
+  assert.match(document.body, /MOD-08[^。\n]*尚未发布/u);
+
+  for (const id of ['MOD-01', 'MOD-05', 'PR-13']) {
+    const peer = requiredDocument(id);
+    assert.ok(peer.metadata.adjacent_topics.includes('MOD-06'), id);
+    assert.ok(
+      new Set(extractInternalLinks(peer)).has('/modeling/mod-06'),
+      `${id} visible MOD-06 link`,
+    );
+  }
+  assert.ok(
+    new Set(extractInternalLinks(requiredSlug(
+      '/cases/temporal-saga-durable-execution',
+    ))).has('/modeling/mod-06'),
+  );
 });

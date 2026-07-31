@@ -457,7 +457,11 @@ test('publishes MOD-05 as one progressive expense-claim data model', () => {
   assert.equal(document.metadata.status, 'reviewed');
   assert.equal(document.metadata.priority, 'P0');
   assert.deepEqual(document.metadata.depends_on, ['MOD-01']);
-  assert.deepEqual(document.metadata.adjacent_topics, ['MOD-04', 'PR-13']);
+  assert.deepEqual(document.metadata.adjacent_topics, [
+    'MOD-04',
+    'MOD-06',
+    'PR-13',
+  ]);
   assert.deepEqual(document.metadata.related_cases, [
     '/cases/temporal-saga-durable-execution',
   ]);
@@ -522,7 +526,7 @@ test('keeps terminology and evidence boundaries mutation-sensitive', () => {
   }
 });
 
-test('uses only published relationships and leaves MOD-06 unlinked', () => {
+test('uses only published relationships including MOD-06', () => {
   const document = requiredDocument('MOD-05');
   const links = new Set(extractInternalLinks(document));
   for (const slug of [
@@ -535,8 +539,8 @@ test('uses only published relationships and leaves MOD-06 unlinked', () => {
   ]) {
     assert.ok(links.has(slug), slug);
   }
-  assert.equal(links.has('/modeling/mod-06'), false);
-  assert.match(document.body, /MOD-06[^。\n]*尚未发布/u);
+  assert.equal(links.has('/modeling/mod-06'), true);
+  assert.doesNotMatch(document.body, /MOD-06[^。\n]*尚未发布/u);
 });
 
 test('renders one exact four-layer mapping table and one visual', () => {
@@ -698,7 +702,7 @@ test('governs exactly the five visible MOD-05 official sources', () => {
     assert.equal(results.length, 1, `${sourceId} exact link-health association`);
     assertStableSourceHealth(sourceId, results[0]);
   }
-  assert.equal(ledger.sources.length, 473);
+  assert.equal(ledger.sources.length, 475);
 });
 
 test('projects the exact G008 Batch 3 Stage B repository state', () => {
@@ -706,8 +710,8 @@ test('projects the exact G008 Batch 3 Stage B repository state', () => {
     schema_version: 1,
     durable_stories: {completed: 7, total: 20, current: 'G008'},
     completed_topics: 44,
-    content_documents: 86,
-    governed_sources: 473,
+    content_documents: 87,
+    governed_sources: 475,
     sources: {
       durable_stories: 'docs/content-backlog.md',
       completed_topics: 'docs/content-backlog.md',

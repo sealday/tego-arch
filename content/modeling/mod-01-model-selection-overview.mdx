@@ -24,6 +24,7 @@ depends_on:
   - FND-03
 adjacent_topics:
   - MOD-02
+  - MOD-06
   - QA-01
   - MTH-03
 related_cases:
@@ -72,7 +73,7 @@ flowchart TD
 | 问题空间 | EventStorming、Domain Storytelling、Context Map | 事件、参与者、语言与边界假设 | 软件内部结构已经正确 |
 | 结构 | C4 Context、Container、Component | 静态边界、责任与依赖 | 运行顺序和部署拓扑 |
 | 行为 | sequence、Dynamic、state machine | 场景顺序、状态转换与异常路径 | 静态所有权或容量 |
-| 数据 | 概念、逻辑、物理数据模型与 ER | 身份、关系、约束和实现映射 | 业务流程已经完整 |
+| 数据 | 概念、逻辑、物理数据模型与 [ER 关系边界](/modeling/mod-06) | 身份、关系、约束和实现映射 | 业务流程已经完整 |
 | 部署 | C4 Deployment、UML deployment | 实例、节点、环境和基础设施关系 | 容量与故障切换已经验证 |
 | 决策 | ADR、约束、风险与质量属性场景 | 选择原因、边界与复核条件 | 运行事实自动与决策一致 |
 

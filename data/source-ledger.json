@@ -726,7 +726,7 @@
     {
       "id": "src-arc42-overview-v9",
       "canonical_locator": "https://arc42.org/overview",
-      "transport_locator": "https://arc42.org/overview",
+      "transport_locator": "https://arc42.org/overview/",
       "query_insensitive": false,
       "locator_aliases": [],
       "tombstone": null,
@@ -734,7 +734,7 @@
       "author_or_org": "arc42 contributors",
       "published_at": null,
       "registered_at": "2026-07-30",
-      "checked_at": "2026-07-30",
+      "checked_at": "2026-07-31",
       "version": "arc42 v9 overview checked on 2026-07-30",
       "source_kind": "official-docs",
       "tier": "primary",
@@ -749,9 +749,9 @@
       "copyright_policy": "adapt-sharealike-review",
       "usage_boundary": "Supports the arc42 v9 problem-domain overview and tailoring principle; it does not make the project’s original six-unit teaching skeleton an official arc42 template.",
       "link_policy": "stable",
-      "expected_final_transport_locator": "https://arc42.org/overview",
-      "expected_final_approved_at": "2026-07-30",
-      "expected_final_approval_note": "Reviewed G008 Batch 2 transport baseline"
+      "expected_final_transport_locator": "https://arc42.org/overview/",
+      "expected_final_approved_at": "2026-07-31",
+      "expected_final_approval_note": "Reviewed permanent trailing-slash redirect from the governed arc42 overview identity"
     },
     {
       "id": "src-arc42-quality-requirements-v9",
@@ -14919,7 +14919,7 @@
     {
       "id": "src-nasa-swehb-7-07",
       "canonical_locator": "https://swehb.nasa.gov/spaces/SWEHBVD/pages/102695632/7.07%2B-%2BSoftware%2BArchitecture%2BDescription",
-      "transport_locator": "https://swehb.nasa.gov/spaces/SWEHBVD/pages/102695632/7.07%2B-%2BSoftware%2BArchitecture%2BDescription",
+      "transport_locator": "https://swehb.nasa.gov/spaces/SWEHBVD/pages/102695632/7.07+-+Software+Architecture+Description",
       "query_insensitive": false,
       "locator_aliases": [],
       "tombstone": null,
@@ -14927,7 +14927,7 @@
       "author_or_org": "National Aeronautics and Space Administration",
       "published_at": null,
       "registered_at": "2026-07-24",
-      "checked_at": "2026-07-24",
+      "checked_at": "2026-07-31",
       "version": "NASA Software Engineering Handbook Version D, Topic 7.07; checked on 2026-07-24",
       "source_kind": "official-docs",
       "tier": "primary",
@@ -14946,9 +14946,9 @@
       "copyright_policy": "facts-and-short-quotation",
       "usage_boundary": "Supports explicit treatment of architectural drivers, driving requirements, decisions, rationale, and verification evidence in NASA architecture descriptions; NASA governance and mission context are not universal requirements.",
       "link_policy": "floating",
-      "expected_final_transport_locator": "https://swehb.nasa.gov/spaces/SWEHBVD/pages/102695632/7.07%2B-%2BSoftware%2BArchitecture%2BDescription",
-      "expected_final_approved_at": "2026-07-24",
-      "expected_final_approval_note": "Initial reviewed NASA SWEHB Version D Topic 7.07 transport baseline"
+      "expected_final_transport_locator": "https://swehb.nasa.gov/spaces/SWEHBVD/pages/102695632/7.07+-+Software+Architecture+Description",
+      "expected_final_approved_at": "2026-07-31",
+      "expected_final_approval_note": "Reviewed equivalent literal-plus NASA SWEHB transport after the encoded-plus endpoint returned repeated HTTP 500 responses"
     },
     {
       "id": "src-nist-ir-5517",
@@ -17807,6 +17807,36 @@
       "expected_final_approval_note": "Reviewed G008 Batch 3 PostgreSQL 18 pinned documentation transport and license boundary"
     },
     {
+      "id": "src-postgresql-18-range-types",
+      "canonical_locator": "https://www.postgresql.org/docs/18/rangetypes.html",
+      "transport_locator": "https://www.postgresql.org/docs/18/rangetypes.html",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "PostgreSQL 18 — Range Types",
+      "author_or_org": "PostgreSQL Global Development Group",
+      "published_at": "2025-09-25",
+      "registered_at": "2026-07-31",
+      "checked_at": "2026-07-31",
+      "version": "PostgreSQL 18 documentation checked on 2026-07-31",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": ["definition", "implementation", "learning"],
+      "license": "PostgreSQL",
+      "license_scope": "The named PostgreSQL 18 documentation page under the PostgreSQL License; trademarks, linked works, and separately licensed third-party material excluded",
+      "license_evidence_url": "https://www.postgresql.org/about/licence/",
+      "license_evidence_note": "The official PostgreSQL license page permits use, copy, modification, and distribution subject to its copyright and permission notice.",
+      "license_family_id": "https://www.postgresql.org/docs/18/",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "adapt-with-attribution",
+      "usage_boundary": "Supports PostgreSQL 18 range bounds and exclusion-constraint mechanism behavior only; it does not establish the expense-domain interval choice, non-overlap rule, migration safety, or performance.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://www.postgresql.org/docs/18/rangetypes.html",
+      "expected_final_approved_at": "2026-07-31",
+      "expected_final_approval_note": "Reviewed PostgreSQL 18 range-types transport and PostgreSQL License boundary"
+    },
+    {
       "id": "src-postgresql-18-indexes",
       "canonical_locator": "https://www.postgresql.org/docs/18/indexes.html",
       "transport_locator": "https://www.postgresql.org/docs/18/indexes.html",
@@ -17839,9 +17869,94 @@
       "expected_final_transport_locator": "https://www.postgresql.org/docs/18/indexes.html",
       "expected_final_approved_at": "2026-07-31",
       "expected_final_approval_note": "Reviewed G008 Batch 3 PostgreSQL 18 pinned documentation transport and license boundary"
+    },
+    {
+      "id": "src-mermaid-er-diagram-11-16-0",
+      "canonical_locator": "https://github.com/mermaid-js/mermaid/blob/mermaid%4011.16.0/packages/mermaid/src/docs/syntax/entityRelationshipDiagram.md",
+      "transport_locator": "https://github.com/mermaid-js/mermaid/blob/mermaid%4011.16.0/packages/mermaid/src/docs/syntax/entityRelationshipDiagram.md",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Entity Relationship Diagrams — Mermaid 11.16.0",
+      "author_or_org": "Mermaid contributors",
+      "published_at": "2026-06-25",
+      "registered_at": "2026-07-31",
+      "checked_at": "2026-07-31",
+      "version": "Mermaid 11.16.0 tag mermaid@11.16.0 checked on 2026-07-31",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": ["definition", "implementation", "learning"],
+      "license": "MIT",
+      "license_scope": "The named Mermaid 11.16.0 documentation source within the evidenced MIT repository scope; trademarks, linked works, embedded quotations, and third-party material excluded",
+      "license_evidence_url": "https://github.com/mermaid-js/mermaid/blob/mermaid%4011.16.0/LICENSE",
+      "license_evidence_note": "The immutable Mermaid 11.16.0 repository tag includes the MIT license; Tego Arch uses only pinned syntax facts and an original diagram.",
+      "license_family_id": "github:mermaid-js/mermaid",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports Mermaid 11.16.0 erDiagram entities, attributes, relationship markers, labels, cardinality, and optionality only; it is a rendering syntax source, not an ER theory standard or expense-domain authority.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://github.com/mermaid-js/mermaid/blob/mermaid%4011.16.0/packages/mermaid/src/docs/syntax/entityRelationshipDiagram.md",
+      "expected_final_approved_at": "2026-07-31",
+      "expected_final_approval_note": "Reviewed immutable Mermaid 11.16.0 ER syntax transport and MIT boundary"
     }
   ],
   "documents": {
+    "content/modeling/mod-06-er-model-relationship-boundaries.mdx": {
+      "reviewed_at": "2026-07-31",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-ibm-ida-logical-data-model-9-1-1",
+          "citation_url": "https://www.ibm.com/docs/en/ida/9.1.1?topic=modeling-logical-data-models",
+          "roles": ["definition", "method"],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Logical Data Models, IBM InfoSphere Data Architect 9.1.1",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-mermaid-er-diagram-11-16-0",
+          "citation_url": "https://github.com/mermaid-js/mermaid/blob/mermaid%4011.16.0/packages/mermaid/src/docs/syntax/entityRelationshipDiagram.md",
+          "roles": ["implementation"],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Mermaid 11.16.0 Entity Relationship Diagrams",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-postgresql-18-constraints",
+          "citation_url": "https://www.postgresql.org/docs/18/ddl-constraints.html",
+          "roles": ["implementation"],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "PostgreSQL 18 Constraints",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-postgresql-18-range-types",
+          "citation_url": "https://www.postgresql.org/docs/18/rangetypes.html",
+          "roles": ["implementation"],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "PostgreSQL 18 Range Types",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
     "content/modeling/mod-05-conceptual-logical-physical-data-model.mdx": {
       "reviewed_at": "2026-07-31",
       "copyright_checks": [

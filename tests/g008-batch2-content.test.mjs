@@ -303,7 +303,10 @@ test('governs exact arc42 and Microsoft evidence identities', () => {
     const source = ledger.sources.find(({id}) => id === sourceId);
     assert.ok(source, sourceId);
     assert.equal(source.canonical_locator, exactLocator);
-    assert.equal(source.transport_locator, exactLocator);
+    assert.equal(
+      source.transport_locator,
+      sourceId === 'src-arc42-overview-v9' ? `${exactLocator}/` : exactLocator,
+    );
     assert.equal(source.license, 'CC-BY-SA-4.0');
     assert.equal(source.copyright_policy, 'adapt-sharealike-review');
     const citation = governed.citations.find(({source_id}) => source_id === sourceId);
@@ -322,8 +325,8 @@ test('projects G008 Batch 2 completion during Stage B', async () => {
     schema_version: 1,
     durable_stories: {completed: 7, total: 20, current: 'G008'},
     completed_topics: 44,
-    content_documents: 86,
-    governed_sources: 473,
+    content_documents: 87,
+    governed_sources: 475,
     sources: {
       durable_stories: 'docs/content-backlog.md',
       completed_topics: 'docs/content-backlog.md',

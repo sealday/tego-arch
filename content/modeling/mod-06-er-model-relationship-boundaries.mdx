@@ -31,6 +31,7 @@ depends_on:
   - MOD-05
 adjacent_topics:
   - MOD-01
+  - MOD-05
   - PR-13
 related_cases:
   - /cases/temporal-saga-durable-execution
@@ -49,7 +50,7 @@ related_questions: []
 
 ## 建模目标与输入
 
-MOD-02 只提供费用申报系统的权威边界与 `银行支付服务` 名称；它不证明本页的数据设计。MOD-05 提供 `Employee`、`ExpenseClaim`、`Approval` 和 `PaymentInstruction` 四个起始逻辑实体。本页的六实体模型、字段、基数、半开区间和不变量都是本站原创的教学决定，不是已被证明的生产事实。
+[MOD-02 C4 Context 与 Container](/modeling/mod-02)只提供费用申报系统的权威边界与 `银行支付服务` 名称；它不证明本页的数据设计。[MOD-05 概念、逻辑与物理数据模型](/modeling/mod-05)提供 `Employee`、`ExpenseClaim`、`Approval` 和 `PaymentInstruction` 四个起始逻辑实体。本页的六实体模型、字段、基数、半开区间和不变量都是本站原创的教学决定，不是已被证明的生产事实。
 
 其他输入包括业务词汇、身份与唯一性规则、实体生命周期、关系两端的最小与最大数量、时间语义、历史查询与修正要求，以及数据保留、审计、迁移和完整性要求。未知的生产基数、并发冲突、查询分布、保留期、迁移方案与性能结果仍是验证缺口。
 
@@ -160,7 +161,7 @@ erDiagram
 
 ## 与其他模型的衔接
 
-MOD-01 负责按评审问题选择模型；MOD-05 为本页提供四个核心逻辑实体；PR-13 帮助区分领域含义与持久化机制。Temporal Saga 案例中的 Event History 是控制面恢复记录，不是费用申报的业务关系历史。MOD-08 未发布，将来可用状态机补充批准与付款前置条件；本页不创建尚未有效的链接。
+[建模目录](/modeling)提供各类模型入口；[MOD-01 建模总览](/modeling/mod-01)负责按评审问题选择模型；[MOD-05 概念、逻辑与物理数据模型](/modeling/mod-05)为本页提供四个核心逻辑实体；[PR-13 Persistence Ignorance](/principles/pr-13)帮助区分领域含义与持久化机制。[Temporal Saga 与持久执行案例](/cases/temporal-saga-durable-execution)中的 Event History 是控制面恢复记录，不是费用申报的业务关系历史。MOD-08 尚未发布，将来可用状态机补充批准与付款前置条件；本页不创建尚未有效的链接。
 
 ## 完整演练
 
@@ -174,6 +175,10 @@ E 在 `2026-07-01` 转入组织 B。模型关闭 A1 的旧区间，并为组织 
 
 ## 来源
 
-本页的逻辑/ER 建模概念、Mermaid `erDiagram` 语法和 PostgreSQL 18 约束与区间机制分别由后续的官方来源治理锁定。这些来源只支持工具、方法或机制的能力边界，不支持本页的费用申报领域规则，也不证明并发、迁移或性能达标。
+DBMS 无关的逻辑实体、标识、关系和约束参考 IBM® InfoSphere® Data Architect 软件的官方文档 [Logical Data Models — IBM InfoSphere Data Architect 9.1.1](https://www.ibm.com/docs/en/ida/9.1.1?topic=modeling-logical-data-models)。[Mermaid 11.16.0 Entity Relationship Diagrams](https://github.com/mermaid-js/mermaid/blob/mermaid%4011.16.0/packages/mermaid/src/docs/syntax/entityRelationshipDiagram.md)锁定本页使用的 `erDiagram` 实体、属性、关系标记、标签、基数与可选性语法；Mermaid 11.16.0 语法是渲染工具能力，不作为 ER 理论标准。[PostgreSQL 18 Constraints](https://www.postgresql.org/docs/18/ddl-constraints.html)只支持约束机制行为，[PostgreSQL 18 Range Types](https://www.postgresql.org/docs/18/rangetypes.html)只支持区间边界与排斥约束机制行为。
+
+这些官方文档只支持工具、方法或机制的能力边界，不支持本页的费用申报领域规则、半开区间选择、不重叠规则、迁移安全或性能结论。
 
 六实体费用申报模型、七条关系及基数、半开有效期选择、跨实体约束、Mermaid 图、两张表和完整演练都是本站原创的教学表达，未复制来源图表、截图、章节结构或长段文字。
+
+IBM 和 InfoSphere 是 International Business Machines Corporation 在美国和/或其他国家/地区的商标或注册商标。

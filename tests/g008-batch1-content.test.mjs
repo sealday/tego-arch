@@ -68,6 +68,7 @@ test('publishes MOD-01 as the six-question model-selection router', () => {
   assert.deepEqual(document.metadata.depends_on, ['FND-03']);
   assert.deepEqual(document.metadata.adjacent_topics, [
     'MOD-02',
+    'MOD-06',
     'QA-01',
     'MTH-03',
   ]);
@@ -138,6 +139,7 @@ test('keeps reciprocal MOD-01 adjacency and visible backlinks with QA-01 and MTH
   const mth03 = requiredDocument('MTH-03');
   assert.deepEqual(mod01.metadata.adjacent_topics, [
     'MOD-02',
+    'MOD-06',
     'QA-01',
     'MTH-03',
   ]);
@@ -331,8 +333,8 @@ test('projects G008 Batch 1 completion during Stage B', async () => {
     schema_version: 1,
     durable_stories: {completed: 7, total: 20, current: 'G008'},
     completed_topics: 44,
-    content_documents: 86,
-    governed_sources: 473,
+    content_documents: 87,
+    governed_sources: 475,
     sources: {
       durable_stories: 'docs/content-backlog.md',
       completed_topics: 'docs/content-backlog.md',
