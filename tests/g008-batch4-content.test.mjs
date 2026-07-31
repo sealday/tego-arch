@@ -9,11 +9,9 @@ import {
 } from '../scripts/content-metadata.mjs';
 import {extractInternalLinks} from '../scripts/content-relations.mjs';
 import {extractExternalLinks} from '../scripts/source-ledger.mjs';
+import {handleHorizontalArrowKey} from '../src/components/KeyboardScrollableRegion/handleHorizontalArrowKey.mjs';
 
 const contentRoot = fileURLToPath(new URL('../content/', import.meta.url));
-const horizontalArrowKeyModule = await import(
-  '../src/components/KeyboardScrollableRegion/handleHorizontalArrowKey.mjs'
-).catch(() => null);
 const modelingHeadings = [
   '学习问题',
   '建模目标与输入',
@@ -203,9 +201,6 @@ test('makes every MOD-06 overflow region explicitly keyboard-scrollable', () => 
 });
 
 test('scrolls a directly focused overflow region by 40px and clamps bounds', () => {
-  assert.ok(horizontalArrowKeyModule, 'keyboard scroll helper must exist');
-  const {handleHorizontalArrowKey} = horizontalArrowKeyModule;
-
   for (const [key, initial, expected] of [
     ['ArrowRight', 80, 120],
     ['ArrowLeft', 80, 40],
@@ -220,8 +215,6 @@ test('scrolls a directly focused overflow region by 40px and clamps bounds', () 
 });
 
 test('leaves unrelated keyboard input and non-overflow regions untouched', () => {
-  assert.ok(horizontalArrowKeyModule, 'keyboard scroll helper must exist');
-  const {handleHorizontalArrowKey} = horizontalArrowKeyModule;
   const probes = [
     horizontalArrowEvent({key: 'Enter'}),
     horizontalArrowEvent({clientWidth: 300, scrollWidth: 300}),
