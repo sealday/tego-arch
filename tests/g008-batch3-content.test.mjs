@@ -35,15 +35,15 @@ const expectedSourceGovernance = new Map([
       expected_final_transport_locator: 'https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2bf926e1b1014a7c7c75eb751dd6e.html',
       allowed_evidence_roles: ['definition', 'learning', 'method'],
       license: 'LicenseRef-All-Rights-Reserved',
-      license_scope: 'Facts and the named SAP PowerDesigner documentation page only; prose, figures, tables, screenshots, product UI, logos, linked works, and third-party material excluded; named trademarks require the article-end attribution and are not licensed for reuse',
+      license_scope: 'Facts and the named SAP PowerDesigner documentation page only; prose, figures, tables, screenshots, product UI, logos, linked works, and third-party material excluded; named trademarks require first-use symbols and the article-end attribution and are not licensed for reuse',
       license_evidence_url: 'https://www.sap.com/about/legal/trademark.html',
-      license_evidence_note: 'SAP trademark guidelines require an end-of-document attribution for named SAP marks; Tego Arch uses textual references, links, original factual summaries, and the required attribution only.',
+      license_evidence_note: 'SAP trademark guidelines require first-use trademark marking and an end-of-document attribution for named SAP marks; Tego Arch marks the first public product-name use, keeps official document titles unchanged, and otherwise uses textual references, links, original factual summaries, and the required attribution only.',
       license_family_id: 'https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2bf926e1b1014a7c7c75eb751dd6e.html',
       license_family_grouping: 'identity',
       family_grouping_evidence_url: null,
       copyright_policy: 'facts-and-short-quotation',
       usage_boundary: 'Supports the named PowerDesigner abstraction or physical-model concept only; it is a product method, not a universal data-modeling standard, and the required trademark attribution does not imply SAP sponsorship or endorsement.',
-      expected_final_approval_note: 'Reviewed G008 Batch 3 SAP documentation transport, all-rights-reserved boundary, and required trademark attribution',
+      expected_final_approval_note: 'Reviewed G008 Batch 3 SAP documentation transport, all-rights-reserved boundary, first-use trademark marking, and required attribution',
     },
   ],
   [
@@ -58,15 +58,15 @@ const expectedSourceGovernance = new Map([
       expected_final_transport_locator: 'https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2e0646e1b1014b15599cfaffb4f4a.html',
       allowed_evidence_roles: ['definition', 'learning', 'method'],
       license: 'LicenseRef-All-Rights-Reserved',
-      license_scope: 'Facts and the named SAP PowerDesigner documentation page only; prose, figures, tables, screenshots, product UI, logos, linked works, and third-party material excluded; named trademarks require the article-end attribution and are not licensed for reuse',
+      license_scope: 'Facts and the named SAP PowerDesigner documentation page only; prose, figures, tables, screenshots, product UI, logos, linked works, and third-party material excluded; named trademarks require first-use symbols and the article-end attribution and are not licensed for reuse',
       license_evidence_url: 'https://www.sap.com/about/legal/trademark.html',
-      license_evidence_note: 'SAP trademark guidelines require an end-of-document attribution for named SAP marks; Tego Arch uses textual references, links, original factual summaries, and the required attribution only.',
+      license_evidence_note: 'SAP trademark guidelines require first-use trademark marking and an end-of-document attribution for named SAP marks; Tego Arch marks the first public product-name use, keeps official document titles unchanged, and otherwise uses textual references, links, original factual summaries, and the required attribution only.',
       license_family_id: 'https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2e0646e1b1014b15599cfaffb4f4a.html',
       license_family_grouping: 'identity',
       family_grouping_evidence_url: null,
       copyright_policy: 'facts-and-short-quotation',
       usage_boundary: 'Supports the named PowerDesigner abstraction or physical-model concept only; it is a product method, not a universal data-modeling standard, and the required trademark attribution does not imply SAP sponsorship or endorsement.',
-      expected_final_approval_note: 'Reviewed G008 Batch 3 SAP documentation transport, all-rights-reserved boundary, and required trademark attribution',
+      expected_final_approval_note: 'Reviewed G008 Batch 3 SAP documentation transport, all-rights-reserved boundary, first-use trademark marking, and required attribution',
     },
   ],
   [
@@ -81,15 +81,15 @@ const expectedSourceGovernance = new Map([
       expected_final_transport_locator: 'https://www.ibm.com/docs/en/ida/9.1.1?topic=modeling-logical-data-models',
       allowed_evidence_roles: ['definition', 'learning', 'method'],
       license: 'LicenseRef-All-Rights-Reserved',
-      license_scope: 'Facts and the named IBM documentation page only; prose, figures, tables, screenshots, product UI, logos, linked works, and third-party material excluded; IBM and InfoSphere trademark references require attribution and are not licensed for reuse',
+      license_scope: 'Facts and the named IBM documentation page only; prose, figures, tables, screenshots, product UI, logos, linked works, and third-party material excluded; IBM and InfoSphere trademark references require first-use symbols and attribution and are not licensed for reuse',
       license_evidence_url: 'https://www.ibm.com/legal/copyright-trademark',
-      license_evidence_note: 'IBM copyright and trademark information identifies IBM and InfoSphere as IBM trademarks and requires attribution on the page or in the legal section; Tego Arch uses textual references, links, original factual summaries, and the required attribution only.',
+      license_evidence_note: 'IBM copyright and trademark information identifies IBM and InfoSphere as IBM trademarks and requires first-use marking plus attribution on the page or in the legal section; Tego Arch marks the first public product-name use, keeps the official document title unchanged, and otherwise uses textual references, links, original factual summaries, and the required attribution only.',
       license_family_id: 'https://www.ibm.com/docs/en/ida/9.1.1?topic=modeling-logical-data-models',
       license_family_grouping: 'identity',
       family_grouping_evidence_url: null,
       copyright_policy: 'facts-and-short-quotation',
       usage_boundary: 'Supports DBMS-independent logical entities, identifiers, relationships, and constraints; it does not establish current DBMS behavior, and the trademark attribution does not imply IBM sponsorship or endorsement.',
-      expected_final_approval_note: 'Reviewed G008 Batch 3 IBM documentation transport, all-rights-reserved boundary, and required trademark attribution',
+      expected_final_approval_note: 'Reviewed G008 Batch 3 IBM documentation transport, all-rights-reserved boundary, first-use trademark marking, and required attribution',
     },
   ],
   [
@@ -195,6 +195,9 @@ const sapTrademarkNotice =
   'SAP 和 SAP PowerDesigner 是 SAP SE 或其关联公司在德国及其他国家/地区的商标或注册商标。';
 const ibmTrademarkNotice =
   'IBM 和 InfoSphere 是 International Business Machines Corporation 在美国和/或其他国家/地区的商标或注册商标。';
+const sapFirstProductUse = 'SAP® PowerDesigner® 软件的官方文档';
+const ibmFirstProductUse =
+  'IBM® InfoSphere® Data Architect 软件的官方文档';
 const expectedMappingRows = [
   ['层次', '回答的问题', '费用申报示例', '新增决定', '明确不证明'],
   ['概念模型', '业务中有哪些事物与词义', '员工、费用申报、审批、付款', '概念边界与业务关系', '实体键、基数、表结构或流程顺序'],
@@ -602,6 +605,19 @@ test('governs exactly the five visible MOD-05 official sources', () => {
       );
     }
   }
+  const sourcesBody = section(document.body, '来源');
+  assert.match(sourcesBody, new RegExp(sapFirstProductUse, 'u'));
+  assert.match(sourcesBody, new RegExp(ibmFirstProductUse, 'u'));
+  assert.equal(
+    sourcesBody.indexOf('SAP'),
+    sourcesBody.indexOf(sapFirstProductUse),
+    'first public SAP product use must carry the official marks',
+  );
+  assert.equal(
+    sourcesBody.indexOf('IBM'),
+    sourcesBody.indexOf(ibmFirstProductUse),
+    'first public IBM product use must carry the official marks',
+  );
   assert.equal(
     document.body.trimEnd().endsWith(
       `${sapTrademarkNotice}\n\n${ibmTrademarkNotice}`,
