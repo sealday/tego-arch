@@ -803,7 +803,7 @@ git commit -m "docs: govern mod06 evidence and relations"
 **Interfaces:**
 
 - Consumes: Task 2 Stage A projection `44 / 87 / 475`.
-- Produces: one fully verified Stage A commit pushed to `origin/codex/g008-modeling-batch4`.
+- Produces: one fully verified Stage A commit pushed to `origin/codex/g008-modeling-batch4`, then fast-forwarded to `main` and pushed to `origin/main` because the Pages workflow deploys only `main`.
 
 - [ ] **Step 1: Run the targeted Batch 4 contract**
 
@@ -861,10 +861,12 @@ Run:
 
 ```bash
 git push -u origin codex/g008-modeling-batch4
+git -C /Users/seal/projects/tego-arch merge --ff-only codex/g008-modeling-batch4
+git -C /Users/seal/projects/tego-arch push origin main
 git rev-parse HEAD
 ```
 
-Expected: push succeeds and the second command prints the authoritative 40-character Stage A SHA. Record that exact literal for Task 4; never use a symbolic placeholder in release evidence.
+Expected: both pushes and the fast-forward succeed; feature HEAD, local `main`, and `origin/main` resolve to the same authoritative 40-character Stage A SHA. Preserve the user's untracked `.codex/config.toml`. Record that exact literal for Task 4; never use a symbolic placeholder in release evidence.
 
 ---
 
@@ -885,7 +887,7 @@ Run:
 
 ```bash
 gh run list --workflow deploy.yml \
-  --branch codex/g008-modeling-batch4 \
+  --branch main \
   --limit 20 \
   --json databaseId,headSha,status,conclusion,url
 ```
@@ -900,7 +902,7 @@ Run:
 g008_b4_stage_a_sha="$(git rev-parse HEAD)"
 g008_b4_pages_run_id="$(
   gh run list --workflow deploy.yml \
-    --branch codex/g008-modeling-batch4 \
+    --branch main \
     --limit 20 \
     --json databaseId,headSha \
     --jq ".[] | select(.headSha == \"${g008_b4_stage_a_sha}\") | .databaseId" \
