@@ -98,6 +98,79 @@ function currentReleaseBaseline(source) {
   return baselines[0];
 }
 
+const expectedBatch4BaselineEvidence = [
+  '2026-07-31 G008 Batch 4 已完成 MOD-06',
+  `Stage A 发布基线为 [\`${expectedStageASha}\`](https://github.com/sealday/tego-arch/commit/${expectedStageASha})`,
+  `Pages run [\`${expectedPagesRunId}\`](https://github.com/sealday/tego-arch/actions/runs/${expectedPagesRunId})`,
+  `exact \`headSha=${expectedStageASha}\`、\`status=completed\`、\`conclusion=success\``,
+  '6/6 个 canonical HTTP route 检查通过',
+  'canonical modeling route 为 `/modeling`',
+  'canonical references route 为 `/references`',
+  'desktop `1440x1000`',
+  'mobile `390x844`',
+  '无 document overflow',
+  'Mermaid 与两张 table 使用 contained horizontal overflow',
+  'keyboard focus/ArrowRight scroll 可用',
+  '1/1 Mermaid（6 entities、7 relationships）',
+  '2/2 tables（4 + 6 data rows）',
+  '4/4 source label',
+  '8/8 次 source 点击',
+  '10/10 次 relation 点击',
+  'MOD-05 backlink 在 desktop/mobile 均通过',
+  '无 MOD-07/MOD-08 链接',
+  '0 warnings、0 errors、0 page errors',
+  'Task 4 raw artifact SHA-256 为 `1c6eb07dc5b46de13addca51a88884bf1c075c853f9a03be4b5d323458c1fb9c`',
+  'Stage A 为 44 个已完成主题、87 篇内容文档与 475 个受治理来源',
+  '仓库测试 `557/557`',
+  'Stage B closure 投影为 45 个已完成主题、87 篇内容文档与 475 个受治理来源',
+  '持久故事进度仍为 `7 / 20`',
+  'G008 仍在进行中',
+  '下一项为 MOD-07',
+  'Stage B closure — PASS',
+];
+
+function batch4Segment(source) {
+  const baseline = currentReleaseBaseline(source);
+  const end = baseline.indexOf('此前 G008 Batch 3');
+  assert.notEqual(end, -1, 'Batch 3 history marker');
+  return baseline.slice(0, end);
+}
+
+function assertBatch4BaselineEvidence(source) {
+  const segment = batch4Segment(source);
+  for (const literal of expectedBatch4BaselineEvidence) {
+    assert.ok(segment.includes(literal), literal);
+  }
+  assert.equal(
+    segment.split(
+      `[\`${expectedStageASha}\`](https://github.com/sealday/tego-arch/commit/${expectedStageASha})`,
+    ).length - 1,
+    1,
+    'Batch 4 baseline must contain one exact Stage A commit link',
+  );
+  assert.equal(
+    segment.split(
+      `[\`${expectedPagesRunId}\`](https://github.com/sealday/tego-arch/actions/runs/${expectedPagesRunId})`,
+    ).length - 1,
+    1,
+    'Batch 4 baseline must contain one exact Pages run link',
+  );
+  assert.equal(
+    segment.split(
+      `exact \`headSha=${expectedStageASha}\`、\`status=completed\`、\`conclusion=success\``,
+    ).length - 1,
+    1,
+    'Batch 4 baseline must contain one exact run gate',
+  );
+  return segment;
+}
+
+function replaceBatch4Baseline(source, literal, replacement) {
+  const segment = batch4Segment(source);
+  assert.ok(segment.includes(literal), `Batch 4 baseline must contain ${literal}`);
+  return source.replace(segment, segment.replaceAll(literal, replacement));
+}
+
 function batch3Segment(source) {
   const baseline = currentReleaseBaseline(source);
   const start = baseline.indexOf('此前 G008 Batch 3');
@@ -133,9 +206,7 @@ function replaceBatch3History(source, literal, replacement) {
 }
 
 function assertBacklogClosure(source) {
-  const baseline = currentReleaseBaseline(source);
-  assert.match(baseline, /^- \*\*当前发布基线：\*\* 2026-07-31 G008 Batch 4 已完成 MOD-06/u);
-  assert.match(baseline, /G008 仍在进行中，下一项为 MOD-07/u);
+  assertBatch4BaselineEvidence(source);
   assert.match(source, /^- \[x\] \*\*MOD-06 /mu);
   for (const id of ['07', '08', '09', '10', '11', '12', '13']) {
     assert.match(source, new RegExp(`^- \\[ \\] \\*\\*MOD-${id} `, 'mu'));
@@ -202,6 +273,18 @@ test('locks the Batch 3 completion identity below Batch 4', () => {
     );
   }
   assert.equal(assertBatch3History(backlog), original);
+});
+
+test('rejects drift in the current Batch 4 baseline evidence', () => {
+  assert.doesNotThrow(() => assertBatch4BaselineEvidence(backlog));
+  for (const literal of expectedBatch4BaselineEvidence) {
+    assert.throws(
+      () => assertBatch4BaselineEvidence(
+        replaceBatch4Baseline(backlog, literal, '__REMOVED__'),
+      ),
+      {name: 'AssertionError'},
+    );
+  }
 });
 
 test('preserves release-review I/O failures', async () => {
