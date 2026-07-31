@@ -100,7 +100,7 @@ test('publishes MOD-04 as an original six-unit arc42 v9 skeleton', () => {
   assert.equal(document.metadata.status, 'reviewed');
   assert.equal(document.metadata.priority, 'P0');
   assert.deepEqual(document.metadata.depends_on, ['MOD-01', 'MOD-03']);
-  assert.deepEqual(document.metadata.adjacent_topics, ['MOD-03']);
+  assert.deepEqual(document.metadata.adjacent_topics, ['MOD-03', 'MOD-05']);
   assert.deepEqual(document.metadata.related_cases, [
     '/cases/microsoft-multi-agent-reference-architecture',
   ]);
@@ -322,8 +322,8 @@ test('projects G008 Batch 2 completion during Stage B', async () => {
     schema_version: 1,
     durable_stories: {completed: 7, total: 20, current: 'G008'},
     completed_topics: 43,
-    content_documents: 85,
-    governed_sources: 468,
+    content_documents: 86,
+    governed_sources: 473,
     sources: {
       durable_stories: 'docs/content-backlog.md',
       completed_topics: 'docs/content-backlog.md',

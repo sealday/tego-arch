@@ -181,8 +181,8 @@ test('closes exactly MOD-04 without closing G008', () => {
     assert.equal(topicsById.get(id)?.status.value, 'pending', id);
   }
   assert.equal(projectStatus.completed_topics, 43);
-  assert.equal(projectStatus.content_documents, 85);
-  assert.equal(projectStatus.governed_sources, 468);
+  assert.equal(projectStatus.content_documents, 86);
+  assert.equal(projectStatus.governed_sources, 473);
   assert.deepEqual(projectStatus.durable_stories, {
     completed: 7,
     total: 20,

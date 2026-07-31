@@ -41,7 +41,7 @@ const h2 = [
 ];
 const relationships = new Map([
   ['PR-12', ['PR-01', 'PR-02', 'PR-03', 'PR-04', 'PR-05', 'PR-08', 'PR-14']],
-  ['PR-13', ['PR-03', 'PR-04', 'PR-11']],
+  ['PR-13', ['PR-03', 'PR-04', 'PR-11', 'MOD-05']],
   ['PR-14', ['PR-02', 'PR-03', 'PR-04', 'PR-12', 'PR-15', 'PR-17']],
 ]);
 const routeByTopic = new Map([
@@ -57,6 +57,7 @@ const routeByTopic = new Map([
   ['PR-14', '/principles/pr-14'],
   ['PR-15', '/principles/pr-15'],
   ['PR-17', '/principles/pr-17'],
+  ['MOD-05', '/modeling/mod-05'],
 ]);
 const solePrimary = new Map([
   ['PR-12', 'src-objectmentor-ocp-1996'],

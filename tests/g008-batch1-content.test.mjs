@@ -331,8 +331,8 @@ test('projects G008 Batch 1 completion during Stage B', async () => {
     schema_version: 1,
     durable_stories: {completed: 7, total: 20, current: 'G008'},
     completed_topics: 43,
-    content_documents: 85,
-    governed_sources: 468,
+    content_documents: 86,
+    governed_sources: 473,
     sources: {
       durable_stories: 'docs/content-backlog.md',
       completed_topics: 'docs/content-backlog.md',

@@ -51,19 +51,17 @@ const expectedMappingRows = [
   ['可移植关系模式', '逻辑实体如何映射为关系结构', 'employee、expense_claim、approval、payment_instruction', '表、PK/FK、唯一性、类型族和索引候选', '严格意义上的 DBMS 物理模型或可部署 schema'],
   ['PostgreSQL 18 物理实现切片', '平台如何落实约束与访问路径', 'PostgreSQL 约束、类型与索引类别', '实际约束类别、类型选择和索引候选', '完整生产 DDL、容量、迁移安全或性能结果'],
 ];
-const expectedMermaid = `flowchart LR
-  C["业务概念"] -->|映射并澄清词义| L["逻辑实体"]
-  L -->|加入身份、关系与约束| R["可移植关系模式"]
-  R -->|选择 PostgreSQL 18| P["物理实现切片"]
-  P -->|需要迁移与运行证据| V["验证缺口"]
-  A["本站教学假设"] -.标注字段、键与索引.-> L
-  A -.标注表与类型候选.-> R
-  U["未知项"] -.保留查询与容量事实.-> P
-  U -.保留性能与迁移结果.-> V`;
-const [documents, ledger] = await Promise.all([
+const [documents, ledger, linkHealth, status, backlog] = await Promise.all([
   readContentDocuments(contentRoot),
   readFile(new URL('../data/source-ledger.json', import.meta.url), 'utf8')
     .then(JSON.parse),
+  readFile(new URL('../data/source-link-health.json', import.meta.url), 'utf8')
+    .then(JSON.parse),
+  readFile(
+    new URL('../src/generated/project-status.json', import.meta.url),
+    'utf8',
+  ).then(JSON.parse),
+  readFile(new URL('../docs/content-backlog.md', import.meta.url), 'utf8'),
 ]);
 const byId = new Map(
   documents
@@ -102,6 +100,78 @@ function fencedBlock(body, language) {
   return matches[0][1];
 }
 
+function parseMermaidEdges(source) {
+  const nodeLabels = new Map();
+  for (const match of source.matchAll(/\b([A-Za-z][\w-]*)\["([^"]+)"\]/gu)) {
+    const [, id, label] = match;
+    const existing = nodeLabels.get(id);
+    assert.ok(existing === undefined || existing === label, `${id} label conflict`);
+    nodeLabels.set(id, label);
+  }
+
+  const edges = [];
+  const edgePattern =
+    /^\s*([A-Za-z][\w-]*)(?:\["([^"]+)"\])?\s+(?:(-->)(?:\|([^|\n]+)\|)?|(-\.(.+?)\.->))\s+([A-Za-z][\w-]*)(?:\["([^"]+)"\])?\s*$/u;
+  for (const line of source.split('\n').slice(1).filter((value) => value.trim())) {
+    const match = line.match(edgePattern);
+    assert.ok(match, `illegal Mermaid edge: ${line.trim()}`);
+    const [
+      ,
+      fromId,
+      fromLabel,
+      solidConnector,
+      ,
+      dottedConnector,
+      ,
+      toId,
+      toLabel,
+    ] = match;
+    assert.ok(solidConnector === '-->' || dottedConnector !== undefined);
+    if (fromLabel !== undefined) {
+      assert.equal(nodeLabels.get(fromId), fromLabel);
+    }
+    if (toLabel !== undefined) {
+      assert.equal(nodeLabels.get(toId), toLabel);
+    }
+    assert.ok(nodeLabels.has(fromId), `unresolved Mermaid node: ${fromId}`);
+    assert.ok(nodeLabels.has(toId), `unresolved Mermaid node: ${toId}`);
+    edges.push(`${nodeLabels.get(fromId)} -> ${nodeLabels.get(toId)}`);
+  }
+  assert.equal(new Set(edges).size, edges.length, 'duplicate Mermaid edge');
+  return edges.sort();
+}
+
+function assertMermaidSemantics(source) {
+  const expectedEdges = [
+    '业务概念 -> 逻辑实体',
+    '逻辑实体 -> 可移植关系模式',
+    '可移植关系模式 -> 物理实现切片',
+    '物理实现切片 -> 验证缺口',
+    '本站教学假设 -> 逻辑实体',
+    '本站教学假设 -> 可移植关系模式',
+    '未知项 -> 物理实现切片',
+    '未知项 -> 验证缺口',
+  ].sort();
+  assert.deepEqual(parseMermaidEdges(source), expectedEdges);
+}
+
+function assertMappingWording(source) {
+  assert.match(source, /映射并澄清词义/u);
+  assert.doesNotMatch(source, /先执行/u);
+  assert.match(source, /箭头表示层次间映射或新增决定，不表示运行时序/u);
+}
+
+function assertDataModelBoundaries(source) {
+  assert.match(source, /可移植关系模式不是严格意义上的完整物理模型/u);
+  assert.match(source, /本站原创的教学假设/u);
+  assert.match(source, /索引候选不证明性能/u);
+  assert.match(source, /不是生产 schema，也不是可部署 schema/u);
+  assert.doesNotMatch(source, /CREATE\s+TABLE/iu);
+  assert.doesNotMatch(source, /可移植关系模式就是已验证物理模型/u);
+  assert.doesNotMatch(source, /生产事实/u);
+  assert.doesNotMatch(source, /索引保证性能/u);
+}
+
 test('publishes MOD-05 as one progressive expense-claim data model', () => {
   const document = requiredDocument('MOD-05');
   assert.equal(
@@ -133,13 +203,23 @@ test('publishes MOD-05 as one progressive expense-claim data model', () => {
   assert.match(document.body, /银行支付服务/u);
 });
 
-test('keeps the portable schema distinct from a DBMS physical model', () => {
+test('keeps terminology and evidence boundaries mutation-sensitive', () => {
   const body = requiredDocument('MOD-05').body;
-  assert.match(body, /可移植关系模式[^。\n]*(?:不等于|不是)[^。\n]*(?:严格|完整)[^。\n]*物理模型/u);
-  assert.match(body, /PostgreSQL 18[^。\n]*(?:切片|示例)/u);
-  assert.match(body, /不是[^。\n]*(?:生产 schema|生产数据库|可部署 schema)/u);
-  assert.match(body, /本站原创[^。\n]*教学/u);
-  assert.doesNotMatch(body, /CREATE\s+TABLE/iu);
+  assertDataModelBoundaries(body);
+
+  for (const forbiddenMutation of [
+    body.replace(
+      '可移植关系模式不是严格意义上的完整物理模型',
+      '可移植关系模式就是已验证物理模型',
+    ),
+    body.replace('本站原创的教学假设', '生产事实'),
+    body.replace('索引候选不证明性能', '索引保证性能'),
+  ]) {
+    assert.throws(
+      () => assertDataModelBoundaries(forbiddenMutation),
+      {name: 'AssertionError'},
+    );
+  }
 });
 
 test('uses only published relationships and leaves MOD-06 unlinked', () => {
@@ -159,20 +239,65 @@ test('uses only published relationships and leaves MOD-06 unlinked', () => {
   assert.match(document.body, /MOD-06[^。\n]*尚未发布/u);
 });
 
-test('locks the single mapping table and Mermaid topology', () => {
-  const artifacts = section(requiredDocument('MOD-05').body, '模型产物');
+test('renders one exact four-layer mapping table and one visual', () => {
+  const body = requiredDocument('MOD-05').body;
+  const artifacts = section(body, '模型产物');
+  const rows = markdownTableRows(artifacts);
+  assert.equal(rows.length, 5, 'one header plus four data rows');
+  assert.deepEqual(rows[0], [
+    '层次',
+    '回答的问题',
+    '费用申报示例',
+    '新增决定',
+    '明确不证明',
+  ]);
+  assert.deepEqual(rows.slice(1).map(([layer]) => layer), [
+    '概念模型',
+    '逻辑模型',
+    '可移植关系模式',
+    'PostgreSQL 18 物理实现切片',
+  ]);
+  assert.equal(new Set(rows.slice(1).map(([layer]) => layer)).size, 4);
   assert.equal(
-    [...artifacts.matchAll(/table-wrapper--mapping/gu)].length,
+    [...artifacts.matchAll(
+      /className="table-wrapper table-wrapper--mapping"/gu,
+    )].length,
     1,
-    'expected exactly one primary mapping table',
   );
-  assert.deepEqual(markdownTableRows(artifacts), expectedMappingRows);
+  assert.match(artifacts, /tabIndex=\{0\}/u);
+  assert.match(artifacts, /可横向滚动/u);
+  assert.deepEqual(rows, expectedMappingRows);
+  assert.equal([...body.matchAll(/```mermaid\n/gu)].length, 1);
+});
 
-  const mermaid = fencedBlock(artifacts, 'mermaid');
-  assert.equal(mermaid, expectedMermaid);
-  assert.equal(
-    mermaid.split('\n').filter((line) => /(?:-->|-\.)(?:[^>]*->)?/u.test(line)).length,
-    8,
+test('parses the exact Mermaid edge multiset independent of line order', () => {
+  const body = requiredDocument('MOD-05').body;
+  const mermaid = fencedBlock(body, 'mermaid');
+  assertMermaidSemantics(mermaid);
+  assertMappingWording(body);
+
+  const lines = mermaid.split('\n');
+  assert.doesNotThrow(() =>
+    assertMermaidSemantics(
+      mermaid.replace('-->|映射并澄清词义|', '-->'),
+    )
+  );
+  assert.doesNotThrow(() =>
+    assertMermaidSemantics([lines[0], ...lines.slice(1).reverse()].join('\n'))
+  );
+  for (const invalidMutation of [
+    mermaid.replace('-->', '==>'),
+    `${mermaid}\n${lines[1]}`,
+    lines.filter((_, index) => index !== 1).join('\n'),
+  ]) {
+    assert.throws(
+      () => assertMermaidSemantics(invalidMutation),
+      {name: 'AssertionError'},
+    );
+  }
+  assert.throws(
+    () => assertMappingWording(body.replace('映射并澄清词义', '先执行')),
+    {name: 'AssertionError'},
   );
 });
 
@@ -194,9 +319,66 @@ test('governs exactly the five visible MOD-05 official sources', () => {
     ]),
     [...requiredSources],
   );
+  assert.deepEqual(
+    review.citations
+      .filter(({manifest_primary}) => manifest_primary)
+      .map(({source_id}) => source_id),
+    [
+      'src-sap-powerdesigner-data-modeling-16-7-sp10',
+      'src-ibm-ida-logical-data-model-9-1-1',
+      'src-postgresql-18-constraints',
+    ],
+  );
 
   const governedSources = ledger.sources
-    .filter(({id}) => requiredSources.has(id))
-    .map(({id, canonical_locator}) => [id, canonical_locator]);
-  assert.deepEqual(governedSources, [...requiredSources]);
+    .filter(({id}) => requiredSources.has(id));
+  assert.deepEqual(
+    governedSources.map(({id, canonical_locator}) => [id, canonical_locator]),
+    [...requiredSources],
+  );
+  for (const source of governedSources) {
+    assert.ok(document.body.includes(source.canonical_locator), source.id);
+    if (source.author_or_org === 'SAP' || source.author_or_org === 'IBM') {
+      assert.equal(source.license, 'LicenseRef-All-Rights-Reserved');
+      assert.equal(source.copyright_policy, 'facts-and-short-quotation');
+    } else {
+      assert.equal(source.license, 'PostgreSQL');
+      assert.equal(source.copyright_policy, 'adapt-with-attribution');
+    }
+  }
+  const acceptedOutcomes = new Set(['healthy', 'auth-required', 'retired']);
+  for (const sourceId of requiredSources.keys()) {
+    const result = linkHealth.results.find(({source_ids}) =>
+      source_ids.includes(sourceId)
+    );
+    assert.ok(result, `${sourceId} link health`);
+    assert.ok(
+      acceptedOutcomes.has(result.last_attempt?.outcome),
+      `${sourceId} accepted current result`,
+    );
+    assert.equal(result.last_success?.outcome, result.last_attempt.outcome);
+    assert.equal(
+      result.last_success?.final_transport_locator,
+      result.last_attempt.final_transport_locator,
+    );
+  }
+  assert.equal(ledger.sources.length, 473);
+});
+
+test('projects the exact G008 Batch 3 Stage A repository state', () => {
+  assert.deepEqual(status, {
+    schema_version: 1,
+    durable_stories: {completed: 7, total: 20, current: 'G008'},
+    completed_topics: 43,
+    content_documents: 86,
+    governed_sources: 473,
+    sources: {
+      durable_stories: 'docs/content-backlog.md',
+      completed_topics: 'docs/content-backlog.md',
+      content_documents: 'content/**/*.{md,mdx}',
+      governed_sources: 'data/source-ledger.json',
+    },
+  });
+  assert.match(backlog, /^- \[ \] \*\*MOD-05 /mu);
+  assert.match(backlog, /下一项[^。\n]*MOD-05/u);
 });
