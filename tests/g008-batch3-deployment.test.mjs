@@ -157,18 +157,25 @@ function assertBatch3HistoricalSegment(source) {
   return extracted;
 }
 
+function replaceBatch3HistoricalLiteral(source, literal, replacement) {
+  const {segment} = g008Batch3BaselineSegment(source);
+  assert.ok(segment.includes(literal), `Batch 3 history must contain ${literal}`);
+  return source.replace(segment, segment.replace(literal, replacement));
+}
+
 function assertCurrentReleaseState(source) {
   const {prefix} = assertBatch3HistoricalSegment(source);
-  assert.equal(
+  assert.match(
     prefix,
-    '- **当前发布基线：** ',
-    'Batch 3 must be the current baseline during its Stage B closure',
+    /^- \*\*当前发布基线：\*\* 2026-07-31 G008 Batch 4 已完成 MOD-06/u,
   );
+  assert.match(prefix, /G008 仍在进行中，下一项为 MOD-07/u);
 }
 
 function assertBacklogClosure(source) {
   assert.match(source, /^- \[x\] \*\*MOD-05 /mu);
-  for (const id of ['06', '07', '08', '09', '10', '11', '12', '13']) {
+  assert.match(source, /^- \[x\] \*\*MOD-06 /mu);
+  for (const id of ['07', '08', '09', '10', '11', '12', '13']) {
     assert.match(source, new RegExp(`^- \\[ \\] \\*\\*MOD-${id} `, 'mu'));
   }
   assertCurrentReleaseState(source);
@@ -240,7 +247,7 @@ test('rejects stale duplicate or missing live deployment evidence', () => {
   }
 });
 
-test('closes only MOD-05 and preserves the non-terminal G008 baseline', () => {
+test('preserves Batch 3 closure under the current non-terminal G008 baseline', () => {
   const {sha, run} = parseEvidence(review);
   const row = backlog
     .split(/\r?\n/u)
@@ -256,10 +263,11 @@ test('closes only MOD-05 and preserves the non-terminal G008 baseline', () => {
     value: 'complete',
     source: 'docs/content-backlog.md',
   });
-  for (const id of ['MOD-06', 'MOD-07', 'MOD-08', 'MOD-09', 'MOD-10', 'MOD-11', 'MOD-12', 'MOD-13']) {
+  assert.equal(topicsById.get('MOD-06')?.status.value, 'complete');
+  for (const id of ['MOD-07', 'MOD-08', 'MOD-09', 'MOD-10', 'MOD-11', 'MOD-12', 'MOD-13']) {
     assert.equal(topicsById.get(id)?.status.value, 'pending', id);
   }
-  assert.equal(projectStatus.completed_topics, 44);
+  assert.equal(projectStatus.completed_topics, 45);
   assert.equal(projectStatus.content_documents, 87);
   assert.equal(projectStatus.governed_sources, 475);
   assert.deepEqual(projectStatus.durable_stories, {
@@ -272,10 +280,10 @@ test('closes only MOD-05 and preserves the non-terminal G008 baseline', () => {
   assert.doesNotMatch(backlog, /最近完成 `G008`/u);
 });
 
-test('rejects incomplete over-complete or terminal Batch 3 mutations', () => {
+test('rejects incomplete over-complete or terminal current mutations', () => {
   assert.throws(
     () => assertCurrentReleaseState(
-      backlog.replace('G008 仍在进行中，下一项为 MOD-06', 'G008 已完成，下一项为 MOD-06'),
+      backlog.replace('G008 仍在进行中，下一项为 MOD-07', 'G008 已完成，下一项为 MOD-07'),
     ),
     {name: 'AssertionError'},
   );
@@ -292,7 +300,13 @@ test('rejects incomplete over-complete or terminal Batch 3 mutations', () => {
   );
   assert.throws(
     () => assertBacklogClosure(
-      backlog.replace('- [ ] **MOD-06 ', '- [x] **MOD-06 '),
+      backlog.replace('- [x] **MOD-06 ', '- [ ] **MOD-06 '),
+    ),
+    {name: 'AssertionError'},
+  );
+  assert.throws(
+    () => assertBacklogClosure(
+      backlog.replace('- [ ] **MOD-07 ', '- [x] **MOD-07 '),
     ),
     {name: 'AssertionError'},
   );
@@ -301,12 +315,12 @@ test('rejects incomplete over-complete or terminal Batch 3 mutations', () => {
 test('locks the full immutable Batch 3 historical segment', () => {
   assert.doesNotThrow(() => assertBatch3HistoricalSegment(backlog));
   for (const mutatedBacklog of [
-    backlog.replace(expectedStageASha, '0'.repeat(40)),
-    backlog.replace('`/references`', '`/sources`'),
-    backlog.replace('Stage A 为 43 个已完成主题', 'Stage A 为 42 个已完成主题'),
-    backlog.replace('12/12 次 relation 点击', '11/12 次 relation 点击'),
-    backlog.replace('0 warnings、0 errors', '0 warnings、1 error'),
-    backlog.replace('无 document overflow', '存在 document overflow'),
+    replaceBatch3HistoricalLiteral(backlog, expectedStageASha, '0'.repeat(40)),
+    replaceBatch3HistoricalLiteral(backlog, '`/references`', '`/sources`'),
+    replaceBatch3HistoricalLiteral(backlog, 'Stage A 为 43 个已完成主题', 'Stage A 为 42 个已完成主题'),
+    replaceBatch3HistoricalLiteral(backlog, '12/12 次 relation 点击', '11/12 次 relation 点击'),
+    replaceBatch3HistoricalLiteral(backlog, '0 warnings、0 errors', '0 warnings、1 error'),
+    replaceBatch3HistoricalLiteral(backlog, '无 document overflow', '存在 document overflow'),
   ]) {
     assert.throws(() => assertBatch3HistoricalSegment(mutatedBacklog), {
       name: 'AssertionError',
