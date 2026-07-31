@@ -36,6 +36,7 @@ export const approvedLicenses = [
   'Apache-2.0',
   'MIT',
   'BSD-3-Clause',
+  'PostgreSQL',
   'EPL-2.0',
   'MPL-2.0',
   'AGPL-3.0-only',
@@ -81,6 +82,7 @@ const usageModes = [
 const requiredPolicyByLicense = new Map([
   ['CC-BY-4.0', 'adapt-with-attribution'],
   ['CC-BY-SA-4.0', 'adapt-sharealike-review'],
+  ['PostgreSQL', 'adapt-with-attribution'],
   ['LicenseRef-US-Gov-Public-Domain', 'public-domain-with-provenance'],
   ['LicenseRef-All-Rights-Reserved', 'facts-and-short-quotation'],
   ['CC-BY-NC-ND-4.0', 'facts-and-short-quotation'],
@@ -113,6 +115,25 @@ const noAdaptLicenses = new Set([
   'LicenseRef-CC-BY-NC-ND-Unversioned',
   'LicenseRef-New-API-Docs-License-Conflict',
 ]);
+
+function expectedLicenseFamily(source) {
+  const identity = licenseFamilyIdentity(source.canonical_locator);
+  if (source.license !== 'PostgreSQL') {
+    return identity;
+  }
+  try {
+    const url = new URL(source.canonical_locator);
+    if (
+      url.hostname.toLowerCase() === 'www.postgresql.org' &&
+      url.pathname.startsWith('/docs/current/')
+    ) {
+      return 'https://www.postgresql.org/docs/current/';
+    }
+  } catch {
+    // Locator-shape validation reports malformed canonical locators.
+  }
+  return identity;
+}
 
 const explicitAdaptLicenses = new Set([
   'CC-BY-4.0',
@@ -562,7 +583,7 @@ function validateSource(source, index, errors) {
   if (!nonEmpty(source.license_evidence_note) && source.license_evidence_url === null) {
     errors.push(`${label}: license evidence URL or note is required`);
   }
-  const expectedFamily = licenseFamilyIdentity(source.canonical_locator);
+  const expectedFamily = expectedLicenseFamily(source);
   if (source.license_family_grouping === 'identity') {
     if (source.license_family_id !== expectedFamily) {
       errors.push(

@@ -30,6 +30,7 @@ adjacent_topics:
   - PR-03
   - PR-04
   - PR-11
+  - MOD-05
 related_cases:
   - /cases/temporal-saga-durable-execution
 related_questions: []
@@ -97,7 +98,7 @@ Persistence Ignorance 不要求 ORM，仓储是可选的，也不要求在所有
 
 ## 相邻原则
 
-[单一职责与关注点分离](/principles/pr-03)区分领域政策与持久化责任的变化所有者；[依赖倒置、控制反转与依赖注入](/principles/pr-04)让领域所需端口决定依赖方向，却不决定一定使用仓储；[CQS、CQRS 与读写分离](/principles/pr-11)允许读取模型按查询形状分离，而不把持久化关注塞回同一领域模型。
+[单一职责与关注点分离](/principles/pr-03)区分领域政策与持久化责任的变化所有者；[依赖倒置、控制反转与依赖注入](/principles/pr-04)让领域所需端口决定依赖方向，却不决定一定使用仓储；[CQS、CQRS 与读写分离](/principles/pr-11)允许读取模型按查询形状分离，而不把持久化关注塞回同一领域模型。[MOD-05 概念、逻辑与物理数据模型](/modeling/mod-05)进一步把领域含义与关系模式、PostgreSQL 实现决定分层。
 
 ## 说明性场景
 

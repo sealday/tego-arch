@@ -1102,6 +1102,7 @@ test('enforces license-specific copyright policies', () => {
   const cases = [
     ['CC-BY-4.0', 'facts-and-short-quotation', 'adapt-with-attribution'],
     ['CC-BY-SA-4.0', 'facts-and-short-quotation', 'adapt-sharealike-review'],
+    ['PostgreSQL', 'facts-and-short-quotation', 'adapt-with-attribution'],
     [
       'LicenseRef-US-Gov-Public-Domain',
       'facts-and-short-quotation',
@@ -1173,6 +1174,20 @@ test('enforces license-specific copyright policies', () => {
     parseSourceLedger(ledger({sources: [cc0], documents: {}})).errors,
     [],
   );
+});
+
+test('accepts the governed PostgreSQL documentation license family', () => {
+  const canonical = 'https://www.postgresql.org/docs/current/ddl-constraints.html';
+  const source = sourceFixture('src-postgresql-family', {
+    canonical_locator: canonical,
+    transport_locator: canonical,
+    license: 'PostgreSQL',
+    license_family_id: 'https://www.postgresql.org/docs/current/',
+    copyright_policy: 'adapt-with-attribution',
+    expected_final_transport_locator: canonical,
+  });
+  const parsed = parseSourceLedger(ledger({sources: [source], documents: {}}));
+  assert.deepEqual(parsed.errors, []);
 });
 
 test('keeps vendor claims and illustration rights explicit', () => {

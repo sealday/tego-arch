@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-07-30T11:23:03.730Z",
+  "generated_at": "2026-07-31T03:38:30.783Z",
   "results": [
     {
       "transport_locator": "https://a2a-protocol.org/latest/",
@@ -30387,6 +30387,68 @@
       "review_status": "healthy"
     },
     {
+      "transport_locator": "https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2bf926e1b1014a7c7c75eb751dd6e.html",
+      "source_ids": [
+        "src-sap-powerdesigner-data-modeling-16-7-sp10"
+      ],
+      "last_attempt": {
+        "at": "2026-07-31T03:38:30.783Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2bf926e1b1014a7c7c75eb751dd6e.html",
+        "http_status": 200,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-07-31T03:38:30.783Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2bf926e1b1014a7c7c75eb751dd6e.html",
+        "http_status": 200,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-07-31T03:38:30.783Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2bf926e1b1014a7c7c75eb751dd6e.html",
+          "http_status": 200,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2e0646e1b1014b15599cfaffb4f4a.html",
+      "source_ids": [
+        "src-sap-powerdesigner-physical-model-16-7-sp10"
+      ],
+      "last_attempt": {
+        "at": "2026-07-31T03:38:30.783Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2e0646e1b1014b15599cfaffb4f4a.html",
+        "http_status": 200,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-07-31T03:38:30.783Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2e0646e1b1014b15599cfaffb4f4a.html",
+        "http_status": 200,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-07-31T03:38:30.783Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2e0646e1b1014b15599cfaffb4f4a.html",
+          "http_status": 200,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
       "transport_locator": "https://ieeexplore.ieee.org/document/5388187/",
       "source_ids": [
         "src-ibm-structured-design-1974"
@@ -36581,6 +36643,37 @@
       "review_status": "healthy"
     },
     {
+      "transport_locator": "https://www.ibm.com/docs/en/ida/9.1.1?topic=modeling-logical-data-models",
+      "source_ids": [
+        "src-ibm-ida-logical-data-model-9-1-1"
+      ],
+      "last_attempt": {
+        "at": "2026-07-31T03:38:30.783Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www.ibm.com/docs/en/ida/9.1.1?topic=modeling-logical-data-models",
+        "http_status": 206,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-07-31T03:38:30.783Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www.ibm.com/docs/en/ida/9.1.1?topic=modeling-logical-data-models",
+        "http_status": 206,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-07-31T03:38:30.783Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://www.ibm.com/docs/en/ida/9.1.1?topic=modeling-logical-data-models",
+          "http_status": 206,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
       "transport_locator": "https://www.informit.com/store/applying-domain-driven-design-and-patterns-with-examples-9780321268204",
       "source_ids": [
         "src-nilsson-ddd-patterns-2006"
@@ -37128,6 +37221,68 @@
           "outcome": "healthy",
           "final_transport_locator": "https://www.pearson.com/en-us/subject-catalog/p/Larman-Applying-UML-and-Patterns-An-Introduction-to-Object-Oriented-Analysis-and-Design-and-Iterative-Development-3rd-Edition/P200000000422/9780131489066",
           "http_status": 200,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://www.postgresql.org/docs/current/ddl-constraints.html",
+      "source_ids": [
+        "src-postgresql-18-constraints"
+      ],
+      "last_attempt": {
+        "at": "2026-07-31T03:38:30.783Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www.postgresql.org/docs/current/ddl-constraints.html",
+        "http_status": 206,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-07-31T03:38:30.783Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www.postgresql.org/docs/current/ddl-constraints.html",
+        "http_status": 206,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-07-31T03:38:30.783Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://www.postgresql.org/docs/current/ddl-constraints.html",
+          "http_status": 206,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://www.postgresql.org/docs/current/indexes.html",
+      "source_ids": [
+        "src-postgresql-18-indexes"
+      ],
+      "last_attempt": {
+        "at": "2026-07-31T03:38:30.783Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www.postgresql.org/docs/current/indexes.html",
+        "http_status": 206,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-07-31T03:38:30.783Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www.postgresql.org/docs/current/indexes.html",
+        "http_status": 206,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-07-31T03:38:30.783Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://www.postgresql.org/docs/current/indexes.html",
+          "http_status": 206,
           "login_wall_detected": false
         }
       ],

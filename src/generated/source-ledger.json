@@ -17987,6 +17987,51 @@
       ]
     },
     {
+      "id": "src-ibm-ida-logical-data-model-9-1-1",
+      "canonical_locator": "https://www.ibm.com/docs/en/ida/9.1.1?topic=modeling-logical-data-models",
+      "transport_locator": "https://www.ibm.com/docs/en/ida/9.1.1?topic=modeling-logical-data-models",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Logical Data Models — IBM InfoSphere Data Architect 9.1.1",
+      "author_or_org": "IBM",
+      "published_at": null,
+      "registered_at": "2026-07-31",
+      "checked_at": "2026-07-31",
+      "version": "IBM InfoSphere Data Architect 9.1.1 documentation checked on 2026-07-31",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "learning",
+        "method"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "Facts and the named IBM documentation page only; prose, figures, tables, screenshots, product UI, trademarks, linked works, and third-party material excluded",
+      "license_evidence_url": "https://www.ibm.com/legal/terms",
+      "license_evidence_note": "IBM's website terms do not grant an open documentation reuse license; Tego Arch uses links and original factual summaries only.",
+      "license_family_id": "https://www.ibm.com/docs/en/ida/9.1.1?topic=modeling-logical-data-models",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports DBMS-independent logical entities, identifiers, relationships, and constraints; it does not establish current DBMS behavior.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://www.ibm.com/docs/en/ida/9.1.1?topic=modeling-logical-data-models",
+      "expected_final_approved_at": "2026-07-31",
+      "expected_final_approval_note": "Reviewed G008 Batch 3 IBM documentation transport and all-rights-reserved boundary",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://www.ibm.com/docs/en/ida/9.1.1?topic=modeling-logical-data-models",
+          "status": "healthy",
+          "last_attempt_at": "2026-07-31T03:38:30.783Z",
+          "last_success_at": "2026-07-31T03:38:30.783Z",
+          "http_status": 206,
+          "final_transport_locator": "https://www.ibm.com/docs/en/ida/9.1.1?topic=modeling-logical-data-models"
+        }
+      ]
+    },
+    {
       "query_insensitive": false,
       "locator_aliases": [],
       "tombstone": null,
@@ -20922,6 +20967,96 @@
       ]
     },
     {
+      "id": "src-postgresql-18-constraints",
+      "canonical_locator": "https://www.postgresql.org/docs/current/ddl-constraints.html",
+      "transport_locator": "https://www.postgresql.org/docs/current/ddl-constraints.html",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "PostgreSQL 18 — Constraints",
+      "author_or_org": "PostgreSQL Global Development Group",
+      "published_at": "2025-09-25",
+      "registered_at": "2026-07-31",
+      "checked_at": "2026-07-31",
+      "version": "PostgreSQL 18 current documentation checked on 2026-07-31",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "implementation",
+        "learning"
+      ],
+      "license": "PostgreSQL",
+      "license_scope": "The named PostgreSQL documentation page under the PostgreSQL License; trademarks, linked works, and separately licensed third-party material excluded",
+      "license_evidence_url": "https://www.postgresql.org/about/licence/",
+      "license_evidence_note": "The official PostgreSQL license page permits use, copy, modification, and distribution subject to its copyright and permission notice.",
+      "license_family_id": "https://www.postgresql.org/docs/current/",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "adapt-with-attribution",
+      "usage_boundary": "Supports PostgreSQL 18 constraint or index behavior only; it does not define the conceptual/logical/physical three-layer taxonomy or prove application performance.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://www.postgresql.org/docs/current/ddl-constraints.html",
+      "expected_final_approved_at": "2026-07-31",
+      "expected_final_approval_note": "Reviewed G008 Batch 3 PostgreSQL 18 documentation transport and license boundary",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://www.postgresql.org/docs/current/ddl-constraints.html",
+          "status": "healthy",
+          "last_attempt_at": "2026-07-31T03:38:30.783Z",
+          "last_success_at": "2026-07-31T03:38:30.783Z",
+          "http_status": 206,
+          "final_transport_locator": "https://www.postgresql.org/docs/current/ddl-constraints.html"
+        }
+      ]
+    },
+    {
+      "id": "src-postgresql-18-indexes",
+      "canonical_locator": "https://www.postgresql.org/docs/current/indexes.html",
+      "transport_locator": "https://www.postgresql.org/docs/current/indexes.html",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "PostgreSQL 18 — Indexes",
+      "author_or_org": "PostgreSQL Global Development Group",
+      "published_at": "2025-09-25",
+      "registered_at": "2026-07-31",
+      "checked_at": "2026-07-31",
+      "version": "PostgreSQL 18 current documentation checked on 2026-07-31",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "implementation",
+        "learning"
+      ],
+      "license": "PostgreSQL",
+      "license_scope": "The named PostgreSQL documentation page under the PostgreSQL License; trademarks, linked works, and separately licensed third-party material excluded",
+      "license_evidence_url": "https://www.postgresql.org/about/licence/",
+      "license_evidence_note": "The official PostgreSQL license page permits use, copy, modification, and distribution subject to its copyright and permission notice.",
+      "license_family_id": "https://www.postgresql.org/docs/current/",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "adapt-with-attribution",
+      "usage_boundary": "Supports PostgreSQL 18 constraint or index behavior only; it does not define the conceptual/logical/physical three-layer taxonomy or prove application performance.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://www.postgresql.org/docs/current/indexes.html",
+      "expected_final_approved_at": "2026-07-31",
+      "expected_final_approval_note": "Reviewed G008 Batch 3 PostgreSQL 18 documentation transport and license boundary",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://www.postgresql.org/docs/current/indexes.html",
+          "status": "healthy",
+          "last_attempt_at": "2026-07-31T03:38:30.783Z",
+          "last_success_at": "2026-07-31T03:38:30.783Z",
+          "http_status": 206,
+          "final_transport_locator": "https://www.postgresql.org/docs/current/indexes.html"
+        }
+      ]
+    },
+    {
       "query_insensitive": false,
       "locator_aliases": [],
       "tombstone": null,
@@ -21502,6 +21637,96 @@
           "last_success_at": "2026-07-29T06:45:33.899Z",
           "http_status": 200,
           "final_transport_locator": "https://web.mit.edu/Saltzer/www/publications/protection/"
+        }
+      ]
+    },
+    {
+      "id": "src-sap-powerdesigner-data-modeling-16-7-sp10",
+      "canonical_locator": "https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2bf926e1b1014a7c7c75eb751dd6e.html",
+      "transport_locator": "https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2bf926e1b1014a7c7c75eb751dd6e.html",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Getting Started with Data Modeling — SAP PowerDesigner 16.7 SP10",
+      "author_or_org": "SAP",
+      "published_at": null,
+      "registered_at": "2026-07-31",
+      "checked_at": "2026-07-31",
+      "version": "SAP PowerDesigner 16.7 SP10 documentation checked on 2026-07-31",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "learning",
+        "method"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "Facts and the named SAP PowerDesigner documentation page only; prose, figures, tables, screenshots, product UI, trademarks, linked works, and third-party material excluded",
+      "license_evidence_url": "https://www.sap.com/about/legal/copyright.html",
+      "license_evidence_note": "SAP's copyright notice does not grant an open reuse license; Tego Arch uses links and original factual summaries only.",
+      "license_family_id": "https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2bf926e1b1014a7c7c75eb751dd6e.html",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports the named PowerDesigner abstraction or physical-model concept only; it is a product method, not a universal data-modeling standard.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2bf926e1b1014a7c7c75eb751dd6e.html",
+      "expected_final_approved_at": "2026-07-31",
+      "expected_final_approval_note": "Reviewed G008 Batch 3 SAP documentation transport and all-rights-reserved boundary",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2bf926e1b1014a7c7c75eb751dd6e.html",
+          "status": "healthy",
+          "last_attempt_at": "2026-07-31T03:38:30.783Z",
+          "last_success_at": "2026-07-31T03:38:30.783Z",
+          "http_status": 200,
+          "final_transport_locator": "https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2bf926e1b1014a7c7c75eb751dd6e.html"
+        }
+      ]
+    },
+    {
+      "id": "src-sap-powerdesigner-physical-model-16-7-sp10",
+      "canonical_locator": "https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2e0646e1b1014b15599cfaffb4f4a.html",
+      "transport_locator": "https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2e0646e1b1014b15599cfaffb4f4a.html",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Physical Data Models — SAP PowerDesigner 16.7 SP10",
+      "author_or_org": "SAP",
+      "published_at": null,
+      "registered_at": "2026-07-31",
+      "checked_at": "2026-07-31",
+      "version": "SAP PowerDesigner 16.7 SP10 documentation checked on 2026-07-31",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "learning",
+        "method"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "Facts and the named SAP PowerDesigner documentation page only; prose, figures, tables, screenshots, product UI, trademarks, linked works, and third-party material excluded",
+      "license_evidence_url": "https://www.sap.com/about/legal/copyright.html",
+      "license_evidence_note": "SAP's copyright notice does not grant an open reuse license; Tego Arch uses links and original factual summaries only.",
+      "license_family_id": "https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2e0646e1b1014b15599cfaffb4f4a.html",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports the named PowerDesigner abstraction or physical-model concept only; it is a product method, not a universal data-modeling standard.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2e0646e1b1014b15599cfaffb4f4a.html",
+      "expected_final_approved_at": "2026-07-31",
+      "expected_final_approval_note": "Reviewed G008 Batch 3 SAP documentation transport and all-rights-reserved boundary",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2e0646e1b1014b15599cfaffb4f4a.html",
+          "status": "healthy",
+          "last_attempt_at": "2026-07-31T03:38:30.783Z",
+          "last_success_at": "2026-07-31T03:38:30.783Z",
+          "http_status": 200,
+          "final_transport_locator": "https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2e0646e1b1014b15599cfaffb4f4a.html"
         }
       ]
     },
@@ -29035,6 +29260,87 @@
           "manifest_primary": true,
           "usage_mode": "facts-summary",
           "attribution_note": "Observability, Microsoft",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/modeling/mod-05-conceptual-logical-physical-data-model.mdx": {
+      "title": "概念、逻辑与物理数据模型",
+      "slug": "/modeling/mod-05",
+      "reviewed_at": "2026-07-31",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-ibm-ida-logical-data-model-9-1-1",
+          "citation_url": "https://www.ibm.com/docs/en/ida/9.1.1?topic=modeling-logical-data-models",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Logical data models, IBM InfoSphere Data Architect 9.1.1",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-postgresql-18-constraints",
+          "citation_url": "https://www.postgresql.org/docs/current/ddl-constraints.html",
+          "roles": [
+            "implementation"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "PostgreSQL 18 Constraints, PostgreSQL Global Development Group",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-postgresql-18-indexes",
+          "citation_url": "https://www.postgresql.org/docs/current/indexes.html",
+          "roles": [
+            "implementation"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "PostgreSQL 18 Indexes, PostgreSQL Global Development Group",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-sap-powerdesigner-data-modeling-16-7-sp10",
+          "citation_url": "https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2bf926e1b1014a7c7c75eb751dd6e.html",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Getting Started with Data Modeling, SAP PowerDesigner 16.7 SP10",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-sap-powerdesigner-physical-model-16-7-sp10",
+          "citation_url": "https://help.sap.com/docs/SAP_POWERDESIGNER/856348b84a7c479489d5172a630f014d/c7c2e0646e1b1014b15599cfaffb4f4a.html",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Physical Data Models, SAP PowerDesigner 16.7 SP10",
           "modification_note": null,
           "excerpt": null,
           "quotation_reviewed": false
