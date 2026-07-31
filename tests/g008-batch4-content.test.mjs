@@ -11,6 +11,9 @@ import {extractInternalLinks} from '../scripts/content-relations.mjs';
 import {extractExternalLinks} from '../scripts/source-ledger.mjs';
 
 const contentRoot = fileURLToPath(new URL('../content/', import.meta.url));
+const horizontalArrowKeyModule = await import(
+  '../src/components/KeyboardScrollableRegion/handleHorizontalArrowKey.mjs'
+).catch(() => null);
 const modelingHeadings = [
   '学习问题',
   '建模目标与输入',
@@ -76,6 +79,35 @@ function fencedBlock(body, language) {
   )];
   assert.equal(matches.length, 1, `expected exactly one ${language} block`);
   return matches[0][1];
+}
+
+function horizontalArrowEvent({
+  key = 'ArrowRight',
+  clientWidth = 100,
+  scrollWidth = 300,
+  scrollLeft = 80,
+  childTarget = false,
+  ...modifiers
+} = {}) {
+  const region = {clientWidth, scrollWidth, scrollLeft};
+  let defaultPrevented = false;
+  return {
+    event: {
+      key,
+      currentTarget: region,
+      target: childTarget ? {} : region,
+      altKey: false,
+      ctrlKey: false,
+      metaKey: false,
+      shiftKey: false,
+      ...modifiers,
+      preventDefault() {
+        defaultPrevented = true;
+      },
+    },
+    region,
+    wasDefaultPrevented: () => defaultPrevented,
+  };
 }
 
 test('publishes MOD-06 with the approved scope and metadata', () => {
@@ -162,17 +194,48 @@ test('makes every MOD-06 overflow region explicitly keyboard-scrollable', () => 
   const body = requiredDocument('MOD-06').body;
   assert.match(
     body,
-    /const handleHorizontalArrowKey = \(event\) => \{/u,
+    /import \{handleHorizontalArrowKey\} from '@site\/src\/components\/KeyboardScrollableRegion\/handleHorizontalArrowKey\.mjs';/u,
   );
-  assert.match(body, /scrollWidth <= region\.clientWidth/u);
-  assert.match(body, /event\.key === 'ArrowRight'/u);
-  assert.match(body, /event\.key === 'ArrowLeft'/u);
-  assert.match(body, /region\.scrollLeft = Math\.min/u);
-  assert.match(body, /Math\.max\(0, nextScrollLeft\)/u);
   assert.equal(
     [...body.matchAll(/onKeyDown=\{handleHorizontalArrowKey\}/gu)].length,
     3,
   );
+});
+
+test('scrolls a directly focused overflow region by 40px and clamps bounds', () => {
+  assert.ok(horizontalArrowKeyModule, 'keyboard scroll helper must exist');
+  const {handleHorizontalArrowKey} = horizontalArrowKeyModule;
+
+  for (const [key, initial, expected] of [
+    ['ArrowRight', 80, 120],
+    ['ArrowLeft', 80, 40],
+    ['ArrowLeft', 20, 0],
+    ['ArrowRight', 190, 200],
+  ]) {
+    const probe = horizontalArrowEvent({key, scrollLeft: initial});
+    handleHorizontalArrowKey(probe.event);
+    assert.equal(probe.region.scrollLeft, expected, `${key} from ${initial}`);
+    assert.equal(probe.wasDefaultPrevented(), true, `${key} prevents default`);
+  }
+});
+
+test('leaves unrelated keyboard input and non-overflow regions untouched', () => {
+  assert.ok(horizontalArrowKeyModule, 'keyboard scroll helper must exist');
+  const {handleHorizontalArrowKey} = horizontalArrowKeyModule;
+  const probes = [
+    horizontalArrowEvent({key: 'Enter'}),
+    horizontalArrowEvent({clientWidth: 300, scrollWidth: 300}),
+    horizontalArrowEvent({childTarget: true}),
+    ...['altKey', 'ctrlKey', 'metaKey', 'shiftKey'].map((modifier) => (
+      horizontalArrowEvent({[modifier]: true})
+    )),
+  ];
+
+  for (const probe of probes) {
+    handleHorizontalArrowKey(probe.event);
+    assert.equal(probe.region.scrollLeft, 80);
+    assert.equal(probe.wasDefaultPrevented(), false);
+  }
 });
 
 test('defines effective-dated relationship history without claiming bitemporal storage', () => {
