@@ -87,6 +87,10 @@ test('publishes MOD-07 with the approved metadata and scope', () => {
   );
   assert.match(document.body, /MOD-02[^。\n]*权威/u);
   assert.match(document.body, /本站原创[^。\n]*教学/u);
+  assert.match(
+    document.body,
+    /MOD-02[^。\n]*系统边界[^。\n]*员工名称；审批人和财务人员[^。\n]*本站原创[^。\n]*教学假设/u,
+  );
 });
 
 test('routes one review question to exactly five UML choices', () => {
