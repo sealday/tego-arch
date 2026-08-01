@@ -69,6 +69,7 @@ test('publishes MOD-01 as the six-question model-selection router', () => {
   assert.deepEqual(document.metadata.adjacent_topics, [
     'MOD-02',
     'MOD-06',
+    'MOD-07',
     'QA-01',
     'MTH-03',
   ]);
@@ -140,6 +141,7 @@ test('keeps reciprocal MOD-01 adjacency and visible backlinks with QA-01 and MTH
   assert.deepEqual(mod01.metadata.adjacent_topics, [
     'MOD-02',
     'MOD-06',
+    'MOD-07',
     'QA-01',
     'MTH-03',
   ]);
@@ -173,7 +175,7 @@ test('publishes MOD-03 with three evidence-bounded C4 views', () => {
   assert.equal(document.metadata.status, 'reviewed');
   assert.equal(document.metadata.priority, 'P0');
   assert.deepEqual(document.metadata.depends_on, ['MOD-01', 'MOD-02']);
-  assert.deepEqual(document.metadata.adjacent_topics, ['MOD-02', 'MOD-04']);
+  assert.deepEqual(document.metadata.adjacent_topics, ['MOD-02', 'MOD-04', 'MOD-07']);
   assert.deepEqual(
     document.headings.filter(({level}) => level === 2).map(({text}) => text),
     modelingHeadings,
@@ -333,8 +335,8 @@ test('projects G008 Batch 1 completion during Stage B', async () => {
     schema_version: 1,
     durable_stories: {completed: 7, total: 20, current: 'G008'},
     completed_topics: 45,
-    content_documents: 87,
-    governed_sources: 475,
+    content_documents: 88,
+    governed_sources: 476,
     sources: {
       durable_stories: 'docs/content-backlog.md',
       completed_topics: 'docs/content-backlog.md',

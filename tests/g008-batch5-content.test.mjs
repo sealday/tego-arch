@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
 import test from 'node:test';
 import {fileURLToPath} from 'node:url';
 
@@ -7,6 +8,7 @@ import {
   readContentDocuments,
 } from '../scripts/content-metadata.mjs';
 import {extractInternalLinks} from '../scripts/content-relations.mjs';
+import {extractExternalLinks} from '../scripts/source-ledger.mjs';
 import {handleHorizontalArrowKey} from '../src/components/KeyboardScrollableRegion/handleHorizontalArrowKey.mjs';
 
 const contentRoot = fileURLToPath(new URL('../content/', import.meta.url));
@@ -22,6 +24,9 @@ const modelingHeadings = [
   '来源',
 ];
 const documents = await readContentDocuments(contentRoot);
+const ledger = JSON.parse(
+  await readFile(new URL('../data/source-ledger.json', import.meta.url), 'utf8'),
+);
 const byId = new Map(
   documents
     .filter(({metadata}) => typeof metadata.topic_id === 'string')
@@ -77,7 +82,7 @@ test('publishes MOD-07 with the approved metadata and scope', () => {
   assert.equal(document.metadata.priority, 'P0');
   assert.equal(document.metadata.review_policy, 'quarterly-version-sensitive');
   assert.deepEqual(document.metadata.depends_on, ['MOD-01']);
-  assert.deepEqual(document.metadata.adjacent_topics, ['MOD-03', 'MOD-06']);
+  assert.deepEqual(document.metadata.adjacent_topics, ['MOD-01', 'MOD-03', 'MOD-06']);
   assert.deepEqual(document.metadata.related_cases, [
     '/cases/temporal-saga-durable-execution',
   ]);
@@ -140,4 +145,88 @@ test('keeps both overflow regions keyboard accessible', () => {
   const body = requiredDocument('MOD-07').body;
   assert.equal([...body.matchAll(/onKeyDown=\{handleHorizontalArrowKey\}/gu)].length, 2);
   assert.equal([...body.matchAll(/tabIndex=\{0\}/gu)].length, 2);
+});
+
+test('governs the four pinned MOD-07 sources and exposes their canonical locators', () => {
+  const document = requiredDocument('MOD-07');
+  const governed = ledger.documents['content/modeling/mod-07-uml-diagram-selection-guide.mdx'];
+  const expectedSources = new Map([
+    ['src-omg-uml-2-5-1-2017', 'https://www.omg.org/spec/UML/2.5.1'],
+    ['src-c4model-dynamic-diagram', 'https://c4model.com/diagrams/dynamic'],
+    ['src-c4model-deployment-diagram', 'https://c4model.com/diagrams/deployment'],
+    ['src-larman-applying-uml-patterns-3e-2004', 'https://www.pearson.com/en-us/subject-catalog/p/Larman-Applying-UML-and-Patterns-An-Introduction-to-Object-Oriented-Analysis-and-Design-and-Iterative-Development-3rd-Edition/P200000000422/9780131489066'],
+  ]);
+  const visible = new Set(extractExternalLinks(document));
+
+  assert.ok(governed, 'MOD-07 source review must exist');
+  assert.equal(governed.reviewed_at, '2026-08-01');
+  assert.deepEqual(governed.copyright_checks, [
+    'original-structure',
+    'quotation-boundary',
+    'attribution-complete',
+    'illustration-rights',
+  ]);
+  assert.deepEqual(governed.citations, [
+    {source_id: 'src-omg-uml-2-5-1-2017', citation_url: 'https://www.omg.org/spec/UML/2.5.1', roles: ['definition', 'method'], manifest_primary: true, usage_mode: 'facts-summary', attribution_note: 'Unified Modeling Language 2.5.1, Object Management Group', modification_note: null, excerpt: null, quotation_reviewed: false},
+    {source_id: 'src-c4model-dynamic-diagram', citation_url: 'https://c4model.com/diagrams/dynamic', roles: ['definition', 'method'], manifest_primary: false, usage_mode: 'facts-summary', attribution_note: 'C4 Model — Dynamic diagram, Simon Brown', modification_note: null, excerpt: null, quotation_reviewed: false},
+    {source_id: 'src-c4model-deployment-diagram', citation_url: 'https://c4model.com/diagrams/deployment', roles: ['definition', 'method'], manifest_primary: false, usage_mode: 'facts-summary', attribution_note: 'C4 Model — Deployment diagram, Simon Brown', modification_note: null, excerpt: null, quotation_reviewed: false},
+    {source_id: 'src-larman-applying-uml-patterns-3e-2004', citation_url: 'https://www.pearson.com/en-us/subject-catalog/p/Larman-Applying-UML-and-Patterns-An-Introduction-to-Object-Oriented-Analysis-and-Design-and-Iterative-Development-3rd-Edition/P200000000422/9780131489066', roles: ['historical-context', 'learning'], manifest_primary: false, usage_mode: 'facts-summary', attribution_note: 'Applying UML and Patterns, 3rd edition, Craig Larman / Pearson', modification_note: null, excerpt: null, quotation_reviewed: false},
+  ]);
+
+  for (const [sourceId, locator] of expectedSources) {
+    assert.equal(ledger.sources.find(({id}) => id === sourceId)?.canonical_locator, locator);
+    assert.ok(visible.has(locator), locator);
+  }
+  const omg = ledger.sources.find(({id}) => id === 'src-omg-uml-2-5-1-2017');
+  assert.equal(omg.source_kind, 'standard');
+  assert.equal(omg.tier, 'primary');
+  assert.equal(omg.version, 'UML 2.5.1, formal, December 2017; checked 2026-08-01');
+  assert.equal(omg.license, 'LicenseRef-All-Rights-Reserved');
+  assert.equal(omg.checked_at, '2026-08-01');
+  assert.equal(governed.citations.filter(({manifest_primary}) => manifest_primary).length, 1);
+});
+
+test('connects MOD-07 reciprocally without linking unpublished MOD-08', () => {
+  const document = requiredDocument('MOD-07');
+  const links = new Set(extractInternalLinks(document));
+  for (const href of [
+    '/modeling',
+    '/modeling/mod-01',
+    '/modeling/mod-03',
+    '/modeling/mod-06',
+    '/cases/temporal-saga-durable-execution',
+  ]) assert.ok(links.has(href), href);
+  assert.ok(!links.has('/modeling/mod-08'));
+  assert.match(document.body, /MOD-08[^。\n]*仍未发布/u);
+
+  for (const id of ['MOD-01', 'MOD-03', 'MOD-06']) {
+    const peer = requiredDocument(id);
+    assert.ok(peer.metadata.adjacent_topics.includes('MOD-07'), `${id} adjacency`);
+    assert.ok(extractInternalLinks(peer).includes('/modeling/mod-07'), `${id} visible link`);
+  }
+});
+
+test('projects the Stage A counts while MOD-07 remains pending', async () => {
+  const [status, indexes] = await Promise.all([
+    readFile(new URL('../src/generated/project-status.json', import.meta.url), 'utf8').then(JSON.parse),
+    readFile(new URL('../src/generated/topic-indexes.json', import.meta.url), 'utf8').then(JSON.parse),
+  ]);
+  assert.deepEqual(status, {
+    schema_version: 1,
+    durable_stories: {completed: 7, total: 20, current: 'G008'},
+    completed_topics: 45,
+    content_documents: 88,
+    governed_sources: 476,
+    sources: {
+      durable_stories: 'docs/content-backlog.md',
+      completed_topics: 'docs/content-backlog.md',
+      content_documents: 'content/**/*.{md,mdx}',
+      governed_sources: 'data/source-ledger.json',
+    },
+  });
+  const topicsById = new Map(
+    Object.values(indexes).flat().map((topic) => [topic.id, topic]),
+  );
+  assert.equal(topicsById.get('MOD-07').published, true);
+  assert.equal(topicsById.get('MOD-07').status.value, 'pending');
 });

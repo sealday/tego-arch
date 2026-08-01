@@ -25,6 +25,7 @@ depends_on:
 adjacent_topics:
   - MOD-02
   - MOD-06
+  - MOD-07
   - QA-01
   - MTH-03
 related_cases:
@@ -87,7 +88,7 @@ flowchart TD
 
 ## 与其他模型的衔接
 
-[C4 Context 与 Container](/modeling/mod-02)用于系统与容器边界；行为问题要补 Dynamic 或 sequence；部署问题要补 Deployment；决策原因要由 [ADR 生命周期](/methods/mth-03)承担。不同模型共享规范名称，但不能互相冒充证据。
+[C4 Context 与 Container](/modeling/mod-02)用于系统与容器边界；需要在 use case、sequence、state、class 与 deployment 间按评审问题选图时，进入 [MOD-07 UML 选图指南](/modeling/mod-07)；行为问题要补 Dynamic 或 sequence；部署问题要补 Deployment；决策原因要由 [ADR 生命周期](/methods/mth-03)承担。不同模型共享规范名称，但不能互相冒充证据。
 
 ## 完整演练
 

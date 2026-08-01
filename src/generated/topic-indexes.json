@@ -1527,27 +1527,6 @@
   ],
   "modeling": [
     {
-      "id": "MOD-07",
-      "type": "modeling",
-      "title": "UML 选图指南",
-      "slug": "/modeling/mod-07",
-      "priority": "P0",
-      "status": {
-        "scope": "backlog-projection",
-        "value": "pending",
-        "source": "docs/content-backlog.md"
-      },
-      "dependencies": [],
-      "adjacent_topics": [],
-      "primary_sources": [],
-      "related_cases": [],
-      "related_questions": [],
-      "reviewed_at": null,
-      "review_policy": null,
-      "published": false,
-      "pattern_group": null
-    },
-    {
       "id": "MOD-01",
       "type": "modeling",
       "title": "建模总览",
@@ -1564,6 +1543,7 @@
       "adjacent_topics": [
         "MOD-02",
         "MOD-06",
+        "MOD-07",
         "QA-01",
         "MTH-03"
       ],
@@ -1648,6 +1628,38 @@
       "presentation": {}
     },
     {
+      "id": "MOD-07",
+      "type": "modeling",
+      "title": "UML 选图指南",
+      "slug": "/modeling/mod-07",
+      "priority": "P0",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "pending",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "MOD-01"
+      ],
+      "adjacent_topics": [
+        "MOD-01",
+        "MOD-03",
+        "MOD-06"
+      ],
+      "primary_sources": [
+        "https://www.omg.org/spec/UML/2.5.1"
+      ],
+      "related_cases": [
+        "/cases/temporal-saga-durable-execution"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-08-01",
+      "review_policy": "quarterly-version-sensitive",
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
+    },
+    {
       "id": "MOD-03",
       "type": "modeling",
       "title": "C4 Component、Dynamic 与 Deployment",
@@ -1664,7 +1676,8 @@
       ],
       "adjacent_topics": [
         "MOD-02",
-        "MOD-04"
+        "MOD-04",
+        "MOD-07"
       ],
       "primary_sources": [
         "https://c4model.com/diagrams/component"
@@ -1696,6 +1709,7 @@
       "adjacent_topics": [
         "MOD-01",
         "MOD-05",
+        "MOD-07",
         "PR-13"
       ],
       "primary_sources": [

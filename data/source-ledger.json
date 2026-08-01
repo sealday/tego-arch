@@ -15171,6 +15171,36 @@
       "expected_final_approval_note": "Reviewed canonical publication-index HTTPS transport and literal page-footer license notice on 2026-07-27."
     },
     {
+      "id": "src-omg-uml-2-5-1-2017",
+      "canonical_locator": "https://www.omg.org/spec/UML/2.5.1",
+      "transport_locator": "https://www.omg.org/spec/UML/2.5.1/PDF",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Unified Modeling Language 2.5.1",
+      "author_or_org": "Object Management Group",
+      "published_at": "2017-12-01",
+      "registered_at": "2026-08-01",
+      "checked_at": "2026-08-01",
+      "version": "UML 2.5.1, formal, December 2017; checked 2026-08-01",
+      "source_kind": "standard",
+      "tier": "primary",
+      "allowed_evidence_roles": ["definition", "learning", "method"],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named OMG UML 2.5.1 version record and normative specification facts only; specification prose, diagrams, tables, machine-readable models, logos, trademarks, linked works, and third-party material excluded",
+      "license_evidence_url": "https://www.omg.org/spec/UML/2.5.1",
+      "license_evidence_note": "The official OMG version page identifies UML 2.5.1 and its normative PDF but does not grant Atlas a general reuse license; Atlas retains only links, version facts, attribution, and original summaries.",
+      "license_family_id": "https://www.omg.org/spec/UML/2.5.1",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports UML 2.5.1 diagram names and standard semantic scope only; it does not support the expense-domain examples, model-selection workflow, production facts, or claims that a diagram proves implementation behavior.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://www.omg.org/spec/UML/2.5.1/PDF",
+      "expected_final_approved_at": "2026-08-01",
+      "expected_final_approval_note": "Reviewed the pinned OMG UML 2.5.1 normative PDF transport and conservative all-rights-reserved boundary"
+    },
+    {
       "id": "src-openai-6c059f59453b",
       "canonical_locator": "https://openai.github.io/openai-agents-python/multi_agent/",
       "transport_locator": "https://openai.github.io/openai-agents-python/multi_agent/",
@@ -17902,6 +17932,21 @@
     }
   ],
   "documents": {
+    "content/modeling/mod-07-uml-diagram-selection-guide.mdx": {
+      "reviewed_at": "2026-08-01",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {"source_id":"src-omg-uml-2-5-1-2017","citation_url":"https://www.omg.org/spec/UML/2.5.1","roles":["definition","method"],"manifest_primary":true,"usage_mode":"facts-summary","attribution_note":"Unified Modeling Language 2.5.1, Object Management Group","modification_note":null,"excerpt":null,"quotation_reviewed":false},
+        {"source_id":"src-c4model-dynamic-diagram","citation_url":"https://c4model.com/diagrams/dynamic","roles":["definition","method"],"manifest_primary":false,"usage_mode":"facts-summary","attribution_note":"C4 Model — Dynamic diagram, Simon Brown","modification_note":null,"excerpt":null,"quotation_reviewed":false},
+        {"source_id":"src-c4model-deployment-diagram","citation_url":"https://c4model.com/diagrams/deployment","roles":["definition","method"],"manifest_primary":false,"usage_mode":"facts-summary","attribution_note":"C4 Model — Deployment diagram, Simon Brown","modification_note":null,"excerpt":null,"quotation_reviewed":false},
+        {"source_id":"src-larman-applying-uml-patterns-3e-2004","citation_url":"https://www.pearson.com/en-us/subject-catalog/p/Larman-Applying-UML-and-Patterns-An-Introduction-to-Object-Oriented-Analysis-and-Design-and-Iterative-Development-3rd-Edition/P200000000422/9780131489066","roles":["historical-context","learning"],"manifest_primary":false,"usage_mode":"facts-summary","attribution_note":"Applying UML and Patterns, 3rd edition, Craig Larman / Pearson","modification_note":null,"excerpt":null,"quotation_reviewed":false}
+      ]
+    },
     "content/modeling/mod-06-er-model-relationship-boundaries.mdx": {
       "reviewed_at": "2026-07-31",
       "copyright_checks": [

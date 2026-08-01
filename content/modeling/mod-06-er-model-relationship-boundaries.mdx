@@ -32,6 +32,7 @@ depends_on:
 adjacent_topics:
   - MOD-01
   - MOD-05
+  - MOD-07
   - PR-13
 related_cases:
   - /cases/temporal-saga-durable-execution
@@ -163,7 +164,7 @@ erDiagram
 
 ## 与其他模型的衔接
 
-[建模目录](/modeling)提供各类模型入口；[MOD-01 建模总览](/modeling/mod-01)负责按评审问题选择模型；[MOD-05 概念、逻辑与物理数据模型](/modeling/mod-05)为本页提供四个核心逻辑实体；[PR-13 Persistence Ignorance](/principles/pr-13)帮助区分领域含义与持久化机制。[Temporal Saga 与持久执行案例](/cases/temporal-saga-durable-execution)中的 Event History 是控制面恢复记录，不是费用申报的业务关系历史。MOD-08 尚未发布，将来可用状态机补充批准与付款前置条件；本页不创建尚未有效的链接。
+[建模目录](/modeling)提供各类模型入口；[MOD-01 建模总览](/modeling/mod-01)负责按评审问题选择模型；[MOD-05 概念、逻辑与物理数据模型](/modeling/mod-05)为本页提供四个核心逻辑实体；[MOD-07 UML 选图指南](/modeling/mod-07)进一步区分 UML class 的静态职责视角与本页的数据关系边界；[PR-13 Persistence Ignorance](/principles/pr-13)帮助区分领域含义与持久化机制。[Temporal Saga 与持久执行案例](/cases/temporal-saga-durable-execution)中的 Event History 是控制面恢复记录，不是费用申报的业务关系历史。MOD-08 尚未发布，将来可用状态机补充批准与付款前置条件；本页不创建尚未有效的链接。
 
 ## 完整演练
 

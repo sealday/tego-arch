@@ -122,6 +122,7 @@ test('publishes MOD-06 with the approved scope and metadata', () => {
   assert.deepEqual(document.metadata.adjacent_topics, [
     'MOD-01',
     'MOD-05',
+    'MOD-07',
     'PR-13',
   ]);
   assert.deepEqual(document.metadata.related_cases, [
@@ -295,12 +296,13 @@ test('publishes only the approved MOD-06 relationships and reciprocal links', ()
     '/modeling/mod-01',
     '/modeling/mod-02',
     '/modeling/mod-05',
+    '/modeling/mod-07',
     '/principles/pr-13',
     '/cases/temporal-saga-durable-execution',
   ]) {
     assert.ok(links.has(slug), slug);
   }
-  for (const slug of ['/modeling/mod-07', '/modeling/mod-08']) {
+  for (const slug of ['/modeling/mod-08']) {
     assert.equal(links.has(slug), false, slug);
   }
   assert.match(document.body, /MOD-08[^。\n]*尚未发布/u);
