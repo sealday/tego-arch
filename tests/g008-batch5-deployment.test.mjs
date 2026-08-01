@@ -35,6 +35,19 @@ const [review, backlog, manifest, projectStatus] = await Promise.all([
 ]);
 const topicsById = new Map(manifest.topics.map((topic) => [topic.id, topic]));
 
+function reviewSectionLines(source, heading) {
+  const headings = [...source.matchAll(/^## ([^\n]+)$/gmu)];
+  const matches = headings.filter((match) => match[1] === heading);
+  assert.equal(matches.length, 1, `review must contain one ${heading} section`);
+  const match = matches[0];
+  const next = headings.find((candidate) => candidate.index > match.index);
+  return source
+    .slice(match.index + match[0].length, next?.index ?? source.length)
+    .trim()
+    .split(/\r?\n/u)
+    .filter(Boolean);
+}
+
 function parseEvidence(source) {
   const shaMatches = [...source.matchAll(
     /^Exact Stage A SHA: `([0-9a-f]{40})`$/gmu,
@@ -69,6 +82,8 @@ const expectedReviewEvidence = [
   'source clicks: 8 / 8',
   'relation clicks: 16 / 16',
   'MOD-08 article links: 0; operator requests: 0',
+  'wrapper focusability: diagram and table PASS at desktop and mobile',
+  'keyboard ArrowRight table scrollLeft: desktop 0 → 40; mobile 0 → 40',
   '0 warnings / 0 errors / 0 page errors',
   `artifact SHA-256: \`${expectedArtifactSha256}\``,
   '46 completed topics',
@@ -78,9 +93,68 @@ const expectedReviewEvidence = [
   'Stage B closure — PASS',
 ];
 
+const expectedStageAReviewLines = [
+  '- 88 content documents',
+  '- 476 governed sources',
+  '- 45 completed topics',
+  '- Repository tests: 574 / 574',
+];
+
+const expectedIndependentReviewLines = [
+  '- spec and content compliance: PASS',
+  '- source and copyright boundary: PASS',
+  '- code and test quality: PASS',
+  '- Task 4 production QA: PASS',
+];
+
+const expectedLiveSmokeLines = [
+  '- desktop `1440x1000`',
+  '- mobile `390x844`',
+  '- HTTP canonical routes: 8 / 8',
+  '- Mermaid: 1 / 1',
+  '- five-row evidence table: 1 / 1',
+  '- review records: 5 / 5',
+  '- source labels: 4 / 4',
+  '- source clicks: 8 / 8',
+  '- relation clicks: 16 / 16',
+  '- MOD-08 article links: 0; operator requests: 0',
+  '- document overflow: 0 at desktop and mobile',
+  '- contained horizontal overflow: table PASS at desktop and mobile',
+  '- keyboard scroll/focus',
+  '- wrapper focusability: diagram and table PASS at desktop and mobile',
+  '- keyboard ArrowRight table scrollLeft: desktop 0 → 40; mobile 0 → 40',
+  '- 0 warnings / 0 errors / 0 page errors',
+  `- artifact SHA-256: \`${expectedArtifactSha256}\``,
+];
+
+const expectedStageBReviewLines = [
+  '- 46 completed topics',
+  '- 88 content documents',
+  '- 476 governed sources',
+  '- 7 / 20',
+  '- current G008',
+  '- next MOD-08',
+  'Stage B closure — PASS',
+];
+
 function assertDeploymentEvidence(source) {
   const identity = parseEvidence(source);
   for (const literal of expectedReviewEvidence) assert.ok(source.includes(literal), literal);
+  assert.deepEqual(reviewSectionLines(source, 'Stage A evidence'), expectedStageAReviewLines);
+  assert.deepEqual(
+    reviewSectionLines(source, 'Independent review'),
+    expectedIndependentReviewLines,
+  );
+  assert.deepEqual(reviewSectionLines(source, 'Live smoke'), expectedLiveSmokeLines);
+  assert.deepEqual(reviewSectionLines(source, 'Stage B projection'), expectedStageBReviewLines);
+  for (const [literal, count] of [
+    ['- 45 completed topics', 1],
+    ['- 46 completed topics', 1],
+    ['- 88 content documents', 2],
+    ['- 476 governed sources', 2],
+  ]) {
+    assert.equal(source.split(literal).length - 1, count, `${literal} occurrence count`);
+  }
   assert.doesNotMatch(source, /ACTUAL_|STAGE_A_SHA|RUN_ID|<[^>]+>/u);
   return identity;
 }
@@ -108,7 +182,11 @@ const expectedBatch5Evidence = [
   '8/8 个 canonical HTTP route 检查通过',
   'desktop `1440x1000`',
   'mobile `390x844`',
-  '无 document overflow',
+  'desktop/mobile 均无 document overflow',
+  '五行证据边界表在 desktop/mobile 均使用 contained horizontal overflow',
+  'keyboard focus/ArrowRight scroll 可用',
+  'diagram/table wrappers 在 desktop/mobile 均可聚焦',
+  'table ArrowRight scrollLeft 在 desktop/mobile 均为 0→40',
   '1/1 Mermaid',
   '1/1 五行证据边界表',
   '5/5 条评审记录',
@@ -134,6 +212,8 @@ function assertBatch5BaselineEvidence(source) {
     `[\`${expectedStageASha}\`](https://github.com/sealday/tego-arch/commit/${expectedStageASha})`,
     `[\`${expectedPagesRunId}\`](https://github.com/sealday/tego-arch/actions/runs/${expectedPagesRunId})`,
     `exact \`headSha=${expectedStageASha}\`、\`status=completed\`、\`conclusion=success\``,
+    'Stage A 为 45 个已完成主题、88 篇内容文档与 476 个受治理来源',
+    'Stage B closure 投影为 46 个已完成主题、88 篇内容文档与 476 个受治理来源',
   ]) {
     assert.equal(segment.split(literal).length - 1, 1, `one Batch 5 ${literal}`);
   }
@@ -187,6 +267,71 @@ test('rejects symbolic duplicate incomplete or weakened deployment evidence', ()
   }
   for (const symbolic of ['ACTUAL_SHA', 'STAGE_A_SHA', 'RUN_ID', '<run-id>']) {
     assert.throws(() => assertDeploymentEvidence(review.replace(expectedStageASha, symbolic)));
+  }
+});
+
+test('rejects segment-local review and interaction evidence mutations', () => {
+  for (const mutatedReview of [
+    review.replace(
+      '- spec and content compliance: PASS',
+      '- spec and content compliance: FAIL',
+    ),
+    review.replace(
+      '## Stage B projection\n\n- 46 completed topics\n- 88 content documents',
+      '## Stage B projection\n\n- 46 completed topics\n- 87 content documents',
+    ),
+    review.replace(
+      '## Stage B projection\n\n- 46 completed topics\n- 88 content documents\n- 476 governed sources',
+      '## Stage B projection\n\n- 46 completed topics\n- 88 content documents\n- 475 governed sources',
+    ),
+    review.replace('- document overflow: 0 at desktop and mobile\n', ''),
+    review.replace(
+      '- contained horizontal overflow: table PASS at desktop and mobile\n',
+      '',
+    ),
+    review.replace('- keyboard scroll/focus\n', ''),
+    review.replace(
+      '- wrapper focusability: diagram and table PASS at desktop and mobile\n',
+      '',
+    ),
+    review.replace(
+      '- keyboard ArrowRight table scrollLeft: desktop 0 → 40; mobile 0 → 40\n',
+      '',
+    ),
+  ]) {
+    assert.throws(() => assertDeploymentEvidence(mutatedReview));
+  }
+
+  const current = batch5Segment(backlog);
+  for (const mutatedSegment of [
+    current.replace(
+      '五行证据边界表在 desktop/mobile 均使用 contained horizontal overflow',
+      '五行证据边界表未验证 contained horizontal overflow',
+    ),
+    current.replace(
+      'keyboard focus/ArrowRight scroll 可用',
+      'keyboard focus/ArrowRight scroll 未验证',
+    ),
+    current.replace(
+      'diagram/table wrappers 在 desktop/mobile 均可聚焦',
+      'diagram/table wrappers 未验证可聚焦',
+    ),
+    current.replace(
+      'table ArrowRight scrollLeft 在 desktop/mobile 均为 0→40',
+      'table ArrowRight scrollLeft 未验证',
+    ),
+    current.replace(
+      'Stage A 为 45 个已完成主题、88 篇内容文档与 476 个受治理来源',
+      'Stage A 为 45 个已完成主题、87 篇内容文档与 476 个受治理来源',
+    ),
+    current.replace(
+      'Stage B closure 投影为 46 个已完成主题、88 篇内容文档与 476 个受治理来源',
+      'Stage B closure 投影为 46 个已完成主题、88 篇内容文档与 475 个受治理来源',
+    ),
+  ]) {
+    assert.throws(() => assertBacklogClosure(
+      backlog.replace(current, mutatedSegment),
+    ));
   }
 });
 

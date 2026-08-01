@@ -30,9 +30,11 @@ Exact run gate: `headSha=21fb1c26624920e78f62ae1c947ff6812fb97e02`, `status=comp
 - source clicks: 8 / 8
 - relation clicks: 16 / 16
 - MOD-08 article links: 0; operator requests: 0
-- no document overflow
-- contained horizontal overflow
+- document overflow: 0 at desktop and mobile
+- contained horizontal overflow: table PASS at desktop and mobile
 - keyboard scroll/focus
+- wrapper focusability: diagram and table PASS at desktop and mobile
+- keyboard ArrowRight table scrollLeft: desktop 0 → 40; mobile 0 → 40
 - 0 warnings / 0 errors / 0 page errors
 - artifact SHA-256: `3795020327a21d4182003cdfdefe169552c8fbff7420710f893ebc3e4733e610`
 
