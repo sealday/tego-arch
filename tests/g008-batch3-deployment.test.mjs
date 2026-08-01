@@ -167,15 +167,16 @@ function assertCurrentReleaseState(source) {
   const {prefix} = assertBatch3HistoricalSegment(source);
   assert.match(
     prefix,
-    /^- \*\*当前发布基线：\*\* 2026-07-31 G008 Batch 4 已完成 MOD-06/u,
+    /^- \*\*当前发布基线：\*\* 2026-08-01 G008 Batch 5 已完成 MOD-07/u,
   );
-  assert.match(prefix, /G008 仍在进行中，下一项为 MOD-07/u);
+  assert.match(prefix, /G008 仍在进行中，下一项为 MOD-08/u);
 }
 
 function assertBacklogClosure(source) {
   assert.match(source, /^- \[x\] \*\*MOD-05 /mu);
   assert.match(source, /^- \[x\] \*\*MOD-06 /mu);
-  for (const id of ['07', '08', '09', '10', '11', '12', '13']) {
+  assert.match(source, /^- \[x\] \*\*MOD-07 /mu);
+  for (const id of ['08', '09', '10', '11', '12', '13']) {
     assert.match(source, new RegExp(`^- \\[ \\] \\*\\*MOD-${id} `, 'mu'));
   }
   assertCurrentReleaseState(source);
@@ -264,10 +265,11 @@ test('preserves Batch 3 closure under the current non-terminal G008 baseline', (
     source: 'docs/content-backlog.md',
   });
   assert.equal(topicsById.get('MOD-06')?.status.value, 'complete');
-  for (const id of ['MOD-07', 'MOD-08', 'MOD-09', 'MOD-10', 'MOD-11', 'MOD-12', 'MOD-13']) {
+  assert.equal(topicsById.get('MOD-07')?.status.value, 'complete');
+  for (const id of ['MOD-08', 'MOD-09', 'MOD-10', 'MOD-11', 'MOD-12', 'MOD-13']) {
     assert.equal(topicsById.get(id)?.status.value, 'pending', id);
   }
-  assert.equal(projectStatus.completed_topics, 45);
+  assert.equal(projectStatus.completed_topics, 46);
   assert.equal(projectStatus.content_documents, 88);
   assert.equal(projectStatus.governed_sources, 476);
   assert.deepEqual(projectStatus.durable_stories, {
@@ -283,7 +285,7 @@ test('preserves Batch 3 closure under the current non-terminal G008 baseline', (
 test('rejects incomplete over-complete or terminal current mutations', () => {
   assert.throws(
     () => assertCurrentReleaseState(
-      backlog.replace('G008 仍在进行中，下一项为 MOD-07', 'G008 已完成，下一项为 MOD-07'),
+      backlog.replace('G008 仍在进行中，下一项为 MOD-08', 'G008 已完成，下一项为 MOD-08'),
     ),
     {name: 'AssertionError'},
   );
@@ -306,7 +308,7 @@ test('rejects incomplete over-complete or terminal current mutations', () => {
   );
   assert.throws(
     () => assertBacklogClosure(
-      backlog.replace('- [ ] **MOD-07 ', '- [x] **MOD-07 '),
+      backlog.replace('- [x] **MOD-07 ', '- [ ] **MOD-07 '),
     ),
     {name: 'AssertionError'},
   );

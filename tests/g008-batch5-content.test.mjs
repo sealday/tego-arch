@@ -399,7 +399,7 @@ test('connects MOD-07 reciprocally without linking unpublished MOD-08', () => {
   }
 });
 
-test('projects the Stage A counts while MOD-07 remains pending', async () => {
+test('projects the Stage B counts after MOD-07 closes', async () => {
   const [status, indexes] = await Promise.all([
     readFile(new URL('../src/generated/project-status.json', import.meta.url), 'utf8').then(JSON.parse),
     readFile(new URL('../src/generated/topic-indexes.json', import.meta.url), 'utf8').then(JSON.parse),
@@ -407,7 +407,7 @@ test('projects the Stage A counts while MOD-07 remains pending', async () => {
   assert.deepEqual(status, {
     schema_version: 1,
     durable_stories: {completed: 7, total: 20, current: 'G008'},
-    completed_topics: 45,
+    completed_topics: 46,
     content_documents: 88,
     governed_sources: 476,
     sources: {
@@ -421,5 +421,5 @@ test('projects the Stage A counts while MOD-07 remains pending', async () => {
     Object.values(indexes).flat().map((topic) => [topic.id, topic]),
   );
   assert.equal(topicsById.get('MOD-07').published, true);
-  assert.equal(topicsById.get('MOD-07').status.value, 'pending');
+  assert.equal(topicsById.get('MOD-07').status.value, 'complete');
 });
