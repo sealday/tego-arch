@@ -166,7 +166,7 @@ test('publishes MOD-07 with the approved metadata and scope', () => {
   assert.equal(document.metadata.priority, 'P0');
   assert.equal(document.metadata.review_policy, 'quarterly-version-sensitive');
   assert.deepEqual(document.metadata.depends_on, ['MOD-01']);
-  assert.deepEqual(document.metadata.adjacent_topics, ['MOD-01', 'MOD-03', 'MOD-06']);
+  assert.deepEqual(document.metadata.adjacent_topics, ['MOD-01', 'MOD-03', 'MOD-06', 'MOD-08']);
   assert.deepEqual(document.metadata.related_cases, [
     '/cases/temporal-saga-durable-execution',
   ]);
@@ -379,7 +379,7 @@ test('governs the four pinned MOD-07 sources and exposes their canonical locator
   assert.equal(governed.citations.filter(({manifest_primary}) => manifest_primary).length, 1);
 });
 
-test('connects MOD-07 reciprocally without linking unpublished MOD-08', () => {
+test('connects MOD-07 reciprocally to its currently published adjacent topics', () => {
   const document = requiredDocument('MOD-07');
   const links = new Set(extractInternalLinks(document));
   for (const href of [
@@ -387,19 +387,19 @@ test('connects MOD-07 reciprocally without linking unpublished MOD-08', () => {
     '/modeling/mod-01',
     '/modeling/mod-03',
     '/modeling/mod-06',
+    '/modeling/mod-08',
     '/cases/temporal-saga-durable-execution',
   ]) assert.ok(links.has(href), href);
-  assert.ok(!links.has('/modeling/mod-08'));
-  assert.match(document.body, /MOD-08[^。\n]*仍未发布/u);
+  assert.doesNotMatch(document.body, /MOD-08[^。\n]*仍未发布/u);
 
-  for (const id of ['MOD-01', 'MOD-03', 'MOD-06']) {
+  for (const id of ['MOD-01', 'MOD-03', 'MOD-06', 'MOD-08']) {
     const peer = requiredDocument(id);
     assert.ok(peer.metadata.adjacent_topics.includes('MOD-07'), `${id} adjacency`);
     assert.ok(extractInternalLinks(peer).includes('/modeling/mod-07'), `${id} visible link`);
   }
 });
 
-test('projects the Stage B counts after MOD-07 closes', async () => {
+test('projects the current G008 counts after MOD-08 publishes', async () => {
   const [status, indexes] = await Promise.all([
     readFile(new URL('../src/generated/project-status.json', import.meta.url), 'utf8').then(JSON.parse),
     readFile(new URL('../src/generated/topic-indexes.json', import.meta.url), 'utf8').then(JSON.parse),
@@ -408,7 +408,7 @@ test('projects the Stage B counts after MOD-07 closes', async () => {
     schema_version: 1,
     durable_stories: {completed: 7, total: 20, current: 'G008'},
     completed_topics: 46,
-    content_documents: 88,
+    content_documents: 89,
     governed_sources: 476,
     sources: {
       durable_stories: 'docs/content-backlog.md',
