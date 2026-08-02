@@ -202,12 +202,26 @@ function stateDiagrams(body) {
 }
 
 function parseStateDiagram(graph) {
-  const declarations = [...graph.matchAll(
-    /^\s*state "([^"]+)" as ([a-z_]+)\s*$/gmu,
-  )].map((match) => ({id: match[2], label: match[1]}));
-  const edges = [...graph.matchAll(
-    /^\s*([a-z_]+) --> ([a-z_]+)\s*:\s*(.+?)\s*$/gmu,
-  )].map((match) => ({from: match[1], to: match[2], label: match[3]}));
+  const [header, ...lines] = graph.split('\n').filter((line) => line.trim() !== '');
+  assert.equal(header, 'stateDiagram-v2', 'state diagram header');
+
+  const declarations = [];
+  const edges = [];
+  for (const line of lines) {
+    const declaration = line.match(/^\s*state "([^"]+)" as ([a-z_]+)\s*$/u);
+    if (declaration) {
+      declarations.push({id: declaration[2], label: declaration[1]});
+      continue;
+    }
+
+    const edge = line.match(/^\s*([a-z_]+) --> ([a-z_]+)\s*:\s*(.+?)\s*$/u);
+    if (edge) {
+      edges.push({from: edge[1], to: edge[2], label: edge[3]});
+      continue;
+    }
+
+    assert.fail(`unsupported state diagram line: ${line.trim()}`);
+  }
   const stateIds = new Set(declarations.map(({id}) => id));
 
   assert.equal(stateIds.size, declarations.length, 'state declarations must be unique');
@@ -583,6 +597,46 @@ test('rejects state, edge, label, mapping, table, wrapper, disposition and invar
     () => assertStateGraphs(body.replace('权威确认未发生且可安全重试', '任意超时后均可重试')),
     {name: 'AssertionError'},
     'weakened retry edge label',
+  );
+  assert.throws(
+    () => assertStateGraphs(body.replace(
+      '  requested --> rejected : 业务规则拒绝',
+      '  requested --> rejected : 业务规则拒绝\n  requested --> settled',
+    )),
+    {name: 'AssertionError'},
+    'unlabeled business transition',
+  );
+  assert.throws(
+    () => assertStateGraphs(body.replace(
+      '  ready --> attempting : 以稳定 operation_id 开始',
+      '  ready --> attempting : 以稳定 operation_id 开始\n  ready --> manual_closed',
+    )),
+    {name: 'AssertionError'},
+    'unlabeled execution transition',
+  );
+  assert.throws(
+    () => assertStateGraphs(body.replace(
+      '  state "已请求" as requested',
+      '  state "已请求" as requested\n  state rogue',
+    )),
+    {name: 'AssertionError'},
+    'shorthand state declaration',
+  );
+  assert.throws(
+    () => assertStateGraphs(body.replace(
+      '  requested --> rejected : 业务规则拒绝',
+      '  requested --> rejected : 业务规则拒绝\n  rogue --> settled : 隐式状态',
+    )),
+    {name: 'AssertionError'},
+    'implicit-state transition',
+  );
+  assert.throws(
+    () => assertStateGraphs(body.replace(
+      'stateDiagram-v2',
+      'stateDiagram-v2\n  direction LR',
+    )),
+    {name: 'AssertionError'},
+    'unsupported diagram directive',
   );
 
   for (const row of expectedMappingRows) {
