@@ -154,7 +154,7 @@ stateDiagram-v2
 | 效果前取消 | `accepted` → `cancelled_before_effect` | `ready` → `stopped_before_effect` | 权威 not-found 证据与流程停止记录 | 只有取消意图不证明效果从未发生 |
 | 未知结果后取消 | 保持 `settlement_pending` | `unknown` → `reconciling` | 取消请求、外部只读查询与 `effect_ref` 核对结果 | 取消请求不等于已经取消 |
 | 确认部分效果后补偿 | `settlement_pending` → `compensated` | `reconciling` → `compensation_pending` → `compensated` | 正向 `effect_ref`、补偿 `operation_id` 与补偿回执 | 补偿是新效果，不是把历史回滚成从未发生 |
-| 证据无法收敛后人工决议 | `settlement_pending` → `manually_resolved` | `manual_review` → `manual_closed` | 持久 `disposition`、`decision_ref`、决策人、时间与残余风险 | `manual_closed` 不能在缺少业务决议时被当作业务终态 |
+| 证据无法收敛后人工决议 | `settlement_pending` → `manually_resolved` | `manual_review` → `manual_closed` | `disposition`：`confirmed-settled` 表示权威证据确认预期结算结果；`confirmed-compensated` 表示权威证据同时确认正向效果与对应补偿；`accepted-residual-risk` 表示有权限的 owner 明确接受尚未解决的残余风险；并持久保存 `decision_ref`、决策人、时间与残余风险 | `manual_closed` 不能在缺少业务决议时被当作业务终态 |
 
 </div>
 
@@ -164,11 +164,15 @@ stateDiagram-v2
 
 取消是事件和意图，不等于已经取消；执行已提交或结果未知时必须先对账。
 
+只有权威 not-found 且原稳定 operation_id 仍然有效时，才允许重试外部写入。
+
 补偿创建新的业务事实，不是把历史回滚成从未发生。
 
-人工终态必须保存 disposition、decision_ref、决策人、时间和残余风险。
+补偿必须拥有自己的 operation_id、预算和对账路径，并且也可能超时、重复或失败。
 
-只有目标系统的权威 not-found 证据成立，且原稳定 `operation_id` 仍在有效窗口内，才允许重试外部写入。补偿也可能超时、重复或失败，因此必须有自己的 `operation_id`、预算、回执和对账路径。
+人工终态必须保存可审计的 disposition、decision_ref、决策人、时间和残余风险，不能用 generic closed 隐藏未知结果。其中，`confirmed-settled` 表示权威证据确认预期结算结果；`confirmed-compensated` 表示权威证据同时确认正向效果与对应补偿；`accepted-residual-risk` 表示有权限的 owner 明确接受尚未解决的残余风险。
+
+两台状态机只通过持久记录关联，任何一台都不能从另一台的内存状态推导外部事实。
 
 ## 完成判断
 
@@ -198,13 +202,13 @@ stateDiagram-v2
 3. 外部调用 timeout，执行状态进入 `unknown`，业务状态保持 `settlement_pending`；处理器不创建新操作身份，而是用原 `operation_id` 进入 `reconciling`。
 4. 对账取得外部 `effect_ref`，确认部分正向效果已发生，因政策要求进入 `compensation_pending`，并为补偿创建独立 `operation_id`。
 5. 若权威回执确认补偿成功，执行状态进入 `compensated`，业务状态也依据正向与补偿两组证据进入 `compensated`，同时保留完整历史。
-6. 若补偿超时、证据冲突或不可逆动作使证据无法收敛，执行状态进入 `manual_review`。有权限的决策人保存 `disposition`、`decision_ref`、时间和残余风险后，执行状态进入 `manual_closed`，业务状态与同一决议记录配对后进入 `manually_resolved`。
+6. 若补偿超时、证据冲突或不可逆动作使证据无法收敛，执行状态进入 `manual_review`。有权限的决策人保存 `disposition`、`decision_ref`、时间和残余风险：`confirmed-settled` 表示权威证据确认预期结算结果；`confirmed-compensated` 表示权威证据同时确认正向效果与对应补偿；`accepted-residual-risk` 表示有权限的 owner 明确接受尚未解决的残余风险。执行状态随后进入 `manual_closed`，业务状态与同一决议记录配对后进入 `manually_resolved`。
 
 演练不设定虚构的生产时延、金额、容量或成功率，它只检查状态、转换、证据与禁止推断是否完整。
 
 ## 来源
 
-- [Unified Modeling Language 2.5.1, Object Management Group](https://www.omg.org/spec/UML/2.5.1)：仅支持 UML 2.5.1 的图名称与标准语义范围；不支持费用领域示例、模型选择工作流、生产事实，也不能据此声称图证明了实现行为。
+- [Unified Modeling Language 2.5.1, Object Management Group](https://www.omg.org/spec/UML/2.5.1)：仅支持 UML 2.5.1 的图名称与标准语义范围；不支持领域示例、本地建模工作流、生产事实，也不能据此声称图证明了实现行为。本文还不以该标准定义转账状态政策或补偿政策。
 - [Temporal Workflow](https://docs.temporal.io/workflows)：仅支持已记录页面与版本中的 Temporal Workflow 文档语义；不证明未记录行为或其他版本的行为。
 - [Temporal Activity](https://docs.temporal.io/activities)：仅支持已记录页面与版本中的 Temporal Activity 文档语义；不证明未记录行为或其他版本的行为。
 - [Temporal Retry Policies](https://docs.temporal.io/encyclopedia/retry-policies)：仅支持已记录页面与版本中的 Temporal Retry Policies 文档语义；不证明未记录行为或其他版本的行为。

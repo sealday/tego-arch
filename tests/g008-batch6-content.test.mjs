@@ -37,46 +37,56 @@ const expectedHeadings = [
   '来源',
 ];
 
-const expectedBusinessStates = new Set([
-  'requested',
-  'accepted',
-  'settlement_pending',
-  'settled',
-  'rejected',
-  'cancelled_before_effect',
-  'compensated',
-  'manually_resolved',
-]);
+const expectedBusinessStates = [
+  {id: 'accepted', label: '已接受'},
+  {id: 'cancelled_before_effect', label: '效果前已取消'},
+  {id: 'compensated', label: '已补偿'},
+  {id: 'manually_resolved', label: '已人工决议'},
+  {id: 'rejected', label: '已拒绝'},
+  {id: 'requested', label: '已请求'},
+  {id: 'settled', label: '已结算'},
+  {id: 'settlement_pending', label: '待结算'},
+];
 
-const expectedExecutionStates = new Set([
-  'ready',
-  'attempting',
-  'awaiting_receipt',
-  'unknown',
-  'reconciling',
-  'confirmed_success',
-  'compensation_pending',
-  'compensated',
-  'manual_review',
-  'manual_closed',
-  'stopped_before_effect',
-]);
+const expectedBusinessEdges = [
+  {from: 'accepted', to: 'cancelled_before_effect', label: '权威确认效果未发生'},
+  {from: 'accepted', to: 'settlement_pending', label: '提交外部效果'},
+  {from: 'requested', to: 'accepted', label: '业务前置条件通过'},
+  {from: 'requested', to: 'rejected', label: '业务规则拒绝'},
+  {from: 'settlement_pending', to: 'compensated', label: '权威确认补偿完成'},
+  {from: 'settlement_pending', to: 'manually_resolved', label: '持久人工决议'},
+  {from: 'settlement_pending', to: 'settled', label: '权威确认目标结果'},
+];
 
-const expectedExecutionEdges = new Set([
-  'ready->attempting',
-  'attempting->awaiting_receipt',
-  'awaiting_receipt->confirmed_success',
-  'awaiting_receipt->unknown',
-  'unknown->reconciling',
-  'reconciling->confirmed_success',
-  'reconciling->ready',
-  'reconciling->compensation_pending',
-  'reconciling->manual_review',
-  'compensation_pending->compensated',
-  'compensation_pending->manual_review',
-  'manual_review->manual_closed',
-  'ready->stopped_before_effect',
-]);
+const expectedExecutionStates = [
+  {id: 'attempting', label: '尝试执行'},
+  {id: 'awaiting_receipt', label: '等待回执'},
+  {id: 'compensated', label: '已补偿'},
+  {id: 'compensation_pending', label: '待补偿'},
+  {id: 'confirmed_success', label: '已确认成功'},
+  {id: 'manual_closed', label: '人工已关闭'},
+  {id: 'manual_review', label: '人工复核中'},
+  {id: 'ready', label: '就绪'},
+  {id: 'reconciling', label: '对账中'},
+  {id: 'stopped_before_effect', label: '效果前已停止'},
+  {id: 'unknown', label: '结果未知'},
+];
+
+const expectedExecutionEdges = [
+  {from: 'attempting', to: 'awaiting_receipt', label: '外部请求已提交'},
+  {from: 'awaiting_receipt', to: 'confirmed_success', label: '取得权威 effect_ref'},
+  {from: 'awaiting_receipt', to: 'unknown', label: '超时、连接中断或回执缺失'},
+  {from: 'compensation_pending', to: 'compensated', label: '权威确认补偿效果'},
+  {from: 'compensation_pending', to: 'manual_review', label: '补偿失败或不可逆'},
+  {from: 'manual_review', to: 'manual_closed', label: '保存耐久人工决议'},
+  {from: 'ready', to: 'attempting', label: '以稳定 operation_id 开始'},
+  {from: 'ready', to: 'stopped_before_effect', label: '权威确认效果未发生'},
+  {from: 'reconciling', to: 'compensation_pending', label: '确认部分效果且需补偿'},
+  {from: 'reconciling', to: 'confirmed_success', label: '确认原效果已发生'},
+  {from: 'reconciling', to: 'manual_review', label: '证据冲突或预算耗尽'},
+  {from: 'reconciling', to: 'ready', label: '权威确认未发生且可安全重试'},
+  {from: 'unknown', to: 'reconciling', label: '启动只读查询或对账'},
+];
 
 const expectedMappingRows = [
   {
@@ -125,7 +135,7 @@ const expectedMappingRows = [
     '触发': '证据无法收敛后人工决议',
     '业务状态变化': '`settlement_pending` → `manually_resolved`',
     '执行状态变化': '`manual_review` → `manual_closed`',
-    '所需权威证据': '持久 `disposition`、`decision_ref`、决策人、时间与残余风险',
+    '所需权威证据': '`disposition`：`confirmed-settled` 表示权威证据确认预期结算结果；`confirmed-compensated` 表示权威证据同时确认正向效果与对应补偿；`accepted-residual-risk` 表示有权限的 owner 明确接受尚未解决的残余风险；并持久保存 `decision_ref`、决策人、时间与残余风险',
     '禁止推断': '`manual_closed` 不能在缺少业务决议时被当作业务终态',
   },
 ];
@@ -133,12 +143,21 @@ const expectedMappingRows = [
 const invariantSentences = [
   '调用超时只说明观察者没有按时得到结果，不能单独证明业务失败或外部效果未发生。',
   '取消是事件和意图，不等于已经取消；执行已提交或结果未知时必须先对账。',
+  '只有权威 not-found 且原稳定 operation_id 仍然有效时，才允许重试外部写入。',
   '补偿创建新的业务事实，不是把历史回滚成从未发生。',
-  '人工终态必须保存 disposition、decision_ref、决策人、时间和残余风险。',
+  '补偿必须拥有自己的 operation_id、预算和对账路径，并且也可能超时、重复或失败。',
+  '人工终态必须保存可审计的 disposition、decision_ref、决策人、时间和残余风险，不能用 generic closed 隐藏未知结果。',
+  '两台状态机只通过持久记录关联，任何一台都不能从另一台的内存状态推导外部事实。',
+];
+
+const manualDispositionMeanings = [
+  '`confirmed-settled` 表示权威证据确认预期结算结果',
+  '`confirmed-compensated` 表示权威证据同时确认正向效果与对应补偿',
+  '`accepted-residual-risk` 表示有权限的 owner 明确接受尚未解决的残余风险',
 ];
 
 const expectedSourceUsageBoundaries = [
-  '仅支持 UML 2.5.1 的图名称与标准语义范围；不支持费用领域示例、模型选择工作流、生产事实，也不能据此声称图证明了实现行为。',
+  '仅支持 UML 2.5.1 的图名称与标准语义范围；不支持领域示例、本地建模工作流、生产事实，也不能据此声称图证明了实现行为。本文还不以该标准定义转账状态政策或补偿政策。',
   '仅支持已记录页面与版本中的 Temporal Workflow 文档语义；不证明未记录行为或其他版本的行为。',
   '仅支持已记录页面与版本中的 Temporal Activity 文档语义；不证明未记录行为或其他版本的行为。',
   '仅支持已记录页面与版本中的 Temporal Retry Policies 文档语义；不证明未记录行为或其他版本的行为。',
@@ -184,36 +203,36 @@ function stateDiagrams(body) {
 
 function parseStateDiagram(graph) {
   const declarations = [...graph.matchAll(
-    /^\s*state "[^"]+" as ([a-z_]+)\s*$/gmu,
-  )].map((match) => match[1]);
+    /^\s*state "([^"]+)" as ([a-z_]+)\s*$/gmu,
+  )].map((match) => ({id: match[2], label: match[1]}));
   const edges = [...graph.matchAll(
-    /^\s*([a-z_]+) --> ([a-z_]+)(?:\s*:.*)?$/gmu,
-  )].map((match) => `${match[1]}->${match[2]}`);
-  const states = new Set(declarations);
+    /^\s*([a-z_]+) --> ([a-z_]+)\s*:\s*(.+?)\s*$/gmu,
+  )].map((match) => ({from: match[1], to: match[2], label: match[3]}));
+  const stateIds = new Set(declarations.map(({id}) => id));
 
-  assert.equal(states.size, declarations.length, 'state declarations must be unique');
-  assert.equal(new Set(edges).size, edges.length, 'directed transitions must be unique');
-  for (const edge of edges) {
-    const [left, right] = edge.split('->');
-    assert.ok(states.has(left), `transition endpoint must be declared: ${left}`);
-    assert.ok(states.has(right), `transition endpoint must be declared: ${right}`);
+  assert.equal(stateIds.size, declarations.length, 'state declarations must be unique');
+  assert.equal(
+    new Set(edges.map(({from, to}) => `${from}->${to}`)).size,
+    edges.length,
+    'directed transitions must be unique',
+  );
+  for (const {from, to} of edges) {
+    assert.ok(stateIds.has(from), `transition endpoint must be declared: ${from}`);
+    assert.ok(stateIds.has(to), `transition endpoint must be declared: ${to}`);
   }
-  return {states, edges: new Set(edges)};
+  return {
+    states: declarations.toSorted((left, right) => left.id.localeCompare(right.id)),
+    edges: edges.toSorted((left, right) =>
+      `${left.from}->${left.to}`.localeCompare(`${right.from}->${right.to}`)),
+  };
 }
 
 function assertStateGraphs(body) {
   const [business, execution] = stateDiagrams(body).map(parseStateDiagram);
-  assert.deepEqual(
-    [...business.states].sort(),
-    [...expectedBusinessStates].sort(),
-  );
-  assert.deepEqual(
-    [...execution.states].sort(),
-    [...expectedExecutionStates].sort(),
-  );
-  for (const edge of expectedExecutionEdges) {
-    assert.ok(execution.edges.has(edge), `missing execution transition: ${edge}`);
-  }
+  assert.deepEqual(business.states, expectedBusinessStates);
+  assert.deepEqual(business.edges, expectedBusinessEdges);
+  assert.deepEqual(execution.states, expectedExecutionStates);
+  assert.deepEqual(execution.edges, expectedExecutionEdges);
 }
 
 function markdownTables(body) {
@@ -280,6 +299,18 @@ function assertInteractionContract(body) {
 
 function assertInvariantSentences(body) {
   for (const sentence of invariantSentences) assert.ok(body.includes(sentence), sentence);
+}
+
+function assertManualDispositionContract(body) {
+  for (const heading of ['超时、取消与补偿', '转换合同', '完整演练']) {
+    const content = section(body, heading);
+    for (const meaning of manualDispositionMeanings) {
+      assert.ok(content.includes(meaning), `${heading}: ${meaning}`);
+    }
+    for (const field of ['decision_ref', '决策人', '时间', '残余风险']) {
+      assert.ok(content.includes(field), `${heading}: ${field}`);
+    }
+  }
 }
 
 function section(body, heading) {
@@ -373,8 +404,12 @@ test('scrolls only a directly focused overflowing region by 40 pixels', () => {
   assert.equal(staticRegion.wasDefaultPrevented(), false);
 });
 
-test('states the four timeout, cancellation, compensation and manual invariants verbatim', () => {
+test('states all seven state-machine design invariants verbatim', () => {
   assertInvariantSentences(requiredDocument().body);
+});
+
+test('carries all three audited manual dispositions through prose, mapping and exercise', () => {
+  assertManualDispositionContract(requiredDocument().body);
 });
 
 test('governs the five exact MOD-08 sources and exposes every canonical locator', () => {
@@ -502,7 +537,7 @@ test('projects the G008 Batch 6 Stage A counts with MOD-08 pending', async () =>
   }
 });
 
-test('rejects state, edge, mapping, table, wrapper and invariant mutations', () => {
+test('rejects state, edge, label, mapping, table, wrapper, disposition and invariant mutations', () => {
   const body = requiredDocument().body;
 
   assert.throws(
@@ -517,6 +552,37 @@ test('rejects state, edge, mapping, table, wrapper and invariant mutations', () 
     )),
     {name: 'AssertionError'},
     'reversed execution transition',
+  );
+  assert.throws(
+    () => assertStateGraphs(body.replace('  requested --> rejected : 业务规则拒绝\n', '')),
+    {name: 'AssertionError'},
+    'removed business transition',
+  );
+  assert.throws(
+    () => assertStateGraphs(body.replace(
+      '  requested --> rejected : 业务规则拒绝',
+      '  requested --> rejected : 业务规则拒绝\n  requested --> settled : 非法直达',
+    )),
+    {name: 'AssertionError'},
+    'extra business transition',
+  );
+  assert.throws(
+    () => assertStateGraphs(body.replace(
+      '  ready --> attempting : 以稳定 operation_id 开始',
+      '  ready --> attempting : 以稳定 operation_id 开始\n  ready --> manual_closed : 非法直达',
+    )),
+    {name: 'AssertionError'},
+    'extra execution transition',
+  );
+  assert.throws(
+    () => assertStateGraphs(body.replace('state "结果未知" as unknown', 'state "业务失败" as unknown')),
+    {name: 'AssertionError'},
+    'semantic state relabel',
+  );
+  assert.throws(
+    () => assertStateGraphs(body.replace('权威确认未发生且可安全重试', '任意超时后均可重试')),
+    {name: 'AssertionError'},
+    'weakened retry edge label',
   );
 
   for (const row of expectedMappingRows) {
@@ -556,4 +622,23 @@ test('rejects state, edge, mapping, table, wrapper and invariant mutations', () 
       sentence,
     );
   }
+  for (const meaning of manualDispositionMeanings) {
+    assert.throws(
+      () => assertManualDispositionContract(body.replaceAll(meaning, '人工 disposition 含义被删除')),
+      {name: 'AssertionError'},
+      meaning,
+    );
+  }
+});
+
+test('uses a source-wide OMG ledger boundary without changing MOD-07 local wording', () => {
+  const omg = ledger.sources.find(({id}) => id === 'src-omg-uml-2-5-1-2017');
+  assert.equal(
+    omg.usage_boundary,
+    'Supports UML 2.5.1 diagram names and standard semantic scope only; it does not support domain examples, local modeling workflows, production facts, or claims that a diagram proves implementation behavior.',
+  );
+  assert.match(
+    documentsById.get('MOD-07').body,
+    /不支持本文的费用领域示例、选图流程、生产事实，也不证明实现行为/u,
+  );
 });

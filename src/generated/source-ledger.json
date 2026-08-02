@@ -20854,7 +20854,7 @@
       "license_family_grouping": "identity",
       "family_grouping_evidence_url": null,
       "copyright_policy": "facts-and-short-quotation",
-      "usage_boundary": "Supports UML 2.5.1 diagram names and standard semantic scope only; it does not support the expense-domain examples, model-selection workflow, production facts, or claims that a diagram proves implementation behavior.",
+      "usage_boundary": "Supports UML 2.5.1 diagram names and standard semantic scope only; it does not support domain examples, local modeling workflows, production facts, or claims that a diagram proves implementation behavior.",
       "link_policy": "stable",
       "expected_final_transport_locator": "https://www.omg.org/spec/UML/2.5.1/PDF",
       "expected_final_approved_at": "2026-08-01",
