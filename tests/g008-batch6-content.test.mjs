@@ -4,6 +4,7 @@ import test from 'node:test';
 import {fileURLToPath} from 'node:url';
 
 import {
+  findMarkdownHeadings,
   readContentDocuments,
 } from '../scripts/content-metadata.mjs';
 import {extractInternalLinks} from '../scripts/content-relations.mjs';
@@ -134,6 +135,14 @@ const invariantSentences = [
   '取消是事件和意图，不等于已经取消；执行已提交或结果未知时必须先对账。',
   '补偿创建新的业务事实，不是把历史回滚成从未发生。',
   '人工终态必须保存 disposition、decision_ref、决策人、时间和残余风险。',
+];
+
+const expectedSourceUsageBoundaries = [
+  '仅支持 UML 2.5.1 的图名称与标准语义范围；不支持费用领域示例、模型选择工作流、生产事实，也不能据此声称图证明了实现行为。',
+  '仅支持已记录页面与版本中的 Temporal Workflow 文档语义；不证明未记录行为或其他版本的行为。',
+  '仅支持已记录页面与版本中的 Temporal Activity 文档语义；不证明未记录行为或其他版本的行为。',
+  '仅支持已记录页面与版本中的 Temporal Retry Policies 文档语义；不证明未记录行为或其他版本的行为。',
+  '提供 Sagas 的原始方法与历史模型；没有独立证据时，不确立其对现代实现的适用性。',
 ];
 
 const expectedWrappers = [
@@ -273,6 +282,33 @@ function assertInvariantSentences(body) {
   for (const sentence of invariantSentences) assert.ok(body.includes(sentence), sentence);
 }
 
+function section(body, heading) {
+  const headings = findMarkdownHeadings(body).filter(({level}) => level === 2);
+  const index = headings.findIndex(({text}) => text === heading);
+  assert.notEqual(index, -1, `missing ## ${heading}`);
+  const start = body.indexOf('\n', headings[index].offset);
+  const end = headings[index + 1]?.offset ?? body.length;
+  return body.slice(start === -1 ? end : start + 1, end);
+}
+
+function assertSourceUsageBoundaries(body) {
+  const sources = section(body, '来源');
+  for (const boundary of expectedSourceUsageBoundaries) {
+    assert.ok(sources.includes(boundary), boundary);
+  }
+}
+
+function assertGlobalPublicationBoundary(topicsById, routes) {
+  for (let number = 9; number <= 13; number += 1) {
+    const id = `MOD-${String(number).padStart(2, '0')}`;
+    const topic = topicsById.get(id);
+    assert.ok(topic, `${id} backlog projection`);
+    assert.equal(topic.published, false, `${id} published`);
+    assert.equal(topic.status.value, 'pending', `${id} status`);
+    assert.ok(!routes.has(topic.slug), `${id} route`);
+  }
+}
+
 function horizontalArrowEvent({clientWidth = 100, scrollWidth = 300} = {}) {
   const region = {clientWidth, scrollWidth, scrollLeft: 0};
   let defaultPrevented = false;
@@ -378,6 +414,15 @@ test('governs the five exact MOD-08 sources and exposes every canonical locator'
   assert.ok(governed.citations.every(({excerpt}) => excerpt === null));
   assert.ok(governed.citations.every(({modification_note}) => modification_note === null));
   assert.ok(governed.citations.every(({quotation_reviewed}) => quotation_reviewed === false));
+  assertSourceUsageBoundaries(requiredDocument().body);
+
+  for (const boundary of expectedSourceUsageBoundaries) {
+    assert.throws(
+      () => assertSourceUsageBoundaries(requiredDocument().body.replace(boundary, '边界被弱化。')),
+      {name: 'AssertionError'},
+      boundary,
+    );
+  }
 });
 
 test('connects MOD-08 reciprocally while keeping unpublished MOD-09 unlinked', () => {
@@ -424,6 +469,37 @@ test('projects the G008 Batch 6 Stage A counts with MOD-08 pending', async () =>
   );
   assert.equal(topicsById.get('MOD-08').published, true);
   assert.equal(topicsById.get('MOD-08').status.value, 'pending');
+  const routes = new Set(extractInternalLinks(requiredDocument()));
+  assertGlobalPublicationBoundary(topicsById, routes);
+
+  for (let number = 9; number <= 13; number += 1) {
+    const id = `MOD-${String(number).padStart(2, '0')}`;
+    const topic = topicsById.get(id);
+    assert.throws(
+      () => assertGlobalPublicationBoundary(
+        new Map(topicsById).set(id, {...topic, published: true}),
+        routes,
+      ),
+      {name: 'AssertionError'},
+      `${id} published mutation`,
+    );
+    assert.throws(
+      () => assertGlobalPublicationBoundary(
+        new Map(topicsById).set(id, {
+          ...topic,
+          status: {...topic.status, value: 'complete'},
+        }),
+        routes,
+      ),
+      {name: 'AssertionError'},
+      `${id} status mutation`,
+    );
+    assert.throws(
+      () => assertGlobalPublicationBoundary(topicsById, new Set(routes).add(topic.slug)),
+      {name: 'AssertionError'},
+      `${id} route mutation`,
+    );
+  }
 });
 
 test('rejects state, edge, mapping, table, wrapper and invariant mutations', () => {
