@@ -36,12 +36,16 @@
 
 - [ ] **Step 1: Write the failing metadata and structure contract**
 
-Create `tests/g008-batch6-content.test.mjs`. Use `readContentDocument` from `../scripts/content-parser.mjs` and require:
+Create `tests/g008-batch6-content.test.mjs`. Use the repository's existing `readContentDocuments` export from `../scripts/content-metadata.mjs`, then select MOD-08 by its content-relative file name:
 
 ```js
-const document = await readContentDocument(
-  new URL('../content/modeling/mod-08-state-machine-modeling.mdx', import.meta.url),
+const documents = await readContentDocuments(
+  new URL('../content', import.meta.url),
 );
+const document = documents.find(
+  ({file}) => file === 'modeling/mod-08-state-machine-modeling.mdx',
+);
+assert.ok(document, 'MOD-08 content document must exist');
 
 assert.equal(document.metadata.topic_id, 'MOD-08');
 assert.equal(document.metadata.slug, '/modeling/mod-08');
