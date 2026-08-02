@@ -234,6 +234,8 @@ Expected: focused tests and typecheck pass; commit contains only the article and
 - Modify: `content/modeling/mod-07-uml-diagram-selection-guide.mdx`
 - Modify: `content/principles/pr-10-idempotency-minimal-coordination.mdx`
 - Modify: `content/quality-attributes/qa-02-reliability-availability-recoverability.mdx`
+- Modify: `scripts/content-schema.mjs`
+- Modify: `tests/content-validation.test.mjs`
 - Modify: `data/source-link-health.json` only through the checker
 - Modify: generated JSON under `src/generated/`
 - Modify only proven live assertions in older tests
@@ -290,6 +292,8 @@ Require MOD-08 visible links to `/modeling`, `/modeling/mod-07`, `/principles/pr
 Require MOD-07, PR-10 and QA-02 metadata `adjacent_topics` to include MOD-08 and each article to expose one `/modeling/mod-08` link. Remove MOD-07's stale “MOD-08 未发布” sentence. Update no unrelated paragraph and do not add a relation override.
 
 - [ ] **Step 5: Generate and lock Stage A**
+
+Register the approved MOD-08 eleven-H2 sequence as a topic-specific modeling contract in `scripts/content-schema.mjs`, leaving the default nine-H2 modeling contract unchanged for other topics. Add a focused validation regression in `tests/content-validation.test.mjs` that accepts the exact MOD-08 order and rejects a missing or reordered MOD-08 heading.
 
 ```bash
 PATH=/Users/seal/.volta/tools/image/node/26.5.0/bin:$PATH npm run generate:content
