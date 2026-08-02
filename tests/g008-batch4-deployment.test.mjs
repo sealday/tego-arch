@@ -252,7 +252,7 @@ test('preserves MOD-06 closure under the current non-terminal G008 baseline', ()
     schema_version: 1,
     durable_stories: {completed: 7, total: 20, current: 'G008'},
     completed_topics: 46,
-    content_documents: 88,
+    content_documents: 89,
     governed_sources: 476,
     sources: {
       durable_stories: 'docs/content-backlog.md',
