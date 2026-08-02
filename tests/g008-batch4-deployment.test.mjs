@@ -209,7 +209,8 @@ function assertBacklogClosure(source) {
   assertBatch4BaselineEvidence(source);
   assert.match(source, /^- \[x\] \*\*MOD-06 /mu);
   assert.match(source, /^- \[x\] \*\*MOD-07 /mu);
-  for (const id of ['08', '09', '10', '11', '12', '13']) {
+  assert.match(source, /^- \[x\] \*\*MOD-08 /mu);
+  for (const id of ['09', '10', '11', '12', '13']) {
     assert.match(source, new RegExp(`^- \\[ \\] \\*\\*MOD-${id} `, 'mu'));
   }
   assertBatch3History(source);
@@ -245,13 +246,14 @@ test('preserves MOD-06 closure under the current non-terminal G008 baseline', ()
   assert.ok(row?.includes(`/actions/runs/${run}`), 'MOD-06 exact Pages run');
   assert.equal(topicsById.get('MOD-06')?.status.value, 'complete');
   assert.equal(topicsById.get('MOD-07')?.status.value, 'complete');
-  for (const id of ['MOD-08', 'MOD-09', 'MOD-10', 'MOD-11', 'MOD-12', 'MOD-13']) {
+  assert.equal(topicsById.get('MOD-08')?.status.value, 'complete');
+  for (const id of ['MOD-09', 'MOD-10', 'MOD-11', 'MOD-12', 'MOD-13']) {
     assert.equal(topicsById.get(id)?.status.value, 'pending', id);
   }
   assert.deepEqual(projectStatus, {
     schema_version: 1,
     durable_stories: {completed: 7, total: 20, current: 'G008'},
-    completed_topics: 46,
+    completed_topics: 47,
     content_documents: 89,
     governed_sources: 476,
     sources: {

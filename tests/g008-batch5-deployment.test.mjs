@@ -169,9 +169,12 @@ function currentReleaseBaseline(source) {
 
 function batch5Segment(source) {
   const baseline = currentReleaseBaseline(source);
+  const marker = '此前 G008 Batch 5 历史完成基线为：';
+  const start = baseline.indexOf(marker);
+  assert.notEqual(start, -1, 'Batch 5 history boundary');
   const end = baseline.indexOf('此前 G008 Batch 4 历史完成基线为：');
   assert.notEqual(end, -1, 'Batch 4 history boundary');
-  return baseline.slice(0, end);
+  return baseline.slice(start + marker.length, end);
 }
 
 const expectedBatch5Evidence = [
@@ -240,7 +243,8 @@ function assertBacklogClosure(source) {
   assertBatch5BaselineEvidence(source);
   assertBatch4AndOlderHistory(source);
   assert.match(source, /^- \[x\] \*\*MOD-07 /mu);
-  for (const id of ['08', '09', '10', '11', '12', '13']) {
+  assert.match(source, /^- \[x\] \*\*MOD-08 /mu);
+  for (const id of ['09', '10', '11', '12', '13']) {
     assert.match(source, new RegExp(`^- \\[ \\] \\*\\*MOD-${id} `, 'mu'));
   }
   assert.match(source, /当前持久故事：\*\* `G008`/u);
@@ -335,19 +339,20 @@ test('rejects segment-local review and interaction evidence mutations', () => {
   }
 });
 
-test('closes only MOD-07 while keeping G008 current and MOD-08 next', () => {
+test('preserves Batch 5 evidence after MOD-08 closes and MOD-09 becomes next', () => {
   const {sha, run} = parseEvidence(review);
   const row = backlog.split(/\r?\n/u).find((line) => line.startsWith('- [x] **MOD-07 '));
   assert.ok(row?.includes(sha), 'MOD-07 exact Stage A SHA');
   assert.ok(row?.includes(`/actions/runs/${run}`), 'MOD-07 exact Pages run');
   assert.equal(topicsById.get('MOD-07')?.status.value, 'complete');
-  for (const id of ['MOD-08', 'MOD-09', 'MOD-10', 'MOD-11', 'MOD-12', 'MOD-13']) {
+  assert.equal(topicsById.get('MOD-08')?.status.value, 'complete');
+  for (const id of ['MOD-09', 'MOD-10', 'MOD-11', 'MOD-12', 'MOD-13']) {
     assert.equal(topicsById.get(id)?.status.value, 'pending', id);
   }
   assert.deepEqual(projectStatus, {
     schema_version: 1,
     durable_stories: {completed: 7, total: 20, current: 'G008'},
-    completed_topics: 46,
+    completed_topics: 47,
     content_documents: 89,
     governed_sources: 476,
     sources: {
@@ -370,7 +375,7 @@ test('rejects current-state and Batch 5 baseline mutations', () => {
     ));
   }
   assert.throws(() => assertBacklogClosure(backlog.replace('- [x] **MOD-07 ', '- [ ] **MOD-07 ')));
-  assert.throws(() => assertBacklogClosure(backlog.replace('- [ ] **MOD-08 ', '- [x] **MOD-08 ')));
+  assert.throws(() => assertBacklogClosure(backlog.replace('- [x] **MOD-08 ', '- [ ] **MOD-08 ')));
 });
 
 test('locks Batch 4 and all older release evidence byte-for-byte', () => {

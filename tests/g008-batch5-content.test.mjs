@@ -407,7 +407,7 @@ test('projects the current G008 counts after MOD-08 publishes', async () => {
   assert.deepEqual(status, {
     schema_version: 1,
     durable_stories: {completed: 7, total: 20, current: 'G008'},
-    completed_topics: 46,
+    completed_topics: 47,
     content_documents: 89,
     governed_sources: 476,
     sources: {

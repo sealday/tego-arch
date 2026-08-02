@@ -495,7 +495,7 @@ test('connects MOD-08 reciprocally while keeping unpublished MOD-09 unlinked', (
   assert.doesNotMatch(documentsById.get('MOD-07').body, /MOD-08[^。\n]*仍未发布/u);
 });
 
-test('projects the G008 Batch 6 Stage A counts with MOD-08 pending', async () => {
+test('projects the G008 Batch 6 Stage B counts with MOD-08 complete', async () => {
   const [status, indexes] = await Promise.all([
     readFile(new URL('../src/generated/project-status.json', import.meta.url), 'utf8').then(JSON.parse),
     readFile(new URL('../src/generated/topic-indexes.json', import.meta.url), 'utf8').then(JSON.parse),
@@ -503,7 +503,7 @@ test('projects the G008 Batch 6 Stage A counts with MOD-08 pending', async () =>
   assert.deepEqual(status, {
     schema_version: 1,
     durable_stories: {completed: 7, total: 20, current: 'G008'},
-    completed_topics: 46,
+    completed_topics: 47,
     content_documents: 89,
     governed_sources: 476,
     sources: {
@@ -517,7 +517,7 @@ test('projects the G008 Batch 6 Stage A counts with MOD-08 pending', async () =>
     Object.values(indexes).flat().map((topic) => [topic.id, topic]),
   );
   assert.equal(topicsById.get('MOD-08').published, true);
-  assert.equal(topicsById.get('MOD-08').status.value, 'pending');
+  assert.equal(topicsById.get('MOD-08').status.value, 'complete');
   const routes = new Set(extractInternalLinks(requiredDocument()));
   assertGlobalPublicationBoundary(topicsById, routes);
 
