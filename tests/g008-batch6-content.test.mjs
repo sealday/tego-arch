@@ -1,16 +1,25 @@
 import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
 import test from 'node:test';
 import {fileURLToPath} from 'node:url';
 
 import {
   readContentDocuments,
 } from '../scripts/content-metadata.mjs';
+import {extractInternalLinks} from '../scripts/content-relations.mjs';
+import {extractExternalLinks} from '../scripts/source-ledger.mjs';
 import {handleHorizontalArrowKey} from '../src/components/KeyboardScrollableRegion/handleHorizontalArrowKey.mjs';
 
 const contentRoot = fileURLToPath(new URL('../content/', import.meta.url));
 const documents = await readContentDocuments(contentRoot);
+const documentsById = new Map(
+  documents.map((content) => [content.metadata.topic_id, content]),
+);
 const document = documents.find(
   ({file}) => file === 'modeling/mod-08-state-machine-modeling.mdx',
+);
+const ledger = JSON.parse(
+  await readFile(new URL('../data/source-ledger.json', import.meta.url), 'utf8'),
 );
 
 const expectedHeadings = [
@@ -330,6 +339,91 @@ test('scrolls only a directly focused overflowing region by 40 pixels', () => {
 
 test('states the four timeout, cancellation, compensation and manual invariants verbatim', () => {
   assertInvariantSentences(requiredDocument().body);
+});
+
+test('governs the five exact MOD-08 sources and exposes every canonical locator', () => {
+  const governed = ledger.documents['content/modeling/mod-08-state-machine-modeling.mdx'];
+  const expectedSources = new Map([
+    ['src-omg-uml-2-5-1-2017', 'https://www.omg.org/spec/UML/2.5.1'],
+    ['src-docs-abd3e18c34a9', 'https://docs.temporal.io/workflows'],
+    ['src-docs-1743ee34e211', 'https://docs.temporal.io/activities'],
+    ['src-docs-9950c767c50f', 'https://docs.temporal.io/encyclopedia/retry-policies'],
+    ['src-doi-c4c907db05fa', 'https://dl.acm.org/doi/10.1145/38713.38742'],
+  ]);
+  const visible = new Set(extractExternalLinks(requiredDocument()));
+
+  assert.ok(governed, 'MOD-08 source review must exist');
+  assert.equal(governed.reviewed_at, '2026-08-02');
+  assert.deepEqual(governed.copyright_checks, [
+    'original-structure',
+    'quotation-boundary',
+    'attribution-complete',
+    'illustration-rights',
+  ]);
+  assert.deepEqual(governed.citations, [
+    {source_id: 'src-omg-uml-2-5-1-2017', citation_url: 'https://www.omg.org/spec/UML/2.5.1', roles: ['definition', 'method'], manifest_primary: true, usage_mode: 'facts-summary', attribution_note: 'Unified Modeling Language 2.5.1, Object Management Group', modification_note: null, excerpt: null, quotation_reviewed: false},
+    {source_id: 'src-docs-abd3e18c34a9', citation_url: 'https://docs.temporal.io/workflows', roles: ['runtime-fact'], manifest_primary: false, usage_mode: 'facts-summary', attribution_note: 'Temporal Workflow, Temporal Technologies', modification_note: null, excerpt: null, quotation_reviewed: false},
+    {source_id: 'src-docs-1743ee34e211', citation_url: 'https://docs.temporal.io/activities', roles: ['runtime-fact'], manifest_primary: false, usage_mode: 'facts-summary', attribution_note: 'Temporal Activity, Temporal Technologies', modification_note: null, excerpt: null, quotation_reviewed: false},
+    {source_id: 'src-docs-9950c767c50f', citation_url: 'https://docs.temporal.io/encyclopedia/retry-policies', roles: ['runtime-fact'], manifest_primary: false, usage_mode: 'facts-summary', attribution_note: 'Temporal Retry Policies, Temporal Technologies', modification_note: null, excerpt: null, quotation_reviewed: false},
+    {source_id: 'src-doi-c4c907db05fa', citation_url: 'https://dl.acm.org/doi/10.1145/38713.38742', roles: ['historical-context', 'method'], manifest_primary: false, usage_mode: 'facts-summary', attribution_note: 'Sagas, Hector Garcia-Molina and Kenneth Salem', modification_note: null, excerpt: null, quotation_reviewed: false},
+  ]);
+
+  for (const [sourceId, locator] of expectedSources) {
+    assert.equal(ledger.sources.find(({id}) => id === sourceId)?.canonical_locator, locator);
+    assert.ok(visible.has(locator), locator);
+  }
+  assert.equal(governed.citations.length, 5);
+  assert.equal(governed.citations.filter(({manifest_primary}) => manifest_primary).length, 1);
+  assert.ok(governed.citations.every(({usage_mode}) => usage_mode === 'facts-summary'));
+  assert.ok(governed.citations.every(({excerpt}) => excerpt === null));
+  assert.ok(governed.citations.every(({modification_note}) => modification_note === null));
+  assert.ok(governed.citations.every(({quotation_reviewed}) => quotation_reviewed === false));
+});
+
+test('connects MOD-08 reciprocally while keeping unpublished MOD-09 unlinked', () => {
+  const links = new Set(extractInternalLinks(requiredDocument()));
+  for (const href of [
+    '/modeling',
+    '/modeling/mod-07',
+    '/principles/pr-10',
+    '/quality-attributes/qa-02',
+    '/cases/temporal-saga-durable-execution',
+  ]) assert.ok(links.has(href), href);
+  assert.ok(!links.has('/modeling/mod-09'));
+  assert.match(requiredDocument().body, /MOD-09[^。\n]*尚未发布/u);
+
+  for (const id of ['MOD-07', 'PR-10', 'QA-02']) {
+    const peer = documentsById.get(id);
+    assert.ok(peer, `${id} must be published`);
+    assert.ok(peer.metadata.adjacent_topics.includes('MOD-08'), `${id} adjacency`);
+    assert.ok(extractInternalLinks(peer).includes('/modeling/mod-08'), `${id} visible link`);
+  }
+  assert.doesNotMatch(documentsById.get('MOD-07').body, /MOD-08[^。\n]*仍未发布/u);
+});
+
+test('projects the G008 Batch 6 Stage A counts with MOD-08 pending', async () => {
+  const [status, indexes] = await Promise.all([
+    readFile(new URL('../src/generated/project-status.json', import.meta.url), 'utf8').then(JSON.parse),
+    readFile(new URL('../src/generated/topic-indexes.json', import.meta.url), 'utf8').then(JSON.parse),
+  ]);
+  assert.deepEqual(status, {
+    schema_version: 1,
+    durable_stories: {completed: 7, total: 20, current: 'G008'},
+    completed_topics: 46,
+    content_documents: 89,
+    governed_sources: 476,
+    sources: {
+      durable_stories: 'docs/content-backlog.md',
+      completed_topics: 'docs/content-backlog.md',
+      content_documents: 'content/**/*.{md,mdx}',
+      governed_sources: 'data/source-ledger.json',
+    },
+  });
+  const topicsById = new Map(
+    Object.values(indexes).flat().map((topic) => [topic.id, topic]),
+  );
+  assert.equal(topicsById.get('MOD-08').published, true);
+  assert.equal(topicsById.get('MOD-08').status.value, 'pending');
 });
 
 test('rejects state, edge, mapping, table, wrapper and invariant mutations', () => {

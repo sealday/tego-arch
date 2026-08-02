@@ -33,6 +33,7 @@ adjacent_topics:
   - QA-01
   - QA-03
   - QA-08
+  - MOD-08
 related_cases:
   - /cases/aws-cell-shuffle-sharding
   - /cases/temporal-saga-durable-execution
@@ -126,6 +127,8 @@ related_questions: []
 [QA-00](/quality-attributes/qa-00)限定模型用途，[QA-01](/quality-attributes/qa-01)提供六字段写法，[QA-03](/quality-attributes/qa-03)解释负载与饱和如何触发 failure，[QA-08](/quality-attributes/qa-08)把发现、诊断、受控动作与用户可见恢复闭成运行环。可靠性常以额外容量、延迟或一致性成本换取隔离和恢复空间。
 
 [AWS Cell 与 Shuffle Sharding](/cases/aws-cell-shuffle-sharding)展示隔离边界；[Temporal Saga 与耐久执行](/cases/temporal-saga-durable-execution)展示事件历史、重试、补偿和外部副作用的不同责任。两者都不能替代当前系统自己的 RTO、RPO 和核对设计。
+
+[MOD-08 状态机建模](/modeling/mod-08)把结果未知、恢复证据和人工终态组织成可评审的状态转换。
 
 ## 说明性场景
 

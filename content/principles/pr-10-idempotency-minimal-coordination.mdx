@@ -31,6 +31,7 @@ adjacent_topics:
   - PR-09
   - PR-11
   - PR-16
+  - MOD-08
 related_cases:
   - /cases/temporal-saga-durable-execution
 related_questions: []
@@ -97,6 +98,8 @@ related_questions: []
 [Fail Fast、Fail Safe 与 Graceful Degradation](/principles/pr-07)规定错误与降级应保持真实语义；[为演化设计](/principles/pr-08)要求兼容迁移期间保持稳定操作身份；[最小权限、安全默认值与纵深防御](/principles/pr-09)决定谁可发起效果；[CQS、CQRS 与读写分离](/principles/pr-11)区分改变状态的命令与观察恢复状态的查询。PR-10 只约束效果重放和不变量协调，不替代授权或责任模型。
 
 [Secure by Design](/principles/pr-16)把重试和副作用边界纳入生命周期安全。
+
+[MOD-08 状态机建模](/modeling/mod-08)把稳定操作身份、未知结果、对账与补偿落实为显式转换合同。
 
 ## 说明性场景
 

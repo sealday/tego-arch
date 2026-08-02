@@ -1008,6 +1008,20 @@ const closingPrincipleHeadings = [
   '## 来源',
 ];
 
+const mod08Headings = [
+  '## 学习问题',
+  '## 建模目标与输入',
+  '## 两类状态与权威记录',
+  '## 模型产物',
+  '## 转换合同',
+  '## 超时、取消与补偿',
+  '## 完成判断',
+  '## 常见失败',
+  '## 与其他模型的衔接',
+  '## 完整演练',
+  '## 来源',
+];
+
 test('accepts the Pattern knowledge contract and excludes the Pattern index', async () => {
   await withTempRoot(async (root) => {
     await writeMdx(
@@ -1084,6 +1098,62 @@ test('accepts all six knowledge content contracts', async () => {
 
     assert.deepEqual(result.errors, []);
   });
+});
+
+test('accepts the exact MOD-08 eleven-heading modeling contract', async () => {
+  await withTempRoot(async (root) => {
+    await writeMdx(
+      root,
+      'modeling/mod-08.mdx',
+      validKnowledgeFrontMatter('modeling', {
+        topic_id: 'MOD-08',
+        slug: '/modeling/mod-08',
+      }),
+      mod08Headings.join('\n\n'),
+    );
+
+    const result = await validateContent(root);
+
+    assert.deepEqual(result.errors, []);
+  });
+});
+
+test('rejects missing and reordered MOD-08 headings against its exact contract', async () => {
+  const variants = [
+    {
+      name: 'missing',
+      headings: mod08Headings.filter((heading) => heading !== '## 转换合同'),
+      expected: /expected exactly 11 ## 学习问题-contract H2 headings; found 10/u,
+    },
+    {
+      name: 'reordered',
+      headings: [
+        ...mod08Headings.slice(0, 2),
+        mod08Headings[3],
+        mod08Headings[2],
+        ...mod08Headings.slice(4),
+      ],
+      expected: /position 3; expected "## 两类状态与权威记录", actual "## 模型产物"/u,
+    },
+  ];
+
+  for (const variant of variants) {
+    await withTempRoot(async (root) => {
+      await writeMdx(
+        root,
+        `modeling/mod-08-${variant.name}.mdx`,
+        validKnowledgeFrontMatter('modeling', {
+          topic_id: 'MOD-08',
+          slug: `/modeling/mod-08-${variant.name}`,
+        }),
+        variant.headings.join('\n\n'),
+      );
+
+      const result = await validateContent(root);
+
+      assert.match(result.errors.join('\n'), variant.expected, variant.name);
+    });
+  }
 });
 
 test('accepts the closing-principle contract only for PR-15 through PR-17', async () => {

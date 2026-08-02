@@ -17932,6 +17932,22 @@
     }
   ],
   "documents": {
+    "content/modeling/mod-08-state-machine-modeling.mdx": {
+      "reviewed_at": "2026-08-02",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {"source_id":"src-omg-uml-2-5-1-2017","citation_url":"https://www.omg.org/spec/UML/2.5.1","roles":["definition","method"],"manifest_primary":true,"usage_mode":"facts-summary","attribution_note":"Unified Modeling Language 2.5.1, Object Management Group","modification_note":null,"excerpt":null,"quotation_reviewed":false},
+        {"source_id":"src-docs-abd3e18c34a9","citation_url":"https://docs.temporal.io/workflows","roles":["runtime-fact"],"manifest_primary":false,"usage_mode":"facts-summary","attribution_note":"Temporal Workflow, Temporal Technologies","modification_note":null,"excerpt":null,"quotation_reviewed":false},
+        {"source_id":"src-docs-1743ee34e211","citation_url":"https://docs.temporal.io/activities","roles":["runtime-fact"],"manifest_primary":false,"usage_mode":"facts-summary","attribution_note":"Temporal Activity, Temporal Technologies","modification_note":null,"excerpt":null,"quotation_reviewed":false},
+        {"source_id":"src-docs-9950c767c50f","citation_url":"https://docs.temporal.io/encyclopedia/retry-policies","roles":["runtime-fact"],"manifest_primary":false,"usage_mode":"facts-summary","attribution_note":"Temporal Retry Policies, Temporal Technologies","modification_note":null,"excerpt":null,"quotation_reviewed":false},
+        {"source_id":"src-doi-c4c907db05fa","citation_url":"https://dl.acm.org/doi/10.1145/38713.38742","roles":["historical-context","method"],"manifest_primary":false,"usage_mode":"facts-summary","attribution_note":"Sagas, Hector Garcia-Molina and Kenneth Salem","modification_note":null,"excerpt":null,"quotation_reviewed":false}
+      ]
+    },
     "content/modeling/mod-07-uml-diagram-selection-guide.mdx": {
       "reviewed_at": "2026-08-01",
       "copyright_checks": [

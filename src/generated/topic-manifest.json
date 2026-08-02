@@ -1584,7 +1584,8 @@
       "adjacent_topics": [
         "MOD-01",
         "MOD-03",
-        "MOD-06"
+        "MOD-06",
+        "MOD-08"
       ],
       "primary_sources": [
         "https://www.omg.org/spec/UML/2.5.1"
@@ -1618,7 +1619,8 @@
         "PR-08",
         "PR-09",
         "PR-11",
-        "PR-16"
+        "PR-16",
+        "MOD-08"
       ],
       "primary_sources": [
         "https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-APIs/"
@@ -1855,7 +1857,8 @@
         "QA-00",
         "QA-01",
         "QA-03",
-        "QA-08"
+        "QA-08",
+        "MOD-08"
       ],
       "primary_sources": [
         "https://sre.google/sre-book/availability-table/"
@@ -3112,27 +3115,6 @@
       "pattern_group": null
     },
     {
-      "id": "MOD-08",
-      "type": "modeling",
-      "title": "状态机建模",
-      "slug": "/modeling/mod-08",
-      "priority": "P1",
-      "status": {
-        "scope": "backlog-projection",
-        "value": "pending",
-        "source": "docs/content-backlog.md"
-      },
-      "dependencies": [],
-      "adjacent_topics": [],
-      "primary_sources": [],
-      "related_cases": [],
-      "related_questions": [],
-      "reviewed_at": null,
-      "review_policy": null,
-      "published": false,
-      "pattern_group": null
-    },
-    {
       "id": "MOD-09",
       "type": "modeling",
       "title": "EventStorming",
@@ -4154,6 +4136,38 @@
       ],
       "related_questions": [],
       "reviewed_at": "2026-07-24",
+      "review_policy": "quarterly-version-sensitive",
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
+    },
+    {
+      "id": "MOD-08",
+      "type": "modeling",
+      "title": "状态机建模",
+      "slug": "/modeling/mod-08",
+      "priority": "P1",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "pending",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "MOD-07"
+      ],
+      "adjacent_topics": [
+        "MOD-07",
+        "PR-10",
+        "QA-02"
+      ],
+      "primary_sources": [
+        "https://www.omg.org/spec/UML/2.5.1"
+      ],
+      "related_cases": [
+        "/cases/temporal-saga-durable-execution"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-08-02",
       "review_policy": "quarterly-version-sensitive",
       "published": true,
       "pattern_group": null,
