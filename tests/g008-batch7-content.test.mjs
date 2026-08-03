@@ -146,6 +146,38 @@ const nonProofSentences = [
   '一次 EventStorming 工作坊不能单独确认正式边界，候选关系仍须在 MOD-11 或等价架构活动中验证。',
 ];
 
+const expectedInputContract = [
+  '记录要探索的业务问题与时间范围。',
+  '列出已知参与者、外部系统和权威记录。',
+  '确认 MOD-02 权威边界，并保留“银行支付服务”的权威名称。',
+  '汇集可用的访谈、流程、事故、政策和术语证据。',
+  '标明未知项、争议项和不能在本次工作坊决定的事项。',
+  '约定预期获得的模型、热点清单，以及每项后续验证的具名责任人。',
+];
+
+const expectedWorkshopSteps = [
+  '说明业务问题、时间范围、权威边界和非目标。',
+  '参与者先独立写出过去时领域事件，再按业务时间线排列。',
+  '补充事件来源、参与者、外部系统、pivotal event 候选、hotspot 和未知项。',
+  '共同 walkthrough，合并同义词，同时保留真实分歧。',
+  '选择“费用已审批到支付结果已确认”的高风险片段。',
+  '用 Person、Read Model、Command、System、Policy 和 Event 建立 Process Model。',
+  '回到 hotspot，将事项记录为已回答、待验证或超出本轮范围。',
+  '把边界信号写入候选边界台账，给出替代解释、所需证据和处置。',
+];
+
+const expectedCompletionContract = [
+  '时间范围、参与者和权威记录可见。',
+  'Big Picture 事件以过去时表达，并能完成一次端到端 walkthrough。',
+  '每个 pivotal event 候选、hotspot 和未知项都有记录，不强行消除分歧。',
+  '选中的高风险片段已建立可解释的 Process Model。',
+  '候选边界台账包含替代解释、待补证据和责任明确的下一步。',
+  '与 MOD-02、MOD-05、MOD-08 和后续 MOD-11 的交接边界写清。',
+  '所有参与者理解共享模型是当前证据的共同视图，而不是生产事实或架构批准。',
+];
+
+const unpublishedModelingTopics = ['MOD-10', 'MOD-11', 'MOD-12', 'MOD-13'];
+
 const expectedWrapperLabels = [
   '费用申报 Big Picture 事件表，可横向滚动',
   '费用支付 Process Model，可横向滚动',
@@ -179,6 +211,38 @@ function assertPublicationContract(source) {
   assert.deepEqual(
     findMarkdownHeadings(source).filter(({level}) => level === 2).map(({text}) => text),
     expectedHeadings,
+  );
+}
+
+function sectionBody(body, heading) {
+  const startMarker = `## ${heading}\n`;
+  const start = body.indexOf(startMarker);
+  assert.notEqual(start, -1, `missing section: ${heading}`);
+  const contentStart = start + startMarker.length;
+  const next = body.indexOf('\n## ', contentStart);
+  return body.slice(contentStart, next === -1 ? body.length : next).trim();
+}
+
+function unorderedListItems(section) {
+  return [...section.matchAll(/^- (.+)$/gmu)].map((match) => match[1]);
+}
+
+function orderedListItems(section) {
+  return [...section.matchAll(/^\d+\. (.+)$/gmu)].map((match) => match[1]);
+}
+
+function assertWorkshopSemanticContract(body) {
+  assert.deepEqual(
+    unorderedListItems(sectionBody(body, '建模目标与输入')),
+    expectedInputContract,
+  );
+  assert.deepEqual(
+    orderedListItems(sectionBody(body, '参与者与步骤')),
+    expectedWorkshopSteps,
+  );
+  assert.deepEqual(
+    unorderedListItems(sectionBody(body, '完成判断')),
+    expectedCompletionContract,
   );
 }
 
@@ -285,40 +349,8 @@ function horizontalArrowEvent({clientWidth = 100, scrollWidth = 300} = {}) {
   return {event: {key: 'ArrowRight', currentTarget: region, target: region, altKey: false, ctrlKey: false, metaKey: false, shiftKey: false, preventDefault() { defaultPrevented = true; }}, region, wasDefaultPrevented: () => defaultPrevented};
 }
 
-test('publishes MOD-09 with the approved metadata and H2 sequence', () => {
-  const content = requiredDocument();
-  assertPublicationContract(content.source);
-});
-
-test('locks both complete workshop tables', () => {
-  assertTableContracts(requiredDocument().body);
-});
-
-test('locks the typed Process Model graph', () => {
-  assertProcessContract(requiredDocument().body);
-});
-
-test('keeps the diagram and both tables keyboard accessible', () => {
-  assertInteractionContract(requiredDocument().body);
-});
-
-test('scrolls only a directly focused overflowing region by 40 pixels', () => {
-  const overflow = horizontalArrowEvent();
-  handleHorizontalArrowKey(overflow.event);
-  assert.equal(overflow.region.scrollLeft, 40);
-  assert.equal(overflow.wasDefaultPrevented(), true);
-  const staticRegion = horizontalArrowEvent({clientWidth: 300, scrollWidth: 300});
-  handleHorizontalArrowKey(staticRegion.event);
-  assert.equal(staticRegion.region.scrollLeft, 0);
-  assert.equal(staticRegion.wasDefaultPrevented(), false);
-});
-
-test('states the workshop terminology and non-proof rules verbatim', () => {
-  assertTerminologyAndNonProof(requiredDocument().body);
-});
-
-test('governs the five reviewed MOD-09 sources and citation boundaries exactly', () => {
-  const governed = ledger.documents['content/modeling/mod-09-eventstorming.mdx'];
+function assertSourceGovernance(ledgerData, content) {
+  const governed = ledgerData.documents['content/modeling/mod-09-eventstorming.mdx'];
   assert.ok(governed);
   assert.equal(governed.reviewed_at, '2026-08-03');
   assert.deepEqual(governed.copyright_checks, [
@@ -329,10 +361,10 @@ test('governs the five reviewed MOD-09 sources and citation boundaries exactly',
   ]);
   assert.equal(governed.citations.length, 5);
   const citations = new Map(governed.citations.map((citation) => [citation.source_id, citation]));
-  const visible = new Set(extractExternalLinks(requiredDocument()));
+  const visible = new Set(extractExternalLinks(content));
   for (const definition of sourceDefinitions) {
     const url = expectedSources.get(definition.id);
-    const source = ledger.sources.find(({id}) => id === definition.id);
+    const source = ledgerData.sources.find(({id}) => id === definition.id);
     assert.ok(source, definition.id);
     assert.deepEqual(source, {
       id: definition.id,
@@ -377,6 +409,129 @@ test('governs the five reviewed MOD-09 sources and citation boundaries exactly',
       quotation_reviewed: false,
     });
   }
+}
+
+function assertRelationContract(content, peers) {
+  const links = extractInternalLinks(content);
+  for (const href of ['/modeling', '/modeling/mod-01', '/modeling/mod-02', '/modeling/mod-05', '/modeling/mod-08', '/cases/temporal-saga-durable-execution']) {
+    assert.ok(links.includes(href), href);
+  }
+  for (const id of unpublishedModelingTopics) {
+    assert.equal(
+      links.filter((href) => href === `/modeling/${id.toLowerCase()}`).length,
+      0,
+      `${id} actionable article links`,
+    );
+  }
+  for (const id of ['MOD-05', 'MOD-08']) {
+    const peer = peers.get(id);
+    assert.ok(peer.metadata.adjacent_topics.includes('MOD-09'), `${id} adjacency`);
+    assert.equal(
+      extractInternalLinks(peer).filter((href) => href === '/modeling/mod-09').length,
+      1,
+      `${id} visible link`,
+    );
+  }
+}
+
+function assertStageAProjection(projectStatus, topicIndexes, content) {
+  assert.deepEqual(projectStatus, {
+    schema_version: 1,
+    durable_stories: {completed: 7, total: 20, current: 'G008'},
+    completed_topics: 47,
+    content_documents: 90,
+    governed_sources: 481,
+    sources: {
+      durable_stories: 'docs/content-backlog.md',
+      completed_topics: 'docs/content-backlog.md',
+      content_documents: 'content/**/*.{md,mdx}',
+      governed_sources: 'data/source-ledger.json',
+    },
+  });
+  const topicsById = new Map(Object.values(topicIndexes).flat().map((topic) => [topic.id, topic]));
+  assert.equal(topicsById.get('MOD-09').published, true);
+  assert.equal(topicsById.get('MOD-09').status.value, 'pending');
+  const links = extractInternalLinks(content);
+  for (const id of unpublishedModelingTopics) {
+    assert.equal(topicsById.get(id).published, false, `${id} publication`);
+    assert.equal(topicsById.get(id).status.value, 'pending', `${id} status`);
+    assert.equal(
+      links.filter((href) => href === `/modeling/${id.toLowerCase()}`).length,
+      0,
+      `${id} actionable article links`,
+    );
+  }
+}
+
+test('publishes MOD-09 with the approved metadata and H2 sequence', () => {
+  const content = requiredDocument();
+  assertPublicationContract(content.source);
+});
+
+test('locks both complete workshop tables', () => {
+  assertTableContracts(requiredDocument().body);
+});
+
+test('locks the typed Process Model graph', () => {
+  assertProcessContract(requiredDocument().body);
+});
+
+test('keeps the diagram and both tables keyboard accessible', () => {
+  assertInteractionContract(requiredDocument().body);
+});
+
+test('scrolls only a directly focused overflowing region by 40 pixels', () => {
+  const overflow = horizontalArrowEvent();
+  handleHorizontalArrowKey(overflow.event);
+  assert.equal(overflow.region.scrollLeft, 40);
+  assert.equal(overflow.wasDefaultPrevented(), true);
+  const staticRegion = horizontalArrowEvent({clientWidth: 300, scrollWidth: 300});
+  handleHorizontalArrowKey(staticRegion.event);
+  assert.equal(staticRegion.region.scrollLeft, 0);
+  assert.equal(staticRegion.wasDefaultPrevented(), false);
+});
+
+test('states the workshop terminology and non-proof rules verbatim', () => {
+  assertTerminologyAndNonProof(requiredDocument().body);
+});
+
+test('locks the complete workshop inputs, eight steps and exit conditions', () => {
+  const {body} = requiredDocument();
+  assertWorkshopSemanticContract(body);
+  for (const item of [
+    ...expectedInputContract,
+    ...expectedWorkshopSteps,
+    ...expectedCompletionContract,
+  ]) {
+    assert.throws(
+      () => assertWorkshopSemanticContract(body.replace(`${item}\n`, '')),
+      {name: 'AssertionError'},
+      `deleted semantic contract item: ${item}`,
+    );
+  }
+});
+
+test('governs the five reviewed MOD-09 sources and citation boundaries exactly', () => {
+  const content = requiredDocument();
+  assertSourceGovernance(ledger, content);
+  for (const definition of sourceDefinitions) {
+    const deleted = structuredClone(ledger);
+    deleted.sources = deleted.sources.filter(({id}) => id !== definition.id);
+    assert.throws(
+      () => assertSourceGovernance(deleted, content),
+      {name: 'AssertionError'},
+      `deleted governed source: ${definition.id}`,
+    );
+
+    const replaced = structuredClone(ledger);
+    const source = replaced.sources.find(({id}) => id === definition.id);
+    source.canonical_locator = 'https://example.invalid/replacement';
+    assert.throws(
+      () => assertSourceGovernance(replaced, content),
+      {name: 'AssertionError'},
+      `replaced governed source: ${definition.id}`,
+    );
+  }
 });
 
 test('preserves the exact Medium failure and checker-recovered link-health history', () => {
@@ -394,19 +549,33 @@ test('preserves the exact Medium failure and checker-recovered link-health histo
 });
 
 test('connects MOD-09 and its published reciprocal modeling relations', () => {
-  const links = extractInternalLinks(requiredDocument());
-  for (const href of ['/modeling', '/modeling/mod-01', '/modeling/mod-02', '/modeling/mod-05', '/modeling/mod-08', '/cases/temporal-saga-durable-execution']) {
-    assert.ok(links.includes(href), href);
-  }
-  assert.equal(links.filter((href) => href === '/modeling/mod-10').length, 0);
-  assert.equal(links.filter((href) => href === '/modeling/mod-11').length, 0);
+  const content = requiredDocument();
+  assertRelationContract(content, documentsById);
   for (const id of ['MOD-05', 'MOD-08']) {
     const peer = documentsById.get(id);
-    assert.ok(peer.metadata.adjacent_topics.includes('MOD-09'), `${id} adjacency`);
-    assert.equal(
-      extractInternalLinks(peer).filter((href) => href === '/modeling/mod-09').length,
-      1,
-      `${id} visible link`,
+    const withoutAdjacency = new Map(documentsById);
+    withoutAdjacency.set(id, {
+      ...peer,
+      metadata: {
+        ...peer.metadata,
+        adjacent_topics: peer.metadata.adjacent_topics.filter((topicId) => topicId !== 'MOD-09'),
+      },
+    });
+    assert.throws(
+      () => assertRelationContract(content, withoutAdjacency),
+      {name: 'AssertionError'},
+      `${id} deleted adjacency`,
+    );
+
+    const withoutBacklink = new Map(documentsById);
+    withoutBacklink.set(id, {
+      ...peer,
+      body: peer.body.replace('/modeling/mod-09', '/modeling/mod-08'),
+    });
+    assert.throws(
+      () => assertRelationContract(content, withoutBacklink),
+      {name: 'AssertionError'},
+      `${id} deleted visible backlink`,
     );
   }
 });
@@ -416,24 +585,28 @@ test('projects Stage A after publishing MOD-09', async () => {
     readFile(new URL('../src/generated/project-status.json', import.meta.url), 'utf8').then(JSON.parse),
     readFile(new URL('../src/generated/topic-indexes.json', import.meta.url), 'utf8').then(JSON.parse),
   ]);
-  assert.deepEqual(projectStatus, {
-    schema_version: 1,
-    durable_stories: {completed: 7, total: 20, current: 'G008'},
-    completed_topics: 47,
-    content_documents: 90,
-    governed_sources: 481,
-    sources: {
-      durable_stories: 'docs/content-backlog.md',
-      completed_topics: 'docs/content-backlog.md',
-      content_documents: 'content/**/*.{md,mdx}',
-      governed_sources: 'data/source-ledger.json',
-    },
-  });
-  const topicsById = new Map(Object.values(topicIndexes).flat().map((topic) => [topic.id, topic]));
-  assert.equal(topicsById.get('MOD-09').published, true);
-  assert.equal(topicsById.get('MOD-09').status.value, 'pending');
-  assert.equal(topicsById.get('MOD-10').published, false);
-  assert.equal(topicsById.get('MOD-10').status.value, 'pending');
+  const content = requiredDocument();
+  assertStageAProjection(projectStatus, topicIndexes, content);
+  for (const id of unpublishedModelingTopics) {
+    const published = structuredClone(topicIndexes);
+    const topic = Object.values(published).flat().find(({id: topicId}) => topicId === id);
+    topic.published = true;
+    assert.throws(
+      () => assertStageAProjection(projectStatus, published, content),
+      {name: 'AssertionError'},
+      `${id} forbidden publication`,
+    );
+
+    const linked = {
+      ...content,
+      body: `${content.body}\n[forbidden ${id}](/modeling/${id.toLowerCase()})\n`,
+    };
+    assert.throws(
+      () => assertStageAProjection(projectStatus, topicIndexes, linked),
+      {name: 'AssertionError'},
+      `${id} forbidden actionable link`,
+    );
+  }
 });
 
 test('rejects heading, table, graph, wrapper, terminology and non-proof mutations', () => {
