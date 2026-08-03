@@ -353,8 +353,8 @@ test('preserves Batch 5 evidence after MOD-08 closes and MOD-09 becomes next', (
     schema_version: 1,
     durable_stories: {completed: 7, total: 20, current: 'G008'},
     completed_topics: 47,
-    content_documents: 89,
-    governed_sources: 476,
+    content_documents: 90,
+    governed_sources: 481,
     sources: {
       durable_stories: 'docs/content-backlog.md',
       completed_topics: 'docs/content-backlog.md',

@@ -460,6 +460,7 @@ test('publishes MOD-05 as one progressive expense-claim data model', () => {
   assert.deepEqual(document.metadata.adjacent_topics, [
     'MOD-04',
     'MOD-06',
+    'MOD-09',
     'PR-13',
   ]);
   assert.deepEqual(document.metadata.related_cases, [
@@ -702,7 +703,7 @@ test('governs exactly the five visible MOD-05 official sources', () => {
     assert.equal(results.length, 1, `${sourceId} exact link-health association`);
     assertStableSourceHealth(sourceId, results[0]);
   }
-  assert.equal(ledger.sources.length, 476);
+  assert.equal(ledger.sources.length, 481);
 });
 
 test('projects the exact G008 Batch 3 Stage B repository state', () => {
@@ -710,8 +711,8 @@ test('projects the exact G008 Batch 3 Stage B repository state', () => {
     schema_version: 1,
     durable_stories: {completed: 7, total: 20, current: 'G008'},
     completed_topics: 47,
-    content_documents: 89,
-    governed_sources: 476,
+    content_documents: 90,
+    governed_sources: 481,
     sources: {
       durable_stories: 'docs/content-backlog.md',
       completed_topics: 'docs/content-backlog.md',
