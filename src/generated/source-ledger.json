@@ -5119,6 +5119,51 @@
       ]
     },
     {
+      "id": "src-docs-28997e2e106b",
+      "canonical_locator": "https://medium.com/@ziobrando/collaborative-process-modelling-with-eventstorming-17ed363650c0",
+      "transport_locator": "https://medium.com/@ziobrando/collaborative-process-modelling-with-eventstorming-17ed363650c0",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Collaborative Process Modelling with EventStorming",
+      "author_or_org": "Alberto Brandolini",
+      "published_at": null,
+      "registered_at": "2026-08-03",
+      "checked_at": "2026-08-03",
+      "version": "Living page retrieved 2026-08-03",
+      "source_kind": "engineering-blog",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "method",
+        "learning"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "Facts summarized from the named page only; page text, diagrams, templates, examples, sticky-note layouts, trademarks, linked works and third-party assets are excluded.",
+      "license_evidence_url": "https://medium.com/@ziobrando/collaborative-process-modelling-with-eventstorming-17ed363650c0",
+      "license_evidence_note": "Collaborative Process Modelling with EventStorming at https://medium.com/@ziobrando/collaborative-process-modelling-with-eventstorming-17ed363650c0 was checked on 2026-08-03; no open content license was found.",
+      "license_family_id": "https://medium.com/@ziobrando/collaborative-process-modelling-with-eventstorming-17ed363650c0",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports the reviewed Process Modelling grammar of Person, System, Command, Policy, Read Model and Event; it does not define this article’s expense-claim example or architecture.",
+      "link_policy": "floating",
+      "expected_final_transport_locator": "https://medium.com/@ziobrando/collaborative-process-modelling-with-eventstorming-17ed363650c0",
+      "expected_final_approved_at": "2026-08-03",
+      "expected_final_approval_note": "Initial reviewed EventStorming teaching-source transport baseline",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://medium.com/@ziobrando/collaborative-process-modelling-with-eventstorming-17ed363650c0",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-03T00:59:30.000Z",
+          "last_success_at": "2026-08-03T00:59:30.000Z",
+          "http_status": 200,
+          "final_transport_locator": "https://medium.com/@ziobrando/collaborative-process-modelling-with-eventstorming-17ed363650c0"
+        }
+      ]
+    },
+    {
       "id": "src-docs-399cf6369bd3",
       "canonical_locator": "https://docs.langchain.com/oss/python/langgraph/overview",
       "transport_locator": "https://docs.langchain.com/oss/python/langgraph/overview",
@@ -5615,6 +5660,50 @@
           "last_success_at": "2026-08-02T04:33:33.082Z",
           "http_status": 200,
           "final_transport_locator": "https://docs.ros.org/en/jazzy/Concepts/Basic.html"
+        }
+      ]
+    },
+    {
+      "id": "src-docs-5b4206bf06fe",
+      "canonical_locator": "https://www.avanscoperta.it/en/eventstorming/pivotal-events/",
+      "transport_locator": "https://www.avanscoperta.it/en/eventstorming/pivotal-events/",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Pivotal Events",
+      "author_or_org": "Avanscoperta",
+      "published_at": null,
+      "registered_at": "2026-08-03",
+      "checked_at": "2026-08-03",
+      "version": "Living page retrieved 2026-08-03",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "method"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "Facts summarized from the named page only; page text, diagrams, templates, examples, sticky-note layouts, trademarks, linked works and third-party assets are excluded.",
+      "license_evidence_url": "https://www.avanscoperta.it/en/eventstorming/pivotal-events/",
+      "license_evidence_note": "Pivotal Events at https://www.avanscoperta.it/en/eventstorming/pivotal-events/ was checked on 2026-08-03; no open content license was found.",
+      "license_family_id": "https://www.avanscoperta.it/en/eventstorming/pivotal-events/",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports reviewed pivotal-event, timeline and swimlane discussion signals; it does not make a pivotal event or swimlane a context, team, system or service.",
+      "link_policy": "floating",
+      "expected_final_transport_locator": "https://www.avanscoperta.it/en/eventstorming/pivotal-events/",
+      "expected_final_approved_at": "2026-08-03",
+      "expected_final_approval_note": "Initial reviewed EventStorming teaching-source transport baseline",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://www.avanscoperta.it/en/eventstorming/pivotal-events/",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-03T00:56:31.386Z",
+          "last_success_at": "2026-08-03T00:56:31.386Z",
+          "http_status": 200,
+          "final_transport_locator": "https://www.avanscoperta.it/en/eventstorming/pivotal-events/"
         }
       ]
     },
@@ -6620,6 +6709,51 @@
       ]
     },
     {
+      "id": "src-docs-9a4e9ce7f01b",
+      "canonical_locator": "https://www.avanscoperta.it/en/eventstorming/",
+      "transport_locator": "https://www.avanscoperta.it/en/eventstorming/",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "EventStorming",
+      "author_or_org": "Avanscoperta",
+      "published_at": null,
+      "registered_at": "2026-08-03",
+      "checked_at": "2026-08-03",
+      "version": "Living page retrieved 2026-08-03",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "method",
+        "learning"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "Facts summarized from the named page only; page text, diagrams, templates, examples, sticky-note layouts, trademarks, linked works and third-party assets are excluded.",
+      "license_evidence_url": "https://www.avanscoperta.it/en/eventstorming/",
+      "license_evidence_note": "EventStorming at https://www.avanscoperta.it/en/eventstorming/ was checked on 2026-08-03; no open content license was found.",
+      "license_family_id": "https://www.avanscoperta.it/en/eventstorming/",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports the three EventStorming workshop formats, collaborative purpose and reviewed artifact vocabulary; it does not prove local boundaries, teams, services or production behavior.",
+      "link_policy": "floating",
+      "expected_final_transport_locator": "https://www.avanscoperta.it/en/eventstorming/",
+      "expected_final_approved_at": "2026-08-03",
+      "expected_final_approval_note": "Initial reviewed EventStorming teaching-source transport baseline",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://www.avanscoperta.it/en/eventstorming/",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-03T00:56:31.386Z",
+          "last_success_at": "2026-08-03T00:56:31.386Z",
+          "http_status": 200,
+          "final_transport_locator": "https://www.avanscoperta.it/en/eventstorming/"
+        }
+      ]
+    },
+    {
       "id": "src-docs-9a58a5e05af5",
       "canonical_locator": "https://docs.aws.amazon.com/wellarchitected/latest/reducing-scope-of-impact-with-cell-based-architecture/why-to-use-a-cell-based-architecture.html",
       "transport_locator": "https://docs.aws.amazon.com/wellarchitected/latest/reducing-scope-of-impact-with-cell-based-architecture/why-to-use-a-cell-based-architecture.html",
@@ -7120,6 +7254,50 @@
       ]
     },
     {
+      "id": "src-docs-ce27d09ce1e2",
+      "canonical_locator": "https://www.eventstorming.com/patterns/chaotic-exploration/",
+      "transport_locator": "https://www.eventstorming.com/patterns/chaotic-exploration/",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Chaotic Exploration",
+      "author_or_org": "EventStorming",
+      "published_at": null,
+      "registered_at": "2026-08-03",
+      "checked_at": "2026-08-03",
+      "version": "Living page retrieved 2026-08-03",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "method",
+        "learning"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "Facts summarized from the named page only; page text, diagrams, templates, examples, sticky-note layouts, trademarks, linked works and third-party assets are excluded.",
+      "license_evidence_url": "https://www.eventstorming.com/patterns/chaotic-exploration/",
+      "license_evidence_note": "Chaotic Exploration at https://www.eventstorming.com/patterns/chaotic-exploration/ was checked on 2026-08-03; no open content license was found.",
+      "license_family_id": "https://www.eventstorming.com/patterns/chaotic-exploration/",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports independent event exploration followed by collaborative organization; it does not license copying its prose, examples, diagrams, templates or layouts.",
+      "link_policy": "floating",
+      "expected_final_transport_locator": "https://www.eventstorming.com/patterns/chaotic-exploration/",
+      "expected_final_approved_at": "2026-08-03",
+      "expected_final_approval_note": "Initial reviewed EventStorming teaching-source transport baseline",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://www.eventstorming.com/patterns/chaotic-exploration/",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-03T00:56:31.386Z",
+          "last_success_at": "2026-08-03T00:56:31.386Z",
+          "http_status": 206,
+          "final_transport_locator": "https://www.eventstorming.com/patterns/chaotic-exploration/"
+        }
+      ]
+    },
+    {
       "id": "src-docs-cf7fd7aab73f",
       "canonical_locator": "https://docs.yjs.dev/ecosystem/database-provider/y-indexeddb",
       "transport_locator": "https://docs.yjs.dev/ecosystem/database-provider/y-indexeddb",
@@ -7616,6 +7794,50 @@
           "last_success_at": "2026-08-02T04:33:33.082Z",
           "http_status": 206,
           "final_transport_locator": "https://docs.aws.amazon.com/solutions/cell-based-architecture-on-aws/"
+        }
+      ]
+    },
+    {
+      "id": "src-docs-fc6e554f1153",
+      "canonical_locator": "https://www.avanscoperta.it/en/context-mapping/",
+      "transport_locator": "https://www.avanscoperta.it/en/context-mapping/",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Context Mapping",
+      "author_or_org": "Avanscoperta",
+      "published_at": null,
+      "registered_at": "2026-08-03",
+      "checked_at": "2026-08-03",
+      "version": "Living page retrieved 2026-08-03",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "method"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "Facts summarized from the named page only; page text, diagrams, templates, examples, sticky-note layouts, trademarks, linked works and third-party assets are excluded.",
+      "license_evidence_url": "https://www.avanscoperta.it/en/context-mapping/",
+      "license_evidence_note": "Context Mapping at https://www.avanscoperta.it/en/context-mapping/ was checked on 2026-08-03; no open content license was found.",
+      "license_family_id": "https://www.avanscoperta.it/en/context-mapping/",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports the reviewed warning that boundary indicators are not bulletproof and require architecture judgment; it does not approve the article’s candidate boundaries.",
+      "link_policy": "floating",
+      "expected_final_transport_locator": "https://www.avanscoperta.it/en/context-mapping/",
+      "expected_final_approved_at": "2026-08-03",
+      "expected_final_approval_note": "Initial reviewed EventStorming teaching-source transport baseline",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://www.avanscoperta.it/en/context-mapping/",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-03T00:56:31.386Z",
+          "last_success_at": "2026-08-03T00:56:31.386Z",
+          "http_status": 200,
+          "final_transport_locator": "https://www.avanscoperta.it/en/context-mapping/"
         }
       ]
     },
@@ -29691,6 +29913,91 @@
           "manifest_primary": true,
           "usage_mode": "facts-summary",
           "attribution_note": "Unified Modeling Language 2.5.1, Object Management Group",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/modeling/mod-09-eventstorming.mdx": {
+      "title": "EventStorming 工作坊建模",
+      "slug": "/modeling/mod-09",
+      "reviewed_at": "2026-08-03",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-docs-28997e2e106b",
+          "citation_url": "https://medium.com/@ziobrando/collaborative-process-modelling-with-eventstorming-17ed363650c0",
+          "roles": [
+            "definition",
+            "method",
+            "learning"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Collaborative Process Modelling with EventStorming, Alberto Brandolini",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-docs-5b4206bf06fe",
+          "citation_url": "https://www.avanscoperta.it/en/eventstorming/pivotal-events/",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Pivotal Events, Avanscoperta",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-docs-9a4e9ce7f01b",
+          "citation_url": "https://www.avanscoperta.it/en/eventstorming/",
+          "roles": [
+            "definition",
+            "method",
+            "learning"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "EventStorming, Avanscoperta",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-docs-ce27d09ce1e2",
+          "citation_url": "https://www.eventstorming.com/patterns/chaotic-exploration/",
+          "roles": [
+            "method",
+            "learning"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Chaotic Exploration, EventStorming",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-docs-fc6e554f1153",
+          "citation_url": "https://www.avanscoperta.it/en/context-mapping/",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Context Mapping, Avanscoperta",
           "modification_note": null,
           "excerpt": null,
           "quotation_reviewed": false

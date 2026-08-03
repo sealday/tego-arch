@@ -383,7 +383,7 @@ test('publishes MOD-08 with the approved metadata and structure', () => {
   assert.equal(content.metadata.status, 'reviewed');
   assert.equal(content.metadata.priority, 'P1');
   assert.deepEqual(content.metadata.depends_on, ['MOD-07']);
-  assert.deepEqual(content.metadata.adjacent_topics, ['MOD-07', 'PR-10', 'QA-02']);
+  assert.deepEqual(content.metadata.adjacent_topics, ['MOD-07', 'MOD-09', 'PR-10', 'QA-02']);
   assert.deepEqual(content.metadata.related_cases, [
     '/cases/temporal-saga-durable-execution',
   ]);
@@ -474,7 +474,7 @@ test('governs the five exact MOD-08 sources and exposes every canonical locator'
   }
 });
 
-test('connects MOD-08 reciprocally while keeping unpublished MOD-09 unlinked', () => {
+test('connects MOD-08 reciprocally and hands off to published MOD-09', () => {
   const links = new Set(extractInternalLinks(requiredDocument()));
   for (const href of [
     '/modeling',
@@ -483,8 +483,9 @@ test('connects MOD-08 reciprocally while keeping unpublished MOD-09 unlinked', (
     '/quality-attributes/qa-02',
     '/cases/temporal-saga-durable-execution',
   ]) assert.ok(links.has(href), href);
-  assert.ok(!links.has('/modeling/mod-09'));
-  assert.match(requiredDocument().body, /MOD-09[^。\n]*尚未发布/u);
+  assert.ok(links.has('/modeling/mod-09'));
+  assert.doesNotMatch(requiredDocument().body, /MOD-09[^。\n]*尚未发布/u);
+  assert.ok(requiredDocument().metadata.adjacent_topics.includes('MOD-09'));
 
   for (const id of ['MOD-07', 'PR-10', 'QA-02']) {
     const peer = documentsById.get(id);
@@ -500,7 +501,12 @@ test('projects the G008 Batch 6 Stage B counts with MOD-08 complete', async () =
     readFile(new URL('../src/generated/project-status.json', import.meta.url), 'utf8').then(JSON.parse),
     readFile(new URL('../src/generated/topic-indexes.json', import.meta.url), 'utf8').then(JSON.parse),
   ]);
-  assert.deepEqual(status, {
+  const batch6Status = {
+    ...status,
+    content_documents: status.content_documents - 1,
+    governed_sources: status.governed_sources - 5,
+  };
+  assert.deepEqual(batch6Status, {
     schema_version: 1,
     durable_stories: {completed: 7, total: 20, current: 'G008'},
     completed_topics: 47,
@@ -518,15 +524,21 @@ test('projects the G008 Batch 6 Stage B counts with MOD-08 complete', async () =
   );
   assert.equal(topicsById.get('MOD-08').published, true);
   assert.equal(topicsById.get('MOD-08').status.value, 'complete');
+  const batch6TopicsById = new Map(topicsById);
+  batch6TopicsById.set('MOD-09', {
+    ...batch6TopicsById.get('MOD-09'),
+    published: false,
+  });
   const routes = new Set(extractInternalLinks(requiredDocument()));
-  assertGlobalPublicationBoundary(topicsById, routes);
+  routes.delete('/modeling/mod-09');
+  assertGlobalPublicationBoundary(batch6TopicsById, routes);
 
   for (let number = 9; number <= 13; number += 1) {
     const id = `MOD-${String(number).padStart(2, '0')}`;
-    const topic = topicsById.get(id);
+    const topic = batch6TopicsById.get(id);
     assert.throws(
       () => assertGlobalPublicationBoundary(
-        new Map(topicsById).set(id, {...topic, published: true}),
+        new Map(batch6TopicsById).set(id, {...topic, published: true}),
         routes,
       ),
       {name: 'AssertionError'},
@@ -534,7 +546,7 @@ test('projects the G008 Batch 6 Stage B counts with MOD-08 complete', async () =
     );
     assert.throws(
       () => assertGlobalPublicationBoundary(
-        new Map(topicsById).set(id, {
+        new Map(batch6TopicsById).set(id, {
           ...topic,
           status: {...topic.status, value: 'complete'},
         }),
@@ -544,7 +556,7 @@ test('projects the G008 Batch 6 Stage B counts with MOD-08 complete', async () =
       `${id} status mutation`,
     );
     assert.throws(
-      () => assertGlobalPublicationBoundary(topicsById, new Set(routes).add(topic.slug)),
+      () => assertGlobalPublicationBoundary(batch6TopicsById, new Set(routes).add(topic.slug)),
       {name: 'AssertionError'},
       `${id} route mutation`,
     );

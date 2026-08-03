@@ -165,6 +165,8 @@ Person 不等于长期 owner。
 
 [Temporal Saga 与持久执行案例](/cases/temporal-saga-durable-execution)可用于检验长时流程中的超时、重试、补偿和人工收敛，但其运行机制不会替本文决定业务边界。候选关系需在 MOD-11 或等价架构活动中结合术语 owner、规则变更、权威记录和组织协作证据继续验证。
 
+返回[建模目录](/modeling)可继续选择其他建模观察尺度。
+
 ## 完整演练
 
 1. 参与者先从“费用已提交”开始，用过去时补齐审批、财务复核、支付请求、支付确认、结果未知、支付对账与人工登记，不写“支付中”这类含混状态。
@@ -176,7 +178,10 @@ Person 不等于长期 owner。
 
 ## 来源
 
-- [EventStorming](https://www.eventstorming.com/)：用于核对 EventStorming 方法的公开入口；不支持本文的费用领域事实、贴纸内容或边界结论。
-- [Introducing EventStorming, Alberto Brandolini](https://leanpub.com/introducing_eventstorming)：用于核对 Big Picture、Process Modelling、Software Design 等工作坊格式及其常用语法背景；本文不复制书中图表或案例，也不把方法说明当作生产证据。
+- [EventStorming](https://www.avanscoperta.it/en/eventstorming/)：支持三种工作坊格式、协作目的与经审查的产物词汇；不证明本站边界、团队、服务或生产行为。
+- [Collaborative Process Modelling with EventStorming](https://medium.com/@ziobrando/collaborative-process-modelling-with-eventstorming-17ed363650c0)：支持 Process Modelling 工作坊格式中的 Person、System、Command、Policy、Read Model 与 Event 语法；不定义本文的费用申报案例或架构。
+- [Pivotal Events](https://www.avanscoperta.it/en/eventstorming/pivotal-events/)：支持 pivotal event、时间线与 swimlane 的讨论信号；不把 pivotal event 或 swimlane 变成 context、团队、系统或服务。
+- [Context Mapping](https://www.avanscoperta.it/en/context-mapping/)：支持边界指标并非绝对可靠、仍需架构判断的提醒；不批准本文的候选边界。
+- [Chaotic Exploration](https://www.eventstorming.com/patterns/chaotic-exploration/)：支持先独立探索事件、再协作整理的方法；不许可复制其文字、示例、图、模板或布局。
 
 本文的表格、Mermaid 图、费用流程、候选边界与演练均为本站原创教学内容；来源只支持方法背景，不证明运行时实现或正式组织边界。

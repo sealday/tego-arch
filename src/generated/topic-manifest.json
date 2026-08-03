@@ -1550,6 +1550,7 @@
       "adjacent_topics": [
         "MOD-04",
         "MOD-06",
+        "MOD-09",
         "PR-13"
       ],
       "primary_sources": [
@@ -3115,27 +3116,6 @@
       "pattern_group": null
     },
     {
-      "id": "MOD-09",
-      "type": "modeling",
-      "title": "EventStorming",
-      "slug": "/modeling/mod-09",
-      "priority": "P1",
-      "status": {
-        "scope": "backlog-projection",
-        "value": "pending",
-        "source": "docs/content-backlog.md"
-      },
-      "dependencies": [],
-      "adjacent_topics": [],
-      "primary_sources": [],
-      "related_cases": [],
-      "related_questions": [],
-      "reviewed_at": null,
-      "review_policy": null,
-      "published": false,
-      "pattern_group": null
-    },
-    {
       "id": "MOD-10",
       "type": "modeling",
       "title": "Domain Storytelling",
@@ -4157,6 +4137,7 @@
       ],
       "adjacent_topics": [
         "MOD-07",
+        "MOD-09",
         "PR-10",
         "QA-02"
       ],
@@ -4168,6 +4149,38 @@
       ],
       "related_questions": [],
       "reviewed_at": "2026-08-02",
+      "review_policy": "quarterly-version-sensitive",
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
+    },
+    {
+      "id": "MOD-09",
+      "type": "modeling",
+      "title": "EventStorming 工作坊建模",
+      "slug": "/modeling/mod-09",
+      "priority": "P1",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "pending",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "MOD-01",
+        "MOD-02"
+      ],
+      "adjacent_topics": [
+        "MOD-05",
+        "MOD-08"
+      ],
+      "primary_sources": [
+        "https://www.avanscoperta.it/en/eventstorming/"
+      ],
+      "related_cases": [
+        "/cases/temporal-saga-durable-execution"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-08-03",
       "review_policy": "quarterly-version-sensitive",
       "published": true,
       "pattern_group": null,

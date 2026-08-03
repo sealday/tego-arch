@@ -272,8 +272,8 @@ test('preserves Batch 3 closure under the current non-terminal G008 baseline', (
     assert.equal(topicsById.get(id)?.status.value, 'pending', id);
   }
   assert.equal(projectStatus.completed_topics, 47);
-  assert.equal(projectStatus.content_documents, 89);
-  assert.equal(projectStatus.governed_sources, 476);
+  assert.equal(projectStatus.content_documents, 90);
+  assert.equal(projectStatus.governed_sources, 481);
   assert.deepEqual(projectStatus.durable_stories, {
     completed: 7,
     total: 20,

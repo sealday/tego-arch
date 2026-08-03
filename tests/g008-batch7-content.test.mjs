@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
 import test from 'node:test';
 import {fileURLToPath} from 'node:url';
 
@@ -7,6 +8,8 @@ import {
   parseFrontMatter,
   readContentDocuments,
 } from '../scripts/content-metadata.mjs';
+import {extractInternalLinks} from '../scripts/content-relations.mjs';
+import {extractExternalLinks} from '../scripts/source-ledger.mjs';
 import {handleHorizontalArrowKey} from '../src/components/KeyboardScrollableRegion/handleHorizontalArrowKey.mjs';
 
 const contentRoot = fileURLToPath(new URL('../content/', import.meta.url));
@@ -14,6 +17,28 @@ const documents = await readContentDocuments(contentRoot);
 const document = documents.find(
   ({file}) => file === 'modeling/mod-09-eventstorming.mdx',
 );
+const documentsById = new Map(
+  documents.map((content) => [content.metadata.topic_id, content]),
+);
+const ledger = JSON.parse(
+  await readFile(new URL('../data/source-ledger.json', import.meta.url), 'utf8'),
+);
+
+const expectedSources = new Map([
+  ['src-docs-9a4e9ce7f01b', 'https://www.avanscoperta.it/en/eventstorming/'],
+  ['src-docs-28997e2e106b', 'https://medium.com/@ziobrando/collaborative-process-modelling-with-eventstorming-17ed363650c0'],
+  ['src-docs-5b4206bf06fe', 'https://www.avanscoperta.it/en/eventstorming/pivotal-events/'],
+  ['src-docs-fc6e554f1153', 'https://www.avanscoperta.it/en/context-mapping/'],
+  ['src-docs-ce27d09ce1e2', 'https://www.eventstorming.com/patterns/chaotic-exploration/'],
+]);
+
+const sourceDefinitions = [
+  {id: 'src-docs-9a4e9ce7f01b', title: 'EventStorming', author_or_org: 'Avanscoperta', source_kind: 'official-docs', roles: ['definition', 'method', 'learning'], boundary: 'Supports the three EventStorming workshop formats, collaborative purpose and reviewed artifact vocabulary; it does not prove local boundaries, teams, services or production behavior.', attribution: 'EventStorming, Avanscoperta'},
+  {id: 'src-docs-28997e2e106b', title: 'Collaborative Process Modelling with EventStorming', author_or_org: 'Alberto Brandolini', source_kind: 'engineering-blog', roles: ['definition', 'method', 'learning'], boundary: 'Supports the reviewed Process Modelling grammar of Person, System, Command, Policy, Read Model and Event; it does not define this article’s expense-claim example or architecture.', attribution: 'Collaborative Process Modelling with EventStorming, Alberto Brandolini'},
+  {id: 'src-docs-5b4206bf06fe', title: 'Pivotal Events', author_or_org: 'Avanscoperta', source_kind: 'official-docs', roles: ['definition', 'method'], boundary: 'Supports reviewed pivotal-event, timeline and swimlane discussion signals; it does not make a pivotal event or swimlane a context, team, system or service.', attribution: 'Pivotal Events, Avanscoperta'},
+  {id: 'src-docs-fc6e554f1153', title: 'Context Mapping', author_or_org: 'Avanscoperta', source_kind: 'official-docs', roles: ['definition', 'method'], boundary: 'Supports the reviewed warning that boundary indicators are not bulletproof and require architecture judgment; it does not approve the article’s candidate boundaries.', attribution: 'Context Mapping, Avanscoperta'},
+  {id: 'src-docs-ce27d09ce1e2', title: 'Chaotic Exploration', author_or_org: 'EventStorming', source_kind: 'official-docs', roles: ['method', 'learning'], boundary: 'Supports independent event exploration followed by collaborative organization; it does not license copying its prose, examples, diagrams, templates or layouts.', attribution: 'Chaotic Exploration, EventStorming'},
+];
 
 const expectedHeadings = [
   '学习问题',
@@ -255,6 +280,111 @@ test('scrolls only a directly focused overflowing region by 40 pixels', () => {
 
 test('states the workshop terminology and non-proof rules verbatim', () => {
   assertTerminologyAndNonProof(requiredDocument().body);
+});
+
+test('governs the five reviewed MOD-09 sources and citation boundaries exactly', () => {
+  const governed = ledger.documents['content/modeling/mod-09-eventstorming.mdx'];
+  assert.ok(governed);
+  assert.equal(governed.reviewed_at, '2026-08-03');
+  assert.deepEqual(governed.copyright_checks, [
+    'original-structure',
+    'quotation-boundary',
+    'attribution-complete',
+    'illustration-rights',
+  ]);
+  assert.equal(governed.citations.length, 5);
+  const citations = new Map(governed.citations.map((citation) => [citation.source_id, citation]));
+  const visible = new Set(extractExternalLinks(requiredDocument()));
+  for (const definition of sourceDefinitions) {
+    const url = expectedSources.get(definition.id);
+    const source = ledger.sources.find(({id}) => id === definition.id);
+    assert.ok(source, definition.id);
+    assert.deepEqual(source, {
+      id: definition.id,
+      canonical_locator: url,
+      transport_locator: url,
+      query_insensitive: false,
+      locator_aliases: [],
+      tombstone: null,
+      title: definition.title,
+      author_or_org: definition.author_or_org,
+      published_at: null,
+      registered_at: '2026-08-03',
+      checked_at: '2026-08-03',
+      version: 'Living page retrieved 2026-08-03',
+      source_kind: definition.source_kind,
+      tier: 'primary',
+      allowed_evidence_roles: definition.roles,
+      license: 'LicenseRef-All-Rights-Reserved',
+      license_scope: 'Facts summarized from the named page only; page text, diagrams, templates, examples, sticky-note layouts, trademarks, linked works and third-party assets are excluded.',
+      license_evidence_url: url,
+      license_evidence_note: `${definition.title} at ${url} was checked on 2026-08-03; no open content license was found.`,
+      license_family_id: url,
+      license_family_grouping: 'identity',
+      family_grouping_evidence_url: null,
+      copyright_policy: 'facts-and-short-quotation',
+      usage_boundary: definition.boundary,
+      link_policy: 'floating',
+      expected_final_transport_locator: url,
+      expected_final_approved_at: '2026-08-03',
+      expected_final_approval_note: 'Initial reviewed EventStorming teaching-source transport baseline',
+    });
+    assert.ok(visible.has(url), url);
+    assert.deepEqual(citations.get(definition.id), {
+      source_id: definition.id,
+      citation_url: url,
+      roles: definition.roles,
+      manifest_primary: definition.id === 'src-docs-9a4e9ce7f01b',
+      usage_mode: 'facts-summary',
+      attribution_note: definition.attribution,
+      modification_note: null,
+      excerpt: null,
+      quotation_reviewed: false,
+    });
+  }
+});
+
+test('connects MOD-09 and its published reciprocal modeling relations', () => {
+  const links = extractInternalLinks(requiredDocument());
+  for (const href of ['/modeling', '/modeling/mod-01', '/modeling/mod-02', '/modeling/mod-05', '/modeling/mod-08', '/cases/temporal-saga-durable-execution']) {
+    assert.ok(links.includes(href), href);
+  }
+  assert.equal(links.filter((href) => href === '/modeling/mod-10').length, 0);
+  assert.equal(links.filter((href) => href === '/modeling/mod-11').length, 0);
+  for (const id of ['MOD-05', 'MOD-08']) {
+    const peer = documentsById.get(id);
+    assert.ok(peer.metadata.adjacent_topics.includes('MOD-09'), `${id} adjacency`);
+    assert.equal(
+      extractInternalLinks(peer).filter((href) => href === '/modeling/mod-09').length,
+      1,
+      `${id} visible link`,
+    );
+  }
+});
+
+test('projects Stage A after publishing MOD-09', async () => {
+  const [projectStatus, topicIndexes] = await Promise.all([
+    readFile(new URL('../src/generated/project-status.json', import.meta.url), 'utf8').then(JSON.parse),
+    readFile(new URL('../src/generated/topic-indexes.json', import.meta.url), 'utf8').then(JSON.parse),
+  ]);
+  assert.deepEqual(projectStatus, {
+    schema_version: 1,
+    durable_stories: {completed: 7, total: 20, current: 'G008'},
+    completed_topics: 47,
+    content_documents: 90,
+    governed_sources: 481,
+    sources: {
+      durable_stories: 'docs/content-backlog.md',
+      completed_topics: 'docs/content-backlog.md',
+      content_documents: 'content/**/*.{md,mdx}',
+      governed_sources: 'data/source-ledger.json',
+    },
+  });
+  const topicsById = new Map(Object.values(topicIndexes).flat().map((topic) => [topic.id, topic]));
+  assert.equal(topicsById.get('MOD-09').published, true);
+  assert.equal(topicsById.get('MOD-09').status.value, 'pending');
+  assert.equal(topicsById.get('MOD-10').published, false);
+  assert.equal(topicsById.get('MOD-10').status.value, 'pending');
 });
 
 test('rejects heading, table, graph, wrapper, terminology and non-proof mutations', () => {

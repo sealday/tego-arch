@@ -7,6 +7,8 @@ import test from 'node:test';
 import {fileURLToPath} from 'node:url';
 
 import {
+  knowledgeHeadingContract,
+  mod09ModelingHeadings,
   requiredCaseHeadings,
   requiredMigrationHeadings,
 } from '../scripts/content-schema.mjs';
@@ -1022,6 +1024,18 @@ const mod08Headings = [
   '## 来源',
 ];
 
+const mod09Headings = [
+  '## 学习问题',
+  '## 建模目标与输入',
+  '## 参与者与步骤',
+  '## 模型产物',
+  '## 完成判断',
+  '## 常见失败',
+  '## 与其他模型的衔接',
+  '## 完整演练',
+  '## 来源',
+];
+
 test('accepts the Pattern knowledge contract and excludes the Pattern index', async () => {
   await withTempRoot(async (root) => {
     await writeMdx(
@@ -1151,6 +1165,65 @@ test('rejects missing and reordered MOD-08 headings against its exact contract',
 
       const result = await validateContent(root);
 
+      assert.match(result.errors.join('\n'), variant.expected, variant.name);
+    });
+  }
+});
+
+test('accepts the exact MOD-09 nine-heading modeling contract', async () => {
+  assert.deepEqual(mod09ModelingHeadings, mod09Headings);
+  assert.strictEqual(
+    knowledgeHeadingContract('modeling', 'MOD-09'),
+    mod09ModelingHeadings,
+  );
+  await withTempRoot(async (root) => {
+    await writeMdx(
+      root,
+      'modeling/mod-09.mdx',
+      validKnowledgeFrontMatter('modeling', {
+        topic_id: 'MOD-09',
+        slug: '/modeling/mod-09',
+      }),
+      mod09Headings.join('\n\n'),
+    );
+
+    const result = await validateContent(root);
+    assert.deepEqual(result.errors, []);
+  });
+});
+
+test('rejects missing and reordered MOD-09 headings against its exact contract', async () => {
+  const variants = [
+    {
+      name: 'missing',
+      headings: mod09Headings.filter((heading) => heading !== '## 参与者与步骤'),
+      expected: /expected exactly 9 ## 学习问题-contract H2 headings; found 8/u,
+    },
+    {
+      name: 'reordered',
+      headings: [
+        ...mod09Headings.slice(0, 2),
+        mod09Headings[3],
+        mod09Headings[2],
+        ...mod09Headings.slice(4),
+      ],
+      expected: /position 3; expected "## 参与者与步骤", actual "## 模型产物"/u,
+    },
+  ];
+
+  for (const variant of variants) {
+    await withTempRoot(async (root) => {
+      await writeMdx(
+        root,
+        `modeling/mod-09-${variant.name}.mdx`,
+        validKnowledgeFrontMatter('modeling', {
+          topic_id: 'MOD-09',
+          slug: `/modeling/mod-09-${variant.name}`,
+        }),
+        variant.headings.join('\n\n'),
+      );
+
+      const result = await validateContent(root);
       assert.match(result.errors.join('\n'), variant.expected, variant.name);
     });
   }
