@@ -23,6 +23,9 @@ const documentsById = new Map(
 const ledger = JSON.parse(
   await readFile(new URL('../data/source-ledger.json', import.meta.url), 'utf8'),
 );
+const linkHealth = JSON.parse(
+  await readFile(new URL('../data/source-link-health.json', import.meta.url), 'utf8'),
+);
 
 const expectedSources = new Map([
   ['src-docs-9a4e9ce7f01b', 'https://www.avanscoperta.it/en/eventstorming/'],
@@ -39,6 +42,38 @@ const sourceDefinitions = [
   {id: 'src-docs-fc6e554f1153', title: 'Context Mapping', author_or_org: 'Avanscoperta', source_kind: 'official-docs', roles: ['definition', 'method'], boundary: 'Supports the reviewed warning that boundary indicators are not bulletproof and require architecture judgment; it does not approve the article’s candidate boundaries.', attribution: 'Context Mapping, Avanscoperta'},
   {id: 'src-docs-ce27d09ce1e2', title: 'Chaotic Exploration', author_or_org: 'EventStorming', source_kind: 'official-docs', roles: ['method', 'learning'], boundary: 'Supports independent event exploration followed by collaborative organization; it does not license copying its prose, examples, diagrams, templates or layouts.', attribution: 'Chaotic Exploration, EventStorming'},
 ];
+
+const mediumLocator =
+  'https://medium.com/@ziobrando/collaborative-process-modelling-with-eventstorming-17ed363650c0';
+
+function assertMediumLinkHealth(cache) {
+  const matches = cache.results.filter(
+    ({transport_locator}) => transport_locator === mediumLocator,
+  );
+  assert.equal(matches.length, 1, 'exact Medium link-health target');
+  const [result] = matches;
+  assert.deepEqual(result.source_ids, ['src-docs-28997e2e106b']);
+  assert.deepEqual(
+    result.attempt_history.map(({outcome, http_status}) => [outcome, http_status]),
+    [['error', 403], ['healthy', 200]],
+  );
+  assert.equal(result.review_status, 'healthy');
+  assert.deepEqual(result.last_attempt, {
+    at: '2026-08-03T00:59:30.000Z',
+    outcome: 'healthy',
+    final_transport_locator: mediumLocator,
+    http_status: 200,
+    login_wall_detected: false,
+    redirects: [],
+  });
+  assert.deepEqual(result.last_success, {
+    at: '2026-08-03T00:59:30.000Z',
+    outcome: 'healthy',
+    final_transport_locator: mediumLocator,
+    http_status: 200,
+    login_wall_detected: false,
+  });
+}
 
 const expectedHeadings = [
   '学习问题',
@@ -342,6 +377,20 @@ test('governs the five reviewed MOD-09 sources and citation boundaries exactly',
       quotation_reviewed: false,
     });
   }
+});
+
+test('preserves the exact Medium failure and checker-recovered link-health history', () => {
+  assertMediumLinkHealth(linkHealth);
+  const withoutDirectFailure = structuredClone(linkHealth);
+  const target = withoutDirectFailure.results.find(
+    ({transport_locator}) => transport_locator === mediumLocator,
+  );
+  target.attempt_history = target.attempt_history.slice(1);
+  assert.throws(
+    () => assertMediumLinkHealth(withoutDirectFailure),
+    {name: 'AssertionError'},
+    'deleted direct 403 attempt',
+  );
 });
 
 test('connects MOD-09 and its published reciprocal modeling relations', () => {

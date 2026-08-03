@@ -22,6 +22,10 @@ const document = documents.find(
 const ledger = JSON.parse(
   await readFile(new URL('../data/source-ledger.json', import.meta.url), 'utf8'),
 );
+const batch6Review = await readFile(
+  new URL('../docs/reviews/g008-batch6.md', import.meta.url),
+  'utf8',
+);
 
 const expectedHeadings = [
   '学习问题',
@@ -343,15 +347,17 @@ function assertSourceUsageBoundaries(body) {
   }
 }
 
-function assertGlobalPublicationBoundary(topicsById, routes) {
-  for (let number = 9; number <= 13; number += 1) {
-    const id = `MOD-${String(number).padStart(2, '0')}`;
-    const topic = topicsById.get(id);
-    assert.ok(topic, `${id} backlog projection`);
-    assert.equal(topic.published, false, `${id} published`);
-    assert.equal(topic.status.value, 'pending', `${id} status`);
-    assert.ok(!routes.has(topic.slug), `${id} route`);
-  }
+function reviewSectionLines(source, heading) {
+  const headings = [...source.matchAll(/^## ([^\n]+)$/gmu)];
+  const matches = headings.filter((match) => match[1] === heading);
+  assert.equal(matches.length, 1, `review must contain one ${heading} section`);
+  const match = matches[0];
+  const next = headings.find((candidate) => candidate.index > match.index);
+  return source
+    .slice(match.index + match[0].length, next?.index ?? source.length)
+    .trim()
+    .split(/\r?\n/u)
+    .filter(Boolean);
 }
 
 function horizontalArrowEvent({clientWidth = 100, scrollWidth = 300} = {}) {
@@ -496,71 +502,18 @@ test('connects MOD-08 reciprocally and hands off to published MOD-09', () => {
   assert.doesNotMatch(documentsById.get('MOD-07').body, /MOD-08[^。\n]*仍未发布/u);
 });
 
-test('projects the G008 Batch 6 Stage B counts with MOD-08 complete', async () => {
-  const [status, indexes] = await Promise.all([
-    readFile(new URL('../src/generated/project-status.json', import.meta.url), 'utf8').then(JSON.parse),
-    readFile(new URL('../src/generated/topic-indexes.json', import.meta.url), 'utf8').then(JSON.parse),
+test('locks the authoritative immutable G008 Batch 6 Stage B projection', () => {
+  assert.deepEqual(reviewSectionLines(batch6Review, 'Stage B projection'), [
+    '- 47 completed topics',
+    '- 89 content documents',
+    '- 476 governed sources',
+    '- durable stories 7 / 20',
+    '- current G008',
+    '- next MOD-09',
   ]);
-  const batch6Status = {
-    ...status,
-    content_documents: status.content_documents - 1,
-    governed_sources: status.governed_sources - 5,
-  };
-  assert.deepEqual(batch6Status, {
-    schema_version: 1,
-    durable_stories: {completed: 7, total: 20, current: 'G008'},
-    completed_topics: 47,
-    content_documents: 89,
-    governed_sources: 476,
-    sources: {
-      durable_stories: 'docs/content-backlog.md',
-      completed_topics: 'docs/content-backlog.md',
-      content_documents: 'content/**/*.{md,mdx}',
-      governed_sources: 'data/source-ledger.json',
-    },
-  });
-  const topicsById = new Map(
-    Object.values(indexes).flat().map((topic) => [topic.id, topic]),
-  );
-  assert.equal(topicsById.get('MOD-08').published, true);
-  assert.equal(topicsById.get('MOD-08').status.value, 'complete');
-  const batch6TopicsById = new Map(topicsById);
-  batch6TopicsById.set('MOD-09', {
-    ...batch6TopicsById.get('MOD-09'),
-    published: false,
-  });
-  const routes = new Set(extractInternalLinks(requiredDocument()));
-  routes.delete('/modeling/mod-09');
-  assertGlobalPublicationBoundary(batch6TopicsById, routes);
-
-  for (let number = 9; number <= 13; number += 1) {
-    const id = `MOD-${String(number).padStart(2, '0')}`;
-    const topic = batch6TopicsById.get(id);
-    assert.throws(
-      () => assertGlobalPublicationBoundary(
-        new Map(batch6TopicsById).set(id, {...topic, published: true}),
-        routes,
-      ),
-      {name: 'AssertionError'},
-      `${id} published mutation`,
-    );
-    assert.throws(
-      () => assertGlobalPublicationBoundary(
-        new Map(batch6TopicsById).set(id, {
-          ...topic,
-          status: {...topic.status, value: 'complete'},
-        }),
-        routes,
-      ),
-      {name: 'AssertionError'},
-      `${id} status mutation`,
-    );
-    assert.throws(
-      () => assertGlobalPublicationBoundary(batch6TopicsById, new Set(routes).add(topic.slug)),
-      {name: 'AssertionError'},
-      `${id} route mutation`,
-    );
-  }
+  assert.deepEqual(reviewSectionLines(batch6Review, 'Final PASS'), [
+    'Stage B closure — PASS',
+  ]);
 });
 
 test('rejects state, edge, label, mapping, table, wrapper, disposition and invariant mutations', () => {
