@@ -597,6 +597,17 @@ test('projects Stage A after publishing MOD-09', async () => {
       `${id} forbidden publication`,
     );
 
+    const completed = structuredClone(topicIndexes);
+    const completedTopic = Object.values(completed)
+      .flat()
+      .find(({id: topicId}) => topicId === id);
+    completedTopic.status.value = 'complete';
+    assert.throws(
+      () => assertStageAProjection(projectStatus, completed, content),
+      {name: 'AssertionError'},
+      `${id} forbidden completion`,
+    );
+
     const linked = {
       ...content,
       body: `${content.body}\n[forbidden ${id}](/modeling/${id.toLowerCase()})\n`,
