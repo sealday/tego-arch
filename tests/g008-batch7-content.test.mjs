@@ -434,11 +434,11 @@ function assertRelationContract(content, peers) {
   }
 }
 
-function assertStageAProjection(projectStatus, topicIndexes, content) {
+function assertStageBProjection(projectStatus, topicIndexes, content) {
   assert.deepEqual(projectStatus, {
     schema_version: 1,
     durable_stories: {completed: 7, total: 20, current: 'G008'},
-    completed_topics: 47,
+    completed_topics: 48,
     content_documents: 90,
     governed_sources: 481,
     sources: {
@@ -450,7 +450,7 @@ function assertStageAProjection(projectStatus, topicIndexes, content) {
   });
   const topicsById = new Map(Object.values(topicIndexes).flat().map((topic) => [topic.id, topic]));
   assert.equal(topicsById.get('MOD-09').published, true);
-  assert.equal(topicsById.get('MOD-09').status.value, 'pending');
+  assert.equal(topicsById.get('MOD-09').status.value, 'complete');
   const links = extractInternalLinks(content);
   for (const id of unpublishedModelingTopics) {
     assert.equal(topicsById.get(id).published, false, `${id} publication`);
@@ -580,19 +580,19 @@ test('connects MOD-09 and its published reciprocal modeling relations', () => {
   }
 });
 
-test('projects Stage A after publishing MOD-09', async () => {
+test('projects Stage B after closing MOD-09', async () => {
   const [projectStatus, topicIndexes] = await Promise.all([
     readFile(new URL('../src/generated/project-status.json', import.meta.url), 'utf8').then(JSON.parse),
     readFile(new URL('../src/generated/topic-indexes.json', import.meta.url), 'utf8').then(JSON.parse),
   ]);
   const content = requiredDocument();
-  assertStageAProjection(projectStatus, topicIndexes, content);
+  assertStageBProjection(projectStatus, topicIndexes, content);
   for (const id of unpublishedModelingTopics) {
     const published = structuredClone(topicIndexes);
     const topic = Object.values(published).flat().find(({id: topicId}) => topicId === id);
     topic.published = true;
     assert.throws(
-      () => assertStageAProjection(projectStatus, published, content),
+      () => assertStageBProjection(projectStatus, published, content),
       {name: 'AssertionError'},
       `${id} forbidden publication`,
     );
@@ -603,7 +603,7 @@ test('projects Stage A after publishing MOD-09', async () => {
       .find(({id: topicId}) => topicId === id);
     completedTopic.status.value = 'complete';
     assert.throws(
-      () => assertStageAProjection(projectStatus, completed, content),
+      () => assertStageBProjection(projectStatus, completed, content),
       {name: 'AssertionError'},
       `${id} forbidden completion`,
     );
@@ -613,7 +613,7 @@ test('projects Stage A after publishing MOD-09', async () => {
       body: `${content.body}\n[forbidden ${id}](/modeling/${id.toLowerCase()})\n`,
     };
     assert.throws(
-      () => assertStageAProjection(projectStatus, topicIndexes, linked),
+      () => assertStageBProjection(projectStatus, topicIndexes, linked),
       {name: 'AssertionError'},
       `${id} forbidden actionable link`,
     );

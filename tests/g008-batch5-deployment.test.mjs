@@ -244,7 +244,8 @@ function assertBacklogClosure(source) {
   assertBatch4AndOlderHistory(source);
   assert.match(source, /^- \[x\] \*\*MOD-07 /mu);
   assert.match(source, /^- \[x\] \*\*MOD-08 /mu);
-  for (const id of ['09', '10', '11', '12', '13']) {
+  assert.match(source, /^- \[x\] \*\*MOD-09 /mu);
+  for (const id of ['10', '11', '12', '13']) {
     assert.match(source, new RegExp(`^- \\[ \\] \\*\\*MOD-${id} `, 'mu'));
   }
   assert.match(source, /当前持久故事：\*\* `G008`/u);
@@ -339,20 +340,21 @@ test('rejects segment-local review and interaction evidence mutations', () => {
   }
 });
 
-test('preserves Batch 5 evidence after MOD-08 closes and MOD-09 becomes next', () => {
+test('preserves Batch 5 evidence under the live Batch 7 projection', () => {
   const {sha, run} = parseEvidence(review);
   const row = backlog.split(/\r?\n/u).find((line) => line.startsWith('- [x] **MOD-07 '));
   assert.ok(row?.includes(sha), 'MOD-07 exact Stage A SHA');
   assert.ok(row?.includes(`/actions/runs/${run}`), 'MOD-07 exact Pages run');
   assert.equal(topicsById.get('MOD-07')?.status.value, 'complete');
   assert.equal(topicsById.get('MOD-08')?.status.value, 'complete');
-  for (const id of ['MOD-09', 'MOD-10', 'MOD-11', 'MOD-12', 'MOD-13']) {
+  assert.equal(topicsById.get('MOD-09')?.status.value, 'complete');
+  for (const id of ['MOD-10', 'MOD-11', 'MOD-12', 'MOD-13']) {
     assert.equal(topicsById.get(id)?.status.value, 'pending', id);
   }
   assert.deepEqual(projectStatus, {
     schema_version: 1,
     durable_stories: {completed: 7, total: 20, current: 'G008'},
-    completed_topics: 47,
+    completed_topics: 48,
     content_documents: 90,
     governed_sources: 481,
     sources: {
@@ -376,6 +378,7 @@ test('rejects current-state and Batch 5 baseline mutations', () => {
   }
   assert.throws(() => assertBacklogClosure(backlog.replace('- [x] **MOD-07 ', '- [ ] **MOD-07 ')));
   assert.throws(() => assertBacklogClosure(backlog.replace('- [x] **MOD-08 ', '- [ ] **MOD-08 ')));
+  assert.throws(() => assertBacklogClosure(backlog.replace('- [x] **MOD-09 ', '- [ ] **MOD-09 ')));
 });
 
 test('locks Batch 4 and all older release evidence byte-for-byte', () => {

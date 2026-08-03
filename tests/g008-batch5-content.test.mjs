@@ -399,7 +399,7 @@ test('connects MOD-07 reciprocally to its currently published adjacent topics', 
   }
 });
 
-test('projects the current G008 counts after MOD-08 publishes', async () => {
+test('projects the current G008 counts after MOD-09 closes', async () => {
   const [status, indexes] = await Promise.all([
     readFile(new URL('../src/generated/project-status.json', import.meta.url), 'utf8').then(JSON.parse),
     readFile(new URL('../src/generated/topic-indexes.json', import.meta.url), 'utf8').then(JSON.parse),
@@ -407,7 +407,7 @@ test('projects the current G008 counts after MOD-08 publishes', async () => {
   assert.deepEqual(status, {
     schema_version: 1,
     durable_stories: {completed: 7, total: 20, current: 'G008'},
-    completed_topics: 47,
+    completed_topics: 48,
     content_documents: 90,
     governed_sources: 481,
     sources: {
