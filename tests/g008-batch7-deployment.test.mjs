@@ -101,23 +101,49 @@ const expectedReviewSections = new Map([
   ['Final PASS', expectedFinalPassLines],
 ]);
 
+const expectedReviewText = [
+  '# G008 Batch 7 Release Review',
+  '',
+  ...[...expectedReviewSections].flatMap(([heading, lines]) => [
+    `## ${heading}`,
+    '',
+    ...lines,
+    '',
+  ]),
+].join('\n');
+
+function normalizeLf(source) {
+  return source.replace(/\r\n?/gu, '\n');
+}
+
 function assertDeploymentEvidence(source) {
+  const normalizedSource = normalizeLf(source);
   assert.equal(
-    source.match(/^# G008 Batch 7 Release Review$/gmu)?.length,
+    normalizedSource.match(/^# G008 Batch 7 Release Review$/gmu)?.length,
     1,
     'exact release review title',
   );
+  assert.deepEqual(
+    [...normalizedSource.matchAll(/^## ([^\n]+)$/gmu)].map((match) => match[1]),
+    [...expectedReviewSections.keys()],
+    'exact ordered release review H2 sequence',
+  );
   for (const [heading, lines] of expectedReviewSections) {
-    assert.deepEqual(reviewSectionLines(source, heading), lines);
+    assert.deepEqual(reviewSectionLines(normalizedSource, heading), lines);
   }
   for (const lines of expectedReviewSections.values()) {
     for (const line of lines) {
-      assert.equal(source.split(line).length - 1, 1, `one review literal: ${line}`);
+      assert.equal(normalizedSource.split(line).length - 1, 1, `one review literal: ${line}`);
     }
   }
   assert.doesNotMatch(
-    source,
+    normalizedSource,
     /ACTUAL_|STAGE_A_SHA|RUN_ID|TEST_COUNT|ARTIFACT_SHA|<[^>]+>/u,
+  );
+  assert.equal(
+    normalizedSource,
+    expectedReviewText,
+    'release review must contain only the exact title and six approved sections',
   );
 }
 
@@ -168,8 +194,19 @@ const expectedBatch7Evidence = [
   'Stage B closure — PASS',
 ];
 
+const expectedBatch7Segment = `- **当前发布基线：** 2026-08-03 G008 Batch 7 已完成 MOD-09，Stage A 发布基线为 [\`${expectedStageASha}\`](https://github.com/sealday/tego-arch/commit/${expectedStageASha})，Pages run [\`${expectedPagesRunId}\`](https://github.com/sealday/tego-arch/actions/runs/${expectedPagesRunId}) 以 exact \`headSha=${expectedStageASha}\`、\`status=completed\`、\`conclusion=success\` 完成部署；9/9 个 canonical HTTP route 检查通过，desktop \`1440x1000\`、mobile \`390x844\`，1/1 Mermaid region/SVG、2/2 张表格（8 行 Big Picture、5 行 boundary），10/10 次 source 激活、16/16 次 relation 激活，MOD-10 target 为 0，MOD-11 actionable article link 为 0，0 warnings、0 errors、0 page errors。Task 4 raw artifact SHA-256 为 \`${expectedArtifactSha256}\`。Stage A 为 47 个已完成主题、90 篇内容文档与 481 个受治理来源，仓库测试 \`615/615\`；Stage B closure 投影为 48 个已完成主题、90 篇内容文档与 481 个受治理来源，持久故事进度仍为 \`7 / 20\`，G008 仍在进行中，下一项为 MOD-10。Stage B closure — PASS。`;
+
 function assertBacklogClosure(source) {
   const segment = batch7Segment(source);
+  assert.doesNotMatch(
+    segment,
+    /ACTUAL_|STAGE_A_SHA|RUN_ID|TEST_COUNT|ARTIFACT_SHA|<[^>]+>/u,
+  );
+  assert.equal(
+    segment,
+    expectedBatch7Segment,
+    'Batch 7 current release segment must equal the exact approved measured text',
+  );
   for (const literal of expectedBatch7Evidence) {
     assert.equal(segment.split(literal).length - 1, 1, `one Batch 7 ${literal}`);
   }
@@ -236,6 +273,31 @@ test('rejects missing duplicate symbolic or weakened review evidence', () => {
   }
 });
 
+test('rejects reordered extra or contradictory review content', () => {
+  const verificationBlock = [
+    '## Verification',
+    '',
+    ...expectedVerificationLines,
+  ].join('\n');
+  const independentReviewBlock = [
+    '## Independent review',
+    '',
+    ...expectedIndependentReviewLines,
+  ].join('\n');
+  const reordered = review.replace(
+    `${verificationBlock}\n\n${independentReviewBlock}`,
+    `${independentReviewBlock}\n\n${verificationBlock}`,
+  );
+  assert.notEqual(reordered, review, 'review section reorder mutant must apply');
+  for (const mutation of [
+    reordered,
+    `${review}\n## Unexpected evidence\n\n- unapproved: PASS\n`,
+    `${review}\nContradictory conclusion: Stage B closure — FAIL\n`,
+  ]) {
+    assert.throws(() => assertDeploymentEvidence(mutation));
+  }
+});
+
 test('closes only MOD-09 while keeping G008 current and MOD-10 next', () => {
   assertBacklogClosure(backlog);
   assertGeneratedState(manifest, projectStatus);
@@ -259,6 +321,19 @@ test('rejects backlog evidence status and next-topic mutations', () => {
     backlog.replace('- [ ] **MOD-11 ', '- [x] **MOD-11 '),
     backlog.replace('- **当前持久故事：** `G008`。', '- **当前持久故事：** `G009`。'),
     backlog.replace('下一项为 MOD-10', '下一项为 MOD-11'),
+  ]) {
+    assert.throws(() => assertBacklogClosure(mutation));
+  }
+});
+
+test('rejects symbolic or contradictory Batch 7 current-segment content', () => {
+  const segment = batch7Segment(backlog);
+  for (const mutation of [
+    backlog.replace(segment, segment.replace(expectedStageASha, 'STAGE_A_SHA')),
+    backlog.replace(
+      segment,
+      `${segment}Contradictory projection: 47 / 90 / 481; Stage B closure — FAIL。`,
+    ),
   ]) {
     assert.throws(() => assertBacklogClosure(mutation));
   }
