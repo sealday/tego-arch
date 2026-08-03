@@ -86,6 +86,14 @@ const nonProofSentences = [
   '一次 EventStorming 工作坊不能单独确认正式边界，候选关系仍须在 MOD-11 或等价架构活动中验证。',
 ];
 
+const expectedWrapperLabels = [
+  '费用申报 Big Picture 事件表，可横向滚动',
+  '费用支付 Process Model，可横向滚动',
+  'EventStorming 候选边界假设表，可横向滚动',
+];
+
+const processNonProofStatement = '不能证明运行时顺序、同步或异步协议、事务边界、服务边界或组织 owner。';
+
 function requiredDocument() {
   assert.ok(document, 'MOD-09 content document must exist');
   return document;
@@ -98,6 +106,12 @@ function assertPublicationContract(source) {
   assert.equal(metadata.content_type, 'modeling');
   assert.equal(metadata.status, 'reviewed');
   assert.equal(metadata.priority, 'P1');
+  assert.equal(metadata.analyzed_at, '2026-08-03');
+  assert.equal(metadata.source_cutoff, '2026-08-03');
+  assert.equal(metadata.review_policy, 'quarterly-version-sensitive');
+  assert.equal(metadata.confidence, 'high');
+  assert.deepEqual(metadata.domains, ['software-architecture', 'domain-modeling']);
+  assert.deepEqual(metadata.tags, ['EventStorming', 'Big Picture', 'Process Modelling', '边界假设']);
   assert.deepEqual(metadata.depends_on, ['MOD-01', 'MOD-02']);
   assert.deepEqual(metadata.adjacent_topics, ['MOD-05', 'MOD-08']);
   assert.deepEqual(metadata.related_cases, ['/cases/temporal-saga-durable-execution']);
@@ -150,8 +164,9 @@ function assertTableContracts(body) {
 }
 
 function processDiagram(body) {
-  const diagrams = [...body.matchAll(/```mermaid\n(flowchart LR[\s\S]*?)\n```/gu)].map((match) => match[1]);
-  assert.equal(diagrams.length, 1, 'MOD-09 must contain exactly one flowchart LR diagram');
+  const diagrams = [...body.matchAll(/```mermaid\n([\s\S]*?)\n```/gu)].map((match) => match[1]);
+  assert.equal(diagrams.length, 1, 'MOD-09 must contain exactly one Mermaid diagram');
+  assert.match(diagrams[0], /^flowchart LR(?:\n|$)/u, 'the sole Mermaid diagram must start with flowchart LR');
   return diagrams[0];
 }
 
@@ -185,7 +200,8 @@ function assertInteractionContract(body) {
   assert.match(body, /import \{handleHorizontalArrowKey\} from '@site\/src\/components\/KeyboardScrollableRegion\/handleHorizontalArrowKey\.mjs';/u);
   const regions = wrappers(body);
   assert.equal(regions.length, 3, 'MOD-09 must have exactly three accessible overflow wrappers');
-  assert.equal(new Set(regions.map((match) => match[1])).size, 3, 'wrapper aria-label values must be unique');
+  assert.deepEqual(regions.map((match) => match[1]), expectedWrapperLabels);
+  assert.equal(new Set(expectedWrapperLabels).size, expectedWrapperLabels.length, 'wrapper aria-label values must be unique');
   assert.equal([...body.matchAll(/className="(?:diagram-wrapper|table-wrapper table-wrapper--mapping)"/gu)].length, 3, 'no unvalidated overflow wrappers');
 }
 
@@ -199,10 +215,8 @@ function assertTerminologyAndNonProof(body) {
   assert.ok(graphIndex > -1);
   const before = body.slice(Math.max(0, graphIndex - 500), graphIndex);
   const after = body.slice(graphIndex, graphIndex + 1500);
-  for (const term of ['运行时顺序', '同步或异步协议', '事务边界', '服务边界', '组织 owner']) {
-    assert.ok(before.includes(term), `pre-diagram disclaimer: ${term}`);
-    assert.ok(after.includes(term), `post-diagram disclaimer: ${term}`);
-  }
+  assert.ok(before.includes(processNonProofStatement), `pre-diagram disclaimer: ${processNonProofStatement}`);
+  assert.ok(after.includes(processNonProofStatement), `post-diagram disclaimer: ${processNonProofStatement}`);
 }
 
 function horizontalArrowEvent({clientWidth = 100, scrollWidth = 300} = {}) {
@@ -250,6 +264,16 @@ test('rejects heading, table, graph, wrapper, terminology and non-proof mutation
     .replace('## 学习问题\n', '## __SWAP__\n')
     .replace('## 建模目标与输入\n', '## 学习问题\n')
     .replace('## __SWAP__\n', '## 建模目标与输入\n')), {name: 'AssertionError'}, 'reordered H2');
+  for (const [literal, mutation] of [
+    ['analyzed_at: 2026-08-03', 'analyzed_at: 2026-08-02'],
+    ['source_cutoff: 2026-08-03', 'source_cutoff: 2026-08-02'],
+    ['review_policy: quarterly-version-sensitive', 'review_policy: annual'],
+    ['confidence: high', 'confidence: medium'],
+    ['  - domain-modeling', '  - data-modeling'],
+    ['  - 边界假设', '  - 正式边界'],
+  ]) {
+    assert.throws(() => assertPublicationContract(source.replace(literal, mutation)), {name: 'AssertionError'}, literal);
+  }
   assert.throws(() => assertTableContracts(body.replace(/\n\| 观察到的信号[\s\S]*?<\/div>/u, '\n</div>')), {name: 'AssertionError'}, 'removed table');
   assert.throws(() => assertTableContracts(`${body}\n| 重复 | 表格 |\n| --- | --- |\n`), {name: 'AssertionError'}, 'duplicated table');
   assert.throws(() => assertTableContracts(body.replace('| 领域事件 |', '| 事件 |')), {name: 'AssertionError'}, 'changed header');
@@ -259,11 +283,19 @@ test('rejects heading, table, graph, wrapper, terminology and non-proof mutation
   assert.throws(() => assertProcessContract(body.replace('finance_person["Person<br/>财务人员"]', 'finance_person')), {name: 'AssertionError'}, 'removed node type');
   assert.throws(() => assertProcessContract(body.replace('payment_unknown --> payment_result_policy', 'payment_result_policy --> payment_unknown')), {name: 'AssertionError'}, 'reversed edge');
   assert.throws(() => assertProcessContract(body.replace('  register_manual --> expense_system\n', '')), {name: 'AssertionError'}, 'removed edge');
+  assert.throws(() => assertProcessContract(`${body}\n\`\`\`mermaid\nsequenceDiagram\n  A->>B: extra\n\`\`\`\n`), {name: 'AssertionError'}, 'extra non-flowchart Mermaid fence');
   assert.throws(() => assertTableContracts(body.replace('它也可能只是低频运营升级路径', '')), {name: 'AssertionError'}, 'empty alternative');
   assert.throws(() => assertTableContracts(body.replace('不作为边界证据', '已批准边界')), {name: 'AssertionError'}, 'invalid disposition');
   assert.throws(() => assertInteractionContract(body.replace('  tabIndex={0}\n', '')), {name: 'AssertionError'}, 'removed tabIndex');
   assert.throws(() => assertInteractionContract(body.replace('  onKeyDown={handleHorizontalArrowKey}\n', '')), {name: 'AssertionError'}, 'removed onKeyDown');
+  assert.throws(() => assertInteractionContract(body.replace('aria-label="费用支付 Process Model，可横向滚动"', 'aria-label="任意标签"')), {name: 'AssertionError'}, 'changed wrapper aria-label');
   assert.throws(() => assertTerminologyAndNonProof(body.replaceAll('Person', 'Actor')), {name: 'AssertionError'}, 'Actor mutation');
+  const disclaimer = processNonProofStatement;
+  const affirmative = '能够证明运行时顺序、同步或异步协议、事务边界、服务边界或组织 owner。';
+  assert.throws(() => assertTerminologyAndNonProof(body.replace(disclaimer, affirmative)), {name: 'AssertionError'}, 'pre-diagram sign flip');
+  const lastDisclaimer = body.lastIndexOf(disclaimer);
+  assert.notEqual(lastDisclaimer, -1, 'post-diagram disclaimer fixture');
+  assert.throws(() => assertTerminologyAndNonProof(`${body.slice(0, lastDisclaimer)}${affirmative}${body.slice(lastDisclaimer + disclaimer.length)}`), {name: 'AssertionError'}, 'post-diagram sign flip');
   for (const sentence of nonProofSentences) {
     assert.throws(() => assertTerminologyAndNonProof(body.replace(sentence, `${sentence.slice(0, -1)}通常不等于。`)), {name: 'AssertionError'}, sentence);
   }
