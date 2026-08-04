@@ -8,6 +8,7 @@ import {
   readContentDocuments,
 } from '../scripts/content-metadata.mjs';
 import {extractInternalLinks} from '../scripts/content-relations.mjs';
+import {visibleMdxLines} from '../scripts/source-ledger.mjs';
 import {handleHorizontalArrowKey} from '../src/components/KeyboardScrollableRegion/handleHorizontalArrowKey.mjs';
 
 const contentRoot = fileURLToPath(new URL('../content/', import.meta.url));
@@ -27,6 +28,30 @@ const expectedHeadings = [
   '完整演练',
   '来源',
 ];
+
+const expectedMetadata = {
+  title: 'Domain Storytelling 协作建模',
+  slug: '/modeling/mod-10',
+  content_type: 'modeling',
+  status: 'reviewed',
+  difficulty: 'intermediate',
+  analyzed_at: '2026-08-04',
+  source_cutoff: '2026-08-04',
+  review_policy: 'quarterly-version-sensitive',
+  confidence: 'high',
+  domains: ['software-architecture', 'domain-modeling'],
+  agent_patterns: [],
+  protocols: [],
+  quality_attributes: ['maintainability'],
+  tags: ['Domain Storytelling', '领域协作', '业务流程', '模型比较'],
+  summary: '用费用支付典型场景演练 Domain Storytelling，并明确它与流程图、用例和 EventStorming 的证据边界。',
+  topic_id: 'MOD-10',
+  priority: 'P1',
+  depends_on: ['MOD-01', 'MOD-02', 'MOD-09'],
+  adjacent_topics: ['MOD-08'],
+  related_cases: [],
+  related_questions: [],
+};
 
 const expectedStoryRows = [
   {'序号': '1', '主体 actor': '费用申报系统', activity: '展示', 'work object': '待支付费用', '协作 actor': '财务人员', '证据说明': '费用申报系统中的待支付费用视图；不证明银行已经接受请求'},
@@ -88,6 +113,10 @@ const expectedWorkshopSteps = [
 
 const annotationRule = '如果费用申报系统未取得可核验的银行回执，则停止典型故事，将“支付结果仍未知”保留为 annotation，并依据 MOD-08 另建异常故事。';
 
+const scopeSentence = '本文只建立 one narrow、digitalized、as-is、typical/80% 的费用支付故事：财务人员从费用申报系统查看待支付费用，提交支付请求，系统把请求传递给银行支付服务，并依据可核验的银行回执创建和展示支付结果记录。';
+const nameAuthoritySentence = '本文承接 [MOD-02 C4 模型](/modeling/mod-02)的名称与系统权威：本地软件 actor 始终称为“费用申报系统”，外部软件 actor 始终称为“银行支付服务”。';
+const paymentEvidenceSentence = '它也承接 [MOD-08 状态机建模](/modeling/mod-08)的结果证据边界：本地支付请求、传递记录和支付结果记录都不能代替银行支付服务回执。';
+
 const nonProofSentences = [
   'actor 不等于团队、长期 owner、服务或部署单元。',
   'software actor 不证明真实 API、契约、协议、SLA 或安全责任。',
@@ -112,21 +141,7 @@ function requiredDocument() {
 
 function assertPublicationContract(source) {
   const metadata = parseFrontMatter(source);
-  assert.equal(metadata.topic_id, 'MOD-10');
-  assert.equal(metadata.slug, '/modeling/mod-10');
-  assert.equal(metadata.content_type, 'modeling');
-  assert.equal(metadata.status, 'reviewed');
-  assert.equal(metadata.priority, 'P1');
-  assert.equal(metadata.analyzed_at, '2026-08-04');
-  assert.equal(metadata.source_cutoff, '2026-08-04');
-  assert.equal(metadata.review_policy, 'quarterly-version-sensitive');
-  assert.equal(metadata.confidence, 'high');
-  assert.deepEqual(metadata.domains, ['software-architecture', 'domain-modeling']);
-  assert.deepEqual(metadata.tags, ['Domain Storytelling', '领域协作', '业务流程', '模型比较']);
-  assert.deepEqual(metadata.depends_on, ['MOD-01', 'MOD-02', 'MOD-09']);
-  assert.deepEqual(metadata.adjacent_topics, ['MOD-08']);
-  assert.deepEqual(metadata.related_cases, []);
-  assert.deepEqual(metadata.related_questions, []);
+  assert.deepEqual(metadata, expectedMetadata);
   assert.deepEqual(
     findMarkdownHeadings(source).filter(({level}) => level === 2).map(({text}) => text),
     expectedHeadings,
@@ -236,34 +251,66 @@ function assertStoryGraphContract(body) {
 }
 
 function wrappers(body) {
-  return [...body.matchAll(/<div\n  className="(?:diagram-wrapper|table-wrapper table-wrapper--mapping)"\n  role="region"\n  aria-label="([^"]+)"\n  tabIndex=\{0\}\n  onKeyDown=\{handleHorizontalArrowKey\}\n>/gu)];
+  const openings = [...body.matchAll(/<div\n  className="(diagram-wrapper|table-wrapper table-wrapper--mapping)"\n  role="region"\n  aria-label="([^"]+)"\n  tabIndex=\{0\}\n  onKeyDown=\{handleHorizontalArrowKey\}\n>/gu)];
+  assert.equal([...body.matchAll(/<div\b/gu)].length, 3, 'MOD-10 must have exactly three div openings');
+  assert.equal([...body.matchAll(/<\/div>/gu)].length, 3, 'MOD-10 must have exactly three div closings');
+  return openings.map((opening) => {
+    const contentStart = opening.index + opening[0].length;
+    const contentEnd = body.indexOf('</div>', contentStart);
+    assert.notEqual(contentEnd, -1, `unclosed wrapper: ${opening[2]}`);
+    const nextOpening = body.indexOf('<div', contentStart);
+    assert.ok(nextOpening === -1 || nextOpening > contentEnd, `nested or prematurely closed wrapper: ${opening[2]}`);
+    return {className: opening[1], label: opening[2], content: body.slice(contentStart, contentEnd).trim()};
+  });
 }
 
 function assertInteractionContract(body) {
   assert.match(body, /import \{handleHorizontalArrowKey\} from '@site\/src\/components\/KeyboardScrollableRegion\/handleHorizontalArrowKey\.mjs';/u);
   const regions = wrappers(body);
   assert.equal(regions.length, 3, 'MOD-10 must have exactly three accessible overflow wrappers');
-  assert.deepEqual(regions.map((match) => match[1]), expectedWrapperLabels);
-  assert.equal(new Set(regions.map((match) => match[1])).size, 3, 'wrapper labels must be unique');
+  assert.deepEqual(regions.map(({label}) => label), expectedWrapperLabels);
+  assert.deepEqual(regions.map(({className}) => className), [
+    'table-wrapper table-wrapper--mapping',
+    'diagram-wrapper',
+    'table-wrapper table-wrapper--mapping',
+  ]);
+  assert.equal(new Set(regions.map(({label}) => label)).size, 3, 'wrapper labels must be unique');
   assert.equal([...body.matchAll(/className="(?:diagram-wrapper|table-wrapper table-wrapper--mapping)"/gu)].length, 3, 'no unvalidated overflow wrappers');
+  const storyTables = markdownTables(regions[0].content);
+  assert.equal(storyTables.length, 1, 'story wrapper must contain exactly the story table');
+  assert.deepEqual(records(storyTables[0], ['序号', '主体 actor', 'activity', 'work object', '协作 actor', '证据说明']), expectedStoryRows);
+  assertStoryGraphContract(regions[1].content);
+  const comparisonTables = markdownTables(regions[2].content);
+  assert.equal(comparisonTables.length, 1, 'comparison wrapper must contain exactly the comparison table');
+  assert.deepEqual(records(comparisonTables[0], ['模型', '主要问题', '典型输入', '核心产物', '适合发现什么', '明确不证明什么']), expectedComparisonRows);
 }
 
 function assertWorkshopAndNonProofContracts(body) {
+  const workshop = visibleSection(body, '完整演练');
   assert.deepEqual(
-    [...sectionBody(body, '完整演练').matchAll(/^\d+\. (.+)$/gmu)].map((match) => match[1]),
+    [...workshop.matchAll(/^\d+\. (.+)$/gmu)].map((match) => match[1]),
     expectedWorkshopSteps,
   );
-  assert.ok(body.includes(annotationRule), annotationRule);
-  const completion = sectionBody(body, '完成判断');
+  assert.ok(workshop.includes(annotationRule), annotationRule);
+  const completion = visibleSection(body, '完成判断');
   for (const sentence of nonProofSentences) assert.ok(completion.includes(sentence), sentence);
 }
 
 function assertScopeAndRelations(body) {
-  for (const term of ['narrow', 'digitalized', 'as-is', 'typical', '80%']) assert.ok(body.includes(term), term);
+  const inputs = visibleSection(body, '建模目标与输入');
+  assert.ok(inputs.includes(scopeSentence), scopeSentence);
+  assert.ok(inputs.includes(nameAuthoritySentence), nameAuthoritySentence);
+  assert.ok(inputs.includes(paymentEvidenceSentence), paymentEvidenceSentence);
   const links = extractInternalLinks({body});
   for (const href of ['/modeling', '/modeling/mod-01', '/modeling/mod-02', '/modeling/mod-08', '/modeling/mod-09']) assert.ok(links.includes(href), href);
-  assert.match(body, /MOD-11/u);
-  assert.ok(!links.includes('/modeling/mod-11'), 'MOD-11 must remain plain text');
+  assert.match(visibleMdxLines({body}).join('\n'), /MOD-11/u);
+  for (const id of ['MOD-11', 'MOD-12', 'MOD-13']) {
+    assert.ok(!links.includes(`/modeling/${id.toLowerCase()}`), `${id} must remain non-actionable`);
+  }
+}
+
+function visibleSection(body, heading) {
+  return sectionBody(visibleMdxLines({body}).join('\n'), heading);
 }
 
 function horizontalArrowEvent({clientWidth = 100, scrollWidth = 300} = {}) {
@@ -274,6 +321,17 @@ function horizontalArrowEvent({clientWidth = 100, scrollWidth = 300} = {}) {
     region,
     wasDefaultPrevented: () => defaultPrevented,
   };
+}
+
+function moveWrapperContentOutside(body, label, placement = 'after') {
+  const pattern = new RegExp(
+    `(<div\\n  className="(?:diagram-wrapper|table-wrapper table-wrapper--mapping)"\\n  role="region"\\n  aria-label="${label}"\\n  tabIndex=\\{0\\}\\n  onKeyDown=\\{handleHorizontalArrowKey\\}\\n>\\n\\n)([\\s\\S]*?)(\\n\\n<\\/div>)`,
+    'u',
+  );
+  return body.replace(
+    pattern,
+    placement === 'before' ? '$2\n\n$1</div>' : '$1</div>\n\n$2',
+  );
 }
 
 test('publishes MOD-10 with the approved metadata and H2 sequence', () => {
@@ -343,5 +401,64 @@ test('rejects controlled article mutations', () => {
       {name: 'AssertionError'},
       `weakened non-proof sentence: ${sentence}`,
     );
+  }
+});
+
+test('rejects review regressions that the original contract missed', () => {
+  const {source, body} = requiredDocument();
+  for (const [label, mutation] of [
+    ['title', source.replace('title: Domain Storytelling 协作建模', 'title: 领域故事')],
+    ['difficulty', source.replace('difficulty: intermediate', 'difficulty: advanced')],
+    ['agent_patterns', source.replace('agent_patterns: []', 'agent_patterns:\n  - tool-use')],
+    ['protocols', source.replace('protocols: []', 'protocols:\n  - HTTP')],
+    ['quality_attributes', source.replace('  - maintainability', '  - maintainability\n  - reliability')],
+    ['summary', source.replace('summary: 用费用支付典型场景演练 Domain Storytelling，并明确它与流程图、用例和 EventStorming 的证据边界。', 'summary: 被弱化的摘要。')],
+    ['extra field', source.replace('title: Domain Storytelling 协作建模', 'title: Domain Storytelling 协作建模\nreviewer_extra: true')],
+  ]) {
+    assert.throws(() => assertPublicationContract(mutation), {name: 'AssertionError'}, `metadata mutation: ${label}`);
+  }
+
+  for (const [label, mutation] of [
+    ['premature story close', body.replace('>\n\n| 序号 |', '>\n\n</div>\n\n| 序号 |')],
+    ['story table after wrapper', moveWrapperContentOutside(body, expectedWrapperLabels[0])],
+    ['Mermaid before wrapper', moveWrapperContentOutside(body, expectedWrapperLabels[1], 'before')],
+    ['comparison table after wrapper', moveWrapperContentOutside(body, expectedWrapperLabels[2])],
+  ]) {
+    assert.throws(() => assertInteractionContract(mutation), {name: 'AssertionError'}, label);
+  }
+
+  for (const [label, mutation] of [
+    ['scope negated', body.replace(scopeSentence, scopeSentence.replace('只建立', '不建立'))],
+    ['scope moved section', body.replace(scopeSentence, '').replace('## 完成判断\n', `## 完成判断\n\n${scopeSentence}\n`)],
+    ['scope hidden comment', body.replace(scopeSentence, `<!-- ${scopeSentence} -->`)],
+    ['scope hidden fence', body.replace(scopeSentence, `\`\`\`text\n${scopeSentence}\n\`\`\``)],
+    ['name authority negated', body.replace(nameAuthoritySentence, nameAuthoritySentence.replace('始终称为', '不再称为'))],
+    ['name authority moved section', body.replace(nameAuthoritySentence, '').replace('## 常见失败\n', `## 常见失败\n\n${nameAuthoritySentence}\n`)],
+    ['name authority hidden comment', body.replace(nameAuthoritySentence, `<!-- ${nameAuthoritySentence} -->`)],
+    ['payment evidence reversed', body.replace(paymentEvidenceSentence, paymentEvidenceSentence.replace('都不能代替', '都能够代替'))],
+    ['payment evidence moved section', body.replace(`${paymentEvidenceSentence}\n`, '').replace('## 来源\n', `## 来源\n\n${paymentEvidenceSentence}\n`)],
+    ['payment evidence hidden fence', body.replace(paymentEvidenceSentence, `\n\n\`\`\`text\n${paymentEvidenceSentence}\n\`\`\``)],
+  ]) {
+    assert.throws(() => assertScopeAndRelations(mutation), {name: 'AssertionError'}, label);
+  }
+
+  for (const id of ['MOD-11', 'MOD-12', 'MOD-13']) {
+    assert.throws(
+      () => assertScopeAndRelations(`${body}\n[forbidden](/modeling/${id.toLowerCase()})\n`),
+      {name: 'AssertionError'},
+      `${id} actionable link`,
+    );
+  }
+
+  for (const [label, mutation] of [
+    ['annotation moved section', body.replace(`${annotationRule}\n`, '').replace('## 来源\n', `## 来源\n\n${annotationRule}\n`)],
+    ['annotation hidden comment', body.replace(annotationRule, `<!-- ${annotationRule} -->`)],
+    ['annotation hidden fence', body.replace(annotationRule, `\`\`\`text\n${annotationRule}\n\`\`\``)],
+    ['non-proof sign reversed', body.replace(nonProofSentences[0], 'actor 等于团队、长期 owner、服务或部署单元。')],
+    ['non-proof moved section', body.replace(`${nonProofSentences[1]}\n`, '').replace('## 常见失败\n', `## 常见失败\n\n${nonProofSentences[1]}\n`)],
+    ['non-proof hidden comment', body.replace(nonProofSentences[2], `<!-- ${nonProofSentences[2]} -->`)],
+    ['non-proof hidden fence', body.replace(nonProofSentences[3], `\`\`\`text\n${nonProofSentences[3]}\n\`\`\``)],
+  ]) {
+    assert.throws(() => assertWorkshopAndNonProofContracts(mutation), {name: 'AssertionError'}, label);
   }
 });
