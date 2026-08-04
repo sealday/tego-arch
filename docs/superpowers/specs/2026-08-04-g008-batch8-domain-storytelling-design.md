@@ -142,7 +142,7 @@ workshop 开始前记录：
 
 ### 6.1 Domain Story Mermaid
 
-主图位于一个可聚焦的 `diagram-wrapper` 中，使用本站原创简单形状和文字区分 actor 与 work object。图中固定出现三个 actor、四类 work object 和六个按顺序编号的 activity。六个故事句子为：
+主图位于一个可聚焦的 `diagram-wrapper diagram-wrapper--scroll-owner` 中；专用 modifier 使外层聚焦区域成为真实横向滚动 owner，并覆盖内层 Mermaid 容器的横向 overflow，确保键盘 handler 与 scroll target 是同一元素。图使用本站原创简单形状和文字区分 actor 与 work object。图中固定出现三个 actor、四类 work object 和六个按顺序编号的 activity。六个故事句子为：
 
 1. 费用申报系统向财务人员展示待支付费用。
 2. 财务人员向费用申报系统提交支付请求。
@@ -243,7 +243,7 @@ MOD-10 metadata 固定为：
 1. `https://domainstorytelling.org/quick-start-guide` — 核心语法、scope、典型路径、annotation、参与者、主持方式与完成检查；`official / primary`；MOD-10 唯一 `manifest_primary: true`。
 2. `https://domainstorytelling.org/` — 方法目的、共同语言、活动、工作对象、边界发现和需求衔接的官方概览；`official / primary`；不作为 manifest primary。
 3. `https://domainstorytelling.org/requirements` — 从 Domain Story 衔接需求和 user story 的范围，以及场景到需求之间仍需桥接的限制；`official / primary`；不作为 manifest primary。
-4. `https://domainstorytelling.org/articles/how-to-model-loops/` — 重复活动、具体实例和 annotation/group 的表达边界；`official / primary`；不作为 manifest primary。
+4. `https://domainstorytelling.org/articles/how-to-model-loops/` — Stefan Hofer 撰写的重复活动文章，支持具体实例和 annotation/group 的表达边界；`official / primary`；不作为 manifest primary。账本 `author_or_org`、citation attribution 与正文可见来源署名均使用 `Stefan Hofer`；其余三个页面保留组织作者 `Domain Storytelling`。
 
 四个页面均按 living/unversioned 页面治理，`source_version` 记录“retrieved 2026-08-04”，不得将官网整体更新时间、书籍年份或 Egon 工具版本写成页面版本。官网页脚的 CC BY 4.0 只适用于其明确许可范围；`license_scope` 必须排除商标、第三方图标、书籍、外链作品、工具代码和另有声明的媒体。
 
@@ -292,7 +292,7 @@ QA 必须验证：
 
 - Mermaid `1/1`，三个 actor、四类 work object、六个 activity 标签可见；
 - 表格 `2/2`，数据行分别为 `6 + 4`；
-- diagram 和 table wrapper 可聚焦，容器内 overflow 与 ArrowLeft/ArrowRight 可用；
+- diagram 和 table wrapper 可聚焦；主图的专用外层 wrapper 是实际 overflow owner，内层 Mermaid 不抢占横向滚动，ArrowLeft/ArrowRight 由聚焦外层驱动；
 - document overflow 为零；
 - 来源激活 `8/8`：四个来源乘两个视口；
 - 关系激活 `14/14`：MOD-10 的 `/modeling` 加四个主题关系乘两个视口，再加 MOD-08、MOD-09 reciprocal backlink 各乘两个视口；

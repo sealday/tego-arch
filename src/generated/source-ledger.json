@@ -4676,7 +4676,7 @@
       "locator_aliases": [],
       "tombstone": null,
       "title": "How to Model Repeating Activities",
-      "author_or_org": "Domain Storytelling",
+      "author_or_org": "Stefan Hofer",
       "published_at": null,
       "registered_at": "2026-08-04",
       "checked_at": "2026-08-04",
@@ -30202,7 +30202,7 @@
           ],
           "manifest_primary": false,
           "usage_mode": "facts-summary",
-          "attribution_note": "How to Model Repeating Activities, Domain Storytelling",
+          "attribution_note": "How to Model Repeating Activities, Stefan Hofer",
           "modification_note": null,
           "excerpt": null,
           "quotation_reviewed": false

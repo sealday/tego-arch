@@ -270,6 +270,21 @@ button:focus-visible,
   height: auto;
 }
 
+.theme-doc-markdown .diagram-wrapper--scroll-owner {
+  max-width: 100%;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  -webkit-overflow-scrolling: touch;
+}
+
+.theme-doc-markdown .diagram-wrapper--scroll-owner > .docusaurus-mermaid-container,
+.theme-doc-markdown .diagram-wrapper--scroll-owner > .docusaurus-mermaid-container > .mermaid,
+.theme-doc-markdown .diagram-wrapper--scroll-owner > .mermaid {
+  width: max-content;
+  max-width: none;
+  overflow-x: visible;
+}
+
 .pagination-nav__link {
   border-color: var(--atlas-line);
   border-radius: 3px;

@@ -357,13 +357,13 @@ related_questions: []
 import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableRegion/handleHorizontalArrowKey.mjs';
 ```
 
-Use exactly the nine H2s from Step 1. Put the Mermaid from Step 3 in one `diagram-wrapper` with `role="region"`, `aria-label="费用支付 Domain Story，可横向滚动"`, `tabIndex={0}` and `onKeyDown={handleHorizontalArrowKey}`. Put each exact table from Steps 2 and 4 in its own `table-wrapper table-wrapper--mapping` using the same role/tab/handler and unique labels `费用支付故事句子表，可横向滚动` and `Domain Storytelling 四模型比较表，可横向滚动`.
+Use exactly the nine H2s from Step 1. Put the Mermaid from Step 3 in one `diagram-wrapper diagram-wrapper--scroll-owner` with `role="region"`, `aria-label="费用支付 Domain Story，可横向滚动"`, `tabIndex={0}` and `onKeyDown={handleHorizontalArrowKey}`. Add targeted CSS so this focused outer wrapper owns `overflow-x: auto`, while its direct Mermaid containers use `width: max-content`, `max-width: none` and `overflow-x: visible`; the handler and scroll owner must be the same element. Put each exact table from Steps 2 and 4 in its own `table-wrapper table-wrapper--mapping` using the same role/tab/handler and unique labels `费用支付故事句子表，可横向滚动` and `Domain Storytelling 四模型比较表，可横向滚动`.
 
 The prose must state the scope as one narrow, digitalized, as-is, typical/80% payment story; preserve MOD-02 and MOD-08 authority; explain actor/work object/activity/sequence number/annotation; include the seven steps, annotation rule and eight non-proof sentences verbatim; and visibly link `/modeling`, `/modeling/mod-01`, `/modeling/mod-02`, `/modeling/mod-08`, `/modeling/mod-09` and `/cases/temporal-saga-durable-execution`. The existing Temporal Saga case is only the terminal relation required by the repository's related-case-or-question OR gate and does not add formal execution semantics to the story. Mention MOD-11 only as plain text.
 
 - [ ] **Step 8: Add accessibility and mutation tests**
 
-Require exactly three wrappers with unique labels and the keyboard handler. Directly test `handleHorizontalArrowKey`: a focused overflowing region moves by 40 pixels; a non-overflowing region remains unchanged. Add controlled mutations that remove/reorder an H2, remove/duplicate a table, change a table header, delete or swap one story row, duplicate an actor declaration, merge two work-object instances, change one object label, remove/reverse one activity edge, duplicate an activity number, remove a collaborator edge, attach a collaborator to activity 5, change a comparison row, remove the annotation rule, remove `tabIndex`, remove `onKeyDown`, or weaken each non-proof sentence. Every mutation must throw.
+Require exactly three wrappers with unique labels and the keyboard handler. Statically lock the main diagram's focused `diagram-wrapper--scroll-owner` and the targeted CSS contract that gives the outer wrapper horizontal overflow while preventing direct nested Mermaid containers from retaining it. Directly test `handleHorizontalArrowKey`: a focused overflowing region moves by 40 pixels; a non-overflowing region remains unchanged. Add controlled mutations that remove/reorder an H2, remove/duplicate a table, change a table header, delete or swap one story row, duplicate an actor declaration, merge two work-object instances, change one object label, remove/reverse one activity edge, duplicate an activity number, remove a collaborator edge, attach a collaborator to activity 5, change a comparison row, remove the annotation rule, remove `tabIndex`, remove `onKeyDown`, or weaken each non-proof sentence. Every mutation must throw. Task 4 must confirm the real rendered outer wrapper moves by exactly 40 pixels.
 
 - [ ] **Step 9: Run Task 1 verification and commit**
 
@@ -438,6 +438,7 @@ const sourceDefinitions = [
     id: 'src-docs-be2e1512961a',
     url: 'https://domainstorytelling.org/quick-start-guide',
     title: 'Domain Storytelling Quick-Start Guide',
+    author: 'Domain Storytelling',
     roles: ['definition', 'method', 'learning'],
     boundary: 'Supports actors, work objects, activities, sequence numbers, annotations, scope choices, typical-case modeling, workshop participation and replay checks; it does not make a Domain Story a complete requirement, executable process or architecture proof.',
   },
@@ -445,6 +446,7 @@ const sourceDefinitions = [
     id: 'src-docs-9e1e53a50c3b',
     url: 'https://domainstorytelling.org/',
     title: 'Domain Storytelling',
+    author: 'Domain Storytelling',
     roles: ['definition', 'learning'],
     boundary: 'Supports the method purpose of shared understanding, domain language, activities and work objects; it does not prove this article’s system boundary or production behavior.',
   },
@@ -452,6 +454,7 @@ const sourceDefinitions = [
     id: 'src-docs-a2dceda76218',
     url: 'https://domainstorytelling.org/requirements',
     title: 'Requirements',
+    author: 'Domain Storytelling',
     roles: ['method', 'comparison', 'learning'],
     boundary: 'Supports bridging a Domain Story into requirements and user stories while retaining scenario context; it does not make Domain Storytelling and use cases or user stories equivalent.',
   },
@@ -459,6 +462,7 @@ const sourceDefinitions = [
     id: 'src-docs-0d3f7c6c1483',
     url: 'https://domainstorytelling.org/articles/how-to-model-loops/',
     title: 'How to Model Repeating Activities',
+    author: 'Stefan Hofer',
     roles: ['method', 'comparison'],
     boundary: 'Supports concrete-instance, annotation and group choices for repeating activities; it does not give a Domain Story formal loop, branch or execution semantics.',
   },
@@ -480,7 +484,7 @@ For every record use:
   family_grouping_evidence_url: null,
   link_policy: 'floating',
   expected_final_approved_at: '2026-08-04',
-  author_or_org: 'Domain Storytelling',
+  author_or_org: definition.author,
   published_at: null,
   version: 'Living page retrieved 2026-08-04',
   license: 'CC-BY-4.0',
@@ -491,9 +495,9 @@ For every record use:
 }
 ```
 
-Set `canonical_locator`, `transport_locator`, `expected_final_transport_locator`, `license_evidence_url` and `license_family_id` to each definition’s exact URL; set `allowed_evidence_roles` and `usage_boundary` from its definition. Citation attribution is `${title}, Domain Storytelling`; only Quick-Start has `manifest_primary: true`.
+Set `canonical_locator`, `transport_locator`, `expected_final_transport_locator`, `license_evidence_url` and `license_family_id` to each definition’s exact URL; set `allowed_evidence_roles` and `usage_boundary` from its definition. Citation attribution is `${title}, ${author}`; the loops article and its visible source list entry must credit Stefan Hofer, while the other three retain Domain Storytelling. Only Quick-Start has `manifest_primary: true`.
 
-Replace the provisional `## 来源` body with exactly four visible Markdown links, in the same order as `sourceDefinitions`, using labels `Domain Storytelling Quick-Start Guide`, `Domain Storytelling`, `Requirements` and `How to Model Repeating Activities`. Each list item must state the supported method fact and a local non-proof or reuse boundary; no fifth external link, official icon, book/PDF asset or Egon artifact may appear.
+Replace the provisional `## 来源` body with exactly four visible Markdown links, in the same order as `sourceDefinitions`, using labels `Domain Storytelling Quick-Start Guide`, `Domain Storytelling`, `Requirements` and `How to Model Repeating Activities`. The loops item must visibly name Stefan Hofer. Each list item must state the supported method fact and a local non-proof or reuse boundary; no fifth external link, official icon, book/PDF asset or Egon artifact may appear.
 
 - [ ] **Step 3: Refresh and validate link health**
 

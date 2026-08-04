@@ -18178,7 +18178,7 @@
       "locator_aliases": [],
       "tombstone": null,
       "title": "How to Model Repeating Activities",
-      "author_or_org": "Domain Storytelling",
+      "author_or_org": "Stefan Hofer",
       "published_at": null,
       "registered_at": "2026-08-04",
       "checked_at": "2026-08-04",
@@ -18214,7 +18214,7 @@
         {"source_id":"src-docs-be2e1512961a","citation_url":"https://domainstorytelling.org/quick-start-guide","roles":["definition","method","learning"],"manifest_primary":true,"usage_mode":"facts-summary","attribution_note":"Domain Storytelling Quick-Start Guide, Domain Storytelling","modification_note":null,"excerpt":null,"quotation_reviewed":false},
         {"source_id":"src-docs-9e1e53a50c3b","citation_url":"https://domainstorytelling.org/","roles":["definition","learning"],"manifest_primary":false,"usage_mode":"facts-summary","attribution_note":"Domain Storytelling, Domain Storytelling","modification_note":null,"excerpt":null,"quotation_reviewed":false},
         {"source_id":"src-docs-a2dceda76218","citation_url":"https://domainstorytelling.org/requirements","roles":["method","comparison","learning"],"manifest_primary":false,"usage_mode":"facts-summary","attribution_note":"Requirements, Domain Storytelling","modification_note":null,"excerpt":null,"quotation_reviewed":false},
-        {"source_id":"src-docs-0d3f7c6c1483","citation_url":"https://domainstorytelling.org/articles/how-to-model-loops/","roles":["method","comparison"],"manifest_primary":false,"usage_mode":"facts-summary","attribution_note":"How to Model Repeating Activities, Domain Storytelling","modification_note":null,"excerpt":null,"quotation_reviewed":false}
+        {"source_id":"src-docs-0d3f7c6c1483","citation_url":"https://domainstorytelling.org/articles/how-to-model-loops/","roles":["method","comparison"],"manifest_primary":false,"usage_mode":"facts-summary","attribution_note":"How to Model Repeating Activities, Stefan Hofer","modification_note":null,"excerpt":null,"quotation_reviewed":false}
       ]
     },
     "content/modeling/mod-09-eventstorming.mdx": {

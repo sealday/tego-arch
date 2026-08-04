@@ -23,6 +23,7 @@ const documentsById = new Map(
 const ledger = JSON.parse(
   await readFile(new URL('../data/source-ledger.json', import.meta.url), 'utf8'),
 );
+const customCss = await readFile(new URL('../src/css/custom.css', import.meta.url), 'utf8');
 
 const expectedSources = new Map([
   ['src-docs-be2e1512961a', 'https://domainstorytelling.org/quick-start-guide'],
@@ -32,10 +33,10 @@ const expectedSources = new Map([
 ]);
 
 const sourceDefinitions = [
-  {id: 'src-docs-be2e1512961a', title: 'Domain Storytelling Quick-Start Guide', roles: ['definition', 'method', 'learning'], boundary: 'Supports actors, work objects, activities, sequence numbers, annotations, scope choices, typical-case modeling, workshop participation and replay checks; it does not make a Domain Story a complete requirement, executable process or architecture proof.'},
-  {id: 'src-docs-9e1e53a50c3b', title: 'Domain Storytelling', roles: ['definition', 'learning'], boundary: 'Supports the method purpose of shared understanding, domain language, activities and work objects; it does not prove this article’s system boundary or production behavior.'},
-  {id: 'src-docs-a2dceda76218', title: 'Requirements', roles: ['method', 'comparison', 'learning'], boundary: 'Supports bridging a Domain Story into requirements and user stories while retaining scenario context; it does not make Domain Storytelling and use cases or user stories equivalent.'},
-  {id: 'src-docs-0d3f7c6c1483', title: 'How to Model Repeating Activities', roles: ['method', 'comparison'], boundary: 'Supports concrete-instance, annotation and group choices for repeating activities; it does not give a Domain Story formal loop, branch or execution semantics.'},
+  {id: 'src-docs-be2e1512961a', title: 'Domain Storytelling Quick-Start Guide', author: 'Domain Storytelling', roles: ['definition', 'method', 'learning'], boundary: 'Supports actors, work objects, activities, sequence numbers, annotations, scope choices, typical-case modeling, workshop participation and replay checks; it does not make a Domain Story a complete requirement, executable process or architecture proof.'},
+  {id: 'src-docs-9e1e53a50c3b', title: 'Domain Storytelling', author: 'Domain Storytelling', roles: ['definition', 'learning'], boundary: 'Supports the method purpose of shared understanding, domain language, activities and work objects; it does not prove this article’s system boundary or production behavior.'},
+  {id: 'src-docs-a2dceda76218', title: 'Requirements', author: 'Domain Storytelling', roles: ['method', 'comparison', 'learning'], boundary: 'Supports bridging a Domain Story into requirements and user stories while retaining scenario context; it does not make Domain Storytelling and use cases or user stories equivalent.'},
+  {id: 'src-docs-0d3f7c6c1483', title: 'How to Model Repeating Activities', author: 'Stefan Hofer', roles: ['method', 'comparison'], boundary: 'Supports concrete-instance, annotation and group choices for repeating activities; it does not give a Domain Story formal loop, branch or execution semantics.'},
 ];
 
 const expectedHeadings = [
@@ -329,7 +330,7 @@ function assertStoryGraphContract(body) {
 
 function wrappers(body) {
   const visibleBody = visibleContractLines(body).join('\n');
-  const openings = [...visibleBody.matchAll(/<div\n  className="(diagram-wrapper|table-wrapper table-wrapper--mapping)"\n  role="region"\n  aria-label="([^"]+)"\n  tabIndex=\{0\}\n  onKeyDown=\{handleHorizontalArrowKey\}\n>/gu)];
+  const openings = [...visibleBody.matchAll(/<div\n  className="(diagram-wrapper diagram-wrapper--scroll-owner|table-wrapper table-wrapper--mapping)"\n  role="region"\n  aria-label="([^"]+)"\n  tabIndex=\{0\}\n  onKeyDown=\{handleHorizontalArrowKey\}\n>/gu)];
   assert.equal([...visibleBody.matchAll(/<div\b/gu)].length, 3, 'MOD-10 must have exactly three div openings');
   assert.equal([...visibleBody.matchAll(/<\/div>/gu)].length, 3, 'MOD-10 must have exactly three div closings');
   return openings.map((opening) => {
@@ -349,11 +350,11 @@ function assertInteractionContract(body) {
   assert.deepEqual(regions.map(({label}) => label), expectedWrapperLabels);
   assert.deepEqual(regions.map(({className}) => className), [
     'table-wrapper table-wrapper--mapping',
-    'diagram-wrapper',
+    'diagram-wrapper diagram-wrapper--scroll-owner',
     'table-wrapper table-wrapper--mapping',
   ]);
   assert.equal(new Set(regions.map(({label}) => label)).size, 3, 'wrapper labels must be unique');
-  assert.equal([...visibleContractLines(body).join('\n').matchAll(/className="(?:diagram-wrapper|table-wrapper table-wrapper--mapping)"/gu)].length, 3, 'no unvalidated overflow wrappers');
+  assert.equal([...visibleContractLines(body).join('\n').matchAll(/className="(?:diagram-wrapper diagram-wrapper--scroll-owner|table-wrapper table-wrapper--mapping)"/gu)].length, 3, 'no unvalidated overflow wrappers');
   const storyTables = markdownTables(regions[0].content);
   assert.equal(storyTables.length, 1, 'story wrapper must contain exactly the story table');
   assert.deepEqual(records(storyTables[0], ['序号', '主体 actor', 'activity', 'work object', '协作 actor', '证据说明']), expectedStoryRows);
@@ -361,6 +362,19 @@ function assertInteractionContract(body) {
   const comparisonTables = markdownTables(regions[2].content);
   assert.equal(comparisonTables.length, 1, 'comparison wrapper must contain exactly the comparison table');
   assert.deepEqual(records(comparisonTables[0], ['模型', '主要问题', '典型输入', '核心产物', '适合发现什么', '明确不证明什么']), expectedComparisonRows);
+}
+
+function assertDiagramScrollOwnership(css) {
+  assert.match(
+    css,
+    /\.theme-doc-markdown \.diagram-wrapper--scroll-owner \{[^}]*max-width: 100%;[^}]*overflow-x: auto;[^}]*\}/su,
+    'focused diagram wrapper must own horizontal overflow',
+  );
+  assert.match(
+    css,
+    /\.theme-doc-markdown \.diagram-wrapper--scroll-owner > \.docusaurus-mermaid-container,[\s\S]*?\.theme-doc-markdown \.diagram-wrapper--scroll-owner > \.docusaurus-mermaid-container > \.mermaid,[\s\S]*?\.theme-doc-markdown \.diagram-wrapper--scroll-owner > \.mermaid \{[^}]*width: max-content;[^}]*max-width: none;[^}]*overflow-x: visible;[^}]*\}/u,
+    'nested Mermaid containers must not retain horizontal overflow',
+  );
 }
 
 function assertWorkshopAndNonProofContracts(body) {
@@ -427,7 +441,7 @@ function assertSourceGovernance(ledgerData, content) {
       locator_aliases: [],
       tombstone: null,
       title: definition.title,
-      author_or_org: 'Domain Storytelling',
+      author_or_org: definition.author,
       published_at: null,
       registered_at: '2026-08-04',
       checked_at: '2026-08-04',
@@ -455,12 +469,17 @@ function assertSourceGovernance(ledgerData, content) {
       roles: definition.roles,
       manifest_primary: definition.id === 'src-docs-be2e1512961a',
       usage_mode: 'facts-summary',
-      attribution_note: `${definition.title}, Domain Storytelling`,
+      attribution_note: `${definition.title}, ${definition.author}`,
       modification_note: null,
       excerpt: null,
       quotation_reviewed: false,
     });
   }
+  assert.match(
+    visibleSection(content.body, '来源'),
+    /\[How to Model Repeating Activities\]\(https:\/\/domainstorytelling\.org\/articles\/how-to-model-loops\/\)（Stefan Hofer）/u,
+    'the visible source list must credit Stefan Hofer',
+  );
   assert.equal(governed.citations.filter(({manifest_primary}) => manifest_primary).length, 1);
 }
 
@@ -480,7 +499,7 @@ function horizontalArrowEvent({clientWidth = 100, scrollWidth = 300} = {}) {
 
 function moveWrapperContentOutside(body, label, placement = 'after') {
   const pattern = new RegExp(
-    `(<div\\n  className="(?:diagram-wrapper|table-wrapper table-wrapper--mapping)"\\n  role="region"\\n  aria-label="${label}"\\n  tabIndex=\\{0\\}\\n  onKeyDown=\\{handleHorizontalArrowKey\\}\\n>\\n\\n)([\\s\\S]*?)(\\n\\n<\\/div>)`,
+    `(<div\\n  className="(?:diagram-wrapper diagram-wrapper--scroll-owner|table-wrapper table-wrapper--mapping)"\\n  role="region"\\n  aria-label="${label}"\\n  tabIndex=\\{0\\}\\n  onKeyDown=\\{handleHorizontalArrowKey\\}\\n>\\n\\n)([\\s\\S]*?)(\\n\\n<\\/div>)`,
     'u',
   );
   return body.replace(
@@ -499,7 +518,7 @@ function hideMarkdownTable(body, headerStart, mode) {
 
 function hideWrapper(body, label, mode) {
   const pattern = new RegExp(
-    `(<div\\n  className="(?:diagram-wrapper|table-wrapper table-wrapper--mapping)"\\n  role="region"\\n  aria-label="${label}"\\n  tabIndex=\\{0\\}\\n  onKeyDown=\\{handleHorizontalArrowKey\\}\\n>\\n\\n[\\s\\S]*?\\n\\n<\\/div>)`,
+    `(<div\\n  className="(?:diagram-wrapper diagram-wrapper--scroll-owner|table-wrapper table-wrapper--mapping)"\\n  role="region"\\n  aria-label="${label}"\\n  tabIndex=\\{0\\}\\n  onKeyDown=\\{handleHorizontalArrowKey\\}\\n>\\n\\n[\\s\\S]*?\\n\\n<\\/div>)`,
     'u',
   );
   return body.replace(
@@ -522,6 +541,27 @@ test('locks the typed and numbered Domain Story graph', () => {
 
 test('keeps the diagram and both tables keyboard accessible', () => {
   assertInteractionContract(requiredDocument().body);
+});
+
+test('makes the focused diagram wrapper the real horizontal scroll owner', () => {
+  assertInteractionContract(requiredDocument().body);
+  assertDiagramScrollOwnership(customCss);
+  assert.throws(
+    () => assertDiagramScrollOwnership(customCss.replace(
+      '.theme-doc-markdown .diagram-wrapper--scroll-owner {\n  max-width: 100%;\n  overflow-x: auto;',
+      '.theme-doc-markdown .diagram-wrapper--scroll-owner {\n  max-width: 100%;\n  overflow-x: visible;',
+    )),
+    {name: 'AssertionError'},
+    'outer wrapper stopped owning horizontal overflow',
+  );
+  assert.throws(
+    () => assertDiagramScrollOwnership(customCss.replace(
+      '  width: max-content;\n  max-width: none;\n  overflow-x: visible;\n}',
+      '  width: max-content;\n  max-width: none;\n  overflow-x: auto;\n}',
+    )),
+    {name: 'AssertionError'},
+    'nested Mermaid resumed owning horizontal overflow',
+  );
 });
 
 test('scrolls only a directly focused overflowing region by 40 pixels', () => {
@@ -587,6 +627,7 @@ test('governs the four exact MOD-10 sources and citation boundaries', () => {
   for (const definition of sourceDefinitions) {
     for (const [label, mutate] of [
       ['identity', (source) => { source.id = `${source.id}-changed`; }],
+      ['author', (source) => { source.author_or_org = source.author_or_org === 'Domain Storytelling' ? 'Changed author' : 'Domain Storytelling'; }],
       ['license', (source) => { source.license = 'LicenseRef-All-Rights-Reserved'; }],
       ['roles', (source) => { source.allowed_evidence_roles = ['learning']; }],
       ['boundary', (source) => { source.usage_boundary = 'Boundary weakened.'; }],
@@ -627,6 +668,7 @@ test('rejects controlled article mutations', () => {
     ['removed collaborator edge', body.replace('  receipt_object -.-> expense_actor\n', ''), assertStoryGraphContract],
     ['attached collaborator to activity 5', body.replace('  expense_actor -->|"6 展示"|', '  result_create_object -.-> finance_actor\n  expense_actor -->|"6 展示"|'), assertStoryGraphContract],
     ['removed annotation rule', body.replace(annotationRule, ''), assertWorkshopAndNonProofContracts],
+    ['removed diagram scroll-owner modifier', body.replace('diagram-wrapper diagram-wrapper--scroll-owner', 'diagram-wrapper'), assertInteractionContract],
     ['removed tabIndex', body.replace('  tabIndex={0}\n', ''), assertInteractionContract],
     ['removed onKeyDown', body.replace('  onKeyDown={handleHorizontalArrowKey}\n', ''), assertInteractionContract],
   ];
