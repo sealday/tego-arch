@@ -1,0 +1,199 @@
+---
+title: Domain Storytelling 协作建模
+slug: /modeling/mod-10
+content_type: modeling
+status: reviewed
+difficulty: intermediate
+analyzed_at: 2026-08-04
+source_cutoff: 2026-08-04
+review_policy: quarterly-version-sensitive
+confidence: high
+domains:
+  - software-architecture
+  - domain-modeling
+agent_patterns: []
+protocols: []
+quality_attributes:
+  - maintainability
+tags:
+  - Domain Storytelling
+  - 领域协作
+  - 业务流程
+  - 模型比较
+summary: 用费用支付典型场景演练 Domain Storytelling，并明确它与流程图、用例和 EventStorming 的证据边界。
+topic_id: MOD-10
+priority: P1
+depends_on:
+  - MOD-01
+  - MOD-02
+  - MOD-09
+adjacent_topics:
+  - MOD-08
+related_cases: []
+related_questions: []
+---
+
+import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableRegion/handleHorizontalArrowKey.mjs';
+
+# Domain Storytelling 协作建模
+
+## 学习问题
+
+- 怎样让领域专家用具体业务语言讲清“谁对什么做了什么，并与谁协作”？
+- actor、work object、activity、sequence number 与 annotation 分别记录什么，又不能证明什么？
+- 怎样把银行支付服务的外部权威证据保留在故事中，而不把本地记录误当成支付结果？
+- Domain Storytelling 与流程图、用例、EventStorming 各自适合回答什么问题？
+
+## 建模目标与输入
+
+本文只建立 one narrow、digitalized、as-is、typical/80% 的费用支付故事：财务人员从费用申报系统查看待支付费用，提交支付请求，系统把请求传递给银行支付服务，并依据可核验的银行回执创建和展示支付结果记录。这个窄范围不讨论异常恢复、循环、合规分支或未来流程。
+
+建模前先让一位熟悉日常支付工作的领域专家准备一个真实但已脱敏的典型实例，并明确开始点、结束点、粒度、当前流程和非目标。参与者可以带来操作说明、页面、请求记录与回执样例，但这些材料只是澄清叙述的证据，不能预先决定故事句子。
+
+本文承接 [MOD-02 C4 模型](/modeling/mod-02)的名称与系统权威：本地软件 actor 始终称为“费用申报系统”，外部软件 actor 始终称为“银行支付服务”。它也承接 [MOD-08 状态机建模](/modeling/mod-08)的结果证据边界：本地支付请求、传递记录和支付结果记录都不能代替银行支付服务回执。
+
+## 元素选择与证据边界
+
+actor 是故事中主动执行 activity 的人、群体或软件系统；同一 actor 在图中只声明一次。software actor 仍只是业务叙事中的参与者，不自动成为服务、部署单元或真实接口。
+
+work object 是 actor 创建、处理、传递或查看的业务对象。每条 activity 使用独立的 work-object 实例，即使业务类别相同，也保留当句的对象状态与协作者；因此两个“支付请求”和两个“支付结果记录”不会在图中合并。
+
+activity 是从主体 actor 发出的、使用领域动词命名的箭头。sequence number 只把具体故事的句子排成可复述顺序。annotation 用于保留变体、假设、错误可能性和需要澄清的术语，而不把它们伪装成已经实现的行为。
+
+故事句子的证据说明必须区分意图、传递、本地记录和外部权威结果。尤其是第 4 句的银行支付回执是本故事支付结果的外部权威证据；第 5、6 句只能表示费用申报系统据此形成并展示本地记录。
+
+## 核心产物
+
+先把领域专家讲述记录成六句可朗读的故事。表格保留每句的主体、动词、工作对象、可选协作者和证据边界。
+
+<div
+  className="table-wrapper table-wrapper--mapping"
+  role="region"
+  aria-label="费用支付故事句子表，可横向滚动"
+  tabIndex={0}
+  onKeyDown={handleHorizontalArrowKey}
+>
+
+| 序号 | 主体 actor | activity | work object | 协作 actor | 证据说明 |
+| --- | --- | --- | --- | --- | --- |
+| 1 | 费用申报系统 | 展示 | 待支付费用 | 财务人员 | 费用申报系统中的待支付费用视图；不证明银行已经接受请求 |
+| 2 | 财务人员 | 提交 | 支付请求 | 费用申报系统 | 本地支付请求记录；只证明财务人员表达了支付意图 |
+| 3 | 费用申报系统 | 传递 | 支付请求 | 银行支付服务 | 请求传递记录；不证明支付已经发生或成功 |
+| 4 | 银行支付服务 | 提供 | 银行支付回执 | 费用申报系统 | 银行支付服务回执；是本故事支付结果的外部权威证据 |
+| 5 | 费用申报系统 | 创建 | 支付结果记录 | — | 依据银行支付回执创建的本地记录；不能反向替代银行回执 |
+| 6 | 费用申报系统 | 展示 | 支付结果记录 | 财务人员 | 向财务人员展示的本地结果；结论仍由银行回执支撑 |
+
+</div>
+
+同一组句子可画成 Domain Story。实线箭头表达带序号的 activity，点线只连接该句的协作 actor；第 5 句只有主体 actor 和 work object，因此没有协作者边。
+
+<div
+  className="diagram-wrapper"
+  role="region"
+  aria-label="费用支付 Domain Story，可横向滚动"
+  tabIndex={0}
+  onKeyDown={handleHorizontalArrowKey}
+>
+
+```mermaid
+flowchart LR
+  finance_actor(["Actor<br/>财务人员"])
+  expense_actor(["Actor<br/>费用申报系统"])
+  bank_actor(["Actor<br/>银行支付服务"])
+  pending_object[["Work Object<br/>待支付费用"]]
+  request_submit_object[["Work Object<br/>支付请求"]]
+  request_transfer_object[["Work Object<br/>支付请求"]]
+  receipt_object[["Work Object<br/>银行支付回执"]]
+  result_create_object[["Work Object<br/>支付结果记录"]]
+  result_view_object[["Work Object<br/>支付结果记录"]]
+  expense_actor -->|"1 展示"| pending_object
+  pending_object -.-> finance_actor
+  finance_actor -->|"2 提交"| request_submit_object
+  request_submit_object -.-> expense_actor
+  expense_actor -->|"3 传递"| request_transfer_object
+  request_transfer_object -.-> bank_actor
+  bank_actor -->|"4 提供"| receipt_object
+  receipt_object -.-> expense_actor
+  expense_actor -->|"5 创建"| result_create_object
+  expense_actor -->|"6 展示"| result_view_object
+  result_view_object -.-> finance_actor
+```
+
+</div>
+
+最后用同一证据问题比较四种模型。比较的目的不是选出万能工具，而是阻止团队把一种产物的语法和结论偷换成另一种。
+
+<div
+  className="table-wrapper table-wrapper--mapping"
+  role="region"
+  aria-label="Domain Storytelling 四模型比较表，可横向滚动"
+  tabIndex={0}
+  onKeyDown={handleHorizontalArrowKey}
+>
+
+| 模型 | 主要问题 | 典型输入 | 核心产物 | 适合发现什么 | 明确不证明什么 |
+| --- | --- | --- | --- | --- | --- |
+| Domain Storytelling | 一个具体业务场景中，谁对什么做了什么并与谁协作 | 领域专家讲述、业务语言、具体实例与 scope 决定 | 带 actor、work object、activity、序号与 annotation 的 Domain Story | 共同语言、参与者协作、工作对象、遗漏、分歧与重要变体 | 完整分支、正式需求、API、事务、服务边界或组织设计 |
+| 流程图 | 活动、判断、分支与路径如何连接 | 已识别的活动、条件、入口、出口与规则 | 活动节点、判断与有向路径 | 路径遗漏、分支、循环、顺序与规则缺口 | 参与者已经共享领域语言或系统实现满足流程 |
+| 用例 | actor 为实现目标如何与系统交互 | actor 目标、系统范围、前后条件及主与替代流程 | 用例、参与者、前后条件与场景描述 | 系统责任、目标、交互边界与需求场景 | actor、work object、activity 与用例元素存在一一映射 |
+| EventStorming | 领域中发生了什么，哪里存在热点、未知项和边界线索 | 领域事件、参与者叙述、政策、系统、事故与术语证据 | 过去时事件时间线、Process Model、热点与候选假设 | 事件语言、业务转折、政策、未知项和候选边界信号 | 与 Domain Storytelling 等价或可按元素严格互换 |
+
+</div>
+
+## 完成判断
+
+完成的故事应当能由领域专家按 1 到 6 逐句复述，所有 actor、work object 和 activity 都使用参与者认可的领域语言。图、句子表和口头叙述应一致；权威名称、典型范围以及每条 annotation 的后续处置应可见。
+
+还必须逐条保留以下非证明规则：
+
+actor 不等于团队、长期 owner、服务或部署单元。
+
+software actor 不证明真实 API、契约、协议、SLA 或安全责任。
+
+work object 不等于数据库表、聚合、数据 owner 或权威存储。
+
+activity arrow 不等于同步调用、消息、事务或网络连接。
+
+sequence number 不等于完整时序、并发语义或性能保证。
+
+annotation 不等于已经实现的分支、错误处理或正式需求。
+
+一张典型 Domain Story 不证明全部异常、循环、合规路径或流程完备性。
+
+一次 workshop 不单独确认正式系统边界、Bounded Context 或组织结构。
+
+## 常见失败
+
+- 用“处理”“操作”之类抽象词替代领域动词，导致参与者无法判断真实行为。
+- 把两条 activity 使用的同类 work object 合并，使对象状态与协作 actor 变得含混。
+- 将费用申报系统的请求或结果记录当作银行已经接受请求或支付成功的证据。
+- 为典型故事塞入所有异常、判断与循环，使一次复述无法完成，也掩盖重要替代情形。
+- 把 software actor、activity arrow 或 sequence number 直接翻译成服务、调用和运行时顺序。
+- 主持人替领域专家选择术语，或在 workshop 后独自“整理”掉现场分歧。
+
+## 与其他模型的衔接
+
+[MOD-01 架构视图与视点](/modeling/mod-01)帮助团队按关切选择模型；[MOD-02 C4 模型](/modeling/mod-02)提供系统范围和权威名称；[MOD-08 状态机建模](/modeling/mod-08)约束支付结果仍未知时的证据与恢复语义；[MOD-09 EventStorming](/modeling/mod-09)可探索更宽的事件时间线、热点和候选边界信号。
+
+Domain Story 中发现的语言分歧、权威记录冲突和协作变化只能作为后续输入。正式系统边界与 Bounded Context 仍需交给 MOD-11 或等价架构活动验证，不能从 actor 布局直接推出。
+
+返回[建模目录](/modeling)可按新的问题选择下一种模型。
+
+## 完整演练
+
+1. 主持人说明场景、粒度、as-is、digitalized、权威名称和非目标。
+2. 领域专家从一个具体费用支付实例开始，用自己的领域语言回答“接下来发生什么”。
+3. 主持人逐句画出 actor、work object、activity 和 sequence number，并当场朗读。
+4. 参与者即时纠正术语、遗漏、顺序和工作对象，不用抽象词掩盖真实分歧。
+5. 团队先完成典型路径；小差异写入 annotation，重要替代情形另建 Domain Story。
+6. 全体从第一句开始复述，检查明显错误、遗漏和领域专家是否认可。
+7. 团队复查 annotations，为每个分歧或变体确定澄清方式、后续故事或其他模型。
+
+如果费用申报系统未取得可核验的银行回执，则停止典型故事，将“支付结果仍未知”保留为 annotation，并依据 MOD-08 另建异常故事。
+
+## 来源
+
+- [Domain Storytelling Quick-Start Guide](https://domainstorytelling.org/quick-start-guide)：支持 actor、work object、activity、sequence number、annotation、逐句复述与 scope 因子的定义；不证明本文费用支付故事或任何生产实现。
+- [The First Book About Domain Storytelling](https://domainstorytelling.org/book)：提供方法、场景建模、工作坊和与其他建模方法关系的学习入口；不授权把示例、图或文字复制为本站内容。
+
+本文的费用支付故事、表格、Mermaid 图、比较与演练均为本站原创教学内容。外部来源只支持方法背景，不证明系统边界、运行时机制、组织责任或支付结果。
