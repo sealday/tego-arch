@@ -28,6 +28,7 @@ depends_on:
 adjacent_topics:
   - MOD-07
   - MOD-09
+  - MOD-10
   - PR-10
   - QA-02
 related_cases:
@@ -195,6 +196,8 @@ stateDiagram-v2
 [MOD-07 UML 选图指南](/modeling/mod-07)定义单对象生命周期的建模边界；[PR-10 幂等性与最小协调](/principles/pr-10)约束稳定操作身份、未知结果和安全重试；[QA-02 可靠性、可用性与可恢复性](/quality-attributes/qa-02)用可执行证据检验 timeout、重试、补偿和人工收敛。
 
 [Temporal Saga 与持久执行案例](/cases/temporal-saga-durable-execution)提供 Workflow、Activity、重试、超时与补偿的实例边界。Temporal 机制不定义本文的业务状态或补偿政策。返回[建模目录](/modeling)可继续选择其他观察尺度；[MOD-09 EventStorming 工作坊建模](/modeling/mod-09)把未知支付结果、对账与人工决议的证据语义带入协作工作坊，但不会据此宣布正式边界。
+
+[MOD-10 Domain Storytelling](/modeling/mod-10)中发现的一个重要的 Domain Story 变体，可以用本文细化状态、终态与恢复语义；故事本身不证明这些语义已经完整或可执行。
 
 ## 完整演练
 

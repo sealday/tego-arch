@@ -270,12 +270,15 @@ test('preserves Batch 3 closure under the current non-terminal G008 baseline', (
   assert.equal(topicsById.get('MOD-07')?.status.value, 'complete');
   assert.equal(topicsById.get('MOD-08')?.status.value, 'complete');
   assert.equal(topicsById.get('MOD-09')?.status.value, 'complete');
-  for (const id of ['MOD-10', 'MOD-11', 'MOD-12', 'MOD-13']) {
+  assert.equal(topicsById.get('MOD-10')?.published, true);
+  assert.equal(topicsById.get('MOD-10')?.status.value, 'pending');
+  for (const id of ['MOD-11', 'MOD-12', 'MOD-13']) {
+    assert.equal(topicsById.get(id)?.published, false, id);
     assert.equal(topicsById.get(id)?.status.value, 'pending', id);
   }
   assert.equal(projectStatus.completed_topics, 48);
-  assert.equal(projectStatus.content_documents, 90);
-  assert.equal(projectStatus.governed_sources, 481);
+  assert.equal(projectStatus.content_documents, 91);
+  assert.equal(projectStatus.governed_sources, 485);
   assert.deepEqual(projectStatus.durable_stories, {
     completed: 7,
     total: 20,

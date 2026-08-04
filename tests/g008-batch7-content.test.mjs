@@ -176,7 +176,7 @@ const expectedCompletionContract = [
   '所有参与者理解共享模型是当前证据的共同视图，而不是生产事实或架构批准。',
 ];
 
-const unpublishedModelingTopics = ['MOD-10', 'MOD-11', 'MOD-12', 'MOD-13'];
+const unpublishedModelingTopics = ['MOD-11', 'MOD-12', 'MOD-13'];
 
 const expectedWrapperLabels = [
   '费用申报 Big Picture 事件表，可横向滚动',
@@ -205,7 +205,7 @@ function assertPublicationContract(source) {
   assert.deepEqual(metadata.domains, ['software-architecture', 'domain-modeling']);
   assert.deepEqual(metadata.tags, ['EventStorming', 'Big Picture', 'Process Modelling', '边界假设']);
   assert.deepEqual(metadata.depends_on, ['MOD-01', 'MOD-02']);
-  assert.deepEqual(metadata.adjacent_topics, ['MOD-05', 'MOD-08']);
+  assert.deepEqual(metadata.adjacent_topics, ['MOD-05', 'MOD-08', 'MOD-10']);
   assert.deepEqual(metadata.related_cases, ['/cases/temporal-saga-durable-execution']);
   assert.deepEqual(metadata.related_questions, []);
   assert.deepEqual(
@@ -432,6 +432,8 @@ function assertRelationContract(content, peers) {
       `${id} visible link`,
     );
   }
+  assert.equal(links.filter((href) => href === '/modeling/mod-10').length, 1);
+  assert.match(content.body, /Domain Storytelling[^。\n]*可以组合[^。\n]*不是替代关系[^。\n]*没有严格的元素映射/u);
 }
 
 function assertStageBProjection(projectStatus, topicIndexes, content) {
@@ -439,8 +441,8 @@ function assertStageBProjection(projectStatus, topicIndexes, content) {
     schema_version: 1,
     durable_stories: {completed: 7, total: 20, current: 'G008'},
     completed_topics: 48,
-    content_documents: 90,
-    governed_sources: 481,
+    content_documents: 91,
+    governed_sources: 485,
     sources: {
       durable_stories: 'docs/content-backlog.md',
       completed_topics: 'docs/content-backlog.md',
@@ -451,6 +453,8 @@ function assertStageBProjection(projectStatus, topicIndexes, content) {
   const topicsById = new Map(Object.values(topicIndexes).flat().map((topic) => [topic.id, topic]));
   assert.equal(topicsById.get('MOD-09').published, true);
   assert.equal(topicsById.get('MOD-09').status.value, 'complete');
+  assert.equal(topicsById.get('MOD-10').published, true);
+  assert.equal(topicsById.get('MOD-10').status.value, 'pending');
   const links = extractInternalLinks(content);
   for (const id of unpublishedModelingTopics) {
     assert.equal(topicsById.get(id).published, false, `${id} publication`);

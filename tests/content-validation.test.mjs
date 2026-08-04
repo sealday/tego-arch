@@ -8,6 +8,7 @@ import {fileURLToPath} from 'node:url';
 
 import {
   knowledgeHeadingContract,
+  mod10ModelingHeadings,
   mod09ModelingHeadings,
   requiredCaseHeadings,
   requiredMigrationHeadings,
@@ -1035,6 +1036,17 @@ const mod09Headings = [
   '## 完整演练',
   '## 来源',
 ];
+const mod10Headings = [
+  '## 学习问题',
+  '## 建模目标与输入',
+  '## 元素选择与证据边界',
+  '## 核心产物',
+  '## 完成判断',
+  '## 常见失败',
+  '## 与其他模型的衔接',
+  '## 完整演练',
+  '## 来源',
+];
 
 test('accepts the Pattern knowledge contract and excludes the Pattern index', async () => {
   await withTempRoot(async (root) => {
@@ -1225,6 +1237,34 @@ test('rejects missing and reordered MOD-09 headings against its exact contract',
 
       const result = await validateContent(root);
       assert.match(result.errors.join('\n'), variant.expected, variant.name);
+    });
+  }
+});
+
+test('accepts the exact MOD-10 nine-heading modeling contract', async () => {
+  assert.deepEqual(mod10ModelingHeadings, mod10Headings);
+  assert.strictEqual(knowledgeHeadingContract('modeling', 'MOD-10'), mod10ModelingHeadings);
+  await withTempRoot(async (root) => {
+    await writeMdx(root, 'modeling/mod-10.mdx', validKnowledgeFrontMatter('modeling', {
+      topic_id: 'MOD-10',
+      slug: '/modeling/mod-10',
+    }), mod10Headings.join('\n\n'));
+    assert.deepEqual((await validateContent(root)).errors, []);
+  });
+});
+
+test('rejects missing and reordered MOD-10 headings against its exact contract', async () => {
+  const variants = [
+    {name: 'missing', headings: mod10Headings.filter((heading) => heading !== '## 元素选择与证据边界'), expected: /expected exactly 9 ## 学习问题-contract H2 headings; found 8/u},
+    {name: 'reordered', headings: [...mod10Headings.slice(0, 2), mod10Headings[3], mod10Headings[2], ...mod10Headings.slice(4)], expected: /position 3; expected "## 元素选择与证据边界", actual "## 核心产物"/u},
+  ];
+  for (const variant of variants) {
+    await withTempRoot(async (root) => {
+      await writeMdx(root, `modeling/mod-10-${variant.name}.mdx`, validKnowledgeFrontMatter('modeling', {
+        topic_id: 'MOD-10',
+        slug: `/modeling/mod-10-${variant.name}`,
+      }), variant.headings.join('\n\n'));
+      assert.match((await validateContent(root)).errors.join('\n'), variant.expected, variant.name);
     });
   }
 });

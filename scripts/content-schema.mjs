@@ -158,6 +158,18 @@ export const mod09ModelingHeadings = [
   '## 来源',
 ];
 
+export const mod10ModelingHeadings = [
+  '## 学习问题',
+  '## 建模目标与输入',
+  '## 元素选择与证据边界',
+  '## 核心产物',
+  '## 完成判断',
+  '## 常见失败',
+  '## 与其他模型的衔接',
+  '## 完整演练',
+  '## 来源',
+];
+
 export function knowledgeHeadingContract(type, topicId) {
   if (type === 'principle' && closingPrincipleTopicIds.has(topicId)) {
     return closingPrincipleHeadings;
@@ -167,6 +179,9 @@ export function knowledgeHeadingContract(type, topicId) {
   }
   if (type === 'modeling' && topicId === 'MOD-09') {
     return mod09ModelingHeadings;
+  }
+  if (type === 'modeling' && topicId === 'MOD-10') {
+    return mod10ModelingHeadings;
   }
   return knowledgeTypeContracts[type];
 }

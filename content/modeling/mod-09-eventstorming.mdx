@@ -30,6 +30,7 @@ depends_on:
 adjacent_topics:
   - MOD-05
   - MOD-08
+  - MOD-10
 related_cases:
   - /cases/temporal-saga-durable-execution
 related_questions: []
@@ -190,6 +191,8 @@ Person 不等于长期 owner。
 ## 与其他模型的衔接
 
 [MOD-01 架构视图与视点](/modeling/mod-01)提供按关切选择表达方式的基础；[MOD-02 C4 模型](/modeling/mod-02)约束系统名称和范围；[MOD-05 概念、逻辑与物理数据模型](/modeling/mod-05)提供费用申报的数据场景；[MOD-08 状态机建模](/modeling/mod-08)约束未知支付结果、对账与人工决议的证据语义。
+
+[MOD-10 Domain Storytelling](/modeling/mod-10)与 EventStorming 可以组合，但不是替代关系，两种协作方法之间没有严格的元素映射。
 
 [Temporal Saga 与持久执行案例](/cases/temporal-saga-durable-execution)可用于检验长时流程中的超时、重试、补偿和人工收敛，但其运行机制不会替本文决定业务边界。候选关系需在 MOD-11 或等价架构活动中结合术语 owner、规则变更、权威记录和组织协作证据继续验证。
 

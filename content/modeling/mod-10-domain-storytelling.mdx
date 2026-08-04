@@ -29,7 +29,9 @@ depends_on:
   - MOD-09
 adjacent_topics:
   - MOD-08
-related_cases: []
+  - MOD-09
+related_cases:
+  - /cases/temporal-saga-durable-execution
 related_questions: []
 ---
 
@@ -177,6 +179,8 @@ annotation 不等于已经实现的分支、错误处理或正式需求。
 
 Domain Story 中发现的语言分歧、权威记录冲突和协作变化只能作为后续输入。正式系统边界与 Bounded Context 仍需交给 MOD-11 或等价架构活动验证，不能从 actor 布局直接推出。
 
+[Temporal Saga 与持久执行案例](/cases/temporal-saga-durable-execution)可用于进一步检验超时、重试、补偿与人工收敛，但该案例的运行机制不为 Domain Story 补充正式执行语义。
+
 返回[建模目录](/modeling)可按新的问题选择下一种模型。
 
 ## 完整演练
@@ -193,7 +197,9 @@ Domain Story 中发现的语言分歧、权威记录冲突和协作变化只能�
 
 ## 来源
 
-- [Domain Storytelling Quick-Start Guide](https://domainstorytelling.org/quick-start-guide)：支持 actor、work object、activity、sequence number、annotation、逐句复述与 scope 因子的定义；不证明本文费用支付故事或任何生产实现。
-- [The First Book About Domain Storytelling](https://domainstorytelling.org/book)：提供方法、场景建模、工作坊和与其他建模方法关系的学习入口；不授权把示例、图或文字复制为本站内容。
+- [Domain Storytelling Quick-Start Guide](https://domainstorytelling.org/quick-start-guide)：支持 actor、work object、activity、sequence number、annotation、范围选择、典型场景、参与式 workshop 与复述检查；不使 Domain Story 成为完整需求、可执行流程或架构证明。
+- [Domain Storytelling](https://domainstorytelling.org/)：支持通过领域语言、activity 与 work object 建立共享理解的方法目的；不证明本文的系统边界或生产行为。
+- [Requirements](https://domainstorytelling.org/requirements)：支持在保留场景上下文的前提下把 Domain Story 衔接到需求与用户故事；不表示 Domain Storytelling 与用例或用户故事等价。
+- [How to Model Repeating Activities](https://domainstorytelling.org/articles/how-to-model-loops/)：支持用具体实例、annotation 与 group 表达重复活动的选择；不赋予 Domain Story 正式循环、分支或执行语义。
 
 本文的费用支付故事、表格、Mermaid 图、比较与演练均为本站原创教学内容。外部来源只支持方法背景，不证明系统边界、运行时机制、组织责任或支付结果。

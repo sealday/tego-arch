@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
 import test from 'node:test';
 import {fileURLToPath} from 'node:url';
 
@@ -8,7 +9,7 @@ import {
   readContentDocuments,
 } from '../scripts/content-metadata.mjs';
 import {extractInternalLinks} from '../scripts/content-relations.mjs';
-import {visibleMdxLines} from '../scripts/source-ledger.mjs';
+import {extractExternalLinks, visibleMdxLines} from '../scripts/source-ledger.mjs';
 import {handleHorizontalArrowKey} from '../src/components/KeyboardScrollableRegion/handleHorizontalArrowKey.mjs';
 
 const contentRoot = fileURLToPath(new URL('../content/', import.meta.url));
@@ -16,6 +17,23 @@ const documents = await readContentDocuments(contentRoot);
 const document = documents.find(
   ({file}) => file === 'modeling/mod-10-domain-storytelling.mdx',
 );
+const ledger = JSON.parse(
+  await readFile(new URL('../data/source-ledger.json', import.meta.url), 'utf8'),
+);
+
+const expectedSources = new Map([
+  ['src-docs-be2e1512961a', 'https://domainstorytelling.org/quick-start-guide'],
+  ['src-docs-9e1e53a50c3b', 'https://domainstorytelling.org/'],
+  ['src-docs-a2dceda76218', 'https://domainstorytelling.org/requirements'],
+  ['src-docs-0d3f7c6c1483', 'https://domainstorytelling.org/articles/how-to-model-loops/'],
+]);
+
+const sourceDefinitions = [
+  {id: 'src-docs-be2e1512961a', title: 'Domain Storytelling Quick-Start Guide', roles: ['definition', 'method', 'learning'], boundary: 'Supports actors, work objects, activities, sequence numbers, annotations, scope choices, typical-case modeling, workshop participation and replay checks; it does not make a Domain Story a complete requirement, executable process or architecture proof.'},
+  {id: 'src-docs-9e1e53a50c3b', title: 'Domain Storytelling', roles: ['definition', 'learning'], boundary: 'Supports the method purpose of shared understanding, domain language, activities and work objects; it does not prove this article’s system boundary or production behavior.'},
+  {id: 'src-docs-a2dceda76218', title: 'Requirements', roles: ['method', 'comparison', 'learning'], boundary: 'Supports bridging a Domain Story into requirements and user stories while retaining scenario context; it does not make Domain Storytelling and use cases or user stories equivalent.'},
+  {id: 'src-docs-0d3f7c6c1483', title: 'How to Model Repeating Activities', roles: ['method', 'comparison'], boundary: 'Supports concrete-instance, annotation and group choices for repeating activities; it does not give a Domain Story formal loop, branch or execution semantics.'},
+];
 
 const expectedHeadings = [
   '学习问题',
@@ -48,8 +66,8 @@ const expectedMetadata = {
   topic_id: 'MOD-10',
   priority: 'P1',
   depends_on: ['MOD-01', 'MOD-02', 'MOD-09'],
-  adjacent_topics: ['MOD-08'],
-  related_cases: [],
+  adjacent_topics: ['MOD-08', 'MOD-09'],
+  related_cases: ['/cases/temporal-saga-durable-execution'],
   related_questions: [],
 };
 
@@ -359,11 +377,76 @@ function assertScopeAndRelations(body) {
   assert.ok(inputs.includes(nameAuthoritySentence), nameAuthoritySentence);
   assert.ok(inputs.includes(paymentEvidenceSentence), paymentEvidenceSentence);
   const links = extractInternalLinks({body});
-  for (const href of ['/modeling', '/modeling/mod-01', '/modeling/mod-02', '/modeling/mod-08', '/modeling/mod-09']) assert.ok(links.includes(href), href);
+  for (const href of ['/modeling', '/modeling/mod-01', '/modeling/mod-02', '/modeling/mod-08', '/modeling/mod-09', '/cases/temporal-saga-durable-execution']) assert.ok(links.includes(href), href);
   assert.match(visibleMdxLines({body}).join('\n'), /MOD-11/u);
   for (const id of ['MOD-11', 'MOD-12', 'MOD-13']) {
     assert.ok(!links.includes(`/modeling/${id.toLowerCase()}`), `${id} must remain non-actionable`);
   }
+}
+
+function assertSourceGovernance(ledgerData, content) {
+  const governed = ledgerData.documents['content/modeling/mod-10-domain-storytelling.mdx'];
+  assert.ok(governed, 'MOD-10 source review must exist');
+  assert.equal(governed.reviewed_at, '2026-08-04');
+  assert.deepEqual(governed.copyright_checks, [
+    'original-structure',
+    'quotation-boundary',
+    'attribution-complete',
+    'illustration-rights',
+  ]);
+  assert.equal(governed.citations.length, 4);
+  const visible = extractExternalLinks(content);
+  assert.deepEqual(visible, [...expectedSources.values()].toSorted());
+  assert.deepEqual(
+    [...visibleSection(content.body, '来源').matchAll(/\[[^\]]+\]\((https:[^)]+)\)/gu)].map((match) => match[1]),
+    [...expectedSources.values()],
+  );
+  const citations = new Map(governed.citations.map((citation) => [citation.source_id, citation]));
+  for (const definition of sourceDefinitions) {
+    const url = expectedSources.get(definition.id);
+    assert.deepEqual(ledgerData.sources.find(({id}) => id === definition.id), {
+      id: definition.id,
+      canonical_locator: url,
+      transport_locator: url,
+      query_insensitive: false,
+      locator_aliases: [],
+      tombstone: null,
+      title: definition.title,
+      author_or_org: 'Domain Storytelling',
+      published_at: null,
+      registered_at: '2026-08-04',
+      checked_at: '2026-08-04',
+      version: 'Living page retrieved 2026-08-04',
+      source_kind: 'official-docs',
+      tier: 'primary',
+      allowed_evidence_roles: definition.roles,
+      license: 'CC-BY-4.0',
+      license_scope: 'The named Domain Storytelling page within its visible CC BY 4.0 scope; trademarks, third-party icons, books, linked works, tool code and separately licensed media are excluded.',
+      license_evidence_url: url,
+      license_evidence_note: 'The named page displayed the Domain Storytelling CC BY 4.0 footer when checked on 2026-08-04; separately licensed and third-party material remains excluded.',
+      license_family_id: url,
+      license_family_grouping: 'identity',
+      family_grouping_evidence_url: null,
+      copyright_policy: 'adapt-with-attribution',
+      usage_boundary: definition.boundary,
+      link_policy: 'floating',
+      expected_final_transport_locator: url,
+      expected_final_approved_at: '2026-08-04',
+      expected_final_approval_note: 'Reviewed the direct Domain Storytelling HTTPS transport and visible CC BY 4.0 footer on 2026-08-04.',
+    });
+    assert.deepEqual(citations.get(definition.id), {
+      source_id: definition.id,
+      citation_url: url,
+      roles: definition.roles,
+      manifest_primary: definition.id === 'src-docs-be2e1512961a',
+      usage_mode: 'facts-summary',
+      attribution_note: `${definition.title}, Domain Storytelling`,
+      modification_note: null,
+      excerpt: null,
+      quotation_reviewed: false,
+    });
+  }
+  assert.equal(governed.citations.filter(({manifest_primary}) => manifest_primary).length, 1);
 }
 
 function visibleSection(body, heading) {
@@ -443,6 +526,10 @@ test('locks the workshop, annotation and non-proof contracts', () => {
 
 test('states the narrow story scope and required modeling relations', () => {
   assertScopeAndRelations(requiredDocument().body);
+});
+
+test('governs the four exact MOD-10 sources and citation boundaries', () => {
+  assertSourceGovernance(ledger, requiredDocument());
 });
 
 test('rejects controlled article mutations', () => {

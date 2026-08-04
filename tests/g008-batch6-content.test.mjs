@@ -389,7 +389,7 @@ test('publishes MOD-08 with the approved metadata and structure', () => {
   assert.equal(content.metadata.status, 'reviewed');
   assert.equal(content.metadata.priority, 'P1');
   assert.deepEqual(content.metadata.depends_on, ['MOD-07']);
-  assert.deepEqual(content.metadata.adjacent_topics, ['MOD-07', 'MOD-09', 'PR-10', 'QA-02']);
+  assert.deepEqual(content.metadata.adjacent_topics, ['MOD-07', 'MOD-09', 'MOD-10', 'PR-10', 'QA-02']);
   assert.deepEqual(content.metadata.related_cases, [
     '/cases/temporal-saga-durable-execution',
   ]);
@@ -490,6 +490,9 @@ test('connects MOD-08 reciprocally and hands off to published MOD-09', () => {
     '/cases/temporal-saga-durable-execution',
   ]) assert.ok(links.has(href), href);
   assert.ok(links.has('/modeling/mod-09'));
+  assert.ok(links.has('/modeling/mod-10'));
+  assert.equal(extractInternalLinks(requiredDocument()).filter((href) => href === '/modeling/mod-10').length, 1);
+  assert.match(requiredDocument().body, /重要的 Domain Story 变体[^。\n]*状态、终态与恢复语义/u);
   assert.doesNotMatch(requiredDocument().body, /MOD-09[^。\n]*尚未发布/u);
   assert.ok(requiredDocument().metadata.adjacent_topics.includes('MOD-09'));
 

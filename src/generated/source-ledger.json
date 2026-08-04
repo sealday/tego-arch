@@ -4669,6 +4669,50 @@
       ]
     },
     {
+      "id": "src-docs-0d3f7c6c1483",
+      "canonical_locator": "https://domainstorytelling.org/articles/how-to-model-loops/",
+      "transport_locator": "https://domainstorytelling.org/articles/how-to-model-loops/",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "How to Model Repeating Activities",
+      "author_or_org": "Domain Storytelling",
+      "published_at": null,
+      "registered_at": "2026-08-04",
+      "checked_at": "2026-08-04",
+      "version": "Living page retrieved 2026-08-04",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "method",
+        "comparison"
+      ],
+      "license": "CC-BY-4.0",
+      "license_scope": "The named Domain Storytelling page within its visible CC BY 4.0 scope; trademarks, third-party icons, books, linked works, tool code and separately licensed media are excluded.",
+      "license_evidence_url": "https://domainstorytelling.org/articles/how-to-model-loops/",
+      "license_evidence_note": "The named page displayed the Domain Storytelling CC BY 4.0 footer when checked on 2026-08-04; separately licensed and third-party material remains excluded.",
+      "license_family_id": "https://domainstorytelling.org/articles/how-to-model-loops/",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "adapt-with-attribution",
+      "usage_boundary": "Supports concrete-instance, annotation and group choices for repeating activities; it does not give a Domain Story formal loop, branch or execution semantics.",
+      "link_policy": "floating",
+      "expected_final_transport_locator": "https://domainstorytelling.org/articles/how-to-model-loops/",
+      "expected_final_approved_at": "2026-08-04",
+      "expected_final_approval_note": "Reviewed the direct Domain Storytelling HTTPS transport and visible CC BY 4.0 footer on 2026-08-04.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://domainstorytelling.org/articles/how-to-model-loops/",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-04T07:10:21.381Z",
+          "last_success_at": "2026-08-04T07:10:21.381Z",
+          "http_status": 206,
+          "final_transport_locator": "https://domainstorytelling.org/articles/how-to-model-loops/"
+        }
+      ]
+    },
+    {
       "id": "src-docs-0db68142a378",
       "canonical_locator": "https://docs.litellm.ai/docs/proxy/budget_fallbacks",
       "transport_locator": "https://docs.litellm.ai/docs/proxy/budget_fallbacks",
@@ -6854,6 +6898,50 @@
       ]
     },
     {
+      "id": "src-docs-9e1e53a50c3b",
+      "canonical_locator": "https://domainstorytelling.org/",
+      "transport_locator": "https://domainstorytelling.org/",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Domain Storytelling",
+      "author_or_org": "Domain Storytelling",
+      "published_at": null,
+      "registered_at": "2026-08-04",
+      "checked_at": "2026-08-04",
+      "version": "Living page retrieved 2026-08-04",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "learning"
+      ],
+      "license": "CC-BY-4.0",
+      "license_scope": "The named Domain Storytelling page within its visible CC BY 4.0 scope; trademarks, third-party icons, books, linked works, tool code and separately licensed media are excluded.",
+      "license_evidence_url": "https://domainstorytelling.org/",
+      "license_evidence_note": "The named page displayed the Domain Storytelling CC BY 4.0 footer when checked on 2026-08-04; separately licensed and third-party material remains excluded.",
+      "license_family_id": "https://domainstorytelling.org/",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "adapt-with-attribution",
+      "usage_boundary": "Supports the method purpose of shared understanding, domain language, activities and work objects; it does not prove this article’s system boundary or production behavior.",
+      "link_policy": "floating",
+      "expected_final_transport_locator": "https://domainstorytelling.org/",
+      "expected_final_approved_at": "2026-08-04",
+      "expected_final_approval_note": "Reviewed the direct Domain Storytelling HTTPS transport and visible CC BY 4.0 footer on 2026-08-04.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://domainstorytelling.org/",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-04T07:10:21.381Z",
+          "last_success_at": "2026-08-04T07:10:21.381Z",
+          "http_status": 206,
+          "final_transport_locator": "https://domainstorytelling.org/"
+        }
+      ]
+    },
+    {
       "id": "src-docs-9e1e7a0010d1",
       "canonical_locator": "https://docs.litellm.ai/docs/proxy/guardrails/quick_start",
       "transport_locator": "https://docs.litellm.ai/docs/proxy/guardrails/quick_start",
@@ -6900,6 +6988,51 @@
           "last_success_at": "2026-08-02T04:33:33.082Z",
           "http_status": 206,
           "final_transport_locator": "https://docs.litellm.ai/docs/proxy/guardrails/quick_start"
+        }
+      ]
+    },
+    {
+      "id": "src-docs-a2dceda76218",
+      "canonical_locator": "https://domainstorytelling.org/requirements",
+      "transport_locator": "https://domainstorytelling.org/requirements",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Requirements",
+      "author_or_org": "Domain Storytelling",
+      "published_at": null,
+      "registered_at": "2026-08-04",
+      "checked_at": "2026-08-04",
+      "version": "Living page retrieved 2026-08-04",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "method",
+        "comparison",
+        "learning"
+      ],
+      "license": "CC-BY-4.0",
+      "license_scope": "The named Domain Storytelling page within its visible CC BY 4.0 scope; trademarks, third-party icons, books, linked works, tool code and separately licensed media are excluded.",
+      "license_evidence_url": "https://domainstorytelling.org/requirements",
+      "license_evidence_note": "The named page displayed the Domain Storytelling CC BY 4.0 footer when checked on 2026-08-04; separately licensed and third-party material remains excluded.",
+      "license_family_id": "https://domainstorytelling.org/requirements",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "adapt-with-attribution",
+      "usage_boundary": "Supports bridging a Domain Story into requirements and user stories while retaining scenario context; it does not make Domain Storytelling and use cases or user stories equivalent.",
+      "link_policy": "floating",
+      "expected_final_transport_locator": "https://domainstorytelling.org/requirements",
+      "expected_final_approved_at": "2026-08-04",
+      "expected_final_approval_note": "Reviewed the direct Domain Storytelling HTTPS transport and visible CC BY 4.0 footer on 2026-08-04.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://domainstorytelling.org/requirements",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-04T07:10:21.381Z",
+          "last_success_at": "2026-08-04T07:10:21.381Z",
+          "http_status": 206,
+          "final_transport_locator": "https://domainstorytelling.org/requirements"
         }
       ]
     },
@@ -7000,6 +7133,51 @@
           "last_success_at": "2026-08-02T04:33:33.082Z",
           "http_status": 200,
           "final_transport_locator": "https://docs.ros.org/en/jazzy/How-To-Guides/Using-callback-groups.html"
+        }
+      ]
+    },
+    {
+      "id": "src-docs-be2e1512961a",
+      "canonical_locator": "https://domainstorytelling.org/quick-start-guide",
+      "transport_locator": "https://domainstorytelling.org/quick-start-guide",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Domain Storytelling Quick-Start Guide",
+      "author_or_org": "Domain Storytelling",
+      "published_at": null,
+      "registered_at": "2026-08-04",
+      "checked_at": "2026-08-04",
+      "version": "Living page retrieved 2026-08-04",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "method",
+        "learning"
+      ],
+      "license": "CC-BY-4.0",
+      "license_scope": "The named Domain Storytelling page within its visible CC BY 4.0 scope; trademarks, third-party icons, books, linked works, tool code and separately licensed media are excluded.",
+      "license_evidence_url": "https://domainstorytelling.org/quick-start-guide",
+      "license_evidence_note": "The named page displayed the Domain Storytelling CC BY 4.0 footer when checked on 2026-08-04; separately licensed and third-party material remains excluded.",
+      "license_family_id": "https://domainstorytelling.org/quick-start-guide",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "adapt-with-attribution",
+      "usage_boundary": "Supports actors, work objects, activities, sequence numbers, annotations, scope choices, typical-case modeling, workshop participation and replay checks; it does not make a Domain Story a complete requirement, executable process or architecture proof.",
+      "link_policy": "floating",
+      "expected_final_transport_locator": "https://domainstorytelling.org/quick-start-guide",
+      "expected_final_approved_at": "2026-08-04",
+      "expected_final_approval_note": "Reviewed the direct Domain Storytelling HTTPS transport and visible CC BY 4.0 footer on 2026-08-04.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://domainstorytelling.org/quick-start-guide",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-04T07:10:21.381Z",
+          "last_success_at": "2026-08-04T07:10:21.381Z",
+          "http_status": 206,
+          "final_transport_locator": "https://domainstorytelling.org/quick-start-guide"
         }
       ]
     },
@@ -29998,6 +30176,77 @@
           "manifest_primary": false,
           "usage_mode": "facts-summary",
           "attribution_note": "Context Mapping, Avanscoperta",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/modeling/mod-10-domain-storytelling.mdx": {
+      "title": "Domain Storytelling 协作建模",
+      "slug": "/modeling/mod-10",
+      "reviewed_at": "2026-08-04",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-docs-0d3f7c6c1483",
+          "citation_url": "https://domainstorytelling.org/articles/how-to-model-loops/",
+          "roles": [
+            "method",
+            "comparison"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "How to Model Repeating Activities, Domain Storytelling",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-docs-9e1e53a50c3b",
+          "citation_url": "https://domainstorytelling.org/",
+          "roles": [
+            "definition",
+            "learning"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Domain Storytelling, Domain Storytelling",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-docs-a2dceda76218",
+          "citation_url": "https://domainstorytelling.org/requirements",
+          "roles": [
+            "method",
+            "comparison",
+            "learning"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Requirements, Domain Storytelling",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-docs-be2e1512961a",
+          "citation_url": "https://domainstorytelling.org/quick-start-guide",
+          "roles": [
+            "definition",
+            "method",
+            "learning"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Domain Storytelling Quick-Start Guide, Domain Storytelling",
           "modification_note": null,
           "excerpt": null,
           "quotation_reviewed": false
