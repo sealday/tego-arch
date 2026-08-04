@@ -182,6 +182,61 @@ function records(table, expectedHeader) {
   });
 }
 
+function stripHtmlComments(line, state) {
+  let visible = '';
+  let cursor = 0;
+  while (cursor < line.length) {
+    if (state.inComment) {
+      const end = line.indexOf('-->', cursor);
+      if (end === -1) return visible;
+      state.inComment = false;
+      cursor = end + 3;
+      continue;
+    }
+    const start = line.indexOf('<!--', cursor);
+    if (start === -1) return visible + line.slice(cursor);
+    visible += line.slice(cursor, start);
+    const end = line.indexOf('-->', start + 4);
+    if (end === -1) {
+      state.inComment = true;
+      return visible;
+    }
+    cursor = end + 3;
+  }
+  return visible;
+}
+
+function visibleContractLines(body) {
+  const lines = [];
+  const state = {inComment: false};
+  let fence;
+  for (const rawLine of body.split(/\r?\n/u)) {
+    if (fence) {
+      const closing = rawLine.match(/^ {0,3}([`~]{3,})[ \t]*$/u);
+      if (closing && closing[1][0] === fence.marker && closing[1].length >= fence.length) {
+        if (fence.isMermaid) lines.push(rawLine);
+        fence = undefined;
+      } else if (fence.isMermaid) {
+        lines.push(rawLine);
+      }
+      continue;
+    }
+    const line = stripHtmlComments(rawLine, state);
+    const opening = line.match(/^ {0,3}([`~]{3,})([^\r\n]*)$/u);
+    if (opening) {
+      fence = {
+        marker: opening[1][0],
+        length: opening[1].length,
+        isMermaid: opening[2].trim() === 'mermaid',
+      };
+      if (fence.isMermaid) lines.push(line);
+      continue;
+    }
+    lines.push(line);
+  }
+  return lines;
+}
+
 function assertTableContracts(body) {
   const tables = markdownTables(body);
   assert.equal(tables.length, 2, 'MOD-10 must contain exactly two Markdown tables');
@@ -195,7 +250,8 @@ function assertTableContracts(body) {
 }
 
 function storyDiagram(body) {
-  const diagrams = [...body.matchAll(/```mermaid\n([\s\S]*?)\n```/gu)].map((match) => match[1]);
+  const visibleBody = visibleContractLines(body).join('\n');
+  const diagrams = [...visibleBody.matchAll(/```mermaid\n([\s\S]*?)\n```/gu)].map((match) => match[1]);
   assert.equal(diagrams.length, 1, 'MOD-10 must contain exactly one Mermaid diagram');
   assert.match(diagrams[0], /^flowchart LR(?:\n|$)/u);
   return diagrams[0];
@@ -251,16 +307,17 @@ function assertStoryGraphContract(body) {
 }
 
 function wrappers(body) {
-  const openings = [...body.matchAll(/<div\n  className="(diagram-wrapper|table-wrapper table-wrapper--mapping)"\n  role="region"\n  aria-label="([^"]+)"\n  tabIndex=\{0\}\n  onKeyDown=\{handleHorizontalArrowKey\}\n>/gu)];
-  assert.equal([...body.matchAll(/<div\b/gu)].length, 3, 'MOD-10 must have exactly three div openings');
-  assert.equal([...body.matchAll(/<\/div>/gu)].length, 3, 'MOD-10 must have exactly three div closings');
+  const visibleBody = visibleContractLines(body).join('\n');
+  const openings = [...visibleBody.matchAll(/<div\n  className="(diagram-wrapper|table-wrapper table-wrapper--mapping)"\n  role="region"\n  aria-label="([^"]+)"\n  tabIndex=\{0\}\n  onKeyDown=\{handleHorizontalArrowKey\}\n>/gu)];
+  assert.equal([...visibleBody.matchAll(/<div\b/gu)].length, 3, 'MOD-10 must have exactly three div openings');
+  assert.equal([...visibleBody.matchAll(/<\/div>/gu)].length, 3, 'MOD-10 must have exactly three div closings');
   return openings.map((opening) => {
     const contentStart = opening.index + opening[0].length;
-    const contentEnd = body.indexOf('</div>', contentStart);
+    const contentEnd = visibleBody.indexOf('</div>', contentStart);
     assert.notEqual(contentEnd, -1, `unclosed wrapper: ${opening[2]}`);
-    const nextOpening = body.indexOf('<div', contentStart);
+    const nextOpening = visibleBody.indexOf('<div', contentStart);
     assert.ok(nextOpening === -1 || nextOpening > contentEnd, `nested or prematurely closed wrapper: ${opening[2]}`);
-    return {className: opening[1], label: opening[2], content: body.slice(contentStart, contentEnd).trim()};
+    return {className: opening[1], label: opening[2], content: visibleBody.slice(contentStart, contentEnd).trim()};
   });
 }
 
@@ -275,7 +332,7 @@ function assertInteractionContract(body) {
     'table-wrapper table-wrapper--mapping',
   ]);
   assert.equal(new Set(regions.map(({label}) => label)).size, 3, 'wrapper labels must be unique');
-  assert.equal([...body.matchAll(/className="(?:diagram-wrapper|table-wrapper table-wrapper--mapping)"/gu)].length, 3, 'no unvalidated overflow wrappers');
+  assert.equal([...visibleContractLines(body).join('\n').matchAll(/className="(?:diagram-wrapper|table-wrapper table-wrapper--mapping)"/gu)].length, 3, 'no unvalidated overflow wrappers');
   const storyTables = markdownTables(regions[0].content);
   assert.equal(storyTables.length, 1, 'story wrapper must contain exactly the story table');
   assert.deepEqual(records(storyTables[0], ['序号', '主体 actor', 'activity', 'work object', '协作 actor', '证据说明']), expectedStoryRows);
@@ -339,6 +396,17 @@ function hideMarkdownTable(body, headerStart, mode) {
   return body.replace(
     pattern,
     mode === 'fence' ? '```text\n$1\n```' : '<!--\n$1\n-->',
+  );
+}
+
+function hideWrapper(body, label, mode) {
+  const pattern = new RegExp(
+    `(<div\\n  className="(?:diagram-wrapper|table-wrapper table-wrapper--mapping)"\\n  role="region"\\n  aria-label="${label}"\\n  tabIndex=\\{0\\}\\n  onKeyDown=\\{handleHorizontalArrowKey\\}\\n>\\n\\n[\\s\\S]*?\\n\\n<\\/div>)`,
+    'u',
+  );
+  return body.replace(
+    pattern,
+    mode === 'fence' ? '````text\n$1\n````' : '<!--\n$1\n-->',
   );
 }
 
@@ -477,5 +545,13 @@ test('rejects review regressions that the original contract missed', () => {
     ['comparison table hidden comment', hideMarkdownTable(body, '模型', 'comment')],
   ]) {
     assert.throws(() => assertTableContracts(mutation), {name: 'AssertionError'}, label);
+  }
+
+  for (const [label, mutation] of [
+    ['diagram wrapper hidden in outer fence', hideWrapper(body, expectedWrapperLabels[1], 'fence')],
+    ['diagram wrapper hidden in comment', hideWrapper(body, expectedWrapperLabels[1], 'comment')],
+  ]) {
+    assert.throws(() => assertInteractionContract(mutation), {name: 'AssertionError'}, label);
+    assert.throws(() => assertStoryGraphContract(mutation), {name: 'AssertionError'}, `${label}: graph visibility`);
   }
 });
