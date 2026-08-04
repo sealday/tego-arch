@@ -434,6 +434,10 @@ function assertRelationContract(content, peers) {
   }
   assert.equal(links.filter((href) => href === '/modeling/mod-10').length, 1);
   assert.match(content.body, /Domain Storytelling[^。\n]*可以组合[^。\n]*不是替代关系[^。\n]*没有严格的元素映射/u);
+  const mod10 = peers.get('MOD-10');
+  assert.ok(content.metadata.adjacent_topics.includes('MOD-10'), 'MOD-09 -> MOD-10 adjacency');
+  assert.ok(mod10.metadata.adjacent_topics.includes('MOD-09'), 'MOD-10 -> MOD-09 adjacency');
+  assert.equal(extractInternalLinks(mod10).filter((href) => href === '/modeling/mod-09').length, 1, 'MOD-10 -> MOD-09 backlink');
 }
 
 function assertStageBProjection(projectStatus, topicIndexes, content) {
@@ -581,6 +585,19 @@ test('connects MOD-09 and its published reciprocal modeling relations', () => {
       {name: 'AssertionError'},
       `${id} deleted visible backlink`,
     );
+  }
+  for (const [label, mutateContent, mutateMod10] of [
+    ['MOD-09 adjacency', (value) => { value.metadata.adjacent_topics = value.metadata.adjacent_topics.filter((id) => id !== 'MOD-10'); }],
+    ['MOD-09 backlink', (value) => { value.body = value.body.replace('/modeling/mod-10', '/modeling'); }],
+    ['MOD-09 semantics', (value) => { value.body = value.body.replace('可以组合，但不是替代关系，两种协作方法之间没有严格的元素映射', '可以相互替代'); }],
+    ['MOD-10 adjacency', undefined, (value) => { value.metadata.adjacent_topics = value.metadata.adjacent_topics.filter((id) => id !== 'MOD-09'); }],
+    ['MOD-10 backlink', undefined, (value) => { value.body = value.body.replaceAll('/modeling/mod-09', '/modeling'); }],
+  ]) {
+    const mutatedContent = structuredClone(content);
+    const peers = structuredClone(documentsById);
+    mutateContent?.(mutatedContent);
+    mutateMod10?.(peers.get('MOD-10'));
+    assert.throws(() => assertRelationContract(mutatedContent, peers), {name: 'AssertionError'}, label);
   }
 });
 

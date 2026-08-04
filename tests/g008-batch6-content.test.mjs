@@ -381,6 +381,16 @@ function horizontalArrowEvent({clientWidth = 100, scrollWidth = 300} = {}) {
   };
 }
 
+function assertMod10ReciprocalRelation(peers) {
+  const mod08 = peers.get('MOD-08');
+  const mod10 = peers.get('MOD-10');
+  assert.ok(mod08.metadata.adjacent_topics.includes('MOD-10'));
+  assert.ok(mod10.metadata.adjacent_topics.includes('MOD-08'));
+  assert.equal(extractInternalLinks(mod08).filter((href) => href === '/modeling/mod-10').length, 1);
+  assert.equal(extractInternalLinks(mod10).filter((href) => href === '/modeling/mod-08').length, 1);
+  assert.match(mod08.body, /重要的 Domain Story 变体[^。\n]*状态、终态与恢复语义/u);
+}
+
 test('publishes MOD-08 with the approved metadata and structure', () => {
   const content = requiredDocument();
   assert.equal(content.metadata.topic_id, 'MOD-08');
@@ -481,6 +491,7 @@ test('governs the five exact MOD-08 sources and exposes every canonical locator'
 });
 
 test('connects MOD-08 reciprocally and hands off to published MOD-09', () => {
+  assertMod10ReciprocalRelation(documentsById);
   const links = new Set(extractInternalLinks(requiredDocument()));
   for (const href of [
     '/modeling',
@@ -503,6 +514,20 @@ test('connects MOD-08 reciprocally and hands off to published MOD-09', () => {
     assert.ok(extractInternalLinks(peer).includes('/modeling/mod-08'), `${id} visible link`);
   }
   assert.doesNotMatch(documentsById.get('MOD-07').body, /MOD-08[^。\n]*仍未发布/u);
+});
+
+test('rejects MOD-08/MOD-10 reciprocal relation mutations', () => {
+  for (const [label, mutate] of [
+    ['MOD-08 adjacency', (mod08) => { mod08.metadata.adjacent_topics = mod08.metadata.adjacent_topics.filter((id) => id !== 'MOD-10'); }],
+    ['MOD-08 backlink', (mod08) => { mod08.body = mod08.body.replace('/modeling/mod-10', '/modeling'); }],
+    ['MOD-08 semantics', (mod08) => { mod08.body = mod08.body.replace('状态、终态与恢复语义', '一般说明'); }],
+    ['MOD-10 adjacency', (_mod08, mod10) => { mod10.metadata.adjacent_topics = mod10.metadata.adjacent_topics.filter((id) => id !== 'MOD-08'); }],
+    ['MOD-10 backlink', (_mod08, mod10) => { mod10.body = mod10.body.replaceAll('/modeling/mod-08', '/modeling'); }],
+  ]) {
+    const peers = structuredClone(documentsById);
+    mutate(peers.get('MOD-08'), peers.get('MOD-10'));
+    assert.throws(() => assertMod10ReciprocalRelation(peers), {name: 'AssertionError'}, label);
+  }
 });
 
 test('locks the authoritative immutable G008 Batch 6 Stage B projection', () => {

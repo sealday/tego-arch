@@ -17,6 +17,9 @@ const documents = await readContentDocuments(contentRoot);
 const document = documents.find(
   ({file}) => file === 'modeling/mod-10-domain-storytelling.mdx',
 );
+const documentsById = new Map(
+  documents.map((content) => [content.metadata.topic_id, content]),
+);
 const ledger = JSON.parse(
   await readFile(new URL('../data/source-ledger.json', import.meta.url), 'utf8'),
 );
@@ -371,7 +374,7 @@ function assertWorkshopAndNonProofContracts(body) {
   for (const sentence of nonProofSentences) assert.ok(completion.includes(sentence), sentence);
 }
 
-function assertScopeAndRelations(body) {
+function assertScopeAndRelations(body, peers = documentsById) {
   const inputs = visibleSection(body, '建模目标与输入');
   assert.ok(inputs.includes(scopeSentence), scopeSentence);
   assert.ok(inputs.includes(nameAuthoritySentence), nameAuthoritySentence);
@@ -382,6 +385,18 @@ function assertScopeAndRelations(body) {
   for (const id of ['MOD-11', 'MOD-12', 'MOD-13']) {
     assert.ok(!links.includes(`/modeling/${id.toLowerCase()}`), `${id} must remain non-actionable`);
   }
+  const mod08 = peers.get('MOD-08');
+  const mod09 = peers.get('MOD-09');
+  const mod10 = peers.get('MOD-10');
+  for (const [peer, peerId] of [[mod08, 'MOD-08'], [mod09, 'MOD-09']]) {
+    assert.ok(peer, `${peerId} must be published`);
+    assert.ok(peer.metadata.adjacent_topics.includes('MOD-10'), `${peerId} -> MOD-10 adjacency`);
+    assert.equal(extractInternalLinks(peer).filter((href) => href === '/modeling/mod-10').length, 1, `${peerId} -> MOD-10 backlink`);
+    assert.ok(mod10.metadata.adjacent_topics.includes(peerId), `MOD-10 -> ${peerId} adjacency`);
+    assert.equal(links.filter((href) => href === `/modeling/${peerId.toLowerCase()}`).length, 1, `MOD-10 -> ${peerId} backlink`);
+  }
+  assert.match(mod08.body, /重要的 Domain Story 变体[^。\n]*状态、终态与恢复语义/u);
+  assert.match(mod09.body, /Domain Storytelling[^。\n]*可以组合[^。\n]*不是替代关系[^。\n]*没有严格的元素映射/u);
 }
 
 function assertSourceGovernance(ledgerData, content) {
@@ -528,8 +543,68 @@ test('states the narrow story scope and required modeling relations', () => {
   assertScopeAndRelations(requiredDocument().body);
 });
 
+test('rejects reciprocal relation regressions on every MOD-08/MOD-09/MOD-10 side', () => {
+  for (const peerId of ['MOD-08', 'MOD-09']) {
+    const peer = documentsById.get(peerId);
+    const withoutPeerAdjacency = new Map(documentsById);
+    withoutPeerAdjacency.set(peerId, {
+      ...peer,
+      metadata: {...peer.metadata, adjacent_topics: peer.metadata.adjacent_topics.filter((id) => id !== 'MOD-10')},
+    });
+    assert.throws(() => assertScopeAndRelations(requiredDocument().body, withoutPeerAdjacency), {name: 'AssertionError'}, `${peerId} deleted MOD-10 adjacency`);
+
+    const withoutPeerBacklink = new Map(documentsById);
+    withoutPeerBacklink.set(peerId, {...peer, body: peer.body.replace('/modeling/mod-10', '/modeling')});
+    assert.throws(() => assertScopeAndRelations(requiredDocument().body, withoutPeerBacklink), {name: 'AssertionError'}, `${peerId} deleted MOD-10 backlink`);
+
+    const withoutMod10Adjacency = new Map(documentsById);
+    withoutMod10Adjacency.set('MOD-10', {
+      ...requiredDocument(),
+      metadata: {...requiredDocument().metadata, adjacent_topics: requiredDocument().metadata.adjacent_topics.filter((id) => id !== peerId)},
+    });
+    assert.throws(() => assertScopeAndRelations(requiredDocument().body, withoutMod10Adjacency), {name: 'AssertionError'}, `MOD-10 deleted ${peerId} adjacency`);
+
+    assert.throws(
+      () => assertScopeAndRelations(requiredDocument().body.replaceAll(`/modeling/${peerId.toLowerCase()}`, '/modeling')),
+      {name: 'AssertionError'},
+      `MOD-10 deleted ${peerId} backlink`,
+    );
+  }
+
+  const weakenedMod08 = new Map(documentsById);
+  const mod08 = weakenedMod08.get('MOD-08');
+  weakenedMod08.set('MOD-08', {...mod08, body: mod08.body.replace('状态、终态与恢复语义', '一般说明')});
+  assert.throws(() => assertScopeAndRelations(requiredDocument().body, weakenedMod08), {name: 'AssertionError'}, 'weakened MOD-08 reciprocal semantics');
+
+  const weakenedMod09 = new Map(documentsById);
+  const mod09 = weakenedMod09.get('MOD-09');
+  weakenedMod09.set('MOD-09', {...mod09, body: mod09.body.replace('可以组合，但不是替代关系，两种协作方法之间没有严格的元素映射', '可以相互替代')});
+  assert.throws(() => assertScopeAndRelations(requiredDocument().body, weakenedMod09), {name: 'AssertionError'}, 'weakened MOD-09 reciprocal semantics');
+});
+
 test('governs the four exact MOD-10 sources and citation boundaries', () => {
   assertSourceGovernance(ledger, requiredDocument());
+  for (const definition of sourceDefinitions) {
+    for (const [label, mutate] of [
+      ['identity', (source) => { source.id = `${source.id}-changed`; }],
+      ['license', (source) => { source.license = 'LicenseRef-All-Rights-Reserved'; }],
+      ['roles', (source) => { source.allowed_evidence_roles = ['learning']; }],
+      ['boundary', (source) => { source.usage_boundary = 'Boundary weakened.'; }],
+    ]) {
+      const mutated = structuredClone(ledger);
+      mutate(mutated.sources.find(({id}) => id === definition.id));
+      assert.throws(() => assertSourceGovernance(mutated, requiredDocument()), {name: 'AssertionError'}, `${definition.id} ${label}`);
+    }
+    for (const [label, mutate] of [
+      ['citation', (citation) => { citation.attribution_note = 'Changed attribution'; }],
+      ['primary', (citation) => { citation.manifest_primary = !citation.manifest_primary; }],
+    ]) {
+      const mutated = structuredClone(ledger);
+      const citation = mutated.documents['content/modeling/mod-10-domain-storytelling.mdx'].citations.find(({source_id}) => source_id === definition.id);
+      mutate(citation);
+      assert.throws(() => assertSourceGovernance(mutated, requiredDocument()), {name: 'AssertionError'}, `${definition.id} ${label}`);
+    }
+  }
 });
 
 test('rejects controlled article mutations', () => {

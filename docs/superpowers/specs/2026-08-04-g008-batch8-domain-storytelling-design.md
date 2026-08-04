@@ -219,13 +219,15 @@ Mermaid 只表达 Domain Story 的教学语法，不使用 sequence diagram、BP
 MOD-10 metadata 固定为：
 
 - `depends_on: [MOD-01, MOD-02, MOD-09]`
-- `adjacent_topics: [MOD-08]`
-- `related_cases: []`
+- `adjacent_topics: [MOD-08, MOD-09]`
+- `related_cases: [/cases/temporal-saga-durable-execution]`
 - `related_questions: []`
+
+这是对已批准 metadata 的最小修订：既有知识内容合同要求 `related_cases` 或 `related_questions` 至少保留一个 terminal relation，而发布关系清单要求 adjacency 在 manifest 中互为 reciprocal。选用已存在的 Temporal Saga 案例只作为超时、重试、补偿与人工收敛的受限后续检验，不为 Domain Story 增加正式执行语义；将 MOD-09 加入 `adjacent_topics` 只表达两种协作方法的双向衔接，不改变二者不可替代且没有严格元素映射的边界。
 
 发布时必须添加并测试以下可见关系：
 
-- MOD-10 链接到 `/modeling`、MOD-01、MOD-02、MOD-08 和 MOD-09；
+- MOD-10 链接到 `/modeling`、MOD-01、MOD-02、MOD-08、MOD-09 和现有 Temporal Saga terminal case；
 - MOD-08 新增 MOD-10 reciprocal adjacency，并说明状态机适合细化重要变体的状态、终态和恢复语义；
 - MOD-09 新增 MOD-10 reciprocal adjacency，并说明 EventStorming 与 Domain Storytelling 可以组合，但不能相互替代；
 - MOD-01 提供模型选择和问题空间非证明边界；

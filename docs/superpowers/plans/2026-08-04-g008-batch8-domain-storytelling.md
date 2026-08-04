@@ -4,7 +4,7 @@
 
 **Goal:** Publish MOD-10 as an evidence-bounded Domain Storytelling guide built around one digitalized as-is expense-payment story, compare it precisely with process diagrams, use cases and EventStorming, then deploy and close only MOD-10.
 
-**Architecture:** One original six-sentence Domain Story reuses three actors across six activity-specific work-object instances, while a sentence table is the accessible semantic equivalent and a four-row comparison table prevents false model equivalence. The article adds four governed CC BY 4.0 Domain Storytelling sources, reciprocal MOD-08/MOD-09 links and a dedicated nine-heading schema; MOD-02 remains authoritative for the system boundary and “银行支付服务”, and MOD-11 stays unpublished and unlinked.
+**Architecture:** One original six-sentence Domain Story reuses three actors across six activity-specific work-object instances, while a sentence table is the accessible semantic equivalent and a four-row comparison table prevents false model equivalence. The article adds four governed CC BY 4.0 Domain Storytelling sources, reciprocal MOD-08/MOD-09 links, the existing Temporal Saga case as its bounded terminal relation, and a dedicated nine-heading schema; MOD-02 remains authoritative for the system boundary and “银行支付服务”, and MOD-11 stays unpublished and unlinked. MOD-09 is included in MOD-10 `adjacent_topics` to satisfy the existing reciprocal manifest contract; the terminal case satisfies the existing related-case-or-question OR gate without adding execution semantics to the Domain Story.
 
 **Tech Stack:** Docusaurus MDX, Mermaid `flowchart`, Markdown tables, Node.js 26.5.0, `node:test`, generated JSON, governed source ledger and committed link-health cache, GitHub Pages.
 
@@ -60,8 +60,8 @@ assert.deepEqual(document.metadata.tags, [
   '模型比较',
 ]);
 assert.deepEqual(document.metadata.depends_on, ['MOD-01', 'MOD-02', 'MOD-09']);
-assert.deepEqual(document.metadata.adjacent_topics, ['MOD-08']);
-assert.deepEqual(document.metadata.related_cases, []);
+assert.deepEqual(document.metadata.adjacent_topics, ['MOD-08', 'MOD-09']);
+assert.deepEqual(document.metadata.related_cases, ['/cases/temporal-saga-durable-execution']);
 assert.deepEqual(document.metadata.related_questions, []);
 assert.deepEqual(
   document.headings.filter(({level}) => level === 2).map(({text}) => text),
@@ -348,7 +348,9 @@ depends_on:
   - MOD-09
 adjacent_topics:
   - MOD-08
-related_cases: []
+  - MOD-09
+related_cases:
+  - /cases/temporal-saga-durable-execution
 related_questions: []
 ---
 
@@ -357,7 +359,7 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 
 Use exactly the nine H2s from Step 1. Put the Mermaid from Step 3 in one `diagram-wrapper` with `role="region"`, `aria-label="费用支付 Domain Story，可横向滚动"`, `tabIndex={0}` and `onKeyDown={handleHorizontalArrowKey}`. Put each exact table from Steps 2 and 4 in its own `table-wrapper table-wrapper--mapping` using the same role/tab/handler and unique labels `费用支付故事句子表，可横向滚动` and `Domain Storytelling 四模型比较表，可横向滚动`.
 
-The prose must state the scope as one narrow, digitalized, as-is, typical/80% payment story; preserve MOD-02 and MOD-08 authority; explain actor/work object/activity/sequence number/annotation; include the seven steps, annotation rule and eight non-proof sentences verbatim; and visibly link `/modeling`, `/modeling/mod-01`, `/modeling/mod-02`, `/modeling/mod-08` and `/modeling/mod-09`. Mention MOD-11 only as plain text.
+The prose must state the scope as one narrow, digitalized, as-is, typical/80% payment story; preserve MOD-02 and MOD-08 authority; explain actor/work object/activity/sequence number/annotation; include the seven steps, annotation rule and eight non-proof sentences verbatim; and visibly link `/modeling`, `/modeling/mod-01`, `/modeling/mod-02`, `/modeling/mod-08`, `/modeling/mod-09` and `/cases/temporal-saga-durable-execution`. The existing Temporal Saga case is only the terminal relation required by the repository's related-case-or-question OR gate and does not add formal execution semantics to the story. Mention MOD-11 only as plain text.
 
 - [ ] **Step 8: Add accessibility and mutation tests**
 
