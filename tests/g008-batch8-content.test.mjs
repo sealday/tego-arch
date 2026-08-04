@@ -160,7 +160,7 @@ function sectionBody(body, heading) {
 function markdownTables(body) {
   const tables = [];
   let current = [];
-  for (const line of body.split('\n')) {
+  for (const line of visibleMdxLines({body})) {
     if (/^\|.+\|$/u.test(line)) {
       current.push(line.slice(1, -1).split('|').map((cell) => cell.trim()));
     } else if (current.length > 0) {
@@ -334,6 +334,14 @@ function moveWrapperContentOutside(body, label, placement = 'after') {
   );
 }
 
+function hideMarkdownTable(body, headerStart, mode) {
+  const pattern = new RegExp(`(^\\| ${headerStart} \\|[\\s\\S]*?)(?=\\n\\n<\\/div>)`, 'mu');
+  return body.replace(
+    pattern,
+    mode === 'fence' ? '```text\n$1\n```' : '<!--\n$1\n-->',
+  );
+}
+
 test('publishes MOD-10 with the approved metadata and H2 sequence', () => {
   assertPublicationContract(requiredDocument().source);
 });
@@ -460,5 +468,14 @@ test('rejects review regressions that the original contract missed', () => {
     ['non-proof hidden fence', body.replace(nonProofSentences[3], `\`\`\`text\n${nonProofSentences[3]}\n\`\`\``)],
   ]) {
     assert.throws(() => assertWorkshopAndNonProofContracts(mutation), {name: 'AssertionError'}, label);
+  }
+
+  for (const [label, mutation] of [
+    ['story table hidden fence', hideMarkdownTable(body, '序号', 'fence')],
+    ['story table hidden comment', hideMarkdownTable(body, '序号', 'comment')],
+    ['comparison table hidden fence', hideMarkdownTable(body, '模型', 'fence')],
+    ['comparison table hidden comment', hideMarkdownTable(body, '模型', 'comment')],
+  ]) {
+    assert.throws(() => assertTableContracts(mutation), {name: 'AssertionError'}, label);
   }
 });
