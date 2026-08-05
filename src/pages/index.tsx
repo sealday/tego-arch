@@ -144,27 +144,27 @@ function RoadmapSection(): ReactNode {
               alt="Tego Arch 初版发布路线图：从基线与知识主干走向完整初版发布"
             />
           </div>
-          <figcaption className={styles.roadmapMeta}>
-            <span>初版路线图 · 2026-08-05 快照</span>
-            <div className={styles.roadmapDesktopInfo}>
-              <button
-                type="button"
-                className={styles.roadmapInfoControl}
-                aria-describedby="roadmap-status-note">
-                状态与图例说明
-              </button>
-              <div id="roadmap-status-note" role="note" className={styles.roadmapInfoPanel}>
-                <RoadmapStatusContent />
-              </div>
+          <div className={styles.roadmapDesktopInfo}>
+            <button
+              type="button"
+              className={styles.roadmapInfoControl}
+              aria-describedby="roadmap-status-note">
+              状态与图例说明
+            </button>
+            <div id="roadmap-status-note" role="note" className={styles.roadmapInfoPanel}>
+              <RoadmapStatusContent />
             </div>
-            <a href={roadmapSrc} target="_blank" rel="noreferrer" className={styles.roadmapLargeLink}>
-              查看大图 <span aria-hidden="true">↗</span>
-            </a>
-          </figcaption>
+          </div>
           <details className={styles.roadmapMobileDetails}>
             <summary>关于这张路线图</summary>
             <div><RoadmapStatusContent /></div>
           </details>
+          <figcaption className={styles.roadmapMeta}>
+            <span>初版路线图 · 2026-08-05 快照</span>
+            <a href={roadmapSrc} target="_blank" rel="noreferrer" className={styles.roadmapLargeLink}>
+              查看大图 <span aria-hidden="true">↗</span>
+            </a>
+          </figcaption>
         </figure>
       </div>
     </section>

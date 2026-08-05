@@ -251,11 +251,33 @@ test('keeps hero labels, focused secondary actions, and focus indicators contras
 test('forbids decorative effects and oversized ordinary radii in homepage styles', async () => {
   const styles = await read('src/pages/index.module.css');
   assert.doesNotMatch(styles, /\b(?:backdrop-filter|filter|box-shadow|text-shadow)\s*:/iu);
-  const stylesWithoutRoadmapFeather = styles.replace(
-    /\.roadmapMedia::after\s*\{[\s\S]*?\}/u,
-    '',
+  const featherSelector = '.roadmapMedia::after';
+  const featherBlock = cssBlock(styles, featherSelector);
+  const featherBackgrounds = [...featherBlock.matchAll(/(?:^|\n)\s*background\s*:/gu)];
+  assert.equal(featherBackgrounds.length, 1, 'roadmap feather must have one background declaration');
+
+  const featherBackgroundDeclaration = featherBlock.match(
+    /(?:^|\n)(\s*background:\s*[^;]+;)/u,
   );
-  assert.doesNotMatch(stylesWithoutRoadmapFeather, /\b[\w-]*gradient\s*\(/iu);
+  assert.ok(featherBackgroundDeclaration, 'roadmap feather background declaration must be parseable');
+  const featherBackground = declaration(featherBlock, 'background').replace(/\s+/gu, ' ');
+  assert.equal(
+    featherBackground,
+    'linear-gradient(90deg, var(--atlas-paper) 0, transparent 7%, transparent 93%, var(--atlas-paper) 100%), ' +
+      'linear-gradient(var(--atlas-paper) 0, transparent 9%, transparent 90%, var(--atlas-paper) 100%)',
+  );
+  assert.equal([...featherBackground.matchAll(/linear-gradient\(/gu)].length, 2);
+  assert.doesNotMatch(featherBackground, /(?:radial|conic)-gradient\(/u);
+
+  const featherStart = styles.indexOf(featherSelector);
+  const featherOpen = styles.indexOf('{', featherStart + featherSelector.length);
+  const declarationOffset = featherBackgroundDeclaration.index +
+    featherBackgroundDeclaration[0].length - featherBackgroundDeclaration[1].length;
+  const declarationStart = featherOpen + 1 + declarationOffset;
+  const declarationEnd = declarationStart + featherBackgroundDeclaration[1].length;
+  const stylesWithoutRoadmapFeatherBackground =
+    styles.slice(0, declarationStart) + styles.slice(declarationEnd);
+  assert.doesNotMatch(stylesWithoutRoadmapFeatherBackground, /\b[\w-]*gradient\s*\(/iu);
 
   for (const match of styles.matchAll(/([^{}]+)\{([^{}]*)\}/gu)) {
     const selector = match[1].trim();
@@ -311,6 +333,26 @@ test('keeps roadmap details available without forcing them into the reading flow
   assert.match(styles, /\.roadmapMedia::after/u);
   assert.match(styles, /\.roadmapDesktopInfo:hover[\s\S]*\.roadmapInfoPanel/u);
   assert.match(styles, /\.roadmapDesktopInfo:focus-within[\s\S]*\.roadmapInfoPanel/u);
+  assert.equal(declaration(cssBlock(styles, '.roadmapInfoPanel'), 'visibility'), 'hidden');
+  const visiblePanel = cssBlock(
+    styles,
+    '.roadmapDesktopInfo:hover .roadmapInfoPanel,\n.roadmapDesktopInfo:focus-within .roadmapInfoPanel',
+  );
+  assert.equal(declaration(visiblePanel, 'visibility'), 'visible');
+  const hoverBridge = cssBlock(styles, '.roadmapInfoPanel::after');
+  assert.equal(declaration(hoverBridge, 'bottom'), '-0.75rem');
+  assert.equal(declaration(hoverBridge, 'height'), '0.75rem');
+  assert.doesNotMatch(hoverBridge, /\b(?:background|border|box-shadow)\s*:/u);
   assert.doesNotMatch(cssBlock(styles, '.roadmapMedia'), /\bborder\s*:/u);
   assert.doesNotMatch(cssBlock(styles, '.roadmapInfoPanel'), /\bbox-shadow\s*:/u);
+
+  const figure = homepage.match(
+    /<figure className=\{styles\.roadmapFigure\}>([\s\S]*?)\n\s*<\/figure>/u,
+  );
+  assert.ok(figure, 'roadmap figure must remain statically inspectable');
+  assert.match(figure[1].trim(), /<figcaption className=\{styles\.roadmapMeta\}>[\s\S]*<\/figcaption>$/u);
+  assert.ok(
+    figure[1].indexOf('roadmapMobileDetails') < figure[1].indexOf('<figcaption'),
+    'mobile disclosure must precede the final figcaption',
+  );
 });

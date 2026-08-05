@@ -235,6 +235,7 @@
 }
 
 .roadmapFigure {
+  position: relative;
   max-width: 68rem;
   margin: 0 auto;
 }
@@ -274,8 +275,9 @@
 }
 
 .roadmapDesktopInfo {
-  position: relative;
-  margin-left: auto;
+  position: absolute;
+  right: 0;
+  bottom: 0;
 }
 
 .roadmapInfoControl {
@@ -306,7 +308,20 @@
   opacity: 0;
   pointer-events: none;
   transform: translateY(0.35rem);
-  transition: opacity 140ms ease, transform 140ms ease;
+  visibility: hidden;
+  transition:
+    visibility 0s linear 140ms,
+    opacity 140ms ease,
+    transform 140ms ease;
+}
+
+.roadmapInfoPanel::after {
+  position: absolute;
+  right: 0;
+  bottom: -0.75rem;
+  width: 100%;
+  height: 0.75rem;
+  content: '';
 }
 
 .roadmapInfoPanel p,
@@ -319,6 +334,8 @@
   opacity: 1;
   pointer-events: auto;
   transform: translateY(0);
+  visibility: visible;
+  transition-delay: 0s;
 }
 
 .roadmapMobileDetails,
