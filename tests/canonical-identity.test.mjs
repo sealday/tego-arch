@@ -40,7 +40,7 @@ test('uses Tego Arch as the canonical active project identity', async () => {
   assert.equal(packageLock.packages[''].name, 'tego-arch');
   assert.match(intro, /title: Tego Arch/u);
   assert.match(intro, /# Tego Arch/u);
-  assert.match(homepage, /软件架构知识图谱/u);
+  assert.match(homepage, /Tego Arch \/ 架构决策观察/u);
   assert.equal(existsSync(new URL('../static/CNAME', import.meta.url)), false);
   assert.doesNotMatch(
     [config, homepage, crawler, inventory, ledger].join('\n'),

@@ -242,7 +242,7 @@ test('provides the shared Chinese source-kind labels for catalog consumers', () 
   });
 });
 
-test('derives homepage case-series visibility from the generated registry', async () => {
+test('keeps homepage series flags while sourcing research highlights from featured cases', async () => {
   assert.deepEqual(
     caseSeries.filter(({show_on_homepage}) => show_on_homepage).map(({id}) => id),
     ['classic-distributed', 'frontend-architecture', 'edge-physical'],
@@ -252,9 +252,16 @@ test('derives homepage case-series visibility from the generated registry', asyn
     new URL('../src/pages/index.tsx', import.meta.url),
     'utf8',
   );
-  assert.match(homepage, /caseSeries\.filter\(\(\{show_on_homepage\}\) => show_on_homepage\)/);
-  assert.match(homepage, /homepageSeries\.has\(series\)/);
-  assert.doesNotMatch(homepage, /migrationSeries\s*=/);
+  assert.match(
+    homepage,
+    /import \{featuredCases\} from '@site\/src\/data\/caseCatalog';/u,
+  );
+  assert.match(homepage, /const homepageCases = featuredCases\.slice\(0, 3\);/u);
+  assert.match(
+    homepage,
+    /function ResearchHighlights\(\)[\s\S]*homepageCases\[0\][\s\S]*homepageCases\.slice\(1\)/u,
+  );
+  assert.doesNotMatch(homepage, /migrationSeries|homepageSeries|groupCases/u);
 });
 
 test('rejects prototype-inherited names as generated catalog series', () => {
