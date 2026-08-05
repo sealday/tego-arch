@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2026-08-05T00:00:00.000Z" agent="Codex" version="24.7.17" type="device">
+  <diagram id="mod12-problem" name="Page-1">
+    <mxGraphModel dx="1200" dy="840" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="840" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="background" value="" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#F6F1E7;strokeColor=none;" vertex="1" parent="1"><mxGeometry x="0" y="0" width="1200" height="840" as="geometry"/></mxCell>
+        <mxCell id="title" value="费用平台架构图" style="text;html=0;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=36;fontStyle=1;fontColor=#263238;" vertex="1" parent="1"><mxGeometry x="40" y="24" width="1120" height="64" as="geometry"/></mxCell>
+        <mxCell id="system-boundary" value="" style="rounded=1;arcSize=8;whiteSpace=wrap;html=0;fillColor=#EEF3ED;strokeColor=#64806B;strokeWidth=3;dashed=1;dashPattern=8 6;" vertex="1" parent="1"><mxGeometry x="180" y="140" width="950" height="500" as="geometry"/></mxCell>
+
+        <mxCell id="employee" value="员工" style="rounded=1;arcSize=14;whiteSpace=wrap;html=0;fillColor=#ECE8E1;strokeColor=#77716A;strokeWidth=2;fontSize=24;fontStyle=1;verticalAlign=top;spacingTop=24;" vertex="1" parent="1"><mxGeometry x="40" y="300" width="150" height="96" as="geometry"/></mxCell>
+        <mxCell id="employee-type" value="PERSON" style="text;html=0;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=15;fontStyle=1;fontColor=#55514B;" vertex="1" parent="1"><mxGeometry x="56" y="358" width="118" height="22" as="geometry"/></mxCell>
+        <mxCell id="web" value="Web 应用" style="rounded=1;arcSize=14;whiteSpace=wrap;html=0;fillColor=#D9E5DA;strokeColor=#64806B;strokeWidth=2;fontSize=24;fontStyle=1;verticalAlign=top;spacingTop=27;" vertex="1" parent="1"><mxGeometry x="240" y="260" width="160" height="104" as="geometry"/></mxCell>
+        <mxCell id="web-type" value="CONTAINER" style="text;html=0;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=15;fontStyle=1;fontColor=#55514B;" vertex="1" parent="1"><mxGeometry x="256" y="324" width="128" height="22" as="geometry"/></mxCell>
+        <mxCell id="api" value="申报 API" style="rounded=1;arcSize=14;whiteSpace=wrap;html=0;fillColor=#D9E5DA;strokeColor=#64806B;strokeWidth=2;fontSize=24;fontStyle=1;verticalAlign=top;spacingTop=27;" vertex="1" parent="1"><mxGeometry x="470" y="260" width="160" height="104" as="geometry"/></mxCell>
+        <mxCell id="api-type" value="CONTAINER" style="text;html=0;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=15;fontStyle=1;fontColor=#55514B;" vertex="1" parent="1"><mxGeometry x="486" y="324" width="128" height="22" as="geometry"/></mxCell>
+        <mxCell id="database" value="申报数据库" style="shape=cylinder3;whiteSpace=wrap;html=0;boundedLbl=1;backgroundOutline=1;size=13;fillColor=#E8E1CF;strokeColor=#8B7855;strokeWidth=2;fontSize=24;fontStyle=1;verticalAlign=top;spacingTop=27;" vertex="1" parent="1"><mxGeometry x="470" y="460" width="160" height="104" as="geometry"/></mxCell>
+        <mxCell id="database-type" value="DATA STORE" style="text;html=0;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=15;fontStyle=1;fontColor=#55514B;" vertex="1" parent="1"><mxGeometry x="486" y="524" width="128" height="22" as="geometry"/></mxCell>
+        <mxCell id="payment-worker" value="支付任务执行器" style="rounded=1;arcSize=14;whiteSpace=wrap;html=0;fillColor=#D9E5DA;strokeColor=#64806B;strokeWidth=2;fontSize=24;fontStyle=1;verticalAlign=top;spacingTop=27;" vertex="1" parent="1"><mxGeometry x="700" y="260" width="180" height="104" as="geometry"/></mxCell>
+        <mxCell id="payment-worker-type" value="CONTAINER" style="text;html=0;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=15;fontStyle=1;fontColor=#55514B;" vertex="1" parent="1"><mxGeometry x="716" y="324" width="148" height="22" as="geometry"/></mxCell>
+        <mxCell id="bank" value="银行支付服务" style="rounded=1;arcSize=14;whiteSpace=wrap;html=0;fillColor=#ECE8E1;strokeColor=#77716A;strokeWidth=2;fontSize=24;fontStyle=1;verticalAlign=top;spacingTop=27;" vertex="1" parent="1"><mxGeometry x="920" y="260" width="170" height="104" as="geometry"/></mxCell>
+        <mxCell id="bank-type" value="EXTERNAL SYSTEM" style="text;html=0;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=15;fontStyle=1;fontColor=#55514B;" vertex="1" parent="1"><mxGeometry x="930" y="324" width="150" height="22" as="geometry"/></mxCell>
+
+        <mxCell id="edge-employee-web" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;strokeColor=#263238;strokeWidth=2.4;endArrow=block;endFill=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="employee" target="web"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="edge-web-api" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;strokeColor=#263238;strokeWidth=2.4;endArrow=block;endFill=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="web" target="api"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="edge-api-database" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;strokeColor=#263238;strokeWidth=2.4;endArrow=block;endFill=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="api" target="database"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="edge-api-worker" value="同步/事件？" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;strokeColor=#263238;strokeWidth=2.4;endArrow=block;endFill=1;fontSize=23;fontStyle=1;fontColor=#8E3B32;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="api" target="payment-worker"><mxGeometry relative="1" as="geometry"><mxPoint x="0" y="-82" as="offset"/></mxGeometry></mxCell>
+        <mxCell id="edge-worker-bank" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;strokeColor=#263238;strokeWidth=2.4;endArrow=block;endFill=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="payment-worker" target="bank"><mxGeometry relative="1" as="geometry"/></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

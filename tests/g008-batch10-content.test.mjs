@@ -15,6 +15,40 @@ const contentRoot = fileURLToPath(new URL('../content/', import.meta.url));
 const documents = await readContentDocuments(contentRoot);
 const document = documents.find(({file}) => file === 'modeling/mod-12-architecture-diagram-review.mdx');
 
+const commonNodes = [
+  ['employee', '员工', 'PERSON'],
+  ['web', 'Web 应用', 'CONTAINER'],
+  ['api', '申报 API', 'CONTAINER'],
+  ['database', '申报数据库', 'DATA STORE'],
+  ['payment-worker', '支付任务执行器', 'CONTAINER'],
+  ['bank', '银行支付服务', 'EXTERNAL SYSTEM'],
+];
+
+const diagramPairs = [
+  {
+    slug: 'mod-12-architecture-review-problem',
+    labels: [
+      '费用平台架构图',
+      '同步/事件？',
+      ...commonNodes.flatMap(([, name, type]) => [name, type]),
+    ],
+  },
+  {
+    slug: 'mod-12-architecture-review-corrected',
+    labels: [
+      '费用申报系统 Container 图',
+      '费用提交与支付协作',
+      'as-is teaching exercise',
+      'rev 1',
+      '事实截止 2026-08-05',
+      '协议：待确认',
+      '候选信任边界',
+      '候选失败边界',
+      ...commonNodes.flatMap(([, name, type]) => [name, type]),
+    ],
+  },
+];
+
 const expectedMetadata = {
   title: '架构图审阅清单',
   slug: '/modeling/mod-12',
@@ -283,6 +317,27 @@ test('keeps all wrappers accessible and shared keyboard behavior correct', () =>
 
 test('states method, non-proof rules, exercise, relations and source boundaries', () => {
   assertMethodContract(requiredDocument().body);
+});
+
+test('publishes synchronized accessible MOD-12 Draw.io and SVG pairs', async () => {
+  for (const {slug, labels} of diagramPairs) {
+    const [drawio, svg] = await Promise.all([
+      readFile(fileURLToPath(new URL(`../diagrams/${slug}.drawio`, import.meta.url)), 'utf8'),
+      readFile(fileURLToPath(new URL(`../static/img/diagrams/${slug}.svg`, import.meta.url)), 'utf8'),
+    ]);
+
+    assert.match(svg, /^<svg\b[^>]*\bviewBox="0 0 1200 840"/u, `${slug} must use the prescribed viewBox`);
+    assert.doesNotMatch(svg.match(/^<svg\b[^>]*>/u)?.[0] ?? '', /\s(?:width|height)="/u, `${slug} root must stay responsive`);
+    assert.match(svg, /^<svg\b[^>]*\brole="img"/u, `${slug} must expose an image role`);
+    assert.match(svg, /<title\b[^>]*>[^<]+<\/title>/u, `${slug} must provide a title`);
+    assert.match(svg, /<desc\b[^>]*>[^<]+<\/desc>/u, `${slug} must provide a description`);
+    assert.match(svg, /^<svg\b[^>]*\bpreserveAspectRatio="xMidYMid meet"/u, `${slug} must preserve its aspect ratio`);
+
+    for (const label of labels) {
+      assert.ok(drawio.includes(label), `${slug}.drawio missing label: ${label}`);
+      assert.ok(svg.includes(label), `${slug}.svg missing label: ${label}`);
+    }
+  }
 });
 
 test('rejects controlled MOD-12 mutations', () => {
