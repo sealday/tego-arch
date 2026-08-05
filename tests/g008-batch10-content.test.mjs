@@ -332,6 +332,8 @@ test('publishes synchronized accessible MOD-12 Draw.io and SVG pairs', async () 
     assert.match(svg, /<title\b[^>]*>[^<]+<\/title>/u, `${slug} must provide a title`);
     assert.match(svg, /<desc\b[^>]*>[^<]+<\/desc>/u, `${slug} must provide a description`);
     assert.match(svg, /^<svg\b[^>]*\bpreserveAspectRatio="xMidYMid meet"/u, `${slug} must preserve its aspect ratio`);
+    assert.match(drawio, /<mxCell id="employee"[^>]*>[\s\S]*?<mxGeometry x="40" y="300" width="150" height="104" as="geometry"\/>[\s\S]*?<\/mxCell>/u, `${slug}.drawio must lock the repaired employee geometry`);
+    assert.match(svg, /<g data-node-id="employee" data-node-bounds="40 300 150 104">/u, `${slug}.svg must lock the repaired employee geometry`);
 
     for (const label of labels) {
       assert.ok(drawio.includes(label), `${slug}.drawio missing label: ${label}`);
