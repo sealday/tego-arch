@@ -123,6 +123,11 @@ const expectedWrapperLabels = [
   '修正后的费用申报系统架构图，可横向滚动',
 ];
 
+const expectedImages = [
+  '![故意混合层级、边界、数据、协议、信任域、失败域和版本信息的费用申报系统审阅练习图](/img/diagrams/mod-12-architecture-review-problem.svg)',
+  '![恢复 MOD-02 系统边界并明确未知协议、候选信任边界和候选失败边界的费用申报系统 Container 图](/img/diagrams/mod-12-architecture-review-corrected.svg)',
+];
+
 const requiredLinks = [
   '/modeling', '/modeling/mod-01', '/modeling/mod-02', '/modeling/mod-03',
   '/modeling/mod-04', '/modeling/mod-11', '/quality-attributes/qa-02',
@@ -130,11 +135,35 @@ const requiredLinks = [
 ];
 
 const expectedSources = [
-  'https://c4model.com/diagrams/checklist',
-  'https://c4model.com/diagrams/notation',
-  'https://docs.arc42.org/section-3/',
-  'https://cheatsheetseries.owasp.org/cheatsheets/Threat_Modeling_Cheat_Sheet.html',
+  {
+    attribution: 'C4 Model：Software Architecture Diagram Review Checklist',
+    url: 'https://c4model.com/diagrams/checklist',
+    support: '支持标题、图类型、范围、图例、元素名称、类型、职责、关系方向、标签和适用时协议等通用检查',
+    nonProof: '不提供或认可本站四道门、九行方法、示例、措辞或布局',
+  },
+  {
+    attribution: 'C4 Model：Notation',
+    url: 'https://c4model.com/diagrams/notation',
+    support: '支持自描述表示法、标题、范围、图例、元素类型与职责、方向和关系标签',
+    nonProof: '不证明本练习图正确或可读',
+  },
+  {
+    attribution: 'arc42：Context and Scope',
+    url: 'https://docs.arc42.org/section-3/',
+    support: '支持区分系统与通信伙伴、业务输入输出、技术通道或协议，以及业务与技术上下文',
+    nonProof: '不提供本站审阅矩阵或演练',
+  },
+  {
+    attribution: 'OWASP Threat Modeling Cheat Sheet',
+    url: 'https://cheatsheetseries.owasp.org/cheatsheets/Threat_Modeling_Cheat_Sheet.html',
+    support: '支持建模数据流与信任边界，并持续更新和复查模型',
+    nonProof: '不把 MOD-12 变成完整威胁建模流程，也不支持失败域或版本结论',
+  },
 ];
+
+function sourceBullet({attribution, url, support, nonProof}) {
+  return `- [${attribution}](${url})（facts-summary）：${support}；${nonProof}。`;
+}
 
 function markdownTables(body) {
   return [...body.matchAll(/(^\|[^\n]+\|\n^\|(?:\s*:?-+:?\s*\|)+\n(?:^\|[^\n]+\|\n?)+)/gmu)]
@@ -189,9 +218,9 @@ function assertInteractionContract(body) {
     'table-wrapper table-wrapper--mapping', 'architecture-diagram-scroll',
   ]);
   assert.deepEqual(markdownTables(regions[0].content)[0], expectedGateRows);
-  assert.match(regions[1].content, /\/img\/diagrams\/mod-12-architecture-review-problem\.svg/u);
+  assert.equal(regions[1].content, expectedImages[0]);
   assert.deepEqual(markdownTables(regions[2].content)[0], expectedFindingRows);
-  assert.match(regions[3].content, /\/img\/diagrams\/mod-12-architecture-review-corrected\.svg/u);
+  assert.equal(regions[3].content, expectedImages[1]);
 }
 
 function assertMethodContract(body) {
@@ -204,7 +233,10 @@ function assertMethodContract(body) {
   assert.match(body, /MOD-13/u);
   assert.ok(!links.includes('/modeling/mod-13'));
   assert.doesNotMatch(body, /\[[^\]]*MOD-13[^\]]*\]\([^)]*\)/u);
-  for (const url of expectedSources) assert.equal(body.split(url).length - 1, 1, `source URL must appear once: ${url}`);
+  const sourceSection = body.match(/## 来源\n\n([\s\S]*)$/u)?.[1] ?? '';
+  const sourceBullets = [...sourceSection.matchAll(/^- .+$/gmu)].map((match) => match[0]);
+  assert.deepEqual(sourceBullets, expectedSources.map(sourceBullet));
+  for (const {url} of expectedSources) assert.equal(body.split(url).length - 1, 1, `source URL must appear once: ${url}`);
   assert.match(body, /四道门、九项矩阵、严重度、问题图、修正图、两张表、七步演练和中文表述均为本站原创综合/u);
   assert.equal([...body.matchAll(/facts-summary/gu)].length, 4);
 }
@@ -276,7 +308,16 @@ test('rejects controlled MOD-12 mutations', () => {
   for (const sentence of nonProofSentences) mutations.push([`non-proof ${sentence}`, body.replace(sentence, '已变更。'), assertMethodContract]);
   for (const step of expectedExerciseSteps) mutations.push([`exercise ${step}`, body.replace(step, '已变更。'), assertMethodContract]);
   for (const link of requiredLinks) mutations.push([`relation ${link}`, body.replace(`(${link})`, '(#已变更)'), assertMethodContract]);
-  for (const url of expectedSources) mutations.push([`source ${url}`, body.replace(url, 'https://example.invalid/changed'), assertMethodContract]);
+  for (const sourceRecord of expectedSources) {
+    const bullet = sourceBullet(sourceRecord);
+    mutations.push([`source URL ${sourceRecord.url}`, body.replace(sourceRecord.url, 'https://example.invalid/changed'), assertMethodContract]);
+    mutations.push([`source attribution ${sourceRecord.url}`, body.replace(bullet, sourceBullet({...sourceRecord, attribution: `${sourceRecord.attribution} 已变更`})), assertMethodContract]);
+    mutations.push([`source facts-summary placement ${sourceRecord.url}`, body.replace(bullet, bullet.replace('（facts-summary）：', '：facts-summary；')), assertMethodContract]);
+    mutations.push([`source support boundary ${sourceRecord.url}`, body.replace(bullet, sourceBullet({...sourceRecord, support: '支持范围已变更'})), assertMethodContract]);
+    mutations.push([`source non-proof boundary ${sourceRecord.url}`, body.replace(bullet, sourceBullet({...sourceRecord, nonProof: '不证明边界已变更'})), assertMethodContract]);
+  }
+  mutations.push(['problem image suffix', body.replace('mod-12-architecture-review-problem.svg)', 'mod-12-architecture-review-problem.svg.bak)'), assertInteractionContract]);
+  mutations.push(['corrected image suffix', body.replace('mod-12-architecture-review-corrected.svg)', 'mod-12-architecture-review-corrected.svg.bak)'), assertInteractionContract]);
   mutations.push(['forbidden MOD-13 href', `${body}\n\n[下一篇](/modeling/mod-13)\n`, assertMethodContract]);
   mutations.push(['forbidden neutral MOD-13 href', `${body}\n\n[下一篇模型](/modeling/mod-13)\n`, assertMethodContract]);
   for (const [label, mutation, contract] of mutations) assert.throws(() => contract(mutation), {name: 'AssertionError'}, label);
