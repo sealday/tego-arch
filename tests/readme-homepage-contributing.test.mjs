@@ -74,6 +74,24 @@ test('homepage leads with the transition to architecture design and the release 
   assert.match(homepage, /精华学习路线/u);
   assert.match(homepage, /Tego 实践与规划/u);
   assert.match(homepage, /https:\/\/github\.com\/sealday\/tego-arch#参与贡献/u);
+  assert.equal([...homepage.matchAll(/<RoadmapSection\s*\/>/gu)].length, 1);
+  assert.equal([...homepage.matchAll(/<FutureDeliverablesSection\s*\/>/gu)].length, 1);
+  assert.match(
+    homepage,
+    /<Hero\s*\/>\s*<main>\s*<RoadmapSection\s*\/>\s*<FutureDeliverablesSection\s*\/>/u,
+  );
+
+  const futureSectionSource = homepage.match(
+    /function FutureDeliverablesSection\(\): ReactNode \{[\s\S]*?\n\}\n\nexport default function Home/u,
+  )?.[0];
+  assert.ok(futureSectionSource);
+  assert.doesNotMatch(futureSectionSource, /<Link\b|\bhref=|<button\b|\bto=/u);
+
+  assert.match(
+    homepage,
+    /2026-08-05[\s\S]*视觉快照[\s\S]*不是实时状态[\s\S]*最新[\s\S]*精确进度[\s\S]*当前故事[\s\S]*停止条件[\s\S]*只在[\s\S]*docs\/content-backlog\.md/u,
+  );
+  assert.doesNotMatch(homepage, /7\s*\/\s*20|当前\s*G008/u);
 
   assert.match(styles, /\.roadmapSection/u);
   assert.match(styles, /\.roadmapImage/u);
