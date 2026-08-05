@@ -44,10 +44,90 @@ const diagramPairs = [
       '协议：待确认',
       '候选信任边界',
       '候选失败边界',
+      '系统与 Container 团队归属：待确认',
       ...commonNodes.flatMap(([, name, type]) => [name, type]),
     ],
   },
 ];
+
+function decodeXmlText(value) {
+  return value
+    .replaceAll('&amp;', '&')
+    .replaceAll('&lt;', '<')
+    .replaceAll('&gt;', '>')
+    .replaceAll('&quot;', '"')
+    .replaceAll('&apos;', "'");
+}
+
+function xmlAttributes(tag) {
+  return new Map([...tag.matchAll(/([\w:-]+)=(['"])(.*?)\2/gu)]
+    .map(([, name, , value]) => [name, decodeXmlText(value)]));
+}
+
+function hiddenPresentation(attributes, inherited = false) {
+  const style = attributes.get('style') ?? '';
+  return inherited
+    || attributes.get('aria-hidden') === 'true'
+    || attributes.get('display') === 'none'
+    || ['hidden', 'collapse'].includes(attributes.get('visibility'))
+    || attributes.get('opacity') === '0'
+    || /(?:^|;)\s*display\s*:\s*none(?:;|$)/iu.test(style)
+    || /(?:^|;)\s*visibility\s*:\s*(?:hidden|collapse)(?:;|$)/iu.test(style)
+    || /(?:^|;)\s*opacity\s*:\s*0(?:;|$)/u.test(style);
+}
+
+function visibleDrawioLabels(drawio) {
+  return [...drawio.matchAll(/<mxCell\b[^>]*>/gu)].flatMap(([tag]) => {
+    const attributes = xmlAttributes(tag);
+    const style = attributes.get('style') ?? '';
+    if (attributes.get('visible') === '0' || /(?:^|;)\s*(?:opacity=0|visible=0)(?:;|$)/u.test(style)) return [];
+    const value = attributes.get('value')?.trim();
+    return value ? [value] : [];
+  });
+}
+
+function visibleSvgTextLabels(svg) {
+  const nonRendered = new Set(['defs', 'desc', 'metadata', 'symbol', 'title']);
+  const stack = [];
+  const labels = [];
+
+  for (const [token] of svg.matchAll(/<[^>]+>|[^<]+/gu)) {
+    if (!token.startsWith('<')) {
+      const current = stack.at(-1);
+      if (!current?.hidden) {
+        const text = stack.findLast(({name}) => name === 'text');
+        if (text) text.value += decodeXmlText(token);
+      }
+      continue;
+    }
+    if (/^<\//u.test(token)) {
+      const closed = stack.pop();
+      if (closed?.name === 'text' && !closed.hidden && closed.painted) {
+        const label = closed.value.replace(/\s+/gu, ' ').trim();
+        if (label) labels.push(label);
+      }
+      continue;
+    }
+    if (/^<(?:\?|!)/u.test(token)) continue;
+    const name = token.match(/^<([\w:-]+)/u)?.[1] ?? '';
+    const attributes = xmlAttributes(token);
+    const parent = stack.at(-1);
+    const style = attributes.get('style') ?? '';
+    const fill = attributes.get('fill') ?? (/(?:^|;)\s*fill\s*:\s*([^;]+)/iu.exec(style)?.[1]?.trim() ?? 'black');
+    const stroke = attributes.get('stroke') ?? (/(?:^|;)\s*stroke\s*:\s*([^;]+)/iu.exec(style)?.[1]?.trim() ?? 'none');
+    const fillOpacity = attributes.get('fill-opacity') ?? (/(?:^|;)\s*fill-opacity\s*:\s*([^;]+)/iu.exec(style)?.[1]?.trim() ?? '1');
+    const strokeOpacity = attributes.get('stroke-opacity') ?? (/(?:^|;)\s*stroke-opacity\s*:\s*([^;]+)/iu.exec(style)?.[1]?.trim() ?? '1');
+    const painted = (fill !== 'none' && fillOpacity !== '0') || (stroke !== 'none' && strokeOpacity !== '0');
+    stack.push({
+      name,
+      hidden: hiddenPresentation(attributes, parent?.hidden || nonRendered.has(name)),
+      painted,
+      value: '',
+    });
+    if (/\/>$/u.test(token)) stack.pop();
+  }
+  return labels;
+}
 
 const expectedMetadata = {
   title: '架构图审阅清单',
@@ -334,10 +414,29 @@ test('publishes synchronized accessible MOD-12 Draw.io and SVG pairs', async () 
     assert.match(svg, /^<svg\b[^>]*\bpreserveAspectRatio="xMidYMid meet"/u, `${slug} must preserve its aspect ratio`);
     assert.match(drawio, /<mxCell id="employee"[^>]*>[\s\S]*?<mxGeometry x="40" y="300" width="150" height="104" as="geometry"\/>[\s\S]*?<\/mxCell>/u, `${slug}.drawio must lock the repaired employee geometry`);
     assert.match(svg, /<g data-node-id="employee" data-node-bounds="40 300 150 104">/u, `${slug}.svg must lock the repaired employee geometry`);
+    const drawioLabels = visibleDrawioLabels(drawio);
+    const svgLabels = visibleSvgTextLabels(svg);
 
     for (const label of labels) {
-      assert.ok(drawio.includes(label), `${slug}.drawio missing label: ${label}`);
-      assert.ok(svg.includes(label), `${slug}.svg missing label: ${label}`);
+      assert.ok(drawioLabels.some((value) => value.includes(label)), `${slug}.drawio missing visible label: ${label}`);
+      assert.ok(svgLabels.some((value) => value.includes(label)), `${slug}.svg missing visible label: ${label}`);
+    }
+
+    if (slug.endsWith('problem')) {
+      const hiddenDrawio = drawio.replace('id="employee" value="员工" style="', 'id="employee" value="员工" style="opacity=0;');
+      const hiddenSvg = svg.replace('data-text-role="title">员工</text>', 'data-text-role="title" style="display:none">员工</text>');
+      const hiddenAncestorSvg = svg.replace('<g data-node-id="employee"', '<g style="visibility:hidden" data-node-id="employee"');
+      const descOnlySvg = svg.replace(/<text x="115" y="346"([^>]*)>员工<\/text>/u, '<desc>员工</desc>');
+      assert.ok(!visibleDrawioLabels(hiddenDrawio).includes('员工'), 'hidden Draw.io employee label must not satisfy visibility');
+      assert.ok(!visibleSvgTextLabels(hiddenSvg).includes('员工'), 'hidden SVG employee label must not satisfy visibility');
+      assert.ok(!visibleSvgTextLabels(hiddenAncestorSvg).includes('员工'), 'ancestor-hidden SVG employee label must not satisfy visibility');
+      assert.ok(!visibleSvgTextLabels(descOnlySvg).includes('员工'), 'desc-only SVG employee label must not satisfy visibility');
+    } else {
+      assert.match(drawio, /id="system-boundary"[^>]*style="(?![^"]*dashed=1)[^"]*"/u, 'corrected Draw.io system boundary must be solid');
+      assert.match(svg, /data-boundary-id="system-boundary"[^>]*stroke-width="3"\/>/u, 'corrected SVG system boundary must be solid');
+      assert.doesNotMatch(svg.match(/<path data-boundary-id="system-boundary"[^>]*>/u)?.[0] ?? '', /stroke-dasharray/u);
+      assert.match(drawio, /id="trust-employee-line"[\s\S]*?<mxPoint x="215" y="190" as="sourcePoint"\/>[\s\S]*?<mxPoint x="215" y="440" as="targetPoint"\/>/u);
+      assert.match(drawio, /id="trust-bank-line"[\s\S]*?<mxPoint x="940" y="190" as="sourcePoint"\/>[\s\S]*?<mxPoint x="940" y="465" as="targetPoint"\/>/u);
     }
   }
 });
