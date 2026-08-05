@@ -1,5 +1,6 @@
 import type {ReactNode} from 'react';
 import Link from '@docusaurus/Link';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 import Layout from '@theme/Layout';
 import Heading from '@theme/Heading';
 
@@ -54,6 +55,27 @@ const expansionPorts = [
   },
 ] as const;
 
+const futureDeliverables = [
+  {
+    index: '01',
+    title: '便携小抄',
+    description:
+      '提炼第一性原理、关键判断和高代价错误提醒，以尽可能小的记忆占用守住关键决策。',
+  },
+  {
+    index: '02',
+    title: '精华学习路线',
+    description:
+      '从完整版选择一组连贯主题，形成更短、更易进入，同时能回到完整证据的学习线索。',
+  },
+  {
+    index: '03',
+    title: 'Tego 实践与规划',
+    description:
+      '说明这些架构判断在 Tego 设计中的应用位置、当前取舍与未来规划。',
+  },
+] as const;
+
 function SectionHeading({
   id,
   eyebrow,
@@ -83,16 +105,18 @@ function Hero(): ReactNode {
         <div className={styles.heroGrid}>
           <div className={styles.heroCopy}>
             <p className={styles.kicker}>Tego Arch · 软件架构知识图谱</p>
-            <Heading as="h1">从真实系统与证据出发，系统学习软件架构。</Heading>
+            <Heading as="h1">从高级工程师到架构设计者。</Heading>
             <p className={styles.lede}>
-              为有开发经验、第一次系统学习架构的工程师，从真实系统、成熟方法与可核验的证据出发，串联概念、质量属性、方法、模式、架构风格与真实案例。
+              面向有经验的高级工程师，用证据、权衡与真实案例训练从实现到架构决策的能力。
             </p>
             <div className={styles.heroActions}>
-              <Link className={styles.primaryAction} to="/cases">
-                浏览架构案例 <span aria-hidden="true">→</span>
+              <Link className={styles.primaryAction} to="/paths">
+                沿学习路径开始 <span aria-hidden="true">→</span>
               </Link>
-              <Link className={styles.secondaryAction} to="/paths">
-                按学习路径开始
+              <Link
+                className={styles.secondaryAction}
+                href="https://github.com/sealday/tego-arch#参与贡献">
+                参与贡献
               </Link>
             </div>
           </div>
@@ -135,13 +159,75 @@ function Hero(): ReactNode {
   );
 }
 
+function RoadmapSection(): ReactNode {
+  const roadmapSrc = useBaseUrl(
+    '/img/illustrations/tego-arch-initial-release-roadmap.png',
+  );
+
+  return (
+    <section className={styles.roadmapSection} aria-labelledby="roadmap-title">
+      <div className="container">
+        <SectionHeading
+          id="roadmap-title"
+          eyebrow="INITIAL RELEASE"
+          title="初版先完成一套完整的架构知识体系"
+          description="路线图展示阶段顺序；精确任务、当前故事与停止条件只在长期 backlog 维护。"
+        />
+        <figure className={styles.roadmapFigure}>
+          <img
+            className={styles.roadmapImage}
+            src={roadmapSrc}
+            width={1672}
+            height={941}
+            loading="eager"
+            alt="Tego Arch 初版发布路线图：从基线与知识主干，经架构风格、领域模式、治理专题和学习闭环走向初版发布"
+          />
+          <figcaption>
+            这是执行概览，不是实时任务清单。{' '}
+            <Link href="https://github.com/sealday/tego-arch/blob/main/docs/content-backlog.md">
+              查看最新 backlog <span aria-hidden="true">↗</span>
+            </Link>
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+  );
+}
+
+function FutureDeliverablesSection(): ReactNode {
+  return (
+    <section className={styles.futureSection} aria-labelledby="future-title">
+      <div className="container">
+        <SectionHeading
+          id="future-title"
+          eyebrow="AFTER THE COMPLETE EDITION"
+          title="从完整版继续提炼三类产物"
+          description="先建立完整上下文，再针对记忆、学习和实践形成更轻的入口。"
+        />
+        <div className={styles.futureGrid}>
+          {futureDeliverables.map((deliverable) => (
+            <article className={styles.futureCard} key={deliverable.index}>
+              <span aria-hidden="true">{deliverable.index}</span>
+              <Heading as="h3">{deliverable.title}</Heading>
+              <p>{deliverable.description}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function Home(): ReactNode {
   return (
     <Layout
       title="Tego Arch"
-      description="为有开发经验、第一次系统学习架构的工程师，从真实系统、成熟方法与可核验证据中学习概念、质量属性、方法、模式、架构风格与真实案例。">
+      description="面向有经验的高级工程师，用证据、权衡与真实案例训练从实现到架构决策的能力。">
       <Hero />
       <main>
+        <RoadmapSection />
+        <FutureDeliverablesSection />
+
         <section className={styles.featuredSection} aria-labelledby="featured-cases-title">
           <div className="container">
             <div className={styles.featuredHeader}>
@@ -260,13 +346,13 @@ export default function Home(): ReactNode {
                   一起把结论钉在证据上
                 </Heading>
                 <p>
-                  每份档案区分已证实事实、基于证据的推断与个人分析。欢迎补充案例、纠正来源，或带着一道设计题加入讨论。
+                  欢迎补充内容、纠正证据、贡献原创插图，或改进站点与内容工具链的工程实现。
                 </p>
               </div>
               <div className={styles.contributionActions}>
                 <Link
                   className={styles.primaryAction}
-                  href="https://github.com/sealday/tego-arch">
+                  href="https://github.com/sealday/tego-arch#参与贡献">
                   在 GitHub 参与 <span aria-hidden="true">↗</span>
                 </Link>
                 <Link className={styles.secondaryAction} to="/intro">

@@ -58,3 +58,25 @@ test('README positions the project, shows the roadmap, and closes the contributi
   assert.match(readme, /LICENSE-CONTENT\.md/u);
   assert.match(readme, /NOTICE\.md/u);
 });
+
+test('homepage leads with the transition to architecture design and the release roadmap', async () => {
+  const [homepage, styles] = await Promise.all([
+    read('src/pages/index.tsx'),
+    read('src/pages/index.module.css'),
+  ]);
+
+  assert.match(homepage, /从高级工程师到架构设计者/u);
+  assert.match(homepage, /面向有经验的高级工程师/u);
+  assert.match(homepage, /tego-arch-initial-release-roadmap\.png/u);
+  assert.match(homepage, /Tego Arch 初版发布路线图/u);
+  assert.match(homepage, /docs\/content-backlog\.md/u);
+  assert.match(homepage, /便携小抄/u);
+  assert.match(homepage, /精华学习路线/u);
+  assert.match(homepage, /Tego 实践与规划/u);
+  assert.match(homepage, /https:\/\/github\.com\/sealday\/tego-arch#参与贡献/u);
+
+  assert.match(styles, /\.roadmapSection/u);
+  assert.match(styles, /\.roadmapImage/u);
+  assert.match(styles, /\.futureGrid/u);
+  assert.match(styles, /@media\s*\(max-width:\s*996px\)/u);
+});
