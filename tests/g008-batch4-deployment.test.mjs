@@ -211,7 +211,8 @@ function assertBacklogClosure(source) {
   assert.match(source, /^- \[x\] \*\*MOD-07 /mu);
   assert.match(source, /^- \[x\] \*\*MOD-08 /mu);
   assert.match(source, /^- \[x\] \*\*MOD-09 /mu);
-  for (const id of ['10', '11', '12', '13']) {
+  assert.match(source, /^- \[x\] \*\*MOD-10 /mu);
+  for (const id of ['11', '12', '13']) {
     assert.match(source, new RegExp(`^- \\[ \\] \\*\\*MOD-${id} `, 'mu'));
   }
   assertBatch3History(source);
@@ -250,7 +251,7 @@ test('preserves MOD-06 closure under the current non-terminal G008 baseline', ()
   assert.equal(topicsById.get('MOD-08')?.status.value, 'complete');
   assert.equal(topicsById.get('MOD-09')?.status.value, 'complete');
   assert.equal(topicsById.get('MOD-10')?.published, true);
-  assert.equal(topicsById.get('MOD-10')?.status.value, 'pending');
+  assert.equal(topicsById.get('MOD-10')?.status.value, 'complete');
   for (const id of ['MOD-11', 'MOD-12', 'MOD-13']) {
     assert.equal(topicsById.get(id)?.published, false, id);
     assert.equal(topicsById.get(id)?.status.value, 'pending', id);
@@ -258,7 +259,7 @@ test('preserves MOD-06 closure under the current non-terminal G008 baseline', ()
   assert.deepEqual(projectStatus, {
     schema_version: 1,
     durable_stories: {completed: 7, total: 20, current: 'G008'},
-    completed_topics: 48,
+    completed_topics: 49,
     content_documents: 91,
     governed_sources: 485,
     sources: {

@@ -444,7 +444,7 @@ function assertStageBProjection(projectStatus, topicIndexes, content) {
   assert.deepEqual(projectStatus, {
     schema_version: 1,
     durable_stories: {completed: 7, total: 20, current: 'G008'},
-    completed_topics: 48,
+    completed_topics: 49,
     content_documents: 91,
     governed_sources: 485,
     sources: {
@@ -458,7 +458,7 @@ function assertStageBProjection(projectStatus, topicIndexes, content) {
   assert.equal(topicsById.get('MOD-09').published, true);
   assert.equal(topicsById.get('MOD-09').status.value, 'complete');
   assert.equal(topicsById.get('MOD-10').published, true);
-  assert.equal(topicsById.get('MOD-10').status.value, 'pending');
+  assert.equal(topicsById.get('MOD-10').status.value, 'complete');
   const links = extractInternalLinks(content);
   for (const id of unpublishedModelingTopics) {
     assert.equal(topicsById.get(id).published, false, `${id} publication`);
