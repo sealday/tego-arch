@@ -98,3 +98,15 @@ test('homepage leads with the transition to architecture design and the release 
   assert.match(styles, /\.futureGrid/u);
   assert.match(styles, /@media\s*\(max-width:\s*996px\)/u);
 });
+
+test('website footer exposes the dual-license and third-party boundaries', async () => {
+  const config = await read('docusaurus.config.ts');
+
+  assert.match(config, /代码 · Apache-2\.0/u);
+  assert.match(config, /内容 · CC BY 4\.0/u);
+  assert.match(config, /第三方材料/u);
+  assert.match(config, /blob\/main\/LICENSE/u);
+  assert.match(config, /blob\/main\/LICENSE-CONTENT\.md/u);
+  assert.match(config, /blob\/main\/NOTICE\.md/u);
+  assert.match(config, /Tego Arch contributors/u);
+});
