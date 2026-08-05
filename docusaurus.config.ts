@@ -85,10 +85,18 @@ const config: Config = {
         },
         {
           title: '项目',
-          items: [{label: 'GitHub', href: repositoryUrl}],
+          items: [
+            {label: 'GitHub', href: repositoryUrl},
+            {label: '代码 · Apache-2.0', href: `${repositoryUrl}/blob/main/LICENSE`},
+            {
+              label: '内容 · CC BY 4.0',
+              href: `${repositoryUrl}/blob/main/LICENSE-CONTENT.md`,
+            },
+            {label: '第三方材料', href: `${repositoryUrl}/blob/main/NOTICE.md`},
+          ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} Tego Arch. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Tego Arch contributors. Code Apache-2.0; original content CC BY 4.0.`,
     },
     prism: {
       theme: prismThemes.github,
