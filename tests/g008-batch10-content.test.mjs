@@ -20,6 +20,18 @@ const sourceLinkHealth = JSON.parse(await readFile(new URL('../data/source-link-
 const projectStatus = JSON.parse(await readFile(new URL('../src/generated/project-status.json', import.meta.url)));
 const topicManifest = JSON.parse(await readFile(new URL('../src/generated/topic-manifest.json', import.meta.url)));
 const topicRelations = JSON.parse(await readFile(new URL('../data/topic-relations.json', import.meta.url)));
+const backlog = await readFile(new URL('../docs/content-backlog.md', import.meta.url), 'utf8');
+
+function currentNextTopic(source) {
+  const baselines = source
+    .split(/\r?\n/u)
+    .filter((line) => line.startsWith('- **当前发布基线：**'));
+  assert.equal(baselines.length, 1, 'backlog must contain one current release baseline');
+  const liveSegment = baselines[0].split('。此前 ')[0];
+  const nextTopics = [...liveSegment.matchAll(/下一项为 (MOD-\d+)/gu)];
+  assert.equal(nextTopics.length, 1, 'live baseline must contain one next modeling topic');
+  return nextTopics[0][1];
+}
 
 const commonNodes = [
   ['employee', '员工', 'PERSON'],
@@ -486,7 +498,7 @@ test('locks the generated MOD-12 Stage A projection', () => {
       total: projectStatus.durable_stories.total,
     },
     current_goal: projectStatus.durable_stories.current,
-    next_topic: topicManifest.topics.find((topic) => topic.id === 'MOD-12')?.id,
+    next_topic: currentNextTopic(backlog),
   }, {
     completed_topics: 50,
     content_documents: 93,
@@ -500,6 +512,13 @@ test('locks the generated MOD-12 Stage A projection', () => {
   assert.equal(topicsById.get('MOD-12').status.value, 'pending');
   assert.equal(topicsById.get('MOD-13').published, false);
   assert.equal(topicsById.get('MOD-13').status.value, 'pending');
+  assert.throws(
+    () => assert.equal(
+      currentNextTopic(backlog.replace('下一项为 MOD-12', '下一项为 MOD-13')),
+      'MOD-12',
+    ),
+    {name: 'AssertionError'},
+  );
 });
 
 test('publishes synchronized accessible MOD-12 Draw.io and SVG pairs', async () => {
