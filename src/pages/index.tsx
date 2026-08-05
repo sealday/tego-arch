@@ -179,15 +179,17 @@ function RoadmapSection(): ReactNode {
             src={roadmapSrc}
             width={1672}
             height={941}
-            loading="eager"
+            loading="lazy"
+            decoding="async"
             alt="Tego Arch 初版发布路线图：从基线与知识主干，经架构风格、领域模式、治理专题和学习闭环走向初版发布"
           />
           <figcaption>
-            这是 2026-08-05 的视觉快照，不是实时状态。最新的精确进度、当前故事和停止条件只在{' '}
+            这是 2026-08-05 的视觉快照，不是实时状态。图例仅代表 2026-08-05
+            快照当日：绿色表示当日已完成，橙色表示当日当前阶段，蓝色表示当日待执行；每个阶段都需经过验证、评审、发布和线上检查，这些共同构成发布门槛。最新的精确进度、当前故事和停止条件只在{' '}
             <Link href="https://github.com/sealday/tego-arch/blob/main/docs/content-backlog.md">
               docs/content-backlog.md <span aria-hidden="true">↗</span>
             </Link>
-            {' '}维护。
+            {' '}维护；该 backlog 是实时、最新状态的唯一事实源。
           </figcaption>
         </figure>
       </div>

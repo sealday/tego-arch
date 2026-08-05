@@ -98,6 +98,22 @@ test('homepage leads with the transition to architecture design and the release 
     homepage,
     /2026-08-05[\s\S]*视觉快照[\s\S]*不是实时状态[\s\S]*最新[\s\S]*精确进度[\s\S]*当前故事[\s\S]*停止条件[\s\S]*只在[\s\S]*docs\/content-backlog\.md/u,
   );
+  assert.match(
+    homepage,
+    /2026-08-05\s+快照当日[\s\S]*绿色[\s\S]*当日已完成[\s\S]*橙色[\s\S]*当日当前阶段[\s\S]*蓝色[\s\S]*当日待执行/u,
+  );
+  assert.match(
+    homepage,
+    /每个阶段[\s\S]*验证[\s\S]*评审[\s\S]*发布[\s\S]*线上检查[\s\S]*发布门槛/u,
+  );
+  assert.match(
+    homepage,
+    /docs\/content-backlog\.md[\s\S]*实时[\s\S]*最新状态[\s\S]*唯一事实源/u,
+  );
+  assert.match(
+    homepage,
+    /<img\s+[\s\S]*?src=\{roadmapSrc\}[\s\S]*?width=\{1672\}[\s\S]*?height=\{941\}[\s\S]*?loading="lazy"[\s\S]*?decoding="async"[\s\S]*?alt="Tego Arch 初版发布路线图[^"]*"[\s\S]*?\/>/u,
+  );
   assert.doesNotMatch(homepage, /7\s*\/\s*20|当前\s*G008/u);
 
   assert.match(styles, /\.roadmapSection/u);
