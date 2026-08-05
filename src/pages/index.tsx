@@ -107,13 +107,11 @@ function Hero(): ReactNode {
             <p className={styles.kicker}>Tego Arch · 软件架构知识图谱</p>
             <Heading as="h1">从高级工程师到架构设计者。</Heading>
             <p className={styles.lede}>
-              面向有经验的高级工程师，也为有开发经验、第一次系统学习架构的工程师提供一套完整知识图谱：
-              从真实系统、成熟方法与可核验的证据出发，连接概念、质量属性、方法、模式、架构风格与真实案例，
-              训练从实现到架构决策的能力。
+              面向有经验的高级工程师，用证据、权衡与真实案例训练从实现到架构决策的能力。
             </p>
             <div className={styles.heroActions}>
-              <Link className={styles.primaryAction} to="/cases">
-                浏览架构案例 <span aria-hidden="true">→</span>
+              <Link className={styles.primaryAction} to="/paths">
+                沿学习路径开始 <span aria-hidden="true">→</span>
               </Link>
               <Link
                 className={styles.secondaryAction}

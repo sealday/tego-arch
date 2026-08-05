@@ -65,8 +65,15 @@ test('homepage leads with the transition to architecture design and the release 
     read('src/pages/index.module.css'),
   ]);
 
-  assert.match(homepage, /从高级工程师到架构设计者/u);
-  assert.match(homepage, /面向有经验的高级工程师/u);
+  assert.match(homepage, /<Heading as="h1">从高级工程师到架构设计者。<\/Heading>/u);
+  assert.match(
+    homepage,
+    /<p className=\{styles\.lede\}>\s*面向有经验的高级工程师，用证据、权衡与真实案例训练从实现到架构决策的能力。\s*<\/p>/u,
+  );
+  assert.match(
+    homepage,
+    /<Link className=\{styles\.primaryAction\} to="\/paths">\s*沿学习路径开始/u,
+  );
   assert.match(homepage, /tego-arch-initial-release-roadmap\.png/u);
   assert.match(homepage, /Tego Arch 初版发布路线图/u);
   assert.match(homepage, /docs\/content-backlog\.md/u);
