@@ -333,16 +333,28 @@ test('keeps roadmap details available without forcing them into the reading flow
   assert.match(styles, /\.roadmapMedia::after/u);
   assert.match(styles, /\.roadmapDesktopInfo:hover[\s\S]*\.roadmapInfoPanel/u);
   assert.match(styles, /\.roadmapDesktopInfo:focus-within[\s\S]*\.roadmapInfoPanel/u);
-  assert.equal(declaration(cssBlock(styles, '.roadmapInfoPanel'), 'visibility'), 'hidden');
+  const hiddenPanel = cssBlock(styles, '.roadmapInfoPanel');
+  assert.equal(declaration(hiddenPanel, 'visibility'), 'hidden');
+  assert.equal(declaration(hiddenPanel, 'pointer-events'), 'none');
+  assert.equal(
+    declaration(hiddenPanel, 'transition').replace(/\s+/gu, ' '),
+    'visibility 0s linear 140ms, opacity 140ms ease',
+  );
+  assert.doesNotMatch(hiddenPanel, /\btransform\s*:/u);
   const visiblePanel = cssBlock(
     styles,
     '.roadmapDesktopInfo:hover .roadmapInfoPanel,\n.roadmapDesktopInfo:focus-within .roadmapInfoPanel',
   );
   assert.equal(declaration(visiblePanel, 'visibility'), 'visible');
+  assert.equal(declaration(visiblePanel, 'pointer-events'), 'auto');
+  assert.doesNotMatch(visiblePanel, /\btransform\s*:/u);
   const hoverBridge = cssBlock(styles, '.roadmapInfoPanel::after');
   assert.equal(declaration(hoverBridge, 'bottom'), '-0.75rem');
   assert.equal(declaration(hoverBridge, 'height'), '0.75rem');
-  assert.doesNotMatch(hoverBridge, /\b(?:background|border|box-shadow)\s*:/u);
+  assert.doesNotMatch(
+    hoverBridge,
+    /\b(?:background|border|box-shadow|top|transform|transition)\s*:/u,
+  );
   assert.doesNotMatch(cssBlock(styles, '.roadmapMedia'), /\bborder\s*:/u);
   assert.doesNotMatch(cssBlock(styles, '.roadmapInfoPanel'), /\bbox-shadow\s*:/u);
 
