@@ -126,3 +126,24 @@ test('publishes three problem-led entrances and generated research highlights', 
   assert.doesNotMatch(homepage, /secondCollectionCases|groupCasesBySeries|migrationGroups/u);
   assert.match(homepage, /homepageCases\.slice\(1\)\.map/u);
 });
+
+test('uses restrained homepage tokens and responsive density rules', async () => {
+  const [styles, globalStyles] = await Promise.all([
+    read('src/pages/index.module.css'),
+    read('src/css/custom.css'),
+  ]);
+
+  for (const token of ['--atlas-hero', '--atlas-hero-ink', '--atlas-hero-muted']) {
+    assert.match(globalStyles, new RegExp(token, 'u'));
+  }
+
+  assert.match(styles, /\.hero\s*\{[\s\S]*background:\s*var\(--atlas-hero\)/u);
+  assert.match(styles, /\.heroRelations\s*\{/u);
+  assert.match(styles, /\.entryRow/u);
+  assert.match(styles, /\.researchLead/u);
+  assert.match(styles, /\.futureList/u);
+  assert.match(styles, /@media\s*\(max-width:\s*996px\)/u);
+  assert.match(styles, /@media\s*screen and \(max-width:\s*700px\)/u);
+  assert.match(styles, /@media\s*\(prefers-reduced-motion:\s*reduce\)/u);
+  assert.doesNotMatch(styles, /backdrop-filter/u);
+});
