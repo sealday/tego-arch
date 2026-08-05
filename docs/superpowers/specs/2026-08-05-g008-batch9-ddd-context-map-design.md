@@ -245,7 +245,7 @@ MOD-11 metadata 固定为：
 
 本批次引用四个来源，其中新增三个来源身份并复用一个既有身份；检索日期统一为 2026-08-05：
 
-1. `https://martinfowler.com/bliki/BoundedContext.html` — Martin Fowler 对 Bounded Context、语言/模型边界和 Context Map 关系的概览；`independent / secondary`；MOD-11 唯一 `manifest_primary: true`；未发现开放内容许可，按 `all-rights-reserved`、`facts-summary` 治理。
+1. `https://martinfowler.com/bliki/BoundedContext.html` — Martin Fowler 对 Bounded Context、语言/模型边界和 Context Map 关系的概览；`independent-blog / primary`，其中 primary 只表示它是本文的定义性主要证据，不把独立文章变成 DDD 官方规范；MOD-11 唯一 `manifest_primary: true`；未发现开放内容许可，按 `all-rights-reserved`、`facts-summary` 治理。
 2. `https://github.com/ddd-crew/context-mapping/tree/970c1ff3a61f7aa8b61b789b697c05bc585f614d` — DDD Crew Context Mapping 仓库在固定提交 `970c1ff3a61f7aa8b61b789b697c05bc585f614d` 的 README 事实；支持小型、问题驱动的 map、U/D 与关系模式语境；`community / secondary`；仓库 LICENSE 按 `CC-BY-SA-4.0` 治理，实际只使用 `facts-summary`。
 3. `https://contextmapper.org/docs/anticorruption-layer/` — Context Mapper ACL 文档；支持 ACL 位于 downstream 并承担翻译/隔离角色；`official / primary`；未发现适用于页面内容的开放许可，保守按 `all-rights-reserved`、`facts-summary` 治理。
 4. `https://www.avanscoperta.it/en/context-mapping/` — 复用既有 `src-docs-fc6e554f1153`；支持边界指标不是可靠证明、Bounded Context 不等于业务关注点以及边界仍需架构判断；不创建重复来源身份，继续按既有 `facts-summary` 和保守权利记录治理。
