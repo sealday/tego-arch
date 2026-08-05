@@ -14,6 +14,12 @@ import {handleHorizontalArrowKey} from '../src/components/KeyboardScrollableRegi
 const contentRoot = fileURLToPath(new URL('../content/', import.meta.url));
 const documents = await readContentDocuments(contentRoot);
 const document = documents.find(({file}) => file === 'modeling/mod-12-architecture-diagram-review.mdx');
+const relatedDocuments = new Map(documents.map((entry) => [entry.file, entry]));
+const sourceLedger = JSON.parse(await readFile(new URL('../data/source-ledger.json', import.meta.url)));
+const sourceLinkHealth = JSON.parse(await readFile(new URL('../data/source-link-health.json', import.meta.url)));
+const projectStatus = JSON.parse(await readFile(new URL('../src/generated/project-status.json', import.meta.url)));
+const topicManifest = JSON.parse(await readFile(new URL('../src/generated/topic-manifest.json', import.meta.url)));
+const topicRelations = JSON.parse(await readFile(new URL('../data/topic-relations.json', import.meta.url)));
 
 const commonNodes = [
   ['employee', '员工', 'PERSON'],
@@ -248,6 +254,13 @@ const requiredLinks = [
   '/quality-attributes/qa-05', '/cases/microsoft-multi-agent-reference-architecture',
 ];
 
+const expectedGovernedSources = new Map([
+  ['src-c4model-review-checklist', 'https://c4model.com/diagrams/checklist'],
+  ['src-c4model-notation', 'https://c4model.com/diagrams/notation'],
+  ['src-arc42-context-scope-v9', 'https://docs.arc42.org/section-3/'],
+  ['src-cheatsheetseries-ea079221bd09', 'https://cheatsheetseries.owasp.org/cheatsheets/Threat_Modeling_Cheat_Sheet.html'],
+]);
+
 const expectedSources = [
   {
     attribution: 'C4 Model：Software Architecture Diagram Review Checklist',
@@ -397,6 +410,96 @@ test('keeps all wrappers accessible and shared keyboard behavior correct', () =>
 
 test('states method, non-proof rules, exercise, relations and source boundaries', () => {
   assertMethodContract(requiredDocument().body);
+});
+
+test('governs the four MOD-12 citations in visible source order', () => {
+  const governed = sourceLedger.documents['content/modeling/mod-12-architecture-diagram-review.mdx'];
+  assert.ok(governed);
+  assert.deepEqual(
+    governed.citations.map(({source_id, citation_url}) => [source_id, citation_url]),
+    [...expectedGovernedSources],
+  );
+  assert.equal(governed.citations.filter(({manifest_primary}) => manifest_primary).length, 1);
+  assert.equal(governed.citations.find(({manifest_primary}) => manifest_primary)?.source_id, 'src-c4model-review-checklist');
+  for (const citation of governed.citations) {
+    assert.equal(citation.usage_mode, 'facts-summary');
+    assert.equal(citation.modification_note, null);
+    assert.equal(citation.excerpt, null);
+    assert.equal(citation.quotation_reviewed, false);
+  }
+  const sourcesById = new Map(sourceLedger.sources.map((source) => [source.id, source]));
+  for (const [id, canonicalUrl] of expectedGovernedSources) {
+    assert.equal(sourcesById.get(id)?.canonical_locator, canonicalUrl, id);
+  }
+  const sourceSection = requiredDocument().body.match(/## 来源\n\n([\s\S]*)$/u)?.[1] ?? '';
+  const visibleUrls = [...sourceSection.matchAll(/\]\((https:\/\/[^)]+)\)/gu)].map((match) => match[1]);
+  assert.deepEqual(visibleUrls, [...expectedGovernedSources.values()]);
+});
+
+test('commits current stable-policy health for the two new transports', () => {
+  const healthByTransport = new Map(sourceLinkHealth.results.map((result) => [result.transport_locator, result]));
+  for (const transport of [
+    'https://c4model.com/diagrams/checklist',
+    'https://docs.arc42.org/section-3/',
+  ]) {
+    const health = healthByTransport.get(transport);
+    assert.ok(health, transport);
+    assert.equal(health.review_status, 'healthy', transport);
+    assert.equal(health.last_attempt.outcome, 'healthy', transport);
+    assert.equal(health.last_attempt.final_transport_locator, transport);
+    assert.deepEqual(health.last_success, {
+      at: health.last_attempt.at,
+      outcome: 'healthy',
+      final_transport_locator: transport,
+      http_status: health.last_attempt.http_status,
+      login_wall_detected: false,
+    });
+    assert.equal(health.attempt_history.at(-1).at, health.last_attempt.at);
+  }
+});
+
+test('publishes exact reciprocal MOD-12 relations without an override', () => {
+  assert.deepEqual(extractInternalLinks(requiredDocument()), requiredLinks.toSorted());
+  assert.equal('MOD-12' in topicRelations, false);
+  const reciprocal = [
+    ['modeling/mod-11-ddd-context-map.mdx', ['MOD-05', 'MOD-08', 'MOD-12'], /\[MOD-12 架构图审阅清单\]\(\/modeling\/mod-12\)[^。\n]*candidate Context is not component decomposition/iu],
+    ['quality-attributes/qa-02-reliability-availability-recoverability.mdx', ['QA-00', 'QA-01', 'QA-03', 'QA-08', 'MOD-08', 'MOD-12'], /\[MOD-12 架构图审阅清单\]\(\/modeling\/mod-12\)[^。\n]*视觉分离[^。\n]*不证明[^。\n]*故障隔离[^。\n]*传播限制[^。\n]*故障切换[^。\n]*恢复/u],
+    ['quality-attributes/qa-05-security-privacy-trust.mdx', ['QA-07', 'QA-08', 'QA-09', 'MOD-12'], /\[MOD-12 架构图审阅清单\]\(\/modeling\/mod-12\)[^。\n]*系统[^。\n]*网络边界[^。\n]*不证明[^。\n]*信任边界[^。\n]*身份[^。\n]*权限[^。\n]*数据[^。\n]*威胁/u],
+  ];
+  for (const [file, adjacentTopics, backlink] of reciprocal) {
+    const related = relatedDocuments.get(file);
+    assert.deepEqual(parseFrontMatter(related.source).adjacent_topics, adjacentTopics, file);
+    assert.match(related.body, backlink, file);
+  }
+  assert.match(requiredDocument().body, /\[MOD-04[^\]]*\]\(\/modeling\/mod-04\)[^。\n]*文档[^。\n]*版本/u);
+  assert.equal(extractInternalLinks(requiredDocument()).length, 9);
+  assert.doesNotMatch(requiredDocument().body, /\[[^\]]*MOD-13[^\]]*\]\([^)]*\)/u);
+});
+
+test('locks the generated MOD-12 Stage A projection', () => {
+  assert.deepEqual({
+    completed_topics: projectStatus.completed_topics,
+    content_documents: projectStatus.content_documents,
+    governed_sources: projectStatus.governed_sources,
+    durable_stories: {
+      completed: projectStatus.durable_stories.completed,
+      total: projectStatus.durable_stories.total,
+    },
+    current_goal: projectStatus.durable_stories.current,
+    next_topic: topicManifest.topics.find((topic) => topic.id === 'MOD-12')?.id,
+  }, {
+    completed_topics: 50,
+    content_documents: 93,
+    governed_sources: 490,
+    durable_stories: {completed: 7, total: 20},
+    current_goal: 'G008',
+    next_topic: 'MOD-12',
+  });
+  const topicsById = new Map(topicManifest.topics.map((topic) => [topic.id, topic]));
+  assert.equal(topicsById.get('MOD-12').published, true);
+  assert.equal(topicsById.get('MOD-12').status.value, 'pending');
+  assert.equal(topicsById.get('MOD-13').published, false);
+  assert.equal(topicsById.get('MOD-13').status.value, 'pending');
 });
 
 test('publishes synchronized accessible MOD-12 Draw.io and SVG pairs', async () => {

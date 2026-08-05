@@ -255,7 +255,9 @@ test('preserves MOD-06 closure under the current non-terminal G008 baseline', ()
   assert.equal(topicsById.get('MOD-10')?.status.value, 'complete');
   assert.equal(topicsById.get('MOD-11')?.published, true);
   assert.equal(topicsById.get('MOD-11')?.status.value, 'complete');
-  for (const id of ['MOD-12', 'MOD-13']) {
+  assert.equal(topicsById.get('MOD-12')?.published, true);
+  assert.equal(topicsById.get('MOD-12')?.status.value, 'pending');
+  for (const id of ['MOD-13']) {
     assert.equal(topicsById.get(id)?.published, false, id);
     assert.equal(topicsById.get(id)?.status.value, 'pending', id);
   }
@@ -263,8 +265,8 @@ test('preserves MOD-06 closure under the current non-terminal G008 baseline', ()
     schema_version: 1,
     durable_stories: {completed: 7, total: 20, current: 'G008'},
     completed_topics: 50,
-    content_documents: 92,
-    governed_sources: 488,
+    content_documents: 93,
+    governed_sources: 490,
     sources: {
       durable_stories: 'docs/content-backlog.md',
       completed_topics: 'docs/content-backlog.md',

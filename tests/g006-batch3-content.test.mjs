@@ -30,7 +30,7 @@ const h2 = [
 const relationships = new Map([
   ['QA-05', {
     dependsOn: ['QA-00', 'QA-01'],
-    adjacent: ['QA-07', 'QA-08', 'QA-09'],
+    adjacent: ['QA-07', 'QA-08', 'QA-09', 'MOD-12'],
     cases: [
       '/cases/microsoft-multi-agent-reference-architecture',
       '/cases/cloudflare-durable-objects-workerd',

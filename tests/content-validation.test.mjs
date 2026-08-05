@@ -8,6 +8,7 @@ import {fileURLToPath} from 'node:url';
 
 import {
   knowledgeHeadingContract,
+  mod12ModelingHeadings,
   mod11ModelingHeadings,
   mod10ModelingHeadings,
   mod09ModelingHeadings,
@@ -1059,6 +1060,17 @@ const mod11Headings = [
   '## 完整演练',
   '## 来源',
 ];
+const mod12Headings = [
+  '## 学习问题',
+  '## 审阅目标与输入',
+  '## 四道审阅门',
+  '## 核心产物',
+  '## 完成判断',
+  '## 常见失败',
+  '## 与其他模型的衔接',
+  '## 完整演练',
+  '## 来源',
+];
 
 test('accepts the Pattern knowledge contract and excludes the Pattern index', async () => {
   await withTempRoot(async (root) => {
@@ -1311,6 +1323,42 @@ test('rejects missing and reordered MOD-11 headings against its exact contract',
       await writeMdx(root, `modeling/mod-11-${variant.name}.mdx`, validKnowledgeFrontMatter('modeling', {
         topic_id: 'MOD-11',
         slug: `/modeling/mod-11-${variant.name}`,
+      }), variant.headings.join('\n\n'));
+      assert.match((await validateContent(root)).errors.join('\n'), variant.expected, variant.name);
+    });
+  }
+});
+
+test('accepts the exact MOD-12 nine-heading modeling contract', async () => {
+  assert.deepEqual(mod12ModelingHeadings, mod12Headings);
+  assert.strictEqual(knowledgeHeadingContract('modeling', 'MOD-12'), mod12ModelingHeadings);
+  await withTempRoot(async (root) => {
+    await writeMdx(root, 'modeling/mod-12.mdx', validKnowledgeFrontMatter('modeling', {
+      topic_id: 'MOD-12',
+      slug: '/modeling/mod-12',
+    }), mod12Headings.join('\n\n'));
+    assert.deepEqual((await validateContent(root)).errors, []);
+  });
+});
+
+test('rejects missing and reordered MOD-12 headings against its exact contract', async () => {
+  const variants = [
+    {
+      name: 'missing-four-gates',
+      headings: mod12Headings.filter((heading) => heading !== '## 四道审阅门'),
+      expected: /expected exactly 9 ## 学习问题-contract H2 headings; found 8/u,
+    },
+    {
+      name: 'reordered-four-gates-and-artifact',
+      headings: [...mod12Headings.slice(0, 2), mod12Headings[3], mod12Headings[2], ...mod12Headings.slice(4)],
+      expected: /position 3; expected "## 四道审阅门", actual "## 核心产物"/u,
+    },
+  ];
+  for (const variant of variants) {
+    await withTempRoot(async (root) => {
+      await writeMdx(root, `modeling/mod-12-${variant.name}.mdx`, validKnowledgeFrontMatter('modeling', {
+        topic_id: 'MOD-12',
+        slug: `/modeling/mod-12-${variant.name}`,
       }), variant.headings.join('\n\n'));
       assert.match((await validateContent(root)).errors.join('\n'), variant.expected, variant.name);
     });

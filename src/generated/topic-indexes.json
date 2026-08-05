@@ -1033,7 +1033,8 @@
         "QA-01",
         "QA-03",
         "QA-08",
-        "MOD-08"
+        "MOD-08",
+        "MOD-12"
       ],
       "primary_sources": [
         "https://sre.google/sre-book/availability-table/"
@@ -1138,7 +1139,8 @@
       "adjacent_topics": [
         "QA-07",
         "QA-08",
-        "QA-09"
+        "QA-09",
+        "MOD-12"
       ],
       "primary_sources": [
         "https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final"
@@ -1768,27 +1770,6 @@
       "presentation": {}
     },
     {
-      "id": "MOD-12",
-      "type": "modeling",
-      "title": "架构图审阅清单",
-      "slug": "/modeling/mod-12",
-      "priority": "P1",
-      "status": {
-        "scope": "backlog-projection",
-        "value": "pending",
-        "source": "docs/content-backlog.md"
-      },
-      "dependencies": [],
-      "adjacent_topics": [],
-      "primary_sources": [],
-      "related_cases": [],
-      "related_questions": [],
-      "reviewed_at": null,
-      "review_policy": null,
-      "published": false,
-      "pattern_group": null
-    },
-    {
       "id": "MOD-08",
       "type": "modeling",
       "title": "状态机建模",
@@ -1890,6 +1871,40 @@
       "presentation": {}
     },
     {
+      "id": "MOD-12",
+      "type": "modeling",
+      "title": "架构图审阅清单",
+      "slug": "/modeling/mod-12",
+      "priority": "P1",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "pending",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "MOD-01",
+        "MOD-02",
+        "MOD-03"
+      ],
+      "adjacent_topics": [
+        "MOD-11",
+        "QA-02",
+        "QA-05"
+      ],
+      "primary_sources": [
+        "https://c4model.com/diagrams/checklist"
+      ],
+      "related_cases": [
+        "/cases/microsoft-multi-agent-reference-architecture"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-08-05",
+      "review_policy": "quarterly-version-sensitive",
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
+    },
+    {
       "id": "MOD-11",
       "type": "modeling",
       "title": "DDD Context Map 建模",
@@ -1908,7 +1923,8 @@
       ],
       "adjacent_topics": [
         "MOD-05",
-        "MOD-08"
+        "MOD-08",
+        "MOD-12"
       ],
       "primary_sources": [
         "https://martinfowler.com/bliki/BoundedContext.html"

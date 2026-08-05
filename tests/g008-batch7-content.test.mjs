@@ -176,7 +176,7 @@ const expectedCompletionContract = [
   '所有参与者理解共享模型是当前证据的共同视图，而不是生产事实或架构批准。',
 ];
 
-const unpublishedModelingTopics = ['MOD-12', 'MOD-13'];
+const unpublishedModelingTopics = ['MOD-13'];
 
 const expectedWrapperLabels = [
   '费用申报 Big Picture 事件表，可横向滚动',
@@ -446,8 +446,8 @@ function assertStageBProjection(projectStatus, topicIndexes, content) {
     schema_version: 1,
     durable_stories: {completed: 7, total: 20, current: 'G008'},
     completed_topics: 50,
-    content_documents: 92,
-    governed_sources: 488,
+    content_documents: 93,
+    governed_sources: 490,
     sources: {
       durable_stories: 'docs/content-backlog.md',
       completed_topics: 'docs/content-backlog.md',
