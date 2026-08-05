@@ -215,7 +215,7 @@ test('scopes hero typography, focus, responsive density, and reduced motion', as
   assert.match(reducedMotion, /\.entryRow,[\s\S]*\.primaryAction,[\s\S]*\.secondaryAction\s*\{[^}]*transition:\s*none;/u);
 });
 
-test('keeps hero labels and focus indicators contrast-safe in both themes', async () => {
+test('keeps hero labels, focused secondary actions, and focus indicators contrast-safe', async () => {
   const [styles, globalStyles] = await Promise.all([
     read('src/pages/index.module.css'),
     read('src/css/custom.css'),
@@ -223,29 +223,54 @@ test('keeps hero labels and focus indicators contrast-safe in both themes', asyn
   const heroLabelColor = declaration(cssBlock(styles, '.heroLabel'), 'color');
   const focusColor = declaration(cssBlock(styles, '.hero a:focus-visible'), 'outline')
     .match(/var\((--[^)]+)\)$/u)?.[1];
+  const secondaryInteraction = cssBlock(
+    styles,
+    '.secondaryAction:hover,\n.secondaryAction:focus-visible',
+  );
+  const secondaryTextColor = declaration(secondaryInteraction, 'color');
+  const secondaryBorderColor = declaration(secondaryInteraction, 'border-color');
   assert.equal(heroLabelColor, 'var(--atlas-hero-ink)');
   assert.equal(focusColor, '--atlas-hero-ink');
+  assert.equal(secondaryTextColor, 'var(--atlas-hero-ink)');
+  assert.equal(secondaryBorderColor, 'var(--atlas-hero-ink)');
 
   for (const theme of [cssBlock(globalStyles, ':root'), cssBlock(globalStyles, "[data-theme='dark']")]) {
     const background = declaration(theme, '--atlas-hero');
     const label = declaration(theme, heroLabelColor.slice(4, -1));
     const focus = declaration(theme, focusColor);
+    const secondaryText = declaration(theme, secondaryTextColor.slice(4, -1));
     assert.ok(contrastRatio(label, background) >= 4.5, 'hero label contrast must be at least 4.5:1');
+    assert.ok(
+      contrastRatio(secondaryText, background) >= 4.5,
+      'focused secondary action text contrast must be at least 4.5:1',
+    );
     assert.ok(contrastRatio(focus, background) >= 3, 'hero focus outline contrast must be at least 3:1');
   }
 });
 
 test('forbids decorative effects and oversized ordinary radii in homepage styles', async () => {
   const styles = await read('src/pages/index.module.css');
-  assert.doesNotMatch(styles, /backdrop-filter|box-shadow|(?:^|[;{\s])filter\s*:\s*drop-shadow|(?:linear|radial)-gradient/iu);
+  assert.doesNotMatch(styles, /\b(?:backdrop-filter|filter|box-shadow|text-shadow)\s*:/iu);
+  assert.doesNotMatch(styles, /\b[\w-]*gradient\s*\(/iu);
 
   for (const match of styles.matchAll(/([^{}]+)\{([^{}]*)\}/gu)) {
     const selector = match[1].trim();
-    for (const radius of match[2].matchAll(/border-radius:\s*([\d.]+)px/gu)) {
-      assert.ok(Number(radius[1]) <= 6, `${selector} exceeds the 6px radius limit`);
-    }
-    if (/border-radius:\s*50%/u.test(match[2])) {
-      assert.equal(selector, '.heroRelations span', 'only relationship nodes may use circular radius');
+    for (const radius of match[2].matchAll(/border-radius\s*:\s*([^;]+);/gu)) {
+      const value = radius[1].trim();
+      if (selector === '.heroRelations span') {
+        assert.equal(value, '50%', 'relationship nodes must use the explicit circular radius');
+        continue;
+      }
+
+      const lengths = value.split(/\s+/u);
+      assert.ok(
+        lengths.length <= 4 && lengths.every((length) => /^\d+(?:\.\d+)?px$/u.test(length)),
+        `${selector} must use only explicit px radii`,
+      );
+      assert.ok(
+        lengths.every((length) => Number.parseFloat(length) <= 6),
+        `${selector} exceeds the 6px radius limit`,
+      );
     }
   }
 });

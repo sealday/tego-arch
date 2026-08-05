@@ -101,8 +101,8 @@
 
 .secondaryAction:hover,
 .secondaryAction:focus-visible {
-  border-color: var(--ifm-color-primary-light);
-  color: var(--ifm-color-primary-light);
+  border-color: var(--atlas-hero-ink);
+  color: var(--atlas-hero-ink);
   text-decoration: none;
 }
 
