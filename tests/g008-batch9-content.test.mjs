@@ -15,6 +15,9 @@ const contentRoot = fileURLToPath(new URL('../content/', import.meta.url));
 const documents = await readContentDocuments(contentRoot);
 const document = documents.find(({file}) => file === 'modeling/mod-11-ddd-context-map.mdx');
 const customCss = await readFile(new URL('../src/css/custom.css', import.meta.url), 'utf8');
+const sourceLedger = JSON.parse(await readFile(new URL('../data/source-ledger.json', import.meta.url)));
+const topicManifest = JSON.parse(await readFile(new URL('../src/generated/topic-manifest.json', import.meta.url)));
+const projectStatus = JSON.parse(await readFile(new URL('../src/generated/project-status.json', import.meta.url)));
 
 const expectedMetadata = {
   title: 'DDD Context Map 建模',
@@ -159,6 +162,58 @@ const requiredLinks = [
   '/modeling/mod-09',
   '/modeling/mod-10',
   '/cases/temporal-saga-durable-execution',
+];
+const expectedSources = new Map([
+  ['src-docs-8fb33e125d2a', 'https://martinfowler.com/bliki/BoundedContext.html'],
+  ['src-docs-1ad75d39a251', 'https://github.com/ddd-crew/context-mapping/tree/970c1ff3a61f7aa8b61b789b697c05bc585f614d'],
+  ['src-docs-ac85a74ed0b2', 'https://contextmapper.org/docs/anticorruption-layer/'],
+  ['src-docs-fc6e554f1153', 'https://www.avanscoperta.it/en/context-mapping/'],
+]);
+const expectedCitations = [
+  {
+    source_id: 'src-docs-8fb33e125d2a',
+    citation_url: 'https://martinfowler.com/bliki/BoundedContext.html',
+    roles: ['definition', 'method', 'learning'],
+    manifest_primary: true,
+    usage_mode: 'facts-summary',
+    attribution_note: 'Bounded Context, Martin Fowler',
+    modification_note: null,
+    excerpt: null,
+    quotation_reviewed: false,
+  },
+  {
+    source_id: 'src-docs-1ad75d39a251',
+    citation_url: 'https://github.com/ddd-crew/context-mapping/tree/970c1ff3a61f7aa8b61b789b697c05bc585f614d',
+    roles: ['definition', 'method', 'comparison'],
+    manifest_primary: false,
+    usage_mode: 'facts-summary',
+    attribution_note: 'Context Mapping, DDD Crew',
+    modification_note: null,
+    excerpt: null,
+    quotation_reviewed: false,
+  },
+  {
+    source_id: 'src-docs-ac85a74ed0b2',
+    citation_url: 'https://contextmapper.org/docs/anticorruption-layer/',
+    roles: ['definition', 'method'],
+    manifest_primary: false,
+    usage_mode: 'facts-summary',
+    attribution_note: 'Anti-Corruption Layer, Context Mapper',
+    modification_note: null,
+    excerpt: null,
+    quotation_reviewed: false,
+  },
+  {
+    source_id: 'src-docs-fc6e554f1153',
+    citation_url: 'https://www.avanscoperta.it/en/context-mapping/',
+    roles: ['definition', 'method'],
+    manifest_primary: false,
+    usage_mode: 'facts-summary',
+    attribution_note: 'Context Mapping, Avanscoperta',
+    modification_note: null,
+    excerpt: null,
+    quotation_reviewed: false,
+  },
 ];
 const expectedExerciseSteps = [
   '复述 MOD-02 权威系统边界，明确银行支付服务位于系统外。',
@@ -476,5 +531,186 @@ test('rejects controlled MOD-11 mutations', () => {
   ];
   for (const [label, mutation, contract] of mutations) {
     assert.throws(() => contract(mutation), {name: 'AssertionError'}, label);
+  }
+});
+
+test('governs the exact MOD-11 source records and citation review', () => {
+  const shared = {
+    query_insensitive: false,
+    locator_aliases: [],
+    tombstone: null,
+    published_at: null,
+    registered_at: '2026-08-05',
+    checked_at: '2026-08-05',
+    license_family_grouping: 'identity',
+    family_grouping_evidence_url: null,
+    expected_final_approved_at: '2026-08-05',
+  };
+  const expectedRecords = [
+    {
+      id: 'src-docs-8fb33e125d2a',
+      canonical_locator: 'https://martinfowler.com/bliki/BoundedContext.html',
+      transport_locator: 'https://martinfowler.com/bliki/BoundedContext.html',
+      ...shared,
+      title: 'Bounded Context',
+      author_or_org: 'Martin Fowler',
+      version: 'Living page retrieved 2026-08-05',
+      source_kind: 'independent-blog',
+      tier: 'primary',
+      allowed_evidence_roles: ['definition', 'method', 'learning'],
+      license: 'LicenseRef-All-Rights-Reserved',
+      license_scope: 'Facts summarized from the named page only; page prose, diagrams, examples, templates, trademarks, linked works and third-party assets are excluded.',
+      license_evidence_url: 'https://martinfowler.com/bliki/BoundedContext.html',
+      license_evidence_note: 'Bounded Context at https://martinfowler.com/bliki/BoundedContext.html was checked on 2026-08-05; no open content license was found.',
+      license_family_id: 'https://martinfowler.com/bliki/BoundedContext.html',
+      copyright_policy: 'facts-and-short-quotation',
+      usage_boundary: 'Supports the language/model boundary and explicit Context Map relationship summary; it does not approve this article’s candidate boundaries, services, teams or runtime design.',
+      link_policy: 'floating',
+      expected_final_transport_locator: 'https://martinfowler.com/bliki/BoundedContext.html',
+      expected_final_approval_note: 'Reviewed the direct Bounded Context HTTPS transport and page identity on 2026-08-05.',
+    },
+    {
+      id: 'src-docs-1ad75d39a251',
+      canonical_locator: 'https://github.com/ddd-crew/context-mapping/tree/970c1ff3a61f7aa8b61b789b697c05bc585f614d',
+      transport_locator: 'https://github.com/ddd-crew/context-mapping/tree/970c1ff3a61f7aa8b61b789b697c05bc585f614d',
+      ...shared,
+      title: 'Context Mapping',
+      author_or_org: 'DDD Crew',
+      version: 'ddd-crew/context-mapping@970c1ff3a61f7aa8b61b789b697c05bc585f614d',
+      source_kind: 'official-repository',
+      tier: 'secondary',
+      allowed_evidence_roles: ['definition', 'method', 'comparison'],
+      license: 'CC-BY-SA-4.0',
+      license_scope: 'The pinned ddd-crew/context-mapping repository content covered by its CC BY-SA 4.0 LICENSE; trademarks, linked works, Miro-hosted assets and separately licensed third-party material are excluded.',
+      license_evidence_url: 'https://github.com/ddd-crew/context-mapping/blob/970c1ff3a61f7aa8b61b789b697c05bc585f614d/LICENSE',
+      license_evidence_note: 'The pinned repository LICENSE, not abbreviated README wording, governs the reviewed content at commit 970c1ff3a61f7aa8b61b789b697c05bc585f614d.',
+      license_family_id: 'github:ddd-crew/context-mapping',
+      copyright_policy: 'adapt-sharealike-review',
+      usage_boundary: 'Supports small question-specific Context Maps, U/D roles and the existence of relationship patterns; it does not license copying the cheat sheet or Miro board and does not select patterns for this article.',
+      link_policy: 'stable',
+      expected_final_transport_locator: 'https://github.com/ddd-crew/context-mapping/tree/970c1ff3a61f7aa8b61b789b697c05bc585f614d',
+      expected_final_approval_note: 'Reviewed the pinned GitHub tree transport and commit-specific LICENSE on 2026-08-05.',
+    },
+    {
+      id: 'src-docs-ac85a74ed0b2',
+      canonical_locator: 'https://contextmapper.org/docs/anticorruption-layer/',
+      transport_locator: 'https://contextmapper.org/docs/anticorruption-layer/',
+      ...shared,
+      title: 'Anti-Corruption Layer',
+      author_or_org: 'Context Mapper',
+      version: 'Living page retrieved 2026-08-05',
+      source_kind: 'official-docs',
+      tier: 'primary',
+      allowed_evidence_roles: ['definition', 'method'],
+      license: 'LicenseRef-All-Rights-Reserved',
+      license_scope: 'Facts summarized from the named page only; page prose, diagrams, examples, templates, trademarks, linked works and third-party assets are excluded.',
+      license_evidence_url: 'https://contextmapper.org/docs/anticorruption-layer/',
+      license_evidence_note: 'Anti-Corruption Layer at https://contextmapper.org/docs/anticorruption-layer/ was checked on 2026-08-05; no open content license was found.',
+      license_family_id: 'https://contextmapper.org/docs/anticorruption-layer/',
+      copyright_policy: 'facts-and-short-quotation',
+      usage_boundary: 'Supports ACL as a downstream translation and isolation role; it does not prove a production ACL implementation, bank OHS/PL, protocol or deployment boundary.',
+      link_policy: 'floating',
+      expected_final_transport_locator: 'https://contextmapper.org/docs/anticorruption-layer/',
+      expected_final_approval_note: 'Reviewed the direct Anti-Corruption Layer HTTPS transport and page identity on 2026-08-05.',
+    },
+  ];
+  const sourcesById = new Map(sourceLedger.sources.map((source) => [source.id, source]));
+  for (const record of expectedRecords) assert.deepEqual(sourcesById.get(record.id), record);
+  for (const [id, url] of expectedSources) assert.equal(sourcesById.get(id)?.canonical_locator, url, id);
+
+  assert.deepEqual(sourceLedger.documents['content/modeling/mod-11-ddd-context-map.mdx'], {
+    reviewed_at: '2026-08-05',
+    copyright_checks: [
+      'original-structure',
+      'quotation-boundary',
+      'attribution-complete',
+      'illustration-rights',
+    ],
+    citations: expectedCitations,
+  });
+});
+
+test('renders exactly four governed MOD-11 sources', () => {
+  const sourceSection = requiredDocument().body.split('## 来源\n')[1];
+  assert.ok(sourceSection, 'MOD-11 source section');
+  assert.deepEqual(
+    [...sourceSection.matchAll(/^- \[([^\]]+)\]\((https:\/\/[^)]+)\)：(.+)$/gmu)].map((match) => ({
+      label: match[1],
+      url: match[2],
+      boundary: match[3],
+    })),
+    [
+      {label: 'Bounded Context', url: expectedSources.get('src-docs-8fb33e125d2a'), boundary: '支持语言与模型边界以及显式 Context Map 关系；不证明本文候选边界、服务、团队或运行时设计。'},
+      {label: 'DDD Crew Context Mapping', url: expectedSources.get('src-docs-1ad75d39a251'), boundary: '支持围绕具体问题绘制小型 Context Map、逐关系判断 U/D 与关系模式的存在；不复用其 cheat sheet 或 Miro 资产，也不替本文选择关系模式。'},
+      {label: 'Anti-Corruption Layer', url: expectedSources.get('src-docs-ac85a74ed0b2'), boundary: '支持 ACL 作为下游翻译与隔离责任；不证明银行边界已有 ACL、OHS/PL、协议或部署实现。'},
+      {label: 'Avanscoperta Context Mapping', url: expectedSources.get('src-docs-fc6e554f1153'), boundary: '支持边界指标并非绝对、仍需架构判断；不批准本文候选边界。'},
+    ],
+  );
+});
+
+test('publishes reciprocal MOD-05/MOD-08 relations and actionable MOD-09/MOD-10 handoffs', () => {
+  const byTopic = new Map(documents.map((item) => [parseFrontMatter(item.source).topic_id, item]));
+  const mod05 = byTopic.get('MOD-05');
+  const mod08 = byTopic.get('MOD-08');
+  const mod09 = byTopic.get('MOD-09');
+  const mod10 = byTopic.get('MOD-10');
+  assert.deepEqual(parseFrontMatter(mod05.source).adjacent_topics, ['MOD-04', 'MOD-06', 'MOD-09', 'MOD-11', 'PR-13']);
+  assert.deepEqual(parseFrontMatter(mod08.source).adjacent_topics, ['MOD-07', 'MOD-09', 'MOD-10', 'MOD-11', 'PR-10', 'QA-02']);
+  assert.equal(extractInternalLinks(mod05).filter((link) => link === '/modeling/mod-11').length, 1);
+  assert.equal(extractInternalLinks(mod08).filter((link) => link === '/modeling/mod-11').length, 1);
+  assert.match(mod05.body, /\[MOD-11 DDD Context Map 建模\]\(\/modeling\/mod-11\)：实体、关系与权威记录可以为 Context 边界提供证据，但数据模型不能单独决定 Bounded Context。/u);
+  assert.match(mod08.body, /\[MOD-11 DDD Context Map 建模\]\(\/modeling\/mod-11\)：状态、不变量和恢复规则的独立变化可以验证候选边界，但状态机不等于 Context Map。/u);
+  assert.ok(!parseFrontMatter(mod09.source).adjacent_topics.includes('MOD-11'));
+  assert.ok(!parseFrontMatter(mod10.source).adjacent_topics.includes('MOD-11'));
+  assert.ok(extractInternalLinks(mod09).includes('/modeling/mod-11'));
+  assert.ok(extractInternalLinks(mod10).includes('/modeling/mod-11'));
+  assert.match(mod09.body, /EventStorming[^。\n]*(?:lane|swimlane|泳道|信号)[^。\n]*不能[^。\n]*Context/u);
+  assert.match(mod10.body, /actor[^。\n]*工作对象[^。\n]*不能[^。\n]*Context/iu);
+});
+
+function assertStageAProjection(statusValue, manifestValue, mod11Document) {
+  assert.deepEqual(statusValue, {
+    schema_version: 1,
+    durable_stories: {completed: 7, total: 20, current: 'G008'},
+    completed_topics: 49,
+    content_documents: 92,
+    governed_sources: 488,
+    sources: {
+      durable_stories: 'docs/content-backlog.md',
+      completed_topics: 'docs/content-backlog.md',
+      content_documents: 'content/**/*.{md,mdx}',
+      governed_sources: 'data/source-ledger.json',
+    },
+  });
+  const topicsById = new Map(manifestValue.topics.map((topic) => [topic.id, topic]));
+  assert.equal(topicsById.get('MOD-11').published, true);
+  assert.equal(topicsById.get('MOD-11').status.value, 'pending');
+  for (const id of ['MOD-12', 'MOD-13']) {
+    assert.equal(topicsById.get(id).published, false, id);
+    assert.equal(topicsById.get(id).status.value, 'pending', id);
+    assert.ok(!extractInternalLinks(mod11Document).includes(`/modeling/${id.toLowerCase()}`), id);
+  }
+}
+
+test('locks the Stage A current projection and keeps MOD-12 through MOD-13 pending', () => {
+  assertStageAProjection(projectStatus, topicManifest, requiredDocument());
+});
+
+test('rejects controlled MOD-12 through MOD-13 publication, status and link mutations', () => {
+  for (const [label, mutateManifest, mutateDocument] of [
+    ['MOD-12 published', (value) => { value.topics.find(({id}) => id === 'MOD-12').published = true; }],
+    ['MOD-13 complete', (value) => { value.topics.find(({id}) => id === 'MOD-13').status.value = 'complete'; }],
+    ['MOD-12 linked', undefined, (value) => { value.body += '\n[MOD-12](/modeling/mod-12)\n'; }],
+    ['MOD-13 linked', undefined, (value) => { value.body += '\n[MOD-13](/modeling/mod-13)\n'; }],
+  ]) {
+    const mutatedManifest = structuredClone(topicManifest);
+    const mutatedDocument = structuredClone(requiredDocument());
+    mutateManifest?.(mutatedManifest);
+    mutateDocument?.(mutatedDocument);
+    assert.throws(
+      () => assertStageAProjection(projectStatus, mutatedManifest, mutatedDocument),
+      {name: 'AssertionError'},
+      label,
+    );
   }
 });

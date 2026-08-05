@@ -408,8 +408,8 @@ test('projects the current G008 counts after MOD-09 closes', async () => {
     schema_version: 1,
     durable_stories: {completed: 7, total: 20, current: 'G008'},
     completed_topics: 49,
-    content_documents: 91,
-    governed_sources: 485,
+    content_documents: 92,
+    governed_sources: 488,
     sources: {
       durable_stories: 'docs/content-backlog.md',
       completed_topics: 'docs/content-backlog.md',
@@ -424,7 +424,9 @@ test('projects the current G008 counts after MOD-09 closes', async () => {
   assert.equal(topicsById.get('MOD-07').status.value, 'complete');
   assert.equal(topicsById.get('MOD-10').published, true);
   assert.equal(topicsById.get('MOD-10').status.value, 'complete');
-  for (const id of ['MOD-11', 'MOD-12', 'MOD-13']) {
+  assert.equal(topicsById.get('MOD-11').published, true);
+  assert.equal(topicsById.get('MOD-11').status.value, 'pending');
+  for (const id of ['MOD-12', 'MOD-13']) {
     assert.equal(topicsById.get(id).published, false, id);
     assert.equal(topicsById.get(id).status.value, 'pending', id);
   }

@@ -176,7 +176,7 @@ const expectedCompletionContract = [
   '所有参与者理解共享模型是当前证据的共同视图，而不是生产事实或架构批准。',
 ];
 
-const unpublishedModelingTopics = ['MOD-11', 'MOD-12', 'MOD-13'];
+const unpublishedModelingTopics = ['MOD-12', 'MOD-13'];
 
 const expectedWrapperLabels = [
   '费用申报 Big Picture 事件表，可横向滚动',
@@ -433,6 +433,7 @@ function assertRelationContract(content, peers) {
     );
   }
   assert.equal(links.filter((href) => href === '/modeling/mod-10').length, 1);
+  assert.equal(links.filter((href) => href === '/modeling/mod-11').length, 1);
   assert.match(content.body, /Domain Storytelling[^。\n]*可以组合[^。\n]*不是替代关系[^。\n]*没有严格的元素映射/u);
   const mod10 = peers.get('MOD-10');
   assert.ok(content.metadata.adjacent_topics.includes('MOD-10'), 'MOD-09 -> MOD-10 adjacency');
@@ -445,8 +446,8 @@ function assertStageBProjection(projectStatus, topicIndexes, content) {
     schema_version: 1,
     durable_stories: {completed: 7, total: 20, current: 'G008'},
     completed_topics: 49,
-    content_documents: 91,
-    governed_sources: 485,
+    content_documents: 92,
+    governed_sources: 488,
     sources: {
       durable_stories: 'docs/content-backlog.md',
       completed_topics: 'docs/content-backlog.md',
@@ -459,6 +460,8 @@ function assertStageBProjection(projectStatus, topicIndexes, content) {
   assert.equal(topicsById.get('MOD-09').status.value, 'complete');
   assert.equal(topicsById.get('MOD-10').published, true);
   assert.equal(topicsById.get('MOD-10').status.value, 'complete');
+  assert.equal(topicsById.get('MOD-11').published, true);
+  assert.equal(topicsById.get('MOD-11').status.value, 'pending');
   const links = extractInternalLinks(content);
   for (const id of unpublishedModelingTopics) {
     assert.equal(topicsById.get(id).published, false, `${id} publication`);

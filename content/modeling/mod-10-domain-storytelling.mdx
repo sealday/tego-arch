@@ -180,7 +180,7 @@ annotation 不等于已经实现的分支、错误处理或正式需求。
 
 [MOD-01 架构视图与视点](/modeling/mod-01)帮助团队按关切选择模型；[MOD-02 C4 模型](/modeling/mod-02)提供系统范围和权威名称；[MOD-08 状态机建模](/modeling/mod-08)约束支付结果仍未知时的证据与恢复语义；[MOD-09 EventStorming](/modeling/mod-09)可探索更宽的事件时间线、热点和候选边界信号。
 
-Domain Story 中发现的语言分歧、权威记录冲突和协作变化只能作为后续输入。正式系统边界与 Bounded Context 仍需交给 MOD-11 或等价架构活动验证，不能从 actor 布局直接推出。
+Domain Story 中发现的语言分歧、权威记录冲突和协作变化只能作为后续输入。正式系统边界与 Bounded Context 仍需交给 [MOD-11 DDD Context Map 建模](/modeling/mod-11)或等价架构活动验证；actor 与工作对象不能直接生成 Context。
 
 [Temporal Saga 与持久执行案例](/cases/temporal-saga-durable-execution)可用于进一步检验超时、重试、补偿与人工收敛，但该案例的运行机制不为 Domain Story 补充正式执行语义。
 

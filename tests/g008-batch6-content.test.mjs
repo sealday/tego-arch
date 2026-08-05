@@ -399,7 +399,7 @@ test('publishes MOD-08 with the approved metadata and structure', () => {
   assert.equal(content.metadata.status, 'reviewed');
   assert.equal(content.metadata.priority, 'P1');
   assert.deepEqual(content.metadata.depends_on, ['MOD-07']);
-  assert.deepEqual(content.metadata.adjacent_topics, ['MOD-07', 'MOD-09', 'MOD-10', 'PR-10', 'QA-02']);
+  assert.deepEqual(content.metadata.adjacent_topics, ['MOD-07', 'MOD-09', 'MOD-10', 'MOD-11', 'PR-10', 'QA-02']);
   assert.deepEqual(content.metadata.related_cases, [
     '/cases/temporal-saga-durable-execution',
   ]);

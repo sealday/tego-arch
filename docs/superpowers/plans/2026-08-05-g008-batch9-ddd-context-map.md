@@ -322,6 +322,10 @@ Expected: focused tests and typecheck pass; the commit contains only the article
   - `tests/g008-batch8-content.test.mjs`
   - `tests/g008-batch8-deployment.test.mjs`
   - `tests/project-status.test.mjs`
+  - `tests/content-review-health.test.mjs`
+  - `tests/source-ledger-pagination.test.mjs`
+  - `tests/source-ledger-rendering.test.mjs`
+  - `tests/g005-batch3-content.test.mjs`
 - Modify generated JSON under `src/generated/`
 
 **Interfaces:**

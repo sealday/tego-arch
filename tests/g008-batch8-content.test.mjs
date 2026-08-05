@@ -402,8 +402,8 @@ function assertScopeAndRelations(body, peers = documentsById) {
   assert.ok(inputs.includes(paymentEvidenceSentence), paymentEvidenceSentence);
   const links = extractInternalLinks({body});
   for (const href of ['/modeling', '/modeling/mod-01', '/modeling/mod-02', '/modeling/mod-08', '/modeling/mod-09', '/cases/temporal-saga-durable-execution']) assert.ok(links.includes(href), href);
-  assert.match(visibleMdxLines({body}).join('\n'), /MOD-11/u);
-  for (const id of ['MOD-11', 'MOD-12', 'MOD-13']) {
+  assert.equal(links.filter((href) => href === '/modeling/mod-11').length, 1);
+  for (const id of ['MOD-12', 'MOD-13']) {
     assert.ok(!links.includes(`/modeling/${id.toLowerCase()}`), `${id} must remain non-actionable`);
   }
   const mod08 = peers.get('MOD-08');
@@ -747,7 +747,12 @@ test('rejects review regressions that the original contract missed', () => {
     assert.throws(() => assertScopeAndRelations(mutation), {name: 'AssertionError'}, label);
   }
 
-  for (const id of ['MOD-11', 'MOD-12', 'MOD-13']) {
+  assert.throws(
+    () => assertScopeAndRelations(body.replace('/modeling/mod-11', '/modeling')),
+    {name: 'AssertionError'},
+    'MOD-11 actionable link removed',
+  );
+  for (const id of ['MOD-12', 'MOD-13']) {
     assert.throws(
       () => assertScopeAndRelations(`${body}\n[forbidden](/modeling/${id.toLowerCase()})\n`),
       {name: 'AssertionError'},

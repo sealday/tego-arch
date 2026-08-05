@@ -1551,6 +1551,7 @@
         "MOD-04",
         "MOD-06",
         "MOD-09",
+        "MOD-11",
         "PR-13"
       ],
       "primary_sources": [
@@ -3116,27 +3117,6 @@
       "pattern_group": null
     },
     {
-      "id": "MOD-11",
-      "type": "modeling",
-      "title": "DDD Context Map",
-      "slug": "/modeling/mod-11",
-      "priority": "P1",
-      "status": {
-        "scope": "backlog-projection",
-        "value": "pending",
-        "source": "docs/content-backlog.md"
-      },
-      "dependencies": [],
-      "adjacent_topics": [],
-      "primary_sources": [],
-      "related_cases": [],
-      "related_questions": [],
-      "reviewed_at": null,
-      "review_policy": null,
-      "published": false,
-      "pattern_group": null
-    },
-    {
       "id": "MOD-12",
       "type": "modeling",
       "title": "架构图审阅清单",
@@ -4118,6 +4098,7 @@
         "MOD-07",
         "MOD-09",
         "MOD-10",
+        "MOD-11",
         "PR-10",
         "QA-02"
       ],
@@ -4359,6 +4340,40 @@
       ],
       "related_questions": [],
       "reviewed_at": "2026-07-27",
+      "review_policy": "quarterly-version-sensitive",
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
+    },
+    {
+      "id": "MOD-11",
+      "type": "modeling",
+      "title": "DDD Context Map 建模",
+      "slug": "/modeling/mod-11",
+      "priority": "P1",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "pending",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "MOD-01",
+        "MOD-02",
+        "MOD-09",
+        "MOD-10"
+      ],
+      "adjacent_topics": [
+        "MOD-05",
+        "MOD-08"
+      ],
+      "primary_sources": [
+        "https://martinfowler.com/bliki/BoundedContext.html"
+      ],
+      "related_cases": [
+        "/cases/temporal-saga-durable-execution"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-08-05",
       "review_policy": "quarterly-version-sensitive",
       "published": true,
       "pattern_group": null,
