@@ -12,17 +12,25 @@
   max-width: 48rem;
 }
 
-.heroLabel,
-.sectionLabel {
+.heroLabel {
   margin: 0;
-  color: var(--ifm-color-primary-light);
+  color: var(--atlas-hero-ink);
   font-family: var(--atlas-mono);
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.12em;
 }
 
-.hero h1 {
+.sectionLabel {
+  margin: 0;
+  color: var(--ifm-color-primary);
+  font-family: var(--atlas-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.heroTitle {
   max-width: 12ch;
   margin: 1.35rem 0 1rem;
   color: var(--atlas-hero-ink);
@@ -30,6 +38,15 @@
   font-weight: 560;
   letter-spacing: -0.04em;
   line-height: 1.14;
+}
+
+.heroTitle h1 {
+  margin: 0;
+  color: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+  line-height: inherit;
 }
 
 .lede {
@@ -87,6 +104,11 @@
   border-color: var(--ifm-color-primary-light);
   color: var(--ifm-color-primary-light);
   text-decoration: none;
+}
+
+.hero a:focus-visible {
+  outline: 3px solid var(--atlas-hero-ink);
+  outline-offset: 3px;
 }
 
 .heroRelations {
@@ -412,7 +434,7 @@
     padding: 3.5rem 0 2.5rem;
   }
 
-  .hero h1 {
+  .heroTitle {
     max-width: 9ch;
     font-size: clamp(2.25rem, 11vw, 3rem);
   }

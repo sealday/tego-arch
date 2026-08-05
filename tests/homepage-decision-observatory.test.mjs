@@ -5,6 +5,51 @@ import test from 'node:test';
 const read = async (path) =>
   readFile(new URL(`../${path}`, import.meta.url), 'utf8');
 
+const cssBlock = (source, header) => {
+  const start = source.indexOf(header);
+  assert.notEqual(start, -1, `missing CSS block: ${header}`);
+  const open = source.indexOf('{', start + header.length);
+  assert.notEqual(open, -1, `missing opening brace: ${header}`);
+
+  let depth = 0;
+  for (let index = open; index < source.length; index += 1) {
+    if (source[index] === '{') depth += 1;
+    if (source[index] === '}') depth -= 1;
+    if (depth === 0) return source.slice(open + 1, index);
+  }
+
+  assert.fail(`missing closing brace: ${header}`);
+};
+
+const declaration = (block, property) => {
+  const escapedProperty = property.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
+  const match = block.match(new RegExp(`(?:^|\\n)\\s*${escapedProperty}:\\s*([^;]+);`, 'u'));
+  assert.ok(match, `missing declaration: ${property}`);
+  return match[1].trim();
+};
+
+const parseHex = (value) => {
+  const match = value.match(/^#([0-9a-f]{6})$/iu);
+  assert.ok(match, `expected six-digit hex color, received ${value}`);
+  return [0, 2, 4].map((offset) => Number.parseInt(match[1].slice(offset, offset + 2), 16));
+};
+
+const relativeLuminance = (rgb) => {
+  const linear = rgb.map((channel) => {
+    const normalized = channel / 255;
+    return normalized <= 0.04045
+      ? normalized / 12.92
+      : ((normalized + 0.055) / 1.055) ** 2.4;
+  });
+  return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
+};
+
+const contrastRatio = (foreground, background) => {
+  const [lighter, darker] = [relativeLuminance(parseHex(foreground)), relativeLuminance(parseHex(background))]
+    .sort((left, right) => right - left);
+  return (lighter + 0.05) / (darker + 0.05);
+};
+
 test('publishes the approved homepage design contract', async () => {
   const design = await read('DESIGN.md');
 
@@ -127,23 +172,80 @@ test('publishes three problem-led entrances and generated research highlights', 
   assert.match(homepage, /homepageCases\.slice\(1\)\.map/u);
 });
 
-test('uses restrained homepage tokens and responsive density rules', async () => {
+test('uses exact restrained homepage tokens in both theme scopes', async () => {
   const [styles, globalStyles] = await Promise.all([
     read('src/pages/index.module.css'),
     read('src/css/custom.css'),
   ]);
 
-  for (const token of ['--atlas-hero', '--atlas-hero-ink', '--atlas-hero-muted']) {
-    assert.match(globalStyles, new RegExp(token, 'u'));
+  const light = cssBlock(globalStyles, ':root');
+  const dark = cssBlock(globalStyles, "[data-theme='dark']");
+  for (const [token, lightValue, darkValue] of [
+    ['--atlas-hero', '#242522', '#181916'],
+    ['--atlas-hero-ink', '#eee8de', '#f0ebe2'],
+    ['--atlas-hero-muted', 'rgba(238, 232, 222, 0.66)', 'rgba(240, 235, 226, 0.68)'],
+  ]) {
+    assert.equal(declaration(light, token), lightValue);
+    assert.equal(declaration(dark, token), darkValue);
   }
 
-  assert.match(styles, /\.hero\s*\{[\s\S]*background:\s*var\(--atlas-hero\)/u);
-  assert.match(styles, /\.heroRelations\s*\{/u);
-  assert.match(styles, /\.entryRow/u);
-  assert.match(styles, /\.researchLead/u);
-  assert.match(styles, /\.futureList/u);
-  assert.match(styles, /@media\s*\(max-width:\s*996px\)/u);
-  assert.match(styles, /@media\s*screen and \(max-width:\s*700px\)/u);
-  assert.match(styles, /@media\s*\(prefers-reduced-motion:\s*reduce\)/u);
-  assert.doesNotMatch(styles, /backdrop-filter/u);
+  assert.equal(declaration(cssBlock(styles, '.hero'), 'background'), 'var(--atlas-hero)');
+});
+
+test('scopes hero typography, focus, responsive density, and reduced motion', async () => {
+  const [homepage, styles] = await Promise.all([
+    read('src/pages/index.tsx'),
+    read('src/pages/index.module.css'),
+  ]);
+  const heroTitle = cssBlock(styles, '.heroTitle');
+  const heroFocus = cssBlock(styles, '.hero a:focus-visible');
+  const tablet = cssBlock(styles, '@media (max-width: 996px)');
+  const mobile = cssBlock(styles, '@media screen and (max-width: 700px)');
+  const reducedMotion = cssBlock(styles, '@media (prefers-reduced-motion: reduce)');
+
+  assert.match(homepage, /<div className=\{styles\.heroTitle\}>\s*<Heading as="h1">/u);
+  assert.equal(declaration(heroTitle, 'font-size'), 'clamp(3rem, 5.4vw, 4.25rem)');
+  assert.equal(declaration(heroFocus, 'outline'), '3px solid var(--atlas-hero-ink)');
+  assert.match(tablet, /\.heroRelations\s*\{[^}]*opacity:\s*0\.32;/u);
+  assert.match(tablet, /\.researchGrid\s*\{[^}]*grid-template-columns:\s*1fr;/u);
+  assert.match(tablet, /\.futureList\s*\{[^}]*grid-template-columns:\s*1fr;/u);
+  assert.match(mobile, /\.heroTitle\s*\{[^}]*font-size:\s*clamp\(2\.25rem, 11vw, 3rem\);/u);
+  assert.match(mobile, /\.statusRail div:nth-child\(n \+ 3\)\s*\{[^}]*display:\s*none;/u);
+  assert.match(mobile, /\.entryRow p\s*\{[^}]*display:\s*none;/u);
+  assert.match(reducedMotion, /\.entryRow,[\s\S]*\.primaryAction,[\s\S]*\.secondaryAction\s*\{[^}]*transition:\s*none;/u);
+});
+
+test('keeps hero labels and focus indicators contrast-safe in both themes', async () => {
+  const [styles, globalStyles] = await Promise.all([
+    read('src/pages/index.module.css'),
+    read('src/css/custom.css'),
+  ]);
+  const heroLabelColor = declaration(cssBlock(styles, '.heroLabel'), 'color');
+  const focusColor = declaration(cssBlock(styles, '.hero a:focus-visible'), 'outline')
+    .match(/var\((--[^)]+)\)$/u)?.[1];
+  assert.equal(heroLabelColor, 'var(--atlas-hero-ink)');
+  assert.equal(focusColor, '--atlas-hero-ink');
+
+  for (const theme of [cssBlock(globalStyles, ':root'), cssBlock(globalStyles, "[data-theme='dark']")]) {
+    const background = declaration(theme, '--atlas-hero');
+    const label = declaration(theme, heroLabelColor.slice(4, -1));
+    const focus = declaration(theme, focusColor);
+    assert.ok(contrastRatio(label, background) >= 4.5, 'hero label contrast must be at least 4.5:1');
+    assert.ok(contrastRatio(focus, background) >= 3, 'hero focus outline contrast must be at least 3:1');
+  }
+});
+
+test('forbids decorative effects and oversized ordinary radii in homepage styles', async () => {
+  const styles = await read('src/pages/index.module.css');
+  assert.doesNotMatch(styles, /backdrop-filter|box-shadow|(?:^|[;{\s])filter\s*:\s*drop-shadow|(?:linear|radial)-gradient/iu);
+
+  for (const match of styles.matchAll(/([^{}]+)\{([^{}]*)\}/gu)) {
+    const selector = match[1].trim();
+    for (const radius of match[2].matchAll(/border-radius:\s*([\d.]+)px/gu)) {
+      assert.ok(Number(radius[1]) <= 6, `${selector} exceeds the 6px radius limit`);
+    }
+    if (/border-radius:\s*50%/u.test(match[2])) {
+      assert.equal(selector, '.heroRelations span', 'only relationship nodes may use circular radius');
+    }
+  }
 });
