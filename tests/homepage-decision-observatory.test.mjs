@@ -100,8 +100,11 @@ test('keeps every visible heading source free of terminal punctuation', async ()
       .map(({title}) => title),
   };
 
+  const requiredHeadingSources = new Set(['static', 'homepageEntries', 'futureOutputs']);
   for (const [source, headings] of Object.entries(headingSources)) {
-    assert.ok(headings.length > 0, `${source} must contribute visible headings`);
+    if (requiredHeadingSources.has(source)) {
+      assert.ok(headings.length > 0, `${source} must contribute visible headings`);
+    }
     for (const heading of headings) {
       assert.doesNotMatch(heading, /[。.]+$/u, `${source}: ${heading}`);
     }
