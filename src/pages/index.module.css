@@ -49,6 +49,11 @@
   line-height: inherit;
 }
 
+.heroTitlePhrase {
+  display: block;
+  white-space: nowrap;
+}
+
 .lede {
   max-width: 40rem;
   margin: 0;
@@ -250,8 +255,8 @@
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(90deg, var(--atlas-paper) 0, transparent 7%, transparent 93%, var(--atlas-paper) 100%),
-    linear-gradient(var(--atlas-paper) 0, transparent 9%, transparent 90%, var(--atlas-paper) 100%);
+    linear-gradient(90deg, var(--atlas-paper) 0, transparent 10%, transparent 90%, var(--atlas-paper) 100%),
+    linear-gradient(var(--atlas-paper) 0, transparent 12%, transparent 88%, var(--atlas-paper) 100%);
   content: '';
   pointer-events: none;
 }
@@ -516,7 +521,7 @@
   }
 
   .heroTitle {
-    max-width: 9ch;
+    max-width: 100%;
     font-size: clamp(2.25rem, 11vw, 3rem);
   }
 

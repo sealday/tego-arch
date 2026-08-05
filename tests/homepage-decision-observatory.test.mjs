@@ -84,7 +84,8 @@ test('publishes the approved homepage design contract', async () => {
 test('uses the approved decision-observatory narrative in exact order', async () => {
   const homepage = await read('src/pages/index.tsx');
   const orderedCopy = [
-    '在复杂系统里 做清醒的选择',
+    '在复杂系统里',
+    '做清醒的选择',
     '一张持续展开的架构坐标',
     '从问题出发',
     '正在研究的系统',
@@ -210,9 +211,27 @@ test('scopes hero typography, focus, responsive density, and reduced motion', as
   assert.match(tablet, /\.researchGrid\s*\{[^}]*grid-template-columns:\s*1fr;/u);
   assert.match(tablet, /\.futureList\s*\{[^}]*grid-template-columns:\s*1fr;/u);
   assert.match(mobile, /\.heroTitle\s*\{[^}]*font-size:\s*clamp\(2\.25rem, 11vw, 3rem\);/u);
+  assert.match(mobile, /\.heroTitle\s*\{[^}]*max-width:\s*100%;/u);
   assert.match(mobile, /\.statusRail div:nth-child\(n \+ 3\)\s*\{[^}]*display:\s*none;/u);
   assert.match(mobile, /\.entryRow p\s*\{[^}]*display:\s*none;/u);
   assert.match(reducedMotion, /\.entryRow,[\s\S]*\.primaryAction,[\s\S]*\.secondaryAction\s*\{[^}]*transition:\s*none;/u);
+});
+
+test('keeps both homepage promise phrases intact on every viewport', async () => {
+  const [homepage, styles] = await Promise.all([
+    read('src/pages/index.tsx'),
+    read('src/pages/index.module.css'),
+  ]);
+  const phrase = cssBlock(styles, '.heroTitlePhrase');
+
+  assert.equal((homepage.match(/<Heading as="h1">/gu) ?? []).length, 1);
+  assert.match(
+    homepage,
+    /<Heading as="h1">\s*<span className=\{styles\.heroTitlePhrase\}>在复杂系统里<\/span>\{' '\}\s*<span className=\{styles\.heroTitlePhrase\}>做清醒的选择<\/span>\s*<\/Heading>/u,
+  );
+  assert.doesNotMatch(homepage, /(?:&nbsp;|\u00a0)/u);
+  assert.equal(declaration(phrase, 'display'), 'block');
+  assert.equal(declaration(phrase, 'white-space'), 'nowrap');
 });
 
 test('keeps hero labels, focused secondary actions, and focus indicators contrast-safe', async () => {
@@ -263,8 +282,8 @@ test('forbids decorative effects and oversized ordinary radii in homepage styles
   const featherBackground = declaration(featherBlock, 'background').replace(/\s+/gu, ' ');
   assert.equal(
     featherBackground,
-    'linear-gradient(90deg, var(--atlas-paper) 0, transparent 7%, transparent 93%, var(--atlas-paper) 100%), ' +
-      'linear-gradient(var(--atlas-paper) 0, transparent 9%, transparent 90%, var(--atlas-paper) 100%)',
+    'linear-gradient(90deg, var(--atlas-paper) 0, transparent 10%, transparent 90%, var(--atlas-paper) 100%), ' +
+      'linear-gradient(var(--atlas-paper) 0, transparent 12%, transparent 88%, var(--atlas-paper) 100%)',
   );
   assert.equal([...featherBackground.matchAll(/linear-gradient\(/gu)].length, 2);
   assert.doesNotMatch(featherBackground, /(?:radial|conic)-gradient\(/u);

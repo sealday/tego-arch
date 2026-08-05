@@ -56,7 +56,10 @@ function Hero(): ReactNode {
         <div className={styles.heroContent}>
           <p className={styles.heroLabel}>Tego Arch / 架构决策观察</p>
           <div className={styles.heroTitle}>
-            <Heading as="h1">在复杂系统里 做清醒的选择</Heading>
+            <Heading as="h1">
+              <span className={styles.heroTitlePhrase}>在复杂系统里</span>{' '}
+              <span className={styles.heroTitlePhrase}>做清醒的选择</span>
+            </Heading>
           </div>
           <p className={styles.lede}>
             从边界、状态、控制与质量属性出发，让每个架构决定都能解释、验证和演化

@@ -43,7 +43,10 @@ test('positions architecture judgment with the approved homepage actions', async
     'utf8',
   );
 
-  assert.match(homepage, /<Heading as="h1">\s*在复杂系统里 做清醒的选择\s*<\/Heading>/u);
+  assert.match(
+    homepage,
+    /<Heading as="h1">[\s\S]*在复杂系统里[\s\S]*做清醒的选择[\s\S]*<\/Heading>/u,
+  );
   assert.match(homepage, /从边界、状态、控制与质量属性出发，让每个架构决定都能解释、验证和演化/u);
   assert.match(homepage, /to="\/paths"[\s\S]*开始建立判断坐标/u);
   assert.match(homepage, /to="\/intro"[\s\S]*了解研究方法/u);

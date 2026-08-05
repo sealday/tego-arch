@@ -62,7 +62,7 @@ test('README positions the project, shows the roadmap, and closes the contributi
 test('homepage presents architecture judgment and the release roadmap', async () => {
   const homepage = await read('src/pages/index.tsx');
 
-  assert.match(homepage, /在复杂系统里 做清醒的选择/u);
+  assert.match(homepage, /在复杂系统里[\s\S]*做清醒的选择/u);
   assert.match(homepage, /开始建立判断坐标/u);
   assert.match(homepage, /了解研究方法/u);
   assert.match(homepage, /tego-arch-initial-release-roadmap\.png/u);
