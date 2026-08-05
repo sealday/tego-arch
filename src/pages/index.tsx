@@ -102,6 +102,24 @@ function SectionIntro({id, label, title, description}: SectionIntroProps): React
   );
 }
 
+function RoadmapStatusContent(): ReactNode {
+  return (
+    <>
+      <strong>这是一张历史快照</strong>
+      <p>图中颜色只表示 2026-08-05 快照当日状态。</p>
+      <ul>
+        <li>绿色表示快照当日已完成</li>
+        <li>橙色表示快照当日当前阶段</li>
+        <li>蓝色表示快照当日待执行</li>
+      </ul>
+      <p>每个阶段仍需经过验证、评审、发布与线上检查。</p>
+      <Link href="https://github.com/sealday/tego-arch/blob/main/docs/content-backlog.md">
+        查看实时 backlog <span aria-hidden="true">↗</span>
+      </Link>
+    </>
+  );
+}
+
 function RoadmapSection(): ReactNode {
   const roadmapSrc = useBaseUrl('/img/illustrations/tego-arch-initial-release-roadmap.png');
 
@@ -126,7 +144,27 @@ function RoadmapSection(): ReactNode {
               alt="Tego Arch 初版发布路线图：从基线与知识主干走向完整初版发布"
             />
           </div>
-          <figcaption className={styles.roadmapMeta}>初版路线图 · 2026-08-05 快照</figcaption>
+          <figcaption className={styles.roadmapMeta}>
+            <span>初版路线图 · 2026-08-05 快照</span>
+            <div className={styles.roadmapDesktopInfo}>
+              <button
+                type="button"
+                className={styles.roadmapInfoControl}
+                aria-describedby="roadmap-status-note">
+                状态与图例说明
+              </button>
+              <div id="roadmap-status-note" role="note" className={styles.roadmapInfoPanel}>
+                <RoadmapStatusContent />
+              </div>
+            </div>
+            <a href={roadmapSrc} target="_blank" rel="noreferrer" className={styles.roadmapLargeLink}>
+              查看大图 <span aria-hidden="true">↗</span>
+            </a>
+          </figcaption>
+          <details className={styles.roadmapMobileDetails}>
+            <summary>关于这张路线图</summary>
+            <div><RoadmapStatusContent /></div>
+          </details>
         </figure>
       </div>
     </section>

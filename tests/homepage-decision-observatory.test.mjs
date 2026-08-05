@@ -251,7 +251,11 @@ test('keeps hero labels, focused secondary actions, and focus indicators contras
 test('forbids decorative effects and oversized ordinary radii in homepage styles', async () => {
   const styles = await read('src/pages/index.module.css');
   assert.doesNotMatch(styles, /\b(?:backdrop-filter|filter|box-shadow|text-shadow)\s*:/iu);
-  assert.doesNotMatch(styles, /\b[\w-]*gradient\s*\(/iu);
+  const stylesWithoutRoadmapFeather = styles.replace(
+    /\.roadmapMedia::after\s*\{[\s\S]*?\}/u,
+    '',
+  );
+  assert.doesNotMatch(stylesWithoutRoadmapFeather, /\b[\w-]*gradient\s*\(/iu);
 
   for (const match of styles.matchAll(/([^{}]+)\{([^{}]*)\}/gu)) {
     const selector = match[1].trim();
@@ -273,4 +277,40 @@ test('forbids decorative effects and oversized ordinary radii in homepage styles
       );
     }
   }
+});
+
+test('keeps roadmap details available without forcing them into the reading flow', async () => {
+  const [homepage, styles] = await Promise.all([
+    read('src/pages/index.tsx'),
+    read('src/pages/index.module.css'),
+  ]);
+
+  assert.match(homepage, /初版路线图 · 2026-08-05 快照/u);
+  assert.match(homepage, /<button[\s\S]*aria-describedby="roadmap-status-note"[\s\S]*状态与图例说明/u);
+  assert.match(homepage, /id="roadmap-status-note"[\s\S]*role="note"/u);
+  assert.match(homepage, /<details className=\{styles\.roadmapMobileDetails\}>/u);
+  assert.match(homepage, /<summary>关于这张路线图<\/summary>/u);
+  assert.match(homepage, /href=\{roadmapSrc\}[\s\S]*target="_blank"[\s\S]*查看大图/u);
+
+  for (const text of [
+    '历史快照',
+    '绿色表示快照当日已完成',
+    '橙色表示快照当日当前阶段',
+    '蓝色表示快照当日待执行',
+    '验证、评审、发布与线上检查',
+    'docs/content-backlog.md',
+  ]) {
+    assert.match(homepage, new RegExp(text, 'u'));
+  }
+
+  assert.match(homepage, /width=\{1672\}/u);
+  assert.match(homepage, /height=\{941\}/u);
+  assert.match(homepage, /loading="lazy"/u);
+  assert.match(homepage, /decoding="async"/u);
+  assert.doesNotMatch(homepage, /data-(?:status|backlog|legend)/u);
+  assert.match(styles, /\.roadmapMedia::after/u);
+  assert.match(styles, /\.roadmapDesktopInfo:hover[\s\S]*\.roadmapInfoPanel/u);
+  assert.match(styles, /\.roadmapDesktopInfo:focus-within[\s\S]*\.roadmapInfoPanel/u);
+  assert.doesNotMatch(cssBlock(styles, '.roadmapMedia'), /\bborder\s*:/u);
+  assert.doesNotMatch(cssBlock(styles, '.roadmapInfoPanel'), /\bbox-shadow\s*:/u);
 });

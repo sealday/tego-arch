@@ -240,8 +240,19 @@
 }
 
 .roadmapMedia {
-  border: 1px solid var(--atlas-line-strong);
-  background: #f7f2e8;
+  position: relative;
+  overflow: hidden;
+  background: var(--atlas-paper);
+}
+
+.roadmapMedia::after {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, var(--atlas-paper) 0, transparent 7%, transparent 93%, var(--atlas-paper) 100%),
+    linear-gradient(var(--atlas-paper) 0, transparent 9%, transparent 90%, var(--atlas-paper) 100%);
+  content: '';
+  pointer-events: none;
 }
 
 .roadmapImage {
@@ -251,12 +262,68 @@
 }
 
 .roadmapMeta {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
   margin-top: 0.75rem;
   color: var(--atlas-muted);
   font-family: var(--atlas-mono);
-  font-size: 0.7rem;
+  font-size: 0.78rem;
   letter-spacing: 0.04em;
-  text-align: right;
+}
+
+.roadmapDesktopInfo {
+  position: relative;
+  margin-left: auto;
+}
+
+.roadmapInfoControl {
+  border: 0;
+  border-bottom: 1px dotted var(--ifm-color-primary);
+  background: transparent;
+  color: var(--ifm-color-primary);
+  cursor: help;
+  font: inherit;
+}
+
+.roadmapInfoControl:focus-visible {
+  outline: 2px solid var(--ifm-color-primary);
+  outline-offset: 3px;
+}
+
+.roadmapInfoPanel {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 0.75rem);
+  z-index: 3;
+  width: min(20rem, 80vw);
+  border-radius: 4px;
+  background: var(--atlas-paper-raised);
+  padding: 1rem;
+  color: var(--atlas-ink-soft);
+  line-height: 1.65;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(0.35rem);
+  transition: opacity 140ms ease, transform 140ms ease;
+}
+
+.roadmapInfoPanel p,
+.roadmapInfoPanel ul {
+  margin: 0.5rem 0;
+}
+
+.roadmapDesktopInfo:hover .roadmapInfoPanel,
+.roadmapDesktopInfo:focus-within .roadmapInfoPanel {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.roadmapMobileDetails,
+.roadmapLargeLink {
+  display: none;
 }
 
 .entryList {
@@ -485,7 +552,35 @@
   }
 
   .roadmapMeta {
-    text-align: left;
+    align-items: baseline;
+  }
+
+  .roadmapDesktopInfo {
+    display: none;
+  }
+
+  .roadmapLargeLink {
+    display: inline;
+    flex: none;
+  }
+
+  .roadmapMobileDetails {
+    display: block;
+    margin-top: 0.9rem;
+    border-block: 1px solid var(--atlas-line);
+  }
+
+  .roadmapMobileDetails summary {
+    padding: 0.8rem 0;
+    color: var(--atlas-ink-soft);
+    cursor: pointer;
+  }
+
+  .roadmapMobileDetails > div {
+    padding-bottom: 1rem;
+    color: var(--atlas-muted);
+    font-size: 0.82rem;
+    line-height: 1.7;
   }
 }
 
@@ -493,6 +588,10 @@
   .entryRow,
   .primaryAction,
   .secondaryAction {
+    transition: none;
+  }
+
+  .roadmapInfoPanel {
     transition: none;
   }
 }
