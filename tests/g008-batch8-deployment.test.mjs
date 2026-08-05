@@ -314,14 +314,22 @@ test('rejects backlog evidence status and next-topic mutations', () => {
       backlog.replace(segment, `${segment}${literal}`),
     ));
   }
-  for (const mutation of [
+  const backlogStateMutations = [
     backlog.replace('- [x] **MOD-08 ', '- [ ] **MOD-08 '),
     backlog.replace('- [x] **MOD-09 ', '- [ ] **MOD-09 '),
     backlog.replace('- [x] **MOD-10 ', '- [ ] **MOD-10 '),
     backlog.replace('- [ ] **MOD-11 ', '- [x] **MOD-11 '),
+    backlog.replace('- [ ] **MOD-12 ', '- [x] **MOD-12 '),
+    backlog.replace('- [ ] **MOD-13 ', '- [x] **MOD-13 '),
     backlog.replace('- **当前持久故事：** `G008`。', '- **当前持久故事：** `G009`。'),
     backlog.replace('下一项为 MOD-11', '下一项为 MOD-12'),
-  ]) {
+  ];
+  assert.equal(
+    backlogStateMutations.length,
+    8,
+    'six MOD-08..13 checkbox mutations plus current-story and next-topic mutations',
+  );
+  for (const mutation of backlogStateMutations) {
     assert.throws(() => assertBacklogClosure(mutation));
   }
 });
@@ -348,6 +356,23 @@ test('locks Batch 7 and all older release evidence byte-for-byte', () => {
 
 test('rejects every generated status and count mutation', () => {
   assert.doesNotThrow(() => assertGeneratedState(manifest, projectStatus));
+  const sourceMutations = [
+    (value) => { value.sources.durable_stories = 'other'; },
+    (value) => { value.sources.completed_topics = 'other'; },
+    (value) => { value.sources.content_documents = 'other'; },
+    (value) => { value.sources.governed_sources = 'other'; },
+  ];
+  assert.equal(sourceMutations.length, 4, 'every project-status source has a mutation');
+  const publishedMutations = ['MOD-10', 'MOD-11', 'MOD-12', 'MOD-13'].map((id) => {
+    const mutatedManifest = structuredClone(manifest);
+    const topic = mutatedManifest.topics.find((candidate) => candidate.id === id);
+    topic.published = !topic.published;
+    return mutatedManifest;
+  });
+  assert.equal(publishedMutations.length, 4, 'every MOD-10..13 published flag has a mutation');
+  for (const mutatedManifest of publishedMutations) {
+    assert.throws(() => assertGeneratedState(mutatedManifest, projectStatus));
+  }
   for (const id of ['MOD-10', 'MOD-11', 'MOD-12', 'MOD-13']) {
     const mutatedManifest = structuredClone(manifest);
     const topic = mutatedManifest.topics.find((candidate) => candidate.id === id);
@@ -362,7 +387,7 @@ test('rejects every generated status and count mutation', () => {
     (value) => { value.completed_topics = 48; },
     (value) => { value.content_documents = 90; },
     (value) => { value.governed_sources = 484; },
-    (value) => { value.sources.completed_topics = 'other'; },
+    ...sourceMutations,
   ]) {
     const mutatedStatus = structuredClone(projectStatus);
     mutate(mutatedStatus);
