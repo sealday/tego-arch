@@ -102,11 +102,18 @@ test('homepage leads with the transition to architecture design and the release 
 test('website footer exposes the dual-license and third-party boundaries', async () => {
   const config = await read('docusaurus.config.ts');
 
-  assert.match(config, /代码 · Apache-2\.0/u);
-  assert.match(config, /内容 · CC BY 4\.0/u);
-  assert.match(config, /第三方材料/u);
-  assert.match(config, /blob\/main\/LICENSE/u);
-  assert.match(config, /blob\/main\/LICENSE-CONTENT\.md/u);
-  assert.match(config, /blob\/main\/NOTICE\.md/u);
+  const footerLinks = [
+    ['代码 · Apache-2.0', '/blob/main/LICENSE'],
+    ['内容 · CC BY 4.0', '/blob/main/LICENSE-CONTENT.md'],
+    ['第三方材料', '/blob/main/NOTICE.md'],
+  ];
+
+  for (const [label, destination] of footerLinks) {
+    const linkObject = String.raw`\{\s*label: '${label.replaceAll('.', String.raw`\.`)}',\s*href: ` +
+      '`' + String.raw`\$\{repositoryUrl\}${destination.replaceAll('.', String.raw`\.`)}` +
+      '`' + String.raw`,?\s*\}`;
+    assert.match(config, new RegExp(linkObject, 'u'));
+  }
+
   assert.match(config, /Tego Arch contributors/u);
 });
