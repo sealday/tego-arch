@@ -59,67 +59,26 @@ test('README positions the project, shows the roadmap, and closes the contributi
   assert.match(readme, /NOTICE\.md/u);
 });
 
-test('homepage leads with the transition to architecture design and the release roadmap', async () => {
-  const [homepage, styles] = await Promise.all([
-    read('src/pages/index.tsx'),
-    read('src/pages/index.module.css'),
-  ]);
+test('homepage presents architecture judgment and the release roadmap', async () => {
+  const homepage = await read('src/pages/index.tsx');
 
-  assert.match(homepage, /<Heading as="h1">从高级工程师到架构设计者。<\/Heading>/u);
-  assert.match(
-    homepage,
-    /<p className=\{styles\.lede\}>\s*面向有经验的高级工程师，用证据、权衡与真实案例训练从实现到架构决策的能力。\s*<\/p>/u,
-  );
-  assert.match(
-    homepage,
-    /<Link className=\{styles\.primaryAction\} to="\/paths">\s*沿学习路径开始/u,
-  );
+  assert.match(homepage, /在复杂系统里 做清醒的选择/u);
+  assert.match(homepage, /开始建立判断坐标/u);
+  assert.match(homepage, /了解研究方法/u);
   assert.match(homepage, /tego-arch-initial-release-roadmap\.png/u);
-  assert.match(homepage, /Tego Arch 初版发布路线图/u);
+  assert.match(homepage, /一张持续展开的架构坐标/u);
   assert.match(homepage, /docs\/content-backlog\.md/u);
   assert.match(homepage, /便携小抄/u);
   assert.match(homepage, /精华学习路线/u);
   assert.match(homepage, /Tego 实践与规划/u);
   assert.match(homepage, /https:\/\/github\.com\/sealday\/tego-arch#参与贡献/u);
-  assert.equal([...homepage.matchAll(/<RoadmapSection\s*\/>/gu)].length, 1);
-  assert.equal([...homepage.matchAll(/<FutureDeliverablesSection\s*\/>/gu)].length, 1);
-  assert.match(
-    homepage,
-    /<Hero\s*\/>\s*<main>\s*<RoadmapSection\s*\/>\s*<FutureDeliverablesSection\s*\/>/u,
-  );
-
-  const futureSectionSource = homepage.match(
-    /function FutureDeliverablesSection\(\): ReactNode \{[\s\S]*?\n\}\n\nexport default function Home/u,
-  )?.[0];
-  assert.ok(futureSectionSource);
-  assert.doesNotMatch(futureSectionSource, /<Link\b|\bhref=|<button\b|\bto=/u);
-
-  assert.match(
-    homepage,
-    /2026-08-05[\s\S]*视觉快照[\s\S]*不是实时状态[\s\S]*最新[\s\S]*精确进度[\s\S]*当前故事[\s\S]*停止条件[\s\S]*只在[\s\S]*docs\/content-backlog\.md/u,
-  );
-  assert.match(
-    homepage,
-    /2026-08-05\s+快照当日[\s\S]*绿色[\s\S]*当日已完成[\s\S]*橙色[\s\S]*当日当前阶段[\s\S]*蓝色[\s\S]*当日待执行/u,
-  );
-  assert.match(
-    homepage,
-    /每个阶段[\s\S]*验证[\s\S]*评审[\s\S]*发布[\s\S]*线上检查[\s\S]*发布门槛/u,
-  );
-  assert.match(
-    homepage,
-    /docs\/content-backlog\.md[\s\S]*实时[\s\S]*最新状态[\s\S]*唯一事实源/u,
-  );
-  assert.match(
-    homepage,
-    /<img\s+[\s\S]*?src=\{roadmapSrc\}[\s\S]*?width=\{1672\}[\s\S]*?height=\{941\}[\s\S]*?loading="lazy"[\s\S]*?decoding="async"[\s\S]*?alt="Tego Arch 初版发布路线图[^"]*"[\s\S]*?\/>/u,
-  );
-  assert.doesNotMatch(homepage, /7\s*\/\s*20|当前\s*G008/u);
-
-  assert.match(styles, /\.roadmapSection/u);
-  assert.match(styles, /\.roadmapImage/u);
-  assert.match(styles, /\.futureGrid/u);
-  assert.match(styles, /@media\s*\(max-width:\s*996px\)/u);
+  assert.match(homepage, /<Hero\s*\/>\s*<main>\s*<RoadmapSection\s*\/>\s*<EntrySection\s*\/>\s*<ResearchHighlights\s*\/>\s*<FutureOutputSection\s*\/>\s*<ContributionBand\s*\/>/u);
+  assert.doesNotMatch(homepage, /Migration|migrationGroups|learningSteps|expansionPorts/u);
+  assert.match(homepage, /styles\.hero/u);
+  assert.match(homepage, /styles\.roadmapMedia/u);
+  assert.match(homepage, /styles\.entryList/u);
+  assert.match(homepage, /styles\.researchGrid/u);
+  assert.match(homepage, /styles\.futureList/u);
 });
 
 test('website footer exposes the dual-license and third-party boundaries', async () => {
