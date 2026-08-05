@@ -63,14 +63,48 @@ test('uses the approved decision-observatory narrative in exact order', async ()
   ]) {
     assert.doesNotMatch(homepage, new RegExp(removed, 'u'));
   }
+});
 
-  const visibleHeadings = [
-    ...homepage.matchAll(/<Heading[^>]*>([^<]+)<\/Heading>/gu),
-    ...homepage.matchAll(/<SectionIntro[^>]*\btitle="([^"]+)"/gu),
-  ].map((match) => match[1].trim());
-  assert.ok(visibleHeadings.length >= 6);
-  for (const heading of visibleHeadings) {
-    assert.doesNotMatch(heading, /[。.]+$/u);
+test('keeps every visible heading source free of terminal punctuation', async () => {
+  const [homepage, caseCatalogSource, generatedCatalogSource] = await Promise.all([
+    read('src/pages/index.tsx'),
+    read('src/data/caseCatalog.ts'),
+    read('src/generated/case-catalog.json'),
+  ]);
+
+  const configuredTitles = (declaration) => {
+    const block = homepage.match(
+      new RegExp(`const ${declaration}:[^=]+ = \\[([\\s\\S]*?)\\n\\] as const;`, 'u'),
+    );
+    assert.ok(block, `${declaration} must remain a literal readonly array`);
+    return [...block[1].matchAll(/\btitle: '([^']+)'/gu)].map((match) => match[1]);
+  };
+
+  assert.match(homepage, /homepageEntries\.map\([\s\S]*<Heading as="h3">\{entry\.title\}<\/Heading>/u);
+  assert.match(homepage, /futureOutputs\.map\([\s\S]*<Heading as="h3">\{output\.title\}<\/Heading>/u);
+  assert.match(homepage, /<Heading as="h3">\{leadCase\.title\}<\/Heading>/u);
+  assert.match(homepage, /homepageCases\.slice\(1\)\.map\([\s\S]*\{caseStudy\.title\}/u);
+  assert.match(caseCatalogSource, /export const featuredCases = caseCatalog\.filter\(\(\{featured\}\) => featured\)/u);
+
+  const generatedCatalog = JSON.parse(generatedCatalogSource);
+  const headingSources = {
+    static: [
+      ...homepage.matchAll(/<Heading[^>]*>([^<{]+)<\/Heading>/gu),
+      ...homepage.matchAll(/<SectionIntro[^>]*\btitle="([^"]+)"/gu),
+    ].map((match) => match[1].trim()),
+    homepageEntries: configuredTitles('homepageEntries'),
+    futureOutputs: configuredTitles('futureOutputs'),
+    featuredCases: generatedCatalog
+      .filter(({featured}) => featured)
+      .slice(0, 3)
+      .map(({title}) => title),
+  };
+
+  for (const [source, headings] of Object.entries(headingSources)) {
+    assert.ok(headings.length > 0, `${source} must contribute visible headings`);
+    for (const heading of headings) {
+      assert.doesNotMatch(heading, /[。.]+$/u, `${source}: ${heading}`);
+    }
   }
 });
 

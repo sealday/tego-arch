@@ -67,7 +67,6 @@ test('homepage presents architecture judgment and the release roadmap', async ()
   assert.match(homepage, /了解研究方法/u);
   assert.match(homepage, /tego-arch-initial-release-roadmap\.png/u);
   assert.match(homepage, /一张持续展开的架构坐标/u);
-  assert.match(homepage, /docs\/content-backlog\.md/u);
   assert.match(homepage, /便携小抄/u);
   assert.match(homepage, /精华学习路线/u);
   assert.match(homepage, /Tego 实践与规划/u);

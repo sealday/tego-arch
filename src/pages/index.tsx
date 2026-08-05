@@ -112,9 +112,7 @@ function RoadmapSection(): ReactNode {
           title="一张持续展开的架构坐标"
           description="初版沿一条可验证的研究路线展开。首页保留方向，实时进度回到 backlog"
         />
-        <figure
-          className={styles.roadmapFigure}
-          data-status-source="docs/content-backlog.md">
+        <figure className={styles.roadmapFigure}>
           <div className={styles.roadmapMedia}>
             <img
               className={styles.roadmapImage}
