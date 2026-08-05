@@ -270,7 +270,7 @@ Stage A 新增一篇内容文档和三个来源身份，预期投影为 `49 / 92
 - 关系责任表的七列、四行及其与 Mermaid 边的一致性；
 - 八项非证明规则、七步演练、完成条件、责任类型和候选反证；
 - MOD-05、MOD-08 reciprocal adjacency，MOD-09、MOD-10 的可操作后续链接，以及 MOD-12 零操作链接；
-- 三个新来源身份、一个复用来源、唯一 manifest primary、固定 DDD Crew commit、CC BY-SA 4.0 许可证据和全部 `facts-summary` 边界；
+- 三个新来源身份、一个复用来源、唯一 manifest primary、固定 DDD Crew commit、固定 README anchor 的 CC BY 4.0 许可证据、无独立 LICENSE 文件事实和全部 `facts-summary` 边界；
 - Stage A `49 / 92 / 488`、MOD-11 published/pending、G008 current、durable `7 / 20` 和 next MOD-11。
 
 Mutation 测试必须分别删除、交换或替换 H2、Context、系统归属、边方向、U/D、交换事实、ACL、表字段、表行、反证、责任类型、非证明规则、来源和关系，证明合同拒绝结构或语义漂移，而不是只检查关键词存在。

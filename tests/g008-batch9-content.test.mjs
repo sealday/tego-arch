@@ -19,6 +19,14 @@ const sourceLedger = JSON.parse(await readFile(new URL('../data/source-ledger.js
 const sourceLinkHealth = JSON.parse(await readFile(new URL('../data/source-link-health.json', import.meta.url)));
 const topicManifest = JSON.parse(await readFile(new URL('../src/generated/topic-manifest.json', import.meta.url)));
 const projectStatus = JSON.parse(await readFile(new URL('../src/generated/project-status.json', import.meta.url)));
+const normativePlan = await readFile(
+  new URL('../docs/superpowers/plans/2026-08-05-g008-batch9-ddd-context-map.md', import.meta.url),
+  'utf8',
+);
+const normativeDesign = await readFile(
+  new URL('../docs/superpowers/specs/2026-08-05-g008-batch9-ddd-context-map-design.md', import.meta.url),
+  'utf8',
+);
 
 const expectedMetadata = {
   title: 'DDD Context Map 建模',
@@ -669,6 +677,22 @@ test('pins DDD Crew CC BY 4.0 evidence to the checker-managed README section', (
     {name: 'AssertionError'},
     'nonexistent pinned LICENSE must be rejected',
   );
+});
+
+test('keeps normative MOD-11 requirements aligned with corrected DDD Crew provenance', () => {
+  const requirements = `${normativePlan}\n${normativeDesign}`;
+  assert.doesNotMatch(requirements, /CC-BY-SA-4\.0|CC BY-SA 4\.0|adapt-sharealike-review/iu);
+  assert.doesNotMatch(
+    requirements,
+    new RegExp(`ddd-crew/context-mapping/blob/${dddCrewCommit}/LICENSE`, 'u'),
+  );
+  assert.match(requirements, /CC-BY-4\.0/gu);
+  assert.match(requirements, /CC BY 4\.0/gu);
+  assert.match(
+    requirements,
+    new RegExp(`ddd-crew/context-mapping/blob/${dddCrewCommit}/README\\.md#contributions-and-feedback`, 'u'),
+  );
+  assert.match(requirements, /(?:no standalone LICENSE|没有独立 LICENSE)/gu);
 });
 
 test('renders exactly four governed MOD-11 sources', () => {
