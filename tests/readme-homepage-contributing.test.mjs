@@ -36,6 +36,16 @@ test('README positions the project, shows the roadmap, and closes the contributi
     readme,
     /static\/img\/illustrations\/tego-arch-initial-release-roadmap\.png/u,
   );
+  assert.match(readme, /^## 初版方向$/mu);
+  assert.match(readme, /^## 初版之后$/mu);
+  assert.match(readme, /^## 本地开发$/mu);
+  assert.match(readme, /^## 参与贡献$/mu);
+  assert.match(readme, /^## 许可证与第三方材料$/mu);
+  assert.match(readme, /2026-08-05.*视觉快照.*不是实时状态/su);
+  assert.match(
+    readme,
+    /最新.*精确进度、当前故事和停止条件.*只在.*docs\/content-backlog\.md/su,
+  );
   assert.match(readme, /精确进度.*docs\/content-backlog\.md/su);
   assert.match(readme, /便携小抄/u);
   assert.match(readme, /精华学习路线/u);

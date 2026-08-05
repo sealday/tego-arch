@@ -12,7 +12,7 @@ Tego Arch 不是架构名词或外部链接的重新排列。项目把架构基�
 
 ![Tego Arch 初版发布路线图](static/img/illustrations/tego-arch-initial-release-roadmap.png)
 
-路线图是阶段概览，不是实时任务清单。精确进度、当前故事和停止条件只在 [`docs/content-backlog.md`](docs/content-backlog.md) 维护。
+路线图是 2026-08-05 生成的视觉快照，不是实时状态。最新的精确进度、当前故事和停止条件只在 [`docs/content-backlog.md`](docs/content-backlog.md) 维护。
 
 ## 适合谁
 
