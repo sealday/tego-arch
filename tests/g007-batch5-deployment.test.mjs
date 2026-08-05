@@ -127,7 +127,7 @@ function assertStageBClosure(
     /- \*\*持久故事进度：\*\* 已完成 `7 \/ 20`；最近完成 `G007`。/u,
   );
   assert.match(snapshotBacklog, /- \*\*当前持久故事：\*\* `G008`。/u);
-  assert.equal(snapshotProjectStatus.completed_topics, 49);
+  assert.equal(snapshotProjectStatus.completed_topics, 50);
   assert.deepEqual(snapshotProjectStatus.durable_stories, {
     completed: 7,
     total: 20,

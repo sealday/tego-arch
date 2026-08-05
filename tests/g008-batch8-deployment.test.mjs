@@ -156,9 +156,12 @@ function currentReleaseBaseline(source) {
 
 function batch8Segment(source) {
   const baseline = currentReleaseBaseline(source);
+  const startMarker = '此前 G008 Batch 8 历史完成基线为：';
+  const start = baseline.indexOf(startMarker);
+  assert.notEqual(start, -1, 'Batch 8 history boundary');
   const end = baseline.indexOf('此前 G008 Batch 7 历史完成基线为：');
   assert.notEqual(end, -1, 'Batch 7 history boundary');
-  return baseline.slice(0, end);
+  return baseline.slice(start + startMarker.length, end);
 }
 
 function batch7AndOlderHistory(source) {
@@ -202,7 +205,7 @@ function assertBacklogClosure(source) {
   );
   assert.equal(
     segment,
-    expectedBatch8Segment,
+    expectedBatch8Segment.slice('- **当前发布基线：** '.length),
     'Batch 8 current release segment must equal the exact approved measured text',
   );
   for (const literal of expectedBatch8Evidence) {
@@ -213,14 +216,19 @@ function assertBacklogClosure(source) {
     expectedBatch7AndOlderSha256,
     'Batch 7 and older baseline text must remain byte-for-byte unchanged',
   );
-  for (const id of ['08', '09', '10']) {
+  for (const id of ['08', '09', '10', '11']) {
     assert.match(source, new RegExp(`^- \\[x\\] \\*\\*MOD-${id} `, 'mu'));
   }
-  for (const id of ['11', '12', '13']) {
+  for (const id of ['12', '13']) {
     assert.match(source, new RegExp(`^- \\[ \\] \\*\\*MOD-${id} `, 'mu'));
   }
   assert.match(source, /当前持久故事：\*\* `G008`/u);
   assert.doesNotMatch(source, /最近完成 `G008`/u);
+  assert.equal(
+    currentReleaseBaseline(source).split('下一项为 MOD-12').length - 1,
+    1,
+    'live current segment must identify MOD-12 as next',
+  );
 }
 
 function assertGeneratedState(manifestValue, statusValue) {
@@ -228,7 +236,7 @@ function assertGeneratedState(manifestValue, statusValue) {
   assert.equal(topicsById.get('MOD-10')?.published, true);
   assert.equal(topicsById.get('MOD-10')?.status.value, 'complete');
   assert.equal(topicsById.get('MOD-11')?.published, true);
-  assert.equal(topicsById.get('MOD-11')?.status.value, 'pending');
+  assert.equal(topicsById.get('MOD-11')?.status.value, 'complete');
   for (const id of ['MOD-12', 'MOD-13']) {
     assert.equal(topicsById.get(id)?.published, false, id);
     assert.equal(topicsById.get(id)?.status.value, 'pending', id);
@@ -236,7 +244,7 @@ function assertGeneratedState(manifestValue, statusValue) {
   assert.deepEqual(statusValue, {
     schema_version: 1,
     durable_stories: {completed: 7, total: 20, current: 'G008'},
-    completed_topics: 49,
+    completed_topics: 50,
     content_documents: 92,
     governed_sources: 488,
     sources: {
@@ -300,7 +308,7 @@ test('rejects reordered extra or contradictory review content', () => {
   }
 });
 
-test('closes only MOD-10 while keeping G008 current and MOD-11 next', () => {
+test('preserves Batch 8 evidence while reflecting the live MOD-11 closure', () => {
   assertBacklogClosure(backlog);
   assertGeneratedState(manifest, projectStatus);
 });
@@ -320,11 +328,11 @@ test('rejects backlog evidence status and next-topic mutations', () => {
     backlog.replace('- [x] **MOD-08 ', '- [ ] **MOD-08 '),
     backlog.replace('- [x] **MOD-09 ', '- [ ] **MOD-09 '),
     backlog.replace('- [x] **MOD-10 ', '- [ ] **MOD-10 '),
-    backlog.replace('- [ ] **MOD-11 ', '- [x] **MOD-11 '),
+    backlog.replace('- [x] **MOD-11 ', '- [ ] **MOD-11 '),
     backlog.replace('- [ ] **MOD-12 ', '- [x] **MOD-12 '),
     backlog.replace('- [ ] **MOD-13 ', '- [x] **MOD-13 '),
     backlog.replace('- **当前持久故事：** `G008`。', '- **当前持久故事：** `G009`。'),
-    backlog.replace('下一项为 MOD-11', '下一项为 MOD-12'),
+    backlog.replace('下一项为 MOD-12', '下一项为 MOD-13'),
   ];
   assert.equal(
     backlogStateMutations.length,
@@ -386,7 +394,7 @@ test('rejects every generated status and count mutation', () => {
     (value) => { value.durable_stories.completed = 8; },
     (value) => { value.durable_stories.total = 21; },
     (value) => { value.durable_stories.current = 'G009'; },
-    (value) => { value.completed_topics = 48; },
+    (value) => { value.completed_topics = 49; },
     (value) => { value.content_documents = 90; },
     (value) => { value.governed_sources = 484; },
     ...sourceMutations,

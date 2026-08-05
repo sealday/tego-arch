@@ -668,11 +668,11 @@ test('publishes reciprocal MOD-05/MOD-08 relations and actionable MOD-09/MOD-10 
   assert.match(mod10.body, /actor[^。\n]*工作对象[^。\n]*不能[^。\n]*Context/iu);
 });
 
-function assertStageAProjection(statusValue, manifestValue, mod11Document) {
+function assertStageBProjection(statusValue, manifestValue, mod11Document) {
   assert.deepEqual(statusValue, {
     schema_version: 1,
     durable_stories: {completed: 7, total: 20, current: 'G008'},
-    completed_topics: 49,
+    completed_topics: 50,
     content_documents: 92,
     governed_sources: 488,
     sources: {
@@ -684,7 +684,7 @@ function assertStageAProjection(statusValue, manifestValue, mod11Document) {
   });
   const topicsById = new Map(manifestValue.topics.map((topic) => [topic.id, topic]));
   assert.equal(topicsById.get('MOD-11').published, true);
-  assert.equal(topicsById.get('MOD-11').status.value, 'pending');
+  assert.equal(topicsById.get('MOD-11').status.value, 'complete');
   for (const id of ['MOD-12', 'MOD-13']) {
     assert.equal(topicsById.get(id).published, false, id);
     assert.equal(topicsById.get(id).status.value, 'pending', id);
@@ -692,8 +692,8 @@ function assertStageAProjection(statusValue, manifestValue, mod11Document) {
   }
 }
 
-test('locks the Stage A current projection and keeps MOD-12 through MOD-13 pending', () => {
-  assertStageAProjection(projectStatus, topicManifest, requiredDocument());
+test('locks the Stage B current projection and keeps MOD-12 through MOD-13 pending', () => {
+  assertStageBProjection(projectStatus, topicManifest, requiredDocument());
 });
 
 test('rejects controlled MOD-12 through MOD-13 publication, status and link mutations', () => {
@@ -708,7 +708,7 @@ test('rejects controlled MOD-12 through MOD-13 publication, status and link muta
     mutateManifest?.(mutatedManifest);
     mutateDocument?.(mutatedDocument);
     assert.throws(
-      () => assertStageAProjection(projectStatus, mutatedManifest, mutatedDocument),
+      () => assertStageBProjection(projectStatus, mutatedManifest, mutatedDocument),
       {name: 'AssertionError'},
       label,
     );

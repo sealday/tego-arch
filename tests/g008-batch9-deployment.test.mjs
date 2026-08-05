@@ -4,13 +4,13 @@ import {execFileSync} from 'node:child_process';
 import {readFile} from 'node:fs/promises';
 import test from 'node:test';
 
-const expectedStageASha = '683c836cc5058272ec0ba09af6b42f512284cdf6';
-const expectedPagesRunId = '30778428606';
+const expectedStageASha = 'ce92d866444769927755b7d87280ddb238d961c9';
+const expectedPagesRunId = '30984920687';
 const expectedArtifactSha256 =
-  '833c815b3ccb23f223aebfdd0de51631fbbb362c22be4637c704480b8649bcd7';
-const expectedBatch6AndOlderSha256 =
-  '0ffa6047ddb4038eec48cb160a5b18183d531205d12df5a7030eccdcc96efbc6';
-const releaseReviewUrl = new URL('../docs/reviews/g008-batch7.md', import.meta.url);
+  '7f3f2be12ebe0551fae1228781f63a9b2d46a76e76bc7cac23057552aa399a89';
+const expectedBatch8AndOlderSha256 =
+  'f4ea7bfd273e3a430e77625df71e8d482722381d4875061a68d0b52740daeab6';
+const releaseReviewUrl = new URL('../docs/reviews/g008-batch9.md', import.meta.url);
 
 assert.match(expectedStageASha, /^[0-9a-f]{40}$/u);
 assert.match(expectedPagesRunId, /^[0-9]+$/u);
@@ -54,9 +54,9 @@ const expectedStageAIdentityLines = [
 ];
 
 const expectedVerificationLines = [
-  '- Stage A projection: 47 completed topics / 90 content documents / 481 governed sources',
-  '- Repository tests: 615 / 615',
-  '- Content validation: 90 content documents / 481 governed sources',
+  '- Stage A projection: 49 completed topics / 92 content documents / 488 governed sources',
+  '- Repository tests: 661 / 661',
+  '- Content validation: 92 content documents / 488 governed sources',
 ];
 
 const expectedIndependentReviewLines = [
@@ -70,24 +70,23 @@ const expectedProductionSmokeLines = [
   '- Task 4 production QA — PASS',
   '- desktop `1440x1000`',
   '- mobile `390x844`',
-  '- HTTP canonical routes: 9 / 9',
+  '- HTTP canonical routes: 10 / 10',
   '- Mermaid regions / SVGs: 1 / 1',
-  '- tables: 2 / 2; Big Picture rows: 8; boundary rows: 5',
-  '- source activations: 10 / 10',
-  '- relation activations: 16 / 16',
-  '- closed-world MOD-10 targets: 0',
-  '- MOD-11 actionable article links: 0',
+  '- tables: 2 / 2; boundary rows: 3; relationship rows: 4',
+  '- source activations: 8 / 8',
+  '- relation activations: 24 / 24',
+  '- closed-world MOD-12 targets: 0',
   '- warnings / errors / page errors: 0 / 0 / 0',
   `- artifact SHA-256: \`${expectedArtifactSha256}\``,
 ];
 
 const expectedStageBProjectionLines = [
-  '- 48 completed topics',
-  '- 90 content documents',
-  '- 481 governed sources',
+  '- 50 completed topics',
+  '- 92 content documents',
+  '- 488 governed sources',
   '- durable stories 7 / 20',
   '- current G008',
-  '- next MOD-10',
+  '- next MOD-12',
 ];
 
 const expectedFinalPassLines = ['Stage B closure — PASS'];
@@ -102,7 +101,7 @@ const expectedReviewSections = new Map([
 ]);
 
 const expectedReviewText = [
-  '# G008 Batch 7 Release Review',
+  '# G008 Batch 9 Release Review',
   '',
   ...[...expectedReviewSections].flatMap(([heading, lines]) => [
     `## ${heading}`,
@@ -119,7 +118,7 @@ function normalizeLf(source) {
 function assertDeploymentEvidence(source) {
   const normalizedSource = normalizeLf(source);
   assert.equal(
-    normalizedSource.match(/^# G008 Batch 7 Release Review$/gmu)?.length,
+    normalizedSource.match(/^# G008 Batch 9 Release Review$/gmu)?.length,
     1,
     'exact release review title',
   );
@@ -155,68 +154,64 @@ function currentReleaseBaseline(source) {
   return baselines[0];
 }
 
-function batch7Segment(source) {
+function batch9Segment(source) {
   const baseline = currentReleaseBaseline(source);
-  const marker = '此前 G008 Batch 7 历史完成基线为：';
-  const start = baseline.indexOf(marker);
-  assert.notEqual(start, -1, 'Batch 7 history boundary');
-  const end = baseline.indexOf('此前 G008 Batch 6 历史完成基线为：', start);
-  assert.notEqual(end, -1, 'Batch 6 history boundary');
-  return `- **当前发布基线：** ${baseline.slice(start + marker.length, end)}`;
+  const end = baseline.indexOf('此前 G008 Batch 8 历史完成基线为：');
+  assert.notEqual(end, -1, 'Batch 8 history boundary');
+  return baseline.slice(0, end);
 }
 
-function batch6AndOlderHistory(source) {
+function batch8AndOlderHistory(source) {
   const baseline = currentReleaseBaseline(source);
-  const marker = '此前 G008 Batch 6 历史完成基线为：';
+  const marker = '此前 G008 Batch 8 历史完成基线为：';
   const start = baseline.indexOf(marker);
-  assert.notEqual(start, -1, 'Batch 6 history boundary');
+  assert.notEqual(start, -1, 'Batch 8 history boundary');
   return baseline.slice(start + marker.length);
 }
 
-const expectedBatch7Evidence = [
-  '2026-08-03 G008 Batch 7 已完成 MOD-09',
+const expectedBatch9Evidence = [
+  '2026-08-05 G008 Batch 9 已完成 MOD-11',
   `Stage A 发布基线为 [\`${expectedStageASha}\`](https://github.com/sealday/tego-arch/commit/${expectedStageASha})`,
   `Pages run [\`${expectedPagesRunId}\`](https://github.com/sealday/tego-arch/actions/runs/${expectedPagesRunId})`,
   `exact \`headSha=${expectedStageASha}\`、\`status=completed\`、\`conclusion=success\``,
-  '9/9 个 canonical HTTP route 检查通过',
+  '10/10 个 canonical HTTP route 检查通过',
   'desktop `1440x1000`、mobile `390x844`',
   '1/1 Mermaid region/SVG',
-  '2/2 张表格（8 行 Big Picture、5 行 boundary）',
-  '10/10 次 source 激活',
-  '16/16 次 relation 激活',
-  'MOD-10 target 为 0',
-  'MOD-11 actionable article link 为 0',
+  '2/2 张表格（3 行 boundary、4 行 relationship）',
+  '8/8 次 source 激活',
+  '24/24 次 relation 激活',
+  'MOD-12 target 为 0',
   '0 warnings、0 errors、0 page errors',
   `Task 4 raw artifact SHA-256 为 \`${expectedArtifactSha256}\``,
-  'Stage A 为 47 个已完成主题、90 篇内容文档与 481 个受治理来源',
-  '仓库测试 `615/615`',
-  'Stage B closure 投影为 48 个已完成主题、90 篇内容文档与 481 个受治理来源',
+  'Stage A 为 49 个已完成主题、92 篇内容文档与 488 个受治理来源',
+  '仓库测试 `661/661`',
+  'Stage B closure 投影为 50 个已完成主题、92 篇内容文档与 488 个受治理来源',
   '持久故事进度仍为 `7 / 20`',
   'G008 仍在进行中',
-  '下一项为 MOD-10',
+  '下一项为 MOD-12',
   'Stage B closure — PASS',
 ];
 
-const expectedBatch7Segment = `- **当前发布基线：** 2026-08-03 G008 Batch 7 已完成 MOD-09，Stage A 发布基线为 [\`${expectedStageASha}\`](https://github.com/sealday/tego-arch/commit/${expectedStageASha})，Pages run [\`${expectedPagesRunId}\`](https://github.com/sealday/tego-arch/actions/runs/${expectedPagesRunId}) 以 exact \`headSha=${expectedStageASha}\`、\`status=completed\`、\`conclusion=success\` 完成部署；9/9 个 canonical HTTP route 检查通过，desktop \`1440x1000\`、mobile \`390x844\`，1/1 Mermaid region/SVG、2/2 张表格（8 行 Big Picture、5 行 boundary），10/10 次 source 激活、16/16 次 relation 激活，MOD-10 target 为 0，MOD-11 actionable article link 为 0，0 warnings、0 errors、0 page errors。Task 4 raw artifact SHA-256 为 \`${expectedArtifactSha256}\`。Stage A 为 47 个已完成主题、90 篇内容文档与 481 个受治理来源，仓库测试 \`615/615\`；Stage B closure 投影为 48 个已完成主题、90 篇内容文档与 481 个受治理来源，持久故事进度仍为 \`7 / 20\`，G008 仍在进行中，下一项为 MOD-10。Stage B closure — PASS。`;
+const expectedBatch9Segment = `- **当前发布基线：** 2026-08-05 G008 Batch 9 已完成 MOD-11，Stage A 发布基线为 [\`${expectedStageASha}\`](https://github.com/sealday/tego-arch/commit/${expectedStageASha})，Pages run [\`${expectedPagesRunId}\`](https://github.com/sealday/tego-arch/actions/runs/${expectedPagesRunId}) 以 exact \`headSha=${expectedStageASha}\`、\`status=completed\`、\`conclusion=success\` 完成部署；10/10 个 canonical HTTP route 检查通过，desktop \`1440x1000\`、mobile \`390x844\`，1/1 Mermaid region/SVG、2/2 张表格（3 行 boundary、4 行 relationship），8/8 次 source 激活、24/24 次 relation 激活，MOD-12 target 为 0，0 warnings、0 errors、0 page errors。Task 4 raw artifact SHA-256 为 \`${expectedArtifactSha256}\`。Stage A 为 49 个已完成主题、92 篇内容文档与 488 个受治理来源，仓库测试 \`661/661\`；Stage B closure 投影为 50 个已完成主题、92 篇内容文档与 488 个受治理来源，持久故事进度仍为 \`7 / 20\`，G008 仍在进行中，下一项为 MOD-12。Stage B closure — PASS。`;
 
 function assertBacklogClosure(source) {
-  const segment = batch7Segment(source);
+  const segment = batch9Segment(source);
   assert.doesNotMatch(
     segment,
     /ACTUAL_|STAGE_A_SHA|RUN_ID|TEST_COUNT|ARTIFACT_SHA|<[^>]+>/u,
   );
   assert.equal(
     segment,
-    expectedBatch7Segment,
-    'Batch 7 current release segment must equal the exact approved measured text',
+    expectedBatch9Segment,
+    'Batch 9 current release segment must equal the exact approved measured text',
   );
-  for (const literal of expectedBatch7Evidence) {
-    assert.equal(segment.split(literal).length - 1, 1, `one Batch 7 ${literal}`);
+  for (const literal of expectedBatch9Evidence) {
+    assert.equal(segment.split(literal).length - 1, 1, `one Batch 9 ${literal}`);
   }
   assert.equal(
-    createHash('sha256').update(batch6AndOlderHistory(source)).digest('hex'),
-    expectedBatch6AndOlderSha256,
-    'Batch 6 and older baseline text must remain byte-for-byte unchanged',
+    createHash('sha256').update(batch8AndOlderHistory(source)).digest('hex'),
+    expectedBatch8AndOlderSha256,
+    'Batch 8 and older baseline text must remain byte-for-byte unchanged',
   );
   for (const id of ['08', '09', '10', '11']) {
     assert.match(source, new RegExp(`^- \\[x\\] \\*\\*MOD-${id} `, 'mu'));
@@ -226,16 +221,10 @@ function assertBacklogClosure(source) {
   }
   assert.match(source, /当前持久故事：\*\* `G008`/u);
   assert.doesNotMatch(source, /最近完成 `G008`/u);
-  assert.equal(
-    currentReleaseBaseline(source).split('下一项为 MOD-12').length - 1,
-    1,
-    'live current segment must identify MOD-12 as next',
-  );
 }
 
 function assertGeneratedState(manifestValue, statusValue) {
   const topicsById = new Map(manifestValue.topics.map((topic) => [topic.id, topic]));
-  assert.equal(topicsById.get('MOD-09')?.status.value, 'complete');
   assert.equal(topicsById.get('MOD-10')?.published, true);
   assert.equal(topicsById.get('MOD-10')?.status.value, 'complete');
   assert.equal(topicsById.get('MOD-11')?.published, true);
@@ -259,7 +248,7 @@ function assertGeneratedState(manifestValue, statusValue) {
   });
 }
 
-test('records exact successful G008 Batch 7 deployment evidence', () => {
+test('records exact successful G008 Batch 9 deployment evidence', () => {
   assertDeploymentEvidence(review);
   assert.doesNotThrow(() =>
     execFileSync('git', ['cat-file', '-e', `${expectedStageASha}^{commit}`], {stdio: 'pipe'}),
@@ -311,59 +300,82 @@ test('rejects reordered extra or contradictory review content', () => {
   }
 });
 
-test('preserves Batch 7 evidence while accepting the live Batch 8 projection', () => {
+test('closes only MOD-11 while keeping G008 current and MOD-12 next', () => {
   assertBacklogClosure(backlog);
   assertGeneratedState(manifest, projectStatus);
 });
 
 test('rejects backlog evidence status and next-topic mutations', () => {
   assert.doesNotThrow(() => assertBacklogClosure(backlog));
-  const segment = batch7Segment(backlog);
-  const storedSegment = segment.slice('- **当前发布基线：** '.length);
-  for (const literal of expectedBatch7Evidence) {
+  const segment = batch9Segment(backlog);
+  for (const literal of expectedBatch9Evidence) {
     assert.throws(() => assertBacklogClosure(
-      backlog.replace(storedSegment, storedSegment.replace(literal, '__REMOVED__')),
+      backlog.replace(segment, segment.replace(literal, '__REMOVED__')),
     ));
     assert.throws(() => assertBacklogClosure(
-      backlog.replace(storedSegment, `${storedSegment}${literal}`),
+      backlog.replace(segment, `${segment}${literal}`),
     ));
   }
-  for (const mutation of [
+  const backlogStateMutations = [
     backlog.replace('- [x] **MOD-08 ', '- [ ] **MOD-08 '),
     backlog.replace('- [x] **MOD-09 ', '- [ ] **MOD-09 '),
     backlog.replace('- [x] **MOD-10 ', '- [ ] **MOD-10 '),
     backlog.replace('- [x] **MOD-11 ', '- [ ] **MOD-11 '),
+    backlog.replace('- [ ] **MOD-12 ', '- [x] **MOD-12 '),
+    backlog.replace('- [ ] **MOD-13 ', '- [x] **MOD-13 '),
     backlog.replace('- **当前持久故事：** `G008`。', '- **当前持久故事：** `G009`。'),
     backlog.replace('下一项为 MOD-12', '下一项为 MOD-13'),
-  ]) {
+  ];
+  assert.equal(
+    backlogStateMutations.length,
+    8,
+    'six MOD-08..13 checkbox mutations plus current-story and next-topic mutations',
+  );
+  for (const mutation of backlogStateMutations) {
     assert.throws(() => assertBacklogClosure(mutation));
   }
 });
 
-test('rejects symbolic or contradictory Batch 7 current-segment content', () => {
-  const segment = batch7Segment(backlog);
-  const storedSegment = segment.slice('- **当前发布基线：** '.length);
+test('rejects symbolic or contradictory Batch 9 current-segment content', () => {
+  const segment = batch9Segment(backlog);
   for (const mutation of [
-    backlog.replace(storedSegment, storedSegment.replace(expectedStageASha, 'STAGE_A_SHA')),
+    backlog.replace(segment, segment.replace(expectedStageASha, 'STAGE_A_SHA')),
     backlog.replace(
-      storedSegment,
-      `${storedSegment}Contradictory projection: 47 / 90 / 481; Stage B closure — FAIL。`,
+      segment,
+      `${segment}Contradictory projection: 49 / 92 / 488; Stage B closure — FAIL。`,
     ),
   ]) {
     assert.throws(() => assertBacklogClosure(mutation));
   }
 });
 
-test('locks Batch 6 and all older release evidence byte-for-byte', () => {
-  const original = batch6AndOlderHistory(backlog);
+test('locks Batch 8 and all older release evidence byte-for-byte', () => {
+  const original = batch8AndOlderHistory(backlog);
   assert.throws(() => assertBacklogClosure(
-    backlog.replace(original, original.replace('G008 Batch 6', 'G008 Batch six')),
+    backlog.replace(original, original.replace('G008 Batch 8', 'G008 Batch eight')),
   ));
 });
 
 test('rejects every generated status and count mutation', () => {
   assert.doesNotThrow(() => assertGeneratedState(manifest, projectStatus));
-  for (const id of ['MOD-09', 'MOD-10', 'MOD-11', 'MOD-12', 'MOD-13']) {
+  const sourceMutations = [
+    (value) => { value.sources.durable_stories = 'other'; },
+    (value) => { value.sources.completed_topics = 'other'; },
+    (value) => { value.sources.content_documents = 'other'; },
+    (value) => { value.sources.governed_sources = 'other'; },
+  ];
+  assert.equal(sourceMutations.length, 4, 'every project-status source has a mutation');
+  const publishedMutations = ['MOD-11', 'MOD-12', 'MOD-13'].map((id) => {
+    const mutatedManifest = structuredClone(manifest);
+    const topic = mutatedManifest.topics.find((candidate) => candidate.id === id);
+    topic.published = !topic.published;
+    return mutatedManifest;
+  });
+  assert.equal(publishedMutations.length, 3, 'every MOD-11..13 published flag has a mutation');
+  for (const mutatedManifest of publishedMutations) {
+    assert.throws(() => assertGeneratedState(mutatedManifest, projectStatus));
+  }
+  for (const id of ['MOD-11', 'MOD-12', 'MOD-13']) {
     const mutatedManifest = structuredClone(manifest);
     const topic = mutatedManifest.topics.find((candidate) => candidate.id === id);
     topic.status.value = topic.status.value === 'complete' ? 'pending' : 'complete';
@@ -374,10 +386,10 @@ test('rejects every generated status and count mutation', () => {
     (value) => { value.durable_stories.completed = 8; },
     (value) => { value.durable_stories.total = 21; },
     (value) => { value.durable_stories.current = 'G009'; },
-    (value) => { value.completed_topics = 48; },
-    (value) => { value.content_documents = 89; },
-    (value) => { value.governed_sources = 480; },
-    (value) => { value.sources.completed_topics = 'other'; },
+    (value) => { value.completed_topics = 49; },
+    (value) => { value.content_documents = 91; },
+    (value) => { value.governed_sources = 487; },
+    ...sourceMutations,
   ]) {
     const mutatedStatus = structuredClone(projectStatus);
     mutate(mutatedStatus);
