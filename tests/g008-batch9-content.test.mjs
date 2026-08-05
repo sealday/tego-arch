@@ -16,6 +16,7 @@ const documents = await readContentDocuments(contentRoot);
 const document = documents.find(({file}) => file === 'modeling/mod-11-ddd-context-map.mdx');
 const customCss = await readFile(new URL('../src/css/custom.css', import.meta.url), 'utf8');
 const sourceLedger = JSON.parse(await readFile(new URL('../data/source-ledger.json', import.meta.url)));
+const sourceLinkHealth = JSON.parse(await readFile(new URL('../data/source-link-health.json', import.meta.url)));
 const topicManifest = JSON.parse(await readFile(new URL('../src/generated/topic-manifest.json', import.meta.url)));
 const projectStatus = JSON.parse(await readFile(new URL('../src/generated/project-status.json', import.meta.url)));
 
@@ -215,6 +216,32 @@ const expectedCitations = [
     quotation_reviewed: false,
   },
 ];
+
+const dddCrewCommit = '970c1ff3a61f7aa8b61b789b697c05bc585f614d';
+const dddCrewReadmeTransport = `https://github.com/ddd-crew/context-mapping/blob/${dddCrewCommit}/README.md`;
+const dddCrewLicenseEvidence = `${dddCrewReadmeTransport}#contributions-and-feedback`;
+
+function assertDddCrewLicenseContract(source, linkHealth) {
+  assert.equal(source.license, 'CC-BY-4.0');
+  assert.equal(source.copyright_policy, 'adapt-with-attribution');
+  assert.equal(source.license_evidence_url, dddCrewLicenseEvidence);
+  assert.match(source.license_evidence_url, new RegExp(`/blob/${dddCrewCommit}/README\\.md#contributions-and-feedback$`, 'u'));
+  const managedEvidenceTransport = new URL(source.license_evidence_url);
+  managedEvidenceTransport.hash = '';
+  assert.equal(source.transport_locator, managedEvidenceTransport.href);
+  assert.equal(source.expected_final_transport_locator, managedEvidenceTransport.href);
+
+  const result = linkHealth.results.find(
+    ({transport_locator}) => transport_locator === managedEvidenceTransport.href,
+  );
+  assert.ok(result, 'pinned README license evidence is managed by link health');
+  assert.deepEqual(result.source_ids, [source.id]);
+  assert.equal(result.review_status, 'healthy');
+  assert.equal(result.last_attempt.outcome, 'healthy');
+  assert.equal(result.last_attempt.final_transport_locator, managedEvidenceTransport.href);
+  assert.equal(result.last_success.outcome, 'healthy');
+  assert.equal(result.last_success.final_transport_locator, managedEvidenceTransport.href);
+}
 const expectedExerciseSteps = [
   '复述 MOD-02 权威系统边界，明确银行支付服务位于系统外。',
   '从 MOD-09 与 MOD-10 收集语言、规则、权威记录和协作变化线索，不按现有模块分组。',
@@ -572,7 +599,7 @@ test('governs the exact MOD-11 source records and citation review', () => {
     {
       id: 'src-docs-1ad75d39a251',
       canonical_locator: 'https://github.com/ddd-crew/context-mapping/tree/970c1ff3a61f7aa8b61b789b697c05bc585f614d',
-      transport_locator: 'https://github.com/ddd-crew/context-mapping/tree/970c1ff3a61f7aa8b61b789b697c05bc585f614d',
+      transport_locator: dddCrewReadmeTransport,
       ...shared,
       title: 'Context Mapping',
       author_or_org: 'DDD Crew',
@@ -580,16 +607,16 @@ test('governs the exact MOD-11 source records and citation review', () => {
       source_kind: 'official-repository',
       tier: 'secondary',
       allowed_evidence_roles: ['definition', 'method', 'comparison'],
-      license: 'CC-BY-SA-4.0',
-      license_scope: 'The pinned ddd-crew/context-mapping repository content covered by its CC BY-SA 4.0 LICENSE; trademarks, linked works, Miro-hosted assets and separately licensed third-party material are excluded.',
-      license_evidence_url: 'https://github.com/ddd-crew/context-mapping/blob/970c1ff3a61f7aa8b61b789b697c05bc585f614d/LICENSE',
-      license_evidence_note: 'The pinned repository LICENSE, not abbreviated README wording, governs the reviewed content at commit 970c1ff3a61f7aa8b61b789b697c05bc585f614d.',
+      license: 'CC-BY-4.0',
+      license_scope: 'The pinned ddd-crew/context-mapping repository content that its README declares licensed under CC BY 4.0; trademarks, linked works, Miro-hosted assets and third-party material are excluded.',
+      license_evidence_url: dddCrewLicenseEvidence,
+      license_evidence_note: `The pinned README Contributions and Feedback section states that repository contents are licensed under CC BY 4.0; commit ${dddCrewCommit} contains no standalone LICENSE file.`,
       license_family_id: 'github:ddd-crew/context-mapping',
-      copyright_policy: 'adapt-sharealike-review',
+      copyright_policy: 'adapt-with-attribution',
       usage_boundary: 'Supports small question-specific Context Maps, U/D roles and the existence of relationship patterns; it does not license copying the cheat sheet or Miro board and does not select patterns for this article.',
       link_policy: 'stable',
-      expected_final_transport_locator: 'https://github.com/ddd-crew/context-mapping/tree/970c1ff3a61f7aa8b61b789b697c05bc585f614d',
-      expected_final_approval_note: 'Reviewed the pinned GitHub tree transport and commit-specific LICENSE on 2026-08-05.',
+      expected_final_transport_locator: dddCrewReadmeTransport,
+      expected_final_approval_note: 'Reviewed the pinned README transport and its Contributions and Feedback CC BY 4.0 statement on 2026-08-05; the commit has no standalone LICENSE file.',
     },
     {
       id: 'src-docs-ac85a74ed0b2',
@@ -628,6 +655,20 @@ test('governs the exact MOD-11 source records and citation review', () => {
     ],
     citations: expectedCitations,
   });
+});
+
+test('pins DDD Crew CC BY 4.0 evidence to the checker-managed README section', () => {
+  const source = sourceLedger.sources.find(({id}) => id === 'src-docs-1ad75d39a251');
+  assertDddCrewLicenseContract(source, sourceLinkHealth);
+
+  const missingLicenseMutation = structuredClone(source);
+  missingLicenseMutation.license_evidence_url =
+    `https://github.com/ddd-crew/context-mapping/blob/${dddCrewCommit}/LICENSE`;
+  assert.throws(
+    () => assertDddCrewLicenseContract(missingLicenseMutation, sourceLinkHealth),
+    {name: 'AssertionError'},
+    'nonexistent pinned LICENSE must be rejected',
+  );
 });
 
 test('renders exactly four governed MOD-11 sources', () => {

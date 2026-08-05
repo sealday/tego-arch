@@ -21,7 +21,7 @@
 - Treat U/D and arrows as model-influence and integration-responsibility evidence, not organization power, packet direction, APIs, calls, messages, events, transactions, protocols or runtime order.
 - Register exactly three new source identities and reuse `src-docs-fc6e554f1153`; Fowler is the only MOD-11 `manifest_primary: true` citation.
 - Register Fowler as `independent-blog / primary`; primary means the article is MOD-11's main definitional evidence and does not make it an official DDD specification.
-- Pin DDD Crew to commit `970c1ff3a61f7aa8b61b789b697c05bc585f614d` and govern its repository license as `CC-BY-SA-4.0` / `adapt-sharealike-review` while using `facts-summary` only.
+- Pin DDD Crew to commit `970c1ff3a61f7aa8b61b789b697c05bc585f614d` and govern the repository content under the pinned README's `CC-BY-4.0` statement with `adapt-with-attribution`, while excluding trademarks, linked works, Miro assets and third-party material and using `facts-summary` only; the pinned commit has no standalone LICENSE file.
 - Use `facts-summary` for every citation; do not copy or adapt source prose, diagrams, cheat sheets, Miro boards, templates, examples, icons or layouts.
 - Stage A projection is `49 / 92 / 488`, with MOD-11 published/pending and next MOD-11.
 - Stage B projection is `50 / 92 / 488`, durable stories `7 / 20`, current G008, next MOD-12.
@@ -379,10 +379,10 @@ const sourceDefinitions = [
     sourceKind: 'official-repository',
     tier: 'secondary',
     roles: ['definition', 'method', 'comparison'],
-    license: 'CC-BY-SA-4.0',
-    licenseEvidenceUrl: 'https://github.com/ddd-crew/context-mapping/blob/970c1ff3a61f7aa8b61b789b697c05bc585f614d/LICENSE',
+    license: 'CC-BY-4.0',
+    licenseEvidenceUrl: 'https://github.com/ddd-crew/context-mapping/blob/970c1ff3a61f7aa8b61b789b697c05bc585f614d/README.md#contributions-and-feedback',
     licenseFamilyId: 'github:ddd-crew/context-mapping',
-    copyrightPolicy: 'adapt-sharealike-review',
+    copyrightPolicy: 'adapt-with-attribution',
     boundary: 'Supports small question-specific Context Maps, U/D roles and the existence of relationship patterns; it does not license copying the cheat sheet or Miro board and does not select patterns for this article.',
   },
   {

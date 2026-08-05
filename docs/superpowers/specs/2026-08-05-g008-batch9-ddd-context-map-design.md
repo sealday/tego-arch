@@ -246,11 +246,11 @@ MOD-11 metadata 固定为：
 本批次引用四个来源，其中新增三个来源身份并复用一个既有身份；检索日期统一为 2026-08-05：
 
 1. `https://martinfowler.com/bliki/BoundedContext.html` — Martin Fowler 对 Bounded Context、语言/模型边界和 Context Map 关系的概览；`independent-blog / primary`，其中 primary 只表示它是本文的定义性主要证据，不把独立文章变成 DDD 官方规范；MOD-11 唯一 `manifest_primary: true`；未发现开放内容许可，按 `all-rights-reserved`、`facts-summary` 治理。
-2. `https://github.com/ddd-crew/context-mapping/tree/970c1ff3a61f7aa8b61b789b697c05bc585f614d` — DDD Crew Context Mapping 仓库在固定提交 `970c1ff3a61f7aa8b61b789b697c05bc585f614d` 的 README 事实；支持小型、问题驱动的 map、U/D 与关系模式语境；`community / secondary`；仓库 LICENSE 按 `CC-BY-SA-4.0` 治理，实际只使用 `facts-summary`。
+2. `https://github.com/ddd-crew/context-mapping/tree/970c1ff3a61f7aa8b61b789b697c05bc585f614d` — DDD Crew Context Mapping 仓库在固定提交 `970c1ff3a61f7aa8b61b789b697c05bc585f614d` 的 README 事实；支持小型、问题驱动的 map、U/D 与关系模式语境；`community / secondary`；固定 README 声明仓库内容采用 `CC-BY-4.0`，实际只使用 `facts-summary`。
 3. `https://contextmapper.org/docs/anticorruption-layer/` — Context Mapper ACL 文档；支持 ACL 位于 downstream 并承担翻译/隔离角色；`official / primary`；未发现适用于页面内容的开放许可，保守按 `all-rights-reserved`、`facts-summary` 治理。
 4. `https://www.avanscoperta.it/en/context-mapping/` — 复用既有 `src-docs-fc6e554f1153`；支持边界指标不是可靠证明、Bounded Context 不等于业务关注点以及边界仍需架构判断；不创建重复来源身份，继续按既有 `facts-summary` 和保守权利记录治理。
 
-DDD Crew 的许可证据固定到 `https://github.com/ddd-crew/context-mapping/blob/970c1ff3a61f7aa8b61b789b697c05bc585f614d/LICENSE`。仓库页面简述可能使用“CC BY”措辞，但许可证文件为 CC BY-SA 4.0，账本必须采用更具体、更保守的 `CC-BY-SA-4.0`，不得降级为 CC BY。本文不复制或改编 cheat sheet、Miro board、示例图、模板、文字或布局，因此不触发衍生内容发布；所有图、表、费用场景判断和中文表述均为本站原创教学内容。
+DDD Crew 的许可证据固定到 `https://github.com/ddd-crew/context-mapping/blob/970c1ff3a61f7aa8b61b789b697c05bc585f614d/README.md#contributions-and-feedback`。该固定 README 的 Contributions and Feedback 小节明确声明仓库内容采用 CC BY 4.0，而固定提交中没有独立 LICENSE 文件；账本因此采用 `CC-BY-4.0` 与 `adapt-with-attribution`。许可证范围排除 trademarks、linked works、Miro assets 与 third-party material。本文不复制或改编 cheat sheet、Miro board、示例图、模板、文字或布局；所有图、表、费用场景判断和中文表述均为本站原创教学内容。
 
 Fowler 与 Context Mapper 页面使用 living/unversioned 版本说明，`source_version` 记录“retrieved 2026-08-05”，不得把站点页脚年份或软件版本冒充页面版本。只有 Fowler 作为 manifest primary；DDD Crew、Context Mapper 和复用的 Avanscoperta 都提供补充事实或边界校验。
 
