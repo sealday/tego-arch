@@ -136,6 +136,9 @@ const expectedWorkshopSteps = [
 const annotationRule = '如果费用申报系统未取得可核验的银行回执，则停止典型故事，将“支付结果仍未知”保留为 annotation，并依据 MOD-08 另建异常故事。';
 
 const scopeSentence = '本文只建立 one narrow、digitalized、as-is、typical/80% 的费用支付故事：财务人员从费用申报系统查看待支付费用，提交支付请求，系统把请求传递给银行支付服务，并依据可核验的银行回执创建和展示支付结果记录。';
+const scopeLearningQuestion = '- 如何选择故事的粒度、as-is/to-be 与 pure/digitalized scope，又如何先完成典型路径、将重要变体分离为新的 Domain Story？';
+const participantSentence = '参与者包括真正执行日常支付工作的领域专家、提供系统与技术上下文的 IT 专家，以及引导叙述、绘制与复述的主持人。';
+const modelingInputSentence = '输入应包含一个真实但已脱敏的典型实例，并明确粒度、as-is/to-be、pure/digitalized、开始点、典型路径结束条件、非目标、已知分歧与假设，以及重要变体另建 Domain Story 的规则。';
 const nameAuthoritySentence = '本文承接 [MOD-02 C4 模型](/modeling/mod-02)的名称与系统权威：本地软件 actor 始终称为“费用申报系统”，外部软件 actor 始终称为“银行支付服务”。';
 const paymentEvidenceSentence = '它也承接 [MOD-08 状态机建模](/modeling/mod-08)的结果证据边界：本地支付请求、传递记录和支付结果记录都不能代替银行支付服务回执。';
 
@@ -389,8 +392,12 @@ function assertWorkshopAndNonProofContracts(body) {
 }
 
 function assertScopeAndRelations(body, peers = documentsById) {
+  const learningQuestions = visibleSection(body, '学习问题');
+  assert.ok(learningQuestions.includes(scopeLearningQuestion), scopeLearningQuestion);
   const inputs = visibleSection(body, '建模目标与输入');
   assert.ok(inputs.includes(scopeSentence), scopeSentence);
+  assert.ok(inputs.includes(participantSentence), participantSentence);
+  assert.ok(inputs.includes(modelingInputSentence), modelingInputSentence);
   assert.ok(inputs.includes(nameAuthoritySentence), nameAuthoritySentence);
   assert.ok(inputs.includes(paymentEvidenceSentence), paymentEvidenceSentence);
   const links = extractInternalLinks({body});
@@ -708,10 +715,28 @@ test('rejects review regressions that the original contract missed', () => {
   }
 
   for (const [label, mutation] of [
+    ['learning question deleted', body.replace(`${scopeLearningQuestion}\n`, '')],
+    ['learning question negated', body.replace(scopeLearningQuestion, scopeLearningQuestion.replace('又如何先完成', '且不必先完成'))],
+    ['learning question moved section', body.replace(`${scopeLearningQuestion}\n`, '').replace('## 完成判断\n', `## 完成判断\n\n${scopeLearningQuestion}\n`)],
+    ['learning question hidden comment', body.replace(scopeLearningQuestion, `<!-- ${scopeLearningQuestion} -->`)],
+    ['learning question conflates variant', body.replace(scopeLearningQuestion, scopeLearningQuestion.replace('将重要变体分离为新的 Domain Story', '将重要变体并入典型路径'))],
     ['scope negated', body.replace(scopeSentence, scopeSentence.replace('只建立', '不建立'))],
     ['scope moved section', body.replace(scopeSentence, '').replace('## 完成判断\n', `## 完成判断\n\n${scopeSentence}\n`)],
     ['scope hidden comment', body.replace(scopeSentence, `<!-- ${scopeSentence} -->`)],
     ['scope hidden fence', body.replace(scopeSentence, `\`\`\`text\n${scopeSentence}\n\`\`\``)],
+    ['participants deleted', body.replace(`${participantSentence}\n`, '')],
+    ['participants moved section', body.replace(`${participantSentence}\n`, '').replace('## 常见失败\n', `## 常见失败\n\n${participantSentence}\n`)],
+    ['participants hidden fence', body.replace(participantSentence, `\`\`\`text\n${participantSentence}\n\`\`\``)],
+    ['domain expert omitted', body.replace(participantSentence, participantSentence.replace('真正执行日常支付工作的领域专家、', ''))],
+    ['IT expert omitted', body.replace(participantSentence, participantSentence.replace('提供系统与技术上下文的 IT 专家，', ''))],
+    ['facilitator omitted', body.replace(participantSentence, participantSentence.replace('，以及引导叙述、绘制与复述的主持人', ''))],
+    ['modeling inputs deleted', body.replace(modelingInputSentence, '')],
+    ['modeling inputs negated', body.replace(modelingInputSentence, modelingInputSentence.replace('应包含', '不必包含'))],
+    ['modeling inputs moved section', body.replace(modelingInputSentence, '').replace('## 来源\n', `## 来源\n\n${modelingInputSentence}\n`)],
+    ['modeling inputs hidden comment', body.replace(modelingInputSentence, `<!-- ${modelingInputSentence} -->`)],
+    ['modeling inputs omit disagreement', body.replace(modelingInputSentence, modelingInputSentence.replace('、已知分歧与假设', ''))],
+    ['modeling inputs omit end condition', body.replace(modelingInputSentence, modelingInputSentence.replace('、典型路径结束条件', ''))],
+    ['modeling inputs conflate variant', body.replace(modelingInputSentence, modelingInputSentence.replace('重要变体另建 Domain Story', '重要变体并入典型路径'))],
     ['name authority negated', body.replace(nameAuthoritySentence, nameAuthoritySentence.replace('始终称为', '不再称为'))],
     ['name authority moved section', body.replace(nameAuthoritySentence, '').replace('## 常见失败\n', `## 常见失败\n\n${nameAuthoritySentence}\n`)],
     ['name authority hidden comment', body.replace(nameAuthoritySentence, `<!-- ${nameAuthoritySentence} -->`)],

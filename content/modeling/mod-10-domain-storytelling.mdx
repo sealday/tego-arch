@@ -41,6 +41,7 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 
 ## 学习问题
 
+- 如何选择故事的粒度、as-is/to-be 与 pure/digitalized scope，又如何先完成典型路径、将重要变体分离为新的 Domain Story？
 - 怎样让领域专家用具体业务语言讲清“谁对什么做了什么，并与谁协作”？
 - actor、work object、activity、sequence number 与 annotation 分别记录什么，又不能证明什么？
 - 怎样把银行支付服务的外部权威证据保留在故事中，而不把本地记录误当成支付结果？
@@ -50,7 +51,9 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 
 本文只建立 one narrow、digitalized、as-is、typical/80% 的费用支付故事：财务人员从费用申报系统查看待支付费用，提交支付请求，系统把请求传递给银行支付服务，并依据可核验的银行回执创建和展示支付结果记录。这个窄范围不讨论异常恢复、循环、合规分支或未来流程。
 
-建模前先让一位熟悉日常支付工作的领域专家准备一个真实但已脱敏的典型实例，并明确开始点、结束点、粒度、当前流程和非目标。参与者可以带来操作说明、页面、请求记录与回执样例，但这些材料只是澄清叙述的证据，不能预先决定故事句子。
+参与者包括真正执行日常支付工作的领域专家、提供系统与技术上下文的 IT 专家，以及引导叙述、绘制与复述的主持人。
+
+输入应包含一个真实但已脱敏的典型实例，并明确粒度、as-is/to-be、pure/digitalized、开始点、典型路径结束条件、非目标、已知分歧与假设，以及重要变体另建 Domain Story 的规则。参与者可以带来操作说明、页面、请求记录与回执样例，但这些材料只是澄清叙述的证据，不能预先决定故事句子。
 
 本文承接 [MOD-02 C4 模型](/modeling/mod-02)的名称与系统权威：本地软件 actor 始终称为“费用申报系统”，外部软件 actor 始终称为“银行支付服务”。它也承接 [MOD-08 状态机建模](/modeling/mod-08)的结果证据边界：本地支付请求、传递记录和支付结果记录都不能代替银行支付服务回执。
 
