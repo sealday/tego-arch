@@ -333,11 +333,11 @@ function assertContextGraphContract(body) {
 
 function wrappers(body) {
   const visibleBody = visibleLines(body).join('\n');
-  const pattern = /<div\n  className="(diagram-wrapper diagram-wrapper--scroll-owner|table-wrapper table-wrapper--mapping)"\n  role="region"\n  aria-label="([^"]+)"\n  tabIndex=\{0\}\n  onKeyDown=\{handleHorizontalArrowKey\}\n>/gu;
-  const openings = [...visibleBody.matchAll(pattern)];
+  const pattern = /<div\n  className="(diagram-wrapper diagram-wrapper--scroll-owner|table-wrapper table-wrapper--mapping)"\n  role="region"\n  aria-label="([^"]+)"\n  tabIndex=\{0\}\n  onKeyDown=\{handleHorizontalArrowKey\}\n>\n\n([\s\S]*?)\n\n<\/div>/gu;
+  const regions = [...visibleBody.matchAll(pattern)];
   assert.equal([...visibleBody.matchAll(/<div\b/gu)].length, 3, 'exactly three div openings');
   assert.equal([...visibleBody.matchAll(/<\/div>/gu)].length, 3, 'exactly three div closings');
-  return openings.map((opening) => ({className: opening[1], label: opening[2]}));
+  return regions.map((region) => ({className: region[1], label: region[2], content: region[3]}));
 }
 
 function assertInteractionContract(body) {
@@ -351,6 +351,22 @@ function assertInteractionContract(body) {
     'diagram-wrapper diagram-wrapper--scroll-owner',
     'table-wrapper table-wrapper--mapping',
   ]);
+  const boundaryTables = markdownTables(regions[0].content);
+  assert.equal(boundaryTables.length, 1, 'first wrapper contains exactly the candidate-boundary table');
+  assert.deepEqual(
+    records(boundaryTables[0], ['候选 Context', '本地语言', '独立规则', '业务权威', '支持证据', '反证或备选', '下一项验证与责任类型']),
+    expectedBoundaryRows,
+  );
+  assert.equal([...visibleLines(regions[0].content).join('\n').matchAll(/```mermaid\n[\s\S]*?\n```/gu)].length, 0, 'first wrapper contains no Mermaid');
+  assert.equal(markdownTables(regions[1].content).length, 0, 'second wrapper contains no Markdown table');
+  assert.equal([...visibleLines(regions[1].content).join('\n').matchAll(/```mermaid\n[\s\S]*?\n```/gu)].length, 1, 'second wrapper contains the unique Mermaid');
+  const relationshipTables = markdownTables(regions[2].content);
+  assert.equal(relationshipTables.length, 1, 'third wrapper contains exactly the relationship table');
+  assert.deepEqual(
+    records(relationshipTables[0], ['上游 U', '下游 D', '交换事实', '翻译或适配责任', '契约责任类型', '当前不证明什么', '下一项验证与责任类型']),
+    expectedRelationshipRows,
+  );
+  assert.equal([...visibleLines(regions[2].content).join('\n').matchAll(/```mermaid\n[\s\S]*?\n```/gu)].length, 0, 'third wrapper contains no Mermaid');
   assert.match(customCss, /\.theme-doc-markdown \.diagram-wrapper--scroll-owner \{[^}]*overflow-x: auto;[^}]*\}/su);
   assert.match(customCss, /\.theme-doc-markdown \.diagram-wrapper--scroll-owner > \.docusaurus-mermaid-container,[\s\S]*?\.theme-doc-markdown \.diagram-wrapper--scroll-owner > \.docusaurus-mermaid-container > \.mermaid,[\s\S]*?\.theme-doc-markdown \.diagram-wrapper--scroll-owner > \.mermaid \{[^}]*width: max-content;[^}]*max-width: none;[^}]*overflow-x: visible;[^}]*\}/u);
 }
@@ -366,6 +382,7 @@ function assertMethodContract(body) {
   assert.match(visibleBody, /完成检查[^\n]*证据[^\n]*备选[^\n]*责任类型[^\n]*下一项证据[^\n]*不带运行时解释重放/u);
   const links = extractInternalLinks({body});
   for (const target of requiredLinks) assert.ok(links.includes(target), `missing visible link: ${target}`);
+  assert.ok(!links.includes('/modeling/mod-12'), 'MOD-12 must remain plain text without an internal href');
   assert.doesNotMatch(visibleBody, /\[[^\]]*MOD-12[^\]]*\]\([^)]*\)/u);
   assert.match(visibleBody, /MOD-12/u);
   const exerciseSteps = [...visibleBody.matchAll(/^([1-7])\. (.+)$/gmu)].map((match) => match[2]);
@@ -431,6 +448,8 @@ test('rejects controlled MOD-11 mutations', () => {
   assert.ok(boundaryTable);
   const relationshipTable = tableBlock('上游 U');
   assert.ok(relationshipTable);
+  const mermaidBlock = body.match(/```mermaid\n[\s\S]*?\n```/u)?.[0];
+  assert.ok(mermaidBlock);
   const mutations = [
     ['removed H2', source.replace('## 学习问题\n', '') , assertPublicationContract],
     ['reordered H2', source.replace('## 学习问题', '## __SWAP_HEADING__').replace('## 建模目标与输入', '## 学习问题').replace('## __SWAP_HEADING__', '## 建模目标与输入'), assertPublicationContract],
@@ -450,6 +469,10 @@ test('rejects controlled MOD-11 mutations', () => {
     ['onKeyDown removed', body.replace('  onKeyDown={handleHorizontalArrowKey}\n', ''), assertInteractionContract],
     ...nonProofSentences.map((sentence, index) => [`non-proof ${index + 1} weakened`, body.replace(sentence, sentence.replace(/不等于|不存在|不证明|不是|都可能/u, '等于')), assertMethodContract]),
     ['actionable MOD-12 link', body.replace('MOD-12', '[MOD-12](/modeling/mod-12)'), assertMethodContract],
+    ['actionable MOD-12 href with neutral text', `${body}\n[下一篇](/modeling/mod-12)\n`, assertMethodContract],
+    ['boundary table moved outside wrapper', body.replace(`${boundaryTable}\n\n</div>`, `</div>\n\n${boundaryTable}`), assertInteractionContract],
+    ['Mermaid moved outside wrapper', body.replace(`${mermaidBlock}\n\n</div>`, `</div>\n\n${mermaidBlock}`), assertInteractionContract],
+    ['relationship table moved outside wrapper', body.replace(`${relationshipTable}\n\n</div>`, `</div>\n\n${relationshipTable}`), assertInteractionContract],
   ];
   for (const [label, mutation, contract] of mutations) {
     assert.throws(() => contract(mutation), {name: 'AssertionError'}, label);
