@@ -221,15 +221,14 @@ function assertBacklogClosure(source) {
   for (const id of ['08', '09', '10', '11']) {
     assert.match(source, new RegExp(`^- \\[x\\] \\*\\*MOD-${id} `, 'mu'));
   }
-  for (const id of ['12', '13']) {
-    assert.match(source, new RegExp(`^- \\[ \\] \\*\\*MOD-${id} `, 'mu'));
-  }
+  assert.match(source, /^- \[x\] \*\*MOD-12 /mu);
+  assert.match(source, /^- \[ \] \*\*MOD-13 /mu);
   assert.match(source, /当前持久故事：\*\* `G008`/u);
   assert.doesNotMatch(source, /最近完成 `G008`/u);
   assert.equal(
-    currentReleaseBaseline(source).split('下一项为 MOD-12').length - 1,
+    currentReleaseBaseline(source).split('下一项为 MOD-13').length - 1,
     1,
-    'live current segment must identify MOD-12 as next',
+    'live current segment must identify MOD-13 as next',
   );
 }
 
@@ -241,7 +240,7 @@ function assertGeneratedState(manifestValue, statusValue) {
   assert.equal(topicsById.get('MOD-11')?.published, true);
   assert.equal(topicsById.get('MOD-11')?.status.value, 'complete');
   assert.equal(topicsById.get('MOD-12')?.published, true);
-  assert.equal(topicsById.get('MOD-12')?.status.value, 'pending');
+  assert.equal(topicsById.get('MOD-12')?.status.value, 'complete');
   for (const id of ['MOD-13']) {
     assert.equal(topicsById.get(id)?.published, false, id);
     assert.equal(topicsById.get(id)?.status.value, 'pending', id);
@@ -249,7 +248,7 @@ function assertGeneratedState(manifestValue, statusValue) {
   assert.deepEqual(statusValue, {
     schema_version: 1,
     durable_stories: {completed: 7, total: 20, current: 'G008'},
-    completed_topics: 50,
+    completed_topics: 51,
     content_documents: 93,
     governed_sources: 490,
     sources: {
@@ -336,7 +335,7 @@ test('rejects backlog evidence status and next-topic mutations', () => {
     backlog.replace('- [x] **MOD-10 ', '- [ ] **MOD-10 '),
     backlog.replace('- [x] **MOD-11 ', '- [ ] **MOD-11 '),
     backlog.replace('- **当前持久故事：** `G008`。', '- **当前持久故事：** `G009`。'),
-    backlog.replace('下一项为 MOD-12', '下一项为 MOD-13'),
+    backlog.replace('下一项为 MOD-13', '下一项为 MOD-14'),
   ]) {
     assert.throws(() => assertBacklogClosure(mutation));
   }

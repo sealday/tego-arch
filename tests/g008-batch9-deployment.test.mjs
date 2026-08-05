@@ -156,9 +156,12 @@ function currentReleaseBaseline(source) {
 
 function batch9Segment(source) {
   const baseline = currentReleaseBaseline(source);
-  const end = baseline.indexOf('此前 G008 Batch 8 历史完成基线为：');
+  const marker = '此前 G008 Batch 9 历史完成基线为：';
+  const start = baseline.indexOf(marker);
+  assert.notEqual(start, -1, 'Batch 9 history boundary');
+  const end = baseline.indexOf('此前 G008 Batch 8 历史完成基线为：', start);
   assert.notEqual(end, -1, 'Batch 8 history boundary');
-  return baseline.slice(0, end);
+  return `- **当前发布基线：** ${baseline.slice(start + marker.length, end)}`;
 }
 
 function batch8AndOlderHistory(source) {
@@ -216,11 +219,15 @@ function assertBacklogClosure(source) {
   for (const id of ['08', '09', '10', '11']) {
     assert.match(source, new RegExp(`^- \\[x\\] \\*\\*MOD-${id} `, 'mu'));
   }
-  for (const id of ['12', '13']) {
-    assert.match(source, new RegExp(`^- \\[ \\] \\*\\*MOD-${id} `, 'mu'));
-  }
+  assert.match(source, /^- \[x\] \*\*MOD-12 /mu);
+  assert.match(source, /^- \[ \] \*\*MOD-13 /mu);
   assert.match(source, /当前持久故事：\*\* `G008`/u);
   assert.doesNotMatch(source, /最近完成 `G008`/u);
+  assert.equal(
+    currentReleaseBaseline(source).split('下一项为 MOD-13').length - 1,
+    1,
+    'live current segment must identify MOD-13 as next',
+  );
 }
 
 function assertGeneratedState(manifestValue, statusValue) {
@@ -230,7 +237,7 @@ function assertGeneratedState(manifestValue, statusValue) {
   assert.equal(topicsById.get('MOD-11')?.published, true);
   assert.equal(topicsById.get('MOD-11')?.status.value, 'complete');
   assert.equal(topicsById.get('MOD-12')?.published, true);
-  assert.equal(topicsById.get('MOD-12')?.status.value, 'pending');
+  assert.equal(topicsById.get('MOD-12')?.status.value, 'complete');
   for (const id of ['MOD-13']) {
     assert.equal(topicsById.get(id)?.published, false, id);
     assert.equal(topicsById.get(id)?.status.value, 'pending', id);
@@ -238,7 +245,7 @@ function assertGeneratedState(manifestValue, statusValue) {
   assert.deepEqual(statusValue, {
     schema_version: 1,
     durable_stories: {completed: 7, total: 20, current: 'G008'},
-    completed_topics: 50,
+    completed_topics: 51,
     content_documents: 93,
     governed_sources: 490,
     sources: {
@@ -310,12 +317,13 @@ test('closes only MOD-11 while keeping G008 current and MOD-12 next', () => {
 test('rejects backlog evidence status and next-topic mutations', () => {
   assert.doesNotThrow(() => assertBacklogClosure(backlog));
   const segment = batch9Segment(backlog);
+  const storedSegment = segment.slice('- **当前发布基线：** '.length);
   for (const literal of expectedBatch9Evidence) {
     assert.throws(() => assertBacklogClosure(
-      backlog.replace(segment, segment.replace(literal, '__REMOVED__')),
+      backlog.replace(storedSegment, storedSegment.replace(literal, '__REMOVED__')),
     ));
     assert.throws(() => assertBacklogClosure(
-      backlog.replace(segment, `${segment}${literal}`),
+      backlog.replace(storedSegment, `${storedSegment}${literal}`),
     ));
   }
   const backlogStateMutations = [
@@ -323,10 +331,10 @@ test('rejects backlog evidence status and next-topic mutations', () => {
     backlog.replace('- [x] **MOD-09 ', '- [ ] **MOD-09 '),
     backlog.replace('- [x] **MOD-10 ', '- [ ] **MOD-10 '),
     backlog.replace('- [x] **MOD-11 ', '- [ ] **MOD-11 '),
-    backlog.replace('- [ ] **MOD-12 ', '- [x] **MOD-12 '),
+    backlog.replace('- [x] **MOD-12 ', '- [ ] **MOD-12 '),
     backlog.replace('- [ ] **MOD-13 ', '- [x] **MOD-13 '),
     backlog.replace('- **当前持久故事：** `G008`。', '- **当前持久故事：** `G009`。'),
-    backlog.replace('下一项为 MOD-12', '下一项为 MOD-13'),
+    backlog.replace('下一项为 MOD-13', '下一项为 MOD-14'),
   ];
   assert.equal(
     backlogStateMutations.length,
@@ -340,11 +348,12 @@ test('rejects backlog evidence status and next-topic mutations', () => {
 
 test('rejects symbolic or contradictory Batch 9 current-segment content', () => {
   const segment = batch9Segment(backlog);
+  const storedSegment = segment.slice('- **当前发布基线：** '.length);
   for (const mutation of [
-    backlog.replace(segment, segment.replace(expectedStageASha, 'STAGE_A_SHA')),
+    backlog.replace(storedSegment, storedSegment.replace(expectedStageASha, 'STAGE_A_SHA')),
     backlog.replace(
-      segment,
-      `${segment}Contradictory projection: 49 / 92 / 488; Stage B closure — FAIL。`,
+      storedSegment,
+      `${storedSegment}Contradictory projection: 49 / 92 / 488; Stage B closure — FAIL。`,
     ),
   ]) {
     assert.throws(() => assertBacklogClosure(mutation));

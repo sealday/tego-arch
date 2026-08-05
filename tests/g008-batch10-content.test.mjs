@@ -488,7 +488,7 @@ test('publishes exact reciprocal MOD-12 relations without an override', () => {
   assert.doesNotMatch(requiredDocument().body, /\[[^\]]*MOD-13[^\]]*\]\([^)]*\)/u);
 });
 
-test('locks the generated MOD-12 Stage A projection', () => {
+test('locks the generated MOD-12 Stage B projection', () => {
   assert.deepEqual({
     completed_topics: projectStatus.completed_topics,
     content_documents: projectStatus.content_documents,
@@ -500,22 +500,22 @@ test('locks the generated MOD-12 Stage A projection', () => {
     current_goal: projectStatus.durable_stories.current,
     next_topic: currentNextTopic(backlog),
   }, {
-    completed_topics: 50,
+    completed_topics: 51,
     content_documents: 93,
     governed_sources: 490,
     durable_stories: {completed: 7, total: 20},
     current_goal: 'G008',
-    next_topic: 'MOD-12',
+    next_topic: 'MOD-13',
   });
   const topicsById = new Map(topicManifest.topics.map((topic) => [topic.id, topic]));
   assert.equal(topicsById.get('MOD-12').published, true);
-  assert.equal(topicsById.get('MOD-12').status.value, 'pending');
+  assert.equal(topicsById.get('MOD-12').status.value, 'complete');
   assert.equal(topicsById.get('MOD-13').published, false);
   assert.equal(topicsById.get('MOD-13').status.value, 'pending');
   assert.throws(
     () => assert.equal(
-      currentNextTopic(backlog.replace('下一项为 MOD-12', '下一项为 MOD-13')),
-      'MOD-12',
+      currentNextTopic(backlog.replace('下一项为 MOD-13', '下一项为 MOD-14')),
+      'MOD-13',
     ),
     {name: 'AssertionError'},
   );

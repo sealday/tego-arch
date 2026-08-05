@@ -167,9 +167,9 @@ function assertCurrentReleaseState(source) {
   const {prefix} = assertBatch3HistoricalSegment(source);
   assert.match(
     prefix,
-    /^- \*\*当前发布基线：\*\* 2026-08-05 G008 Batch 9 已完成 MOD-11/u,
+    /^- \*\*当前发布基线：\*\* 2026-08-05 G008 Batch 10 已完成 MOD-12/u,
   );
-  assert.match(prefix, /G008 仍在进行中，下一项为 MOD-12/u);
+  assert.match(prefix, /G008 仍在进行中，下一项为 MOD-13/u);
 }
 
 function assertBacklogClosure(source) {
@@ -180,9 +180,8 @@ function assertBacklogClosure(source) {
   assert.match(source, /^- \[x\] \*\*MOD-09 /mu);
   assert.match(source, /^- \[x\] \*\*MOD-10 /mu);
   assert.match(source, /^- \[x\] \*\*MOD-11 /mu);
-  for (const id of ['12', '13']) {
-    assert.match(source, new RegExp(`^- \\[ \\] \\*\\*MOD-${id} `, 'mu'));
-  }
+  assert.match(source, /^- \[x\] \*\*MOD-12 /mu);
+  assert.match(source, /^- \[ \] \*\*MOD-13 /mu);
   assertCurrentReleaseState(source);
 }
 
@@ -277,12 +276,12 @@ test('preserves Batch 3 closure under the current non-terminal G008 baseline', (
   assert.equal(topicsById.get('MOD-11')?.published, true);
   assert.equal(topicsById.get('MOD-11')?.status.value, 'complete');
   assert.equal(topicsById.get('MOD-12')?.published, true);
-  assert.equal(topicsById.get('MOD-12')?.status.value, 'pending');
+  assert.equal(topicsById.get('MOD-12')?.status.value, 'complete');
   for (const id of ['MOD-13']) {
     assert.equal(topicsById.get(id)?.published, false, id);
     assert.equal(topicsById.get(id)?.status.value, 'pending', id);
   }
-  assert.equal(projectStatus.completed_topics, 50);
+  assert.equal(projectStatus.completed_topics, 51);
   assert.equal(projectStatus.content_documents, 93);
   assert.equal(projectStatus.governed_sources, 490);
   assert.deepEqual(projectStatus.durable_stories, {
@@ -298,7 +297,7 @@ test('preserves Batch 3 closure under the current non-terminal G008 baseline', (
 test('rejects incomplete over-complete or terminal current mutations', () => {
   assert.throws(
     () => assertCurrentReleaseState(
-      backlog.replace('G008 仍在进行中，下一项为 MOD-12', 'G008 已完成，下一项为 MOD-11'),
+      backlog.replace('G008 仍在进行中，下一项为 MOD-13', 'G008 已完成，下一项为 MOD-12'),
     ),
     {name: 'AssertionError'},
   );

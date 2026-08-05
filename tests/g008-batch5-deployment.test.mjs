@@ -247,9 +247,8 @@ function assertBacklogClosure(source) {
   assert.match(source, /^- \[x\] \*\*MOD-09 /mu);
   assert.match(source, /^- \[x\] \*\*MOD-10 /mu);
   assert.match(source, /^- \[x\] \*\*MOD-11 /mu);
-  for (const id of ['12', '13']) {
-    assert.match(source, new RegExp(`^- \\[ \\] \\*\\*MOD-${id} `, 'mu'));
-  }
+  assert.match(source, /^- \[x\] \*\*MOD-12 /mu);
+  assert.match(source, /^- \[ \] \*\*MOD-13 /mu);
   assert.match(source, /当前持久故事：\*\* `G008`/u);
   assert.doesNotMatch(source, /最近完成 `G008`/u);
 }
@@ -355,7 +354,7 @@ test('preserves Batch 5 evidence under the live Batch 7 projection', () => {
   assert.equal(topicsById.get('MOD-11')?.published, true);
   assert.equal(topicsById.get('MOD-11')?.status.value, 'complete');
   assert.equal(topicsById.get('MOD-12')?.published, true);
-  assert.equal(topicsById.get('MOD-12')?.status.value, 'pending');
+  assert.equal(topicsById.get('MOD-12')?.status.value, 'complete');
   for (const id of ['MOD-13']) {
     assert.equal(topicsById.get(id)?.published, false, id);
     assert.equal(topicsById.get(id)?.status.value, 'pending', id);
@@ -363,7 +362,7 @@ test('preserves Batch 5 evidence under the live Batch 7 projection', () => {
   assert.deepEqual(projectStatus, {
     schema_version: 1,
     durable_stories: {completed: 7, total: 20, current: 'G008'},
-    completed_topics: 50,
+    completed_topics: 51,
     content_documents: 93,
     governed_sources: 490,
     sources: {
