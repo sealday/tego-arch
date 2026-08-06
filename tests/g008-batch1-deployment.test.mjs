@@ -79,15 +79,15 @@ test('closes exactly MOD-01 through MOD-03 without closing G008', () => {
       source: 'docs/content-backlog.md',
     });
   }
-  assert.equal(projectStatus.completed_topics, 51);
+  assert.equal(projectStatus.completed_topics, 52);
   assert.equal(projectStatus.content_documents, 94);
   assert.equal(projectStatus.governed_sources, 494);
   assert.deepEqual(projectStatus.durable_stories, {
-    completed: 7,
+    completed: 8,
     total: 20,
-    current: 'G008',
+    current: 'G009',
   });
-  assert.match(backlog, /当前持久故事：\*\* `G008`/u);
+  assert.match(backlog, /当前持久故事：\*\* `G009`/u);
   assert.match(backlog, /下一项[^。\n]*MOD-04/u);
-  assert.doesNotMatch(backlog, /最近完成 `G008`/u);
+  assert.match(backlog, /最近完成 `G008`/u);
 });

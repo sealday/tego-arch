@@ -710,8 +710,8 @@ test('governs exactly the five visible MOD-05 official sources', () => {
 test('projects the exact G008 Batch 3 Stage B repository state', () => {
   assert.deepEqual(status, {
     schema_version: 1,
-    durable_stories: {completed: 7, total: 20, current: 'G008'},
-    completed_topics: 51,
+    durable_stories: {completed: 8, total: 20, current: 'G009'},
+    completed_topics: 52,
     content_documents: 94,
     governed_sources: 494,
     sources: {

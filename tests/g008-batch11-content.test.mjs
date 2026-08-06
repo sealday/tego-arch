@@ -642,12 +642,14 @@ test('publishes exact reciprocal MOD-13 relations without changing relation over
   assert.match(requiredDocument().body, /控制器协调[^。\n]*有限类比/u);
 });
 
-test('locks the generated MOD-13 Stage A projection', () => {
-  assert.equal(projectStatus.completed_topics, 51);
+test('locks the generated MOD-13 Stage B projection', () => {
+  assert.equal(projectStatus.completed_topics, 52);
   assert.equal(projectStatus.content_documents, 94);
   assert.equal(projectStatus.governed_sources, 494);
-  assert.deepEqual(projectStatus.durable_stories, {completed:7,total:20,current:'G008'});
+  assert.deepEqual(projectStatus.durable_stories, {completed:8,total:20,current:'G009'});
   const topicsById = new Map(topicManifest.topics.map((topic) => [topic.id, topic]));
   assert.equal(topicsById.get('MOD-13').published, true);
-  assert.equal(topicsById.get('MOD-13').status.value, 'pending');
+  assert.equal(topicsById.get('MOD-13').status.value, 'complete');
+  assert.equal(topicsById.get('STY-00').published, true);
+  assert.equal(topicsById.get('STY-00').status.value, 'pending');
 });

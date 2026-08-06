@@ -214,7 +214,8 @@ function assertBacklogClosure(source) {
   assert.match(source, /^- \[x\] \*\*MOD-10 /mu);
   assert.match(source, /^- \[x\] \*\*MOD-11 /mu);
   assert.match(source, /^- \[x\] \*\*MOD-12 /mu);
-  assert.match(source, /^- \[ \] \*\*MOD-13 /mu);
+  assert.match(source, /^- \[x\] \*\*MOD-13 /mu);
+  assert.match(source, /^- \[ \] \*\*STY-00 /mu);
   assertBatch3History(source);
 }
 
@@ -241,7 +242,7 @@ test('rejects symbolic duplicate or incomplete live evidence', () => {
   }
 });
 
-test('preserves MOD-06 closure under the current non-terminal G008 baseline', () => {
+test('preserves MOD-06 closure under the current G009 baseline', () => {
   const {sha, run} = parseEvidence(review);
   const row = backlog.split(/\r?\n/u).find((line) => line.startsWith('- [x] **MOD-06 '));
   assert.ok(row?.includes(sha), 'MOD-06 exact Stage A SHA');
@@ -256,14 +257,14 @@ test('preserves MOD-06 closure under the current non-terminal G008 baseline', ()
   assert.equal(topicsById.get('MOD-11')?.status.value, 'complete');
   assert.equal(topicsById.get('MOD-12')?.published, true);
   assert.equal(topicsById.get('MOD-12')?.status.value, 'complete');
-  for (const id of ['MOD-13']) {
-    assert.equal(topicsById.get(id)?.published, true, id);
-    assert.equal(topicsById.get(id)?.status.value, 'pending', id);
-  }
+  assert.equal(topicsById.get('MOD-13')?.published, true);
+  assert.equal(topicsById.get('MOD-13')?.status.value, 'complete');
+  assert.equal(topicsById.get('STY-00')?.published, true);
+  assert.equal(topicsById.get('STY-00')?.status.value, 'pending');
   assert.deepEqual(projectStatus, {
     schema_version: 1,
-    durable_stories: {completed: 7, total: 20, current: 'G008'},
-    completed_topics: 51,
+    durable_stories: {completed: 8, total: 20, current: 'G009'},
+    completed_topics: 52,
     content_documents: 94,
     governed_sources: 494,
     sources: {
@@ -274,8 +275,8 @@ test('preserves MOD-06 closure under the current non-terminal G008 baseline', ()
     },
   });
   assertBacklogClosure(backlog);
-  assert.match(backlog, /当前持久故事：\*\* `G008`/u);
-  assert.doesNotMatch(backlog, /最近完成 `G008`/u);
+  assert.match(backlog, /当前持久故事：\*\* `G009`/u);
+  assert.match(backlog, /最近完成 `G008`/u);
 });
 
 test('locks the Batch 3 completion identity below Batch 4', () => {

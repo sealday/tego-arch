@@ -220,13 +220,14 @@ function assertBacklogClosure(source) {
     assert.match(source, new RegExp(`^- \\[x\\] \\*\\*MOD-${id} `, 'mu'));
   }
   assert.match(source, /^- \[x\] \*\*MOD-12 /mu);
-  assert.match(source, /^- \[ \] \*\*MOD-13 /mu);
-  assert.match(source, /当前持久故事：\*\* `G008`/u);
-  assert.doesNotMatch(source, /最近完成 `G008`/u);
+  assert.match(source, /^- \[x\] \*\*MOD-13 /mu);
+  assert.match(source, /^- \[ \] \*\*STY-00 /mu);
+  assert.match(source, /当前持久故事：\*\* `G009`/u);
+  assert.match(source, /最近完成 `G008`/u);
   assert.equal(
-    currentReleaseBaseline(source).split('下一项为 MOD-13').length - 1,
+    currentReleaseBaseline(source).split('下一项为 STY-00').length - 1,
     1,
-    'live current segment must identify MOD-13 as next',
+    'live current segment must identify STY-00 as next',
   );
 }
 
@@ -238,14 +239,14 @@ function assertGeneratedState(manifestValue, statusValue) {
   assert.equal(topicsById.get('MOD-11')?.status.value, 'complete');
   assert.equal(topicsById.get('MOD-12')?.published, true);
   assert.equal(topicsById.get('MOD-12')?.status.value, 'complete');
-  for (const id of ['MOD-13']) {
-    assert.equal(topicsById.get(id)?.published, true, id);
-    assert.equal(topicsById.get(id)?.status.value, 'pending', id);
-  }
+  assert.equal(topicsById.get('MOD-13')?.published, true);
+  assert.equal(topicsById.get('MOD-13')?.status.value, 'complete');
+  assert.equal(topicsById.get('STY-00')?.published, true);
+  assert.equal(topicsById.get('STY-00')?.status.value, 'pending');
   assert.deepEqual(statusValue, {
     schema_version: 1,
-    durable_stories: {completed: 7, total: 20, current: 'G008'},
-    completed_topics: 51,
+    durable_stories: {completed: 8, total: 20, current: 'G009'},
+    completed_topics: 52,
     content_documents: 94,
     governed_sources: 494,
     sources: {
@@ -332,9 +333,9 @@ test('rejects backlog evidence status and next-topic mutations', () => {
     backlog.replace('- [x] **MOD-10 ', '- [ ] **MOD-10 '),
     backlog.replace('- [x] **MOD-11 ', '- [ ] **MOD-11 '),
     backlog.replace('- [x] **MOD-12 ', '- [ ] **MOD-12 '),
-    backlog.replace('- [ ] **MOD-13 ', '- [x] **MOD-13 '),
-    backlog.replace('- **当前持久故事：** `G008`。', '- **当前持久故事：** `G009`。'),
-    backlog.replace('下一项为 MOD-13', '下一项为 MOD-14'),
+    backlog.replace('- [x] **MOD-13 ', '- [ ] **MOD-13 '),
+    backlog.replace('- **当前持久故事：** `G009`。', '- **当前持久故事：** `G008`。'),
+    backlog.replace('下一项为 STY-00', '下一项为 STY-01'),
   ];
   assert.equal(
     backlogStateMutations.length,
@@ -394,9 +395,9 @@ test('rejects every generated status and count mutation', () => {
   }
   for (const mutate of [
     (value) => { value.schema_version = 2; },
-    (value) => { value.durable_stories.completed = 8; },
+    (value) => { value.durable_stories.completed = 7; },
     (value) => { value.durable_stories.total = 21; },
-    (value) => { value.durable_stories.current = 'G009'; },
+    (value) => { value.durable_stories.current = 'G008'; },
     (value) => { value.completed_topics = 49; },
     (value) => { value.content_documents = 91; },
     (value) => { value.governed_sources = 487; },

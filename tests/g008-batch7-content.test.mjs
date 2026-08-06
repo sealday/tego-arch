@@ -444,8 +444,8 @@ function assertRelationContract(content, peers) {
 function assertStageBProjection(projectStatus, topicIndexes, content) {
   assert.deepEqual(projectStatus, {
     schema_version: 1,
-    durable_stories: {completed: 7, total: 20, current: 'G008'},
-    completed_topics: 51,
+    durable_stories: {completed: 8, total: 20, current: 'G009'},
+    completed_topics: 52,
     content_documents: 94,
     governed_sources: 494,
     sources: {
@@ -463,15 +463,11 @@ function assertStageBProjection(projectStatus, topicIndexes, content) {
   assert.equal(topicsById.get('MOD-11').published, true);
   assert.equal(topicsById.get('MOD-11').status.value, 'complete');
   const links = extractInternalLinks(content);
-  for (const id of publishedPendingModelingTopics) {
-    assert.equal(topicsById.get(id).published, true, `${id} publication`);
-    assert.equal(topicsById.get(id).status.value, 'pending', `${id} status`);
-    assert.equal(
-      links.filter((href) => href === `/modeling/${id.toLowerCase()}`).length,
-      0,
-      `${id} actionable article links`,
-    );
-  }
+  assert.equal(topicsById.get('MOD-13').published, true, 'MOD-13 publication');
+  assert.equal(topicsById.get('MOD-13').status.value, 'complete', 'MOD-13 status');
+  assert.equal(topicsById.get('STY-00').published, true, 'STY-00 publication');
+  assert.equal(topicsById.get('STY-00').status.value, 'pending', 'STY-00 status');
+  assert.equal(links.filter((href) => href === '/modeling/mod-13').length, 0, 'MOD-13 actionable article links');
 }
 
 test('publishes MOD-09 with the approved metadata and H2 sequence', () => {
@@ -625,11 +621,11 @@ test('projects Stage B after closing MOD-09', async () => {
     const completedTopic = Object.values(completed)
       .flat()
       .find(({id: topicId}) => topicId === id);
-    completedTopic.status.value = 'complete';
+    completedTopic.status.value = 'pending';
     assert.throws(
       () => assertStageBProjection(projectStatus, completed, content),
       {name: 'AssertionError'},
-      `${id} forbidden completion`,
+      `${id} forbidden pending status`,
     );
 
     const linked = {
