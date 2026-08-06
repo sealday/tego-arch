@@ -167,6 +167,7 @@ test('renders every injected and canonical registry row exactly once without tru
     source('data/terminology.json'),
   ]);
   const registry = JSON.parse(registryText);
+  const expectedRegistryTerms = structuredClone(registry.terms);
   const fixture = [
     {
       id: 'third',
@@ -216,8 +217,28 @@ test('renders every injected and canonical registry row exactly once without tru
   assert.ok(registry.terms.length > 0);
   assertRenderedTerms(
     renderToStaticMarkup(canonicalModule.default()),
-    registry.terms,
+    expectedRegistryTerms,
   );
+  assert.deepEqual(registry.terms, expectedRegistryTerms);
+
+  const wrapperLengthMutation = injectFunctionStatement(
+    component,
+    'TerminologyIndex',
+    'terminology.terms.length = 1;',
+  );
+  const wrapperMutantRegistry = structuredClone(registry);
+  const expectedWrapperMutantTerms = structuredClone(
+    wrapperMutantRegistry.terms,
+  );
+  const wrapperMutantModule = loadTerminologyModule(
+    wrapperLengthMutation,
+    wrapperMutantRegistry,
+  );
+  assert.throws(() =>
+    assertRenderedTerms(
+      renderToStaticMarkup(wrapperMutantModule.default()),
+      expectedWrapperMutantTerms,
+    ));
 
   const lengthMutation = injectFunctionStatement(
     component,
