@@ -236,6 +236,10 @@ test('governs five specific visible STY-00 sources', () => {
     }),
     expectedSources,
   );
+  assert.equal(
+    records.get('src-microsoft-architecture-styles')?.license_evidence_url,
+    'https://github.com/microsoftdocs/architecture-center/blob/4fb4d75aa5ed8423caa0d6c35d40b32bbc3cc819/LICENSE',
+  );
   for (const {source_id, citation_url} of expectedCitations) {
     assert.ok(document.source.includes(`](${citation_url})`), `${source_id} visible citation`);
   }

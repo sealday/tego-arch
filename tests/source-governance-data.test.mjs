@@ -18,6 +18,11 @@ import {
 const inventoryPath = new URL('../docs/source-license-inventory.md', import.meta.url);
 const ledgerPath = new URL('../data/source-ledger.json', import.meta.url);
 const contentRoot = fileURLToPath(new URL('../content', import.meta.url));
+const approvedMicrosoftLicenseEvidenceUrls = new Set([
+  'https://github.com/microsoftdocs/architecture-center/blob/main/LICENSE',
+  'https://github.com/microsoftdocs/architecture-center/blob/4fb4d75aa5ed8423caa0d6c35d40b32bbc3cc819/LICENSE',
+  'https://github.com/dotnet/docs/blob/main/LICENSE',
+]);
 
 async function governedData() {
   const [inventoryMarkdown, ledgerText, microFrontendsBody] = await Promise.all([
@@ -140,9 +145,25 @@ test('records all Microsoft Learn families as CC-BY-4.0 from official license ev
   assert.equal(sources.length, 7);
   for (const item of [...rows, ...sources]) {
     assert.equal(item.exact_license ?? item.license, 'CC-BY-4.0');
-    assert.match(
+    assert.equal(
+      approvedMicrosoftLicenseEvidenceUrls.has(item.license_evidence_url),
+      true,
       item.license_evidence_url,
-      /^https:\/\/github\.com\/(?:microsoftdocs\/architecture-center\/blob\/(?:main|[0-9a-f]{40})|dotnet\/docs\/blob\/main)\/LICENSE$/i,
+    );
+  }
+});
+
+test('rejects unapproved Architecture Center license commit URLs', () => {
+  for (const commit of [
+    '0000000000000000000000000000000000000000',
+    'deadbeefdeadbeefdeadbeefdeadbeefdeadbeef',
+  ]) {
+    assert.equal(
+      approvedMicrosoftLicenseEvidenceUrls.has(
+        `https://github.com/microsoftdocs/architecture-center/blob/${commit}/LICENSE`,
+      ),
+      false,
+      commit,
     );
   }
 });
