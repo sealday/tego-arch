@@ -355,12 +355,15 @@ test('rejects every generated Stage B state route and count mutation', () => {
   sty01.status.value = 'pending';
   assert.notDeepEqual(staleSty01, manifest, 'STY-01 stale-state mutation must change manifest');
   assert.throws(() => assertGeneratedState(staleSty01, projectStatus));
+  const staleCompletedTopics = structuredClone(projectStatus);
+  staleCompletedTopics.completed_topics = 53;
+  assert.notEqual(staleCompletedTopics.completed_topics, projectStatus.completed_topics);
+  assert.throws(() => assertGeneratedState(manifest, staleCompletedTopics));
   for (const mutate of [
     (value) => { value.schema_version = 2; },
     (value) => { value.durable_stories.completed = 7; },
     (value) => { value.durable_stories.total = 21; },
     (value) => { value.durable_stories.current = 'G008'; },
-    (value) => { value.completed_topics = 51; },
     (value) => { value.content_documents = 94; },
     (value) => { value.governed_sources = 498; },
     (value) => { value.sources.completed_topics = 'other'; },

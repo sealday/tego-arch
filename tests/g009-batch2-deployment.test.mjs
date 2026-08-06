@@ -269,3 +269,49 @@ test('preserves the complete G009 Batch 1 and older release history', async () =
     expectedG009Batch1AndOlderSha256,
   );
 });
+
+test('keeps historical live-projection mutations aligned with the immediately prior Stage A', async () => {
+  const mutationSuites = await Promise.all(
+    [7, 8, 9, 10, 11].map(async (batch) => [
+      batch,
+      await readFile(
+        new URL(`g008-batch${batch}-deployment.test.mjs`, import.meta.url),
+        'utf8',
+      ),
+    ]),
+  );
+  for (const [batch, source] of mutationSuites) {
+    assert.match(
+      source,
+      /staleCompletedTopics\.completed_topics = 53;/u,
+      `Batch ${batch} reverses completed topics to Stage A 53`,
+    );
+    assert.match(
+      source,
+      /assert\.notEqual\(staleCompletedTopics\.completed_topics, projectStatus\.completed_topics/u,
+      `Batch ${batch} guards the completed-topics mutation`,
+    );
+    assert.match(
+      source,
+      /assert\.throws\(\(\) => assertGeneratedState\(manifest, staleCompletedTopics\)\);/u,
+      `Batch ${batch} rejects the completed-topics mutation`,
+    );
+  }
+
+  const messageSuites = await Promise.all(
+    [6, 7, 8, 9].map(async (batch) => [
+      batch,
+      await readFile(
+        new URL(`g008-batch${batch}-deployment.test.mjs`, import.meta.url),
+        'utf8',
+      ),
+    ]),
+  );
+  for (const [batch, source] of messageSuites) {
+    assert.match(
+      source,
+      /live current segment must identify STY-02 as next/u,
+      `Batch ${batch} next-topic assertion message`,
+    );
+  }
+});

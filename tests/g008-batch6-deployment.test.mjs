@@ -194,7 +194,7 @@ function assertBacklogClosure(source) {
   assert.equal(
     currentReleaseBaseline(source).split('下一项为 STY-02').length - 1,
     1,
-    'live current segment must identify STY-01 as next',
+    'live current segment must identify STY-02 as next',
   );
 }
 
