@@ -40,6 +40,18 @@ test('ships matching light and dark judgment-path editorial assets', async () =>
   assert.equal(light.readUInt32BE(20), dark.readUInt32BE(20));
 });
 
+test('ships matching light and dark use-modes editorial assets', async () => {
+  const [light, dark] = await Promise.all([
+    readBinary('static/img/illustrations/tego-arch-use-modes-light.png'),
+    readBinary('static/img/illustrations/tego-arch-use-modes-dark.png'),
+  ]);
+
+  assertPng(light, 'light use modes');
+  assertPng(dark, 'dark use modes');
+  assert.equal(light.readUInt32BE(16), dark.readUInt32BE(16));
+  assert.equal(light.readUInt32BE(20), dark.readUInt32BE(20));
+});
+
 test('publishes separate code, content, and third-party license boundaries', async () => {
   const [codeLicense, contentLicense, notice] = await Promise.all([
     read('LICENSE'),
