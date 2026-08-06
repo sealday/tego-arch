@@ -127,6 +127,15 @@ function authorizeMigration(governed, resultValue, replacement) {
   return governed;
 }
 
+function permutations(values) {
+  if (values.length <= 1) return [values];
+  return values.flatMap((value, index) =>
+    permutations(values.filter((_, candidate) => candidate !== index)).map(
+      (remaining) => [value, ...remaining],
+    ),
+  );
+}
+
 test('validates complete transport-deduplicated link-health cache coverage', () => {
   const governed = ledger([
     source('fragment-a', 'https://example.com/file#L1'),
@@ -1366,6 +1375,80 @@ test('fails closed independent of order when duplicate archives conflict outside
     forward.errors.join('\n'),
     /conflicting duplicate result fields.*review_status/u,
   );
+});
+
+test('current result merge detects same-observation conflicts across every three-cache permutation', () => {
+  const governed = ledger([source('a', 'https://example.com/current')]);
+  const target = buildLinkTargets(governed)[0];
+  const firstAttempt = attempt({
+    final: target.transport_locator,
+    when: '2026-07-23T00:00:00.000Z',
+  });
+  const latestAttempt = attempt({final: target.transport_locator});
+  const alpha = {...result(target, firstAttempt), change_note: 'alpha'};
+  const latest = result(target, latestAttempt);
+  const charlie = {...result(target, firstAttempt), change_note: 'charlie'};
+  const caches = [alpha, latest, charlie].map((entry) => ({
+    schema_version: 1,
+    generated_at: at,
+    results: [entry],
+    superseded_results: [],
+  }));
+
+  const merged = permutations(caches).map((ordered) =>
+    mergeLinkHealthCaches(governed, ordered, {now}),
+  );
+  for (const candidate of merged) {
+    assert.deepEqual(candidate.cache, merged[0].cache);
+    assert.deepEqual(candidate.errors, merged[0].errors);
+    assert.match(
+      candidate.errors.join('\n'),
+      /conflicting duplicate result fields.*change_note/u,
+    );
+  }
+});
+
+test('archive merge detects same-observation conflicts across every three-cache permutation', () => {
+  const governed = ledger([source('a', 'https://example.com/current')]);
+  const oldTarget = buildLinkTargets(
+    ledger([source('a', 'https://example.com/old')]),
+  )[0];
+  const firstAttempt = attempt({
+    final: oldTarget.transport_locator,
+    when: '2026-07-23T00:00:00.000Z',
+  });
+  const latestAttempt = attempt({final: oldTarget.transport_locator});
+  const alpha = {...result(oldTarget, firstAttempt), change_note: 'alpha'};
+  const latest = result(oldTarget, latestAttempt);
+  const charlie = {...result(oldTarget, firstAttempt), change_note: 'charlie'};
+  const authorityResult = {
+    ...latest,
+    attempt_history: [firstAttempt, latestAttempt],
+  };
+  authorizeMigration(
+    governed,
+    authorityResult,
+    'https://example.com/current',
+  );
+  const caches = [alpha, latest, charlie].map((entry) => {
+    const cached = cacheFor(governed);
+    cached.superseded_results = [
+      superseded(entry, 'https://example.com/current'),
+    ];
+    return cached;
+  });
+
+  const merged = permutations(caches).map((ordered) =>
+    mergeLinkHealthCaches(governed, ordered, {now}),
+  );
+  for (const candidate of merged) {
+    assert.deepEqual(candidate.cache, merged[0].cache);
+    assert.deepEqual(candidate.errors, merged[0].errors);
+    assert.match(
+      candidate.errors.join('\n'),
+      /conflicting duplicate result fields.*change_note/u,
+    );
+  }
 });
 
 test('uses migration authority to resolve a cited-alias exact-source ambiguity', async () => {

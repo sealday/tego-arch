@@ -1,7 +1,6 @@
 import {createHash, randomUUID} from 'node:crypto';
 import {mkdir, readFile, rename, rm, writeFile} from 'node:fs/promises';
 import path from 'node:path';
-import {isDeepStrictEqual} from 'node:util';
 import {fileURLToPath} from 'node:url';
 
 export const maxSuccessAgeMs = 120 * 24 * 60 * 60 * 1000;
@@ -234,18 +233,32 @@ function authorityKey(transportLocatorValue, sourceIds) {
   return `${transportLocatorValue}\0${sourceIdsKey(sourceIds)}`;
 }
 
+function stableJson(value) {
+  if (Array.isArray(value)) {
+    return `[${value.map((item) => stableJson(item)).join(',')}]`;
+  }
+  if (isRecord(value)) {
+    return `{${Object.keys(value)
+      .sort((left, right) => left.localeCompare(right, 'en'))
+      .filter((key) => value[key] !== undefined)
+      .map((key) => `${JSON.stringify(key)}:${stableJson(value[key])}`)
+      .join(',')}}`;
+  }
+  return JSON.stringify(value);
+}
+
 function newerObservation(left, right) {
   if (!left) return right;
   if (!right) return left;
   const difference = Date.parse(left.at) - Date.parse(right.at);
   if (difference !== 0) return difference > 0 ? left : right;
-  return JSON.stringify(left).localeCompare(JSON.stringify(right), 'en') >= 0
+  return stableJson(left).localeCompare(stableJson(right), 'en') >= 0
     ? left
     : right;
 }
 
-function mergeResultObservations(left, right) {
-  if (!left) return structuredClone(right);
+function mergeResultCandidates(candidates) {
+  if (candidates.length === 1) return structuredClone(candidates[0]);
   const excludedFields = new Set([
     'last_attempt',
     'last_success',
@@ -253,44 +266,42 @@ function mergeResultObservations(left, right) {
     'merge_conflicts',
   ]);
   const identityFields = new Set(['transport_locator', 'source_ids']);
-  const sameLastAttempt = isDeepStrictEqual(
-    left.last_attempt,
-    right.last_attempt,
-  );
   const comparableFields = new Set([
-    ...Object.keys(left),
-    ...Object.keys(right),
+    ...candidates.flatMap((candidate) => Object.keys(candidate)),
   ]);
-  const conflicts = [
-    ...(left.merge_conflicts ?? []),
-    ...(right.merge_conflicts ?? []),
-    ...[...comparableFields].filter(
-      (field) =>
-        !excludedFields.has(field) &&
-        (identityFields.has(field) || sameLastAttempt) &&
-        !isDeepStrictEqual(left[field], right[field]),
-    ),
-  ];
-  const newerAttempt = newerObservation(left.last_attempt, right.last_attempt);
-  let newer;
-  if (sameLastAttempt) {
-    const comparable = (result) =>
-      JSON.stringify(
-        Object.fromEntries(
-          [...comparableFields]
-            .filter((field) => !excludedFields.has(field))
-            .sort((a, b) => a.localeCompare(b, 'en'))
-            .map((field) => [field, result[field]]),
-        ),
-      );
-    newer = comparable(left).localeCompare(comparable(right), 'en') <= 0
-      ? left
-      : right;
-  } else {
-    newer = newerAttempt === left.last_attempt ? left : right;
+  const conflicts = candidates.flatMap(
+    ({merge_conflicts: existing}) => existing ?? [],
+  );
+  for (const field of identityFields) {
+    if (new Set(candidates.map((candidate) => stableJson(candidate[field]))).size > 1) {
+      conflicts.push(field);
+    }
   }
+  const observationGroups = new Map();
+  for (const candidate of candidates) {
+    const key = stableJson(candidate.last_attempt);
+    const group = observationGroups.get(key) ?? [];
+    group.push(candidate);
+    observationGroups.set(key, group);
+  }
+  for (const group of observationGroups.values()) {
+    for (const field of comparableFields) {
+      if (
+        !excludedFields.has(field) &&
+        new Set(group.map((candidate) => stableJson(candidate[field]))).size > 1
+      ) {
+        conflicts.push(field);
+      }
+    }
+  }
+  const latestAt = Math.max(
+    ...candidates.map((candidate) => Date.parse(candidate.last_attempt.at)),
+  );
+  const newer = candidates
+    .filter((candidate) => Date.parse(candidate.last_attempt.at) === latestAt)
+    .sort((left, right) => stableJson(left).localeCompare(stableJson(right), 'en'))[0];
   const historyByObservation = new Map();
-  for (const attempt of [...left.attempt_history, ...right.attempt_history]) {
+  for (const attempt of candidates.flatMap(({attempt_history}) => attempt_history)) {
     const key = JSON.stringify([
       attempt.at,
       attempt.outcome,
@@ -300,7 +311,7 @@ function mergeResultObservations(left, right) {
     const current = historyByObservation.get(key);
     if (
       !current ||
-      JSON.stringify(attempt).localeCompare(JSON.stringify(current), 'en') > 0
+      stableJson(attempt).localeCompare(stableJson(current), 'en') > 0
     ) {
       historyByObservation.set(key, attempt);
     }
@@ -308,11 +319,14 @@ function mergeResultObservations(left, right) {
   return {
     ...structuredClone(newer),
     last_success: structuredClone(
-      newerObservation(left.last_success, right.last_success) ?? null,
+      candidates
+        .map(({last_success}) => last_success)
+        .filter(Boolean)
+        .reduce((latest, success) => newerObservation(latest, success), null),
     ),
     attempt_history: [...historyByObservation.values()].sort((a, b) => {
       const difference = Date.parse(a.at) - Date.parse(b.at);
-      return difference || JSON.stringify(a).localeCompare(JSON.stringify(b), 'en');
+      return difference || stableJson(a).localeCompare(stableJson(b), 'en');
     }),
     ...(conflicts.length > 0
       ? {merge_conflicts: sortedStrings(new Set(conflicts))}
@@ -327,7 +341,7 @@ function collectSupersededResults(ledger, caches, now) {
       authority,
     ]),
   );
-  const archivedResults = new Map();
+  const archivedCandidates = new Map();
   const archiveMetadata = new Map();
   for (const cache of caches) {
     for (const entry of cache?.superseded_results ?? []) {
@@ -336,14 +350,13 @@ function collectSupersededResults(ledger, caches, now) {
         entry.result.transport_locator,
         entry.result.source_ids ?? [],
       );
-      archivedResults.set(
-        key,
-        mergeResultObservations(archivedResults.get(key), entry.result),
-      );
+      const candidates = archivedCandidates.get(key) ?? [];
+      candidates.push(entry.result);
+      archivedCandidates.set(key, candidates);
       const currentMetadata = archiveMetadata.get(key);
       if (
         !currentMetadata ||
-        JSON.stringify(entry).localeCompare(JSON.stringify(currentMetadata), 'en') < 0
+        stableJson(entry).localeCompare(stableJson(currentMetadata), 'en') < 0
       ) {
         archiveMetadata.set(key, structuredClone(entry));
       }
@@ -353,13 +366,12 @@ function collectSupersededResults(ledger, caches, now) {
     for (const result of cache?.results ?? []) {
       const key = authorityKey(result.transport_locator, result.source_ids ?? []);
       if (!authorities.has(key)) continue;
-      archivedResults.set(
-        key,
-        mergeResultObservations(archivedResults.get(key), result),
-      );
+      const candidates = archivedCandidates.get(key) ?? [];
+      candidates.push(result);
+      archivedCandidates.set(key, candidates);
     }
   }
-  return [...archivedResults.entries()].map(([key, result]) => {
+  return [...archivedCandidates.entries()].map(([key, candidates]) => {
     const authority = authorities.get(key);
     const metadata = archiveMetadata.get(key);
     return {
@@ -369,7 +381,7 @@ function collectSupersededResults(ledger, caches, now) {
         authority?.replacement_transport_locator ??
         metadata?.replacement_transport_locator,
       reason: authority?.reason ?? metadata?.reason ?? supersededReason,
-      result,
+      result: mergeResultCandidates(candidates),
     };
   }).sort((left, right) =>
     left.result.transport_locator.localeCompare(
@@ -1387,7 +1399,7 @@ export function mergeLinkHealthCaches(
   const expectedTransports = new Set(
     targets.map(({transport_locator}) => transport_locator),
   );
-  const latest = new Map();
+  const candidatesByTransport = new Map();
   for (const cache of caches) {
     for (const result of cache?.results ?? []) {
       if (
@@ -1396,13 +1408,17 @@ export function mergeLinkHealthCaches(
       ) {
         continue;
       }
-      const current = latest.get(result.transport_locator);
-      latest.set(
-        result.transport_locator,
-        mergeResultObservations(current, result),
-      );
+      const candidates = candidatesByTransport.get(result.transport_locator) ?? [];
+      candidates.push(result);
+      candidatesByTransport.set(result.transport_locator, candidates);
     }
   }
+  const latest = new Map(
+    [...candidatesByTransport].map(([transport, candidates]) => [
+      transport,
+      mergeResultCandidates(candidates),
+    ]),
+  );
   const cache = {
     schema_version: 1,
     generated_at: now.toISOString(),
