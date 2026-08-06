@@ -39,7 +39,7 @@ const assertExactLines = (source, lines) => {
 
 const assertReadmeGovernance = (readme) => {
   const top = readme.split('\n').slice(0, 8).join('\n');
-  assert.match(top, /^# Tego Arch\n\nTego Arch 是一个面向有经验的高级工程师的架构知识项目/u);
+  assert.match(top, /^# Tego Arch 架构知识项目\n\n面向有经验的高级工程师/u);
   assert.match(
     top,
     /^\[在线阅读\]\(https:\/\/sealday\.github\.io\/tego-arch\/\) · \[学习路径\]\(https:\/\/sealday\.github\.io\/tego-arch\/paths\) · \[案例库\]\(https:\/\/sealday\.github\.io\/tego-arch\/cases\) · \[术语规范\]\(https:\/\/sealday\.github\.io\/tego-arch\/terminology\) · \[参与贡献\]\(#参与贡献\)$/mu,
@@ -339,6 +339,25 @@ test('terminology checker accepts README, homepage, and PR template together', a
     'README.md',
     'src/pages/index.tsx',
   ]);
+});
+
+test('registers an executable proper-noun contract for Tego Arch', async () => {
+  const registry = JSON.parse(await read('data/terminology.json'));
+  const term = registry.terms.find(({id}) => id === 'tego-arch');
+
+  assert.deepEqual(term, {
+    id: 'tego-arch',
+    canonical_zh: 'Tego Arch 架构知识项目',
+    english: null,
+    acronym: null,
+    kind: 'proper-noun',
+    first_use: 'Tego Arch 架构知识项目',
+    subsequent_use: ['Tego Arch', '本项目'],
+    allowed_aliases: ['Tego Arch'],
+    forbidden_aliases: [],
+    note: '项目官方名称保持不变，首次出现使用自然中文类别说明，后续可使用官方名。',
+    order: 30,
+  });
 });
 
 test('registers the three reusable future-direction names', async () => {

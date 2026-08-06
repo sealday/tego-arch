@@ -1,6 +1,6 @@
-# Tego Arch
+# Tego Arch 架构知识项目
 
-Tego Arch 是一个面向有经验的高级工程师的架构知识项目，用证据、权衡与真实案例训练从实现到架构决策的能力。
+面向有经验的高级工程师，用证据、权衡与真实案例训练从实现到架构决策的能力。
 
 [在线阅读](https://sealday.github.io/tego-arch/) · [学习路径](https://sealday.github.io/tego-arch/paths) · [案例库](https://sealday.github.io/tego-arch/cases) · [术语规范](https://sealday.github.io/tego-arch/terminology) · [参与贡献](#参与贡献)
 

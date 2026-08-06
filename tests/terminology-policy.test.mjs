@@ -71,10 +71,10 @@ const terms = [
   {
     id: 'tego-arch',
     canonical_zh: 'Tego Arch 架构知识项目',
-    english: 'Tego Arch',
+    english: null,
     acronym: null,
     kind: 'proper-noun',
-    first_use: 'Tego Arch 架构知识项目（Tego Arch）',
+    first_use: 'Tego Arch 架构知识项目',
     subsequent_use: ['Tego Arch', '本项目'],
     allowed_aliases: ['Tego Arch'],
     forbidden_aliases: [],
@@ -403,10 +403,39 @@ other worker
   ]);
 });
 
+test('requires a proper noun first-use form before allowing its official alias', async () => {
+  const premature = await checkFixture('Tego Arch 提供资料。');
+  assert.deepEqual(premature.issues, [{
+    file: 'content/example.mdx',
+    line: 1,
+    ruleId: 'first-use-required',
+    matched: 'Tego Arch',
+    expected: 'Tego Arch 架构知识项目',
+  }]);
+
+  const introduced = await checkFixture(
+    'Tego Arch 架构知识项目提供资料，同一段后续使用 Tego Arch。',
+  );
+  assert.deepEqual(introduced.issues, []);
+});
+
+test('reports the real intro title as a premature proper noun without changing it', async () => {
+  const result = await checkTerminology({
+    root: repositoryRoot,
+    paths: ['content/intro.mdx'],
+  });
+
+  assert.ok(result.issues.some((entry) => (
+    entry.ruleId === 'first-use-required'
+    && entry.matched === 'Tego Arch'
+    && entry.expected === 'Tego Arch 架构知识项目'
+  )));
+});
+
 test('uses explicit phrase boundaries and allows introduced acronyms and registered proper nouns', async () => {
   const result = await checkFixture([
     '应用程序编程接口（Application Programming Interface，API）支持中文 API 调用。',
-    'Tego Arch 架构知识项目（Tego Arch）提供资料，后续使用 Tego Arch。',
+    'Tego Arch 架构知识项目提供资料，后续使用 Tego Arch。',
     '`unknown worker` 不进入检查，worker_id 也不是读者术语。',
     '但 unknown-worker 与 workers 都必须独立报告。',
   ].join('\n'));
