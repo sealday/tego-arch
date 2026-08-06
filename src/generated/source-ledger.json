@@ -1593,6 +1593,40 @@
       "health_checks": []
     },
     {
+      "id": "src-atlas-mod13-authority-drift-loop",
+      "canonical_locator": "/img/diagrams/mod-13-authority-drift-loop.svg",
+      "transport_locator": "/img/diagrams/mod-13-authority-drift-loop.svg",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "权威事实与漂移处置闭环",
+      "author_or_org": "Tego Arch maintainers",
+      "published_at": null,
+      "registered_at": "2026-08-06",
+      "checked_at": "2026-08-06",
+      "version": "Original Draw.io/SVG pair authored and QA-checked on 2026-08-06",
+      "source_kind": "original-illustration",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "illustration"
+      ],
+      "license": "LicenseRef-Atlas-Original",
+      "license_scope": "The named project-authored mod-13-authority-drift-loop.svg asset only",
+      "license_evidence_url": "https://github.com/sealday/tego-arch/blob/main/static/img/diagrams/mod-13-authority-drift-loop.svg",
+      "license_evidence_note": "The project-authored Draw.io/SVG pair contains no third-party reference image, icon, signature, watermark, or copied composition.",
+      "license_family_id": "/img/diagrams/mod-13-authority-drift-loop.svg",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "original-atlas",
+      "usage_boundary": "Original teaching illustration of per-fact authority and drift reconciliation; it does not represent a production topology, team, controller, or tool implementation.",
+      "link_policy": null,
+      "expected_final_transport_locator": "/img/diagrams/mod-13-authority-drift-loop.svg",
+      "expected_final_approved_at": "2026-08-06",
+      "expected_final_approval_note": "Approved project-local original illustration locator for the named SVG asset.",
+      "health_summary": "healthy",
+      "health_checks": []
+    },
+    {
       "id": "src-atlas-pr15-conway-feedback-loop",
       "canonical_locator": "/img/diagrams/pr-15-conway-feedback-loop.svg",
       "transport_locator": "/img/diagrams/pr-15-conway-feedback-loop.svg",
@@ -16999,6 +17033,51 @@
       ]
     },
     {
+      "id": "src-github-deployment-history",
+      "canonical_locator": "https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/view-deployment-history",
+      "transport_locator": "https://raw.githubusercontent.com/github/docs/738593aef7b8d80183a376d5c692feefc0e8a5ff/content/actions/how-tos/deploy/configure-and-manage-deployments/view-deployment-history.md",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Viewing deployment history",
+      "author_or_org": "GitHub",
+      "published_at": null,
+      "registered_at": "2026-08-06",
+      "checked_at": "2026-08-06",
+      "version": "GitHub Docs commit 738593aef7b8d80183a376d5c692feefc0e8a5ff",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "implementation",
+        "learning",
+        "runtime-fact"
+      ],
+      "license": "CC-BY-4.0",
+      "license_scope": "The named GitHub documentation page at the pinned docs commit; GitHub marks, product code, linked works, screenshots, and later versions excluded",
+      "license_evidence_url": "https://github.com/github/docs/blob/738593aef7b8d80183a376d5c692feefc0e8a5ff/LICENSE",
+      "license_evidence_note": "GitHub Docs applies CC BY 4.0 to documentation and content under its LICENSE file.",
+      "license_family_id": "https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/view-deployment-history",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "adapt-with-attribution",
+      "usage_boundary": "Supports deployment history associations with environments, commits, workflow logs, URLs, and statuses; it does not prove application functionality, performance, reliability, or complete runtime health.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://raw.githubusercontent.com/github/docs/738593aef7b8d80183a376d5c692feefc0e8a5ff/content/actions/how-tos/deploy/configure-and-manage-deployments/view-deployment-history.md",
+      "expected_final_approved_at": "2026-08-06",
+      "expected_final_approval_note": "Pinned official documentation source returned HTTP 200 on 2026-08-06.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://raw.githubusercontent.com/github/docs/738593aef7b8d80183a376d5c692feefc0e8a5ff/content/actions/how-tos/deploy/configure-and-manage-deployments/view-deployment-history.md",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-06T07:29:45.145Z",
+          "last_success_at": "2026-08-06T07:29:45.145Z",
+          "http_status": 206,
+          "final_transport_locator": "https://raw.githubusercontent.com/github/docs/738593aef7b8d80183a376d5c692feefc0e8a5ff/content/actions/how-tos/deploy/configure-and-manage-deployments/view-deployment-history.md"
+        }
+      ]
+    },
+    {
       "id": "src-github-e13b6e6f8d7f",
       "canonical_locator": "https://github.com/langchain-ai/langgraph/blob/49ae27c2ae983cfb92091b0dea9f7bc37a716479/README.md",
       "transport_locator": "https://github.com/langchain-ai/langgraph/blob/49ae27c2ae983cfb92091b0dea9f7bc37a716479/README.md",
@@ -21546,6 +21625,51 @@
       ]
     },
     {
+      "id": "src-opengitops-principles-v1",
+      "canonical_locator": "https://opengitops.dev/",
+      "transport_locator": "https://raw.githubusercontent.com/open-gitops/documents/d36cde829c6ef2c7e5cab662ab98a7173a591a49/PRINCIPLES.md",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "GitOps Principles v1.0.0",
+      "author_or_org": "OpenGitOps / CNCF GitOps Working Group",
+      "published_at": null,
+      "registered_at": "2026-08-06",
+      "checked_at": "2026-08-06",
+      "version": "v1.0.0 peeled commit d36cde829c6ef2c7e5cab662ab98a7173a591a49",
+      "source_kind": "standard",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "learning",
+        "method"
+      ],
+      "license": "CC-BY-4.0",
+      "license_scope": "The GitOps Principles content at v1.0.0 under the repository content license; code, marks, translations, linked works, and later versions excluded",
+      "license_evidence_url": "https://github.com/open-gitops/documents/blob/d36cde829c6ef2c7e5cab662ab98a7173a591a49/LICENSE.md",
+      "license_evidence_note": "The pinned repository license applies CC BY 4.0 to content and Apache 2.0 to code.",
+      "license_family_id": "https://opengitops.dev/",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "adapt-with-attribution",
+      "usage_boundary": "Supports declarative, versioned and immutable, automatically pulled, continuously reconciled desired state for GitOps-managed systems; it does not make all architecture knowledge automatically reconcilable.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://raw.githubusercontent.com/open-gitops/documents/d36cde829c6ef2c7e5cab662ab98a7173a591a49/PRINCIPLES.md",
+      "expected_final_approved_at": "2026-08-06",
+      "expected_final_approval_note": "Pinned v1.0.0 principles file returned HTTP 200 on 2026-08-06.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://raw.githubusercontent.com/open-gitops/documents/d36cde829c6ef2c7e5cab662ab98a7173a591a49/PRINCIPLES.md",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-06T07:29:45.145Z",
+          "last_success_at": "2026-08-06T07:29:45.145Z",
+          "http_status": 206,
+          "final_transport_locator": "https://raw.githubusercontent.com/open-gitops/documents/d36cde829c6ef2c7e5cab662ab98a7173a591a49/PRINCIPLES.md"
+        }
+      ]
+    },
+    {
       "query_insensitive": false,
       "locator_aliases": [],
       "tombstone": null,
@@ -23481,6 +23605,52 @@
           "last_success_at": "2026-08-02T04:33:33.082Z",
           "http_status": 200,
           "final_transport_locator": "https://psas.scripts.mit.edu/home/get_file.php?name=STPA_handbook.pdf"
+        }
+      ]
+    },
+    {
+      "id": "src-structurizr-dsl-model-as-code",
+      "canonical_locator": "https://docs.structurizr.com/dsl/tutorial",
+      "transport_locator": "https://raw.githubusercontent.com/structurizr/structurizr.github.io/d7f521eb9c6c55f7e9a4dcaf2a1122b844dbcb7f/dsl/02-tutorial.md",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Structurizr DSL tutorial",
+      "author_or_org": "Structurizr",
+      "published_at": null,
+      "registered_at": "2026-08-06",
+      "checked_at": "2026-08-06",
+      "version": "Structurizr documentation commit d7f521eb9c6c55f7e9a4dcaf2a1122b844dbcb7f",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "implementation",
+        "learning",
+        "method"
+      ],
+      "license": "MIT",
+      "license_scope": "The named Structurizr DSL tutorial page at the pinned documentation commit; trademarks, linked works, code, hosted service behavior, and third-party assets excluded",
+      "license_evidence_url": "https://github.com/structurizr/structurizr.github.io/blob/d7f521eb9c6c55f7e9a4dcaf2a1122b844dbcb7f/LICENSE",
+      "license_evidence_note": "The pinned Structurizr documentation repository LICENSE identifies the repository as MIT licensed; no broader copyright inference is made.",
+      "license_family_id": "https://docs.structurizr.com/dsl/tutorial",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports that a workspace wraps a model and views, including a model element and a view scoped to that element; it does not prove that every possible view is mechanically generated from an entire model or that models synchronize with code, deployment, or runtime state.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://raw.githubusercontent.com/structurizr/structurizr.github.io/d7f521eb9c6c55f7e9a4dcaf2a1122b844dbcb7f/dsl/02-tutorial.md",
+      "expected_final_approved_at": "2026-08-06",
+      "expected_final_approval_note": "Pinned official DSL tutorial returned HTTP 200 on 2026-08-06.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://raw.githubusercontent.com/structurizr/structurizr.github.io/d7f521eb9c6c55f7e9a4dcaf2a1122b844dbcb7f/dsl/02-tutorial.md",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-06T08:59:46.180Z",
+          "last_success_at": "2026-08-06T08:59:46.180Z",
+          "http_status": 206,
+          "final_transport_locator": "https://raw.githubusercontent.com/structurizr/structurizr.github.io/d7f521eb9c6c55f7e9a4dcaf2a1122b844dbcb7f/dsl/02-tutorial.md"
         }
       ]
     },
@@ -30613,6 +30783,92 @@
           "manifest_primary": false,
           "usage_mode": "facts-summary",
           "attribution_note": "Threat Modeling Cheat Sheet, OWASP Cheat Sheet Series",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/modeling/mod-13-model-sync-strategy.mdx": {
+      "title": "模型同步策略",
+      "slug": "/modeling/mod-13",
+      "reviewed_at": "2026-08-06",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-atlas-mod13-authority-drift-loop",
+          "citation_url": "/img/diagrams/mod-13-authority-drift-loop.svg",
+          "roles": [
+            "illustration"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "original-illustration",
+          "attribution_note": "权威事实与漂移处置闭环，Tego Arch maintainers",
+          "modification_note": "Created as an original Draw.io and SVG pair for MOD-13 from a project-authored design; local pre-publication desktop/mobile QA is recorded in .superpowers/sdd/task-2-report.md, while Task 5 production QA remains a separate gate; no third-party reference imagery was used.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-github-deployment-history",
+          "citation_url": "https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/view-deployment-history",
+          "roles": [
+            "implementation",
+            "runtime-fact",
+            "learning"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Viewing deployment history, GitHub Docs",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-nygard-documenting-architecture-decisions-2011",
+          "citation_url": "https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions",
+          "roles": [
+            "definition",
+            "method",
+            "historical-context"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Documenting Architecture Decisions, Michael Nygard / Cognitect",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-opengitops-principles-v1",
+          "citation_url": "https://opengitops.dev/",
+          "roles": [
+            "definition",
+            "method",
+            "learning"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "GitOps Principles v1.0.0, OpenGitOps / CNCF GitOps Working Group",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-structurizr-dsl-model-as-code",
+          "citation_url": "https://docs.structurizr.com/dsl/tutorial",
+          "roles": [
+            "definition",
+            "implementation",
+            "learning"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Structurizr DSL tutorial, Structurizr",
           "modification_note": null,
           "excerpt": null,
           "quotation_reviewed": false

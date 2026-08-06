@@ -356,15 +356,15 @@ test('preserves Batch 5 evidence under the live Batch 7 projection', () => {
   assert.equal(topicsById.get('MOD-12')?.published, true);
   assert.equal(topicsById.get('MOD-12')?.status.value, 'complete');
   for (const id of ['MOD-13']) {
-    assert.equal(topicsById.get(id)?.published, false, id);
+    assert.equal(topicsById.get(id)?.published, true, id);
     assert.equal(topicsById.get(id)?.status.value, 'pending', id);
   }
   assert.deepEqual(projectStatus, {
     schema_version: 1,
     durable_stories: {completed: 7, total: 20, current: 'G008'},
     completed_topics: 51,
-    content_documents: 93,
-    governed_sources: 490,
+    content_documents: 94,
+    governed_sources: 494,
     sources: {
       durable_stories: 'docs/content-backlog.md',
       completed_topics: 'docs/content-backlog.md',

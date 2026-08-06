@@ -176,7 +176,7 @@ const expectedCompletionContract = [
   '所有参与者理解共享模型是当前证据的共同视图，而不是生产事实或架构批准。',
 ];
 
-const unpublishedModelingTopics = ['MOD-13'];
+const publishedPendingModelingTopics = ['MOD-13'];
 
 const expectedWrapperLabels = [
   '费用申报 Big Picture 事件表，可横向滚动',
@@ -416,7 +416,7 @@ function assertRelationContract(content, peers) {
   for (const href of ['/modeling', '/modeling/mod-01', '/modeling/mod-02', '/modeling/mod-05', '/modeling/mod-08', '/cases/temporal-saga-durable-execution']) {
     assert.ok(links.includes(href), href);
   }
-  for (const id of unpublishedModelingTopics) {
+  for (const id of publishedPendingModelingTopics) {
     assert.equal(
       links.filter((href) => href === `/modeling/${id.toLowerCase()}`).length,
       0,
@@ -446,8 +446,8 @@ function assertStageBProjection(projectStatus, topicIndexes, content) {
     schema_version: 1,
     durable_stories: {completed: 7, total: 20, current: 'G008'},
     completed_topics: 51,
-    content_documents: 93,
-    governed_sources: 490,
+    content_documents: 94,
+    governed_sources: 494,
     sources: {
       durable_stories: 'docs/content-backlog.md',
       completed_topics: 'docs/content-backlog.md',
@@ -463,8 +463,8 @@ function assertStageBProjection(projectStatus, topicIndexes, content) {
   assert.equal(topicsById.get('MOD-11').published, true);
   assert.equal(topicsById.get('MOD-11').status.value, 'complete');
   const links = extractInternalLinks(content);
-  for (const id of unpublishedModelingTopics) {
-    assert.equal(topicsById.get(id).published, false, `${id} publication`);
+  for (const id of publishedPendingModelingTopics) {
+    assert.equal(topicsById.get(id).published, true, `${id} publication`);
     assert.equal(topicsById.get(id).status.value, 'pending', `${id} status`);
     assert.equal(
       links.filter((href) => href === `/modeling/${id.toLowerCase()}`).length,
@@ -611,14 +611,14 @@ test('projects Stage B after closing MOD-09', async () => {
   ]);
   const content = requiredDocument();
   assertStageBProjection(projectStatus, topicIndexes, content);
-  for (const id of unpublishedModelingTopics) {
+  for (const id of publishedPendingModelingTopics) {
     const published = structuredClone(topicIndexes);
     const topic = Object.values(published).flat().find(({id: topicId}) => topicId === id);
-    topic.published = true;
+    topic.published = false;
     assert.throws(
       () => assertStageBProjection(projectStatus, published, content),
       {name: 'AssertionError'},
-      `${id} forbidden publication`,
+      `${id} required publication`,
     );
 
     const completed = structuredClone(topicIndexes);

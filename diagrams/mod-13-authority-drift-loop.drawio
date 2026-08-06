@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2026-08-06T00:00:00.000Z" agent="Codex" version="24.7.17" type="device">
+  <diagram id="mod-13-authority-drift-loop" name="MOD-13 权威事实与漂移处置闭环">
+    <mxGraphModel dx="1200" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="region-authority" value="权威事实源" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#f8fafc;strokeColor=#334155;strokeWidth=2;fontSize=23;fontStyle=1;align=left;verticalAlign=top;spacingLeft=20;spacingTop=14;">
+          <mxGeometry x="30" y="30" width="1140" height="230" as="geometry"/>
+        </mxCell>
+        <mxCell id="region-contract" value="同步合同与检测" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#f8fafc;strokeColor=#334155;strokeWidth=2;fontSize=23;fontStyle=1;align=left;verticalAlign=top;spacingLeft=20;spacingTop=14;">
+          <mxGeometry x="30" y="280" width="1140" height="400" as="geometry"/>
+        </mxCell>
+        <mxCell id="region-resolution" value="漂移处置与发布" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#f8fafc;strokeColor=#334155;strokeWidth=2;fontSize=23;fontStyle=1;align=left;verticalAlign=top;spacingLeft=20;spacingTop=14;">
+          <mxGeometry x="30" y="695" width="1140" height="200" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="code-facts" value="代码事实" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#dbeafe;strokeColor=#1d4ed8;strokeWidth=2;fontSize=23;fontStyle=1;">
+          <mxGeometry x="65" y="115" width="250" height="92" as="geometry"/>
+        </mxCell>
+        <mxCell id="code-facts-type" value="受测接口与结构" vertex="1" parent="1" style="text;html=0;strokeColor=none;fillColor=none;fontSize=16;align=center;verticalAlign=middle;">
+          <mxGeometry x="89" y="169" width="202" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="architecture-source" value="架构模型与图源" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#dcfce7;strokeColor=#15803d;strokeWidth=2;fontSize=23;fontStyle=1;">
+          <mxGeometry x="340" y="115" width="250" height="92" as="geometry"/>
+        </mxCell>
+        <mxCell id="architecture-source-type" value="已批准模型与 Draw.io" vertex="1" parent="1" style="text;html=0;strokeColor=none;fillColor=none;fontSize=16;align=center;verticalAlign=middle;">
+          <mxGeometry x="364" y="169" width="202" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="adr-state" value="ADR 决策状态" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#fef3c7;strokeColor=#b45309;strokeWidth=2;fontSize=23;fontStyle=1;">
+          <mxGeometry x="615" y="115" width="250" height="92" as="geometry"/>
+        </mxCell>
+        <mxCell id="adr-state-type" value="状态与替代关系" vertex="1" parent="1" style="text;html=0;strokeColor=none;fillColor=none;fontSize=16;align=center;verticalAlign=middle;">
+          <mxGeometry x="639" y="169" width="202" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="runtime-evidence" value="部署与运行证据" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#f3e8ff;strokeColor=#7e22ce;strokeWidth=2;dashed=1;dashPattern=2 4;fontSize=23;fontStyle=1;">
+          <mxGeometry x="890" y="115" width="250" height="92" as="geometry"/>
+        </mxCell>
+        <mxCell id="runtime-evidence-type" value="实际部署与观测" vertex="1" parent="1" style="text;html=0;strokeColor=none;fillColor=none;fontSize=16;align=center;verticalAlign=middle;">
+          <mxGeometry x="914" y="169" width="202" height="20" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="authority-contract" value="权威事实合同" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#e0f2fe;strokeColor=#0369a1;strokeWidth=3;fontSize=23;fontStyle=1;">
+          <mxGeometry x="445" y="325" width="310" height="92" as="geometry"/>
+        </mxCell>
+        <mxCell id="authority-contract-type" value="单一写者 · 方向 · 责任" vertex="1" parent="1" style="text;html=0;strokeColor=none;fillColor=none;fontSize=16;align=center;verticalAlign=middle;">
+          <mxGeometry x="469" y="379" width="262" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="generator" value="生成器" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#dbeafe;strokeColor=#1d4ed8;strokeWidth=2;fontSize=23;fontStyle=1;">
+          <mxGeometry x="65" y="465" width="220" height="92" as="geometry"/>
+        </mxCell>
+        <mxCell id="generator-type" value="确定性重建派生产物" vertex="1" parent="1" style="text;html=0;strokeColor=none;fillColor=none;fontSize=16;align=center;verticalAlign=middle;">
+          <mxGeometry x="74" y="519" width="202" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="validator" value="验证器" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#dcfce7;strokeColor=#15803d;strokeWidth=2;fontSize=23;fontStyle=1;">
+          <mxGeometry x="490" y="465" width="220" height="92" as="geometry"/>
+        </mxCell>
+        <mxCell id="validator-type" value="独立事实合同比较" vertex="1" parent="1" style="text;html=0;strokeColor=none;fillColor=none;fontSize=16;align=center;verticalAlign=middle;">
+          <mxGeometry x="499" y="519" width="202" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="observer" value="观测器" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#f3e8ff;strokeColor=#7e22ce;strokeWidth=2;dashed=1;dashPattern=2 4;fontSize=23;fontStyle=1;">
+          <mxGeometry x="940" y="465" width="220" height="92" as="geometry"/>
+        </mxCell>
+        <mxCell id="observer-type" value="保留实际状态与未知" vertex="1" parent="1" style="text;html=0;strokeColor=none;fillColor=none;fontSize=16;align=center;verticalAlign=middle;">
+          <mxGeometry x="949" y="519" width="202" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="drift-queue" value="漂移队列" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#fee2e2;strokeColor=#b91c1c;strokeWidth=2;dashed=1;dashPattern=2 4;fontSize=23;fontStyle=1;">
+          <mxGeometry x="490" y="575" width="220" height="92" as="geometry"/>
+        </mxCell>
+        <mxCell id="drift-queue-type" value="差异、未知与分级状态" vertex="1" parent="1" style="text;html=0;strokeColor=none;fillColor=none;fontSize=16;align=center;verticalAlign=middle;">
+          <mxGeometry x="499" y="617" width="202" height="20" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="owner-repair" value="责任人修复" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#ffedd5;strokeColor=#c2410c;strokeWidth=2;fontSize=23;fontStyle=1;">
+          <mxGeometry x="125" y="780" width="250" height="92" as="geometry"/>
+        </mxCell>
+        <mxCell id="owner-repair-type" value="裁决并修改当前权威" vertex="1" parent="1" style="text;html=0;strokeColor=none;fillColor=none;fontSize=16;align=center;verticalAlign=middle;">
+          <mxGeometry x="149" y="834" width="202" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="revalidate" value="重新验证" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#dcfce7;strokeColor=#15803d;strokeWidth=2;fontSize=23;fontStyle=1;">
+          <mxGeometry x="475" y="780" width="250" height="92" as="geometry"/>
+        </mxCell>
+        <mxCell id="revalidate-type" value="重建并独立复放检测" vertex="1" parent="1" style="text;html=0;strokeColor=none;fillColor=none;fontSize=16;align=center;verticalAlign=middle;">
+          <mxGeometry x="499" y="834" width="202" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="release-evidence" value="已验证发布证据" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#e0e7ff;strokeColor=#4338ca;strokeWidth=3;fontSize=23;fontStyle=1;">
+          <mxGeometry x="825" y="780" width="250" height="92" as="geometry"/>
+        </mxCell>
+        <mxCell id="release-evidence-type" value="精确提交、流程与 route" vertex="1" parent="1" style="text;html=0;strokeColor=none;fillColor=none;fontSize=16;align=center;verticalAlign=middle;">
+          <mxGeometry x="849" y="834" width="202" height="20" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="declare-code-facts" value="声明权威" edge="1" source="code-facts" target="authority-contract" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeWidth=2;fontSize=23;exitX=0.5;exitY=1;entryX=0.2;entryY=0;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="declare-architecture-source" value="声明权威" edge="1" source="architecture-source" target="authority-contract" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeWidth=2;fontSize=23;exitX=0.5;exitY=1;entryX=0.4;entryY=0;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="declare-adr-state" value="声明权威" edge="1" source="adr-state" target="authority-contract" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeWidth=2;fontSize=23;exitX=0.5;exitY=1;entryX=0.6;entryY=0;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="declare-runtime-evidence" value="声明权威" edge="1" source="runtime-evidence" target="authority-contract" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;strokeWidth=2;fontSize=23;exitX=0.5;exitY=1;entryX=0.8;entryY=0;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="contract-generate" value="生成" edge="1" source="authority-contract" target="generator" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=block;endFill=1;strokeWidth=2;fontSize=23;exitX=0.25;exitY=1;entryX=0.5;entryY=0;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="contract-validate" value="验证" edge="1" source="authority-contract" target="validator" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=block;endFill=1;strokeWidth=2;fontSize=23;exitX=0.5;exitY=1;entryX=0.5;entryY=0;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="contract-observe" value="观测" edge="1" source="authority-contract" target="observer" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=block;endFill=1;strokeWidth=2;fontSize=23;exitX=0.75;exitY=1;entryX=0.5;entryY=0;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="generate-drift" value="差异或未知" edge="1" source="generator" target="drift-queue" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=block;endFill=1;strokeWidth=2;fontSize=23;exitX=0.5;exitY=1;entryX=0.25;entryY=0;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="validate-drift" value="差异或未知" edge="1" source="validator" target="drift-queue" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=block;endFill=1;strokeWidth=2;fontSize=23;exitX=0.5;exitY=1;entryX=0.5;entryY=0;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="observe-drift" value="差异或未知" edge="1" source="observer" target="drift-queue" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=block;endFill=1;strokeWidth=2;fontSize=23;exitX=0.5;exitY=1;entryX=0.75;entryY=0;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="queue-repair" value="分级与分派" edge="1" source="drift-queue" target="owner-repair" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=block;endFill=1;strokeWidth=2;fontSize=23;exitX=0.25;exitY=1;entryX=0.5;entryY=0;">
+          <mxGeometry relative="1" x="-0.42" y="-18" as="geometry">
+            <Array as="points"><mxPoint x="545" y="730"/><mxPoint x="250" y="730"/></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="repair-revalidate" value="" edge="1" source="owner-repair" target="revalidate" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=block;endFill=1;strokeWidth=2;fontSize=23;exitX=1;exitY=0.5;entryX=0;entryY=0.5;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="revalidate-release" value="" edge="1" source="revalidate" target="release-evidence" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=block;endFill=1;strokeWidth=2;fontSize=23;exitX=1;exitY=0.5;entryX=0;entryY=0.5;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="repair-code-facts" value="" edge="1" source="owner-repair" target="code-facts" parent="1" style="edgeStyle=orthogonalEdgeStyle;dashed=1;dashPattern=8 6;rounded=0;html=0;endArrow=block;endFill=0;strokeWidth=2;fontSize=23;exitX=0;exitY=0.3;entryX=0;entryY=0.5;">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="46" y="808"/><mxPoint x="46" y="166"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="repair-architecture-source" value="" edge="1" source="owner-repair" target="architecture-source" parent="1" style="edgeStyle=orthogonalEdgeStyle;dashed=1;dashPattern=8 6;rounded=0;html=0;endArrow=block;endFill=0;strokeWidth=2;fontSize=23;exitX=0;exitY=0.45;entryX=0;entryY=0.65;">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="50" y="822"/><mxPoint x="50" y="290"/><mxPoint x="330" y="290"/><mxPoint x="330" y="180"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="repair-adr-state" value="" edge="1" source="owner-repair" target="adr-state" parent="1" style="edgeStyle=orthogonalEdgeStyle;dashed=1;dashPattern=8 6;rounded=0;html=0;endArrow=block;endFill=0;strokeWidth=2;fontSize=23;exitX=0.7;exitY=0;entryX=1;entryY=0.65;">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="300" y="755"/><mxPoint x="880" y="755"/><mxPoint x="880" y="180"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="repair-runtime-evidence" value="修改权威或新增替代记录" edge="1" source="owner-repair" target="runtime-evidence" parent="1" style="edgeStyle=orthogonalEdgeStyle;dashed=1;dashPattern=8 6;rounded=0;html=0;endArrow=block;endFill=0;strokeWidth=2;fontSize=23;exitX=0.9;exitY=0;entryX=1;entryY=0.5;">
+          <mxGeometry relative="1" x="0.22" y="-32" as="geometry"><Array as="points"><mxPoint x="350" y="770"/><mxPoint x="1180" y="770"/><mxPoint x="1180" y="166"/></Array></mxGeometry>
+        </mxCell>
+
+        <mxCell id="legend-solid" value="实线箭头：生成或检查" vertex="1" parent="1" style="text;html=0;strokeColor=none;fillColor=none;fontSize=16;align=left;">
+          <mxGeometry x="75" y="78" width="260" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend-dashed" value="虚线箭头：修复反馈" vertex="1" parent="1" style="text;html=0;strokeColor=none;fillColor=none;fontSize=16;align=left;">
+          <mxGeometry x="445" y="78" width="260" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend-dotted" value="点线边框：实际观测或未知" vertex="1" parent="1" style="text;html=0;strokeColor=none;fillColor=none;fontSize=16;align=left;">
+          <mxGeometry x="800" y="78" width="320" height="20" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

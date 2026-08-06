@@ -38,7 +38,7 @@ const expectedMethods = new Map([
   [
     'MTH-06',
     {
-      adjacent: ['MTH-04', 'MTH-05', 'FND-05'],
+      adjacent: ['MTH-04', 'MTH-05', 'FND-05', 'MOD-13'],
       dependsOn: ['MTH-01', 'MTH-02', 'MTH-03', 'MTH-04'],
       file: 'methods/mth-06-requirements-to-evolution-loop.mdx',
       relatedCases: ['/cases/microsoft-multi-agent-reference-architecture'],
@@ -58,13 +58,14 @@ const reciprocalTopics = new Map([
   [
     'MTH-03',
     {
-      adjacent: ['FND-05', 'MTH-04', 'QA-01', 'PR-08', 'MOD-01'],
+      adjacent: ['FND-05', 'MTH-04', 'QA-01', 'PR-08', 'MOD-01', 'MOD-13'],
       file: 'methods/mth-03-adr-lifecycle.mdx',
       visible: [
         '/concepts/fnd-05',
         '/methods/mth-04',
         '/quality-attributes/qa-01',
         '/modeling/mod-01',
+        '/modeling/mod-13',
       ],
     },
   ],
@@ -84,7 +85,7 @@ const immutableFiles = new Map([
   ],
   [
     'scripts/content-schema.mjs',
-    '9141bc4c7a190bf33522a7f811227992585f46da59fa0a62c67ca9b0eb35bee7',
+    '6cb7093ad5def127cbda9071c606b7c5840b9c5e89785c100ab1bf9935bca454',
   ],
   [
     'sidebars.ts',

@@ -100,7 +100,7 @@ test('publishes MOD-04 as an original six-unit arc42 v9 skeleton', () => {
   assert.equal(document.metadata.status, 'reviewed');
   assert.equal(document.metadata.priority, 'P0');
   assert.deepEqual(document.metadata.depends_on, ['MOD-01', 'MOD-03']);
-  assert.deepEqual(document.metadata.adjacent_topics, ['MOD-03', 'MOD-05']);
+  assert.deepEqual(document.metadata.adjacent_topics, ['MOD-03', 'MOD-05', 'MOD-13']);
   assert.deepEqual(document.metadata.related_cases, [
     '/cases/microsoft-multi-agent-reference-architecture',
   ]);
@@ -241,7 +241,7 @@ test('contains one measurable local quality scenario', () => {
   assert.match(exercise, /不是 Microsoft[^。\n]*生产承诺/u);
 });
 
-test('links the real learning chain without publishing MOD-13 early', () => {
+test('links the real learning chain to published MOD-13', () => {
   const mod04 = requiredDocument('MOD-04');
   const links = new Set(extractInternalLinks(mod04));
   for (const slug of [
@@ -249,14 +249,15 @@ test('links the real learning chain without publishing MOD-13 early', () => {
     '/modeling/mod-01',
     '/modeling/mod-02',
     '/modeling/mod-03',
+    '/modeling/mod-13',
     '/methods/mth-03',
     '/methods/mth-06',
     '/cases/microsoft-multi-agent-reference-architecture',
   ]) {
     assert.ok(links.has(slug), slug);
   }
-  assert.equal(links.has('/modeling/mod-13'), false);
-  assert.match(mod04.body, /MOD-13[^。\n]*尚未发布/u);
+  assert.equal(links.has('/modeling/mod-13'), true);
+  assert.doesNotMatch(mod04.body, /MOD-13[^。\n]*尚未发布/u);
   assert.ok(
     extractInternalLinks(requiredDocument('MTH-03')).includes('/modeling/mod-04'),
   );
@@ -325,8 +326,8 @@ test('projects G008 Batch 2 completion during Stage B', async () => {
     schema_version: 1,
     durable_stories: {completed: 7, total: 20, current: 'G008'},
     completed_topics: 51,
-    content_documents: 93,
-    governed_sources: 490,
+    content_documents: 94,
+    governed_sources: 494,
     sources: {
       durable_stories: 'docs/content-backlog.md',
       completed_topics: 'docs/content-backlog.md',

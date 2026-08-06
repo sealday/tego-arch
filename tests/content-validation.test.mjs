@@ -8,6 +8,7 @@ import {fileURLToPath} from 'node:url';
 
 import {
   knowledgeHeadingContract,
+  mod13ModelingHeadings,
   mod12ModelingHeadings,
   mod11ModelingHeadings,
   mod10ModelingHeadings,
@@ -1071,6 +1072,18 @@ const mod12Headings = [
   '## 完整演练',
   '## 来源',
 ];
+const mod13Headings = [
+  '## 学习问题',
+  '## 同步目标与输入',
+  '## 权威事实台账',
+  '## 漂移检测闭环',
+  '## 核心产物',
+  '## 完成判断',
+  '## 常见失败',
+  '## 与其他模型的衔接',
+  '## 完整演练',
+  '## 来源',
+];
 
 test('accepts the Pattern knowledge contract and excludes the Pattern index', async () => {
   await withTempRoot(async (root) => {
@@ -1361,6 +1374,58 @@ test('rejects missing and reordered MOD-12 headings against its exact contract',
         slug: `/modeling/mod-12-${variant.name}`,
       }), variant.headings.join('\n\n'));
       assert.match((await validateContent(root)).errors.join('\n'), variant.expected, variant.name);
+    });
+  }
+});
+
+test('accepts the exact MOD-13 ten-heading modeling contract', async () => {
+  assert.deepEqual(mod13ModelingHeadings, mod13Headings);
+  assert.strictEqual(knowledgeHeadingContract('modeling', 'MOD-13'), mod13ModelingHeadings);
+  await withTempRoot(async (root) => {
+    await writeMdx(root, 'modeling/mod-13.mdx', validKnowledgeFrontMatter('modeling', {
+      topic_id: 'MOD-13',
+      slug: '/modeling/mod-13',
+    }), mod13Headings.join('\n\n'));
+    assert.deepEqual((await validateContent(root)).errors, []);
+  });
+});
+
+test('rejects missing, reordered, and duplicate MOD-13 headings with exact errors', async () => {
+  const variants = [
+    {
+      name: 'missing-authority-ledger',
+      headings: mod13Headings.filter((heading) => heading !== '## 权威事实台账'),
+      expected: [
+        /expected exactly 10 ## 学习问题-contract H2 headings; found 9/u,
+        /position 3; expected "## 权威事实台账", actual "## 漂移检测闭环"/u,
+      ],
+    },
+    {
+      name: 'reordered-ledgers',
+      headings: [...mod13Headings.slice(0, 2), mod13Headings[3], mod13Headings[2], ...mod13Headings.slice(4)],
+      expected: [
+        /position 3; expected "## 权威事实台账", actual "## 漂移检测闭环"/u,
+        /position 4; expected "## 漂移检测闭环", actual "## 权威事实台账"/u,
+      ],
+    },
+    {
+      name: 'duplicate-authority-ledger',
+      headings: [...mod13Headings.slice(0, 3), mod13Headings[2], ...mod13Headings.slice(3)],
+      expected: [
+        /expected exactly 10 ## 学习问题-contract H2 headings; found 11/u,
+        /position 4; expected "## 漂移检测闭环", actual "## 权威事实台账"/u,
+      ],
+    },
+  ];
+
+  for (const variant of variants) {
+    await withTempRoot(async (root) => {
+      await writeMdx(root, `modeling/mod-13-${variant.name}.mdx`, validKnowledgeFrontMatter('modeling', {
+        topic_id: 'MOD-13',
+        slug: `/modeling/mod-13-${variant.name}`,
+      }), variant.headings.join('\n\n'));
+      const errors = (await validateContent(root)).errors.join('\n');
+      for (const expected of variant.expected) assert.match(errors, expected, variant.name);
     });
   }
 });
