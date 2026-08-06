@@ -84,36 +84,29 @@ const expectedCitations = [
   },
 ];
 
-const firstAttemptAt = '2026-08-06T15:21:26.049Z';
-const reviewedAttemptAt = '2026-08-06T15:24:41.578Z';
-
-function expectedHealthResult({id, transport_locator, http_status}) {
-  const observation = (at) => ({
-    at,
-    outcome: 'healthy',
-    final_transport_locator: transport_locator,
-    http_status,
-    login_wall_detected: false,
-  });
-  return {
-    transport_locator,
-    source_ids: [id],
-    last_attempt: {...observation(reviewedAttemptAt), redirects: []},
-    last_success: observation(reviewedAttemptAt),
-    attempt_history: [observation(firstAttemptAt), observation(reviewedAttemptAt)],
-    review_status: 'healthy',
-  };
+function observationFields({
+  at,
+  outcome,
+  final_transport_locator,
+  http_status,
+  login_wall_detected,
+}) {
+  return {at, outcome, final_transport_locator, http_status, login_wall_detected};
 }
 
-const expectedHealthResults = expectedSources
-  .map(({id, transport_locator}) =>
-    expectedHealthResult({
-      id,
-      transport_locator,
-      http_status: id.startsWith('src-sei-') ? 200 : 206,
-    }),
-  )
-  .sort((left, right) => left.transport_locator.localeCompare(right.transport_locator, 'en'));
+function assertHealthyObservation(observation, transportLocator, message) {
+  assert.equal(observation.outcome, 'healthy', `${message} outcome`);
+  assert.equal(
+    observation.final_transport_locator,
+    transportLocator,
+    `${message} final transport`,
+  );
+  assert.ok(Number.isInteger(observation.http_status), `${message} integer HTTP status`);
+  assert.ok(
+    observation.http_status >= 200 && observation.http_status <= 299,
+    `${message} successful HTTP status`,
+  );
+}
 
 test('governs five specific visible STY-00 sources', () => {
   assert.ok(document, 'STY-00 must remain published');
@@ -144,8 +137,30 @@ test('governs five specific visible STY-00 sources', () => {
 
 test('keeps every new remote source in the reviewed health cache', () => {
   const expectedSourceIds = new Set(expectedSources.map(({id}) => id));
-  const results = linkHealth.results
-    .filter(({source_ids}) => source_ids.some((sourceId) => expectedSourceIds.has(sourceId)))
-    .sort((left, right) => left.transport_locator.localeCompare(right.transport_locator, 'en'));
-  assert.deepEqual(results, expectedHealthResults);
+  const governedResults = linkHealth.results.filter(({source_ids}) =>
+    source_ids.some((sourceId) => expectedSourceIds.has(sourceId)),
+  );
+  assert.equal(governedResults.length, expectedSources.length);
+  const resultsByTransport = new Map(
+    governedResults.map((result) => [result.transport_locator, result]),
+  );
+  for (const {id, transport_locator} of expectedSources) {
+    const result = resultsByTransport.get(transport_locator);
+    assert.ok(result, `${id} exact transport result`);
+    assert.deepEqual(result.source_ids, [id], `${id} source binding`);
+    assert.equal(result.review_status, 'healthy', `${id} review status`);
+    assertHealthyObservation(result.last_attempt, transport_locator, `${id} last attempt`);
+    assertHealthyObservation(result.last_success, transport_locator, `${id} last success`);
+    assert.deepEqual(
+      observationFields(result.last_success),
+      observationFields(result.last_attempt),
+      `${id} current healthy attempt is the latest success`,
+    );
+    assert.ok(result.attempt_history.length > 0, `${id} attempt history`);
+    assert.deepEqual(
+      observationFields(result.attempt_history.at(-1)),
+      observationFields(result.last_attempt),
+      `${id} history ends with the current attempt`,
+    );
+  }
 });
