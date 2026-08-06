@@ -371,3 +371,23 @@ test('does not accept foreign SVG title and description as accessibility metadat
     await rm(temporaryDirectory, {recursive: true, force: true});
   }
 });
+
+test('shares strict XML declaration and PI handling with the checker', async () => {
+  const temporaryDirectory = await mkdtemp(path.join(tmpdir(), 'drawio-validator-pi-'));
+  const drawioPath = path.join(temporaryDirectory, 'pi.drawio');
+  const svgPath = path.join(temporaryDirectory, 'pi.svg');
+  const drawio = '<?xml version="1.0"?><?audit ok?><mxfile><diagram name="Page-1"><mxGraphModel><root/></mxGraphModel></diagram></mxfile>';
+  const svg = '<?xml version="1.0"?><?audit ok?><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" role="img" aria-labelledby="title desc"><title id="title">Title</title><desc id="desc">Description</desc></svg>';
+  try {
+    await Promise.all([writeFile(drawioPath, drawio), writeFile(svgPath, svg)]);
+    const valid = runValidatorPaths(drawioPath, svgPath);
+    assert.equal(valid.status, 0, valid.stderr);
+
+    await writeFile(svgPath, `<!--before-->${svg}`);
+    const invalid = runValidatorPaths(drawioPath, svgPath);
+    assert.equal(invalid.status, 1);
+    assert.match(invalid.stderr, /XML declaration|well-formed XML/u);
+  } finally {
+    await rm(temporaryDirectory, {recursive: true, force: true});
+  }
+});

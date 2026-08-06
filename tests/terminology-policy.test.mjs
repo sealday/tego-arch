@@ -839,6 +839,57 @@ test('applies CSS declaration order and important priority to SVG presentation',
   ]);
 });
 
+test('resolves supported CSS-wide keywords and fails closed on revert variants', async () => {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg">
+<g visibility="hidden"><text visibility="inherit">hidden visibility inherit</text><text visibility="unset">hidden visibility unset</text><text visibility="initial">visible visibility initial</text></g>
+<g fill="none"><text fill="inherit">hidden fill inherit</text><text fill="unset">hidden fill unset</text><text fill="initial">visible fill initial</text></g>
+<g fill-opacity="0"><text fill-opacity="inherit">hidden fill opacity inherit</text><text fill-opacity="unset">hidden fill opacity unset</text><text fill-opacity="initial">visible fill opacity initial</text></g>
+<g fill="none" stroke="black" stroke-opacity="0"><text stroke-opacity="inherit">hidden stroke opacity inherit</text><text stroke-opacity="unset">hidden stroke opacity unset</text><text stroke-opacity="initial">visible stroke opacity initial</text></g>
+<g display="none"><text display="initial">hidden display ancestor</text></g>
+<g opacity="0"><text opacity="initial">hidden opacity ancestor</text></g>
+</svg>`;
+  const result = await checkFixture(svg, 'static/css-wide.svg');
+  assert.deepEqual(result.issues.map(({matched}) => matched), [
+    'visible visibility initial',
+    'visible fill initial',
+    'visible fill opacity initial',
+    'visible stroke opacity initial',
+  ]);
+
+  for (const keyword of ['revert', 'revert-layer']) {
+    const unsupported = await checkFixture(
+      `<svg xmlns="http://www.w3.org/2000/svg"><text visibility="${keyword}">worker</text></svg>`,
+      'static/css-wide-unsupported.svg',
+    );
+    assert.deepEqual(unsupported.issues.map(({ruleId}) => ruleId), ['parse-error']);
+  }
+});
+
+test('accepts strict XML declarations and ordinary PIs while rejecting reserved targets', async () => {
+  const valid = await checkFixture(
+    '\uFEFF<?xml version="1.0" encoding="UTF-8" standalone="yes"?><?audit ok?><svg xmlns="http://www.w3.org/2000/svg"><text>unknown worker</text><?inside ok?></svg><?after ok?>',
+    'static/pi-valid.svg',
+  );
+  assert.deepEqual(valid.issues.map(({ruleId, matched}) => ({ruleId, matched})), [
+    {ruleId: 'unknown-english-term', matched: 'unknown worker'},
+  ]);
+
+  const invalid = [
+    '<?XML?><svg xmlns="http://www.w3.org/2000/svg"/>',
+    '<?1bad?><svg xmlns="http://www.w3.org/2000/svg"/>',
+    '<!--before--><?xml version="1.0"?><svg xmlns="http://www.w3.org/2000/svg"/>',
+    '<svg xmlns="http://www.w3.org/2000/svg"><?xml version="1.0"?></svg>',
+    '<?xml encoding="UTF-8" version="1.0"?><svg xmlns="http://www.w3.org/2000/svg"/>',
+    '<?xml version="1.1"?><svg xmlns="http://www.w3.org/2000/svg"/>',
+    '<?xml version="1.0" standalone="maybe"?><svg xmlns="http://www.w3.org/2000/svg"/>',
+    '<?xml version="1.0"?><?xml version="1.0"?><svg xmlns="http://www.w3.org/2000/svg"/>',
+  ];
+  for (const source of invalid) {
+    const result = await checkFixture(source, 'static/pi-invalid.svg');
+    assert.deepEqual(result.issues.map(({ruleId}) => ruleId), ['parse-error'], source);
+  }
+});
+
 test('reports a forbidden raw XML character on its actual source line', async () => {
   const result = await checkFixture(
     '<svg xmlns="http://www.w3.org/2000/svg">\n<text>valid</text>\n<text>bad\0value</text></svg>',

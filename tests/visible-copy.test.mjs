@@ -151,6 +151,50 @@ test('classifies image comment openers with non-quadratic scaling', () => {
   );
 });
 
+test('probe tokens cannot collide with numeric entities or raw surrogate content', async () => {
+  const module = await import('../scripts/visible-copy.mjs');
+  assert.equal(typeof module.commentProbeTokenForTest, 'function');
+  const token = module.commentProbeTokenForTest(0);
+  const numericEntities = Array.from(token, (character) => (
+    `&#x${character.charCodeAt(0).toString(16)};`
+  )).join('');
+  for (const alt of [numericEntities, `replacement-�-${token}`]) {
+    const parsed = parseMdxVisibleCopy(
+      `![${alt}](./image.png "metadata <!-- not a comment -->")`,
+      'content/sentinel-collision.mdx',
+    );
+    assert.deepEqual(parsed.comments, []);
+    assert.equal(parsed.blocks.length, 1);
+  }
+});
+
+test('scans sentinel occupancy once and scales through 6400 image openers', () => {
+  const measure = (count) => {
+    const instrumentation = {};
+    const source = Array.from(
+      {length: count},
+      () => '![<!-- c -->](x)',
+    ).join('\n');
+    const started = performance.now();
+    const parsed = parseMdxVisibleCopy(source, `content/images-${count}.mdx`, {
+      probeInstrumentation: instrumentation,
+    });
+    assert.equal(parsed.comments.length, count);
+    assert.equal(instrumentation.sourceScans, 1);
+    assert.equal(instrumentation.allocatedTokens, count);
+    return performance.now() - started;
+  };
+  measure(200);
+  const timings = new Map();
+  for (const count of [1600, 3200, 6400]) {
+    timings.set(count, Math.min(measure(count), measure(count)));
+  }
+  assert.ok(
+    timings.get(6400) / timings.get(1600) < 10,
+    `expected non-quadratic 6400-image scaling: ${JSON.stringify(Object.fromEntries(timings))}`,
+  );
+});
+
 test('parses visible YAML front matter scalars without leaking YAML syntax', () => {
   const source = `---
 title: "Agent: API" # reader title

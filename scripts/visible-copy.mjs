@@ -27,7 +27,12 @@ const lineAtOffset = (offsets, offset) => {
   return Math.max(1, low);
 };
 
-export const normalizeMdxSource = (source, relativePath, frontMatterEnd = 0) => {
+export const normalizeMdxSource = (
+  source,
+  relativePath,
+  frontMatterEnd = 0,
+  {probeInstrumentation} = {},
+) => {
   const maskedFrontMatter = frontMatterEnd > 0
     ? `${blankCharacters(source.slice(0, frontMatterEnd))}${source.slice(frontMatterEnd)}`
     : source;
@@ -59,7 +64,7 @@ export const normalizeMdxSource = (source, relativePath, frontMatterEnd = 0) => 
   );
 
   const withoutFences = lines.join('\n');
-  return maskHtmlComments(withoutFences, relativePath);
+  return maskHtmlComments(withoutFences, relativePath, probeInstrumentation);
 };
 
 export const parseMdxAst = (source, relativePath) => {
@@ -91,16 +96,16 @@ const protectedCommentNodeTypes = new Set([
 const commentOpeningProbe = 'CMNT';
 const imageNodeTypes = new Set(['image', 'imageReference']);
 
-const openerToken = (index) => {
-  const base = 0xF8FF - 0xE001 + 1;
+export const commentProbeTokenForTest = (index) => {
+  const base = 0x400;
   const digits = [];
   let value = index;
-  for (let position = 0; position < 3; position += 1) {
-    digits.unshift(String.fromCharCode(0xE001 + (value % base)));
+  for (let position = 0; position < 4; position += 1) {
+    digits.unshift(String.fromCharCode(0xDC00 + (value % base)));
     value = Math.floor(value / base);
   }
   assert.equal(value, 0, 'MDX comment probe exhausted unique opener tokens');
-  return `\uE000${digits.join('')}`;
+  return digits.join('');
 };
 
 const lowerBound = (values, target) => {
@@ -148,7 +153,7 @@ const insideRanges = (ranges, offset) => {
 
 const classifyImageOpenings = (ast, tokenOffsets) => {
   const visible = new Set();
-  const tokenPattern = /\uE000[\uE001-\uF8FF]{3}/gu;
+  const tokenPattern = /[\uDC00-\uDFFF]{4}/gu;
   const visit = (node) => {
     if (imageNodeTypes.has(node.type)) {
       for (const match of (node.alt ?? '').matchAll(tokenPattern)) {
@@ -272,22 +277,35 @@ const hasOddBackslashRunBefore = (source, offset) => {
   return backslashes % 2 === 1;
 };
 
-const maskHtmlComments = (source, relativePath) => {
+const maskHtmlComments = (source, relativePath, probeInstrumentation) => {
   const openingOffsets = [];
   for (let opening = source.indexOf('<!--'); opening !== -1;
     opening = source.indexOf('<!--', opening + 4)) {
     openingOffsets.push(opening);
   }
   const tokenOffsets = new Map();
+  const occupiedTokens = new Set();
+  for (let index = 0; index <= source.length - 4; index += 1) {
+    const token = source.slice(index, index + 4);
+    if (/^[\uDC00-\uDFFF]{4}$/u.test(token)) occupiedTokens.add(token);
+  }
+  if (probeInstrumentation) probeInstrumentation.sourceScans = 1;
   const probeCharacters = source.split('');
-  openingOffsets.forEach((opening, index) => {
-    const token = openerToken(index);
-    assert.equal(source.includes(token), false, `${relativePath}: MDX source contains a probe token`);
+  let tokenIndex = 0;
+  openingOffsets.forEach((opening) => {
+    let token = commentProbeTokenForTest(tokenIndex);
+    while (occupiedTokens.has(token)) {
+      tokenIndex += 1;
+      token = commentProbeTokenForTest(tokenIndex);
+    }
+    tokenIndex += 1;
+    occupiedTokens.add(token);
     tokenOffsets.set(token, opening);
     for (let tokenIndex = 0; tokenIndex < token.length; tokenIndex += 1) {
       probeCharacters[opening + tokenIndex] = token[tokenIndex];
     }
   });
+  if (probeInstrumentation) probeInstrumentation.allocatedTokens = openingOffsets.length;
   const baselineProbe = probeCharacters.join('').replaceAll('-->', 'END');
   assert.equal(baselineProbe.length, source.length);
   const baselineAst = parseMdxAst(baselineProbe, relativePath);
@@ -556,6 +574,7 @@ export const parseMdxVisibleCopy = (
     includeAst = false,
     includeInlineCode = false,
     includeStructure = false,
+    probeInstrumentation,
   } = {},
 ) => {
   const frontMatterRegion = parseFrontMatterRegion(source, relativePath);
@@ -564,6 +583,7 @@ export const parseMdxVisibleCopy = (
     source,
     relativePath,
     frontMatterRegion.endOffset,
+    {probeInstrumentation},
   );
   const ast = parseMdxAst(normalized, relativePath);
   const definitions = new Map();

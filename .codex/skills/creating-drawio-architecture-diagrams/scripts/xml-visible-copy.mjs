@@ -173,6 +173,9 @@ const parseStartTag = (markup, file, line) => {
   return {attributes, name, nameParts, selfClosing};
 };
 
+const XML_DECLARATION = /^xml\s+version\s*=\s*(?:"1\.0"|'1\.0')(?:\s+encoding\s*=\s*(?:"[A-Za-z][A-Za-z0-9._-]*"|'[A-Za-z][A-Za-z0-9._-]*'))?(?:\s+standalone\s*=\s*(?:"(?:yes|no)"|'(?:yes|no)'))?\s*$/u;
+const XML_PI_TARGET = /^([A-Za-z_:][A-Za-z0-9_.:-]*)(?:\s|$)/u;
+
 export const parseXml = (source, file = '<xml>') => {
   const xml = source.replace(/^\uFEFF/u, '');
   const offsets = buildXmlLineOffsets(xml);
@@ -182,6 +185,7 @@ export const parseXml = (source, file = '<xml>') => {
   const stack = [];
   let root;
   let cursor = 0;
+  let seenXmlDeclaration = false;
 
   while (cursor < xml.length) {
     const line = lineAt(cursor);
@@ -204,6 +208,21 @@ export const parseXml = (source, file = '<xml>') => {
     if (xml.startsWith('<?', cursor)) {
       const end = xml.indexOf('?>', cursor + 2);
       if (end === -1) fail(file, line, 'unterminated XML processing instruction');
+      const instruction = xml.slice(cursor + 2, end);
+      const target = instruction.match(XML_PI_TARGET)?.[1];
+      if (!target) fail(file, line, 'invalid XML processing instruction target');
+      if (target.toLowerCase() === 'xml') {
+        if (target !== 'xml') {
+          fail(file, line, 'XML processing instruction target is reserved');
+        }
+        if (cursor !== 0 || seenXmlDeclaration) {
+          fail(file, line, 'XML declaration must appear once at the start of the document');
+        }
+        if (!XML_DECLARATION.test(instruction)) {
+          fail(file, line, 'invalid XML declaration');
+        }
+        seenXmlDeclaration = true;
+      }
       cursor = end + 2;
       continue;
     }
@@ -355,29 +374,57 @@ const presentationValue = (element, name) => {
     : (element.attributes.get(name) ?? '').trim().toLowerCase();
 };
 
+const resolvedPresentationValue = (
+  element,
+  parentState,
+  name,
+  initialValue,
+  inherited,
+  file,
+) => {
+  const ownValue = presentationValue(element, name);
+  if (!ownValue) return inherited ? (parentState?.[name] ?? initialValue) : initialValue;
+  if (ownValue === 'inherit') return parentState?.[name] ?? initialValue;
+  if (ownValue === 'unset') {
+    return inherited ? (parentState?.[name] ?? initialValue) : initialValue;
+  }
+  if (ownValue === 'initial') return initialValue;
+  if (ownValue === 'revert' || ownValue === 'revert-layer') {
+    fail(file, element.line, `unsupported CSS-wide keyword "${ownValue}" for ${name}`);
+  }
+  return ownValue;
+};
+
 const zeroOpacity = (value) => {
   const normalized = value.trim().replace(/%$/u, '');
   return normalized !== '' && Number(normalized) === 0;
 };
 
-export const svgPresentationState = (element, parentState) => {
-  const inherited = (name, initial) => (
-    presentationValue(element, name) || parentState?.[name] || initial
+export const svgPresentationState = (element, parentState, file = '<svg>') => {
+  const inherited = (name, initial) => resolvedPresentationValue(
+    element,
+    parentState,
+    name,
+    initial,
+    true,
+    file,
   );
   return {
+    display: resolvedPresentationValue(element, parentState, 'display', 'inline', false, file),
     fill: inherited('fill', 'black'),
     'fill-opacity': inherited('fill-opacity', '1'),
+    opacity: resolvedPresentationValue(element, parentState, 'opacity', '1', false, file),
     stroke: inherited('stroke', 'none'),
     'stroke-opacity': inherited('stroke-opacity', '1'),
     visibility: inherited('visibility', 'visible'),
   };
 };
 
-const hidesSvgSubtree = (element) => (
+const hidesSvgSubtree = (element, state) => (
   NON_RENDERED_SVG_CONTAINERS.has(element.localName)
   || element.attributes.get('aria-hidden')?.trim().toLowerCase() === 'true'
-  || presentationValue(element, 'display') === 'none'
-  || zeroOpacity(presentationValue(element, 'opacity'))
+  || state.display === 'none'
+  || zeroOpacity(state.opacity)
 );
 
 const paintsText = (state) => (
@@ -389,22 +436,22 @@ const paintsText = (state) => (
   )
 );
 
-const visibleTextContent = (element, state, hiddenByAncestor) => {
-  const hidden = hiddenByAncestor || hidesSvgSubtree(element);
+const visibleTextContent = (element, state, hiddenByAncestor, file) => {
+  const hidden = hiddenByAncestor || hidesSvgSubtree(element, state);
   const painted = !hidden && paintsText(state);
   return element.content.map((item) => {
     if (item.type === 'text') return painted ? item.text : '';
-    return visibleTextContent(item, svgPresentationState(item, state), hidden);
+    return visibleTextContent(item, svgPresentationState(item, state, file), hidden, file);
   }).join('');
 };
 
 export const visibleSvgTextRecords = (root, file = '<svg>') => {
   const records = [];
   const visit = (element, parentState, hiddenByAncestor) => {
-    const state = svgPresentationState(element, parentState);
-    const hidden = hiddenByAncestor || hidesSvgSubtree(element);
+    const state = svgPresentationState(element, parentState, file);
+    const hidden = hiddenByAncestor || hidesSvgSubtree(element, state);
     if (element.namespace === SVG_NAMESPACE && element.localName === 'text' && !hidden) {
-      const text = normalizedXmlLabel(visibleTextContent(element, state, hiddenByAncestor));
+      const text = normalizedXmlLabel(visibleTextContent(element, state, hiddenByAncestor, file));
       if (text) records.push({file, line: element.line, text, excerpt: text, kind: 'svg'});
       return;
     }
