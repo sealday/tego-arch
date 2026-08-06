@@ -81,12 +81,17 @@ const protectedCommentNodeTypes = new Set([
 ]);
 const commentOpeningProbe = 'CMNT';
 const comparisonCommentOpeningProbe = 'OPNR';
+const imageNodeTypes = new Set(['image', 'imageReference']);
+
+const nodePositionKey = (node) => (
+  `${node.type}:${node.position?.start.offset}:${node.position?.end.offset}`
+);
 
 const nodesByTypeAndPosition = (ast, type) => {
   const nodes = new Map();
   const visit = (node) => {
     if (node.type === type) {
-      nodes.set(`${node.position?.start.offset}:${node.position?.end.offset}`, node);
+      nodes.set(nodePositionKey(node), node);
     }
     for (const child of node.children ?? []) visit(child);
   };
@@ -96,6 +101,16 @@ const nodesByTypeAndPosition = (ast, type) => {
 
 const countToken = (value, token) => value.split(token).length - 1;
 
+const withCandidateOpenings = (baselineProbe, offsets) => {
+  const candidate = baselineProbe.split('');
+  for (const offset of offsets) {
+    for (let index = 0; index < comparisonCommentOpeningProbe.length; index += 1) {
+      candidate[offset + index] = comparisonCommentOpeningProbe[index];
+    }
+  }
+  return candidate.join('');
+};
+
 const classifyImageOpenings = (
   baselineProbe,
   baselineAst,
@@ -103,7 +118,11 @@ const classifyImageOpenings = (
   relativePath,
 ) => {
   const classifications = new Map();
-  const baselineImages = nodesByTypeAndPosition(baselineAst, 'image');
+  const baselineImages = new Map([
+    ...nodesByTypeAndPosition(baselineAst, 'image'),
+    ...nodesByTypeAndPosition(baselineAst, 'imageReference'),
+  ]);
+  const baselineDefinitions = [...nodesByTypeAndPosition(baselineAst, 'definition').values()];
 
   for (const opening of openingOffsets) {
     const imageEntry = [...baselineImages.entries()].find(([, image]) => (
@@ -112,16 +131,45 @@ const classifyImageOpenings = (
     if (!imageEntry) continue;
 
     const [imageKey, baselineImage] = imageEntry;
-    const candidateProbe = `${baselineProbe.slice(0, opening)}`
-      + `${comparisonCommentOpeningProbe}${baselineProbe.slice(opening + 4)}`;
-    assert.equal(candidateProbe.length, baselineProbe.length);
-    const candidateImage = nodesByTypeAndPosition(
-      parseMdxAst(candidateProbe, relativePath),
-      'image',
-    ).get(imageKey);
+    const findCandidateImage = (candidateOffsets) => {
+      const candidateProbe = withCandidateOpenings(baselineProbe, candidateOffsets);
+      assert.equal(candidateProbe.length, baselineProbe.length);
+      return nodesByTypeAndPosition(
+        parseMdxAst(candidateProbe, relativePath),
+        baselineImage.type,
+      ).get(imageKey);
+    };
+
+    let candidateImage = findCandidateImage([opening]);
+    if (!candidateImage && baselineImage.type === 'imageReference') {
+      const matchingDefinitions = baselineDefinitions.filter(
+        (definition) => definition.identifier === baselineImage.identifier,
+      );
+      assert.ok(
+        matchingDefinitions.length > 0,
+        `${relativePath}: MDX image reference has no matching definition at ${imageKey}`,
+      );
+      const synchronizedCandidates = [];
+      for (const definition of matchingDefinitions) {
+        const definitionOpenings = openingOffsets.filter((definitionOpening) => (
+          definitionOpening >= definition.position.start.offset
+          && definitionOpening < definition.position.end.offset
+        ));
+        for (const definitionOpening of definitionOpenings) {
+          const synchronizedImage = findCandidateImage([opening, definitionOpening]);
+          if (synchronizedImage) synchronizedCandidates.push(synchronizedImage);
+        }
+      }
+      assert.equal(
+        synchronizedCandidates.length,
+        1,
+        `${relativePath}: MDX image-reference probe cannot pair offset ${opening}`,
+      );
+      [candidateImage] = synchronizedCandidates;
+    }
     assert.ok(
       candidateImage,
-      `${relativePath}: MDX comment probe must preserve image offsets at ${imageKey}`,
+      `${relativePath}: MDX comment probe must preserve ${imageKey}`,
     );
 
     const baselineAlt = baselineImage.alt ?? '';
@@ -188,7 +236,7 @@ const collectProtectedCommentRanges = (ast, openingOffsets, imageOpeningVisibili
       })));
     }
 
-    if (node.type === 'image') {
+    if (imageNodeTypes.has(node.type)) {
       const imageOpenings = openingOffsets.filter(
         (opening) => opening >= start && opening < end,
       );
@@ -238,7 +286,7 @@ const collectVisibleOpeningOffsets = (ast, openingOffsets, imageOpeningVisibilit
       addOpeningsInNode(node);
       return;
     }
-    if (node.type === 'image') {
+    if (imageNodeTypes.has(node.type)) {
       for (const [opening, isVisible] of imageOpeningVisibility) {
         if (isVisible) {
           const start = node.position?.start.offset;
@@ -992,6 +1040,78 @@ test('per-opener image alt classification handles nested metadata before visible
       line: 2,
       ruleId: 'generated-page-meta',
       excerpt: '![outer inner \\<!-- 本页从机器可读主题清单生成 -->]',
+    },
+  ]);
+});
+
+test('image-reference opener classification handles nested metadata before visible alt', () => {
+  const fixture = `# Example
+![outer [inner](/safe "<!-- hidden") \\<!-- 本页从机器可读主题清单生成 -->][outer]
+
+[outer]: /image
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/full-image-reference.mdx', fixture), [
+    {
+      file: 'content/cases/full-image-reference.mdx',
+      line: 2,
+      ruleId: 'generated-page-meta',
+      excerpt: '![outer inner \\<!-- 本页从机器可读主题清单生成 -->]',
+    },
+  ]);
+});
+
+test('image-reference opener classification excludes hidden full-reference labels', () => {
+  const visibleAlt = String.raw`\<!-- 本页从机器可读主题清单生成 -->`;
+  const hiddenLabel = String.raw`\<!-- hidden`;
+  const fixture = `# Example
+![${visibleAlt}][${hiddenLabel}]
+
+[${hiddenLabel}]: /image
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/label-image-reference.mdx', fixture), [
+    {
+      file: 'content/cases/label-image-reference.mdx',
+      line: 2,
+      ruleId: 'generated-page-meta',
+      excerpt: `![${visibleAlt}]`,
+    },
+  ]);
+});
+
+test('image-reference opener classification preserves collapsed visible alt', () => {
+  const visibleAlt = String.raw`\<!-- 本页从机器可读主题清单生成 -->`;
+  const fixture = `# Example
+![${visibleAlt}][]
+
+[${visibleAlt}]: /image
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/collapsed-image-reference.mdx', fixture), [
+    {
+      file: 'content/cases/collapsed-image-reference.mdx',
+      line: 2,
+      ruleId: 'generated-page-meta',
+      excerpt: `![${visibleAlt}]`,
+    },
+  ]);
+});
+
+test('image-reference opener classification preserves shortcut visible alt', () => {
+  const visibleAlt = String.raw`\<!-- 本页从机器可读主题清单生成 -->`;
+  const fixture = `# Example
+![${visibleAlt}]
+
+[${visibleAlt}]: /image
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/shortcut-image-reference.mdx', fixture), [
+    {
+      file: 'content/cases/shortcut-image-reference.mdx',
+      line: 2,
+      ruleId: 'generated-page-meta',
+      excerpt: `![${visibleAlt}]`,
     },
   ]);
 });
