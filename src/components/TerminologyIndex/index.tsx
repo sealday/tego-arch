@@ -2,8 +2,14 @@ import type {ReactNode} from 'react';
 import terminology from '@site/data/terminology.json';
 import styles from './styles.module.css';
 
-export default function TerminologyIndex(): ReactNode {
-  const terms = [...terminology.terms].sort(
+type TerminologyTerm = (typeof terminology.terms)[number];
+
+type TerminologyTableProps = {
+  terms: readonly TerminologyTerm[];
+};
+
+export function TerminologyTable({terms}: TerminologyTableProps): ReactNode {
+  const sortedTerms = [...terms].sort(
     (left, right) => left.order - right.order,
   );
 
@@ -23,8 +29,8 @@ export default function TerminologyIndex(): ReactNode {
           </tr>
         </thead>
         <tbody>
-          {terms.map((term) => (
-            <tr key={term.id}>
+          {sortedTerms.map((term) => (
+            <tr data-term-id={term.id} key={term.id}>
               <th scope="row">{term.canonical_zh}</th>
               <td>{term.first_use}</td>
               <td>{term.subsequent_use.join('、')}</td>
@@ -35,4 +41,8 @@ export default function TerminologyIndex(): ReactNode {
       </table>
     </div>
   );
+}
+
+export default function TerminologyIndex(): ReactNode {
+  return <TerminologyTable terms={terminology.terms} />;
 }

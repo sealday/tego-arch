@@ -1,53 +1,90 @@
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
+import {createRequire} from 'node:module';
 import test from 'node:test';
+import {renderToStaticMarkup} from 'react-dom/server';
 
 const root = new URL('../', import.meta.url);
+const require = createRequire(import.meta.url);
+const ts = require('typescript');
 
 async function source(path) {
   return readFile(new URL(path, root), 'utf8');
 }
 
-function escapeRegExp(value) {
-  return value.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
+function loadTerminologyModule(component, registry) {
+  const {outputText} = ts.transpileModule(component, {
+    compilerOptions: {
+      esModuleInterop: true,
+      jsx: ts.JsxEmit.ReactJSX,
+      module: ts.ModuleKind.CommonJS,
+      target: ts.ScriptTarget.ES2022,
+    },
+  });
+  const module = {exports: {}};
+  const localRequire = (specifier) => {
+    if (specifier === '@site/data/terminology.json') {
+      return registry;
+    }
+    if (specifier === './styles.module.css') {
+      return {tableRegion: 'tableRegion'};
+    }
+    return require(specifier);
+  };
+
+  Function('require', 'module', 'exports', outputText)(
+    localRequire,
+    module,
+    module.exports,
+  );
+  return module.exports;
 }
 
-function assertCompleteRegistryProjection(component, registry) {
-  assert.equal(
-    [...component.matchAll(/@site\/data\/terminology\.json/gu)].length,
-    1,
-    'the canonical registry must have exactly one import',
-  );
-  assert.match(
+function injectFunctionStatement(component, functionName, statement) {
+  const syntax = ts.createSourceFile(
+    'TerminologyIndex.tsx',
     component,
-    /import terminology from '@site\/data\/terminology\.json';/u,
+    ts.ScriptTarget.Latest,
+    true,
+    ts.ScriptKind.TSX,
   );
-  assert.match(
-    component,
-    /const terms = \[\.\.\.terminology\.terms\]\.sort\(\s*\(left, right\) => left\.order - right\.order,?\s*\);/su,
-  );
-  assert.doesNotMatch(
-    component,
-    /(?:terminology\.terms|\bterms)\.(?:filter|slice|splice|pop|shift)\(/u,
-  );
-  assert.match(
-    component,
-    /\{terms\.map\(\(term\) => \(\s*<tr key=\{term\.id\}>\s*<th scope="row">\{term\.canonical_zh\}<\/th>\s*<td>\{term\.first_use\}<\/td>\s*<td>\{term\.subsequent_use\.join\('、'\)\}<\/td>\s*<td>\{term\.note\}<\/td>\s*<\/tr>\s*\)\)\}/su,
-  );
+  let insertionPoint = null;
 
-  for (const term of registry.terms) {
-    for (const value of [
-      term.canonical_zh,
-      term.first_use,
-      ...term.subsequent_use,
-      term.note,
-    ]) {
-      assert.doesNotMatch(
-        component,
-        new RegExp(escapeRegExp(value), 'u'),
-        `registry value must be projected, not copied: ${value}`,
-      );
+  function visit(node) {
+    if (
+      ts.isFunctionDeclaration(node)
+      && node.name?.text === functionName
+      && node.body
+    ) {
+      insertionPoint = node.body.getStart(syntax) + 1;
+      return;
     }
+    ts.forEachChild(node, visit);
+  }
+  visit(syntax);
+  assert.notEqual(insertionPoint, null, `${functionName} function body`);
+
+  return `${component.slice(0, insertionPoint)}\n  ${statement}${component.slice(insertionPoint)}`;
+}
+
+function assertRenderedTerms(markup, terms) {
+  const rows = [...markup.matchAll(
+    /<tr data-term-id="([^"]+)">([\s\S]*?)<\/tr>/gu,
+  )].map((match) => ({id: match[1], content: match[2]}));
+  const expected = [...terms].sort((left, right) => left.order - right.order);
+
+  assert.deepEqual(rows.map(({id}) => id), expected.map(({id}) => id));
+  assert.equal(new Set(rows.map(({id}) => id)).size, expected.length);
+
+  for (const [index, term] of expected.entries()) {
+    const row = rows[index];
+    assert.ok(row.content.includes(`>${term.canonical_zh}</th>`), term.id);
+    assert.ok(row.content.includes(`<td>${term.first_use}</td>`), term.id);
+    assert.ok(
+      row.content.includes(`<td>${term.subsequent_use.join('、')}</td>`),
+      term.id,
+    );
+    assert.ok(row.content.includes(`<td>${term.note}</td>`), term.id);
   }
 }
 
@@ -69,16 +106,6 @@ test('publishes one registry-driven terminology policy page', async () => {
   assert.match(page, /贡献流程/u);
   assert.match(page, /<TerminologyIndex\s*\/>/u);
   assert.doesNotMatch(page, /\|\s*质量属性\s*\|/u);
-
-  assert.match(component, /@site\/data\/terminology\.json/u);
-  assert.match(
-    component,
-    /\.sort\(\s*\(left, right\) => left\.order - right\.order,?\s*\)/su,
-  );
-  assert.match(component, /role="region"/u);
-  assert.match(component, /aria-label="规范术语表"/u);
-  assert.match(component, /tabIndex=\{0\}/u);
-  assert.match(component, /<th scope="row">\{term\.canonical_zh\}<\/th>/u);
 
   assert.match(styles, /\.tableRegion\s*\{[^}]*overflow-x:\s*auto;[^}]*\}/su);
   assert.match(styles, /\.tableRegion\s*\{[^}]*max-width:\s*100%;[^}]*\}/su);
@@ -134,29 +161,78 @@ test('enforces one first-use form, mandatory Chinese context for proper nouns, a
   );
 });
 
-test('projects every canonical registry row and field through one mutation-sensitive mapping', async () => {
+test('renders every injected and canonical registry row exactly once without truncation', async () => {
   const [component, registryText] = await Promise.all([
     source('src/components/TerminologyIndex/index.tsx'),
     source('data/terminology.json'),
   ]);
   const registry = JSON.parse(registryText);
-
-  assert.ok(registry.terms.length > 0);
-  assertCompleteRegistryProjection(component, registry);
-
-  const mutations = [
-    component.replace('terminology.terms', 'terminology.terms.slice(0, 1)'),
-    component.replace('term.canonical_zh', 'term.id'),
-    component.replace('term.first_use', 'term.id'),
-    component.replace("term.subsequent_use.join('、')", 'term.id'),
-    component.replace('term.note', 'term.id'),
-    component.replace('return (', 'terms.pop();\n\n  return ('),
-    `${component}\nimport duplicate from '@site/data/terminology.json';\n`,
+  const fixture = [
+    {
+      id: 'third',
+      canonical_zh: '第三项',
+      first_use: '第三项（Third）',
+      subsequent_use: ['第三项', 'T'],
+      note: '第三项边界',
+      order: 30,
+    },
+    {
+      id: 'first',
+      canonical_zh: '第一项',
+      first_use: '第一项（First）',
+      subsequent_use: ['第一项'],
+      note: '第一项边界',
+      order: 10,
+    },
+    {
+      id: 'second',
+      canonical_zh: '第二项',
+      first_use: '第二项（Second）',
+      subsequent_use: ['第二项', 'S'],
+      note: '第二项边界',
+      order: 20,
+    },
   ];
+  const registryImports = component.match(
+    /\bfrom\s+["']@site\/data\/terminology\.json["']/gu,
+  ) ?? [];
+  const expectedFixture = structuredClone(fixture);
 
-  for (const mutant of mutations) {
-    assert.throws(() => assertCompleteRegistryProjection(mutant, registry));
-  }
+  assert.equal(registryImports.length, 1);
+
+  const injectedModule = loadTerminologyModule(component, {terms: []});
+  assert.equal(typeof injectedModule.TerminologyTable, 'function');
+  const injectedMarkup = renderToStaticMarkup(
+    injectedModule.TerminologyTable({terms: fixture}),
+  );
+  assertRenderedTerms(injectedMarkup, expectedFixture);
+  assert.deepEqual(fixture, expectedFixture);
+  assert.match(injectedMarkup, /role="region"/u);
+  assert.match(injectedMarkup, /aria-label="规范术语表"/u);
+  assert.match(injectedMarkup, /tabindex="0"/u);
+  assert.match(injectedMarkup, /<th scope="row">/u);
+
+  const canonicalModule = loadTerminologyModule(component, registry);
+  assert.ok(registry.terms.length > 0);
+  assertRenderedTerms(
+    renderToStaticMarkup(canonicalModule.default()),
+    registry.terms,
+  );
+
+  const lengthMutation = injectFunctionStatement(
+    component,
+    'TerminologyTable',
+    'terms.length = 1;',
+  );
+  const mutantModule = loadTerminologyModule(lengthMutation, {terms: []});
+  const mutantFixture = structuredClone(expectedFixture);
+  assert.throws(() =>
+    assertRenderedTerms(
+      renderToStaticMarkup(
+        mutantModule.TerminologyTable({terms: mutantFixture}),
+      ),
+      expectedFixture,
+    ));
 });
 
 test('registers the terminology page copyright review without inventing citations', async () => {
