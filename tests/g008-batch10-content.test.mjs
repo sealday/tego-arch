@@ -175,7 +175,7 @@ const expectedMetadata = {
   topic_id: 'MOD-12',
   priority: 'P1',
   depends_on: ['MOD-01', 'MOD-02', 'MOD-03'],
-  adjacent_topics: ['MOD-11', 'QA-02', 'QA-05'],
+  adjacent_topics: ['MOD-11', 'QA-02', 'QA-05', 'MOD-13'],
   related_cases: ['/cases/microsoft-multi-agent-reference-architecture'],
   related_questions: [],
 };
@@ -272,7 +272,7 @@ const expectedImages = [
 const requiredLinks = [
   '/modeling', '/modeling/mod-01', '/modeling/mod-02', '/modeling/mod-03',
   '/modeling/mod-04', '/modeling/mod-11', '/quality-attributes/qa-02',
-  '/quality-attributes/qa-05', '/cases/microsoft-multi-agent-reference-architecture',
+  '/quality-attributes/qa-05', '/modeling/mod-13', '/cases/microsoft-multi-agent-reference-architecture',
 ];
 
 const expectedGovernedSources = new Map([
@@ -380,8 +380,7 @@ function assertMethodContract(body) {
   const links = extractInternalLinks({body});
   for (const target of requiredLinks) assert.ok(links.includes(target), `missing visible link: ${target}`);
   assert.match(body, /MOD-13/u);
-  assert.ok(!links.includes('/modeling/mod-13'));
-  assert.doesNotMatch(body, /\[[^\]]*MOD-13[^\]]*\]\([^)]*\)/u);
+  assert.ok(links.includes('/modeling/mod-13'));
   const sourceSection = body.match(/## 来源\n\n([\s\S]*)$/u)?.[1] ?? '';
   const sourceBullets = [...sourceSection.matchAll(/^- .+$/gmu)].map((match) => match[0]);
   assert.deepEqual(sourceBullets, expectedSources.map(sourceBullet));
@@ -494,8 +493,8 @@ test('publishes exact reciprocal MOD-12 relations without an override', () => {
     assert.match(related.body, backlink, file);
   }
   assert.match(requiredDocument().body, /\[MOD-04[^\]]*\]\(\/modeling\/mod-04\)[^。\n]*文档[^。\n]*版本/u);
-  assert.equal(extractInternalLinks(requiredDocument()).length, 9);
-  assert.doesNotMatch(requiredDocument().body, /\[[^\]]*MOD-13[^\]]*\]\([^)]*\)/u);
+  assert.equal(extractInternalLinks(requiredDocument()).length, 10);
+  assert.match(requiredDocument().body, /\[MOD-13[^\]]*\]\(\/modeling\/mod-13\)/u);
 });
 
 test('locks the generated MOD-12 Stage B projection', () => {
@@ -511,8 +510,8 @@ test('locks the generated MOD-12 Stage B projection', () => {
     next_topic: currentNextTopic(backlog),
   }, {
     completed_topics: 51,
-    content_documents: 93,
-    governed_sources: 490,
+    content_documents: 94,
+    governed_sources: 494,
     durable_stories: {completed: 7, total: 20},
     current_goal: 'G008',
     next_topic: 'MOD-13',
@@ -520,7 +519,7 @@ test('locks the generated MOD-12 Stage B projection', () => {
   const topicsById = new Map(topicManifest.topics.map((topic) => [topic.id, topic]));
   assert.equal(topicsById.get('MOD-12').published, true);
   assert.equal(topicsById.get('MOD-12').status.value, 'complete');
-  assert.equal(topicsById.get('MOD-13').published, false);
+  assert.equal(topicsById.get('MOD-13').published, true);
   assert.equal(topicsById.get('MOD-13').status.value, 'pending');
   assert.throws(
     () => assert.equal(
@@ -648,7 +647,6 @@ test('rejects controlled MOD-12 mutations', () => {
   }
   mutations.push(['problem image suffix', body.replace('mod-12-architecture-review-problem.svg)', 'mod-12-architecture-review-problem.svg.bak)'), assertInteractionContract]);
   mutations.push(['corrected image suffix', body.replace('mod-12-architecture-review-corrected.svg)', 'mod-12-architecture-review-corrected.svg.bak)'), assertInteractionContract]);
-  mutations.push(['forbidden MOD-13 href', `${body}\n\n[下一篇](/modeling/mod-13)\n`, assertMethodContract]);
-  mutations.push(['forbidden neutral MOD-13 href', `${body}\n\n[下一篇模型](/modeling/mod-13)\n`, assertMethodContract]);
+  mutations.push(['missing MOD-13 href', body.replace('(/modeling/mod-13)', '(#removed)'), assertMethodContract]);
   for (const [label, mutation, contract] of mutations) assert.throws(() => contract(mutation), {name: 'AssertionError'}, label);
 });

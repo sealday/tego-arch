@@ -446,8 +446,8 @@ function assertStageBProjection(projectStatus, topicIndexes, content) {
     schema_version: 1,
     durable_stories: {completed: 7, total: 20, current: 'G008'},
     completed_topics: 51,
-    content_documents: 93,
-    governed_sources: 490,
+    content_documents: 94,
+    governed_sources: 494,
     sources: {
       durable_stories: 'docs/content-backlog.md',
       completed_topics: 'docs/content-backlog.md',
@@ -464,7 +464,7 @@ function assertStageBProjection(projectStatus, topicIndexes, content) {
   assert.equal(topicsById.get('MOD-11').status.value, 'complete');
   const links = extractInternalLinks(content);
   for (const id of unpublishedModelingTopics) {
-    assert.equal(topicsById.get(id).published, false, `${id} publication`);
+    assert.equal(topicsById.get(id).published, true, `${id} publication`);
     assert.equal(topicsById.get(id).status.value, 'pending', `${id} status`);
     assert.equal(
       links.filter((href) => href === `/modeling/${id.toLowerCase()}`).length,
@@ -614,11 +614,11 @@ test('projects Stage B after closing MOD-09', async () => {
   for (const id of unpublishedModelingTopics) {
     const published = structuredClone(topicIndexes);
     const topic = Object.values(published).flat().find(({id: topicId}) => topicId === id);
-    topic.published = true;
+    topic.published = false;
     assert.throws(
       () => assertStageBProjection(projectStatus, published, content),
       {name: 'AssertionError'},
-      `${id} forbidden publication`,
+      `${id} required publication`,
     );
 
     const completed = structuredClone(topicIndexes);

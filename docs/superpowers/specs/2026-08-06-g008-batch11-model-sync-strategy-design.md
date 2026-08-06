@@ -353,6 +353,7 @@ MOD-13 related case 固定为 `/cases/kubernetes-reconciliation-loop`，正文�
   - source kind：`original-illustration`
   - allowed evidence roles：`illustration`
   - document copyright check：`illustration-rights`
+  - modification note：`Created as an original Draw.io and SVG pair for MOD-13 from a project-authored design; QA-reviewed for semantic synchronization, accessibility, geometry, and desktop/mobile browser rendering without third-party reference imagery.`
   - usage boundary：本站原创权威事实与漂移闭环教学图，不表示特定生产拓扑、团队或工具实现。
 
 Stage A 预计从 490 增加到 494 个唯一来源：三个新增外部身份、一个原创图身份，ADR 来源复用。实现时必须由 source-ledger validator 证明 canonical identity、许可证、角色和 link-health cache；如果实际 canonical 去重结果与 494 不同，先修订设计与计数合同，不能静默改变目标。

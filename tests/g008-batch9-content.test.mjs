@@ -737,8 +737,8 @@ function assertStageBProjection(statusValue, manifestValue, mod11Document) {
     schema_version: 1,
     durable_stories: {completed: 7, total: 20, current: 'G008'},
     completed_topics: 51,
-    content_documents: 93,
-    governed_sources: 490,
+    content_documents: 94,
+    governed_sources: 494,
     sources: {
       durable_stories: 'docs/content-backlog.md',
       completed_topics: 'docs/content-backlog.md',
@@ -753,7 +753,7 @@ function assertStageBProjection(statusValue, manifestValue, mod11Document) {
   assert.equal(topicsById.get('MOD-12').status.value, 'complete');
   assert.ok(extractInternalLinks(mod11Document).includes('/modeling/mod-12'));
   for (const id of ['MOD-13']) {
-    assert.equal(topicsById.get(id).published, false, id);
+    assert.equal(topicsById.get(id).published, true, id);
     assert.equal(topicsById.get(id).status.value, 'pending', id);
     assert.ok(!extractInternalLinks(mod11Document).includes(`/modeling/${id.toLowerCase()}`), id);
   }

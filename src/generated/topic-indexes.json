@@ -1414,7 +1414,8 @@
         "MTH-04",
         "QA-01",
         "PR-08",
-        "MOD-01"
+        "MOD-01",
+        "MOD-13"
       ],
       "primary_sources": [
         "https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions",
@@ -1513,7 +1514,8 @@
       "adjacent_topics": [
         "MTH-04",
         "MTH-05",
-        "FND-05"
+        "FND-05",
+        "MOD-13"
       ],
       "primary_sources": [
         "https://www.sei.cmu.edu/library/quality-attribute-workshops-qaws-third-edition/"
@@ -1751,7 +1753,8 @@
       ],
       "adjacent_topics": [
         "MOD-03",
-        "MOD-05"
+        "MOD-05",
+        "MOD-13"
       ],
       "primary_sources": [
         "https://arc42.org/overview",
@@ -1889,7 +1892,8 @@
       "adjacent_topics": [
         "MOD-11",
         "QA-02",
-        "QA-05"
+        "QA-05",
+        "MOD-13"
       ],
       "primary_sources": [
         "https://c4model.com/diagrams/checklist"
@@ -1950,15 +1954,32 @@
         "value": "pending",
         "source": "docs/content-backlog.md"
       },
-      "dependencies": [],
-      "adjacent_topics": [],
-      "primary_sources": [],
-      "related_cases": [],
+      "dependencies": [
+        "MOD-04",
+        "MOD-12",
+        "MTH-03",
+        "MTH-06"
+      ],
+      "adjacent_topics": [
+        "MOD-04",
+        "MOD-12",
+        "MTH-03",
+        "MTH-06"
+      ],
+      "primary_sources": [
+        "https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions",
+        "https://docs.structurizr.com/dsl",
+        "https://opengitops.dev/"
+      ],
+      "related_cases": [
+        "/cases/kubernetes-reconciliation-loop"
+      ],
       "related_questions": [],
-      "reviewed_at": null,
-      "review_policy": null,
-      "published": false,
-      "pattern_group": null
+      "reviewed_at": "2026-08-06",
+      "review_policy": "quarterly-version-sensitive",
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
     }
   ],
   "style": [

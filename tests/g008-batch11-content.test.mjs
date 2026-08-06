@@ -15,6 +15,30 @@ const contentRoot = fileURLToPath(new URL('../content/', import.meta.url));
 const documents = await readContentDocuments(contentRoot);
 const document = documents.find(({file}) => file === 'modeling/mod-13-model-sync-strategy.mdx');
 const relatedDocuments = new Map(documents.map((entry) => [entry.file, entry]));
+const [sourceLedger, sourceLinkHealth, topicRelations, projectStatus, topicManifest] = await Promise.all([
+  readFile(new URL('../data/source-ledger.json', import.meta.url), 'utf8').then(JSON.parse),
+  readFile(new URL('../data/source-link-health.json', import.meta.url), 'utf8').then(JSON.parse),
+  readFile(new URL('../data/topic-relations.json', import.meta.url), 'utf8').then(JSON.parse),
+  readFile(new URL('../src/generated/project-status.json', import.meta.url), 'utf8').then(JSON.parse),
+  readFile(new URL('../src/generated/topic-manifest.json', import.meta.url), 'utf8').then(JSON.parse),
+]);
+
+const expectedSourceRecords = [
+  {id:'src-structurizr-dsl-model-as-code',canonical_locator:'https://docs.structurizr.com/dsl',transport_locator:'https://raw.githubusercontent.com/structurizr/structurizr.github.io/d7f521eb9c6c55f7e9a4dcaf2a1122b844dbcb7f/dsl/index.md',query_insensitive:false,locator_aliases:[],tombstone:null,title:'Structurizr DSL',author_or_org:'Structurizr',published_at:null,registered_at:'2026-08-06',checked_at:'2026-08-06',version:'Structurizr documentation commit d7f521eb9c6c55f7e9a4dcaf2a1122b844dbcb7f',source_kind:'official-docs',tier:'primary',allowed_evidence_roles:['definition','implementation','learning','method'],license:'MIT',license_scope:'The named Structurizr documentation page at the pinned documentation commit; trademarks, linked works, code, hosted service behavior, and third-party assets excluded',license_evidence_url:'https://github.com/structurizr/structurizr.github.io/blob/d7f521eb9c6c55f7e9a4dcaf2a1122b844dbcb7f/LICENSE',license_evidence_note:'The official Structurizr documentation repository identifies the documentation repository as MIT licensed.',license_family_id:'https://docs.structurizr.com/dsl',license_family_grouping:'identity',family_grouping_evidence_url:null,copyright_policy:'facts-and-short-quotation',usage_boundary:'Supports defining a C4 software architecture model with a text DSL and producing views from a workspace; it does not prove synchronization with code, deployment, or runtime state.',link_policy:'stable',expected_final_transport_locator:'https://raw.githubusercontent.com/structurizr/structurizr.github.io/d7f521eb9c6c55f7e9a4dcaf2a1122b844dbcb7f/dsl/index.md',expected_final_approved_at:'2026-08-06',expected_final_approval_note:'Pinned official documentation commit returned HTTP 200 on 2026-08-06.'},
+  {id:'src-opengitops-principles-v1',canonical_locator:'https://opengitops.dev/',transport_locator:'https://raw.githubusercontent.com/open-gitops/documents/d36cde829c6ef2c7e5cab662ab98a7173a591a49/PRINCIPLES.md',query_insensitive:false,locator_aliases:[],tombstone:null,title:'GitOps Principles v1.0.0',author_or_org:'OpenGitOps / CNCF GitOps Working Group',published_at:null,registered_at:'2026-08-06',checked_at:'2026-08-06',version:'v1.0.0 peeled commit d36cde829c6ef2c7e5cab662ab98a7173a591a49',source_kind:'standard',tier:'primary',allowed_evidence_roles:['definition','learning','method'],license:'CC-BY-4.0',license_scope:'The GitOps Principles content at v1.0.0 under the repository content license; code, marks, translations, linked works, and later versions excluded',license_evidence_url:'https://github.com/open-gitops/documents/blob/d36cde829c6ef2c7e5cab662ab98a7173a591a49/LICENSE.md',license_evidence_note:'The pinned repository license applies CC BY 4.0 to content and Apache 2.0 to code.',license_family_id:'https://opengitops.dev/',license_family_grouping:'identity',family_grouping_evidence_url:null,copyright_policy:'adapt-with-attribution',usage_boundary:'Supports declarative, versioned and immutable, automatically pulled, continuously reconciled desired state for GitOps-managed systems; it does not make all architecture knowledge automatically reconcilable.',link_policy:'stable',expected_final_transport_locator:'https://raw.githubusercontent.com/open-gitops/documents/d36cde829c6ef2c7e5cab662ab98a7173a591a49/PRINCIPLES.md',expected_final_approved_at:'2026-08-06',expected_final_approval_note:'Pinned v1.0.0 principles file returned HTTP 200 on 2026-08-06.'},
+  {id:'src-github-deployment-history',canonical_locator:'https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/view-deployment-history',transport_locator:'https://raw.githubusercontent.com/github/docs/738593aef7b8d80183a376d5c692feefc0e8a5ff/content/actions/how-tos/deploy/configure-and-manage-deployments/view-deployment-history.md',query_insensitive:false,locator_aliases:[],tombstone:null,title:'Viewing deployment history',author_or_org:'GitHub',published_at:null,registered_at:'2026-08-06',checked_at:'2026-08-06',version:'GitHub Docs commit 738593aef7b8d80183a376d5c692feefc0e8a5ff',source_kind:'official-docs',tier:'primary',allowed_evidence_roles:['implementation','learning','runtime-fact'],license:'CC-BY-4.0',license_scope:'The named GitHub documentation page at the pinned docs commit; GitHub marks, product code, linked works, screenshots, and later versions excluded',license_evidence_url:'https://github.com/github/docs/blob/738593aef7b8d80183a376d5c692feefc0e8a5ff/LICENSE',license_evidence_note:'GitHub Docs applies CC BY 4.0 to documentation and content under its LICENSE file.',license_family_id:'https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/view-deployment-history',license_family_grouping:'identity',family_grouping_evidence_url:null,copyright_policy:'adapt-with-attribution',usage_boundary:'Supports deployment history associations with environments, commits, workflow logs, URLs, and statuses; it does not prove application functionality, performance, reliability, or complete runtime health.',link_policy:'stable',expected_final_transport_locator:'https://raw.githubusercontent.com/github/docs/738593aef7b8d80183a376d5c692feefc0e8a5ff/content/actions/how-tos/deploy/configure-and-manage-deployments/view-deployment-history.md',expected_final_approved_at:'2026-08-06',expected_final_approval_note:'Pinned official documentation source returned HTTP 200 on 2026-08-06.'},
+  {id:'src-atlas-mod13-authority-drift-loop',canonical_locator:'/img/diagrams/mod-13-authority-drift-loop.svg',transport_locator:'/img/diagrams/mod-13-authority-drift-loop.svg',query_insensitive:false,locator_aliases:[],tombstone:null,title:'权威事实与漂移处置闭环',author_or_org:'Tego Arch maintainers',published_at:null,registered_at:'2026-08-06',checked_at:'2026-08-06',version:'Original Draw.io/SVG pair authored and QA-checked on 2026-08-06',source_kind:'original-illustration',tier:'primary',allowed_evidence_roles:['illustration'],license:'LicenseRef-Atlas-Original',license_scope:'The named project-authored mod-13-authority-drift-loop.svg asset only',license_evidence_url:'https://github.com/sealday/tego-arch/blob/main/static/img/diagrams/mod-13-authority-drift-loop.svg',license_evidence_note:'The project-authored Draw.io/SVG pair contains no third-party reference image, icon, signature, watermark, or copied composition.',license_family_id:'/img/diagrams/mod-13-authority-drift-loop.svg',license_family_grouping:'identity',family_grouping_evidence_url:null,copyright_policy:'original-atlas',usage_boundary:'Original teaching illustration of per-fact authority and drift reconciliation; it does not represent a production topology, team, controller, or tool implementation.',link_policy:null,expected_final_transport_locator:'/img/diagrams/mod-13-authority-drift-loop.svg',expected_final_approved_at:'2026-08-06',expected_final_approval_note:'Approved project-local original illustration locator for the named SVG asset.'},
+];
+
+const expectedNygardRecord = {id:'src-nygard-documenting-architecture-decisions-2011',canonical_locator:'https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions',transport_locator:'https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions',query_insensitive:false,locator_aliases:[],tombstone:null,title:'Documenting Architecture Decisions',author_or_org:'Michael Nygard / Cognitect',published_at:'2011-11-15',registered_at:'2026-07-24',checked_at:'2026-07-24',version:'Article published 2011-11-15; page checked on 2026-07-24',source_kind:'engineering-blog',tier:'primary',allowed_evidence_roles:['definition','method','historical-context','learning'],license:'CC0-1.0',license_scope:'The named Cognitect article text covered by its explicit CC0 waiver; linked works, marks, and third-party material excluded',license_evidence_url:'https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions',license_evidence_note:'The article page explicitly states that Cognitect waived copyright and related rights to the extent possible under law under CC0.',license_family_id:'https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions',license_family_grouping:'identity',family_grouping_evidence_url:null,copyright_policy:'adapt-with-attribution',usage_boundary:'Supports the ADR context-decision-consequences form and historical status practice; it does not make every local status vocabulary mandatory.',link_policy:'stable',expected_final_transport_locator:'https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions',expected_final_approved_at:'2026-07-24',expected_final_approval_note:'Initial reviewed CC0 article transport baseline'};
+
+const expectedCitations = [
+  {source_id:'src-structurizr-dsl-model-as-code',citation_url:'https://docs.structurizr.com/dsl',roles:['definition','implementation','learning'],manifest_primary:true,usage_mode:'facts-summary',attribution_note:'Structurizr DSL, Structurizr',modification_note:null,excerpt:null,quotation_reviewed:false},
+  {source_id:'src-nygard-documenting-architecture-decisions-2011',citation_url:'https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions',roles:['definition','method','historical-context'],manifest_primary:true,usage_mode:'facts-summary',attribution_note:'Documenting Architecture Decisions, Michael Nygard / Cognitect',modification_note:null,excerpt:null,quotation_reviewed:false},
+  {source_id:'src-opengitops-principles-v1',citation_url:'https://opengitops.dev/',roles:['definition','method','learning'],manifest_primary:true,usage_mode:'facts-summary',attribution_note:'GitOps Principles v1.0.0, OpenGitOps / CNCF GitOps Working Group',modification_note:null,excerpt:null,quotation_reviewed:false},
+  {source_id:'src-github-deployment-history',citation_url:'https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/view-deployment-history',roles:['implementation','runtime-fact','learning'],manifest_primary:false,usage_mode:'facts-summary',attribution_note:'Viewing deployment history, GitHub Docs',modification_note:null,excerpt:null,quotation_reviewed:false},
+  {source_id:'src-atlas-mod13-authority-drift-loop',citation_url:'/img/diagrams/mod-13-authority-drift-loop.svg',roles:['illustration'],manifest_primary:false,usage_mode:'original-illustration',attribution_note:'权威事实与漂移处置闭环，Tego Arch maintainers',modification_note:'Created as an original Draw.io and SVG pair for MOD-13 from a project-authored design; QA-reviewed for semantic synchronization, accessibility, geometry, and desktop/mobile browser rendering without third-party reference imagery.',excerpt:null,quotation_reviewed:false},
+];
 
 const expectedMetadata = {
   title: '模型同步策略',
@@ -457,4 +481,69 @@ test('rejects reordering exact entries in the seven-step numbered exercise', () 
   );
   assert.notEqual(mutation, body);
   assert.throws(() => assertMethodContract(mutation), assert.AssertionError);
+});
+
+test('governs the exact MOD-13 source identities and citation review', () => {
+  const sourcesById = new Map(sourceLedger.sources.map((source) => [source.id, source]));
+  for (const expected of expectedSourceRecords) assert.deepEqual(sourcesById.get(expected.id), expected, expected.id);
+  assert.deepEqual(sourcesById.get(expectedNygardRecord.id), expectedNygardRecord);
+  assert.deepEqual(sourceLedger.documents['content/modeling/mod-13-model-sync-strategy.mdx'], {
+    reviewed_at: '2026-08-06',
+    copyright_checks: ['original-structure','quotation-boundary','attribution-complete','illustration-rights'],
+    citations: expectedCitations,
+  });
+  assert.deepEqual(
+    expectedCitations.filter(({manifest_primary}) => manifest_primary).map(({source_id}) => source_id),
+    ['src-structurizr-dsl-model-as-code','src-nygard-documenting-architecture-decisions-2011','src-opengitops-principles-v1'],
+  );
+});
+
+test('commits healthy real attempts for the three pinned MOD-13 transports', () => {
+  const healthByTransport = new Map(sourceLinkHealth.results.map((result) => [result.transport_locator, result]));
+  for (const {transport_locator: transport} of expectedSourceRecords.slice(0, 3)) {
+    const health = healthByTransport.get(transport);
+    assert.ok(health, transport);
+    assert.equal(health.review_status, 'healthy', transport);
+    assert.equal(health.last_attempt.outcome, 'healthy', transport);
+    assert.equal(health.last_attempt.final_transport_locator, transport);
+    assert.ok(health.last_attempt.http_status >= 200 && health.last_attempt.http_status <= 299, transport);
+    assert.deepEqual(health.last_success, {
+      at: health.last_attempt.at,
+      outcome: 'healthy',
+      final_transport_locator: transport,
+      http_status: health.last_attempt.http_status,
+      login_wall_detected: false,
+    }, transport);
+    assert.deepEqual(health.attempt_history.at(-1), health.last_success, transport);
+  }
+});
+
+test('publishes exact reciprocal MOD-13 relations without changing relation overrides', () => {
+  assert.equal('MOD-13' in topicRelations, false);
+  const reciprocal = [
+    ['modeling/mod-04-arc42-documentation-skeleton.mdx', ['MOD-03','MOD-05','MOD-13'], '/modeling/mod-13'],
+    ['modeling/mod-12-architecture-diagram-review.mdx', ['MOD-11','QA-02','QA-05','MOD-13'], '/modeling/mod-13'],
+    ['methods/mth-03-adr-lifecycle.mdx', ['FND-05','MTH-04','QA-01','PR-08','MOD-01','MOD-13'], '/modeling/mod-13'],
+    ['methods/mth-06-requirements-to-evolution-loop.mdx', ['MTH-04','MTH-05','FND-05','MOD-13'], '/modeling/mod-13'],
+  ];
+  for (const [file, adjacentTopics, backlink] of reciprocal) {
+    const related = relatedDocuments.get(file);
+    assert.deepEqual(parseFrontMatter(related.source).adjacent_topics, adjacentTopics, file);
+    assert.ok(extractInternalLinks(related).includes(backlink), `${file} visible backlink`);
+  }
+  assert.doesNotMatch(relatedDocuments.get('modeling/mod-04-arc42-documentation-skeleton.mdx').body, /MOD-13 尚未发布/u);
+  assert.doesNotMatch(relatedDocuments.get('modeling/mod-12-architecture-diagram-review.mdx').body, /MOD-13[^。\n]*发布前/u);
+  assert.match(relatedDocuments.get('methods/mth-03-adr-lifecycle.mdx').body, /ADR 状态不证明实现符合决定/u);
+  assert.match(relatedDocuments.get('methods/mth-06-requirements-to-evolution-loop.mdx').body, /反馈[^。\n]*MOD-13[^。\n]*权威[^。\n]*检测/u);
+  assert.match(requiredDocument().body, /控制器协调[^。\n]*有限类比/u);
+});
+
+test('locks the generated MOD-13 Stage A projection', () => {
+  assert.equal(projectStatus.completed_topics, 51);
+  assert.equal(projectStatus.content_documents, 94);
+  assert.equal(projectStatus.governed_sources, 494);
+  assert.deepEqual(projectStatus.durable_stories, {completed:7,total:20,current:'G008'});
+  const topicsById = new Map(topicManifest.topics.map((topic) => [topic.id, topic]));
+  assert.equal(topicsById.get('MOD-13').published, true);
+  assert.equal(topicsById.get('MOD-13').status.value, 'pending');
 });

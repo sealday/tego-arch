@@ -391,7 +391,7 @@ const expectedSources = new Map([
 ]);
 ```
 
-Also require reuse of `src-nygard-documenting-architecture-decisions-2011` without changing its identity record. Require three facts-summary external citations plus one reused ADR facts-summary and one local original-illustration citation; all excerpts/modification notes null; all quotation reviews false; only Structurizr/OpenGitOps/Nygard may be manifest primary, while GitHub deployment history and the illustration remain non-primary.
+Also require reuse of `src-nygard-documenting-architecture-decisions-2011` without changing its identity record. Require three facts-summary external citations plus one reused ADR facts-summary and one local original-illustration citation; all excerpts are null, the four facts-summary modification notes are null, the original-illustration modification note is the exact creation note in Step 3, and all quotation reviews are false; only Structurizr/OpenGitOps/Nygard may be manifest primary, while GitHub deployment history and the illustration remain non-primary.
 
 - [ ] **Step 2: Insert the four exact source records**
 
@@ -427,7 +427,7 @@ Insert under `data/source-ledger.json.documents`:
     {"source_id":"src-nygard-documenting-architecture-decisions-2011","citation_url":"https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions","roles":["definition","method","historical-context"],"manifest_primary":true,"usage_mode":"facts-summary","attribution_note":"Documenting Architecture Decisions, Michael Nygard / Cognitect","modification_note":null,"excerpt":null,"quotation_reviewed":false},
     {"source_id":"src-opengitops-principles-v1","citation_url":"https://opengitops.dev/","roles":["definition","method","learning"],"manifest_primary":true,"usage_mode":"facts-summary","attribution_note":"GitOps Principles v1.0.0, OpenGitOps / CNCF GitOps Working Group","modification_note":null,"excerpt":null,"quotation_reviewed":false},
     {"source_id":"src-github-deployment-history","citation_url":"https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/view-deployment-history","roles":["implementation","runtime-fact","learning"],"manifest_primary":false,"usage_mode":"facts-summary","attribution_note":"Viewing deployment history, GitHub Docs","modification_note":null,"excerpt":null,"quotation_reviewed":false},
-    {"source_id":"src-atlas-mod13-authority-drift-loop","citation_url":"/img/diagrams/mod-13-authority-drift-loop.svg","roles":["illustration"],"manifest_primary":false,"usage_mode":"original-illustration","attribution_note":"权威事实与漂移处置闭环，Tego Arch maintainers","modification_note":null,"excerpt":null,"quotation_reviewed":false}
+    {"source_id":"src-atlas-mod13-authority-drift-loop","citation_url":"/img/diagrams/mod-13-authority-drift-loop.svg","roles":["illustration"],"manifest_primary":false,"usage_mode":"original-illustration","attribution_note":"权威事实与漂移处置闭环，Tego Arch maintainers","modification_note":"Created as an original Draw.io and SVG pair for MOD-13 from a project-authored design; QA-reviewed for semantic synchronization, accessibility, geometry, and desktop/mobile browser rendering without third-party reference imagery.","excerpt":null,"quotation_reviewed":false}
   ]
 }
 ```

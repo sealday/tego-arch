@@ -159,6 +159,7 @@ test('keeps reciprocal MOD-01 adjacency and visible backlinks with QA-01 and MTH
     'QA-01',
     'PR-08',
     'MOD-01',
+    'MOD-13',
   ]);
   assert.ok(extractInternalLinks(qa01).includes('/modeling/mod-01'));
   assert.ok(extractInternalLinks(mth03).includes('/modeling/mod-01'));
@@ -335,8 +336,8 @@ test('projects G008 Batch 1 completion during Stage B', async () => {
     schema_version: 1,
     durable_stories: {completed: 7, total: 20, current: 'G008'},
     completed_topics: 51,
-    content_documents: 93,
-    governed_sources: 490,
+    content_documents: 94,
+    governed_sources: 494,
     sources: {
       durable_stories: 'docs/content-backlog.md',
       completed_topics: 'docs/content-backlog.md',

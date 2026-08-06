@@ -80,8 +80,8 @@ const expectedAssets = [
 
 const expectedProjection = {
   completed_topics: 51,
-  content_documents: 93,
-  governed_sources: 490,
+  content_documents: 94,
+  governed_sources: 494,
   durable_stories: {completed: 7, total: 20},
   current_goal: 'G008',
   next_topic: 'MOD-13',
@@ -252,7 +252,7 @@ function assertGeneratedState(manifestValue, statusValue) {
   const topics = new Map(manifestValue.topics.map((topic) => [topic.id, topic]));
   assert.equal(topics.get('MOD-12')?.published, true);
   assert.equal(topics.get('MOD-12')?.status.value, 'complete');
-  assert.equal(topics.get('MOD-13')?.published, false);
+  assert.equal(topics.get('MOD-13')?.published, true);
   assert.equal(topics.get('MOD-13')?.status.value, 'pending');
   assert.deepEqual(statusValue, {
     schema_version: 1,
