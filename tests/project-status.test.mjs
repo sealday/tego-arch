@@ -48,6 +48,18 @@ test('requires one exact durable-story baseline', () => {
     `${declarations}\n${declarations}`,
     declarations.replace('8 / 20', '7 / 20'),
     declarations.replace('最近完成 `G008`', '最近完成 `G007`'),
+    declarations
+      .replace('8 / 20', '0 / 20')
+      .replace('G008', 'G000')
+      .replace('G009', 'G001'),
+    declarations
+      .replace('8 / 20', '20 / 20')
+      .replace('G008', 'G020')
+      .replace('G009', 'G021'),
+    declarations
+      .replace('8 / 20', '21 / 20')
+      .replace('G008', 'G021')
+      .replace('G009', 'G022'),
   ]) {
     assert.throws(() => parseDurableStoryStatus(invalid), /durable story/u);
   }

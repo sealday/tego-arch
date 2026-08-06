@@ -33,6 +33,8 @@ export function parseDurableStoryStatus(backlogSource) {
   const currentNumber = Number(current[1]);
   if (
     total !== 20 ||
+    completed <= 0 ||
+    completed >= total ||
     completed !== lastCompleted ||
     currentNumber !== lastCompleted + 1
   ) {
