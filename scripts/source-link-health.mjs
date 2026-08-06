@@ -268,9 +268,15 @@ function canonicalAttempt(value) {
   ]);
 }
 
-function canonicalResult(result, {includeMergeProvenance = true} = {}) {
+function canonicalResult(
+  result,
+  {includeMergeInternals = true} = {},
+) {
   const value = {...result};
-  if (!includeMergeProvenance) delete value.merge_provenance;
+  if (!includeMergeInternals) {
+    delete value.merge_provenance;
+    delete value.merge_provenance_sha256;
+  }
   const preferredFields = [
     'transport_locator',
     'source_ids',
@@ -280,6 +286,7 @@ function canonicalResult(result, {includeMergeProvenance = true} = {}) {
     'review_status',
     'change_note',
     'merge_conflicts',
+    'merge_provenance_sha256',
     'merge_provenance',
   ];
   const preferred = new Set(preferredFields);
@@ -327,7 +334,7 @@ function canonicalResultJson(result, options) {
 
 function normalizedResultSha256(result) {
   return createHash('sha256')
-    .update(`${canonicalResultJson(result, {includeMergeProvenance: false})}\n`)
+    .update(`${canonicalResultJson(result, {includeMergeInternals: false})}\n`)
     .digest('hex');
 }
 
@@ -346,6 +353,7 @@ const mergeExcludedFields = new Set([
   'last_success',
   'attempt_history',
   'merge_conflicts',
+  'merge_provenance_sha256',
   'merge_provenance',
 ]);
 
@@ -399,28 +407,9 @@ function resultEvidence(result) {
   };
 }
 
-function mergeResultCandidates(candidates) {
+function conflictsFromEvidence(provenance) {
+  const conflicts = [];
   const identityFields = new Set(['transport_locator', 'source_ids']);
-  const conflicts = candidates.flatMap(
-    ({merge_conflicts: existing}) => existing ?? [],
-  );
-  const evidenceByValue = new Map();
-  for (const candidate of candidates) {
-    if (candidate.merge_provenance !== undefined) {
-      if (validMergeProvenance(candidate.merge_provenance)) {
-        for (const entry of candidate.merge_provenance) {
-          evidenceByValue.set(stableJson(entry), entry);
-        }
-      } else {
-        conflicts.push('merge_provenance');
-      }
-    }
-    const evidence = resultEvidence(candidate);
-    evidenceByValue.set(stableJson(evidence), evidence);
-  }
-  const provenance = [...evidenceByValue.values()]
-    .map((entry) => canonicalValue(entry))
-    .sort((left, right) => stableJson(left).localeCompare(stableJson(right), 'en'));
   const comparableFields = new Set(
     provenance.flatMap(({fields}) => Object.keys(fields)),
   );
@@ -447,16 +436,98 @@ function mergeResultCandidates(candidates) {
       }
     }
   }
-  const latestAt = Math.max(
-    ...candidates.map((candidate) => Date.parse(candidate.last_attempt.at)),
+  return sortedStrings(new Set(conflicts));
+}
+
+function provenanceSha256(provenance) {
+  return createHash('sha256')
+    .update(`${stableJson(provenance)}\n`)
+    .digest('hex');
+}
+
+function mergeProvenanceSemanticErrors(result) {
+  const hasProvenance = result.merge_provenance !== undefined;
+  const hasCommitment = result.merge_provenance_sha256 !== undefined;
+  if (!hasProvenance && !hasCommitment) return [];
+  if (
+    !hasProvenance ||
+    typeof result.merge_provenance_sha256 !== 'string' ||
+    !/^[a-f0-9]{64}$/u.test(result.merge_provenance_sha256)
+  ) {
+    return ['merge_provenance commitment is incomplete'];
+  }
+  if (!validMergeProvenance(result.merge_provenance)) return [];
+  const errors = [];
+  if (
+    provenanceSha256(result.merge_provenance) !==
+    result.merge_provenance_sha256
+  ) {
+    errors.push('merge_provenance commitment does not match its evidence');
+  }
+  const evidenceKeys = new Set(result.merge_provenance.map(stableJson));
+  if (!evidenceKeys.has(stableJson(resultEvidence(result)))) {
+    errors.push('merge_provenance does not match result evidence');
+  }
+  if (
+    !Array.isArray(result.attempt_history) ||
+    result.merge_provenance.some(
+      ({last_attempt: lastAttempt}) =>
+        !result.attempt_history.some((attempt) =>
+          sameObservation(attempt, lastAttempt),
+        ),
+    )
+  ) {
+    errors.push('merge_provenance contains evidence outside attempt_history');
+  }
+  const expectedConflicts = conflictsFromEvidence(result.merge_provenance);
+  const actualConflicts = result.merge_conflicts;
+  if (
+    (expectedConflicts.length === 0 && actualConflicts !== undefined) ||
+    (expectedConflicts.length > 0 &&
+      (!Array.isArray(actualConflicts) ||
+        JSON.stringify(actualConflicts) !== JSON.stringify(expectedConflicts)))
+  ) {
+    errors.push('merge_conflicts do not match merge_provenance');
+  }
+  return errors;
+}
+
+function mergeResultCandidates(candidates) {
+  const conflicts = candidates.flatMap(
+    ({merge_conflicts: existing}) => existing ?? [],
   );
-  const newer = candidates
-    .filter((candidate) => Date.parse(candidate.last_attempt.at) === latestAt)
+  const evidenceByValue = new Map();
+  for (const candidate of candidates) {
+    if (candidate.merge_provenance !== undefined) {
+      if (validMergeProvenance(candidate.merge_provenance)) {
+        for (const entry of candidate.merge_provenance) {
+          evidenceByValue.set(stableJson(entry), entry);
+        }
+      } else {
+        conflicts.push('merge_provenance');
+      }
+    }
+    if (mergeProvenanceSemanticErrors(candidate).length > 0) {
+      conflicts.push('merge_provenance');
+    }
+    const evidence = resultEvidence(candidate);
+    evidenceByValue.set(stableJson(evidence), evidence);
+  }
+  const provenance = [...evidenceByValue.values()]
+    .map((entry) => canonicalValue(entry))
+    .sort((left, right) => stableJson(left).localeCompare(stableJson(right), 'en'));
+  conflicts.push(...conflictsFromEvidence(provenance));
+  const latestAt = Math.max(
+    ...provenance.map(({last_attempt: lastAttempt}) =>
+      Date.parse(lastAttempt.at),
+    ),
+  );
+  const winner = provenance
+    .filter(({last_attempt: lastAttempt}) =>
+      Date.parse(lastAttempt.at) === latestAt,
+    )
     .sort((left, right) =>
-      canonicalResultJson(left, {includeMergeProvenance: false}).localeCompare(
-        canonicalResultJson(right, {includeMergeProvenance: false}),
-        'en',
-      ),
+      stableJson(left).localeCompare(stableJson(right), 'en'),
     )[0];
   const historyByObservation = new Map();
   for (const attempt of candidates.flatMap(({attempt_history}) => attempt_history)) {
@@ -474,8 +545,10 @@ function mergeResultCandidates(candidates) {
       historyByObservation.set(key, attempt);
     }
   }
+  const mergeConflicts = sortedStrings(new Set(conflicts));
   return canonicalResult({
-    ...newer,
+    ...winner.fields,
+    last_attempt: winner.last_attempt,
     last_success: structuredClone(
       candidates
         .map(({last_success}) => last_success)
@@ -486,10 +559,15 @@ function mergeResultCandidates(candidates) {
       const difference = Date.parse(a.at) - Date.parse(b.at);
       return difference || stableJson(a).localeCompare(stableJson(b), 'en');
     }),
-    ...(conflicts.length > 0
-      ? {merge_conflicts: sortedStrings(new Set(conflicts))}
+    ...(mergeConflicts.length > 0
+      ? {merge_conflicts: mergeConflicts}
       : {}),
-    ...(provenance.length > 1 ? {merge_provenance: provenance} : {}),
+    ...(provenance.length > 1
+      ? {
+          merge_provenance_sha256: provenanceSha256(provenance),
+          merge_provenance: provenance,
+        }
+      : {}),
   });
 }
 
@@ -730,6 +808,9 @@ export function validateLinkHealthCacheStructure(ledger, cache) {
     ) {
       prefix('merge_provenance is invalid');
     }
+    for (const message of mergeProvenanceSemanticErrors(result)) {
+      prefix(message);
+    }
     if (
       Array.isArray(result.merge_conflicts) &&
       result.merge_conflicts.length > 0
@@ -754,6 +835,14 @@ export function validateLinkHealthCacheStructure(ledger, cache) {
       }
       if (normalizedResultSha256(result) !== authority.result_sha256) {
         prefix('result_sha256 does not match source-ledger migration authority');
+      }
+      if (
+        result.merge_provenance_sha256 !==
+        authority.merge_provenance_sha256
+      ) {
+        prefix(
+          'merge_provenance commitment does not match source-ledger migration authority',
+        );
       }
     }
   }
@@ -930,6 +1019,9 @@ export function validateLinkHealthCacheStructure(ledger, cache) {
       !validMergeProvenance(entry.merge_provenance)
     ) {
       prefix('merge_provenance is invalid');
+    }
+    for (const message of mergeProvenanceSemanticErrors(entry)) {
+      prefix(message);
     }
     if (
       Array.isArray(entry.merge_conflicts) &&
