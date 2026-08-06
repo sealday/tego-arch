@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import test from 'node:test';
+import {inflateSync} from 'node:zlib';
 
 const read = async (path) =>
   readFile(new URL(`../${path}`, import.meta.url), 'utf8');
@@ -18,6 +19,78 @@ const assertPng = (image, label) => {
   assert.equal(image.toString('ascii', 12, 16), 'IHDR');
   assert.equal(image.readUInt32BE(16), 1672, `${label} width`);
   assert.equal(image.readUInt32BE(20), 941, `${label} height`);
+};
+
+const paethPredictor = (left, above, upperLeft) => {
+  const prediction = left + above - upperLeft;
+  const leftDistance = Math.abs(prediction - left);
+  const aboveDistance = Math.abs(prediction - above);
+  const upperLeftDistance = Math.abs(prediction - upperLeft);
+  if (leftDistance <= aboveDistance && leftDistance <= upperLeftDistance) return left;
+  return aboveDistance <= upperLeftDistance ? above : upperLeft;
+};
+
+const decodeRgbPng = (image, label) => {
+  assertPng(image, label);
+  const width = image.readUInt32BE(16);
+  const height = image.readUInt32BE(20);
+  assert.equal(image[24], 8, `${label} must use 8-bit channels`);
+  assert.equal(image[25], 2, `${label} must use RGB color`);
+  assert.equal(image[26], 0, `${label} must use standard PNG compression`);
+  assert.equal(image[27], 0, `${label} must use standard PNG filtering`);
+  assert.equal(image[28], 0, `${label} must be non-interlaced`);
+
+  const idatChunks = [];
+  for (let offset = 8; offset < image.length;) {
+    const length = image.readUInt32BE(offset);
+    const type = image.toString('ascii', offset + 4, offset + 8);
+    if (type === 'IDAT') idatChunks.push(image.subarray(offset + 8, offset + 8 + length));
+    offset += 12 + length;
+  }
+  assert.ok(idatChunks.length > 0, `${label} must contain IDAT data`);
+
+  const bytesPerPixel = 3;
+  const stride = width * bytesPerPixel;
+  const scanlines = inflateSync(Buffer.concat(idatChunks));
+  assert.equal(scanlines.length, height * (stride + 1), `${label} scanline length`);
+  const pixels = Buffer.alloc(width * height * bytesPerPixel);
+
+  for (let y = 0; y < height; y += 1) {
+    const scanlineOffset = y * (stride + 1);
+    const filter = scanlines[scanlineOffset];
+    assert.ok(filter <= 4, `${label} has unsupported PNG filter ${filter}`);
+    for (let x = 0; x < stride; x += 1) {
+      const encoded = scanlines[scanlineOffset + 1 + x];
+      const outputOffset = y * stride + x;
+      const left = x >= bytesPerPixel ? pixels[outputOffset - bytesPerPixel] : 0;
+      const above = y > 0 ? pixels[outputOffset - stride] : 0;
+      const upperLeft = y > 0 && x >= bytesPerPixel
+        ? pixels[outputOffset - stride - bytesPerPixel]
+        : 0;
+      const predictor = [0, left, above, Math.floor((left + above) / 2), paethPredictor(left, above, upperLeft)][filter];
+      pixels[outputOffset] = (encoded + predictor) & 0xff;
+    }
+  }
+
+  return {width, height, pixels};
+};
+
+const assertSolidPngEdges = (image, expected, label) => {
+  const {width, height, pixels} = decodeRgbPng(image, label);
+  const pixelAt = (x, y) => [...pixels.subarray((y * width + x) * 3, (y * width + x) * 3 + 3)];
+  const edges = [
+    ['top', Array.from({length: width}, (_, x) => [x, 0])],
+    ['right', Array.from({length: height}, (_, y) => [width - 1, y])],
+    ['bottom', Array.from({length: width}, (_, x) => [x, height - 1])],
+    ['left', Array.from({length: height}, (_, y) => [0, y])],
+  ];
+  const failures = edges.flatMap(([edge, coordinates]) => {
+    const mismatches = coordinates.filter(([x, y]) => !pixelAt(x, y).every((channel, index) => channel === expected[index]));
+    if (mismatches.length === 0) return [];
+    const [x, y] = mismatches[0];
+    return [`${edge}: ${mismatches.length} mismatch(es), first at (${x}, ${y}) is rgb(${pixelAt(x, y).join(', ')})`];
+  });
+  assert.deepEqual(failures, [], `${label} edges must all be rgb(${expected.join(', ')})`);
 };
 
 test('ships one readable 16:9 future-directions roadmap', async () => {
@@ -38,6 +111,8 @@ test('ships matching light and dark judgment-path editorial assets', async () =>
   assertPng(dark, 'dark judgment path');
   assert.equal(light.readUInt32BE(16), dark.readUInt32BE(16));
   assert.equal(light.readUInt32BE(20), dark.readUInt32BE(20));
+  assertSolidPngEdges(light, [247, 242, 232], 'light judgment path');
+  assertSolidPngEdges(dark, [31, 29, 26], 'dark judgment path');
 });
 
 test('ships matching light and dark use-modes editorial assets', async () => {

@@ -336,6 +336,14 @@ test('presents a themed judgment path without homepage project status', async ()
   assert.doesNotMatch(styles, /\.roadmap(?:DesktopInfo|InfoControl|InfoPanel|MobileDetails|Meta)/u);
   assert.doesNotMatch(styles, /\.roadmapMedia::after/u);
   assert.doesNotMatch(cssBlock(styles, '.roadmapMedia'), /\b(?:border|box-shadow)\s*:/u);
+  assert.equal(
+    declaration(cssBlock(styles, '.roadmapSection'), 'background'),
+    'var(--atlas-paper)',
+  );
+  assert.equal(
+    declaration(cssBlock(styles, '.roadmapMedia'), 'background'),
+    'var(--atlas-paper)',
+  );
 });
 
 test('presents themed usage modes with semantic bilingual cards', async () => {
