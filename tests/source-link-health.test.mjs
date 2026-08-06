@@ -1335,6 +1335,30 @@ test('merges duplicate superseded archives by unioning history independent of ca
   assert.deepEqual(forward.cache.superseded_results[0].result, complete);
 });
 
+test('fails closed independent of order when duplicate archives conflict outside history', () => {
+  const governed = ledger([source('a', 'https://example.com/current')]);
+  const oldTarget = buildLinkTargets(
+    ledger([source('a', 'https://example.com/old')]),
+  )[0];
+  const archivedResult = result(oldTarget);
+  authorizeMigration(governed, archivedResult, 'https://example.com/current');
+  const valid = cacheFor(governed);
+  valid.superseded_results = [
+    superseded(archivedResult, 'https://example.com/current'),
+  ];
+  const tampered = structuredClone(valid);
+  tampered.superseded_results[0].result.review_status = 'stale';
+
+  const forward = mergeLinkHealthCaches(governed, [valid, tampered], {now});
+  const reverse = mergeLinkHealthCaches(governed, [tampered, valid], {now});
+  assert.deepEqual(forward.cache, reverse.cache);
+  assert.deepEqual(forward.errors, reverse.errors);
+  assert.match(
+    forward.errors.join('\n'),
+    /conflicting duplicate result fields.*review_status/u,
+  );
+});
+
 test('uses migration authority to resolve a cited-alias exact-source ambiguity', async () => {
   const old = 'https://example.com/old';
   const replacement = 'https://example.com/current';

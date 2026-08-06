@@ -245,10 +245,47 @@ function newerObservation(left, right) {
 
 function mergeResultObservations(left, right) {
   if (!left) return structuredClone(right);
-  const newer = newerObservation(left.last_attempt, right.last_attempt) ===
-    left.last_attempt
-    ? left
-    : right;
+  const excludedFields = new Set([
+    'last_attempt',
+    'last_success',
+    'attempt_history',
+    'merge_conflicts',
+  ]);
+  const identityFields = new Set(['transport_locator', 'source_ids']);
+  const sameLastAttempt =
+    JSON.stringify(left.last_attempt) === JSON.stringify(right.last_attempt);
+  const comparableFields = new Set([
+    ...Object.keys(left),
+    ...Object.keys(right),
+  ]);
+  const conflicts = [
+    ...(left.merge_conflicts ?? []),
+    ...(right.merge_conflicts ?? []),
+    ...[...comparableFields].filter(
+      (field) =>
+        !excludedFields.has(field) &&
+        (identityFields.has(field) || sameLastAttempt) &&
+        JSON.stringify(left[field]) !== JSON.stringify(right[field]),
+    ),
+  ];
+  const newerAttempt = newerObservation(left.last_attempt, right.last_attempt);
+  let newer;
+  if (sameLastAttempt) {
+    const comparable = (result) =>
+      JSON.stringify(
+        Object.fromEntries(
+          [...comparableFields]
+            .filter((field) => !excludedFields.has(field))
+            .sort((a, b) => a.localeCompare(b, 'en'))
+            .map((field) => [field, result[field]]),
+        ),
+      );
+    newer = comparable(left).localeCompare(comparable(right), 'en') <= 0
+      ? left
+      : right;
+  } else {
+    newer = newerAttempt === left.last_attempt ? left : right;
+  }
   const historyByObservation = new Map();
   for (const attempt of [...left.attempt_history, ...right.attempt_history]) {
     const key = JSON.stringify([
@@ -274,6 +311,9 @@ function mergeResultObservations(left, right) {
       const difference = Date.parse(a.at) - Date.parse(b.at);
       return difference || JSON.stringify(a).localeCompare(JSON.stringify(b), 'en');
     }),
+    ...(conflicts.length > 0
+      ? {merge_conflicts: sortedStrings(new Set(conflicts))}
+      : {}),
   };
 }
 
@@ -510,6 +550,14 @@ export function validateLinkHealthCacheStructure(ledger, cache) {
     if (!reviewStatuses.has(result.review_status)) {
       prefix('review_status is invalid');
     }
+    if (
+      Array.isArray(result.merge_conflicts) &&
+      result.merge_conflicts.length > 0
+    ) {
+      prefix(
+        `has conflicting duplicate result fields ${result.merge_conflicts.join(', ')}`,
+      );
+    }
     const key = authorityKey(result.transport_locator, result.source_ids ?? []);
     const authority = authorities.get(key);
     if (!authority) {
@@ -696,6 +744,14 @@ export function validateLinkHealthCacheStructure(ledger, cache) {
     }
     if (!reviewStatuses.has(entry.review_status)) {
       prefix('review_status is invalid');
+    }
+    if (
+      Array.isArray(entry.merge_conflicts) &&
+      entry.merge_conflicts.length > 0
+    ) {
+      prefix(
+        `has conflicting duplicate result fields ${entry.merge_conflicts.join(', ')}`,
+      );
     }
   }
   for (const target of targets) {
