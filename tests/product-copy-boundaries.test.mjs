@@ -82,7 +82,70 @@ const protectedCommentNodeTypes = new Set([
 const commentOpeningProbe = 'CMNT';
 const comparisonCommentOpeningProbe = 'OPNR';
 
-const collectProtectedCommentRanges = (ast, comparisonAst, openingOffsets) => {
+const nodesByTypeAndPosition = (ast, type) => {
+  const nodes = new Map();
+  const visit = (node) => {
+    if (node.type === type) {
+      nodes.set(`${node.position?.start.offset}:${node.position?.end.offset}`, node);
+    }
+    for (const child of node.children ?? []) visit(child);
+  };
+  visit(ast);
+  return nodes;
+};
+
+const countToken = (value, token) => value.split(token).length - 1;
+
+const classifyImageOpenings = (
+  baselineProbe,
+  baselineAst,
+  openingOffsets,
+  relativePath,
+) => {
+  const classifications = new Map();
+  const baselineImages = nodesByTypeAndPosition(baselineAst, 'image');
+
+  for (const opening of openingOffsets) {
+    const imageEntry = [...baselineImages.entries()].find(([, image]) => (
+      opening >= image.position.start.offset && opening < image.position.end.offset
+    ));
+    if (!imageEntry) continue;
+
+    const [imageKey, baselineImage] = imageEntry;
+    const candidateProbe = `${baselineProbe.slice(0, opening)}`
+      + `${comparisonCommentOpeningProbe}${baselineProbe.slice(opening + 4)}`;
+    assert.equal(candidateProbe.length, baselineProbe.length);
+    const candidateImage = nodesByTypeAndPosition(
+      parseMdxAst(candidateProbe, relativePath),
+      'image',
+    ).get(imageKey);
+    assert.ok(
+      candidateImage,
+      `${relativePath}: MDX comment probe must preserve image offsets at ${imageKey}`,
+    );
+
+    const baselineAlt = baselineImage.alt ?? '';
+    const candidateAlt = candidateImage.alt ?? '';
+    const visibleByBaseline = countToken(baselineAlt, commentOpeningProbe)
+      - countToken(candidateAlt, commentOpeningProbe);
+    const visibleByCandidate = countToken(candidateAlt, comparisonCommentOpeningProbe)
+      - countToken(baselineAlt, comparisonCommentOpeningProbe);
+    assert.equal(
+      visibleByBaseline,
+      visibleByCandidate,
+      `${relativePath}: MDX comment probes disagree at offset ${opening}`,
+    );
+    assert.ok(
+      visibleByBaseline === 0 || visibleByBaseline === 1,
+      `${relativePath}: MDX comment probe has ambiguous visibility at offset ${opening}`,
+    );
+    classifications.set(opening, visibleByBaseline === 1);
+  }
+
+  return classifications;
+};
+
+const collectProtectedCommentRanges = (ast, openingOffsets, imageOpeningVisibility) => {
   const ranges = [];
   const addRange = (start, end) => {
     if (Number.isInteger(start) && Number.isInteger(end) && start < end) {
@@ -105,20 +168,6 @@ const collectProtectedCommentRanges = (ast, comparisonAst, openingOffsets) => {
     addRange(cursor, end);
   };
 
-  const comparisonImages = new Map();
-  const indexComparisonImages = (node) => {
-    if (node.type === 'image') {
-      comparisonImages.set(
-        `${node.position?.start.offset}:${node.position?.end.offset}`,
-        node,
-      );
-    }
-    for (const child of node.children ?? []) indexComparisonImages(child);
-  };
-  indexComparisonImages(comparisonAst);
-
-  const countToken = (value, token) => value.split(token).length - 1;
-
   const visit = (node) => {
     const start = node.position?.start.offset;
     const end = node.position?.end.offset;
@@ -140,28 +189,17 @@ const collectProtectedCommentRanges = (ast, comparisonAst, openingOffsets) => {
     }
 
     if (node.type === 'image') {
-      const comparisonImage = comparisonImages.get(`${start}:${end}`);
-      assert.ok(comparisonImage, 'MDX comment probes must preserve image offsets');
-      const visibleOpenings = countToken(node.alt ?? '', commentOpeningProbe)
-        - countToken(comparisonImage.alt ?? '', commentOpeningProbe);
-      const comparisonVisibleOpenings = countToken(
-        comparisonImage.alt ?? '',
-        comparisonCommentOpeningProbe,
-      ) - countToken(node.alt ?? '', comparisonCommentOpeningProbe);
-      assert.equal(
-        visibleOpenings,
-        comparisonVisibleOpenings,
-        'MDX comment probes must agree on visible image openers',
-      );
       const imageOpenings = openingOffsets.filter(
         (opening) => opening >= start && opening < end,
       );
-      assert.ok(
-        visibleOpenings >= 0 && visibleOpenings <= imageOpenings.length,
-        'MDX comment probes must map visible image openers to source offsets',
-      );
-      for (const opening of imageOpenings.slice(visibleOpenings)) {
-        addRange(opening, opening + commentOpeningProbe.length);
+      for (const opening of imageOpenings) {
+        assert.ok(
+          imageOpeningVisibility.has(opening),
+          `MDX comment probe must classify image opener at offset ${opening}`,
+        );
+        if (!imageOpeningVisibility.get(opening)) {
+          addRange(opening, opening + commentOpeningProbe.length);
+        }
       }
     }
 
@@ -185,6 +223,39 @@ const collectProtectedCommentRanges = (ast, comparisonAst, openingOffsets) => {
   return ranges;
 };
 
+const collectVisibleOpeningOffsets = (ast, openingOffsets, imageOpeningVisibility) => {
+  const visible = new Set();
+  const addOpeningsInNode = (node) => {
+    const start = node.position?.start.offset;
+    const end = node.position?.end.offset;
+    for (const opening of openingOffsets) {
+      if (opening >= start && opening < end) visible.add(opening);
+    }
+  };
+
+  const visit = (node) => {
+    if (node.type === 'text' || node.type === 'inlineCode') {
+      addOpeningsInNode(node);
+      return;
+    }
+    if (node.type === 'image') {
+      for (const [opening, isVisible] of imageOpeningVisibility) {
+        if (isVisible) {
+          const start = node.position?.start.offset;
+          const end = node.position?.end.offset;
+          if (opening >= start && opening < end) visible.add(opening);
+        }
+      }
+      return;
+    }
+    if (protectedCommentNodeTypes.has(node.type) || node.type === 'definition') return;
+    for (const child of node.children ?? []) visit(child);
+  };
+
+  visit(ast);
+  return visible;
+};
+
 const hasOddBackslashRunBefore = (source, offset) => {
   let backslashes = 0;
   for (let index = offset - 1; index >= 0 && source[index] === '\\'; index -= 1) {
@@ -199,23 +270,35 @@ const maskHtmlComments = (source, relativePath) => {
     opening = source.indexOf('<!--', opening + 4)) {
     openingOffsets.push(opening);
   }
-  const probes = [commentOpeningProbe, comparisonCommentOpeningProbe].map(
-    (openingProbe) => source
-      .replaceAll('<!--', openingProbe)
-      .replaceAll('-->', 'END'),
-  );
-  for (const probe of probes) assert.equal(probe.length, source.length);
-  const protectedRanges = collectProtectedCommentRanges(
-    parseMdxAst(probes[0], relativePath),
-    parseMdxAst(probes[1], relativePath),
+  const baselineProbe = source
+    .replaceAll('<!--', commentOpeningProbe)
+    .replaceAll('-->', 'END');
+  assert.equal(baselineProbe.length, source.length);
+  const baselineAst = parseMdxAst(baselineProbe, relativePath);
+  const imageOpeningVisibility = classifyImageOpenings(
+    baselineProbe,
+    baselineAst,
     openingOffsets,
+    relativePath,
   );
+  const protectedRanges = collectProtectedCommentRanges(
+    baselineAst,
+    openingOffsets,
+    imageOpeningVisibility,
+  );
+  const visibleOpeningOffsets = collectVisibleOpeningOffsets(
+    baselineAst,
+    openingOffsets,
+    imageOpeningVisibility,
+  );
+  const visibleEscapedOpenings = new Set();
   const masked = source.split('');
 
   for (let cursor = 0; cursor < source.length;) {
     const opening = source.indexOf('<!--', cursor);
     if (opening === -1) break;
     if (hasOddBackslashRunBefore(source, opening)) {
+      if (visibleOpeningOffsets.has(opening)) visibleEscapedOpenings.add(opening);
       cursor = opening + 4;
       continue;
     }
@@ -237,15 +320,24 @@ const maskHtmlComments = (source, relativePath) => {
     cursor = closing + 3;
   }
 
-  return masked.join('');
+  return {source: masked.join(''), visibleEscapedOpenings};
 };
 
-const restoreEscapedCommentOpeners = (source, line, excerpt) => {
-  const originalLine = source.split('\n')[line - 1] ?? '';
+const restoreEscapedCommentOpeners = (
+  source,
+  line,
+  excerpt,
+  visibleEscapedOpenings,
+) => {
+  const sourceLines = source.split('\n');
+  const originalLine = sourceLines[line - 1] ?? '';
+  const lineOffset = sourceLines
+    .slice(0, line - 1)
+    .reduce((offset, sourceLine) => offset + sourceLine.length + 1, 0);
   const escapedRuns = [];
   for (let opening = originalLine.indexOf('<!--'); opening !== -1;
     opening = originalLine.indexOf('<!--', opening + 4)) {
-    if (!hasOddBackslashRunBefore(originalLine, opening)) continue;
+    if (!visibleEscapedOpenings.has(lineOffset + opening)) continue;
     let runStart = opening;
     while (runStart > 0 && originalLine[runStart - 1] === '\\') runStart -= 1;
     escapedRuns.push(originalLine.slice(runStart, opening));
@@ -425,7 +517,10 @@ const findEditorialIssues = (relativePath, source, ast) => {
 };
 
 const findMdxIssues = (relativePath, source) => {
-  const normalized = normalizeMdxSource(source, relativePath);
+  const {source: normalized, visibleEscapedOpenings} = normalizeMdxSource(
+    source,
+    relativePath,
+  );
   const ast = parseMdxAst(normalized, relativePath);
   const generatedRule = rules.find(({id}) => id === 'generated-page-meta');
   const issues = [];
@@ -441,7 +536,12 @@ const findMdxIssues = (relativePath, source) => {
         normalized,
         line,
         generatedRule.id,
-        restoreEscapedCommentOpeners(normalized, line, block.excerptAt(line)),
+        restoreEscapedCommentOpeners(
+          normalized,
+          line,
+          block.excerptAt(line),
+          visibleEscapedOpenings,
+        ),
       ));
     }
   }
@@ -879,6 +979,36 @@ test('entity-safe image metadata classification ignores decoded alt collisions',
 `;
 
   assert.deepEqual(findProductCopyIssues('content/cases/entity-image-title.mdx', fixture), []);
+});
+
+test('per-opener image alt classification handles nested metadata before visible alt', () => {
+  const fixture = `# Example
+![outer [inner](/safe "<!-- hidden") \\<!-- 本页从机器可读主题清单生成 -->](/outer)
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/nested-image-opener.mdx', fixture), [
+    {
+      file: 'content/cases/nested-image-opener.mdx',
+      line: 2,
+      ruleId: 'generated-page-meta',
+      excerpt: '![outer inner \\<!-- 本页从机器可读主题清单生成 -->]',
+    },
+  ]);
+});
+
+test('per-opener diagnostic restoration ignores escaped metadata openers', () => {
+  const hiddenLink = String.raw`[x](/safe "\<!-- hidden")`;
+  const visibleOpener = String.raw`\\\<!-- 本页从机器可读主题清单生成 -->`;
+  const fixture = `# Example\n${hiddenLink} and ${visibleOpener}\n`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/metadata-before-visible.mdx', fixture), [
+    {
+      file: 'content/cases/metadata-before-visible.mdx',
+      line: 2,
+      ruleId: 'generated-page-meta',
+      excerpt: `[x] and ${visibleOpener}`,
+    },
+  ]);
 });
 
 test('escaped opener comment classification keeps image alt text visible', () => {
