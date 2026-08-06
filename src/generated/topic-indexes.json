@@ -1997,7 +1997,8 @@
       "dependencies": [],
       "adjacent_topics": [
         "PR-01",
-        "MOD-02"
+        "MOD-02",
+        "STY-01"
       ],
       "primary_sources": [
         "https://www.sei.cmu.edu/library/architecture-tradeoff-analysis-method-collection/"
@@ -2011,27 +2012,6 @@
       "published": true,
       "pattern_group": null,
       "presentation": {}
-    },
-    {
-      "id": "STY-01",
-      "type": "style",
-      "title": "Layered Architecture",
-      "slug": "/styles/sty-01",
-      "priority": "P0",
-      "status": {
-        "scope": "backlog-projection",
-        "value": "pending",
-        "source": "docs/content-backlog.md"
-      },
-      "dependencies": [],
-      "adjacent_topics": [],
-      "primary_sources": [],
-      "related_cases": [],
-      "related_questions": [],
-      "reviewed_at": null,
-      "review_policy": null,
-      "published": false,
-      "pattern_group": null
     },
     {
       "id": "STY-02",
@@ -2137,6 +2117,36 @@
       "review_policy": null,
       "published": false,
       "pattern_group": null
+    },
+    {
+      "id": "STY-01",
+      "type": "style",
+      "title": "Layered Architecture：用依赖方向约束职责分层",
+      "slug": "/styles/sty-01",
+      "priority": "P0",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "pending",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "STY-00"
+      ],
+      "adjacent_topics": [
+        "STY-00"
+      ],
+      "primary_sources": [
+        "https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/n-tier"
+      ],
+      "related_cases": [
+        "/cases/micro-frontends-single-spa"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-08-07",
+      "review_policy": null,
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
     },
     {
       "id": "STY-07",

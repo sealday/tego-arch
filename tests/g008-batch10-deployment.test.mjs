@@ -80,8 +80,8 @@ const expectedAssets = [
 
 const expectedProjection = {
   completed_topics: 53,
-  content_documents: 94,
-  governed_sources: 498,
+  content_documents: 95,
+  governed_sources: 502,
   durable_stories: {completed: 8, total: 20},
   current_goal: 'G009',
   next_topic: 'STY-01',
@@ -346,8 +346,8 @@ test('rejects every generated Stage B state mutation', () => {
     (value) => { value.durable_stories.total = 21; },
     (value) => { value.durable_stories.current = 'G008'; },
     (value) => { value.completed_topics = 50; },
-    (value) => { value.content_documents = 92; },
-    (value) => { value.governed_sources = 489; },
+    (value) => { value.content_documents = 94; },
+    (value) => { value.governed_sources = 498; },
     (value) => { value.sources.completed_topics = 'other'; },
   ]) {
     const mutated = structuredClone(projectStatus);

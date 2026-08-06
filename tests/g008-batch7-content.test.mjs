@@ -451,8 +451,8 @@ function assertStageBProjection(projectStatus, topicIndexes, content) {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
     completed_topics: 53,
-    content_documents: 94,
-    governed_sources: 498,
+    content_documents: 95,
+    governed_sources: 502,
     sources: {
       durable_stories: 'docs/content-backlog.md',
       completed_topics: 'docs/content-backlog.md',
@@ -472,6 +472,8 @@ function assertStageBProjection(projectStatus, topicIndexes, content) {
   assert.equal(topicsById.get('MOD-13').status.value, 'complete', 'MOD-13 status');
   assert.equal(topicsById.get('STY-00').published, true, 'STY-00 publication');
   assert.equal(topicsById.get('STY-00').status.value, 'complete', 'STY-00 status');
+  assert.equal(topicsById.get('STY-01').published, true, 'STY-01 publication');
+  assert.equal(topicsById.get('STY-01').status.value, 'pending', 'STY-01 status');
   assert.equal(links.filter((href) => href === '/modeling/mod-13').length, 0, 'MOD-13 actionable article links');
 }
 

@@ -12,6 +12,13 @@ const [ledger, linkHealth] = await Promise.all([
   readFile(new URL('../data/source-link-health.json', import.meta.url), 'utf8').then(JSON.parse),
 ]);
 
+const [manifest, projectStatus, indexes, publicLedger] = await Promise.all([
+  readFile(new URL('../src/generated/topic-manifest.json', import.meta.url), 'utf8').then(JSON.parse),
+  readFile(new URL('../src/generated/project-status.json', import.meta.url), 'utf8').then(JSON.parse),
+  readFile(new URL('../src/generated/topic-indexes.json', import.meta.url), 'utf8').then(JSON.parse),
+  readFile(new URL('../src/generated/source-ledger.json', import.meta.url), 'utf8').then(JSON.parse),
+]);
+
 const expectedSources = new Map([
   ['src-microsoft-n-tier-architecture', 'https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/n-tier'],
   ['src-fowler-presentation-domain-data-layering', 'https://martinfowler.com/bliki/PresentationDomainDataLayering.html'],
@@ -127,6 +134,20 @@ test('governs the four approved STY-01 sources', () => {
   }
   assert.equal(records.get('src-microsoft-n-tier-architecture').version.includes('ef79621488119c618cd3ebeb8f81443f023cc452'), true);
   assert.equal(records.get('src-archunit-user-guide').version.includes('v1.5.0'), true);
+});
+
+test('projects the Stage A G009 Batch 2 state without closing STY-01', () => {
+  const topic = manifest.topics.find(({id}) => id === 'STY-01');
+  assert.equal(topic.published, true);
+  assert.equal(topic.status.value, 'pending');
+  assert.deepEqual(topic.primary_sources, [
+    'https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/n-tier',
+  ]);
+  assert.equal(projectStatus.completed_topics, 53);
+  assert.equal(projectStatus.content_documents, 95);
+  assert.equal(projectStatus.governed_sources, 502);
+  assert.equal(publicLedger.sources.length, 502);
+  assert.ok(indexes.style.some(({id, status}) => id === 'STY-01' && status.value === 'pending'));
 });
 
 test('keeps every STY-01 transport in the reviewed health cache', () => {

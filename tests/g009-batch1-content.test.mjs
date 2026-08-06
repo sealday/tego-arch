@@ -378,7 +378,7 @@ test('publishes the approved STY-00 metadata and style headings', () => {
   assert.equal(metadata.topic_id, 'STY-00');
   assert.equal(metadata.analyzed_at, '2026-08-06');
   assert.equal(metadata.source_cutoff, '2026-08-06');
-  assert.deepEqual(metadata.adjacent_topics, ['PR-01', 'MOD-02']);
+  assert.deepEqual(metadata.adjacent_topics, ['PR-01', 'MOD-02', 'STY-01']);
   assert.deepEqual(metadata.related_cases, ['/cases/micro-frontends-single-spa']);
   assert.deepEqual(
     findMarkdownHeadings(document.body)
@@ -604,8 +604,8 @@ test('projects the Stage B G009 state after closing STY-00', () => {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
     completed_topics: 53,
-    content_documents: 94,
-    governed_sources: 498,
+    content_documents: 95,
+    governed_sources: 502,
     sources: {
       durable_stories: 'docs/content-backlog.md',
       completed_topics: 'docs/content-backlog.md',
@@ -614,5 +614,6 @@ test('projects the Stage B G009 state after closing STY-00', () => {
     },
   });
   assert.ok(indexes.style.some(({id, status}) => id === 'STY-00' && status.value === 'complete'));
-  assert.equal(publicLedger.sources.length, 498);
+  assert.ok(indexes.style.some(({id, status}) => id === 'STY-01' && status.value === 'pending'));
+  assert.equal(publicLedger.sources.length, 502);
 });

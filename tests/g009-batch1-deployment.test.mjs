@@ -218,8 +218,8 @@ test('closes only STY-00 and projects G009 to STY-01', async () => {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
     completed_topics: 53,
-    content_documents: 94,
-    governed_sources: 498,
+    content_documents: 95,
+    governed_sources: 502,
     sources: {
       durable_stories: 'docs/content-backlog.md',
       completed_topics: 'docs/content-backlog.md',

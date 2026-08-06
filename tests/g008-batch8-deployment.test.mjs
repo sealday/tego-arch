@@ -243,12 +243,14 @@ function assertGeneratedState(manifestValue, statusValue) {
   assert.equal(topicsById.get('MOD-13')?.status.value, 'complete');
   assert.equal(topicsById.get('STY-00')?.published, true);
   assert.equal(topicsById.get('STY-00')?.status.value, 'complete');
+  assert.equal(topicsById.get('STY-01')?.published, true);
+  assert.equal(topicsById.get('STY-01')?.status.value, 'pending');
   assert.deepEqual(statusValue, {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
     completed_topics: 53,
-    content_documents: 94,
-    governed_sources: 498,
+    content_documents: 95,
+    governed_sources: 502,
     sources: {
       durable_stories: 'docs/content-backlog.md',
       completed_topics: 'docs/content-backlog.md',
@@ -398,8 +400,8 @@ test('rejects every generated status and count mutation', () => {
     (value) => { value.durable_stories.total = 21; },
     (value) => { value.durable_stories.current = 'G008'; },
     (value) => { value.completed_topics = 49; },
-    (value) => { value.content_documents = 90; },
-    (value) => { value.governed_sources = 484; },
+    (value) => { value.content_documents = 94; },
+    (value) => { value.governed_sources = 498; },
     ...sourceMutations,
   ]) {
     const mutatedStatus = structuredClone(projectStatus);
