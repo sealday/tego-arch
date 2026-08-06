@@ -55,16 +55,22 @@ function assertMediumLinkHealth(cache) {
   assert.deepEqual(result.source_ids, ['src-docs-28997e2e106b']);
   assert.deepEqual(
     result.attempt_history.map(({outcome, http_status}) => [outcome, http_status]),
-    [['error', 403], ['healthy', 200]],
+    [
+      ['error', 403],
+      ['healthy', 200],
+      ['error', 403],
+      ['error', 403],
+    ],
   );
-  assert.equal(result.review_status, 'healthy');
+  assert.equal(result.review_status, 'stale');
   assert.deepEqual(result.last_attempt, {
-    at: '2026-08-03T00:59:30.000Z',
-    outcome: 'healthy',
+    at: '2026-08-06T15:24:41.578Z',
+    outcome: 'error',
     final_transport_locator: mediumLocator,
-    http_status: 200,
+    http_status: 403,
     login_wall_detected: false,
     redirects: [],
+    error: 'unexpected HTTP 403',
   });
   assert.deepEqual(result.last_success, {
     at: '2026-08-03T00:59:30.000Z',
@@ -541,7 +547,7 @@ test('governs the five reviewed MOD-09 sources and citation boundaries exactly',
   }
 });
 
-test('preserves the exact Medium failure and checker-recovered link-health history', () => {
+test('preserves the exact Medium recovery and subsequent failed attempts append-only', () => {
   assertMediumLinkHealth(linkHealth);
   const withoutDirectFailure = structuredClone(linkHealth);
   const target = withoutDirectFailure.results.find(

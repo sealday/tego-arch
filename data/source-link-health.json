@@ -52215,12 +52215,13 @@
         "src-docs-28997e2e106b"
       ],
       "last_attempt": {
-        "at": "2026-08-03T00:59:30.000Z",
-        "outcome": "healthy",
+        "at": "2026-08-06T15:24:41.578Z",
+        "outcome": "error",
         "final_transport_locator": "https://medium.com/@ziobrando/collaborative-process-modelling-with-eventstorming-17ed363650c0",
-        "http_status": 200,
+        "http_status": 403,
         "login_wall_detected": false,
-        "redirects": []
+        "redirects": [],
+        "error": "unexpected HTTP 403"
       },
       "last_success": {
         "at": "2026-08-03T00:59:30.000Z",
@@ -52243,9 +52244,23 @@
           "final_transport_locator": "https://medium.com/@ziobrando/collaborative-process-modelling-with-eventstorming-17ed363650c0",
           "http_status": 200,
           "login_wall_detected": false
+        },
+        {
+          "at": "2026-08-06T15:21:26.049Z",
+          "outcome": "error",
+          "final_transport_locator": "https://medium.com/@ziobrando/collaborative-process-modelling-with-eventstorming-17ed363650c0",
+          "http_status": 403,
+          "login_wall_detected": false
+        },
+        {
+          "at": "2026-08-06T15:24:41.578Z",
+          "outcome": "error",
+          "final_transport_locator": "https://medium.com/@ziobrando/collaborative-process-modelling-with-eventstorming-17ed363650c0",
+          "http_status": 403,
+          "login_wall_detected": false
         }
       ],
-      "review_status": "healthy"
+      "review_status": "stale"
     },
     {
       "transport_locator": "https://modelcontextprotocol.io/docs/getting-started/intro",
@@ -56781,12 +56796,13 @@
         "src-team-topologies-organization-dynamics-2020"
       ],
       "last_attempt": {
-        "at": "2026-08-02T04:40:03.066Z",
-        "outcome": "healthy",
-        "final_transport_locator": "https://teamtopologies.com/all-mini-books/mini-book-organization-dynamics-with-team-topologies",
-        "http_status": 206,
+        "at": "2026-08-06T15:24:41.578Z",
+        "outcome": "error",
+        "final_transport_locator": null,
+        "http_status": null,
         "login_wall_detected": false,
-        "redirects": []
+        "redirects": [],
+        "error": "fetch failed"
       },
       "last_success": {
         "at": "2026-08-02T04:40:03.066Z",
@@ -56865,9 +56881,23 @@
           "final_transport_locator": "https://teamtopologies.com/all-mini-books/mini-book-organization-dynamics-with-team-topologies",
           "http_status": 206,
           "login_wall_detected": false
+        },
+        {
+          "at": "2026-08-06T15:21:26.049Z",
+          "outcome": "error",
+          "final_transport_locator": null,
+          "http_status": null,
+          "login_wall_detected": false
+        },
+        {
+          "at": "2026-08-06T15:24:41.578Z",
+          "outcome": "error",
+          "final_transport_locator": null,
+          "http_status": null,
+          "login_wall_detected": false
         }
       ],
-      "review_status": "healthy"
+      "review_status": "stale"
     },
     {
       "transport_locator": "https://web.archive.org/web/20110714224327/http://www.objectmentor.com/resources/articles/dip.pdf",

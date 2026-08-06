@@ -5409,14 +5409,14 @@
       "expected_final_transport_locator": "https://medium.com/@ziobrando/collaborative-process-modelling-with-eventstorming-17ed363650c0",
       "expected_final_approved_at": "2026-08-03",
       "expected_final_approval_note": "Initial reviewed EventStorming teaching-source transport baseline",
-      "health_summary": "healthy",
+      "health_summary": "stale",
       "health_checks": [
         {
           "transport_locator": "https://medium.com/@ziobrando/collaborative-process-modelling-with-eventstorming-17ed363650c0",
-          "status": "healthy",
-          "last_attempt_at": "2026-08-03T00:59:30.000Z",
+          "status": "stale",
+          "last_attempt_at": "2026-08-06T15:24:41.578Z",
           "last_success_at": "2026-08-03T00:59:30.000Z",
-          "http_status": 200,
+          "http_status": 403,
           "final_transport_locator": "https://medium.com/@ziobrando/collaborative-process-modelling-with-eventstorming-17ed363650c0"
         }
       ]
@@ -23868,15 +23868,15 @@
       "expected_final_transport_locator": "https://teamtopologies.com/all-mini-books/mini-book-organization-dynamics-with-team-topologies",
       "expected_final_approved_at": "2026-07-29",
       "expected_final_approval_note": "After the canonical PDF produced a fetch failure, the 2026-07-29 live checker observed the official Team Topologies page for the same MB80 mini-book as healthy with HTTP 206, no redirects, and no login wall; the decoupled transport is accepted.",
-      "health_summary": "healthy",
+      "health_summary": "stale",
       "health_checks": [
         {
           "transport_locator": "https://teamtopologies.com/all-mini-books/mini-book-organization-dynamics-with-team-topologies",
-          "status": "healthy",
-          "last_attempt_at": "2026-08-02T04:40:03.066Z",
+          "status": "stale",
+          "last_attempt_at": "2026-08-06T15:24:41.578Z",
           "last_success_at": "2026-08-02T04:40:03.066Z",
-          "http_status": 206,
-          "final_transport_locator": "https://teamtopologies.com/all-mini-books/mini-book-organization-dynamics-with-team-topologies"
+          "http_status": null,
+          "final_transport_locator": null
         }
       ]
     },

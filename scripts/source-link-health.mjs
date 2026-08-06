@@ -406,7 +406,8 @@ function acceptedForPolicy(policy, attempt) {
     attempt.outcome === 'healthy' &&
     Number.isInteger(attempt.http_status) &&
     attempt.http_status >= 200 &&
-    attempt.http_status <= 299
+    attempt.http_status <= 299 &&
+    attempt.login_wall_detected !== true
   );
 }
 

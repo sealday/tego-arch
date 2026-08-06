@@ -156,10 +156,28 @@ const expectedMermaid = `flowchart TD
   enough -->|是| decision[决策记录与复核触发器]
   enough -->|否| validate[原型、测量或故障演练]
   validate --> compare`;
-const expectedRegionOpenings = [
-  '<div className="table-wrapper table-wrapper--mapping" role="region" aria-label="候选架构剖面八维表，可横向滚动" tabIndex={0} onKeyDown={handleHorizontalArrowKey}>',
-  '<div className="diagram-wrapper diagram-wrapper--scroll-owner" role="region" aria-label="架构风格比较决策流程，可横向滚动" tabIndex={0} onKeyDown={handleHorizontalArrowKey}>',
-  '<div className="table-wrapper table-wrapper--mapping" role="region" aria-label="场景响应比较矩阵，可横向滚动" tabIndex={0} onKeyDown={handleHorizontalArrowKey}>',
+const expectedRegionContracts = [
+  {
+    className: 'table-wrapper table-wrapper--mapping',
+    role: 'region',
+    'aria-label': '候选架构剖面八维表，可横向滚动',
+    tabIndex: '0',
+    onKeyDown: 'handleHorizontalArrowKey',
+  },
+  {
+    className: 'diagram-wrapper diagram-wrapper--scroll-owner',
+    role: 'region',
+    'aria-label': '架构风格比较决策流程，可横向滚动',
+    tabIndex: '0',
+    onKeyDown: 'handleHorizontalArrowKey',
+  },
+  {
+    className: 'table-wrapper table-wrapper--mapping',
+    role: 'region',
+    'aria-label': '场景响应比较矩阵，可横向滚动',
+    tabIndex: '0',
+    onKeyDown: 'handleHorizontalArrowKey',
+  },
 ];
 
 function extractTableRows(source, header) {
@@ -174,6 +192,29 @@ function extractTableRows(source, header) {
   return rows;
 }
 
+function jsxAttributes(source) {
+  return Object.fromEntries(
+    [...source.matchAll(/\b(?<name>[A-Za-z][\w-]*)=(?:"(?<quoted>[^"]*)"|\{(?<expression>[^}]*)\})/gu)]
+      .map(({groups}) => [groups.name, groups.quoted ?? groups.expression]),
+  );
+}
+
+function overflowRegionContracts(source) {
+  const expectedClasses = new Set(
+    expectedRegionContracts.map(({className}) => className),
+  );
+  return [...source.matchAll(/<div\b(?<attributes>[^>]*)>/gu)]
+    .map(({groups}) => jsxAttributes(groups.attributes))
+    .filter(({className}) => expectedClasses.has(className))
+    .map(({className, role, 'aria-label': accessibleName, tabIndex, onKeyDown}) => ({
+      className,
+      role,
+      'aria-label': accessibleName,
+      tabIndex,
+      onKeyDown,
+    }));
+}
+
 function assertMethodStructure(source) {
   const profileRows = extractTableRows(
     source,
@@ -184,10 +225,11 @@ function assertMethodStructure(source) {
   const mermaid = source.match(/```mermaid\n(?<graph>[\s\S]*?)\n```/u)?.groups?.graph;
   assert.equal(mermaid, expectedMermaid, 'exact Mermaid nodes and edges');
 
-  const regionOpenings = source
-    .split(/\r?\n/u)
-    .filter((line) => line.startsWith('<div ') && line.includes('role="region"'));
-  assert.deepEqual(regionOpenings, expectedRegionOpenings, 'complete overflow-owner contracts');
+  assert.deepEqual(
+    overflowRegionContracts(source),
+    expectedRegionContracts,
+    'complete overflow-owner contracts',
+  );
 
   const scenarioRows = extractTableRows(
     source,
@@ -199,6 +241,47 @@ function assertMethodStructure(source) {
       .map(([, response, judgment]) => [response.match(/^候选 [AB]/u)?.[0], judgment]);
     assert.deepEqual(actual, expected, `${scenario} candidate order and judgments`);
   }
+}
+
+function candidateDimensions(source, candidate, nextMarker) {
+  const start = source.indexOf(`\n候选 ${candidate}：`);
+  assert.notEqual(start, -1, `missing Candidate ${candidate} exercise`);
+  const end = source.indexOf(nextMarker, start + 1);
+  assert.notEqual(end, -1, `missing Candidate ${candidate} exercise boundary`);
+  return source
+    .slice(start, end)
+    .split(/\r?\n/u)
+    .flatMap((line) => {
+      const match = line.match(/^- \*\*(?<label>[^：]+)：\*\*\s*(?<value>.+)$/u);
+      return match ? [[match.groups.label, match.groups.value]] : [];
+    });
+}
+
+function assertExerciseDimensions(source) {
+  const expectedLabels = dimensions;
+  for (const [candidate, nextMarker] of [
+    ['A', '\n候选 B：'],
+    ['B', '\n当前选择候选 A'],
+  ]) {
+    const entries = candidateDimensions(source, candidate, nextMarker);
+    assert.deepEqual(
+      entries.map(([label]) => label),
+      expectedLabels,
+      `Candidate ${candidate} ordered dimensions`,
+    );
+    assert.ok(
+      entries.every(([, value]) => value.trim().length > 0),
+      `Candidate ${candidate} dimension values`,
+    );
+  }
+}
+
+function mutateCandidateExercise(source, candidate, nextMarker, mutate) {
+  const start = source.indexOf(`\n候选 ${candidate}：`);
+  assert.notEqual(start, -1, `missing Candidate ${candidate} mutation fixture`);
+  const end = source.indexOf(nextMarker, start + 1);
+  assert.notEqual(end, -1, `missing Candidate ${candidate} mutation boundary`);
+  return `${source.slice(0, start)}${mutate(source.slice(start, end))}${source.slice(end)}`;
 }
 
 function observationFields({
@@ -223,6 +306,7 @@ function assertHealthyObservation(observation, transportLocator, message) {
     observation.http_status >= 200 && observation.http_status <= 299,
     `${message} successful HTTP status`,
   );
+  assert.equal(observation.login_wall_detected, false, `${message} no login wall`);
 }
 
 test('governs five specific visible STY-00 sources', () => {
@@ -313,6 +397,7 @@ test('publishes the approved STY-00 metadata and style headings', () => {
 
 test('locks the eight-dimension profile and non-numeric judgments', () => {
   assertMethodStructure(document.source);
+  assertExerciseDimensions(document.source);
   for (const value of judgments) assert.match(document.source, new RegExp(value, 'u'));
   assert.match(document.source, /维度 \| 候选约束 \| 实现机制 \| 当前证据 \| 未知项/u);
   assert.match(
@@ -321,6 +406,39 @@ test('locks the eight-dimension profile and non-numeric judgments', () => {
   );
   assert.doesNotMatch(document.source, /`?[012]`?\s*表示/u);
   assert.doesNotMatch(document.source, /总分[^。\n]*(选择|胜出|最高)/u);
+});
+
+test('parses accessible overflow wrapper contracts independent of formatting', () => {
+  const reformatted = document.source.replace(
+    '<div className="table-wrapper table-wrapper--mapping" role="region" aria-label="候选架构剖面八维表，可横向滚动" tabIndex={0} onKeyDown={handleHorizontalArrowKey}>',
+    `<div
+  aria-label="候选架构剖面八维表，可横向滚动"
+  onKeyDown={handleHorizontalArrowKey}
+  role="region"
+  className="table-wrapper table-wrapper--mapping"
+  tabIndex={0}
+>`,
+  );
+  assert.notEqual(reformatted, document.source, 'wrapper fixture changed');
+  assertMethodStructure(reformatted);
+});
+
+test('requires explicitly non-login-wall observations for G009 healthy sources', () => {
+  const forged = structuredClone(
+    linkHealth.results.find(({source_ids}) =>
+      source_ids.includes('src-sei-qaw-collection'),
+    ).last_attempt,
+  );
+  forged.login_wall_detected = true;
+  assert.throws(
+    () =>
+      assertHealthyObservation(
+        forged,
+        expectedSources[0].transport_locator,
+        'forged healthy attempt',
+      ),
+    {name: 'AssertionError'},
+  );
 });
 
 test('locks the Mermaid recovery loop and accessible local overflow owners', () => {
@@ -365,7 +483,7 @@ test('records all decision fields and compares both candidates against the same 
   assert.match(document.source, /验证门槛[^\n。]*不能[^\n。]*验证完成/u);
 });
 
-test('rejects the four reviewed method-contract mutations', async (t) => {
+test('rejects reviewed method-contract mutations', async (t) => {
   const mutations = [
     {
       name: 'swap dimension order',
@@ -395,11 +513,57 @@ test('rejects the four reviewed method-contract mutations', async (t) => {
         'diagram-wrapper',
       ),
     },
+    {
+      name: 'change wrapper role',
+      source: document.source.replace('role="region"', 'role="group"'),
+    },
+    {
+      name: 'remove wrapper accessible name',
+      source: document.source.replace(
+        'aria-label="候选架构剖面八维表，可横向滚动"',
+        '',
+      ),
+    },
+    {
+      name: 'remove wrapper tab focusability',
+      source: document.source.replace('tabIndex={0}', 'tabIndex={-1}'),
+    },
+    {
+      name: 'change wrapper keyboard handler',
+      source: document.source.replace(
+        'onKeyDown={handleHorizontalArrowKey}',
+        'onKeyDown={() => {}}',
+      ),
+    },
+    {
+      name: 'remove Candidate A dimension',
+      source: mutateCandidateExercise(
+        document.source,
+        'A',
+        '\n候选 B：',
+        (exercise) => exercise.replace(/^- \*\*控制流：\*\*.*\n/mu, ''),
+      ),
+    },
+    {
+      name: 'reorder Candidate B dimensions',
+      source: mutateCandidateExercise(
+        document.source,
+        'B',
+        '\n当前选择候选 A',
+        (exercise) => exercise.replace(
+          /(^- \*\*边界：\*\*.*$)\n(^- \*\*控制流：\*\*.*$)/mu,
+          '$2\n$1',
+        ),
+      ),
+    },
   ];
   for (const mutation of mutations) {
     await t.test(mutation.name, () => {
       assert.notEqual(mutation.source, document.source, `${mutation.name} fixture changed`);
-      assert.throws(() => assertMethodStructure(mutation.source), undefined, mutation.name);
+      assert.throws(() => {
+        assertMethodStructure(mutation.source);
+        assertExerciseDimensions(mutation.source);
+      }, undefined, mutation.name);
     });
   }
 });

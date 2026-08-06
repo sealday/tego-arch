@@ -301,6 +301,35 @@ test('rejects last success observations that are incompatible with auth-required
   assert.match(errors, /retired policy/);
 });
 
+test('rejects login-wall observations for policies that do not require authentication', () => {
+  for (const policy of ['stable', 'volatile']) {
+    const governed = ledger([
+      source(policy, `https://example.com/${policy}`, policy),
+    ]);
+    const cached = cacheFor(governed, (entry, target) => {
+      const loginWall = attempt({
+        final: target.transport_locator,
+        login: true,
+      });
+      return {
+        ...entry,
+        last_attempt: loginWall,
+        last_success: loginWall,
+        attempt_history: [loginWall],
+      };
+    });
+
+    assert.match(
+      validateLinkHealthCacheStructure(governed, cached).errors.join('\n'),
+      new RegExp(`${policy} policy`, 'u'),
+    );
+    assert.match(
+      evaluateLinkHealthVerdict(governed, cached, {now}).failures.join('\n'),
+      new RegExp(`${policy} policy`, 'u'),
+    );
+  }
+});
+
 test('requires a policy-accepted current attempt to also be the last success observation', () => {
   const governed = ledger([source('a', 'https://example.com/a')]);
   const cached = cacheFor(governed, (entry, target) => {
