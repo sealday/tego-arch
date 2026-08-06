@@ -8,20 +8,11 @@ const ts = require('typescript');
 
 const blankCharacters = (value) => value.replace(/[^\n]/gu, ' ');
 
-export const normalizeMdxSource = (source, relativePath) => {
-  const lines = source.split('\n');
-
-  if (lines[0]?.trim() === '---') {
-    const end = lines.findIndex((line, index) => index > 0 && line.trim() === '---');
-    assert.notEqual(
-      end,
-      -1,
-      `${relativePath}: MDX front matter must have a closing delimiter`,
-    );
-    for (let index = 0; index <= end; index += 1) {
-      lines[index] = blankCharacters(lines[index]);
-    }
-  }
+export const normalizeMdxSource = (source, relativePath, frontMatterEnd = 0) => {
+  const maskedFrontMatter = frontMatterEnd > 0
+    ? `${blankCharacters(source.slice(0, frontMatterEnd))}${source.slice(frontMatterEnd)}`
+    : source;
+  const lines = maskedFrontMatter.split('\n');
 
   let fence = null;
   for (let index = 0; index < lines.length; index += 1) {
@@ -500,25 +491,40 @@ export const collectVisibleBlocks = (ast, options) => {
 
 const visibleFrontMatterFields = ['title', 'sidebar_label', 'summary'];
 
-const extractVisibleFrontMatter = (source, relativePath) => {
+const parseFrontMatterRegion = (source, relativePath) => {
   const lines = source.split('\n');
-  if (lines[0]?.trim() !== '---') return [];
-  const end = lines.findIndex((line, index) => index > 0 && line.trim() === '---');
-  assert.notEqual(
-    end,
-    -1,
-    `${relativePath}: MDX front matter must have a closing delimiter`,
-  );
+  const bomLength = source.startsWith('\uFEFF') ? 1 : 0;
+  if (!source.startsWith('---', bomLength)) return {endOffset: 0, records: []};
 
-  let metadata;
+  let parsed;
   try {
-    metadata = grayMatter(source, {}).data;
+    parsed = grayMatter(source, {});
   } catch (error) {
     throw new Error(
       `${relativePath}: front matter parser failed: ${error.message}`,
       {cause: error},
     );
   }
+  const matterStart = bomLength + 3;
+  const separatorOffset = matterStart + parsed.matter.length;
+  if (!source.startsWith('\n---', separatorOffset)) {
+    throw new Error(`${relativePath}: MDX front matter must have a closing delimiter`);
+  }
+  const closingStart = separatorOffset + 1;
+  const afterClosing = closingStart + 3;
+  const closingSuffix = source.slice(afterClosing, afterClosing + 2);
+  if (
+    afterClosing < source.length
+    && !closingSuffix.startsWith('\n')
+    && closingSuffix !== '\r\n'
+  ) {
+    throw new Error(`${relativePath}: MDX front matter closing delimiter must own its line`);
+  }
+  const endOffset = closingSuffix === '\r\n'
+    ? afterClosing + 2
+    : afterClosing + (closingSuffix.startsWith('\n') ? 1 : 0);
+  const endLine = source.slice(0, endOffset).split('\n').length;
+  const metadata = parsed.data;
 
   const records = [];
   for (const field of visibleFrontMatterFields) {
@@ -529,7 +535,9 @@ const extractVisibleFrontMatter = (source, relativePath) => {
       );
     }
     const index = lines.findIndex((line, lineIndex) => (
-      lineIndex > 0 && lineIndex < end && new RegExp(`^${field}:(?:\\s|$)`, 'u').test(line)
+      lineIndex > 0
+      && lineIndex < endLine
+      && new RegExp(`^${field}:(?:\\s|$)`, 'u').test(line)
     ));
     if (index === -1) {
       throw new Error(
@@ -547,7 +555,7 @@ const extractVisibleFrontMatter = (source, relativePath) => {
       kind: 'front-matter',
     });
   }
-  return records;
+  return {endOffset, records};
 };
 
 const sourceExcerpt = (source, line) => source.split('\n')[line - 1]?.trim() ?? '';
@@ -557,10 +565,12 @@ export const parseMdxVisibleCopy = (
   relativePath,
   {includeInlineCode = false, includeStructure = false} = {},
 ) => {
-  const frontMatter = extractVisibleFrontMatter(source, relativePath);
+  const frontMatterRegion = parseFrontMatterRegion(source, relativePath);
+  const frontMatter = frontMatterRegion.records;
   const {source: normalized, visibleEscapedOpenings} = normalizeMdxSource(
     source,
     relativePath,
+    frontMatterRegion.endOffset,
   );
   const ast = parseMdxAst(normalized, relativePath);
   const renderedBlocks = collectVisibleBlocks(ast, {includeInlineCode});
@@ -656,6 +666,9 @@ const findShapeEnd = (line, start, closing, relativePath, lineNumber) => {
 };
 
 const flowShapeOpenings = [
+  ['(((', ')))'],
+  ['[/', '/]'],
+  ['[\\', '\\]'],
   ['[[', ']]'],
   ['([', '])'],
   ['[(', ')]'],
@@ -672,6 +685,9 @@ const flowNodeLabels = (line, relativePath, lineNumber) => {
   const candidate = /\b([A-Za-z_][\w-]*)\s*(?=\[\[|\(\[|\[\(|\(\(|\{\{|\[|\{|\(|>)/gu;
   for (let match = candidate.exec(line); match; match = candidate.exec(line)) {
     const openingStart = candidate.lastIndex;
+    if (line.startsWith('{{{', openingStart)) {
+      throw mermaidError(relativePath, lineNumber, 'unsupported Mermaid node shape');
+    }
     const [opening, closing] = flowShapeOpenings.find(([value]) => (
       line.startsWith(value, openingStart)
     )) ?? [];
@@ -720,6 +736,25 @@ const hasCompleteFlowEdge = (line) => {
   return /^\s*(?:\|[^|]+\|\s*)?[A-Za-z_][\w-]*/u.test(remainder);
 };
 
+const flowDirectivePatterns = new Map([
+  ['direction', /^(?:TB|TD|BT|RL|LR)$/u],
+  ['style', /^[A-Za-z_][\w-]*\s+[A-Za-z-]+\s*:\s*[^,]+(?:,\s*[A-Za-z-]+\s*:\s*[^,]+)*$/u],
+  ['classDef', /^[A-Za-z_][\w-]*(?:,[A-Za-z_][\w-]*)*\s+[A-Za-z-]+\s*:\s*[^,]+(?:,\s*[A-Za-z-]+\s*:\s*[^,]+)*$/u],
+  ['class', /^[A-Za-z_][\w-]*(?:,[A-Za-z_][\w-]*)*\s+[A-Za-z_][\w-]*$/u],
+  ['linkStyle', /^(?:default|\d+(?:,\d+)*)\s+[A-Za-z-]+\s*:\s*[^,]+(?:,\s*[A-Za-z-]+\s*:\s*[^,]+)*$/u],
+  ['click', /^(?:[A-Za-z_][\w-]*)\s+(?:"[^"]+"|'[^']+'|href\s+(?:"[^"]+"|'[^']+'|\S+)|call\s+\S+)(?:\s+(?:"[^"]*"|'[^']*'))?(?:\s+_(?:self|blank|parent|top))?$/u],
+]);
+
+const validateFlowDirective = (trimmed, relativePath, lineNumber) => {
+  const match = trimmed.match(/^(classDef|class|style|linkStyle|click|direction)\b\s*(.*)$/u);
+  if (!match) return false;
+  const [, directive, value] = match;
+  if (!flowDirectivePatterns.get(directive).test(value)) {
+    throw mermaidError(relativePath, lineNumber, `malformed Mermaid ${directive} directive`);
+  }
+  return true;
+};
+
 const parseFlowchart = (lines, indexes, relativePath) => {
   const records = [];
   for (const index of indexes) {
@@ -731,7 +766,7 @@ const parseFlowchart = (lines, indexes, relativePath) => {
       continue;
     }
     if (trimmed === 'end') continue;
-    if (/^(?:classDef|class|style|linkStyle|click|direction)\b/u.test(trimmed)) continue;
+    if (validateFlowDirective(trimmed, relativePath, index + 1)) continue;
     if (trimmed.startsWith('subgraph ')) {
       const labelSource = trimmed.slice('subgraph '.length);
       const labels = flowNodeLabels(labelSource, relativePath, index + 1);
@@ -946,14 +981,6 @@ const visibleJsxAttributes = new Set([
 ]);
 const visibleObjectProperties = new Set(['title', 'term', 'description']);
 
-const tsxStringValue = (node) => {
-  if (ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node)) {
-    return node.text;
-  }
-  if (ts.isJsxExpression(node) && node.expression) return tsxStringValue(node.expression);
-  return null;
-};
-
 const collectStaticTsxStrings = (node, collect) => {
   if (ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node)) {
     collect(node, node.text);
@@ -975,13 +1002,22 @@ const collectStaticTsxStrings = (node, collect) => {
   }
   if (
     ts.isBinaryExpression(node)
-    && [
-      ts.SyntaxKind.AmpersandAmpersandToken,
-      ts.SyntaxKind.BarBarToken,
-      ts.SyntaxKind.QuestionQuestionToken,
-    ].includes(node.operatorToken.kind)
   ) {
-    collectStaticTsxStrings(node.right, collect);
+    if (node.operatorToken.kind === ts.SyntaxKind.PlusToken) {
+      collectStaticTsxStrings(node.left, collect);
+      collectStaticTsxStrings(node.right, collect);
+      return;
+    }
+    if (
+      [
+        ts.SyntaxKind.AmpersandAmpersandToken,
+        ts.SyntaxKind.BarBarToken,
+        ts.SyntaxKind.QuestionQuestionToken,
+      ].includes(node.operatorToken.kind)
+    ) {
+      collectStaticTsxStrings(node.left, collect);
+      collectStaticTsxStrings(node.right, collect);
+    }
   }
 };
 
@@ -1005,10 +1041,10 @@ export const extractVisibleTsxStrings = (source, relativePath) => {
   }
 
   const records = [];
-  const addRecord = (node, text) => {
+  const addRecordAtPosition = (position, text) => {
     const normalized = text.replace(/\s+/gu, ' ').trim();
     if (!normalized) return;
-    const line = sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile)).line + 1;
+    const line = sourceFile.getLineAndCharacterOfPosition(position).line + 1;
     records.push({
       file: relativePath,
       line,
@@ -1017,10 +1053,19 @@ export const extractVisibleTsxStrings = (source, relativePath) => {
       kind: 'tsx',
     });
   };
+  const addRecord = (node, text) => addRecordAtPosition(node.getStart(sourceFile), text);
+  const addJsxTextRecords = (node) => {
+    const raw = source.slice(node.pos, node.end);
+    for (const match of raw.matchAll(/[^\r\n]+/gu)) {
+      const leadingWhitespace = match[0].search(/\S/u);
+      if (leadingWhitespace === -1) continue;
+      addRecordAtPosition(node.pos + match.index + leadingWhitespace, match[0]);
+    }
+  };
 
   const visit = (node) => {
     if (ts.isJsxText(node)) {
-      addRecord(node, node.text);
+      addJsxTextRecords(node);
     } else if (ts.isJsxAttribute(node)) {
       const name = node.name.getText(sourceFile);
       if (visibleJsxAttributes.has(name) && node.initializer) {
@@ -1036,8 +1081,7 @@ export const extractVisibleTsxStrings = (source, relativePath) => {
     } else if (ts.isPropertyAssignment(node)) {
       const name = propertyName(node.name);
       if (visibleObjectProperties.has(name)) {
-        const text = tsxStringValue(node.initializer);
-        if (text !== null) addRecord(node.initializer, text);
+        collectStaticTsxStrings(node.initializer, addRecord);
       }
     }
     ts.forEachChild(node, visit);

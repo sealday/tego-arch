@@ -136,6 +136,42 @@ slug: /agent-worker
   );
 });
 
+test('uses one parser-owned front matter boundary for block scalars, BOM and CRLF', () => {
+  const blockScalar = `---
+summary: |-
+  第一行 Agent
+  ---
+  第二行 worker
+---
+正文 Agent`;
+  const parsedBlock = parseMdxVisibleCopy(blockScalar, 'content/block-boundary.mdx');
+  assert.deepEqual(parsedBlock.frontMatter.map(({field, line, text}) => ({field, line, text})), [
+    {field: 'summary', line: 2, text: '第一行 Agent\n---\n第二行 worker'},
+  ]);
+  assert.deepEqual(parsedBlock.blocks, [
+    {
+      file: 'content/block-boundary.mdx',
+      line: 7,
+      text: '正文 Agent',
+      excerpt: '正文 Agent',
+      kind: 'body',
+    },
+  ]);
+
+  const crlf = '\uFEFF---\r\ntitle: "CRLF Agent"\r\nsummary: "摘要 worker"\r\n---\r\n正文 Agent';
+  const parsedCrlf = parseMdxVisibleCopy(crlf, 'content/crlf.mdx');
+  assert.deepEqual(
+    parsedCrlf.frontMatter.map(({field, line, text}) => ({field, line, text})),
+    [
+      {field: 'title', line: 2, text: 'CRLF Agent'},
+      {field: 'summary', line: 3, text: '摘要 worker'},
+    ],
+  );
+  assert.deepEqual(parsedCrlf.blocks.map(({line, text, excerpt}) => ({line, text, excerpt})), [
+    {line: 5, text: '正文 Agent', excerpt: '正文 Agent'},
+  ]);
+});
+
 test('extracts all 72 existing summary fields with exact source lines', async () => {
   const files = await walk('content', '.mdx');
   const summaries = [];
@@ -319,6 +355,39 @@ test('covers every current Mermaid fence and fails closed on unknown structures'
   );
 });
 
+test('normalizes supported Mermaid shapes and validates non-copy directives', () => {
+  const source = `\`\`\`mermaid
+flowchart LR
+  A[/Parallelogram/]
+  B[\\Trapezoid\\]
+  C(((Double Circle)))
+  style A fill:#fff,stroke:#000
+  classDef emphasized fill:#f00,color:#fff
+  class A emphasized
+  linkStyle 0 stroke:#333
+  click A "https://example.com" "External docs"
+\`\`\``;
+  assert.deepEqual(
+    extractMermaidLabels(source, 'content/shapes.mdx').map(({text}) => text),
+    ['Parallelogram', 'Trapezoid', 'Double Circle'],
+  );
+
+  assert.throws(
+    () => extractMermaidLabels(
+      '```mermaid\nflowchart LR\n  A[visible]\n  style A\n```',
+      'content/bad-style.mdx',
+    ),
+    /content\/bad-style\.mdx:4: malformed Mermaid style directive/u,
+  );
+  assert.throws(
+    () => extractMermaidLabels(
+      '```mermaid\nflowchart LR\n  A{{{unsupported}}}\n```',
+      'content/unsupported-shape.mdx',
+    ),
+    /content\/unsupported-shape\.mdx:3: unsupported Mermaid node shape/u,
+  );
+});
+
 test('extracts only reader-visible TSX strings through the TypeScript AST', () => {
   const source = `import icon from './agent-worker.svg';
 import type {Worker} from './types';
@@ -389,6 +458,47 @@ export function Example({ready, name}) {
     '后缀 worker',
   ]);
   assert.doesNotMatch(text.join('\n'), /普通代码|agent\.svg/u);
+});
+
+test('walks concatenated JSX and object copy while preserving multiline source lines', () => {
+  const source = `const dynamic = getValue();
+const copy = {
+  title: "标题 Agent：" + dynamic + " 完成",
+  term: dynamic ? "术语 worker" : '备用 API',
+  description: \`描述前缀 \${dynamic} 描述后缀\`,
+};
+export function Copy() {
+  return <section aria-label={"属性 Agent：" + dynamic + " 可见"}>
+    第一行 Agent
+    第二行 worker
+    {"表达式 API：" + dynamic + " 结束"}
+    {dynamic && "逻辑分支 Agent"}
+    {dynamic || "逻辑备用 worker"}
+  </section>;
+}`;
+  assert.deepEqual(
+    extractVisibleTsxStrings(source, 'src/Copy.tsx').map(({line, text, excerpt}) => ({
+      line,
+      text,
+      excerpt,
+    })),
+    [
+      {line: 3, text: '标题 Agent：', excerpt: 'title: "标题 Agent：" + dynamic + " 完成",'},
+      {line: 3, text: '完成', excerpt: 'title: "标题 Agent：" + dynamic + " 完成",'},
+      {line: 4, text: '术语 worker', excerpt: 'term: dynamic ? "术语 worker" : \'备用 API\','},
+      {line: 4, text: '备用 API', excerpt: 'term: dynamic ? "术语 worker" : \'备用 API\','},
+      {line: 5, text: '描述前缀', excerpt: 'description: `描述前缀 ${dynamic} 描述后缀`,'},
+      {line: 5, text: '描述后缀', excerpt: 'description: `描述前缀 ${dynamic} 描述后缀`,'},
+      {line: 8, text: '属性 Agent：', excerpt: 'return <section aria-label={"属性 Agent：" + dynamic + " 可见"}>'},
+      {line: 8, text: '可见', excerpt: 'return <section aria-label={"属性 Agent：" + dynamic + " 可见"}>'},
+      {line: 9, text: '第一行 Agent', excerpt: '第一行 Agent'},
+      {line: 10, text: '第二行 worker', excerpt: '第二行 worker'},
+      {line: 11, text: '表达式 API：', excerpt: '{"表达式 API：" + dynamic + " 结束"}'},
+      {line: 11, text: '结束', excerpt: '{"表达式 API：" + dynamic + " 结束"}'},
+      {line: 12, text: '逻辑分支 Agent', excerpt: '{dynamic && "逻辑分支 Agent"}'},
+      {line: 13, text: '逻辑备用 worker', excerpt: '{dynamic || "逻辑备用 worker"}'},
+    ],
+  );
 });
 
 test('extracts reader copy from current CaseCard and topic indexes', async () => {
