@@ -168,6 +168,31 @@ test('rejects unapproved Architecture Center license commit URLs', () => {
   }
 });
 
+test('uses policy-compatible transports for known access-controlled sources', async () => {
+  const {ledger} = await governedData();
+  const byId = new Map(ledger.sources.map((source) => [source.id, source]));
+
+  const medium = byId.get('src-docs-28997e2e106b');
+  assert.equal(medium.link_policy, 'auth-required');
+  assert.equal(
+    medium.expected_final_approval_note,
+    'Repeated live checks on 2026-08-06 returned HTTP 403 from the official Medium page; accepted as an auth-required transport baseline for manual access.',
+  );
+
+  const teamTopologies = byId.get(
+    'src-team-topologies-organization-dynamics-2020',
+  );
+  const expectedTransport =
+    'https://landing.teamtopologies.com/organization-dynamics-with-team-topologies';
+  assert.equal(teamTopologies.transport_locator, expectedTransport);
+  assert.equal(teamTopologies.expected_final_transport_locator, expectedTransport);
+  assert.equal(teamTopologies.expected_final_approved_at, '2026-08-06');
+  assert.match(
+    teamTopologies.expected_final_approval_note,
+    /official Team Topologies landing page.*HTTP 200.*2026-08-06/u,
+  );
+});
+
 test('validates the seven Batch 4 license families against mutation-sensitive evidence rules', async () => {
   const {inventory, inventoryMarkdown, ledger} = await governedData();
   const batchSourceIds = [

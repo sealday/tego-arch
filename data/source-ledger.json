@@ -17617,7 +17617,7 @@
     {
       "id": "src-team-topologies-organization-dynamics-2020",
       "canonical_locator": "https://teamtopologies.com/s/Organization-Dynamics-with-Team-Topologies-Mini-book-MB80.pdf",
-      "transport_locator": "https://teamtopologies.com/all-mini-books/mini-book-organization-dynamics-with-team-topologies",
+      "transport_locator": "https://landing.teamtopologies.com/organization-dynamics-with-team-topologies",
       "query_insensitive": false,
       "locator_aliases": [],
       "tombstone": null,
@@ -17644,9 +17644,9 @@
       "copyright_policy": "facts-and-short-quotation",
       "usage_boundary": "Supports the Reverse Conway practice, team boundaries, cognitive load, and platform support as organizational design guidance; it is not an empirical guarantee or a universal reorganization template.",
       "link_policy": "stable",
-      "expected_final_transport_locator": "https://teamtopologies.com/all-mini-books/mini-book-organization-dynamics-with-team-topologies",
-      "expected_final_approved_at": "2026-07-29",
-      "expected_final_approval_note": "After the canonical PDF produced a fetch failure, the 2026-07-29 live checker observed the official Team Topologies page for the same MB80 mini-book as healthy with HTTP 206, no redirects, and no login wall; the decoupled transport is accepted."
+      "expected_final_transport_locator": "https://landing.teamtopologies.com/organization-dynamics-with-team-topologies",
+      "expected_final_approved_at": "2026-08-06",
+      "expected_final_approval_note": "The official Team Topologies landing page for the same MB80 mini-book returned HTTP 200 without redirects or a login wall on 2026-08-06; the decoupled transport is accepted after the Squarespace page transport repeatedly reset Node.js connections."
     },
     {
       "id": "src-cisa-secure-by-design-2023",
@@ -18165,10 +18165,10 @@
       "family_grouping_evidence_url": null,
       "copyright_policy": "facts-and-short-quotation",
       "usage_boundary": "Supports the reviewed Process Modelling grammar of Person, System, Command, Policy, Read Model and Event; it does not define this article’s expense-claim example or architecture.",
-      "link_policy": "floating",
+      "link_policy": "auth-required",
       "expected_final_transport_locator": "https://medium.com/@ziobrando/collaborative-process-modelling-with-eventstorming-17ed363650c0",
-      "expected_final_approved_at": "2026-08-03",
-      "expected_final_approval_note": "Initial reviewed EventStorming teaching-source transport baseline"
+      "expected_final_approved_at": "2026-08-06",
+      "expected_final_approval_note": "Repeated live checks on 2026-08-06 returned HTTP 403 from the official Medium page; accepted as an auth-required transport baseline for manual access."
     },
     {
       "id": "src-docs-5b4206bf06fe",

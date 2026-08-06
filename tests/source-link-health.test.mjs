@@ -537,6 +537,31 @@ test('retries bounded gateway failures and recovers after 502 and 504', async ()
   assert.deepEqual(waits, [250, 250]);
 });
 
+test('retries a transient HTTP 500 before recording a stale observation', async () => {
+  const waits = [];
+  let calls = 0;
+  const checked = await checkSourceLink(
+    buildLinkTargets(
+      ledger([source('asset', 'https://example.com/asset.pdf')]),
+    )[0],
+    {
+      now,
+      sleep: async (ms) => waits.push(ms),
+      fetchImpl: async () => {
+        calls += 1;
+        if (calls < 3) return new Response(null, {status: 500});
+        return new Response(null, {
+          status: 200,
+          headers: {'content-type': 'application/pdf'},
+        });
+      },
+    },
+  );
+  assert.equal(checked.last_attempt.outcome, 'healthy');
+  assert.equal(calls, 3);
+  assert.deepEqual(waits, [250, 250]);
+});
+
 test('falls back from failed HEAD to one bounded ranged GET for active sources', async () => {
   for (const headStatus of [404, 500]) {
     const calls = [];
@@ -546,6 +571,7 @@ test('falls back from failed HEAD to one bounded ranged GET for active sources',
       )[0],
       {
         now,
+        sleep: async () => {},
         fetchImpl: async (_url, options) => {
           calls.push(options);
           return options.method === 'HEAD'
@@ -562,10 +588,12 @@ test('falls back from failed HEAD to one bounded ranged GET for active sources',
     assert.equal(checked.last_attempt.http_status, 200, `HEAD ${headStatus}`);
     assert.deepEqual(
       calls.map(({method}) => method),
-      ['HEAD', 'GET'],
+      headStatus === 500
+        ? ['HEAD', 'HEAD', 'HEAD', 'GET']
+        : ['HEAD', 'GET'],
       `HEAD ${headStatus}`,
     );
-    assert.equal(calls[1].headers.Range, 'bytes=0-65535');
+    assert.equal(calls.at(-1).headers.Range, 'bytes=0-65535');
   }
 });
 
