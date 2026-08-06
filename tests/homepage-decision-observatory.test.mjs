@@ -86,10 +86,10 @@ test('uses the approved decision-observatory narrative in exact order', async ()
   const orderedCopy = [
     '在复杂系统里',
     '做清醒的选择',
-    '一张持续展开的架构坐标',
+    '建立架构判断的主线',
     '从问题出发',
     '正在研究的系统',
-    '让完整体系进入不同使用场景',
+    '从理解架构到做出取舍',
     '这是一份开放的研究记录',
   ];
 
@@ -273,33 +273,7 @@ test('keeps hero labels, focused secondary actions, and focus indicators contras
 test('forbids decorative effects and oversized ordinary radii in homepage styles', async () => {
   const styles = await read('src/pages/index.module.css');
   assert.doesNotMatch(styles, /\b(?:backdrop-filter|filter|box-shadow|text-shadow)\s*:/iu);
-  const featherSelector = '.roadmapMedia::after';
-  const featherBlock = cssBlock(styles, featherSelector);
-  const featherBackgrounds = [...featherBlock.matchAll(/(?:^|\n)\s*background\s*:/gu)];
-  assert.equal(featherBackgrounds.length, 1, 'roadmap feather must have one background declaration');
-
-  const featherBackgroundDeclaration = featherBlock.match(
-    /(?:^|\n)(\s*background:\s*[^;]+;)/u,
-  );
-  assert.ok(featherBackgroundDeclaration, 'roadmap feather background declaration must be parseable');
-  const featherBackground = declaration(featherBlock, 'background').replace(/\s+/gu, ' ');
-  assert.equal(
-    featherBackground,
-    'linear-gradient(90deg, var(--atlas-paper) 0, transparent 10%, transparent 90%, var(--atlas-paper) 100%), ' +
-      'linear-gradient(var(--atlas-paper) 0, transparent 12%, transparent 88%, var(--atlas-paper) 100%)',
-  );
-  assert.equal([...featherBackground.matchAll(/linear-gradient\(/gu)].length, 2);
-  assert.doesNotMatch(featherBackground, /(?:radial|conic)-gradient\(/u);
-
-  const featherStart = styles.indexOf(featherSelector);
-  const featherOpen = styles.indexOf('{', featherStart + featherSelector.length);
-  const declarationOffset = featherBackgroundDeclaration.index +
-    featherBackgroundDeclaration[0].length - featherBackgroundDeclaration[1].length;
-  const declarationStart = featherOpen + 1 + declarationOffset;
-  const declarationEnd = declarationStart + featherBackgroundDeclaration[1].length;
-  const stylesWithoutRoadmapFeatherBackground =
-    styles.slice(0, declarationStart) + styles.slice(declarationEnd);
-  assert.doesNotMatch(stylesWithoutRoadmapFeatherBackground, /\b[\w-]*gradient\s*\(/iu);
+  assert.doesNotMatch(styles, /\b[\w-]*gradient\s*\(/iu);
 
   for (const match of styles.matchAll(/([^{}]+)\{([^{}]*)\}/gu)) {
     const selector = match[1].trim();
@@ -323,99 +297,81 @@ test('forbids decorative effects and oversized ordinary radii in homepage styles
   }
 });
 
-test('keeps roadmap details available without forcing them into the reading flow', async () => {
+test('presents a themed judgment path without homepage project status', async () => {
   const [homepage, styles] = await Promise.all([
     read('src/pages/index.tsx'),
     read('src/pages/index.module.css'),
   ]);
 
-  assert.match(homepage, /初版路线图 · 2026-08-05 快照/u);
-  assert.match(homepage, /<button[\s\S]*aria-describedby="roadmap-status-note"[\s\S]*状态与图例说明/u);
-  assert.match(homepage, /id="roadmap-status-note"[\s\S]*role="note"/u);
-  assert.match(homepage, /<details className=\{styles\.roadmapMobileDetails\}>/u);
-  assert.match(homepage, /<summary>关于这张路线图<\/summary>/u);
-  assert.match(homepage, /href=\{roadmapSrc\}[\s\S]*target="_blank"[\s\S]*查看大图/u);
+  assert.match(homepage, /import \{ThemedComponent\} from '@docusaurus\/theme-common';/u);
+  const themedImage = homepage.match(
+    /function ThemedRoadmapImage\([\s\S]*?\n\}/u,
+  );
+  assert.ok(themedImage, 'themed roadmap image component must remain statically inspectable');
+  assert.match(themedImage[0], /theme === 'dark' \? darkImageSrc : lightImageSrc/u);
+  assert.match(themedImage[0], /width=\{1672\}/u);
+  assert.match(themedImage[0], /height=\{941\}/u);
+  assert.match(themedImage[0], /loading="lazy"/u);
+  assert.match(themedImage[0], /decoding="async"/u);
+  assert.match(themedImage[0], /alt=\{alt\}/u);
 
-  for (const text of [
-    '历史快照',
-    '绿色表示快照当日已完成',
-    '橙色表示快照当日当前阶段',
-    '蓝色表示快照当日待执行',
-    '验证、评审、发布与线上检查',
-    'docs/content-backlog.md',
+  const roadmapSection = homepage.match(
+    /function RoadmapSection\(\): ReactNode \{([\s\S]*?)\n\}\n\nfunction EntrySection/u,
+  );
+  assert.ok(roadmapSection, 'judgment path section must remain statically inspectable');
+  for (const path of [
+    '/img/illustrations/tego-arch-judgment-path-light.png',
+    '/img/illustrations/tego-arch-judgment-path-dark.png',
   ]) {
-    assert.match(homepage, new RegExp(text, 'u'));
+    assert.match(roadmapSection[1], new RegExp(path.replaceAll('/', String.raw`\/`).replace('.', String.raw`\.`), 'u'));
   }
-
-  assert.match(homepage, /width=\{1672\}/u);
-  assert.match(homepage, /height=\{941\}/u);
-  assert.match(homepage, /loading="lazy"/u);
-  assert.match(homepage, /decoding="async"/u);
-  assert.doesNotMatch(homepage, /data-(?:status|backlog|legend)/u);
-  assert.match(styles, /\.roadmapMedia::after/u);
-  assert.match(styles, /\.roadmapDesktopInfo:hover[\s\S]*\.roadmapInfoPanel/u);
-  assert.match(styles, /\.roadmapDesktopInfo:focus-within[\s\S]*\.roadmapInfoPanel/u);
-  const hiddenPanel = cssBlock(styles, '.roadmapInfoPanel');
-  assert.equal(declaration(hiddenPanel, 'visibility'), 'hidden');
-  assert.equal(declaration(hiddenPanel, 'pointer-events'), 'none');
-  assert.equal(
-    declaration(hiddenPanel, 'transition').replace(/\s+/gu, ' '),
-    'visibility 0s linear 140ms, opacity 140ms ease',
+  assert.match(
+    roadmapSection[1],
+    /alt="架构判断从基础与质量出发，经过建模、模式与治理，在案例和复盘中逐步形成"/u,
   );
-  assert.doesNotMatch(hiddenPanel, /\btransform\s*:/u);
-  const visiblePanel = cssBlock(
-    styles,
-    '.roadmapDesktopInfo:hover .roadmapInfoPanel,\n.roadmapDesktopInfo:focus-within .roadmapInfoPanel',
-  );
-  assert.equal(declaration(visiblePanel, 'visibility'), 'visible');
-  assert.equal(declaration(visiblePanel, 'pointer-events'), 'auto');
-  assert.doesNotMatch(visiblePanel, /\btransform\s*:/u);
-  const hoverBridge = cssBlock(styles, '.roadmapInfoPanel::after');
-  assert.equal(declaration(hoverBridge, 'bottom'), '-0.75rem');
-  assert.equal(declaration(hoverBridge, 'height'), '0.75rem');
   assert.doesNotMatch(
-    hoverBridge,
-    /\b(?:background|border|box-shadow|top|transform|transition)\s*:/u,
+    homepage,
+    /RoadmapStatusContent|roadmapDesktopInfo|roadmapInfoPanel|roadmapMobileDetails|初版路线图 · 2026-08-05 快照|状态与图例说明|查看项目进度/u,
   );
-  assert.doesNotMatch(cssBlock(styles, '.roadmapMedia'), /\bborder\s*:/u);
-  assert.doesNotMatch(cssBlock(styles, '.roadmapInfoPanel'), /\bbox-shadow\s*:/u);
-
-  const figure = homepage.match(
-    /<figure className=\{styles\.roadmapFigure\}>([\s\S]*?)\n\s*<\/figure>/u,
+  assert.doesNotMatch(styles, /\.roadmap(?:DesktopInfo|InfoControl|InfoPanel|MobileDetails|Meta)/u);
+  assert.doesNotMatch(styles, /\.roadmapMedia::after/u);
+  assert.doesNotMatch(cssBlock(styles, '.roadmapMedia'), /\b(?:border|box-shadow)\s*:/u);
+  assert.equal(
+    declaration(cssBlock(styles, '.roadmapSection'), 'background'),
+    'var(--atlas-paper)',
   );
-  assert.ok(figure, 'roadmap figure must remain statically inspectable');
-  assert.match(figure[1].trim(), /<figcaption className=\{styles\.roadmapMeta\}>[\s\S]*<\/figcaption>$/u);
-  assert.ok(
-    figure[1].indexOf('roadmapMobileDetails') < figure[1].indexOf('<figcaption'),
-    'mobile disclosure must precede the final figcaption',
+  assert.equal(
+    declaration(cssBlock(styles, '.roadmapMedia'), 'background'),
+    'var(--atlas-paper)',
   );
 });
 
-test('presents future directions as an accessible parallel roadmap', async () => {
+test('presents themed usage modes with semantic bilingual cards', async () => {
   const [homepage, styles] = await Promise.all([
     read('src/pages/index.tsx'),
     read('src/pages/index.module.css'),
   ]);
 
-  assert.match(
-    homepage,
-    /useBaseUrl\('\/img\/illustrations\/tego-arch-future-directions\.png'\)/u,
-  );
   const futureDirectionsSection = homepage.match(
     /function FutureDirectionsSection\(\): ReactNode \{([\s\S]*?)\n\}\n\nfunction ContributionBand/u,
   );
   assert.ok(futureDirectionsSection, 'future directions section must remain statically inspectable');
-  const futureRoadmapImage = futureDirectionsSection[1].match(
-    /<img\b(?=[^>]*\bsrc=\{futureRoadmapSrc\})[^>]*\/>/u,
-  );
-  assert.ok(futureRoadmapImage, 'future roadmap image must remain statically inspectable');
-  assert.match(futureRoadmapImage[0], /width=\{1672\}/u);
-  assert.match(futureRoadmapImage[0], /height=\{941\}/u);
-  assert.match(futureRoadmapImage[0], /loading="lazy"/u);
-  assert.match(futureRoadmapImage[0], /decoding="async"/u);
+  for (const path of [
+    '/img/illustrations/tego-arch-use-modes-light.png',
+    '/img/illustrations/tego-arch-use-modes-dark.png',
+  ]) {
+    assert.match(
+      futureDirectionsSection[1],
+      new RegExp(path.replaceAll('/', String.raw`\/`).replace('.', String.raw`\.`), 'u'),
+    );
+  }
   assert.match(
-    futureRoadmapImage[0],
-    /alt="Tego Arch 从完整架构知识体系并行发展出架构决策速查、精选学习路径和 Tego 参考架构三个未来方向"/u,
+    futureDirectionsSection[1],
+    /alt="一套架构知识体系可以用于快速校准决策、组织学习路径和理解 Tego 的真实架构取舍"/u,
+  );
+  assert.match(
+    futureDirectionsSection[1],
+    /futureDirections\.map\([\s\S]*<Heading as="h3">\{direction\.title\}<\/Heading>[\s\S]*\{direction\.term\}/u,
   );
   assert.match(styles, /\.futureRoadmap\s*\{[^}]*max-width:\s*64rem;[^}]*margin:\s*0 auto 2rem;/u);
   assert.match(styles, /\.futureTerm\s*\{[^}]*font-family:\s*var\(--atlas-mono\);/u);
@@ -425,16 +381,21 @@ test('presents future directions as an accessible parallel roadmap', async () =>
 test('keeps roadmap copy reader-facing instead of exposing design rationale', async () => {
   const homepage = await read('src/pages/index.tsx');
 
-  assert.match(
-    homepage,
-    /初版沿一条可验证的研究路线展开，连接基础、建模、治理与学习闭环/u,
-  );
-  assert.match(homepage, />\s*查看项目进度\s*<span aria-hidden="true">↗<\/span>/u);
+  for (const text of [
+    '建立架构判断的主线',
+    '从基础与质量出发，经过建模、模式与治理，在案例和复盘中形成判断',
+    '从理解架构到做出取舍',
+    '需要判断时快速查，系统学习时沿路径走，也从真实架构中理解取舍',
+  ]) {
+    assert.match(homepage, new RegExp(text, 'u'));
+  }
 
   for (const internalCopy of [
     '首页保留方向',
     '实时进度回到 backlog',
     '查看实时 backlog',
+    '让完整体系进入不同使用场景',
+    '三个方向并行演进，不代表固定顺序或发布日期',
   ]) {
     assert.doesNotMatch(homepage, new RegExp(internalCopy, 'u'));
   }
