@@ -79,7 +79,7 @@ function currentReleaseBaseline(source) {
 function g008Batch2HistoricalSegment(source) {
   const baseline = currentReleaseBaseline(source);
   const starts = [...baseline.matchAll(/此前 G008 Batch 2 历史完成基线为：/gu)];
-  const ends = [...baseline.matchAll(/此前 G008 Batch 1/gu)];
+  const ends = [...baseline.matchAll(/此前 G008 Batch 1 及更早历史完成基线为：/gu)];
   assert.equal(starts.length, 1, 'baseline must contain one G008 Batch 2 history marker');
   assert.equal(ends.length, 1, 'current baseline must contain one G008 Batch 1 history marker');
   assert.ok(
@@ -104,8 +104,8 @@ function assertBatch2HistoricalClosure(source) {
 
 function assertLiveReleaseState(source) {
   const baseline = currentReleaseBaseline(source);
-  assert.match(baseline, /^-\s\*\*当前发布基线：\*\* 2026-08-06 G008 Batch 10 MOD-12 复审修复已完成/u);
-  assert.match(baseline, /G008 仍在进行中，下一项为 MOD-13/u);
+  assert.match(baseline, /^-\s\*\*当前发布基线：\*\* 2026-08-06 G008 Batch 11 已完成 MOD-13 并关闭 G008/u);
+  assert.match(baseline, /当前 G009，下一项为 STY-00/u);
 }
 
 test('records exact successful G008 Batch 2 deployment evidence', () => {
@@ -198,20 +198,20 @@ test('preserves Batch 2 closure history separately from the live projection', ()
   assert.equal(topicsById.get('MOD-11')?.status.value, 'complete');
   assert.equal(topicsById.get('MOD-12')?.published, true);
   assert.equal(topicsById.get('MOD-12')?.status.value, 'complete');
-  for (const id of ['MOD-13']) {
-    assert.equal(topicsById.get(id)?.published, true, id);
-    assert.equal(topicsById.get(id)?.status.value, 'pending', id);
-  }
-  assert.equal(projectStatus.completed_topics, 51);
+  assert.equal(topicsById.get('MOD-13')?.published, true);
+  assert.equal(topicsById.get('MOD-13')?.status.value, 'complete');
+  assert.equal(topicsById.get('STY-00')?.published, true);
+  assert.equal(topicsById.get('STY-00')?.status.value, 'pending');
+  assert.equal(projectStatus.completed_topics, 52);
   assert.equal(projectStatus.content_documents, 94);
   assert.equal(projectStatus.governed_sources, 494);
   assert.deepEqual(projectStatus.durable_stories, {
-    completed: 7,
+    completed: 8,
     total: 20,
-    current: 'G008',
+    current: 'G009',
   });
   assertBatch2HistoricalClosure(backlog);
   assertLiveReleaseState(backlog);
-  assert.match(backlog, /当前持久故事：\*\* `G008`/u);
-  assert.doesNotMatch(backlog, /最近完成 `G008`/u);
+  assert.match(backlog, /当前持久故事：\*\* `G009`/u);
+  assert.match(backlog, /最近完成 `G008`/u);
 });

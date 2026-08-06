@@ -556,7 +556,7 @@ Use real browser clicks at both viewports. Activate four external source links p
 
 - [ ] **Step 4: Verify closed world and diagnostics**
 
-Require `/modeling` to show MOD-13 published/pending and STY-00 planned/non-actionable. Record every browser/operator target and require zero actionable `/styles/sty-00` targets. Collect fresh console warnings, errors, and page errors from each page/viewport and require product diagnostics `0/0/0`; disclose browser-harness instrumentation separately if it is not product code.
+Require `/modeling` to show MOD-13 published/pending and STY-00 published/pending/planned. Record every browser/operator target and require zero **Batch11 accepted source/relation/operator actions** targeting STY-00; separately preserve the three pre-existing production `/styles/sty-00` links observed in each viewport. Collect fresh console warnings, errors, and page errors from each page/viewport and require product diagnostics `0/0/0`; disclose browser-harness instrumentation separately if it is not product code.
 
 - [ ] **Step 5: Freeze and review the artifact**
 
@@ -626,7 +626,7 @@ Preserve the full Batch10-and-older suffix byte-for-byte, including both Batch10
 
 - [ ] **Step 3: Generate Stage B and update only live assertions**
 
-Run `npm run generate:content`. Require MOD-13 published/complete, STY-00 unpublished/pending, and the exact Stage B projection. Add mutation cases for every review/backlog identity, count, state, route, viewport, asset, geometry/table/source/relation/diagnostic total, Task5 hash, and historical-suffix hash.
+Run `npm run generate:content`. Require MOD-13 published/complete, STY-00 published/pending, and the exact Stage B projection. Add mutation cases for every review/backlog identity, count, state, route, viewport, asset, geometry/table/source/relation/diagnostic total, Task5 hash, and historical-suffix hash.
 
 - [ ] **Step 4: Verify, review, and commit Stage B**
 

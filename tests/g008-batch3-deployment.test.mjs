@@ -167,9 +167,9 @@ function assertCurrentReleaseState(source) {
   const {prefix} = assertBatch3HistoricalSegment(source);
   assert.match(
     prefix,
-    /^- \*\*当前发布基线：\*\* 2026-08-06 G008 Batch 10 MOD-12 复审修复已完成/u,
+    /^- \*\*当前发布基线：\*\* 2026-08-06 G008 Batch 11 已完成 MOD-13 并关闭 G008/u,
   );
-  assert.match(prefix, /G008 仍在进行中，下一项为 MOD-13/u);
+  assert.match(prefix, /当前 G009，下一项为 STY-00/u);
 }
 
 function assertBacklogClosure(source) {
@@ -181,7 +181,8 @@ function assertBacklogClosure(source) {
   assert.match(source, /^- \[x\] \*\*MOD-10 /mu);
   assert.match(source, /^- \[x\] \*\*MOD-11 /mu);
   assert.match(source, /^- \[x\] \*\*MOD-12 /mu);
-  assert.match(source, /^- \[ \] \*\*MOD-13 /mu);
+  assert.match(source, /^- \[x\] \*\*MOD-13 /mu);
+  assert.match(source, /^- \[ \] \*\*STY-00 /mu);
   assertCurrentReleaseState(source);
 }
 
@@ -251,7 +252,7 @@ test('rejects stale duplicate or missing live deployment evidence', () => {
   }
 });
 
-test('preserves Batch 3 closure under the current non-terminal G008 baseline', () => {
+test('preserves Batch 3 closure under the current G009 baseline', () => {
   const {sha, run} = parseEvidence(review);
   const row = backlog
     .split(/\r?\n/u)
@@ -277,27 +278,27 @@ test('preserves Batch 3 closure under the current non-terminal G008 baseline', (
   assert.equal(topicsById.get('MOD-11')?.status.value, 'complete');
   assert.equal(topicsById.get('MOD-12')?.published, true);
   assert.equal(topicsById.get('MOD-12')?.status.value, 'complete');
-  for (const id of ['MOD-13']) {
-    assert.equal(topicsById.get(id)?.published, true, id);
-    assert.equal(topicsById.get(id)?.status.value, 'pending', id);
-  }
-  assert.equal(projectStatus.completed_topics, 51);
+  assert.equal(topicsById.get('MOD-13')?.published, true);
+  assert.equal(topicsById.get('MOD-13')?.status.value, 'complete');
+  assert.equal(topicsById.get('STY-00')?.published, true);
+  assert.equal(topicsById.get('STY-00')?.status.value, 'pending');
+  assert.equal(projectStatus.completed_topics, 52);
   assert.equal(projectStatus.content_documents, 94);
   assert.equal(projectStatus.governed_sources, 494);
   assert.deepEqual(projectStatus.durable_stories, {
-    completed: 7,
+    completed: 8,
     total: 20,
-    current: 'G008',
+    current: 'G009',
   });
   assertBacklogClosure(backlog);
-  assert.match(backlog, /当前持久故事：\*\* `G008`/u);
-  assert.doesNotMatch(backlog, /最近完成 `G008`/u);
+  assert.match(backlog, /当前持久故事：\*\* `G009`/u);
+  assert.match(backlog, /最近完成 `G008`/u);
 });
 
 test('rejects incomplete over-complete or terminal current mutations', () => {
   assert.throws(
     () => assertCurrentReleaseState(
-      backlog.replace('G008 仍在进行中，下一项为 MOD-13', 'G008 已完成，下一项为 MOD-12'),
+      backlog.replace('当前 G009，下一项为 STY-00', '当前 G008，下一项为 MOD-13'),
     ),
     {name: 'AssertionError'},
   );

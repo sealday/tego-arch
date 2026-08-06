@@ -12,8 +12,8 @@ import {
 import {parseSourceLedger} from '../scripts/source-ledger.mjs';
 
 const declarations = [
-  '- **持久故事进度：** 已完成 `7 / 20`；最近完成 `G007`。',
-  '- **当前持久故事：** `G008`。',
+  '- **持久故事进度：** 已完成 `8 / 20`；最近完成 `G008`。',
+  '- **当前持久故事：** `G009`。',
 ].join('\n');
 
 test('builds status from canonical input collections', () => {
@@ -29,7 +29,7 @@ test('builds status from canonical input collections', () => {
 
   assert.deepEqual(status, {
     schema_version: 1,
-    durable_stories: {completed: 7, total: 20, current: 'G008'},
+    durable_stories: {completed: 8, total: 20, current: 'G009'},
     completed_topics: 1,
     content_documents: 2,
     governed_sources: 3,
@@ -46,8 +46,20 @@ test('requires one exact durable-story baseline', () => {
   for (const invalid of [
     '',
     `${declarations}\n${declarations}`,
-    declarations.replace('7 / 20', '6 / 20'),
-    declarations.replace('G007', 'G008'),
+    declarations.replace('8 / 20', '7 / 20'),
+    declarations.replace('最近完成 `G008`', '最近完成 `G007`'),
+    declarations
+      .replace('8 / 20', '0 / 20')
+      .replace('G008', 'G000')
+      .replace('G009', 'G001'),
+    declarations
+      .replace('8 / 20', '20 / 20')
+      .replace('G008', 'G020')
+      .replace('G009', 'G021'),
+    declarations
+      .replace('8 / 20', '21 / 20')
+      .replace('G008', 'G021')
+      .replace('G009', 'G022'),
   ]) {
     assert.throws(() => parseDurableStoryStatus(invalid), /durable story/u);
   }
@@ -56,7 +68,7 @@ test('requires one exact durable-story baseline', () => {
 test('rejects a valid declaration followed by a malformed duplicate label', () => {
   for (const duplicate of [
     '- **持久故事进度：** 已完成很多故事。',
-    '- **当前持久故事：** G008。',
+    '- **当前持久故事：** G009。',
   ]) {
     assert.throws(
       () => parseDurableStoryStatus(`${declarations}\n${duplicate}`),
@@ -82,8 +94,8 @@ test('reports an exact-format error for a unique malformed declaration', () => {
     () =>
       parseDurableStoryStatus(
         declarations.replace(
-          '- **当前持久故事：** `G008`。',
-          '- **当前持久故事：** G008。',
+          '- **当前持久故事：** `G009`。',
+          '- **当前持久故事：** G009。',
         ),
       ),
     /exact durable story declaration format/u,
@@ -134,8 +146,8 @@ test('projects the real repository status without rewriting historical evidence'
     }),
     {
       schema_version: 1,
-      durable_stories: {completed: 7, total: 20, current: 'G008'},
-      completed_topics: 51,
+      durable_stories: {completed: 8, total: 20, current: 'G009'},
+      completed_topics: 52,
       content_documents: 94,
       governed_sources: 494,
       sources: {

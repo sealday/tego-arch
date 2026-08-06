@@ -124,14 +124,14 @@ function assertStageBClosure(
 
   assert.match(
     snapshotBacklog,
-    /- \*\*持久故事进度：\*\* 已完成 `7 \/ 20`；最近完成 `G007`。/u,
+    /- \*\*持久故事进度：\*\* 已完成 `8 \/ 20`；最近完成 `G008`。/u,
   );
-  assert.match(snapshotBacklog, /- \*\*当前持久故事：\*\* `G008`。/u);
-  assert.equal(snapshotProjectStatus.completed_topics, 51);
+  assert.match(snapshotBacklog, /- \*\*当前持久故事：\*\* `G009`。/u);
+  assert.equal(snapshotProjectStatus.completed_topics, 52);
   assert.deepEqual(snapshotProjectStatus.durable_stories, {
-    completed: 7,
+    completed: 8,
     total: 20,
-    current: 'G008',
+    current: 'G009',
   });
 
   const currentBaselineLines = snapshotBacklog

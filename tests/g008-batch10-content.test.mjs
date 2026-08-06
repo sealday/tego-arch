@@ -28,8 +28,8 @@ function currentNextTopic(source) {
     .filter((line) => line.startsWith('- **当前发布基线：**'));
   assert.equal(baselines.length, 1, 'backlog must contain one current release baseline');
   const liveSegment = baselines[0].split('。此前 ')[0];
-  const nextTopics = [...liveSegment.matchAll(/下一项为 (MOD-\d+)/gu)];
-  assert.equal(nextTopics.length, 1, 'live baseline must contain one next modeling topic');
+  const nextTopics = [...liveSegment.matchAll(/下一项为 ([A-Z]+-\d+)/gu)];
+  assert.equal(nextTopics.length, 1, 'live baseline must contain one next topic');
   return nextTopics[0][1];
 }
 
@@ -497,7 +497,7 @@ test('publishes exact reciprocal MOD-12 relations without an override', () => {
   assert.match(requiredDocument().body, /\[MOD-13[^\]]*\]\(\/modeling\/mod-13\)/u);
 });
 
-test('locks the generated MOD-12 Stage B projection', () => {
+test('locks the generated MOD-13 Stage B projection', () => {
   assert.deepEqual({
     completed_topics: projectStatus.completed_topics,
     content_documents: projectStatus.content_documents,
@@ -509,22 +509,24 @@ test('locks the generated MOD-12 Stage B projection', () => {
     current_goal: projectStatus.durable_stories.current,
     next_topic: currentNextTopic(backlog),
   }, {
-    completed_topics: 51,
+    completed_topics: 52,
     content_documents: 94,
     governed_sources: 494,
-    durable_stories: {completed: 7, total: 20},
-    current_goal: 'G008',
-    next_topic: 'MOD-13',
+    durable_stories: {completed: 8, total: 20},
+    current_goal: 'G009',
+    next_topic: 'STY-00',
   });
   const topicsById = new Map(topicManifest.topics.map((topic) => [topic.id, topic]));
   assert.equal(topicsById.get('MOD-12').published, true);
   assert.equal(topicsById.get('MOD-12').status.value, 'complete');
   assert.equal(topicsById.get('MOD-13').published, true);
-  assert.equal(topicsById.get('MOD-13').status.value, 'pending');
+  assert.equal(topicsById.get('MOD-13').status.value, 'complete');
+  assert.equal(topicsById.get('STY-00').published, true);
+  assert.equal(topicsById.get('STY-00').status.value, 'pending');
   assert.throws(
     () => assert.equal(
-      currentNextTopic(backlog.replace('下一项为 MOD-13', '下一项为 MOD-14')),
-      'MOD-13',
+      currentNextTopic(backlog.replace('下一项为 STY-00', '下一项为 STY-01')),
+      'STY-00',
     ),
     {name: 'AssertionError'},
   );

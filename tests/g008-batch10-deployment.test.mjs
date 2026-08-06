@@ -79,12 +79,12 @@ const expectedAssets = [
 ];
 
 const expectedProjection = {
-  completed_topics: 51,
+  completed_topics: 52,
   content_documents: 94,
   governed_sources: 494,
-  durable_stories: {completed: 7, total: 20},
-  current_goal: 'G008',
-  next_topic: 'MOD-13',
+  durable_stories: {completed: 8, total: 20},
+  current_goal: 'G009',
+  next_topic: 'STY-00',
 };
 
 const reviewSections = new Map([
@@ -186,9 +186,12 @@ function currentBaseline(source) {
 
 function batch10Segment(source) {
   const baseline = currentBaseline(source);
+  const marker = '此前 G008 Batch 10 历史完成基线为：';
+  const start = baseline.indexOf(marker);
+  assert.notEqual(start, -1, 'Batch 10 history boundary');
   const end = baseline.indexOf('此前 G008 Batch 9 历史完成基线为：');
   assert.notEqual(end, -1, 'Batch 9 history boundary');
-  return baseline.slice(0, end);
+  return baseline.slice(start + marker.length, end);
 }
 
 function batch9AndOlderHistory(source) {
@@ -230,7 +233,7 @@ const expectedBatch10Segment = `- **当前发布基线：** 2026-08-06 G008 Batc
 
 function assertBacklog(source) {
   const segment = batch10Segment(source);
-  assert.equal(segment, expectedBatch10Segment);
+  assert.equal(`- **当前发布基线：** ${segment}`, expectedBatch10Segment);
   assert.doesNotMatch(segment, /ACTUAL_|STAGE_A_SHA|RUN_ID|TEST_COUNT|ARTIFACT_SHA|<[^>]+>/u);
   for (const literal of backlogEvidence) {
     assert.equal(segment.split(literal).length - 1, 1, `one backlog literal: ${literal}`);
@@ -243,9 +246,11 @@ function assertBacklog(source) {
   for (const id of ['08', '09', '10', '11', '12']) {
     assert.match(source, new RegExp(`^- \\[x\\] \\*\\*MOD-${id} `, 'mu'));
   }
-  assert.match(source, /^- \[ \] \*\*MOD-13 /mu);
-  assert.match(source, /当前持久故事：\*\* `G008`/u);
-  assert.doesNotMatch(source, /最近完成 `G008`/u);
+  assert.match(source, /^- \[x\] \*\*MOD-13 /mu);
+  assert.match(source, /^- \[ \] \*\*STY-00 /mu);
+  assert.match(source, /当前持久故事：\*\* `G009`/u);
+  assert.match(source, /最近完成 `G008`/u);
+  assert.equal(currentBaseline(source).split('下一项为 STY-00').length - 1, 1);
 }
 
 function assertGeneratedState(manifestValue, statusValue) {
@@ -253,7 +258,9 @@ function assertGeneratedState(manifestValue, statusValue) {
   assert.equal(topics.get('MOD-12')?.published, true);
   assert.equal(topics.get('MOD-12')?.status.value, 'complete');
   assert.equal(topics.get('MOD-13')?.published, true);
-  assert.equal(topics.get('MOD-13')?.status.value, 'pending');
+  assert.equal(topics.get('MOD-13')?.status.value, 'complete');
+  assert.equal(topics.get('STY-00')?.published, true);
+  assert.equal(topics.get('STY-00')?.status.value, 'pending');
   assert.deepEqual(statusValue, {
     schema_version: 1,
     durable_stories: {...expectedProjection.durable_stories, current: expectedProjection.current_goal},
@@ -310,9 +317,9 @@ test('rejects every backlog evidence status and projection mutation', () => {
   }
   for (const mutation of [
     backlog.replace('- [x] **MOD-12 ', '- [ ] **MOD-12 '),
-    backlog.replace('- [ ] **MOD-13 ', '- [x] **MOD-13 '),
-    backlog.replace('- **当前持久故事：** `G008`。', '- **当前持久故事：** `G009`。'),
-    backlog.replace('下一项为 MOD-13', '下一项为 MOD-14'),
+    backlog.replace('- [x] **MOD-13 ', '- [ ] **MOD-13 '),
+    backlog.replace('- **当前持久故事：** `G009`。', '- **当前持久故事：** `G008`。'),
+    backlog.replace('下一项为 STY-00', '下一项为 STY-01'),
   ]) assert.throws(() => assertBacklog(mutation));
 });
 
@@ -334,9 +341,9 @@ test('rejects every generated Stage B state mutation', () => {
   }
   for (const mutate of [
     (value) => { value.schema_version = 2; },
-    (value) => { value.durable_stories.completed = 8; },
+    (value) => { value.durable_stories.completed = 7; },
     (value) => { value.durable_stories.total = 21; },
-    (value) => { value.durable_stories.current = 'G009'; },
+    (value) => { value.durable_stories.current = 'G008'; },
     (value) => { value.completed_topics = 50; },
     (value) => { value.content_documents = 92; },
     (value) => { value.governed_sources = 489; },

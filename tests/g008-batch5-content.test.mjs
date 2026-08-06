@@ -399,15 +399,15 @@ test('connects MOD-07 reciprocally to its currently published adjacent topics', 
   }
 });
 
-test('projects the current G008 counts after MOD-09 closes', async () => {
+test('projects the current G009 counts after G008 closes', async () => {
   const [status, indexes] = await Promise.all([
     readFile(new URL('../src/generated/project-status.json', import.meta.url), 'utf8').then(JSON.parse),
     readFile(new URL('../src/generated/topic-indexes.json', import.meta.url), 'utf8').then(JSON.parse),
   ]);
   assert.deepEqual(status, {
     schema_version: 1,
-    durable_stories: {completed: 7, total: 20, current: 'G008'},
-    completed_topics: 51,
+    durable_stories: {completed: 8, total: 20, current: 'G009'},
+    completed_topics: 52,
     content_documents: 94,
     governed_sources: 494,
     sources: {
@@ -428,8 +428,8 @@ test('projects the current G008 counts after MOD-09 closes', async () => {
   assert.equal(topicsById.get('MOD-11').status.value, 'complete');
   assert.equal(topicsById.get('MOD-12').published, true);
   assert.equal(topicsById.get('MOD-12').status.value, 'complete');
-  for (const id of ['MOD-13']) {
-    assert.equal(topicsById.get(id).published, true, id);
-    assert.equal(topicsById.get(id).status.value, 'pending', id);
-  }
+  assert.equal(topicsById.get('MOD-13').published, true);
+  assert.equal(topicsById.get('MOD-13').status.value, 'complete');
+  assert.equal(topicsById.get('STY-00').published, true);
+  assert.equal(topicsById.get('STY-00').status.value, 'pending');
 });

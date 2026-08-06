@@ -735,8 +735,8 @@ test('publishes reciprocal MOD-05/MOD-08 relations and actionable MOD-09/MOD-10 
 function assertStageBProjection(statusValue, manifestValue, mod11Document) {
   assert.deepEqual(statusValue, {
     schema_version: 1,
-    durable_stories: {completed: 7, total: 20, current: 'G008'},
-    completed_topics: 51,
+    durable_stories: {completed: 8, total: 20, current: 'G009'},
+    completed_topics: 52,
     content_documents: 94,
     governed_sources: 494,
     sources: {
@@ -752,21 +752,22 @@ function assertStageBProjection(statusValue, manifestValue, mod11Document) {
   assert.equal(topicsById.get('MOD-12').published, true);
   assert.equal(topicsById.get('MOD-12').status.value, 'complete');
   assert.ok(extractInternalLinks(mod11Document).includes('/modeling/mod-12'));
-  for (const id of ['MOD-13']) {
-    assert.equal(topicsById.get(id).published, true, id);
-    assert.equal(topicsById.get(id).status.value, 'pending', id);
-    assert.ok(!extractInternalLinks(mod11Document).includes(`/modeling/${id.toLowerCase()}`), id);
-  }
+  assert.equal(topicsById.get('MOD-13').published, true);
+  assert.equal(topicsById.get('MOD-13').status.value, 'complete');
+  assert.ok(!extractInternalLinks(mod11Document).includes('/modeling/mod-13'));
+  assert.equal(topicsById.get('STY-00').published, true);
+  assert.equal(topicsById.get('STY-00').status.value, 'pending');
 }
 
-test('locks the Stage B current projection with MOD-12 complete and MOD-13 pending', () => {
+test('locks the Stage B current projection with MOD-13 complete and STY-00 pending', () => {
   assertStageBProjection(projectStatus, topicManifest, requiredDocument());
 });
 
 test('rejects controlled MOD-12 through MOD-13 publication, status and link mutations', () => {
   for (const [label, mutateManifest, mutateDocument] of [
     ['MOD-12 unpublished', (value) => { value.topics.find(({id}) => id === 'MOD-12').published = false; }],
-    ['MOD-13 complete', (value) => { value.topics.find(({id}) => id === 'MOD-13').status.value = 'complete'; }],
+    ['MOD-13 pending', (value) => { value.topics.find(({id}) => id === 'MOD-13').status.value = 'pending'; }],
+    ['STY-00 complete', (value) => { value.topics.find(({id}) => id === 'STY-00').status.value = 'complete'; }],
     ['MOD-12 unlinked', undefined, (value) => { value.body = value.body.replace('(/modeling/mod-12)', '(#removed)'); }],
     ['MOD-13 linked', undefined, (value) => { value.body += '\n[MOD-13](/modeling/mod-13)\n'; }],
   ]) {

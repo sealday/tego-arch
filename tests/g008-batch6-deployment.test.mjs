@@ -187,9 +187,10 @@ function assertBacklogClosure(source) {
   assert.match(source, /^- \[x\] \*\*MOD-10 /mu);
   assert.match(source, /^- \[x\] \*\*MOD-11 /mu);
   assert.match(source, /^- \[x\] \*\*MOD-12 /mu);
-  assert.match(source, /^- \[ \] \*\*MOD-13 /mu);
-  assert.match(source, /当前持久故事：\*\* `G008`/u);
-  assert.doesNotMatch(source, /最近完成 `G008`/u);
+  assert.match(source, /^- \[x\] \*\*MOD-13 /mu);
+  assert.match(source, /^- \[ \] \*\*STY-00 /mu);
+  assert.match(source, /当前持久故事：\*\* `G009`/u);
+  assert.match(source, /最近完成 `G008`/u);
 }
 
 test('records exact successful G008 Batch 6 deployment evidence', () => {
@@ -225,14 +226,14 @@ test('preserves Batch 6 evidence under the live Batch 7 projection', () => {
   assert.equal(topicsById.get('MOD-11')?.status.value, 'complete');
   assert.equal(topicsById.get('MOD-12')?.published, true);
   assert.equal(topicsById.get('MOD-12')?.status.value, 'complete');
-  for (const id of ['MOD-13']) {
-    assert.equal(topicsById.get(id)?.published, true, id);
-    assert.equal(topicsById.get(id)?.status.value, 'pending', id);
-  }
+  assert.equal(topicsById.get('MOD-13')?.published, true);
+  assert.equal(topicsById.get('MOD-13')?.status.value, 'complete');
+  assert.equal(topicsById.get('STY-00')?.published, true);
+  assert.equal(topicsById.get('STY-00')?.status.value, 'pending');
   assert.deepEqual(projectStatus, {
     schema_version: 1,
-    durable_stories: {completed: 7, total: 20, current: 'G008'},
-    completed_topics: 51,
+    durable_stories: {completed: 8, total: 20, current: 'G009'},
+    completed_topics: 52,
     content_documents: 94,
     governed_sources: 494,
     sources: {
@@ -256,7 +257,7 @@ test('rejects backlog evidence status and next-topic mutations', () => {
     backlog.replace('- [x] **MOD-08 ', '- [ ] **MOD-08 '),
     backlog.replace('- [x] **MOD-09 ', '- [ ] **MOD-09 '),
     backlog.replace('- [x] **MOD-11 ', '- [ ] **MOD-11 '),
-    backlog.replace('- **当前持久故事：** `G008`。', '- **当前持久故事：** `G009`。'),
+    backlog.replace('- **当前持久故事：** `G009`。', '- **当前持久故事：** `G008`。'),
     backlog.replace('下一项为 MOD-09', '下一项为 MOD-10'),
   ]) {
     assert.throws(() => assertBacklogClosure(mutation));

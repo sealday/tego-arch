@@ -32,13 +32,14 @@ export function parseDurableStoryStatus(backlogSource) {
   const lastCompleted = Number(progress[3]);
   const currentNumber = Number(current[1]);
   if (
-    completed !== 7 ||
     total !== 20 ||
-    lastCompleted !== 7 ||
-    currentNumber !== 8
+    completed <= 0 ||
+    completed >= total ||
+    completed !== lastCompleted ||
+    currentNumber !== lastCompleted + 1
   ) {
     throw new Error(
-      'durable story baseline must be 7 / 20 with G007 complete and G008 current',
+      'durable story baseline must align completed count, recently completed story, and next current story',
     );
   }
   return {completed, total, current: `G${current[1]}`};
