@@ -134,11 +134,72 @@ const decisionRecordFields = [
   '验证动作',
   '复核触发器',
 ];
-const exerciseScenarios = [
-  '订单确认与库存预留一致',
-  '报表消费者隔离与恢复',
-  '回滚且不丢失已接受订单',
+const expectedScenarioJudgments = [
+  [
+    '订单确认与库存预留一致',
+    [['候选 A', '未知'], ['候选 B', '需要补充机制']],
+  ],
+  [
+    '报表消费者隔离与恢复',
+    [['候选 A', '未知'], ['候选 B', '未知']],
+  ],
+  [
+    '回滚且不丢失已接受订单',
+    [['候选 A', '未知'], ['候选 B', '需要补充机制']],
+  ],
 ];
+const expectedMermaid = `flowchart TD
+  scenarios[质量属性场景] --> profiles[候选架构剖面]
+  profiles --> constraints[硬约束检查]
+  constraints --> compare[机制与证据比较]
+  compare --> enough{证据足够}
+  enough -->|是| decision[决策记录与复核触发器]
+  enough -->|否| validate[原型、测量或故障演练]
+  validate --> compare`;
+const expectedRegionOpenings = [
+  '<div className="table-wrapper table-wrapper--mapping" role="region" aria-label="候选架构剖面八维表，可横向滚动" tabIndex={0} onKeyDown={handleHorizontalArrowKey}>',
+  '<div className="diagram-wrapper diagram-wrapper--scroll-owner" role="region" aria-label="架构风格比较决策流程，可横向滚动" tabIndex={0} onKeyDown={handleHorizontalArrowKey}>',
+  '<div className="table-wrapper table-wrapper--mapping" role="region" aria-label="场景响应比较矩阵，可横向滚动" tabIndex={0} onKeyDown={handleHorizontalArrowKey}>',
+];
+
+function extractTableRows(source, header) {
+  const lines = source.split(/\r?\n/u);
+  const headerIndex = lines.indexOf(header);
+  assert.notEqual(headerIndex, -1, `missing table header: ${header}`);
+  const rows = [];
+  for (const line of lines.slice(headerIndex + 2)) {
+    if (!line.startsWith('|')) break;
+    rows.push(line.split('|').slice(1, -1).map((cell) => cell.trim()));
+  }
+  return rows;
+}
+
+function assertMethodStructure(source) {
+  const profileRows = extractTableRows(
+    source,
+    '| 维度 | 候选约束 | 实现机制 | 当前证据 | 未知项 |',
+  );
+  assert.deepEqual(profileRows.map(([dimension]) => dimension), dimensions, '八维顺序');
+
+  const mermaid = source.match(/```mermaid\n(?<graph>[\s\S]*?)\n```/u)?.groups?.graph;
+  assert.equal(mermaid, expectedMermaid, 'exact Mermaid nodes and edges');
+
+  const regionOpenings = source
+    .split(/\r?\n/u)
+    .filter((line) => line.startsWith('<div ') && line.includes('role="region"'));
+  assert.deepEqual(regionOpenings, expectedRegionOpenings, 'complete overflow-owner contracts');
+
+  const scenarioRows = extractTableRows(
+    source,
+    '| 场景与响应度量 | 候选响应 | 判断 | 所需机制 | 风险或代价 | 证据 | 置信度 |',
+  );
+  for (const [scenario, expected] of expectedScenarioJudgments) {
+    const actual = scenarioRows
+      .filter(([rowScenario]) => rowScenario === scenario)
+      .map(([, response, judgment]) => [response.match(/^候选 [AB]/u)?.[0], judgment]);
+    assert.deepEqual(actual, expected, `${scenario} candidate order and judgments`);
+  }
+}
 
 function observationFields({
   at,
@@ -247,9 +308,7 @@ test('publishes the approved STY-00 metadata and style headings', () => {
 });
 
 test('locks the eight-dimension profile and non-numeric judgments', () => {
-  for (const value of dimensions) {
-    assert.match(document.source, new RegExp(`\\| ${value} \\|`, 'u'));
-  }
+  assertMethodStructure(document.source);
   for (const value of judgments) assert.match(document.source, new RegExp(value, 'u'));
   assert.match(document.source, /维度 \| 候选约束 \| 实现机制 \| 当前证据 \| 未知项/u);
   assert.match(
@@ -289,12 +348,56 @@ test('records all decision fields and compares both candidates against the same 
   for (const field of decisionRecordFields) {
     assert.match(document.source, new RegExp(`\\*\\*${field}：\\*\\*`, 'u'));
   }
-  for (const scenario of exerciseScenarios) {
-    const rows = document.source.match(new RegExp(`^\\| ${scenario} \\|`, 'gmu')) ?? [];
-    assert.equal(rows.length, 2, `${scenario} must have candidate A and B rows`);
+  assertMethodStructure(document.source);
+  assert.match(
+    document.source,
+    /仍未关闭的风险：\*\*[^\n]*本地事务[^\n]*回滚[^\n]*恢复时长/u,
+  );
+  assert.match(
+    document.source,
+    /验证动作：\*\*[^\n]*事务[^\n]*已接受订单[^\n]*Outbox[^\n]*消费者不可用[^\n]*恢复时长/u,
+  );
+  assert.match(document.source, /选择候选 A[^\n。]*条件[^\n。]*验证门槛/u);
+  assert.match(document.source, /验证门槛[^\n。]*不能[^\n。]*验证完成/u);
+});
+
+test('rejects the four reviewed method-contract mutations', async (t) => {
+  const mutations = [
+    {
+      name: 'swap dimension order',
+      source: document.source.replace(
+        /(^\| 边界 \|.*$)\n(^\| 控制流 \|.*$)/mu,
+        '$2\n$1',
+      ),
+    },
+    {
+      name: 'bypass constraints edge',
+      source: document.source.replace(
+        '  profiles --> constraints[硬约束检查]\n  constraints --> compare[机制与证据比较]',
+        '  profiles --> compare[机制与证据比较]',
+      ),
+    },
+    {
+      name: 'duplicate candidate A',
+      source: document.source.replace(
+        '| 报表消费者隔离与恢复 | 候选 B ',
+        '| 报表消费者隔离与恢复 | 候选 A ',
+      ),
+    },
+    {
+      name: 'remove scroll-owner class',
+      source: document.source.replace(
+        'diagram-wrapper diagram-wrapper--scroll-owner',
+        'diagram-wrapper',
+      ),
+    },
+  ];
+  for (const mutation of mutations) {
+    await t.test(mutation.name, () => {
+      assert.notEqual(mutation.source, document.source, `${mutation.name} fixture changed`);
+      assert.throws(() => assertMethodStructure(mutation.source), undefined, mutation.name);
+    });
   }
-  assert.match(document.source, /报表消费者隔离与恢复 \| 候选 A[^\n]*\| 未知 \|/u);
-  assert.match(document.source, /报表消费者隔离与恢复 \| 候选 B[^\n]*\| 未知 \|/u);
 });
 
 test('keeps the approved visible relations and exercise decision', () => {
