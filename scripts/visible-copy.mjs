@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import {createProcessor} from '@mdx-js/mdx';
 import {createRequire} from 'node:module';
+import {decodeNamedCharacterReference} from 'decode-named-character-reference';
 
 const require = createRequire(import.meta.url);
 const grayMatter = require('@11ty/gray-matter');
@@ -981,6 +982,22 @@ const visibleJsxAttributes = new Set([
 ]);
 const visibleObjectProperties = new Set(['title', 'term', 'description']);
 
+const decodeJsxCharacterReferences = (value, relativePath, line) => (
+  value.replace(/&(?:#(\d+)|#x([\da-fA-F]+)|(\w+));/gu, (reference, decimal, hex, name) => {
+    if (name) {
+      const decoded = decodeNamedCharacterReference(name);
+      return decoded === false ? reference : decoded;
+    }
+    const codePoint = Number.parseInt(decimal ?? hex, decimal ? 10 : 16);
+    if (codePoint > 0x10FFFF) {
+      throw new Error(
+        `${relativePath}:${line}: invalid JSX numeric character reference "${reference}"`,
+      );
+    }
+    return String.fromCodePoint(codePoint);
+  })
+);
+
 const collectStaticTsxStrings = (node, collect) => {
   if (ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node)) {
     collect(node, node.text);
@@ -1059,7 +1076,12 @@ export const extractVisibleTsxStrings = (source, relativePath) => {
     for (const match of raw.matchAll(/[^\r\n]+/gu)) {
       const leadingWhitespace = match[0].search(/\S/u);
       if (leadingWhitespace === -1) continue;
-      addRecordAtPosition(node.pos + match.index + leadingWhitespace, match[0]);
+      const position = node.pos + match.index + leadingWhitespace;
+      const line = sourceFile.getLineAndCharacterOfPosition(position).line + 1;
+      addRecordAtPosition(
+        position,
+        decodeJsxCharacterReferences(match[0], relativePath, line),
+      );
     }
   };
 

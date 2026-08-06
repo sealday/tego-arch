@@ -501,6 +501,70 @@ export function Copy() {
   );
 });
 
+test('decodes raw JSX character references without changing JavaScript literals', () => {
+  const source = `const copy = {
+  title: "JavaScript &amp; literal",
+  description: \`Template &apos; literal\`,
+};
+export function Entities() {
+  return <div>
+    Agent&nbsp;worker &amp; API &apos;ok&apos; &quot;q&quot; &lt;x&gt; &#65; &#x1F600;
+    unknown &bogus; malformed &amp
+  </div>;
+}`;
+
+  assert.deepEqual(
+    extractVisibleTsxStrings(source, 'src/Entities.tsx').map(({line, text, excerpt}) => ({
+      line,
+      text,
+      excerpt,
+    })),
+    [
+      {
+        line: 2,
+        text: 'JavaScript &amp; literal',
+        excerpt: 'title: "JavaScript &amp; literal",',
+      },
+      {
+        line: 3,
+        text: 'Template &apos; literal',
+        excerpt: 'description: `Template &apos; literal`,',
+      },
+      {
+        line: 7,
+        text: 'Agent worker & API \'ok\' "q" <x> A 😀',
+        excerpt: 'Agent&nbsp;worker &amp; API &apos;ok&apos; &quot;q&quot; &lt;x&gt; &#65; &#x1F600;',
+      },
+      {
+        line: 8,
+        text: 'unknown &bogus; malformed &amp',
+        excerpt: 'unknown &bogus; malformed &amp',
+      },
+    ],
+  );
+});
+
+test('fails closed on an out-of-range JSX numeric character reference', () => {
+  assert.throws(
+    () => extractVisibleTsxStrings(
+      'export const Broken = () => <div>\n  invalid &#x110000;\n</div>;',
+      'src/Broken.tsx',
+    ),
+    /src\/Broken\.tsx:2: invalid JSX numeric character reference "&#x110000;"/u,
+  );
+});
+
+test('decodes reader-visible character references in HomepageFeatures', async () => {
+  const file = 'src/components/HomepageFeatures/index.tsx';
+  const records = extractVisibleTsxStrings(await readFile(file, 'utf8'), file);
+  assert.ok(records.some(({line, text, excerpt}) => (
+    line === 28
+    && text === "Docusaurus lets you focus on your docs, and we'll do the chores. Go"
+    && excerpt.includes('we&apos;ll')
+  )));
+  assert.doesNotMatch(records.map(({text}) => text).join('\n'), /&apos;/u);
+});
+
 test('extracts reader copy from current CaseCard and topic indexes', async () => {
   const fixtures = [
     {
