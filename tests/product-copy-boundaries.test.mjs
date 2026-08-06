@@ -74,14 +74,172 @@ const maskLinkDestinations = (source) => {
   return masked.join('');
 };
 
-const maskReferenceDefinitions = (source) => source
-  .split('\n')
-  .map((line) => (
-    /^ {0,3}\[(?:\\.|[^\]\\])+\]:[ \t]*(?:<[^>\n]+>|\S+)/u.test(line)
-      ? blankCharacters(line)
-      : line
-  ))
-  .join('\n');
+const asciiPunctuation = /[!-/:-@\[-`{-~]/u;
+
+const isLineEnding = (character) => character === '\n' || character === '\r';
+
+const skipLineEnding = (source, index) => (
+  source[index] === '\r' && source[index + 1] === '\n' ? index + 2 : index + 1
+);
+
+const skipSpacesAndTabs = (source, index) => {
+  while (source[index] === ' ' || source[index] === '\t') index += 1;
+  return index;
+};
+
+const skipEscapedPunctuation = (source, index) => (
+  source[index] === '\\' && asciiPunctuation.test(source[index + 1] ?? '')
+    ? index + 2
+    : index
+);
+
+const parseReferenceLabel = (source, opening) => {
+  let index = opening + 1;
+  while (index < source.length) {
+    const afterEscape = skipEscapedPunctuation(source, index);
+    if (afterEscape !== index) {
+      index = afterEscape;
+      continue;
+    }
+    if (source[index] === '[') return null;
+    if (source[index] === ']') {
+      const content = source.slice(opening + 1, index);
+      if (
+        Array.from(content).length > 999
+        || !/[^ \t\r\n]/u.test(content)
+      ) return null;
+      return index + 1;
+    }
+    index += 1;
+  }
+  return null;
+};
+
+const parseReferenceDestination = (source, start) => {
+  if (source[start] === '<') {
+    let index = start + 1;
+    while (index < source.length && !isLineEnding(source[index])) {
+      const afterEscape = skipEscapedPunctuation(source, index);
+      if (afterEscape !== index) {
+        index = afterEscape;
+        continue;
+      }
+      if (source[index] === '<') return null;
+      if (source[index] === '>') return index + 1;
+      index += 1;
+    }
+    return null;
+  }
+
+  let depth = 0;
+  let index = start;
+  while (
+    index < source.length
+    && source[index] !== ' '
+    && source[index] !== '\t'
+    && !isLineEnding(source[index])
+  ) {
+    const character = source[index];
+    const codePoint = character.codePointAt(0);
+    if (codePoint < 0x20 || codePoint === 0x7f || (index === start && character === '<')) {
+      return null;
+    }
+
+    const afterEscape = skipEscapedPunctuation(source, index);
+    if (afterEscape !== index) {
+      index = afterEscape;
+      continue;
+    }
+    if (character === '(') depth += 1;
+    if (character === ')') {
+      if (depth === 0) return null;
+      depth -= 1;
+    }
+    index += 1;
+  }
+
+  return index > start && depth === 0 ? index : null;
+};
+
+const parseReferenceTitle = (source, start) => {
+  const delimiter = source[start];
+  if (delimiter !== '"' && delimiter !== "'" && delimiter !== '(') return null;
+  const closing = delimiter === '(' ? ')' : delimiter;
+  let index = start + 1;
+
+  while (index < source.length) {
+    const afterEscape = skipEscapedPunctuation(source, index);
+    if (afterEscape !== index) {
+      index = afterEscape;
+      continue;
+    }
+    if (source[index] === closing) return index + 1;
+    if (delimiter === '(' && source[index] === '(') return null;
+    if (isLineEnding(source[index])) {
+      const nextLine = skipSpacesAndTabs(source, skipLineEnding(source, index));
+      if (nextLine >= source.length || isLineEnding(source[nextLine])) return null;
+      index = nextLine;
+      continue;
+    }
+    index += 1;
+  }
+  return null;
+};
+
+const parseReferenceDefinition = (source, lineStart) => {
+  let start = lineStart;
+  while (source[start] === ' ' && start - lineStart < 3) start += 1;
+  if (source[start] !== '[') return null;
+
+  let index = parseReferenceLabel(source, start);
+  if (index === null || source[index] !== ':') return null;
+  index = skipSpacesAndTabs(source, index + 1);
+  if (isLineEnding(source[index])) {
+    index = skipSpacesAndTabs(source, skipLineEnding(source, index));
+  }
+
+  index = parseReferenceDestination(source, index);
+  if (index === null) return null;
+
+  const destinationEnd = skipSpacesAndTabs(source, index);
+  if (destinationEnd >= source.length || isLineEnding(source[destinationEnd])) {
+    if (destinationEnd >= source.length) return {start, end: destinationEnd};
+
+    const nextLine = skipSpacesAndTabs(
+      source,
+      skipLineEnding(source, destinationEnd),
+    );
+    const titleEnd = parseReferenceTitle(source, nextLine);
+    if (titleEnd === null) return {start, end: destinationEnd};
+    const definitionEnd = skipSpacesAndTabs(source, titleEnd);
+    return definitionEnd >= source.length || isLineEnding(source[definitionEnd])
+      ? {start, end: definitionEnd}
+      : {start, end: destinationEnd};
+  }
+
+  const titleEnd = parseReferenceTitle(source, destinationEnd);
+  if (titleEnd === null) return null;
+  const definitionEnd = skipSpacesAndTabs(source, titleEnd);
+  return definitionEnd >= source.length || isLineEnding(source[definitionEnd])
+    ? {start, end: definitionEnd}
+    : null;
+};
+
+const maskReferenceDefinitions = (source) => {
+  const masked = source.split('');
+  for (let lineStart = 0; lineStart < source.length;) {
+    const definition = parseReferenceDefinition(source, lineStart);
+    if (definition) {
+      for (let index = definition.start; index < definition.end; index += 1) {
+        if (!isLineEnding(masked[index])) masked[index] = ' ';
+      }
+    }
+    const lineEnding = source.indexOf('\n', lineStart);
+    if (lineEnding === -1) break;
+    lineStart = lineEnding + 1;
+  }
+  return masked.join('');
+};
 
 const visibleMdxSource = (source, relativePath) => {
   const lines = source.split('\n');
@@ -348,6 +506,57 @@ test('masks reference-definition destinations without changing source line numbe
       line: 5,
       ruleId: 'generated-page-meta',
       excerpt: '本页从机器可读主题清单生成。',
+    },
+  ]);
+});
+
+test('reference-definition grammar leaves trailing visible text unmasked', () => {
+  const fixture = `# Example
+[ref]: /safe 本页从机器可读主题清单生成
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/invalid-reference.mdx', fixture), [
+    {
+      file: 'content/cases/invalid-reference.mdx',
+      line: 2,
+      ruleId: 'generated-page-meta',
+      excerpt: '[ref]: /safe 本页从机器可读主题清单生成',
+    },
+  ]);
+});
+
+test('reference-definition grammar masks next-line destinations and valid titles', () => {
+  const fixture = `# Example
+[next-destination]:
+  /本页从机器可读主题清单生成
+[same-line-title]: /safe "本页从机器可读主题清单生成"
+[next-line-title]: /safe
+  (本页从机器可读主题清单生成)
+
+本页从机器可读主题清单生成。
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/multiline-references.mdx', fixture), [
+    {
+      file: 'content/cases/multiline-references.mdx',
+      line: 8,
+      ruleId: 'generated-page-meta',
+      excerpt: '本页从机器可读主题清单生成。',
+    },
+  ]);
+});
+
+test('reference-definition grammar leaves extra text after a title visible', () => {
+  const fixture = `# Example
+[ref]: /safe "title" 本页从机器可读主题清单生成
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/invalid-title.mdx', fixture), [
+    {
+      file: 'content/cases/invalid-title.mdx',
+      line: 2,
+      ruleId: 'generated-page-meta',
+      excerpt: '[ref]: /safe "title" 本页从机器可读主题清单生成',
     },
   ]);
 });
