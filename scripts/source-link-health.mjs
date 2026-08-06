@@ -1,6 +1,7 @@
 import {createHash, randomUUID} from 'node:crypto';
 import {mkdir, readFile, rename, rm, writeFile} from 'node:fs/promises';
 import path from 'node:path';
+import {isDeepStrictEqual} from 'node:util';
 import {fileURLToPath} from 'node:url';
 
 export const maxSuccessAgeMs = 120 * 24 * 60 * 60 * 1000;
@@ -252,8 +253,10 @@ function mergeResultObservations(left, right) {
     'merge_conflicts',
   ]);
   const identityFields = new Set(['transport_locator', 'source_ids']);
-  const sameLastAttempt =
-    JSON.stringify(left.last_attempt) === JSON.stringify(right.last_attempt);
+  const sameLastAttempt = isDeepStrictEqual(
+    left.last_attempt,
+    right.last_attempt,
+  );
   const comparableFields = new Set([
     ...Object.keys(left),
     ...Object.keys(right),
@@ -265,7 +268,7 @@ function mergeResultObservations(left, right) {
       (field) =>
         !excludedFields.has(field) &&
         (identityFields.has(field) || sameLastAttempt) &&
-        JSON.stringify(left[field]) !== JSON.stringify(right[field]),
+        !isDeepStrictEqual(left[field], right[field]),
     ),
   ];
   const newerAttempt = newerObservation(left.last_attempt, right.last_attempt);

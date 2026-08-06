@@ -1348,6 +1348,15 @@ test('fails closed independent of order when duplicate archives conflict outside
   ];
   const tampered = structuredClone(valid);
   tampered.superseded_results[0].result.review_status = 'stale';
+  const reorderedAttempt = tampered.superseded_results[0].result.last_attempt;
+  tampered.superseded_results[0].result.last_attempt = {
+    redirects: reorderedAttempt.redirects,
+    login_wall_detected: reorderedAttempt.login_wall_detected,
+    http_status: reorderedAttempt.http_status,
+    final_transport_locator: reorderedAttempt.final_transport_locator,
+    outcome: reorderedAttempt.outcome,
+    at: reorderedAttempt.at,
+  };
 
   const forward = mergeLinkHealthCaches(governed, [valid, tampered], {now});
   const reverse = mergeLinkHealthCaches(governed, [tampered, valid], {now});
