@@ -15,8 +15,9 @@ type HomepageEntry = Readonly<{
   href: string;
 }>;
 
-type FutureOutput = Readonly<{
+type FutureDirection = Readonly<{
   title: string;
+  term: string;
   description: string;
 }>;
 
@@ -41,10 +42,22 @@ const homepageEntries: readonly HomepageEntry[] = [
   },
 ] as const;
 
-const futureOutputs: readonly FutureOutput[] = [
-  {title: '便携小抄', description: '守住第一性原理与高代价错误'},
-  {title: '精华学习路线', description: '从完整体系提取连贯学习线索'},
-  {title: 'Tego 实践与规划', description: '说明判断在 Tego 设计中的应用与后续方向'},
+const futureDirections: readonly FutureDirection[] = [
+  {
+    title: '架构决策速查',
+    term: 'Architecture Decision Quick Reference',
+    description: '用于设计、评审与复盘的决策参考',
+  },
+  {
+    title: '精选学习路径',
+    term: 'Curated Learning Paths',
+    description: '按角色与任务场景组织学习序列',
+  },
+  {
+    title: 'Tego 参考架构',
+    term: 'Tego Reference Architecture',
+    description: '公开真实决策、验证结果与演进路线',
+  },
 ] as const;
 
 const homepageCases = featuredCases.slice(0, 3);
@@ -236,16 +249,35 @@ function ResearchHighlights(): ReactNode {
   );
 }
 
-function FutureOutputSection(): ReactNode {
+function FutureDirectionsSection(): ReactNode {
+  const futureRoadmapSrc = useBaseUrl('/img/illustrations/tego-arch-future-directions.png');
+
   return (
     <section className={styles.pageSection} aria-labelledby="future-title">
       <div className="container">
-        <SectionIntro id="future-title" label="04 / 后续产物" title="下一步，让完整内容变得更轻" />
+        <SectionIntro
+          id="future-title"
+          label="04 / 未来方向"
+          title="让完整体系进入不同使用场景"
+          description="三个方向并行演进，不代表固定顺序或发布日期"
+        />
+        <div className={`${styles.roadmapMedia} ${styles.futureRoadmap}`}>
+          <img
+            className={styles.roadmapImage}
+            src={futureRoadmapSrc}
+            width={1672}
+            height={941}
+            loading="lazy"
+            decoding="async"
+            alt="Tego Arch 从完整架构知识体系并行发展出架构决策速查、精选学习路径和 Tego 参考架构三个未来方向"
+          />
+        </div>
         <ul className={styles.futureList}>
-          {futureOutputs.map((output) => (
-            <li key={output.title}>
-              <Heading as="h3">{output.title}</Heading>
-              <p>{output.description}</p>
+          {futureDirections.map((direction) => (
+            <li key={direction.title}>
+              <Heading as="h3">{direction.title}</Heading>
+              <span className={styles.futureTerm}>{direction.term}</span>
+              <p>{direction.description}</p>
             </li>
           ))}
         </ul>
@@ -282,7 +314,7 @@ export default function Home(): ReactNode {
         <RoadmapSection />
         <EntrySection />
         <ResearchHighlights />
-        <FutureOutputSection />
+        <FutureDirectionsSection />
         <ContributionBand />
       </main>
     </Layout>
