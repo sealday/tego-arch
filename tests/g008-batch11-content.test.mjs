@@ -92,6 +92,10 @@ const expectedExerciseSteps = [
 
 const expectedStatuses = ['待分级', '阻断', '修复中', '接受差异', '已验证关闭', '未知'];
 
+const expectedDriftDefinition = '四类漂移按内容漂移 → 结构漂移 → 决策漂移 → 运行漂移排列。内容漂移比较 backlog、front matter 与生成清单；结构漂移比较受测接口与模型关系；决策漂移比较有效 ADR 与实现；运行漂移比较期望提交、实际部署身份和线上观测。';
+
+const expectedScenarioLabel = '**说明性场景：**';
+
 function markdownTables(body) {
   return [...body.matchAll(/(^\|[^\n]+\|\n^\|(?:\s*:?-+:?\s*\|)+\n(?:^\|[^\n]+\|\n?)+)/gmu)]
     .map(([source]) => {
@@ -139,7 +143,8 @@ function assertMethodContract(body) {
   assert.match(body, /生成是从当前权威确定性重建派生产物/u);
   assert.match(body, /验证是按合同比较两个独立事实并只报告差异/u);
   assert.match(body, /观测是读取并保留实际状态，不把它反写成期望状态/u);
-  assertOrderedText(body, ['内容漂移', '结构漂移', '决策漂移', '运行漂移'], 'drift types');
+  const driftDefinition = body.match(/## 漂移检测闭环\n\n([^\n]+)/u)?.[1] ?? '';
+  assert.equal(driftDefinition, expectedDriftDefinition, 'canonical drift definition and order');
   assertOrderedText(body, expectedSteps.map((step) => `**${step}：**`), 'closure steps');
   assert.match(body, /禁止手工修补派生产物/u);
   assert.match(body, /同步不是双向复制；每项事实先指定一个当前权威。/u);
@@ -148,8 +153,15 @@ function assertMethodContract(body) {
   assert.match(body, /派生产物必须由权威重新生成，不能手工修补。/u);
   assert.match(body, /ADR 记录决定与状态，但不证明实现遵循决定。/u);
   assert.match(body, /部署成功只证明指定提交完成指定发布流程，不证明全部运行健康。/u);
-  assert.match(body, /说明性场景/u);
-  for (const step of expectedExerciseSteps) assert.match(body, new RegExp(step.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&'), 'u'));
+  const exercise = body.match(/## 完整演练\n\n([\s\S]*?)\n\n## 来源/u)?.[1] ?? '';
+  assert.ok(exercise.startsWith(`${expectedScenarioLabel} `), 'exercise starts with exact scenario label');
+  const numberedBlocks = [...exercise.matchAll(/(?:^\d+\. [^\n]+\n?)+/gmu)]
+    .map(([block]) => block.trim().split('\n'));
+  assert.deepEqual(
+    numberedBlocks,
+    [expectedExerciseSteps.map((step, index) => `${index + 1}. ${step}`)],
+    'exercise contains one exact ordered seven-step numbered list',
+  );
 }
 
 test('renders exact authority and drift ledgers with the complete method vocabulary', () => {
@@ -202,16 +214,50 @@ test('rejects controlled mutations to closure order and epistemic boundaries', (
   const mutations = [
     ['removed step', body.replace('**检测差异：**', '**已删除：**')],
     ['reordered steps', body.replace('**声明权威：**', '**临时：**').replace('**生成或验证：**', '**声明权威：**').replace('**临时：**', '**生成或验证：**')],
-    ['renamed drift type', body.replace('决策漂移', '决定偏差')],
+    ['renamed drift type', body.replace(
+      expectedDriftDefinition,
+      expectedDriftDefinition.replaceAll('决策漂移', '决定偏差'),
+    )],
     ['unknown changed to PASS', body.replaceAll('未知', 'PASS')],
     ['manual patch prohibition removed', body.replace('禁止手工修补派生产物', '可以直接修改派生产物')],
     ['ADR falsely proves implementation', body.replace('ADR 记录决定与状态，但不证明实现遵循决定。', 'ADR 记录决定与状态，并证明实现遵循决定。')],
     ['deployment falsely proves runtime health', body.replace('部署成功只证明指定提交完成指定发布流程，不证明全部运行健康。', '部署成功证明全部运行健康。')],
-    ['scenario label removed', body.replaceAll('说明性场景', '示例')],
+    ['scenario label removed', body.replace(expectedScenarioLabel, '**示例：**')],
   ];
 
   for (const [label, mutation] of mutations) {
     assert.notEqual(mutation, body, `${label} must change the fixture`);
     assert.throws(() => assertMethodContract(mutation), assert.AssertionError, label);
   }
+});
+
+test('rejects reordering the canonical drift-definition paragraph', () => {
+  const body = requiredDocument().body;
+  const mutation = body.replace(
+    expectedDriftDefinition,
+    expectedDriftDefinition.replace(
+      '内容漂移 → 结构漂移 → 决策漂移 → 运行漂移',
+      '结构漂移 → 内容漂移 → 决策漂移 → 运行漂移',
+    ),
+  );
+  assert.notEqual(mutation, body);
+  assert.throws(() => assertMethodContract(mutation), assert.AssertionError);
+});
+
+test('rejects changing only the exact exercise scenario label', () => {
+  const body = requiredDocument().body;
+  const mutation = body.replace(expectedScenarioLabel, '**示例：**');
+  assert.notEqual(mutation, body);
+  assert.throws(() => assertMethodContract(mutation), assert.AssertionError);
+});
+
+test('rejects reordering exact entries in the seven-step numbered exercise', () => {
+  const body = requiredDocument().body;
+  const firstTwoSteps = `1. ${expectedExerciseSteps[0]}\n2. ${expectedExerciseSteps[1]}`;
+  const mutation = body.replace(
+    firstTwoSteps,
+    `1. ${expectedExerciseSteps[1]}\n2. ${expectedExerciseSteps[0]}`,
+  );
+  assert.notEqual(mutation, body);
+  assert.throws(() => assertMethodContract(mutation), assert.AssertionError);
 });
