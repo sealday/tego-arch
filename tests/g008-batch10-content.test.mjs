@@ -484,8 +484,8 @@ test('publishes exact reciprocal MOD-12 relations without an override', () => {
   assert.equal('MOD-12' in topicRelations, false);
   const reciprocal = [
     ['modeling/mod-11-ddd-context-map.mdx', ['MOD-05', 'MOD-08', 'MOD-12'], /\[MOD-12 架构图审阅清单\]\(\/modeling\/mod-12\)[^。\n]*candidate Context is not component decomposition/iu],
-    ['quality-attributes/qa-02-reliability-availability-recoverability.mdx', ['QA-00', 'QA-01', 'QA-03', 'QA-08', 'MOD-08', 'MOD-12'], /\[MOD-12 架构图审阅清单\]\(\/modeling\/mod-12\)[^。\n]*视觉分离[^。\n]*不证明[^。\n]*故障隔离[^。\n]*传播限制[^。\n]*故障切换[^。\n]*恢复/u],
-    ['quality-attributes/qa-05-security-privacy-trust.mdx', ['QA-07', 'QA-08', 'QA-09', 'MOD-12'], /\[MOD-12 架构图审阅清单\]\(\/modeling\/mod-12\)[^。\n]*系统[^。\n]*网络边界[^。\n]*不证明[^。\n]*信任边界[^。\n]*身份[^。\n]*权限[^。\n]*数据[^。\n]*威胁/u],
+    ['quality-attributes/qa-02-reliability-availability-recoverability.mdx', ['QA-00', 'QA-01', 'QA-03', 'QA-08', 'MOD-08', 'MOD-12'], /\[架构图审阅清单\]\(\/modeling\/mod-12\)[^。\n]*视觉分离[^。\n]*不证明[^。\n]*故障隔离[^。\n]*传播限制[^。\n]*故障切换[^。\n]*恢复/u],
+    ['quality-attributes/qa-05-security-privacy-trust.mdx', ['QA-07', 'QA-08', 'QA-09', 'MOD-12'], /\[架构图审阅清单\]\(\/modeling\/mod-12\)[^。\n]*系统[^。\n]*网络边界[^。\n]*不证明[^。\n]*信任边界[^。\n]*身份[^。\n]*权限[^。\n]*数据[^。\n]*威胁/u],
   ];
   for (const [file, adjacentTopics, backlink] of reciprocal) {
     const related = relatedDocuments.get(file);

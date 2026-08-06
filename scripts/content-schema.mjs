@@ -233,12 +233,12 @@ export function knowledgeHeadingContract(type, topicId) {
 }
 
 export const qualityAttributeScenarioHeadings = [
-  '### Source',
-  '### Stimulus',
-  '### Environment',
-  '### Artifact',
-  '### Response',
-  '### Response measure',
+  '### 来源（Source）',
+  '### 刺激（Stimulus）',
+  '### 环境（Environment）',
+  '### 对象（Artifact）',
+  '### 响应（Response）',
+  '### 响应度量（Response Measure）',
 ];
 
 export const allowedValues = {

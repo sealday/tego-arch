@@ -27,7 +27,7 @@ test('orders section index links with exact navigation copy', async () => {
     ['content/intro.mdx', 1, '首页'],
     ['content/concepts/index.mdx', 2, '基础概念'],
     ['content/principles/index.mdx', 3, '架构原则'],
-    ['content/quality-attributes/index.mdx', 4, '质量属性'],
+    ['content/quality-attributes/index.mdx', 4, '质量属性（Quality Attribute）'],
     ['content/methods/index.mdx', 5, '架构方法'],
     ['content/modeling/index.mdx', 6, '建模与图示'],
     ['content/styles/index.mdx', 7, '架构风格'],

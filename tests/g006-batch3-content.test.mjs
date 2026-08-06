@@ -88,7 +88,7 @@ const illustrations = new Map([
       sourceId: 'src-atlas-qa09-safety-control-loop-c4a7e83b1d96',
       alt: '检查数字控制进入物理过程时的反馈、四类不安全动作和故障安全分支',
       caption:
-        'Security、可靠性、人工复核或冗余都不能单独证明 Safety；控制动作必须结合反馈、时序、权限与运行边界验证。',
+        '安全性、可靠性、人工复核或冗余都不能单独证明安全保障；控制动作必须结合反馈、时序、权限与运行边界验证。',
     },
   ],
 ]);
@@ -173,16 +173,16 @@ test('security privacy and safety boundaries', () => {
   assert.match(security, /合规.{0,100}(?:不能|不等于|不证明)/su);
 
   const operability = extractMarkdownBody(requiredDocument('QA-08').source);
-  assert.match(operability, /monitoring.{0,160}observability.{0,160}operability/isu);
+  assert.match(operability, /监控.{0,160}可观测性.{0,160}可运维性/su);
   assert.match(operability, /用户影响.{0,500}信号.{0,500}诊断.{0,500}受控.{0,500}用户可见.{0,500}学习/su);
-  for (const role of ['on-call', '事件指挥', '运行操作', '沟通', '长期负责人']) {
+  for (const role of ['值班人员', '事件指挥', '运行操作', '沟通', '长期负责人']) {
     assert.match(operability, new RegExp(role, 'iu'));
   }
   assert.match(operability, /遥测.{0,100}(?:不能|不等于|不证明)/su);
   assert.match(operability, /自动化.{0,100}(?:不能|不等于|不证明)/su);
 
   const safety = extractMarkdownBody(requiredDocument('QA-09').source);
-  assert.match(safety, /Safety.{0,180}Security.{0,180}可靠性|可靠性.{0,180}Security.{0,180}Safety/isu);
+  assert.match(safety, /安全保障.{0,180}安全性.{0,180}可靠性|可靠性.{0,180}安全性.{0,180}安全保障/su);
   assert.match(safety, /损失.{0,300}危害.{0,300}控制结构.{0,300}不安全控制动作.{0,300}安全约束.{0,300}残余风险/su);
   for (const category of ['未提供', '不安全情境', '时机或顺序错误', '持续过久或过早停止']) {
     assert.match(safety, new RegExp(category, 'u'));

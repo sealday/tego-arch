@@ -458,6 +458,65 @@
       "forbidden_aliases": ["Tego Reference Architecture"],
       "note": "项目长期公开架构决策与验证结果的方向名称。",
       "order": 350
+    },
+    {
+      "id": "quality-attribute-scenario-fields",
+      "canonical_zh": "质量属性场景字段",
+      "english": null,
+      "acronym": null,
+      "kind": "standard",
+      "first_use": "质量属性场景字段",
+      "subsequent_use": ["场景字段"],
+      "allowed_aliases": [
+        "来源（Source）",
+        "刺激（Stimulus）",
+        "环境（Environment）",
+        "对象（Artifact）",
+        "响应（Response）",
+        "响应度量（Response Measure）"
+      ],
+      "forbidden_aliases": ["Response measure"],
+      "note": "六个固定场景字段使用中文主称与英文括注；其他叙述只使用中文字段名。",
+      "order": 360
+    },
+    {
+      "id": "safety",
+      "canonical_zh": "安全保障",
+      "english": "Safety",
+      "acronym": null,
+      "kind": "translated-term",
+      "first_use": "安全保障（Safety）",
+      "subsequent_use": ["安全保障"],
+      "allowed_aliases": [],
+      "forbidden_aliases": ["Safety"],
+      "note": "与 Security 的安全性区分，特指防止系统行为造成不可接受的物理或环境损失。",
+      "order": 370
+    },
+    {
+      "id": "security",
+      "canonical_zh": "安全性",
+      "english": "Security",
+      "acronym": null,
+      "kind": "translated-term",
+      "first_use": "安全性（Security）",
+      "subsequent_use": ["安全性"],
+      "allowed_aliases": [],
+      "forbidden_aliases": ["Security"],
+      "note": "保护资产、命令、身份与完整性的质量属性，不与 Safety 混用。",
+      "order": 380
+    },
+    {
+      "id": "privacy",
+      "canonical_zh": "隐私",
+      "english": "Privacy",
+      "acronym": null,
+      "kind": "translated-term",
+      "first_use": "隐私（Privacy）",
+      "subsequent_use": ["隐私"],
+      "allowed_aliases": [],
+      "forbidden_aliases": ["Privacy", "privacy"],
+      "note": "关注数据处理对数据主体的影响，不与安全性或合规等同。",
+      "order": 390
     }
   ]
 }

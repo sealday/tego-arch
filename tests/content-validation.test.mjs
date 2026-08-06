@@ -910,12 +910,12 @@ const knowledgeFixtures = new Map([
     '## 学习问题',
     '## 定义与业务目标',
     '## 质量属性场景',
-    '### Source',
-    '### Stimulus',
-    '### Environment',
-    '### Artifact',
-    '### Response',
-    '### Response measure',
+    '### 来源（Source）',
+    '### 刺激（Stimulus）',
+    '### 环境（Environment）',
+    '### 对象（Artifact）',
+    '### 响应（Response）',
+    '### 响应度量（Response Measure）',
     '## 架构策略',
     '## 测量信号与阈值',
     '## 权衡与失败模式',
@@ -1651,10 +1651,10 @@ test('keeps quality attribute scenario fields inside their section', async () =>
     const relativePath = 'misplaced-response-measure.mdx';
     const headings = knowledgeFixtures.get(type);
     const body = headings
-      .filter((heading) => heading !== '### Response measure')
+      .filter((heading) => heading !== '### 响应度量（Response Measure）')
       .flatMap((heading) =>
         heading === '## 架构策略'
-          ? [heading, '### Response measure']
+          ? [heading, '### 响应度量（Response Measure）']
           : [heading],
       )
       .join('\n\n');
@@ -1666,7 +1666,7 @@ test('keeps quality attribute scenario fields inside their section', async () =>
       result.errors.some(
         (error) =>
           error.includes(relativePath) &&
-          error.includes('### Response measure') &&
+          error.includes('### 响应度量（Response Measure）') &&
           error.includes('## 质量属性场景'),
       ),
     );

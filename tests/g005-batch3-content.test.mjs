@@ -85,7 +85,7 @@ const immutableFiles = new Map([
   ],
   [
     'scripts/content-schema.mjs',
-    '6cb7093ad5def127cbda9071c606b7c5840b9c5e89785c100ab1bf9935bca454',
+    '6606f4754b5997a8e1f05a5ffa8a5fa6c8a2c41c1fdb62e49468594fd6733f7b',
   ],
   [
     'sidebars.ts',
@@ -497,7 +497,7 @@ test('preserves cases QA-01 the knowledge schema and sidebar', async () => {
   );
   assert.equal(
     createHash('sha256').update(qa01Bytes).digest('hex'),
-    'd28a6ddea6ba88c89f636eb77bd5284a6c28010ba9c6785ac0edd0d944e40cfe',
+    'b218169b64f22f8d2a18faf1d52e6daa7a211cc4ac950e2e65dcb401a19cdb9d',
     'content/quality-attributes/qa-01-scenario-writing.mdx',
   );
 

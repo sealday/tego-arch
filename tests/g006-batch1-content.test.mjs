@@ -345,12 +345,12 @@ test('QA-00 and QA-01 content relations and architecture path', async () => {
     .filter(({level}) => level === 3)
     .map(({text}) => text);
   assert.deepEqual(scenarioHeadings, [
-    'Source',
-    'Stimulus',
-    'Environment',
-    'Artifact',
-    'Response',
-    'Response measure',
+    '来源（Source）',
+    '刺激（Stimulus）',
+    '环境（Environment）',
+    '对象（Artifact）',
+    '响应（Response）',
+    '响应度量（Response Measure）',
   ]);
 
   const architecturePath = await pathBody('01-architecture-thinking.mdx');
@@ -371,37 +371,37 @@ test('QA-02 and QA-03 content relations reliability path and distributed path', 
   assertArticleContract('QA-03');
 
   const qa02 = requiredDocument('QA-02').body;
-  for (const term of ['fault', 'failure', 'RTO', 'RPO', '结果未知']) {
+  for (const term of ['故障', '失效', '恢复时间目标', '恢复点目标', '结果未知']) {
     assert.match(qa02, new RegExp(term, 'iu'), `QA-02 must explain ${term}`);
   }
 
   const qa03 = requiredDocument('QA-03').body;
   for (const term of [
-    'workload',
-    'concurrency',
-    'service time',
-    'throughput',
+    '工作负载',
+    '并发量',
+    '服务时间',
+    '吞吐',
     'p50',
     'p95',
     'p99',
-    'utilization',
-    'queue',
-    'rejection',
-    'saturation',
+    '利用率',
+    '队列',
+    '拒绝',
+    '饱和',
   ]) {
     assert.match(qa03, new RegExp(term, 'iu'), `QA-03 must explain ${term}`);
   }
   assert.match(
     qa03,
-    /(?:平均|average).{0,80}(?:隐藏|掩盖).{0,40}(?:尾部|tail)/isu,
+    /平均.{0,80}(?:隐藏|掩盖).{0,40}尾部/su,
   );
   assert.match(
     qa03,
-    /(?:throughput|吞吐).{0,80}(?:offered load|请求负载|提供负载)/isu,
+    /吞吐.{0,80}(?:请求负载|提供负载)/su,
   );
   assert.match(
     qa03,
-    /(?:capacity|容量).{0,80}(?:边界|区间|运行包络).{0,120}(?:不是|不等于|并非).{0,60}(?:最大值|benchmark|基准)/isu,
+    /容量.{0,80}(?:边界|区间|运行包络).{0,120}(?:不是|不等于|并非).{0,60}(?:最大值|基准)/su,
   );
 
   const reliabilityPath = await pathBody('04-reliability-state.mdx');
