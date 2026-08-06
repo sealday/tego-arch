@@ -86,6 +86,29 @@ const visibleMdxSource = (source) => {
   );
 };
 
+const findEditorialTaskItems = (source) => {
+  const matches = [];
+  let offset = 0;
+  let insideEditorialSection = false;
+
+  for (const line of source.split('\n')) {
+    const sectionHeading = line.match(/^(#{1,2})\s+(.+?)\s*$/u);
+    if (sectionHeading) {
+      insideEditorialSection =
+        sectionHeading[1] === '##' && sectionHeading[2] === '后续待补';
+    }
+
+    if (insideEditorialSection) {
+      const item = line.match(/^-\s+补充[^\n]+$/u);
+      if (item) matches.push({index: offset + item.index, text: item[0]});
+    }
+
+    offset += line.length + 1;
+  }
+
+  return matches;
+};
+
 const rules = [
   {
     id: 'homepage-design-rationale',
@@ -102,6 +125,16 @@ const rules = [
     applies: (file) => file.endsWith('.mdx'),
     pattern: /本页从机器可读主题清单生成|计划主题[^。\n]{0,40}长期\s+backlog\s+跟踪/giu,
   },
+  {
+    id: 'editorial-todo-heading',
+    applies: (file) => file.endsWith('.mdx'),
+    pattern: /^##\s+后续待补\s*$/gmu,
+  },
+  {
+    id: 'editorial-task-item',
+    applies: (file) => file.endsWith('.mdx'),
+    find: findEditorialTaskItems,
+  },
 ];
 
 const findProductCopyIssues = (relativePath, source) => {
@@ -110,8 +143,11 @@ const findProductCopyIssues = (relativePath, source) => {
 
   for (const rule of rules) {
     if (!rule.applies(relativePath)) continue;
-    const pattern = new RegExp(rule.pattern.source, rule.pattern.flags);
-    for (const match of visible.matchAll(pattern)) {
+    const matches = rule.find
+      ? rule.find(visible)
+      : visible.matchAll(new RegExp(rule.pattern.source, rule.pattern.flags));
+
+    for (const match of matches) {
       const line = visible.slice(0, match.index).split('\n').length;
       issues.push({
         file: relativePath,
@@ -209,6 +245,30 @@ test('reports rule id, line, and excerpt for product-process language', () => {
     {line: 3, ruleId: 'generated-page-meta'},
   ]);
   assert.ok(issues.every(({excerpt}) => excerpt.startsWith('本页从机器可读主题清单生成')));
+
+  const pathFixture = `# 云原生与平台
+
+## 后续待补
+
+- 补充镜像供应链案例。
+`;
+  assert.deepEqual(
+    findProductCopyIssues('content/paths/example.mdx', pathFixture).map(({ruleId}) => ruleId),
+    ['editorial-todo-heading', 'editorial-task-item'],
+  );
+
+  const legitimatePathFixture = `# 容量设计
+
+- 补充容量用于吸收短时突发，并不是编辑任务。
+
+## 延伸问题
+
+- 补充容量应由哪些负载信号决定？
+`;
+  assert.deepEqual(
+    findProductCopyIssues('content/paths/example.mdx', legitimatePathFixture),
+    [],
+  );
 });
 
 test('keeps public pages free of internal product-process language', async () => {
