@@ -372,8 +372,15 @@ test('rejects every generated status and count mutation', () => {
     const mutatedManifest = structuredClone(manifest);
     const topic = mutatedManifest.topics.find((candidate) => candidate.id === id);
     topic.status.value = topic.status.value === 'complete' ? 'pending' : 'complete';
+    assert.notDeepEqual(mutatedManifest, manifest, `${id} status mutation must change manifest`);
     assert.throws(() => assertGeneratedState(mutatedManifest, projectStatus));
   }
+  const staleSty01 = structuredClone(manifest);
+  const sty01 = staleSty01.topics.find((candidate) => candidate.id === 'STY-01');
+  sty01.published = false;
+  sty01.status.value = 'pending';
+  assert.notDeepEqual(staleSty01, manifest, 'STY-01 stale-state mutation must change manifest');
+  assert.throws(() => assertGeneratedState(staleSty01, projectStatus));
   for (const mutate of [
     (value) => { value.schema_version = 2; },
     (value) => { value.durable_stories.completed = 7; },
@@ -386,6 +393,7 @@ test('rejects every generated status and count mutation', () => {
   ]) {
     const mutatedStatus = structuredClone(projectStatus);
     mutate(mutatedStatus);
+    assert.notDeepEqual(mutatedStatus, projectStatus, 'project-status mutation must change input');
     assert.throws(() => assertGeneratedState(manifest, mutatedStatus));
   }
 });

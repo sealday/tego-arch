@@ -253,6 +253,8 @@ function assertGeneratedState(manifestValue, statusValue) {
   assert.equal(topics.get('STY-00')?.slug, '/styles/sty-00');
   assert.equal(topics.get('STY-00')?.published, true);
   assert.equal(topics.get('STY-00')?.status.value, 'complete');
+  assert.equal(topics.get('STY-01')?.published, true);
+  assert.equal(topics.get('STY-01')?.status.value, 'pending');
   assert.deepEqual(statusValue, {
     schema_version: 1,
     durable_stories: expectedProjection.durable_stories,
@@ -342,8 +344,15 @@ test('rejects every generated Stage B state route and count mutation', () => {
     const topic = mutated.topics.find((candidate) => candidate.id === id);
     if (field === 'status') topic.status.value = value;
     else topic[field] = value;
+    assert.notDeepEqual(mutated, manifest, `${id} ${field} mutation must change manifest`);
     assert.throws(() => assertGeneratedState(mutated, projectStatus));
   }
+  const staleSty01 = structuredClone(manifest);
+  const sty01 = staleSty01.topics.find((candidate) => candidate.id === 'STY-01');
+  sty01.published = false;
+  sty01.status.value = 'pending';
+  assert.notDeepEqual(staleSty01, manifest, 'STY-01 stale-state mutation must change manifest');
+  assert.throws(() => assertGeneratedState(staleSty01, projectStatus));
   for (const mutate of [
     (value) => { value.schema_version = 2; },
     (value) => { value.durable_stories.completed = 7; },
@@ -356,6 +365,7 @@ test('rejects every generated Stage B state route and count mutation', () => {
   ]) {
     const mutated = structuredClone(projectStatus);
     mutate(mutated);
+    assert.notDeepEqual(mutated, projectStatus, 'project-status mutation must change input');
     assert.throws(() => assertGeneratedState(manifest, mutated));
   }
 });
