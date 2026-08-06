@@ -38,6 +38,8 @@ const expectedHeadings = [
 const layers = ['表示层', '应用层', '领域层', '基础设施层'];
 const dimensions = ['边界', '控制流', '数据所有权', '一致性', '部署单元', '故障域', '团队拓扑', '质量属性'];
 const exceptionFields = ['调用方', '被调用层', '被跳过层', '理由', '不变量', '风险', '自动化验证', '责任角色类型', '复核触发器', '撤销条件'];
+const approvedExceptionRow = '| 应用层 | 基础设施层 | 领域层 | 报表只读查询避免无业务价值的转发 | 不改变订单、库存或权限不变量 | 查询模型耦合与旁路扩散 | 架构依赖测试、查询契约测试、结果映射测试 | 架构责任人、订单能力负责人 | 查询参与业务决策或返回模型变化 | 恢复逐层调用或重新设计边界 |';
+const secondExceptionRow = '| 表示层 | 基础设施层 | 应用层、领域层 | 健康检查避免业务用例编排 | 不改变订单、库存或权限不变量 | 协议与基础设施耦合 | 架构依赖测试、健康检查契约测试、结果映射测试 | 架构责任人、平台负责人 | 健康检查参与业务决策或返回模型变化 | 恢复逐层调用或重新设计边界 |';
 const responsibilityRows = [
   ['表示层', '协议解析、输入格式、响应呈现', '稳定的输入映射和结果呈现', '业务规则、事务决策、数据库访问'],
   ['应用层', '用例编排、权限入口、事务意图、超时预算和流程结果', '面向调用方的用例', '核心业务判断、ORM 与厂商驱动'],
@@ -73,6 +75,24 @@ function externalLinksOf(source) {
   return extractExternalLinks({body: bodyOf(source)});
 }
 
+function markdownTableDataRows(source, headerRow) {
+  const lines = source.split(/\r?\n/u);
+  const headerIndex = lines.indexOf(headerRow);
+  assert.notEqual(headerIndex, -1, 'exception table header');
+  assert.equal(
+    lines[headerIndex + 1],
+    `| ${exceptionFields.map(() => '---').join(' | ')} |`,
+    'exception table divider',
+  );
+
+  const dataRows = [];
+  for (const line of lines.slice(headerIndex + 2)) {
+    if (!line.startsWith('|')) break;
+    dataRows.push(line);
+  }
+  return dataRows;
+}
+
 function assertLayerContract(source) {
   for (const row of responsibilityRows) {
     assert.ok(source.includes(`| ${row.join(' | ')} |`), row[0]);
@@ -95,8 +115,8 @@ function assertLayerContract(source) {
   assert.equal((source.match(/-\.->/gu) ?? []).length, 1);
   assert.match(source, /应用层\s*-\.->\|只读查询例外\|\s*基础设施层/u);
 
-  for (const field of exceptionFields) assert.ok(source.includes(field), field);
-  assert.ok(source.includes('| 应用层 | 基础设施层 | 领域层 | 报表只读查询避免无业务价值的转发 | 不改变订单、库存或权限不变量 | 查询模型耦合与旁路扩散 | 架构依赖测试、查询契约测试、结果映射测试 | 架构责任人、订单能力负责人 | 查询参与业务决策或返回模型变化 | 恢复逐层调用或重新设计边界 |'));
+  const exceptionTableHeader = `| ${exceptionFields.join(' | ')} |`;
+  assert.deepEqual(markdownTableDataRows(source, exceptionTableHeader), [approvedExceptionRow]);
 
   assert.match(source, /逻辑层/u);
   assert.match(source, /module|package/u);
@@ -207,6 +227,7 @@ test('rejects mutations of the closed-layer contract', () => {
     ['domain receives ORM type', sty01.source.replace('HTTP、UI、数据库 schema、ORM 类型和运行配置', '允许 ORM 实体类型')],
     ['missing exception validation', sty01.source.replace('架构依赖测试、查询契约测试、结果映射测试', '')],
     ['missing exception rollback', sty01.source.replace('恢复逐层调用或重新设计边界', '')],
+    ['second exception row', sty01.source.replace(approvedExceptionRow, `${approvedExceptionRow}\n${secondExceptionRow}`)],
     ['four deployments', sty01.source.replace('subgraph 单一部署单元', 'subgraph 四个独立部署单元')],
     ['hexagonal inversion as default', sty01.source.replace('表示层 --> 应用层', '基础设施层 --> 领域层')],
     [
