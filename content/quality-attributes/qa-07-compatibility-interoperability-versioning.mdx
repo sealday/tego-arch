@@ -53,7 +53,7 @@ related_questions: []
 
 ## 定义与业务目标
 
-**来源事实：** [向后兼容指南](https://google.aip.dev/180)明确区分源码、传输表示与语义兼容，并说明兼容判断不是所有变化的完整清单。[接口版本指南](https://google.aip.dev/185)提供版本并存与弃用期指导。[开放式接口描述规范](https://spec.openapis.org/oas/v3.1.1.html)定义超文本传输协议（Hypertext Transfer Protocol，HTTP）应用程序编程接口（Application Programming Interface，API）的语言无关描述格式。
+**来源事实：** [向后兼容指南](https://google.aip.dev/180)明确区分源码、传输表示与语义兼容，并说明兼容判断不是所有变化的完整清单。[接口版本指南](https://google.aip.dev/185)提供版本并存与弃用期指导。[OpenAPI Specification v3.1.1](https://spec.openapis.org/oas/v3.1.1.html)定义 OpenAPI 规范（OpenAPI），即超文本传输协议（Hypertext Transfer Protocol，HTTP）应用程序编程接口（Application Programming Interface，API）的语言无关描述格式。
 
 兼容性关注新旧参与方组合是否保持声明的合同；互操作关注独立系统能否通过协议交换信息并完成约定行为。本站分析把业务兼容作为额外边界：协议消息可解析不代表金额、权限、幂等或终态含义一致。
 
@@ -142,7 +142,7 @@ flowchart LR
 ## 来源
 
 - [OpenAPI Specification v3.1.1](https://spec.openapis.org/oas/v3.1.1.html)：用于接口描述定义与版本事实；不作为实现或业务语义保证。
-- [OpenAPI Specification versions and schema iterations](https://spec.openapis.org/oas/)：用于学习已发布版本与模式边界。
-- [AIP-180: Backwards compatibility](https://google.aip.dev/180)：用于三类兼容性的定义与方法。
-- [AIP-185: API Versioning](https://google.aip.dev/185)：用于版本、弃用和迁移学习。
+- [OpenAPI Specification versions and schemas](https://spec.openapis.org/oas/)：用于学习已发布版本与模式边界。
+- [Google AIP-180 — Backwards compatibility](https://google.aip.dev/180)：用于三类兼容性的定义与方法。
+- [Google AIP-185 — API Versioning](https://google.aip.dev/185)：用于版本、弃用和迁移学习。
 - [Awesome Software Architecture](https://github.com/mehdihadeli/awesome-software-architecture)：仅作学习导航，不支持兼容性事实或效果结论。

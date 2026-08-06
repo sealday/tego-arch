@@ -948,7 +948,7 @@
     {
       "id": "QA-00",
       "type": "quality-attribute",
-      "title": "质量属性总览",
+      "title": "质量属性（Quality Attribute）总览",
       "slug": "/quality-attributes/qa-00",
       "priority": "P0",
       "status": {
@@ -980,7 +980,7 @@
     {
       "id": "QA-01",
       "type": "quality-attribute",
-      "title": "质量属性场景写法",
+      "title": "质量属性（Quality Attribute）场景写法",
       "slug": "/quality-attributes/qa-01",
       "priority": "P0",
       "status": {
@@ -1124,7 +1124,7 @@
     {
       "id": "QA-05",
       "type": "quality-attribute",
-      "title": "安全、隐私与信任边界",
+      "title": "安全性（Security）、隐私（Privacy）与信任边界",
       "slug": "/quality-attributes/qa-05",
       "priority": "P1",
       "status": {
@@ -1159,7 +1159,7 @@
     {
       "id": "QA-09",
       "type": "quality-attribute",
-      "title": "Safety、物理风险与控制约束",
+      "title": "安全保障（Safety）、物理风险与控制约束",
       "slug": "/quality-attributes/qa-09",
       "priority": "P1",
       "status": {

@@ -397,7 +397,7 @@ test('QA-02 and QA-03 content relations reliability path and distributed path', 
   );
   assert.match(
     qa03,
-    /吞吐.{0,80}(?:请求负载|提供负载)/su,
+    /输入负载.{0,120}完成吞吐/su,
   );
   assert.match(
     qa03,

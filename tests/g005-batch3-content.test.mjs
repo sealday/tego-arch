@@ -497,7 +497,7 @@ test('preserves cases QA-01 the knowledge schema and sidebar', async () => {
   );
   assert.equal(
     createHash('sha256').update(qa01Bytes).digest('hex'),
-    'b218169b64f22f8d2a18faf1d52e6daa7a211cc4ac950e2e65dcb401a19cdb9d',
+    '0d27e0226f7ab3cebfd97ba112d89ddb862ab17c66697626be99c774a7bba681',
     'content/quality-attributes/qa-01-scenario-writing.mdx',
   );
 

@@ -18,7 +18,7 @@ const repositorySourceLedger = JSON.parse(
   await readFile(path.join(repositoryRoot, 'data/source-ledger.json'), 'utf8'),
 );
 const officialSource = repositorySourceLedger.sources.find(
-  ({title}) => title === 'Quality Attributes',
+  ({id}) => id === 'src-sei-quality-attributes',
 );
 const officialLocator = officialSource.canonical_locator;
 const localIllustrationSource = repositorySourceLedger.sources.find(
@@ -131,6 +131,45 @@ test('requires bilingual first use and permits registered subsequent use', async
   assert.deepEqual(result.issues, []);
 });
 
+test('reports a repeated first-use display after the term is introduced', async () => {
+  const result = await checkFixture('质量属性（Quality Attribute）决定取舍。后续再写质量属性（Quality Attribute）。');
+  assert.deepEqual(result.issues.map(({ruleId, matched, expected}) => ({ruleId, matched, expected})), [
+    {
+      ruleId: 'first-use-required',
+      matched: '质量属性（Quality Attribute）',
+      expected: '质量属性',
+    },
+  ]);
+});
+
+test('reports the forbidden Chinese human-in-the-loop alias', async () => {
+  const humanInTheLoop = {
+    id: 'human-in-the-loop',
+    canonical_zh: '人在回路',
+    english: 'Human-in-the-loop',
+    acronym: null,
+    kind: 'translated-term',
+    first_use: '人在回路（Human-in-the-loop）',
+    subsequent_use: ['人在回路'],
+    allowed_aliases: [],
+    forbidden_aliases: ['Human-in-the-loop', '人工在环'],
+    note: '测试人在回路译名。',
+    order: 50,
+  };
+  const result = await withFixture(
+    {'content/example.mdx': '人工在环不能代替接管边界。'},
+    (root) => checkTerminology({root, paths: ['content/example.mdx']}),
+    [...terms, humanInTheLoop],
+  );
+  assert.deepEqual(result.issues.map(({ruleId, matched, expected}) => ({ruleId, matched, expected})), [
+    {
+      ruleId: 'bare-english-term',
+      matched: '人工在环',
+      expected: '人在回路（Human-in-the-loop）',
+    },
+  ]);
+});
+
 test('reports bare, unknown, and premature acronym uses together in stable rule order', async () => {
   const result = await checkFixture('Quality Attribute 与 ASR 影响 unknown worker。');
   assert.deepEqual(result.issues.map(({ruleId}) => ({ruleId})), [
@@ -167,6 +206,13 @@ test('does not exempt arbitrary external link labels', async () => {
   assert.deepEqual(result.issues.map(({ruleId, matched}) => ({ruleId, matched})), [
     {ruleId: 'unknown-english-term', matched: 'Unknown External Title'},
   ]);
+});
+
+test('exempts only explicitly registered citation title variants', async () => {
+  const result = await checkFixture(
+    `[SEI — Quality Attributes](${officialLocator}) 提供历史背景。`,
+  );
+  assert.deepEqual(result.issues, []);
 });
 
 test('exempts only an exact external source title and never image alt text', async () => {
@@ -666,7 +712,7 @@ test('projects every approved foundational term exactly', async () => {
     ['fail-fast', 200, 'translated-term', [], ['Fail Fast']],
     ['fail-safe', 210, 'translated-term', [], ['Fail Safe']],
     ['graceful-degradation', 220, 'translated-term', [], ['Graceful Degradation']],
-    ['human-in-the-loop', 230, 'translated-term', [], ['Human-in-the-loop']],
+    ['human-in-the-loop', 230, 'translated-term', [], ['Human-in-the-loop', '人工在环']],
     ['router', 240, 'translated-term', [], ['Router']],
     ['supervisor', 250, 'translated-term', [], ['Supervisor']],
     ['handoff', 260, 'translated-term', [], ['Handoff']],

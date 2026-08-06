@@ -23,7 +23,7 @@ tags:
   - 物理风险
   - 控制结构
   - 系统理论过程分析
-summary: 区分物理安全保障、资产保护与可靠性，并从损失、危害、控制结构和不安全控制动作推导可验证的安全约束与残余风险。
+summary: 区分物理安全保障、资产保护与可靠性，并从损失、危害、控制结构和危险控制关系推导可验证的安全约束与残余风险。
 topic_id: QA-09
 priority: P1
 depends_on:
@@ -47,12 +47,12 @@ related_questions: []
 
 - 安全保障、安全性与可靠性为何不能互相替代？
 - 怎样从损失和危害推导控制结构与安全约束？
-- 四类不安全控制动作分别如何进入测试？
+- 四类危险控制关系分别如何进入测试？
 - 何时进入故障安全（Fail Safe）、降级模式或人工接管？
 
 ## 定义与业务目标
 
-**证据事实：** [美国联邦航空局 8040.4C 号命令](https://www.faa.gov/documentLibrary/media/Order/FAA_Order_8040.4C.pdf)提供其航空组织语境中的安全风险管理要求；它不是跨行业合规标准。[系统理论过程分析手册](https://psas.scripts.mit.edu/home/get_file.php?name=STPA_handbook.pdf)提供从损失、危害、控制结构和不安全控制动作分析约束的方法。本站只总结事实，不镜像、翻译或改编其图。
+**证据事实：** [FAA Order 8040.4C](https://www.faa.gov/documentLibrary/media/Order/FAA_Order_8040.4C.pdf) 提供其航空组织语境中的安全风险管理要求；它不是跨行业合规标准。[STPA Handbook, MIT-STAMP-001](https://psas.scripts.mit.edu/home/get_file.php?name=STPA_handbook.pdf)介绍系统理论过程分析（Systems-Theoretic Process Analysis，STPA），并提供从损失、危害、控制结构和不安全控制动作（Unsafe Control Action，UCA）分析约束的方法。本站只总结事实，不镜像、翻译或改编其图。
 
 | 质量 | 核心问题 | 可能重叠 | 不能推出 |
 | --- | --- | --- | --- |
@@ -136,7 +136,7 @@ flowchart LR
 
 更保守的停止条件降低物理风险，却可能造成频繁停机和绕过诱因；更多冗余改善单点失效，却增加共因故障和状态分歧；人工接管提供额外判断，却受认知负荷、反馈延迟与权限冲突影响。安全约束要优先于吞吐目标，并明确降级状态允许的能力。
 
-失败模式是把高可靠或冗余当作安全保障，因为两个一致但错误的状态估计会可靠地发出危险命令，导致物理损失。另一个反例是把“人工在环”当作保护，却没有可用反馈、操作权限、接管时限或执行器通道。系统理论过程分析、风险矩阵、冗余、安全性控制和认证标签都不证明安全保障；对于没有物理、环境或不可逆高后果作用的纯信息工具，不适用完整物理安全分析，但仍需检查数据和业务伤害。
+失败模式是把高可靠或冗余当作安全保障，因为两个一致但错误的状态估计会可靠地发出危险命令，导致物理损失。另一个反例是把“人在回路”当作保护，却没有可用反馈、操作权限、接管时限或执行器通道。系统理论过程分析、风险矩阵、冗余、安全性控制和认证标签都不证明安全保障；对于没有物理、环境或不可逆高后果作用的纯信息工具，不适用完整物理安全分析，但仍需检查数据和业务伤害。
 
 ## 相邻质量属性
 
@@ -152,7 +152,7 @@ flowchart LR
 
 ## 来源
 
-- [美国联邦航空局 8040.4C 号命令](https://www.faa.gov/documentLibrary/media/Order/FAA_Order_8040.4C.pdf)：用于其航空语境中的安全风险管理事实摘要；排除第三方标记与资产，不作为跨行业合规标准。
-- [系统理论过程分析手册](https://psas.scripts.mit.edu/home/get_file.php?name=STPA_handbook.pdf)：用于控制结构和不安全控制动作方法学习；不镜像、翻译或改编其图。
-- [美国国家标准与技术研究院可信系统工程指南](https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final)：用于比较可信系统工程边界；不把安全性工程等同安全保障证明。
+- [FAA Order 8040.4C](https://www.faa.gov/documentLibrary/media/Order/FAA_Order_8040.4C.pdf)：用于其航空语境中的安全风险管理事实摘要；排除第三方标记与资产，不作为跨行业合规标准。
+- [STPA Handbook, MIT-STAMP-001](https://psas.scripts.mit.edu/home/get_file.php?name=STPA_handbook.pdf)：用于控制结构和不安全控制动作方法学习；不镜像、翻译或改编其图。
+- [NIST SP 800-160 Vol. 1 Rev. 1](https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final)：用于比较可信系统工程边界；不把安全性工程等同安全保障证明。
 - [Awesome Software Architecture](https://github.com/mehdihadeli/awesome-software-architecture)：仅作架构学习导航，不支持事实、实现、运行或效果结论。

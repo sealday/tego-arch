@@ -137,9 +137,9 @@ related_questions: []
 
 更细的对象级授权降低越权风险，却增加策略复杂度、延迟和审计量；更少日志改善数据最小化，却可能削弱取证；更短保留期减少暴露窗口，却提高恢复和争议处理成本。控制必须说明保护目标、失败方式和不可用时的降级边界。
 
-失败模式是把网络隔离或双向传输层安全当作租户授权，因为可信服务仍可能携带错误租户上下文，导致合法连接执行越权导出。另一个反例是把同意或合规清单当作隐私证明，因为新用途、派生数据和长期备份会超出原语境。
+失败模式是把网络隔离或双向传输层安全（mutual TLS，mTLS）当作租户授权，因为可信服务仍可能携带错误租户上下文，导致合法连接执行越权导出。另一个反例是把同意或合规清单当作隐私证明，因为新用途、派生数据和长期备份会超出原语境。
 
-“伪装、篡改、抵赖、信息泄露、拒绝服务、权限提升”分类可帮助提出威胁问题，但不能证明威胁完整；加密、服务身份、同意和审计也都不证明安全性或隐私。对于完全不处理敏感数据且没有跨主体影响的本地演示，可简化流程，但仍需声明资产和边界。
+STRIDE 威胁建模中的“伪装、篡改、抵赖、信息泄露、拒绝服务、权限提升”分类可帮助提出威胁问题，但不能证明威胁完整；加密、服务身份、同意和审计也都不证明安全性或隐私。对于完全不处理敏感数据且没有跨主体影响的本地演示，可简化流程，但仍需声明资产和边界。
 
 ## 相邻质量属性
 
@@ -157,7 +157,7 @@ related_questions: []
 
 ## 来源
 
-- [NIST SP 800-160 Vol. 1 Rev. 1: Engineering Trustworthy Secure Systems](https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final)：用于可信系统工程的定义与方法背景；不引用第三方标准文本，不作为合规证明。
+- [NIST SP 800-160 Vol. 1 Rev. 1](https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final)：用于可信系统工程的定义与方法背景；不引用第三方标准文本，不作为合规证明。
 - [NIST Privacy Framework 1.0](https://doi.org/10.6028/NIST.CSWP.01162020)：用于隐私风险、目的和数据处理的事实摘要；不把后续草案当作正式版本，也不把框架当作法律。
-- [Threat Modeling Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Threat_Modeling_Cheat_Sheet.html)：用于威胁建模流程学习；不证明威胁完整。
+- [OWASP Threat Modeling Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Threat_Modeling_Cheat_Sheet.html)：用于威胁建模流程学习；不证明威胁完整。
 - [Awesome Software Architecture](https://github.com/mehdihadeli/awesome-software-architecture)：仅作架构学习导航，不支持事实、实现、运行或效果结论。

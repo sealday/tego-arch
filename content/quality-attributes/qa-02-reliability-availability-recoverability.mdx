@@ -50,17 +50,17 @@ related_questions: []
 ## 学习问题
 
 - 故障与失效的边界为何会改变隔离和恢复策略？
-- 可用性比例为什么不能代替恢复时间目标、恢复点目标与业务正确性？
+- 可用性比例为什么不能代替恢复时限、数据恢复点与业务正确性？
 - 网络超时造成结果未知时，谁有权重试（Retry）、核对或终止？
 - 如何证明恢复完成，而不是只证明进程重新启动？
 
 ## 定义与业务目标
 
-**证据事实：** 谷歌站点可靠性工程书籍的可用性表说明时间型可用性比例与允许不可用时间之间的换算假设。它不替团队设定服务级别目标，也不证明请求成功、数据正确或恢复过程安全。
+**证据事实：** [Google SRE Book — Appendix A: Availability Table](https://sre.google/sre-book/availability-table/) 中的可用性表说明时间型可用性比例与允许不可用时间之间的换算假设。它不替团队设定服务级别目标，也不证明请求成功、数据正确或恢复过程安全。
 
 本文把故障作为可能导致异常的内部缺陷或外部条件，把失效作为系统对外未能提供所需服务的可观察偏差。一个故障可以被冗余或隔离吸收而不形成失效；同一失效也可能由不同故障引起。可靠性关注在规定条件和时间内维持正确服务，可用性关注所需时刻能否提供服务，可恢复性关注失效后恢复服务与业务状态的能力。
 
-业务目标必须进一步声明允许中断、允许丢失和允许不确定各是多少。恢复时间目标表示需要在多长时间内恢复目标能力，恢复点目标表示恢复点允许落后多少数据；两者是业务边界，不是备份工具的默认参数。
+业务目标必须进一步声明允许中断、允许丢失和允许不确定各是多少。恢复时间目标（Recovery Time Objective，RTO）表示需要在多长时间内恢复目标能力，恢复点目标（Recovery Point Objective，RPO）表示恢复点允许落后多少数据；两者是业务边界，不是备份工具的默认参数。
 
 ## 质量属性场景
 
@@ -141,6 +141,6 @@ related_questions: []
 
 ## 来源
 
-- [可用性表](https://sre.google/sre-book/availability-table/)：用于时间型可用性计算的定义背景；不设定本站或读者系统的服务级别目标。
-- [处理级联故障](https://sre.google/sre-book/addressing-cascading-failures/)：用于级联故障和有界恢复机制的事实摘要；不作为通用运行手册。
-- 卡内基梅隆大学软件工程研究所的 [Quality Attributes](https://www.sei.cmu.edu/library/quality-attributes/)：用于质量属性与架构推理的历史定义背景；不视为当前标准或效果证明。
+- [Google SRE Book — Appendix A: Availability Table](https://sre.google/sre-book/availability-table/)：用于时间型可用性计算的定义背景；不设定本站或读者系统的服务级别目标。
+- [Google SRE Book — Addressing Cascading Failures](https://sre.google/sre-book/addressing-cascading-failures/)：用于级联故障和有界恢复机制的事实摘要；不作为通用运行手册。
+- [SEI — Quality Attributes](https://www.sei.cmu.edu/library/quality-attributes/)：用于质量属性与架构推理的历史定义背景；不视为当前标准或效果证明。

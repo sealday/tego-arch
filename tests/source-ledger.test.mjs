@@ -139,6 +139,24 @@ test('validates canonical source records and document citations', () => {
   assert.deepEqual(cc0Parsed.errors, []);
 });
 
+test('accepts only explicit unique non-canonical citation title variants', () => {
+  const valid = parseSourceLedger(ledger({
+    sources: [{...validSource, citation_titles: ['C4 Model — System Context']}],
+  }));
+  assert.deepEqual(valid.errors, []);
+
+  const invalid = parseSourceLedger(ledger({
+    sources: [{
+      ...validSource,
+      citation_titles: ['', validSource.title, validSource.title],
+    }],
+  }));
+  assert.match(
+    invalid.errors.join('\n'),
+    /citation_titles must be a non-empty array of unique non-title strings/u,
+  );
+});
+
 test('requires a valid source registration date', () => {
   const fixture = ledger();
   fixture.sources[0] = {

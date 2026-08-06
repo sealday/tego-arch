@@ -497,8 +497,19 @@ function validateTombstone(source, errors) {
 
 function validateSource(source, index, errors) {
   const label = `source ${index + 1}${nonEmpty(source?.id) ? ` "${source.id}"` : ''}`;
-  if (!validateExactKeys(source, sourceKeys, label, errors)) {
+  const sourceContract = {...source};
+  delete sourceContract.citation_titles;
+  if (!validateExactKeys(sourceContract, sourceKeys, label, errors)) {
     return;
+  }
+  if (source.citation_titles !== undefined && (
+    !Array.isArray(source.citation_titles)
+    || source.citation_titles.length === 0
+    || source.citation_titles.some((title) => !nonEmpty(title))
+    || new Set(source.citation_titles).size !== source.citation_titles.length
+    || source.citation_titles.includes(source.title)
+  )) {
+    errors.push(`${label}: citation_titles must be a non-empty array of unique non-title strings`);
   }
   if (!nonEmpty(source.id) || !/^src-[a-z0-9]+(?:-[a-z0-9]+)*$/.test(source.id)) {
     errors.push(`${label}: id must be stable kebab-case beginning with "src-"`);

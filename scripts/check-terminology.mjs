@@ -113,7 +113,8 @@ const collectMarkdownRecords = (source, relativePath, sources) => {
       if (hasImage || !url) return false;
       const citation = externalCitationSource(url, sources);
       return citation
-        ? normalizedLinkLabel(label) === normalizedLinkLabel(citation.title)
+        ? [citation.title, ...(citation.citation_titles ?? [])]
+          .some((title) => normalizedLinkLabel(label) === normalizedLinkLabel(title))
         : false;
     },
   });
@@ -343,8 +344,18 @@ const inspectFirstUse = (record, registry, introduced) => {
     let ready = introduced.has(term.id);
     for (const event of events) {
       if (event.type === 'full') {
-        ready = true;
-        introduced.add(term.id);
+        if (ready) {
+          issues.push(issue(
+            record.file,
+            record.line,
+            'first-use-required',
+            event.matched,
+            term.subsequent_use[0] ?? term.canonical_zh,
+          ));
+        } else {
+          ready = true;
+          introduced.add(term.id);
+        }
       } else if (!ready) {
         issues.push(issue(record.file, record.line, 'first-use-required', event.matched, term.first_use));
       }
