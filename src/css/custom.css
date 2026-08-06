@@ -19,6 +19,9 @@
   --ifm-footer-background-color: #272522;
   --ifm-toc-border-color: #d8cebf;
   --atlas-paper: #f7f2e8;
+  --atlas-hero: #242522;
+  --atlas-hero-ink: #eee8de;
+  --atlas-hero-muted: rgba(238, 232, 222, 0.66);
   --atlas-paper-raised: #fffaf0;
   --atlas-paper-muted: #eee7da;
   --atlas-paper-fade: rgba(247, 242, 232, 0.74);
@@ -54,6 +57,9 @@
   --ifm-footer-background-color: #161513;
   --ifm-toc-border-color: #4a443d;
   --atlas-paper: #1f1d1a;
+  --atlas-hero: #181916;
+  --atlas-hero-ink: #f0ebe2;
+  --atlas-hero-muted: rgba(240, 235, 226, 0.68);
   --atlas-paper-raised: #292621;
   --atlas-paper-muted: #25221e;
   --atlas-paper-fade: rgba(31, 29, 26, 0.75);

@@ -16,30 +16,28 @@ test('renders canonical project status only from the generated projection', asyn
     homepage,
     /from ['"][^'"]*(?:docs\/content-backlog|data\/source-ledger)|readFile|fetch\(/u,
   );
-  for (const label of [
-    '持久故事',
-    '已完成主题',
-    '内容文档',
-    '治理来源',
-    '当前故事',
-  ]) {
+  for (const label of ['研究主题', '治理来源', '当前研究']) {
     assert.match(homepage, new RegExp(label, 'u'));
   }
   for (const field of [
-    'durable_stories.completed',
-    'durable_stories.total',
-    'durable_stories.current',
-    'completed_topics',
     'content_documents',
     'governed_sources',
+    'durable_stories.current',
   ]) {
     assert.match(homepage, new RegExp(field.replace('.', '\\.'), 'u'));
+  }
+  for (const removedField of [
+    'durable_stories.completed',
+    'durable_stories.total',
+    'completed_topics',
+  ]) {
+    assert.doesNotMatch(homepage, new RegExp(removedField.replace('.', '\\.'), 'u'));
   }
   assert.doesNotMatch(homepage, /const projectStatus\s*=/u);
   assert.doesNotMatch(homepage, /to=["']\/status|href=["']\/status/u);
 });
 
-test('positions experienced engineers for architecture design with the learning-path CTA', async () => {
+test('positions architecture judgment with the approved homepage actions', async () => {
   const homepage = await readFile(
     new URL('../src/pages/index.tsx', import.meta.url),
     'utf8',
@@ -47,25 +45,9 @@ test('positions experienced engineers for architecture design with the learning-
 
   assert.match(
     homepage,
-    /<Heading as="h1">从高级工程师到架构设计者。<\/Heading>/u,
+    /<Heading as="h1">[\s\S]*在复杂系统里[\s\S]*做清醒的选择[\s\S]*<\/Heading>/u,
   );
-  assert.match(
-    homepage,
-    /<p className=\{styles\.lede\}>\s*面向有经验的高级工程师，用证据、权衡与真实案例训练从实现到架构决策的能力。\s*<\/p>/u,
-  );
-  assert.match(
-    homepage,
-    /<Link className=\{styles\.primaryAction\} to="\/paths">\s*沿学习路径开始/u,
-  );
-  assert.match(
-    homepage,
-    /<Link\s+className=\{styles\.secondaryAction\}\s+href="https:\/\/github\.com\/sealday\/tego-arch#参与贡献">\s*参与贡献/u,
-  );
-  assert.match(homepage, /五步读懂一个软件架构主题/u);
-  assert.doesNotMatch(homepage, /浏览首发案例/u);
-  assert.doesNotMatch(homepage, /五步读透一个多智能体系统/u);
-  assert.doesNotMatch(
-    homepage,
-    /description="[^"]*AI 多智能体系统的控制权/u,
-  );
+  assert.match(homepage, /从边界、状态、控制与质量属性出发，让每个架构决定都能解释、验证和演化/u);
+  assert.match(homepage, /to="\/paths"[\s\S]*开始建立判断坐标/u);
+  assert.match(homepage, /to="\/intro"[\s\S]*了解研究方法/u);
 });
