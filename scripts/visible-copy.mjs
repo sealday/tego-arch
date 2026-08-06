@@ -3,6 +3,7 @@ import {createProcessor} from '@mdx-js/mdx';
 import {createRequire} from 'node:module';
 
 const require = createRequire(import.meta.url);
+const grayMatter = require('@11ty/gray-matter');
 const ts = require('typescript');
 
 const blankCharacters = (value) => value.replace(/[^\n]/gu, ' ');
@@ -497,19 +498,7 @@ export const collectVisibleBlocks = (ast, options) => {
   return blocks;
 };
 
-const visibleFrontMatterFields = new Set(['title', 'sidebar_label', 'description']);
-
-const unquoteScalar = (value) => {
-  const trimmed = value.trim();
-  if (
-    trimmed.length >= 2
-    && ((trimmed.startsWith('"') && trimmed.endsWith('"'))
-      || (trimmed.startsWith("'") && trimmed.endsWith("'")))
-  ) {
-    return trimmed.slice(1, -1);
-  }
-  return trimmed;
-};
+const visibleFrontMatterFields = ['title', 'sidebar_label', 'summary'];
 
 const extractVisibleFrontMatter = (source, relativePath) => {
   const lines = source.split('\n');
@@ -521,14 +510,36 @@ const extractVisibleFrontMatter = (source, relativePath) => {
     `${relativePath}: MDX front matter must have a closing delimiter`,
   );
 
+  let metadata;
+  try {
+    metadata = grayMatter(source, {}).data;
+  } catch (error) {
+    throw new Error(
+      `${relativePath}: front matter parser failed: ${error.message}`,
+      {cause: error},
+    );
+  }
+
   const records = [];
-  for (let index = 1; index < end; index += 1) {
-    const match = lines[index].match(/^([A-Za-z][\w-]*):\s*(.*?)\s*$/u);
-    if (!match || !visibleFrontMatterFields.has(match[1])) continue;
-    const text = unquoteScalar(match[2]);
+  for (const field of visibleFrontMatterFields) {
+    if (!(field in metadata)) continue;
+    if (typeof metadata[field] !== 'string') {
+      throw new Error(
+        `${relativePath}: visible front matter field "${field}" must be a string`,
+      );
+    }
+    const index = lines.findIndex((line, lineIndex) => (
+      lineIndex > 0 && lineIndex < end && new RegExp(`^${field}:(?:\\s|$)`, 'u').test(line)
+    ));
+    if (index === -1) {
+      throw new Error(
+        `${relativePath}: visible front matter field "${field}" must be declared at top level`,
+      );
+    }
+    const text = metadata[field];
     if (!text) continue;
     records.push({
-      field: match[1],
+      field,
       file: relativePath,
       line: index + 1,
       text,
@@ -552,7 +563,8 @@ export const parseMdxVisibleCopy = (
     relativePath,
   );
   const ast = parseMdxAst(normalized, relativePath);
-  const blocks = collectVisibleBlocks(ast, {includeInlineCode}).map((block) => {
+  const renderedBlocks = collectVisibleBlocks(ast, {includeInlineCode});
+  const structuredBlocks = renderedBlocks.map((block) => {
     const line = block.node.position?.start.line ?? 1;
     const excerptAt = (targetLine) => restoreEscapedCommentOpeners(
       normalized,
@@ -567,38 +579,323 @@ export const parseMdxVisibleCopy = (
       excerpt: excerptAt(line),
       kind: 'body',
     };
-    return includeStructure
-      ? {...record, lines: block.lines, excerptAt}
-      : record;
+    return {...record, lines: block.lines, excerptAt};
   }).filter(({text}) => text.trim().length > 0);
+
+  const blocks = includeStructure
+    ? structuredBlocks
+    : renderedBlocks.flatMap((block) => {
+      const textByLine = new Map();
+      for (let index = 0; index < block.text.length; index += 1) {
+        if (block.text[index] === '\n') continue;
+        const line = block.lines[index];
+        textByLine.set(line, `${textByLine.get(line) ?? ''}${block.text[index]}`);
+      }
+      return [...textByLine].flatMap(([line, text]) => {
+        const visibleText = text.trim();
+        if (!visibleText) return [];
+        return [{
+          file: relativePath,
+          line,
+          text: visibleText,
+          excerpt: restoreEscapedCommentOpeners(
+            normalized,
+            line,
+            block.excerptAt(line),
+            visibleEscapedOpenings,
+          ),
+          kind: 'body',
+        }];
+      });
+    });
 
   return includeStructure
     ? {blocks, frontMatter, ast, normalized}
     : {blocks, frontMatter};
 };
 
-const cleanMermaidLabel = (value) => value.trim().replace(/^(?:"|')|(?:"|')$/gu, '');
+const cleanMermaidLabel = (value) => {
+  const trimmed = value.trim();
+  if (
+    trimmed.length >= 2
+    && ((trimmed.startsWith('"') && trimmed.endsWith('"'))
+      || (trimmed.startsWith("'") && trimmed.endsWith("'")))
+  ) {
+    return trimmed.slice(1, -1);
+  }
+  return trimmed;
+};
 
-const mermaidLabelsOnLine = (line) => {
+const mermaidError = (relativePath, line, message) => (
+  new Error(`${relativePath}:${line}: ${message}`)
+);
+
+const mermaidRecord = (relativePath, lines, index, text) => ({
+  file: relativePath,
+  line: index + 1,
+  text: cleanMermaidLabel(text),
+  excerpt: lines[index].trim(),
+  kind: 'mermaid',
+});
+
+const findShapeEnd = (line, start, closing, relativePath, lineNumber) => {
+  let quote = null;
+  for (let index = start; index <= line.length - closing.length; index += 1) {
+    const character = line[index];
+    if (quote) {
+      if (character === quote && line[index - 1] !== '\\') quote = null;
+      continue;
+    }
+    if (character === '"' || character === "'") {
+      quote = character;
+      continue;
+    }
+    if (line.startsWith(closing, index)) return index;
+  }
+  throw mermaidError(relativePath, lineNumber, 'unsupported or malformed flowchart statement');
+};
+
+const flowShapeOpenings = [
+  ['[[', ']]'],
+  ['([', '])'],
+  ['[(', ')]'],
+  ['((', '))'],
+  ['{{', '}}'],
+  ['[', ']'],
+  ['{', '}'],
+  ['(', ')'],
+  ['>', ']'],
+];
+
+const flowNodeLabels = (line, relativePath, lineNumber) => {
   const labels = [];
-  const addMatches = (pattern) => {
+  const candidate = /\b([A-Za-z_][\w-]*)\s*(?=\[\[|\(\[|\[\(|\(\(|\{\{|\[|\{|\(|>)/gu;
+  for (let match = candidate.exec(line); match; match = candidate.exec(line)) {
+    const openingStart = candidate.lastIndex;
+    const [opening, closing] = flowShapeOpenings.find(([value]) => (
+      line.startsWith(value, openingStart)
+    )) ?? [];
+    if (!opening) continue;
+    const contentStart = openingStart + opening.length;
+    const contentEnd = findShapeEnd(
+      line,
+      contentStart,
+      closing,
+      relativePath,
+      lineNumber,
+    );
+    const text = cleanMermaidLabel(line.slice(contentStart, contentEnd));
+    if (opening === '(' && text.includes(',') && !/(?:-->|==>|\.->|<-->)/u.test(line)) {
+      throw mermaidError(relativePath, lineNumber, 'unsupported or malformed flowchart statement');
+    }
+    if (text) labels.push({index: match.index, text});
+    candidate.lastIndex = contentEnd + closing.length;
+  }
+  return labels;
+};
+
+const flowEdgeLabels = (line) => {
+  const labels = [];
+  const patterns = [
+    /\|([^|]+)\|/gu,
+    /--\s+(.+?)\s+-->/gu,
+    /-\.\s*(.+?)\s*\.->/gu,
+    /==\s*(.+?)\s*==>/gu,
+  ];
+  for (const pattern of patterns) {
     for (const match of line.matchAll(pattern)) {
-      const text = cleanMermaidLabel(
-        match.slice(1).find((value) => value !== undefined) ?? '',
-      );
+      const text = cleanMermaidLabel(match[1]);
       if (text) labels.push({index: match.index, text});
     }
+  }
+  return labels;
+};
+
+const hasCompleteFlowEdge = (line) => {
+  const edges = [...line.matchAll(/<-->|-->|==>|\.->|---|~~~/gu)];
+  if (edges.length === 0) return true;
+  if (!/^[A-Za-z_][\w-]*/u.test(line.trimStart())) return false;
+  const edge = edges.at(-1);
+  const remainder = line.slice(edge.index + edge[0].length);
+  return /^\s*(?:\|[^|]+\|\s*)?[A-Za-z_][\w-]*/u.test(remainder);
+};
+
+const parseFlowchart = (lines, indexes, relativePath) => {
+  const records = [];
+  for (const index of indexes) {
+    const trimmed = lines[index].trim();
+    if (!trimmed || trimmed.startsWith('%%')) continue;
+    const accessible = trimmed.match(/^acc(?:Title|Descr):\s*(.+)$/u);
+    if (accessible) {
+      records.push(mermaidRecord(relativePath, lines, index, accessible[1]));
+      continue;
+    }
+    if (trimmed === 'end') continue;
+    if (/^(?:classDef|class|style|linkStyle|click|direction)\b/u.test(trimmed)) continue;
+    if (trimmed.startsWith('subgraph ')) {
+      const labelSource = trimmed.slice('subgraph '.length);
+      const labels = flowNodeLabels(labelSource, relativePath, index + 1);
+      const text = labels[0]?.text ?? labelSource.replace(/^[A-Za-z_][\w-]*\s*/u, '').trim();
+      if (!text) {
+        throw mermaidError(relativePath, index + 1, 'unsupported or malformed flowchart subgraph');
+      }
+      records.push(mermaidRecord(relativePath, lines, index, text));
+      continue;
+    }
+
+    const labels = [
+      ...flowNodeLabels(trimmed, relativePath, index + 1),
+      ...flowEdgeLabels(trimmed),
+    ].sort((left, right) => left.index - right.index);
+    const hasFlowSyntax = labels.length > 0 || /(?:-->|==>|\.->|<-->|---|~~~)/u.test(trimmed);
+    if (!hasFlowSyntax || !hasCompleteFlowEdge(trimmed)) {
+      throw mermaidError(relativePath, index + 1, 'unsupported or malformed flowchart statement');
+    }
+    for (const {text} of labels) {
+      records.push(mermaidRecord(relativePath, lines, index, text));
+    }
+  }
+  return records;
+};
+
+const parseSequenceDiagram = (lines, indexes, relativePath) => {
+  const records = [];
+  for (const index of indexes) {
+    const trimmed = lines[index].trim();
+    if (!trimmed || trimmed.startsWith('%%') || trimmed === 'end') continue;
+    const accessible = trimmed.match(/^acc(?:Title|Descr):\s*(.+)$/u);
+    if (accessible) {
+      records.push(mermaidRecord(relativePath, lines, index, accessible[1]));
+      continue;
+    }
+    const participant = trimmed.match(/^(?:actor|participant)\s+(?:[A-Za-z_][\w-]*\s+as\s+)?(.+)$/u);
+    if (participant) {
+      records.push(mermaidRecord(relativePath, lines, index, participant[1]));
+      continue;
+    }
+    const note = trimmed.match(/^Note\s+(?:over|left of|right of)\s+[^:]+:\s*(.+)$/u);
+    if (note) {
+      records.push(mermaidRecord(relativePath, lines, index, note[1]));
+      continue;
+    }
+    const control = trimmed.match(/^(?:alt|else|opt|loop|par|and|critical|break|rect|box)(?:\s+(.+))?$/u);
+    if (control) {
+      if (control[1]) records.push(mermaidRecord(relativePath, lines, index, control[1]));
+      continue;
+    }
+    if (/^(?:activate|deactivate|autonumber)\b/u.test(trimmed)) continue;
+    const colon = trimmed.indexOf(':');
+    if (colon !== -1 && /(?:-{1,2}>>|-{1,2}>|-{1,2}x|-{1,2}\))/u.test(trimmed.slice(0, colon))) {
+      const text = trimmed.slice(colon + 1).trim();
+      if (!text) throw mermaidError(relativePath, index + 1, 'malformed sequenceDiagram message');
+      records.push(mermaidRecord(relativePath, lines, index, text));
+      continue;
+    }
+    throw mermaidError(relativePath, index + 1, 'unsupported or malformed sequenceDiagram statement');
+  }
+  return records;
+};
+
+const parseStateDiagram = (lines, indexes, relativePath) => {
+  const records = [];
+  const states = new Set();
+  const addState = (index, id, label = id) => {
+    if (id === '[*]' || states.has(id)) return;
+    states.add(id);
+    records.push(mermaidRecord(relativePath, lines, index, label));
   };
 
-  addMatches(/\b[A-Za-z_][\w-]*\s*\[([^\[\]]+)\]/gu);
-  addMatches(/\b[A-Za-z_][\w-]*\s*\{([^{}]+)\}/gu);
-  addMatches(/\b[A-Za-z_][\w-]*\s*\(\(([^()]+)\)\)/gu);
-  addMatches(/\b[A-Za-z_][\w-]*\s*\(([^()]+)\)/gu);
-  addMatches(/--\s+(.+?)\s+-->/gu);
-  addMatches(/-\.\s*(.+?)\s*\.->/gu);
-  addMatches(/==\s*(.+?)\s*==>/gu);
-  addMatches(/\|([^|]+)\|/gu);
-  return labels.sort((left, right) => left.index - right.index);
+  for (const index of indexes) {
+    const trimmed = lines[index].trim();
+    if (!trimmed || trimmed.startsWith('%%')) continue;
+    const accessible = trimmed.match(/^acc(?:Title|Descr):\s*(.+)$/u);
+    if (accessible) {
+      records.push(mermaidRecord(relativePath, lines, index, accessible[1]));
+      continue;
+    }
+    const declaration = trimmed.match(/^state\s+(["'])(.+)\1\s+as\s+([A-Za-z_][\w-]*)$/u);
+    if (declaration) {
+      addState(index, declaration[3], declaration[2]);
+      continue;
+    }
+    const transition = trimmed.match(/^(\[\*\]|[A-Za-z_][\w-]*)\s+-->\s+(\[\*\]|[A-Za-z_][\w-]*)(?:\s*:\s*(.+))?$/u);
+    if (transition) {
+      addState(index, transition[1]);
+      addState(index, transition[2]);
+      if (transition[3]) records.push(mermaidRecord(relativePath, lines, index, transition[3]));
+      continue;
+    }
+    throw mermaidError(relativePath, index + 1, 'unsupported or malformed stateDiagram statement');
+  }
+  return records;
+};
+
+const parseErDiagram = (lines, indexes, relativePath) => {
+  const records = [];
+  const entities = new Set();
+  let entity = null;
+  const addEntity = (index, name) => {
+    if (entities.has(name)) return;
+    entities.add(name);
+    records.push(mermaidRecord(relativePath, lines, index, name));
+  };
+
+  for (const index of indexes) {
+    const trimmed = lines[index].trim();
+    if (!trimmed || trimmed.startsWith('%%')) continue;
+    const accessible = trimmed.match(/^acc(?:Title|Descr):\s*(.+)$/u);
+    if (accessible) {
+      records.push(mermaidRecord(relativePath, lines, index, accessible[1]));
+      continue;
+    }
+    if (trimmed === '}') {
+      if (!entity) throw mermaidError(relativePath, index + 1, 'malformed erDiagram entity');
+      entity = null;
+      continue;
+    }
+    if (entity) {
+      const field = trimmed.match(/^(\S+)\s+(\S+)(?:\s+.*)?$/u);
+      if (!field) throw mermaidError(relativePath, index + 1, 'malformed erDiagram field');
+      records.push(mermaidRecord(relativePath, lines, index, field[1]));
+      records.push(mermaidRecord(relativePath, lines, index, field[2]));
+      continue;
+    }
+    const opening = trimmed.match(/^([A-Za-z_][\w-]*)\s*\{$/u);
+    if (opening) {
+      entity = opening[1];
+      addEntity(index, entity);
+      continue;
+    }
+    const relation = trimmed.match(/^([A-Za-z_][\w-]*)\s+\S+\s+([A-Za-z_][\w-]*)\s*:\s*(.+)$/u);
+    if (relation) {
+      addEntity(index, relation[1]);
+      addEntity(index, relation[2]);
+      records.push(mermaidRecord(relativePath, lines, index, relation[3]));
+      continue;
+    }
+    throw mermaidError(relativePath, index + 1, 'unsupported or malformed erDiagram statement');
+  }
+  if (entity) throw mermaidError(relativePath, indexes.at(-1) + 1, 'unclosed erDiagram entity');
+  return records;
+};
+
+const parseMermaidFence = (lines, indexes, relativePath) => {
+  const headerIndex = indexes.find((index) => {
+    const trimmed = lines[index].trim();
+    return trimmed && !trimmed.startsWith('%%');
+  });
+  if (headerIndex === undefined) {
+    throw mermaidError(relativePath, indexes[0] + 1, 'empty Mermaid fence');
+  }
+  const header = lines[headerIndex].trim();
+  const body = indexes.filter((index) => index > headerIndex);
+  if (/^(?:flowchart|graph)\s+(?:TB|TD|BT|RL|LR)$/u.test(header)) {
+    return parseFlowchart(lines, body, relativePath);
+  }
+  if (header === 'sequenceDiagram') return parseSequenceDiagram(lines, body, relativePath);
+  if (/^stateDiagram(?:-v2)?$/u.test(header)) return parseStateDiagram(lines, body, relativePath);
+  if (header === 'erDiagram') return parseErDiagram(lines, body, relativePath);
+  throw mermaidError(relativePath, headerIndex + 1, `unsupported Mermaid diagram "${header}"`);
 };
 
 export const extractMermaidLabels = (source, relativePath) => {
@@ -609,7 +906,14 @@ export const extractMermaidLabels = (source, relativePath) => {
   for (let index = 0; index < lines.length; index += 1) {
     if (!fence) {
       const opening = lines[index].match(/^\s*(`{3,}|~{3,})\s*mermaid(?:\s+.*)?$/iu);
-      if (opening) fence = {character: opening[1][0], length: opening[1].length};
+      if (opening) {
+        fence = {
+          character: opening[1][0],
+          length: opening[1].length,
+          indexes: [],
+          openingLine: index + 1,
+        };
+      }
       continue;
     }
 
@@ -618,24 +922,17 @@ export const extractMermaidLabels = (source, relativePath) => {
       'u',
     ).test(lines[index]);
     if (closesFence) {
+      records.push(...parseMermaidFence(lines, fence.indexes, relativePath));
       fence = null;
       continue;
     }
-
-    if (lines[index].trimStart().startsWith('%%')) continue;
-    for (const {text} of mermaidLabelsOnLine(lines[index])) {
-      records.push({
-        file: relativePath,
-        line: index + 1,
-        text,
-        excerpt: lines[index].trim(),
-        kind: 'mermaid',
-      });
-    }
+    fence.indexes.push(index);
   }
 
   if (fence) {
-    throw new Error(`${relativePath}: Mermaid fenced code block must have a closing delimiter`);
+    throw new Error(
+      `${relativePath}:${fence.openingLine}: Mermaid fenced code block must have a closing delimiter`,
+    );
   }
   return records;
 };
@@ -655,6 +952,37 @@ const tsxStringValue = (node) => {
   }
   if (ts.isJsxExpression(node) && node.expression) return tsxStringValue(node.expression);
   return null;
+};
+
+const collectStaticTsxStrings = (node, collect) => {
+  if (ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node)) {
+    collect(node, node.text);
+    return;
+  }
+  if (ts.isTemplateExpression(node)) {
+    collect(node.head, node.head.text);
+    for (const span of node.templateSpans) collect(span.literal, span.literal.text);
+    return;
+  }
+  if (ts.isConditionalExpression(node)) {
+    collectStaticTsxStrings(node.whenTrue, collect);
+    collectStaticTsxStrings(node.whenFalse, collect);
+    return;
+  }
+  if (ts.isParenthesizedExpression(node)) {
+    collectStaticTsxStrings(node.expression, collect);
+    return;
+  }
+  if (
+    ts.isBinaryExpression(node)
+    && [
+      ts.SyntaxKind.AmpersandAmpersandToken,
+      ts.SyntaxKind.BarBarToken,
+      ts.SyntaxKind.QuestionQuestionToken,
+    ].includes(node.operatorToken.kind)
+  ) {
+    collectStaticTsxStrings(node.right, collect);
+  }
 };
 
 const propertyName = (node) => {
@@ -696,9 +1024,15 @@ export const extractVisibleTsxStrings = (source, relativePath) => {
     } else if (ts.isJsxAttribute(node)) {
       const name = node.name.getText(sourceFile);
       if (visibleJsxAttributes.has(name) && node.initializer) {
-        const text = tsxStringValue(node.initializer);
-        if (text !== null) addRecord(node.initializer, text);
+        if (ts.isStringLiteral(node.initializer)) {
+          addRecord(node.initializer, node.initializer.text);
+        } else if (ts.isJsxExpression(node.initializer) && node.initializer.expression) {
+          collectStaticTsxStrings(node.initializer.expression, addRecord);
+        }
       }
+      return;
+    } else if (ts.isJsxExpression(node) && node.expression) {
+      collectStaticTsxStrings(node.expression, addRecord);
     } else if (ts.isPropertyAssignment(node)) {
       const name = propertyName(node.name);
       if (visibleObjectProperties.has(name)) {

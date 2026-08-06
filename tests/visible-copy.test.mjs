@@ -1,4 +1,6 @@
 import assert from 'node:assert/strict';
+import {readdir, readFile} from 'node:fs/promises';
+import path from 'node:path';
 import test from 'node:test';
 
 import {
@@ -6,6 +8,20 @@ import {
   extractVisibleTsxStrings,
   parseMdxVisibleCopy,
 } from '../scripts/visible-copy.mjs';
+
+const walk = async (directory, extension) => {
+  const entries = await readdir(directory, {withFileTypes: true});
+  const nested = await Promise.all(entries.map(async (entry) => {
+    const target = path.join(directory, entry.name);
+    if (entry.isDirectory()) return walk(target, extension);
+    return entry.isFile() && entry.name.endsWith(extension) ? [target] : [];
+  }));
+  return nested.flat().sort();
+};
+
+const mermaidFences = (source) => [...source.matchAll(
+  /^```mermaid\s*\n([\s\S]*?)^```\s*$/gmu,
+)].map((match) => `\`\`\`mermaid\n${match[1]}\`\`\``);
 
 test('extracts reader-visible MDX copy with stable source locations', () => {
   const source = `---
@@ -60,6 +76,113 @@ slug: /example-api
 
   const visibleText = result.blocks.map(({text}) => text).join('\n');
   assert.doesNotMatch(visibleText, /example\.com|internal|const Agent|private|表达式|注释/u);
+});
+
+test('parses visible YAML front matter scalars without leaking YAML syntax', () => {
+  const source = `---
+title: "Agent: API" # reader title
+sidebar_label: 'Agent worker'
+summary: |-
+  第一行 Agent
+  第二行 worker
+slug: /agent-worker
+---
+`;
+
+  assert.deepEqual(
+    parseMdxVisibleCopy(source, 'content/yaml.mdx').frontMatter,
+    [
+      {
+        field: 'title',
+        file: 'content/yaml.mdx',
+        line: 2,
+        text: 'Agent: API',
+        excerpt: 'title: "Agent: API" # reader title',
+        kind: 'front-matter',
+      },
+      {
+        field: 'sidebar_label',
+        file: 'content/yaml.mdx',
+        line: 3,
+        text: 'Agent worker',
+        excerpt: "sidebar_label: 'Agent worker'",
+        kind: 'front-matter',
+      },
+      {
+        field: 'summary',
+        file: 'content/yaml.mdx',
+        line: 4,
+        text: '第一行 Agent\n第二行 worker',
+        excerpt: 'summary: |-',
+        kind: 'front-matter',
+      },
+    ],
+  );
+
+  assert.deepEqual(
+    parseMdxVisibleCopy(
+      '---\nsummary: "Agent\\nworker\\u0020API" # hidden comment\n---\n',
+      'content/escaped-yaml.mdx',
+    ).frontMatter.map(({text}) => text),
+    ['Agent\nworker API'],
+  );
+  assert.throws(
+    () => parseMdxVisibleCopy('---\nsummary: "bad \\q"\n---\n', 'content/bad-yaml.mdx'),
+    /content\/bad-yaml\.mdx: front matter parser failed/u,
+  );
+  assert.throws(
+    () => parseMdxVisibleCopy('---\nsummary:\n  nested: value\n---\n', 'content/object.mdx'),
+    /content\/object\.mdx: visible front matter field "summary" must be a string/u,
+  );
+});
+
+test('extracts all 72 existing summary fields with exact source lines', async () => {
+  const files = await walk('content', '.mdx');
+  const summaries = [];
+
+  for (const file of files) {
+    const source = await readFile(file, 'utf8');
+    const expected = source.split('\n').find((line) => line.startsWith('summary: '));
+    if (!expected) continue;
+    const [summary] = parseMdxVisibleCopy(source, file).frontMatter.filter(
+      ({field}) => field === 'summary',
+    );
+    assert.ok(summary, file);
+    assert.equal(summary.text, expected.slice('summary: '.length), file);
+    assert.equal(summary.excerpt, expected, file);
+    assert.equal(source.split('\n')[summary.line - 1], expected, file);
+    summaries.push(summary);
+  }
+
+  assert.equal(summaries.length, 72);
+});
+
+test('locates each visible MDX body record on the line containing its text', () => {
+  const source = `第一行没有术语
+第二行出现 Agent
+跨越 {/* hidden */} Agent 节点与[链接 Agent](https://example.com/Agent)
+![图片 Agent](./agent.png)
+<!-- suppression: next-line -->
+下一行 Agent`;
+  const {blocks} = parseMdxVisibleCopy(source, 'content/lines.mdx');
+
+  assert.deepEqual(
+    blocks.map(({line, text, excerpt}) => ({line, text, excerpt})),
+    [
+      {line: 1, text: '第一行没有术语', excerpt: '第一行没有术语'},
+      {line: 2, text: '第二行出现 Agent', excerpt: '第二行出现 Agent'},
+      {
+        line: 3,
+        text: '跨越  Agent 节点与链接 Agent',
+        excerpt: '跨越  Agent 节点与[链接 Agent]',
+      },
+      {line: 4, text: '图片 Agent', excerpt: '![图片 Agent]'},
+      {line: 6, text: '下一行 Agent', excerpt: '下一行 Agent'},
+    ],
+  );
+  for (const block of blocks) {
+    assert.ok(block.excerpt.includes('Agent') || block.line === 1);
+  }
 });
 
 test('extracts only reader-visible Mermaid labels', () => {
@@ -130,6 +253,72 @@ flowchart LR
   );
 });
 
+test('parses current flowchart, sequence and state diagram reader labels', async () => {
+  const fixtures = [
+    {
+      file: 'content/methods/mth-03-adr-lifecycle.mdx',
+      expected: ['Proposed', 'Accepted', '权衡与授权完成', 'Deprecated', 'Superseded'],
+    },
+    {
+      file: 'content/modeling/mod-08-state-machine-modeling.mdx',
+      expected: ['已请求', '已接受', '业务前置条件通过', '权威确认补偿完成'],
+    },
+    {
+      file: 'content/cases/aws-cli-agent-orchestrator.mdx',
+      expected: [
+        'CAO 控制面',
+        'SQLite\\nterminal / inbox / workflow journal',
+        '用户',
+        'Supervisor',
+        '目标 + 约束',
+        '并行分派',
+        'worker ERROR 或超时',
+      ],
+    },
+  ];
+
+  for (const {file, expected} of fixtures) {
+    const labels = extractMermaidLabels(await readFile(file, 'utf8'), file).map(({text}) => text);
+    for (const text of expected) assert.ok(labels.includes(text), `${file}: ${text}`);
+    assert.ok(labels.every((text) => !/^(?:\[\[|\[\(|\(\[|\(\(|\{\{)/u.test(text)), file);
+    assert.ok(!labels.includes('planner, task, timeout'), file);
+  }
+});
+
+test('covers every current Mermaid fence and fails closed on unknown structures', async () => {
+  const files = await walk('content', '.mdx');
+  let fenceCount = 0;
+  for (const file of files) {
+    const source = await readFile(file, 'utf8');
+    for (const fence of mermaidFences(source)) {
+      fenceCount += 1;
+      const labels = extractMermaidLabels(fence, file);
+      assert.ok(labels.length > 0, `${file}: Mermaid fence ${fenceCount} produced no labels`);
+    }
+  }
+  assert.equal(fenceCount, 52);
+
+  assert.throws(
+    () => extractMermaidLabels('```mermaid\npie\n  "Agent": 1\n```', 'content/pie.mdx'),
+    /content\/pie\.mdx:2: unsupported Mermaid diagram "pie"/u,
+  );
+  assert.throws(
+    () => extractMermaidLabels('```mermaid\nflowchart LR\n  A[unclosed\n```', 'content/broken-flow.mdx'),
+    /content\/broken-flow\.mdx:3: unsupported or malformed flowchart statement/u,
+  );
+  assert.throws(
+    () => extractMermaidLabels('```mermaid\nflowchart LR\n  A -->\n```', 'content/incomplete-flow.mdx'),
+    /content\/incomplete-flow\.mdx:3: unsupported or malformed flowchart statement/u,
+  );
+  assert.throws(
+    () => extractMermaidLabels(
+      '```mermaid\nflowchart LR\n  A[可见] --> B\n  invoke(hidden, path)\n```',
+      'content/function.mdx',
+    ),
+    /content\/function\.mdx:4: unsupported or malformed flowchart statement/u,
+  );
+});
+
 test('extracts only reader-visible TSX strings through the TypeScript AST', () => {
   const source = `import icon from './agent-worker.svg';
 import type {Worker} from './types';
@@ -177,6 +366,53 @@ export function Card() {
     records.map(({text}) => text).join('\n'),
     /agent-worker\.svg|\.\/types|\/agent-worker|AgentCard|hidden Agent literal|\/hidden/u,
   );
+});
+
+test('extracts static JSX expression branches without scanning ordinary code', () => {
+  const source = `const hidden = "普通代码 Agent";
+const asset = "/agent.svg";
+export function Example({ready, name}) {
+  return <section aria-label={\`Agent 面板：\${name}\`}>
+    {"可见静态表达式"}
+    {ready ? "任务已完成" : '计划主题'}
+    {\`前缀 Agent \${name} 后缀 worker\`}
+  </section>;
+}`;
+  const text = extractVisibleTsxStrings(source, 'src/Example.tsx').map((record) => record.text);
+
+  assert.deepEqual(text, [
+    'Agent 面板：',
+    '可见静态表达式',
+    '任务已完成',
+    '计划主题',
+    '前缀 Agent',
+    '后缀 worker',
+  ]);
+  assert.doesNotMatch(text.join('\n'), /普通代码|agent\.svg/u);
+});
+
+test('extracts reader copy from current CaseCard and topic indexes', async () => {
+  const fixtures = [
+    {
+      file: 'src/components/CaseCard/index.tsx',
+      expected: ['阅读案例：', '涉及的架构主题', 'CASE', '打开研究档案'],
+    },
+    {
+      file: 'src/components/PatternTopicIndex/index.tsx',
+      expected: ['该分组尚无已登记主题。', '内容状态：', '计划主题', '外部学习起点'],
+    },
+    {
+      file: 'src/components/TopicIndex/index.tsx',
+      expected: ['当前没有符合条件的主题。', '任务已完成', '计划主题', '内容状态：'],
+    },
+  ];
+
+  for (const {file, expected} of fixtures) {
+    const records = extractVisibleTsxStrings(await readFile(file, 'utf8'), file);
+    const text = records.map((record) => record.text);
+    for (const value of expected) assert.ok(text.includes(value), `${file}: ${value}`);
+    assert.ok(records.every((record) => record.excerpt === record.excerpt.trim()), file);
+  }
 });
 
 test('surfaces MDX and TSX parse errors with file context', () => {
