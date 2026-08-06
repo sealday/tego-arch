@@ -17,6 +17,21 @@ const isNonEmpty = (value) => typeof value === 'string' && value.trim() !== '';
 const isNullableText = (value) => value === null || isNonEmpty(value);
 const isTextArray = (value) => Array.isArray(value)
   && value.every((item) => isNonEmpty(item));
+const emptyResult = (error) => ({
+  registry: {schema_version: 1, terms: []},
+  byId: new Map(),
+  byAlias: new Map(),
+  errors: [error],
+});
+
+const expectedFirstUse = ({canonical_zh, english, acronym}) => {
+  if (english !== null && acronym !== null) {
+    return `${canonical_zh}（${english}，${acronym}）`;
+  }
+  if (english !== null) return `${canonical_zh}（${english}）`;
+  if (acronym !== null) return `${canonical_zh}（${acronym}）`;
+  return canonical_zh;
+};
 
 export function parseTerminologyRegistry(value, file = 'data/terminology.json') {
   const errors = [];
@@ -25,22 +40,19 @@ export function parseTerminologyRegistry(value, file = 'data/terminology.json') 
   const byAlias = new Map();
   const orders = new Set();
   if (!exactKeys(value, ['schema_version', 'terms'])) {
-    return {
-      registry: {schema_version: 1, terms: []}, byId, byAlias,
-      errors: [`${file}: expected exactly schema_version and terms`],
-    };
+    return emptyResult(`${file}: expected exactly schema_version and terms`);
   }
   if (value.schema_version !== 1 || !Array.isArray(value.terms)) {
-    return {
-      registry: {schema_version: 1, terms: []}, byId, byAlias,
-      errors: [`${file}: schema_version must equal 1 and terms must be an array`],
-    };
+    return emptyResult(`${file}: schema_version must equal 1 and terms must be an array`);
   }
   for (const [index, entry] of value.terms.entries()) {
     const label = `${file}: term ${index + 1}`;
     if (!exactKeys(entry, entryKeys)) {
       errors.push(`${label} has unknown or missing fields`);
       if (isRecord(entry) && Number.isInteger(entry.order) && entry.order > 0) {
+        if (orders.has(entry.order)) {
+          errors.push(`${label} has duplicate order "${entry.order}"`);
+        }
         orders.add(entry.order);
       }
       continue;
@@ -50,14 +62,21 @@ export function parseTerminologyRegistry(value, file = 'data/terminology.json') 
       && !prototypeNames.has(entry.id);
     if (!validId) errors.push(`${label} id must be non-prototype kebab-case`);
     if (validId && byId.has(entry.id)) errors.push(`${label} has duplicate id "${entry.id}"`);
-    if (!isNonEmpty(entry.canonical_zh)
-      || !isNullableText(entry.english)
-      || !isNullableText(entry.acronym)
+    const validCanonical = isNonEmpty(entry.canonical_zh);
+    const validEnglish = isNullableText(entry.english);
+    const validAcronym = isNullableText(entry.acronym);
+    const validFirstUse = isNonEmpty(entry.first_use);
+    const validSubsequent = isTextArray(entry.subsequent_use);
+    const validAllowed = isTextArray(entry.allowed_aliases);
+    const validForbidden = isTextArray(entry.forbidden_aliases);
+    if (!validCanonical
+      || !validEnglish
+      || !validAcronym
       || !kinds.has(entry.kind)
-      || !isNonEmpty(entry.first_use)
-      || !isTextArray(entry.subsequent_use)
-      || !isTextArray(entry.allowed_aliases)
-      || !isTextArray(entry.forbidden_aliases)
+      || !validFirstUse
+      || !validSubsequent
+      || !validAllowed
+      || !validForbidden
       || !isNonEmpty(entry.note)
       || !Number.isInteger(entry.order)
       || entry.order <= 0) {
@@ -65,15 +84,16 @@ export function parseTerminologyRegistry(value, file = 'data/terminology.json') 
     }
     if (orders.has(entry.order)) errors.push(`${label} has duplicate order "${entry.order}"`);
     orders.add(entry.order);
-    if (!entry.first_use.includes(entry.canonical_zh)
-      || (entry.english !== null && !entry.first_use.includes(entry.english))
-      || (entry.acronym !== null && !entry.first_use.includes(entry.acronym))) {
-      errors.push(`${label} first_use must contain canonical_zh, english, and acronym when present`);
+    if (validCanonical && validEnglish && validAcronym && validFirstUse
+      && entry.first_use !== expectedFirstUse(entry)) {
+      errors.push(`${label} first_use must exactly equal "${expectedFirstUse(entry)}"`);
     }
     const allowed = [
-      entry.canonical_zh, ...entry.subsequent_use, ...entry.allowed_aliases,
+      ...(validCanonical ? [entry.canonical_zh] : []),
+      ...(validSubsequent ? entry.subsequent_use : []),
+      ...(validAllowed ? entry.allowed_aliases : []),
     ].filter(Boolean);
-    const forbidden = entry.forbidden_aliases;
+    const forbidden = validForbidden ? entry.forbidden_aliases : [];
     const allowedKeys = new Set(allowed.map(normalizeAlias));
     for (const alias of forbidden) {
       if (allowedKeys.has(normalizeAlias(alias))) {
@@ -83,7 +103,12 @@ export function parseTerminologyRegistry(value, file = 'data/terminology.json') 
     const normalized = {...entry};
     terms.push(normalized);
     if (validId && !byId.has(entry.id)) byId.set(entry.id, normalized);
-    const lookupAliases = [entry.english, entry.acronym, ...allowed, ...forbidden].filter(Boolean);
+    const lookupAliases = [
+      ...(isNonEmpty(entry.english) ? [entry.english] : []),
+      ...(isNonEmpty(entry.acronym) ? [entry.acronym] : []),
+      ...allowed,
+      ...forbidden,
+    ];
     for (const alias of lookupAliases) {
       const key = normalizeAlias(alias);
       const existing = byAlias.get(key);
@@ -101,6 +126,16 @@ export function parseTerminologyRegistry(value, file = 'data/terminology.json') 
 
 export async function loadTerminologyRegistry(root) {
   const file = path.join(root, 'data/terminology.json');
-  const source = await readFile(file, 'utf8');
-  return parseTerminologyRegistry(JSON.parse(source), 'data/terminology.json');
+  const displayFile = 'data/terminology.json';
+  let source;
+  try {
+    source = await readFile(file, 'utf8');
+  } catch (error) {
+    return emptyResult(`${displayFile}: unable to read: ${error.message}`);
+  }
+  try {
+    return parseTerminologyRegistry(JSON.parse(source), displayFile);
+  } catch (error) {
+    return emptyResult(`${displayFile}: invalid JSON: ${error.message}`);
+  }
 }
