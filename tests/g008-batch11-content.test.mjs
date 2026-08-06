@@ -96,6 +96,101 @@ const expectedDriftDefinition = '四类漂移按内容漂移 → 结构漂移 �
 
 const expectedScenarioLabel = '**说明性场景：**';
 
+const diagram = {
+  slug: 'mod-13-authority-drift-loop',
+  labels: [
+    '权威事实源', '同步合同与检测', '漂移处置与发布',
+    '代码事实', '架构模型与图源', 'ADR 决策状态', '部署与运行证据',
+    '权威事实合同', '生成器', '验证器', '观测器',
+    '漂移队列', '责任人修复', '重新验证', '已验证发布证据',
+    '声明权威', '生成', '验证', '观测', '差异或未知',
+    '分级与分派', '修改权威或新增替代记录',
+    '实线箭头：生成或检查', '虚线箭头：修复反馈', '点线边框：实际观测或未知',
+  ],
+};
+
+const sourceIds = ['code-facts', 'architecture-source', 'adr-state', 'runtime-evidence'];
+
+function decodeXmlText(value) {
+  return value
+    .replaceAll('&quot;', '"')
+    .replaceAll('&apos;', "'")
+    .replaceAll('&lt;', '<')
+    .replaceAll('&gt;', '>')
+    .replaceAll('&amp;', '&');
+}
+
+function drawioCells(source) {
+  return [...source.matchAll(/<mxCell\b([^>]*)>/gu)].map(([, attributes]) => {
+    const entries = [...attributes.matchAll(/([\w-]+)="([^"]*)"/gu)]
+      .map(([, key, value]) => [key, decodeXmlText(value)]);
+    return Object.fromEntries(entries);
+  });
+}
+
+function assertDiagramContract(drawio, svg) {
+  const cells = drawioCells(drawio);
+  const byId = new Map(cells.map((cell) => [cell.id, cell]));
+  assert.match(drawio, /<mxGraphModel\b[^>]*\bpageWidth="1200"[^>]*\bpageHeight="900"/u);
+  assert.match(svg, /<svg\b(?=[^>]*\bviewBox="0 0 1200 900")(?=[^>]*\brole="img")(?=[^>]*\baria-labelledby="mod13-title mod13-desc")(?![^>]*\bwidth=)(?![^>]*\bheight=)[^>]*>/u);
+  assert.match(svg, /<title id="mod13-title">[^<]+<\/title>/u);
+  assert.match(svg, /<desc id="mod13-desc">[^<]+<\/desc>/u);
+
+  const visibleSvgText = [...svg.matchAll(/<text\b([^>]*)>([^<]*)<\/text>/gu)]
+    .filter(([, attributes]) => !/(?:display\s*(?::|=\s*")\s*none|visibility\s*(?::|=\s*")\s*(?:hidden|collapse)|opacity\s*(?::|=\s*")\s*0|fill\s*(?::|=\s*")\s*none)/u.test(attributes))
+    .map(([, , value]) => decodeXmlText(value));
+  for (const label of diagram.labels) {
+    assert.ok(cells.some((cell) => cell.value === label), `Draw.io must visibly declare exact label: ${label}`);
+    assert.ok(visibleSvgText.includes(label), `SVG must paint exact label: ${label}`);
+  }
+
+  for (const regionId of ['region-authority', 'region-contract', 'region-resolution']) {
+    assert.equal(byId.get(regionId)?.vertex, '1', `missing region ${regionId}`);
+  }
+  for (const source of sourceIds) {
+    const declaration = byId.get(`declare-${source}`);
+    assert.equal(declaration?.source, source, `${source} must originate its authority declaration`);
+    assert.equal(declaration?.target, 'authority-contract', `${source} must point to authority-contract`);
+    assert.match(declaration?.style ?? '', /endArrow=block/u);
+    const feedback = byId.get(`repair-${source}`);
+    assert.equal(feedback?.source, 'owner-repair', `repair feedback must originate at owner-repair for ${source}`);
+    assert.equal(feedback?.target, source, `repair feedback must return to ${source}`);
+    assert.match(feedback?.style ?? '', /dashed=1/u, `repair feedback must be dashed for ${source}`);
+  }
+  for (const [id, source, target] of [
+    ['contract-generate', 'authority-contract', 'generator'],
+    ['contract-validate', 'authority-contract', 'validator'],
+    ['contract-observe', 'authority-contract', 'observer'],
+    ['generate-drift', 'generator', 'drift-queue'],
+    ['validate-drift', 'validator', 'drift-queue'],
+    ['observe-drift', 'observer', 'drift-queue'],
+    ['queue-repair', 'drift-queue', 'owner-repair'],
+    ['repair-revalidate', 'owner-repair', 'revalidate'],
+    ['revalidate-release', 'revalidate', 'release-evidence'],
+  ]) {
+    assert.equal(byId.get(id)?.source, source, `${id} source`);
+    assert.equal(byId.get(id)?.target, target, `${id} target`);
+  }
+  assert.ok(!cells.some((cell) => cell.edge === '1' && cell.source === 'release-evidence'), 'release evidence must have no reverse edge');
+
+  for (const edge of cells.filter((cell) => cell.edge === '1')) {
+    assert.match(edge.style ?? '', /edgeStyle=orthogonalEdgeStyle/u, `${edge.id} must be orthogonal`);
+    assert.match(edge.style ?? '', /exitX=/u, `${edge.id} must declare an explicit exit port`);
+    assert.match(edge.style ?? '', /entryX=/u, `${edge.id} must declare an explicit entry port`);
+  }
+  for (const [source, target] of [
+    ['code-facts', 'authority-contract'], ['architecture-source', 'authority-contract'],
+    ['adr-state', 'authority-contract'], ['runtime-evidence', 'authority-contract'],
+    ['authority-contract', 'generator'], ['authority-contract', 'validator'],
+    ['authority-contract', 'observer'], ['generator', 'drift-queue'],
+    ['validator', 'drift-queue'], ['observer', 'drift-queue'],
+    ['drift-queue', 'owner-repair'], ['owner-repair', 'revalidate'],
+    ['revalidate', 'release-evidence'],
+  ]) {
+    assert.match(svg, new RegExp(`<path\\b(?=[^>]*\\bdata-source="${source}")(?=[^>]*\\bdata-target="${target}")[^>]*>`, 'u'));
+  }
+}
+
 function markdownTables(body) {
   return [...body.matchAll(/(^\|[^\n]+\|\n^\|(?:\s*:?-+:?\s*\|)+\n(?:^\|[^\n]+\|\n?)+)/gmu)]
     .map(([source]) => {
@@ -173,7 +268,7 @@ test('uses the fixed diagram path and accessible keyboard-scroll wrappers', asyn
   const expectedRegions = [
     ['table-wrapper table-wrapper--mapping', '模型同步权威事实台账，可横向滚动'],
     ['table-wrapper table-wrapper--mapping', '四类漂移处置台账，可横向滚动'],
-    ['architecture-diagram-scroll', '模型同步权威、检测、漂移处置与发布闭环图，可横向滚动'],
+    ['architecture-diagram-scroll', '权威事实与漂移处置闭环图，可横向滚动'],
   ];
   const regions = [...body.matchAll(/<div\n  className="([^"]+)"\n  role="region"\n  aria-label="([^"]+)"\n  tabIndex=\{0\}\n  onKeyDown=\{handleHorizontalArrowKey\}\n>/gu)]
     .map(([, className, label]) => [className, label]);
@@ -192,6 +287,39 @@ test('uses the fixed diagram path and accessible keyboard-scroll wrappers', asyn
     preventDefault() {},
   });
   assert.equal(target.scrollLeft, 40);
+});
+
+test('publishes a synchronized accessible MOD-13 authority-drift diagram pair', async () => {
+  const [drawio, svg] = await Promise.all([
+    readFile(new URL(`../diagrams/${diagram.slug}.drawio`, import.meta.url), 'utf8'),
+    readFile(new URL(`../static/img/diagrams/${diagram.slug}.svg`, import.meta.url), 'utf8'),
+  ]);
+  assertDiagramContract(drawio, svg);
+
+  const body = requiredDocument().body;
+  assert.match(body, /请逐一检查为什么每类事实源都通过自己的修复反馈边返回，而不是由发布证据反写权威。/u);
+  assert.match(body, /!\[不同事实拥有不同权威，并通过生成、验证、观测和修复完成发布复核的闭环图\]\(\/img\/diagrams\/mod-13-authority-drift-loop\.svg\)/u);
+  assert.match(body, /发布证据只关闭一次经过验证的变更，绝不会覆盖权威，也不证明长期运行健康。/u);
+});
+
+test('rejects controlled diagram-pair accessibility, topology, style, and wording mutations', async () => {
+  const [drawio, svg] = await Promise.all([
+    readFile(new URL(`../diagrams/${diagram.slug}.drawio`, import.meta.url), 'utf8'),
+    readFile(new URL(`../static/img/diagrams/${diagram.slug}.svg`, import.meta.url), 'utf8'),
+  ]);
+  const mutations = [
+    ['missing label', drawio.replace('value="代码事实"', 'value=""'), svg],
+    ['hidden SVG text', drawio, svg.replace('<text class="node-title" x="190" y="150">代码事实</text>', '<text class="node-title" x="190" y="150" visibility="hidden">代码事实</text>')],
+    ['wrong arrow direction', drawio.replace('id="declare-code-facts" value="声明权威" edge="1" source="code-facts" target="authority-contract"', 'id="declare-code-facts" value="声明权威" edge="1" source="authority-contract" target="code-facts"'), svg],
+    ['solid repair feedback', drawio.replace('id="repair-code-facts" value="" edge="1" source="owner-repair" target="code-facts" parent="1" style="edgeStyle=orthogonalEdgeStyle;dashed=1;', 'id="repair-code-facts" value="" edge="1" source="owner-repair" target="code-facts" parent="1" style="edgeStyle=orthogonalEdgeStyle;dashed=0;'), svg],
+    ['missing region', drawio.replace('id="region-authority"', 'id="deleted-region-authority"'), svg],
+    ['fixed SVG width', drawio, svg.replace('<svg ', '<svg width="1200" ')],
+    ['diagram/SVG wording drift', drawio, svg.replace('<text class="node-title" x="190" y="150">代码事实</text>', '<text class="node-title" x="190" y="150">程序事实</text>')],
+  ];
+  for (const [label, mutatedDrawio, mutatedSvg] of mutations) {
+    assert.notEqual(`${mutatedDrawio}\n${mutatedSvg}`, `${drawio}\n${svg}`, `${label} must change the fixture`);
+    assert.throws(() => assertDiagramContract(mutatedDrawio, mutatedSvg), assert.AssertionError, label);
+  }
 });
 
 test('links the parent, four related topics, and the reconciliation case to real documents', () => {

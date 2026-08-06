@@ -125,21 +125,21 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 
 ## 核心产物
 
-图把不同事实权威、三类同步关系和同一漂移处置闭环放在一个视图里。阅读时先看四类事实源如何声明权威，再看生成器、验证器和观测器如何把差异或未知送入队列，最后确认修复反馈只返回对应权威。
+图把不同事实权威、三类同步关系和同一漂移处置闭环放在一个视图里。请逐一检查为什么每类事实源都通过自己的修复反馈边返回，而不是由发布证据反写权威。
 
 <div
   className="architecture-diagram-scroll"
   role="region"
-  aria-label="模型同步权威、检测、漂移处置与发布闭环图，可横向滚动"
+  aria-label="权威事实与漂移处置闭环图，可横向滚动"
   tabIndex={0}
   onKeyDown={handleHorizontalArrowKey}
 >
 
-![不同事实分别声明权威，经生成、验证或观测进入漂移处置，并回到对应权威修复的闭环](/img/diagrams/mod-13-authority-drift-loop.svg)
+![不同事实拥有不同权威，并通过生成、验证、观测和修复完成发布复核的闭环图](/img/diagrams/mod-13-authority-drift-loop.svg)
 
 </div>
 
-图中的发布证据不会反向覆盖权威事实；它只证明指定版本完成了被记录的复核。本站原创 Draw.io/SVG 图对是教学综合，不表示特定生产拓扑、团队、控制器或工具实现。
+发布证据只关闭一次经过验证的变更，绝不会覆盖权威，也不证明长期运行健康。本站原创 Draw.io/SVG 图对是教学综合，不表示特定生产拓扑、团队、控制器或工具实现。
 
 ## 完成判断
 
