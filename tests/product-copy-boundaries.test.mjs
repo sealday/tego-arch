@@ -79,13 +79,29 @@ const protectedCommentNodeTypes = new Set([
   'mdxTextExpression',
   'mdxjsEsm',
 ]);
+const commentOpeningProbe = 'CMNT';
 
-const collectProtectedCommentRanges = (ast) => {
+const collectProtectedCommentRanges = (ast, source) => {
   const ranges = [];
   const addRange = (start, end) => {
     if (Number.isInteger(start) && Number.isInteger(end) && start < end) {
       ranges.push({start, end});
     }
+  };
+
+  const addMetadataGaps = (start, end, visibleRanges) => {
+    let cursor = start;
+    for (const range of visibleRanges
+      .filter(({start: rangeStart, end: rangeEnd}) => (
+        Number.isInteger(rangeStart)
+        && Number.isInteger(rangeEnd)
+        && rangeStart < rangeEnd
+      ))
+      .sort((left, right) => left.start - right.start)) {
+      addRange(cursor, Math.max(start, range.start));
+      cursor = Math.max(cursor, Math.min(end, range.end));
+    }
+    addRange(cursor, end);
   };
 
   const visit = (node) => {
@@ -94,6 +110,31 @@ const collectProtectedCommentRanges = (ast) => {
     if (protectedCommentNodeTypes.has(node.type)) {
       addRange(start, end);
       return;
+    }
+
+    if (node.type === 'definition') {
+      addRange(start, end);
+      return;
+    }
+
+    if (node.type === 'link') {
+      addMetadataGaps(start, end, (node.children ?? []).map((child) => ({
+        start: child.position?.start.offset,
+        end: child.position?.end.offset,
+      })));
+    }
+
+    if (node.type === 'image') {
+      const visibleOpenings = [...(node.alt ?? '').matchAll(/CMNT/gu)].length;
+      let seenOpenings = 0;
+      for (let opening = source.indexOf(commentOpeningProbe, start);
+        opening !== -1 && opening < end;
+        opening = source.indexOf(commentOpeningProbe, opening + commentOpeningProbe.length)) {
+        if (seenOpenings >= visibleOpenings) {
+          addRange(opening, opening + commentOpeningProbe.length);
+        }
+        seenOpenings += 1;
+      }
     }
 
     if (node.type === 'mdxJsxFlowElement' || node.type === 'mdxJsxTextElement') {
@@ -116,19 +157,32 @@ const collectProtectedCommentRanges = (ast) => {
   return ranges;
 };
 
+const hasOddBackslashRunBefore = (source, offset) => {
+  let backslashes = 0;
+  for (let index = offset - 1; index >= 0 && source[index] === '\\'; index -= 1) {
+    backslashes += 1;
+  }
+  return backslashes % 2 === 1;
+};
+
 const maskHtmlComments = (source, relativePath) => {
   const probe = source
-    .replaceAll('<!--', 'CMNT')
+    .replaceAll('<!--', commentOpeningProbe)
     .replaceAll('-->', 'END');
   assert.equal(probe.length, source.length);
   const protectedRanges = collectProtectedCommentRanges(
     parseMdxAst(probe, relativePath),
+    probe,
   );
   const masked = source.split('');
 
   for (let cursor = 0; cursor < source.length;) {
     const opening = source.indexOf('<!--', cursor);
     if (opening === -1) break;
+    if (hasOddBackslashRunBefore(source, opening)) {
+      cursor = opening + 4;
+      continue;
+    }
     const isProtected = protectedRanges.some(
       ({start, end}) => opening >= start && opening < end,
     );
@@ -148,6 +202,13 @@ const maskHtmlComments = (source, relativePath) => {
   }
 
   return masked.join('');
+};
+
+const restoreEscapedCommentOpener = (source, line, excerpt) => {
+  const originalLine = source.split('\n')[line - 1] ?? '';
+  const opening = originalLine.indexOf('<!--');
+  if (opening === -1 || !hasOddBackslashRunBefore(originalLine, opening)) return excerpt;
+  return excerpt.replace('<!--', '\\<!--');
 };
 
 const excludedAstTypes = new Set([
@@ -327,7 +388,7 @@ const findMdxIssues = (relativePath, source) => {
         normalized,
         line,
         generatedRule.id,
-        block.excerptAt(line),
+        restoreEscapedCommentOpener(normalized, line, block.excerptAt(line)),
       ));
     }
   }
@@ -672,6 +733,63 @@ test('AST comment preprocessing still masks and validates actual comments', () =
       return true;
     },
   );
+});
+
+test('escaped opener comment classification keeps visible source text', () => {
+  const fixture = `# Example
+\\<!-- 本页从机器可读主题清单生成 -->
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/escaped-comment.mdx', fixture), [
+    {
+      file: 'content/cases/escaped-comment.mdx',
+      line: 2,
+      ruleId: 'generated-page-meta',
+      excerpt: '\\<!-- 本页从机器可读主题清单生成 -->',
+    },
+  ]);
+  assert.deepEqual(
+    findProductCopyIssues(
+      'content/cases/even-backslashes-comment.mdx',
+      `# Example
+\\\\<!-- 本页从机器可读主题清单生成 -->
+`,
+    ),
+    [],
+  );
+});
+
+test('AST metadata comment classification protects link and definition titles', () => {
+  const fixture = `# Example
+[inline](/safe "<!-- 本页从机器可读主题清单生成")
+
+[reference]: /safe "<!-- 本页从机器可读主题清单生成"
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/comment-titles.mdx', fixture), []);
+});
+
+test('AST metadata comment classification protects image titles', () => {
+  const fixture = `# Example
+![diagram](/safe "<!-- 本页从机器可读主题清单生成")
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/image-comment-title.mdx', fixture), []);
+});
+
+test('escaped opener comment classification keeps image alt text visible', () => {
+  const fixture = `# Example
+![\\<!-- 本页从机器可读主题清单生成 -->](/safe "diagram")
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/image-comment-alt.mdx', fixture), [
+    {
+      file: 'content/cases/image-comment-alt.mdx',
+      line: 2,
+      ruleId: 'generated-page-meta',
+      excerpt: '![\\<!-- 本页从机器可读主题清单生成 -->]',
+    },
+  ]);
 });
 
 test('finds nested editorial sections inside blockquotes without duplicates', () => {
