@@ -67191,5 +67191,121 @@
       ],
       "review_status": "healthy"
     }
+  ],
+  "superseded_results": [
+    {
+      "superseded_at": "2026-08-06T16:59:31.495Z",
+      "replacement_transport_locator": "https://landing.teamtopologies.com/organization-dynamics-with-team-topologies",
+      "reason": "ledger transport target changed for exact source_ids",
+      "result": {
+        "transport_locator": "https://teamtopologies.com/all-mini-books/mini-book-organization-dynamics-with-team-topologies",
+        "source_ids": [
+          "src-team-topologies-organization-dynamics-2020"
+        ],
+        "last_attempt": {
+          "at": "2026-08-06T15:24:41.578Z",
+          "outcome": "error",
+          "final_transport_locator": null,
+          "http_status": null,
+          "login_wall_detected": false,
+          "redirects": [],
+          "error": "fetch failed"
+        },
+        "last_success": {
+          "at": "2026-08-02T04:40:03.066Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://teamtopologies.com/all-mini-books/mini-book-organization-dynamics-with-team-topologies",
+          "http_status": 206,
+          "login_wall_detected": false
+        },
+        "attempt_history": [
+          {
+            "at": "2026-07-29T06:45:33.899Z",
+            "outcome": "healthy",
+            "final_transport_locator": "https://teamtopologies.com/all-mini-books/mini-book-organization-dynamics-with-team-topologies",
+            "http_status": 206,
+            "login_wall_detected": false
+          },
+          {
+            "at": "2026-07-31T09:45:55.477Z",
+            "outcome": "healthy",
+            "final_transport_locator": "https://teamtopologies.com/all-mini-books/mini-book-organization-dynamics-with-team-topologies",
+            "http_status": 206,
+            "login_wall_detected": false
+          },
+          {
+            "at": "2026-07-31T09:55:02.161Z",
+            "outcome": "healthy",
+            "final_transport_locator": "https://teamtopologies.com/all-mini-books/mini-book-organization-dynamics-with-team-topologies",
+            "http_status": 206,
+            "login_wall_detected": false
+          },
+          {
+            "at": "2026-08-01T15:10:23.618Z",
+            "outcome": "error",
+            "final_transport_locator": null,
+            "http_status": null,
+            "login_wall_detected": false
+          },
+          {
+            "at": "2026-08-01T15:12:55.386Z",
+            "outcome": "error",
+            "final_transport_locator": null,
+            "http_status": null,
+            "login_wall_detected": false
+          },
+          {
+            "at": "2026-08-01T15:16:10.945Z",
+            "outcome": "error",
+            "final_transport_locator": null,
+            "http_status": null,
+            "login_wall_detected": false
+          },
+          {
+            "at": "2026-08-01T15:19:10.286Z",
+            "outcome": "error",
+            "final_transport_locator": null,
+            "http_status": null,
+            "login_wall_detected": false
+          },
+          {
+            "at": "2026-08-01T15:25:15.543Z",
+            "outcome": "healthy",
+            "final_transport_locator": "https://teamtopologies.com/all-mini-books/mini-book-organization-dynamics-with-team-topologies",
+            "http_status": 206,
+            "login_wall_detected": false
+          },
+          {
+            "at": "2026-08-02T04:33:33.082Z",
+            "outcome": "error",
+            "final_transport_locator": null,
+            "http_status": null,
+            "login_wall_detected": false
+          },
+          {
+            "at": "2026-08-02T04:40:03.066Z",
+            "outcome": "healthy",
+            "final_transport_locator": "https://teamtopologies.com/all-mini-books/mini-book-organization-dynamics-with-team-topologies",
+            "http_status": 206,
+            "login_wall_detected": false
+          },
+          {
+            "at": "2026-08-06T15:21:26.049Z",
+            "outcome": "error",
+            "final_transport_locator": null,
+            "http_status": null,
+            "login_wall_detected": false
+          },
+          {
+            "at": "2026-08-06T15:24:41.578Z",
+            "outcome": "error",
+            "final_transport_locator": null,
+            "http_status": null,
+            "login_wall_detected": false
+          }
+        ],
+        "review_status": "stale"
+      }
+    }
   ]
 }

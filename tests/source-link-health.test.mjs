@@ -80,6 +80,16 @@ function cacheFor(governed, mutate = (value) => value) {
   };
 }
 
+function superseded(resultValue, replacement, extra = {}) {
+  return {
+    superseded_at: at,
+    replacement_transport_locator: replacement,
+    reason: 'ledger transport target changed for exact source_ids',
+    result: structuredClone(resultValue),
+    ...extra,
+  };
+}
+
 test('validates complete transport-deduplicated link-health cache coverage', () => {
   const governed = ledger([
     source('fragment-a', 'https://example.com/file#L1'),
@@ -157,6 +167,92 @@ test('rejects a cache generated before its latest recorded attempt', () => {
     validateLinkHealthCacheStructure(governed, cache).errors.join('\n'),
     /generated_at must not be older than latest last_attempt\.at/u,
   );
+});
+
+test('validates governed superseded transport history without treating it as current coverage', () => {
+  const governed = ledger([source('a', 'https://example.com/new')]);
+  const oldTarget = buildLinkTargets(
+    ledger([source('a', 'https://example.com/old')]),
+  )[0];
+  const cached = cacheFor(governed);
+  cached.superseded_results = [
+    superseded(result(oldTarget), 'https://example.com/new'),
+  ];
+
+  assert.deepEqual(validateLinkHealthCacheStructure(governed, cached).errors, []);
+  assert.deepEqual(evaluateLinkHealthVerdict(governed, cached, {now}).failures, []);
+  assert.equal(
+    mergePublicLedgerHealth(governed, cached).sources[0].health_checks.length,
+    1,
+  );
+});
+
+test('rejects malformed overlapping orphaned and incomplete superseded history', () => {
+  const governed = ledger([source('a', 'https://example.com/new')]);
+  const current = cacheFor(governed);
+  const oldTarget = buildLinkTargets(
+    ledger([source('a', 'https://example.com/old')]),
+  )[0];
+  const cases = [
+    [
+      'overlap',
+      superseded(current.results[0], 'https://example.com/new'),
+      /superseded result transport overlaps current ledger target/u,
+    ],
+    [
+      'orphan',
+      superseded(
+        {...result(oldTarget), source_ids: ['missing']},
+        'https://example.com/new',
+      ),
+      /superseded result source_ids are orphaned/u,
+    ],
+    [
+      'bad replacement',
+      superseded(result(oldTarget), 'https://example.com/elsewhere'),
+      /replacement chain must terminate at a current target/u,
+    ],
+    [
+      'missing history',
+      superseded(
+        {...result(oldTarget), attempt_history: []},
+        'https://example.com/new',
+      ),
+      /superseded result attempt_history must contain valid attempts/u,
+    ],
+  ];
+  for (const [label, archive, expected] of cases) {
+    const malformed = structuredClone(current);
+    malformed.superseded_results = [archive];
+    assert.match(
+      validateLinkHealthCacheStructure(governed, malformed).errors.join('\n'),
+      expected,
+      label,
+    );
+  }
+});
+
+test('rejects superseded replacement cycles and timestamps before archived history', () => {
+  const governed = ledger([source('a', 'https://example.com/current')]);
+  const oldTarget = buildLinkTargets(
+    ledger([source('a', 'https://example.com/old')]),
+  )[0];
+  const olderTarget = buildLinkTargets(
+    ledger([source('a', 'https://example.com/older')]),
+  )[0];
+  const malformed = cacheFor(governed);
+  malformed.superseded_results = [
+    superseded(result(oldTarget), 'https://example.com/older', {
+      superseded_at: '2026-07-23T23:59:59.999Z',
+    }),
+    superseded(result(olderTarget), 'https://example.com/old'),
+  ];
+
+  const errors = validateLinkHealthCacheStructure(governed, malformed).errors.join(
+    '\n',
+  );
+  assert.match(errors, /superseded_at cannot precede archived last_attempt/u);
+  assert.match(errors, /replacement chain must terminate at a current target/u);
 });
 
 test('checks cited aliases but excludes uncited superseded aliases', () => {
@@ -974,6 +1070,85 @@ test('does not reuse an old healthy result when the live request fails', async (
   assert.equal(cache.results[0].attempt_history.length, 2);
   assert.ok(errors.length > 0);
   assert.deepEqual(target.source_ids, cache.results[0].source_ids);
+});
+
+test('archives an exact-source transport change while probing the replacement fresh', async () => {
+  const previousLedger = ledger([source('a', 'https://example.com/old')]);
+  const governed = ledger([source('a', 'https://example.com/new')]);
+  const previousCache = cacheFor(previousLedger);
+  const {cache} = await checkLiveLinks(governed, {
+    previousCache,
+    now,
+    fetchImpl: async () => new Response(null, {status: 500}),
+  });
+
+  assert.equal(cache.results[0].transport_locator, 'https://example.com/new');
+  assert.equal(cache.results[0].last_success, null);
+  assert.equal(cache.results[0].last_attempt.outcome, 'error');
+  assert.deepEqual(cache.superseded_results, [
+    superseded(previousCache.results[0], 'https://example.com/new'),
+  ]);
+});
+
+test('preserves existing superseded archives across refresh and cache merge', async () => {
+  const governed = ledger([source('a', 'https://example.com/current')]);
+  const ancientTarget = buildLinkTargets(
+    ledger([source('a', 'https://example.com/ancient')]),
+  )[0];
+  const previousCache = cacheFor(governed);
+  previousCache.superseded_results = [
+    superseded(result(ancientTarget), 'https://example.com/current', {
+      superseded_at: at,
+    }),
+  ];
+  const refreshed = await checkLiveLinks(governed, {
+    previousCache,
+    now,
+    fetchImpl: async () => new Response(null, {status: 200}),
+  });
+  assert.deepEqual(
+    refreshed.cache.superseded_results,
+    previousCache.superseded_results,
+  );
+
+  const merged = mergeLinkHealthCaches(
+    governed,
+    [cacheFor(governed), refreshed.cache],
+    {now},
+  );
+  assert.deepEqual(
+    merged.cache.superseded_results,
+    previousCache.superseded_results,
+  );
+  assert.deepEqual(merged.errors, []);
+});
+
+test('cache merge migrates an old exact-source result and preserves its observations', () => {
+  const previousLedger = ledger([source('a', 'https://example.com/old')]);
+  const governed = ledger([source('a', 'https://example.com/new')]);
+  const oldCache = cacheFor(previousLedger);
+  oldCache.results[0].attempt_history.push({
+    ...oldCache.results[0].attempt_history[0],
+    at: '2026-07-24T00:00:01.000Z',
+  });
+  oldCache.results[0].last_attempt = {
+    ...oldCache.results[0].last_attempt,
+    at: '2026-07-24T00:00:01.000Z',
+  };
+  oldCache.generated_at = '2026-07-24T00:00:01.000Z';
+
+  const merged = mergeLinkHealthCaches(
+    governed,
+    [oldCache, cacheFor(governed)],
+    {now: new Date('2026-07-24T00:00:02.000Z')},
+  );
+  assert.deepEqual(merged.cache.superseded_results, [
+    superseded(oldCache.results[0], 'https://example.com/new', {
+      superseded_at: '2026-07-24T00:00:02.000Z',
+    }),
+  ]);
+  assert.equal(merged.cache.results[0].attempt_history.length, 1);
+  assert.deepEqual(merged.errors, []);
 });
 
 test('reports live cache structure failures alongside verdict failures', async () => {

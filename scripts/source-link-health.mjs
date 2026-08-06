@@ -203,6 +203,59 @@ function sameObservation(left, right) {
   );
 }
 
+function sourceIdsKey(sourceIds) {
+  return JSON.stringify(sortedStrings(sourceIds));
+}
+
+const supersededReason = 'ledger transport target changed for exact source_ids';
+
+function collectSupersededResults(ledger, caches, now) {
+  const targets = collectTargets(ledger);
+  const currentTransports = new Set(
+    targets.map(({transport_locator}) => transport_locator),
+  );
+  const targetsBySourceIds = new Map();
+  for (const target of targets) {
+    const key = sourceIdsKey(target.source_ids);
+    const matches = targetsBySourceIds.get(key) ?? [];
+    matches.push(target);
+    targetsBySourceIds.set(key, matches);
+  }
+  const archived = new Map();
+  for (const cache of caches) {
+    for (const entry of cache?.superseded_results ?? []) {
+      const key = `${entry?.result?.transport_locator}\0${sourceIdsKey(
+        entry?.result?.source_ids ?? [],
+      )}`;
+      if (!archived.has(key)) archived.set(key, structuredClone(entry));
+    }
+  }
+  for (const cache of caches) {
+    for (const result of cache?.results ?? []) {
+      if (currentTransports.has(result.transport_locator)) continue;
+      const replacements = targetsBySourceIds.get(
+        sourceIdsKey(result.source_ids ?? []),
+      );
+      if (replacements?.length !== 1) continue;
+      const [replacement] = replacements;
+      const key = `${result.transport_locator}\0${sourceIdsKey(result.source_ids)}`;
+      if (archived.has(key)) continue;
+      archived.set(key, {
+        superseded_at: now.toISOString(),
+        replacement_transport_locator: replacement.transport_locator,
+        reason: supersededReason,
+        result: structuredClone(result),
+      });
+    }
+  }
+  return [...archived.values()].sort((left, right) =>
+    left.result.transport_locator.localeCompare(
+      right.result.transport_locator,
+      'en',
+    ),
+  );
+}
+
 export function validateLinkHealthCacheStructure(ledger, cache) {
   const targets = collectTargets(ledger);
   const errors = [];
@@ -231,10 +284,156 @@ export function validateLinkHealthCacheStructure(ledger, cache) {
       ].sort(),
     };
   }
+  if (
+    cache.superseded_results !== undefined &&
+    !Array.isArray(cache.superseded_results)
+  ) {
+    errors.push('data/source-link-health.json: superseded_results must be an array');
+  }
 
   const expected = new Map(
     targets.map((target) => [target.transport_locator, target]),
   );
+  const ledgerSourceIds = new Set((ledger.sources ?? []).map(({id}) => id));
+  const superseded = Array.isArray(cache.superseded_results)
+    ? cache.superseded_results
+    : [];
+  const archivedByTransport = new Map();
+  for (const archive of superseded) {
+    const result = archive?.result;
+    const locator = result?.transport_locator ?? '<invalid>';
+    const sourceIds = Array.isArray(result?.source_ids)
+      ? result.source_ids.filter((value) => typeof value === 'string')
+      : [];
+    const prefix = (message) =>
+      errors.push(formatDiagnostic(locator, sourceIds, `superseded result ${message}`));
+    if (
+      !isRecord(archive) ||
+      typeof archive.superseded_at !== 'string' ||
+      Number.isNaN(Date.parse(archive.superseded_at)) ||
+      typeof archive.reason !== 'string' ||
+      archive.reason.length === 0 ||
+      typeof archive.replacement_transport_locator !== 'string' ||
+      !archive.replacement_transport_locator.startsWith('https://') ||
+      !isRecord(result)
+    ) {
+      prefix('archive metadata and result are required');
+      continue;
+    }
+    if (
+      transportLocator(archive.replacement_transport_locator) !==
+      archive.replacement_transport_locator
+    ) {
+      prefix('replacement_transport_locator must omit fragments');
+    }
+    if (
+      typeof result.transport_locator !== 'string' ||
+      !result.transport_locator.startsWith('https://') ||
+      transportLocator(result.transport_locator) !== result.transport_locator
+    ) {
+      prefix('must have a canonical HTTPS transport_locator');
+      continue;
+    }
+    if (expected.has(result.transport_locator)) {
+      prefix('transport overlaps current ledger target');
+    }
+    const count = archivedByTransport.get(result.transport_locator) ?? 0;
+    archivedByTransport.set(result.transport_locator, count + 1);
+    if (count > 0) prefix('is duplicated');
+    if (
+      !Array.isArray(result.source_ids) ||
+      result.source_ids.length === 0 ||
+      !result.source_ids.every((value) => typeof value === 'string') ||
+      new Set(result.source_ids).size !== result.source_ids.length ||
+      JSON.stringify(result.source_ids) !==
+        JSON.stringify(sortedStrings(result.source_ids))
+    ) {
+      prefix('source_ids must be unique sorted strings');
+    } else if (result.source_ids.some((id) => !ledgerSourceIds.has(id))) {
+      prefix('source_ids are orphaned from the ledger');
+    }
+    if (!validAttempt(result.last_attempt, {full: true})) {
+      prefix('last_attempt is invalid');
+    } else if (
+      Date.parse(archive.superseded_at) < Date.parse(result.last_attempt.at)
+    ) {
+      prefix('superseded_at cannot precede archived last_attempt');
+    }
+    if (
+      result.last_success !== null &&
+      !validAttempt(result.last_success, {success: true})
+    ) {
+      prefix('last_success is invalid');
+    }
+    if (
+      !Array.isArray(result.attempt_history) ||
+      result.attempt_history.length === 0 ||
+      !result.attempt_history.every((item) => validAttempt(item))
+    ) {
+      prefix('attempt_history must contain valid attempts');
+    } else {
+      if (!sameObservation(result.attempt_history.at(-1), result.last_attempt)) {
+        prefix('attempt_history must end with last_attempt');
+      }
+      if (
+        result.attempt_history.some(
+          (item, index, values) =>
+            index > 0 && Date.parse(item.at) < Date.parse(values[index - 1].at),
+        )
+      ) {
+        prefix('attempt_history must be chronological');
+      }
+      if (
+        validAttempt(result.last_success, {success: true}) &&
+        !result.attempt_history.some((item) =>
+          sameObservation(item, result.last_success),
+        )
+      ) {
+        prefix('last_success must be preserved in attempt_history');
+      }
+    }
+    if (!reviewStatuses.has(result.review_status)) {
+      prefix('review_status is invalid');
+    }
+  }
+  const archiveByTransport = new Map(
+    superseded
+      .filter((archive) => isRecord(archive?.result))
+      .map((archive) => [archive.result.transport_locator, archive]),
+  );
+  for (const archive of superseded) {
+    if (!isRecord(archive) || !isRecord(archive.result)) continue;
+    const archivedSourceKey = sourceIdsKey(archive.result.source_ids ?? []);
+    const visited = new Set([archive.result.transport_locator]);
+    let replacement = archive.replacement_transport_locator;
+    let validChain = false;
+    while (typeof replacement === 'string' && !visited.has(replacement)) {
+      visited.add(replacement);
+      const replacementTarget = expected.get(replacement);
+      if (replacementTarget) {
+        validChain = sourceIdsKey(replacementTarget.source_ids) === archivedSourceKey;
+        break;
+      }
+      const replacementArchive = archiveByTransport.get(replacement);
+      if (
+        !replacementArchive ||
+        sourceIdsKey(replacementArchive.result.source_ids ?? []) !==
+          archivedSourceKey
+      ) {
+        break;
+      }
+      replacement = replacementArchive.replacement_transport_locator;
+    }
+    if (!validChain) {
+      errors.push(
+        formatDiagnostic(
+          archive.result.transport_locator ?? '<invalid>',
+          archive.result.source_ids ?? [],
+          'superseded result replacement chain must terminate at a current target for the same exact source_ids',
+        ),
+      );
+    }
+  }
   const byTransport = new Map();
   for (const entry of cache.results) {
     const locator =
@@ -897,6 +1096,11 @@ async function checkTargets(
     schema_version: 1,
     generated_at: now.toISOString(),
     results,
+    superseded_results: collectSupersededResults(
+      ledger,
+      previousCache ? [previousCache] : [],
+      now,
+    ),
   };
   return {
     cache,
@@ -1004,6 +1208,7 @@ export function mergeLinkHealthCaches(
     results: [...latest.values()].sort((left, right) =>
       left.transport_locator.localeCompare(right.transport_locator, 'en'),
     ),
+    superseded_results: collectSupersededResults(ledger, caches, now),
   };
   const structure = validateLinkHealthCacheStructure(ledger, cache);
   const verdict =
