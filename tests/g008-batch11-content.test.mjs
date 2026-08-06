@@ -128,17 +128,72 @@ function drawioCells(source) {
   });
 }
 
+function xmlAttributes(source) {
+  return Object.fromEntries([...source.matchAll(/([\w:-]+)="([^"]*)"/gu)]
+    .map(([, key, value]) => [key, decodeXmlText(value)]));
+}
+
+function svgElements(source, name) {
+  return [...source.matchAll(new RegExp(`<${name}\\b([^>]*)>`, 'gu'))]
+    .map(([, attributes]) => xmlAttributes(attributes));
+}
+
+function hiddenStylesheetClasses(source) {
+  const classes = new Set();
+  for (const [, stylesheet] of source.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/gu)) {
+    for (const [, selectors, declarations] of stylesheet.matchAll(/([^{}]+)\{([^{}]*)\}/gu)) {
+      if (!/(?:display\s*:\s*none|visibility\s*:\s*(?:hidden|collapse)|opacity\s*:\s*0(?:\D|$))/u.test(declarations)) continue;
+      for (const selector of selectors.split(',')) {
+        const className = selector.trim().match(/^\.([\w-]+)$/u)?.[1];
+        if (className) classes.add(className);
+      }
+    }
+  }
+  return classes;
+}
+
+function elementIsHidden(attributes, hiddenClasses) {
+  const values = xmlAttributes(attributes);
+  const presentation = `${attributes};${values.style ?? ''}`;
+  if (/(?:display\s*(?::|=\s*")\s*none|visibility\s*(?::|=\s*")\s*(?:hidden|collapse)|opacity\s*(?::|=\s*")\s*0(?:\D|$))/u.test(presentation)) return true;
+  if (values['aria-hidden'] === 'true') return true;
+  return (values.class ?? '').split(/\s+/u).some((className) => hiddenClasses.has(className));
+}
+
+function visibleSvgTexts(source) {
+  const hiddenClasses = hiddenStylesheetClasses(source);
+  const stack = [];
+  const visible = [];
+  for (const [token] of source.matchAll(/<\/?[\w:-]+\b[^>]*>|[^<]+/gu)) {
+    if (!token.startsWith('<')) {
+      const textFrame = stack.findLast((frame) => frame.name === 'text');
+      if (textFrame && !stack.at(-1).hidden) textFrame.content += token;
+      continue;
+    }
+    if (token.startsWith('</')) {
+      const frame = stack.pop();
+      if (frame?.name === 'text' && !frame.hidden) visible.push(decodeXmlText(frame.content.trim()));
+      continue;
+    }
+    const [, name = '', attributes = ''] = token.match(/^<([\w:-]+)\b([^>]*)>/u) ?? [];
+    const hidden = (stack.at(-1)?.hidden ?? false) || elementIsHidden(attributes, hiddenClasses);
+    const frame = {name, hidden, content: ''};
+    if (!/\/\s*>$/u.test(token)) stack.push(frame);
+  }
+  return visible;
+}
+
 function assertDiagramContract(drawio, svg) {
   const cells = drawioCells(drawio);
   const byId = new Map(cells.map((cell) => [cell.id, cell]));
+  const svgPaths = svgElements(svg, 'path');
+  const svgPathsById = new Map(svgPaths.map((path) => [path.id, path]));
   assert.match(drawio, /<mxGraphModel\b[^>]*\bpageWidth="1200"[^>]*\bpageHeight="900"/u);
   assert.match(svg, /<svg\b(?=[^>]*\bviewBox="0 0 1200 900")(?=[^>]*\brole="img")(?=[^>]*\baria-labelledby="mod13-title mod13-desc")(?![^>]*\bwidth=)(?![^>]*\bheight=)[^>]*>/u);
   assert.match(svg, /<title id="mod13-title">[^<]+<\/title>/u);
   assert.match(svg, /<desc id="mod13-desc">[^<]+<\/desc>/u);
 
-  const visibleSvgText = [...svg.matchAll(/<text\b([^>]*)>([^<]*)<\/text>/gu)]
-    .filter(([, attributes]) => !/(?:display\s*(?::|=\s*")\s*none|visibility\s*(?::|=\s*")\s*(?:hidden|collapse)|opacity\s*(?::|=\s*")\s*0|fill\s*(?::|=\s*")\s*none)/u.test(attributes))
-    .map(([, , value]) => decodeXmlText(value));
+  const visibleSvgText = visibleSvgTexts(svg);
   for (const label of diagram.labels) {
     assert.ok(cells.some((cell) => cell.value === label), `Draw.io must visibly declare exact label: ${label}`);
     assert.ok(visibleSvgText.includes(label), `SVG must paint exact label: ${label}`);
@@ -156,6 +211,10 @@ function assertDiagramContract(drawio, svg) {
     assert.equal(feedback?.source, 'owner-repair', `repair feedback must originate at owner-repair for ${source}`);
     assert.equal(feedback?.target, source, `repair feedback must return to ${source}`);
     assert.match(feedback?.style ?? '', /dashed=1/u, `repair feedback must be dashed for ${source}`);
+    const svgFeedback = svgPathsById.get(`repair-${source}`);
+    assert.equal(svgFeedback?.['data-source'], 'owner-repair', `SVG repair feedback must originate at owner-repair for ${source}`);
+    assert.equal(svgFeedback?.['data-target'], source, `SVG repair feedback must return to ${source}`);
+    assert.ok((svgFeedback?.class ?? '').split(/\s+/u).includes('feedback'), `SVG repair feedback must use feedback class for ${source}`);
   }
   for (const [id, source, target] of [
     ['contract-generate', 'authority-contract', 'generator'],
@@ -172,6 +231,7 @@ function assertDiagramContract(drawio, svg) {
     assert.equal(byId.get(id)?.target, target, `${id} target`);
   }
   assert.ok(!cells.some((cell) => cell.edge === '1' && cell.source === 'release-evidence'), 'release evidence must have no reverse edge');
+  assert.ok(!svgPaths.some((path) => path['data-source'] === 'release-evidence'), 'SVG release evidence must have no outgoing edge');
 
   for (const edge of cells.filter((cell) => cell.edge === '1')) {
     assert.match(edge.style ?? '', /edgeStyle=orthogonalEdgeStyle/u, `${edge.id} must be orthogonal`);
@@ -310,15 +370,24 @@ test('rejects controlled diagram-pair accessibility, topology, style, and wordin
   const mutations = [
     ['missing label', drawio.replace('value="代码事实"', 'value=""'), svg],
     ['hidden SVG text', drawio, svg.replace('<text class="node-title" x="190" y="150">代码事实</text>', '<text class="node-title" x="190" y="150" visibility="hidden">代码事实</text>')],
+    ['ancestor-hidden SVG text', drawio, svg.replace('<text class="node-title" x="190" y="150">代码事实</text>', '<g visibility="hidden"><text class="node-title" x="190" y="150">代码事实</text></g>'), /SVG must paint exact label: 代码事实/u],
+    ['stylesheet-hidden SVG text', drawio, svg.replace('</style>', '.node-title { display: none; }\n    </style>'), /SVG must paint exact label: 代码事实/u],
     ['wrong arrow direction', drawio.replace('id="declare-code-facts" value="声明权威" edge="1" source="code-facts" target="authority-contract"', 'id="declare-code-facts" value="声明权威" edge="1" source="authority-contract" target="code-facts"'), svg],
     ['solid repair feedback', drawio.replace('id="repair-code-facts" value="" edge="1" source="owner-repair" target="code-facts" parent="1" style="edgeStyle=orthogonalEdgeStyle;dashed=1;', 'id="repair-code-facts" value="" edge="1" source="owner-repair" target="code-facts" parent="1" style="edgeStyle=orthogonalEdgeStyle;dashed=0;'), svg],
+    ['reversed SVG repair feedback', drawio, svg.replace('data-source="owner-repair" data-target="code-facts"', 'data-source="code-facts" data-target="owner-repair"'), /SVG repair feedback must originate at owner-repair for code-facts/u],
+    ['solid SVG repair feedback', drawio, svg.replace('id="repair-code-facts" class="feedback"', 'id="repair-code-facts" class="edge"'), /SVG repair feedback must use feedback class for code-facts/u],
+    ['SVG release-evidence outgoing edge', drawio, svg.replace('</svg>', '<path id="release-backflow" class="edge" data-source="release-evidence" data-target="authority-contract" d="M950 755 V700 H600 V417"/>\n</svg>'), /SVG release evidence must have no outgoing edge/u],
     ['missing region', drawio.replace('id="region-authority"', 'id="deleted-region-authority"'), svg],
     ['fixed SVG width', drawio, svg.replace('<svg ', '<svg width="1200" ')],
     ['diagram/SVG wording drift', drawio, svg.replace('<text class="node-title" x="190" y="150">代码事实</text>', '<text class="node-title" x="190" y="150">程序事实</text>')],
   ];
-  for (const [label, mutatedDrawio, mutatedSvg] of mutations) {
+  for (const [label, mutatedDrawio, mutatedSvg, expectedFailure] of mutations) {
     assert.notEqual(`${mutatedDrawio}\n${mutatedSvg}`, `${drawio}\n${svg}`, `${label} must change the fixture`);
-    assert.throws(() => assertDiagramContract(mutatedDrawio, mutatedSvg), assert.AssertionError, label);
+    assert.throws(
+      () => assertDiagramContract(mutatedDrawio, mutatedSvg),
+      expectedFailure ?? assert.AssertionError,
+      label,
+    );
   }
 });
 
