@@ -9,6 +9,13 @@ const expectedPagesRunId = '31001453418';
 const expectedRepositoryTestTotal = 688;
 const expectedArtifactSha256 =
   '35fbdf9aa818e955b3c8c4dd3f6c5eb4830892e3ce358c8fd270e8f92b7bcb72';
+const expectedRemediationSha = '4e06d24eac7b82dc4ddd0fe25a5e07186aa0e574';
+const expectedRemediationPagesRunId = '31070354568';
+const expectedRemediationBuildJobId = '92516850799';
+const expectedRemediationDeployJobId = '92517013250';
+const expectedRemediationTestTotal = 706;
+const expectedRemediationQaSha256 =
+  'f32cd5fefaf46c15c38948ad298d8247ee782ddad33b99eba8722c1eed3c9fdb';
 const expectedBatch9AndOlderSha256 =
   '2fc5c3532293652f59bedd85eabdc3435be5277221af062998d49f7155eab5c5';
 const reviewUrl = new URL('../docs/reviews/g008-batch10.md', import.meta.url);
@@ -17,6 +24,12 @@ assert.match(expectedStageASha, /^[0-9a-f]{40}$/u);
 assert.match(expectedPagesRunId, /^[0-9]+$/u);
 assert.equal(Number.isInteger(expectedRepositoryTestTotal), true);
 assert.match(expectedArtifactSha256, /^[0-9a-f]{64}$/u);
+assert.match(expectedRemediationSha, /^[0-9a-f]{40}$/u);
+assert.match(expectedRemediationPagesRunId, /^[0-9]+$/u);
+assert.match(expectedRemediationBuildJobId, /^[0-9]+$/u);
+assert.match(expectedRemediationDeployJobId, /^[0-9]+$/u);
+assert.equal(Number.isInteger(expectedRemediationTestTotal), true);
+assert.match(expectedRemediationQaSha256, /^[0-9a-f]{64}$/u);
 assert.match(expectedBatch9AndOlderSha256, /^[0-9a-f]{64}$/u);
 
 async function readReview(read = readFile) {
@@ -115,7 +128,17 @@ const reviewSections = new Map([
     '- current G008',
     '- next MOD-13',
   ]],
-  ['Final PASS', ['Stage B closure — PASS']],
+  ['Final PASS', [
+    'Stage B closure — PASS',
+    `- R1 remediation SHA: \`${expectedRemediationSha}\``,
+    `- R1 GitHub Pages run: [\`${expectedRemediationPagesRunId}\`](https://github.com/sealday/tego-arch/actions/runs/${expectedRemediationPagesRunId})`,
+    `- R1 Pages jobs: build \`${expectedRemediationBuildJobId}\`; deploy \`${expectedRemediationDeployJobId}\``,
+    `- R1 repository tests: ${expectedRemediationTestTotal} / ${expectedRemediationTestTotal}`,
+    `- R1 browser QA artifact SHA-256: \`${expectedRemediationQaSha256}\``,
+    '- R1 browser QA totals: 13 / 13 canonical page routes; 2 / 2 SVG assets; 26 / 26 page/viewport observations; 4 / 4 asset/viewport observations; 8 / 8 source activations; 24 / 24 relation activations; 0 MOD-13 targets; 0 / 0 / 0 warnings / errors / page errors',
+    '- R1 semantic verdict: trust/failure findings close only the erroneous representation while evidence remains unknown; protocol remains 待澄清; the problem failure-domain claim is visibly unverified; the corrected diagram legend is complete and scoped',
+    'Post-review remediation — PASS',
+  ]],
 ]);
 
 const expectedReviewText = [
@@ -177,29 +200,33 @@ function batch9AndOlderHistory(source) {
 }
 
 const backlogEvidence = [
-  '2026-08-05 G008 Batch 10 已完成 MOD-12',
-  `Stage A 发布基线为 [\`${expectedStageASha}\`](https://github.com/sealday/tego-arch/commit/${expectedStageASha})`,
-  `Pages run [\`${expectedPagesRunId}\`](https://github.com/sealday/tego-arch/actions/runs/${expectedPagesRunId})`,
-  `exact \`headSha=${expectedStageASha}\`、\`status=completed\`、\`conclusion=success\``,
+  '2026-08-06 G008 Batch 10 MOD-12 复审修复已完成',
+  `R1 修复提交为 [\`${expectedRemediationSha}\`](https://github.com/sealday/tego-arch/commit/${expectedRemediationSha})`,
+  `R1 Pages run [\`${expectedRemediationPagesRunId}\`](https://github.com/sealday/tego-arch/actions/runs/${expectedRemediationPagesRunId})`,
+  `exact \`headSha=${expectedRemediationSha}\`、\`status=completed\`、\`conclusion=success\``,
+  `build job \`${expectedRemediationBuildJobId}\`、deploy job \`${expectedRemediationDeployJobId}\``,
   '13/13 个 canonical HTTP page route 与 2/2 个 SVG asset 检查通过',
   'desktop `1440x1000`、mobile `390x844`',
+  '26/26 个 page/viewport 与 4/4 个 asset/viewport observation',
   '2/2 Draw.io/SVG pairs',
   '2/2 张表格（9 行 review、9 行 findings）',
   '8/8 次 source 激活',
   '24/24 次 relation 激活',
   'MOD-13 target 为 0',
   '0 warnings、0 errors、0 page errors',
-  `Task 5 artifact SHA-256 为 \`${expectedArtifactSha256}\``,
-  'Stage A 为 50 个已完成主题、93 篇内容文档与 490 个受治理来源',
-  `仓库测试 \`${expectedRepositoryTestTotal}/${expectedRepositoryTestTotal}\``,
-  'Stage B closure 投影为 51 个已完成主题、93 篇内容文档与 490 个受治理来源',
+  `原 Task 5 artifact SHA-256 仍为 \`${expectedArtifactSha256}\``,
+  `R1 browser QA artifact SHA-256 为 \`${expectedRemediationQaSha256}\``,
+  'Stage A 仍为 50 个已完成主题、93 篇内容文档与 490 个受治理来源',
+  `R1 仓库测试 \`${expectedRemediationTestTotal}/${expectedRemediationTestTotal}\``,
+  'Stage B closure 投影仍为 51 个已完成主题、93 篇内容文档与 490 个受治理来源',
   '持久故事进度仍为 `7 / 20`',
   'G008 仍在进行中',
   '下一项为 MOD-13',
   'Stage B closure — PASS',
+  'Post-review remediation — PASS',
 ];
 
-const expectedBatch10Segment = `- **当前发布基线：** 2026-08-05 G008 Batch 10 已完成 MOD-12，Stage A 发布基线为 [\`${expectedStageASha}\`](https://github.com/sealday/tego-arch/commit/${expectedStageASha})，Pages run [\`${expectedPagesRunId}\`](https://github.com/sealday/tego-arch/actions/runs/${expectedPagesRunId}) 以 exact \`headSha=${expectedStageASha}\`、\`status=completed\`、\`conclusion=success\` 完成部署；13/13 个 canonical HTTP page route 与 2/2 个 SVG asset 检查通过，desktop \`1440x1000\`、mobile \`390x844\`，2/2 Draw.io/SVG pairs、2/2 张表格（9 行 review、9 行 findings），8/8 次 source 激活、24/24 次 relation 激活，MOD-13 target 为 0，0 warnings、0 errors、0 page errors。Task 5 artifact SHA-256 为 \`${expectedArtifactSha256}\`。Stage A 为 50 个已完成主题、93 篇内容文档与 490 个受治理来源，仓库测试 \`${expectedRepositoryTestTotal}/${expectedRepositoryTestTotal}\`；Stage B closure 投影为 51 个已完成主题、93 篇内容文档与 490 个受治理来源，持久故事进度仍为 \`7 / 20\`，G008 仍在进行中，下一项为 MOD-13。Stage B closure — PASS。`;
+const expectedBatch10Segment = `- **当前发布基线：** 2026-08-06 G008 Batch 10 MOD-12 复审修复已完成，R1 修复提交为 [\`${expectedRemediationSha}\`](https://github.com/sealday/tego-arch/commit/${expectedRemediationSha})，R1 Pages run [\`${expectedRemediationPagesRunId}\`](https://github.com/sealday/tego-arch/actions/runs/${expectedRemediationPagesRunId}) 以 exact \`headSha=${expectedRemediationSha}\`、\`status=completed\`、\`conclusion=success\` 完成部署，build job \`${expectedRemediationBuildJobId}\`、deploy job \`${expectedRemediationDeployJobId}\`；13/13 个 canonical HTTP page route 与 2/2 个 SVG asset 检查通过，desktop \`1440x1000\`、mobile \`390x844\`，26/26 个 page/viewport 与 4/4 个 asset/viewport observation，2/2 Draw.io/SVG pairs、2/2 张表格（9 行 review、9 行 findings），8/8 次 source 激活、24/24 次 relation 激活，MOD-13 target 为 0，0 warnings、0 errors、0 page errors。原 Task 5 artifact SHA-256 仍为 \`${expectedArtifactSha256}\`，R1 browser QA artifact SHA-256 为 \`${expectedRemediationQaSha256}\`。Stage A 仍为 50 个已完成主题、93 篇内容文档与 490 个受治理来源，R1 仓库测试 \`${expectedRemediationTestTotal}/${expectedRemediationTestTotal}\`；Stage B closure 投影仍为 51 个已完成主题、93 篇内容文档与 490 个受治理来源，持久故事进度仍为 \`7 / 20\`，G008 仍在进行中，下一项为 MOD-13。Stage B closure — PASS。Post-review remediation — PASS。`;
 
 function assertBacklog(source) {
   const segment = batch10Segment(source);
@@ -245,6 +272,7 @@ function assertGeneratedState(manifestValue, statusValue) {
 test('records exact successful G008 Batch 10 deployment evidence', () => {
   assertReview(review);
   assert.doesNotThrow(() => execFileSync('git', ['cat-file', '-e', `${expectedStageASha}^{commit}`], {stdio: 'pipe'}));
+  assert.doesNotThrow(() => execFileSync('git', ['cat-file', '-e', `${expectedRemediationSha}^{commit}`], {stdio: 'pipe'}));
 });
 
 test('rejects every missing duplicate symbolic or weakened review literal', () => {

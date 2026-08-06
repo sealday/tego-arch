@@ -104,7 +104,7 @@ function assertBatch2HistoricalClosure(source) {
 
 function assertLiveReleaseState(source) {
   const baseline = currentReleaseBaseline(source);
-  assert.match(baseline, /^-\s\*\*当前发布基线：\*\* 2026-08-05 G008 Batch 10 已完成 MOD-12/u);
+  assert.match(baseline, /^-\s\*\*当前发布基线：\*\* 2026-08-06 G008 Batch 10 MOD-12 复审修复已完成/u);
   assert.match(baseline, /G008 仍在进行中，下一项为 MOD-13/u);
 }
 

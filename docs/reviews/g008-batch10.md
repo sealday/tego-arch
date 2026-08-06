@@ -48,3 +48,11 @@
 ## Final PASS
 
 Stage B closure — PASS
+- R1 remediation SHA: `4e06d24eac7b82dc4ddd0fe25a5e07186aa0e574`
+- R1 GitHub Pages run: [`31070354568`](https://github.com/sealday/tego-arch/actions/runs/31070354568)
+- R1 Pages jobs: build `92516850799`; deploy `92517013250`
+- R1 repository tests: 706 / 706
+- R1 browser QA artifact SHA-256: `f32cd5fefaf46c15c38948ad298d8247ee782ddad33b99eba8722c1eed3c9fdb`
+- R1 browser QA totals: 13 / 13 canonical page routes; 2 / 2 SVG assets; 26 / 26 page/viewport observations; 4 / 4 asset/viewport observations; 8 / 8 source activations; 24 / 24 relation activations; 0 MOD-13 targets; 0 / 0 / 0 warnings / errors / page errors
+- R1 semantic verdict: trust/failure findings close only the erroneous representation while evidence remains unknown; protocol remains 待澄清; the problem failure-domain claim is visibly unverified; the corrected diagram legend is complete and scoped
+Post-review remediation — PASS
