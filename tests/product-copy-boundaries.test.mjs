@@ -8,6 +8,49 @@ const repositoryRoot = fileURLToPath(new URL('../', import.meta.url));
 
 const blankCharacters = (value) => value.replace(/[^\n]/gu, ' ');
 
+const maskLinkDestinations = (source) => {
+  const link = /(!?)\[([^\]\n]+)\]\(/gu;
+  const parts = [];
+  let cursor = 0;
+
+  for (let match = link.exec(source); match; match = link.exec(source)) {
+    const opening = link.lastIndex - 1;
+    let depth = 1;
+    let escaped = false;
+    let closing = -1;
+
+    for (let index = opening + 1; index < source.length; index += 1) {
+      const character = source[index];
+      if (escaped) {
+        escaped = false;
+      } else if (character === '\\') {
+        escaped = true;
+      } else if (character === '(') {
+        depth += 1;
+      } else if (character === ')') {
+        depth -= 1;
+        if (depth === 0) {
+          closing = index;
+          break;
+        }
+      }
+    }
+
+    if (closing === -1) break;
+
+    parts.push(
+      source.slice(cursor, match.index),
+      `${match[1]}${match[2]}`,
+      blankCharacters(source.slice(opening, closing + 1)),
+    );
+    cursor = closing + 1;
+    link.lastIndex = cursor;
+  }
+
+  parts.push(source.slice(cursor));
+  return parts.join('');
+};
+
 const visibleMdxSource = (source) => {
   const lines = source.split('\n');
 
@@ -21,12 +64,15 @@ const visibleMdxSource = (source) => {
   for (let index = 0; index < lines.length; index += 1) {
     const opening = lines[index].match(/^\s*(`{3,}|~{3,})/u);
     if (!fence && opening) {
-      fence = opening[1][0];
+      fence = {character: opening[1][0], length: opening[1].length};
       lines[index] = '';
       continue;
     }
     if (fence) {
-      const closing = new RegExp(`^\\s*${fence}{3,}\\s*$`, 'u');
+      const closing = new RegExp(
+        `^\\s*${fence.character}{${fence.length},}\\s*$`,
+        'u',
+      );
       const closesFence = closing.test(lines[index]);
       lines[index] = '';
       if (closesFence) fence = null;
@@ -35,10 +81,9 @@ const visibleMdxSource = (source) => {
 
   assert.equal(fence, null, 'MDX fenced code block must have a closing delimiter');
 
-  return lines
-    .join('\n')
-    .replace(/<!--[\s\S]*?-->/gu, blankCharacters)
-    .replace(/(!?)\[([^\]\n]+)\]\([^\n)]+\)/gu, '$1$2');
+  return maskLinkDestinations(
+    lines.join('\n').replace(/<!--[\s\S]*?-->/gu, blankCharacters),
+  );
 };
 
 const rules = [
@@ -111,6 +156,45 @@ TODO from upstream
 `;
 
   assert.deepEqual(findProductCopyIssues('content/cases/example.mdx', fixture), []);
+});
+
+test('keeps shorter fence runs hidden without changing source line numbers', () => {
+  const fixture = `# Example
+
+\`\`\`\`mdx
+\`\`\`
+本页从机器可读主题清单生成
+\`\`\`
+\`\`\`\`
+
+计划主题仍由长期 backlog 跟踪。
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/example.mdx', fixture), [
+    {
+      file: 'content/cases/example.mdx',
+      line: 9,
+      ruleId: 'generated-page-meta',
+      excerpt: '计划主题仍由长期 backlog 跟踪。',
+    },
+  ]);
+});
+
+test('masks balanced and escaped parentheses in link destinations', () => {
+  const fixture = `# Example
+[上游参考](https://example.com/path_(nested(value))/escaped\\(part\\)/本页从机器可读主题清单生成)
+
+计划主题仍由长期 backlog 跟踪。
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/example.mdx', fixture), [
+    {
+      file: 'content/cases/example.mdx',
+      line: 4,
+      ruleId: 'generated-page-meta',
+      excerpt: '计划主题仍由长期 backlog 跟踪。',
+    },
+  ]);
 });
 
 test('reports rule id, line, and excerpt for product-process language', () => {
