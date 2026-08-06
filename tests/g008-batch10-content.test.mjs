@@ -48,6 +48,7 @@ const diagramPairs = [
     labels: [
       '费用平台架构图',
       '同步/事件？',
+      '未经证实的共享失败域（证据缺失）',
       ...commonNodes.flatMap(([, name, type]) => [name, type]),
     ],
   },
@@ -66,6 +67,14 @@ const diagramPairs = [
       ...commonNodes.flatMap(([, name, type]) => [name, type]),
     ],
   },
+];
+
+const closureExplanation = '阻断的错误表示在被删除，或改为明确标注的候选/未知时即可关闭；这只关闭错误表示。认证、授权、部署、故障隔离、故障切换和恢复证据仍然未知，不得自行补全。';
+
+const correctedLegendLabels = [
+  '元素：Person｜Container｜Data Store｜External System',
+  '边界：权威系统边界（实线）｜候选信任边界（长虚线）｜候选失败边界（短虚线）',
+  '关系方向：实线箭头｜待确认/未知：证据缺失，不得推断',
 ];
 
 function decodeXmlText(value) {
@@ -221,8 +230,8 @@ const expectedFindingRows = [
   {'检查项': '边界', '严重度': '阻断', '图中证据': '银行支付服务位于费用申报系统边界内', '风险': '错误分配系统责任和外部依赖', '修复建议': '恢复 MOD-02 权威系统边界并把银行移到边界外', '责任类型': '系统边界维护者', '复查状态': '已关闭'},
   {'检查项': '数据', '严重度': '阻断', '图中证据': '重要箭头没有业务事实、方向或权威说明', '风险': '无法判断数据责任和跨界含义', '修复建议': '写明提交申报、读写、支付任务、支付请求与外部结果证据', '责任类型': '接口契约责任人', '复查状态': '已关闭'},
   {'检查项': '协议', '严重度': '待澄清', '图中证据': '连线写成“同步/事件？”', '风险': '把猜测当成实现承诺', '修复建议': '删除猜测并统一标记“协议：待确认”', '责任类型': '接口契约责任人', '复查状态': '保留待澄清'},
-  {'检查项': '信任域', '严重度': '阻断', '图中证据': '员工、费用申报系统和银行之间没有信任说明', '风险': '跨界数据与身份检查被隐藏', '修复建议': '标出候选信任边界并回链 QA-05 所需证据', '责任类型': '安全责任人', '复查状态': '保留待澄清'},
-  {'检查项': '失败域', '严重度': '阻断', '图中证据': '支付任务执行器与银行被画成同一失败域', '风险': '误判故障隔离、传播和恢复责任', '修复建议': '只标外部依赖与候选失败边界，内部隔离继续待证', '责任类型': '可靠性责任人', '复查状态': '保留待澄清'},
+  {'检查项': '信任域', '严重度': '阻断', '图中证据': '员工、费用申报系统和银行之间没有信任说明', '风险': '跨界数据与身份检查被隐藏', '修复建议': '标出候选信任边界并回链 QA-05 所需证据', '责任类型': '安全责任人', '复查状态': '已关闭（证据仍待澄清）'},
+  {'检查项': '失败域', '严重度': '阻断', '图中证据': '支付任务执行器与银行被画成同一失败域', '风险': '误判故障隔离、传播和恢复责任', '修复建议': '只标外部依赖与候选失败边界，内部隔离继续待证', '责任类型': '可靠性责任人', '复查状态': '已关闭（证据仍待澄清）'},
   {'检查项': '版本', '严重度': '重要', '图中证据': '没有状态、修订号、日期和维护责任类型', '风险': '无法判断图适用时间和复查责任', '修复建议': '增加 as-is teaching exercise、rev 1、2026-08-05 和责任类型', '责任类型': '架构文档维护者', '复查状态': '已关闭'},
 ];
 
@@ -363,6 +372,7 @@ function assertInteractionContract(body) {
 }
 
 function assertMethodContract(body) {
+  assert.match(body, new RegExp(closureExplanation.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'u'));
   for (const sentence of nonProofSentences) {
     assert.match(body, new RegExp(`(?:^|\\n)${sentence.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?:\\n|$)`, 'u'));
   }
@@ -545,6 +555,21 @@ test('publishes synchronized accessible MOD-12 Draw.io and SVG pairs', async () 
     }
 
     if (slug.endsWith('problem')) {
+      const assertProblemFailureDomain = (drawioValue, svgValue) => {
+        assert.match(drawioValue, /id="problem-shared-failure-domain"[^>]*value="未经证实的共享失败域（证据缺失）"[^>]*style="[^"]*fontSize=23;[^"]*"[^>]*>[\s\S]*?<mxGeometry x="675" y="220" width="440" height="230" as="geometry"\/>/u);
+        assert.match(svgValue, /\.risk-label\{font-size:23px[^}]*\}[\s\S]*?<g data-layout-id="problem-shared-failure-domain" data-layout-bounds="675 220 440 230">[\s\S]*?<text[^>]*>未经证实的共享失败域（证据缺失）<\/text>[\s\S]*?<\/g>/u);
+        assert.ok(drawioValue.indexOf('id="problem-shared-failure-domain"') < drawioValue.indexOf('id="payment-worker"'), 'problem Draw.io enclosure must remain behind nodes');
+        assert.ok(svgValue.indexOf('data-layout-id="problem-shared-failure-domain"') < svgValue.indexOf('data-node-id="payment-worker"'), 'problem SVG enclosure must remain behind nodes');
+        assert.ok(drawioValue.indexOf('id="problem-shared-failure-domain"') < drawioValue.indexOf('id="edge-worker-bank"'), 'problem Draw.io enclosure must remain behind connectors');
+        assert.ok(svgValue.indexOf('data-layout-id="problem-shared-failure-domain"') < svgValue.indexOf('data-edge-id="edge-worker-bank"'), 'problem SVG enclosure must remain behind connectors');
+      };
+      assertProblemFailureDomain(drawio, svg);
+      for (const [label, drawioMutation, svgMutation] of [
+        ['wording', drawio.replace('证据缺失', '证据已确认'), svg],
+        ['Draw.io geometry', drawio.replace('x="675" y="220" width="440" height="230"', 'x="676" y="220" width="440" height="230"'), svg],
+        ['SVG geometry', drawio, svg.replace('data-layout-bounds="675 220 440 230"', 'data-layout-bounds="676 220 440 230"')],
+        ['SVG visible synchronization', drawio, svg.replace('>未经证实的共享失败域（证据缺失）</text>', '>已变更</text>')],
+      ]) assert.throws(() => assertProblemFailureDomain(drawioMutation, svgMutation), {name: 'AssertionError'}, label);
       const hiddenDrawio = drawio.replace('id="employee" value="员工" style="', 'id="employee" value="员工" style="opacity=0;');
       const hiddenSvg = svg.replace('data-text-role="title">员工</text>', 'data-text-role="title" style="display:none">员工</text>');
       const hiddenAncestorSvg = svg.replace('<g data-node-id="employee"', '<g style="visibility:hidden" data-node-id="employee"');
@@ -559,6 +584,29 @@ test('publishes synchronized accessible MOD-12 Draw.io and SVG pairs', async () 
       assert.doesNotMatch(svg.match(/<path data-boundary-id="system-boundary"[^>]*>/u)?.[0] ?? '', /stroke-dasharray/u);
       assert.match(drawio, /id="trust-employee-line"[\s\S]*?<mxPoint x="215" y="190" as="sourcePoint"\/>[\s\S]*?<mxPoint x="215" y="440" as="targetPoint"\/>/u);
       assert.match(drawio, /id="trust-bank-line"[\s\S]*?<mxPoint x="940" y="190" as="sourcePoint"\/>[\s\S]*?<mxPoint x="940" y="465" as="targetPoint"\/>/u);
+      const assertCorrectedLegend = (drawioValue, svgValue) => {
+        const drawioLegend = drawioValue.match(/<mxCell id="legend"[\s\S]*?<mxCell id="legend-end"[^>]*\/>/u)?.[0] ?? '';
+        const svgLegend = svgValue.match(/<g data-layout-id="legend"[^>]*>[\s\S]*?<\/g>/u)?.[0] ?? '';
+        assert.match(drawioLegend, /<mxGeometry x="40" y="680" width="1120" height="120" as="geometry"\/>/u);
+        assert.match(svgLegend, /data-layout-bounds="40 680 1120 120"/u);
+        for (const label of correctedLegendLabels) {
+          assert.ok(visibleDrawioLabels(drawioLegend).includes(label), `corrected Draw.io legend missing scoped label: ${label}`);
+          assert.ok(visibleSvgTextLabels(svgLegend).includes(label), `corrected SVG legend missing scoped label: ${label}`);
+        }
+      };
+      assertCorrectedLegend(drawio, svg);
+      const drawioLegend = drawio.match(/<mxCell id="legend"[\s\S]*?<mxCell id="legend-end"[^>]*\/>/u)?.[0] ?? '';
+      const svgLegend = svg.match(/<g data-layout-id="legend"[^>]*>[\s\S]*?<\/g>/u)?.[0] ?? '';
+      const hiddenLegendSvg = svgLegend.replace('>元素：Person｜Container｜Data Store｜External System</text>', ' style="display:none">元素：Person｜Container｜Data Store｜External System</text>');
+      const descOnlyLegendSvg = svgLegend.replace(/<text([^>]*)>元素：Person｜Container｜Data Store｜External System<\/text>/u, '<desc>元素：Person｜Container｜Data Store｜External System</desc>');
+      const hiddenLegendDrawio = drawioLegend.replace('id="legend-elements" value="元素：Person｜Container｜Data Store｜External System" style="', 'id="legend-elements" value="元素：Person｜Container｜Data Store｜External System" style="opacity=0;');
+      assert.ok(!visibleDrawioLabels(hiddenLegendDrawio).includes(correctedLegendLabels[0]), 'hidden corrected Draw.io legend inventory must not satisfy visibility');
+      assert.ok(!visibleSvgTextLabels(hiddenLegendSvg).includes(correctedLegendLabels[0]), 'hidden corrected legend inventory must not satisfy visibility');
+      assert.ok(!visibleSvgTextLabels(descOnlyLegendSvg).includes(correctedLegendLabels[0]), 'desc-only corrected legend inventory must not satisfy visibility');
+      for (const label of correctedLegendLabels) {
+        assert.throws(() => assertCorrectedLegend(drawio.replace(label, '已变更'), svg), {name: 'AssertionError'}, `Draw.io scoped legend mutation: ${label}`);
+        assert.throws(() => assertCorrectedLegend(drawio, svg.replace(label, '已变更')), {name: 'AssertionError'}, `SVG scoped legend mutation: ${label}`);
+      }
     }
   }
 });
@@ -572,6 +620,9 @@ test('rejects controlled MOD-12 mutations', () => {
   for (const row of expectedFindingRows) {
     mutations.push([`finding ${row['检查项']}`, body.replace(`| ${row['检查项']} | ${row['严重度']} | ${row['图中证据']} |`, `| ${row['检查项']} | ${row['严重度']} | 已变更 |`), assertTableContracts]);
     mutations.push([`severity ${row['检查项']}`, body.replace(`| ${row['检查项']} | ${row['严重度']} |`, `| ${row['检查项']} | 已变更 |`), assertTableContracts]);
+    if (['信任域', '失败域'].includes(row['检查项'])) {
+      mutations.push([`closure status ${row['检查项']}`, body.replace(`| ${row['责任类型']} | ${row['复查状态']} |`, `| ${row['责任类型']} | 保留待澄清 |`), assertTableContracts]);
+    }
   }
   for (const label of expectedWrapperLabels) {
     const wrapperClass = label.includes('架构图九项审阅矩阵') || label.includes('发现台账')
@@ -584,6 +635,7 @@ test('rejects controlled MOD-12 mutations', () => {
     mutations.push([`wrapper handler ${label}`, body.replace(`  aria-label="${label}"\n  tabIndex={0}\n  onKeyDown={handleHorizontalArrowKey}`, `  aria-label="${label}"\n  tabIndex={0}`), assertInteractionContract]);
   }
   for (const sentence of nonProofSentences) mutations.push([`non-proof ${sentence}`, body.replace(sentence, '已变更。'), assertMethodContract]);
+  mutations.push(['closure explanation', body.replace(closureExplanation, '已变更。'), assertMethodContract]);
   for (const step of expectedExerciseSteps) mutations.push([`exercise ${step}`, body.replace(step, '已变更。'), assertMethodContract]);
   for (const link of requiredLinks) mutations.push([`relation ${link}`, body.replace(`(${link})`, '(#已变更)'), assertMethodContract]);
   for (const sourceRecord of expectedSources) {

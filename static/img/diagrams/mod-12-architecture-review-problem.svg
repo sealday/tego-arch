@@ -1,16 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 840" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="problem-title problem-description">
   <title id="problem-title">费用平台架构图</title>
-  <desc id="problem-description">用于架构审阅练习的故意含缺陷图：银行支付服务被放在系统边界内，关系缺少数据说明，并保留没有证据的同步或事件猜测。</desc>
+  <desc id="problem-description">用于架构审阅练习的故意含缺陷图：银行支付服务被放在系统边界内，关系缺少数据说明，并保留没有证据的协议与共享失败域猜测。</desc>
   <defs>
     <marker id="problem-arrow" markerUnits="strokeWidth" markerWidth="10" markerHeight="10" viewBox="0 0 10 10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#263238"/></marker>
     <style>
       text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;fill:#263238}
-      .diagram-title{font-size:36px;font-weight:760}.node-title{font-size:24px;font-weight:720}.node-type{font-size:15px;font-weight:700;letter-spacing:1px;fill:#55514b}.edge-label{font-size:23px;font-weight:700;fill:#8e3b32}
+      .diagram-title{font-size:36px;font-weight:760}.node-title{font-size:24px;font-weight:720}.node-type{font-size:15px;font-weight:700;letter-spacing:1px;fill:#55514b}.edge-label{font-size:23px;font-weight:700;fill:#8e3b32}.risk-label{font-size:23px;font-weight:760;fill:#8e3b32}
     </style>
   </defs>
   <path d="M0 0H1200V840H0Z" fill="#f6f1e7"/>
   <g data-layout-id="title" data-layout-bounds="40 24 1120 64"><text x="40" y="70" class="diagram-title">费用平台架构图</text></g>
   <path data-boundary-id="system-boundary" data-boundary-bounds="180 140 950 500" d="M194 140H1116Q1130 140 1130 154V626Q1130 640 1116 640H194Q180 640 180 626V154Q180 140 194 140Z" fill="#eef3ed" stroke="#64806b" stroke-width="3" stroke-dasharray="9 7"/>
+  <g data-layout-id="problem-shared-failure-domain" data-layout-bounds="675 220 440 230"><path d="M689 220H1101Q1115 220 1115 234V436Q1115 450 1101 450H689Q675 450 675 436V234Q675 220 689 220Z" fill="none" stroke="#8e3b32" stroke-width="3" stroke-dasharray="5 6"/><text x="895" y="432" text-anchor="middle" textLength="400" lengthAdjust="spacingAndGlyphs" class="risk-label">未经证实的共享失败域（证据缺失）</text></g>
 
   <g data-node-id="employee" data-node-bounds="40 300 150 104"><path d="M54 300H176Q190 300 190 314V390Q190 404 176 404H54Q40 404 40 390V314Q40 300 54 300Z" fill="#ece8e1" stroke="#77716a" stroke-width="2"/><text x="115" y="346" text-anchor="middle" class="node-title" data-text-role="title">员工</text><text x="115" y="379" text-anchor="middle" class="node-type" data-text-role="type">PERSON</text></g>
   <g data-node-id="web" data-node-bounds="240 260 160 104"><path d="M254 260H386Q400 260 400 274V350Q400 364 386 364H254Q240 364 240 350V274Q240 260 254 260Z" fill="#d9e5da" stroke="#64806b" stroke-width="2"/><text x="320" y="306" text-anchor="middle" class="node-title" data-text-role="title">Web 应用</text><text x="320" y="339" text-anchor="middle" class="node-type" data-text-role="type">CONTAINER</text></g>

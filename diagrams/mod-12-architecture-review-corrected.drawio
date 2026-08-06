@@ -37,14 +37,13 @@
         <mxCell id="payment-request" value="支付请求" style="text;html=0;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=23;fontColor=#55514B;" vertex="1" parent="1"><mxGeometry x="765" y="438" width="120" height="32" as="geometry"/></mxCell>
         <mxCell id="bank-result" value="银行回执/查询结果" style="text;html=0;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=23;fontColor=#55514B;" vertex="1" parent="1"><mxGeometry x="950" y="468" width="230" height="32" as="geometry"/></mxCell>
 
-        <mxCell id="legend" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=0;fillColor=#FBF8F1;strokeColor=#B9B1A5;strokeWidth=2;" vertex="1" parent="1"><mxGeometry x="40" y="680" width="1120" height="120" as="geometry"/></mxCell>
-        <mxCell id="legend-title" value="图例与证据边界｜虚线：候选信任/失败边界｜实线：系统边界｜实线箭头：关系方向" style="text;html=0;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=23;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="64" y="686" width="1072" height="28" as="geometry"/></mxCell>
-        <mxCell id="note-1" value="员工↔系统：候选信任边界；认证与授权证据待确认" style="text;html=0;strokeColor=none;fillColor=none;align=left;fontSize=23;" vertex="1" parent="1"><mxGeometry x="64" y="716" width="520" height="24" as="geometry"/></mxCell>
-        <mxCell id="note-2" value="系统↔银行：候选信任边界；协议、加密与 SLA 待确认" style="text;html=0;strokeColor=none;fillColor=none;align=left;fontSize=23;" vertex="1" parent="1"><mxGeometry x="64" y="744" width="520" height="24" as="geometry"/></mxCell>
-        <mxCell id="note-3" value="银行是外部依赖；候选失败边界，故障隔离与切换待确认" style="text;html=0;strokeColor=none;fillColor=none;align=left;fontSize=23;" vertex="1" parent="1"><mxGeometry x="64" y="772" width="520" height="24" as="geometry"/></mxCell>
-        <mxCell id="note-4" value="内部 Container 是否独立失败域：待部署、运行与恢复证据确认" style="text;html=0;strokeColor=none;fillColor=none;align=left;fontSize=23;" vertex="1" parent="1"><mxGeometry x="610" y="716" width="526" height="24" as="geometry"/></mxCell>
-        <mxCell id="note-5" value="所有跨进程协议：待确认" style="text;html=0;strokeColor=none;fillColor=none;align=left;fontSize=23;" vertex="1" parent="1"><mxGeometry x="610" y="744" width="526" height="24" as="geometry"/></mxCell>
-        <mxCell id="note-6" value="系统与 Container 团队归属：待确认" style="text;html=0;strokeColor=none;fillColor=none;align=left;fontSize=23;" vertex="1" parent="1"><mxGeometry x="610" y="772" width="526" height="24" as="geometry"/></mxCell>
+        <mxCell id="legend" value="" style="group;" vertex="1" connectable="0" parent="1"><mxGeometry x="40" y="680" width="1120" height="120" as="geometry"/></mxCell>
+        <mxCell id="legend-background" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=0;fillColor=#FBF8F1;strokeColor=#B9B1A5;strokeWidth=2;" vertex="1" parent="legend"><mxGeometry x="0" y="0" width="1120" height="120" as="geometry"/></mxCell>
+        <mxCell id="legend-elements" value="元素：Person｜Container｜Data Store｜External System" style="text;html=0;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=23;fontStyle=1;" vertex="1" parent="legend"><mxGeometry x="24" y="8" width="1072" height="24" as="geometry"/></mxCell>
+        <mxCell id="legend-boundaries" value="边界：权威系统边界（实线）｜候选信任边界（长虚线）｜候选失败边界（短虚线）" style="text;html=0;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=23;" vertex="1" parent="legend"><mxGeometry x="24" y="36" width="1072" height="24" as="geometry"/></mxCell>
+        <mxCell id="legend-relations" value="关系方向：实线箭头｜待确认/未知：证据缺失，不得推断" style="text;html=0;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=23;" vertex="1" parent="legend"><mxGeometry x="24" y="64" width="1072" height="24" as="geometry"/></mxCell>
+        <mxCell id="legend-team-unknown" value="系统与 Container 团队归属：待确认" style="text;html=0;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=23;" vertex="1" parent="legend"><mxGeometry x="24" y="92" width="1072" height="24" as="geometry"/></mxCell>
+        <mxCell id="legend-end" parent="1"/>
       </root>
     </mxGraphModel>
   </diagram>
