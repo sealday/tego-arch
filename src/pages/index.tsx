@@ -117,7 +117,7 @@ function RoadmapStatusContent(): ReactNode {
       </ul>
       <p>每个阶段仍需经过验证、评审、发布与线上检查。</p>
       <Link href="https://github.com/sealday/tego-arch/blob/main/docs/content-backlog.md">
-        查看实时 backlog <span aria-hidden="true">↗</span>
+        查看项目进度 <span aria-hidden="true">↗</span>
       </Link>
     </>
   );
@@ -133,7 +133,7 @@ function RoadmapSection(): ReactNode {
           id="roadmap-title"
           label="01 / 初版路线"
           title="一张持续展开的架构坐标"
-          description="初版沿一条可验证的研究路线展开。首页保留方向，实时进度回到 backlog"
+          description="初版沿一条可验证的研究路线展开，连接基础、建模、治理与学习闭环"
         />
         <figure className={styles.roadmapFigure}>
           <div className={styles.roadmapMedia}>

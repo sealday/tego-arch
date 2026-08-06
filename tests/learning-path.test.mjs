@@ -593,7 +593,7 @@ test('defines ordered slugs and non-empty article sections', async () => {
   }
 
   for (const document of documents.slice(mainStages.length)) {
-    const topicHeadings = ['## 当前已覆盖', '## 后续待补'];
+    const topicHeadings = ['## 当前已覆盖', '## 延伸问题'];
     assertHeadingsInOrder(document.body, topicHeadings, document.filename);
   }
 });
@@ -627,26 +627,31 @@ test('stops automatic pagination after the final main stage', async () => {
   );
 });
 
-test('bounds topic gaps and links each topic to its prerequisite stage', async () => {
+test('bounds extension questions and links each topic to its prerequisite stage', async () => {
   const topics = (await readRoadmapDocuments()).slice(mainStages.length);
 
   for (const topic of topics) {
-    const gapSection = stripIgnoredMarkdown(
-      sectionForHeading(topic.body, '后续待补'),
+    const extensionQuestionSection = stripIgnoredMarkdown(
+      sectionForHeading(topic.body, '延伸问题'),
     );
-    const gapItems = gapSection
+    const extensionQuestions = extensionQuestionSection
       .split(/\r?\n/)
       .filter((line) => /^ {0,3}[-*+]\s+/.test(line));
     assert.ok(
-      gapItems.length >= 3 && gapItems.length <= 6,
-      `${topic.filename} must list 3–6 gaps, found ${gapItems.length}`,
+      extensionQuestions.length >= 3 && extensionQuestions.length <= 6,
+      `${topic.filename} must list 3–6 extension questions, found ${extensionQuestions.length}`,
     );
-    for (const item of gapItems) {
+    for (const question of extensionQuestions) {
+      assert.match(
+        question,
+        /[?？]\s*$/u,
+        `Extension question must end with a question mark in ${topic.filename}: ${question}`,
+      );
       const substantiveCharacters =
-        visibleMarkdownText(item).match(/[\p{L}\p{N}]/gu)?.length ?? 0;
+        visibleMarkdownText(question).match(/[\p{L}\p{N}]/gu)?.length ?? 0;
       assert.ok(
         substantiveCharacters >= 8,
-        `Gap item is not substantive in ${topic.filename}: ${item}`,
+        `Extension question is not substantive in ${topic.filename}: ${question}`,
       );
     }
 

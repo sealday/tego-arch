@@ -1,0 +1,1308 @@
+import assert from 'node:assert/strict';
+import {createProcessor} from '@mdx-js/mdx';
+import {readdir, readFile} from 'node:fs/promises';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+import test from 'node:test';
+
+const repositoryRoot = fileURLToPath(new URL('../', import.meta.url));
+
+const blankCharacters = (value) => value.replace(/[^\n]/gu, ' ');
+
+const normalizeMdxSource = (source, relativePath) => {
+  const lines = source.split('\n');
+
+  if (lines[0]?.trim() === '---') {
+    const end = lines.findIndex((line, index) => index > 0 && line.trim() === '---');
+    assert.notEqual(
+      end,
+      -1,
+      `${relativePath}: MDX front matter must have a closing delimiter`,
+    );
+    for (let index = 0; index <= end; index += 1) {
+      lines[index] = blankCharacters(lines[index]);
+    }
+  }
+
+  let fence = null;
+  for (let index = 0; index < lines.length; index += 1) {
+    const opening = lines[index].match(/^\s*(`{3,}|~{3,})/u);
+    if (!fence && opening) {
+      fence = {character: opening[1][0], length: opening[1].length};
+      lines[index] = blankCharacters(lines[index]);
+      continue;
+    }
+    if (fence) {
+      const closing = new RegExp(
+        `^\\s*${fence.character}{${fence.length},}\\s*$`,
+        'u',
+      );
+      const closesFence = closing.test(lines[index]);
+      lines[index] = blankCharacters(lines[index]);
+      if (closesFence) fence = null;
+    }
+  }
+
+  assert.equal(
+    fence,
+    null,
+    `${relativePath}: MDX fenced code block must have a closing delimiter`,
+  );
+
+  const withoutFences = lines.join('\n');
+  return maskHtmlComments(withoutFences, relativePath);
+};
+
+const parseMdxAst = (source, relativePath) => {
+  let ast;
+  const captureAst = () => (tree) => {
+    ast = tree;
+  };
+
+  try {
+    createProcessor({remarkPlugins: [captureAst]}).processSync({
+      value: source,
+      path: relativePath,
+    });
+  } catch (error) {
+    throw new Error(`${relativePath}: MDX parser failed: ${error.message}`, {cause: error});
+  }
+
+  assert.ok(ast, `${relativePath}: MDX parser did not produce an AST`);
+  return ast;
+};
+
+const protectedCommentNodeTypes = new Set([
+  'code',
+  'inlineCode',
+  'mdxFlowExpression',
+  'mdxTextExpression',
+  'mdxjsEsm',
+]);
+const commentOpeningProbe = 'CMNT';
+const comparisonCommentOpeningProbe = 'OPNR';
+const imageNodeTypes = new Set(['image', 'imageReference']);
+
+const nodePositionKey = (node) => (
+  `${node.type}:${node.position?.start.offset}:${node.position?.end.offset}`
+);
+
+const nodesByTypeAndPosition = (ast, type) => {
+  const nodes = new Map();
+  const visit = (node) => {
+    if (node.type === type) {
+      nodes.set(nodePositionKey(node), node);
+    }
+    for (const child of node.children ?? []) visit(child);
+  };
+  visit(ast);
+  return nodes;
+};
+
+const countToken = (value, token) => value.split(token).length - 1;
+
+const withCandidateOpenings = (baselineProbe, offsets) => {
+  const candidate = baselineProbe.split('');
+  for (const offset of offsets) {
+    for (let index = 0; index < comparisonCommentOpeningProbe.length; index += 1) {
+      candidate[offset + index] = comparisonCommentOpeningProbe[index];
+    }
+  }
+  return candidate.join('');
+};
+
+const classifyImageOpenings = (
+  baselineProbe,
+  baselineAst,
+  openingOffsets,
+  relativePath,
+) => {
+  const classifications = new Map();
+  const baselineImages = new Map([
+    ...nodesByTypeAndPosition(baselineAst, 'image'),
+    ...nodesByTypeAndPosition(baselineAst, 'imageReference'),
+  ]);
+  const baselineDefinitions = [...nodesByTypeAndPosition(baselineAst, 'definition').values()];
+
+  for (const opening of openingOffsets) {
+    const imageEntry = [...baselineImages.entries()].find(([, image]) => (
+      opening >= image.position.start.offset && opening < image.position.end.offset
+    ));
+    if (!imageEntry) continue;
+
+    const [imageKey, baselineImage] = imageEntry;
+    const findCandidateImage = (candidateOffsets) => {
+      const candidateProbe = withCandidateOpenings(baselineProbe, candidateOffsets);
+      assert.equal(candidateProbe.length, baselineProbe.length);
+      return nodesByTypeAndPosition(
+        parseMdxAst(candidateProbe, relativePath),
+        baselineImage.type,
+      ).get(imageKey);
+    };
+
+    let candidateImage = findCandidateImage([opening]);
+    if (!candidateImage && baselineImage.type === 'imageReference') {
+      const matchingDefinitions = baselineDefinitions.filter(
+        (definition) => definition.identifier === baselineImage.identifier,
+      );
+      assert.ok(
+        matchingDefinitions.length > 0,
+        `${relativePath}: MDX image reference has no matching definition at ${imageKey}`,
+      );
+      const synchronizedCandidates = [];
+      for (const definition of matchingDefinitions) {
+        const definitionOpenings = openingOffsets.filter((definitionOpening) => (
+          definitionOpening >= definition.position.start.offset
+          && definitionOpening < definition.position.end.offset
+        ));
+        for (const definitionOpening of definitionOpenings) {
+          const synchronizedImage = findCandidateImage([opening, definitionOpening]);
+          if (synchronizedImage) synchronizedCandidates.push(synchronizedImage);
+        }
+      }
+      assert.equal(
+        synchronizedCandidates.length,
+        1,
+        `${relativePath}: MDX image-reference probe cannot pair offset ${opening}`,
+      );
+      [candidateImage] = synchronizedCandidates;
+    }
+    assert.ok(
+      candidateImage,
+      `${relativePath}: MDX comment probe must preserve ${imageKey}`,
+    );
+
+    const baselineAlt = baselineImage.alt ?? '';
+    const candidateAlt = candidateImage.alt ?? '';
+    const visibleByBaseline = countToken(baselineAlt, commentOpeningProbe)
+      - countToken(candidateAlt, commentOpeningProbe);
+    const visibleByCandidate = countToken(candidateAlt, comparisonCommentOpeningProbe)
+      - countToken(baselineAlt, comparisonCommentOpeningProbe);
+    assert.equal(
+      visibleByBaseline,
+      visibleByCandidate,
+      `${relativePath}: MDX comment probes disagree at offset ${opening}`,
+    );
+    assert.ok(
+      visibleByBaseline === 0 || visibleByBaseline === 1,
+      `${relativePath}: MDX comment probe has ambiguous visibility at offset ${opening}`,
+    );
+    classifications.set(opening, visibleByBaseline === 1);
+  }
+
+  return classifications;
+};
+
+const collectProtectedCommentRanges = (ast, openingOffsets, imageOpeningVisibility) => {
+  const ranges = [];
+  const addRange = (start, end) => {
+    if (Number.isInteger(start) && Number.isInteger(end) && start < end) {
+      ranges.push({start, end});
+    }
+  };
+
+  const addMetadataGaps = (start, end, visibleRanges) => {
+    let cursor = start;
+    for (const range of visibleRanges
+      .filter(({start: rangeStart, end: rangeEnd}) => (
+        Number.isInteger(rangeStart)
+        && Number.isInteger(rangeEnd)
+        && rangeStart < rangeEnd
+      ))
+      .sort((left, right) => left.start - right.start)) {
+      addRange(cursor, Math.max(start, range.start));
+      cursor = Math.max(cursor, Math.min(end, range.end));
+    }
+    addRange(cursor, end);
+  };
+
+  const visit = (node) => {
+    const start = node.position?.start.offset;
+    const end = node.position?.end.offset;
+    if (protectedCommentNodeTypes.has(node.type)) {
+      addRange(start, end);
+      return;
+    }
+
+    if (node.type === 'definition') {
+      addRange(start, end);
+      return;
+    }
+
+    if (node.type === 'link') {
+      addMetadataGaps(start, end, (node.children ?? []).map((child) => ({
+        start: child.position?.start.offset,
+        end: child.position?.end.offset,
+      })));
+    }
+
+    if (imageNodeTypes.has(node.type)) {
+      const imageOpenings = openingOffsets.filter(
+        (opening) => opening >= start && opening < end,
+      );
+      for (const opening of imageOpenings) {
+        assert.ok(
+          imageOpeningVisibility.has(opening),
+          `MDX comment probe must classify image opener at offset ${opening}`,
+        );
+        if (!imageOpeningVisibility.get(opening)) {
+          addRange(opening, opening + commentOpeningProbe.length);
+        }
+      }
+    }
+
+    if (node.type === 'mdxJsxFlowElement' || node.type === 'mdxJsxTextElement') {
+      const children = node.children ?? [];
+      if (children.length === 0) {
+        addRange(start, end);
+      } else {
+        addRange(start, children[0].position?.start.offset);
+        addRange(children.at(-1).position?.end.offset, end);
+      }
+      for (const attribute of node.attributes ?? []) {
+        addRange(attribute.position?.start.offset, attribute.position?.end.offset);
+      }
+    }
+
+    for (const child of node.children ?? []) visit(child);
+  };
+
+  visit(ast);
+  return ranges;
+};
+
+const collectVisibleOpeningOffsets = (ast, openingOffsets, imageOpeningVisibility) => {
+  const visible = new Set();
+  const addOpeningsInNode = (node) => {
+    const start = node.position?.start.offset;
+    const end = node.position?.end.offset;
+    for (const opening of openingOffsets) {
+      if (opening >= start && opening < end) visible.add(opening);
+    }
+  };
+
+  const visit = (node) => {
+    if (node.type === 'text' || node.type === 'inlineCode') {
+      addOpeningsInNode(node);
+      return;
+    }
+    if (imageNodeTypes.has(node.type)) {
+      for (const [opening, isVisible] of imageOpeningVisibility) {
+        if (isVisible) {
+          const start = node.position?.start.offset;
+          const end = node.position?.end.offset;
+          if (opening >= start && opening < end) visible.add(opening);
+        }
+      }
+      return;
+    }
+    if (protectedCommentNodeTypes.has(node.type) || node.type === 'definition') return;
+    for (const child of node.children ?? []) visit(child);
+  };
+
+  visit(ast);
+  return visible;
+};
+
+const hasOddBackslashRunBefore = (source, offset) => {
+  let backslashes = 0;
+  for (let index = offset - 1; index >= 0 && source[index] === '\\'; index -= 1) {
+    backslashes += 1;
+  }
+  return backslashes % 2 === 1;
+};
+
+const maskHtmlComments = (source, relativePath) => {
+  const openingOffsets = [];
+  for (let opening = source.indexOf('<!--'); opening !== -1;
+    opening = source.indexOf('<!--', opening + 4)) {
+    openingOffsets.push(opening);
+  }
+  const baselineProbe = source
+    .replaceAll('<!--', commentOpeningProbe)
+    .replaceAll('-->', 'END');
+  assert.equal(baselineProbe.length, source.length);
+  const baselineAst = parseMdxAst(baselineProbe, relativePath);
+  const imageOpeningVisibility = classifyImageOpenings(
+    baselineProbe,
+    baselineAst,
+    openingOffsets,
+    relativePath,
+  );
+  const protectedRanges = collectProtectedCommentRanges(
+    baselineAst,
+    openingOffsets,
+    imageOpeningVisibility,
+  );
+  const visibleOpeningOffsets = collectVisibleOpeningOffsets(
+    baselineAst,
+    openingOffsets,
+    imageOpeningVisibility,
+  );
+  const visibleEscapedOpenings = new Set();
+  const masked = source.split('');
+
+  for (let cursor = 0; cursor < source.length;) {
+    const opening = source.indexOf('<!--', cursor);
+    if (opening === -1) break;
+    if (hasOddBackslashRunBefore(source, opening)) {
+      if (visibleOpeningOffsets.has(opening)) visibleEscapedOpenings.add(opening);
+      cursor = opening + 4;
+      continue;
+    }
+    const isProtected = protectedRanges.some(
+      ({start, end}) => opening >= start && opening < end,
+    );
+    if (isProtected) {
+      cursor = opening + 4;
+      continue;
+    }
+
+    const closing = source.indexOf('-->', opening + 4);
+    if (closing === -1) {
+      assert.fail(`${relativePath}: MDX HTML comment must have a closing delimiter`);
+    }
+    for (let index = opening; index < closing + 3; index += 1) {
+      if (masked[index] !== '\n') masked[index] = ' ';
+    }
+    cursor = closing + 3;
+  }
+
+  return {source: masked.join(''), visibleEscapedOpenings};
+};
+
+const restoreEscapedCommentOpeners = (
+  source,
+  line,
+  excerpt,
+  visibleEscapedOpenings,
+) => {
+  const sourceLines = source.split('\n');
+  const originalLine = sourceLines[line - 1] ?? '';
+  const lineOffset = sourceLines
+    .slice(0, line - 1)
+    .reduce((offset, sourceLine) => offset + sourceLine.length + 1, 0);
+  const escapedRuns = [];
+  for (let opening = originalLine.indexOf('<!--'); opening !== -1;
+    opening = originalLine.indexOf('<!--', opening + 4)) {
+    if (!visibleEscapedOpenings.has(lineOffset + opening)) continue;
+    let runStart = opening;
+    while (runStart > 0 && originalLine[runStart - 1] === '\\') runStart -= 1;
+    escapedRuns.push(originalLine.slice(runStart, opening));
+  }
+
+  let restored = excerpt;
+  let cursor = 0;
+  for (const escapedRun of escapedRuns) {
+    const opening = restored.indexOf('<!--', cursor);
+    if (opening === -1) break;
+    let runStart = opening;
+    while (runStart > cursor && restored[runStart - 1] === '\\') runStart -= 1;
+    restored = `${restored.slice(0, runStart)}${escapedRun}${restored.slice(opening)}`;
+    cursor = runStart + escapedRun.length + 4;
+  }
+  return restored;
+};
+
+const excludedAstTypes = new Set([
+  'code',
+  'definition',
+  'html',
+  'mdxFlowExpression',
+  'mdxTextExpression',
+  'mdxjsEsm',
+]);
+
+const renderVisibleBlock = (node) => {
+  const block = {text: '', lines: [], display: '', displayLines: []};
+
+  const append = (field, lineField, value, startLine) => {
+    let line = startLine;
+    for (let index = 0; index < value.length; index += 1) {
+      const character = value[index];
+      block[field] += character;
+      block[lineField].push(line);
+      if (character === '\n') line += 1;
+    }
+  };
+
+  const appendVisible = (value, visibleNode) => {
+    const line = visibleNode.position?.start.line ?? node.position?.start.line ?? 1;
+    append('text', 'lines', value, line);
+    append('display', 'displayLines', value, line);
+  };
+
+  const appendDisplay = (value, line) => {
+    append('display', 'displayLines', value, line);
+  };
+
+  const visit = (current) => {
+    if (excludedAstTypes.has(current.type)) return;
+
+    if (current.type === 'text' || current.type === 'inlineCode') {
+      appendVisible(current.value, current);
+      return;
+    }
+
+    if (current.type === 'break') {
+      appendVisible('\n', current);
+      return;
+    }
+
+    if (current.type === 'image' || current.type === 'imageReference') {
+      const alt = current.alt ?? '';
+      const startLine = current.position?.start.line ?? 1;
+      append('text', 'lines', alt, startLine);
+      appendDisplay('![', startLine);
+      append('display', 'displayLines', alt, startLine);
+      appendDisplay(']', current.position?.end.line ?? startLine);
+      return;
+    }
+
+    if (current.type === 'link' || current.type === 'linkReference') {
+      appendDisplay('[', current.position?.start.line ?? 1);
+      for (const child of current.children ?? []) visit(child);
+      appendDisplay(']', current.position?.end.line ?? current.position?.start.line ?? 1);
+      return;
+    }
+
+    for (const child of current.children ?? []) visit(child);
+  };
+
+  visit(node);
+  block.excerptAt = (line) => {
+    let excerpt = '';
+    for (let index = 0; index < block.display.length; index += 1) {
+      if (block.displayLines[index] === line) excerpt += block.display[index];
+    }
+    return excerpt.trim();
+  };
+  return block;
+};
+
+const collectVisibleBlocks = (ast) => {
+  const blocks = [];
+  const visit = (node) => {
+    if (excludedAstTypes.has(node.type)) return;
+    if (node.type === 'heading' || node.type === 'paragraph' || node.type === 'tableCell') {
+      blocks.push({...renderVisibleBlock(node), node});
+      return;
+    }
+    for (const child of node.children ?? []) visit(child);
+  };
+  visit(ast);
+  return blocks;
+};
+
+const rules = [
+  {
+    id: 'homepage-design-rationale',
+    applies: (file) => file === 'src/pages/index.tsx',
+    pattern: /首页保留方向|实时进度回到\s*backlog/giu,
+  },
+  {
+    id: 'homepage-internal-progress-label',
+    applies: (file) => file === 'src/pages/index.tsx',
+    pattern: /查看实时\s*backlog/giu,
+  },
+  {
+    id: 'generated-page-meta',
+    applies: (file) => file.endsWith('.mdx'),
+    pattern: /本页从机器可读主题清单生成|计划主题[^。\n]{0,40}长期\s+backlog\s+跟踪/giu,
+  },
+];
+
+const issueFromLine = (relativePath, source, line, ruleId, excerpt) => ({
+  file: relativePath,
+  line,
+  ruleId,
+  excerpt: excerpt ?? source.split('\n')[line - 1].trim(),
+});
+
+const findEditorialIssues = (relativePath, source, ast) => {
+  const issues = [];
+
+  const inspectList = (list) => {
+    for (const node of list.children ?? []) {
+      if (node.type !== 'listItem') continue;
+      const text = renderVisibleBlock(node).text.trim();
+      if (/^补充[^\n]+$/u.test(text)) {
+        issues.push(issueFromLine(
+          relativePath,
+          source,
+          node.position.start.line,
+          'editorial-task-item',
+        ));
+      }
+    }
+  };
+
+  const processContainer = (container) => {
+    let insideEditorialSection = false;
+    for (const node of container.children ?? []) {
+      if (node.type === 'heading' && node.depth <= 2) {
+        const heading = renderVisibleBlock(node).text.trim();
+        insideEditorialSection = node.depth === 2 && heading === '后续待补';
+        if (insideEditorialSection) {
+          issues.push(issueFromLine(
+            relativePath,
+            source,
+            node.position.start.line,
+            'editorial-todo-heading',
+          ));
+        }
+      } else if (insideEditorialSection && node.type === 'list') {
+        inspectList(node);
+      }
+
+      if (node.children?.length) processContainer(node);
+    }
+  };
+
+  processContainer(ast);
+
+  return issues;
+};
+
+const findMdxIssues = (relativePath, source) => {
+  const {source: normalized, visibleEscapedOpenings} = normalizeMdxSource(
+    source,
+    relativePath,
+  );
+  const ast = parseMdxAst(normalized, relativePath);
+  const generatedRule = rules.find(({id}) => id === 'generated-page-meta');
+  const issues = [];
+
+  for (const block of collectVisibleBlocks(ast)) {
+    const matches = block.text.matchAll(
+      new RegExp(generatedRule.pattern.source, generatedRule.pattern.flags),
+    );
+    for (const match of matches) {
+      const line = block.lines[match.index];
+      issues.push(issueFromLine(
+        relativePath,
+        normalized,
+        line,
+        generatedRule.id,
+        restoreEscapedCommentOpeners(
+          normalized,
+          line,
+          block.excerptAt(line),
+          visibleEscapedOpenings,
+        ),
+      ));
+    }
+  }
+
+  return [...issues, ...findEditorialIssues(relativePath, normalized, ast)];
+};
+
+const findProductCopyIssues = (relativePath, source) => {
+  if (relativePath.endsWith('.mdx')) return findMdxIssues(relativePath, source);
+
+  const issues = [];
+
+  for (const rule of rules) {
+    if (!rule.applies(relativePath) || rule.id === 'generated-page-meta') continue;
+    const matches = source.matchAll(new RegExp(rule.pattern.source, rule.pattern.flags));
+
+    for (const match of matches) {
+      const line = source.slice(0, match.index).split('\n').length;
+      issues.push(issueFromLine(relativePath, source, line, rule.id));
+    }
+  }
+
+  return issues;
+};
+
+const walkMdx = async (directory) => {
+  const entries = await readdir(directory, {withFileTypes: true});
+  const nested = await Promise.all(
+    entries
+      .sort((left, right) => left.name.localeCompare(right.name))
+      .map(async (entry) => {
+        const absolute = path.join(directory, entry.name);
+        if (entry.isDirectory()) return walkMdx(absolute);
+        return entry.isFile() && entry.name.endsWith('.mdx') ? [absolute] : [];
+      }),
+  );
+  return nested.flat();
+};
+
+test('normalizes only non-visible MDX regions', () => {
+  const fixture = `---
+title: 首页保留方向
+---
+
+本文以固定版本为证据范围。Kafka queue backlog 是领域术语。
+
+\`\`\`text
+查看实时 backlog
+TODO from upstream
+\`\`\`
+
+<!-- 本页从机器可读主题清单生成 -->
+[上游 TODO](https://example.com/长期-backlog)
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/example.mdx', fixture), []);
+});
+
+test('keeps shorter fence runs hidden without changing source line numbers', () => {
+  const fixture = `# Example
+
+\`\`\`\`mdx
+\`\`\`
+本页从机器可读主题清单生成
+\`\`\`
+\`\`\`\`
+
+计划主题仍由长期 backlog 跟踪。
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/example.mdx', fixture), [
+    {
+      file: 'content/cases/example.mdx',
+      line: 9,
+      ruleId: 'generated-page-meta',
+      excerpt: '计划主题仍由长期 backlog 跟踪。',
+    },
+  ]);
+});
+
+test('masks balanced and escaped parentheses in link destinations', () => {
+  const fixture = `# Example
+[上游参考](https://example.com/path_(nested(value))/escaped\\(part\\)/本页从机器可读主题清单生成)
+
+计划主题仍由长期 backlog 跟踪。
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/example.mdx', fixture), [
+    {
+      file: 'content/cases/example.mdx',
+      line: 4,
+      ruleId: 'generated-page-meta',
+      excerpt: '计划主题仍由长期 backlog 跟踪。',
+    },
+  ]);
+});
+
+test('masks complex inline destinations without changing source line numbers', () => {
+  const fixtures = [
+    {
+      name: 'empty-alt image',
+      source: '![](https://example.com/本页从机器可读主题清单生成)',
+      visibleLine: 4,
+    },
+    {
+      name: 'escaped label',
+      source: '[escaped \\] label](https://example.com/本页从机器可读主题清单生成)',
+      visibleLine: 4,
+    },
+    {
+      name: 'nested label',
+      source: '[nested [label]](https://example.com/本页从机器可读主题清单生成)',
+      visibleLine: 4,
+    },
+    {
+      name: 'multiline label',
+      source: '[multiline\nlabel](https://example.com/本页从机器可读主题清单生成)',
+      visibleLine: 5,
+    },
+    {
+      name: 'valid link after unmatched candidate',
+      source: '[broken](https://example.com/unclosed\n[later](https://example.com/本页从机器可读主题清单生成)',
+      visibleLine: 5,
+    },
+  ];
+
+  for (const {name, source, visibleLine} of fixtures) {
+    const fixture = `# Example\n${source}\n\n计划主题仍由长期 backlog 跟踪。\n`;
+    assert.deepEqual(
+      findProductCopyIssues(`content/cases/${name}.mdx`, fixture),
+      [
+        {
+          file: `content/cases/${name}.mdx`,
+          line: visibleLine,
+          ruleId: 'generated-page-meta',
+          excerpt: '计划主题仍由长期 backlog 跟踪。',
+        },
+      ],
+      name,
+    );
+  }
+});
+
+test('masks reference-definition destinations without changing source line numbers', () => {
+  const fixture = `# Example
+[raw]: https://example.com/本页从机器可读主题清单生成
+[angle]: <https://example.com/本页从机器可读主题清单生成>
+
+本页从机器可读主题清单生成。
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/references.mdx', fixture), [
+    {
+      file: 'content/cases/references.mdx',
+      line: 5,
+      ruleId: 'generated-page-meta',
+      excerpt: '本页从机器可读主题清单生成。',
+    },
+  ]);
+});
+
+test('reference-definition grammar leaves trailing visible text unmasked', () => {
+  const fixture = `# Example
+[ref]: /safe 本页从机器可读主题清单生成
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/invalid-reference.mdx', fixture), [
+    {
+      file: 'content/cases/invalid-reference.mdx',
+      line: 2,
+      ruleId: 'generated-page-meta',
+      excerpt: '[ref]: /safe 本页从机器可读主题清单生成',
+    },
+  ]);
+});
+
+test('reference-definition grammar masks next-line destinations and valid titles', () => {
+  const fixture = `# Example
+[next-destination]:
+  /本页从机器可读主题清单生成
+[same-line-title]: /safe "本页从机器可读主题清单生成"
+[next-line-title]: /safe
+  (本页从机器可读主题清单生成)
+
+本页从机器可读主题清单生成。
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/multiline-references.mdx', fixture), [
+    {
+      file: 'content/cases/multiline-references.mdx',
+      line: 8,
+      ruleId: 'generated-page-meta',
+      excerpt: '本页从机器可读主题清单生成。',
+    },
+  ]);
+});
+
+test('reference-definition grammar leaves extra text after a title visible', () => {
+  const fixture = `# Example
+[ref]: /safe "title" 本页从机器可读主题清单生成
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/invalid-title.mdx', fixture), [
+    {
+      file: 'content/cases/invalid-title.mdx',
+      line: 2,
+      ruleId: 'generated-page-meta',
+      excerpt: '[ref]: /safe "title" 本页从机器可读主题清单生成',
+    },
+  ]);
+});
+
+test('matches MDX compiler paragraph-interruption visibility', () => {
+  const fixture = `Foo
+[ref]: /本页从机器可读主题清单生成
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/interrupted-definition.mdx', fixture), [
+    {
+      file: 'content/cases/interrupted-definition.mdx',
+      line: 2,
+      ruleId: 'generated-page-meta',
+      excerpt: '[ref]: /本页从机器可读主题清单生成',
+    },
+  ]);
+});
+
+test('matches MDX compiler container-definition visibility', () => {
+  const fixture = `# Example
+> [quote]: /本页从机器可读主题清单生成
+> [quote]
+
+- [list]: /本页从机器可读主题清单生成
+- [list]
+
+本页从机器可读主题清单生成。
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/container-definitions.mdx', fixture), [
+    {
+      file: 'content/cases/container-definitions.mdx',
+      line: 8,
+      ruleId: 'generated-page-meta',
+      excerpt: '本页从机器可读主题清单生成。',
+    },
+  ]);
+});
+
+test('matches MDX compiler invalid-inline-link visibility', () => {
+  const fixture = `# Example
+[x](/safe 本页从机器可读主题清单生成)
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/invalid-inline-link.mdx', fixture), [
+    {
+      file: 'content/cases/invalid-inline-link.mdx',
+      line: 2,
+      ruleId: 'generated-page-meta',
+      excerpt: '[x](/safe 本页从机器可读主题清单生成)',
+    },
+  ]);
+});
+
+test('matches MDX compiler code-span link-label visibility', () => {
+  const fixture = `# Example
+[foo \`]\` bar](/本页从机器可读主题清单生成)
+
+计划主题仍由长期 backlog 跟踪。
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/code-span-label.mdx', fixture), [
+    {
+      file: 'content/cases/code-span-label.mdx',
+      line: 4,
+      ruleId: 'generated-page-meta',
+      excerpt: '计划主题仍由长期 backlog 跟踪。',
+    },
+  ]);
+});
+
+test('joins visible text across link boundaries for contextual rules', () => {
+  const fixture = `# Example
+计划主题仍由[长期 backlog](https://example.com/internal) 跟踪。
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/split-context.mdx', fixture), [
+    {
+      file: 'content/cases/split-context.mdx',
+      line: 2,
+      ruleId: 'generated-page-meta',
+      excerpt: '计划主题仍由[长期 backlog] 跟踪。',
+    },
+  ]);
+});
+
+test('AST comment preprocessing preserves closed tokens in inline code', () => {
+  const fixture = `# Example
+\`<!-- 本页从机器可读主题清单生成 -->\`
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/closed-comment-code.mdx', fixture), [
+    {
+      file: 'content/cases/closed-comment-code.mdx',
+      line: 2,
+      ruleId: 'generated-page-meta',
+      excerpt: '<!-- 本页从机器可读主题清单生成 -->',
+    },
+  ]);
+});
+
+test('AST comment preprocessing preserves unclosed tokens in inline code', () => {
+  const fixture = `# Example
+\`<!-- 本页从机器可读主题清单生成\`
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/unclosed-comment-code.mdx', fixture), [
+    {
+      file: 'content/cases/unclosed-comment-code.mdx',
+      line: 2,
+      ruleId: 'generated-page-meta',
+      excerpt: '<!-- 本页从机器可读主题清单生成',
+    },
+  ]);
+});
+
+test('AST comment preprocessing still masks and validates actual comments', () => {
+  assert.deepEqual(
+    findProductCopyIssues(
+      'content/cases/closed-comment.mdx',
+      '<!-- 本页从机器可读主题清单生成 -->\n',
+    ),
+    [],
+  );
+  assert.throws(
+    () => findProductCopyIssues(
+      'content/cases/unclosed-comment.mdx',
+      '<!-- 本页从机器可读主题清单生成\n',
+    ),
+    (error) => {
+      assert.match(error.message, /content\/cases\/unclosed-comment\.mdx/u);
+      assert.match(error.message, /HTML comment/u);
+      return true;
+    },
+  );
+});
+
+test('escaped opener comment classification keeps visible source text', () => {
+  const fixture = `# Example
+\\<!-- 本页从机器可读主题清单生成 -->
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/escaped-comment.mdx', fixture), [
+    {
+      file: 'content/cases/escaped-comment.mdx',
+      line: 2,
+      ruleId: 'generated-page-meta',
+      excerpt: '\\<!-- 本页从机器可读主题清单生成 -->',
+    },
+  ]);
+  assert.deepEqual(
+    findProductCopyIssues(
+      'content/cases/even-backslashes-comment.mdx',
+      `# Example
+\\\\<!-- 本页从机器可读主题清单生成 -->
+`,
+    ),
+    [],
+  );
+});
+
+test('escaped opener diagnostic restoration preserves a longer odd backslash run', () => {
+  const tripleBackslashOpener = String.raw`\\\<!-- 本页从机器可读主题清单生成 -->`;
+  assert.deepEqual(
+    findProductCopyIssues(
+      'content/cases/triple-backslash-comment.mdx',
+      `# Example\n${tripleBackslashOpener}\n`,
+    ),
+    [
+      {
+        file: 'content/cases/triple-backslash-comment.mdx',
+        line: 2,
+        ruleId: 'generated-page-meta',
+        excerpt: tripleBackslashOpener,
+      },
+    ],
+  );
+});
+
+test('escaped opener diagnostic restoration preserves multiple openers', () => {
+  const singleBackslashOpener = String.raw`\<!-- 本页从机器可读主题清单生成 -->`;
+  const repeatedLine = `${singleBackslashOpener} 与 ${singleBackslashOpener}`;
+  assert.deepEqual(
+    findProductCopyIssues(
+      'content/cases/repeated-escaped-comments.mdx',
+      `# Example\n${repeatedLine}\n`,
+    ),
+    [
+      {
+        file: 'content/cases/repeated-escaped-comments.mdx',
+        line: 2,
+        ruleId: 'generated-page-meta',
+        excerpt: repeatedLine,
+      },
+      {
+        file: 'content/cases/repeated-escaped-comments.mdx',
+        line: 2,
+        ruleId: 'generated-page-meta',
+        excerpt: repeatedLine,
+      },
+    ],
+  );
+});
+
+test('AST metadata comment classification protects link and definition titles', () => {
+  const fixture = `# Example
+[inline](/safe "<!-- 本页从机器可读主题清单生成")
+
+[reference]: /safe "<!-- 本页从机器可读主题清单生成"
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/comment-titles.mdx', fixture), []);
+});
+
+test('AST metadata comment classification protects image titles', () => {
+  const fixture = `# Example
+![diagram](/safe "<!-- 本页从机器可读主题清单生成")
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/image-comment-title.mdx', fixture), []);
+});
+
+test('entity-safe image metadata classification ignores decoded alt collisions', () => {
+  const fixture = `# Example
+![CM&#78;T](/safe "<!-- 本页从机器可读主题清单生成")
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/entity-image-title.mdx', fixture), []);
+});
+
+test('per-opener image alt classification handles nested metadata before visible alt', () => {
+  const fixture = `# Example
+![outer [inner](/safe "<!-- hidden") \\<!-- 本页从机器可读主题清单生成 -->](/outer)
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/nested-image-opener.mdx', fixture), [
+    {
+      file: 'content/cases/nested-image-opener.mdx',
+      line: 2,
+      ruleId: 'generated-page-meta',
+      excerpt: '![outer inner \\<!-- 本页从机器可读主题清单生成 -->]',
+    },
+  ]);
+});
+
+test('image-reference opener classification handles nested metadata before visible alt', () => {
+  const fixture = `# Example
+![outer [inner](/safe "<!-- hidden") \\<!-- 本页从机器可读主题清单生成 -->][outer]
+
+[outer]: /image
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/full-image-reference.mdx', fixture), [
+    {
+      file: 'content/cases/full-image-reference.mdx',
+      line: 2,
+      ruleId: 'generated-page-meta',
+      excerpt: '![outer inner \\<!-- 本页从机器可读主题清单生成 -->]',
+    },
+  ]);
+});
+
+test('image-reference opener classification excludes hidden full-reference labels', () => {
+  const visibleAlt = String.raw`\<!-- 本页从机器可读主题清单生成 -->`;
+  const hiddenLabel = String.raw`\<!-- hidden`;
+  const fixture = `# Example
+![${visibleAlt}][${hiddenLabel}]
+
+[${hiddenLabel}]: /image
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/label-image-reference.mdx', fixture), [
+    {
+      file: 'content/cases/label-image-reference.mdx',
+      line: 2,
+      ruleId: 'generated-page-meta',
+      excerpt: `![${visibleAlt}]`,
+    },
+  ]);
+});
+
+test('image-reference opener classification preserves collapsed visible alt', () => {
+  const visibleAlt = String.raw`\<!-- 本页从机器可读主题清单生成 -->`;
+  const fixture = `# Example
+![${visibleAlt}][]
+
+[${visibleAlt}]: /image
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/collapsed-image-reference.mdx', fixture), [
+    {
+      file: 'content/cases/collapsed-image-reference.mdx',
+      line: 2,
+      ruleId: 'generated-page-meta',
+      excerpt: `![${visibleAlt}]`,
+    },
+  ]);
+});
+
+test('image-reference opener classification preserves shortcut visible alt', () => {
+  const visibleAlt = String.raw`\<!-- 本页从机器可读主题清单生成 -->`;
+  const fixture = `# Example
+![${visibleAlt}]
+
+[${visibleAlt}]: /image
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/shortcut-image-reference.mdx', fixture), [
+    {
+      file: 'content/cases/shortcut-image-reference.mdx',
+      line: 2,
+      ruleId: 'generated-page-meta',
+      excerpt: `![${visibleAlt}]`,
+    },
+  ]);
+});
+
+test('per-opener diagnostic restoration ignores escaped metadata openers', () => {
+  const hiddenLink = String.raw`[x](/safe "\<!-- hidden")`;
+  const visibleOpener = String.raw`\\\<!-- 本页从机器可读主题清单生成 -->`;
+  const fixture = `# Example\n${hiddenLink} and ${visibleOpener}\n`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/metadata-before-visible.mdx', fixture), [
+    {
+      file: 'content/cases/metadata-before-visible.mdx',
+      line: 2,
+      ruleId: 'generated-page-meta',
+      excerpt: `[x] and ${visibleOpener}`,
+    },
+  ]);
+});
+
+test('escaped opener comment classification keeps image alt text visible', () => {
+  const fixture = `# Example
+![\\<!-- 本页从机器可读主题清单生成 -->](/safe "diagram")
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/image-comment-alt.mdx', fixture), [
+    {
+      file: 'content/cases/image-comment-alt.mdx',
+      line: 2,
+      ruleId: 'generated-page-meta',
+      excerpt: '![\\<!-- 本页从机器可读主题清单生成 -->]',
+    },
+  ]);
+});
+
+test('finds nested editorial sections inside blockquotes without duplicates', () => {
+  const fixture = `> ## 后续待补
+>
+> - 补充容器案例。
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/paths/blockquote.mdx', fixture), [
+    {
+      file: 'content/paths/blockquote.mdx',
+      line: 1,
+      ruleId: 'editorial-todo-heading',
+      excerpt: '> ## 后续待补',
+    },
+    {
+      file: 'content/paths/blockquote.mdx',
+      line: 3,
+      ruleId: 'editorial-task-item',
+      excerpt: '> - 补充容器案例。',
+    },
+  ]);
+});
+
+test('finds nested editorial sections inside MDX JSX without duplicates', () => {
+  const fixture = `<Section>
+## 后续待补
+
+- 补充容器案例。
+</Section>
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/paths/jsx-section.mdx', fixture), [
+    {
+      file: 'content/paths/jsx-section.mdx',
+      line: 2,
+      ruleId: 'editorial-todo-heading',
+      excerpt: '## 后续待补',
+    },
+    {
+      file: 'content/paths/jsx-section.mdx',
+      line: 4,
+      ruleId: 'editorial-task-item',
+      excerpt: '- 补充容器案例。',
+    },
+  ]);
+});
+
+test('preserves visible link labels and image markers exactly', () => {
+  const fixture = `# Example
+[本页从机器可读主题清单生成](https://example.com/reference)
+![本页从机器可读主题清单生成](https://example.com/image.png)
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/visible-labels.mdx', fixture), [
+    {
+      file: 'content/cases/visible-labels.mdx',
+      line: 2,
+      ruleId: 'generated-page-meta',
+      excerpt: '[本页从机器可读主题清单生成]',
+    },
+    {
+      file: 'content/cases/visible-labels.mdx',
+      line: 3,
+      ruleId: 'generated-page-meta',
+      excerpt: '![本页从机器可读主题清单生成]',
+    },
+  ]);
+});
+
+test('reports file context for unsafe MDX structures', () => {
+  const fixtures = [
+    {
+      structure: 'front matter',
+      source: '---\ntitle: Example\n',
+    },
+    {
+      structure: 'fenced code block',
+      source: '# Example\n\n```text\nunclosed\n',
+    },
+    {
+      structure: 'HTML comment',
+      source: '# Example\n\n<!-- unclosed\n',
+    },
+    {
+      structure: 'MDX parser',
+      source: '# Example\n\n<Component\n',
+    },
+  ];
+
+  for (const {structure, source} of fixtures) {
+    assert.throws(
+      () => findProductCopyIssues('content/cases/broken.mdx', source),
+      (error) => {
+        assert.match(error.message, /content\/cases\/broken\.mdx/u);
+        assert.match(error.message, new RegExp(structure, 'u'));
+        return true;
+      },
+    );
+  }
+});
+
+test('reports rule id, line, and excerpt for product-process language', () => {
+  const fixture = `# 架构方法
+
+本页从机器可读主题清单生成。计划主题仍由长期 backlog 跟踪。
+`;
+  const issues = findProductCopyIssues('content/methods/index.mdx', fixture);
+
+  assert.deepEqual(issues.map(({line, ruleId}) => ({line, ruleId})), [
+    {line: 3, ruleId: 'generated-page-meta'},
+    {line: 3, ruleId: 'generated-page-meta'},
+  ]);
+  assert.ok(issues.every(({excerpt}) => excerpt.startsWith('本页从机器可读主题清单生成')));
+
+  const pathFixture = `# 云原生与平台
+
+## 后续待补
+
+- 补充镜像供应链案例。
+`;
+  assert.deepEqual(
+    findProductCopyIssues('content/paths/example.mdx', pathFixture).map(({ruleId}) => ruleId),
+    ['editorial-todo-heading', 'editorial-task-item'],
+  );
+
+  const legitimatePathFixture = `# 容量设计
+
+- 补充容量用于吸收短时突发，并不是编辑任务。
+
+## 延伸问题
+
+- 补充容量应由哪些负载信号决定？
+`;
+  assert.deepEqual(
+    findProductCopyIssues('content/paths/example.mdx', legitimatePathFixture),
+    [],
+  );
+});
+
+test('keeps public pages free of internal product-process language', async () => {
+  const mdxFiles = await walkMdx(path.join(repositoryRoot, 'content'));
+  const relativeFiles = [
+    'src/pages/index.tsx',
+    ...mdxFiles.map((file) => path.relative(repositoryRoot, file)),
+  ];
+  const issues = (
+    await Promise.all(
+      relativeFiles.map(async (file) =>
+        findProductCopyIssues(file, await readFile(path.join(repositoryRoot, file), 'utf8')),
+      ),
+    )
+  ).flat();
+
+  assert.equal(
+    issues.length,
+    0,
+    `Internal product-process language found:\n${issues
+      .map(({file, line, ruleId, excerpt}) => `${file}:${line} [${ruleId}] ${excerpt}`)
+      .join('\n')}`,
+  );
+});
