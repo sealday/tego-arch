@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "terms": [
+    {
+      "id": "quality-attribute",
+      "canonical_zh": "质量属性",
+      "english": "Quality Attribute",
+      "acronym": null,
+      "kind": "translated-term",
+      "first_use": "质量属性（Quality Attribute）",
+      "subsequent_use": ["质量属性"],
+      "allowed_aliases": [],
+      "forbidden_aliases": ["quality attribute", "Quality Attribute"],
+      "note": "描述系统在运行或演化中的关键特性，不简称为“质量”。",
+      "order": 10
+    },
+    {
+      "id": "architecturally-significant-requirement",
+      "canonical_zh": "架构重要需求",
+      "english": "Architecturally Significant Requirement",
+      "acronym": "ASR",
+      "kind": "acronym",
+      "first_use": "架构重要需求（Architecturally Significant Requirement，ASR）",
+      "subsequent_use": ["架构重要需求", "ASR"],
+      "allowed_aliases": [],
+      "forbidden_aliases": ["architecture significant requirement"],
+      "note": "指足以显著影响架构结构或关键决策的需求。",
+      "order": 20
+    },
+    {
+      "id": "tego-arch",
+      "canonical_zh": "Tego Arch 架构知识项目",
+      "english": "Tego Arch",
+      "acronym": null,
+      "kind": "proper-noun",
+      "first_use": "Tego Arch 架构知识项目（Tego Arch）",
+      "subsequent_use": ["Tego Arch", "本项目"],
+      "allowed_aliases": ["Tego Arch"],
+      "forbidden_aliases": [],
+      "note": "项目官方名称保持不变，首次出现由中文上下文说明其用途。",
+      "order": 30
+    }
+  ]
+}
