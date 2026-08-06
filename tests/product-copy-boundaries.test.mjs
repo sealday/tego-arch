@@ -80,8 +80,9 @@ const protectedCommentNodeTypes = new Set([
   'mdxjsEsm',
 ]);
 const commentOpeningProbe = 'CMNT';
+const comparisonCommentOpeningProbe = 'OPNR';
 
-const collectProtectedCommentRanges = (ast, source) => {
+const collectProtectedCommentRanges = (ast, comparisonAst, openingOffsets) => {
   const ranges = [];
   const addRange = (start, end) => {
     if (Number.isInteger(start) && Number.isInteger(end) && start < end) {
@@ -104,6 +105,20 @@ const collectProtectedCommentRanges = (ast, source) => {
     addRange(cursor, end);
   };
 
+  const comparisonImages = new Map();
+  const indexComparisonImages = (node) => {
+    if (node.type === 'image') {
+      comparisonImages.set(
+        `${node.position?.start.offset}:${node.position?.end.offset}`,
+        node,
+      );
+    }
+    for (const child of node.children ?? []) indexComparisonImages(child);
+  };
+  indexComparisonImages(comparisonAst);
+
+  const countToken = (value, token) => value.split(token).length - 1;
+
   const visit = (node) => {
     const start = node.position?.start.offset;
     const end = node.position?.end.offset;
@@ -125,15 +140,28 @@ const collectProtectedCommentRanges = (ast, source) => {
     }
 
     if (node.type === 'image') {
-      const visibleOpenings = [...(node.alt ?? '').matchAll(/CMNT/gu)].length;
-      let seenOpenings = 0;
-      for (let opening = source.indexOf(commentOpeningProbe, start);
-        opening !== -1 && opening < end;
-        opening = source.indexOf(commentOpeningProbe, opening + commentOpeningProbe.length)) {
-        if (seenOpenings >= visibleOpenings) {
-          addRange(opening, opening + commentOpeningProbe.length);
-        }
-        seenOpenings += 1;
+      const comparisonImage = comparisonImages.get(`${start}:${end}`);
+      assert.ok(comparisonImage, 'MDX comment probes must preserve image offsets');
+      const visibleOpenings = countToken(node.alt ?? '', commentOpeningProbe)
+        - countToken(comparisonImage.alt ?? '', commentOpeningProbe);
+      const comparisonVisibleOpenings = countToken(
+        comparisonImage.alt ?? '',
+        comparisonCommentOpeningProbe,
+      ) - countToken(node.alt ?? '', comparisonCommentOpeningProbe);
+      assert.equal(
+        visibleOpenings,
+        comparisonVisibleOpenings,
+        'MDX comment probes must agree on visible image openers',
+      );
+      const imageOpenings = openingOffsets.filter(
+        (opening) => opening >= start && opening < end,
+      );
+      assert.ok(
+        visibleOpenings >= 0 && visibleOpenings <= imageOpenings.length,
+        'MDX comment probes must map visible image openers to source offsets',
+      );
+      for (const opening of imageOpenings.slice(visibleOpenings)) {
+        addRange(opening, opening + commentOpeningProbe.length);
       }
     }
 
@@ -166,13 +194,21 @@ const hasOddBackslashRunBefore = (source, offset) => {
 };
 
 const maskHtmlComments = (source, relativePath) => {
-  const probe = source
-    .replaceAll('<!--', commentOpeningProbe)
-    .replaceAll('-->', 'END');
-  assert.equal(probe.length, source.length);
+  const openingOffsets = [];
+  for (let opening = source.indexOf('<!--'); opening !== -1;
+    opening = source.indexOf('<!--', opening + 4)) {
+    openingOffsets.push(opening);
+  }
+  const probes = [commentOpeningProbe, comparisonCommentOpeningProbe].map(
+    (openingProbe) => source
+      .replaceAll('<!--', openingProbe)
+      .replaceAll('-->', 'END'),
+  );
+  for (const probe of probes) assert.equal(probe.length, source.length);
   const protectedRanges = collectProtectedCommentRanges(
-    parseMdxAst(probe, relativePath),
-    probe,
+    parseMdxAst(probes[0], relativePath),
+    parseMdxAst(probes[1], relativePath),
+    openingOffsets,
   );
   const masked = source.split('');
 
@@ -204,11 +240,28 @@ const maskHtmlComments = (source, relativePath) => {
   return masked.join('');
 };
 
-const restoreEscapedCommentOpener = (source, line, excerpt) => {
+const restoreEscapedCommentOpeners = (source, line, excerpt) => {
   const originalLine = source.split('\n')[line - 1] ?? '';
-  const opening = originalLine.indexOf('<!--');
-  if (opening === -1 || !hasOddBackslashRunBefore(originalLine, opening)) return excerpt;
-  return excerpt.replace('<!--', '\\<!--');
+  const escapedRuns = [];
+  for (let opening = originalLine.indexOf('<!--'); opening !== -1;
+    opening = originalLine.indexOf('<!--', opening + 4)) {
+    if (!hasOddBackslashRunBefore(originalLine, opening)) continue;
+    let runStart = opening;
+    while (runStart > 0 && originalLine[runStart - 1] === '\\') runStart -= 1;
+    escapedRuns.push(originalLine.slice(runStart, opening));
+  }
+
+  let restored = excerpt;
+  let cursor = 0;
+  for (const escapedRun of escapedRuns) {
+    const opening = restored.indexOf('<!--', cursor);
+    if (opening === -1) break;
+    let runStart = opening;
+    while (runStart > cursor && restored[runStart - 1] === '\\') runStart -= 1;
+    restored = `${restored.slice(0, runStart)}${escapedRun}${restored.slice(opening)}`;
+    cursor = runStart + escapedRun.length + 4;
+  }
+  return restored;
 };
 
 const excludedAstTypes = new Set([
@@ -388,7 +441,7 @@ const findMdxIssues = (relativePath, source) => {
         normalized,
         line,
         generatedRule.id,
-        restoreEscapedCommentOpener(normalized, line, block.excerptAt(line)),
+        restoreEscapedCommentOpeners(normalized, line, block.excerptAt(line)),
       ));
     }
   }
@@ -759,6 +812,49 @@ test('escaped opener comment classification keeps visible source text', () => {
   );
 });
 
+test('escaped opener diagnostic restoration preserves a longer odd backslash run', () => {
+  const tripleBackslashOpener = String.raw`\\\<!-- 本页从机器可读主题清单生成 -->`;
+  assert.deepEqual(
+    findProductCopyIssues(
+      'content/cases/triple-backslash-comment.mdx',
+      `# Example\n${tripleBackslashOpener}\n`,
+    ),
+    [
+      {
+        file: 'content/cases/triple-backslash-comment.mdx',
+        line: 2,
+        ruleId: 'generated-page-meta',
+        excerpt: tripleBackslashOpener,
+      },
+    ],
+  );
+});
+
+test('escaped opener diagnostic restoration preserves multiple openers', () => {
+  const singleBackslashOpener = String.raw`\<!-- 本页从机器可读主题清单生成 -->`;
+  const repeatedLine = `${singleBackslashOpener} 与 ${singleBackslashOpener}`;
+  assert.deepEqual(
+    findProductCopyIssues(
+      'content/cases/repeated-escaped-comments.mdx',
+      `# Example\n${repeatedLine}\n`,
+    ),
+    [
+      {
+        file: 'content/cases/repeated-escaped-comments.mdx',
+        line: 2,
+        ruleId: 'generated-page-meta',
+        excerpt: repeatedLine,
+      },
+      {
+        file: 'content/cases/repeated-escaped-comments.mdx',
+        line: 2,
+        ruleId: 'generated-page-meta',
+        excerpt: repeatedLine,
+      },
+    ],
+  );
+});
+
 test('AST metadata comment classification protects link and definition titles', () => {
   const fixture = `# Example
 [inline](/safe "<!-- 本页从机器可读主题清单生成")
@@ -775,6 +871,14 @@ test('AST metadata comment classification protects image titles', () => {
 `;
 
   assert.deepEqual(findProductCopyIssues('content/cases/image-comment-title.mdx', fixture), []);
+});
+
+test('entity-safe image metadata classification ignores decoded alt collisions', () => {
+  const fixture = `# Example
+![CM&#78;T](/safe "<!-- 本页从机器可读主题清单生成")
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/entity-image-title.mdx', fixture), []);
 });
 
 test('escaped opener comment classification keeps image alt text visible', () => {
