@@ -223,28 +223,112 @@ function sourceIdsKey(sourceIds) {
 
 const supersededReason = 'ledger transport target changed for exact source_ids';
 
-function normalizedResultSha256(result) {
-  return createHash('sha256')
-    .update(`${JSON.stringify(result)}\n`)
-    .digest('hex');
-}
-
 function authorityKey(transportLocatorValue, sourceIds) {
   return `${transportLocatorValue}\0${sourceIdsKey(sourceIds)}`;
 }
 
-function stableJson(value) {
+function canonicalValue(value) {
   if (Array.isArray(value)) {
-    return `[${value.map((item) => stableJson(item)).join(',')}]`;
+    return value.map((item) => canonicalValue(item));
   }
   if (isRecord(value)) {
-    return `{${Object.keys(value)
-      .sort((left, right) => left.localeCompare(right, 'en'))
-      .filter((key) => value[key] !== undefined)
-      .map((key) => `${JSON.stringify(key)}:${stableJson(value[key])}`)
-      .join(',')}}`;
+    return Object.fromEntries(
+      Object.keys(value)
+        .filter((key) => value[key] !== undefined)
+        .sort((left, right) => left.localeCompare(right, 'en'))
+        .map((key) => [key, canonicalValue(value[key])]),
+    );
   }
-  return JSON.stringify(value);
+  return value;
+}
+
+function canonicalRecord(value, preferredFields) {
+  const preferred = new Set(preferredFields);
+  const fields = [
+    ...preferredFields.filter((field) => value[field] !== undefined),
+    ...Object.keys(value)
+      .filter((field) => !preferred.has(field) && value[field] !== undefined)
+      .sort((left, right) => left.localeCompare(right, 'en')),
+  ];
+  return Object.fromEntries(
+    fields.map((field) => [field, canonicalValue(value[field])]),
+  );
+}
+
+function canonicalAttempt(value) {
+  if (!isRecord(value)) return value;
+  return canonicalRecord(value, [
+    'at',
+    'outcome',
+    'final_transport_locator',
+    'http_status',
+    'login_wall_detected',
+    'redirects',
+    'error',
+  ]);
+}
+
+function canonicalResult(result, {includeMergeProvenance = true} = {}) {
+  const value = {...result};
+  if (!includeMergeProvenance) delete value.merge_provenance;
+  const preferredFields = [
+    'transport_locator',
+    'source_ids',
+    'last_attempt',
+    'last_success',
+    'attempt_history',
+    'review_status',
+    'change_note',
+    'merge_conflicts',
+    'merge_provenance',
+  ];
+  const preferred = new Set(preferredFields);
+  const fields = [
+    ...preferredFields.filter((field) => value[field] !== undefined),
+    ...Object.keys(value)
+      .filter((field) => !preferred.has(field) && value[field] !== undefined)
+      .sort((left, right) => left.localeCompare(right, 'en')),
+  ];
+  return Object.fromEntries(
+    fields.map((field) => {
+      if (field === 'last_attempt') {
+        return [field, canonicalAttempt(value[field])];
+      }
+      if (field === 'last_success') {
+        return [
+          field,
+          value[field] === null ? null : canonicalAttempt(value[field]),
+        ];
+      }
+      if (field === 'attempt_history') {
+        return [field, value[field].map(canonicalAttempt)];
+      }
+      if (field === 'merge_provenance') {
+        return [
+          field,
+          value[field].map((entry) => ({
+            last_attempt: canonicalAttempt(entry.last_attempt),
+            fields: canonicalValue(entry.fields),
+          })),
+        ];
+      }
+      return [field, canonicalValue(value[field])];
+    }),
+  );
+}
+
+function stableJson(value) {
+  return JSON.stringify(canonicalValue(value));
+}
+
+function canonicalResultJson(result, options) {
+  return JSON.stringify(canonicalResult(result, options));
+}
+
+function normalizedResultSha256(result) {
+  return createHash('sha256')
+    .update(`${canonicalResultJson(result, {includeMergeProvenance: false})}\n`)
+    .digest('hex');
 }
 
 function newerObservation(left, right) {
@@ -257,38 +341,107 @@ function newerObservation(left, right) {
     : right;
 }
 
+const mergeExcludedFields = new Set([
+  'last_attempt',
+  'last_success',
+  'attempt_history',
+  'merge_conflicts',
+  'merge_provenance',
+]);
+
+function containsMergeProvenance(value) {
+  if (Array.isArray(value)) return value.some(containsMergeProvenance);
+  if (!isRecord(value)) return false;
+  return (
+    Object.hasOwn(value, 'merge_provenance') ||
+    Object.values(value).some(containsMergeProvenance)
+  );
+}
+
+function validMergeProvenance(value) {
+  if (!Array.isArray(value) || value.length === 0) return false;
+  const keys = value.map((entry) => stableJson(entry));
+  if (
+    new Set(keys).size !== keys.length ||
+    keys.some(
+      (key, index) =>
+        index > 0 && key.localeCompare(keys[index - 1], 'en') < 0,
+    )
+  ) {
+    return false;
+  }
+  return value.every(
+    (entry) =>
+      isRecord(entry) &&
+      Object.keys(entry).length === 2 &&
+      Object.hasOwn(entry, 'last_attempt') &&
+      Object.hasOwn(entry, 'fields') &&
+      validAttempt(entry.last_attempt, {full: true}) &&
+      isRecord(entry.fields) &&
+      Object.keys(entry.fields).length > 0 &&
+      !Object.keys(entry.fields).some((field) =>
+        mergeExcludedFields.has(field),
+      ) &&
+      !containsMergeProvenance(entry.fields),
+  );
+}
+
+function resultEvidence(result) {
+  return {
+    last_attempt: canonicalAttempt(result.last_attempt),
+    fields: canonicalValue(
+      Object.fromEntries(
+        Object.keys(result)
+          .filter((field) => !mergeExcludedFields.has(field))
+          .map((field) => [field, result[field]]),
+      ),
+    ),
+  };
+}
+
 function mergeResultCandidates(candidates) {
-  if (candidates.length === 1) return structuredClone(candidates[0]);
-  const excludedFields = new Set([
-    'last_attempt',
-    'last_success',
-    'attempt_history',
-    'merge_conflicts',
-  ]);
   const identityFields = new Set(['transport_locator', 'source_ids']);
-  const comparableFields = new Set([
-    ...candidates.flatMap((candidate) => Object.keys(candidate)),
-  ]);
   const conflicts = candidates.flatMap(
     ({merge_conflicts: existing}) => existing ?? [],
   );
+  const evidenceByValue = new Map();
+  for (const candidate of candidates) {
+    if (candidate.merge_provenance !== undefined) {
+      if (validMergeProvenance(candidate.merge_provenance)) {
+        for (const entry of candidate.merge_provenance) {
+          evidenceByValue.set(stableJson(entry), entry);
+        }
+      } else {
+        conflicts.push('merge_provenance');
+      }
+    }
+    const evidence = resultEvidence(candidate);
+    evidenceByValue.set(stableJson(evidence), evidence);
+  }
+  const provenance = [...evidenceByValue.values()]
+    .map((entry) => canonicalValue(entry))
+    .sort((left, right) => stableJson(left).localeCompare(stableJson(right), 'en'));
+  const comparableFields = new Set(
+    provenance.flatMap(({fields}) => Object.keys(fields)),
+  );
   for (const field of identityFields) {
-    if (new Set(candidates.map((candidate) => stableJson(candidate[field]))).size > 1) {
+    if (
+      new Set(provenance.map(({fields}) => stableJson(fields[field]))).size > 1
+    ) {
       conflicts.push(field);
     }
   }
   const observationGroups = new Map();
-  for (const candidate of candidates) {
-    const key = stableJson(candidate.last_attempt);
+  for (const evidence of provenance) {
+    const key = stableJson(evidence.last_attempt);
     const group = observationGroups.get(key) ?? [];
-    group.push(candidate);
+    group.push(evidence);
     observationGroups.set(key, group);
   }
   for (const group of observationGroups.values()) {
     for (const field of comparableFields) {
       if (
-        !excludedFields.has(field) &&
-        new Set(group.map((candidate) => stableJson(candidate[field]))).size > 1
+        new Set(group.map(({fields}) => stableJson(fields[field]))).size > 1
       ) {
         conflicts.push(field);
       }
@@ -299,7 +452,12 @@ function mergeResultCandidates(candidates) {
   );
   const newer = candidates
     .filter((candidate) => Date.parse(candidate.last_attempt.at) === latestAt)
-    .sort((left, right) => stableJson(left).localeCompare(stableJson(right), 'en'))[0];
+    .sort((left, right) =>
+      canonicalResultJson(left, {includeMergeProvenance: false}).localeCompare(
+        canonicalResultJson(right, {includeMergeProvenance: false}),
+        'en',
+      ),
+    )[0];
   const historyByObservation = new Map();
   for (const attempt of candidates.flatMap(({attempt_history}) => attempt_history)) {
     const key = JSON.stringify([
@@ -316,8 +474,8 @@ function mergeResultCandidates(candidates) {
       historyByObservation.set(key, attempt);
     }
   }
-  return {
-    ...structuredClone(newer),
+  return canonicalResult({
+    ...newer,
     last_success: structuredClone(
       candidates
         .map(({last_success}) => last_success)
@@ -331,7 +489,8 @@ function mergeResultCandidates(candidates) {
     ...(conflicts.length > 0
       ? {merge_conflicts: sortedStrings(new Set(conflicts))}
       : {}),
-  };
+    ...(provenance.length > 1 ? {merge_provenance: provenance} : {}),
+  });
 }
 
 function collectSupersededResults(ledger, caches, now) {
@@ -566,6 +725,12 @@ export function validateLinkHealthCacheStructure(ledger, cache) {
       prefix('review_status is invalid');
     }
     if (
+      result.merge_provenance !== undefined &&
+      !validMergeProvenance(result.merge_provenance)
+    ) {
+      prefix('merge_provenance is invalid');
+    }
+    if (
       Array.isArray(result.merge_conflicts) &&
       result.merge_conflicts.length > 0
     ) {
@@ -759,6 +924,12 @@ export function validateLinkHealthCacheStructure(ledger, cache) {
     }
     if (!reviewStatuses.has(entry.review_status)) {
       prefix('review_status is invalid');
+    }
+    if (
+      entry.merge_provenance !== undefined &&
+      !validMergeProvenance(entry.merge_provenance)
+    ) {
+      prefix('merge_provenance is invalid');
     }
     if (
       Array.isArray(entry.merge_conflicts) &&
