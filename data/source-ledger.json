@@ -26865,6 +26865,16 @@
       ],
       "citations": []
     },
+    "content/terminology.mdx": {
+      "reviewed_at": "2026-08-07",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": []
+    },
     "content/styles/sty-00-comparison-framework.mdx": {
       "reviewed_at": "2026-07-24",
       "copyright_checks": [

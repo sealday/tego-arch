@@ -1,0 +1,13 @@
+.tableRegion {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.tableRegion table {
+  min-width: 52rem;
+}
+
+.tableRegion th,
+.tableRegion td {
+  vertical-align: top;
+}

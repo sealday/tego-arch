@@ -36,6 +36,7 @@ test('orders section index links with exact navigation copy', async () => {
     ['content/questions/index.mdx', 10, '设计题'],
     ['content/paths/index.mdx', 11, '学习路径'],
     ['content/references/index.mdx', 12, '资料库'],
+    ['content/terminology.mdx', 13, '术语规范'],
   ];
 
   for (const [path, position, label] of expected) {
