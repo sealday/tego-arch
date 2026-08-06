@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import {readdir, readFile} from 'node:fs/promises';
 import {createRequire} from 'node:module';
 import path from 'node:path';
+import {performance} from 'node:perf_hooks';
 import test from 'node:test';
 
 import {
@@ -126,6 +127,28 @@ test('collects many HTML comments without candidate-by-candidate parsing', () =>
     assert.equal(result.comments.length, count);
     assert.equal(result.blocks.length, count);
   }
+});
+
+test('classifies image comment openers with non-quadratic scaling', () => {
+  const measure = (count) => {
+    const source = Array.from(
+      {length: count},
+      (_, index) => `![alt ${index} <!-- visible ${index} -->](./img-${index}.png "title")`,
+    ).join('\n');
+    const started = performance.now();
+    const parsed = parseMdxVisibleCopy(source, `content/images-${count}.mdx`);
+    assert.equal(parsed.comments.length, count);
+    return performance.now() - started;
+  };
+  measure(20);
+  const timings = new Map();
+  for (const count of [50, 100, 200, 400]) {
+    timings.set(count, Math.min(measure(count), measure(count)));
+  }
+  assert.ok(
+    timings.get(400) / timings.get(100) < 12,
+    `expected non-quadratic image scaling: ${JSON.stringify(Object.fromEntries(timings))}`,
+  );
 });
 
 test('parses visible YAML front matter scalars without leaking YAML syntax', () => {

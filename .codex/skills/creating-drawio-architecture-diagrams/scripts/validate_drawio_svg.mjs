@@ -3,6 +3,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 
 import {
+  collectDrawioPairValidation,
   collectXmlVisibleCopy,
   normalizedXmlLabel,
   parseXml,
@@ -44,8 +45,8 @@ function slug(filePath) {
 }
 
 function hasAccessibleMetadata(svgRoot) {
-  const titles = xmlElements(svgRoot, 'title');
-  const descriptions = xmlElements(svgRoot, 'desc');
+  const titles = xmlElements(svgRoot, 'title', SVG_NAMESPACE);
+  const descriptions = xmlElements(svgRoot, 'desc', SVG_NAMESPACE);
   const title = titles.find((element) => normalizedXmlLabel(xmlTextContent(element)));
   const description = descriptions.find((element) => normalizedXmlLabel(xmlTextContent(element)));
   const titleId = title?.attributes.get('id') ?? '';
@@ -105,7 +106,7 @@ export async function validatePair({drawioPath, svgPath, labels}) {
     errors.push('Draw.io source must be XML rooted at mxfile');
   } else if (drawioParsed) {
     try {
-      drawioVisible = collectXmlVisibleCopy(drawioParsed, drawioPath, 'drawio');
+      drawioVisible = collectDrawioPairValidation(drawioParsed, drawioPath);
     } catch (error) {
       errors.push(`Draw.io source must be well-formed XML in the supported subset: ${error.message}`);
     }

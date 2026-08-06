@@ -1,6 +1,7 @@
 const XML_NAME = /^[A-Za-z_][A-Za-z0-9_.-]*(?::[A-Za-z_][A-Za-z0-9_.-]*)?/u;
 const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
 const XML_NAMESPACE = 'http://www.w3.org/XML/1998/namespace';
+const XMLNS_NAMESPACE = 'http://www.w3.org/2000/xmlns/';
 const NAMED_ENTITIES = new Map([
   ['amp', '&'],
   ['apos', "'"],
@@ -54,16 +55,17 @@ const fail = (file, line, message) => {
   throw new Error(`${file}:${line}: XML parser failed: ${message}`);
 };
 
-const validateRawCharacters = (source, file) => {
-  for (const character of source) {
-    const codePoint = character.codePointAt(0);
+const validateRawCharacters = (source, file, offsets) => {
+  for (let offset = 0; offset < source.length;) {
+    const codePoint = source.codePointAt(offset);
     if (!allowedXml10CodePoint(codePoint)) {
       fail(
         file,
-        1,
+        xmlLineAt(offsets, offset),
         `forbidden XML 1.0 character U+${codePoint.toString(16).toUpperCase().padStart(4, '0')}`,
       );
     }
+    offset += codePoint > 0xFFFF ? 2 : 1;
   }
 };
 
@@ -173,8 +175,8 @@ const parseStartTag = (markup, file, line) => {
 
 export const parseXml = (source, file = '<xml>') => {
   const xml = source.replace(/^\uFEFF/u, '');
-  validateRawCharacters(xml, file);
   const offsets = buildXmlLineOffsets(xml);
+  validateRawCharacters(xml, file, offsets);
   const lineAt = (offset) => xmlLineAt(offsets, offset);
   const comments = [];
   const stack = [];
@@ -247,18 +249,42 @@ export const parseXml = (source, file = '<xml>') => {
       ['xml', XML_NAMESPACE],
     ]);
     for (const [attribute, value] of parsed.attributes) {
-      if (attribute === 'xmlns') namespaces.set('', value);
-      else if (attribute.startsWith('xmlns:')) namespaces.set(attribute.slice(6), value);
+      if (attribute === 'xmlns') {
+        if (value === XML_NAMESPACE || value === XMLNS_NAMESPACE) {
+          fail(file, line, `reserved namespace URI cannot be the default namespace`);
+        }
+        namespaces.set('', value);
+      } else if (attribute.startsWith('xmlns:')) {
+        const prefix = attribute.slice(6);
+        if (prefix === 'xmlns') fail(file, line, 'xmlns prefix must not be declared');
+        if (prefix === 'xml') {
+          if (value !== XML_NAMESPACE) {
+            fail(file, line, `xml prefix must bind ${XML_NAMESPACE}`);
+          }
+        } else if (value === '') {
+          fail(file, line, `namespace prefix "${prefix}" must not bind an empty URI`);
+        } else if (value === XML_NAMESPACE || value === XMLNS_NAMESPACE) {
+          fail(file, line, `namespace prefix "${prefix}" uses a reserved URI`);
+        }
+        namespaces.set(prefix, value);
+      }
     }
     if (parsed.nameParts.prefix && !namespaces.has(parsed.nameParts.prefix)) {
       fail(file, line, `undeclared element namespace "${parsed.nameParts.prefix}"`);
     }
+    const expandedAttributes = new Set();
     for (const [attribute] of parsed.attributes) {
       if (attribute === 'xmlns' || attribute.startsWith('xmlns:')) continue;
       const attributeParts = qualifiedName(attribute, file, line);
       if (attributeParts.prefix && !namespaces.has(attributeParts.prefix)) {
         fail(file, line, `undeclared attribute namespace "${attributeParts.prefix}"`);
       }
+      const namespace = attributeParts.prefix ? namespaces.get(attributeParts.prefix) : '';
+      const expandedName = `${namespace}\0${attributeParts.localName}`;
+      if (expandedAttributes.has(expandedName)) {
+        fail(file, line, `duplicate expanded attribute "${attributeParts.localName}"`);
+      }
+      expandedAttributes.add(expandedName);
     }
     const element = {
       ...parsed,
@@ -286,10 +312,13 @@ export const parseXml = (source, file = '<xml>') => {
   return {comments, lineOffsets: offsets, root};
 };
 
-export const xmlElements = (root, localName) => {
+export const xmlElements = (root, localName, namespace) => {
   const matches = [];
   const visit = (element) => {
-    if (element.localName === localName) matches.push(element);
+    if (
+      element.localName === localName
+      && (namespace === undefined || element.namespace === namespace)
+    ) matches.push(element);
     for (const child of element.children) visit(child);
   };
   visit(root);
@@ -304,15 +333,17 @@ export const normalizedXmlLabel = (value) => value.replace(/\s+/gu, ' ').trim();
 
 const inlineStyles = (element) => {
   const styles = new Map();
-  for (const declaration of (element.attributes.get('style') ?? '').split(';')) {
+  for (const [order, declaration] of (element.attributes.get('style') ?? '').split(';').entries()) {
     const separator = declaration.indexOf(':');
     if (separator === -1) continue;
     const name = declaration.slice(0, separator).trim().toLowerCase();
-    const value = declaration.slice(separator + 1)
-      .replace(/\s*!important\s*$/iu, '')
-      .trim()
-      .toLowerCase();
-    if (name) styles.set(name, value);
+    const rawValue = declaration.slice(separator + 1);
+    const important = /\s*!important\s*$/iu.test(rawValue);
+    const value = rawValue.replace(/\s*!important\s*$/iu, '').trim().toLowerCase();
+    const previous = styles.get(name);
+    if (name && (!previous || important || !previous.important)) {
+      styles.set(name, {important, order, value});
+    }
   }
   return styles;
 };
@@ -320,7 +351,7 @@ const inlineStyles = (element) => {
 const presentationValue = (element, name) => {
   const styles = inlineStyles(element);
   return styles.has(name)
-    ? styles.get(name)
+    ? styles.get(name).value
     : (element.attributes.get(name) ?? '').trim().toLowerCase();
 };
 
@@ -383,25 +414,25 @@ export const visibleSvgTextRecords = (root, file = '<svg>') => {
   return records;
 };
 
-const descendant = (element, localName) => xmlElements(element, localName)
+const descendant = (element, localName, namespace) => xmlElements(element, localName, namespace)
   .some((candidate) => candidate !== element);
 
 const validateDrawio = (root, file) => {
-  const diagrams = xmlElements(root, 'diagram').filter(({namespace}) => namespace === '');
+  const diagrams = xmlElements(root, 'diagram', '');
   if (diagrams.length === 0) fail(file, root.line, 'named diagram with mxGraphModel required');
   for (const diagram of diagrams) {
     if (!(diagram.attributes.get('name') ?? '').trim()) {
       fail(file, diagram.line, 'named diagram with mxGraphModel required');
     }
-    if (!descendant(diagram, 'mxGraphModel')) {
+    if (!descendant(diagram, 'mxGraphModel', '')) {
       if (normalizedXmlLabel(xmlTextContent(diagram))) {
         fail(file, diagram.line, 'compressed Draw.io diagrams are unsupported');
       }
       fail(file, diagram.line, 'named diagram with mxGraphModel required');
     }
   }
-  for (const model of xmlElements(root, 'mxGraphModel')) {
-    if (!diagrams.some((diagram) => xmlElements(diagram, 'mxGraphModel').includes(model))) {
+  for (const model of xmlElements(root, 'mxGraphModel', '')) {
+    if (!diagrams.some((diagram) => xmlElements(diagram, 'mxGraphModel', '').includes(model))) {
       fail(file, model.line, 'mxGraphModel must be inside diagram');
     }
   }
@@ -409,13 +440,27 @@ const validateDrawio = (root, file) => {
 
 export const visibleDrawioCellRecords = (root, file = '<drawio>') => {
   const records = [];
-  for (const cell of xmlElements(root, 'mxCell')) {
-    if (cell.namespace !== '' || cell.attributes.get('visible') === '0') continue;
+  for (const cell of xmlElements(root, 'mxCell', '')) {
+    if (cell.attributes.get('visible') === '0') continue;
     const text = normalizedXmlLabel(cell.attributes.get('value') ?? '');
     if (/<[^>]+>/u.test(text)) fail(file, cell.line, 'HTML in mxCell.value is unsupported');
     if (text) records.push({file, line: cell.line, text, excerpt: text, kind: 'drawio'});
   }
   return records;
+};
+
+export const collectDrawioPairValidation = (parsed, file) => {
+  if (parsed.root.localName !== 'mxfile' || parsed.root.namespace !== '') {
+    fail(file, parsed.root.line, 'Draw.io root must be unnamespaced mxfile');
+  }
+  const diagrams = xmlElements(parsed.root, 'diagram', '');
+  if (!diagrams.some((diagram) => (diagram.attributes.get('name') ?? '').trim())) {
+    fail(file, parsed.root.line, 'named diagram page required');
+  }
+  return {
+    records: visibleDrawioCellRecords(parsed.root, file),
+    root: parsed.root,
+  };
 };
 
 export const collectXmlVisibleCopy = (parsed, file, type) => {

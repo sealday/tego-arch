@@ -326,3 +326,48 @@ test('applies strict shared XML spacing and SVG cascade semantics', async () => 
     await rm(temporaryDirectory, {recursive: true, force: true});
   }
 });
+
+test('accepts a named compressed Draw.io page for pair validation', async () => {
+  const temporaryDirectory = await mkdtemp(path.join(tmpdir(), 'drawio-validator-compressed-'));
+  const drawioPath = path.join(temporaryDirectory, 'compressed.drawio');
+  const svgPath = path.join(temporaryDirectory, 'compressed.svg');
+  try {
+    await Promise.all([
+      writeFile(
+        drawioPath,
+        '<mxfile><diagram name="Page-1">eJyrVkrLz1eyUkpKLFKqBQAQSwQJ</diagram></mxfile>',
+      ),
+      writeFile(
+        svgPath,
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" role="img" aria-labelledby="title desc"><title id="title">Title</title><desc id="desc">Description</desc></svg>',
+      ),
+    ]);
+    const result = runValidatorPaths(drawioPath, svgPath);
+    assert.equal(result.status, 0, result.stderr);
+  } finally {
+    await rm(temporaryDirectory, {recursive: true, force: true});
+  }
+});
+
+test('does not accept foreign SVG title and description as accessibility metadata', async () => {
+  const temporaryDirectory = await mkdtemp(path.join(tmpdir(), 'drawio-validator-foreign-'));
+  const drawioPath = path.join(temporaryDirectory, 'foreign.drawio');
+  const svgPath = path.join(temporaryDirectory, 'foreign.svg');
+  try {
+    await Promise.all([
+      writeFile(
+        drawioPath,
+        '<mxfile><diagram name="Page-1"><mxGraphModel><root/></mxGraphModel></diagram></mxfile>',
+      ),
+      writeFile(
+        svgPath,
+        '<svg xmlns="http://www.w3.org/2000/svg" xmlns:x="urn:foreign" viewBox="0 0 10 10" role="img" aria-labelledby="title desc"><x:title id="title">Title</x:title><x:desc id="desc">Description</x:desc></svg>',
+      ),
+    ]);
+    const result = runValidatorPaths(drawioPath, svgPath);
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /accessible title and description/u);
+  } finally {
+    await rm(temporaryDirectory, {recursive: true, force: true});
+  }
+});

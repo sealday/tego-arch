@@ -89,117 +89,78 @@ const protectedCommentNodeTypes = new Set([
   'mdxjsEsm',
 ]);
 const commentOpeningProbe = 'CMNT';
-const comparisonCommentOpeningProbe = 'OPNR';
 const imageNodeTypes = new Set(['image', 'imageReference']);
 
-const nodePositionKey = (node) => (
-  `${node.type}:${node.position?.start.offset}:${node.position?.end.offset}`
-);
+const openerToken = (index) => {
+  const base = 0xF8FF - 0xE001 + 1;
+  const digits = [];
+  let value = index;
+  for (let position = 0; position < 3; position += 1) {
+    digits.unshift(String.fromCharCode(0xE001 + (value % base)));
+    value = Math.floor(value / base);
+  }
+  assert.equal(value, 0, 'MDX comment probe exhausted unique opener tokens');
+  return `\uE000${digits.join('')}`;
+};
 
-const nodesByTypeAndPosition = (ast, type) => {
-  const nodes = new Map();
+const lowerBound = (values, target) => {
+  let low = 0;
+  let high = values.length;
+  while (low < high) {
+    const middle = Math.floor((low + high) / 2);
+    if (values[middle] < target) low = middle + 1;
+    else high = middle;
+  }
+  return low;
+};
+
+const openingsInRange = (openingOffsets, start, end) => {
+  const matches = [];
+  for (let index = lowerBound(openingOffsets, start);
+    index < openingOffsets.length && openingOffsets[index] < end;
+    index += 1) {
+    matches.push(openingOffsets[index]);
+  }
+  return matches;
+};
+
+const mergeRanges = (ranges) => {
+  const merged = [];
+  for (const range of ranges.sort((left, right) => left.start - right.start || left.end - right.end)) {
+    const previous = merged.at(-1);
+    if (previous && range.start <= previous.end) previous.end = Math.max(previous.end, range.end);
+    else merged.push({...range});
+  }
+  return merged;
+};
+
+const insideRanges = (ranges, offset) => {
+  let low = 0;
+  let high = ranges.length;
+  while (low < high) {
+    const middle = Math.floor((low + high) / 2);
+    if (ranges[middle].start <= offset) low = middle + 1;
+    else high = middle;
+  }
+  const candidate = ranges[low - 1];
+  return Boolean(candidate && offset < candidate.end);
+};
+
+const classifyImageOpenings = (ast, tokenOffsets) => {
+  const visible = new Set();
+  const tokenPattern = /\uE000[\uE001-\uF8FF]{3}/gu;
   const visit = (node) => {
-    if (node.type === type) {
-      nodes.set(nodePositionKey(node), node);
+    if (imageNodeTypes.has(node.type)) {
+      for (const match of (node.alt ?? '').matchAll(tokenPattern)) {
+        const offset = tokenOffsets.get(match[0]);
+        if (offset !== undefined) visible.add(offset);
+      }
+      return;
     }
     for (const child of node.children ?? []) visit(child);
   };
   visit(ast);
-  return nodes;
-};
-
-const countToken = (value, token) => value.split(token).length - 1;
-
-const withCandidateOpenings = (baselineProbe, offsets) => {
-  const candidate = baselineProbe.split('');
-  for (const offset of offsets) {
-    for (let index = 0; index < comparisonCommentOpeningProbe.length; index += 1) {
-      candidate[offset + index] = comparisonCommentOpeningProbe[index];
-    }
-  }
-  return candidate.join('');
-};
-
-const classifyImageOpenings = (
-  baselineProbe,
-  baselineAst,
-  openingOffsets,
-  relativePath,
-) => {
-  const classifications = new Map();
-  const baselineImages = new Map([
-    ...nodesByTypeAndPosition(baselineAst, 'image'),
-    ...nodesByTypeAndPosition(baselineAst, 'imageReference'),
-  ]);
-  const baselineDefinitions = [...nodesByTypeAndPosition(baselineAst, 'definition').values()];
-
-  for (const opening of openingOffsets) {
-    const imageEntry = [...baselineImages.entries()].find(([, image]) => (
-      opening >= image.position.start.offset && opening < image.position.end.offset
-    ));
-    if (!imageEntry) continue;
-
-    const [imageKey, baselineImage] = imageEntry;
-    const findCandidateImage = (candidateOffsets) => {
-      const candidateProbe = withCandidateOpenings(baselineProbe, candidateOffsets);
-      assert.equal(candidateProbe.length, baselineProbe.length);
-      return nodesByTypeAndPosition(
-        parseMdxAst(candidateProbe, relativePath),
-        baselineImage.type,
-      ).get(imageKey);
-    };
-
-    let candidateImage = findCandidateImage([opening]);
-    if (!candidateImage && baselineImage.type === 'imageReference') {
-      const matchingDefinitions = baselineDefinitions.filter(
-        (definition) => definition.identifier === baselineImage.identifier,
-      );
-      assert.ok(
-        matchingDefinitions.length > 0,
-        `${relativePath}: MDX image reference has no matching definition at ${imageKey}`,
-      );
-      const synchronizedCandidates = [];
-      for (const definition of matchingDefinitions) {
-        const definitionOpenings = openingOffsets.filter((definitionOpening) => (
-          definitionOpening >= definition.position.start.offset
-          && definitionOpening < definition.position.end.offset
-        ));
-        for (const definitionOpening of definitionOpenings) {
-          const synchronizedImage = findCandidateImage([opening, definitionOpening]);
-          if (synchronizedImage) synchronizedCandidates.push(synchronizedImage);
-        }
-      }
-      assert.equal(
-        synchronizedCandidates.length,
-        1,
-        `${relativePath}: MDX image-reference probe cannot pair offset ${opening}`,
-      );
-      [candidateImage] = synchronizedCandidates;
-    }
-    assert.ok(
-      candidateImage,
-      `${relativePath}: MDX comment probe must preserve ${imageKey}`,
-    );
-
-    const baselineAlt = baselineImage.alt ?? '';
-    const candidateAlt = candidateImage.alt ?? '';
-    const visibleByBaseline = countToken(baselineAlt, commentOpeningProbe)
-      - countToken(candidateAlt, commentOpeningProbe);
-    const visibleByCandidate = countToken(candidateAlt, comparisonCommentOpeningProbe)
-      - countToken(baselineAlt, comparisonCommentOpeningProbe);
-    assert.equal(
-      visibleByBaseline,
-      visibleByCandidate,
-      `${relativePath}: MDX comment probes disagree at offset ${opening}`,
-    );
-    assert.ok(
-      visibleByBaseline === 0 || visibleByBaseline === 1,
-      `${relativePath}: MDX comment probe has ambiguous visibility at offset ${opening}`,
-    );
-    classifications.set(opening, visibleByBaseline === 1);
-  }
-
-  return classifications;
+  return visible;
 };
 
 const collectProtectedCommentRanges = (ast, openingOffsets, imageOpeningVisibility) => {
@@ -246,15 +207,9 @@ const collectProtectedCommentRanges = (ast, openingOffsets, imageOpeningVisibili
     }
 
     if (imageNodeTypes.has(node.type)) {
-      const imageOpenings = openingOffsets.filter(
-        (opening) => opening >= start && opening < end,
-      );
+      const imageOpenings = openingsInRange(openingOffsets, start, end);
       for (const opening of imageOpenings) {
-        assert.ok(
-          imageOpeningVisibility.has(opening),
-          `MDX comment probe must classify image opener at offset ${opening}`,
-        );
-        if (!imageOpeningVisibility.get(opening)) {
+        if (!imageOpeningVisibility.has(opening)) {
           addRange(opening, opening + commentOpeningProbe.length);
         }
       }
@@ -277,7 +232,7 @@ const collectProtectedCommentRanges = (ast, openingOffsets, imageOpeningVisibili
   };
 
   visit(ast);
-  return ranges;
+  return mergeRanges(ranges);
 };
 
 const collectVisibleOpeningOffsets = (ast, openingOffsets, imageOpeningVisibility) => {
@@ -285,9 +240,7 @@ const collectVisibleOpeningOffsets = (ast, openingOffsets, imageOpeningVisibilit
   const addOpeningsInNode = (node) => {
     const start = node.position?.start.offset;
     const end = node.position?.end.offset;
-    for (const opening of openingOffsets) {
-      if (opening >= start && opening < end) visible.add(opening);
-    }
+    for (const opening of openingsInRange(openingOffsets, start, end)) visible.add(opening);
   };
 
   const visit = (node) => {
@@ -296,12 +249,10 @@ const collectVisibleOpeningOffsets = (ast, openingOffsets, imageOpeningVisibilit
       return;
     }
     if (imageNodeTypes.has(node.type)) {
-      for (const [opening, isVisible] of imageOpeningVisibility) {
-        if (isVisible) {
-          const start = node.position?.start.offset;
-          const end = node.position?.end.offset;
-          if (opening >= start && opening < end) visible.add(opening);
-        }
+      const start = node.position?.start.offset;
+      const end = node.position?.end.offset;
+      for (const opening of openingsInRange(openingOffsets, start, end)) {
+        if (imageOpeningVisibility.has(opening)) visible.add(opening);
       }
       return;
     }
@@ -327,16 +278,22 @@ const maskHtmlComments = (source, relativePath) => {
     opening = source.indexOf('<!--', opening + 4)) {
     openingOffsets.push(opening);
   }
-  const baselineProbe = source
-    .replaceAll('<!--', commentOpeningProbe)
-    .replaceAll('-->', 'END');
+  const tokenOffsets = new Map();
+  const probeCharacters = source.split('');
+  openingOffsets.forEach((opening, index) => {
+    const token = openerToken(index);
+    assert.equal(source.includes(token), false, `${relativePath}: MDX source contains a probe token`);
+    tokenOffsets.set(token, opening);
+    for (let tokenIndex = 0; tokenIndex < token.length; tokenIndex += 1) {
+      probeCharacters[opening + tokenIndex] = token[tokenIndex];
+    }
+  });
+  const baselineProbe = probeCharacters.join('').replaceAll('-->', 'END');
   assert.equal(baselineProbe.length, source.length);
   const baselineAst = parseMdxAst(baselineProbe, relativePath);
   const imageOpeningVisibility = classifyImageOpenings(
-    baselineProbe,
     baselineAst,
-    openingOffsets,
-    relativePath,
+    tokenOffsets,
   );
   const protectedRanges = collectProtectedCommentRanges(
     baselineAst,
@@ -361,9 +318,7 @@ const maskHtmlComments = (source, relativePath) => {
       cursor = opening + 4;
       continue;
     }
-    const isProtected = protectedRanges.some(
-      ({start, end}) => opening >= start && opening < end,
-    );
+    const isProtected = insideRanges(protectedRanges, opening);
     if (isProtected) {
       cursor = opening + 4;
       continue;
@@ -620,9 +575,9 @@ export const parseMdxVisibleCopy = (
   visitLinks(ast);
   const classifyLinks = (node) => {
     if (node.type === 'link' || node.type === 'linkReference') {
-      const hasImage = (node.children ?? []).some(
-        (child) => child.type === 'image' || child.type === 'imageReference',
-      );
+      const containsImage = (candidate) => imageNodeTypes.has(candidate.type)
+        || (candidate.children ?? []).some(containsImage);
+      const hasImage = (node.children ?? []).some(containsImage);
       const label = renderVisibleBlock(node, {includeInlineCode}).text;
       const url = node.type === 'link' ? node.url : definitions.get(node.identifier);
       if (excludeLink?.({hasImage, label, node, url})) excludedNodes.add(node);

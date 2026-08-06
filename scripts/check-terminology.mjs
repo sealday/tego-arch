@@ -381,7 +381,7 @@ const inspectUnknownEnglish = (record, registry) => {
   }
   let candidate = characters.join('');
   candidate = candidate.replace(
-    /(?:https?:\/\/|mailto:|\/)[^\s，。；：！？、（）【】]+|\b[A-Za-z][A-Za-z0-9]*(?:[._][A-Za-z0-9_-]+)+\b|\b[A-Za-z][A-Za-z0-9]*_[A-Za-z0-9_]+\b|\b[a-z][a-z0-9]*(?:[A-Z][A-Za-z0-9]*)+\b|\b[A-Z]{2,}(?:[A-Z][a-z0-9]+)+\b|\bOAuth[A-Z][A-Za-z0-9]*\b/gu,
+    /(?:https?:\/\/|mailto:|\/)[^\s，。；：！？、（）【】]+|\b[A-Za-z][A-Za-z0-9]*(?:[._][A-Za-z0-9_-]+)+\b|\b[A-Za-z][A-Za-z0-9]*_[A-Za-z0-9_]+\b/gu,
     (match) => '\uFFFF'.repeat(match.length),
   );
   const phrasePattern = /(?<![A-Za-z0-9_])[A-Za-z][A-Za-z0-9]*(?:[-/][A-Za-z0-9]+)*(?:[ \t]+[A-Za-z][A-Za-z0-9]*(?:[-/][A-Za-z0-9]+)*)*(?![A-Za-z0-9_])/gu;

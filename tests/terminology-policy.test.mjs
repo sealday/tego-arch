@@ -182,6 +182,13 @@ test('exempts only an exact external source title and never image alt text', asy
     {ruleId: 'unknown-english-term', matched: 'Quality Attributes'},
   ]);
 
+  const nestedImage = await checkFixture(
+    `[**![Quality Attributes](./cover.png)**](${officialLocator})`,
+  );
+  assert.deepEqual(nestedImage.issues.map(({ruleId, matched}) => ({ruleId, matched})), [
+    {ruleId: 'unknown-english-term', matched: 'Quality Attributes'},
+  ]);
+
   await withFixture({
     'content/local.mdx': `[${localIllustrationSource.title}](${localIllustrationSource.canonical_locator})`,
   }, async (root) => {
@@ -406,10 +413,19 @@ test('uses explicit phrase boundaries and allows introduced acronyms and registe
   assert.deepEqual(result.issues.map(({matched}) => matched), ['unknown-worker', 'workers']);
 });
 
-test('uses UTF-16-safe masking and excludes only explicit program identifier shapes', async () => {
+test('uses UTF-16-safe masking and excludes identifiers only in structural code contexts', async () => {
   const result = await checkFixture([
     '😀 应用程序编程接口（Application Programming Interface，API）支持中文 API。',
-    'retry_count dotted.identifier retryPolicy HTTPClient XMLHttpRequest URLParser HTMLElement OAuthClient',
+    '`retryCount`、`HTTPClient`、`gRPC` 与 `AWSLambda` 是代码字面量。',
+    'retryCount',
+    'HTTPClient',
+    'gRPC',
+    'iPhone',
+    'eBay',
+    'macOS',
+    'AWSLambda',
+    'IBMCloud',
+    'SQLAlchemy',
     'LangGraph',
     'OpenTelemetry',
     'GitHub',
@@ -417,12 +433,21 @@ test('uses UTF-16-safe masking and excludes only explicit program identifier sha
     'Ordinary Title Phrase 与 unknown-workers。',
   ].join('\n'));
   assert.deepEqual(result.issues.map(({line, matched}) => ({line, matched})), [
-    {line: 3, matched: 'LangGraph'},
-    {line: 4, matched: 'OpenTelemetry'},
-    {line: 5, matched: 'GitHub'},
-    {line: 6, matched: 'WorkerNode'},
-    {line: 7, matched: 'Ordinary Title Phrase'},
-    {line: 7, matched: 'unknown-workers'},
+    {line: 3, matched: 'retryCount'},
+    {line: 4, matched: 'HTTPClient'},
+    {line: 5, matched: 'gRPC'},
+    {line: 6, matched: 'iPhone'},
+    {line: 7, matched: 'eBay'},
+    {line: 8, matched: 'macOS'},
+    {line: 9, matched: 'AWSLambda'},
+    {line: 10, matched: 'IBMCloud'},
+    {line: 11, matched: 'SQLAlchemy'},
+    {line: 12, matched: 'LangGraph'},
+    {line: 13, matched: 'OpenTelemetry'},
+    {line: 14, matched: 'GitHub'},
+    {line: 15, matched: 'WorkerNode'},
+    {line: 16, matched: 'Ordinary Title Phrase'},
+    {line: 16, matched: 'unknown-workers'},
   ]);
 });
 
@@ -752,6 +777,76 @@ test('shares strict XML visibility and tokenization contracts with the diagram v
   assert.match(checkerSource, /xml-visible-copy\.mjs/u);
   assert.match(validatorSource, sharedImport);
   assert.doesNotMatch(checkerSource, /const parseXmlVisibleCopy\s*=/u);
+});
+
+test('enforces reserved namespaces and namespace-aware structural XML queries', async () => {
+  const invalidNamespaces = [
+    '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xml="urn:wrong"/>',
+    '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xmlns="urn:wrong"/>',
+    '<svg xmlns="http://www.w3.org/2000/svg" xmlns:x=""/>',
+    '<svg xmlns="http://www.w3.org/2000/svg" xmlns:x="http://www.w3.org/2000/xmlns/"/>',
+    '<svg xmlns="http://www.w3.org/2000/svg" xmlns:x="urn:same" xmlns:y="urn:same" x:id="1" y:id="2"/>',
+  ];
+  for (const source of invalidNamespaces) {
+    const result = await checkFixture(source, 'static/namespace.svg');
+    assert.deepEqual(result.issues.map(({ruleId}) => ruleId), ['parse-error']);
+  }
+
+  const foreignModel = await checkFixture(
+    '<mxfile xmlns:x="urn:foreign"><diagram name="Page-1"><x:mxGraphModel/></diagram></mxfile>',
+    'diagrams/foreign.drawio',
+  );
+  assert.deepEqual(foreignModel.issues.map(({ruleId}) => ruleId), ['parse-error']);
+});
+
+test('applies CSS declaration order and important priority to SVG presentation', async () => {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg">
+<text style="display:block;display:none">hidden display last</text>
+<text style="display:none;display:block">visible display last</text>
+<text style="display:none!important;display:block">hidden display important</text>
+<text style="display:none;display:block!important">visible display important</text>
+<text style="visibility:visible;visibility:hidden">hidden visibility last</text>
+<text style="visibility:hidden;visibility:visible">visible visibility last</text>
+<text style="visibility:hidden!important;visibility:visible">hidden visibility important</text>
+<text style="visibility:hidden;visibility:visible!important">visible visibility important</text>
+<text style="fill:black;fill:none">hidden fill last</text>
+<text style="fill:none;fill:black">visible fill last</text>
+<text style="fill:none!important;fill:black">hidden fill important</text>
+<text style="fill:none;fill:black!important">visible fill important</text>
+<text fill="none" style="stroke:black;stroke:none">hidden stroke last</text>
+<text fill="none" style="stroke:none;stroke:black">visible stroke last</text>
+<text fill="none" style="stroke:none!important;stroke:black">hidden stroke important</text>
+<text fill="none" style="stroke:none;stroke:black!important">visible stroke important</text>
+<text display="none" style="display:block">visible display over attribute</text>
+<text visibility="hidden" style="visibility:visible">visible visibility over attribute</text>
+<text fill="none" style="fill:black">visible fill over attribute</text>
+<text fill="none" stroke="none" style="stroke:black">visible stroke over attribute</text>
+</svg>`;
+  const result = await checkFixture(svg, 'static/cascade.svg');
+  assert.deepEqual(result.issues.map(({matched}) => matched), [
+    'visible display last',
+    'visible display important',
+    'visible visibility last',
+    'visible visibility important',
+    'visible fill last',
+    'visible fill important',
+    'visible stroke last',
+    'visible stroke important',
+    'visible display over attribute',
+    'visible visibility over attribute',
+    'visible fill over attribute',
+    'visible stroke over attribute',
+  ]);
+});
+
+test('reports a forbidden raw XML character on its actual source line', async () => {
+  const result = await checkFixture(
+    '<svg xmlns="http://www.w3.org/2000/svg">\n<text>valid</text>\n<text>bad\0value</text></svg>',
+    'static/raw-line.svg',
+  );
+  assert.deepEqual(result.issues.map(({line, ruleId}) => ({line, ruleId})), [
+    {line: 3, ruleId: 'parse-error'},
+  ]);
 });
 
 test('parses quoted greater-than and CDATA while validating hidden XML entities', async () => {
