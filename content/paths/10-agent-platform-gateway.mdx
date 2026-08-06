@@ -87,14 +87,14 @@ tags:
 
 [New API Channel Pool Routing](/cases/new-api-channel-pool-routing)、[LiteLLM Virtual Keys](/cases/litellm-virtual-keys-governance) 与 [Kong AI Gateway](/cases/kong-ai-gateway-routing-resilience) 已经覆盖模型与能力路由、渠道和虚拟 Key 治理、预算与 Guardrail 执行点以及网关插件边界；[OpenAI Agents SDK](/cases/openai-agents-sdk)、[LangGraph Supervisor](/cases/langgraph-supervisor)、[Google ADK 与 A2A](/cases/google-adk-a2a) 和 [Microsoft 多智能体参考架构](/cases/microsoft-multi-agent-reference-architecture) 覆盖 Manager/Handoff/Supervisor 控制方式、显式编排状态、A2A 互操作，以及企业参考架构中的身份、网络、评估和隔离。案例之间的机制可以比较，但没有证据支持把它们拼成唯一或完整的平台蓝图。
 
-## 后续待补
+## 延伸问题
 
-- 补充跨供应商模型能力声明、语义回退和数据驻留约束的验证案例。
-- 补充端用户、服务、Agent、工具和上游模型之间的身份委托与撤销链路。
-- 补充输入、输出、工具执行和人工审批多层 Guardrail 的绕过测试与审计。
-- 补充 A2A 与 MCP 版本协商、发现、授权和失败恢复的互操作测试。
-- 补充离线评估、在线反馈、追踪、成本和安全事件关联到同一任务的观测案例。
-- 补充多租户执行沙箱、缓存与记忆泄漏以及故障半径验证案例。
+- 跨供应商模型能力、语义回退与数据驻留约束如何被验证？
+- 端用户、服务、Agent、工具与上游模型之间如何委托和撤销身份？
+- 输入、输出、工具执行与人工审批的多层 Guardrail 如何接受绕过测试和审计？
+- A2A 与 MCP 如何协商版本、发现能力、授权调用并从失败中恢复？
+- 离线评估、在线反馈、追踪、成本与安全事件如何关联到同一任务？
+- 多租户执行沙箱、缓存和记忆如何防止泄漏并限制故障半径？
 
 ## 实践产出
 

@@ -387,3 +387,21 @@ test('keeps roadmap details available without forcing them into the reading flow
     'mobile disclosure must precede the final figcaption',
   );
 });
+
+test('keeps roadmap copy reader-facing instead of exposing design rationale', async () => {
+  const homepage = await read('src/pages/index.tsx');
+
+  assert.match(
+    homepage,
+    /初版沿一条可验证的研究路线展开，连接基础、建模、治理与学习闭环/u,
+  );
+  assert.match(homepage, />\s*查看项目进度\s*<span aria-hidden="true">↗<\/span>/u);
+
+  for (const internalCopy of [
+    '首页保留方向',
+    '实时进度回到 backlog',
+    '查看实时 backlog',
+  ]) {
+    assert.doesNotMatch(homepage, new RegExp(internalCopy, 'u'));
+  }
+});
