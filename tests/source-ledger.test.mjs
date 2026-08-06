@@ -177,6 +177,59 @@ test('validates canonical superseded transport migration authority', () => {
   }
 });
 
+test('parses current and archived merge provenance commitments exactly', () => {
+  const digest = 'a'.repeat(64);
+  const authority = {
+    source_ids: [validSource.id],
+    transport_locator: 'https://old.example.com/source',
+    replacement_transport_locator: validSource.transport_locator,
+    superseded_at: '2026-07-24T00:00:00.000Z',
+    reason: 'Reviewed transport migration',
+    result_sha256: 'b'.repeat(64),
+    merge_provenance_sha256: digest,
+  };
+  const valid = ledger({
+    current_merge_provenance_sha256: digest,
+    superseded_transports: [authority],
+  });
+
+  const parsed = parseSourceLedger(valid);
+  assert.deepEqual(parsed.errors, []);
+  assert.equal(parsed.ledger.current_merge_provenance_sha256, digest);
+  assert.equal(
+    parsed.ledger.superseded_transports[0].merge_provenance_sha256,
+    digest,
+  );
+
+  for (const [label, mutate, expected] of [
+    [
+      'missing result hash pair',
+      (value) => delete value.superseded_transports[0].result_sha256,
+      /missing required field "result_sha256"/u,
+    ],
+    [
+      'bad current commitment',
+      (value) => (value.current_merge_provenance_sha256 = 'not-a-sha'),
+      /current_merge_provenance_sha256/u,
+    ],
+    [
+      'bad archive commitment',
+      (value) =>
+        (value.superseded_transports[0].merge_provenance_sha256 = 'not-a-sha'),
+      /merge_provenance_sha256/u,
+    ],
+    [
+      'unknown authority field',
+      (value) => (value.superseded_transports[0].provenance_hash = digest),
+      /unknown field "provenance_hash"/u,
+    ],
+  ]) {
+    const mutated = structuredClone(valid);
+    mutate(mutated);
+    assert.match(parseSourceLedger(mutated).errors.join('\n'), expected, label);
+  }
+});
+
 test('requires a valid source registration date', () => {
   const fixture = ledger();
   fixture.sources[0] = {

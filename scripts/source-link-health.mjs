@@ -212,8 +212,11 @@ function validAttempt(value, {success = false, full = false} = {}) {
 }
 
 function sameObservation(left, right) {
-  return ['at', 'outcome', 'final_transport_locator', 'http_status'].every(
-    (field) => left?.[field] === right?.[field],
+  return (
+    Date.parse(left?.at) === Date.parse(right?.at) &&
+    ['outcome', 'final_transport_locator', 'http_status'].every(
+      (field) => left?.[field] === right?.[field],
+    )
   );
 }
 
@@ -257,7 +260,14 @@ function canonicalRecord(value, preferredFields) {
 
 function canonicalAttempt(value) {
   if (!isRecord(value)) return value;
-  return canonicalRecord(value, [
+  const normalized = {...value};
+  if (
+    typeof normalized.at === 'string' &&
+    !Number.isNaN(Date.parse(normalized.at))
+  ) {
+    normalized.at = new Date(normalized.at).toISOString();
+  }
+  return canonicalRecord(normalized, [
     'at',
     'outcome',
     'final_transport_locator',
@@ -315,6 +325,11 @@ function canonicalResult(
           field,
           value[field].map((entry) => ({
             last_attempt: canonicalAttempt(entry.last_attempt),
+            last_success:
+              entry.last_success === null
+                ? null
+                : canonicalAttempt(entry.last_success),
+            attempt_history: entry.attempt_history.map(canonicalAttempt),
             fields: canonicalValue(entry.fields),
           })),
         ];
@@ -343,7 +358,7 @@ function newerObservation(left, right) {
   if (!right) return left;
   const difference = Date.parse(left.at) - Date.parse(right.at);
   if (difference !== 0) return difference > 0 ? left : right;
-  return stableJson(left).localeCompare(stableJson(right), 'en') >= 0
+  return stableJson(left).localeCompare(stableJson(right), 'en') <= 0
     ? left
     : right;
 }
@@ -381,10 +396,29 @@ function validMergeProvenance(value) {
   return value.every(
     (entry) =>
       isRecord(entry) &&
-      Object.keys(entry).length === 2 &&
+      Object.keys(entry).length === 4 &&
       Object.hasOwn(entry, 'last_attempt') &&
+      Object.hasOwn(entry, 'last_success') &&
+      Object.hasOwn(entry, 'attempt_history') &&
       Object.hasOwn(entry, 'fields') &&
       validAttempt(entry.last_attempt, {full: true}) &&
+      (entry.last_success === null ||
+        validAttempt(entry.last_success, {success: true})) &&
+      Array.isArray(entry.attempt_history) &&
+      entry.attempt_history.length > 0 &&
+      entry.attempt_history.every((attempt) => validAttempt(attempt)) &&
+      sameObservation(entry.attempt_history.at(-1), entry.last_attempt) &&
+      !entry.attempt_history.some(
+        (attempt, index, attempts) =>
+          index > 0 &&
+          Date.parse(attempt.at) < Date.parse(attempts[index - 1].at),
+      ) &&
+      (entry.last_success === null ||
+        (Date.parse(entry.last_success.at) <=
+          Date.parse(entry.last_attempt.at) &&
+          entry.attempt_history.some((attempt) =>
+            sameObservation(attempt, entry.last_success),
+          ))) &&
       isRecord(entry.fields) &&
       Object.keys(entry.fields).length > 0 &&
       !Object.keys(entry.fields).some((field) =>
@@ -394,16 +428,92 @@ function validMergeProvenance(value) {
   );
 }
 
+function resultFields(result) {
+  return canonicalValue(
+    Object.fromEntries(
+      Object.keys(result)
+        .filter((field) => !mergeExcludedFields.has(field))
+        .map((field) => [field, result[field]]),
+    ),
+  );
+}
+
 function resultEvidence(result) {
   return {
     last_attempt: canonicalAttempt(result.last_attempt),
-    fields: canonicalValue(
-      Object.fromEntries(
-        Object.keys(result)
-          .filter((field) => !mergeExcludedFields.has(field))
-          .map((field) => [field, result[field]]),
-      ),
+    last_success:
+      result.last_success === null
+        ? null
+        : canonicalAttempt(result.last_success),
+    attempt_history: result.attempt_history.map(canonicalAttempt),
+    fields: resultFields(result),
+  };
+}
+
+function winningEvidence(provenance) {
+  const latestAt = Math.max(
+    ...provenance.map(({last_attempt: lastAttempt}) =>
+      Date.parse(lastAttempt.at),
     ),
+  );
+  return provenance
+    .filter(({last_attempt: lastAttempt}) =>
+      Date.parse(lastAttempt.at) === latestAt,
+    )
+    .sort((left, right) =>
+      stableJson({
+        last_attempt: left.last_attempt,
+        fields: left.fields,
+      }).localeCompare(
+        stableJson({
+          last_attempt: right.last_attempt,
+          fields: right.fields,
+        }),
+        'en',
+      ),
+    )[0];
+}
+
+function aggregateLastSuccess(provenance) {
+  return provenance
+    .map(({last_success: lastSuccess}) => lastSuccess)
+    .filter(Boolean)
+    .reduce((latest, success) => newerObservation(latest, success), null);
+}
+
+function aggregateAttemptHistory(provenance) {
+  const historyByObservation = new Map();
+  for (const attempt of provenance.flatMap(
+    ({attempt_history: attemptHistory}) => attemptHistory,
+  )) {
+    const canonical = canonicalAttempt(attempt);
+    const key = JSON.stringify([
+      canonical.at,
+      canonical.outcome,
+      canonical.final_transport_locator,
+      canonical.http_status,
+    ]);
+    const current = historyByObservation.get(key);
+    if (
+      !current ||
+      stableJson(canonical).localeCompare(stableJson(current), 'en') < 0
+    ) {
+      historyByObservation.set(key, canonical);
+    }
+  }
+  return [...historyByObservation.values()].sort((left, right) => {
+    const difference = Date.parse(left.at) - Date.parse(right.at);
+    return difference || stableJson(left).localeCompare(stableJson(right), 'en');
+  });
+}
+
+function materializeEvidence(provenance) {
+  const winner = winningEvidence(provenance);
+  return {
+    ...winner.fields,
+    last_attempt: winner.last_attempt,
+    last_success: aggregateLastSuccess(provenance),
+    attempt_history: aggregateAttemptHistory(provenance),
   };
 }
 
@@ -445,6 +555,34 @@ function provenanceSha256(provenance) {
     .digest('hex');
 }
 
+function currentProvenanceSha256(results) {
+  const envelope = results
+    .filter(({merge_provenance_sha256: commitment}) => commitment)
+    .map(({transport_locator, source_ids, merge_provenance_sha256}) => ({
+      transport_locator,
+      source_ids,
+      merge_provenance_sha256,
+    }))
+    .sort((left, right) =>
+      left.transport_locator.localeCompare(right.transport_locator, 'en'),
+    );
+  if (envelope.length === 0) return null;
+  return createHash('sha256')
+    .update(`${JSON.stringify(envelope)}\n`)
+    .digest('hex');
+}
+
+function committedResult(result) {
+  if (
+    validMergeProvenance(result.merge_provenance) &&
+    provenanceSha256(result.merge_provenance) ===
+      result.merge_provenance_sha256
+  ) {
+    return canonicalResult({...result, ...materializeEvidence(result.merge_provenance)});
+  }
+  return result;
+}
+
 function mergeProvenanceSemanticErrors(result) {
   const hasProvenance = result.merge_provenance !== undefined;
   const hasCommitment = result.merge_provenance_sha256 !== undefined;
@@ -464,20 +602,27 @@ function mergeProvenanceSemanticErrors(result) {
   ) {
     errors.push('merge_provenance commitment does not match its evidence');
   }
-  const evidenceKeys = new Set(result.merge_provenance.map(stableJson));
-  if (!evidenceKeys.has(stableJson(resultEvidence(result)))) {
+  const materialized = materializeEvidence(result.merge_provenance);
+  if (
+    stableJson({
+      last_attempt: canonicalAttempt(result.last_attempt),
+      fields: resultFields(result),
+    }) !==
+    stableJson({
+      last_attempt: materialized.last_attempt,
+      fields: resultFields(materialized),
+    })
+  ) {
     errors.push('merge_provenance does not match result evidence');
   }
+  if (stableJson(result.last_success) !== stableJson(materialized.last_success)) {
+    errors.push('merge_provenance does not match aggregate last_success');
+  }
   if (
-    !Array.isArray(result.attempt_history) ||
-    result.merge_provenance.some(
-      ({last_attempt: lastAttempt}) =>
-        !result.attempt_history.some((attempt) =>
-          sameObservation(attempt, lastAttempt),
-        ),
-    )
+    stableJson(result.attempt_history) !==
+    stableJson(materialized.attempt_history)
   ) {
-    errors.push('merge_provenance contains evidence outside attempt_history');
+    errors.push('merge_provenance does not match aggregate attempt_history');
   }
   const expectedConflicts = conflictsFromEvidence(result.merge_provenance);
   const actualConflicts = result.merge_conflicts;
@@ -498,67 +643,30 @@ function mergeResultCandidates(candidates) {
   );
   const evidenceByValue = new Map();
   for (const candidate of candidates) {
-    if (candidate.merge_provenance !== undefined) {
-      if (validMergeProvenance(candidate.merge_provenance)) {
-        for (const entry of candidate.merge_provenance) {
-          evidenceByValue.set(stableJson(entry), entry);
-        }
-      } else {
+    const validProvenance = validMergeProvenance(candidate.merge_provenance);
+    if (validProvenance) {
+      for (const entry of candidate.merge_provenance) {
+        evidenceByValue.set(stableJson(entry), entry);
+      }
+    } else {
+      const evidence = resultEvidence(candidate);
+      evidenceByValue.set(stableJson(evidence), evidence);
+      if (candidate.merge_provenance !== undefined) {
         conflicts.push('merge_provenance');
       }
     }
     if (mergeProvenanceSemanticErrors(candidate).length > 0) {
       conflicts.push('merge_provenance');
     }
-    const evidence = resultEvidence(candidate);
-    evidenceByValue.set(stableJson(evidence), evidence);
   }
   const provenance = [...evidenceByValue.values()]
     .map((entry) => canonicalValue(entry))
     .sort((left, right) => stableJson(left).localeCompare(stableJson(right), 'en'));
   conflicts.push(...conflictsFromEvidence(provenance));
-  const latestAt = Math.max(
-    ...provenance.map(({last_attempt: lastAttempt}) =>
-      Date.parse(lastAttempt.at),
-    ),
-  );
-  const winner = provenance
-    .filter(({last_attempt: lastAttempt}) =>
-      Date.parse(lastAttempt.at) === latestAt,
-    )
-    .sort((left, right) =>
-      stableJson(left).localeCompare(stableJson(right), 'en'),
-    )[0];
-  const historyByObservation = new Map();
-  for (const attempt of candidates.flatMap(({attempt_history}) => attempt_history)) {
-    const key = JSON.stringify([
-      attempt.at,
-      attempt.outcome,
-      attempt.final_transport_locator,
-      attempt.http_status,
-    ]);
-    const current = historyByObservation.get(key);
-    if (
-      !current ||
-      stableJson(attempt).localeCompare(stableJson(current), 'en') > 0
-    ) {
-      historyByObservation.set(key, attempt);
-    }
-  }
+  const materialized = materializeEvidence(provenance);
   const mergeConflicts = sortedStrings(new Set(conflicts));
   return canonicalResult({
-    ...winner.fields,
-    last_attempt: winner.last_attempt,
-    last_success: structuredClone(
-      candidates
-        .map(({last_success}) => last_success)
-        .filter(Boolean)
-        .reduce((latest, success) => newerObservation(latest, success), null),
-    ),
-    attempt_history: [...historyByObservation.values()].sort((a, b) => {
-      const difference = Date.parse(a.at) - Date.parse(b.at);
-      return difference || stableJson(a).localeCompare(stableJson(b), 'en');
-    }),
+    ...materialized,
     ...(mergeConflicts.length > 0
       ? {merge_conflicts: mergeConflicts}
       : {}),
@@ -1043,6 +1151,14 @@ export function validateLinkHealthCacheStructure(ledger, cache) {
       );
     }
   }
+  const expectedCurrentCommitment =
+    ledger.current_merge_provenance_sha256 ?? null;
+  const actualCurrentCommitment = currentProvenanceSha256(cache.results);
+  if (expectedCurrentCommitment !== actualCurrentCommitment) {
+    errors.push(
+      'data/source-link-health.json: current merge_provenance commitment does not match source-ledger',
+    );
+  }
   const latestAttemptAt = cache.results
     .map((entry) => entry?.last_attempt?.at)
     .filter(
@@ -1095,7 +1211,10 @@ export function evaluateLinkHealthVerdict(
   const failures = [];
   const results = new Map(
     Array.isArray(cache?.results)
-      ? cache.results.map((entry) => [entry.transport_locator, entry])
+      ? cache.results.map((entry) => [
+          entry.transport_locator,
+          committedResult(entry),
+        ])
       : [],
   );
   for (const target of collectTargets(ledger)) {
@@ -1719,11 +1838,15 @@ export function mergeLinkHealthCaches(
 export function mergePublicLedgerHealth(governedLedger, cache) {
   const {
     superseded_transports: _supersededTransports,
+    current_merge_provenance_sha256: _currentProvenanceCommitment,
     ...publicLedger
   } = governedLedger;
   const targets = buildLinkTargets(governedLedger);
   const results = new Map(
-    cache.results.map((entry) => [entry.transport_locator, entry]),
+    cache.results.map((entry) => [
+      entry.transport_locator,
+      committedResult(entry),
+    ]),
   );
   const checksBySource = new Map();
   for (const target of targets) {

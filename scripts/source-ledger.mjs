@@ -192,6 +192,7 @@ const supersededTransportKeys = [
   'reason',
   'result_sha256',
 ];
+const supersededTransportOptionalKeys = ['merge_provenance_sha256'];
 const documentKeys = ['reviewed_at', 'copyright_checks', 'citations'];
 const citationKeys = [
   'source_id',
@@ -891,8 +892,21 @@ function validateSupersededTransports(authorities, sourcesById, file, errors) {
   const seen = new Set();
   authorities.forEach((authority, index) => {
     const label = `${file}: superseded_transports[${index}]`;
-    if (!validateExactKeys(authority, supersededTransportKeys, label, errors)) {
+    if (!isObject(authority)) {
+      errors.push(`${label}: expected an object`);
       return;
+    }
+    const allowedKeys = new Set([
+      ...supersededTransportKeys,
+      ...supersededTransportOptionalKeys,
+    ]);
+    for (const key of Object.keys(authority)) {
+      if (!allowedKeys.has(key)) errors.push(`${label}: unknown field "${key}"`);
+    }
+    for (const key of supersededTransportKeys) {
+      if (!Object.hasOwn(authority, key)) {
+        errors.push(`${label}: missing required field "${key}"`);
+      }
     }
     if (
       !Array.isArray(authority.source_ids) ||
@@ -949,6 +963,14 @@ function validateSupersededTransports(authorities, sourcesById, file, errors) {
     if (!/^[a-f0-9]{64}$/.test(authority.result_sha256)) {
       errors.push(`${label}: result_sha256 must be a lowercase SHA-256 digest`);
     }
+    if (
+      authority.merge_provenance_sha256 !== undefined &&
+      !/^[a-f0-9]{64}$/.test(authority.merge_provenance_sha256)
+    ) {
+      errors.push(
+        `${label}: merge_provenance_sha256 must be a lowercase SHA-256 digest`,
+      );
+    }
     const key = `${authority.transport_locator}\0${JSON.stringify(
       authority.source_ids,
     )}`;
@@ -968,6 +990,7 @@ export function parseSourceLedger(value, file = 'data/source-ledger.json') {
     'sources',
     'documents',
     'superseded_transports',
+    'current_merge_provenance_sha256',
   ]);
   for (const key of Object.keys(value)) {
     if (!allowedKeys.has(key)) errors.push(`${file}: unknown field "${key}"`);
@@ -983,6 +1006,14 @@ export function parseSourceLedger(value, file = 'data/source-ledger.json') {
   }
   if (!isObject(value.documents)) {
     errors.push(`${file}: documents must be an object`);
+  }
+  if (
+    value.current_merge_provenance_sha256 !== undefined &&
+    !/^[a-f0-9]{64}$/.test(value.current_merge_provenance_sha256)
+  ) {
+    errors.push(
+      `${file}: current_merge_provenance_sha256 must be a lowercase SHA-256 digest`,
+    );
   }
   if (!Array.isArray(value.sources) || !isObject(value.documents)) {
     return {ledger: emptyLedger(), errors: errors.sort((a, b) => a.localeCompare(b, 'en'))};
@@ -1397,6 +1428,12 @@ export function validateSourceGovernance(documents, ledger) {
 
   const governedLedger = {
     schema_version: 1,
+    ...(ledger.current_merge_provenance_sha256 !== undefined
+      ? {
+          current_merge_provenance_sha256:
+            ledger.current_merge_provenance_sha256,
+        }
+      : {}),
     sources: [...ledger.sources].sort((left, right) => left.id.localeCompare(right.id, 'en')),
     documents: Object.fromEntries(
       Object.entries(ledger.documents)

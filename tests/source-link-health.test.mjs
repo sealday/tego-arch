@@ -13,6 +13,7 @@ import {
   mergeLinkHealthCaches,
   validateLinkHealthCacheStructure,
 } from '../scripts/source-link-health.mjs';
+import {parseSourceLedger} from '../scripts/source-ledger.mjs';
 
 const at = '2026-07-24T00:00:00.000Z';
 const now = new Date(at);
@@ -140,6 +141,113 @@ function permutations(values) {
       (remaining) => [value, ...remaining],
     ),
   );
+}
+
+function stableJsonForTest(value) {
+  if (Array.isArray(value)) {
+    return `[${value.map(stableJsonForTest).join(',')}]`;
+  }
+  if (value && typeof value === 'object') {
+    return `{${Object.keys(value)
+      .sort((left, right) => left.localeCompare(right, 'en'))
+      .map((key) => `${JSON.stringify(key)}:${stableJsonForTest(value[key])}`)
+      .join(',')}}`;
+  }
+  return JSON.stringify(value);
+}
+
+function provenanceDigest(provenance) {
+  return createHash('sha256')
+    .update(`${stableJsonForTest(provenance)}\n`)
+    .digest('hex');
+}
+
+function currentProvenanceDigest(cache) {
+  const envelope = cache.results
+    .filter(({merge_provenance_sha256: commitment}) => commitment)
+    .map(({transport_locator, source_ids, merge_provenance_sha256}) => ({
+      transport_locator,
+      source_ids,
+      merge_provenance_sha256,
+    }))
+    .sort((left, right) =>
+      left.transport_locator.localeCompare(right.transport_locator, 'en'),
+    );
+  if (envelope.length === 0) return null;
+  return createHash('sha256')
+    .update(`${JSON.stringify(envelope)}\n`)
+    .digest('hex');
+}
+
+function parsedLinkLedger({currentCommitment, authorities = []} = {}) {
+  const locator = 'https://example.com/current/';
+  const sourceId = 'src-link-test';
+  const raw = {
+    schema_version: 1,
+    sources: [
+      {
+        id: sourceId,
+        canonical_locator: locator,
+        transport_locator: locator,
+        query_insensitive: false,
+        locator_aliases: [],
+        tombstone: null,
+        title: 'Link test source',
+        author_or_org: 'Test organization',
+        published_at: null,
+        registered_at: '2026-07-24',
+        checked_at: '2026-07-23',
+        version: 'current page checked on 2026-07-23',
+        source_kind: 'official-docs',
+        tier: 'primary',
+        allowed_evidence_roles: ['definition'],
+        license: 'LicenseRef-All-Rights-Reserved',
+        license_scope: 'Page text',
+        license_evidence_url: locator,
+        license_evidence_note: 'No reuse license declared',
+        license_family_id: locator,
+        license_family_grouping: 'identity',
+        family_grouping_evidence_url: null,
+        copyright_policy: 'facts-and-short-quotation',
+        usage_boundary: 'Test-only governed source.',
+        link_policy: 'stable',
+        expected_final_transport_locator: locator,
+        expected_final_approved_at: '2026-07-23',
+        expected_final_approval_note: 'Reviewed',
+      },
+    ],
+    documents: {
+      'content/cases/example.mdx': {
+        reviewed_at: '2026-07-23',
+        copyright_checks: [
+          'original-structure',
+          'quotation-boundary',
+          'attribution-complete',
+          'illustration-rights',
+        ],
+        citations: [
+          {
+            source_id: sourceId,
+            citation_url: `${locator}#definition`,
+            roles: ['definition'],
+            manifest_primary: true,
+            usage_mode: 'facts-summary',
+            attribution_note: 'Test organization',
+            modification_note: null,
+            excerpt: null,
+            quotation_reviewed: false,
+          },
+        ],
+      },
+    },
+    superseded_transports: authorities,
+    ...(currentCommitment
+      ? {current_merge_provenance_sha256: currentCommitment}
+      : {}),
+  };
+  const parsed = parseSourceLedger(raw);
+  assert.deepEqual(parsed.errors, []);
+  return parsed.ledger;
 }
 
 function reorderedAttempt(value) {
@@ -1288,11 +1396,16 @@ test('preserves existing superseded archives across refresh and cache merge', as
     previousCache.superseded_results,
   );
 
-  const merged = mergeLinkHealthCaches(
+  const caches = [cacheFor(governed), refreshed.cache];
+  const candidate = mergeLinkHealthCaches(
     governed,
-    [cacheFor(governed), refreshed.cache],
+    caches,
     {now},
   );
+  governed.current_merge_provenance_sha256 = currentProvenanceDigest(
+    candidate.cache,
+  );
+  const merged = mergeLinkHealthCaches(governed, caches, {now});
   assert.deepEqual(
     merged.cache.superseded_results,
     previousCache.superseded_results,
@@ -1829,8 +1942,8 @@ test('same-attempt winner comes from leaf evidence independent of merge grouping
 });
 
 test('current cache rejects deleted or truncated committed provenance before later merge', () => {
-  const governed = ledger([source('a', 'https://example.com/current')]);
-  const target = buildLinkTargets(governed)[0];
+  const uncommitted = parsedLinkLedger();
+  const target = buildLinkTargets(uncommitted)[0];
   const firstAttempt = attempt({
     final: target.transport_locator,
     when: '2026-07-23T00:00:00.000Z',
@@ -1845,26 +1958,40 @@ test('current cache rejects deleted or truncated committed provenance before lat
     superseded_results: [],
   });
   const clean = mergeLinkHealthCaches(
-    governed,
+    uncommitted,
     [asCache(alpha), asCache(latest)],
     {now},
   ).cache;
+  const governed = parsedLinkLedger({
+    currentCommitment: currentProvenanceDigest(clean),
+  });
+  assert.deepEqual(validateLinkHealthCacheStructure(governed, clean).errors, []);
 
   for (const [label, mutate] of [
-    ['deleted', (entry) => delete entry.merge_provenance],
     [
-      'truncated',
-      (entry) =>
-        (entry.merge_provenance = entry.merge_provenance.filter(
+      'deleted all local evidence',
+      (entry) => {
+        delete entry.merge_provenance;
+        delete entry.merge_provenance_sha256;
+      },
+    ],
+    [
+      'truncated and re-signed locally',
+      (entry) => {
+        entry.merge_provenance = entry.merge_provenance.filter(
           ({fields}) => fields.change_note !== 'alpha',
-        )),
+        );
+        entry.merge_provenance_sha256 = provenanceDigest(
+          entry.merge_provenance,
+        );
+      },
     ],
   ]) {
     const attacked = structuredClone(clean);
     mutate(attacked.results[0]);
     assert.match(
       validateLinkHealthCacheStructure(governed, attacked).errors.join('\n'),
-      /merge_provenance commitment|merge_provenance does not match result evidence/u,
+      /current merge_provenance commitment|merge_provenance does not match result evidence/u,
       label,
     );
     assert.match(
@@ -1878,8 +2005,9 @@ test('current cache rejects deleted or truncated committed provenance before lat
 });
 
 test('authorized archive rejects deleted or truncated externally committed provenance', () => {
-  const governed = ledger([source('a', 'https://example.com/current')]);
-  const oldLedger = ledger([source('a', 'https://example.com/old')]);
+  const oldLedger = ledger([
+    source('src-link-test', 'https://example.com/old'),
+  ]);
   const oldTarget = buildLinkTargets(oldLedger)[0];
   const firstAttempt = attempt({
     final: oldTarget.transport_locator,
@@ -1899,39 +2027,39 @@ test('authorized archive rejects deleted or truncated externally committed prove
     [oldCache(alpha), oldCache(latest)],
     {now},
   ).cache.results[0];
-  const {merge_provenance: _provenance, ...authorizedResult} = cleanResult;
-  authorizeMigration(
-    governed,
-    authorizedResult,
-    'https://example.com/current',
+  const authority = migrationAuthority(
+    cleanResult.source_ids,
+    cleanResult.transport_locator,
+    'https://example.com/current/',
+    cleanResult,
   );
-  if (cleanResult.merge_provenance_sha256) {
-    governed.superseded_transports[0].merge_provenance_sha256 =
-      cleanResult.merge_provenance_sha256;
-  }
+  const governed = parsedLinkLedger({authorities: [authority]});
   const archiveCache = (entry) => {
     const cached = cacheFor(governed);
     cached.superseded_results = [
-      superseded(entry, 'https://example.com/current'),
+      superseded(entry, 'https://example.com/current/'),
     ];
     return cached;
   };
 
   for (const [label, mutate] of [
-    ['deleted', (entry) => delete entry.merge_provenance],
     [
-      'deleted with local commitment',
+      'deleted all local evidence',
       (entry) => {
         delete entry.merge_provenance;
         delete entry.merge_provenance_sha256;
       },
     ],
     [
-      'truncated',
-      (entry) =>
-        (entry.merge_provenance = entry.merge_provenance.filter(
+      'truncated and re-signed locally',
+      (entry) => {
+        entry.merge_provenance = entry.merge_provenance.filter(
           ({fields}) => fields.change_note !== 'alpha',
-        )),
+        );
+        entry.merge_provenance_sha256 = provenanceDigest(
+          entry.merge_provenance,
+        );
+      },
     ],
   ]) {
     const attacked = structuredClone(cleanResult);
@@ -1950,6 +2078,172 @@ test('authorized archive rejects deleted or truncated externally committed prove
       `${label} later merge`,
     );
   }
+});
+
+test('committed leaf evidence prevents last-success and history mutation from changing public health', () => {
+  const uncommitted = parsedLinkLedger();
+  const target = buildLinkTargets(uncommitted)[0];
+  const success = attempt({
+    final: target.transport_locator,
+    when: '2026-07-23T00:00:00.000Z',
+  });
+  const failure = attempt({
+    outcome: 'error',
+    status: 503,
+    final: target.transport_locator,
+  });
+  const successful = result(target, success);
+  const failed = {
+    ...result(target, failure),
+    last_success: null,
+    review_status: 'stale',
+  };
+  const asCache = (entry) => ({
+    schema_version: 1,
+    generated_at: at,
+    results: [entry],
+    superseded_results: [],
+  });
+  const clean = mergeLinkHealthCaches(
+    uncommitted,
+    [asCache(successful), asCache(failed)],
+    {now},
+  ).cache;
+  const governed = parsedLinkLedger({
+    currentCommitment: currentProvenanceDigest(clean),
+  });
+  const expectedPublic = mergePublicLedgerHealth(governed, clean);
+  const injected = attempt({
+    final: target.transport_locator,
+    when: '2026-07-23T12:00:00.000Z',
+  });
+
+  for (const [label, mutate] of [
+    [
+      'injected last success and history',
+      (entry) => {
+        entry.last_success = injected;
+        entry.attempt_history.splice(1, 0, injected);
+      },
+    ],
+    ['deleted last success', (entry) => (entry.last_success = null)],
+    [
+      'rewritten history',
+      (entry) => (entry.attempt_history[0].login_wall_detected = true),
+    ],
+  ]) {
+    const attacked = structuredClone(clean);
+    mutate(attacked.results[0]);
+    assert.match(
+      validateLinkHealthCacheStructure(governed, attacked).errors.join('\n'),
+      /merge_provenance does not match aggregate last_success|merge_provenance does not match aggregate attempt_history/u,
+      label,
+    );
+    assert.deepEqual(
+      mergePublicLedgerHealth(governed, attacked),
+      expectedPublic,
+      `${label} public projection`,
+    );
+  }
+});
+
+test('current merge canonicalizes equivalent instants across grouping and permutations', () => {
+  const uncommitted = parsedLinkLedger();
+  const target = buildLinkTargets(uncommitted)[0];
+  const caches = [
+    result(target, attempt({final: target.transport_locator})),
+    result(
+      target,
+      attempt({
+        final: target.transport_locator,
+        when: '2026-07-24T01:00:00.000+01:00',
+      }),
+    ),
+    result(target, attempt({final: target.transport_locator})),
+  ].map((entry) => ({
+    schema_version: 1,
+    generated_at: at,
+    results: [entry],
+    superseded_results: [],
+  }));
+  const initial = mergeLinkHealthCaches(uncommitted, caches, {now}).cache;
+  const governed = parsedLinkLedger({
+    currentCommitment: currentProvenanceDigest(initial),
+  });
+  const merge = (values) => mergeLinkHealthCaches(governed, values, {now});
+  const direct = merge(caches);
+  const candidates = [
+    ...permutations(caches).map(merge),
+    merge([merge(caches.slice(0, 2)).cache, caches[2]]),
+    merge([caches[0], merge(caches.slice(1)).cache]),
+  ];
+
+  for (const candidate of candidates) {
+    assert.equal(JSON.stringify(candidate.cache), JSON.stringify(direct.cache));
+    assert.deepEqual(candidate.errors, []);
+  }
+  assert.equal(direct.cache.results[0].last_attempt.at, at);
+  assert.equal(direct.cache.results[0].last_success.at, at);
+  assert.equal(direct.cache.results[0].attempt_history.length, 1);
+});
+
+test('archive merge canonicalizes equivalent instants across grouping and permutations', () => {
+  const oldLedger = ledger([
+    source('src-link-test', 'https://example.com/old'),
+  ]);
+  const oldTarget = buildLinkTargets(oldLedger)[0];
+  const results = [
+    result(oldTarget, attempt({final: oldTarget.transport_locator})),
+    result(
+      oldTarget,
+      attempt({
+        final: oldTarget.transport_locator,
+        when: '2026-07-24T01:00:00.000+01:00',
+      }),
+    ),
+    result(oldTarget, attempt({final: oldTarget.transport_locator})),
+  ];
+  const oldCache = (entry) => ({
+    schema_version: 1,
+    generated_at: at,
+    results: [entry],
+    superseded_results: [],
+  });
+  const initial = mergeLinkHealthCaches(
+    oldLedger,
+    results.map(oldCache),
+    {now},
+  ).cache.results[0];
+  const authority = migrationAuthority(
+    initial.source_ids,
+    initial.transport_locator,
+    'https://example.com/current/',
+    initial,
+  );
+  const governed = parsedLinkLedger({authorities: [authority]});
+  const caches = results.map((entry) => {
+    const cached = cacheFor(governed);
+    cached.superseded_results = [
+      superseded(entry, 'https://example.com/current/'),
+    ];
+    return cached;
+  });
+  const merge = (values) => mergeLinkHealthCaches(governed, values, {now});
+  const direct = merge(caches);
+  const candidates = [
+    ...permutations(caches).map(merge),
+    merge([merge(caches.slice(0, 2)).cache, caches[2]]),
+    merge([caches[0], merge(caches.slice(1)).cache]),
+  ];
+
+  for (const candidate of candidates) {
+    assert.equal(JSON.stringify(candidate.cache), JSON.stringify(direct.cache));
+    assert.deepEqual(candidate.errors, []);
+  }
+  const archived = direct.cache.superseded_results[0].result;
+  assert.equal(archived.last_attempt.at, at);
+  assert.equal(archived.last_success.at, at);
+  assert.equal(archived.attempt_history.length, 1);
 });
 
 test('uses migration authority to resolve a cited-alias exact-source ambiguity', async () => {
@@ -2113,16 +2407,21 @@ test('preserves earlier failed attempts when merging a successful recheck', asyn
     now,
     fetchImpl: async () => new Response(null, {status: 200}),
   });
+  const caches = [
+    {schema_version: 1, generated_at: failed.last_attempt.at, results: [failed]},
+    {
+      schema_version: 1,
+      generated_at: recovered.last_attempt.at,
+      results: [recovered],
+    },
+  ];
+  const candidate = mergeLinkHealthCaches(governed, caches, {now});
+  governed.current_merge_provenance_sha256 = currentProvenanceDigest(
+    candidate.cache,
+  );
   const merged = mergeLinkHealthCaches(
     governed,
-    [
-      {schema_version: 1, generated_at: failed.last_attempt.at, results: [failed]},
-      {
-        schema_version: 1,
-        generated_at: recovered.last_attempt.at,
-        results: [recovered],
-      },
-    ],
+    caches,
     {now},
   );
   assert.deepEqual(merged.errors, []);
