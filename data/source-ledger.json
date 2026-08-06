@@ -18596,6 +18596,16 @@
     }
   ],
   "documents": {
+    "content/styles/sty-01-layered-architecture.mdx": {
+      "reviewed_at": "2026-08-07",
+      "copyright_checks": ["original-structure","quotation-boundary","attribution-complete","illustration-rights"],
+      "citations": [
+        {"source_id":"src-microsoft-n-tier-architecture","citation_url":"https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/n-tier","roles":["definition","comparison","learning"],"manifest_primary":true,"usage_mode":"facts-summary","attribution_note":"N-tier architecture style, Microsoft Learn","modification_note":null,"excerpt":null,"quotation_reviewed":false},
+        {"source_id":"src-fowler-presentation-domain-data-layering","citation_url":"https://martinfowler.com/bliki/PresentationDomainDataLayering.html","roles":["definition","comparison","learning"],"manifest_primary":false,"usage_mode":"facts-summary","attribution_note":"Presentation Domain Data Layering, Martin Fowler","modification_note":null,"excerpt":null,"quotation_reviewed":false},
+        {"source_id":"src-aws-hexagonal-layered-overview","citation_url":"https://docs.aws.amazon.com/prescriptive-guidance/latest/hexagonal-architectures/overview.html","roles":["definition","comparison"],"manifest_primary":false,"usage_mode":"facts-summary","attribution_note":"Hexagonal architecture overview, Amazon Web Services","modification_note":null,"excerpt":null,"quotation_reviewed":false},
+        {"source_id":"src-archunit-user-guide","citation_url":"https://www.archunit.org/userguide/html/000_Index.html","roles":["implementation","learning"],"manifest_primary":false,"usage_mode":"facts-summary","attribution_note":"ArchUnit User Guide — Layer Checks, TNG Technology Consulting","modification_note":null,"excerpt":null,"quotation_reviewed":false}
+      ]
+    },
     "content/modeling/mod-13-model-sync-strategy.mdx": {
       "reviewed_at": "2026-08-06",
       "copyright_checks": ["original-structure","quotation-boundary","attribution-complete","illustration-rights"],

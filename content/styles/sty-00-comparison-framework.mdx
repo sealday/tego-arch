@@ -25,6 +25,7 @@ depends_on: []
 adjacent_topics:
   - PR-01
   - MOD-02
+  - STY-01
 related_cases:
   - /cases/micro-frontends-single-spa
 related_questions: []
@@ -130,7 +131,7 @@ flowchart TD
 
 ## 迁移路径
 
-先为未知项安排原型、测量或故障演练，再根据证据回到机制与代价比较。迁移不必从一个标签跳到另一个标签：可先用 [C4 Context 与 Container](/modeling/mod-02)画出系统、运行单元和外部协作者，在现有边界内建立契约与观测，然后只在场景需要时移动部署或数据边界。
+先为未知项安排原型、测量或故障演练，再根据证据回到机制与代价比较。迁移不必从一个标签跳到另一个标签：可先用 [C4 Context 与 Container](/modeling/mod-02)画出系统、运行单元和外部协作者，在现有边界内建立契约与观测，再用 [Layered Architecture](/styles/sty-01)检查单一部署单元内的职责和依赖，然后只在场景需要时移动部署或数据边界。
 
 ## 禁用条件
 
