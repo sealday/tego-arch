@@ -8,6 +8,25 @@ const ts = require('typescript');
 
 const blankCharacters = (value) => value.replace(/[^\n]/gu, ' ');
 
+const lineOffsets = (source) => {
+  const offsets = [0];
+  for (let index = 0; index < source.length; index += 1) {
+    if (source.charCodeAt(index) === 10) offsets.push(index + 1);
+  }
+  return offsets;
+};
+
+const lineAtOffset = (offsets, offset) => {
+  let low = 0;
+  let high = offsets.length;
+  while (low < high) {
+    const middle = Math.floor((low + high) / 2);
+    if (offsets[middle] <= offset) low = middle + 1;
+    else high = middle;
+  }
+  return Math.max(1, low);
+};
+
 export const normalizeMdxSource = (source, relativePath, frontMatterEnd = 0) => {
   const maskedFrontMatter = frontMatterEnd > 0
     ? `${blankCharacters(source.slice(0, frontMatterEnd))}${source.slice(frontMatterEnd)}`
@@ -330,6 +349,8 @@ const maskHtmlComments = (source, relativePath) => {
     imageOpeningVisibility,
   );
   const visibleEscapedOpenings = new Set();
+  const comments = [];
+  const offsets = lineOffsets(source);
   const masked = source.split('');
 
   for (let cursor = 0; cursor < source.length;) {
@@ -352,13 +373,21 @@ const maskHtmlComments = (source, relativePath) => {
     if (closing === -1) {
       assert.fail(`${relativePath}: MDX HTML comment must have a closing delimiter`);
     }
+    const excerpt = source.slice(opening, closing + 3).trim();
+    comments.push({
+      file: relativePath,
+      line: lineAtOffset(offsets, opening),
+      text: source.slice(opening + 4, closing).trim(),
+      excerpt,
+      kind: 'html-comment',
+    });
     for (let index = opening; index < closing + 3; index += 1) {
       if (masked[index] !== '\n') masked[index] = ' ';
     }
     cursor = closing + 3;
   }
 
-  return {source: masked.join(''), visibleEscapedOpenings};
+  return {source: masked.join(''), visibleEscapedOpenings, comments};
 };
 
 export const restoreEscapedCommentOpeners = (
@@ -403,7 +432,10 @@ const excludedAstTypes = new Set([
   'mdxjsEsm',
 ]);
 
-export const renderVisibleBlock = (node, {includeInlineCode = false} = {}) => {
+export const renderVisibleBlock = (
+  node,
+  {excludedNodes = new Set(), includeInlineCode = false} = {},
+) => {
   const block = {text: '', lines: [], display: '', displayLines: []};
 
   const append = (field, lineField, value, startLine) => {
@@ -428,6 +460,7 @@ export const renderVisibleBlock = (node, {includeInlineCode = false} = {}) => {
 
   const visit = (current) => {
     if (excludedAstTypes.has(current.type)) return;
+    if (excludedNodes.has(current)) return;
 
     if (current.type === 'text') {
       appendVisible(current.value, current);
@@ -563,17 +596,41 @@ const sourceExcerpt = (source, line) => source.split('\n')[line - 1]?.trim() ?? 
 export const parseMdxVisibleCopy = (
   source,
   relativePath,
-  {includeInlineCode = false, includeStructure = false} = {},
+  {
+    excludeLink,
+    includeAst = false,
+    includeInlineCode = false,
+    includeStructure = false,
+  } = {},
 ) => {
   const frontMatterRegion = parseFrontMatterRegion(source, relativePath);
   const frontMatter = frontMatterRegion.records;
-  const {source: normalized, visibleEscapedOpenings} = normalizeMdxSource(
+  const {source: normalized, visibleEscapedOpenings, comments} = normalizeMdxSource(
     source,
     relativePath,
     frontMatterRegion.endOffset,
   );
   const ast = parseMdxAst(normalized, relativePath);
-  const renderedBlocks = collectVisibleBlocks(ast, {includeInlineCode});
+  const definitions = new Map();
+  const excludedNodes = new Set();
+  const visitLinks = (node) => {
+    if (node.type === 'definition') definitions.set(node.identifier, node.url);
+    for (const child of node.children ?? []) visitLinks(child);
+  };
+  visitLinks(ast);
+  const classifyLinks = (node) => {
+    if (node.type === 'link' || node.type === 'linkReference') {
+      const hasImage = (node.children ?? []).some(
+        (child) => child.type === 'image' || child.type === 'imageReference',
+      );
+      const label = renderVisibleBlock(node, {includeInlineCode}).text;
+      const url = node.type === 'link' ? node.url : definitions.get(node.identifier);
+      if (excludeLink?.({hasImage, label, node, url})) excludedNodes.add(node);
+    }
+    for (const child of node.children ?? []) classifyLinks(child);
+  };
+  classifyLinks(ast);
+  const renderedBlocks = collectVisibleBlocks(ast, {excludedNodes, includeInlineCode});
   const structuredBlocks = renderedBlocks.map((block) => {
     const line = block.node.position?.start.line ?? 1;
     const excerptAt = (targetLine) => restoreEscapedCommentOpeners(
@@ -619,9 +676,10 @@ export const parseMdxVisibleCopy = (
       });
     });
 
-  return includeStructure
-    ? {blocks, frontMatter, ast, normalized}
-    : {blocks, frontMatter};
+  const result = {blocks, comments, frontMatter};
+  return includeStructure || includeAst
+    ? {...result, ast, normalized}
+    : result;
 };
 
 const cleanMermaidLabel = (value) => {

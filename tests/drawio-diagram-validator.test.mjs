@@ -297,3 +297,32 @@ test('rejects XML comments containing double hyphens or ending in a hyphen', () 
   assert.equal(trailingHyphen.status, 1);
   assert.match(trailingHyphen.stderr, /XML comments must not end with -/u);
 });
+
+test('applies strict shared XML spacing and SVG cascade semantics', async () => {
+  const temporaryDirectory = await mkdtemp(path.join(tmpdir(), 'drawio-validator-shared-'));
+  const drawioPath = path.join(temporaryDirectory, 'shared.drawio');
+  const svgPath = path.join(temporaryDirectory, 'shared.svg');
+  const drawio = '<mxfile><diagram name="Page-1"><mxGraphModel><root><mxCell value="Visible override"/></root></mxGraphModel></diagram></mxfile>';
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" role="img" aria-labelledby="title desc">
+<title id="title">Title</title><desc id="desc">Description</desc>
+<g visibility="hidden"><text visibility="visible">Visible override</text></g>
+<g style="display:none !important"><text>Hidden important</text></g>
+</svg>`;
+  try {
+    await Promise.all([writeFile(drawioPath, drawio), writeFile(svgPath, svg)]);
+    const valid = runValidatorPaths(drawioPath, svgPath, '--label', 'Visible override');
+    assert.equal(valid.status, 0, valid.stderr);
+
+    await writeFile(svgPath, svg.replace('role="img" ', 'role="img"'));
+    const missingSpace = runValidatorPaths(drawioPath, svgPath);
+    assert.equal(missingSpace.status, 1);
+    assert.match(missingSpace.stderr, /expected whitespace|well-formed XML/u);
+
+    await writeFile(svgPath, svg.replace('</text>', '</ text>'));
+    const spacedClose = runValidatorPaths(drawioPath, svgPath);
+    assert.equal(spacedClose.status, 1);
+    assert.match(spacedClose.stderr, /invalid XML closing tag|well-formed XML/u);
+  } finally {
+    await rm(temporaryDirectory, {recursive: true, force: true});
+  }
+});

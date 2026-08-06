@@ -94,6 +94,40 @@ slug: /example-api
   assert.doesNotMatch(visibleText, /example\.com|internal|const Agent|private|表达式|注释/u);
 });
 
+test('returns parser-owned HTML comment records outside YAML, code, and literals', () => {
+  const directive = '<!-- terminology-exempt: unknown-english-term | reason: 测试 -->';
+  const source = [
+    '---',
+    'summary: |',
+    `  ${directive}`,
+    '---',
+    `\`\`\`text\n${directive}\n\`\`\``,
+    `\`${directive}\``,
+    directive,
+    'unknown worker',
+  ].join('\n');
+  const result = parseMdxVisibleCopy(source, 'content/comments.mdx');
+  assert.deepEqual(result.comments, [{
+    file: 'content/comments.mdx',
+    line: 9,
+    text: 'terminology-exempt: unknown-english-term | reason: 测试',
+    excerpt: directive,
+    kind: 'html-comment',
+  }]);
+});
+
+test('collects many HTML comments without candidate-by-candidate parsing', () => {
+  for (const count of [50, 100, 200, 400]) {
+    const source = Array.from(
+      {length: count},
+      (_, index) => `<!-- comment ${index} -->\n段落 ${index}`,
+    ).join('\n');
+    const result = parseMdxVisibleCopy(source, `content/comments-${count}.mdx`);
+    assert.equal(result.comments.length, count);
+    assert.equal(result.blocks.length, count);
+  }
+});
+
 test('parses visible YAML front matter scalars without leaking YAML syntax', () => {
   const source = `---
 title: "Agent: API" # reader title
