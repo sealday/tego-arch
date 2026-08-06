@@ -401,12 +401,20 @@ test('presents future directions as an accessible parallel roadmap', async () =>
     homepage,
     /useBaseUrl\('\/img\/illustrations\/tego-arch-future-directions\.png'\)/u,
   );
-  assert.match(homepage, /width=\{1672\}/u);
-  assert.match(homepage, /height=\{941\}/u);
-  assert.match(homepage, /loading="lazy"/u);
-  assert.match(homepage, /decoding="async"/u);
+  const futureDirectionsSection = homepage.match(
+    /function FutureDirectionsSection\(\): ReactNode \{([\s\S]*?)\n\}\n\nfunction ContributionBand/u,
+  );
+  assert.ok(futureDirectionsSection, 'future directions section must remain statically inspectable');
+  const futureRoadmapImage = futureDirectionsSection[1].match(
+    /<img\b(?=[^>]*\bsrc=\{futureRoadmapSrc\})[^>]*\/>/u,
+  );
+  assert.ok(futureRoadmapImage, 'future roadmap image must remain statically inspectable');
+  assert.match(futureRoadmapImage[0], /width=\{1672\}/u);
+  assert.match(futureRoadmapImage[0], /height=\{941\}/u);
+  assert.match(futureRoadmapImage[0], /loading="lazy"/u);
+  assert.match(futureRoadmapImage[0], /decoding="async"/u);
   assert.match(
-    homepage,
+    futureRoadmapImage[0],
     /alt="Tego Arch 从完整架构知识体系并行发展出架构决策速查、精选学习路径和 Tego 参考架构三个未来方向"/u,
   );
   assert.match(styles, /\.futureRoadmap\s*\{[^}]*max-width:\s*64rem;[^}]*margin:\s*0 auto 2rem;/u);
