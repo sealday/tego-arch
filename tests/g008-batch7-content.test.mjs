@@ -450,7 +450,7 @@ function assertStageBProjection(projectStatus, topicIndexes, content) {
   assert.deepEqual(projectStatus, {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
-    completed_topics: 52,
+    completed_topics: 53,
     content_documents: 94,
     governed_sources: 498,
     sources: {
@@ -471,7 +471,7 @@ function assertStageBProjection(projectStatus, topicIndexes, content) {
   assert.equal(topicsById.get('MOD-13').published, true, 'MOD-13 publication');
   assert.equal(topicsById.get('MOD-13').status.value, 'complete', 'MOD-13 status');
   assert.equal(topicsById.get('STY-00').published, true, 'STY-00 publication');
-  assert.equal(topicsById.get('STY-00').status.value, 'pending', 'STY-00 status');
+  assert.equal(topicsById.get('STY-00').status.value, 'complete', 'STY-00 status');
   assert.equal(links.filter((href) => href === '/modeling/mod-13').length, 0, 'MOD-13 actionable article links');
 }
 

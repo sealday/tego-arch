@@ -593,17 +593,17 @@ const [manifest, projectStatus, indexes, publicLedger] = await Promise.all([
   readFile(new URL('../src/generated/source-ledger.json', import.meta.url), 'utf8').then(JSON.parse),
 ]);
 
-test('projects the Stage A G009 state without closing STY-00', () => {
+test('projects the Stage B G009 state after closing STY-00', () => {
   const topic = manifest.topics.find(({id}) => id === 'STY-00');
   assert.equal(topic.published, true);
-  assert.equal(topic.status.value, 'pending');
+  assert.equal(topic.status.value, 'complete');
   assert.deepEqual(topic.primary_sources, [
     'https://www.sei.cmu.edu/library/architecture-tradeoff-analysis-method-collection/',
   ]);
   assert.deepEqual(projectStatus, {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
-    completed_topics: 52,
+    completed_topics: 53,
     content_documents: 94,
     governed_sources: 498,
     sources: {
@@ -613,6 +613,6 @@ test('projects the Stage A G009 state without closing STY-00', () => {
       governed_sources: 'data/source-ledger.json',
     },
   });
-  assert.ok(indexes.style.some(({id, status}) => id === 'STY-00' && status.value === 'pending'));
+  assert.ok(indexes.style.some(({id, status}) => id === 'STY-00' && status.value === 'complete'));
   assert.equal(publicLedger.sources.length, 498);
 });

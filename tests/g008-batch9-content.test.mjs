@@ -736,7 +736,7 @@ function assertStageBProjection(statusValue, manifestValue, mod11Document) {
   assert.deepEqual(statusValue, {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
-    completed_topics: 52,
+    completed_topics: 53,
     content_documents: 94,
     governed_sources: 498,
     sources: {
@@ -756,10 +756,10 @@ function assertStageBProjection(statusValue, manifestValue, mod11Document) {
   assert.equal(topicsById.get('MOD-13').status.value, 'complete');
   assert.ok(!extractInternalLinks(mod11Document).includes('/modeling/mod-13'));
   assert.equal(topicsById.get('STY-00').published, true);
-  assert.equal(topicsById.get('STY-00').status.value, 'pending');
+  assert.equal(topicsById.get('STY-00').status.value, 'complete');
 }
 
-test('locks the Stage B current projection with MOD-13 complete and STY-00 pending', () => {
+test('locks the Stage B current projection with STY-00 complete', () => {
   assertStageBProjection(projectStatus, topicManifest, requiredDocument());
 });
 
@@ -767,7 +767,7 @@ test('rejects controlled MOD-12 through MOD-13 publication, status and link muta
   for (const [label, mutateManifest, mutateDocument] of [
     ['MOD-12 unpublished', (value) => { value.topics.find(({id}) => id === 'MOD-12').published = false; }],
     ['MOD-13 pending', (value) => { value.topics.find(({id}) => id === 'MOD-13').status.value = 'pending'; }],
-    ['STY-00 complete', (value) => { value.topics.find(({id}) => id === 'STY-00').status.value = 'complete'; }],
+    ['STY-00 pending', (value) => { value.topics.find(({id}) => id === 'STY-00').status.value = 'pending'; }],
     ['MOD-12 unlinked', undefined, (value) => { value.body = value.body.replace('(/modeling/mod-12)', '(#removed)'); }],
     ['MOD-13 linked', undefined, (value) => { value.body += '\n[MOD-13](/modeling/mod-13)\n'; }],
   ]) {

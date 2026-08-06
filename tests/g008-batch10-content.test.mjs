@@ -509,12 +509,12 @@ test('locks the generated MOD-13 Stage B projection', () => {
     current_goal: projectStatus.durable_stories.current,
     next_topic: currentNextTopic(backlog),
   }, {
-    completed_topics: 52,
+    completed_topics: 53,
     content_documents: 94,
     governed_sources: 498,
     durable_stories: {completed: 8, total: 20},
     current_goal: 'G009',
-    next_topic: 'STY-00',
+    next_topic: 'STY-01',
   });
   const topicsById = new Map(topicManifest.topics.map((topic) => [topic.id, topic]));
   assert.equal(topicsById.get('MOD-12').published, true);
@@ -522,11 +522,11 @@ test('locks the generated MOD-13 Stage B projection', () => {
   assert.equal(topicsById.get('MOD-13').published, true);
   assert.equal(topicsById.get('MOD-13').status.value, 'complete');
   assert.equal(topicsById.get('STY-00').published, true);
-  assert.equal(topicsById.get('STY-00').status.value, 'pending');
+  assert.equal(topicsById.get('STY-00').status.value, 'complete');
   assert.throws(
     () => assert.equal(
-      currentNextTopic(backlog.replace('下一项为 STY-00', '下一项为 STY-01')),
-      'STY-00',
+      currentNextTopic(backlog.replace('下一项为 STY-01', '下一项为 STY-00')),
+      'STY-01',
     ),
     {name: 'AssertionError'},
   );

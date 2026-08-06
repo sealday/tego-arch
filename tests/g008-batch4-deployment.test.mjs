@@ -215,7 +215,7 @@ function assertBacklogClosure(source) {
   assert.match(source, /^- \[x\] \*\*MOD-11 /mu);
   assert.match(source, /^- \[x\] \*\*MOD-12 /mu);
   assert.match(source, /^- \[x\] \*\*MOD-13 /mu);
-  assert.match(source, /^- \[ \] \*\*STY-00 /mu);
+  assert.match(source, /^- \[x\] \*\*STY-00 /mu);
   assertBatch3History(source);
 }
 
@@ -260,11 +260,11 @@ test('preserves MOD-06 closure under the current G009 baseline', () => {
   assert.equal(topicsById.get('MOD-13')?.published, true);
   assert.equal(topicsById.get('MOD-13')?.status.value, 'complete');
   assert.equal(topicsById.get('STY-00')?.published, true);
-  assert.equal(topicsById.get('STY-00')?.status.value, 'pending');
+  assert.equal(topicsById.get('STY-00')?.status.value, 'complete');
   assert.deepEqual(projectStatus, {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
-    completed_topics: 52,
+    completed_topics: 53,
     content_documents: 94,
     governed_sources: 498,
     sources: {

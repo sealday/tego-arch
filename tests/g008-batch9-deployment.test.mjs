@@ -221,13 +221,13 @@ function assertBacklogClosure(source) {
   }
   assert.match(source, /^- \[x\] \*\*MOD-12 /mu);
   assert.match(source, /^- \[x\] \*\*MOD-13 /mu);
-  assert.match(source, /^- \[ \] \*\*STY-00 /mu);
+  assert.match(source, /^- \[x\] \*\*STY-00 /mu);
   assert.match(source, /当前持久故事：\*\* `G009`/u);
   assert.match(source, /最近完成 `G008`/u);
   assert.equal(
-    currentReleaseBaseline(source).split('下一项为 STY-00').length - 1,
+    currentReleaseBaseline(source).split('下一项为 STY-01').length - 1,
     1,
-    'live current segment must identify STY-00 as next',
+    'live current segment must identify STY-01 as next',
   );
 }
 
@@ -242,11 +242,11 @@ function assertGeneratedState(manifestValue, statusValue) {
   assert.equal(topicsById.get('MOD-13')?.published, true);
   assert.equal(topicsById.get('MOD-13')?.status.value, 'complete');
   assert.equal(topicsById.get('STY-00')?.published, true);
-  assert.equal(topicsById.get('STY-00')?.status.value, 'pending');
+  assert.equal(topicsById.get('STY-00')?.status.value, 'complete');
   assert.deepEqual(statusValue, {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
-    completed_topics: 52,
+    completed_topics: 53,
     content_documents: 94,
     governed_sources: 498,
     sources: {
@@ -335,12 +335,13 @@ test('rejects backlog evidence status and next-topic mutations', () => {
     backlog.replace('- [x] **MOD-12 ', '- [ ] **MOD-12 '),
     backlog.replace('- [x] **MOD-13 ', '- [ ] **MOD-13 '),
     backlog.replace('- **当前持久故事：** `G009`。', '- **当前持久故事：** `G008`。'),
-    backlog.replace('下一项为 STY-00', '下一项为 STY-01'),
+    backlog.replace('下一项为 STY-01', '下一项为 STY-00'),
+    backlog.replace('- [x] **STY-00 ', '- [ ] **STY-00 '),
   ];
   assert.equal(
     backlogStateMutations.length,
-    8,
-    'six MOD-08..13 checkbox mutations plus current-story and next-topic mutations',
+    9,
+    'six MOD-08..13 checkbox mutations plus STY-00, current-story, and next-topic mutations',
   );
   for (const mutation of backlogStateMutations) {
     assert.throws(() => assertBacklogClosure(mutation));
