@@ -3,7 +3,13 @@ import {readFile} from 'node:fs/promises';
 import test from 'node:test';
 import {fileURLToPath} from 'node:url';
 
-import {readContentDocuments} from '../scripts/content-metadata.mjs';
+import {
+  findMarkdownHeadings,
+  parseFrontMatter,
+  readContentDocuments,
+} from '../scripts/content-metadata.mjs';
+import {extractInternalLinks} from '../scripts/content-relations.mjs';
+import {handleHorizontalArrowKey} from '../src/components/KeyboardScrollableRegion/handleHorizontalArrowKey.mjs';
 
 const contentRoot = fileURLToPath(new URL('../content/', import.meta.url));
 const documents = await readContentDocuments(contentRoot);
@@ -82,6 +88,56 @@ const expectedCitations = [
     roles: ['definition', 'method', 'learning'],
     manifest_primary: false,
   },
+];
+
+const expectedHeadings = [
+  '学习问题',
+  '组件、连接器与约束',
+  '边界与控制流',
+  '数据所有权与一致性',
+  '部署单元与故障域',
+  '团队拓扑',
+  '质量属性收益与成本',
+  '迁移路径',
+  '禁用条件',
+  '对比案例',
+  '来源',
+];
+const dimensions = [
+  '边界',
+  '控制流',
+  '数据所有权',
+  '一致性',
+  '部署单元',
+  '故障域',
+  '团队拓扑',
+  '质量属性',
+];
+const judgments = ['直接支持', '需要补充机制', '与约束冲突', '未知'];
+const flowLabels = [
+  '质量属性场景',
+  '候选架构剖面',
+  '硬约束检查',
+  '机制与证据比较',
+  '证据足够',
+  '原型、测量或故障演练',
+  '决策记录与复核触发器',
+];
+const decisionRecordFields = [
+  '决策范围与日期',
+  '参与的责任角色类型',
+  '选定候选',
+  '被否决候选与原因',
+  '关键敏感点',
+  '关键权衡点',
+  '仍未关闭的风险',
+  '验证动作',
+  '复核触发器',
+];
+const exerciseScenarios = [
+  '订单确认与库存预留一致',
+  '报表消费者隔离与恢复',
+  '回滚且不丢失已接受订单',
 ];
 
 function observationFields({
@@ -163,4 +219,98 @@ test('keeps every new remote source in the reviewed health cache', () => {
       `${id} history ends with the current attempt`,
     );
   }
+});
+
+test('publishes the approved STY-00 metadata and style headings', () => {
+  const metadata = parseFrontMatter(document.source);
+  assert.equal(metadata.title, '架构风格比较框架');
+  assert.equal(metadata.slug, '/styles/sty-00');
+  assert.equal(metadata.content_type, 'style');
+  assert.equal(metadata.topic_id, 'STY-00');
+  assert.equal(metadata.analyzed_at, '2026-08-06');
+  assert.equal(metadata.source_cutoff, '2026-08-06');
+  assert.deepEqual(metadata.adjacent_topics, ['PR-01', 'MOD-02']);
+  assert.deepEqual(metadata.related_cases, ['/cases/micro-frontends-single-spa']);
+  assert.deepEqual(
+    findMarkdownHeadings(document.body)
+      .filter(({level}) => level === 2)
+      .map(({text}) => text),
+    expectedHeadings,
+  );
+  assert.match(
+    document.source,
+    /import \{handleHorizontalArrowKey\} from '@site\/src\/components\/KeyboardScrollableRegion\/handleHorizontalArrowKey\.mjs';/u,
+  );
+  assert.match(document.body, /风格是一组约束|风格是约束族/u);
+  assert.match(document.body, /候选[^\n。]*组合[^\n。]*风格/u);
+  assert.match(document.body, /比较架构剖面[^\n。]*不是[^\n。]*标签/u);
+});
+
+test('locks the eight-dimension profile and non-numeric judgments', () => {
+  for (const value of dimensions) {
+    assert.match(document.source, new RegExp(`\\| ${value} \\|`, 'u'));
+  }
+  for (const value of judgments) assert.match(document.source, new RegExp(value, 'u'));
+  assert.match(document.source, /维度 \| 候选约束 \| 实现机制 \| 当前证据 \| 未知项/u);
+  assert.match(
+    document.source,
+    /场景与响应度量 \| 候选响应 \| 判断 \| 所需机制 \| 风险或代价 \| 证据 \| 置信度/u,
+  );
+  assert.doesNotMatch(document.source, /`?[012]`?\s*表示/u);
+  assert.doesNotMatch(document.source, /总分[^。\n]*(选择|胜出|最高)/u);
+});
+
+test('locks the Mermaid recovery loop and accessible local overflow owners', () => {
+  assert.equal((document.source.match(/```mermaid/gmu) ?? []).length, 1);
+  for (const label of flowLabels) assert.match(document.source, new RegExp(label, 'u'));
+  assert.match(document.source, /证据足够.*-->\|否\|.*原型、测量或故障演练/su);
+  assert.match(document.source, /validate --> compare/u);
+  assert.equal((document.source.match(/role="region"/gmu) ?? []).length, 3);
+  assert.equal((document.source.match(/tabIndex=\{0\}/gmu) ?? []).length, 3);
+  assert.equal(
+    (document.source.match(/onKeyDown=\{handleHorizontalArrowKey\}/gmu) ?? []).length,
+    3,
+  );
+  const region = {scrollWidth: 900, clientWidth: 360, scrollLeft: 0};
+  let prevented = false;
+  handleHorizontalArrowKey({
+    key: 'ArrowRight',
+    currentTarget: region,
+    target: region,
+    preventDefault() {
+      prevented = true;
+    },
+  });
+  assert.equal(region.scrollLeft, 40);
+  assert.equal(prevented, true);
+});
+
+test('records all decision fields and compares both candidates against the same scenarios', () => {
+  for (const field of decisionRecordFields) {
+    assert.match(document.source, new RegExp(`\\*\\*${field}：\\*\\*`, 'u'));
+  }
+  for (const scenario of exerciseScenarios) {
+    const rows = document.source.match(new RegExp(`^\\| ${scenario} \\|`, 'gmu')) ?? [];
+    assert.equal(rows.length, 2, `${scenario} must have candidate A and B rows`);
+  }
+  assert.match(document.source, /报表消费者隔离与恢复 \| 候选 A[^\n]*\| 未知 \|/u);
+  assert.match(document.source, /报表消费者隔离与恢复 \| 候选 B[^\n]*\| 未知 \|/u);
+});
+
+test('keeps the approved visible relations and exercise decision', () => {
+  const links = new Set(extractInternalLinks(document));
+  for (const href of [
+    '/styles',
+    '/principles/pr-01',
+    '/modeling/mod-02',
+    '/cases/micro-frontends-single-spa',
+  ]) {
+    assert.ok(links.has(href), href);
+  }
+  assert.match(document.source, /模块化单体 \+ 事务性 Outbox \+ 独立报表消费者/u);
+  assert.match(document.source, /订单、库存、报表独立部署/u);
+  assert.match(document.source, /选择候选 A/u);
+  assert.match(document.source, /团队所有权拆分/u);
+  assert.match(document.source, /容量或故障隔离目标变化/u);
+  assert.match(document.source, /独立发布需求持续出现/u);
 });
