@@ -419,6 +419,45 @@
       "forbidden_aliases": ["Software Development Kit"],
       "note": "工具包概念使用中文主称，产品官方名称可另行登记。",
       "order": 320
+    },
+    {
+      "id": "architecture-decision-quick-reference",
+      "canonical_zh": "架构决策速查",
+      "english": "Architecture Decision Quick Reference",
+      "acronym": null,
+      "kind": "translated-term",
+      "first_use": "架构决策速查（Architecture Decision Quick Reference）",
+      "subsequent_use": ["架构决策速查"],
+      "allowed_aliases": [],
+      "forbidden_aliases": ["Architecture Decision Quick Reference"],
+      "note": "长期复用的决策参考方向使用中文主称。",
+      "order": 330
+    },
+    {
+      "id": "curated-learning-paths",
+      "canonical_zh": "精选学习路径",
+      "english": "Curated Learning Paths",
+      "acronym": null,
+      "kind": "translated-term",
+      "first_use": "精选学习路径（Curated Learning Paths）",
+      "subsequent_use": ["精选学习路径"],
+      "allowed_aliases": [],
+      "forbidden_aliases": ["Curated Learning Paths"],
+      "note": "长期复用的学习路径方向使用中文主称。",
+      "order": 340
+    },
+    {
+      "id": "tego-reference-architecture",
+      "canonical_zh": "Tego 参考架构",
+      "english": "Tego Reference Architecture",
+      "acronym": null,
+      "kind": "proper-noun",
+      "first_use": "Tego 参考架构（Tego Reference Architecture）",
+      "subsequent_use": ["Tego 参考架构"],
+      "allowed_aliases": [],
+      "forbidden_aliases": ["Tego Reference Architecture"],
+      "note": "项目长期公开架构决策与验证结果的方向名称。",
+      "order": 350
     }
   ]
 }

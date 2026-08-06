@@ -395,17 +395,6 @@
   font-size: 1.1rem;
 }
 
-.futureTerm {
-  display: block;
-  margin-bottom: 0.75rem;
-  color: var(--ifm-color-primary);
-  font-family: var(--atlas-mono);
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  line-height: 1.5;
-}
-
 .futureList p {
   margin: 0;
   color: var(--atlas-ink-soft);

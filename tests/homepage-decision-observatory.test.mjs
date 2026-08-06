@@ -129,7 +129,7 @@ test('keeps every visible heading source free of terminal punctuation', async ()
   assert.match(homepage, /homepageEntries\.map\([\s\S]*<Heading as="h3">\{entry\.title\}<\/Heading>/u);
   assert.match(
     homepage,
-    /futureDirections\.map\([\s\S]*<Heading as="h3">\{direction\.title\}<\/Heading>[\s\S]*\{direction\.term\}/u,
+    /futureDirections\.map\([\s\S]*<Heading as="h3">\{direction\.title\}<\/Heading>[\s\S]*<p>\{direction\.description\}<\/p>/u,
   );
   assert.match(homepage, /<Heading as="h3">\{leadCase\.title\}<\/Heading>/u);
   assert.match(homepage, /homepageCases\.slice\(1\)\.map\([\s\S]*\{caseStudy\.title\}/u);
@@ -327,7 +327,7 @@ test('presents a themed judgment path without homepage project status', async ()
   }
   assert.match(
     roadmapSection[1],
-    /alt="架构判断从基础与质量出发，经过建模、模式与治理，在案例和复盘中逐步形成"/u,
+    /alt="架构判断从需求与约束出发，经过建模、模式与治理，在案例和复盘中逐步形成"/u,
   );
   assert.doesNotMatch(
     homepage,
@@ -346,7 +346,7 @@ test('presents a themed judgment path without homepage project status', async ()
   );
 });
 
-test('presents themed usage modes with semantic bilingual cards', async () => {
+test('presents themed usage modes with single bilingual card titles', async () => {
   const [homepage, styles] = await Promise.all([
     read('src/pages/index.tsx'),
     read('src/pages/index.module.css'),
@@ -367,14 +367,15 @@ test('presents themed usage modes with semantic bilingual cards', async () => {
   }
   assert.match(
     futureDirectionsSection[1],
-    /alt="一套架构知识体系可以用于快速校准决策、组织学习路径和理解 Tego 的真实架构取舍"/u,
+    /alt="一套架构知识体系可以用于快速校准决策、组织学习路径和理解该项目的真实架构取舍"/u,
   );
   assert.match(
     futureDirectionsSection[1],
-    /futureDirections\.map\([\s\S]*<Heading as="h3">\{direction\.title\}<\/Heading>[\s\S]*\{direction\.term\}/u,
+    /futureDirections\.map\([\s\S]*<Heading as="h3">\{direction\.title\}<\/Heading>[\s\S]*<p>\{direction\.description\}<\/p>/u,
   );
   assert.match(styles, /\.futureRoadmap\s*\{[^}]*max-width:\s*64rem;[^}]*margin:\s*0 auto 2rem;/u);
-  assert.match(styles, /\.futureTerm\s*\{[^}]*font-family:\s*var\(--atlas-mono\);/u);
+  assert.doesNotMatch(homepage, /\bterm:|futureTerm/u);
+  assert.doesNotMatch(styles, /\.futureTerm\b/u);
   assert.match(styles, /@media \(max-width: 996px\)[\s\S]*\.futureList\s*\{[^}]*grid-template-columns:\s*1fr;/u);
 });
 
@@ -383,7 +384,7 @@ test('keeps roadmap copy reader-facing instead of exposing design rationale', as
 
   for (const text of [
     '建立架构判断的主线',
-    '从基础与质量出发，经过建模、模式与治理，在案例和复盘中形成判断',
+    '从需求与约束出发，经过建模、模式与治理，在案例和复盘中形成判断',
     '从理解架构到做出取舍',
     '需要判断时快速查，系统学习时沿路径走，也从真实架构中理解取舍',
   ]) {

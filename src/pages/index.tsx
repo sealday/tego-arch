@@ -18,7 +18,6 @@ type HomepageEntry = Readonly<{
 
 type FutureDirection = Readonly<{
   title: string;
-  term: string;
   description: string;
 }>;
 
@@ -45,18 +44,15 @@ const homepageEntries: readonly HomepageEntry[] = [
 
 const futureDirections: readonly FutureDirection[] = [
   {
-    title: '架构决策速查',
-    term: 'Architecture Decision Quick Reference',
+    title: '架构决策速查（Architecture Decision Quick Reference）',
     description: '用于设计、评审与复盘的决策参考',
   },
   {
-    title: '精选学习路径',
-    term: 'Curated Learning Paths',
+    title: '精选学习路径（Curated Learning Paths）',
     description: '按角色与任务场景组织学习序列',
   },
   {
-    title: 'Tego 参考架构',
-    term: 'Tego Reference Architecture',
+    title: 'Tego 参考架构（Tego Reference Architecture）',
     description: '公开真实决策、验证结果与演进路线',
   },
 ] as const;
@@ -68,7 +64,7 @@ function Hero(): ReactNode {
     <header className={styles.hero}>
       <div className="container">
         <div className={styles.heroContent}>
-          <p className={styles.heroLabel}>Tego Arch / 架构决策观察</p>
+          <p className={styles.heroLabel}>Tego Arch 架构知识项目（Tego Arch） / 架构决策观察</p>
           <div className={styles.heroTitle}>
             <Heading as="h1">
               <span className={styles.heroTitlePhrase}>在复杂系统里</span>{' '}
@@ -76,7 +72,7 @@ function Hero(): ReactNode {
             </Heading>
           </div>
           <p className={styles.lede}>
-            从边界、状态、控制与质量属性出发，让每个架构决定都能解释、验证和演化
+            从边界、状态、控制与质量属性（Quality Attribute）出发，让每个架构决定都能解释、验证和演化
           </p>
           <div className={styles.heroActions}>
             <Link className={styles.primaryAction} to="/paths">
@@ -154,13 +150,13 @@ function RoadmapSection(): ReactNode {
           id="roadmap-title"
           label="01 / 判断路径"
           title="建立架构判断的主线"
-          description="从基础与质量出发，经过建模、模式与治理，在案例和复盘中形成判断"
+          description="从需求与约束出发，经过建模、模式与治理，在案例和复盘中形成判断"
         />
         <div className={styles.roadmapMedia}>
           <ThemedRoadmapImage
             lightSrc="/img/illustrations/tego-arch-judgment-path-light.png"
             darkSrc="/img/illustrations/tego-arch-judgment-path-dark.png"
-            alt="架构判断从基础与质量出发，经过建模、模式与治理，在案例和复盘中逐步形成"
+            alt="架构判断从需求与约束出发，经过建模、模式与治理，在案例和复盘中逐步形成"
           />
         </div>
       </div>
@@ -208,7 +204,7 @@ function ResearchHighlights(): ReactNode {
         <div className={styles.researchGrid}>
           {leadCase && (
             <Link className={styles.researchLead} to={leadCase.slug}>
-              <span className={styles.sectionLabel}>FEATURED NOTE</span>
+              <span className={styles.sectionLabel}>精选研究</span>
               <Heading as="h3">{leadCase.title}</Heading>
               <p>{leadCase.summary}</p>
               <span>打开研究档案 <span aria-hidden="true">→</span></span>
@@ -244,14 +240,13 @@ function FutureDirectionsSection(): ReactNode {
           <ThemedRoadmapImage
             lightSrc="/img/illustrations/tego-arch-use-modes-light.png"
             darkSrc="/img/illustrations/tego-arch-use-modes-dark.png"
-            alt="一套架构知识体系可以用于快速校准决策、组织学习路径和理解 Tego 的真实架构取舍"
+            alt="一套架构知识体系可以用于快速校准决策、组织学习路径和理解该项目的真实架构取舍"
           />
         </div>
         <ul className={styles.futureList}>
           {futureDirections.map((direction) => (
             <li key={direction.title}>
               <Heading as="h3">{direction.title}</Heading>
-              <span className={styles.futureTerm}>{direction.term}</span>
               <p>{direction.description}</p>
             </li>
           ))}
@@ -267,7 +262,7 @@ function ContributionBand(): ReactNode {
       <div className="container">
         <SectionIntro
           id="contribution-title"
-          label="OPEN RESEARCH"
+          label="开放研究"
           title="这是一份开放的研究记录"
           description="欢迎修订证据、补充案例、贡献原创图示，或改进研究工具链"
         />

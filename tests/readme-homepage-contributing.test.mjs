@@ -167,6 +167,9 @@ test('README positions the project, shows the roadmap, and closes the contributi
   assert.match(readme, /^## 本地开发$/mu);
   assert.match(readme, /^## 参与贡献$/mu);
   assert.match(readme, /^## 许可证与第三方材料$/mu);
+  assert.match(readme, /术语规范/u);
+  assert.match(readme, /中文（English，ACRONYM）/u);
+  assert.match(readme, /新术语先登记/u);
   assert.match(readme, /2026-08-05.*视觉快照.*不是实时状态/su);
   assert.match(
     readme,
@@ -177,12 +180,12 @@ test('README positions the project, shows the roadmap, and closes the contributi
     readme,
     /完整知识体系是共同基础[\s\S]*不构成固定的交付顺序或发布日期/u,
   );
-  for (const [title, term] of [
-    ['架构决策速查', 'Architecture Decision Quick Reference'],
-    ['精选学习路径', 'Curated Learning Paths'],
-    ['Tego 参考架构', 'Tego Reference Architecture'],
+  for (const title of [
+    '架构决策速查（Architecture Decision Quick Reference）',
+    '精选学习路径（Curated Learning Paths）',
+    'Tego 参考架构（Tego Reference Architecture）',
   ]) {
-    assert.match(readme, new RegExp(`^### ${title}$[\\s\\S]*${term}`, 'mu'));
+    assert.match(readme, new RegExp(`^### ${title}$`, 'mu'));
   }
   assert.doesNotMatch(
     readme,
@@ -215,8 +218,11 @@ test('homepage presents architecture judgment and reader-facing usage modes', as
   assert.match(homepage, /title="建立架构判断的主线"/u);
   assert.match(
     homepage,
-    /从基础与质量出发，经过建模、模式与治理，在案例和复盘中形成判断/u,
+    /从需求与约束出发，经过建模、模式与治理，在案例和复盘中形成判断/u,
   );
+  assert.match(homepage, /精选研究/u);
+  assert.match(homepage, /开放研究/u);
+  assert.doesNotMatch(homepage, /基础与质量|FEATURED NOTE|OPEN RESEARCH/u);
   assert.match(homepage, /label="04 \/ 使用方式"/u);
   assert.match(homepage, /title="从理解架构到做出取舍"/u);
   assert.match(
@@ -224,15 +230,13 @@ test('homepage presents architecture judgment and reader-facing usage modes', as
     /需要判断时快速查，系统学习时沿路径走，也从真实架构中理解取舍/u,
   );
   for (const text of [
-    '架构决策速查',
-    'Architecture Decision Quick Reference',
-    '精选学习路径',
-    'Curated Learning Paths',
-    'Tego 参考架构',
-    'Tego Reference Architecture',
+    '架构决策速查（Architecture Decision Quick Reference）',
+    '精选学习路径（Curated Learning Paths）',
+    'Tego 参考架构（Tego Reference Architecture）',
   ]) {
     assert.match(homepage, new RegExp(text, 'u'));
   }
+  assert.doesNotMatch(homepage, /futureTerm|term:/u);
   assert.doesNotMatch(
     homepage,
     /tego-arch-initial-release-roadmap\.png|tego-arch-future-directions\.png|让完整体系进入不同使用场景|三个方向并行演进，不代表固定顺序或发布日期/u,
@@ -248,6 +252,66 @@ test('homepage presents architecture judgment and reader-facing usage modes', as
   assert.match(homepage, /styles\.entryList/u);
   assert.match(homepage, /styles\.researchGrid/u);
   assert.match(homepage, /styles\.futureList/u);
+});
+
+test('PR template requires contributor-facing terminology checks', async () => {
+  const template = await read('.github/pull_request_template.md');
+
+  assert.match(template, /^## 术语与中文表达检查$/mu);
+  assert.match(template, /正文使用规范中文主称/u);
+  assert.match(template, /新术语已先登记/u);
+  assert.match(template, /产品专名、代码、引用和图中文字/u);
+});
+
+test('registers the three reusable future-direction names', async () => {
+  const registry = JSON.parse(await read('data/terminology.json'));
+  const directions = registry.terms.filter(({id}) => [
+    'architecture-decision-quick-reference',
+    'curated-learning-paths',
+    'tego-reference-architecture',
+  ].includes(id));
+
+  assert.deepEqual(directions, [
+    {
+      id: 'architecture-decision-quick-reference',
+      canonical_zh: '架构决策速查',
+      english: 'Architecture Decision Quick Reference',
+      acronym: null,
+      kind: 'translated-term',
+      first_use: '架构决策速查（Architecture Decision Quick Reference）',
+      subsequent_use: ['架构决策速查'],
+      allowed_aliases: [],
+      forbidden_aliases: ['Architecture Decision Quick Reference'],
+      note: '长期复用的决策参考方向使用中文主称。',
+      order: 330,
+    },
+    {
+      id: 'curated-learning-paths',
+      canonical_zh: '精选学习路径',
+      english: 'Curated Learning Paths',
+      acronym: null,
+      kind: 'translated-term',
+      first_use: '精选学习路径（Curated Learning Paths）',
+      subsequent_use: ['精选学习路径'],
+      allowed_aliases: [],
+      forbidden_aliases: ['Curated Learning Paths'],
+      note: '长期复用的学习路径方向使用中文主称。',
+      order: 340,
+    },
+    {
+      id: 'tego-reference-architecture',
+      canonical_zh: 'Tego 参考架构',
+      english: 'Tego Reference Architecture',
+      acronym: null,
+      kind: 'proper-noun',
+      first_use: 'Tego 参考架构（Tego Reference Architecture）',
+      subsequent_use: ['Tego 参考架构'],
+      allowed_aliases: [],
+      forbidden_aliases: ['Tego Reference Architecture'],
+      note: '项目长期公开架构决策与验证结果的方向名称。',
+      order: 350,
+    },
+  ]);
 });
 
 test('website footer exposes the dual-license and third-party boundaries', async () => {
