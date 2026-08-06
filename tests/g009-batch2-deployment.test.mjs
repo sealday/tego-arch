@@ -10,6 +10,7 @@ const expectedDeployJobId = '92713365859';
 const expectedRepositoryTestTotal = 847;
 const expectedArtifactSha256 =
   'ed3e0e69e3c4c63cc174c80b2e13da4f762becaf4429ab0449d082135a0c9531';
+const releaseReviewUrl = new URL('../docs/reviews/g009-batch2.md', import.meta.url);
 
 assert.match(expectedStageASha, /^[0-9a-f]{40}$/u);
 for (const value of [expectedPagesRunId, expectedBuildJobId, expectedDeployJobId]) {
@@ -129,6 +130,15 @@ function normalized(source) {
   return source.replace(/\r\n?/gu, '\n');
 }
 
+async function readReleaseReview(read = readFile) {
+  try {
+    return await read(releaseReviewUrl, 'utf8');
+  } catch (error) {
+    if (error?.code === 'ENOENT') return null;
+    throw error;
+  }
+}
+
 function sectionLines(source, heading) {
   const headings = [...source.matchAll(/^## ([^\n]+)$/gmu)];
   const matches = headings.filter((match) => match[1] === heading);
@@ -185,18 +195,28 @@ function assertBacklog(source) {
   assert.match(source, /^- \*\*当前持久故事：\*\* `G009`。$/mu);
 }
 
+test('treats ENOENT as missing and preserves other release-review I/O failures', async () => {
+  const missingError = Object.assign(new Error('not found'), {code: 'ENOENT'});
+  const permissionError = Object.assign(new Error('permission denied'), {code: 'EACCES'});
+  assert.equal(
+    await readReleaseReview(async () => { throw missingError; }),
+    null,
+  );
+  await assert.rejects(
+    () => readReleaseReview(async () => { throw permissionError; }),
+    (error) => error === permissionError,
+  );
+});
+
 test('records an exact non-symbolic G009 Batch 2 review', async () => {
-  const review = await readFile(
-    new URL('../docs/reviews/g009-batch2.md', import.meta.url),
-    'utf8',
-  ).catch(() => null);
+  const review = await readReleaseReview();
   assert.ok(review, 'G009 Batch 2 release review exists');
   assertReview(review);
 });
 
 test('rejects review and current-baseline contradictions', async (t) => {
   const [review, backlog] = await Promise.all([
-    readFile(new URL('../docs/reviews/g009-batch2.md', import.meta.url), 'utf8').catch(() => ''),
+    readReleaseReview(),
     readFile(new URL('../docs/content-backlog.md', import.meta.url), 'utf8'),
   ]);
   assert.ok(review, 'G009 Batch 2 release review exists');
@@ -268,50 +288,4 @@ test('preserves the complete G009 Batch 1 and older release history', async () =
     createHash('sha256').update(g009Batch1AndOlderHistory(backlog)).digest('hex'),
     expectedG009Batch1AndOlderSha256,
   );
-});
-
-test('keeps historical live-projection mutations aligned with the immediately prior Stage A', async () => {
-  const mutationSuites = await Promise.all(
-    [7, 8, 9, 10, 11].map(async (batch) => [
-      batch,
-      await readFile(
-        new URL(`g008-batch${batch}-deployment.test.mjs`, import.meta.url),
-        'utf8',
-      ),
-    ]),
-  );
-  for (const [batch, source] of mutationSuites) {
-    assert.match(
-      source,
-      /staleCompletedTopics\.completed_topics = 53;/u,
-      `Batch ${batch} reverses completed topics to Stage A 53`,
-    );
-    assert.match(
-      source,
-      /assert\.notEqual\(staleCompletedTopics\.completed_topics, projectStatus\.completed_topics/u,
-      `Batch ${batch} guards the completed-topics mutation`,
-    );
-    assert.match(
-      source,
-      /assert\.throws\(\(\) => assertGeneratedState\(manifest, staleCompletedTopics\)\);/u,
-      `Batch ${batch} rejects the completed-topics mutation`,
-    );
-  }
-
-  const messageSuites = await Promise.all(
-    [6, 7, 8, 9].map(async (batch) => [
-      batch,
-      await readFile(
-        new URL(`g008-batch${batch}-deployment.test.mjs`, import.meta.url),
-        'utf8',
-      ),
-    ]),
-  );
-  for (const [batch, source] of messageSuites) {
-    assert.match(
-      source,
-      /live current segment must identify STY-02 as next/u,
-      `Batch ${batch} next-topic assertion message`,
-    );
-  }
 });

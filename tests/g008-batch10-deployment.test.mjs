@@ -353,6 +353,7 @@ test('rejects every generated Stage B state mutation', () => {
   assert.throws(() => assertGeneratedState(staleSty01, projectStatus));
   const staleCompletedTopics = structuredClone(projectStatus);
   staleCompletedTopics.completed_topics = 53;
+  assert.equal(staleCompletedTopics.completed_topics, 53);
   assert.notEqual(staleCompletedTopics.completed_topics, projectStatus.completed_topics);
   assert.throws(() => assertGeneratedState(manifest, staleCompletedTopics));
   for (const mutate of [
