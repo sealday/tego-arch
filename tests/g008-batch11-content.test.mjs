@@ -24,7 +24,7 @@ const [sourceLedger, sourceLinkHealth, topicRelations, projectStatus, topicManif
 ]);
 
 const expectedSourceRecords = [
-  {id:'src-structurizr-dsl-model-as-code',canonical_locator:'https://docs.structurizr.com/dsl',transport_locator:'https://raw.githubusercontent.com/structurizr/structurizr.github.io/d7f521eb9c6c55f7e9a4dcaf2a1122b844dbcb7f/dsl/index.md',query_insensitive:false,locator_aliases:[],tombstone:null,title:'Structurizr DSL',author_or_org:'Structurizr',published_at:null,registered_at:'2026-08-06',checked_at:'2026-08-06',version:'Structurizr documentation commit d7f521eb9c6c55f7e9a4dcaf2a1122b844dbcb7f',source_kind:'official-docs',tier:'primary',allowed_evidence_roles:['definition','implementation','learning','method'],license:'MIT',license_scope:'The named Structurizr documentation page at the pinned documentation commit; trademarks, linked works, code, hosted service behavior, and third-party assets excluded',license_evidence_url:'https://github.com/structurizr/structurizr.github.io/blob/d7f521eb9c6c55f7e9a4dcaf2a1122b844dbcb7f/LICENSE',license_evidence_note:'The official Structurizr documentation repository identifies the documentation repository as MIT licensed.',license_family_id:'https://docs.structurizr.com/dsl',license_family_grouping:'identity',family_grouping_evidence_url:null,copyright_policy:'facts-and-short-quotation',usage_boundary:'Supports defining a C4 software architecture model with a text DSL and producing views from a workspace; it does not prove synchronization with code, deployment, or runtime state.',link_policy:'stable',expected_final_transport_locator:'https://raw.githubusercontent.com/structurizr/structurizr.github.io/d7f521eb9c6c55f7e9a4dcaf2a1122b844dbcb7f/dsl/index.md',expected_final_approved_at:'2026-08-06',expected_final_approval_note:'Pinned official documentation commit returned HTTP 200 on 2026-08-06.'},
+  {id:'src-structurizr-dsl-model-as-code',canonical_locator:'https://docs.structurizr.com/dsl/tutorial',transport_locator:'https://raw.githubusercontent.com/structurizr/structurizr.github.io/d7f521eb9c6c55f7e9a4dcaf2a1122b844dbcb7f/dsl/02-tutorial.md',query_insensitive:false,locator_aliases:[],tombstone:null,title:'Structurizr DSL tutorial',author_or_org:'Structurizr',published_at:null,registered_at:'2026-08-06',checked_at:'2026-08-06',version:'Structurizr documentation commit d7f521eb9c6c55f7e9a4dcaf2a1122b844dbcb7f',source_kind:'official-docs',tier:'primary',allowed_evidence_roles:['definition','implementation','learning','method'],license:'MIT',license_scope:'The named Structurizr DSL tutorial page at the pinned documentation commit; trademarks, linked works, code, hosted service behavior, and third-party assets excluded',license_evidence_url:'https://github.com/structurizr/structurizr.github.io/blob/d7f521eb9c6c55f7e9a4dcaf2a1122b844dbcb7f/LICENSE',license_evidence_note:'The pinned Structurizr documentation repository LICENSE identifies the repository as MIT licensed; no broader copyright inference is made.',license_family_id:'https://docs.structurizr.com/dsl/tutorial',license_family_grouping:'identity',family_grouping_evidence_url:null,copyright_policy:'facts-and-short-quotation',usage_boundary:'Supports that a workspace wraps a model and views, including a model element and a view scoped to that element; it does not prove that every possible view is mechanically generated from an entire model or that models synchronize with code, deployment, or runtime state.',link_policy:'stable',expected_final_transport_locator:'https://raw.githubusercontent.com/structurizr/structurizr.github.io/d7f521eb9c6c55f7e9a4dcaf2a1122b844dbcb7f/dsl/02-tutorial.md',expected_final_approved_at:'2026-08-06',expected_final_approval_note:'Pinned official DSL tutorial returned HTTP 200 on 2026-08-06.'},
   {id:'src-opengitops-principles-v1',canonical_locator:'https://opengitops.dev/',transport_locator:'https://raw.githubusercontent.com/open-gitops/documents/d36cde829c6ef2c7e5cab662ab98a7173a591a49/PRINCIPLES.md',query_insensitive:false,locator_aliases:[],tombstone:null,title:'GitOps Principles v1.0.0',author_or_org:'OpenGitOps / CNCF GitOps Working Group',published_at:null,registered_at:'2026-08-06',checked_at:'2026-08-06',version:'v1.0.0 peeled commit d36cde829c6ef2c7e5cab662ab98a7173a591a49',source_kind:'standard',tier:'primary',allowed_evidence_roles:['definition','learning','method'],license:'CC-BY-4.0',license_scope:'The GitOps Principles content at v1.0.0 under the repository content license; code, marks, translations, linked works, and later versions excluded',license_evidence_url:'https://github.com/open-gitops/documents/blob/d36cde829c6ef2c7e5cab662ab98a7173a591a49/LICENSE.md',license_evidence_note:'The pinned repository license applies CC BY 4.0 to content and Apache 2.0 to code.',license_family_id:'https://opengitops.dev/',license_family_grouping:'identity',family_grouping_evidence_url:null,copyright_policy:'adapt-with-attribution',usage_boundary:'Supports declarative, versioned and immutable, automatically pulled, continuously reconciled desired state for GitOps-managed systems; it does not make all architecture knowledge automatically reconcilable.',link_policy:'stable',expected_final_transport_locator:'https://raw.githubusercontent.com/open-gitops/documents/d36cde829c6ef2c7e5cab662ab98a7173a591a49/PRINCIPLES.md',expected_final_approved_at:'2026-08-06',expected_final_approval_note:'Pinned v1.0.0 principles file returned HTTP 200 on 2026-08-06.'},
   {id:'src-github-deployment-history',canonical_locator:'https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/view-deployment-history',transport_locator:'https://raw.githubusercontent.com/github/docs/738593aef7b8d80183a376d5c692feefc0e8a5ff/content/actions/how-tos/deploy/configure-and-manage-deployments/view-deployment-history.md',query_insensitive:false,locator_aliases:[],tombstone:null,title:'Viewing deployment history',author_or_org:'GitHub',published_at:null,registered_at:'2026-08-06',checked_at:'2026-08-06',version:'GitHub Docs commit 738593aef7b8d80183a376d5c692feefc0e8a5ff',source_kind:'official-docs',tier:'primary',allowed_evidence_roles:['implementation','learning','runtime-fact'],license:'CC-BY-4.0',license_scope:'The named GitHub documentation page at the pinned docs commit; GitHub marks, product code, linked works, screenshots, and later versions excluded',license_evidence_url:'https://github.com/github/docs/blob/738593aef7b8d80183a376d5c692feefc0e8a5ff/LICENSE',license_evidence_note:'GitHub Docs applies CC BY 4.0 to documentation and content under its LICENSE file.',license_family_id:'https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/view-deployment-history',license_family_grouping:'identity',family_grouping_evidence_url:null,copyright_policy:'adapt-with-attribution',usage_boundary:'Supports deployment history associations with environments, commits, workflow logs, URLs, and statuses; it does not prove application functionality, performance, reliability, or complete runtime health.',link_policy:'stable',expected_final_transport_locator:'https://raw.githubusercontent.com/github/docs/738593aef7b8d80183a376d5c692feefc0e8a5ff/content/actions/how-tos/deploy/configure-and-manage-deployments/view-deployment-history.md',expected_final_approved_at:'2026-08-06',expected_final_approval_note:'Pinned official documentation source returned HTTP 200 on 2026-08-06.'},
   {id:'src-atlas-mod13-authority-drift-loop',canonical_locator:'/img/diagrams/mod-13-authority-drift-loop.svg',transport_locator:'/img/diagrams/mod-13-authority-drift-loop.svg',query_insensitive:false,locator_aliases:[],tombstone:null,title:'权威事实与漂移处置闭环',author_or_org:'Tego Arch maintainers',published_at:null,registered_at:'2026-08-06',checked_at:'2026-08-06',version:'Original Draw.io/SVG pair authored and QA-checked on 2026-08-06',source_kind:'original-illustration',tier:'primary',allowed_evidence_roles:['illustration'],license:'LicenseRef-Atlas-Original',license_scope:'The named project-authored mod-13-authority-drift-loop.svg asset only',license_evidence_url:'https://github.com/sealday/tego-arch/blob/main/static/img/diagrams/mod-13-authority-drift-loop.svg',license_evidence_note:'The project-authored Draw.io/SVG pair contains no third-party reference image, icon, signature, watermark, or copied composition.',license_family_id:'/img/diagrams/mod-13-authority-drift-loop.svg',license_family_grouping:'identity',family_grouping_evidence_url:null,copyright_policy:'original-atlas',usage_boundary:'Original teaching illustration of per-fact authority and drift reconciliation; it does not represent a production topology, team, controller, or tool implementation.',link_policy:null,expected_final_transport_locator:'/img/diagrams/mod-13-authority-drift-loop.svg',expected_final_approved_at:'2026-08-06',expected_final_approval_note:'Approved project-local original illustration locator for the named SVG asset.'},
@@ -33,11 +33,11 @@ const expectedSourceRecords = [
 const expectedNygardRecord = {id:'src-nygard-documenting-architecture-decisions-2011',canonical_locator:'https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions',transport_locator:'https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions',query_insensitive:false,locator_aliases:[],tombstone:null,title:'Documenting Architecture Decisions',author_or_org:'Michael Nygard / Cognitect',published_at:'2011-11-15',registered_at:'2026-07-24',checked_at:'2026-07-24',version:'Article published 2011-11-15; page checked on 2026-07-24',source_kind:'engineering-blog',tier:'primary',allowed_evidence_roles:['definition','method','historical-context','learning'],license:'CC0-1.0',license_scope:'The named Cognitect article text covered by its explicit CC0 waiver; linked works, marks, and third-party material excluded',license_evidence_url:'https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions',license_evidence_note:'The article page explicitly states that Cognitect waived copyright and related rights to the extent possible under law under CC0.',license_family_id:'https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions',license_family_grouping:'identity',family_grouping_evidence_url:null,copyright_policy:'adapt-with-attribution',usage_boundary:'Supports the ADR context-decision-consequences form and historical status practice; it does not make every local status vocabulary mandatory.',link_policy:'stable',expected_final_transport_locator:'https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions',expected_final_approved_at:'2026-07-24',expected_final_approval_note:'Initial reviewed CC0 article transport baseline'};
 
 const expectedCitations = [
-  {source_id:'src-structurizr-dsl-model-as-code',citation_url:'https://docs.structurizr.com/dsl',roles:['definition','implementation','learning'],manifest_primary:true,usage_mode:'facts-summary',attribution_note:'Structurizr DSL, Structurizr',modification_note:null,excerpt:null,quotation_reviewed:false},
+  {source_id:'src-structurizr-dsl-model-as-code',citation_url:'https://docs.structurizr.com/dsl/tutorial',roles:['definition','implementation','learning'],manifest_primary:true,usage_mode:'facts-summary',attribution_note:'Structurizr DSL tutorial, Structurizr',modification_note:null,excerpt:null,quotation_reviewed:false},
   {source_id:'src-nygard-documenting-architecture-decisions-2011',citation_url:'https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions',roles:['definition','method','historical-context'],manifest_primary:true,usage_mode:'facts-summary',attribution_note:'Documenting Architecture Decisions, Michael Nygard / Cognitect',modification_note:null,excerpt:null,quotation_reviewed:false},
   {source_id:'src-opengitops-principles-v1',citation_url:'https://opengitops.dev/',roles:['definition','method','learning'],manifest_primary:true,usage_mode:'facts-summary',attribution_note:'GitOps Principles v1.0.0, OpenGitOps / CNCF GitOps Working Group',modification_note:null,excerpt:null,quotation_reviewed:false},
   {source_id:'src-github-deployment-history',citation_url:'https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/view-deployment-history',roles:['implementation','runtime-fact','learning'],manifest_primary:false,usage_mode:'facts-summary',attribution_note:'Viewing deployment history, GitHub Docs',modification_note:null,excerpt:null,quotation_reviewed:false},
-  {source_id:'src-atlas-mod13-authority-drift-loop',citation_url:'/img/diagrams/mod-13-authority-drift-loop.svg',roles:['illustration'],manifest_primary:false,usage_mode:'original-illustration',attribution_note:'权威事实与漂移处置闭环，Tego Arch maintainers',modification_note:'Created as an original Draw.io and SVG pair for MOD-13 from a project-authored design; QA-reviewed for semantic synchronization, accessibility, geometry, and desktop/mobile browser rendering without third-party reference imagery.',excerpt:null,quotation_reviewed:false},
+  {source_id:'src-atlas-mod13-authority-drift-loop',citation_url:'/img/diagrams/mod-13-authority-drift-loop.svg',roles:['illustration'],manifest_primary:false,usage_mode:'original-illustration',attribution_note:'权威事实与漂移处置闭环，Tego Arch maintainers',modification_note:'Created as an original Draw.io and SVG pair for MOD-13 from a project-authored design; local pre-publication desktop/mobile QA is recorded in .superpowers/sdd/task-2-report.md, while Task 5 production QA remains a separate gate; no third-party reference imagery was used.',excerpt:null,quotation_reviewed:false},
 ];
 
 const expectedMetadata = {
@@ -134,6 +134,12 @@ const diagram = {
 };
 
 const sourceIds = ['code-facts', 'architecture-source', 'adr-state', 'runtime-evidence'];
+const measuredNodeIds = [
+  ...sourceIds,
+  'authority-contract', 'generator', 'validator', 'observer', 'drift-queue',
+  'owner-repair', 'revalidate', 'release-evidence',
+];
+const renderedScale = 800 / 1200;
 
 function decodeXmlText(value) {
   return value
@@ -160,6 +166,41 @@ function xmlAttributes(source) {
 function svgElements(source, name) {
   return [...source.matchAll(new RegExp(`<${name}\\b([^>]*)>`, 'gu'))]
     .map(([, attributes]) => xmlAttributes(attributes));
+}
+
+function boundsAttribute(attributes, name) {
+  return (attributes[name] ?? '').split(/\s+/u).map(Number);
+}
+
+function rectDistance(left, right) {
+  const horizontal = Math.max(left[0] - (right[0] + right[2]), right[0] - (left[0] + left[2]), 0);
+  const vertical = Math.max(left[1] - (right[1] + right[3]), right[1] - (left[1] + left[3]), 0);
+  return Math.hypot(horizontal, vertical);
+}
+
+function orthogonalPathPoints(pathData) {
+  const commands = [...pathData.matchAll(/([MHV])\s*(-?\d+(?:\.\d+)?)(?:\s+(-?\d+(?:\.\d+)?))?/gu)];
+  const points = [];
+  let x = 0;
+  let y = 0;
+  for (const [, command, first, second] of commands) {
+    if (command === 'M') [x, y] = [Number(first), Number(second)];
+    if (command === 'H') x = Number(first);
+    if (command === 'V') y = Number(first);
+    points.push([x, y]);
+  }
+  return points;
+}
+
+function segmentIntersectsRectInterior(start, end, [x, y, width, height]) {
+  const left = x;
+  const right = x + width;
+  const top = y;
+  const bottom = y + height;
+  if (start[0] === end[0]) {
+    return start[0] > left && start[0] < right && Math.max(start[1], end[1]) > top && Math.min(start[1], end[1]) < bottom;
+  }
+  return start[1] > top && start[1] < bottom && Math.max(start[0], end[0]) > left && Math.min(start[0], end[0]) < right;
 }
 
 function hiddenStylesheetClasses(source) {
@@ -240,6 +281,11 @@ function assertDiagramContract(drawio, svg) {
     assert.equal(svgFeedback?.['data-target'], source, `SVG repair feedback must return to ${source}`);
     assert.ok((svgFeedback?.class ?? '').split(/\s+/u).includes('feedback'), `SVG repair feedback must use feedback class for ${source}`);
   }
+  assert.equal(byId.get('repair-revalidate')?.value, '', 'revalidation stays semantically separate from authority repair feedback');
+  assert.equal(byId.get('repair-runtime-evidence')?.value, '修改权威或新增替代记录', 'repair wording belongs to a dashed feedback edge');
+  const repairLabel = svgElements(svg, 'text').find((text) => text['data-edge-id'] === 'repair-runtime-evidence');
+  assert.equal(repairLabel?.class, 'edge-label');
+  assert.ok(visibleSvgText.includes('修改权威或新增替代记录'));
   for (const [id, source, target] of [
     ['contract-generate', 'authority-contract', 'generator'],
     ['contract-validate', 'authority-contract', 'validator'],
@@ -273,6 +319,60 @@ function assertDiagramContract(drawio, svg) {
   ]) {
     assert.match(svg, new RegExp(`<path\\b(?=[^>]*\\bdata-source="${source}")(?=[^>]*\\bdata-target="${target}")[^>]*>`, 'u'));
   }
+
+  assert.match(svg, /\.node-title\s*\{[^}]*font:\s*700 23px/u);
+  assert.match(svg, /\.node-type\s*\{[^}]*font:\s*16px/u);
+  assert.match(svg, /\.edge-label\s*\{[^}]*font:\s*700 23px/u);
+  for (const edge of cells.filter((cell) => cell.edge === '1')) {
+    assert.match(edge.style ?? '', /fontSize=23/u, `${edge.id} label font must be 23 authoring units`);
+  }
+
+  const measuredGroups = [...svg.matchAll(/<g\b([^>]*)>([\s\S]*?)<\/g>/gu)]
+    .map(([, attributes, contents]) => [xmlAttributes(attributes), contents])
+    .filter(([attributes]) => attributes['data-node-id']);
+  assert.equal(measuredGroups.length, measuredNodeIds.length);
+  for (const [attributes, contents] of measuredGroups) {
+    const nodeId = attributes['data-node-id'];
+    assert.ok(measuredNodeIds.includes(nodeId), `unexpected measured node ${nodeId}`);
+    const nodeBounds = boundsAttribute(attributes, 'data-node-bounds');
+    assert.equal(nodeBounds.length, 4, `${nodeId} node bounds`);
+    const texts = [...contents.matchAll(/<text\b([^>]*)>/gu)].map(([, value]) => xmlAttributes(value));
+    const title = texts.find((text) => text['data-text-role'] === 'title');
+    const type = texts.find((text) => text['data-text-role'] === 'type');
+    assert.ok(title && type, `${nodeId} title/type measurement metadata`);
+    const titleBounds = boundsAttribute(title, 'data-text-bounds');
+    const typeBounds = boundsAttribute(type, 'data-text-bounds');
+    assert.ok((Number(type.y) - Number(title.y)) * renderedScale >= 22, `${nodeId} baseline gap`);
+    assert.ok((Math.min(titleBounds[0], typeBounds[0]) - nodeBounds[0]) * renderedScale >= 16, `${nodeId} left padding`);
+    assert.ok((Math.max(titleBounds[0] + titleBounds[2], typeBounds[0] + typeBounds[2]) - (nodeBounds[0] + nodeBounds[2])) * renderedScale <= -16, `${nodeId} right padding`);
+    assert.ok((nodeBounds[1] + nodeBounds[3] - (typeBounds[1] + typeBounds[3])) * renderedScale >= 14, `${nodeId} bottom clearance`);
+  }
+
+  const nodeBoundsById = new Map(measuredGroups.map(([attributes]) => [attributes['data-node-id'], boundsAttribute(attributes, 'data-node-bounds')]));
+  for (const feedback of svgPaths.filter((path) => (path.class ?? '').split(/\s+/u).includes('feedback'))) {
+    const points = orthogonalPathPoints(feedback.d ?? '');
+    assert.ok(points.length >= 2, `${feedback.id} orthogonal route`);
+    for (const [nodeId, bounds] of nodeBoundsById) {
+      if ([feedback['data-source'], feedback['data-target']].includes(nodeId)) continue;
+      for (let index = 1; index < points.length; index += 1) {
+        assert.equal(segmentIntersectsRectInterior(points[index - 1], points[index], bounds), false, `${feedback.id} must not intersect ${nodeId}`);
+      }
+    }
+  }
+
+  const edgeLabels = [...svg.matchAll(/<text\b([^>]*)class="edge-label"([^>]*)>/gu)]
+    .map(([, before, after]) => xmlAttributes(`${before} class="edge-label" ${after}`));
+  assert.equal(edgeLabels.length, 12);
+  for (const label of edgeLabels) {
+    assert.equal(boundsAttribute(label, 'data-label-bounds').length, 4, `${label['data-edge-id']} label bounds`);
+    assert.ok(Number(label['data-stroke-clearance-css']) >= 8, `${label['data-edge-id']} stroke clearance`);
+    assert.ok(Number(label['data-arrow-clearance-css']) >= 16, `${label['data-edge-id']} arrow clearance`);
+    assert.ok(Number(label['data-node-clearance-css']) >= 12, `${label['data-edge-id']} node clearance`);
+  }
+  const queueLabelBounds = boundsAttribute(edgeLabels.find((label) => label['data-edge-id'] === 'queue-repair'), 'data-label-bounds');
+  const feedbackLabelBounds = boundsAttribute(edgeLabels.find((label) => label['data-edge-id'] === 'repair-runtime-evidence'), 'data-label-bounds');
+  assert.ok((680 - (queueLabelBounds[1] + queueLabelBounds[3])) * renderedScale >= 12, 'queue label clears the contract-region border');
+  assert.ok((feedbackLabelBounds[1] - 695) * renderedScale >= 12, 'feedback label clears the resolution-region border');
 }
 
 function markdownTables(body) {
@@ -393,8 +493,8 @@ test('rejects controlled diagram-pair accessibility, topology, style, and wordin
   ]);
   const mutations = [
     ['missing label', drawio.replace('value="代码事实"', 'value=""'), svg],
-    ['hidden SVG text', drawio, svg.replace('<text class="node-title" x="190" y="150">代码事实</text>', '<text class="node-title" x="190" y="150" visibility="hidden">代码事实</text>')],
-    ['ancestor-hidden SVG text', drawio, svg.replace('<text class="node-title" x="190" y="150">代码事实</text>', '<g visibility="hidden"><text class="node-title" x="190" y="150">代码事实</text></g>'), /SVG must paint exact label: 代码事实/u],
+    ['hidden SVG text', drawio, svg.replace('<text class="node-title" data-text-role="title" data-text-bounds="132.5 122.5 115 27" x="190" y="145">代码事实</text>', '<text class="node-title" data-text-role="title" data-text-bounds="132.5 122.5 115 27" x="190" y="145" visibility="hidden">代码事实</text>')],
+    ['ancestor-hidden SVG text', drawio, svg.replace('<text class="node-title" data-text-role="title" data-text-bounds="132.5 122.5 115 27" x="190" y="145">代码事实</text>', '<g visibility="hidden"><text class="node-title" data-text-role="title" data-text-bounds="132.5 122.5 115 27" x="190" y="145">代码事实</text></g>'), /SVG must paint exact label: 代码事实/u],
     ['stylesheet-hidden SVG text', drawio, svg.replace('</style>', '.node-title { display: none; }\n    </style>'), /SVG must paint exact label: 代码事实/u],
     ['wrong arrow direction', drawio.replace('id="declare-code-facts" value="声明权威" edge="1" source="code-facts" target="authority-contract"', 'id="declare-code-facts" value="声明权威" edge="1" source="authority-contract" target="code-facts"'), svg],
     ['solid repair feedback', drawio.replace('id="repair-code-facts" value="" edge="1" source="owner-repair" target="code-facts" parent="1" style="edgeStyle=orthogonalEdgeStyle;dashed=1;', 'id="repair-code-facts" value="" edge="1" source="owner-repair" target="code-facts" parent="1" style="edgeStyle=orthogonalEdgeStyle;dashed=0;'), svg],
@@ -403,7 +503,11 @@ test('rejects controlled diagram-pair accessibility, topology, style, and wordin
     ['SVG release-evidence outgoing edge', drawio, svg.replace('</svg>', '<path id="release-backflow" class="edge" data-source="release-evidence" data-target="authority-contract" d="M950 755 V700 H600 V417"/>\n</svg>'), /SVG release evidence must have no outgoing edge/u],
     ['missing region', drawio.replace('id="region-authority"', 'id="deleted-region-authority"'), svg],
     ['fixed SVG width', drawio, svg.replace('<svg ', '<svg width="1200" ')],
-    ['diagram/SVG wording drift', drawio, svg.replace('<text class="node-title" x="190" y="150">代码事实</text>', '<text class="node-title" x="190" y="150">程序事实</text>')],
+    ['diagram/SVG wording drift', drawio, svg.replace('>代码事实</text>', '>程序事实</text>')],
+    ['repair wording rebound to revalidation', drawio.replace('id="repair-revalidate" value=""', 'id="repair-revalidate" value="修改权威或新增替代记录"'), svg, /revalidation stays semantically separate/u],
+    ['feedback path intersects revalidate', drawio, svg.replace('d="M350 780 V770 H1180 V161 H1140"', 'd="M350 826 H1180 V161 H1140"'), /repair-runtime-evidence must not intersect revalidate/u],
+    ['queue label crowds region border', drawio, svg.replace('data-label-bounds="151 627.5 138 27"', 'data-label-bounds="151 650 138 27"'), /queue label clears the contract-region border/u],
+    ['feedback label loses stroke clearance', drawio, svg.replace('data-stroke-clearance-css="18.33"', 'data-stroke-clearance-css="7.99"'), /repair-runtime-evidence stroke clearance/u],
   ];
   for (const [label, mutatedDrawio, mutatedSvg, expectedFailure] of mutations) {
     assert.notEqual(`${mutatedDrawio}\n${mutatedSvg}`, `${drawio}\n${svg}`, `${label} must change the fixture`);

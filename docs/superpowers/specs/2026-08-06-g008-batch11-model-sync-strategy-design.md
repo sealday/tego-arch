@@ -322,13 +322,15 @@ MOD-13 related case 固定为 `/cases/kubernetes-reconciliation-loop`，正文�
 新增三个外部来源身份：
 
 1. `src-structurizr-dsl-model-as-code`
-   - canonical：`https://docs.structurizr.com/dsl`
-   - pinned transport：`https://raw.githubusercontent.com/structurizr/structurizr.github.io/d7f521eb9c6c55f7e9a4dcaf2a1122b844dbcb7f/dsl/index.md`
+   - canonical：`https://docs.structurizr.com/dsl/tutorial`
+   - pinned blob：`https://github.com/structurizr/structurizr.github.io/blob/d7f521eb9c6c55f7e9a4dcaf2a1122b844dbcb7f/dsl/02-tutorial.md`
+   - pinned transport：`https://raw.githubusercontent.com/structurizr/structurizr.github.io/d7f521eb9c6c55f7e9a4dcaf2a1122b844dbcb7f/dsl/02-tutorial.md`
    - version：Structurizr documentation commit `d7f521eb9c6c55f7e9a4dcaf2a1122b844dbcb7f`，checked `2026-08-06`
    - author/org：Structurizr
    - kind/tier：official-docs / primary
    - license：MIT；evidence `https://github.com/structurizr/structurizr.github.io/blob/d7f521eb9c6c55f7e9a4dcaf2a1122b844dbcb7f/LICENSE`
-   - boundary：支持文本 DSL 定义 C4 软件架构模型，以及 model/views 同一 workspace 的做法；不证明模型与代码、部署或运行状态自动一致。
+   - evidence：固定页第 16–17 行说明 workspace 包含 model 与 views；第 24–25、41–64 行定义一个模型元素和限定到该元素的 view
+   - boundary：支持 workspace 内基于模型的 views；不证明每一种 view 都由整个 model 机械生成，也不证明模型与代码、部署或运行状态自动一致。
 2. `src-opengitops-principles-v1`
    - canonical：`https://opengitops.dev/`
    - pinned transport：`https://raw.githubusercontent.com/open-gitops/documents/d36cde829c6ef2c7e5cab662ab98a7173a591a49/PRINCIPLES.md`
@@ -353,7 +355,7 @@ MOD-13 related case 固定为 `/cases/kubernetes-reconciliation-loop`，正文�
   - source kind：`original-illustration`
   - allowed evidence roles：`illustration`
   - document copyright check：`illustration-rights`
-  - modification note：`Created as an original Draw.io and SVG pair for MOD-13 from a project-authored design; QA-reviewed for semantic synchronization, accessibility, geometry, and desktop/mobile browser rendering without third-party reference imagery.`
+  - modification note：`Created as an original Draw.io and SVG pair for MOD-13 from a project-authored design; local pre-publication desktop/mobile QA is recorded in .superpowers/sdd/task-2-report.md, while Task 5 production QA remains a separate gate; no third-party reference imagery was used.`
   - usage boundary：本站原创权威事实与漂移闭环教学图，不表示特定生产拓扑、团队或工具实现。
 
 Stage A 预计从 490 增加到 494 个唯一来源：三个新增外部身份、一个原创图身份，ADR 来源复用。实现时必须由 source-ledger validator 证明 canonical identity、许可证、角色和 link-health cache；如果实际 canonical 去重结果与 494 不同，先修订设计与计数合同，不能静默改变目标。

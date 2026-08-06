@@ -23610,12 +23610,12 @@
     },
     {
       "id": "src-structurizr-dsl-model-as-code",
-      "canonical_locator": "https://docs.structurizr.com/dsl",
-      "transport_locator": "https://raw.githubusercontent.com/structurizr/structurizr.github.io/d7f521eb9c6c55f7e9a4dcaf2a1122b844dbcb7f/dsl/index.md",
+      "canonical_locator": "https://docs.structurizr.com/dsl/tutorial",
+      "transport_locator": "https://raw.githubusercontent.com/structurizr/structurizr.github.io/d7f521eb9c6c55f7e9a4dcaf2a1122b844dbcb7f/dsl/02-tutorial.md",
       "query_insensitive": false,
       "locator_aliases": [],
       "tombstone": null,
-      "title": "Structurizr DSL",
+      "title": "Structurizr DSL tutorial",
       "author_or_org": "Structurizr",
       "published_at": null,
       "registered_at": "2026-08-06",
@@ -23630,27 +23630,27 @@
         "method"
       ],
       "license": "MIT",
-      "license_scope": "The named Structurizr documentation page at the pinned documentation commit; trademarks, linked works, code, hosted service behavior, and third-party assets excluded",
+      "license_scope": "The named Structurizr DSL tutorial page at the pinned documentation commit; trademarks, linked works, code, hosted service behavior, and third-party assets excluded",
       "license_evidence_url": "https://github.com/structurizr/structurizr.github.io/blob/d7f521eb9c6c55f7e9a4dcaf2a1122b844dbcb7f/LICENSE",
-      "license_evidence_note": "The official Structurizr documentation repository identifies the documentation repository as MIT licensed.",
-      "license_family_id": "https://docs.structurizr.com/dsl",
+      "license_evidence_note": "The pinned Structurizr documentation repository LICENSE identifies the repository as MIT licensed; no broader copyright inference is made.",
+      "license_family_id": "https://docs.structurizr.com/dsl/tutorial",
       "license_family_grouping": "identity",
       "family_grouping_evidence_url": null,
       "copyright_policy": "facts-and-short-quotation",
-      "usage_boundary": "Supports defining a C4 software architecture model with a text DSL and producing views from a workspace; it does not prove synchronization with code, deployment, or runtime state.",
+      "usage_boundary": "Supports that a workspace wraps a model and views, including a model element and a view scoped to that element; it does not prove that every possible view is mechanically generated from an entire model or that models synchronize with code, deployment, or runtime state.",
       "link_policy": "stable",
-      "expected_final_transport_locator": "https://raw.githubusercontent.com/structurizr/structurizr.github.io/d7f521eb9c6c55f7e9a4dcaf2a1122b844dbcb7f/dsl/index.md",
+      "expected_final_transport_locator": "https://raw.githubusercontent.com/structurizr/structurizr.github.io/d7f521eb9c6c55f7e9a4dcaf2a1122b844dbcb7f/dsl/02-tutorial.md",
       "expected_final_approved_at": "2026-08-06",
-      "expected_final_approval_note": "Pinned official documentation commit returned HTTP 200 on 2026-08-06.",
+      "expected_final_approval_note": "Pinned official DSL tutorial returned HTTP 200 on 2026-08-06.",
       "health_summary": "healthy",
       "health_checks": [
         {
-          "transport_locator": "https://raw.githubusercontent.com/structurizr/structurizr.github.io/d7f521eb9c6c55f7e9a4dcaf2a1122b844dbcb7f/dsl/index.md",
+          "transport_locator": "https://raw.githubusercontent.com/structurizr/structurizr.github.io/d7f521eb9c6c55f7e9a4dcaf2a1122b844dbcb7f/dsl/02-tutorial.md",
           "status": "healthy",
-          "last_attempt_at": "2026-08-06T07:29:45.145Z",
-          "last_success_at": "2026-08-06T07:29:45.145Z",
+          "last_attempt_at": "2026-08-06T08:59:46.180Z",
+          "last_success_at": "2026-08-06T08:59:46.180Z",
           "http_status": 206,
-          "final_transport_locator": "https://raw.githubusercontent.com/structurizr/structurizr.github.io/d7f521eb9c6c55f7e9a4dcaf2a1122b844dbcb7f/dsl/index.md"
+          "final_transport_locator": "https://raw.githubusercontent.com/structurizr/structurizr.github.io/d7f521eb9c6c55f7e9a4dcaf2a1122b844dbcb7f/dsl/02-tutorial.md"
         }
       ]
     },
@@ -30809,7 +30809,7 @@
           "manifest_primary": false,
           "usage_mode": "original-illustration",
           "attribution_note": "权威事实与漂移处置闭环，Tego Arch maintainers",
-          "modification_note": "Created as an original Draw.io and SVG pair for MOD-13 from a project-authored design; QA-reviewed for semantic synchronization, accessibility, geometry, and desktop/mobile browser rendering without third-party reference imagery.",
+          "modification_note": "Created as an original Draw.io and SVG pair for MOD-13 from a project-authored design; local pre-publication desktop/mobile QA is recorded in .superpowers/sdd/task-2-report.md, while Task 5 production QA remains a separate gate; no third-party reference imagery was used.",
           "excerpt": null,
           "quotation_reviewed": false
         },
@@ -30860,7 +30860,7 @@
         },
         {
           "source_id": "src-structurizr-dsl-model-as-code",
-          "citation_url": "https://docs.structurizr.com/dsl",
+          "citation_url": "https://docs.structurizr.com/dsl/tutorial",
           "roles": [
             "definition",
             "implementation",
@@ -30868,7 +30868,7 @@
           ],
           "manifest_primary": true,
           "usage_mode": "facts-summary",
-          "attribution_note": "Structurizr DSL, Structurizr",
+          "attribution_note": "Structurizr DSL tutorial, Structurizr",
           "modification_note": null,
           "excerpt": null,
           "quotation_reviewed": false

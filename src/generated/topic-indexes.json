@@ -1968,7 +1968,7 @@
       ],
       "primary_sources": [
         "https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions",
-        "https://docs.structurizr.com/dsl",
+        "https://docs.structurizr.com/dsl/tutorial",
         "https://opengitops.dev/"
       ],
       "related_cases": [

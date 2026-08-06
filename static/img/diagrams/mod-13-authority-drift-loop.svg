@@ -30,98 +30,98 @@
   <rect class="region" x="30" y="695" width="1140" height="200" rx="16"/>
   <text class="region-title" x="52" y="725">漂移处置与发布</text>
 
-  <path id="declare-code-facts" class="edge" data-source="code-facts" data-target="authority-contract" d="M80 166 V270 H507 V325"/>
-  <path id="declare-architecture-source" class="edge" data-source="architecture-source" data-target="authority-contract" d="M355 166 V276 H569 V325"/>
-  <path id="declare-adr-state" class="edge" data-source="adr-state" data-target="authority-contract" d="M850 166 V276 H631 V325"/>
-  <path id="declare-runtime-evidence" class="edge" data-source="runtime-evidence" data-target="authority-contract" d="M1125 166 V270 H693 V325"/>
-  <path id="contract-generate" class="edge" data-source="authority-contract" data-target="generator" d="M523 417 V450 H175 V465"/>
+  <path id="declare-code-facts" class="edge" data-source="code-facts" data-target="authority-contract" d="M80 161 V272 H507 V325"/>
+  <path id="declare-architecture-source" class="edge" data-source="architecture-source" data-target="authority-contract" d="M355 161 V278 H569 V325"/>
+  <path id="declare-adr-state" class="edge" data-source="adr-state" data-target="authority-contract" d="M850 161 V278 H631 V325"/>
+  <path id="declare-runtime-evidence" class="edge" data-source="runtime-evidence" data-target="authority-contract" d="M1125 161 V272 H693 V325"/>
+  <path id="contract-generate" class="edge" data-source="authority-contract" data-target="generator" d="M523 417 V452 H175 V465"/>
   <path id="contract-validate" class="edge" data-source="authority-contract" data-target="validator" d="M600 417 V465"/>
-  <path id="contract-observe" class="edge" data-source="authority-contract" data-target="observer" d="M677 417 V450 H1050 V465"/>
+  <path id="contract-observe" class="edge" data-source="authority-contract" data-target="observer" d="M677 417 V452 H1050 V465"/>
   <path id="generate-drift" class="edge" data-source="generator" data-target="drift-queue" d="M285 511 H295 V621 H490"/>
   <path id="validate-drift" class="edge" data-source="validator" data-target="drift-queue" d="M710 511 H730 V621 H710"/>
   <path id="observe-drift" class="edge" data-source="observer" data-target="drift-queue" d="M940 511 H905 V645 H710"/>
-  <path id="queue-repair" class="edge" data-source="drift-queue" data-target="owner-repair" d="M545 667 V716 H250 V755"/>
-  <path id="repair-revalidate" class="edge" data-source="owner-repair" data-target="revalidate" d="M375 801 H475"/>
-  <path id="revalidate-release" class="edge" data-source="revalidate" data-target="release-evidence" d="M725 801 H825"/>
+  <path id="queue-repair" class="edge" data-source="drift-queue" data-target="owner-repair" d="M545 667 V730 H250 V780"/>
+  <path id="repair-revalidate" class="edge" data-source="owner-repair" data-target="revalidate" d="M375 826 H475"/>
+  <path id="revalidate-release" class="edge" data-source="revalidate" data-target="release-evidence" d="M725 826 H825"/>
 
-  <path id="repair-code-facts" class="feedback" data-source="owner-repair" data-target="code-facts" d="M125 783 H46 V166 H65"/>
-  <path id="repair-architecture-source" class="feedback" data-source="owner-repair" data-target="architecture-source" d="M125 797 H50 V290 H330 V180 H340"/>
-  <path id="repair-adr-state" class="feedback" data-source="owner-repair" data-target="adr-state" d="M375 787 H880 V166 H865"/>
-  <path id="repair-runtime-evidence" class="feedback" data-source="owner-repair" data-target="runtime-evidence" d="M375 773 H1152 V166 H1140"/>
+  <path id="repair-code-facts" class="feedback" data-source="owner-repair" data-target="code-facts" d="M125 808 H46 V166 H65"/>
+  <path id="repair-architecture-source" class="feedback" data-source="owner-repair" data-target="architecture-source" d="M125 822 H50 V290 H330 V180 H340"/>
+  <path id="repair-adr-state" class="feedback" data-source="owner-repair" data-target="adr-state" d="M300 780 V758 H880 V161 H865"/>
+  <path id="repair-runtime-evidence" class="feedback" data-source="owner-repair" data-target="runtime-evidence" d="M350 780 V770 H1180 V161 H1140"/>
 
-  <g data-node-id="code-facts">
-    <rect class="node" x="65" y="120" width="250" height="92" rx="14" fill="#dbeafe" stroke="#1d4ed8"/>
-    <text class="node-title" x="190" y="150">代码事实</text>
-    <text class="node-type" x="190" y="186">受测接口与结构</text>
+  <g data-node-id="code-facts" data-node-bounds="65 115 250 92">
+    <rect class="node" x="65" y="115" width="250" height="92" rx="14" fill="#dbeafe" stroke="#1d4ed8"/>
+    <text class="node-title" data-text-role="title" data-text-bounds="132.5 122.5 115 27" x="190" y="145">代码事实</text>
+    <text class="node-type" data-text-role="type" data-text-bounds="132.5 166.5 115 19" x="190" y="181">受测接口与结构</text>
   </g>
-  <g data-node-id="architecture-source">
-    <rect class="node" x="340" y="120" width="250" height="92" rx="14" fill="#dcfce7" stroke="#15803d"/>
-    <text class="node-title" x="465" y="150">架构模型与图源</text>
-    <text class="node-type" x="465" y="186">已批准模型与 Draw.io</text>
+  <g data-node-id="architecture-source" data-node-bounds="340 115 250 92">
+    <rect class="node" x="340" y="115" width="250" height="92" rx="14" fill="#dcfce7" stroke="#15803d"/>
+    <text class="node-title" data-text-role="title" data-text-bounds="383 122.5 164 27" x="465" y="145">架构模型与图源</text>
+    <text class="node-type" data-text-role="type" data-text-bounds="383 166.5 164 19" x="465" y="181">已批准模型与 Draw.io</text>
   </g>
-  <g data-node-id="adr-state">
-    <rect class="node" x="615" y="120" width="250" height="92" rx="14" fill="#fef3c7" stroke="#b45309"/>
-    <text class="node-title" x="740" y="150">ADR 决策状态</text>
-    <text class="node-type" x="740" y="186">状态与替代关系</text>
+  <g data-node-id="adr-state" data-node-bounds="615 115 250 92">
+    <rect class="node" x="615" y="115" width="250" height="92" rx="14" fill="#fef3c7" stroke="#b45309"/>
+    <text class="node-title" data-text-role="title" data-text-bounds="666.3 122.5 147.4 27" x="740" y="145">ADR 决策状态</text>
+    <text class="node-type" data-text-role="type" data-text-bounds="666.3 166.5 147.4 19" x="740" y="181">状态与替代关系</text>
   </g>
-  <g data-node-id="runtime-evidence">
-    <rect class="node" x="890" y="120" width="250" height="92" rx="14" fill="#f3e8ff" stroke="#7e22ce" stroke-dasharray="2 4"/>
-    <text class="node-title" x="1015" y="150">部署与运行证据</text>
-    <text class="node-type" x="1015" y="186">实际部署与观测</text>
+  <g data-node-id="runtime-evidence" data-node-bounds="890 115 250 92">
+    <rect class="node" x="890" y="115" width="250" height="92" rx="14" fill="#f3e8ff" stroke="#7e22ce" stroke-dasharray="2 4"/>
+    <text class="node-title" data-text-role="title" data-text-bounds="933 122.5 164 27" x="1015" y="145">部署与运行证据</text>
+    <text class="node-type" data-text-role="type" data-text-bounds="933 166.5 164 19" x="1015" y="181">实际部署与观测</text>
   </g>
-  <g data-node-id="authority-contract">
+  <g data-node-id="authority-contract" data-node-bounds="445 325 310 92">
     <rect class="node-strong" x="445" y="325" width="310" height="92" rx="14" fill="#e0f2fe" stroke="#0369a1"/>
-    <text class="node-title" x="600" y="354">权威事实合同</text>
-    <text class="node-type" x="600" y="390">单一写者 · 方向 · 责任</text>
+    <text class="node-title" data-text-role="title" data-text-bounds="521 331.5 158 27" x="600" y="354">权威事实合同</text>
+    <text class="node-type" data-text-role="type" data-text-bounds="521 375.5 158 19" x="600" y="390">单一写者 · 方向 · 责任</text>
   </g>
-  <g data-node-id="generator">
+  <g data-node-id="generator" data-node-bounds="65 465 220 92">
     <rect class="node" x="65" y="465" width="220" height="92" rx="14" fill="#dbeafe" stroke="#1d4ed8"/>
-    <text class="node-title" x="175" y="495">生成器</text>
-    <text class="node-type" x="175" y="531">确定性重建派生产物</text>
+    <text class="node-title" data-text-role="title" data-text-bounds="101.5 472.5 147 27" x="175" y="495">生成器</text>
+    <text class="node-type" data-text-role="type" data-text-bounds="101.5 516.5 147 19" x="175" y="531">确定性重建派生产物</text>
   </g>
-  <g data-node-id="validator">
+  <g data-node-id="validator" data-node-bounds="490 465 220 92">
     <rect class="node" x="490" y="465" width="220" height="92" rx="14" fill="#dcfce7" stroke="#15803d"/>
-    <text class="node-title" x="600" y="495">验证器</text>
-    <text class="node-type" x="600" y="531">独立事实合同比较</text>
+    <text class="node-title" data-text-role="title" data-text-bounds="534.5 472.5 131 27" x="600" y="495">验证器</text>
+    <text class="node-type" data-text-role="type" data-text-bounds="534.5 516.5 131 19" x="600" y="531">独立事实合同比较</text>
   </g>
-  <g data-node-id="observer">
+  <g data-node-id="observer" data-node-bounds="940 465 220 92">
     <rect class="node" x="940" y="465" width="220" height="92" rx="14" fill="#f3e8ff" stroke="#7e22ce" stroke-dasharray="2 4"/>
-    <text class="node-title" x="1050" y="495">观测器</text>
-    <text class="node-type" x="1050" y="531">保留实际状态与未知</text>
+    <text class="node-title" data-text-role="title" data-text-bounds="976.5 472.5 147 27" x="1050" y="495">观测器</text>
+    <text class="node-type" data-text-role="type" data-text-bounds="976.5 516.5 147 19" x="1050" y="531">保留实际状态与未知</text>
   </g>
-  <g data-node-id="drift-queue">
+  <g data-node-id="drift-queue" data-node-bounds="490 575 220 92">
     <rect class="node" x="490" y="575" width="220" height="92" rx="14" fill="#fee2e2" stroke="#b91c1c" stroke-dasharray="2 4"/>
-    <text class="node-title" x="600" y="605">漂移队列</text>
-    <text class="node-type" x="600" y="641">差异、未知与分级状态</text>
+    <text class="node-title" data-text-role="title" data-text-bounds="518.5 582.5 163 27" x="600" y="605">漂移队列</text>
+    <text class="node-type" data-text-role="type" data-text-bounds="518.5 626.5 163 19" x="600" y="641">差异、未知与分级状态</text>
   </g>
-  <g data-node-id="owner-repair">
-    <rect class="node" x="125" y="755" width="250" height="92" rx="14" fill="#ffedd5" stroke="#c2410c"/>
-    <text class="node-title" x="250" y="785">责任人修复</text>
-    <text class="node-type" x="250" y="821">裁决并修改当前权威</text>
+  <g data-node-id="owner-repair" data-node-bounds="125 780 250 92">
+    <rect class="node" x="125" y="780" width="250" height="92" rx="14" fill="#ffedd5" stroke="#c2410c"/>
+    <text class="node-title" data-text-role="title" data-text-bounds="176.5 787.5 147 27" x="250" y="810">责任人修复</text>
+    <text class="node-type" data-text-role="type" data-text-bounds="176.5 831.5 147 19" x="250" y="846">裁决并修改当前权威</text>
   </g>
-  <g data-node-id="revalidate">
-    <rect class="node" x="475" y="755" width="250" height="92" rx="14" fill="#dcfce7" stroke="#15803d"/>
-    <text class="node-title" x="600" y="785">重新验证</text>
-    <text class="node-type" x="600" y="821">重建并独立复放检测</text>
+  <g data-node-id="revalidate" data-node-bounds="475 780 250 92">
+    <rect class="node" x="475" y="780" width="250" height="92" rx="14" fill="#dcfce7" stroke="#15803d"/>
+    <text class="node-title" data-text-role="title" data-text-bounds="526.5 787.5 147 27" x="600" y="810">重新验证</text>
+    <text class="node-type" data-text-role="type" data-text-bounds="526.5 831.5 147 19" x="600" y="846">重建并独立复放检测</text>
   </g>
-  <g data-node-id="release-evidence">
-    <rect class="node-strong" x="825" y="755" width="250" height="92" rx="14" fill="#e0e7ff" stroke="#4338ca"/>
-    <text class="node-title" x="950" y="784">已验证发布证据</text>
-    <text class="node-type" x="950" y="820">精确提交、流程与 route</text>
+  <g data-node-id="release-evidence" data-node-bounds="825 780 250 92">
+    <rect class="node-strong" x="825" y="780" width="250" height="92" rx="14" fill="#e0e7ff" stroke="#4338ca"/>
+    <text class="node-title" data-text-role="title" data-text-bounds="862.7 786.5 174.6 27" x="950" y="809">已验证发布证据</text>
+    <text class="node-type" data-text-role="type" data-text-bounds="862.7 830.5 174.6 19" x="950" y="845">精确提交、流程与 route</text>
   </g>
 
-  <text class="edge-label" data-edge-id="declare-code-facts" x="190" y="253">声明权威</text>
-  <text class="edge-label" data-edge-id="declare-architecture-source" x="465" y="253">声明权威</text>
-  <text class="edge-label" data-edge-id="declare-adr-state" x="740" y="253">声明权威</text>
-  <text class="edge-label" data-edge-id="declare-runtime-evidence" x="1015" y="253">声明权威</text>
-  <text class="edge-label" data-edge-id="contract-generate" x="390" y="433">生成</text>
-  <text class="edge-label" data-edge-id="contract-validate" x="800" y="400">验证</text>
-  <text class="edge-label" data-edge-id="contract-observe" x="840" y="433">观测</text>
-  <text class="edge-label" data-edge-id="generate-drift" x="380" y="600">差异或未知</text>
-  <text class="edge-label" data-edge-id="validate-drift" x="800" y="540">差异或未知</text>
-  <text class="edge-label" data-edge-id="observe-drift" x="805" y="620">差异或未知</text>
-  <text class="edge-label" data-edge-id="queue-repair" x="390" y="690">分级与分派</text>
-  <text class="edge-label" data-edge-id="repair-revalidate" x="425" y="890">修改权威或新增替代记录</text>
+  <text class="edge-label" data-edge-id="declare-code-facts" data-label-bounds="144 230.5 92 27" data-stroke-clearance-css="8.33" data-arrow-clearance-css="176.59" data-node-clearance-css="12.33" x="190" y="253">声明权威</text>
+  <text class="edge-label" data-edge-id="declare-architecture-source" data-label-bounds="419 230.5 92 27" data-stroke-clearance-css="12.33" data-arrow-clearance-css="48.06" data-node-clearance-css="12.33" x="465" y="253">声明权威</text>
+  <text class="edge-label" data-edge-id="declare-adr-state" data-label-bounds="694 230.5 92 27" data-stroke-clearance-css="12.33" data-arrow-clearance-css="50.25" data-node-clearance-css="12.33" x="740" y="253">声明权威</text>
+  <text class="edge-label" data-edge-id="declare-runtime-evidence" data-label-bounds="969 230.5 92 27" data-stroke-clearance-css="8.33" data-arrow-clearance-css="179.85" data-node-clearance-css="12.33" x="1015" y="253">声明权威</text>
+  <text class="edge-label" data-edge-id="contract-generate" data-label-bounds="367 410.5 46 27" data-stroke-clearance-css="8.33" data-arrow-clearance-css="120.45" data-node-clearance-css="21.33" x="390" y="433">生成</text>
+  <text class="edge-label" data-edge-id="contract-validate" data-label-bounds="777 377.5 46 27" data-stroke-clearance-css="118.30" data-arrow-clearance-css="114.65" data-node-clearance-css="14.67" x="800" y="400">验证</text>
+  <text class="edge-label" data-edge-id="contract-observe" data-label-bounds="817 410.5 46 27" data-stroke-clearance-css="8.33" data-arrow-clearance-css="117.12" data-node-clearance-css="41.33" x="840" y="433">观测</text>
+  <text class="edge-label" data-edge-id="generate-drift" data-label-bounds="322.5 577.5 115 27" data-stroke-clearance-css="11" data-arrow-clearance-css="27.17" data-node-clearance-css="28.50" x="380" y="600">差异或未知</text>
+  <text class="edge-label" data-edge-id="validate-drift" data-label-bounds="744.5 517.5 115 27" data-stroke-clearance-css="9" data-arrow-clearance-css="46" data-node-clearance-css="21" x="802" y="540">差异或未知</text>
+  <text class="edge-label" data-edge-id="observe-drift" data-label-bounds="749.5 597.5 115 27" data-stroke-clearance-css="13" data-arrow-clearance-css="17" data-node-clearance-css="24" x="807" y="620">差异或未知</text>
+  <text class="edge-label" data-edge-id="queue-repair" data-label-bounds="151 627.5 138 27" data-stroke-clearance-css="8" data-arrow-clearance-css="57" data-node-clearance-css="27" x="220" y="650">分级与分派</text>
+  <text class="edge-label" data-edge-id="repair-runtime-evidence" data-label-bounds="562 715.5 276 27" data-stroke-clearance-css="18.33" data-arrow-clearance-css="150" data-node-clearance-css="25" x="700" y="738">修改权威或新增替代记录</text>
 
   <text class="legend" x="75" y="95">实线箭头：生成或检查</text>
   <text class="legend" x="445" y="95">虚线箭头：修复反馈</text>

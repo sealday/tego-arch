@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-06T07:29:45.145Z",
+  "generated_at": "2026-08-06T08:59:46.180Z",
   "results": [
     {
       "transport_locator": "https://a2a-protocol.org/latest/",
@@ -53373,30 +53373,30 @@
       "review_status": "healthy"
     },
     {
-      "transport_locator": "https://raw.githubusercontent.com/structurizr/structurizr.github.io/d7f521eb9c6c55f7e9a4dcaf2a1122b844dbcb7f/dsl/index.md",
+      "transport_locator": "https://raw.githubusercontent.com/structurizr/structurizr.github.io/d7f521eb9c6c55f7e9a4dcaf2a1122b844dbcb7f/dsl/02-tutorial.md",
       "source_ids": [
         "src-structurizr-dsl-model-as-code"
       ],
       "last_attempt": {
-        "at": "2026-08-06T07:29:45.145Z",
+        "at": "2026-08-06T08:59:46.180Z",
         "outcome": "healthy",
-        "final_transport_locator": "https://raw.githubusercontent.com/structurizr/structurizr.github.io/d7f521eb9c6c55f7e9a4dcaf2a1122b844dbcb7f/dsl/index.md",
+        "final_transport_locator": "https://raw.githubusercontent.com/structurizr/structurizr.github.io/d7f521eb9c6c55f7e9a4dcaf2a1122b844dbcb7f/dsl/02-tutorial.md",
         "http_status": 206,
         "login_wall_detected": false,
         "redirects": []
       },
       "last_success": {
-        "at": "2026-08-06T07:29:45.145Z",
+        "at": "2026-08-06T08:59:46.180Z",
         "outcome": "healthy",
-        "final_transport_locator": "https://raw.githubusercontent.com/structurizr/structurizr.github.io/d7f521eb9c6c55f7e9a4dcaf2a1122b844dbcb7f/dsl/index.md",
+        "final_transport_locator": "https://raw.githubusercontent.com/structurizr/structurizr.github.io/d7f521eb9c6c55f7e9a4dcaf2a1122b844dbcb7f/dsl/02-tutorial.md",
         "http_status": 206,
         "login_wall_detected": false
       },
       "attempt_history": [
         {
-          "at": "2026-08-06T07:29:45.145Z",
+          "at": "2026-08-06T08:59:46.180Z",
           "outcome": "healthy",
-          "final_transport_locator": "https://raw.githubusercontent.com/structurizr/structurizr.github.io/d7f521eb9c6c55f7e9a4dcaf2a1122b844dbcb7f/dsl/index.md",
+          "final_transport_locator": "https://raw.githubusercontent.com/structurizr/structurizr.github.io/d7f521eb9c6c55f7e9a4dcaf2a1122b844dbcb7f/dsl/02-tutorial.md",
           "http_status": 206,
           "login_wall_detected": false
         }
