@@ -704,16 +704,16 @@ test('governs exactly the five visible MOD-05 official sources', () => {
     assert.equal(results.length, 1, `${sourceId} exact link-health association`);
     assertStableSourceHealth(sourceId, results[0]);
   }
-  assert.equal(ledger.sources.length, 488);
+  assert.equal(ledger.sources.length, 490);
 });
 
 test('projects the exact G008 Batch 3 Stage B repository state', () => {
   assert.deepEqual(status, {
     schema_version: 1,
     durable_stories: {completed: 7, total: 20, current: 'G008'},
-    completed_topics: 50,
-    content_documents: 92,
-    governed_sources: 488,
+    completed_topics: 51,
+    content_documents: 93,
+    governed_sources: 490,
     sources: {
       durable_stories: 'docs/content-backlog.md',
       completed_topics: 'docs/content-backlog.md',

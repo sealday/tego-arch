@@ -724,6 +724,36 @@
       "expected_final_approval_note": "Reviewed G008 Batch 2 transport baseline"
     },
     {
+      "id": "src-arc42-context-scope-v9",
+      "canonical_locator": "https://docs.arc42.org/section-3/",
+      "transport_locator": "https://docs.arc42.org/section-3/",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "arc42 v9 — Context and Scope",
+      "author_or_org": "arc42 contributors",
+      "published_at": null,
+      "registered_at": "2026-08-05",
+      "checked_at": "2026-08-05",
+      "version": "arc42 v9 section checked on 2026-08-05",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": ["definition", "learning", "method"],
+      "license": "CC-BY-SA-4.0",
+      "license_scope": "The named arc42 documentation page within the official CC BY-SA 4.0 scope; linked third-party works, trademarks, code, and separately licensed media excluded",
+      "license_evidence_url": "https://arc42.org/license",
+      "license_evidence_note": "The official arc42 license page identifies arc42 documentation as CC BY-SA 4.0.",
+      "license_family_id": "https://docs.arc42.org/section-3/",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "adapt-sharealike-review",
+      "usage_boundary": "Supports factual summary of system scope, communication partners, business inputs/outputs, technical channels, and protocol context; it does not approve this project scope or authorize copying the template examples.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://docs.arc42.org/section-3/",
+      "expected_final_approved_at": "2026-08-05",
+      "expected_final_approval_note": "Reviewed the official arc42 v9 Context and Scope HTTPS transport and CC BY-SA 4.0 license evidence on 2026-08-05."
+    },
+    {
       "id": "src-arc42-overview-v9",
       "canonical_locator": "https://arc42.org/overview",
       "transport_locator": "https://arc42.org/overview/",
@@ -1902,6 +1932,36 @@
       "expected_final_transport_locator": "https://c4model.com/diagrams/notation",
       "expected_final_approved_at": "2026-07-30",
       "expected_final_approval_note": "Reviewed G008 Batch 1 transport baseline"
+    },
+    {
+      "id": "src-c4model-review-checklist",
+      "canonical_locator": "https://c4model.com/diagrams/checklist",
+      "transport_locator": "https://c4model.com/diagrams/checklist",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "C4 Model — Software architecture diagram review checklist",
+      "author_or_org": "Simon Brown",
+      "published_at": null,
+      "registered_at": "2026-08-05",
+      "checked_at": "2026-08-05",
+      "version": "Current review checklist checked on 2026-08-05",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": ["definition", "learning", "method"],
+      "license": "CC-BY-4.0",
+      "license_scope": "C4 Model site content covered by the CC BY 4.0 footer; trademarks, linked works, code, media, and third-party assets excluded",
+      "license_evidence_url": "https://c4model.com/",
+      "license_evidence_note": "The official C4 Model site footer identifies its content and example diagrams as CC BY 4.0; this record uses a factual summary with attribution.",
+      "license_family_id": "https://c4model.com/diagrams/checklist",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "adapt-with-attribution",
+      "usage_boundary": "Supports title, type, scope, legend, element, relationship, and applicable protocol review questions; it does not make the Tego Arch four-gate method an official C4 checklist or certify a diagram.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://c4model.com/diagrams/checklist",
+      "expected_final_approved_at": "2026-08-05",
+      "expected_final_approval_note": "Reviewed the official C4 checklist HTTPS transport and CC BY 4.0 site footer on 2026-08-05."
     },
     {
       "id": "src-cheatsheetseries-ea079221bd09",
@@ -18292,6 +18352,21 @@
     }
   ],
   "documents": {
+    "content/modeling/mod-12-architecture-diagram-review.mdx": {
+      "reviewed_at": "2026-08-05",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {"source_id":"src-c4model-review-checklist","citation_url":"https://c4model.com/diagrams/checklist","roles":["definition","method","learning"],"manifest_primary":true,"usage_mode":"facts-summary","attribution_note":"Software architecture diagram review checklist, C4 Model / Simon Brown","modification_note":null,"excerpt":null,"quotation_reviewed":false},
+        {"source_id":"src-c4model-notation","citation_url":"https://c4model.com/diagrams/notation","roles":["definition","method"],"manifest_primary":false,"usage_mode":"facts-summary","attribution_note":"C4 Model — Notation, Simon Brown","modification_note":null,"excerpt":null,"quotation_reviewed":false},
+        {"source_id":"src-arc42-context-scope-v9","citation_url":"https://docs.arc42.org/section-3/","roles":["definition","method"],"manifest_primary":false,"usage_mode":"facts-summary","attribution_note":"arc42 v9 — Context and Scope, arc42 contributors","modification_note":null,"excerpt":null,"quotation_reviewed":false},
+        {"source_id":"src-cheatsheetseries-ea079221bd09","citation_url":"https://cheatsheetseries.owasp.org/cheatsheets/Threat_Modeling_Cheat_Sheet.html","roles":["definition","method","learning"],"manifest_primary":false,"usage_mode":"facts-summary","attribution_note":"Threat Modeling Cheat Sheet, OWASP Cheat Sheet Series","modification_note":null,"excerpt":null,"quotation_reviewed":false}
+      ]
+    },
     "content/modeling/mod-11-ddd-context-map.mdx": {
       "reviewed_at": "2026-08-05",
       "copyright_checks": [

@@ -104,8 +104,8 @@ function assertBatch2HistoricalClosure(source) {
 
 function assertLiveReleaseState(source) {
   const baseline = currentReleaseBaseline(source);
-  assert.match(baseline, /^-\s\*\*当前发布基线：\*\* 2026-08-05 G008 Batch 9 已完成 MOD-11/u);
-  assert.match(baseline, /G008 仍在进行中，下一项为 MOD-12/u);
+  assert.match(baseline, /^-\s\*\*当前发布基线：\*\* 2026-08-05 G008 Batch 10 已完成 MOD-12/u);
+  assert.match(baseline, /G008 仍在进行中，下一项为 MOD-13/u);
 }
 
 test('records exact successful G008 Batch 2 deployment evidence', () => {
@@ -196,13 +196,15 @@ test('preserves Batch 2 closure history separately from the live projection', ()
   assert.equal(topicsById.get('MOD-10')?.status.value, 'complete');
   assert.equal(topicsById.get('MOD-11')?.published, true);
   assert.equal(topicsById.get('MOD-11')?.status.value, 'complete');
-  for (const id of ['MOD-12', 'MOD-13']) {
+  assert.equal(topicsById.get('MOD-12')?.published, true);
+  assert.equal(topicsById.get('MOD-12')?.status.value, 'complete');
+  for (const id of ['MOD-13']) {
     assert.equal(topicsById.get(id)?.published, false, id);
     assert.equal(topicsById.get(id)?.status.value, 'pending', id);
   }
-  assert.equal(projectStatus.completed_topics, 50);
-  assert.equal(projectStatus.content_documents, 92);
-  assert.equal(projectStatus.governed_sources, 488);
+  assert.equal(projectStatus.completed_topics, 51);
+  assert.equal(projectStatus.content_documents, 93);
+  assert.equal(projectStatus.governed_sources, 490);
   assert.deepEqual(projectStatus.durable_stories, {
     completed: 7,
     total: 20,

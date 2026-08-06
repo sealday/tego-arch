@@ -31,6 +31,7 @@ depends_on:
 adjacent_topics:
   - MOD-05
   - MOD-08
+  - MOD-12
 related_cases:
   - /cases/temporal-saga-durable-execution
 related_questions: []
@@ -168,7 +169,7 @@ ACL 标签不证明实现已经存在。
 
 [MOD-01 架构视图与视点](/modeling/mod-01)解释为何 Context Map 只回答特定关切；[MOD-02 C4 模型](/modeling/mod-02)给出费用申报系统与银行支付服务的名称和系统范围。[MOD-05 数据模型](/modeling/mod-05)可在候选稳定后检验概念、逻辑与物理数据责任，不能反向用表结构决定边界。
 
-[MOD-08 状态机建模](/modeling/mod-08)约束未知支付结果与证据收敛；[MOD-09 EventStorming](/modeling/mod-09)提供事件、政策、热点和候选边界线索；[MOD-10 Domain Storytelling](/modeling/mod-10)提供具体场景中的语言、工作对象与协作变化。后续 MOD-12 只能接收这里仍标为候选、且带有非证明边界的产物，不能把候选直接当作组件拆分。
+[MOD-08 状态机建模](/modeling/mod-08)约束未知支付结果与证据收敛；[MOD-09 EventStorming](/modeling/mod-09)提供事件、政策、热点和候选边界线索；[MOD-10 Domain Storytelling](/modeling/mod-10)提供具体场景中的语言、工作对象与协作变化。[MOD-12 架构图审阅清单](/modeling/mod-12)只能接收这里仍标为候选、且带有非证明边界的产物，并保留“candidate Context is not component decomposition（候选 Context 不是组件拆分）”这一交接约束。
 
 [Temporal Saga 与持久执行案例](/cases/temporal-saga-durable-execution)提供运行时异常案例。Temporal Saga 案例可检验超时、重试、补偿与人工收敛，但不能确定候选 Context。
 

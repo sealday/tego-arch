@@ -34,6 +34,7 @@ adjacent_topics:
   - QA-03
   - QA-08
   - MOD-08
+  - MOD-12
 related_cases:
   - /cases/aws-cell-shuffle-sharding
   - /cases/temporal-saga-durable-execution
@@ -129,6 +130,8 @@ related_questions: []
 [AWS Cell 与 Shuffle Sharding](/cases/aws-cell-shuffle-sharding)展示隔离边界；[Temporal Saga 与耐久执行](/cases/temporal-saga-durable-execution)展示事件历史、重试、补偿和外部副作用的不同责任。两者都不能替代当前系统自己的 RTO、RPO 和核对设计。
 
 [MOD-08 状态机建模](/modeling/mod-08)把结果未知、恢复证据和人工终态组织成可评审的状态转换。
+
+[MOD-12 架构图审阅清单](/modeling/mod-12)可以标出候选失败边界，但视觉分离不证明故障隔离、传播限制、故障切换或恢复；这些结论仍需部署、运行、故障与恢复证据。
 
 ## 说明性场景
 

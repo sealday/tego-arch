@@ -47,7 +47,7 @@ const expectedMetadata = {
   topic_id: 'MOD-11',
   priority: 'P1',
   depends_on: ['MOD-01', 'MOD-02', 'MOD-09', 'MOD-10'],
-  adjacent_topics: ['MOD-05', 'MOD-08'],
+  adjacent_topics: ['MOD-05', 'MOD-08', 'MOD-12'],
   related_cases: ['/cases/temporal-saga-durable-execution'],
   related_questions: [],
 };
@@ -170,6 +170,7 @@ const requiredLinks = [
   '/modeling/mod-08',
   '/modeling/mod-09',
   '/modeling/mod-10',
+  '/modeling/mod-12',
   '/cases/temporal-saga-durable-execution',
 ];
 const expectedSources = new Map([
@@ -472,9 +473,8 @@ function assertMethodContract(body) {
   assert.match(visibleBody, /完成检查[^\n]*证据[^\n]*备选[^\n]*责任类型[^\n]*下一项证据[^\n]*不带运行时解释重放/u);
   const links = extractInternalLinks({body});
   for (const target of requiredLinks) assert.ok(links.includes(target), `missing visible link: ${target}`);
-  assert.ok(!links.includes('/modeling/mod-12'), 'MOD-12 must remain plain text without an internal href');
-  assert.doesNotMatch(visibleBody, /\[[^\]]*MOD-12[^\]]*\]\([^)]*\)/u);
-  assert.match(visibleBody, /MOD-12/u);
+  assert.ok(links.includes('/modeling/mod-12'), 'MOD-12 must be a visible reciprocal link');
+  assert.match(visibleBody, /\[MOD-12 架构图审阅清单\]\(\/modeling\/mod-12\)/u);
   const exerciseSteps = [...visibleBody.matchAll(/^([1-7])\. (.+)$/gmu)].map((match) => match[2]);
   assert.deepEqual(exerciseSteps, expectedExerciseSteps);
   const completionItems = [...visibleBody.matchAll(/^- (.+[；。])$/gmu)]
@@ -559,7 +559,6 @@ test('rejects controlled MOD-11 mutations', () => {
     ['onKeyDown removed', body.replace('  onKeyDown={handleHorizontalArrowKey}\n', ''), assertInteractionContract],
     ...nonProofSentences.map((sentence, index) => [`non-proof ${index + 1} weakened`, body.replace(sentence, sentence.replace(/不等于|不存在|不证明|不是|都可能/u, '等于')), assertMethodContract]),
     ['actionable MOD-12 link', body.replace('MOD-12', '[MOD-12](/modeling/mod-12)'), assertMethodContract],
-    ['actionable MOD-12 href with neutral text', `${body}\n[下一篇](/modeling/mod-12)\n`, assertMethodContract],
     ['boundary table moved outside wrapper', body.replace(`${boundaryTable}\n\n</div>`, `</div>\n\n${boundaryTable}`), assertInteractionContract],
     ['Mermaid moved outside wrapper', body.replace(`${mermaidBlock}\n\n</div>`, `</div>\n\n${mermaidBlock}`), assertInteractionContract],
     ['relationship table moved outside wrapper', body.replace(`${relationshipTable}\n\n</div>`, `</div>\n\n${relationshipTable}`), assertInteractionContract],
@@ -737,9 +736,9 @@ function assertStageBProjection(statusValue, manifestValue, mod11Document) {
   assert.deepEqual(statusValue, {
     schema_version: 1,
     durable_stories: {completed: 7, total: 20, current: 'G008'},
-    completed_topics: 50,
-    content_documents: 92,
-    governed_sources: 488,
+    completed_topics: 51,
+    content_documents: 93,
+    governed_sources: 490,
     sources: {
       durable_stories: 'docs/content-backlog.md',
       completed_topics: 'docs/content-backlog.md',
@@ -750,22 +749,25 @@ function assertStageBProjection(statusValue, manifestValue, mod11Document) {
   const topicsById = new Map(manifestValue.topics.map((topic) => [topic.id, topic]));
   assert.equal(topicsById.get('MOD-11').published, true);
   assert.equal(topicsById.get('MOD-11').status.value, 'complete');
-  for (const id of ['MOD-12', 'MOD-13']) {
+  assert.equal(topicsById.get('MOD-12').published, true);
+  assert.equal(topicsById.get('MOD-12').status.value, 'complete');
+  assert.ok(extractInternalLinks(mod11Document).includes('/modeling/mod-12'));
+  for (const id of ['MOD-13']) {
     assert.equal(topicsById.get(id).published, false, id);
     assert.equal(topicsById.get(id).status.value, 'pending', id);
     assert.ok(!extractInternalLinks(mod11Document).includes(`/modeling/${id.toLowerCase()}`), id);
   }
 }
 
-test('locks the Stage B current projection and keeps MOD-12 through MOD-13 pending', () => {
+test('locks the Stage B current projection with MOD-12 complete and MOD-13 pending', () => {
   assertStageBProjection(projectStatus, topicManifest, requiredDocument());
 });
 
 test('rejects controlled MOD-12 through MOD-13 publication, status and link mutations', () => {
   for (const [label, mutateManifest, mutateDocument] of [
-    ['MOD-12 published', (value) => { value.topics.find(({id}) => id === 'MOD-12').published = true; }],
+    ['MOD-12 unpublished', (value) => { value.topics.find(({id}) => id === 'MOD-12').published = false; }],
     ['MOD-13 complete', (value) => { value.topics.find(({id}) => id === 'MOD-13').status.value = 'complete'; }],
-    ['MOD-12 linked', undefined, (value) => { value.body += '\n[MOD-12](/modeling/mod-12)\n'; }],
+    ['MOD-12 unlinked', undefined, (value) => { value.body = value.body.replace('(/modeling/mod-12)', '(#removed)'); }],
     ['MOD-13 linked', undefined, (value) => { value.body += '\n[MOD-13](/modeling/mod-13)\n'; }],
   ]) {
     const mutatedManifest = structuredClone(topicManifest);
