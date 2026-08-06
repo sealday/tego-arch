@@ -89,7 +89,7 @@ test('uses the approved decision-observatory narrative in exact order', async ()
     '一张持续展开的架构坐标',
     '从问题出发',
     '正在研究的系统',
-    '下一步，让完整内容变得更轻',
+    '让完整体系进入不同使用场景',
     '这是一份开放的研究记录',
   ];
 
@@ -127,7 +127,10 @@ test('keeps every visible heading source free of terminal punctuation', async ()
   };
 
   assert.match(homepage, /homepageEntries\.map\([\s\S]*<Heading as="h3">\{entry\.title\}<\/Heading>/u);
-  assert.match(homepage, /futureOutputs\.map\([\s\S]*<Heading as="h3">\{output\.title\}<\/Heading>/u);
+  assert.match(
+    homepage,
+    /futureDirections\.map\([\s\S]*<Heading as="h3">\{direction\.title\}<\/Heading>[\s\S]*\{direction\.term\}/u,
+  );
   assert.match(homepage, /<Heading as="h3">\{leadCase\.title\}<\/Heading>/u);
   assert.match(homepage, /homepageCases\.slice\(1\)\.map\([\s\S]*\{caseStudy\.title\}/u);
   assert.match(caseCatalogSource, /export const featuredCases = caseCatalog\.filter\(\(\{featured\}\) => featured\)/u);
@@ -139,14 +142,14 @@ test('keeps every visible heading source free of terminal punctuation', async ()
       ...homepage.matchAll(/<SectionIntro[^>]*\btitle="([^"]+)"/gu),
     ].map((match) => match[1].trim()),
     homepageEntries: configuredTitles('homepageEntries'),
-    futureOutputs: configuredTitles('futureOutputs'),
+    futureDirections: configuredTitles('futureDirections'),
     featuredCases: generatedCatalog
       .filter(({featured}) => featured)
       .slice(0, 3)
       .map(({title}) => title),
   };
 
-  const requiredHeadingSources = new Set(['static', 'homepageEntries', 'futureOutputs']);
+  const requiredHeadingSources = new Set(['static', 'homepageEntries', 'futureDirections']);
   for (const [source, headings] of Object.entries(headingSources)) {
     if (requiredHeadingSources.has(source)) {
       assert.ok(headings.length > 0, `${source} must contribute visible headings`);
@@ -386,6 +389,37 @@ test('keeps roadmap details available without forcing them into the reading flow
     figure[1].indexOf('roadmapMobileDetails') < figure[1].indexOf('<figcaption'),
     'mobile disclosure must precede the final figcaption',
   );
+});
+
+test('presents future directions as an accessible parallel roadmap', async () => {
+  const [homepage, styles] = await Promise.all([
+    read('src/pages/index.tsx'),
+    read('src/pages/index.module.css'),
+  ]);
+
+  assert.match(
+    homepage,
+    /useBaseUrl\('\/img\/illustrations\/tego-arch-future-directions\.png'\)/u,
+  );
+  const futureDirectionsSection = homepage.match(
+    /function FutureDirectionsSection\(\): ReactNode \{([\s\S]*?)\n\}\n\nfunction ContributionBand/u,
+  );
+  assert.ok(futureDirectionsSection, 'future directions section must remain statically inspectable');
+  const futureRoadmapImage = futureDirectionsSection[1].match(
+    /<img\b(?=[^>]*\bsrc=\{futureRoadmapSrc\})[^>]*\/>/u,
+  );
+  assert.ok(futureRoadmapImage, 'future roadmap image must remain statically inspectable');
+  assert.match(futureRoadmapImage[0], /width=\{1672\}/u);
+  assert.match(futureRoadmapImage[0], /height=\{941\}/u);
+  assert.match(futureRoadmapImage[0], /loading="lazy"/u);
+  assert.match(futureRoadmapImage[0], /decoding="async"/u);
+  assert.match(
+    futureRoadmapImage[0],
+    /alt="Tego Arch 从完整架构知识体系并行发展出架构决策速查、精选学习路径和 Tego 参考架构三个未来方向"/u,
+  );
+  assert.match(styles, /\.futureRoadmap\s*\{[^}]*max-width:\s*64rem;[^}]*margin:\s*0 auto 2rem;/u);
+  assert.match(styles, /\.futureTerm\s*\{[^}]*font-family:\s*var\(--atlas-mono\);/u);
+  assert.match(styles, /@media \(max-width: 996px\)[\s\S]*\.futureList\s*\{[^}]*grid-template-columns:\s*1fr;/u);
 });
 
 test('keeps roadmap copy reader-facing instead of exposing design rationale', async () => {

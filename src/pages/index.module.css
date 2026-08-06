@@ -461,6 +461,11 @@
   color: var(--ifm-color-primary);
 }
 
+.futureRoadmap {
+  max-width: 64rem;
+  margin: 0 auto 2rem;
+}
+
 .futureList {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -479,8 +484,19 @@
 }
 
 .futureList h3 {
-  margin: 0 0 0.75rem;
+  margin: 0 0 0.35rem;
   font-size: 1.1rem;
+}
+
+.futureTerm {
+  display: block;
+  margin-bottom: 0.75rem;
+  color: var(--ifm-color-primary);
+  font-family: var(--atlas-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  line-height: 1.5;
 }
 
 .futureList p {
