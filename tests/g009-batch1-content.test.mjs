@@ -13,51 +13,139 @@ const [ledger, linkHealth] = await Promise.all([
   readFile(new URL('../data/source-link-health.json', import.meta.url), 'utf8').then(JSON.parse),
 ]);
 
-const expectedSources = new Map([
-  ['src-sei-qaw-collection', 'https://www.sei.cmu.edu/library/quality-attribute-workshop-collection/'],
-  ['src-sei-atam-collection', 'https://www.sei.cmu.edu/library/architecture-tradeoff-analysis-method-collection/'],
-  ['src-microsoft-architecture-styles', 'https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/'],
-  ['src-arc42-architecture-decisions', 'https://docs.arc42.org/section-9/'],
-  ['src-arc42-quality-requirements-v9', 'https://docs.arc42.org/section-10/'],
-]);
+const expectedSources = [
+  {
+    id: 'src-sei-qaw-collection',
+    canonical_locator: 'https://www.sei.cmu.edu/library/quality-attribute-workshop-collection/',
+    transport_locator: 'https://www.sei.cmu.edu/library/quality-attribute-workshop-collection/',
+    expected_final_transport_locator:
+      'https://www.sei.cmu.edu/library/quality-attribute-workshop-collection/',
+  },
+  {
+    id: 'src-sei-atam-collection',
+    canonical_locator:
+      'https://www.sei.cmu.edu/library/architecture-tradeoff-analysis-method-collection/',
+    transport_locator:
+      'https://www.sei.cmu.edu/library/architecture-tradeoff-analysis-method-collection/',
+    expected_final_transport_locator:
+      'https://www.sei.cmu.edu/library/architecture-tradeoff-analysis-method-collection/',
+  },
+  {
+    id: 'src-microsoft-architecture-styles',
+    canonical_locator:
+      'https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/',
+    transport_locator:
+      'https://raw.githubusercontent.com/microsoftdocs/architecture-center/4fb4d75aa5ed8423caa0d6c35d40b32bbc3cc819/docs/guide/architecture-styles/index.md',
+    expected_final_transport_locator:
+      'https://raw.githubusercontent.com/microsoftdocs/architecture-center/4fb4d75aa5ed8423caa0d6c35d40b32bbc3cc819/docs/guide/architecture-styles/index.md',
+  },
+  {
+    id: 'src-arc42-architecture-decisions',
+    canonical_locator: 'https://docs.arc42.org/section-9/',
+    transport_locator:
+      'https://raw.githubusercontent.com/arc42/docs.arc42.org-site/bcbc20283a2a486305ce72e400e731a3ee30f7f4/_pages/section-9.md',
+    expected_final_transport_locator:
+      'https://raw.githubusercontent.com/arc42/docs.arc42.org-site/bcbc20283a2a486305ce72e400e731a3ee30f7f4/_pages/section-9.md',
+  },
+];
 
 const expectedCitations = [
-  ['src-sei-qaw-collection', false],
-  ['src-sei-atam-collection', true],
-  ['src-microsoft-architecture-styles', false],
-  ['src-arc42-architecture-decisions', false],
-  ['src-arc42-quality-requirements-v9', false],
+  {
+    source_id: 'src-sei-qaw-collection',
+    citation_url: 'https://www.sei.cmu.edu/library/quality-attribute-workshop-collection/',
+    roles: ['method', 'learning'],
+    manifest_primary: false,
+  },
+  {
+    source_id: 'src-sei-atam-collection',
+    citation_url:
+      'https://www.sei.cmu.edu/library/architecture-tradeoff-analysis-method-collection/',
+    roles: ['definition', 'method', 'learning'],
+    manifest_primary: true,
+  },
+  {
+    source_id: 'src-microsoft-architecture-styles',
+    citation_url:
+      'https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/',
+    roles: ['comparison', 'definition', 'learning'],
+    manifest_primary: false,
+  },
+  {
+    source_id: 'src-arc42-architecture-decisions',
+    citation_url: 'https://docs.arc42.org/section-9/',
+    roles: ['method', 'learning'],
+    manifest_primary: false,
+  },
+  {
+    source_id: 'src-arc42-quality-requirements-v9',
+    citation_url: 'https://docs.arc42.org/section-10/',
+    roles: ['definition', 'method', 'learning'],
+    manifest_primary: false,
+  },
 ];
+
+const firstAttemptAt = '2026-08-06T15:21:26.049Z';
+const reviewedAttemptAt = '2026-08-06T15:24:41.578Z';
+
+function expectedHealthResult({id, transport_locator, http_status}) {
+  const observation = (at) => ({
+    at,
+    outcome: 'healthy',
+    final_transport_locator: transport_locator,
+    http_status,
+    login_wall_detected: false,
+  });
+  return {
+    transport_locator,
+    source_ids: [id],
+    last_attempt: {...observation(reviewedAttemptAt), redirects: []},
+    last_success: observation(reviewedAttemptAt),
+    attempt_history: [observation(firstAttemptAt), observation(reviewedAttemptAt)],
+    review_status: 'healthy',
+  };
+}
+
+const expectedHealthResults = expectedSources
+  .map(({id, transport_locator}) =>
+    expectedHealthResult({
+      id,
+      transport_locator,
+      http_status: id.startsWith('src-sei-') ? 200 : 206,
+    }),
+  )
+  .sort((left, right) => left.transport_locator.localeCompare(right.transport_locator, 'en'));
 
 test('governs five specific visible STY-00 sources', () => {
   assert.ok(document, 'STY-00 must remain published');
   const records = new Map(ledger.sources.map((source) => [source.id, source]));
-  for (const [id, locator] of expectedSources) {
-    assert.equal(records.get(id)?.canonical_locator, locator, id);
-    assert.ok(document.source.includes(`](${locator})`), `${id} visible citation`);
+  assert.deepEqual(
+    expectedSources.map(({id}) => {
+      const {canonical_locator, transport_locator, expected_final_transport_locator} =
+        records.get(id) ?? {};
+      return {id, canonical_locator, transport_locator, expected_final_transport_locator};
+    }),
+    expectedSources,
+  );
+  for (const {source_id, citation_url} of expectedCitations) {
+    assert.ok(document.source.includes(`](${citation_url})`), `${source_id} visible citation`);
   }
   const review = ledger.documents['content/styles/sty-00-comparison-framework.mdx'];
   assert.equal(review.reviewed_at, '2026-08-06');
   assert.deepEqual(
-    review.citations.map(({source_id, manifest_primary}) => [source_id, manifest_primary]),
+    review.citations.map(({source_id, citation_url, roles, manifest_primary}) => ({
+      source_id,
+      citation_url,
+      roles,
+      manifest_primary,
+    })),
     expectedCitations,
-  );
-  assert.deepEqual(
-    review.citations.filter(({manifest_primary}) => manifest_primary).map(({source_id}) => source_id),
-    ['src-sei-atam-collection'],
   );
 });
 
 test('keeps every new remote source in the reviewed health cache', () => {
-  const results = new Map(
-    linkHealth.results.flatMap((result) =>
-      result.source_ids.map((sourceId) => [sourceId, result]),
-    ),
-  );
-  for (const id of [...expectedSources.keys()].slice(0, 4)) {
-    const result = results.get(id);
-    assert.ok(result, `${id} health result`);
-    assert.equal(result.last_attempt.outcome, 'healthy', `${id} current transport`);
-    assert.equal(result.review_status, 'healthy', `${id} review status`);
-  }
+  const expectedSourceIds = new Set(expectedSources.map(({id}) => id));
+  const results = linkHealth.results
+    .filter(({source_ids}) => source_ids.some((sourceId) => expectedSourceIds.has(sourceId)))
+    .sort((left, right) => left.transport_locator.localeCompare(right.transport_locator, 'en'));
+  assert.deepEqual(results, expectedHealthResults);
 });
