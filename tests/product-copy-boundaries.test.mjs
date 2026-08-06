@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {createProcessor} from '@mdx-js/mdx';
 import {readdir, readFile} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -8,240 +9,7 @@ const repositoryRoot = fileURLToPath(new URL('../', import.meta.url));
 
 const blankCharacters = (value) => value.replace(/[^\n]/gu, ' ');
 
-const maskLinkDestinations = (source) => {
-  const masked = source.split('');
-
-  for (let start = 0; start < source.length; start += 1) {
-    const labelOpening = source[start] === '['
-      ? start
-      : source[start] === '!' && source[start + 1] === '['
-        ? start + 1
-        : -1;
-    if (labelOpening === -1) continue;
-
-    let labelDepth = 1;
-    let escaped = false;
-    let labelClosing = -1;
-    for (let index = labelOpening + 1; index < source.length; index += 1) {
-      const character = source[index];
-      if (escaped) {
-        escaped = false;
-      } else if (character === '\\') {
-        escaped = true;
-      } else if (character === '[') {
-        labelDepth += 1;
-      } else if (character === ']') {
-        labelDepth -= 1;
-        if (labelDepth === 0) {
-          labelClosing = index;
-          break;
-        }
-      }
-    }
-
-    const opening = labelClosing + 1;
-    if (labelClosing === -1 || source[opening] !== '(') continue;
-
-    let depth = 1;
-    escaped = false;
-    let closing = -1;
-
-    for (let index = opening + 1; index < source.length; index += 1) {
-      const character = source[index];
-      if (escaped) {
-        escaped = false;
-      } else if (character === '\\') {
-        escaped = true;
-      } else if (character === '(') {
-        depth += 1;
-      } else if (character === ')') {
-        depth -= 1;
-        if (depth === 0) {
-          closing = index;
-          break;
-        }
-      }
-    }
-
-    if (closing === -1) continue;
-
-    for (let index = opening; index <= closing; index += 1) {
-      if (masked[index] !== '\n') masked[index] = ' ';
-    }
-    start = closing;
-  }
-
-  return masked.join('');
-};
-
-const asciiPunctuation = /[!-/:-@\[-`{-~]/u;
-
-const isLineEnding = (character) => character === '\n' || character === '\r';
-
-const skipLineEnding = (source, index) => (
-  source[index] === '\r' && source[index + 1] === '\n' ? index + 2 : index + 1
-);
-
-const skipSpacesAndTabs = (source, index) => {
-  while (source[index] === ' ' || source[index] === '\t') index += 1;
-  return index;
-};
-
-const skipEscapedPunctuation = (source, index) => (
-  source[index] === '\\' && asciiPunctuation.test(source[index + 1] ?? '')
-    ? index + 2
-    : index
-);
-
-const parseReferenceLabel = (source, opening) => {
-  let index = opening + 1;
-  while (index < source.length) {
-    const afterEscape = skipEscapedPunctuation(source, index);
-    if (afterEscape !== index) {
-      index = afterEscape;
-      continue;
-    }
-    if (source[index] === '[') return null;
-    if (source[index] === ']') {
-      const content = source.slice(opening + 1, index);
-      if (
-        Array.from(content).length > 999
-        || !/[^ \t\r\n]/u.test(content)
-      ) return null;
-      return index + 1;
-    }
-    index += 1;
-  }
-  return null;
-};
-
-const parseReferenceDestination = (source, start) => {
-  if (source[start] === '<') {
-    let index = start + 1;
-    while (index < source.length && !isLineEnding(source[index])) {
-      const afterEscape = skipEscapedPunctuation(source, index);
-      if (afterEscape !== index) {
-        index = afterEscape;
-        continue;
-      }
-      if (source[index] === '<') return null;
-      if (source[index] === '>') return index + 1;
-      index += 1;
-    }
-    return null;
-  }
-
-  let depth = 0;
-  let index = start;
-  while (
-    index < source.length
-    && source[index] !== ' '
-    && source[index] !== '\t'
-    && !isLineEnding(source[index])
-  ) {
-    const character = source[index];
-    const codePoint = character.codePointAt(0);
-    if (codePoint < 0x20 || codePoint === 0x7f || (index === start && character === '<')) {
-      return null;
-    }
-
-    const afterEscape = skipEscapedPunctuation(source, index);
-    if (afterEscape !== index) {
-      index = afterEscape;
-      continue;
-    }
-    if (character === '(') depth += 1;
-    if (character === ')') {
-      if (depth === 0) return null;
-      depth -= 1;
-    }
-    index += 1;
-  }
-
-  return index > start && depth === 0 ? index : null;
-};
-
-const parseReferenceTitle = (source, start) => {
-  const delimiter = source[start];
-  if (delimiter !== '"' && delimiter !== "'" && delimiter !== '(') return null;
-  const closing = delimiter === '(' ? ')' : delimiter;
-  let index = start + 1;
-
-  while (index < source.length) {
-    const afterEscape = skipEscapedPunctuation(source, index);
-    if (afterEscape !== index) {
-      index = afterEscape;
-      continue;
-    }
-    if (source[index] === closing) return index + 1;
-    if (delimiter === '(' && source[index] === '(') return null;
-    if (isLineEnding(source[index])) {
-      const nextLine = skipSpacesAndTabs(source, skipLineEnding(source, index));
-      if (nextLine >= source.length || isLineEnding(source[nextLine])) return null;
-      index = nextLine;
-      continue;
-    }
-    index += 1;
-  }
-  return null;
-};
-
-const parseReferenceDefinition = (source, lineStart) => {
-  let start = lineStart;
-  while (source[start] === ' ' && start - lineStart < 3) start += 1;
-  if (source[start] !== '[') return null;
-
-  let index = parseReferenceLabel(source, start);
-  if (index === null || source[index] !== ':') return null;
-  index = skipSpacesAndTabs(source, index + 1);
-  if (isLineEnding(source[index])) {
-    index = skipSpacesAndTabs(source, skipLineEnding(source, index));
-  }
-
-  index = parseReferenceDestination(source, index);
-  if (index === null) return null;
-
-  const destinationEnd = skipSpacesAndTabs(source, index);
-  if (destinationEnd >= source.length || isLineEnding(source[destinationEnd])) {
-    if (destinationEnd >= source.length) return {start, end: destinationEnd};
-
-    const nextLine = skipSpacesAndTabs(
-      source,
-      skipLineEnding(source, destinationEnd),
-    );
-    const titleEnd = parseReferenceTitle(source, nextLine);
-    if (titleEnd === null) return {start, end: destinationEnd};
-    const definitionEnd = skipSpacesAndTabs(source, titleEnd);
-    return definitionEnd >= source.length || isLineEnding(source[definitionEnd])
-      ? {start, end: definitionEnd}
-      : {start, end: destinationEnd};
-  }
-
-  const titleEnd = parseReferenceTitle(source, destinationEnd);
-  if (titleEnd === null) return null;
-  const definitionEnd = skipSpacesAndTabs(source, titleEnd);
-  return definitionEnd >= source.length || isLineEnding(source[definitionEnd])
-    ? {start, end: definitionEnd}
-    : null;
-};
-
-const maskReferenceDefinitions = (source) => {
-  const masked = source.split('');
-  for (let lineStart = 0; lineStart < source.length;) {
-    const definition = parseReferenceDefinition(source, lineStart);
-    if (definition) {
-      for (let index = definition.start; index < definition.end; index += 1) {
-        if (!isLineEnding(masked[index])) masked[index] = ' ';
-      }
-    }
-    const lineEnding = source.indexOf('\n', lineStart);
-    if (lineEnding === -1) break;
-    lineStart = lineEnding + 1;
-  }
-  return masked.join('');
-};
-
-const visibleMdxSource = (source, relativePath) => {
+const normalizeMdxSource = (source, relativePath) => {
   const lines = source.split('\n');
 
   if (lines[0]?.trim() === '---') {
@@ -251,7 +19,9 @@ const visibleMdxSource = (source, relativePath) => {
       -1,
       `${relativePath}: MDX front matter must have a closing delimiter`,
     );
-    for (let index = 0; index <= end; index += 1) lines[index] = '';
+    for (let index = 0; index <= end; index += 1) {
+      lines[index] = blankCharacters(lines[index]);
+    }
   }
 
   let fence = null;
@@ -259,7 +29,7 @@ const visibleMdxSource = (source, relativePath) => {
     const opening = lines[index].match(/^\s*(`{3,}|~{3,})/u);
     if (!fence && opening) {
       fence = {character: opening[1][0], length: opening[1].length};
-      lines[index] = '';
+      lines[index] = blankCharacters(lines[index]);
       continue;
     }
     if (fence) {
@@ -268,7 +38,7 @@ const visibleMdxSource = (source, relativePath) => {
         'u',
       );
       const closesFence = closing.test(lines[index]);
-      lines[index] = '';
+      lines[index] = blankCharacters(lines[index]);
       if (closesFence) fence = null;
     }
   }
@@ -290,34 +60,116 @@ const visibleMdxSource = (source, relativePath) => {
     cursor = commentClosing + 3;
   }
 
-  return maskLinkDestinations(
-    maskReferenceDefinitions(
-      withoutFences.replace(/<!--[\s\S]*?-->/gu, blankCharacters),
-    ),
-  );
+  return withoutFences.replace(/<!--[\s\S]*?-->/gu, blankCharacters);
 };
 
-const findEditorialTaskItems = (source) => {
-  const matches = [];
-  let offset = 0;
-  let insideEditorialSection = false;
+const parseMdxAst = (source, relativePath) => {
+  let ast;
+  const captureAst = () => (tree) => {
+    ast = tree;
+  };
 
-  for (const line of source.split('\n')) {
-    const sectionHeading = line.match(/^(#{1,2})\s+(.+?)\s*$/u);
-    if (sectionHeading) {
-      insideEditorialSection =
-        sectionHeading[1] === '##' && sectionHeading[2] === '后续待补';
-    }
-
-    if (insideEditorialSection) {
-      const item = line.match(/^-\s+补充[^\n]+$/u);
-      if (item) matches.push({index: offset + item.index, text: item[0]});
-    }
-
-    offset += line.length + 1;
+  try {
+    createProcessor({remarkPlugins: [captureAst]}).processSync({
+      value: source,
+      path: relativePath,
+    });
+  } catch (error) {
+    throw new Error(`${relativePath}: MDX parser failed: ${error.message}`, {cause: error});
   }
 
-  return matches;
+  assert.ok(ast, `${relativePath}: MDX parser did not produce an AST`);
+  return ast;
+};
+
+const excludedAstTypes = new Set([
+  'code',
+  'definition',
+  'html',
+  'mdxFlowExpression',
+  'mdxTextExpression',
+  'mdxjsEsm',
+]);
+
+const renderVisibleBlock = (node) => {
+  const block = {text: '', lines: [], display: '', displayLines: []};
+
+  const append = (field, lineField, value, startLine) => {
+    let line = startLine;
+    for (let index = 0; index < value.length; index += 1) {
+      const character = value[index];
+      block[field] += character;
+      block[lineField].push(line);
+      if (character === '\n') line += 1;
+    }
+  };
+
+  const appendVisible = (value, visibleNode) => {
+    const line = visibleNode.position?.start.line ?? node.position?.start.line ?? 1;
+    append('text', 'lines', value, line);
+    append('display', 'displayLines', value, line);
+  };
+
+  const appendDisplay = (value, line) => {
+    append('display', 'displayLines', value, line);
+  };
+
+  const visit = (current) => {
+    if (excludedAstTypes.has(current.type)) return;
+
+    if (current.type === 'text' || current.type === 'inlineCode') {
+      appendVisible(current.value, current);
+      return;
+    }
+
+    if (current.type === 'break') {
+      appendVisible('\n', current);
+      return;
+    }
+
+    if (current.type === 'image' || current.type === 'imageReference') {
+      const alt = current.alt ?? '';
+      const startLine = current.position?.start.line ?? 1;
+      append('text', 'lines', alt, startLine);
+      appendDisplay('![', startLine);
+      append('display', 'displayLines', alt, startLine);
+      appendDisplay(']', current.position?.end.line ?? startLine);
+      return;
+    }
+
+    if (current.type === 'link' || current.type === 'linkReference') {
+      appendDisplay('[', current.position?.start.line ?? 1);
+      for (const child of current.children ?? []) visit(child);
+      appendDisplay(']', current.position?.end.line ?? current.position?.start.line ?? 1);
+      return;
+    }
+
+    for (const child of current.children ?? []) visit(child);
+  };
+
+  visit(node);
+  block.excerptAt = (line) => {
+    let excerpt = '';
+    for (let index = 0; index < block.display.length; index += 1) {
+      if (block.displayLines[index] === line) excerpt += block.display[index];
+    }
+    return excerpt.trim();
+  };
+  return block;
+};
+
+const collectVisibleBlocks = (ast) => {
+  const blocks = [];
+  const visit = (node) => {
+    if (excludedAstTypes.has(node.type)) return;
+    if (node.type === 'heading' || node.type === 'paragraph' || node.type === 'tableCell') {
+      blocks.push({...renderVisibleBlock(node), node});
+      return;
+    }
+    for (const child of node.children ?? []) visit(child);
+  };
+  visit(ast);
+  return blocks;
 };
 
 const rules = [
@@ -336,38 +188,91 @@ const rules = [
     applies: (file) => file.endsWith('.mdx'),
     pattern: /本页从机器可读主题清单生成|计划主题[^。\n]{0,40}长期\s+backlog\s+跟踪/giu,
   },
-  {
-    id: 'editorial-todo-heading',
-    applies: (file) => file.endsWith('.mdx'),
-    pattern: /^##\s+后续待补\s*$/gmu,
-  },
-  {
-    id: 'editorial-task-item',
-    applies: (file) => file.endsWith('.mdx'),
-    find: findEditorialTaskItems,
-  },
 ];
 
+const issueFromLine = (relativePath, source, line, ruleId, excerpt) => ({
+  file: relativePath,
+  line,
+  ruleId,
+  excerpt: excerpt ?? source.split('\n')[line - 1].trim(),
+});
+
+const findEditorialIssues = (relativePath, source, ast) => {
+  const issues = [];
+  let insideEditorialSection = false;
+
+  const collectListItems = (node) => {
+    if (node.type === 'listItem') {
+      const text = renderVisibleBlock(node).text.trim();
+      if (/^补充[^\n]+$/u.test(text)) {
+        issues.push(issueFromLine(
+          relativePath,
+          source,
+          node.position.start.line,
+          'editorial-task-item',
+        ));
+      }
+    }
+    for (const child of node.children ?? []) collectListItems(child);
+  };
+
+  for (const node of ast.children) {
+    if (node.type === 'heading' && node.depth <= 2) {
+      const heading = renderVisibleBlock(node).text.trim();
+      insideEditorialSection = node.depth === 2 && heading === '后续待补';
+      if (insideEditorialSection) {
+        issues.push(issueFromLine(
+          relativePath,
+          source,
+          node.position.start.line,
+          'editorial-todo-heading',
+        ));
+      }
+      continue;
+    }
+    if (insideEditorialSection) collectListItems(node);
+  }
+
+  return issues;
+};
+
+const findMdxIssues = (relativePath, source) => {
+  const normalized = normalizeMdxSource(source, relativePath);
+  const ast = parseMdxAst(normalized, relativePath);
+  const generatedRule = rules.find(({id}) => id === 'generated-page-meta');
+  const issues = [];
+
+  for (const block of collectVisibleBlocks(ast)) {
+    const matches = block.text.matchAll(
+      new RegExp(generatedRule.pattern.source, generatedRule.pattern.flags),
+    );
+    for (const match of matches) {
+      const line = block.lines[match.index];
+      issues.push(issueFromLine(
+        relativePath,
+        normalized,
+        line,
+        generatedRule.id,
+        block.excerptAt(line),
+      ));
+    }
+  }
+
+  return [...issues, ...findEditorialIssues(relativePath, normalized, ast)];
+};
+
 const findProductCopyIssues = (relativePath, source) => {
-  const visible = relativePath.endsWith('.mdx')
-    ? visibleMdxSource(source, relativePath)
-    : source;
+  if (relativePath.endsWith('.mdx')) return findMdxIssues(relativePath, source);
+
   const issues = [];
 
   for (const rule of rules) {
-    if (!rule.applies(relativePath)) continue;
-    const matches = rule.find
-      ? rule.find(visible)
-      : visible.matchAll(new RegExp(rule.pattern.source, rule.pattern.flags));
+    if (!rule.applies(relativePath) || rule.id === 'generated-page-meta') continue;
+    const matches = source.matchAll(new RegExp(rule.pattern.source, rule.pattern.flags));
 
     for (const match of matches) {
-      const line = visible.slice(0, match.index).split('\n').length;
-      issues.push({
-        file: relativePath,
-        line,
-        ruleId: rule.id,
-        excerpt: visible.split('\n')[line - 1].trim(),
-      });
+      const line = source.slice(0, match.index).split('\n').length;
+      issues.push(issueFromLine(relativePath, source, line, rule.id));
     }
   }
 
@@ -561,6 +466,89 @@ test('reference-definition grammar leaves extra text after a title visible', () 
   ]);
 });
 
+test('matches MDX compiler paragraph-interruption visibility', () => {
+  const fixture = `Foo
+[ref]: /本页从机器可读主题清单生成
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/interrupted-definition.mdx', fixture), [
+    {
+      file: 'content/cases/interrupted-definition.mdx',
+      line: 2,
+      ruleId: 'generated-page-meta',
+      excerpt: '[ref]: /本页从机器可读主题清单生成',
+    },
+  ]);
+});
+
+test('matches MDX compiler container-definition visibility', () => {
+  const fixture = `# Example
+> [quote]: /本页从机器可读主题清单生成
+> [quote]
+
+- [list]: /本页从机器可读主题清单生成
+- [list]
+
+本页从机器可读主题清单生成。
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/container-definitions.mdx', fixture), [
+    {
+      file: 'content/cases/container-definitions.mdx',
+      line: 8,
+      ruleId: 'generated-page-meta',
+      excerpt: '本页从机器可读主题清单生成。',
+    },
+  ]);
+});
+
+test('matches MDX compiler invalid-inline-link visibility', () => {
+  const fixture = `# Example
+[x](/safe 本页从机器可读主题清单生成)
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/invalid-inline-link.mdx', fixture), [
+    {
+      file: 'content/cases/invalid-inline-link.mdx',
+      line: 2,
+      ruleId: 'generated-page-meta',
+      excerpt: '[x](/safe 本页从机器可读主题清单生成)',
+    },
+  ]);
+});
+
+test('matches MDX compiler code-span link-label visibility', () => {
+  const fixture = `# Example
+[foo \`]\` bar](/本页从机器可读主题清单生成)
+
+计划主题仍由长期 backlog 跟踪。
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/code-span-label.mdx', fixture), [
+    {
+      file: 'content/cases/code-span-label.mdx',
+      line: 4,
+      ruleId: 'generated-page-meta',
+      excerpt: '计划主题仍由长期 backlog 跟踪。',
+    },
+  ]);
+});
+
+test('joins visible text across link boundaries for contextual rules', () => {
+  const fixture = `# Example
+计划主题仍由[长期 backlog](https://example.com/internal) 跟踪。
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/split-context.mdx', fixture), [
+    {
+      file: 'content/cases/split-context.mdx',
+      line: 2,
+      ruleId: 'generated-page-meta',
+      excerpt: '计划主题仍由[长期 backlog] 跟踪。',
+    },
+  ]);
+});
+
 test('preserves visible link labels and image markers exactly', () => {
   const fixture = `# Example
 [本页从机器可读主题清单生成](https://example.com/reference)
@@ -596,6 +584,10 @@ test('reports file context for unsafe MDX structures', () => {
     {
       structure: 'HTML comment',
       source: '# Example\n\n<!-- unclosed\n',
+    },
+    {
+      structure: 'MDX parser',
+      source: '# Example\n\n<Component\n',
     },
   ];
 
