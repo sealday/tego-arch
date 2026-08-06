@@ -43,7 +43,7 @@
 
 **Interfaces:**
 - Consumes: the approved closed-label list and the existing project visual language in `.codex/skills/illustrating-architecture-articles/references/`.
-- Produces: a valid 1536×864 PNG at `/img/illustrations/tego-arch-future-directions.png` for Task 2.
+- Produces: a valid project-native 1672×941 PNG at `/img/illustrations/tego-arch-future-directions.png` for Task 2.
 
 - [ ] **Step 1: Add the failing PNG asset contract**
 
@@ -76,8 +76,8 @@ test('ships one readable 16:9 future-directions roadmap', async () => {
     'future roadmap must be a PNG',
   );
   assert.equal(image.toString('ascii', 12, 16), 'IHDR');
-  assert.equal(image.readUInt32BE(16), 1536);
-  assert.equal(image.readUInt32BE(20), 864);
+  assert.equal(image.readUInt32BE(16), 1672);
+  assert.equal(image.readUInt32BE(20), 941);
 });
 ```
 
@@ -109,7 +109,7 @@ Asset type: Tego Arch README and homepage future-directions roadmap
 Primary request: explain that one complete architecture knowledge foundation will evolve into three parallel ways of use, with no delivery sequence or release promise
 Scene/backdrop: warm white paper with generous outer margins
 Style/medium: original Chinese hand-drawn technical whiteboard infographic, flat 2D felt-tip marker lines, editorially polished, matching the Tego Arch warm hand-drawn visual language
-Composition/framing: 16:9 landscape; title at top; one foundation card on the left or center; exactly three equally weighted direction cards branching independently from it; no arrows between the three direction cards; one concise conclusion band at the bottom; keep every label inside a centered 16:9 safe area suitable for a 1536×864 crop
+Composition/framing: near-16:9 landscape on the project-native 1672×941 canvas; title at top; one foundation card on the left or center; exactly three equally weighted direction cards branching independently from it; no arrows between the three direction cards; one concise conclusion band at the bottom
 Color palette: deep blue for the shared foundation and connectors; orange only for direction emphasis; charcoal text; do not use green completion or red failure semantics
 Text (verbatim): "Tego Arch 未来三个方向"; "一套知识基础 · 三种使用方式"; "完整架构知识体系"; "架构决策速查"; "QUICK REFERENCE"; "精选学习路径"; "CURATED LEARNING PATHS"; "Tego 参考架构"; "REFERENCE ARCHITECTURE"; "并行演进 · 不代表交付顺序"
 Architecture: nodes are one shared foundation and exactly three parallel directions; edges are exactly three independent foundation-to-direction connectors; the direction nodes have no ordering edges
@@ -120,7 +120,7 @@ Avoid: extra labels, pseudo-Chinese, paragraphs, photorealism, 3D, logos, signat
 
 The generated image is project-bound. Copy the returned built-in output into the worktree as `static/img/illustrations/tego-arch-future-directions.png`; do not leave the consumed asset only under `$CODEX_HOME/generated_images/`.
 
-- [ ] **Step 4: Normalize to the closed 1536×864 canvas only if required**
+- [ ] **Step 4: Verify the project-native 1672×941 canvas**
 
 Inspect the returned file:
 
@@ -128,16 +128,7 @@ Inspect the returned file:
 sips -g pixelWidth -g pixelHeight static/img/illustrations/tego-arch-future-directions.png
 ```
 
-Expected: `pixelWidth: 1536` and `pixelHeight: 864`.
-
-If the built-in result is the common 1536×1024 canvas, the prompt’s safe-area constraint makes a centered crop valid. Run exactly:
-
-```bash
-sips --cropToHeightWidth 864 1536 static/img/illustrations/tego-arch-future-directions.png --out static/img/illustrations/tego-arch-future-directions-cropped.png
-mv static/img/illustrations/tego-arch-future-directions-cropped.png static/img/illustrations/tego-arch-future-directions.png
-```
-
-If the output is neither 1536×864 nor 1536×1024, do not distort or improvise another crop. Regenerate once with the same closed labels and a stronger `1536×864 centered 16:9 safe area` constraint.
+Expected: `pixelWidth: 1672` and `pixelHeight: 941`. Preserve this native output without crop, resampling, or distortion; it matches the existing project roadmap asset and remains visually near 16:9 at page width.
 
 - [ ] **Step 5: Perform image-only visual QA**
 
@@ -267,8 +258,8 @@ test('presents future directions as an accessible parallel roadmap', async () =>
     homepage,
     /useBaseUrl\('\/img\/illustrations\/tego-arch-future-directions\.png'\)/u,
   );
-  assert.match(homepage, /width=\{1536\}/u);
-  assert.match(homepage, /height=\{864\}/u);
+  assert.match(homepage, /width=\{1672\}/u);
+  assert.match(homepage, /height=\{941\}/u);
   assert.match(homepage, /loading="lazy"/u);
   assert.match(homepage, /decoding="async"/u);
   assert.match(
@@ -372,8 +363,8 @@ function FutureDirectionsSection(): ReactNode {
           <img
             className={styles.roadmapImage}
             src={futureRoadmapSrc}
-            width={1536}
-            height={864}
+            width={1672}
+            height={941}
             loading="lazy"
             decoding="async"
             alt="Tego Arch 从完整架构知识体系并行发展出架构决策速查、精选学习路径和 Tego 参考架构三个未来方向"
