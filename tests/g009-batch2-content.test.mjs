@@ -5,6 +5,7 @@ import {fileURLToPath} from 'node:url';
 
 import {findMarkdownHeadings, parseFrontMatter, readContentDocuments} from '../scripts/content-metadata.mjs';
 import {extractInternalLinks} from '../scripts/content-relations.mjs';
+import {extractExternalLinks} from '../scripts/source-ledger.mjs';
 
 const [ledger, linkHealth] = await Promise.all([
   readFile(new URL('../data/source-ledger.json', import.meta.url), 'utf8').then(JSON.parse),
@@ -61,6 +62,10 @@ function internalLinksOf(source) {
   return extractInternalLinks({body: bodyOf(source)});
 }
 
+function externalLinksOf(source) {
+  return extractExternalLinks({body: bodyOf(source)});
+}
+
 function assertLayerContract(source) {
   for (const row of responsibilityRows) {
     assert.ok(source.includes(`| ${row.join(' | ')} |`), row[0]);
@@ -97,7 +102,8 @@ function assertLayerContract(source) {
   assertInOrder(source, dimensions.map((dimension) => `| ${dimension} |`), 'dimension order');
   assert.match(source, /同一本地事务/u);
   assert.match(source, /格式错误[\s\S]*流程失败[\s\S]*业务拒绝[\s\S]*稳定错误类别/u);
-  for (const locator of canonicalSources) assert.ok(source.includes(locator), locator);
+  const visibleExternalLinks = externalLinksOf(source);
+  for (const locator of canonicalSources) assert.ok(visibleExternalLinks.includes(locator), locator);
   assert.ok(internalLinksOf(source).includes('/cases/micro-frontends-single-spa'));
   assert.ok(!internalLinksOf(source).includes('/styles/sty-02'));
   assert.doesNotMatch(source, /吞吐提升|延迟降低|恢复时间缩短|生产事故减少/u);
@@ -160,6 +166,8 @@ test('locks four closed layers and one controlled read-query exception', () => {
 test('locks responsibilities, logical-versus-physical boundaries, visual wrappers, profile, and evidence', () => {
   assert.ok(sty01);
   assertLayerContract(sty01.source);
+  assert.match(sty01.body, /aria-label="四层责任合同，可横向滚动"/u);
+  assert.doesNotMatch(sty01.body, /aria-label="四层责任合同与八维架构剖面，可横向滚动"/u);
 });
 
 test('keeps the STY-00 relation reciprocal and STY-02 non-actionable', () => {
@@ -180,6 +188,13 @@ test('rejects mutations of the closed-layer contract', () => {
     ['missing exception rollback', sty01.source.replace('恢复逐层调用或重新设计边界', '')],
     ['four deployments', sty01.source.replace('subgraph 单一部署单元', 'subgraph 四个独立部署单元')],
     ['hexagonal inversion as default', sty01.source.replace('表示层 --> 应用层', '基础设施层 --> 领域层')],
+    [
+      'source URL is plain text',
+      sty01.source.replace(
+        '[Microsoft N-tier architecture style](https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/n-tier)',
+        'Microsoft N-tier architecture style：https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/n-tier',
+      ),
+    ],
   ]) {
     assert.notEqual(mutated, sty01.source, `${label} mutation must change source`);
     assert.throws(() => assertLayerContract(mutated), {name: 'AssertionError'});
