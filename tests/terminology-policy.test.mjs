@@ -142,6 +142,36 @@ test('reports a repeated first-use display after the term is introduced', async 
   ]);
 });
 
+test('governs STRIDE without claiming the generic Chinese threat-modeling phrase', async () => {
+  const registry = JSON.parse(
+    await readFile(path.join(repositoryRoot, 'data/terminology.json'), 'utf8'),
+  );
+  const stride = registry.terms.find(({id}) => id === 'stride-threat-modeling');
+  assert.deepEqual(stride.subsequent_use, ['STRIDE']);
+  const result = await withFixture(
+    {
+      'content/generic.mdx': '威胁建模需要持续复查。',
+      'content/premature.mdx': 'STRIDE 可以帮助分类威胁。',
+      'content/introduced.mdx': 'STRIDE 威胁建模用于提出问题，后续 STRIDE 分类继续使用。',
+    },
+    (root) => checkTerminology({root, paths: ['content']}),
+    [...terms, stride],
+  );
+  assert.deepEqual(result.issues.map(({file, ruleId, matched, expected}) => ({
+    file,
+    ruleId,
+    matched,
+    expected,
+  })), [
+    {
+      file: 'content/premature.mdx',
+      ruleId: 'first-use-required',
+      matched: 'STRIDE',
+      expected: 'STRIDE 威胁建模',
+    },
+  ]);
+});
+
 test('reports the forbidden Chinese human-in-the-loop alias', async () => {
   const humanInTheLoop = {
     id: 'human-in-the-loop',

@@ -564,7 +564,7 @@
       "acronym": null,
       "kind": "proper-noun",
       "first_use": "STRIDE 威胁建模",
-      "subsequent_use": ["威胁建模"],
+      "subsequent_use": ["STRIDE"],
       "allowed_aliases": [],
       "forbidden_aliases": [],
       "note": "保留 STRIDE 方法名称，并以中文说明其用途。",
