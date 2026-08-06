@@ -645,7 +645,7 @@ test('publishes exact reciprocal MOD-13 relations without changing relation over
 test('locks the generated MOD-13 Stage B projection', () => {
   assert.equal(projectStatus.completed_topics, 52);
   assert.equal(projectStatus.content_documents, 94);
-  assert.equal(projectStatus.governed_sources, 494);
+  assert.equal(projectStatus.governed_sources, 498);
   assert.deepEqual(projectStatus.durable_stories, {completed:8,total:20,current:'G009'});
   const topicsById = new Map(topicManifest.topics.map((topic) => [topic.id, topic]));
   assert.equal(topicsById.get('MOD-13').published, true);

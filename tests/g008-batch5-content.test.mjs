@@ -409,7 +409,7 @@ test('projects the current G009 counts after G008 closes', async () => {
     durable_stories: {completed: 8, total: 20, current: 'G009'},
     completed_topics: 52,
     content_documents: 94,
-    governed_sources: 494,
+    governed_sources: 498,
     sources: {
       durable_stories: 'docs/content-backlog.md',
       completed_topics: 'docs/content-backlog.md',

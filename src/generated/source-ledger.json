@@ -892,6 +892,51 @@
       ]
     },
     {
+      "id": "src-arc42-architecture-decisions",
+      "canonical_locator": "https://docs.arc42.org/section-9/",
+      "transport_locator": "https://raw.githubusercontent.com/arc42/docs.arc42.org-site/bcbc20283a2a486305ce72e400e731a3ee30f7f4/_pages/section-9.md",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "arc42 — Architecture Decisions",
+      "author_or_org": "arc42 contributors",
+      "published_at": null,
+      "registered_at": "2026-08-06",
+      "checked_at": "2026-08-06",
+      "version": "docs.arc42.org-site commit bcbc20283a2a486305ce72e400e731a3ee30f7f4",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "learning",
+        "method"
+      ],
+      "license": "CC-BY-SA-4.0",
+      "license_scope": "The named arc42 documentation page at the pinned official source commit; linked works, trademarks, code, and separately licensed media excluded",
+      "license_evidence_url": "https://arc42.org/license",
+      "license_evidence_note": "The official arc42 license page identifies arc42 documentation as CC BY-SA 4.0.",
+      "license_family_id": "https://docs.arc42.org/section-9/",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "adapt-sharealike-review",
+      "usage_boundary": "Supports recording important architecture decisions, alternatives, reasons and consequences; it does not prescribe this article's local card vocabulary or prove implementation compliance.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://raw.githubusercontent.com/arc42/docs.arc42.org-site/bcbc20283a2a486305ce72e400e731a3ee30f7f4/_pages/section-9.md",
+      "expected_final_approved_at": "2026-08-06",
+      "expected_final_approval_note": "Pinned official arc42 source file returned HTTP 200 on 2026-08-06.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://raw.githubusercontent.com/arc42/docs.arc42.org-site/bcbc20283a2a486305ce72e400e731a3ee30f7f4/_pages/section-9.md",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-06T15:24:41.578Z",
+          "last_success_at": "2026-08-06T15:24:41.578Z",
+          "http_status": 206,
+          "final_transport_locator": "https://raw.githubusercontent.com/arc42/docs.arc42.org-site/bcbc20283a2a486305ce72e400e731a3ee30f7f4/_pages/section-9.md"
+        }
+      ]
+    },
+    {
       "id": "src-arc42-building-block-view-v9",
       "canonical_locator": "https://docs.arc42.org/section-5/",
       "transport_locator": "https://docs.arc42.org/section-5/",
@@ -20735,6 +20780,52 @@
       ]
     },
     {
+      "id": "src-microsoft-architecture-styles",
+      "canonical_locator": "https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/",
+      "transport_locator": "https://raw.githubusercontent.com/microsoftdocs/architecture-center/4fb4d75aa5ed8423caa0d6c35d40b32bbc3cc819/docs/guide/architecture-styles/index.md",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Architecture Styles — Azure Architecture Center",
+      "author_or_org": "Microsoft",
+      "published_at": "2025-09-25",
+      "registered_at": "2026-08-06",
+      "checked_at": "2026-08-06",
+      "version": "MicrosoftDocs architecture-center commit 4fb4d75aa5ed8423caa0d6c35d40b32bbc3cc819; source ms.date 2025-09-25",
+      "source_kind": "vendor-reference-architecture",
+      "tier": "first-party",
+      "allowed_evidence_roles": [
+        "comparison",
+        "definition",
+        "learning",
+        "method"
+      ],
+      "license": "CC-BY-4.0",
+      "license_scope": "The named Microsoft Learn page at the pinned official documentation commit; code, trademarks, linked works, and third-party assets excluded",
+      "license_evidence_url": "https://github.com/microsoftdocs/architecture-center/blob/4fb4d75aa5ed8423caa0d6c35d40b32bbc3cc819/LICENSE",
+      "license_evidence_note": "The pinned official Architecture Center repository LICENSE applies CC BY 4.0 to the documentation repository.",
+      "license_family_id": "https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "vendor-claims-separated",
+      "usage_boundary": "Supports Microsoft's description of styles as characteristic constraints with benefits and challenges; it does not independently validate suitability, cost, reliability, or performance for a concrete system.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://raw.githubusercontent.com/microsoftdocs/architecture-center/4fb4d75aa5ed8423caa0d6c35d40b32bbc3cc819/docs/guide/architecture-styles/index.md",
+      "expected_final_approved_at": "2026-08-06",
+      "expected_final_approval_note": "Pinned official source file returned HTTP 200 on 2026-08-06.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://raw.githubusercontent.com/microsoftdocs/architecture-center/4fb4d75aa5ed8423caa0d6c35d40b32bbc3cc819/docs/guide/architecture-styles/index.md",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-06T15:24:41.578Z",
+          "last_success_at": "2026-08-06T15:24:41.578Z",
+          "http_status": 206,
+          "final_transport_locator": "https://raw.githubusercontent.com/microsoftdocs/architecture-center/4fb4d75aa5ed8423caa0d6c35d40b32bbc3cc819/docs/guide/architecture-styles/index.md"
+        }
+      ]
+    },
+    {
       "query_insensitive": false,
       "locator_aliases": [],
       "tombstone": null,
@@ -22755,6 +22846,51 @@
       ]
     },
     {
+      "id": "src-sei-atam-collection",
+      "canonical_locator": "https://www.sei.cmu.edu/library/architecture-tradeoff-analysis-method-collection/",
+      "transport_locator": "https://www.sei.cmu.edu/library/architecture-tradeoff-analysis-method-collection/",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Architecture Tradeoff Analysis Method Collection",
+      "author_or_org": "Carnegie Mellon Software Engineering Institute",
+      "published_at": "2018-02-14",
+      "registered_at": "2026-08-06",
+      "checked_at": "2026-08-06",
+      "version": "Collection published 2018-02-14; page checked on 2026-08-06",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "learning",
+        "method"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named checked collection page only; linked reports, marks, and third-party works excluded unless separately governed",
+      "license_evidence_url": "https://www.sei.cmu.edu/library/architecture-tradeoff-analysis-method-collection/",
+      "license_evidence_note": "The checked SEI collection page exposes no reusable documentation license; Tego Arch retains only the link and original factual summaries.",
+      "license_family_id": "https://www.sei.cmu.edu/library/architecture-tradeoff-analysis-method-collection/",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports scenario-based analysis of architectural approaches and identification of risks, sensitivity points and tradeoff points; it does not certify an architecture or define numeric style scores.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://www.sei.cmu.edu/library/architecture-tradeoff-analysis-method-collection/",
+      "expected_final_approved_at": "2026-08-06",
+      "expected_final_approval_note": "Reviewed canonical SEI collection transport and publication identity on 2026-08-06.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://www.sei.cmu.edu/library/architecture-tradeoff-analysis-method-collection/",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-06T15:24:41.578Z",
+          "last_success_at": "2026-08-06T15:24:41.578Z",
+          "http_status": 200,
+          "final_transport_locator": "https://www.sei.cmu.edu/library/architecture-tradeoff-analysis-method-collection/"
+        }
+      ]
+    },
+    {
       "id": "src-sei-bfb2b903b4eb",
       "canonical_locator": "https://www.sei.cmu.edu/training/software-architecture-principles-practices/",
       "transport_locator": "https://www.sei.cmu.edu/training/software-architecture-principles-practices/",
@@ -22935,6 +23071,51 @@
           "last_success_at": "2026-08-02T04:33:33.082Z",
           "http_status": 200,
           "final_transport_locator": "https://www.sei.cmu.edu/library/modifiability-tactics/"
+        }
+      ]
+    },
+    {
+      "id": "src-sei-qaw-collection",
+      "canonical_locator": "https://www.sei.cmu.edu/library/quality-attribute-workshop-collection/",
+      "transport_locator": "https://www.sei.cmu.edu/library/quality-attribute-workshop-collection/",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Quality Attribute Workshop Collection",
+      "author_or_org": "Carnegie Mellon Software Engineering Institute",
+      "published_at": "2016-09-01",
+      "registered_at": "2026-08-06",
+      "checked_at": "2026-08-06",
+      "version": "Collection published 2016-09-01; page checked on 2026-08-06",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "learning",
+        "method"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named checked collection page only; linked reports, marks, and third-party works excluded unless separately governed",
+      "license_evidence_url": "https://www.sei.cmu.edu/library/quality-attribute-workshop-collection/",
+      "license_evidence_note": "The checked SEI collection page exposes no reusable documentation license; Tego Arch retains only the link and original factual summaries.",
+      "license_family_id": "https://www.sei.cmu.edu/library/quality-attribute-workshop-collection/",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports stakeholder-derived, prioritized and refined quality-attribute scenarios before architecture comparison; it does not supply project-specific priorities, measurements, or a style choice.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://www.sei.cmu.edu/library/quality-attribute-workshop-collection/",
+      "expected_final_approved_at": "2026-08-06",
+      "expected_final_approval_note": "Reviewed canonical SEI collection transport and publication identity on 2026-08-06.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://www.sei.cmu.edu/library/quality-attribute-workshop-collection/",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-06T15:24:41.578Z",
+          "last_success_at": "2026-08-06T15:24:41.578Z",
+          "http_status": 200,
+          "final_transport_locator": "https://www.sei.cmu.edu/library/quality-attribute-workshop-collection/"
         }
       ]
     },
@@ -33956,7 +34137,7 @@
     "content/styles/sty-00-comparison-framework.mdx": {
       "title": "架构风格比较框架",
       "slug": "/styles/sty-00",
-      "reviewed_at": "2026-07-24",
+      "reviewed_at": "2026-08-06",
       "copyright_checks": [
         "original-structure",
         "quotation-boundary",
@@ -33965,29 +34146,74 @@
       ],
       "citations": [
         {
-          "source_id": "src-arc42-8b346f00707f",
-          "citation_url": "https://arc42.org/",
+          "source_id": "src-arc42-architecture-decisions",
+          "citation_url": "https://docs.arc42.org/section-9/",
           "roles": [
             "method",
             "learning"
           ],
-          "manifest_primary": true,
+          "manifest_primary": false,
           "usage_mode": "facts-summary",
-          "attribution_note": "arc42, arc42 contributors",
+          "attribution_note": "Architecture Decisions, arc42 contributors",
           "modification_note": null,
           "excerpt": null,
           "quotation_reviewed": false
         },
         {
-          "source_id": "src-sei-bfb2b903b4eb",
-          "citation_url": "https://www.sei.cmu.edu/training/software-architecture-principles-practices/",
+          "source_id": "src-arc42-quality-requirements-v9",
+          "citation_url": "https://docs.arc42.org/section-10/",
           "roles": [
             "definition",
-            "method"
+            "method",
+            "learning"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Quality Requirements, arc42 contributors",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-microsoft-architecture-styles",
+          "citation_url": "https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/",
+          "roles": [
+            "comparison",
+            "definition",
+            "learning"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Architecture Styles, Microsoft Azure Architecture Center",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-sei-atam-collection",
+          "citation_url": "https://www.sei.cmu.edu/library/architecture-tradeoff-analysis-method-collection/",
+          "roles": [
+            "definition",
+            "method",
+            "learning"
           ],
           "manifest_primary": true,
           "usage_mode": "facts-summary",
-          "attribution_note": "Software Architecture: Principles and Practices, Carnegie Mellon Software Engineering Institute",
+          "attribution_note": "Architecture Tradeoff Analysis Method Collection, Carnegie Mellon Software Engineering Institute",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-sei-qaw-collection",
+          "citation_url": "https://www.sei.cmu.edu/library/quality-attribute-workshop-collection/",
+          "roles": [
+            "method",
+            "learning"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Quality Attribute Workshop Collection, Carnegie Mellon Software Engineering Institute",
           "modification_note": null,
           "excerpt": null,
           "quotation_reviewed": false

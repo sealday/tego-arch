@@ -137,12 +137,12 @@ test('records all Microsoft Learn families as CC-BY-4.0 from official license ev
     source.license_family_id.startsWith('https://learn.microsoft.com/'));
 
   assert.equal(rows.length, 4);
-  assert.equal(sources.length, 6);
+  assert.equal(sources.length, 7);
   for (const item of [...rows, ...sources]) {
     assert.equal(item.exact_license ?? item.license, 'CC-BY-4.0');
     assert.match(
       item.license_evidence_url,
-      /^https:\/\/github\.com\/(?:microsoftdocs\/architecture-center|dotnet\/docs)\/blob\/main\/LICENSE$/i,
+      /^https:\/\/github\.com\/(?:microsoftdocs\/architecture-center\/blob\/(?:main|[0-9a-f]{40})|dotnet\/docs\/blob\/main)\/LICENSE$/i,
     );
   }
 });

@@ -417,3 +417,34 @@ test('keeps the approved visible relations and exercise decision', () => {
   assert.match(document.source, /容量或故障隔离目标变化/u);
   assert.match(document.source, /独立发布需求持续出现/u);
 });
+
+const [manifest, projectStatus, indexes, publicLedger] = await Promise.all([
+  readFile(new URL('../src/generated/topic-manifest.json', import.meta.url), 'utf8').then(JSON.parse),
+  readFile(new URL('../src/generated/project-status.json', import.meta.url), 'utf8').then(JSON.parse),
+  readFile(new URL('../src/generated/topic-indexes.json', import.meta.url), 'utf8').then(JSON.parse),
+  readFile(new URL('../src/generated/source-ledger.json', import.meta.url), 'utf8').then(JSON.parse),
+]);
+
+test('projects the Stage A G009 state without closing STY-00', () => {
+  const topic = manifest.topics.find(({id}) => id === 'STY-00');
+  assert.equal(topic.published, true);
+  assert.equal(topic.status.value, 'pending');
+  assert.deepEqual(topic.primary_sources, [
+    'https://www.sei.cmu.edu/library/architecture-tradeoff-analysis-method-collection/',
+  ]);
+  assert.deepEqual(projectStatus, {
+    schema_version: 1,
+    durable_stories: {completed: 8, total: 20, current: 'G009'},
+    completed_topics: 52,
+    content_documents: 94,
+    governed_sources: 498,
+    sources: {
+      durable_stories: 'docs/content-backlog.md',
+      completed_topics: 'docs/content-backlog.md',
+      content_documents: 'content/**/*.{md,mdx}',
+      governed_sources: 'data/source-ledger.json',
+    },
+  });
+  assert.ok(indexes.style.some(({id, status}) => id === 'STY-00' && status.value === 'pending'));
+  assert.equal(publicLedger.sources.length, 498);
+});

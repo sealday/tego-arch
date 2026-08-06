@@ -910,14 +910,13 @@
         "MOD-02"
       ],
       "primary_sources": [
-        "https://arc42.org/",
-        "https://www.sei.cmu.edu/training/software-architecture-principles-practices/"
+        "https://www.sei.cmu.edu/library/architecture-tradeoff-analysis-method-collection/"
       ],
       "related_cases": [
         "/cases/micro-frontends-single-spa"
       ],
       "related_questions": [],
-      "reviewed_at": "2026-07-24",
+      "reviewed_at": "2026-08-06",
       "review_policy": null,
       "published": true,
       "pattern_group": null,
