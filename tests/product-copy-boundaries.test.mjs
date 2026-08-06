@@ -50,17 +50,7 @@ const normalizeMdxSource = (source, relativePath) => {
   );
 
   const withoutFences = lines.join('\n');
-  for (let cursor = 0; cursor < withoutFences.length;) {
-    const commentOpening = withoutFences.indexOf('<!--', cursor);
-    if (commentOpening === -1) break;
-    const commentClosing = withoutFences.indexOf('-->', commentOpening + 4);
-    if (commentClosing === -1) {
-      assert.fail(`${relativePath}: MDX HTML comment must have a closing delimiter`);
-    }
-    cursor = commentClosing + 3;
-  }
-
-  return withoutFences.replace(/<!--[\s\S]*?-->/gu, blankCharacters);
+  return maskHtmlComments(withoutFences, relativePath);
 };
 
 const parseMdxAst = (source, relativePath) => {
@@ -80,6 +70,84 @@ const parseMdxAst = (source, relativePath) => {
 
   assert.ok(ast, `${relativePath}: MDX parser did not produce an AST`);
   return ast;
+};
+
+const protectedCommentNodeTypes = new Set([
+  'code',
+  'inlineCode',
+  'mdxFlowExpression',
+  'mdxTextExpression',
+  'mdxjsEsm',
+]);
+
+const collectProtectedCommentRanges = (ast) => {
+  const ranges = [];
+  const addRange = (start, end) => {
+    if (Number.isInteger(start) && Number.isInteger(end) && start < end) {
+      ranges.push({start, end});
+    }
+  };
+
+  const visit = (node) => {
+    const start = node.position?.start.offset;
+    const end = node.position?.end.offset;
+    if (protectedCommentNodeTypes.has(node.type)) {
+      addRange(start, end);
+      return;
+    }
+
+    if (node.type === 'mdxJsxFlowElement' || node.type === 'mdxJsxTextElement') {
+      const children = node.children ?? [];
+      if (children.length === 0) {
+        addRange(start, end);
+      } else {
+        addRange(start, children[0].position?.start.offset);
+        addRange(children.at(-1).position?.end.offset, end);
+      }
+      for (const attribute of node.attributes ?? []) {
+        addRange(attribute.position?.start.offset, attribute.position?.end.offset);
+      }
+    }
+
+    for (const child of node.children ?? []) visit(child);
+  };
+
+  visit(ast);
+  return ranges;
+};
+
+const maskHtmlComments = (source, relativePath) => {
+  const probe = source
+    .replaceAll('<!--', 'CMNT')
+    .replaceAll('-->', 'END');
+  assert.equal(probe.length, source.length);
+  const protectedRanges = collectProtectedCommentRanges(
+    parseMdxAst(probe, relativePath),
+  );
+  const masked = source.split('');
+
+  for (let cursor = 0; cursor < source.length;) {
+    const opening = source.indexOf('<!--', cursor);
+    if (opening === -1) break;
+    const isProtected = protectedRanges.some(
+      ({start, end}) => opening >= start && opening < end,
+    );
+    if (isProtected) {
+      cursor = opening + 4;
+      continue;
+    }
+
+    const closing = source.indexOf('-->', opening + 4);
+    if (closing === -1) {
+      assert.fail(`${relativePath}: MDX HTML comment must have a closing delimiter`);
+    }
+    for (let index = opening; index < closing + 3; index += 1) {
+      if (masked[index] !== '\n') masked[index] = ' ';
+    }
+    cursor = closing + 3;
+  }
+
+  return masked.join('');
 };
 
 const excludedAstTypes = new Set([
@@ -199,10 +267,10 @@ const issueFromLine = (relativePath, source, line, ruleId, excerpt) => ({
 
 const findEditorialIssues = (relativePath, source, ast) => {
   const issues = [];
-  let insideEditorialSection = false;
 
-  const collectListItems = (node) => {
-    if (node.type === 'listItem') {
+  const inspectList = (list) => {
+    for (const node of list.children ?? []) {
+      if (node.type !== 'listItem') continue;
       const text = renderVisibleBlock(node).text.trim();
       if (/^补充[^\n]+$/u.test(text)) {
         issues.push(issueFromLine(
@@ -213,25 +281,31 @@ const findEditorialIssues = (relativePath, source, ast) => {
         ));
       }
     }
-    for (const child of node.children ?? []) collectListItems(child);
   };
 
-  for (const node of ast.children) {
-    if (node.type === 'heading' && node.depth <= 2) {
-      const heading = renderVisibleBlock(node).text.trim();
-      insideEditorialSection = node.depth === 2 && heading === '后续待补';
-      if (insideEditorialSection) {
-        issues.push(issueFromLine(
-          relativePath,
-          source,
-          node.position.start.line,
-          'editorial-todo-heading',
-        ));
+  const processContainer = (container) => {
+    let insideEditorialSection = false;
+    for (const node of container.children ?? []) {
+      if (node.type === 'heading' && node.depth <= 2) {
+        const heading = renderVisibleBlock(node).text.trim();
+        insideEditorialSection = node.depth === 2 && heading === '后续待补';
+        if (insideEditorialSection) {
+          issues.push(issueFromLine(
+            relativePath,
+            source,
+            node.position.start.line,
+            'editorial-todo-heading',
+          ));
+        }
+      } else if (insideEditorialSection && node.type === 'list') {
+        inspectList(node);
       }
-      continue;
+
+      if (node.children?.length) processContainer(node);
     }
-    if (insideEditorialSection) collectListItems(node);
-  }
+  };
+
+  processContainer(ast);
 
   return issues;
 };
@@ -545,6 +619,103 @@ test('joins visible text across link boundaries for contextual rules', () => {
       line: 2,
       ruleId: 'generated-page-meta',
       excerpt: '计划主题仍由[长期 backlog] 跟踪。',
+    },
+  ]);
+});
+
+test('AST comment preprocessing preserves closed tokens in inline code', () => {
+  const fixture = `# Example
+\`<!-- 本页从机器可读主题清单生成 -->\`
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/closed-comment-code.mdx', fixture), [
+    {
+      file: 'content/cases/closed-comment-code.mdx',
+      line: 2,
+      ruleId: 'generated-page-meta',
+      excerpt: '<!-- 本页从机器可读主题清单生成 -->',
+    },
+  ]);
+});
+
+test('AST comment preprocessing preserves unclosed tokens in inline code', () => {
+  const fixture = `# Example
+\`<!-- 本页从机器可读主题清单生成\`
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/unclosed-comment-code.mdx', fixture), [
+    {
+      file: 'content/cases/unclosed-comment-code.mdx',
+      line: 2,
+      ruleId: 'generated-page-meta',
+      excerpt: '<!-- 本页从机器可读主题清单生成',
+    },
+  ]);
+});
+
+test('AST comment preprocessing still masks and validates actual comments', () => {
+  assert.deepEqual(
+    findProductCopyIssues(
+      'content/cases/closed-comment.mdx',
+      '<!-- 本页从机器可读主题清单生成 -->\n',
+    ),
+    [],
+  );
+  assert.throws(
+    () => findProductCopyIssues(
+      'content/cases/unclosed-comment.mdx',
+      '<!-- 本页从机器可读主题清单生成\n',
+    ),
+    (error) => {
+      assert.match(error.message, /content\/cases\/unclosed-comment\.mdx/u);
+      assert.match(error.message, /HTML comment/u);
+      return true;
+    },
+  );
+});
+
+test('finds nested editorial sections inside blockquotes without duplicates', () => {
+  const fixture = `> ## 后续待补
+>
+> - 补充容器案例。
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/paths/blockquote.mdx', fixture), [
+    {
+      file: 'content/paths/blockquote.mdx',
+      line: 1,
+      ruleId: 'editorial-todo-heading',
+      excerpt: '> ## 后续待补',
+    },
+    {
+      file: 'content/paths/blockquote.mdx',
+      line: 3,
+      ruleId: 'editorial-task-item',
+      excerpt: '> - 补充容器案例。',
+    },
+  ]);
+});
+
+test('finds nested editorial sections inside MDX JSX without duplicates', () => {
+  const fixture = `<Section>
+## 后续待补
+
+- 补充容器案例。
+</Section>
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/paths/jsx-section.mdx', fixture), [
+    {
+      file: 'content/paths/jsx-section.mdx',
+      line: 2,
+      ruleId: 'editorial-todo-heading',
+      excerpt: '## 后续待补',
+    },
+    {
+      file: 'content/paths/jsx-section.mdx',
+      line: 4,
+      ruleId: 'editorial-task-item',
+      excerpt: '- 补充容器案例。',
     },
   ]);
 });
