@@ -1,4 +1,6 @@
 import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
+import {readFile} from 'node:fs/promises';
 import test from 'node:test';
 
 import {
@@ -37,7 +39,30 @@ function source(id, locator, policy = 'stable', extra = {}) {
 }
 
 function ledger(sources) {
-  return {schema_version: 1, sources, documents: {}};
+  return {
+    schema_version: 1,
+    sources,
+    documents: {},
+    superseded_transports: [],
+  };
+}
+
+function migrationAuthority(
+  sourceIds,
+  transport,
+  replacement,
+  resultValue,
+) {
+  return {
+    source_ids: sourceIds,
+    transport_locator: transport,
+    replacement_transport_locator: replacement,
+    superseded_at: resultValue.last_attempt.at,
+    reason: 'ledger transport target changed for exact source_ids',
+    result_sha256: createHash('sha256')
+      .update(`${JSON.stringify(resultValue)}\n`)
+      .digest('hex'),
+  };
 }
 
 function attempt({
@@ -88,6 +113,18 @@ function superseded(resultValue, replacement, extra = {}) {
     result: structuredClone(resultValue),
     ...extra,
   };
+}
+
+function authorizeMigration(governed, resultValue, replacement) {
+  governed.superseded_transports = [
+    migrationAuthority(
+      resultValue.source_ids,
+      resultValue.transport_locator,
+      replacement,
+      resultValue,
+    ),
+  ];
+  return governed;
 }
 
 test('validates complete transport-deduplicated link-health cache coverage', () => {
@@ -174,9 +211,11 @@ test('validates governed superseded transport history without treating it as cur
   const oldTarget = buildLinkTargets(
     ledger([source('a', 'https://example.com/old')]),
   )[0];
+  const oldResult = result(oldTarget);
+  authorizeMigration(governed, oldResult, 'https://example.com/new');
   const cached = cacheFor(governed);
   cached.superseded_results = [
-    superseded(result(oldTarget), 'https://example.com/new'),
+    superseded(oldResult, 'https://example.com/new'),
   ];
 
   assert.deepEqual(validateLinkHealthCacheStructure(governed, cached).errors, []);
@@ -187,12 +226,86 @@ test('validates governed superseded transport history without treating it as cur
   );
 });
 
-test('rejects malformed overlapping orphaned and incomplete superseded history', () => {
+test('requires every authority archive and rejects normalized-result hash tampering', () => {
   const governed = ledger([source('a', 'https://example.com/new')]);
-  const current = cacheFor(governed);
   const oldTarget = buildLinkTargets(
     ledger([source('a', 'https://example.com/old')]),
   )[0];
+  const oldResult = result(oldTarget);
+  authorizeMigration(governed, oldResult, 'https://example.com/new');
+  const valid = cacheFor(governed);
+  valid.superseded_results = [
+    superseded(oldResult, 'https://example.com/new'),
+  ];
+
+  for (const [label, mutate] of [
+    ['deleted property', (cache) => delete cache.superseded_results],
+    ['empty archive', (cache) => (cache.superseded_results = [])],
+    [
+      'tampered observation',
+      (cache) => {
+        cache.superseded_results[0].result.attempt_history[0].http_status = 201;
+      },
+    ],
+    [
+      'tampered authority hash',
+      (_cache, governedValue) => {
+        governedValue.superseded_transports[0].result_sha256 = '0'.repeat(64);
+      },
+    ],
+  ]) {
+    const cache = structuredClone(valid);
+    const governedValue = structuredClone(governed);
+    mutate(cache, governedValue);
+    assert.match(
+      validateLinkHealthCacheStructure(governedValue, cache).errors.join('\n'),
+      /required superseded archive|result_sha256 does not match/u,
+      label,
+    );
+  }
+});
+
+test('real Team Topologies authority requires the exact governed 12-observation archive', async () => {
+  const [governed, cached] = await Promise.all([
+    readFile(new URL('../data/source-ledger.json', import.meta.url), 'utf8').then(
+      JSON.parse,
+    ),
+    readFile(
+      new URL('../data/source-link-health.json', import.meta.url),
+      'utf8',
+    ).then(JSON.parse),
+  ]);
+  const id = 'src-team-topologies-organization-dynamics-2020';
+  const archive = cached.superseded_results.find(({result: entry}) =>
+    entry.source_ids.includes(id),
+  );
+  assert.equal(archive.result.attempt_history.length, 12);
+  assert.deepEqual(validateLinkHealthCacheStructure(governed, cached).errors, []);
+
+  for (const mutate of [
+    (value) => delete value.superseded_results,
+    (value) => (value.superseded_results = []),
+    (value) => {
+      value.superseded_results[0].result.attempt_history[3].outcome = 'healthy';
+      value.superseded_results[0].result.attempt_history[3].http_status = 200;
+    },
+  ]) {
+    const changed = structuredClone(cached);
+    mutate(changed);
+    assert.match(
+      validateLinkHealthCacheStructure(governed, changed).errors.join('\n'),
+      /required superseded archive|result_sha256 does not match/u,
+    );
+  }
+});
+
+test('rejects malformed overlapping orphaned and incomplete superseded history', () => {
+  const governed = ledger([source('a', 'https://example.com/new')]);
+  const oldTarget = buildLinkTargets(
+    ledger([source('a', 'https://example.com/old')]),
+  )[0];
+  authorizeMigration(governed, result(oldTarget), 'https://example.com/new');
+  const current = cacheFor(governed);
   const cases = [
     [
       'overlap',
@@ -1076,6 +1189,11 @@ test('archives an exact-source transport change while probing the replacement fr
   const previousLedger = ledger([source('a', 'https://example.com/old')]);
   const governed = ledger([source('a', 'https://example.com/new')]);
   const previousCache = cacheFor(previousLedger);
+  authorizeMigration(
+    governed,
+    previousCache.results[0],
+    'https://example.com/new',
+  );
   const {cache} = await checkLiveLinks(governed, {
     previousCache,
     now,
@@ -1090,14 +1208,34 @@ test('archives an exact-source transport change while probing the replacement fr
   ]);
 });
 
+test('preserves a changed-transport result and fails closed without migration authority', async () => {
+  const previousLedger = ledger([source('a', 'https://example.com/old')]);
+  const governed = ledger([source('a', 'https://example.com/new')]);
+  const previousCache = cacheFor(previousLedger);
+  const checked = await checkLiveLinks(governed, {
+    previousCache,
+    now,
+    fetchImpl: async () => new Response(null, {status: 200}),
+  });
+
+  assert.ok(
+    checked.cache.results.some(
+      ({transport_locator}) => transport_locator === 'https://example.com/old',
+    ),
+  );
+  assert.match(checked.errors.join('\n'), /transport migration.*authority/u);
+});
+
 test('preserves existing superseded archives across refresh and cache merge', async () => {
   const governed = ledger([source('a', 'https://example.com/current')]);
   const ancientTarget = buildLinkTargets(
     ledger([source('a', 'https://example.com/ancient')]),
   )[0];
+  const ancientResult = result(ancientTarget);
+  authorizeMigration(governed, ancientResult, 'https://example.com/current');
   const previousCache = cacheFor(governed);
   previousCache.superseded_results = [
-    superseded(result(ancientTarget), 'https://example.com/current', {
+    superseded(ancientResult, 'https://example.com/current', {
       superseded_at: at,
     }),
   ];
@@ -1136,6 +1274,7 @@ test('cache merge migrates an old exact-source result and preserves its observat
     at: '2026-07-24T00:00:01.000Z',
   };
   oldCache.generated_at = '2026-07-24T00:00:01.000Z';
+  authorizeMigration(governed, oldCache.results[0], 'https://example.com/new');
 
   const merged = mergeLinkHealthCaches(
     governed,
@@ -1144,11 +1283,115 @@ test('cache merge migrates an old exact-source result and preserves its observat
   );
   assert.deepEqual(merged.cache.superseded_results, [
     superseded(oldCache.results[0], 'https://example.com/new', {
-      superseded_at: '2026-07-24T00:00:02.000Z',
+      superseded_at: oldCache.results[0].last_attempt.at,
     }),
   ]);
   assert.equal(merged.cache.results[0].attempt_history.length, 1);
   assert.deepEqual(merged.errors, []);
+});
+
+test('merges duplicate superseded archives by unioning history independent of cache order', () => {
+  const governed = ledger([source('a', 'https://example.com/current')]);
+  const oldTarget = buildLinkTargets(
+    ledger([source('a', 'https://example.com/old')]),
+  )[0];
+  const success = attempt({
+    final: oldTarget.transport_locator,
+    when: '2026-07-23T00:00:00.000Z',
+  });
+  const failure = attempt({
+    outcome: 'error',
+    status: 503,
+    final: oldTarget.transport_locator,
+  });
+  const complete = {
+    ...result(oldTarget, failure),
+    last_success: success,
+    attempt_history: [success, failure],
+    review_status: 'stale',
+  };
+  authorizeMigration(governed, complete, 'https://example.com/current');
+  const first = cacheFor(governed);
+  first.superseded_results = [
+    superseded(result(oldTarget, success), 'https://example.com/current'),
+  ];
+  const second = cacheFor(governed);
+  second.superseded_results = [
+    superseded(
+      {
+        ...result(oldTarget, failure),
+        last_success: null,
+        review_status: 'stale',
+      },
+      'https://example.com/current',
+    ),
+  ];
+
+  const forward = mergeLinkHealthCaches(governed, [first, second], {now});
+  const reverse = mergeLinkHealthCaches(governed, [second, first], {now});
+  assert.deepEqual(forward.errors, []);
+  assert.deepEqual(reverse.errors, []);
+  assert.deepEqual(forward.cache, reverse.cache);
+  assert.deepEqual(forward.cache.superseded_results[0].result, complete);
+});
+
+test('uses migration authority to resolve a cited-alias exact-source ambiguity', async () => {
+  const old = 'https://example.com/old';
+  const replacement = 'https://example.com/current';
+  const governedSource = source('a', replacement, 'stable', {
+    locator_aliases: [
+      {
+        locator: old,
+        transport_locator: old,
+        expected_final_transport_locator: old,
+        expected_final_approved_at: '2026-07-23',
+        expected_final_approval_note: 'Historical citation',
+        superseded_at: '2026-07-24',
+      },
+    ],
+  });
+  const governed = ledger([governedSource]);
+  governed.documents = {
+    'content/example.mdx': {
+      citations: [{source_id: 'a', citation_url: old}],
+    },
+  };
+  const oldTarget = {transport_locator: old, source_ids: ['a']};
+  const oldResult = result(oldTarget);
+  const previousCache = {
+    schema_version: 1,
+    generated_at: at,
+    results: [oldResult],
+  };
+  authorizeMigration(governed, oldResult, replacement);
+
+  const resolved = await checkLiveLinks(governed, {
+    previousCache,
+    now,
+    fetchImpl: async () => new Response(null, {status: 200}),
+  });
+  assert.deepEqual(
+    resolved.cache.results.map(({transport_locator}) => transport_locator),
+    [replacement],
+  );
+  assert.deepEqual(resolved.cache.superseded_results, [
+    superseded(oldResult, replacement),
+  ]);
+  assert.deepEqual(resolved.errors, []);
+
+  const unresolvedLedger = structuredClone(governed);
+  unresolvedLedger.superseded_transports = [];
+  const unresolved = await checkLiveLinks(unresolvedLedger, {
+    previousCache,
+    now,
+    fetchImpl: async () => new Response(null, {status: 200}),
+  });
+  assert.ok(
+    unresolved.cache.results.some(
+      ({transport_locator}) => transport_locator === old,
+    ),
+  );
+  assert.match(unresolved.errors.join('\n'), /ambiguous transport migration/u);
 });
 
 test('reports live cache structure failures alongside verdict failures', async () => {
@@ -1315,6 +1558,7 @@ test('merges healthy auth retired and stale health into the public ledger', () =
     return entry;
   });
   const merged = mergePublicLedgerHealth(governed, cached);
+  assert.equal(Object.hasOwn(merged, 'superseded_transports'), false);
   assert.deepEqual(
     Object.fromEntries(
       merged.sources.map(({id, health_summary}) => [id, health_summary]),

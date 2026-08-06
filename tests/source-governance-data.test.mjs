@@ -191,6 +191,26 @@ test('uses policy-compatible transports for known access-controlled sources', as
     teamTopologies.expected_final_approval_note,
     /official Team Topologies landing page.*HTTP 200.*2026-08-06/u,
   );
+  assert.deepEqual(ledger.superseded_transports, [
+    {
+      source_ids: ['src-team-topologies-organization-dynamics-2020'],
+      transport_locator:
+        'https://teamtopologies.com/all-mini-books/mini-book-organization-dynamics-with-team-topologies',
+      replacement_transport_locator: expectedTransport,
+      superseded_at: '2026-08-06T16:59:31.495Z',
+      reason:
+        'The old Squarespace transport repeatedly reset Node.js connections; the reviewed official landing transport replaces it.',
+      result_sha256:
+        '80676dc47aadfa1746abee2e823521043cd0e6b8978db2efeecea1425a6e5285',
+    },
+  ]);
+
+  const mutated = structuredClone(ledger);
+  mutated.superseded_transports[0].result_sha256 = 'not-a-sha';
+  assert.match(
+    parseSourceLedger(mutated).errors.join('\n'),
+    /result_sha256/u,
+  );
 });
 
 test('validates the seven Batch 4 license families against mutation-sensitive evidence rules', async () => {

@@ -71,6 +71,7 @@ function ledger(overrides = {}) {
     schema_version: 1,
     sources: [validSource],
     documents: {'content/cases/example.mdx': validDocument},
+    superseded_transports: [],
     ...overrides,
   };
 }
@@ -137,6 +138,43 @@ test('validates canonical source records and document citations', () => {
   };
   const cc0Parsed = parseSourceLedger(ledger({sources: [cc0Source], documents: {}}));
   assert.deepEqual(cc0Parsed.errors, []);
+});
+
+test('validates canonical superseded transport migration authority', () => {
+  const authority = {
+    source_ids: [validSource.id],
+    transport_locator: 'https://old.example.com/source',
+    replacement_transport_locator: validSource.transport_locator,
+    superseded_at: '2026-07-24T00:00:00.000Z',
+    reason: 'Reviewed transport migration',
+    result_sha256:
+      '80676dc47aadfa1746abee2e823521043cd0e6b8978db2efeecea1425a6e5285',
+  };
+  assert.deepEqual(
+    parseSourceLedger(ledger({superseded_transports: [authority]})).errors,
+    [],
+  );
+
+  const mutations = [
+    ['orphan source', {...authority, source_ids: ['src-missing']}, /does not exist/u],
+    [
+      'bad replacement',
+      {...authority, replacement_transport_locator: 'https://elsewhere.example/'},
+      /replacement_transport_locator must equal the current transport/u,
+    ],
+    ['bad timestamp', {...authority, superseded_at: '2026-02-30'}, /superseded_at/u],
+    ['empty reason', {...authority, reason: ''}, /reason must be non-empty/u],
+    ['bad hash', {...authority, result_sha256: 'not-a-sha'}, /result_sha256/u],
+  ];
+  for (const [label, mutated, expected] of mutations) {
+    assert.match(
+      parseSourceLedger(ledger({superseded_transports: [mutated]})).errors.join(
+        '\n',
+      ),
+      expected,
+      label,
+    );
+  }
 });
 
 test('requires a valid source registration date', () => {
@@ -375,6 +413,7 @@ test('rejects duplicate sources invalid enums and dangling citations', () => {
   };
   const parsed = parseSourceLedger({
     schema_version: 1,
+    superseded_transports: [],
     sources: [validSource, duplicate, malformedSource],
     documents: {
       'outside/example.mdx': malformedDocument,
@@ -698,6 +737,7 @@ test('keeps stable source identity across citation anchors queries and locator m
 
   const wrongQueryCitation = parseSourceLedger({
     schema_version: 1,
+    superseded_transports: [],
     sources: [{
       ...validSource,
       id: 'src-version-one',

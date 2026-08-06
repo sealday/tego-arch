@@ -28178,5 +28178,17 @@
         }
       ]
     }
-  }
+  },
+  "superseded_transports": [
+    {
+      "source_ids": [
+        "src-team-topologies-organization-dynamics-2020"
+      ],
+      "transport_locator": "https://teamtopologies.com/all-mini-books/mini-book-organization-dynamics-with-team-topologies",
+      "replacement_transport_locator": "https://landing.teamtopologies.com/organization-dynamics-with-team-topologies",
+      "superseded_at": "2026-08-06T16:59:31.495Z",
+      "reason": "The old Squarespace transport repeatedly reset Node.js connections; the reviewed official landing transport replaces it.",
+      "result_sha256": "80676dc47aadfa1746abee2e823521043cd0e6b8978db2efeecea1425a6e5285"
+    }
+  ]
 }

@@ -67196,7 +67196,7 @@
     {
       "superseded_at": "2026-08-06T16:59:31.495Z",
       "replacement_transport_locator": "https://landing.teamtopologies.com/organization-dynamics-with-team-topologies",
-      "reason": "ledger transport target changed for exact source_ids",
+      "reason": "The old Squarespace transport repeatedly reset Node.js connections; the reviewed official landing transport replaces it.",
       "result": {
         "transport_locator": "https://teamtopologies.com/all-mini-books/mini-book-organization-dynamics-with-team-topologies",
         "source_ids": [

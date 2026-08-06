@@ -184,6 +184,14 @@ const aliasKeys = [
 ];
 
 const tombstoneKeys = ['retired_at', 'replacement_source_id', 'reason'];
+const supersededTransportKeys = [
+  'source_ids',
+  'transport_locator',
+  'replacement_transport_locator',
+  'superseded_at',
+  'reason',
+  'result_sha256',
+];
 const documentKeys = ['reviewed_at', 'copyright_checks', 'citations'];
 const citationKeys = [
   'source_id',
@@ -874,10 +882,98 @@ function validateReplacementGraph(sourcesById, errors) {
   }
 }
 
+function validateSupersededTransports(authorities, sourcesById, file, errors) {
+  if (authorities === undefined) return;
+  if (!Array.isArray(authorities)) {
+    errors.push(`${file}: superseded_transports must be an array`);
+    return;
+  }
+  const seen = new Set();
+  authorities.forEach((authority, index) => {
+    const label = `${file}: superseded_transports[${index}]`;
+    if (!validateExactKeys(authority, supersededTransportKeys, label, errors)) {
+      return;
+    }
+    if (
+      !Array.isArray(authority.source_ids) ||
+      authority.source_ids.length === 0 ||
+      !authority.source_ids.every(nonEmpty) ||
+      new Set(authority.source_ids).size !== authority.source_ids.length ||
+      JSON.stringify(authority.source_ids) !==
+        JSON.stringify([...authority.source_ids].sort((a, b) => a.localeCompare(b, 'en')))
+    ) {
+      errors.push(`${label}: source_ids must be unique sorted non-empty strings`);
+    } else {
+      for (const sourceId of authority.source_ids) {
+        if (!sourcesById.has(sourceId)) {
+          errors.push(`${label}: source_id "${sourceId}" does not exist`);
+        }
+      }
+    }
+    for (const field of [
+      'transport_locator',
+      'replacement_transport_locator',
+    ]) {
+      if (!isHttps(authority[field])) {
+        errors.push(`${label}: ${field} must be HTTPS`);
+      } else if (canonicalizeTransportLocator(authority[field]) !== authority[field]) {
+        errors.push(`${label}: ${field} must be canonical and omit fragments`);
+      }
+    }
+    if (authority.transport_locator === authority.replacement_transport_locator) {
+      errors.push(`${label}: transport and replacement must differ`);
+    }
+    const currentTransports = new Set(
+      (authority.source_ids ?? [])
+        .map((sourceId) => sourcesById.get(sourceId)?.transport_locator)
+        .filter(Boolean),
+    );
+    if (
+      currentTransports.size !== 1 ||
+      !currentTransports.has(authority.replacement_transport_locator)
+    ) {
+      errors.push(
+        `${label}: replacement_transport_locator must equal the current transport for every source_id`,
+      );
+    }
+    if (
+      typeof authority.superseded_at !== 'string' ||
+      Number.isNaN(Date.parse(authority.superseded_at)) ||
+      new Date(authority.superseded_at).toISOString() !== authority.superseded_at
+    ) {
+      errors.push(`${label}: superseded_at must be an ISO timestamp`);
+    }
+    if (!nonEmpty(authority.reason)) {
+      errors.push(`${label}: reason must be non-empty`);
+    }
+    if (!/^[a-f0-9]{64}$/.test(authority.result_sha256)) {
+      errors.push(`${label}: result_sha256 must be a lowercase SHA-256 digest`);
+    }
+    const key = `${authority.transport_locator}\0${JSON.stringify(
+      authority.source_ids,
+    )}`;
+    if (seen.has(key)) errors.push(`${label}: duplicate migration authority`);
+    seen.add(key);
+  });
+}
+
 export function parseSourceLedger(value, file = 'data/source-ledger.json') {
   const errors = [];
-  if (!validateExactKeys(value, ['schema_version', 'sources', 'documents'], file, errors)) {
+  if (!isObject(value)) {
+    errors.push(`${file}: expected an object`);
     return {ledger: emptyLedger(), errors: errors.sort((a, b) => a.localeCompare(b, 'en'))};
+  }
+  const allowedKeys = new Set([
+    'schema_version',
+    'sources',
+    'documents',
+    'superseded_transports',
+  ]);
+  for (const key of Object.keys(value)) {
+    if (!allowedKeys.has(key)) errors.push(`${file}: unknown field "${key}"`);
+  }
+  for (const key of ['schema_version', 'sources', 'documents']) {
+    if (!Object.hasOwn(value, key)) errors.push(`${file}: missing required field "${key}"`);
   }
   if (value.schema_version !== 1) {
     errors.push(`${file}: schema_version must equal 1`);
@@ -906,6 +1002,12 @@ export function parseSourceLedger(value, file = 'data/source-ledger.json') {
   }
   validateGlobalLocatorUniqueness(value.sources, errors);
   validateReplacementGraph(sourcesById, errors);
+  validateSupersededTransports(
+    value.superseded_transports,
+    sourcesById,
+    file,
+    errors,
+  );
   for (const [documentPath, entry] of Object.entries(value.documents)) {
     validateDocumentEntry(documentPath, entry, sourcesById, errors);
   }
@@ -1304,6 +1406,17 @@ export function validateSourceGovernance(documents, ledger) {
           {...entry, citations: [...entry.citations].sort(citationSort)},
         ]),
     ),
+    ...(ledger.superseded_transports !== undefined
+      ? {
+          superseded_transports: [...ledger.superseded_transports].sort(
+            (left, right) =>
+              left.transport_locator.localeCompare(
+                right.transport_locator,
+                'en',
+              ),
+          ),
+        }
+      : {}),
   };
   return {
     errors: errors.sort((left, right) => left.localeCompare(right, 'en')),

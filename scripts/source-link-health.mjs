@@ -1,4 +1,4 @@
-import {randomUUID} from 'node:crypto';
+import {createHash, randomUUID} from 'node:crypto';
 import {mkdir, readFile, rename, rm, writeFile} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -53,6 +53,7 @@ function sourceTransports(source, citedUrls = []) {
         source.expected_final_transport_locator,
       expected_final_approved_at: source.expected_final_approved_at,
       expected_final_approval_note: source.expected_final_approval_note,
+      primary_transport: true,
     },
   ];
   for (const alias of source.locator_aliases ?? []) {
@@ -81,6 +82,7 @@ function sourceTransports(source, citedUrls = []) {
         alias.expected_final_transport_locator,
       expected_final_approved_at: alias.expected_final_approved_at,
       expected_final_approval_note: alias.expected_final_approval_note,
+      primary_transport: false,
     });
   }
   return values.filter(
@@ -92,6 +94,13 @@ function sourceTransports(source, citedUrls = []) {
 
 function collectTargets(ledger) {
   const groups = new Map();
+  const superseded = new Set(
+    (ledger.superseded_transports ?? []).flatMap((authority) =>
+      (authority.source_ids ?? []).map(
+        (sourceId) => `${sourceId}\0${authority.transport_locator}`,
+      ),
+    ),
+  );
   const citationsBySource = new Map();
   for (const document of Object.values(ledger.documents ?? {})) {
     for (const citation of document.citations ?? []) {
@@ -106,6 +115,7 @@ function collectTargets(ledger) {
       citationsBySource.get(source.id) ?? [],
     )) {
       const locator = transportLocator(transport.transport_locator);
+      if (superseded.has(`${source.id}\0${locator}`)) continue;
       const current = groups.get(locator) ?? {
         transport_locator: locator,
         expected_final_transport_locator:
@@ -115,6 +125,7 @@ function collectTargets(ledger) {
         source_ids: [],
         link_policy: source.link_policy,
         conflicts: [],
+        primary_transport: false,
       };
       const fields = [
         'link_policy',
@@ -130,6 +141,7 @@ function collectTargets(ledger) {
         }
       }
       current.source_ids.push(source.id);
+      current.primary_transport ||= transport.primary_transport;
       groups.set(locator, current);
     }
   }
@@ -145,7 +157,9 @@ function collectTargets(ledger) {
 }
 
 export function buildLinkTargets(ledger) {
-  return collectTargets(ledger).map(({conflicts: _conflicts, ...target}) => target);
+  return collectTargets(ledger).map(
+    ({conflicts: _conflicts, primary_transport: _primary, ...target}) => target,
+  );
 }
 
 function isRecord(value) {
@@ -209,11 +223,120 @@ function sourceIdsKey(sourceIds) {
 
 const supersededReason = 'ledger transport target changed for exact source_ids';
 
+function normalizedResultSha256(result) {
+  return createHash('sha256')
+    .update(`${JSON.stringify(result)}\n`)
+    .digest('hex');
+}
+
+function authorityKey(transportLocatorValue, sourceIds) {
+  return `${transportLocatorValue}\0${sourceIdsKey(sourceIds)}`;
+}
+
+function newerObservation(left, right) {
+  if (!left) return right;
+  if (!right) return left;
+  const difference = Date.parse(left.at) - Date.parse(right.at);
+  if (difference !== 0) return difference > 0 ? left : right;
+  return JSON.stringify(left).localeCompare(JSON.stringify(right), 'en') >= 0
+    ? left
+    : right;
+}
+
+function mergeResultObservations(left, right) {
+  if (!left) return structuredClone(right);
+  const newer = newerObservation(left.last_attempt, right.last_attempt) ===
+    left.last_attempt
+    ? left
+    : right;
+  const historyByObservation = new Map();
+  for (const attempt of [...left.attempt_history, ...right.attempt_history]) {
+    const key = JSON.stringify([
+      attempt.at,
+      attempt.outcome,
+      attempt.final_transport_locator,
+      attempt.http_status,
+    ]);
+    const current = historyByObservation.get(key);
+    if (
+      !current ||
+      JSON.stringify(attempt).localeCompare(JSON.stringify(current), 'en') > 0
+    ) {
+      historyByObservation.set(key, attempt);
+    }
+  }
+  return {
+    ...structuredClone(newer),
+    last_success: structuredClone(
+      newerObservation(left.last_success, right.last_success) ?? null,
+    ),
+    attempt_history: [...historyByObservation.values()].sort((a, b) => {
+      const difference = Date.parse(a.at) - Date.parse(b.at);
+      return difference || JSON.stringify(a).localeCompare(JSON.stringify(b), 'en');
+    }),
+  };
+}
+
 function collectSupersededResults(ledger, caches, now) {
-  const targets = collectTargets(ledger);
-  const currentTransports = new Set(
-    targets.map(({transport_locator}) => transport_locator),
+  const authorities = new Map(
+    (ledger.superseded_transports ?? []).map((authority) => [
+      authorityKey(authority.transport_locator, authority.source_ids),
+      authority,
+    ]),
   );
+  const archivedResults = new Map();
+  const archiveMetadata = new Map();
+  for (const cache of caches) {
+    for (const entry of cache?.superseded_results ?? []) {
+      if (!entry?.result) continue;
+      const key = authorityKey(
+        entry.result.transport_locator,
+        entry.result.source_ids ?? [],
+      );
+      archivedResults.set(
+        key,
+        mergeResultObservations(archivedResults.get(key), entry.result),
+      );
+      const currentMetadata = archiveMetadata.get(key);
+      if (
+        !currentMetadata ||
+        JSON.stringify(entry).localeCompare(JSON.stringify(currentMetadata), 'en') < 0
+      ) {
+        archiveMetadata.set(key, structuredClone(entry));
+      }
+    }
+  }
+  for (const cache of caches) {
+    for (const result of cache?.results ?? []) {
+      const key = authorityKey(result.transport_locator, result.source_ids ?? []);
+      if (!authorities.has(key)) continue;
+      archivedResults.set(
+        key,
+        mergeResultObservations(archivedResults.get(key), result),
+      );
+    }
+  }
+  return [...archivedResults.entries()].map(([key, result]) => {
+    const authority = authorities.get(key);
+    const metadata = archiveMetadata.get(key);
+    return {
+      superseded_at:
+        authority?.superseded_at ?? metadata?.superseded_at ?? now.toISOString(),
+      replacement_transport_locator:
+        authority?.replacement_transport_locator ??
+        metadata?.replacement_transport_locator,
+      reason: authority?.reason ?? metadata?.reason ?? supersededReason,
+      result,
+    };
+  }).sort((left, right) =>
+    left.result.transport_locator.localeCompare(
+      right.result.transport_locator,
+      'en',
+    ),
+  );
+}
+
+function ambiguousMigrationResults(ledger, targets, results) {
   const targetsBySourceIds = new Map();
   for (const target of targets) {
     const key = sourceIdsKey(target.source_ids);
@@ -221,39 +344,24 @@ function collectSupersededResults(ledger, caches, now) {
     matches.push(target);
     targetsBySourceIds.set(key, matches);
   }
-  const archived = new Map();
-  for (const cache of caches) {
-    for (const entry of cache?.superseded_results ?? []) {
-      const key = `${entry?.result?.transport_locator}\0${sourceIdsKey(
-        entry?.result?.source_ids ?? [],
-      )}`;
-      if (!archived.has(key)) archived.set(key, structuredClone(entry));
-    }
-  }
-  for (const cache of caches) {
-    for (const result of cache?.results ?? []) {
-      if (currentTransports.has(result.transport_locator)) continue;
-      const replacements = targetsBySourceIds.get(
-        sourceIdsKey(result.source_ids ?? []),
-      );
-      if (replacements?.length !== 1) continue;
-      const [replacement] = replacements;
-      const key = `${result.transport_locator}\0${sourceIdsKey(result.source_ids)}`;
-      if (archived.has(key)) continue;
-      archived.set(key, {
-        superseded_at: now.toISOString(),
-        replacement_transport_locator: replacement.transport_locator,
-        reason: supersededReason,
-        result: structuredClone(result),
-      });
-    }
-  }
-  return [...archived.values()].sort((left, right) =>
-    left.result.transport_locator.localeCompare(
-      right.result.transport_locator,
-      'en',
+  const authorities = new Set(
+    (ledger.superseded_transports ?? []).map((authority) =>
+      authorityKey(authority.transport_locator, authority.source_ids),
     ),
   );
+  return results.filter((result) => {
+    const matches = targetsBySourceIds.get(sourceIdsKey(result.source_ids ?? []));
+    const target = matches?.find(
+      ({transport_locator: locator}) => locator === result.transport_locator,
+    );
+    return (
+      matches?.some(({primary_transport}) => primary_transport) &&
+      (!target || target.primary_transport === false) &&
+      !authorities.has(
+        authorityKey(result.transport_locator, result.source_ids ?? []),
+      )
+    );
+  });
 }
 
 export function validateLinkHealthCacheStructure(ledger, cache) {
@@ -298,6 +406,13 @@ export function validateLinkHealthCacheStructure(ledger, cache) {
   const superseded = Array.isArray(cache.superseded_results)
     ? cache.superseded_results
     : [];
+  const authorities = new Map(
+    (ledger.superseded_transports ?? []).map((authority) => [
+      authorityKey(authority.transport_locator, authority.source_ids),
+      authority,
+    ]),
+  );
+  const observedAuthorityKeys = new Set();
   const archivedByTransport = new Map();
   for (const archive of superseded) {
     const result = archive?.result;
@@ -395,6 +510,34 @@ export function validateLinkHealthCacheStructure(ledger, cache) {
     if (!reviewStatuses.has(result.review_status)) {
       prefix('review_status is invalid');
     }
+    const key = authorityKey(result.transport_locator, result.source_ids ?? []);
+    const authority = authorities.get(key);
+    if (!authority) {
+      prefix('has no source-ledger migration authority');
+    } else {
+      observedAuthorityKeys.add(key);
+      if (
+        archive.superseded_at !== authority.superseded_at ||
+        archive.replacement_transport_locator !==
+          authority.replacement_transport_locator ||
+        archive.reason !== authority.reason
+      ) {
+        prefix('metadata does not match source-ledger migration authority');
+      }
+      if (normalizedResultSha256(result) !== authority.result_sha256) {
+        prefix('result_sha256 does not match source-ledger migration authority');
+      }
+    }
+  }
+  for (const [key, authority] of authorities) {
+    if (observedAuthorityKeys.has(key)) continue;
+    errors.push(
+      formatDiagnostic(
+        authority.transport_locator,
+        authority.source_ids,
+        'required superseded archive is missing',
+      ),
+    );
   }
   const archiveByTransport = new Map(
     superseded
@@ -1038,7 +1181,7 @@ export async function checkLiveLinks(
     perOriginConcurrency = 2,
   } = {},
 ) {
-  const targets = buildLinkTargets(ledger);
+  const targets = collectTargets(ledger);
   const checked = await checkTargets(ledger, targets, {
     previousCache,
     fetchImpl,
@@ -1076,8 +1219,18 @@ async function checkTargets(
       entry,
     ]),
   );
-  const results = await runScheduled(
+  const ambiguous = ambiguousMigrationResults(
+    ledger,
     targets,
+    [...previous.values()],
+  );
+  const ambiguousTransports = new Set(
+    ambiguous.map(({transport_locator}) => transport_locator),
+  );
+  const results = await runScheduled(
+    targets.filter(
+      ({transport_locator: locator}) => !ambiguousTransports.has(locator),
+    ),
     globalConcurrency,
     perOriginConcurrency,
     (target) =>
@@ -1089,6 +1242,7 @@ async function checkTargets(
         timeoutMs,
       }),
   );
+  results.push(...ambiguous.map((result) => structuredClone(result)));
   results.sort((left, right) =>
     left.transport_locator.localeCompare(right.transport_locator, 'en'),
   );
@@ -1104,7 +1258,16 @@ async function checkTargets(
   };
   return {
     cache,
-    errors: evaluateLinkHealthVerdict(ledger, cache, {now}).failures,
+    errors: [
+      ...evaluateLinkHealthVerdict(ledger, cache, {now}).failures,
+      ...ambiguous.map((result) =>
+        formatDiagnostic(
+          result.transport_locator,
+          result.source_ids,
+          'ambiguous transport migration requires source-ledger authority',
+        ),
+      ),
+    ],
   };
 }
 
@@ -1130,7 +1293,7 @@ export async function checkLiveLinkBatch(
   ) {
     throw new TypeError('batchIndex must be >= 0 and batchSize must be >= 1');
   }
-  const allTargets = buildLinkTargets(ledger);
+  const allTargets = collectTargets(ledger);
   const start = batchIndex * batchSize;
   const targets = allTargets.slice(start, start + batchSize);
   const checked = await checkTargets(ledger, targets, {
@@ -1161,45 +1324,24 @@ export function mergeLinkHealthCaches(
   if (!Array.isArray(caches) || caches.length === 0) {
     throw new TypeError('at least one link-health cache is required');
   }
+  const targets = collectTargets(ledger);
   const expectedTransports = new Set(
-    buildLinkTargets(ledger).map(({transport_locator}) => transport_locator),
+    targets.map(({transport_locator}) => transport_locator),
   );
   const latest = new Map();
   for (const cache of caches) {
     for (const result of cache?.results ?? []) {
-      if (!expectedTransports.has(result.transport_locator)) continue;
-      const current = latest.get(result.transport_locator);
-      if (!current) {
-        latest.set(result.transport_locator, structuredClone(result));
+      if (
+        !expectedTransports.has(result.transport_locator) &&
+        ambiguousMigrationResults(ledger, targets, [result]).length === 0
+      ) {
         continue;
       }
-      const newer =
-        Date.parse(result.last_attempt.at) >= Date.parse(current.last_attempt.at)
-          ? result
-          : current;
-      const successCandidates = [current.last_success, result.last_success]
-        .filter(Boolean)
-        .sort((left, right) => Date.parse(left.at) - Date.parse(right.at));
-      const historyByObservation = new Map();
-      for (const attempt of [
-        ...current.attempt_history,
-        ...result.attempt_history,
-      ]) {
-        const key = JSON.stringify([
-          attempt.at,
-          attempt.outcome,
-          attempt.final_transport_locator,
-          attempt.http_status,
-        ]);
-        historyByObservation.set(key, attempt);
-      }
-      latest.set(result.transport_locator, {
-        ...structuredClone(newer),
-        last_success: successCandidates.at(-1) ?? null,
-        attempt_history: [...historyByObservation.values()].sort(
-          (left, right) => Date.parse(left.at) - Date.parse(right.at),
-        ),
-      });
+      const current = latest.get(result.transport_locator);
+      latest.set(
+        result.transport_locator,
+        mergeResultObservations(current, result),
+      );
     }
   }
   const cache = {
@@ -1215,10 +1357,32 @@ export function mergeLinkHealthCaches(
     structure.errors.length === 0
       ? evaluateLinkHealthVerdict(ledger, cache, {now})
       : {failures: []};
-  return {cache, errors: [...structure.errors, ...verdict.failures]};
+  const ambiguous = ambiguousMigrationResults(
+    ledger,
+    targets,
+    [...latest.values()],
+  );
+  return {
+    cache,
+    errors: [
+      ...structure.errors,
+      ...verdict.failures,
+      ...ambiguous.map((result) =>
+        formatDiagnostic(
+          result.transport_locator,
+          result.source_ids,
+          'ambiguous transport migration requires source-ledger authority',
+        ),
+      ),
+    ],
+  };
 }
 
 export function mergePublicLedgerHealth(governedLedger, cache) {
+  const {
+    superseded_transports: _supersededTransports,
+    ...publicLedger
+  } = governedLedger;
   const targets = buildLinkTargets(governedLedger);
   const results = new Map(
     cache.results.map((entry) => [entry.transport_locator, entry]),
@@ -1248,7 +1412,7 @@ export function mergePublicLedgerHealth(governedLedger, cache) {
     stale: 3,
   };
   return {
-    ...governedLedger,
+    ...publicLedger,
     sources: governedLedger.sources.map((source) => {
       const health_checks = checksBySource.get(source.id) ?? [];
       const health_summary =
