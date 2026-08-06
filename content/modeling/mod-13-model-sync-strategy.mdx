@@ -1,0 +1,186 @@
+---
+title: 模型同步策略
+slug: /modeling/mod-13
+content_type: modeling
+status: reviewed
+difficulty: advanced
+analyzed_at: 2026-08-06
+source_cutoff: 2026-08-06
+review_policy: quarterly-version-sensitive
+confidence: high
+domains:
+  - software-architecture
+agent_patterns: []
+protocols: []
+quality_attributes:
+  - understandability
+  - maintainability
+  - auditability
+  - reliability
+tags:
+  - 模型同步
+  - 架构漂移
+  - ADR
+  - GitOps
+summary: 为代码、架构图、ADR、期望部署和实际运行事实指定单一权威、同步方向与检测证据，并用四类漂移和六步闭环完成修复与发布复核。
+topic_id: MOD-13
+priority: P2
+depends_on:
+  - MOD-04
+  - MOD-12
+  - MTH-03
+  - MTH-06
+adjacent_topics:
+  - MOD-04
+  - MOD-12
+  - MTH-03
+  - MTH-06
+related_cases:
+  - /cases/kubernetes-reconciliation-loop
+related_questions: []
+---
+
+import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableRegion/handleHorizontalArrowKey.mjs';
+
+# 模型同步策略
+
+代码已经移除接口，架构图却仍保留旧关系；ADR 仍是 accepted，部署记录和线上观测又指向不同版本。把这些文件双向复制只会让最后一次写入覆盖真实差异。同步不是双向复制；每项事实先指定一个当前权威。
+
+本文提供一个可迁移判断：先按事实粒度声明权威，再选择生成、验证或观测关系，把差异送入同一处置闭环。生成关系重建派生产物，验证关系只报告合同差异，观测关系保留实际状态。
+
+证据范围只覆盖本站内容仓库的可重建产物、受测接口、架构图源、ADR 状态、部署记录与运行查询，以及一个费用申报说明性场景。它不把教学场景写成生产事实，也不把一次测试、部署或观测扩张为长期健康结论；[建模目录](/modeling)提供其他模型入口。
+
+## 学习问题
+
+- 如何把“代码或 Git 是真相”改写为每项事实只有一个当前权威的可执行合同？
+- 何时应该生成派生产物，何时只能验证两个事实，何时必须保留实际观测？
+- 如何区分内容漂移、结构漂移、决策漂移和运行漂移，并保留检测失败产生的未知？
+- 如何在不手改派生产物、不改写历史 ADR 的前提下修复差异？
+- 如何用精确发布身份和独立复放关闭一次同步循环，而不夸大证据？
+
+## 同步目标与输入
+
+同步的目标不是让所有载体文字相同，而是让每项事实的写入权、派生方向、检测证据和修复方向明确。输入包括主题状态、MDX 元数据、代码接口、已批准模型与图源、ADR、版本化部署声明、实际部署记录和运行观测；两个来源争夺同一事实时，先拆细事实或人工裁决，不能自动互相覆盖。
+
+生成是从当前权威确定性重建派生产物；验证是按合同比较两个独立事实并只报告差异；观测是读取并保留实际状态，不把它反写成期望状态。检测器不可用时状态是“未知”，不是“无漂移”或 PASS。
+
+## 权威事实台账
+
+这张台账回答每类事实由谁写、向哪里派生、何时检查，以及发生差异时回到哪里修复。权威随具体事实分配，不存在对所有事实都有效的单一文件或工具。
+
+<div
+  className="table-wrapper table-wrapper--mapping"
+  role="region"
+  aria-label="模型同步权威事实台账，可横向滚动"
+  tabIndex={0}
+  onKeyDown={handleHorizontalArrowKey}
+>
+
+| 事实 | 权威来源 | 派生产物 | 同步关系 | 触发时机 | 检测方式 | 责任类型 | 修复方向 | 明确不证明 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 主题完成状态 | docs/content-backlog.md checkbox | topic manifest 与 project status | 生成 | Stage B closure | generate:content 与状态测试 | 内容发布维护者 | 修改 backlog 后重新生成 | checkbox 不证明部署成功 |
+| 已发布内容元数据 | MDX front matter | topic manifest 与 indexes | 生成 | 内容变更或发布 | 内容 schema 与生成差异 | 内容维护者 | 修改 MDX 后重新生成 | 元数据不证明正文事实正确 |
+| 代码接口与受测结构 | 受测代码与接口契约 | 结构检查结果 | 验证 | 代码或接口变更 | 测试、schema 与接口差异 | 代码责任人 | 修改代码或经批准修订模型 | 静态与测试证据不证明运行健康或业务边界 |
+| 架构模型与图中语义 | 已批准模型与 Draw.io 图源 | SVG 与文章视图 | 生成 | 模型或图源变更 | Draw.io/SVG pair validator 与独立复述 | 架构文档维护者 | 修改图源并重新导出 | 图不证明代码、部署或运行一致 |
+| ADR 决策及状态 | ADR 文件、状态与替代关系 | 决策索引与可见链接 | 验证 | 架构显著变更或定期复核 | 状态、替代链接与实现复核 | 决策责任人 | 恢复实现或新增替代 ADR | ADR 不证明实现遵循决定 |
+| 期望部署声明 | 版本化 workflow 与配置声明 | 待部署计划与制品选择 | 生成 | 配置、制品或发布变更 | 配置差异、策略与构建测试 | 平台维护者 | 经批准修改声明并重新发布 | 期望状态不等于实际状态 |
+| 实际部署身份与状态 | GitHub Deployment 与 Actions 记录 | 发布复审证据 | 观测 | 部署完成或状态变化 | exact SHA、run、jobs、status 与 route 查询 | 发布维护者 | 回滚或前滚后形成新部署记录 | workflow success 不证明全部运行健康 |
+| 运行观测 | 线上 route、日志、指标与实际环境查询 | 运行复核证据 | 观测 | 部署后、事件发生或定时检查 | 浏览器、端点与可观测性查询 | 运行责任人 | 修复期望或实际状态后重新观测 | 单次观测不证明 SLA、因果或长期健康 |
+
+</div>
+
+派生产物必须由权威重新生成，不能手工修补。禁止手工修补派生产物；如果生成结果错误，应修改权威输入或生成器，再保存新的生成与差异证据。
+
+## 漂移检测闭环
+
+四类漂移按内容漂移 → 结构漂移 → 决策漂移 → 运行漂移排列。内容漂移比较 backlog、front matter 与生成清单；结构漂移比较受测接口与模型关系；决策漂移比较有效 ADR 与实现；运行漂移比较期望提交、实际部署身份和线上观测。
+
+状态词汇限定为：`待分级`、`阻断`、`修复中`、`接受差异`、`已验证关闭`、`未知`。接受差异还必须记录理由、责任类型、复查条件和到期点；已验证关闭必须指向修复后的检测与发布证据。
+
+<div
+  className="table-wrapper table-wrapper--mapping"
+  role="region"
+  aria-label="四类漂移处置台账，可横向滚动"
+  tabIndex={0}
+  onKeyDown={handleHorizontalArrowKey}
+>
+
+| 漂移类型 | 差异证据 | 严重度 | 当前状态 | 责任类型 | 修复动作 | 重新验证证据 | 明确不证明 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 内容漂移 | backlog、front matter 与 generated manifest 状态不同 | 阻断 | 修复中 | 内容发布维护者 | 修改权威输入并重新生成，禁止手改 generated JSON | 生成命令、状态测试与 exact diff | 生成一致不证明正文结论正确 |
+| 结构漂移 | 代码已移除接口而架构图仍保留旧关系 | 待分级 | 待分级 | 代码责任人与架构文档维护者 | 先裁决结构事实权威，再修改代码或图源 | 接口测试、图对验证与独立复述 | 图与代码对齐不证明部署或运行状态 |
+| 决策漂移 | 实现绕过 accepted ADR 且旧状态仍有效 | 阻断 | 修复中 | 决策责任人 | 恢复实现，或新增 ADR 并标记旧记录 superseded | ADR 状态、替代链接与实现复核 | 记录替代关系不证明新实现已经上线 |
+| 运行漂移 | 期望 commit 与实际部署或线上观测身份不同 | 阻断 | 未知 | 平台维护者与运行责任人 | 保留实际观测，前滚或回滚后重新部署 | 新 exact-head run、jobs、route 与运行复核 | 部署成功不证明功能、性能、可靠性或长期健康 |
+
+</div>
+
+闭环按以下顺序执行：
+
+1. **声明权威：** 把事实拆到足以拥有单一写者的粒度，并记录关系、责任类型和非证明边界。
+2. **生成或验证：** 能确定性派生的产物自动生成；独立事实按合同比较或观测。
+3. **检测差异：** 保存输入、比较结果、时间和版本身份；检测失败保留为未知。
+4. **分级处置：** 决定自动重建、人工裁决、接受差异或阻断发布，并分配责任类型。
+5. **重建证据：** 修改权威来源或新增替代 ADR，重新生成并重跑所有受影响检测。
+6. **发布复核：** 用精确提交、workflow run、jobs、状态和线上 route 复核，不扩张结论。
+
+## 核心产物
+
+图把不同事实权威、三类同步关系和同一漂移处置闭环放在一个视图里。阅读时先看四类事实源如何声明权威，再看生成器、验证器和观测器如何把差异或未知送入队列，最后确认修复反馈只返回对应权威。
+
+<div
+  className="architecture-diagram-scroll"
+  role="region"
+  aria-label="模型同步权威、检测、漂移处置与发布闭环图，可横向滚动"
+  tabIndex={0}
+  onKeyDown={handleHorizontalArrowKey}
+>
+
+![不同事实分别声明权威，经生成、验证或观测进入漂移处置，并回到对应权威修复的闭环](/img/diagrams/mod-13-authority-drift-loop.svg)
+
+</div>
+
+图中的发布证据不会反向覆盖权威事实；它只证明指定版本完成了被记录的复核。本站原创 Draw.io/SVG 图对是教学综合，不表示特定生产拓扑、团队、控制器或工具实现。
+
+## 完成判断
+
+闭环完成要求每项事实都有当前权威、关系类型、责任类型和修复方向；四类漂移已检测或明确说明不适用；所有阻断项关闭，所有未知仍可见；接受差异拥有理由、复查条件和到期点；ADR 冲突通过恢复实现或新增替代记录解决；发布证据绑定精确提交、run、jobs、状态与线上 route。
+
+ADR 记录决定与状态，但不证明实现遵循决定。部署成功只证明指定提交完成指定发布流程，不证明全部运行健康。最终还需要一位未参与修复的人从台账与图中独立复述权威、方向、差异、修复和非证明边界。
+
+## 常见失败
+
+最常见的失败是宣布“代码永远权威”或“Git 永远权威”，从而让实际部署、运行观测或有效决定失去自己的写入边界。另一类失败是检测器无输出便记为同步，或直接修改 generated JSON、SVG 与索引，掩盖权威输入或生成器中的问题。
+
+删除旧 ADR 会伪造决策连续性；正确做法是恢复仍有效决定要求的实现，或新增决定并建立 superseded 关系。期望部署与实际状态不一致时，应保留真实观测，经过裁决后前滚、回滚或修改期望，再产生新的部署身份和复核证据。
+
+## 与其他模型的衔接
+
+[MOD-04 arc42 文档骨架](/modeling/mod-04)提供事实、推断、决定与未知的分层，本文补充持续同步和漂移治理。[MOD-12 架构图审阅清单](/modeling/mod-12)提供图的版本与审阅发现，本文负责在后续变化中维持图源权威和复查证据。
+
+[MTH-03 ADR 生命周期](/methods/mth-03)提供状态和替代关系，本文检查实现是否与仍有效的决定漂移。[MTH-06 从需求到持续演进](/methods/mth-06)提供需求、决定、实现与运行反馈的闭环，本文为每次反馈指定权威和检测合同。
+
+[Kubernetes reconciliation loop 案例](/cases/kubernetes-reconciliation-loop)中的 desired/actual 协调可有限类比观测与修复循环；这个类比不证明文档、架构图和 ADR 都能由 controller 自动协调。
+
+## 完整演练
+
+**说明性场景：** 费用申报系统边界内包含 Web 应用、申报 API、申报数据库和支付任务执行器，员工与银行支付服务位于边界外。受控差异只有一个：代码已移除申报 API 与支付任务执行器之间的接口，架构图仍保留旧关系；不补写协议、事故、指标或生产效果。
+
+1. 盘点主题状态、内容元数据、代码接口、图中语义、ADR、期望部署、实际部署与运行观测。
+2. 把每项事实拆到单一写者粒度，指定当前权威、责任类型与非证明边界。
+3. 把每条同步关系分类为生成、验证或观测。
+4. 注入一个受控差异：代码移除接口，但架构图仍保留旧关系。
+5. 把差异分类为结构漂移，记录严重度与当前状态，并分配责任类型。
+6. 裁决结构事实权威，修改代码或图源，再重建受影响的派生产物与检测证据。
+7. 由未参与修复的人独立复放检测，并用精确提交、发布流程与线上 route 完成发布复核。
+
+演练只证明学习者能够执行合同。接口测试证明受测结构差异，图对验证证明派生语义一致；两者都不证明部署或运行状态。修复必须回到经裁决的权威，然后重建检测与发布证据。
+
+## 来源
+
+- [Structurizr DSL](https://docs.structurizr.com/dsl)（facts-summary）：支持用文本 DSL 定义 C4 软件架构模型，并在同一 workspace 中维护 model 与 views；不证明模型与代码、部署或运行状态自动一致。
+- [Documenting Architecture Decisions](https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions)（facts-summary）：支持 ADR 的 context、decision、consequences、状态与 superseded 关系；不证明本地实现遵循决定。
+- [GitOps Principles v1.0.0](https://opengitops.dev/)（facts-summary）：支持声明式、版本化不可变、自动拉取与持续协调的 GitOps 期望状态；不把所有架构知识推广为自动同步对象。
+- [Viewing deployment history](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/view-deployment-history)（facts-summary）：支持部署历史关联环境、提交、workflow logs、URL 与状态；不证明应用功能、性能、可靠性或全部运行健康。
+- [权威事实与漂移处置闭环](/img/diagrams/mod-13-authority-drift-loop.svg)（original-illustration）：本站原创教学图；不表示生产拓扑、团队、控制器或工具实现。
+
+所有外部来源仅作事实摘要。本文的八行台账、四类漂移、六步闭环、费用申报演练、中文措辞与图形组合均为本站原创综合，不复制外部表格、图、目录、长段落或工具界面。
