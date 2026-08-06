@@ -9,14 +9,41 @@ const repositoryRoot = fileURLToPath(new URL('../', import.meta.url));
 const blankCharacters = (value) => value.replace(/[^\n]/gu, ' ');
 
 const maskLinkDestinations = (source) => {
-  const link = /(!?)\[([^\]\n]+)\]\(/gu;
-  const parts = [];
-  let cursor = 0;
+  const masked = source.split('');
 
-  for (let match = link.exec(source); match; match = link.exec(source)) {
-    const opening = link.lastIndex - 1;
-    let depth = 1;
+  for (let start = 0; start < source.length; start += 1) {
+    const labelOpening = source[start] === '['
+      ? start
+      : source[start] === '!' && source[start + 1] === '['
+        ? start + 1
+        : -1;
+    if (labelOpening === -1) continue;
+
+    let labelDepth = 1;
     let escaped = false;
+    let labelClosing = -1;
+    for (let index = labelOpening + 1; index < source.length; index += 1) {
+      const character = source[index];
+      if (escaped) {
+        escaped = false;
+      } else if (character === '\\') {
+        escaped = true;
+      } else if (character === '[') {
+        labelDepth += 1;
+      } else if (character === ']') {
+        labelDepth -= 1;
+        if (labelDepth === 0) {
+          labelClosing = index;
+          break;
+        }
+      }
+    }
+
+    const opening = labelClosing + 1;
+    if (labelClosing === -1 || source[opening] !== '(') continue;
+
+    let depth = 1;
+    escaped = false;
     let closing = -1;
 
     for (let index = opening + 1; index < source.length; index += 1) {
@@ -36,27 +63,36 @@ const maskLinkDestinations = (source) => {
       }
     }
 
-    if (closing === -1) break;
+    if (closing === -1) continue;
 
-    parts.push(
-      source.slice(cursor, match.index),
-      `${match[1]}${match[2]}`,
-      blankCharacters(source.slice(opening, closing + 1)),
-    );
-    cursor = closing + 1;
-    link.lastIndex = cursor;
+    for (let index = opening; index <= closing; index += 1) {
+      if (masked[index] !== '\n') masked[index] = ' ';
+    }
+    start = closing;
   }
 
-  parts.push(source.slice(cursor));
-  return parts.join('');
+  return masked.join('');
 };
 
-const visibleMdxSource = (source) => {
+const maskReferenceDefinitions = (source) => source
+  .split('\n')
+  .map((line) => (
+    /^ {0,3}\[(?:\\.|[^\]\\])+\]:[ \t]*(?:<[^>\n]+>|\S+)/u.test(line)
+      ? blankCharacters(line)
+      : line
+  ))
+  .join('\n');
+
+const visibleMdxSource = (source, relativePath) => {
   const lines = source.split('\n');
 
   if (lines[0]?.trim() === '---') {
     const end = lines.findIndex((line, index) => index > 0 && line.trim() === '---');
-    assert.notEqual(end, -1, 'MDX front matter must have a closing delimiter');
+    assert.notEqual(
+      end,
+      -1,
+      `${relativePath}: MDX front matter must have a closing delimiter`,
+    );
     for (let index = 0; index <= end; index += 1) lines[index] = '';
   }
 
@@ -79,10 +115,27 @@ const visibleMdxSource = (source) => {
     }
   }
 
-  assert.equal(fence, null, 'MDX fenced code block must have a closing delimiter');
+  assert.equal(
+    fence,
+    null,
+    `${relativePath}: MDX fenced code block must have a closing delimiter`,
+  );
+
+  const withoutFences = lines.join('\n');
+  for (let cursor = 0; cursor < withoutFences.length;) {
+    const commentOpening = withoutFences.indexOf('<!--', cursor);
+    if (commentOpening === -1) break;
+    const commentClosing = withoutFences.indexOf('-->', commentOpening + 4);
+    if (commentClosing === -1) {
+      assert.fail(`${relativePath}: MDX HTML comment must have a closing delimiter`);
+    }
+    cursor = commentClosing + 3;
+  }
 
   return maskLinkDestinations(
-    lines.join('\n').replace(/<!--[\s\S]*?-->/gu, blankCharacters),
+    maskReferenceDefinitions(
+      withoutFences.replace(/<!--[\s\S]*?-->/gu, blankCharacters),
+    ),
   );
 };
 
@@ -138,7 +191,9 @@ const rules = [
 ];
 
 const findProductCopyIssues = (relativePath, source) => {
-  const visible = relativePath.endsWith('.mdx') ? visibleMdxSource(source) : source;
+  const visible = relativePath.endsWith('.mdx')
+    ? visibleMdxSource(source, relativePath)
+    : source;
   const issues = [];
 
   for (const rule of rules) {
@@ -231,6 +286,120 @@ test('masks balanced and escaped parentheses in link destinations', () => {
       excerpt: '计划主题仍由长期 backlog 跟踪。',
     },
   ]);
+});
+
+test('masks complex inline destinations without changing source line numbers', () => {
+  const fixtures = [
+    {
+      name: 'empty-alt image',
+      source: '![](https://example.com/本页从机器可读主题清单生成)',
+      visibleLine: 4,
+    },
+    {
+      name: 'escaped label',
+      source: '[escaped \\] label](https://example.com/本页从机器可读主题清单生成)',
+      visibleLine: 4,
+    },
+    {
+      name: 'nested label',
+      source: '[nested [label]](https://example.com/本页从机器可读主题清单生成)',
+      visibleLine: 4,
+    },
+    {
+      name: 'multiline label',
+      source: '[multiline\nlabel](https://example.com/本页从机器可读主题清单生成)',
+      visibleLine: 5,
+    },
+    {
+      name: 'valid link after unmatched candidate',
+      source: '[broken](https://example.com/unclosed\n[later](https://example.com/本页从机器可读主题清单生成)',
+      visibleLine: 5,
+    },
+  ];
+
+  for (const {name, source, visibleLine} of fixtures) {
+    const fixture = `# Example\n${source}\n\n计划主题仍由长期 backlog 跟踪。\n`;
+    assert.deepEqual(
+      findProductCopyIssues(`content/cases/${name}.mdx`, fixture),
+      [
+        {
+          file: `content/cases/${name}.mdx`,
+          line: visibleLine,
+          ruleId: 'generated-page-meta',
+          excerpt: '计划主题仍由长期 backlog 跟踪。',
+        },
+      ],
+      name,
+    );
+  }
+});
+
+test('masks reference-definition destinations without changing source line numbers', () => {
+  const fixture = `# Example
+[raw]: https://example.com/本页从机器可读主题清单生成
+[angle]: <https://example.com/本页从机器可读主题清单生成>
+
+本页从机器可读主题清单生成。
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/references.mdx', fixture), [
+    {
+      file: 'content/cases/references.mdx',
+      line: 5,
+      ruleId: 'generated-page-meta',
+      excerpt: '本页从机器可读主题清单生成。',
+    },
+  ]);
+});
+
+test('preserves visible link labels and image markers exactly', () => {
+  const fixture = `# Example
+[本页从机器可读主题清单生成](https://example.com/reference)
+![本页从机器可读主题清单生成](https://example.com/image.png)
+`;
+
+  assert.deepEqual(findProductCopyIssues('content/cases/visible-labels.mdx', fixture), [
+    {
+      file: 'content/cases/visible-labels.mdx',
+      line: 2,
+      ruleId: 'generated-page-meta',
+      excerpt: '[本页从机器可读主题清单生成]',
+    },
+    {
+      file: 'content/cases/visible-labels.mdx',
+      line: 3,
+      ruleId: 'generated-page-meta',
+      excerpt: '![本页从机器可读主题清单生成]',
+    },
+  ]);
+});
+
+test('reports file context for unsafe MDX structures', () => {
+  const fixtures = [
+    {
+      structure: 'front matter',
+      source: '---\ntitle: Example\n',
+    },
+    {
+      structure: 'fenced code block',
+      source: '# Example\n\n```text\nunclosed\n',
+    },
+    {
+      structure: 'HTML comment',
+      source: '# Example\n\n<!-- unclosed\n',
+    },
+  ];
+
+  for (const {structure, source} of fixtures) {
+    assert.throws(
+      () => findProductCopyIssues('content/cases/broken.mdx', source),
+      (error) => {
+        assert.match(error.message, /content\/cases\/broken\.mdx/u);
+        assert.match(error.message, new RegExp(structure, 'u'));
+        return true;
+      },
+    );
+  }
 });
 
 test('reports rule id, line, and excerpt for product-process language', () => {
