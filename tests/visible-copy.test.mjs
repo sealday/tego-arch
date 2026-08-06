@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import {readdir, readFile} from 'node:fs/promises';
+import {createRequire} from 'node:module';
 import path from 'node:path';
 import test from 'node:test';
 
@@ -8,6 +9,9 @@ import {
   extractVisibleTsxStrings,
   parseMdxVisibleCopy,
 } from '../scripts/visible-copy.mjs';
+
+const require = createRequire(import.meta.url);
+const ts = require('typescript');
 
 const walk = async (directory, extension) => {
   const entries = await readdir(directory, {withFileTypes: true});
@@ -22,6 +26,18 @@ const walk = async (directory, extension) => {
 const mermaidFences = (source) => [...source.matchAll(
   /^```mermaid\s*\n([\s\S]*?)^```\s*$/gmu,
 )].map((match) => `\`\`\`mermaid\n${match[1]}\`\`\``);
+
+const jsxTextOracle = (text) => {
+  const output = ts.transpileModule(
+    `const value = <>${text}</>;`,
+    {compilerOptions: {jsx: ts.JsxEmit.React}},
+  ).outputText;
+  const react = {
+    Fragment: Symbol('Fragment'),
+    createElement: (_type, _properties, ...children) => children.join(''),
+  };
+  return Function('React', `${output}\nreturn value;`)(react);
+};
 
 test('extracts reader-visible MDX copy with stable source locations', () => {
   const source = `---
@@ -541,6 +557,26 @@ export function Entities() {
         excerpt: 'unknown &bogus; malformed &amp',
       },
     ],
+  );
+});
+
+test('matches TypeScript JSX named character reference semantics', () => {
+  const raw = '&AMP; &Abreve; &lang; &rang; we&apos;ll A&amp;B left&nbsp;right &#65; &#x41;';
+  const expected = jsxTextOracle(raw).replace(/\s+/gu, ' ').trim();
+  assert.equal(expected, "&AMP; &Abreve; 〈 〉 we'll A&B left right A A");
+
+  const source = `export function ExactEntities() {
+  return <div>
+    ${raw}
+  </div>;
+}`;
+  assert.deepEqual(
+    extractVisibleTsxStrings(source, 'src/ExactEntities.tsx').map(({line, text, excerpt}) => ({
+      line,
+      text,
+      excerpt,
+    })),
+    [{line: 3, text: expected, excerpt: raw}],
   );
 });
 

@@ -1,7 +1,6 @@
 import assert from 'node:assert/strict';
 import {createProcessor} from '@mdx-js/mdx';
 import {createRequire} from 'node:module';
-import {decodeNamedCharacterReference} from 'decode-named-character-reference';
 
 const require = createRequire(import.meta.url);
 const grayMatter = require('@11ty/gray-matter');
@@ -982,21 +981,62 @@ const visibleJsxAttributes = new Set([
 ]);
 const visibleObjectProperties = new Set(['title', 'term', 'description']);
 
-const decodeJsxCharacterReferences = (value, relativePath, line) => (
-  value.replace(/&(?:#(\d+)|#x([\da-fA-F]+)|(\w+));/gu, (reference, decimal, hex, name) => {
-    if (name) {
-      const decoded = decodeNamedCharacterReference(name);
-      return decoded === false ? reference : decoded;
-    }
-    const codePoint = Number.parseInt(decimal ?? hex, decimal ? 10 : 16);
-    if (codePoint > 0x10FFFF) {
+const jsxTextDecodeCache = new Map();
+
+const findOutOfRangeJsxReference = (value) => (
+  [...value.matchAll(/&#(?:([0-9]+)|x([\da-fA-F]+));/gu)]
+    .find((match) => Number.parseInt(match[1] ?? match[2], match[1] ? 10 : 16) > 0x10FFFF)
+    ?.[0]
+);
+
+const decodeJsxCharacterReferences = (value, relativePath, line) => {
+  if (!value.includes('&')) return value;
+  const cached = jsxTextDecodeCache.get(value);
+  if (cached !== undefined) return cached;
+
+  let output;
+  try {
+    output = ts.transpileModule(
+      `const __visibleCopyJsxText = <>${value}</>;`,
+      {
+        compilerOptions: {
+          jsx: ts.JsxEmit.React,
+          target: ts.ScriptTarget.ESNext,
+        },
+      },
+    ).outputText;
+  } catch (error) {
+    const reference = findOutOfRangeJsxReference(value);
+    if (reference) {
       throw new Error(
         `${relativePath}:${line}: invalid JSX numeric character reference "${reference}"`,
+        {cause: error},
       );
     }
-    return String.fromCodePoint(codePoint);
-  })
-);
+    throw new Error(
+      `${relativePath}:${line}: TypeScript JSX text decoding failed: ${error.message}`,
+      {cause: error},
+    );
+  }
+
+  const emitted = ts.createSourceFile(
+    'visible-copy-jsx-text.js',
+    output,
+    ts.ScriptTarget.Latest,
+    true,
+    ts.ScriptKind.JS,
+  );
+  const declaration = emitted.statements
+    .filter(ts.isVariableStatement)
+    .flatMap((statement) => [...statement.declarationList.declarations])
+    .find((node) => node.name.getText(emitted) === '__visibleCopyJsxText');
+  const decoded = declaration?.initializer?.arguments?.[2];
+  if (!decoded || !ts.isStringLiteral(decoded)) {
+    throw new Error(`${relativePath}:${line}: TypeScript JSX text decoding produced no text`);
+  }
+  jsxTextDecodeCache.set(value, decoded.text);
+  return decoded.text;
+};
 
 const collectStaticTsxStrings = (node, collect) => {
   if (ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node)) {
