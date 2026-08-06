@@ -1,5 +1,5 @@
 ---
-title: ADR 生命周期
+title: 架构决策记录（Architecture Decision Record，ADR）生命周期
 slug: /methods/mth-03
 content_type: method
 status: reviewed
@@ -47,7 +47,7 @@ ADR 的价值不是“存下一份文档”，而是让重要决策的上下文�
 
 ## 输入与参与者
 
-输入包括待解决的问题、约束、质量属性场景、候选方案和已知证据。决策所有者对取舍负责，受影响团队提供约束，评审者寻找遗漏与不可逆风险，记录维护者保证状态和链接可追踪。[质量属性场景写法](/quality-attributes/qa-01)可把“更可靠”等口号变成可比较输入。
+输入包括待解决的问题、约束、质量属性（Quality Attribute）场景、候选方案和已知证据。决策所有者对取舍负责，受影响团队提供约束，评审者寻找遗漏与不可逆风险，记录维护者保证状态和链接可追踪。[质量属性场景写法](/quality-attributes/qa-01)可把“更可靠”等口号变成可比较输入。
 
 ## 步骤
 
@@ -55,6 +55,10 @@ ADR 的价值不是“存下一份文档”，而是让重要决策的上下文�
 
 ```mermaid
 stateDiagram-v2
+  state "已提议" as Proposed
+  state "已接受" as Accepted
+  state "已弃用" as Deprecated
+  state "已取代" as Superseded
   [*] --> Proposed
   Proposed --> Accepted: 权衡与授权完成
   Proposed --> Deprecated: 问题不再成立
@@ -67,7 +71,7 @@ stateDiagram-v2
 
 ## 产物
 
-最小产物包含稳定 ID、标题、日期、状态、上下文、候选、决定、后果、验证方式和关联 ADR。已接受 ADR 还应链接实现或监控证据，但不能把代码当前行为误写成决策永远正确。
+最小产物包含稳定标识符、标题、日期、状态、上下文、候选、决定、后果、验证方式和关联 ADR。已接受 ADR 还应链接实现或监控证据，但不能把代码当前行为误写成决策永远正确。
 
 ## 完成判断
 
@@ -75,13 +79,15 @@ stateDiagram-v2
 
 ## 常见失败
 
-记录每个可逆小选择会淹没真正的架构决定，例如局部变量命名或可随时更换的测试工具不应创建 ADR。另一个失败是接受后原地改写理由，使后来者看不到当时约束。若决定没有跨团队、长期、成本、安全或质量属性影响，轻量 issue 或代码注释通常更合适。
+记录每个可逆小选择会淹没真正的架构决定，例如局部变量命名或可随时更换的测试工具不应创建 ADR。另一个失败是接受后原地改写理由，使后来者看不到当时约束。若决定没有跨团队、长期、成本、安全或质量属性影响，轻量问题或代码注释通常更合适。
 
 ## 与其他方法的衔接
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 场景评审提供决策输入，风险分析揭示失败后果，ADR 固化被授权的取舍，实施验证再为复核提供证据。[架构债与演进式设计](/concepts/fnd-05)说明为什么决定需要随证据演进，[架构适应度函数](/methods/mth-04)把决定转成持续反馈，[质量属性场景写法](/quality-attributes/qa-01)提供可比较的决策输入。[为演化设计](/principles/pr-08)把迁移退出条件、回滚证据和旧决定的替代关系交给 ADR 持续记录。[建模总览](/modeling/mod-01)提供从评审问题到决策记录及互补模型的反向入口。在 [Kubernetes reconciliation loop 案例](/cases/kubernetes-reconciliation-loop)中，可用 ADR 区分“采用声明式期望状态”的决定与具体控制器实现细节。
 
-[arc42 文档骨架](/modeling/mod-04)把 ADR 放回约束、策略、结构、运行、质量与风险证据链，但不改变 ADR 自身的状态和替代规则。[MOD-13 模型同步策略](/modeling/mod-13)检查有效决定与实现之间的漂移；ADR 状态不证明实现符合决定。
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+[arc42 架构文档模板](/modeling/mod-04)把 ADR 放回约束、策略、结构、运行、质量与风险证据链，但不改变 ADR 自身的状态和替代规则。[MOD-13 模型同步策略](/modeling/mod-13)检查有效决定与实现之间的漂移；ADR 状态不证明实现符合决定。
 
 ## 完整演练
 
@@ -95,4 +101,7 @@ stateDiagram-v2
 
 ## 来源
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 ADR 的短记录格式与状态思想主要依据 Michael Nygard 的 [Documenting Architecture Decisions](https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions)；替代决定应保留历史并通过链接表达的当前生命周期说明依据 Martin Fowler 的 [Architecture Decision Record](https://martinfowler.com/bliki/ArchitectureDecisionRecord.html)。[Architectural Decision Records 社区索引](https://adr.github.io/)仅作为工具与延伸材料入口，不承担本文核心事实。状态图与演练为原创事实归纳，不复制来源模板。

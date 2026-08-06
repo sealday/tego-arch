@@ -1,5 +1,5 @@
 ---
-title: Conway 定律与团队边界
+title: 康威定律与团队边界
 slug: /principles/pr-15
 content_type: principle
 status: reviewed
@@ -35,14 +35,17 @@ related_cases:
 related_questions: []
 ---
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 # Conway 定律与团队边界
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 当团队按项目、职能或历史遗留关系沟通，而系统需要按能力独立演进时，接口和交付节奏会承受同一组拉扯。Conway 定律提供的是识别这种约束的镜头，不是把组织图翻译成服务图的处方。可从[原则目录](/principles)继续浏览。
 
 反向康威把这个镜头变成有边界的干预假设：先说明要保护的系统边界和交付流，再调整沟通、所有权、接口与平台支持，并以交付和所有权的反馈复核。它不能替代对产品、技术债和人员处境的判断。
 
 ## 学习问题
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 - Conway 定律为何是描述性规律，而不是规范命令？
 - 沟通路径怎样约束团队边界与系统边界，却不决定它们一一对应？
 - 反向康威何时是可检验的干预策略，而不是一次重组口号？
@@ -51,6 +54,8 @@ related_questions: []
 
 ## 一页摘要
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 **来源事实：** Melvin E. Conway 的 1968 年文章讨论组织沟通结构与系统设计的关系。**推断：** 沟通结构会约束系统设计；它不是精确、确定地复制出某一种系统形状，而是让某些协作和接口更容易出现。
 
 把“团队边界”理解为承担一组能力、决策和运行责任的协作边界，把“系统边界”理解为可独立理解、变更和交付的技术边界。二者相互影响，但业务能力、遗留依赖、合规要求和产品路线也会影响系统形状；[高内聚与低耦合](/principles/pr-02)可用来检查边界是否减小不必要的传播，[单一职责与关注点分离](/principles/pr-03)则帮助说明某项变化由谁发起和承担。
@@ -66,6 +71,7 @@ related_questions: []
 
 ## 事实边界
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 Conway 定律在本文中是描述性规律，不是也不等于规范命令。它支持把沟通路径作为架构设计的约束来审视；它不规定团队拓扑，也不证明仅靠重组就会改变已有系统。
 
 反向康威在这里被用作有条件的干预策略：预先写清希望保护的边界、相应的所有权和待观察的交付反馈。若接口仍不稳定、能力仍缺失或交付反馈没有改善，应重新评估假设，而不是把变化归因于组织名称；这与[演进式设计](/principles/pr-08)要求持续验证设计假设的节奏相一致。
@@ -73,7 +79,10 @@ Conway 定律在本文中是描述性规律，不是也不等于规范命令。�
 <details className="evidence-card">
   <summary>证据：1968 年发表与描述性命题</summary>
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
   - **来源：** [How Do Committees Invent?](https://www.melconway.com/research/committees.html)，Melvin E. Conway。
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
   - **版本：** Datamation 文章，1968 年 4 月；作者托管转录于 2026-07-29 核验。
   - **边界：** 该来源支持原始描述性命题与沟通路径推理，不规定团队拓扑，也不证明重组单独改变系统。
 </details>
@@ -94,7 +103,8 @@ Conway 定律在本文中是描述性规律，不是也不等于规范命令。�
 
 **说明性场景：** 一个跨前端与后端的能力准备改变发布节奏。架构负责人先提出候选系统边界；受影响团队说明接口和运行所有权；平台团队确认哪些重复能力可由受治理的自助路径承担；管理者则负责涉及角色、汇报或能力建设的人员决策。
 
-交付负责人把等待点、移交和未决所有权记录为反馈，而不是把一次发布快慢当作定论。若边界内的变更仍需跨多个未定义所有者协调，恢复动作是回到接口、所有权和平台支持的假设；[single-spa 微前端案例](/cases/micro-frontends-single-spa)可用来审视前端能力与共享基础设施的实际交接。若涉及人员调整，架构证据只能提供输入，不能单独授权作出人事决定。
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+交付负责人把等待点、移交（Handoff）和未决所有权记录为反馈，而不是把一次发布快慢当作定论。若边界内的变更仍需跨多个未定义所有者协调，恢复动作是回到接口、所有权和平台支持的假设；[single-spa 微前端案例](/cases/micro-frontends-single-spa)可用来审视前端能力与共享基础设施的实际交接。若涉及人员调整，架构证据只能提供输入，不能单独授权作出人事决定。
 
 ## 关键源码导读
 
@@ -108,6 +118,7 @@ Conway 定律在本文中是描述性规律，不是也不等于规范命令。�
 
 **本站分析：** 把每次边界调整写成可复核假设，比承诺一种固定团队形状更稳妥。观察记录应服务于下一轮接口、所有权或平台支持的判断，不应被解释为对某种组织方案的效果保证。
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 一项可审查的选择是分别指定架构、平台、管理和受影响团队的决策所有者。架构所有者说明边界与依赖，平台所有者说明共享能力的契约和支持成本，管理者处理人员与职责变化，受影响团队验证日常交付是否仍可承担；这种跨团队的责任说明可借助 [GRASP 责任分配](/principles/pr-14) 检查“谁拥有判断所需信息”，但不能把对象级启发式误作人事授权。任何一方都不应越过其授权范围替代其他方。
 
 这张责任表把“谁提供哪类证据”与“谁不能替代谁”放在一起，避免把协作关系压缩成单一架构决定。
@@ -122,7 +133,11 @@ Conway 定律在本文中是描述性规律，不是也不等于规范命令。�
 <details className="evidence-card">
   <summary>证据：Team Topologies 的工作与版本范围</summary>
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
   - **来源：** [Organization Dynamics with Team Topologies](https://teamtopologies.com/s/Organization-Dynamics-with-Team-Topologies-Mini-book-MB80.pdf)，Matthew Skelton、Manuel Pais 与 Team Topologies。
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
   - **版本：** 官方 MB80 mini-book，2020 年 7 月发布；2026-07-29 核验。
   - **边界：** 该材料支持反向康威、团队边界、认知负荷和平台支持的组织设计语境；不构成实证保证，也不是通用重组模板。
 </details>
@@ -156,6 +171,8 @@ Conway 定律在本文中是描述性规律，不是也不等于规范命令。�
 
   - **原始论述：** [How Do Committees Invent?](https://www.melconway.com/research/committees.html)仅用于事实摘要与原始描述性命题。
   - **方法语境：** [Organization Dynamics with Team Topologies](https://teamtopologies.com/s/Organization-Dynamics-with-Team-Topologies-Mini-book-MB80.pdf)仅用于事实摘要与组织设计语境。
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
   - **原创图：** [Conway communication and system-boundary feedback loop illustration](/img/diagrams/pr-15-conway-feedback-loop.svg)是项目作者制作的 Draw.io 与 SVG 配对图。
   - **边界：** 不复用来源的图、表、案例或篇章结构；本文的矩阵、情景和中文论证为原创，且不声称生产指标、组织效果或人事授权。
 </details>

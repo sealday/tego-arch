@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import test from 'node:test';
+
+import {stripTerminologyExemptions} from './helpers/terminology-content.mjs';
 import {fileURLToPath} from 'node:url';
 
 import {
@@ -24,7 +26,7 @@ const modelingHeadings = [
   '来源',
 ];
 const [documents, ledger] = await Promise.all([
-  readContentDocuments(contentRoot),
+  readContentDocuments(contentRoot).then((entries) => entries.map(stripTerminologyExemptions)),
   readFile(new URL('../data/source-ledger.json', import.meta.url), 'utf8')
     .then(JSON.parse),
 ]);
@@ -136,7 +138,7 @@ test('publishes MOD-06 with the approved scope and metadata', () => {
   assert.match(document.body, /本站原创[^。\n]*教学/u);
 });
 
-test('renders exactly the approved six-entity seven-relation ER model', () => {
+test('renders exactly the approved six-entity seven-relation model', () => {
   const body = requiredDocument('MOD-06').body;
   const graph = fencedBlock(body, 'mermaid');
   assert.match(graph, /^erDiagram$/mu);
@@ -155,13 +157,13 @@ test('renders exactly the approved six-entity seven-relation ER model', () => {
     .filter((line) => /^\s+\w+\s+[|}{o.]{2}--[|}{o.]{2}\s+\w+\s+:/u.test(line));
   assert.equal(relations.length, 7);
   for (const literal of [
-    'Employee ||--o{ ExpenseClaim : submits',
-    'ExpenseClaim ||--o{ Approval : receives',
-    'Employee ||--o{ Approval : decides',
-    'ExpenseClaim ||--o| PaymentInstruction : authorizes',
-    'Employee ||--o{ EmployeeOrgAssignment : has',
-    'OrganizationalUnit ||--o{ EmployeeOrgAssignment : hosts',
-    'EmployeeOrgAssignment ||--o{ ExpenseClaim : anchors',
+    'Employee ||--o{ ExpenseClaim : 提交',
+    'ExpenseClaim ||--o{ Approval : 接收',
+    'Employee ||--o{ Approval : 决定',
+    'ExpenseClaim ||--o| PaymentInstruction : 授权',
+    'Employee ||--o{ EmployeeOrgAssignment : 包含',
+    'OrganizationalUnit ||--o{ EmployeeOrgAssignment : 承载',
+    'EmployeeOrgAssignment ||--o{ ExpenseClaim : 锚定',
   ]) {
     assert.ok(graph.includes(literal), literal);
   }
@@ -173,7 +175,7 @@ test('separates identity decisions from graph-external constraint evidence', () 
   const tables = markdownTables(artifacts);
   assert.equal(tables.length, 2);
   assert.deepEqual(tables[0][0], ['类别', '判断问题', '费用申报示例', '边界']);
-  assert.deepEqual(tables[1][0], ['规则', 'ER 图', '主要表达位置', '仍需验证']);
+  assert.deepEqual(tables[1][0], ['规则', '实体关系图', '主要表达位置', '仍需验证']);
   for (const label of ['实体', '属性', '值对象', '关联实体']) {
     assert.ok(tables[0].some((row) => row[0] === label), label);
   }
@@ -249,7 +251,7 @@ test('defines effective-dated relationship history without claiming bitemporal s
     assert.match(body, new RegExp(label, 'u'), label);
   }
   assert.match(body, /不(?:是|包含)[^。\n]*双时态/u);
-  assert.match(body, /不(?:是|采用)[^。\n]*Event Sourcing/u);
+  assert.match(body, /不(?:是|采用)[^。\n]*事件溯源（Event Sourcing）/u);
 });
 
 test('governs the exact pinned MOD-06 source set', () => {

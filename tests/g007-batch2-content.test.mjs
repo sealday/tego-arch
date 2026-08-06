@@ -97,27 +97,27 @@ const misconceptionContracts = new Map([
       [
         'Fail Fast is bounded locally rather than crashing everything',
         '要保护的性质',
-        /Fail Fast 是局部且有界的[\s\S]*并不意味着“每个异常都让整个进程崩溃”/u,
+        /快速失败是局部且有界的[\s\S]*并不意味着“每个异常都让整个进程崩溃”/u,
       ],
       [
         'Fail Safe requires a named hazard and safe state',
         '要保护的性质',
-        /Fail Safe 必须先命名危害与安全状态/u,
+        /故障安全必须先命名危害与安全状态/u,
       ],
       [
         'Fail Safe is not silent error swallowing',
         '误用与反原则',
-        /把这种静默吞错叫作 Fail Safe/u,
+        /把这种静默吞错叫作故障安全/u,
       ],
       [
         'degradation must preserve truthful semantics and visible status',
         '机制',
-        /Graceful Degradation 必须同时保留真实语义和可见降级状态/u,
+        /优雅降级必须同时保留真实语义和可见降级状态/u,
       ],
       [
         'one request path can mix all three policies at different boundaries',
         '机制',
-        /一个请求路径可以在输入验证处 Fail Fast[\s\S]*副作用边界 Fail Safe[\s\S]*Graceful Degradation/u,
+        /一个请求路径可以在输入验证处快速失败[\s\S]*副作用边界故障安全[\s\S]*优雅降级/u,
       ],
       [
         'AWS and SRE guidance does not define universal thresholds',
@@ -132,12 +132,12 @@ const misconceptionContracts = new Map([
       [
         'compatibility distinguishes source wire and semantic behavior in applicable API contexts',
         '要保护的性质',
-        /在其适用的 API 上下文中把向后兼容区分为源代码、线协议和语义行为/u,
+        /在其适用的应用程序编程接口（Application Programming Interface，API）上下文中把向后兼容区分为源代码、线协议和语义行为/u,
       ],
       [
         'expand migrate contract is a temporary compatibility window',
         '要保护的性质',
-        /expand\/migrate\/contract 创建的是临时兼容窗口，不是永久双支持/u,
+        /扩展\/migrate\/contract 创建的是临时兼容窗口，不是永久双支持/u,
       ],
       [
         'a replacement seam surrounds an identified volatile decision',

@@ -178,8 +178,8 @@ test('governs every visible source and relationship', () => {
 
 const decisionContracts = new Map([
   ['PR-12', [
-    ['OCP absorbs evidenced variation', '要保护的性质', /Open\/Closed[^。；\n]*可能变化[^。；\n]*稳定政策[^。；\n]*扩展点/u],
-    ['ISP constrains consumer dependencies', '要保护的性质', /Interface Segregation[^。；\n]*消费者[^。；\n]*所需能力/u],
+    ['OCP absorbs evidenced variation', '要保护的性质', /开闭原则[^。；\n]*可能变化[^。；\n]*稳定政策[^。；\n]*扩展点/u],
+    ['ISP constrains consumer dependencies', '要保护的性质', /接口隔离原则[^。；\n]*消费者[^。；\n]*所需能力/u],
     ['principles remain distinct', '要保护的性质', /一个回答变化在哪里被吸收[^。；\n]*另一个回答消费者依赖哪些能力/u],
     ['extension ownership and compatibility cost', '机制', /所有者、兼容性、测试与运行成本/u],
     ['strategic closure not universal closure', '冲突与适用上下文', /(?:不可能对所有变化关闭[\s\S]*战略性关闭|战略性关闭[\s\S]*不可能对所有变化关闭)/u],
@@ -202,13 +202,13 @@ const decisionContracts = new Map([
   ]],
   ['PR-14', [
     ['decision system not catalog', '要保护的性质', /责任分配决策系统[^。；\n]*不是模式名称目录/u],
-    ['all nine patterns', '机制', /Information Expert[\s\S]*Creator[\s\S]*Controller[\s\S]*Low Coupling[\s\S]*High Cohesion[\s\S]*Polymorphism[\s\S]*Pure Fabrication[\s\S]*Indirection[\s\S]*Protected Variations/u],
+    ['all nine patterns', '机制', /信息专家[\s\S]*创建者[\s\S]*Controller[\s\S]*低耦合[\s\S]*高内聚[\s\S]*多态[\s\S]*纯虚构[\s\S]*间接[\s\S]*受保护变化/u],
     ['ownership dimensions', '机制', /信息、创建、协调、变化与基础设施责任/u],
     ['heuristics can conflict', '冲突与适用上下文', /不同方向|相互拉扯|发生冲突/u],
     ['controller is not god object', '误用与反原则', /Controller[^。；\n]*(?:不是|不应成为)[^。；\n]*(?:god object|上帝对象)/u],
-    ['expert is not data holder', '误用与反原则', /Information Expert[^。；\n]*(?:不是|不等于)[^。；\n]*(?:数据持有者|数据对象)/u],
-    ['pure fabrication has cost', '冲突与适用上下文', /(?:Pure Fabrication[^。；\n]*成本|成本[^。；\n]*Pure Fabrication)/u],
-    ['indirection has cost', '冲突与适用上下文', /(?:Indirection[^。；\n]*成本|成本[^。；\n]*Indirection)/u],
+    ['expert is not data holder', '误用与反原则', /信息专家[^。；\n]*(?:不是|不等于)[^。；\n]*(?:数据持有者|数据对象)/u],
+    ['pure fabrication has cost', '冲突与适用上下文', /(?:纯虚构[^。；\n]*成本|成本[^。；\n]*纯虚构)/u],
+    ['indirection has cost', '冲突与适用上下文', /(?:间接[^。；\n]*成本|成本[^。；\n]*间接)/u],
     ['protected variation is evidence-led', '机制', /Protected Variations[^。；\n]*变化证据/u],
   ]],
 ]);
@@ -230,5 +230,5 @@ test('does not collapse the Batch 4 misconceptions into slogans', () => {
   assert.doesNotMatch(requiredDocument('PR-13').body, /所有上下文[^。\n]*必须禁止持久化注解/u);
   assert.doesNotMatch(requiredDocument('PR-13').body, /数据库成本可以忽略/u);
   assert.doesNotMatch(requiredDocument('PR-14').body, /Controller[^。\n]*(?:就是|应成为)[^。\n]*(?:god object|上帝对象)/u);
-  assert.doesNotMatch(requiredDocument('PR-14').body, /Information Expert[^。\n]*就是数据持有者/u);
+  assert.doesNotMatch(requiredDocument('PR-14').body, /信息专家[^。\n]*就是数据持有者/u);
 });

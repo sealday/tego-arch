@@ -98,7 +98,7 @@ const decisionContracts = new Map([
       [
         'additional controls name the asset threat boundary and residual risk',
         '机制',
-        /授权决策先明确[^。；\n]*resource[^。；\n]*[\s\S]*额外控制必须针对已命名威胁[^。；\n]*[\s\S]*trust boundary[^|\n]*\|[^|\n]*残余风险/u,
+        /授权决策先明确[^。；\n]*资源[^。；\n]*[\s\S]*额外控制必须针对已命名威胁[^。；\n]*[\s\S]*信任边界[^|\n]*\|[^|\n]*残余风险/u,
       ],
       [
         'narrow role names do not prove least privilege',
@@ -120,14 +120,14 @@ const decisionContracts = new Map([
       ['unknown is not failed', '机制', /未知结果不是可盲重试的失败/u],
       ['dedupe is not invariant coordination', '冲突与适用上下文', /去重不能替代共享不变量所需的所有权、条件写或串行化/u],
       ['minimal coordination is not zero', '误用与反原则', /最小协调不等于零协调/u],
-      ['HTTP method is not proof', '误用与反原则', /HTTP 方法[^。；\n]*不能证明[^。；\n]*幂等/u],
+      ['HTTP method is not proof', '误用与反原则', /超文本传输协议（Hypertext Transfer Protocol，HTTP）方法[^。；\n]*不能证明[^。；\n]*幂等/u],
       ['fresh retry key is rejected', '误用与反原则', /每次(?:传输|网络)重试生成新(?:的)?幂等键[^。；\n]*(?:破坏|错误)/u],
       [
         'success-only state is rejected',
         '机制',
         /只存储(?:一个)?成功(?:标志|旗标)[^。；\n]*(?:不足|不能)[^。；\n]*in-progress、completed、rejected、conflict、expired 与 unknown/u,
       ],
-      ['exactly-once is not enough', '误用与反原则', /exactly-once[^。；\n]*不能[^。；\n]*(?:幂等消费者|效果边界)/u],
+      ['exactly-once is not enough', '误用与反原则', /恰好一次[^。；\n]*不能[^。；\n]*(?:幂等消费者|效果边界)/u],
       ['irreversible retries are bounded', '误用与反原则', /不可逆效果[^。；\n]*(?:无限|无界|不设上限)重试[^。；\n]*(?:补偿|对账|人工终态)/u],
       ['process-local cache is insufficient', '适用尺度', /进程内缓存[^。；\n]*不足以[^。；\n]*(?:跨实例|持久)/u],
     ],
@@ -139,7 +139,7 @@ const decisionContracts = new Map([
       ['CQRS scale', '要保护的性质', /CQRS 分离命令与查询责任及其模型/u],
       ['replica is not CQRS', '要保护的性质', /只读副本只是基础设施路由，不能单独证明 CQRS/u],
       ['four outcomes', '机制', /保留现有模型并应用 CQS[\s\S]*优化单模型读取[\s\S]*基础设施读写分流[\s\S]*采用 CQRS/u],
-      ['CQRS costs are explicit', '冲突与适用上下文', /投影延迟、read-your-write、回放重建、对账与模式演化/u],
+      ['CQRS costs are explicit', '冲突与适用上下文', /投影延迟、读己之写、回放重建、对账与模式演化/u],
       ['simple CRUD non-use', '误用与反原则', /简单 CRUD 边界没有模型分歧证据时不采用 CQRS/u],
       ['return value does not define query', '误用与反原则', /返回值[^。；\n]*不能[^。；\n]*查询/u],
       [
@@ -180,7 +180,7 @@ const decisionContracts = new Map([
       [
         'read-your-write remains explicit',
         '冲突与适用上下文',
-        /团队必须承担[^。；\n]*read-your-write/u,
+        /团队必须承担[^。；\n]*读己之写/u,
       ],
       [
         'mutating value return is a CQS exception',
@@ -216,7 +216,7 @@ const pr09AuthorizationRows = [
   ],
   [
     'emergency access lifecycle',
-    /紧急访问获批[^|\n]*\|\s*发放短时、窄范围能力[^|\n]*\|[^|\n]*(?:owner|所有者)[^|\n]*(?:expiry|过期)[^|\n]*\|[^|\n]*(?:审计)[^|\n]*(?:撤销)/u,
+    /\| 紧急访问获批 \| 发放短时、窄范围能力 \| 审批者、负责人、范围、到期、工单 \| 强审计，到期撤销并复盘 \|/u,
   ],
   [
     'independent remaining control',

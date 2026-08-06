@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import test from 'node:test';
+
+import {stripTerminologyExemptions} from './helpers/terminology-content.mjs';
 import {fileURLToPath} from 'node:url';
 
 import {
@@ -12,7 +14,7 @@ import {extractExternalLinks} from '../scripts/source-ledger.mjs';
 import {handleHorizontalArrowKey} from '../src/components/KeyboardScrollableRegion/handleHorizontalArrowKey.mjs';
 
 const contentRoot = fileURLToPath(new URL('../content/', import.meta.url));
-const documents = await readContentDocuments(contentRoot);
+const documents = await readContentDocuments(contentRoot).then((entries) => entries.map(stripTerminologyExemptions));
 const documentsById = new Map(
   documents.map((content) => [content.metadata.topic_id, content]),
 );
@@ -118,7 +120,7 @@ const expectedMappingRows = [
     '触发': '效果前取消',
     '业务状态变化': '`accepted` → `cancelled_before_effect`',
     '执行状态变化': '`ready` → `stopped_before_effect`',
-    '所需权威证据': '权威 not-found 证据与流程停止记录',
+    '所需权威证据': '权威未找到证据与流程停止记录',
     '禁止推断': '只有取消意图不证明效果从未发生',
   },
   {
@@ -139,7 +141,7 @@ const expectedMappingRows = [
     '触发': '证据无法收敛后人工决议',
     '业务状态变化': '`settlement_pending` → `manually_resolved`',
     '执行状态变化': '`manual_review` → `manual_closed`',
-    '所需权威证据': '`disposition`：`confirmed-settled` 表示权威证据确认预期结算结果；`confirmed-compensated` 表示权威证据同时确认正向效果与对应补偿；`accepted-residual-risk` 表示有权限的 owner 明确接受尚未解决的残余风险；并持久保存 `decision_ref`、决策人、时间与残余风险',
+    '所需权威证据': '`disposition`：`confirmed-settled` 表示权威证据确认预期结算结果；`confirmed-compensated` 表示权威证据同时确认正向效果与对应补偿；`accepted-residual-risk` 表示有权限的负责人明确接受尚未解决的残余风险；并持久保存 `decision_ref`、决策人、时间与残余风险',
     '禁止推断': '`manual_closed` 不能在缺少业务决议时被当作业务终态',
   },
 ];
@@ -147,24 +149,24 @@ const expectedMappingRows = [
 const invariantSentences = [
   '调用超时只说明观察者没有按时得到结果，不能单独证明业务失败或外部效果未发生。',
   '取消是事件和意图，不等于已经取消；执行已提交或结果未知时必须先对账。',
-  '只有权威 not-found 且原稳定 operation_id 仍然有效时，才允许重试外部写入。',
+  '只有权威未找到且原稳定 operation_id 仍然有效时，才允许重试外部写入。',
   '补偿创建新的业务事实，不是把历史回滚成从未发生。',
   '补偿必须拥有自己的 operation_id、预算和对账路径，并且也可能超时、重复或失败。',
-  '人工终态必须保存可审计的 disposition、decision_ref、决策人、时间和残余风险，不能用 generic closed 隐藏未知结果。',
+  '人工终态必须保存可审计的处置、decision_ref、决策人、时间和残余风险，不能用通用闭合隐藏未知结果。',
   '两台状态机只通过持久记录关联，任何一台都不能从另一台的内存状态推导外部事实。',
 ];
 
 const manualDispositionMeanings = [
   '`confirmed-settled` 表示权威证据确认预期结算结果',
   '`confirmed-compensated` 表示权威证据同时确认正向效果与对应补偿',
-  '`accepted-residual-risk` 表示有权限的 owner 明确接受尚未解决的残余风险',
+  '`accepted-residual-risk` 表示有权限的负责人明确接受尚未解决的残余风险',
 ];
 
 const expectedSourceUsageBoundaries = [
   '仅支持 UML 2.5.1 的图名称与标准语义范围；不支持领域示例、本地建模工作流、生产事实，也不能据此声称图证明了实现行为。本文还不以该标准定义转账状态政策或补偿政策。',
   '仅支持已记录页面与版本中的 Temporal Workflow 文档语义；不证明未记录行为或其他版本的行为。',
-  '仅支持已记录页面与版本中的 Temporal Activity 文档语义；不证明未记录行为或其他版本的行为。',
-  '仅支持已记录页面与版本中的 Temporal Retry Policies 文档语义；不证明未记录行为或其他版本的行为。',
+  '仅支持已记录页面与版本中的 Temporal 活动文档语义；不证明未记录行为或其他版本的行为。',
+  '仅支持已记录页面与版本中的 Temporal 重试策略文档语义；不证明未记录行为或其他版本的行为。',
   '提供 Sagas 的原始方法与历史模型；没有独立证据时，不确立其对现代实现的适用性。',
 ];
 
@@ -201,13 +203,13 @@ function stateDiagrams(body) {
   const diagrams = [...body.matchAll(
     /```mermaid\n(stateDiagram-v2[\s\S]*?)\n```/gu,
   )].map((match) => match[1]);
-  assert.equal(diagrams.length, 2, 'MOD-08 must have exactly two state diagrams');
+  assert.equal(diagrams.length, 2, 'MOD-08 must have exactly two 状态 diagrams');
   return diagrams;
 }
 
 function parseStateDiagram(graph) {
   const [header, ...lines] = graph.split('\n').filter((line) => line.trim() !== '');
-  assert.equal(header, 'stateDiagram-v2', 'state diagram header');
+  assert.equal(header, 'stateDiagram-v2', '状态 diagram header');
 
   const declarations = [];
   const edges = [];
@@ -224,11 +226,11 @@ function parseStateDiagram(graph) {
       continue;
     }
 
-    assert.fail(`unsupported state diagram line: ${line.trim()}`);
+    assert.fail(`unsupported 状态 diagram line: ${line.trim()}`);
   }
   const stateIds = new Set(declarations.map(({id}) => id));
 
-  assert.equal(stateIds.size, declarations.length, 'state declarations must be unique');
+  assert.equal(stateIds.size, declarations.length, '状态 declarations must be unique');
   assert.equal(
     new Set(edges.map(({from, to}) => `${from}->${to}`)).size,
     edges.length,
@@ -388,7 +390,7 @@ function assertMod10ReciprocalRelation(peers) {
   assert.ok(mod10.metadata.adjacent_topics.includes('MOD-08'));
   assert.equal(extractInternalLinks(mod08).filter((href) => href === '/modeling/mod-10').length, 1);
   assert.equal(extractInternalLinks(mod10).filter((href) => href === '/modeling/mod-08').length, 1);
-  assert.match(mod08.body, /重要的 Domain Story 变体[^。\n]*状态、终态与恢复语义/u);
+  assert.match(mod08.body, /重要的领域故事变体[^。\n]*状态、终态与恢复语义/u);
 }
 
 test('publishes MOD-08 with the approved metadata and structure', () => {
@@ -503,7 +505,7 @@ test('connects MOD-08 reciprocally and hands off to published MOD-09', () => {
   assert.ok(links.has('/modeling/mod-09'));
   assert.ok(links.has('/modeling/mod-10'));
   assert.equal(extractInternalLinks(requiredDocument()).filter((href) => href === '/modeling/mod-10').length, 1);
-  assert.match(requiredDocument().body, /重要的 Domain Story 变体[^。\n]*状态、终态与恢复语义/u);
+  assert.match(requiredDocument().body, /重要的领域故事变体[^。\n]*状态、终态与恢复语义/u);
   assert.doesNotMatch(requiredDocument().body, /MOD-09[^。\n]*尚未发布/u);
   assert.ok(requiredDocument().metadata.adjacent_topics.includes('MOD-09'));
 
@@ -550,7 +552,7 @@ test('rejects state, edge, label, mapping, table, wrapper, disposition and invar
   assert.throws(
     () => assertStateGraphs(body.replace('  state "尝试执行" as attempting\n', '')),
     {name: 'AssertionError'},
-    'removed execution state',
+    'removed execution 状态',
   );
   assert.throws(
     () => assertStateGraphs(body.replace(
@@ -584,7 +586,7 @@ test('rejects state, edge, label, mapping, table, wrapper, disposition and invar
   assert.throws(
     () => assertStateGraphs(body.replace('state "结果未知" as unknown', 'state "业务失败" as unknown')),
     {name: 'AssertionError'},
-    'semantic state relabel',
+    'semantic 状态 relabel',
   );
   assert.throws(
     () => assertStateGraphs(body.replace('权威确认未发生且可安全重试', '任意超时后均可重试')),
@@ -613,7 +615,7 @@ test('rejects state, edge, label, mapping, table, wrapper, disposition and invar
       '  state "已请求" as requested\n  state rogue',
     )),
     {name: 'AssertionError'},
-    'shorthand state declaration',
+    'shorthand 状态 declaration',
   );
   assert.throws(
     () => assertStateGraphs(body.replace(
@@ -621,7 +623,7 @@ test('rejects state, edge, label, mapping, table, wrapper, disposition and invar
       '  requested --> rejected : 业务规则拒绝\n  rogue --> settled : 隐式状态',
     )),
     {name: 'AssertionError'},
-    'implicit-state transition',
+    'implicit-状态 transition',
   );
   assert.throws(
     () => assertStateGraphs(body.replace(
@@ -671,7 +673,7 @@ test('rejects state, edge, label, mapping, table, wrapper, disposition and invar
   }
   for (const meaning of manualDispositionMeanings) {
     assert.throws(
-      () => assertManualDispositionContract(body.replaceAll(meaning, '人工 disposition 含义被删除')),
+      () => assertManualDispositionContract(body.replaceAll(meaning, '人工 处置 含义被删除')),
       {name: 'AssertionError'},
       meaning,
     );

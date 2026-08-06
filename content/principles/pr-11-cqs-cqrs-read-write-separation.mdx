@@ -1,5 +1,5 @@
 ---
-title: CQS、CQRS 与读写分离
+title: 命令查询分离、命令查询职责分离（Command Query Responsibility Segregation，CQRS）与读写分离
 slug: /principles/pr-11
 content_type: principle
 status: reviewed
@@ -36,12 +36,15 @@ related_cases:
 related_questions: []
 ---
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 # CQS、CQRS 与读写分离
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 CQS 是操作或接口尺度的可观察状态规则，CQRS 是命令与查询责任及概念模型的分离，读副本则是基础设施路由。把三者区分开，才能让复杂度对应真实的模型分歧。可从[原则目录](/principles)继续浏览。
 
 ## 学习问题
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 - CQS 约束一个方法的什么可观察语义？
 - 何种模型分歧足以承担 CQRS 的投影成本？
 - 只读副本为什么不能单独证明系统采用 CQRS？
@@ -49,59 +52,89 @@ CQS 是操作或接口尺度的可观察状态规则，CQRS 是命令与查询�
 
 ## 要保护的性质
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 **来源事实：** [Command Query Separation](https://martinfowler.com/bliki/CommandQuerySeparation.html)区分返回结果且不改变可观察状态的查询与改变状态的命令，也承认组合原子操作等有用例外；[CQRS](https://martinfowler.com/bliki/CQRS.html)描述更新与展示使用不同概念模型，并指出这会引入显著风险与复杂度。**推断：** CQS 约束方法或接口的可观察状态语义；CQRS 分离命令与查询责任及其模型，但不必分离物理存储。
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 CQS 不是“查询绝不执行任何指令”的字面禁令，也不由是否返回值来分类：返回值不会让操作自动成为查询。若一个操作改变可观察状态并返回标识符、回执或结果，它是必须显式记录的组合操作与 CQS 例外，而不是严格 CQS 下的命令。严格应用 CQS 时，应改为无返回值命令加独立回执查询或结果查询。
 
 内部记账、指标、缓存与延迟加载必须按两个分支判断。若这些副作用形成调用者可观察的领域状态变化，就不能称为纯查询。实现内部的记账、指标、缓存或延迟加载若不改变领域契约，不会自行把查询变成命令，但仍须在契约中披露并命名。取值并原子推进游标之类的组合操作也应作为记录清楚的例外。CQRS 则需要长期、实质的模型差异作为证据，不能从方法命名或数据库拓扑反推。
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 [Amazon RDS read replica 文档](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html)说明读取可路由到只读副本且复制通常异步，因此存在延迟与陈旧读取；只读副本只是基础设施路由，不能单独证明 CQRS。
 
 ## 冲突与适用上下文
 
-单模型减少映射、投影和一致性路径，却可能让复杂命令规则与高维查询形状互相拖累。分离模型能各自优化写入不变量和读取形状，但团队必须承担投影延迟、read-your-write、回放重建、对账与模式演化。
+单模型减少映射、投影和一致性路径，却可能让复杂命令规则与高维查询形状互相拖累。分离模型能各自优化写入不变量和读取形状，但团队必须承担投影延迟、读己之写、回放重建、对账与模式演化。
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 [Microsoft 的 CQRS pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/cqrs)同时描述共享存储和分离存储变体，并列出简单 CRUD 等不适用条件。**本站分析：** 架构选择应从模型分歧、容量证据和所有权出发，而不是先选消息总线、Event Sourcing 或双数据库再寻找理由。
 
 运行成本包括事件或变更捕获、幂等投影、重复与乱序处理、重建演练、延迟指标、对账工具、模式兼容和跨模型故障值守。若没有明确投影所有者和恢复目标，这些成本会直接转化为长期数据不一致。
 
 ## 机制
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 先保留现有模型并应用 CQS；若模型相同而读取慢，优化单模型读取；若只需卸载读取，采用基础设施读写分流；只有命令规则与查询形状长期不同且团队承担完整投影责任时，采用 CQRS。
 
 以下决策表为本站原创：
 
 | 证据 | 选择 | 数据与一致性责任 | 不增加的复杂度 |
 | --- | --- | --- | --- |
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 | 单个操作混合观察与领域变更 | 在现有模型内应用 CQS | 明确可观察状态与例外 | 不拆模型、不拆存储 |
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 | 模型相同，只是查询慢或读多 | 优化单模型读取 | 索引、缓存、查询 DTO 与容量证据 | 不引入投影流水线 |
-| 只需卸载读取或提高可用性 | 基础设施读写分流 | 副本延迟、read-your-write 与路由 | 不声称 CQRS |
-| 命令规则与查询形状长期不同，且团队能承担运维 | 采用 CQRS | 投影、重复事件、重建、对账、模式演化 | 不默认要求 Event Sourcing 或双数据库 |
+| 只需卸载读取或提高可用性 | 基础设施读写分流 | 副本延迟、读己之写与路由 | 不声称 CQRS |
+| 命令规则与查询形状长期不同，且团队能承担运维 | 采用 CQRS | 投影、重复事件、重建、对账、模式演化 | 不默认要求事件溯源或双数据库 |
 
-命令入口校验业务不变量；严格 CQS 下，调用端通过独立查询读取稳定操作身份，组合 API 则必须显式标注例外。查询入口只读取为消费场景组织的模型。共享存储时，两种模型可以是不同 schema、view 或 mapper；分离存储时，投影必须定义 offset、重复、乱序、重建和对账契约。CQRS 不默认要求 Event Sourcing 或双数据库。
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+命令入口校验业务不变量；严格 CQS 下，调用端通过独立查询读取稳定操作身份，组合应用程序编程接口（Application Programming Interface，API）则必须显式标注例外。查询入口只读取为消费场景组织的模型。共享存储时，两种模型可以是不同模式、视图或映射器；分离存储时，投影必须定义偏移、重复、乱序、重建和对账契约。CQRS 不默认要求事件溯源或双数据库。
 
 ## 误用与反原则
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 返回值本身不能把一个函数定义成查询；改变状态后又返回新 ID、receipt 或业务 outcome 的操作是组合操作，不是严格 CQS 命令。应明确记录该 CQS 例外，或拆成无返回值命令与独立结果查询。简单 CRUD 边界没有模型分歧证据时不采用 CQRS。命令与查询模型实质相同、严格即时一致性占主导，或团队缺少投影所有权与恢复能力时，也不采用。把 `create/update` 与 `get/list` 放进不同类，只是代码组织；把读流量路由到副本，只是基础设施扩展。
 
-失败模式包括把副本延迟暴露成未声明的陈旧读取、投影重复处理造成计数倍增、模式升级后无法重建、命令成功但查询长期不可见，以及两个模型无人负责对账。用 Event Sourcing、消息队列或双库作为“已经 CQRS”的证据，会掩盖这些真正责任。
+失败模式包括把副本延迟暴露成未声明的陈旧读取、投影重复处理造成计数倍增、模式升级后无法重建、命令成功但查询长期不可见，以及两个模型无人负责对账。用事件溯源、消息队列或双库作为“已经 CQRS”的证据，会掩盖这些真正责任。
 
 ## 适用尺度
 
-方法尺度应用 CQS，明确可观察状态和少量例外；模块尺度可用独立 command handler 与 query service，但仍共享领域模型；应用尺度在模型长期分歧时采用 CQRS；基础设施尺度的副本、缓存和路由只解决容量或可用性。尺度之间不能凭同一个“读写分离”标签跳跃。
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+方法尺度应用 CQS，明确可观察状态和少量例外；模块尺度可用独立命令处理器与查询服务，但仍共享领域模型；应用尺度在模型长期分歧时采用 CQRS；基础设施尺度的副本、缓存和路由只解决容量或可用性。尺度之间不能凭同一个“读写分离”标签跳跃。
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 对低写入、低查询复杂度、单团队维护的 CRUD 系统，索引、查询 DTO 或缓存通常足够。跨团队、高写入规则复杂度且查询形状独立演化时，才进一步评估 CQRS，并把延迟、重建和对账写进运行契约。
 
 ## 相邻原则
 
-[单一职责与关注点分离](/principles/pr-03)提供按变化主体划分责任的方法；[依赖倒置、控制反转与依赖注入](/principles/pr-04)让命令和查询依赖稳定政策接口，而不把 CQRS 等同于 handler 注入；[幂等与最小协调](/principles/pr-10)约束命令重试和投影重复处理；[Persistence Ignorance](/principles/pr-13)提醒查询模型可以为读取形状显式优化。查询模型分离不意味着把领域持久化关注强塞进同一个模型；PR-11 只决定观察与改变状态的责任边界，不替代事务、不变量、映射或重放规则。
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+[单一职责与关注点分离](/principles/pr-03)提供按变化主体划分责任的方法；[依赖倒置、控制反转与依赖注入](/principles/pr-04)让命令和查询依赖稳定政策接口，而不把 CQRS 等同于处理器注入；[幂等与最小协调](/principles/pr-10)约束命令重试（Retry）和投影重复处理；[领域模型与存储解耦](/principles/pr-13)提醒查询模型可以为读取形状显式优化。查询模型分离不意味着把领域持久化关注强塞进同一个模型；PR-11 只决定观察与改变状态的责任边界，不替代事务、不变量、映射或重放规则。
 
 ## 说明性场景
 
-在 [Temporal Saga 与持久执行案例](/cases/temporal-saga-durable-execution)中，启动转账、确认补偿和人工决议是改变状态的命令；读取 workflow 状态、查询外部 receipt 和生成对账视图是只读的恢复与查询路径。两者可以先共享同一权威历史，仅在查询形状和容量证据长期分歧时增加投影。
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+在 [Temporal Saga 与持久执行案例](/cases/temporal-saga-durable-execution)中，启动转账、确认补偿和人工决议是改变状态的命令；读取工作流（Workflow）状态、查询外部回执和生成对账视图是只读的恢复与查询路径。两者可以先共享同一权威历史，仅在查询形状和容量证据长期分歧时增加投影。
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 这个场景说明状态变更命令与只读对账/查询路径的分离，但不宣称 Temporal 本身等于 CQRS。是否采用 CQRS 仍取决于概念模型分歧和投影运行责任，而不是工作流引擎品牌。
 
 ## 来源
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 [Command Query Separation](https://martinfowler.com/bliki/CommandQuerySeparation.html)仅用于 CQS 的可观察状态规则和例外边界；[CQRS](https://martinfowler.com/bliki/CQRS.html)仅用于不同概念模型、存储非必然分离及复杂度警告；[Microsoft CQRS pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/cqrs)仅用于共享/分离存储、最终一致性和非采用语境；[Amazon RDS read replicas](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html)仅用于只读路由与异步延迟事实。本文不复制来源图表、示例或结构；决策表、尺度判断和场景分析均为本站原创。

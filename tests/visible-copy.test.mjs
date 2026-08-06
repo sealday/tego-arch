@@ -117,6 +117,18 @@ test('returns parser-owned HTML comment records outside YAML, code, and literals
   }]);
 });
 
+test('returns parser-owned MDX comment records for native suppression directives', () => {
+  const directive = '{/* terminology-exempt: unknown-english-term | reason: 测试 */}';
+  const result = parseMdxVisibleCopy(`${directive}\n\n正文`, 'content/native-comment.mdx');
+  assert.deepEqual(result.comments, [{
+    file: 'content/native-comment.mdx',
+    line: 1,
+    text: 'terminology-exempt: unknown-english-term | reason: 测试',
+    excerpt: directive,
+    kind: 'mdx-comment',
+  }]);
+});
+
 test('collects many HTML comments without candidate-by-candidate parsing', () => {
   for (const count of [50, 100, 200, 400]) {
     const source = Array.from(
@@ -406,11 +418,19 @@ flowchart LR
   );
 });
 
+test('treats Mermaid HTML break tags as layout rather than reader terminology', () => {
+  const labels = extractMermaidLabels(
+    '```mermaid\nflowchart LR\n  A["第一行<br/>第二行"]\n```',
+    'content/diagram.mdx',
+  );
+  assert.equal(labels[0].text, '第一行 第二行');
+});
+
 test('parses current flowchart, sequence and state diagram reader labels', async () => {
   const fixtures = [
     {
       file: 'content/methods/mth-03-adr-lifecycle.mdx',
-      expected: ['Proposed', 'Accepted', '权衡与授权完成', 'Deprecated', 'Superseded'],
+      expected: ['已提议', '已接受', '权衡与授权完成', '已弃用', '已取代'],
     },
     {
       file: 'content/modeling/mod-08-state-machine-modeling.mdx',
@@ -422,7 +442,6 @@ test('parses current flowchart, sequence and state diagram reader labels', async
         'CAO 控制面',
         'SQLite\\nterminal / inbox / workflow journal',
         '用户',
-        'Supervisor',
         '目标 + 约束',
         '并行分派',
         'worker ERROR 或超时',

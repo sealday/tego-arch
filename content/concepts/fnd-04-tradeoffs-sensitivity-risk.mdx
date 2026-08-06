@@ -21,7 +21,7 @@ tags:
   - 敏感点
   - 风险
   - ATAM
-summary: 用质量属性场景区分权衡、敏感点、权衡点、风险与非风险，并明确结论的证据边界。
+summary: 用质量属性（Quality Attribute）场景区分权衡、敏感点、权衡点、风险与非风险，并明确结论的证据边界。
 topic_id: FND-04
 priority: P0
 depends_on:
@@ -38,7 +38,7 @@ related_questions: []
 
 架构选择很少只有“更好”或“更差”。一个决定可能降低故障扩散范围，却增加路由状态、容量浪费和运维复杂度；如果不说明相对哪些场景、在哪些参数范围内判断，所谓权衡就只是印象。
 
-本文从[概念目录](/concepts)进入，并位于[架构思维与表达路径](/paths/architecture-thinking)的驱动力到评估阶段。它采用 SEI ATAM 的术语区分，但不把概念说明冒充一次正式评估。
+本文从[概念目录](/concepts)进入，并位于[架构思维与表达路径](/paths/architecture-thinking)的驱动力到评估阶段。它采用软件工程研究所架构权衡分析方法（Architecture Tradeoff Analysis Method，ATAM）的术语区分，但不把概念说明冒充一次正式评估。
 
 ## 学习问题
 
@@ -55,11 +55,13 @@ related_questions: []
 
 风险是依据当前证据，某项架构决定可能无法满足已声明场景的理由；非风险则是分析后有充分理由相信决定可以满足特定场景。二者都不是系统的永久标签。场景、环境、实现或证据变化后，原结论必须重评。
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 [SEI 对 ATAM 的介绍](https://www.sei.cmu.edu/library/the-architecture-tradeoff-analysis-method/)把风险、非风险、敏感点和权衡点列为架构相对质量属性目标评估的产出。[NASA SWEHB Version D 7.07](https://swehb.nasa.gov/spaces/SWEHBVD/pages/102695632/7.07%2B-%2BSoftware%2BArchitecture%2BDescription)则要求架构描述呈现驱动因素、关键决策、理由以及度量或验证证据。两者共同支持“结论要从驱动力追到决策和证据”的边界，但都不提供跨组织通用的风险分数。
 
 ## 核心机制
 
-分析从[架构驱动力与 ASR](/concepts/fnd-02)开始：先写明刺激、环境、响应和度量，再列出为满足场景采用的架构方法。随后改变一个决定或参数，判断响应度量是否显著变化；若影响显著，记录为候选敏感点。若它同时改善一个目标、恶化另一个目标，再记录为候选权衡点。
+分析从[架构驱动力与架构重要需求（Architecturally Significant Requirement，ASR）](/concepts/fnd-02)开始：先写明刺激、环境、响应和度量，再列出为满足场景采用的架构方法。随后改变一个决定或参数，判断响应度量是否显著变化；若影响显著，记录为候选敏感点。若它同时改善一个目标、恶化另一个目标，再记录为候选权衡点。
 
 最后才判断风险或非风险。判断至少要包含场景、架构决定、推理或验证证据，以及仍未覆盖的条件。缺少其中任一项时，更准确的状态是“待验证”，而不是凭会议共识宣布非风险。
 
@@ -85,21 +87,25 @@ related_questions: []
 
 ## 说明性场景
 
-一个多租户服务考虑采用 cell 和 shuffle sharding 限制故障扩散。可靠性场景要求单个 cell 失效时，受影响租户比例不超过既定阈值；成本目标要求正常负载下的预留容量维持在预算内。cell 数量与每个租户映射的 cell 组合数成为候选参数。
+一个多租户服务考虑采用隔离单元和洗牌分片限制故障扩散。可靠性场景要求单个隔离单元失效时，受影响租户比例不超过既定阈值；成本目标要求正常负载下的预留容量维持在预算内。隔离单元数量与每个租户映射的隔离单元组合数成为候选参数。
 
-当 cell 更小时，故障影响范围下降，但预留容量、跨 cell 路由和部署操作增加，因此 cell 大小是候选权衡点。若容量模型没有覆盖热点租户，团队应记录“预算或恢复目标可能失守”的风险；若故障演练和容量数据覆盖了声明环境，可以把对应决定记录为非风险，但结论不能外推到未演练的区域级故障。
+当隔离单元更小时，故障影响范围下降，但预留容量、跨隔离单元路由和部署操作增加，因此隔离单元大小是候选权衡点。若容量模型没有覆盖热点租户，团队应记录“预算或恢复目标可能失守”的风险；若故障演练和容量数据覆盖了声明环境，可以把对应决定记录为非风险，但结论不能外推到未演练的区域级故障。
 
-[AWS Cell 与 Shuffle Sharding 案例](/cases/aws-cell-shuffle-sharding)提供可继续检查的隔离案例。这里的参数比较是本站原创说明性推演，不声称代表 AWS 的具体生产配置，也不把一种隔离策略当成所有系统的默认答案。
+[亚马逊云科技单元架构与洗牌分片案例](/cases/aws-cell-shuffle-sharding)提供可继续检查的隔离案例。这里的参数比较是本站原创说明性推演，不声称代表亚马逊云科技的具体生产配置，也不把一种隔离策略当成所有系统的默认答案。
 
 ## 相邻主题
 
 先阅读[架构驱动力与 ASR](/concepts/fnd-02)，为权衡判断提供业务优先级和可测场景。需要执行场景驱动的架构评估时，继续到[架构权衡分析方法](/methods/mth-02)；方法页会把本文术语组织成输入、步骤和产物。
 
-本文的父级是[概念目录](/concepts)，所在学习路线是[架构思维与表达路径](/paths/architecture-thinking)。[AWS Cell 与 Shuffle Sharding 案例](/cases/aws-cell-shuffle-sharding)用于观察隔离收益如何伴随容量和操作成本。
+本文的父级是[概念目录](/concepts)，所在学习路线是[架构思维与表达路径](/paths/architecture-thinking)。[亚马逊云科技单元架构与洗牌分片案例](/cases/aws-cell-shuffle-sharding)用于观察隔离收益如何伴随容量和操作成本。
 
 ## 来源
 
-- [SEI — The Architecture Tradeoff Analysis Method](https://www.sei.cmu.edu/library/the-architecture-tradeoff-analysis-method/)：用于 ATAM 的评估对象与风险、非风险、敏感点、权衡点术语边界。
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+- [SEI — The 架构权衡分析方法](https://www.sei.cmu.edu/library/the-architecture-tradeoff-analysis-method/)：用于 ATAM 的评估对象与风险、非风险、敏感点、权衡点术语边界。
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 - [NASA SWEHB Version D — 7.07 Software Architecture Description](https://swehb.nasa.gov/spaces/SWEHBVD/pages/102695632/7.07%2B-%2BSoftware%2BArchitecture%2BDescription)：用于驱动力、关键决策、理由和验证证据之间的追踪关系。
 
 定义对照表和说明性场景是本站原创归纳。来源支持分析结构，不为本文示例提供测量数据，也不构成对任何具体架构的认证。

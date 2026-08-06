@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import test from 'node:test';
+
+import {stripTerminologyExemptions} from './helpers/terminology-content.mjs';
 import {fileURLToPath} from 'node:url';
 
 import {
@@ -13,7 +15,7 @@ import {extractExternalLinks} from '../scripts/source-ledger.mjs';
 import {handleHorizontalArrowKey} from '../src/components/KeyboardScrollableRegion/handleHorizontalArrowKey.mjs';
 
 const contentRoot = fileURLToPath(new URL('../content/', import.meta.url));
-const documents = await readContentDocuments(contentRoot);
+const documents = await readContentDocuments(contentRoot).then((entries) => entries.map(stripTerminologyExemptions));
 const document = documents.find(
   ({file}) => file === 'modeling/mod-09-eventstorming.mdx',
 );
@@ -93,24 +95,24 @@ const expectedBigPictureRows = [
   {'领域事件': '财务复核已完成', '事件来源或权威记录': '财务复核记录', '关键转折候选': '是：费用具备支付条件', '热点': '财务政策与审批结论可能冲突', '未知项': '冲突时由哪条记录裁定'},
   {'领域事件': '支付已请求', '事件来源或权威记录': '费用申报系统的支付请求记录', '关键转折候选': '是：进入外部效果阶段', '热点': '重复请求、超时与幂等身份', '未知项': '银行支付服务是否已经接受请求'},
   {'领域事件': '支付结果已确认', '事件来源或权威记录': '银行支付服务回执与本地核对记录', '关键转折候选': '是：正常路径收束', '热点': '外部回执与费用申报的身份映射', '未知项': '该确认是否已经满足业务终态条件'},
-  {'领域事件': '支付结果仍未知', '事件来源或权威记录': '超时记录与缺失回执证据', '关键转折候选': '是：进入异常恢复', '热点': '重试、取消与对账顺序', '未知项': '外部支付效果是否已经发生'},
+  {'领域事件': '支付结果仍未知', '事件来源或权威记录': '超时记录与缺失回执证据', '关键转折候选': '是：进入异常恢复', '热点': '重试（Retry）、取消与对账顺序', '未知项': '外部支付效果是否已经发生'},
   {'领域事件': '支付对账已完成', '事件来源或权威记录': '银行支付服务查询结果与对账记录', '关键转折候选': '是：重新获得权威结果', '热点': '回执、查询与本地记录可能冲突', '未知项': '冲突记录的更正由谁批准'},
-  {'领域事件': '人工处理已登记', '事件来源或权威记录': '持久人工处理记录', '关键转折候选': '是：进入人工收敛路径', '热点': '处理 owner、证据和 disposition', '未知项': '谁有权限确认最终业务结论'},
+  {'领域事件': '人工处理已登记', '事件来源或权威记录': '持久人工处理记录', '关键转折候选': '是：进入人工收敛路径', '热点': '处理负责人、证据和处置', '未知项': '谁有权限确认最终业务结论'},
 ];
 
 const expectedProcessNodes = [
-  {id: 'bank_payment_service', type: 'System', label: '银行支付服务'},
-  {id: 'expense_system', type: 'System', label: '费用申报系统'},
-  {id: 'finance_person', type: 'Person', label: '财务人员'},
-  {id: 'manual_registered', type: 'Event', label: '人工处理已登记'},
-  {id: 'payment_confirmed', type: 'Event', label: '支付结果已确认'},
-  {id: 'payment_requested', type: 'Event', label: '支付已请求'},
-  {id: 'payment_result_policy', type: 'Policy', label: '支付结果核对政策'},
-  {id: 'payment_unknown', type: 'Event', label: '支付结果仍未知'},
-  {id: 'pending_read_model', type: 'Read Model', label: '待支付费用'},
-  {id: 'query_payment', type: 'Command', label: '查询支付结果'},
-  {id: 'register_manual', type: 'Command', label: '登记人工处理'},
-  {id: 'request_payment', type: 'Command', label: '请求支付'},
+  {id: 'bank_payment_service', type: '系统', label: '银行支付服务'},
+  {id: 'expense_system', type: '系统', label: '费用申报系统'},
+  {id: 'finance_person', type: '人员', label: '财务人员'},
+  {id: 'manual_registered', type: '事件', label: '人工处理已登记'},
+  {id: 'payment_confirmed', type: '事件', label: '支付结果已确认'},
+  {id: 'payment_requested', type: '事件', label: '支付已请求'},
+  {id: 'payment_result_policy', type: '策略', label: '支付结果核对政策'},
+  {id: 'payment_unknown', type: '事件', label: '支付结果仍未知'},
+  {id: 'pending_read_model', type: '读模型', label: '待支付费用'},
+  {id: 'query_payment', type: '命令', label: '查询支付结果'},
+  {id: 'register_manual', type: '命令', label: '登记人工处理'},
+  {id: 'request_payment', type: '命令', label: '请求支付'},
 ];
 
 const expectedProcessEdges = [
@@ -130,20 +132,20 @@ const expectedProcessEdges = [
 ].toSorted();
 
 const expectedBoundaryRows = [
-  {'观察到的信号': '审批与支付使用不同结果语言', '候选边界假设': '审批判断与支付执行可能属于不同业务边界', '替代解释': '它们也可能只是同一费用生命周期的不同阶段', '仍需的证据': '术语 owner、规则变更历史与跨阶段不变量', '当前处置': '交给 MOD-11'},
+  {'观察到的信号': '审批与支付使用不同结果语言', '候选边界假设': '审批判断与支付执行可能属于不同业务边界', '替代解释': '它们也可能只是同一费用生命周期的不同阶段', '仍需的证据': '术语负责人、规则变更历史与跨阶段不变量', '当前处置': '交给 MOD-11'},
   {'观察到的信号': '银行支付服务具有独立契约与变更节奏', '候选边界假设': '外部支付集成需要明确的翻译与隔离边界', '替代解释': '它也可能只是技术适配器，而非新的业务边界', '仍需的证据': '契约所有权、版本策略、失败语义与变更记录', '当前处置': '下一轮验证'},
-  {'观察到的信号': '费用申报记录与支付结果由不同权威记录裁定', '候选边界假设': '申报事实与支付结果可能需要分离的权威边界', '替代解释': '它们也可能是同一边界内的权威记录与投影视图', '仍需的证据': '数据 owner、更正规则、审计责任与一致性需求', '当前处置': '保留假设'},
-  {'观察到的信号': '人工处理跨越财务判断与技术排障', '候选边界假设': '异常处理可能形成独立协作能力', '替代解释': '它也可能只是低频运营升级路径', '仍需的证据': '发生频率、稳定规则、持久 owner 与独立目标', '当前处置': '不作为边界证据'},
-  {'观察到的信号': '审批政策与支付核对政策的变化节奏不同', '候选边界假设': '两类政策可能需要分别演进', '替代解释': '它们也可能由同一 owner 通过配置独立调整', '仍需的证据': '变更历史、发布耦合、规则 owner 与共同不变量', '当前处置': '下一轮验证'},
+  {'观察到的信号': '费用申报记录与支付结果由不同权威记录裁定', '候选边界假设': '申报事实与支付结果可能需要分离的权威边界', '替代解释': '它们也可能是同一边界内的权威记录与投影视图', '仍需的证据': '数据负责人、更正规则、审计责任与一致性需求', '当前处置': '保留假设'},
+  {'观察到的信号': '人工处理跨越财务判断与技术排障', '候选边界假设': '异常处理可能形成独立协作能力', '替代解释': '它也可能只是低频运营升级路径', '仍需的证据': '发生频率、稳定规则、持久负责人与独立目标', '当前处置': '不作为边界证据'},
+  {'观察到的信号': '审批政策与支付核对政策的变化节奏不同', '候选边界假设': '两类政策可能需要分别演进', '替代解释': '它们也可能由同一负责人通过配置独立调整', '仍需的证据': '变更历史、发布耦合、规则负责人与共同不变量', '当前处置': '下一轮验证'},
 ];
 
 const nonProofSentences = [
-  'pivotal event 不等于 Bounded Context。',
-  'swimlane 不等于团队、系统或服务。',
-  'hotspot 不等于 backlog item、服务或已批准决策。',
-  'Person 不等于长期 owner。',
+  '关键事件不等于限界上下文。',
+  '泳道不等于团队、系统或服务。',
+  '热点不等于待办项、服务或已批准决策。',
+  '人员不等于长期负责人。',
   '工作坊排列顺序不等于运行时调用顺序。',
-  '一次 EventStorming 工作坊不能单独确认正式边界，候选关系仍须在 MOD-11 或等价架构活动中验证。',
+  '一次事件风暴工作坊不能单独确认正式边界，候选关系仍须在 MOD-11 或等价架构活动中验证。',
 ];
 
 const expectedInputContract = [
@@ -158,19 +160,19 @@ const expectedInputContract = [
 const expectedWorkshopSteps = [
   '说明业务问题、时间范围、权威边界和非目标。',
   '参与者先独立写出过去时领域事件，再按业务时间线排列。',
-  '补充事件来源、参与者、外部系统、pivotal event 候选、hotspot 和未知项。',
-  '共同 walkthrough，合并同义词，同时保留真实分歧。',
+  '补充事件来源、参与者、外部系统、关键事件候选、热点和未知项。',
+  '共同走查，合并同义词，同时保留真实分歧。',
   '选择“费用已审批到支付结果已确认”的高风险片段。',
-  '用 Person、Read Model、Command、System、Policy 和 Event 建立 Process Model。',
-  '回到 hotspot，将事项记录为已回答、待验证或超出本轮范围。',
+  '用人员、读模型、命令、系统、策略和事件建立过程模型。',
+  '回到热点，将事项记录为已回答、待验证或超出本轮范围。',
   '把边界信号写入候选边界台账，给出替代解释、所需证据和处置。',
 ];
 
 const expectedCompletionContract = [
   '时间范围、参与者和权威记录可见。',
-  'Big Picture 事件以过去时表达，并能完成一次端到端 walkthrough。',
-  '每个 pivotal event 候选、hotspot 和未知项都有记录，不强行消除分歧。',
-  '选中的高风险片段已建立可解释的 Process Model。',
+  '全景事件以过去时表达，并能完成一次端到端共同走查。',
+  '每个关键事件候选、热点和未知项都有记录，不强行消除分歧。',
+  '选中的高风险片段已建立可解释的过程模型。',
   '候选边界台账包含替代解释、待补证据和责任明确的下一步。',
   '与 MOD-02、MOD-05、MOD-08 和后续 MOD-11 的交接边界写清。',
   '所有参与者理解共享模型是当前证据的共同视图，而不是生产事实或架构批准。',
@@ -179,12 +181,12 @@ const expectedCompletionContract = [
 const publishedPendingModelingTopics = ['MOD-13'];
 
 const expectedWrapperLabels = [
-  '费用申报 Big Picture 事件表，可横向滚动',
-  '费用支付 Process Model，可横向滚动',
-  'EventStorming 候选边界假设表，可横向滚动',
+  '费用申报全景事件表，可横向滚动',
+  '费用支付过程模型，可横向滚动',
+  '事件风暴候选边界假设表，可横向滚动',
 ];
 
-const processNonProofStatement = '不能证明运行时顺序、同步或异步协议、事务边界、服务边界或组织 owner。';
+const processNonProofStatement = '不能证明运行时顺序、同步或异步协议、事务边界、服务边界或组织负责人。';
 
 function requiredDocument() {
   assert.ok(document, 'MOD-09 content document must exist');
@@ -203,7 +205,7 @@ function assertPublicationContract(source) {
   assert.equal(metadata.review_policy, 'quarterly-version-sensitive');
   assert.equal(metadata.confidence, 'high');
   assert.deepEqual(metadata.domains, ['software-architecture', 'domain-modeling']);
-  assert.deepEqual(metadata.tags, ['EventStorming', 'Big Picture', 'Process Modelling', '边界假设']);
+  assert.deepEqual(metadata.tags, ['事件风暴', '全景', '过程建模', '边界假设']);
   assert.deepEqual(metadata.depends_on, ['MOD-01', 'MOD-02']);
   assert.deepEqual(metadata.adjacent_topics, ['MOD-05', 'MOD-08', 'MOD-10']);
   assert.deepEqual(metadata.related_cases, ['/cases/temporal-saga-durable-execution']);
@@ -283,7 +285,7 @@ function assertTableContracts(body) {
   for (const row of boundaries) {
     assert.ok(row['替代解释'], 'candidate boundary alternative must not be empty');
     assert.ok(row['仍需的证据'], 'candidate boundary evidence must not be empty');
-    assert.ok(dispositions.has(row['当前处置']), `invalid disposition: ${row['当前处置']}`);
+    assert.ok(dispositions.has(row['当前处置']), `invalid 处置: ${row['当前处置']}`);
   }
 }
 
@@ -330,10 +332,10 @@ function assertInteractionContract(body) {
 }
 
 function assertTerminologyAndNonProof(body) {
-  assert.match(body, /Person/u);
-  assert.doesNotMatch(body, /Actor/u);
-  assert.doesNotMatch(body, /(?:Big Picture|Process Modelling|Software Design).{0,8}层级|层级.{0,8}(?:Big Picture|Process Modelling|Software Design)/u);
-  for (const format of ['Big Picture', 'Process Modelling', 'Software Design']) assert.match(body, new RegExp(`${format}[^。\\n]{0,24}工作坊格式`, 'u'));
+  assert.match(body, /人员/u);
+  assert.doesNotMatch(body, /\bPerson\b/u);
+  assert.doesNotMatch(body, /(?:全景|过程建模|Software Design).{0,8}层级|层级.{0,8}(?:全景|过程建模|Software Design)/u);
+  for (const format of ['全景', '过程建模', 'Software Design']) assert.match(body, new RegExp(`${format}[^。\\n]{0,24}工作坊格式`, 'u'));
   for (const sentence of nonProofSentences) assert.ok(body.includes(sentence), sentence);
   const graphIndex = body.indexOf('```mermaid\nflowchart LR');
   assert.ok(graphIndex > -1);
@@ -470,7 +472,7 @@ function assertStageBProjection(projectStatus, topicIndexes, content) {
   assert.equal(links.filter((href) => href === '/modeling/mod-13').length, 0, 'MOD-13 actionable article links');
 }
 
-test('publishes MOD-09 with the approved metadata and H2 sequence', () => {
+test('publishes MOD-09 with the approved metadata and H2 sequence diagram', () => {
   const content = requiredDocument();
   assertPublicationContract(content.source);
 });
@@ -479,7 +481,7 @@ test('locks both complete workshop tables', () => {
   assertTableContracts(requiredDocument().body);
 });
 
-test('locks the typed Process Model graph', () => {
+test('locks the typed process-model graph', () => {
   assertProcessContract(requiredDocument().body);
 });
 
@@ -662,19 +664,19 @@ test('rejects heading, table, graph, wrapper, terminology and non-proof mutation
   assert.throws(() => assertTableContracts(body.replace('| 领域事件 |', '| 事件 |')), {name: 'AssertionError'}, 'changed header');
   assert.throws(() => assertTableContracts(body.replace('| 费用已提交 |', '| 费用提交中 |')), {name: 'AssertionError'}, 'changed event');
   assert.throws(() => assertTableContracts(body.replace(/\| 支付结果仍未知 \|[^\n]+\n/u, '')), {name: 'AssertionError'}, 'removed event');
-  assert.throws(() => assertProcessContract(body.replace('Person<br/>财务人员', 'Actor<br/>财务人员')), {name: 'AssertionError'}, 'changed node type');
-  assert.throws(() => assertProcessContract(body.replace('finance_person["Person<br/>财务人员"]', 'finance_person')), {name: 'AssertionError'}, 'removed node type');
+  assert.throws(() => assertProcessContract(body.replace('人员<br/>财务人员', '参与者<br/>财务人员')), {name: 'AssertionError'}, 'changed node type');
+  assert.throws(() => assertProcessContract(body.replace('finance_person["人员<br/>财务人员"]', 'finance_person')), {name: 'AssertionError'}, 'removed node type');
   assert.throws(() => assertProcessContract(body.replace('payment_unknown --> payment_result_policy', 'payment_result_policy --> payment_unknown')), {name: 'AssertionError'}, 'reversed edge');
   assert.throws(() => assertProcessContract(body.replace('  register_manual --> expense_system\n', '')), {name: 'AssertionError'}, 'removed edge');
   assert.throws(() => assertProcessContract(`${body}\n\`\`\`mermaid\nsequenceDiagram\n  A->>B: extra\n\`\`\`\n`), {name: 'AssertionError'}, 'extra non-flowchart Mermaid fence');
   assert.throws(() => assertTableContracts(body.replace('它也可能只是低频运营升级路径', '')), {name: 'AssertionError'}, 'empty alternative');
-  assert.throws(() => assertTableContracts(body.replace('不作为边界证据', '已批准边界')), {name: 'AssertionError'}, 'invalid disposition');
+  assert.throws(() => assertTableContracts(body.replace('不作为边界证据', '已批准边界')), {name: 'AssertionError'}, 'invalid 处置');
   assert.throws(() => assertInteractionContract(body.replace('  tabIndex={0}\n', '')), {name: 'AssertionError'}, 'removed tabIndex');
   assert.throws(() => assertInteractionContract(body.replace('  onKeyDown={handleHorizontalArrowKey}\n', '')), {name: 'AssertionError'}, 'removed onKeyDown');
-  assert.throws(() => assertInteractionContract(body.replace('aria-label="费用支付 Process Model，可横向滚动"', 'aria-label="任意标签"')), {name: 'AssertionError'}, 'changed wrapper aria-label');
-  assert.throws(() => assertTerminologyAndNonProof(body.replaceAll('Person', 'Actor')), {name: 'AssertionError'}, 'Actor mutation');
+  assert.throws(() => assertInteractionContract(body.replace('aria-label="费用支付过程模型，可横向滚动"', 'aria-label="任意标签"')), {name: 'AssertionError'}, 'changed wrapper aria-label');
+  assert.throws(() => assertTerminologyAndNonProof(body.replaceAll('人员', 'Person')), {name: 'AssertionError'}, 'Person mutation');
   const disclaimer = processNonProofStatement;
-  const affirmative = '能够证明运行时顺序、同步或异步协议、事务边界、服务边界或组织 owner。';
+  const affirmative = '能够证明运行时顺序、同步或异步协议、事务边界、服务边界或组织 负责人。';
   assert.throws(() => assertTerminologyAndNonProof(body.replace(disclaimer, affirmative)), {name: 'AssertionError'}, 'pre-diagram sign flip');
   const lastDisclaimer = body.lastIndexOf(disclaimer);
   assert.notEqual(lastDisclaimer, -1, 'post-diagram disclaimer fixture');

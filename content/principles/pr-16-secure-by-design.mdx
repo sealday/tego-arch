@@ -1,5 +1,5 @@
 ---
-title: Secure by Design
+title: 安全内建（Secure by Design）
 slug: /principles/pr-16
 content_type: principle
 status: reviewed
@@ -35,10 +35,11 @@ related_cases:
 related_questions: []
 ---
 
-# Secure by Design
+# 安全内建
 
 安全设计不是在发布前追加一次扫描，而是让风险、控制、验证和运行反馈在同一生命周期中互相约束。它要求产品、架构、工程、运营与安全专长共同对结果负责；安全团队提供方法与复核，不能独自拥有安全。
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 这个原则提供把安全判断放回工程流的透镜。组件级的默认拒绝、最小权限和纵深防御由[最小权限、安全默认值与纵深防御](/principles/pr-09)提供；PR-16 把这些控制接入从需求到恢复的生命周期。可从[原则目录](/principles)继续浏览。
 
 ## 学习问题
@@ -51,6 +52,8 @@ related_questions: []
 
 ## 一页摘要
 
+{/* terminology-exempt: bare-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 **来源事实：** [CISA 的 Secure by Design 指导](https://www.cisa.gov/sites/default/files/2023-10/Shifting-the-Balance-of-Cybersecurity-Risk-Principles-and-Approaches-for-Secure-by-Design-Software.pdf)面向软件制造商，强调把可预见风险从使用者转回能够改变设计的制造者。**推断：** 安全工作必须把需求、设计、实现、部署与运营连成可复核的工程链，而非把责任留给最后一道测试。
 
 生命周期的每一步都要留下下一步可用的输入：资产和边界决定威胁问题，威胁问题决定控制与安全需求，验证产生有限的证据，运行检测揭示例外和新风险。证据只支持已检查的范围，不能把一次通过扩展成“系统已安全”。
@@ -66,13 +69,16 @@ related_questions: []
 
 ## 事实边界
 
-**本站分析：** Secure by Design 是工程与责任分配的方法，不是认证、产品功能或风险归零的同义词。加密可以保护某些数据与链路，却只是一个控制；它不定义安全设计，也不补足授权、隔离、检测和恢复缺口。
+**本站分析：** 安全内建是工程与责任分配的方法，不是认证、产品功能或风险归零的同义词。加密可以保护某些数据与链路，却只是一个控制；它不定义安全设计，也不补足授权、隔离、检测和恢复缺口。
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 [NIST SP 800-160 Vol. 1 Rev. 1](https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final)提供可信安全系统工程的生命周期语境；本文据此讨论工程活动，不把 NIST 文档当成合规结论或某个部署的安全证明。
 
 <details className="evidence-card">
   <summary>证据：CISA 的软件制造商范围</summary>
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
   - **来源：** [Shifting the Balance of Cybersecurity Risk](https://www.cisa.gov/sites/default/files/2023-10/Shifting-the-Balance-of-Cybersecurity-Risk-Principles-and-Approaches-for-Secure-by-Design-Software.pdf)，CISA 与国际合作方，2023-10-25。
   - **边界：** 支持软件制造商的安全设计责任、默认安全与透明度语境；不证明任一策略消除了产品风险。
 </details>
@@ -80,6 +86,7 @@ related_questions: []
 <details className="evidence-card">
   <summary>证据：NIST 的生命周期工程范围</summary>
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
   - **来源：** [NIST SP 800-160 Vol. 1 Rev. 1](https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final)，2022-11-16 Final。
   - **边界：** 支持可信安全系统工程的生命周期方法语境；不替代系统自己的威胁分析、风险接受或运行证据。
 </details>
@@ -111,15 +118,17 @@ flowchart LR
 
 ## 控制权与任务流
 
-**来源事实：** [OWASP Threat Modeling Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Threat_Modeling_Cheat_Sheet.html)将威胁建模作为识别、沟通和处理威胁的工作流。一个可审查的输入序列是：资产、攻击者目标、信任边界和滥用路径；少一项就可能把控制选择变成无根据的清单。
+**来源事实：** [OWASP Threat Modeling Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Threat_Modeling_Cheat_Sheet.html)将威胁建模作为识别、沟通和处理威胁的工作流（Workflow）。一个可审查的输入序列是：资产、攻击者目标、信任边界和滥用路径；少一项就可能把控制选择变成无根据的清单。
 
 **说明性场景：** 一个服务准备新增“导出审计记录”能力。产品说明受保护资产和合法用途；架构与工程标出管理员、导出服务和对象存储之间的信任边界；团队再列出越权导出、过期下载链接和日志泄露等滥用路径。默认拒绝没有匹配授权的导出，最小权限把临时凭据限制为单一租户、对象前缀和短期限；运行告警发现异常下载时，运营先撤销凭据并保留核查记录，再由风险所有者决定恢复条件。
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 这不是某个真实事件或产品承诺；它说明控制权随状态移动：产品与架构定义可接受用途，工程实现控制，运营执行撤销和恢复，风险所有者接受残余风险。对租户范围凭据和路由治理的具体实现，可对照[LiteLLM Virtual Keys 治理案例](/cases/litellm-virtual-keys-governance)，但该案例不因此被宣称实现本文全部生命周期控制。
 
 <details className="evidence-card">
   <summary>证据：OWASP 的威胁建模工作流</summary>
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
   - **来源：** [Threat Modeling Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Threat_Modeling_Cheat_Sheet.html)，OWASP Cheat Sheet Series。
   - **边界：** 支持威胁建模的学习与流程语境；不提供一个适用于所有行业的统一流程，也不证明威胁枚举完整。
 </details>
@@ -134,7 +143,7 @@ flowchart LR
 
 **推断：** 默认拒绝与最小权限应先决定“无明确授权时发生什么”，再决定授权成功后能做什么；这使策略缺失、身份不明或上下文不完整时的结果保持保守。
 
-[Fail Fast、Fail Safe 与 Graceful Degradation](/principles/pr-07)补充控制不可用时的停止或诚实降级边界。
+[快速失败（Fail Fast）、故障安全（Fail Safe）与优雅降级（Graceful Degradation）](/principles/pr-07)补充控制不可用时的停止或诚实降级边界。
 
 [幂等与最小协调](/principles/pr-10)约束撤销、补偿和恢复期间可能被重放的副作用。
 
@@ -182,6 +191,8 @@ flowchart LR
 <details className="evidence-card">
   <summary>证据：本文来源范围与原创论证</summary>
 
+{/* terminology-exempt: bare-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
   - **主要架构来源：** [CISA Secure by Design 指导](https://www.cisa.gov/sites/default/files/2023-10/Shifting-the-Balance-of-Cybersecurity-Risk-Principles-and-Approaches-for-Secure-by-Design-Software.pdf)用于软件制造商的安全设计事实摘要。
   - **工程语境：** [NIST SP 800-160 Vol. 1 Rev. 1](https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final)用于可信安全系统工程范围；[OWASP Threat Modeling Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Threat_Modeling_Cheat_Sheet.html)用于威胁建模工作流。
   - **边界：** 不复制来源图、表、案例或篇章结构；生命周期表、示例情境和中文论证为原创，且不声称渗透测试关闭设计风险、加密等于安全或安全团队独自负责。

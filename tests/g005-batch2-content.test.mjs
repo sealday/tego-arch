@@ -346,7 +346,7 @@ test('defines MTH-01 as stakeholder-driven scenario prioritization rather than A
   assert.match(body, /优先/u, 'MTH-01 must prioritize scenarios');
   assert.match(
     body,
-    /(?:不是|不等于|不能替代|并非).{0,24}ATAM|ATAM.{0,24}(?:不是|不等于|不能替代|并非)/isu,
+    /(?:不是|不等于|不能替代|并非).{0,24}架构权衡分析方法|架构权衡分析方法.{0,24}(?:不是|不等于|不能替代|并非)/isu,
     'MTH-01 must distinguish QAW from ATAM',
   );
 });

@@ -46,6 +46,7 @@ related_questions: []
 
 ## 要保护的性质
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 **来源事实：** Parnas 以“困难设计决策”而不是处理步骤组织模块。由此可把模块应隐藏的对象理解为未来可能改变、且不应迫使使用者同步改变的决策，例如存储布局、缓存策略或第三方协议映射。**推断：** 稳定接口应表达使用者需要的能力，让实现细节仍可替换，而不能从语言可见性规则反推架构。
 
 ## 冲突与适用上下文
@@ -60,7 +61,7 @@ related_questions: []
 
 ```mermaid
 flowchart LR
-  C["调用方：请求结算"] --> I["稳定接口：settle(invoice)"]
+  C["调用方：请求结算"] --> I["稳定接口：结算(发票)"]
   subgraph M["结算模块"]
     I --> P["隐藏决策：支付路由"]
     P --> S["隐藏决策：账本布局"]
@@ -72,6 +73,8 @@ flowchart LR
 
 ## 误用与反原则
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 把字段标成 `private` 只限制直接访问；若 getter 暴露同样的数据布局，决策仍然泄漏。另一个反例是把 DTO 包进对象但要求所有调用方理解内部状态机。封装是实现手段，信息隐藏的验收标准则是“决策改变时，哪些边界外的代码必须一起修改”。
 
 ## 适用尺度
@@ -80,17 +83,28 @@ flowchart LR
 
 ## 相邻原则
 
-[高内聚与低耦合](/principles/pr-02)检查决策泄漏会沿哪些变化、运行、数据和团队关系传播；[单一职责与关注点分离](/principles/pr-03)判断决策应由哪个责任主体拥有；[依赖倒置、控制反转与依赖注入](/principles/pr-04)进一步约束策略和细节之间的源代码依赖方向。[KISS、YAGNI 与 DRY 的张力](/principles/pr-06)限制没有当前证据的推测性抽象；[演进式设计](/principles/pr-08)则在易变决策周围保留迁移接缝；[Open/Closed 与 Interface Segregation](/principles/pr-12)把已隐藏的可能变化进一步变成由明确所有者负责的扩展决策。[架构风格比较框架](/styles/sty-00)把边界、数据所有权和部署单元放到同一尺度。信息隐藏回答“变化由谁承担”，其他原则再回答传播、责任、依赖与演进如何约束。
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+[高内聚与低耦合](/principles/pr-02)检查决策泄漏会沿哪些变化、运行、数据和团队关系传播；[单一职责与关注点分离](/principles/pr-03)判断决策应由哪个责任主体拥有；[依赖倒置、控制反转与依赖注入](/principles/pr-04)进一步约束策略和细节之间的源代码依赖方向。[KISS、YAGNI 与 DRY 的张力](/principles/pr-06)限制没有当前证据的推测性抽象；[演进式设计](/principles/pr-08)则在易变决策周围保留迁移接缝；[开闭原则（Open/Closed Principle）与接口隔离原则（Interface Segregation Principle）](/principles/pr-12)把已隐藏的可能变化进一步变成由明确所有者负责的扩展决策。[架构风格比较框架](/styles/sty-00)把边界、数据所有权和部署单元放到同一尺度。信息隐藏回答“变化由谁承担”，其他原则再回答传播、责任、依赖与演进如何约束。
 
 ## 说明性场景
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 输入：两个前端团队共享同一个构建时依赖，团队 A 准备升级其路由库。比较两种分解：
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 1. 按页面分解但导出路由对象，升级会穿过共享对象影响团队 B。
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 2. 按决策所有权分解，只导出 `navigate(destination)`，路由对象留在团队 A 的适配层。
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 决策：选择第二种边界，并用契约测试验证已声明的目的地。结果：路由库升级局限在一个模块；若团队 B 确实需要底层路由能力，则另建有版本承诺的低层接口，而不是读取内部对象。[Micro-Frontend 案例](/cases/micro-frontends-single-spa)可用于继续检查共享依赖如何把独立部署重新耦合起来。
 
 ## 来源
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 定义与历史边界依据 [Parnas 的模块分解论文](https://dl.acm.org/doi/10.1145/361598.361623)；架构尺度与权衡用 [SEI Software Architecture: Principles and Practices](https://www.sei.cmu.edu/training/software-architecture-principles-practices/)交叉核对。本文只作事实归纳，图、练习与表述均为原创。

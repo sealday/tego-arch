@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import test from 'node:test';
+
+import {stripTerminologyExemptions} from './helpers/terminology-content.mjs';
 import {fileURLToPath} from 'node:url';
 
 import {
@@ -23,7 +25,7 @@ const modelingHeadings = [
   '来源',
 ];
 const [documents, ledger] = await Promise.all([
-  readContentDocuments(contentRoot),
+  readContentDocuments(contentRoot).then((entries) => entries.map(stripTerminologyExemptions)),
   readFile(new URL('../data/source-ledger.json', import.meta.url), 'utf8')
     .then(JSON.parse),
 ]);
@@ -131,23 +133,26 @@ test('maps all twelve arc42 problem domains without copying the template', () =>
   assert.deepEqual(
     dataRows.map(([unit, mappedDomains]) => [unit, mappedDomains]),
     [
-      ['目标与边界', '1 Introduction and Goals；3 Context and Scope'],
+      [
+        '目标与边界',
+        '1 介绍与目标（Introduction and Goals）；3 上下文与范围（Context and Scope）',
+      ],
       [
         '约束与权衡',
-        '2 Architecture Constraints；4 Solution Strategy；9 Architecture Decisions',
+        '2 架构约束；4 解决方案策略；9 架构决策',
       ],
       [
         '静态组成',
-        '5 Building Block View；8 Cross-cutting Concepts 的结构部分',
+        '5 构建块视图；8 横切概念（Cross-cutting Concepts）的结构部分',
       ],
       [
         '动态行为',
-        '6 Runtime View；8 Cross-cutting Concepts 的运行部分',
+        '6 运行时视图；8 横切概念（Cross-cutting Concepts）的运行部分',
       ],
-      ['条件性部署', '7 Deployment View'],
+      ['条件性部署', '7 部署视图'],
       [
         '质量、风险与词汇',
-        '10 Quality Requirements；11 Risks and Technical Debt；12 Glossary',
+        '10 质量要求（Quality Requirements）；11 风险与技术债务（Risks and Technical Debt）；12 术语表（Glossary）',
       ],
     ],
   );
@@ -187,7 +192,7 @@ test('keeps evidence classes and non-proof boundaries explicit', () => {
   }
   assert.match(
     document.body,
-    /Building Block View[^。\n]*(?:核心|主线)[^。\n]*静态/u,
+    /构建块视图[^。\n]*(?:核心|主线)[^。\n]*静态/u,
   );
   assert.match(document.body, /未知[^。\n]*(?:生产拓扑|部署拓扑)/u);
   assert.match(document.body, /不[^。\n]*虚构[^。\n]*(?:拓扑|容量|故障切换)/u);

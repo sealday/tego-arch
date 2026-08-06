@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import test from 'node:test';
+
+import {stripTerminologyExemptions} from './helpers/terminology-content.mjs';
 import {fileURLToPath} from 'node:url';
 
 import {
@@ -25,7 +27,7 @@ const modelingHeadings = [
 ];
 
 const [documents, ledger] = await Promise.all([
-  readContentDocuments(contentRoot),
+  readContentDocuments(contentRoot).then((entries) => entries.map(stripTerminologyExemptions)),
   readFile(new URL('../data/source-ledger.json', import.meta.url), 'utf8')
     .then(JSON.parse),
 ]);
@@ -184,9 +186,9 @@ test('publishes MOD-03 with three evidence-bounded C4 views', () => {
 
   const products = section(document.body, '模型产物');
   for (const label of [
-    'Component',
-    'Dynamic',
-    'Deployment',
+    '组件',
+    '动态图',
+    '部署',
     '提交用例',
     '审批策略',
     '付款编排',
@@ -195,23 +197,23 @@ test('publishes MOD-03 with three evidence-bounded C4 views', () => {
     assert.match(products, new RegExp(label, 'u'), label);
   }
   assert.match(products, /```mermaid[\s\S]*?sequenceDiagram/u);
-  assert.match(document.body, /Component[^。；\n]*(?:不证明|不能证明)[^。；\n]*代码/u);
-  assert.match(document.body, /Dynamic[^。；\n]*(?:不等于|不证明)[^。；\n]*(?:性能|追踪)/u);
-  assert.match(document.body, /Deployment[^。；\n]*(?:不证明|不能证明)[^。；\n]*(?:容量|故障切换)/u);
+  assert.match(document.body, /组件[^。；\n]*(?:不证明|不能证明)[^。；\n]*代码/u);
+  assert.match(document.body, /动态图[^。；\n]*(?:不等于|不证明)[^。；\n]*(?:性能|追踪)/u);
+  assert.match(document.body, /部署[^。；\n]*(?:不证明|不能证明)[^。；\n]*(?:容量|故障切换)/u);
 });
 
 test('requires view-specific evidence and marks the expense topology as a dated teaching assumption', () => {
   const document = requiredDocument('MOD-03');
   const inputs = section(document.body, '建模目标与输入');
-  assert.match(inputs, /Component[^。\n]*代码[^。\n]*依赖[^。\n]*所有权/u);
-  assert.match(inputs, /Dynamic[^。\n]*用例[^。\n]*测试[^。\n]*追踪/u);
-  assert.match(inputs, /Deployment[^。\n]*环境清单[^。\n]*配置[^。\n]*观测/u);
+  assert.match(inputs, /组件[^。\n]*代码[^。\n]*依赖[^。\n]*所有权/u);
+  assert.match(inputs, /动态图[^。\n]*用例[^。\n]*测试[^。\n]*追踪/u);
+  assert.match(inputs, /部署[^。\n]*环境清单[^。\n]*配置[^。\n]*观测/u);
   assert.match(inputs, /事实截止时间[^。\n]*2026-07-30/u);
   assert.match(document.body, /费用申报系统[^。\n]*教学演练假设/u);
   assert.match(document.body, /并非[^。\n]*生产拓扑事实/u);
   assert.match(
     document.body,
-    /数据库部署节点承载申报数据库 Container 实例/u,
+    /数据库部署节点承载申报数据库容器实例/u,
   );
   assert.match(
     document.body,
@@ -240,7 +242,7 @@ test('requires view-specific evidence and marks the expense topology as a dated 
   assert.match(citation.modification_note, /teaching exercise assumption/iu);
 });
 
-test('locks the MOD-03 Dynamic asynchronous boundary and one minimal failure alt', () => {
+test('locks the MOD-03 dynamic-diagram asynchronous boundary and one minimal failure alt', () => {
   const mermaid = fencedBlock(requiredDocument('MOD-03').body, 'mermaid');
   assert.match(mermaid, /^sequenceDiagram/mu);
   assert.match(

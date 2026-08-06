@@ -79,7 +79,7 @@ const decisionContracts = new Map([
   ['PR-17', [
     ['classification criteria', '一页摘要', /核心问题[^。；\n]*适用尺度[^。；\n]*输入[^。；\n]*输出[^。；\n]*失效条件/u],
     ['CAP home', '架构决策与权衡', /CAP[^。；\n]*分布式(?:系统|理论)/u],
-    ['Strangler home', '架构决策与权衡', /Strangler(?: Fig)?[^。；\n]*迁移模式/u],
+    ['Strangler home', '架构决策与权衡', /绞杀者模式[^。；\n]*迁移模式/u],
     ['GRASP home', '架构决策与权衡', /GRASP[^。；\n]*责任分配/u],
     ['primary versus cross-link', '架构图', /主归属[^。；\n]*(?:交叉关系|相关链接)/u],
   ]],

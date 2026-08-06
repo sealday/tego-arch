@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import test from 'node:test';
+
+import {stripTerminologyExemptions} from './helpers/terminology-content.mjs';
 import {fileURLToPath} from 'node:url';
 
 import {
@@ -12,7 +14,7 @@ import {extractInternalLinks} from '../scripts/content-relations.mjs';
 import {handleHorizontalArrowKey} from '../src/components/KeyboardScrollableRegion/handleHorizontalArrowKey.mjs';
 
 const contentRoot = fileURLToPath(new URL('../content/', import.meta.url));
-const documents = await readContentDocuments(contentRoot);
+const documents = await readContentDocuments(contentRoot).then((entries) => entries.map(stripTerminologyExemptions));
 const document = documents.find(({file}) => file === 'modeling/mod-13-model-sync-strategy.mdx');
 const relatedDocuments = new Map(documents.map((entry) => [entry.file, entry]));
 const [sourceLedger, sourceLinkHealth, topicRelations, projectStatus, topicManifest] = await Promise.all([
@@ -55,7 +57,7 @@ const expectedMetadata = {
   protocols: [],
   quality_attributes: ['understandability', 'maintainability', 'auditability', 'reliability'],
   tags: ['模型同步', '架构漂移', 'ADR', 'GitOps'],
-  summary: '为代码、架构图、ADR、期望部署和实际运行事实指定单一权威、同步方向与检测证据，并用四类漂移和六步闭环完成修复与发布复核。',
+  summary: '为代码、架构图、架构决策记录（Architecture Decision Record，ADR）、期望部署和实际运行事实指定单一权威、同步方向与检测证据，并用四类漂移和六步闭环完成修复与发布复核。',
   topic_id: 'MOD-13',
   priority: 'P2',
   depends_on: ['MOD-04', 'MOD-12', 'MTH-03', 'MTH-06'],
@@ -78,21 +80,21 @@ const expectedHeadings = [
 ];
 
 const expectedAuthorityRows = [
-  {事实:'主题完成状态',权威来源:'docs/content-backlog.md checkbox',派生产物:'topic manifest 与 project status',同步关系:'生成',触发时机:'Stage B closure',检测方式:'generate:content 与状态测试',责任类型:'内容发布维护者',修复方向:'修改 backlog 后重新生成',明确不证明:'checkbox 不证明部署成功'},
-  {事实:'已发布内容元数据',权威来源:'MDX front matter',派生产物:'topic manifest 与 indexes',同步关系:'生成',触发时机:'内容变更或发布',检测方式:'内容 schema 与生成差异',责任类型:'内容维护者',修复方向:'修改 MDX 后重新生成',明确不证明:'元数据不证明正文事实正确'},
-  {事实:'代码接口与受测结构',权威来源:'受测代码与接口契约',派生产物:'结构检查结果',同步关系:'验证',触发时机:'代码或接口变更',检测方式:'测试、schema 与接口差异',责任类型:'代码责任人',修复方向:'修改代码或经批准修订模型',明确不证明:'静态与测试证据不证明运行健康或业务边界'},
-  {事实:'架构模型与图中语义',权威来源:'已批准模型与 Draw.io 图源',派生产物:'SVG 与文章视图',同步关系:'生成',触发时机:'模型或图源变更',检测方式:'Draw.io/SVG pair validator 与独立复述',责任类型:'架构文档维护者',修复方向:'修改图源并重新导出',明确不证明:'图不证明代码、部署或运行一致'},
+  {事实:'主题完成状态',权威来源:'文档/内容-待办.md 复选框',派生产物:'主题清单与项目状态',同步关系:'生成',触发时机:'Stage B closure',检测方式:'生成:内容与状态测试',责任类型:'内容发布维护者',修复方向:'修改待办后重新生成',明确不证明:'复选框不证明部署成功'},
+  {事实:'已发布内容元数据',权威来源:'MDX 前置元数据',派生产物:'主题清单与索引',同步关系:'生成',触发时机:'内容变更或发布',检测方式:'内容模式与生成差异',责任类型:'内容维护者',修复方向:'修改 MDX 后重新生成',明确不证明:'元数据不证明正文事实正确'},
+  {事实:'代码接口与受测结构',权威来源:'受测代码与接口契约',派生产物:'结构检查结果',同步关系:'验证',触发时机:'代码或接口变更',检测方式:'测试、模式与接口差异',责任类型:'代码责任人',修复方向:'修改代码或经批准修订模型',明确不证明:'静态与测试证据不证明运行健康或业务边界'},
+  {事实:'架构模型与图中语义',权威来源:'已批准模型与 Draw.io 图源',派生产物:'SVG 与文章视图',同步关系:'生成',触发时机:'模型或图源变更',检测方式:'Draw.io/SVG 配对校验器与独立复述',责任类型:'架构文档维护者',修复方向:'修改图源并重新导出',明确不证明:'图不证明代码、部署或运行一致'},
   {事实:'ADR 决策及状态',权威来源:'ADR 文件、状态与替代关系',派生产物:'决策索引与可见链接',同步关系:'验证',触发时机:'架构显著变更或定期复核',检测方式:'状态、替代链接与实现复核',责任类型:'决策责任人',修复方向:'恢复实现或新增替代 ADR',明确不证明:'ADR 不证明实现遵循决定'},
-  {事实:'期望部署声明',权威来源:'版本化 workflow 与配置声明',派生产物:'待部署计划与制品选择',同步关系:'生成',触发时机:'配置、制品或发布变更',检测方式:'配置差异、策略与构建测试',责任类型:'平台维护者',修复方向:'经批准修改声明并重新发布',明确不证明:'期望状态不等于实际状态'},
-  {事实:'实际部署身份与状态',权威来源:'GitHub Deployment 与 Actions 记录',派生产物:'发布复审证据',同步关系:'观测',触发时机:'部署完成或状态变化',检测方式:'exact SHA、run、jobs、status 与 route 查询',责任类型:'发布维护者',修复方向:'回滚或前滚后形成新部署记录',明确不证明:'workflow success 不证明全部运行健康'},
-  {事实:'运行观测',权威来源:'线上 route、日志、指标与实际环境查询',派生产物:'运行复核证据',同步关系:'观测',触发时机:'部署后、事件发生或定时检查',检测方式:'浏览器、端点与可观测性查询',责任类型:'运行责任人',修复方向:'修复期望或实际状态后重新观测',明确不证明:'单次观测不证明 SLA、因果或长期健康'},
+  {事实:'期望部署声明',权威来源:'版本化工作流与配置声明',派生产物:'待部署计划与制品选择',同步关系:'生成',触发时机:'配置、制品或发布变更',检测方式:'配置差异、策略与构建测试',责任类型:'平台维护者',修复方向:'经批准修改声明并重新发布',明确不证明:'期望状态不等于实际状态'},
+  {事实:'实际部署身份与状态',权威来源:'GitHub 部署与动作记录',派生产物:'发布复审证据',同步关系:'观测',触发时机:'部署完成或状态变化',检测方式:'精确 SHA、运行、作业、状态与路由查询',责任类型:'发布维护者',修复方向:'回滚或前滚后形成新部署记录',明确不证明:'工作流成功不证明全部运行健康'},
+  {事实:'运行观测',权威来源:'线上路由、日志、指标与实际环境查询',派生产物:'运行复核证据',同步关系:'观测',触发时机:'部署后、事件发生或定时检查',检测方式:'浏览器、端点与可观测性查询',责任类型:'运行责任人',修复方向:'修复期望或实际状态后重新观测',明确不证明:'单次观测不证明 SLA、因果或长期健康'},
 ];
 
 const expectedDriftRows = [
-  {漂移类型:'内容漂移',差异证据:'backlog、front matter 与 generated manifest 状态不同',严重度:'阻断',当前状态:'修复中',责任类型:'内容发布维护者',修复动作:'修改权威输入并重新生成，禁止手改 generated JSON',重新验证证据:'生成命令、状态测试与 exact diff',明确不证明:'生成一致不证明正文结论正确'},
+  {漂移类型:'内容漂移',差异证据:'待办、前置元数据与生成清单状态不同',严重度:'阻断',当前状态:'修复中',责任类型:'内容发布维护者',修复动作:'修改权威输入并重新生成，禁止手改生成的 JSON',重新验证证据:'生成命令、状态测试与精确差异',明确不证明:'生成一致不证明正文结论正确'},
   {漂移类型:'结构漂移',差异证据:'代码已移除接口而架构图仍保留旧关系',严重度:'待分级',当前状态:'待分级',责任类型:'代码责任人与架构文档维护者',修复动作:'先裁决结构事实权威，再修改代码或图源',重新验证证据:'接口测试、图对验证与独立复述',明确不证明:'图与代码对齐不证明部署或运行状态'},
-  {漂移类型:'决策漂移',差异证据:'实现绕过 accepted ADR 且旧状态仍有效',严重度:'阻断',当前状态:'修复中',责任类型:'决策责任人',修复动作:'恢复实现，或新增 ADR 并标记旧记录 superseded',重新验证证据:'ADR 状态、替代链接与实现复核',明确不证明:'记录替代关系不证明新实现已经上线'},
-  {漂移类型:'运行漂移',差异证据:'期望 commit 与实际部署或线上观测身份不同',严重度:'阻断',当前状态:'未知',责任类型:'平台维护者与运行责任人',修复动作:'保留实际观测，前滚或回滚后重新部署',重新验证证据:'新 exact-head run、jobs、route 与运行复核',明确不证明:'部署成功不证明功能、性能、可靠性或长期健康'},
+  {漂移类型:'决策漂移',差异证据:'实现绕过已接受 ADR 且旧状态仍有效',严重度:'阻断',当前状态:'修复中',责任类型:'决策责任人',修复动作:'恢复实现，或新增 ADR 并标记旧记录已取代',重新验证证据:'ADR 状态、替代链接与实现复核',明确不证明:'记录替代关系不证明新实现已经上线'},
+  {漂移类型:'运行漂移',差异证据:'期望 commit 与实际部署或线上观测身份不同',严重度:'阻断',当前状态:'未知',责任类型:'平台维护者与运行责任人',修复动作:'保留实际观测，前滚或回滚后重新部署',重新验证证据:'新精确版本运行、作业、路由与运行复核',明确不证明:'部署成功不证明功能、性能、可靠性或长期健康'},
 ];
 
 const expectedSteps = [
@@ -111,12 +113,12 @@ const expectedExerciseSteps = [
   '注入一个受控差异：代码移除接口，但架构图仍保留旧关系。',
   '把差异分类为结构漂移，记录严重度与当前状态，并分配责任类型。',
   '裁决结构事实权威，修改代码或图源，再重建受影响的派生产物与检测证据。',
-  '由未参与修复的人独立复放检测，并用精确提交、发布流程与线上 route 完成发布复核。',
+  '由未参与修复的人独立复放检测，并用精确提交、发布流程与线上路由完成发布复核。',
 ];
 
 const expectedStatuses = ['待分级', '阻断', '修复中', '接受差异', '已验证关闭', '未知'];
 
-const expectedDriftDefinition = '四类漂移按内容漂移 → 结构漂移 → 决策漂移 → 运行漂移排列。内容漂移比较 backlog、front matter 与生成清单；结构漂移比较受测接口与模型关系；决策漂移比较有效 ADR 与实现；运行漂移比较期望提交、实际部署身份和线上观测。';
+const expectedDriftDefinition = '四类漂移按内容漂移 → 结构漂移 → 决策漂移 → 运行漂移排列。内容漂移比较待办、前置元数据与生成清单；结构漂移比较受测接口与模型关系；决策漂移比较有效 ADR 与实现；运行漂移比较期望提交、实际部署身份和线上观测。';
 
 const expectedScenarioLabel = '**说明性场景：**';
 
@@ -279,7 +281,7 @@ function assertDiagramContract(drawio, svg) {
     const svgFeedback = svgPathsById.get(`repair-${source}`);
     assert.equal(svgFeedback?.['data-source'], 'owner-repair', `SVG repair feedback must originate at owner-repair for ${source}`);
     assert.equal(svgFeedback?.['data-target'], source, `SVG repair feedback must return to ${source}`);
-    assert.ok((svgFeedback?.class ?? '').split(/\s+/u).includes('feedback'), `SVG repair feedback must use feedback class for ${source}`);
+    assert.ok((svgFeedback?.class ?? '').split(/\s+/u).includes('feedback'), `SVG repair feedback must use the feedback class for ${source}`);
   }
   assert.equal(byId.get('repair-revalidate')?.value, '', 'revalidation stays semantically separate from authority repair feedback');
   assert.equal(byId.get('repair-runtime-evidence')?.value, '修改权威或新增替代记录', 'repair wording belongs to a dashed feedback edge');
@@ -351,7 +353,7 @@ function assertDiagramContract(drawio, svg) {
   const nodeBoundsById = new Map(measuredGroups.map(([attributes]) => [attributes['data-node-id'], boundsAttribute(attributes, 'data-node-bounds')]));
   for (const feedback of svgPaths.filter((path) => (path.class ?? '').split(/\s+/u).includes('feedback'))) {
     const points = orthogonalPathPoints(feedback.d ?? '');
-    assert.ok(points.length >= 2, `${feedback.id} orthogonal route`);
+    assert.ok(points.length >= 2, `${feedback.id} orthogonal 路由`);
     for (const [nodeId, bounds] of nodeBoundsById) {
       if ([feedback['data-source'], feedback['data-target']].includes(nodeId)) continue;
       for (let index = 1; index < points.length; index += 1) {
@@ -414,8 +416,8 @@ function assertMethodContract(body) {
   assert.equal(tables.length, 2, 'MOD-13 must contain exactly two Markdown tables');
   assert.deepEqual(tables[0], expectedAuthorityRows);
   assert.deepEqual(tables[1], expectedDriftRows);
-  assert.equal(tables[0].length, 8, 'authority ledger has eight rows');
-  assert.equal(tables[1].length, 4, 'drift ledger has four rows');
+  assert.equal(tables[0].length, 8, 'authority ledger 包含 eight rows');
+  assert.equal(tables[1].length, 4, 'drift ledger 包含 four rows');
 
   const statusLine = body.match(/状态词汇限定为：([^。]+)。/u)?.[1] ?? '';
   assert.deepEqual([...statusLine.matchAll(/`([^`]+)`/gu)].map(([, value]) => value), expectedStatuses);
@@ -499,7 +501,7 @@ test('rejects controlled diagram-pair accessibility, topology, style, and wordin
     ['wrong arrow direction', drawio.replace('id="declare-code-facts" value="声明权威" edge="1" source="code-facts" target="authority-contract"', 'id="declare-code-facts" value="声明权威" edge="1" source="authority-contract" target="code-facts"'), svg],
     ['solid repair feedback', drawio.replace('id="repair-code-facts" value="" edge="1" source="owner-repair" target="code-facts" parent="1" style="edgeStyle=orthogonalEdgeStyle;dashed=1;', 'id="repair-code-facts" value="" edge="1" source="owner-repair" target="code-facts" parent="1" style="edgeStyle=orthogonalEdgeStyle;dashed=0;'), svg],
     ['reversed SVG repair feedback', drawio, svg.replace('data-source="owner-repair" data-target="code-facts"', 'data-source="code-facts" data-target="owner-repair"'), /SVG repair feedback must originate at owner-repair for code-facts/u],
-    ['solid SVG repair feedback', drawio, svg.replace('id="repair-code-facts" class="feedback"', 'id="repair-code-facts" class="edge"'), /SVG repair feedback must use feedback class for code-facts/u],
+    ['solid SVG repair feedback', drawio, svg.replace('id="repair-code-facts" class="feedback"', 'id="repair-code-facts" class="edge"'), /SVG repair feedback must use the feedback class for code-facts/u],
     ['SVG release-evidence outgoing edge', drawio, svg.replace('</svg>', '<path id="release-backflow" class="edge" data-source="release-evidence" data-target="authority-contract" d="M950 755 V700 H600 V417"/>\n</svg>'), /SVG release evidence must have no outgoing edge/u],
     ['missing region', drawio.replace('id="region-authority"', 'id="deleted-region-authority"'), svg],
     ['fixed SVG width', drawio, svg.replace('<svg ', '<svg width="1200" ')],
@@ -546,7 +548,7 @@ test('rejects controlled mutations to closure order and epistemic boundaries', (
     ['unknown changed to PASS', body.replaceAll('未知', 'PASS')],
     ['manual patch prohibition removed', body.replace('禁止手工修补派生产物', '可以直接修改派生产物')],
     ['ADR falsely proves implementation', body.replace('ADR 记录决定与状态，但不证明实现遵循决定。', 'ADR 记录决定与状态，并证明实现遵循决定。')],
-    ['deployment falsely proves runtime health', body.replace('部署成功只证明指定提交完成指定发布流程，不证明全部运行健康。', '部署成功证明全部运行健康。')],
+    ['部署 falsely proves runtime health', body.replace('部署成功只证明指定提交完成指定发布流程，不证明全部运行健康。', '部署成功证明全部运行健康。')],
     ['scenario label removed', body.replace(expectedScenarioLabel, '**示例：**')],
   ];
 

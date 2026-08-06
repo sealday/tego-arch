@@ -566,6 +566,27 @@ const parseFrontMatterRegion = (source, relativePath) => {
 
 const sourceExcerpt = (source, line) => source.split('\n')[line - 1]?.trim() ?? '';
 
+const collectMdxCommentExpressions = (ast, source, relativePath) => {
+  const comments = [];
+  const visit = (node) => {
+    if (node.type === 'mdxFlowExpression' || node.type === 'mdxTextExpression') {
+      const match = node.value.match(/^\/\*([\s\S]*?)\*\/$/u);
+      if (match && node.position?.start.offset !== undefined && node.position?.end.offset !== undefined) {
+        comments.push({
+          file: relativePath,
+          line: node.position.start.line,
+          text: match[1].trim(),
+          excerpt: source.slice(node.position.start.offset, node.position.end.offset).trim(),
+          kind: 'mdx-comment',
+        });
+      }
+    }
+    for (const child of node.children ?? []) visit(child);
+  };
+  visit(ast);
+  return comments;
+};
+
 export const parseMdxVisibleCopy = (
   source,
   relativePath,
@@ -586,6 +607,7 @@ export const parseMdxVisibleCopy = (
     {probeInstrumentation},
   );
   const ast = parseMdxAst(normalized, relativePath);
+  comments.push(...collectMdxCommentExpressions(ast, source, relativePath));
   const definitions = new Map();
   const excludedNodes = new Set();
   const visitLinks = (node) => {
@@ -659,26 +681,28 @@ export const parseMdxVisibleCopy = (
 
 const cleanMermaidLabel = (value) => {
   const trimmed = value.trim();
+  const withoutBreakTags = trimmed.replace(/<br\s*\/?>/giu, ' ');
   if (
-    trimmed.length >= 2
-    && ((trimmed.startsWith('"') && trimmed.endsWith('"'))
-      || (trimmed.startsWith("'") && trimmed.endsWith("'")))
+    withoutBreakTags.length >= 2
+    && ((withoutBreakTags.startsWith('"') && withoutBreakTags.endsWith('"'))
+      || (withoutBreakTags.startsWith("'") && withoutBreakTags.endsWith("'")))
   ) {
-    return trimmed.slice(1, -1);
+    return withoutBreakTags.slice(1, -1);
   }
-  return trimmed;
+  return withoutBreakTags;
 };
 
 const mermaidError = (relativePath, line, message) => (
   new Error(`${relativePath}:${line}: ${message}`)
 );
 
-const mermaidRecord = (relativePath, lines, index, text) => ({
+const mermaidRecord = (relativePath, lines, index, text, {structural = false} = {}) => ({
   file: relativePath,
   line: index + 1,
   text: cleanMermaidLabel(text),
   excerpt: lines[index].trim(),
   kind: 'mermaid',
+  ...(structural ? {structural: true} : {}),
 });
 
 const findShapeEnd = (line, start, closing, relativePath, lineNumber) => {
@@ -838,7 +862,13 @@ const parseSequenceDiagram = (lines, indexes, relativePath) => {
     }
     const participant = trimmed.match(/^(?:actor|participant)\s+(?:[A-Za-z_][\w-]*\s+as\s+)?(.+)$/u);
     if (participant) {
-      records.push(mermaidRecord(relativePath, lines, index, participant[1]));
+      records.push(mermaidRecord(
+        relativePath,
+        lines,
+        index,
+        participant[1],
+        {structural: !/\s+as\s+/u.test(trimmed)},
+      ));
       continue;
     }
     const note = trimmed.match(/^Note\s+(?:over|left of|right of)\s+[^:]+:\s*(.+)$/u);
@@ -870,7 +900,7 @@ const parseStateDiagram = (lines, indexes, relativePath) => {
   const addState = (index, id, label = id) => {
     if (id === '[*]' || states.has(id)) return;
     states.add(id);
-    records.push(mermaidRecord(relativePath, lines, index, label));
+    records.push(mermaidRecord(relativePath, lines, index, label, {structural: label === id}));
   };
 
   for (const index of indexes) {
@@ -905,7 +935,7 @@ const parseErDiagram = (lines, indexes, relativePath) => {
   const addEntity = (index, name) => {
     if (entities.has(name)) return;
     entities.add(name);
-    records.push(mermaidRecord(relativePath, lines, index, name));
+    records.push(mermaidRecord(relativePath, lines, index, name, {structural: true}));
   };
 
   for (const index of indexes) {
@@ -924,8 +954,8 @@ const parseErDiagram = (lines, indexes, relativePath) => {
     if (entity) {
       const field = trimmed.match(/^(\S+)\s+(\S+)(?:\s+.*)?$/u);
       if (!field) throw mermaidError(relativePath, index + 1, 'malformed erDiagram field');
-      records.push(mermaidRecord(relativePath, lines, index, field[1]));
-      records.push(mermaidRecord(relativePath, lines, index, field[2]));
+      records.push(mermaidRecord(relativePath, lines, index, field[1], {structural: true}));
+      records.push(mermaidRecord(relativePath, lines, index, field[2], {structural: true}));
       continue;
     }
     const opening = trimmed.match(/^([A-Za-z_][\w-]*)\s*\{$/u);

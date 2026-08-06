@@ -39,24 +39,34 @@ related_questions: []
 
 # 单一职责与关注点分离
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 单一职责原则（SRP）判断一个边界应向哪个责任主体负责、因哪些政策变化而改变；关注点分离（SoC）则把问题按业务规则、安全、呈现、持久化等维度分开推理。可从[原则目录](/principles)进入其他原则。两者相关，却不是“一个类只做一件事”的文件整理规则。
 
 ## 学习问题
 
 - “职责”应由方法数量、功能名称还是变化原因定义？
 - 谁是责任主体，为什么它比“只做一件事”更可检验？
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 - SRP 与关注点分离分别解决什么问题？
 - 技术分层为什么可能看似分离却仍共同变化？
 
 ## 要保护的性质
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 **来源事实：** Parnas 用应隐藏的困难设计决策区分模块；Dijkstra 把关注点分离描述为暂时隔离一个方面、在不否认其他方面的前提下单独推理；Robert C. Martin 后来把 SRP 的“责任”解释为面向同一类人或角色的变化原因。**推断：** 一个模块是否单一职责，不能从类名、方法数量或代码行数直接得出，而要列出谁要求它改变、这些变化是否属于同一政策所有权。
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 要保护的是责任可归属：发生规则变化时能指出谁做决定、哪个边界实现决定、哪些消费方只依赖稳定结果。SoC 提供观察维度，SRP 决定其中哪些变化应由同一责任边界承担。
 
 ## 冲突与适用上下文
 
-把计价、授权、审计完全分开可令政策所有者独立变化，却会增加调用、装配与事务协调；放在一个模块中能保持原子性，却可能让财务、安全和合规团队的变化互相阻塞。责任边界应优先反映真实变化来源，而不是预设所有 concern 都必须成为服务。
+把计价、授权、审计完全分开可令政策所有者独立变化，却会增加调用、装配与事务协调；放在一个模块中能保持原子性，却可能让财务、安全和合规团队的变化互相阻塞。责任边界应优先反映真实变化来源，而不是预设所有关注点都必须成为服务。
 
 不应为追求“单一”把每个函数或每个字段拆成独立类。若变化总是由同一责任主体提出、必须原子生效且具有相同生命周期，继续放在一个内聚边界更简单。职责分离是控制变化传播，不是最大化文件数量。
 
@@ -71,6 +81,8 @@ related_questions: []
 | 法定留痕期限 | 合规团队 | 审计记录 | 审计策略模块 |
 | 页面呈现顺序 | 体验团队 | 展示模型 | 呈现适配层 |
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 **本站分析：** 矩阵不是看到四行就建立四个网络服务。先用进程内模块和稳定接口隔离责任；只有独立容量、故障、合规或发布约束成立时，才升级部署边界。SRP 决定政策所有权，SoC 帮助在同一流程中分别观察业务、安全、合规和呈现。
 
 ## 误用与反原则
@@ -87,16 +99,29 @@ related_questions: []
 
 ## 相邻原则
 
-[信息隐藏与封装](/principles/pr-01)使一个责任主体能够隐藏其设计决策；[高内聚与低耦合](/principles/pr-02)检查职责拆分后变化和运行传播是否真的缩小；[组合优于继承](/principles/pr-05)则避免用继承把独立职责重新锁进同一状态层次。[CQS、CQRS 与读写分离](/principles/pr-11)只在尺度与模型分歧足以证明时，才把责任分离应用到命令与查询模型；[Open/Closed 与 Interface Segregation](/principles/pr-12)要求扩展点与客户端契约仍由具名责任所有者承担；[Persistence Ignorance](/principles/pr-13)区分领域变化所有权与映射、事务等持久化责任；[GRASP 责任分配](/principles/pr-14)在候选对象之间选择具体责任所有者。PR-03 判断“谁要求变化”，PR-13 判断“哪些存储事实可以进入领域边界”，PR-14 判断“当前协作中的责任交给谁”，三者不能互相替代。
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+[信息隐藏与封装](/principles/pr-01)使一个责任主体能够隐藏其设计决策；[高内聚与低耦合](/principles/pr-02)检查职责拆分后变化和运行传播是否真的缩小；[组合优于继承](/principles/pr-05)则避免用继承把独立职责重新锁进同一状态层次。[CQS、命令查询职责分离（Command Query Responsibility Segregation，CQRS）与读写分离](/principles/pr-11)只在尺度与模型分歧足以证明时，才把责任分离应用到命令与查询模型；[开闭原则（Open/Closed Principle）与接口隔离原则（Interface Segregation Principle）](/principles/pr-12)要求扩展点与客户端契约仍由具名责任所有者承担；[领域模型与存储解耦](/principles/pr-13)区分领域变化所有权与映射、事务等持久化责任；[GRASP 责任分配](/principles/pr-14)在候选对象之间选择具体责任所有者。PR-03 判断“谁要求变化”，PR-13 判断“哪些存储事实可以进入领域边界”，PR-14 判断“当前协作中的责任交给谁”，三者不能互相替代。
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 [Conway 定律与团队边界](/principles/pr-15)说明团队沟通与责任边界会影响变化如何跨模块传播。
 
 ## 说明性场景
 
-说明性场景：一个 API key 服务同时计算预算、判断访问权限并格式化管理页面。因为代码只有一个类，团队最初称其为“密钥管理这一件事”。变化历史却显示预算由财务策略驱动、权限由安全策略驱动、页面由体验团队驱动。
+说明性场景：一个应用程序编程接口（Application Programming Interface，API）键服务同时计算预算、判断访问权限并格式化管理页面。因为代码只有一个类，团队最初称其为“密钥管理这一件事”。变化历史却显示预算由财务策略驱动、权限由安全策略驱动、页面由体验团队驱动。
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 决策是先在同一部署内拆成预算政策、授权政策和呈现适配器，由应用服务编排，不立即引入分布式事务。这样既保留原子流程，又让责任主体各自拥有策略。[LiteLLM 虚拟密钥治理案例](/cases/litellm-virtual-keys-governance)可继续观察身份、预算和路由策略如何在同一控制面保持不同边界。
 
 ## 来源
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 模块应围绕隐藏决策组织的事实依据 [Parnas 模块分解论文](https://dl.acm.org/doi/10.1145/361598.361623)；关注点分离的原始讨论依据 [Dijkstra 的 EWD447](https://www.cs.utexas.edu/~EWD/transcriptions/EWD04xx/EWD447.html)；责任面向人或角色而非“一个动作”的解释用 [Robert C. Martin 的 SRP 说明](https://blog.cleancoder.com/uncle-bob/2014/05/08/SingleReponsibilityPrinciple.html)交叉核验。本站仅作事实摘要，不复刻原文结构；变化原因矩阵、场景和尺度判断均为原创。

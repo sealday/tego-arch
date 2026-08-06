@@ -36,7 +36,7 @@ related_questions: []
 
 “架构”不是“大图”的同义词。一个类可以承载高代价协议决定，一张系统图也可能只是在复述目录结构；判断尺度要看决定约束了谁、改变它要付出什么代价，以及需要哪些视图才能评审。
 
-[概念目录](/concepts)提供后续主题入口，[架构思维与表达路径](/paths/architecture-thinking)把本文放在第一阶段起点。本文采用 NASA 软件架构指导、C4 抽象和 ISO/IEC/IEEE 42010:2022 的公开摘要作为边界，但不把任何一套术语宣称为普遍分类法。
+[概念目录](/concepts)提供后续主题入口，[架构思维与表达路径](/paths/architecture-thinking)把本文放在第一阶段起点。本文采用美国国家航空航天局软件架构指导、C4 架构模型（C4 Model）抽象和国际标准化组织/IEC/IEEE 42010:2022 的公开摘要作为边界，但不把任何一套术语宣称为普遍分类法。
 
 ## 学习问题
 
@@ -47,17 +47,20 @@ related_questions: []
 
 ## 定义与尺度边界
 
-本文把软件架构理解为：一组跨元素、跨团队或跨生命周期约束系统演进的重要决定，以及这些决定形成的结构、关系和原则。[NASA NPR 7150.2D 第 4 章](https://nodis3.gsfc.nasa.gov/npg_img/N_PR_7150_002D_/N_PR_7150_002D__Chapter4.pdf)把软件需求、架构、详细设计和评审放在同一工程生命周期中；它面向 NASA 项目治理，不是所有组织都必须照搬的流程。
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+本文把软件架构理解为：一组跨元素、跨团队或跨生命周期约束系统演进的重要决定，以及这些决定形成的结构、关系和原则。[NASA NPR 7150.2D 第 4 章](https://nodis3.gsfc.nasa.gov/npg_img/N_PR_7150_002D_/N_PR_7150_002D__Chapter4.pdf)把软件需求、架构、详细设计和评审放在同一工程生命周期中；它面向美国国家航空航天局项目治理，不是所有组织都必须照搬的流程。
 
 尺度不是按文件数量机械划分。系统架构关注系统与环境、主要运行单元、数据与故障边界；应用设计关注单个应用内部的模块职责与协作；代码级设计关注类、函数、算法和局部数据结构。若某个选择改变公共协议、数据所有权、安全边界或多个团队的交付方式，即使落在一个文件里，也可能是架构决定。
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 [ISO/IEC/IEEE 42010:2022 公开摘要](https://www.iso.org/standard/74393.html)明确区分实体的架构与表达它的架构描述，并且不规定创建描述的方法、记法、工具或记录格式。因此，本文不可用来断言“用了某种图就是有架构”，也不应把标准摘要扩张成完整标准条文。
 
 ## 核心机制
 
 判断尺度时，依次追踪四个问题：决定作用于哪些元素，约束哪些关系，保护哪些质量目标，错误后由谁承担恢复成本。作用范围越跨边界、替换窗口越长、失败影响越难隔离，就越需要把决定提升到架构层公开评审。
 
-[C4 Model abstractions](https://c4model.com/abstractions)用 software system、container、component 和 code 提供逐层放大的抽象。它帮助选择沟通层级，但不是通用本体：`container` 在 C4 中表示可运行或可部署单元，不等同于 Docker 容器；C4 也不替代质量属性场景、决策理由或运行验证。
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+[C4 架构模型 abstractions](https://c4model.com/abstractions)用软件系统、容器、组件和代码提供逐层放大的抽象。它帮助选择沟通层级，但不是通用本体：`container` 在 C4 架构模型中表示可运行或可部署单元，不等同于容器运行时容器；C4 架构模型也不替代质量属性（Quality Attribute）场景、决策理由或运行验证。
 
 下面是本站原创的尺度判断表。它回答“评审时最少要看到什么”，不是对所有组织都适用的职位或文档模板。
 
@@ -80,20 +83,24 @@ related_questions: []
 
 ## 说明性场景
 
-一个报销系统计划把“付款任务”从 Web 进程移到独立执行器。若只看代码，这是移动一个调用；沿四问检查后会发现它新增异步协议、任务状态、重试副作用和独立部署故障域，因此应在系统或应用架构层记录。
+一个报销系统计划把“付款任务”从网页服务进程移到独立执行器。若只看代码，这是移动一个调用；沿四问检查后会发现它新增异步协议、任务状态、重试（Retry）副作用和独立部署故障域，因此应在系统或应用架构层记录。
 
-团队用 C4 Context 保持员工、报销系统和银行的外部关系，用 Container 层显示 Web、API、数据库与任务执行器，再用代码设计处理任务序列化。失败边界保持可见：图不能证明重试安全，仍需单独定义幂等与核对机制。这个场景为原创推演，不代表 NASA、C4 或 ISO 给出的标准方案。
+团队用系统上下文视图保持员工、报销系统和银行的外部关系，用容器层显示网页服务、应用程序编程接口（Application Programming Interface，API）、数据库与任务执行器，再用代码设计处理任务序列化。失败边界保持可见：图不能证明重试安全，仍需单独定义幂等与核对机制。这个场景为原创推演，不代表美国国家航空航天局、C4 架构模型或国际标准化组织给出的标准方案。
 
 ## 相邻主题
 
-接下来用[架构驱动力与 ASR](/concepts/fnd-02)判断哪些目标真正塑造结构，再用[架构分类法](/concepts/fnd-03)区分风格、模式、战术和参考架构。完整阶段顺序见[架构思维与表达路径](/paths/architecture-thinking)。
+接下来用[架构驱动力与架构重要需求（Architecturally Significant Requirement，ASR）](/concepts/fnd-02)判断哪些目标真正塑造结构，再用[架构分类法](/concepts/fnd-03)区分风格、模式、战术和参考架构。完整阶段顺序见[架构思维与表达路径](/paths/architecture-thinking)。
 
-[Micro Frontends + single-spa 案例](/cases/micro-frontends-single-spa)可检验业务边界、团队所有权、部署与运行时边界为何不能自动画等号。
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+[微前端与 single-spa 案例](/cases/micro-frontends-single-spa)可检验业务边界、团队所有权、部署与运行时边界为何不能自动画等号。
 
 ## 来源
 
-- [NASA NPR 7150.2D — Chapter 4](https://nodis3.gsfc.nasa.gov/npg_img/N_PR_7150_002D_/N_PR_7150_002D__Chapter4.pdf)：用于需求、架构、详细设计和评审的生命周期边界；NASA 项目要求不被表述为通用流程。
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+- [NASA NPR 7150.2D — Chapter 4](https://nodis3.gsfc.nasa.gov/npg_img/N_PR_7150_002D_/N_PR_7150_002D__Chapter4.pdf)：用于需求、架构、详细设计和评审的生命周期边界；美国国家航空航天局项目要求不被表述为通用流程。
 - [C4 Model — Abstractions](https://c4model.com/abstractions)：用于逐层抽象与 `container` 术语边界；不作为质量属性或架构正确性的证据。
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 - [ISO/IEC/IEEE 42010:2022 公开摘要](https://www.iso.org/standard/74393.html)：用于区分架构与架构描述，以及标准不规定方法、记法和格式的公开边界。
 
 正文结构、尺度判断表和说明性场景均为本站原创归纳；未复制来源图表，也未声称三项来源共同定义一套普遍尺度。

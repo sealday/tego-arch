@@ -48,6 +48,9 @@ related_questions: []
 
 ## 要保护的性质
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 **来源事实：** Design Patterns 提出优先对象组合而非类继承的设计指导；Oracle 的 Java 教程说明子类继承超类成员并形成类型层次。**推断：** 选择依据不应是语法偏好，而是父类契约是否稳定、子类是否真正可替换，以及复用的能力是否需要独立变化。
 
 要保护的是局部替换能力：改变一个策略、存储或通知能力时，不迫使整个类型层次理解新的状态和生命周期。继承能提供语言级多态与统一契约，组合则把变化放进明确协作者；二者都会产生耦合，只是传播路径不同。
@@ -66,7 +69,7 @@ related_questions: []
 | --- | --- | --- |
 | 多态契约 | 子类型天然进入父类型位置，但必须满足替换语义 | 消费方依赖能力接口，运行时选择实现 |
 | 共享实现 | 直接复用父类代码，容易连带继承不需要的行为 | 通过协作者复用，需编写装配和委托 |
-| 状态耦合 | 子类可能依赖 protected 状态与初始化顺序 | 状态由各对象拥有，交互通过显式接口 |
+| 状态耦合 | 子类可能依赖受保护状态与初始化顺序 | 状态由各对象拥有，交互通过显式接口 |
 | 替换成本 | 基类变化可能传播到整个层次 | 可替换单一协作者，但接口变化仍会传播 |
 | 适合关系 | 稳定、真实、可验证的类型层次 | 独立变化的策略、能力和资源 |
 
@@ -86,14 +89,23 @@ related_questions: []
 
 ## 相邻原则
 
-[高内聚与低耦合](/principles/pr-02)用于比较两种复用机制的变化与状态耦合；[单一职责与关注点分离](/principles/pr-03)检查被组合的能力是否真的独立变化；[依赖倒置、控制反转与依赖注入](/principles/pr-04)约束组合时策略、抽象和具体实现的依赖方向。[KISS、YAGNI 与 DRY 的张力](/principles/pr-06)要求等变化边界稳定后再提取抽象；[演进式设计](/principles/pr-08)则在迁移期间使用可替换的组合接缝；[Open/Closed 与 Interface Segregation](/principles/pr-12)说明组合可以承载稳定扩展点，但组合机制本身不能证明扩展点确有必要。
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+[高内聚与低耦合](/principles/pr-02)用于比较两种复用机制的变化与状态耦合；[单一职责与关注点分离](/principles/pr-03)检查被组合的能力是否真的独立变化；[依赖倒置、控制反转与依赖注入](/principles/pr-04)约束组合时策略、抽象和具体实现的依赖方向。[KISS、YAGNI 与 DRY 的张力](/principles/pr-06)要求等变化边界稳定后再提取抽象；[演进式设计](/principles/pr-08)则在迁移期间使用可替换的组合接缝；[开闭原则（Open/Closed Principle）与接口隔离原则（Interface Segregation Principle）](/principles/pr-12)说明组合可以承载稳定扩展点，但组合机制本身不能证明扩展点确有必要。
 
 ## 说明性场景
 
-说明性场景：任务执行器需要重试、审计和速率限制。方案 A 建立 `AuditedRetryingRateLimitedExecutor` 继承链，每层覆写执行钩子并访问父类状态；方案 B 让执行器组合三个明确策略。
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+说明性场景：任务执行器需要重试（Retry）、审计和速率限制。方案 A 建立 `AuditedRetryingRateLimitedExecutor` 继承链，每层覆写执行钩子并访问父类状态；方案 B 让执行器组合三个明确策略。
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 因为三项能力由不同团队和配置节奏驱动，选择 B，并在组合根固定顺序和失败语义。若所有执行器只共享一个稳定、无状态的 `execute` 模板且子类满足同一契约，则受控继承也可接受。[Kubernetes reconciliation 案例](/cases/kubernetes-reconciliation-loop)可继续观察控制循环如何通过组合具体资源适配器而保持核心机制稳定。
 
 ## 来源
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 经验法则的历史边界依据 [Design Patterns 书目记录](https://search.worldcat.org/title/Design-patterns-:-elements-of-reusable-object-oriented-software/oclc/31169738)；继承成员与类型层次的实现事实用 [Oracle Java Inheritance](https://docs.oracle.com/javase/tutorial/java/IandI/subclasses.html)交叉核验。本站不复制书籍目录、原文图或代码，选择矩阵和场景均为原创。

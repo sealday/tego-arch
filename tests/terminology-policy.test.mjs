@@ -350,6 +350,20 @@ flowchart LR
   ]);
 });
 
+test('excludes Mermaid model identifiers while checking reader-visible relationship labels', async () => {
+  const result = await checkFixture(`
+\`\`\`mermaid
+erDiagram
+  ExpenseClaim {
+    string claimId
+  }
+  ExpenseClaim ||--o{ Approval : unknown relationship
+\`\`\``);
+  assert.deepEqual(result.issues.map(({line, ruleId, matched}) => ({line, ruleId, matched})), [
+    {line: 7, ruleId: 'unknown-english-term', matched: 'unknown relationship'},
+  ]);
+});
+
 test('checks visible TSX strings but excludes imports, paths, props, and ordinary literals', async () => {
   const source = `import workerIcon from './unknown-worker.svg';
 const config = {worker_id: 'unknown worker'};
@@ -414,6 +428,12 @@ second worker`);
   const unused = await checkFixture(`<!-- terminology-exempt: unknown-english-term | reason: 官方界面原始标签 -->
 纯中文内容`);
   assert.deepEqual(unused.issues.map(({ruleId}) => ruleId), ['invalid-suppression']);
+});
+
+test('accepts an exclusive MDX-native suppression directive', async () => {
+  const result = await checkFixture(`{/* terminology-exempt: unknown-english-term | reason: 官方界面原始标签 */}
+unknown worker`);
+  assert.deepEqual(result.issues, []);
 });
 
 test('ignores suppression-shaped text in fenced code, inline code, TS comments, and strings', async () => {

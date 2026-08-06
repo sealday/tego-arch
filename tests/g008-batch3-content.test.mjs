@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import test from 'node:test';
+
+import {stripTerminologyExemptions} from './helpers/terminology-content.mjs';
 import {fileURLToPath} from 'node:url';
 
 import {
@@ -202,11 +204,11 @@ const expectedMappingRows = [
   ['层次', '回答的问题', '费用申报示例', '新增决定', '明确不证明'],
   ['概念模型', '业务中有哪些事物与词义', '员工、费用申报、审批、付款', '概念边界与业务关系', '实体键、基数、表结构或流程顺序'],
   ['逻辑模型', '实体如何识别、关联并受约束', 'Employee、ExpenseClaim、Approval、PaymentInstruction', '唯一标识、属性、关系、基数与业务约束', 'SQL 表已设计或查询性能达标'],
-  ['可移植关系模式', '逻辑实体如何映射为关系结构', 'employee、expense_claim、approval、payment_instruction', '表、PK/FK、唯一性、类型族和索引候选', '严格意义上的 DBMS 物理模型或可部署 schema'],
-  ['PostgreSQL 18 物理实现切片', '平台如何落实约束与访问路径', 'PostgreSQL 约束、类型与索引类别', '实际约束类别、类型选择和索引候选', '完整生产 DDL、容量、迁移安全或性能结果'],
+  ['可移植关系模式', '逻辑实体如何映射为关系结构', 'employee、expense_claim、审批、payment_instruction', '表、PK/FK、唯一性、类型族和索引候选', '严格意义上的数据库管理系统物理模型或可部署模式'],
+  ['PostgreSQL 18 物理实现切片', '平台如何落实约束与访问路径', 'PostgreSQL 约束、类型与索引类别', '实际约束类别、类型选择和索引候选', '完整生产数据定义语言、容量、迁移安全或性能结果'],
 ];
 const [documents, ledger, linkHealth, status, backlog] = await Promise.all([
-  readContentDocuments(contentRoot),
+  readContentDocuments(contentRoot).then((entries) => entries.map(stripTerminologyExemptions)),
   readFile(new URL('../data/source-ledger.json', import.meta.url), 'utf8')
     .then(JSON.parse),
   readFile(new URL('../data/source-link-health.json', import.meta.url), 'utf8')
@@ -309,16 +311,16 @@ function assertMermaidSemantics(source) {
   const expectedNodes = {
     A: '本站教学假设',
     C: '业务概念<br/>员工 · 费用申报 · 审批 · 付款',
-    L: '逻辑实体<br/>Employee · ExpenseClaim · Approval · PaymentInstruction',
-    P: 'PostgreSQL 18 物理决定<br/>PK / FK / UNIQUE / CHECK / NOT NULL<br/>类型选择 · 索引候选',
-    R: '可移植关系表<br/>employee · expense_claim · approval · payment_instruction',
+    L: '逻辑实体<br/>员工 · 费用申报 · 审批 · 付款指令',
+    P: '目标数据库物理决定<br/>主键 / 外键 / 唯一 / 检查 / 非空约束<br/>类型选择 · 索引候选',
+    R: '可移植关系表<br/>员工表 · 费用申报表 · 审批表 · 付款指令表',
     U: '未知项',
     V: '验证缺口<br/>迁移窗口 · 回填与回滚<br/>查询分布 · 写入竞争 · 完整性与运行测量',
   };
   const expectedEdges = [
     'solid|映射业务词义|C -> L',
     'solid|映射为关系结构|L -> R',
-    'solid|加入 PostgreSQL 18 决定|R -> P',
+    'solid|加入目标数据库决定|R -> P',
     'solid|保留迁移与运行验证|P -> V',
     'dotted|标注字段、键与约束|A -> L',
     'dotted|标注类型与索引候选|A -> P',
@@ -347,7 +349,7 @@ function assertRequiredInputs(source) {
 function assertRequiredFailures(source) {
   const failures = section(source, '常见失败');
   assert.match(failures, /把逻辑模型画成流程[^。\n]*运行顺序/u);
-  assert.match(failures, /从 C4 或 arc42[^。\n]*生产 schema/u);
+  assert.match(failures, /从 C4 或 arc42[^。\n]*生产模式/u);
   assert.match(failures, /忽略金额、时间、身份、历史和迁移语义/u);
 }
 
@@ -355,7 +357,7 @@ function assertDataModelBoundaries(source) {
   assert.match(source, /可移植关系模式不是严格意义上的完整物理模型/u);
   assert.match(source, /本站原创的教学假设/u);
   assert.match(source, /索引候选不证明性能/u);
-  assert.match(source, /不是生产 schema，也不是可部署 schema/u);
+  assert.match(source, /不是生产模式，也不是可部署模式/u);
   assert.doesNotMatch(source, /CREATE\s+TABLE/iu);
   assert.doesNotMatch(source, /可移植关系模式就是已验证物理模型/u);
   assert.doesNotMatch(source, /生产事实/u);
@@ -594,9 +596,9 @@ test('parses the exact Mermaid edge multiset independent of line order', () => {
       '-->|标注字段、键与约束|',
     ),
     mermaid.replace('员工 · 费用申报 · 审批 · 付款', '费用申报'),
-    mermaid.replace('PaymentInstruction', 'Payment'),
-    mermaid.replace('payment_instruction', 'payment'),
-    mermaid.replace('PK / FK / UNIQUE / CHECK / NOT NULL', 'PK / FK'),
+    mermaid.replace('付款指令', '付款'),
+    mermaid.replace('付款指令表', '付款表'),
+    mermaid.replace('主键 / 外键 / 唯一 / 检查 / 非空约束', '主键 / 外键'),
     mermaid.replace('迁移窗口 · 回填与回滚', '待验证'),
     mermaid.replace('映射为关系结构', '随后创建表'),
     mermaid.replace(

@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import test from 'node:test';
+
+import {stripTerminologyExemptions} from './helpers/terminology-content.mjs';
 import {fileURLToPath} from 'node:url';
 
 import {
@@ -12,7 +14,7 @@ import {extractInternalLinks} from '../scripts/content-relations.mjs';
 import {handleHorizontalArrowKey} from '../src/components/KeyboardScrollableRegion/handleHorizontalArrowKey.mjs';
 
 const contentRoot = fileURLToPath(new URL('../content/', import.meta.url));
-const documents = await readContentDocuments(contentRoot);
+const documents = await readContentDocuments(contentRoot).then((entries) => entries.map(stripTerminologyExemptions));
 const document = documents.find(({file}) => file === 'modeling/mod-12-architecture-diagram-review.mdx');
 const relatedDocuments = new Map(documents.map((entry) => [entry.file, entry]));
 const sourceLedger = JSON.parse(await readFile(new URL('../data/source-ledger.json', import.meta.url)));
@@ -26,7 +28,7 @@ function currentNextTopic(source) {
   const baselines = source
     .split(/\r?\n/u)
     .filter((line) => line.startsWith('- **当前发布基线：**'));
-  assert.equal(baselines.length, 1, 'backlog must contain one current release baseline');
+  assert.equal(baselines.length, 1, '待办 must contain one current release baseline');
   const liveSegment = baselines[0].split('。此前 ')[0];
   const nextTopics = [...liveSegment.matchAll(/下一项为 ([A-Z]+-\d+)/gu)];
   assert.equal(nextTopics.length, 1, 'live baseline must contain one next topic');
@@ -213,8 +215,8 @@ const expectedSeverities = new Map([
 
 const expectedGateRows = [
   {'审阅门': '身份与范围', '检查项': '标题', '必须回答的问题': '图的类型、目标系统或主题，以及本图回答的主要问题是什么', '所需证据': '评审问题、目标受众、图类型与权威名称', '失败信号': '只有项目名或“架构图”', '明确不证明': '标题完整不等于图中事实正确'},
-  {'审阅门': '身份与范围', '检查项': '范围', '必须回答的问题': '抽象层级、场景、环境、受众和非目标是什么', '所需证据': '模型类型、scope 声明、场景与环境记录', '失败信号': 'Context、Container、数据库和外部系统混在未说明层级', '明确不证明': '范围声明不批准边界或实现'},
-  {'审阅门': '身份与范围', '检查项': '版本', '必须回答的问题': '这是 as-is、to-be 还是教学假设，事实截止和维护责任是什么', '所需证据': '修订号、日期、状态与责任类型', '失败信号': '没有状态、修订号、日期或责任类型', '明确不证明': '版本块不证明与代码、部署或运行一致'},
+  {'审阅门': '身份与范围', '检查项': '范围', '必须回答的问题': '抽象层级、场景、环境、受众和非目标是什么', '所需证据': '模型类型、范围声明、场景与环境记录', '失败信号': '上下文、容器、数据库和外部系统混在未说明层级', '明确不证明': '范围声明不批准边界或实现'},
+  {'审阅门': '身份与范围', '检查项': '版本', '必须回答的问题': '这是现状、目标状态还是教学假设，事实截止和维护责任是什么', '所需证据': '修订号、日期、状态与责任类型', '失败信号': '没有状态、修订号、日期或责任类型', '明确不证明': '版本块不证明与代码、部署或运行一致'},
   {'审阅门': '表示与边界', '检查项': '图例', '必须回答的问题': '元素、线型、箭头、颜色、边框、缩写和尺寸分别表示什么', '所需证据': '图例与可独立复述的符号说明', '失败信号': '符号只能靠作者口头解释', '明确不证明': '图例完整不允许混用抽象层级'},
   {'审阅门': '表示与边界', '检查项': '边界', '必须回答的问题': '系统内外、外部参与者和当前抽象层级如何分开', '所需证据': 'MOD-02 权威系统边界与元素类型', '失败信号': '银行支付服务位于费用申报系统内部', '明确不证明': '系统边界不等于信任、部署、网络或组织边界'},
   {'审阅门': '运行与交换', '检查项': '数据', '必须回答的问题': '交换什么业务事实，方向、权威和消费责任是什么', '所需证据': '接口、数据、业务权威或可核验案例', '失败信号': '只有“使用”或无标签箭头', '明确不证明': '数据关系不等于所有权、一致性、事务或顺序'},
@@ -224,15 +226,15 @@ const expectedGateRows = [
 ];
 
 const expectedFindingRows = [
-  {'检查项': '标题', '严重度': '重要', '图中证据': '标题只有“费用平台架构图”', '风险': '评审者不知道图类型和问题', '修复建议': '写明费用申报系统 Container 图和费用提交与支付协作问题', '责任类型': '架构文档维护者', '复查状态': '已关闭'},
-  {'检查项': '范围', '严重度': '阻断', '图中证据': '系统、Container、数据库和外部系统处于同一未说明层级', '风险': '把不同观察单位当成可直接比较的结构', '修复建议': '固定为 Container 图并声明 as-is 教学范围与非目标', '责任类型': '系统边界维护者', '复查状态': '已关闭'},
-  {'检查项': '图例', '严重度': '重要', '图中证据': '元素类型、边框和线型没有说明', '风险': '图只能由作者口头解释', '修复建议': '增加 Person、Container、Data Store、External System 和边界图例', '责任类型': '架构文档维护者', '复查状态': '已关闭'},
+  {'检查项': '标题', '严重度': '重要', '图中证据': '标题只有“费用平台架构图”', '风险': '评审者不知道图类型和问题', '修复建议': '写明费用申报系统容器图和费用提交与支付协作问题', '责任类型': '架构文档维护者', '复查状态': '已关闭'},
+  {'检查项': '范围', '严重度': '阻断', '图中证据': '系统、容器、数据库和外部系统处于同一未说明层级', '风险': '把不同观察单位当成可直接比较的结构', '修复建议': '固定为容器图并声明现状教学范围与非目标', '责任类型': '系统边界维护者', '复查状态': '已关闭'},
+  {'检查项': '图例', '严重度': '重要', '图中证据': '元素类型、边框和线型没有说明', '风险': '图只能由作者口头解释', '修复建议': '增加人员、容器、数据存储、外部系统和边界图例', '责任类型': '架构文档维护者', '复查状态': '已关闭'},
   {'检查项': '边界', '严重度': '阻断', '图中证据': '银行支付服务位于费用申报系统边界内', '风险': '错误分配系统责任和外部依赖', '修复建议': '恢复 MOD-02 权威系统边界并把银行移到边界外', '责任类型': '系统边界维护者', '复查状态': '已关闭'},
   {'检查项': '数据', '严重度': '阻断', '图中证据': '重要箭头没有业务事实、方向或权威说明', '风险': '无法判断数据责任和跨界含义', '修复建议': '写明提交申报、读写、支付任务、支付请求与外部结果证据', '责任类型': '接口契约责任人', '复查状态': '已关闭'},
   {'检查项': '协议', '严重度': '待澄清', '图中证据': '连线写成“同步/事件？”', '风险': '把猜测当成实现承诺', '修复建议': '删除猜测并统一标记“协议：待确认”', '责任类型': '接口契约责任人', '复查状态': '保留待澄清'},
   {'检查项': '信任域', '严重度': '阻断', '图中证据': '员工、费用申报系统和银行之间没有信任说明', '风险': '跨界数据与身份检查被隐藏', '修复建议': '标出候选信任边界并回链 QA-05 所需证据', '责任类型': '安全责任人', '复查状态': '已关闭（证据仍待澄清）'},
   {'检查项': '失败域', '严重度': '阻断', '图中证据': '支付任务执行器与银行被画成同一失败域', '风险': '误判故障隔离、传播和恢复责任', '修复建议': '只标外部依赖与候选失败边界，内部隔离继续待证', '责任类型': '可靠性责任人', '复查状态': '已关闭（证据仍待澄清）'},
-  {'检查项': '版本', '严重度': '重要', '图中证据': '没有状态、修订号、日期和维护责任类型', '风险': '无法判断图适用时间和复查责任', '修复建议': '增加 as-is teaching exercise、rev 1、2026-08-05 和责任类型', '责任类型': '架构文档维护者', '复查状态': '已关闭'},
+  {'检查项': '版本', '严重度': '重要', '图中证据': '没有状态、修订号、日期和维护责任类型', '风险': '无法判断图适用时间和复查责任', '修复建议': '增加现状教学练习、rev 1、2026-08-05 和责任类型', '责任类型': '架构文档维护者', '复查状态': '已关闭'},
 ];
 
 const nonProofSentences = [
@@ -241,7 +243,7 @@ const nonProofSentences = [
   '系统边界不等于信任边界、网络边界、部署边界或组织边界。',
   '数据关系不等于数据所有权、一致性、事务或运行顺序。',
   '协议标签不证明实现、配置、兼容性或运行健康。',
-  'Container、Context、数据库或团队不存在自动一一映射。',
+  '容器、上下文、数据库或团队不存在自动一一映射。',
   '外部系统不自动构成独立失败域或完成故障隔离。',
   '版本块不证明图与当前代码、部署或运行状态一致。',
   '审阅清单不替代威胁建模、可靠性演练、代码检查、部署盘点或生产观测。',
@@ -266,7 +268,7 @@ const expectedWrapperLabels = [
 
 const expectedImages = [
   '![故意混合层级、边界、数据、协议、信任域、失败域和版本信息的费用申报系统审阅练习图](/img/diagrams/mod-12-architecture-review-problem.svg)',
-  '![恢复 MOD-02 系统边界并明确未知协议、候选信任边界和候选失败边界的费用申报系统 Container 图](/img/diagrams/mod-12-architecture-review-corrected.svg)',
+  '![恢复 MOD-02 系统边界并明确未知协议、候选信任边界和候选失败边界的费用申报系统容器图](/img/diagrams/mod-12-architecture-review-corrected.svg)',
 ];
 
 const requiredLinks = [
@@ -483,7 +485,7 @@ test('publishes exact reciprocal MOD-12 relations without an override', () => {
   assert.deepEqual(extractInternalLinks(requiredDocument()), requiredLinks.toSorted());
   assert.equal('MOD-12' in topicRelations, false);
   const reciprocal = [
-    ['modeling/mod-11-ddd-context-map.mdx', ['MOD-05', 'MOD-08', 'MOD-12'], /\[MOD-12 架构图审阅清单\]\(\/modeling\/mod-12\)[^。\n]*candidate Context is not component decomposition/iu],
+    ['modeling/mod-11-ddd-context-map.mdx', ['MOD-05', 'MOD-08', 'MOD-12'], /\[MOD-12 架构图审阅清单\]\(\/modeling\/mod-12\)[^。\n]*候选上下文不是组件分解/u],
     ['quality-attributes/qa-02-reliability-availability-recoverability.mdx', ['QA-00', 'QA-01', 'QA-03', 'QA-08', 'MOD-08', 'MOD-12'], /\[架构图审阅清单\]\(\/modeling\/mod-12\)[^。\n]*视觉分离[^。\n]*不证明[^。\n]*故障隔离[^。\n]*传播限制[^。\n]*故障切换[^。\n]*恢复/u],
     ['quality-attributes/qa-05-security-privacy-trust.mdx', ['QA-07', 'QA-08', 'QA-09', 'MOD-12'], /\[架构图审阅清单\]\(\/modeling\/mod-12\)[^。\n]*系统[^。\n]*网络边界[^。\n]*不证明[^。\n]*信任边界[^。\n]*身份[^。\n]*权限[^。\n]*数据[^。\n]*威胁/u],
   ];
@@ -629,7 +631,7 @@ test('rejects controlled MOD-12 mutations', () => {
     const wrapperClass = label.includes('架构图九项审阅矩阵') || label.includes('发现台账')
       ? 'table-wrapper table-wrapper--mapping'
       : 'architecture-diagram-scroll';
-    mutations.push([`wrapper class ${label}`, body.replace(`  className="${wrapperClass}"\n  role="region"\n  aria-label="${label}"`, `  className="changed"\n  role="region"\n  aria-label="${label}"`), assertInteractionContract]);
+    mutations.push([`wrapper 类 ${label}`, body.replace(`  className="${wrapperClass}"\n  role="region"\n  aria-label="${label}"`, `  className="changed"\n  role="region"\n  aria-label="${label}"`), assertInteractionContract]);
     mutations.push([`wrapper role ${label}`, body.replace(`  role="region"\n  aria-label="${label}"`, `  role="group"\n  aria-label="${label}"`), assertInteractionContract]);
     mutations.push([`wrapper label ${label}`, body.replace(`  aria-label="${label}"`, '  aria-label="已变更"'), assertInteractionContract]);
     mutations.push([`wrapper tabindex ${label}`, body.replace(`  aria-label="${label}"\n  tabIndex={0}`, `  aria-label="${label}"\n  tabIndex={-1}`), assertInteractionContract]);

@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import test from 'node:test';
+
+import {stripTerminologyExemptions} from './helpers/terminology-content.mjs';
 import {fileURLToPath} from 'node:url';
 
 import {
@@ -12,7 +14,7 @@ import {extractInternalLinks} from '../scripts/content-relations.mjs';
 import {handleHorizontalArrowKey} from '../src/components/KeyboardScrollableRegion/handleHorizontalArrowKey.mjs';
 
 const contentRoot = fileURLToPath(new URL('../content/', import.meta.url));
-const documents = await readContentDocuments(contentRoot);
+const documents = await readContentDocuments(contentRoot).then((entries) => entries.map(stripTerminologyExemptions));
 const document = documents.find(({file}) => file === 'modeling/mod-11-ddd-context-map.mdx');
 const customCss = await readFile(new URL('../src/css/custom.css', import.meta.url), 'utf8');
 const sourceLedger = JSON.parse(await readFile(new URL('../data/source-ledger.json', import.meta.url)));
@@ -29,7 +31,7 @@ const normativeDesign = await readFile(
 );
 
 const expectedMetadata = {
-  title: 'DDD Context Map 建模',
+  title: '领域驱动设计上下文映射（DDD Context Map）',
   slug: '/modeling/mod-11',
   content_type: 'modeling',
   status: 'reviewed',
@@ -42,8 +44,8 @@ const expectedMetadata = {
   agent_patterns: [],
   protocols: [],
   quality_attributes: ['maintainability'],
-  tags: ['DDD', 'Bounded Context', 'Context Map', 'Anti-Corruption Layer'],
-  summary: '用费用申报系统的语言、规则与权威证据提出三个候选 Bounded Context，并明确四条上下游关系和翻译责任。',
+  tags: ['DDD', '限界上下文', '上下文映射', 'Anti-Corruption Layer'],
+  summary: '用费用申报系统的语言、规则与权威证据提出三个候选限界上下文，并明确四条上下游关系和翻译责任。',
   topic_id: 'MOD-11',
   priority: 'P1',
   depends_on: ['MOD-01', 'MOD-02', 'MOD-09', 'MOD-10'],
@@ -66,7 +68,7 @@ const expectedHeadings = [
 
 const expectedBoundaryRows = [
   {
-    '候选 Context': '费用申报',
+    '候选上下文': '费用申报',
     '本地语言': '费用、凭证、提交、补正、申请人',
     '独立规则': '费用完整性、凭证要求、提交与补正条件',
     '业务权威': '已提交且可供后续判断的费用事实；不含审批决定与支付结果',
@@ -75,7 +77,7 @@ const expectedBoundaryRows = [
     '下一项验证与责任类型': '核对规则变更历史与术语冲突；费用业务领域专家',
   },
   {
-    '候选 Context': '费用审批',
+    '候选上下文': '费用审批',
     '本地语言': '审批决定、审批理由、权限、政策适用',
     '独立规则': '审批层级、额度、拒绝与重新审批',
     '业务权威': '审批决定及其依据；已批准 ≠ 已支付',
@@ -84,7 +86,7 @@ const expectedBoundaryRows = [
     '下一项验证与责任类型': '核对政策变更与跨阶段不变量；审批政策责任人',
   },
   {
-    '候选 Context': '支付结算',
+    '候选上下文': '支付结算',
     '本地语言': '支付请求、银行回执、结果未知、查询、对账',
     '独立规则': '结果确认、未知保持、重查与对账收敛',
     '业务权威': '本地支付执行语义与可展示摘要；银行结果仍以外部回执或查询为证',
@@ -134,33 +136,33 @@ const expectedRelationshipRows = [
 ];
 
 const expectedNodes = [
-  'approval_context:候选 Bounded Context<br/>费用审批',
+  'approval_context:候选限界上下文<br/>费用审批',
   'bank_system:外部系统<br/>银行支付服务',
-  'claim_context:候选 Bounded Context<br/>费用申报',
-  'payment_context:候选 Bounded Context<br/>支付结算',
+  'claim_context:候选限界上下文<br/>费用申报',
+  'payment_context:候选限界上下文<br/>支付结算',
 ];
 const expectedSubgraphMembers = ['approval_context', 'claim_context', 'payment_context'];
 const expectedEdges = [
-  'approval_context--U→D：审批决定（已批准 ≠ 已支付）->payment_context',
-  'bank_system--U→D：银行回执/查询结果；D 侧 ACL->payment_context',
-  'claim_context--U→D：已提交的费用事实->approval_context',
-  'payment_context--U→D：可展示的支付结果摘要->claim_context',
+  'approval_context--上游→下游：审批决定（已批准 ≠ 已支付）->payment_context',
+  'bank_system--上游→下游：银行回执/查询结果；下游侧防腐层->payment_context',
+  'claim_context--上游→下游：已提交的费用事实->approval_context',
+  'payment_context--上游→下游：可展示的支付结果摘要->claim_context',
 ];
 
 const nonProofSentences = [
-  'Bounded Context 不等于子域、系统、服务、模块、数据库、仓库、部署单元或团队。',
-  'Context 与团队不存在自动的一对一关系。',
-  '图中的箭头不等于 API、调用、事件、事务、协议、网络方向或执行顺序。',
+  '限界上下文不等于子域、系统、服务、模块、数据库、仓库、部署单元或团队。',
+  '上下文与团队不存在自动的一对一关系。',
+  '图中的箭头不等于应用程序编程接口（Application Programming Interface，API）、调用、事件、事务、协议、网络方向或执行顺序。',
   'U/D 不等于组织权力、价值高低或数据包方向。',
   'ACL 标签不证明实现已经存在。',
   '业务权威不等于数据库、存储位置或组织所有权。',
-  '银行支付服务是外部系统，不是本地 Bounded Context。',
+  '银行支付服务是外部系统，不是本地限界上下文。',
   '三个候选都可能在后续证据下合并、拆分或被否决。',
 ];
 const expectedWrapperLabels = [
-  '候选 Bounded Context 证据表，可横向滚动',
-  '费用申报系统 Context Map，可横向滚动',
-  'Context Map 关系责任表，可横向滚动',
+  '候选限界上下文证据表，可横向滚动',
+  '费用申报系统上下文映射，可横向滚动',
+  '上下文映射关系责任表，可横向滚动',
 ];
 const requiredLinks = [
   '/modeling',
@@ -254,9 +256,9 @@ function assertDddCrewLicenseContract(source, linkHealth) {
 const expectedExerciseSteps = [
   '复述 MOD-02 权威系统边界，明确银行支付服务位于系统外。',
   '从 MOD-09 与 MOD-10 收集语言、规则、权威记录和协作变化线索，不按现有模块分组。',
-  '提出三个候选 Context，并为每个候选填写支持证据、反证和备选划分。',
+  '提出三个候选上下文，并为每个候选填写支持证据、反证和备选划分。',
   '为四条关系逐条判断 U/D，写清交换的业务事实，不画运行时调用链。',
-  '只在银行边界标注 downstream ACL，说明翻译内容和未被证明的模式。',
+  '只在银行边界标注下游防腐层，说明翻译内容和未被证明的模式。',
   '为每个未决边界和关系登记责任类型、下一项证据与复查条件。',
   '从系统边界到四条关系完整复述，确认候选、权威和非证明规则没有相互矛盾。',
 ];
@@ -348,13 +350,13 @@ function records(table, expectedHeader) {
 function assertTableContracts(body) {
   const tables = markdownTables(body);
   assert.equal(tables.length, 2, 'MOD-11 must contain exactly two Markdown tables');
-  const boundaryRows = records(tables[0], ['候选 Context', '本地语言', '独立规则', '业务权威', '支持证据', '反证或备选', '下一项验证与责任类型']);
+  const boundaryRows = records(tables[0], ['候选上下文', '本地语言', '独立规则', '业务权威', '支持证据', '反证或备选', '下一项验证与责任类型']);
   const relationshipRows = records(tables[1], ['上游 U', '下游 D', '交换事实', '翻译或适配责任', '契约责任类型', '当前不证明什么', '下一项验证与责任类型']);
   assert.deepEqual(boundaryRows, expectedBoundaryRows);
   assert.deepEqual(relationshipRows, expectedRelationshipRows);
-  assert.equal(new Set(boundaryRows.map((row) => row['候选 Context'])).size, 3);
+  assert.equal(new Set(boundaryRows.map((row) => row['候选上下文'])).size, 3);
   for (const row of boundaryRows) assert.match(row['反证或备选'], /(?:合并|拆分|否决)/u);
-  const forbiddenOwner = /(?:团队|team|服务 owner|数据库 owner|仓库 owner|部署 owner)/iu;
+  const forbiddenOwner = /(?:团队|team|服务 负责人|数据库 负责人|仓库 负责人|部署 负责人)/iu;
   assert.ok(!boundaryRows.some((row) => forbiddenOwner.test(row['下一项验证与责任类型'])));
   assert.ok(!relationshipRows.some((row) => forbiddenOwner.test(`${row['契约责任类型']} ${row['下一项验证与责任类型']}`)));
   assert.equal(relationshipRows.filter((row) => row['翻译或适配责任'].includes('ACL')).length, 1);
@@ -380,7 +382,7 @@ function assertContextGraphContract(body) {
   let inSubgraph = false;
   let subgraphCount = 0;
   for (const line of diagram.split('\n').slice(1).filter((item) => item.trim())) {
-    let match = line.match(/^\s*subgraph\s+expense_system\["费用申报系统（MOD-02 权威系统边界）"\]\s*$/u);
+    let match = line.match(/^\s*subgraph\s+expense_system\["费用申报系统（权威系统边界）"\]\s*$/u);
     if (match) {
       assert.equal(inSubgraph, false, 'nested subgraph');
       inSubgraph = true;
@@ -403,13 +405,13 @@ function assertContextGraphContract(body) {
     match = line.match(/^\s*([a-z_]+)\s*-->\|"([^"\n]+)"\|\s*([a-z_]+)\s*$/u);
     if (match) {
       const [, from, label, to] = match;
-      assert.match(label, /^U→D：/u, 'every edge label must declare U→D');
+      assert.match(label, /^上游→下游：/u, 'every edge label must declare upstream and downstream');
       assert.doesNotMatch(label, /API|HTTP|event|topic|transaction/iu);
       edges.push(`${from}--${label}->${to}`);
       endpoints.push(from, to);
       continue;
     }
-    assert.fail(`unsupported Context Map line: ${line.trim()}`);
+    assert.fail(`unsupported 上下文映射 line: ${line.trim()}`);
   }
   assert.equal(inSubgraph, false, 'unclosed subgraph');
   assert.equal(subgraphCount, 1, 'exactly one system subgraph');
@@ -418,8 +420,8 @@ function assertContextGraphContract(body) {
   assert.deepEqual(members.toSorted(), expectedSubgraphMembers);
   assert.deepEqual(edges.toSorted(), expectedEdges);
   assert.equal(edges.length, 4);
-  assert.equal(edges.filter((edge) => edge.includes('ACL')).length, 1);
-  assert.match(edges.find((edge) => edge.includes('ACL')), /^bank_system--/u);
+  assert.equal(edges.filter((edge) => edge.includes('防腐层')).length, 1);
+  assert.match(edges.find((edge) => edge.includes('防腐层')), /^bank_system--/u);
 }
 
 function wrappers(body) {
@@ -445,7 +447,7 @@ function assertInteractionContract(body) {
   const boundaryTables = markdownTables(regions[0].content);
   assert.equal(boundaryTables.length, 1, 'first wrapper contains exactly the candidate-boundary table');
   assert.deepEqual(
-    records(boundaryTables[0], ['候选 Context', '本地语言', '独立规则', '业务权威', '支持证据', '反证或备选', '下一项验证与责任类型']),
+    records(boundaryTables[0], ['候选上下文', '本地语言', '独立规则', '业务权威', '支持证据', '反证或备选', '下一项验证与责任类型']),
     expectedBoundaryRows,
   );
   assert.equal([...visibleLines(regions[0].content).join('\n').matchAll(/```mermaid\n[\s\S]*?\n```/gu)].length, 0, 'first wrapper contains no Mermaid');
@@ -469,7 +471,7 @@ function assertMethodContract(body) {
   assert.match(visibleBody, /箭头只为表达模型影响与集成责任而从 U 指向 D/u);
   assert.match(visibleBody, /已批准 ≠ 已支付/u);
   assert.match(visibleBody, /支付结算翻译银行证据，但不成为外部支付结果权威/u);
-  assert.match(visibleBody, /Temporal Saga 案例可检验超时、重试、补偿与人工收敛，但不能确定候选 Context/u);
+  assert.match(visibleBody, /Temporal Saga 案例可检验超时、重试（Retry）、补偿与人工收敛，但不能确定候选上下文/u);
   assert.match(visibleBody, /完成检查[^\n]*证据[^\n]*备选[^\n]*责任类型[^\n]*下一项证据[^\n]*不带运行时解释重放/u);
   const links = extractInternalLinks({body});
   for (const target of requiredLinks) assert.ok(links.includes(target), `missing visible link: ${target}`);
@@ -510,7 +512,7 @@ test('locks candidate and relationship responsibility tables', () => {
   assertTableContracts(requiredDocument().body);
 });
 
-test('locks the semantic Context Map graph', () => {
+test('locks the semantic context-map graph', () => {
   assertContextGraphContract(requiredDocument().body);
 });
 
@@ -534,7 +536,7 @@ test('states method, evidence, links, completion and non-proof rules', () => {
 test('rejects controlled MOD-11 mutations', () => {
   const {body, source} = requiredDocument();
   const tableBlock = (header) => body.match(new RegExp(`\\| ${header} \\|[\\s\\S]*?(?=\\n\\n<\\/div>)`, 'u'))?.[0];
-  const boundaryTable = tableBlock('候选 Context');
+  const boundaryTable = tableBlock('候选上下文');
   assert.ok(boundaryTable);
   const relationshipTable = tableBlock('上游 U');
   assert.ok(relationshipTable);
@@ -544,17 +546,17 @@ test('rejects controlled MOD-11 mutations', () => {
     ['removed H2', source.replace('## 学习问题\n', '') , assertPublicationContract],
     ['reordered H2', source.replace('## 学习问题', '## __SWAP_HEADING__').replace('## 建模目标与输入', '## 学习问题').replace('## __SWAP_HEADING__', '## 建模目标与输入'), assertPublicationContract],
     ['bank moved into subgraph', body.replace('  end\n  bank_system', '    bank_system').replace('\n  claim_context -->', '\n  end\n  claim_context -->'), assertContextGraphContract],
-    ['candidate moved outside subgraph', body.replace('    claim_context["候选 Bounded Context<br/>费用申报"]\n', '').replace('  bank_system[', '  claim_context["候选 Bounded Context<br/>费用申报"]\n  bank_system['), assertContextGraphContract],
-    ['edge removed', body.replace('  claim_context -->|"U→D：已提交的费用事实"| approval_context\n', ''), assertContextGraphContract],
-    ['edge reversed', body.replace('claim_context -->|"U→D：已提交的费用事实"| approval_context', 'approval_context -->|"U→D：已提交的费用事实"| claim_context'), assertContextGraphContract],
-    ['U/D changed', body.replace('U→D：已提交的费用事实', 'D→U：已提交的费用事实'), assertContextGraphContract],
-    ['second ACL', body.replace('U→D：审批决定（已批准 ≠ 已支付）', 'U→D：审批决定（已批准 ≠ 已支付）；D 侧 ACL'), assertContextGraphContract],
+    ['candidate moved outside subgraph', body.replace('    claim_context["候选限界上下文<br/>费用申报"]\n', '').replace('  bank_system[', '  claim_context["候选限界上下文<br/>费用申报"]\n  bank_system['), assertContextGraphContract],
+    ['edge removed', body.replace('  claim_context -->|"上游→下游：已提交的费用事实"| approval_context\n', ''), assertContextGraphContract],
+    ['edge reversed', body.replace('claim_context -->|"上游→下游：已提交的费用事实"| approval_context', 'approval_context -->|"上游→下游：已提交的费用事实"| claim_context'), assertContextGraphContract],
+    ['direction changed', body.replace('上游→下游：已提交的费用事实', '下游→上游：已提交的费用事实'), assertContextGraphContract],
+    ['second ACL', body.replace('上游→下游：审批决定（已批准 ≠ 已支付）', '上游→下游：审批决定（已批准 ≠ 已支付）；下游侧防腐层'), assertContextGraphContract],
     ['table deleted', body.replace(boundaryTable, ''), assertTableContracts],
     ['table duplicated', body.replace(boundaryTable, `${boundaryTable}\n\n${boundaryTable}`), assertTableContracts],
-    ['header changed', body.replace('候选 Context | 本地语言', 'Context 候选 | 本地语言'), assertTableContracts],
-    ['row swapped', body.replace(`| ${expectedBoundaryRows[0]['候选 Context']} |`, '| __SWAP__ |').replace(`| ${expectedBoundaryRows[1]['候选 Context']} |`, `| ${expectedBoundaryRows[0]['候选 Context']} |`).replace('| __SWAP__ |', `| ${expectedBoundaryRows[1]['候选 Context']} |`), assertTableContracts],
+    ['header changed', body.replace('候选上下文 | 本地语言', '上下文候选 | 本地语言'), assertTableContracts],
+    ['row swapped', body.replace(`| ${expectedBoundaryRows[0]['候选上下文']} |`, '| __SWAP__ |').replace(`| ${expectedBoundaryRows[1]['候选上下文']} |`, `| ${expectedBoundaryRows[0]['候选上下文']} |`).replace('| __SWAP__ |', `| ${expectedBoundaryRows[1]['候选上下文']} |`), assertTableContracts],
     ['alternative removed', body.replace(expectedBoundaryRows[0]['反证或备选'], '暂无'), assertTableContracts],
-    ['fictional team owner', body.replace('费用业务领域专家', '报销平台团队'), assertTableContracts],
+    ['fictional team 负责人', body.replace('费用业务领域专家', '报销平台团队'), assertTableContracts],
     ['tabIndex removed', body.replace('  tabIndex={0}\n', ''), assertInteractionContract],
     ['onKeyDown removed', body.replace('  onKeyDown={handleHorizontalArrowKey}\n', ''), assertInteractionContract],
     ...nonProofSentences.map((sentence, index) => [`non-proof ${index + 1} weakened`, body.replace(sentence, sentence.replace(/不等于|不存在|不证明|不是|都可能/u, '等于')), assertMethodContract]),
@@ -704,8 +706,8 @@ test('renders exactly four governed MOD-11 sources', () => {
       boundary: match[3],
     })),
     [
-      {label: 'Bounded Context', url: expectedSources.get('src-docs-8fb33e125d2a'), boundary: '支持语言与模型边界以及显式 Context Map 关系；不证明本文候选边界、服务、团队或运行时设计。'},
-      {label: 'DDD Crew Context Mapping', url: expectedSources.get('src-docs-1ad75d39a251'), boundary: '支持围绕具体问题绘制小型 Context Map、逐关系判断 U/D 与关系模式的存在；不复用其 cheat sheet 或 Miro 资产，也不替本文选择关系模式。'},
+      {label: 'Bounded Context', url: expectedSources.get('src-docs-8fb33e125d2a'), boundary: '支持语言与模型边界以及显式上下文映射关系；不证明本文候选边界、服务、团队或运行时设计。'},
+      {label: 'DDD Crew Context Mapping', url: expectedSources.get('src-docs-1ad75d39a251'), boundary: '支持围绕具体问题绘制小型上下文映射、逐关系判断 U/D 与关系模式的存在；不复用其 cheat sheet 或 Miro 资产，也不替本文选择关系模式。'},
       {label: 'Anti-Corruption Layer', url: expectedSources.get('src-docs-ac85a74ed0b2'), boundary: '支持 ACL 作为下游翻译与隔离责任；不证明银行边界已有 ACL、OHS/PL、协议或部署实现。'},
       {label: 'Avanscoperta Context Mapping', url: expectedSources.get('src-docs-fc6e554f1153'), boundary: '支持边界指标并非绝对、仍需架构判断；不批准本文候选边界。'},
     ],
@@ -722,14 +724,14 @@ test('publishes reciprocal MOD-05/MOD-08 relations and actionable MOD-09/MOD-10 
   assert.deepEqual(parseFrontMatter(mod08.source).adjacent_topics, ['MOD-07', 'MOD-09', 'MOD-10', 'MOD-11', 'PR-10', 'QA-02']);
   assert.equal(extractInternalLinks(mod05).filter((link) => link === '/modeling/mod-11').length, 1);
   assert.equal(extractInternalLinks(mod08).filter((link) => link === '/modeling/mod-11').length, 1);
-  assert.match(mod05.body, /\[MOD-11 DDD Context Map 建模\]\(\/modeling\/mod-11\)：实体、关系与权威记录可以为 Context 边界提供证据，但数据模型不能单独决定 Bounded Context。/u);
-  assert.match(mod08.body, /\[MOD-11 DDD Context Map 建模\]\(\/modeling\/mod-11\)：状态、不变量和恢复规则的独立变化可以验证候选边界，但状态机不等于 Context Map。/u);
+  assert.match(mod05.body, /\[MOD-11 领域驱动设计上下文映射（DDD Context Map）\]\(\/modeling\/mod-11\)：实体、关系与权威记录可以为上下文边界提供证据，但数据模型不能单独决定限界上下文。/u);
+  assert.match(mod08.body, /\[MOD-11 领域驱动设计上下文映射（DDD Context Map）\]\(\/modeling\/mod-11\)：状态、不变量和恢复规则的独立变化可以验证候选边界，但状态机不等于上下文映射。/u);
   assert.ok(!parseFrontMatter(mod09.source).adjacent_topics.includes('MOD-11'));
   assert.ok(!parseFrontMatter(mod10.source).adjacent_topics.includes('MOD-11'));
   assert.ok(extractInternalLinks(mod09).includes('/modeling/mod-11'));
   assert.ok(extractInternalLinks(mod10).includes('/modeling/mod-11'));
-  assert.match(mod09.body, /EventStorming[^。\n]*(?:lane|swimlane|泳道|信号)[^。\n]*不能[^。\n]*Context/u);
-  assert.match(mod10.body, /actor[^。\n]*工作对象[^。\n]*不能[^。\n]*Context/iu);
+  assert.match(mod09.body, /事件风暴[^。\n]*(?:泳道|信号)[^。\n]*不能[^。\n]*上下文/u);
+  assert.match(mod10.body, /参与者[^。\n]*工作对象[^。\n]*不能[^。\n]*上下文/iu);
 });
 
 function assertStageBProjection(statusValue, manifestValue, mod11Document) {

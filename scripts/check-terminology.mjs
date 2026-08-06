@@ -314,6 +314,14 @@ const insideAny = (range, containers) => containers.some(
   ({start, end}) => range.start >= start && range.end <= end,
 );
 
+const insideForeignTerm = (record, range, term, registry) => registry.registry.terms
+  .filter((candidate) => candidate.id !== term.id)
+  .flatMap(termForms)
+  .some((form) => matchRanges(record.text, form).some(
+    ({start, end}) => start <= range.start && end >= range.end
+      && (start < range.start || end > range.end),
+  ));
+
 const termForms = (term) => [...new Set([
   term.first_use,
   term.canonical_zh,
@@ -336,6 +344,7 @@ const inspectFirstUse = (record, registry, introduced) => {
     ])]
       .flatMap((value) => matchRanges(record.text, value))
       .filter((range) => !insideAny(range, fullRanges))
+      .filter((range) => !insideForeignTerm(record, range, term, registry))
       .sort((left, right) => left.start - right.start || right.end - left.end);
     const events = [
       ...fullRanges.map((range) => ({...range, type: 'full'})),
@@ -407,7 +416,7 @@ const inspectUnknownEnglish = (record, registry) => {
 
 const classifySuppression = ({raw, file, line, exclusive}) => {
   const exact = raw.match(
-    /^<!--\s*terminology-exempt:\s*([^|\s]+)\s*\|\s*reason:\s*(.*?)\s*-->$/u,
+    /^(?:<!--\s*|\{\/\*\s*)terminology-exempt:\s*([^|\s]+)\s*\|\s*reason:\s*(.*?)\s*(?:-->|\*\/\})$/u,
   );
   if (!exclusive || !exact || !suppressibleRules.has(exact[1]) || exact[2].trim() === '') {
     return {file, line, valid: false, matched: raw};
@@ -481,6 +490,7 @@ export async function checkTerminology({root, paths = defaultPaths}) {
     const introduced = new Set();
     const fileIssues = [];
     for (const record of fileEntry.records) {
+      if (record.kind === 'mermaid' && record.structural) continue;
       const inspected = [
         ...inspectBareAliases(record, registry),
         ...inspectFirstUse(record, registry, introduced),

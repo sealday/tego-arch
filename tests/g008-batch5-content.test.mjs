@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import test from 'node:test';
+
+import {stripTerminologyExemptions} from './helpers/terminology-content.mjs';
 import {fileURLToPath} from 'node:url';
 
 import {
@@ -23,7 +25,7 @@ const modelingHeadings = [
   '完整演练',
   '来源',
 ];
-const documents = await readContentDocuments(contentRoot);
+const documents = await readContentDocuments(contentRoot).then((entries) => entries.map(stripTerminologyExemptions));
 const ledger = JSON.parse(
   await readFile(new URL('../data/source-ledger.json', import.meta.url), 'utf8'),
 );
@@ -103,7 +105,7 @@ function reviewRecords(body) {
     const end = headings[index + 1]?.offset ?? exercise.length;
     const record = exercise.slice(start === -1 ? end : start + 1, end);
     const diagram = heading.text.match(
-      /^(use case|sequence|state|class|deployment)：/u,
+      /^(用例|时序图|状态|类|部署)：/u,
     )?.[1];
     assert.ok(diagram, `unexpected review heading: ${heading.text}`);
     return {
@@ -141,7 +143,7 @@ function assertOverflowWrappers(body) {
 const expectedWorkflow = [
   '把“画一张 UML 图”改写成一句可判断的评审问题。',
   '确定观察对象是参与者目标、单场景交互、对象生命周期、静态类型还是运行节点。',
-  '选择最小而充分的图，不因工具熟悉度默认选择 class。',
+  '选择最小而充分的图，不因工具熟悉度默认选择类。',
   '为图中每个关键元素写出事实来源、截止时间或显式假设。',
   '写出该图明确不能证明的内容，并列出补充证据。',
   '请未参与绘图的评审者复述预期判断和证据缺口。',
@@ -198,64 +200,64 @@ test('routes one review question to exactly five UML choices', () => {
   assert.match(graph, /^flowchart TD$/mu);
   const expected = [
     'Q["当前评审问题观察什么？"]',
-    'U["参与者与目标<br/>use case"]',
-    'S["单场景交互顺序<br/>sequence"]',
-    'T["单对象生命周期<br/>state"]',
-    'C["静态类型与职责<br/>class"]',
-    'D["节点与部署单元<br/>deployment"]',
+    'U["参与者与目标<br/>用例"]',
+    'S["单场景交互顺序<br/>时序图"]',
+    'T["单对象生命周期<br/>状态"]',
+    'C["静态类型与职责<br/>类"]',
+    'D["节点与部署单元<br/>部署"]',
   ];
   for (const literal of expected) assert.ok(graph.includes(literal), literal);
   assert.equal([...graph.matchAll(/^  Q --> [USTCD]$/gmu)].length, 5);
-  assert.doesNotMatch(graph, /MOD-08|timeout|compensation/iu);
+  assert.doesNotMatch(graph, /MOD-08|超时|compensation/iu);
 });
 
 const expectedEvidenceRows = [
-  ['use case', '参与者与目标', '参与者、目标、系统边界和外部交互范围', '操作顺序、内部组件、授权已经正确', '业务规则与授权测试'],
-  ['sequence', '单场景交互顺序', '消息顺序、参与者、同步点、分支与异常路径', '性能时限、并发安全、所有状态都被覆盖', '追踪、负载与并发测试'],
-  ['state', '单对象生命周期', '状态、事件、守卫、转换和终态', '跨对象原子性、组件所有权、分布式一致性', '事务、故障与恢复测试'],
-  ['class', '静态类型与职责', '类型、职责、关联、多重性和泛化', '运行时顺序、数据库 schema、对象数量和生命周期事实', '代码、数据模型与运行检查'],
-  ['deployment', '节点与部署单元', '节点、执行环境、部署单元和通信路径', '实际库存、容量、故障切换和安全控制已经验证', '资产、容量、演练与安全证据'],
+  ['用例', '参与者与目标', '参与者、目标、系统边界和外部交互范围', '操作顺序、内部组件、授权已经正确', '业务规则与授权测试'],
+  ['时序图', '单场景交互顺序', '消息顺序、参与者、同步点、分支与异常路径', '性能时限、并发安全、所有状态都被覆盖', '追踪、负载与并发测试'],
+  ['状态', '单对象生命周期', '状态、事件、守卫、转换和终态', '跨对象原子性、组件所有权、分布式一致性', '事务、故障与恢复测试'],
+  ['类', '静态类型与职责', '类型、职责、关联、多重性和泛化', '运行时顺序、数据库模式、对象数量和生命周期事实', '代码、数据模型与运行检查'],
+  ['部署', '节点与部署单元', '节点、执行环境、部署单元和通信路径', '实际库存、容量、故障切换和安全控制已经验证', '资产、容量、演练与安全证据'],
 ];
 
 const expectedReviewRecords = [
   {
-    heading: 'use case：参与者与目标',
+    heading: '用例：参与者与目标',
     question: '员工、审批人和财务人员分别为了什么目标使用费用申报系统？',
-    diagram: 'use case',
+    diagram: '用例',
     requiredInput: '采用 MOD-02 的费用申报系统边界与员工名称；审批人和财务人员是本站原创的教学假设。把提交申报、作出审批决定和处理付款作为待核对目标。',
-    proves: '选择 use case，评审参与者、业务目标、系统边界与外部交互范围是否完整且用词一致。',
+    proves: '选择用例，评审参与者、业务目标、系统边界与外部交互范围是否完整且用词一致。',
     doesNotProve: '角色是否有权执行操作、授权冲突如何处理以及业务规则是否落实，仍需权限策略、业务规则和授权测试证明。',
   },
   {
-    heading: 'sequence：审批到付款意图',
+    heading: '时序图：审批到付款意图',
     question: '已提交申报如何经过审批并形成付款意图？',
-    diagram: 'sequence',
+    diagram: '时序图',
     requiredInput: '单个教学场景从已提交申报开始，审批人作出决定，系统在批准分支形成付款意图；一个必要的拒绝分支也应显式出现。',
-    proves: '选择 sequence，评审场景参与者、消息相对顺序、同步点、批准分支和拒绝分支是否支持这一次交互说明。',
-    doesNotProve: '延迟目标、并发提交、消息重试和事务边界仍需运行追踪、负载、并发与故障测试证明。',
+    proves: '选择时序图，评审场景参与者、消息相对顺序、同步点、批准分支和拒绝分支是否支持这一次交互说明。',
+    doesNotProve: '延迟目标、并发提交、消息重试（Retry）和事务边界仍需运行追踪、负载、并发与故障测试证明。',
   },
   {
-    heading: 'state：申报生命周期',
+    heading: '状态：申报生命周期',
     question: '一份申报允许经历哪些状态变化？',
-    diagram: 'state',
+    diagram: '状态',
     requiredInput: '以单份申报为观察单位，记录当前已知状态、触发事件、守卫、转换和终态；不把其他对象的变化合并进同一生命周期。',
-    proves: '选择 state，评审申报能否从允许的事件和守卫到达合法状态，并识别不允许的转换。',
+    proves: '选择状态，评审申报能否从允许的事件和守卫到达合法状态，并识别不允许的转换。',
     doesNotProve: '跨对象原子性、故障恢复和分布式一致性仍需事务与运行证据；完整终态、超时、取消、补偿和人工终态不在本页展开。',
   },
   {
-    heading: 'class：静态职责',
+    heading: '类：静态职责',
     question: '申报、审批和付款意图的静态职责如何关联？',
-    diagram: 'class',
+    diagram: '类',
     requiredInput: '复用 MOD-06 的 `ExpenseClaim`、`Approval` 和 `PaymentInstruction` 概念名称，但只把它们当作候选类型及静态职责输入。',
-    proves: '选择 class，评审类型职责、关联、多重性和必要泛化是否足以表达静态协作结构；UML class 不是 ER 实体，也不是数据库表。',
-    doesNotProve: '运行时创建数量、生命周期事实、持久化 schema 和具体代码归属仍需代码、数据模型与运行检查证明。',
+    proves: '选择类，评审类型职责、关联、多重性和必要泛化是否足以表达静态协作结构；UML 类不是实体关系实体，也不是数据库表。',
+    doesNotProve: '运行时创建数量、生命周期事实、持久化模式和具体代码归属仍需代码、数据模型与运行检查证明。',
   },
   {
-    heading: 'deployment：指定环境中的运行位置',
-    question: '费用申报 Web 应用、申报 API、支付任务执行器、申报数据库和银行支付服务在指定环境中如何部署？',
-    diagram: 'deployment',
+    heading: '部署：指定环境中的运行位置',
+    question: '费用申报网页应用、申报应用程序编程接口（Application Programming Interface，API）、支付任务执行器、申报数据库和银行支付服务在指定环境中如何部署？',
+    diagram: '部署',
     requiredInput: '采用 MOD-02 的系统边界和银行支付服务权威名称，把指定环境、节点、执行环境、部署单元与通信路径作为待核对输入。',
-    proves: '选择 deployment，评审各软件实例运行位置、节点边界和必要通信路径是否清晰，并与 MOD-03 的部署观察尺度保持一致。',
+    proves: '选择部署，评审各软件实例运行位置、节点边界和必要通信路径是否清晰，并与 MOD-03 的部署观察尺度保持一致。',
     doesNotProve: '实际资产库存、容量余量、故障切换结果、网络策略和安全控制仍需资产系统、容量数据、演练记录与安全证据证明。',
   },
 ];

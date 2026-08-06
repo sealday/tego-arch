@@ -19,7 +19,7 @@ tags:
   - 风险风暴
   - 事前验尸
   - 威胁建模
-summary: 按对象、时机和证据选择风险风暴、事前验尸、威胁建模、ATAM 或 GameDay，而不是把五种方法混成一次泛化头脑风暴。
+summary: 按对象、时机和证据选择风险风暴、事前验尸、威胁建模、架构权衡分析方法（Architecture Tradeoff Analysis Method，ATAM）或演练日，而不是把五种方法混成一次泛化头脑风暴。
 topic_id: MTH-05
 priority: P1
 depends_on:
@@ -38,7 +38,7 @@ related_questions: []
 ## 学习问题
 
 - 风险风暴与事前验尸分别从什么视角暴露风险？
-- 什么情况下应改用威胁建模、ATAM 或 GameDay？
+- 什么情况下应改用威胁建模、架构权衡分析方法或演练日？
 - 如何把匿名担忧转成可负责、可验证的处置？
 - 风险工作坊何时不适用？
 
@@ -61,10 +61,11 @@ related_questions: []
 | 风险风暴 | 架构视图与组件关系 | 设计形成后、重大变更前 | 跨职能技术与业务代表 | 图上风险、排序和处置 | 想象故障 | 假设与排序，仍待验证 | 结构哪里可能出错 | 没有共同可读的范围或视图 |
 | 事前验尸 | 项目或变更计划 | 承诺前或关键里程碑前 | 知道计划约束的团队 | 假设失败原因与验证任务 | 想象故障 | 假设原因，仍待验证 | 为什么最终会失败 | 事故已发生且需要事实复盘 |
 | 威胁建模 | 资产、信任边界和攻击面 | 设计早期并随变化更新 | 开发、安全、业务所有者 | 威胁、缓解与验证 | 模型分析 | 模型推理与评审证据 | 对手或滥用如何破坏目标 | 只讨论非安全权衡且无安全边界 |
-| ATAM | 候选或现有架构 | 有业务驱动力和方案后 | 决策者、架构师、利益相关者 | 敏感点、权衡、风险与非风险 | 模型分析 | 场景评审与架构分析证据 | 质量属性取舍如何失衡 | 尚无可评估架构或驱动力 |
-| GameDay | 可运行系统、流程与团队响应 | 恢复措施具备后定期进行 | 实际响应团队与利益相关者 | 演练证据、缺口和改进项 | 实际演练观测 | 受控环境中的观测证据 | 故障发生时是否能检测与恢复 | 没有止损、回退或安全演练环境 |
+| 架构权衡分析方法 | 候选或现有架构 | 有业务驱动力和方案后 | 决策者、架构师、利益相关者 | 敏感点、权衡、风险与非风险 | 模型分析 | 场景评审与架构分析证据 | 质量属性（Quality Attribute）取舍如何失衡 | 尚无可评估架构或驱动力 |
+| 演练日 | 可运行系统、流程与团队响应 | 恢复措施具备后定期进行 | 实际响应团队与利益相关者 | 演练证据、缺口和改进项 | 实际演练观测 | 受控环境中的观测证据 | 故障发生时是否能检测与恢复 | 没有止损、回退或安全演练环境 |
 
-GameDay 的实际演练观测比想象故障更接近运行行为，但不等于生产保证；演练范围、环境、流量和参与者不同，结论就可能失效。OWASP 没有提供一个统一、普遍的行业标准流程；其指导用于组织威胁建模活动，不能把某一种流程宣布为所有系统的标准答案。
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+演练日的实际演练观测比想象故障更接近运行行为，但不等于生产保证；演练范围、环境、流量和参与者不同，结论就可能失效。OWASP 没有提供一个统一、普遍的行业标准流程；其指导用于组织威胁建模活动，不能把某一种流程宣布为所有系统的标准答案。
 
 ## 产物
 
@@ -76,28 +77,40 @@ GameDay 的实际演练观测比想象故障更接近运行行为，但不等于
 
 ## 常见失败
 
-最常见失败是把担忧直接当事实，以“高概率”掩盖证据缺口。另一种误用是五种方法叠加成一次长会，既没有明确对象，也没有任何方法的完整产物。主持人先给答案、只邀请技术人员、把匿名发散延续成匿名责任、或在 GameDay 中没有止损边界，都会使结果失效。
+最常见失败是把担忧直接当事实，以“高概率”掩盖证据缺口。另一种误用是五种方法叠加成一次长会，既没有明确对象，也没有任何方法的完整产物。主持人先给答案、只邀请技术人员、把匿名发散延续成匿名责任、或在演练日中没有止损边界，都会使结果失效。
 
 非使用条件：已发生事故需要时间线与证据时，不应用事前验尸替代事后复盘；系统正在造成用户伤害时，不应先开风险风暴，应先止损；没有回退能力时不可把生产故障注入当作普通讨论练习。
 
 ## 与其他方法的衔接
 
-风险风暴或事前验尸发现的关键场景可以回到 ATAM 做取舍，也可以进入[需求到演进闭环](/methods/mth-06)形成验证与复核。威胁建模可依据 OWASP 的指导持续更新，GameDay 则在系统可运行后检验人员、流程与技术响应。[AWS cell 与 shuffle sharding 案例](/cases/aws-cell-shuffle-sharding)可用于讨论隔离假设，但案例中的公开证据不等于某个团队已完成演练。
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+风险风暴或事前验尸发现的关键场景可以回到架构权衡分析方法做取舍，也可以进入[需求到演进闭环](/methods/mth-06)形成验证与复核。威胁建模可依据 OWASP 的指导持续更新，演练日则在系统可运行后检验人员、流程与技术响应。[AWS 单元与洗牌分片案例](/cases/aws-cell-shuffle-sharding)可用于讨论隔离假设，但案例中的公开证据不等于某个团队已完成演练。
 
 ## 完整演练
 
-以下是虚构演练，分数与人数均为说明性数值。一个 8 人团队计划把租户流量分到 12 个 cell。主持人先展示请求、路由、数据和故障边界图；每人静默写 5 张风险卡。风险风暴得到 31 个原始担忧，聚类后剩 9 组，其中“路由配置错误把多个大租户放入同一 cell”以影响 5、可能性 3、证据置信度 2 排在前列。分数只用于排序，不把猜测变成事实。
+以下是虚构演练，分数与人数均为说明性数值。一个 8 人团队计划把租户流量分到 12 个单元。主持人先展示请求、路由、数据和故障边界图；每人静默写 5 张风险卡。风险风暴得到 31 个原始担忧，聚类后剩 9 组，其中“路由配置错误把多个大租户放入同一单元”以影响 5、可能性 3、证据置信度 2 排在前列。分数只用于排序，不把猜测变成事实。
 
-随后团队做 15 分钟事前验尸，假设迁移在 90 天后失败。新发现的主要原因不是组件故障，而是值班人员无法判断租户实际落在哪个 cell。团队决定：平台负责人在 7 天内补充可查询映射；可靠性负责人设计非生产 GameDay，模拟一个 cell 不可用并验证隔离、告警与回退；安全负责人另开威胁建模，检查租户标识篡改。
+随后团队做 15 分钟事前验尸，假设迁移在 90 天后失败。新发现的主要原因不是组件故障，而是值班人员无法判断租户实际落在哪个单元。团队决定：平台负责人在 7 天内补充可查询映射；可靠性负责人设计非生产演练日，模拟一个单元不可用并验证隔离、告警与回退；安全负责人另开威胁建模，检查租户标识篡改。
 
 若演练发现回退超过假设的 10 分钟，就暂停扩大流量并回到架构取舍。工作坊结束时，9 组风险都有决定，3 个未知项有验证任务，2 个残余风险由业务负责人明确接受。
 
 ## 来源
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 - [Simon Brown — Risk-storming](https://riskstorming.com/)：用于在架构图上协作识别、排序和处置风险的原始方法；站点内容以 CC BY 4.0 发布。
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 - [Gary Klein — Performing a Project Premortem](https://hbr.org/2007/09/performing-a-project-premortem)：用于“假设项目已经失败再生成原因”的事前验尸机制；仅作事实摘要。
 - [OWASP Threat Modeling Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Threat_Modeling_Cheat_Sheet.html)：用于持续威胁建模、范围、风险与缓解的当前官方实践入口。
-- [SEI — The Architecture Tradeoff Analysis Method](https://www.sei.cmu.edu/library/the-architecture-tradeoff-analysis-method/)：用于 ATAM 的场景化架构分析、敏感点、权衡与风险边界。
-- [AWS Well-Architected — Conduct game days regularly](https://docs.aws.amazon.com/wellarchitected/latest/framework/rel_testing_resiliency_game_days_resiliency.html)：用于 GameDay 对系统、流程和团队响应的验证边界。
+{/* terminology-exempt: bare-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+- [SEI — The Architecture Tradeoff Analysis Method](https://www.sei.cmu.edu/library/the-architecture-tradeoff-analysis-method/)：用于架构权衡分析方法的场景化架构分析、敏感点、权衡与风险边界。
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+- [AWS Well-Architected — Conduct game days regularly](https://docs.aws.amazon.com/wellarchitected/latest/framework/rel_testing_resiliency_game_days_resiliency.html)：用于演练日对系统、流程和团队响应的验证边界。
 
 选择矩阵、排序字段和演练为本站原创归纳。各来源支持各自方法，不能证明一次通用工作坊已经覆盖全部架构、安全与运行风险。

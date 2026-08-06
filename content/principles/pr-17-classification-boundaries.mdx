@@ -37,42 +37,67 @@ related_questions: []
 
 把一个主题放进“原则”栏目，不等于它的主要问题、证据形式和适用尺度都变成了原则。分类的价值在于让读者先找到该用哪种判断，再通过交叉链接看到它和其他架构判断的关系；可从[原则目录](/principles)继续浏览。
 
-CAP、Strangler Fig 与 GRASP 都能影响架构决策，却分别从分布式可行性、遗留迁移和对象协作切入。本文给出可复核的主归属，不把它们隔离成与架构原则无关的知识岛，也不把一次目录选择当成永久结论。
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+CAP、绞杀者模式与 GRASP 都能影响架构决策，却分别从分布式可行性、遗留迁移和对象协作切入。本文给出可复核的主归属，不把它们隔离成与架构原则无关的知识岛，也不把一次目录选择当成永久结论。
 
 ## 学习问题
 
 - 分类一个架构主题时，核心问题、适用尺度、输入和输出分别要回答什么？
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 - CAP 的网络模型约束为什么应先放在分布式系统理论语境中？
-- Strangler Fig 的迁移序列为何不能被当成通用设计原则？
+- 绞杀者模式的迁移序列为何不能被当成通用设计原则？
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 - GRASP 怎样以责任分配问题连接对象设计与架构边界？
 - 主归属与交叉关系如何同时保留，而不制造未发布的导航承诺？
 
 ## 一页摘要
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 **来源事实：** [Gilbert 与 Lynch 的 CAP 论文](https://dl.acm.org/doi/10.1145/564585.564601)讨论一致性、可用性与分区假设下的可行性边界。**推断：** 分类应按核心问题、适用尺度、输入、输出、失效条件来判断，而不是只按一个词是否常在架构讨论中出现。
 
 下表回答“先把什么问题带到哪里”。主归属由问题和产出决定；原则链接仍可为迁移、责任、演进或边界判断提供上下文。
 
-| Topic | Core question | Scale | Input | Output | Primary home |
+| 主题 | 核心问题 | 尺度 | 输入 | 输出 | 主要归属地 |
 | --- | --- | --- | --- | --- | --- |
-| CAP | What guarantees are feasible under the stated network model? | Distributed system | Consistency, availability, partition assumptions | Feasibility/trade-off boundary | Distributed-systems theory |
-| Strangler Fig | How can legacy capability be replaced incrementally? | System migration | Outcomes, seams, coexistence, cutover evidence | Migration sequence and transitional architecture | Migration pattern |
-| GRASP | Who should own an object-design responsibility? | Object/module collaboration | Information, creation, coordination, variation | Responsibility assignment | Responsibility-assignment method |
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+| CAP | What guarantees are feasible under the stated network model? | 分布式系统 | 一致性, 可用性, 分区假设 | 可行性/trade-off 边界 | 分布式系统理论 |
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+| 绞杀者模式 | How can legacy capability be replaced incrementally? | 系统迁移 | 结果, 接缝, 共存, 切换证据 | 迁移顺序与过渡架构 | 迁移模式 |
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+| GRASP | Who should own an object-design responsibility? | 对象/module 协作 | Information, 创建, 协调, 变化 | 职责分配 | 职责分配方法 |
 
-这不是把目录当作知识本体。分类可修订；一个主题只有一个便于导航的主归属，并不抹去它与原则、质量属性或其他尺度之间的交叉关系。
+这不是把目录当作知识本体。分类可修订；一个主题只有一个便于导航的主归属，并不抹去它与原则、质量属性（Quality Attribute）或其他尺度之间的交叉关系。
 
 ## 事实边界
 
-CAP 讨论在给定网络模型下可同时满足的保证边界，不是“任意系统从三个词任选两个”的产品口号。Strangler Fig 指向渐进替换、共存和切换证据的迁移方法，不能保证迁移低成本或无风险。
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+CAP 讨论在给定网络模型下可同时满足的保证边界，不是“任意系统从三个词任选两个”的产品口号。绞杀者模式指向渐进替换、共存和切换证据的迁移方法，不能保证迁移低成本或无风险。
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 **本站分析：** GRASP 是责任分配方法：它让对象或模块协作中的信息、创建、协调与变化拥有者可被讨论。它与[GRASP 责任分配](/principles/pr-14)相连，但这种链接不把对象级启发式扩大成任意系统治理的自动答案。
 
 <details className="evidence-card">
   <summary>证据：三个主题的原始语境</summary>
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
   - **CAP：** [Brewer's Conjecture and the Feasibility of Consistent, Available, Partition-Tolerant Web Services](https://dl.acm.org/doi/10.1145/564585.564601)，Gilbert、Lynch，2002。
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
   - **迁移：** [Strangler Fig](https://martinfowler.com/bliki/StranglerFigApplication.html)，Martin Fowler，用于渐进替换的事实语境。
-  - **责任分配：** [Applying UML and Patterns, 3rd Edition](https://www.pearson.com/en-us/subject-catalog/p/Larman-Applying-UML-and-Patterns-An-Introduction-to-Object-Oriented-Analysis-and-Design-and-Iterative-Development-3rd-Edition/P200000000422/9780131489066)，Craig Larman，用于 GRASP 的历史语境。
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+  - **责任分配：** [Applying 统一建模语言（Unified Modeling Language，UML） and Patterns, 3rd Edition](https://www.pearson.com/en-us/subject-catalog/p/Larman-Applying-UML-and-Patterns-An-Introduction-to-Object-Oriented-Analysis-and-Design-and-Iterative-Development-3rd-Edition/P200000000422/9780131489066)，Craig Larman，用于 GRASP 的历史语境。
   - **边界：** 这些来源分别支持术语与方法范围，不证明某个具体系统、迁移或责任划分已经成功。
 </details>
 
@@ -82,16 +107,23 @@ CAP 讨论在给定网络模型下可同时满足的保证边界，不是“任�
 
 <div className="architecture-diagram-scroll" role="region" aria-label="架构主题主归属与交叉关系图，可横向滚动" tabIndex={0}>
 
-![CAP、Strangler Fig 与 GRASP 的分类边界、主归属及交叉关系](/img/diagrams/pr-17-classification-boundaries.svg)
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+![CAP、绞杀者模式与 GRASP 的分类边界、主归属及交叉关系](/img/diagrams/pr-17-classification-boundaries.svg)
 
 </div>
 
-图把三种问题定在不同的主语境中，同时保留通向架构原则的虚线。交叉链接帮助读者跳转到相关判断；它不授权把 CAP 或 Strangler Fig 的计划分类页写成可点击地址。
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+图把三种问题定在不同的主语境中，同时保留通向架构原则的虚线。交叉链接帮助读者跳转到相关判断；它不授权把 CAP 或绞杀者模式的计划分类页写成可点击地址。
 
 ## 控制权与任务流
 
-**说明性场景：** 一个团队要替换遗留前端能力。迁移负责人先用 Strangler Fig 的问题检查缝隙、共存与切换证据；当新旧组件出现跨网络副本读取时，分布式设计者再用 CAP 的假设限定可讨论的保证；模块内的协调责任则由 GRASP 检查谁掌握信息、谁承担变化。
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+**说明性场景：** 一个团队要替换遗留前端能力。迁移负责人先用绞杀者模式的问题检查缝隙、共存与切换证据；当新旧组件出现跨网络副本读取时，分布式设计者再用 CAP 的假设限定可讨论的保证；模块内的协调责任则由 GRASP 检查谁掌握信息、谁承担变化。
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 控制权不随分类标签转移：迁移负责人不能用 CAP 省略切换验证，分布式设计者不能替代模块所有者分配责任。若演进中的前端边界需要观察，可参考[single-spa 微前端案例](/cases/micro-frontends-single-spa)；该案例是实际案例链接，不证明任何迁移路径必然适用。
 
 | 判断时点 | 首先使用的分类镜头 | 必须留下的证据 | 不能据此推出什么 |
@@ -102,16 +134,21 @@ CAP 讨论在给定网络模型下可同时满足的保证边界，不是“任�
 
 ## 关键源码导读
 
-这篇分类说明没有单一实现入口。阅读具体系统时，先找迁移路由、兼容契约、复制或故障模型，以及模块边界中的责任所有者；它们分别提供 Strangler Fig、CAP 和 GRASP 所需的输入。
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+这篇分类说明没有单一实现入口。阅读具体系统时，先找迁移路由、兼容契约、复制或故障模型，以及模块边界中的责任所有者；它们分别提供绞杀者模式、CAP 和 GRASP 所需的输入。
 
 源码和运行记录能证明当前结构与观察范围，不能自行确定目录。分类结论仍要说明所问问题、使用尺度与产出，否则很容易从一个熟悉的名称倒推错误的归属。
 
 ## 架构决策与权衡
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 **来源事实：** CAP 的主归属是分布式系统理论，因为它讨论分区假设下的可行性与取舍边界；它可以链接到原则，但不应被叙述成一般性的原则清单。
 
-Strangler Fig 的主归属是迁移模式，因为其产出是迁移序列与过渡架构，而非抽象的行为准则。它可与[演进式设计](/principles/pr-08)交叉阅读：两者都要求用反馈修正变化，但后者不能替代缝隙、共存和切换的迁移证据。
+绞杀者模式的主归属是迁移模式，因为其产出是迁移序列与过渡架构，而非抽象的行为准则。它可与[演进式设计](/principles/pr-08)交叉阅读：两者都要求用反馈修正变化，但后者不能替代缝隙、共存和切换的迁移证据。
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 GRASP 的主归属是责任分配方法，因为它要解决对象或模块协作中谁拥有责任的问题。它与原则相连，特别是可借由 PR-14 检查信息、创建、协调与变化，却不能从“责任分配”直接推导系统级组织或网络保证。
 
 | 分类决策 | 得到的导航收益 | 付出的代价与边界 |
@@ -122,7 +159,9 @@ GRASP 的主归属是责任分配方法，因为它要解决对象或模块协�
 
 ## 生产化分析
 
-分类失真常在交接中出现：团队把“CAP”当作拒绝需求讨论的口号，或把“Strangler Fig”当作无需验证切换的保证。也有人把“GRASP”当作绕过模块边界的万能命名法；每一种误用都会把本应留下的输入和输出抹掉。
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+分类失真常在交接中出现：团队把“CAP”当作拒绝需求讨论的口号，或把“绞杀者模式”当作无需验证切换的保证。也有人把“GRASP”当作绕过模块边界的万能命名法；每一种误用都会把本应留下的输入和输出抹掉。
 
 维护者应把目录当成可审查的索引：当主题的核心问题、尺度或产出发生变化时，重新检查主归属和交叉关系；当目标页面不存在时，只保留文字分类，不建立死链。这样既不会把三个主题说成与架构原则无关，也不会把关系网伪装成稳定的分类法。
 
@@ -145,9 +184,20 @@ GRASP 的主归属是责任分配方法，因为它要解决对象或模块协�
 <details className="evidence-card">
   <summary>证据：来源范围与原创分类图</summary>
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
   - **分布式系统理论：** [Gilbert 与 Lynch 的 CAP 论文](https://dl.acm.org/doi/10.1145/564585.564601)用于 CAP 的模型与历史语境。
   - **迁移方法：** [Strangler Fig](https://martinfowler.com/bliki/StranglerFigApplication.html)用于渐进替换与过渡架构的语境。
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
   - **责任分配：** [Applying UML and Patterns, 3rd Edition](https://www.pearson.com/en-us/subject-catalog/p/Larman-Applying-UML-and-Patterns-An-Introduction-to-Object-Oriented-Analysis-and-Design-and-Iterative-Development-3rd-Edition/P200000000422/9780131489066)用于 GRASP 的历史语境。
-  - **原创图：** [CAP、Strangler Fig 与 GRASP 的主归属及交叉关系图](/img/diagrams/pr-17-classification-boundaries.svg)是项目作者制作的 Draw.io 与 SVG 配对图。
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+  - **原创图：** [CAP、绞杀者模式与 GRASP 的主归属及交叉关系图](/img/diagrams/pr-17-classification-boundaries.svg)是项目作者制作的 Draw.io 与 SVG 配对图。
   - **边界：** 不复制来源的图、表、案例或篇章结构；本文的分类表、情景、中文论证和图形为原创，分类也不建立事实保证。
 </details>

@@ -262,16 +262,16 @@ test('renders parent path reciprocal adjacency and terminal case links', () => {
 
 test('distinguishes fitness tests metrics and monitors from SLOs and release gates', () => {
   const body = extractMarkdownBody(requiredDocument('MTH-04').source);
-  for (const term of ['test', 'metric', 'monitor', 'SLO', 'release gate']) {
+  for (const term of ['测试', '指标', '监控', '服务等级目标', '发布门禁']) {
     assert.match(body, new RegExp(term, 'iu'), `MTH-04 must explain ${term}`);
   }
   assert.match(
     body,
-    /(?:不是|不等于|不能替代|并非).{0,36}SLO|SLO.{0,36}(?:不是|不等于|不能替代|并非)/isu,
+    /(?:不是|不等于|不能替代|并非).{0,36}服务等级目标|服务等级目标.{0,36}(?:不是|不等于|不能替代|并非)/isu,
   );
   assert.match(
     body,
-    /(?:不是|不等于|不能替代|并非).{0,36}release gate|release gate.{0,36}(?:不是|不等于|不能替代|并非)/isu,
+    /(?:不是|不等于|不能替代|并非).{0,36}发布门禁|发布门禁.{0,36}(?:不是|不等于|不能替代|并非)/isu,
   );
 });
 
@@ -317,17 +317,17 @@ test('compares five risk methods by execution mode and evidence level', () => {
   for (const method of ['风险风暴', '事前验尸']) {
     assert.match(rowByMethod.get(method)?.join(' ') ?? '', /想象故障/u, method);
   }
-  for (const method of ['威胁建模', 'ATAM']) {
+  for (const method of ['威胁建模', '架构权衡分析方法']) {
     assert.match(rowByMethod.get(method)?.join(' ') ?? '', /模型分析/u, method);
   }
   assert.match(
-    rowByMethod.get('GameDay')?.join(' ') ?? '',
+    rowByMethod.get('演练日')?.join(' ') ?? '',
     /实际演练观测/u,
-    'GameDay',
+    '演练日',
   );
   assert.match(
     body,
-    /GameDay.{0,100}(?:观测|演练证据).{0,80}(?:不等于|不能证明|不是).{0,40}生产保证/isu,
+    /演练日.{0,100}(?:观测|演练证据).{0,80}(?:不等于|不能证明|不是).{0,40}生产保证/isu,
     'GameDay observations must not be described as a production guarantee',
   );
 });
@@ -359,7 +359,7 @@ test('states the OWASP process boundary and visibly governs SEI ATAM in MTH-05',
 test('marks exactly three Atlas synthesis points and preserves feedback ordering', () => {
   const body = extractMarkdownBody(requiredDocument('MTH-06').source);
   assert.equal(
-    body.match(/Atlas synthesis/giu)?.length ?? 0,
+    body.match(/Atlas 归纳/giu)?.length ?? 0,
     3,
     'MTH-06 must label exactly three Atlas synthesis points',
   );
@@ -377,7 +377,7 @@ test('bounds C4 and arc42 as representation tools with governed citations in MTH
   );
   assert.match(
     body,
-    /(?:C4|arc42).{0,220}(?:不替代|不能替代|不是).{0,180}QAW.{0,80}ATAM.{0,80}ADR.{0,80}(?:fitness|适应度函数)/isu,
+    /(?:C4|arc42).{0,220}(?:不替代|不能替代|不是).{0,180}质量属性工作坊.{0,80}架构权衡分析方法.{0,80}架构决策记录.{0,80}架构适应度函数/isu,
     'MTH-06 must not let C4 or arc42 replace architecture methods',
   );
 

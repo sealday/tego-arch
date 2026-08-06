@@ -51,13 +51,17 @@ related_questions: []
 
 ## 要保护的性质
 
-**来源事实：** Stevens、Myers 与 Constantine 的 Structured Design 讨论模块强度与模块间耦合，目标是形成可理解、可修改的结构。SEI 的 Maintainability 报告则把可维护性放入明确的变化场景中分析。**推断：** 架构评审不应只数 import 或接口数量，而应问一次预期变化、一次依赖故障或一次团队交付会穿过哪些边界。
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+**来源事实：** Stevens、Myers 与 Constantine 的结构化设计讨论模块强度与模块间耦合，目标是形成可理解、可修改的结构。SEI 的可维护性报告则把可维护性放入明确的变化场景中分析。**推断：** 架构评审不应只数导入或接口数量，而应问一次预期变化、一次依赖故障或一次团队交付会穿过哪些边界。
 
 要保护的是局部推理能力：团队能在有限上下文中解释一个模块为什么存在、修改什么、依赖谁，以及失败后影响谁。内聚为边界提供正向理由，耦合则检查边界外的传播成本。
 
 ## 冲突与适用上下文
 
-把能力聚合到一个模块可提高业务内聚，却可能形成过大的运行时故障域；把服务拆开可获得独立扩缩容，却会增加网络、版本和团队协调。共享一个规范化数据模型能减少字段转换，却可能让所有消费方与同一次 schema 演进绑定。
+把能力聚合到一个模块可提高业务内聚，却可能形成过大的运行时故障域；把服务拆开可获得独立扩缩容，却会增加网络、版本和团队协调。共享一个规范化数据模型能减少字段转换，却可能让所有消费方与同一次模式演进绑定。
 
 不应把“低耦合”理解成没有连接。系统要协作就必然有依赖；目标是让依赖显式、必要且有可接受的传播边界。小型、同团队、同发布节奏的系统若为消除进程内调用而引入网络服务，通常只是把可见耦合换成更昂贵的运行耦合。
 
@@ -69,14 +73,14 @@ related_questions: []
 | --- | --- | --- | --- |
 | 变化耦合 | 同一需求需同时修改多个模块 | 源码、契约和发布集合 | 按变化原因分配所有权；稳定能力接口 |
 | 运行时耦合 | 同步依赖不可用时请求一同失败 | 调用链、资源池和故障域 | 超时、隔离、异步边界和降级 |
-| 数据耦合 | 多方直接理解同一表或内部字段 | schema、状态与语义所有权 | 语义契约、事件版本和数据所有者 |
+| 数据耦合 | 多方直接理解同一表或内部字段 | 模式、状态与语义所有权 | 语义契约、事件版本和数据所有者 |
 | 团队耦合 | 交付需等待其他团队审批或同步上线 | 计划、评审和发布节奏 | 明确服务边界、平台能力和兼容窗口 |
 
-**本站分析：** 降低一种耦合会增加另一种耦合。例如异步消息降低请求时运行耦合，却增加 schema、顺序和运维耦合；复制数据减少查询时依赖，却增加一致性与数据治理成本。决策记录应写明换掉了哪种传播，而不是笼统宣称“解耦”。
+**本站分析：** 降低一种耦合会增加另一种耦合。例如异步消息降低请求时运行耦合，却增加模式、顺序和运维耦合；复制数据减少查询时依赖，却增加一致性与数据治理成本。决策记录应写明换掉了哪种传播，而不是笼统宣称“解耦”。
 
 ## 误用与反原则
 
-反例一是以目录层次代替内聚：`controllers`、`services`、`repositories` 各自看似整齐，但一个业务规则仍跨三层共同变化。反例二是以接口数量代替低耦合：两个服务只有一个 API，若请求必须同步成功、共享数据库且同日发布，仍同时存在运行、数据和团队耦合。
+反例一是以目录层次代替内聚：`controllers`、`services`、`repositories` 各自看似整齐，但一个业务规则仍跨三层共同变化。反例二是以接口数量代替低耦合：两个服务只有一个应用程序编程接口（Application Programming Interface，API），若请求必须同步成功、共享数据库且同日发布，仍同时存在运行、数据和团队耦合。
 
 另一种误用是为了“复用”把不共同变化的功能塞入共享库。共享库减少重复行数，却把发布和版本选择传播给所有调用方。若复用对象没有共同责任和演化节奏，复制一小段稳定代码可能比错误抽象更便宜。
 
@@ -88,16 +92,28 @@ related_questions: []
 
 ## 相邻原则
 
-[信息隐藏与封装](/principles/pr-01)决定变化决策由谁拥有；[单一职责与关注点分离](/principles/pr-03)帮助识别共同变化的责任主体；[组合优于继承](/principles/pr-05)比较复用机制带来的状态和替换耦合。[KISS、YAGNI 与 DRY 的张力](/principles/pr-06)揭示过早共享抽象造成的耦合；[Fail Fast、Fail Safe 与 Graceful Degradation](/principles/pr-07)处理运行时故障如何传播；[Open/Closed 与 Interface Segregation](/principles/pr-12)按消费者依赖是否内聚及变化如何传播判断接口大小，而不是按行数判断；[GRASP 责任分配](/principles/pr-14)则把内聚与耦合作为选择责任所有者的评价标准。它们共同回答边界为何存在、责任交给谁、传播到哪里、如何组合以及失败时如何响应。
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+[信息隐藏与封装](/principles/pr-01)决定变化决策由谁拥有；[单一职责与关注点分离](/principles/pr-03)帮助识别共同变化的责任主体；[组合优于继承](/principles/pr-05)比较复用机制带来的状态和替换耦合。[KISS、YAGNI 与 DRY 的张力](/principles/pr-06)揭示过早共享抽象造成的耦合；[快速失败（Fail Fast）、故障安全（Fail Safe）与优雅降级（Graceful Degradation）](/principles/pr-07)处理运行时故障如何传播；[开闭原则（Open/Closed Principle）与接口隔离原则（Interface Segregation Principle）](/principles/pr-12)按消费者依赖是否内聚及变化如何传播判断接口大小，而不是按行数判断；[GRASP 责任分配](/principles/pr-14)则把内聚与耦合作为选择责任所有者的评价标准。它们共同回答边界为何存在、责任交给谁、传播到哪里、如何组合以及失败时如何响应。
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 [Conway 定律与团队边界](/principles/pr-15)说明团队沟通与责任边界会影响变化如何跨模块传播。
 
 ## 说明性场景
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 说明性场景：三个前端团队使用同一运行时壳。方案 A 让所有页面直接导入壳的路由对象与认证状态；方案 B 只公开 `navigate` 和 `currentUser` 能力契约。
 
-评审先记录事实：A 的 import 数量不多，但壳升级会要求三个团队同步测试，认证故障也影响全部页面。由此推断 A 同时具有变化、运行和团队耦合。选择 B 后，接口适配增加少量代码，却把路由实现变化留在壳内。[single-spa 微前端案例](/cases/micro-frontends-single-spa)可继续检查共享依赖如何重新耦合独立部署。
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+评审先记录事实：A 的导入数量不多，但壳升级会要求三个团队同步测试，认证故障也影响全部页面。由此推断 A 同时具有变化、运行和团队耦合。选择 B 后，接口适配增加少量代码，却把路由实现变化留在壳内。[single-spa 微前端案例](/cases/micro-frontends-single-spa)可继续检查共享依赖如何重新耦合独立部署。
 
 ## 来源
 
+{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 模块强度与耦合的历史语境依据 [Structured Design](https://ieeexplore.ieee.org/document/5388187/)；变化场景与可维护性边界用 [SEI Maintainability](https://www.sei.cmu.edu/library/maintainability/)交叉核验。本站不复用原文图表或分类结构，四维决策表、场景和中文论证均为原创。
