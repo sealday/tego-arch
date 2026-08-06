@@ -1,498 +1,12 @@
 import assert from 'node:assert/strict';
-import {createProcessor} from '@mdx-js/mdx';
 import {readdir, readFile} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import test from 'node:test';
 
+import {parseMdxVisibleCopy, renderVisibleBlock} from '../scripts/visible-copy.mjs';
+
 const repositoryRoot = fileURLToPath(new URL('../', import.meta.url));
-
-const blankCharacters = (value) => value.replace(/[^\n]/gu, ' ');
-
-const normalizeMdxSource = (source, relativePath) => {
-  const lines = source.split('\n');
-
-  if (lines[0]?.trim() === '---') {
-    const end = lines.findIndex((line, index) => index > 0 && line.trim() === '---');
-    assert.notEqual(
-      end,
-      -1,
-      `${relativePath}: MDX front matter must have a closing delimiter`,
-    );
-    for (let index = 0; index <= end; index += 1) {
-      lines[index] = blankCharacters(lines[index]);
-    }
-  }
-
-  let fence = null;
-  for (let index = 0; index < lines.length; index += 1) {
-    const opening = lines[index].match(/^\s*(`{3,}|~{3,})/u);
-    if (!fence && opening) {
-      fence = {character: opening[1][0], length: opening[1].length};
-      lines[index] = blankCharacters(lines[index]);
-      continue;
-    }
-    if (fence) {
-      const closing = new RegExp(
-        `^\\s*${fence.character}{${fence.length},}\\s*$`,
-        'u',
-      );
-      const closesFence = closing.test(lines[index]);
-      lines[index] = blankCharacters(lines[index]);
-      if (closesFence) fence = null;
-    }
-  }
-
-  assert.equal(
-    fence,
-    null,
-    `${relativePath}: MDX fenced code block must have a closing delimiter`,
-  );
-
-  const withoutFences = lines.join('\n');
-  return maskHtmlComments(withoutFences, relativePath);
-};
-
-const parseMdxAst = (source, relativePath) => {
-  let ast;
-  const captureAst = () => (tree) => {
-    ast = tree;
-  };
-
-  try {
-    createProcessor({remarkPlugins: [captureAst]}).processSync({
-      value: source,
-      path: relativePath,
-    });
-  } catch (error) {
-    throw new Error(`${relativePath}: MDX parser failed: ${error.message}`, {cause: error});
-  }
-
-  assert.ok(ast, `${relativePath}: MDX parser did not produce an AST`);
-  return ast;
-};
-
-const protectedCommentNodeTypes = new Set([
-  'code',
-  'inlineCode',
-  'mdxFlowExpression',
-  'mdxTextExpression',
-  'mdxjsEsm',
-]);
-const commentOpeningProbe = 'CMNT';
-const comparisonCommentOpeningProbe = 'OPNR';
-const imageNodeTypes = new Set(['image', 'imageReference']);
-
-const nodePositionKey = (node) => (
-  `${node.type}:${node.position?.start.offset}:${node.position?.end.offset}`
-);
-
-const nodesByTypeAndPosition = (ast, type) => {
-  const nodes = new Map();
-  const visit = (node) => {
-    if (node.type === type) {
-      nodes.set(nodePositionKey(node), node);
-    }
-    for (const child of node.children ?? []) visit(child);
-  };
-  visit(ast);
-  return nodes;
-};
-
-const countToken = (value, token) => value.split(token).length - 1;
-
-const withCandidateOpenings = (baselineProbe, offsets) => {
-  const candidate = baselineProbe.split('');
-  for (const offset of offsets) {
-    for (let index = 0; index < comparisonCommentOpeningProbe.length; index += 1) {
-      candidate[offset + index] = comparisonCommentOpeningProbe[index];
-    }
-  }
-  return candidate.join('');
-};
-
-const classifyImageOpenings = (
-  baselineProbe,
-  baselineAst,
-  openingOffsets,
-  relativePath,
-) => {
-  const classifications = new Map();
-  const baselineImages = new Map([
-    ...nodesByTypeAndPosition(baselineAst, 'image'),
-    ...nodesByTypeAndPosition(baselineAst, 'imageReference'),
-  ]);
-  const baselineDefinitions = [...nodesByTypeAndPosition(baselineAst, 'definition').values()];
-
-  for (const opening of openingOffsets) {
-    const imageEntry = [...baselineImages.entries()].find(([, image]) => (
-      opening >= image.position.start.offset && opening < image.position.end.offset
-    ));
-    if (!imageEntry) continue;
-
-    const [imageKey, baselineImage] = imageEntry;
-    const findCandidateImage = (candidateOffsets) => {
-      const candidateProbe = withCandidateOpenings(baselineProbe, candidateOffsets);
-      assert.equal(candidateProbe.length, baselineProbe.length);
-      return nodesByTypeAndPosition(
-        parseMdxAst(candidateProbe, relativePath),
-        baselineImage.type,
-      ).get(imageKey);
-    };
-
-    let candidateImage = findCandidateImage([opening]);
-    if (!candidateImage && baselineImage.type === 'imageReference') {
-      const matchingDefinitions = baselineDefinitions.filter(
-        (definition) => definition.identifier === baselineImage.identifier,
-      );
-      assert.ok(
-        matchingDefinitions.length > 0,
-        `${relativePath}: MDX image reference has no matching definition at ${imageKey}`,
-      );
-      const synchronizedCandidates = [];
-      for (const definition of matchingDefinitions) {
-        const definitionOpenings = openingOffsets.filter((definitionOpening) => (
-          definitionOpening >= definition.position.start.offset
-          && definitionOpening < definition.position.end.offset
-        ));
-        for (const definitionOpening of definitionOpenings) {
-          const synchronizedImage = findCandidateImage([opening, definitionOpening]);
-          if (synchronizedImage) synchronizedCandidates.push(synchronizedImage);
-        }
-      }
-      assert.equal(
-        synchronizedCandidates.length,
-        1,
-        `${relativePath}: MDX image-reference probe cannot pair offset ${opening}`,
-      );
-      [candidateImage] = synchronizedCandidates;
-    }
-    assert.ok(
-      candidateImage,
-      `${relativePath}: MDX comment probe must preserve ${imageKey}`,
-    );
-
-    const baselineAlt = baselineImage.alt ?? '';
-    const candidateAlt = candidateImage.alt ?? '';
-    const visibleByBaseline = countToken(baselineAlt, commentOpeningProbe)
-      - countToken(candidateAlt, commentOpeningProbe);
-    const visibleByCandidate = countToken(candidateAlt, comparisonCommentOpeningProbe)
-      - countToken(baselineAlt, comparisonCommentOpeningProbe);
-    assert.equal(
-      visibleByBaseline,
-      visibleByCandidate,
-      `${relativePath}: MDX comment probes disagree at offset ${opening}`,
-    );
-    assert.ok(
-      visibleByBaseline === 0 || visibleByBaseline === 1,
-      `${relativePath}: MDX comment probe has ambiguous visibility at offset ${opening}`,
-    );
-    classifications.set(opening, visibleByBaseline === 1);
-  }
-
-  return classifications;
-};
-
-const collectProtectedCommentRanges = (ast, openingOffsets, imageOpeningVisibility) => {
-  const ranges = [];
-  const addRange = (start, end) => {
-    if (Number.isInteger(start) && Number.isInteger(end) && start < end) {
-      ranges.push({start, end});
-    }
-  };
-
-  const addMetadataGaps = (start, end, visibleRanges) => {
-    let cursor = start;
-    for (const range of visibleRanges
-      .filter(({start: rangeStart, end: rangeEnd}) => (
-        Number.isInteger(rangeStart)
-        && Number.isInteger(rangeEnd)
-        && rangeStart < rangeEnd
-      ))
-      .sort((left, right) => left.start - right.start)) {
-      addRange(cursor, Math.max(start, range.start));
-      cursor = Math.max(cursor, Math.min(end, range.end));
-    }
-    addRange(cursor, end);
-  };
-
-  const visit = (node) => {
-    const start = node.position?.start.offset;
-    const end = node.position?.end.offset;
-    if (protectedCommentNodeTypes.has(node.type)) {
-      addRange(start, end);
-      return;
-    }
-
-    if (node.type === 'definition') {
-      addRange(start, end);
-      return;
-    }
-
-    if (node.type === 'link') {
-      addMetadataGaps(start, end, (node.children ?? []).map((child) => ({
-        start: child.position?.start.offset,
-        end: child.position?.end.offset,
-      })));
-    }
-
-    if (imageNodeTypes.has(node.type)) {
-      const imageOpenings = openingOffsets.filter(
-        (opening) => opening >= start && opening < end,
-      );
-      for (const opening of imageOpenings) {
-        assert.ok(
-          imageOpeningVisibility.has(opening),
-          `MDX comment probe must classify image opener at offset ${opening}`,
-        );
-        if (!imageOpeningVisibility.get(opening)) {
-          addRange(opening, opening + commentOpeningProbe.length);
-        }
-      }
-    }
-
-    if (node.type === 'mdxJsxFlowElement' || node.type === 'mdxJsxTextElement') {
-      const children = node.children ?? [];
-      if (children.length === 0) {
-        addRange(start, end);
-      } else {
-        addRange(start, children[0].position?.start.offset);
-        addRange(children.at(-1).position?.end.offset, end);
-      }
-      for (const attribute of node.attributes ?? []) {
-        addRange(attribute.position?.start.offset, attribute.position?.end.offset);
-      }
-    }
-
-    for (const child of node.children ?? []) visit(child);
-  };
-
-  visit(ast);
-  return ranges;
-};
-
-const collectVisibleOpeningOffsets = (ast, openingOffsets, imageOpeningVisibility) => {
-  const visible = new Set();
-  const addOpeningsInNode = (node) => {
-    const start = node.position?.start.offset;
-    const end = node.position?.end.offset;
-    for (const opening of openingOffsets) {
-      if (opening >= start && opening < end) visible.add(opening);
-    }
-  };
-
-  const visit = (node) => {
-    if (node.type === 'text' || node.type === 'inlineCode') {
-      addOpeningsInNode(node);
-      return;
-    }
-    if (imageNodeTypes.has(node.type)) {
-      for (const [opening, isVisible] of imageOpeningVisibility) {
-        if (isVisible) {
-          const start = node.position?.start.offset;
-          const end = node.position?.end.offset;
-          if (opening >= start && opening < end) visible.add(opening);
-        }
-      }
-      return;
-    }
-    if (protectedCommentNodeTypes.has(node.type) || node.type === 'definition') return;
-    for (const child of node.children ?? []) visit(child);
-  };
-
-  visit(ast);
-  return visible;
-};
-
-const hasOddBackslashRunBefore = (source, offset) => {
-  let backslashes = 0;
-  for (let index = offset - 1; index >= 0 && source[index] === '\\'; index -= 1) {
-    backslashes += 1;
-  }
-  return backslashes % 2 === 1;
-};
-
-const maskHtmlComments = (source, relativePath) => {
-  const openingOffsets = [];
-  for (let opening = source.indexOf('<!--'); opening !== -1;
-    opening = source.indexOf('<!--', opening + 4)) {
-    openingOffsets.push(opening);
-  }
-  const baselineProbe = source
-    .replaceAll('<!--', commentOpeningProbe)
-    .replaceAll('-->', 'END');
-  assert.equal(baselineProbe.length, source.length);
-  const baselineAst = parseMdxAst(baselineProbe, relativePath);
-  const imageOpeningVisibility = classifyImageOpenings(
-    baselineProbe,
-    baselineAst,
-    openingOffsets,
-    relativePath,
-  );
-  const protectedRanges = collectProtectedCommentRanges(
-    baselineAst,
-    openingOffsets,
-    imageOpeningVisibility,
-  );
-  const visibleOpeningOffsets = collectVisibleOpeningOffsets(
-    baselineAst,
-    openingOffsets,
-    imageOpeningVisibility,
-  );
-  const visibleEscapedOpenings = new Set();
-  const masked = source.split('');
-
-  for (let cursor = 0; cursor < source.length;) {
-    const opening = source.indexOf('<!--', cursor);
-    if (opening === -1) break;
-    if (hasOddBackslashRunBefore(source, opening)) {
-      if (visibleOpeningOffsets.has(opening)) visibleEscapedOpenings.add(opening);
-      cursor = opening + 4;
-      continue;
-    }
-    const isProtected = protectedRanges.some(
-      ({start, end}) => opening >= start && opening < end,
-    );
-    if (isProtected) {
-      cursor = opening + 4;
-      continue;
-    }
-
-    const closing = source.indexOf('-->', opening + 4);
-    if (closing === -1) {
-      assert.fail(`${relativePath}: MDX HTML comment must have a closing delimiter`);
-    }
-    for (let index = opening; index < closing + 3; index += 1) {
-      if (masked[index] !== '\n') masked[index] = ' ';
-    }
-    cursor = closing + 3;
-  }
-
-  return {source: masked.join(''), visibleEscapedOpenings};
-};
-
-const restoreEscapedCommentOpeners = (
-  source,
-  line,
-  excerpt,
-  visibleEscapedOpenings,
-) => {
-  const sourceLines = source.split('\n');
-  const originalLine = sourceLines[line - 1] ?? '';
-  const lineOffset = sourceLines
-    .slice(0, line - 1)
-    .reduce((offset, sourceLine) => offset + sourceLine.length + 1, 0);
-  const escapedRuns = [];
-  for (let opening = originalLine.indexOf('<!--'); opening !== -1;
-    opening = originalLine.indexOf('<!--', opening + 4)) {
-    if (!visibleEscapedOpenings.has(lineOffset + opening)) continue;
-    let runStart = opening;
-    while (runStart > 0 && originalLine[runStart - 1] === '\\') runStart -= 1;
-    escapedRuns.push(originalLine.slice(runStart, opening));
-  }
-
-  let restored = excerpt;
-  let cursor = 0;
-  for (const escapedRun of escapedRuns) {
-    const opening = restored.indexOf('<!--', cursor);
-    if (opening === -1) break;
-    let runStart = opening;
-    while (runStart > cursor && restored[runStart - 1] === '\\') runStart -= 1;
-    restored = `${restored.slice(0, runStart)}${escapedRun}${restored.slice(opening)}`;
-    cursor = runStart + escapedRun.length + 4;
-  }
-  return restored;
-};
-
-const excludedAstTypes = new Set([
-  'code',
-  'definition',
-  'html',
-  'mdxFlowExpression',
-  'mdxTextExpression',
-  'mdxjsEsm',
-]);
-
-const renderVisibleBlock = (node) => {
-  const block = {text: '', lines: [], display: '', displayLines: []};
-
-  const append = (field, lineField, value, startLine) => {
-    let line = startLine;
-    for (let index = 0; index < value.length; index += 1) {
-      const character = value[index];
-      block[field] += character;
-      block[lineField].push(line);
-      if (character === '\n') line += 1;
-    }
-  };
-
-  const appendVisible = (value, visibleNode) => {
-    const line = visibleNode.position?.start.line ?? node.position?.start.line ?? 1;
-    append('text', 'lines', value, line);
-    append('display', 'displayLines', value, line);
-  };
-
-  const appendDisplay = (value, line) => {
-    append('display', 'displayLines', value, line);
-  };
-
-  const visit = (current) => {
-    if (excludedAstTypes.has(current.type)) return;
-
-    if (current.type === 'text' || current.type === 'inlineCode') {
-      appendVisible(current.value, current);
-      return;
-    }
-
-    if (current.type === 'break') {
-      appendVisible('\n', current);
-      return;
-    }
-
-    if (current.type === 'image' || current.type === 'imageReference') {
-      const alt = current.alt ?? '';
-      const startLine = current.position?.start.line ?? 1;
-      append('text', 'lines', alt, startLine);
-      appendDisplay('![', startLine);
-      append('display', 'displayLines', alt, startLine);
-      appendDisplay(']', current.position?.end.line ?? startLine);
-      return;
-    }
-
-    if (current.type === 'link' || current.type === 'linkReference') {
-      appendDisplay('[', current.position?.start.line ?? 1);
-      for (const child of current.children ?? []) visit(child);
-      appendDisplay(']', current.position?.end.line ?? current.position?.start.line ?? 1);
-      return;
-    }
-
-    for (const child of current.children ?? []) visit(child);
-  };
-
-  visit(node);
-  block.excerptAt = (line) => {
-    let excerpt = '';
-    for (let index = 0; index < block.display.length; index += 1) {
-      if (block.displayLines[index] === line) excerpt += block.display[index];
-    }
-    return excerpt.trim();
-  };
-  return block;
-};
-
-const collectVisibleBlocks = (ast) => {
-  const blocks = [];
-  const visit = (node) => {
-    if (excludedAstTypes.has(node.type)) return;
-    if (node.type === 'heading' || node.type === 'paragraph' || node.type === 'tableCell') {
-      blocks.push({...renderVisibleBlock(node), node});
-      return;
-    }
-    for (const child of node.children ?? []) visit(child);
-  };
-  visit(ast);
-  return blocks;
-};
 
 const rules = [
   {
@@ -521,11 +35,10 @@ const issueFromLine = (relativePath, source, line, ruleId, excerpt) => ({
 
 const findEditorialIssues = (relativePath, source, ast) => {
   const issues = [];
-
   const inspectList = (list) => {
     for (const node of list.children ?? []) {
       if (node.type !== 'listItem') continue;
-      const text = renderVisibleBlock(node).text.trim();
+      const text = renderVisibleBlock(node, {includeInlineCode: true}).text.trim();
       if (/^补充[^\n]+$/u.test(text)) {
         issues.push(issueFromLine(
           relativePath,
@@ -541,7 +54,7 @@ const findEditorialIssues = (relativePath, source, ast) => {
     let insideEditorialSection = false;
     for (const node of container.children ?? []) {
       if (node.type === 'heading' && node.depth <= 2) {
-        const heading = renderVisibleBlock(node).text.trim();
+        const heading = renderVisibleBlock(node, {includeInlineCode: true}).text.trim();
         insideEditorialSection = node.depth === 2 && heading === '后续待补';
         if (insideEditorialSection) {
           issues.push(issueFromLine(
@@ -565,15 +78,15 @@ const findEditorialIssues = (relativePath, source, ast) => {
 };
 
 const findMdxIssues = (relativePath, source) => {
-  const {source: normalized, visibleEscapedOpenings} = normalizeMdxSource(
+  const {ast, blocks, normalized} = parseMdxVisibleCopy(
     source,
     relativePath,
+    {includeInlineCode: true, includeStructure: true},
   );
-  const ast = parseMdxAst(normalized, relativePath);
   const generatedRule = rules.find(({id}) => id === 'generated-page-meta');
   const issues = [];
 
-  for (const block of collectVisibleBlocks(ast)) {
+  for (const block of blocks) {
     const matches = block.text.matchAll(
       new RegExp(generatedRule.pattern.source, generatedRule.pattern.flags),
     );
@@ -584,12 +97,7 @@ const findMdxIssues = (relativePath, source) => {
         normalized,
         line,
         generatedRule.id,
-        restoreEscapedCommentOpeners(
-          normalized,
-          line,
-          block.excerptAt(line),
-          visibleEscapedOpenings,
-        ),
+        block.excerptAt(line),
       ));
     }
   }
