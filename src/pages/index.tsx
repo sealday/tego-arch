@@ -64,7 +64,7 @@ function Hero(): ReactNode {
     <header className={styles.hero}>
       <div className="container">
         <div className={styles.heroContent}>
-          <p className={styles.heroLabel}>Tego Arch 架构知识项目（Tego Arch） / 架构决策观察</p>
+          <p className={styles.heroLabel}>Tego Arch / 架构决策观察</p>
           <div className={styles.heroTitle}>
             <Heading as="h1">
               <span className={styles.heroTitlePhrase}>在复杂系统里</span>{' '}

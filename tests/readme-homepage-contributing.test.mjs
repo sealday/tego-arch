@@ -1,13 +1,57 @@
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
+import {fileURLToPath} from 'node:url';
 import test from 'node:test';
 import {inflateSync} from 'node:zlib';
+
+import {checkTerminology} from '../scripts/check-terminology.mjs';
 
 const read = async (path) =>
   readFile(new URL(`../${path}`, import.meta.url), 'utf8');
 
 const readBinary = async (path) =>
   readFile(new URL(`../${path}`, import.meta.url));
+
+const repositoryRoot = fileURLToPath(new URL('../', import.meta.url));
+
+const readmeGovernanceLines = [
+  '- 图示：原创位图、`Mermaid` 文本图，或同时提交 `Draw.io` 源文件与 `SVG` 发布文件的可编辑矢量图；',
+  '2. 优先使用标准、原作者、官方文档、论文、源码和一手工程材料；`Awesome`、路线图、面试站和博客索引只用于发现与学习，不承担事实证据。',
+  '- 项目自有代码、构建脚本、测试、配置和工具代码采用 `Apache License 2.0`，详见[代码许可证](LICENSE)。',
+  '- 项目自有中文文章与原创插图采用 `CC BY 4.0`，详见[内容许可证](LICENSE-CONTENT.md)。',
+];
+
+const prTerminologyLines = [
+  '- [ ] 已检索 `/terminology` 与 `data/terminology.json`，正文使用规范中文主称。',
+  '- [ ] 新术语已先登记；首次出现使用 `中文（English，ACRONYM）`。',
+  '- [ ] 产品专名、代码、引用和图中文字已按例外边界复核，没有裸英文说明文字。',
+];
+
+const assertExactLines = (source, lines) => {
+  for (const line of lines) {
+    assert.equal(
+      source.split('\n').filter((candidate) => candidate === line).length,
+      1,
+      `expected exactly one line: ${line}`,
+    );
+  }
+};
+
+const assertReadmeGovernance = (readme) => {
+  const top = readme.split('\n').slice(0, 8).join('\n');
+  assert.match(top, /^# Tego Arch\n\nTego Arch 是一个面向有经验的高级工程师的架构知识项目/u);
+  assert.match(
+    top,
+    /^\[在线阅读\]\(https:\/\/sealday\.github\.io\/tego-arch\/\) · \[学习路径\]\(https:\/\/sealday\.github\.io\/tego-arch\/paths\) · \[案例库\]\(https:\/\/sealday\.github\.io\/tego-arch\/cases\) · \[术语规范\]\(https:\/\/sealday\.github\.io\/tego-arch\/terminology\) · \[参与贡献\]\(#参与贡献\)$/mu,
+  );
+  assert.doesNotMatch(readme, /Tego Arch 架构知识项目（Tego Arch）/u);
+  assertExactLines(readme, readmeGovernanceLines);
+};
+
+const assertPrTerminologyChecklist = (template) => {
+  assert.match(template, /^## 术语与中文表达检查$/mu);
+  assertExactLines(template, prTerminologyLines);
+};
 
 const assertPng = (image, label) => {
   assert.ok(image.length > 50 * 1024, `${label} must exceed 50 KB`);
@@ -152,6 +196,7 @@ test('publishes separate code, content, and third-party license boundaries', asy
 test('README positions the project, shows the roadmap, and closes the contribution loop', async () => {
   const readme = await read('README.md');
 
+  assertReadmeGovernance(readme);
   assert.match(readme, /面向有经验的高级工程师/u);
   assert.match(readme, /从实现到架构决策/u);
   assert.match(
@@ -257,10 +302,43 @@ test('homepage presents architecture judgment and reader-facing usage modes', as
 test('PR template requires contributor-facing terminology checks', async () => {
   const template = await read('.github/pull_request_template.md');
 
-  assert.match(template, /^## 术语与中文表达检查$/mu);
-  assert.match(template, /正文使用规范中文主称/u);
-  assert.match(template, /新术语已先登记/u);
-  assert.match(template, /产品专名、代码、引用和图中文字/u);
+  assertPrTerminologyChecklist(template);
+  assert.match(template, /文档引用（`citation`）/u);
+  assert.match(template, /发现方式（`discovery`）或学习用途（`learning`）/u);
+  assert.match(template, /使用方式（`usage mode`）/u);
+  assert.doesNotMatch(template, /document citation|discovery\/learning|每个 citation|usage mode、/u);
+});
+
+test('README and PR terminology contracts reject deleted required copy', async () => {
+  const [readme, template] = await Promise.all([
+    read('README.md'),
+    read('.github/pull_request_template.md'),
+  ]);
+  const readmeMutations = [
+    '[术语规范](https://sealday.github.io/tego-arch/terminology) · ',
+    ...readmeGovernanceLines,
+  ];
+
+  for (const target of readmeMutations) {
+    assert.throws(() => assertReadmeGovernance(readme.replace(target, '')));
+  }
+  for (const target of prTerminologyLines) {
+    assert.throws(() => assertPrTerminologyChecklist(template.replace(target, '')));
+  }
+});
+
+test('terminology checker accepts README, homepage, and PR template together', async () => {
+  const result = await checkTerminology({
+    root: repositoryRoot,
+    paths: ['README.md', 'src/pages/index.tsx', '.github/pull_request_template.md'],
+  });
+
+  assert.deepEqual(result.issues, []);
+  assert.deepEqual(result.checkedFiles, [
+    '.github/pull_request_template.md',
+    'README.md',
+    'src/pages/index.tsx',
+  ]);
 });
 
 test('registers the three reusable future-direction names', async () => {
@@ -303,7 +381,7 @@ test('registers the three reusable future-direction names', async () => {
       canonical_zh: 'Tego 参考架构',
       english: 'Tego Reference Architecture',
       acronym: null,
-      kind: 'proper-noun',
+      kind: 'translated-term',
       first_use: 'Tego 参考架构（Tego Reference Architecture）',
       subsequent_use: ['Tego 参考架构'],
       allowed_aliases: [],

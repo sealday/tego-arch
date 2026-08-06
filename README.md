@@ -1,6 +1,6 @@
-# Tego Arch 架构知识项目（Tego Arch）
+# Tego Arch
 
-面向有经验的高级工程师，用证据、权衡与真实案例训练从实现到架构决策的能力。
+Tego Arch 是一个面向有经验的高级工程师的架构知识项目，用证据、权衡与真实案例训练从实现到架构决策的能力。
 
 [在线阅读](https://sealday.github.io/tego-arch/) · [学习路径](https://sealday.github.io/tego-arch/paths) · [案例库](https://sealday.github.io/tego-arch/cases) · [术语规范](https://sealday.github.io/tego-arch/terminology) · [参与贡献](#参与贡献)
 
@@ -71,7 +71,7 @@ npm run verify
 
 - 内容：概念、原则、质量属性、方法、建模、模式、风格、案例、反模式和设计题；
 - 证据：来源补充、版本固定、错误纠正、失效链接和许可证边界；
-- 图示：原创位图、文本图或可编辑矢量图；
+- 图示：原创位图、`Mermaid` 文本图，或同时提交 `Draw.io` 源文件与 `SVG` 发布文件的可编辑矢量图；
 - 工程：内容契约、生成器、验证、可访问性、性能和导航改进。
 
 小型事实纠错、错别字、失效链接和局部测试修复可以直接提交拉取请求。新主题、页面结构变化、许可证变化、来源模型变化或跨页面重构，请先创建议题，写明读者问题、范围、来源候选和停止条件。
@@ -79,7 +79,7 @@ npm run verify
 贡献时请遵守：
 
 1. 从 [`docs/content-backlog.md`](docs/content-backlog.md) 读取活跃任务；历史规格与计划不恢复为活任务。
-2. 优先使用标准、原作者、官方文档、论文、源码和一手工程材料；路线图和聚合索引只用于发现与学习。
+2. 优先使用标准、原作者、官方文档、论文、源码和一手工程材料；`Awesome`、路线图、面试站和博客索引只用于发现与学习，不承担事实证据。
 3. 明确区分事实、基于证据的推断、厂商自述、本站分析和未知项。
 4. 使用原创中文表达，不逐段翻译，不复制第三方图表或目录文案。
 5. 遵守[术语规范](https://sealday.github.io/tego-arch/terminology)：受管术语首次出现使用 `中文（English，ACRONYM）`，后续使用规范中文或已登记写法。
@@ -91,6 +91,6 @@ npm run verify
 
 ## 许可证与第三方材料
 
-- 项目自有代码、构建脚本、测试、配置和工具代码：[代码许可证](LICENSE)。
-- 项目自有中文文章与原创插图：[内容许可证](LICENSE-CONTENT.md)。
+- 项目自有代码、构建脚本、测试、配置和工具代码采用 `Apache License 2.0`，详见[代码许可证](LICENSE)。
+- 项目自有中文文章与原创插图采用 `CC BY 4.0`，详见[内容许可证](LICENSE-CONTENT.md)。
 - 第三方来源、短引用、外部图片、商标和链接作品不被上述许可证重新授权，详见 [NOTICE.md](NOTICE.md) 与 [`data/source-ledger.json`](data/source-ledger.json)。
