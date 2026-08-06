@@ -1,4 +1,5 @@
 const XML_NAME = /^[A-Za-z_][A-Za-z0-9_.-]*(?::[A-Za-z_][A-Za-z0-9_.-]*)?/u;
+const XML_S = new Set(['\x20', '\x09', '\x0D', '\x0A']);
 const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
 const XML_NAMESPACE = 'http://www.w3.org/XML/1998/namespace';
 const XMLNS_NAMESPACE = 'http://www.w3.org/2000/xmlns/';
@@ -22,6 +23,16 @@ const NON_RENDERED_SVG_CONTAINERS = new Set([
   'symbol',
   'title',
 ]);
+
+export const isXmlWhitespace = (character) => XML_S.has(character);
+
+export const skipXmlWhitespace = (source, start = 0) => {
+  let cursor = start;
+  while (cursor < source.length && isXmlWhitespace(source[cursor])) cursor += 1;
+  return cursor;
+};
+
+export const allXmlWhitespace = (source) => skipXmlWhitespace(source) === source.length;
 
 export const buildXmlLineOffsets = (source) => {
   const offsets = [0];
@@ -131,9 +142,9 @@ const readMarkupEnd = (source, start, file, line) => {
 const parseStartTag = (markup, file, line) => {
   let contents = markup.slice(1, -1);
   let selfClosing = false;
-  if (/\/\s*$/u.test(contents)) {
+  if (contents.endsWith('/')) {
     selfClosing = true;
-    contents = contents.replace(/\/\s*$/u, '');
+    contents = contents.slice(0, -1);
   }
   const name = contents.match(XML_NAME)?.[0] ?? '';
   if (!name) fail(file, line, 'invalid XML element name');
@@ -141,9 +152,9 @@ const parseStartTag = (markup, file, line) => {
   let cursor = name.length;
   const attributes = new Map();
   while (cursor < contents.length) {
-    const whitespace = contents.slice(cursor).match(/^\s+/u)?.[0] ?? '';
-    if (!whitespace) fail(file, line, `expected whitespace after ${name}`);
-    cursor += whitespace.length;
+    const afterWhitespace = skipXmlWhitespace(contents, cursor);
+    if (afterWhitespace === cursor) fail(file, line, `expected whitespace after ${name}`);
+    cursor = afterWhitespace;
     if (cursor >= contents.length) break;
     const attributeName = contents.slice(cursor).match(XML_NAME)?.[0] ?? '';
     if (!attributeName) fail(file, line, `invalid attribute on ${name}`);
@@ -152,12 +163,12 @@ const parseStartTag = (markup, file, line) => {
       fail(file, line, `duplicate attribute "${attributeName}"`);
     }
     cursor += attributeName.length;
-    cursor += contents.slice(cursor).match(/^\s*/u)?.[0].length ?? 0;
+    cursor = skipXmlWhitespace(contents, cursor);
     if (contents[cursor] !== '=') {
       fail(file, line, `attribute ${attributeName} must have a value`);
     }
     cursor += 1;
-    cursor += contents.slice(cursor).match(/^\s*/u)?.[0].length ?? 0;
+    cursor = skipXmlWhitespace(contents, cursor);
     const quote = contents[cursor];
     if (quote !== '"' && quote !== "'") {
       fail(file, line, `attribute ${attributeName} must be quoted`);
@@ -173,8 +184,8 @@ const parseStartTag = (markup, file, line) => {
   return {attributes, name, nameParts, selfClosing};
 };
 
-const XML_DECLARATION = /^xml\s+version\s*=\s*(?:"1\.0"|'1\.0')(?:\s+encoding\s*=\s*(?:"[A-Za-z][A-Za-z0-9._-]*"|'[A-Za-z][A-Za-z0-9._-]*'))?(?:\s+standalone\s*=\s*(?:"(?:yes|no)"|'(?:yes|no)'))?\s*$/u;
-const XML_PI_TARGET = /^([A-Za-z_:][A-Za-z0-9_.:-]*)(?:\s|$)/u;
+const XML_DECLARATION = /^xml[ \t\r\n]+version[ \t\r\n]*=[ \t\r\n]*(?:"1\.0"|'1\.0')(?:[ \t\r\n]+encoding[ \t\r\n]*=[ \t\r\n]*(?:"[A-Za-z][A-Za-z0-9._-]*"|'[A-Za-z][A-Za-z0-9._-]*'))?(?:[ \t\r\n]+standalone[ \t\r\n]*=[ \t\r\n]*(?:"(?:yes|no)"|'(?:yes|no)'))?[ \t\r\n]*$/u;
+const XML_PI_TARGET = /^([A-Za-z_:][A-Za-z0-9_.:-]*)(?:[ \t\r\n]|$)/u;
 
 export const parseXml = (source, file = '<xml>') => {
   const xml = source.replace(/^\uFEFF/u, '');
@@ -239,10 +250,13 @@ export const parseXml = (source, file = '<xml>') => {
       const end = next === -1 ? xml.length : next;
       const raw = xml.slice(cursor, end);
       if (raw.includes(']]>')) fail(file, line, ']]> is not allowed in normal XML character data');
-      const text = decodeXml(raw, file, line);
       if (stack.length === 0) {
-        if (text.trim()) fail(file, line, 'text outside root element');
+        if (!allXmlWhitespace(raw)) {
+          const invalidOffset = skipXmlWhitespace(raw);
+          fail(file, lineAt(cursor + invalidOffset), 'non-XML whitespace outside root element');
+        }
       } else {
+        const text = decodeXml(raw, file, line);
         stack.at(-1).content.push({line, text, type: 'text'});
       }
       cursor = end;
@@ -251,8 +265,10 @@ export const parseXml = (source, file = '<xml>') => {
     if (xml.startsWith('</', cursor)) {
       const end = readMarkupEnd(xml, cursor + 2, file, line);
       const contents = xml.slice(cursor + 2, end);
-      const closingName = contents.match(/^([A-Za-z_][A-Za-z0-9_.:-]*)$/u)?.[1];
-      if (!closingName) fail(file, line, 'invalid XML closing tag');
+      const closingName = contents.match(XML_NAME)?.[0] ?? '';
+      if (!closingName || !allXmlWhitespace(contents.slice(closingName.length))) {
+        fail(file, line, 'invalid XML closing tag');
+      }
       qualifiedName(closingName, file, line);
       const open = stack.pop();
       if (!open || open.name !== closingName) fail(file, line, 'mismatched closing tag');

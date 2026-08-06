@@ -890,6 +890,35 @@ test('accepts strict XML declarations and ordinary PIs while rejecting reserved 
   }
 });
 
+test('accepts only XML S as syntax and document-boundary whitespace', async () => {
+  const root = '<svg xmlns="http://www.w3.org/2000/svg"/>';
+  for (const whitespace of ['\u00A0', '\u2028']) {
+    const invalid = [
+      {line: 2, source: `\n<svg xmlns="http://www.w3.org/2000/svg"${whitespace}role="img"/>`},
+      {line: 1, source: `<?xml${whitespace}version="1.0"?>${root}`},
+      {line: 1, source: `<?audit${whitespace}ok?>${root}`},
+      {line: 2, source: `\n${whitespace}${root}`},
+      {line: 2, source: `${root}\n${whitespace}`},
+    ];
+    for (const {line, source} of invalid) {
+      const result = await checkFixture(source, 'static/xml-s-invalid.svg');
+      assert.deepEqual(
+        result.issues.map(({file, line: issueLine, ruleId}) => ({file, line: issueLine, ruleId})),
+        [{file: 'static/xml-s-invalid.svg', line, ruleId: 'parse-error'}],
+        JSON.stringify(source),
+      );
+    }
+  }
+
+  const content = await checkFixture(
+    '<svg xmlns="http://www.w3.org/2000/svg"><text>unknown\u00A0worker</text></svg>',
+    'static/xml-s-content.svg',
+  );
+  assert.deepEqual(content.issues.map(({ruleId, matched}) => ({ruleId, matched})), [
+    {ruleId: 'unknown-english-term', matched: 'unknown worker'},
+  ]);
+});
+
 test('reports a forbidden raw XML character on its actual source line', async () => {
   const result = await checkFixture(
     '<svg xmlns="http://www.w3.org/2000/svg">\n<text>valid</text>\n<text>bad\0value</text></svg>',

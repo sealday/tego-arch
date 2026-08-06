@@ -391,3 +391,31 @@ test('shares strict XML declaration and PI handling with the checker', async () 
     await rm(temporaryDirectory, {recursive: true, force: true});
   }
 });
+
+test('rejects non-XML-S syntax and document-boundary whitespace', async () => {
+  const temporaryDirectory = await mkdtemp(path.join(tmpdir(), 'drawio-validator-xml-s-'));
+  const drawioPath = path.join(temporaryDirectory, 'whitespace.drawio');
+  const svgPath = path.join(temporaryDirectory, 'whitespace.svg');
+  const drawio = '<mxfile><diagram name="Page-1"><mxGraphModel><root/></mxGraphModel></diagram></mxfile>';
+  const root = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" role="img" aria-labelledby="title desc"><title id="title">Title</title><desc id="desc">Description</desc></svg>';
+  try {
+    await writeFile(drawioPath, drawio);
+    for (const whitespace of ['\u00A0', '\u2028']) {
+      const invalid = [
+        {line: 1, source: root.replace('" viewBox', `"${whitespace}viewBox`)},
+        {line: 1, source: `<?xml${whitespace}version="1.0"?>${root}`},
+        {line: 1, source: `<?audit${whitespace}ok?>${root}`},
+        {line: 2, source: `\n${whitespace}${root}`},
+        {line: 2, source: `${root}\n${whitespace}`},
+      ];
+      for (const {line, source} of invalid) {
+        await writeFile(svgPath, source);
+        const result = runValidatorPaths(drawioPath, svgPath);
+        assert.equal(result.status, 1, JSON.stringify(source));
+        assert.match(result.stderr, new RegExp(`whitespace\\.svg:${line}:`, 'u'));
+      }
+    }
+  } finally {
+    await rm(temporaryDirectory, {recursive: true, force: true});
+  }
+});
