@@ -1,6 +1,7 @@
 import type {ReactNode} from 'react';
 import Link from '@docusaurus/Link';
 import useBaseUrl from '@docusaurus/useBaseUrl';
+import {ThemedComponent} from '@docusaurus/theme-common';
 import Layout from '@theme/Layout';
 import Heading from '@theme/Heading';
 
@@ -118,70 +119,50 @@ function SectionIntro({id, label, title, description}: SectionIntroProps): React
   );
 }
 
-function RoadmapStatusContent(): ReactNode {
+type ThemedRoadmapImageProps = Readonly<{
+  lightSrc: string;
+  darkSrc: string;
+  alt: string;
+}>;
+
+function ThemedRoadmapImage({lightSrc, darkSrc, alt}: ThemedRoadmapImageProps): ReactNode {
+  const lightImageSrc = useBaseUrl(lightSrc);
+  const darkImageSrc = useBaseUrl(darkSrc);
+
   return (
-    <>
-      <strong>这是一张历史快照</strong>
-      <p>图中颜色只表示 2026-08-05 快照当日状态。</p>
-      <ul>
-        <li>绿色表示快照当日已完成</li>
-        <li>橙色表示快照当日当前阶段</li>
-        <li>蓝色表示快照当日待执行</li>
-      </ul>
-      <p>每个阶段仍需经过验证、评审、发布与线上检查。</p>
-      <Link href="https://github.com/sealday/tego-arch/blob/main/docs/content-backlog.md">
-        查看项目进度 <span aria-hidden="true">↗</span>
-      </Link>
-    </>
+    <ThemedComponent>
+      {({theme, className}) => (
+        <img
+          className={`${styles.roadmapImage} ${className}`}
+          src={theme === 'dark' ? darkImageSrc : lightImageSrc}
+          width={1672}
+          height={941}
+          loading="lazy"
+          decoding="async"
+          alt={alt}
+        />
+      )}
+    </ThemedComponent>
   );
 }
 
 function RoadmapSection(): ReactNode {
-  const roadmapSrc = useBaseUrl('/img/illustrations/tego-arch-initial-release-roadmap.png');
-
   return (
     <section className={`${styles.pageSection} ${styles.roadmapSection}`} aria-labelledby="roadmap-title">
       <div className="container">
         <SectionIntro
           id="roadmap-title"
-          label="01 / 初版路线"
-          title="一张持续展开的架构坐标"
-          description="初版沿一条可验证的研究路线展开，连接基础、建模、治理与学习闭环"
+          label="01 / 判断路径"
+          title="建立架构判断的主线"
+          description="从基础与质量出发，经过建模、模式与治理，在案例和复盘中形成判断"
         />
-        <figure className={styles.roadmapFigure}>
-          <div className={styles.roadmapMedia}>
-            <img
-              className={styles.roadmapImage}
-              src={roadmapSrc}
-              width={1672}
-              height={941}
-              loading="lazy"
-              decoding="async"
-              alt="Tego Arch 初版发布路线图：从基线与知识主干走向完整初版发布"
-            />
-          </div>
-          <div className={styles.roadmapDesktopInfo}>
-            <button
-              type="button"
-              className={styles.roadmapInfoControl}
-              aria-describedby="roadmap-status-note">
-              状态与图例说明
-            </button>
-            <div id="roadmap-status-note" role="note" className={styles.roadmapInfoPanel}>
-              <RoadmapStatusContent />
-            </div>
-          </div>
-          <details className={styles.roadmapMobileDetails}>
-            <summary>关于这张路线图</summary>
-            <div><RoadmapStatusContent /></div>
-          </details>
-          <figcaption className={styles.roadmapMeta}>
-            <span>初版路线图 · 2026-08-05 快照</span>
-            <a href={roadmapSrc} target="_blank" rel="noreferrer" className={styles.roadmapLargeLink}>
-              查看大图 <span aria-hidden="true">↗</span>
-            </a>
-          </figcaption>
-        </figure>
+        <div className={styles.roadmapMedia}>
+          <ThemedRoadmapImage
+            lightSrc="/img/illustrations/tego-arch-judgment-path-light.png"
+            darkSrc="/img/illustrations/tego-arch-judgment-path-dark.png"
+            alt="架构判断从基础与质量出发，经过建模、模式与治理，在案例和复盘中逐步形成"
+          />
+        </div>
       </div>
     </section>
   );
@@ -250,26 +231,20 @@ function ResearchHighlights(): ReactNode {
 }
 
 function FutureDirectionsSection(): ReactNode {
-  const futureRoadmapSrc = useBaseUrl('/img/illustrations/tego-arch-future-directions.png');
-
   return (
     <section className={styles.pageSection} aria-labelledby="future-title">
       <div className="container">
         <SectionIntro
           id="future-title"
-          label="04 / 未来方向"
-          title="让完整体系进入不同使用场景"
-          description="三个方向并行演进，不代表固定顺序或发布日期"
+          label="04 / 使用方式"
+          title="从理解架构到做出取舍"
+          description="需要判断时快速查，系统学习时沿路径走，也从真实架构中理解取舍"
         />
         <div className={`${styles.roadmapMedia} ${styles.futureRoadmap}`}>
-          <img
-            className={styles.roadmapImage}
-            src={futureRoadmapSrc}
-            width={1672}
-            height={941}
-            loading="lazy"
-            decoding="async"
-            alt="Tego Arch 从完整架构知识体系并行发展出架构决策速查、精选学习路径和 Tego 参考架构三个未来方向"
+          <ThemedRoadmapImage
+            lightSrc="/img/illustrations/tego-arch-use-modes-light.png"
+            darkSrc="/img/illustrations/tego-arch-use-modes-dark.png"
+            alt="一套架构知识体系可以用于快速校准决策、组织学习路径和理解 Tego 的真实架构取舍"
           />
         </div>
         <ul className={styles.futureList}>

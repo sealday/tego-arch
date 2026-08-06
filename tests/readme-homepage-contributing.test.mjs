@@ -128,12 +128,26 @@ test('homepage presents architecture judgment and the release roadmap', async ()
   assert.match(homepage, /在复杂系统里[\s\S]*做清醒的选择/u);
   assert.match(homepage, /开始建立判断坐标/u);
   assert.match(homepage, /了解研究方法/u);
-  assert.match(homepage, /tego-arch-initial-release-roadmap\.png/u);
-  assert.match(homepage, /一张持续展开的架构坐标/u);
-  assert.match(homepage, /tego-arch-future-directions\.png/u);
-  assert.match(homepage, /label="04 \/ 未来方向"/u);
-  assert.match(homepage, /title="让完整体系进入不同使用场景"/u);
-  assert.match(homepage, /三个方向并行演进，不代表固定顺序或发布日期/u);
+  for (const path of [
+    'tego-arch-judgment-path-light.png',
+    'tego-arch-judgment-path-dark.png',
+    'tego-arch-use-modes-light.png',
+    'tego-arch-use-modes-dark.png',
+  ]) {
+    assert.match(homepage, new RegExp(path.replace('.', String.raw`\.`), 'u'));
+  }
+  assert.match(homepage, /label="01 \/ 判断路径"/u);
+  assert.match(homepage, /title="建立架构判断的主线"/u);
+  assert.match(
+    homepage,
+    /从基础与质量出发，经过建模、模式与治理，在案例和复盘中形成判断/u,
+  );
+  assert.match(homepage, /label="04 \/ 使用方式"/u);
+  assert.match(homepage, /title="从理解架构到做出取舍"/u);
+  assert.match(
+    homepage,
+    /需要判断时快速查，系统学习时沿路径走，也从真实架构中理解取舍/u,
+  );
   for (const text of [
     '架构决策速查',
     'Architecture Decision Quick Reference',
@@ -146,7 +160,7 @@ test('homepage presents architecture judgment and the release roadmap', async ()
   }
   assert.doesNotMatch(
     homepage,
-    /初版之后|后续产物|下一步，让完整内容变得更轻|便携小抄|精华学习路线|Tego 实践与规划/u,
+    /tego-arch-initial-release-roadmap\.png|tego-arch-future-directions\.png|让完整体系进入不同使用场景|三个方向并行演进，不代表固定顺序或发布日期/u,
   );
   assert.match(homepage, /https:\/\/github\.com\/sealday\/tego-arch#参与贡献/u);
   assert.match(
