@@ -1,13 +1,24 @@
 import assert from 'node:assert/strict';
-import {mkdtemp, mkdir, readFile, rm, writeFile} from 'node:fs/promises';
+import {mkdtemp, mkdir, readFile, rm, symlink, writeFile} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import path from 'node:path';
+import {performance} from 'node:perf_hooks';
 import {spawnSync} from 'node:child_process';
 import test from 'node:test';
 
-import {checkTerminology} from '../scripts/check-terminology.mjs';
+import {
+  buildLineOffsets,
+  checkTerminology,
+  lineFromOffsets,
+  terminologyRuleOrder,
+} from '../scripts/check-terminology.mjs';
 
 const repositoryRoot = path.resolve(import.meta.dirname, '..');
+const repositorySourceLedger = JSON.parse(
+  await readFile(path.join(repositoryRoot, 'data/source-ledger.json'), 'utf8'),
+);
+const officialSource = repositorySourceLedger.sources[0];
+const officialLocator = officialSource.canonical_locator;
 
 const terms = [
   {
@@ -75,6 +86,14 @@ const withFixture = async (files, callback, registryTerms = terms) => {
       path.join(root, 'data/terminology.json'),
       JSON.stringify({schema_version: 1, terms: registryTerms}),
     );
+    await writeFile(
+      path.join(root, 'data/source-ledger.json'),
+      JSON.stringify({
+        schema_version: 1,
+        sources: [officialSource],
+        documents: {},
+      }),
+    );
     for (const [file, source] of Object.entries(files)) {
       const target = path.join(root, file);
       await mkdir(path.dirname(target), {recursive: true});
@@ -90,6 +109,17 @@ const checkFixture = (source, file = 'content/example.mdx') => withFixture(
   {[file]: source},
   (root) => checkTerminology({root, paths: [file]}),
 );
+
+test('publishes the stable terminology issue rule order', () => {
+  assert.deepEqual(terminologyRuleOrder, [
+    'registry-error',
+    'parse-error',
+    'bare-english-term',
+    'first-use-required',
+    'unknown-english-term',
+    'invalid-suppression',
+  ]);
+});
 
 test('requires bilingual first use and permits registered subsequent use', async () => {
   const result = await checkFixture('质量属性（Quality Attribute）决定取舍。后续质量属性继续使用。');
@@ -115,15 +145,49 @@ test('reports a registered English full name when it is used bare', async () => 
   ]);
 });
 
-test('exempts literals, commands, paths, URLs, identifiers, fields, and citation titles', async () => {
+test('exempts literals, commands, paths, URLs, identifiers, fields, and registered citation titles', async () => {
   const result = await checkFixture([
     '`retry_count` 与 `config.worker.name`',
     '```bash\nnpm run verify -- --config ./worker.json\n```',
-    '[Quality Attributes](https://www.sei.cmu.edu/library/quality-attributes/)',
+    `[Quality Attributes](${officialLocator})`,
+    `[Quality Attributes][official]\n\n[official]: ${officialLocator}`,
     '> Direct quotation title',
     '字段 `worker_id` 通过 `/api/v1/workers` 访问。',
   ].join('\n\n'));
   assert.deepEqual(result.issues, []);
+});
+
+test('does not exempt arbitrary external link labels', async () => {
+  const result = await checkFixture('[Unknown External Title](https://example.com/not-registered)');
+  assert.deepEqual(result.issues.map(({ruleId, matched}) => ({ruleId, matched})), [
+    {ruleId: 'unknown-english-term', matched: 'Unknown External Title'},
+  ]);
+});
+
+test('does not grant citation exemptions from an invalid source ledger', async () => {
+  await withFixture({'content/example.mdx': `[Unknown External Title](${officialLocator})`}, async (root) => {
+    await writeFile(path.join(root, 'data/source-ledger.json'), JSON.stringify({
+      schema_version: 1,
+      sources: [{canonical_locator: officialLocator}],
+      documents: {},
+    }));
+    const result = await checkTerminology({root, paths: ['content/example.mdx']});
+    assert.deepEqual(result.issues.map(({ruleId, matched}) => ({ruleId, matched})), [
+      {ruleId: 'unknown-english-term', matched: 'Unknown External Title'},
+    ]);
+  });
+});
+
+test('excludes complete AST blockquotes including compact and lazy continuation forms', async () => {
+  const result = await checkFixture([
+    '>Quoted English Title',
+    'lazy continuation phrase',
+    '',
+    'outside worker',
+  ].join('\n'));
+  assert.deepEqual(result.issues.map(({line, matched}) => ({line, matched})), [
+    {line: 4, matched: 'outside worker'},
+  ]);
 });
 
 test('tracks first use per file and follows front matter then body reader order', async () => {
@@ -173,7 +237,7 @@ test('checks SVG and Draw.io visible labels and fails closed on malformed XML', 
 <text>unknown worker <tspan visibility="hidden">hidden tspan phrase</tspan></text>
 <path id="unknown-worker" d="M0 0"/>
 </svg>`,
-    'diagrams/example.drawio': '<mxfile><diagram><mxGraphModel><root>\n<mxCell id="1" value="unknown router" vertex="1"/>\n<mxCell id="unknown-worker" value=""/>\n</root></mxGraphModel></diagram></mxfile>',
+    'diagrams/example.drawio': '<mxfile><diagram name="Page-1"><mxGraphModel><root>\n<mxCell id="1" value="unknown router" vertex="1"/>\n<mxCell id="unknown-worker" value=""/>\n</root></mxGraphModel></diagram></mxfile>',
   }, async (root) => {
     const result = await checkTerminology({
       root,
@@ -185,18 +249,20 @@ test('checks SVG and Draw.io visible labels and fails closed on malformed XML', 
     ]);
   });
 
-  await assert.rejects(
-    () => checkFixture('<svg><text>unknown worker</svg>', 'static/broken.svg'),
-    /static\/broken\.svg:1: XML parser failed/u,
-  );
-  await assert.rejects(
-    () => checkFixture('<mxfile><diagram></mxfile>', 'diagrams/broken.drawio'),
-    /diagrams\/broken\.drawio:1: XML parser failed/u,
-  );
-  await assert.rejects(
-    () => checkFixture('<svg><text>bad &unknown;</text></svg>', 'static/entity.svg'),
-    /static\/entity\.svg:1: XML parser failed: unknown entity/u,
-  );
+  for (const [file, source, message] of [
+    ['static/broken.svg', '<svg><text>unknown worker</svg>', 'mismatched closing tag'],
+    ['diagrams/broken.drawio', '<mxfile><diagram></mxfile>', 'mismatched closing tag'],
+    [
+      'static/entity.svg',
+      '<svg xmlns="http://www.w3.org/2000/svg"><text>bad &unknown;</text></svg>',
+      'unknown entity',
+    ],
+  ]) {
+    const malformed = await checkFixture(source, file);
+    assert.equal(malformed.issues.length, 1);
+    assert.equal(malformed.issues[0].ruleId, 'parse-error');
+    assert.match(malformed.issues[0].matched, new RegExp(message, 'u'));
+  }
 });
 
 test('applies a suppression to exactly the next visible record and requires a real hit', async () => {
@@ -211,6 +277,54 @@ second worker`);
   const unused = await checkFixture(`<!-- terminology-exempt: unknown-english-term | reason: 官方界面原始标签 -->
 纯中文内容`);
   assert.deepEqual(unused.issues.map(({ruleId}) => ruleId), ['invalid-suppression']);
+});
+
+test('ignores suppression-shaped text in fenced code, inline code, TS comments, and strings', async () => {
+  const directive = '<!-- terminology-exempt: unknown-english-term | reason: 测试 -->';
+  const markdown = await checkFixture([
+    `\`\`\`text\n${directive}\n\`\`\``,
+    `\`${directive}\``,
+    'unknown worker',
+  ].join('\n'));
+  assert.deepEqual(markdown.issues.map(({ruleId, matched}) => ({ruleId, matched})), [
+    {ruleId: 'unknown-english-term', matched: 'unknown worker'},
+  ]);
+
+  const tsx = await checkFixture([
+    `// ${directive}`,
+    `const hidden = '${directive}';`,
+    'export const Page = () => <div>unknown worker</div>;',
+  ].join('\n'), 'src/pages/suppression.tsx');
+  assert.deepEqual(tsx.issues.map(({ruleId, matched}) => ({ruleId, matched})), [
+    {ruleId: 'unknown-english-term', matched: 'unknown worker'},
+  ]);
+});
+
+test('requires an exclusive parser-confirmed comment line', async () => {
+  const result = await checkFixture([
+    '前缀 <!-- terminology-exempt: unknown-english-term | reason: 测试 -->',
+    'unknown worker',
+  ].join('\n'));
+  assert.deepEqual(result.issues.map(({line, ruleId}) => ({line, ruleId})), [
+    {line: 1, ruleId: 'invalid-suppression'},
+    {line: 2, ruleId: 'unknown-english-term'},
+  ]);
+});
+
+test('binds suppression to one stable record instead of another record on the same line', async () => {
+  const result = await checkFixture(`<!-- terminology-exempt: unknown-english-term | reason: 测试 -->
+\`\`\`mermaid
+flowchart LR
+  A[纯中文] -->|unknown worker| B[完成]
+\`\`\``);
+  assert.deepEqual(result.issues.map(({line, ruleId, matched}) => ({line, ruleId, matched})), [
+    {
+      line: 1,
+      ruleId: 'invalid-suppression',
+      matched: '<!-- terminology-exempt: unknown-english-term | reason: 测试 -->',
+    },
+    {line: 4, ruleId: 'unknown-english-term', matched: 'unknown worker'},
+  ]);
 });
 
 test('reports empty, unknown, and whole-file suppressions as invalid', async () => {
@@ -236,6 +350,18 @@ test('uses explicit phrase boundaries and allows introduced acronyms and registe
     '但 unknown-worker 与 workers 都必须独立报告。',
   ].join('\n'));
   assert.deepEqual(result.issues.map(({matched}) => matched), ['unknown-worker', 'workers']);
+});
+
+test('uses UTF-16-safe masking and excludes program identifiers without hiding prose', async () => {
+  const result = await checkFixture([
+    '😀 应用程序编程接口（Application Programming Interface，API）支持中文 API。',
+    'retry_count dotted.identifier retryPolicy WorkerNode',
+    'Ordinary Title Phrase 与 unknown-workers。',
+  ].join('\n'));
+  assert.deepEqual(result.issues.map(({line, matched}) => ({line, matched})), [
+    {line: 3, matched: 'Ordinary Title Phrase'},
+    {line: 3, matched: 'unknown-workers'},
+  ]);
 });
 
 test('does not join unknown phrases across a registered acronym', async () => {
@@ -267,6 +393,89 @@ test('returns registry errors before scanning content and CLI reports every issu
     assert.match(run.stdout, /bare-english-term/u);
     assert.match(run.stdout, /unknown-english-term/u);
     assert.match(run.stdout, /2 issues? in 1 checked file/u);
+  });
+});
+
+test('collects parse errors with other file issues and keeps CLI diagnostics on stdout', async () => {
+  await withFixture({
+    'content/bad.mdx': '```text\nunclosed',
+    'content/good.mdx': 'unknown worker',
+    'static/bad.svg': '<svg><text>broken</svg>',
+  }, async (root) => {
+    const result = await checkTerminology({root, paths: ['content', 'static/bad.svg']});
+    assert.deepEqual(result.issues.map(({file, ruleId}) => ({file, ruleId})), [
+      {file: 'content/bad.mdx', ruleId: 'parse-error'},
+      {file: 'content/good.mdx', ruleId: 'unknown-english-term'},
+      {file: 'static/bad.svg', ruleId: 'parse-error'},
+    ]);
+
+    const run = spawnSync(
+      process.execPath,
+      [path.join(repositoryRoot, 'scripts/check-terminology.mjs'), '--paths', 'content,static/bad.svg'],
+      {cwd: root, encoding: 'utf8'},
+    );
+    assert.equal(run.status, 1);
+    assert.equal(run.stderr, '');
+    assert.match(run.stdout, /\[parse-error\]/u);
+    assert.match(run.stdout, /\[unknown-english-term\]/u);
+    assert.match(run.stdout, /3 issues in 3 checked files/u);
+  });
+});
+
+test('preserves a parser-provided source line on parse-error issues', async () => {
+  const result = await checkFixture(
+    '<svg xmlns="http://www.w3.org/2000/svg">\n<text>broken</svg>',
+    'static/line.svg',
+  );
+  assert.deepEqual(result.issues.map(({line, ruleId}) => ({line, ruleId})), [
+    {line: 2, ruleId: 'parse-error'},
+  ]);
+});
+
+test('rejects unsafe, symlinked, missing, and unsupported scan paths while deduplicating files', async () => {
+  await withFixture({'content/example.mdx': 'unknown worker'}, async (root) => {
+    await symlink(path.join(root, 'content/example.mdx'), path.join(root, 'content/link.mdx'));
+    const result = await checkTerminology({
+      root,
+      paths: [
+        'content/example.mdx',
+        'content/example.mdx',
+        'content/link.mdx',
+        '../outside.mdx',
+        'missing.mdx',
+        'data/terminology.json',
+      ],
+    });
+    assert.deepEqual(result.checkedFiles, ['content/example.mdx']);
+    assert.deepEqual(result.issues.map(({ruleId}) => ruleId), [
+      'parse-error',
+      'unknown-english-term',
+      'parse-error',
+      'parse-error',
+      'parse-error',
+    ]);
+  });
+});
+
+test('rejects a scan path that traverses a symlinked parent directory', async () => {
+  await withFixture({'real/example.mdx': 'unknown worker'}, async (root) => {
+    await symlink(path.join(root, 'real'), path.join(root, 'alias'));
+    const result = await checkTerminology({root, paths: ['alias/example.mdx']});
+    assert.deepEqual(result.checkedFiles, []);
+    assert.deepEqual(result.issues.map(({ruleId}) => ruleId), ['parse-error']);
+    assert.match(result.issues[0].matched, /symbolic links are not allowed/u);
+  });
+});
+
+test('reports a symlink encountered during recursive directory scanning', async () => {
+  await withFixture({'content/example.mdx': 'unknown worker'}, async (root) => {
+    await symlink(path.join(root, 'content/example.mdx'), path.join(root, 'content/link.mdx'));
+    const result = await checkTerminology({root, paths: ['content']});
+    assert.deepEqual(result.checkedFiles, ['content/example.mdx']);
+    assert.deepEqual(result.issues.map(({file, ruleId}) => ({file, ruleId})), [
+      {file: 'content/example.mdx', ruleId: 'unknown-english-term'},
+      {file: 'content/link.mdx', ruleId: 'parse-error'},
+    ]);
   });
 });
 
@@ -317,4 +526,168 @@ test('the repository registry contains every approved foundational term in uniqu
   ];
   assert.deepEqual(required.filter((id) => !registry.terms.some((term) => term.id === id)), []);
   assert.equal(new Set(registry.terms.map(({order}) => order)).size, registry.terms.length);
+});
+
+test('projects every approved foundational term exactly', async () => {
+  const registry = JSON.parse(await readFile(path.join(repositoryRoot, 'data/terminology.json')));
+  const approved = [
+    ['architecture-decision-record', '架构决策记录', 'Architecture Decision Record', 'ADR'],
+    ['quality-attribute-workshop', '质量属性工作坊', 'Quality Attribute Workshop', 'QAW'],
+    ['architecture-tradeoff-analysis-method', '架构权衡分析方法', 'Architecture Tradeoff Analysis Method', 'ATAM'],
+    ['application-programming-interface', '应用程序编程接口', 'Application Programming Interface', 'API'],
+    ['hypertext-transfer-protocol', '超文本传输协议', 'Hypertext Transfer Protocol', 'HTTP'],
+    ['uniform-resource-locator', '统一资源定位符', 'Uniform Resource Locator', 'URL'],
+    ['c4-model', 'C4 架构模型', 'C4 Model', null],
+    ['unified-modeling-language', '统一建模语言', 'Unified Modeling Language', 'UML'],
+    ['domain-driven-design', '领域驱动设计', 'Domain-Driven Design', 'DDD'],
+    ['command-query-responsibility-segregation', '命令查询职责分离', 'Command Query Responsibility Segregation', 'CQRS'],
+    ['conflict-free-replicated-data-type', '无冲突复制数据类型', 'Conflict-free Replicated Data Type', 'CRDT'],
+    ['model-context-protocol', '模型上下文协议', 'Model Context Protocol', 'MCP'],
+    ['agent-to-agent-protocol', '智能体间协议', 'Agent2Agent Protocol', 'A2A'],
+    ['retry', '重试', 'Retry', null],
+    ['exponential-backoff', '指数退避', 'Exponential Backoff', null],
+    ['jitter', '抖动', 'Jitter', null],
+    ['fail-fast', '快速失败', 'Fail Fast', null],
+    ['fail-safe', '故障安全', 'Fail Safe', null],
+    ['graceful-degradation', '优雅降级', 'Graceful Degradation', null],
+    ['human-in-the-loop', '人在回路', 'Human-in-the-loop', null],
+    ['router', '路由器', 'Router', null],
+    ['supervisor', '监督者', 'Supervisor', null],
+    ['handoff', '移交', 'Handoff', null],
+    ['fan-out-fan-in', '扇出与扇入', 'Fan-out/Fan-in', null],
+    ['checkpointer', '检查点器', 'Checkpointer', null],
+    ['reducer', '归约器', 'Reducer', null],
+    ['workflow', '工作流', 'Workflow', null],
+    ['agent', '智能体', 'Agent', null],
+    ['software-development-kit', '软件开发工具包', 'Software Development Kit', 'SDK'],
+  ].map(([id, canonical_zh, english, acronym]) => ({
+    id,
+    canonical_zh,
+    first_use: acronym === null
+      ? `${canonical_zh}（${english}）`
+      : `${canonical_zh}（${english}，${acronym}）`,
+    acronym,
+    subsequent_use: acronym === null ? [canonical_zh] : [canonical_zh, acronym],
+    forbidden_english: english,
+  }));
+  const actual = approved.map(({id}) => {
+    const term = registry.terms.find((candidate) => candidate.id === id);
+    return {
+      id: term.id,
+      canonical_zh: term.canonical_zh,
+      first_use: term.first_use,
+      acronym: term.acronym,
+      subsequent_use: term.subsequent_use,
+      forbidden_english: term.forbidden_aliases.find((alias) => alias === term.english),
+    };
+  });
+  assert.deepEqual(actual, approved);
+});
+
+test('rejects wrong XML roots, undeclared namespaced text, compressed Draw.io, and XML 1.0 NUL', async () => {
+  const fixtures = [
+    ['static/wrong.svg', '<html><text>unknown worker</text></html>'],
+    ['static/prefixed.svg', '<svg xmlns="http://www.w3.org/2000/svg"><svg:text>unknown worker</svg:text></svg>'],
+    ['diagrams/compressed.drawio', '<mxfile><diagram name="Page-1">eJyrVkrLz1eyUkpKLFKqBQAQSwQJ</diagram></mxfile>'],
+    ['diagrams/nul.drawio', '<mxfile><diagram name="Page-1"><mxGraphModel value="&#0;"/></diagram></mxfile>'],
+    ['static/cdata-outside.svg', '<![CDATA[text]]><svg xmlns="http://www.w3.org/2000/svg"/>'],
+    ['static/bad-attribute.svg', '<svg xmlns="http://www.w3.org/2000/svg" 1bad="value"/>'],
+    ['static/raw-less-than.svg', '<svg xmlns="http://www.w3.org/2000/svg" data-note="a < b"/>'],
+  ];
+  await withFixture(Object.fromEntries(fixtures), async (root) => {
+    const result = await checkTerminology({root, paths: fixtures.map(([file]) => file)});
+    assert.deepEqual(result.issues.map(({file, ruleId}) => ({file, ruleId})), fixtures
+      .map(([file]) => ({file, ruleId: 'parse-error'}))
+      .sort((left, right) => left.file.localeCompare(right.file, 'en')));
+    assert.match(
+      result.issues.find(({file}) => file === 'diagrams/compressed.drawio').matched,
+      /compressed Draw\.io diagrams are unsupported/u,
+    );
+  });
+});
+
+test('supports explicitly bound SVG namespace prefixes', async () => {
+  const result = await checkFixture(
+    '<svg:svg svg:data="value" xmlns:svg="http://www.w3.org/2000/svg"><svg:text>unknown worker</svg:text></svg:svg>',
+    'static/prefixed.svg',
+  );
+  assert.deepEqual(result.issues.map(({ruleId, matched}) => ({ruleId, matched})), [
+    {ruleId: 'unknown-english-term', matched: 'unknown worker'},
+  ]);
+});
+
+test('parses quoted greater-than and CDATA while validating hidden XML entities', async () => {
+  const valid = await checkFixture(
+    '<!----><svg xmlns="http://www.w3.org/2000/svg"><text data-note="a > b"><![CDATA[unknown & worker]]></text></svg>',
+    'static/cdata.svg',
+  );
+  assert.deepEqual(valid.issues.map(({ruleId, matched}) => ({ruleId, matched})), [
+    {ruleId: 'unknown-english-term', matched: 'unknown'},
+    {ruleId: 'unknown-english-term', matched: 'worker'},
+  ]);
+
+  const hidden = await checkFixture(
+    '<svg xmlns="http://www.w3.org/2000/svg"><desc>bad &unknown;</desc></svg>',
+    'static/hidden-entity.svg',
+  );
+  assert.deepEqual(hidden.issues.map(({ruleId}) => ruleId), ['parse-error']);
+  assert.match(hidden.issues[0].matched, /unknown entity/u);
+});
+
+test('accepts parser-confirmed XML suppression and requires named Draw.io pages', async () => {
+  const svg = await checkFixture(`<svg xmlns="http://www.w3.org/2000/svg">
+<!-- terminology-exempt: unknown-english-term | reason: 官方图示标签 -->
+<text>unknown worker</text>
+</svg>`, 'static/suppressed.svg');
+  assert.deepEqual(svg.issues, []);
+
+  const drawio = await checkFixture(
+    '<mxfile><diagram><mxGraphModel><root/></mxGraphModel></diagram></mxfile>',
+    'diagrams/unnamed.drawio',
+  );
+  assert.deepEqual(drawio.issues.map(({ruleId}) => ruleId), ['parse-error']);
+  assert.match(drawio.issues[0].matched, /named diagram/u);
+
+  const misplaced = await checkFixture(
+    '<mxfile><diagram name="Page-1"></diagram><mxGraphModel/> </mxfile>',
+    'diagrams/misplaced.drawio',
+  );
+  assert.deepEqual(misplaced.issues.map(({ruleId}) => ruleId), ['parse-error']);
+  assert.match(misplaced.issues[0].matched, /mxGraphModel/u);
+});
+
+test('decodes Draw.io entities once and rejects embedded HTML cell values', async () => {
+  const escaped = await checkFixture(
+    '<mxfile><diagram name="Page-1"><mxGraphModel><root><mxCell value="unknown &amp; worker"/></root></mxGraphModel></diagram></mxfile>',
+    'diagrams/escaped.drawio',
+  );
+  assert.deepEqual(escaped.issues.map(({ruleId, matched}) => ({ruleId, matched})), [
+    {ruleId: 'unknown-english-term', matched: 'unknown'},
+    {ruleId: 'unknown-english-term', matched: 'worker'},
+  ]);
+
+  const html = await checkFixture(
+    '<mxfile><diagram name="Page-1"><mxGraphModel><root><mxCell value="&lt;b&gt;unknown worker&lt;/b&gt;"/></root></mxGraphModel></diagram></mxfile>',
+    'diagrams/html.drawio',
+  );
+  assert.deepEqual(html.issues.map(({ruleId}) => ruleId), ['parse-error']);
+  assert.match(html.issues[0].matched, /HTML in mxCell.value/u);
+});
+
+test('uses indexed XML line lookup with near-linear 5k/10k scaling', async () => {
+  const source = `${'line\n'.repeat(10_000)}tail`;
+  const offsets = buildLineOffsets(source);
+  assert.equal(offsets.length, 10_001);
+  assert.equal(lineFromOffsets(offsets, source.length), 10_001);
+
+  const measure = async (count) => {
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg">${'<text>纯中文</text>\n'.repeat(count)}</svg>`;
+    const started = performance.now();
+    await checkFixture(svg, 'static/scale.svg');
+    return performance.now() - started;
+  };
+  await measure(1_000);
+  const small = Math.min(await measure(5_000), await measure(5_000));
+  const large = Math.min(await measure(10_000), await measure(10_000));
+  assert.ok(large / small < 3.5, `expected near-linear scaling, got ${small}ms -> ${large}ms`);
 });

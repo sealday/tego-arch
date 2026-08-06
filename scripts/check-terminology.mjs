@@ -1,13 +1,16 @@
 #!/usr/bin/env node
 
-import {readdir, readFile, stat} from 'node:fs/promises';
+import {lstat, readdir, readFile, realpath} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 
 import {loadTerminologyRegistry} from './terminology-registry.mjs';
+import {citationMatchesSource, parseSourceLedger} from './source-ledger.mjs';
 import {
   extractMermaidLabels,
   extractVisibleTsxStrings,
+  normalizeMdxSource,
+  parseMdxAst,
   parseMdxVisibleCopy,
 } from './visible-copy.mjs';
 
@@ -21,13 +24,15 @@ export const defaultPaths = [
 ];
 
 const supportedExtensions = new Set(['.md', '.mdx', '.tsx', '.svg', '.drawio']);
-const ruleOrder = new Map([
-  ['registry-error', 0],
-  ['bare-english-term', 1],
-  ['first-use-required', 2],
-  ['unknown-english-term', 3],
-  ['invalid-suppression', 4],
-]);
+export const terminologyRuleOrder = [
+  'registry-error',
+  'parse-error',
+  'bare-english-term',
+  'first-use-required',
+  'unknown-english-term',
+  'invalid-suppression',
+];
+const ruleOrder = new Map(terminologyRuleOrder.map((ruleId, index) => [ruleId, index]));
 const suppressibleRules = new Set([
   'bare-english-term',
   'first-use-required',
@@ -65,27 +70,78 @@ const compareIssues = (left, right) => (
   || left.expected.localeCompare(right.expected, 'en')
 );
 
-const lineAtOffset = (source, offset) => source.slice(0, offset).split('\n').length;
-const blank = (value) => value.replace(/[^\r\n]/gu, ' ');
+export const buildLineOffsets = (source) => {
+  const offsets = [0];
+  for (let index = 0; index < source.length; index += 1) {
+    if (source.charCodeAt(index) === 10) offsets.push(index + 1);
+  }
+  return offsets;
+};
 
-const maskExternalCitationTitles = (source) => source.replace(
-  /(?<!!)\[([^\]\n]+)\]\((?:https?:\/\/|mailto:)[^)\n]+\)/gu,
-  (match, title) => `[${blank(title)}]${match.slice(title.length + 2)}`,
+export const lineFromOffsets = (offsets, offset) => {
+  let low = 0;
+  let high = offsets.length;
+  while (low < high) {
+    const middle = Math.floor((low + high) / 2);
+    if (offsets[middle] <= offset) low = middle + 1;
+    else high = middle;
+  }
+  return Math.max(1, low);
+};
+
+const visitAst = (node, visit) => {
+  visit(node);
+  for (const child of node.children ?? []) visitAst(child, visit);
+};
+
+const blankAstRange = (characters, node) => {
+  const start = node.position?.start.offset;
+  const end = node.position?.end.offset;
+  if (!Number.isInteger(start) || !Number.isInteger(end)) return;
+  for (let index = start; index < end; index += 1) {
+    if (characters[index] !== '\n' && characters[index] !== '\r') characters[index] = ' ';
+  }
+};
+
+const officialCitation = (url, sources) => sources.some(
+  (source) => citationMatchesSource(url, source),
 );
 
-const maskDirectQuotationLines = (source) => source.replace(
-  /^( {0,3}>[ \t]+[^\r\n]*)$/gmu,
-  (match) => blank(match),
-);
+const markdownStructure = (source, relativePath, sources) => {
+  const normalized = normalizeMdxSource(source, relativePath).source;
+  const ast = parseMdxAst(normalized, relativePath);
+  const definitions = new Map();
+  const quoteLines = [];
+  visitAst(ast, (node) => {
+    if (node.type === 'definition') definitions.set(node.identifier, node.url);
+    if (node.type === 'blockquote') {
+      quoteLines.push([node.position.start.line, node.position.end.line]);
+    }
+  });
+  const characters = normalized.split('');
+  visitAst(ast, (node) => {
+    if (node.type !== 'link' && node.type !== 'linkReference') return;
+    const url = node.type === 'link' ? node.url : definitions.get(node.identifier);
+    if (!officialCitation(url, sources)) return;
+    for (const child of node.children ?? []) blankAstRange(characters, child);
+  });
+  return {normalized, protectedSource: characters.join(''), quoteLines};
+};
 
-const collectMarkdownRecords = (source, relativePath) => {
-  const protectedSource = maskDirectQuotationLines(maskExternalCitationTitles(source));
-  const parsed = parseMdxVisibleCopy(protectedSource, relativePath);
-  return [
-    ...parsed.frontMatter,
-    ...parsed.blocks,
-    ...extractMermaidLabels(source, relativePath),
-  ];
+const collectMarkdownRecords = (source, relativePath, sources) => {
+  const structure = markdownStructure(source, relativePath, sources);
+  const parsed = parseMdxVisibleCopy(structure.protectedSource, relativePath);
+  const outsideQuotes = (record) => !structure.quoteLines.some(
+    ([start, end]) => record.line >= start && record.line <= end,
+  );
+  return {
+    records: [
+      ...parsed.frontMatter,
+      ...parsed.blocks.filter(outsideQuotes),
+      ...extractMermaidLabels(source, relativePath).filter(outsideQuotes),
+    ],
+    normalizedSource: structure.normalized,
+  };
 };
 
 const decodeXmlEntities = (value, relativePath, line) => {
@@ -103,12 +159,42 @@ const decodeXmlEntities = (value, relativePath, line) => {
     if (!entity.startsWith('#')) return named[entity.toLowerCase()];
     const hexadecimal = entity[1].toLowerCase() === 'x';
     const codePoint = Number.parseInt(entity.slice(hexadecimal ? 2 : 1), hexadecimal ? 16 : 10);
-    if (!Number.isInteger(codePoint) || codePoint > 0x10FFFF || (codePoint >= 0xD800 && codePoint <= 0xDFFF)) {
+    if (!Number.isInteger(codePoint) || !allowedXmlCodePoint(codePoint)) {
       throw new Error(`${relativePath}:${line}: XML parser failed: invalid character reference`);
     }
     return String.fromCodePoint(codePoint);
   },
   );
+};
+
+const allowedXmlCodePoint = (codePoint) => (
+  codePoint === 0x9
+  || codePoint === 0xA
+  || codePoint === 0xD
+  || (codePoint >= 0x20 && codePoint <= 0xD7FF)
+  || (codePoint >= 0xE000 && codePoint <= 0xFFFD)
+  || (codePoint >= 0x10000 && codePoint <= 0x10FFFF)
+);
+
+const validateXmlCharacters = (source, relativePath) => {
+  for (const character of source) {
+    const codePoint = character.codePointAt(0);
+    if (!allowedXmlCodePoint(codePoint)) {
+      throw new Error(
+        `${relativePath}:1: XML parser failed: forbidden XML 1.0 character U+${codePoint.toString(16).toUpperCase()}`,
+      );
+    }
+  }
+};
+
+const qualifiedName = (name) => {
+  const parts = name.split(':');
+  if (parts.length > 2 || parts.some((part) => !/^[A-Za-z_][A-Za-z0-9_.-]*$/u.test(part))) {
+    return null;
+  }
+  return parts.length === 1
+    ? {prefix: '', localName: parts[0]}
+    : {prefix: parts[0], localName: parts[1]};
 };
 
 const parseAttributes = (tag, relativePath, line) => {
@@ -125,7 +211,14 @@ const parseAttributes = (tag, relativePath, line) => {
     if (attributes.has(match[1])) {
       throw new Error(`${relativePath}:${line}: XML parser failed: duplicate attribute "${match[1]}"`);
     }
-    attributes.set(match[1], decodeXmlEntities(match[2].slice(1, -1), relativePath, line));
+    if (!qualifiedName(match[1])) {
+      throw new Error(`${relativePath}:${line}: XML parser failed: invalid attribute name "${match[1]}"`);
+    }
+    const rawValue = match[2].slice(1, -1);
+    if (rawValue.includes('<')) {
+      throw new Error(`${relativePath}:${line}: XML parser failed: raw < in attribute value`);
+    }
+    attributes.set(match[1], decodeXmlEntities(rawValue, relativePath, line));
     cursor = match.index + match[0].length;
   }
   const remainder = tail.slice(cursor).replace(/^\s+|\s+$/gu, '');
@@ -141,13 +234,66 @@ const stripMarkup = (value) => value
   .replace(/\s+/gu, ' ')
   .trim();
 
+const tokenizeXml = (source, relativePath, lineAt) => {
+  const tokens = [];
+  let cursor = 0;
+  const terminated = (label, openingLength, closing) => {
+    const end = source.indexOf(closing, cursor + openingLength);
+    if (end === -1) {
+      throw new Error(`${relativePath}:${lineAt(cursor)}: XML parser failed: unterminated ${label}`);
+    }
+    return end + closing.length;
+  };
+  while (cursor < source.length) {
+    const start = cursor;
+    if (source.startsWith('<!--', cursor)) {
+      cursor = terminated('comment', 4, '-->');
+    } else if (source.startsWith('<![CDATA[', cursor)) {
+      cursor = terminated('CDATA', 9, ']]>');
+    } else if (source.startsWith('<?', cursor)) {
+      cursor = terminated('processing instruction', 2, '?>');
+    } else if (source.startsWith('<!', cursor)) {
+      throw new Error(`${relativePath}:${lineAt(cursor)}: XML parser failed: unsupported declaration`);
+    } else if (source[cursor] === '<') {
+      let quote = '';
+      cursor += 1;
+      for (; cursor < source.length; cursor += 1) {
+        const character = source[cursor];
+        if (quote) {
+          if (character === quote) quote = '';
+        } else if (character === '"' || character === "'") {
+          quote = character;
+        } else if (character === '>') {
+          cursor += 1;
+          break;
+        }
+      }
+      if (cursor > source.length || source[cursor - 1] !== '>') {
+        throw new Error(`${relativePath}:${lineAt(start)}: XML parser failed: unterminated tag`);
+      }
+    } else {
+      const next = source.indexOf('<', cursor);
+      cursor = next === -1 ? source.length : next;
+    }
+    tokens.push({index: start, token: source.slice(start, cursor)});
+  }
+  return tokens;
+};
+
 const parseXmlVisibleCopy = (source, relativePath, type) => {
+  validateXmlCharacters(source, relativePath);
+  const lineOffsets = buildLineOffsets(source);
+  const lineAt = (offset) => lineFromOffsets(lineOffsets, offset);
   const records = [];
+  const suppressionComments = [];
   const stack = [];
-  const tokenPattern = /<!--[\s\S]*?-->|<!\[CDATA\[[\s\S]*?\]\]>|<\?[^>]*\?>|<!DOCTYPE[^>]*>|<[^>]+>|[^<]+/giu;
   let cursor = 0;
   let textBuffer = null;
   let roots = 0;
+  let rootElement = null;
+  let diagrams = 0;
+  let compressedDiagram = false;
+  const svgNamespace = 'http://www.w3.org/2000/svg';
 
   const styleValue = (attributes, name) => {
     const declaration = (attributes.get('style') ?? '').split(';').find((part) => (
@@ -187,28 +333,53 @@ const parseXmlVisibleCopy = (source, relativePath, type) => {
     return fill || stroke;
   };
 
-  for (const match of source.matchAll(tokenPattern)) {
-    if (match.index !== cursor) {
-      throw new Error(`${relativePath}:${lineAtOffset(source, cursor)}: XML parser failed: unparsed input`);
+  for (const {index, token} of tokenizeXml(source, relativePath, lineAt)) {
+    if (index !== cursor) {
+      throw new Error(`${relativePath}:${lineAt(cursor)}: XML parser failed: unparsed input`);
     }
-    cursor = match.index + match[0].length;
-    const token = match[0];
-    const line = lineAtOffset(source, match.index);
+    cursor = index + token.length;
+    const line = lineAt(index);
     if (token.startsWith('<!--')) {
       if (!token.endsWith('-->') || /--(?:[^>]|$)/u.test(token.slice(4, -3))) {
         throw new Error(`${relativePath}:${line}: XML parser failed: malformed comment`);
+      }
+      if (token.includes('terminology-exempt')) {
+        const lineStart = lineOffsets[line - 1];
+        const newline = source.indexOf('\n', lineStart);
+        const lineEnd = newline === -1 ? source.length : newline;
+        suppressionComments.push({
+          raw: token.trim(),
+          line,
+          exclusive: source.slice(lineStart, lineEnd).trim() === token,
+        });
       }
       continue;
     }
     if (token.startsWith('<?') || /^<!DOCTYPE/iu.test(token)) continue;
     if (token.startsWith('<![CDATA[')) {
-      if (textBuffer && stack.at(-1)?.painted) textBuffer.value += token.slice(9, -3);
+      if (stack.length === 0) {
+        throw new Error(`${relativePath}:${line}: XML parser failed: CDATA outside root element`);
+      }
+      const value = token.slice(9, -3);
+      if (textBuffer && stack.at(-1)?.painted) textBuffer.value += value;
+      if (type === 'drawio' && value.trim() && stack.at(-1)?.localName === 'diagram') {
+        compressedDiagram = true;
+      }
       continue;
     }
     if (!token.startsWith('<')) {
-      if (textBuffer && stack.at(-1)?.painted) textBuffer.value += token;
-      else if (token.trim() && stack.length === 0) {
+      const decoded = decodeXmlEntities(token, relativePath, line);
+      if (textBuffer && stack.at(-1)?.painted) {
+        textBuffer.value += decoded;
+      }
+      else if (decoded.trim() && stack.length === 0) {
         throw new Error(`${relativePath}:${line}: XML parser failed: text outside root element`);
+      }
+      if (type === 'drawio' && decoded.trim() && stack.at(-1)?.localName === 'diagram') {
+        compressedDiagram = true;
+      }
+      if (token.includes(']]>')) {
+        throw new Error(`${relativePath}:${line}: XML parser failed: ]]> outside CDATA`);
       }
       continue;
     }
@@ -218,8 +389,16 @@ const parseXmlVisibleCopy = (source, relativePath, type) => {
       if (!name || !current || current.name !== name) {
         throw new Error(`${relativePath}:${line}: XML parser failed: mismatched closing tag`);
       }
-      if (type === 'svg' && current.name === 'text' && textBuffer) {
-        const text = decodeXmlEntities(stripMarkup(textBuffer.value), relativePath, textBuffer.line);
+      if (type === 'drawio' && current.localName === 'diagram') {
+        if (compressedDiagram) {
+          throw new Error(`${relativePath}:${line}: XML parser failed: compressed Draw.io diagrams are unsupported`);
+        }
+        if (!current.namedDiagram || !current.hasGraphModel) {
+          throw new Error(`${relativePath}:${line}: XML parser failed: named diagram with mxGraphModel required`);
+        }
+      }
+      if (type === 'svg' && current.namespace === svgNamespace && current.localName === 'text' && textBuffer) {
+        const text = textBuffer.value.replace(/\s+/gu, ' ').trim();
         if (text) {
           records.push({file: relativePath, line: textBuffer.line, text, excerpt: text, kind: 'svg'});
         }
@@ -231,75 +410,239 @@ const parseXmlVisibleCopy = (source, relativePath, type) => {
     const parsed = token.match(/^<\s*([^\s/>]+)[\s\S]*?>$/u);
     if (!parsed) throw new Error(`${relativePath}:${line}: XML parser failed: malformed tag`);
     const name = parsed[1];
+    const parsedName = qualifiedName(name);
+    if (!parsedName) throw new Error(`${relativePath}:${line}: XML parser failed: invalid qualified name`);
     const attributes = parseAttributes(token.slice(1, -1), relativePath, line);
     if (stack.length === 0) roots += 1;
     if (roots > 1) throw new Error(`${relativePath}:${line}: XML parser failed: multiple root elements`);
     const parent = stack.at(-1);
+    const namespaces = new Map(parent?.namespaces ?? []);
+    for (const [attribute, value] of attributes) {
+      if (attribute === 'xmlns') namespaces.set('', value);
+      else if (attribute.startsWith('xmlns:')) namespaces.set(attribute.slice(6), value);
+    }
+    for (const [attribute] of attributes) {
+      if (!attribute.startsWith('xmlns') && attribute.includes(':')) {
+        const attributeName = qualifiedName(attribute);
+        if (!attributeName || (attributeName.prefix !== 'xml' && !namespaces.has(attributeName.prefix))) {
+          throw new Error(`${relativePath}:${line}: XML parser failed: undeclared attribute namespace`);
+        }
+      }
+    }
+    if (parsedName.prefix && !namespaces.has(parsedName.prefix)) {
+      throw new Error(`${relativePath}:${line}: XML parser failed: undeclared element namespace`);
+    }
+    const namespace = namespaces.get(parsedName.prefix) ?? '';
     const parentHidden = parent?.hidden ?? false;
     const state = presentation(attributes, parent?.state);
     const hidden = parentHidden
       || hiddenByAttributes(attributes)
-      || (type === 'svg' && [
+      || (type === 'svg' && namespace === svgNamespace && [
         'defs', 'metadata', 'title', 'desc', 'script', 'style', 'symbol', 'clipPath',
         'mask', 'pattern', 'marker',
-      ].includes(name));
+      ].includes(parsedName.localName));
     const painted = !hidden && paintsText(state);
     const selfClosing = /\/\s*>$/u.test(token);
 
-    if (type === 'drawio' && name === 'mxCell') {
+    if (roots === 1 && !rootElement) {
+      rootElement = {namespace, localName: parsedName.localName};
+    }
+    if (type === 'drawio' && namespace === '' && parsedName.localName === 'diagram') {
+      diagrams += 1;
+      if (selfClosing) {
+        throw new Error(`${relativePath}:${line}: XML parser failed: named diagram with mxGraphModel required`);
+      }
+    }
+    if (type === 'drawio' && namespace === '' && parsedName.localName === 'mxGraphModel') {
+      const diagram = [...stack].reverse().find((element) => element.localName === 'diagram');
+      if (!diagram) {
+        throw new Error(`${relativePath}:${line}: XML parser failed: mxGraphModel must be inside diagram`);
+      }
+      diagram.hasGraphModel = true;
+    }
+    if (type === 'drawio' && namespace === '' && parsedName.localName === 'mxCell') {
       const raw = attributes.get('value') ?? '';
-      const text = decodeXmlEntities(stripMarkup(raw), relativePath, line);
+      if (/<[^>]+>/u.test(raw)) {
+        throw new Error(`${relativePath}:${line}: XML parser failed: HTML in mxCell.value is unsupported`);
+      }
+      const text = stripMarkup(raw);
       if (text && !hidden && attributes.get('visible') !== '0') {
         records.push({file: relativePath, line, text, excerpt: text, kind: 'drawio'});
       }
     }
-    if (type === 'svg' && name === 'text' && !selfClosing) {
+    if (type === 'svg' && namespace === svgNamespace && parsedName.localName === 'text' && !selfClosing) {
       textBuffer = {line, value: ''};
     }
-    if (!selfClosing) stack.push({name, hidden, painted, state});
+    if (!selfClosing) stack.push({
+      name,
+      localName: parsedName.localName,
+      namespace,
+      namespaces,
+      hidden,
+      painted,
+      state,
+      namedDiagram: parsedName.localName === 'diagram' && Boolean((attributes.get('name') ?? '').trim()),
+      hasGraphModel: false,
+    });
   }
 
   if (cursor !== source.length || stack.length > 0 || roots !== 1 || !source.trim().startsWith('<')) {
-    throw new Error(`${relativePath}:${lineAtOffset(source, cursor)}: XML parser failed: unclosed or missing root element`);
+    throw new Error(`${relativePath}:${lineAt(cursor)}: XML parser failed: unclosed or missing root element`);
   }
-  return records;
+  if (type === 'svg' && (rootElement?.localName !== 'svg' || rootElement.namespace !== svgNamespace)) {
+    throw new Error(`${relativePath}:1: XML parser failed: SVG root must be svg in ${svgNamespace}`);
+  }
+  if (type === 'drawio' && (rootElement?.localName !== 'mxfile' || rootElement.namespace !== '')) {
+    throw new Error(`${relativePath}:1: XML parser failed: Draw.io root must be unnamespaced mxfile`);
+  }
+  if (type === 'drawio' && diagrams === 0) {
+    throw new Error(`${relativePath}:1: XML parser failed: named diagram with mxGraphModel required`);
+  }
+  return {records, suppressionComments};
 };
 
-const walk = async (root, target) => {
-  const absolute = path.join(root, target);
+const parseError = (file, message) => {
+  const lineMatch = message.startsWith(`${file}:`)
+    ? message.slice(file.length + 1).match(/^(\d+):/u)
+    : null;
+  return issue(
+    file,
+    lineMatch ? Number(lineMatch[1]) : 1,
+    'parse-error',
+    message,
+    'a readable, supported, well-formed file inside the scan root',
+  );
+};
+
+const containedBy = (root, target) => {
+  const relative = path.relative(root, target);
+  return relative === '' || (!relative.startsWith(`..${path.sep}`) && relative !== '..' && !path.isAbsolute(relative));
+};
+
+const traversesSymlink = async (root, absolute) => {
+  const relative = path.relative(root, absolute);
+  let cursor = root;
+  for (const component of relative.split(path.sep).filter(Boolean)) {
+    cursor = path.join(cursor, component);
+    try {
+      if ((await lstat(cursor)).isSymbolicLink()) return true;
+    } catch {
+      return false;
+    }
+  }
+  return false;
+};
+
+const scanTarget = async (root, target, files, errors, explicit = false) => {
+  const absolute = path.resolve(root, target);
+  if (!containedBy(root, absolute)) {
+    errors.push(parseError(target, `${target}: scan path escapes root`));
+    return;
+  }
+  if (await traversesSymlink(root, absolute)) {
+    errors.push(parseError(target, `${target}: symbolic links are not allowed`));
+    return;
+  }
   let metadata;
   try {
-    metadata = await stat(absolute);
+    metadata = await lstat(absolute);
   } catch (error) {
-    throw new Error(`${target}: unable to read: ${error.message}`, {cause: error});
+    errors.push(parseError(target, `${target}: unable to read: ${error.message}`));
+    return;
   }
-  if (metadata.isFile()) return supportedExtensions.has(path.extname(target).toLowerCase()) ? [target] : [];
-  if (!metadata.isDirectory()) return [];
-  const entries = await readdir(absolute, {withFileTypes: true});
-  const nested = await Promise.all(entries
-    .filter((entry) => !entry.name.startsWith('.'))
-    .map((entry) => walk(root, path.join(target, entry.name))));
-  return nested.flat().sort((left, right) => left.localeCompare(right, 'en'));
+  if (metadata.isSymbolicLink()) {
+    errors.push(parseError(target, `${target}: symbolic links are not allowed`));
+    return;
+  }
+  let resolved;
+  try {
+    resolved = await realpath(absolute);
+  } catch (error) {
+    errors.push(parseError(target, `${target}: unable to resolve: ${error.message}`));
+    return;
+  }
+  if (!containedBy(root, resolved)) {
+    errors.push(parseError(target, `${target}: resolved path escapes root`));
+    return;
+  }
+  const display = path.relative(root, absolute) || '.';
+  if (metadata.isFile()) {
+    if (!supportedExtensions.has(path.extname(display).toLowerCase())) {
+      if (explicit) errors.push(parseError(display, `${display}: unsupported file type`));
+    } else {
+      files.add(display);
+    }
+    return;
+  }
+  if (!metadata.isDirectory()) {
+    errors.push(parseError(display, `${display}: scan target is neither a file nor directory`));
+    return;
+  }
+  const before = files.size;
+  const errorCount = errors.length;
+  let entries;
+  try {
+    entries = await readdir(absolute, {withFileTypes: true});
+  } catch (error) {
+    errors.push(parseError(display, `${display}: unable to list directory: ${error.message}`));
+    return;
+  }
+  for (const entry of entries.sort((left, right) => left.name.localeCompare(right.name, 'en'))) {
+    if (entry.name.startsWith('.')) continue;
+    await scanTarget(root, path.join(display, entry.name), files, errors, false);
+  }
+  if (explicit && files.size === before && errors.length === errorCount) {
+    errors.push(parseError(display, `${display}: path contains no supported files`));
+  }
+};
+
+const loadCitationSources = async (root) => {
+  try {
+    const value = JSON.parse(await readFile(path.join(root, 'data/source-ledger.json'), 'utf8'));
+    const parsed = parseSourceLedger(value);
+    return parsed.errors.length === 0 ? parsed.ledger.sources : [];
+  } catch {
+    return [];
+  }
 };
 
 const collectVisibleRecords = async (root, paths) => {
-  const files = [...new Set((await Promise.all(paths.map((target) => walk(root, target)))).flat())]
-    .sort((left, right) => left.localeCompare(right, 'en'));
+  const resolvedRoot = await realpath(root);
+  const fileSet = new Set();
+  const errors = [];
+  for (const target of [...new Set(paths)]) {
+    await scanTarget(resolvedRoot, target, fileSet, errors, true);
+  }
+  const files = [...fileSet].sort((left, right) => left.localeCompare(right, 'en'));
+  const citationSources = await loadCitationSources(resolvedRoot);
   const output = [];
   for (const file of files) {
-    const source = await readFile(path.join(root, file), 'utf8');
-    const extension = path.extname(file).toLowerCase();
-    let records;
-    if (extension === '.md' || extension === '.mdx') records = collectMarkdownRecords(source, file);
-    else if (extension === '.tsx') records = extractVisibleTsxStrings(source, file);
-    else records = parseXmlVisibleCopy(source, file, extension.slice(1));
-    records.sort((left, right) => (
-      left.line - right.line
-      || (kindOrder.get(left.kind) ?? 99) - (kindOrder.get(right.kind) ?? 99)
-    ));
-    output.push({file, source, records});
+    let source;
+    try {
+      source = await readFile(path.join(resolvedRoot, file), 'utf8');
+      const extension = path.extname(file).toLowerCase();
+      let collected;
+      if (extension === '.md' || extension === '.mdx') {
+        collected = collectMarkdownRecords(source, file, citationSources);
+      } else if (extension === '.tsx') {
+        collected = {records: extractVisibleTsxStrings(source, file)};
+      } else {
+        collected = parseXmlVisibleCopy(source, file, extension.slice(1));
+      }
+      collected.records.sort((left, right) => (
+        left.line - right.line
+        || (kindOrder.get(left.kind) ?? 99) - (kindOrder.get(right.kind) ?? 99)
+      ));
+      collected.records.forEach((record, recordIndex) => {
+        record.recordIndex = recordIndex;
+      });
+      output.push({file, source, ...collected});
+    } catch (error) {
+      errors.push(parseError(file, error.message));
+      output.push({file, source: source ?? '', records: []});
+    }
   }
-  return output;
+  return {files: output, issues: errors};
 };
 
 const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
@@ -374,7 +717,7 @@ const blankRange = (characters, start, end) => {
 };
 
 const inspectUnknownEnglish = (record, registry) => {
-  const characters = [...record.text];
+  const characters = record.text.split('');
   const known = registry.registry.terms.flatMap(termForms)
     .sort((left, right) => right.length - left.length || left.localeCompare(right, 'en'));
   for (const form of known) {
@@ -382,7 +725,7 @@ const inspectUnknownEnglish = (record, registry) => {
   }
   let candidate = characters.join('');
   candidate = candidate.replace(
-    /(?:https?:\/\/|mailto:|\/)[^\s，。；：！？、（）【】]+|\b[A-Za-z][\w]*(?:[._][A-Za-z0-9_-]+)+\b/gu,
+    /(?:https?:\/\/|mailto:|\/)[^\s，。；：！？、（）【】]+|\b[A-Za-z][A-Za-z0-9]*(?:[._][A-Za-z0-9_-]+)+\b|\b[A-Za-z][A-Za-z0-9]*_[A-Za-z0-9_]+\b|\b[a-z][a-z0-9]*(?:[A-Z][A-Za-z0-9]*)+\b|\b(?:[A-Z][a-z0-9]+){2,}\b/gu,
     (match) => '\uFFFF'.repeat(match.length),
   );
   const phrasePattern = /(?<![A-Za-z0-9_])[A-Za-z][A-Za-z0-9]*(?:[-/][A-Za-z0-9]+)*(?:[ \t]+[A-Za-z][A-Za-z0-9]*(?:[-/][A-Za-z0-9]+)*)*(?![A-Za-z0-9_])/gu;
@@ -395,26 +738,57 @@ const inspectUnknownEnglish = (record, registry) => {
   ));
 };
 
-const parseSuppressions = (source, file) => {
+const classifySuppression = ({raw, file, line, exclusive}) => {
+  const exact = raw.match(
+    /^<!--\s*terminology-exempt:\s*([^|\s]+)\s*\|\s*reason:\s*(.*?)\s*-->$/u,
+  );
+  if (!exclusive || !exact || !suppressibleRules.has(exact[1]) || exact[2].trim() === '') {
+    return {file, line, valid: false, matched: raw};
+  }
+  return {file, line, valid: true, ruleId: exact[1], matched: raw};
+};
+
+const parseSuppressions = (fileEntry) => {
+  const xmlSuppressions = (fileEntry.suppressionComments ?? []).map((comment) => (
+    classifySuppression({...comment, file: fileEntry.file})
+  ));
+  if (!fileEntry.normalizedSource) return xmlSuppressions;
+  const {source, file, normalizedSource} = fileEntry;
+  const lineOffsets = buildLineOffsets(source);
   const suppressions = [];
   for (const match of source.matchAll(/<!--[\s\S]*?-->/gu)) {
     if (!match[0].includes('terminology-exempt')) continue;
-    const line = lineAtOffset(source, match.index);
-    const exact = match[0].match(
-      /^<!--\s*terminology-exempt:\s*([^|\s]+)\s*\|\s*reason:\s*(.*?)\s*-->$/u,
-    );
-    if (!exact || !suppressibleRules.has(exact[1]) || exact[2].trim() === '') {
-      suppressions.push({file, line, valid: false, matched: match[0].trim()});
-    } else {
-      suppressions.push({file, line, valid: true, ruleId: exact[1], matched: match[0].trim()});
+    const candidate = source.split('');
+    const probe = 'SUPPRESSION';
+    for (let index = 0; index < match[0].length; index += 1) {
+      candidate[match.index + index] = probe[index] ?? ' ';
     }
+    let candidateNormalized;
+    try {
+      candidateNormalized = normalizeMdxSource(candidate.join(''), file).source;
+    } catch {
+      continue;
+    }
+    const originalRange = normalizedSource.slice(match.index, match.index + match[0].length);
+    const candidateRange = candidateNormalized.slice(match.index, match.index + match[0].length);
+    const parserConfirmed = originalRange.trim() === '' && candidateRange.includes(probe);
+    if (!parserConfirmed) continue;
+    const line = lineFromOffsets(lineOffsets, match.index);
+    const lineStart = lineOffsets[line - 1];
+    const lineEnd = source.indexOf('\n', lineStart) === -1
+      ? source.length
+      : source.indexOf('\n', lineStart);
+    const exclusive = source.slice(lineStart, lineEnd).trim() === match[0];
+    suppressions.push(classifySuppression({
+      raw: match[0].trim(), file, line, exclusive,
+    }));
   }
-  return suppressions;
+  return [...xmlSuppressions, ...suppressions];
 };
 
 const applySuppressions = (fileEntry, recordIssues) => {
   const invalid = [];
-  const pending = parseSuppressions(fileEntry.source, fileEntry.file);
+  const pending = parseSuppressions(fileEntry);
   for (const suppression of pending) {
     if (!suppression.valid) {
       invalid.push(issue(
@@ -429,7 +803,7 @@ const applySuppressions = (fileEntry, recordIssues) => {
     const nextRecord = fileEntry.records.find((record) => record.line > suppression.line);
     const targetIndex = recordIssues.findIndex((candidate) => (
       candidate.ruleId === suppression.ruleId
-      && candidate.line === nextRecord?.line
+      && candidate._recordIndex === nextRecord?.recordIndex
       && !candidate.suppressed
     ));
     if (targetIndex === -1) {
@@ -445,7 +819,9 @@ const applySuppressions = (fileEntry, recordIssues) => {
     }
   }
   return [
-    ...recordIssues.filter(({suppressed}) => !suppressed).map(({suppressed: _suppressed, ...rest}) => rest),
+    ...recordIssues
+      .filter(({suppressed}) => !suppressed)
+      .map(({suppressed: _suppressed, _recordIndex, ...rest}) => rest),
     ...invalid,
   ];
 };
@@ -456,21 +832,25 @@ export async function checkTerminology({root, paths = defaultPaths}) {
     return {issues: registry.errors.map(registryIssue).sort(compareIssues), checkedFiles: []};
   }
 
-  const files = await collectVisibleRecords(root, paths);
+  const collected = await collectVisibleRecords(root, paths);
   const issues = [];
-  for (const fileEntry of files) {
+  for (const fileEntry of collected.files) {
     const introduced = new Set();
     const fileIssues = [];
     for (const record of fileEntry.records) {
-      fileIssues.push(...inspectBareAliases(record, registry));
-      fileIssues.push(...inspectFirstUse(record, registry, introduced));
-      fileIssues.push(...inspectUnknownEnglish(record, registry));
+      const inspected = [
+        ...inspectBareAliases(record, registry),
+        ...inspectFirstUse(record, registry, introduced),
+        ...inspectUnknownEnglish(record, registry),
+      ];
+      for (const candidate of inspected) candidate._recordIndex = record.recordIndex;
+      fileIssues.push(...inspected);
     }
     issues.push(...applySuppressions(fileEntry, fileIssues));
   }
   return {
-    issues: issues.sort(compareIssues),
-    checkedFiles: files.map(({file}) => file),
+    issues: [...collected.issues, ...issues].sort(compareIssues),
+    checkedFiles: collected.files.map(({file}) => file),
   };
 }
 
