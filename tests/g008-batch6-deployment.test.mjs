@@ -192,7 +192,7 @@ function assertBacklogClosure(source) {
   assert.match(source, /当前持久故事：\*\* `G009`/u);
   assert.match(source, /最近完成 `G008`/u);
   assert.equal(
-    currentReleaseBaseline(source).split('下一项为 STY-01').length - 1,
+    currentReleaseBaseline(source).split('下一项为 STY-02').length - 1,
     1,
     'live current segment must identify STY-01 as next',
   );
@@ -236,11 +236,11 @@ test('preserves Batch 6 evidence under the live Batch 7 projection', () => {
   assert.equal(topicsById.get('STY-00')?.published, true);
   assert.equal(topicsById.get('STY-00')?.status.value, 'complete');
   assert.equal(topicsById.get('STY-01')?.published, true);
-  assert.equal(topicsById.get('STY-01')?.status.value, 'pending');
+  assert.equal(topicsById.get('STY-01')?.status.value, 'complete');
   assert.deepEqual(projectStatus, {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
-    completed_topics: 53,
+    completed_topics: 54,
     content_documents: 95,
     governed_sources: 502,
     sources: {
@@ -265,9 +265,10 @@ test('rejects backlog evidence status and next-topic mutations', () => {
     backlog.replace('- [x] **MOD-09 ', '- [ ] **MOD-09 '),
     backlog.replace('- [x] **MOD-11 ', '- [ ] **MOD-11 '),
     backlog.replace('- **当前持久故事：** `G009`。', '- **当前持久故事：** `G008`。'),
-    backlog.replace('下一项为 STY-01', '下一项为 STY-00'),
+    backlog.replace('下一项为 STY-02', '下一项为 STY-01'),
     backlog.replace('- [x] **STY-00 ', '- [ ] **STY-00 '),
   ]) {
+    assert.notEqual(mutation, backlog, 'backlog mutation must change source');
     assert.throws(() => assertBacklogClosure(mutation));
   }
 });

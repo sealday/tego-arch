@@ -407,7 +407,7 @@ test('projects the current G009 counts after G008 closes', async () => {
   assert.deepEqual(status, {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
-    completed_topics: 53,
+    completed_topics: 54,
     content_documents: 95,
     governed_sources: 502,
     sources: {
@@ -433,5 +433,5 @@ test('projects the current G009 counts after G008 closes', async () => {
   assert.equal(topicsById.get('STY-00').published, true);
   assert.equal(topicsById.get('STY-00').status.value, 'complete');
   assert.equal(topicsById.get('STY-01').published, true);
-  assert.equal(topicsById.get('STY-01').status.value, 'pending');
+  assert.equal(topicsById.get('STY-01').status.value, 'complete');
 });

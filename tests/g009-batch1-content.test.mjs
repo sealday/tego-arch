@@ -603,7 +603,7 @@ test('projects the Stage B G009 state after closing STY-00', () => {
   assert.deepEqual(projectStatus, {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
-    completed_topics: 53,
+    completed_topics: 54,
     content_documents: 95,
     governed_sources: 502,
     sources: {
@@ -614,6 +614,6 @@ test('projects the Stage B G009 state after closing STY-00', () => {
     },
   });
   assert.ok(indexes.style.some(({id, status}) => id === 'STY-00' && status.value === 'complete'));
-  assert.ok(indexes.style.some(({id, status}) => id === 'STY-01' && status.value === 'pending'));
+  assert.ok(indexes.style.some(({id, status}) => id === 'STY-01' && status.value === 'complete'));
   assert.equal(publicLedger.sources.length, 502);
 });

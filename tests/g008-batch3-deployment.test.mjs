@@ -167,9 +167,9 @@ function assertCurrentReleaseState(source) {
   const {prefix} = assertBatch3HistoricalSegment(source);
   assert.match(
     prefix,
-    /^- \*\*当前发布基线：\*\* 2026-08-06 G009 Batch 1 已完成 STY-00/u,
+    /^- \*\*当前发布基线：\*\* 2026-08-07 G009 Batch 2 已完成 STY-01/u,
   );
-  assert.match(prefix, /当前 G009，下一项为 STY-01/u);
+  assert.match(prefix, /当前 G009，下一项为 STY-02/u);
 }
 
 function assertBacklogClosure(source) {
@@ -283,8 +283,8 @@ test('preserves Batch 3 closure under the current G009 baseline', () => {
   assert.equal(topicsById.get('STY-00')?.published, true);
   assert.equal(topicsById.get('STY-00')?.status.value, 'complete');
   assert.equal(topicsById.get('STY-01')?.published, true);
-  assert.equal(topicsById.get('STY-01')?.status.value, 'pending');
-  assert.equal(projectStatus.completed_topics, 53);
+  assert.equal(topicsById.get('STY-01')?.status.value, 'complete');
+  assert.equal(projectStatus.completed_topics, 54);
   assert.equal(projectStatus.content_documents, 95);
   assert.equal(projectStatus.governed_sources, 502);
   assert.deepEqual(projectStatus.durable_stories, {
@@ -298,10 +298,13 @@ test('preserves Batch 3 closure under the current G009 baseline', () => {
 });
 
 test('rejects incomplete over-complete or terminal current mutations', () => {
+  const staleNextTopic = backlog.replace(
+    '当前 G009，下一项为 STY-02',
+    '当前 G009，下一项为 STY-01',
+  );
+  assert.notEqual(staleNextTopic, backlog, 'next-topic mutation must change backlog');
   assert.throws(
-    () => assertCurrentReleaseState(
-      backlog.replace('当前 G009，下一项为 STY-01', '当前 G009，下一项为 STY-00'),
-    ),
+    () => assertCurrentReleaseState(staleNextTopic),
     {name: 'AssertionError'},
   );
   assert.throws(

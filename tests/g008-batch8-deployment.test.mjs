@@ -225,7 +225,7 @@ function assertBacklogClosure(source) {
   assert.match(source, /当前持久故事：\*\* `G009`/u);
   assert.match(source, /最近完成 `G008`/u);
   assert.equal(
-    currentReleaseBaseline(source).split('下一项为 STY-01').length - 1,
+    currentReleaseBaseline(source).split('下一项为 STY-02').length - 1,
     1,
     'live current segment must identify STY-01 as next',
   );
@@ -244,11 +244,11 @@ function assertGeneratedState(manifestValue, statusValue) {
   assert.equal(topicsById.get('STY-00')?.published, true);
   assert.equal(topicsById.get('STY-00')?.status.value, 'complete');
   assert.equal(topicsById.get('STY-01')?.published, true);
-  assert.equal(topicsById.get('STY-01')?.status.value, 'pending');
+  assert.equal(topicsById.get('STY-01')?.status.value, 'complete');
   assert.deepEqual(statusValue, {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
-    completed_topics: 53,
+    completed_topics: 54,
     content_documents: 95,
     governed_sources: 502,
     sources: {
@@ -336,7 +336,7 @@ test('rejects backlog evidence status and next-topic mutations', () => {
     backlog.replace('- [x] **MOD-12 ', '- [ ] **MOD-12 '),
     backlog.replace('- [x] **MOD-13 ', '- [ ] **MOD-13 '),
     backlog.replace('- **当前持久故事：** `G009`。', '- **当前持久故事：** `G008`。'),
-    backlog.replace('下一项为 STY-01', '下一项为 STY-00'),
+    backlog.replace('下一项为 STY-02', '下一项为 STY-01'),
     backlog.replace('- [x] **STY-00 ', '- [ ] **STY-00 '),
   ];
   assert.equal(
@@ -345,6 +345,7 @@ test('rejects backlog evidence status and next-topic mutations', () => {
     'six MOD-08..13 checkbox mutations plus STY-00, current-story, and next-topic mutations',
   );
   for (const mutation of backlogStateMutations) {
+    assert.notEqual(mutation, backlog, 'backlog mutation must change source');
     assert.throws(() => assertBacklogClosure(mutation));
   }
 });
@@ -398,7 +399,6 @@ test('rejects every generated status and count mutation', () => {
   }
   const staleSty01 = structuredClone(manifest);
   const sty01 = staleSty01.topics.find((candidate) => candidate.id === 'STY-01');
-  sty01.published = false;
   sty01.status.value = 'pending';
   assert.notDeepEqual(staleSty01, manifest, 'STY-01 stale-state mutation must change manifest');
   assert.throws(() => assertGeneratedState(staleSty01, projectStatus));

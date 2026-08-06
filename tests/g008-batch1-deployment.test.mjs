@@ -79,7 +79,7 @@ test('closes exactly MOD-01 through MOD-03 without closing G008', () => {
       source: 'docs/content-backlog.md',
     });
   }
-  assert.equal(projectStatus.completed_topics, 53);
+  assert.equal(projectStatus.completed_topics, 54);
   assert.equal(projectStatus.content_documents, 95);
   assert.equal(projectStatus.governed_sources, 502);
   assert.deepEqual(projectStatus.durable_stories, {
@@ -88,6 +88,8 @@ test('closes exactly MOD-01 through MOD-03 without closing G008', () => {
     current: 'G009',
   });
   assert.match(backlog, /当前持久故事：\*\* `G009`/u);
-  assert.match(backlog, /下一项[^。\n]*STY-01/u);
+  const currentBaseline = backlog.split(/\r?\n/u)
+    .find((line) => line.startsWith('- **当前发布基线：**'));
+  assert.match(currentBaseline, /下一项为 STY-02/u);
   assert.match(backlog, /最近完成 `G008`/u);
 });

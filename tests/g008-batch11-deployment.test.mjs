@@ -54,12 +54,12 @@ const expectedReviewSections = [
 ];
 
 const expectedProjection = {
-  completed_topics: 53,
+  completed_topics: 54,
   content_documents: 95,
   governed_sources: 502,
   durable_stories: {completed: 8, total: 20, current: 'G009'},
   recently_completed: 'G008',
-  next_topic: 'STY-01',
+  next_topic: 'STY-02',
 };
 
 const expectedRoutes = [
@@ -240,9 +240,9 @@ function assertBacklog(source) {
   assert.equal(segment.split('下一项为 STY-00').length - 1, 1);
   assert.match(
     currentReleaseBaseline(source),
-    /^- \*\*当前发布基线：\*\* 2026-08-06 G009 Batch 1 已完成 STY-00/u,
+    /^- \*\*当前发布基线：\*\* 2026-08-07 G009 Batch 2 已完成 STY-01/u,
   );
-  assert.match(currentReleaseBaseline(source), /当前 G009，下一项为 STY-01/u);
+  assert.match(currentReleaseBaseline(source), /当前 G009，下一项为 STY-02/u);
 }
 
 function assertGeneratedState(manifestValue, statusValue) {
@@ -254,7 +254,7 @@ function assertGeneratedState(manifestValue, statusValue) {
   assert.equal(topics.get('STY-00')?.published, true);
   assert.equal(topics.get('STY-00')?.status.value, 'complete');
   assert.equal(topics.get('STY-01')?.published, true);
-  assert.equal(topics.get('STY-01')?.status.value, 'pending');
+  assert.equal(topics.get('STY-01')?.status.value, 'complete');
   assert.deepEqual(statusValue, {
     schema_version: 1,
     durable_stories: expectedProjection.durable_stories,
@@ -324,8 +324,11 @@ test('rejects every backlog evidence identity count state and history mutation',
     backlog.replace('- [x] **MOD-13 ', '- [ ] **MOD-13 '),
     backlog.replace('- [x] **STY-00 ', '- [ ] **STY-00 '),
     backlog.replace('- **当前持久故事：** `G009`。', '- **当前持久故事：** `G008`。'),
-    backlog.replace('下一项为 STY-01', '下一项为 STY-00'),
-  ]) assert.throws(() => assertBacklog(mutation));
+    backlog.replace('下一项为 STY-02', '下一项为 STY-01'),
+  ]) {
+    assert.notEqual(mutation, backlog, 'backlog mutation must change source');
+    assert.throws(() => assertBacklog(mutation));
+  }
   const history = batch10AndOlderHistory(backlog);
   assert.throws(() => assertBacklog(backlog.replace(history, history.replace('G008 Batch 10', 'G008 Batch ten'))));
 });
@@ -349,7 +352,6 @@ test('rejects every generated Stage B state route and count mutation', () => {
   }
   const staleSty01 = structuredClone(manifest);
   const sty01 = staleSty01.topics.find((candidate) => candidate.id === 'STY-01');
-  sty01.published = false;
   sty01.status.value = 'pending';
   assert.notDeepEqual(staleSty01, manifest, 'STY-01 stale-state mutation must change manifest');
   assert.throws(() => assertGeneratedState(staleSty01, projectStatus));

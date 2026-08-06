@@ -156,18 +156,18 @@ test('governs the four approved STY-01 sources', () => {
   assert.equal(records.get('src-archunit-user-guide').version.includes('v1.5.0'), true);
 });
 
-test('projects the Stage A G009 Batch 2 state without closing STY-01', () => {
+test('projects the Stage B G009 Batch 2 state after closing STY-01', () => {
   const topic = manifest.topics.find(({id}) => id === 'STY-01');
   assert.equal(topic.published, true);
-  assert.equal(topic.status.value, 'pending');
+  assert.equal(topic.status.value, 'complete');
   assert.deepEqual(topic.primary_sources, [
     'https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/n-tier',
   ]);
-  assert.equal(projectStatus.completed_topics, 53);
+  assert.equal(projectStatus.completed_topics, 54);
   assert.equal(projectStatus.content_documents, 95);
   assert.equal(projectStatus.governed_sources, 502);
   assert.equal(publicLedger.sources.length, 502);
-  assert.ok(indexes.style.some(({id, status}) => id === 'STY-01' && status.value === 'pending'));
+  assert.ok(indexes.style.some(({id, status}) => id === 'STY-01' && status.value === 'complete'));
 });
 
 test('keeps every STY-01 transport in the reviewed health cache', () => {

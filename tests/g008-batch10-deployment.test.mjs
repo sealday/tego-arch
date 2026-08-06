@@ -79,12 +79,12 @@ const expectedAssets = [
 ];
 
 const expectedProjection = {
-  completed_topics: 53,
+  completed_topics: 54,
   content_documents: 95,
   governed_sources: 502,
   durable_stories: {completed: 8, total: 20},
   current_goal: 'G009',
-  next_topic: 'STY-01',
+  next_topic: 'STY-02',
 };
 
 const reviewSections = new Map([
@@ -250,7 +250,7 @@ function assertBacklog(source) {
   assert.match(source, /^- \[x\] \*\*STY-00 /mu);
   assert.match(source, /当前持久故事：\*\* `G009`/u);
   assert.match(source, /最近完成 `G008`/u);
-  assert.equal(currentBaseline(source).split('下一项为 STY-01').length - 1, 1);
+  assert.equal(currentBaseline(source).split('下一项为 STY-02').length - 1, 1);
 }
 
 function assertGeneratedState(manifestValue, statusValue) {
@@ -262,7 +262,7 @@ function assertGeneratedState(manifestValue, statusValue) {
   assert.equal(topics.get('STY-00')?.published, true);
   assert.equal(topics.get('STY-00')?.status.value, 'complete');
   assert.equal(topics.get('STY-01')?.published, true);
-  assert.equal(topics.get('STY-01')?.status.value, 'pending');
+  assert.equal(topics.get('STY-01')?.status.value, 'complete');
   assert.deepEqual(statusValue, {
     schema_version: 1,
     durable_stories: {...expectedProjection.durable_stories, current: expectedProjection.current_goal},
@@ -321,9 +321,12 @@ test('rejects every backlog evidence status and projection mutation', () => {
     backlog.replace('- [x] **MOD-12 ', '- [ ] **MOD-12 '),
     backlog.replace('- [x] **MOD-13 ', '- [ ] **MOD-13 '),
     backlog.replace('- **当前持久故事：** `G009`。', '- **当前持久故事：** `G008`。'),
-    backlog.replace('下一项为 STY-01', '下一项为 STY-00'),
+    backlog.replace('下一项为 STY-02', '下一项为 STY-01'),
     backlog.replace('- [x] **STY-00 ', '- [ ] **STY-00 '),
-  ]) assert.throws(() => assertBacklog(mutation));
+  ]) {
+    assert.notEqual(mutation, backlog, 'backlog mutation must change source');
+    assert.throws(() => assertBacklog(mutation));
+  }
 });
 
 test('locks Batch 9 and all older release evidence byte-for-byte', () => {
@@ -345,7 +348,6 @@ test('rejects every generated Stage B state mutation', () => {
   }
   const staleSty01 = structuredClone(manifest);
   const sty01 = staleSty01.topics.find((candidate) => candidate.id === 'STY-01');
-  sty01.published = false;
   sty01.status.value = 'pending';
   assert.notDeepEqual(staleSty01, manifest, 'STY-01 stale-state mutation must change manifest');
   assert.throws(() => assertGeneratedState(staleSty01, projectStatus));
