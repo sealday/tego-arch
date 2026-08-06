@@ -12,7 +12,8 @@ const prototypeNames = new Set(['__proto__', 'constructor', 'prototype']);
 const normalizeAlias = (value) => value.normalize('NFC').trim().toLocaleLowerCase('en');
 const isRecord = (value) => typeof value === 'object' && value !== null && !Array.isArray(value);
 const exactKeys = (value, keys) => isRecord(value)
-  && Object.keys(value).sort().join('\0') === [...keys].sort().join('\0');
+  && Object.keys(value).length === keys.length
+  && keys.every((key) => Object.hasOwn(value, key));
 const isNonEmpty = (value) => typeof value === 'string' && value.trim() !== '';
 const isNullableText = (value) => value === null || isNonEmpty(value);
 const isTextArray = (value) => Array.isArray(value)
@@ -29,7 +30,6 @@ const expectedFirstUse = ({canonical_zh, english, acronym}) => {
     return `${canonical_zh}（${english}，${acronym}）`;
   }
   if (english !== null) return `${canonical_zh}（${english}）`;
-  if (acronym !== null) return `${canonical_zh}（${acronym}）`;
   return canonical_zh;
 };
 
@@ -69,6 +69,7 @@ export function parseTerminologyRegistry(value, file = 'data/terminology.json') 
     const validSubsequent = isTextArray(entry.subsequent_use);
     const validAllowed = isTextArray(entry.allowed_aliases);
     const validForbidden = isTextArray(entry.forbidden_aliases);
+    const validTermCombination = entry.acronym === null || isNonEmpty(entry.english);
     if (!validCanonical
       || !validEnglish
       || !validAcronym
@@ -82,9 +83,12 @@ export function parseTerminologyRegistry(value, file = 'data/terminology.json') 
       || entry.order <= 0) {
       errors.push(`${label} has invalid field values`);
     }
+    if (validAcronym && !validTermCombination) {
+      errors.push(`${label} acronym requires english`);
+    }
     if (orders.has(entry.order)) errors.push(`${label} has duplicate order "${entry.order}"`);
     orders.add(entry.order);
-    if (validCanonical && validEnglish && validAcronym && validFirstUse
+    if (validCanonical && validEnglish && validAcronym && validTermCombination && validFirstUse
       && entry.first_use !== expectedFirstUse(entry)) {
       errors.push(`${label} first_use must exactly equal "${expectedFirstUse(entry)}"`);
     }
@@ -133,9 +137,11 @@ export async function loadTerminologyRegistry(root) {
   } catch (error) {
     return emptyResult(`${displayFile}: unable to read: ${error.message}`);
   }
+  let value;
   try {
-    return parseTerminologyRegistry(JSON.parse(source), displayFile);
+    value = JSON.parse(source);
   } catch (error) {
     return emptyResult(`${displayFile}: invalid JSON: ${error.message}`);
   }
+  return parseTerminologyRegistry(value, displayFile);
 }

@@ -55,6 +55,11 @@ test('rejects invalid top-level keys, schema versions, and terms values', () => 
   assert.match(terms.errors[0], /terms must be an array/);
 });
 
+test('rejects a NUL-joined key that only resembles the required top-level keys', () => {
+  const result = parseTerminologyRegistry({'schema_version\0terms': []}, 'nul-key.json');
+  assert.deepEqual(result.errors, ['nul-key.json: expected exactly schema_version and terms']);
+});
+
 test('collects invalid field types without throwing and skips invalid alias containers', () => {
   const result = parseTerminologyRegistry({
     schema_version: 1,
@@ -86,6 +91,21 @@ test('rejects illegal ids, prototype ids, kinds, and orders', () => {
   assert.equal(result.byId.has('constructor'), false);
 });
 
+test('reports an exact duplicate id and keeps the first indexed term', () => {
+  const first = {...validEntry};
+  const second = {
+    ...validEntry,
+    canonical_zh: '品质属性',
+    first_use: '品质属性（Quality Attribute）',
+    subsequent_use: ['品质属性'],
+    order: 20,
+  };
+
+  const result = parseTerminologyRegistry({schema_version: 1, terms: [first, second]});
+  assert.ok(result.errors.some((error) => error.includes('duplicate id "quality-attribute"')));
+  assert.equal(result.byId.get('quality-attribute').canonical_zh, '质量属性');
+});
+
 test('reports duplicate malformed orders independent of entry order', () => {
   const malformed = (id) => ({...validEntry, id, extra: true});
   const valid = (id) => ({...validEntry, id});
@@ -104,7 +124,7 @@ test('reports duplicate malformed orders independent of entry order', () => {
   }
 });
 
-test('accepts every exact first-use display form', () => {
+test('accepts the three permitted exact first-use display forms', () => {
   const forms = [
     {...validEntry, id: 'english-only'},
     {
@@ -116,24 +136,32 @@ test('accepts every exact first-use display form', () => {
     },
     {
       ...validEntry,
-      id: 'acronym-only',
-      english: null,
-      acronym: 'QA',
-      first_use: '质量属性（QA）',
-      order: 30,
-    },
-    {
-      ...validEntry,
       id: 'canonical-only',
       english: null,
       acronym: null,
       first_use: '质量属性',
-      order: 40,
+      order: 30,
     },
   ];
 
-  const result = parseTerminologyRegistry({schema_version: 1, terms: forms});
-  assert.equal(result.errors.filter((error) => error.includes('first_use must exactly equal')).length, 0);
+  for (const entry of forms) {
+    const result = parseTerminologyRegistry({schema_version: 1, terms: [entry]});
+    assert.deepEqual(result.errors, []);
+  }
+});
+
+test('rejects an acronym without an English term', () => {
+  const result = parseTerminologyRegistry({
+    schema_version: 1,
+    terms: [{
+      ...validEntry,
+      english: null,
+      acronym: 'QA',
+      first_use: '质量属性（QA）',
+    }],
+  });
+
+  assert.ok(result.errors.some((error) => error.includes('acronym requires english')));
 });
 
 test('rejects reordered, half-width, missing, and extra first-use text', () => {
