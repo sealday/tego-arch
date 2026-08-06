@@ -8,20 +8,36 @@ const read = async (path) =>
 const readBinary = async (path) =>
   readFile(new URL(`../${path}`, import.meta.url));
 
+const assertPng = (image, label) => {
+  assert.ok(image.length > 50 * 1024, `${label} must exceed 50 KB`);
+  assert.deepEqual(
+    [...image.subarray(0, 8)],
+    [137, 80, 78, 71, 13, 10, 26, 10],
+    `${label} must be a PNG`,
+  );
+  assert.equal(image.toString('ascii', 12, 16), 'IHDR');
+  assert.equal(image.readUInt32BE(16), 1672, `${label} width`);
+  assert.equal(image.readUInt32BE(20), 941, `${label} height`);
+};
+
 test('ships one readable 16:9 future-directions roadmap', async () => {
   const image = await readBinary(
     'static/img/illustrations/tego-arch-future-directions.png',
   );
 
-  assert.ok(image.length > 50 * 1024, 'future roadmap must exceed 50 KB');
-  assert.deepEqual(
-    [...image.subarray(0, 8)],
-    [137, 80, 78, 71, 13, 10, 26, 10],
-    'future roadmap must be a PNG',
-  );
-  assert.equal(image.toString('ascii', 12, 16), 'IHDR');
-  assert.equal(image.readUInt32BE(16), 1672);
-  assert.equal(image.readUInt32BE(20), 941);
+  assertPng(image, 'future roadmap');
+});
+
+test('ships matching light and dark judgment-path editorial assets', async () => {
+  const [light, dark] = await Promise.all([
+    readBinary('static/img/illustrations/tego-arch-judgment-path-light.png'),
+    readBinary('static/img/illustrations/tego-arch-judgment-path-dark.png'),
+  ]);
+
+  assertPng(light, 'light judgment path');
+  assertPng(dark, 'dark judgment path');
+  assert.equal(light.readUInt32BE(16), dark.readUInt32BE(16));
+  assert.equal(light.readUInt32BE(20), dark.readUInt32BE(20));
 });
 
 test('publishes separate code, content, and third-party license boundaries', async () => {
