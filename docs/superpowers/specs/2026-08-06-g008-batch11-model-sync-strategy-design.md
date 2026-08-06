@@ -326,7 +326,7 @@ MOD-13 related case 固定为 `/cases/kubernetes-reconciliation-loop`，正文�
    - pinned transport：`https://raw.githubusercontent.com/structurizr/structurizr.github.io/d7f521eb9c6c55f7e9a4dcaf2a1122b844dbcb7f/dsl/index.md`
    - version：Structurizr documentation commit `d7f521eb9c6c55f7e9a4dcaf2a1122b844dbcb7f`，checked `2026-08-06`
    - author/org：Structurizr
-   - kind/tier：official-doc / primary
+   - kind/tier：official-docs / primary
    - license：MIT；evidence `https://github.com/structurizr/structurizr.github.io/blob/d7f521eb9c6c55f7e9a4dcaf2a1122b844dbcb7f/LICENSE`
    - boundary：支持文本 DSL 定义 C4 软件架构模型，以及 model/views 同一 workspace 的做法；不证明模型与代码、部署或运行状态自动一致。
 2. `src-opengitops-principles-v1`
@@ -342,17 +342,17 @@ MOD-13 related case 固定为 `/cases/kubernetes-reconciliation-loop`，正文�
    - pinned transport：`https://raw.githubusercontent.com/github/docs/738593aef7b8d80183a376d5c692feefc0e8a5ff/content/actions/how-tos/deploy/configure-and-manage-deployments/view-deployment-history.md`
    - version：GitHub Docs commit `738593aef7b8d80183a376d5c692feefc0e8a5ff`，checked `2026-08-06`
    - author/org：GitHub
-   - kind/tier：official-doc / primary
+   - kind/tier：official-docs / primary
    - license：CC-BY-4.0 for documentation；evidence `https://github.com/github/docs/blob/738593aef7b8d80183a376d5c692feefc0e8a5ff/LICENSE`
    - boundary：支持部署历史关联环境、提交、workflow logs、URL 与状态；不证明应用功能、性能、可靠性或全部运行健康。
 
 新增一个本站原创图来源：
 
 - `src-atlas-mod13-authority-drift-loop`
-  - canonical：`atlas://illustrations/mod-13-authority-drift-loop`
-  - transport：`/img/diagrams/mod-13-authority-drift-loop.svg`
+  - canonical/transport：`/img/diagrams/mod-13-authority-drift-loop.svg`
   - source kind：`original-illustration`
-  - roles：`illustration-rights`、`learning`
+  - allowed evidence roles：`illustration`
+  - document copyright check：`illustration-rights`
   - usage boundary：本站原创权威事实与漂移闭环教学图，不表示特定生产拓扑、团队或工具实现。
 
 Stage A 预计从 490 增加到 494 个唯一来源：三个新增外部身份、一个原创图身份，ADR 来源复用。实现时必须由 source-ledger validator 证明 canonical identity、许可证、角色和 link-health cache；如果实际 canonical 去重结果与 494 不同，先修订设计与计数合同，不能静默改变目标。
