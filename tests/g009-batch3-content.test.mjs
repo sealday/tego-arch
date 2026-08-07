@@ -194,6 +194,10 @@ function externalLinksOf(source) {
   return extractExternalLinks({body: bodyOf(source)});
 }
 
+function visibleExternalLinksOf(source) {
+  return [...source.matchAll(/\]\((https?:\/\/[^)]+)\)/gu)].map(([, locator]) => locator);
+}
+
 function assertInOrder(source, values, label) {
   let cursor = -1;
   for (const value of values) {
@@ -203,7 +207,87 @@ function assertInOrder(source, values, label) {
   }
 }
 
+const expectedLearningQuestions = [
+  '三种架构共享哪些依赖和边界不变量，又在哪些命名与推理起点上不同？',
+  '同一次提交订单控制流如何在三套术语中保持同一行为？',
+  '当运行时调用外部机制时，源码依赖为什么仍能指向内部？',
+  '什么情况下迁移成本超过边界隔离带来的价值？',
+];
+
+const expectedTerminologyTable = [
+  ['关注点', '共同语义', 'Hexagonal', 'Onion', 'Clean'],
+  ['内部核心', '业务策略位于内部，技术机制位于外部', 'Application', 'Domain Model / Application Core', 'Entities + Use Cases'],
+  ['输入边界', '外部驱动方以显式接口发起用例', 'Driving Port', 'Application Interface', 'Input Boundary'],
+  ['输出边界', '核心声明所需的外部能力', 'Driven Port', 'Core Interface', 'Output Boundary / Gateway'],
+  ['外部实现', '技术机制实现内侧合同', 'Adapter', 'Infrastructure', 'Interface Adapter / Frameworks and Drivers'],
+  ['依赖规则', '源码依赖指向内部或内侧抽象', 'Adapter 依赖 Port', 'Outer Layer 依赖 Inner Interface', 'Source Dependency points inward'],
+  ['主要观察重点', '边界所有权可被检查', '有目的的对话与可替换适配器', '独立对象模型和核心接口', '策略层级、用例和边界数据'],
+];
+
+const expectedDecisionTable = [
+  ['判断信号', 'Hexagonal 视角', 'Onion 视角', 'Clean 视角', '不采用或停止条件'],
+  ['端口对话', '按驱动方和被驱动方识别有目的的对话', '只在核心需要能力时定义接口', '用输入与输出边界保护用例', '只有单一稳定入口且替换价值很低'],
+  ['核心所有权', 'Application 不知道适配器技术', '内层定义接口，外层实现', '高层策略不提及外层名称', '接口仍由数据库或框架模块拥有'],
+  ['策略层级', '不强制固定圈数', 'Domain Model 位于中心', '区分 Entities 与 Use Cases', '分层只增加转发而没有独立策略'],
+  ['测试', '用测试适配器驱动端口', '核心可脱离基础设施运行', '用例和实体可独立测试', '测试仍必须启动真实 UI 或数据库'],
+  ['部署', '不从端口推导部署拓扑', '不从同心层推导故障域', 'Frameworks 位于外圈不等于独立服务', '目标是独立扩缩或网络隔离却没有额外设计'],
+  ['迁移成本', '先包围有变化压力的对话', '把接口所有权移回核心', '在边界转换外部数据', '小型、短生命周期、变化压力低的 CRUD 应用'],
+];
+
+const expectedOrderRestatements = [
+  '**Hexagonal：** HTTP、CLI 或自动化测试通过 driving adapter 和 driving port 调用提交订单；用例通过 driven port 使用库存和持久化能力，外侧 adapter 实现这些 port。',
+  '**Onion：** 应用服务编排订单领域模型；库存和仓储接口属于 application core，基础设施在外圈实现并依赖这些接口。',
+  '**Clean：** Controller 调用 Input Boundary；Use Case 调用 Entity，并通过 Output Boundary 或 Gateway 使用库存和持久化机制。',
+];
+
+const expectedVisibleSourceOrder = [
+  'https://alistair.cockburn.us/hexagonal-architecture/',
+  'https://jeffreypalermo.com/2008/07/the-onion-architecture-part-1/',
+  'https://jeffreypalermo.com/2008/08/the-onion-architecture-part-3/',
+  'https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html',
+  'https://docs.aws.amazon.com/prescriptive-guidance/latest/hexagonal-architectures/overview.html',
+];
+
+function sectionBody(source, heading, nextHeading) {
+  const start = source.indexOf(`## ${heading}`);
+  assert.ok(start >= 0, `${heading} section`);
+  const end = nextHeading ? source.indexOf(`## ${nextHeading}`, start + heading.length + 3) : source.length;
+  assert.ok(end > start, `${heading} section end`);
+  return source.slice(start, end);
+}
+
+function markdownTables(source) {
+  const tables = [];
+  const lines = source.split(/\r?\n/u);
+  for (let index = 0; index < lines.length; index += 1) {
+    if (!/^\|.*\|$/u.test(lines[index]) || !/^\|(?:\s*:?-+:?\s*\|)+$/u.test(lines[index + 1] ?? '')) continue;
+    const rows = [];
+    for (; index < lines.length && /^\|.*\|$/u.test(lines[index]); index += 1) {
+      if (/^\|(?:\s*:?-+:?\s*\|)+$/u.test(lines[index])) continue;
+      rows.push(lines[index].slice(1, -1).split('|').map((cell) => cell.trim()));
+    }
+    tables.push(rows);
+  }
+  return tables;
+}
+
+function assertExactArticleStructures(source) {
+  const learningQuestions = [...sectionBody(source, '学习问题', '组件、连接器与约束')
+    .matchAll(/^- (.+？)$/gmu)].map(([, question]) => question);
+  assert.ok(learningQuestions.length >= 3 && learningQuestions.length <= 5, 'learning question count');
+  assert.deepEqual(learningQuestions, expectedLearningQuestions);
+  assert.deepEqual(markdownTables(source), [expectedTerminologyTable, expectedDecisionTable]);
+
+  const comparison = sectionBody(source, '对比案例', '来源');
+  const restatements = [...comparison.matchAll(/^- (\*\*(?:Hexagonal|Onion|Clean)：\*\* .+)$/gmu)]
+    .map(([, restatement]) => restatement);
+  assert.deepEqual(restatements, expectedOrderRestatements);
+  assert.equal((source.match(/同一订单行为和拓扑/gu) ?? []).length, 1, 'one explicit shared order scenario');
+  assert.deepEqual(visibleExternalLinksOf(sectionBody(source, '来源')), expectedVisibleSourceOrder);
+}
+
 function assertStyleContract(source) {
+  assertExactArticleStructures(source);
   assertInOrder(source, ['业务策略位于内部', '技术机制位于外部', '源码依赖指向内部', '显式接口', '简单数据'], 'common kernel');
   assert.match(source, /Hexagonal[\s\S]*有目的的对话/u);
   assert.match(source, /Onion[\s\S]*核心[\s\S]*接口/u);
@@ -447,6 +531,13 @@ test('rejects mutations of the STY-02 decision contract', () => {
     ['deployment overclaim', '不自动形成独立部署', sty02.source.replace('不自动形成独立部署', '自动提供独立部署')],
     ['missing non-use', '小型、短生命周期、变化压力低的 CRUD 应用可能不值得承担接口、映射和组合成本。', sty02.source.replace('小型、短生命周期、变化压力低的 CRUD 应用可能不值得承担接口、映射和组合成本。', '所有应用都值得承担接口、映射和组合成本。')],
     ['STY-03 actionable', null, `${sty02.source}\n[下一个风格](/styles/sty-03)\n`],
+    ['removed terminology row', '| 输出边界 |', sty02.source.replace(/^\| 输出边界 \|.*\n/mu, '')],
+    ['reordered decision rows', '| 核心所有权 |', sty02.source.replace(/(\| 端口对话 \|.*\n)(\| 核心所有权 \|.*\n)/u, '$2$1')],
+    ['altered terminology header', '| 关注点 |', sty02.source.replace('| 关注点 | 共同语义 |', '| 比较项 | 共同语义 |')],
+    ['too few learning questions', '- 三种架构共享哪些', sty02.source.replace(/^- 三种架构共享哪些.*\n/mu, '')],
+    ['too many learning questions', null, sty02.source.replace('## 组件、连接器与约束', '- 是否还有第五个问题？\n- 是否还有第六个问题？\n\n## 组件、连接器与约束')],
+    ['reordered visible sources', 'Alistair Cockburn', sty02.source.replace(/(\[Alistair Cockburn[^\n]+?。)(\[Jeffrey Palermo 的 Onion Architecture part 1[^\n]+?。)/u, '$2$1')],
+    ['changed Clean restatement', '**Clean：**', sty02.source.replace('**Clean：** Controller 调用 Input Boundary', '**Clean：** Controller 直接调用数据库')],
   ]) {
     if (needle) assert.equal(sty02.source.split(needle).length - 1, 1, `${label} mutation needle count`);
     assert.notEqual(mutated, sty02.source, `${label} mutation must change source`);

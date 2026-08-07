@@ -263,8 +263,9 @@ Stage A 架构复审确认：输入边界与用例实现必须显式分离。以
 | `b-mechanism` | 980 | 100 | 190 | 520 |
 | `n-driver` | 45 | 300 | 190 | 130 |
 | `n-input-adapter` | 260 | 265 | 135 | 210 |
-| `n-usecase` | 430 | 255 | 270 | 150 |
-| `n-domain` | 430 | 475 | 270 | 135 |
+| `n-input-port` | 430 | 130 | 270 | 145 |
+| `n-usecase` | 430 | 355 | 270 | 130 |
+| `n-domain` | 430 | 555 | 270 | 120 |
 | `n-inventory-port` | 710 | 135 | 230 | 160 |
 | `n-order-port` | 710 | 455 | 230 | 160 |
 | `n-inventory-adapter` | 985 | 155 | 180 | 210 |
@@ -311,11 +312,13 @@ Stage A 架构复审确认：输入边界与用例实现必须显式分离。以
 
 | ID | Canonical URL | 角色 | 使用边界 |
 | --- | --- | --- | --- |
-| `src-aws-hexagonal-layered-overview` | `https://docs.aws.amazon.com/prescriptive-guidance/latest/hexagonal-architectures/overview.html` | comparison, implementation-boundary | 工程落地与成本补充，不覆盖原作者定义 |
+| `src-aws-hexagonal-layered-overview` | `https://docs.aws.amazon.com/prescriptive-guidance/latest/hexagonal-architectures/overview.html` | comparison, implementation-boundary | 工程实现边界补充，不覆盖原作者定义；成本分析属于 Tego Arch 综合 |
 
 所有新增来源均使用 `facts-summary`，`excerpt: null`，`quotation_reviewed: false`。来源页面、图片和代码按保守 ARR 边界处理：只链接、归纳事实，不改编图示或复制结构。每条来源必须同时进入 canonical ledger、document citation review、license inventory 和生成物，并通过链接健康与 manifest-primary 资格验证。
 
 预计受治理来源从 `502` 增加至 `506`。
+
+正文可见来源顺序固定为 Cockburn → Palermo part 1 → Palermo part 3 → Martin → AWS。生成器对 `primary_sources` 使用 canonical URL 字典序归一化，因此生成投影固定为 Cockburn → Martin → Palermo part 3；这是确定性投影顺序，不表示事实叙述或来源优先级变化。
 
 ## 10. 关系治理
 
@@ -338,7 +341,7 @@ Stage A 架构复审确认：输入边界与用例实现必须显式分离。以
 - 三至五个学习问题；
 - 共同内核五项规则；
 - 术语矩阵和选择矩阵的列、行与顺序；
-- 唯一“提交订单”案例及八个图节点；
+- 唯一“提交订单”案例及九个图节点；
 - 控制流与源码依赖方向的区别；
 - 外部数据类型不得越界；
 - 部署/故障边界不由代码层自动推导；

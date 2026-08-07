@@ -403,11 +403,13 @@ node .codex/skills/creating-drawio-architecture-diagrams/scripts/validate_drawio
   --label "数据库适配器" \
   --label "Driving Adapter / UI Edge / Controller" \
   --label "Driving Port / Application Interface / Input Boundary" \
+  --label "Use Case / Application Service / Interactor" \
   --label "Domain Model / Entity Policy" \
   --label "Driven Port / Core Interface / Output Gateway" \
   --label "Driven Adapter / Infrastructure / Interface Adapter" \
   --label "运行时控制流" \
-  --label "源码依赖指向内侧接口"
+  --label "源码依赖指向内侧接口" \
+  --label "术语映射用于对照，不表示节点完全等价"
 node --test tests/g009-batch3-content.test.mjs tests/drawio-diagram-validator.test.mjs
 git diff --check
 ```
@@ -798,8 +800,8 @@ test('projects Stage A without closing STY-02 or activating STY-03', () => {
   assert.equal(topics.get('STY-02')?.status.value, 'pending');
   assert.deepEqual(topics.get('STY-02')?.primary_sources, [
     'https://alistair.cockburn.us/hexagonal-architecture/',
-    'https://jeffreypalermo.com/2008/08/the-onion-architecture-part-3/',
     'https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html',
+    'https://jeffreypalermo.com/2008/08/the-onion-architecture-part-3/',
   ]);
   assert.equal(topics.get('STY-03')?.published, false);
   assert.equal(topics.get('STY-03')?.status.value, 'pending');
@@ -948,7 +950,7 @@ Require exact H1, two tables, one SVG, three focusable wrappers, no document ove
 
 - [ ] **Step 6: Measure the diagram in final rendered CSS pixels**
 
-At desktop, require `image.getBoundingClientRect().width === 800` and record scale `2/3`. For all eight semantic nodes—driver, input adapter, use case, domain rule, inventory port, order repository port, inventory adapter, database adapter—record rendered title/type baselines, baseline gap, horizontal/vertical text clearance, and bottom clearance. For every visible edge label record clearance from stroke, marker, node, and boundary.
+At desktop, require `image.getBoundingClientRect().width === 800` and record scale `2/3`. For all nine semantic nodes—driver, input adapter, input port, use case, domain rule, inventory port, order repository port, inventory adapter, database adapter—record rendered title/type baselines, baseline gap, horizontal/vertical text clearance, and bottom clearance. For every visible edge label record clearance from stroke, marker, node, and boundary.
 
 At mobile require:
 
