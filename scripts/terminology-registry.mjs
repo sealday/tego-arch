@@ -86,12 +86,21 @@ export function parseTerminologyRegistry(value, file = 'data/terminology.json') 
     if (validAcronym && !validTermCombination) {
       errors.push(`${label} acronym requires english`);
     }
-    if (entry.kind === 'proper-noun'
-      && validCanonical
-      && validFirstUse
-      && /[A-Za-z]/u.test(entry.first_use)
-      && (!entry.first_use.includes(entry.canonical_zh) || !/\p{Script=Han}/u.test(entry.first_use))) {
-      errors.push(`${label} proper-noun first_use must contain canonical_zh and Chinese context`);
+    if (entry.kind === 'proper-noun' && validCanonical && validFirstUse) {
+      if (entry.english !== null || entry.acronym !== null) {
+        if (validEnglish && validAcronym && validTermCombination
+          && entry.first_use !== expectedFirstUse(entry)) {
+          errors.push(`${label} first_use must exactly equal "${expectedFirstUse(entry)}"`);
+        }
+      } else {
+        const prefix = `${entry.canonical_zh} `;
+        const context = entry.first_use.startsWith(prefix)
+          ? entry.first_use.slice(prefix.length)
+          : '';
+        if (context === '' || !/\p{Script=Han}/u.test(context) || /[A-Za-z]/u.test(context)) {
+          errors.push(`${label} proper-noun first_use must equal canonical_zh plus Chinese context`);
+        }
+      }
     }
     if (orders.has(entry.order)) errors.push(`${label} has duplicate order "${entry.order}"`);
     orders.add(entry.order);

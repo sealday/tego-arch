@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {mkdtemp, mkdir, rm, writeFile} from 'node:fs/promises';
+import {mkdtemp, mkdir, readFile, rm, writeFile} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
@@ -21,6 +21,10 @@ const validEntry = {
   note: '描述系统在运行或演化中的关键特性，不简称为“质量”。',
   order: 10,
 };
+const repositoryRegistry = JSON.parse(
+  await readFile(new URL('../data/terminology.json', import.meta.url), 'utf8'),
+);
+const repositoryTerms = new Map(repositoryRegistry.terms.map((term) => [term.id, term]));
 
 test('accepts and indexes a canonical terminology registry', () => {
   const result = parseTerminologyRegistry({schema_version: 1, terms: [validEntry]});
@@ -189,6 +193,55 @@ test('requires Latin proper nouns to introduce a Chinese category or meaning', (
     parseTerminologyRegistry({schema_version: 1, terms: [contextual]}).errors,
     [],
   );
+});
+
+test('rejects bare canonical first use for real proper nouns with Chinese in their names', () => {
+  for (const id of [
+    'google-adk-a2a-case',
+    'google-agent-development-kit',
+    'cloudflare-durable-objects',
+  ]) {
+    const term = repositoryTerms.get(id);
+    const result = parseTerminologyRegistry({
+      schema_version: 1,
+      terms: [{...term, first_use: term.canonical_zh}],
+    });
+    assert.ok(result.errors.some((error) => error.includes('first_use')), id);
+  }
+});
+
+test('keeps the exact display contract for proper nouns with an English name', () => {
+  const term = repositoryTerms.get('cloudflare-durable-objects');
+  assert.deepEqual(parseTerminologyRegistry({schema_version: 1, terms: [term]}).errors, []);
+
+  for (const firstUse of [
+    'Cloudflare 持久对象(Durable Objects)',
+    'Durable Objects（Cloudflare 持久对象）',
+    'Cloudflare 持久对象',
+    'Cloudflare 持久对象（Durable Objects） Extra',
+    'Cloudflare 持久对象：边缘状态单元',
+  ]) {
+    const result = parseTerminologyRegistry({
+      schema_version: 1,
+      terms: [{...term, first_use: firstUse}],
+    });
+    assert.ok(result.errors.some((error) => error.includes('first_use must exactly equal')), firstUse);
+  }
+});
+
+test('allows only Chinese context after an English-null proper noun canonical name', () => {
+  const microsoft = repositoryTerms.get('microsoft');
+  const caseIdentity = repositoryTerms.get('aws-cell-shuffle-sharding-case');
+
+  assert.deepEqual(parseTerminologyRegistry({schema_version: 1, terms: [microsoft]}).errors, []);
+  assert.deepEqual(parseTerminologyRegistry({schema_version: 1, terms: [caseIdentity]}).errors, []);
+  for (const firstUse of ['Microsoft', 'Microsoft Company 公司']) {
+    const result = parseTerminologyRegistry({
+      schema_version: 1,
+      terms: [{...microsoft, first_use: firstUse}],
+    });
+    assert.ok(result.errors.some((error) => error.includes('proper-noun first_use')), firstUse);
+  }
 });
 
 test('rejects reordered, half-width, missing, and extra first-use text', () => {

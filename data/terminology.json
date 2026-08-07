@@ -32,7 +32,7 @@
     },
     {
       "id": "tego-arch",
-      "canonical_zh": "Tego Arch 架构知识项目",
+      "canonical_zh": "Tego Arch",
       "english": null,
       "acronym": null,
       "kind": "proper-noun",
@@ -630,7 +630,7 @@
     },
     {
       "id": "stride-threat-modeling",
-      "canonical_zh": "STRIDE 威胁建模",
+      "canonical_zh": "STRIDE",
       "english": null,
       "acronym": null,
       "kind": "proper-noun",
@@ -773,7 +773,7 @@
     },
     {
       "id": "arc42-template",
-      "canonical_zh": "arc42 架构文档模板",
+      "canonical_zh": "arc42",
       "english": null,
       "acronym": null,
       "kind": "proper-noun",
@@ -916,7 +916,7 @@
     },
     {
       "id": "postgresql",
-      "canonical_zh": "PostgreSQL 数据库",
+      "canonical_zh": "PostgreSQL",
       "english": null,
       "acronym": null,
       "kind": "proper-noun",
@@ -929,7 +929,7 @@
     },
     {
       "id": "mermaid",
-      "canonical_zh": "Mermaid 图表工具",
+      "canonical_zh": "Mermaid",
       "english": null,
       "acronym": null,
       "kind": "proper-noun",
@@ -942,7 +942,7 @@
     },
     {
       "id": "temporal",
-      "canonical_zh": "Temporal 工作流平台",
+      "canonical_zh": "Temporal",
       "english": null,
       "acronym": null,
       "kind": "proper-noun",
@@ -955,7 +955,7 @@
     },
     {
       "id": "single-spa",
-      "canonical_zh": "single-spa 微前端框架",
+      "canonical_zh": "single-spa",
       "english": null,
       "acronym": null,
       "kind": "proper-noun",
@@ -1302,7 +1302,7 @@
     },
     {
       "id": "route53-infima",
-      "canonical_zh": "Route 53 Infima 项目",
+      "canonical_zh": "Route 53 Infima",
       "english": null,
       "acronym": null,
       "kind": "proper-noun",
@@ -1477,7 +1477,7 @@
     },
     {
       "id": "cloudflare-workers",
-      "canonical_zh": "Cloudflare Workers 平台",
+      "canonical_zh": "Cloudflare Workers",
       "english": null,
       "acronym": null,
       "kind": "proper-noun",
@@ -1490,7 +1490,7 @@
     },
     {
       "id": "cloudflare",
-      "canonical_zh": "Cloudflare 云平台",
+      "canonical_zh": "Cloudflare",
       "english": null,
       "acronym": null,
       "kind": "proper-noun",
@@ -1538,7 +1538,7 @@
     },
     {
       "id": "javascript-programming-language",
-      "canonical_zh": "JavaScript 编程语言",
+      "canonical_zh": "JavaScript",
       "english": null,
       "acronym": null,
       "kind": "proper-noun",
@@ -1586,11 +1586,11 @@
     },
     {
       "id": "fastapi",
-      "canonical_zh": "FastAPI Web 框架",
+      "canonical_zh": "FastAPI",
       "english": null,
       "acronym": null,
       "kind": "proper-noun",
-      "first_use": "FastAPI Web 框架",
+      "first_use": "FastAPI 网络框架",
       "subsequent_use": [
         "FastAPI Web 框架",
         "FastAPI"

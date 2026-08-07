@@ -71,7 +71,7 @@ const terms = [
   },
   {
     id: 'tego-arch',
-    canonical_zh: 'Tego Arch 架构知识项目',
+    canonical_zh: 'Tego Arch',
     english: null,
     acronym: null,
     kind: 'proper-noun',

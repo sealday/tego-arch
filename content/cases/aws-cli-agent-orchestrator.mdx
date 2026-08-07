@@ -333,7 +333,7 @@ planned -> dispatched -> acknowledged -> running
   <summary>证据：命令行智能体编排器控制、权限与恢复的完整阅读路径</summary>
 
 1. 固定版本 [`README.md`](https://github.com/awslabs/cli-agent-orchestrator/blob/bae80071a17e001380367c461b32d64bc6b54433/README.md)：先理解命令行智能体编排器面向编码命令行界面、监督者–工作进程、终端复用器会话隔离和三类 MCP 原语。重点区分会话内 MCP 与运维 MCP。
-2. [`CODEBASE.md`](https://github.com/awslabs/cli-agent-orchestrator/blob/bae80071a17e001380367c461b32d64bc6b54433/CODEBASE.md)：沿命令行界面、MCP、FastAPI Web 框架、服务、终端复用器、SQLite 数据库与提供方这条路径阅读。收件箱消息流程和移交流程给出比架构图更精确的调用链。
+2. [`CODEBASE.md`](https://github.com/awslabs/cli-agent-orchestrator/blob/bae80071a17e001380367c461b32d64bc6b54433/CODEBASE.md)：沿命令行界面、MCP、FastAPI 网络框架、服务、终端复用器、SQLite 数据库与提供方这条路径阅读。收件箱消息流程和移交流程给出比架构图更精确的调用链。
 3. [`mcp_server/server.py`](https://github.com/awslabs/cli-agent-orchestrator/blob/bae80071a17e001380367c461b32d64bc6b54433/src/cli_agent_orchestrator/mcp_server/server.py)：阅读`_handoff_impl`、`_assign_impl`、`send_message`和子级工具解析。注意移交的单 HTTP 接缝、分配的延后初始化、回调注入和超时与错误区分。
 4. [`services/agent_step.py`](https://github.com/awslabs/cli-agent-orchestrator/blob/bae80071a17e001380367c461b32d64bc6b54433/src/cli_agent_orchestrator/services/agent_step.py)：观察创建 → 就绪 → 输入 → 等待 → 提取 → 清理的规范形式步骤。重点看稳定空闲状态判断、`ERROR`/超时、`cancel_event`和失败时保留终端标识。
 5. [`models/terminal.py`](https://github.com/awslabs/cli-agent-orchestrator/blob/bae80071a17e001380367c461b32d64bc6b54433/src/cli_agent_orchestrator/models/terminal.py) 与 [`docs/inbox-delivery.md`](https://github.com/awslabs/cli-agent-orchestrator/blob/bae80071a17e001380367c461b32d64bc6b54433/docs/inbox-delivery.md)：对照终端状态与收件箱的“待处理”和“已投递”状态，理解为什么接收端忙碌时消息等待，以及协调清扫仍不是恰好一次处理。
