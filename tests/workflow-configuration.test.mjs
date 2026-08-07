@@ -204,8 +204,8 @@ test('runs terminology governance in the complete verification chain', async () 
     packageJson.scripts['check:terminology'],
     'node scripts/check-terminology.mjs',
   );
-  assert.match(
+  assert.equal(
     packageJson.scripts.verify,
-    /npm run validate:content && npm run check:terminology && npm run check:content/u,
+    'npm run test && npm run validate:content && npm run check:terminology && npm run check:content && npm run check:links && npm run check:reviews && npm run typecheck && npm run build',
   );
 });

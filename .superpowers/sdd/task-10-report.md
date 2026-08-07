@@ -5,7 +5,7 @@
 - 接入 `check:terminology` package script，并把它放在完整 `verify` 链的内容校验之后、生成物检查之前。
 - 增加 package/workflow 合同测试。
 - 运行真实内容生成器；生成结果无漂移，因此未人为修改 `src/generated/*.json`。
-- 按真实执行状态勾选计划步骤；Task 10 浏览器视觉验收保持未勾选，由控制器独立执行。
+- 按真实执行状态勾选计划步骤；Task 10 浏览器视觉验收由控制器独立完成，并依据控制器证据勾选完成。
 
 ## TDD 证据
 
@@ -21,6 +21,12 @@
 命令：`node --test tests/workflow-configuration.test.mjs`
 
 - 6 tests，6 pass，0 fail。
+
+### 独立审查修复 RED / GREEN
+
+- 先把 workflow 合同收紧为完整 `verify` 字符串相等，并临时从生产脚本末尾移除 `&& npm run build` 验证回归合同。
+- RED：`node --test tests/workflow-configuration.test.mjs` 得到 6 tests、5 pass、1 fail；失败差异精确指出实际字符串缺少 `&& npm run build`。
+- 恢复完整生产脚本后再次运行同一命令，GREEN：6 tests、6 pass、0 fail。
 
 ## 生成物
 
@@ -53,13 +59,18 @@
 
 - 生产构建通过 `http://127.0.0.1:58042/tego-arch/` 提供服务。
 - 首页 `/`：在 `1440×1000` 与 `390×844`、light/dark 四种组合下完成检查。
-  - document `scrollWidth === clientWidth`，分别为 `1440 === 1440` 与 `390 === 390`。
+  - desktop light：document `scrollWidth=1440`、`clientWidth=1440`。
+  - desktop dark：document `scrollWidth=1440`、`clientWidth=1440`。
+  - mobile light：document `scrollWidth=390`、`clientWidth=390`。
+  - mobile dark：document `scrollWidth=390`、`clientWidth=390`。
   - 旧词“基础与质量”不存在，新词存在。
   - light/dark 主题分别加载对应的 light/dark PNG。
   - 四种组合的 console errors 均为 `[]`。
 - 术语页 `/terminology`：在同样四种视口与主题组合下完成检查，共渲染 119 rows。
-  - desktop 表格区域 `clientWidth=800`、`scrollWidth=832`；mobile 为 `clientWidth=358`、`scrollWidth=832`。
-  - 表格区域 `overflow-x: auto`；移动端 document `scrollWidth/clientWidth=390/390`。
+  - desktop light：document `scrollWidth=1440`、`clientWidth=1440`；表格区域 `clientWidth=800`、`scrollWidth=832`、`overflow-x: auto`。
+  - desktop dark：document `scrollWidth=1440`、`clientWidth=1440`；表格区域 `clientWidth=800`、`scrollWidth=832`、`overflow-x: auto`。
+  - mobile light：document `scrollWidth=390`、`clientWidth=390`；表格区域 `clientWidth=358`、`scrollWidth=832`、`overflow-x: auto`。
+  - mobile dark：document `scrollWidth=390`、`clientWidth=390`；表格区域 `clientWidth=358`、`scrollWidth=832`、`overflow-x: auto`。
   - 在表格上水平滚动后区域 `scrollLeft` 从 `0` 变为 `300`，document 宽度仍为 `390`，证明只有表格区域滚动。
   - 四种组合的 console errors 均为 `[]`。
 - 站内导航：从 `/intro` 点击“术语规范”成功进入 `/terminology`，再点击“首页”成功进入 `/`。
