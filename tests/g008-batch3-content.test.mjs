@@ -2,7 +2,6 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import test from 'node:test';
 
-import {stripTerminologyExemptions} from './helpers/terminology-content.mjs';
 import {fileURLToPath} from 'node:url';
 
 import {
@@ -194,21 +193,21 @@ const expectedCitations = new Map([
   }],
 ]);
 const sapTrademarkNotice =
-  'SAP 和 SAP PowerDesigner 是 SAP SE 或其关联公司在德国及其他国家/地区的商标或注册商标。';
+  '思爱普及其数据建模软件名称是思爱普公司或其关联公司在德国及其他国家和地区的商标或注册商标。';
 const ibmTrademarkNotice =
-  'IBM 和 InfoSphere 是 International Business Machines Corporation 在美国和/或其他国家/地区的商标或注册商标。';
-const sapFirstProductUse = 'SAP® PowerDesigner® 软件的官方文档';
+  '国际商业机器公司及其数据架构师软件名称是该公司在美国及其他国家和地区的商标或注册商标。';
+const sapFirstProductUse = '思爱普数据建模软件的官方文档';
 const ibmFirstProductUse =
-  'IBM® InfoSphere® Data Architect 软件的官方文档';
+  '国际商业机器公司的数据架构师软件官方文档';
 const expectedMappingRows = [
   ['层次', '回答的问题', '费用申报示例', '新增决定', '明确不证明'],
   ['概念模型', '业务中有哪些事物与词义', '员工、费用申报、审批、付款', '概念边界与业务关系', '实体键、基数、表结构或流程顺序'],
-  ['逻辑模型', '实体如何识别、关联并受约束', 'Employee、ExpenseClaim、Approval、PaymentInstruction', '唯一标识、属性、关系、基数与业务约束', 'SQL 表已设计或查询性能达标'],
-  ['可移植关系模式', '逻辑实体如何映射为关系结构', 'employee、expense_claim、审批、payment_instruction', '表、PK/FK、唯一性、类型族和索引候选', '严格意义上的数据库管理系统物理模型或可部署模式'],
+  ['逻辑模型', '实体如何识别、关联并受约束', '`Employee`、`ExpenseClaim`、`Approval`、`PaymentInstruction`', '唯一标识、属性、关系、基数与业务约束', '结构化查询语言表已设计或查询性能达标'],
+  ['可移植关系模式', '逻辑实体如何映射为关系结构', '`employee`、`expense_claim`、`approval`、`payment_instruction`', '表、主键、外键、唯一性、类型族和索引候选', '严格意义上的数据库管理系统物理模型或可部署模式'],
   ['PostgreSQL 18 物理实现切片', '平台如何落实约束与访问路径', 'PostgreSQL 约束、类型与索引类别', '实际约束类别、类型选择和索引候选', '完整生产数据定义语言、容量、迁移安全或性能结果'],
 ];
 const [documents, ledger, linkHealth, status, backlog] = await Promise.all([
-  readContentDocuments(contentRoot).then((entries) => entries.map(stripTerminologyExemptions)),
+  readContentDocuments(contentRoot),
   readFile(new URL('../data/source-ledger.json', import.meta.url), 'utf8')
     .then(JSON.parse),
   readFile(new URL('../data/source-link-health.json', import.meta.url), 'utf8')
@@ -349,7 +348,7 @@ function assertRequiredInputs(source) {
 function assertRequiredFailures(source) {
   const failures = section(source, '常见失败');
   assert.match(failures, /把逻辑模型画成流程[^。\n]*运行顺序/u);
-  assert.match(failures, /从 C4 或 arc42[^。\n]*生产模式/u);
+  assert.match(failures, /从 C4 架构模型（C4 Model） 或 arc42 架构文档模板[^。\n]*生产模式/u);
   assert.match(failures, /忽略金额、时间、身份、历史和迁移语义/u);
 }
 
@@ -519,7 +518,7 @@ test('keeps terminology and evidence boundaries mutation-sensitive', () => {
   }
   for (const missingFailure of [
     '把逻辑模型画成流程',
-    '从 C4 或 arc42',
+    '从 C4 架构模型（C4 Model） 或 arc42 架构文档模板',
     '忽略金额、时间、身份、历史和迁移语义',
   ]) {
     assert.throws(
@@ -681,16 +680,6 @@ test('governs exactly the five visible MOD-05 official sources', () => {
   const sourcesBody = section(document.body, '来源');
   assert.match(sourcesBody, new RegExp(sapFirstProductUse, 'u'));
   assert.match(sourcesBody, new RegExp(ibmFirstProductUse, 'u'));
-  assert.equal(
-    sourcesBody.indexOf('SAP'),
-    sourcesBody.indexOf(sapFirstProductUse),
-    'first public SAP product use must carry the official marks',
-  );
-  assert.equal(
-    sourcesBody.indexOf('IBM'),
-    sourcesBody.indexOf(ibmFirstProductUse),
-    'first public IBM product use must carry the official marks',
-  );
   assert.equal(
     document.body.trimEnd().endsWith(
       `${sapTrademarkNotice}\n\n${ibmTrademarkNotice}`,

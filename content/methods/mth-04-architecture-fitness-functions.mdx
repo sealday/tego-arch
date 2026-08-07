@@ -84,8 +84,7 @@ related_questions: []
 
 ## 与其他方法的衔接
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-[架构决策记录生命周期](/methods/mth-03)保存为什么选择某个目标与阈值；本方法把决定转成持续证据。反馈进入[需求到演进闭环](/methods/mth-06)，触发场景、决定或实现调整。[为演化设计](/principles/pr-08)用旧、新路径的正确性、负载和采用率信号决定扩大、回退或退出兼容窗口。在 [Kubernetes reconciliation loop 案例](/cases/kubernetes-reconciliation-loop)中，可以分别检查控制器依赖方向、调谐积压和恢复时间，但这些检查不能证明所有副作用都幂等。
+[架构决策记录生命周期](/methods/mth-03)保存为什么选择某个目标与阈值；本方法把决定转成持续证据。反馈进入[需求到演进闭环](/methods/mth-06)，触发场景、决定或实现调整。[为演化设计](/principles/pr-08)用旧、新路径的正确性、负载和采用率信号决定扩大、回退或退出兼容窗口。在 [容器编排平台调谐循环案例](/cases/kubernetes-reconciliation-loop)中，可以分别检查控制器依赖方向、调谐积压和恢复时间，但这些检查不能证明所有副作用都幂等。
 
 ## 完整演练
 
@@ -95,13 +94,7 @@ related_questions: []
 
 ## 来源
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-- [O’Reilly — Building Evolutionary Architectures, 2nd Edition](https://www.oreilly.com/library/view/building-evolutionary-architectures/9781492097532/)：用于适应度函数的类别、作用域、节奏与治理语境；页面为书目信息和目录入口，本文不复制书中表达。
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-- [Thoughtworks — Fitness function-driven development](https://www.thoughtworks.com/en-us/insights/articles/fitness-function-driven-development)：用于持续反馈、客观度量与交付管道中的实践边界。
+- [Building Evolutionary Architectures, 2nd Edition](https://www.oreilly.com/library/view/building-evolutionary-architectures/9781492097532/)：用于适应度函数的类别、作用域、节奏与治理语境；页面为书目信息和目录入口，本文不复制书中表达。
+- [Fitness function-driven development](https://www.thoughtworks.com/en-us/insights/articles/fitness-function-driven-development)：用于持续反馈、客观度量与交付管道中的实践边界。
 
 反馈表、阈值分层和演练是本站原创归纳。来源支持适应度函数作为演进反馈的概念，不证明某个测试、指标、监控、服务等级目标或发布门禁可以互相替代。

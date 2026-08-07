@@ -49,9 +49,7 @@ related_questions: []
 
 ## 要保护的性质
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-**来源事实：** [AWS 的快速失败指南](https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_mitigate_interaction_failure_fail_fast.html)建议无法成功处理的请求尽快失败，避免无界排队继续消耗资源；[AWS 的优雅降级指南](https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_mitigate_interaction_failure_graceful_degradation.html)讨论在适用边界把硬依赖转成软依赖，以保留明确的核心功能。**推断：** 快速失败保护错误定位和资源边界，安全失败保护危害不再扩大，优雅降级保护可用的真实能力；三者保护的性质不同。
+**来源事实：** [REL05-BP04 Fail fast and limit queues](https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_mitigate_interaction_failure_fail_fast.html)建议无法成功处理的请求尽快失败，避免无界排队继续消耗资源；[REL05-BP01 Implement graceful degradation to transform applicable hard dependencies into soft dependencies](https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_mitigate_interaction_failure_graceful_degradation.html)讨论在适用边界把硬依赖转成软依赖，以保留明确的核心功能。**推断：** 快速失败保护错误定位和资源边界，安全失败保护危害不再扩大，优雅降级保护可用的真实能力；三者保护的性质不同。
 
 快速失败是局部且有界的：它停止受影响的操作或边界，并不意味着“每个异常都让整个进程崩溃”。故障安全必须先命名危害与安全状态，例如“禁止未经确认的扣款继续发生”以及“拒绝后续写入并保留人工核对记录”；没有这两个输入，就不能声称系统已经安全。
 
@@ -59,10 +57,7 @@ related_questions: []
 
 尽快返回错误可以缩短反馈，但在不可逆副作用之后，仅返回失败会掩盖结果不确定性；此时还要核对、补偿或进入人工终态。继续服务可以提高可用性，但若缓存内容已无法表达真实库存、权限或资金状态，返回“成功”反而扩大完整性伤害。
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-[Google SRE 关于级联故障的章节](https://sre.google/sre-book/addressing-cascading-failures/)给出了过载、排队、重试（Retry）和恢复的运行机制与应对背景。AWS 与 Google SRE 的材料在本文中只是操作指南，不是适用于所有系统的通用阈值；超时、队列长度、降级范围和恢复条件必须来自本系统的容量、风险与业务场景。
+[Chapter 22 - Addressing Cascading Failures](https://sre.google/sre-book/addressing-cascading-failures/)给出了过载、排队、重试（Retry）和恢复的运行机制与应对背景。亚马逊云科技与谷歌站点可靠性工程的材料在本文中只是操作指南，不是适用于所有系统的通用阈值；超时、队列长度、降级范围和恢复条件必须来自本系统的容量、风险与业务场景。
 
 ## 机制
 
@@ -94,21 +89,16 @@ related_questions: []
 
 ## 相邻原则
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 [高内聚与低耦合](/principles/pr-02)揭示依赖失败如何沿运行关系传播；[依赖倒置、控制反转与依赖注入](/principles/pr-04)帮助把故障策略放在拥有控制权的政策边界；[质量属性（Quality Attribute）场景写法](/quality-attributes/qa-01)用刺激、环境、响应与度量明确危害、安全状态和恢复条件。[最小权限、安全默认值与纵深防御](/principles/pr-09)定义策略缺失或不可用时保守的授权结果，[幂等与最小协调](/principles/pr-10)处理真实表达重试结果与未知终态。PR-07 在这些输入上选择局部故障响应，而不是给系统贴一个永久标签。
 
 [安全设计主题](/principles/pr-16)把故障隔离纳入生命周期安全。
 
 ## 说明性场景
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-在 [Microsoft 多智能体（Agent）参考架构案例](/cases/microsoft-multi-agent-reference-architecture)中，编排器接到一个需要读取客户资料、调用受限工具并生成解释的请求。注册表找不到被授权的工具时，编排器在调用前快速拒绝该步骤；若工具调用已返回不可判定终态，则停止后续写操作并保留审计记录，避免重复副作用；若只是解释性摘要服务不可用，则明确标记缺失能力，保留仍可核验的核心结果。
+在 [微软多智能体（Agent）参考架构案例](/cases/microsoft-multi-agent-reference-architecture)中，编排器接到一个需要读取客户资料、调用受限工具并生成解释的请求。注册表找不到被授权的工具时，编排器在调用前快速拒绝该步骤；若工具调用已返回不可判定终态，则停止后续写操作并保留审计记录，避免重复副作用；若只是解释性摘要服务不可用，则明确标记缺失能力，保留仍可核验的核心结果。
 
 这个场景没有把整个多智能体平台统一设为“快速失败”或“优雅降级”。验证、权限与副作用、可选展示分别由能证明其风险边界的组件处理，操作者还能从状态与遥测区分健康、拒绝、待核对和降级。
 
 ## 来源
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-快速拒绝与队列边界依据 [AWS REL05-BP04](https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_mitigate_interaction_failure_fail_fast.html)；适用的依赖降级依据 [AWS REL05-BP01](https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_mitigate_interaction_failure_graceful_degradation.html)；过载与级联故障背景用 [Google SRE Book 第 22 章](https://sre.google/sre-book/addressing-cascading-failures/)交叉核验。本文只做事实摘要，不复用来源的表格、示例或章节结构；决策表、场景和中文论证均为原创。
+快速拒绝与队列边界依据 [REL05-BP04 Fail fast and limit queues](https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_mitigate_interaction_failure_fail_fast.html)；适用的依赖降级依据 [REL05-BP01 Implement graceful degradation to transform applicable hard dependencies into soft dependencies](https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_mitigate_interaction_failure_graceful_degradation.html)；过载与级联故障背景用 [Chapter 22 - Addressing Cascading Failures](https://sre.google/sre-book/addressing-cascading-failures/)交叉核验。本文只做事实摘要，不复用来源的表格、示例或章节结构；决策表、场景和中文论证均为原创。

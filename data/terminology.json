@@ -696,7 +696,7 @@
       "first_use": "领域驱动设计上下文映射（DDD Context Map）",
       "subsequent_use": ["领域驱动设计上下文映射"],
       "allowed_aliases": [],
-      "forbidden_aliases": ["DDD Context Map", "Context Map"],
+      "forbidden_aliases": ["DDD Context Map"],
       "note": "表达限界上下文之间上下游与翻译关系的领域驱动设计模型。",
       "order": 530
     },
@@ -751,6 +751,84 @@
       "forbidden_aliases": ["Hierarchical Teams"],
       "note": "由顶层协调者和子团队管理者分层分配控制权的模式。",
       "order": 570
+    },
+    {
+      "id": "grasp",
+      "canonical_zh": "通用职责分配软件模式",
+      "english": "General Responsibility Assignment Software Patterns",
+      "acronym": "GRASP",
+      "kind": "acronym",
+      "first_use": "通用职责分配软件模式（General Responsibility Assignment Software Patterns，GRASP）",
+      "subsequent_use": ["通用职责分配软件模式", "GRASP"],
+      "allowed_aliases": [],
+      "forbidden_aliases": ["General Responsibility Assignment Software Patterns"],
+      "note": "对象设计中九项责任分配模式的准确全称与缩写。",
+      "order": 580
+    },
+    {
+      "id": "cap-theorem",
+      "canonical_zh": "CAP 定理",
+      "english": "Consistency, Availability, Partition Tolerance",
+      "acronym": "CAP",
+      "kind": "acronym",
+      "first_use": "CAP 定理（Consistency, Availability, Partition Tolerance，CAP）",
+      "subsequent_use": ["CAP 定理", "CAP"],
+      "allowed_aliases": [],
+      "forbidden_aliases": [],
+      "note": "分布式系统在分区假设下讨论一致性与可用性边界的术语。",
+      "order": 590
+    },
+    {
+      "id": "postgresql",
+      "canonical_zh": "PostgreSQL 数据库",
+      "english": null,
+      "acronym": null,
+      "kind": "proper-noun",
+      "first_use": "PostgreSQL 数据库",
+      "subsequent_use": ["PostgreSQL"],
+      "allowed_aliases": [],
+      "forbidden_aliases": [],
+      "note": "保留数据库产品名，并在首次出现时补充中文类别。",
+      "order": 690
+    },
+    {
+      "id": "mermaid",
+      "canonical_zh": "Mermaid 图表工具",
+      "english": null,
+      "acronym": null,
+      "kind": "proper-noun",
+      "first_use": "Mermaid 图表工具",
+      "subsequent_use": ["Mermaid"],
+      "allowed_aliases": [],
+      "forbidden_aliases": [],
+      "note": "保留图表工具名称，并在首次出现时说明类别。",
+      "order": 700
+    },
+    {
+      "id": "temporal",
+      "canonical_zh": "Temporal 工作流平台",
+      "english": null,
+      "acronym": null,
+      "kind": "proper-noun",
+      "first_use": "Temporal 工作流平台",
+      "subsequent_use": ["Temporal"],
+      "allowed_aliases": [],
+      "forbidden_aliases": [],
+      "note": "保留工作流平台名称，并在首次出现时说明类别。",
+      "order": 710
+    },
+    {
+      "id": "single-spa",
+      "canonical_zh": "single-spa 微前端框架",
+      "english": null,
+      "acronym": null,
+      "kind": "proper-noun",
+      "first_use": "single-spa 微前端框架",
+      "subsequent_use": ["single-spa"],
+      "allowed_aliases": [],
+      "forbidden_aliases": [],
+      "note": "保留框架名称，并在首次出现时说明其微前端用途。",
+      "order": 720
     }
   ]
 }

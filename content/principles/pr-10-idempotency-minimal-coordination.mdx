@@ -50,10 +50,7 @@ related_questions: []
 
 ## 要保护的性质
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-**来源事实：** [AWS Builders’ Library 的幂等应用程序编程接口（Application Programming Interface，API）文章](https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-APIs/)说明调用者提供请求身份并按语义等价判断重试的适用方式；它不证明任意外部效果都能 exactly-once。**推断：** 幂等保护的是受约束效果，而不是逐字节相同响应。返回时间戳、追踪标识或缓存头可以变化，只要语义结果不使被保护效果重复发生。
+**来源事实：** [Making retries safe with idempotent APIs](https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-APIs/)说明调用者提供请求身份并按语义等价判断重试的适用方式；它不证明任意外部效果都能恰好一次。**推断：** 幂等保护的是受约束效果，而不是逐字节相同响应。返回时间戳、追踪标识或缓存头可以变化，只要语义结果不使被保护效果重复发生。
 
 幂等作用域是逻辑操作身份加上声明的业务有效窗口。业务有效窗口回答“这个意图现在是否仍可执行”，不同于去重记录的保留窗口；后者回答“系统还保存多久的重放证据”。同一规范化意图的传输重试必须复用同一身份，而保留期至少覆盖可重试和结果查询的风险期。记录过期后不能凭旧键推断安全，也不能自动把仍有效的业务意图当作首次执行。受保护性质应写成可核验断言，例如“一次业务扣款至多落账一次”，而不是含糊地写“接口支持重试”。
 
@@ -61,20 +58,11 @@ related_questions: []
 
 同一逻辑操作的重复投递与不同命令争夺共享余额是两类问题：前者可以用稳定身份和结果记录去重，后者即使每个命令都有独立幂等键，仍可能共同破坏余额不为负等不变量。去重不能替代共享不变量所需的所有权、条件写或串行化。
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-[UC Berkeley 的协调避免研究记录](https://www2.eecs.berkeley.edu/Pubs/TechRpts/2015/EECS-2015-206.html)把目标界定为在保持应用完整性的前提下尽量少协调，而不是消灭所有协调。只有所有权、单调性、交换律、escrow 或条件写能够保持已命名不变量时，才移除对应协调；无法证明时保留最窄的同步边界。
+[Coordination Avoidance in Distributed Databases](https://www2.eecs.berkeley.edu/Pubs/TechRpts/2015/EECS-2015-206.html)把目标界定为在保持应用完整性的前提下尽量少协调，而不是消灭所有协调。只有所有权、单调性、交换律、托管或条件写能够保持已命名不变量时，才移除对应协调；无法证明时保留最窄的同步边界。
 
 ## 机制
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-同一逻辑操作的传输重试必须复用同一幂等键，并把规范化意图的 hash、调用者、状态、结果引用和保留期限绑定在同一权威记录中。只存储成功标志不足以让调用者区分 in-progress、completed、rejected、conflict、expired 与 unknown；这些状态及其结果引用必须显式保存。未知结果不是可盲重试的失败；`unknown` 是一等终态或恢复状态，需要查询权威结果、补偿或人工处置。
+同一逻辑操作的传输重试必须复用同一幂等键，并把规范化意图的哈希、调用者、状态、结果引用和保留期限绑定在同一权威记录中。只存储成功标志不足以让调用者区分进行中、已完成、已拒绝、冲突、已过期与未知；这些状态及其结果引用必须显式保存。未知结果不是可盲重试的失败；`unknown` 是一等终态或恢复状态，需要查询权威结果、补偿或人工处置。
 
 以下重放矩阵为本站原创。每一行都把操作身份、存储状态、协调点、调用者可见的响应类别和终态路径分开，避免用一个模糊的“已去重”状态吞掉恢复责任：
 
@@ -82,16 +70,12 @@ related_questions: []
 | --- | --- | --- | --- | --- | --- |
 | 首次成功但响应丢失 | 同一逻辑操作与幂等键 | `completed + result_ref` | 权威记录的唯一约束或条件写 | 返回语义等价的已记录结果 | 返回已记录结果 |
 | 首次尝试在受保护效果前失败 | 原逻辑操作与幂等键 | `failed-before-effect`，证明未产生效果 | 权威记录状态机的条件写 | 可重试失败 | 有界重试受保护工作 |
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-| 副作用可能成功但完成记录缺失 | 逻辑操作与稳定目标侧键 | `unknown` | 查询目标侧 receipt 或权威结果 | 未知、待查 | 查询后补偿或进入人工终态 |
+| 副作用可能成功但完成记录缺失 | 逻辑操作与稳定目标侧键 | `unknown` | 查询目标侧回执或权威结果 | 未知、待查 | 查询后补偿或进入人工终态 |
 | 同键重复在首次执行仍运行时到达 | 同一逻辑操作与幂等键 | `in-progress` | 租约或条件写选出单一执行者 | 返回处理中 | 返回处理中，随后安全恢复或返回已记录结果 |
 | 去重记录已过期 | 原逻辑操作与旧幂等键 | `expired` | 按业务有效期查询权威记录或人工核对 | 过期，不能判定是否安全 | 创建新业务操作或人工核对 |
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-| 同键不同规范化意图 | 同一幂等键、不同 payload | `conflict` | 在权威记录比较 payload hash | 冲突并拒绝 | 拒绝冲突 |
+| 同键不同规范化意图 | 同一幂等键、不同载荷 | `conflict` | 在权威记录比较载荷哈希 | 冲突并拒绝 | 拒绝冲突 |
 | 不同命令竞争同一不变量 | 各自独立幂等键 | 各自状态独立 | 所有权、条件写、配额或串行化 | 条件失败或冲突拒绝 | 拒绝冲突 |
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-| 外部不可逆效果无法原子耦合 | 逻辑操作与稳定目标侧键 | `pending/unknown` | 目标侧幂等边界与 receipt 对账 | 待定或未知 | 对账后补偿或进入人工终态 |
+| 外部不可逆效果无法原子耦合 | 逻辑操作与稳定目标侧键 | `pending/unknown` | 目标侧幂等边界与回执对账 | 待定或未知 | 对账后补偿或进入人工终态 |
 
 **本站分析：** 接收记录与受保护副作用能原子提交时，用唯一约束或条件写建立单一执行者；不能原子耦合外部效果时，把稳定身份传到目标侧并保存回执。任何超时都只说明观察者没有得到结果，不能把业务结果改写成失败。
 
@@ -105,37 +89,24 @@ related_questions: []
 
 ## 适用尺度
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-进程内命令可用状态机或唯一键防止重复执行；单库事务可用唯一约束和条件更新；跨服务消息要稳定传播操作身份并定义消费者去重窗口；外部支付、邮件或云资源创建则需要目标侧身份、receipt 和对账路径。进程内缓存不足以支撑跨实例的持久操作，因为重启、扩缩容或路由变化会让不同执行者看不到同一重放证据。尺度越大，原子边界越少，`unknown` 越必须显式。
+进程内命令可用状态机或唯一键防止重复执行；单库事务可用唯一约束和条件更新；跨服务消息要稳定传播操作身份并定义消费者去重窗口；外部支付、邮件或云资源创建则需要目标侧身份、回执和对账路径。进程内缓存不足以支撑跨实例的持久操作，因为重启、扩缩容或路由变化会让不同执行者看不到同一重放证据。尺度越大，原子边界越少，`unknown` 越必须显式。
 
 若状态完全可重算、效果可交换且重复无害，可以不建立持久去重记录。若配额、余额或唯一所有权跨命令共享，则应先命名不变量，再选择托管、单一所有者、条件写或串行化，不能用“幂等”掩盖协调需求。
 
 ## 相邻原则
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-[快速失败（Fail Fast）、故障安全（Fail Safe）与优雅降级（Graceful Degradation）](/principles/pr-07)规定错误与降级应保持真实语义；[为演化设计](/principles/pr-08)要求兼容迁移期间保持稳定操作身份；[最小权限、安全默认值与纵深防御](/principles/pr-09)决定谁可发起效果；[CQS、命令查询职责分离（Command Query Responsibility Segregation，CQRS）与读写分离](/principles/pr-11)区分改变状态的命令与观察恢复状态的查询。PR-10 只约束效果重放和不变量协调，不替代授权或责任模型。
+[快速失败（Fail Fast）、故障安全（Fail Safe）与优雅降级（Graceful Degradation）](/principles/pr-07)规定错误与降级应保持真实语义；[为演化设计](/principles/pr-08)要求兼容迁移期间保持稳定操作身份；[最小权限、安全默认值与纵深防御](/principles/pr-09)决定谁可发起效果；[命令查询分离、命令查询职责分离（Command Query Responsibility Segregation，CQRS）与读写分离](/principles/pr-11)区分改变状态的命令与观察恢复状态的查询。PR-10 只约束效果重放和不变量协调，不替代授权或责任模型。
 
 [安全设计主题](/principles/pr-16)把重试和副作用边界纳入生命周期安全。
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 [MOD-08 状态机建模](/modeling/mod-08)把稳定操作身份、未知结果、对账与补偿落实为显式转换合同。
 
 ## 说明性场景
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-在 [Temporal Saga 与持久执行案例](/cases/temporal-saga-durable-execution)中，一次转账 workflow 用稳定业务操作 ID 调用目标侧扣款。activity 超时后可以由运行时重放，但目标侧必须复用同一身份；若扣款可能成功而 receipt 未写回，workflow 进入 `unknown` 恢复路径，通过查询、对账或补偿决定终态。
+在 [Temporal 工作流平台补偿事务与持久执行案例](/cases/temporal-saga-durable-execution)中，一次转账工作流（Workflow）使用稳定业务操作标识符调用目标侧扣款。活动超时后可以由运行时重放，但目标侧必须复用同一身份；若扣款可能成功而回执未写回，工作流进入 `unknown` 恢复路径，通过查询、对账或补偿决定终态。
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-Temporal 在这里是重放与目标侧幂等的说明性证据，不是业务恰好一次的证明。运行时保留历史并重试活动，不能替代支付系统对业务身份、外部回执、并发余额不变量和人工终态的责任。
+该平台在这里是重放与目标侧幂等的说明性证据，不是业务恰好一次的证明。运行时保留历史并重试活动，不能替代支付系统对业务身份、外部回执、并发余额不变量和人工终态的责任。
 
 ## 来源
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-[Making retries safe with idempotent APIs](https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-APIs/)仅用于调用者身份、语义等价和重试契约的事实摘要；[Coordination Avoidance in Distributed Databases](https://www2.eecs.berkeley.edu/Pubs/TechRpts/2015/EECS-2015-206.html)仅用于“保持完整性前提下减少协调”的方法边界；[Azure 重试 pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/retry)仅用于瞬时故障重试、退避和非瞬时故障边界。本文不复制来源图表、示例或分类；重放矩阵、状态划分和场景分析均为本站原创。
+[Making retries safe with idempotent APIs](https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-APIs/)仅用于调用者身份、语义等价和重试契约的事实摘要；[Coordination Avoidance in Distributed Databases](https://www2.eecs.berkeley.edu/Pubs/TechRpts/2015/EECS-2015-206.html)仅用于“保持完整性前提下减少协调”的方法边界；[Retry pattern — Azure Architecture Center](https://learn.microsoft.com/en-us/azure/architecture/patterns/retry)仅用于瞬时故障重试、退避和非瞬时故障边界。本文不复制来源图表、示例或分类；重放矩阵、状态划分和场景分析均为本站原创。

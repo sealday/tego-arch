@@ -51,11 +51,7 @@ related_questions: []
 
 ## 要保护的性质
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-**来源事实：** Stevens、Myers 与 Constantine 的结构化设计讨论模块强度与模块间耦合，目标是形成可理解、可修改的结构。SEI 的可维护性报告则把可维护性放入明确的变化场景中分析。**推断：** 架构评审不应只数导入或接口数量，而应问一次预期变化、一次依赖故障或一次团队交付会穿过哪些边界。
+**来源事实：** 史蒂文斯、迈尔斯与康斯坦丁的结构化设计讨论模块强度与模块间耦合，目标是形成可理解、可修改的结构。软件工程研究所的可维护性报告则把可维护性放入明确的变化场景中分析。**推断：** 架构评审不应只数导入或接口数量，而应问一次预期变化、一次依赖故障或一次团队交付会穿过哪些边界。
 
 要保护的是局部推理能力：团队能在有限上下文中解释一个模块为什么存在、修改什么、依赖谁，以及失败后影响谁。内聚为边界提供正向理由，耦合则检查边界外的传播成本。
 
@@ -92,28 +88,16 @@ related_questions: []
 
 ## 相邻原则
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-[信息隐藏与封装](/principles/pr-01)决定变化决策由谁拥有；[单一职责与关注点分离](/principles/pr-03)帮助识别共同变化的责任主体；[组合优于继承](/principles/pr-05)比较复用机制带来的状态和替换耦合。[KISS、YAGNI 与 DRY 的张力](/principles/pr-06)揭示过早共享抽象造成的耦合；[快速失败（Fail Fast）、故障安全（Fail Safe）与优雅降级（Graceful Degradation）](/principles/pr-07)处理运行时故障如何传播；[开闭原则（Open/Closed Principle）与接口隔离原则（Interface Segregation Principle）](/principles/pr-12)按消费者依赖是否内聚及变化如何传播判断接口大小，而不是按行数判断；[GRASP 责任分配](/principles/pr-14)则把内聚与耦合作为选择责任所有者的评价标准。它们共同回答边界为何存在、责任交给谁、传播到哪里、如何组合以及失败时如何响应。
+[信息隐藏与封装](/principles/pr-01)决定变化决策由谁拥有；[单一职责与关注点分离](/principles/pr-03)帮助识别共同变化的责任主体；[组合优于继承](/principles/pr-05)比较复用机制带来的状态和替换耦合。[保持简单、不预建未需能力与避免知识重复的张力](/principles/pr-06)揭示过早共享抽象造成的耦合；[快速失败（Fail Fast）、故障安全（Fail Safe）与优雅降级（Graceful Degradation）](/principles/pr-07)处理运行时故障如何传播；[开闭原则（Open/Closed Principle）与接口隔离原则（Interface Segregation Principle）](/principles/pr-12)按消费者依赖是否内聚及变化如何传播判断接口大小，而不是按行数判断；[通用职责分配软件模式（General Responsibility Assignment Software Patterns，GRASP） 责任分配](/principles/pr-14)则把内聚与耦合作为选择责任所有者的评价标准。它们共同回答边界为何存在、责任交给谁、传播到哪里、如何组合以及失败时如何响应。
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-[Conway 定律与团队边界](/principles/pr-15)说明团队沟通与责任边界会影响变化如何跨模块传播。
+[康威定律与团队边界](/principles/pr-15)说明团队沟通与责任边界会影响变化如何跨模块传播。
 
 ## 说明性场景
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-说明性场景：三个前端团队使用同一运行时壳。方案 A 让所有页面直接导入壳的路由对象与认证状态；方案 B 只公开 `navigate` 和 `currentUser` 能力契约。
+说明性场景：三个前端团队使用同一运行时壳。方案甲让所有页面直接导入壳的路由对象与认证状态；方案乙只公开 `navigate` 和 `currentUser` 能力契约。
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-评审先记录事实：A 的导入数量不多，但壳升级会要求三个团队同步测试，认证故障也影响全部页面。由此推断 A 同时具有变化、运行和团队耦合。选择 B 后，接口适配增加少量代码，却把路由实现变化留在壳内。[single-spa 微前端案例](/cases/micro-frontends-single-spa)可继续检查共享依赖如何重新耦合独立部署。
+评审先记录事实：方案甲的导入数量不多，但壳升级会要求三个团队同步测试，认证故障也影响全部页面。由此推断方案甲同时具有变化、运行和团队耦合。选择方案乙后，接口适配增加少量代码，却把路由实现变化留在壳内。[single-spa 微前端框架案例](/cases/micro-frontends-single-spa)可继续检查共享依赖如何重新耦合独立部署。
 
 ## 来源
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-模块强度与耦合的历史语境依据 [Structured Design](https://ieeexplore.ieee.org/document/5388187/)；变化场景与可维护性边界用 [SEI Maintainability](https://www.sei.cmu.edu/library/maintainability/)交叉核验。本站不复用原文图表或分类结构，四维决策表、场景和中文论证均为原创。
+模块强度与耦合的历史语境依据 [Structured Design](https://ieeexplore.ieee.org/document/5388187/)；变化场景与可维护性边界用 [Maintainability](https://www.sei.cmu.edu/library/maintainability/)交叉核验。本站不复用原文图表或分类结构，四维决策表、场景和中文论证均为原创。

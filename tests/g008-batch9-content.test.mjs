@@ -2,7 +2,6 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import test from 'node:test';
 
-import {stripTerminologyExemptions} from './helpers/terminology-content.mjs';
 import {fileURLToPath} from 'node:url';
 
 import {
@@ -14,7 +13,7 @@ import {extractInternalLinks} from '../scripts/content-relations.mjs';
 import {handleHorizontalArrowKey} from '../src/components/KeyboardScrollableRegion/handleHorizontalArrowKey.mjs';
 
 const contentRoot = fileURLToPath(new URL('../content/', import.meta.url));
-const documents = await readContentDocuments(contentRoot).then((entries) => entries.map(stripTerminologyExemptions));
+const documents = await readContentDocuments(contentRoot);
 const document = documents.find(({file}) => file === 'modeling/mod-11-ddd-context-map.mdx');
 const customCss = await readFile(new URL('../src/css/custom.css', import.meta.url), 'utf8');
 const sourceLedger = JSON.parse(await readFile(new URL('../data/source-ledger.json', import.meta.url)));
@@ -98,8 +97,8 @@ const expectedBoundaryRows = [
 
 const expectedRelationshipRows = [
   {
-    '上游 U': '费用申报',
-    '下游 D': '费用审批',
+    '上游': '费用申报',
+    '下游': '费用审批',
     '交换事实': '已提交的费用事实',
     '翻译或适配责任': '费用审批按审批语言解释输入，不反向改写申报事实',
     '契约责任类型': '审批政策责任人',
@@ -107,8 +106,8 @@ const expectedRelationshipRows = [
     '下一项验证与责任类型': '核对字段含义与拒绝、补正规则；费用领域专家、审批政策责任人',
   },
   {
-    '上游 U': '费用审批',
-    '下游 D': '支付结算',
+    '上游': '费用审批',
+    '下游': '支付结算',
     '交换事实': '审批决定',
     '翻译或适配责任': '支付结算把已批准解释为可进入支付判断，不解释为已支付',
     '契约责任类型': '审批政策责任人、支付或对账责任人',
@@ -116,17 +115,17 @@ const expectedRelationshipRows = [
     '下一项验证与责任类型': '核对撤回、过期与重复决定；审批政策责任人',
   },
   {
-    '上游 U': '银行支付服务',
-    '下游 D': '支付结算',
+    '上游': '银行支付服务',
+    '下游': '支付结算',
     '交换事实': '银行回执或查询结果',
-    '翻译或适配责任': '支付结算以 D 侧 ACL 转换外部语义并保留可核验原始证据',
+    '翻译或适配责任': '支付结算以下游侧防腐层转换外部语义并保留可核验原始证据',
     '契约责任类型': '外部集成契约责任人',
-    '当前不证明什么': '不证明 ACL 实现、银行 OHS、PL、协议或 SLA 已存在',
+    '当前不证明什么': '不证明防腐层实现、银行开放主机服务、发布语言、协议或服务级别协议已存在',
     '下一项验证与责任类型': '核对回执状态、未知值与查询语义；外部集成契约责任人',
   },
   {
-    '上游 U': '支付结算',
-    '下游 D': '费用申报',
+    '上游': '支付结算',
+    '下游': '费用申报',
     '交换事实': '可展示的支付结果摘要',
     '翻译或适配责任': '费用申报只转换展示语言，不成为银行结果或支付执行状态权威',
     '契约责任类型': '费用业务领域专家、支付或对账责任人',
@@ -153,8 +152,8 @@ const nonProofSentences = [
   '限界上下文不等于子域、系统、服务、模块、数据库、仓库、部署单元或团队。',
   '上下文与团队不存在自动的一对一关系。',
   '图中的箭头不等于应用程序编程接口（Application Programming Interface，API）、调用、事件、事务、协议、网络方向或执行顺序。',
-  'U/D 不等于组织权力、价值高低或数据包方向。',
-  'ACL 标签不证明实现已经存在。',
+  '上游与下游关系不等于组织权力、价值高低或数据包方向。',
+  '防腐层标签不证明实现已经存在。',
   '业务权威不等于数据库、存储位置或组织所有权。',
   '银行支付服务是外部系统，不是本地限界上下文。',
   '三个候选都可能在后续证据下合并、拆分或被否决。',
@@ -257,16 +256,16 @@ const expectedExerciseSteps = [
   '复述 MOD-02 权威系统边界，明确银行支付服务位于系统外。',
   '从 MOD-09 与 MOD-10 收集语言、规则、权威记录和协作变化线索，不按现有模块分组。',
   '提出三个候选上下文，并为每个候选填写支持证据、反证和备选划分。',
-  '为四条关系逐条判断 U/D，写清交换的业务事实，不画运行时调用链。',
+  '为四条关系逐条判断上游与下游，写清交换的业务事实，不画运行时调用链。',
   '只在银行边界标注下游防腐层，说明翻译内容和未被证明的模式。',
   '为每个未决边界和关系登记责任类型、下一项证据与复查条件。',
   '从系统边界到四条关系完整复述，确认候选、权威和非证明规则没有相互矛盾。',
 ];
 const expectedCompletionItems = [
   '每个候选都记录本地语言、独立规则、业务权威、支持证据、反证或备选以及下一项验证责任；',
-  '每条关系都记录 U/D、交换事实、翻译责任、契约责任、非证明边界和下一项验证；',
+  '每条关系都记录上游/下游角色、交换事实、翻译责任、契约责任、非证明边界和下一项验证；',
   '参与者能在不使用 API、调用链或组织权力解释的情况下复述四条箭头；',
-  '银行支付服务保持外部系统身份，支付结算的 ACL 责任与银行结果权威不混淆；',
+  '银行支付服务保持外部系统身份，支付结算的防腐层责任与银行结果权威不混淆；',
   'MOD-09、MOD-10 的线索被明确接受、否决或保留为待验证项；',
   '所有未决项都有责任类型、下一项证据和复查条件；',
   '所有人理解三块都是候选，不是已批准的系统、服务、数据库、团队或部署划分；',
@@ -351,7 +350,7 @@ function assertTableContracts(body) {
   const tables = markdownTables(body);
   assert.equal(tables.length, 2, 'MOD-11 must contain exactly two Markdown tables');
   const boundaryRows = records(tables[0], ['候选上下文', '本地语言', '独立规则', '业务权威', '支持证据', '反证或备选', '下一项验证与责任类型']);
-  const relationshipRows = records(tables[1], ['上游 U', '下游 D', '交换事实', '翻译或适配责任', '契约责任类型', '当前不证明什么', '下一项验证与责任类型']);
+  const relationshipRows = records(tables[1], ['上游', '下游', '交换事实', '翻译或适配责任', '契约责任类型', '当前不证明什么', '下一项验证与责任类型']);
   assert.deepEqual(boundaryRows, expectedBoundaryRows);
   assert.deepEqual(relationshipRows, expectedRelationshipRows);
   assert.equal(new Set(boundaryRows.map((row) => row['候选上下文'])).size, 3);
@@ -359,7 +358,7 @@ function assertTableContracts(body) {
   const forbiddenOwner = /(?:团队|team|服务 负责人|数据库 负责人|仓库 负责人|部署 负责人)/iu;
   assert.ok(!boundaryRows.some((row) => forbiddenOwner.test(row['下一项验证与责任类型'])));
   assert.ok(!relationshipRows.some((row) => forbiddenOwner.test(`${row['契约责任类型']} ${row['下一项验证与责任类型']}`)));
-  assert.equal(relationshipRows.filter((row) => row['翻译或适配责任'].includes('ACL')).length, 1);
+  assert.equal(relationshipRows.filter((row) => row['翻译或适配责任'].includes('防腐层')).length, 1);
   for (const [index, row] of relationshipRows.entries()) {
     if (index !== 2) assert.doesNotMatch(Object.values(row).join(' '), /Partnership|Shared Kernel|Customer-Supplier|Conformist|OHS|\bPL\b/u);
   }
@@ -456,7 +455,7 @@ function assertInteractionContract(body) {
   const relationshipTables = markdownTables(regions[2].content);
   assert.equal(relationshipTables.length, 1, 'third wrapper contains exactly the relationship table');
   assert.deepEqual(
-    records(relationshipTables[0], ['上游 U', '下游 D', '交换事实', '翻译或适配责任', '契约责任类型', '当前不证明什么', '下一项验证与责任类型']),
+    records(relationshipTables[0], ['上游', '下游', '交换事实', '翻译或适配责任', '契约责任类型', '当前不证明什么', '下一项验证与责任类型']),
     expectedRelationshipRows,
   );
   assert.equal([...visibleLines(regions[2].content).join('\n').matchAll(/```mermaid\n[\s\S]*?\n```/gu)].length, 0, 'third wrapper contains no Mermaid');
@@ -467,11 +466,11 @@ function assertInteractionContract(body) {
 function assertMethodContract(body) {
   const visibleBody = visibleLines(body).join('\n');
   for (const sentence of nonProofSentences) assert.match(visibleBody, new RegExp(`(?:^|\\n)${sentence.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?:\\n|$)`, 'u'));
-  assert.match(visibleBody, /U 与 D 是逐条关系判定的角色/u);
-  assert.match(visibleBody, /箭头只为表达模型影响与集成责任而从 U 指向 D/u);
+  assert.match(visibleBody, /上游与下游是逐条关系判定的角色/u);
+  assert.match(visibleBody, /箭头只为表达模型影响与集成责任而从上游指向下游/u);
   assert.match(visibleBody, /已批准 ≠ 已支付/u);
   assert.match(visibleBody, /支付结算翻译银行证据，但不成为外部支付结果权威/u);
-  assert.match(visibleBody, /Temporal Saga 案例可检验超时、重试（Retry）、补偿与人工收敛，但不能确定候选上下文/u);
+  assert.match(visibleBody, /Temporal 补偿事务案例可检验超时、重试（Retry）、补偿与人工收敛，但不能确定候选上下文/u);
   assert.match(visibleBody, /完成检查[^\n]*证据[^\n]*备选[^\n]*责任类型[^\n]*下一项证据[^\n]*不带运行时解释重放/u);
   const links = extractInternalLinks({body});
   for (const target of requiredLinks) assert.ok(links.includes(target), `missing visible link: ${target}`);
@@ -538,7 +537,7 @@ test('rejects controlled MOD-11 mutations', () => {
   const tableBlock = (header) => body.match(new RegExp(`\\| ${header} \\|[\\s\\S]*?(?=\\n\\n<\\/div>)`, 'u'))?.[0];
   const boundaryTable = tableBlock('候选上下文');
   assert.ok(boundaryTable);
-  const relationshipTable = tableBlock('上游 U');
+  const relationshipTable = tableBlock('上游');
   assert.ok(relationshipTable);
   const mermaidBlock = body.match(/```mermaid\n[\s\S]*?\n```/u)?.[0];
   assert.ok(mermaidBlock);
@@ -707,9 +706,9 @@ test('renders exactly four governed MOD-11 sources', () => {
     })),
     [
       {label: 'Bounded Context', url: expectedSources.get('src-docs-8fb33e125d2a'), boundary: '支持语言与模型边界以及显式上下文映射关系；不证明本文候选边界、服务、团队或运行时设计。'},
-      {label: 'DDD Crew Context Mapping', url: expectedSources.get('src-docs-1ad75d39a251'), boundary: '支持围绕具体问题绘制小型上下文映射、逐关系判断 U/D 与关系模式的存在；不复用其 cheat sheet 或 Miro 资产，也不替本文选择关系模式。'},
-      {label: 'Anti-Corruption Layer', url: expectedSources.get('src-docs-ac85a74ed0b2'), boundary: '支持 ACL 作为下游翻译与隔离责任；不证明银行边界已有 ACL、OHS/PL、协议或部署实现。'},
-      {label: 'Avanscoperta Context Mapping', url: expectedSources.get('src-docs-fc6e554f1153'), boundary: '支持边界指标并非绝对、仍需架构判断；不批准本文候选边界。'},
+      {label: 'Context Mapping', url: expectedSources.get('src-docs-1ad75d39a251'), boundary: '支持围绕具体问题绘制小型上下文映射、逐关系判断上游与下游及关系模式的存在；不复用其速查表或在线白板资产，也不替本文选择关系模式。'},
+      {label: 'Anti-Corruption Layer', url: expectedSources.get('src-docs-ac85a74ed0b2'), boundary: '支持防腐层作为下游翻译与隔离责任；不证明银行边界已有防腐层、开放主机服务、发布语言、协议或部署实现。'},
+      {label: 'Context Mapping', url: expectedSources.get('src-docs-fc6e554f1153'), boundary: '支持边界指标并非绝对、仍需架构判断；不批准本文候选边界。'},
     ],
   );
 });

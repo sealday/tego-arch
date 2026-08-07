@@ -68,8 +68,7 @@ related_questions: []
 
 同步重试会形成尖峰，嵌套重试会放大调用数，重试非幂等写入会产生重复副作用，持续重试永久错误则掩盖真实故障。不要对付款扣款、不可去重的消息发布或已经明确拒绝的请求启用自动重试；也不要让重试无限延长用户等待。
 
-{/* terminology-exempt: first-use-required | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-## 质量属性权衡
+## 质量属性（Quality Attribute）权衡
 
 重试可提高短暂故障下的成功率，却增加尾延迟和恢复期负载。更长退避保护下游但延长恢复时间；更多尝试提高机会但消耗公平性预算。应把成功率与“额外请求数、截止时间超时率、重复副作用数”一起观察。
 
@@ -79,7 +78,7 @@ related_questions: []
 
 ## 相邻模式与反模式
 
-[质量属性（Quality Attribute）场景写法](/quality-attributes/qa-01)可把“可靠”改写成特定故障、环境和响应时间的场景。重试风暴反模式则提醒：当大量调用者共享相同触发与间隔时，恢复机制本身会成为故障放大器。
+[质量属性场景写法](/quality-attributes/qa-01)可把“可靠”改写成特定故障、环境和响应时间的场景。重试风暴反模式则提醒：当大量调用者共享相同触发与间隔时，恢复机制本身会成为故障放大器。
 
 ## 说明性场景
 
@@ -87,12 +86,8 @@ related_questions: []
 
 决策与计算：第 1 次调用耗时 `100 ms` 后失败，等待 `80 ms`；第 2 次耗时 `100 ms` 后失败，等待 `170 ms`；第 3 次耗时 `100 ms` 后成功。总耗时为 `100 + 80 + 100 + 170 + 100 = 550 ms`，共 3 次尝试，仍在截止时间内。若第 3 次也失败，下一候选等待即使为 `350 ms`，加上下一次调用也会达到 `1,000 ms`，因此停止并暴露失败。
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-结果：预算而非“最大 5 次”决定停止点。[Temporal Retry Policies](https://docs.temporal.io/encyclopedia/retry-policies)与 [Temporal 持久执行案例](/cases/temporal-saga-durable-execution)可继续检查活动重试与工作流（Workflow）重放的边界，两者不能混为一次副作用的重复执行。
+结果：预算而非“最大 5 次”决定停止点。[Temporal Retry Policies](https://docs.temporal.io/encyclopedia/retry-policies)与 [Temporal 工作流平台持久执行案例](/cases/temporal-saga-durable-execution)可继续检查活动重试与工作流（Workflow）重放的边界，两者不能混为一次副作用的重复执行。
 
 ## 来源
 
-{/* terminology-exempt: bare-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-模式资格与错误分类依据 [Azure Retry pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/retry)；重试策略字段及工作流语境依据 [Temporal Retry Policies](https://docs.temporal.io/encyclopedia/retry-policies)。本文没有把任一产品默认值当成通用保证。
+模式资格与错误分类依据 [Retry pattern — Azure Architecture Center](https://learn.microsoft.com/en-us/azure/architecture/patterns/retry)；重试策略字段及工作流语境依据 [Temporal Retry Policies](https://docs.temporal.io/encyclopedia/retry-policies)。本文没有把任一产品默认值当成通用保证。

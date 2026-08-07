@@ -2,7 +2,6 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import test from 'node:test';
 
-import {stripTerminologyExemptions} from './helpers/terminology-content.mjs';
 import {fileURLToPath} from 'node:url';
 
 import {
@@ -25,7 +24,7 @@ const modelingHeadings = [
   '完整演练',
   '来源',
 ];
-const documents = await readContentDocuments(contentRoot).then((entries) => entries.map(stripTerminologyExemptions));
+const documents = await readContentDocuments(contentRoot);
 const ledger = JSON.parse(
   await readFile(new URL('../data/source-ledger.json', import.meta.url), 'utf8'),
 );

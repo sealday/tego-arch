@@ -2,7 +2,6 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import test from 'node:test';
 
-import {stripTerminologyExemptions} from './helpers/terminology-content.mjs';
 import {fileURLToPath} from 'node:url';
 
 import {
@@ -14,7 +13,7 @@ import {extractExternalLinks} from '../scripts/source-ledger.mjs';
 import {handleHorizontalArrowKey} from '../src/components/KeyboardScrollableRegion/handleHorizontalArrowKey.mjs';
 
 const contentRoot = fileURLToPath(new URL('../content/', import.meta.url));
-const documents = await readContentDocuments(contentRoot).then((entries) => entries.map(stripTerminologyExemptions));
+const documents = await readContentDocuments(contentRoot);
 const documentsById = new Map(
   documents.map((content) => [content.metadata.topic_id, content]),
 );
@@ -164,10 +163,10 @@ const manualDispositionMeanings = [
 
 const expectedSourceUsageBoundaries = [
   '仅支持 UML 2.5.1 的图名称与标准语义范围；不支持领域示例、本地建模工作流、生产事实，也不能据此声称图证明了实现行为。本文还不以该标准定义转账状态政策或补偿政策。',
-  '仅支持已记录页面与版本中的 Temporal Workflow 文档语义；不证明未记录行为或其他版本的行为。',
+  '仅支持已记录页面与版本中的工作流文档语义；不证明未记录行为或其他版本的行为。',
   '仅支持已记录页面与版本中的 Temporal 活动文档语义；不证明未记录行为或其他版本的行为。',
   '仅支持已记录页面与版本中的 Temporal 重试策略文档语义；不证明未记录行为或其他版本的行为。',
-  '提供 Sagas 的原始方法与历史模型；没有独立证据时，不确立其对现代实现的适用性。',
+  '提供补偿事务的原始方法与历史模型；没有独立证据时，不确立其对现代实现的适用性。',
 ];
 
 const expectedWrappers = [

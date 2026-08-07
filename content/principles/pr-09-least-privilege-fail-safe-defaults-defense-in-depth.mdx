@@ -47,13 +47,7 @@ related_questions: []
 
 ## 要保护的性质
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-**来源事实：** [Saltzer 与 Schroeder 的保护原则](https://web.mit.edu/Saltzer/www/publications/protection/)以基于许可的默认决策解释安全默认值，并把最小权限描述为完成工作所需的最低权限；[NIST SP 800-160 Vol. 1 Rev. 1](https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final)把最小权限、分布式特权和纵深防御放进更广的可信系统工程语境。前者支持 permission-based defaults 与 least privilege，后者支持 trustworthy-system 与 defense-in-depth 的宽阔上下文；两者都不能证明某个已部署控制确实正确、独立或达到最小权限。
+**来源事实：** [The Protection of Information in Computer Systems](https://web.mit.edu/Saltzer/www/publications/protection/)以基于许可的默认决策解释安全默认值，并把最小权限描述为完成工作所需的最低权限；[NIST SP 800-160 Vol. 1 Rev. 1: Engineering Trustworthy Secure Systems](https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final)把最小权限、分布式特权和纵深防御放进更广的可信系统工程语境。前者支持基于权限的默认值与最小权限，后者支持可信系统与纵深防御的宽阔上下文；两者都不能证明某个已部署控制确实正确、独立或达到最小权限。
 
 **推断：** 要保护的性质不是“角色足够多”，而是每次副作用都只能由经过证明的主体，在限定资源、动作、时长和委派路径内发起；证据缺失时不扩大权力；一层控制失效时仍有独立边界限制损害。
 
@@ -74,8 +68,7 @@ related_questions: []
 | 决策状态 | 当前请求结果 | 必需证据 | 后续动作 |
 | --- | --- | --- | --- |
 | 身份、动作、资源、约束均有明确授权 | 只发放本次操作所需能力 | 主体、资源、动作、范围、到期 | 执行并留下决策与使用审计 |
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-| 明确拒绝 | 拒绝 | 命中的 deny 与政策版本 | 返回可区分拒绝，不降级为匿名或宽权限 |
+| 明确拒绝 | 拒绝 | 命中的拒绝与政策版本 | 返回可区分拒绝，不降级为匿名或宽权限 |
 | 没有匹配策略 | 拒绝 | 无匹配与输入摘要 | 修订策略或请求，不自动补允许 |
 | 策略求值失败或身份陈旧 | 保守拒绝并标记控制故障 | 错误、身份时长、依赖状态 | 告警、恢复控制面、禁止静默放行 |
 | 紧急访问获批 | 发放短时、窄范围能力 | 审批者、负责人、范围、到期、工单 | 强审计，到期撤销并复盘 |
@@ -99,26 +92,16 @@ related_questions: []
 
 ## 相邻原则
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 [依赖倒置、控制反转与依赖注入](/principles/pr-04)让授权政策不依赖具体身份或云厂商软件开发工具包（Software Development Kit，SDK）；[快速失败（Fail Fast）、故障安全（Fail Safe）与优雅降级（Graceful Degradation）](/principles/pr-07)帮助在策略缺失和控制故障时选择保守且可观察的响应；[幂等与最小协调](/principles/pr-10)继续约束已获授权副作用的重试（Retry）、重放和并发边界。PR-09 只回答谁能以何种能力发起效果，不替代效果执行后的协调规则。
 
 [安全设计主题](/principles/pr-16)把安全默认值与最小权限纳入生命周期安全。
 
 ## 说明性场景
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-说明性场景：一个 LiteLLM 租户请求携带 virtual 键到达网关。网关先把 key 解析为租户、允许模型、预算和期限，再由路由策略决定本次提供器路由；真正调用上游时，只使用绑定该路由与模型范围的提供器凭证，而不把平台级凭证交给租户。
+说明性场景：一个大语言模型网关的租户请求携带虚拟键到达网关。网关先把密钥解析为租户、允许模型、预算和期限，再由路由策略决定本次提供器路由；真正调用上游时，只使用绑定该路由与模型范围的提供器凭证，而不把平台级凭证交给租户。
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-若策略引擎没有匹配规则、不可用或返回陈旧身份状态，请求以可区分的控制故障被拒绝，不能转成匿名访问或默认宽权限。即使该决策层失效，上游凭证的窄范围与独立审计仍限制剩余路径，并让操作者核验是否发生越权。这一场景只用于演示授权链与独立控制；[LiteLLM Virtual Keys 治理案例](/cases/litellm-virtual-keys-governance)并不因此被声称已经实现本文全部机制。
+若策略引擎没有匹配规则、不可用或返回陈旧身份状态，请求以可区分的控制故障被拒绝，不能转成匿名访问或默认宽权限。即使该决策层失效，上游凭证的窄范围与独立审计仍限制剩余路径，并让操作者核验是否发生越权。这一场景只用于演示授权链与独立控制；[大语言模型网关虚拟密钥治理案例](/cases/litellm-virtual-keys-governance)并不因此被声称已经实现本文全部机制。
 
 ## 来源
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-[Saltzer 与 Schroeder 的原始保护原则页面](https://web.mit.edu/Saltzer/www/publications/protection/)仅用于 fail-safe defaults 和 least privilege 的定义与历史边界，不用于推断现代 IAM 产品或证明部署状态；[NIST SP 800-160 Vol. 1 Rev. 1](https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final)仅用于可信系统、最小权限和纵深防御的方法背景，不替代本系统威胁分析，也不证明控制独立性。本文只做事实摘要；授权矩阵、尺度比较和说明性场景均为本站原创。
+[The Protection of Information in Computer Systems](https://web.mit.edu/Saltzer/www/publications/protection/)仅用于故障安全默认值和最小权限的定义与历史边界，不用于推断现代身份与访问管理产品或证明部署状态；[NIST SP 800-160 Vol. 1 Rev. 1: Engineering Trustworthy Secure Systems](https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final)仅用于可信系统、最小权限和纵深防御的方法背景，不替代本系统威胁分析，也不证明控制独立性。本文只做事实摘要；授权矩阵、尺度比较和说明性场景均为本站原创。

@@ -50,9 +50,7 @@ related_questions: []
 
 本站分类框架把“原则”用于表达跨多个方案仍要保护的性质或决策规则；把“战术”用于描述影响某项质量属性（Quality Attribute）响应的聚焦设计决定；把“模式”用于描述特定上下文中反复出现的问题、结构化解法与后果；把“风格”用于描述一类系统的元素、连接器和约束组合；把“参考架构”用于描述某领域的共同角色、职责、关系和词汇；把“最佳实践”仅作为带上下文的经验建议。
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-[SEI Attribute-Based Architectural Styles](https://www.sei.cmu.edu/library/attribute-based-architectural-styles/)把架构风格与质量属性分析联系起来，支持“风格关注整体组织约束”的边界；它是 1999 年的基于属性架构风格方法方法资料，不是当前、穷尽的风格目录。[SEI Modifiability Tactics](https://www.sei.cmu.edu/library/modifiability-tactics/)把战术描述为影响架构满足特定质量属性程度的设计决定，支持“战术比完整结构更聚焦”的边界。
+[Attribute-Based Architectural Styles](https://www.sei.cmu.edu/library/attribute-based-architectural-styles/)把架构风格与质量属性分析联系起来，支持“风格关注整体组织约束”的边界；它是 1999 年的基于属性架构风格方法资料，不是当前、穷尽的风格目录。[Modifiability Tactics](https://www.sei.cmu.edu/library/modifiability-tactics/)把战术描述为影响架构满足特定质量属性程度的设计决定，支持“战术比完整结构更聚焦”的边界。
 
 这些类别不是互斥集合。信息隐藏原则可以指导多个模式与战术；事件驱动可以作为整体风格讨论，也可在特定上下文中形成模式；引入中介、限制依赖或复制状态可能是战术，并被多个模式共同采用。分类取决于当前问题和证据尺度，不由名称大小写决定。
 
@@ -60,9 +58,7 @@ related_questions: []
 
 遇到一个架构名词时，先问它承诺的输出：是保护跨方案的决策规则、改变单项质量响应、提供可复用问题解法、规定整体组织约束、给出领域共同骨架，还是仅提供经验建议。再检查输入条件、失败模式与验证方式；缺少这些边界时，标签只能用于检索，不能用于选型。
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-[NISTIR 5517 官方 PDF 正文](https://nvlpubs.nist.gov/nistpubs/Legacy/IR/nistir5517.pdf)定义并展开了计算机集成制造语境中的参考架构。这支持参考架构作为共同语汇和关系框架的用法，但报告中的制造控制框架不能推广成其他领域的通用结构，也不证明某个实现自动安全、可靠或适合生产。
+[Reference Architecture for Machine Control Systems Integration: Interim Report](https://nvlpubs.nist.gov/nistpubs/Legacy/IR/nistir5517.pdf)定义并展开了计算机集成制造语境中的参考架构。这支持参考架构作为共同语汇和关系框架的用法，但报告中的制造控制框架不能推广成其他领域的通用结构，也不证明某个实现自动安全、可靠或适合生产。
 
 下面这张本站原创的操作性分类表用于评审条目角色：
 
@@ -83,7 +79,7 @@ related_questions: []
 
 第三种混淆是把参考架构当模板复制，忽略它的领域范围和可变点。第四种是把“最佳实践”当无条件规范。实践可能来自成熟团队的特定规模、法规和运维能力；丢失上下文后会在较小系统中制造成本，或在高风险系统中隐藏不足。失败模式是团队按标签购物，直到上线后才发现数据所有权、故障恢复和责任边界互相冲突。
 
-何时不用这套分类？当某个标准、采购规范或组织方法已经赋予术语强制含义时，应使用其原定义，不可用本站分类框架分类覆盖。本站分类框架分类也不适合证明方案效果；效果必须由场景、实现证据和运行验证支持。
+何时不用这套分类？当某个标准、采购规范或组织方法已经赋予术语强制含义时，应使用其原定义，不可用本站的分类覆盖。本站分类框架也不适合证明方案效果；效果必须由场景、实现证据和运行验证支持。
 
 ## 说明性场景
 
@@ -99,15 +95,9 @@ related_questions: []
 
 ## 来源
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-- [SEI — Attribute-Based Architectural Styles](https://www.sei.cmu.edu/library/attribute-based-architectural-styles/)：用于风格与质量属性分析的历史边界；不作为当前风格全集。
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-- [SEI — Modifiability Tactics](https://www.sei.cmu.edu/library/modifiability-tactics/)：用于战术影响特定质量属性响应的定义边界。
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-- [NISTIR 5517 官方 PDF 正文](https://nvlpubs.nist.gov/nistpubs/Legacy/IR/nistir5517.pdf)：用于参考架构定义的权威来源；不推广其制造控制框架。
+- [Attribute-Based Architectural Styles](https://www.sei.cmu.edu/library/attribute-based-architectural-styles/)：用于风格与质量属性分析的历史边界；不作为当前风格全集。
+- [Modifiability Tactics](https://www.sei.cmu.edu/library/modifiability-tactics/)：用于战术影响特定质量属性响应的定义边界。
+- [Reference Architecture for Machine Control Systems Integration: Interim Report](https://nvlpubs.nist.gov/nistpubs/Legacy/IR/nistir5517.pdf)：用于参考架构定义的权威来源；不推广其制造控制框架。
 - [Awesome Software Architecture](https://github.com/mehdihadeli/awesome-software-architecture)：仅作后续材料发现入口；社区索引不是事实、实现或运行证据。
 
 六类分类表、类别边界和说明性场景为本站原创的操作性归纳。不同来源的术语传统可能重叠，本文不主张存在唯一、普遍、互斥的架构分类法。

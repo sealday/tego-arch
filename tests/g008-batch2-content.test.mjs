@@ -2,7 +2,6 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import test from 'node:test';
 
-import {stripTerminologyExemptions} from './helpers/terminology-content.mjs';
 import {fileURLToPath} from 'node:url';
 
 import {
@@ -25,7 +24,7 @@ const modelingHeadings = [
   '来源',
 ];
 const [documents, ledger] = await Promise.all([
-  readContentDocuments(contentRoot).then((entries) => entries.map(stripTerminologyExemptions)),
+  readContentDocuments(contentRoot),
   readFile(new URL('../data/source-ledger.json', import.meta.url), 'utf8')
     .then(JSON.parse),
 ]);
@@ -110,7 +109,7 @@ test('publishes MOD-04 as an original six-unit arc42 v9 skeleton', () => {
     document.headings.filter(({level}) => level === 2).map(({text}) => text),
     modelingHeadings,
   );
-  assert.match(document.body, /arc42 v9\.0/u);
+  assert.match(document.body, /arc42 第 9 版/u);
   assert.match(document.body, /本站原创的六单元教学骨架/u);
   assert.match(document.body, /不是[^。\n]*官方模板/u);
 });
@@ -121,7 +120,7 @@ test('maps all twelve arc42 problem domains without copying the template', () =>
   const rows = markdownTableRows(products);
   assert.deepEqual(rows[0], [
     '本站原创单元',
-    '对应 arc42 v9 问题域',
+    '对应 arc42 第 9 版问题域',
     '核心问题',
     '最小证据与产物',
     '明确不证明',
@@ -135,7 +134,7 @@ test('maps all twelve arc42 problem domains without copying the template', () =>
     [
       [
         '目标与边界',
-        '1 介绍与目标（Introduction and Goals）；3 上下文与范围（Context and Scope）',
+        '1 引言与目标；3 上下文与范围',
       ],
       [
         '约束与权衡',
@@ -143,16 +142,16 @@ test('maps all twelve arc42 problem domains without copying the template', () =>
       ],
       [
         '静态组成',
-        '5 构建块视图；8 横切概念（Cross-cutting Concepts）的结构部分',
+        '5 构建块视图；8 横切概念的结构部分',
       ],
       [
         '动态行为',
-        '6 运行时视图；8 横切概念（Cross-cutting Concepts）的运行部分',
+        '6 运行时视图；8 横切概念的运行部分',
       ],
       ['条件性部署', '7 部署视图'],
       [
         '质量、风险与词汇',
-        '10 质量要求（Quality Requirements）；11 风险与技术债务（Risks and Technical Debt）；12 术语表（Glossary）',
+        '10 质量需求；11 风险与技术债务；12 术语表',
       ],
     ],
   );
@@ -176,7 +175,7 @@ test('maps all twelve arc42 problem domains without copying the template', () =>
     products,
     /className="table-wrapper table-wrapper--mapping"/u,
   );
-  assert.match(products, /aria-label="arc42 v9 六单元映射表，可横向滚动"/u);
+  assert.match(products, /aria-label="arc42 第 9 版六单元映射表，可横向滚动"/u);
   assert.match(products, /tabIndex=\{0\}/u);
 });
 
@@ -243,7 +242,7 @@ test('contains one measurable local quality scenario', () => {
   assert.match(exercise, /全部关键步骤[^。\n]*一致关联标识/u);
   assert.match(exercise, /故障步骤[^。\n]*10 分钟内定位/u);
   assert.match(exercise, /本站教学验收标准/u);
-  assert.match(exercise, /不是 Microsoft[^。\n]*生产承诺/u);
+  assert.match(exercise, /不是微软[^。\n]*生产承诺/u);
 });
 
 test('links the real learning chain to published MOD-13', () => {

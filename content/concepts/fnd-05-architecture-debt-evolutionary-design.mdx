@@ -48,19 +48,17 @@ related_questions: []
 
 ## 定义与尺度边界
 
-**技术债**描述一种经济关系：某个设计或构造途径带来短期便利，却使同一类工作以后比现在更昂贵。软件工程研究所的[复杂软件系统技术债管理说明](https://www.sei.cmu.edu/library/managing-technical-debt-in-complex-software-systems/)强调让债务可见、辨别类型并纳入项目规划；它也指出，管理得当的部分债务可以支持设计探索，而未识别、未管理的累积会增加开发和维护成本。
+**技术债**描述一种经济关系：某个设计或构造途径带来短期便利，却使同一类工作以后比现在更昂贵。软件工程研究所的[Managing Technical Debt in Complex Software Systems](https://www.sei.cmu.edu/library/managing-technical-debt-in-complex-software-systems/)强调让债务可见、辨别类型并纳入项目规划；它也指出，管理得当的部分债务可以支持设计探索，而未识别、未管理的累积会增加开发和维护成本。
 
 **架构债**是本文对技术债中结构性部分的操作性称呼：其影响穿过局部实现，约束组件职责、依赖方向、数据所有权、部署单元或故障隔离，使多个后续改动共同支付利息。它不是“严重技术债”的同义词；一个很昂贵但完全局部的替换仍可能是实现债，而一个看似很小的共享契约捷径可能成为架构债。
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-**演进式设计**则是一种设计方式，不是一类债务。马丁·福勒在[《Is Design Dead?》](https://martinfowler.com/articles/designDead.html)中把它描述为设计随实现一起生长，并把测试、持续集成和重构视为让这种方式可行的支撑实践。它既不是拒绝前期设计，也不是允许临时决定无限堆积；缺少反馈、安全网和持续整理时，所谓“演进”会退化成编码后修补。
+**演进式设计**则是一种设计方式，不是一类债务。马丁·福勒在[Is Design Dead?](https://martinfowler.com/articles/designDead.html)中把它描述为设计随实现一起生长，并把测试、持续集成和重构视为让这种方式可行的支撑实践。它既不是拒绝前期设计，也不是允许临时决定无限堆积；缺少反馈、安全网和持续整理时，所谓“演进”会退化成编码后修补。
 
 尺度边界很重要：不是每个遗留问题都是债。过时但稳定、没有增加后续工作成本的模块，可能只是遗留资产；明确违反当前需求的行为首先是缺陷；无法满足可靠性或安全目标的结构首先是架构风险。只有当团队能够说明“当前技术状态—未来活动—额外成本或受限选择”之间的关系时，债务标签才有管理价值。
 
 ## 核心机制
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-债务管理从记录可检验的成本关系开始，而不是先汇总“大家不喜欢的代码”。沃德·坎宁安的 [WyCash 经验报告](https://dl.acm.org/doi/10.1145/157710.157715)奠定了债务隐喻：较早交付可以获得短期价值，但未整理的实现会让后续工作持续支付利息。这个隐喻帮助讨论时机与代价，不提供自动计算偿还顺序的公式。
+债务管理从记录可检验的成本关系开始，而不是先汇总“大家不喜欢的代码”。沃德·坎宁安的 [The WyCash Portfolio Management System](https://dl.acm.org/doi/10.1145/157710.157715)奠定了债务隐喻：较早交付可以获得短期价值，但未整理的实现会让后续工作持续支付利息。这个隐喻帮助讨论时机与代价，不提供自动计算偿还顺序的公式。
 
 下面是本站原创的架构债登记表。它要求把当前收益、未来利息、结构影响和触发条件放在同一条记录中：
 
@@ -116,15 +114,8 @@ flowchart LR
 
 ## 来源
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-- [Ward Cunningham — The WyCash Portfolio Management System（ACM DOI）](https://dl.acm.org/doi/10.1145/157710.157715)：用于技术债隐喻的历史来源；不据此推导通用利息公式。
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-- [SEI — Managing Technical Debt in Complex Software Systems](https://www.sei.cmu.edu/library/managing-technical-debt-in-complex-software-systems/)：用于技术债的工作定义、可见化与纳入规划的管理边界。
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-- [Martin Fowler — Is Design Dead?](https://martinfowler.com/articles/designDead.html)：用于演进式设计及其测试、持续集成、重构等支撑条件；文章讨论的是极限编程与设计语境，不是所有系统的迁移规范。
+- [The WyCash Portfolio Management System](https://dl.acm.org/doi/10.1145/157710.157715)：用于技术债隐喻的历史来源；不据此推导通用利息公式。
+- [Managing Technical Debt in Complex Software Systems](https://www.sei.cmu.edu/library/managing-technical-debt-in-complex-software-systems/)：用于技术债的工作定义、可见化与纳入规划的管理边界。
+- [Is Design Dead?](https://martinfowler.com/articles/designDead.html)：用于演进式设计及其测试、持续集成、重构等支撑条件；文章讨论的是极限编程与设计语境，不是所有系统的迁移规范。
 
 架构债的尺度定义、债务登记表、调谐迁移流程与说明性场景是本站原创归纳。来源支持技术债与演进式设计的概念边界，不证明每个遗留问题都是债，也不保证渐进修改天然安全。

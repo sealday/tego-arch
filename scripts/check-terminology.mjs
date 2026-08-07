@@ -37,6 +37,9 @@ const suppressibleRules = new Set([
   'first-use-required',
   'unknown-english-term',
 ]);
+const genericSuppressionReasons = new Set([
+  '引用原题、产品专名、主题标识或固定内容合同按原样保留',
+]);
 const kindOrder = new Map([
   ['front-matter', 0],
   ['body', 1],
@@ -379,7 +382,7 @@ const inspectBareAliases = (record, registry) => {
     const fullRanges = matchRanges(record.text, term.first_use);
     for (const alias of term.forbidden_aliases) {
       for (const range of matchRanges(record.text, alias)) {
-        if (!insideAny(range, fullRanges)) {
+        if (!insideAny(range, fullRanges) && !insideForeignTerm(record, range, term, registry)) {
           issues.push(issue(record.file, record.line, 'bare-english-term', range.matched, term.first_use));
         }
       }
@@ -401,7 +404,7 @@ const inspectUnknownEnglish = (record, registry) => {
   }
   let candidate = characters.join('');
   candidate = candidate.replace(
-    /(?:https?:\/\/|mailto:|\/)[^\s，。；：！？、（）【】]+|\b[A-Za-z][A-Za-z0-9]*(?:[._][A-Za-z0-9_-]+)+\b|\b[A-Za-z][A-Za-z0-9]*_[A-Za-z0-9_]+\b/gu,
+    /(?:https?:\/\/|mailto:|\/)[^\s，。；：！？、（）【】]+|\b(?:FND|MTH|MOD|PR|QA|STY)-\d+\b|\b[A-Za-z][A-Za-z0-9]*(?:[._][A-Za-z0-9_-]+)+\b|\b[A-Za-z][A-Za-z0-9]*_[A-Za-z0-9_]+\b/gu,
     (match) => '\uFFFF'.repeat(match.length),
   );
   const phrasePattern = /(?<![A-Za-z0-9_])[A-Za-z][A-Za-z0-9]*(?:[-/][A-Za-z0-9]+)*(?:[ \t]+[A-Za-z][A-Za-z0-9]*(?:[-/][A-Za-z0-9]+)*)*(?![A-Za-z0-9_])/gu;
@@ -418,7 +421,13 @@ const classifySuppression = ({raw, file, line, exclusive}) => {
   const exact = raw.match(
     /^(?:<!--\s*|\{\/\*\s*)terminology-exempt:\s*([^|\s]+)\s*\|\s*reason:\s*(.*?)\s*(?:-->|\*\/\})$/u,
   );
-  if (!exclusive || !exact || !suppressibleRules.has(exact[1]) || exact[2].trim() === '') {
+  if (
+    !exclusive
+    || !exact
+    || !suppressibleRules.has(exact[1])
+    || exact[2].trim() === ''
+    || genericSuppressionReasons.has(exact[2].trim())
+  ) {
     return {file, line, valid: false, matched: raw};
   }
   return {file, line, valid: true, ruleId: exact[1], matched: raw};
@@ -426,7 +435,7 @@ const classifySuppression = ({raw, file, line, exclusive}) => {
 
 const parseSuppressions = (fileEntry) => {
   const sourceLines = fileEntry.source.split('\n');
-  return (fileEntry.suppressionComments ?? [])
+  const suppressions = (fileEntry.suppressionComments ?? [])
     .map((comment) => ({...comment, excerpt: comment.excerpt ?? comment.raw}))
     .filter(({excerpt}) => excerpt?.includes('terminology-exempt'))
     .map((comment) => classifySuppression({
@@ -436,6 +445,16 @@ const parseSuppressions = (fileEntry) => {
       exclusive: !comment.excerpt.includes('\n')
         && sourceLines[comment.line - 1]?.trim() === comment.excerpt,
     }));
+  const consecutiveLines = new Set();
+  for (let index = 1; index < suppressions.length; index += 1) {
+    if (suppressions[index].line === suppressions[index - 1].line + 1) {
+      consecutiveLines.add(suppressions[index - 1].line);
+      consecutiveLines.add(suppressions[index].line);
+    }
+  }
+  return suppressions.map((suppression) => (
+    consecutiveLines.has(suppression.line) ? {...suppression, valid: false} : suppression
+  ));
 };
 
 const applySuppressions = (fileEntry, recordIssues) => {

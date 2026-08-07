@@ -231,6 +231,11 @@ test('exempts literals, commands, paths, URLs, identifiers, fields, and register
   assert.deepEqual(result.issues, []);
 });
 
+test('treats canonical topic identifiers as protected navigation literals', async () => {
+  const result = await checkFixture('先阅读 MOD-13，再回到 PR-14 与 MTH-02。');
+  assert.deepEqual(result.issues, []);
+});
+
 test('does not exempt arbitrary external link labels', async () => {
   const result = await checkFixture('[Unknown External Title](https://example.com/not-registered)');
   assert.deepEqual(result.issues.map(({ruleId, matched}) => ({ruleId, matched})), [
@@ -436,6 +441,24 @@ unknown worker`);
   assert.deepEqual(result.issues, []);
 });
 
+test('rejects generic and consecutive bulk suppression directives', async () => {
+  const generic = await checkFixture(`{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+unknown worker`);
+  assert.deepEqual(generic.issues.map(({line, ruleId}) => ({line, ruleId})), [
+    {line: 1, ruleId: 'invalid-suppression'},
+    {line: 2, ruleId: 'unknown-english-term'},
+  ]);
+
+  const consecutive = await checkFixture(`{/* terminology-exempt: unknown-english-term | reason: 固定按钮原文 */}
+{/* terminology-exempt: unknown-english-term | reason: 固定状态原文 */}
+unknown worker`);
+  assert.deepEqual(consecutive.issues.map(({line, ruleId}) => ({line, ruleId})), [
+    {line: 1, ruleId: 'invalid-suppression'},
+    {line: 2, ruleId: 'invalid-suppression'},
+    {line: 3, ruleId: 'unknown-english-term'},
+  ]);
+});
+
 test('ignores suppression-shaped text in fenced code, inline code, TS comments, and strings', async () => {
   const directive = '<!-- terminology-exempt: unknown-english-term | reason: 测试 -->';
   const markdown = await checkFixture([
@@ -582,6 +605,28 @@ test('does not join unknown phrases across a registered acronym', async () => {
     'unknown API worker',
   ].join('\n'));
   assert.deepEqual(result.issues.map(({matched}) => matched), ['unknown', 'worker']);
+});
+
+test('does not report a shorter registered alias inside another registered term', async () => {
+  const workshop = {
+    id: 'quality-attribute-workshop',
+    canonical_zh: '质量属性工作坊',
+    english: 'Quality Attribute Workshop',
+    acronym: 'QAW',
+    kind: 'acronym',
+    first_use: '质量属性工作坊（Quality Attribute Workshop，QAW）',
+    subsequent_use: ['质量属性工作坊', 'QAW'],
+    allowed_aliases: [],
+    forbidden_aliases: ['Quality Attribute Workshop'],
+    note: '测试嵌套术语。',
+    order: 50,
+  };
+  const result = await withFixture(
+    {'content/example.mdx': '质量属性工作坊（Quality Attribute Workshop，QAW）用于发现场景。'},
+    (root) => checkTerminology({root, paths: ['content/example.mdx']}),
+    [...terms, workshop],
+  );
+  assert.deepEqual(result.issues, []);
 });
 
 test('returns registry errors before scanning content and CLI reports every issue', async () => {

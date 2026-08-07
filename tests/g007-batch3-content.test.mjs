@@ -125,7 +125,7 @@ const decisionContracts = new Map([
       [
         'success-only state is rejected',
         '机制',
-        /只存储(?:一个)?成功(?:标志|旗标)[^。；\n]*(?:不足|不能)[^。；\n]*in-progress、completed、rejected、conflict、expired 与 unknown/u,
+        /只存储(?:一个)?成功(?:标志|旗标)[^。；\n]*(?:不足|不能)[^。；\n]*进行中、已完成、已拒绝、冲突、已过期与未知/u,
       ],
       ['exactly-once is not enough', '误用与反原则', /恰好一次[^。；\n]*不能[^。；\n]*(?:幂等消费者|效果边界)/u],
       ['irreversible retries are bounded', '误用与反原则', /不可逆效果[^。；\n]*(?:无限|无界|不设上限)重试[^。；\n]*(?:补偿|对账|人工终态)/u],
@@ -135,17 +135,17 @@ const decisionContracts = new Map([
   [
     'PR-11',
     [
-      ['CQS scale', '要保护的性质', /CQS 约束方法或接口的可观察状态语义/u],
+      ['command-query-separation scale', '要保护的性质', /命令查询分离约束方法或接口的可观察状态语义/u],
       ['CQRS scale', '要保护的性质', /CQRS 分离命令与查询责任及其模型/u],
       ['replica is not CQRS', '要保护的性质', /只读副本只是基础设施路由，不能单独证明 CQRS/u],
-      ['four outcomes', '机制', /保留现有模型并应用 CQS[\s\S]*优化单模型读取[\s\S]*基础设施读写分流[\s\S]*采用 CQRS/u],
+      ['four outcomes', '机制', /保留现有模型并应用命令查询分离[\s\S]*优化单模型读取[\s\S]*基础设施读写分流[\s\S]*采用 CQRS/u],
       ['CQRS costs are explicit', '冲突与适用上下文', /投影延迟、读己之写、回放重建、对账与模式演化/u],
-      ['simple CRUD non-use', '误用与反原则', /简单 CRUD 边界没有模型分歧证据时不采用 CQRS/u],
+      ['simple CRUD non-use', '误用与反原则', /简单增删改查边界没有模型分歧证据时不采用 CQRS/u],
       ['return value does not define query', '误用与反原则', /返回值[^。；\n]*不能[^。；\n]*查询/u],
       [
         'CQS is not CQRS',
         '机制',
-        /先保留现有模型并应用 CQS[^。；\n]*[\s\S]*只有命令规则与查询形状长期不同[^。；\n]*采用 CQRS/u,
+        /先保留现有模型并应用命令查询分离[^。；\n]*[\s\S]*只有命令规则与查询形状长期不同[^。；\n]*采用 CQRS/u,
       ],
       [
         'read-heavy ratio alone does not justify CQRS',
@@ -185,7 +185,7 @@ const decisionContracts = new Map([
       [
         'mutating value return is a CQS exception',
         '要保护的性质',
-        /改变可观察状态[^。；\n]*返回(?:标识符|ID)、(?:回执|receipt)或(?:结果|outcome)[^。；\n]*组合操作[^。；\n]*CQS 例外/u,
+        /改变可观察状态[^。；\n]*返回(?:标识符|ID)、(?:回执|receipt)或(?:结果|outcome)[^。；\n]*组合操作[^。；\n]*命令查询分离例外/u,
       ],
       [
         'strict CQS redesign separates result lookup',

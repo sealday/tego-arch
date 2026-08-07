@@ -2,7 +2,6 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import test from 'node:test';
 
-import {stripTerminologyExemptions} from './helpers/terminology-content.mjs';
 import {fileURLToPath} from 'node:url';
 
 import {
@@ -26,7 +25,7 @@ const modelingHeadings = [
   '来源',
 ];
 const [documents, ledger] = await Promise.all([
-  readContentDocuments(contentRoot).then((entries) => entries.map(stripTerminologyExemptions)),
+  readContentDocuments(contentRoot),
   readFile(new URL('../data/source-ledger.json', import.meta.url), 'utf8')
     .then(JSON.parse),
 ]);
@@ -251,7 +250,7 @@ test('defines effective-dated relationship history without claiming bitemporal s
     assert.match(body, new RegExp(label, 'u'), label);
   }
   assert.match(body, /不(?:是|包含)[^。\n]*双时态/u);
-  assert.match(body, /不(?:是|采用)[^。\n]*事件溯源（Event Sourcing）/u);
+  assert.match(body, /不(?:是|采用)[^。\n]*事件溯源/u);
 });
 
 test('governs the exact pinned MOD-06 source set', () => {

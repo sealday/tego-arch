@@ -196,20 +196,20 @@ const decisionContracts = new Map([
     ['query models may bypass domain model', '机制', /(?:报表|查询模型)[^。；\n]*不必[^。；\n]*领域模型/u],
     ['leakage is named', '冲突与适用上下文', /身份、延迟加载、并发、批处理与查询形状/u],
     ['persistence-aware optimization is honest', '冲突与适用上下文', /显式[^。；\n]*持久化感知[^。；\n]*优化/u],
-    ['ORM requirement rejected', '误用与反原则', /不要求 ORM|并非必须使用 ORM/u],
+    ['object-relational-mapping requirement rejected', '误用与反原则', /不要求对象关系映射|并非必须使用对象关系映射/u],
     ['annotation ban rejected', '误用与反原则', /不要求在所有上下文禁止持久化注解/u],
     ['database costs remain', '误用与反原则', /数据库与事务成本[^。；\n]*(?:不会消失|仍然存在)/u],
   ]],
   ['PR-14', [
     ['decision system not catalog', '要保护的性质', /责任分配决策系统[^。；\n]*不是模式名称目录/u],
-    ['all nine patterns', '机制', /信息专家[\s\S]*创建者[\s\S]*Controller[\s\S]*低耦合[\s\S]*高内聚[\s\S]*多态[\s\S]*纯虚构[\s\S]*间接[\s\S]*受保护变化/u],
+    ['all nine patterns', '机制', /信息专家[\s\S]*创建者[\s\S]*控制器[\s\S]*低耦合[\s\S]*高内聚[\s\S]*多态[\s\S]*纯虚构[\s\S]*间接[\s\S]*受保护变化/u],
     ['ownership dimensions', '机制', /信息、创建、协调、变化与基础设施责任/u],
     ['heuristics can conflict', '冲突与适用上下文', /不同方向|相互拉扯|发生冲突/u],
-    ['controller is not god object', '误用与反原则', /Controller[^。；\n]*(?:不是|不应成为)[^。；\n]*(?:god object|上帝对象)/u],
+    ['controller is not god object', '误用与反原则', /控制器[^。；\n]*(?:不是|不应成为)[^。；\n]*上帝对象/u],
     ['expert is not data holder', '误用与反原则', /信息专家[^。；\n]*(?:不是|不等于)[^。；\n]*(?:数据持有者|数据对象)/u],
     ['pure fabrication has cost', '冲突与适用上下文', /(?:纯虚构[^。；\n]*成本|成本[^。；\n]*纯虚构)/u],
     ['indirection has cost', '冲突与适用上下文', /(?:间接[^。；\n]*成本|成本[^。；\n]*间接)/u],
-    ['protected variation is evidence-led', '机制', /Protected Variations[^。；\n]*变化证据/u],
+    ['protected variation is evidence-led', '机制', /受保护变化[^。；\n]*变化证据/u],
   ]],
 ]);
 
@@ -225,10 +225,10 @@ for (const [id, contracts] of decisionContracts) {
 test('does not collapse the Batch 4 misconceptions into slogans', () => {
   assert.doesNotMatch(requiredDocument('PR-12').body, /应该在所有地方使用接口/u);
   assert.doesNotMatch(requiredDocument('PR-12').body, /现有代码永远不应修改/u);
-  assert.doesNotMatch(requiredDocument('PR-13').body, /Persistence Ignorance[^。\n]*必须使用 ORM/u);
+  assert.doesNotMatch(requiredDocument('PR-13').body, /持久化无知[^。\n]*必须使用对象关系映射/u);
   assert.doesNotMatch(requiredDocument('PR-13').body, /Persistence Ignorance[^。\n]*(?:等于|就是)忽略存储行为/u);
   assert.doesNotMatch(requiredDocument('PR-13').body, /所有上下文[^。\n]*必须禁止持久化注解/u);
   assert.doesNotMatch(requiredDocument('PR-13').body, /数据库成本可以忽略/u);
-  assert.doesNotMatch(requiredDocument('PR-14').body, /Controller[^。\n]*(?:就是|应成为)[^。\n]*(?:god object|上帝对象)/u);
+  assert.doesNotMatch(requiredDocument('PR-14').body, /控制器[^。\n]*(?:就是|应成为)[^。\n]*上帝对象/u);
   assert.doesNotMatch(requiredDocument('PR-14').body, /信息专家[^。\n]*就是数据持有者/u);
 });

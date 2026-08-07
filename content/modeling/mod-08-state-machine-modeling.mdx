@@ -50,11 +50,9 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 
 ## 建模目标与输入
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 本文承接 [MOD-07 统一建模语言（Unified Modeling Language，UML）选图指南](/modeling/mod-07)的证据边界：状态图用于评审单个观察对象的状态、事件、守卫和转换，不单独证明跨系统外部效果。教学场景是一笔跨边界长时转账：系统接受转账意图，提交外部扣款与入账动作，可能在取得结果前超时，然后通过只读查询、受控重试、补偿或人工决议收敛。
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-参与者、状态名、转换、时间预算、补偿条件和人工决议字段都是本站原创教学设定，不代表现有生产系统或 Temporal 默认实现。输入至少包括稳定 `transfer_id`、每个外部效果的 `operation_id`、目标系统 `effect_ref`、证据截止时间、负责人与可核对的权威记录。
+参与者、状态名、转换、时间预算、补偿条件和人工决议字段都是本站原创教学设定，不代表现有生产系统或 Temporal 工作流平台默认实现。输入至少包括稳定 `transfer_id`、每个外部效果的 `operation_id`、目标系统 `effect_ref`、证据截止时间、负责人与可核对的权威记录。
 
 ## 两类状态与权威记录
 
@@ -192,25 +190,16 @@ stateDiagram-v2
 - 把取消请求直接存为已取消，不核对已提交或未知效果。
 - 把补偿当作数据删除或历史回卷，不为补偿本身建立身份、预算和对账。
 - 只写通用 `closed`，没有 `disposition`、`decision_ref`、决策人、时间和残余风险。
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 - 将 Temporal 工作流历史或图中状态当作外部扣款与入账的权威证据。
 
 ## 与其他模型的衔接
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 [MOD-07 UML 选图指南](/modeling/mod-07)定义单对象生命周期的建模边界；[PR-10 幂等性与最小协调](/principles/pr-10)约束稳定操作身份、未知结果和安全重试；[QA-02 可靠性、可用性与可恢复性](/quality-attributes/qa-02)用可执行证据检验超时、重试、补偿和人工收敛。
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-[Temporal Saga 与持久执行案例](/cases/temporal-saga-durable-execution)提供工作流、活动、重试、超时与补偿的实例边界。Temporal 机制不定义本文的业务状态或补偿政策。返回[建模目录](/modeling)可继续选择其他观察尺度；[MOD-09 事件风暴工作坊建模](/modeling/mod-09)把未知支付结果、对账与人工决议的证据语义带入协作工作坊，但不会据此宣布正式边界。
+[Temporal 补偿事务与持久执行案例](/cases/temporal-saga-durable-execution)提供工作流、活动、重试、超时与补偿的实例边界。Temporal 机制不定义本文的业务状态或补偿政策。返回[建模目录](/modeling)可继续选择其他观察尺度；[MOD-09 事件风暴工作坊建模](/modeling/mod-09)把未知支付结果、对账与人工决议的证据语义带入协作工作坊，但不会据此宣布正式边界。
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 [MOD-10 领域叙事（Domain Storytelling）](/modeling/mod-10)中发现的一个重要的领域故事变体，可以用本文细化状态、终态与恢复语义；故事本身不证明这些语义已经完整或可执行。
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 [MOD-11 领域驱动设计上下文映射（DDD Context Map）](/modeling/mod-11)：状态、不变量和恢复规则的独立变化可以验证候选边界，但状态机不等于上下文映射。
 
 ## 完整演练
@@ -226,19 +215,10 @@ stateDiagram-v2
 
 ## 来源
 
-{/* terminology-exempt: bare-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-- [Unified Modeling Language 2.5.1, Object Management Group](https://www.omg.org/spec/UML/2.5.1)：仅支持 UML 2.5.1 的图名称与标准语义范围；不支持领域示例、本地建模工作流、生产事实，也不能据此声称图证明了实现行为。本文还不以该标准定义转账状态政策或补偿政策。
-{/* terminology-exempt: bare-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-- [Temporal Workflow](https://docs.temporal.io/workflows)：仅支持已记录页面与版本中的 Temporal Workflow 文档语义；不证明未记录行为或其他版本的行为。
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
+- [Unified Modeling Language 2.5.1](https://www.omg.org/spec/UML/2.5.1)：仅支持 UML 2.5.1 的图名称与标准语义范围；不支持领域示例、本地建模工作流、生产事实，也不能据此声称图证明了实现行为。本文还不以该标准定义转账状态政策或补偿政策。
+- [Temporal Workflow](https://docs.temporal.io/workflows)：仅支持已记录页面与版本中的工作流文档语义；不证明未记录行为或其他版本的行为。
 - [Temporal Activity](https://docs.temporal.io/activities)：仅支持已记录页面与版本中的 Temporal 活动文档语义；不证明未记录行为或其他版本的行为。
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 - [Temporal Retry Policies](https://docs.temporal.io/encyclopedia/retry-policies)：仅支持已记录页面与版本中的 Temporal 重试策略文档语义；不证明未记录行为或其他版本的行为。
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-- [Sagas, Garcia-Molina and Salem](https://dl.acm.org/doi/10.1145/38713.38742)：提供 Sagas 的原始方法与历史模型；没有独立证据时，不确立其对现代实现的适用性。
+- [Sagas](https://dl.acm.org/doi/10.1145/38713.38742)：提供补偿事务的原始方法与历史模型；没有独立证据时，不确立其对现代实现的适用性。
 
 两张状态图、映射表、状态名与转账演练均为本站原创教学内容，不复制来源图表或示例流程。

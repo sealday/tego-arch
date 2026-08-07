@@ -2,7 +2,6 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import test from 'node:test';
 
-import {stripTerminologyExemptions} from './helpers/terminology-content.mjs';
 import {fileURLToPath} from 'node:url';
 
 import {
@@ -15,7 +14,7 @@ import {extractExternalLinks} from '../scripts/source-ledger.mjs';
 import {handleHorizontalArrowKey} from '../src/components/KeyboardScrollableRegion/handleHorizontalArrowKey.mjs';
 
 const contentRoot = fileURLToPath(new URL('../content/', import.meta.url));
-const documents = await readContentDocuments(contentRoot).then((entries) => entries.map(stripTerminologyExemptions));
+const documents = await readContentDocuments(contentRoot);
 const document = documents.find(
   ({file}) => file === 'modeling/mod-09-eventstorming.mdx',
 );
@@ -334,8 +333,8 @@ function assertInteractionContract(body) {
 function assertTerminologyAndNonProof(body) {
   assert.match(body, /人员/u);
   assert.doesNotMatch(body, /\bPerson\b/u);
-  assert.doesNotMatch(body, /(?:全景|过程建模|Software Design).{0,8}层级|层级.{0,8}(?:全景|过程建模|Software Design)/u);
-  for (const format of ['全景', '过程建模', 'Software Design']) assert.match(body, new RegExp(`${format}[^。\\n]{0,24}工作坊格式`, 'u'));
+  assert.doesNotMatch(body, /(?:全景|过程建模|软件设计).{0,8}层级|层级.{0,8}(?:全景|过程建模|软件设计)/u);
+  for (const format of ['全景', '过程建模', '软件设计']) assert.match(body, new RegExp(`${format}[^。\\n]{0,24}工作坊格式`, 'u'));
   for (const sentence of nonProofSentences) assert.ok(body.includes(sentence), sentence);
   const graphIndex = body.indexOf('```mermaid\nflowchart LR');
   assert.ok(graphIndex > -1);

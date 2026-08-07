@@ -67,17 +67,17 @@ const misconceptionContracts = new Map([
       [
         'DRY protects authoritative knowledge rather than every similar code shape',
         '机制',
-        /DRY 关心权威知识，不是每一段形状相似的代码/u,
+        /避免知识重复关心权威知识，不是每一段形状相似的代码/u,
       ],
       [
         'YAGNI permits currently required engineering work',
         '冲突与适用上下文',
-        /YAGNI 不禁止当前必需的重构、测试、可观测性、安全或合规工作/u,
+        /不预建未需能力不禁止当前必需的重构、测试、可观测性、安全或合规工作/u,
       ],
       [
         'KISS preserves inherent domain and operational complexity',
         '冲突与适用上下文',
-        /KISS 也不构成忽略领域固有复杂度或运行复杂度的理由/u,
+        /保持简单也不构成忽略领域固有复杂度或运行复杂度的理由/u,
       ],
       [
         'temporary duplication can be safer while variation is unknown',
@@ -122,7 +122,7 @@ const misconceptionContracts = new Map([
       [
         'AWS and SRE guidance does not define universal thresholds',
         '冲突与适用上下文',
-        /AWS 与 Google SRE 的材料[\s\S]*不是适用于所有系统的通用阈值/u,
+        /亚马逊云科技与谷歌站点可靠性工程的材料[\s\S]*不是适用于所有系统的通用阈值/u,
       ],
     ],
   ],
@@ -137,7 +137,7 @@ const misconceptionContracts = new Map([
       [
         'expand migrate contract is a temporary compatibility window',
         '要保护的性质',
-        /扩展\/migrate\/contract 创建的是临时兼容窗口，不是永久双支持/u,
+        /扩展、迁移、收缩三个阶段创建的是临时兼容窗口，不是永久双支持/u,
       ],
       [
         'a replacement seam surrounds an identified volatile decision',

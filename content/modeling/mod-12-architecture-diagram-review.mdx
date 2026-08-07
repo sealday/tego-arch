@@ -45,8 +45,7 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 
 一张图可以整齐、完整，却仍让评审者对系统内外、数据权威和故障传播作出错误判断。本文提供四道顺序执行的审阅门，把“看懂图”转成九项可记录、可分派、可复查的发现；[建模目录](/modeling)提供其他模型入口。
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-本文以 [MOD-02 C4 系统上下文图与容器](/modeling/mod-02)的费用申报系统为权威输入，使用故意含缺陷的问题图做说明性演练。图、表和中文方法是教学综合，不是生产盘点，也不把外部资料扩张为对本站方法的背书。
+本文以 [MOD-02 C4 架构模型（C4 Model） 系统上下文图与容器](/modeling/mod-02)的费用申报系统为权威输入，使用故意含缺陷的问题图做说明性演练。图、表和中文方法是教学综合，不是生产盘点，也不把外部资料扩张为对本站方法的背书。
 
 ## 学习问题
 
@@ -59,10 +58,6 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 
 审阅目标不是把图改得更漂亮，而是判断它能否支撑当前评审问题，并让未知项继续可见。开始前收集原始文件、目标受众、待作决策、图类型、抽象层级、场景、环境，以及代码、接口、数据、部署、运行、安全、故障和决策证据；证据不足时形成“待澄清”，不能自行补全。
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 元素名称和系统边界沿用 MOD-02：员工在边界外，网页应用、申报应用程序编程接口（Application Programming Interface，API）、申报数据库和支付任务执行器位于费用申报系统内，银行支付服务是外部系统。[MOD-01 建模总览](/modeling/mod-01)帮助先选问题与视图，[MOD-03](/modeling/mod-03)区分组件、动态图和部署，[MOD-04](/modeling/mod-04)承接文档事实分类与版本记录。
 
 ## 四道审阅门
@@ -83,7 +78,6 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 | 身份与范围 | 范围 | 抽象层级、场景、环境、受众和非目标是什么 | 模型类型、范围声明、场景与环境记录 | 上下文、容器、数据库和外部系统混在未说明层级 | 范围声明不批准边界或实现 |
 | 身份与范围 | 版本 | 这是现状、目标状态还是教学假设，事实截止和维护责任是什么 | 修订号、日期、状态与责任类型 | 没有状态、修订号、日期或责任类型 | 版本块不证明与代码、部署或运行一致 |
 | 表示与边界 | 图例 | 元素、线型、箭头、颜色、边框、缩写和尺寸分别表示什么 | 图例与可独立复述的符号说明 | 符号只能靠作者口头解释 | 图例完整不允许混用抽象层级 |
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 | 表示与边界 | 边界 | 系统内外、外部参与者和当前抽象层级如何分开 | MOD-02 权威系统边界与元素类型 | 银行支付服务位于费用申报系统内部 | 系统边界不等于信任、部署、网络或组织边界 |
 | 运行与交换 | 数据 | 交换什么业务事实，方向、权威和消费责任是什么 | 接口、数据、业务权威或可核验案例 | 只有“使用”或无标签箭头 | 数据关系不等于所有权、一致性、事务或顺序 |
 | 运行与交换 | 协议 | 哪些协议、通道或同步异步语义已有证据 | 接口契约、配置、运行或部署事实 | “同步/事件？”既暗示实现又没有依据 | 协议标签不证明实现、兼容性或运行健康 |
@@ -96,7 +90,6 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 
 ## 核心产物
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 说明性演练先只看问题图：它故意混合层级，把银行放错边界，省略数据方向与图例，并用没有证据的协议和失败域暗示制造误判。此图不是 MOD-02 原图的质量评价，也不是生产快照。
 
 <div
@@ -126,21 +119,16 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 | 标题 | 重要 | 标题只有“费用平台架构图” | 评审者不知道图类型和问题 | 写明费用申报系统容器图和费用提交与支付协作问题 | 架构文档维护者 | 已关闭 |
 | 范围 | 阻断 | 系统、容器、数据库和外部系统处于同一未说明层级 | 把不同观察单位当成可直接比较的结构 | 固定为容器图并声明现状教学范围与非目标 | 系统边界维护者 | 已关闭 |
 | 图例 | 重要 | 元素类型、边框和线型没有说明 | 图只能由作者口头解释 | 增加人员、容器、数据存储、外部系统和边界图例 | 架构文档维护者 | 已关闭 |
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 | 边界 | 阻断 | 银行支付服务位于费用申报系统边界内 | 错误分配系统责任和外部依赖 | 恢复 MOD-02 权威系统边界并把银行移到边界外 | 系统边界维护者 | 已关闭 |
 | 数据 | 阻断 | 重要箭头没有业务事实、方向或权威说明 | 无法判断数据责任和跨界含义 | 写明提交申报、读写、支付任务、支付请求与外部结果证据 | 接口契约责任人 | 已关闭 |
 | 协议 | 待澄清 | 连线写成“同步/事件？” | 把猜测当成实现承诺 | 删除猜测并统一标记“协议：待确认” | 接口契约责任人 | 保留待澄清 |
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 | 信任域 | 阻断 | 员工、费用申报系统和银行之间没有信任说明 | 跨界数据与身份检查被隐藏 | 标出候选信任边界并回链 QA-05 所需证据 | 安全责任人 | 已关闭（证据仍待澄清） |
 | 失败域 | 阻断 | 支付任务执行器与银行被画成同一失败域 | 误判故障隔离、传播和恢复责任 | 只标外部依赖与候选失败边界，内部隔离继续待证 | 可靠性责任人 | 已关闭（证据仍待澄清） |
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-| 版本 | 重要 | 没有状态、修订号、日期和维护责任类型 | 无法判断图适用时间和复查责任 | 增加现状教学练习、rev 1、2026-08-05 和责任类型 | 架构文档维护者 | 已关闭 |
+| 版本 | 重要 | 没有状态、修订号、日期和维护责任类型 | 无法判断图适用时间和复查责任 | 增加现状教学练习、修订版 1、2026-08-05 和责任类型 | 架构文档维护者 | 已关闭 |
 
 </div>
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-修正图恢复 MOD-02 的系统边界与元素类型，补足业务关系和版本块，并让未知协议、候选信任边界与候选失败边界继续可见。它没有把缺失证据改写成 HTTPS、事件、独立部署或故障切换事实。
+修正图恢复 MOD-02 的系统边界与元素类型，补足业务关系和版本块，并让未知协议、候选信任边界与候选失败边界继续可见。它没有把缺失证据改写成加密超文本传输协议（Hypertext Transfer Protocol，HTTP） 协议、事件、独立部署或故障切换事实。
 
 <div
   className="architecture-diagram-scroll"
@@ -150,7 +138,6 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
   onKeyDown={handleHorizontalArrowKey}
 >
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 ![恢复 MOD-02 系统边界并明确未知协议、候选信任边界和候选失败边界的费用申报系统容器图](/img/diagrams/mod-12-architecture-review-corrected.svg)
 
 </div>
@@ -163,8 +150,7 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 
 阻断的错误表示在被删除，或改为明确标注的候选/未知时即可关闭；这只关闭错误表示。认证、授权、部署、故障隔离、故障切换和恢复证据仍然未知，不得自行补全。
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-未参与修图的人应能复述图类型、范围、系统内外、数据关系和非证明项，并能从修正图回到每条发现。两组 Draw.io 与 SVG 还需保持可见语义同步，并在桌面和移动端验证局部滚动与可读性；资产验证由后续发布任务完成。
+未参与修图的人应能复述图类型、范围、系统内外、数据关系和非证明项，并能从修正图回到每条发现。两组 Draw.io 与矢量图还需保持可见语义同步，并在桌面和移动端验证局部滚动与可读性；资产验证由后续发布任务完成。
 
 ## 常见失败
 
@@ -186,20 +172,14 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 
 审阅清单不替代威胁建模、可靠性演练、代码检查、部署盘点或生产观测。
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-另一种常见失败是把发现合并成一个总 PASS。九项中的任何一项都可能拥有不同证据、责任类型和复查状态，因此必须逐项关闭、保留或退回。
+另一种常见失败是把发现合并成一个总通过。九项中的任何一项都可能拥有不同证据、责任类型和复查状态，因此必须逐项关闭、保留或退回。
 
 ## 与其他模型的衔接
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 [MOD-11 上下文映射](/modeling/mod-11)可以提供候选业务边界和交换事实，但候选上下文不能直接重命名为容器，也不能推出协议或调用顺序。[QA-02 可靠性、可用性与可恢复性](/quality-attributes/qa-02)要求用运行、部署、故障和恢复证据验证失败边界；图上的隔离形状本身不证明故障隔离。
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-[QA-05 安全、隐私（Privacy）与信任](/quality-attributes/qa-05)要求补充数据分类、身份、权限、威胁与控制证据；系统边界不能代替信任边界判断。同一方法也可用于 [Microsoft multi-agent reference architecture 案例](/cases/microsoft-multi-agent-reference-architecture)，但必须采用该案例自己的权威名称和边界。
+[QA-05 安全、隐私（Privacy）与信任](/quality-attributes/qa-05)要求补充数据分类、身份、权限、威胁与控制证据；系统边界不能代替信任边界判断。同一方法也可用于 [微软多智能体（Agent）参考架构案例](/cases/microsoft-multi-agent-reference-architecture)，但必须采用该案例自己的权威名称和边界。
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 [MOD-13 模型同步策略](/modeling/mod-13)接续图的版本与审阅发现，为后续变化指定图源权威、同步方向和漂移复查证据。
 
 ## 完整演练
@@ -218,23 +198,9 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 
 ## 来源
 
-{/* terminology-exempt: bare-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-- [C4 Model：Software Architecture Diagram Review Checklist](https://c4model.com/diagrams/checklist)（facts-summary）：支持标题、图类型、范围、图例、元素名称、类型、职责、关系方向、标签和适用时协议等通用检查；不提供或认可本站四道门、九行方法、示例、措辞或布局。
-{/* terminology-exempt: bare-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-- [C4 Model：Notation](https://c4model.com/diagrams/notation)（facts-summary）：支持自描述表示法、标题、范围、图例、元素类型与职责、方向和关系标签；不证明本练习图正确或可读。
-{/* terminology-exempt: first-use-required | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-- [arc42：Context and Scope](https://docs.arc42.org/section-3/)（facts-summary）：支持区分系统与通信伙伴、业务输入输出、技术通道或协议，以及业务与技术上下文；不提供本站审阅矩阵或演练。
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-- [OWASP Threat Modeling Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Threat_Modeling_Cheat_Sheet.html)（facts-summary）：支持建模数据流与信任边界，并持续更新和复查模型；不把 MOD-12 变成完整威胁建模流程，也不支持失败域或版本结论。
+- [C4 Model — Software architecture diagram review checklist](https://c4model.com/diagrams/checklist)（`facts-summary`）：支持标题、图类型、范围、图例、元素名称、类型、职责、关系方向、标签和适用时协议等通用检查；不提供或认可本站四道门、九行方法、示例、措辞或布局。
+- [C4 Model — Notation](https://c4model.com/diagrams/notation)（`facts-summary`）：支持自描述表示法、标题、范围、图例、元素类型与职责、方向和关系标签；不证明本练习图正确或可读。
+- [arc42 v9 — Context and Scope](https://docs.arc42.org/section-3/)（`facts-summary`）：支持区分系统与通信伙伴、业务输入输出、技术通道或协议，以及业务与技术上下文；不提供本站审阅矩阵或演练。
+- [Threat Modeling Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Threat_Modeling_Cheat_Sheet.html)（`facts-summary`）：支持建模数据流与信任边界，并持续更新和复查模型；不把 MOD-12 变成完整威胁建模流程，也不支持失败域或版本结论。
 
-{/* terminology-exempt: first-use-required | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-所有引用均只作事实摘要，不复刻外部表格、措辞、布局、模板或示例。本文的方法分组、严重度和费用申报演练不代表 C4、arc42 或 OWASP 的官方方法。
+所有引用均只作事实摘要，不复刻外部表格、措辞、布局、模板或示例。本文的方法分组、严重度和费用申报演练不代表 C4 架构模型、arc42 架构文档模板或开放式全球应用程序安全项目的官方方法。

@@ -49,16 +49,12 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 
 ## 建模目标与输入
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-本文承接 [MOD-02 C4 模型](/modeling/mod-02)中的名称与系统权威：教学范围内的本地系统称为“费用申报系统”，外部支付能力称为“银行支付服务”，不能为了贴纸排列临时改名。场景沿用 [MOD-05 概念、逻辑与物理数据模型](/modeling/mod-05)的费用申报过程，并采用 [MOD-08 状态机建模](/modeling/mod-08)的支付结果证据边界：本地请求、超时或人工处理记录都不能代替银行支付服务回执或查询结果。
+本文承接 [MOD-02 C4 架构模型（C4 Model）](/modeling/mod-02)中的名称与系统权威：教学范围内的本地系统称为“费用申报系统”，外部支付能力称为“银行支付服务”，不能为了贴纸排列临时改名。场景沿用 [MOD-05 概念、逻辑与物理数据模型](/modeling/mod-05)的费用申报过程，并采用 [MOD-08 状态机建模](/modeling/mod-08)的支付结果证据边界：本地请求、超时或人工处理记录都不能代替银行支付服务回执或查询结果。
 
 开始前按以下完整输入合同留下可见记录：
 
 - 记录要探索的业务问题与时间范围。
 - 列出已知参与者、外部系统和权威记录。
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 - 确认 MOD-02 权威边界，并保留“银行支付服务”的权威名称。
 - 汇集可用的访谈、流程、事故、政策和术语证据。
 - 标明未知项、争议项和不能在本次工作坊决定的事项。
@@ -79,8 +75,7 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 7. 回到热点，将事项记录为已回答、待验证或超出本轮范围。
 8. 把边界信号写入候选边界台账，给出替代解释、所需证据和处置。
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-全景是发现全局叙事、关键转折、热点和未知项的工作坊格式。过程建模是围绕一个具体流程连接人员、读模型、命令、系统、事件与策略的工作坊格式。Software Design 是在更窄范围内探索实现协作与设计选择的工作坊格式。三者服务于不同讨论尺度，不是正式层级，也不会自动把上一轮贴纸变成下一轮架构决定。
+全景是发现全局叙事、关键转折、热点和未知项的工作坊格式。过程建模是围绕一个具体流程连接人员、读模型、命令、系统、事件与策略的工作坊格式。软件设计是在更窄范围内探索实现协作与设计选择的工作坊格式。三者服务于不同讨论尺度，不是正式层级，也不会自动把上一轮贴纸变成下一轮架构决定。
 
 ## 模型产物
 
@@ -150,7 +145,6 @@ flowchart LR
 
 | 观察到的信号 | 候选边界假设 | 替代解释 | 仍需的证据 | 当前处置 |
 | --- | --- | --- | --- | --- |
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 | 审批与支付使用不同结果语言 | 审批判断与支付执行可能属于不同业务边界 | 它们也可能只是同一费用生命周期的不同阶段 | 术语负责人、规则变更历史与跨阶段不变量 | 交给 MOD-11 |
 | 银行支付服务具有独立契约与变更节奏 | 外部支付集成需要明确的翻译与隔离边界 | 它也可能只是技术适配器，而非新的业务边界 | 契约所有权、版本策略、失败语义与变更记录 | 下一轮验证 |
 | 费用申报记录与支付结果由不同权威记录裁定 | 申报事实与支付结果可能需要分离的权威边界 | 它们也可能是同一边界内的权威记录与投影视图 | 数据负责人、更正规则、审计责任与一致性需求 | 保留假设 |
@@ -168,10 +162,6 @@ flowchart LR
 - 每个关键事件候选、热点和未知项都有记录，不强行消除分歧。
 - 选中的高风险片段已建立可解释的过程模型。
 - 候选边界台账包含替代解释、待补证据和责任明确的下一步。
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 - 与 MOD-02、MOD-05、MOD-08 和后续 MOD-11 的交接边界写清。
 - 所有参与者理解共享模型是当前证据的共同视图，而不是生产事实或架构批准。
 
@@ -187,7 +177,6 @@ flowchart LR
 
 工作坊排列顺序不等于运行时调用顺序。
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 一次事件风暴工作坊不能单独确认正式边界，候选关系仍须在 MOD-11 或等价架构活动中验证。
 
 ## 常见失败
@@ -201,18 +190,11 @@ flowchart LR
 
 ## 与其他模型的衔接
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-[MOD-01 架构视图与视点](/modeling/mod-01)提供按关切选择表达方式的基础；[MOD-02 C4 模型](/modeling/mod-02)约束系统名称和范围；[MOD-05 概念、逻辑与物理数据模型](/modeling/mod-05)提供费用申报的数据场景；[MOD-08 状态机建模](/modeling/mod-08)约束未知支付结果、对账与人工决议的证据语义。
+[MOD-01 架构视图与视点](/modeling/mod-01)提供按关切选择表达方式的基础；[MOD-02 C4 架构模型](/modeling/mod-02)约束系统名称和范围；[MOD-05 概念、逻辑与物理数据模型](/modeling/mod-05)提供费用申报的数据场景；[MOD-08 状态机建模](/modeling/mod-08)约束未知支付结果、对账与人工决议的证据语义。
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 [MOD-10 领域叙事（Domain Storytelling）](/modeling/mod-10)与事件风暴可以组合，但不是替代关系，两种协作方法之间没有严格的元素映射。
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-[Temporal Saga 与持久执行案例](/cases/temporal-saga-durable-execution)可用于检验长时流程中的超时、重试、补偿和人工收敛，但其运行机制不会替本文决定业务边界。候选关系需在 [MOD-11 领域驱动设计（Domain-Driven Design，DDD）上下文映射建模](/modeling/mod-11)或等价架构活动中结合术语负责人、规则变更、权威记录和组织协作证据继续验证。事件风暴的泳道、热点与边界信号不能直接生成上下文。
+[Temporal 工作流平台补偿事务与持久执行案例](/cases/temporal-saga-durable-execution)可用于检验长时流程中的超时、重试、补偿和人工收敛，但其运行机制不会替本文决定业务边界。候选关系需在 [MOD-11 领域驱动设计（Domain-Driven Design，DDD）上下文映射建模](/modeling/mod-11)或等价架构活动中结合术语负责人、规则变更、权威记录和组织协作证据继续验证。事件风暴的泳道、热点与边界信号不能直接生成上下文。
 
 返回[建模目录](/modeling)可继续选择其他建模观察尺度。
 
@@ -233,5 +215,4 @@ flowchart LR
 - [Context Mapping](https://www.avanscoperta.it/en/context-mapping/)：支持边界指标并非绝对可靠、仍需架构判断的提醒；不批准本文的候选边界。
 - [Chaotic Exploration](https://www.eventstorming.com/patterns/chaotic-exploration/)：支持先独立探索事件、再协作整理的方法；不许可复制其文字、示例、图、模板或布局。
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-本文的表格、Mermaid 图、费用流程、候选边界与演练均为本站原创教学内容；来源只支持方法背景，不证明运行时实现或正式组织边界。
+本文的表格、Mermaid 图表工具生成的图、费用流程、候选边界与演练均为本站原创教学内容；来源只支持方法背景，不证明运行时实现或正式组织边界。

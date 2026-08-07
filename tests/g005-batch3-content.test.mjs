@@ -85,7 +85,7 @@ const immutableFiles = new Map([
   ],
   [
     'scripts/content-schema.mjs',
-    '6606f4754b5997a8e1f05a5ffa8a5fa6c8a2c41c1fdb62e49468594fd6733f7b',
+    'de41990b6d9eb9cb88fe6b01dad806bd747ee2d9f30dc7291711a9e5c4bf6f41',
   ],
   [
     'sidebars.ts',
@@ -337,7 +337,7 @@ test('states the OWASP process boundary and visibly governs SEI ATAM in MTH-05',
   const body = extractMarkdownBody(document.source);
   assert.match(
     body,
-    /OWASP.{0,160}(?:没有|不存在|不提供).{0,40}(?:统一|普遍).{0,40}行业标准.{0,30}流程/isu,
+    /开放式全球应用程序安全项目.{0,160}(?:没有|不存在|不提供).{0,40}(?:统一|普遍).{0,40}行业标准.{0,30}流程/isu,
     'MTH-05 must state that OWASP does not define one universal industry-standard process',
   );
 
@@ -359,7 +359,7 @@ test('states the OWASP process boundary and visibly governs SEI ATAM in MTH-05',
 test('marks exactly three Atlas synthesis points and preserves feedback ordering', () => {
   const body = extractMarkdownBody(requiredDocument('MTH-06').source);
   assert.equal(
-    body.match(/Atlas 归纳/giu)?.length ?? 0,
+    body.match(/本站归纳/gu)?.length ?? 0,
     3,
     'MTH-06 must label exactly three Atlas synthesis points',
   );

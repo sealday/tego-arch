@@ -44,7 +44,6 @@ related_questions: []
 
 - 业务目标、硬约束、质量属性和关键功能如何成为架构驱动力？
 - 什么证据足以把一条需求标记为 ASR？
-{/* terminology-exempt: bare-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 - 质量属性工作坊（Quality Attribute Workshop，QAW）的发现工作与架构权衡分析方法（Architecture Tradeoff Analysis Method，ATAM）的下游评估为何不能互换？
 - 何时不应把普通需求升级为 ASR？
 
@@ -52,8 +51,7 @@ related_questions: []
 
 架构驱动力是会显著影响架构选择的目标、需求、约束或风险。ASR 是其中以需求形式表达、若处理错误会迫使架构重做或使关键目标失败的一部分；它可以是可测质量属性场景、不可违反的技术/法规约束，也可以是迫使系统采用特定交互或状态模型的关键功能。
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-[NASA SWEHB Version D 7.07](https://swehb.nasa.gov/spaces/SWEHBVD/pages/102695632/7.07%2B-%2BSoftware%2BArchitecture%2BDescription)要求架构描述显式呈现架构驱动力、驱动性需求、关键决策及其理由，并把度量与验证证据纳入质量属性说明。它支持“驱动因素和候选 ASR 必须可追溯到决定与验证”的关系；这是美国国家航空航天局项目语境中的指导，不提供适用于所有团队的 ASR 排名公式。
+[7.07 — Software Architecture Description](https://swehb.nasa.gov/spaces/SWEHBVD/pages/102695632/7.07%2B-%2BSoftware%2BArchitecture%2BDescription)要求架构描述显式呈现架构驱动力、驱动性需求、关键决策及其理由，并把度量与验证证据纳入质量属性说明。它支持“驱动因素和候选 ASR 必须可追溯到决定与验证”的关系；这是美国国家航空航天局项目语境中的指导，不提供适用于所有团队的 ASR 排名公式。
 
 尺度边界在“是否改变架构”而非“措辞是否带非功能性”。颜色、报表字段或局部校验通常不是 ASR；跨区域恢复时间、法定数据驻留、不可重复扣款或必须兼容既有主机协议，往往会改变结构。反之，“高性能”“安全可靠”没有刺激、环境与度量，只是候选关注点，尚不能直接驱动选择。
 
@@ -61,11 +59,9 @@ related_questions: []
 
 先从业务或任务目标追问失败损失，再收集关键功能、质量属性、硬约束和已知风险。对每个候选项提出三个筛选问题：它会排除哪些架构方案？若推迟处理，返工或失败代价是什么？用什么场景或约束可以验证？回答不具体的条目退回需求澄清，而不是贴上 ASR 标签。
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-[SEI QAW 第三版](https://www.sei.cmu.edu/library/quality-attribute-workshops-qaws-third-edition/)把 QAW 定位为架构形成前的发现方法。多类利益相关者共同提出并排序关键质量属性场景。QAW 的产出是更清楚的驱动力，不是已经通过评估的架构。
+[Quality Attribute Workshops (QAWs), Third Edition](https://www.sei.cmu.edu/library/quality-attribute-workshops-qaws-third-edition/)把 QAW 定位为架构形成前的发现方法。多类利益相关者共同提出并排序关键质量属性场景。QAW 的产出是更清楚的驱动力，不是已经通过评估的架构。
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-当候选架构已经存在，[SEI ATAM](https://www.sei.cmu.edu/library/the-architecture-tradeoff-analysis-method/)才用于相对质量属性目标评估架构。它识别风险、敏感点和权衡点。ATAM 是下游评估，不应倒置成“先选架构，再用评估会议发明需求”。
+当候选架构已经存在，[The Architecture Tradeoff Analysis Method](https://www.sei.cmu.edu/library/the-architecture-tradeoff-analysis-method/)才用于相对质量属性目标评估架构。它识别风险、敏感点和权衡点。ATAM 是下游评估，不应倒置成“先选架构，再用评估会议发明需求”。
 
 本站原创筛选表用于把发现、决定和验证分开：
 
@@ -78,7 +74,7 @@ related_questions: []
 
 ## 常见混淆
 
-ASR 不等于“所有非功能需求”。有些功能需求会塑造架构，有些质量目标并未具体到可行动；分类标签不能替代显著性判断。本文也不使用国际标准化组织/IEC 25010 作为 ASR 定义：质量模型可以帮助发现词汇，却不告诉团队哪一条要求在当前业务中具有架构显著性。
+ASR 不等于“所有非功能需求”。有些功能需求会塑造架构，有些质量目标并未具体到可行动；分类标签不能替代显著性判断。本文也不使用国际标准化组织与国际电工委员会 25010 作为 ASR 定义：质量模型可以帮助发现词汇，却不告诉团队哪一条要求在当前业务中具有架构显著性。
 
 QAW 与 ATAM 也不等价。前者偏向架构形成前的利益相关者发现与场景精炼，后者面向已有架构的质量目标评估。把两者混用会产生失败模式：团队把未经验证的方案写进“需求”，评估时只能证明自己的预设。
 
@@ -100,12 +96,8 @@ QAW 与 ATAM 也不等价。前者偏向架构形成前的利益相关者发现�
 
 ## 来源
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-- [NASA SWEHB Version D — 7.07 Software Architecture Description](https://swehb.nasa.gov/spaces/SWEHBVD/pages/102695632/7.07%2B-%2BSoftware%2BArchitecture%2BDescription)：用于驱动因素、关键需求、架构决策与验证证据之间的关系。
-- [SEI Quality Attribute Workshops, Third Edition](https://www.sei.cmu.edu/library/quality-attribute-workshops-qaws-third-edition/)：用于架构形成前发现和精炼关键质量属性场景。
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-- [SEI — The 架构权衡分析方法](https://www.sei.cmu.edu/library/the-architecture-tradeoff-analysis-method/)：用于已有架构相对质量目标的下游评估边界。
+- [7.07 — Software Architecture Description](https://swehb.nasa.gov/spaces/SWEHBVD/pages/102695632/7.07%2B-%2BSoftware%2BArchitecture%2BDescription)：用于驱动因素、关键需求、架构决策与验证证据之间的关系。
+- [Quality Attribute Workshops (QAWs), Third Edition](https://www.sei.cmu.edu/library/quality-attribute-workshops-qaws-third-edition/)：用于架构形成前发现和精炼关键质量属性场景。
+- [The Architecture Tradeoff Analysis Method](https://www.sei.cmu.edu/library/the-architecture-tradeoff-analysis-method/)：用于已有架构相对质量目标的下游评估边界。
 
 筛选表、ASR 工作定义和场景是本站原创归纳。来源支持方法边界，不提供一套跨组织通用的 ASR 判定公式。

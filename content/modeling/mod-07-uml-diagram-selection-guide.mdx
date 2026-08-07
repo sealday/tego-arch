@@ -50,8 +50,7 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 
 ## 建模目标与输入
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-[MOD-02 C4 系统上下文图与容器](/modeling/mod-02)中的名称和系统边界是本文的权威输入；本文的选图矩阵、问题、场景细节和预期判断都是本站原创的教学假设，不代表现有系统已经如此实现或验证。
+[MOD-02 C4 架构模型（C4 Model） 系统上下文图与容器](/modeling/mod-02)中的名称和系统边界是本文的权威输入；本文的选图矩阵、问题、场景细节和预期判断都是本站原创的教学假设，不代表现有系统已经如此实现或验证。
 
 开始前收集评审问题、受众、事实截止时间、系统边界、单个场景、业务概念、目标部署环境和已有证据。授权规则、并发行为、实际部署库存、容量、容灾、运行时延和状态覆盖如果没有可核对的材料，就继续标为验证缺口。
 
@@ -121,14 +120,9 @@ flowchart TD
 
 ## 与其他模型的衔接
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-[MOD-01 模型选择总览](/modeling/mod-01)提供从问题到模型的总入口；[MOD-03 C4 动态图与部署](/modeling/mod-03)用于比较单场景协作和部署实例边界；[MOD-06 实体关系模型与关系边界](/modeling/mod-06)帮助区分 UML 类与数据模型；[MOD-08 状态机建模](/modeling/mod-08)继续展开单对象生命周期、转换证据与禁止推断边界。
+[MOD-01 模型选择总览](/modeling/mod-01)提供从问题到模型的总入口；[MOD-03 C4 架构模型动态图与部署](/modeling/mod-03)用于比较单场景协作和部署实例边界；[MOD-06 实体关系模型与关系边界](/modeling/mod-06)帮助区分 UML 类与数据模型；[MOD-08 状态机建模](/modeling/mod-08)继续展开单对象生命周期、转换证据与禁止推断边界。
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-[Temporal Saga 与持久执行案例](/cases/temporal-saga-durable-execution)进一步说明：行为顺序、对象状态与运行证据应分层评审，不能由一张图互相代证。返回[建模目录](/modeling)可以继续选择其他观察尺度。
+[Temporal 工作流平台补偿事务与持久执行案例](/cases/temporal-saga-durable-execution)进一步说明：行为顺序、对象状态与运行证据应分层评审，不能由一张图互相代证。返回[建模目录](/modeling)可以继续选择其他观察尺度。
 
 ## 完整演练
 
@@ -138,7 +132,6 @@ flowchart TD
 
 **评审问题：** 员工、审批人和财务人员分别为了什么目标使用费用申报系统？
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 **输入事实：** 采用 MOD-02 的费用申报系统边界与员工名称；审批人和财务人员是本站原创的教学假设。把提交申报、作出审批决定和处理付款作为待核对目标。
 
 **预期判断：** 选择用例，评审参与者、业务目标、系统边界与外部交互范围是否完整且用词一致。
@@ -169,7 +162,6 @@ flowchart TD
 
 **评审问题：** 申报、审批和付款意图的静态职责如何关联？
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 **输入事实：** 复用 MOD-06 的 `ExpenseClaim`、`Approval` 和 `PaymentInstruction` 概念名称，但只把它们当作候选类型及静态职责输入。
 
 **预期判断：** 选择类，评审类型职责、关联、多重性和必要泛化是否足以表达静态协作结构；UML 类不是实体关系实体，也不是数据库表。
@@ -180,27 +172,17 @@ flowchart TD
 
 **评审问题：** 费用申报网页应用、申报应用程序编程接口（Application Programming Interface，API）、支付任务执行器、申报数据库和银行支付服务在指定环境中如何部署？
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 **输入事实：** 采用 MOD-02 的系统边界和银行支付服务权威名称，把指定环境、节点、执行环境、部署单元与通信路径作为待核对输入。
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 **预期判断：** 选择部署，评审各软件实例运行位置、节点边界和必要通信路径是否清晰，并与 MOD-03 的部署观察尺度保持一致。
 
 **证据缺口：** 实际资产库存、容量余量、故障切换结果、网络策略和安全控制仍需资产系统、容量数据、演练记录与安全证据证明。
 
 ## 来源
 
-{/* terminology-exempt: bare-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-- [OMG Unified Modeling Language 2.5.1](https://www.omg.org/spec/UML/2.5.1)只支持 UML 2.5.1 的图名与标准语义范围；它不支持本文的费用领域示例、选图流程、生产事实，也不证明实现行为。
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-- [C4 Dynamic diagram](https://c4model.com/diagrams/dynamic)只支持场景级运行协作及其克制使用；它不提供生产追踪或性能证据。
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-- [C4 Deployment diagram](https://c4model.com/diagrams/deployment)只支持指定环境中的部署节点、基础设施节点、软件系统实例与容器实例范围；它不证明生产库存、容量、故障切换或运行健康。
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-- [Applying UML and Patterns, 3rd edition](https://www.pearson.com/en-us/subject-catalog/p/Larman-Applying-UML-and-Patterns-An-Introduction-to-Object-Oriented-Analysis-and-Design-and-Iterative-Development-3rd-Edition/P200000000422/9780131489066)只支持该书的书目出处及其与 UML、对象设计的历史语境；本文不复制书中的 POS 案例、图、表、示例或扩展措辞。
+- [Unified Modeling Language 2.5.1](https://www.omg.org/spec/UML/2.5.1)只支持 UML 2.5.1 的图名与标准语义范围；它不支持本文的费用领域示例、选图流程、生产事实，也不证明实现行为。
+- [C4 Model — Dynamic diagram](https://c4model.com/diagrams/dynamic)只支持场景级运行协作及其克制使用；它不提供生产追踪或性能证据。
+- [C4 Model — Deployment diagram](https://c4model.com/diagrams/deployment)只支持指定环境中的部署节点、基础设施节点、软件系统实例与容器实例范围；它不证明生产库存、容量、故障切换或运行健康。
+- [Applying UML and Patterns: An Introduction to Object-Oriented Analysis and Design and Iterative Development, 3rd edition](https://www.pearson.com/en-us/subject-catalog/p/Larman-Applying-UML-and-Patterns-An-Introduction-to-Object-Oriented-Analysis-and-Design-and-Iterative-Development-3rd-Edition/P200000000422/9780131489066)只支持该书的书目出处及其与 UML、对象设计的历史语境；本文不复制书中的销售终端案例、图、表、示例或扩展措辞。
 
 本文的费用申报选择流、证据表和演练记录均为原创教学内容，不引用、改编或复制任何来源图表。

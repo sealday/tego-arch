@@ -2,7 +2,6 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import test from 'node:test';
 
-import {stripTerminologyExemptions} from './helpers/terminology-content.mjs';
 import {fileURLToPath} from 'node:url';
 
 import {
@@ -14,7 +13,7 @@ import {extractInternalLinks} from '../scripts/content-relations.mjs';
 import {handleHorizontalArrowKey} from '../src/components/KeyboardScrollableRegion/handleHorizontalArrowKey.mjs';
 
 const contentRoot = fileURLToPath(new URL('../content/', import.meta.url));
-const documents = await readContentDocuments(contentRoot).then((entries) => entries.map(stripTerminologyExemptions));
+const documents = await readContentDocuments(contentRoot);
 const document = documents.find(({file}) => file === 'modeling/mod-12-architecture-diagram-review.mdx');
 const relatedDocuments = new Map(documents.map((entry) => [entry.file, entry]));
 const sourceLedger = JSON.parse(await readFile(new URL('../data/source-ledger.json', import.meta.url)));
@@ -234,7 +233,7 @@ const expectedFindingRows = [
   {'检查项': '协议', '严重度': '待澄清', '图中证据': '连线写成“同步/事件？”', '风险': '把猜测当成实现承诺', '修复建议': '删除猜测并统一标记“协议：待确认”', '责任类型': '接口契约责任人', '复查状态': '保留待澄清'},
   {'检查项': '信任域', '严重度': '阻断', '图中证据': '员工、费用申报系统和银行之间没有信任说明', '风险': '跨界数据与身份检查被隐藏', '修复建议': '标出候选信任边界并回链 QA-05 所需证据', '责任类型': '安全责任人', '复查状态': '已关闭（证据仍待澄清）'},
   {'检查项': '失败域', '严重度': '阻断', '图中证据': '支付任务执行器与银行被画成同一失败域', '风险': '误判故障隔离、传播和恢复责任', '修复建议': '只标外部依赖与候选失败边界，内部隔离继续待证', '责任类型': '可靠性责任人', '复查状态': '已关闭（证据仍待澄清）'},
-  {'检查项': '版本', '严重度': '重要', '图中证据': '没有状态、修订号、日期和维护责任类型', '风险': '无法判断图适用时间和复查责任', '修复建议': '增加现状教学练习、rev 1、2026-08-05 和责任类型', '责任类型': '架构文档维护者', '复查状态': '已关闭'},
+  {'检查项': '版本', '严重度': '重要', '图中证据': '没有状态、修订号、日期和维护责任类型', '风险': '无法判断图适用时间和复查责任', '修复建议': '增加现状教学练习、修订版 1、2026-08-05 和责任类型', '责任类型': '架构文档维护者', '复查状态': '已关闭'},
 ];
 
 const nonProofSentences = [
@@ -286,25 +285,25 @@ const expectedGovernedSources = new Map([
 
 const expectedSources = [
   {
-    attribution: 'C4 Model：Software Architecture Diagram Review Checklist',
+    attribution: 'C4 Model — Software architecture diagram review checklist',
     url: 'https://c4model.com/diagrams/checklist',
     support: '支持标题、图类型、范围、图例、元素名称、类型、职责、关系方向、标签和适用时协议等通用检查',
     nonProof: '不提供或认可本站四道门、九行方法、示例、措辞或布局',
   },
   {
-    attribution: 'C4 Model：Notation',
+    attribution: 'C4 Model — Notation',
     url: 'https://c4model.com/diagrams/notation',
     support: '支持自描述表示法、标题、范围、图例、元素类型与职责、方向和关系标签',
     nonProof: '不证明本练习图正确或可读',
   },
   {
-    attribution: 'arc42：Context and Scope',
+    attribution: 'arc42 v9 — Context and Scope',
     url: 'https://docs.arc42.org/section-3/',
     support: '支持区分系统与通信伙伴、业务输入输出、技术通道或协议，以及业务与技术上下文',
     nonProof: '不提供本站审阅矩阵或演练',
   },
   {
-    attribution: 'OWASP Threat Modeling Cheat Sheet',
+    attribution: 'Threat Modeling Cheat Sheet',
     url: 'https://cheatsheetseries.owasp.org/cheatsheets/Threat_Modeling_Cheat_Sheet.html',
     support: '支持建模数据流与信任边界，并持续更新和复查模型',
     nonProof: '不把 MOD-12 变成完整威胁建模流程，也不支持失败域或版本结论',
@@ -312,7 +311,7 @@ const expectedSources = [
 ];
 
 function sourceBullet({attribution, url, support, nonProof}) {
-  return `- [${attribution}](${url})（facts-summary）：${support}；${nonProof}。`;
+  return `- [${attribution}](${url})（\`facts-summary\`）：${support}；${nonProof}。`;
 }
 
 function markdownTables(body) {
@@ -645,7 +644,7 @@ test('rejects controlled MOD-12 mutations', () => {
     const bullet = sourceBullet(sourceRecord);
     mutations.push([`source URL ${sourceRecord.url}`, body.replace(sourceRecord.url, 'https://example.invalid/changed'), assertMethodContract]);
     mutations.push([`source attribution ${sourceRecord.url}`, body.replace(bullet, sourceBullet({...sourceRecord, attribution: `${sourceRecord.attribution} 已变更`})), assertMethodContract]);
-    mutations.push([`source facts-summary placement ${sourceRecord.url}`, body.replace(bullet, bullet.replace('（facts-summary）：', '：facts-summary；')), assertMethodContract]);
+    mutations.push([`source facts-summary placement ${sourceRecord.url}`, body.replace(bullet, bullet.replace('（`facts-summary`）：', '：facts-summary；')), assertMethodContract]);
     mutations.push([`source support boundary ${sourceRecord.url}`, body.replace(bullet, sourceBullet({...sourceRecord, support: '支持范围已变更'})), assertMethodContract]);
     mutations.push([`source non-proof boundary ${sourceRecord.url}`, body.replace(bullet, sourceBullet({...sourceRecord, nonProof: '不证明边界已变更'})), assertMethodContract]);
   }

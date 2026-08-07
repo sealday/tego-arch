@@ -51,14 +51,11 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 
 本文只建立单一且有限、数字化、现状、典型/80% 的费用支付故事：财务人员从费用申报系统查看待支付费用，提交支付请求，系统把请求传递给银行支付服务，并依据可核验的银行回执创建和展示支付结果记录。这个窄范围不讨论异常恢复、循环、合规分支或未来流程。
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-参与者包括真正执行日常支付工作的领域专家、提供系统与技术上下文的 IT 专家，以及引导叙述、绘制与复述的主持人。
+参与者包括真正执行日常支付工作的领域专家、提供系统与技术上下文的信息技术专家，以及引导叙述、绘制与复述的主持人。
 
 输入应包含一个真实但已脱敏的典型实例，并明确粒度、现状/目标状态、纯粹/数字化、开始点、典型路径结束条件、非目标、已知分歧与假设，以及重要变体另建领域故事的规则。参与者可以带来操作说明、页面、请求记录与回执样例，但这些材料只是澄清叙述的证据，不能预先决定故事句子。
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-本文承接 [MOD-02 C4 模型](/modeling/mod-02)的名称与系统权威：本地软件参与者始终称为“费用申报系统”，外部软件参与者始终称为“银行支付服务”。它也承接 [MOD-08 状态机建模](/modeling/mod-08)的结果证据边界：本地支付请求、传递记录和支付结果记录都不能代替银行支付服务回执。
+本文承接 [MOD-02 C4 架构模型（C4 Model）](/modeling/mod-02)的名称与系统权威：本地软件参与者始终称为“费用申报系统”，外部软件参与者始终称为“银行支付服务”。它也承接 [MOD-08 状态机建模](/modeling/mod-08)的结果证据边界：本地支付请求、传递记录和支付结果记录都不能代替银行支付服务回执。
 
 ## 元素选择与证据边界
 
@@ -156,8 +153,7 @@ flowchart LR
 
 参与者不等于团队、长期负责人、服务或部署单元。
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-软件参与者不证明真实 API、契约、协议、SLA 或安全责任。
+软件参与者不证明真实 API、契约、协议、服务级别协议或安全责任。
 
 工作对象不等于数据库表、聚合、数据负责人或权威存储。
 
@@ -182,17 +178,11 @@ flowchart LR
 
 ## 与其他模型的衔接
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-[MOD-01 架构视图与视点](/modeling/mod-01)帮助团队按关切选择模型；[MOD-02 C4 模型](/modeling/mod-02)提供系统范围和权威名称；[MOD-08 状态机建模](/modeling/mod-08)约束支付结果仍未知时的证据与恢复语义；[MOD-09 事件风暴](/modeling/mod-09)可探索更宽的事件时间线、热点和候选边界信号。
+[MOD-01 架构视图与视点](/modeling/mod-01)帮助团队按关切选择模型；[MOD-02 C4 架构模型](/modeling/mod-02)提供系统范围和权威名称；[MOD-08 状态机建模](/modeling/mod-08)约束支付结果仍未知时的证据与恢复语义；[MOD-09 事件风暴](/modeling/mod-09)可探索更宽的事件时间线、热点和候选边界信号。
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 领域故事中发现的语言分歧、权威记录冲突和协作变化只能作为后续输入。正式系统边界与限界上下文仍需交给 [MOD-11 领域驱动设计上下文映射（DDD Context Map）](/modeling/mod-11)或等价架构活动验证；参与者与工作对象不能直接生成上下文。
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-[Temporal Saga 与持久执行案例](/cases/temporal-saga-durable-execution)可用于进一步检验超时、重试（Retry）、补偿与人工收敛，但该案例的运行机制不为领域故事补充正式执行语义。
+[Temporal 工作流平台补偿事务与持久执行案例](/cases/temporal-saga-durable-execution)可用于进一步检验超时、重试（Retry）、补偿与人工收敛，但该案例的运行机制不为领域故事补充正式执行语义。
 
 返回[建模目录](/modeling)可按新的问题选择下一种模型。
 
@@ -206,7 +196,6 @@ flowchart LR
 6. 全体从第一句开始复述，检查明显错误、遗漏和领域专家是否认可。
 7. 团队复查注释，为每个分歧或变体确定澄清方式、后续故事或其他模型。
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
 如果费用申报系统未取得可核验的银行回执，则停止典型故事，将“支付结果仍未知”保留为注释，并依据 MOD-08 另建异常故事。
 
 ## 来源
@@ -214,8 +203,6 @@ flowchart LR
 - [Domain Storytelling Quick-Start Guide](https://domainstorytelling.org/quick-start-guide)：支持参与者、工作对象、活动、序号、注释、范围选择、典型场景、参与式工作坊与复述检查；不使领域故事成为完整需求、可执行流程或架构证明。
 - [Domain Storytelling](https://domainstorytelling.org/)：支持通过领域语言、活动与工作对象建立共享理解的方法目的；不证明本文的系统边界或生产行为。
 - [Requirements](https://domainstorytelling.org/requirements)：支持在保留场景上下文的前提下把领域故事衔接到需求与用户故事；不表示领域叙事与用例或用户故事等价。
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-- [How to Model Repeating Activities](https://domainstorytelling.org/articles/how-to-model-loops/)（Stefan Hofer）：支持用具体实例、注释与分组表达重复活动的选择；不赋予领域故事正式循环、分支或执行语义。
+- [How to Model Repeating Activities](https://domainstorytelling.org/articles/how-to-model-loops/)（斯特凡·霍费尔）：支持用具体实例、注释与分组表达重复活动的选择；不赋予领域故事正式循环、分支或执行语义。
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-本文的费用支付故事、表格、Mermaid 图、比较与演练均为本站原创教学内容。外部来源只支持方法背景，不证明系统边界、运行时机制、组织责任或支付结果。
+本文的费用支付故事、表格、Mermaid 图表工具生成的图、比较与演练均为本站原创教学内容。外部来源只支持方法背景，不证明系统边界、运行时机制、组织责任或支付结果。

@@ -2,7 +2,6 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import test from 'node:test';
 
-import {stripTerminologyExemptions} from './helpers/terminology-content.mjs';
 import {fileURLToPath} from 'node:url';
 
 import {
@@ -27,7 +26,7 @@ const modelingHeadings = [
 ];
 
 const [documents, ledger] = await Promise.all([
-  readContentDocuments(contentRoot).then((entries) => entries.map(stripTerminologyExemptions)),
+  readContentDocuments(contentRoot),
   readFile(new URL('../data/source-ledger.json', import.meta.url), 'utf8')
     .then(JSON.parse),
 ]);
@@ -220,7 +219,7 @@ test('requires view-specific evidence and marks the expense topology as a dated 
     /基础设施节点[^。\n]*可选类型[^。\n]*最小教学图[^。\n]*未引入/u,
   );
   assert.doesNotMatch(document.body, /数据库等基础设施节点|托管数据库基础设施节点/u);
-  assert.match(document.body, /不[^。\n]*DNS[^。\n]*LB/u);
+  assert.match(document.body, /不[^。\n]*域名系统[^。\n]*负载均衡器/u);
 
   const source = ledger.sources.find(
     ({id}) => id === 'src-atlas-mod03-c4-deployment',

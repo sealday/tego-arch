@@ -2,7 +2,6 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import test from 'node:test';
 
-import {stripTerminologyExemptions} from './helpers/terminology-content.mjs';
 import {fileURLToPath} from 'node:url';
 
 import {
@@ -15,7 +14,7 @@ import {extractExternalLinks, visibleMdxLines} from '../scripts/source-ledger.mj
 import {handleHorizontalArrowKey} from '../src/components/KeyboardScrollableRegion/handleHorizontalArrowKey.mjs';
 
 const contentRoot = fileURLToPath(new URL('../content/', import.meta.url));
-const documents = await readContentDocuments(contentRoot).then((entries) => entries.map(stripTerminologyExemptions));
+const documents = await readContentDocuments(contentRoot);
 const document = documents.find(
   ({file}) => file === 'modeling/mod-10-domain-storytelling.mdx',
 );
@@ -139,14 +138,14 @@ const annotationRule = '如果费用申报系统未取得可核验的银行回�
 
 const scopeSentence = '本文只建立单一且有限、数字化、现状、典型/80% 的费用支付故事：财务人员从费用申报系统查看待支付费用，提交支付请求，系统把请求传递给银行支付服务，并依据可核验的银行回执创建和展示支付结果记录。';
 const scopeLearningQuestion = '- 如何选择故事的粒度、现状/目标状态与纯粹/数字化范围，又如何先完成典型路径、将重要变体分离为新的领域故事？';
-const participantSentence = '参与者包括真正执行日常支付工作的领域专家、提供系统与技术上下文的 IT 专家，以及引导叙述、绘制与复述的主持人。';
+const participantSentence = '参与者包括真正执行日常支付工作的领域专家、提供系统与技术上下文的信息技术专家，以及引导叙述、绘制与复述的主持人。';
 const modelingInputSentence = '输入应包含一个真实但已脱敏的典型实例，并明确粒度、现状/目标状态、纯粹/数字化、开始点、典型路径结束条件、非目标、已知分歧与假设，以及重要变体另建领域故事的规则。';
-const nameAuthoritySentence = '本文承接 [MOD-02 C4 模型](/modeling/mod-02)的名称与系统权威：本地软件参与者始终称为“费用申报系统”，外部软件参与者始终称为“银行支付服务”。';
+const nameAuthoritySentence = '本文承接 [MOD-02 C4 架构模型（C4 Model）](/modeling/mod-02)的名称与系统权威：本地软件参与者始终称为“费用申报系统”，外部软件参与者始终称为“银行支付服务”。';
 const paymentEvidenceSentence = '它也承接 [MOD-08 状态机建模](/modeling/mod-08)的结果证据边界：本地支付请求、传递记录和支付结果记录都不能代替银行支付服务回执。';
 
 const nonProofSentences = [
   '参与者不等于团队、长期负责人、服务或部署单元。',
-  '软件参与者不证明真实 API、契约、协议、SLA 或安全责任。',
+  '软件参与者不证明真实 API、契约、协议、服务级别协议或安全责任。',
   '工作对象不等于数据库表、聚合、数据负责人或权威存储。',
   '活动箭头不等于同步调用、消息、事务或网络连接。',
   '序号不等于完整时序、并发语义或性能保证。',
@@ -486,7 +485,7 @@ function assertSourceGovernance(ledgerData, content) {
   }
   assert.match(
     visibleSection(content.body, '来源'),
-    /\[How to Model Repeating Activities\]\(https:\/\/domainstorytelling\.org\/articles\/how-to-model-loops\/\)（Stefan Hofer）/u,
+    /\[How to Model Repeating Activities\]\(https:\/\/domainstorytelling\.org\/articles\/how-to-model-loops\/\)（斯特凡·霍费尔）/u,
     'the visible source list must credit Stefan Hofer',
   );
   assert.equal(governed.citations.filter(({manifest_primary}) => manifest_primary).length, 1);
@@ -730,7 +729,7 @@ test('rejects review regressions that the original contract missed', () => {
     ['participants moved section', body.replace(`${participantSentence}\n`, '').replace('## 常见失败\n', `## 常见失败\n\n${participantSentence}\n`)],
     ['participants hidden fence', body.replace(participantSentence, `\`\`\`text\n${participantSentence}\n\`\`\``)],
     ['domain expert omitted', body.replace(participantSentence, participantSentence.replace('真正执行日常支付工作的领域专家、', ''))],
-    ['IT expert omitted', body.replace(participantSentence, participantSentence.replace('提供系统与技术上下文的 IT 专家，', ''))],
+    ['information-technology expert omitted', body.replace(participantSentence, participantSentence.replace('提供系统与技术上下文的信息技术专家，', ''))],
     ['facilitator omitted', body.replace(participantSentence, participantSentence.replace('，以及引导叙述、绘制与复述的主持人', ''))],
     ['modeling inputs deleted', body.replace(modelingInputSentence, '')],
     ['modeling inputs negated', body.replace(modelingInputSentence, modelingInputSentence.replace('应包含', '不必包含'))],

@@ -1,0 +1,830 @@
+{
+  "content/concepts/fnd-01-architecture-design-scale.mdx": {
+    "inline": [
+      "container",
+      "container"
+    ],
+    "code": [],
+    "mermaid": []
+  },
+  "content/concepts/fnd-02-architecture-drivers-asr.mdx": {
+    "inline": [],
+    "code": [],
+    "mermaid": []
+  },
+  "content/concepts/fnd-03-architecture-taxonomy.mdx": {
+    "inline": [],
+    "code": [],
+    "mermaid": []
+  },
+  "content/concepts/fnd-04-tradeoffs-sensitivity-risk.mdx": {
+    "inline": [],
+    "code": [],
+    "mermaid": []
+  },
+  "content/concepts/fnd-05-architecture-debt-evolutionary-design.mdx": {
+    "inline": [],
+    "code": [],
+    "mermaid": [
+      [
+        "A",
+        "B",
+        "B",
+        "C",
+        "C",
+        "D",
+        "D",
+        "E",
+        "E",
+        "F",
+        "F"
+      ]
+    ]
+  },
+  "content/methods/mth-01-quality-attribute-workshop.mdx": {
+    "inline": [],
+    "code": [],
+    "mermaid": []
+  },
+  "content/methods/mth-02-architecture-tradeoff-analysis-method.mdx": {
+    "inline": [],
+    "code": [],
+    "mermaid": []
+  },
+  "content/methods/mth-03-adr-lifecycle.mdx": {
+    "inline": [
+      "ADR-017",
+      "ADR-017",
+      "ADR-017 proposed",
+      "ADR-024",
+      "ADR-024",
+      "accepted",
+      "accepted",
+      "accepted",
+      "accepted",
+      "accepted",
+      "accepted",
+      "accepted",
+      "deprecated",
+      "deprecated",
+      "deprecated",
+      "proposed",
+      "proposed",
+      "proposed",
+      "reviewed",
+      "superseded",
+      "superseded",
+      "superseded",
+      "superseded"
+    ],
+    "code": [],
+    "mermaid": [
+      [
+        "Accepted",
+        "Accepted",
+        "Accepted",
+        "Accepted",
+        "Accepted",
+        "Deprecated",
+        "Deprecated",
+        "Proposed",
+        "Proposed",
+        "Superseded"
+      ]
+    ]
+  },
+  "content/methods/mth-04-architecture-fitness-functions.mdx": {
+    "inline": [],
+    "code": [],
+    "mermaid": []
+  },
+  "content/methods/mth-05-risk-storming-premortem.mdx": {
+    "inline": [],
+    "code": [],
+    "mermaid": []
+  },
+  "content/methods/mth-06-requirements-to-evolution-loop.mdx": {
+    "inline": [],
+    "code": [],
+    "mermaid": [
+      [
+        "A",
+        "B",
+        "C",
+        "C",
+        "D",
+        "D",
+        "E",
+        "E",
+        "F"
+      ]
+    ]
+  },
+  "content/modeling/mod-01-model-selection-overview.mdx": {
+    "inline": [],
+    "code": [],
+    "mermaid": [
+      [
+        "B",
+        "B",
+        "BM",
+        "D",
+        "D",
+        "DM",
+        "E",
+        "E",
+        "EM",
+        "P",
+        "PM",
+        "Q",
+        "Q",
+        "Q",
+        "Q",
+        "Q",
+        "Q",
+        "R",
+        "R",
+        "RM",
+        "S",
+        "S",
+        "SM"
+      ]
+    ]
+  },
+  "content/modeling/mod-02-c4-context-container.mdx": {
+    "inline": [],
+    "code": [],
+    "mermaid": []
+  },
+  "content/modeling/mod-03-c4-component-dynamic-deployment.mdx": {
+    "inline": [
+      "API 节点",
+      "Web 应用实例",
+      "Web 节点",
+      "付款编排",
+      "付款编排",
+      "任务执行节点",
+      "员工终端",
+      "基础设施节点",
+      "审批策略",
+      "审批策略",
+      "持久化端口",
+      "持久化端口",
+      "提交用例",
+      "提交用例",
+      "支付任务执行器实例",
+      "数据库节点",
+      "申报 API",
+      "申报 API",
+      "申报 API 实例",
+      "申报数据库实例",
+      "银行支付服务"
+    ],
+    "code": [],
+    "mermaid": [
+      [
+        "Bank",
+        "Bank",
+        "Employee",
+        "Employee",
+        "Payment",
+        "Payment",
+        "Policy",
+        "Policy",
+        "Submit",
+        "Submit",
+        "Web",
+        "Web",
+        "Worker",
+        "Worker"
+      ]
+    ]
+  },
+  "content/modeling/mod-04-arc42-documentation-skeleton.mdx": {
+    "inline": [],
+    "code": [],
+    "mermaid": [
+      [
+        "A",
+        "B",
+        "C",
+        "C",
+        "D",
+        "D",
+        "E",
+        "E",
+        "F",
+        "R",
+        "U",
+        "V"
+      ]
+    ]
+  },
+  "content/modeling/mod-05-conceptual-logical-physical-data-model.mdx": {
+    "inline": [
+      "approval",
+      "approval",
+      "employee",
+      "employee",
+      "expense_claim",
+      "expense_claim",
+      "payment_instruction",
+      "payment_instruction"
+    ],
+    "code": [],
+    "mermaid": [
+      [
+        "A",
+        "C",
+        "U"
+      ]
+    ]
+  },
+  "content/modeling/mod-06-er-model-relationship-boundaries.mdx": {
+    "inline": [
+      "2026-06-20",
+      "2026-07-01",
+      "2026-07-01",
+      "Approval",
+      "Approval",
+      "Employee",
+      "EmployeeOrgAssignment",
+      "EmployeeOrgAssignment",
+      "ExpenseClaim",
+      "PK",
+      "PaymentInstruction",
+      "PaymentInstruction",
+      "UK",
+      "[2026-01-01, 2026-07-01)",
+      "[validFrom, validTo)",
+      "approvalId",
+      "assignmentId",
+      "claimId",
+      "employeeId",
+      "erDiagram",
+      "orgUnitId",
+      "paymentInstructionId",
+      "validFrom",
+      "validTo",
+      "validTo",
+      "银行支付服务"
+    ],
+    "code": [],
+    "mermaid": [
+      [
+        "Approval",
+        "Approval",
+        "Approval",
+        "Employee",
+        "Employee",
+        "Employee",
+        "Employee",
+        "EmployeeOrgAssignment",
+        "EmployeeOrgAssignment",
+        "EmployeeOrgAssignment",
+        "EmployeeOrgAssignment",
+        "ExpenseClaim",
+        "ExpenseClaim",
+        "ExpenseClaim",
+        "ExpenseClaim",
+        "ExpenseClaim",
+        "OrganizationalUnit",
+        "OrganizationalUnit",
+        "PaymentInstruction",
+        "PaymentInstruction",
+        "amount",
+        "approvalId",
+        "assignmentId",
+        "claimId",
+        "currency",
+        "decision",
+        "employeeId",
+        "employeeNumber",
+        "idempotencyKey",
+        "orgCode",
+        "orgUnitId",
+        "paymentInstructionId",
+        "stepKey",
+        "submittedAt",
+        "validFrom",
+        "validTo"
+      ]
+    ]
+  },
+  "content/modeling/mod-07-uml-diagram-selection-guide.mdx": {
+    "inline": [
+      "Approval",
+      "ExpenseClaim",
+      "PaymentInstruction"
+    ],
+    "code": [],
+    "mermaid": [
+      [
+        "C",
+        "C",
+        "D",
+        "D",
+        "Q",
+        "Q",
+        "Q",
+        "Q",
+        "Q",
+        "Q",
+        "S",
+        "S",
+        "T",
+        "T",
+        "U",
+        "U"
+      ]
+    ]
+  },
+  "content/modeling/mod-08-state-machine-modeling.mdx": {
+    "inline": [
+      "accepted",
+      "accepted",
+      "accepted",
+      "accepted",
+      "accepted",
+      "accepted-residual-risk",
+      "accepted-residual-risk",
+      "accepted-residual-risk",
+      "attempting",
+      "attempting",
+      "awaiting_receipt",
+      "awaiting_receipt",
+      "awaiting_receipt",
+      "cancelled_before_effect",
+      "cancelled_before_effect",
+      "closed",
+      "compensated",
+      "compensated",
+      "compensated",
+      "compensated",
+      "compensated",
+      "compensation_pending",
+      "compensation_pending",
+      "confirmed-compensated",
+      "confirmed-compensated",
+      "confirmed-compensated",
+      "confirmed-settled",
+      "confirmed-settled",
+      "confirmed-settled",
+      "confirmed_success",
+      "decision_ref",
+      "decision_ref",
+      "decision_ref",
+      "disposition",
+      "disposition",
+      "disposition",
+      "effect_ref",
+      "effect_ref",
+      "effect_ref",
+      "effect_ref",
+      "effect_ref",
+      "manual_closed",
+      "manual_closed",
+      "manual_closed",
+      "manual_closed",
+      "manual_review",
+      "manual_review",
+      "manually_resolved",
+      "manually_resolved",
+      "operation_id",
+      "operation_id",
+      "operation_id",
+      "operation_id",
+      "operation_id",
+      "operation_id",
+      "operation_id",
+      "operation_id",
+      "operation_id",
+      "ready",
+      "ready",
+      "ready",
+      "ready",
+      "ready",
+      "reconciling",
+      "reconciling",
+      "reconciling",
+      "rejected",
+      "requested",
+      "requested",
+      "settlement_pending",
+      "settlement_pending",
+      "settlement_pending",
+      "settlement_pending",
+      "settlement_pending",
+      "settlement_pending",
+      "settlement_pending",
+      "settlement_pending",
+      "stopped_before_effect",
+      "transfer_id",
+      "transfer_id",
+      "transfer_id",
+      "unknown",
+      "unknown",
+      "unknown"
+    ],
+    "code": [],
+    "mermaid": [
+      [
+        "accepted",
+        "accepted",
+        "accepted",
+        "accepted",
+        "cancelled_before_effect",
+        "cancelled_before_effect",
+        "compensated",
+        "compensated",
+        "manually_resolved",
+        "manually_resolved",
+        "rejected",
+        "rejected",
+        "requested",
+        "requested",
+        "requested",
+        "settled",
+        "settled",
+        "settlement_pending",
+        "settlement_pending",
+        "settlement_pending",
+        "settlement_pending",
+        "settlement_pending"
+      ],
+      [
+        "attempting",
+        "attempting",
+        "attempting",
+        "awaiting_receipt",
+        "awaiting_receipt",
+        "awaiting_receipt",
+        "awaiting_receipt",
+        "compensated",
+        "compensated",
+        "compensation_pending",
+        "compensation_pending",
+        "compensation_pending",
+        "compensation_pending",
+        "confirmed_success",
+        "confirmed_success",
+        "confirmed_success",
+        "manual_closed",
+        "manual_closed",
+        "manual_review",
+        "manual_review",
+        "manual_review",
+        "manual_review",
+        "ready",
+        "ready",
+        "ready",
+        "ready",
+        "reconciling",
+        "reconciling",
+        "reconciling",
+        "reconciling",
+        "reconciling",
+        "reconciling",
+        "stopped_before_effect",
+        "stopped_before_effect",
+        "unknown",
+        "unknown",
+        "unknown"
+      ]
+    ]
+  },
+  "content/modeling/mod-09-eventstorming.mdx": {
+    "inline": [],
+    "code": [],
+    "mermaid": [
+      [
+        "bank_payment_service",
+        "bank_payment_service",
+        "bank_payment_service",
+        "expense_system",
+        "expense_system",
+        "expense_system",
+        "expense_system",
+        "finance_person",
+        "manual_registered",
+        "payment_confirmed",
+        "payment_requested",
+        "payment_requested",
+        "payment_result_policy",
+        "payment_result_policy",
+        "payment_result_policy",
+        "payment_result_policy",
+        "payment_unknown",
+        "payment_unknown",
+        "pending_read_model",
+        "query_payment",
+        "query_payment",
+        "register_manual",
+        "register_manual",
+        "request_payment",
+        "request_payment"
+      ]
+    ]
+  },
+  "content/modeling/mod-10-domain-storytelling.mdx": {
+    "inline": [],
+    "code": [],
+    "mermaid": [
+      [
+        "bank_actor",
+        "bank_actor",
+        "expense_actor",
+        "expense_actor",
+        "expense_actor",
+        "finance_actor",
+        "finance_actor",
+        "finance_actor",
+        "pending_object",
+        "pending_object",
+        "receipt_object",
+        "receipt_object",
+        "request_submit_object",
+        "request_submit_object",
+        "request_transfer_object",
+        "request_transfer_object",
+        "result_create_object",
+        "result_view_object",
+        "result_view_object"
+      ]
+    ]
+  },
+  "content/modeling/mod-11-ddd-context-map.mdx": {
+    "inline": [],
+    "code": [],
+    "mermaid": [
+      [
+        "approval_context",
+        "bank_system",
+        "claim_context",
+        "expense_system",
+        "payment_context"
+      ]
+    ]
+  },
+  "content/modeling/mod-12-architecture-diagram-review.mdx": {
+    "inline": [],
+    "code": [],
+    "mermaid": []
+  },
+  "content/modeling/mod-13-model-sync-strategy.mdx": {
+    "inline": [
+      "修复中",
+      "已验证关闭",
+      "待分级",
+      "接受差异",
+      "未知",
+      "阻断"
+    ],
+    "code": [],
+    "mermaid": []
+  },
+  "content/patterns/index.mdx": {
+    "inline": [],
+    "code": [],
+    "mermaid": []
+  },
+  "content/patterns/rel-02-retry-backoff-jitter.mdx": {
+    "inline": [
+      "1,000 ms",
+      "1,000 ms",
+      "100 + 80 + 100 + 170 + 100 = 550 ms",
+      "100 ms",
+      "100 ms",
+      "100 ms",
+      "100 ms",
+      "100 ms",
+      "170 ms",
+      "170 ms",
+      "350 ms",
+      "80 ms",
+      "80 ms",
+      "Retry-After",
+      "n"
+    ],
+    "code": [],
+    "mermaid": []
+  },
+  "content/principles/pr-01-information-hiding.mdx": {
+    "inline": [
+      "navigate(destination)",
+      "private",
+      "private",
+      "settle"
+    ],
+    "code": [],
+    "mermaid": [
+      [
+        "C",
+        "I",
+        "L",
+        "M",
+        "P",
+        "P",
+        "S"
+      ]
+    ]
+  },
+  "content/principles/pr-02-cohesion-coupling.mdx": {
+    "inline": [
+      "controllers",
+      "currentUser",
+      "navigate",
+      "repositories",
+      "services"
+    ],
+    "code": [],
+    "mermaid": []
+  },
+  "content/principles/pr-03-single-responsibility-separation-of-concerns.mdx": {
+    "inline": [
+      "controller/service/repository"
+    ],
+    "code": [],
+    "mermaid": []
+  },
+  "content/principles/pr-04-dip-ioc-dependency-injection.mdx": {
+    "inline": [
+      "InvoiceStore.save(invoice)",
+      "new Policy(new SqlAdapter())"
+    ],
+    "code": [],
+    "mermaid": [
+      [
+        "D",
+        "F",
+        "P",
+        "R"
+      ]
+    ]
+  },
+  "content/principles/pr-05-composition-over-inheritance.mdx": {
+    "inline": [
+      "AuditedRetryingRateLimitedExecutor",
+      "CachedRepository",
+      "execute",
+      "extends"
+    ],
+    "code": [],
+    "mermaid": []
+  },
+  "content/principles/pr-06-kiss-yagni-dry.mdx": {
+    "inline": [],
+    "code": [],
+    "mermaid": []
+  },
+  "content/principles/pr-07-fail-fast-fail-safe-graceful-degradation.mdx": {
+    "inline": [],
+    "code": [],
+    "mermaid": []
+  },
+  "content/principles/pr-08-evolutionary-design.mdx": {
+    "inline": [],
+    "code": [],
+    "mermaid": [
+      [
+        "A",
+        "B",
+        "C",
+        "C",
+        "D",
+        "D",
+        "E",
+        "G",
+        "H",
+        "H",
+        "I"
+      ]
+    ]
+  },
+  "content/principles/pr-09-least-privilege-fail-safe-defaults-defense-in-depth.mdx": {
+    "inline": [],
+    "code": [],
+    "mermaid": []
+  },
+  "content/principles/pr-10-idempotency-minimal-coordination.mdx": {
+    "inline": [
+      "completed + result_ref",
+      "conflict",
+      "expired",
+      "failed-before-effect",
+      "in-progress",
+      "pending/unknown",
+      "unknown",
+      "unknown",
+      "unknown",
+      "unknown"
+    ],
+    "code": [],
+    "mermaid": []
+  },
+  "content/principles/pr-11-cqs-cqrs-read-write-separation.mdx": {
+    "inline": [
+      "create/update",
+      "get/list"
+    ],
+    "code": [],
+    "mermaid": []
+  },
+  "content/principles/pr-12-open-closed-interface-segregation.mdx": {
+    "inline": [
+      "captureAuthorized(amount)"
+    ],
+    "code": [],
+    "mermaid": []
+  },
+  "content/principles/pr-13-persistence-ignorance.mdx": {
+    "inline": [],
+    "code": [],
+    "mermaid": [
+      [
+        "A",
+        "A",
+        "D",
+        "DB",
+        "P",
+        "Q",
+        "U"
+      ]
+    ]
+  },
+  "content/principles/pr-14-grasp-responsibility-assignment.mdx": {
+    "inline": [
+      "AuditSink",
+      "AuditSink",
+      "BudgetAccount",
+      "KeyFactory",
+      "KeyFactory",
+      "KeyIssueController",
+      "RoutePolicy",
+      "Tenant",
+      "Tenant",
+      "Tenant",
+      "Tenant",
+      "VirtualKeyManager"
+    ],
+    "code": [],
+    "mermaid": [
+      [
+        "C",
+        "C",
+        "E",
+        "E",
+        "F",
+        "I",
+        "R",
+        "R",
+        "T",
+        "T",
+        "V"
+      ]
+    ]
+  },
+  "content/principles/pr-15-conway-law-team-boundaries.mdx": {
+    "inline": [],
+    "code": [],
+    "mermaid": []
+  },
+  "content/principles/pr-16-secure-by-design.mdx": {
+    "inline": [],
+    "code": [],
+    "mermaid": [
+      [
+        "A",
+        "A",
+        "C",
+        "C",
+        "O",
+        "O",
+        "R",
+        "R",
+        "T",
+        "V",
+        "V"
+      ]
+    ]
+  },
+  "content/principles/pr-17-classification-boundaries.mdx": {
+    "inline": [],
+    "code": [],
+    "mermaid": []
+  },
+  "content/styles/sty-00-comparison-framework.mdx": {
+    "inline": [
+      "0",
+      "0",
+      "1",
+      "1+2+1+2=6",
+      "2",
+      "2",
+      "2+0+2+1=5",
+      "7"
+    ],
+    "code": [],
+    "mermaid": []
+  }
+}

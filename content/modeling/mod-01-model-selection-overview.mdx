@@ -35,8 +35,7 @@ related_questions: []
 
 # 建模总览
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-模型是针对一个评审问题压缩事实的工具，不是越完整越好的系统副本。[建模目录](/modeling)提供各类模型入口；本文先确定要证明什么，再进入 [C4 系统上下文图与容器](/modeling/mod-02)。
+模型是针对一个评审问题压缩事实的工具，不是越完整越好的系统副本。[建模目录](/modeling)提供各类模型入口；本文先确定要证明什么，再进入 [C4 架构模型（C4 Model） 系统上下文图与容器](/modeling/mod-02)。
 
 ## 学习问题
 
@@ -73,12 +72,10 @@ flowchart TD
 | 问题类别 | 首选产物 | 主要证明 | 明确不证明 |
 | --- | --- | --- | --- |
 | 问题空间 | 事件风暴、领域叙事（Domain Storytelling）、上下文映射 | 事件、参与者、语言与边界假设 | 软件内部结构已经正确 |
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-| 结构 | C4 系统上下文图、容器、组件 | 静态边界、责任与依赖 | 运行顺序和部署拓扑 |
+| 结构 | C4 架构模型系统上下文图、容器、组件 | 静态边界、责任与依赖 | 运行顺序和部署拓扑 |
 | 行为 | 时序图、动态图、状态机 | 场景顺序、状态转换与异常路径 | 静态所有权或容量 |
-| 数据 | 概念、逻辑、物理数据模型与 [实体关系关系边界](/modeling/mod-06) | 身份、关系、约束和实现映射 | 业务流程已经完整 |
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-| 部署 | C4 部署图、统一建模语言（Unified Modeling Language，UML）部署 | 实例、节点、环境和基础设施关系 | 容量与故障切换已经验证 |
+| 数据 | 概念、逻辑、物理数据模型与 [实体关系边界](/modeling/mod-06) | 身份、关系、约束和实现映射 | 业务流程已经完整 |
+| 部署 | C4 架构模型部署图、统一建模语言（Unified Modeling Language，UML）部署 | 实例、节点、环境和基础设施关系 | 容量与故障切换已经验证 |
 | 决策 | 架构决策记录（Architecture Decision Record，ADR）、约束、风险与质量属性场景 | 选择原因、边界与复核条件 | 运行事实自动与决策一致 |
 
 ## 完成判断
@@ -91,17 +88,12 @@ flowchart TD
 
 ## 与其他模型的衔接
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-[C4 系统上下文图与容器](/modeling/mod-02)用于系统与容器边界；需要在用例、时序图、状态、类与部署间按评审问题选图时，进入 [MOD-07 UML 选图指南](/modeling/mod-07)；行为问题要补动态图或时序图；部署问题要补部署；决策原因要由 [ADR 生命周期](/methods/mth-03)承担。不同模型共享规范名称，但不能互相冒充证据。
+[C4 架构模型系统上下文图与容器](/modeling/mod-02)用于系统与容器边界；需要在用例、时序图、状态、类与部署间按评审问题选图时，进入 [MOD-07 UML 选图指南](/modeling/mod-07)；行为问题要补动态图或时序图；部署问题要补部署；决策原因要由 [ADR 生命周期](/methods/mth-03)承担。不同模型共享规范名称，但不能互相冒充证据。
 
 ## 完整演练
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-费用申报系统评审先问“员工、系统和银行支付服务的边界是否清楚”，因此选择上下文；再问“责任落在哪些可运行或存储单元”，因此选择容器。审批顺序改用动态图，生产实例映射改用部署，数据身份与约束留给数据模型，选择原因写入 ADR。结果不是一张万能图，而是一组按问题展开的最小证据；同样的选择顺序可用于 [Microsoft multi-agent reference architecture 案例](/cases/microsoft-multi-agent-reference-architecture)，但模型仍需由该系统的事实证据支撑。
+费用申报系统评审先问“员工、系统和银行支付服务的边界是否清楚”，因此选择上下文；再问“责任落在哪些可运行或存储单元”，因此选择容器。审批顺序改用动态图，生产实例映射改用部署，数据身份与约束留给数据模型，选择原因写入 ADR。结果不是一张万能图，而是一组按问题展开的最小证据；同样的选择顺序可用于 [微软多智能体（Agent）参考架构案例](/cases/microsoft-multi-agent-reference-architecture)，但模型仍需由该系统的事实证据支撑。
 
 ## 来源
 
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-{/* terminology-exempt: unknown-english-term | reason: 引用原题、产品专名、主题标识或固定内容合同按原样保留 */}
-模型集合与推荐边界依据 [C4 diagrams](https://c4model.com/diagrams)，自描述符号与图例原则依据 [C4 notation](https://c4model.com/diagrams/notation)，跨视图文档一致性参考 [arc42](https://arc42.org/)。本文选择表、决策图和费用申报演练为本站原创。
+模型集合与推荐边界依据 [C4 Model — Diagrams](https://c4model.com/diagrams)，自描述符号与图例原则依据 [C4 Model — Notation](https://c4model.com/diagrams/notation)，跨视图文档一致性参考 [arc42](https://arc42.org/)。本文选择表、决策图和费用申报演练为本站原创。
