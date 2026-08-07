@@ -241,7 +241,7 @@ flowchart LR
 
   - [`rclcpp_lifecycle/.../lifecycle_node_interface.hpp`](https://github.com/ros2/rclcpp/blob/53cf81e42e6530c2ed7a23489d6640966dccd083/rclcpp_lifecycle/include/rclcpp_lifecycle/node_interfaces/lifecycle_node_interface.hpp)：声明`on_configure`、`on_activate`、`on_deactivate`、`on_cleanup`、`on_shutdown`与`on_error`。
 
-  - [`rclcpp_lifecycle/src/lifecycle_node_interface_impl.cpp`](https://github.com/ros2/rclcpp/blob/53cf81e42e6530c2ed7a23489d6640966dccd083/rclcpp_lifecycle/src/lifecycle_node_interface_impl.cpp)与[`lifecycle_node.cpp`](https://github.com/ros2/rclcpp/blob/53cf81e42e6530c2ed7a23489d6640966dccd083/rclcpp_lifecycle/src/lifecycle_node.cpp)：将转换回调异常映射为`CallbackReturn::ERROR`，并暴露转换接缝。
+  - [`rclcpp_lifecycle/src/lifecycle_node_interface_impl.cpp`](https://github.com/ros2/rclcpp/blob/53cf81e42e6530c2ed7a23489d6640966dccd083/rclcpp_lifecycle/src/lifecycle_node_interface_impl.cpp) 与 [`lifecycle_node.cpp`](https://github.com/ros2/rclcpp/blob/53cf81e42e6530c2ed7a23489d6640966dccd083/rclcpp_lifecycle/src/lifecycle_node.cpp)：将转换回调异常映射为`CallbackReturn::ERROR`，并暴露转换接缝。
 
   - **边界：** 这只证明生命周期转换回调的错误处理；普通主题、服务、动作或计时器回调异常不会因此自动触发生命周期转换。
 </details>
@@ -296,7 +296,7 @@ flowchart LR
 <details className="evidence-card">
   <summary>证据：生产观测、限额与恢复字段</summary>
 
-  - **来源锚点：** [QoS settings](https://docs.ros.org/en/jazzy/Concepts/Intermediate/About-Quality-of-Service-Settings.html)、[Executors](https://docs.ros.org/en/jazzy/Concepts/Intermediate/About-Executors.html)与[Access Controls](https://docs.ros.org/en/jazzy/Tutorials/Advanced/Security/Access-Controls.html)支持通信、调度和权限信号；业务预算与设备回执是应用补充。
+  - **来源锚点：** [QoS settings](https://docs.ros.org/en/jazzy/Concepts/Intermediate/About-Quality-of-Service-Settings.html)、[Executors](https://docs.ros.org/en/jazzy/Concepts/Intermediate/About-Executors.html) 与 [Access Controls](https://docs.ros.org/en/jazzy/Tutorials/Advanced/Security/Access-Controls.html) 支持通信、调度和权限信号；业务预算与设备回执是应用补充。
 
   - **身份与授权：** 安全域、证书指纹与到期、主体、权限拒绝、目标与设备与工具作用域、策略版本、权限主体租约、激活原因。
 
@@ -316,7 +316,7 @@ flowchart LR
 <details className="evidence-card">
   <summary>证据：恢复演练的故障覆盖</summary>
 
-  - **机制锚点：** [About Actions](https://docs.ros.org/en/jazzy/Concepts/Basic/About-Actions.html)、[Using Callback Groups](https://docs.ros.org/en/jazzy/How-To-Guides/Using-callback-groups.html)与[Managed nodes design](https://design.ros2.org/articles/node_lifecycle.html)分别界定取消、调度与生命周期机制；故障组合和通过条件属于演练设计。
+  - **机制锚点：** [About Actions](https://docs.ros.org/en/jazzy/Concepts/Basic/About-Actions.html)、[Using Callback Groups](https://docs.ros.org/en/jazzy/How-To-Guides/Using-callback-groups.html) 与 [Managed nodes design](https://design.ros2.org/articles/node_lifecycle.html) 分别界定取消、调度与生命周期机制；故障组合和通过条件属于演练设计。
 
   - **通信：** QoS 不兼容导致零数据、存活性丢失、数据分发服务参与者重建。
 
@@ -399,19 +399,19 @@ flowchart LR
 
 **主要架构来源**
 
-- [ROS 2 distributions](https://docs.ros.org/en/jazzy/Releases.html)与[Jazzy Jalisco release page](https://docs.ros.org/en/jazzy/Releases/Release-Jazzy-Jalisco.html)：Jazzy 发行于2024-05-23、生命周期结束时间为2029-05，是本文唯一发行版。
+- [ROS 2 distributions](https://docs.ros.org/en/jazzy/Releases.html) 与 [Jazzy Jalisco release page](https://docs.ros.org/en/jazzy/Releases/Release-Jazzy-Jalisco.html)：Jazzy 发行于2024-05-23、生命周期结束时间为2029-05，是本文唯一发行版。
 
-- [Interfaces: Topics, Services, Actions](https://docs.ros.org/en/jazzy/Concepts/Basic/Interfaces-Topics-Services-Actions.html)与[About Actions](https://docs.ros.org/en/jazzy/Concepts/Basic/About-Actions.html)：持续数据、短请求响应、长任务、目标与反馈与结果与取消与动作服务端责任。
+- [Interfaces: Topics, Services, Actions](https://docs.ros.org/en/jazzy/Concepts/Basic/Interfaces-Topics-Services-Actions.html) 与 [About Actions](https://docs.ros.org/en/jazzy/Concepts/Basic/About-Actions.html)：持续数据、短请求响应、长任务、目标与反馈与结果与取消与动作服务端责任。
 
 - [QoS settings](https://docs.ros.org/en/jazzy/Concepts/Intermediate/About-Quality-of-Service-Settings.html)：历史与深度、可靠性、持久性、截止时间、存活性、请求与提供的兼容和 QoS 事件。
 
-- [Executors](https://docs.ros.org/en/jazzy/Concepts/Intermediate/About-Executors.html)与[Using Callback Groups](https://docs.ros.org/en/jazzy/How-To-Guides/Using-callback-groups.html)：等待集合、就绪标志、轮询非先进先出、单线程与多线程执行器、互斥与可重入和实时边界。
+- [Executors](https://docs.ros.org/en/jazzy/Concepts/Intermediate/About-Executors.html) 与 [Using Callback Groups](https://docs.ros.org/en/jazzy/How-To-Guides/Using-callback-groups.html)：等待集合、就绪标志、轮询非先进先出、单线程与多线程执行器、互斥与可重入和实时边界。
 
-- [Security keystore](https://docs.ros.org/en/jazzy/Tutorials/Advanced/Security/The-Keystore.html)与[Access Controls](https://docs.ros.org/en/jazzy/Tutorials/Advanced/Security/Access-Controls.html)：数据分发服务身份与权限信任链、安全域、治理、签名权限与主题发布和订阅控制。
+- [Security keystore](https://docs.ros.org/en/jazzy/Tutorials/Advanced/Security/The-Keystore.html) 与 [Access Controls](https://docs.ros.org/en/jazzy/Tutorials/Advanced/Security/Access-Controls.html)：数据分发服务身份与权限信任链、安全域、治理、签名权限与主题发布和订阅控制。
 
 **源码**
 
-- [`ros2/ros2` 固定 release](https://github.com/ros2/ros2/releases/tag/release-jazzy-20260618)、[固定源码树](https://github.com/ros2/ros2/tree/a38203a7da336eb123122bc241f53e78d2a0284f)与[依赖清单](https://github.com/ros2/ros2/blob/a38203a7da336eb123122bc241f53e78d2a0284f/ros2.repos)：本文采用的 Jazzy 发布包；[rclcpp 固定源码树](https://github.com/ros2/rclcpp/tree/53cf81e42e6530c2ed7a23489d6640966dccd083)与其属于同一发布语境。
+- [`ros2/ros2` 固定 release](https://github.com/ros2/ros2/releases/tag/release-jazzy-20260618)、[固定源码树](https://github.com/ros2/ros2/tree/a38203a7da336eb123122bc241f53e78d2a0284f) 与 [依赖清单](https://github.com/ros2/ros2/blob/a38203a7da336eb123122bc241f53e78d2a0284f/ros2.repos)：本文采用的 Jazzy 发布包；[rclcpp 固定源码树](https://github.com/ros2/rclcpp/tree/53cf81e42e6530c2ed7a23489d6640966dccd083) 与其属于同一发布语境。
 - 执行器、动作与生命周期的逐文件源码链接已放入对应证据卡，用于核对实现接缝，不用于证明业务效果。
 
 **补充说明**

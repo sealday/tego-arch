@@ -73,15 +73,15 @@ const reciprocalTopics = new Map([
 const immutableFiles = new Map([
   [
     'content/cases/aws-cell-shuffle-sharding.mdx',
-    '55dd97cc6ae8f51749d0fc8f1e9a3c31e7ed3fdc11b130085ee554a563a1a8da',
+    '35f10ed9172b28d2b5744583e331bbbc7ba15b35e15e8877fbd57c0bf392f95e',
   ],
   [
     'content/cases/kubernetes-reconciliation-loop.mdx',
-    'c842b3a67c5a381e7aa39927d6e5ae6445dda8cf927b7957c4211c687c619aa3',
+    '84a32e98ffa32974960bace7e96868e6a6d5013fc9a5f9c198f0568a3362f5b0',
   ],
   [
     'content/cases/microsoft-multi-agent-reference-architecture.mdx',
-    '987b125e2fd94273c240186848e15a6ffb0508a0d8aa09f2725452844dde4e02',
+    '40bb7455dad5e5dd2756daf7d46a7f7fb8f78eecee38166ffd7f14955c795b3f',
   ],
   [
     'scripts/content-schema.mjs',

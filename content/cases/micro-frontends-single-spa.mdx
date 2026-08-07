@@ -224,12 +224,12 @@ sequenceDiagram
 | 源码接缝| 已证实行为| 合同或错误语义| 智能体类比提醒|
 | --- | --- | --- | --- |
 | [`applications/apps.js`](https://github.com/single-spa/single-spa/blob/297483c11265050542d7ef107d14c44936c51883/src/applications/apps.js) | `registerApplication`校验并标准化输入，以`NOT_LOADED`加入注册表后触发重新路由；同名注册直接抛错| 名称、加载对象、激活函数、`customProps`均有边界校验；未调用`start`五秒后给出警告| 能力注册必须拒绝重名、非法入口和无效策略，不能靠运行时猜测|
-| [`applications/app.helpers.js`](https://github.com/single-spa/single-spa/blob/297483c11265050542d7ef107d14c44936c51883/src/applications/app.helpers.js)与[`applications/apps.js`](https://github.com/single-spa/single-spa/blob/297483c11265050542d7ef107d14c44936c51883/src/applications/apps.js) | `shouldBeActive`调用`activeWhen(location)`；异常则报告并进入`SKIP_BECAUSE_BROKEN`；`getAppChanges`按状态分桶| `LOAD_ERROR`在满足激活且经过至少200ms 后可再次尝试负载；损坏应用不再被激活| 路由谓词必须纯且可审计；策略代码异常不能默认放行|
+| [`applications/app.helpers.js`](https://github.com/single-spa/single-spa/blob/297483c11265050542d7ef107d14c44936c51883/src/applications/app.helpers.js) 与 [`applications/apps.js`](https://github.com/single-spa/single-spa/blob/297483c11265050542d7ef107d14c44936c51883/src/applications/apps.js) | `shouldBeActive`调用`activeWhen(location)`；异常则报告并进入`SKIP_BECAUSE_BROKEN`；`getAppChanges`按状态分桶| `LOAD_ERROR`在满足激活且经过至少200ms 后可再次尝试负载；损坏应用不再被激活| 路由谓词必须纯且可审计；策略代码异常不能默认放行|
 | [`navigation/reroute.js`](https://github.com/single-spa/single-spa/blob/297483c11265050542d7ef107d14c44936c51883/src/navigation/reroute.js) | 启动前只加载；启动后编排卸载、加载、引导启动和挂载；挂载等待旧应用全部卸载| 同时发生的重新路由排队；加载与清理可并行，挂载前两次复核激活条件| 任务切换需要排空屏障与迟到结果检查，不能只在接单时鉴权|
 | [`lifecycles/load.js`](https://github.com/single-spa/single-spa/blob/297483c11265050542d7ef107d14c44936c51883/src/lifecycles/load.js) | 要求加载函数返回承诺对象；验证`mount`、`unmount`及可选`bootstrap`的导出形式，并展平函数数组| 用户合同错误进入`SKIP_BECAUSE_BROKEN`；加载承诺对象拒绝进入`LOAD_ERROR`并记录时间| 区分“制品暂不可达”与“能力合同无效”，两者恢复和告警不同|
-| [`lifecycles/bootstrap.js`](https://github.com/single-spa/single-spa/blob/297483c11265050542d7ef107d14c44936c51883/src/lifecycles/bootstrap.js)与[`lifecycles/mount.js`](https://github.com/single-spa/single-spa/blob/297483c11265050542d7ef107d14c44936c51883/src/lifecycles/mount.js) | 引导启动仅从`NOT_BOOTSTRAPPED`进入，成功后为`NOT_MOUNTED`；挂载仅从`NOT_MOUNTED`进入，成功后为`MOUNTED` | 引导启动失败进入损坏；挂载失败先尽力卸载，再进入损坏| 一次性初始化与每次激活要分开；失败清理必须幂等且不掩盖原错误|
-| [`lifecycles/unmount.js`](https://github.com/single-spa/single-spa/blob/297483c11265050542d7ef107d14c44936c51883/src/lifecycles/unmount.js)与[`lifecycles/unload.js`](https://github.com/single-spa/single-spa/blob/297483c11265050542d7ef107d14c44936c51883/src/lifecycles/unload.js) | 卸载只处理`MOUNTED`，先清子数据包再清父；卸载只在被请求且已卸载或处于`LOAD_ERROR`时执行| 清理失败进入损坏；卸载无论成功或错误都会移除缓存生命周期，成功回到`NOT_LOADED` | 智能体停用先处理子任务和租约；卸载制品不等于撤销已发生的外部副作用|
-| [`lifecycles/lifecycle.helpers.js`](https://github.com/single-spa/single-spa/blob/297483c11265050542d7ef107d14c44936c51883/src/lifecycles/lifecycle.helpers.js)、[`applications/timeouts.js`](https://github.com/single-spa/single-spa/blob/297483c11265050542d7ef107d14c44936c51883/src/applications/timeouts.js)与[`applications/app-errors.js`](https://github.com/single-spa/single-spa/blob/297483c11265050542d7ef107d14c44936c51883/src/applications/app-errors.js) | 生命周期数组串行执行；默认时限会周期告警，只有`dieOnTimeout`为真才拒绝承诺对象；错误带应用名并先记录失败前状态，再切换新状态| 默认引导启动4000ms，其他主要生命周期3000ms，且默认不因超时终止等待| 生产策略必须显式选择超时后告警、隔离、取消或熔断；默认无限等待不等于恢复|
+| [`lifecycles/bootstrap.js`](https://github.com/single-spa/single-spa/blob/297483c11265050542d7ef107d14c44936c51883/src/lifecycles/bootstrap.js) 与 [`lifecycles/mount.js`](https://github.com/single-spa/single-spa/blob/297483c11265050542d7ef107d14c44936c51883/src/lifecycles/mount.js) | 引导启动仅从`NOT_BOOTSTRAPPED`进入，成功后为`NOT_MOUNTED`；挂载仅从`NOT_MOUNTED`进入，成功后为`MOUNTED` | 引导启动失败进入损坏；挂载失败先尽力卸载，再进入损坏| 一次性初始化与每次激活要分开；失败清理必须幂等且不掩盖原错误|
+| [`lifecycles/unmount.js`](https://github.com/single-spa/single-spa/blob/297483c11265050542d7ef107d14c44936c51883/src/lifecycles/unmount.js) 与 [`lifecycles/unload.js`](https://github.com/single-spa/single-spa/blob/297483c11265050542d7ef107d14c44936c51883/src/lifecycles/unload.js) | 卸载只处理`MOUNTED`，先清子数据包再清父；卸载只在被请求且已卸载或处于`LOAD_ERROR`时执行| 清理失败进入损坏；卸载无论成功或错误都会移除缓存生命周期，成功回到`NOT_LOADED` | 智能体停用先处理子任务和租约；卸载制品不等于撤销已发生的外部副作用|
+| [`lifecycles/lifecycle.helpers.js`](https://github.com/single-spa/single-spa/blob/297483c11265050542d7ef107d14c44936c51883/src/lifecycles/lifecycle.helpers.js)、[`applications/timeouts.js`](https://github.com/single-spa/single-spa/blob/297483c11265050542d7ef107d14c44936c51883/src/applications/timeouts.js) 与 [`applications/app-errors.js`](https://github.com/single-spa/single-spa/blob/297483c11265050542d7ef107d14c44936c51883/src/applications/app-errors.js) | 生命周期数组串行执行；默认时限会周期告警，只有`dieOnTimeout`为真才拒绝承诺对象；错误带应用名并先记录失败前状态，再切换新状态| 默认引导启动4000ms，其他主要生命周期3000ms，且默认不因超时终止等待| 生产策略必须显式选择超时后告警、隔离、取消或熔断；默认无限等待不等于恢复|
 
 **边界：** 这些锚点支持注册校验、状态分桶、清理屏障、失败分类和超时语义，不证明业务效果或智能体副作用可以照搬浏览器生命周期。
 
@@ -263,7 +263,7 @@ sequenceDiagram
 <details className="evidence-card">
   <summary>证据：生产控制、观测字段与恢复动作</summary>
 
-**来源锚点：** [single-spa Applications API](https://single-spa.js.org/docs/api/)与固定提交的[`navigation/reroute.js`](https://github.com/single-spa/single-spa/blob/297483c11265050542d7ef107d14c44936c51883/src/navigation/reroute.js)支持生命周期、路由与失败状态；授权、审计和智能体字段是应用补充。
+**来源锚点：** [single-spa Applications API](https://single-spa.js.org/docs/api/) 与固定提交的 [`navigation/reroute.js`](https://github.com/single-spa/single-spa/blob/297483c11265050542d7ef107d14c44936c51883/src/navigation/reroute.js) 支持生命周期、路由与失败状态；授权、审计和智能体字段是应用补充。
 
 | 生产维度| 最小控制| 可观测信号| 失败处置|
 | --- | --- | --- | --- |
@@ -329,9 +329,9 @@ sequenceDiagram
 
 **single-spa 官方文档（已证实事实）**
 
-- [Microfrontends Overview](https://single-spa.js.org/docs/microfrontends-concept/)与[Microfrontend Types](https://single-spa.js.org/docs/module-types/)：浏览器共享进程与文档对象模型的边界，应用、数据包、工具模块分类，声明式应用与公开接口。访问与截断日期：2026-07-22。
+- [Microfrontends Overview](https://single-spa.js.org/docs/microfrontends-concept/) 与 [Microfrontend Types](https://single-spa.js.org/docs/module-types/)：浏览器共享进程与文档对象模型的边界，应用、数据包、工具模块分类，声明式应用与公开接口。访问与截断日期：2026-07-22。
 - [Configuring single-spa](https://single-spa.js.org/docs/configuration/)：根配置、`registerApplication`、`activeWhen`、`customProps`、顶层与子路由关系以及`start()`前后的行为。访问与截断日期：2026-07-22。
-- [Building single-spa applications](https://single-spa.js.org/docs/building-applications/)与[Applications API](https://single-spa.js.org/docs/api/)：加载、引导启动、挂载、卸载、承诺对象合同、超时、错误状态、重载与注销语义。访问与截断日期：2026-07-22。
+- [Building single-spa applications](https://single-spa.js.org/docs/building-applications/) 与 [Applications API](https://single-spa.js.org/docs/api/)：加载、引导启动、挂载、卸载、承诺对象合同、超时、错误状态、重载与注销语义。访问与截断日期：2026-07-22。
 - [The Recommended Setup](https://single-spa.js.org/docs/recommended-setup/)：浏览器内模块、导入映射、独立流水线、工具模块、跨应用接口、共享依赖与全局状态反模式。访问与截断日期：2026-07-22。
 
 **single-spa 固定源码（已证实事实）**

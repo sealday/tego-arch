@@ -108,7 +108,7 @@ tags:
   <summary>证据：固定版本与认证路径修复边界</summary>
 
   - **固定版本：** [`v1.92.0 / b3086ccd74553565c9a39716e72303ae985555f9`](https://github.com/BerriAI/litellm/tree/b3086ccd74553565c9a39716e72303ae985555f9)。
-  - **官方公告：** [`GHSA-r75f-5x8p-qvmc`](https://github.com/BerriAI/litellm/security/advisories/GHSA-r75f-5x8p-qvmc)列出受影响版本`>=1.81.16,<1.83.7`、修复版本`>=1.83.7`、大语言模型路由上的触发路径与临时缓解。
+  - **官方公告：** [`GHSA-r75f-5x8p-qvmc`](https://github.com/BerriAI/litellm/security/advisories/GHSA-r75f-5x8p-qvmc) 列出受影响版本`>=1.81.16,<1.83.7`、修复版本`>=1.83.7`、大语言模型路由上的触发路径与临时缓解。
   - **版本判断：** `v1.92.0`位于修复范围之后，并提供稳定标签与不可变提交，适合作为本文源码锚点。
   - **证明边界：** 版本号证明本文不落在该公告的受影响区间，不证明此版本不存在其他漏洞。
 </details>
@@ -255,11 +255,11 @@ flowchart TD
 <details className="evidence-card">
   <summary>证据：管理审计、推理日志与许可边界</summary>
 
-  - **管理审计：** [Audit Logs](https://docs.litellm.ai/docs/proxy/multiple_admins)列出审计实体、动作、`changed_by`、哈希密钥、更新前后的值，并明确要求企业版许可证。
-  - **推理日志：** [Logging](https://docs.litellm.ai/docs/proxy/logging)说明记录代理输入、输出和异常，并为每次请求生成`call_id`。
-  - **产品能力：** [Budgets, Rate Limits](https://docs.litellm.ai/docs/proxy/users#virtual-key-model-specific)把虚拟密钥的`model_max_budget`标为企业版专属；[Budget Fallbacks](https://docs.litellm.ai/docs/proxy/budget_fallbacks)说明它在1.92 系列起依赖每个模型的预算。
-  - **运行时门：** [`validate_model_max_budget`](https://github.com/BerriAI/litellm/blob/b3086ccd74553565c9a39716e72303ae985555f9/litellm/proxy/management_endpoints/key_management_endpoints.py#L6325-L6354)在非高级套餐用户设置非空模型预算时拒绝。
-  - **代码许可：** [仓库根 LICENSE](https://github.com/BerriAI/litellm/blob/b3086ccd74553565c9a39716e72303ae985555f9/LICENSE)说明`enterprise/`外代码采用宽松开源许可；[`enterprise/LICENSE.md`](https://github.com/BerriAI/litellm/blob/b3086ccd74553565c9a39716e72303ae985555f9/enterprise/LICENSE.md)规定该目录的软件许可。
+  - **管理审计：** [Audit Logs](https://docs.litellm.ai/docs/proxy/multiple_admins) 列出审计实体、动作、`changed_by`、哈希密钥、更新前后的值，并明确要求企业版许可证。
+  - **推理日志：** [Logging](https://docs.litellm.ai/docs/proxy/logging) 说明记录代理输入、输出和异常，并为每次请求生成`call_id`。
+  - **产品能力：** [Budgets, Rate Limits](https://docs.litellm.ai/docs/proxy/users#virtual-key-model-specific) 把虚拟密钥的`model_max_budget`标为企业版专属；[Budget Fallbacks](https://docs.litellm.ai/docs/proxy/budget_fallbacks) 说明它在1.92 系列起依赖每个模型的预算。
+  - **运行时门：** [`validate_model_max_budget`](https://github.com/BerriAI/litellm/blob/b3086ccd74553565c9a39716e72303ae985555f9/litellm/proxy/management_endpoints/key_management_endpoints.py#L6325-L6354) 在非高级套餐用户设置非空模型预算时拒绝。
+  - **代码许可：** [仓库根 LICENSE](https://github.com/BerriAI/litellm/blob/b3086ccd74553565c9a39716e72303ae985555f9/LICENSE) 说明`enterprise/`外代码采用宽松开源许可；[`enterprise/LICENSE.md`](https://github.com/BerriAI/litellm/blob/b3086ccd74553565c9a39716e72303ae985555f9/enterprise/LICENSE.md) 规定该目录的软件许可。
   - **证明边界：** 源码位于哪个目录只说明代码文件许可，不能单独决定产品功能授权。企业版标签、运行时高级套餐门禁、实际合同与版本功能清单才共同约束使用；本文不构成法律意见。
 </details>
 
@@ -309,9 +309,9 @@ flowchart TD
 **固定上游源码（已证实事实）**
 
 - [`BerriAI/litellm@b3086cc`](https://github.com/BerriAI/litellm/tree/b3086ccd74553565c9a39716e72303ae985555f9)：`v1.92.0`的不可变源码锚点。
-- [`user_api_key_auth.py`](https://github.com/BerriAI/litellm/blob/b3086ccd74553565c9a39716e72303ae985555f9/litellm/proxy/auth/user_api_key_auth.py)、[`auth_checks.py`](https://github.com/BerriAI/litellm/blob/b3086ccd74553565c9a39716e72303ae985555f9/litellm/proxy/auth/auth_checks.py)与[`model_checks.py`](https://github.com/BerriAI/litellm/blob/b3086ccd74553565c9a39716e72303ae985555f9/litellm/proxy/auth/model_checks.py)：主密钥提前返回、普通密钥授权、空列表继承和多级预算检查。
+- [`user_api_key_auth.py`](https://github.com/BerriAI/litellm/blob/b3086ccd74553565c9a39716e72303ae985555f9/litellm/proxy/auth/user_api_key_auth.py)、[`auth_checks.py`](https://github.com/BerriAI/litellm/blob/b3086ccd74553565c9a39716e72303ae985555f9/litellm/proxy/auth/auth_checks.py) 与 [`model_checks.py`](https://github.com/BerriAI/litellm/blob/b3086ccd74553565c9a39716e72303ae985555f9/litellm/proxy/auth/model_checks.py)：主密钥提前返回、普通密钥授权、空列表继承和多级预算检查。
 - [`key_management_endpoints.py`](https://github.com/BerriAI/litellm/blob/b3086ccd74553565c9a39716e72303ae985555f9/litellm/proxy/management_endpoints/key_management_endpoints.py)：`model_max_budget`的企业版与高级套餐运行时校验。
-- [根 LICENSE](https://github.com/BerriAI/litellm/blob/b3086ccd74553565c9a39716e72303ae985555f9/LICENSE)与[`enterprise/LICENSE.md`](https://github.com/BerriAI/litellm/blob/b3086ccd74553565c9a39716e72303ae985555f9/enterprise/LICENSE.md)：宽松开源许可与企业版目录许可边界。
+- [根 LICENSE](https://github.com/BerriAI/litellm/blob/b3086ccd74553565c9a39716e72303ae985555f9/LICENSE) 与 [`enterprise/LICENSE.md`](https://github.com/BerriAI/litellm/blob/b3086ccd74553565c9a39716e72303ae985555f9/enterprise/LICENSE.md)：宽松开源许可与企业版目录许可边界。
 
 **官方安全公告（已证实事实）**
 

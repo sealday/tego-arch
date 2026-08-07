@@ -98,7 +98,7 @@ tags:
   <summary>证据：固定版本、官方概念与差异边界</summary>
 
   - **源码版本：** [`QuantumNous/new-api@1721144221ec5c94dd87891a7ae1bee228e7bb63`](https://github.com/QuantumNous/new-api/tree/1721144221ec5c94dd87891a7ae1bee228e7bb63)，提交时间2026-07-21。
-  - **官方说明：** [渠道管理](https://docs.newapi.pro/zh/docs/guide/feature-guide/admin/channel)说明优先级、权重、自动禁用与多密钥；[分组管理](https://docs.newapi.pro/zh/docs/guide/feature-guide/admin/group)说明分组隔离与`auto`分组。
+  - **官方说明：** [渠道管理](https://docs.newapi.pro/zh/docs/guide/feature-guide/admin/channel) 说明优先级、权重、自动禁用与多密钥；[分组管理](https://docs.newapi.pro/zh/docs/guide/feature-guide/admin/group) 说明分组隔离与`auto`分组。
   - **源码锚点：** [`model/ability.go`](https://github.com/QuantumNous/new-api/blob/1721144221ec5c94dd87891a7ae1bee228e7bb63/model/ability.go#L18-L25)、[`constant/multi_key_mode.go`](https://github.com/QuantumNous/new-api/blob/1721144221ec5c94dd87891a7ae1bee228e7bb63/constant/multi_key_mode.go#L3-L8)。
   - **时间边界：** 访问与来源截断日期为2026-07-23。
   - **证明边界：** 在线文档支持产品概念；固定提交支持本文的精确控制流。二者不一致处不合并为虚构能力。
@@ -307,9 +307,9 @@ flowchart TD
 **固定上游源码（已证实事实）**
 
 - [`QuantumNous/new-api@1721144221ec5c94dd87891a7ae1bee228e7bb63`](https://github.com/QuantumNous/new-api/tree/1721144221ec5c94dd87891a7ae1bee228e7bb63)：2026-07-23 解析的固定提交；提交时间2026-07-21。
-- [`model/ability.go`](https://github.com/QuantumNous/new-api/blob/1721144221ec5c94dd87891a7ae1bee228e7bb63/model/ability.go)与[`model/channel_cache.go`](https://github.com/QuantumNous/new-api/blob/1721144221ec5c94dd87891a7ae1bee228e7bb63/model/channel_cache.go)：能力模块物化、缓存索引、优先级层与权重选择。
-- [`service/channel_select.go`](https://github.com/QuantumNous/new-api/blob/1721144221ec5c94dd87891a7ae1bee228e7bb63/service/channel_select.go)与[`controller/relay.go`](https://github.com/QuantumNous/new-api/blob/1721144221ec5c94dd87891a7ae1bee228e7bb63/controller/relay.go)：分组选择、请求循环、错误处理与重试判定。
-- [`model/channel.go`](https://github.com/QuantumNous/new-api/blob/1721144221ec5c94dd87891a7ae1bee228e7bb63/model/channel.go)与[`service/channel.go`](https://github.com/QuantumNous/new-api/blob/1721144221ec5c94dd87891a7ae1bee228e7bb63/service/channel.go)：多密钥选择、状态隔离、自动禁用与启用条件。
+- [`model/ability.go`](https://github.com/QuantumNous/new-api/blob/1721144221ec5c94dd87891a7ae1bee228e7bb63/model/ability.go) 与 [`model/channel_cache.go`](https://github.com/QuantumNous/new-api/blob/1721144221ec5c94dd87891a7ae1bee228e7bb63/model/channel_cache.go)：能力模块物化、缓存索引、优先级层与权重选择。
+- [`service/channel_select.go`](https://github.com/QuantumNous/new-api/blob/1721144221ec5c94dd87891a7ae1bee228e7bb63/service/channel_select.go) 与 [`controller/relay.go`](https://github.com/QuantumNous/new-api/blob/1721144221ec5c94dd87891a7ae1bee228e7bb63/controller/relay.go)：分组选择、请求循环、错误处理与重试判定。
+- [`model/channel.go`](https://github.com/QuantumNous/new-api/blob/1721144221ec5c94dd87891a7ae1bee228e7bb63/model/channel.go) 与 [`service/channel.go`](https://github.com/QuantumNous/new-api/blob/1721144221ec5c94dd87891a7ae1bee228e7bb63/service/channel.go)：多密钥选择、状态隔离、自动禁用与启用条件。
 - [`controller/channel-test.go`](https://github.com/QuantumNous/new-api/blob/1721144221ec5c94dd87891a7ae1bee228e7bb63/controller/channel-test.go)：自动测试、手工禁用边界与被动恢复路径。
 
 **证据边界说明**：`已证实事实`可由官方说明或固定提交定位；`基于证据的推断`从实现控制流推导部署含义；`个人分析`是迁移判断。本文没有虚构客户、事故、指标或供应商保证，也不把平台测试成功解释为供应商授权恢复。

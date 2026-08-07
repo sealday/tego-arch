@@ -267,8 +267,8 @@ flowchart LR
   <summary>证据：两种语言工具包的取消回调接缝</summary>
 
   - [`workflow_task_completed_handler.go` 670–768](https://github.com/temporalio/temporal/blob/955948007cc6d9d94fa8ef484225954bd9328451/service/history/api/respondworkflowtaskcompleted/workflow_task_completed_handler.go#L670-L768)：取消请求入历史，并在能力条件满足时创建工作进程命令任务。
-  - [`sdk-go/internal_worker_heartbeat.go` 88–117、172–185、239–327](https://github.com/temporalio/sdk-go/blob/3cebc26908119368df3911df6146f756bad3882b/internal/internal_worker_heartbeat.go#L88-L117)与[`internal_task_handlers.go` 2122–2147、2388–2398](https://github.com/temporalio/sdk-go/blob/3cebc26908119368df3911df6146f756bad3882b/internal/internal_task_handlers.go#L2122-L2147)：固定工具包的能力、控制队列与上下文取消路径。
-  - [`sdk-java/WorkerFactory.java` 291–349](https://github.com/temporalio/sdk-java/blob/6d09a341c14daeddf9b3795cd43721de770fec2c/temporal-sdk/src/main/java/io/temporal/worker/WorkerFactory.java#L291-L349)、[`WorkerCommandTaskHandler.java` 28–126](https://github.com/temporalio/sdk-java/blob/6d09a341c14daeddf9b3795cd43721de770fec2c/temporal-sdk/src/main/java/io/temporal/internal/worker/WorkerCommandTaskHandler.java#L28-L126)、[`ActivityExecutionContextFactoryImpl.java` 71–80](https://github.com/temporalio/sdk-java/blob/6d09a341c14daeddf9b3795cd43721de770fec2c/temporal-sdk/src/main/java/io/temporal/internal/activity/ActivityExecutionContextFactoryImpl.java#L71-L80)与[`HeartbeatContextImpl.java` 239–247](https://github.com/temporalio/sdk-java/blob/6d09a341c14daeddf9b3795cd43721de770fec2c/temporal-sdk/src/main/java/io/temporal/internal/activity/HeartbeatContextImpl.java#L239-L247)：固定工具包仅在能力门满足时启动命令工作进程，运行上下文最终调用`cancelFromWorkerCommand`请求本地取消。
+  - [`sdk-go/internal_worker_heartbeat.go` 88–117、172–185、239–327](https://github.com/temporalio/sdk-go/blob/3cebc26908119368df3911df6146f756bad3882b/internal/internal_worker_heartbeat.go#L88-L117) 与 [`internal_task_handlers.go` 2122–2147、2388–2398](https://github.com/temporalio/sdk-go/blob/3cebc26908119368df3911df6146f756bad3882b/internal/internal_task_handlers.go#L2122-L2147)：固定工具包的能力、控制队列与上下文取消路径。
+  - [`sdk-java/WorkerFactory.java` 291–349](https://github.com/temporalio/sdk-java/blob/6d09a341c14daeddf9b3795cd43721de770fec2c/temporal-sdk/src/main/java/io/temporal/worker/WorkerFactory.java#L291-L349)、[`WorkerCommandTaskHandler.java` 28–126](https://github.com/temporalio/sdk-java/blob/6d09a341c14daeddf9b3795cd43721de770fec2c/temporal-sdk/src/main/java/io/temporal/internal/worker/WorkerCommandTaskHandler.java#L28-L126)、[`ActivityExecutionContextFactoryImpl.java` 71–80](https://github.com/temporalio/sdk-java/blob/6d09a341c14daeddf9b3795cd43721de770fec2c/temporal-sdk/src/main/java/io/temporal/internal/activity/ActivityExecutionContextFactoryImpl.java#L71-L80) 与 [`HeartbeatContextImpl.java` 239–247](https://github.com/temporalio/sdk-java/blob/6d09a341c14daeddf9b3795cd43721de770fec2c/temporal-sdk/src/main/java/io/temporal/internal/activity/HeartbeatContextImpl.java#L239-L247)：固定工具包仅在能力门满足时启动命令工作进程，运行上下文最终调用`cancelFromWorkerCommand`请求本地取消。
   - **边界：** 只证明固定提交中的回调路径，不外推到旧版本、其他 SDK 或强制终止。
 </details>
 
@@ -403,18 +403,18 @@ flowchart LR
 **主要架构来源**
 
 - [Garcia-Molina & Salem, 《Sagas》（ACM SIGMOD 1987）](https://dl.acm.org/doi/10.1145/38713.38742) — 长事务拆分、子事务交错、`T1...Tj,Cj...C1`、向前与向后恢复、补偿错误与人工修复。
-- [Temporal Workflow](https://docs.temporal.io/workflows)与[Workflow Definition](https://docs.temporal.io/workflow-definition) — 工作流与执行、确定性命令契约，以及将 API、大语言模型与人工智能、数据库与外部交互放入活动。
+- [Temporal Workflow](https://docs.temporal.io/workflows) 与 [Workflow Definition](https://docs.temporal.io/workflow-definition) — 工作流与执行、确定性命令契约，以及将 API、大语言模型与人工智能、数据库与外部交互放入活动。
 - [Temporal Event History](https://docs.temporal.io/encyclopedia/event-history) — 命令、持久事件与崩溃后状态重建。
-- [Temporal Activity](https://docs.temporal.io/activities)、[Activity Definition](https://docs.temporal.io/activity-definition)与[Activity Execution](https://docs.temporal.io/activity-execution) — 非确定性活动、结果复用、完成远程过程调用前崩溃、幂等键、活动标识与心跳。
+- [Temporal Activity](https://docs.temporal.io/activities)、[Activity Definition](https://docs.temporal.io/activity-definition) 与 [Activity Execution](https://docs.temporal.io/activity-execution) — 非确定性活动、结果复用、完成远程过程调用前崩溃、幂等键、活动标识与心跳。
 
 **源码**
 
 - [`temporalio/temporal@955948007cc6d9d94fa8ef484225954bd9328451`](https://github.com/temporalio/temporal/tree/955948007cc6d9d94fa8ef484225954bd9328451) — 命令、活动可变状态、重试与计时器与匹配的服务端截面。
-- [`temporalio/sdk-go@3cebc26908119368df3911df6146f756bad3882b`](https://github.com/temporalio/sdk-go/tree/3cebc26908119368df3911df6146f756bad3882b)与[`temporalio/sdk-java@6d09a341c14daeddf9b3795cd43721de770fec2c`](https://github.com/temporalio/sdk-java/tree/6d09a341c14daeddf9b3795cd43721de770fec2c) — 仅证明工作进程命令能力条件下的快速取消回调，不代表所有 SDK 和版本。
+- [`temporalio/sdk-go@3cebc26908119368df3911df6146f756bad3882b`](https://github.com/temporalio/sdk-go/tree/3cebc26908119368df3911df6146f756bad3882b) 与 [`temporalio/sdk-java@6d09a341c14daeddf9b3795cd43721de770fec2c`](https://github.com/temporalio/sdk-java/tree/6d09a341c14daeddf9b3795cd43721de770fec2c) — 仅证明工作进程命令能力条件下的快速取消回调，不代表所有 SDK 和版本。
 
 **补充说明**
 
-- [Temporal Retry Policies](https://docs.temporal.io/encyclopedia/retry-policies)与[Detecting Activity Failures](https://docs.temporal.io/encyclopedia/detecting-activity-failures) — 默认重试差异、退避、不可重试错误、活动超时、心跳进度与文档基线取消交付。
-- [Temporal Task Queues](https://docs.temporal.io/task-queue)与[Temporal Service](https://docs.temporal.io/temporal-service) — 主动轮询、持久任务、负载均衡、队列分区与顺序边界与服务组成。
+- [Temporal Retry Policies](https://docs.temporal.io/encyclopedia/retry-policies) 与 [Detecting Activity Failures](https://docs.temporal.io/encyclopedia/detecting-activity-failures) — 默认重试差异、退避、不可重试错误、活动超时、心跳进度与文档基线取消交付。
+- [Temporal Task Queues](https://docs.temporal.io/task-queue) 与 [Temporal Service](https://docs.temporal.io/temporal-service) — 主动轮询、持久任务、负载均衡、队列分区与顺序边界与服务组成。
 
 [MOD-06 实体关系模型与关系边界](/modeling/mod-06)进一步说明 Temporal 事件历史是控制面恢复记录，不是带有效期的业务关系历史。

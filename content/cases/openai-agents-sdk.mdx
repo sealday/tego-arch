@@ -359,21 +359,21 @@ flowchart TD
 
 ### 主要架构
 
-- [Agent orchestration 官方指南](https://openai.github.io/openai-agents-python/multi_agent/)与[固定提交文档](https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/docs/multi_agent.md) — 大语言模型编排、智能体作为工具、移交、代码编排及组合原则。
+- [Agent orchestration 官方指南](https://openai.github.io/openai-agents-python/multi_agent/) 与 [固定提交文档](https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/docs/multi_agent.md) — 大语言模型编排、智能体作为工具、移交、代码编排及组合原则。
 - [OpenAI Agents SDK 官方仓库](https://github.com/openai/openai-agents-python/tree/2fa463571e76dae8ff267622f1018eaf06ffeb9f) — SDK 定位、核心概念、源码与官方示例入口。
 - [Tools / Agents as tools](https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/docs/tools.md#agents-as-tools) — 管理者模式、嵌套运行状态、回合限制、结构化输入、输出提取、流式传输与审批。
 - [Handoffs](https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/docs/handoffs.md) — 控制转移、移交元数据、输入过滤、历史传递和护栏边界。
 
 ### 源码
 
-- [Running agents](https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/docs/running_agents.md)与[`Runner` 源码](https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/src/agents/run.py) — 运行循环、`max_turns`、并发工具执行、状态策略与追踪记录配置。
-- [`Agent.as_tool()` 源码](https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/src/agents/agent.py#L508)与[`Handoff` 源码](https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/src/agents/handoffs/__init__.py#L98) — 两种控制模型的实现入口。
-- [Human-in-the-loop](https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/docs/human_in_the_loop.md)与[`RunState` 源码](https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/src/agents/run_state.py#L208) — 跨移交与嵌套运行的审批中断、持久化和恢复。
+- [Running agents](https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/docs/running_agents.md) 与 [`Runner` 源码](https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/src/agents/run.py) — 运行循环、`max_turns`、并发工具执行、状态策略与追踪记录配置。
+- [`Agent.as_tool()` 源码](https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/src/agents/agent.py#L508)与 [`Handoff` 源码](https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/src/agents/handoffs/__init__.py#L98) — 两种控制模型的实现入口。
+- [Human-in-the-loop](https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/docs/human_in_the_loop.md) 与 [`RunState` 源码](https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/src/agents/run_state.py#L208) — 跨移交与嵌套运行的审批中断、持久化和恢复。
 
 ### 补充说明
 
 - [Guardrails](https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/docs/guardrails.md) — 链首输入、链尾输出、函数工具护栏和并行与阻塞执行差异。
 - [Tracing](https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/docs/tracing.md) — 默认跨度、对话关联、敏感数据和自定义处理器。
-- [Agent patterns 目录](https://github.com/openai/openai-agents-python/tree/2fa463571e76dae8ff267622f1018eaf06ffeb9f/examples/agent_patterns) — [Agents-as-Tools](https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/examples/agent_patterns/agents_as_tools.py)、[Handoff routing](https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/examples/agent_patterns/routing.py)、[deterministic flow](https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/examples/agent_patterns/deterministic.py)、[parallelization](https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/examples/agent_patterns/parallelization.py)与[LLM-as-a-judge](https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/examples/agent_patterns/llm_as_a_judge.py)的可运行示例。
+- [Agent patterns 目录](https://github.com/openai/openai-agents-python/tree/2fa463571e76dae8ff267622f1018eaf06ffeb9f/examples/agent_patterns) — [Agents-as-Tools](https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/examples/agent_patterns/agents_as_tools.py)、[Handoff routing](https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/examples/agent_patterns/routing.py)、[deterministic flow](https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/examples/agent_patterns/deterministic.py)、[parallelization](https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/examples/agent_patterns/parallelization.py) 与 [LLM-as-a-judge](https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/examples/agent_patterns/llm_as_a_judge.py) 的可运行示例。
 
 判断一个专家智能体应该“接管”还是“返回结果”，要在它第一次运行前完成。控制权归属一旦清楚，历史裁剪、护栏、审批、预算和恢复位置才有一致答案。

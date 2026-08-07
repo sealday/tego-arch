@@ -323,11 +323,11 @@ sequenceDiagram
 2. [`src/google/adk/agents/llm_agent.py`](https://github.com/google/adk-python/blob/be5828f317c7430411df29974cd9ccfa875e90de/src/google/adk/agents/llm_agent.py)：看`disallow_transfer_to_parent`、`disallow_transfer_to_peers`、`_get_subagent_to_resume()`与根树查找。重点区分大语言模型路由与静态父子所有权。
 3. [`sequential_agent.py`](https://github.com/google/adk-python/blob/be5828f317c7430411df29974cd9ccfa875e90de/src/google/adk/agents/sequential_agent.py)、[`parallel_agent.py`](https://github.com/google/adk-python/blob/be5828f317c7430411df29974cd9ccfa875e90de/src/google/adk/agents/parallel_agent.py)、[`loop_agent.py`](https://github.com/google/adk-python/blob/be5828f317c7430411df29974cd9ccfa875e90de/src/google/adk/agents/loop_agent.py)：对照顺序循环、分支上下文、`TaskGroup`合并、`max_iterations` / 升级处理与当前弃用注释。
 4. [`docs/agents/workflow-agents`](https://github.com/google/adk-docs/tree/3e6ee758f2a642abf42b6a92682bb113e7fb0743/docs/agents/workflow-agents)：先读总览中的确定性定义和智能体开发工具包2.0 迁移提示，再读串行的共享调用、并行的独立分支、循环的终止条件。
-5. [`docs/sessions/state.md`](https://github.com/google/adk-docs/blob/3e6ee758f2a642abf42b6a92682bb113e7fb0743/docs/sessions/state.md)与[`docs/sessions/session/index.md`](https://github.com/google/adk-docs/blob/3e6ee758f2a642abf42b6a92682bb113e7fb0743/docs/sessions/session/index.md)：理解事件历史、状态前缀、上下文更新方式与会话服务的持久化选择。
+5. [`docs/sessions/state.md`](https://github.com/google/adk-docs/blob/3e6ee758f2a642abf42b6a92682bb113e7fb0743/docs/sessions/state.md) 与 [`docs/sessions/session/index.md`](https://github.com/google/adk-docs/blob/3e6ee758f2a642abf42b6a92682bb113e7fb0743/docs/sessions/session/index.md)：理解事件历史、状态前缀、上下文更新方式与会话服务的持久化选择。
 6. [`src/google/adk/agents/remote_a2a_agent.py`](https://github.com/google/adk-python/blob/be5828f317c7430411df29974cd9ccfa875e90de/src/google/adk/agents/remote_a2a_agent.py)：查看智能体卡片解析、智能体开发工具包与 A2A 之间的转换、`message_id` 生成，以及远端 `task_id` 与 `context_id` 如何写入事件元数据和无状态历史选项。
 7. [`src/google/adk/a2a/utils/agent_to_a2a.py`](https://github.com/google/adk-python/blob/be5828f317c7430411df29974cd9ccfa875e90de/src/google/adk/a2a/utils/agent_to_a2a.py)：看`to_a2a()`如何组合网页服务框架、运行器、智能体卡片、任务存储区与推送配置存储区。注意默认运行器和存储区使用内存实现，只适合开发起点。
 8. [`src/google/adk/a2a/executor/a2a_agent_executor_impl.py`](https://github.com/google/adk-python/blob/be5828f317c7430411df29974cd9ccfa875e90de/src/google/adk/a2a/executor/a2a_agent_executor_impl.py)：沿已提交 → 工作中 → 已完成与失败事件看协议映射，并核对`cancel()`当前未实现的边界。
-9. [`specification/a2a.proto`](https://github.com/a2aproject/A2A/blob/af112d9491c1fd4b2a568ac65755af4a62790490/specification/a2a.proto)与[`docs/specification.md`](https://github.com/a2aproject/A2A/blob/af112d9491c1fd4b2a568ac65755af4a62790490/docs/specification.md)：前者是规范形式数据对象与请求与响应的规范源，后者解释操作、绑定、版本、幂等、任务状态和安全语义。
+9. [`specification/a2a.proto`](https://github.com/a2aproject/A2A/blob/af112d9491c1fd4b2a568ac65755af4a62790490/specification/a2a.proto) 与 [`docs/specification.md`](https://github.com/a2aproject/A2A/blob/af112d9491c1fd4b2a568ac65755af4a62790490/docs/specification.md)：前者是规范形式数据对象与请求与响应的规范源，后者解释操作、绑定、版本、幂等、任务状态和安全语义。
   10. [`docs/topics/agent-discovery.md`](https://github.com/a2aproject/A2A/blob/af112d9491c1fd4b2a568ac65755af4a62790490/docs/topics/agent-discovery.md)、[`life-of-a-task.md`](https://github.com/a2aproject/A2A/blob/af112d9491c1fd4b2a568ac65755af4a62790490/docs/topics/life-of-a-task.md)、[`a2a-and-mcp.md`](https://github.com/a2aproject/A2A/blob/af112d9491c1fd4b2a568ac65755af4a62790490/docs/topics/a2a-and-mcp.md)：最后建立发现、任务生命周期和协议分工的整体图。
 
   - **本地符号：** `BaseAgent.name`、`LlmAgent.description`、`Session.events`、`Session.state`、`app_name`、`SessionService`、`InMemorySessionService`、`DatabaseSessionService`、`VertexAiSessionService`。
@@ -463,13 +463,13 @@ A2A 场景还应加入契约与对抗数据集：新旧卡片版本、错误媒�
 
 1. [ADK Agents 总览](https://adk.dev/agents/)：先确认单智能体默认起点和升级工作流的条件。
 2. [ADK Template workflow agents](https://adk.dev/agents/workflow-agents/)：理解串行与并行与循环的确定性外壳与智能体开发工具包2.0 迁移提示。
-3. [ADK Session state](https://adk.dev/sessions/state/)与[Session](https://adk.dev/sessions/session/)：建立本地会话、调用和持久化边界。
+3. [ADK Session state](https://adk.dev/sessions/state/) 与 [Session](https://adk.dev/sessions/session/)：建立本地会话、调用和持久化边界。
 4. [ADK A2A introduction](https://adk.dev/a2a/intro/)：先判断本地智能体与远端 A2A 智能体的适用条件。
-5. [ADK consuming](https://adk.dev/a2a/quickstart-consuming/)与[exposing](https://adk.dev/a2a/quickstart-exposing/)：追踪`RemoteA2aAgent`、智能体卡片、客户端代理与服务端执行器。
+5. [ADK consuming](https://adk.dev/a2a/quickstart-consuming/) 与 [exposing](https://adk.dev/a2a/quickstart-exposing/)：追踪`RemoteA2aAgent`、智能体卡片、客户端代理与服务端执行器。
 6. [A2A 规范](https://a2a-protocol.org/latest/specification/)：核对智能体卡片、消息与任务与产物、操作、绑定、幂等、安全和版本语义。
-7. [A2A discovery](https://a2a-protocol.org/latest/topics/agent-discovery/)、[task lifecycle](https://a2a-protocol.org/latest/topics/life-of-a-task/)与[A2A/MCP comparison](https://a2a-protocol.org/latest/topics/a2a-and-mcp/)：补齐发现、长任务和协议分工。
+7. [A2A discovery](https://a2a-protocol.org/latest/topics/agent-discovery/)、[task lifecycle](https://a2a-protocol.org/latest/topics/life-of-a-task/) 与 [A2A/MCP comparison](https://a2a-protocol.org/latest/topics/a2a-and-mcp/)：补齐发现、长任务和协议分工。
 8. [MCP Architecture（2025-06-18 版）](https://modelcontextprotocol.io/specification/2025-06-18/architecture)：只用于界定主机、客户端、服务端、工具、资源与上下文边界，不用来声称该项目的 A2A 实现行为。
-9. [ADK observability](https://adk.dev/observability/traces/)与[evaluation](https://adk.dev/evaluate/)：把运行轨迹与质量验证连接起来。
+9. [ADK observability](https://adk.dev/observability/traces/) 与 [evaluation](https://adk.dev/evaluate/)：把运行轨迹与质量验证连接起来。
 
 ### 固定版本证据
 

@@ -217,7 +217,7 @@ flowchart LR
   - [`deployment_controller.go` 479–519](https://github.com/kubernetes/kubernetes/blob/39c618b5c30ced3969862e0b4b5acce7a7f8cecb/pkg/controller/deployment/deployment_controller.go#L479-L519)：同密钥串行及成功与错误路径。
   - [`deployment_controller.go` 521–548](https://github.com/kubernetes/kubernetes/blob/39c618b5c30ced3969862e0b4b5acce7a7f8cecb/pkg/controller/deployment/deployment_controller.go#L521-L548)：所有者接纳前的新鲜读取。
   - [`deployment_controller.go` 572–659](https://github.com/kubernetes/kubernetes/blob/39c618b5c30ced3969862e0b4b5acce7a7f8cecb/pkg/controller/deployment/deployment_controller.go#L572-L659)：`syncDeployment`重读部署、重建`ownerReferences`约束下的已拥有状态，并暴露非可重入回滚边界。
-  - [`sync.go` 220–299](https://github.com/kubernetes/kubernetes/blob/39c618b5c30ced3969862e0b4b5acce7a7f8cecb/pkg/controller/deployment/sync.go#L220-L299)与[`sync.go` 478–531](https://github.com/kubernetes/kubernetes/blob/39c618b5c30ced3969862e0b4b5acce7a7f8cecb/pkg/controller/deployment/sync.go#L478-L531)：副本集身份校验、冲突状态、状态空操作，以及`calculateStatus`写入`ObservedGeneration`的接缝。
+  - [`sync.go` 220–299](https://github.com/kubernetes/kubernetes/blob/39c618b5c30ced3969862e0b4b5acce7a7f8cecb/pkg/controller/deployment/sync.go#L220-L299) 与 [`sync.go` 478–531](https://github.com/kubernetes/kubernetes/blob/39c618b5c30ced3969862e0b4b5acce7a7f8cecb/pkg/controller/deployment/sync.go#L478-L531)：副本集身份校验、冲突状态、状态空操作，以及`calculateStatus`写入`ObservedGeneration`的接缝。
   - [`kubelet.go` 2018–2067](https://github.com/kubernetes/kubernetes/blob/39c618b5c30ced3969862e0b4b5acce7a7f8cecb/pkg/kubelet/kubelet.go#L2018-L2067)：可重入`SyncPod`。
   - [`kubelet.go` 2680–2725](https://github.com/kubernetes/kubernetes/blob/39c618b5c30ced3969862e0b4b5acce7a7f8cecb/pkg/kubelet/kubelet.go#L2680-L2725)：多配置源与运行时100ms 到5s 退避。
   - [`kubelet.go` 2728–2877](https://github.com/kubernetes/kubernetes/blob/39c618b5c30ced3969862e0b4b5acce7a7f8cecb/pkg/kubelet/kubelet.go#L2728-L2877)：多事件通道与无处理顺序保证。
@@ -301,14 +301,14 @@ flowchart LR
 
 **官方架构与 API（已证实事实）**
 
-- [Controllers](https://kubernetes.io/docs/concepts/architecture/controller/)、[Cluster Architecture](https://kubernetes.io/docs/concepts/architecture/)与[Objects](https://kubernetes.io/docs/concepts/overview/working-with-objects/)：控制循环、组件分工、`spec`和`status`。访问与截断日期：2026-07-22；站点版本 v1.36。
+- [Controllers](https://kubernetes.io/docs/concepts/architecture/controller/)、[Cluster Architecture](https://kubernetes.io/docs/concepts/architecture/) 与 [Objects](https://kubernetes.io/docs/concepts/overview/working-with-objects/)：控制循环、组件分工、`spec`和`status`。访问与截断日期：2026-07-22；站点版本 v1.36。
 - [Kubernetes API Concepts](https://kubernetes.io/docs/reference/using-api/api-concepts/)：列表与监视、`resourceVersion`、`410 Gone`与`409 Conflict`。
-- [Owners and Dependents](https://kubernetes.io/docs/concepts/overview/working-with-objects/owners-dependents/)、[Server-Side Apply](https://kubernetes.io/docs/reference/using-api/server-side-apply/)与[Leases](https://kubernetes.io/docs/concepts/architecture/leases/)：对象、字段与候选实例的不同所有权边界。
+- [Owners and Dependents](https://kubernetes.io/docs/concepts/overview/working-with-objects/owners-dependents/)、[Server-Side Apply](https://kubernetes.io/docs/reference/using-api/server-side-apply/) 与 [Leases](https://kubernetes.io/docs/concepts/architecture/leases/)：对象、字段与候选实例的不同所有权边界。
 
 **固定上游源码（已证实事实）**
 
 - [`kubernetes/kubernetes@39c618b5c30ced3969862e0b4b5acce7a7f8cecb`](https://github.com/kubernetes/kubernetes/tree/39c618b5c30ced3969862e0b4b5acce7a7f8cecb)：2026-07-22 解析的上游最新提交。
-- [`deployment_controller.go`](https://github.com/kubernetes/kubernetes/blob/39c618b5c30ced3969862e0b4b5acce7a7f8cecb/pkg/controller/deployment/deployment_controller.go)与[`sync.go`](https://github.com/kubernetes/kubernetes/blob/39c618b5c30ced3969862e0b4b5acce7a7f8cecb/pkg/controller/deployment/sync.go)：通知器、队列、工作进程、所有者接纳、副本集与状态。
+- [`deployment_controller.go`](https://github.com/kubernetes/kubernetes/blob/39c618b5c30ced3969862e0b4b5acce7a7f8cecb/pkg/controller/deployment/deployment_controller.go) 与 [`sync.go`](https://github.com/kubernetes/kubernetes/blob/39c618b5c30ced3969862e0b4b5acce7a7f8cecb/pkg/controller/deployment/sync.go)：通知器、队列、工作进程、所有者接纳、副本集与状态。
 - [`kubelet.go`](https://github.com/kubernetes/kubernetes/blob/39c618b5c30ced3969862e0b4b5acce7a7f8cecb/pkg/kubelet/kubelet.go)：多通道同步循环、运行时退避、事件顺序边界与`SyncPod`。
 - [`leaderelection.go`](https://github.com/kubernetes/kubernetes/blob/39c618b5c30ced3969862e0b4b5acce7a7f8cecb/staging/src/k8s.io/client-go/tools/leaderelection/leaderelection.go)：非隔离栅栏边界与时钟偏斜率与可用性权衡。
 

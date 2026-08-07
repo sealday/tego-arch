@@ -5,7 +5,8 @@ import path from 'node:path';
 import test from 'node:test';
 
 import {parseFrontMatter} from '../scripts/content-metadata.mjs';
-import {parseMdxVisibleCopy} from '../scripts/visible-copy.mjs';
+import {citationMatchesSource} from '../scripts/source-ledger.mjs';
+import {parseMdxVisibleCopy, renderVisibleBlock} from '../scripts/visible-copy.mjs';
 
 const root = new URL('../', import.meta.url);
 
@@ -17,6 +18,63 @@ const task8Directories = [
 ];
 const latinHanBoundary = /(?:[A-Za-z][A-Za-z0-9.+-]*(?:[ \t]+[A-Za-z0-9.+-]+)*(?=\p{Script=Han})|(?<=\p{Script=Han})[A-Za-z][A-Za-z0-9.+-]*(?:[ \t]+[A-Za-z0-9.+-]+)*)/u;
 const asciiProseSlash = /(?:\p{Script=Han}|[A-Za-z][A-Za-z0-9.+-]*)\s*\/\s*(?:\p{Script=Han}|[A-Za-z][A-Za-z0-9.+-]*)/u;
+const sourceLedger = JSON.parse(await readFile(new URL('data/source-ledger.json', root), 'utf8'));
+
+function normalizeLinkLabel(value) {
+  return value.normalize('NFC').replace(/\s+/gu, ' ').trim();
+}
+
+function governedCitation(url, label) {
+  if (!/^https?:/u.test(url ?? '')) return false;
+  const source = sourceLedger.sources.find((candidate) => citationMatchesSource(url, candidate));
+  return [source?.title, ...(source?.citation_titles ?? [])]
+    .some((title) => title && normalizeLinkLabel(title) === normalizeLinkLabel(label));
+}
+
+function protectedCitationLabels(ast) {
+  const labels = new Set();
+  const visit = (node) => {
+    if (node.type === 'link' && /^https?:/u.test(node.url)) {
+      const fullLabel = renderVisibleBlock(node, {includeInlineCode: true}).text;
+      const visibleLabel = renderVisibleBlock(node).text;
+      if (visibleLabel && governedCitation(node.url, fullLabel)) labels.add(visibleLabel.trim());
+    }
+    for (const child of node.children ?? []) visit(child);
+  };
+  visit(ast);
+  return labels;
+}
+
+function linkBoundaryIssues(source, file = 'content/example.mdx') {
+  const {ast} = parseMdxVisibleCopy(source, file, {includeAst: true});
+  const issues = [];
+  const visit = (node) => {
+    if (node.type === 'link' || node.type === 'linkReference') {
+      const start = node.position.start.offset;
+      const end = node.position.end.offset;
+      const before = source[start - 1] ?? '';
+      const after = source[end] ?? '';
+      const label = renderVisibleBlock(node, {includeInlineCode: true}).text;
+      const first = label.match(/[\p{Script=Han}A-Za-z0-9]/u)?.[0] ?? '';
+      const last = [...label.matchAll(/[\p{Script=Han}A-Za-z0-9]/gu)].at(-1)?.[0] ?? '';
+      const crossScript = (left, right) => (
+        (/\p{Script=Han}/u.test(left) && /[A-Za-z0-9]/u.test(right))
+        || (/[A-Za-z0-9]/u.test(left) && /\p{Script=Han}/u.test(right))
+      );
+      const exactCitation = governedCitation(node.url, label);
+      const word = /^[\p{Script=Han}A-Za-z0-9]$/u;
+      if (before === ']' || crossScript(before, first) || (exactCitation && word.test(before))) {
+        issues.push({line: node.position.start.line, side: 'before'});
+      }
+      if (after === '[' || crossScript(last, after) || (exactCitation && word.test(after))) {
+        issues.push({line: node.position.end.line, side: 'after'});
+      }
+    }
+    for (const child of node.children ?? []) visit(child);
+  };
+  visit(ast);
+  return issues;
+}
 
 async function task8Files() {
   const files = ['content/intro.mdx'];
@@ -204,11 +262,14 @@ test('keeps production-visible Task 8 prose free of mechanical script boundaries
   const repeatedNoun = /(数据库|语言|存储|进程|数据|终端|接口|状态|服务|工作流|管理者)\1/u;
   for (const file of await task8Files()) {
     const source = await readFile(new URL(file, root), 'utf8');
-    const parsed = parseMdxVisibleCopy(source, file, {
-      excludeLink: ({url}) => Boolean(url),
-    });
+    const parsed = parseMdxVisibleCopy(source, file, {includeAst: true});
+    const protectedLabels = protectedCitationLabels(parsed.ast);
+    assert.deepEqual(linkBoundaryIssues(source, file), [], `${file}: link boundary`);
     for (const record of [...parsed.frontMatter, ...parsed.blocks].filter(({structural}) => !structural)) {
-      const reviewedText = record.text
+      const reviewedText = [...protectedLabels].reduce(
+        (text, label) => text.replaceAll(label, '受治理来源题名'),
+        record.text,
+      )
         .replaceAll('Erlang/OTP', 'Erlang OTP')
         .replaceAll('Fan-out/Fan-in', 'Fan-out 与 Fan-in');
       assert.doesNotMatch(reviewedText, latinHanBoundary, `${file}:${record.line}: Latin↔Han`);
@@ -216,6 +277,21 @@ test('keeps production-visible Task 8 prose free of mechanical script boundaries
       assert.doesNotMatch(reviewedText, repeatedNoun, `${file}:${record.line}: repeated noun`);
     }
   }
+});
+
+test('rejects glued Markdown link seams while preserving exact governed labels', () => {
+  const governedUrl = 'https://github.com/mehdihadeli/awesome-software-architecture';
+  for (const source of [
+    '前文[arc42](/inside)分别说明',
+    `前文[Awesome Software Architecture](${governedUrl})后文`,
+    `[Awesome Software Architecture](${governedUrl})可继续阅读`,
+  ]) assert.notDeepEqual(linkBoundaryIssues(source), [], source);
+
+  assert.deepEqual(linkBoundaryIssues('前文 [arc42](/inside) 分别说明'), []);
+  assert.deepEqual(
+    linkBoundaryIssues(`前文 [Awesome Software Architecture](${governedUrl}) 后文`),
+    [],
+  );
 });
 
 test('recognizes product, acronym, both slash styles, and repeated-word review candidates', () => {

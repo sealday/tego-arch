@@ -99,7 +99,7 @@ SQLite 支撑的对象提供结构化查询语言、同步与异步键值存储�
 <details className="evidence-card">
   <summary>证据：运行时快照、存储版本与重试参数</summary>
 
-- **固定快照：** `git ls-remote https://github.com/cloudflare/workerd.git HEAD`返回[`14894eccbb339da199d772fcadd337b6d0902128`](https://github.com/cloudflare/workerd/tree/14894eccbb339da199d772fcadd337b6d0902128)。
+- **固定快照：** `git ls-remote https://github.com/cloudflare/workerd.git HEAD`返回 [`14894eccbb339da199d772fcadd337b6d0902128`](https://github.com/cloudflare/workerd/tree/14894eccbb339da199d772fcadd337b6d0902128)。
 - **提交信息：** `Release 2026-07-22`，时间为2026-07-22 00:59:49 协调世界时。说明文件（README）说明日期版本对应最大兼容日期。
 - **新建命名空间：** 当前新`exports`命名空间只能选择 SQLite 后端。2026-07-09 变更日志的旧版 `migrations` 例外，仅允许已有键值存储支撑命名空间的账户继续用`new_classes`新建键值存储命名空间；已有键值存储命名空间继续受支持。
 - **SQLite 合同：** 支持结构化查询语言、同步与异步键值存储与时间点恢复。`transactionSync()`仅 SQLite 可用且回调必须同步；SQLite 下`transaction()`的`txn`参数已废弃，直接使用`ctx.storage`。连续且无中间`await`的写会自动合并并原子提交。
@@ -293,7 +293,7 @@ flowchart TB
 <details className="evidence-card">
   <summary>证据：生产控制、观测字段与故障处置</summary>
 
-**来源锚点：** [Durable Objects limits](https://developers.cloudflare.com/durable-objects/platform/limits/)与[Metrics and analytics](https://developers.cloudflare.com/durable-objects/observability/metrics-and-analytics/)提供平台容量和观测边界；表中的发件箱、分片纪元与人工升级属于应用设计。
+**来源锚点：** [Durable Objects limits](https://developers.cloudflare.com/durable-objects/platform/limits/) 与 [Metrics and analytics](https://developers.cloudflare.com/durable-objects/observability/metrics-and-analytics/) 提供平台容量和观测边界；表中的发件箱、分片纪元与人工升级属于应用设计。
 
 | 生产维度| 最小控制| 关键观测| 故障处置|
 | --- | --- | --- | --- |
@@ -358,16 +358,16 @@ flowchart TB
 
 **Cloudflare Durable Objects 官方文档（已证实事实，访问与截断日期2026-07-22）**
 
-- [Durable Objects overview](https://developers.cloudflare.com/durable-objects/)与[What are Durable Objects?](https://developers.cloudflare.com/durable-objects/concepts/what-are-durable-objects/)：身份寻址、单点协调、私有存储、网页套接字与告警的产品边界。
-- [Namespace](https://developers.cloudflare.com/durable-objects/api/namespace/)、[ID](https://developers.cloudflare.com/durable-objects/api/id/)与[Stub](https://developers.cloudflare.com/durable-objects/api/stub/)：`idFromName`、`newUniqueId`、`idFromString`、`get/getByName`、懒创建、单连接顺序、存根故障与命名空间限制。
-- [Rules of Durable Objects](https://developers.cloudflare.com/durable-objects/best-practices/rules-of-durable-objects/)、[State](https://developers.cloudflare.com/durable-objects/api/state/)与[Known issues](https://developers.cloudflare.com/durable-objects/platform/known-issues/)：单线程的异步交错、输入门禁、非存储输入输出竞态、`blockConcurrencyWhile`、全局唯一性限定与代码版本兼容。
+- [Durable Objects overview](https://developers.cloudflare.com/durable-objects/) 与 [What are Durable Objects?](https://developers.cloudflare.com/durable-objects/concepts/what-are-durable-objects/)：身份寻址、单点协调、私有存储、网页套接字与告警的产品边界。
+- [Namespace](https://developers.cloudflare.com/durable-objects/api/namespace/)、[ID](https://developers.cloudflare.com/durable-objects/api/id/) 与 [Stub](https://developers.cloudflare.com/durable-objects/api/stub/)：`idFromName`、`newUniqueId`、`idFromString`、`get/getByName`、懒创建、单连接顺序、存根故障与命名空间限制。
+- [Rules of Durable Objects](https://developers.cloudflare.com/durable-objects/best-practices/rules-of-durable-objects/)、[State](https://developers.cloudflare.com/durable-objects/api/state/) 与 [Known issues](https://developers.cloudflare.com/durable-objects/platform/known-issues/)：单线程的异步交错、输入门禁、非存储输入输出竞态、`blockConcurrencyWhile`、全局唯一性限定与代码版本兼容。
 - [SQLite-backed storage](https://developers.cloudflare.com/durable-objects/api/sqlite-storage-api/)：SQLite 数据库与旧版键值存储能力矩阵、同步与异步键值存储、时间点恢复、自动事务、`transaction/transactionSync`、写入合并、输出门禁与告警元数据。
 - [Alarms](https://developers.cloudflare.com/durable-objects/api/alarms/)：单告警、至少一次、2 秒起指数退避、最多6 次重试、重试信息与有限重试边界。
-- [WebSockets](https://developers.cloudflare.com/durable-objects/best-practices/websockets/)与[Lifecycle](https://developers.cloudflare.com/durable-objects/concepts/durable-object-lifecycle/)：服务端休眠、构造器重跑、内存丢失、附件、重启、关闭与无钩子恢复。
+- [WebSockets](https://developers.cloudflare.com/durable-objects/best-practices/websockets/) 与 [Lifecycle](https://developers.cloudflare.com/durable-objects/concepts/durable-object-lifecycle/)：服务端休眠、构造器重跑、内存丢失、附件、重启、关闭与无钩子恢复。
 - [Data location](https://developers.cloudflare.com/durable-objects/reference/data-location/)：管辖域、首次`get()`、尽力而为`locationHint`、当前位置不动态变更及其非保证边界。
 - [Data security](https://developers.cloudflare.com/durable-objects/reference/data-security/)：已附加存储的对象私有边界、全部数据及元数据的静态加密，以及 Cloudflare Workers、Cloudflare 网络节点与对象间的传输层安全协议或安全套接层保护。
-- [Durable Object class exports](https://developers.cloudflare.com/durable-objects/reference/durable-objects-migrations/)与[Durable Objects changelog](https://developers.cloudflare.com/changelog/product/durable-objects/)：当前`exports`与旧版迁移、创建、删除、重命名与转移、存储后端不可变性、渐进部署和回滚限制；2026-07-09 条目限定了哪些账户仍可通过`new_classes`新建键值存储支撑命名空间。
-- [Limits](https://developers.cloudflare.com/durable-objects/platform/limits/)与[Metrics and analytics](https://developers.cloudflare.com/durable-objects/observability/metrics-and-analytics/)：单对象软吞吐上限、过载、存储与处理器与网页套接字边界、命名空间与每对象指标与`$workers.durableObjectId`。
+- [Durable Object class exports](https://developers.cloudflare.com/durable-objects/reference/durable-objects-migrations/) 与 [Durable Objects changelog](https://developers.cloudflare.com/changelog/product/durable-objects/)：当前`exports`与旧版迁移、创建、删除、重命名与转移、存储后端不可变性、渐进部署和回滚限制；2026-07-09 条目限定了哪些账户仍可通过`new_classes`新建键值存储支撑命名空间。
+- [Limits](https://developers.cloudflare.com/durable-objects/platform/limits/) 与 [Metrics and analytics](https://developers.cloudflare.com/durable-objects/observability/metrics-and-analytics/)：单对象软吞吐上限、过载、存储与处理器与网页套接字边界、命名空间与每对象指标与`$workers.durableObjectId`。
 
 **Cloudflare 官方引用架构（已证实事实，访问与截断日期2026-07-22）**
 
@@ -376,7 +376,7 @@ flowchart TB
 **Cloudflare 固定上游源码（已证实事实）**
 
 - [`cloudflare/workerd@14894eccbb339da199d772fcadd337b6d0902128`](https://github.com/cloudflare/workerd/tree/14894eccbb339da199d772fcadd337b6d0902128)：2026-07-22 核对的最新提交，提交题为`Release 2026-07-22`，提交时间2026-07-22 00:59:49 协调世界时。
-- [`README.md`](https://github.com/cloudflare/workerd/blob/14894eccbb339da199d772fcadd337b6d0902128/README.md)、[`io-gate.h`](https://github.com/cloudflare/workerd/blob/14894eccbb339da199d772fcadd337b6d0902128/src/workerd/io/io-gate.h)、[`actor-cache.h`](https://github.com/cloudflare/workerd/blob/14894eccbb339da199d772fcadd337b6d0902128/src/workerd/io/actor-cache.h)、[`actor-sqlite.c++`](https://github.com/cloudflare/workerd/blob/14894eccbb339da199d772fcadd337b6d0902128/src/workerd/io/actor-sqlite.c%2B%2B)与[`workerd.capnp`](https://github.com/cloudflare/workerd/blob/14894eccbb339da199d772fcadd337b6d0902128/src/workerd/server/workerd.capnp)：运行时定位、门禁、缓存、SQLite 数据库、命名空间唯一密钥、本地存储和单运行时边界。
+- [`README.md`](https://github.com/cloudflare/workerd/blob/14894eccbb339da199d772fcadd337b6d0902128/README.md)、[`io-gate.h`](https://github.com/cloudflare/workerd/blob/14894eccbb339da199d772fcadd337b6d0902128/src/workerd/io/io-gate.h)、[`actor-cache.h`](https://github.com/cloudflare/workerd/blob/14894eccbb339da199d772fcadd337b6d0902128/src/workerd/io/actor-cache.h)、[`actor-sqlite.c++`](https://github.com/cloudflare/workerd/blob/14894eccbb339da199d772fcadd337b6d0902128/src/workerd/io/actor-sqlite.c%2B%2B) 与 [`workerd.capnp`](https://github.com/cloudflare/workerd/blob/14894eccbb339da199d772fcadd337b6d0902128/src/workerd/server/workerd.capnp)：运行时定位、门禁、缓存、SQLite 数据库、命名空间唯一密钥、本地存储和单运行时边界。
 
 **证据边界说明**：智能体会话与任务状态机、规范形式密钥和发件箱与回执是架构推断。分片纪元、租户目录与迁移墓碑标记也来自对官方原语的迁移分析。资源预算和人工升级不是 Cloudflare 对智能体平台的官方承诺。
 
