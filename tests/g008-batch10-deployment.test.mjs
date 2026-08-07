@@ -84,7 +84,6 @@ const expectedProjection = {
   governed_sources: 506,
   durable_stories: {completed: 8, total: 20},
   current_goal: 'G009',
-  next_topic: 'STY-02',
 };
 
 const reviewSections = new Map([
@@ -184,6 +183,21 @@ function currentBaseline(source) {
   return lines[0];
 }
 
+function currentG009Batch3Prefix(source) {
+  const baseline = currentBaseline(source);
+  const marker = '此前 G009 Batch 2 历史完成基线为：';
+  const end = baseline.indexOf(marker);
+  assert.notEqual(end, -1, 'G009 Batch 2 history boundary');
+  return baseline.slice(0, end);
+}
+
+function mutateCurrentG009Batch3Prefix(source, replacement) {
+  const prefix = currentG009Batch3Prefix(source);
+  const mutatedPrefix = prefix.replace('下一项为 STY-03', replacement);
+  assert.notEqual(mutatedPrefix, prefix, 'current next-topic mutation must change prefix');
+  return source.replace(prefix, mutatedPrefix);
+}
+
 function batch10Segment(source) {
   const baseline = currentBaseline(source);
   const marker = '此前 G008 Batch 10 历史完成基线为：';
@@ -250,7 +264,11 @@ function assertBacklog(source) {
   assert.match(source, /^- \[x\] \*\*STY-00 /mu);
   assert.match(source, /当前持久故事：\*\* `G009`/u);
   assert.match(source, /最近完成 `G008`/u);
-  assert.equal(currentBaseline(source).split('下一项为 STY-02').length - 1, 1);
+  assert.equal(
+    currentG009Batch3Prefix(source).split('下一项为 STY-03').length - 1,
+    1,
+    'G009 Batch 3 current prefix must identify STY-03 as next',
+  );
 }
 
 function assertGeneratedState(manifestValue, statusValue) {
@@ -321,7 +339,7 @@ test('rejects every backlog evidence status and projection mutation', () => {
     backlog.replace('- [x] **MOD-12 ', '- [ ] **MOD-12 '),
     backlog.replace('- [x] **MOD-13 ', '- [ ] **MOD-13 '),
     backlog.replace('- **当前持久故事：** `G009`。', '- **当前持久故事：** `G008`。'),
-    backlog.replace('下一项为 STY-02', '下一项为 STY-01'),
+    mutateCurrentG009Batch3Prefix(backlog, '下一项为 STY-01'),
     backlog.replace('- [x] **STY-00 ', '- [ ] **STY-00 '),
   ]) {
     assert.notEqual(mutation, backlog, 'backlog mutation must change source');
