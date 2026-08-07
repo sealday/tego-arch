@@ -129,13 +129,13 @@ flowchart TB
   accTitle: 身份寻址的智能体持久对象协调与外部副作用边界
   accDescr: 客户端先经 Cloudflare Workers 鉴权和规范形式密钥派生，再由命名空间将名称或随机标识转成存根，路由到一个会话、任务、租户或实体持久对象。对象内单线程事件循环、SQLite、告警和休眠网页套接字构成协调单元；模型、工具、队列与对象间索引位于事务外，必须经发件箱、回执和版本校验。
 
-  Client["客户端/ 智能体<br/>HTTP · 远程过程调用 · 网页套接字"] --> Edge["Cloudflare Workers 入口<br/>认证 · 授权 · 规范形式密钥"]
-  Edge --> NS["持久对象命名空间<br/>名称派生 / 新建唯一标识 / 获取"]
+  Client["客户端、智能体<br/>HTTP · 远程过程调用 · 网页套接字"] --> Edge["Cloudflare Workers 入口<br/>认证 · 授权 · 规范形式密钥"]
+  Edge --> NS["持久对象命名空间<br/>名称派生、新建唯一标识、获取"]
   NS --> Stub["持久对象存根<br/>顺序调用路由"]
 
   subgraph DO["一个按身份寻址的持久对象"]
     Loop["单线程事件循环<br/>非存储等待可交错"]
-    Gate["输入门禁/ 输出门禁"]
+    Gate["输入门禁、输出门禁"]
     DB[("私有 SQLite<br/>结构化查询 · 键值存储 · 时间点恢复")]
     Alarm["单个告警<br/>至少一次"]
     WS["休眠网页套接字<br/>休眠时内存重建"]
@@ -146,11 +146,11 @@ flowchart TB
   end
 
   Stub --> Loop
-  Loop --> Outbox[("操作/ 发件箱/ 回执<br/>状态版本与幂等键")]
+  Loop --> Outbox[("操作、发件箱、回执<br/>状态版本与幂等键")]
   Outbox --> External["事务外系统<br/>模型 · 工具 · R2 · 队列 · 付款"]
-  Control["应用控制面/ 对象目录<br/>索引 · 分片纪元 · 迁移状态"] -. "只提供路由元数据" .-> NS
+  Control["应用控制面、对象目录<br/>索引 · 分片纪元 · 迁移状态"] -. "只提供路由元数据" .-> NS
   Control -. "拆分、排空、墓碑标记" .-> DO
-  Obs["日志/ 指标/ 追踪记录<br/>对象标识 · 任务 · 操作"] -.-> DO
+  Obs["日志、指标、追踪记录<br/>对象标识 · 任务 · 操作"] -.-> DO
   Obs -.-> External
 ```
 
@@ -207,7 +207,7 @@ flowchart TB
 
 ## 控制权与任务流
 
-**说明性场景**：一个智能体任务在等待模型结果时收到取消请求，随后旧模型结果迟到。这个场景用已证实的事件交错和存储门禁机制说明恢复设计，不代表Cloudflare 官方事故或生产测量。
+**说明性场景**：一个智能体任务在等待模型结果时收到取消请求，随后旧模型结果迟到。这个场景用已证实的事件交错和存储门禁机制说明恢复设计，不代表 Cloudflare 官方事故或生产测量。
 
 1. **认证与密钥派生。** 入口验证用户与智能体令牌，读取可信租户、工作空间、会话、任务或实体标识，做规范化与长度限制，再组合版本化密钥，例如`v2:tenant-17:task-42`。不要直接采用查询字符串作为`idFromName()`输入，更不要把“知道名称与标识”当作已授权。
 
@@ -225,7 +225,7 @@ flowchart TB
 
 8. **故障恢复。** 对象没有关闭钩子，持续写检查点。遇到对象重置、过载、存根错误、告警重试或客户端重连时，先查询持久状态与外部回执；不能判断时转人工。客户端使用退避、截止时间和幂等键，禁止无界重试制造热点。
 
-**基于证据的推断**：智能体任务持久对象先经历已创建、运行中与waiting_external。外部结果返回后进入result_received、已验证或已完成。异常分支包括cancel_requested、失败与manual_review。
+**基于证据的推断**：智能体任务持久对象先经历已创建、运行中与 waiting_external。外部结果返回后进入 result_received、已验证或已完成。异常分支包括 cancel_requested、失败与 manual_review。
 
 每次转移都带单调`state_version`。外部工作进程（worker）回调必须匹配任务标识、操作标识、尝试和基础版本。
 
@@ -257,7 +257,7 @@ flowchart TB
 
 **已证实事实**：固定`workerd.capnp`说明持久对象标识与稳定命名空间`uniqueKey`关联。类名称变化不必破坏既有存储。Cloudflare 当前托管配置使用`exports`管理已置备命名空间。它会执行创建、删除、重命名或转移协调。
 
-两个证据都说明类生命周期与单个对象标识不是同一概念，但本地`uniqueKey`不是用户在Cloudflare 控制面手工操作的迁移API。
+两个证据都说明类生命周期与单个对象标识不是同一概念，但本地`uniqueKey`不是用户在 Cloudflare 控制面手工操作的迁移 API。
 
 **边界。个人分析**：源码审阅应停止在运行时契约。Cloudflare 如何选择生产主机、维护全球位置缓存、处理分区或移动底层数据，是公开`workerd`未给出的服务实现。命名空间转移同样不能从类名、本地 SQLite 文件名或输入输出门禁推导出来。
 
@@ -356,7 +356,7 @@ flowchart TB
 
 ## 来源
 
-**Cloudflare Durable Objects官方文档（已证实事实，访问与截断日期2026-07-22）**
+**Cloudflare Durable Objects 官方文档（已证实事实，访问与截断日期2026-07-22）**
 
 - [Durable Objects overview](https://developers.cloudflare.com/durable-objects/)与[What are Durable Objects?](https://developers.cloudflare.com/durable-objects/concepts/what-are-durable-objects/)：身份寻址、单点协调、私有存储、网页套接字与告警的产品边界。
 - [Namespace](https://developers.cloudflare.com/durable-objects/api/namespace/)、[ID](https://developers.cloudflare.com/durable-objects/api/id/)与[Stub](https://developers.cloudflare.com/durable-objects/api/stub/)：`idFromName`、`newUniqueId`、`idFromString`、`get/getByName`、懒创建、单连接顺序、存根故障与命名空间限制。
@@ -378,6 +378,6 @@ flowchart TB
 - [`cloudflare/workerd@14894eccbb339da199d772fcadd337b6d0902128`](https://github.com/cloudflare/workerd/tree/14894eccbb339da199d772fcadd337b6d0902128)：2026-07-22 核对的最新提交，提交题为`Release 2026-07-22`，提交时间2026-07-22 00:59:49 协调世界时。
 - [`README.md`](https://github.com/cloudflare/workerd/blob/14894eccbb339da199d772fcadd337b6d0902128/README.md)、[`io-gate.h`](https://github.com/cloudflare/workerd/blob/14894eccbb339da199d772fcadd337b6d0902128/src/workerd/io/io-gate.h)、[`actor-cache.h`](https://github.com/cloudflare/workerd/blob/14894eccbb339da199d772fcadd337b6d0902128/src/workerd/io/actor-cache.h)、[`actor-sqlite.c++`](https://github.com/cloudflare/workerd/blob/14894eccbb339da199d772fcadd337b6d0902128/src/workerd/io/actor-sqlite.c%2B%2B)与[`workerd.capnp`](https://github.com/cloudflare/workerd/blob/14894eccbb339da199d772fcadd337b6d0902128/src/workerd/server/workerd.capnp)：运行时定位、门禁、缓存、SQLite 数据库、命名空间唯一密钥、本地存储和单运行时边界。
 
-**证据边界说明**：智能体会话与任务状态机、规范形式密钥和发件箱与回执是架构推断。分片纪元、租户目录与迁移墓碑标记也来自对官方原语的迁移分析。资源预算和人工升级不是Cloudflare 对智能体平台的官方承诺。
+**证据边界说明**：智能体会话与任务状态机、规范形式密钥和发件箱与回执是架构推断。分片纪元、租户目录与迁移墓碑标记也来自对官方原语的迁移分析。资源预算和人工升级不是 Cloudflare 对智能体平台的官方承诺。
 
 Cloudflare 托管服务未公开的全球放置、迁移和存储控制平面不在结论范围内。2026-07-22 之后的文档和`workerd`变化也不在范围内。

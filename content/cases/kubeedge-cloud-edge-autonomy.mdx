@@ -54,9 +54,9 @@ tags:
 
 # 云边自治：在断网边界上划分规划权与执行权
 
-云边连接消失时，真正的问题不是“进程还能不能跑”，而是边缘还被授权做什么。KubeEdge能让已下发工作负载和节点局部状态继续工作，却不会把云端控制权完整复制到现场；新凭证、跨节点协调、集中审批和未缓存依赖仍可能停住。
+云边连接消失时，真正的问题不是“进程还能不能跑”，而是边缘还被授权做什么。KubeEdge 能让已下发工作负载和节点局部状态继续工作，却不会把云端控制权完整复制到现场；新凭证、跨节点协调、集中审批和未缓存依赖仍可能停住。
 
-KubeEdge把容器编排平台期望和设备配置留在云端规划，把已下发工作负载、局部元数据、设备交互和运行健康留在边缘执行。恢复连接后，云端枢纽与边缘枢纽通过资源版本、确认消息、状态上报和同步控制器继续协调，而不是简单让最后到达的状态覆盖一切。
+KubeEdge 把容器编排平台期望和设备配置留在云端规划，把已下发工作负载、局部元数据、设备交互和运行健康留在边缘执行。恢复连接后，云端枢纽与边缘枢纽通过资源版本、确认消息、状态上报和同步控制器继续协调，而不是简单让最后到达的状态覆盖一切。
 
 本文依据 KubeEdge 文档固定在 v1.20.0。迁移到物理智能体时，云边智能体离线自治必须有明确授权、风险预算、过期和回滚边界；离线权限租约、审计发件箱、反回滚和人工接管均标为应用设计，不冒充平台内建能力。
 
@@ -82,23 +82,23 @@ KubeEdge把容器编排平台期望和设备配置留在云端规划，把已下
 | 关键决策| 推荐默认| 边界与退出信号|
 | --- | --- | --- |
 | 云边权威| 云端签发期望、策略与版本；边缘只执行已缓存且未过期的授权| 需要新资源、新机密对象、跨节点协调或集中审批时暂停|
-| 离线工作负载| 维持已有容器组、探针、重启与本地设备闭环| 镜像与卷与配置未准备、依赖云API 或资源压力失控时降级|
+| 离线工作负载| 维持已有容器组、探针、重启与本地设备闭环| 镜像与卷与配置未准备、依赖云 API 或资源压力失控时降级|
 | 设备状态| 期望状态与上报值分离，命令与观测带版本和时间| 上报值未证明命令唯一执行；危险设备动作需外部安全联锁|
 | 重连| 版本比较、确认回执、状态快照、发件箱协调| 冲突不可自动判定、效果不可逆或审计缺口时人工接管|
 | 缓存定位| SQLite 数据库是节点局部元数据与缓存| 不作全局真相、审计总账或跨节点事务数据库|
 
 ## 事实边界
 
-本文于**2026-07-22** 选择稳定发布**KubeEdge v1.20.0**。架构与组件语义只采用发布-1.20 文档和同一标签的源码，不把默认官网或后续分支语义倒灌到结论中。
+本文于**2026-07-22** 选择稳定发布 **KubeEdge v1.20.0**。架构与组件语义只采用发布-1.20 文档和同一标签的源码，不把默认官网或后续分支语义倒灌到结论中。
 
 <details className="evidence-card">
   <summary>证据：v1.20.0 标签、提交与文档截断</summary>
 
 - **固定标签：** [`v1.20.0`](https://github.com/kubeedge/kubeedge/releases/tag/v1.20.0)。
 - **完整提交：** `git ls-remote`与本地精确拉取均解析为[`bae61505d4919c404665f70347ad0646aaa98958`](https://github.com/kubeedge/kubeedge/tree/bae61505d4919c404665f70347ad0646aaa98958)。
-- **提交信息：** 2025-01-21 12:40:26 协调世界时，更新v1.20.0 版本；官方发布博客同样记录v1.20 于2025-01-21 发布。
+- **提交信息：** 2025-01-21 12:40:26 协调世界时，更新 v1.20.0 版本；官方发布博客同样记录 v1.20 于2025-01-21 发布。
 - **文档范围：** 只使用[`release-1-20.docs.kubeedge.io`](https://release-1-20.docs.kubeedge.io/docs/)；默认官网和`release-1.20`分支后续修复不在本文范围。
-- **边界：** 这些锚点固定版本语义，不证明迁移设计中的智能体租约、发件箱或反回滚是KubeEdge API。
+- **边界：** 这些锚点固定版本语义，不证明迁移设计中的智能体租约、发件箱或反回滚是 KubeEdge API。
 
 </details>
 
@@ -106,7 +106,7 @@ KubeEdge把容器编排平台期望和设备配置留在云端规划，把已下
 
 **边界。已证实事实**：云端枢纽分派器的确认回执说明只覆盖需要确认的资源消息，并以元管理器成功存储为确认点；否定确认回执路径允许丢失，设备孪生成功点尚有待实现。由此不能承诺任意云边消息、设备命令或物理副作用恰好一次，也不能把孪生版本当作通用事务序号。
 
-**个人分析**：本案例把“离线智能体权限租约、模型与工具包、风险分级、审计发件箱、人工接管和反回滚”作为迁移设计。这些都不是KubeEdge v1.20.0 开箱即用的API；实现者必须另建签名、持久化、设备安全和治理机制。
+**个人分析**：本案例把“离线智能体权限租约、模型与工具包、风险分级、审计发件箱、人工接管和反回滚”作为迁移设计。这些都不是 KubeEdge v1.20.0 开箱即用的 API；实现者必须另建签名、持久化、设备安全和治理机制。
 
 ## 架构图
 
@@ -150,9 +150,9 @@ flowchart TB
 
 ## 控制权与任务流
 
-**说明性场景**：一个边缘智能体在断网期间依据未过期租约执行低风险设备调整，同时云端产生了新的期望状态。场景只用于追踪已证实的云边机制和明确标注的应用层恢复设计，不是KubeEdge官方事故。
+**说明性场景**：一个边缘智能体在断网期间依据未过期租约执行低风险设备调整，同时云端产生了新的期望状态。场景只用于追踪已证实的云边机制和明确标注的应用层恢复设计，不是 KubeEdge 官方事故。
 
-1. **云端规划。** 容器编排平台API 保存容器组、设备和相关期望；边缘控制器与设备控制器根据目标节点与资源版本生成下行消息。设备`spec.properties[].desired`是设备控制意图，`status.twins[].reported`是观测结果，两者不能互换。
+1. **云端规划。** 容器编排平台 API 保存容器组、设备和相关期望；边缘控制器与设备控制器根据目标节点与资源版本生成下行消息。设备`spec.properties[].desired`是设备控制意图，`status.twins[].reported`是观测结果，两者不能互换。
 
 2. **云端枢纽下发。** 云端枢纽把消息按节点标识放入节点队列。需要确认回执的资源消息必须带资源版本；边缘核心成功存入元管理器后确认，超时会重试。集群对象同步资源（ClusterObjectSync）保存成功点，同步控制器周期比较云端对象版本，形成后续协调。
 
@@ -164,7 +164,7 @@ flowchart TB
 
 6. **设备闭环。** 云端期望状态下发后，边缘核心内部转换为设备孪生期望值；映射器接收并对物理设备执行，采集实际值，再上报为自定义资源定义上报值，并回写已观测期望值表明本轮已观察的期望。设备孪生数据库保存当前孪生与版本并生成差量，但物理效果是否发生仍要由映射器、设备回执与安全传感器验证。
 
-7. **断网继续。** 边缘枢纽标记已断开后，本地边缘守护进程、容器运行时接口、设备孪生、映射器和应用进程可以继续运行；本地查询使用已有元数据。云端新意图到不了现场，边缘新状态也暂时上不去。任何依赖云API、在线授权、远程机密对象或跨站点共识的动作必须失败关闭或进入降级模式。
+7. **断网继续。** 边缘枢纽标记已断开后，本地边缘守护进程、容器运行时接口、设备孪生、映射器和应用进程可以继续运行；本地查询使用已有元数据。云端新意图到不了现场，边缘新状态也暂时上不去。任何依赖云 API、在线授权、远程机密对象或跨站点共识的动作必须失败关闭或进入降级模式。
 
 8. **重连协调。** 边缘枢纽新建连接并广播已连接；需要确认回执的资源继续按版本同步。边缘守护进程与轻量节点代理周期生成容器组状态，并经元管理器上报云端。设备孪生从已断开变为已连接时会请求成员关系详情；后续显式孪生同步或新的设备报告可更新云端上报值与已观测期望值，但断网期间被跳过的所有发云消息不会自动变成完整重放日志。重复和迟到消息必须按资源与孪生与业务版本判定，不能按到达顺序覆盖。
 
@@ -178,9 +178,9 @@ flowchart TB
 
 ## 关键源码导读
 
-最短源码路径沿一条消息走：边缘枢纽处理连接，云端枢纽分派器和同步控制器确认可重试资源，元管理器与边缘守护进程负责节点缓存与容器组恢复，设备API 与设备孪生区分期望和观测。它能证明基础同步与恢复接缝，不能证明物理副作用恰好一次。
+最短源码路径沿一条消息走：边缘枢纽处理连接，云端枢纽分派器和同步控制器确认可重试资源，元管理器与边缘守护进程负责节点缓存与容器组恢复，设备 API 与设备孪生区分期望和观测。它能证明基础同步与恢复接缝，不能证明物理副作用恰好一次。
 
-本节只解释KubeEdge v1.20.0 固定快照。发布范围决定组件、字段与重连语义，后续分支修复不倒灌到本文结论。
+本节只解释 KubeEdge v1.20.0 固定快照。发布范围决定组件、字段与重连语义，后续分支修复不倒灌到本文结论。
 
 <details className="evidence-card">
   <summary>证据：连接、资源同步、本地缓存与设备状态源码</summary>
@@ -190,7 +190,7 @@ flowchart TB
 | 固定源码| 可观察事实| 支持的结论| 不支持的结论|
 | --- | --- | --- | --- |
 | [`edgehub.go`](https://github.com/kubeedge/kubeedge/blob/bae61505d4919c404665f70347ad0646aaa98958/edge/pkg/edgehub/edgehub.go)与[`process.go`](https://github.com/kubeedge/kubeedge/blob/bae61505d4919c404665f70347ad0646aaa98958/edge/pkg/edgehub/process.go) | 客户端初始化后广播已连接；读写与保活错误触发重新连接；断开广播给元数据、孪生和总线组| 连接状态显式化与自动重连| 断网消息零丢失、零重复或语义冲突自动解决|
-| [`certmanager.go`](https://github.com/kubeedge/kubeedge/blob/bae61505d4919c404665f70347ad0646aaa98958/edge/pkg/edgehub/certificate/certmanager.go) | 本地加载X.509 密钥对；缺失时以令牌申请；可在证书生命周期约70%–90% 抖动窗口轮换并重连| 节点证书和轮换有实现接缝| 业务设备身份、智能体工具凭证或离线撤销自动覆盖|
+| [`certmanager.go`](https://github.com/kubeedge/kubeedge/blob/bae61505d4919c404665f70347ad0646aaa98958/edge/pkg/edgehub/certificate/certmanager.go) | 本地加载 X.509 密钥对；缺失时以令牌申请；可在证书生命周期约70%–90% 抖动窗口轮换并重连| 节点证书和轮换有实现接缝| 业务设备身份、智能体工具凭证或离线撤销自动覆盖|
 | [`message_dispatcher.go`](https://github.com/kubeedge/kubeedge/blob/bae61505d4919c404665f70347ad0646aaa98958/cloud/pkg/cloudhub/dispatcher/message_dispatcher.go)与[`node_session.go`](https://github.com/kubeedge/kubeedge/blob/bae61505d4919c404665f70347ad0646aaa98958/cloud/pkg/cloudhub/session/node_session.go) | 确认回执在元管理器存储后返回；超时重试；否定确认回执可丢；资源版本成功点写对象同步| 资源消息可确认、去除旧版本并重试| 所有消息与设备效果恰好一次，或队列本身是业务审计日志|
 | [`synccontroller.go`](https://github.com/kubeedge/kubeedge/blob/bae61505d4919c404665f70347ad0646aaa98958/cloud/pkg/synccontroller/synccontroller.go) | 周期比较对象同步中已下发版本与容器编排平台当前对象，生成同步事件| 重连后的资源收敛有版本化控制循环| 多资源原子事务或应用级冲突自动合并|
 | [`metamanager/process.go`](https://github.com/kubeedge/kubeedge/blob/bae61505d4919c404665f70347ad0646aaa98958/edge/pkg/metamanager/process.go)与[`dao/meta.go`](https://github.com/kubeedge/kubeedge/blob/bae61505d4919c404665f70347ad0646aaa98958/edge/pkg/metamanager/dao/meta.go) | 元数据以密钥与类型和值写入节点本地数据库；在线时部分查询走云端，否则查本地| 节点局部元数据与缓存支撑恢复和离线读| 容器编排平台全量权威副本、任意离线写或跨节点事务|
@@ -205,7 +205,7 @@ flowchart TB
 
 ## 架构决策与权衡
 
-**个人分析**：KubeEdge给出了通信、缓存和期望状态与上报值原语；智能体离线权限必须在它们之上另加一个明确的权限主体租约。推荐采用以下签名合同：
+**个人分析**：KubeEdge 给出了通信、缓存和期望状态与上报值原语；智能体离线权限必须在它们之上另加一个明确的权限主体租约。推荐采用以下签名合同：
 
 | 租约字段| 必需控制| 拒绝条件|
 | --- | --- | --- |
@@ -254,7 +254,7 @@ flowchart TB
 
 </details>
 
-**安全。已证实事实**：v1.20 边缘枢纽证书管理器加载节点X.509 证书与密钥，首次缺失时用令牌获取证书颁发机构与边缘证书，开启轮换后在证书生命周期约70%–90% 的抖动点申请新证书，并让边缘枢纽重连使用新材料。这是节点到云端核心的身份链，不是每台物理设备或每个智能体工具的自动身份。
+**安全。已证实事实**：v1.20 边缘枢纽证书管理器加载节点 X.509 证书与密钥，首次缺失时用令牌获取证书颁发机构与边缘证书，开启轮换后在证书生命周期约70%–90% 的抖动点申请新证书，并让边缘枢纽重连使用新材料。这是节点到云端核心的身份链，不是每台物理设备或每个智能体工具的自动身份。
 
 **安全。个人分析**：设备身份应独立于节点身份，最好由安全元件保护私钥；映射器建立会话时验证设备证书或硬件标识，并把设备指纹写入每条命令回执。
 
@@ -262,7 +262,7 @@ flowchart TB
 
 **容量与恢复。个人分析**：磁盘接近满载时，优先保留安全事件、租约、发件箱和最小运行元数据，停止模型缓存扩张与低价值遥测。恢复测试要覆盖云端枢纽不可达、边缘核心重启、节点本地数据库损坏、容器运行时接口重启、映射器断连、设备上报值停滞、证书轮换失败和发件箱重复上传；“容器组还在跑”不等于物理流程安全。
 
-**可观测性。基于证据的推断**：KubeEdge的连接、资源版本、容器组状态和孪生版本只能说明基础同步状态。
+**可观测性。基于证据的推断**：KubeEdge 的连接、资源版本、容器组状态和孪生版本只能说明基础同步状态。
 
 智能体还要记录`lease_id/policy/model/tool/security_epoch`、离线时长、风险类、操作标识、设备回执、基础与结果版本、时钟不确定性和人工接管原因，才能解释为什么一个离线动作被允许以及重连后如何裁决。
 
@@ -281,7 +281,7 @@ flowchart TB
 ### 只能有限类比的部分
 
 - 元管理器的 SQLite 数据库能支撑节点元数据和缓存查询；智能体发件箱需要仅追加、哈希值链、保留期和审计访问控制，不能直接把同一表当合规总账。
-- KubeEdge资源版本与设备孪生云端与边缘端版本能帮助同步；智能体的不可逆工具效果还需业务操作标识、下游幂等键和真实回执。
+- KubeEdge 资源版本与设备孪生云端与边缘端版本能帮助同步；智能体的不可逆工具效果还需业务操作标识、下游幂等键和真实回执。
 - 边缘守护进程可维持容器组生命周期；模型推理、工具调用和物理动作还受制品、能耗、传感器、安全联锁和现场设备状态约束。
 - 设备期望状态与上报值适合状态收敛；多步机器人任务、资金操作或安全审批不是一个孪生属性能表达的事务。
 - 云端枢纽确认回执证明消息在边缘核心的特定落点被处理，不证明映射器已操作设备，更不证明物理世界达到期望状态。
@@ -301,7 +301,7 @@ flowchart TB
 
 **KubeEdge v1.20 官方文档（已证实事实，访问与截断日期2026-07-22）**
 
-- [v1.20 Why KubeEdge](https://release-1-20.docs.kubeedge.io/docs/)与[v1.20 release blog](https://release-1-20.docs.kubeedge.io/blog/release-v1.20)：组件总览、边缘端自治定位、稳定发布日期和v1.20 边界。
+- [v1.20 Why KubeEdge](https://release-1-20.docs.kubeedge.io/docs/)与[v1.20 release blog](https://release-1-20.docs.kubeedge.io/blog/release-v1.20)：组件总览、边缘端自治定位、稳定发布日期和 v1.20 边界。
 - [CloudHub](https://release-1-20.docs.kubeedge.io/docs/architecture/cloud/cloudhub/)与[EdgeHub](https://release-1-20.docs.kubeedge.io/docs/architecture/edge/edgehub/)：网页套接字与快速用户数据报互联网连接协议（Quick UDP Internet Connections，QUIC）、云边路由、保活、连接状态和上下行职责。
 - [MetaManager](https://release-1-20.docs.kubeedge.io/docs/architecture/edge/metamanager/)与[Edged](https://release-1-20.docs.kubeedge.io/docs/architecture/edge/edged/)：SQLite 数据库元数据、插入与更新与删除与查询、容器组生命周期、容器运行时接口、机密对象与配置映射缓存。
 - [DeviceTwin](https://release-1-20.docs.kubeedge.io/docs/architecture/edge/devicetwin/)与[Device Controller](https://release-1-20.docs.kubeedge.io/docs/architecture/cloud/device_controller/)：设备元数据与状态、期望值与实际值、云边同步和设备自定义资源定义控制链。
@@ -314,4 +314,4 @@ flowchart TB
 - [`metamanager/process.go`](https://github.com/kubeedge/kubeedge/blob/bae61505d4919c404665f70347ad0646aaa98958/edge/pkg/metamanager/process.go)、[`dao/meta.go`](https://github.com/kubeedge/kubeedge/blob/bae61505d4919c404665f70347ad0646aaa98958/edge/pkg/metamanager/dao/meta.go)与[`edged.go`](https://github.com/kubeedge/kubeedge/blob/bae61505d4919c404665f70347ad0646aaa98958/edge/pkg/edged/edged.go)：本地元数据写入与查询、在线远端查询条件、启动容器组恢复和轻量节点代理与容器运行时接口接缝。
 - [`device_instance_types.go`](https://github.com/kubeedge/kubeedge/blob/bae61505d4919c404665f70347ad0646aaa98958/staging/src/github.com/kubeedge/api/apis/devices/v1beta1/device_instance_types.go)、[`twin.go`](https://github.com/kubeedge/kubeedge/blob/bae61505d4919c404665f70347ad0646aaa98958/edge/pkg/devicetwin/dtmanager/twin.go)、[`communicate.go`](https://github.com/kubeedge/kubeedge/blob/bae61505d4919c404665f70347ad0646aaa98958/edge/pkg/devicetwin/dtmanager/communicate.go)、[`types.go`](https://github.com/kubeedge/kubeedge/blob/bae61505d4919c404665f70347ad0646aaa98958/edge/pkg/devicetwin/dttype/types.go)、[`downstream.go`](https://github.com/kubeedge/kubeedge/blob/bae61505d4919c404665f70347ad0646aaa98958/cloud/pkg/devicecontroller/controller/downstream.go)与[`upstream.go`](https://github.com/kubeedge/kubeedge/blob/bae61505d4919c404665f70347ad0646aaa98958/cloud/pkg/devicecontroller/controller/upstream.go)：期望状态与上报值与已观测期望值、期望值与实际值、版本、连接生命周期与云边设备状态映射。
 
-**证据边界说明**：离线权限主体租约、风险分级、模型与工具包、双时钟过期、仅追加审计记录与发件箱、设备级凭证、人工接管、业务冲突规则和反回滚保护，均是依据KubeEdge v1.20.0 机制形成的“基于证据的推断”或“个人分析”，不是KubeEdge官方功能承诺。默认官网及v1.20.0 之后的组件和语义不在本文结论范围内。
+**证据边界说明**：离线权限主体租约、风险分级、模型与工具包、双时钟过期、仅追加审计记录与发件箱、设备级凭证、人工接管、业务冲突规则和反回滚保护，均是依据 KubeEdge v1.20.0 机制形成的“基于证据的推断”或“个人分析”，不是 KubeEdge 官方功能承诺。默认官网及 v1.20.0 之后的组件和语义不在本文结论范围内。

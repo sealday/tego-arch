@@ -105,8 +105,8 @@ tags:
   <summary>证据：版本、协议与历史材料范围</summary>
 
   - **当前文档：** Kafka 4.3.1；消费者配置支持`classic`与`consumer`，默认仍为`classic`。
-  - **新协议边界：** `consumer`协议自Kafka 4.0 起正式可用，且不依赖经典模式的全局同步屏障；本文不把两套状态机混写。
-  - **排除项：** 不把Kafka 4.3 共享组的逐记录获取、交付尝试或拒绝语义倒推到消费者组。
+  - **新协议边界：** `consumer`协议自 Kafka 4.0 起正式可用，且不依赖经典模式的全局同步屏障；本文不把两套状态机混写。
+  - **排除项：** 不把 Kafka 4.3 共享组的逐记录获取、交付尝试或拒绝语义倒推到消费者组。
   - **固定源码：** `apache/kafka@ebac341b28d4224c296ada31eb45122176e8b27b`。
   - **历史来源：** 原始工程团队于 2011 年发表的文章用于确认数据库研讨会论文；论文文档由研究机构网站托管。
   - **时间边界：** 来源访问与分析日期为2026-07-22。
@@ -198,7 +198,7 @@ sequenceDiagram
   - [`GroupMetadataManager` 7757–7833](https://github.com/apache/kafka/blob/ebac341b28d4224c296ada31eb45122176e8b27b/group-coordinator/src/main/java/org/apache/kafka/coordinator/group/GroupMetadataManager.java#L7757-L7833)：分配保存与传播。
   - [`OffsetMetadataManager.commitOffset` 620–693](https://github.com/apache/kafka/blob/ebac341b28d4224c296ada31eb45122176e8b27b/group-coordinator/src/main/java/org/apache/kafka/coordinator/group/OffsetMetadataManager.java#L620-L693)：提交者校验与协调器记录。
   - [`ClassicKafkaConsumer.pollForFetches` 700–771](https://github.com/apache/kafka/blob/ebac341b28d4224c296ada31eb45122176e8b27b/clients/src/main/java/org/apache/kafka/clients/consumer/internals/ClassicKafkaConsumer.java#L700-L771)、[`FetchCollector.collectFetch` 91–190](https://github.com/apache/kafka/blob/ebac341b28d4224c296ada31eb45122176e8b27b/clients/src/main/java/org/apache/kafka/clients/consumer/internals/FetchCollector.java#L91-L190)与[`CompletedFetch.fetchRecords` 257–329](https://github.com/apache/kafka/blob/ebac341b28d4224c296ada31eb45122176e8b27b/clients/src/main/java/org/apache/kafka/clients/consumer/internals/CompletedFetch.java#L257-L329)：轮询与拉取、分配检查、位置推进与有毒消息反序列化。
-  - **证明边界：** 这些位置证明Kafka 的组与偏移量控制流，不证明用户处理器或外部写具备恰好一次。
+  - **证明边界：** 这些位置证明 Kafka 的组与偏移量控制流，不证明用户处理器或外部写具备恰好一次。
 </details>
 
 ## 架构决策与权衡
@@ -239,12 +239,12 @@ sequenceDiagram
 </details>
 
 <details className="evidence-card">
-  <summary>证据：消费者监控字段与Kafka 事务接缝</summary>
+  <summary>证据：消费者监控字段与 Kafka 事务接缝</summary>
 
   - **客户端指标：** `records-consumed-rate`、`time-between-poll-max`与`last-poll-seconds-ago`分别帮助判断吞吐和轮询活性。
   - **操作入口：** `kafka-consumer-groups.sh --describe`用于查看组分配、偏移量与滞后量；它不证明业务处理器已完成。
   - **提交接缝：** `commitAsync`保证提交请求与回调的调用顺序；应用仍不能在旧回调中回写倒退的业务水位。
-  - **事务接缝：** 事务型生产者的`sendOffsetsToTransaction`把消费偏移量与Kafka 输出纳入同一Kafka 事务，不覆盖数据库、邮件、支付或任意工具调用。
+  - **事务接缝：** 事务型生产者的`sendOffsetsToTransaction`把消费偏移量与 Kafka 输出纳入同一 Kafka 事务，不覆盖数据库、邮件、支付或任意工具调用。
   - **边界：** 这些字段与应用程序编程接口（Application Programming Interface，API）支持定位轮询、滞后量、提交与 Kafka 内部事务，不提供外部副作用恰好一次。
 </details>
 
@@ -267,7 +267,7 @@ sequenceDiagram
 1. 分区分配可类比工作所有权，但只控制取数。
 2. 重放恢复输入流，不恢复模型的确定性内部状态。
 3. 组故障转移接管未提交工作，新旧工作进程仍可能在外部重叠。
-4. Kafka 事务精确覆盖Kafka 偏移量与Kafka 输出，不自动覆盖任意目的地。
+4. Kafka 事务精确覆盖 Kafka 偏移量与 Kafka 输出，不自动覆盖任意目的地。
 
 ### 不应照搬的部分
 
@@ -275,7 +275,7 @@ sequenceDiagram
 2. 不要在轮询线程无界等待长时模型、工具或人工。
 3. 不要先提交再执行高价值动作，也不要把自动提交当业务确认回执。
 4. 不要把死信队列当垃圾桶后无条件推进同密钥后续状态。
-5. 不要宣称Kafka 提供全局顺序、处理器恰好一次或通用分布式事务。
+5. 不要宣称 Kafka 提供全局顺序、处理器恰好一次或通用分布式事务。
 
 ## 来源
 
@@ -300,6 +300,6 @@ sequenceDiagram
 - [`GroupMetadataManager`](https://github.com/apache/kafka/blob/ebac341b28d4224c296ada31eb45122176e8b27b/group-coordinator/src/main/java/org/apache/kafka/coordinator/group/GroupMetadataManager.java)与[`OffsetMetadataManager`](https://github.com/apache/kafka/blob/ebac341b28d4224c296ada31eb45122176e8b27b/group-coordinator/src/main/java/org/apache/kafka/coordinator/group/OffsetMetadataManager.java)：加入与再均衡与同步与分配与偏移量记录。
 - [`ConsumerCoordinator`](https://github.com/apache/kafka/blob/ebac341b28d4224c296ada31eb45122176e8b27b/clients/src/main/java/org/apache/kafka/clients/consumer/internals/ConsumerCoordinator.java)：经典模式领导者分配器与回调。
 - [`ClassicKafkaConsumer`](https://github.com/apache/kafka/blob/ebac341b28d4224c296ada31eb45122176e8b27b/clients/src/main/java/org/apache/kafka/clients/consumer/internals/ClassicKafkaConsumer.java)、[`FetchCollector`](https://github.com/apache/kafka/blob/ebac341b28d4224c296ada31eb45122176e8b27b/clients/src/main/java/org/apache/kafka/clients/consumer/internals/FetchCollector.java)与[`CompletedFetch`](https://github.com/apache/kafka/blob/ebac341b28d4224c296ada31eb45122176e8b27b/clients/src/main/java/org/apache/kafka/clients/consumer/internals/CompletedFetch.java)：轮询与拉取、位置与有毒消息接缝。
-- [`KafkaApis.scala`](https://github.com/apache/kafka/blob/ebac341b28d4224c296ada31eb45122176e8b27b/core/src/main/scala/kafka/server/KafkaApis.scala)：代理节点API、安全与后端入口。
+- [`KafkaApis.scala`](https://github.com/apache/kafka/blob/ebac341b28d4224c296ada31eb45122176e8b27b/core/src/main/scala/kafka/server/KafkaApis.scala)：代理节点 API、安全与后端入口。
 
-**证据边界说明**：官方与固定源码支持Kafka 机制；智能体任务、审批、工具调用、补偿、收件箱和业务隔离栅栏是本文迁移设计。访问与截断日期均为**2026-07-22**。
+**证据边界说明**：官方与固定源码支持 Kafka 机制；智能体任务、审批、工具调用、补偿、收件箱和业务隔离栅栏是本文迁移设计。访问与截断日期均为**2026-07-22**。

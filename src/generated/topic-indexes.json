@@ -5195,7 +5195,7 @@
     {
       "id": "DOC-CASE-NEW-API-CHANNEL-POOL-ROUTING",
       "type": "case",
-      "title": "New API通道池路由：把模型请求分解为能力、层级与故障隔离",
+      "title": "New API 通道池路由：把模型请求分解为能力、层级与故障隔离",
       "slug": "/cases/new-api-channel-pool-routing",
       "priority": null,
       "status": {
@@ -5239,7 +5239,7 @@
       "pattern_group": null,
       "presentation": {
         "case_catalog": {
-          "title": "New API通道池路由：把模型请求分解为能力、层级与故障隔离",
+          "title": "New API 通道池路由：把模型请求分解为能力、层级与故障隔离",
           "slug": "/cases/new-api-channel-pool-routing",
           "summary": "用能力模块索引、优先级层、权重选择和多密钥状态分析统一模型网关如何路由、重试（Retry）与隔离故障。",
           "difficulty": "advanced",

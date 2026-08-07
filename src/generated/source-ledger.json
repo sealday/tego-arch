@@ -11033,6 +11033,7 @@
       "title": "Awesome Software Architecture",
       "citation_titles": [
         "Architectural Design Principles",
+        "Awesome Software Architecture 的设计原则主题",
         "Awesome Software Architecture 的 Micro-Frontend 专题",
         "Back Pressure",
         "Clean Architecture",
@@ -23475,6 +23476,9 @@
       "locator_aliases": [],
       "tombstone": null,
       "title": "Google SRE Workbook 目录",
+      "citation_titles": [
+        "Google SRE Workbook"
+      ],
       "author_or_org": "Google",
       "published_at": null,
       "registered_at": "2026-07-24",
@@ -27897,7 +27901,7 @@
       ]
     },
     "content/cases/new-api-channel-pool-routing.mdx": {
-      "title": "New API通道池路由：把模型请求分解为能力、层级与故障隔离",
+      "title": "New API 通道池路由：把模型请求分解为能力、层级与故障隔离",
       "slug": "/cases/new-api-channel-pool-routing",
       "reviewed_at": "2026-07-24",
       "copyright_checks": [

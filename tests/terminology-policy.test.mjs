@@ -250,6 +250,22 @@ test('exempts only explicitly registered citation title variants', async () => {
   assert.deepEqual(result.issues, []);
 });
 
+test('treats exact title fields as structural metadata without exempting summary or body copy', async () => {
+  const result = await checkFixture([
+    '---',
+    'title: AWS Cell Architecture + Shuffle Sharding：限制故障半径',
+    'sidebar_label: AWS Cell Architecture + Shuffle Sharding',
+    'summary: Unregistered Product Identity 仍需术语治理',
+    '---',
+    '',
+    '正文中的 Unregistered Product Identity 也仍需术语治理。',
+  ].join('\n'));
+  assert.deepEqual(result.issues.map(({line, ruleId, matched}) => ({line, ruleId, matched})), [
+    {line: 4, ruleId: 'unknown-english-term', matched: 'Unregistered Product Identity'},
+    {line: 7, ruleId: 'unknown-english-term', matched: 'Unregistered Product Identity'},
+  ]);
+});
+
 test('exempts only an exact external source title and never image alt text', async () => {
   const mismatch = await checkFixture(`[Quality Attribute](${officialLocator})`);
   assert.deepEqual(mismatch.issues.map(({ruleId, matched}) => ({ruleId, matched})), [
@@ -855,6 +871,16 @@ test('keeps source titles and adjacent concepts out of the normative terminology
   assert.deepEqual(byId.get('aws-cli-agent-orchestrator').allowed_aliases, ['AWS CLI Agent Orchestrator']);
   assert.deepEqual(byId.get('git-version-control-system').allowed_aliases, []);
   assert.deepEqual(byId.get('kong-ai-proxy-advanced').allowed_aliases, []);
+  assert.deepEqual(
+    registry.terms.filter(({id}) => id.endsWith('-title')).map(({id}) => id),
+    [],
+  );
+  assert.deepEqual(
+    registry.terms
+      .filter(({canonical_zh, note}) => canonical_zh.includes('：') && /案例标题/u.test(note))
+      .map(({id}) => id),
+    [],
+  );
 });
 
 test('keeps code signatures, source identities, authors, and institutions out of terminology', async () => {

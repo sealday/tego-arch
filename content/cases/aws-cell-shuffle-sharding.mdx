@@ -101,14 +101,14 @@ tags:
 **个人分析**：动态模型推理不能修改单元上限、放置、凭证作用域或疏散门禁。容量与放置是确定性控制面协议；模型只能在单元内已批准的预算和资源集合中执行。
 
 <details className="evidence-card">
-  <summary>证据：当前AWS 指南、历史源码与失效来源</summary>
+  <summary>证据：当前 AWS 指南、历史源码与失效来源</summary>
 
   - **当前依据：** AWS 良好架构单元指南、AWS 解决方案引用架构、构建者资料库与架构博客。
   - **历史源码：** `awslabs/route53-infima@cabce497698e41d610a949e8a5e4a0528170382b`，提交日期2020-10-20。
   - **归档状态：** 代码托管站记录该仓库于2024-06-06 已归档且只读；最后提交早于归档近四年。
   - **失效来源：** 任务给定的规范性指南统一资源定位符（Uniform Resource Locator，URL）在2026-07-22 返回超文本传输协议（Hypertext Transfer Protocol，HTTP）状态码404；本文保留该地址作来源状态记录，不从失效页面造事实。
   - **时间边界：** 访问与分析日期为2026-07-22。
-  - **证明边界：** 归档源码只解释公开历史思路，不是受维护依赖，也不能证明AWS 当前内部实现。
+  - **证明边界：** 归档源码只解释公开历史思路，不是受维护依赖，也不能证明 AWS 当前内部实现。
 </details>
 
 ## 架构图
@@ -192,7 +192,7 @@ flowchart TB
   - [`StatefulSearchingShuffleSharder.java` 30–33](https://github.com/awslabs/route53-infima/blob/cabce497698e41d610a949e8a5e4a0528170382b/src/main/java/com/amazonaws/services/route53/infima/StatefulSearchingShuffleSharder.java#L30-L33)：外部存储区与最大重叠契约；不证明并发分配已解决。
   - [`StatefulSearchingShuffleSharder.java` 69–124](https://github.com/awslabs/route53-infima/blob/cabce497698e41d610a949e8a5e4a0528170382b/src/main/java/com/amazonaws/services/route53/infima/StatefulSearchingShuffleSharder.java#L69-L124)：`FragmentStore`保存`maximumOverlap + 1`片段；找不到合法组合时需要显式`NoCapacity/NoShardAvailable`结果，不能假设存储区可用性和组合耗尽已经解决。
   - [`StatefulSearchingShuffleSharder.java` 127–210](https://github.com/awslabs/route53-infima/blob/cabce497698e41d610a949e8a5e4a0528170382b/src/main/java/com/amazonaws/services/route53/infima/StatefulSearchingShuffleSharder.java#L127-L210)：递归回溯与重叠检查；不证明大规模池有固定低延迟。
-  - **依赖结论：** 仓库已归档；这些源码是历史证据，不是当前AWS 实现或新依赖推荐。
+  - **依赖结论：** 仓库已归档；这些源码是历史证据，不是当前 AWS 实现或新依赖推荐。
 </details>
 
 ## 架构决策与权衡
@@ -283,7 +283,7 @@ flowchart TB
 - [Mapping warning](https://docs.aws.amazon.com/wellarchitected/latest/reducing-scope-of-impact-with-cell-based-architecture/a-warning-for-all-mapping-approaches.html)、[Migration](https://docs.aws.amazon.com/wellarchitected/latest/reducing-scope-of-impact-with-cell-based-architecture/cell-migration.html)、[Deployment](https://docs.aws.amazon.com/wellarchitected/latest/reducing-scope-of-impact-with-cell-based-architecture/cell-deployment.html)、[Observability](https://docs.aws.amazon.com/wellarchitected/latest/reducing-scope-of-impact-with-cell-based-architecture/cell-observability.html)：覆盖、迁移、逐单元发布与遥测。
 - [FAQ: What about shuffle-sharding?](https://docs.aws.amazon.com/wellarchitected/latest/reducing-scope-of-impact-with-cell-based-architecture/faq.html)：单元与洗牌分片的差异及单元内使用边界。
 - [Guidance for Cell-Based Architecture on AWS](https://docs.aws.amazon.com/solutions/cell-based-architecture-on-aws/)：固定独立单元、用户映射、每单元监控、金丝雀实例与再均衡器。
-- 旧[Prescriptive Guidance URL](https://docs.aws.amazon.com/prescriptive-guidance/latest/cell-based-architecture/welcome.html)于2026-07-22 返回HTTP 404；本文保留该状态，不从页面推导事实。
+- 旧[Prescriptive Guidance URL](https://docs.aws.amazon.com/prescriptive-guidance/latest/cell-based-architecture/welcome.html)于2026-07-22 返回 HTTP 404；本文保留该状态，不从页面推导事实。
 
 **构建者资料库与架构博客（已证实事实）**
 

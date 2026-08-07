@@ -64,7 +64,7 @@ tags:
 1. 命令行智能体编排器的监督者–工作进程拓扑把任务控制权、会话上下文与文件所有权分别放在哪里？
 2. `handoff`、`assign`与`send_message`的同步、异步和回调语义有何不同，怎样组合成串行与并行协作？
 3. 终端复用器隔离了哪些东西，又为什么没有自动隔离文件系统、Git 工作树、凭证和外部副作用？
-4. 命令行智能体编排器怎样借助MCP 暴露编排原语，并在本地HTTP、MCP 客户端与服务端与真实命令行界面进程之间转换？
+4. 命令行智能体编排器怎样借助 MCP 暴露编排原语，并在本地 HTTP、MCP 客户端与服务端与真实命令行界面进程之间转换？
 5. 终端状态、超时、取消、日志快照和工作流日志簿能恢复什么，不能恢复什么？
 6. 面向生产使用时，怎样补齐安全边界、并发写控制、可观测性和业务幂等？
 
@@ -72,7 +72,7 @@ tags:
 
 命令行智能体编排器先保留完整命令行界面，再在外部增加控制。每个工作进程有独立终端复用器与伪终端与上下文，但仍可能共享操作系统用户、仓库、凭证和网络。
 
-**已证实事实**：监督者通过MCP 与本地HTTP 管理终端。`handoff`阻塞到工作进程完成、失败或超时；`assign`创建后立即返回；`send_message`先进入持久收件箱，再在接收端可接收时投递。
+**已证实事实**：监督者通过 MCP 与本地 HTTP 管理终端。`handoff`阻塞到工作进程完成、失败或超时；`assign`创建后立即返回；`send_message`先进入持久收件箱，再在接收端可接收时投递。
 
 工作流脚本可冻结源码与输入、记录稳定运行与步骤标识、日志簿、生成隔离栅栏、取消和恢复。固定提交的恢复会重新执行每个`run_step`；已有日志簿记录不等于步骤结果重放。
 
@@ -87,9 +87,9 @@ tags:
 | 协作| 同步移交、异步分配、收件箱消息| 去重回调、结果模式、屏障与部分失败策略|
 | 文件| 可选择工作目录| 工作树与副本、写入租约、合并与冲突处理|
 | 恢复| 日志、终端快照、工作流日志簿与恢复| 外部副作用去重、补偿、灾备与跨主机恢复|
-| 安全| 配置档案工具限制、路径校验、启动确认、可选开放授权协议作用域门禁| 租户与终端所有权、细粒度MCP 工具授权、伪终端强认证|
+| 安全| 配置档案工具限制、路径校验、启动确认、可选开放授权协议作用域门禁| 租户与终端所有权、细粒度 MCP 工具授权、伪终端强认证|
 
-**个人分析**：命令行智能体编排器适合可信开发机上的多命令行界面工作台。进入共享或高风险环境前，还需HTTP 身份、终端所有权、伪终端认证、工作树与容器、秘密代理、写租约和业务幂等账本。
+**个人分析**：命令行智能体编排器适合可信开发机上的多命令行界面工作台。进入共享或高风险环境前，还需 HTTP 身份、终端所有权、伪终端认证、工作树与容器、秘密代理、写租约和业务幂等账本。
 
 ## 事实边界
 
@@ -105,7 +105,7 @@ tags:
 
 工作进程默认继承监督者当前工作目录，也可显式指定并经过路径校验。终端复用器隔离窗口、伪终端、环境和上下文，却不创建文件副本、工作树、容器、用户命名空间或网络沙箱。
 
-配置档案的`allowedTools`覆盖角色，`--yolo`覆盖限制。固定版本的Codex/Kimi 是软约束；MCP 编排工具不能逐个禁用。
+配置档案的`allowedTools`覆盖角色，`--yolo`覆盖限制。固定版本的 Codex、Kimi 是软约束；MCP 编排工具不能逐个禁用。
 
 工作流脚本先验证，再用预声明`run_id`启动。并发`run_step`必须有稳定`step_id`，用于状态、取消、生成隔离栅栏与未来重放接缝。
 
@@ -123,7 +123,7 @@ MCP 可用`CAO_AUTH_LOCAL_TOKEN`转发持有者令牌。伪终端网页套接字
 
 ### 基于证据的推断
 
-`CAO_TERMINAL_ID`是本地路由键，不是认证凭证。即使HTTP 开放授权协议开启，调用方、租户与终端所有权与伪终端仍未形成端到端多租户边界。
+`CAO_TERMINAL_ID`是本地路由键，不是认证凭证。即使 HTTP 开放授权协议开启，调用方、租户与终端所有权与伪终端仍未形成端到端多租户边界。
 
 终端复用器可降低上下文污染并让人工附接可见，不能阻止有命令行外壳权限的工作进程读取同一用户可访问的文件、环境变量或凭证。
 
@@ -131,7 +131,7 @@ MCP 可用`CAO_AUTH_LOCAL_TOKEN`转发持有者令牌。伪终端网页套接字
 
 收件箱的“待处理”和“已投递”是投递状态，不是恰好一次处理证明。回调需要稳定的 `task_id` 与幂等键。
 
-工作流日志簿记录运行，仍不能证明文件或外部API 效果是否生效。副作用必须进入有唯一约束的账本或可补偿操作。
+工作流日志簿记录运行，仍不能证明文件或外部 API 效果是否生效。副作用必须进入有唯一约束的账本或可补偿操作。
 
 ### 个人分析与未知项
 
@@ -155,14 +155,14 @@ MCP 可用`CAO_AUTH_LOCAL_TOKEN`转发持有者令牌。伪终端网页套接字
 ```mermaid
 flowchart TB
   accTitle: 命令行智能体编排器监督者工作进程本地编排与共享文件边界
-  accDescr: 用户把任务交给监督者；监督者经MCP和本地HTTP服务同步移交或异步分配多个终端复用器工作进程。工作进程相互独立，却可能共享同一仓库和用户权限，因此写操作要经过租约与合并门禁。
+  accDescr: 用户把任务交给监督者；监督者经 MCP 和本地 HTTP 服务同步移交或异步分配多个终端复用器工作进程。工作进程相互独立，却可能共享同一仓库和用户权限，因此写操作要经过租约与合并门禁。
 
-  User["用户/开发者"] --> Supervisor["监督者命令行界面智能体：<br/>任务分解、分派、汇总"]
+  User["用户、开发者"] --> Supervisor["监督者命令行界面智能体：<br/>任务分解、分派、汇总"]
 
   subgraph Control["命令行智能体编排器控制面"]
-    MCP["CAO MCP服务端：<br/>移交/分配/发送消息"]
-    API["本地HTTP API：<br/>默认127.0.0.1:9889，可配置"]
-    State[("SQLite<br/>终端 / 收件箱 / 工作流日志簿")]
+    MCP["CAO MCP 服务端：<br/>移交、分配、发送消息"]
+    API["本地 HTTP API：<br/>默认127.0.0.1:9889，可配置"]
+    State[("SQLite<br/>终端、收件箱、工作流日志簿")]
     Monitor["状态监测、日志与事件"]
     MCP --> API
     API <--> State
@@ -177,19 +177,19 @@ flowchart TB
     W3["工作进程丙<br/>研究命令行界面进程"]
   end
 
-  API -->|"创建/ 输入/ 状态/ 输出"| W1
-  API -->|"创建/ 输入/ 状态/ 输出"| W2
-  API -->|"创建/ 输入/ 状态/ 输出"| W3
+  API -->|"创建、输入、状态、输出"| W1
+  API -->|"创建、输入、状态、输出"| W2
+  API -->|"创建、输入、状态、输出"| W3
   W1 -->|"消息回调"| MCP
   W2 -->|"消息回调"| MCP
   W3 -->|"消息回调"| MCP
 
-  Repo[("共享仓库/ 工作目录")]
+  Repo[("共享仓库、工作目录")]
   W1 <-->|"可能读写"| Repo
   W2 <-->|"可能读写"| Repo
   W3 <-->|"可能读写"| Repo
 
-  Gate["应用补充：工作树/ 写入租约<br/>测试、审阅、合并门禁"]
+  Gate["应用补充：工作树、写入租约<br/>测试、审阅、合并门禁"]
   Gate -.约束.-> W1
   Gate -.约束.-> W2
   Gate -.约束.-> W3
@@ -209,8 +209,8 @@ flowchart TB
 
 ```mermaid
 sequenceDiagram
-  accTitle: 命令行智能体编排器移交分配send_message 的控制权与任务生命周期
-  accDescr: 监督者先用阻塞移交获得计划，再并行分配两个工作进程。工作进程完成后把带task_id 的结果放入监督者收件箱；消息在监督者可接收时投递。超时或崩溃不会自动证明任务可安全重试，必须检查终端、日志簿和外部副作用。
+  accTitle: 命令行智能体编排器移交分配 send_message 的控制权与任务生命周期
+  accDescr: 监督者先用阻塞移交获得计划，再并行分配两个工作进程。工作进程完成后把带 task_id 的结果放入监督者收件箱；消息在监督者可接收时投递。超时或崩溃不会自动证明任务可安全重试，必须检查终端、日志簿和外部副作用。
 
   actor U as 用户
   participant S as 监督者
@@ -218,7 +218,7 @@ sequenceDiagram
   participant H as 规划工作进程
   participant A as 实现工作进程
   participant B as 审阅工作进程
-  participant J as 收件箱 / 日志簿
+  participant J as 收件箱、日志簿
 
   U->>S: 目标与约束
   S->>M: 移交（规划者、任务、超时）
@@ -274,7 +274,7 @@ sequenceDiagram
 
 ### 监督者拥有什么
 
-**已证实事实**：内置监督者配置档案的职责是调用编排MCP 工具、读取上下文并选择工作进程。`handoff`与`assign`创建的工作进程会记录`caller_id`，`assign`默认还在任务文本中注入监督者终端标识和回调说明。
+**已证实事实**：内置监督者配置档案的职责是调用编排 MCP 工具、读取上下文并选择工作进程。`handoff`与`assign`创建的工作进程会记录`caller_id`，`assign`默认还在任务文本中注入监督者终端标识和回调说明。
 
 **个人分析**：监督者应拥有全局任务图、预算、截止时间、完成定义、工作进程名单与最终交付权；它不应亲自承担所有代码修改。工作进程应拥有一个边界清晰、可独立验收的子任务，并返回文件路径、提交、测试结果或结构化发现。没有明确交付物时，多个命令行界面只是在并行生成难以合并的文字。
 
@@ -317,7 +317,7 @@ planned -> dispatched -> acknowledged -> running
 
 ### MCP 在架构中的位置
 
-**已证实事实**：MCP 的标准边界是主机–客户端–服务端。命令行智能体编排器为会话内智能体暴露`cao-mcp-server`，提供编排工具；另有`cao-ops-mcp`供外部MCP-具备能力智能体管理会话。
+**已证实事实**：MCP 的标准边界是主机–客户端–服务端。命令行智能体编排器为会话内智能体暴露`cao-mcp-server`，提供编排工具；另有`cao-ops-mcp`供外部具备 MCP 能力的智能体管理会话。
 
 两者最终都调用命令行智能体编排器默认位于`127.0.0.1:9889`、可由环境变量改址的 HTTP API，而工作进程本身仍由各提供方命令行界面启动。启用 HTTP 认证后，MCP 服务端可用`CAO_AUTH_LOCAL_TOKEN`为内部 HTTP 跳转添加持有者令牌凭证。
 
@@ -325,7 +325,7 @@ planned -> dispatched -> acknowledged -> running
 
 ## 关键源码导读
 
-源码阅读要验证三件事：原语何时返回、权限最终落到哪些启动参数、恢复会执行哪些步骤。最短路径是MCP 服务端、智能体步骤、工具限制和工作流日志簿与脚本运行器。
+源码阅读要验证三件事：原语何时返回、权限最终落到哪些启动参数、恢复会执行哪些步骤。最短路径是 MCP 服务端、智能体步骤、工具限制和工作流日志簿与脚本运行器。
 
 阅读时同步维护四张表：原语与阻塞关系、终端与任务状态、配置档案与提供方参数、文件与外部副作用与幂等策略。只看说明文件（README）会漏掉失败路径。
 
@@ -338,11 +338,11 @@ planned -> dispatched -> acknowledged -> running
 4. [`services/agent_step.py`](https://github.com/awslabs/cli-agent-orchestrator/blob/bae80071a17e001380367c461b32d64bc6b54433/src/cli_agent_orchestrator/services/agent_step.py)：观察创建 → 就绪 → 输入 → 等待 → 提取 → 清理的规范形式步骤。重点看稳定空闲状态判断、`ERROR`/超时、`cancel_event`和失败时保留终端标识。
 5. [`models/terminal.py`](https://github.com/awslabs/cli-agent-orchestrator/blob/bae80071a17e001380367c461b32d64bc6b54433/src/cli_agent_orchestrator/models/terminal.py)与[`docs/inbox-delivery.md`](https://github.com/awslabs/cli-agent-orchestrator/blob/bae80071a17e001380367c461b32d64bc6b54433/docs/inbox-delivery.md)：对照终端状态与收件箱的“待处理”和“已投递”状态，理解为什么接收端忙碌时消息等待，以及协调清扫仍不是恰好一次处理。
 6. [`docs/working-directory.md`](https://github.com/awslabs/cli-agent-orchestrator/blob/bae80071a17e001380367c461b32d64bc6b54433/docs/working-directory.md)：阅读默认继承当前工作目录、显式目录和路径校验。然后回到架构图，明确它没有创建工作区副本。
-7. [`docs/tool-restrictions.md`](https://github.com/awslabs/cli-agent-orchestrator/blob/bae80071a17e001380367c461b32d64bc6b54433/docs/tool-restrictions.md)：比较角色、允许工具、`--auto-approve`和`--yolo`，再看各提供方的硬性与软性强制执行与MCP 工具限制。
+7. [`docs/tool-restrictions.md`](https://github.com/awslabs/cli-agent-orchestrator/blob/bae80071a17e001380367c461b32d64bc6b54433/docs/tool-restrictions.md)：比较角色、允许工具、`--auto-approve`和`--yolo`，再看各提供方的硬性与软性强制执行与 MCP 工具限制。
 8. [`docs/terminal-lifecycle.md`](https://github.com/awslabs/cli-agent-orchestrator/blob/bae80071a17e001380367c461b32d64bc6b54433/docs/terminal-lifecycle.md)：核对移交与分配的清理差异、快照保留和恢复限制。恢复是取证工具，不是智能体续接。
 9. [`docs/workflows.md`](https://github.com/awslabs/cli-agent-orchestrator/blob/bae80071a17e001380367c461b32d64bc6b54433/docs/workflows.md)、[`services/workflow_journal.py`](https://github.com/awslabs/cli-agent-orchestrator/blob/bae80071a17e001380367c461b32d64bc6b54433/src/cli_agent_orchestrator/services/workflow_journal.py)与[`services/script_runner.py`](https://github.com/awslabs/cli-agent-orchestrator/blob/bae80071a17e001380367c461b32d64bc6b54433/src/cli_agent_orchestrator/services/script_runner.py)：理解验证、运行、状态、取消与恢复，以及冻结源码、输入和生成隔离栅栏。特别核对版本内文档漂移：文档描述已完成步骤重放，源码明确`lookup_replay`尚未接入，当前恢复会重新执行所有`run_step`。
-10. [`docs/configuration.md`](https://github.com/awslabs/cli-agent-orchestrator/blob/bae80071a17e001380367c461b32d64bc6b54433/docs/configuration.md)、[`docs/mcp-apps.md`](https://github.com/awslabs/cli-agent-orchestrator/blob/bae80071a17e001380367c461b32d64bc6b54433/docs/mcp-apps.md)与[`security/auth.py`](https://github.com/awslabs/cli-agent-orchestrator/blob/bae80071a17e001380367c461b32d64bc6b54433/src/cli_agent_orchestrator/security/auth.py)：区分默认关闭的HTTP 开放授权协议作用域强制执行、MCP → API 服务令牌与仍未认证的伪终端网页套接字。
-  11. MCP 上游固定版本[`modelcontextprotocol/modelcontextprotocol`](https://github.com/modelcontextprotocol/modelcontextprotocol/tree/46fa5192d4969f51ecea9896f7211a67d147f803)与[2025-06-18 架构规范](https://modelcontextprotocol.io/specification/2025-06-18/architecture)：最后把命令行智能体编排器的实现映射回主机与客户端与服务端、连接和能力协商，避免把一个MCP 服务端的应用语义误当协议全局语义。
+10. [`docs/configuration.md`](https://github.com/awslabs/cli-agent-orchestrator/blob/bae80071a17e001380367c461b32d64bc6b54433/docs/configuration.md)、[`docs/mcp-apps.md`](https://github.com/awslabs/cli-agent-orchestrator/blob/bae80071a17e001380367c461b32d64bc6b54433/docs/mcp-apps.md)与[`security/auth.py`](https://github.com/awslabs/cli-agent-orchestrator/blob/bae80071a17e001380367c461b32d64bc6b54433/src/cli_agent_orchestrator/security/auth.py)：区分默认关闭的 HTTP 开放授权协议作用域强制执行、MCP → API 服务令牌与仍未认证的伪终端网页套接字。
+  11. MCP 上游固定版本[`modelcontextprotocol/modelcontextprotocol`](https://github.com/modelcontextprotocol/modelcontextprotocol/tree/46fa5192d4969f51ecea9896f7211a67d147f803)与[2025-06-18 架构规范](https://modelcontextprotocol.io/specification/2025-06-18/architecture)：最后把命令行智能体编排器的实现映射回主机与客户端与服务端、连接和能力协商，避免把一个 MCP 服务端的应用语义误当协议全局语义。
 
   - **权限符号：** `role`、`allowedTools`、`@cao-mcp-server`、`--yolo`；令牌校验字段为`iss`、`aud`、`exp`。
   - **工作流符号：** `cao_workflow`、`workflow_journal.py`、`script_runner.py`、`lookup_replay`。
@@ -359,7 +359,7 @@ planned -> dispatched -> acknowledged -> running
 | 选择| 收益| 代价|
 | --- | --- | --- |
 | 完整命令行界面与终端复用器| 保留提供方登录、伪终端、原生工具与人工附接；跨提供方混用| 状态识别依赖终端界面与提供方适配器；资源较重；恢复困难|
-| 直接模型与智能体API | 结构化事件和超时更易控制；更适合服务化| 需要重建工具、登录、上下文与提供方特性|
+| 直接模型与智能体 API | 结构化事件和超时更易控制；更适合服务化| 需要重建工具、登录、上下文与提供方特性|
 | 单进程内子智能体| 低启动开销，共享运行时状态| 隔离和人工观察较弱；框架绑定更强|
 
 **个人分析**：当团队已经依赖多个成熟编码命令行界面时，命令行智能体编排器的进程级适配比重写智能体运行时更经济。若目标是高吞吐、多租户、无头服务或强一致业务流程，直接调用 API 或运行时通常更容易建立身份、配额和结构化恢复。
@@ -368,7 +368,7 @@ planned -> dispatched -> acknowledged -> running
 
 选择`handoff`的信号：后续步骤依赖返回值、结果规模可控、预计耗时不超过调用链超时、失败时需要马上处理。选择`assign`的信号：任务彼此独立、需要扇出、监督者可以结束回合等待回调、应用已有任务注册表和清理机制。
 
-不要用`handoff`模拟长时间批处理。官方工作流文档提醒MCP 主机可能比命令行智能体编排器自身更早终止一个长阻塞工具调用；长流程应后台运行并用稳定运行标识查询。也不要把`assign`当无责任的发后即忘：它留下终端、回调与资源清理责任。
+不要用`handoff`模拟长时间批处理。官方工作流文档提醒 MCP 主机可能比命令行智能体编排器自身更早终止一个长阻塞工具调用；长流程应后台运行并用稳定运行标识查询。也不要把`assign`当无责任的发后即忘：它留下终端、回调与资源清理责任。
 
 ### 共享目录还是独立工作树
 
@@ -397,16 +397,16 @@ planned -> dispatched -> acknowledged -> running
 
 **已证实事实**：命令行智能体编排器服务端默认绑定 `127.0.0.1:9889`，主机和端口可由 `CAO_API_HOST` 与 `CAO_API_PORT` 修改。未配置身份提供方时，开放授权协议认证默认关闭，HTTP 请求获得完整作用域集合，因而安全姿态是“可信环回”，不是匿名公网服务。工作目录验证拒绝系统敏感路径，但允许用户主目录、外部卷和其他有效目录；`--yolo` 允许任意工具并跳过确认。
 
-**已证实事实**：配置`AUTH0_DOMAIN`或`CAO_AUTH_JWKS_URI`后，内建HTTP 认证会验证RS256、签发方、受众与到期时间，并把令牌作用域映射为`cao:read`、`cao:write`、`cao:admin`。固定源码保证所有变更型路由需要`cao:write` / `cao:admin`，并让`/events`、`/events/history`等特定读端点至少需要`cao:read`；这不表示每一个HTTP 读取都受读取作用域保护。
+**已证实事实**：配置`AUTH0_DOMAIN`或`CAO_AUTH_JWKS_URI`后，内建 HTTP 认证会验证 RS256、签发方、受众与到期时间，并把令牌作用域映射为`cao:read`、`cao:write`、`cao:admin`。固定源码保证所有变更型路由需要`cao:write` / `cao:admin`，并让`/events`、`/events/history`等特定读端点至少需要`cao:read`；这不表示每一个 HTTP 读取都受读取作用域保护。
 
 MCP 服务端可通过 `CAO_AUTH_LOCAL_TOKEN` 为内部 HTTP 调用转发持有者令牌。这个保护不覆盖伪终端网页套接字：该端点仍未认证，只接受默认环回或显式 `CAO_WS_ALLOWED_CLIENTS` 中的来源。
 
 **个人分析**：共享机器或服务化部署至少补齐：
 
-- 默认保持环回；如需改址或反向代理，先启用身份提供方、正确设置签发方与受众和最小作用域的`CAO_AUTH_LOCAL_TOKEN`，并测试所有HTTP 路由门禁；
+- 默认保持环回；如需改址或反向代理，先启用身份提供方、正确设置签发方与受众和最小作用域的`CAO_AUTH_LOCAL_TOKEN`，并测试所有 HTTP 路由门禁；
 - 为每个会话与终端增加所有者与租户授权；不要把`cao:read/write/admin`三档作用域误当资源级所有权；
 - 不把未认证伪终端网页套接字暴露给非可信网络；客户端网络地址允许列表不是用户身份认证，远程访问应另加受认证代理或隧道；
-- 为MCP 编排原语增加更细粒度授权，区分只发消息、创建工作进程、删除终端与运行工作流；
+- 为 MCP 编排原语增加更细粒度授权，区分只发消息、创建工作进程、删除终端与运行工作流；
 - 监督者和工作进程分开的短期凭证，按仓库、云账号、环境和操作作用域发放；
 - 默认拒绝网络与生产写入，高风险工具经独立策略网关和人工审批；
 - 提示词、终端回滚缓冲区、收件箱、日志簿、环境变量与日志的秘密脱敏、加密和保留策略；
@@ -420,7 +420,7 @@ MCP 服务端可通过 `CAO_AUTH_LOCAL_TOKEN` 为内部 HTTP 调用转发持有�
 
 ### 取消与超时
 
-**已证实事实**：移交有明确超时；智能体步骤区分超时与终端错误。工作流运行支持协作式取消，当前步骤等待可由取消事件打断并清理它创建的终端。长MCP 工具调用还受主机自己的超时影响，主机放弃等待时服务端运行可能继续。
+**已证实事实**：移交有明确超时；智能体步骤区分超时与终端错误。工作流运行支持协作式取消，当前步骤等待可由取消事件打断并清理它创建的终端。长 MCP 工具调用还受主机自己的超时影响，主机放弃等待时服务端运行可能继续。
 
 **基于证据的推断**：应有三层截止时间：用户请求总截止时间、每任务截止时间、提供方与工具截止时间。取消先停止继续派发，再请求终止活动终端，最后等待有限清理时间；若外部操作已经提交，则转入补偿而不是声称“已取消”。所有超时响应都返回`run_id` / `task_id` / `terminal_id`，让运维能查询真实状态。
 
@@ -450,7 +450,7 @@ MCP 工具成功、终端`COMPLETED`或收件箱`DELIVERED`都不能证明业务
 
 - 监督者为每个派发生成稳定`task_id`，重试与工作流恢复沿用同一业务幂等键并增加尝试；不能依赖日志簿自动跳过已完成步骤；
 - 工作进程结果包含输入哈希值、基础提交、输出哈希值、已变更文件、测试与外部效果标识；
-- 文件写入通过独立工作树与分支合并，外部API 使用提供方支持的幂等性密钥；
+- 文件写入通过独立工作树与分支合并，外部 API 使用提供方支持的幂等性密钥；
 - 每个可能产生副作用的`run_step`先查业务账本与回执；把“已提交效果”与“智能体返回文本”分开记录，使整个脚本重跑时能复用或补偿；
 - 回调表对`(run_id, task_id, result_version)`建唯一约束；
 - 监督者验证模式、测试、差异和来源后，才把任务标记为“已验证”或“已合并”；
@@ -509,8 +509,8 @@ MCP 工具成功、终端`COMPLETED`或收件箱`DELIVERED`都不能证明业务
 ### 补充说明
 
 4. [Working Directory](https://github.com/awslabs/cli-agent-orchestrator/blob/bae80071a17e001380367c461b32d64bc6b54433/docs/working-directory.md)、[Tool Restrictions](https://github.com/awslabs/cli-agent-orchestrator/blob/bae80071a17e001380367c461b32d64bc6b54433/docs/tool-restrictions.md)与[Inbox Delivery](https://github.com/awslabs/cli-agent-orchestrator/blob/bae80071a17e001380367c461b32d64bc6b54433/docs/inbox-delivery.md)：分别核对路径、权限与消息可靠性边界。
-7. [MCP 上游固定版本仓库](https://github.com/modelcontextprotocol/modelcontextprotocol/tree/46fa5192d4969f51ecea9896f7211a67d147f803)与[MCP 2025-06-18 架构规范](https://modelcontextprotocol.io/specification/2025-06-18/architecture)：把命令行智能体编排器MCP 服务端放回主机–客户端–服务端和能力协商的协议上下文。
+7. [MCP 上游固定版本仓库](https://github.com/modelcontextprotocol/modelcontextprotocol/tree/46fa5192d4969f51ecea9896f7211a67d147f803)与[MCP 2025-06-18 架构规范](https://modelcontextprotocol.io/specification/2025-06-18/architecture)：把命令行智能体编排器 MCP 服务端放回主机–客户端–服务端和能力协商的协议上下文。
 
-证据标注规则：文中“已证实事实”来自以上固定源码或官方文档；“基于证据的推断”是对实现边界的工程推导；“个人分析”是面向生产落地的建议，不代表AWS 实验室、命令行智能体编排器或MCP 官方承诺。
+证据标注规则：文中“已证实事实”来自以上固定源码或官方文档；“基于证据的推断”是对实现边界的工程推导；“个人分析”是面向生产落地的建议，不代表 AWS 实验室、命令行智能体编排器或 MCP 官方承诺。
 
 命令行智能体编排器能把多个命令行界面变成可编排步骤，但真正的自治上限来自可执行权限、可复查状态和操作员的继续决定。三者缺一时，多开终端只会扩大未受控的写入面。

@@ -68,7 +68,7 @@ Temporal 用事件历史恢复控制状态，长事务用新的业务动作补�
 
 ## 一页摘要
 
-**已证实事实**：Temporal把工作流的决策记录为有序事件历史。工作进程崩溃后，工作流代码以历史输入和已记录结果重建内存状态；同一历史必须产生相同顺序的命令，否则可能出现非确定性错误。
+**已证实事实**：Temporal 把工作流的决策记录为有序事件历史。工作进程崩溃后，工作流代码以历史输入和已记录结果重建内存状态；同一历史必须产生相同顺序的命令，否则可能出现非确定性错误。
 
 **已证实事实**：API、大语言模型、数据库和其他外部交互应放入活动。历史已经记录的活动完成结果会在工作流重放时复用；但若外部调用成功、工作进程在完成远程过程调用前崩溃，历史中没有完成事件，后续尝试仍可能再次执行。
 
@@ -83,11 +83,11 @@ Temporal 用事件历史恢复控制状态，长事务用新的业务动作补�
 | 外部系统| 付款、邮件、资源、账本等业务事实| 以稳定幂等键查询或返回原结果| 补偿必然可行|
 | 长事务与人工| 已确认步骤、补偿顺序、审批与修复| 反向补偿、向前恢复或人工处置| 回到从未发生过的历史|
 
-结论是：Temporal的耐久性覆盖控制面；业务效果能否安全恢复，仍取决于活动边界、外部幂等契约和补偿设计。
+结论是：Temporal 的耐久性覆盖控制面；业务效果能否安全恢复，仍取决于活动边界、外部幂等契约和补偿设计。
 
 ## 事实边界
 
-这一节区分“Temporal直接保证的机制”与“应用必须补上的业务契约”。
+这一节区分“Temporal 直接保证的机制”与“应用必须补上的业务契约”。
 
 **已证实事实**
 
@@ -107,11 +107,11 @@ Temporal 用事件历史恢复控制状态，长事务用新的业务动作补�
 
 **个人分析**
 
-Temporal不知道退款是否修复了扣款的会计后果，也不知道收件人是否已经看过错误邮件。补偿动作、可补偿时限、审批人、残余风险和不可逆动作都属于应用契约；补偿失败或结果不明必须成为有所有者、服务等级协议和权限门的耐久状态。
+Temporal 不知道退款是否修复了扣款的会计后果，也不知道收件人是否已经看过错误邮件。补偿动作、可补偿时限、审批人、残余风险和不可逆动作都属于应用契约；补偿失败或结果不明必须成为有所有者、服务等级协议和权限门的耐久状态。
 
 原始长事务论文甚至用“发射导弹”说明某些现实动作不可撤销，也指出确定性代码缺陷会让补偿反复失败。它给出的出路是备选补偿实现或人工修复，而不是无限重试同一缺陷。
 
-模型供应商是否支持请求幂等、结果查询与计费去重，也必须逐API 验证。本地结果表只能抑制已知成功的重复请求，不能消除“供应商已处理、客户端未收到响应”的窗口。
+模型供应商是否支持请求幂等、结果查询与计费去重，也必须逐 API 验证。本地结果表只能抑制已知成功的重复请求，不能消除“供应商已处理、客户端未收到响应”的窗口。
 
 本文只讨论顺序长事务。并行分支必须按依赖图计算补偿偏序，不能把分叉与加入结果随意压成一个全局后进先出栈。
 
@@ -139,7 +139,7 @@ Temporal不知道退款是否修复了扣款的会计后果，也不知道收件
 
 ```mermaid
 flowchart LR
-    C["客户端启动请求"] --> TS["Temporal服务"]
+    C["客户端启动请求"] --> TS["Temporal 服务"]
     TS -->|"追加启动事件"| H["持久化事件历史"]
     H -->|"调度工作流任务"| WTQ["工作流任务队列"]
     WTQ -->|"任务与历史"| WW["工作流工作进程"]
@@ -175,7 +175,7 @@ flowchart LR
 
 `client start → Service appends start Event → Workflow Task → Worker replays History and matches recorded Commands → new Command → Service appends Event → Activity task → external side effect → worker crash → replay → reconciliation / retry / compensation / manual escalation`
 
-**个人分析**：外部账本只有与真实副作用处于同一原子边界，或由外部API 原生实现时，才能消除重复效果。先在本地写“即将发送”再调用不支持幂等的邮件API，仍有双写窗口。
+**个人分析**：外部账本只有与真实副作用处于同一原子边界，或由外部 API 原生实现时，才能消除重复效果。先在本地写“即将发送”再调用不支持幂等的邮件 API，仍有双写窗口。
 
 `planned/submitted/confirmed/failed/unknown/compensated`能暴露不确定性，却不会凭空创造外部原子性。
 
@@ -183,11 +183,11 @@ flowchart LR
 
 **说明性场景：付款成功后工作进程崩溃。** 这个场景不声称来自某个真实事故，只用前述机制解释一次恢复。
 
-1. 客户端向Temporal服务发出启动请求。服务先把启动事件写入事件历史，再调度工作流任务。
+1. 客户端向 Temporal 服务发出启动请求。服务先把启动事件写入事件历史，再调度工作流任务。
 
 2. 工作流工作进程收到任务与历史后执行重放。它先让已有命令与历史匹配，只把重建状态后的新决策作为新命令返回；服务验证后才追加新事件并派发活动任务。
 
-3. 活动工作进程使用由支付系统强制的稳定幂等键请求扣款。支付成功并返回付款号，但工作进程在向Temporal报告完成前崩溃。
+3. 活动工作进程使用由支付系统强制的稳定幂等键请求扣款。支付成功并返回付款号，但工作进程在向 Temporal 报告完成前崩溃。
 
 4. 新工作流工作进程从历史重建控制状态。由于历史只有“已调度”而没有“已完成”，Temporal 可以按重试策略产生新的活动尝试，但这不授权再次扣款。
 
@@ -201,7 +201,7 @@ flowchart LR
 
 超时与取消回答的是不同问题：
 
-| 机制| Temporal语义| 业务边界|
+| 机制| Temporal 语义| 业务边界|
 | --- | --- | --- |
 | `Schedule-To-Start` | 一次任务等待工作进程的上限；该超时不会因重试策略在同一队列重试| 容量不足不是业务失败，需要备用队列与区域或明确重路由|
 | `Start-To-Close` | 单个尝试的上限，可触发后续尝试| 超时不证明旧网络请求已停止，新旧尝试可能并存|
@@ -230,7 +230,7 @@ flowchart LR
 <details className="evidence-card">
   <summary>证据：快速取消的固定实现条件</summary>
 
-  - **服务端条件：** 已开始活动记录`WorkerControlTaskQueue`/时钟后，取消处理可按队列汇集`CancelActivityCommand`并创建工作进程命令任务。
+  - **服务端条件：** 已开始活动记录`WorkerControlTaskQueue`与时钟后，取消处理可按队列汇集`CancelActivityCommand`并创建工作进程命令任务。
   - **工具包条件：** 固定的第一种语言工具包读取工作进程心跳与命令能力，并把任务令牌映射到活动上下文取消回调；固定的第二种语言工具包仅在`isWorkerCommands()`时启动命令工作进程，并将令牌交给运行上下文。
   - **边界：** 该路径证明“回调可更早触发”，不证明活动被强杀、远端请求停止或副作用回滚。
 </details>
@@ -239,7 +239,7 @@ flowchart LR
 
 源码阅读只需要回答四个问题：命令在哪里成为持久状态，活动重试如何转移，任务如何路由，快速取消如何到达运行中的回调。
 
-这些服务端接缝不负责证明业务幂等、补偿正确或工作流SDK 的语言级解释器行为。
+这些服务端接缝不负责证明业务幂等、补偿正确或工作流 SDK 的语言级解释器行为。
 
 最短路径是先看命令分派与活动可变状态，再看重试计时器和匹配；只有部署依赖快速取消时，才继续核对固定的两种语言工具包。
 
@@ -249,7 +249,7 @@ flowchart LR
   - [`workflow_task_completed_handler.go` 275–330](https://github.com/temporalio/temporal/blob/955948007cc6d9d94fa8ef484225954bd9328451/service/history/api/respondworkflowtaskcompleted/workflow_task_completed_handler.go#L275-L330)：`handleCommand`分派活动、计时器、子级工作流、信号、取消与终止等命令。
   - [`workflow_task_completed_handler.go` 467–571](https://github.com/temporalio/temporal/blob/955948007cc6d9d94fa8ef484225954bd9328451/service/history/api/respondworkflowtaskcompleted/workflow_task_completed_handler.go#L467-L571)：校验活动属性、队列和输入，再调用`AddActivityTaskScheduledEvent`；当前重复活动标识会使工作流任务失败。
   - [`mutable_state_impl.go` 4187–4283](https://github.com/temporalio/temporal/blob/955948007cc6d9d94fa8ef484225954bd9328451/service/history/workflow/mutable_state_impl.go#L4187-L4283)：持久化活动标识、已调度事件、队列、四类超时、取消标志、尝试与重试策略。
-  - **边界：** 这些锚点证明Temporal的持久调度状态，不证明目标服务已经按活动标识去重。
+  - **边界：** 这些锚点证明 Temporal 的持久调度状态，不证明目标服务已经按活动标识去重。
 </details>
 
 <details className="evidence-card">
@@ -269,7 +269,7 @@ flowchart LR
   - [`workflow_task_completed_handler.go` 670–768](https://github.com/temporalio/temporal/blob/955948007cc6d9d94fa8ef484225954bd9328451/service/history/api/respondworkflowtaskcompleted/workflow_task_completed_handler.go#L670-L768)：取消请求入历史，并在能力条件满足时创建工作进程命令任务。
   - [`sdk-go/internal_worker_heartbeat.go` 88–117、172–185、239–327](https://github.com/temporalio/sdk-go/blob/3cebc26908119368df3911df6146f756bad3882b/internal/internal_worker_heartbeat.go#L88-L117)与[`internal_task_handlers.go` 2122–2147、2388–2398](https://github.com/temporalio/sdk-go/blob/3cebc26908119368df3911df6146f756bad3882b/internal/internal_task_handlers.go#L2122-L2147)：固定工具包的能力、控制队列与上下文取消路径。
   - [`sdk-java/WorkerFactory.java` 291–349](https://github.com/temporalio/sdk-java/blob/6d09a341c14daeddf9b3795cd43721de770fec2c/temporal-sdk/src/main/java/io/temporal/worker/WorkerFactory.java#L291-L349)、[`WorkerCommandTaskHandler.java` 28–126](https://github.com/temporalio/sdk-java/blob/6d09a341c14daeddf9b3795cd43721de770fec2c/temporal-sdk/src/main/java/io/temporal/internal/worker/WorkerCommandTaskHandler.java#L28-L126)、[`ActivityExecutionContextFactoryImpl.java` 71–80](https://github.com/temporalio/sdk-java/blob/6d09a341c14daeddf9b3795cd43721de770fec2c/temporal-sdk/src/main/java/io/temporal/internal/activity/ActivityExecutionContextFactoryImpl.java#L71-L80)与[`HeartbeatContextImpl.java` 239–247](https://github.com/temporalio/sdk-java/blob/6d09a341c14daeddf9b3795cd43721de770fec2c/temporal-sdk/src/main/java/io/temporal/internal/activity/HeartbeatContextImpl.java#L239-L247)：固定工具包仅在能力门满足时启动命令工作进程，运行上下文最终调用`cancelFromWorkerCommand`请求本地取消。
-  - **边界：** 只证明固定提交中的回调路径，不外推到旧版本、其他SDK 或强制终止。
+  - **边界：** 只证明固定提交中的回调路径，不外推到旧版本、其他 SDK 或强制终止。
 </details>
 
 **基于证据的推断**：服务端的`ActivityId`、`ScheduledEventId`、`Attempt`、`Stamp`和任务令牌适合组成外部请求证据。只有目标服务在同一原子写中检查稳定幂等键，才能抑制重复业务效果。
@@ -282,7 +282,7 @@ flowchart LR
 | --- | --- | --- |
 | 纯状态转移、定时等待、补偿顺序| 工作流| 必须可确定重放，命令变化要版本化|
 | 大语言模型、HTTP、数据库、文件、工具调用| 活动| 可重复执行，必须查询或去重外部结果|
-| 单个写入有原生幂等API | 一个窄活动| 核对参数冲突语义与幂等记录保留期|
+| 单个写入有原生幂等 API | 一个窄活动| 核对参数冲突语义与幂等记录保留期|
 | 多个写入只有局部事务| 多活动与长事务| 接受中间可见和弱隔离|
 | 长任务有安全进度| 心跳上报活动或外部回调与信号| 人工等待不应占住周级尝试|
 | 副作用不可查询且不可幂等| 冻结并人工决策| 耐久编排无法补上外部契约缺口|
@@ -313,7 +313,7 @@ flowchart LR
 
 没有原生支持时，应改造目标系统使用收件箱、去重表或可查询业务标识。工作进程本地缓存、“成功后再写一行”和消息消费位点都不能替代目标侧原子去重。
 
-**代码升级撞上旧历史。** 工作流代码变化要使用Temporal版本机制，并以生产历史做重放测试。活动输入与输出模式要向后兼容，补偿代码保留时间要覆盖最长可补偿任务。
+**代码升级撞上旧历史。** 工作流代码变化要使用 Temporal 版本机制，并以生产历史做重放测试。活动输入与输出模式要向后兼容，补偿代码保留时间要覆盖最长可补偿任务。
 
 继续为新运行后仍需传递稳定业务键、剩余预算、已成功`effect_ref`与补偿指针，不能只复制对话摘要。
 
@@ -323,7 +323,7 @@ flowchart LR
 
 **费用或重试失控。** 主线观测排队时延、尝试分布、超时、每任务费用、`unknown`龄期、补偿成功率与人工队列龄期。完整字段放入下方证据卡。
 
-活动内隐藏重试会与Temporal重试形成乘法预算。所有重试必须统一计数，并在工作流中设置总门限。
+活动内隐藏重试会与 Temporal 重试形成乘法预算。所有重试必须统一计数，并在工作流中设置总门限。
 
 <details className="evidence-card">
   <summary>证据：生产观测字段</summary>
@@ -371,7 +371,7 @@ flowchart LR
 
 ### 只能有限类比的部分
 
-当团队试图把Temporal概念类比成数据库或消息语义时，应保留这些限制：
+当团队试图把 Temporal 概念类比成数据库或消息语义时，应保留这些限制：
 
 1. 活动是 Temporal 的调度与结果单元，不是外部世界的原子性、一致性、隔离性与持久性事务；它可能部分执行多次。
 2. 工作流执行可完成一次，但工作流函数会因重放多次运行；内联副作用会被放大。
@@ -389,7 +389,7 @@ flowchart LR
 1. 不要在工作流重放路径调用大语言模型、工具、HTTP、数据库或文件系统。
 2. 不要宣称耐久执行提供业务恰好一次，也不要把活动标识当成目标侧幂等已经完成。
 3. 不要把超时或取消当成旧执行已终止；外部状态未知时先对账。
-4. 不要认为Temporal会发明正确补偿；顺序、会计与合规语义、时窗和审批权限都由应用设计。
+4. 不要认为 Temporal 会发明正确补偿；顺序、会计与合规语义、时窗和审批权限都由应用设计。
 5. 不要无限重试补偿、永久错误或付费大语言模型；设置总预算、备选补偿和人工修复。
 6. 不要在人工处理期保留无主任务或宽权限工作进程；冻结新副作用，只开放对账和经批准的修复能力。
 7. 不要把业务秘密与无界上下文直接写入事件历史。
@@ -403,7 +403,7 @@ flowchart LR
 **主要架构来源**
 
 - [Garcia-Molina & Salem, 《Sagas》（ACM SIGMOD 1987）](https://dl.acm.org/doi/10.1145/38713.38742) — 长事务拆分、子事务交错、`T1...Tj,Cj...C1`、向前与向后恢复、补偿错误与人工修复。
-- [Temporal Workflow](https://docs.temporal.io/workflows)与[Workflow Definition](https://docs.temporal.io/workflow-definition) — 工作流与执行、确定性命令契约，以及将API、大语言模型与人工智能、数据库与外部交互放入活动。
+- [Temporal Workflow](https://docs.temporal.io/workflows)与[Workflow Definition](https://docs.temporal.io/workflow-definition) — 工作流与执行、确定性命令契约，以及将 API、大语言模型与人工智能、数据库与外部交互放入活动。
 - [Temporal Event History](https://docs.temporal.io/encyclopedia/event-history) — 命令、持久事件与崩溃后状态重建。
 - [Temporal Activity](https://docs.temporal.io/activities)、[Activity Definition](https://docs.temporal.io/activity-definition)与[Activity Execution](https://docs.temporal.io/activity-execution) — 非确定性活动、结果复用、完成远程过程调用前崩溃、幂等键、活动标识与心跳。
 

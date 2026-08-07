@@ -15,6 +15,8 @@ const task8Directories = [
   'content/references',
   'content/cases',
 ];
+const latinHanBoundary = /(?:[A-Za-z][A-Za-z0-9.+-]*(?:[ \t]+[A-Za-z0-9.+-]+)*(?=\p{Script=Han})|(?<=\p{Script=Han})[A-Za-z][A-Za-z0-9.+-]*(?:[ \t]+[A-Za-z0-9.+-]+)*)/u;
+const asciiProseSlash = /(?:\p{Script=Han}|[A-Za-z][A-Za-z0-9.+-]*)\s*\/\s*(?:\p{Script=Han}|[A-Za-z][A-Za-z0-9.+-]*)/u;
 
 async function task8Files() {
   const files = ['content/intro.mdx'];
@@ -62,6 +64,16 @@ function jsxStructure(ast) {
   };
   visit(ast);
   return structure;
+}
+
+function mdxModuleStructure(ast) {
+  const modules = [];
+  const visit = (node) => {
+    if (node.type === 'mdxjsEsm') modules.push(node.value);
+    for (const child of node.children ?? []) visit(child);
+  };
+  visit(ast);
+  return modules;
 }
 
 function protectedContract(source, file) {
@@ -159,6 +171,17 @@ test('preserves the complete pre-Task-8 JSX structure contract', async () => {
   assert.equal(digest, '957ca8b793ca974388e1528530a35b4e291e27cb149800a5b1544c37a574031a');
 });
 
+test('preserves the complete pre-Task-8 MDX module contract', async () => {
+  const structures = {};
+  for (const file of await task8Files()) {
+    const source = await readFile(new URL(file, root), 'utf8');
+    const {ast} = parseMdxVisibleCopy(source, file, {includeAst: true});
+    structures[file] = mdxModuleStructure(ast);
+  }
+  const digest = createHash('sha256').update(JSON.stringify(structures)).digest('hex');
+  assert.equal(digest, 'b68184a3fb7b6d17efe640df880b41be9e777f5d3426b8173d0af5b5aafa767f');
+});
+
 test('preserves official product identity in every reviewed Task 8 case title', async () => {
   const identities = new Map([
     ['aws-cell-shuffle-sharding.mdx', 'AWS Cell Architecture + Shuffle Sharding'],
@@ -178,20 +201,31 @@ test('preserves official product identity in every reviewed Task 8 case title', 
 });
 
 test('keeps production-visible Task 8 prose free of mechanical script boundaries', async () => {
-  const tightScriptBoundary = /(?:\b[A-Z][A-Z0-9.-]*\s*\p{Script=Han}(?=[A-Z])|(?<=图)API\b|\bTemporal(?=用))/u;
-  const proseSlash = /\p{Script=Han}\/\s+\p{Script=Han}/u;
   const repeatedNoun = /(数据库|语言|存储|进程|数据|终端|接口|状态|服务|工作流|管理者)\1/u;
   for (const file of await task8Files()) {
     const source = await readFile(new URL(file, root), 'utf8');
     const parsed = parseMdxVisibleCopy(source, file, {
       excludeLink: ({url}) => Boolean(url),
     });
-    for (const record of [...parsed.frontMatter, ...parsed.blocks].filter(({structural, kind}) => !structural && kind !== 'mermaid')) {
-      assert.doesNotMatch(record.excerpt, tightScriptBoundary, `${file}:${record.line}: Latin↔Han`);
-      assert.doesNotMatch(record.excerpt, proseSlash, `${file}:${record.line}: prose slash`);
-      assert.doesNotMatch(record.excerpt, repeatedNoun, `${file}:${record.line}: repeated noun`);
+    for (const record of [...parsed.frontMatter, ...parsed.blocks].filter(({structural}) => !structural)) {
+      const reviewedText = record.text
+        .replaceAll('Erlang/OTP', 'Erlang OTP')
+        .replaceAll('Fan-out/Fan-in', 'Fan-out 与 Fan-in');
+      assert.doesNotMatch(reviewedText, latinHanBoundary, `${file}:${record.line}: Latin↔Han`);
+      assert.doesNotMatch(reviewedText, asciiProseSlash, `${file}:${record.line}: prose slash`);
+      assert.doesNotMatch(reviewedText, repeatedNoun, `${file}:${record.line}: repeated noun`);
     }
   }
+});
+
+test('recognizes product, acronym, both slash styles, and repeated-word review candidates', () => {
+  for (const candidate of ['New API通道', 'KubeEdge能', 'ROS 2用', '数据分发服务QoS']) {
+    assert.match(candidate, latinHanBoundary, candidate);
+  }
+  for (const candidate of ['期望/报告状态', '客户端/ 智能体']) {
+    assert.match(candidate, asciiProseSlash, candidate);
+  }
+  assert.match('数据数据', /(数据库|语言|存储|进程|数据|终端|接口|状态|服务|工作流|管理者)\1/u);
 });
 
 test('uses reviewed natural wording for known semantic seams and Kafka generations', async () => {
@@ -229,6 +263,40 @@ test('registers immutable official citation labels and localizes descriptive sou
   const erlang = await readCase('erlang-otp-supervision-tree.mdx');
   assert.match(erlang, /\[`restart\/2` 及策略 1472–1562\]\(/u);
   assert.doesNotMatch(erlang, /\[`restart\/2` 及 strategy 1472–1562\]\(/u);
+});
+
+test('preserves the reviewed Task 8 source-link labels together with their URLs', async () => {
+  const expected = new Map([
+    ['content/paths/01-architecture-thinking.mdx', [[
+      'Awesome Software Architecture 的设计原则主题',
+      'https://github.com/mehdihadeli/awesome-software-architecture#architectural-design-principles',
+    ]]],
+    ['content/paths/04-reliability-state.mdx', [[
+      'Google SRE Workbook',
+      'https://sre.google/workbook/table-of-contents/',
+    ]]],
+    ['content/paths/05-production-governance.mdx', [[
+      'Google SRE Workbook',
+      'https://sre.google/workbook/table-of-contents/',
+    ]]],
+    ['content/paths/07-cloud-native-platform.mdx', [[
+      'Google SRE Workbook',
+      'https://sre.google/workbook/table-of-contents/',
+    ]]],
+  ]);
+  for (const [file, links] of expected) {
+    const source = await readFile(new URL(file, root), 'utf8');
+    const {ast} = parseMdxVisibleCopy(source, file, {includeAst: true});
+    const actual = [];
+    const visit = (node) => {
+      if (node.type === 'link' && links.some(([, url]) => node.url === url)) {
+        actual.push([node.children.map(({value = ''}) => value).join(''), node.url]);
+      }
+      for (const child of node.children ?? []) visit(child);
+    };
+    visit(ast);
+    assert.deepEqual(actual, links, file);
+  }
 });
 
 test('uses no terminology suppressions in Task 8 content', async () => {

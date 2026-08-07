@@ -52,7 +52,7 @@ tags:
 
 这套架构依赖多个控制器持续收敛，却不允许它们含糊地共享所有权。对象所有者、字段管理者、资源版本、候选实例租约分别解决不同冲突；任何一项都不能替代其他项。
 
-**证据范围**：本文依据容器编排平台v1.36 在线文档和上游固定提交`39c618b5c30ced3969862e0b4b5acce7a7f8cecb`。迁移时最重要的非等价边界是：确定性协调能对同一目标重算差异；非确定模型可能每轮改变计划、成本与副作用，不能被放进无界循环。
+**证据范围**：本文依据容器编排平台 v1.36 在线文档和上游固定提交`39c618b5c30ced3969862e0b4b5acce7a7f8cecb`。迁移时最重要的非等价边界是：确定性协调能对同一目标重算差异；非确定模型可能每轮改变计划、成本与副作用，不能被放进无界循环。
 
 ## 学习问题
 
@@ -106,7 +106,7 @@ tags:
 
 ## 架构图
 
-先看多个所有者如何围绕同一API 状态协作。部署控制器管部署到副本集的差异；副本集控制器继续声明容器组；调度器负责放置；节点代理在节点上协调运行时。它们共享资源状态，但不共享一个模糊的“全局写权限”。
+先看多个所有者如何围绕同一 API 状态协作。部署控制器管部署到副本集的差异；副本集控制器继续声明容器组；调度器负责放置；节点代理在节点上协调运行时。它们共享资源状态，但不共享一个模糊的“全局写权限”。
 
 ```mermaid
 flowchart LR
@@ -156,7 +156,7 @@ flowchart LR
 
 ### 视觉检查点：所有者与确定性判定
 
-多个所有者不是共享一个全局写权限。它们通过带版本的API 状态连接，每一层只声明自己的资源、字段和观测结果。
+多个所有者不是共享一个全局写权限。它们通过带版本的 API 状态连接，每一层只声明自己的资源、字段和观测结果。
 
 <div
   className="architecture-diagram-scroll"
@@ -260,7 +260,7 @@ flowchart LR
   - **状态提交：** 用比较并交换提交`observed_version → new_status`，并携带期望值目标生成与外部版本。
   - **分层退避：** 网络瞬时失败使用指数退避（Exponential Backoff）和抖动（Jitter）；供应商限流遵守`Retry-After`；外部结果不确定时冻结写入，而不是延时后盲重放。
   - **顶层预算：** 原子扣减`max_model_calls`、`max_tool_calls`、`max_tokens`、`max_cost`、`deadline`、`max_external_writes`与`max_no_progress_rounds`；子目标只能领取剩余额度。
-  - **边界：** 这些字段是迁移设计，不是容器编排平台API 原生字段；其作用是防止每层控制器各自重置预算。
+  - **边界：** 这些字段是迁移设计，不是容器编排平台 API 原生字段；其作用是防止每层控制器各自重置预算。
 </details>
 
 人工接管包应包含目标生成、最后可靠观测、动作与操作标识、外部资源、冲突字段、累计预算和建议选项。接管前递增隔离栅栏纪元，并要求所有目标端校验；撤销租约只能降低并发概率。
@@ -283,9 +283,9 @@ flowchart LR
 ### 只能有限类比的部分
 
 1. `spec/status`适合结构化资源；开放式知识工作仍需验证器、来源策略与人工判断。
-2. 通知器、监视与`resourceVersion`由容器编排平台API 提供；自建平台必须选择自己的存储区、事件日志、比较并交换与重新列举。
+2. 通知器、监视与`resourceVersion`由容器编排平台 API 提供；自建平台必须选择自己的存储区、事件日志、比较并交换与重新列举。
 3. 部署的15 次重试和节点代理的退避只属于相应路径。
-4. `SyncPod`的可重入性建立在明确运行时API 上；多工具智能体没有检查点、幂等与补偿时不具备同等语义。
+4. `SyncPod`的可重入性建立在明确运行时 API 上；多工具智能体没有检查点、幂等与补偿时不具备同等语义。
 5. 所有者引用与字段管理者不会自动解决组织责任和审批服务等级协议。
 
 ### 不应照搬的部分
@@ -299,9 +299,9 @@ flowchart LR
 
 ## 来源
 
-**官方架构与API（已证实事实）**
+**官方架构与 API（已证实事实）**
 
-- [Controllers](https://kubernetes.io/docs/concepts/architecture/controller/)、[Cluster Architecture](https://kubernetes.io/docs/concepts/architecture/)与[Objects](https://kubernetes.io/docs/concepts/overview/working-with-objects/)：控制循环、组件分工、`spec`和`status`。访问与截断日期：2026-07-22；站点版本v1.36。
+- [Controllers](https://kubernetes.io/docs/concepts/architecture/controller/)、[Cluster Architecture](https://kubernetes.io/docs/concepts/architecture/)与[Objects](https://kubernetes.io/docs/concepts/overview/working-with-objects/)：控制循环、组件分工、`spec`和`status`。访问与截断日期：2026-07-22；站点版本 v1.36。
 - [Kubernetes API Concepts](https://kubernetes.io/docs/reference/using-api/api-concepts/)：列表与监视、`resourceVersion`、`410 Gone`与`409 Conflict`。
 - [Owners and Dependents](https://kubernetes.io/docs/concepts/overview/working-with-objects/owners-dependents/)、[Server-Side Apply](https://kubernetes.io/docs/reference/using-api/server-side-apply/)与[Leases](https://kubernetes.io/docs/concepts/architecture/leases/)：对象、字段与候选实例的不同所有权边界。
 
