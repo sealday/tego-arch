@@ -90,24 +90,24 @@ test('groups Pattern topics from generated registry order', async () => {
   );
 });
 
-test('Pattern page renders five common groups plus one Agent wrapper', async () => {
+test('Pattern page renders five common groups plus one Chinese-first Agent wrapper', async () => {
   const source = await readFile(
     fileURLToPath(new URL('../content/patterns/index.mdx', import.meta.url)),
     'utf8',
   );
   const lines = source.split('\n');
   assert.equal(source.includes('<PatternTopicIndex />'), true);
-  assert.equal(lines.includes('## Agent 控制与协作模式'), true);
+  assert.equal(lines.includes('## 智能体（Agent）控制与协作模式'), true);
   const agentHeadings = [
-    'Router',
-    'Supervisor',
-    'Agents as Tools',
-    'Handoff',
-    'Fan-out / Fan-in',
-    'Evaluator-Optimizer',
-    'Hierarchical Teams',
-    'A2A',
-    'MCP',
+    '路由器（Router）',
+    '监督者（Supervisor）',
+    '智能体作为工具（Agents as Tools）',
+    '移交（Handoff）',
+    '扇出与扇入（Fan-out/Fan-in）',
+    '评估者—优化者（Evaluator-Optimizer）',
+    '分层团队（Hierarchical Teams）',
+    '智能体间协议（Agent2Agent Protocol，A2A）',
+    '模型上下文协议（Model Context Protocol，MCP）',
   ];
   for (const heading of agentHeadings) {
     assert.equal(lines.includes(`### ${heading}`), true, heading);
@@ -115,15 +115,15 @@ test('Pattern page renders five common groups plus one Agent wrapper', async () 
   }
 
   const agentSection = source
-    .slice(source.indexOf('## Agent 控制与协作模式'))
+    .slice(source.indexOf('## 智能体（Agent）控制与协作模式'))
     .replace(/\r\n/g, '\n')
     .replace(/[ \t]+$/gm, '')
     .trimEnd()
     .concat('\n');
   assert.equal(
     createHash('sha256').update(agentSection).digest('hex'),
-    'aa0fea7e7bff540a7fb6e9ee81a691fee2bde3d2bcd88b2ee959289003fe5ca2',
-    'the complete original Agent wrapper, nine headings, paragraphs, links, and comparison must remain intact',
+    '4a43c81c52b2f8b549db26ef9f8e7eeec80f7a9e35589ed47cd592e477784c65',
+    'the complete Chinese-first Agent wrapper, nine headings, paragraphs, links, and comparison must remain intact',
   );
 });
 

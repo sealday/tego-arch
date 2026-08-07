@@ -27,30 +27,30 @@ tags:
 
 ## 为什么学
 
-架构工作的起点是识别约束和质量属性，并让关键决策可以沟通、复查和演进。先建立这套表达方式，后续学习模式、分布式机制或 Agent 框架时，才不会退化成技术名词和组件清单。
+架构工作的起点是识别约束和质量属性（Quality Attribute），并让关键决策可以沟通、复查和演进。先建立这套表达方式，后续学习模式、分布式机制或智能体（Agent）框架时，才不会退化成技术名词和组件清单。
 
 ## 前置能力与跳过条件
 
-读者应能读懂一个熟悉系统的主要调用关系，并能区分业务目标与实现手段。如果已经能独立写出主要约束、三项关键质量属性、一张上下文图，以及一条包含备选方案和取舍的 ADR，并能说明它们如何约束后续设计，可以跳过必读起点。
+读者应能读懂一个熟悉系统的主要调用关系，并能区分业务目标与实现手段。如果已经能独立写出主要约束、三项关键质量属性、一张上下文图，以及一条包含备选方案和取舍的架构决策记录（Architecture Decision Record，ADR），并能说明它们如何约束后续设计，可以跳过必读起点。
 
 ## 核心问题
 
 - 功能需求、质量属性和硬约束如何共同形成架构决策？
-- C4、ADR 和质量属性场景分别回答什么问题？
+- C4 架构模型（C4 Model）、架构决策记录和质量属性场景分别回答什么问题？
 - 代码设计、应用结构和系统架构的决策尺度有什么不同？
 
 ## 推荐学习顺序
 
 1. 先读[架构与设计的尺度](/concepts/fnd-01)，用影响范围、变更成本和所需视图区分架构、应用设计与代码设计。
-2. 再读[架构驱动力与 ASR](/concepts/fnd-02)，从业务目标、约束、质量属性和关键功能中筛出真正塑造架构的要求。
+2. 再读[架构驱动力与架构重要需求（Architecturally Significant Requirement，ASR）](/concepts/fnd-02)，从业务目标、约束、质量属性和关键功能中筛出真正塑造架构的要求。
 3. 接着读[架构分类法](/concepts/fnd-03)，区分原则、战术、模式、风格、参考架构和带上下文的最佳实践。
 4. 学习[权衡、敏感点与风险](/concepts/fnd-04)，区分敏感点、权衡点、风险与已有证据支持的非风险。
 5. 学习[架构债与演进式设计](/concepts/fnd-05)，把决策成本、偿还触发条件和持续演进联系起来。
 6. 先读[质量属性总览](/quality-attributes/qa-00)，明确模型、场景、策略与证据的边界；再读[质量属性场景写法](/quality-attributes/qa-01)，为后续方法准备可比较、可验证的输入。
-7. 用[质量属性工作坊](/methods/mth-01)召集利益相关者，发现并排序关键场景。
-8. 对已有候选架构使用[架构权衡分析方法](/methods/mth-02)，识别敏感点、权衡点、风险与非风险。
-9. 用[ADR 生命周期](/methods/mth-03)记录被授权的取舍、替代关系和复核条件。
-10. 把关键决定转成[架构适应度函数](/methods/mth-04)，区分测试、度量、监控、SLO 与发布门禁。
+7. 用[质量属性工作坊（Quality Attribute Workshop，QAW）](/methods/mth-01)召集利益相关者，发现并排序关键场景。
+8. 对已有候选架构使用[架构权衡分析方法（Architecture Tradeoff Analysis Method，ATAM）](/methods/mth-02)，识别敏感点、权衡点、风险与非风险。
+9. 用[架构决策记录生命周期](/methods/mth-03)记录被授权的取舍、替代关系和复核条件。
+10. 把关键决定转成[架构适应度函数](/methods/mth-04)，区分测试、度量、监控、服务级别目标与发布门禁。
 11. 用[风险风暴与事前验尸](/methods/mth-05)补充结构风险、计划失败原因与验证任务。
 12. 最后用[从需求到演进的架构闭环](/methods/mth-06)连接驱动力、场景、风险、决定、实现与运行反馈；活动顺序可按证据调整。
 
@@ -60,32 +60,32 @@ tags:
 
 ## 查漏补缺
 
-[Awesome Software Architecture 的设计原则主题](https://github.com/mehdihadeli/awesome-software-architecture#architectural-design-principles)可用于发现耦合、内聚、依赖和权衡的补充材料；它是社区索引，只用于发现，不作为架构事实的主要或唯一证据。
+[Awesome Software Architecture 的设计原则主题](https://github.com/mehdihadeli/awesome-software-architecture#architectural-design-principles)可用于发现耦合、内聚、依赖和权衡的补充材料；这个社区索引只用于发现，不作为架构事实的主要或唯一证据。
 
 ## 深入拓展
 
-[Architecture Documentation](https://github.com/mehdihadeli/awesome-software-architecture/blob/main/docs/architecture-documententation.md) 汇集 ADR、C4、arc42 和完整示例，适合在需要建立团队文档约定时继续阅读。
+[Architecture Documentation](https://github.com/mehdihadeli/awesome-software-architecture/blob/main/docs/architecture-documententation.md) 汇集架构决策记录、C4 架构模型、arc42 架构文档模板和完整示例，适合在需要建立团队文档约定时继续阅读。
 
 ## 用本站案例深化
 
 - [Microsoft 多智能体参考架构](/cases/microsoft-multi-agent-reference-architecture)：观察治理、身份、网络和可观测性约束如何改变组件设计。
-- [AWS Cell Architecture + Shuffle Sharding](/cases/aws-cell-shuffle-sharding)：Batch 2 的 FND-04 与 MTH-02 terminal mapping，用于观察隔离、敏感点、权衡与风险。
-- [Kubernetes Reconciliation Loop](/cases/kubernetes-reconciliation-loop)：Batch 2 的 FND-05 与 MTH-03 terminal mapping，用于观察演进式控制与决策复核。
-- [Micro Frontends + single-spa](/cases/micro-frontends-single-spa)：用于观察业务边界、团队所有权和运行时边界为何不能自动画等号；它是补充案例，不是 Batch 2 terminal mapping。
+- [亚马逊云服务（Amazon Web Services，AWS）单元架构与洗牌分片](/cases/aws-cell-shuffle-sharding)：第二批的 FND-04 与 MTH-02 终态映射，用于观察隔离、敏感点、权衡与风险。
+- [Kubernetes 调谐循环](/cases/kubernetes-reconciliation-loop)：第二批的 FND-05 与 MTH-03 终态映射，用于观察演进式控制与决策复核。
+- [微前端与 single-spa 微前端框架](/cases/micro-frontends-single-spa)：用于观察业务边界、团队所有权和运行时边界为何不能自动画等号；它是补充案例，不属于第二批终态映射。
 
 ## 实践产出
 
-保留一张系统上下文图和一条 ADR。ADR 至少写明决策背景、备选方案、选择理由、代价与重新评估条件。
+保留一张系统上下文图和一条架构决策记录。该记录至少写明决策背景、备选方案、选择理由、代价与重新评估条件。
 
 ## 检查点
 
-1. 完成 [FND-01](/concepts/fnd-01) 与 [FND-02](/concepts/fnd-02) 判断：为三个决定说明尺度，并写出“驱动因素 → ASR → 架构决策 → 验证证据”的可追溯链。
+1. 完成 [FND-01](/concepts/fnd-01) 与 [FND-02](/concepts/fnd-02) 判断：为三个决定说明尺度，并写出“驱动因素 → 架构重要需求 → 架构决策 → 验证证据”的可追溯链。
 2. 完成 [FND-03](/concepts/fnd-03) 与 [FND-04](/concepts/fnd-04) 辨析：给候选做分类，再指出一个敏感点、一个权衡点、一项风险和一项带证据边界的非风险。
 3. 完成 [FND-05](/concepts/fnd-05) 演进判断：识别一项架构债，写明利息、偿还触发条件以及不应立即偿还的边界。
 4. 完成 [QA-00](/quality-attributes/qa-00) → [QA-01](/quality-attributes/qa-01) → [MTH-01](/methods/mth-01) 产出：先说明模型边界，再写出结构完整的质量属性场景，并保留利益相关者排序与分歧。
-5. 完成 [MTH-02](/methods/mth-02) 与 [MTH-03](/methods/mth-03) 闭环：评估一个已有架构方法，把被授权的取舍写入 ADR，并给出替代或复核条件。
+5. 完成 [MTH-02](/methods/mth-02) 与 [MTH-03](/methods/mth-03) 闭环：评估一个已有架构方法，把被授权的取舍写入架构决策记录，并给出替代或复核条件。
 
-C4 图可以作为上述判断的补充证据，但不是本阶段的核心通过条件。五项检查均可解释、可追溯并带边界时，才进入下一阶段。
+C4 架构模型图可以作为上述判断的补充证据，但不是本阶段的核心通过条件。五项检查均可解释、可追溯并带边界时，才进入下一阶段。
 
 ## 继续学习
 

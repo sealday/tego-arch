@@ -703,7 +703,7 @@ test('projects the exact G008 Batch 3 Stage B repository state', () => {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
     completed_topics: 52,
-    content_documents: 94,
+    content_documents: 95,
     governed_sources: 494,
     sources: {
       durable_stories: 'docs/content-backlog.md',

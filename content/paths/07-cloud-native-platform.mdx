@@ -30,19 +30,19 @@ tags:
 
 ## 为什么学
 
-容器只是交付格式，平台也不只是一个 Kubernetes 集群。真正需要学习的是：工作负载如何部署和寻址，控制器如何使状态收敛，发布与扩缩容如何受信号约束，以及业务团队和平台团队分别拥有什么责任。
+容器只是交付格式，平台也不只是一个容器编排集群。真正需要学习的是：工作负载如何部署和寻址，控制器如何使状态收敛，发布与扩缩容如何受信号约束，以及业务团队和平台团队分别拥有什么责任。
 
 ## 前置能力与跳过条件
 
-读者应先理解生产系统中的容量、故障半径、降级和恢复负责人。如果已经能为一个服务说明镜像与运行配置、网络入口、期望状态、发布回滚、SLO、基础设施变更所有者和隔离边界，可以跳过必读起点，直接用本站案例检查薄弱环节。
+读者应先理解生产系统中的容量、故障半径、降级和恢复负责人。如果已经能为一个服务说明镜像与运行配置、网络入口、期望状态、发布回滚、服务级别目标、基础设施变更所有者和隔离边界，可以跳过必读起点，直接用本站案例检查薄弱环节。
 
 ## 核心问题
 
 - 容器镜像、运行配置与部署对象分别约束什么，哪些状态不应留在临时实例中？
 - 服务发现、入口流量、东西向通信和网络策略形成了哪些信任边界？
 - 调谐、扩缩容和渐进发布分别依赖什么观察信号与停止条件？
-- SLO、告警和发布判断如何连接，而不是停留在仪表盘展示？
-- GitOps、IaC、应用仓库和平台 API 的所有权如何划分？
+- 服务级别目标、告警和发布判断如何连接，而不是停留在仪表盘展示？
+- 声明式交付、基础设施即代码、应用仓库和平台应用程序编程接口（Application Programming Interface，API）的所有权如何划分？
 - 租户、工作负载、凭据和故障域应在哪些层次隔离？
 
 ## 推荐学习顺序
@@ -50,13 +50,13 @@ tags:
 1. 先画出容器、镜像、配置、持久状态和部署单元，明确什么能被替换。
 2. 再标出服务发现、入口、东西向流量与网络策略，确认每次跨界调用的身份和策略执行点。
 3. 接着把期望状态调谐、扩缩容和发布放入有信号、有预算、有回滚条件的控制循环。
-4. 用可观测性信号定义 SLI、SLO 与告警，并说明这些信号如何约束发布和容量动作。
-5. 划分 GitOps、IaC、平台能力与业务配置的所有权，明确基础设施和平台变更由谁负责。
+4. 用可观测性信号定义服务级别指标、服务级别目标与告警，并说明这些信号如何约束发布和容量动作。
+5. 划分声明式交付、基础设施即代码、平台能力与业务配置的所有权，明确基础设施和平台变更由谁负责。
 6. 最后检查租户、工作负载、凭据和故障域的安全与隔离边界是否贯穿上述各层。
 
 ## 必读起点
 
-[可扩展性、弹性与扩缩容](/quality-attributes/qa-04)用于先界定 demand、scale unit、扩缩控制延迟与分区边界，避免把平台控制器动作直接当作容量结果。
+[可扩展性、弹性与扩缩容](/quality-attributes/qa-04)用于先界定需求量、扩展单元、扩缩控制延迟与分区边界，避免把平台控制器动作直接当作容量结果。
 
 [可运维性、可观测性与事件闭环](/quality-attributes/qa-08)用于把平台信号连接到分诊、诊断、受控变更和用户可见恢复，而不是把遥测覆盖率直接当作平台可运维性。
 
@@ -64,34 +64,34 @@ tags:
 
 ## 查漏补缺
 
-使用 [CNCF Curriculum](https://github.com/cncf/curriculum) 查找 Kubernetes、可观测性、GitOps 与平台工程能力域，再用 [Awesome Software Architecture](https://github.com/mehdihadeli/awesome-software-architecture) 的 Cloud Design Patterns、Microservices、Observability 和 Security 专题定位更窄的阅读入口。二者都是导航索引，不单独证明生产建议。
+使用 [CNCF Curriculum](https://github.com/cncf/curriculum) 查找容器编排、可观测性、声明式交付与平台工程能力域，再用 [Awesome Software Architecture](https://github.com/mehdihadeli/awesome-software-architecture) 的云设计模式、微服务、可观测性和安全性（Security）专题定位更窄的阅读入口。二者都是导航索引，不单独证明生产建议。
 
 ## 深入拓展
 
-当工作需要建立运行目标与发布治理时，再进入 [Google SRE Workbook](https://sre.google/workbook/table-of-contents/) 的 SLO、告警、发布和事件响应章节。具体平台仍需根据组织所有权、合规边界和失败历史验证，不能从通用材料直接推出唯一方案。
+当工作需要建立运行目标与发布治理时，再进入 [Google SRE Workbook](https://sre.google/workbook/table-of-contents/) 的服务级别目标、告警、发布和事件响应章节。具体平台仍需根据组织所有权、合规边界和失败历史验证，不能从通用材料直接推出唯一方案。
 
 ## 用本站案例深化
 
-- [Kubernetes Reconciliation Loop](/cases/kubernetes-reconciliation-loop)：检查 spec/status、调谐所有权、版本冲突和有界恢复。
-- [AWS Cell Architecture + Shuffle Sharding](/cases/aws-cell-shuffle-sharding)：检查 cell、租户映射、容量边界和故障半径。
-- [Cloudflare Durable Objects + workerd](/cases/cloudflare-durable-objects-workerd)：检查按身份寻址的状态单元、热点 key 和运行时隔离。
-- [Microsoft 多智能体参考架构](/cases/microsoft-multi-agent-reference-architecture)：检查身份、网络、数据、可观测性和平台治理如何共同约束部署。
+- [Kubernetes 调谐循环](/cases/kubernetes-reconciliation-loop)：检查规格与状态、调谐所有权、版本冲突和有界恢复。
+- [亚马逊云服务（Amazon Web Services，AWS）单元架构与洗牌分片](/cases/aws-cell-shuffle-sharding)：检查单元、租户映射、容量边界和故障半径。
+- [Cloudflare 持久对象（Durable Objects）与 workerd 运行时](/cases/cloudflare-durable-objects-workerd)：检查按身份寻址的状态单元、热点键和运行时隔离。
+- [Microsoft 多智能体（Agent）参考架构](/cases/microsoft-multi-agent-reference-architecture)：检查身份、网络、数据、可观测性和平台治理如何共同约束部署。
 
 ## 当前已覆盖
 
-[Kubernetes Reconciliation Loop](/cases/kubernetes-reconciliation-loop)、[AWS Cell Architecture + Shuffle Sharding](/cases/aws-cell-shuffle-sharding)、[Cloudflare Durable Objects + workerd](/cases/cloudflare-durable-objects-workerd) 与 [Microsoft 多智能体参考架构](/cases/microsoft-multi-agent-reference-architecture) 已经覆盖期望状态与观察状态的调谐、基于版本的冲突处理、cell 与 shuffle sharding 隔离、按身份寻址的状态单元，以及身份、网络、数据和可观测性边界。这些案例能支持机制比较，但不能替代完整的 Kubernetes 运维、GitOps 工具选型或组织平台建设指南。
+[上述调谐循环案例](/cases/kubernetes-reconciliation-loop)、[上述单元隔离案例](/cases/aws-cell-shuffle-sharding)、[上述边缘状态案例](/cases/cloudflare-durable-objects-workerd)与[上述企业参考架构案例](/cases/microsoft-multi-agent-reference-architecture)已经覆盖期望状态与观察状态的调谐、基于版本的冲突处理、单元与洗牌分片隔离、按身份寻址的状态单元，以及身份、网络、数据和可观测性边界。这些案例能支持机制比较，但不能替代完整的容器编排运维、声明式交付工具选型或组织平台建设指南。
 
 ## 延伸问题
 
 - 镜像供应链、签名验证、制品晋级与运行时准入如何形成端到端证据链？
-- 服务网格、Gateway API 与多集群流量切换分别在哪些故障边界生效？
-- HPA、VPA、集群扩容与队列背压同时作用时，容量决策应以哪些信号为准？
-- GitOps 漂移、IaC 状态和平台 API 版本分别由谁拥有？
-- SLI、错误预算、发布暂停与复盘怎样形成可验证闭环？
+- 服务网格、网关 API 与多集群流量切换分别在哪些故障边界生效？
+- 水平自动扩缩器（Horizontal Pod Autoscaler，HPA）、垂直自动扩缩器（Vertical Pod Autoscaler，VPA）、集群扩容与队列背压同时作用时，容量决策应以哪些信号为准？
+- 声明式交付漂移、基础设施即代码状态和平台 API 版本分别由谁拥有？
+- 服务级别指标、错误预算、发布暂停与复盘怎样形成可验证闭环？
 
 ## 实践产出
 
-为一个真实服务保留一张平台责任图：标出镜像与配置、持久状态、网络入口、调谐器、扩缩容信号、发布与回滚、SLI/SLO、基础设施变更路径，以及平台团队和业务团队的所有权。
+为一个真实服务保留一张平台责任图：标出镜像与配置、持久状态、网络入口、调谐器、扩缩容信号、发布与回滚、服务级别指标与目标、基础设施变更路径，以及平台团队和业务团队的所有权。
 
 ## 检查点
 

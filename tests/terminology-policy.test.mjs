@@ -593,17 +593,13 @@ test('rejects bare Glossary after the arc42 product name is introduced', async (
   ]);
 });
 
-test('reports the real intro title as a premature proper noun without changing it', async () => {
+test('accepts the Chinese-context introduction of the project name', async () => {
   const result = await checkTerminology({
     root: repositoryRoot,
     paths: ['content/intro.mdx'],
   });
 
-  assert.ok(result.issues.some((entry) => (
-    entry.ruleId === 'first-use-required'
-    && entry.matched === 'Tego Arch'
-    && entry.expected === 'Tego Arch 架构知识项目'
-  )));
+  assert.deepEqual(result.issues, []);
 });
 
 test('uses explicit phrase boundaries and allows introduced acronyms and registered proper nouns', async () => {

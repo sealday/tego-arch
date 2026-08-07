@@ -68,6 +68,12 @@ function injectFunctionStatement(component, functionName, statement) {
 }
 
 function assertRenderedTerms(markup, terms) {
+  const escapeHtml = (value) => value
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#x27;');
   const rows = [...markup.matchAll(
     /<tr data-term-id="([^"]+)">([\s\S]*?)<\/tr>/gu,
   )].map((match) => ({id: match[1], content: match[2]}));
@@ -78,13 +84,13 @@ function assertRenderedTerms(markup, terms) {
 
   for (const [index, term] of expected.entries()) {
     const row = rows[index];
-    assert.ok(row.content.includes(`>${term.canonical_zh}</th>`), term.id);
-    assert.ok(row.content.includes(`<td>${term.first_use}</td>`), term.id);
+    assert.ok(row.content.includes(`>${escapeHtml(term.canonical_zh)}</th>`), term.id);
+    assert.ok(row.content.includes(`<td>${escapeHtml(term.first_use)}</td>`), term.id);
     assert.ok(
-      row.content.includes(`<td>${term.subsequent_use.join('、')}</td>`),
+      row.content.includes(`<td>${escapeHtml(term.subsequent_use.join('、'))}</td>`),
       term.id,
     );
-    assert.ok(row.content.includes(`<td>${term.note}</td>`), term.id);
+    assert.ok(row.content.includes(`<td>${escapeHtml(term.note)}</td>`), term.id);
   }
 }
 

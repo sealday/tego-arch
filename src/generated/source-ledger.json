@@ -23802,7 +23802,7 @@
   ],
   "documents": {
     "content/cases/apache-kafka-consumer-groups.mdx": {
-      "title": "Apache Kafka Consumer Groups：用分区所有权组织可重放的 Agent 工作",
+      "title": "Apache Kafka：用消费者组的分区所有权组织可重放工作",
       "slug": "/cases/apache-kafka-consumer-groups",
       "reviewed_at": "2026-07-24",
       "copyright_checks": [
@@ -24309,7 +24309,7 @@
       ]
     },
     "content/cases/aws-cell-shuffle-sharding.mdx": {
-      "title": "AWS Cell Architecture + Shuffle Sharding：把失控智能体限制在可计算的故障半径内",
+      "title": "单元架构与洗牌分片：限制故障半径",
       "slug": "/cases/aws-cell-shuffle-sharding",
       "reviewed_at": "2026-07-24",
       "copyright_checks": [
@@ -24647,7 +24647,7 @@
       ]
     },
     "content/cases/aws-cli-agent-orchestrator.mdx": {
-      "title": "AWS Labs CLI Agent Orchestrator：以终端为执行边界的 Supervisor–Worker 编排",
+      "title": "以终端为执行边界的多进程编排",
       "slug": "/cases/aws-cli-agent-orchestrator",
       "reviewed_at": "2026-07-24",
       "copyright_checks": [
@@ -24907,7 +24907,7 @@
       ]
     },
     "content/cases/cloudflare-durable-objects-workerd.mdx": {
-      "title": "Cloudflare Durable Objects + workerd：把边缘协调收敛到身份寻址的状态单元",
+      "title": "把边缘协调收敛到身份寻址的状态单元",
       "slug": "/cases/cloudflare-durable-objects-workerd",
       "reviewed_at": "2026-07-24",
       "copyright_checks": [
@@ -25258,7 +25258,7 @@
       ]
     },
     "content/cases/erlang-otp-supervision-tree.mdx": {
-      "title": "Erlang/OTP Supervision Tree：把失败恢复设计成层级控制协议",
+      "title": "Erlang/OTP：把失败恢复设计成层级控制协议",
       "slug": "/cases/erlang-otp-supervision-tree",
       "reviewed_at": "2026-07-24",
       "copyright_checks": [
@@ -25427,7 +25427,7 @@
       ]
     },
     "content/cases/google-adk-a2a.mdx": {
-      "title": "Google ADK 与 A2A：从本地层级编排到跨系统智能体协作",
+      "title": "本地层级编排与跨系统协作",
       "slug": "/cases/google-adk-a2a",
       "reviewed_at": "2026-07-24",
       "copyright_checks": [
@@ -26128,7 +26128,7 @@
       ]
     },
     "content/cases/kubeedge-cloud-edge-autonomy.mdx": {
-      "title": "KubeEdge Cloud-Edge Autonomy：在断网边界上划分规划权与执行权",
+      "title": "云边自治：在断网边界划分规划权与执行权",
       "slug": "/cases/kubeedge-cloud-edge-autonomy",
       "reviewed_at": "2026-07-24",
       "copyright_checks": [
@@ -26466,7 +26466,7 @@
       ]
     },
     "content/cases/kubernetes-reconciliation-loop.mdx": {
-      "title": "Kubernetes Reconciliation Loop：让智能体围绕期望状态持续收敛",
+      "title": "Kubernetes：让自动控制器围绕期望状态持续收敛",
       "slug": "/cases/kubernetes-reconciliation-loop",
       "reviewed_at": "2026-07-24",
       "copyright_checks": [
@@ -26791,7 +26791,7 @@
       ]
     },
     "content/cases/langgraph-supervisor.mdx": {
-      "title": "LangGraph Supervisor：用显式状态构建可恢复的多智能体编排",
+      "title": "显式状态图：构建可恢复编排",
       "slug": "/cases/langgraph-supervisor",
       "reviewed_at": "2026-07-24",
       "copyright_checks": [
@@ -27285,7 +27285,7 @@
       ]
     },
     "content/cases/micro-frontends-single-spa.mdx": {
-      "title": "Micro Frontends + single-spa：用垂直业务切片约束多 Agent 所有权",
+      "title": "single-spa 微前端框架：用垂直业务切片约束跨团队所有权",
       "slug": "/cases/micro-frontends-single-spa",
       "reviewed_at": "2026-07-24",
       "copyright_checks": [
@@ -27545,7 +27545,7 @@
       ]
     },
     "content/cases/microsoft-multi-agent-reference-architecture.mdx": {
-      "title": "Microsoft 多智能体参考架构：企业治理下的受控自治",
+      "title": "Microsoft：企业协作平台的受控自治",
       "slug": "/cases/microsoft-multi-agent-reference-architecture",
       "reviewed_at": "2026-07-24",
       "copyright_checks": [
@@ -27753,7 +27753,7 @@
       ]
     },
     "content/cases/new-api-channel-pool-routing.mdx": {
-      "title": "New API Channel Pool Routing：把模型请求分解为能力、层级与故障隔离",
+      "title": "New API通道池路由：把模型请求分解为能力、层级与故障隔离",
       "slug": "/cases/new-api-channel-pool-routing",
       "reviewed_at": "2026-07-24",
       "copyright_checks": [
@@ -28078,7 +28078,7 @@
       ]
     },
     "content/cases/openai-agents-sdk.mdx": {
-      "title": "OpenAI Agents SDK：小型多智能体系统的控制权模型",
+      "title": "OpenAI Agents SDK：控制权模型",
       "slug": "/cases/openai-agents-sdk",
       "reviewed_at": "2026-07-24",
       "copyright_checks": [
@@ -28377,7 +28377,7 @@
       ]
     },
     "content/cases/ros2-dds-agent-lifecycle.mdx": {
-      "title": "ROS 2 + DDS Agent Lifecycle：为物理智能体选择通信语义与受管状态",
+      "title": "物理任务通信语义与受管生命周期",
       "slug": "/cases/ros2-dds-agent-lifecycle",
       "reviewed_at": "2026-07-24",
       "copyright_checks": [
@@ -28663,7 +28663,7 @@
       ]
     },
     "content/cases/temporal-saga-durable-execution.mdx": {
-      "title": "Temporal Durable Execution + Saga：为长时智能体任务建立可恢复边界",
+      "title": "持久化执行与长事务：建立可恢复边界",
       "slug": "/cases/temporal-saga-durable-execution",
       "reviewed_at": "2026-07-24",
       "copyright_checks": [
@@ -29053,7 +29053,7 @@
       ]
     },
     "content/cases/yjs-crdt-collaboration.mdx": {
-      "title": "Yjs CRDT Collaboration：让人和多个 Agent 合并共享工作区状态",
+      "title": "Yjs：让人和多个自动协作者合并共享工作区状态",
       "slug": "/cases/yjs-crdt-collaboration",
       "reviewed_at": "2026-07-24",
       "copyright_checks": [
@@ -29303,7 +29303,7 @@
       ]
     },
     "content/concepts/fnd-02-architecture-drivers-asr.mdx": {
-      "title": "架构驱动力与 ASR",
+      "title": "架构驱动力与架构重要需求（Architecturally Significant Requirement，ASR）",
       "slug": "/concepts/fnd-02",
       "reviewed_at": "2026-07-24",
       "copyright_checks": [
@@ -29533,7 +29533,7 @@
       "citations": []
     },
     "content/intro.mdx": {
-      "title": "Tego Arch",
+      "title": "Tego Arch 架构知识项目",
       "slug": "/intro",
       "reviewed_at": "2026-07-24",
       "copyright_checks": [
@@ -29584,7 +29584,7 @@
       "citations": []
     },
     "content/methods/mth-01-quality-attribute-workshop.mdx": {
-      "title": "质量属性工作坊（QAW）",
+      "title": "质量属性（Quality Attribute）协作工作坊",
       "slug": "/methods/mth-01",
       "reviewed_at": "2026-07-24",
       "copyright_checks": [
@@ -29624,7 +29624,7 @@
       ]
     },
     "content/methods/mth-02-architecture-tradeoff-analysis-method.mdx": {
-      "title": "架构权衡分析方法（ATAM）",
+      "title": "架构权衡分析方法（Architecture Tradeoff Analysis Method，ATAM）",
       "slug": "/methods/mth-02",
       "reviewed_at": "2026-07-24",
       "copyright_checks": [
@@ -29664,7 +29664,7 @@
       ]
     },
     "content/methods/mth-03-adr-lifecycle.mdx": {
-      "title": "ADR 生命周期",
+      "title": "架构决策记录（Architecture Decision Record，ADR）生命周期",
       "slug": "/methods/mth-03",
       "reviewed_at": "2026-07-24",
       "copyright_checks": [
@@ -30008,7 +30008,7 @@
       ]
     },
     "content/modeling/mod-02-c4-context-container.mdx": {
-      "title": "C4 Context 与 Container",
+      "title": "C4 架构模型（C4 Model）：系统上下文图与容器图",
       "slug": "/modeling/mod-02",
       "reviewed_at": "2026-07-24",
       "copyright_checks": [
@@ -30048,7 +30048,7 @@
       ]
     },
     "content/modeling/mod-03-c4-component-dynamic-deployment.mdx": {
-      "title": "C4 Component、Dynamic 与 Deployment",
+      "title": "C4 架构模型（C4 Model）：组件图、动态图与部署图",
       "slug": "/modeling/mod-03",
       "reviewed_at": "2026-07-30",
       "copyright_checks": [
@@ -30143,7 +30143,7 @@
       ]
     },
     "content/modeling/mod-04-arc42-documentation-skeleton.mdx": {
-      "title": "arc42 文档骨架",
+      "title": "arc42 架构文档模板：文档骨架",
       "slug": "/modeling/mod-04",
       "reviewed_at": "2026-07-30",
       "copyright_checks": [
@@ -30331,7 +30331,7 @@
       ]
     },
     "content/modeling/mod-06-er-model-relationship-boundaries.mdx": {
-      "title": "ER 模型与关系边界",
+      "title": "实体关系模型与关系边界",
       "slug": "/modeling/mod-06",
       "reviewed_at": "2026-07-31",
       "copyright_checks": [
@@ -30397,7 +30397,7 @@
       ]
     },
     "content/modeling/mod-07-uml-diagram-selection-guide.mdx": {
-      "title": "UML 选图指南",
+      "title": "统一建模语言（Unified Modeling Language，UML）选图指南",
       "slug": "/modeling/mod-07",
       "reviewed_at": "2026-08-01",
       "copyright_checks": [
@@ -30546,7 +30546,7 @@
       ]
     },
     "content/modeling/mod-09-eventstorming.mdx": {
-      "title": "EventStorming 工作坊建模",
+      "title": "事件风暴工作坊建模",
       "slug": "/modeling/mod-09",
       "reviewed_at": "2026-08-03",
       "copyright_checks": [
@@ -30631,7 +30631,7 @@
       ]
     },
     "content/modeling/mod-10-domain-storytelling.mdx": {
-      "title": "Domain Storytelling 协作建模",
+      "title": "领域叙事（Domain Storytelling）协作建模",
       "slug": "/modeling/mod-10",
       "reviewed_at": "2026-08-04",
       "copyright_checks": [
@@ -30702,7 +30702,7 @@
       ]
     },
     "content/modeling/mod-11-ddd-context-map.mdx": {
-      "title": "DDD Context Map 建模",
+      "title": "领域驱动设计上下文映射（DDD Context Map）",
       "slug": "/modeling/mod-11",
       "reviewed_at": "2026-08-05",
       "copyright_checks": [
@@ -31325,7 +31325,7 @@
       ]
     },
     "content/paths/06-agentic-architecture.mdx": {
-      "title": "Agentic 架构专项",
+      "title": "自主式架构专项",
       "slug": "/paths/agentic-architecture",
       "reviewed_at": "2026-07-24",
       "copyright_checks": [
@@ -31523,7 +31523,7 @@
       ]
     },
     "content/paths/09-edge-physical-agents.mdx": {
-      "title": "边缘与物理智能体",
+      "title": "边缘与物理自主系统",
       "slug": "/paths/edge-physical-agents",
       "reviewed_at": "2026-07-24",
       "copyright_checks": [
@@ -31563,7 +31563,7 @@
       ]
     },
     "content/paths/10-agent-platform-gateway.mdx": {
-      "title": "Agent 平台与模型网关",
+      "title": "自主系统平台与模型网关",
       "slug": "/paths/agent-platform-gateway",
       "reviewed_at": "2026-07-24",
       "copyright_checks": [
@@ -31707,7 +31707,7 @@
       ]
     },
     "content/patterns/rel-02-retry-backoff-jitter.mdx": {
-      "title": "Retry、Exponential Backoff 与 Jitter",
+      "title": "重试（Retry）、指数退避（Exponential Backoff）与抖动（Jitter）",
       "slug": "/patterns/rel-02",
       "reviewed_at": "2026-07-24",
       "copyright_checks": [
@@ -31978,7 +31978,7 @@
       ]
     },
     "content/principles/pr-06-kiss-yagni-dry.mdx": {
-      "title": "KISS、YAGNI 与 DRY 的张力",
+      "title": "保持简单、非必要不实现与避免重复的张力",
       "slug": "/principles/pr-06",
       "reviewed_at": "2026-07-28",
       "copyright_checks": [
@@ -32033,7 +32033,7 @@
       ]
     },
     "content/principles/pr-07-fail-fast-fail-safe-graceful-degradation.mdx": {
-      "title": "Fail Fast、Fail Safe 与 Graceful Degradation",
+      "title": "快速失败（Fail Fast）、故障安全（Fail Safe）与优雅降级（Graceful Degradation）",
       "slug": "/principles/pr-07",
       "reviewed_at": "2026-07-28",
       "copyright_checks": [
@@ -32255,7 +32255,7 @@
       ]
     },
     "content/principles/pr-11-cqs-cqrs-read-write-separation.mdx": {
-      "title": "CQS、CQRS 与读写分离",
+      "title": "命令查询分离、命令查询职责分离（Command Query Responsibility Segregation，CQRS）与读写分离",
       "slug": "/principles/pr-11",
       "reviewed_at": "2026-07-28",
       "copyright_checks": [
@@ -32325,7 +32325,7 @@
       ]
     },
     "content/principles/pr-12-open-closed-interface-segregation.mdx": {
-      "title": "Open/Closed 与 Interface Segregation",
+      "title": "开闭原则（Open/Closed Principle）与接口隔离原则（Interface Segregation Principle）",
       "slug": "/principles/pr-12",
       "reviewed_at": "2026-07-29",
       "copyright_checks": [
@@ -32366,7 +32366,7 @@
       ]
     },
     "content/principles/pr-13-persistence-ignorance.mdx": {
-      "title": "Persistence Ignorance",
+      "title": "持久化无知（Persistence Ignorance）",
       "slug": "/principles/pr-13",
       "reviewed_at": "2026-07-29",
       "copyright_checks": [
@@ -32421,7 +32421,7 @@
       ]
     },
     "content/principles/pr-14-grasp-responsibility-assignment.mdx": {
-      "title": "GRASP 责任分配",
+      "title": "通用职责分配原则",
       "slug": "/principles/pr-14",
       "reviewed_at": "2026-07-29",
       "copyright_checks": [
@@ -32461,7 +32461,7 @@
       ]
     },
     "content/principles/pr-15-conway-law-team-boundaries.mdx": {
-      "title": "Conway 定律与团队边界",
+      "title": "康威定律与团队边界",
       "slug": "/principles/pr-15",
       "reviewed_at": "2026-07-29",
       "copyright_checks": [
@@ -32515,7 +32515,7 @@
       ]
     },
     "content/principles/pr-16-secure-by-design.mdx": {
-      "title": "Secure by Design",
+      "title": "安全内建（Secure by Design）",
       "slug": "/principles/pr-16",
       "reviewed_at": "2026-07-29",
       "copyright_checks": [

@@ -60,7 +60,7 @@ test('gives every canonical case a concise navigation-only label', async () => {
 
   assert.match(
     await source('content/cases/kong-ai-gateway-routing-resilience.mdx'),
-    /^sidebar_label: Kong AI Gateway$/m,
+    /^sidebar_label: 人工智能网关路由与恢复$/m,
   );
 });
 

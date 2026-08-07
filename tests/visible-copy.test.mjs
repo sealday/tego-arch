@@ -439,12 +439,12 @@ test('parses current flowchart, sequence and state diagram reader labels', async
     {
       file: 'content/cases/aws-cli-agent-orchestrator.mdx',
       expected: [
-        'CAO 控制面',
-        'SQLite\\nterminal / inbox / workflow journal',
+        '命令行智能体编排器控制面',
+        'SQLite 终端 / 收件箱 / 工作流日志簿',
         '用户',
-        '目标 + 约束',
+        '目标与约束',
         '并行分派',
-        'worker ERROR 或超时',
+        '工作进程错误或超时',
       ],
     },
   ];

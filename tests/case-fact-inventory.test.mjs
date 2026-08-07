@@ -70,7 +70,7 @@ const factInventory = {
     'NotImplementedError(\'Cancellation is not supported\')',
   ],
   'kubeedge-cloud-edge-autonomy.mdx': [
-    '等待恰好两个 heartbeat 周期',
+    '等待恰好两个心跳周期',
     'max_offline_duration',
     'lease_id/policy/model/tool/security_epoch',
     'operation_id + device + base_version',
@@ -110,8 +110,8 @@ const factInventory = {
     'retries',
     'max_fails',
     'fail_timeout',
-    'task ID',
-    'context ID',
+    '任务标识',
+    '上下文标识',
   ],
   'micro-frontends-single-spa.mdx': [
     'activeWhen(location)',
@@ -130,7 +130,7 @@ const factInventory = {
     'GetNextEnabledKey',
     'shouldRetry',
     'auto-disabled',
-    'retry index',
+    '较低优先级索引',
   ],
   'openai-agents-sdk.mdx': [
     'current_agent',

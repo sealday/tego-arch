@@ -29,7 +29,7 @@ tags:
 
 ## 为什么学
 
-重试只能再次发起动作，不能自动恢复正确状态。可靠系统需要知道什么可以重做、状态如何观察、恢复何时停止，以及无法自动判断时由谁接管。
+重试（Retry）只能再次发起动作，不能自动恢复正确状态。可靠系统需要知道什么可以重做、状态如何观察、恢复何时停止，以及无法自动判断时由谁接管。
 
 ## 前置能力与跳过条件
 
@@ -44,7 +44,7 @@ tags:
 
 ## 推荐学习顺序
 
-1. 先读[可靠性、可用性与可恢复性](/quality-attributes/qa-02)，区分 fault、failure、RTO、RPO 与结果未知。
+1. 先读[可靠性、可用性与可恢复性](/quality-attributes/qa-02)，区分故障原因、服务失效、恢复时间目标（Recovery Time Objective，RTO）、恢复点目标（Recovery Point Objective，RPO）与结果未知。
 2. 为长时任务列出业务状态与执行状态，并指定唯一写入者。
 3. 标出可安全重做的动作、幂等键和外部副作用。
 4. 定义超时、重试预算、取消与人工终态。
@@ -52,7 +52,7 @@ tags:
 
 ## 必读起点
 
-[可靠性、可用性与可恢复性](/quality-attributes/qa-02)先建立故障、服务、数据和恢复边界。[Google SRE Workbook](https://sre.google/workbook/table-of-contents/) 的 Foundations 与 Practices 再用 SLO、监控和故障响应连接设计与运行结果。
+[可靠性、可用性与可恢复性](/quality-attributes/qa-02)先建立故障、服务、数据和恢复边界。[Google SRE Workbook](https://sre.google/workbook/table-of-contents/) 的基础与实践部分再用服务级别目标、监控和故障响应连接设计与运行结果。
 
 ## 查漏补缺
 
@@ -60,14 +60,14 @@ tags:
 
 ## 深入拓展
 
-继续阅读 SRE Workbook 中的告警、事件响应和复盘章节，把“可恢复”落实为信号、动作与负责人。自动恢复必须有停止边界，无法判断业务事实时应转入人工终态。
+继续阅读该工作手册中的告警、事件响应和复盘章节，把“可恢复”落实为信号、动作与负责人。自动恢复必须有停止边界，无法判断业务事实时应转入人工终态。
 
 ## 用本站案例深化
 
-- [Erlang/OTP Supervision Tree](/cases/erlang-otp-supervision-tree)：比较局部重启、向上升级和重启强度。
-- [Kubernetes Reconciliation Loop](/cases/kubernetes-reconciliation-loop)：理解 spec/status、幂等协调和持续收敛。
-- [Temporal Durable Execution + Saga](/cases/temporal-saga-durable-execution)：检查确定性重放、Activity、副作用和补偿边界。
-- [Apache Kafka Consumer Groups](/cases/apache-kafka-consumer-groups)：检查 rebalance、在途动作、重复执行和背压。
+- [Erlang/OTP 监督树](/cases/erlang-otp-supervision-tree)：比较局部重启、向上升级和重启强度。
+- [Kubernetes 调谐循环](/cases/kubernetes-reconciliation-loop)：理解规格与状态、幂等协调和持续收敛。
+- [Temporal 工作流平台的耐久执行与补偿事务](/cases/temporal-saga-durable-execution)：检查确定性重放、活动任务、副作用和补偿边界。
+- [Apache Kafka 消费者组](/cases/apache-kafka-consumer-groups)：检查再均衡、在途动作、重复执行和背压。
 
 ## 实践产出
 

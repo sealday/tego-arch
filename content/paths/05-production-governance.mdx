@@ -38,7 +38,7 @@ tags:
 
 ## 核心问题
 
-- 分区、cell、配额、薄路由和负载隔离如何控制容量与故障半径？
+- 分区、单元、配额、薄路由和负载隔离如何控制容量与故障半径？
 - 可观测性、安全、合规、成本和发布策略如何成为架构约束？
 - 平台能力与业务能力应如何分工？
 - 热点租户、依赖故障和失败发布分别由什么信号触发降级或回滚？
@@ -52,25 +52,25 @@ tags:
 
 ## 必读起点
 
-[安全、隐私与信任边界](/quality-attributes/qa-05)用于先盘点资产、主体、处理目的和授权上下文；[可运维性、可观测性与事件闭环](/quality-attributes/qa-08)再把信号、诊断、受控动作和用户可见恢复连成责任明确的运行闭环。
+[安全、隐私（Privacy）与信任边界](/quality-attributes/qa-05)用于先盘点资产、主体、处理目的和授权上下文；[可运维性、可观测性与事件闭环](/quality-attributes/qa-08)再把信号、诊断、受控动作和用户可见恢复连成责任明确的运行闭环。
 
 [AWS Builders Library 的 Workload isolation using shuffle-sharding](https://aws.amazon.com/builders-library/workload-isolation-using-shuffle-sharding/) 用具体机制说明如何限制共享系统中的故障相关性和租户影响范围。
 
 ## 查漏补缺
 
-使用 [System Design Primer 的解题流程](https://github.com/donnemartin/system-design-primer#how-to-approach-a-system-design-interview-question) 和 [Awesome Software Architecture](https://github.com/mehdihadeli/awesome-software-architecture) 中的 Microservices、Observability、Security 与 Cloud Design Patterns 专题补齐当前缺口。两者用于社区导航和解释，不能作为生产架构事实的唯一证据。
+使用 [System Design Primer 的解题流程](https://github.com/donnemartin/system-design-primer#how-to-approach-a-system-design-interview-question) 和 [Awesome Software Architecture](https://github.com/mehdihadeli/awesome-software-architecture) 中的微服务、可观测性、安全性（Security）与云设计模式专题补齐当前缺口。两者用于社区导航和解释，不能作为生产架构事实的唯一证据。
 
 ## 深入拓展
 
-继续阅读 [Google SRE Workbook](https://sre.google/workbook/table-of-contents/) 中的 SLO、告警、发布和事件管理章节，把生产治理落实为日常信号与控制动作。
+继续阅读 [Google SRE Workbook](https://sre.google/workbook/table-of-contents/) 中的服务级别目标、告警、发布和事件管理章节，把生产治理落实为日常信号与控制动作。
 
 ## 用本站案例深化
 
-- [AWS Cell Architecture + Shuffle Sharding](/cases/aws-cell-shuffle-sharding)：研究租户隔离、容量边界和故障半径。
-- [Cloudflare Durable Objects + workerd](/cases/cloudflare-durable-objects-workerd)：研究身份寻址的状态单元、热点 key 和重分片边界。
-- [New API Channel Pool Routing](/cases/new-api-channel-pool-routing)：研究能力路由、Key 池、故障恢复和合规隔离。
-- [LiteLLM Virtual Keys](/cases/litellm-virtual-keys-governance)：研究分层权限、预算限流、Guardrail 时序和供应商凭据托管。
-- [Microsoft 多智能体参考架构](/cases/microsoft-multi-agent-reference-architecture)：研究身份、网络、数据、评估和平台治理。
+- [单元架构与洗牌分片案例](/cases/aws-cell-shuffle-sharding)：研究租户隔离、容量边界和故障半径。
+- [Cloudflare 持久对象（Durable Objects）与 workerd 运行时](/cases/cloudflare-durable-objects-workerd)：研究身份寻址的状态单元、热点键和重分片边界。
+- [New API 渠道池路由](/cases/new-api-channel-pool-routing)：研究能力路由、密钥池、故障恢复和合规隔离。
+- [LiteLLM 虚拟密钥](/cases/litellm-virtual-keys-governance)：研究分层权限、预算限流、护栏（guardrail）时序和供应商凭据托管。
+- [Microsoft 多智能体（Agent）参考架构](/cases/microsoft-multi-agent-reference-architecture)：研究身份、网络、数据、评估和平台治理。
 
 ## 实践产出
 
@@ -82,4 +82,4 @@ tags:
 
 ## 继续学习
 
-回看[可靠性与状态管理](/paths/reliability-state)，或继续进入[Agentic 架构专项](/paths/agentic-architecture)。如果当前工作与智能体无关，也可以回到[路线总览](/paths)，按职责选择云原生、协作状态或边缘物理专题。
+回看[可靠性与状态管理](/paths/reliability-state)，或继续进入[智能体式架构专项](/paths/agentic-architecture)。如果当前工作与智能体无关，也可以回到[路线总览](/paths)，按职责选择云原生、协作状态或边缘物理专题。
