@@ -93,24 +93,6 @@ const visitAst = (node, visit) => {
 };
 
 const normalizedLinkLabel = (value) => value.normalize('NFC').replace(/\s+/gu, ' ').trim();
-const protectedCaseMetadata = new Set([
-  'title\u0000AWS Cell Architecture + Shuffle Sharding：限制故障半径',
-  'sidebar_label\u0000AWS Cell Architecture + Shuffle Sharding',
-  'title\u0000AWS Labs CLI Agent Orchestrator：以终端为执行边界的多进程编排',
-  'sidebar_label\u0000AWS Labs CLI Agent Orchestrator',
-  'title\u0000Cloudflare Durable Objects + workerd：把边缘协调收敛到身份寻址的状态单元',
-  'sidebar_label\u0000Cloudflare Durable Objects + workerd',
-  'title\u0000Google ADK 与 A2A：本地层级编排与跨系统协作',
-  'sidebar_label\u0000Google ADK 与 A2A',
-  'title\u0000KubeEdge Cloud-Edge Autonomy：在断网边界划分规划权与执行权',
-  'sidebar_label\u0000KubeEdge Cloud-Edge Autonomy',
-  'title\u0000LangGraph Supervisor：用显式状态图构建可恢复编排',
-  'sidebar_label\u0000LangGraph Supervisor',
-  'title\u0000ROS 2 + DDS Agent Lifecycle：为物理任务选择通信语义与受管生命周期',
-  'sidebar_label\u0000ROS 2 + DDS Agent Lifecycle',
-  'title\u0000Temporal Durable Execution + Saga：为长事务建立可恢复边界',
-  'sidebar_label\u0000Temporal Durable Execution + Saga',
-]);
 
 const externalCitationSource = (url, sources) => sources.find((source) => {
   if (!citationMatchesSource(url, source) || source.source_kind === 'original-illustration') {
@@ -146,7 +128,7 @@ const collectMarkdownRecords = (source, relativePath, sources) => {
   );
   return {
     records: [
-      ...parsed.frontMatter.filter(({field, text}) => !protectedCaseMetadata.has(`${field}\u0000${text}`)),
+      ...parsed.frontMatter,
       ...parsed.blocks.filter(outsideQuotes),
     ],
     suppressionComments: parsed.comments,

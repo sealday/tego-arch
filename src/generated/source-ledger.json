@@ -23950,7 +23950,7 @@
   ],
   "documents": {
     "content/cases/apache-kafka-consumer-groups.mdx": {
-      "title": "Apache Kafka：用消费者组的分区所有权组织可重放工作",
+      "title": "Apache Kafka 事件流平台：用消费者组的分区所有权组织可重放工作",
       "slug": "/cases/apache-kafka-consumer-groups",
       "reviewed_at": "2026-07-24",
       "copyright_checks": [
@@ -24457,7 +24457,7 @@
       ]
     },
     "content/cases/aws-cell-shuffle-sharding.mdx": {
-      "title": "AWS Cell Architecture + Shuffle Sharding：限制故障半径",
+      "title": "AWS Cell Architecture + Shuffle Sharding 架构方案：限制故障半径",
       "slug": "/cases/aws-cell-shuffle-sharding",
       "reviewed_at": "2026-07-24",
       "copyright_checks": [
@@ -24795,7 +24795,7 @@
       ]
     },
     "content/cases/aws-cli-agent-orchestrator.mdx": {
-      "title": "AWS Labs CLI Agent Orchestrator：以终端为执行边界的多进程编排",
+      "title": "AWS Labs CLI Agent Orchestrator 多进程编排项目：以终端为执行边界的多进程编排",
       "slug": "/cases/aws-cli-agent-orchestrator",
       "reviewed_at": "2026-07-24",
       "copyright_checks": [
@@ -25055,7 +25055,7 @@
       ]
     },
     "content/cases/cloudflare-durable-objects-workerd.mdx": {
-      "title": "Cloudflare Durable Objects + workerd：把边缘协调收敛到身份寻址的状态单元",
+      "title": "Cloudflare Durable Objects + workerd 边缘协调方案：把边缘协调收敛到身份寻址的状态单元",
       "slug": "/cases/cloudflare-durable-objects-workerd",
       "reviewed_at": "2026-07-24",
       "copyright_checks": [
@@ -25406,7 +25406,7 @@
       ]
     },
     "content/cases/erlang-otp-supervision-tree.mdx": {
-      "title": "Erlang/OTP：把失败恢复设计成层级控制协议",
+      "title": "Erlang/OTP 运行时平台：把失败恢复设计成层级控制协议",
       "slug": "/cases/erlang-otp-supervision-tree",
       "reviewed_at": "2026-07-24",
       "copyright_checks": [
@@ -25575,7 +25575,7 @@
       ]
     },
     "content/cases/google-adk-a2a.mdx": {
-      "title": "Google ADK 与 A2A：本地层级编排与跨系统协作",
+      "title": "Google ADK 与 A2A 智能体协作方案：本地层级编排与跨系统协作",
       "slug": "/cases/google-adk-a2a",
       "reviewed_at": "2026-07-24",
       "copyright_checks": [
@@ -26029,7 +26029,7 @@
       "citations": []
     },
     "content/cases/kong-ai-gateway-routing-resilience.mdx": {
-      "title": "Kong AI Gateway：把模型路由与副作用恢复分成两条控制链",
+      "title": "Kong AI Gateway 人工智能网关：把模型路由与副作用恢复分成两条控制链",
       "slug": "/cases/kong-ai-gateway-routing-resilience",
       "reviewed_at": "2026-07-24",
       "copyright_checks": [
@@ -26276,7 +26276,7 @@
       ]
     },
     "content/cases/kubeedge-cloud-edge-autonomy.mdx": {
-      "title": "KubeEdge Cloud-Edge Autonomy：在断网边界划分规划权与执行权",
+      "title": "KubeEdge Cloud-Edge Autonomy 云边自治方案：在断网边界划分规划权与执行权",
       "slug": "/cases/kubeedge-cloud-edge-autonomy",
       "reviewed_at": "2026-07-24",
       "copyright_checks": [
@@ -26614,7 +26614,7 @@
       ]
     },
     "content/cases/kubernetes-reconciliation-loop.mdx": {
-      "title": "Kubernetes：让自动控制器围绕期望状态持续收敛",
+      "title": "Kubernetes 容器编排系统：让自动控制器围绕期望状态持续收敛",
       "slug": "/cases/kubernetes-reconciliation-loop",
       "reviewed_at": "2026-07-24",
       "copyright_checks": [
@@ -26939,7 +26939,7 @@
       ]
     },
     "content/cases/langgraph-supervisor.mdx": {
-      "title": "LangGraph Supervisor：用显式状态图构建可恢复编排",
+      "title": "LangGraph Supervisor 智能体编排方案：用显式状态图构建可恢复编排",
       "slug": "/cases/langgraph-supervisor",
       "reviewed_at": "2026-07-24",
       "copyright_checks": [
@@ -27160,7 +27160,7 @@
       ]
     },
     "content/cases/litellm-virtual-keys-governance.mdx": {
-      "title": "LiteLLM 虚拟密钥：把模型网关变成权限与预算的交汇点",
+      "title": "LiteLLM 模型网关：用虚拟密钥连接权限与预算",
       "slug": "/cases/litellm-virtual-keys-governance",
       "reviewed_at": "2026-07-24",
       "copyright_checks": [
@@ -27693,7 +27693,7 @@
       ]
     },
     "content/cases/microsoft-multi-agent-reference-architecture.mdx": {
-      "title": "Microsoft：企业协作平台的受控自治",
+      "title": "Microsoft 公司：企业协作平台的受控自治",
       "slug": "/cases/microsoft-multi-agent-reference-architecture",
       "reviewed_at": "2026-07-24",
       "copyright_checks": [
@@ -27901,7 +27901,7 @@
       ]
     },
     "content/cases/new-api-channel-pool-routing.mdx": {
-      "title": "New API 通道池路由：把模型请求分解为能力、层级与故障隔离",
+      "title": "New API 模型网关：用通道池路由分解能力、层级与故障隔离",
       "slug": "/cases/new-api-channel-pool-routing",
       "reviewed_at": "2026-07-24",
       "copyright_checks": [
@@ -28226,7 +28226,7 @@
       ]
     },
     "content/cases/openai-agents-sdk.mdx": {
-      "title": "OpenAI Agents SDK：控制权模型",
+      "title": "OpenAI Agents SDK 智能体开发工具包：控制权模型",
       "slug": "/cases/openai-agents-sdk",
       "reviewed_at": "2026-07-24",
       "copyright_checks": [
@@ -28525,7 +28525,7 @@
       ]
     },
     "content/cases/ros2-dds-agent-lifecycle.mdx": {
-      "title": "ROS 2 + DDS Agent Lifecycle：为物理任务选择通信语义与受管生命周期",
+      "title": "ROS 2 + DDS Agent Lifecycle 机器人智能体生命周期方案：为物理任务选择通信语义与受管生命周期",
       "slug": "/cases/ros2-dds-agent-lifecycle",
       "reviewed_at": "2026-07-24",
       "copyright_checks": [
@@ -28811,7 +28811,7 @@
       ]
     },
     "content/cases/temporal-saga-durable-execution.mdx": {
-      "title": "Temporal Durable Execution + Saga：为长事务建立可恢复边界",
+      "title": "Temporal Durable Execution + Saga 长事务执行方案：为长事务建立可恢复边界",
       "slug": "/cases/temporal-saga-durable-execution",
       "reviewed_at": "2026-07-24",
       "copyright_checks": [
@@ -29201,7 +29201,7 @@
       ]
     },
     "content/cases/yjs-crdt-collaboration.mdx": {
-      "title": "Yjs：让人和多个自动协作者合并共享工作区状态",
+      "title": "Yjs 协作数据框架：让人和多个自动协作者合并共享工作区状态",
       "slug": "/cases/yjs-crdt-collaboration",
       "reviewed_at": "2026-07-24",
       "copyright_checks": [

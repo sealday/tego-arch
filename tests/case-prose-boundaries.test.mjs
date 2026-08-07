@@ -249,19 +249,19 @@ test('preserves the complete pre-Task-8 MDX module contract', async () => {
 
 test('preserves official product identity in every reviewed Task 8 case title', async () => {
   const identities = new Map([
-    ['aws-cell-shuffle-sharding.mdx', 'AWS Cell Architecture + Shuffle Sharding'],
-    ['aws-cli-agent-orchestrator.mdx', 'AWS Labs CLI Agent Orchestrator'],
-    ['cloudflare-durable-objects-workerd.mdx', 'Cloudflare Durable Objects + workerd'],
-    ['google-adk-a2a.mdx', 'Google ADK 与 A2A'],
-    ['kubeedge-cloud-edge-autonomy.mdx', 'KubeEdge Cloud-Edge Autonomy'],
-    ['langgraph-supervisor.mdx', 'LangGraph Supervisor'],
-    ['ros2-dds-agent-lifecycle.mdx', 'ROS 2 + DDS Agent Lifecycle'],
-    ['temporal-saga-durable-execution.mdx', 'Temporal Durable Execution + Saga'],
+    ['aws-cell-shuffle-sharding.mdx', ['AWS Cell Architecture + Shuffle Sharding 架构方案', 'AWS Cell Architecture + Shuffle Sharding']],
+    ['aws-cli-agent-orchestrator.mdx', ['AWS Labs CLI Agent Orchestrator 多进程编排项目', 'AWS Labs CLI Agent Orchestrator']],
+    ['cloudflare-durable-objects-workerd.mdx', ['Cloudflare Durable Objects + workerd 边缘协调方案', 'Cloudflare Durable Objects + workerd']],
+    ['google-adk-a2a.mdx', ['Google ADK 与 A2A 智能体协作方案', 'Google ADK 与 A2A']],
+    ['kubeedge-cloud-edge-autonomy.mdx', ['KubeEdge Cloud-Edge Autonomy 云边自治方案', 'KubeEdge Cloud-Edge Autonomy']],
+    ['langgraph-supervisor.mdx', ['LangGraph Supervisor 智能体编排方案', 'LangGraph Supervisor']],
+    ['ros2-dds-agent-lifecycle.mdx', ['ROS 2 + DDS Agent Lifecycle 机器人智能体生命周期方案', 'ROS 2 + DDS Agent Lifecycle']],
+    ['temporal-saga-durable-execution.mdx', ['Temporal Durable Execution + Saga 长事务执行方案', 'Temporal Durable Execution + Saga']],
   ]);
-  for (const [file, identity] of identities) {
+  for (const [file, [titleIdentity, sidebarIdentity]] of identities) {
     const metadata = parseFrontMatter(await readCase(file));
-    assert.match(metadata.title, new RegExp(`^${identity.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&')}：\\p{Script=Han}`, 'u'), `${file}: title`);
-    assert.equal(metadata.sidebar_label, identity, `${file}: sidebar_label`);
+    assert.match(metadata.title, new RegExp(`^${titleIdentity.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&')}：\\p{Script=Han}`, 'u'), `${file}: title`);
+    assert.equal(metadata.sidebar_label, sidebarIdentity, `${file}: sidebar_label`);
   }
 });
 

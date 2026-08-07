@@ -164,6 +164,33 @@ test('rejects an acronym without an English term', () => {
   assert.ok(result.errors.some((error) => error.includes('acronym requires english')));
 });
 
+test('requires Latin proper nouns to introduce a Chinese category or meaning', () => {
+  const bare = {
+    ...validEntry,
+    id: 'microsoft',
+    canonical_zh: 'Microsoft',
+    english: null,
+    acronym: null,
+    kind: 'proper-noun',
+    first_use: 'Microsoft',
+    subsequent_use: ['Microsoft'],
+    allowed_aliases: [],
+    forbidden_aliases: [],
+  };
+  const contextual = {
+    ...bare,
+    first_use: 'Microsoft 公司',
+  };
+
+  assert.ok(parseTerminologyRegistry({schema_version: 1, terms: [bare]}).errors.some(
+    (error) => error.includes('proper-noun first_use'),
+  ));
+  assert.deepEqual(
+    parseTerminologyRegistry({schema_version: 1, terms: [contextual]}).errors,
+    [],
+  );
+});
+
 test('rejects reordered, half-width, missing, and extra first-use text', () => {
   const invalidForms = [
     '质量属性（QA，Quality Attribute）',

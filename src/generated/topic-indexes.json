@@ -4258,7 +4258,7 @@
     {
       "id": "DOC-CASE-APACHE-KAFKA-CONSUMER-GROUPS",
       "type": "case",
-      "title": "Apache Kafka：用消费者组的分区所有权组织可重放工作",
+      "title": "Apache Kafka 事件流平台：用消费者组的分区所有权组织可重放工作",
       "slug": "/cases/apache-kafka-consumer-groups",
       "priority": null,
       "status": {
@@ -4314,7 +4314,7 @@
       "pattern_group": null,
       "presentation": {
         "case_catalog": {
-          "title": "Apache Kafka：用消费者组的分区所有权组织可重放工作",
+          "title": "Apache Kafka 事件流平台：用消费者组的分区所有权组织可重放工作",
           "slug": "/cases/apache-kafka-consumer-groups",
           "summary": "从日志、分区、消费组和再均衡中分析智能体（Agent）任务归属、重放、背压与重复执行。",
           "difficulty": "advanced",
@@ -4347,7 +4347,7 @@
     {
       "id": "DOC-CASE-AWS-CELL-SHUFFLE-SHARDING",
       "type": "case",
-      "title": "AWS Cell Architecture + Shuffle Sharding：限制故障半径",
+      "title": "AWS Cell Architecture + Shuffle Sharding 架构方案：限制故障半径",
       "slug": "/cases/aws-cell-shuffle-sharding",
       "priority": null,
       "status": {
@@ -4392,7 +4392,7 @@
       "pattern_group": null,
       "presentation": {
         "case_catalog": {
-          "title": "AWS Cell Architecture + Shuffle Sharding：限制故障半径",
+          "title": "AWS Cell Architecture + Shuffle Sharding 架构方案：限制故障半径",
           "slug": "/cases/aws-cell-shuffle-sharding",
           "summary": "以亚马逊云服务（Amazon Web Services，AWS）的单元、舱壁和洗牌分片设计多智能体（Agent）系统的租户隔离、容量边界与逐单元发布。",
           "difficulty": "advanced",
@@ -4425,7 +4425,7 @@
     {
       "id": "DOC-CASE-AWS-CLI-AGENT-ORCHESTRATOR",
       "type": "case",
-      "title": "AWS Labs CLI Agent Orchestrator：以终端为执行边界的多进程编排",
+      "title": "AWS Labs CLI Agent Orchestrator 多进程编排项目：以终端为执行边界的多进程编排",
       "slug": "/cases/aws-cli-agent-orchestrator",
       "priority": null,
       "status": {
@@ -4463,7 +4463,7 @@
       "pattern_group": null,
       "presentation": {
         "case_catalog": {
-          "title": "AWS Labs CLI Agent Orchestrator：以终端为执行边界的多进程编排",
+          "title": "AWS Labs CLI Agent Orchestrator 多进程编排项目：以终端为执行边界的多进程编排",
           "slug": "/cases/aws-cli-agent-orchestrator",
           "summary": "以亚马逊云服务（Amazon Web Services，AWS）的 AWS 命令行智能体编排器（CLI Agent Orchestrator，CAO）为例，研究监督者（Supervisor）、工作进程（worker）、智能体（Agent）与工作流（Workflow）如何借助模型上下文协议（Model Context Protocol，MCP）、超文本传输协议（Hypertext Transfer Protocol，HTTP）、节点本地数据库（SQLite）、应用程序编程接口（Application Programming Interface，API）、Python 编程语言、Git 版本控制系统、移交（Handoff）和重试（Retry）机制完成进程隔离与工具接入。",
           "difficulty": "advanced",
@@ -4492,7 +4492,7 @@
     {
       "id": "DOC-CASE-CLOUDFLARE-DURABLE-OBJECTS-WORKERD",
       "type": "case",
-      "title": "Cloudflare Durable Objects + workerd：把边缘协调收敛到身份寻址的状态单元",
+      "title": "Cloudflare Durable Objects + workerd 边缘协调方案：把边缘协调收敛到身份寻址的状态单元",
       "slug": "/cases/cloudflare-durable-objects-workerd",
       "priority": null,
       "status": {
@@ -4538,7 +4538,7 @@
       "pattern_group": null,
       "presentation": {
         "case_catalog": {
-          "title": "Cloudflare Durable Objects + workerd：把边缘协调收敛到身份寻址的状态单元",
+          "title": "Cloudflare Durable Objects + workerd 边缘协调方案：把边缘协调收敛到身份寻址的状态单元",
           "slug": "/cases/cloudflare-durable-objects-workerd",
           "summary": "以智能体（Agent）状态为例，分析 Cloudflare 云平台中的 Cloudflare 持久对象（Durable Objects）与面向 JavaScript 与 WebAssembly 的开源服务端运行时（workerd）如何用节点本地数据库（SQLite）、超文本传输协议（Hypertext Transfer Protocol，HTTP）和重试（Retry）机制承载边缘分片。",
           "difficulty": "advanced",
@@ -4571,7 +4571,7 @@
     {
       "id": "DOC-CASE-ERLANG-OTP-SUPERVISION-TREE",
       "type": "case",
-      "title": "Erlang/OTP：把失败恢复设计成层级控制协议",
+      "title": "Erlang/OTP 运行时平台：把失败恢复设计成层级控制协议",
       "slug": "/cases/erlang-otp-supervision-tree",
       "priority": null,
       "status": {
@@ -4603,7 +4603,7 @@
       "pattern_group": null,
       "presentation": {
         "case_catalog": {
-          "title": "Erlang/OTP：把失败恢复设计成层级控制协议",
+          "title": "Erlang/OTP 运行时平台：把失败恢复设计成层级控制协议",
           "slug": "/cases/erlang-otp-supervision-tree",
           "summary": "从监督树、重启策略和故障升级中提炼智能体（Agent）的失败恢复与人工接管边界。",
           "difficulty": "intermediate",
@@ -4632,7 +4632,7 @@
     {
       "id": "DOC-CASE-GOOGLE-ADK-A2A",
       "type": "case",
-      "title": "Google ADK 与 A2A：本地层级编排与跨系统协作",
+      "title": "Google ADK 与 A2A 智能体协作方案：本地层级编排与跨系统协作",
       "slug": "/cases/google-adk-a2a",
       "priority": null,
       "status": {
@@ -4685,7 +4685,7 @@
       "pattern_group": null,
       "presentation": {
         "case_catalog": {
-          "title": "Google ADK 与 A2A：本地层级编排与跨系统协作",
+          "title": "Google ADK 与 A2A 智能体协作方案：本地层级编排与跨系统协作",
           "slug": "/cases/google-adk-a2a",
           "summary": "以智能体（Agent）与工作流（Workflow）为主线，区分 Python 编程语言中的 Google 智能体开发工具包（Agent Development Kit，ADK）进程内层级编排、智能体间协议（Agent2Agent Protocol，A2A）的跨系统协作，以及模型上下文协议（Model Context Protocol，MCP）的工具边界。",
           "difficulty": "advanced",
@@ -4714,7 +4714,7 @@
     {
       "id": "DOC-CASE-KONG-AI-GATEWAY-ROUTING-RESILIENCE",
       "type": "case",
-      "title": "Kong AI Gateway：把模型路由与副作用恢复分成两条控制链",
+      "title": "Kong AI Gateway 人工智能网关：把模型路由与副作用恢复分成两条控制链",
       "slug": "/cases/kong-ai-gateway-routing-resilience",
       "priority": null,
       "status": {
@@ -4749,7 +4749,7 @@
       "pattern_group": null,
       "presentation": {
         "case_catalog": {
-          "title": "Kong AI Gateway：把模型路由与副作用恢复分成两条控制链",
+          "title": "Kong AI Gateway 人工智能网关：把模型路由与副作用恢复分成两条控制链",
           "slug": "/cases/kong-ai-gateway-routing-resilience",
           "summary": "用多目标路由、失败分类、重试（Retry）与回退、断路器和协议边界分析人工智能网关的韧性设计。",
           "difficulty": "advanced",
@@ -4779,7 +4779,7 @@
     {
       "id": "DOC-CASE-KUBEEDGE-CLOUD-EDGE-AUTONOMY",
       "type": "case",
-      "title": "KubeEdge Cloud-Edge Autonomy：在断网边界划分规划权与执行权",
+      "title": "KubeEdge Cloud-Edge Autonomy 云边自治方案：在断网边界划分规划权与执行权",
       "slug": "/cases/kubeedge-cloud-edge-autonomy",
       "priority": null,
       "status": {
@@ -4824,7 +4824,7 @@
       "pattern_group": null,
       "presentation": {
         "case_catalog": {
-          "title": "KubeEdge Cloud-Edge Autonomy：在断网边界划分规划权与执行权",
+          "title": "KubeEdge Cloud-Edge Autonomy 云边自治方案：在断网边界划分规划权与执行权",
           "slug": "/cases/kubeedge-cloud-edge-autonomy",
           "summary": "沿云边协同平台（KubeEdge）、智能体（Agent）、工作流（Workflow）、重试（Retry）、抖动（Jitter）、应用程序编程接口（Application Programming Interface，API）、双向传输层安全（mutual TLS，mTLS）与节点本地数据库（SQLite），分析云端规划与边缘执行如何分权。",
           "difficulty": "advanced",
@@ -4855,7 +4855,7 @@
     {
       "id": "DOC-CASE-KUBERNETES-RECONCILIATION-LOOP",
       "type": "case",
-      "title": "Kubernetes：让自动控制器围绕期望状态持续收敛",
+      "title": "Kubernetes 容器编排系统：让自动控制器围绕期望状态持续收敛",
       "slug": "/cases/kubernetes-reconciliation-loop",
       "priority": null,
       "status": {
@@ -4899,7 +4899,7 @@
       "pattern_group": null,
       "presentation": {
         "case_catalog": {
-          "title": "Kubernetes：让自动控制器围绕期望状态持续收敛",
+          "title": "Kubernetes 容器编排系统：让自动控制器围绕期望状态持续收敛",
           "slug": "/cases/kubernetes-reconciliation-loop",
           "summary": "用规范与状态、控制循环和幂等协调分析多智能体（Agent）系统如何从命令执行转向目标收敛。",
           "difficulty": "advanced",
@@ -4929,7 +4929,7 @@
     {
       "id": "DOC-CASE-LANGGRAPH-SUPERVISOR",
       "type": "case",
-      "title": "LangGraph Supervisor：用显式状态图构建可恢复编排",
+      "title": "LangGraph Supervisor 智能体编排方案：用显式状态图构建可恢复编排",
       "slug": "/cases/langgraph-supervisor",
       "priority": null,
       "status": {
@@ -4965,7 +4965,7 @@
       "pattern_group": null,
       "presentation": {
         "case_catalog": {
-          "title": "LangGraph Supervisor：用显式状态图构建可恢复编排",
+          "title": "LangGraph Supervisor 智能体编排方案：用显式状态图构建可恢复编排",
           "slug": "/cases/langgraph-supervisor",
           "summary": "以图编排框架（LangGraph）的显式状态，比较智能体（Agent）、监督者（Supervisor）、路由器（Router）、工作流（Workflow）、归约器（Reducer）、检查点器（Checkpointer）、移交（Handoff）、智能体作为工具（Agents as Tools）、重试（Retry）、扇出与扇入（Fan-out/Fan-in）、人在回路（Human-in-the-loop）、隐私（Privacy）及应用程序编程接口（Application Programming Interface，API）边界。",
           "difficulty": "advanced",
@@ -4994,7 +4994,7 @@
     {
       "id": "DOC-CASE-LITELLM-VIRTUAL-KEYS-GOVERNANCE",
       "type": "case",
-      "title": "LiteLLM 虚拟密钥：把模型网关变成权限与预算的交汇点",
+      "title": "LiteLLM 模型网关：用虚拟密钥连接权限与预算",
       "slug": "/cases/litellm-virtual-keys-governance",
       "priority": null,
       "status": {
@@ -5031,7 +5031,7 @@
       "pattern_group": null,
       "presentation": {
         "case_catalog": {
-          "title": "LiteLLM 虚拟密钥：把模型网关变成权限与预算的交汇点",
+          "title": "LiteLLM 模型网关：用虚拟密钥连接权限与预算",
           "slug": "/cases/litellm-virtual-keys-governance",
           "summary": "用虚拟密钥、分层模型权限、预算与限流、护栏（guardrail）时序和双轨日志分析多租户模型网关的治理边界。",
           "difficulty": "advanced",
@@ -5132,7 +5132,7 @@
     {
       "id": "DOC-CASE-MICROSOFT-MULTI-AGENT-REFERENCE-ARCHITECTURE",
       "type": "case",
-      "title": "Microsoft：企业协作平台的受控自治",
+      "title": "Microsoft 公司：企业协作平台的受控自治",
       "slug": "/cases/microsoft-multi-agent-reference-architecture",
       "priority": null,
       "status": {
@@ -5166,7 +5166,7 @@
       "pattern_group": null,
       "presentation": {
         "case_catalog": {
-          "title": "Microsoft：企业协作平台的受控自治",
+          "title": "Microsoft 公司：企业协作平台的受控自治",
           "slug": "/cases/microsoft-multi-agent-reference-architecture",
           "summary": "从注册、编排、记忆到治理，分析企业级智能体（Agent）平台如何约束自治边界。",
           "difficulty": "advanced",
@@ -5195,7 +5195,7 @@
     {
       "id": "DOC-CASE-NEW-API-CHANNEL-POOL-ROUTING",
       "type": "case",
-      "title": "New API 通道池路由：把模型请求分解为能力、层级与故障隔离",
+      "title": "New API 模型网关：用通道池路由分解能力、层级与故障隔离",
       "slug": "/cases/new-api-channel-pool-routing",
       "priority": null,
       "status": {
@@ -5239,7 +5239,7 @@
       "pattern_group": null,
       "presentation": {
         "case_catalog": {
-          "title": "New API 通道池路由：把模型请求分解为能力、层级与故障隔离",
+          "title": "New API 模型网关：用通道池路由分解能力、层级与故障隔离",
           "slug": "/cases/new-api-channel-pool-routing",
           "summary": "用能力模块索引、优先级层、权重选择和多密钥状态分析统一模型网关如何路由、重试（Retry）与隔离故障。",
           "difficulty": "advanced",
@@ -5269,7 +5269,7 @@
     {
       "id": "DOC-CASE-OPENAI-AGENTS-SDK",
       "type": "case",
-      "title": "OpenAI Agents SDK：控制权模型",
+      "title": "OpenAI Agents SDK 智能体开发工具包：控制权模型",
       "slug": "/cases/openai-agents-sdk",
       "priority": null,
       "status": {
@@ -5308,7 +5308,7 @@
       "pattern_group": null,
       "presentation": {
         "case_catalog": {
-          "title": "OpenAI Agents SDK：控制权模型",
+          "title": "OpenAI Agents SDK 智能体开发工具包：控制权模型",
           "slug": "/cases/openai-agents-sdk",
           "summary": "比较多智能体（Agent）系统中的多智能体管理者（Manager）、移交（Handoff）、护栏（guardrail）、智能体作为工具（Agents as Tools）、工作流（Workflow）与人在回路（Human-in-the-loop），理解控制权配置。",
           "difficulty": "intermediate",
@@ -5336,7 +5336,7 @@
     {
       "id": "DOC-CASE-ROS2-DDS-AGENT-LIFECYCLE",
       "type": "case",
-      "title": "ROS 2 + DDS Agent Lifecycle：为物理任务选择通信语义与受管生命周期",
+      "title": "ROS 2 + DDS Agent Lifecycle 机器人智能体生命周期方案：为物理任务选择通信语义与受管生命周期",
       "slug": "/cases/ros2-dds-agent-lifecycle",
       "priority": null,
       "status": {
@@ -5377,7 +5377,7 @@
       "pattern_group": null,
       "presentation": {
         "case_catalog": {
-          "title": "ROS 2 + DDS Agent Lifecycle：为物理任务选择通信语义与受管生命周期",
+          "title": "ROS 2 + DDS Agent Lifecycle 机器人智能体生命周期方案：为物理任务选择通信语义与受管生命周期",
           "slug": "/cases/ros2-dds-agent-lifecycle",
           "summary": "用机器人操作系统（Robot Operating System，ROS 2）、数据分发服务（Data Distribution Service，DDS）、智能体（Agent）、服务质量（Quality of Service，QoS）、监督者（Supervisor）、工作流（Workflow）、重试（Retry）与安全保障（Safety），区分消息流、长任务和执行授权。",
           "difficulty": "advanced",
@@ -5407,7 +5407,7 @@
     {
       "id": "DOC-CASE-TEMPORAL-SAGA-DURABLE-EXECUTION",
       "type": "case",
-      "title": "Temporal Durable Execution + Saga：为长事务建立可恢复边界",
+      "title": "Temporal Durable Execution + Saga 长事务执行方案：为长事务建立可恢复边界",
       "slug": "/cases/temporal-saga-durable-execution",
       "priority": null,
       "status": {
@@ -5456,7 +5456,7 @@
       "pattern_group": null,
       "presentation": {
         "case_catalog": {
-          "title": "Temporal Durable Execution + Saga：为长事务建立可恢复边界",
+          "title": "Temporal Durable Execution + Saga 长事务执行方案：为长事务建立可恢复边界",
           "slug": "/cases/temporal-saga-durable-execution",
           "summary": "结合 Temporal 工作流平台、智能体（Agent）、工作流（Workflow）、工作进程（worker）、重试（Retry）、软件开发工具包（Software Development Kit，SDK）、应用程序编程接口（Application Programming Interface，API）、超文本传输协议（Hypertext Transfer Protocol，HTTP）与指数退避（Exponential Backoff），分析长事务补偿和外部副作用的耐久边界。",
           "difficulty": "advanced",
@@ -5488,7 +5488,7 @@
     {
       "id": "DOC-CASE-YJS-CRDT-COLLABORATION",
       "type": "case",
-      "title": "Yjs：让人和多个自动协作者合并共享工作区状态",
+      "title": "Yjs 协作数据框架：让人和多个自动协作者合并共享工作区状态",
       "slug": "/cases/yjs-crdt-collaboration",
       "priority": null,
       "status": {
@@ -5522,7 +5522,7 @@
       "pattern_group": null,
       "presentation": {
         "case_catalog": {
-          "title": "Yjs：让人和多个自动协作者合并共享工作区状态",
+          "title": "Yjs 协作数据框架：让人和多个自动协作者合并共享工作区状态",
           "slug": "/cases/yjs-crdt-collaboration",
           "summary": "用无冲突复制数据类型（Conflict-free Replicated Data Type，CRDT）更新和在线感知，区分智能体（Agent）的收敛数据、临时意图与业务语义。",
           "difficulty": "advanced",

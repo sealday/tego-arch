@@ -86,9 +86,17 @@ export function parseTerminologyRegistry(value, file = 'data/terminology.json') 
     if (validAcronym && !validTermCombination) {
       errors.push(`${label} acronym requires english`);
     }
+    if (entry.kind === 'proper-noun'
+      && validCanonical
+      && validFirstUse
+      && /[A-Za-z]/u.test(entry.first_use)
+      && (!entry.first_use.includes(entry.canonical_zh) || !/\p{Script=Han}/u.test(entry.first_use))) {
+      errors.push(`${label} proper-noun first_use must contain canonical_zh and Chinese context`);
+    }
     if (orders.has(entry.order)) errors.push(`${label} has duplicate order "${entry.order}"`);
     orders.add(entry.order);
-    if (validCanonical && validEnglish && validAcronym && validTermCombination && validFirstUse
+    if (entry.kind !== 'proper-noun'
+      && validCanonical && validEnglish && validAcronym && validTermCombination && validFirstUse
       && entry.first_use !== expectedFirstUse(entry)) {
       errors.push(`${label} first_use must exactly equal "${expectedFirstUse(entry)}"`);
     }

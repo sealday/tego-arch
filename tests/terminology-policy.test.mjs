@@ -149,7 +149,7 @@ test('no-argument CLI checks the repository default terminology scope', () => {
   );
   assert.equal(run.status, 0, run.stdout || run.stderr);
   assert.equal(run.stderr, '');
-  assert.match(run.stdout, /checked 97 files with 119 registered terms; 0 issues/u);
+  assert.match(run.stdout, /checked 97 files with 127 registered terms; 0 issues/u);
 });
 
 test('requires bilingual first use and permits registered subsequent use', async () => {
@@ -276,20 +276,60 @@ test('exempts only explicitly registered citation title variants', async () => {
   assert.deepEqual(result.issues, []);
 });
 
-test('treats exact title fields as structural metadata without exempting summary or body copy', async () => {
+test('does not hard-code case title or sidebar metadata exemptions', async () => {
   const result = await checkFixture([
     '---',
     'title: AWS Cell Architecture + Shuffle Sharding：限制故障半径',
     'sidebar_label: AWS Cell Architecture + Shuffle Sharding',
-    'summary: Unregistered Product Identity 仍需术语治理',
     '---',
-    '',
-    '正文中的 Unregistered Product Identity 也仍需术语治理。',
   ].join('\n'));
-  assert.deepEqual(result.issues.map(({line, ruleId, matched}) => ({line, ruleId, matched})), [
-    {line: 4, ruleId: 'unknown-english-term', matched: 'Unregistered Product Identity'},
-    {line: 7, ruleId: 'unknown-english-term', matched: 'Unregistered Product Identity'},
-  ]);
+  assert.ok(result.issues.some(({line, ruleId}) => line === 2 && ruleId === 'unknown-english-term'));
+  assert.ok(result.issues.some(({line, ruleId}) => line === 3 && ruleId === 'unknown-english-term'));
+});
+
+test('governs case title identity and sidebar introduction through the registry', async () => {
+  const identity = {
+    id: 'example-product',
+    canonical_zh: 'Example Product',
+    english: null,
+    acronym: null,
+    kind: 'proper-noun',
+    first_use: 'Example Product 智能体平台',
+    subsequent_use: ['Example Product'],
+    allowed_aliases: [],
+    forbidden_aliases: [],
+    note: '测试案例标题中的稳定官方身份。',
+    order: 50,
+  };
+  const document = (title, sidebar = 'Example Product') => [
+    '---',
+    `title: ${title}`,
+    `sidebar_label: ${sidebar}`,
+    '---',
+  ].join('\n');
+  const result = await withFixture({
+    'content/arbitrary.mdx': document('Example Product 智能体平台：任意自然中文判断句'),
+    'content/changed.mdx': document('Altered Product 智能体平台：中文判断句'),
+    'content/extra.mdx': document('Example Product 智能体平台：中文判断句 Extra Unknown'),
+    'content/no-context.mdx': document('Example Product：中文判断句'),
+    'content/sidebar-only.mdx': document('纯中文判断句'),
+  }, (root) => checkTerminology({root, paths: ['content']}), [...terms, identity]);
+
+  assert.equal(result.issues.some(({file}) => file === 'content/arbitrary.mdx'), false);
+  assert.ok(result.issues.some(({file}) => file === 'content/changed.mdx'));
+  assert.ok(result.issues.some(({file, matched}) => (
+    file === 'content/extra.mdx' && matched === 'Extra Unknown'
+  )));
+  assert.ok(result.issues.some(({file, ruleId, matched}) => (
+    file === 'content/no-context.mdx'
+      && ruleId === 'first-use-required'
+      && matched === 'Example Product'
+  )));
+  assert.ok(result.issues.some(({file, ruleId, matched}) => (
+    file === 'content/sidebar-only.mdx'
+      && ruleId === 'first-use-required'
+      && matched === 'Example Product'
+  )));
 });
 
 test('exempts only an exact external source title and never image alt text', async () => {
