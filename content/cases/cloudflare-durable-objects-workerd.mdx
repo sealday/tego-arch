@@ -1,6 +1,6 @@
 ---
-title: 把边缘协调收敛到身份寻址的状态单元
-sidebar_label: 身份寻址的边缘协调
+title: Cloudflare Durable Objects + workerd：把边缘协调收敛到身份寻址的状态单元
+sidebar_label: Cloudflare Durable Objects + workerd
 slug: /cases/cloudflare-durable-objects-workerd
 content_type: case
 status: reviewed
@@ -9,7 +9,7 @@ analyzed_at: 2026-07-22
 source_cutoff: 2026-07-22
 review_policy: quarterly-version-sensitive
 confidence: high
-summary: 以智能体（Agent）状态为例，分析 Cloudflare 云平台（Cloudflare）中的 Cloudflare 持久对象（Durable Objects）与 workerd 开源运行时（workerd）如何用节点本地数据库（SQLite）、超文本传输协议（Hypertext Transfer Protocol，HTTP）和重试（Retry）机制承载边缘分片。
+summary: 以智能体（Agent）状态为例，分析 Cloudflare 云平台中的 Cloudflare 持久对象（Durable Objects）与面向 JavaScript 与 WebAssembly 的开源服务端运行时（workerd）如何用节点本地数据库（SQLite）、超文本传输协议（Hypertext Transfer Protocol，HTTP）和重试（Retry）机制承载边缘分片。
 series: edge-physical
 catalog_order: 13
 featured: false
@@ -74,7 +74,7 @@ Cloudflare 持久对象把全局可寻址身份、事件循环、私有持久存
 
 ## 一页摘要
 
-**已证实事实**：一个持久对象类对应一个命名空间，每个对象有自己的标识、活动实例和私有持久存储。`idFromName(name)`从稳定名称得到标识，`newUniqueId()`生成随机标识，`get(id)`返回存根；按名称获取 getByName(name) 是更短的等价入口。真正调用时才路由并惰性创建。存根是远程客户端，不是对象本身，失败后应重新获取。
+**已证实事实**：一个持久对象类对应一个命名空间，每个对象有自己的标识、活动实例和私有持久存储。`idFromName(name)`从稳定名称得到标识，`newUniqueId()`生成随机标识，`get(id)`返回存根；按名称获取`getByName(name)`是更短的等价入口。真正调用时才路由并惰性创建。存根是远程客户端，不是对象本身，失败后应重新获取。
 
 单个对象固有单线程，但事件可在异步边界交错。异步存储默认受输入门禁保护，同步数据库操作不让出事件循环；`fetch()`等非存储输入输出会允许其他请求运行。因此“读状态 → 外呼 → 写状态”仍会竞态，长时间模型推理也不应放进`blockConcurrencyWhile()`。
 
@@ -108,11 +108,11 @@ SQLite 支撑的对象提供结构化查询语言、同步与异步键值存储�
 
 </details>
 
-**已证实事实**：`workerd` 是与 Cloudflare 工作进程（worker）同源的开源 JavaScript 语言（JavaScript）与网页汇编服务端运行时。它可用于自行托管和本地开发，但说明文件警告它不是安全加固沙箱。固定`workerd.capnp`说明本地持久对象当前位于单个运行时实例；跨集群分布仍未实现。
+**已证实事实**：开源服务端运行时可用于自行托管和本地开发；该`workerd`运行时与 Cloudflare Workers 平台同源，但说明文件警告它不是安全加固沙箱。固定`workerd.capnp`说明本地持久对象当前位于单个运行时实例；跨集群分布仍未实现。
 
 **边界。已证实事实**：源码能支持输入输出门禁、参与者缓存、SQLite、本地标识命名空间和事件循环方面的陈述。它不能证明托管服务怎样执行全球首次放置、故障迁移、复制、法域约束或负载调度。本文也不从本地磁盘布局反推生产存储实现。
 
-**已证实事实**：官方数据位置当前称对象创建后不会改变位置；默认靠近首次`get()`的请求，`locationHint`只在该对象第一次`get()`时考虑，而且是尽力而为、不是保证。管辖域则是运行和持久化区域的约束，但工作进程仍可从世界其他位置访问对象，且标识会因计费与调试在管辖域外记录。
+**已证实事实**：官方数据位置当前称对象创建后不会改变位置；默认靠近首次`get()`的请求，`locationHint`只在该对象第一次`get()`时考虑，而且是尽力而为、不是保证。管辖域则是运行和持久化区域的约束，但 Cloudflare Workers 仍可从世界其他位置访问对象，且标识会因计费与调试在管辖域外记录。
 
 位置、主机与内存生命周期不可混为一谈：对象仍会因更新、空闲或运行时决策被重启或换主机。
 
@@ -127,9 +127,9 @@ SQLite 支撑的对象提供结构化查询语言、同步与异步键值存储�
 ```mermaid
 flowchart TB
   accTitle: 身份寻址的智能体持久对象协调与外部副作用边界
-  accDescr: 客户端先经工作进程鉴权和规范形式密钥派生，再由命名空间将名称或随机标识转成存根，路由到一个会话、任务、租户或实体持久对象。对象内单线程事件循环、SQLite、告警和休眠网页套接字构成协调单元；模型、工具、队列与对象间索引位于事务外，必须经发件箱、回执和版本校验。
+  accDescr: 客户端先经 Cloudflare Workers 鉴权和规范形式密钥派生，再由命名空间将名称或随机标识转成存根，路由到一个会话、任务、租户或实体持久对象。对象内单线程事件循环、SQLite、告警和休眠网页套接字构成协调单元；模型、工具、队列与对象间索引位于事务外，必须经发件箱、回执和版本校验。
 
-  Client["客户端/ 智能体<br/>HTTP · 远程过程调用 · 网页套接字"] --> Edge["入口工作进程<br/>认证 · 授权 · 规范形式密钥"]
+  Client["客户端/ 智能体<br/>HTTP · 远程过程调用 · 网页套接字"] --> Edge["Cloudflare Workers 入口<br/>认证 · 授权 · 规范形式密钥"]
   Edge --> NS["持久对象命名空间<br/>名称派生 / 新建唯一标识 / 获取"]
   NS --> Stub["持久对象存根<br/>顺序调用路由"]
 
@@ -154,7 +154,7 @@ flowchart TB
   Obs -.-> External
 ```
 
-文字等价描述：客户端不能直接把任意租户与资源字符串当作对象权限。入口工作进程先认证主体并生成规范形式密钥，再通过命名空间得到标识和存根；存根把调用路由到唯一协调单元。对象内的存储操作受输入与输出门禁约束，但外部模型和工具位于事务外。
+文字等价描述：客户端不能直接把任意租户与资源字符串当作对象权限。Cloudflare Workers 入口先认证主体并生成规范形式密钥，再通过命名空间得到标识和存根；存根把调用路由到唯一协调单元。对象内的存储操作受输入与输出门禁约束，但外部模型和工具位于事务外。
 
 应用控制面只保存索引、分片纪元与迁移状态，不进入每个数据请求的同步路径。热点拆分需要它显式迁移密钥，平台不会自动把一个对象切开。
 
@@ -163,7 +163,7 @@ flowchart TB
 先沿左到右检查最小串行边界。只有稳定业务密钥对应的对象状态进入持久对象；模型、工具和队列仍在事务外。
 
 <div
-  className="架构-diagram-scroll"
+  className="architecture-diagram-scroll"
   role="region"
   aria-label="持久对象最小串行边界图，可横向滚动"
   tabIndex={0}
@@ -176,7 +176,7 @@ flowchart TB
 这张图回答“什么必须共同判定”。下一张图回答“外部调用返回时，旧结果还能不能写回”。
 
 <div
-  className="架构-diagram-scroll"
+  className="architecture-diagram-scroll"
   role="region"
   aria-label="持久对象事务外副作用恢复图，可横向滚动"
   tabIndex={0}
@@ -193,7 +193,7 @@ flowchart TB
 单对象排队或连接持续增长时，平台不会自动把同一标识分裂。应用必须冻结迁移版本、创建更小的业务键并排空旧对象。
 
 <div
-  className="架构-diagram-scroll"
+  className="architecture-diagram-scroll"
   role="region"
   aria-label="持久对象热点拆分图，可横向滚动"
   tabIndex={0}
@@ -211,7 +211,7 @@ flowchart TB
 
 1. **认证与密钥派生。** 入口验证用户与智能体令牌，读取可信租户、工作空间、会话、任务或实体标识，做规范化与长度限制，再组合版本化密钥，例如`v2:tenant-17:task-42`。不要直接采用查询字符串作为`idFromName()`输入，更不要把“知道名称与标识”当作已授权。
 
-2. **选择标识策略。** 稳定且可重算的业务实体使用`idFromName()`或`getByName()`；不可预测的新会话可用`newUniqueId()`。“原子保存”只表示目录对象能在它自己的私有存储事务中保存标识字符串和目录记录，不会让目录对象与目标对象的首次初始化形成跨对象原子事务。目标对象的初始化必须以稳定回执/ 初始化密钥做幂等检查；调用超时或重试后，系统通过目录记录、目标对象回执和协调收敛。若把标识字符串返回给已认证客户端，也不能把它当授权凭证。标识只在原命名空间有效，`idFromString()`会拒绝其他命名空间生成的标识。
+2. **选择标识策略。** 稳定且可重算的业务实体使用`idFromName()`或`getByName()`；不可预测的新会话可用`newUniqueId()`。“原子保存”只表示目录对象能在它自己的私有存储事务中保存标识字符串和目录记录，不会让目录对象与目标对象的首次初始化形成跨对象原子事务。目标对象的初始化必须以稳定回执或初始化密钥做幂等检查；调用超时或重试后，系统通过目录记录、目标对象回执和协调收敛。若把标识字符串返回给已认证客户端，也不能把它当授权凭证。标识只在原命名空间有效，`idFromString()`会拒绝其他命名空间生成的标识。
 
 3. **取得并调用存根。** `get()` 立即返回客户端；真正发起远程过程调用或 HTTP 调用时才建立连接并惰性创建对象。按调用方和业务协议携带 `request_id` 与 `operation_id`，不要仅靠存根的单连接顺序代替跨调用方全局顺序。存根抛错后重建存根，再依据回执判断是否重试。
 
@@ -221,13 +221,13 @@ flowchart TB
 
 6. **响应与输出门禁。** 存储写入后的响应或后续拉取默认等待写盘确认；失败会阻止外界看到“已提交”消息。但在写入前已经发出的副作用不会被撤销，设置`allowUnconfirmed`也会主动放弃默认可见性保护。高风险流程不使用它。
 
-7. **告警与网页套接字。** 告警载荷与进度存存储，处理器先按稳定操作密钥去重，再执行可重入步骤；`retryCount`只说明平台重试尝试，不证明外部动作未发生。网页套接字使用`acceptWebSocket()`进入休眠API；必要的会话态写存储，小型连接态可用附件，唤醒构造器只重建缓存。
+7. **告警与网页套接字。** 告警载荷与进度写入存储，处理器先按稳定操作密钥去重，再执行可重入步骤；`retryCount`只说明平台重试尝试，不证明外部动作未发生。网页套接字使用`acceptWebSocket()`进入休眠 API；必要的会话态写存储，小型连接态可用附件，唤醒构造器只重建缓存。
 
 8. **故障恢复。** 对象没有关闭钩子，持续写检查点。遇到对象重置、过载、存根错误、告警重试或客户端重连时，先查询持久状态与外部回执；不能判断时转人工。客户端使用退避、截止时间和幂等键，禁止无界重试制造热点。
 
 **基于证据的推断**：智能体任务持久对象先经历已创建、运行中与waiting_external。外部结果返回后进入result_received、已验证或已完成。异常分支包括cancel_requested、失败与manual_review。
 
-每次转移都带单调`state_version`。外部工作进程回调必须匹配任务标识、操作标识、尝试和基础版本。
+每次转移都带单调`state_version`。外部工作进程（worker）回调必须匹配任务标识、操作标识、尝试和基础版本。
 
 **个人分析**：不要在`blockConcurrencyWhile()`里等待模型或人类审批。它会把对象所有其他事件挡住，并受30 秒重置边界影响。更稳妥的是先提交`waiting_external`，释放事件循环，让取消、查询和其他合法更新继续处理；外部结果回来后做乐观版本检查。
 
@@ -244,7 +244,7 @@ flowchart TB
 
 | 固定源码| 可观察事实| 可以支持的结论| 不能支持的结论|
 | --- | --- | --- | --- |
-| [`README.md`](https://github.com/cloudflare/workerd/blob/14894eccbb339da199d772fcadd337b6d0902128/README.md) | `workerd`与工作进程同源，可自行托管与本地开发；版本号对应最大兼容日期；自身不是加固的沙箱| 本地运行、兼容日期和运行时安全边界| 托管工作进程的全部防御、全球网络或服务等级目标|
+| [`README.md`](https://github.com/cloudflare/workerd/blob/14894eccbb339da199d772fcadd337b6d0902128/README.md) | `workerd`与 Cloudflare Workers 同源，可自行托管与本地开发；版本号对应最大兼容日期；自身不是加固的沙箱| 本地运行、兼容日期和运行时安全边界| 托管 Cloudflare Workers 的全部防御、全球网络或服务等级目标|
 | [`src/workerd/io/io-gate.h`](https://github.com/cloudflare/workerd/blob/14894eccbb339da199d772fcadd337b6d0902128/src/workerd/io/io-gate.h) | 输入门禁阻止存储未完成时其他传入操作；输出门禁阻止可观察未确认写的传出消息| 存储等待的门控与持久化写入可见性| 所有`await`都串行；外部系统加入存储事务|
 | [`src/workerd/io/io-context.c++`](https://github.com/cloudflare/workerd/blob/14894eccbb339da199d772fcadd337b6d0902128/src/workerd/io/io-context.c%2B%2B) | 参与者上下文监控输入与输出门禁损坏；参与者请求共享一个输入输出上下文| 门禁故障会使当前参与者上下文不再安全| 失败后业务副作用自动补偿|
 | [`src/workerd/io/actor-cache.h`](https://github.com/cloudflare/workerd/blob/14894eccbb339da199d772fcadd337b6d0902128/src/workerd/io/actor-cache.h) | 参与者缓存假定自己是底层存储唯一客户端；写先入缓存，并让输出门禁等待确认| 私有存储、写缓冲区与输出门禁的实现关系| 生产存储的复制拓扑、物理磁盘布局或跨对象事务|
@@ -265,7 +265,7 @@ flowchart TB
 
 最重要的设计不是“要不要持久对象”，而是**哪个密钥代表必须共享同一串行判定与私有存储的原子协调单元**。
 
-| 对象粒度| 推荐密钥/ 标识| 适合状态| 热点与吞吐| 拆分、迁移与权限代价|
+| 对象粒度| 推荐密钥或标识| 适合状态| 热点与吞吐| 拆分、迁移与权限代价|
 | --- | --- | --- | --- | --- |
 | 每个会话或协作空间一个对象| `tenant:session`的`idFromName()`；不公开原始敏感字段| 对话、多人协作、连接集合、短期在线状态、会话检查点| 大房间或高频网页套接字消息集中到一个单线程对象；需批量消息| 按通道与主题子分片；跨房间查询外置；成员访问控制列表每次连接与消息复核|
 | 每个任务或运行一个对象| `newUniqueId()` 配合受控目录，或使用稳定的`tenant:task` | 任务状态机、尝试、屏障、告警、操作回执| 大量独立任务天然并行；单个扇入巨大任务仍会排队| 子任务另建对象，父对象只聚合摘要；目录写入和删除策略必须幂等|
@@ -280,7 +280,7 @@ flowchart TB
 
 **已证实事实**：当前类生命周期以`exports`为主，旧版`migrations`仍受支持但二者不可混用。重命名把已置备命名空间和数据移动到新类名称；删除永久删除命名空间与数据；存储后端创建后不可原地更换。
 
-生命周期变更只能`wrangler deploy`，不能渐进发布，回滚也不能跨越该变更。普通代码更新仍可能让新工作进程暂时调用旧持久对象版本，API 要前后兼容。
+生命周期变更只能`wrangler deploy`，不能渐进发布，回滚也不能跨越该变更。普通代码更新仍可能让新的 Cloudflare Workers 暂时调用旧持久对象版本，API 要前后兼容。
 
 **个人分析**：把模式与数据迁移与类生命周期分开。先发布兼容读写和可重复模式迁移，记录每对象模式版本与迁移回执；再执行类重命名与转移；最后移除旧接口。
 
@@ -305,15 +305,15 @@ flowchart TB
 | 网页套接字与休眠| 使用服务端休眠 API；重要状态写入存储；附件只存小型连接状态；客户端负责重新连接与恢复| 活动连接数、休眠连接数、消息大小与频率、唤醒与冷启动、附件版本、断开连接| 构造器重建缓存；按会话版本恢复；关闭后附件不可作为持久化记录|
 | 部署与迁移| 前后兼容远程过程调用；模式版本；类 `exports` 三阶段安全重命名；分片纪元与墓碑标记| 代码、类与模式版本、协调、新旧 API 错误、旧纪元写入| 停止发布；前向修复；生命周期变更前备份，因回滚不能跨界|
 | 故障恢复| 增量检查点、无关闭钩子假设；存根错误后重建；客户端有界退避| 对象重置与重启、存储异常、处理中时长、孤儿对象操作、重新连接| 先协调存储与发件箱与下游；无法判定转人工，禁止盲重放|
-| 可观测性| 官方命名空间与每对象指标，加上工作进程日志与追踪；统一任务、操作与版本字段| `$workers.durableObjectId`、调用、存储、子请求与网页套接字指标、成本、拒绝速率| 从热点对象下钻；保护个人身份信息；为控制与数据平面分开服务等级目标|
+| 可观测性| 官方命名空间与每对象指标，加上 Cloudflare Workers 日志与追踪；统一任务、操作与版本字段| `$workers.durableObjectId`、调用、存储、子请求与网页套接字指标、成本、拒绝速率| 从热点对象下钻；保护个人身份信息；为控制与数据平面分开服务等级目标|
 
 **边界：** 表中规范形式密钥、发件箱、分片纪元、人工升级和跨系统对账属于应用设计，不是持久对象自动提供的工作流（Workflow）能力。
 
 </details>
 
-**安全。已证实事实**：每个对象的已附加存储是私有的，其他对象不能直接访问。官方数据安全说明持久对象数据及其元数据会自动静态加密。工作进程、Cloudflare 网络节点与对象之间的传输由传输层安全协议（Transport Layer Security，TLS）或安全套接层（Secure Sockets Layer，SSL）保护。
+**安全。已证实事实**：每个对象的已附加存储是私有的，其他对象不能直接访问。官方数据安全说明持久对象数据及其元数据会自动静态加密。Cloudflare Workers、Cloudflare 网络节点与对象之间的传输由传输层安全协议（Transport Layer Security，TLS）或安全套接层（Secure Sockets Layer，SSL）保护。
 
-官方最佳实践把工作进程放在认证、校验和响应格式层；这些平台能力不等于应用授权。
+官方最佳实践把 Cloudflare Workers 放在认证、校验和响应格式层；这些平台能力不等于应用授权。
 
 **安全。个人分析**：生产系统还应限制密钥长度与基数、远程过程调用载荷、网页套接字消息、结构化查询语言查询、外部连接和每主体成本。高风险工具凭证只在实际调用时按租户与动作发放。
 
@@ -352,7 +352,7 @@ flowchart TB
 - 不要允许客户端自由选择租户或对象名称，或把标识、存根、私有存储和平台加密误当应用访问控制列表。认证与资源授权必须显式执行。
 - 不要依赖构造器、内存变量、网页套接字附件或关闭钩子保存唯一状态。重要进度持续写存储，连接关闭后附件也会消失。
 - 不要把告警当恰好一次调度器。它至少执行一次、只有有限自动重试，外部效果需要稳定幂等键、回执、对账与人工升级。
-- 不要用`workerd`解释Cloudflare 生产全球放置、迁移、复制或存储控制平面。它是开源本地运行时与工作进程引擎，固定源码明确仍是单运行时实例的对象模型。
+- 不要用`workerd`解释 Cloudflare 生产全球放置、迁移、复制或存储控制平面。它是开源本地运行时与 Cloudflare Workers 引擎，固定源码明确仍是单运行时实例的对象模型。
 
 ## 来源
 
@@ -365,7 +365,7 @@ flowchart TB
 - [Alarms](https://developers.cloudflare.com/durable-objects/api/alarms/)：单告警、至少一次、2 秒起指数退避、最多6 次重试、重试信息与有限重试边界。
 - [WebSockets](https://developers.cloudflare.com/durable-objects/best-practices/websockets/)与[Lifecycle](https://developers.cloudflare.com/durable-objects/concepts/durable-object-lifecycle/)：服务端休眠、构造器重跑、内存丢失、附件、重启、关闭与无钩子恢复。
 - [Data location](https://developers.cloudflare.com/durable-objects/reference/data-location/)：管辖域、首次`get()`、尽力而为`locationHint`、当前位置不动态变更及其非保证边界。
-- [Data security](https://developers.cloudflare.com/durable-objects/reference/data-security/)：已附加存储的对象私有边界、全部数据及元数据的静态加密，以及工作进程、Cloudflare 网络节点与对象间的传输层安全协议或安全套接层保护。
+- [Data security](https://developers.cloudflare.com/durable-objects/reference/data-security/)：已附加存储的对象私有边界、全部数据及元数据的静态加密，以及 Cloudflare Workers、Cloudflare 网络节点与对象间的传输层安全协议或安全套接层保护。
 - [Durable Object class exports](https://developers.cloudflare.com/durable-objects/reference/durable-objects-migrations/)与[Durable Objects changelog](https://developers.cloudflare.com/changelog/product/durable-objects/)：当前`exports`与旧版迁移、创建、删除、重命名与转移、存储后端不可变性、渐进部署和回滚限制；2026-07-09 条目限定了哪些账户仍可通过`new_classes`新建键值存储支撑命名空间。
 - [Limits](https://developers.cloudflare.com/durable-objects/platform/limits/)与[Metrics and analytics](https://developers.cloudflare.com/durable-objects/observability/metrics-and-analytics/)：单对象软吞吐上限、过载、存储与处理器与网页套接字边界、命名空间与每对象指标与`$workers.durableObjectId`。
 

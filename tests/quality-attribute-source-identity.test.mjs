@@ -85,7 +85,7 @@ test('preserves formal quality-attribute identities in reader-facing definitions
   assert.match(qa05, /STRIDE 威胁建模/u);
 
   const qa07 = await readFile(new URL('../content/quality-attributes/qa-07-compatibility-interoperability-versioning.mdx', import.meta.url), 'utf8');
-  assert.match(qa07, /OpenAPI 规范（OpenAPI）/u);
+  assert.match(qa07, /OpenAPI 接口描述规范（OpenAPI Specification）/u);
 
   const qa09 = await readFile(new URL('../content/quality-attributes/qa-09-safety-physical-risk.mdx', import.meta.url), 'utf8');
   assert.match(qa09, /系统理论过程分析（Systems-Theoretic Process Analysis，STPA）/u);

@@ -53,7 +53,7 @@ related_questions: []
 
 ## 定义与业务目标
 
-**来源事实：** [向后兼容指南](https://google.aip.dev/180)明确区分源码、传输表示与语义兼容，并说明兼容判断不是所有变化的完整清单。[接口版本指南](https://google.aip.dev/185)提供版本并存与弃用期指导。[OpenAPI Specification v3.1.1](https://spec.openapis.org/oas/v3.1.1.html)定义 OpenAPI 规范（OpenAPI），即超文本传输协议（Hypertext Transfer Protocol，HTTP）应用程序编程接口（Application Programming Interface，API）的语言无关描述格式。
+**来源事实：** [向后兼容指南](https://google.aip.dev/180)明确区分源码、传输表示与语义兼容，并说明兼容判断不是所有变化的完整清单。[接口版本指南](https://google.aip.dev/185)提供版本并存与弃用期指导。[OpenAPI Specification v3.1.1](https://spec.openapis.org/oas/v3.1.1.html)定义 OpenAPI 接口描述规范（OpenAPI Specification），即超文本传输协议（Hypertext Transfer Protocol，HTTP）应用程序编程接口（Application Programming Interface，API）的语言无关描述格式。
 
 兼容性关注新旧参与方组合是否保持声明的合同；互操作关注独立系统能否通过协议交换信息并完成约定行为。本站分析把业务兼容作为额外边界：协议消息可解析不代表金额、权限、幂等或终态含义一致。
 
@@ -68,23 +68,23 @@ related_questions: []
 | 新消费方 → 新提供方 | 新合同可使用 | 新字段往返一致 | 新行为满足业务规则 |
 | 旧消费方 → 旧提供方 | 基线可复现 | 基线编码稳定 | 基线语义作为比较证据 |
 
-### 来源（Source）
+### 场景来源（Source）
 
 应用程序编程接口所有者发起合同变化。
 
-### 刺激（Stimulus）
+### 触发刺激（Stimulus）
 
 增加字段并准备移除旧字段。
 
-### 环境（Environment）
+### 运行环境（Environment）
 
 新旧客户端与服务端同时存在。
 
-### 对象（Artifact）
+### 受影响对象（Artifact）
 
 软件开发工具包（Software Development Kit，SDK）、接口描述、传输载荷、业务规则和迁移状态共同受影响。
 
-### 响应（Response）
+### 系统响应（Response）
 
 系统依次增量发布、弃用、迁移，最后才移除。
 

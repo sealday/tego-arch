@@ -1,6 +1,6 @@
 ---
-title: 物理任务通信语义与受管生命周期
-sidebar_label: 通信语义与受管生命周期
+title: ROS 2 + DDS Agent Lifecycle：为物理任务选择通信语义与受管生命周期
+sidebar_label: ROS 2 + DDS Agent Lifecycle
 slug: /cases/ros2-dds-agent-lifecycle
 content_type: case
 status: reviewed
@@ -9,7 +9,7 @@ analyzed_at: 2026-07-22
 source_cutoff: 2026-07-22
 review_policy: quarterly-version-sensitive
 confidence: high
-summary: 用机器人操作系统（Robot Operating System，ROS 2）、数据分发服务（Data Distribution Service，DDS）、智能体（Agent）、服务质量（Quality of Service，QoS）、监督者（Supervisor）、管理者（Manager）、工作流（Workflow）、重试（Retry）与安全保障（Safety），区分消息流、长任务和执行授权。
+summary: 用机器人操作系统（Robot Operating System，ROS 2）、数据分发服务（Data Distribution Service，DDS）、智能体（Agent）、服务质量（Quality of Service，QoS）、监督者（Supervisor）、工作流（Workflow）、重试（Retry）与安全保障（Safety），区分消息流、长任务和执行授权。
 series: edge-physical
 catalog_order: 15
 featured: false
@@ -150,7 +150,7 @@ flowchart LR
 先沿长任务主链检查控制权。生命周期管理者决定节点是否参与处理，动作服务端管理目标与取消，设备真实状态仍由驱动器回执和安全链确认。
 
 <div
-  className="架构-diagram-scroll"
+  className="architecture-diagram-scroll"
   role="region"
   aria-label="ROS 2长任务控制合同图，可横向滚动"
   tabIndex={0}
@@ -163,7 +163,7 @@ flowchart LR
 取消路径尤其不能缩写成一个状态位。接受请求后，应用仍要停止命令、等待设备回执，再提交已取消、失败或人工终态。
 
 <div
-  className="架构-diagram-scroll"
+  className="architecture-diagram-scroll"
   role="region"
   aria-label="ROS 2取消到物理终态图，可横向滚动"
   tabIndex={0}
@@ -256,7 +256,7 @@ flowchart LR
 | 可靠性| 尽力交付可丢；可靠模式重试以保证数据分发服务样本交付| 相机与雷达可容忍新帧覆盖旧帧时选尽力而为；低频控制状态常选可靠模式| 可靠模式会增加等待与带宽，也不保证业务效果；设置超时和限流|
 | 持久性| 易失模式不为迟加入者保留；瞬态本地模式由发布者为后加入订阅者保留样本| 配置与静态状态可考虑瞬态本地模式；实时流常用易失模式| 迟到数据可能过期；每条消息带时间戳与版本并拒绝陈旧状态|
 | 截止时间| 期望连续样本间的最大间隔，可产生遗漏事件| 控制状态和传感器健康设明确截止时间| 事件只是诊断与策略输入，不会自动停机；安全控制器另行看门狗|
-| 存活性/ 租约| 发布者在租约内表明仍存活；自动或手动按主题| 关键命令发布者可用更严格存活性与租约| 存活不等于回调正常、设备执行或授权有效；联合反馈和设备健康|
+| 存活性与租约| 发布者在租约内表明仍存活；自动或手动按主题| 关键命令发布者可用更严格存活性与租约| 存活不等于回调正常、设备执行或授权有效；联合反馈和设备健康|
 | 兼容性| 订阅者请求最低质量，发布者提供最高质量；所有兼容策略都满足才连接| 部署前生成主题与服务与动作QoS 契约并在启动时检查事件| 同名同类型仍可能零数据；观测不兼容QoS 并失败关闭|
 
 可靠模式不是统一答案。高频感知可以让新帧覆盖旧帧，低频控制状态可能更重视交付；每类数据都要明确年龄、丢弃、连接失败与降级政策。

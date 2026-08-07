@@ -345,11 +345,11 @@ test('QA-00 and QA-01 content relations and architecture path', async () => {
     .filter(({level}) => level === 3)
     .map(({text}) => text);
   assert.deepEqual(scenarioHeadings, [
-    '来源（Source）',
-    '刺激（Stimulus）',
-    '环境（Environment）',
-    '对象（Artifact）',
-    '响应（Response）',
+    '场景来源（Source）',
+    '触发刺激（Stimulus）',
+    '运行环境（Environment）',
+    '受影响对象（Artifact）',
+    '系统响应（Response）',
     '响应度量（Response Measure）',
   ]);
 

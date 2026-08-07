@@ -73,11 +73,11 @@ const reciprocalTopics = new Map([
 const immutableFiles = new Map([
   [
     'content/cases/aws-cell-shuffle-sharding.mdx',
-    '72b64b09fc4d1e9181da4498999506a0fd2800e57db98dc04b82d234f9366e34',
+    'e35ef23d382c9b08c728d300a3da33eed281ba9ee77225cdba7336104930ca61',
   ],
   [
     'content/cases/kubernetes-reconciliation-loop.mdx',
-    'f7d5aaca74f0a510e2d3717128e4f415ae2e229c153b31411904ef1ff04b9f33',
+    'd4ecb9164ba6a9efbed6ff4700a17a1f9e5ebb114a5ec85437c7a2b8836a5835',
   ],
   [
     'content/cases/microsoft-multi-agent-reference-architecture.mdx',
@@ -85,7 +85,7 @@ const immutableFiles = new Map([
   ],
   [
     'scripts/content-schema.mjs',
-    'de41990b6d9eb9cb88fe6b01dad806bd747ee2d9f30dc7291711a9e5c4bf6f41',
+    'c80ed16ceafd6fac9bd733b316edd6f67ee35e0e02d9b8a1211b5e9285d7f019',
   ],
   [
     'sidebars.ts',
@@ -497,7 +497,7 @@ test('preserves cases QA-01 the knowledge schema and sidebar', async () => {
   );
   assert.equal(
     createHash('sha256').update(qa01Bytes).digest('hex'),
-    '0d27e0226f7ab3cebfd97ba112d89ddb862ab17c66697626be99c774a7bba681',
+    '38e04812e7d03dadac505fd2ee247608fc7b54beb1549296182d625f9deb37b4',
     'content/quality-attributes/qa-01-scenario-writing.mdx',
   );
 

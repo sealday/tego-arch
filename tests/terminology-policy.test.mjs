@@ -857,6 +857,56 @@ test('keeps source titles and adjacent concepts out of the normative terminology
   assert.deepEqual(byId.get('kong-ai-proxy-advanced').allowed_aliases, []);
 });
 
+test('keeps code signatures, source identities, authors, and institutions out of terminology', async () => {
+  const registry = JSON.parse(await readFile(path.join(repositoryRoot, 'data/terminology.json')));
+  const forbiddenIds = new Set([
+    'awesome-software-architecture',
+    'google-sre-workbook',
+    'linkedin-engineering',
+    'netdb-workshop',
+    'microsoft-research',
+    'jay-kreps',
+    'durable-object-get-by-name-signature',
+  ]);
+  assert.deepEqual(registry.terms.filter(({id}) => forbiddenIds.has(id)).map(({id}) => id), []);
+  assert.deepEqual(registry.terms.filter(({kind}) => kind === 'code-literal').map(({id}) => id), []);
+  assert.deepEqual(
+    registry.terms.filter(({note}) => /来源题名|来源署名|作者姓名|机构官方名称|会议类别|受审阅签名/u.test(note)).map(({id}) => id),
+    [],
+  );
+});
+
+test('uses natural first-use forms and only same-concept aliases', async () => {
+  const registry = JSON.parse(await readFile(path.join(repositoryRoot, 'data/terminology.json')));
+  const byId = new Map(registry.terms.map((term) => [term.id, term]));
+  assert.deepEqual(
+    registry.terms
+      .filter(({canonical_zh, english, first_use}) => english && canonical_zh.includes(english) && first_use.includes(`（${english}`))
+      .map(({id}) => id),
+    [],
+  );
+  assert.deepEqual(byId.get('quality-attribute-scenario-fields').allowed_aliases, []);
+  assert.equal(byId.get('manager').first_use, '多智能体管理者（Manager）');
+  assert.deepEqual(
+    Object.fromEntries(registry.terms.filter(({allowed_aliases}) => allowed_aliases.length).map(({id, allowed_aliases}) => [id, allowed_aliases])),
+    {
+      'tego-arch': ['Tego Arch'],
+      'cloudflare-durable-objects': ['Durable Object'],
+      'aws-cli-agent-orchestrator': ['AWS CLI Agent Orchestrator'],
+      'ros2-jazzy': ['Jazzy'],
+    },
+  );
+  for (const id of [
+    'quality-scenario-source',
+    'quality-scenario-stimulus',
+    'quality-scenario-environment',
+    'quality-scenario-artifact',
+    'quality-scenario-response',
+    'quality-scenario-response-measure',
+    'cloudflare-workers',
+  ]) assert.ok(byId.has(id), id);
+});
+
 test('projects every approved foundational term exactly', async () => {
   const registry = JSON.parse(await readFile(path.join(repositoryRoot, 'data/terminology.json')));
   const metadata = new Map([

@@ -122,7 +122,7 @@ test('Pattern page renders five common groups plus one Chinese-first Agent wrapp
     .concat('\n');
   assert.equal(
     createHash('sha256').update(agentSection).digest('hex'),
-    '4a43c81c52b2f8b549db26ef9f8e7eeec80f7a9e35589ed47cd592e477784c65',
+    'a80035a30f04cf96640dc8ee66637555abaa0af099acc3d965fd4bf67e9e62b2',
     'the complete Chinese-first Agent wrapper, nine headings, paragraphs, links, and comparison must remain intact',
   );
 });

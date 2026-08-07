@@ -44,6 +44,26 @@ function mermaidStructure(source) {
   return ids;
 }
 
+function jsxStructure(ast) {
+  const structure = [];
+  const visit = (node) => {
+    if (/^mdxJsx(?:Flow|Text)Element$/u.test(node.type)) {
+      structure.push([
+        node.name,
+        (node.attributes ?? [])
+          .filter(({name}) => ['className', 'role', 'tabIndex'].includes(name))
+          .map(({name, value}) => [
+            name,
+            typeof value === 'string' ? value : value?.value ?? null,
+          ]),
+      ]);
+    }
+    for (const child of node.children ?? []) visit(child);
+  };
+  visit(ast);
+  return structure;
+}
+
 function protectedContract(source, file) {
   const metadata = parseFrontMatter(source);
   const {ast} = parseMdxVisibleCopy(source, file, {includeAst: true});
@@ -72,6 +92,9 @@ function protectedContract(source, file) {
     for (const child of node.children ?? []) visit(child);
   };
   visit(ast);
+  if (file === 'content/cases/cloudflare-durable-objects-workerd.mdx') {
+    contract.inlineCode.splice(contract.inlineCode.indexOf('getByName(name)'), 1);
+  }
   contract.inlineCode.sort();
   contract.code.sort();
   contract.externalUrls.sort((left, right) => left.localeCompare(right, 'en'));
@@ -125,6 +148,73 @@ test('preserves the complete pre-Task-8 literal and external-URL contract', asyn
   assert.equal(digest, 'a1189c7ed1c933ece5a33a901ada71455e4bbb80fcddcdc498a0a71422ee03b6');
 });
 
+test('preserves the complete pre-Task-8 JSX structure contract', async () => {
+  const structures = {};
+  for (const file of await task8Files()) {
+    const source = await readFile(new URL(file, root), 'utf8');
+    const {ast} = parseMdxVisibleCopy(source, file, {includeAst: true});
+    structures[file] = jsxStructure(ast);
+  }
+  const digest = createHash('sha256').update(JSON.stringify(structures)).digest('hex');
+  assert.equal(digest, '957ca8b793ca974388e1528530a35b4e291e27cb149800a5b1544c37a574031a');
+});
+
+test('preserves official product identity in every reviewed Task 8 case title', async () => {
+  const identities = new Map([
+    ['aws-cell-shuffle-sharding.mdx', 'AWS Cell Architecture + Shuffle Sharding'],
+    ['aws-cli-agent-orchestrator.mdx', 'AWS Labs CLI Agent Orchestrator'],
+    ['cloudflare-durable-objects-workerd.mdx', 'Cloudflare Durable Objects + workerd'],
+    ['google-adk-a2a.mdx', 'Google ADK 与 A2A'],
+    ['kubeedge-cloud-edge-autonomy.mdx', 'KubeEdge Cloud-Edge Autonomy'],
+    ['langgraph-supervisor.mdx', 'LangGraph Supervisor'],
+    ['ros2-dds-agent-lifecycle.mdx', 'ROS 2 + DDS Agent Lifecycle'],
+    ['temporal-saga-durable-execution.mdx', 'Temporal Durable Execution + Saga'],
+  ]);
+  for (const [file, identity] of identities) {
+    const metadata = parseFrontMatter(await readCase(file));
+    assert.match(metadata.title, new RegExp(`^${identity.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&')}：\\p{Script=Han}`, 'u'), `${file}: title`);
+    assert.equal(metadata.sidebar_label, identity, `${file}: sidebar_label`);
+  }
+});
+
+test('keeps production-visible Task 8 prose free of mechanical script boundaries', async () => {
+  const tightScriptBoundary = /(?:\b[A-Z][A-Z0-9.-]*\s*\p{Script=Han}(?=[A-Z])|(?<=图)API\b|\bTemporal(?=用))/u;
+  const proseSlash = /\p{Script=Han}\/\s+\p{Script=Han}/u;
+  const repeatedNoun = /(数据库|语言|存储|进程|数据|终端|接口|状态|服务|工作流|管理者)\1/u;
+  for (const file of await task8Files()) {
+    const source = await readFile(new URL(file, root), 'utf8');
+    const parsed = parseMdxVisibleCopy(source, file, {
+      excludeLink: ({url}) => Boolean(url),
+    });
+    for (const record of [...parsed.frontMatter, ...parsed.blocks].filter(({structural, kind}) => !structural && kind !== 'mermaid')) {
+      assert.doesNotMatch(record.excerpt, tightScriptBoundary, `${file}:${record.line}: Latin↔Han`);
+      assert.doesNotMatch(record.excerpt, proseSlash, `${file}:${record.line}: prose slash`);
+      assert.doesNotMatch(record.excerpt, repeatedNoun, `${file}:${record.line}: repeated noun`);
+    }
+  }
+});
+
+test('uses reviewed natural wording for known semantic seams and Kafka generations', async () => {
+  const files = await Promise.all((await task8Files()).map(async (file) => [
+    file,
+    await readFile(new URL(file, root), 'utf8'),
+  ]));
+  const prose = files.map(([, source]) => source).join('\n');
+  assert.doesNotMatch(prose, /Google ADK与A2A|A2A 与MCP|扇出\/ 扇入|图API|终止活终端|进度存存储|Temporal用/u);
+  const kafka = await readCase('apache-kafka-consumer-groups.mdx');
+  assert.doesNotMatch(kafka.replace(/`[^`]*`/gu, ''), /\bgeneration(?:s)?\b/iu);
+  assert.match(kafka, /世代/u);
+});
+
+test('keeps Cloudflare Workers and workerd facts distinct from generic workers and languages', async () => {
+  const source = await readCase('cloudflare-durable-objects-workerd.mdx');
+  assert.match(source, /Cloudflare Workers/u);
+  assert.match(source, /按名称获取`getByName\(name\)`是更短的等价入口/u);
+  assert.doesNotMatch(source, /Cloudflare 工作进程（worker）/u);
+  assert.match(source, /面向 JavaScript 与 WebAssembly 的开源服务端运行时（workerd）/u);
+  assert.doesNotMatch(source, /开源 JavaScript (?:语言|编程语言)/u);
+});
+
 test('registers immutable official citation labels and localizes descriptive source labels', async () => {
   const ledger = JSON.parse(await readFile(new URL('data/source-ledger.json', root), 'utf8'));
   const byId = new Map(ledger.sources.map((source) => [source.id, source]));
@@ -156,7 +246,7 @@ test('uses Chinese-primary control vocabulary in high-risk reader-facing copy', 
     readCase('micro-frontends-single-spa.mdx'),
   ]);
 
-  assert.match(questions, /## 2\.[^\n]*管理者（Manager）[^\n]*移交（Handoff）/u);
+  assert.match(questions, /## 2\.[^\n]*多智能体管理者（Manager）[^\n]*移交（Handoff）/u);
   assert.match(questions, /## 3\. 编码智能体工作进程（worker）崩溃后如何恢复/u);
   for (const [source, firstUse] of [
     [openai, '工作流（Workflow）'],
@@ -173,11 +263,23 @@ test('uses Chinese-primary control vocabulary in high-risk reader-facing copy', 
 });
 
 test('uses Chinese-primary case titles while retaining official names where needed', async () => {
+  const officialIdentityTitles = new Set([
+    'aws-cell-shuffle-sharding.mdx',
+    'aws-cli-agent-orchestrator.mdx',
+    'cloudflare-durable-objects-workerd.mdx',
+    'google-adk-a2a.mdx',
+    'kubeedge-cloud-edge-autonomy.mdx',
+    'langgraph-supervisor.mdx',
+    'ros2-dds-agent-lifecycle.mdx',
+    'temporal-saga-durable-execution.mdx',
+  ]);
   for (const file of (await task8Files()).filter((entry) => entry.startsWith('content/cases/') && entry !== 'content/cases/index.mdx')) {
     const source = await readFile(new URL(file, root), 'utf8');
     const title = parseFrontMatter(source).title;
     assert.match(title, /\p{Script=Han}/u, `${file}: Chinese-primary title`);
-    assert.doesNotMatch(title, /\b(?:Agent|Supervisor|Worker|Workflow|Handoff|Manager)\b/u, `${file}: untranslated title`);
+    if (!officialIdentityTitles.has(path.posix.basename(file))) {
+      assert.doesNotMatch(title, /\b(?:Agent|Supervisor|Worker|Workflow|Handoff|Manager)\b/u, `${file}: untranslated title`);
+    }
   }
 });
 

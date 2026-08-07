@@ -55,7 +55,7 @@ tags:
 
 # 消费者组：用分区所有权组织可重放的智能体工作
 
-再均衡把分区3 从消费者甲转给消费者乙时，旧消费者发出的超文本传输协议（Hypertext Transfer Protocol，HTTP）请求可能仍在执行。Kafka 能阻止失去分配的成员继续用旧生成提交偏移量，却不会撤回这个请求，也不会替业务数据库选择哪次写入有效。
+再均衡把分区 3 从消费者甲转给消费者乙时，旧消费者发出的超文本传输协议（Hypertext Transfer Protocol，HTTP）请求可能仍在执行。Kafka 能阻止失去分配的成员继续用旧世代提交偏移量，却不会撤回这个请求，也不会替业务数据库选择哪次写入有效。
 
 消费者组的可迁移价值，正是把“取数所有权”和“业务动作所有权”拆开。分区分配、偏移量与保留日志支撑接管和重放；收件箱、幂等键、租约、隔离栅栏与对账才负责处理在途工作的重叠。
 
@@ -73,7 +73,7 @@ tags:
 
 **已证实事实**：Kafka 主题分成分区，事件追加到其中一个分区。相同密钥的事件进入同一分区；消费者按主题内单个分区的写入顺序读取。该保证只在分区内成立，不提供跨分区的全局顺序。
 
-同一`group.id`内，一个分区在当前分配中交给一个消费者。经典模式协议由代理节点协调器管理成员、生成和状态；被选为领导者的客户端执行分配器，再通过组同步让协调器保存并传播分配。
+同一`group.id`内，一个分区在当前分配中交给一个消费者。经典模式协议由代理节点协调器管理成员、世代和状态；被选为领导者的客户端执行分配器，再通过组同步让协调器保存并传播分配。
 
 消费者位置是下一次`poll()`返回的位置，已提交偏移量是失败或再均衡后的恢复位置。业务动作成功而偏移量未提交时进程失败，接管者会从旧偏移量重读。这是至少一次的重复窗口。
 
@@ -97,7 +97,7 @@ tags:
 
 **已证实事实**：生产者幂等性针对生产者的重试（Retry）写入，并受单个生产者会话边界限制。Kafka 事务可原子提交流输出与消费者偏移量，配合`read_committed`形成 Kafka 内部边界；任意外部系统仍需自己配合。
 
-**基于证据的推断**：组生成能拒绝陈旧成员提交偏移量，却不能隔离栅栏已发送的业务请求。目标存储必须比较更高层所有权纪元，并在同一原子操作中决定是否应用业务变更。
+**基于证据的推断**：组世代能拒绝陈旧成员提交偏移量，却不能隔离栅栏已发送的业务请求。目标存储必须比较更高层所有权纪元，并在同一原子操作中决定是否应用业务变更。
 
 **个人分析**：Kafka 偏移量不是完整审计快照。重放只恢复输入字节和顺序，不恢复模型、提示词、工具、知识、权限与外部世界的历史版本；这些版本需要独立账本。
 
@@ -108,7 +108,7 @@ tags:
   - **新协议边界：** `consumer`协议自Kafka 4.0 起正式可用，且不依赖经典模式的全局同步屏障；本文不把两套状态机混写。
   - **排除项：** 不把Kafka 4.3 共享组的逐记录获取、交付尝试或拒绝语义倒推到消费者组。
   - **固定源码：** `apache/kafka@ebac341b28d4224c296ada31eb45122176e8b27b`。
-  - **历史来源：** 原始工程团队于 2011 年发表的文章用于确认 NetDB 研讨会论文；论文文档由 Microsoft Research 研究院托管。
+  - **历史来源：** 原始工程团队于 2011 年发表的文章用于确认数据库研讨会论文；论文文档由研究机构网站托管。
   - **时间边界：** 来源访问与分析日期为2026-07-22。
 </details>
 
@@ -126,7 +126,7 @@ tags:
 
 这个循环不是无缝切换承诺。新所有者恢复消费与旧工作仍可能完成可以同时成立，业务目的地仍需幂等或隔离栅栏。
 
-下面跟踪所有权转移最危险的时间窗：业务动作已经提交，偏移量还没提交，再均衡又让新消费者接管。Kafka 生成与应用工作纪元故意画成两个变量，因为前者不会自动保护外部目的地。
+下面跟踪所有权转移最危险的时间窗：业务动作已经提交，偏移量还没提交，再均衡又让新消费者接管。Kafka 世代与应用工作纪元故意画成两个变量，因为前者不会自动保护外部目的地。
 
 ```mermaid
 sequenceDiagram
@@ -192,8 +192,8 @@ sequenceDiagram
   <summary>证据：固定提交中的经典模式分配、偏移量与拉取源码接缝</summary>
 
   - [`KafkaApis.scala` 1389–1440](https://github.com/apache/kafka/blob/ebac341b28d4224c296ada31eb45122176e8b27b/core/src/main/scala/kafka/server/KafkaApis.scala#L1389-L1440)：加入组与组同步先检查组的`READ`权限；偏移量提交与拉取还会检查对应组与主题权限，再进入协调器或拉取后端。
-  - [`ClassicGroup.java` 72–154](https://github.com/apache/kafka/blob/ebac341b28d4224c296ada31eb45122176e8b27b/group-coordinator/src/main/java/org/apache/kafka/coordinator/group/classic/ClassicGroup.java#L72-L154)与[`ClassicGroupState.java` 29–126](https://github.com/apache/kafka/blob/ebac341b28d4224c296ada31eb45122176e8b27b/group-coordinator/src/main/java/org/apache/kafka/coordinator/group/classic/ClassicGroupState.java#L29-L126)：成员、领导者、生成与状态迁移。
-  - [`GroupMetadataManager.classicGroupJoin` 6822–6946](https://github.com/apache/kafka/blob/ebac341b28d4224c296ada31eb45122176e8b27b/group-coordinator/src/main/java/org/apache/kafka/coordinator/group/GroupMetadataManager.java#L6822-L6946)与[`prepareRebalance` 7648–7732](https://github.com/apache/kafka/blob/ebac341b28d4224c296ada31eb45122176e8b27b/group-coordinator/src/main/java/org/apache/kafka/coordinator/group/GroupMetadataManager.java#L7648-L7732)：加入、等待与生成推进。
+  - [`ClassicGroup.java` 72–154](https://github.com/apache/kafka/blob/ebac341b28d4224c296ada31eb45122176e8b27b/group-coordinator/src/main/java/org/apache/kafka/coordinator/group/classic/ClassicGroup.java#L72-L154)与[`ClassicGroupState.java` 29–126](https://github.com/apache/kafka/blob/ebac341b28d4224c296ada31eb45122176e8b27b/group-coordinator/src/main/java/org/apache/kafka/coordinator/group/classic/ClassicGroupState.java#L29-L126)：成员、领导者、世代与状态迁移。
+  - [`GroupMetadataManager.classicGroupJoin` 6822–6946](https://github.com/apache/kafka/blob/ebac341b28d4224c296ada31eb45122176e8b27b/group-coordinator/src/main/java/org/apache/kafka/coordinator/group/GroupMetadataManager.java#L6822-L6946)与[`prepareRebalance` 7648–7732](https://github.com/apache/kafka/blob/ebac341b28d4224c296ada31eb45122176e8b27b/group-coordinator/src/main/java/org/apache/kafka/coordinator/group/GroupMetadataManager.java#L7648-L7732)：加入、等待与世代推进。
   - [`ConsumerCoordinator.onLeaderElected` 655–715](https://github.com/apache/kafka/blob/ebac341b28d4224c296ada31eb45122176e8b27b/clients/src/main/java/org/apache/kafka/clients/consumer/internals/ConsumerCoordinator.java#L655-L715)与[`onJoinComplete` 379–474](https://github.com/apache/kafka/blob/ebac341b28d4224c296ada31eb45122176e8b27b/clients/src/main/java/org/apache/kafka/clients/consumer/internals/ConsumerCoordinator.java#L379-L474)：协作式路径先调用`onPartitionsRevoked`；分配路径先执行`subscriptions.assignFromSubscribed(...)`，再调用`onPartitionsAssigned`。
   - [`GroupMetadataManager` 7757–7833](https://github.com/apache/kafka/blob/ebac341b28d4224c296ada31eb45122176e8b27b/group-coordinator/src/main/java/org/apache/kafka/coordinator/group/GroupMetadataManager.java#L7757-L7833)：分配保存与传播。
   - [`OffsetMetadataManager.commitOffset` 620–693](https://github.com/apache/kafka/blob/ebac341b28d4224c296ada31eb45122176e8b27b/group-coordinator/src/main/java/org/apache/kafka/coordinator/group/OffsetMetadataManager.java#L620-L693)：提交者校验与协调器记录。
@@ -279,7 +279,7 @@ sequenceDiagram
 
 ## 来源
 
-**官方文档与API（已证实事实）**
+**官方文档与 API（已证实事实）**
 
 - [Apache Kafka Introduction](https://kafka.apache.org/intro/)与[Kafka 4.3 Design](https://kafka.apache.org/43/design/design/)：主题、分区、密钥、位置、交付语义、事务与外部系统边界。
 - [KafkaConsumer 4.3.1 Javadoc](https://kafka.apache.org/43/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html)与[KafkaProducer 4.3.1 Javadoc](https://kafka.apache.org/43/javadoc/org/apache/kafka/clients/producer/KafkaProducer.html)：分配、提交、定位、暂停与恢复、生产者幂等性与事务。
@@ -289,14 +289,14 @@ sequenceDiagram
 
 **经典论文与原始工程资料（已证实事实）**
 
-- 三位论文作者在[Kafka: a Distributed Messaging System for Log Processing](https://www.microsoft.com/en-us/research/wp-content/uploads/2017/09/Kafka.pdf)（NetDB ’11）中说明了原始日志、分区、消费者组与显式偏移量设计。
-- LinkedIn, [Open-sourcing Kafka](https://www.linkedin.com/blog/member/archive/open-source-linkedin-kafka), 2011-01-11，与[Project Kafka reaches v0.6](https://www.linkedin.com/blog/engineering/open-source/project-kafka-distributed-publish-subscribe-messaging-system-reaches-v06), 2011-06-16：公开背景、早期语义与论文链接。
-- Jay Kreps, [The Log](https://www.linkedin.com/blog/engineering/distributed-systems/log-what-every-software-engineer-should-know-about-real-time-datas-unifying), 2013：仅追加日志、分区内全序与分区间无全局顺序。
+- 三位论文作者在[Kafka: a Distributed Messaging System for Log Processing](https://www.microsoft.com/en-us/research/wp-content/uploads/2017/09/Kafka.pdf)中说明了原始日志、分区、消费者组与显式偏移量设计。
+- 原始工程团队的[Open-sourcing Kafka](https://www.linkedin.com/blog/member/archive/open-source-linkedin-kafka)（2011-01-11）与[Project Kafka reaches v0.6](https://www.linkedin.com/blog/engineering/open-source/project-kafka-distributed-publish-subscribe-messaging-system-reaches-v06)（2011-06-16）：公开背景、早期语义与论文链接。
+- 原始设计者的[The Log](https://www.linkedin.com/blog/engineering/distributed-systems/log-what-every-software-engineer-should-know-about-real-time-datas-unifying)（2013）：仅追加日志、分区内全序与分区间无全局顺序。
 
 **固定源码（已证实事实）**
 
 - [`apache/kafka@ebac341b28d4224c296ada31eb45122176e8b27b`](https://github.com/apache/kafka/tree/ebac341b28d4224c296ada31eb45122176e8b27b)：本文唯一源码截面。
-- [`ClassicGroup` / `ClassicGroupState`](https://github.com/apache/kafka/blob/ebac341b28d4224c296ada31eb45122176e8b27b/group-coordinator/src/main/java/org/apache/kafka/coordinator/group/classic/ClassicGroup.java)：成员关系、生成、领导者与状态机。
+- [`ClassicGroup` / `ClassicGroupState`](https://github.com/apache/kafka/blob/ebac341b28d4224c296ada31eb45122176e8b27b/group-coordinator/src/main/java/org/apache/kafka/coordinator/group/classic/ClassicGroup.java)：成员关系、世代、领导者与状态机。
 - [`GroupMetadataManager`](https://github.com/apache/kafka/blob/ebac341b28d4224c296ada31eb45122176e8b27b/group-coordinator/src/main/java/org/apache/kafka/coordinator/group/GroupMetadataManager.java)与[`OffsetMetadataManager`](https://github.com/apache/kafka/blob/ebac341b28d4224c296ada31eb45122176e8b27b/group-coordinator/src/main/java/org/apache/kafka/coordinator/group/OffsetMetadataManager.java)：加入与再均衡与同步与分配与偏移量记录。
 - [`ConsumerCoordinator`](https://github.com/apache/kafka/blob/ebac341b28d4224c296ada31eb45122176e8b27b/clients/src/main/java/org/apache/kafka/clients/consumer/internals/ConsumerCoordinator.java)：经典模式领导者分配器与回调。
 - [`ClassicKafkaConsumer`](https://github.com/apache/kafka/blob/ebac341b28d4224c296ada31eb45122176e8b27b/clients/src/main/java/org/apache/kafka/clients/consumer/internals/ClassicKafkaConsumer.java)、[`FetchCollector`](https://github.com/apache/kafka/blob/ebac341b28d4224c296ada31eb45122176e8b27b/clients/src/main/java/org/apache/kafka/clients/consumer/internals/FetchCollector.java)与[`CompletedFetch`](https://github.com/apache/kafka/blob/ebac341b28d4224c296ada31eb45122176e8b27b/clients/src/main/java/org/apache/kafka/clients/consumer/internals/CompletedFetch.java)：轮询与拉取、位置与有毒消息接缝。
