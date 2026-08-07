@@ -281,3 +281,32 @@ test('keeps every new STY-02 transport in the reviewed health cache', () => {
     assert.equal(result.review_status, 'healthy', `${id} review status`);
   }
 });
+
+const diagramSourceUrl = new URL('../diagrams/sty-02-hexagonal-onion-clean-order.drawio', import.meta.url);
+const diagramSvgUrl = new URL('../static/img/diagrams/sty-02-hexagonal-onion-clean-order.svg', import.meta.url);
+const requiredDiagramLabels = [
+  '外部驱动方', '应用核心', '外部机制',
+  'HTTP / CLI / 自动化测试', '输入适配器', '提交订单用例', '订单领域规则',
+  '库存端口', '订单仓储端口', '库存服务适配器', '数据库适配器',
+  'Driving Adapter / UI Edge / Controller',
+  'Driving Port / Application Interface / Input Boundary',
+  'Domain Model / Entity Policy',
+  'Driven Port / Core Interface / Output Gateway',
+  'Driven Adapter / Infrastructure / Interface Adapter',
+  '运行时控制流', '源码依赖指向内侧接口',
+];
+
+test('publishes the synchronized STY-02 Draw.io and SVG pair', async () => {
+  const [drawio, svg] = await Promise.all([
+    readFile(diagramSourceUrl, 'utf8'),
+    readFile(diagramSvgUrl, 'utf8'),
+  ]);
+  for (const label of requiredDiagramLabels) {
+    assert.ok(drawio.includes(label), `Draw.io label: ${label}`);
+    assert.ok(svg.includes(label), `SVG label: ${label}`);
+  }
+  assert.match(svg, /viewBox="0 0 1200 760"/u);
+  assert.doesNotMatch(svg, /<svg[^>]+(?:width|height)="[0-9]/u);
+  assert.match(svg, /role="img"/u);
+  assert.match(svg, /aria-labelledby="diagram-title diagram-description"/u);
+});
