@@ -166,7 +166,8 @@ function assertBacklog(source) {
   }
   assert.match(source, /^- \[x\] \*\*STY-00 /mu);
   assert.match(source, /^- \[x\] \*\*STY-01 /mu);
-  assert.match(source, /^- \[ \] \*\*STY-02 /mu);
+  assert.match(source, /^- \[x\] \*\*STY-02 /mu);
+  assert.match(source, /^- \[ \] \*\*STY-03 /mu);
   assert.match(source, /^- \*\*当前持久故事：\*\* `G009`。$/mu);
 }
 
@@ -216,7 +217,7 @@ test('rejects closure mutations accepted by the former weak predicates', async (
   }
 });
 
-test('preserves the STY-00 closure while projecting STY-01 complete and STY-02 next', async () => {
+test('preserves the Batch 1 closure while projecting STY-02 complete and STY-03 next', async () => {
   const [backlog, manifest, status] = await Promise.all([
     readFile(new URL('../docs/content-backlog.md', import.meta.url), 'utf8'),
     readFile(new URL('../src/generated/topic-manifest.json', import.meta.url), 'utf8').then(JSON.parse),
@@ -229,11 +230,13 @@ test('preserves the STY-00 closure while projecting STY-01 complete and STY-02 n
   assert.equal(topics.get('STY-01')?.published, true);
   assert.equal(topics.get('STY-01')?.status.value, 'complete');
   assert.equal(topics.get('STY-02')?.published, true);
-  assert.equal(topics.get('STY-02')?.status.value, 'pending');
+  assert.equal(topics.get('STY-02')?.status.value, 'complete');
+  assert.equal(topics.get('STY-03')?.published, false);
+  assert.equal(topics.get('STY-03')?.status.value, 'pending');
   assert.deepEqual(status, {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
-    completed_topics: 54,
+    completed_topics: 55,
     content_documents: 96,
     governed_sources: 506,
     sources: {

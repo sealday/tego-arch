@@ -335,7 +335,7 @@ test('projects G008 Batch 1 completion during Stage B', async () => {
   assert.deepEqual(status, {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
-    completed_topics: 54,
+    completed_topics: 55,
     content_documents: 96,
     governed_sources: 506,
     sources: {

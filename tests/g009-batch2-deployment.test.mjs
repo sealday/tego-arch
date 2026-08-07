@@ -122,6 +122,7 @@ const currentBacklogEvidence = [
 ];
 
 const expectedCurrentBaseline = `- **当前发布基线：** ${currentBacklogEvidence.join('，')}。`;
+const batch2HistoryMarker = '此前 G009 Batch 2 历史完成基线为：';
 const historyMarker = '此前 G009 Batch 1 历史完成基线为：';
 const expectedG009Batch1AndOlderSha256 =
   'c0bbc4af5cbbbe68fb3a61a5fceb30c172a4c132b01931cf55a8cb2ec02489c1';
@@ -172,9 +173,19 @@ function currentReleaseBaseline(source) {
 
 function currentG009Batch2Baseline(source) {
   const baseline = currentReleaseBaseline(source);
+  const start = baseline.indexOf(batch2HistoryMarker);
   const end = baseline.indexOf(historyMarker);
+  assert.notEqual(start, -1, 'G009 Batch 2 history boundary');
   assert.notEqual(end, -1, 'G009 Batch 1 history boundary');
-  return baseline.slice(0, end);
+  return `- **当前发布基线：** ${baseline.slice(start + batch2HistoryMarker.length, end)}`;
+}
+
+function mutateG009Batch2History(source, from, to) {
+  const historicalBaseline = currentG009Batch2Baseline(source);
+  const historicalText = historicalBaseline.slice('- **当前发布基线：** '.length);
+  const mutation = historicalText.replace(from, to);
+  assert.notEqual(mutation, historicalText, `historical mutation must replace: ${from}`);
+  return source.replace(historicalText, mutation);
 }
 
 function g009Batch1AndOlderHistory(source) {
@@ -191,7 +202,8 @@ function assertBacklog(source) {
     assert.equal(segment.split(literal).length - 1, 1, `one backlog literal: ${literal}`);
   }
   assert.match(source, /^- \[x\] \*\*STY-01 /mu);
-  assert.match(source, /^- \[ \] \*\*STY-02 /mu);
+  assert.match(source, /^- \[x\] \*\*STY-02 /mu);
+  assert.match(source, /^- \[ \] \*\*STY-03 /mu);
   assert.match(source, /^- \*\*当前持久故事：\*\* `G009`。$/mu);
 }
 
@@ -237,13 +249,13 @@ test('rejects review and current-baseline contradictions', async (t) => {
   }
 
   const baselineMutations = [
-    ['run conclusion failure', backlog.replace('`conclusion=success`', '`conclusion=failure`')],
-    ['route observation failure', backlog.replace('route/viewport observations `20/20`', 'route/viewport observations `19/20`')],
-    ['interaction failure', backlog.replace('interactions `36/36`', 'interactions `35/36`')],
-    ['repository test failure', backlog.replace('仓库测试 `847/847`', '仓库测试 `846/847`')],
-    ['Stage B count regression', backlog.replace('Stage B closure 为 54 个已完成主题、95 篇内容文档与 502 个受治理来源', 'Stage B closure 为 53 个已完成主题、95 篇内容文档与 502 个受治理来源')],
-    ['next topic regression', backlog.replace('下一项为 STY-02', '下一项为 STY-01')],
-    ['Stage B closure failure', backlog.replace('Stage B closure — PASS', 'Stage B closure — FAIL')],
+    ['run conclusion failure', mutateG009Batch2History(backlog, '`conclusion=success`', '`conclusion=failure`')],
+    ['route observation failure', mutateG009Batch2History(backlog, 'route/viewport observations `20/20`', 'route/viewport observations `19/20`')],
+    ['interaction failure', mutateG009Batch2History(backlog, 'interactions `36/36`', 'interactions `35/36`')],
+    ['repository test failure', mutateG009Batch2History(backlog, '仓库测试 `847/847`', '仓库测试 `846/847`')],
+    ['Stage B count regression', mutateG009Batch2History(backlog, 'Stage B closure 为 54 个已完成主题、95 篇内容文档与 502 个受治理来源', 'Stage B closure 为 53 个已完成主题、95 篇内容文档与 502 个受治理来源')],
+    ['next topic regression', mutateG009Batch2History(backlog, '下一项为 STY-02', '下一项为 STY-01')],
+    ['Stage B closure failure', mutateG009Batch2History(backlog, 'Stage B closure — PASS', 'Stage B closure — FAIL')],
   ];
   for (const [name, mutation] of baselineMutations) {
     await t.test(`baseline ${name}`, () => {
@@ -253,7 +265,7 @@ test('rejects review and current-baseline contradictions', async (t) => {
   }
 });
 
-test('closes only STY-01 and projects G009 to STY-02', async () => {
+test('preserves the STY-01 closure while projecting STY-02 complete and STY-03 next', async () => {
   const [backlog, manifest, status, sourceLedger] = await Promise.all([
     readFile(new URL('../docs/content-backlog.md', import.meta.url), 'utf8'),
     readFile(new URL('../src/generated/topic-manifest.json', import.meta.url), 'utf8').then(JSON.parse),
@@ -265,11 +277,13 @@ test('closes only STY-01 and projects G009 to STY-02', async () => {
   assert.equal(topics.get('STY-01')?.published, true);
   assert.equal(topics.get('STY-01')?.status.value, 'complete');
   assert.equal(topics.get('STY-02')?.published, true);
-  assert.equal(topics.get('STY-02')?.status.value, 'pending');
+  assert.equal(topics.get('STY-02')?.status.value, 'complete');
+  assert.equal(topics.get('STY-03')?.published, false);
+  assert.equal(topics.get('STY-03')?.status.value, 'pending');
   assert.deepEqual(status, {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
-    completed_topics: 54,
+    completed_topics: 55,
     content_documents: 96,
     governed_sources: 506,
     sources: {

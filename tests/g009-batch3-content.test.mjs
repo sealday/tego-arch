@@ -28,10 +28,10 @@ const [manifest, projectStatus, indexes, publicLedger] = await Promise.all([
 const licenseScope = 'The named article/page and bibliographic facts only; prose, code, diagrams, images, marks, comments, linked works, and third-party material excluded';
 const migrationPolicy = 'Facts summary and reviewed short quotation only; no adaptation or copied structure';
 
-test('projects Stage A without closing STY-02 or activating STY-03', () => {
+test('projects Stage B after closing STY-02 without activating STY-03', () => {
   const topics = new Map(manifest.topics.map((topic) => [topic.id, topic]));
   assert.equal(topics.get('STY-02')?.published, true);
-  assert.equal(topics.get('STY-02')?.status.value, 'pending');
+  assert.equal(topics.get('STY-02')?.status.value, 'complete');
   assert.deepEqual(topics.get('STY-02')?.primary_sources, [
     'https://alistair.cockburn.us/hexagonal-architecture/',
     'https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html',
@@ -39,11 +39,11 @@ test('projects Stage A without closing STY-02 or activating STY-03', () => {
   ]);
   assert.equal(topics.get('STY-03')?.published, false);
   assert.equal(topics.get('STY-03')?.status.value, 'pending');
-  assert.equal(projectStatus.completed_topics, 54);
+  assert.equal(projectStatus.completed_topics, 55);
   assert.equal(projectStatus.content_documents, 96);
   assert.equal(projectStatus.governed_sources, 506);
   assert.equal(publicLedger.sources.length, 506);
-  assert.ok(indexes.style.some(({id, status}) => id === 'STY-02' && status.value === 'pending'));
+  assert.ok(indexes.style.some(({id, status}) => id === 'STY-02' && status.value === 'complete'));
 });
 
 const expectedNewSources = new Map([

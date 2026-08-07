@@ -736,7 +736,7 @@ function assertStageBProjection(statusValue, manifestValue, mod11Document) {
   assert.deepEqual(statusValue, {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
-    completed_topics: 54,
+    completed_topics: 55,
     content_documents: 96,
     governed_sources: 506,
     sources: {
