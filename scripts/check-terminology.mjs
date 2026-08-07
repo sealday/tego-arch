@@ -15,10 +15,7 @@ import {
 export const defaultPaths = [
   'README.md',
   'content',
-  'src/pages',
-  'src/components',
-  'diagrams',
-  'static/img',
+  'src/pages/index.tsx',
 ];
 
 const supportedExtensions = new Set(['.md', '.mdx', '.tsx', '.svg', '.drawio']);

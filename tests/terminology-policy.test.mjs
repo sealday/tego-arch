@@ -9,6 +9,7 @@ import test from 'node:test';
 import {
   buildLineOffsets,
   checkTerminology,
+  defaultPaths,
   lineFromOffsets,
   terminologyRuleOrder,
 } from '../scripts/check-terminology.mjs';
@@ -124,6 +125,31 @@ test('publishes the stable terminology issue rule order', () => {
     'unknown-english-term',
     'invalid-suppression',
   ]);
+});
+
+test('limits the default terminology governance gate to reader-facing entry points', () => {
+  assert.deepEqual(defaultPaths, [
+    'README.md',
+    'content',
+    'src/pages/index.tsx',
+  ]);
+});
+
+test('default terminology checks cover all repository reader-facing entry points', async () => {
+  const result = await checkTerminology({root: repositoryRoot});
+  assert.equal(result.checkedFiles.length, 97);
+  assert.deepEqual(result.issues, []);
+});
+
+test('no-argument CLI checks the repository default terminology scope', () => {
+  const run = spawnSync(
+    process.execPath,
+    [path.join(repositoryRoot, 'scripts/check-terminology.mjs')],
+    {cwd: repositoryRoot, encoding: 'utf8'},
+  );
+  assert.equal(run.status, 0, run.stdout || run.stderr);
+  assert.equal(run.stderr, '');
+  assert.match(run.stdout, /checked 97 files with 119 registered terms; 0 issues/u);
 });
 
 test('requires bilingual first use and permits registered subsequent use', async () => {
