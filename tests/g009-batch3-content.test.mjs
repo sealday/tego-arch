@@ -310,3 +310,207 @@ test('publishes the synchronized STY-02 Draw.io and SVG pair', async () => {
   assert.match(svg, /role="img"/u);
   assert.match(svg, /aria-labelledby="diagram-title diagram-description"/u);
 });
+
+function parseXmlAttributes(fragment) {
+  return Object.fromEntries(
+    [...fragment.matchAll(/([\w:-]+)="([^"]*)"/gu)].map(([, name, value]) => [name, value]),
+  );
+}
+
+function xmlElements(xml, name) {
+  return [...xml.matchAll(new RegExp(`<${name}\\b[^>]*>`, 'gu'))]
+    .map(([fragment]) => parseXmlAttributes(fragment));
+}
+
+function drawioCells(drawio) {
+  return new Map(xmlElements(drawio, 'mxCell').map((cell) => [cell.id, cell]));
+}
+
+function drawioGeometries(drawio) {
+  const geometries = new Map();
+  for (const match of drawio.matchAll(/<mxCell\b([^>]*)>\s*<mxGeometry\b([^>]*)\/>/gu)) {
+    const cell = parseXmlAttributes(match[1]);
+    const geometry = parseXmlAttributes(match[2]);
+    geometries.set(cell.id, ['x', 'y', 'width', 'height'].map((field) => Number(geometry[field])));
+  }
+  return geometries;
+}
+
+function svgElementsById(svg, name, idAttribute) {
+  return new Map(xmlElements(svg, name).map((element) => [element[idAttribute], element]));
+}
+
+function svgNodeShapes(svg) {
+  return new Map([...svg.matchAll(/<g\b([^>]*\bdata-node-id="[^"]+"[^>]*)>[\s\S]*?<path\b([^>]*)\/>/gu)]
+    .map((match) => {
+      const group = parseXmlAttributes(match[1]);
+      return [group['data-node-id'], parseXmlAttributes(match[2])];
+    }));
+}
+
+function svgPathBounds(pathData) {
+  const tokens = pathData.match(/[MHVQZ]|-?\d+(?:\.\d+)?/gu) ?? [];
+  const points = [];
+  let cursor = 0;
+  let command;
+  let x = 0;
+  let y = 0;
+  while (cursor < tokens.length) {
+    if (/^[MHVQZ]$/u.test(tokens[cursor])) command = tokens[cursor++];
+    if (command === 'M') {
+      x = Number(tokens[cursor++]); y = Number(tokens[cursor++]); points.push([x, y]); command = 'L';
+    } else if (command === 'H') {
+      x = Number(tokens[cursor++]); points.push([x, y]);
+    } else if (command === 'V') {
+      y = Number(tokens[cursor++]); points.push([x, y]);
+    } else if (command === 'Q') {
+      const controlX = Number(tokens[cursor++]); const controlY = Number(tokens[cursor++]);
+      x = Number(tokens[cursor++]); y = Number(tokens[cursor++]);
+      points.push([controlX, controlY], [x, y]);
+    } else if (command === 'Z') {
+      command = undefined;
+    } else {
+      assert.fail(`unsupported SVG path command in ${pathData}`);
+    }
+  }
+  const xs = points.map(([pointX]) => pointX);
+  const ys = points.map(([, pointY]) => pointY);
+  return [Math.min(...xs), Math.min(...ys), Math.max(...xs) - Math.min(...xs), Math.max(...ys) - Math.min(...ys)];
+}
+
+function svgMarker(svg, id) {
+  const match = svg.match(new RegExp(`<marker\\b([^>]*\\bid="${id}"[^>]*)>([\\s\\S]*?)<\\/marker>`, 'u'));
+  assert.ok(match, `${id} marker`);
+  const pathMatch = match[2].match(/<path\b([^>]*)\/>/u);
+  assert.ok(pathMatch, `${id} marker path`);
+  return {attributes: parseXmlAttributes(match[1]), path: parseXmlAttributes(pathMatch[1])};
+}
+
+function parsePathEndpoint(pathData) {
+  const coordinates = [...pathData.matchAll(/([HV])(-?\d+(?:\.\d+)?)/gu)];
+  assert.ok(coordinates.length > 0, `path coordinates: ${pathData}`);
+  let [x, y] = pathData.match(/^M(-?\d+(?:\.\d+)?) (-?\d+(?:\.\d+)?)/u)
+    .slice(1).map(Number);
+  for (const [, axis, value] of coordinates) {
+    if (axis === 'H') x = Number(value);
+    else y = Number(value);
+  }
+  return {x, y};
+}
+
+const plannedDiagramGeometries = new Map([
+  ['b-driver', [30, 100, 220, 520]],
+  ['b-core', [400, 70, 550, 620]],
+  ['b-mechanism', [980, 100, 190, 520]],
+  ['n-driver', [60, 310, 160, 100]],
+  ['n-input-adapter', [270, 310, 110, 100]],
+  ['n-usecase', [450, 270, 210, 110]],
+  ['n-domain', [450, 450, 210, 110]],
+  ['n-inventory-port', [750, 175, 160, 100]],
+  ['n-order-port', [750, 485, 160, 100]],
+  ['n-inventory-adapter', [995, 175, 160, 100]],
+  ['n-database-adapter', [995, 485, 160, 100]],
+]);
+
+const plannedDiagramRelations = new Map([
+  ['c1', ['n-driver', 'n-input-adapter']],
+  ['c2', ['n-input-adapter', 'n-usecase']],
+  ['c3', ['n-usecase', 'n-domain']],
+  ['c4', ['n-usecase', 'n-inventory-port']],
+  ['c5', ['n-inventory-port', 'n-inventory-adapter']],
+  ['c6', ['n-usecase', 'n-order-port']],
+  ['c7', ['n-order-port', 'n-database-adapter']],
+  ['d1', ['n-input-adapter', 'n-usecase']],
+  ['d2', ['n-inventory-adapter', 'n-inventory-port']],
+  ['d3', ['n-database-adapter', 'n-order-port']],
+]);
+
+test('parses the exact STY-02 geometry and directed relation inventory', async () => {
+  const [drawio, svg] = await Promise.all([
+    readFile(diagramSourceUrl, 'utf8'),
+    readFile(diagramSvgUrl, 'utf8'),
+  ]);
+  const geometries = drawioGeometries(drawio);
+  const cells = drawioCells(drawio);
+  const svgNodes = svgNodeShapes(svg);
+  const svgBoundaries = svgElementsById(svg, 'path', 'data-boundary-id');
+  const svgEdges = svgElementsById(svg, 'path', 'data-edge-id');
+
+  for (const [id, geometry] of plannedDiagramGeometries) {
+    assert.deepEqual(geometries.get(id), geometry, `${id} Draw.io geometry`);
+    const svgElement = id.startsWith('b-') ? svgBoundaries.get(id) : svgNodes.get(id);
+    assert.deepEqual(svgPathBounds(svgElement?.d), geometry, `${id} SVG rendered path geometry`);
+  }
+
+  for (const [id, [source, target]] of plannedDiagramRelations) {
+    assert.deepEqual([cells.get(id)?.source, cells.get(id)?.target], [source, target], `${id} Draw.io relation`);
+    assert.deepEqual([svgEdges.get(id)?.['data-source'], svgEdges.get(id)?.['data-target']], [source, target], `${id} SVG relation`);
+  }
+});
+
+test('parses distinct runtime and inward source-dependency routing contracts', async () => {
+  const [drawio, svg] = await Promise.all([
+    readFile(diagramSourceUrl, 'utf8'),
+    readFile(diagramSvgUrl, 'utf8'),
+  ]);
+  const cells = drawioCells(drawio);
+  const edges = svgElementsById(svg, 'path', 'data-edge-id');
+  const runtimeMarker = svgMarker(svg, 'arrow-runtime');
+  const dependencyMarker = svgMarker(svg, 'arrow-dependency');
+
+  for (const id of ['c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7']) {
+    assert.match(cells.get(id).style, /strokeWidth=3/u, `${id} Draw.io runtime width`);
+    assert.doesNotMatch(cells.get(id).style, /dashed=1/u, `${id} Draw.io runtime solid`);
+    assert.match(cells.get(id).style, /endArrow=block;endFill=1/u, `${id} Draw.io runtime marker`);
+    assert.equal(edges.get(id).stroke, '#263238', `${id} SVG runtime stroke`);
+    assert.equal(edges.get(id)['stroke-dasharray'], undefined, `${id} SVG runtime solid`);
+    assert.equal(edges.get(id)['marker-end'], 'url(#arrow-runtime)', `${id} SVG runtime marker`);
+  }
+  for (const id of ['d1', 'd2', 'd3']) {
+    assert.match(cells.get(id).style, /dashed=1/u, `${id} Draw.io dependency dashed`);
+    assert.match(cells.get(id).style, /endArrow=open;endFill=0/u, `${id} Draw.io dependency marker`);
+    assert.equal(edges.get(id).stroke, '#2F6F9F', `${id} SVG dependency stroke`);
+    assert.ok(edges.get(id)['stroke-dasharray'], `${id} SVG dependency dashed`);
+    assert.equal(edges.get(id)['marker-end'], 'url(#arrow-dependency)', `${id} SVG dependency marker`);
+  }
+
+  assert.notEqual(edges.get('c2').d, edges.get('d1').d, 'input runtime/dependency lanes');
+  assert.notEqual(parsePathEndpoint(edges.get('c5').d).y, parsePathEndpoint(edges.get('d2').d).y, 'inventory lanes');
+  assert.notEqual(parsePathEndpoint(edges.get('c7').d).y, parsePathEndpoint(edges.get('d3').d).y, 'repository lanes');
+  assert.ok(parsePathEndpoint(edges.get('d2').d).x < 995, 'd2 points inward');
+  assert.ok(parsePathEndpoint(edges.get('d3').d).x < 995, 'd3 points inward');
+  assert.equal(runtimeMarker.attributes.markerUnits, 'userSpaceOnUse');
+  assert.notEqual(runtimeMarker.path.fill, 'none', 'runtime arrowhead is filled');
+  assert.equal(dependencyMarker.attributes.markerUnits, 'userSpaceOnUse');
+  assert.equal(dependencyMarker.path.fill, 'none', 'dependency arrowhead is open');
+  assert.ok(dependencyMarker.path.stroke, 'dependency arrowhead has a visible outline');
+});
+
+test('connects every visible SVG arrow tip to its target-node boundary', async () => {
+  const svg = await readFile(diagramSvgUrl, 'utf8');
+  const edges = svgElementsById(svg, 'path', 'data-edge-id');
+  const expectedTips = new Map([
+    ['c1', {x: 270, y: 360}], ['c2', {x: 450, y: 345}], ['c3', {x: 505, y: 450}],
+    ['c4', {x: 750, y: 225}], ['c5', {x: 995, y: 225}], ['c6', {x: 750, y: 535}],
+    ['c7', {x: 995, y: 535}], ['d1', {x: 450, y: 365}], ['d2', {x: 910, y: 260}],
+    ['d3', {x: 910, y: 570}],
+  ]);
+  const markerTipOffset = new Map(['arrow-runtime', 'arrow-dependency'].map((id) => {
+    const marker = svgMarker(svg, id);
+    const xCoordinates = [...marker.path.d.matchAll(/[ML](-?\d+(?:\.\d+)?)[ ,]-?\d+(?:\.\d+)?/gu)]
+      .map(([, x]) => Number(x));
+    return [`url(#${id})`, Math.max(...xCoordinates) - Number(marker.attributes.refX)];
+  }));
+
+  for (const [id, expectedTip] of expectedTips) {
+    const edge = edges.get(id);
+    const endpoint = parsePathEndpoint(edge.d);
+    const previousHorizontal = /H/u.test(edge.d.slice(edge.d.lastIndexOf('V') + 1));
+    const offset = markerTipOffset.get(edge['marker-end']);
+    const direction = id === 'd2' || id === 'd3' ? -1 : 1;
+    const actualTip = previousHorizontal
+      ? {x: endpoint.x + (offset * direction), y: endpoint.y}
+      : {x: endpoint.x, y: endpoint.y + offset};
+    assert.deepEqual(actualTip, expectedTip, `${id} visible marker tip`);
+  }
+});
