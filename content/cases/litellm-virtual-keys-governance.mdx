@@ -1,5 +1,5 @@
 ---
-title: LiteLLM Virtual Keys：把模型网关变成权限与预算的交汇点
+title: LiteLLM 虚拟密钥：把模型网关变成权限与预算的交汇点
 sidebar_label: 虚拟密钥治理
 slug: /cases/litellm-virtual-keys-governance
 content_type: case
@@ -299,7 +299,6 @@ flowchart TD
 
 **官方产品说明（已证实事实）**
 
-{/* terminology-exempt: unknown-english-term | reason: 受保护的官方产品文档链接标签必须保持 Virtual Keys 原文 */}
 - [Virtual Keys](https://docs.litellm.ai/docs/proxy/virtual_keys)：主密钥、虚拟密钥、消耗跟踪、默认与上界参数。访问与截断日期：2026-07-23。
 - [Budgets, Rate Limits](https://docs.litellm.ai/docs/proxy/users)：预算层级、代理管理员速率限制例外，以及企业版专属模型虚拟密钥预算。访问与截断日期：2026-07-23。
 - [Budget Fallbacks](https://docs.litellm.ai/docs/proxy/budget_fallbacks)：1.92 系列起基于`model_max_budget`的密钥级预算回退。访问与截断日期：2026-07-23。
@@ -312,7 +311,6 @@ flowchart TD
 - [`BerriAI/litellm@b3086cc`](https://github.com/BerriAI/litellm/tree/b3086ccd74553565c9a39716e72303ae985555f9)：`v1.92.0`的不可变源码锚点。
 - [`user_api_key_auth.py`](https://github.com/BerriAI/litellm/blob/b3086ccd74553565c9a39716e72303ae985555f9/litellm/proxy/auth/user_api_key_auth.py)、[`auth_checks.py`](https://github.com/BerriAI/litellm/blob/b3086ccd74553565c9a39716e72303ae985555f9/litellm/proxy/auth/auth_checks.py)与[`model_checks.py`](https://github.com/BerriAI/litellm/blob/b3086ccd74553565c9a39716e72303ae985555f9/litellm/proxy/auth/model_checks.py)：主密钥提前返回、普通密钥授权、空列表继承和多级预算检查。
 - [`key_management_endpoints.py`](https://github.com/BerriAI/litellm/blob/b3086ccd74553565c9a39716e72303ae985555f9/litellm/proxy/management_endpoints/key_management_endpoints.py)：`model_max_budget`的企业版与高级套餐运行时校验。
-{/* terminology-exempt: unknown-english-term | reason: 受保护的官方仓库许可证链接标签必须保持 LICENSE 原文 */}
 - [根 LICENSE](https://github.com/BerriAI/litellm/blob/b3086ccd74553565c9a39716e72303ae985555f9/LICENSE)与[`enterprise/LICENSE.md`](https://github.com/BerriAI/litellm/blob/b3086ccd74553565c9a39716e72303ae985555f9/enterprise/LICENSE.md)：宽松开源许可与企业版目录许可边界。
 
 **官方安全公告（已证实事实）**

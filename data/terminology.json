@@ -1039,149 +1039,6 @@
       "order": 830
     },
     {
-      "id": "source-common-web-application-architectures",
-      "canonical_zh": "Common web application architectures",
-      "english": null,
-      "acronym": null,
-      "kind": "proper-noun",
-      "first_use": "Common web application architectures",
-      "subsequent_use": ["Common web application architectures"],
-      "allowed_aliases": [],
-      "forbidden_aliases": [],
-      "note": "受保护的官方来源链接标题按原样保留。",
-      "order": 840
-    },
-    {
-      "id": "source-architecture-patterns-with-python",
-      "canonical_zh": "Architecture Patterns with Python",
-      "english": null,
-      "acronym": null,
-      "kind": "proper-noun",
-      "first_use": "Architecture Patterns with Python",
-      "subsequent_use": ["Architecture Patterns with Python"],
-      "allowed_aliases": [],
-      "forbidden_aliases": [],
-      "note": "受保护的官方来源链接标题按原样保留。",
-      "order": 850
-    },
-    {
-      "id": "source-architectural-design-principles",
-      "canonical_zh": "Architectural Design Principles",
-      "english": null,
-      "acronym": null,
-      "kind": "proper-noun",
-      "first_use": "Architectural Design Principles",
-      "subsequent_use": ["Architectural Design Principles"],
-      "allowed_aliases": [],
-      "forbidden_aliases": [],
-      "note": "受保护的社区索引链接标题按原样保留。",
-      "order": 860
-    },
-    {
-      "id": "source-modular-monolith",
-      "canonical_zh": "Modular Monolith",
-      "english": null,
-      "acronym": null,
-      "kind": "proper-noun",
-      "first_use": "Modular Monolith",
-      "subsequent_use": ["Modular Monolith"],
-      "allowed_aliases": [],
-      "forbidden_aliases": [],
-      "note": "受保护的社区索引链接标题按原样保留。",
-      "order": 870
-    },
-    {
-      "id": "source-domain-driven-design",
-      "canonical_zh": "Domain Driven Design",
-      "english": null,
-      "acronym": null,
-      "kind": "proper-noun",
-      "first_use": "Domain Driven Design",
-      "subsequent_use": ["Domain Driven Design"],
-      "allowed_aliases": [],
-      "forbidden_aliases": [],
-      "note": "受保护的社区索引链接标题按原样保留，不作为正文术语别名。",
-      "order": 880
-    },
-    {
-      "id": "source-hexagonal-architecture",
-      "canonical_zh": "Hexagonal Architecture",
-      "english": null,
-      "acronym": null,
-      "kind": "proper-noun",
-      "first_use": "Hexagonal Architecture",
-      "subsequent_use": ["Hexagonal Architecture"],
-      "allowed_aliases": [],
-      "forbidden_aliases": [],
-      "note": "受保护的社区索引链接标题按原样保留。",
-      "order": 890
-    },
-    {
-      "id": "source-clean-architecture",
-      "canonical_zh": "Clean Architecture",
-      "english": null,
-      "acronym": null,
-      "kind": "proper-noun",
-      "first_use": "Clean Architecture",
-      "subsequent_use": ["Clean Architecture"],
-      "allowed_aliases": [],
-      "forbidden_aliases": [],
-      "note": "受保护的社区索引链接标题按原样保留。",
-      "order": 900
-    },
-    {
-      "id": "source-vertical-slice-architecture",
-      "canonical_zh": "Vertical Slice Architecture",
-      "english": null,
-      "acronym": null,
-      "kind": "proper-noun",
-      "first_use": "Vertical Slice Architecture",
-      "subsequent_use": ["Vertical Slice Architecture"],
-      "allowed_aliases": [],
-      "forbidden_aliases": [],
-      "note": "受保护的社区索引链接标题按原样保留。",
-      "order": 910
-    },
-    {
-      "id": "source-azure-retry-pattern",
-      "canonical_zh": "Azure Architecture Center 的 Retry pattern",
-      "english": null,
-      "acronym": null,
-      "kind": "proper-noun",
-      "first_use": "Azure Architecture Center 的 Retry pattern",
-      "subsequent_use": ["Azure Architecture Center 的 Retry pattern"],
-      "allowed_aliases": [],
-      "forbidden_aliases": [],
-      "note": "受保护的官方来源链接标题按原样保留。",
-      "order": 920
-    },
-    {
-      "id": "source-system-design-primer-topics",
-      "canonical_zh": "System Design Primer 的主题入口",
-      "english": null,
-      "acronym": null,
-      "kind": "proper-noun",
-      "first_use": "System Design Primer 的主题入口",
-      "subsequent_use": ["System Design Primer 的主题入口"],
-      "allowed_aliases": [],
-      "forbidden_aliases": [],
-      "note": "受保护的社区学习项目链接标题按原样保留。",
-      "order": 930
-    },
-    {
-      "id": "source-system-design-primer-exercises",
-      "canonical_zh": "System Design Primer 的真实架构和练习",
-      "english": null,
-      "acronym": null,
-      "kind": "proper-noun",
-      "first_use": "System Design Primer 的真实架构和练习",
-      "subsequent_use": ["System Design Primer 的真实架构和练习"],
-      "allowed_aliases": [],
-      "forbidden_aliases": [],
-      "note": "受保护的社区学习项目链接标题按原样保留。",
-      "order": 935
-    },
-    {
       "id": "google-sre-workbook",
       "canonical_zh": "Google SRE Workbook",
       "english": null,
@@ -1193,45 +1050,6 @@
       "forbidden_aliases": [],
       "note": "保留官方工作手册标题，并在正文中使用中文类别说明。",
       "order": 940
-    },
-    {
-      "id": "source-microservices-resiliency",
-      "canonical_zh": "Microservices Resiliency",
-      "english": null,
-      "acronym": null,
-      "kind": "proper-noun",
-      "first_use": "Microservices Resiliency",
-      "subsequent_use": ["Microservices Resiliency"],
-      "allowed_aliases": [],
-      "forbidden_aliases": [],
-      "note": "受保护的社区索引链接标题按原样保留。",
-      "order": 950
-    },
-    {
-      "id": "source-cloud-design-patterns",
-      "canonical_zh": "Cloud Design Patterns",
-      "english": null,
-      "acronym": null,
-      "kind": "proper-noun",
-      "first_use": "Cloud Design Patterns",
-      "subsequent_use": ["Cloud Design Patterns"],
-      "allowed_aliases": [],
-      "forbidden_aliases": [],
-      "note": "受保护的社区索引链接标题按原样保留。",
-      "order": 960
-    },
-    {
-      "id": "source-back-pressure",
-      "canonical_zh": "Back Pressure",
-      "english": null,
-      "acronym": null,
-      "kind": "proper-noun",
-      "first_use": "Back Pressure",
-      "subsequent_use": ["Back Pressure"],
-      "allowed_aliases": [],
-      "forbidden_aliases": [],
-      "note": "受保护的社区索引链接标题按原样保留。",
-      "order": 970
     },
     {
       "id": "openai",
@@ -1299,79 +1117,23 @@
       "order": 1040
     },
     {
-      "id": "source-aws-builders-shuffle-sharding",
-      "canonical_zh": "AWS Builders Library 的 Workload isolation using shuffle-sharding",
-      "english": null,
-      "acronym": null,
-      "kind": "proper-noun",
-      "first_use": "AWS Builders Library 的 Workload isolation using shuffle-sharding",
-      "subsequent_use": ["AWS Builders Library 的 Workload isolation using shuffle-sharding"],
-      "allowed_aliases": [],
-      "forbidden_aliases": [],
-      "note": "受保护的官方来源链接标题按原样保留。",
-      "order": 1050
-    },
-    {
-      "id": "source-system-design-primer-method",
-      "canonical_zh": "System Design Primer 的解题流程",
-      "english": null,
-      "acronym": null,
-      "kind": "proper-noun",
-      "first_use": "System Design Primer 的解题流程",
-      "subsequent_use": ["System Design Primer 的解题流程"],
-      "allowed_aliases": [],
-      "forbidden_aliases": [],
-      "note": "受保护的社区学习项目链接标题按原样保留。",
-      "order": 1060
-    },
-    {
-      "id": "source-langgraph-docs",
-      "canonical_zh": "LangGraph 文档",
-      "english": null,
-      "acronym": null,
-      "kind": "proper-noun",
-      "first_use": "LangGraph 文档",
-      "subsequent_use": ["LangGraph 文档"],
-      "allowed_aliases": [],
-      "forbidden_aliases": [],
-      "note": "受保护的官方来源链接标题按原样保留。",
-      "order": 1070
-    },
-    {
       "id": "google-agent-development-kit",
       "canonical_zh": "Google 智能体开发工具包",
       "english": "Agent Development Kit",
       "acronym": "ADK",
       "kind": "proper-noun",
       "first_use": "Google 智能体开发工具包（Agent Development Kit，ADK）",
-      "subsequent_use": ["Google 智能体开发工具包", "Google ADK", "ADK"],
-      "allowed_aliases": [
-        "RemoteA2aAgent",
-        "LlmAgent",
-        "SessionService",
-        "InvocationContext",
-        "InMemorySessionService",
-        "DatabaseSessionService",
-        "VertexAiSessionService",
-        "ArtifactStore",
-        "TaskStore"
+      "subsequent_use": [
+        "Google 智能体开发工具包",
+        "Google ADK",
+        "ADK"
       ],
-      "forbidden_aliases": ["Agent Development Kit"],
-      "note": "产品名称首次说明后可使用官方简称；源码标识按原样保留。",
+      "allowed_aliases": [],
+      "forbidden_aliases": [
+        "Agent Development Kit"
+      ],
+      "note": "产品名称首次说明后可使用官方简称；源码标识由可见文案与代码边界保护。",
       "order": 1075
-    },
-    {
-      "id": "source-google-adk-multi-agent",
-      "canonical_zh": "Google ADK 多智能体文档",
-      "english": null,
-      "acronym": null,
-      "kind": "proper-noun",
-      "first_use": "Google ADK 多智能体文档",
-      "subsequent_use": ["Google ADK 多智能体文档"],
-      "allowed_aliases": ["google", "a2aproject"],
-      "forbidden_aliases": [],
-      "note": "受保护的官方来源链接标题按原样保留。",
-      "order": 1080
     },
     {
       "id": "cloudflare-durable-objects",
@@ -1380,25 +1142,14 @@
       "acronym": null,
       "kind": "proper-noun",
       "first_use": "Cloudflare 持久对象（Durable Objects）",
-      "subsequent_use": ["Cloudflare 持久对象"],
+      "subsequent_use": [
+        "Cloudflare 持久对象"
+      ],
       "allowed_aliases": [
-        "Durable Objects",
-        "Durable Object",
-        "DurableObjectNamespace",
-        "DurableObjectStub",
-        "idFromName",
-        "newUniqueId",
-        "getByName",
-        "R2",
-        "JavaScript",
-        "WebSocket",
-        "WebSockets",
-        "ACID",
-        "Cloudflare",
-        "workerd"
+        "Durable Object"
       ],
       "forbidden_aliases": [],
-      "note": "产品名称使用中文主称；源码标识和官方能力名按原样保留。",
+      "note": "产品名称使用中文主称；仅保留同一产品名称的单复数变体。",
       "order": 1085
     },
     {
@@ -1408,31 +1159,16 @@
       "acronym": "CAO",
       "kind": "proper-noun",
       "first_use": "AWS 命令行智能体编排器（CLI Agent Orchestrator，CAO）",
-      "subsequent_use": ["AWS 命令行智能体编排器", "命令行智能体编排器", "CAO"],
+      "subsequent_use": [
+        "AWS 命令行智能体编排器",
+        "命令行智能体编排器",
+        "CAO"
+      ],
       "allowed_aliases": [
-        "AWS CLI Agent Orchestrator",
-        "cao-mcp",
-        "CAO_TERMINAL_ID",
-        "CAO_AUTH_LOCAL_TOKEN",
-        "Codex",
-        "Kimi",
-        "FastAPI",
-        "OAuth",
-        "RS256",
-        "MCP server 实现",
-        "agent step 实现",
-        "Terminal Lifecycle",
-        "Workflows 文档",
-        "Workflow Journal 源码",
-        "Script Runner 源码",
-        "Configuration",
-        "MCP Apps 安全说明",
-        "Working Directory",
-        "Tool Restrictions",
-        "Inbox Delivery"
+        "AWS CLI Agent Orchestrator"
       ],
       "forbidden_aliases": [],
-      "note": "项目名称使用中文主称；源码标识、提供方名称和协议标识按原样保留。",
+      "note": "项目名称使用中文主称；代码标识、提供方与协议分别由各自边界治理。",
       "order": 1087
     },
     {
@@ -1455,10 +1191,13 @@
       "acronym": null,
       "kind": "translated-term",
       "first_use": "Git 版本控制系统（Git）",
-      "subsequent_use": ["Git 版本控制系统", "Git"],
-      "allowed_aliases": ["GitHub"],
+      "subsequent_use": [
+        "Git 版本控制系统",
+        "Git"
+      ],
+      "allowed_aliases": [],
       "forbidden_aliases": [],
-      "note": "首次出现补充中文类别，后续保留官方名称。",
+      "note": "首次出现补充中文类别，后续保留官方名称；相邻托管平台不作为别名。",
       "order": 1089
     },
     {
@@ -1475,32 +1214,6 @@
       "order": 1091
     },
     {
-      "id": "state-source-label",
-      "canonical_zh": "State",
-      "english": null,
-      "acronym": null,
-      "kind": "proper-noun",
-      "first_use": "State",
-      "subsequent_use": ["State"],
-      "allowed_aliases": [],
-      "forbidden_aliases": [],
-      "note": "受保护的官方来源链接标题按原样保留。",
-      "order": 1092
-    },
-    {
-      "id": "limits-source-label",
-      "canonical_zh": "Limits",
-      "english": null,
-      "acronym": null,
-      "kind": "proper-noun",
-      "first_use": "Limits",
-      "subsequent_use": ["Limits"],
-      "allowed_aliases": [],
-      "forbidden_aliases": [],
-      "note": "受保护的官方来源链接标题按原样保留。",
-      "order": 1093
-    },
-    {
       "id": "quality-of-service",
       "canonical_zh": "服务质量",
       "english": "Quality of Service",
@@ -1512,85 +1225,6 @@
       "forbidden_aliases": ["Quality of Service"],
       "note": "通信可靠性、历史深度、截止期等交付策略使用中文主称。",
       "order": 1090
-    },
-    {
-      "id": "source-micro-frontend-topic",
-      "canonical_zh": "Awesome Software Architecture 的 Micro-Frontend 专题",
-      "english": null,
-      "acronym": null,
-      "kind": "proper-noun",
-      "first_use": "Awesome Software Architecture 的 Micro-Frontend 专题",
-      "subsequent_use": ["Awesome Software Architecture 的 Micro-Frontend 专题"],
-      "allowed_aliases": [],
-      "forbidden_aliases": [],
-      "note": "受保护的社区索引链接标题按原样保留。",
-      "order": 1100
-    },
-    {
-      "id": "source-kubeedge-docs",
-      "canonical_zh": "KubeEdge 文档",
-      "english": null,
-      "acronym": null,
-      "kind": "proper-noun",
-      "first_use": "KubeEdge 文档",
-      "subsequent_use": ["KubeEdge 文档"],
-      "allowed_aliases": [
-        "v1.20 Why KubeEdge",
-        "v1.20 release blog"
-      ],
-      "forbidden_aliases": [],
-      "note": "受保护的官方来源链接标题按原样保留。",
-      "order": 1110
-    },
-    {
-      "id": "source-ros2-jazzy-basics",
-      "canonical_zh": "ROS 2 Jazzy 基础概念",
-      "english": null,
-      "acronym": null,
-      "kind": "proper-noun",
-      "first_use": "ROS 2 Jazzy 基础概念",
-      "subsequent_use": ["ROS 2 Jazzy 基础概念"],
-      "allowed_aliases": [
-        "Jazzy",
-        "Jazzy Jalisco",
-        "Rolling",
-        "Kilted",
-        "Lyrical",
-        "rclcpp",
-        "ROS 2 distributions",
-        "Jazzy Jalisco release page",
-        "ros2/ros2 固定 release",
-        "release"
-      ],
-      "forbidden_aliases": [],
-      "note": "受保护的官方来源链接标题按原样保留。",
-      "order": 1120
-    },
-    {
-      "id": "source-litellm-virtual-keys",
-      "canonical_zh": "LiteLLM Virtual Keys",
-      "english": null,
-      "acronym": null,
-      "kind": "proper-noun",
-      "first_use": "LiteLLM Virtual Keys",
-      "subsequent_use": ["LiteLLM Virtual Keys"],
-      "allowed_aliases": [],
-      "forbidden_aliases": [],
-      "note": "受保护的官方来源链接标题按原样保留。",
-      "order": 1130
-    },
-    {
-      "id": "source-envoy-ai-gateway",
-      "canonical_zh": "Envoy AI Gateway 入门",
-      "english": null,
-      "acronym": null,
-      "kind": "proper-noun",
-      "first_use": "Envoy AI Gateway 入门",
-      "subsequent_use": ["Envoy AI Gateway 入门"],
-      "allowed_aliases": [],
-      "forbidden_aliases": [],
-      "note": "受保护的官方来源链接标题按原样保留。",
-      "order": 1140
     },
     {
       "id": "kong-ai-gateway",
@@ -1612,24 +1246,14 @@
       "acronym": null,
       "kind": "translated-term",
       "first_use": "人工智能代理高级模式（AI Proxy Advanced）",
-      "subsequent_use": ["人工智能代理高级模式", "AI Proxy Advanced"],
-      "allowed_aliases": ["AI Proxy Advanced 插件页", "AI Proxy Advanced Configuration Reference", "Load balancing with AI Proxy Advanced"],
-      "forbidden_aliases": [],
-      "note": "产品能力使用中文主称，官方来源标题保留原文。",
-      "order": 1160
-    },
-    {
-      "id": "source-kong-ai-load-balancing",
-      "canonical_zh": "AI 负载均衡文档",
-      "english": null,
-      "acronym": null,
-      "kind": "proper-noun",
-      "first_use": "AI 负载均衡文档",
-      "subsequent_use": ["AI 负载均衡文档"],
+      "subsequent_use": [
+        "人工智能代理高级模式",
+        "AI Proxy Advanced"
+      ],
       "allowed_aliases": [],
       "forbidden_aliases": [],
-      "note": "受保护的来源链接标题按原样保留。",
-      "order": 1170
+      "note": "产品能力使用中文主称；官方来源标题由来源账本治理。",
+      "order": 1160
     },
     {
       "id": "linkedin-engineering",
@@ -1671,45 +1295,6 @@
       "order": 1200
     },
     {
-      "id": "source-kafka-paper-authors",
-      "canonical_zh": "Kreps, Narkhede, Rao",
-      "english": null,
-      "acronym": null,
-      "kind": "proper-noun",
-      "first_use": "Kreps, Narkhede, Rao",
-      "subsequent_use": ["Kreps, Narkhede, Rao"],
-      "allowed_aliases": [],
-      "forbidden_aliases": [],
-      "note": "论文作者署名按原样保留。",
-      "order": 1210
-    },
-    {
-      "id": "source-open-sourcing-kafka",
-      "canonical_zh": "Open-sourcing Kafka",
-      "english": null,
-      "acronym": null,
-      "kind": "proper-noun",
-      "first_use": "Open-sourcing Kafka",
-      "subsequent_use": ["Open-sourcing Kafka"],
-      "allowed_aliases": [],
-      "forbidden_aliases": [],
-      "note": "受保护的原始工程文章标题按原样保留。",
-      "order": 1220
-    },
-    {
-      "id": "source-project-kafka-v06",
-      "canonical_zh": "Project Kafka reaches v0.6",
-      "english": null,
-      "acronym": null,
-      "kind": "proper-noun",
-      "first_use": "Project Kafka reaches v0.6",
-      "subsequent_use": ["Project Kafka reaches v0.6"],
-      "allowed_aliases": [],
-      "forbidden_aliases": [],
-      "note": "受保护的原始工程文章标题按原样保留。",
-      "order": 1230
-    },
-    {
       "id": "jay-kreps",
       "canonical_zh": "Jay Kreps",
       "english": null,
@@ -1721,45 +1306,6 @@
       "forbidden_aliases": [],
       "note": "作者姓名按原样保留。",
       "order": 1240
-    },
-    {
-      "id": "source-the-log",
-      "canonical_zh": "The Log",
-      "english": null,
-      "acronym": null,
-      "kind": "proper-noun",
-      "first_use": "The Log",
-      "subsequent_use": ["The Log"],
-      "allowed_aliases": [],
-      "forbidden_aliases": [],
-      "note": "受保护的工程文章标题按原样保留。",
-      "order": 1250
-    },
-    {
-      "id": "source-yjs-awareness",
-      "canonical_zh": "Awareness",
-      "english": null,
-      "acronym": null,
-      "kind": "proper-noun",
-      "first_use": "Awareness",
-      "subsequent_use": ["Awareness"],
-      "allowed_aliases": [],
-      "forbidden_aliases": [],
-      "note": "受保护的官方文档标题按原样保留。",
-      "order": 1260
-    },
-    {
-      "id": "source-yjs-snapshot",
-      "canonical_zh": "yjs/yjs 快照",
-      "english": null,
-      "acronym": null,
-      "kind": "proper-noun",
-      "first_use": "yjs/yjs 快照",
-      "subsequent_use": ["yjs/yjs 快照"],
-      "allowed_aliases": [],
-      "forbidden_aliases": [],
-      "note": "受保护的固定上游快照链接标题按原样保留。",
-      "order": 1270
     },
     {
       "id": "route53-infima",
@@ -1777,21 +1323,6 @@
       "order": 1280
     },
     {
-      "id": "source-openai-agent-orchestration",
-      "canonical_zh": "Agent orchestration 官方指南",
-      "english": null,
-      "acronym": null,
-      "kind": "proper-noun",
-      "first_use": "Agent orchestration 官方指南",
-      "subsequent_use": [
-        "Agent orchestration 官方指南"
-      ],
-      "allowed_aliases": [],
-      "forbidden_aliases": [],
-      "note": "受保护的官方来源链接标题按原样保留。",
-      "order": 1290
-    },
-    {
       "id": "langgraph",
       "canonical_zh": "图编排框架",
       "english": "LangGraph",
@@ -1806,39 +1337,6 @@
       "forbidden_aliases": [],
       "note": "正文首次出现时说明产品类别，后续可保留官方产品名。",
       "order": 1300
-    },
-    {
-      "id": "source-langgraph-official",
-      "canonical_zh": "LangGraph 官方来源",
-      "english": null,
-      "acronym": null,
-      "kind": "proper-noun",
-      "first_use": "LangGraph 官方来源",
-      "subsequent_use": [
-        "LangGraph 官方来源"
-      ],
-      "allowed_aliases": [
-        "Subagents",
-        "LangGraph README"
-      ],
-      "forbidden_aliases": [],
-      "note": "受保护的官方来源链接标题按原样保留。",
-      "order": 1310
-    },
-    {
-      "id": "source-sagas-paper",
-      "canonical_zh": "Garcia-Molina & Salem, 《Sagas》（ACM SIGMOD 1987）",
-      "english": null,
-      "acronym": null,
-      "kind": "proper-noun",
-      "first_use": "Garcia-Molina & Salem, 《Sagas》（ACM SIGMOD 1987）",
-      "subsequent_use": [
-        "Garcia-Molina & Salem, 《Sagas》（ACM SIGMOD 1987）"
-      ],
-      "allowed_aliases": [],
-      "forbidden_aliases": [],
-      "note": "受保护的经典论文链接标题按原样保留。",
-      "order": 1320
     },
     {
       "id": "kubeedge",
@@ -1998,6 +1496,152 @@
       "forbidden_aliases": [],
       "note": "持久对象命名获取接口的受审阅签名按原样保留。",
       "order": 1420
+    },
+    {
+      "id": "cloudflare",
+      "canonical_zh": "Cloudflare 云平台",
+      "english": "Cloudflare",
+      "acronym": null,
+      "kind": "proper-noun",
+      "first_use": "Cloudflare 云平台（Cloudflare）",
+      "subsequent_use": [
+        "Cloudflare 云平台",
+        "Cloudflare"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [],
+      "note": "独立登记平台名称，不把它并入具体产品或运行时的别名。",
+      "order": 1430
+    },
+    {
+      "id": "workerd-runtime",
+      "canonical_zh": "workerd 开源运行时",
+      "english": "workerd",
+      "acronym": null,
+      "kind": "proper-noun",
+      "first_use": "workerd 开源运行时（workerd）",
+      "subsequent_use": [
+        "workerd 开源运行时",
+        "workerd"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [],
+      "note": "独立登记开源运行时，不把它作为 Cloudflare 持久对象的别名。",
+      "order": 1440
+    },
+    {
+      "id": "cloudflare-r2",
+      "canonical_zh": "Cloudflare 对象存储服务",
+      "english": "R2",
+      "acronym": null,
+      "kind": "proper-noun",
+      "first_use": "Cloudflare 对象存储服务（R2）",
+      "subsequent_use": [
+        "Cloudflare 对象存储服务",
+        "R2"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [],
+      "note": "独立登记对象存储产品，不与持久对象协调产品混为同一术语。",
+      "order": 1450
+    },
+    {
+      "id": "javascript-programming-language",
+      "canonical_zh": "JavaScript 语言",
+      "english": "JavaScript",
+      "acronym": null,
+      "kind": "proper-noun",
+      "first_use": "JavaScript 语言（JavaScript）",
+      "subsequent_use": [
+        "JavaScript 语言",
+        "JavaScript"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [],
+      "note": "独立登记编程语言，不借产品术语放行语言名称。",
+      "order": 1460
+    },
+    {
+      "id": "openai-codex",
+      "canonical_zh": "OpenAI 编码智能体",
+      "english": "Codex",
+      "acronym": null,
+      "kind": "proper-noun",
+      "first_use": "OpenAI 编码智能体（Codex）",
+      "subsequent_use": [
+        "OpenAI 编码智能体",
+        "Codex"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [],
+      "note": "独立登记编码智能体产品，不把提供方产品并入编排器别名。",
+      "order": 1470
+    },
+    {
+      "id": "kimi-coding-agent",
+      "canonical_zh": "Kimi 编码智能体",
+      "english": "Kimi",
+      "acronym": null,
+      "kind": "proper-noun",
+      "first_use": "Kimi 编码智能体（Kimi）",
+      "subsequent_use": [
+        "Kimi 编码智能体",
+        "Kimi"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [],
+      "note": "独立登记编码智能体产品，不把提供方产品并入编排器别名。",
+      "order": 1480
+    },
+    {
+      "id": "fastapi",
+      "canonical_zh": "FastAPI Web 框架",
+      "english": "FastAPI",
+      "acronym": null,
+      "kind": "proper-noun",
+      "first_use": "FastAPI Web 框架（FastAPI）",
+      "subsequent_use": [
+        "FastAPI Web 框架",
+        "FastAPI"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [],
+      "note": "独立登记 Web 框架，不把实现依赖并入编排器别名。",
+      "order": 1490
+    },
+    {
+      "id": "rs256",
+      "canonical_zh": "RSA SHA-256 签名算法",
+      "english": "RSA SHA-256",
+      "acronym": "RS256",
+      "kind": "standard",
+      "first_use": "RSA SHA-256 签名算法（RSA SHA-256，RS256）",
+      "subsequent_use": [
+        "RSA SHA-256 签名算法",
+        "RS256"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [],
+      "note": "独立登记令牌签名算法，不把协议或算法并入应用产品别名。",
+      "order": 1500
+    },
+    {
+      "id": "ros2-jazzy",
+      "canonical_zh": "ROS 2 Jazzy 长期支持发行版",
+      "english": "Jazzy Jalisco",
+      "acronym": null,
+      "kind": "proper-noun",
+      "first_use": "ROS 2 Jazzy 长期支持发行版（Jazzy Jalisco）",
+      "subsequent_use": [
+        "ROS 2 Jazzy 长期支持发行版",
+        "Jazzy"
+      ],
+      "allowed_aliases": [
+        "Jazzy"
+      ],
+      "forbidden_aliases": [],
+      "note": "独立登记本文固定的 ROS 2 长期支持发行版，不吸收其他发行版或客户端库。",
+      "order": 1510
     }
   ]
 }

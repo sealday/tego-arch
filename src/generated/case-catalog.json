@@ -319,7 +319,7 @@
   {
     "title": "把边缘协调收敛到身份寻址的状态单元",
     "slug": "/cases/cloudflare-durable-objects-workerd",
-    "summary": "以智能体（Agent）状态为例，分析 Cloudflare 持久对象（Durable Objects）与 workerd 如何用节点本地数据库（SQLite）、超文本传输协议（Hypertext Transfer Protocol，HTTP）和重试（Retry）机制承载边缘分片。",
+    "summary": "以智能体（Agent）状态为例，分析 Cloudflare 云平台（Cloudflare）中的 Cloudflare 持久对象（Durable Objects）与 workerd 开源运行时（workerd）如何用节点本地数据库（SQLite）、超文本传输协议（Hypertext Transfer Protocol，HTTP）和重试（Retry）机制承载边缘分片。",
     "difficulty": "advanced",
     "series": "edge-physical",
     "catalog_order": 13,
@@ -425,7 +425,7 @@
     ]
   },
   {
-    "title": "LiteLLM Virtual Keys：把模型网关变成权限与预算的交汇点",
+    "title": "LiteLLM 虚拟密钥：把模型网关变成权限与预算的交汇点",
     "slug": "/cases/litellm-virtual-keys-governance",
     "summary": "用虚拟密钥、分层模型权限、预算与限流、护栏（guardrail）时序和双轨日志分析多租户模型网关的治理边界。",
     "difficulty": "advanced",

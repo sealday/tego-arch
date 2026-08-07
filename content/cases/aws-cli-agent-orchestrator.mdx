@@ -76,7 +76,7 @@ tags:
 
 工作流脚本可冻结源码与输入、记录稳定运行与步骤标识、日志簿、生成隔离栅栏、取消和恢复。固定提交的恢复会重新执行每个`run_step`；已有日志簿记录不等于步骤结果重放。
 
-工具限制由配置档案映射到提供方机制。部分提供方是硬限制，Codex/Kimi 固定版本为提示级软限制；命令行智能体编排器MCP 工具也不能逐个阻断，`--yolo`会移除限制。
+工具限制由配置档案映射到提供方机制。部分提供方是硬限制，OpenAI 编码智能体（Codex）与 Kimi 编码智能体（Kimi）的固定版本为提示级软限制；命令行智能体编排器MCP 工具也不能逐个阻断，`--yolo`会移除限制。
 
 **基于证据的推断**：可执行脚本只能固定“调用哪些步骤”，不能证明副作用一次发生。操作员检查点应核对差异、测试、外部回执和权限，再决定继续、补偿或停止。
 
@@ -113,7 +113,7 @@ tags:
 
 固定`docs/workflows.md`声称已完成步骤会重放，只运行剩余步骤；这与同提交源码不一致。本文以源码“已预留, 尚未接入”为事实边界。
 
-HTTP 默认绑定`127.0.0.1:9889`，开放授权协议未配置身份提供方时关闭。启用后验证RS256、签发方、受众和到期时间，并按`cao:read/write/admin`做路由门禁。
+HTTP 默认绑定`127.0.0.1:9889`，开放授权协议未配置身份提供方时关闭。启用后验证RSA SHA-256 签名算法（RSA SHA-256，RS256）、签发方、受众和到期时间，并按`cao:read/write/admin`做路由门禁。
 
 MCP 可用`CAO_AUTH_LOCAL_TOKEN`转发持有者令牌。伪终端网页套接字仍无令牌认证，只依靠环回或客户端网络地址允许列表。
 
@@ -333,7 +333,7 @@ planned -> dispatched -> acknowledged -> running
   <summary>证据：命令行智能体编排器控制、权限与恢复的完整阅读路径</summary>
 
 1. 固定版本[`README.md`](https://github.com/awslabs/cli-agent-orchestrator/blob/bae80071a17e001380367c461b32d64bc6b54433/README.md)：先理解命令行智能体编排器面向编码命令行界面、监督者–工作进程、终端复用器会话隔离和三类 MCP 原语。重点区分会话内 MCP 与运维 MCP。
-2. [`CODEBASE.md`](https://github.com/awslabs/cli-agent-orchestrator/blob/bae80071a17e001380367c461b32d64bc6b54433/CODEBASE.md)：沿命令行界面、MCP、FastAPI、服务、终端复用器、SQLite 数据库与提供方这条路径阅读。收件箱消息流程和移交流程给出比架构图更精确的调用链。
+2. [`CODEBASE.md`](https://github.com/awslabs/cli-agent-orchestrator/blob/bae80071a17e001380367c461b32d64bc6b54433/CODEBASE.md)：沿命令行界面、MCP、FastAPI Web 框架（FastAPI）、服务、终端复用器、SQLite 数据库与提供方这条路径阅读。收件箱消息流程和移交流程给出比架构图更精确的调用链。
 3. [`mcp_server/server.py`](https://github.com/awslabs/cli-agent-orchestrator/blob/bae80071a17e001380367c461b32d64bc6b54433/src/cli_agent_orchestrator/mcp_server/server.py)：阅读`_handoff_impl`、`_assign_impl`、`send_message`和子级工具解析。注意移交的单 HTTP 接缝、分配的延后初始化、回调注入和超时与错误区分。
 4. [`services/agent_step.py`](https://github.com/awslabs/cli-agent-orchestrator/blob/bae80071a17e001380367c461b32d64bc6b54433/src/cli_agent_orchestrator/services/agent_step.py)：观察创建 → 就绪 → 输入 → 等待 → 提取 → 清理的规范形式步骤。重点看稳定空闲状态判断、`ERROR`/超时、`cancel_event`和失败时保留终端标识。
 5. [`models/terminal.py`](https://github.com/awslabs/cli-agent-orchestrator/blob/bae80071a17e001380367c461b32d64bc6b54433/src/cli_agent_orchestrator/models/terminal.py)与[`docs/inbox-delivery.md`](https://github.com/awslabs/cli-agent-orchestrator/blob/bae80071a17e001380367c461b32d64bc6b54433/docs/inbox-delivery.md)：对照终端状态与收件箱的“待处理”和“已投递”状态，理解为什么接收端忙碌时消息等待，以及协调清扫仍不是恰好一次处理。
@@ -489,7 +489,7 @@ MCP 工具成功、终端`COMPLETED`或收件箱`DELIVERED`都不能证明业务
 
 ## 来源
 
-以下来源均为官方或上游材料。GitHub 链接固定到本文核对的提交，便于日后复现；网页规范可能继续演进。
+以下来源均为官方或上游材料。代码托管平台链接固定到本文核对的提交，便于日后复现；网页规范可能继续演进。
 
 [CAO 项目入口](https://github.com/awslabs/cli-agent-orchestrator)仅用于查看当前仓库导航与后续版本；本文的实现事实仍以以下固定提交链接为准。
 

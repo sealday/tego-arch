@@ -26,11 +26,6 @@ async function task8Files() {
   return files.sort();
 }
 
-function textFrom(node) {
-  if (typeof node.value === 'string') return node.value;
-  return (node.children ?? []).map(textFrom).join('');
-}
-
 function mermaidStructure(source) {
   const ids = [];
   for (const line of source.split('\n')) {
@@ -61,7 +56,7 @@ function protectedContract(source, file) {
     inlineCode: [],
     code: [],
     mermaid: [],
-    externalLinks: [],
+    externalUrls: [],
   };
   const visit = (node) => {
     if (node.type === 'inlineCode') contract.inlineCode.push(node.value);
@@ -72,14 +67,14 @@ function protectedContract(source, file) {
       contract.mermaid.push(mermaidStructure(node.value));
     }
     if (node.type === 'link' && /^https?:/u.test(node.url)) {
-      contract.externalLinks.push([textFrom(node), node.url]);
+      contract.externalUrls.push(node.url);
     }
     for (const child of node.children ?? []) visit(child);
   };
   visit(ast);
   contract.inlineCode.sort();
   contract.code.sort();
-  contract.externalLinks.sort(([left], [right]) => left.localeCompare(right, 'en'));
+  contract.externalUrls.sort((left, right) => left.localeCompare(right, 'en'));
   return contract;
 }
 
@@ -121,13 +116,36 @@ test('keeps the Microsoft opening artifact role separate from its evidence scope
   );
 });
 
-test('preserves the complete pre-Task-8 literal and source-link contract', async () => {
+test('preserves the complete pre-Task-8 literal and external-URL contract', async () => {
   const contracts = {};
   for (const file of await task8Files()) {
     contracts[file] = protectedContract(await readFile(new URL(file, root), 'utf8'), file);
   }
   const digest = createHash('sha256').update(JSON.stringify(contracts)).digest('hex');
-  assert.equal(digest, 'eb46f68035531c0c6efd9b27a7105edd565f53acd2f28004c2d258f087f47bea');
+  assert.equal(digest, 'a1189c7ed1c933ece5a33a901ada71455e4bbb80fcddcdc498a0a71422ee03b6');
+});
+
+test('registers immutable official citation labels and localizes descriptive source labels', async () => {
+  const ledger = JSON.parse(await readFile(new URL('data/source-ledger.json', root), 'utf8'));
+  const byId = new Map(ledger.sources.map((source) => [source.id, source]));
+  for (const [id, title] of [
+    ['src-erlang-f24784704ffe', '— STDLIB'],
+    ['src-single-spa-e413a44ee5ff', 'Applications API'],
+    ['src-docs-135f0dce83d9', 'Virtual Keys'],
+    ['src-github-bfb5499bfab6', '根 LICENSE'],
+  ]) {
+    assert.ok(byId.get(id).citation_titles?.includes(title), `${id}: ${title}`);
+  }
+  const erlang = await readCase('erlang-otp-supervision-tree.mdx');
+  assert.match(erlang, /\[`restart\/2` 及策略 1472–1562\]\(/u);
+  assert.doesNotMatch(erlang, /\[`restart\/2` 及 strategy 1472–1562\]\(/u);
+});
+
+test('uses no terminology suppressions in Task 8 content', async () => {
+  for (const file of await task8Files()) {
+    const source = await readFile(new URL(file, root), 'utf8');
+    assert.doesNotMatch(source, /terminology-exempt:/u, file);
+  }
 });
 
 test('uses Chinese-primary control vocabulary in high-risk reader-facing copy', async () => {

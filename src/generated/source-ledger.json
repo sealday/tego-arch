@@ -799,6 +799,9 @@
       "locator_aliases": [],
       "tombstone": null,
       "title": "Envoy AI Gateway getting started",
+      "citation_titles": [
+        "Envoy AI Gateway 入门"
+      ],
       "author_or_org": "Envoy AI Gateway maintainers",
       "published_at": null,
       "registered_at": "2026-07-24",
@@ -2126,6 +2129,9 @@
       "locator_aliases": [],
       "tombstone": null,
       "title": "Workload isolation using shuffle-sharding",
+      "citation_titles": [
+        "AWS Builders Library 的 Workload isolation using shuffle-sharding"
+      ],
       "author_or_org": "Amazon Web Services",
       "published_at": null,
       "registered_at": "2026-07-24",
@@ -2966,6 +2972,9 @@
       "locator_aliases": [],
       "tombstone": null,
       "title": "Architecture Patterns with Python：Preface",
+      "citation_titles": [
+        "Architecture Patterns with Python"
+      ],
       "author_or_org": "Harry Percival and Bob Gregory",
       "published_at": null,
       "registered_at": "2026-07-24",
@@ -3411,6 +3420,9 @@
       "locator_aliases": [],
       "tombstone": null,
       "title": "Load balancing with AI Proxy Advanced",
+      "citation_titles": [
+        "AI 负载均衡文档"
+      ],
       "author_or_org": "Kong Inc.",
       "published_at": null,
       "registered_at": "2026-07-24",
@@ -4061,6 +4073,9 @@
       "locator_aliases": [],
       "tombstone": null,
       "title": "State — developers.cloudflare.com",
+      "citation_titles": [
+        "State"
+      ],
       "author_or_org": "Cloudflare",
       "published_at": null,
       "registered_at": "2026-07-24",
@@ -4511,6 +4526,9 @@
       "locator_aliases": [],
       "tombstone": null,
       "title": "Durable Objects limits",
+      "citation_titles": [
+        "Limits"
+      ],
       "author_or_org": "Cloudflare",
       "published_at": null,
       "registered_at": "2026-07-24",
@@ -4900,6 +4918,9 @@
       "locator_aliases": [],
       "tombstone": null,
       "title": "Subagents 的迁移说明",
+      "citation_titles": [
+        "Subagents"
+      ],
       "author_or_org": "LangChain",
       "published_at": null,
       "registered_at": "2026-07-24",
@@ -4950,6 +4971,10 @@
       "locator_aliases": [],
       "tombstone": null,
       "title": "LiteLLM virtual keys",
+      "citation_titles": [
+        "LiteLLM Virtual Keys",
+        "Virtual Keys"
+      ],
       "author_or_org": "BerriAI / LiteLLM maintainers",
       "published_at": null,
       "registered_at": "2026-07-24",
@@ -5390,6 +5415,9 @@
       "locator_aliases": [],
       "tombstone": null,
       "title": "LangGraph overview",
+      "citation_titles": [
+        "LangGraph 文档"
+      ],
       "author_or_org": "LangChain",
       "published_at": null,
       "registered_at": "2026-07-24",
@@ -5840,6 +5868,9 @@
       "locator_aliases": [],
       "tombstone": null,
       "title": "ROS 2 Jazzy concepts",
+      "citation_titles": [
+        "ROS 2 Jazzy 基础概念"
+      ],
       "author_or_org": "Open Robotics",
       "published_at": null,
       "registered_at": "2026-07-24",
@@ -6388,6 +6419,9 @@
       "locator_aliases": [],
       "tombstone": null,
       "title": "Awareness API",
+      "citation_titles": [
+        "Awareness"
+      ],
       "author_or_org": "Yjs maintainers",
       "published_at": null,
       "registered_at": "2026-07-24",
@@ -8300,6 +8334,9 @@
       ],
       "tombstone": null,
       "title": "Sagas",
+      "citation_titles": [
+        "Garcia-Molina & Salem, 《Sagas》（ACM SIGMOD 1987）"
+      ],
       "author_or_org": "Hector Garcia-Molina and Kenneth Salem",
       "published_at": "1987-12-01",
       "registered_at": "2026-07-24",
@@ -8400,6 +8437,9 @@
       "locator_aliases": [],
       "tombstone": null,
       "title": "supervisor — STDLIB",
+      "citation_titles": [
+        "— STDLIB"
+      ],
       "author_or_org": "Erlang/OTP maintainers",
       "published_at": null,
       "registered_at": "2026-07-24",
@@ -8732,6 +8772,9 @@
       "locator_aliases": [],
       "tombstone": null,
       "title": "google/adk-python @ be5828f317c7430411df29974cd9ccfa875e90de",
+      "citation_titles": [
+        "google/adk-python @"
+      ],
       "author_or_org": "Google",
       "published_at": null,
       "registered_at": "2026-07-24",
@@ -9482,6 +9525,9 @@
       "locator_aliases": [],
       "tombstone": null,
       "title": "docs/mcp-apps.md",
+      "citation_titles": [
+        "MCP Apps 安全说明"
+      ],
       "author_or_org": "Amazon Web Services",
       "published_at": null,
       "registered_at": "2026-07-24",
@@ -10182,6 +10228,9 @@
       "locator_aliases": [],
       "tombstone": null,
       "title": "mcpserver/server.py",
+      "citation_titles": [
+        "MCP server 实现"
+      ],
       "author_or_org": "Amazon Web Services",
       "published_at": null,
       "registered_at": "2026-07-24",
@@ -10982,6 +11031,18 @@
       "locator_aliases": [],
       "tombstone": null,
       "title": "Awesome Software Architecture",
+      "citation_titles": [
+        "Architectural Design Principles",
+        "Awesome Software Architecture 的 Micro-Frontend 专题",
+        "Back Pressure",
+        "Clean Architecture",
+        "Cloud Design Patterns",
+        "Domain Driven Design",
+        "Hexagonal Architecture",
+        "Microservices Resiliency",
+        "Modular Monolith",
+        "Vertical Slice Architecture"
+      ],
       "author_or_org": "Mehdi Hadeli and contributors",
       "published_at": null,
       "registered_at": "2026-07-24",
@@ -11026,6 +11087,9 @@
       "locator_aliases": [],
       "tombstone": null,
       "title": "docs/tool-restrictions.md",
+      "citation_titles": [
+        "Tool Restrictions"
+      ],
       "author_or_org": "Amazon Web Services",
       "published_at": null,
       "registered_at": "2026-07-24",
@@ -11626,6 +11690,9 @@
       "locator_aliases": [],
       "tombstone": null,
       "title": "services/agentstep.py",
+      "citation_titles": [
+        "agent step 实现"
+      ],
       "author_or_org": "Amazon Web Services",
       "published_at": null,
       "registered_at": "2026-07-24",
@@ -11776,6 +11843,9 @@
       "locator_aliases": [],
       "tombstone": null,
       "title": "google/adk-docs @ 3e6ee758f2a642abf42b6a92682bb113e7fb0743",
+      "citation_titles": [
+        "google/adk-docs @"
+      ],
       "author_or_org": "Google",
       "published_at": null,
       "registered_at": "2026-07-24",
@@ -11876,6 +11946,9 @@
       "locator_aliases": [],
       "tombstone": null,
       "title": "services/workflowjournal.py",
+      "citation_titles": [
+        "Workflow Journal 源码"
+      ],
       "author_or_org": "Amazon Web Services",
       "published_at": null,
       "registered_at": "2026-07-24",
@@ -11926,6 +11999,9 @@
       "locator_aliases": [],
       "tombstone": null,
       "title": "a2aproject/A2A @ af112d9491c1fd4b2a568ac65755af4a62790490",
+      "citation_titles": [
+        "a2aproject/A2A @"
+      ],
       "author_or_org": "A2A Project",
       "published_at": null,
       "registered_at": "2026-07-24",
@@ -12426,6 +12502,9 @@
       "locator_aliases": [],
       "tombstone": null,
       "title": "docs/configuration.md",
+      "citation_titles": [
+        "Configuration"
+      ],
       "author_or_org": "Amazon Web Services",
       "published_at": null,
       "registered_at": "2026-07-24",
@@ -12776,6 +12855,9 @@
       "locator_aliases": [],
       "tombstone": null,
       "title": "security/auth.py",
+      "citation_titles": [
+        "OAuth 实现"
+      ],
       "author_or_org": "Amazon Web Services",
       "published_at": null,
       "registered_at": "2026-07-24",
@@ -12876,6 +12958,9 @@
       "locator_aliases": [],
       "tombstone": null,
       "title": "docs/working-directory.md",
+      "citation_titles": [
+        "Working Directory"
+      ],
       "author_or_org": "Amazon Web Services",
       "published_at": null,
       "registered_at": "2026-07-24",
@@ -13520,6 +13605,11 @@
       "locator_aliases": [],
       "tombstone": null,
       "title": "How to approach a system design question",
+      "citation_titles": [
+        "System Design Primer 的主题入口",
+        "System Design Primer 的真实架构和练习",
+        "System Design Primer 的解题流程"
+      ],
       "author_or_org": "Donne Martin",
       "published_at": null,
       "registered_at": "2026-07-24",
@@ -14764,6 +14854,9 @@
       "locator_aliases": [],
       "tombstone": null,
       "title": "ros2/ros2 固定 release",
+      "citation_titles": [
+        "固定 release"
+      ],
       "author_or_org": "Open Robotics",
       "published_at": null,
       "registered_at": "2026-07-24",
@@ -15408,6 +15501,9 @@
       "locator_aliases": [],
       "tombstone": null,
       "title": "yjs/yjs 快照 9c1994547d7bc86245a21e1a4c8319f056d05ecf",
+      "citation_titles": [
+        "yjs/yjs 快照"
+      ],
       "author_or_org": "Yjs maintainers",
       "published_at": null,
       "registered_at": "2026-07-24",
@@ -15458,6 +15554,9 @@
       "locator_aliases": [],
       "tombstone": null,
       "title": "docs/workflows.md",
+      "citation_titles": [
+        "Workflows 文档"
+      ],
       "author_or_org": "Amazon Web Services",
       "published_at": null,
       "registered_at": "2026-07-24",
@@ -15858,6 +15957,9 @@
       "locator_aliases": [],
       "tombstone": null,
       "title": "docs/inbox-delivery.md",
+      "citation_titles": [
+        "Inbox Delivery"
+      ],
       "author_or_org": "Amazon Web Services",
       "published_at": null,
       "registered_at": "2026-07-24",
@@ -16258,6 +16360,9 @@
       "locator_aliases": [],
       "tombstone": null,
       "title": "仓库根 LICENSE",
+      "citation_titles": [
+        "根 LICENSE"
+      ],
       "author_or_org": "BerriAI / LiteLLM maintainers",
       "published_at": null,
       "registered_at": "2026-07-24",
@@ -16308,6 +16413,9 @@
       "locator_aliases": [],
       "tombstone": null,
       "title": "services/scriptrunner.py",
+      "citation_titles": [
+        "Script Runner 源码"
+      ],
       "author_or_org": "Amazon Web Services",
       "published_at": null,
       "registered_at": "2026-07-24",
@@ -17247,6 +17355,9 @@
       "locator_aliases": [],
       "tombstone": null,
       "title": "docs/terminal-lifecycle.md",
+      "citation_titles": [
+        "Terminal Lifecycle"
+      ],
       "author_or_org": "Amazon Web Services",
       "published_at": null,
       "registered_at": "2026-07-24",
@@ -18436,6 +18547,9 @@
       "locator_aliases": [],
       "tombstone": null,
       "title": "Google ADK：Multi-agent systems",
+      "citation_titles": [
+        "Google ADK 多智能体文档"
+      ],
       "author_or_org": "Google",
       "published_at": null,
       "registered_at": "2026-07-24",
@@ -19453,6 +19567,9 @@
       "locator_aliases": [],
       "tombstone": null,
       "title": "KubeEdge documentation",
+      "citation_titles": [
+        "KubeEdge 文档"
+      ],
       "author_or_org": "KubeEdge project",
       "published_at": null,
       "registered_at": "2026-07-24",
@@ -19992,6 +20109,9 @@
       "locator_aliases": [],
       "tombstone": null,
       "title": "Retry pattern — Azure Architecture Center",
+      "citation_titles": [
+        "Azure Architecture Center 的 Retry pattern"
+      ],
       "author_or_org": "Microsoft",
       "published_at": null,
       "registered_at": "2026-07-24",
@@ -20042,6 +20162,9 @@
       "locator_aliases": [],
       "tombstone": null,
       "title": "Microsoft Learn：Common web application architectures",
+      "citation_titles": [
+        "Common web application architectures"
+      ],
       "author_or_org": "Microsoft",
       "published_at": null,
       "registered_at": "2026-07-24",
@@ -20142,6 +20265,9 @@
       "locator_aliases": [],
       "tombstone": null,
       "title": "Open-sourcing Kafka, LinkedIn's distributed message queue",
+      "citation_titles": [
+        "Open-sourcing Kafka"
+      ],
       "author_or_org": "Jun Rao / LinkedIn",
       "published_at": "2011-01-11",
       "registered_at": "2026-07-24",
@@ -20192,6 +20318,9 @@
       "locator_aliases": [],
       "tombstone": null,
       "title": "Project Kafka, a distributed publish-subscribe messaging system, reaches v0.6",
+      "citation_titles": [
+        "Project Kafka reaches v0.6"
+      ],
       "author_or_org": "Neha Narkhede / LinkedIn Engineering",
       "published_at": "2011-06-16",
       "registered_at": "2026-07-24",
@@ -20242,6 +20371,9 @@
       "locator_aliases": [],
       "tombstone": null,
       "title": "The Log: What every software engineer should know about real-time data's unifying abstraction",
+      "citation_titles": [
+        "The Log"
+      ],
       "author_or_org": "Jay Kreps / LinkedIn Engineering",
       "published_at": "2013-12-16",
       "registered_at": "2026-07-24",
@@ -21609,6 +21741,9 @@
       "locator_aliases": [],
       "tombstone": null,
       "title": "OpenAI Agents SDK：Multi-agent",
+      "citation_titles": [
+        "Agent orchestration 官方指南"
+      ],
       "author_or_org": "OpenAI",
       "published_at": null,
       "registered_at": "2026-07-24",
@@ -22074,6 +22209,9 @@
       "locator_aliases": [],
       "tombstone": null,
       "title": "release-1-20.docs.kubeedge.io",
+      "citation_titles": [
+        "v1.20 Why KubeEdge"
+      ],
       "author_or_org": "KubeEdge project",
       "published_at": null,
       "registered_at": "2026-07-24",
@@ -22124,6 +22262,9 @@
       "locator_aliases": [],
       "tombstone": null,
       "title": "KubeEdge v1.20 is live!",
+      "citation_titles": [
+        "v1.20 release blog"
+      ],
       "author_or_org": "KubeEdge SIG Release",
       "published_at": "2025-01-21",
       "registered_at": "2026-07-24",
@@ -23231,6 +23372,9 @@
       "locator_aliases": [],
       "tombstone": null,
       "title": "single-spa Applications API",
+      "citation_titles": [
+        "Applications API"
+      ],
       "author_or_org": "single-spa maintainers",
       "published_at": null,
       "registered_at": "2026-07-24",
@@ -27012,7 +27156,7 @@
       ]
     },
     "content/cases/litellm-virtual-keys-governance.mdx": {
-      "title": "LiteLLM Virtual Keys：把模型网关变成权限与预算的交汇点",
+      "title": "LiteLLM 虚拟密钥：把模型网关变成权限与预算的交汇点",
       "slug": "/cases/litellm-virtual-keys-governance",
       "reviewed_at": "2026-07-24",
       "copyright_checks": [

@@ -221,9 +221,11 @@ test('renders every injected and canonical registry row exactly once without tru
 
   const canonicalModule = loadTerminologyModule(component, registry);
   assert.ok(registry.terms.length > 0);
-  assertRenderedTerms(
-    renderToStaticMarkup(canonicalModule.default()),
-    expectedRegistryTerms,
+  const canonicalMarkup = renderToStaticMarkup(canonicalModule.default());
+  assertRenderedTerms(canonicalMarkup, expectedRegistryTerms);
+  assert.doesNotMatch(
+    canonicalMarkup,
+    /Common web application architectures|Project Kafka reaches v0\.6|LangGraph README|Jazzy Jalisco release page/u,
   );
   assert.deepEqual(registry.terms, expectedRegistryTerms);
 

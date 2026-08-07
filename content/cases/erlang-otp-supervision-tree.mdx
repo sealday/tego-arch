@@ -164,8 +164,7 @@ flowchart TB
   - [`supervisor.erl` 50–113](https://github.com/erlang/otp/blob/295c7737d1b25a270e3fc6fa2b7ec7ad4779cf17/lib/stdlib/src/supervisor.erl#L50-L113)：子级顺序、三种策略与重启强度契约。
   - [`init/1`、`init_children/2` 949–980](https://github.com/erlang/otp/blob/295c7737d1b25a270e3fc6fa2b7ec7ad4779cf17/lib/stdlib/src/supervisor.erl#L949-L980)与[`start_children/2` 993–1017](https://github.com/erlang/otp/blob/295c7737d1b25a270e3fc6fa2b7ec7ad4779cf17/lib/stdlib/src/supervisor.erl#L993-L1017)：`trap_exit`、部分启动失败清理、启动与终止顺序。
   - [`handle_info/2` 1275–1310](https://github.com/erlang/otp/blob/295c7737d1b25a270e3fc6fa2b7ec7ad4779cf17/lib/stdlib/src/supervisor.erl#L1275-L1310)与[`do_restart/3` 1418–1470](https://github.com/erlang/otp/blob/295c7737d1b25a270e3fc6fa2b7ec7ad4779cf17/lib/stdlib/src/supervisor.erl#L1418-L1470)：`EXIT`入口与重启类型分流。
-{/* terminology-exempt: unknown-english-term | reason: 固定源码链接标签中的 strategy 必须按任务边界保持原样 */}
-  - [`restart/2` 及 strategy 1472–1562](https://github.com/erlang/otp/blob/295c7737d1b25a270e3fc6fa2b7ec7ad4779cf17/lib/stdlib/src/supervisor.erl#L1472-L1562)：先记账；超限时报告`reached_max_restart_intensity`并关闭，再区分一个、后缀或全部恢复。
+  - [`restart/2` 及策略 1472–1562](https://github.com/erlang/otp/blob/295c7737d1b25a270e3fc6fa2b7ec7ad4779cf17/lib/stdlib/src/supervisor.erl#L1472-L1562)：先记账；超限时报告`reached_max_restart_intensity`并关闭，再区分一个、后缀或全部恢复。
   - [`terminate_children/2`、`shutdown/1` 1571–1657](https://github.com/erlang/otp/blob/295c7737d1b25a270e3fc6fa2b7ec7ad4779cf17/lib/stdlib/src/supervisor.erl#L1571-L1657)与[`add_restart/1` 2248–2290](https://github.com/erlang/otp/blob/295c7737d1b25a270e3fc6fa2b7ec7ad4779cf17/lib/stdlib/src/supervisor.erl#L2248-L2290)：超时关闭等待`DOWN`再强制终止；强度窗口使用单调时钟、裁剪过期记录，并明确处理`intensity = 0`。
   - **证明边界：** 这些接缝证明实现怎样维护进程恢复协议，不证明任一智能体业务恢复策略安全。
 </details>
@@ -237,7 +236,6 @@ OTP 子级可由`{M,F,A}`重新调用；智能体的可重建运行契约还要�
 **官方架构与接口（已证实事实）**
 
 - [Supervisor Behaviour — OTP Design Principles](https://www.erlang.org/doc/system/sup_princ.html)：监督原则、三种策略、最大重启强度、向上升级、子进程规范与停止顺序；在线页面核对版本为29.0.3。
-{/* terminology-exempt: unknown-english-term | reason: 官方标准库来源标题中的 STDLIB 缩写必须与受保护链接标签保持一致 */}
 - [`supervisor` — STDLIB](https://www.erlang.org/doc/apps/stdlib/supervisor.html)：监督器标志、重启类型、关闭语义、默认值与公开接口。
 
 **固定源码（已证实事实）**

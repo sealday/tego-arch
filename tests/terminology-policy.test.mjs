@@ -836,6 +836,27 @@ test('the repository registry contains every approved foundational term in uniqu
   assert.equal(new Set(registry.terms.map(({order}) => order)).size, registry.terms.length);
 });
 
+test('keeps source titles and adjacent concepts out of the normative terminology registry', async () => {
+  const registry = JSON.parse(await readFile(path.join(repositoryRoot, 'data/terminology.json')));
+  const byId = new Map(registry.terms.map((term) => [term.id, term]));
+
+  assert.deepEqual(
+    registry.terms.filter(({id}) => id.startsWith('source-')).map(({id}) => id),
+    [],
+  );
+  assert.deepEqual(
+    registry.terms.filter(({note}) => /^受保护的.*来源链接标题/u.test(note)).map(({id}) => id),
+    [],
+  );
+  assert.equal(byId.has('state-source-label'), false);
+  assert.equal(byId.has('limits-source-label'), false);
+  assert.deepEqual(byId.get('google-agent-development-kit').allowed_aliases, []);
+  assert.deepEqual(byId.get('cloudflare-durable-objects').allowed_aliases, ['Durable Object']);
+  assert.deepEqual(byId.get('aws-cli-agent-orchestrator').allowed_aliases, ['AWS CLI Agent Orchestrator']);
+  assert.deepEqual(byId.get('git-version-control-system').allowed_aliases, []);
+  assert.deepEqual(byId.get('kong-ai-proxy-advanced').allowed_aliases, []);
+});
+
 test('projects every approved foundational term exactly', async () => {
   const registry = JSON.parse(await readFile(path.join(repositoryRoot, 'data/terminology.json')));
   const metadata = new Map([
