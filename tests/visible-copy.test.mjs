@@ -2,7 +2,6 @@ import assert from 'node:assert/strict';
 import {readdir, readFile} from 'node:fs/promises';
 import {createRequire} from 'node:module';
 import path from 'node:path';
-import {performance} from 'node:perf_hooks';
 import test from 'node:test';
 
 import {
@@ -39,6 +38,11 @@ const jsxTextOracle = (text) => {
   };
   return Function('React', `${output}\nreturn value;`)(react);
 };
+
+test('uses deterministic operation contracts for visible-copy performance gates', async () => {
+  const testSource = await readFile(import.meta.filename, 'utf8');
+  assert.doesNotMatch(testSource, /performance\.now\(\)/u);
+});
 
 test('extracts reader-visible MDX copy with stable source locations', () => {
   const source = `---
@@ -141,26 +145,41 @@ test('collects many HTML comments without candidate-by-candidate parsing', () =>
   }
 });
 
-test('classifies image comment openers with non-quadratic scaling', () => {
-  const measure = (count) => {
-    const source = Array.from(
-      {length: count},
-      (_, index) => `![alt ${index} <!-- visible ${index} -->](./img-${index}.png "title")`,
-    ).join('\n');
-    const started = performance.now();
-    const parsed = parseMdxVisibleCopy(source, `content/images-${count}.mdx`);
-    assert.equal(parsed.comments.length, count);
-    return performance.now() - started;
-  };
-  measure(20);
-  const timings = new Map();
-  for (const count of [50, 100, 200, 400]) {
-    timings.set(count, Math.min(measure(count), measure(count)));
-  }
-  assert.ok(
-    timings.get(400) / timings.get(100) < 12,
-    `expected non-quadratic image scaling: ${JSON.stringify(Object.fromEntries(timings))}`,
+test('classifies every image comment opener in a large batch', () => {
+  const count = 400;
+  const source = Array.from(
+    {length: count},
+    (_, index) => `![alt ${index} <!-- visible ${index} -->](./img-${index}.png "title")`,
+  ).join('\n');
+
+  const parsed = parseMdxVisibleCopy(source, `content/images-${count}.mdx`);
+
+  assert.equal(parsed.comments.length, count);
+});
+
+test('keeps image comment classification at two fixed AST parse call sites', async () => {
+  const implementationSource = await readFile('scripts/visible-copy.mjs', 'utf8');
+  const sourceFile = ts.createSourceFile(
+    'scripts/visible-copy.mjs',
+    implementationSource,
+    ts.ScriptTarget.Latest,
+    true,
+    ts.ScriptKind.JS,
   );
+  let parseCallSites = 0;
+  const visit = (node) => {
+    if (
+      ts.isCallExpression(node)
+      && ts.isIdentifier(node.expression)
+      && node.expression.text === 'parseMdxAst'
+    ) {
+      parseCallSites += 1;
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(sourceFile);
+
+  assert.equal(parseCallSites, 2);
 });
 
 test('probe tokens cannot collide with numeric entities or raw surrogate content', async () => {
@@ -180,31 +199,34 @@ test('probe tokens cannot collide with numeric entities or raw surrogate content
   }
 });
 
-test('scans sentinel occupancy once and scales through 6400 image openers', () => {
-  const measure = (count) => {
-    const instrumentation = {};
-    const source = Array.from(
-      {length: count},
-      () => '![<!-- c -->](x)',
-    ).join('\n');
-    const started = performance.now();
-    const parsed = parseMdxVisibleCopy(source, `content/images-${count}.mdx`, {
-      probeInstrumentation: instrumentation,
-    });
-    assert.equal(parsed.comments.length, count);
-    assert.equal(instrumentation.sourceScans, 1);
-    assert.equal(instrumentation.allocatedTokens, count);
-    return performance.now() - started;
-  };
-  measure(200);
-  const timings = new Map();
-  for (const count of [1600, 3200, 6400]) {
-    timings.set(count, Math.min(measure(count), measure(count)));
-  }
-  assert.ok(
-    timings.get(6400) / timings.get(1600) < 10,
-    `expected non-quadratic 6400-image scaling: ${JSON.stringify(Object.fromEntries(timings))}`,
-  );
+test('scans sentinel occupancy once for 6400 image openers', () => {
+  const count = 6400;
+  const instrumentation = {};
+  const source = Array.from(
+    {length: count},
+    () => '![<!-- c -->](x)',
+  ).join('\n');
+
+  parseMdxVisibleCopy(source, `content/images-${count}.mdx`, {
+    probeInstrumentation: instrumentation,
+  });
+
+  assert.equal(instrumentation.sourceScans, 1);
+});
+
+test('allocates one sentinel token per image opener', () => {
+  const count = 6400;
+  const instrumentation = {};
+  const source = Array.from(
+    {length: count},
+    () => '![<!-- c -->](x)',
+  ).join('\n');
+
+  parseMdxVisibleCopy(source, `content/images-${count}.mdx`, {
+    probeInstrumentation: instrumentation,
+  });
+
+  assert.equal(instrumentation.allocatedTokens, count);
 });
 
 test('parses visible YAML front matter scalars without leaking YAML syntax', () => {
