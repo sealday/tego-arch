@@ -795,6 +795,35 @@ const plannedDiagramRelations = new Map([
   ['d3', ['n-database-adapter', 'n-order-port']],
 ]);
 
+function assertExactDiagramInventory(drawio, svg) {
+  const cells = drawioCells(drawio);
+  const svgNodes = svgVisibleNodeLabels(svg);
+  const svgBoundaries = svgElementsById(svg, 'path', 'data-boundary-id');
+  const svgEdges = svgElementsById(svg, 'path', 'data-edge-id');
+  const expectedNodeIds = [...plannedDiagramGeometries.keys()].filter((id) => id.startsWith('n-')).sort();
+  const expectedBoundaryIds = [...plannedDiagramGeometries.keys()].filter((id) => id.startsWith('b-')).sort();
+  const expectedRelationIds = [...plannedDiagramRelations.keys()].sort();
+  const drawioNodeIds = [...cells.values()]
+    .filter(({id, vertex}) => vertex === '1' && /^n-/u.test(id) && !id.endsWith('-role'))
+    .map(({id}) => id)
+    .sort();
+  const drawioBoundaryIds = [...cells.values()]
+    .filter(({id, vertex}) => vertex === '1' && /^b-/u.test(id))
+    .map(({id}) => id)
+    .sort();
+  const drawioRelationIds = [...cells.values()]
+    .filter(({edge}) => edge === '1')
+    .map(({id}) => id)
+    .sort();
+
+  assert.deepEqual(drawioNodeIds, expectedNodeIds, 'Draw.io semantic node IDs');
+  assert.deepEqual([...svgNodes.keys()].filter(Boolean).sort(), expectedNodeIds, 'SVG semantic node IDs');
+  assert.deepEqual(drawioBoundaryIds, expectedBoundaryIds, 'Draw.io boundary IDs');
+  assert.deepEqual([...svgBoundaries.keys()].filter(Boolean).sort(), expectedBoundaryIds, 'SVG boundary IDs');
+  assert.deepEqual(drawioRelationIds, expectedRelationIds, 'Draw.io relation IDs');
+  assert.deepEqual([...svgEdges.keys()].filter(Boolean).sort(), expectedRelationIds, 'SVG relation IDs');
+}
+
 test('parses the exact STY-02 geometry and directed relation inventory', async () => {
   const [drawio, svg] = await Promise.all([
     readFile(diagramSourceUrl, 'utf8'),
@@ -806,6 +835,8 @@ test('parses the exact STY-02 geometry and directed relation inventory', async (
   const svgBoundaries = svgElementsById(svg, 'path', 'data-boundary-id');
   const svgEdges = svgElementsById(svg, 'path', 'data-edge-id');
 
+  assertExactDiagramInventory(drawio, svg);
+
   for (const [id, geometry] of plannedDiagramGeometries) {
     assert.deepEqual(geometries.get(id), geometry, `${id} Draw.io geometry`);
     const svgElement = id.startsWith('b-') ? svgBoundaries.get(id) : svgNodes.get(id);
@@ -816,6 +847,36 @@ test('parses the exact STY-02 geometry and directed relation inventory', async (
     assert.deepEqual([cells.get(id)?.source, cells.get(id)?.target], [source, target], `${id} Draw.io relation`);
     assert.deepEqual([svgEdges.get(id)?.['data-source'], svgEdges.get(id)?.['data-target']], [source, target], `${id} SVG relation`);
   }
+});
+
+test('rejects extra paired semantic nodes and relations in both diagram assets', async () => {
+  const [drawio, svg] = await Promise.all([
+    readFile(diagramSourceUrl, 'utf8'),
+    readFile(diagramSvgUrl, 'utf8'),
+  ]);
+  const extraNodeDrawio = drawio.replace(
+    '</root>',
+    '<mxCell id="n-extra" value="额外节点" vertex="1" parent="1"><mxGeometry x="10" y="10" width="10" height="10" as="geometry"/></mxCell></root>',
+  );
+  const extraNodeSvg = svg.replace(
+    '</svg>',
+    '<g data-node-id="n-extra"><path d="M10 10H20V20H10Z"/><text x="15" y="16">额外节点</text></g></svg>',
+  );
+  assert.notEqual(extraNodeDrawio, drawio, 'extra Draw.io node mutation must change source');
+  assert.notEqual(extraNodeSvg, svg, 'extra SVG node mutation must change source');
+  assert.throws(() => assertExactDiagramInventory(extraNodeDrawio, extraNodeSvg), {name: 'AssertionError'});
+
+  const extraRelationDrawio = drawio.replace(
+    '</root>',
+    '<mxCell id="c-extra" value="额外关系" edge="1" parent="1" source="n-driver" target="n-domain"><mxGeometry relative="1" as="geometry"/></mxCell></root>',
+  );
+  const extraRelationSvg = svg.replace(
+    '</svg>',
+    '<path data-edge-id="c-extra" data-source="n-driver" data-target="n-domain" d="M1 1H2"/></svg>',
+  );
+  assert.notEqual(extraRelationDrawio, drawio, 'extra Draw.io relation mutation must change source');
+  assert.notEqual(extraRelationSvg, svg, 'extra SVG relation mutation must change source');
+  assert.throws(() => assertExactDiagramInventory(extraRelationDrawio, extraRelationSvg), {name: 'AssertionError'});
 });
 
 test('binds every diagram title, role, and visible edge label to its semantic ID', async () => {
