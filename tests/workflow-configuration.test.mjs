@@ -7,6 +7,7 @@ const linkHealthUrl = new URL(
   '../.github/workflows/link-health.yml',
   import.meta.url,
 );
+const packageJsonUrl = new URL('../package.json', import.meta.url);
 const approvedDeployActions = [
   'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1',
   'actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0',
@@ -194,4 +195,17 @@ test('keeps workflow YAML indentation and top-level keys unambiguous', async () 
       );
     }
   }
+});
+
+test('runs terminology governance in the complete verification chain', async () => {
+  const packageJson = JSON.parse(await readFile(packageJsonUrl, 'utf8'));
+
+  assert.equal(
+    packageJson.scripts['check:terminology'],
+    'node scripts/check-terminology.mjs',
+  );
+  assert.match(
+    packageJson.scripts.verify,
+    /npm run validate:content && npm run check:terminology && npm run check:content/u,
+  );
 });

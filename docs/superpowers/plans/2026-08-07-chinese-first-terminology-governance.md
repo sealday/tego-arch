@@ -34,7 +34,7 @@
 - Produces: `loadTerminologyRegistry(root)` → 同一结构的 Promise
 - Consumes: 无；后续页面、检查器和测试都依赖此任务。
 
-- [ ] **Step 1: 写注册表解析失败测试**
+- [x] **Step 1: 写注册表解析失败测试**
 
 在 `tests/terminology-registry.test.mjs` 中先写以下合同测试：
 
@@ -79,13 +79,13 @@ test('collects exact-key, duplicate, alias-conflict, and display-contract errors
 });
 ```
 
-- [ ] **Step 2: 运行测试并确认 RED**
+- [x] **Step 2: 运行测试并确认 RED**
 
 Run: `node --test tests/terminology-registry.test.mjs`
 
 Expected: FAIL，原因是 `scripts/terminology-registry.mjs` 尚不存在。
 
-- [ ] **Step 3: 实现最小严格解析器**
+- [x] **Step 3: 实现最小严格解析器**
 
 `scripts/terminology-registry.mjs` 必须：
 
@@ -197,7 +197,7 @@ export async function loadTerminologyRegistry(root) {
 
 实现必须展开注释中的每条校验，不得用快照代替字段级断言。
 
-- [ ] **Step 4: 写入首批规范术语**
+- [x] **Step 4: 写入首批规范术语**
 
 `data/terminology.json` 先登记后续基础设施和首页会直接使用的术语：
 
@@ -248,13 +248,13 @@ export async function loadTerminologyRegistry(root) {
 }
 ```
 
-- [ ] **Step 5: 运行测试并确认 GREEN**
+- [x] **Step 5: 运行测试并确认 GREEN**
 
 Run: `node --test tests/terminology-registry.test.mjs`
 
 Expected: PASS，且测试输出无警告。
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add scripts/terminology-registry.mjs tests/terminology-registry.test.mjs data/terminology.json
@@ -274,7 +274,7 @@ git commit -m "feat(terminology): add canonical registry"
 - Consumes: `data/terminology.json`
 - Produces: `<TerminologyIndex />` 和 `/terminology`
 
-- [ ] **Step 1: 写页面与导航失败测试**
+- [x] **Step 1: 写页面与导航失败测试**
 
 测试必须锁定 route、中文规则、单一数据源和侧栏位置：
 
@@ -300,13 +300,13 @@ test('publishes one registry-driven terminology policy page', async () => {
 ['content/terminology.mdx', 13, '术语规范'],
 ```
 
-- [ ] **Step 2: 运行测试并确认 RED**
+- [x] **Step 2: 运行测试并确认 RED**
 
 Run: `node --test tests/terminology-page.test.mjs tests/sidebar-navigation.test.mjs`
 
 Expected: FAIL，原因是页面和组件不存在。
 
-- [ ] **Step 3: 实现术语表组件**
+- [x] **Step 3: 实现术语表组件**
 
 组件直接消费注册表并输出可访问表格：
 
@@ -343,17 +343,17 @@ CSS 只允许容器横向滚动，不允许整页溢出：
 .tableRegion th, .tableRegion td { vertical-align: top; }
 ```
 
-- [ ] **Step 4: 创建正文页面**
+- [x] **Step 4: 创建正文页面**
 
 `content/terminology.mdx` 使用完整 reference metadata，正文包含：中文优先、首次出现、后续使用、专名、缩写、代码与引用、图中文字、贡献流程，并以 `<TerminologyIndex />` 投影注册表。不得手写第二份术语表。
 
-- [ ] **Step 5: 运行聚焦测试与构建**
+- [x] **Step 5: 运行聚焦测试与构建**
 
 Run: `node --test tests/terminology-page.test.mjs tests/sidebar-navigation.test.mjs && npm run typecheck && npm run build`
 
 Expected: PASS；`/terminology` 被 Docusaurus 构建且无 broken link。
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add content/terminology.mdx src/components/TerminologyIndex tests/terminology-page.test.mjs tests/sidebar-navigation.test.mjs
@@ -372,13 +372,13 @@ git commit -m "feat(terminology): publish terminology policy page"
 - Produces: `extractMermaidLabels(source, relativePath)` → label records
 - Produces: `extractVisibleTsxStrings(source, relativePath)` → string records
 
-- [ ] **Step 1: 先运行现有回归测试并记录 GREEN**
+- [x] **Step 1: 先运行现有回归测试并记录 GREEN**
 
 Run: `node --test tests/product-copy-boundaries.test.mjs`
 
 Expected: PASS。这是行为保持重构的基线。
 
-- [ ] **Step 2: 写共享模块的失败测试**
+- [x] **Step 2: 写共享模块的失败测试**
 
 测试必须证明：可见正文、链接标签、图片 alt 和用户可见 front matter 被保留；代码、URL、路径、MDX 表达式和注释被排除；Mermaid 只返回标签；TSX 只返回可见属性、JSX 文本和 `title/term/description` 数据字段。
 
@@ -392,13 +392,13 @@ assert.ok(result.blocks.every(({text}) => !text.includes('const Agent')));
 assert.deepEqual(extractMermaidLabels(mdx, 'content/example.mdx').map(({text}) => text), ['Agent worker', '完成']);
 ```
 
-- [ ] **Step 3: 运行测试并确认 RED**
+- [x] **Step 3: 运行测试并确认 RED**
 
 Run: `node --test tests/visible-copy.test.mjs`
 
 Expected: FAIL，原因是共享模块不存在。
 
-- [ ] **Step 4: 移动并扩展现有 AST 逻辑**
+- [x] **Step 4: 移动并扩展现有 AST 逻辑**
 
 把 `tests/product-copy-boundaries.test.mjs` 中的 MDX 规范化、HTML comment 保护、AST 解析、可见 block 渲染和行号恢复逻辑移动到 `scripts/visible-copy.mjs`。现有测试改为导入共享函数，不保留第二份实现。
 
@@ -410,13 +410,13 @@ Expected: FAIL，原因是共享模块不存在。
 
 TSX 使用已安装的 `typescript` 编译器 API，收集 JSX 文本、`alt/title/label/description/aria-label` 属性，以及对象属性 `title/term/description` 的字符串值；排除 import、href、to、className 和资源路径。
 
-- [ ] **Step 5: 运行重构与新行为测试**
+- [x] **Step 5: 运行重构与新行为测试**
 
 Run: `node --test tests/visible-copy.test.mjs tests/product-copy-boundaries.test.mjs`
 
 Expected: PASS；现有文案边界行为不变。
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add scripts/visible-copy.mjs tests/visible-copy.test.mjs tests/product-copy-boundaries.test.mjs
@@ -435,7 +435,7 @@ git commit -m "refactor(content): share visible copy parser"
 - Produces: `checkTerminology({root, paths})` → `{issues, checkedFiles}`
 - Produces: CLI `node scripts/check-terminology.mjs [--paths <comma-list>]`
 
-- [ ] **Step 1: 写检查器正反例测试**
+- [x] **Step 1: 写检查器正反例测试**
 
 临时 fixture 必须覆盖：
 
@@ -466,13 +466,13 @@ test('exempts literals and official citation titles without exempting surroundin
 
 另写 Mermaid、SVG/Draw.io、TSX、无理由 suppression 和一次输出全部命中的测试。
 
-- [ ] **Step 2: 运行测试并确认 RED**
+- [x] **Step 2: 运行测试并确认 RED**
 
 Run: `node --test tests/terminology-policy.test.mjs`
 
 Expected: FAIL，原因是检查器不存在。
 
-- [ ] **Step 3: 实现检查器**
+- [x] **Step 3: 实现检查器**
 
 检查器必须：
 
@@ -499,7 +499,7 @@ export async function checkTerminology({root, paths = defaultPaths}) {
 
 检查器消费一次后失效；空理由、未知规则、未命中下一行和整文件标记均失败。
 
-- [ ] **Step 4: 扩充基础术语注册表**
+- [x] **Step 4: 扩充基础术语注册表**
 
 按下表登记跨页面核心术语。`first_use` 必须逐字使用表中形式；`subsequent_use` 为中文主称与缩写；英文全称及列出的英文短语进入 `forbidden_aliases`，只有产品专名可以进入 `allowed_aliases`：
 
@@ -535,13 +535,13 @@ export async function checkTerminology({root, paths = defaultPaths}) {
 | `agent` | 智能体 | 智能体（Agent） |
 | `software-development-kit` | 软件开发工具包 | 软件开发工具包（Software Development Kit，SDK） |
 
-- [ ] **Step 5: 运行 fixture 测试并生成首次仓库报告**
+- [x] **Step 5: 运行 fixture 测试并生成首次仓库报告**
 
 Run: `node --test tests/terminology-policy.test.mjs && node scripts/check-terminology.mjs --paths README.md,src/pages/index.tsx,content/intro.mdx`
 
 Expected: fixture 测试 PASS；仓库命令因当前裸英文而非零退出，并一次列出首页、README 和 intro 的全部问题。
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add scripts/check-terminology.mjs tests/terminology-policy.test.mjs data/terminology.json
@@ -561,7 +561,7 @@ git commit -m "feat(terminology): add Chinese-first policy checker"
 - Consumes: 术语检查 CLI
 - Produces: 首页与 README 的零违规高可见文案
 
-- [ ] **Step 1: 先修改合同测试并确认 RED**
+- [x] **Step 1: 先修改合同测试并确认 RED**
 
 把测试期待改为：
 
@@ -581,7 +581,7 @@ Run: `node --test tests/readme-homepage-contributing.test.mjs`
 
 Expected: FAIL，命中旧首页和 README。
 
-- [ ] **Step 2: 更新首页用户文案**
+- [x] **Step 2: 更新首页用户文案**
 
 精确替换：
 
@@ -600,7 +600,7 @@ title: '架构决策速查（Architecture Decision Quick Reference）'
 
 不再把英文副标渲染为独立层级；相应删除 `term` 字段和 `.futureTerm` 未使用样式。
 
-- [ ] **Step 3: 更新 README 与 PR 模板**
+- [x] **Step 3: 更新 README 与 PR 模板**
 
 README 顶部增加 `[术语规范](https://sealday.github.io/tego-arch/terminology)`；贡献规则写明首次出现、专名例外、先登记后写作。三个未来方向把独立英文行合并到中文标题后的全角括号。
 
@@ -614,13 +614,13 @@ PR 模板新增：
 - [ ] 产品专名、代码、引用和图中文字已按例外边界复核，没有裸英文说明文字。
 ```
 
-- [ ] **Step 4: 运行聚焦合同与术语检查**
+- [x] **Step 4: 运行聚焦合同与术语检查**
 
 Run: `node --test tests/readme-homepage-contributing.test.mjs && node scripts/check-terminology.mjs --paths README.md,src/pages/index.tsx`
 
 Expected: PASS，零术语问题。
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/pages/index.tsx src/pages/index.module.css README.md .github/pull_request_template.md data/terminology.json tests/readme-homepage-contributing.test.mjs
@@ -640,7 +640,7 @@ git commit -m "feat(copy): apply Chinese-first homepage terminology"
 **Interfaces:**
 - Produces: 六字段中文主称加英文首次括注的稳定 schema
 
-- [ ] **Step 1: 修改 schema 合同测试并确认 RED**
+- [x] **Step 1: 修改 schema 合同测试并确认 RED**
 
 新合同：
 
@@ -659,7 +659,7 @@ Run: `node --test tests/content-validation.test.mjs tests/g006-batch1-content.te
 
 Expected: FAIL，当前 schema 与 11 篇文章仍使用英文标题。
 
-- [ ] **Step 2: 原子更新 schema 与 11 篇文章**
+- [x] **Step 2: 原子更新 schema 与 11 篇文章**
 
 把 `qualityAttributeScenarioHeadings` 和每篇质量属性正文中的六个 H3 同步替换为批准形式；正文后续提及字段时只使用中文。同步修正标题中的裸英文：
 
@@ -667,13 +667,13 @@ Expected: FAIL，当前 schema 与 11 篇文章仍使用英文标题。
 - `human in the loop` → 首次 `人在回路（Human-in-the-loop）`，后续“人在回路”；
 - 其他 quality attribute 英文只在每页首次括注。
 
-- [ ] **Step 3: 运行目录级术语和内容合同**
+- [x] **Step 3: 运行目录级术语和内容合同**
 
 Run: `node --test tests/content-validation.test.mjs tests/g006-batch1-content.test.mjs tests/g006-batch2-content.test.mjs tests/g006-batch3-content.test.mjs tests/g006-qa10-content.test.mjs && node scripts/check-terminology.mjs --paths content/quality-attributes`
 
 Expected: PASS，质量属性目录零未说明英文。
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add scripts/content-schema.mjs tests/content-validation.test.mjs tests/g006-*.test.mjs content/quality-attributes data/terminology.json
@@ -718,7 +718,7 @@ git commit -m "refactor(content): localize quality scenario vocabulary"
 - Consumes: `check:terminology` 的目录过滤
 - Produces: 六个知识域零未说明英文
 
-- [ ] **Step 1: 为已知标题改写添加失败合同**
+- [x] **Step 1: 为已知标题改写添加失败合同**
 
 测试至少锁定：
 
@@ -737,7 +737,7 @@ Run: `node --test tests/terminology-content-contract.test.mjs tests/g005*.test.m
 
 Expected: FAIL，当前标题仍使用裸英文。
 
-- [ ] **Step 2: 按目录逐页应用首次出现规则**
+- [x] **Step 2: 按目录逐页应用首次出现规则**
 
 每页依次处理标题、summary、学习问题、正文、表格、alt、图注和 Mermaid 标签。不得改 slug、topic_id、source_id、代码、命令或外部引用原题。arc42 表格使用：
 
@@ -751,7 +751,7 @@ Expected: FAIL，当前标题仍使用裸英文。
 
 模式目录中的 Router、Supervisor、Agents as Tools、Handoff、Fan-out/Fan-in、Evaluator-Optimizer、Hierarchical Teams 必须改为中文主称加首次英文括注，并登记后续允许形式。
 
-- [ ] **Step 3: 每完成一个目录即运行聚焦检查**
+- [x] **Step 3: 每完成一个目录即运行聚焦检查**
 
 依次运行：
 
@@ -766,7 +766,7 @@ node scripts/check-terminology.mjs --paths content/styles
 
 Expected: 每条命令零 issue；相应内容测试全部 PASS。
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add content/concepts content/principles content/methods content/modeling content/patterns content/styles data/terminology.json tests
@@ -807,7 +807,7 @@ git commit -m "refactor(content): standardize architecture terminology"
 **Interfaces:**
 - Produces: 剩余全部正文零未说明英文
 
-- [ ] **Step 1: 添加高风险混合用词失败合同**
+- [x] **Step 1: 添加高风险混合用词失败合同**
 
 测试锁定以下改写意图：
 
@@ -822,7 +822,7 @@ Run: `node --test tests/learning-path.test.mjs tests/case-prose-boundaries.test.
 
 Expected: FAIL，至少命中已知混合表达。
 
-- [ ] **Step 2: 分三批清理并登记术语**
+- [x] **Step 2: 分三批清理并登记术语**
 
 1. `intro`、`paths`、`questions`、`references`；
 2. 智能体控制与工作流案例；
@@ -830,19 +830,19 @@ Expected: FAIL，至少命中已知混合表达。
 
 专名使用“中文类别说明（官方名称）”或“官方名称：中文判断句”；同一案例后续可保留官方专名。所有普通英文动作、角色和状态改为中文，只有在首次解释时保留括注。
 
-- [ ] **Step 3: 运行全部正文术语检查**
+- [x] **Step 3: 运行全部正文术语检查**
 
 Run: `node scripts/check-terminology.mjs --paths content`
 
 Expected: 检查 95 篇正文（含术语页），零 issue。
 
-- [ ] **Step 4: 运行内容测试**
+- [x] **Step 4: 运行内容测试**
 
 Run: `npm run test && npm run validate:content && npm run check:content`
 
 Expected: PASS；若标题测试失败，更新产品期待值而不是放宽规则。
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add content data/terminology.json tests src/generated
@@ -861,7 +861,7 @@ git commit -m "refactor(content): complete Chinese-first terminology cleanup"
 - Consumes: 既有两张路线图作为 edit targets
 - Produces: 文字改为“需求与约束”的同构亮暗图
 
-- [ ] **Step 1: 阅读并执行必需视觉技能**
+- [x] **Step 1: 阅读并执行必需视觉技能**
 
 主执行者必须完整读取：
 
@@ -873,7 +873,7 @@ git commit -m "refactor(content): complete Chinese-first terminology cleanup"
 
 格式决策记录为 `位图`：该资产是概念性路线总结，且本次仅修改现有位图文字。
 
-- [ ] **Step 2: 写图片合同失败测试**
+- [x] **Step 2: 写图片合同失败测试**
 
 保留现有 PNG 尺寸与纯色边缘检查，并新增人工文字闭集报告合同：
 
@@ -887,7 +887,7 @@ Run: `node --test tests/readme-homepage-contributing.test.mjs`
 
 Expected: FAIL，视觉报告尚不存在。
 
-- [ ] **Step 3: 查看 edit targets 并调用 built-in imagegen**
+- [x] **Step 3: 查看 edit targets 并调用 built-in imagegen**
 
 先用 `view_image` 分别检查亮暗图。两张都作为 edit target；不得把一张仅当风格参考。
 
@@ -905,13 +905,13 @@ Avoid: new labels, English, watermark, signature, logo, status marks, changed to
 
 亮暗版本分别调用 built-in imagegen；生成后复制回项目路径。用户已经明确要求替换现有资产，因此允许覆盖这两个文件。
 
-- [ ] **Step 4: 视觉验收与报告**
+- [x] **Step 4: 视觉验收与报告**
 
 在 `.superpowers/terminology-visual-qa.md` 记录：最终 prompt、edit target 角色、输出路径、六个闭集标签、亮暗背景 RGB、尺寸、桌面/手机可读性、无水印、无额外英文和禁用旧词。
 
 用 `view_image` 检查两张最终图，并运行 PNG 边缘测试。
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add static/img/illustrations/tego-arch-judgment-path-light.png static/img/illustrations/tego-arch-judgment-path-dark.png tests/readme-homepage-contributing.test.mjs .superpowers/terminology-visual-qa.md
@@ -929,7 +929,7 @@ git commit -m "fix(homepage): localize judgment path terminology"
 **Interfaces:**
 - Produces: `npm run check:terminology` 与完整 `npm run verify` 门禁
 
-- [ ] **Step 1: 写 package/workflow 失败合同**
+- [x] **Step 1: 写 package/workflow 失败合同**
 
 ```js
 assert.equal(packageJson.scripts['check:terminology'], 'node scripts/check-terminology.mjs');
@@ -940,7 +940,7 @@ Run: `node --test tests/workflow-configuration.test.mjs`
 
 Expected: FAIL，脚本尚未接入。
 
-- [ ] **Step 2: 接入验证链**
+- [x] **Step 2: 接入验证链**
 
 `package.json` 新增：
 
@@ -954,13 +954,13 @@ Expected: FAIL，脚本尚未接入。
 "verify": "npm run test && npm run validate:content && npm run check:terminology && npm run check:content && npm run check:links && npm run check:reviews && npm run typecheck && npm run build"
 ```
 
-- [ ] **Step 3: 重新生成内容投影**
+- [x] **Step 3: 重新生成内容投影**
 
 Run: `npm run generate:content`
 
 Expected: `src/generated/project-status.json` 的内容文档数从 94 更新为 95，其他生成物只反映批准的标题和术语变化。
 
-- [ ] **Step 4: 运行静态和完整验证**
+- [x] **Step 4: 运行静态和完整验证**
 
 依次运行：
 
@@ -984,13 +984,13 @@ Expected: 全部退出 0；术语检查报告 95 篇正文及 README/首页零 i
 
 确认：首页无旧词和独立英文标签；路线图文字正确；术语表只在自身区域滚动；页面无横向溢出；控制台零 error；两个 route 均可从站内链接访问。
 
-- [ ] **Step 6: 最终范围与工作树检查**
+- [x] **Step 6: 最终范围与工作树检查**
 
 Run: `git status --short --branch && git diff --stat HEAD~10..HEAD`
 
 Expected: 只保留用户已有的 `.codex/config.toml` 未跟踪文件；没有临时图、生成器输出或未登记资产。
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add package.json package-lock.json tests/workflow-configuration.test.mjs src/generated docs/superpowers/plans/2026-08-07-chinese-first-terminology-governance.md

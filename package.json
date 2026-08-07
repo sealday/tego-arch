@@ -23,9 +23,10 @@
     "check:links:live": "node scripts/source-link-health.mjs --live",
     "refresh:links": "node scripts/source-link-health.mjs --refresh",
     "validate:content": "node scripts/validate-content.mjs content",
+    "check:terminology": "node scripts/check-terminology.mjs",
     "report:writing-density": "node .codex/skills/writing-architecture-cases/scripts/analyze_case_density.mjs content/cases",
     "typecheck": "tsc --noEmit",
-    "verify": "npm run test && npm run validate:content && npm run check:content && npm run check:links && npm run check:reviews && npm run typecheck && npm run build"
+    "verify": "npm run test && npm run validate:content && npm run check:terminology && npm run check:content && npm run check:links && npm run check:reviews && npm run typecheck && npm run build"
   },
   "dependencies": {
     "@docusaurus/core": "3.10.2",
