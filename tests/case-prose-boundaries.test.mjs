@@ -31,20 +31,6 @@ function governedCitation(url, label) {
     .some((title) => title && normalizeLinkLabel(title) === normalizeLinkLabel(label));
 }
 
-function protectedCitationLabels(ast) {
-  const labels = new Set();
-  const visit = (node) => {
-    if (node.type === 'link' && /^https?:/u.test(node.url)) {
-      const fullLabel = renderVisibleBlock(node, {includeInlineCode: true}).text;
-      const visibleLabel = renderVisibleBlock(node).text;
-      if (visibleLabel && governedCitation(node.url, fullLabel)) labels.add(visibleLabel.trim());
-    }
-    for (const child of node.children ?? []) visit(child);
-  };
-  visit(ast);
-  return labels;
-}
-
 function linkBoundaryIssues(source, file = 'content/example.mdx') {
   const {ast} = parseMdxVisibleCopy(source, file, {includeAst: true});
   const issues = [];
@@ -73,6 +59,27 @@ function linkBoundaryIssues(source, file = 'content/example.mdx') {
     for (const child of node.children ?? []) visit(child);
   };
   visit(ast);
+  return issues;
+}
+
+function naturalCopyIssues(source, file = 'content/example.mdx') {
+  const repeatedNoun = /(数据库|语言|存储|进程|数据|终端|接口|状态|服务|工作流|管理者)\1/u;
+  const parsed = parseMdxVisibleCopy(source, file, {
+    excludeLink: ({hasImage, label, url}) => !hasImage && governedCitation(url, label),
+  });
+  const issues = [];
+  for (const record of [...parsed.frontMatter, ...parsed.blocks].filter(({structural}) => !structural)) {
+    const reviewedText = record.text
+      .replaceAll('Erlang/OTP', 'Erlang OTP')
+      .replaceAll('Fan-out/Fan-in', 'Fan-out 与 Fan-in');
+    for (const [kind, pattern] of [
+      ['Latin↔Han', latinHanBoundary],
+      ['prose slash', asciiProseSlash],
+      ['repeated noun', repeatedNoun],
+    ]) {
+      if (pattern.test(reviewedText)) issues.push({line: record.line, kind});
+    }
+  }
   return issues;
 }
 
@@ -259,24 +266,34 @@ test('preserves official product identity in every reviewed Task 8 case title', 
 });
 
 test('keeps production-visible Task 8 prose free of mechanical script boundaries', async () => {
-  const repeatedNoun = /(数据库|语言|存储|进程|数据|终端|接口|状态|服务|工作流|管理者)\1/u;
   for (const file of await task8Files()) {
     const source = await readFile(new URL(file, root), 'utf8');
-    const parsed = parseMdxVisibleCopy(source, file, {includeAst: true});
-    const protectedLabels = protectedCitationLabels(parsed.ast);
     assert.deepEqual(linkBoundaryIssues(source, file), [], `${file}: link boundary`);
-    for (const record of [...parsed.frontMatter, ...parsed.blocks].filter(({structural}) => !structural)) {
-      const reviewedText = [...protectedLabels].reduce(
-        (text, label) => text.replaceAll(label, '受治理来源题名'),
-        record.text,
-      )
-        .replaceAll('Erlang/OTP', 'Erlang OTP')
-        .replaceAll('Fan-out/Fan-in', 'Fan-out 与 Fan-in');
-      assert.doesNotMatch(reviewedText, latinHanBoundary, `${file}:${record.line}: Latin↔Han`);
-      assert.doesNotMatch(reviewedText, asciiProseSlash, `${file}:${record.line}: prose slash`);
-      assert.doesNotMatch(reviewedText, repeatedNoun, `${file}:${record.line}: repeated noun`);
-    }
+    assert.deepEqual(naturalCopyIssues(source, file), [], `${file}: natural copy`);
   }
+});
+
+test('scopes governed citation exemptions to the exact link node', () => {
+  const governedUrl = 'https://developers.cloudflare.com/durable-objects/api/state/';
+
+  assert.notDeepEqual(
+    naturalCopyIssues(`[State](${governedUrl}) 有说明。\n\n普通 State状态 必须检查。`),
+    [],
+    'the same governed label outside the link must remain visible to prose checks',
+  );
+  assert.notDeepEqual(
+    naturalCopyIssues('[State](https://example.com/wrong)状态'),
+    [],
+    'a correct label with the wrong URL must not be exempt',
+  );
+  assert.notDeepEqual(
+    naturalCopyIssues(`[State Variant](${governedUrl})状态`),
+    [],
+    'a correct URL with the wrong label must not be exempt',
+  );
+  assert.deepEqual(naturalCopyIssues(`前文 [State](${governedUrl}) 后文`), []);
+  assert.notDeepEqual(linkBoundaryIssues(`前文[State](${governedUrl}) 后文`), []);
+  assert.notDeepEqual(linkBoundaryIssues(`前文 [State](${governedUrl})后文`), []);
 });
 
 test('rejects glued Markdown link seams while preserving exact governed labels', () => {
