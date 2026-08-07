@@ -323,7 +323,7 @@ summary: |-
   ]);
 });
 
-test('extracts all 72 existing summary fields with exact source lines', async () => {
+test('extracts all 74 existing summary fields with exact source lines', async () => {
   const files = await walk('content', '.mdx');
   const summaries = [];
 
@@ -341,7 +341,7 @@ test('extracts all 72 existing summary fields with exact source lines', async ()
     summaries.push(summary);
   }
 
-  assert.equal(summaries.length, 72);
+  assert.equal(summaries.length, 74);
 });
 
 test('locates each visible MDX body record on the line containing its text', () => {
@@ -490,7 +490,7 @@ test('covers every current Mermaid fence and fails closed on unknown structures'
       assert.ok(labels.length > 0, `${file}: Mermaid fence ${fenceCount} produced no labels`);
     }
   }
-  assert.equal(fenceCount, 52);
+  assert.equal(fenceCount, 54);
 
   assert.throws(
     () => extractMermaidLabels('```mermaid\npie\n  "Agent": 1\n```', 'content/pie.mdx'),

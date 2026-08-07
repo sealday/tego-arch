@@ -18,6 +18,12 @@ import {
 const inventoryPath = new URL('../docs/source-license-inventory.md', import.meta.url);
 const ledgerPath = new URL('../data/source-ledger.json', import.meta.url);
 const contentRoot = fileURLToPath(new URL('../content', import.meta.url));
+const approvedMicrosoftLicenseEvidenceUrls = new Set([
+  'https://github.com/microsoftdocs/architecture-center/blob/main/LICENSE',
+  'https://github.com/microsoftdocs/architecture-center/blob/4fb4d75aa5ed8423caa0d6c35d40b32bbc3cc819/LICENSE',
+  'https://raw.githubusercontent.com/MicrosoftDocs/architecture-center/ef79621488119c618cd3ebeb8f81443f023cc452/LICENSE',
+  'https://github.com/dotnet/docs/blob/main/LICENSE',
+]);
 
 async function governedData() {
   const [inventoryMarkdown, ledgerText, microFrontendsBody] = await Promise.all([
@@ -137,14 +143,75 @@ test('records all Microsoft Learn families as CC-BY-4.0 from official license ev
     source.license_family_id.startsWith('https://learn.microsoft.com/'));
 
   assert.equal(rows.length, 4);
-  assert.equal(sources.length, 6);
+  assert.equal(sources.length, 8);
   for (const item of [...rows, ...sources]) {
     assert.equal(item.exact_license ?? item.license, 'CC-BY-4.0');
-    assert.match(
+    assert.equal(
+      approvedMicrosoftLicenseEvidenceUrls.has(item.license_evidence_url),
+      true,
       item.license_evidence_url,
-      /^https:\/\/github\.com\/(?:microsoftdocs\/architecture-center|dotnet\/docs)\/blob\/main\/LICENSE$/i,
     );
   }
+});
+
+test('rejects unapproved Architecture Center license commit URLs', () => {
+  for (const commit of [
+    '0000000000000000000000000000000000000000',
+    'deadbeefdeadbeefdeadbeefdeadbeefdeadbeef',
+  ]) {
+    assert.equal(
+      approvedMicrosoftLicenseEvidenceUrls.has(
+        `https://github.com/microsoftdocs/architecture-center/blob/${commit}/LICENSE`,
+      ),
+      false,
+      commit,
+    );
+  }
+});
+
+test('uses policy-compatible transports for known access-controlled sources', async () => {
+  const {ledger} = await governedData();
+  const byId = new Map(ledger.sources.map((source) => [source.id, source]));
+
+  const medium = byId.get('src-docs-28997e2e106b');
+  assert.equal(medium.link_policy, 'auth-required');
+  assert.equal(
+    medium.expected_final_approval_note,
+    'Repeated live checks on 2026-08-06 returned HTTP 403 from the official Medium page; accepted as an auth-required transport baseline for manual access.',
+  );
+
+  const teamTopologies = byId.get(
+    'src-team-topologies-organization-dynamics-2020',
+  );
+  const expectedTransport =
+    'https://landing.teamtopologies.com/organization-dynamics-with-team-topologies';
+  assert.equal(teamTopologies.transport_locator, expectedTransport);
+  assert.equal(teamTopologies.expected_final_transport_locator, expectedTransport);
+  assert.equal(teamTopologies.expected_final_approved_at, '2026-08-06');
+  assert.match(
+    teamTopologies.expected_final_approval_note,
+    /official Team Topologies landing page.*HTTP 200.*2026-08-06/u,
+  );
+  assert.deepEqual(ledger.superseded_transports, [
+    {
+      source_ids: ['src-team-topologies-organization-dynamics-2020'],
+      transport_locator:
+        'https://teamtopologies.com/all-mini-books/mini-book-organization-dynamics-with-team-topologies',
+      replacement_transport_locator: expectedTransport,
+      superseded_at: '2026-08-06T16:59:31.495Z',
+      reason:
+        'The old Squarespace transport repeatedly reset Node.js connections; the reviewed official landing transport replaces it.',
+      result_sha256:
+        '80676dc47aadfa1746abee2e823521043cd0e6b8978db2efeecea1425a6e5285',
+    },
+  ]);
+
+  const mutated = structuredClone(ledger);
+  mutated.superseded_transports[0].result_sha256 = 'not-a-sha';
+  assert.match(
+    parseSourceLedger(mutated).errors.join('\n'),
+    /result_sha256/u,
+  );
 });
 
 test('validates the seven Batch 4 license families against mutation-sensitive evidence rules', async () => {

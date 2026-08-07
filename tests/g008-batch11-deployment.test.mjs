@@ -54,12 +54,12 @@ const expectedReviewSections = [
 ];
 
 const expectedProjection = {
-  completed_topics: 52,
-  content_documents: 95,
-  governed_sources: 494,
+  completed_topics: 55,
+  content_documents: 97,
+  governed_sources: 506,
   durable_stories: {completed: 8, total: 20, current: 'G009'},
   recently_completed: 'G008',
-  next_topic: 'STY-00',
+  next_topic: 'STY-03',
 };
 
 const expectedRoutes = [
@@ -177,9 +177,12 @@ function currentReleaseBaseline(source) {
 
 function batch11Segment(source) {
   const baseline = currentReleaseBaseline(source);
+  const marker = '此前 G008 Batch 11 历史完成基线为：';
+  const start = baseline.indexOf(marker);
+  assert.notEqual(start, -1, 'Batch 11 history boundary');
   const end = baseline.indexOf('此前 G008 Batch 10 历史完成基线为：');
   assert.notEqual(end, -1, 'Batch 10 history boundary');
-  return baseline.slice(0, end);
+  return `- **当前发布基线：** ${baseline.slice(start + marker.length, end)}`;
 }
 
 function batch10AndOlderHistory(source) {
@@ -231,10 +234,15 @@ function assertBacklog(source) {
     'Batch 10 and older baseline text remains byte-for-byte unchanged',
   );
   assert.match(source, /^- \[x\] \*\*MOD-13 /mu);
-  assert.match(source, /^- \[ \] \*\*STY-00 /mu);
+  assert.match(source, /^- \[x\] \*\*STY-00 /mu);
   assert.match(source, /^- \*\*持久故事进度：\*\* 已完成 `8 \/ 20`；最近完成 `G008`。$/mu);
   assert.match(source, /^- \*\*当前持久故事：\*\* `G009`。$/mu);
   assert.equal(segment.split('下一项为 STY-00').length - 1, 1);
+  assert.match(
+    currentReleaseBaseline(source),
+    /^- \*\*当前发布基线：\*\* 2026-08-07 G009 Batch 3 已完成 STY-02/u,
+  );
+  assert.match(currentReleaseBaseline(source), /当前 G009，下一项为 STY-03/u);
 }
 
 function assertGeneratedState(manifestValue, statusValue) {
@@ -244,7 +252,9 @@ function assertGeneratedState(manifestValue, statusValue) {
   assert.equal(topics.get('MOD-13')?.status.value, 'complete');
   assert.equal(topics.get('STY-00')?.slug, '/styles/sty-00');
   assert.equal(topics.get('STY-00')?.published, true);
-  assert.equal(topics.get('STY-00')?.status.value, 'pending');
+  assert.equal(topics.get('STY-00')?.status.value, 'complete');
+  assert.equal(topics.get('STY-01')?.published, true);
+  assert.equal(topics.get('STY-01')?.status.value, 'complete');
   assert.deepEqual(statusValue, {
     schema_version: 1,
     durable_stories: expectedProjection.durable_stories,
@@ -294,23 +304,31 @@ test('rejects reordered extra or contradictory review content', () => {
   }
 });
 
-test('closes only MOD-13 and G008 while projecting G009 and STY-00 next', () => {
+test('preserves G008 Batch 11 closure under the live STY-00 completion', () => {
   assertBacklog(backlog);
   assertGeneratedState(manifest, projectStatus);
 });
 
 test('rejects every backlog evidence identity count state and history mutation', () => {
   const segment = batch11Segment(backlog);
+  const storedSegment = segment.slice('- **当前发布基线：** '.length);
   for (const literal of backlogEvidence) {
-    assert.throws(() => assertBacklog(backlog.replace(segment, segment.replace(literal, '__REMOVED__'))));
-    assert.throws(() => assertBacklog(backlog.replace(segment, `${segment}${literal}`)));
+    assert.throws(() => assertBacklog(
+      backlog.replace(storedSegment, storedSegment.replace(literal, '__REMOVED__')),
+    ));
+    assert.throws(() => assertBacklog(
+      backlog.replace(storedSegment, `${storedSegment}${literal}`),
+    ));
   }
   for (const mutation of [
     backlog.replace('- [x] **MOD-13 ', '- [ ] **MOD-13 '),
-    backlog.replace('- [ ] **STY-00 ', '- [x] **STY-00 '),
+    backlog.replace('- [x] **STY-00 ', '- [ ] **STY-00 '),
     backlog.replace('- **当前持久故事：** `G009`。', '- **当前持久故事：** `G008`。'),
-    backlog.replace('下一项为 STY-00', '下一项为 STY-01'),
-  ]) assert.throws(() => assertBacklog(mutation));
+    backlog.replace('下一项为 STY-03', '下一项为 STY-02'),
+  ]) {
+    assert.notEqual(mutation, backlog, 'backlog mutation must change source');
+    assert.throws(() => assertBacklog(mutation));
+  }
   const history = batch10AndOlderHistory(backlog);
   assert.throws(() => assertBacklog(backlog.replace(history, history.replace('G008 Batch 10', 'G008 Batch ten'))));
 });
@@ -323,26 +341,37 @@ test('rejects every generated Stage B state route and count mutation', () => {
     ['MOD-13', 'status', 'pending'],
     ['STY-00', 'slug', '/styles/sty-01'],
     ['STY-00', 'published', false],
-    ['STY-00', 'status', 'complete'],
+    ['STY-00', 'status', 'pending'],
   ]) {
     const mutated = structuredClone(manifest);
     const topic = mutated.topics.find((candidate) => candidate.id === id);
     if (field === 'status') topic.status.value = value;
     else topic[field] = value;
+    assert.notDeepEqual(mutated, manifest, `${id} ${field} mutation must change manifest`);
     assert.throws(() => assertGeneratedState(mutated, projectStatus));
   }
+  const staleSty01 = structuredClone(manifest);
+  const sty01 = staleSty01.topics.find((candidate) => candidate.id === 'STY-01');
+  sty01.status.value = 'pending';
+  assert.notDeepEqual(staleSty01, manifest, 'STY-01 stale-state mutation must change manifest');
+  assert.throws(() => assertGeneratedState(staleSty01, projectStatus));
+  const staleCompletedTopics = structuredClone(projectStatus);
+  staleCompletedTopics.completed_topics = 53;
+  assert.equal(staleCompletedTopics.completed_topics, 53);
+  assert.notEqual(staleCompletedTopics.completed_topics, projectStatus.completed_topics);
+  assert.throws(() => assertGeneratedState(manifest, staleCompletedTopics));
   for (const mutate of [
     (value) => { value.schema_version = 2; },
     (value) => { value.durable_stories.completed = 7; },
     (value) => { value.durable_stories.total = 21; },
     (value) => { value.durable_stories.current = 'G008'; },
-    (value) => { value.completed_topics = 51; },
-    (value) => { value.content_documents = 93; },
-    (value) => { value.governed_sources = 493; },
+    (value) => { value.content_documents = 95; },
+    (value) => { value.governed_sources = 502; },
     (value) => { value.sources.completed_topics = 'other'; },
   ]) {
     const mutated = structuredClone(projectStatus);
     mutate(mutated);
+    assert.notDeepEqual(mutated, projectStatus, 'project-status mutation must change input');
     assert.throws(() => assertGeneratedState(manifest, mutated));
   }
 });

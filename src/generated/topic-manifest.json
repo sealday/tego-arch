@@ -901,69 +901,27 @@
       "priority": "P0",
       "status": {
         "scope": "backlog-projection",
-        "value": "pending",
+        "value": "complete",
         "source": "docs/content-backlog.md"
       },
       "dependencies": [],
       "adjacent_topics": [
         "PR-01",
-        "MOD-02"
+        "MOD-02",
+        "STY-01"
       ],
       "primary_sources": [
-        "https://arc42.org/",
-        "https://www.sei.cmu.edu/training/software-architecture-principles-practices/"
+        "https://www.sei.cmu.edu/library/architecture-tradeoff-analysis-method-collection/"
       ],
       "related_cases": [
         "/cases/micro-frontends-single-spa"
       ],
       "related_questions": [],
-      "reviewed_at": "2026-07-24",
+      "reviewed_at": "2026-08-06",
       "review_policy": null,
       "published": true,
       "pattern_group": null,
       "presentation": {}
-    },
-    {
-      "id": "STY-01",
-      "type": "style",
-      "title": "Layered Architecture",
-      "slug": "/styles/sty-01",
-      "priority": "P0",
-      "status": {
-        "scope": "backlog-projection",
-        "value": "pending",
-        "source": "docs/content-backlog.md"
-      },
-      "dependencies": [],
-      "adjacent_topics": [],
-      "primary_sources": [],
-      "related_cases": [],
-      "related_questions": [],
-      "reviewed_at": null,
-      "review_policy": null,
-      "published": false,
-      "pattern_group": null
-    },
-    {
-      "id": "STY-02",
-      "type": "style",
-      "title": "Hexagonal、Onion 与 Clean Architecture 对照",
-      "slug": "/styles/sty-02",
-      "priority": "P0",
-      "status": {
-        "scope": "backlog-projection",
-        "value": "pending",
-        "source": "docs/content-backlog.md"
-      },
-      "dependencies": [],
-      "adjacent_topics": [],
-      "primary_sources": [],
-      "related_cases": [],
-      "related_questions": [],
-      "reviewed_at": null,
-      "review_policy": null,
-      "published": false,
-      "pattern_group": null
     },
     {
       "id": "STY-03",
@@ -1335,6 +1293,37 @@
       "presentation": {}
     },
     {
+      "id": "STY-01",
+      "type": "style",
+      "title": "分层架构：用依赖方向约束职责分层",
+      "slug": "/styles/sty-01",
+      "priority": "P0",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "complete",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "STY-00"
+      ],
+      "adjacent_topics": [
+        "STY-00",
+        "STY-02"
+      ],
+      "primary_sources": [
+        "https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/n-tier"
+      ],
+      "related_cases": [
+        "/cases/micro-frontends-single-spa"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-08-07",
+      "review_policy": null,
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
+    },
+    {
       "id": "FND-04",
       "type": "concept",
       "title": "架构权衡、敏感点与风险",
@@ -1496,6 +1485,39 @@
       "related_questions": [],
       "reviewed_at": "2026-07-27",
       "review_policy": "quarterly-version-sensitive",
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
+    },
+    {
+      "id": "STY-02",
+      "type": "style",
+      "title": "六边形架构、洋葱架构与整洁架构：用依赖方向判断边界所有权",
+      "slug": "/styles/sty-02",
+      "priority": "P0",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "complete",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "STY-00",
+        "STY-01"
+      ],
+      "adjacent_topics": [
+        "STY-01"
+      ],
+      "primary_sources": [
+        "https://alistair.cockburn.us/hexagonal-architecture/",
+        "https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html",
+        "https://jeffreypalermo.com/2008/08/the-onion-architecture-part-3/"
+      ],
+      "related_cases": [
+        "/cases/micro-frontends-single-spa"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-08-07",
+      "review_policy": null,
       "published": true,
       "pattern_group": null,
       "presentation": {}

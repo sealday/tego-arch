@@ -814,17 +814,20 @@
     "mermaid": []
   },
   "content/styles/sty-00-comparison-framework.mdx": {
-    "inline": [
-      "0",
-      "0",
-      "1",
-      "1+2+1+2=6",
-      "2",
-      "2",
-      "2+0+2+1=5",
-      "7"
-    ],
+    "inline": [],
     "code": [],
-    "mermaid": []
+    "mermaid": [
+      [
+        "compare",
+        "compare",
+        "compare",
+        "constraints",
+        "constraints",
+        "enough",
+        "profiles",
+        "scenarios",
+        "validate"
+      ]
+    ]
   }
 }

@@ -38,7 +38,7 @@ const expectedSources = new Map([
 
 const sourceDefinitions = [
   {id: 'src-docs-9a4e9ce7f01b', title: 'EventStorming', author_or_org: 'Avanscoperta', source_kind: 'official-docs', roles: ['definition', 'method', 'learning'], boundary: 'Supports the three EventStorming workshop formats, collaborative purpose and reviewed artifact vocabulary; it does not prove local boundaries, teams, services or production behavior.', attribution: 'EventStorming, Avanscoperta'},
-  {id: 'src-docs-28997e2e106b', title: 'Collaborative Process Modelling with EventStorming', author_or_org: 'Alberto Brandolini', source_kind: 'engineering-blog', roles: ['definition', 'method', 'learning'], boundary: 'Supports the reviewed Process Modelling grammar of Person, System, Command, Policy, Read Model and Event; it does not define this article’s expense-claim example or architecture.', attribution: 'Collaborative Process Modelling with EventStorming, Alberto Brandolini'},
+  {id: 'src-docs-28997e2e106b', title: 'Collaborative Process Modelling with EventStorming', author_or_org: 'Alberto Brandolini', source_kind: 'engineering-blog', roles: ['definition', 'method', 'learning'], boundary: 'Supports the reviewed Process Modelling grammar of Person, System, Command, Policy, Read Model and Event; it does not define this article’s expense-claim example or architecture.', attribution: 'Collaborative Process Modelling with EventStorming, Alberto Brandolini', linkPolicy: 'auth-required', expectedFinalApprovedAt: '2026-08-06', expectedFinalApprovalNote: 'Repeated live checks on 2026-08-06 returned HTTP 403 from the official Medium page; accepted as an auth-required transport baseline for manual access.'},
   {id: 'src-docs-5b4206bf06fe', title: 'Pivotal Events', author_or_org: 'Avanscoperta', source_kind: 'official-docs', roles: ['definition', 'method'], boundary: 'Supports reviewed pivotal-event, timeline and swimlane discussion signals; it does not make a pivotal event or swimlane a context, team, system or service.', attribution: 'Pivotal Events, Avanscoperta'},
   {id: 'src-docs-fc6e554f1153', title: 'Context Mapping', author_or_org: 'Avanscoperta', source_kind: 'official-docs', roles: ['definition', 'method'], boundary: 'Supports the reviewed warning that boundary indicators are not bulletproof and require architecture judgment; it does not approve the article’s candidate boundaries.', attribution: 'Context Mapping, Avanscoperta'},
   {id: 'src-docs-ce27d09ce1e2', title: 'Chaotic Exploration', author_or_org: 'EventStorming', source_kind: 'official-docs', roles: ['method', 'learning'], boundary: 'Supports independent event exploration followed by collaborative organization; it does not license copying its prose, examples, diagrams, templates or layouts.', attribution: 'Chaotic Exploration, EventStorming'},
@@ -54,26 +54,31 @@ function assertMediumLinkHealth(cache) {
   assert.equal(matches.length, 1, 'exact Medium link-health target');
   const [result] = matches;
   assert.deepEqual(result.source_ids, ['src-docs-28997e2e106b']);
+  const attempts = result.attempt_history.map(({outcome, http_status}) => [
+    outcome,
+    http_status,
+  ]);
+  assert.deepEqual(attempts.slice(0, 4), [
+    ['error', 403],
+    ['healthy', 200],
+    ['error', 403],
+    ['error', 403],
+  ]);
+  assert.ok(attempts.length >= 5, 'policy review must append a new observation');
   assert.deepEqual(
-    result.attempt_history.map(({outcome, http_status}) => [outcome, http_status]),
-    [['error', 403], ['healthy', 200]],
+    attempts.slice(4),
+    attempts.slice(4).map(() => ['auth-required', 403]),
   );
-  assert.equal(result.review_status, 'healthy');
-  assert.deepEqual(result.last_attempt, {
-    at: '2026-08-03T00:59:30.000Z',
-    outcome: 'healthy',
-    final_transport_locator: mediumLocator,
-    http_status: 200,
-    login_wall_detected: false,
-    redirects: [],
-  });
-  assert.deepEqual(result.last_success, {
-    at: '2026-08-03T00:59:30.000Z',
-    outcome: 'healthy',
-    final_transport_locator: mediumLocator,
-    http_status: 200,
-    login_wall_detected: false,
-  });
+  assert.equal(result.review_status, 'auth-required');
+  assert.equal(result.last_attempt.at, result.attempt_history.at(-1).at);
+  assert.equal(result.last_attempt.outcome, 'auth-required');
+  assert.equal(result.last_attempt.final_transport_locator, mediumLocator);
+  assert.equal(result.last_attempt.http_status, 403);
+  assert.equal(result.last_attempt.login_wall_detected, false);
+  assert.deepEqual(result.last_attempt.redirects, []);
+  const {redirects: _redirects, ...lastAttemptWithoutRedirects} =
+    result.last_attempt;
+  assert.deepEqual(result.last_success, lastAttemptWithoutRedirects);
 }
 
 const expectedHeadings = [
@@ -392,10 +397,10 @@ function assertSourceGovernance(ledgerData, content) {
       family_grouping_evidence_url: null,
       copyright_policy: 'facts-and-short-quotation',
       usage_boundary: definition.boundary,
-      link_policy: 'floating',
+      link_policy: definition.linkPolicy ?? 'floating',
       expected_final_transport_locator: url,
-      expected_final_approved_at: '2026-08-03',
-      expected_final_approval_note: 'Initial reviewed EventStorming teaching-source transport baseline',
+      expected_final_approved_at: definition.expectedFinalApprovedAt ?? '2026-08-03',
+      expected_final_approval_note: definition.expectedFinalApprovalNote ?? 'Initial reviewed EventStorming teaching-source transport baseline',
     });
     assert.ok(visible.has(url), url);
     assert.deepEqual(citations.get(definition.id), {
@@ -446,9 +451,9 @@ function assertStageBProjection(projectStatus, topicIndexes, content) {
   assert.deepEqual(projectStatus, {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
-    completed_topics: 52,
-    content_documents: 95,
-    governed_sources: 494,
+    completed_topics: 55,
+    content_documents: 97,
+    governed_sources: 506,
     sources: {
       durable_stories: 'docs/content-backlog.md',
       completed_topics: 'docs/content-backlog.md',
@@ -467,7 +472,9 @@ function assertStageBProjection(projectStatus, topicIndexes, content) {
   assert.equal(topicsById.get('MOD-13').published, true, 'MOD-13 publication');
   assert.equal(topicsById.get('MOD-13').status.value, 'complete', 'MOD-13 status');
   assert.equal(topicsById.get('STY-00').published, true, 'STY-00 publication');
-  assert.equal(topicsById.get('STY-00').status.value, 'pending', 'STY-00 status');
+  assert.equal(topicsById.get('STY-00').status.value, 'complete', 'STY-00 status');
+  assert.equal(topicsById.get('STY-01').published, true, 'STY-01 publication');
+  assert.equal(topicsById.get('STY-01').status.value, 'complete', 'STY-01 status');
   assert.equal(links.filter((href) => href === '/modeling/mod-13').length, 0, 'MOD-13 actionable article links');
 }
 
@@ -542,7 +549,7 @@ test('governs the five reviewed MOD-09 sources and citation boundaries exactly',
   }
 });
 
-test('preserves the exact Medium failure and checker-recovered link-health history', () => {
+test('preserves the exact Medium recovery and subsequent failed attempts append-only', () => {
   assertMediumLinkHealth(linkHealth);
   const withoutDirectFailure = structuredClone(linkHealth);
   const target = withoutDirectFailure.results.find(

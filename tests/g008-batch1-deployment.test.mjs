@@ -14,6 +14,32 @@ const [review, backlog, manifest, projectStatus] = await Promise.all([
 ]);
 const topicsById = new Map(manifest.topics.map((topic) => [topic.id, topic]));
 
+function currentG009Batch3Prefix(source) {
+  const baselines = source
+    .split(/\r?\n/u)
+    .filter((line) => line.startsWith('- **当前发布基线：**'));
+  assert.equal(baselines.length, 1, 'backlog must contain one current release baseline');
+  const marker = '此前 G009 Batch 2 历史完成基线为：';
+  const end = baselines[0].indexOf(marker);
+  assert.notEqual(end, -1, 'G009 Batch 2 history boundary');
+  return baselines[0].slice(0, end);
+}
+
+function assertCurrentG009Batch3Prefix(source) {
+  assert.equal(
+    currentG009Batch3Prefix(source).split('下一项为 STY-03').length - 1,
+    1,
+    'G009 Batch 3 current prefix must identify STY-03 as next',
+  );
+}
+
+function mutateCurrentG009Batch3Prefix(source, replacement) {
+  const prefix = currentG009Batch3Prefix(source);
+  const mutatedPrefix = prefix.replace('下一项为 STY-03', replacement);
+  assert.notEqual(mutatedPrefix, prefix, 'current next-topic mutation must change prefix');
+  return source.replace(prefix, mutatedPrefix);
+}
+
 function parseEvidence(source) {
   const sha = source.match(/^Exact Stage A SHA: `([0-9a-f]{40})`$/mu)?.[1];
   const run = source.match(
@@ -79,15 +105,18 @@ test('closes exactly MOD-01 through MOD-03 without closing G008', () => {
       source: 'docs/content-backlog.md',
     });
   }
-  assert.equal(projectStatus.completed_topics, 52);
-  assert.equal(projectStatus.content_documents, 95);
-  assert.equal(projectStatus.governed_sources, 494);
+  assert.equal(projectStatus.completed_topics, 55);
+  assert.equal(projectStatus.content_documents, 97);
+  assert.equal(projectStatus.governed_sources, 506);
   assert.deepEqual(projectStatus.durable_stories, {
     completed: 8,
     total: 20,
     current: 'G009',
   });
   assert.match(backlog, /当前持久故事：\*\* `G009`/u);
-  assert.match(backlog, /下一项[^。\n]*MOD-04/u);
+  assertCurrentG009Batch3Prefix(backlog);
+  assert.throws(() => assertCurrentG009Batch3Prefix(
+    mutateCurrentG009Batch3Prefix(backlog, '下一项为 STY-04'),
+  ));
   assert.match(backlog, /最近完成 `G008`/u);
 });

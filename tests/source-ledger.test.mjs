@@ -71,6 +71,7 @@ function ledger(overrides = {}) {
     schema_version: 1,
     sources: [validSource],
     documents: {'content/cases/example.mdx': validDocument},
+    superseded_transports: [],
     ...overrides,
   };
 }
@@ -155,6 +156,96 @@ test('accepts only explicit unique non-canonical citation title variants', () =>
     invalid.errors.join('\n'),
     /citation_titles must be a non-empty array of unique non-title strings/u,
   );
+});
+
+test('validates canonical superseded transport migration authority', () => {
+  const authority = {
+    source_ids: [validSource.id],
+    transport_locator: 'https://old.example.com/source',
+    replacement_transport_locator: validSource.transport_locator,
+    superseded_at: '2026-07-24T00:00:00.000Z',
+    reason: 'Reviewed transport migration',
+    result_sha256:
+      '80676dc47aadfa1746abee2e823521043cd0e6b8978db2efeecea1425a6e5285',
+  };
+  assert.deepEqual(
+    parseSourceLedger(ledger({superseded_transports: [authority]})).errors,
+    [],
+  );
+
+  const mutations = [
+    ['orphan source', {...authority, source_ids: ['src-missing']}, /does not exist/u],
+    [
+      'bad replacement',
+      {...authority, replacement_transport_locator: 'https://elsewhere.example/'},
+      /replacement_transport_locator must equal the current transport/u,
+    ],
+    ['bad timestamp', {...authority, superseded_at: '2026-02-30'}, /superseded_at/u],
+    ['empty reason', {...authority, reason: ''}, /reason must be non-empty/u],
+    ['bad hash', {...authority, result_sha256: 'not-a-sha'}, /result_sha256/u],
+  ];
+  for (const [label, mutated, expected] of mutations) {
+    assert.match(
+      parseSourceLedger(ledger({superseded_transports: [mutated]})).errors.join(
+        '\n',
+      ),
+      expected,
+      label,
+    );
+  }
+});
+
+test('parses current and archived merge provenance commitments exactly', () => {
+  const digest = 'a'.repeat(64);
+  const authority = {
+    source_ids: [validSource.id],
+    transport_locator: 'https://old.example.com/source',
+    replacement_transport_locator: validSource.transport_locator,
+    superseded_at: '2026-07-24T00:00:00.000Z',
+    reason: 'Reviewed transport migration',
+    result_sha256: 'b'.repeat(64),
+    merge_provenance_sha256: digest,
+  };
+  const valid = ledger({
+    current_merge_provenance_sha256: digest,
+    superseded_transports: [authority],
+  });
+
+  const parsed = parseSourceLedger(valid);
+  assert.deepEqual(parsed.errors, []);
+  assert.equal(parsed.ledger.current_merge_provenance_sha256, digest);
+  assert.equal(
+    parsed.ledger.superseded_transports[0].merge_provenance_sha256,
+    digest,
+  );
+
+  for (const [label, mutate, expected] of [
+    [
+      'missing result hash pair',
+      (value) => delete value.superseded_transports[0].result_sha256,
+      /missing required field "result_sha256"/u,
+    ],
+    [
+      'bad current commitment',
+      (value) => (value.current_merge_provenance_sha256 = 'not-a-sha'),
+      /current_merge_provenance_sha256/u,
+    ],
+    [
+      'bad archive commitment',
+      (value) =>
+        (value.superseded_transports[0].merge_provenance_sha256 = 'not-a-sha'),
+      /merge_provenance_sha256/u,
+    ],
+    [
+      'unknown authority field',
+      (value) => (value.superseded_transports[0].provenance_hash = digest),
+      /unknown field "provenance_hash"/u,
+    ],
+  ]) {
+    const mutated = structuredClone(valid);
+    mutate(mutated);
+    assert.match(parseSourceLedger(mutated).errors.join('\n'), expected, label);
+  }
 });
 
 test('requires a valid source registration date', () => {
@@ -393,6 +484,7 @@ test('rejects duplicate sources invalid enums and dangling citations', () => {
   };
   const parsed = parseSourceLedger({
     schema_version: 1,
+    superseded_transports: [],
     sources: [validSource, duplicate, malformedSource],
     documents: {
       'outside/example.mdx': malformedDocument,
@@ -716,6 +808,7 @@ test('keeps stable source identity across citation anchors queries and locator m
 
   const wrongQueryCitation = parseSourceLedger({
     schema_version: 1,
+    superseded_transports: [],
     sources: [{
       ...validSource,
       id: 'src-version-one',

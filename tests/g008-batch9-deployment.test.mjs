@@ -154,6 +154,21 @@ function currentReleaseBaseline(source) {
   return baselines[0];
 }
 
+function currentG009Batch3Prefix(source) {
+  const baseline = currentReleaseBaseline(source);
+  const marker = '此前 G009 Batch 2 历史完成基线为：';
+  const end = baseline.indexOf(marker);
+  assert.notEqual(end, -1, 'G009 Batch 2 history boundary');
+  return baseline.slice(0, end);
+}
+
+function mutateCurrentG009Batch3Prefix(source, replacement) {
+  const prefix = currentG009Batch3Prefix(source);
+  const mutatedPrefix = prefix.replace('下一项为 STY-03', replacement);
+  assert.notEqual(mutatedPrefix, prefix, 'current next-topic mutation must change prefix');
+  return source.replace(prefix, mutatedPrefix);
+}
+
 function batch9Segment(source) {
   const baseline = currentReleaseBaseline(source);
   const marker = '此前 G008 Batch 9 历史完成基线为：';
@@ -221,13 +236,13 @@ function assertBacklogClosure(source) {
   }
   assert.match(source, /^- \[x\] \*\*MOD-12 /mu);
   assert.match(source, /^- \[x\] \*\*MOD-13 /mu);
-  assert.match(source, /^- \[ \] \*\*STY-00 /mu);
+  assert.match(source, /^- \[x\] \*\*STY-00 /mu);
   assert.match(source, /当前持久故事：\*\* `G009`/u);
   assert.match(source, /最近完成 `G008`/u);
   assert.equal(
-    currentReleaseBaseline(source).split('下一项为 STY-00').length - 1,
+    currentG009Batch3Prefix(source).split('下一项为 STY-03').length - 1,
     1,
-    'live current segment must identify STY-00 as next',
+    'G009 Batch 3 current prefix must identify STY-03 as next',
   );
 }
 
@@ -242,13 +257,15 @@ function assertGeneratedState(manifestValue, statusValue) {
   assert.equal(topicsById.get('MOD-13')?.published, true);
   assert.equal(topicsById.get('MOD-13')?.status.value, 'complete');
   assert.equal(topicsById.get('STY-00')?.published, true);
-  assert.equal(topicsById.get('STY-00')?.status.value, 'pending');
+  assert.equal(topicsById.get('STY-00')?.status.value, 'complete');
+  assert.equal(topicsById.get('STY-01')?.published, true);
+  assert.equal(topicsById.get('STY-01')?.status.value, 'complete');
   assert.deepEqual(statusValue, {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
-    completed_topics: 52,
-    content_documents: 95,
-    governed_sources: 494,
+    completed_topics: 55,
+    content_documents: 97,
+    governed_sources: 506,
     sources: {
       durable_stories: 'docs/content-backlog.md',
       completed_topics: 'docs/content-backlog.md',
@@ -335,14 +352,16 @@ test('rejects backlog evidence status and next-topic mutations', () => {
     backlog.replace('- [x] **MOD-12 ', '- [ ] **MOD-12 '),
     backlog.replace('- [x] **MOD-13 ', '- [ ] **MOD-13 '),
     backlog.replace('- **当前持久故事：** `G009`。', '- **当前持久故事：** `G008`。'),
-    backlog.replace('下一项为 STY-00', '下一项为 STY-01'),
+    mutateCurrentG009Batch3Prefix(backlog, '下一项为 STY-01'),
+    backlog.replace('- [x] **STY-00 ', '- [ ] **STY-00 '),
   ];
   assert.equal(
     backlogStateMutations.length,
-    8,
-    'six MOD-08..13 checkbox mutations plus current-story and next-topic mutations',
+    9,
+    'six MOD-08..13 checkbox mutations plus STY-00, current-story, and next-topic mutations',
   );
   for (const mutation of backlogStateMutations) {
+    assert.notEqual(mutation, backlog, 'backlog mutation must change source');
     assert.throws(() => assertBacklogClosure(mutation));
   }
 });
@@ -385,26 +404,38 @@ test('rejects every generated status and count mutation', () => {
   });
   assert.equal(publishedMutations.length, 3, 'every MOD-11..13 published flag has a mutation');
   for (const mutatedManifest of publishedMutations) {
+    assert.notDeepEqual(mutatedManifest, manifest, 'published mutation must change manifest');
     assert.throws(() => assertGeneratedState(mutatedManifest, projectStatus));
   }
   for (const id of ['MOD-11', 'MOD-12', 'MOD-13']) {
     const mutatedManifest = structuredClone(manifest);
     const topic = mutatedManifest.topics.find((candidate) => candidate.id === id);
     topic.status.value = topic.status.value === 'complete' ? 'pending' : 'complete';
+    assert.notDeepEqual(mutatedManifest, manifest, `${id} status mutation must change manifest`);
     assert.throws(() => assertGeneratedState(mutatedManifest, projectStatus));
   }
+  const staleSty01 = structuredClone(manifest);
+  const sty01 = staleSty01.topics.find((candidate) => candidate.id === 'STY-01');
+  sty01.status.value = 'pending';
+  assert.notDeepEqual(staleSty01, manifest, 'STY-01 stale-state mutation must change manifest');
+  assert.throws(() => assertGeneratedState(staleSty01, projectStatus));
+  const staleCompletedTopics = structuredClone(projectStatus);
+  staleCompletedTopics.completed_topics = 53;
+  assert.equal(staleCompletedTopics.completed_topics, 53);
+  assert.notEqual(staleCompletedTopics.completed_topics, projectStatus.completed_topics);
+  assert.throws(() => assertGeneratedState(manifest, staleCompletedTopics));
   for (const mutate of [
     (value) => { value.schema_version = 2; },
     (value) => { value.durable_stories.completed = 7; },
     (value) => { value.durable_stories.total = 21; },
     (value) => { value.durable_stories.current = 'G008'; },
-    (value) => { value.completed_topics = 49; },
-    (value) => { value.content_documents = 91; },
-    (value) => { value.governed_sources = 487; },
+    (value) => { value.content_documents = 95; },
+    (value) => { value.governed_sources = 502; },
     ...sourceMutations,
   ]) {
     const mutatedStatus = structuredClone(projectStatus);
     mutate(mutatedStatus);
+    assert.notDeepEqual(mutatedStatus, projectStatus, 'project-status mutation must change input');
     assert.throws(() => assertGeneratedState(manifest, mutatedStatus));
   }
 });

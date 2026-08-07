@@ -43,7 +43,7 @@ const fixtureCompletionById = new Map([
   ['PR-16', true],
   ['PR-17', true],
   ['REL-02', false],
-  ['STY-00', false],
+  ['STY-00', true],
   ['MTH-03', true],
   ['MOD-02', true],
   ['QA-01', true],

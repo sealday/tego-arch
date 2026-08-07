@@ -1,4 +1,4 @@
-import {randomUUID} from 'node:crypto';
+import {createHash, randomUUID} from 'node:crypto';
 import {mkdir, readFile, rename, rm, writeFile} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -18,7 +18,7 @@ const reviewStatuses = new Set([
   'stale',
 ]);
 const redirectStatuses = new Set([301, 302, 303, 307, 308]);
-const transientResponseStatuses = new Set([429, 502, 503, 504]);
+const transientResponseStatuses = new Set([429, 500, 502, 503, 504]);
 const transientRetryDelayMs = 250;
 const userAgent =
   'Mozilla/5.0 (compatible; TegoArchLinkCheck/1.0; +https://github.com/sealday/tego-arch)';
@@ -53,6 +53,7 @@ function sourceTransports(source, citedUrls = []) {
         source.expected_final_transport_locator,
       expected_final_approved_at: source.expected_final_approved_at,
       expected_final_approval_note: source.expected_final_approval_note,
+      primary_transport: true,
     },
   ];
   for (const alias of source.locator_aliases ?? []) {
@@ -81,6 +82,7 @@ function sourceTransports(source, citedUrls = []) {
         alias.expected_final_transport_locator,
       expected_final_approved_at: alias.expected_final_approved_at,
       expected_final_approval_note: alias.expected_final_approval_note,
+      primary_transport: false,
     });
   }
   return values.filter(
@@ -92,6 +94,13 @@ function sourceTransports(source, citedUrls = []) {
 
 function collectTargets(ledger) {
   const groups = new Map();
+  const superseded = new Set(
+    (ledger.superseded_transports ?? []).flatMap((authority) =>
+      (authority.source_ids ?? []).map(
+        (sourceId) => `${sourceId}\0${authority.transport_locator}`,
+      ),
+    ),
+  );
   const citationsBySource = new Map();
   for (const document of Object.values(ledger.documents ?? {})) {
     for (const citation of document.citations ?? []) {
@@ -106,6 +115,7 @@ function collectTargets(ledger) {
       citationsBySource.get(source.id) ?? [],
     )) {
       const locator = transportLocator(transport.transport_locator);
+      if (superseded.has(`${source.id}\0${locator}`)) continue;
       const current = groups.get(locator) ?? {
         transport_locator: locator,
         expected_final_transport_locator:
@@ -115,6 +125,7 @@ function collectTargets(ledger) {
         source_ids: [],
         link_policy: source.link_policy,
         conflicts: [],
+        primary_transport: false,
       };
       const fields = [
         'link_policy',
@@ -130,6 +141,7 @@ function collectTargets(ledger) {
         }
       }
       current.source_ids.push(source.id);
+      current.primary_transport ||= transport.primary_transport;
       groups.set(locator, current);
     }
   }
@@ -145,7 +157,9 @@ function collectTargets(ledger) {
 }
 
 export function buildLinkTargets(ledger) {
-  return collectTargets(ledger).map(({conflicts: _conflicts, ...target}) => target);
+  return collectTargets(ledger).map(
+    ({conflicts: _conflicts, primary_transport: _primary, ...target}) => target,
+  );
 }
 
 function isRecord(value) {
@@ -198,9 +212,556 @@ function validAttempt(value, {success = false, full = false} = {}) {
 }
 
 function sameObservation(left, right) {
-  return ['at', 'outcome', 'final_transport_locator', 'http_status'].every(
-    (field) => left?.[field] === right?.[field],
+  return (
+    Date.parse(left?.at) === Date.parse(right?.at) &&
+    ['outcome', 'final_transport_locator', 'http_status'].every(
+      (field) => left?.[field] === right?.[field],
+    )
   );
+}
+
+function sourceIdsKey(sourceIds) {
+  return JSON.stringify(sortedStrings(sourceIds));
+}
+
+const supersededReason = 'ledger transport target changed for exact source_ids';
+
+function authorityKey(transportLocatorValue, sourceIds) {
+  return `${transportLocatorValue}\0${sourceIdsKey(sourceIds)}`;
+}
+
+function canonicalValue(value) {
+  if (Array.isArray(value)) {
+    return value.map((item) => canonicalValue(item));
+  }
+  if (isRecord(value)) {
+    return Object.fromEntries(
+      Object.keys(value)
+        .filter((key) => value[key] !== undefined)
+        .sort((left, right) => left.localeCompare(right, 'en'))
+        .map((key) => [key, canonicalValue(value[key])]),
+    );
+  }
+  return value;
+}
+
+function canonicalRecord(value, preferredFields) {
+  const preferred = new Set(preferredFields);
+  const fields = [
+    ...preferredFields.filter((field) => value[field] !== undefined),
+    ...Object.keys(value)
+      .filter((field) => !preferred.has(field) && value[field] !== undefined)
+      .sort((left, right) => left.localeCompare(right, 'en')),
+  ];
+  return Object.fromEntries(
+    fields.map((field) => [field, canonicalValue(value[field])]),
+  );
+}
+
+function canonicalAttempt(value) {
+  if (!isRecord(value)) return value;
+  const normalized = {...value};
+  if (
+    typeof normalized.at === 'string' &&
+    !Number.isNaN(Date.parse(normalized.at))
+  ) {
+    normalized.at = new Date(normalized.at).toISOString();
+  }
+  return canonicalRecord(normalized, [
+    'at',
+    'outcome',
+    'final_transport_locator',
+    'http_status',
+    'login_wall_detected',
+    'redirects',
+    'error',
+  ]);
+}
+
+function canonicalResult(
+  result,
+  {includeMergeInternals = true} = {},
+) {
+  const value = {...result};
+  if (!includeMergeInternals) {
+    delete value.merge_provenance;
+    delete value.merge_provenance_sha256;
+  }
+  const preferredFields = [
+    'transport_locator',
+    'source_ids',
+    'last_attempt',
+    'last_success',
+    'attempt_history',
+    'review_status',
+    'change_note',
+    'merge_conflicts',
+    'merge_provenance_sha256',
+    'merge_provenance',
+  ];
+  const preferred = new Set(preferredFields);
+  const fields = [
+    ...preferredFields.filter((field) => value[field] !== undefined),
+    ...Object.keys(value)
+      .filter((field) => !preferred.has(field) && value[field] !== undefined)
+      .sort((left, right) => left.localeCompare(right, 'en')),
+  ];
+  return Object.fromEntries(
+    fields.map((field) => {
+      if (field === 'last_attempt') {
+        return [field, canonicalAttempt(value[field])];
+      }
+      if (field === 'last_success') {
+        return [
+          field,
+          value[field] === null ? null : canonicalAttempt(value[field]),
+        ];
+      }
+      if (field === 'attempt_history') {
+        return [field, value[field].map(canonicalAttempt)];
+      }
+      if (field === 'merge_provenance') {
+        return [
+          field,
+          value[field].map((entry) => ({
+            last_attempt: canonicalAttempt(entry.last_attempt),
+            last_success:
+              entry.last_success === null
+                ? null
+                : canonicalAttempt(entry.last_success),
+            attempt_history: entry.attempt_history.map(canonicalAttempt),
+            fields: canonicalValue(entry.fields),
+          })),
+        ];
+      }
+      return [field, canonicalValue(value[field])];
+    }),
+  );
+}
+
+function stableJson(value) {
+  return JSON.stringify(canonicalValue(value));
+}
+
+function canonicalResultJson(result, options) {
+  return JSON.stringify(canonicalResult(result, options));
+}
+
+function normalizedResultSha256(result) {
+  return createHash('sha256')
+    .update(`${canonicalResultJson(result, {includeMergeInternals: false})}\n`)
+    .digest('hex');
+}
+
+function newerObservation(left, right) {
+  if (!left) return right;
+  if (!right) return left;
+  const difference = Date.parse(left.at) - Date.parse(right.at);
+  if (difference !== 0) return difference > 0 ? left : right;
+  return stableJson(left).localeCompare(stableJson(right), 'en') <= 0
+    ? left
+    : right;
+}
+
+const mergeExcludedFields = new Set([
+  'last_attempt',
+  'last_success',
+  'attempt_history',
+  'merge_conflicts',
+  'merge_provenance_sha256',
+  'merge_provenance',
+]);
+
+function containsMergeProvenance(value) {
+  if (Array.isArray(value)) return value.some(containsMergeProvenance);
+  if (!isRecord(value)) return false;
+  return (
+    Object.hasOwn(value, 'merge_provenance') ||
+    Object.values(value).some(containsMergeProvenance)
+  );
+}
+
+function validMergeProvenance(value) {
+  if (!Array.isArray(value) || value.length === 0) return false;
+  const keys = value.map((entry) => stableJson(entry));
+  if (
+    new Set(keys).size !== keys.length ||
+    keys.some(
+      (key, index) =>
+        index > 0 && key.localeCompare(keys[index - 1], 'en') < 0,
+    )
+  ) {
+    return false;
+  }
+  return value.every(
+    (entry) =>
+      isRecord(entry) &&
+      Object.keys(entry).length === 4 &&
+      Object.hasOwn(entry, 'last_attempt') &&
+      Object.hasOwn(entry, 'last_success') &&
+      Object.hasOwn(entry, 'attempt_history') &&
+      Object.hasOwn(entry, 'fields') &&
+      validAttempt(entry.last_attempt, {full: true}) &&
+      (entry.last_success === null ||
+        validAttempt(entry.last_success, {success: true})) &&
+      Array.isArray(entry.attempt_history) &&
+      entry.attempt_history.length > 0 &&
+      entry.attempt_history.every((attempt) => validAttempt(attempt)) &&
+      sameObservation(entry.attempt_history.at(-1), entry.last_attempt) &&
+      !entry.attempt_history.some(
+        (attempt, index, attempts) =>
+          index > 0 &&
+          Date.parse(attempt.at) < Date.parse(attempts[index - 1].at),
+      ) &&
+      (entry.last_success === null ||
+        (Date.parse(entry.last_success.at) <=
+          Date.parse(entry.last_attempt.at) &&
+          entry.attempt_history.some((attempt) =>
+            sameObservation(attempt, entry.last_success),
+          ))) &&
+      isRecord(entry.fields) &&
+      Object.keys(entry.fields).length > 0 &&
+      !Object.keys(entry.fields).some((field) =>
+        mergeExcludedFields.has(field),
+      ) &&
+      !containsMergeProvenance(entry.fields),
+  );
+}
+
+function resultFields(result) {
+  return canonicalValue(
+    Object.fromEntries(
+      Object.keys(result)
+        .filter((field) => !mergeExcludedFields.has(field))
+        .map((field) => [field, result[field]]),
+    ),
+  );
+}
+
+function resultEvidence(result) {
+  return {
+    last_attempt: canonicalAttempt(result.last_attempt),
+    last_success:
+      result.last_success === null
+        ? null
+        : canonicalAttempt(result.last_success),
+    attempt_history: result.attempt_history.map(canonicalAttempt),
+    fields: resultFields(result),
+  };
+}
+
+function winningEvidence(provenance) {
+  const latestAt = Math.max(
+    ...provenance.map(({last_attempt: lastAttempt}) =>
+      Date.parse(lastAttempt.at),
+    ),
+  );
+  return provenance
+    .filter(({last_attempt: lastAttempt}) =>
+      Date.parse(lastAttempt.at) === latestAt,
+    )
+    .sort((left, right) =>
+      stableJson({
+        last_attempt: left.last_attempt,
+        fields: left.fields,
+      }).localeCompare(
+        stableJson({
+          last_attempt: right.last_attempt,
+          fields: right.fields,
+        }),
+        'en',
+      ),
+    )[0];
+}
+
+function aggregateLastSuccess(provenance) {
+  return provenance
+    .map(({last_success: lastSuccess}) => lastSuccess)
+    .filter(Boolean)
+    .reduce((latest, success) => newerObservation(latest, success), null);
+}
+
+function aggregateAttemptHistory(provenance) {
+  const historyByObservation = new Map();
+  for (const attempt of provenance.flatMap(
+    ({attempt_history: attemptHistory}) => attemptHistory,
+  )) {
+    const canonical = canonicalAttempt(attempt);
+    const key = JSON.stringify([
+      canonical.at,
+      canonical.outcome,
+      canonical.final_transport_locator,
+      canonical.http_status,
+    ]);
+    const current = historyByObservation.get(key);
+    if (
+      !current ||
+      stableJson(canonical).localeCompare(stableJson(current), 'en') < 0
+    ) {
+      historyByObservation.set(key, canonical);
+    }
+  }
+  return [...historyByObservation.values()].sort((left, right) => {
+    const difference = Date.parse(left.at) - Date.parse(right.at);
+    return difference || stableJson(left).localeCompare(stableJson(right), 'en');
+  });
+}
+
+function materializeEvidence(provenance) {
+  const winner = winningEvidence(provenance);
+  return {
+    ...winner.fields,
+    last_attempt: winner.last_attempt,
+    last_success: aggregateLastSuccess(provenance),
+    attempt_history: aggregateAttemptHistory(provenance),
+  };
+}
+
+function conflictsFromEvidence(provenance) {
+  const conflicts = [];
+  const identityFields = new Set(['transport_locator', 'source_ids']);
+  const comparableFields = new Set(
+    provenance.flatMap(({fields}) => Object.keys(fields)),
+  );
+  for (const field of identityFields) {
+    if (
+      new Set(provenance.map(({fields}) => stableJson(fields[field]))).size > 1
+    ) {
+      conflicts.push(field);
+    }
+  }
+  const observationGroups = new Map();
+  for (const evidence of provenance) {
+    const key = stableJson(evidence.last_attempt);
+    const group = observationGroups.get(key) ?? [];
+    group.push(evidence);
+    observationGroups.set(key, group);
+  }
+  for (const group of observationGroups.values()) {
+    for (const field of comparableFields) {
+      if (
+        new Set(group.map(({fields}) => stableJson(fields[field]))).size > 1
+      ) {
+        conflicts.push(field);
+      }
+    }
+  }
+  return sortedStrings(new Set(conflicts));
+}
+
+function provenanceSha256(provenance) {
+  return createHash('sha256')
+    .update(`${stableJson(provenance)}\n`)
+    .digest('hex');
+}
+
+function currentProvenanceSha256(results) {
+  const envelope = results
+    .filter(({merge_provenance_sha256: commitment}) => commitment)
+    .map(({transport_locator, source_ids, merge_provenance_sha256}) => ({
+      transport_locator,
+      source_ids,
+      merge_provenance_sha256,
+    }))
+    .sort((left, right) =>
+      left.transport_locator.localeCompare(right.transport_locator, 'en'),
+    );
+  if (envelope.length === 0) return null;
+  return createHash('sha256')
+    .update(`${JSON.stringify(envelope)}\n`)
+    .digest('hex');
+}
+
+function committedResult(result) {
+  if (
+    validMergeProvenance(result.merge_provenance) &&
+    provenanceSha256(result.merge_provenance) ===
+      result.merge_provenance_sha256
+  ) {
+    return canonicalResult({...result, ...materializeEvidence(result.merge_provenance)});
+  }
+  return result;
+}
+
+function mergeProvenanceSemanticErrors(result) {
+  const hasProvenance = result.merge_provenance !== undefined;
+  const hasCommitment = result.merge_provenance_sha256 !== undefined;
+  if (!hasProvenance && !hasCommitment) return [];
+  if (
+    !hasProvenance ||
+    typeof result.merge_provenance_sha256 !== 'string' ||
+    !/^[a-f0-9]{64}$/u.test(result.merge_provenance_sha256)
+  ) {
+    return ['merge_provenance commitment is incomplete'];
+  }
+  if (!validMergeProvenance(result.merge_provenance)) return [];
+  const errors = [];
+  if (
+    provenanceSha256(result.merge_provenance) !==
+    result.merge_provenance_sha256
+  ) {
+    errors.push('merge_provenance commitment does not match its evidence');
+  }
+  const materialized = materializeEvidence(result.merge_provenance);
+  if (
+    stableJson({
+      last_attempt: canonicalAttempt(result.last_attempt),
+      fields: resultFields(result),
+    }) !==
+    stableJson({
+      last_attempt: materialized.last_attempt,
+      fields: resultFields(materialized),
+    })
+  ) {
+    errors.push('merge_provenance does not match result evidence');
+  }
+  if (stableJson(result.last_success) !== stableJson(materialized.last_success)) {
+    errors.push('merge_provenance does not match aggregate last_success');
+  }
+  if (
+    stableJson(result.attempt_history) !==
+    stableJson(materialized.attempt_history)
+  ) {
+    errors.push('merge_provenance does not match aggregate attempt_history');
+  }
+  const expectedConflicts = conflictsFromEvidence(result.merge_provenance);
+  const actualConflicts = result.merge_conflicts;
+  if (
+    (expectedConflicts.length === 0 && actualConflicts !== undefined) ||
+    (expectedConflicts.length > 0 &&
+      (!Array.isArray(actualConflicts) ||
+        JSON.stringify(actualConflicts) !== JSON.stringify(expectedConflicts)))
+  ) {
+    errors.push('merge_conflicts do not match merge_provenance');
+  }
+  return errors;
+}
+
+function mergeResultCandidates(candidates) {
+  const conflicts = candidates.flatMap(
+    ({merge_conflicts: existing}) => existing ?? [],
+  );
+  const evidenceByValue = new Map();
+  for (const candidate of candidates) {
+    const validProvenance = validMergeProvenance(candidate.merge_provenance);
+    if (validProvenance) {
+      for (const entry of candidate.merge_provenance) {
+        evidenceByValue.set(stableJson(entry), entry);
+      }
+    } else {
+      const evidence = resultEvidence(candidate);
+      evidenceByValue.set(stableJson(evidence), evidence);
+      if (candidate.merge_provenance !== undefined) {
+        conflicts.push('merge_provenance');
+      }
+    }
+    if (mergeProvenanceSemanticErrors(candidate).length > 0) {
+      conflicts.push('merge_provenance');
+    }
+  }
+  const provenance = [...evidenceByValue.values()]
+    .map((entry) => canonicalValue(entry))
+    .sort((left, right) => stableJson(left).localeCompare(stableJson(right), 'en'));
+  conflicts.push(...conflictsFromEvidence(provenance));
+  const materialized = materializeEvidence(provenance);
+  const mergeConflicts = sortedStrings(new Set(conflicts));
+  return canonicalResult({
+    ...materialized,
+    ...(mergeConflicts.length > 0
+      ? {merge_conflicts: mergeConflicts}
+      : {}),
+    ...(provenance.length > 1
+      ? {
+          merge_provenance_sha256: provenanceSha256(provenance),
+          merge_provenance: provenance,
+        }
+      : {}),
+  });
+}
+
+function collectSupersededResults(ledger, caches, now) {
+  const authorities = new Map(
+    (ledger.superseded_transports ?? []).map((authority) => [
+      authorityKey(authority.transport_locator, authority.source_ids),
+      authority,
+    ]),
+  );
+  const archivedCandidates = new Map();
+  const archiveMetadata = new Map();
+  for (const cache of caches) {
+    for (const entry of cache?.superseded_results ?? []) {
+      if (!entry?.result) continue;
+      const key = authorityKey(
+        entry.result.transport_locator,
+        entry.result.source_ids ?? [],
+      );
+      const candidates = archivedCandidates.get(key) ?? [];
+      candidates.push(entry.result);
+      archivedCandidates.set(key, candidates);
+      const currentMetadata = archiveMetadata.get(key);
+      if (
+        !currentMetadata ||
+        stableJson(entry).localeCompare(stableJson(currentMetadata), 'en') < 0
+      ) {
+        archiveMetadata.set(key, structuredClone(entry));
+      }
+    }
+  }
+  for (const cache of caches) {
+    for (const result of cache?.results ?? []) {
+      const key = authorityKey(result.transport_locator, result.source_ids ?? []);
+      if (!authorities.has(key)) continue;
+      const candidates = archivedCandidates.get(key) ?? [];
+      candidates.push(result);
+      archivedCandidates.set(key, candidates);
+    }
+  }
+  return [...archivedCandidates.entries()].map(([key, candidates]) => {
+    const authority = authorities.get(key);
+    const metadata = archiveMetadata.get(key);
+    return {
+      superseded_at:
+        authority?.superseded_at ?? metadata?.superseded_at ?? now.toISOString(),
+      replacement_transport_locator:
+        authority?.replacement_transport_locator ??
+        metadata?.replacement_transport_locator,
+      reason: authority?.reason ?? metadata?.reason ?? supersededReason,
+      result: mergeResultCandidates(candidates),
+    };
+  }).sort((left, right) =>
+    left.result.transport_locator.localeCompare(
+      right.result.transport_locator,
+      'en',
+    ),
+  );
+}
+
+function ambiguousMigrationResults(ledger, targets, results) {
+  const targetsBySourceIds = new Map();
+  for (const target of targets) {
+    const key = sourceIdsKey(target.source_ids);
+    const matches = targetsBySourceIds.get(key) ?? [];
+    matches.push(target);
+    targetsBySourceIds.set(key, matches);
+  }
+  const authorities = new Set(
+    (ledger.superseded_transports ?? []).map((authority) =>
+      authorityKey(authority.transport_locator, authority.source_ids),
+    ),
+  );
+  return results.filter((result) => {
+    const matches = targetsBySourceIds.get(sourceIdsKey(result.source_ids ?? []));
+    const target = matches?.find(
+      ({transport_locator: locator}) => locator === result.transport_locator,
+    );
+    return (
+      matches?.some(({primary_transport}) => primary_transport) &&
+      (!target || target.primary_transport === false) &&
+      !authorities.has(
+        authorityKey(result.transport_locator, result.source_ids ?? []),
+      )
+    );
+  });
 }
 
 export function validateLinkHealthCacheStructure(ledger, cache) {
@@ -231,10 +792,216 @@ export function validateLinkHealthCacheStructure(ledger, cache) {
       ].sort(),
     };
   }
+  if (
+    cache.superseded_results !== undefined &&
+    !Array.isArray(cache.superseded_results)
+  ) {
+    errors.push('data/source-link-health.json: superseded_results must be an array');
+  }
 
   const expected = new Map(
     targets.map((target) => [target.transport_locator, target]),
   );
+  const ledgerSourceIds = new Set((ledger.sources ?? []).map(({id}) => id));
+  const superseded = Array.isArray(cache.superseded_results)
+    ? cache.superseded_results
+    : [];
+  const authorities = new Map(
+    (ledger.superseded_transports ?? []).map((authority) => [
+      authorityKey(authority.transport_locator, authority.source_ids),
+      authority,
+    ]),
+  );
+  const observedAuthorityKeys = new Set();
+  const archivedByTransport = new Map();
+  for (const archive of superseded) {
+    const result = archive?.result;
+    const locator = result?.transport_locator ?? '<invalid>';
+    const sourceIds = Array.isArray(result?.source_ids)
+      ? result.source_ids.filter((value) => typeof value === 'string')
+      : [];
+    const prefix = (message) =>
+      errors.push(formatDiagnostic(locator, sourceIds, `superseded result ${message}`));
+    if (
+      !isRecord(archive) ||
+      typeof archive.superseded_at !== 'string' ||
+      Number.isNaN(Date.parse(archive.superseded_at)) ||
+      typeof archive.reason !== 'string' ||
+      archive.reason.length === 0 ||
+      typeof archive.replacement_transport_locator !== 'string' ||
+      !archive.replacement_transport_locator.startsWith('https://') ||
+      !isRecord(result)
+    ) {
+      prefix('archive metadata and result are required');
+      continue;
+    }
+    if (
+      transportLocator(archive.replacement_transport_locator) !==
+      archive.replacement_transport_locator
+    ) {
+      prefix('replacement_transport_locator must omit fragments');
+    }
+    if (
+      typeof result.transport_locator !== 'string' ||
+      !result.transport_locator.startsWith('https://') ||
+      transportLocator(result.transport_locator) !== result.transport_locator
+    ) {
+      prefix('must have a canonical HTTPS transport_locator');
+      continue;
+    }
+    if (expected.has(result.transport_locator)) {
+      prefix('transport overlaps current ledger target');
+    }
+    const count = archivedByTransport.get(result.transport_locator) ?? 0;
+    archivedByTransport.set(result.transport_locator, count + 1);
+    if (count > 0) prefix('is duplicated');
+    if (
+      !Array.isArray(result.source_ids) ||
+      result.source_ids.length === 0 ||
+      !result.source_ids.every((value) => typeof value === 'string') ||
+      new Set(result.source_ids).size !== result.source_ids.length ||
+      JSON.stringify(result.source_ids) !==
+        JSON.stringify(sortedStrings(result.source_ids))
+    ) {
+      prefix('source_ids must be unique sorted strings');
+    } else if (result.source_ids.some((id) => !ledgerSourceIds.has(id))) {
+      prefix('source_ids are orphaned from the ledger');
+    }
+    if (!validAttempt(result.last_attempt, {full: true})) {
+      prefix('last_attempt is invalid');
+    } else if (
+      Date.parse(archive.superseded_at) < Date.parse(result.last_attempt.at)
+    ) {
+      prefix('superseded_at cannot precede archived last_attempt');
+    }
+    if (
+      result.last_success !== null &&
+      !validAttempt(result.last_success, {success: true})
+    ) {
+      prefix('last_success is invalid');
+    }
+    if (
+      !Array.isArray(result.attempt_history) ||
+      result.attempt_history.length === 0 ||
+      !result.attempt_history.every((item) => validAttempt(item))
+    ) {
+      prefix('attempt_history must contain valid attempts');
+    } else {
+      if (!sameObservation(result.attempt_history.at(-1), result.last_attempt)) {
+        prefix('attempt_history must end with last_attempt');
+      }
+      if (
+        result.attempt_history.some(
+          (item, index, values) =>
+            index > 0 && Date.parse(item.at) < Date.parse(values[index - 1].at),
+        )
+      ) {
+        prefix('attempt_history must be chronological');
+      }
+      if (
+        validAttempt(result.last_success, {success: true}) &&
+        !result.attempt_history.some((item) =>
+          sameObservation(item, result.last_success),
+        )
+      ) {
+        prefix('last_success must be preserved in attempt_history');
+      }
+    }
+    if (!reviewStatuses.has(result.review_status)) {
+      prefix('review_status is invalid');
+    }
+    if (
+      result.merge_provenance !== undefined &&
+      !validMergeProvenance(result.merge_provenance)
+    ) {
+      prefix('merge_provenance is invalid');
+    }
+    for (const message of mergeProvenanceSemanticErrors(result)) {
+      prefix(message);
+    }
+    if (
+      Array.isArray(result.merge_conflicts) &&
+      result.merge_conflicts.length > 0
+    ) {
+      prefix(
+        `has conflicting duplicate result fields ${result.merge_conflicts.join(', ')}`,
+      );
+    }
+    const key = authorityKey(result.transport_locator, result.source_ids ?? []);
+    const authority = authorities.get(key);
+    if (!authority) {
+      prefix('has no source-ledger migration authority');
+    } else {
+      observedAuthorityKeys.add(key);
+      if (
+        archive.superseded_at !== authority.superseded_at ||
+        archive.replacement_transport_locator !==
+          authority.replacement_transport_locator ||
+        archive.reason !== authority.reason
+      ) {
+        prefix('metadata does not match source-ledger migration authority');
+      }
+      if (normalizedResultSha256(result) !== authority.result_sha256) {
+        prefix('result_sha256 does not match source-ledger migration authority');
+      }
+      if (
+        result.merge_provenance_sha256 !==
+        authority.merge_provenance_sha256
+      ) {
+        prefix(
+          'merge_provenance commitment does not match source-ledger migration authority',
+        );
+      }
+    }
+  }
+  for (const [key, authority] of authorities) {
+    if (observedAuthorityKeys.has(key)) continue;
+    errors.push(
+      formatDiagnostic(
+        authority.transport_locator,
+        authority.source_ids,
+        'required superseded archive is missing',
+      ),
+    );
+  }
+  const archiveByTransport = new Map(
+    superseded
+      .filter((archive) => isRecord(archive?.result))
+      .map((archive) => [archive.result.transport_locator, archive]),
+  );
+  for (const archive of superseded) {
+    if (!isRecord(archive) || !isRecord(archive.result)) continue;
+    const archivedSourceKey = sourceIdsKey(archive.result.source_ids ?? []);
+    const visited = new Set([archive.result.transport_locator]);
+    let replacement = archive.replacement_transport_locator;
+    let validChain = false;
+    while (typeof replacement === 'string' && !visited.has(replacement)) {
+      visited.add(replacement);
+      const replacementTarget = expected.get(replacement);
+      if (replacementTarget) {
+        validChain = sourceIdsKey(replacementTarget.source_ids) === archivedSourceKey;
+        break;
+      }
+      const replacementArchive = archiveByTransport.get(replacement);
+      if (
+        !replacementArchive ||
+        sourceIdsKey(replacementArchive.result.source_ids ?? []) !==
+          archivedSourceKey
+      ) {
+        break;
+      }
+      replacement = replacementArchive.replacement_transport_locator;
+    }
+    if (!validChain) {
+      errors.push(
+        formatDiagnostic(
+          archive.result.transport_locator ?? '<invalid>',
+          archive.result.source_ids ?? [],
+          'superseded result replacement chain must terminate at a current target for the same exact source_ids',
+        ),
+      );
+    }
+  }
   const byTransport = new Map();
   for (const entry of cache.results) {
     const locator =
@@ -355,6 +1122,23 @@ export function validateLinkHealthCacheStructure(ledger, cache) {
     if (!reviewStatuses.has(entry.review_status)) {
       prefix('review_status is invalid');
     }
+    if (
+      entry.merge_provenance !== undefined &&
+      !validMergeProvenance(entry.merge_provenance)
+    ) {
+      prefix('merge_provenance is invalid');
+    }
+    for (const message of mergeProvenanceSemanticErrors(entry)) {
+      prefix(message);
+    }
+    if (
+      Array.isArray(entry.merge_conflicts) &&
+      entry.merge_conflicts.length > 0
+    ) {
+      prefix(
+        `has conflicting duplicate result fields ${entry.merge_conflicts.join(', ')}`,
+      );
+    }
   }
   for (const target of targets) {
     if (!byTransport.has(target.transport_locator)) {
@@ -366,6 +1150,14 @@ export function validateLinkHealthCacheStructure(ledger, cache) {
         ),
       );
     }
+  }
+  const expectedCurrentCommitment =
+    ledger.current_merge_provenance_sha256 ?? null;
+  const actualCurrentCommitment = currentProvenanceSha256(cache.results);
+  if (expectedCurrentCommitment !== actualCurrentCommitment) {
+    errors.push(
+      'data/source-link-health.json: current merge_provenance commitment does not match source-ledger',
+    );
   }
   const latestAttemptAt = cache.results
     .map((entry) => entry?.last_attempt?.at)
@@ -406,7 +1198,8 @@ function acceptedForPolicy(policy, attempt) {
     attempt.outcome === 'healthy' &&
     Number.isInteger(attempt.http_status) &&
     attempt.http_status >= 200 &&
-    attempt.http_status <= 299
+    attempt.http_status <= 299 &&
+    attempt.login_wall_detected !== true
   );
 }
 
@@ -418,7 +1211,10 @@ export function evaluateLinkHealthVerdict(
   const failures = [];
   const results = new Map(
     Array.isArray(cache?.results)
-      ? cache.results.map((entry) => [entry.transport_locator, entry])
+      ? cache.results.map((entry) => [
+          entry.transport_locator,
+          committedResult(entry),
+        ])
       : [],
   );
   for (const target of collectTargets(ledger)) {
@@ -838,7 +1634,7 @@ export async function checkLiveLinks(
     perOriginConcurrency = 2,
   } = {},
 ) {
-  const targets = buildLinkTargets(ledger);
+  const targets = collectTargets(ledger);
   const checked = await checkTargets(ledger, targets, {
     previousCache,
     fetchImpl,
@@ -876,8 +1672,18 @@ async function checkTargets(
       entry,
     ]),
   );
-  const results = await runScheduled(
+  const ambiguous = ambiguousMigrationResults(
+    ledger,
     targets,
+    [...previous.values()],
+  );
+  const ambiguousTransports = new Set(
+    ambiguous.map(({transport_locator}) => transport_locator),
+  );
+  const results = await runScheduled(
+    targets.filter(
+      ({transport_locator: locator}) => !ambiguousTransports.has(locator),
+    ),
     globalConcurrency,
     perOriginConcurrency,
     (target) =>
@@ -889,6 +1695,7 @@ async function checkTargets(
         timeoutMs,
       }),
   );
+  results.push(...ambiguous.map((result) => structuredClone(result)));
   results.sort((left, right) =>
     left.transport_locator.localeCompare(right.transport_locator, 'en'),
   );
@@ -896,10 +1703,24 @@ async function checkTargets(
     schema_version: 1,
     generated_at: now.toISOString(),
     results,
+    superseded_results: collectSupersededResults(
+      ledger,
+      previousCache ? [previousCache] : [],
+      now,
+    ),
   };
   return {
     cache,
-    errors: evaluateLinkHealthVerdict(ledger, cache, {now}).failures,
+    errors: [
+      ...evaluateLinkHealthVerdict(ledger, cache, {now}).failures,
+      ...ambiguous.map((result) =>
+        formatDiagnostic(
+          result.transport_locator,
+          result.source_ids,
+          'ambiguous transport migration requires source-ledger authority',
+        ),
+      ),
+    ],
   };
 }
 
@@ -925,7 +1746,7 @@ export async function checkLiveLinkBatch(
   ) {
     throw new TypeError('batchIndex must be >= 0 and batchSize must be >= 1');
   }
-  const allTargets = buildLinkTargets(ledger);
+  const allTargets = collectTargets(ledger);
   const start = batchIndex * batchSize;
   const targets = allTargets.slice(start, start + batchSize);
   const checked = await checkTargets(ledger, targets, {
@@ -956,66 +1777,76 @@ export function mergeLinkHealthCaches(
   if (!Array.isArray(caches) || caches.length === 0) {
     throw new TypeError('at least one link-health cache is required');
   }
+  const targets = collectTargets(ledger);
   const expectedTransports = new Set(
-    buildLinkTargets(ledger).map(({transport_locator}) => transport_locator),
+    targets.map(({transport_locator}) => transport_locator),
   );
-  const latest = new Map();
+  const candidatesByTransport = new Map();
   for (const cache of caches) {
     for (const result of cache?.results ?? []) {
-      if (!expectedTransports.has(result.transport_locator)) continue;
-      const current = latest.get(result.transport_locator);
-      if (!current) {
-        latest.set(result.transport_locator, structuredClone(result));
+      if (
+        !expectedTransports.has(result.transport_locator) &&
+        ambiguousMigrationResults(ledger, targets, [result]).length === 0
+      ) {
         continue;
       }
-      const newer =
-        Date.parse(result.last_attempt.at) >= Date.parse(current.last_attempt.at)
-          ? result
-          : current;
-      const successCandidates = [current.last_success, result.last_success]
-        .filter(Boolean)
-        .sort((left, right) => Date.parse(left.at) - Date.parse(right.at));
-      const historyByObservation = new Map();
-      for (const attempt of [
-        ...current.attempt_history,
-        ...result.attempt_history,
-      ]) {
-        const key = JSON.stringify([
-          attempt.at,
-          attempt.outcome,
-          attempt.final_transport_locator,
-          attempt.http_status,
-        ]);
-        historyByObservation.set(key, attempt);
-      }
-      latest.set(result.transport_locator, {
-        ...structuredClone(newer),
-        last_success: successCandidates.at(-1) ?? null,
-        attempt_history: [...historyByObservation.values()].sort(
-          (left, right) => Date.parse(left.at) - Date.parse(right.at),
-        ),
-      });
+      const candidates = candidatesByTransport.get(result.transport_locator) ?? [];
+      candidates.push(result);
+      candidatesByTransport.set(result.transport_locator, candidates);
     }
   }
+  const latest = new Map(
+    [...candidatesByTransport].map(([transport, candidates]) => [
+      transport,
+      mergeResultCandidates(candidates),
+    ]),
+  );
   const cache = {
     schema_version: 1,
     generated_at: now.toISOString(),
     results: [...latest.values()].sort((left, right) =>
       left.transport_locator.localeCompare(right.transport_locator, 'en'),
     ),
+    superseded_results: collectSupersededResults(ledger, caches, now),
   };
   const structure = validateLinkHealthCacheStructure(ledger, cache);
   const verdict =
     structure.errors.length === 0
       ? evaluateLinkHealthVerdict(ledger, cache, {now})
       : {failures: []};
-  return {cache, errors: [...structure.errors, ...verdict.failures]};
+  const ambiguous = ambiguousMigrationResults(
+    ledger,
+    targets,
+    [...latest.values()],
+  );
+  return {
+    cache,
+    errors: [
+      ...structure.errors,
+      ...verdict.failures,
+      ...ambiguous.map((result) =>
+        formatDiagnostic(
+          result.transport_locator,
+          result.source_ids,
+          'ambiguous transport migration requires source-ledger authority',
+        ),
+      ),
+    ],
+  };
 }
 
 export function mergePublicLedgerHealth(governedLedger, cache) {
+  const {
+    superseded_transports: _supersededTransports,
+    current_merge_provenance_sha256: _currentProvenanceCommitment,
+    ...publicLedger
+  } = governedLedger;
   const targets = buildLinkTargets(governedLedger);
   const results = new Map(
-    cache.results.map((entry) => [entry.transport_locator, entry]),
+    cache.results.map((entry) => [
+      entry.transport_locator,
+      committedResult(entry),
+    ]),
   );
   const checksBySource = new Map();
   for (const target of targets) {
@@ -1042,7 +1873,7 @@ export function mergePublicLedgerHealth(governedLedger, cache) {
     stale: 3,
   };
   return {
-    ...governedLedger,
+    ...publicLedger,
     sources: governedLedger.sources.map((source) => {
       const health_checks = checksBySource.get(source.id) ?? [];
       const health_summary =
