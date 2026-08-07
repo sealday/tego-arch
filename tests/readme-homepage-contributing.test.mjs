@@ -159,6 +159,15 @@ test('ships matching light and dark judgment-path editorial assets', async () =>
   assertSolidPngEdges(dark, [31, 29, 26], 'dark judgment path');
 });
 
+test('records the localized judgment-path visual QA result', async () => {
+  const report = await read('.superpowers/terminology-visual-qa.md');
+
+  assert.match(report, /需求与约束/u);
+  assert.doesNotMatch(report, /基础与质量/u);
+  assert.match(report, /浅色 PASS/u);
+  assert.match(report, /深色 PASS/u);
+});
+
 test('ships matching light and dark use-modes editorial assets', async () => {
   const [light, dark] = await Promise.all([
     readBinary('static/img/illustrations/tego-arch-use-modes-light.png'),
