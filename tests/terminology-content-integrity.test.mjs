@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {readFile} from 'node:fs/promises';
+import {readFile, readdir} from 'node:fs/promises';
 import path from 'node:path';
 import test from 'node:test';
 
@@ -15,6 +15,14 @@ const read = (file) => readFile(path.join(root, file), 'utf8');
 const parser = unified().use(remarkParse).use(remarkGfm).use(remarkMdx);
 const protectedLiteralFixture = JSON.parse(await read('tests/fixtures/task7-protected-literals.json'));
 const sourceLedger = JSON.parse(await read('data/source-ledger.json'));
+const governedContentDirectories = [
+  'content/concepts',
+  'content/methods',
+  'content/modeling',
+  'content/principles',
+  'content/patterns',
+  'content/styles',
+];
 const tableContracts = new Map([
   ['content/modeling/mod-01-model-selection-overview.mdx', [7]],
   ['content/modeling/mod-04-arc42-documentation-skeleton.mdx', [7]],
@@ -78,6 +86,16 @@ const collectProtectedLiterals = (source) => {
   return {inline: inline.sort(), code: code.sort(), mermaid};
 };
 
+const collectVisibleText = (source) => {
+  const values = [];
+  const visit = (node) => {
+    if (node.type === 'text') values.push(node.value);
+    for (const child of node.children ?? []) visit(child);
+  };
+  visit(parser.parse(source));
+  return values;
+};
+
 test('production MDX parsing preserves every governed table and row', async () => {
   for (const [file, expectedRows] of tableContracts) {
     assert.deepEqual(collectTableRows(await read(file)), expectedRows, file);
@@ -101,6 +119,28 @@ test('six knowledge domains contain no bulk terminology suppressions', async () 
   const files = [...tableContracts.keys()];
   for (const file of files) {
     assert.doesNotMatch(await read(file), /terminology-exempt/u, file);
+  }
+});
+
+test('six knowledge domains do not separate Chinese prose after a closing parenthesis', async () => {
+  const files = (
+    await Promise.all(
+      governedContentDirectories.map(async (directory) => {
+        const entries = await readdir(path.join(root, directory), {recursive: true});
+        return entries
+          .filter((entry) => entry.endsWith('.mdx'))
+          .map((entry) => path.join(directory, entry));
+      }),
+    )
+  ).flat();
+  const misplacedSpace = /） (?=[\p{Script=Han}，。；：！？、“”‘’])/u;
+  assert.doesNotMatch('说明（note） continues in English', misplacedSpace);
+  assert.deepEqual(collectVisibleText('`命令（arg） 参数`\n\n```text\n配置（mode） value\n```'), []);
+
+  for (const file of files) {
+    for (const value of collectVisibleText(await read(file))) {
+      assert.doesNotMatch(value, misplacedSpace, `${file}: ${value}`);
+    }
   }
 });
 

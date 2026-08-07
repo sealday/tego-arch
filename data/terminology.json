@@ -708,7 +708,13 @@
       "kind": "proper-noun",
       "first_use": "arc42 架构文档模板",
       "subsequent_use": ["arc42"],
-      "allowed_aliases": [],
+      "allowed_aliases": [
+        "Introduction and Goals",
+        "Context and Scope",
+        "Quality Requirements",
+        "Risks and Technical Debt",
+        "Glossary"
+      ],
       "forbidden_aliases": [],
       "note": "保留产品名，并用中文说明其架构文档模板用途。",
       "order": 540

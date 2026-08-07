@@ -134,7 +134,7 @@ test('maps all twelve arc42 problem domains without copying the template', () =>
     [
       [
         '目标与边界',
-        '1 引言与目标；3 上下文与范围',
+        '1 介绍与目标（Introduction and Goals）；3 上下文与范围（Context and Scope）',
       ],
       [
         '约束与权衡',
@@ -151,7 +151,7 @@ test('maps all twelve arc42 problem domains without copying the template', () =>
       ['条件性部署', '7 部署视图'],
       [
         '质量、风险与词汇',
-        '10 质量需求；11 风险与技术债务；12 术语表',
+        '10 质量要求（Quality Requirements）；11 风险与技术债务（Risks and Technical Debt）；12 术语表（Glossary）',
       ],
     ],
   );

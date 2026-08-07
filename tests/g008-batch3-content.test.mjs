@@ -348,7 +348,7 @@ function assertRequiredInputs(source) {
 function assertRequiredFailures(source) {
   const failures = section(source, '常见失败');
   assert.match(failures, /把逻辑模型画成流程[^。\n]*运行顺序/u);
-  assert.match(failures, /从 C4 架构模型（C4 Model） 或 arc42 架构文档模板[^。\n]*生产模式/u);
+  assert.match(failures, /从 C4 架构模型（C4 Model）或 arc42 架构文档模板[^。\n]*生产模式/u);
   assert.match(failures, /忽略金额、时间、身份、历史和迁移语义/u);
 }
 
@@ -518,7 +518,7 @@ test('keeps terminology and evidence boundaries mutation-sensitive', () => {
   }
   for (const missingFailure of [
     '把逻辑模型画成流程',
-    '从 C4 架构模型（C4 Model） 或 arc42 架构文档模板',
+    '从 C4 架构模型（C4 Model）或 arc42 架构文档模板',
     '忽略金额、时间、身份、历史和迁移语义',
   ]) {
     assert.throws(

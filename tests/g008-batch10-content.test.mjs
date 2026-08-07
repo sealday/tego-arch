@@ -623,7 +623,7 @@ test('rejects controlled MOD-12 mutations', () => {
     mutations.push([`finding ${row['检查项']}`, body.replace(`| ${row['检查项']} | ${row['严重度']} | ${row['图中证据']} |`, `| ${row['检查项']} | ${row['严重度']} | 已变更 |`), assertTableContracts]);
     mutations.push([`severity ${row['检查项']}`, body.replace(`| ${row['检查项']} | ${row['严重度']} |`, `| ${row['检查项']} | 已变更 |`), assertTableContracts]);
     if (['信任域', '失败域'].includes(row['检查项'])) {
-      mutations.push([`closure status ${row['检查项']}`, body.replace(`| ${row['责任类型']} | ${row['复查状态']} |`, `| ${row['责任类型']} | 保留待澄清 |`), assertTableContracts]);
+      mutations.push([`closure status ${row['检查项']}`, body.replace(`| ${row['责任类型']} | ${row['复查状态']}|`, `| ${row['责任类型']} | 保留待澄清|`), assertTableContracts]);
     }
   }
   for (const label of expectedWrapperLabels) {
