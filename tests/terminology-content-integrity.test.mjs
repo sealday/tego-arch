@@ -9,6 +9,7 @@ import remarkMdx from 'remark-mdx';
 import remarkParse from 'remark-parse';
 
 import {citationMatchesSource} from '../scripts/source-ledger.mjs';
+import {parseMdxVisibleCopy} from '../scripts/visible-copy.mjs';
 
 const root = path.resolve(import.meta.dirname, '..');
 const read = (file) => readFile(path.join(root, file), 'utf8');
@@ -86,14 +87,16 @@ const collectProtectedLiterals = (source) => {
   return {inline: inline.sort(), code: code.sort(), mermaid};
 };
 
-const collectVisibleText = (source) => {
-  const values = [];
-  const visit = (node) => {
-    if (node.type === 'text') values.push(node.value);
-    for (const child of node.children ?? []) visit(child);
-  };
-  visit(parser.parse(source));
-  return values;
+const misplacedChineseParenthesisSpace = /） (?=[\p{Script=Han}，。；：！？、“”‘’])/u;
+const assertChineseParenthesisSpacing = (source, file) => {
+  const {blocks, frontMatter} = parseMdxVisibleCopy(source, file);
+  for (const record of [...frontMatter, ...blocks]) {
+    assert.doesNotMatch(
+      record.text,
+      misplacedChineseParenthesisSpace,
+      `${file}:${record.line}: ${record.text}`,
+    );
+  }
 };
 
 test('production MDX parsing preserves every governed table and row', async () => {
@@ -133,14 +136,25 @@ test('six knowledge domains do not separate Chinese prose after a closing parent
       }),
     )
   ).flat();
-  const misplacedSpace = /） (?=[\p{Script=Han}，。；：！？、“”‘’])/u;
-  assert.doesNotMatch('说明（note） continues in English', misplacedSpace);
-  assert.deepEqual(collectVisibleText('`命令（arg） 参数`\n\n```text\n配置（mode） value\n```'), []);
+  assert.doesNotThrow(() => assertChineseParenthesisSpacing(
+    '说明（note） continues in English\n\n`命令（arg） 参数`\n\n```text\n配置（mode） value\n```',
+    'content/safe-example.mdx',
+  ));
+  assert.throws(() => assertChineseParenthesisSpacing(
+    '![示意图（Diagram） 说明](./diagram.svg)',
+    'content/image-alt-example.mdx',
+  ), /image-alt-example/u);
+  assert.throws(() => assertChineseParenthesisSpacing(
+    '```mermaid\nflowchart LR\n  A["节点（Node） 说明"]\n```',
+    'content/mermaid-example.mdx',
+  ), /mermaid-example/u);
+  assert.throws(() => assertChineseParenthesisSpacing(
+    '<section aria-label="区域（Region） 说明" />',
+    'content/mdx-attribute-example.mdx',
+  ), /mdx-attribute-example/u);
 
   for (const file of files) {
-    for (const value of collectVisibleText(await read(file))) {
-      assert.doesNotMatch(value, misplacedSpace, `${file}: ${value}`);
-    }
+    assertChineseParenthesisSpacing(await read(file), file);
   }
 });
 

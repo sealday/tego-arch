@@ -538,6 +538,61 @@ test('requires a proper noun first-use form before allowing its official alias',
   assert.deepEqual(introduced.issues, []);
 });
 
+test('models arc42 section names as standalone bilingual terms', async () => {
+  const registry = JSON.parse(
+    await readFile(path.join(repositoryRoot, 'data/terminology.json'), 'utf8'),
+  );
+  const arc42 = registry.terms.find(({id}) => id === 'arc42-template');
+  assert.ok(arc42);
+  const expected = new Map([
+    ['arc42-introduction-and-goals', ['介绍与目标', 'Introduction and Goals']],
+    ['arc42-context-and-scope', ['上下文与范围', 'Context and Scope']],
+    ['arc42-quality-requirements', ['质量要求', 'Quality Requirements']],
+    ['arc42-risks-and-technical-debt', ['风险与技术债务', 'Risks and Technical Debt']],
+    ['arc42-glossary', ['术语表', 'Glossary']],
+  ]);
+
+  assert.deepEqual(
+    arc42.allowed_aliases.filter((alias) => (
+      [...expected.values()].some(([, english]) => english === alias)
+    )),
+    [],
+  );
+  for (const [id, [canonicalZh, english]] of expected) {
+    const term = registry.terms.find((candidate) => candidate.id === id);
+    assert.ok(term, id);
+    assert.equal(term.canonical_zh, canonicalZh);
+    assert.equal(term.english, english);
+    assert.equal(term.first_use, `${canonicalZh}（${english}）`);
+    assert.deepEqual(term.subsequent_use, [canonicalZh]);
+    assert.deepEqual(term.allowed_aliases, []);
+    assert.deepEqual(term.forbidden_aliases, [english]);
+  }
+});
+
+test('rejects bare Glossary after the arc42 product name is introduced', async () => {
+  const registry = JSON.parse(
+    await readFile(path.join(repositoryRoot, 'data/terminology.json'), 'utf8'),
+  );
+  const governedTerms = ['arc42-template', 'arc42-glossary'].map((id) => {
+    const term = registry.terms.find((candidate) => candidate.id === id);
+    assert.ok(term, id);
+    return term;
+  });
+  const result = await withFixture(
+    {'content/example.mdx': 'arc42 架构文档模板（arc42）包含 Glossary。'},
+    (root) => checkTerminology({root, paths: ['content/example.mdx']}),
+    governedTerms,
+  );
+  assert.deepEqual(result.issues.map(({ruleId, matched, expected}) => ({ruleId, matched, expected})), [
+    {
+      ruleId: 'bare-english-term',
+      matched: 'Glossary',
+      expected: '术语表（Glossary）',
+    },
+  ]);
+});
+
 test('reports the real intro title as a premature proper noun without changing it', async () => {
   const result = await checkTerminology({
     root: repositoryRoot,

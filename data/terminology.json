@@ -708,13 +708,7 @@
       "kind": "proper-noun",
       "first_use": "arc42 架构文档模板",
       "subsequent_use": ["arc42"],
-      "allowed_aliases": [
-        "Introduction and Goals",
-        "Context and Scope",
-        "Quality Requirements",
-        "Risks and Technical Debt",
-        "Glossary"
-      ],
+      "allowed_aliases": [],
       "forbidden_aliases": [],
       "note": "保留产品名，并用中文说明其架构文档模板用途。",
       "order": 540
@@ -783,6 +777,71 @@
       "forbidden_aliases": [],
       "note": "分布式系统在分区假设下讨论一致性与可用性边界的术语。",
       "order": 590
+    },
+    {
+      "id": "arc42-introduction-and-goals",
+      "canonical_zh": "介绍与目标",
+      "english": "Introduction and Goals",
+      "acronym": null,
+      "kind": "translated-term",
+      "first_use": "介绍与目标（Introduction and Goals）",
+      "subsequent_use": ["介绍与目标"],
+      "allowed_aliases": [],
+      "forbidden_aliases": ["Introduction and Goals"],
+      "note": "arc42 第 1 个问题域的中文优先节名。",
+      "order": 600
+    },
+    {
+      "id": "arc42-context-and-scope",
+      "canonical_zh": "上下文与范围",
+      "english": "Context and Scope",
+      "acronym": null,
+      "kind": "translated-term",
+      "first_use": "上下文与范围（Context and Scope）",
+      "subsequent_use": ["上下文与范围"],
+      "allowed_aliases": [],
+      "forbidden_aliases": ["Context and Scope"],
+      "note": "arc42 第 3 个问题域的中文优先节名。",
+      "order": 610
+    },
+    {
+      "id": "arc42-quality-requirements",
+      "canonical_zh": "质量要求",
+      "english": "Quality Requirements",
+      "acronym": null,
+      "kind": "translated-term",
+      "first_use": "质量要求（Quality Requirements）",
+      "subsequent_use": ["质量要求"],
+      "allowed_aliases": [],
+      "forbidden_aliases": ["Quality Requirements"],
+      "note": "arc42 第 10 个问题域的中文优先节名。",
+      "order": 620
+    },
+    {
+      "id": "arc42-risks-and-technical-debt",
+      "canonical_zh": "风险与技术债务",
+      "english": "Risks and Technical Debt",
+      "acronym": null,
+      "kind": "translated-term",
+      "first_use": "风险与技术债务（Risks and Technical Debt）",
+      "subsequent_use": ["风险与技术债务"],
+      "allowed_aliases": [],
+      "forbidden_aliases": ["Risks and Technical Debt"],
+      "note": "arc42 第 11 个问题域的中文优先节名。",
+      "order": 630
+    },
+    {
+      "id": "arc42-glossary",
+      "canonical_zh": "术语表",
+      "english": "Glossary",
+      "acronym": null,
+      "kind": "translated-term",
+      "first_use": "术语表（Glossary）",
+      "subsequent_use": ["术语表"],
+      "allowed_aliases": [],
+      "forbidden_aliases": ["Glossary"],
+      "note": "arc42 第 12 个问题域的中文优先节名。",
+      "order": 640
     },
     {
       "id": "postgresql",

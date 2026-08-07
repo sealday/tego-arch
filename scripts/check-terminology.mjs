@@ -8,7 +8,6 @@ import {parseXmlVisibleCopy} from '../.codex/skills/creating-drawio-architecture
 import {loadTerminologyRegistry} from './terminology-registry.mjs';
 import {citationMatchesSource, parseSourceLedger} from './source-ledger.mjs';
 import {
-  extractMermaidLabels,
   extractVisibleTsxStrings,
   parseMdxVisibleCopy,
 } from './visible-copy.mjs';
@@ -134,7 +133,6 @@ const collectMarkdownRecords = (source, relativePath, sources) => {
     records: [
       ...parsed.frontMatter,
       ...parsed.blocks.filter(outsideQuotes),
-      ...extractMermaidLabels(source, relativePath).filter(outsideQuotes),
     ],
     suppressionComments: parsed.comments,
   };

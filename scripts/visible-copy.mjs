@@ -95,6 +95,13 @@ const protectedCommentNodeTypes = new Set([
 ]);
 const commentOpeningProbe = 'CMNT';
 const imageNodeTypes = new Set(['image', 'imageReference']);
+const visibleJsxAttributes = new Set([
+  'alt',
+  'title',
+  'label',
+  'description',
+  'aria-label',
+]);
 
 export const commentProbeTokenForTest = (index) => {
   const base = 0x400;
@@ -587,6 +594,43 @@ const collectMdxCommentExpressions = (ast, source, relativePath) => {
   return comments;
 };
 
+const collectMdxVisibleAttributeRecords = (ast, source, relativePath) => {
+  const records = [];
+  const visit = (node) => {
+    if (node.type === 'mdxJsxFlowElement' || node.type === 'mdxJsxTextElement') {
+      for (const attribute of node.attributes ?? []) {
+        if (attribute.type !== 'mdxJsxAttribute' || !visibleJsxAttributes.has(attribute.name)) {
+          continue;
+        }
+        const line = attribute.position?.start.line ?? node.position?.start.line ?? 1;
+        let values = [];
+        if (typeof attribute.value === 'string') {
+          values = [attribute.value];
+        } else if (attribute.value?.type === 'mdxJsxAttributeValueExpression') {
+          values = extractVisibleTsxStrings(
+            `<X ${attribute.name}={${attribute.value.value}} />`,
+            relativePath,
+          ).map(({text}) => text);
+        }
+        for (const text of values) {
+          const normalized = text.replace(/\s+/gu, ' ').trim();
+          if (!normalized) continue;
+          records.push({
+            file: relativePath,
+            line,
+            text: normalized,
+            excerpt: sourceExcerpt(source, line),
+            kind: 'body',
+          });
+        }
+      }
+    }
+    for (const child of node.children ?? []) visit(child);
+  };
+  visit(ast);
+  return records;
+};
+
 export const parseMdxVisibleCopy = (
   source,
   relativePath,
@@ -646,9 +690,14 @@ export const parseMdxVisibleCopy = (
     return {...record, lines: block.lines, excerptAt};
   }).filter(({text}) => text.trim().length > 0);
 
+  const additionalVisibleRecords = [
+    ...collectMdxVisibleAttributeRecords(ast, source, relativePath),
+    ...extractMermaidLabels(source, relativePath),
+  ];
+
   const blocks = includeStructure
     ? structuredBlocks
-    : renderedBlocks.flatMap((block) => {
+    : [...renderedBlocks.flatMap((block) => {
       const textByLine = new Map();
       for (let index = 0; index < block.text.length; index += 1) {
         if (block.text[index] === '\n') continue;
@@ -671,7 +720,7 @@ export const parseMdxVisibleCopy = (
           kind: 'body',
         }];
       });
-    });
+    }), ...additionalVisibleRecords].sort((left, right) => left.line - right.line);
 
   const result = {blocks, comments, frontMatter};
   return includeStructure || includeAst
@@ -1035,13 +1084,6 @@ export const extractMermaidLabels = (source, relativePath) => {
   return records;
 };
 
-const visibleJsxAttributes = new Set([
-  'alt',
-  'title',
-  'label',
-  'description',
-  'aria-label',
-]);
 const visibleObjectProperties = new Set(['title', 'term', 'description']);
 
 const jsxTextDecodeCache = new Map();
