@@ -398,18 +398,58 @@ function parsePathEndpoint(pathData) {
   return {x, y};
 }
 
+function orthogonalPathPoints(pathData) {
+  const tokens = pathData.match(/[MHV]|-?\d+(?:\.\d+)?/gu) ?? [];
+  const points = [];
+  let cursor = 0;
+  let command;
+  let x;
+  let y;
+  while (cursor < tokens.length) {
+    if (/^[MHV]$/u.test(tokens[cursor])) command = tokens[cursor++];
+    if (command === 'M') {
+      x = Number(tokens[cursor++]); y = Number(tokens[cursor++]); points.push({x, y});
+    } else if (command === 'H') {
+      x = Number(tokens[cursor++]); points.push({x, y});
+    } else if (command === 'V') {
+      y = Number(tokens[cursor++]); points.push({x, y});
+    } else {
+      assert.fail(`unsupported orthogonal path command in ${pathData}`);
+    }
+  }
+  return points;
+}
+
+function hasCollinearSegmentOverlap(firstPath, secondPath) {
+  const segments = (pathData) => {
+    const points = orthogonalPathPoints(pathData);
+    return points.slice(1).map((point, index) => [points[index], point]);
+  };
+  for (const [a, b] of segments(firstPath)) {
+    for (const [c, d] of segments(secondPath)) {
+      if (a.y === b.y && c.y === d.y && a.y === c.y) {
+        if (Math.max(Math.min(a.x, b.x), Math.min(c.x, d.x)) < Math.min(Math.max(a.x, b.x), Math.max(c.x, d.x))) return true;
+      }
+      if (a.x === b.x && c.x === d.x && a.x === c.x) {
+        if (Math.max(Math.min(a.y, b.y), Math.min(c.y, d.y)) < Math.min(Math.max(a.y, b.y), Math.max(c.y, d.y))) return true;
+      }
+    }
+  }
+  return false;
+}
+
 const plannedDiagramGeometries = new Map([
   ['b-driver', [30, 100, 220, 520]],
   ['b-core', [400, 70, 550, 620]],
   ['b-mechanism', [980, 100, 190, 520]],
-  ['n-driver', [60, 310, 160, 100]],
-  ['n-input-adapter', [270, 310, 110, 100]],
-  ['n-usecase', [450, 270, 210, 110]],
-  ['n-domain', [450, 450, 210, 110]],
-  ['n-inventory-port', [750, 175, 160, 100]],
-  ['n-order-port', [750, 485, 160, 100]],
-  ['n-inventory-adapter', [995, 175, 160, 100]],
-  ['n-database-adapter', [995, 485, 160, 100]],
+  ['n-driver', [45, 300, 190, 130]],
+  ['n-input-adapter', [260, 265, 135, 210]],
+  ['n-usecase', [430, 255, 270, 150]],
+  ['n-domain', [430, 475, 270, 135]],
+  ['n-inventory-port', [710, 135, 230, 160]],
+  ['n-order-port', [710, 455, 230, 160]],
+  ['n-inventory-adapter', [985, 155, 180, 210]],
+  ['n-database-adapter', [985, 400, 180, 210]],
 ]);
 
 const plannedDiagramRelations = new Map([
@@ -477,6 +517,9 @@ test('parses distinct runtime and inward source-dependency routing contracts', a
   assert.notEqual(edges.get('c2').d, edges.get('d1').d, 'input runtime/dependency lanes');
   assert.notEqual(parsePathEndpoint(edges.get('c5').d).y, parsePathEndpoint(edges.get('d2').d).y, 'inventory lanes');
   assert.notEqual(parsePathEndpoint(edges.get('c7').d).y, parsePathEndpoint(edges.get('d3').d).y, 'repository lanes');
+  assert.equal(hasCollinearSegmentOverlap(edges.get('c2').d, edges.get('d1').d), false, 'input lanes do not share a segment');
+  assert.equal(hasCollinearSegmentOverlap(edges.get('c5').d, edges.get('d2').d), false, 'inventory lanes do not share a segment');
+  assert.equal(hasCollinearSegmentOverlap(edges.get('c7').d, edges.get('d3').d), false, 'repository lanes do not share a segment');
   assert.ok(parsePathEndpoint(edges.get('d2').d).x < 995, 'd2 points inward');
   assert.ok(parsePathEndpoint(edges.get('d3').d).x < 995, 'd3 points inward');
   assert.equal(runtimeMarker.attributes.markerUnits, 'userSpaceOnUse');
@@ -490,10 +533,16 @@ test('connects every visible SVG arrow tip to its target-node boundary', async (
   const svg = await readFile(diagramSvgUrl, 'utf8');
   const edges = svgElementsById(svg, 'path', 'data-edge-id');
   const expectedTips = new Map([
-    ['c1', {x: 270, y: 360}], ['c2', {x: 450, y: 345}], ['c3', {x: 505, y: 450}],
-    ['c4', {x: 750, y: 225}], ['c5', {x: 995, y: 225}], ['c6', {x: 750, y: 535}],
-    ['c7', {x: 995, y: 535}], ['d1', {x: 450, y: 365}], ['d2', {x: 910, y: 260}],
-    ['d3', {x: 910, y: 570}],
+    ['c1', {x: 260, y: 365}], ['c2', {x: 430, y: 335}], ['c3', {x: 520, y: 475}],
+    ['c4', {x: 710, y: 215}], ['c5', {x: 985, y: 230}], ['c6', {x: 710, y: 535}],
+    ['c7', {x: 985, y: 500}], ['d1', {x: 430, y: 380}], ['d2', {x: 940, y: 280}],
+    ['d3', {x: 940, y: 580}],
+  ]);
+  const expectedStarts = new Map([
+    ['c1', {x: 235, y: 365}], ['c2', {x: 395, y: 335}], ['c3', {x: 520, y: 405}],
+    ['c4', {x: 700, y: 295}], ['c5', {x: 940, y: 230}], ['c6', {x: 700, y: 365}],
+    ['c7', {x: 940, y: 500}], ['d1', {x: 395, y: 445}], ['d2', {x: 985, y: 280}],
+    ['d3', {x: 985, y: 580}],
   ]);
   const markerTipOffset = new Map(['arrow-runtime', 'arrow-dependency'].map((id) => {
     const marker = svgMarker(svg, id);
@@ -504,6 +553,7 @@ test('connects every visible SVG arrow tip to its target-node boundary', async (
 
   for (const [id, expectedTip] of expectedTips) {
     const edge = edges.get(id);
+    assert.deepEqual(orthogonalPathPoints(edge.d)[0], expectedStarts.get(id), `${id} source-boundary contact`);
     const endpoint = parsePathEndpoint(edge.d);
     const previousHorizontal = /H/u.test(edge.d.slice(edge.d.lastIndexOf('V') + 1));
     const offset = markerTipOffset.get(edge['marker-end']);

@@ -320,21 +320,21 @@ Expected: FAIL with ENOENT for the Draw.io/SVG pair.
 
 - [ ] **Step 3: Create the Draw.io source from the exact semantic inventory**
 
-Use plain-text `mxCell.value` labels and `viewBox 0 0 1200 760`. Use this authoring geometry:
+Use plain-text `mxCell.value` labels and `viewBox 0 0 1200 760`. The original narrow semantic-node geometry is superseded by the following readability amendment. The three boundary rectangles remain unchanged; semantic nodes expand only enough to render every full role label without `textLength`/`lengthAdjust` glyph compression while preserving the approved topology:
 
 | ID | Label | x | y | w | h | Boundary/role |
 | --- | --- | ---: | ---: | ---: | ---: | --- |
 | `b-driver` | 外部驱动方 | 30 | 100 | 220 | 520 | boundary |
 | `b-core` | 应用核心 | 400 | 70 | 550 | 620 | boundary |
 | `b-mechanism` | 外部机制 | 980 | 100 | 190 | 520 | boundary |
-| `n-driver` | HTTP / CLI / 自动化测试 | 60 | 310 | 160 | 100 | external driver |
-| `n-input-adapter` | 输入适配器 | 270 | 310 | 110 | 100 | outside core |
-| `n-usecase` | 提交订单用例 | 450 | 270 | 210 | 110 | core |
-| `n-domain` | 订单领域规则 | 450 | 450 | 210 | 110 | core |
-| `n-inventory-port` | 库存端口 | 750 | 175 | 160 | 100 | core boundary |
-| `n-order-port` | 订单仓储端口 | 750 | 485 | 160 | 100 | core boundary |
-| `n-inventory-adapter` | 库存服务适配器 | 995 | 175 | 160 | 100 | external mechanism |
-| `n-database-adapter` | 数据库适配器 | 995 | 485 | 160 | 100 | external mechanism |
+| `n-driver` | HTTP / CLI / 自动化测试 | 45 | 300 | 190 | 130 | external driver |
+| `n-input-adapter` | 输入适配器 | 260 | 265 | 135 | 210 | outside core |
+| `n-usecase` | 提交订单用例 | 430 | 255 | 270 | 150 | core |
+| `n-domain` | 订单领域规则 | 430 | 475 | 270 | 135 | core |
+| `n-inventory-port` | 库存端口 | 710 | 135 | 230 | 160 | core boundary |
+| `n-order-port` | 订单仓储端口 | 710 | 455 | 230 | 160 | core boundary |
+| `n-inventory-adapter` | 库存服务适配器 | 985 | 155 | 180 | 210 | external mechanism |
+| `n-database-adapter` | 数据库适配器 | 985 | 400 | 180 | 210 | external mechanism |
 
 Use these secondary role labels inside the corresponding nodes:
 
@@ -375,7 +375,7 @@ The SVG root must have `viewBox="0 0 1200 760"`, no fixed root width/height, `ro
 <desc id="diagram-description">同一提交订单控制流从外部驱动方进入应用核心，再经核心拥有的库存和仓储接口调用外部机制；实线表示运行时控制流，虚线表示源码依赖指向内侧接口。</desc>
 ```
 
-Size the authoring fonts so final rendering at `800 / 1200 = 2/3` yields body/edge text at least 15 CSS px and role text at least 10 CSS px. Enforce final CSS-pixel minima: horizontal padding 16, vertical padding 14, title/type baseline gap 22, bottom clearance 14, edge-label-to-stroke 8, edge-label-to-arrow 16, and edge-label-to-node 12. Do not use color as the only distinction.
+Size the authoring fonts so final rendering at `800 / 1200 = 2/3` yields body/edge text at least 15 CSS px and role text at least 10 CSS px. Do not use `textLength`, `lengthAdjust`, `spacingAndGlyphs`, or another transform that compresses glyphs to satisfy geometry. Reflow full role labels over two to four natural-width lines. Preserve the normative minima (horizontal padding 16, vertical padding 14, title/type baseline gap 22, bottom clearance 14, edge-label-to-stroke 8, edge-label-to-arrow 16, and edge-label-to-node 12) and target a conservative measured safety buffer of at least 17 CSS px horizontal padding and 15 CSS px top/bottom clearance. Do not use color as the only distinction.
 
 - [ ] **Step 5: Run deterministic pair validation**
 
