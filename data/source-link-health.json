@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-06T21:30:02.583Z",
+  "generated_at": "2026-08-07T03:33:27.018Z",
   "results": [
     {
       "transport_locator": "https://a2a-protocol.org/latest/",
@@ -2919,6 +2919,50 @@
       "review_status": "healthy"
     },
     {
+      "transport_locator": "https://alistair.cockburn.us/hexagonal-architecture/",
+      "source_ids": [
+        "src-cockburn-hexagonal-architecture-2005"
+      ],
+      "last_attempt": {
+        "at": "2026-08-07T03:33:22.909Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://alistair.cockburn.us/hexagonal-architecture",
+        "http_status": 200,
+        "login_wall_detected": false,
+        "redirects": [
+          {
+            "from": "https://alistair.cockburn.us/hexagonal-architecture/",
+            "status": 301,
+            "to": "https://alistair.cockburn.us/hexagonal-architecture"
+          }
+        ]
+      },
+      "last_success": {
+        "at": "2026-08-07T03:33:22.909Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://alistair.cockburn.us/hexagonal-architecture",
+        "http_status": 200,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-08-07T03:08:53.172Z",
+          "outcome": "redirect-changed",
+          "final_transport_locator": "https://alistair.cockburn.us/hexagonal-architecture",
+          "http_status": 200,
+          "login_wall_detected": false
+        },
+        {
+          "at": "2026-08-07T03:33:22.909Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://alistair.cockburn.us/hexagonal-architecture",
+          "http_status": 200,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
       "transport_locator": "https://arc42.org/",
       "source_ids": [
         "src-arc42-8b346f00707f"
@@ -3725,6 +3769,37 @@
           "outcome": "healthy",
           "final_transport_locator": "https://builder.aws.com/content/3F06NpJ8YeoIGP8VHTw4n81pFn8/workload-isolation-using-shuffle-sharding",
           "http_status": 200,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html",
+      "source_ids": [
+        "src-martin-clean-architecture-2012"
+      ],
+      "last_attempt": {
+        "at": "2026-08-07T03:08:53.172Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html",
+        "http_status": 206,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-07T03:08:53.172Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html",
+        "http_status": 206,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-08-07T03:08:53.172Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html",
+          "http_status": 206,
           "login_wall_detected": false
         }
       ],
@@ -62256,6 +62331,68 @@
           "outcome": "healthy",
           "final_transport_locator": "https://ieeexplore.ieee.org/document/5388187/",
           "http_status": 202,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://jeffreypalermo.com/2008/07/the-onion-architecture-part-1/",
+      "source_ids": [
+        "src-palermo-onion-architecture-part-1"
+      ],
+      "last_attempt": {
+        "at": "2026-08-07T03:08:53.172Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://jeffreypalermo.com/2008/07/the-onion-architecture-part-1/",
+        "http_status": 200,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-07T03:08:53.172Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://jeffreypalermo.com/2008/07/the-onion-architecture-part-1/",
+        "http_status": 200,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-08-07T03:08:53.172Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://jeffreypalermo.com/2008/07/the-onion-architecture-part-1/",
+          "http_status": 200,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://jeffreypalermo.com/2008/08/the-onion-architecture-part-3/",
+      "source_ids": [
+        "src-palermo-onion-architecture-part-3"
+      ],
+      "last_attempt": {
+        "at": "2026-08-07T03:08:53.172Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://jeffreypalermo.com/2008/08/the-onion-architecture-part-3/",
+        "http_status": 200,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-07T03:08:53.172Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://jeffreypalermo.com/2008/08/the-onion-architecture-part-3/",
+        "http_status": 200,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-08-07T03:08:53.172Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://jeffreypalermo.com/2008/08/the-onion-architecture-part-3/",
+          "http_status": 200,
           "login_wall_detected": false
         }
       ],
