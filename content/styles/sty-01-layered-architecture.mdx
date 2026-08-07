@@ -26,6 +26,7 @@ depends_on:
   - STY-00
 adjacent_topics:
   - STY-00
+  - STY-02
 related_cases:
   - /cases/micro-frontends-single-spa
 related_questions: []
@@ -119,7 +120,7 @@ flowchart TD
 
 ## 迁移路径
 
-先记录现有跨层依赖与唯一写入路径，再把协议、业务判断和厂商类型移回其责任层。若查询开始参与权限判断或状态转换，撤销旁路。若大量业务变化持续横跨所有技术层，按业务能力重组 module/package，并重新比较边界、部署和团队所有权；依赖反转变体属于后续主题，本页不提供可执行链接。
+先记录现有跨层依赖与唯一写入路径，再把协议、业务判断和厂商类型移回其责任层。若查询开始参与权限判断或状态转换，撤销旁路。若大量业务变化持续横跨所有技术层，按业务能力重组 module/package，并重新比较边界、部署和团队所有权；依赖反转变体可继续参阅[Hexagonal、Onion 与 Clean Architecture 对照](/styles/sty-02)。
 
 ## 禁用条件
 

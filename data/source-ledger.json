@@ -18726,6 +18726,17 @@
         {"source_id":"src-archunit-user-guide","citation_url":"https://www.archunit.org/userguide/html/000_Index.html","roles":["implementation","learning"],"manifest_primary":false,"usage_mode":"facts-summary","attribution_note":"ArchUnit User Guide — Layer Checks, TNG Technology Consulting","modification_note":null,"excerpt":null,"quotation_reviewed":false}
       ]
     },
+    "content/styles/sty-02-hexagonal-onion-clean.mdx": {
+      "reviewed_at": "2026-08-07",
+      "copyright_checks": ["original-structure","quotation-boundary","attribution-complete","illustration-rights"],
+      "citations": [
+        {"source_id":"src-cockburn-hexagonal-architecture-2005","citation_url":"https://alistair.cockburn.us/hexagonal-architecture/","roles":["definition","comparison","historical-context","learning"],"manifest_primary":true,"usage_mode":"facts-summary","attribution_note":"Hexagonal architecture the original 2005 article, Alistair Cockburn","modification_note":null,"excerpt":null,"quotation_reviewed":false},
+        {"source_id":"src-palermo-onion-architecture-part-1","citation_url":"https://jeffreypalermo.com/2008/07/the-onion-architecture-part-1/","roles":["definition","comparison","historical-context","learning"],"manifest_primary":false,"usage_mode":"facts-summary","attribution_note":"The Onion Architecture : part 1, Jeffrey Palermo","modification_note":null,"excerpt":null,"quotation_reviewed":false},
+        {"source_id":"src-palermo-onion-architecture-part-3","citation_url":"https://jeffreypalermo.com/2008/08/the-onion-architecture-part-3/","roles":["definition","comparison","historical-context","learning"],"manifest_primary":true,"usage_mode":"facts-summary","attribution_note":"The Onion Architecture : part 3, Jeffrey Palermo","modification_note":null,"excerpt":null,"quotation_reviewed":false},
+        {"source_id":"src-martin-clean-architecture-2012","citation_url":"https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html","roles":["definition","comparison","historical-context","learning"],"manifest_primary":true,"usage_mode":"facts-summary","attribution_note":"The Clean Architecture, Robert C. Martin","modification_note":null,"excerpt":null,"quotation_reviewed":false},
+        {"source_id":"src-aws-hexagonal-layered-overview","citation_url":"https://docs.aws.amazon.com/prescriptive-guidance/latest/hexagonal-architectures/overview.html","roles":["comparison","implementation"],"manifest_primary":false,"usage_mode":"facts-summary","attribution_note":"Hexagonal architecture overview, Amazon Web Services","modification_note":null,"excerpt":null,"quotation_reviewed":false}
+      ]
+    },
     "content/modeling/mod-13-model-sync-strategy.mdx": {
       "reviewed_at": "2026-08-06",
       "copyright_checks": ["original-structure","quotation-boundary","attribution-complete","illustration-rights"],

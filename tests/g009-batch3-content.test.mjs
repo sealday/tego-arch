@@ -1,8 +1,12 @@
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import test from 'node:test';
+import {fileURLToPath} from 'node:url';
 import {isDeepStrictEqual} from 'node:util';
 
+import {findMarkdownHeadings, parseFrontMatter, readContentDocuments} from '../scripts/content-metadata.mjs';
+import {extractInternalLinks} from '../scripts/content-relations.mjs';
+import {extractExternalLinks} from '../scripts/source-ledger.mjs';
 import {
   validateInventoryLedgerConsistency,
   validateSourceLicenseInventory,
@@ -135,6 +139,73 @@ const expectedNewSources = new Map([
     expected_final_approval_note: 'Reviewed canonical identity and current author-hosted transport on 2026-08-07.',
   }],
 ]);
+
+const contentRoot = fileURLToPath(new URL('../content/', import.meta.url));
+const documents = await readContentDocuments(contentRoot);
+const sty02 = documents.find(({file}) => file === 'styles/sty-02-hexagonal-onion-clean.mdx');
+const sty01 = documents.find(({file}) => file === 'styles/sty-01-layered-architecture.mdx');
+const expectedHeadings = [
+  '学习问题', '组件、连接器与约束', '边界与控制流', '数据所有权与一致性',
+  '部署单元与故障域', '团队拓扑', '质量属性收益与成本', '迁移路径',
+  '禁用条件', '对比案例', '来源',
+];
+const expectedCitationIds = [
+  'src-cockburn-hexagonal-architecture-2005',
+  'src-palermo-onion-architecture-part-1',
+  'src-palermo-onion-architecture-part-3',
+  'src-martin-clean-architecture-2012',
+  'src-aws-hexagonal-layered-overview',
+];
+
+function bodyOf(source) {
+  return source.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n/u, '');
+}
+
+function internalLinksOf(source) {
+  return extractInternalLinks({body: bodyOf(source)});
+}
+
+function externalLinksOf(source) {
+  return extractExternalLinks({body: bodyOf(source)});
+}
+
+function assertInOrder(source, values, label) {
+  let cursor = -1;
+  for (const value of values) {
+    const next = source.indexOf(value, cursor + 1);
+    assert.ok(next > cursor, `${label}: ${value}`);
+    cursor = next;
+  }
+}
+
+function assertStyleContract(source) {
+  assertInOrder(source, ['业务策略位于内部', '技术机制位于外部', '源码依赖指向内部', '显式接口', '简单数据'], 'common kernel');
+  assert.match(source, /Hexagonal[\s\S]*有目的的对话/u);
+  assert.match(source, /Onion[\s\S]*核心[\s\S]*接口/u);
+  assert.match(source, /Clean[\s\S]*策略层级[\s\S]*边界数据/u);
+  assert.match(source, /运行时控制流[\s\S]*源码依赖/u);
+  assert.match(source, /接口由需要它的内侧策略拥有/u);
+  assert.match(source, /HTTP request[\s\S]*ORM entity[\s\S]*database row[\s\S]*SDK response[\s\S]*必须在边界转换[\s\S]*不得进入应用核心/u);
+  assert.match(source, /代码边界[\s\S]*不自动[\s\S]*独立部署/u);
+  assert.match(source, /小型[\s\S]*短生命周期[\s\S]*CRUD/u);
+  assert.match(source, /小型、短生命周期、变化压力低的 CRUD 应用可能不值得承担接口、映射和组合成本。/u);
+  assert.match(source, /修复具体依赖违规/u);
+  assert.doesNotMatch(source, /完全等价|三者同义|Hexagonal.*→.*Onion.*→.*Clean|六个端口|就是源码依赖方向|可以直接进入应用核心/u);
+  assert.doesNotMatch(source, /必然降低|必然提升|自动提供独立部署|自动提供故障隔离/u);
+  assert.equal((source.match(/table-wrapper--mapping/g) ?? []).length, 2);
+  assert.equal((source.match(/architecture-diagram-scroll/g) ?? []).length, 1);
+  assert.equal((source.match(/tabIndex=\{0\}/g) ?? []).length, 3);
+  assert.equal((source.match(/onKeyDown=\{handleHorizontalArrowKey\}/g) ?? []).length, 2);
+  assert.ok(source.includes('/img/diagrams/sty-02-hexagonal-onion-clean-order.svg'));
+  for (const locator of [...expectedNewSources.values(), 'https://docs.aws.amazon.com/prescriptive-guidance/latest/hexagonal-architectures/overview.html']) {
+    const expectedLocator = typeof locator === 'string' ? locator : locator.canonical_locator;
+    assert.ok(externalLinksOf(source).includes(expectedLocator), expectedLocator);
+  }
+  for (const link of ['/styles', '/styles/sty-00', '/styles/sty-01', '/cases/micro-frontends-single-spa']) {
+    assert.ok(internalLinksOf(source).includes(link), link);
+  }
+  assert.ok(!internalLinksOf(source).includes('/styles/sty-03'));
+}
 
 const inventoryColumns = [
   'source_family',
@@ -279,6 +350,82 @@ test('keeps every new STY-02 transport in the reviewed health cache', () => {
     assert.ok(result, `${id} health result`);
     assert.equal(result.last_attempt.outcome, 'healthy', `${id} current transport`);
     assert.equal(result.review_status, 'healthy', `${id} review status`);
+  }
+});
+
+test('publishes the exact STY-02 metadata and eleven headings', () => {
+  assert.ok(sty02);
+  const metadata = parseFrontMatter(sty02.source);
+  assert.equal(metadata.title, 'Hexagonal、Onion 与 Clean Architecture：用依赖方向判断边界所有权');
+  assert.equal(metadata.slug, '/styles/sty-02');
+  assert.equal(metadata.content_type, 'style');
+  assert.equal(metadata.status, 'reviewed');
+  assert.equal(metadata.difficulty, 'intermediate');
+  assert.equal(metadata.analyzed_at, '2026-08-07');
+  assert.equal(metadata.source_cutoff, '2026-08-07');
+  assert.equal(metadata.confidence, 'high');
+  assert.deepEqual(metadata.domains, ['software-architecture']);
+  assert.deepEqual(metadata.agent_patterns, []);
+  assert.deepEqual(metadata.protocols, []);
+  assert.deepEqual(metadata.quality_attributes, ['maintainability', 'testability', 'deployability']);
+  assert.deepEqual(metadata.tags, ['架构风格', 'Hexagonal Architecture', 'Onion Architecture', 'Clean Architecture', '依赖反转']);
+  assert.equal(metadata.summary, '用同一个提交订单案例合并三种架构的共同内核，并保留端口、核心所有权、策略层级和边界数据规则的差异。');
+  assert.equal(metadata.topic_id, 'STY-02');
+  assert.equal(metadata.priority, 'P0');
+  assert.deepEqual(metadata.depends_on, ['STY-00', 'STY-01']);
+  assert.deepEqual(metadata.adjacent_topics, ['STY-01']);
+  assert.deepEqual(metadata.related_cases, ['/cases/micro-frontends-single-spa']);
+  assert.deepEqual(metadata.related_questions, []);
+  assert.deepEqual(findMarkdownHeadings(sty02.body).map(({text}) => text), expectedHeadings);
+});
+
+test('locks the common kernel, vocabulary overlays, order boundary, and non-use conditions', () => {
+  assert.ok(sty02);
+  assertStyleContract(sty02.source);
+});
+
+test('makes STY-01 and STY-02 reciprocal while keeping STY-03 non-actionable', () => {
+  assert.ok(sty01);
+  assert.ok(sty02);
+  assert.ok(parseFrontMatter(sty01.source).adjacent_topics.includes('STY-02'));
+  assert.ok(internalLinksOf(sty01.source).includes('/styles/sty-02'));
+  assert.ok(parseFrontMatter(sty02.source).adjacent_topics.includes('STY-01'));
+  assert.ok(internalLinksOf(sty02.source).includes('/styles/sty-01'));
+  assert.ok(!internalLinksOf(sty02.source).includes('/styles/sty-03'));
+});
+
+test('records the approved STY-02 citation review', () => {
+  const review = ledger.documents['content/styles/sty-02-hexagonal-onion-clean.mdx'];
+  assert.ok(review);
+  assert.equal(review.reviewed_at, '2026-08-07');
+  assert.deepEqual(review.copyright_checks, [
+    'original-structure', 'quotation-boundary', 'attribution-complete', 'illustration-rights',
+  ]);
+  assert.deepEqual(review.citations.map(({source_id}) => source_id), expectedCitationIds);
+  assert.deepEqual(review.citations.map(({manifest_primary}) => manifest_primary), [true, false, true, true, false]);
+  for (const citation of review.citations) {
+    assert.equal(citation.usage_mode, 'facts-summary');
+    assert.equal(citation.excerpt, null);
+    assert.equal(citation.quotation_reviewed, false);
+  }
+});
+
+test('rejects mutations of the STY-02 decision contract', () => {
+  assert.ok(sty02);
+  for (const [label, needle, mutated] of [
+    ['synonym collapse', '观察视角不同', sty02.source.replace('观察视角不同', '三者完全等价')],
+    ['fixed evolution', '不是三个标签之间的迁移', sty02.source.replace('不是三个标签之间的迁移', 'Hexagonal → Onion → Clean')],
+    ['six ports', '六边形的边数没有架构语义', sty02.source.replace('六边形的边数没有架构语义', '六边形代表六个端口')],
+    ['outer-owned interface', '接口由需要它的内侧策略拥有', sty02.source.replace('接口由需要它的内侧策略拥有', '仓储接口由数据库适配器拥有')],
+    ['control equals dependency', '两种方向不能混为一谈', sty02.source.replace('两种方向不能混为一谈', '运行时控制流就是源码依赖方向')],
+    ['ORM crosses boundary', '不得进入应用核心', sty02.source.replace('不得进入应用核心', '可以直接进入应用核心')],
+    ['deployment overclaim', '不自动形成独立部署', sty02.source.replace('不自动形成独立部署', '自动提供独立部署')],
+    ['missing non-use', '小型、短生命周期、变化压力低的 CRUD 应用可能不值得承担接口、映射和组合成本。', sty02.source.replace('小型、短生命周期、变化压力低的 CRUD 应用可能不值得承担接口、映射和组合成本。', '所有应用都值得承担接口、映射和组合成本。')],
+    ['STY-03 actionable', null, `${sty02.source}\n[下一个风格](/styles/sty-03)\n`],
+  ]) {
+    if (needle) assert.equal(sty02.source.split(needle).length - 1, 1, `${label} mutation needle count`);
+    assert.notEqual(mutated, sty02.source, `${label} mutation must change source`);
+    assert.throws(() => assertStyleContract(mutated), {name: 'AssertionError'});
   }
 });
 
