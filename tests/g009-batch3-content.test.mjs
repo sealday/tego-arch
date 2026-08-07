@@ -304,7 +304,10 @@ function assertStyleContract(source) {
   assert.equal((source.match(/table-wrapper--mapping/g) ?? []).length, 2);
   assert.equal((source.match(/architecture-diagram-scroll/g) ?? []).length, 1);
   assert.equal((source.match(/tabIndex=\{0\}/g) ?? []).length, 3);
-  assert.equal((source.match(/onKeyDown=\{handleHorizontalArrowKey\}/g) ?? []).length, 2);
+  assert.equal((source.match(/onKeyDown=\{handleHorizontalArrowKey\}/g) ?? []).length, 3);
+  assert.ok(source.includes(
+    '<div className="architecture-diagram-scroll" role="region" aria-label="提交订单的控制流与向内源码依赖图，可横向滚动" tabIndex={0} onKeyDown={handleHorizontalArrowKey}>',
+  ));
   assert.ok(source.includes('/img/diagrams/sty-02-hexagonal-onion-clean-order.svg'));
   for (const locator of [...expectedNewSources.values(), 'https://docs.aws.amazon.com/prescriptive-guidance/latest/hexagonal-architectures/overview.html']) {
     const expectedLocator = typeof locator === 'string' ? locator : locator.canonical_locator;

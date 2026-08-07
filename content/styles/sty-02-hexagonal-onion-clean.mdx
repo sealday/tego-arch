@@ -70,7 +70,7 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 
 同一个提交订单结构包含外部驱动方、输入适配器、输入端口、提交订单用例、订单领域规则、库存端口、订单仓储端口、库存服务适配器和数据库适配器。输入端口是核心拥有的边界合同，提交订单用例是实现应用行为的 Application Service / Interactor；运行时控制先跨越输入端口，再进入用例，两者不是同一个节点。实线表示运行时控制流，虚线表示源码依赖指向内侧接口，两种方向不能混为一谈。接口由需要它的内侧策略拥有，外侧适配器实现并依赖该接口。
 
-<div className="architecture-diagram-scroll" role="region" aria-label="提交订单的控制流与向内源码依赖图，可横向滚动" tabIndex={0}>
+<div className="architecture-diagram-scroll" role="region" aria-label="提交订单的控制流与向内源码依赖图，可横向滚动" tabIndex={0} onKeyDown={handleHorizontalArrowKey}>
 
 ![同一提交订单控制流在 Hexagonal、Onion 与 Clean Architecture 中的端口、核心和适配器映射](/img/diagrams/sty-02-hexagonal-onion-clean-order.svg)
 
