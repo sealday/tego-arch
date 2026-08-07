@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 760" role="img" aria-labelledby="diagram-title diagram-description">
   <title id="diagram-title">提交订单在 Hexagonal、Onion 与 Clean Architecture 中的共同边界</title>
-  <desc id="diagram-description">同一提交订单控制流从外部驱动方进入应用核心，再经核心拥有的库存和仓储接口调用外部机制；实线表示运行时控制流，虚线表示源码依赖指向内侧接口。</desc>
+  <desc id="diagram-description">同一提交订单控制流从外部驱动方经过核心拥有的输入端口进入用例，再经核心拥有的库存和仓储接口调用外部机制；实线表示运行时控制流，虚线表示源码依赖指向内侧接口。</desc>
   <defs>
     <marker id="arrow-runtime" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" viewBox="0 0 14 14" refX="12" refY="7" orient="auto"><path d="M1 1L13 7L1 13Z" fill="#263238"/></marker>
     <marker id="arrow-dependency" markerUnits="userSpaceOnUse" markerWidth="16" markerHeight="16" viewBox="0 0 16 16" refX="14" refY="8" orient="auto"><path d="M2 2L14 8L2 14" fill="none" stroke="#2F6F9F" stroke-width="2.5"/></marker>
@@ -15,6 +15,7 @@
     </style>
   </defs>
   <path d="M0 0H1200V760H0Z" fill="#F6F1E7"/>
+  <text x="600" y="46" text-anchor="middle" class="edge-label">术语映射用于对照，不表示节点完全等价</text>
 
   <path data-boundary-id="b-driver" data-bounds="30 100 220 520" d="M42 100H238Q250 100 250 112V608Q250 620 238 620H42Q30 620 30 608V112Q30 100 42 100Z" fill="#FBF8F1" stroke="#77716A" stroke-width="2.5" stroke-dasharray="10 8"/>
   <text x="140" y="142" text-anchor="middle" class="boundary-title">外部驱动方</text>
@@ -24,14 +25,15 @@
   <text x="1075" y="142" text-anchor="middle" class="boundary-title">外部机制</text>
 
   <path data-edge-id="c1" data-source="n-driver" data-target="n-input-adapter" d="M235 365H259" class="runtime" fill="none" stroke="#263238" stroke-width="3" marker-end="url(#arrow-runtime)"/>
-  <path data-edge-id="c2" data-source="n-input-adapter" data-target="n-usecase" d="M395 335H429" class="runtime" fill="none" stroke="#263238" stroke-width="3" marker-end="url(#arrow-runtime)"/>
-  <path data-edge-id="c3" data-source="n-usecase" data-target="n-domain" d="M520 405V474" class="runtime" fill="none" stroke="#263238" stroke-width="3" marker-end="url(#arrow-runtime)"/>
-  <path data-edge-id="c4" data-source="n-usecase" data-target="n-inventory-port" d="M700 295H705V215H709" class="runtime" fill="none" stroke="#263238" stroke-width="3" marker-end="url(#arrow-runtime)"/>
+  <path data-edge-id="c2" data-source="n-input-adapter" data-target="n-input-port" d="M395 315H412V200H429" class="runtime" fill="none" stroke="#263238" stroke-width="3" marker-end="url(#arrow-runtime)"/>
+  <path data-edge-id="c8" data-source="n-input-port" data-target="n-usecase" d="M565 275V354" class="runtime" fill="none" stroke="#263238" stroke-width="3" marker-end="url(#arrow-runtime)"/>
+  <path data-edge-id="c3" data-source="n-usecase" data-target="n-domain" d="M470 485V554" class="runtime" fill="none" stroke="#263238" stroke-width="3" marker-end="url(#arrow-runtime)"/>
+  <path data-edge-id="c4" data-source="n-usecase" data-target="n-inventory-port" d="M700 390H705V215H709" class="runtime" fill="none" stroke="#263238" stroke-width="3" marker-end="url(#arrow-runtime)"/>
   <path data-edge-id="c5" data-source="n-inventory-port" data-target="n-inventory-adapter" d="M940 230H984" class="runtime" fill="none" stroke="#263238" stroke-width="3" marker-end="url(#arrow-runtime)"/>
-  <path data-edge-id="c6" data-source="n-usecase" data-target="n-order-port" d="M700 365H705V535H709" class="runtime" fill="none" stroke="#263238" stroke-width="3" marker-end="url(#arrow-runtime)"/>
+  <path data-edge-id="c6" data-source="n-usecase" data-target="n-order-port" d="M700 450H705V535H709" class="runtime" fill="none" stroke="#263238" stroke-width="3" marker-end="url(#arrow-runtime)"/>
   <path data-edge-id="c7" data-source="n-order-port" data-target="n-database-adapter" d="M940 500H984" class="runtime" fill="none" stroke="#263238" stroke-width="3" marker-end="url(#arrow-runtime)"/>
 
-  <path data-edge-id="d1" data-source="n-input-adapter" data-target="n-usecase" d="M395 445H412V380H430" class="dependency" fill="none" stroke="#2F6F9F" stroke-width="3" stroke-dasharray="10 8" marker-end="url(#arrow-dependency)"/>
+  <path data-edge-id="d1" data-source="n-input-adapter" data-target="n-input-port" d="M395 435H415V245H430" class="dependency" fill="none" stroke="#2F6F9F" stroke-width="3" stroke-dasharray="10 8" marker-end="url(#arrow-dependency)"/>
   <path data-edge-id="d2" data-source="n-inventory-adapter" data-target="n-inventory-port" d="M985 280H940" class="dependency" fill="none" stroke="#2F6F9F" stroke-width="3" stroke-dasharray="10 8" marker-end="url(#arrow-dependency)"/>
   <path data-edge-id="d3" data-source="n-database-adapter" data-target="n-order-port" d="M985 580H940" class="dependency" fill="none" stroke="#2F6F9F" stroke-width="3" stroke-dasharray="10 8" marker-end="url(#arrow-dependency)"/>
 
@@ -44,15 +46,20 @@
     <text x="327.5" y="314" text-anchor="middle" class="node-title">输入<tspan x="327.5" dy="28">适配器</tspan></text>
     <text x="327.5" y="375.2" text-anchor="middle" class="node-role" fill="#405D6B">Driving<tspan x="327.5" dy="18"> Adapter /</tspan><tspan x="327.5" dy="18"> UI Edge /</tspan><tspan x="327.5" dy="18"> Controller</tspan></text>
   </g>
-  <g data-node-id="n-usecase" data-node-bounds="430 255 270 150" data-bounds="430 255 270 150" data-role-label="Driving Port / Application Interface / Input Boundary">
-    <path d="M442 255H688Q700 255 700 267V393Q700 405 688 405H442Q430 405 430 393V267Q430 255 442 255Z" fill="#405D6B" stroke="#304854" stroke-width="2"/>
-    <text x="565" y="304" text-anchor="middle" class="node-title" style="fill:#FFFFFF">提交订单用例</text>
-    <text x="565" y="337.2" text-anchor="middle" class="node-role" style="fill:#DCE7EA">Driving Port /<tspan x="565" dy="18"> Application Interface /</tspan><tspan x="565" dy="18"> Input Boundary</tspan></text>
+  <g data-node-id="n-input-port" data-node-bounds="430 130 270 145" data-bounds="430 130 270 145">
+    <path d="M442 130H688Q700 130 700 142V263Q700 275 688 275H442Q430 275 430 263V142Q430 130 442 130Z" fill="#FFF7DA" stroke="#8B7855" stroke-width="2"/>
+    <text x="565" y="175" text-anchor="middle" class="node-title">输入端口</text>
+    <text x="565" y="211" text-anchor="middle" class="node-role" fill="#6A5A3E">Driving Port /<tspan x="565" dy="18"> Application Interface /</tspan><tspan x="565" dy="18"> Input Boundary</tspan></text>
   </g>
-  <g data-node-id="n-domain" data-node-bounds="430 475 270 135" data-bounds="430 475 270 135" data-role-label="Domain Model / Entity Policy">
-    <path d="M442 475H688Q700 475 700 487V598Q700 610 688 610H442Q430 610 430 598V487Q430 475 442 475Z" fill="#D9E5DA" stroke="#64806B" stroke-width="2"/>
-    <text x="565" y="524" text-anchor="middle" class="node-title">订单领域规则</text>
-    <text x="565" y="557.2" text-anchor="middle" class="node-role" fill="#405D6B">Domain Model /<tspan x="565" dy="18"> Entity Policy</tspan></text>
+  <g data-node-id="n-usecase" data-node-bounds="430 355 270 130" data-bounds="430 355 270 130">
+    <path d="M442 355H688Q700 355 700 367V473Q700 485 688 485H442Q430 485 430 473V367Q430 355 442 355Z" fill="#405D6B" stroke="#304854" stroke-width="2"/>
+    <text x="565" y="400" text-anchor="middle" class="node-title" style="fill:#FFFFFF">提交订单用例</text>
+    <text x="565" y="436" text-anchor="middle" class="node-role" style="fill:#DCE7EA">Use Case / Application<tspan x="565" dy="18"> Service / Interactor</tspan></text>
+  </g>
+  <g data-node-id="n-domain" data-node-bounds="430 555 270 120" data-bounds="430 555 270 120">
+    <path d="M442 555H688Q700 555 700 567V663Q700 675 688 675H442Q430 675 430 663V567Q430 555 442 555Z" fill="#D9E5DA" stroke="#64806B" stroke-width="2"/>
+    <text x="565" y="600" text-anchor="middle" class="node-title">订单领域规则</text>
+    <text x="565" y="633" text-anchor="middle" class="node-role" fill="#405D6B">Domain Model /<tspan x="565" dy="18"> Entity Policy</tspan></text>
   </g>
   <g data-node-id="n-inventory-port" data-node-bounds="710 135 230 160" data-bounds="710 135 230 160" data-role-label="Driven Port / Core Interface / Output Gateway">
     <path d="M722 135H928Q940 135 940 147V283Q940 295 928 295H722Q710 295 710 283V147Q710 135 722 135Z" fill="#FFF7DA" stroke="#8B7855" stroke-width="2"/>
@@ -75,12 +82,13 @@
     <text x="1075" y="510.2" text-anchor="middle" class="node-role" fill="#55514B">Driven<tspan x="1075" dy="16"> Adapter /</tspan><tspan x="1075" dy="16"> Infrastructure /</tspan><tspan x="1075" dy="16"> Interface</tspan><tspan x="1075" dy="16"> Adapter</tspan></text>
   </g>
 
-  <text x="247" y="235" text-anchor="middle" class="edge-label" data-edge-id="c1" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12">提交</text>
-  <text x="412" y="225" text-anchor="middle" class="edge-label" data-edge-id="c2" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12">调用用例</text>
-  <text x="620" y="450" text-anchor="middle" class="edge-label" data-edge-id="c3" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12">执行业务判断</text>
-  <text x="625" y="220" text-anchor="middle" class="edge-label" data-edge-id="c4" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12">查询库存</text>
-  <text x="850" y="350" text-anchor="middle" class="edge-label" data-edge-id="c5" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12">调用外部能力</text>
-  <text x="650" y="655" text-anchor="middle" class="edge-label" data-edge-id="c6" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12">保存订单</text>
+  <text x="180" y="265" text-anchor="middle" class="edge-label" data-edge-id="c1" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12">提交</text>
+  <text x="325" y="230" text-anchor="middle" class="edge-label" data-edge-id="c2" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12">调用输入边界</text>
+  <text x="640" y="320" text-anchor="middle" class="edge-label" data-edge-id="c8" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12">进入用例</text>
+  <text x="620" y="529" text-anchor="middle" class="edge-label" data-edge-id="c3" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12">执行业务判断</text>
+  <text x="790" y="340" text-anchor="middle" class="edge-label" data-edge-id="c4" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12">查询库存</text>
+  <text x="850" y="390" text-anchor="middle" class="edge-label" data-edge-id="c5" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12">调用外部能力</text>
+  <text x="820" y="660" text-anchor="middle" class="edge-label" data-edge-id="c6" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12">保存订单</text>
   <text x="850" y="430" text-anchor="middle" class="edge-label" data-edge-id="c7" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12">调用持久化</text>
 
   <path d="M70 721H220" class="runtime"/>

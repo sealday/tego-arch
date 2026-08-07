@@ -272,7 +272,7 @@ git commit -m "content(styles): govern STY-02 sources"
 - Create: `static/img/diagrams/sty-02-hexagonal-onion-clean-order.svg`
 
 **Interfaces:**
-- Consumes: Draw.io/SVG pairing skill, MOD-02 visual contract, eight semantic nodes, three boundaries, runtime-control and source-dependency relation types.
+- Consumes: Draw.io/SVG pairing skill, MOD-02 visual contract, nine semantic nodes, three boundaries, runtime-control and source-dependency relation types.
 - Produces: one editable/published pair with identical visible semantics and responsive accessibility.
 
 - [ ] **Step 1: Add the diagram inventory test before creating assets**
@@ -284,14 +284,15 @@ const diagramSourceUrl = new URL('../diagrams/sty-02-hexagonal-onion-clean-order
 const diagramSvgUrl = new URL('../static/img/diagrams/sty-02-hexagonal-onion-clean-order.svg', import.meta.url);
 const requiredDiagramLabels = [
   '外部驱动方', '应用核心', '外部机制',
-  'HTTP / CLI / 自动化测试', '输入适配器', '提交订单用例', '订单领域规则',
+  'HTTP / CLI / 自动化测试', '输入适配器', '输入端口', '提交订单用例', '订单领域规则',
   '库存端口', '订单仓储端口', '库存服务适配器', '数据库适配器',
   'Driving Adapter / UI Edge / Controller',
   'Driving Port / Application Interface / Input Boundary',
+  'Use Case / Application Service / Interactor',
   'Domain Model / Entity Policy',
   'Driven Port / Core Interface / Output Gateway',
   'Driven Adapter / Infrastructure / Interface Adapter',
-  '运行时控制流', '源码依赖指向内侧接口',
+  '运行时控制流', '源码依赖指向内侧接口', '术语映射用于对照，不表示节点完全等价',
 ];
 
 test('publishes the synchronized STY-02 Draw.io and SVG pair', async () => {
@@ -329,8 +330,9 @@ Use plain-text `mxCell.value` labels and `viewBox 0 0 1200 760`. The original na
 | `b-mechanism` | 外部机制 | 980 | 100 | 190 | 520 | boundary |
 | `n-driver` | HTTP / CLI / 自动化测试 | 45 | 300 | 190 | 130 | external driver |
 | `n-input-adapter` | 输入适配器 | 260 | 265 | 135 | 210 | outside core |
-| `n-usecase` | 提交订单用例 | 430 | 255 | 270 | 150 | core |
-| `n-domain` | 订单领域规则 | 430 | 475 | 270 | 135 | core |
+| `n-input-port` | 输入端口 | 430 | 130 | 270 | 145 | core-owned input boundary |
+| `n-usecase` | 提交订单用例 | 430 | 355 | 270 | 130 | core implementation |
+| `n-domain` | 订单领域规则 | 430 | 555 | 270 | 120 | core |
 | `n-inventory-port` | 库存端口 | 710 | 135 | 230 | 160 | core boundary |
 | `n-order-port` | 订单仓储端口 | 710 | 455 | 230 | 160 | core boundary |
 | `n-inventory-adapter` | 库存服务适配器 | 985 | 155 | 180 | 210 | external mechanism |
@@ -339,7 +341,8 @@ Use plain-text `mxCell.value` labels and `viewBox 0 0 1200 760`. The original na
 Use these secondary role labels inside the corresponding nodes:
 
 - 输入适配器：`Driving Adapter / UI Edge / Controller`
-- 提交订单用例：`Driving Port / Application Interface / Input Boundary`
+- 输入端口：`Driving Port / Application Interface / Input Boundary`
+- 提交订单用例：`Use Case / Application Service / Interactor`
 - 订单领域规则：`Domain Model / Entity Policy`
 - 库存端口、订单仓储端口：`Driven Port / Core Interface / Output Gateway`
 - 两个外部适配器：`Driven Adapter / Infrastructure / Interface Adapter`
@@ -348,7 +351,8 @@ Use solid dark orthogonal connectors for runtime control:
 
 ```text
 c1 n-driver -> n-input-adapter  label=提交
-c2 n-input-adapter -> n-usecase label=调用用例
+c2 n-input-adapter -> n-input-port label=调用输入边界
+c8 n-input-port -> n-usecase label=进入用例
 c3 n-usecase -> n-domain label=执行业务判断
 c4 n-usecase -> n-inventory-port label=查询库存
 c5 n-inventory-port -> n-inventory-adapter label=调用外部能力
@@ -359,12 +363,12 @@ c7 n-order-port -> n-database-adapter label=调用持久化
 Use visually separate dashed blue connectors for source dependencies:
 
 ```text
-d1 n-input-adapter -> n-usecase
+d1 n-input-adapter -> n-input-port
 d2 n-inventory-adapter -> n-inventory-port
 d3 n-database-adapter -> n-order-port
 ```
 
-Route every source-dependency connector in a reserved parallel lane so it cannot overlap its control connector. The marker of `d2` and `d3` must point left into the core-owned ports. Add the two exact legend labels `运行时控制流` and `源码依赖指向内侧接口`. Do not draw transaction, network, retry, database ownership, deployment, or failure-recovery semantics.
+Route every source-dependency connector in a reserved parallel lane so it cannot overlap its control connector. The marker of `d1` must terminate at the core-owned `n-input-port`; the marker of `d2` and `d3` must point left into the core-owned output ports. Add the two exact legend labels `运行时控制流` and `源码依赖指向内侧接口`, plus the visible disclaimer `术语映射用于对照，不表示节点完全等价`. The exact inventory is nine nodes, three boundaries, eight runtime edges, and three dependency edges. Do not draw transaction, network, retry, database ownership, deployment, or failure-recovery semantics.
 
 - [ ] **Step 4: Export the synchronized accessible SVG**
 
@@ -390,6 +394,7 @@ node .codex/skills/creating-drawio-architecture-diagrams/scripts/validate_drawio
   --label "外部机制" \
   --label "HTTP / CLI / 自动化测试" \
   --label "输入适配器" \
+  --label "输入端口" \
   --label "提交订单用例" \
   --label "订单领域规则" \
   --label "库存端口" \
@@ -805,6 +810,8 @@ test('projects Stage A without closing STY-02 or activating STY-03', () => {
   assert.ok(indexes.style.some(({id, status}) => id === 'STY-02' && status.value === 'pending'));
 });
 ```
+
+`primary_sources` is generator-normalized by canonical URL, so its deterministic order is Cockburn → Martin → Palermo part 3. This projection order is intentionally different from the article's visible source order Cockburn → Palermo part 1 → Palermo part 3 → Martin → AWS.
 
 - [ ] **Step 2: Verify stale projections fail**
 

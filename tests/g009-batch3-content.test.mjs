@@ -458,15 +458,39 @@ const diagramSourceUrl = new URL('../diagrams/sty-02-hexagonal-onion-clean-order
 const diagramSvgUrl = new URL('../static/img/diagrams/sty-02-hexagonal-onion-clean-order.svg', import.meta.url);
 const requiredDiagramLabels = [
   '外部驱动方', '应用核心', '外部机制',
-  'HTTP / CLI / 自动化测试', '输入适配器', '提交订单用例', '订单领域规则',
+  'HTTP / CLI / 自动化测试', '输入适配器', '输入端口', '提交订单用例', '订单领域规则',
   '库存端口', '订单仓储端口', '库存服务适配器', '数据库适配器',
   'Driving Adapter / UI Edge / Controller',
   'Driving Port / Application Interface / Input Boundary',
+  'Use Case / Application Service / Interactor',
   'Domain Model / Entity Policy',
   'Driven Port / Core Interface / Output Gateway',
   'Driven Adapter / Infrastructure / Interface Adapter',
-  '运行时控制流', '源码依赖指向内侧接口',
+  '运行时控制流', '源码依赖指向内侧接口', '术语映射用于对照，不表示节点完全等价',
 ];
+
+const expectedDiagramNodeLabels = new Map([
+  ['n-driver', ['HTTP / CLI / 自动化测试', null]],
+  ['n-input-adapter', ['输入适配器', 'Driving Adapter / UI Edge / Controller']],
+  ['n-input-port', ['输入端口', 'Driving Port / Application Interface / Input Boundary']],
+  ['n-usecase', ['提交订单用例', 'Use Case / Application Service / Interactor']],
+  ['n-domain', ['订单领域规则', 'Domain Model / Entity Policy']],
+  ['n-inventory-port', ['库存端口', 'Driven Port / Core Interface / Output Gateway']],
+  ['n-order-port', ['订单仓储端口', 'Driven Port / Core Interface / Output Gateway']],
+  ['n-inventory-adapter', ['库存服务适配器', 'Driven Adapter / Infrastructure / Interface Adapter']],
+  ['n-database-adapter', ['数据库适配器', 'Driven Adapter / Infrastructure / Interface Adapter']],
+]);
+
+const expectedDiagramEdgeLabels = new Map([
+  ['c1', '提交'],
+  ['c2', '调用输入边界'],
+  ['c8', '进入用例'],
+  ['c3', '执行业务判断'],
+  ['c4', '查询库存'],
+  ['c5', '调用外部能力'],
+  ['c6', '保存订单'],
+  ['c7', '调用持久化'],
+]);
 
 test('publishes the synchronized STY-02 Draw.io and SVG pair', async () => {
   const [drawio, svg] = await Promise.all([
@@ -475,7 +499,7 @@ test('publishes the synchronized STY-02 Draw.io and SVG pair', async () => {
   ]);
   for (const label of requiredDiagramLabels) {
     assert.ok(drawio.includes(label), `Draw.io label: ${label}`);
-    assert.ok(svg.includes(label), `SVG label: ${label}`);
+    assert.ok(visibleXmlText(svg).includes(label), `SVG visible label: ${label}`);
   }
   assert.match(svg, /viewBox="0 0 1200 760"/u);
   assert.doesNotMatch(svg, /<svg[^>]+(?:width|height)="[0-9]/u);
@@ -510,6 +534,47 @@ function drawioGeometries(drawio) {
 
 function svgElementsById(svg, name, idAttribute) {
   return new Map(xmlElements(svg, name).map((element) => [element[idAttribute], element]));
+}
+
+function visibleXmlText(fragment) {
+  return fragment
+    .replace(/<[^>]+>/gu, '')
+    .replace(/&amp;/gu, '&')
+    .replace(/&lt;/gu, '<')
+    .replace(/&gt;/gu, '>')
+    .replace(/&quot;/gu, '"')
+    .replace(/&apos;/gu, "'")
+    .replace(/\s+/gu, ' ')
+    .trim();
+}
+
+function svgVisibleNodeLabels(svg) {
+  return new Map([...svg.matchAll(/<g\b([^>]*\bdata-node-id="[^"]+"[^>]*)>([\s\S]*?)<\/g>/gu)]
+    .map(([, attributes, body]) => {
+      const id = parseXmlAttributes(attributes)['data-node-id'];
+      return [id, visibleXmlText(body.match(/<text\b[\s\S]*?<\/text>/gu)?.join(' ') ?? '')];
+    }));
+}
+
+function svgVisibleEdgeLabels(svg) {
+  return new Map([...svg.matchAll(/<text\b([^>]*\bdata-edge-id="[^"]+"[^>]*)>([\s\S]*?)<\/text>/gu)]
+    .map(([, attributes, body]) => [parseXmlAttributes(attributes)['data-edge-id'], visibleXmlText(body)]));
+}
+
+function assertExactDiagramLabels(drawio, svg) {
+  const cells = drawioCells(drawio);
+  const svgNodes = svgVisibleNodeLabels(svg);
+  for (const [id, [title, role]] of expectedDiagramNodeLabels) {
+    assert.equal(cells.get(id)?.value, title, `${id} Draw.io title`);
+    assert.equal(role ? cells.get(`${id}-role`)?.value : undefined, role ?? undefined, `${id} Draw.io role`);
+    assert.equal(svgNodes.get(id), [title, role].filter(Boolean).join(' '), `${id} SVG visible text`);
+  }
+  const svgEdges = svgVisibleEdgeLabels(svg);
+  for (const [id, label] of expectedDiagramEdgeLabels) {
+    assert.equal(cells.get(id)?.value, label, `${id} Draw.io visible label`);
+    assert.equal(svgEdges.get(id), label, `${id} SVG visible label`);
+  }
+  assert.deepEqual([...svgEdges.keys()].sort(), [...expectedDiagramEdgeLabels.keys()].sort(), 'SVG visible edge-label IDs');
 }
 
 function svgNodeShapes(svg) {
@@ -616,8 +681,9 @@ const plannedDiagramGeometries = new Map([
   ['b-mechanism', [980, 100, 190, 520]],
   ['n-driver', [45, 300, 190, 130]],
   ['n-input-adapter', [260, 265, 135, 210]],
-  ['n-usecase', [430, 255, 270, 150]],
-  ['n-domain', [430, 475, 270, 135]],
+  ['n-input-port', [430, 130, 270, 145]],
+  ['n-usecase', [430, 355, 270, 130]],
+  ['n-domain', [430, 555, 270, 120]],
   ['n-inventory-port', [710, 135, 230, 160]],
   ['n-order-port', [710, 455, 230, 160]],
   ['n-inventory-adapter', [985, 155, 180, 210]],
@@ -626,13 +692,14 @@ const plannedDiagramGeometries = new Map([
 
 const plannedDiagramRelations = new Map([
   ['c1', ['n-driver', 'n-input-adapter']],
-  ['c2', ['n-input-adapter', 'n-usecase']],
+  ['c2', ['n-input-adapter', 'n-input-port']],
+  ['c8', ['n-input-port', 'n-usecase']],
   ['c3', ['n-usecase', 'n-domain']],
   ['c4', ['n-usecase', 'n-inventory-port']],
   ['c5', ['n-inventory-port', 'n-inventory-adapter']],
   ['c6', ['n-usecase', 'n-order-port']],
   ['c7', ['n-order-port', 'n-database-adapter']],
-  ['d1', ['n-input-adapter', 'n-usecase']],
+  ['d1', ['n-input-adapter', 'n-input-port']],
   ['d2', ['n-inventory-adapter', 'n-inventory-port']],
   ['d3', ['n-database-adapter', 'n-order-port']],
 ]);
@@ -660,6 +727,31 @@ test('parses the exact STY-02 geometry and directed relation inventory', async (
   }
 });
 
+test('binds every diagram title, role, and visible edge label to its semantic ID', async () => {
+  const [drawio, svg] = await Promise.all([
+    readFile(diagramSourceUrl, 'utf8'),
+    readFile(diagramSvgUrl, 'utf8'),
+  ]);
+  assertExactDiagramLabels(drawio, svg);
+});
+
+test('rejects swapped node labels and changed edge labels despite preserved IDs', async () => {
+  const [drawio, svg] = await Promise.all([
+    readFile(diagramSourceUrl, 'utf8'),
+    readFile(diagramSvgUrl, 'utf8'),
+  ]);
+  const swappedSvg = svg
+    .replace('>库存端口</text>', '>临时交换标签</text>')
+    .replace('>订单仓储端口</text>', '>库存端口</text>')
+    .replace('>临时交换标签</text>', '>订单仓储端口</text>');
+  assert.notEqual(swappedSvg, svg, 'node-label swap must mutate SVG');
+  assert.throws(() => assertExactDiagramLabels(drawio, swappedSvg), {name: 'AssertionError'});
+
+  const changedDrawio = drawio.replace('id="c4" value="查询库存"', 'id="c4" value="保存订单"');
+  assert.notEqual(changedDrawio, drawio, 'edge-label mutation must mutate Draw.io');
+  assert.throws(() => assertExactDiagramLabels(changedDrawio, svg), {name: 'AssertionError'});
+});
+
 test('parses distinct runtime and inward source-dependency routing contracts', async () => {
   const [drawio, svg] = await Promise.all([
     readFile(diagramSourceUrl, 'utf8'),
@@ -670,7 +762,7 @@ test('parses distinct runtime and inward source-dependency routing contracts', a
   const runtimeMarker = svgMarker(svg, 'arrow-runtime');
   const dependencyMarker = svgMarker(svg, 'arrow-dependency');
 
-  for (const id of ['c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7']) {
+  for (const id of ['c1', 'c2', 'c8', 'c3', 'c4', 'c5', 'c6', 'c7']) {
     assert.match(cells.get(id).style, /strokeWidth=3/u, `${id} Draw.io runtime width`);
     assert.doesNotMatch(cells.get(id).style, /dashed=1/u, `${id} Draw.io runtime solid`);
     assert.match(cells.get(id).style, /endArrow=block;endFill=1/u, `${id} Draw.io runtime marker`);
@@ -705,15 +797,15 @@ test('connects every visible SVG arrow tip to its target-node boundary', async (
   const svg = await readFile(diagramSvgUrl, 'utf8');
   const edges = svgElementsById(svg, 'path', 'data-edge-id');
   const expectedTips = new Map([
-    ['c1', {x: 260, y: 365}], ['c2', {x: 430, y: 335}], ['c3', {x: 520, y: 475}],
+    ['c1', {x: 260, y: 365}], ['c2', {x: 430, y: 200}], ['c8', {x: 565, y: 355}], ['c3', {x: 470, y: 555}],
     ['c4', {x: 710, y: 215}], ['c5', {x: 985, y: 230}], ['c6', {x: 710, y: 535}],
-    ['c7', {x: 985, y: 500}], ['d1', {x: 430, y: 380}], ['d2', {x: 940, y: 280}],
+    ['c7', {x: 985, y: 500}], ['d1', {x: 430, y: 245}], ['d2', {x: 940, y: 280}],
     ['d3', {x: 940, y: 580}],
   ]);
   const expectedStarts = new Map([
-    ['c1', {x: 235, y: 365}], ['c2', {x: 395, y: 335}], ['c3', {x: 520, y: 405}],
-    ['c4', {x: 700, y: 295}], ['c5', {x: 940, y: 230}], ['c6', {x: 700, y: 365}],
-    ['c7', {x: 940, y: 500}], ['d1', {x: 395, y: 445}], ['d2', {x: 985, y: 280}],
+    ['c1', {x: 235, y: 365}], ['c2', {x: 395, y: 315}], ['c8', {x: 565, y: 275}], ['c3', {x: 470, y: 485}],
+    ['c4', {x: 700, y: 390}], ['c5', {x: 940, y: 230}], ['c6', {x: 700, y: 450}],
+    ['c7', {x: 940, y: 500}], ['d1', {x: 395, y: 435}], ['d2', {x: 985, y: 280}],
     ['d3', {x: 985, y: 580}],
   ]);
   const markerTipOffset = new Map(['arrow-runtime', 'arrow-dependency'].map((id) => {
