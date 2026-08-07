@@ -55,8 +55,8 @@ const expectedReviewSections = [
 
 const expectedProjection = {
   completed_topics: 54,
-  content_documents: 95,
-  governed_sources: 502,
+  content_documents: 96,
+  governed_sources: 506,
   durable_stories: {completed: 8, total: 20, current: 'G009'},
   recently_completed: 'G008',
   next_topic: 'STY-02',
@@ -365,8 +365,8 @@ test('rejects every generated Stage B state route and count mutation', () => {
     (value) => { value.durable_stories.completed = 7; },
     (value) => { value.durable_stories.total = 21; },
     (value) => { value.durable_stories.current = 'G008'; },
-    (value) => { value.content_documents = 94; },
-    (value) => { value.governed_sources = 498; },
+    (value) => { value.content_documents = 95; },
+    (value) => { value.governed_sources = 502; },
     (value) => { value.sources.completed_topics = 'other'; },
   ]) {
     const mutated = structuredClone(projectStatus);

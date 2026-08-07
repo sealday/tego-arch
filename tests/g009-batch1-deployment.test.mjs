@@ -228,14 +228,14 @@ test('preserves the STY-00 closure while projecting STY-01 complete and STY-02 n
   assert.equal(topics.get('STY-00')?.status.value, 'complete');
   assert.equal(topics.get('STY-01')?.published, true);
   assert.equal(topics.get('STY-01')?.status.value, 'complete');
-  assert.equal(topics.get('STY-02')?.published, false);
+  assert.equal(topics.get('STY-02')?.published, true);
   assert.equal(topics.get('STY-02')?.status.value, 'pending');
   assert.deepEqual(status, {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
     completed_topics: 54,
-    content_documents: 95,
-    governed_sources: 502,
+    content_documents: 96,
+    governed_sources: 506,
     sources: {
       durable_stories: 'docs/content-backlog.md',
       completed_topics: 'docs/content-backlog.md',

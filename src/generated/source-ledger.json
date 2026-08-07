@@ -2275,6 +2275,7 @@
       "allowed_evidence_roles": [
         "comparison",
         "definition",
+        "implementation",
         "learning"
       ],
       "license": "LicenseRef-All-Rights-Reserved",
@@ -2285,7 +2286,7 @@
       "license_family_grouping": "identity",
       "family_grouping_evidence_url": null,
       "copyright_policy": "vendor-claims-separated",
-      "usage_boundary": "Supports only the contrast between classic top-down layered dependencies and dependency inversion; it does not make AWS implementation choices or Hexagonal mechanisms part of STY-01.",
+      "usage_boundary": "Supports the STY-01 contrast between classic top-down layered dependencies and dependency inversion, and the STY-02 official engineering description of domain core, ports, adapters, primary and secondary adapters, and dependency inversion; AWS-specific implementation choices, source diagrams, and universal outcome claims are excluded.",
       "link_policy": "stable",
       "expected_final_transport_locator": "https://docs.aws.amazon.com/prescriptive-guidance/latest/hexagonal-architectures/overview.html",
       "expected_final_approved_at": "2026-08-07",
@@ -3083,6 +3084,53 @@
           "last_success_at": "2026-08-06T21:30:02.583Z",
           "http_status": 206,
           "final_transport_locator": "https://blog.cleancoder.com/uncle-bob/2014/05/08/SingleReponsibilityPrinciple.html"
+        }
+      ]
+    },
+    {
+      "id": "src-cockburn-hexagonal-architecture-2005",
+      "canonical_locator": "https://alistair.cockburn.us/hexagonal-architecture/",
+      "transport_locator": "https://alistair.cockburn.us/hexagonal-architecture/",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Hexagonal architecture the original 2005 article",
+      "author_or_org": "Alistair Cockburn",
+      "published_at": "2005-09-04",
+      "registered_at": "2026-08-07",
+      "checked_at": "2026-08-07",
+      "version": "HaT Technical Report 2005.02, version 0.9 dated 2005-09-04; page checked 2026-08-07",
+      "source_kind": "paper",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "comparison",
+        "definition",
+        "historical-context",
+        "implementation",
+        "learning"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named article/page and bibliographic facts only; prose, code, diagrams, images, marks, comments, linked works, and third-party material excluded",
+      "license_evidence_url": "https://alistair.cockburn.us/hexagonal-architecture/",
+      "license_evidence_note": "The Alistair Cockburn article at https://alistair.cockburn.us/hexagonal-architecture/ was checked on 2026-08-07; the page carries Copyright © Alistair Cockburn 2022 All Rights Reserved and exposes no reusable license for the work. Tego Arch retains attribution, a link, and original factual summary only.",
+      "license_family_id": "https://alistair.cockburn.us/hexagonal-architecture/",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Defines the original Ports and Adapters intent, purposeful ports, adapters, primary and secondary actors, and isolated application testing; source diagrams, code structure, and later interpretations are not copied.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://alistair.cockburn.us/hexagonal-architecture",
+      "expected_final_approved_at": "2026-08-07",
+      "expected_final_approval_note": "Approved the 2026-08-07 live 301 normalization from the canonical trailing-slash transport to the author-hosted no-trailing-slash final transport.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://alistair.cockburn.us/hexagonal-architecture/",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-07T03:33:22.909Z",
+          "last_success_at": "2026-08-07T03:33:22.909Z",
+          "http_status": 200,
+          "final_transport_locator": "https://alistair.cockburn.us/hexagonal-architecture"
         }
       ]
     },
@@ -20443,6 +20491,53 @@
       ]
     },
     {
+      "id": "src-martin-clean-architecture-2012",
+      "canonical_locator": "https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html",
+      "transport_locator": "https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "The Clean Architecture",
+      "author_or_org": "Robert C. Martin",
+      "published_at": "2012-08-13",
+      "registered_at": "2026-08-07",
+      "checked_at": "2026-08-07",
+      "version": "Original article published 2012-08-13; page checked 2026-08-07",
+      "source_kind": "engineering-blog",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "comparison",
+        "definition",
+        "historical-context",
+        "implementation",
+        "learning"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named article/page and bibliographic facts only; prose, code, diagrams, images, marks, comments, linked works, and third-party material excluded",
+      "license_evidence_url": "https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html",
+      "license_evidence_note": "The Robert C. Martin article “The Clean Architecture” at https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html was checked on 2026-08-07; the author-hosted page exposes no reusable license for this work. Tego Arch retains attribution, a link, and original factual summary only.",
+      "license_family_id": "https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Defines the Dependency Rule, Entities, Use Cases, Interface Adapters, Frameworks and Drivers, boundary crossing, and simple boundary data; the source diagram and fixed four-circle layout are not copied or required.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html",
+      "expected_final_approved_at": "2026-08-07",
+      "expected_final_approval_note": "Reviewed canonical identity and current author-hosted transport on 2026-08-07.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-07T03:08:53.172Z",
+          "last_success_at": "2026-08-07T03:08:53.172Z",
+          "http_status": 206,
+          "final_transport_locator": "https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html"
+        }
+      ]
+    },
+    {
       "id": "src-martin-fowler-architecture-decision-record-2026",
       "canonical_locator": "https://martinfowler.com/bliki/ArchitectureDecisionRecord.html",
       "transport_locator": "https://martinfowler.com/bliki/ArchitectureDecisionRecord.html",
@@ -22072,6 +22167,98 @@
           "last_success_at": "2026-08-06T21:30:02.583Z",
           "http_status": 403,
           "final_transport_locator": "https://www.oreilly.com/library/view/building-evolutionary-architectures/9781492097532/"
+        }
+      ]
+    },
+    {
+      "id": "src-palermo-onion-architecture-part-1",
+      "canonical_locator": "https://jeffreypalermo.com/2008/07/the-onion-architecture-part-1/",
+      "transport_locator": "https://jeffreypalermo.com/2008/07/the-onion-architecture-part-1/",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "The Onion Architecture : part 1",
+      "author_or_org": "Jeffrey Palermo",
+      "published_at": "2008-07-29",
+      "registered_at": "2026-08-07",
+      "checked_at": "2026-08-07",
+      "version": "Original article published 2008-07-29; page checked 2026-08-07",
+      "source_kind": "engineering-blog",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "comparison",
+        "definition",
+        "historical-context",
+        "learning"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named article/page and bibliographic facts only; prose, code, diagrams, images, marks, comments, linked works, and third-party material excluded",
+      "license_evidence_url": "https://jeffreypalermo.com/2008/07/the-onion-architecture-part-1/",
+      "license_evidence_note": "The Jeffrey Palermo article “The Onion Architecture : part 1” at https://jeffreypalermo.com/2008/07/the-onion-architecture-part-1/ was checked on 2026-08-07; the author-hosted page exposes no reusable license for this work. Tego Arch retains attribution, a link, and original factual summary only.",
+      "license_family_id": "https://jeffreypalermo.com/2008/07/the-onion-architecture-part-1/",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Defines Onion Architecture scope, inward coupling, the independent Domain Model, core-owned repository interfaces, and external infrastructure; maintenance claims remain attributed author experience.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://jeffreypalermo.com/2008/07/the-onion-architecture-part-1/",
+      "expected_final_approved_at": "2026-08-07",
+      "expected_final_approval_note": "Reviewed canonical identity and current author-hosted transport on 2026-08-07.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://jeffreypalermo.com/2008/07/the-onion-architecture-part-1/",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-07T03:08:53.172Z",
+          "last_success_at": "2026-08-07T03:08:53.172Z",
+          "http_status": 200,
+          "final_transport_locator": "https://jeffreypalermo.com/2008/07/the-onion-architecture-part-1/"
+        }
+      ]
+    },
+    {
+      "id": "src-palermo-onion-architecture-part-3",
+      "canonical_locator": "https://jeffreypalermo.com/2008/08/the-onion-architecture-part-3/",
+      "transport_locator": "https://jeffreypalermo.com/2008/08/the-onion-architecture-part-3/",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "The Onion Architecture : part 3",
+      "author_or_org": "Jeffrey Palermo",
+      "published_at": "2008-08-04",
+      "registered_at": "2026-08-07",
+      "checked_at": "2026-08-07",
+      "version": "Original article published 2008-08-04; page checked 2026-08-07",
+      "source_kind": "engineering-blog",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "comparison",
+        "definition",
+        "historical-context",
+        "learning"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named article/page and bibliographic facts only; prose, code, diagrams, images, marks, comments, linked works, and third-party material excluded",
+      "license_evidence_url": "https://jeffreypalermo.com/2008/08/the-onion-architecture-part-3/",
+      "license_evidence_note": "The Jeffrey Palermo article “The Onion Architecture : part 3” at https://jeffreypalermo.com/2008/08/the-onion-architecture-part-3/ was checked on 2026-08-07; the author-hosted page exposes no reusable license for this work. Tego Arch retains attribution, a link, and original factual summary only.",
+      "license_family_id": "https://jeffreypalermo.com/2008/08/the-onion-architecture-part-3/",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Defines the four Onion tenets and its contrast with traditional layered dependencies; C#, IoC product recommendations, source diagrams, and universal outcome claims are excluded.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://jeffreypalermo.com/2008/08/the-onion-architecture-part-3/",
+      "expected_final_approved_at": "2026-08-07",
+      "expected_final_approval_note": "Reviewed canonical identity and current author-hosted transport on 2026-08-07.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://jeffreypalermo.com/2008/08/the-onion-architecture-part-3/",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-07T03:08:53.172Z",
+          "last_success_at": "2026-08-07T03:08:53.172Z",
+          "http_status": 200,
+          "final_transport_locator": "https://jeffreypalermo.com/2008/08/the-onion-architecture-part-3/"
         }
       ]
     },
@@ -34465,6 +34652,97 @@
           "manifest_primary": true,
           "usage_mode": "facts-summary",
           "attribution_note": "N-tier architecture style, Microsoft Learn",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/styles/sty-02-hexagonal-onion-clean.mdx": {
+      "title": "Hexagonal、Onion 与 Clean Architecture：用依赖方向判断边界所有权",
+      "slug": "/styles/sty-02",
+      "reviewed_at": "2026-08-07",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-aws-hexagonal-layered-overview",
+          "citation_url": "https://docs.aws.amazon.com/prescriptive-guidance/latest/hexagonal-architectures/overview.html",
+          "roles": [
+            "comparison",
+            "implementation"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Hexagonal architecture overview, Amazon Web Services",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-cockburn-hexagonal-architecture-2005",
+          "citation_url": "https://alistair.cockburn.us/hexagonal-architecture/",
+          "roles": [
+            "definition",
+            "comparison",
+            "historical-context",
+            "learning"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Hexagonal architecture the original 2005 article, Alistair Cockburn",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-martin-clean-architecture-2012",
+          "citation_url": "https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html",
+          "roles": [
+            "definition",
+            "comparison",
+            "historical-context",
+            "learning"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "The Clean Architecture, Robert C. Martin",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-palermo-onion-architecture-part-1",
+          "citation_url": "https://jeffreypalermo.com/2008/07/the-onion-architecture-part-1/",
+          "roles": [
+            "definition",
+            "comparison",
+            "historical-context",
+            "learning"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "The Onion Architecture : part 1, Jeffrey Palermo",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-palermo-onion-architecture-part-3",
+          "citation_url": "https://jeffreypalermo.com/2008/08/the-onion-architecture-part-3/",
+          "roles": [
+            "definition",
+            "comparison",
+            "historical-context",
+            "learning"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "The Onion Architecture : part 3, Jeffrey Palermo",
           "modification_note": null,
           "excerpt": null,
           "quotation_reviewed": false

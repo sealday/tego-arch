@@ -18,8 +18,33 @@ const [ledger, linkHealth, licenseInventory] = await Promise.all([
   readFile(new URL('../docs/source-license-inventory.md', import.meta.url), 'utf8'),
 ]);
 
+const [manifest, projectStatus, indexes, publicLedger] = await Promise.all([
+  readFile(new URL('../src/generated/topic-manifest.json', import.meta.url), 'utf8').then(JSON.parse),
+  readFile(new URL('../src/generated/project-status.json', import.meta.url), 'utf8').then(JSON.parse),
+  readFile(new URL('../src/generated/topic-indexes.json', import.meta.url), 'utf8').then(JSON.parse),
+  readFile(new URL('../src/generated/source-ledger.json', import.meta.url), 'utf8').then(JSON.parse),
+]);
+
 const licenseScope = 'The named article/page and bibliographic facts only; prose, code, diagrams, images, marks, comments, linked works, and third-party material excluded';
 const migrationPolicy = 'Facts summary and reviewed short quotation only; no adaptation or copied structure';
+
+test('projects Stage A without closing STY-02 or activating STY-03', () => {
+  const topics = new Map(manifest.topics.map((topic) => [topic.id, topic]));
+  assert.equal(topics.get('STY-02')?.published, true);
+  assert.equal(topics.get('STY-02')?.status.value, 'pending');
+  assert.deepEqual(topics.get('STY-02')?.primary_sources, [
+    'https://alistair.cockburn.us/hexagonal-architecture/',
+    'https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html',
+    'https://jeffreypalermo.com/2008/08/the-onion-architecture-part-3/',
+  ]);
+  assert.equal(topics.get('STY-03')?.published, false);
+  assert.equal(topics.get('STY-03')?.status.value, 'pending');
+  assert.equal(projectStatus.completed_topics, 54);
+  assert.equal(projectStatus.content_documents, 96);
+  assert.equal(projectStatus.governed_sources, 506);
+  assert.equal(publicLedger.sources.length, 506);
+  assert.ok(indexes.style.some(({id, status}) => id === 'STY-02' && status.value === 'pending'));
+});
 
 const expectedNewSources = new Map([
   ['src-cockburn-hexagonal-architecture-2005', {

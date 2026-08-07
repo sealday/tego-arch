@@ -249,8 +249,8 @@ function assertGeneratedState(manifestValue, statusValue) {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
     completed_topics: 54,
-    content_documents: 95,
-    governed_sources: 502,
+    content_documents: 96,
+    governed_sources: 506,
     sources: {
       durable_stories: 'docs/content-backlog.md',
       completed_topics: 'docs/content-backlog.md',
@@ -414,8 +414,8 @@ test('rejects every generated status and count mutation', () => {
     (value) => { value.durable_stories.completed = 7; },
     (value) => { value.durable_stories.total = 21; },
     (value) => { value.durable_stories.current = 'G008'; },
-    (value) => { value.content_documents = 94; },
-    (value) => { value.governed_sources = 498; },
+    (value) => { value.content_documents = 95; },
+    (value) => { value.governed_sources = 502; },
     ...sourceMutations,
   ]) {
     const mutatedStatus = structuredClone(projectStatus);

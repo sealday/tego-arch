@@ -132,14 +132,14 @@ function assertLayerContract(source) {
   const visibleExternalLinks = externalLinksOf(source);
   for (const locator of canonicalSources) assert.ok(visibleExternalLinks.includes(locator), locator);
   assert.ok(internalLinksOf(source).includes('/cases/micro-frontends-single-spa'));
-  assert.ok(!internalLinksOf(source).includes('/styles/sty-02'));
+  assert.ok(internalLinksOf(source).includes('/styles/sty-02'));
   assert.doesNotMatch(source, /吞吐提升|延迟降低|恢复时间缩短|生产事故减少/u);
 }
 
 function assertReciprocalRelation(sty01Source, sty00Source) {
   assert.ok(internalLinksOf(sty01Source).includes('/styles/sty-00'));
   assert.ok(internalLinksOf(sty00Source).includes('/styles/sty-01'));
-  assert.ok(!internalLinksOf(sty01Source).includes('/styles/sty-02'));
+  assert.ok(internalLinksOf(sty01Source).includes('/styles/sty-02'));
   assert.ok(parseFrontMatter(sty00Source).adjacent_topics.includes('STY-01'));
 }
 
@@ -164,9 +164,9 @@ test('projects the Stage B G009 Batch 2 state after closing STY-01', () => {
     'https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/n-tier',
   ]);
   assert.equal(projectStatus.completed_topics, 54);
-  assert.equal(projectStatus.content_documents, 95);
-  assert.equal(projectStatus.governed_sources, 502);
-  assert.equal(publicLedger.sources.length, 502);
+  assert.equal(projectStatus.content_documents, 96);
+  assert.equal(projectStatus.governed_sources, 506);
+  assert.equal(publicLedger.sources.length, 506);
   assert.ok(indexes.style.some(({id, status}) => id === 'STY-01' && status.value === 'complete'));
 });
 
@@ -188,7 +188,7 @@ test('publishes the approved STY-01 metadata and style headings', () => {
   assert.equal(metadata.slug, '/styles/sty-01');
   assert.equal(metadata.topic_id, 'STY-01');
   assert.deepEqual(metadata.depends_on, ['STY-00']);
-  assert.deepEqual(metadata.adjacent_topics, ['STY-00']);
+  assert.deepEqual(metadata.adjacent_topics, ['STY-00', 'STY-02']);
   assert.deepEqual(metadata.related_cases, ['/cases/micro-frontends-single-spa']);
   assert.deepEqual(findMarkdownHeadings(sty01.body).map(({text}) => text), expectedHeadings);
 });
@@ -211,7 +211,7 @@ test('locks responsibilities, logical-versus-physical boundaries, visual wrapper
   assert.doesNotMatch(sty01.body, /aria-label="四层责任合同与八维架构剖面，可横向滚动"/u);
 });
 
-test('keeps the STY-00 relation reciprocal and STY-02 non-actionable', () => {
+test('keeps the STY-00 relation reciprocal and STY-02 actionable', () => {
   assert.ok(sty01);
   assert.ok(sty00);
   assertReciprocalRelation(sty01.source, sty00.source);
@@ -247,11 +247,11 @@ test('rejects mutations of the reciprocal relation', () => {
   assert.ok(sty01);
   assert.ok(sty00);
   const withoutSty01 = sty00.source.replace('/styles/sty-01', '/styles');
-  const withSty02 = `${sty01.source}\n[下一个风格](/styles/sty-02)\n`;
+  const withoutSty02 = sty01.source.replace('/styles/sty-02', '/styles');
   assert.notEqual(withoutSty01, sty00.source, 'STY-00 mutation must change source');
-  assert.notEqual(withSty02, sty01.source, 'STY-01 mutation must change source');
+  assert.notEqual(withoutSty02, sty01.source, 'STY-01 mutation must change source');
   assert.throws(() => assertReciprocalRelation(sty01.source, withoutSty01), {name: 'AssertionError'});
-  assert.throws(() => assertReciprocalRelation(withSty02, sty00.source), {name: 'AssertionError'});
+  assert.throws(() => assertReciprocalRelation(withoutSty02, sty00.source), {name: 'AssertionError'});
 });
 
 test('records the approved STY-01 citation review', () => {

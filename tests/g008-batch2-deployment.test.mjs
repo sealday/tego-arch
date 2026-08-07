@@ -205,8 +205,8 @@ test('preserves Batch 2 closure history separately from the live projection', ()
   assert.equal(topicsById.get('STY-01')?.published, true);
   assert.equal(topicsById.get('STY-01')?.status.value, 'complete');
   assert.equal(projectStatus.completed_topics, 54);
-  assert.equal(projectStatus.content_documents, 95);
-  assert.equal(projectStatus.governed_sources, 502);
+  assert.equal(projectStatus.content_documents, 96);
+  assert.equal(projectStatus.governed_sources, 506);
   assert.deepEqual(projectStatus.durable_stories, {
     completed: 8,
     total: 20,
