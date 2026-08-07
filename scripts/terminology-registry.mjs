@@ -95,9 +95,12 @@ export function parseTerminologyRegistry(value, file = 'data/terminology.json') 
       } else {
         const prefix = `${entry.canonical_zh} `;
         const context = entry.first_use.startsWith(prefix)
-          ? entry.first_use.slice(prefix.length)
+          ? entry.first_use.slice(prefix.length).normalize('NFKC')
           : '';
-        if (context === '' || !/\p{Script=Han}/u.test(context) || /[A-Za-z]/u.test(context)) {
+        const hasNonHanLetterOrNumber = [...context].some((character) => (
+          /[\p{Letter}\p{Number}]/u.test(character) && !/\p{Script=Han}/u.test(character)
+        ));
+        if (context === '' || !/\p{Script=Han}/u.test(context) || hasNonHanLetterOrNumber) {
           errors.push(`${label} proper-noun first_use must equal canonical_zh plus Chinese context`);
         }
       }

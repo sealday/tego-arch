@@ -25,6 +25,7 @@ const repositoryRegistry = JSON.parse(
   await readFile(new URL('../data/terminology.json', import.meta.url), 'utf8'),
 );
 const repositoryTerms = new Map(repositoryRegistry.terms.map((term) => [term.id, term]));
+const repositoryProperNouns = repositoryRegistry.terms.filter((term) => term.kind === 'proper-noun');
 
 test('accepts and indexes a canonical terminology registry', () => {
   const result = parseTerminologyRegistry({schema_version: 1, terms: [validEntry]});
@@ -195,25 +196,31 @@ test('requires Latin proper nouns to introduce a Chinese category or meaning', (
   );
 });
 
-test('rejects bare canonical first use for real proper nouns with Chinese in their names', () => {
-  for (const id of [
-    'google-adk-a2a-case',
-    'google-agent-development-kit',
-    'cloudflare-durable-objects',
-  ]) {
-    const term = repositoryTerms.get(id);
+test('rejects bare canonical first use for every registered proper noun', () => {
+  assert.equal(repositoryProperNouns.length, 39);
+  for (const term of repositoryProperNouns) {
     const result = parseTerminologyRegistry({
       schema_version: 1,
       terms: [{...term, first_use: term.canonical_zh}],
     });
-    assert.ok(result.errors.some((error) => error.includes('first_use')), id);
+    assert.ok(result.errors.some((error) => error.includes('first_use')), term.id);
   }
 });
 
 test('keeps the exact display contract for proper nouns with an English name', () => {
-  const term = repositoryTerms.get('cloudflare-durable-objects');
-  assert.deepEqual(parseTerminologyRegistry({schema_version: 1, terms: [term]}).errors, []);
+  const exactDisplayTerms = repositoryProperNouns.filter(
+    (term) => term.english !== null || term.acronym !== null,
+  );
+  assert.equal(exactDisplayTerms.length, 9);
+  for (const exactDisplayTerm of exactDisplayTerms) {
+    assert.deepEqual(
+      parseTerminologyRegistry({schema_version: 1, terms: [exactDisplayTerm]}).errors,
+      [],
+      exactDisplayTerm.id,
+    );
+  }
 
+  const term = repositoryTerms.get('cloudflare-durable-objects');
   for (const firstUse of [
     'Cloudflare 持久对象(Durable Objects)',
     'Durable Objects（Cloudflare 持久对象）',
@@ -232,13 +239,23 @@ test('keeps the exact display contract for proper nouns with an English name', (
 test('allows only Chinese context after an English-null proper noun canonical name', () => {
   const microsoft = repositoryTerms.get('microsoft');
   const caseIdentity = repositoryTerms.get('aws-cell-shuffle-sharding-case');
+  const googleCase = repositoryTerms.get('google-adk-a2a-case');
+  const fastapi = repositoryTerms.get('fastapi');
 
   assert.deepEqual(parseTerminologyRegistry({schema_version: 1, terms: [microsoft]}).errors, []);
   assert.deepEqual(parseTerminologyRegistry({schema_version: 1, terms: [caseIdentity]}).errors, []);
-  for (const firstUse of ['Microsoft', 'Microsoft Company 公司']) {
+  for (const [term, firstUse] of [
+    [microsoft, 'Microsoft'],
+    [microsoft, 'Microsoft Company 公司'],
+    [microsoft, 'Microsoft Ｃｏｍｐａｎｙ 公司'],
+    [microsoft, 'Microsoft Société 公司'],
+    [microsoft, 'Microsoft 第２家公司'],
+    [googleCase, 'Google ADK 与 A2A Ｅｘｔｒａ 智能体协作方案'],
+    [fastapi, 'FastAPI Ｗｅｂ 网络框架'],
+  ]) {
     const result = parseTerminologyRegistry({
       schema_version: 1,
-      terms: [{...microsoft, first_use: firstUse}],
+      terms: [{...term, first_use: firstUse}],
     });
     assert.ok(result.errors.some((error) => error.includes('proper-noun first_use')), firstUse);
   }
