@@ -2608,6 +2608,56 @@
       ]
     },
     {
+      "id": "src-bogard-vertical-slice-architecture",
+      "canonical_locator": "https://www.jimmybogard.com/vertical-slice-architecture/",
+      "transport_locator": "https://www.jimmybogard.com/vertical-slice-architecture/",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Vertical Slice Architecture",
+      "citation_titles": [
+        "Vertical Slice Architecture，Jimmy Bogard"
+      ],
+      "author_or_org": "Jimmy Bogard",
+      "published_at": "2018-04-19",
+      "registered_at": "2026-08-10",
+      "checked_at": "2026-08-10",
+      "version": "Original article published 2018-04-19; page checked 2026-08-10",
+      "source_kind": "engineering-blog",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "comparison",
+        "definition",
+        "historical-context",
+        "learning",
+        "method"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named Jimmy Bogard article and bibliographic facts only; prose, code, diagrams, images, marks, comments, linked works, and third-party material excluded",
+      "license_evidence_url": "https://www.jimmybogard.com/vertical-slice-architecture/",
+      "license_evidence_note": "The 2026-08-10 audit checked Jimmy Bogard’s “Vertical Slice Architecture” article at https://www.jimmybogard.com/vertical-slice-architecture/; no reusable license notice for the work was found. Tego Arch retains attribution, a link, and original factual summary only.",
+      "license_family_id": "https://www.jimmybogard.com/vertical-slice-architecture/",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports the definition of vertical slice architecture and its change-oriented organization discussion; the author’s implementation choices and outcome claims are not universal requirements or production guarantees.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://www.jimmybogard.com/vertical-slice-architecture/",
+      "expected_final_approved_at": "2026-08-10",
+      "expected_final_approval_note": "Reviewed canonical identity and healthy author-hosted transport on 2026-08-10.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://www.jimmybogard.com/vertical-slice-architecture/",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-10T03:13:20.300Z",
+          "last_success_at": "2026-08-10T03:13:20.300Z",
+          "http_status": 200,
+          "final_transport_locator": "https://www.jimmybogard.com/vertical-slice-architecture/"
+        }
+      ]
+    },
+    {
       "id": "src-c4model-abstractions",
       "canonical_locator": "https://c4model.com/abstractions",
       "transport_locator": "https://c4model.com/abstractions",
@@ -21282,6 +21332,56 @@
       ]
     },
     {
+      "id": "src-microsoft-eshoponweb-architecture",
+      "canonical_locator": "https://github.com/dotnet-architecture/eShopOnWeb",
+      "transport_locator": "https://github.com/dotnet-architecture/eShopOnWeb",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "eShopOnWeb sample reference application",
+      "citation_titles": [
+        "eShopOnWeb 示例参考应用"
+      ],
+      "author_or_org": ".NET Foundation and contributors; Microsoft-maintained dotnet-architecture repository",
+      "published_at": null,
+      "registered_at": "2026-08-10",
+      "checked_at": "2026-08-10",
+      "version": "Repository main at commit 4da8212117e87d808d4bbc7da6286fd2147ce606; repository checked 2026-08-10",
+      "source_kind": "official-repository",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "case-evidence",
+        "comparison",
+        "implementation",
+        "learning",
+        "method"
+      ],
+      "license": "MIT",
+      "license_scope": "Repository material covered by the evidenced LICENSE only; external links, trademarks, and third-party assets excluded",
+      "license_evidence_url": "https://raw.githubusercontent.com/dotnet-architecture/eShopOnWeb/main/LICENSE",
+      "license_evidence_note": "The official eShopOnWeb repository LICENSE retrieved on 2026-08-10 identifies the MIT License. Tego Arch limits use to attributed factual summary of the sample; external links, trademarks, and third-party assets are excluded.",
+      "license_family_id": "github:dotnet-architecture/eshoponweb",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Provides an implementation example for discussing use-case-oriented organization and boundaries; its ASP.NET Core choices and sample structure are examples, not normative vertical-slice requirements or production evidence.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://github.com/dotnet-architecture/eShopOnWeb",
+      "expected_final_approved_at": "2026-08-10",
+      "expected_final_approval_note": "Reviewed canonical identity, repository version boundary, LICENSE evidence, and healthy GitHub transport on 2026-08-10.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://github.com/dotnet-architecture/eShopOnWeb",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-10T03:13:20.300Z",
+          "last_success_at": "2026-08-10T03:13:20.300Z",
+          "http_status": 200,
+          "final_transport_locator": "https://github.com/dotnet-architecture/eShopOnWeb"
+        }
+      ]
+    },
+    {
       "id": "src-microsoft-n-tier-architecture",
       "canonical_locator": "https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/n-tier",
       "transport_locator": "https://raw.githubusercontent.com/MicrosoftDocs/architecture-center/ef79621488119c618cd3ebeb8f81443f023cc452/docs/guide/architecture-styles/n-tier.md",
@@ -34985,6 +35085,48 @@
           "manifest_primary": true,
           "usage_mode": "facts-summary",
           "attribution_note": "The Onion Architecture : part 3, Jeffrey Palermo",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/styles/sty-03-vertical-slice-architecture.mdx": {
+      "title": "垂直切片架构：按用例收拢变化边界",
+      "slug": "/styles/sty-03",
+      "reviewed_at": "2026-08-10",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-bogard-vertical-slice-architecture",
+          "citation_url": "https://www.jimmybogard.com/vertical-slice-architecture/",
+          "roles": [
+            "definition",
+            "comparison",
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Vertical Slice Architecture, Jimmy Bogard",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-microsoft-eshoponweb-architecture",
+          "citation_url": "https://github.com/dotnet-architecture/eShopOnWeb",
+          "roles": [
+            "implementation",
+            "comparison"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "eShopOnWeb sample reference application, .NET Foundation and contributors / Microsoft-maintained dotnet-architecture repository",
           "modification_note": null,
           "excerpt": null,
           "quotation_reviewed": false

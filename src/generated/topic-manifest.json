@@ -924,27 +924,6 @@
       "presentation": {}
     },
     {
-      "id": "STY-03",
-      "type": "style",
-      "title": "Vertical Slice Architecture",
-      "slug": "/styles/sty-03",
-      "priority": "P0",
-      "status": {
-        "scope": "backlog-projection",
-        "value": "pending",
-        "source": "docs/content-backlog.md"
-      },
-      "dependencies": [],
-      "adjacent_topics": [],
-      "primary_sources": [],
-      "related_cases": [],
-      "related_questions": [],
-      "reviewed_at": null,
-      "review_policy": null,
-      "published": false,
-      "pattern_group": null
-    },
-    {
       "id": "STY-04",
       "type": "style",
       "title": "Modular Monolith",
@@ -1308,7 +1287,8 @@
       ],
       "adjacent_topics": [
         "STY-00",
-        "STY-02"
+        "STY-02",
+        "STY-03"
       ],
       "primary_sources": [
         "https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/n-tier"
@@ -1505,7 +1485,8 @@
         "STY-01"
       ],
       "adjacent_topics": [
-        "STY-01"
+        "STY-01",
+        "STY-03"
       ],
       "primary_sources": [
         "https://alistair.cockburn.us/hexagonal-architecture/",
@@ -1517,6 +1498,39 @@
       ],
       "related_questions": [],
       "reviewed_at": "2026-08-07",
+      "review_policy": null,
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
+    },
+    {
+      "id": "STY-03",
+      "type": "style",
+      "title": "垂直切片架构：按用例收拢变化边界",
+      "slug": "/styles/sty-03",
+      "priority": "P0",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "pending",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "STY-00",
+        "STY-01"
+      ],
+      "adjacent_topics": [
+        "STY-01",
+        "STY-02"
+      ],
+      "primary_sources": [
+        "https://github.com/dotnet-architecture/eShopOnWeb",
+        "https://www.jimmybogard.com/vertical-slice-architecture/"
+      ],
+      "related_cases": [
+        "/cases/micro-frontends-single-spa"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-08-08",
       "review_policy": null,
       "published": true,
       "pattern_group": null,

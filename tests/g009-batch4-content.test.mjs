@@ -37,6 +37,7 @@ const SOURCE_URLS = [
   'https://www.jimmybogard.com/vertical-slice-architecture/',
   'https://github.com/dotnet-architecture/eShopOnWeb',
 ];
+const PROJECTED_SOURCE_URLS = [...SOURCE_URLS].sort((left, right) => left.localeCompare(right, 'en'));
 const DIAGRAM_DRAWIO = 'diagrams/sty-03-vertical-slice-boundary.drawio';
 const DIAGRAM_SVG = 'static/img/diagrams/sty-03-vertical-slice-boundary.svg';
 const REQUIRED_HEADINGS = [
@@ -281,7 +282,7 @@ test('publishes STY-03 metadata and the eleven-section style contract', () => {
   assert.equal(metadata.difficulty, 'intermediate');
   assert.equal(metadata.priority, 'P0');
   assert.deepEqual(metadata.depends_on, ['STY-00', 'STY-01']);
-  assert.deepEqual(metadata.adjacent_topics, ['STY-01', 'STY-02', 'STY-04']);
+  assert.deepEqual(metadata.adjacent_topics, ['STY-01', 'STY-02']);
   assert.deepEqual(metadata.related_cases, ['/cases/micro-frontends-single-spa']);
   assert.deepEqual(metadata.related_questions, []);
   assert.ok(Array.isArray(metadata.quality_attributes));
@@ -376,31 +377,33 @@ test('keeps adjacent relations reciprocal without activating STY-04', () => {
   assert.ok(parseFrontMatter(sty02.source).adjacent_topics.includes(STY03));
   assert.ok(internalLinksOf(sty01).includes(STY03_SLUG));
   assert.ok(internalLinksOf(sty02).includes(STY03_SLUG));
+  assert.ok(internalLinksOf(sty03).includes('/styles'));
   assert.ok(internalLinksOf(sty03).includes('/styles/sty-01'));
   assert.ok(internalLinksOf(sty03).includes('/styles/sty-02'));
   assert.ok(internalLinksOf(sty03).includes('/cases/micro-frontends-single-spa'));
   assert.ok(internalLinksOf(moduleBoundaries).includes(STY03_SLUG));
-  assert.equal(parseFrontMatter(sty03.source).adjacent_topics.includes('STY-04'), true);
+  assert.equal(parseFrontMatter(sty03.source).adjacent_topics.includes('STY-04'), false);
   assert.equal(manifest.topics.find(({id}) => id === 'STY-04')?.published, false);
   assert.equal(manifest.topics.find(({id}) => id === 'STY-04')?.status.value, 'pending');
 });
 
-test('projects the completed STY-03 topic and exact Batch 4 counts', () => {
+test('projects the published pre-closure STY-03 topic and exact Batch 4 counts', () => {
   const topic = manifest.topics.find(({id}) => id === STY03);
   assert.equal(topic?.published, true);
   assert.equal(topic?.slug, STY03_SLUG);
-  assert.equal(topic?.status.value, 'complete');
+  assert.equal(topic?.status.value, 'pending');
   assert.deepEqual(topic?.dependencies, ['STY-00', 'STY-01']);
-  assert.deepEqual(topic?.adjacent_topics, ['STY-01', 'STY-02', 'STY-04']);
+  assert.deepEqual(topic?.adjacent_topics, ['STY-01', 'STY-02']);
   assert.deepEqual(topic?.related_cases, ['/cases/micro-frontends-single-spa']);
-  assert.deepEqual(topic?.primary_sources, SOURCE_URLS);
+  assert.deepEqual(topic?.primary_sources, PROJECTED_SOURCE_URLS);
   const styleIndexEntry = indexes.style.find(({id}) => id === STY03);
-  assert.deepEqual(styleIndexEntry?.primary_sources, SOURCE_URLS);
-  assert.equal(projectStatus.completed_topics, 56);
+  assert.deepEqual(styleIndexEntry?.primary_sources, PROJECTED_SOURCE_URLS);
+  assert.equal(projectStatus.completed_topics, 55);
   assert.equal(projectStatus.content_documents, 98);
   assert.equal(projectStatus.governed_sources, 508);
   assert.equal(publicLedger.sources.length, 508);
-  assert.ok(indexes.style.some(({id, status}) => id === STY03 && status.value === 'complete'));
+  assert.ok(indexes.style.some(({id, published, status}) =>
+    id === STY03 && published && status.value === 'pending'));
 });
 
 test('publishes the synchronized STY-03 diagram pair with the minimum inventory', async () => {

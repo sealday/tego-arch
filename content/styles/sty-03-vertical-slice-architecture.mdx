@@ -28,7 +28,6 @@ depends_on:
 adjacent_topics:
   - STY-01
   - STY-02
-  - STY-04
 related_cases:
   - /cases/micro-frontends-single-spa
 related_questions: []
@@ -39,7 +38,7 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 
 # 垂直切片架构：按用例收拢变化边界
 
-垂直切片架构首先是一种**面向变化的代码边界**：把完成一个业务用例通常要共同修改的输入、处理、规则调用、数据访问与输出映射收拢在一起。它不是固定目录模板，也不是进程、服务、数据库、团队或部署单元的别名。Tego Arch 架构知识项目用提交订单（`SubmitOrder`）说明这种组织方式如何回应高频的端到端变化，并以质量属性（Quality Attribute）讨论可维护性、可测试性与可部署性的权衡。
+垂直切片架构首先是一种**面向变化的代码边界**：把完成一个业务用例通常要共同修改的输入、处理、规则调用、数据访问与输出映射收拢在一起。它不是固定目录模板，也不是进程、服务、数据库、团队或部署单元的别名。Tego Arch 的[架构风格目录](/styles)用提交订单（`SubmitOrder`）说明这种组织方式如何回应高频的端到端变化，并以质量属性（Quality Attribute）讨论可维护性、可测试性与可部署性的权衡。
 
 **来源支持的事实：** [Vertical Slice Architecture，Jimmy Bogard](https://www.jimmybogard.com/vertical-slice-architecture/)把按请求或功能组织代码、降低跨功能共享层以及围绕请求处理边界组织变化作为主要工程意图。[eShopOnWeb 示例参考应用](https://github.com/dotnet-architecture/eShopOnWeb)则展示应用核心、领域逻辑、接口与基础设施实现可以保持职责边界。两项来源都只支持各自明确展示的工程事实，不把某个技术栈、目录结构或作者经验提升为普遍规范。
 
