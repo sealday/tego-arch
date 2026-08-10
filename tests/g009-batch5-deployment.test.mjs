@@ -101,6 +101,24 @@ function assertExactStageAProductionEvidence(source) {
   }
 }
 
+function assertStageBIndependentReview(source) {
+  const stageBClosure = section(source, 'Stage B closure implementation');
+  for (const literal of [
+    'Exact reviewed local head: `2a46df9`.',
+    'Independent code reviewer (`code-reviewer`): `READY / APPROVE`; findings: `0`.',
+    'Independent content reviewer: `READY`; rights: `PASS`; blocking findings: `0`.',
+    'Nonblocking item 1: the plan/brief 512-source forecast is stale; the authoritative Stage A and generated projection remain 513 sources — `ACCEPTED`.',
+    'Nonblocking item 2: the stale STY-04 mutation expectation and six assertion messages were corrected in `2a46df9` — `RESOLVED`.',
+    'Independent architecture reviewer (`architect`): `CLEAR / READY`; blockers: `0`.',
+    'Invariant proof: module contracts, unique data ownership, explicit transaction/event semantics, shared deployment/failure boundaries, and evidence-based extraction remain intact.',
+    'Local Stage B review readiness: `READY`; this is not Stage B deployment evidence.',
+    'Stage B deployment status: `PENDING`.',
+  ]) {
+    assert.ok(stageBClosure.includes(literal), `Stage B review literal: ${literal}`);
+  }
+  assert.doesNotMatch(stageBClosure, /Stage B deployment status: `(?:PASS|DEPLOYED|SUCCESS)`/u);
+}
+
 test('projects the exact STY-04 Stage B closure inventory', () => {
   assert.deepEqual(
     {
@@ -170,7 +188,7 @@ test('closes only STY-04 and advances the G009 release baseline to STY-05', () =
   }
 });
 
-test('preserves exact Stage A evidence and records pending Stage B review slots', async () => {
+test('preserves exact Stage A evidence and records final Stage B independent verdicts', async () => {
   assertExactStageAProductionEvidence(review);
   assert.match(review, /^# G009 Batch 5 Stage A Review$/mu);
   assert.match(section(review, 'Stage A projection'), /56 completed topics \/ 99 content documents \/ 513 governed sources/u);
@@ -261,14 +279,35 @@ test('preserves exact Stage A evidence and records pending Stage B review slots'
   );
   assert.match(browserQa, /Stage A production verdict: \*\*PASS\*\*/u);
 
+  assertStageBIndependentReview(review);
   const stageBClosure = section(review, 'Stage B closure implementation');
   assert.match(stageBClosure, /Projection: 57 completed topics \/ 99 content documents \/ 513 governed sources/u);
   assert.match(stageBClosure, /STY-04: `published \/ complete`/u);
   assert.match(stageBClosure, /STY-05: `unpublished \/ pending`/u);
-  assert.match(stageBClosure, /Code review slot: `PENDING`/u);
-  assert.match(stageBClosure, /Content review slot: `PENDING`/u);
-  assert.match(stageBClosure, /Architecture review slot: `PENDING`/u);
+  assert.match(stageBClosure, /Local Stage B review readiness: `READY`/u);
+  assert.match(stageBClosure, /Stage B deployment status: `PENDING`/u);
   assert.doesNotMatch(review, /Stage B closure verdict:\s*\*\*PASS\*\*/iu);
+});
+
+test('rejects missing or fabricated Stage B independent verdicts', () => {
+  const mutations = [
+    ['reviewed head', 'Exact reviewed local head: `2a46df9`.', 'Exact reviewed local head: `46cc7a1`.'],
+    ['code verdict', '`READY / APPROVE`; findings: `0`.', '`PENDING`; findings: `1`.'],
+    ['content rights', '`READY`; rights: `PASS`; blocking findings: `0`.', '`READY`; rights: `UNKNOWN`; blocking findings: `0`.'],
+    ['brief item', '513 sources — `ACCEPTED`.', '512 sources — `ACCEPTED`.'],
+    ['message cleanup', 'corrected in `2a46df9` — `RESOLVED`.', 'deferred — `PENDING`.'],
+    ['architecture verdict', '`CLEAR / READY`; blockers: `0`.', '`BLOCKED`; blockers: `1`.'],
+    ['invariant proof', 'unique data ownership', 'shared data ownership'],
+    ['deployment boundary', 'Stage B deployment status: `PENDING`.', 'Stage B deployment status: `SUCCESS`.'],
+  ];
+
+  for (const [label, exact, replacement] of mutations) {
+    const stageBClosure = section(review, 'Stage B closure implementation');
+    const mutatedStageBClosure = stageBClosure.replace(exact, replacement);
+    assert.notEqual(mutatedStageBClosure, stageBClosure, `${label} mutation must apply`);
+    const mutatedReview = review.replace(stageBClosure, mutatedStageBClosure);
+    assert.throws(() => assertStageBIndependentReview(mutatedReview), {name: 'AssertionError'}, label);
+  }
 });
 
 test('rejects mutated Stage A run and four-state production evidence', () => {
