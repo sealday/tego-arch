@@ -19019,6 +19019,36 @@
       "expected_final_transport_locator": "https://docs.spring.io/spring-modulith/reference/events.html",
       "expected_final_approved_at": "2026-08-11",
       "expected_final_approval_note": "Reviewed documentation version 2.1.0, versioned source identity, Apache-2.0 evidence, and healthy official transport on 2026-08-11."
+    },
+    {
+      "id": "src-atlas-sty04-modular-monolith-boundaries",
+      "canonical_locator": "/img/diagrams/sty-04-modular-monolith-boundaries.svg",
+      "transport_locator": "/img/diagrams/sty-04-modular-monolith-boundaries.svg",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "模块化单体的模块合同、数据所有权与单一部署边界图",
+      "author_or_org": "Tego Arch maintainers",
+      "published_at": null,
+      "registered_at": "2026-08-11",
+      "checked_at": "2026-08-11",
+      "version": "Original Draw.io/SVG pair authored and remediation-QA-checked on 2026-08-11",
+      "source_kind": "original-illustration",
+      "tier": "primary",
+      "allowed_evidence_roles": ["illustration"],
+      "license": "LicenseRef-Atlas-Original",
+      "license_scope": "The named project-authored sty-04-modular-monolith-boundaries.svg asset only",
+      "license_evidence_url": "https://github.com/sealday/tego-arch/blob/main/static/img/diagrams/sty-04-modular-monolith-boundaries.svg",
+      "license_evidence_note": "The project-authored Draw.io/SVG pair contains no third-party reference image, icon, signature, watermark, or copied composition.",
+      "license_family_id": "/img/diagrams/sty-04-modular-monolith-boundaries.svg",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "original-atlas",
+      "usage_boundary": "Original teaching illustration of module contracts, authoritative data ownership, local transaction coupling, post-commit payment and publication recovery, consumer deduplication, and shared deployment failure scope; it is illustration-only and does not establish factual claims or represent a production implementation.",
+      "link_policy": null,
+      "expected_final_transport_locator": "/img/diagrams/sty-04-modular-monolith-boundaries.svg",
+      "expected_final_approved_at": "2026-08-11",
+      "expected_final_approval_note": "Approved project-local original illustration locator after synchronized Draw.io/SVG semantics, contrast, geometry, and responsive QA on 2026-08-11."
     }
   ],
   "documents": {
@@ -28847,6 +28877,17 @@
           "usage_mode": "facts-summary",
           "attribution_note": "Working with Application Events, Spring Modulith reference documentation 2.1.0",
           "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-atlas-sty04-modular-monolith-boundaries",
+          "citation_url": "/img/diagrams/sty-04-modular-monolith-boundaries.svg",
+          "roles": ["illustration"],
+          "manifest_primary": false,
+          "usage_mode": "original-illustration",
+          "attribution_note": "模块化单体的模块合同、数据所有权与单一部署边界图，Tego Arch maintainers",
+          "modification_note": "Created as an original Draw.io and SVG pair for STY-04 from a project-authored design; remediation synchronized payment-intent semantics, durable publication recovery, consumer deduplication, poison-message isolation/manual replay, opaque-canvas contrast, and responsive readability without third-party reference imagery.",
           "excerpt": null,
           "quotation_reviewed": false
         }

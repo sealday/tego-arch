@@ -17,7 +17,10 @@ const SOURCE_IDS = [
   'src-fowler-monolith-first',
   'src-spring-modulith-fundamentals',
   'src-spring-modulith-events',
+  'src-atlas-sty04-modular-monolith-boundaries',
 ];
+const ILLUSTRATION_SOURCE_ID = 'src-atlas-sty04-modular-monolith-boundaries';
+const ILLUSTRATION_URL = '/img/diagrams/sty-04-modular-monolith-boundaries.svg';
 const REQUIRED_HEADINGS = [
   '学习问题', '组件、连接器与约束', '边界与控制流', '数据所有权与一致性',
   '部署单元与故障域', '团队拓扑', '质量属性收益与成本', '迁移路径',
@@ -28,6 +31,7 @@ const SOURCE_URLS = [
   'https://martinfowler.com/bliki/MonolithFirst.html',
   'https://docs.spring.io/spring-modulith/reference/fundamentals.html',
   'https://docs.spring.io/spring-modulith/reference/events.html',
+  ILLUSTRATION_URL,
 ];
 const SOURCE_CONTRACTS = [
   {
@@ -66,6 +70,18 @@ const SOURCE_CONTRACTS = [
     manifestPrimary: false,
     usageBoundary: 'Supports documented event-publication registration, publication after transaction commit, completion tracking, and recovery mechanisms; it does not establish exactly-once delivery, arbitrary broker guarantees, or production outcomes.',
   },
+  {
+    id: ILLUSTRATION_SOURCE_ID,
+    license: 'LicenseRef-Atlas-Original',
+    licenseFamilyId: ILLUSTRATION_URL,
+    licenseEvidenceUrl: 'https://github.com/sealday/tego-arch/blob/main/static/img/diagrams/sty-04-modular-monolith-boundaries.svg',
+    copyrightPolicy: 'original-atlas',
+    allowedEvidenceRoles: ['illustration'],
+    citationRoles: ['illustration'],
+    citationUsageMode: 'original-illustration',
+    manifestPrimary: false,
+    usageBoundary: 'Original teaching illustration of module contracts, authoritative data ownership, local transaction coupling, post-commit payment and publication recovery, consumer deduplication, and shared deployment failure scope; it is illustration-only and does not establish factual claims or represent a production implementation.',
+  },
 ];
 const ADJACENT_TOPICS = ['STY-01', 'STY-02', 'STY-03'];
 const ADJACENT_ROUTES = ['/styles/sty-01', '/styles/sty-02', '/styles/sty-03'];
@@ -95,9 +111,11 @@ const DIAGRAM_GEOMETRY = new Map([
   ['notification-internal-implementation', [675, 1235, 455, 96]],
   ['order-owned-data', [185, 660, 375, 190]],
   ['inventory-owned-data', [675, 660, 455, 170]],
-  ['payment-owned-data', [185, 1430, 375, 120]],
-  ['notification-owned-data', [675, 1430, 455, 120]],
-  ['outbox', [210, 745, 325, 90]],
+  ['payment-owned-data', [185, 1420, 375, 145]],
+  ['payment-recovery-note', [200, 1510, 345, 44]],
+  ['notification-owned-data', [675, 1420, 455, 145]],
+  ['notification-recovery-note', [690, 1510, 425, 44]],
+  ['outbox', [197.5, 745, 350, 90]],
   ['event-publication', [850, 75, 310, 104.25]],
   ['shared-process-failure-domain', [430, 75, 400, 103]],
   ['submit-order-request', [5, 270, 95, 110]],
@@ -133,10 +151,12 @@ const DIAGRAM_NODES = [
   ['notification-internal-implementation', '通知内部实现', '内部实现 / Internal Implementation'],
   ['order-owned-data', '订单数据', '唯一模块所有者 / Owned Data'],
   ['inventory-owned-data', '库存数据', '唯一模块所有者 / Owned Data'],
-  ['payment-owned-data', '支付数据', '唯一模块所有者 / Owned Data'],
-  ['notification-owned-data', '通知数据', '唯一模块所有者 / Owned Data'],
-  ['outbox', 'Outbox', '订单模块拥有 / Transactional Outbox'],
-  ['event-publication', '事件发布登记', '提交后事件 / Event Publication'],
+  ['payment-owned-data', '支付意图与结果', '唯一模块所有者 / Owned Data'],
+  ['payment-recovery-note', '待授权 / 待核实 / 待人工处置', ''],
+  ['notification-owned-data', '通知去重与投递状态', '唯一模块所有者 / Owned Data'],
+  ['notification-recovery-note', '消费者去重 / 毒消息隔离 / 人工重放', ''],
+  ['outbox', 'Outbox 不保证 exactly-once', '失败发布保留 / 重试 / 重放'],
+  ['event-publication', '事件发布登记', '持久扫描 / 提交后发布'],
   ['shared-process-failure-domain', '共享进程故障域', '共享运行时 / Failure Domain'],
   ['submit-order-request', '提交订单请求', '外部请求 / Request'],
   ['legend-sync-line', '', ''],
@@ -151,7 +171,7 @@ const DIAGRAM_EDGES = [
   ['payment-contract-dispatch', 'payment-public-contract', 'payment-internal-implementation', '进入支付模块', 'sync'],
   ['notification-contract-dispatch', 'notification-public-contract', 'notification-internal-implementation', '进入通知模块', 'sync'],
   ['order-inventory-call', 'order-internal-implementation', 'inventory-public-contract', '申请库存预留', 'sync'],
-  ['order-payment-call', 'order-internal-implementation', 'payment-public-contract', '请求支付', 'sync'],
+  ['order-payment-call', 'order-internal-implementation', 'payment-public-contract', '登记支付意图', 'sync'],
   ['order-outbox-write', 'order-internal-implementation', 'outbox', '同事务记录', 'sync'],
   ['outbox-event-publication', 'outbox', 'event-publication', '提交后发布', 'event'],
   ['event-notification-delivery', 'event-publication', 'notification-public-contract', '异步投递', 'event'],
@@ -527,6 +547,18 @@ function markdownParagraphs(source) {
   return source.split(/\r?\n\s*\r?\n/u).map((paragraph) => paragraph.trim()).filter(Boolean);
 }
 
+function relativeLuminance(hex) {
+  const channels = hex.match(/[\da-f]{2}/giu).map((value) => Number.parseInt(value, 16) / 255)
+    .map((value) => value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4);
+  return channels[0] * 0.2126 + channels[1] * 0.7152 + channels[2] * 0.0722;
+}
+
+function contrastRatio(first, second) {
+  const [lighter, darker] = [relativeLuminance(first), relativeLuminance(second)]
+    .sort((left, right) => right - left);
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
 test('SVG presentation parser resolves stylesheet, presentation, inline, and inherited dash semantics', () => {
   const fixture = `<svg>
     <style>.sync { stroke-dasharray: none; } path.event { stroke-dasharray: 8 4; } .legend-event { stroke-dasharray: 6,3; }</style>
@@ -609,6 +641,28 @@ test('locks module contracts, data ownership, consistency, failure domain, and s
     'accessible diagram embed');
 });
 
+test('locks the complete local payment transaction and post-commit recovery boundary', () => {
+  assert.ok(article);
+  const visibleCopy = parseMdxVisibleCopy(article.source, ARTICLE).blocks.map(({text}) => text).join('\n');
+  for (const pattern of [
+    /订单行.*库存预留行.*支付意图行/u,
+    /订单模式.*库存模式.*支付模式/u,
+    /锁竞争.*失败耦合/u,
+    /支付模块拥有.*持久.*待授权.*支付意图/u,
+    /稳定幂等键/u,
+    /持久调度器.*待处理扫描/u,
+    /本地事务提交后.*外部.*授权/u,
+    /从未尝试.*结果未知/u,
+    /记录授权结果.*推进或取消订单.*释放库存/u,
+    /部分失败.*恢复/u,
+    /处置期限/u,
+    /重试.*撤销.*冲正.*退款.*对账/u,
+    /待人工处置状态/u,
+  ]) assert.match(visibleCopy, pattern, `payment boundary ${pattern}`);
+  assert.doesNotMatch(visibleCopy, /爆炸半径证据/u);
+  assert.match(visibleCopy, /故障影响半径证据/u);
+});
+
 test('rejects claims that erase module, data, deployment, or delivery boundaries', () => {
   assert.ok(article);
   const visibleCopy = parseMdxVisibleCopy(article.source, ARTICLE).blocks.map(({text}) => text).join(' ')
@@ -650,7 +704,7 @@ test('prohibited-claim patterns cover equivalents while permitting explicit deni
   ]) assert.ok(PROHIBITED_CLAIMS.every(([, pattern]) => !pattern.test(denial)), `must permit denial: ${denial}`);
 });
 
-test('governs the three STY-04 sources with bounded evidence and one manifest primary', () => {
+test('governs the STY-04 evidence and original illustration with one manifest primary', () => {
   const records = new Map(ledger.sources.map((source) => [source.id, source]));
   const healthBySource = new Map(linkHealth.results.flatMap((result) =>
     result.source_ids.map((sourceId) => [sourceId, result])));
@@ -670,7 +724,7 @@ test('governs the three STY-04 sources with bounded evidence and one manifest pr
     const record = records.get(sourceId);
     assert.ok(record, `${sourceId} ledger record`);
     assert.equal(record.canonical_locator, SOURCE_URLS[index]);
-    citedDomains.add(new URL(record.canonical_locator).hostname);
+    if (record.canonical_locator.startsWith('https://')) citedDomains.add(new URL(record.canonical_locator).hostname);
     for (const field of [
       'author_or_org', 'version', 'source_kind', 'copyright_policy', 'license', 'license_family_id',
       'license_evidence_url', 'license_evidence_note', 'usage_boundary',
@@ -692,17 +746,31 @@ test('governs the three STY-04 sources with bounded evidence and one manifest pr
     assert.ok(review.citations[index].attribution_note?.trim(), `${sourceId} attribution`);
     assert.equal(review.citations[index].excerpt, null, `${sourceId} no copied excerpt`);
     assert.equal(review.citations[index].quotation_reviewed, false, `${sourceId} no quotation`);
-    assert.ok(externalLinksOf(article).includes(record.canonical_locator), `${sourceId} visible citation`);
-    const health = healthBySource.get(sourceId);
-    assert.equal(health?.last_attempt?.outcome, 'healthy', `${sourceId} current transport`);
-    assert.equal(health?.review_status, 'healthy', `${sourceId} reviewed health`);
-    assert.equal(health?.last_attempt?.final_transport_locator, record.transport_locator,
-      `${sourceId} final transport`);
+    if (record.canonical_locator.startsWith('https://')) {
+      assert.ok(externalLinksOf(article).includes(record.canonical_locator), `${sourceId} visible citation`);
+      const health = healthBySource.get(sourceId);
+      assert.equal(health?.last_attempt?.outcome, 'healthy', `${sourceId} current transport`);
+      assert.equal(health?.review_status, 'healthy', `${sourceId} reviewed health`);
+      assert.equal(health?.last_attempt?.final_transport_locator, record.transport_locator,
+        `${sourceId} final transport`);
+    } else {
+      assert.match(article.source, new RegExp(record.canonical_locator.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&'), 'u'),
+        `${sourceId} visible illustration`);
+    }
     const escapedFamily = record.license_family_id.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
     assert.match(licenseInventory, new RegExp(`^\\|\\s*${escapedFamily}\\s*\\|`, 'mu'),
       `${sourceId} license inventory`);
   }
   assert.deepEqual([...citedDomains].sort(), ['docs.spring.io', 'martinfowler.com']);
+  const illustration = records.get(ILLUSTRATION_SOURCE_ID);
+  assert.equal(illustration?.source_kind, 'original-illustration');
+  assert.equal(illustration?.tier, 'primary');
+  assert.equal(illustration?.license_scope,
+    'The named project-authored sty-04-modular-monolith-boundaries.svg asset only');
+  const illustrationCitation = review.citations.at(-1);
+  assert.ok(illustrationCitation?.modification_note?.trim());
+  assert.equal(illustrationCitation?.excerpt, null);
+  assert.equal(illustrationCitation?.quotation_reviewed, false);
 });
 
 test('projects the exact pre-closure Stage A state', () => {
@@ -731,8 +799,8 @@ test('projects the exact pre-closure Stage A state', () => {
   assert.equal(nextStyleIndexEntry?.status.value, 'pending');
   assert.equal(projectStatus.completed_topics, 56);
   assert.equal(projectStatus.content_documents, 99);
-  assert.equal(projectStatus.governed_sources, 512);
-  assert.equal(publicLedger.sources.length, 512);
+  assert.equal(projectStatus.governed_sources, 513);
+  assert.equal(publicLedger.sources.length, 513);
 });
 
 test('publishes a synchronized, accessible Draw.io and SVG semantic inventory', async () => {
@@ -747,6 +815,10 @@ test('publishes a synchronized, accessible Draw.io and SVG semantic inventory', 
   const svgRoot = svg.match(/<svg\b[^>]*>/u)?.[0] ?? '';
   assert.equal(xmlAttributes(svgRoot).get('viewBox'), DIAGRAM_VIEWBOX, 'stable STY-04 SVG viewBox');
   assert.doesNotMatch(svgRoot, /\b(?:width|height)="/u, 'responsive SVG root');
+  assert.match(svg, /<rect\b(?=[^>]*data-canvas-role="background")(?=[^>]*fill="#FFFFFF")(?=[^>]*width="1200")(?=[^>]*height="1800")[^>]*>/u,
+    'opaque light canvas makes rendering theme-independent');
+  assert.match(svg, /<desc\b[^>]*>[^<]*各自拥有权威数据的唯一写入责任[^<]*<\/desc>/u);
+  assert.doesNotMatch(svg, /每个模块独占自己的数据/u);
   assert.equal(Number(xmlAttributes(svgRoot).get('data-render-width-css')), DIAGRAM_RENDER_WIDTH,
     'planned article render width');
   assert.equal(Number(xmlAttributes(svgRoot).get('data-authoring-to-render-scale')), DIAGRAM_RENDER_SCALE,
@@ -853,6 +925,26 @@ test('publishes a synchronized, accessible Draw.io and SVG semantic inventory', 
     assert.equal(strokeDashKind(svgLegendDashArray(svg, lineId)), connectorClass === 'event' ? 'dashed' : 'solid',
       `SVG ${lineId} rendered stroke pattern`);
   }
+});
+
+test('keeps every essential diagram role contrast-safe on the opaque canvas', async () => {
+  const svg = await readFile(new URL(`../${SVG}`, import.meta.url), 'utf8');
+  const canvas = '#FFFFFF';
+  const essentialForegrounds = new Map([
+    ['title', '#172033'],
+    ['type', '#475569'],
+    ['sync edge and legend', '#334155'],
+    ['event edge', '#7C3AED'],
+    ['recovery note', '#7C2D12'],
+    ['consumer recovery note', '#5B21B6'],
+  ]);
+  for (const [role, foreground] of essentialForegrounds) {
+    assert.ok(contrastRatio(foreground, canvas) >= 4.5,
+      `${role} contrast ${contrastRatio(foreground, canvas).toFixed(2)}:1`);
+    assert.match(svg, new RegExp(foreground.replace('#', '#'), 'u'), `${role} color is present`);
+  }
+  assert.doesNotMatch(svg, /prefers-color-scheme|currentColor/u,
+    'diagram presentation cannot inherit a dark theme canvas or text color');
 });
 
 test('keeps every measured STY-04 header above node-text padding and baseline thresholds', async () => {

@@ -170,8 +170,8 @@ test('preserves the Batch 2 STY-01 facts in the current Batch 4 projection', () 
   assert.equal(manifest.topics.find(({id}) => id === 'STY-04')?.status.value, 'pending');
   assert.equal(projectStatus.completed_topics, 56);
   assert.equal(projectStatus.content_documents, 99);
-  assert.equal(projectStatus.governed_sources, 512);
-  assert.equal(publicLedger.sources.length, 512);
+  assert.equal(projectStatus.governed_sources, 513);
+  assert.equal(publicLedger.sources.length, 513);
   assert.ok(indexes.style.some(({id, status}) => id === 'STY-01' && status.value === 'complete'));
   assert.ok(indexes.style.some(({id, status}) => id === 'STY-02' && status.value === 'complete'));
 });

@@ -10,6 +10,7 @@ const SOURCE_IDS = [
   'src-fowler-monolith-first',
   'src-spring-modulith-fundamentals',
   'src-spring-modulith-events',
+  'src-atlas-sty04-modular-monolith-boundaries',
 ];
 
 const [article, backlog, review, manifest, indexes, projectStatus, publicLedger] =
@@ -61,9 +62,9 @@ test('projects the exact STY-04 Stage A inventory', () => {
       content_documents: projectStatus.content_documents,
       governed_sources: projectStatus.governed_sources,
     },
-    {completed_topics: 56, content_documents: 99, governed_sources: 512},
+    {completed_topics: 56, content_documents: 99, governed_sources: 513},
   );
-  assert.equal(publicLedger.sources.length, 512);
+  assert.equal(publicLedger.sources.length, 513);
 
   const topic = topicsById.get('STY-04');
   const style = stylesById.get('STY-04');
@@ -106,7 +107,7 @@ test('preserves the pre-closure G009 backlog state', () => {
 
 test('records deterministic Stage A evidence without fabricating independent verdicts', async () => {
   assert.match(review, /^# G009 Batch 5 Stage A Review$/mu);
-  assert.match(section(review, 'Stage A projection'), /56 completed topics \/ 99 content documents \/ 512 governed sources/u);
+  assert.match(section(review, 'Stage A projection'), /56 completed topics \/ 99 content documents \/ 513 governed sources/u);
   assert.match(section(review, 'Stage A projection'), /STY-04: `published \/ pending`/u);
   assert.match(section(review, 'Stage A projection'), /STY-05: `unpublished \/ pending`/u);
 
