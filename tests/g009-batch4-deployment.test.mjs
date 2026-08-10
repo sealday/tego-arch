@@ -2,9 +2,10 @@ import assert from 'node:assert/strict';
 import {access, readFile} from 'node:fs/promises';
 import test from 'node:test';
 
-const [backlog, article, manifest, indexes, projectStatus, publicLedger] = await Promise.all([
+const [backlog, article, review, manifest, indexes, projectStatus, publicLedger] = await Promise.all([
   readFile(new URL('../docs/content-backlog.md', import.meta.url), 'utf8'),
   readFile(new URL('../content/styles/sty-03-vertical-slice-architecture.mdx', import.meta.url), 'utf8'),
+  readFile(new URL('../docs/reviews/g009-batch4.md', import.meta.url), 'utf8'),
   readFile(new URL('../src/generated/topic-manifest.json', import.meta.url), 'utf8').then(JSON.parse),
   readFile(new URL('../src/generated/topic-indexes.json', import.meta.url), 'utf8').then(JSON.parse),
   readFile(new URL('../src/generated/project-status.json', import.meta.url), 'utf8').then(JSON.parse),
@@ -62,4 +63,17 @@ test('includes the canonical STY-03 route and SVG in the deployment inventory', 
   assert.ok(deploymentInventory.assets.includes(STY03_ASSET));
   assert.equal(deploymentInventory.routes.includes('/styles/sty-04'), false);
   await access(new URL(`../static${STY03_ASSET}`, import.meta.url));
+});
+
+test('records exact successful Stage A deployment and production QA before closure', () => {
+  assert.match(review, /Stage A exact head: `75b1838eb37d1bc41bc3260c6fc5f71cd2f9a00e`/u);
+  assert.match(review, /Pages run: \[`31366156479`\]\(https:\/\/github\.com\/sealday\/tego-arch\/actions\/runs\/31366156479\)/u);
+  assert.match(review, /build job `93384860162`; deploy job `93385369626`/u);
+  assert.match(review, /https:\/\/sealday\.github\.io\/tego-arch\/styles\/sty-03/u);
+  assert.match(review, /desktop `1440x1000`.*mobile `390x844`/su);
+  assert.match(review, /1092\/1092/u);
+  assert.match(review, /Production smoke verdict: \*\*PASS\*\*/u);
+  assert.match(review, /STY-03 backlog checkbox: remains unchecked/u);
+  assert.match(review, /STY-04 projected status: unpublished \/ pending/u);
+  assert.doesNotMatch(review, /PARENT PRODUCTION QA REQUIRED|NOT RUN \/ NOT ACCEPTED|BLOCKED —/u);
 });
