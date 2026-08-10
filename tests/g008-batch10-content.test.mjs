@@ -531,7 +531,7 @@ test('locks the generated MOD-13 Stage B projection', () => {
   assert.throws(
     () => assert.equal(
       currentNextTopic(staleNextTopic),
-      'STY-04',
+      'STY-05',
     ),
     {name: 'AssertionError'},
   );

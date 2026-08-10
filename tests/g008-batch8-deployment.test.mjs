@@ -242,7 +242,7 @@ function assertBacklogClosure(source) {
   assert.equal(
     currentG009Batch5Prefix(source).split('下一项为 STY-05').length - 1,
     1,
-    'G009 Batch 5 current prefix must identify STY-04 as next',
+    'G009 Batch 5 current prefix must identify STY-05 as next',
   );
 }
 
