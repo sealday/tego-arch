@@ -78,7 +78,6 @@ const DIAGRAM_NODES = [
   ['layered-controller', 'Controller', '接口层 / Web'],
   ['layered-service', 'Application Service', '应用层 / Shared Service'],
   ['layered-repository', 'Shared Repository', '共享数据访问 / Infrastructure'],
-  ['layered-database', '数据库', 'Shared Database'],
   ['slice-http', 'HTTP 请求', '入口 / Request'],
   ['submit-order-handler', 'SubmitOrder Handler', '切片入口 / Use Case Handler'],
   ['order-rules', 'Order Rules', '领域规则 / Policy'],
@@ -86,6 +85,8 @@ const DIAGRAM_NODES = [
   ['order-store', 'Order Store', 'Persistence Port'],
   ['response-mapper', 'Response Mapper', '输出映射 / Presenter'],
   ['inventory-adapter', 'Inventory Adapter', '外部机制 / Adapter'],
+  ['order-persistence-adapter', 'Order Persistence', '持久化机制 / Adapter'],
+  ['shared-database', '数据库', 'Shared Database'],
   ['legend-runtime-line', '', ''],
   ['legend-dependency-line', '', ''],
   ['legend-runtime', '运行时控制流', ''],
@@ -93,17 +94,40 @@ const DIAGRAM_NODES = [
   ['deployment-note', '切片不等于独立部署单元', ''],
 ];
 const DIAGRAM_EDGES = [
-  ['layered-request', 'layered-http', 'layered-controller', '接收请求', [115, 0], [375, 433]],
-  ['layered-controller-service', 'layered-controller', 'layered-service', '调用应用', [115, 0], [375, 703]],
-  ['layered-service-repository', 'layered-service', 'layered-repository', '访问仓储', [115, 0], [375, 973]],
-  ['layered-repository-database', 'layered-repository', 'layered-database', '写入数据', [115, 0], [375, 1243]],
-  ['slice-request-handler', 'slice-http', 'submit-order-handler', '进入切片', [125, 0], [1330, 503]],
-  ['slice-handler-rules', 'submit-order-handler', 'order-rules', '执行业务规则', [385, 0], [1660, 765]],
-  ['slice-rules-inventory', 'order-rules', 'inventory-port', '查询库存', [155, -45], [1265, 1063]],
-  ['slice-rules-store', 'order-rules', 'order-store', '保存订单', [167, -45], [1615, 1063]],
-  ['slice-rules-response', 'order-rules', 'response-mapper', '映射响应', [0, -45], [1585, 1393]],
-  ['layered-repository-service-dependency', 'layered-repository', 'layered-service', '依赖抽象', [60, 0], [740, 960]],
-  ['inventory-adapter-port-dependency', 'inventory-adapter', 'inventory-port', '实现端口', [100, 0], [1095, 1408]],
+  ['layered-request', 'layered-http', 'layered-controller', '接收请求', [105, 0], [425, 433]],
+  ['layered-controller-service', 'layered-controller', 'layered-service', '调用应用', [105, 0], [425, 703]],
+  ['layered-service-repository', 'layered-service', 'layered-repository', '访问仓储', [105, 0], [425, 973]],
+  ['layered-repository-database', 'layered-repository', 'shared-database', '写入数据', [130, 250], [500, 1420]],
+  ['slice-request-handler', 'slice-http', 'submit-order-handler', '进入切片', [105, 0], [1060, 433]],
+  ['slice-handler-rules', 'submit-order-handler', 'order-rules', '', null, null],
+  ['slice-handler-inventory', 'submit-order-handler', 'inventory-port', '', null, null],
+  ['slice-handler-store', 'submit-order-handler', 'order-store', '', null, null],
+  ['slice-handler-response', 'submit-order-handler', 'response-mapper', '', null, null],
+  ['inventory-port-adapter', 'inventory-port', 'inventory-adapter', '', null, null],
+  ['order-store-persistence-adapter', 'order-store', 'order-persistence-adapter', '', null, null],
+  ['order-persistence-database', 'order-persistence-adapter', 'shared-database', '写入数据', [70, 250], [1350, 1420]],
+  ['layered-repository-service-dependency', 'layered-repository', 'layered-service', '依赖抽象', [-55, 0], [625, 960]],
+  ['inventory-adapter-port-dependency', 'inventory-adapter', 'inventory-port', '', null, null],
+  ['order-persistence-adapter-store-dependency', 'order-persistence-adapter', 'order-store', '', null, null],
+];
+const RUNTIME_EDGES = [
+  ['layered-request', 'layered-http', 'layered-controller'],
+  ['layered-controller-service', 'layered-controller', 'layered-service'],
+  ['layered-service-repository', 'layered-service', 'layered-repository'],
+  ['layered-repository-database', 'layered-repository', 'shared-database'],
+  ['slice-request-handler', 'slice-http', 'submit-order-handler'],
+  ['slice-handler-rules', 'submit-order-handler', 'order-rules'],
+  ['slice-handler-inventory', 'submit-order-handler', 'inventory-port'],
+  ['inventory-port-adapter', 'inventory-port', 'inventory-adapter'],
+  ['slice-handler-store', 'submit-order-handler', 'order-store'],
+  ['order-store-persistence-adapter', 'order-store', 'order-persistence-adapter'],
+  ['order-persistence-database', 'order-persistence-adapter', 'shared-database'],
+  ['slice-handler-response', 'submit-order-handler', 'response-mapper'],
+];
+const DEPENDENCY_EDGES = [
+  ['layered-repository-service-dependency', 'layered-repository', 'layered-service'],
+  ['inventory-adapter-port-dependency', 'inventory-adapter', 'inventory-port'],
+  ['order-persistence-adapter-store-dependency', 'order-persistence-adapter', 'order-store'],
 ];
 const DIAGRAM_BOUNDARIES = [
   ['deployment-boundary', '单体部署边界'],
@@ -174,10 +198,10 @@ function hiddenStylesheetClasses(source) {
 
 function elementIsHidden(attributes, hiddenClasses) {
   const values = xmlAttributes(attributes);
-  const presentation = `${attributes};${values.style ?? ''}`;
+  const presentation = `${attributes};${values.get('style') ?? ''}`;
   if (/(?:display\s*(?::|=\s*")\s*none|visibility\s*(?::|=\s*")\s*(?:hidden|collapse)|opacity\s*(?::|=\s*")\s*0(?:\D|$))/u.test(presentation)) return true;
-  if (values['aria-hidden'] === 'true') return true;
-  return (values.class ?? '').split(/\s+/u).some((className) => hiddenClasses.has(className));
+  if (values.get('aria-hidden') === 'true') return true;
+  return (values.get('class') ?? '').split(/\s+/u).some((className) => hiddenClasses.has(className));
 }
 
 function visibleSvgText(source) {
@@ -234,10 +258,25 @@ function svgDiagramContract(source) {
     const labelAttributes = xmlAttributes(`${labelTag?.[1] ?? ''}${labelTag?.[2] ?? ''}`);
     return {
       id, label: labels.get(id) ?? '', source: attributes.get('data-source'), target: attributes.get('data-target'),
+      className: attributes.get('class') ?? '',
       labelX: Number(labelAttributes.get('x')), labelY: Number(labelAttributes.get('y')),
     };
   });
   return {nodes, edges};
+}
+
+function svgCellGeometry(source, id) {
+  const escapedId = id.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
+  const match = source.match(new RegExp(`<g\\b[^>]*data-node-id="${escapedId}"[^>]*data-node-bounds="([^"]+)"`, 'u'));
+  assert.ok(match, `SVG node geometry ${id}`);
+  const [x, y, width, height] = match[1].split(/\s+/u).map(Number);
+  return {x, y, width, height};
+}
+
+function contains(outer, inner) {
+  return inner.x >= outer.x && inner.y >= outer.y &&
+    inner.x + inner.width <= outer.x + outer.width &&
+    inner.y + inner.height <= outer.y + outer.height;
 }
 
 function drawioEdgeGeometry(source, id) {
@@ -423,6 +462,7 @@ test('publishes the synchronized STY-03 diagram pair with the minimum inventory'
   assert.equal(drawioNodeMap.size, drawioContract.nodes.length, 'Draw.io node IDs are unique');
   assert.equal(svgNodeMap.size, svgContract.nodes.length, 'SVG node IDs are unique');
   assert.deepEqual([...drawioNodeMap.keys()].sort(), [...svgNodeMap.keys()].sort(), 'paired node inventory');
+  assert.deepEqual([...drawioNodeMap.keys()].sort(), DIAGRAM_NODES.map(([id]) => id).sort(), 'exact semantic node inventory');
   for (const [id, label, typeLabel] of DIAGRAM_NODES) {
     assert.equal(drawioNodeMap.get(id)?.label, label, `Draw.io node ${id} title`);
     assert.equal(svgNodeMap.get(id)?.label, label, `SVG node ${id} title`);
@@ -452,8 +492,10 @@ test('publishes the synchronized STY-03 diagram pair with the minimum inventory'
     assert.equal(svgEdges.get(id)?.source, source, `SVG edge ${id} source`);
     assert.equal(svgEdges.get(id)?.target, target, `SVG edge ${id} target`);
     assert.equal(svgEdges.get(id)?.label, label, `SVG edge ${id} label`);
-    assert.deepEqual(drawioEdgeGeometry(drawio, id).offset, drawioOffset, `Draw.io edge ${id} actual label offset`);
-    assert.deepEqual([svgEdges.get(id)?.labelX, svgEdges.get(id)?.labelY], svgLabelPosition, `SVG edge ${id} actual text position`);
+    if (drawioOffset) {
+      assert.deepEqual(drawioEdgeGeometry(drawio, id).offset, drawioOffset, `Draw.io edge ${id} actual label offset`);
+      assert.deepEqual([svgEdges.get(id)?.labelX, svgEdges.get(id)?.labelY], svgLabelPosition, `SVG edge ${id} actual text position`);
+    }
   }
   const visibleDrawioLabels = drawioContract.nodes.map(({label}) => label)
     .concat(drawioContract.edges.map(({label}) => label));
@@ -465,13 +507,38 @@ test('publishes the synchronized STY-03 diagram pair with the minimum inventory'
   assert.ok(drawioContract.nodes.length >= 8, 'Draw.io has at least eight visible nodes');
   assert.ok(drawioContract.edges.length >= 10, 'Draw.io has at least ten directed relations');
   assert.deepEqual([...drawioEdges.keys()], [...svgEdges.keys()], 'paired relation inventory');
-  const responseRoute = drawioEdgeGeometry(drawio, 'slice-rules-response');
-  assert.equal(responseRoute.style.get('exitX'), '0.75', 'response route exits Order Rules at the lower 75% port');
-  assert.equal(responseRoute.style.get('exitY'), '1', 'response route exits from the bottom');
-  assert.equal(responseRoute.style.get('entryX'), '0.5', 'response route enters Response Mapper at its top center');
-  assert.equal(responseRoute.style.get('entryY'), '0', 'response route enters from the top');
-  assert.deepEqual(responseRoute.points, [[1375, 1100], [1700, 1100], [1700, 1425], [1490, 1425]], 'response route waypoints');
-  assert.match(svg, /data-edge-id="slice-rules-response"[^>]*d="M1375 1000V1100H1700V1425H1490V1469"/u, 'SVG response route matches Draw.io bottom-to-top route');
+  assert.deepEqual([...drawioEdges.keys()].sort(), DIAGRAM_EDGES.map(([id]) => id).sort(), 'exact semantic relation inventory');
+  const drawioRuntime = drawioContract.edges.filter(({id}) => drawioEdgeGeometry(drawio, id).style.get('dashed') !== '1')
+    .map(({id, source, target}) => [id, source, target]);
+  const drawioDependencies = drawioContract.edges.filter(({id}) => drawioEdgeGeometry(drawio, id).style.get('dashed') === '1')
+    .map(({id, source, target}) => [id, source, target]);
+  const svgRuntime = svgContract.edges.filter(({className}) => className.split(/\s+/u).includes('runtime'))
+    .map(({id, source, target}) => [id, source, target]);
+  const svgDependencies = svgContract.edges.filter(({className}) => className.split(/\s+/u).includes('dependency'))
+    .map(({id, source, target}) => [id, source, target]);
+  for (const inventory of [drawioRuntime, svgRuntime]) assert.deepEqual(inventory.sort(), [...RUNTIME_EDGES].sort(), 'exact runtime graph');
+  for (const inventory of [drawioDependencies, svgDependencies]) assert.deepEqual(inventory.sort(), [...DEPENDENCY_EDGES].sort(), 'exact source-dependency graph');
+
+  const containmentContract = [
+    ['deployment-boundary', DIAGRAM_NODES.map(([id]) => id).filter((id) => id !== 'deployment-boundary'), []],
+    ['layered-boundary', ['layered-http', 'layered-controller', 'layered-service', 'layered-repository'], ['shared-database']],
+    ['vertical-slice-boundary', ['submit-order-boundary', 'shared-domain-invariants', 'inventory-adapter', 'order-persistence-adapter'], ['shared-database']],
+    ['submit-order-boundary', ['slice-http', 'submit-order-handler', 'inventory-port', 'order-store', 'response-mapper'],
+      ['order-rules', 'inventory-adapter', 'order-persistence-adapter', 'shared-database']],
+    ['shared-domain-invariants', ['order-rules'],
+      ['inventory-port', 'order-store', 'response-mapper', 'inventory-adapter', 'order-persistence-adapter', 'shared-database']],
+  ];
+  for (const geometryOf of [
+    (id) => drawioCellGeometry(drawio, id),
+    (id) => svgCellGeometry(svg, id),
+  ]) {
+    for (const [boundaryId, included, excluded] of containmentContract) {
+      const boundary = geometryOf(boundaryId);
+      for (const nodeId of included) assert.ok(contains(boundary, geometryOf(nodeId)), `${boundaryId} contains ${nodeId}`);
+      for (const nodeId of excluded) assert.ok(!contains(boundary, geometryOf(nodeId)), `${boundaryId} excludes ${nodeId}`);
+    }
+  }
+  assert.equal(DIAGRAM_NODES.filter(([id]) => id === 'shared-database').length, 1, 'one shared database node');
   for (const [lineId, className] of [['legend-runtime-line', 'runtime'], ['legend-dependency-line', 'dependency']]) {
     assert.match(drawio, new RegExp(`<mxCell\\b(?=[^>]*\\bid="${lineId}")(?=[^>]*\\blegendLine="${className}")[^>]*>`, 'u'), `Draw.io ${lineId}`);
     assert.match(svg, new RegExp(`<g\\b[^>]*data-node-id="${lineId}"[^>]*data-legend-line="${className}"[^>]*>`, 'u'), `SVG ${lineId}`);
