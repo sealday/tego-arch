@@ -168,6 +168,11 @@ test('closes only STY-04 and advances the G009 release baseline to STY-05', () =
   assert.match(currentBaseline, /当前 G009，下一项为 STY-05/u);
   assert.match(currentBaseline, /STY-04 为 published\/complete/u);
   assert.match(currentBaseline, /STY-05 为 unpublished\/pending/u);
+  assert.match(currentBaseline, /Stage B 独立 code review verdict 为 READY\/APPROVE，findings `0`/u);
+  assert.match(currentBaseline, /content review verdict 为 READY，rights PASS，blocking findings `0`/u);
+  assert.match(currentBaseline, /architecture review verdict 为 CLEAR\/READY，blockers `0`/u);
+  assert.match(currentBaseline, /Stage B deployment status 仍为 `PENDING`/u);
+  assert.doesNotMatch(currentBaseline, /最终独立评审槽位保持 pending/u);
   assert.match(backlog, /^- \[x\] \*\*STY-03 /mu);
   assert.match(backlog, /^- \[ \] \*\*STY-05 /mu);
 
@@ -185,6 +190,31 @@ test('closes only STY-04 and advances the G009 release baseline to STY-05', () =
     'Stage A production verdict PASS',
   ]) {
     assert.ok(sty04Line.includes(literal), `STY-04 closure literal: ${literal}`);
+  }
+});
+
+test('rejects stale Stage B review and fabricated deployment state in the canonical baseline', () => {
+  const mutations = [
+    ['stale review slots', 'Stage B 独立 code review verdict 为 READY/APPROVE，findings `0`', 'Stage B 本地实现的最终独立评审槽位保持 pending'],
+    ['code verdict', 'READY/APPROVE，findings `0`', 'PENDING，findings `1`'],
+    ['content verdict', 'READY，rights PASS，blocking findings `0`', 'PENDING，rights UNKNOWN，blocking findings `1`'],
+    ['architecture verdict', 'CLEAR/READY，blockers `0`', 'BLOCKED，blockers `1`'],
+    ['deployment status', 'Stage B deployment status 仍为 `PENDING`', 'Stage B deployment status 为 `SUCCESS`'],
+  ];
+
+  for (const [label, exact, replacement] of mutations) {
+    const mutatedBacklog = backlog.replace(exact, replacement);
+    assert.notEqual(mutatedBacklog, backlog, `${label} mutation must apply`);
+    const mutatedBaseline = mutatedBacklog.split(/\r?\n/u)
+      .find((line) => line.startsWith('- **当前发布基线：**'));
+    assert.ok(mutatedBaseline, `${label} current baseline`);
+    assert.throws(() => {
+      assert.match(mutatedBaseline, /Stage B 独立 code review verdict 为 READY\/APPROVE，findings `0`/u);
+      assert.match(mutatedBaseline, /content review verdict 为 READY，rights PASS，blocking findings `0`/u);
+      assert.match(mutatedBaseline, /architecture review verdict 为 CLEAR\/READY，blockers `0`/u);
+      assert.match(mutatedBaseline, /Stage B deployment status 仍为 `PENDING`/u);
+      assert.doesNotMatch(mutatedBaseline, /最终独立评审槽位保持 pending/u);
+    }, {name: 'AssertionError'}, label);
   }
 });
 
