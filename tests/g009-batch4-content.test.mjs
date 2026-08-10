@@ -343,6 +343,8 @@ test('publishes the synchronized STY-03 diagram pair with the minimum inventory'
   assert.match(drawio, /<mxfile\b/u);
   assert.match(svg, /<title\b[^>]*>[^<]+<\/title>/u);
   assert.match(svg, /<desc\b[^>]*>[^<]+<\/desc>/u);
+  assert.match(svg, /<svg\b(?=[^>]*\bviewBox="0 0 1800 1480")(?=[^>]*\brole="img")(?=[^>]*\baria-labelledby="[^"]+")[^>]*>/u);
+  assert.doesNotMatch(svg.match(/<svg\b[^>]*>/u)?.[0] ?? '', /\b(?:width|height)="/u, 'responsive SVG root');
   const drawioContract = drawioDiagramContract(drawio);
   const svgContract = svgDiagramContract(svg);
   const drawioNodeMap = new Map(drawioContract.nodes.map((node) => [node.id, node]));
@@ -371,6 +373,8 @@ test('publishes the synchronized STY-03 diagram pair with the minimum inventory'
   assert.ok(DIAGRAM_LABELS.every((label) => visibleDrawioLabels.includes(label)), 'Draw.io visible semantic labels');
   assert.ok(DIAGRAM_LABELS.every((label) => visibleSvgText(svg).includes(label)), 'SVG visible semantic labels');
   assert.ok(DIAGRAM_BOUNDARIES.every(([id, label]) => drawioNodeMap.get(id)?.label === label), 'comparison boundaries');
+  assert.equal(drawioNodeMap.get('submit-order-boundary')?.label, 'SubmitOrder', 'SubmitOrder slice boundary');
+  assert.equal(drawioNodeMap.get('deployment-boundary')?.label, '单体部署边界', 'single deployment boundary');
   assert.ok(drawioContract.nodes.length >= 8, 'Draw.io has at least eight visible nodes');
   assert.ok(drawioContract.edges.length >= 10, 'Draw.io has at least ten directed relations');
   assert.deepEqual([...drawioEdges.keys()], [...svgEdges.keys()], 'paired relation inventory');
