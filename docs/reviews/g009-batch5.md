@@ -76,7 +76,14 @@
 - Stage A exact head: `9cfe1de9497dd7e0a38e2c6358ba5bded59b0c63`.
 - Pages run: [`31436111404`](https://github.com/sealday/tego-arch/actions/runs/31436111404); build job `93610482485`; deploy job `93611048927`.
 - Exact run gate: workflow `Verify and deploy Docusaurus to GitHub Pages`, `event=push`, `headSha=9cfe1de9497dd7e0a38e2c6358ba5bded59b0c63`, `status=completed`, `conclusion=success`.
-- Run timing: created `2026-08-10T21:56:13Z`, completed/updated `2026-08-10T21:59:03Z`; build job and deploy job both recorded `status=completed`, `conclusion=success`.
+- Implementation build job `93610482485`: `status=completed`, `conclusion=success`.
+- Implementation deploy job `93611048927`: `status=completed`, `conclusion=success`.
+- Run timing: created `2026-08-10T21:56:13Z`, completed/updated `2026-08-10T21:59:03Z`.
+- Evidence commit exact head: `9d60259599c43dbd10c7ec31507dabf6db5d0ac5`.
+- Evidence-contract Pages run: [`31438264944`](https://github.com/sealday/tego-arch/actions/runs/31438264944); workflow `Verify and deploy Docusaurus to GitHub Pages`, `event=push`, `headSha=9d60259599c43dbd10c7ec31507dabf6db5d0ac5`, `status=completed`, `conclusion=success`.
+- Evidence build job `93617237855`: `status=completed`, `conclusion=success`.
+- Evidence deploy job `93617748403`: `status=completed`, `conclusion=success`.
+- The evidence-contract run verifies the evidence commit; it does not replace the implementation run bound to the Stage A head.
 
 ## Production HTTP smoke
 
@@ -91,9 +98,39 @@
 - Desktop light and dark, `1440x1000`: document `1440/1440`; diagram wrapper `800/800`; both table wrappers `800/1024`; rendered diagram `800 × 1200`; no document overflow. ArrowRight movement was `0/40/40` for diagram and tables.
 - Mobile light and dark, `390x844`: document `390/390`; diagram wrapper `358/800`; both table wrappers `358/1024`; rendered diagram `800 × 1200`; overflow remained inside the three labelled focusable regions. ArrowRight movement was `40/40/40`.
 - Keyboard evidence: all 12 wrapper checks began at `0`, focused the intended region, matched `:focus-visible`, rendered a `3px solid` outline, and preserved the document width.
-- Published relations: STY-01, STY-02, STY-03, and the linked micro-frontends case each reached the exact production URL and expected H1 in all four states, then returned to STY-04. Desktop used visible-DOM clicks; mobile bound each visible href before exact destination/return navigation because the responsive navigation layer made offscreen clicks unreliable.
-- Governed sources: 5 exact source anchors per state retained their governed HTTPS locator, `target="_blank"`, and `rel="noopener noreferrer"`. The 3 unique source targets resolved in all four states. The in-app Browser suppressed `_blank` popups, so the exact selected hrefs were validated in temporary Browser tabs; the raw artifact records this fallback per activation.
-- STY-05 actionable article links: `0` in each state. Browser warning/error logs and `Runtime.exceptionThrown` / `Log.entryAdded` events were empty in each state; every diagnostic page recorded `hasMore=false` and `truncated=false`.
+
+Exact per-state relation destination, H1, and return outcomes:
+
+| State | Activation path | Exact destination H1 and return outcomes |
+| --- | --- | --- |
+| `desktopLight` | visible-DOM click | `STY-01 → 分层架构：用依赖方向约束职责分层 → return /styles/sty-04`; `STY-02 → 六边形架构、洋葱架构与整洁架构：用依赖方向判断边界所有权 → return /styles/sty-04`; `STY-03 → 垂直切片架构：按用例收拢变化边界 → return /styles/sty-04`; `case → 微前端：用垂直业务切片约束跨团队所有权 → return /styles/sty-04` |
+| `desktopDark` | visible-DOM click | `STY-01 → 分层架构：用依赖方向约束职责分层 → return /styles/sty-04`; `STY-02 → 六边形架构、洋葱架构与整洁架构：用依赖方向判断边界所有权 → return /styles/sty-04`; `STY-03 → 垂直切片架构：按用例收拢变化边界 → return /styles/sty-04`; `case → 微前端：用垂直业务切片约束跨团队所有权 → return /styles/sty-04` |
+| `mobileLight` | visible-DOM href selection + direct navigation (`responsive offscreen-click fallback`) | `STY-01 → 分层架构：用依赖方向约束职责分层 → return /styles/sty-04`; `STY-02 → 六边形架构、洋葱架构与整洁架构：用依赖方向判断边界所有权 → return /styles/sty-04`; `STY-03 → 垂直切片架构：按用例收拢变化边界 → return /styles/sty-04`; `case → 微前端：用垂直业务切片约束跨团队所有权 → return /styles/sty-04` |
+| `mobileDark` | visible-DOM href selection + direct navigation (`responsive offscreen-click fallback`) | `STY-01 → 分层架构：用依赖方向约束职责分层 → return /styles/sty-04`; `STY-02 → 六边形架构、洋葱架构与整洁架构：用依赖方向判断边界所有权 → return /styles/sty-04`; `STY-03 → 垂直切片架构：按用例收拢变化边界 → return /styles/sty-04`; `case → 微前端：用垂直业务切片约束跨团队所有权 → return /styles/sty-04` |
+
+The production relation routes were `/styles/sty-01`, `/styles/sty-02`, `/styles/sty-03`, and `/cases/micro-frontends-single-spa`. On mobile, the visible-DOM href was selected first; direct navigation and the return to `/styles/sty-04` were the recorded fallback after responsive offscreen clicks proved unreliable.
+
+Governed source fallback outcomes:
+
+| State | `_blank` popup and direct-open path | Outcome |
+| --- | --- | --- |
+| `desktopLight` | visible-DOM anchor click; `_blank` popup suppressed; exact selected href direct-opened in a temporary Browser tab | `3/3` exact governed destinations resolved |
+| `desktopDark` | visible-DOM anchor click; `_blank` popup suppressed; exact selected href direct-opened in a temporary Browser tab | `3/3` exact governed destinations resolved |
+| `mobileLight` | exact anchor resolution; `_blank` popup suppressed; exact selected href direct-opened in a temporary Browser tab | `3/3` exact governed destinations resolved |
+| `mobileDark` | exact anchor resolution; `_blank` popup suppressed; exact selected href direct-opened in a temporary Browser tab | `3/3` exact governed destinations resolved |
+
+The three exact governed destinations were `https://martinfowler.com/bliki/MonolithFirst.html`, `https://docs.spring.io/spring-modulith/reference/fundamentals.html`, and `https://docs.spring.io/spring-modulith/reference/events.html`. Five source anchors per state retained their exact governed locator, `target="_blank"`, and `rel="noopener noreferrer"`.
+
+Exact per-state diagnostic outcomes:
+
+| State | Browser and CDP diagnostics |
+| --- | --- |
+| `desktopLight` | warning/error logs `0`; `Runtime.exceptionThrown=0`; `Log.entryAdded=0`; `hasMore=false`; `truncated=false` |
+| `desktopDark` | warning/error logs `0`; `Runtime.exceptionThrown=0`; `Log.entryAdded=0`; `hasMore=false`; `truncated=false` |
+| `mobileLight` | warning/error logs `0`; `Runtime.exceptionThrown=0`; `Log.entryAdded=0`; `hasMore=false`; `truncated=false` |
+| `mobileDark` | warning/error logs `0`; `Runtime.exceptionThrown=0`; `Log.entryAdded=0`; `hasMore=false`; `truncated=false` |
+
+- STY-05 actionable article links: `0` in each state.
 - Production screenshot SHA-256 values: desktop light `ff220fe6595578400011fabc7776d9c5c2dab82b6b90c4ebecd03ce42d12d961`; desktop dark `5ac79ac96baef4192704504d8ced113bbf73fe44d402652c0e37ca1974621c82`; mobile light `c50f50bbba21d1e36e9415063d786b2c7cca3a254d26db1fbc9e02d5728bd0e5`; mobile dark `ecb38667f37778277925f67dda957d569e3c73f49e3118eb9105dbfa68c4110d`.
 - Raw production evidence: `.superpowers/sdd/task-6-production-evidence.json`, SHA-256 `f2bfe05bd293c5f896cfedb591143bbcdd736d70aa8d88c69302ec44876879de`. The raw Browser artifact remains local and is not staged as release-review input.
 - Stage A production verdict: **PASS**.

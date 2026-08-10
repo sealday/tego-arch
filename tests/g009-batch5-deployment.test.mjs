@@ -55,6 +55,52 @@ function section(source, heading) {
   return source.slice(match.index + match[0].length, next?.index ?? source.length).trim();
 }
 
+function assertExactStageAProductionEvidence(source) {
+  const deployment = section(source, 'Stage A deployment evidence');
+  for (const literal of [
+    'Exact run gate: workflow `Verify and deploy Docusaurus to GitHub Pages`, `event=push`, `headSha=9cfe1de9497dd7e0a38e2c6358ba5bded59b0c63`, `status=completed`, `conclusion=success`.',
+    'Implementation build job `93610482485`: `status=completed`, `conclusion=success`.',
+    'Implementation deploy job `93611048927`: `status=completed`, `conclusion=success`.',
+    'Evidence commit exact head: `9d60259599c43dbd10c7ec31507dabf6db5d0ac5`.',
+    'Evidence-contract Pages run: [`31438264944`](https://github.com/sealday/tego-arch/actions/runs/31438264944); workflow `Verify and deploy Docusaurus to GitHub Pages`, `event=push`, `headSha=9d60259599c43dbd10c7ec31507dabf6db5d0ac5`, `status=completed`, `conclusion=success`.',
+    'Evidence build job `93617237855`: `status=completed`, `conclusion=success`.',
+    'Evidence deploy job `93617748403`: `status=completed`, `conclusion=success`.',
+  ]) {
+    assert.ok(deployment.includes(literal), `deployment literal: ${literal}`);
+  }
+
+  const browser = section(source, 'Production Browser QA');
+  const relationOutcomes = [
+    '| `desktopLight` | visible-DOM click | `STY-01 → 分层架构：用依赖方向约束职责分层 → return /styles/sty-04`; `STY-02 → 六边形架构、洋葱架构与整洁架构：用依赖方向判断边界所有权 → return /styles/sty-04`; `STY-03 → 垂直切片架构：按用例收拢变化边界 → return /styles/sty-04`; `case → 微前端：用垂直业务切片约束跨团队所有权 → return /styles/sty-04` |',
+    '| `desktopDark` | visible-DOM click | `STY-01 → 分层架构：用依赖方向约束职责分层 → return /styles/sty-04`; `STY-02 → 六边形架构、洋葱架构与整洁架构：用依赖方向判断边界所有权 → return /styles/sty-04`; `STY-03 → 垂直切片架构：按用例收拢变化边界 → return /styles/sty-04`; `case → 微前端：用垂直业务切片约束跨团队所有权 → return /styles/sty-04` |',
+    '| `mobileLight` | visible-DOM href selection + direct navigation (`responsive offscreen-click fallback`) | `STY-01 → 分层架构：用依赖方向约束职责分层 → return /styles/sty-04`; `STY-02 → 六边形架构、洋葱架构与整洁架构：用依赖方向判断边界所有权 → return /styles/sty-04`; `STY-03 → 垂直切片架构：按用例收拢变化边界 → return /styles/sty-04`; `case → 微前端：用垂直业务切片约束跨团队所有权 → return /styles/sty-04` |',
+    '| `mobileDark` | visible-DOM href selection + direct navigation (`responsive offscreen-click fallback`) | `STY-01 → 分层架构：用依赖方向约束职责分层 → return /styles/sty-04`; `STY-02 → 六边形架构、洋葱架构与整洁架构：用依赖方向判断边界所有权 → return /styles/sty-04`; `STY-03 → 垂直切片架构：按用例收拢变化边界 → return /styles/sty-04`; `case → 微前端：用垂直业务切片约束跨团队所有权 → return /styles/sty-04` |',
+  ];
+  const sourceOutcomes = [
+    '| `desktopLight` | visible-DOM anchor click; `_blank` popup suppressed; exact selected href direct-opened in a temporary Browser tab | `3/3` exact governed destinations resolved |',
+    '| `desktopDark` | visible-DOM anchor click; `_blank` popup suppressed; exact selected href direct-opened in a temporary Browser tab | `3/3` exact governed destinations resolved |',
+    '| `mobileLight` | exact anchor resolution; `_blank` popup suppressed; exact selected href direct-opened in a temporary Browser tab | `3/3` exact governed destinations resolved |',
+    '| `mobileDark` | exact anchor resolution; `_blank` popup suppressed; exact selected href direct-opened in a temporary Browser tab | `3/3` exact governed destinations resolved |',
+  ];
+  const diagnostics = [
+    '| `desktopLight` | warning/error logs `0`; `Runtime.exceptionThrown=0`; `Log.entryAdded=0`; `hasMore=false`; `truncated=false` |',
+    '| `desktopDark` | warning/error logs `0`; `Runtime.exceptionThrown=0`; `Log.entryAdded=0`; `hasMore=false`; `truncated=false` |',
+    '| `mobileLight` | warning/error logs `0`; `Runtime.exceptionThrown=0`; `Log.entryAdded=0`; `hasMore=false`; `truncated=false` |',
+    '| `mobileDark` | warning/error logs `0`; `Runtime.exceptionThrown=0`; `Log.entryAdded=0`; `hasMore=false`; `truncated=false` |',
+  ];
+  for (const literal of [...relationOutcomes, ...sourceOutcomes, ...diagnostics]) {
+    assert.ok(browser.includes(literal), `browser literal: ${literal}`);
+  }
+  for (const screenshotHash of [
+    'ff220fe6595578400011fabc7776d9c5c2dab82b6b90c4ebecd03ce42d12d961',
+    '5ac79ac96baef4192704504d8ced113bbf73fe44d402652c0e37ca1974621c82',
+    'c50f50bbba21d1e36e9415063d786b2c7cca3a254d26db1fbc9e02d5728bd0e5',
+    'ecb38667f37778277925f67dda957d569e3c73f49e3118eb9105dbfa68c4110d',
+  ]) {
+    assert.ok(browser.includes(screenshotHash), `screenshot SHA-256: ${screenshotHash}`);
+  }
+}
+
 test('projects the exact STY-04 Stage A inventory', () => {
   assert.deepEqual(
     {
@@ -106,6 +152,7 @@ test('preserves the pre-closure G009 backlog state', () => {
 });
 
 test('records exact Stage A deployment and production evidence without closing STY-04', async () => {
+  assertExactStageAProductionEvidence(review);
   assert.match(review, /^# G009 Batch 5 Stage A Review$/mu);
   assert.match(section(review, 'Stage A projection'), /56 completed topics \/ 99 content documents \/ 513 governed sources/u);
   assert.match(section(review, 'Stage A projection'), /STY-04: `published \/ pending`/u);
@@ -188,12 +235,7 @@ test('records exact Stage A deployment and production evidence without closing S
   assert.match(browserQa, /all 12 wrapper checks began at `0`/u);
   assert.match(browserQa, /matched `:focus-visible`/u);
   assert.match(browserQa, /rendered a `3px solid` outline/u);
-  assert.match(browserQa, /STY-01, STY-02, STY-03, and the linked micro-frontends case/u);
-  assert.match(browserQa, /5 exact source anchors per state/u);
-  assert.match(browserQa, /The 3 unique source targets resolved in all four states/u);
   assert.match(browserQa, /STY-05 actionable article links: `0` in each state/u);
-  assert.match(browserQa, /warning\/error logs.*events were empty in each state/u);
-  assert.match(browserQa, /`hasMore=false` and `truncated=false`/u);
   assert.match(
     browserQa,
     /Raw production evidence: `\.superpowers\/sdd\/task-6-production-evidence\.json`, SHA-256 `f2bfe05bd293c5f896cfedb591143bbcdd736d70aa8d88c69302ec44876879de`/u,
@@ -206,4 +248,36 @@ test('records exact Stage A deployment and production evidence without closing S
   assert.match(releaseState, /STY-05 remains `unpublished \/ pending`/u);
   assert.match(releaseState, /No Stage B closure is claimed/u);
   assert.doesNotMatch(review, /Stage B closure verdict:\s*\*\*PASS\*\*/iu);
+});
+
+test('rejects mutated Stage A run and four-state production evidence', () => {
+  const mutations = [
+    ['implementation run conclusion', 'Exact run gate: workflow `Verify and deploy Docusaurus to GitHub Pages`, `event=push`, `headSha=9cfe1de9497dd7e0a38e2c6358ba5bded59b0c63`, `status=completed`, `conclusion=success`.', 'Exact run gate: workflow `Verify and deploy Docusaurus to GitHub Pages`, `event=push`, `headSha=9cfe1de9497dd7e0a38e2c6358ba5bded59b0c63`, `status=completed`, `conclusion=failure`.'],
+    ['implementation build status', 'Implementation build job `93610482485`: `status=completed`, `conclusion=success`.', 'Implementation build job `93610482485`: `status=completed`, `conclusion=failure`.'],
+    ['implementation deploy job', 'Implementation deploy job `93611048927`', 'Implementation deploy job `93611048928`'],
+    ['evidence build status', 'Evidence build job `93617237855`: `status=completed`, `conclusion=success`.', 'Evidence build job `93617237855`: `status=in_progress`, `conclusion=success`.'],
+    ['evidence deploy conclusion', 'Evidence deploy job `93617748403`: `status=completed`, `conclusion=success`.', 'Evidence deploy job `93617748403`: `status=completed`, `conclusion=failure`.'],
+    ['evidence run status', '`headSha=9d60259599c43dbd10c7ec31507dabf6db5d0ac5`, `status=completed`, `conclusion=success`.', '`headSha=9d60259599c43dbd10c7ec31507dabf6db5d0ac5`, `status=in_progress`, `conclusion=success`.'],
+    ['desktop relation outcome', '| `desktopLight` | visible-DOM click |', '| `desktopLight` | unverified |'],
+    ['mobile relation fallback', 'visible-DOM href selection + direct navigation (`responsive offscreen-click fallback`)', 'ordinary click'],
+    ['source popup fallback', '`_blank` popup suppressed; exact selected href direct-opened in a temporary Browser tab', '`_blank` popup opened normally'],
+    ['desktop light screenshot', 'ff220fe6595578400011fabc7776d9c5c2dab82b6b90c4ebecd03ce42d12d961', '0'.repeat(64)],
+    ['desktop dark screenshot', '5ac79ac96baef4192704504d8ced113bbf73fe44d402652c0e37ca1974621c82', '1'.repeat(64)],
+    ['mobile light screenshot', 'c50f50bbba21d1e36e9415063d786b2c7cca3a254d26db1fbc9e02d5728bd0e5', '2'.repeat(64)],
+    ['mobile dark screenshot', 'ecb38667f37778277925f67dda957d569e3c73f49e3118eb9105dbfa68c4110d', '3'.repeat(64)],
+    ['runtime exceptions', '`Runtime.exceptionThrown=0`', '`Runtime.exceptionThrown=1`'],
+    ['log entries', '`Log.entryAdded=0`', '`Log.entryAdded=1`'],
+    ['diagnostic pagination', '`hasMore=false`', '`hasMore=true`'],
+    ['diagnostic truncation', '`truncated=false`', '`truncated=true`'],
+  ];
+
+  for (const [label, exact, replacement] of mutations) {
+    const mutatedReview = review.replace(exact, replacement);
+    assert.notEqual(mutatedReview, review, `${label} mutation must apply`);
+    assert.throws(
+      () => assertExactStageAProductionEvidence(mutatedReview),
+      {name: 'AssertionError'},
+      label,
+    );
+  }
 });
