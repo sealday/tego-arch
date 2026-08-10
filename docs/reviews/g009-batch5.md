@@ -71,7 +71,35 @@
 - Remediation commits reviewed: `7669994f6b5cd29bc5515e2269d778579e954559` and `e33e11f452a3a3ef82e7e2f8a8e74eecff70d05e`.
 - Final Stage A release judgment: `READY` — independent review is complete and the exact head may proceed to the deployment step; this verdict is not evidence that deployment ran.
 
+## Stage A deployment evidence
+
+- Stage A exact head: `9cfe1de9497dd7e0a38e2c6358ba5bded59b0c63`.
+- Pages run: [`31436111404`](https://github.com/sealday/tego-arch/actions/runs/31436111404); build job `93610482485`; deploy job `93611048927`.
+- Exact run gate: workflow `Verify and deploy Docusaurus to GitHub Pages`, `event=push`, `headSha=9cfe1de9497dd7e0a38e2c6358ba5bded59b0c63`, `status=completed`, `conclusion=success`.
+- Run timing: created `2026-08-10T21:56:13Z`, completed/updated `2026-08-10T21:59:03Z`; build job and deploy job both recorded `status=completed`, `conclusion=success`.
+
+## Production HTTP smoke
+
+- Target: `https://sealday.github.io/tego-arch`.
+- Routes: `/styles/sty-04`, `/styles`, `/paths/module-boundaries`, `/styles/sty-01`, `/styles/sty-02`, `/styles/sty-03`, `/cases/micro-frontends-single-spa`, and `/references` all returned HTTP 200 with `text/html; charset=utf-8`.
+- Canonical SVG `/img/diagrams/sty-04-modular-monolith-boundaries.svg` returned HTTP 200 with `image/svg+xml`, 19,722 bytes, and SHA-256 `d78f3231d9aaaa4cdbf39e04ec3070fabc9b4a8cb7f64aad862cc340ce8da8e4`.
+- Production HTTP probes: `9/9` passed (`8` HTML routes + `1` SVG asset).
+
+## Production Browser QA
+
+- Browser surface: Codex in-app Browser; canonical article `https://sealday.github.io/tego-arch/styles/sty-04`.
+- Desktop light and dark, `1440x1000`: document `1440/1440`; diagram wrapper `800/800`; both table wrappers `800/1024`; rendered diagram `800 × 1200`; no document overflow. ArrowRight movement was `0/40/40` for diagram and tables.
+- Mobile light and dark, `390x844`: document `390/390`; diagram wrapper `358/800`; both table wrappers `358/1024`; rendered diagram `800 × 1200`; overflow remained inside the three labelled focusable regions. ArrowRight movement was `40/40/40`.
+- Keyboard evidence: all 12 wrapper checks began at `0`, focused the intended region, matched `:focus-visible`, rendered a `3px solid` outline, and preserved the document width.
+- Published relations: STY-01, STY-02, STY-03, and the linked micro-frontends case each reached the exact production URL and expected H1 in all four states, then returned to STY-04. Desktop used visible-DOM clicks; mobile bound each visible href before exact destination/return navigation because the responsive navigation layer made offscreen clicks unreliable.
+- Governed sources: 5 exact source anchors per state retained their governed HTTPS locator, `target="_blank"`, and `rel="noopener noreferrer"`. The 3 unique source targets resolved in all four states. The in-app Browser suppressed `_blank` popups, so the exact selected hrefs were validated in temporary Browser tabs; the raw artifact records this fallback per activation.
+- STY-05 actionable article links: `0` in each state. Browser warning/error logs and `Runtime.exceptionThrown` / `Log.entryAdded` events were empty in each state; every diagnostic page recorded `hasMore=false` and `truncated=false`.
+- Production screenshot SHA-256 values: desktop light `ff220fe6595578400011fabc7776d9c5c2dab82b6b90c4ebecd03ce42d12d961`; desktop dark `5ac79ac96baef4192704504d8ced113bbf73fe44d402652c0e37ca1974621c82`; mobile light `c50f50bbba21d1e36e9415063d786b2c7cca3a254d26db1fbc9e02d5728bd0e5`; mobile dark `ecb38667f37778277925f67dda957d569e3c73f49e3118eb9105dbfa68c4110d`.
+- Raw production evidence: `.superpowers/sdd/task-6-production-evidence.json`, SHA-256 `f2bfe05bd293c5f896cfedb591143bbcdd736d70aa8d88c69302ec44876879de`. The raw Browser artifact remains local and is not staged as release-review input.
+- Stage A production verdict: **PASS**.
+
 ## Release state
 
-- This record contains local Stage A implementation and independent-review evidence only. No Pages run, production observation, Stage B closure, or production deployment is claimed.
-- Publication handoff is ready for the Stage A deployment step; deployment and production evidence must be recorded separately after they run.
+- The exact Stage A implementation head has a successful Pages run and production observation bound above.
+- This is Stage A publication evidence only. STY-04 remains `published / pending`; its backlog checkbox remains unchecked, the baseline still names STY-04 as the next G009 item, and STY-05 remains `unpublished / pending`.
+- No Stage B closure is claimed. Backlog and generated status closure remain a later task.

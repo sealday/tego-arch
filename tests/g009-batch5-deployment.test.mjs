@@ -105,7 +105,7 @@ test('preserves the pre-closure G009 backlog state', () => {
   assert.match(backlog, /^- \[ \] \*\*STY-05 /mu);
 });
 
-test('records the completed independent Stage A verdicts without claiming deployment', async () => {
+test('records exact Stage A deployment and production evidence without closing STY-04', async () => {
   assert.match(review, /^# G009 Batch 5 Stage A Review$/mu);
   assert.match(section(review, 'Stage A projection'), /56 completed topics \/ 99 content documents \/ 513 governed sources/u);
   assert.match(section(review, 'Stage A projection'), /STY-04: `published \/ pending`/u);
@@ -140,8 +140,70 @@ test('records the completed independent Stage A verdicts without claiming deploy
   assert.match(independentReview, /invariant proof/u);
   assert.match(independentReview, /Final Stage A release judgment: `READY`/u);
   assert.doesNotMatch(independentReview, /`PENDING`/u);
-  assert.doesNotMatch(
-    review,
-    /Stage B closure\s*[—:-]\s*PASS|Pages run:\s*\[`[0-9]+`\]|production smoke\s*[—:-]\s*PASS/iu,
+
+  const deployment = section(review, 'Stage A deployment evidence');
+  assert.match(
+    deployment,
+    /Stage A exact head: `9cfe1de9497dd7e0a38e2c6358ba5bded59b0c63`/u,
   );
+  assert.match(
+    deployment,
+    /Pages run: \[`31436111404`\]\(https:\/\/github\.com\/sealday\/tego-arch\/actions\/runs\/31436111404\); build job `93610482485`; deploy job `93611048927`/u,
+  );
+  assert.match(
+    deployment,
+    /workflow `Verify and deploy Docusaurus to GitHub Pages`, `event=push`, `headSha=9cfe1de9497dd7e0a38e2c6358ba5bded59b0c63`, `status=completed`, `conclusion=success`/u,
+  );
+  assert.match(deployment, /created `2026-08-10T21:56:13Z`/u);
+  assert.match(deployment, /completed\/updated `2026-08-10T21:59:03Z`/u);
+
+  const productionHttp = section(review, 'Production HTTP smoke');
+  for (const route of [
+    '/styles/sty-04',
+    '/styles',
+    '/paths/module-boundaries',
+    '/styles/sty-01',
+    '/styles/sty-02',
+    '/styles/sty-03',
+    '/cases/micro-frontends-single-spa',
+    '/references',
+  ]) {
+    assert.match(productionHttp, new RegExp(escapeRegExp(`\`${route}\``), 'u'));
+  }
+  assert.match(productionHttp, /HTTP 200 with `text\/html; charset=utf-8`/u);
+  assert.match(productionHttp, /HTTP 200 with `image\/svg\+xml`, 19,722 bytes/u);
+  assert.match(
+    productionHttp,
+    /SHA-256 `d78f3231d9aaaa4cdbf39e04ec3070fabc9b4a8cb7f64aad862cc340ce8da8e4`/u,
+  );
+  assert.match(productionHttp, /Production HTTP probes: `9\/9` passed \(`8` HTML routes \+ `1` SVG asset\)/u);
+
+  const browserQa = section(review, 'Production Browser QA');
+  assert.match(browserQa, /Desktop light and dark, `1440x1000`/u);
+  assert.match(browserQa, /document `1440\/1440`/u);
+  assert.match(browserQa, /ArrowRight movement was `0\/40\/40`/u);
+  assert.match(browserQa, /Mobile light and dark, `390x844`/u);
+  assert.match(browserQa, /document `390\/390`/u);
+  assert.match(browserQa, /ArrowRight movement was `40\/40\/40`/u);
+  assert.match(browserQa, /all 12 wrapper checks began at `0`/u);
+  assert.match(browserQa, /matched `:focus-visible`/u);
+  assert.match(browserQa, /rendered a `3px solid` outline/u);
+  assert.match(browserQa, /STY-01, STY-02, STY-03, and the linked micro-frontends case/u);
+  assert.match(browserQa, /5 exact source anchors per state/u);
+  assert.match(browserQa, /The 3 unique source targets resolved in all four states/u);
+  assert.match(browserQa, /STY-05 actionable article links: `0` in each state/u);
+  assert.match(browserQa, /warning\/error logs.*events were empty in each state/u);
+  assert.match(browserQa, /`hasMore=false` and `truncated=false`/u);
+  assert.match(
+    browserQa,
+    /Raw production evidence: `\.superpowers\/sdd\/task-6-production-evidence\.json`, SHA-256 `f2bfe05bd293c5f896cfedb591143bbcdd736d70aa8d88c69302ec44876879de`/u,
+  );
+  assert.match(browserQa, /Stage A production verdict: \*\*PASS\*\*/u);
+
+  const releaseState = section(review, 'Release state');
+  assert.match(releaseState, /STY-04 remains `published \/ pending`/u);
+  assert.match(releaseState, /backlog checkbox remains unchecked/u);
+  assert.match(releaseState, /STY-05 remains `unpublished \/ pending`/u);
+  assert.match(releaseState, /No Stage B closure is claimed/u);
+  assert.doesNotMatch(review, /Stage B closure verdict:\s*\*\*PASS\*\*/iu);
 });
