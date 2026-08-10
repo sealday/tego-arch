@@ -28,7 +28,7 @@ const [manifest, projectStatus, indexes, publicLedger] = await Promise.all([
 const licenseScope = 'The named article/page and bibliographic facts only; prose, code, diagrams, images, marks, comments, linked works, and third-party material excluded';
 const migrationPolicy = 'Facts summary and reviewed short quotation only; no adaptation or copied structure';
 
-test('preserves STY-02 closure while projecting STY-03 published and pending', () => {
+test('preserves STY-02 closure in the current Batch 4 projection', () => {
   const topics = new Map(manifest.topics.map((topic) => [topic.id, topic]));
   assert.equal(topics.get('STY-02')?.published, true);
   assert.equal(topics.get('STY-02')?.status.value, 'complete');
@@ -38,8 +38,10 @@ test('preserves STY-02 closure while projecting STY-03 published and pending', (
     'https://jeffreypalermo.com/2008/08/the-onion-architecture-part-3/',
   ]);
   assert.equal(topics.get('STY-03')?.published, true);
-  assert.equal(topics.get('STY-03')?.status.value, 'pending');
-  assert.equal(projectStatus.completed_topics, 55);
+  assert.equal(topics.get('STY-03')?.status.value, 'complete');
+  assert.equal(topics.get('STY-04')?.published, false);
+  assert.equal(topics.get('STY-04')?.status.value, 'pending');
+  assert.equal(projectStatus.completed_topics, 56);
   assert.equal(projectStatus.content_documents, 98);
   assert.equal(projectStatus.governed_sources, 509);
   assert.equal(publicLedger.sources.length, 509);

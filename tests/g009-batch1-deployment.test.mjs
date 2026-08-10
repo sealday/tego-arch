@@ -159,6 +159,11 @@ function currentG009Baseline(source) {
 }
 
 function assertBacklog(source) {
+  const liveBaseline = currentReleaseBaseline(source);
+  assert.match(liveBaseline, /^- \*\*当前发布基线：\*\* 2026-08-10 G009 Batch 4 已完成 STY-03/u);
+  assert.match(liveBaseline, /Stage B closure 为 56 个已完成主题、98 篇内容文档与 509 个受治理来源/u);
+  assert.match(liveBaseline, /下一项为 STY-04/u);
+  assert.equal(liveBaseline.split('此前 G009 Batch 3 历史完成基线为：').length - 1, 1);
   const segment = currentG009Baseline(source);
   assert.equal(segment, expectedCurrentBaseline);
   for (const literal of currentBacklogEvidence) {
@@ -167,7 +172,8 @@ function assertBacklog(source) {
   assert.match(source, /^- \[x\] \*\*STY-00 /mu);
   assert.match(source, /^- \[x\] \*\*STY-01 /mu);
   assert.match(source, /^- \[x\] \*\*STY-02 /mu);
-  assert.match(source, /^- \[ \] \*\*STY-03 /mu);
+  assert.match(source, /^- \[x\] \*\*STY-03 /mu);
+  assert.match(source, /^- \[ \] \*\*STY-04 /mu);
   assert.match(source, /^- \*\*当前持久故事：\*\* `G009`。$/mu);
 }
 
@@ -217,7 +223,7 @@ test('rejects closure mutations accepted by the former weak predicates', async (
   }
 });
 
-test('preserves the Batch 1 closure while projecting STY-03 published and pending', async () => {
+test('preserves the Batch 1 closure in the current Batch 4 projection', async () => {
   const [backlog, manifest, status] = await Promise.all([
     readFile(new URL('../docs/content-backlog.md', import.meta.url), 'utf8'),
     readFile(new URL('../src/generated/topic-manifest.json', import.meta.url), 'utf8').then(JSON.parse),
@@ -232,11 +238,13 @@ test('preserves the Batch 1 closure while projecting STY-03 published and pendin
   assert.equal(topics.get('STY-02')?.published, true);
   assert.equal(topics.get('STY-02')?.status.value, 'complete');
   assert.equal(topics.get('STY-03')?.published, true);
-  assert.equal(topics.get('STY-03')?.status.value, 'pending');
+  assert.equal(topics.get('STY-03')?.status.value, 'complete');
+  assert.equal(topics.get('STY-04')?.published, false);
+  assert.equal(topics.get('STY-04')?.status.value, 'pending');
   assert.deepEqual(status, {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
-    completed_topics: 55,
+    completed_topics: 56,
     content_documents: 98,
     governed_sources: 509,
     sources: {

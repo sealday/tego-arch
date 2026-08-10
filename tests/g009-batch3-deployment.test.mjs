@@ -142,6 +142,7 @@ const currentBacklogEvidence = [
 ];
 
 const expectedCurrentBaseline = `- **当前发布基线：** ${currentBacklogEvidence.join('，')}。`;
+const batch3HistoryMarker = '此前 G009 Batch 3 历史完成基线为：';
 const historyMarker = '此前 G009 Batch 2 历史完成基线为：';
 
 function normalized(source) {
@@ -191,8 +192,19 @@ function currentReleaseBaseline(source) {
 
 function currentG009Batch3Baseline(source) {
   const baseline = currentReleaseBaseline(source);
-  assert.equal(baseline.split(historyMarker).length - 1, 1, 'one G009 Batch 2 history boundary');
-  return baseline.slice(0, baseline.indexOf(historyMarker));
+  const start = baseline.indexOf(batch3HistoryMarker);
+  const end = baseline.indexOf(historyMarker);
+  assert.notEqual(start, -1, 'G009 Batch 3 history boundary');
+  assert.notEqual(end, -1, 'G009 Batch 2 history boundary');
+  return `- **当前发布基线：** ${baseline.slice(start + batch3HistoryMarker.length, end)}`;
+}
+
+function mutateG009Batch3History(source, from, to) {
+  const historicalBaseline = currentG009Batch3Baseline(source);
+  const historicalText = historicalBaseline.slice('- **当前发布基线：** '.length);
+  const mutation = historicalText.replace(from, to);
+  assert.notEqual(mutation, historicalText, `historical mutation must replace: ${from}`);
+  return source.replace(historicalText, mutation);
 }
 
 function g009Batch2AndOlderHistory(source) {
@@ -203,13 +215,19 @@ function g009Batch2AndOlderHistory(source) {
 }
 
 function assertBacklog(source) {
+  const liveBaseline = currentReleaseBaseline(source);
+  assert.match(liveBaseline, /^- \*\*当前发布基线：\*\* 2026-08-10 G009 Batch 4 已完成 STY-03/u);
+  assert.match(liveBaseline, /Stage B closure 为 56 个已完成主题、98 篇内容文档与 509 个受治理来源/u);
+  assert.match(liveBaseline, /下一项为 STY-04/u);
+  assert.equal(liveBaseline.split(batch3HistoryMarker).length - 1, 1);
   const segment = currentG009Batch3Baseline(source);
   assert.equal(segment, expectedCurrentBaseline);
   for (const literal of currentBacklogEvidence) {
     assert.equal(segment.split(literal).length - 1, 1, `one backlog literal: ${literal}`);
   }
   assert.match(source, /^- \[x\] \*\*STY-02 /mu);
-  assert.match(source, /^- \[ \] \*\*STY-03 /mu);
+  assert.match(source, /^- \[x\] \*\*STY-03 /mu);
+  assert.match(source, /^- \[ \] \*\*STY-04 /mu);
   assert.match(source, /^- \*\*当前持久故事：\*\* `G009`。$/mu);
   assert.doesNotMatch(segment, /4\s*\/\s*4 diagram movement/u);
 }
@@ -263,26 +281,26 @@ test('rejects review contradictions', async (t) => {
   }
 });
 
-test('rejects current-baseline contradictions', async (t) => {
+test('rejects historical Batch 3 baseline contradictions', async (t) => {
   const backlog = await readFile(new URL('../docs/content-backlog.md', import.meta.url), 'utf8');
   assertBacklog(backlog);
   const mutations = [
-    ['run conclusion failure', backlog.replace('`conclusion=success`', '`conclusion=failure`')],
-    ['Critical finding', backlog.replace('Critical `0`', 'Critical `1`')],
-    ['Important finding', backlog.replace('Important `0`', 'Important `1`')],
-    ['architecture blocked', backlog.replace('READY/READY/CLEAR/READY', 'READY/READY/BLOCK/NOT READY')],
-    ['HTTP probe failure', backlog.replace('HTTP probes `14/14`', 'HTTP probes `13/14`')],
-    ['page viewport failure', backlog.replace('page/viewport observations `24/24`', 'page/viewport observations `23/24`')],
-    ['SVG observation failure', backlog.replace('SVG observations `4/4`', 'SVG observations `3/4`')],
-    ['interaction failure', backlog.replace('interactions `48/48`', 'interactions `47/48`')],
-    ['SVG width regression', backlog.replace('SVG article width `800px`', 'SVG article width `799px`')],
-    ['diagnostic failure', backlog.replace('warnings/errors/page errors `0/0/0`', 'warnings/errors/page errors `1/0/0`')],
-    ['repository test failure', backlog.replace('仓库测试 `886/886`', '仓库测试 `885/886`')],
-    ['Stage B count regression', backlog.replace('Stage B closure 为 55 个已完成主题、96 篇内容文档与 506 个受治理来源', 'Stage B closure 为 54 个已完成主题、96 篇内容文档与 506 个受治理来源')],
-    ['next topic regression', backlog.replace('下一项为 STY-03', '下一项为 STY-02')],
-    ['mobile keyboard movement failure', backlog.replace('mobile movement `2/2`', 'mobile movement `1/2`')],
-    ['desktop keyboard no-op failure', backlog.replace('desktop non-overflow no-op `2/2`', 'desktop non-overflow no-op `1/2`')],
-    ['Stage B closure failure', backlog.replace('Stage B closure — PASS', 'Stage B closure — FAIL')],
+    ['run conclusion failure', mutateG009Batch3History(backlog, '`conclusion=success`', '`conclusion=failure`')],
+    ['Critical finding', mutateG009Batch3History(backlog, 'Critical `0`', 'Critical `1`')],
+    ['Important finding', mutateG009Batch3History(backlog, 'Important `0`', 'Important `1`')],
+    ['architecture blocked', mutateG009Batch3History(backlog, 'READY/READY/CLEAR/READY', 'READY/READY/BLOCK/NOT READY')],
+    ['HTTP probe failure', mutateG009Batch3History(backlog, 'HTTP probes `14/14`', 'HTTP probes `13/14`')],
+    ['page viewport failure', mutateG009Batch3History(backlog, 'page/viewport observations `24/24`', 'page/viewport observations `23/24`')],
+    ['SVG observation failure', mutateG009Batch3History(backlog, 'SVG observations `4/4`', 'SVG observations `3/4`')],
+    ['interaction failure', mutateG009Batch3History(backlog, 'interactions `48/48`', 'interactions `47/48`')],
+    ['SVG width regression', mutateG009Batch3History(backlog, 'SVG article width `800px`', 'SVG article width `799px`')],
+    ['diagnostic failure', mutateG009Batch3History(backlog, 'warnings/errors/page errors `0/0/0`', 'warnings/errors/page errors `1/0/0`')],
+    ['repository test failure', mutateG009Batch3History(backlog, '仓库测试 `886/886`', '仓库测试 `885/886`')],
+    ['Stage B count regression', mutateG009Batch3History(backlog, 'Stage B closure 为 55 个已完成主题、96 篇内容文档与 506 个受治理来源', 'Stage B closure 为 54 个已完成主题、96 篇内容文档与 506 个受治理来源')],
+    ['next topic regression', mutateG009Batch3History(backlog, '下一项为 STY-03', '下一项为 STY-02')],
+    ['mobile keyboard movement failure', mutateG009Batch3History(backlog, 'mobile movement `2/2`', 'mobile movement `1/2`')],
+    ['desktop keyboard no-op failure', mutateG009Batch3History(backlog, 'desktop non-overflow no-op `2/2`', 'desktop non-overflow no-op `1/2`')],
+    ['Stage B closure failure', mutateG009Batch3History(backlog, 'Stage B closure — PASS', 'Stage B closure — FAIL')],
   ];
   for (const [name, mutation] of mutations) {
     await t.test(name, () => {
@@ -292,7 +310,7 @@ test('rejects current-baseline contradictions', async (t) => {
   }
 });
 
-test('preserves STY-02 closure while projecting STY-03 published and pending', async () => {
+test('preserves STY-02 closure in the current Batch 4 projection', async () => {
   const [backlog, manifest, status, sourceLedger, indexes] = await Promise.all([
     readFile(new URL('../docs/content-backlog.md', import.meta.url), 'utf8'),
     readFile(new URL('../src/generated/topic-manifest.json', import.meta.url), 'utf8').then(JSON.parse),
@@ -304,11 +322,13 @@ test('preserves STY-02 closure while projecting STY-03 published and pending', a
   assert.equal(topics.get('STY-02')?.published, true);
   assert.equal(topics.get('STY-02')?.status.value, 'complete');
   assert.equal(topics.get('STY-03')?.published, true);
-  assert.equal(topics.get('STY-03')?.status.value, 'pending');
+  assert.equal(topics.get('STY-03')?.status.value, 'complete');
+  assert.equal(topics.get('STY-04')?.published, false);
+  assert.equal(topics.get('STY-04')?.status.value, 'pending');
   assert.deepEqual(status, {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
-    completed_topics: 55,
+    completed_topics: 56,
     content_documents: 98,
     governed_sources: 509,
     sources: {
@@ -322,7 +342,9 @@ test('preserves STY-02 closure while projecting STY-03 published and pending', a
   assert.ok(indexes.style.some(({id, published, status: topicStatus}) =>
     id === 'STY-02' && published === true && topicStatus.value === 'complete'));
   assert.ok(indexes.style.some(({id, published, status: topicStatus}) =>
-    id === 'STY-03' && published === true && topicStatus.value === 'pending'));
+    id === 'STY-03' && published === true && topicStatus.value === 'complete'));
+  assert.ok(indexes.style.some(({id, published, status: topicStatus}) =>
+    id === 'STY-04' && published === false && topicStatus.value === 'pending'));
   assertBacklog(backlog);
 });
 
