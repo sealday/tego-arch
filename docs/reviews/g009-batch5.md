@@ -148,6 +148,46 @@ Exact per-state diagnostic outcomes:
 - Nonblocking item 2: the stale STY-04 mutation expectation and six assertion messages were corrected in `2a46df9` — `RESOLVED`.
 - Independent architecture reviewer (`architect`): `CLEAR / READY`; blockers: `0`.
 - Invariant proof: module contracts, unique data ownership, explicit transaction/event semantics, shared deployment/failure boundaries, and evidence-based extraction remain intact. The Stage B diff changes only backlog-derived completion, deterministic projections, review evidence, and current-state assertions; it does not alter the reviewed STY-04 article, source governance, diagram topology, or runtime boundaries.
-- Local Stage B review readiness: `READY`; this is not Stage B deployment evidence.
-- Stage B deployment status: `PENDING`.
-- No final Stage B closure deployment verdict is recorded before an exact reviewed-head push, successful Pages run, and production verification.
+- Local Stage B review readiness: `READY`.
+- Stage B deployment status: `SUCCESS`.
+
+## Stage B deployment evidence
+
+- Stage B exact reviewed head: `0ea5751c0c35486ee65f5bb8948b167df1daeeb9`.
+- Pages run: [`31443254424`](https://github.com/sealday/tego-arch/actions/runs/31443254424); build job `93632136039`; deploy job `93632580205`.
+- Exact run gate: workflow `Verify and deploy Docusaurus to GitHub Pages`, `event=push`, `headSha=0ea5751c0c35486ee65f5bb8948b167df1daeeb9`, `status=completed`, `conclusion=success`.
+- Stage B build job `93632136039`: `status=completed`, `conclusion=success`.
+- Stage B deploy job `93632580205`: `status=completed`, `conclusion=success`.
+- Run timing: created `2026-08-10T23:40:40Z`, completed/updated `2026-08-10T23:43:26Z`.
+- Production target: `https://sealday.github.io/tego-arch`.
+- HTML routes `/`, `/styles`, `/styles/sty-04`, `/paths/module-boundaries`, and `/references` returned HTTP 200 with `text/html; charset=utf-8`.
+- Canonical SVG `/img/diagrams/sty-04-modular-monolith-boundaries.svg` returned HTTP 200 with `image/svg+xml`, 19,722 bytes, and SHA-256 `d78f3231d9aaaa4cdbf39e04ec3070fabc9b4a8cb7f64aad862cc340ce8da8e4`.
+- Production HTTP probes: `6/6` passed (`5` HTML routes + `1` SVG asset).
+- Final IAB observation groups: `15` (`4` article states + `6` internal route/H1 observations + `3` external destination resolutions + `1` styles directory + `1` homepage).
+- Current final IAB revalidated content, layout, governed source metadata, and route resolution; it did not write a new four-state interaction artifact.
+
+Current final IAB article-state observations:
+
+| State | Viewport | Theme | Document client/scroll | Diagram/table wrapper client/scroll | Complete visible SVG | STY-05 actionable |
+| --- | --- | --- | --- | --- | --- | ---: |
+| `desktopLight` | `1440x1000` | `light` | `1440/1440` | `800/800`; `800/1024`; `800/1024` | `800x1200` | `0` |
+| `desktopDark` | `1440x1000` | `dark` | `1440/1440` | `800/800`; `800/1024`; `800/1024` | `800x1200` | `0` |
+| `mobileLight` | `390x844` | `light` | `390/390` | `358/800`; `358/1024`; `358/1024` | `800x1200` | `0` |
+| `mobileDark` | `390x844` | `dark` | `390/390` | `358/800`; `358/1024`; `358/1024` | `800x1200` | `0` |
+
+- Every article state rendered the exact H1 `模块化单体：在一个部署单元内保护业务边界` with no document overflow and empty Browser warning/error logs.
+- Each state exposed exactly `4` relation hrefs: `/tego-arch/styles/sty-01`, `/tego-arch/styles/sty-02`, `/tego-arch/styles/sty-03`, and `/tego-arch/cases/micro-frontends-single-spa`.
+- Current direct IAB activations resolved the six internal H1 observations: STY-01 `分层架构：用依赖方向约束职责分层`; STY-02 `六边形架构、洋葱架构与整洁架构：用依赖方向判断边界所有权`; STY-03 `垂直切片架构：按用例收拢变化边界`; micro-frontends `微前端：用垂直业务切片约束跨团队所有权`; module boundaries `模块边界与应用架构`; references `资料库`.
+- Each state exposed exactly `5` governed external source anchors: Spring Modulith Fundamentals twice, Application Events twice, and Monolith First once. Every anchor retained `target="_blank"` and `rel="noopener noreferrer"`, for `3` unique destinations.
+- Current direct IAB resolution reached `https://martinfowler.com/bliki/MonolithFirst.html` with title `Monolith First`, `https://docs.spring.io/spring-modulith/reference/fundamentals.html` with title `Fundamentals :: Spring Modulith`, and `https://docs.spring.io/spring-modulith/reference/events.html` with title `Working with Application Events :: Spring Modulith`.
+- Spring navigations reached the exact URLs and titles although goto completion timed out; this is recorded as an exact resolved-navigation compatibility fallback, not a clean goto.
+- `/styles` exposed the exact STY-04 actionable href `/tego-arch/styles/sty-04` in `2` rendered anchors and `0` STY-05 anchors. The only visible STY-05 text was the prerequisite note `前置主题：STY-04、STY-05、STY-06`.
+- Homepage visibly reported `研究主题 99`, `治理来源 513`, and `当前研究 G009`; it did not render completed topic count 57 or STY-04/STY-05 completion state.
+- The exact 57 completed topics, STY-04 complete, and STY-05 pending remain bound to canonical backlog and generated projection truth, not inferred from Browser output.
+- Interaction and diagnostic contracts are inherited only from the unchanged reviewed production artifact `.superpowers/sdd/task-6-production-evidence.json`, SHA-256 `f2bfe05bd293c5f896cfedb591143bbcdd736d70aa8d88c69302ec44876879de`.
+- Inherited interaction contract: all `12` wrapper checks focused the intended region, matched `:focus-visible`, rendered a `3px solid` outline, and preserved ArrowRight movement: desktop `0/40/40`, mobile `40/40/40`.
+- Inherited relation-return contract: every Stage A state resolved STY-01, STY-02, STY-03, and micro-frontends and returned to `/styles/sty-04`; the unchanged article relation href inventory was revalidated in the current final IAB run.
+- Inherited per-state diagnostics: `Runtime.exceptionThrown=0`, `Log.entryAdded=0`, `hasMore=false`, and `truncated=false`.
+- Current final IAB screenshot SHA-256 values: desktop light `e4240fb16322006aae7ad344613776cd8eb1d2cf99d7d7c8acd36ef531949dff`; desktop dark `23b99d2de1b22ab8619c416ea9aabf5d924ac645d52e60aee88296dbcad1b0aa`; mobile light `532be15383d290a6d191c5a34418fac2768b4f753d935cc8ca19b0098939d29e`; mobile dark `dc23e10d05576b367b563a05d1c9c86aae7f9eed47f4c50f84874a1b32e4098e`.
+- No new raw Browser JSON artifact was written for the current final IAB run; the four screenshots and exact visible observations above are the current evidence, while inherited interaction fields cite only the immutable Task 6 artifact.
+- Stage B closure verdict: **PASS**.

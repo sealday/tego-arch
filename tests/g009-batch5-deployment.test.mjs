@@ -111,12 +111,55 @@ function assertStageBIndependentReview(source) {
     'Nonblocking item 2: the stale STY-04 mutation expectation and six assertion messages were corrected in `2a46df9` — `RESOLVED`.',
     'Independent architecture reviewer (`architect`): `CLEAR / READY`; blockers: `0`.',
     'Invariant proof: module contracts, unique data ownership, explicit transaction/event semantics, shared deployment/failure boundaries, and evidence-based extraction remain intact.',
-    'Local Stage B review readiness: `READY`; this is not Stage B deployment evidence.',
-    'Stage B deployment status: `PENDING`.',
+    'Local Stage B review readiness: `READY`.',
+    'Stage B deployment status: `SUCCESS`.',
   ]) {
     assert.ok(stageBClosure.includes(literal), `Stage B review literal: ${literal}`);
   }
-  assert.doesNotMatch(stageBClosure, /Stage B deployment status: `(?:PASS|DEPLOYED|SUCCESS)`/u);
+}
+
+function assertStageBDeploymentEvidence(source) {
+  const deployment = section(source, 'Stage B deployment evidence');
+  for (const literal of [
+    'Stage B exact reviewed head: `0ea5751c0c35486ee65f5bb8948b167df1daeeb9`.',
+    'Pages run: [`31443254424`](https://github.com/sealday/tego-arch/actions/runs/31443254424); build job `93632136039`; deploy job `93632580205`.',
+    'Exact run gate: workflow `Verify and deploy Docusaurus to GitHub Pages`, `event=push`, `headSha=0ea5751c0c35486ee65f5bb8948b167df1daeeb9`, `status=completed`, `conclusion=success`.',
+    'Stage B build job `93632136039`: `status=completed`, `conclusion=success`.',
+    'Stage B deploy job `93632580205`: `status=completed`, `conclusion=success`.',
+    'Run timing: created `2026-08-10T23:40:40Z`, completed/updated `2026-08-10T23:43:26Z`.',
+    'Production HTTP probes: `6/6` passed (`5` HTML routes + `1` SVG asset).',
+    'Final IAB observation groups: `15` (`4` article states + `6` internal route/H1 observations + `3` external destination resolutions + `1` styles directory + `1` homepage).',
+    'Current final IAB revalidated content, layout, governed source metadata, and route resolution; it did not write a new four-state interaction artifact.',
+    'Interaction and diagnostic contracts are inherited only from the unchanged reviewed production artifact `.superpowers/sdd/task-6-production-evidence.json`, SHA-256 `f2bfe05bd293c5f896cfedb591143bbcdd736d70aa8d88c69302ec44876879de`.',
+    'Homepage visibly reported `研究主题 99`, `治理来源 513`, and `当前研究 G009`; it did not render completed topic count 57 or STY-04/STY-05 completion state.',
+    'The exact 57 completed topics, STY-04 complete, and STY-05 pending remain bound to canonical backlog and generated projection truth, not inferred from Browser output.',
+    'Stage B closure verdict: **PASS**.',
+  ]) {
+    assert.ok(deployment.includes(literal), `Stage B deployment literal: ${literal}`);
+  }
+
+  for (const literal of [
+    '| `desktopLight` | `1440x1000` | `light` | `1440/1440` | `800/800`; `800/1024`; `800/1024` | `800x1200` | `0` |',
+    '| `desktopDark` | `1440x1000` | `dark` | `1440/1440` | `800/800`; `800/1024`; `800/1024` | `800x1200` | `0` |',
+    '| `mobileLight` | `390x844` | `light` | `390/390` | `358/800`; `358/1024`; `358/1024` | `800x1200` | `0` |',
+    '| `mobileDark` | `390x844` | `dark` | `390/390` | `358/800`; `358/1024`; `358/1024` | `800x1200` | `0` |',
+    'Each state exposed exactly `4` relation hrefs:',
+    'Each state exposed exactly `5` governed external source anchors:',
+    'Spring navigations reached the exact URLs and titles although goto completion timed out; this is recorded as an exact resolved-navigation compatibility fallback, not a clean goto.',
+    'Inherited interaction contract: all `12` wrapper checks focused the intended region, matched `:focus-visible`, rendered a `3px solid` outline, and preserved ArrowRight movement: desktop `0/40/40`, mobile `40/40/40`.',
+    'Inherited per-state diagnostics: `Runtime.exceptionThrown=0`, `Log.entryAdded=0`, `hasMore=false`, and `truncated=false`.',
+  ]) {
+    assert.ok(deployment.includes(literal), `Stage B Browser literal: ${literal}`);
+  }
+
+  for (const screenshotHash of [
+    'e4240fb16322006aae7ad344613776cd8eb1d2cf99d7d7c8acd36ef531949dff',
+    '23b99d2de1b22ab8619c416ea9aabf5d924ac645d52e60aee88296dbcad1b0aa',
+    '532be15383d290a6d191c5a34418fac2768b4f753d935cc8ca19b0098939d29e',
+    'dc23e10d05576b367b563a05d1c9c86aae7f9eed47f4c50f84874a1b32e4098e',
+  ]) {
+    assert.ok(deployment.includes(screenshotHash), `Stage B screenshot SHA-256: ${screenshotHash}`);
+  }
 }
 
 test('projects the exact STY-04 Stage B closure inventory', () => {
@@ -171,7 +214,14 @@ test('closes only STY-04 and advances the G009 release baseline to STY-05', () =
   assert.match(currentBaseline, /Stage B 独立 code review verdict 为 READY\/APPROVE，findings `0`/u);
   assert.match(currentBaseline, /content review verdict 为 READY，rights PASS，blocking findings `0`/u);
   assert.match(currentBaseline, /architecture review verdict 为 CLEAR\/READY，blockers `0`/u);
-  assert.match(currentBaseline, /Stage B deployment status 仍为 `PENDING`/u);
+  assert.match(currentBaseline, /Stage B deployment status 为 `SUCCESS`/u);
+  assert.match(currentBaseline, /Stage B exact reviewed head \[`0ea5751c0c35486ee65f5bb8948b167df1daeeb9`\]/u);
+  assert.match(currentBaseline, /Pages run \[`31443254424`\]/u);
+  assert.match(currentBaseline, /build job `93632136039`、deploy job `93632580205`/u);
+  assert.match(currentBaseline, /final IAB observation groups `15`/u);
+  assert.match(currentBaseline, /desktop `1440\/1440`、mobile `390\/390`/u);
+  assert.match(currentBaseline, /首页 visible metrics 为 `99\/513\/G009`/u);
+  assert.match(currentBaseline, /Task 6 immutable interaction artifact `f2bfe05bd293c5f896cfedb591143bbcdd736d70aa8d88c69302ec44876879de`/u);
   assert.doesNotMatch(currentBaseline, /最终独立评审槽位保持 pending/u);
   assert.match(backlog, /^- \[x\] \*\*STY-03 /mu);
   assert.match(backlog, /^- \[ \] \*\*STY-05 /mu);
@@ -199,7 +249,13 @@ test('rejects stale Stage B review and fabricated deployment state in the canoni
     ['code verdict', 'READY/APPROVE，findings `0`', 'PENDING，findings `1`'],
     ['content verdict', 'READY，rights PASS，blocking findings `0`', 'PENDING，rights UNKNOWN，blocking findings `1`'],
     ['architecture verdict', 'CLEAR/READY，blockers `0`', 'BLOCKED，blockers `1`'],
-    ['deployment status', 'Stage B deployment status 仍为 `PENDING`', 'Stage B deployment status 为 `SUCCESS`'],
+    ['deployment status', 'Stage B deployment status 为 `SUCCESS`', 'Stage B deployment status 仍为 `PENDING`'],
+    ['deployment head', '0ea5751c0c35486ee65f5bb8948b167df1daeeb9', '2a46df97720f7bedac5e80ad215c3c9d83345a34'],
+    ['deployment run', 'Pages run [`31443254424`]', 'Pages run [`31443254425`]'],
+    ['deployment jobs', 'build job `93632136039`、deploy job `93632580205`', 'build job `93632136040`、deploy job `93632580206`'],
+    ['IAB observations', 'final IAB observation groups `15`', 'final IAB observation groups `14`'],
+    ['homepage metrics', '首页 visible metrics 为 `99/513/G009`', '首页 visible metrics 为 `57/99/513/G009`'],
+    ['interaction provenance', 'Task 6 immutable interaction artifact `f2bfe05bd293c5f896cfedb591143bbcdd736d70aa8d88c69302ec44876879de`', 'current final interaction artifact `unknown`'],
   ];
 
   for (const [label, exact, replacement] of mutations) {
@@ -212,7 +268,13 @@ test('rejects stale Stage B review and fabricated deployment state in the canoni
       assert.match(mutatedBaseline, /Stage B 独立 code review verdict 为 READY\/APPROVE，findings `0`/u);
       assert.match(mutatedBaseline, /content review verdict 为 READY，rights PASS，blocking findings `0`/u);
       assert.match(mutatedBaseline, /architecture review verdict 为 CLEAR\/READY，blockers `0`/u);
-      assert.match(mutatedBaseline, /Stage B deployment status 仍为 `PENDING`/u);
+      assert.match(mutatedBaseline, /Stage B deployment status 为 `SUCCESS`/u);
+      assert.match(mutatedBaseline, /Stage B exact reviewed head \[`0ea5751c0c35486ee65f5bb8948b167df1daeeb9`\]/u);
+      assert.match(mutatedBaseline, /Pages run \[`31443254424`\]/u);
+      assert.match(mutatedBaseline, /build job `93632136039`、deploy job `93632580205`/u);
+      assert.match(mutatedBaseline, /final IAB observation groups `15`/u);
+      assert.match(mutatedBaseline, /首页 visible metrics 为 `99\/513\/G009`/u);
+      assert.match(mutatedBaseline, /Task 6 immutable interaction artifact `f2bfe05bd293c5f896cfedb591143bbcdd736d70aa8d88c69302ec44876879de`/u);
       assert.doesNotMatch(mutatedBaseline, /最终独立评审槽位保持 pending/u);
     }, {name: 'AssertionError'}, label);
   }
@@ -315,8 +377,9 @@ test('preserves exact Stage A evidence and records final Stage B independent ver
   assert.match(stageBClosure, /STY-04: `published \/ complete`/u);
   assert.match(stageBClosure, /STY-05: `unpublished \/ pending`/u);
   assert.match(stageBClosure, /Local Stage B review readiness: `READY`/u);
-  assert.match(stageBClosure, /Stage B deployment status: `PENDING`/u);
-  assert.doesNotMatch(review, /Stage B closure verdict:\s*\*\*PASS\*\*/iu);
+  assert.match(stageBClosure, /Stage B deployment status: `SUCCESS`/u);
+  assertStageBDeploymentEvidence(review);
+  assert.match(review, /Stage B closure verdict:\s*\*\*PASS\*\*/iu);
 });
 
 test('rejects missing or fabricated Stage B independent verdicts', () => {
@@ -328,7 +391,7 @@ test('rejects missing or fabricated Stage B independent verdicts', () => {
     ['message cleanup', 'corrected in `2a46df9` — `RESOLVED`.', 'deferred — `PENDING`.'],
     ['architecture verdict', '`CLEAR / READY`; blockers: `0`.', '`BLOCKED`; blockers: `1`.'],
     ['invariant proof', 'unique data ownership', 'shared data ownership'],
-    ['deployment boundary', 'Stage B deployment status: `PENDING`.', 'Stage B deployment status: `SUCCESS`.'],
+    ['deployment status', 'Stage B deployment status: `SUCCESS`.', 'Stage B deployment status: `PENDING`.'],
   ];
 
   for (const [label, exact, replacement] of mutations) {
@@ -337,6 +400,38 @@ test('rejects missing or fabricated Stage B independent verdicts', () => {
     assert.notEqual(mutatedStageBClosure, stageBClosure, `${label} mutation must apply`);
     const mutatedReview = review.replace(stageBClosure, mutatedStageBClosure);
     assert.throws(() => assertStageBIndependentReview(mutatedReview), {name: 'AssertionError'}, label);
+  }
+});
+
+test('rejects mutated Stage B deployment evidence', () => {
+  const mutations = [
+    ['reviewed head', '0ea5751c0c35486ee65f5bb8948b167df1daeeb9', '2a46df97720f7bedac5e80ad215c3c9d83345a34'],
+    ['Pages run', '31443254424', '31443254425'],
+    ['build job', '93632136039', '93632136040'],
+    ['deploy job', '93632580205', '93632580206'],
+    ['run conclusion', '`status=completed`, `conclusion=success`', '`status=completed`, `conclusion=failure`'],
+    ['HTTP probes', '`6/6` passed (`5` HTML routes + `1` SVG asset)', '`5/6` passed (`5` HTML routes + `1` SVG asset)'],
+    ['IAB observation total', 'Final IAB observation groups: `15`', 'Final IAB observation groups: `14`'],
+    ['desktop geometry', '`800/800`; `800/1024`; `800/1024`', '`800/801`; `800/1024`; `800/1024`'],
+    ['mobile geometry', '`358/800`; `358/1024`; `358/1024`', '`358/799`; `358/1024`; `358/1024`'],
+    ['inherited artifact', 'f2bfe05bd293c5f896cfedb591143bbcdd736d70aa8d88c69302ec44876879de', '0'.repeat(64)],
+    ['interaction provenance', 'Inherited interaction contract:', 'Current final interaction contract:'],
+    ['homepage boundary', 'it did not render completed topic count 57', 'it rendered completed topic count 57'],
+    ['desktop screenshot', 'e4240fb16322006aae7ad344613776cd8eb1d2cf99d7d7c8acd36ef531949dff', '1'.repeat(64)],
+    ['mobile screenshot', '532be15383d290a6d191c5a34418fac2768b4f753d935cc8ca19b0098939d29e', '2'.repeat(64)],
+    ['closure verdict', 'Stage B closure verdict: **PASS**.', 'Stage B closure verdict: **FAIL**.'],
+  ];
+
+  for (const [label, exact, replacement] of mutations) {
+    const stageBDeployment = section(review, 'Stage B deployment evidence');
+    const mutatedStageBDeployment = stageBDeployment.replace(exact, replacement);
+    assert.notEqual(mutatedStageBDeployment, stageBDeployment, `${label} mutation must apply`);
+    const mutatedReview = review.replace(stageBDeployment, mutatedStageBDeployment);
+    assert.throws(
+      () => assertStageBDeploymentEvidence(mutatedReview),
+      {name: 'AssertionError'},
+      label,
+    );
   }
 });
 
