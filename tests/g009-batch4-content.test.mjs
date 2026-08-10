@@ -256,7 +256,7 @@ test('requires STY-03 sources, citations, and reviewed transport evidence', () =
     result.source_ids.map((sourceId) => [sourceId, result])));
   const documentReview = ledger.documents[`content/${sty03.file}`];
   assert.ok(documentReview, 'STY-03 source review record');
-  assert.equal(documentReview.reviewed_at, '2026-08-08');
+  assert.equal(documentReview.reviewed_at, '2026-08-10');
   assert.deepEqual(documentReview.copyright_checks, [
     'original-structure', 'quotation-boundary', 'attribution-complete', 'illustration-rights',
   ]);
@@ -274,7 +274,17 @@ test('requires STY-03 sources, citations, and reviewed transport evidence', () =
     assert.ok(record, `${id} ledger record`);
     assert.equal(record.canonical_locator, url);
     assert.ok(record.author_or_org, `${id} source identity`);
-    assert.ok(record.checked_at, `${id} health date`);
+    assert.equal(record.registered_at, '2026-08-10', `${id} registration date`);
+    assert.equal(record.checked_at, '2026-08-10', `${id} health date`);
+    assert.equal(record.expected_final_approved_at, '2026-08-10', `${id} transport approval date`);
+    for (const [field, value] of [
+      ['version', record.version],
+      ['license_evidence_note', record.license_evidence_note],
+      ['expected_final_approval_note', record.expected_final_approval_note],
+    ]) {
+      assert.doesNotMatch(value, /2026-08-08/u, `${id} ${field} must not claim a 2026-08-08 live review`);
+      assert.match(value, /2026-08-10/u, `${id} ${field} actual review date`);
+    }
     assert.ok(record.license, `${id} license`);
     assert.ok(record.license_evidence_url, `${id} license evidence`);
     assert.ok(record.usage_boundary, `${id} usage boundary`);

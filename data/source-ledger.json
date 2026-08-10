@@ -18830,9 +18830,9 @@
       ],
       "author_or_org": "Jimmy Bogard",
       "published_at": "2018-04-19",
-      "registered_at": "2026-08-08",
-      "checked_at": "2026-08-08",
-      "version": "Original article published 2018-04-19; page checked 2026-08-08",
+      "registered_at": "2026-08-10",
+      "checked_at": "2026-08-10",
+      "version": "Original article published 2018-04-19; page checked 2026-08-10",
       "source_kind": "engineering-blog",
       "tier": "primary",
       "allowed_evidence_roles": [
@@ -18845,7 +18845,7 @@
       "license": "LicenseRef-All-Rights-Reserved",
       "license_scope": "The named Jimmy Bogard article and bibliographic facts only; prose, code, diagrams, images, marks, comments, linked works, and third-party material excluded",
       "license_evidence_url": "https://www.jimmybogard.com/vertical-slice-architecture/",
-      "license_evidence_note": "The 2026-08-08 audit checked Jimmy Bogard’s “Vertical Slice Architecture” article at https://www.jimmybogard.com/vertical-slice-architecture/; no reusable license notice for the work was found. Tego Arch retains attribution, a link, and original factual summary only.",
+      "license_evidence_note": "The 2026-08-10 audit checked Jimmy Bogard’s “Vertical Slice Architecture” article at https://www.jimmybogard.com/vertical-slice-architecture/; no reusable license notice for the work was found. Tego Arch retains attribution, a link, and original factual summary only.",
       "license_family_id": "https://www.jimmybogard.com/vertical-slice-architecture/",
       "license_family_grouping": "identity",
       "family_grouping_evidence_url": null,
@@ -18853,8 +18853,8 @@
       "usage_boundary": "Supports the definition of vertical slice architecture and its change-oriented organization discussion; the author’s implementation choices and outcome claims are not universal requirements or production guarantees.",
       "link_policy": "stable",
       "expected_final_transport_locator": "https://www.jimmybogard.com/vertical-slice-architecture/",
-      "expected_final_approved_at": "2026-08-08",
-      "expected_final_approval_note": "Reviewed canonical identity and healthy author-hosted transport on 2026-08-08."
+      "expected_final_approved_at": "2026-08-10",
+      "expected_final_approval_note": "Reviewed canonical identity and healthy author-hosted transport on 2026-08-10."
     },
     {
       "id": "src-microsoft-eshoponweb-architecture",
@@ -18869,9 +18869,9 @@
       ],
       "author_or_org": ".NET Foundation and contributors; Microsoft-maintained dotnet-architecture repository",
       "published_at": null,
-      "registered_at": "2026-08-08",
-      "checked_at": "2026-08-08",
-      "version": "Repository main at commit 4da8212117e87d808d4bbc7da6286fd2147ce606; repository checked 2026-08-08",
+      "registered_at": "2026-08-10",
+      "checked_at": "2026-08-10",
+      "version": "Repository main at commit 4da8212117e87d808d4bbc7da6286fd2147ce606; repository checked 2026-08-10",
       "source_kind": "official-repository",
       "tier": "primary",
       "allowed_evidence_roles": [
@@ -18884,7 +18884,7 @@
       "license": "MIT",
       "license_scope": "Repository material covered by the evidenced LICENSE only; external links, trademarks, and third-party assets excluded",
       "license_evidence_url": "https://raw.githubusercontent.com/dotnet-architecture/eShopOnWeb/main/LICENSE",
-      "license_evidence_note": "The official eShopOnWeb repository LICENSE retrieved on 2026-08-08 identifies the MIT License. Tego Arch limits use to attributed factual summary of the sample; external links, trademarks, and third-party assets are excluded.",
+      "license_evidence_note": "The official eShopOnWeb repository LICENSE retrieved on 2026-08-10 identifies the MIT License. Tego Arch limits use to attributed factual summary of the sample; external links, trademarks, and third-party assets are excluded.",
       "license_family_id": "github:dotnet-architecture/eshoponweb",
       "license_family_grouping": "identity",
       "family_grouping_evidence_url": null,
@@ -18892,8 +18892,8 @@
       "usage_boundary": "Provides an implementation example for discussing use-case-oriented organization and boundaries; its ASP.NET Core choices and sample structure are examples, not normative vertical-slice requirements or production evidence.",
       "link_policy": "stable",
       "expected_final_transport_locator": "https://github.com/dotnet-architecture/eShopOnWeb",
-      "expected_final_approved_at": "2026-08-08",
-      "expected_final_approval_note": "Reviewed canonical identity, repository version boundary, LICENSE evidence, and healthy GitHub transport on 2026-08-08."
+      "expected_final_approved_at": "2026-08-10",
+      "expected_final_approval_note": "Reviewed canonical identity, repository version boundary, LICENSE evidence, and healthy GitHub transport on 2026-08-10."
     }
   ],
   "documents": {
@@ -28631,7 +28631,7 @@
       ]
     },
     "content/styles/sty-03-vertical-slice-architecture.mdx": {
-      "reviewed_at": "2026-08-08",
+      "reviewed_at": "2026-08-10",
       "copyright_checks": [
         "original-structure",
         "quotation-boundary",
