@@ -19,17 +19,18 @@ const deploymentInventory = {
   assets: [...article.matchAll(/\]\((\/img\/[^)]+)\)/gu)].map(([, asset]) => asset),
 };
 
-test('closes only STY-03 and advances the current backlog target', () => {
+test('preserves the STY-03 closure under the current STY-04 closure', () => {
   const currentBaseline = backlog.split(/\r?\n/u)
     .find((line) => line.startsWith('- **当前发布基线：**'));
   assert.ok(currentBaseline, 'current release baseline');
-  assert.match(currentBaseline, /G009 Batch 4 已完成 STY-03/u);
-  assert.match(currentBaseline, /当前 G009，下一项为 STY-04/u);
+  assert.match(currentBaseline, /G009 Batch 5 已完成 STY-04/u);
+  assert.match(currentBaseline, /当前 G009，下一项为 STY-05/u);
   assert.match(backlog, /^- \[x\] \*\*STY-03 /mu);
-  assert.match(backlog, /^- \[ \] \*\*STY-04 /mu);
+  assert.match(backlog, /^- \[x\] \*\*STY-04 /mu);
+  assert.match(backlog, /^- \[ \] \*\*STY-05 /mu);
 });
 
-test('projects STY-03 complete while publishing STY-04 pending', () => {
+test('projects both STY-03 and STY-04 complete', () => {
   const topics = new Map(manifest.topics.map((topic) => [topic.id, topic]));
   const styleTopics = new Map(indexes.style.map((topic) => [topic.id, topic]));
 
@@ -38,9 +39,9 @@ test('projects STY-03 complete while publishing STY-04 pending', () => {
   assert.equal(styleTopics.get('STY-03')?.published, true);
   assert.equal(styleTopics.get('STY-03')?.status.value, 'complete');
   assert.equal(topics.get('STY-04')?.published, true);
-  assert.equal(topics.get('STY-04')?.status.value, 'pending');
+  assert.equal(topics.get('STY-04')?.status.value, 'complete');
   assert.equal(styleTopics.get('STY-04')?.published, true);
-  assert.equal(styleTopics.get('STY-04')?.status.value, 'pending');
+  assert.equal(styleTopics.get('STY-04')?.status.value, 'complete');
 });
 
 test('retains the published corpus and closes the deployed topic', () => {
@@ -51,7 +52,7 @@ test('retains the published corpus and closes the deployed topic', () => {
       governed_sources: projectStatus.governed_sources,
     },
     {
-      completed_topics: 56,
+      completed_topics: 57,
       content_documents: 98 + 1,
       governed_sources: 509 + 4,
     },

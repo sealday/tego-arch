@@ -101,14 +101,14 @@ function assertExactStageAProductionEvidence(source) {
   }
 }
 
-test('projects the exact STY-04 Stage A inventory', () => {
+test('projects the exact STY-04 Stage B closure inventory', () => {
   assert.deepEqual(
     {
       completed_topics: projectStatus.completed_topics,
       content_documents: projectStatus.content_documents,
       governed_sources: projectStatus.governed_sources,
     },
-    {completed_topics: 56, content_documents: 99, governed_sources: 513},
+    {completed_topics: 57, content_documents: 99, governed_sources: 513},
   );
   assert.equal(publicLedger.sources.length, 513);
 
@@ -116,7 +116,7 @@ test('projects the exact STY-04 Stage A inventory', () => {
   const style = stylesById.get('STY-04');
   for (const projection of [topic, style]) {
     assert.equal(projection?.published, true);
-    assert.equal(projection?.status.value, 'pending');
+    assert.equal(projection?.status.value, 'complete');
     assert.equal(projection?.slug, ROUTE);
   }
 
@@ -141,17 +141,36 @@ test('publishes only the governed STY-04 route, SVG, and sources', async () => {
   );
 });
 
-test('preserves the pre-closure G009 backlog state', () => {
+test('closes only STY-04 and advances the G009 release baseline to STY-05', () => {
   const currentBaseline = backlog.split(/\r?\n/u)
     .find((line) => line.startsWith('- **当前发布基线：**'));
   assert.ok(currentBaseline, 'current release baseline');
-  assert.match(currentBaseline, /当前 G009，下一项为 STY-04/u);
+  assert.match(currentBaseline, /2026-08-11 G009 Batch 5 已完成 STY-04/u);
+  assert.match(currentBaseline, /57 个已完成主题、99 篇内容文档与 513 个受治理来源/u);
+  assert.match(currentBaseline, /当前 G009，下一项为 STY-05/u);
+  assert.match(currentBaseline, /STY-04 为 published\/complete/u);
+  assert.match(currentBaseline, /STY-05 为 unpublished\/pending/u);
   assert.match(backlog, /^- \[x\] \*\*STY-03 /mu);
-  assert.match(backlog, /^- \[ \] \*\*STY-04 /mu);
   assert.match(backlog, /^- \[ \] \*\*STY-05 /mu);
+
+  const sty04Lines = backlog.split(/\r?\n/u)
+    .filter((line) => /^- \[[ x]\] \*\*STY-04 /u.test(line));
+  assert.equal(sty04Lines.length, 1);
+  const [sty04Line] = sty04Lines;
+  for (const literal of [
+    '- [x] **STY-04 ',
+    '2026-08-11',
+    '9cfe1de9497dd7e0a38e2c6358ba5bded59b0c63',
+    '31436111404',
+    '/styles/sty-04',
+    '/img/diagrams/sty-04-modular-monolith-boundaries.svg',
+    'Stage A production verdict PASS',
+  ]) {
+    assert.ok(sty04Line.includes(literal), `STY-04 closure literal: ${literal}`);
+  }
 });
 
-test('records exact Stage A deployment and production evidence without closing STY-04', async () => {
+test('preserves exact Stage A evidence and records pending Stage B review slots', async () => {
   assertExactStageAProductionEvidence(review);
   assert.match(review, /^# G009 Batch 5 Stage A Review$/mu);
   assert.match(section(review, 'Stage A projection'), /56 completed topics \/ 99 content documents \/ 513 governed sources/u);
@@ -242,11 +261,13 @@ test('records exact Stage A deployment and production evidence without closing S
   );
   assert.match(browserQa, /Stage A production verdict: \*\*PASS\*\*/u);
 
-  const releaseState = section(review, 'Release state');
-  assert.match(releaseState, /STY-04 remains `published \/ pending`/u);
-  assert.match(releaseState, /backlog checkbox remains unchecked/u);
-  assert.match(releaseState, /STY-05 remains `unpublished \/ pending`/u);
-  assert.match(releaseState, /No Stage B closure is claimed/u);
+  const stageBClosure = section(review, 'Stage B closure implementation');
+  assert.match(stageBClosure, /Projection: 57 completed topics \/ 99 content documents \/ 513 governed sources/u);
+  assert.match(stageBClosure, /STY-04: `published \/ complete`/u);
+  assert.match(stageBClosure, /STY-05: `unpublished \/ pending`/u);
+  assert.match(stageBClosure, /Code review slot: `PENDING`/u);
+  assert.match(stageBClosure, /Content review slot: `PENDING`/u);
+  assert.match(stageBClosure, /Architecture review slot: `PENDING`/u);
   assert.doesNotMatch(review, /Stage B closure verdict:\s*\*\*PASS\*\*/iu);
 });
 

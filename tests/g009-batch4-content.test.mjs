@@ -462,7 +462,7 @@ test('keeps adjacent relations reciprocal while activating STY-04', () => {
   assert.equal(parseFrontMatter(sty03.source).adjacent_topics.includes('STY-04'), true);
   assert.ok(internalLinksOf(sty03).includes('/styles/sty-04'));
   assert.equal(manifest.topics.find(({id}) => id === 'STY-04')?.published, true);
-  assert.equal(manifest.topics.find(({id}) => id === 'STY-04')?.status.value, 'pending');
+  assert.equal(manifest.topics.find(({id}) => id === 'STY-04')?.status.value, 'complete');
 });
 
 test('projects the published complete STY-03 topic and exact Batch 4 counts', () => {
@@ -476,7 +476,7 @@ test('projects the published complete STY-03 topic and exact Batch 4 counts', ()
   assert.deepEqual(topic?.primary_sources, PROJECTED_SOURCE_URLS);
   const styleIndexEntry = indexes.style.find(({id}) => id === STY03);
   assert.deepEqual(styleIndexEntry?.primary_sources, PROJECTED_SOURCE_URLS);
-  assert.equal(projectStatus.completed_topics, 56);
+  assert.equal(projectStatus.completed_topics, 57);
   assert.equal(projectStatus.content_documents, 99);
   assert.equal(projectStatus.governed_sources, 513);
   assert.equal(publicLedger.sources.length, 513);

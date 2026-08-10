@@ -908,12 +908,12 @@ test('governs the STY-04 evidence and original illustration with one manifest pr
   assert.equal(illustrationCitation?.quotation_reviewed, false);
 });
 
-test('projects the exact pre-closure Stage A state', () => {
+test('projects the exact Stage B closure state', () => {
   const topic = manifest.topics.find(({id}) => id === TOPIC_ID);
   const nextTopic = manifest.topics.find(({id}) => id === 'STY-05');
   assert.equal(topic?.published, true);
   assert.equal(topic?.slug, ROUTE);
-  assert.equal(topic?.status.value, 'pending');
+  assert.equal(topic?.status.value, 'complete');
   assert.deepEqual(topic?.dependencies, ['STY-00', 'STY-03']);
   assert.deepEqual(topic?.adjacent_topics, ADJACENT_TOPICS);
   assert.deepEqual(topic?.related_cases, ['/cases/micro-frontends-single-spa']);
@@ -925,14 +925,14 @@ test('projects the exact pre-closure Stage A state', () => {
   assert.deepEqual(topic?.primary_sources, projectedPrimaryUrls);
   const styleIndexEntry = indexes.style.find(({id}) => id === TOPIC_ID);
   assert.equal(styleIndexEntry?.published, true);
-  assert.equal(styleIndexEntry?.status.value, 'pending');
+  assert.equal(styleIndexEntry?.status.value, 'complete');
   assert.deepEqual(styleIndexEntry?.primary_sources, projectedPrimaryUrls);
   assert.equal(nextTopic?.published, false);
   assert.equal(nextTopic?.status.value, 'pending');
   const nextStyleIndexEntry = indexes.style.find(({id}) => id === 'STY-05');
   assert.equal(nextStyleIndexEntry?.published, false);
   assert.equal(nextStyleIndexEntry?.status.value, 'pending');
-  assert.equal(projectStatus.completed_topics, 56);
+  assert.equal(projectStatus.completed_topics, 57);
   assert.equal(projectStatus.content_documents, 99);
   assert.equal(projectStatus.governed_sources, 513);
   assert.equal(publicLedger.sources.length, 513);

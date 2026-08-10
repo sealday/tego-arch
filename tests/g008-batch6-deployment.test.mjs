@@ -128,17 +128,17 @@ function currentReleaseBaseline(source) {
   return baselines[0];
 }
 
-function currentG009Batch4Prefix(source) {
+function currentG009Batch5Prefix(source) {
   const baseline = currentReleaseBaseline(source);
-  const marker = '此前 G009 Batch 3 历史完成基线为：';
+  const marker = '此前 G009 Batch 4 历史完成基线为：';
   const end = baseline.indexOf(marker);
-  assert.notEqual(end, -1, 'G009 Batch 3 history boundary');
+  assert.notEqual(end, -1, 'G009 Batch 4 history boundary');
   return baseline.slice(0, end);
 }
 
-function mutateCurrentG009Batch4Prefix(source, replacement) {
-  const prefix = currentG009Batch4Prefix(source);
-  const mutatedPrefix = prefix.replace('下一项为 STY-04', replacement);
+function mutateCurrentG009Batch5Prefix(source, replacement) {
+  const prefix = currentG009Batch5Prefix(source);
+  const mutatedPrefix = prefix.replace('下一项为 STY-05', replacement);
   assert.notEqual(mutatedPrefix, prefix, 'current next-topic mutation must change prefix');
   return source.replace(prefix, mutatedPrefix);
 }
@@ -207,9 +207,9 @@ function assertBacklogClosure(source) {
   assert.match(source, /当前持久故事：\*\* `G009`/u);
   assert.match(source, /最近完成 `G008`/u);
   assert.equal(
-    currentG009Batch4Prefix(source).split('下一项为 STY-04').length - 1,
+    currentG009Batch5Prefix(source).split('下一项为 STY-05').length - 1,
     1,
-    'G009 Batch 4 current prefix must identify STY-04 as next',
+    'G009 Batch 5 current prefix must identify STY-04 as next',
   );
 }
 
@@ -255,7 +255,7 @@ test('preserves Batch 6 evidence under the live Batch 7 projection', () => {
   assert.deepEqual(projectStatus, {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
-    completed_topics: 56,
+    completed_topics: 57,
     content_documents: 99,
     governed_sources: 513,
     sources: {
@@ -269,7 +269,7 @@ test('preserves Batch 6 evidence under the live Batch 7 projection', () => {
 
 test('rejects backlog evidence status and next-topic mutations', () => {
   assert.doesNotThrow(() => assertBacklogClosure(backlog));
-  const invalidCurrentNextTopic = mutateCurrentG009Batch4Prefix(
+  const invalidCurrentNextTopic = mutateCurrentG009Batch5Prefix(
     backlog,
     '下一项为 STY-03',
   );
@@ -285,7 +285,7 @@ test('rejects backlog evidence status and next-topic mutations', () => {
     backlog.replace('- [x] **MOD-09 ', '- [ ] **MOD-09 '),
     backlog.replace('- [x] **MOD-11 ', '- [ ] **MOD-11 '),
     backlog.replace('- **当前持久故事：** `G009`。', '- **当前持久故事：** `G008`。'),
-    mutateCurrentG009Batch4Prefix(backlog, '下一项为 STY-01'),
+    mutateCurrentG009Batch5Prefix(backlog, '下一项为 STY-01'),
     backlog.replace('- [x] **STY-00 ', '- [ ] **STY-00 '),
   ]) {
     assert.notEqual(mutation, backlog, 'backlog mutation must change source');

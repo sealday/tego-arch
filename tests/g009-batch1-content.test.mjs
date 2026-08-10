@@ -593,7 +593,7 @@ const [manifest, projectStatus, indexes, publicLedger] = await Promise.all([
   readFile(new URL('../src/generated/source-ledger.json', import.meta.url), 'utf8').then(JSON.parse),
 ]);
 
-test('preserves the STY-00 closure in the current Batch 4 projection', () => {
+test('preserves the STY-00 closure in the current Batch 5 projection', () => {
   const topic = manifest.topics.find(({id}) => id === 'STY-00');
   assert.equal(topic.published, true);
   assert.equal(topic.status.value, 'complete');
@@ -603,7 +603,7 @@ test('preserves the STY-00 closure in the current Batch 4 projection', () => {
   assert.deepEqual(projectStatus, {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
-    completed_topics: 56,
+    completed_topics: 57,
     content_documents: 99,
     governed_sources: 513,
     sources: {
@@ -618,6 +618,6 @@ test('preserves the STY-00 closure in the current Batch 4 projection', () => {
   assert.ok(indexes.style.some(({id, published, status}) =>
     id === 'STY-03' && published === true && status.value === 'complete'));
   assert.ok(indexes.style.some(({id, published, status}) =>
-    id === 'STY-04' && published === true && status.value === 'pending'));
+    id === 'STY-04' && published === true && status.value === 'complete'));
   assert.equal(publicLedger.sources.length, 513);
 });

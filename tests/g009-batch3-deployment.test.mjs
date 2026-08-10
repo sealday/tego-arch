@@ -216,9 +216,9 @@ function g009Batch2AndOlderHistory(source) {
 
 function assertBacklog(source) {
   const liveBaseline = currentReleaseBaseline(source);
-  assert.match(liveBaseline, /^- \*\*当前发布基线：\*\* 2026-08-10 G009 Batch 4 已完成 STY-03/u);
+  assert.match(liveBaseline, /^- \*\*当前发布基线：\*\* 2026-08-11 G009 Batch 5 已完成 STY-04/u);
   assert.match(liveBaseline, /Stage B closure 为 56 个已完成主题、98 篇内容文档与 509 个受治理来源/u);
-  assert.match(liveBaseline, /下一项为 STY-04/u);
+  assert.match(liveBaseline, /下一项为 STY-05/u);
   assert.equal(liveBaseline.split(batch3HistoryMarker).length - 1, 1);
   const segment = currentG009Batch3Baseline(source);
   assert.equal(segment, expectedCurrentBaseline);
@@ -227,7 +227,7 @@ function assertBacklog(source) {
   }
   assert.match(source, /^- \[x\] \*\*STY-02 /mu);
   assert.match(source, /^- \[x\] \*\*STY-03 /mu);
-  assert.match(source, /^- \[ \] \*\*STY-04 /mu);
+  assert.match(source, /^- \[x\] \*\*STY-04 /mu);
   assert.match(source, /^- \*\*当前持久故事：\*\* `G009`。$/mu);
   assert.doesNotMatch(segment, /4\s*\/\s*4 diagram movement/u);
 }
@@ -310,7 +310,7 @@ test('rejects historical Batch 3 baseline contradictions', async (t) => {
   }
 });
 
-test('preserves STY-02 closure in the current Batch 4 projection', async () => {
+test('preserves STY-02 closure in the current Batch 5 projection', async () => {
   const [backlog, manifest, status, sourceLedger, indexes] = await Promise.all([
     readFile(new URL('../docs/content-backlog.md', import.meta.url), 'utf8'),
     readFile(new URL('../src/generated/topic-manifest.json', import.meta.url), 'utf8').then(JSON.parse),
@@ -324,11 +324,11 @@ test('preserves STY-02 closure in the current Batch 4 projection', async () => {
   assert.equal(topics.get('STY-03')?.published, true);
   assert.equal(topics.get('STY-03')?.status.value, 'complete');
   assert.equal(topics.get('STY-04')?.published, true);
-  assert.equal(topics.get('STY-04')?.status.value, 'pending');
+  assert.equal(topics.get('STY-04')?.status.value, 'complete');
   assert.deepEqual(status, {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
-    completed_topics: 56,
+    completed_topics: 57,
     content_documents: 99,
     governed_sources: 513,
     sources: {
@@ -344,7 +344,7 @@ test('preserves STY-02 closure in the current Batch 4 projection', async () => {
   assert.ok(indexes.style.some(({id, published, status: topicStatus}) =>
     id === 'STY-03' && published === true && topicStatus.value === 'complete'));
   assert.ok(indexes.style.some(({id, published, status: topicStatus}) =>
-    id === 'STY-04' && published === true && topicStatus.value === 'pending'));
+    id === 'STY-04' && published === true && topicStatus.value === 'complete'));
   assertBacklog(backlog);
 });
 
