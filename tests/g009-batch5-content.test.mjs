@@ -547,8 +547,18 @@ function markdownParagraphs(source) {
   return source.split(/\r?\n\s*\r?\n/u).map((paragraph) => paragraph.trim()).filter(Boolean);
 }
 
+function normalizeHexColor(value) {
+  const match = value?.trim().match(/^#([\da-f]{3}|[\da-f]{6})$/iu);
+  assert.ok(match, `supported opaque hex color: ${String(value)}`);
+  const expanded = match[1].length === 3
+    ? [...match[1]].map((component) => component.repeat(2)).join('')
+    : match[1];
+  return `#${expanded.toUpperCase()}`;
+}
+
 function relativeLuminance(hex) {
-  const channels = hex.match(/[\da-f]{2}/giu).map((value) => Number.parseInt(value, 16) / 255)
+  const channels = normalizeHexColor(hex).match(/[\da-f]{2}/giu)
+    .map((value) => Number.parseInt(value, 16) / 255)
     .map((value) => value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4);
   return channels[0] * 0.2126 + channels[1] * 0.7152 + channels[2] * 0.0722;
 }
@@ -557,6 +567,131 @@ function contrastRatio(first, second) {
   const [lighter, darker] = [relativeLuminance(first), relativeLuminance(second)]
     .sort((left, right) => right - left);
   return (lighter + 0.05) / (darker + 0.05);
+}
+
+function compositeColor(foreground, background, opacity) {
+  assert.ok(Number.isFinite(opacity) && opacity >= 0 && opacity <= 1, `valid paint opacity ${opacity}`);
+  const channels = (color) => normalizeHexColor(color).match(/[\da-f]{2}/giu)
+    .map((value) => Number.parseInt(value, 16));
+  const foregroundChannels = channels(foreground);
+  const backgroundChannels = channels(background);
+  return `#${foregroundChannels.map((channel, index) =>
+    Math.round(channel * opacity + backgroundChannels[index] * (1 - opacity))
+      .toString(16).padStart(2, '0')).join('').toUpperCase()}`;
+}
+
+function presentationOpacity(source, elementName, attributesSource, property, inheritedClasses = []) {
+  const paintOpacity = Number(svgPresentationValue(
+    source, elementName, attributesSource, `${property}-opacity`, inheritedClasses,
+  ) ?? 1);
+  const elementOpacity = Number(svgPresentationValue(
+    source, elementName, attributesSource, 'opacity', inheritedClasses,
+  ) ?? 1);
+  assert.ok(Number.isFinite(paintOpacity) && Number.isFinite(elementOpacity),
+    `${elementName} ${property} opacity resolves numerically`);
+  return paintOpacity * elementOpacity;
+}
+
+function svgGroupBlock(source, id) {
+  const escapedId = id.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
+  const group = source.match(new RegExp(
+    `<g\\b([^>]*)data-node-id="${escapedId}"([^>]*)>([\\s\\S]*?)<\\/g>`, 'u',
+  ));
+  assert.ok(group, `SVG group ${id}`);
+  return {
+    attributesSource: `${group[1]}${group[2]}`,
+    classes: (xmlAttributes(`${group[1]}${group[2]}`).get('class') ?? '').split(/\s+/u).filter(Boolean),
+    contents: group[3],
+  };
+}
+
+function effectiveGroupBackground(source, id, canvas) {
+  const group = svgGroupBlock(source, id);
+  const shape = group.contents.match(/<(rect|path)\b([^>]*)>/u);
+  if (!shape) return canvas;
+  const fill = svgPresentationValue(source, shape[1], shape[2], 'fill', group.classes);
+  if (!fill || fill === 'none') return canvas;
+  return compositeColor(fill, canvas,
+    presentationOpacity(source, shape[1], shape[2], 'fill', group.classes));
+}
+
+function assertSvgRoleContrast(source, role, elementName, attributesSource, property, background, inheritedClasses = []) {
+  const foreground = svgPresentationValue(
+    source, elementName, attributesSource, property, inheritedClasses,
+  );
+  const effectiveForeground = compositeColor(
+    foreground,
+    background,
+    presentationOpacity(source, elementName, attributesSource, property, inheritedClasses),
+  );
+  const ratio = contrastRatio(effectiveForeground, background);
+  assert.ok(ratio >= 4.5, `${role} contrast ${ratio.toFixed(2)}:1 (${effectiveForeground} on ${background})`);
+}
+
+function assertGroupTextContrast(source, id, role, canvas) {
+  const group = svgGroupBlock(source, id);
+  const background = effectiveGroupBackground(source, id, canvas);
+  for (const textRole of ['title', 'type']) {
+    const text = group.contents.match(new RegExp(
+      `<text\\b([^>]*)data-text-role="${textRole}"([^>]*)>`, 'u',
+    ));
+    if (!text) continue;
+    assertSvgRoleContrast(
+      source, `${role} ${textRole} ${id}`, 'text', `${text[1]}${text[2]}`, 'fill', background, group.classes,
+    );
+  }
+}
+
+function assertEssentialDiagramContrast(source) {
+  const canvasTag = source.match(
+    /<rect\b([^>]*)data-canvas-role="background"([^>]*)>/u,
+  );
+  assert.ok(canvasTag, 'opaque canvas element');
+  const canvasAttributes = `${canvasTag[1]}${canvasTag[2]}`;
+  const canvas = normalizeHexColor(svgPresentationValue(source, 'rect', canvasAttributes, 'fill'));
+  assert.equal(canvas, '#FFFFFF', 'canvas resolves to white');
+  assert.equal(presentationOpacity(source, 'rect', canvasAttributes, 'fill'), 1, 'canvas is opaque');
+
+  const noteIds = new Set(['payment-recovery-note', 'notification-recovery-note']);
+  const legendIds = new Set(['legend-sync-line', 'legend-event-line', 'legend-sync-label', 'legend-event-label']);
+  for (const [id] of DIAGRAM_NODES) {
+    if (noteIds.has(id) || legendIds.has(id)) continue;
+    assertGroupTextContrast(source, id, id.includes('boundary') ? 'boundary/module' : 'node', canvas);
+  }
+  for (const id of noteIds) assertGroupTextContrast(source, id, 'note', canvas);
+
+  for (const [id, , , , connectorClass] of DIAGRAM_EDGES) {
+    const escapedId = id.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
+    const edge = source.match(new RegExp(`<path\\b([^>]*)data-edge-id="${escapedId}"([^>]*)>`, 'u'));
+    assert.ok(edge, `SVG edge ${id}`);
+    assertSvgRoleContrast(
+      source, `${connectorClass} edge ${id}`, 'path', `${edge[1]}${edge[2]}`, 'stroke', canvas,
+    );
+    const label = source.match(new RegExp(`<text\\b([^>]*)data-edge-id="${escapedId}"([^>]*)>`, 'u'));
+    assert.ok(label, `SVG edge label ${id}`);
+    assertSvgRoleContrast(source, `edge label ${id}`, 'text', `${label[1]}${label[2]}`, 'fill', canvas);
+  }
+
+  for (const [id, connectorClass] of [['legend-sync-line', 'sync'], ['legend-event-line', 'event']]) {
+    const group = svgGroupBlock(source, id);
+    const line = group.contents.match(/<(line|path)\b([^>]*)>/u);
+    assert.ok(line, `SVG legend line ${id}`);
+    assertSvgRoleContrast(
+      source, `${connectorClass} legend ${id}`, line[1], line[2], 'stroke', canvas, group.classes,
+    );
+  }
+  for (const id of ['legend-sync-label', 'legend-event-label']) {
+    const group = svgGroupBlock(source, id);
+    const label = group.contents.match(/<text\b([^>]*)>/u);
+    assert.ok(label, `SVG legend label ${id}`);
+    assertSvgRoleContrast(source, `legend label ${id}`, 'text', label[1], 'fill', canvas, group.classes);
+  }
+
+  const deploymentNote = source.match(
+    /<text\b([^>]*)>一个部署单元不等于一个数据所有者<\/text>/u,
+  );
+  assert.ok(deploymentNote, 'deployment note');
+  assertSvgRoleContrast(source, 'deployment note', 'text', deploymentNote[1], 'fill', canvas);
 }
 
 test('SVG presentation parser resolves stylesheet, presentation, inline, and inherited dash semantics', () => {
@@ -929,22 +1064,23 @@ test('publishes a synchronized, accessible Draw.io and SVG semantic inventory', 
 
 test('keeps every essential diagram role contrast-safe on the opaque canvas', async () => {
   const svg = await readFile(new URL(`../${SVG}`, import.meta.url), 'utf8');
-  const canvas = '#FFFFFF';
-  const essentialForegrounds = new Map([
-    ['title', '#172033'],
-    ['type', '#475569'],
-    ['sync edge and legend', '#334155'],
-    ['event edge', '#7C3AED'],
-    ['recovery note', '#7C2D12'],
-    ['consumer recovery note', '#5B21B6'],
-  ]);
-  for (const [role, foreground] of essentialForegrounds) {
-    assert.ok(contrastRatio(foreground, canvas) >= 4.5,
-      `${role} contrast ${contrastRatio(foreground, canvas).toFixed(2)}:1`);
-    assert.match(svg, new RegExp(foreground.replace('#', '#'), 'u'), `${role} color is present`);
-  }
+  assertEssentialDiagramContrast(svg);
   assert.doesNotMatch(svg, /prefers-color-scheme|currentColor/u,
     'diagram presentation cannot inherit a dark theme canvas or text color');
+});
+
+test('contrast gate rejects event-edge and label mutations on their rendered roles', async () => {
+  const svg = await readFile(new URL(`../${SVG}`, import.meta.url), 'utf8');
+  const whiteEvent = svg.replace(/(\.event\{[^}]*\bstroke:)#[0-9A-F]{6}/u, '$1#FFFFFF');
+  assert.notEqual(whiteEvent, svg, 'event stroke mutation applied');
+  assert.throws(() => assertEssentialDiagramContrast(whiteEvent), /event edge .* contrast/u);
+
+  const whiteLabels = svg.replace(
+    /(\.edge-label,\.legend-label\{[^}]*\bfill:)#[0-9A-F]{6}/u,
+    '$1#FFFFFF',
+  );
+  assert.notEqual(whiteLabels, svg, 'edge/legend label fill mutation applied');
+  assert.throws(() => assertEssentialDiagramContrast(whiteLabels), /edge label .* contrast/u);
 });
 
 test('keeps every measured STY-04 header above node-text padding and baseline thresholds', async () => {

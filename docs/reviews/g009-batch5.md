@@ -35,7 +35,7 @@
 - Deployment canvas: `1200 × 1800`; article render width contract: `800px`; render scale: `2/3`.
 - Required/observed conservative minima at 800px: label-to-connector `8 / 9.1667px`; label-to-own-marker `16 / 22.5px`; label-to-node `12 / 12.6667px`; label-to-boundary `12 / 15.8333px`.
 - Node padding and typography gates: horizontal `16px`, vertical `14px`, title/type baseline separation `22px`, body/edge text `15px`, type text `10px` minimum.
-- Exact semantic inventory, direction, solid/dashed connector classes, boundary containment, accessibility metadata, recovery annotations, effective contrast, and Draw.io/SVG synchronization are enforced by `tests/g009-batch5-content.test.mjs`.
+- Exact semantic inventory, direction, solid/dashed connector classes, boundary containment, accessibility metadata, recovery annotations, and Draw.io/SVG synchronization are enforced by `tests/g009-batch5-content.test.mjs`. Its contrast gate resolves the actual canvas, local node backgrounds, stylesheet/presentation cascade, inherited legend styles, edge strokes, and text fills; mutations that turn `.event` stroke or `.edge-label/.legend-label` fill white fail deterministically.
 
 ## Deterministic local verification
 
@@ -43,9 +43,10 @@
 - The remediation TDD RED run failed on the newly required payment transaction/recovery, diagram recovery, illustration governance, contrast, and 513-source assertions before implementation.
 - Focused source-governance gate: 155 tests / 155 passed / 0 failed; content validation 99 documents / 513 sources; terminology 101 files / 127 terms / 0 issues; deterministic content check: PASS.
 - Focused projection gate: 46 tests / 46 passed / 0 failed; `git diff --check`: PASS.
+- Final contrast-review gate: 17 tests / 17 passed / 0 failed, including the two mutation fixtures; Draw.io/SVG validator: PASS.
 - Article-density advisory: sentence and paragraph checks are clear; the approved one-diagram/two-table article reports visual-balance `46`, below the case analyzer's `>90` multi-visual advisory. No extra decorative asset was added outside the approved illustration scope.
 - Production build: PASS; Docusaurus generated `build/`. Node emitted the repository-known experimental `localStorage` warnings during the build process; no compilation error occurred.
-- Full `npm run verify`: PASS — 1109 tests / 1109 passed / 0 failed; content validation 99 documents / 513 sources; terminology 101 files / 127 terms / 0 issues; deterministic content, link-cache, review-health, typecheck, and production-build gates passed.
+- Full `npm run verify`: PASS — 1110 tests / 1110 passed / 0 failed; content validation 99 documents / 513 sources; terminology 101 files / 127 terms / 0 issues; deterministic content, link-cache, review-health, typecheck, and production-build gates passed.
 
 ## Local browser QA
 
@@ -53,12 +54,12 @@
 - Canonical SVG route: `http://127.0.0.1:3100/tego-arch/img/diagrams/sty-04-modular-monolith-boundaries.svg`; root SVG present with `viewBox="0 0 1200 1800"`, `role="img"`, and `aria-labelledby="sty04-title sty04-desc"`.
 - Desktop `1440x1000`, light and dark: document `1440/1440`; diagram wrapper `800/800`; both table wrappers `800/1024`; rendered SVG `800 × 1200`; no document overflow.
 - Mobile `390x844`, light and dark: document `390/390`; diagram wrapper `358/800`; both table wrappers `358/1024`; rendered SVG `800 × 1200`; overflow remains inside the labelled focusable regions.
-- Keyboard: all 12 wrapper/theme/viewport checks focused the intended region, matched `:focus-visible`, rendered a `3px solid` outline, and preserved ArrowRight behavior. Desktop diagrams remained at `0`; desktop tables moved `0→40`. Mobile regions moved by `40px` from their current scroll position.
-- Governed sources: 5 visible source anchors in each of the four viewport/theme combinations. Every link retained its exact governed HTTPS locator, `target="_blank"`, and `rel="noopener noreferrer"`; five remediation click commands completed, while the extension reused or deduplicated already-open destinations instead of exposing five durable new tabs.
+- Keyboard: the raw artifact contains wrappers and interaction results for every named state: `desktopLight`, `desktopDark`, `mobileLight`, and `mobileDark`. All 12 checks started at `0`, focused the intended region, matched `:focus-visible`, rendered a `3px solid` outline, and preserved ArrowRight behavior. Desktop diagrams remained `0→0`; desktop tables moved `0→40`; all mobile regions moved `0→40`.
+- Governed sources: 5 visible source anchors in each of the four viewport/theme combinations. Every link retained its exact governed HTTPS locator, `target="_blank"`, and `rel="noopener noreferrer"`.
 - Reciprocal published relations: exact STY-01, STY-02, and STY-03 anchors remained visible in all four checks. STY-05 actionable article links: `0` in all four checks.
-- Browser diagnostics after the four checks: warnings / errors / runtime exceptions: `0 / 0 / 0`.
-- Accepted screenshots: desktop light `9dfdf89c6006a80c154f60d53f3d7a9530b077453c4b7b00c935b1907f308f8c`, desktop dark `87c9cbd075f1536fdcb231aa4f45c64181fd8bd68510a9c2c1dc326c3540acd1`, mobile light `bc5fe17c7f845176152dad28185e0f279277b6e1299af6f3c1b171e3af8a46a9`, and mobile dark `595f87dc3e0af8c7d7d4fba46a53f0fd598c82ab51cd65a846cb955a9fc25aee` under `.superpowers/sdd/`.
-- Raw evidence: `.superpowers/sdd/task-5-remediation-browser-qa.json` (`83fb6296845082f4d5a570ed528a16fad33258cf9b025193e684999a730a7a43`). Browser artifacts remain local and are not release-review inputs.
+- Browser diagnostics are stored per state; every state recorded empty warning/error logs, empty runtime exception/error events, `hasMore: false`, and `truncated: false`.
+- Accepted viewport screenshots: desktop light `5b24490aead909fc9997106b71786d5dd5e13713bc73b252556d85537fd80e7c`, desktop dark `8400db58fbd3dfe0910e413e4bc32460c7d49674aa9c369abc8bc3016c9664e6`, mobile light `b8439084eb31578a1e5eebd8991abe480df22299b318f7ae88417a5e985ee44e`, and mobile dark `1e68e1fa15ec55383b2f5d322fced3727618364d02e82bd8384c2e2c56a2a378` under `.superpowers/sdd/task-5-final-*`.
+- Raw evidence: `.superpowers/sdd/task-5-final-browser-qa.json` (`e3e5f3a2013adb84d25c8d2ad120a06c73d24fdb840cf2a98854d1b2bde48cf3`). Browser artifacts remain local and are not release-review inputs.
 
 ## Independent review
 
