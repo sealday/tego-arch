@@ -66,6 +66,30 @@ const DIAGRAM_LABELS = [
   '分层架构', '垂直切片', 'SubmitOrder', '共享领域不变量', '数据库',
   '单体部署边界', '运行时控制流', '源码依赖', '切片不等于独立部署单元',
 ];
+const COMPARISON_HEADER = ['比较维度', '分层架构', '垂直切片', '模块化单体'];
+const DIAGRAM_NODES = [
+  ['layered-http', 'HTTP 请求'], ['layered-controller', 'Controller'],
+  ['layered-service', 'Application Service'], ['layered-repository', 'Shared Repository'],
+  ['layered-database', '数据库'], ['slice-http', 'HTTP 请求'],
+  ['submit-order-handler', 'SubmitOrder Handler'], ['order-rules', 'Order Rules'],
+  ['inventory-port', 'Inventory Port'], ['inventory-adapter', 'Inventory Adapter'],
+  ['order-store', 'Order Store'], ['response-mapper', 'Response Mapper'],
+  ['shared-domain-invariants', '共享领域不变量'],
+];
+const DIAGRAM_EDGES = [
+  ['layered-request', 'layered-http', 'layered-controller'],
+  ['layered-controller-service', 'layered-controller', 'layered-service'],
+  ['layered-service-repository', 'layered-service', 'layered-repository'],
+  ['layered-repository-database', 'layered-repository', 'layered-database'],
+  ['slice-request-handler', 'slice-http', 'submit-order-handler'],
+  ['slice-handler-rules', 'submit-order-handler', 'order-rules'],
+  ['slice-rules-inventory', 'order-rules', 'inventory-port'],
+  ['slice-rules-store', 'order-rules', 'order-store'],
+  ['slice-rules-response', 'order-rules', 'response-mapper'],
+  ['layered-repository-service-dependency', 'layered-repository', 'layered-service'],
+  ['inventory-adapter-port-dependency', 'inventory-adapter', 'inventory-port'],
+];
+const DIAGRAM_BOUNDARIES = [['layered-boundary', '分层架构'], ['vertical-slice-boundary', '垂直切片']];
 
 function bodyOf(source) {
   return source.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n/u, '');
@@ -92,6 +116,57 @@ function markdownTables(source) {
     tables.push(rows);
   }
   return tables;
+}
+
+function xmlAttributes(tag) {
+  return new Map([...tag.matchAll(/([\w:-]+)="([^"]*)"/gu)].map(([, key, value]) => [key, value]));
+}
+
+function decodeXmlText(value) {
+  return value.replace(/&amp;/gu, '&').replace(/&lt;/gu, '<').replace(/&gt;/gu, '>')
+    .replace(/&quot;/gu, '"').replace(/&#39;/gu, "'");
+}
+
+function visibleDrawioCells(source) {
+  return [...source.matchAll(/<mxCell\b[^>]*>/gu)].map(([tag]) => {
+    const attributes = xmlAttributes(tag);
+    const style = attributes.get('style') ?? '';
+    if (attributes.get('visible') === '0' || /(?:^|;)\s*(?:opacity=0|visible=0)(?:;|$)/u.test(style)) return null;
+    return {attributes, label: decodeXmlText(attributes.get('value') ?? '')};
+  }).filter(Boolean);
+}
+
+function visibleSvgText(source) {
+  const withoutComments = source.replace(/<!--[\s\S]*?-->/gu, '');
+  return [...withoutComments.matchAll(/<text\b([^>]*)>([^<]*)<\/text>/gu)].flatMap(([, rawTag, text]) => {
+    if (/(?:style|visibility)="[^"]*(?:display\s*:\s*none|hidden)/u.test(rawTag)) return [];
+    return [decodeXmlText(text).trim()];
+  }).filter(Boolean);
+}
+
+function drawioDiagramContract(source) {
+  const cells = visibleDrawioCells(source);
+  return {
+    nodes: cells.filter(({attributes}) => attributes.get('vertex') === '1')
+      .map(({attributes, label}) => ({id: attributes.get('id'), label})),
+    edges: cells.filter(({attributes}) => attributes.get('edge') === '1')
+      .map(({attributes, label}) => ({id: attributes.get('id'), label, source: attributes.get('source'), target: attributes.get('target')})),
+  };
+}
+
+function svgDiagramContract(source) {
+  const nodes = [...source.matchAll(/<g\b([^>]*)data-node-id="([^"]+)"([^>]*)>([\s\S]*?)<\/g>/gu)]
+    .filter(([, before, , after]) => !/(?:style|visibility)="[^"]*(?:display\s*:\s*none|hidden)/u.test(`${before}${after}`))
+    .map(([, before, id, after, contents]) => ({
+      id, label: decodeXmlText(contents.match(/<text\b[^>]*data-text-role="title"[^>]*>([^<]+)<\/text>/u)?.[1] ?? ''),
+    }));
+  const labels = new Map([...source.matchAll(/<text\b[^>]*data-edge-id="([^"]+)"[^>]*>([^<]*)<\/text>/gu)]
+    .map(([, id, label]) => [id, decodeXmlText(label).trim()]));
+  const edges = [...source.matchAll(/<path\b([^>]*)data-edge-id="([^"]+)"([^>]*)>/gu)].map(([, before, id, after]) => {
+    const attributes = xmlAttributes(`${before}${after}`);
+    return {id, label: labels.get(id) ?? '', source: attributes.get('data-source'), target: attributes.get('data-target')};
+  });
+  return {nodes, edges};
 }
 
 function sectionBody(source, heading, nextHeading) {
@@ -127,8 +202,10 @@ test('locks the four learning questions, order scenario, and comparison dimensio
   assert.match(sty03.source, /提交订单/u);
   assert.match(sty03.source, /SubmitOrder/u);
   const tables = markdownTables(sty03.source);
-  assert.ok(tables.some((rows) => rows.length === COMPARISON_ROWS.length + 1 &&
-    COMPARISON_ROWS.every((row) => rows.some((candidate) => JSON.stringify(candidate) === JSON.stringify(row)))));
+  const comparisonTable = tables.find((rows) => rows.length === COMPARISON_ROWS.length + 1 &&
+    JSON.stringify(rows[0]) === JSON.stringify(COMPARISON_HEADER));
+  assert.ok(comparisonTable, 'comparison table header and row count');
+  assert.deepEqual(comparisonTable.slice(1), COMPARISON_ROWS, 'comparison table row order and exact columns');
   for (const section of REQUIRED_HEADINGS.slice(1, -1)) assert.match(sty03.source, new RegExp(section, 'u'));
   assert.match(sty03.source, /不是固定目录模板/u);
   assert.match(sty03.source, /不自动.*独立部署单元/u);
@@ -141,7 +218,19 @@ test('requires STY-03 sources, citations, and reviewed transport evidence', () =
     result.source_ids.map((sourceId) => [sourceId, result])));
   const documentReview = ledger.documents[sty03.file];
   assert.ok(documentReview, 'STY-03 source review record');
+  assert.equal(documentReview.reviewed_at, '2026-08-08');
+  assert.deepEqual(documentReview.copyright_checks, [
+    'original-structure', 'quotation-boundary', 'attribution-complete', 'illustration-rights',
+  ]);
   assert.deepEqual(documentReview.citations.map(({source_id}) => source_id), SOURCE_IDS);
+  assert.deepEqual(documentReview.citations.map(({manifest_primary}) => manifest_primary), [true, true]);
+  for (const citation of documentReview.citations) {
+    assert.equal(citation.usage_mode, 'facts-summary');
+    assert.equal(citation.modification_note, null);
+    assert.equal(citation.excerpt, null);
+    assert.equal(citation.quotation_reviewed, false);
+    assert.ok(citation.attribution_note?.trim(), `${citation.source_id} attribution`);
+  }
   for (const [id, url] of SOURCE_IDS.map((id, index) => [id, SOURCE_URLS[index]])) {
     const record = records.get(id);
     assert.ok(record, `${id} ledger record`);
@@ -151,8 +240,13 @@ test('requires STY-03 sources, citations, and reviewed transport evidence', () =
     assert.ok(record.license, `${id} license`);
     assert.ok(record.license_evidence_url, `${id} license evidence`);
     assert.ok(record.usage_boundary, `${id} usage boundary`);
-    assert.equal(healthBySource.get(id)?.review_status, 'healthy', `${id} reviewed health`);
-    assert.ok(licenseInventory.includes(record.license_family_id), `${id} license inventory`);
+    const health = healthBySource.get(id);
+    assert.equal(health?.last_attempt?.outcome, 'healthy', `${id} current transport`);
+    assert.equal(health?.review_status, 'healthy', `${id} reviewed health`);
+    assert.equal(health?.last_attempt?.final_transport_locator, record.transport_locator, `${id} final transport`);
+    assert.ok(health?.last_attempt?.at, `${id} health timestamp`);
+    const escapedFamily = record.license_family_id.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
+    assert.match(licenseInventory, new RegExp(`^\\|[^|]+\\|[^|]+\\|${escapedFamily}\\|`, 'mu'), `${id} license inventory`);
     assert.ok(externalLinksOf(sty03).includes(url), `${id} visible citation`);
   }
 });
@@ -168,6 +262,7 @@ test('keeps adjacent relations reciprocal without activating STY-04', () => {
   assert.ok(internalLinksOf(sty02).includes(STY03_SLUG));
   assert.ok(internalLinksOf(sty03).includes('/styles/sty-01'));
   assert.ok(internalLinksOf(sty03).includes('/styles/sty-02'));
+  assert.ok(internalLinksOf(sty03).includes('/cases/micro-frontends-single-spa'));
   assert.ok(internalLinksOf(moduleBoundaries).includes(STY03_SLUG));
   assert.equal(parseFrontMatter(sty03.source).adjacent_topics.includes('STY-04'), true);
   assert.equal(manifest.topics.find(({id}) => id === 'STY-04')?.published, false);
@@ -182,6 +277,9 @@ test('projects the completed STY-03 topic and exact Batch 4 counts', () => {
   assert.deepEqual(topic?.dependencies, ['STY-00', 'STY-01']);
   assert.deepEqual(topic?.adjacent_topics, ['STY-01', 'STY-02', 'STY-04']);
   assert.deepEqual(topic?.related_cases, ['/cases/micro-frontends-single-spa']);
+  assert.deepEqual(topic?.primary_sources, SOURCE_URLS);
+  const styleIndexEntry = indexes.style.find(({id}) => id === STY03);
+  assert.deepEqual(styleIndexEntry?.primary_sources, SOURCE_URLS);
   assert.equal(projectStatus.completed_topics, 56);
   assert.equal(projectStatus.content_documents, 98);
   assert.equal(projectStatus.governed_sources, 508);
@@ -197,16 +295,34 @@ test('publishes the synchronized STY-03 diagram pair with the minimum inventory'
   assert.match(drawio, /<mxfile\b/u);
   assert.match(svg, /<title\b[^>]*>[^<]+<\/title>/u);
   assert.match(svg, /<desc\b[^>]*>[^<]+<\/desc>/u);
-  for (const label of DIAGRAM_LABELS) {
-    assert.ok(drawio.includes(label), `Draw.io label: ${label}`);
-    assert.ok(svg.includes(label), `SVG label: ${label}`);
+  const drawioContract = drawioDiagramContract(drawio);
+  const svgContract = svgDiagramContract(svg);
+  const drawioNodeMap = new Map(drawioContract.nodes.map((node) => [node.id, node]));
+  const svgNodeMap = new Map(svgContract.nodes.map((node) => [node.id, node]));
+  assert.equal(drawioNodeMap.size, drawioContract.nodes.length, 'Draw.io node IDs are unique');
+  assert.equal(svgNodeMap.size, svgContract.nodes.length, 'SVG node IDs are unique');
+  assert.deepEqual([...drawioNodeMap.keys()].sort(), [...svgNodeMap.keys()].sort(), 'paired node inventory');
+  for (const [id, label] of DIAGRAM_NODES) {
+    assert.equal(drawioNodeMap.get(id)?.label, label, `Draw.io node ${id}`);
+    assert.equal(svgNodeMap.get(id)?.label, label, `SVG node ${id}`);
   }
-  const drawioNodes = [...drawio.matchAll(/<mxCell\b[^>]*\bvertex="1"/gu)];
-  const drawioEdges = [...drawio.matchAll(/<mxCell\b[^>]*\bedge="1"/gu)];
-  const svgNodes = [...svg.matchAll(/data-node-id=/gu)];
-  const svgEdges = [...svg.matchAll(/data-edge-id=/gu)];
-  assert.ok(drawioNodes.length >= 8, 'Draw.io has at least eight visible nodes');
-  assert.ok(drawioEdges.length >= 10, 'Draw.io has at least ten directed relations');
-  assert.equal(svgNodes.length, drawioNodes.length, 'paired node inventory');
-  assert.equal(svgEdges.length, drawioEdges.length, 'paired relation inventory');
+  const drawioEdges = new Map(drawioContract.edges.map((edge) => [edge.id, edge]));
+  const svgEdges = new Map(svgContract.edges.map((edge) => [edge.id, edge]));
+  assert.equal(drawioEdges.size, drawioContract.edges.length, 'Draw.io edge IDs are unique');
+  assert.equal(svgEdges.size, svgContract.edges.length, 'SVG edge IDs are unique');
+  for (const [id, source, target] of DIAGRAM_EDGES) {
+    assert.equal(drawioEdges.get(id)?.source, source, `Draw.io edge ${id} source`);
+    assert.equal(drawioEdges.get(id)?.target, target, `Draw.io edge ${id} target`);
+    assert.equal(svgEdges.get(id)?.source, source, `SVG edge ${id} source`);
+    assert.equal(svgEdges.get(id)?.target, target, `SVG edge ${id} target`);
+    assert.equal(svgEdges.get(id)?.label, drawioEdges.get(id)?.label, `paired edge ${id} label`);
+  }
+  const visibleDrawioLabels = drawioContract.nodes.map(({label}) => label)
+    .concat(drawioContract.edges.map(({label}) => label));
+  assert.ok(DIAGRAM_LABELS.every((label) => visibleDrawioLabels.includes(label)), 'Draw.io visible semantic labels');
+  assert.ok(DIAGRAM_LABELS.every((label) => visibleSvgText(svg).includes(label)), 'SVG visible semantic labels');
+  assert.ok(DIAGRAM_BOUNDARIES.every(([id, label]) => drawioNodeMap.get(id)?.label === label), 'comparison boundaries');
+  assert.ok(drawioContract.nodes.length >= 8, 'Draw.io has at least eight visible nodes');
+  assert.ok(drawioContract.edges.length >= 10, 'Draw.io has at least ten directed relations');
+  assert.deepEqual([...drawioEdges.keys()], [...svgEdges.keys()], 'paired relation inventory');
 });
