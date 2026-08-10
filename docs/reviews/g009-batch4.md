@@ -1,4 +1,4 @@
-# G009 Batch 4 Release Review — Stage A Accepted
+# G009 Batch 4 Release Review
 
 ## Stage A identity
 
@@ -82,9 +82,11 @@ The synchronized diagram-pair validator, XML parsing, geometry contracts, exact 
 - Production console warnings/errors: `0/0`.
 - Production smoke verdict: **PASS**.
 
-## Stage B closure gate
+## Stage B closure
 
-- STY-03 backlog checkbox: remains unchecked.
-- STY-03 projected status: published / pending.
+- STY-03 backlog checkbox: checked.
+- STY-03 projected status: published / complete.
 - STY-04 projected status: unpublished / pending.
-- Stage B is now authorized by the exact-SHA successful deployment and production smoke. Closure must check only STY-03, retain STY-04 pending, regenerate projections, expect 56 completed topics / 98 documents / 509 sources, rerun the full verification chain, and publish the closure head.
+- Final projection: 56 completed topics / 98 documents / 509 sources. Only STY-03 was closed; STY-04 remains pending and non-actionable.
+- Final repository tests: 1093/1093 passed; full verification chain PASS.
+- Stage B closure verdict: **PASS**.

@@ -464,23 +464,23 @@ test('keeps adjacent relations reciprocal without activating STY-04', () => {
   assert.equal(manifest.topics.find(({id}) => id === 'STY-04')?.status.value, 'pending');
 });
 
-test('projects the published pre-closure STY-03 topic and exact Batch 4 counts', () => {
+test('projects the published complete STY-03 topic and exact Batch 4 counts', () => {
   const topic = manifest.topics.find(({id}) => id === STY03);
   assert.equal(topic?.published, true);
   assert.equal(topic?.slug, STY03_SLUG);
-  assert.equal(topic?.status.value, 'pending');
+  assert.equal(topic?.status.value, 'complete');
   assert.deepEqual(topic?.dependencies, ['STY-00', 'STY-01']);
   assert.deepEqual(topic?.adjacent_topics, ['STY-01', 'STY-02']);
   assert.deepEqual(topic?.related_cases, ['/cases/micro-frontends-single-spa']);
   assert.deepEqual(topic?.primary_sources, PROJECTED_SOURCE_URLS);
   const styleIndexEntry = indexes.style.find(({id}) => id === STY03);
   assert.deepEqual(styleIndexEntry?.primary_sources, PROJECTED_SOURCE_URLS);
-  assert.equal(projectStatus.completed_topics, 55);
+  assert.equal(projectStatus.completed_topics, 56);
   assert.equal(projectStatus.content_documents, 98);
   assert.equal(projectStatus.governed_sources, 509);
   assert.equal(publicLedger.sources.length, 509);
   assert.ok(indexes.style.some(({id, published, status}) =>
-    id === STY03 && published && status.value === 'pending'));
+    id === STY03 && published && status.value === 'complete'));
 });
 
 test('publishes the synchronized STY-03 diagram pair with the minimum inventory', async () => {

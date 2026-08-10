@@ -19,30 +19,31 @@ const deploymentInventory = {
   assets: [...article.matchAll(/\]\((\/img\/[^)]+)\)/gu)].map(([, asset]) => asset),
 };
 
-test('preserves STY-03 as the current pre-closure backlog target', () => {
+test('closes only STY-03 and advances the current backlog target', () => {
   const currentBaseline = backlog.split(/\r?\n/u)
     .find((line) => line.startsWith('- **当前发布基线：**'));
   assert.ok(currentBaseline, 'current release baseline');
-  assert.match(currentBaseline, /当前 G009，下一项为 STY-03/u);
-  assert.match(backlog, /^- \[ \] \*\*STY-03 /mu);
+  assert.match(currentBaseline, /G009 Batch 4 已完成 STY-03/u);
+  assert.match(currentBaseline, /当前 G009，下一项为 STY-04/u);
+  assert.match(backlog, /^- \[x\] \*\*STY-03 /mu);
   assert.match(backlog, /^- \[ \] \*\*STY-04 /mu);
 });
 
-test('projects STY-03 published but pending while keeping STY-04 unpublished', () => {
+test('projects STY-03 published and complete while keeping STY-04 unpublished', () => {
   const topics = new Map(manifest.topics.map((topic) => [topic.id, topic]));
   const styleTopics = new Map(indexes.style.map((topic) => [topic.id, topic]));
 
   assert.equal(topics.get('STY-03')?.published, true);
-  assert.equal(topics.get('STY-03')?.status.value, 'pending');
+  assert.equal(topics.get('STY-03')?.status.value, 'complete');
   assert.equal(styleTopics.get('STY-03')?.published, true);
-  assert.equal(styleTopics.get('STY-03')?.status.value, 'pending');
+  assert.equal(styleTopics.get('STY-03')?.status.value, 'complete');
   assert.equal(topics.get('STY-04')?.published, false);
   assert.equal(topics.get('STY-04')?.status.value, 'pending');
   assert.equal(styleTopics.get('STY-04')?.published, false);
   assert.equal(styleTopics.get('STY-04')?.status.value, 'pending');
 });
 
-test('adds one document and three sources without closing the topic before deployment', () => {
+test('retains the published corpus and closes the deployed topic', () => {
   assert.deepEqual(
     {
       completed_topics: projectStatus.completed_topics,
@@ -50,7 +51,7 @@ test('adds one document and three sources without closing the topic before deplo
       governed_sources: projectStatus.governed_sources,
     },
     {
-      completed_topics: 55,
+      completed_topics: 56,
       content_documents: 97 + 1,
       governed_sources: 506 + 3,
     },
@@ -65,7 +66,7 @@ test('includes the canonical STY-03 route and SVG in the deployment inventory', 
   await access(new URL(`../static${STY03_ASSET}`, import.meta.url));
 });
 
-test('records exact successful Stage A deployment and production QA before closure', () => {
+test('records exact successful Stage A deployment, production QA, and Stage B closure', () => {
   assert.match(review, /Stage A exact head: `75b1838eb37d1bc41bc3260c6fc5f71cd2f9a00e`/u);
   assert.match(review, /Pages run: \[`31366156479`\]\(https:\/\/github\.com\/sealday\/tego-arch\/actions\/runs\/31366156479\)/u);
   assert.match(review, /build job `93384860162`; deploy job `93385369626`/u);
@@ -73,7 +74,8 @@ test('records exact successful Stage A deployment and production QA before closu
   assert.match(review, /desktop `1440x1000`.*mobile `390x844`/su);
   assert.match(review, /1092\/1092/u);
   assert.match(review, /Production smoke verdict: \*\*PASS\*\*/u);
-  assert.match(review, /STY-03 backlog checkbox: remains unchecked/u);
+  assert.match(review, /STY-03 backlog checkbox: checked/u);
   assert.match(review, /STY-04 projected status: unpublished \/ pending/u);
+  assert.match(review, /Stage B closure verdict: \*\*PASS\*\*/u);
   assert.doesNotMatch(review, /PARENT PRODUCTION QA REQUIRED|NOT RUN \/ NOT ACCEPTED|BLOCKED —/u);
 });
