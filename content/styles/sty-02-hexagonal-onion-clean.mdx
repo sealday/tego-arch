@@ -29,6 +29,7 @@ depends_on:
   - STY-01
 adjacent_topics:
   - STY-01
+  - STY-03
 related_cases:
   - /cases/micro-frontends-single-spa
 related_questions: []
@@ -96,7 +97,7 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 
 ## 迁移路径
 
-迁移修复具体依赖违规，不是三个标签之间的迁移。依次识别被机制类型污染的策略、在现有调用点建立稳定边界、把接口所有权移入核心、逐个替换外部实现、加入依赖与行为测试，并保持每一步可发布和可回退。目录重命名不构成迁移证据。
+迁移修复具体依赖违规，不是三个标签之间的迁移。依次识别被机制类型污染的策略、在现有调用点建立稳定边界、把接口所有权移入核心、逐个替换外部实现、加入依赖与行为测试，并保持每一步可发布和可回退。目录重命名不构成迁移证据；若主要压力是一次业务变化反复穿过共享技术层，可进一步用[垂直切片架构](/styles/sty-03)按用例收拢变化，同时保留向内依赖和边界转换。
 
 ## 禁用条件
 

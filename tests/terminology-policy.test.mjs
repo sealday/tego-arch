@@ -137,7 +137,7 @@ test('limits the default terminology governance gate to reader-facing entry poin
 
 test('default terminology checks cover all repository reader-facing entry points', async () => {
   const result = await checkTerminology({root: repositoryRoot});
-  assert.equal(result.checkedFiles.length, 99);
+  assert.equal(result.checkedFiles.length, 100);
   assert.deepEqual(result.issues, []);
 });
 
@@ -149,7 +149,7 @@ test('no-argument CLI checks the repository default terminology scope', () => {
   );
   assert.equal(run.status, 0, run.stdout || run.stderr);
   assert.equal(run.stderr, '');
-  assert.match(run.stdout, /checked 99 files with 127 registered terms; 0 issues/u);
+  assert.match(run.stdout, /checked 100 files with 127 registered terms; 0 issues/u);
 });
 
 test('requires bilingual first use and permits registered subsequent use', async () => {

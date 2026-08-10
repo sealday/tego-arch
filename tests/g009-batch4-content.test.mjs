@@ -305,6 +305,18 @@ test('locks the four learning questions, order scenario, and comparison dimensio
   assert.match(sty03.source, /不自动.*独立部署单元/u);
 });
 
+test('embeds the comparison diagram accessibly and separates knowledge claims', () => {
+  assert.ok(sty03);
+  assert.match(sty03.source,
+    /import \{handleHorizontalArrowKey\} from '@site\/src\/components\/KeyboardScrollableRegion\/handleHorizontalArrowKey\.mjs';/u);
+  assert.match(sty03.source,
+    /<div className="architecture-diagram-scroll" role="region" aria-label="分层架构与垂直切片的提交订单边界对照图，可横向滚动" tabIndex=\{0\} onKeyDown=\{handleHorizontalArrowKey\}>\s+!\[提交订单在分层架构与垂直切片架构中的边界、控制流与单体部署关系\]\(\/img\/diagrams\/sty-03-vertical-slice-boundary\.svg\)\s+<\/div>/u);
+  for (const marker of ['来源支持的事实', '证据推断', 'Tego Arch 分析', '未知生产结果']) {
+    assert.match(sty03.source, new RegExp(`\\*\\*${marker}：\\*\\*`, 'u'), `${marker} marker`);
+  }
+  assert.doesNotMatch(sty03.source, /当前骨架|后续(?:内容)?任务|本阶段只/u);
+});
+
 test('requires STY-03 sources, citations, and reviewed transport evidence', () => {
   assert.ok(sty03);
   const records = new Map(ledger.sources.map((source) => [source.id, source]));
