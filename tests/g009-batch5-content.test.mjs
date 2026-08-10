@@ -70,15 +70,21 @@ const SOURCE_CONTRACTS = [
 const ADJACENT_TOPICS = ['STY-01', 'STY-02', 'STY-03'];
 const ADJACENT_ROUTES = ['/styles/sty-01', '/styles/sty-02', '/styles/sty-03'];
 const MODULES = ['order', 'inventory', 'payment', 'notification'];
+const MEASURED_HEADER_NODES = [
+  'deployment-boundary',
+  ...MODULES.map((module) => `${module}-module-boundary`),
+  'shared-process-failure-domain',
+  'event-publication',
+];
 const DIAGRAM_VIEWBOX = '0 0 1200 1800';
 const DIAGRAM_RENDER_WIDTH = 800;
 const DIAGRAM_RENDER_SCALE = 2 / 3;
 const DIAGRAM_GEOMETRY = new Map([
   ['deployment-boundary', [130, 70, 1060, 1570]],
-  ['order-module-boundary', [160, 200, 430, 670]],
-  ['inventory-module-boundary', [650, 200, 510, 670]],
-  ['payment-module-boundary', [160, 970, 430, 610]],
-  ['notification-module-boundary', [650, 970, 510, 610]],
+  ['order-module-boundary', [160, 180, 430, 690]],
+  ['inventory-module-boundary', [650, 180, 510, 690]],
+  ['payment-module-boundary', [160, 950, 430, 630]],
+  ['notification-module-boundary', [650, 950, 510, 630]],
   ['order-public-contract', [185, 270, 375, 96]],
   ['inventory-public-contract', [675, 270, 455, 96]],
   ['payment-public-contract', [185, 1040, 375, 96]],
@@ -92,8 +98,8 @@ const DIAGRAM_GEOMETRY = new Map([
   ['payment-owned-data', [185, 1430, 375, 120]],
   ['notification-owned-data', [675, 1430, 455, 120]],
   ['outbox', [210, 745, 325, 90]],
-  ['event-publication', [900, 90, 260, 90]],
-  ['shared-process-failure-domain', [430, 90, 450, 90]],
+  ['event-publication', [850, 75, 310, 101]],
+  ['shared-process-failure-domain', [430, 75, 400, 101]],
   ['submit-order-request', [5, 270, 95, 110]],
   ['legend-sync-line', [160, 1690, 90, 24]],
   ['legend-event-line', [160, 1735, 90, 24]],
@@ -410,6 +416,15 @@ function conservativeLabelBounds(tag, label, fontSize) {
   const anchor = attributes.get('text-anchor') || 'start';
   const left = anchor === 'middle' ? x - width / 2 : anchor === 'end' ? x - width : x;
   return {bottom, left, right: left + width, top: bottom - fontSize};
+}
+
+function conservativeTextWidth(text, fontSize) {
+  return [...text].reduce((width, character) => {
+    if (/\p{Script=Han}/u.test(character)) return width + fontSize;
+    if (/\s/u.test(character)) return width + fontSize * 0.33;
+    if (character === '/') return width + fontSize * 0.4;
+    return width + fontSize * 0.6;
+  }, 0);
 }
 
 function rectangleDistance(first, second) {
@@ -837,6 +852,64 @@ test('publishes a synchronized, accessible Draw.io and SVG semantic inventory', 
       `SVG ${lineId}`);
     assert.equal(strokeDashKind(svgLegendDashArray(svg, lineId)), connectorClass === 'event' ? 'dashed' : 'solid',
       `SVG ${lineId} rendered stroke pattern`);
+  }
+});
+
+test('keeps every measured STY-04 header above node-text padding and baseline thresholds', async () => {
+  const [drawio, svg] = await Promise.all([
+    readFile(new URL(`../${DRAWIO}`, import.meta.url), 'utf8'),
+    readFile(new URL(`../${SVG}`, import.meta.url), 'utf8'),
+  ]);
+
+  for (const nodeId of MEASURED_HEADER_NODES) {
+    const group = svg.match(new RegExp(
+      `<g\\b[^>]*data-node-id="${nodeId}"[^>]*data-node-bounds="([^"]+)"[^>]*>([\\s\\S]*?)<\\/g>`,
+      'u',
+    )) ?? [];
+    const [x, y, width, height] = (group[1] ?? '').split(/\s+/u).map(Number);
+    const contents = group[2] ?? '';
+    const titleMatch = contents.match(
+      /(<text\b[^>]*data-text-role="title"[^>]*>)([^<]+)<\/text>/u,
+    ) ?? [];
+    const typeMatch = contents.match(
+      /(<text\b[^>]*data-text-role="type"[^>]*>)([^<]+)<\/text>/u,
+    ) ?? [];
+    assert.ok(titleMatch[1], `${nodeId} measurable title`);
+    assert.ok(typeMatch[1], `${nodeId} measurable type`);
+    const titleAttributesSource = titleMatch[1].replace(/^<text\b|>$/gu, '');
+    const typeAttributesSource = typeMatch[1].replace(/^<text\b|>$/gu, '');
+    const titleAttributes = xmlAttributes(titleAttributesSource);
+    const typeAttributes = xmlAttributes(typeAttributesSource);
+    const titleFontSize = Number.parseFloat(svgPresentationValue(svg, 'text', titleAttributesSource, 'font-size'));
+    const typeFontSize = Number.parseFloat(svgPresentationValue(svg, 'text', typeAttributesSource, 'font-size'));
+    const titleBaseline = Number(titleAttributes.get('y'));
+    const typeBaseline = Number(typeAttributes.get('y'));
+
+    for (const [role, attributes, textValue, fontSize] of [
+      ['title', titleAttributes, titleMatch[2], titleFontSize],
+      ['type', typeAttributes, typeMatch[2], typeFontSize],
+    ]) {
+      const textWidth = conservativeTextWidth(textValue, fontSize);
+      const textX = Number(attributes.get('x'));
+      const anchor = attributes.get('text-anchor') ?? 'start';
+      const left = anchor === 'middle' ? textX - textWidth / 2 : anchor === 'end' ? textX - textWidth : textX;
+      const right = left + textWidth;
+      const horizontalPadding = Math.min(left - x, x + width - right);
+      assert.ok(horizontalPadding >= 24,
+        `${nodeId} ${role} has only ${horizontalPadding} authoring units horizontal padding`);
+    }
+
+    const topPadding = titleBaseline - titleFontSize - y;
+    const baselineGap = typeBaseline - titleBaseline;
+    const bottomClearance = y + height - typeBaseline;
+    assert.ok(topPadding >= 21,
+      `${nodeId} title has only ${topPadding} authoring units vertical padding`);
+    assert.ok(baselineGap >= 33,
+      `${nodeId} title/type baselines are only ${baselineGap} authoring units apart`);
+    assert.ok(bottomClearance >= 21,
+      `${nodeId} type has only ${bottomClearance} authoring units bottom clearance`);
+    assert.deepEqual(Object.values(drawioCellGeometry(drawio, nodeId)), [x, y, width, height],
+      `${nodeId} measured header geometry stays synchronized`);
   }
 });
 

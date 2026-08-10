@@ -6,37 +6,37 @@
         <mxCell id="0"/>
         <mxCell id="1" parent="0"/>
 
-        <mxCell id="deployment-boundary" value="单一部署单元" style="rounded=1;whiteSpace=wrap;html=0;verticalAlign=top;align=left;spacingTop=16;spacingLeft=20;fontSize=23;fontStyle=1;strokeColor=#263238;strokeWidth=3;fillColor=#F8FAFC;fillOpacity=4;" vertex="1" parent="1">
+        <mxCell id="deployment-boundary" value="单一部署单元" style="rounded=1;whiteSpace=wrap;html=0;verticalAlign=top;align=left;spacingTop=19;spacingLeft=20;fontSize=23;fontStyle=1;strokeColor=#263238;strokeWidth=3;fillColor=#F8FAFC;fillOpacity=4;" vertex="1" parent="1">
           <mxGeometry x="130" y="70" width="1060" height="1570" as="geometry"/>
         </mxCell>
         <mxCell id="deployment-boundary-type" value="部署边界 / Deployment Boundary" dataRole="type" style="text;html=0;align=left;verticalAlign=middle;fontSize=16;fontColor=#475569;" vertex="1" parent="deployment-boundary">
-          <mxGeometry x="24" y="50" width="320" height="24" as="geometry"/>
+          <mxGeometry x="24" y="53" width="320" height="24" as="geometry"/>
         </mxCell>
         <mxCell id="deployment-note" value="一个部署单元不等于一个数据所有者" dataRole="type" style="text;html=0;align=center;verticalAlign=middle;fontSize=23;fontStyle=1;fontColor=#7C2D12;" vertex="1" parent="1">
           <mxGeometry x="410" y="1585" width="500" height="36" as="geometry"/>
         </mxCell>
 
-        <mxCell id="shared-process-failure-domain" value="共享进程故障域" style="rounded=1;whiteSpace=wrap;html=0;align=center;verticalAlign=top;spacingTop=6;fontSize=23;fontStyle=1;strokeColor=#7C2D12;strokeWidth=2;dashed=1;dashPattern=6 4;fillColor=#FFF7ED;" vertex="1" parent="1">
-          <mxGeometry x="430" y="90" width="450" height="90" as="geometry"/>
+        <mxCell id="shared-process-failure-domain" value="共享进程故障域" style="rounded=1;whiteSpace=wrap;html=0;align=center;verticalAlign=top;spacingTop=20;fontSize=23;fontStyle=1;strokeColor=#7C2D12;strokeWidth=2;dashed=1;dashPattern=6 4;fillColor=#FFF7ED;" vertex="1" parent="1">
+          <mxGeometry x="430" y="75" width="400" height="101" as="geometry"/>
         </mxCell>
         <mxCell id="shared-process-failure-domain-type" value="共享运行时 / Failure Domain" dataRole="type" style="text;html=0;align=center;verticalAlign=middle;fontSize=16;fontColor=#7C2D12;" vertex="1" parent="shared-process-failure-domain">
-          <mxGeometry x="50" y="48" width="350" height="24" as="geometry"/>
+          <mxGeometry x="25" y="62" width="350" height="24" as="geometry"/>
         </mxCell>
-        <mxCell id="event-publication" value="事件发布登记" style="rounded=1;whiteSpace=wrap;html=0;align=center;verticalAlign=top;spacingTop=8;fontSize=23;fontStyle=1;strokeColor=#7C3AED;strokeWidth=2.5;fillColor=#F5F3FF;" vertex="1" parent="1">
-          <mxGeometry x="900" y="90" width="260" height="90" as="geometry"/>
+        <mxCell id="event-publication" value="事件发布登记" style="rounded=1;whiteSpace=wrap;html=0;align=center;verticalAlign=top;spacingTop=20;fontSize=23;fontStyle=1;strokeColor=#7C3AED;strokeWidth=2.5;fillColor=#F5F3FF;" vertex="1" parent="1">
+          <mxGeometry x="850" y="75" width="310" height="101" as="geometry"/>
         </mxCell>
         <mxCell id="event-publication-type" value="提交后事件 / Event Publication" dataRole="type" style="text;html=0;align=center;verticalAlign=middle;fontSize=16;fontColor=#5B21B6;" vertex="1" parent="event-publication">
-          <mxGeometry x="10" y="48" width="240" height="24" as="geometry"/>
+          <mxGeometry x="25" y="62" width="260" height="24" as="geometry"/>
         </mxCell>
 
-        <mxCell id="order-module-boundary" value="订单模块" style="rounded=1;whiteSpace=wrap;html=0;verticalAlign=top;align=left;spacingTop=12;spacingLeft=16;fontSize=23;fontStyle=1;strokeColor=#1D4ED8;strokeWidth=2.5;fillColor=#EFF6FF;fillOpacity=12;" vertex="1" parent="1"><mxGeometry x="160" y="200" width="430" height="670" as="geometry"/></mxCell>
-        <mxCell id="order-module-boundary-type" value="业务模块 / Module Boundary" dataRole="type" style="text;html=0;align=left;verticalAlign=middle;fontSize=16;fontColor=#1E3A8A;" vertex="1" parent="order-module-boundary"><mxGeometry x="20" y="44" width="270" height="24" as="geometry"/></mxCell>
-        <mxCell id="inventory-module-boundary" value="库存模块" style="rounded=1;whiteSpace=wrap;html=0;verticalAlign=top;align=left;spacingTop=12;spacingLeft=16;fontSize=23;fontStyle=1;strokeColor=#047857;strokeWidth=2.5;fillColor=#ECFDF5;fillOpacity=12;" vertex="1" parent="1"><mxGeometry x="650" y="200" width="510" height="670" as="geometry"/></mxCell>
-        <mxCell id="inventory-module-boundary-type" value="业务模块 / Module Boundary" dataRole="type" style="text;html=0;align=left;verticalAlign=middle;fontSize=16;fontColor=#065F46;" vertex="1" parent="inventory-module-boundary"><mxGeometry x="20" y="44" width="270" height="24" as="geometry"/></mxCell>
-        <mxCell id="payment-module-boundary" value="支付模块" style="rounded=1;whiteSpace=wrap;html=0;verticalAlign=top;align=left;spacingTop=12;spacingLeft=16;fontSize=23;fontStyle=1;strokeColor=#B45309;strokeWidth=2.5;fillColor=#FFFBEB;fillOpacity=12;" vertex="1" parent="1"><mxGeometry x="160" y="970" width="430" height="610" as="geometry"/></mxCell>
-        <mxCell id="payment-module-boundary-type" value="业务模块 / Module Boundary" dataRole="type" style="text;html=0;align=left;verticalAlign=middle;fontSize=16;fontColor=#92400E;" vertex="1" parent="payment-module-boundary"><mxGeometry x="20" y="44" width="270" height="24" as="geometry"/></mxCell>
-        <mxCell id="notification-module-boundary" value="通知模块" style="rounded=1;whiteSpace=wrap;html=0;verticalAlign=top;align=left;spacingTop=12;spacingLeft=16;fontSize=23;fontStyle=1;strokeColor=#7C3AED;strokeWidth=2.5;fillColor=#FAF5FF;fillOpacity=12;" vertex="1" parent="1"><mxGeometry x="650" y="970" width="510" height="610" as="geometry"/></mxCell>
-        <mxCell id="notification-module-boundary-type" value="业务模块 / Module Boundary" dataRole="type" style="text;html=0;align=left;verticalAlign=middle;fontSize=16;fontColor=#5B21B6;" vertex="1" parent="notification-module-boundary"><mxGeometry x="20" y="44" width="270" height="24" as="geometry"/></mxCell>
+        <mxCell id="order-module-boundary" value="订单模块" style="rounded=1;whiteSpace=wrap;html=0;verticalAlign=top;align=left;spacingTop=22;spacingLeft=20;fontSize=23;fontStyle=1;strokeColor=#1D4ED8;strokeWidth=2.5;fillColor=#EFF6FF;fillOpacity=12;" vertex="1" parent="1"><mxGeometry x="160" y="180" width="430" height="690" as="geometry"/></mxCell>
+        <mxCell id="order-module-boundary-type" value="业务模块 / Module Boundary" dataRole="type" style="text;html=0;align=left;verticalAlign=middle;fontSize=16;fontColor=#1E3A8A;" vertex="1" parent="order-module-boundary"><mxGeometry x="24" y="62" width="270" height="24" as="geometry"/></mxCell>
+        <mxCell id="inventory-module-boundary" value="库存模块" style="rounded=1;whiteSpace=wrap;html=0;verticalAlign=top;align=left;spacingTop=22;spacingLeft=20;fontSize=23;fontStyle=1;strokeColor=#047857;strokeWidth=2.5;fillColor=#ECFDF5;fillOpacity=12;" vertex="1" parent="1"><mxGeometry x="650" y="180" width="510" height="690" as="geometry"/></mxCell>
+        <mxCell id="inventory-module-boundary-type" value="业务模块 / Module Boundary" dataRole="type" style="text;html=0;align=left;verticalAlign=middle;fontSize=16;fontColor=#065F46;" vertex="1" parent="inventory-module-boundary"><mxGeometry x="24" y="62" width="270" height="24" as="geometry"/></mxCell>
+        <mxCell id="payment-module-boundary" value="支付模块" style="rounded=1;whiteSpace=wrap;html=0;verticalAlign=top;align=left;spacingTop=22;spacingLeft=20;fontSize=23;fontStyle=1;strokeColor=#B45309;strokeWidth=2.5;fillColor=#FFFBEB;fillOpacity=12;" vertex="1" parent="1"><mxGeometry x="160" y="950" width="430" height="630" as="geometry"/></mxCell>
+        <mxCell id="payment-module-boundary-type" value="业务模块 / Module Boundary" dataRole="type" style="text;html=0;align=left;verticalAlign=middle;fontSize=16;fontColor=#92400E;" vertex="1" parent="payment-module-boundary"><mxGeometry x="24" y="62" width="270" height="24" as="geometry"/></mxCell>
+        <mxCell id="notification-module-boundary" value="通知模块" style="rounded=1;whiteSpace=wrap;html=0;verticalAlign=top;align=left;spacingTop=22;spacingLeft=20;fontSize=23;fontStyle=1;strokeColor=#7C3AED;strokeWidth=2.5;fillColor=#FAF5FF;fillOpacity=12;" vertex="1" parent="1"><mxGeometry x="650" y="950" width="510" height="630" as="geometry"/></mxCell>
+        <mxCell id="notification-module-boundary-type" value="业务模块 / Module Boundary" dataRole="type" style="text;html=0;align=left;verticalAlign=middle;fontSize=16;fontColor=#5B21B6;" vertex="1" parent="notification-module-boundary"><mxGeometry x="24" y="62" width="270" height="24" as="geometry"/></mxCell>
 
         <mxCell id="submit-order-request" value="提交订单请求" style="rounded=1;whiteSpace=wrap;html=0;align=center;verticalAlign=top;spacingTop=15;fontSize=23;fontStyle=1;strokeColor=#334155;strokeWidth=2;fillColor=#FFFFFF;" vertex="1" parent="1"><mxGeometry x="5" y="270" width="95" height="110" as="geometry"/></mxCell>
         <mxCell id="submit-order-request-type" value="外部请求 / Request" dataRole="type" style="text;html=0;align=center;verticalAlign=middle;fontSize=16;fontColor=#475569;" vertex="1" parent="submit-order-request"><mxGeometry x="2" y="60" width="86" height="24" as="geometry"/></mxCell>

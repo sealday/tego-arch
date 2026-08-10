@@ -47,23 +47,23 @@
 
   <g data-node-id="deployment-boundary" data-type-label="部署边界 / Deployment Boundary" data-node-bounds="130 70 1060 1570">
     <rect x="130" y="70" width="1060" height="1570" rx="18" fill="#F8FAFC" fill-opacity="0.04" stroke="#263238" stroke-width="3"/>
-    <text class="boundary-title" data-text-role="title" data-text-bounds="154 88 138 27" x="154" y="111">单一部署单元</text>
-    <text class="node-type" data-text-role="type" data-text-bounds="154 131 244 19" x="154" y="147">部署边界 / Deployment Boundary</text>
+    <text class="boundary-title" data-text-role="title" data-text-bounds="154 91 138 27" x="154" y="114">单一部署单元</text>
+    <text class="node-type" data-text-role="type" data-text-bounds="154 134 244 19" x="154" y="150">部署边界 / Deployment Boundary</text>
   </g>
-  <g data-node-id="shared-process-failure-domain" data-type-label="共享运行时 / Failure Domain" data-node-bounds="430 90 450 90">
-    <rect x="430" y="90" width="450" height="90" rx="14" fill="#FFF7ED" stroke="#7C2D12" stroke-width="2" stroke-dasharray="6 4"/>
-    <text class="node-title" data-text-role="title" data-text-bounds="549.5 97 211 27" x="655" y="120" text-anchor="middle">共享进程故障域</text>
-    <text class="node-type" data-text-role="type" data-text-bounds="533 137 244 19" x="655" y="156" text-anchor="middle">共享运行时 / Failure Domain</text>
+  <g data-node-id="shared-process-failure-domain" data-type-label="共享运行时 / Failure Domain" data-node-bounds="430 75 400 101">
+    <rect x="430" y="75" width="400" height="101" rx="14" fill="#FFF7ED" stroke="#7C2D12" stroke-width="2" stroke-dasharray="6 4"/>
+    <text class="node-title" data-text-role="title" data-text-bounds="524.5 96 211 27" x="630" y="119" text-anchor="middle">共享进程故障域</text>
+    <text class="node-type" data-text-role="type" data-text-bounds="508 139 244 19" x="630" y="155" text-anchor="middle">共享运行时 / Failure Domain</text>
   </g>
-  <g data-node-id="event-publication" data-type-label="提交后事件 / Event Publication" data-node-bounds="900 90 260 90">
-    <rect x="900" y="90" width="260" height="90" rx="14" fill="#F5F3FF" stroke="#7C3AED" stroke-width="2.5"/>
-    <text class="node-title" data-text-role="title" data-text-bounds="961 97 138 27" x="1030" y="120" text-anchor="middle">事件发布登记</text>
-    <text class="node-type" data-text-role="type" data-text-bounds="912 137 236 19" x="1030" y="156" text-anchor="middle">提交后事件 / Event Publication</text>
+  <g data-node-id="event-publication" data-type-label="提交后事件 / Event Publication" data-node-bounds="850 75 310 101">
+    <rect x="850" y="75" width="310" height="101" rx="14" fill="#F5F3FF" stroke="#7C3AED" stroke-width="2.5"/>
+    <text class="node-title" data-text-role="title" data-text-bounds="936 96 138 27" x="1005" y="119" text-anchor="middle">事件发布登记</text>
+    <text class="node-type" data-text-role="type" data-text-bounds="887 139 236 19" x="1005" y="155" text-anchor="middle">提交后事件 / Event Publication</text>
   </g>
-  <g data-node-id="order-module-boundary" data-type-label="业务模块 / Module Boundary" data-node-bounds="160 200 430 670"><rect class="module" x="160" y="200" width="430" height="670" rx="16" fill="#EFF6FF" fill-opacity="0.12" stroke="#1D4ED8"/><text class="boundary-title" data-text-role="title" x="184" y="234">订单模块</text><text class="node-type" data-text-role="type" x="184" y="262">业务模块 / Module Boundary</text></g>
-  <g data-node-id="inventory-module-boundary" data-type-label="业务模块 / Module Boundary" data-node-bounds="650 200 510 670"><rect class="module" x="650" y="200" width="510" height="670" rx="16" fill="#ECFDF5" fill-opacity="0.12" stroke="#047857"/><text class="boundary-title" data-text-role="title" x="674" y="234">库存模块</text><text class="node-type" data-text-role="type" x="674" y="262">业务模块 / Module Boundary</text></g>
-  <g data-node-id="payment-module-boundary" data-type-label="业务模块 / Module Boundary" data-node-bounds="160 970 430 610"><rect class="module" x="160" y="970" width="430" height="610" rx="16" fill="#FFFBEB" fill-opacity="0.12" stroke="#B45309"/><text class="boundary-title" data-text-role="title" x="184" y="1004">支付模块</text><text class="node-type" data-text-role="type" x="184" y="1032">业务模块 / Module Boundary</text></g>
-  <g data-node-id="notification-module-boundary" data-type-label="业务模块 / Module Boundary" data-node-bounds="650 970 510 610"><rect class="module" x="650" y="970" width="510" height="610" rx="16" fill="#FAF5FF" fill-opacity="0.12" stroke="#7C3AED"/><text class="boundary-title" data-text-role="title" x="674" y="1004">通知模块</text><text class="node-type" data-text-role="type" x="674" y="1032">业务模块 / Module Boundary</text></g>
+  <g data-node-id="order-module-boundary" data-type-label="业务模块 / Module Boundary" data-node-bounds="160 180 430 690"><rect class="module" x="160" y="180" width="430" height="690" rx="16" fill="#EFF6FF" fill-opacity="0.12" stroke="#1D4ED8"/><text class="boundary-title" data-text-role="title" x="184" y="224">订单模块</text><text class="node-type" data-text-role="type" x="184" y="260">业务模块 / Module Boundary</text></g>
+  <g data-node-id="inventory-module-boundary" data-type-label="业务模块 / Module Boundary" data-node-bounds="650 180 510 690"><rect class="module" x="650" y="180" width="510" height="690" rx="16" fill="#ECFDF5" fill-opacity="0.12" stroke="#047857"/><text class="boundary-title" data-text-role="title" x="674" y="224">库存模块</text><text class="node-type" data-text-role="type" x="674" y="260">业务模块 / Module Boundary</text></g>
+  <g data-node-id="payment-module-boundary" data-type-label="业务模块 / Module Boundary" data-node-bounds="160 950 430 630"><rect class="module" x="160" y="950" width="430" height="630" rx="16" fill="#FFFBEB" fill-opacity="0.12" stroke="#B45309"/><text class="boundary-title" data-text-role="title" x="184" y="994">支付模块</text><text class="node-type" data-text-role="type" x="184" y="1030">业务模块 / Module Boundary</text></g>
+  <g data-node-id="notification-module-boundary" data-type-label="业务模块 / Module Boundary" data-node-bounds="650 950 510 630"><rect class="module" x="650" y="950" width="510" height="630" rx="16" fill="#FAF5FF" fill-opacity="0.12" stroke="#7C3AED"/><text class="boundary-title" data-text-role="title" x="674" y="994">通知模块</text><text class="node-type" data-text-role="type" x="674" y="1030">业务模块 / Module Boundary</text></g>
 
   <g data-node-id="submit-order-request" data-type-label="外部请求 / Request" data-node-bounds="5 270 95 110"><rect class="contract" x="5" y="270" width="95" height="110" rx="14" fill="#FFF" stroke="#334155"/><text class="node-title" data-text-role="title" x="52.5" y="305" text-anchor="middle" textLength="82" lengthAdjust="spacingAndGlyphs">提交订单请求</text><text class="node-type" data-text-role="type" x="52.5" y="345" text-anchor="middle" textLength="82" lengthAdjust="spacingAndGlyphs">外部请求 / Request</text></g>
   <g data-node-id="order-public-contract" data-type-label="公开合同 / Public Contract" data-node-bounds="185 270 375 96"><rect class="contract" x="185" y="270" width="375" height="96" rx="14" fill="#DBEAFE" stroke="#1D4ED8"/><text class="node-title" data-text-role="title" x="372.5" y="303" text-anchor="middle">订单公开合同</text><text class="node-type" data-text-role="type" x="372.5" y="339" text-anchor="middle">公开合同 / Public Contract</text></g>
