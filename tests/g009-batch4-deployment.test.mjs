@@ -41,7 +41,7 @@ test('projects STY-03 published but pending while keeping STY-04 unpublished', (
   assert.equal(styleTopics.get('STY-04')?.status.value, 'pending');
 });
 
-test('adds one document and two sources without closing the topic before deployment', () => {
+test('adds one document and three sources without closing the topic before deployment', () => {
   assert.deepEqual(
     {
       completed_topics: projectStatus.completed_topics,
@@ -51,10 +51,10 @@ test('adds one document and two sources without closing the topic before deploym
     {
       completed_topics: 55,
       content_documents: 97 + 1,
-      governed_sources: 506 + 2,
+      governed_sources: 506 + 3,
     },
   );
-  assert.equal(publicLedger.sources.length, 506 + 2);
+  assert.equal(publicLedger.sources.length, 506 + 3);
 });
 
 test('includes the canonical STY-03 route and SVG in the deployment inventory', async () => {

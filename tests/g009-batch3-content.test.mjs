@@ -28,7 +28,7 @@ const [manifest, projectStatus, indexes, publicLedger] = await Promise.all([
 const licenseScope = 'The named article/page and bibliographic facts only; prose, code, diagrams, images, marks, comments, linked works, and third-party material excluded';
 const migrationPolicy = 'Facts summary and reviewed short quotation only; no adaptation or copied structure';
 
-test('projects Stage B after closing STY-02 without activating STY-03', () => {
+test('preserves STY-02 closure while projecting STY-03 published and pending', () => {
   const topics = new Map(manifest.topics.map((topic) => [topic.id, topic]));
   assert.equal(topics.get('STY-02')?.published, true);
   assert.equal(topics.get('STY-02')?.status.value, 'complete');
@@ -37,12 +37,12 @@ test('projects Stage B after closing STY-02 without activating STY-03', () => {
     'https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html',
     'https://jeffreypalermo.com/2008/08/the-onion-architecture-part-3/',
   ]);
-  assert.equal(topics.get('STY-03')?.published, false);
+  assert.equal(topics.get('STY-03')?.published, true);
   assert.equal(topics.get('STY-03')?.status.value, 'pending');
   assert.equal(projectStatus.completed_topics, 55);
-  assert.equal(projectStatus.content_documents, 97);
-  assert.equal(projectStatus.governed_sources, 506);
-  assert.equal(publicLedger.sources.length, 506);
+  assert.equal(projectStatus.content_documents, 98);
+  assert.equal(projectStatus.governed_sources, 509);
+  assert.equal(publicLedger.sources.length, 509);
   assert.ok(indexes.style.some(({id, status}) => id === 'STY-02' && status.value === 'complete'));
 });
 
@@ -313,10 +313,9 @@ function assertStyleContract(source) {
     const expectedLocator = typeof locator === 'string' ? locator : locator.canonical_locator;
     assert.ok(externalLinksOf(source).includes(expectedLocator), expectedLocator);
   }
-  for (const link of ['/styles', '/styles/sty-00', '/styles/sty-01', '/cases/micro-frontends-single-spa']) {
+  for (const link of ['/styles', '/styles/sty-00', '/styles/sty-01', '/styles/sty-03', '/cases/micro-frontends-single-spa']) {
     assert.ok(internalLinksOf(source).includes(link), link);
   }
-  assert.ok(!internalLinksOf(source).includes('/styles/sty-03'));
 }
 
 const inventoryColumns = [
@@ -485,7 +484,7 @@ test('publishes the exact STY-02 metadata and eleven headings', () => {
   assert.equal(metadata.topic_id, 'STY-02');
   assert.equal(metadata.priority, 'P0');
   assert.deepEqual(metadata.depends_on, ['STY-00', 'STY-01']);
-  assert.deepEqual(metadata.adjacent_topics, ['STY-01']);
+  assert.deepEqual(metadata.adjacent_topics, ['STY-01', 'STY-03']);
   assert.deepEqual(metadata.related_cases, ['/cases/micro-frontends-single-spa']);
   assert.deepEqual(metadata.related_questions, []);
   assert.deepEqual(findMarkdownHeadings(sty02.body).map(({text}) => text), expectedHeadings);
@@ -496,14 +495,15 @@ test('locks the common kernel, vocabulary overlays, order boundary, and non-use 
   assertStyleContract(sty02.source);
 });
 
-test('makes STY-01 and STY-02 reciprocal while keeping STY-03 non-actionable', () => {
+test('keeps STY-01 and STY-02 reciprocal while linking the published STY-03 page', () => {
   assert.ok(sty01);
   assert.ok(sty02);
   assert.ok(parseFrontMatter(sty01.source).adjacent_topics.includes('STY-02'));
   assert.ok(internalLinksOf(sty01.source).includes('/styles/sty-02'));
   assert.ok(parseFrontMatter(sty02.source).adjacent_topics.includes('STY-01'));
   assert.ok(internalLinksOf(sty02.source).includes('/styles/sty-01'));
-  assert.ok(!internalLinksOf(sty02.source).includes('/styles/sty-03'));
+  assert.ok(parseFrontMatter(sty02.source).adjacent_topics.includes('STY-03'));
+  assert.ok(internalLinksOf(sty02.source).includes('/styles/sty-03'));
 });
 
 test('records the approved STY-02 citation review', () => {
@@ -533,7 +533,7 @@ test('rejects mutations of the STY-02 decision contract', () => {
     ['ORM crosses boundary', '不得进入应用核心', sty02.source.replace('不得进入应用核心', '可以直接进入应用核心')],
     ['deployment overclaim', '不自动形成独立部署', sty02.source.replace('不自动形成独立部署', '自动提供独立部署')],
     ['missing non-use', '小型、短生命周期、变化压力低的增删改查应用可能不值得承担接口、映射和组合成本。', sty02.source.replace('小型、短生命周期、变化压力低的增删改查应用可能不值得承担接口、映射和组合成本。', '所有应用都值得承担接口、映射和组合成本。')],
-    ['STY-03 actionable', null, `${sty02.source}\n[下一个风格](/styles/sty-03)\n`],
+    ['removed STY-03 reciprocal', '/styles/sty-03', sty02.source.replace(/\[[^\]]+\]\(\/styles\/sty-03\)/u, '')],
     ['removed terminology row', '| 输出边界 |', sty02.source.replace(/^\| 输出边界 \|.*\n/mu, '')],
     ['reordered decision rows', '| 核心所有权 |', sty02.source.replace(/(\| 端口对话 \|.*\n)(\| 核心所有权 \|.*\n)/u, '$2$1')],
     ['altered terminology header', '| 关注点 |', sty02.source.replace('| 关注点 | 共同语义 |', '| 比较项 | 共同语义 |')],

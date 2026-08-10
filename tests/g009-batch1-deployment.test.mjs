@@ -217,7 +217,7 @@ test('rejects closure mutations accepted by the former weak predicates', async (
   }
 });
 
-test('preserves the Batch 1 closure while projecting STY-02 complete and STY-03 next', async () => {
+test('preserves the Batch 1 closure while projecting STY-03 published and pending', async () => {
   const [backlog, manifest, status] = await Promise.all([
     readFile(new URL('../docs/content-backlog.md', import.meta.url), 'utf8'),
     readFile(new URL('../src/generated/topic-manifest.json', import.meta.url), 'utf8').then(JSON.parse),
@@ -231,14 +231,14 @@ test('preserves the Batch 1 closure while projecting STY-02 complete and STY-03 
   assert.equal(topics.get('STY-01')?.status.value, 'complete');
   assert.equal(topics.get('STY-02')?.published, true);
   assert.equal(topics.get('STY-02')?.status.value, 'complete');
-  assert.equal(topics.get('STY-03')?.published, false);
+  assert.equal(topics.get('STY-03')?.published, true);
   assert.equal(topics.get('STY-03')?.status.value, 'pending');
   assert.deepEqual(status, {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
     completed_topics: 55,
-    content_documents: 97,
-    governed_sources: 506,
+    content_documents: 98,
+    governed_sources: 509,
     sources: {
       durable_stories: 'docs/content-backlog.md',
       completed_topics: 'docs/content-backlog.md',

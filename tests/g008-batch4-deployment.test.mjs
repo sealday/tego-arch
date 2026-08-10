@@ -267,8 +267,8 @@ test('preserves MOD-06 closure under the current G009 baseline', () => {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
     completed_topics: 55,
-    content_documents: 97,
-    governed_sources: 506,
+    content_documents: 98,
+    governed_sources: 509,
     sources: {
       durable_stories: 'docs/content-backlog.md',
       completed_topics: 'docs/content-backlog.md',

@@ -292,7 +292,7 @@ test('rejects current-baseline contradictions', async (t) => {
   }
 });
 
-test('closes only STY-02 and projects G009 to non-actionable STY-03', async () => {
+test('preserves STY-02 closure while projecting STY-03 published and pending', async () => {
   const [backlog, manifest, status, sourceLedger, indexes] = await Promise.all([
     readFile(new URL('../docs/content-backlog.md', import.meta.url), 'utf8'),
     readFile(new URL('../src/generated/topic-manifest.json', import.meta.url), 'utf8').then(JSON.parse),
@@ -303,14 +303,14 @@ test('closes only STY-02 and projects G009 to non-actionable STY-03', async () =
   const topics = new Map(manifest.topics.map((topic) => [topic.id, topic]));
   assert.equal(topics.get('STY-02')?.published, true);
   assert.equal(topics.get('STY-02')?.status.value, 'complete');
-  assert.equal(topics.get('STY-03')?.published, false);
+  assert.equal(topics.get('STY-03')?.published, true);
   assert.equal(topics.get('STY-03')?.status.value, 'pending');
   assert.deepEqual(status, {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
     completed_topics: 55,
-    content_documents: 97,
-    governed_sources: 506,
+    content_documents: 98,
+    governed_sources: 509,
     sources: {
       durable_stories: 'docs/content-backlog.md',
       completed_topics: 'docs/content-backlog.md',
@@ -318,11 +318,11 @@ test('closes only STY-02 and projects G009 to non-actionable STY-03', async () =
       governed_sources: 'data/source-ledger.json',
     },
   });
-  assert.equal(sourceLedger.sources.length, 506);
+  assert.equal(sourceLedger.sources.length, 509);
   assert.ok(indexes.style.some(({id, published, status: topicStatus}) =>
     id === 'STY-02' && published === true && topicStatus.value === 'complete'));
   assert.ok(indexes.style.some(({id, published, status: topicStatus}) =>
-    id === 'STY-03' && published === false && topicStatus.value === 'pending'));
+    id === 'STY-03' && published === true && topicStatus.value === 'pending'));
   assertBacklog(backlog);
 });
 

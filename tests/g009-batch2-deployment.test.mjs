@@ -265,7 +265,7 @@ test('rejects review and current-baseline contradictions', async (t) => {
   }
 });
 
-test('preserves the STY-01 closure while projecting STY-02 complete and STY-03 next', async () => {
+test('preserves the STY-01 closure while projecting STY-03 published and pending', async () => {
   const [backlog, manifest, status, sourceLedger] = await Promise.all([
     readFile(new URL('../docs/content-backlog.md', import.meta.url), 'utf8'),
     readFile(new URL('../src/generated/topic-manifest.json', import.meta.url), 'utf8').then(JSON.parse),
@@ -278,14 +278,14 @@ test('preserves the STY-01 closure while projecting STY-02 complete and STY-03 n
   assert.equal(topics.get('STY-01')?.status.value, 'complete');
   assert.equal(topics.get('STY-02')?.published, true);
   assert.equal(topics.get('STY-02')?.status.value, 'complete');
-  assert.equal(topics.get('STY-03')?.published, false);
+  assert.equal(topics.get('STY-03')?.published, true);
   assert.equal(topics.get('STY-03')?.status.value, 'pending');
   assert.deepEqual(status, {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
     completed_topics: 55,
-    content_documents: 97,
-    governed_sources: 506,
+    content_documents: 98,
+    governed_sources: 509,
     sources: {
       durable_stories: 'docs/content-backlog.md',
       completed_topics: 'docs/content-backlog.md',
@@ -293,7 +293,7 @@ test('preserves the STY-01 closure while projecting STY-02 complete and STY-03 n
       governed_sources: 'data/source-ledger.json',
     },
   });
-  assert.equal(sourceLedger.sources.length, 506);
+  assert.equal(sourceLedger.sources.length, 509);
 });
 
 test('preserves the complete G009 Batch 1 and older release history', async () => {

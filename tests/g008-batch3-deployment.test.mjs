@@ -285,8 +285,8 @@ test('preserves Batch 3 closure under the current G009 baseline', () => {
   assert.equal(topicsById.get('STY-01')?.published, true);
   assert.equal(topicsById.get('STY-01')?.status.value, 'complete');
   assert.equal(projectStatus.completed_topics, 55);
-  assert.equal(projectStatus.content_documents, 97);
-  assert.equal(projectStatus.governed_sources, 506);
+  assert.equal(projectStatus.content_documents, 98);
+  assert.equal(projectStatus.governed_sources, 509);
   assert.deepEqual(projectStatus.durable_stories, {
     completed: 8,
     total: 20,
