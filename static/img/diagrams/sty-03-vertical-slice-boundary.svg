@@ -117,11 +117,11 @@
   <text x="375" y="973" text-anchor="start" class="edge-label" data-edge-id="layered-service-repository">访问仓储</text>
   <text x="375" y="1243" text-anchor="start" class="edge-label" data-edge-id="layered-repository-database">写入数据</text>
   <text x="1330" y="503" text-anchor="start" class="edge-label" data-edge-id="slice-request-handler">进入切片</text>
-  <text x="1640" y="765" text-anchor="middle" class="edge-label" transform="rotate(-90 1640 765)" data-edge-id="slice-handler-rules">执行业务规则</text>
+  <text x="1660" y="765" text-anchor="middle" class="edge-label" transform="rotate(-90 1660 765)" data-edge-id="slice-handler-rules">执行业务规则</text>
   <text x="1110" y="1063" text-anchor="middle" class="edge-label" data-edge-id="slice-rules-inventory">查询库存</text>
   <text x="1448" y="1063" text-anchor="middle" class="edge-label" data-edge-id="slice-rules-store">保存订单</text>
   <text x="1585" y="1393" text-anchor="middle" class="edge-label" data-edge-id="slice-rules-response">映射响应</text>
-  <text x="720" y="960" text-anchor="middle" class="edge-label" fill="#2F6F9F" transform="rotate(-90 720 960)" data-edge-id="layered-repository-service-dependency">依赖抽象</text>
+  <text x="740" y="960" text-anchor="middle" class="edge-label" fill="#2F6F9F" transform="rotate(-90 740 960)" data-edge-id="layered-repository-service-dependency">依赖抽象</text>
   <text x="1095" y="1408" text-anchor="start" class="edge-label" fill="#2F6F9F" data-edge-id="inventory-adapter-port-dependency">实现端口</text>
 
   <g data-node-id="legend-runtime-line" data-node-bounds="70 1835 110 1" data-type-label="" data-legend-line="runtime"><path d="M70 1835H180" class="runtime"/></g>
