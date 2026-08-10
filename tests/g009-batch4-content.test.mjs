@@ -77,17 +77,17 @@ const DIAGRAM_NODES = [
   ['shared-domain-invariants', '共享领域不变量'],
 ];
 const DIAGRAM_EDGES = [
-  ['layered-request', 'layered-http', 'layered-controller'],
-  ['layered-controller-service', 'layered-controller', 'layered-service'],
-  ['layered-service-repository', 'layered-service', 'layered-repository'],
-  ['layered-repository-database', 'layered-repository', 'layered-database'],
-  ['slice-request-handler', 'slice-http', 'submit-order-handler'],
-  ['slice-handler-rules', 'submit-order-handler', 'order-rules'],
-  ['slice-rules-inventory', 'order-rules', 'inventory-port'],
-  ['slice-rules-store', 'order-rules', 'order-store'],
-  ['slice-rules-response', 'order-rules', 'response-mapper'],
-  ['layered-repository-service-dependency', 'layered-repository', 'layered-service'],
-  ['inventory-adapter-port-dependency', 'inventory-adapter', 'inventory-port'],
+  ['layered-request', 'layered-http', 'layered-controller', '运行时控制流'],
+  ['layered-controller-service', 'layered-controller', 'layered-service', '运行时控制流'],
+  ['layered-service-repository', 'layered-service', 'layered-repository', '运行时控制流'],
+  ['layered-repository-database', 'layered-repository', 'layered-database', '运行时控制流'],
+  ['slice-request-handler', 'slice-http', 'submit-order-handler', '运行时控制流'],
+  ['slice-handler-rules', 'submit-order-handler', 'order-rules', '运行时控制流'],
+  ['slice-rules-inventory', 'order-rules', 'inventory-port', '运行时控制流'],
+  ['slice-rules-store', 'order-rules', 'order-store', '运行时控制流'],
+  ['slice-rules-response', 'order-rules', 'response-mapper', '运行时控制流'],
+  ['layered-repository-service-dependency', 'layered-repository', 'layered-service', '源码依赖'],
+  ['inventory-adapter-port-dependency', 'inventory-adapter', 'inventory-port', '源码依赖'],
 ];
 const DIAGRAM_BOUNDARIES = [['layered-boundary', '分层架构'], ['vertical-slice-boundary', '垂直切片']];
 
@@ -136,12 +136,50 @@ function visibleDrawioCells(source) {
   }).filter(Boolean);
 }
 
+function hiddenStylesheetClasses(source) {
+  const classes = new Set();
+  for (const [, stylesheet] of source.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/gu)) {
+    for (const [, selectors, declarations] of stylesheet.matchAll(/([^{}]+)\{([^{}]*)\}/gu)) {
+      if (!/(?:display\s*:\s*none|visibility\s*:\s*(?:hidden|collapse)|opacity\s*:\s*0(?:\D|$))/u.test(declarations)) continue;
+      for (const selector of selectors.split(',')) {
+        const className = selector.trim().match(/^\.([\w-]+)$/u)?.[1];
+        if (className) classes.add(className);
+      }
+    }
+  }
+  return classes;
+}
+
+function elementIsHidden(attributes, hiddenClasses) {
+  const values = xmlAttributes(attributes);
+  const presentation = `${attributes};${values.style ?? ''}`;
+  if (/(?:display\s*(?::|=\s*")\s*none|visibility\s*(?::|=\s*")\s*(?:hidden|collapse)|opacity\s*(?::|=\s*")\s*0(?:\D|$))/u.test(presentation)) return true;
+  if (values['aria-hidden'] === 'true') return true;
+  return (values.class ?? '').split(/\s+/u).some((className) => hiddenClasses.has(className));
+}
+
 function visibleSvgText(source) {
+  const hiddenClasses = hiddenStylesheetClasses(source);
+  const stack = [];
+  const visible = [];
   const withoutComments = source.replace(/<!--[\s\S]*?-->/gu, '');
-  return [...withoutComments.matchAll(/<text\b([^>]*)>([^<]*)<\/text>/gu)].flatMap(([, rawTag, text]) => {
-    if (/(?:style|visibility)="[^"]*(?:display\s*:\s*none|hidden)/u.test(rawTag)) return [];
-    return [decodeXmlText(text).trim()];
-  }).filter(Boolean);
+  for (const [token] of withoutComments.matchAll(/<\/?[\w:-]+\b[^>]*>|[^<]+/gu)) {
+    if (!token.startsWith('<')) {
+      const textFrame = stack.findLast((frame) => frame.name === 'text');
+      if (textFrame && !stack.at(-1).hidden) textFrame.content += token;
+      continue;
+    }
+    if (token.startsWith('</')) {
+      const frame = stack.pop();
+      if (frame?.name === 'text' && !frame.hidden) visible.push(decodeXmlText(frame.content.trim()));
+      continue;
+    }
+    const [, name = '', attributes = ''] = token.match(/^<([\w:-]+)\b([^>]*)>/u) ?? [];
+    const hidden = (stack.at(-1)?.hidden ?? false) || elementIsHidden(attributes, hiddenClasses);
+    const frame = {name, hidden, content: ''};
+    if (!/\/\s*>$/u.test(token)) stack.push(frame);
+  }
+  return visible.filter(Boolean);
 }
 
 function drawioDiagramContract(source) {
@@ -310,12 +348,13 @@ test('publishes the synchronized STY-03 diagram pair with the minimum inventory'
   const svgEdges = new Map(svgContract.edges.map((edge) => [edge.id, edge]));
   assert.equal(drawioEdges.size, drawioContract.edges.length, 'Draw.io edge IDs are unique');
   assert.equal(svgEdges.size, svgContract.edges.length, 'SVG edge IDs are unique');
-  for (const [id, source, target] of DIAGRAM_EDGES) {
+  for (const [id, source, target, label] of DIAGRAM_EDGES) {
     assert.equal(drawioEdges.get(id)?.source, source, `Draw.io edge ${id} source`);
     assert.equal(drawioEdges.get(id)?.target, target, `Draw.io edge ${id} target`);
+    assert.equal(drawioEdges.get(id)?.label, label, `Draw.io edge ${id} label`);
     assert.equal(svgEdges.get(id)?.source, source, `SVG edge ${id} source`);
     assert.equal(svgEdges.get(id)?.target, target, `SVG edge ${id} target`);
-    assert.equal(svgEdges.get(id)?.label, drawioEdges.get(id)?.label, `paired edge ${id} label`);
+    assert.equal(svgEdges.get(id)?.label, label, `SVG edge ${id} label`);
   }
   const visibleDrawioLabels = drawioContract.nodes.map(({label}) => label)
     .concat(drawioContract.edges.map(({label}) => label));
