@@ -68,28 +68,49 @@ const DIAGRAM_LABELS = [
 ];
 const COMPARISON_HEADER = ['比较维度', '分层架构', '垂直切片', '模块化单体'];
 const DIAGRAM_NODES = [
-  ['layered-http', 'HTTP 请求'], ['layered-controller', 'Controller'],
-  ['layered-service', 'Application Service'], ['layered-repository', 'Shared Repository'],
-  ['layered-database', '数据库'], ['slice-http', 'HTTP 请求'],
-  ['submit-order-handler', 'SubmitOrder Handler'], ['order-rules', 'Order Rules'],
-  ['inventory-port', 'Inventory Port'], ['inventory-adapter', 'Inventory Adapter'],
-  ['order-store', 'Order Store'], ['response-mapper', 'Response Mapper'],
-  ['shared-domain-invariants', '共享领域不变量'],
+  ['deployment-boundary', '单体部署边界', ''],
+  ['layered-boundary', '分层架构', ''],
+  ['vertical-slice-boundary', '垂直切片', ''],
+  ['submit-order-boundary', 'SubmitOrder', ''],
+  ['shared-domain-invariants', '共享领域不变量', ''],
+  ['layered-http', 'HTTP 请求', '入口 / Request'],
+  ['layered-controller', 'Controller', '接口层 / Web'],
+  ['layered-service', 'Application Service', '应用层 / Shared Service'],
+  ['layered-repository', 'Shared Repository', '共享数据访问 / Infrastructure'],
+  ['layered-database', '数据库', 'Shared Database'],
+  ['slice-http', 'HTTP 请求', '入口 / Request'],
+  ['submit-order-handler', 'SubmitOrder Handler', '切片入口 / Use Case Handler'],
+  ['order-rules', 'Order Rules', '领域规则 / Policy'],
+  ['inventory-port', 'Inventory Port', 'Driven Port'],
+  ['order-store', 'Order Store', 'Persistence Port'],
+  ['response-mapper', 'Response Mapper', '输出映射 / Presenter'],
+  ['inventory-adapter', 'Inventory Adapter', '外部机制 / Adapter'],
+  ['legend-runtime-line', '', ''],
+  ['legend-dependency-line', '', ''],
+  ['legend-runtime', '运行时控制流', ''],
+  ['legend-dependency', '源码依赖', ''],
+  ['deployment-note', '切片不等于独立部署单元', ''],
 ];
 const DIAGRAM_EDGES = [
-  ['layered-request', 'layered-http', 'layered-controller', '运行时控制流'],
-  ['layered-controller-service', 'layered-controller', 'layered-service', '运行时控制流'],
-  ['layered-service-repository', 'layered-service', 'layered-repository', '运行时控制流'],
-  ['layered-repository-database', 'layered-repository', 'layered-database', '运行时控制流'],
-  ['slice-request-handler', 'slice-http', 'submit-order-handler', '运行时控制流'],
-  ['slice-handler-rules', 'submit-order-handler', 'order-rules', '运行时控制流'],
-  ['slice-rules-inventory', 'order-rules', 'inventory-port', '运行时控制流'],
-  ['slice-rules-store', 'order-rules', 'order-store', '运行时控制流'],
-  ['slice-rules-response', 'order-rules', 'response-mapper', '运行时控制流'],
-  ['layered-repository-service-dependency', 'layered-repository', 'layered-service', '源码依赖'],
-  ['inventory-adapter-port-dependency', 'inventory-adapter', 'inventory-port', '源码依赖'],
+  ['layered-request', 'layered-http', 'layered-controller', '接收请求', 375, 433],
+  ['layered-controller-service', 'layered-controller', 'layered-service', '调用应用', 375, 703],
+  ['layered-service-repository', 'layered-service', 'layered-repository', '访问仓储', 375, 973],
+  ['layered-repository-database', 'layered-repository', 'layered-database', '写入数据', 375, 1243],
+  ['slice-request-handler', 'slice-http', 'submit-order-handler', '进入切片', 1330, 503],
+  ['slice-handler-rules', 'submit-order-handler', 'order-rules', '执行业务规则', 1640, 765],
+  ['slice-rules-inventory', 'order-rules', 'inventory-port', '查询库存', 1110, 1063],
+  ['slice-rules-store', 'order-rules', 'order-store', '保存订单', 1448, 1063],
+  ['slice-rules-response', 'order-rules', 'response-mapper', '映射响应', 1585, 1393],
+  ['layered-repository-service-dependency', 'layered-repository', 'layered-service', '依赖抽象', 720, 960],
+  ['inventory-adapter-port-dependency', 'inventory-adapter', 'inventory-port', '实现端口', 1095, 1408],
 ];
-const DIAGRAM_BOUNDARIES = [['layered-boundary', '分层架构'], ['vertical-slice-boundary', '垂直切片']];
+const DIAGRAM_BOUNDARIES = [
+  ['deployment-boundary', '单体部署边界'],
+  ['layered-boundary', '分层架构'],
+  ['vertical-slice-boundary', '垂直切片'],
+  ['submit-order-boundary', 'SubmitOrder'],
+  ['shared-domain-invariants', '共享领域不变量'],
+];
 
 function bodyOf(source) {
   return source.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n/u, '');
@@ -186,9 +207,12 @@ function drawioDiagramContract(source) {
   const cells = visibleDrawioCells(source);
   return {
     nodes: cells.filter(({attributes}) => attributes.get('vertex') === '1')
-      .map(({attributes, label}) => ({id: attributes.get('id'), label})),
+      .map(({attributes, label}) => ({id: attributes.get('id'), label, typeLabel: decodeXmlText(attributes.get('typeLabel') ?? '')})),
     edges: cells.filter(({attributes}) => attributes.get('edge') === '1')
-      .map(({attributes, label}) => ({id: attributes.get('id'), label, source: attributes.get('source'), target: attributes.get('target')})),
+      .map(({attributes, label}) => ({
+        id: attributes.get('id'), label, source: attributes.get('source'), target: attributes.get('target'),
+        labelX: Number(attributes.get('labelX')), labelY: Number(attributes.get('labelY')),
+      })),
   };
 }
 
@@ -196,15 +220,35 @@ function svgDiagramContract(source) {
   const nodes = [...source.matchAll(/<g\b([^>]*)data-node-id="([^"]+)"([^>]*)>([\s\S]*?)<\/g>/gu)]
     .filter(([, before, , after]) => !/(?:style|visibility)="[^"]*(?:display\s*:\s*none|hidden)/u.test(`${before}${after}`))
     .map(([, before, id, after, contents]) => ({
-      id, label: decodeXmlText(contents.match(/<text\b[^>]*data-text-role="title"[^>]*>([^<]+)<\/text>/u)?.[1] ?? ''),
+      id,
+      label: decodeXmlText(contents.match(/<text\b[^>]*data-text-role="title"[^>]*>([^<]+)<\/text>/u)?.[1] ?? ''),
+      typeLabel: decodeXmlText(xmlAttributes(`${before}${after}`).get('data-type-label') ?? ''),
+      visibleTypeLabel: decodeXmlText(contents.match(/<text\b[^>]*data-text-role="type"[^>]*>([^<]+)<\/text>/u)?.[1] ?? ''),
     }));
   const labels = new Map([...source.matchAll(/<text\b[^>]*data-edge-id="([^"]+)"[^>]*>([^<]*)<\/text>/gu)]
     .map(([, id, label]) => [id, decodeXmlText(label).trim()]));
   const edges = [...source.matchAll(/<path\b([^>]*)data-edge-id="([^"]+)"([^>]*)>/gu)].map(([, before, id, after]) => {
     const attributes = xmlAttributes(`${before}${after}`);
-    return {id, label: labels.get(id) ?? '', source: attributes.get('data-source'), target: attributes.get('data-target')};
+    const labelTag = source.match(new RegExp(`<text\\b([^>]*)data-edge-id="${id}"([^>]*)>`, 'u'));
+    const labelAttributes = xmlAttributes(`${labelTag?.[1] ?? ''}${labelTag?.[2] ?? ''}`);
+    return {
+      id, label: labels.get(id) ?? '', source: attributes.get('data-source'), target: attributes.get('data-target'),
+      labelX: Number(labelAttributes.get('data-label-x')), labelY: Number(labelAttributes.get('data-label-y')),
+    };
   });
   return {nodes, edges};
+}
+
+function drawioEdgeGeometry(source, id) {
+  const escapedId = id.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
+  const match = source.match(new RegExp(`<mxCell\\b([^>]*)\\bid="${escapedId}"([^>]*)>([\\s\\S]*?)<\\/mxCell>`, 'u'));
+  assert.ok(match, `Draw.io edge geometry ${id}`);
+  const attributes = xmlAttributes(`${match[1]}${match[2]}`);
+  const style = new Map((attributes.get('style') ?? '').split(';').filter(Boolean).map((part) => part.split('=')));
+  const waypointSource = match[3].match(/<Array\b[^>]*as="points"[^>]*>([\s\S]*?)<\/Array>/u)?.[1] ?? '';
+  const points = [...waypointSource.matchAll(/<mxPoint\b[^>]*x="([^"]+)"[^>]*y="([^"]+)"[^>]*\/>/gu)]
+    .map(([, x, y]) => [Number(x), Number(y)]);
+  return {style, points};
 }
 
 function sectionBody(source, heading, nextHeading) {
@@ -343,7 +387,7 @@ test('publishes the synchronized STY-03 diagram pair with the minimum inventory'
   assert.match(drawio, /<mxfile\b/u);
   assert.match(svg, /<title\b[^>]*>[^<]+<\/title>/u);
   assert.match(svg, /<desc\b[^>]*>[^<]+<\/desc>/u);
-  assert.match(svg, /<svg\b(?=[^>]*\bviewBox="0 0 1800 1480")(?=[^>]*\brole="img")(?=[^>]*\baria-labelledby="[^"]+")[^>]*>/u);
+  assert.match(svg, /<svg\b(?=[^>]*\bviewBox="0 0 1800 1950")(?=[^>]*\brole="img")(?=[^>]*\baria-labelledby="[^"]+")[^>]*>/u);
   assert.doesNotMatch(svg.match(/<svg\b[^>]*>/u)?.[0] ?? '', /\b(?:width|height)="/u, 'responsive SVG root');
   const drawioContract = drawioDiagramContract(drawio);
   const svgContract = svgDiagramContract(svg);
@@ -352,21 +396,26 @@ test('publishes the synchronized STY-03 diagram pair with the minimum inventory'
   assert.equal(drawioNodeMap.size, drawioContract.nodes.length, 'Draw.io node IDs are unique');
   assert.equal(svgNodeMap.size, svgContract.nodes.length, 'SVG node IDs are unique');
   assert.deepEqual([...drawioNodeMap.keys()].sort(), [...svgNodeMap.keys()].sort(), 'paired node inventory');
-  for (const [id, label] of DIAGRAM_NODES) {
-    assert.equal(drawioNodeMap.get(id)?.label, label, `Draw.io node ${id}`);
-    assert.equal(svgNodeMap.get(id)?.label, label, `SVG node ${id}`);
+  for (const [id, label, typeLabel] of DIAGRAM_NODES) {
+    assert.equal(drawioNodeMap.get(id)?.label, label, `Draw.io node ${id} title`);
+    assert.equal(svgNodeMap.get(id)?.label, label, `SVG node ${id} title`);
+    assert.equal(drawioNodeMap.get(id)?.typeLabel, typeLabel, `Draw.io node ${id} type`);
+    assert.equal(svgNodeMap.get(id)?.typeLabel, typeLabel, `SVG node ${id} data type`);
+    assert.equal(svgNodeMap.get(id)?.visibleTypeLabel, typeLabel, `SVG node ${id} visible type`);
   }
   const drawioEdges = new Map(drawioContract.edges.map((edge) => [edge.id, edge]));
   const svgEdges = new Map(svgContract.edges.map((edge) => [edge.id, edge]));
   assert.equal(drawioEdges.size, drawioContract.edges.length, 'Draw.io edge IDs are unique');
   assert.equal(svgEdges.size, svgContract.edges.length, 'SVG edge IDs are unique');
-  for (const [id, source, target, label] of DIAGRAM_EDGES) {
+  for (const [id, source, target, label, labelX, labelY] of DIAGRAM_EDGES) {
     assert.equal(drawioEdges.get(id)?.source, source, `Draw.io edge ${id} source`);
     assert.equal(drawioEdges.get(id)?.target, target, `Draw.io edge ${id} target`);
     assert.equal(drawioEdges.get(id)?.label, label, `Draw.io edge ${id} label`);
     assert.equal(svgEdges.get(id)?.source, source, `SVG edge ${id} source`);
     assert.equal(svgEdges.get(id)?.target, target, `SVG edge ${id} target`);
     assert.equal(svgEdges.get(id)?.label, label, `SVG edge ${id} label`);
+    assert.deepEqual([drawioEdges.get(id)?.labelX, drawioEdges.get(id)?.labelY], [labelX, labelY], `Draw.io edge ${id} label lane`);
+    assert.deepEqual([svgEdges.get(id)?.labelX, svgEdges.get(id)?.labelY], [labelX, labelY], `SVG edge ${id} label lane`);
   }
   const visibleDrawioLabels = drawioContract.nodes.map(({label}) => label)
     .concat(drawioContract.edges.map(({label}) => label));
@@ -378,4 +427,15 @@ test('publishes the synchronized STY-03 diagram pair with the minimum inventory'
   assert.ok(drawioContract.nodes.length >= 8, 'Draw.io has at least eight visible nodes');
   assert.ok(drawioContract.edges.length >= 10, 'Draw.io has at least ten directed relations');
   assert.deepEqual([...drawioEdges.keys()], [...svgEdges.keys()], 'paired relation inventory');
+  const responseRoute = drawioEdgeGeometry(drawio, 'slice-rules-response');
+  assert.equal(responseRoute.style.get('exitX'), '0.75', 'response route exits Order Rules at the lower 75% port');
+  assert.equal(responseRoute.style.get('exitY'), '1', 'response route exits from the bottom');
+  assert.equal(responseRoute.style.get('entryX'), '0.5', 'response route enters Response Mapper at its top center');
+  assert.equal(responseRoute.style.get('entryY'), '0', 'response route enters from the top');
+  assert.deepEqual(responseRoute.points, [[1375, 1100], [1700, 1100], [1700, 1425], [1490, 1425]], 'response route waypoints');
+  assert.match(svg, /data-edge-id="slice-rules-response"[^>]*d="M1375 1000V1100H1700V1425H1490V1469"/u, 'SVG response route matches Draw.io bottom-to-top route');
+  for (const [lineId, className] of [['legend-runtime-line', 'runtime'], ['legend-dependency-line', 'dependency']]) {
+    assert.match(drawio, new RegExp(`<mxCell\\b(?=[^>]*\\bid="${lineId}")(?=[^>]*\\blegendLine="${className}")[^>]*>`, 'u'), `Draw.io ${lineId}`);
+    assert.match(svg, new RegExp(`<g\\b[^>]*data-node-id="${lineId}"[^>]*data-legend-line="${className}"[^>]*>`, 'u'), `SVG ${lineId}`);
+  }
 });

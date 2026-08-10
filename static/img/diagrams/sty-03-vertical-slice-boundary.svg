@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 1480" role="img" aria-labelledby="sty03-title sty03-description">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 1950" role="img" aria-labelledby="sty03-title sty03-description">
   <title id="sty03-title">分层架构与 SubmitOrder 垂直切片的单体边界对比</title>
-  <desc id="sty03-description">两列对比同一单体部署边界内的分层控制流与 SubmitOrder 垂直切片。实线表示运行时控制流，虚线表示源码依赖；共享领域不变量跨越切片内部的规则与端口，但切片不等于独立部署单元。</desc>
+  <desc id="sty03-description">两列对比同一单体部署边界内的分层控制流与 SubmitOrder 垂直切片。实线表示运行时控制流，虚线表示源码依赖；共享领域不变量保护规则与端口，但切片不等于独立部署单元。</desc>
   <defs>
     <marker id="sty03-runtime-arrow" markerUnits="userSpaceOnUse" markerWidth="28" markerHeight="28" viewBox="0 0 28 28" refX="25" refY="14" orient="auto"><path d="M2 2L26 14L2 26Z" fill="#263238"/></marker>
     <marker id="sty03-dependency-arrow" markerUnits="userSpaceOnUse" markerWidth="32" markerHeight="32" viewBox="0 0 32 32" refX="28" refY="16" orient="auto"><path d="M4 4L28 16L4 28" fill="none" stroke="#2F6F9F" stroke-width="4"/></marker>
@@ -14,125 +14,119 @@
       .dependency{fill:none;stroke:#2F6F9F;stroke-width:4;stroke-dasharray:14 11;marker-end:url(#sty03-dependency-arrow)}
     </style>
   </defs>
-  <path d="M0 0H1800V1480H0Z" fill="#F7F3EA"/>
+  <path d="M0 0H1800V1950H0Z" fill="#F7F3EA"/>
 
-  <g data-node-id="deployment-boundary" data-node-bounds="20 20 1760 1410">
-    <path d="M42 20H1758Q1780 20 1780 42V1408Q1780 1430 1758 1430H42Q20 1430 20 1408V42Q20 20 42 20Z" fill="#F7F3EA" stroke="#263238" stroke-width="4"/>
+  <g data-node-id="deployment-boundary" data-node-bounds="20 20 1760 1900" data-type-label="">
+    <path d="M42 20H1758Q1780 20 1780 42V1898Q1780 1920 1758 1920H42Q20 1920 20 1898V42Q20 20 42 20Z" fill="#F7F3EA" stroke="#263238" stroke-width="4"/>
     <text x="900" y="68" text-anchor="middle" class="boundary-title" data-text-role="title">单体部署边界</text>
   </g>
-  <g data-node-id="layered-boundary" data-node-bounds="60 80 720 1240">
-    <path d="M78 80H762Q780 80 780 98V1302Q780 1320 762 1320H78Q60 1320 60 1302V98Q60 80 78 80Z" fill="#FBF8F1" stroke="#77716A" stroke-width="3"/>
+  <g data-node-id="layered-boundary" data-node-bounds="60 80 720 1660" data-type-label="">
+    <path d="M78 80H762Q780 80 780 98V1722Q780 1740 762 1740H78Q60 1740 60 1722V98Q60 80 78 80Z" fill="#FBF8F1" stroke="#77716A" stroke-width="3"/>
     <text x="420" y="128" text-anchor="middle" class="boundary-title" data-text-role="title">分层架构</text>
   </g>
-  <g data-node-id="vertical-slice-boundary" data-node-bounds="810 80 950 1240">
-    <path d="M828 80H1742Q1760 80 1760 98V1302Q1760 1320 1742 1320H828Q810 1320 810 1302V98Q810 80 828 80Z" fill="#EEF3ED" stroke="#405D6B" stroke-width="3"/>
+  <g data-node-id="vertical-slice-boundary" data-node-bounds="810 80 950 1660" data-type-label="">
+    <path d="M828 80H1742Q1760 80 1760 98V1722Q1760 1740 1742 1740H828Q810 1740 810 1722V98Q810 80 828 80Z" fill="#EEF3ED" stroke="#405D6B" stroke-width="3"/>
     <text x="1285" y="128" text-anchor="middle" class="boundary-title" data-text-role="title">垂直切片</text>
   </g>
-  <g data-node-id="submit-order-boundary" data-node-bounds="840 150 910 1140">
-    <path d="M858 150H1732Q1750 150 1750 168V1272Q1750 1290 1732 1290H858Q840 1290 840 1272V168Q840 150 858 150Z" fill="none" stroke="#8B7855" stroke-width="3" stroke-dasharray="14 11"/>
-    <text x="1295" y="198" text-anchor="middle" class="boundary-title" data-text-role="title">SubmitOrder</text>
+  <g data-node-id="submit-order-boundary" data-node-bounds="840 170 910 1540" data-type-label="">
+    <path d="M858 170H1732Q1750 170 1750 188V1692Q1750 1710 1732 1710H858Q840 1710 840 1692V188Q840 170 858 170Z" fill="none" stroke="#8B7855" stroke-width="3" stroke-dasharray="14 11"/>
+    <text x="1295" y="218" text-anchor="middle" class="boundary-title" data-text-role="title">SubmitOrder</text>
   </g>
-  <g data-node-id="shared-domain-invariants" data-node-bounds="865 585 860 500">
-    <path d="M883 585H1707Q1725 585 1725 603V1067Q1725 1085 1707 1085H883Q865 1085 865 1067V603Q865 585 883 585Z" fill="#FFF7DA" fill-opacity=".68" stroke="#8B7855" stroke-width="3" stroke-dasharray="11 9"/>
-    <text x="1295" y="633" text-anchor="middle" class="boundary-title" data-text-role="title">共享领域不变量</text>
-  </g>
-
-  <path data-edge-id="layered-request" data-source="layered-http" data-target="layered-controller" d="M320 300V349" class="runtime"/>
-  <path data-edge-id="layered-controller-service" data-source="layered-controller" data-target="layered-service" d="M320 520V569" class="runtime"/>
-  <path data-edge-id="layered-service-repository" data-source="layered-service" data-target="layered-repository" d="M320 740V789" class="runtime"/>
-  <path data-edge-id="layered-repository-database" data-source="layered-repository" data-target="layered-database" d="M320 960V1009" class="runtime"/>
-  <path data-edge-id="slice-request-handler" data-source="slice-http" data-target="submit-order-handler" d="M1275 360V399" class="runtime"/>
-  <path data-edge-id="slice-handler-rules" data-source="submit-order-handler" data-target="order-rules" d="M1275 570V649" class="runtime"/>
-  <path data-edge-id="slice-rules-inventory" data-source="order-rules" data-target="inventory-port" d="M1175 820V850H1010V884" class="runtime"/>
-  <path data-edge-id="slice-rules-store" data-source="order-rules" data-target="order-store" d="M1375 820V850H1520V884" class="runtime"/>
-  <path data-edge-id="slice-rules-response" data-source="order-rules" data-target="response-mapper" d="M1475 735H1695V1195H1681" class="runtime"/>
-  <path data-edge-id="layered-repository-service-dependency" data-source="layered-repository" data-target="layered-service" d="M120 875H85V655H119" class="dependency"/>
-  <path data-edge-id="inventory-adapter-port-dependency" data-source="inventory-adapter" data-target="inventory-port" d="M1060 1110V1056" class="dependency"/>
-
-  <g data-node-id="layered-http" data-node-bounds="120 130 400 170">
-    <path d="M138 130H502Q520 130 520 148V282Q520 300 502 300H138Q120 300 120 282V148Q120 130 138 130Z" fill="#ECE8E1" stroke="#77716A" stroke-width="3"/>
-    <text x="320" y="196" text-anchor="middle" class="node-title" data-text-role="title">HTTP 请求</text>
-    <text x="320" y="246" text-anchor="middle" class="node-type">入口 / Request</text>
-  </g>
-  <g data-node-id="layered-controller" data-node-bounds="120 350 400 170">
-    <path d="M138 350H502Q520 350 520 368V502Q520 520 502 520H138Q120 520 120 502V368Q120 350 138 350Z" fill="#DCE7EA" stroke="#405D6B" stroke-width="3"/>
-    <text x="320" y="416" text-anchor="middle" class="node-title" data-text-role="title">Controller</text>
-    <text x="320" y="466" text-anchor="middle" class="node-type">接口层 / Web</text>
-  </g>
-  <g data-node-id="layered-service" data-node-bounds="120 570 400 170">
-    <path d="M138 570H502Q520 570 520 588V722Q520 740 502 740H138Q120 740 120 722V588Q120 570 138 570Z" fill="#DCE7EA" stroke="#405D6B" stroke-width="3"/>
-    <text x="320" y="636" text-anchor="middle" class="node-title" data-text-role="title">Application Service</text>
-    <text x="320" y="686" text-anchor="middle" class="node-type">应用层 / Shared Service</text>
-  </g>
-  <g data-node-id="layered-repository" data-node-bounds="120 790 400 170">
-    <path d="M138 790H502Q520 790 520 808V942Q520 960 502 960H138Q120 960 120 942V808Q120 790 138 790Z" fill="#FFF7DA" stroke="#8B7855" stroke-width="3"/>
-    <text x="320" y="856" text-anchor="middle" class="node-title" data-text-role="title">Shared Repository</text>
-    <text x="320" y="906" text-anchor="middle" class="node-type">共享数据访问 / Infrastructure</text>
-  </g>
-  <g data-node-id="layered-database" data-node-bounds="120 1010 400 170">
-    <path d="M120 1040Q120 1010 320 1010T520 1040V1150Q520 1180 320 1180T120 1150Z" fill="#ECE8E1" stroke="#77716A" stroke-width="3"/>
-    <path d="M120 1040Q120 1070 320 1070T520 1040" fill="none" stroke="#77716A" stroke-width="3"/>
-    <text x="320" y="1090" text-anchor="middle" class="node-title" data-text-role="title">数据库</text>
-    <text x="320" y="1140" text-anchor="middle" class="node-type">Shared Database</text>
+  <g data-node-id="shared-domain-invariants" data-node-bounds="865 740 860 940" data-type-label="">
+    <path d="M883 740H1707Q1725 740 1725 758V1662Q1725 1680 1707 1680H883Q865 1680 865 1662V758Q865 740 883 740Z" fill="#FFF7DA" fill-opacity=".68" stroke="#8B7855" stroke-width="3" stroke-dasharray="11 9"/>
+    <text x="1295" y="788" text-anchor="middle" class="boundary-title" data-text-role="title">共享领域不变量</text>
   </g>
 
-  <g data-node-id="slice-http" data-node-bounds="1070 190 410 170">
-    <path d="M1088 190H1462Q1480 190 1480 208V342Q1480 360 1462 360H1088Q1070 360 1070 342V208Q1070 190 1088 190Z" fill="#ECE8E1" stroke="#77716A" stroke-width="3"/>
-    <text x="1275" y="256" text-anchor="middle" class="node-title" data-text-role="title">HTTP 请求</text>
-    <text x="1275" y="306" text-anchor="middle" class="node-type">入口 / Request</text>
+  <path data-edge-id="layered-request" data-source="layered-http" data-target="layered-controller" d="M320 370V469" class="runtime"/>
+  <path data-edge-id="layered-controller-service" data-source="layered-controller" data-target="layered-service" d="M320 640V739" class="runtime"/>
+  <path data-edge-id="layered-service-repository" data-source="layered-service" data-target="layered-repository" d="M320 910V1009" class="runtime"/>
+  <path data-edge-id="layered-repository-database" data-source="layered-repository" data-target="layered-database" d="M320 1180V1279" class="runtime"/>
+  <path data-edge-id="slice-request-handler" data-source="slice-http" data-target="submit-order-handler" d="M1275 440V539" class="runtime"/>
+  <path data-edge-id="slice-handler-rules" data-source="submit-order-handler" data-target="order-rules" d="M1275 710V730H1600V818H1275V829" class="runtime"/>
+  <path data-edge-id="slice-rules-inventory" data-source="order-rules" data-target="inventory-port" d="M1175 1000V1095H1045V1159" class="runtime"/>
+  <path data-edge-id="slice-rules-store" data-source="order-rules" data-target="order-store" d="M1375 1000V1095H1520V1159" class="runtime"/>
+  <path data-edge-id="slice-rules-response" data-source="order-rules" data-target="response-mapper" d="M1375 1000V1100H1700V1425H1490V1469" class="runtime"/>
+  <path data-edge-id="layered-repository-service-dependency" data-source="layered-repository" data-target="layered-service" d="M520 1095H680V825H521" class="dependency"/>
+  <path data-edge-id="inventory-adapter-port-dependency" data-source="inventory-adapter" data-target="inventory-port" d="M1060 1470V1390H1045V1331" class="dependency"/>
+
+  <g data-node-id="layered-http" data-node-bounds="120 200 400 170" data-type-label="入口 / Request">
+    <path d="M138 200H502Q520 200 520 218V352Q520 370 502 370H138Q120 370 120 352V218Q120 200 138 200Z" fill="#ECE8E1" stroke="#77716A" stroke-width="3"/>
+    <text x="320" y="266" text-anchor="middle" class="node-title" data-text-role="title">HTTP 请求</text>
+    <text x="320" y="316" text-anchor="middle" class="node-type" data-text-role="type">入口 / Request</text>
   </g>
-  <g data-node-id="submit-order-handler" data-node-bounds="1069 400 412 170">
-    <path d="M1087 400H1463Q1481 400 1481 418V552Q1481 570 1463 570H1087Q1069 570 1069 552V418Q1069 400 1087 400Z" fill="#405D6B" stroke="#304854" stroke-width="3"/>
-    <text x="1275" y="466" text-anchor="middle" class="node-title" style="fill:#FFFFFF" data-text-role="title">SubmitOrder Handler</text>
-    <text x="1275" y="516" text-anchor="middle" class="node-type" style="fill:#DCE7EA">切片入口 / Use Case Handler</text>
+  <g data-node-id="layered-controller" data-node-bounds="120 470 400 170" data-type-label="接口层 / Web">
+    <path d="M138 470H502Q520 470 520 488V622Q520 640 502 640H138Q120 640 120 622V488Q120 470 138 470Z" fill="#DCE7EA" stroke="#405D6B" stroke-width="3"/>
+    <text x="320" y="536" text-anchor="middle" class="node-title" data-text-role="title">Controller</text>
+    <text x="320" y="586" text-anchor="middle" class="node-type" data-text-role="type">接口层 / Web</text>
   </g>
-  <g data-node-id="order-rules" data-node-bounds="1075 650 400 170">
-    <path d="M1093 650H1457Q1475 650 1475 668V802Q1475 820 1457 820H1093Q1075 820 1075 802V668Q1075 650 1093 650Z" fill="#D9E5DA" stroke="#64806B" stroke-width="3"/>
-    <text x="1275" y="716" text-anchor="middle" class="node-title" data-text-role="title">Order Rules</text>
-    <text x="1275" y="766" text-anchor="middle" class="node-type">领域规则 / Policy</text>
+  <g data-node-id="layered-service" data-node-bounds="120 740 400 170" data-type-label="应用层 / Shared Service">
+    <path d="M138 740H502Q520 740 520 758V892Q520 910 502 910H138Q120 910 120 892V758Q120 740 138 740Z" fill="#DCE7EA" stroke="#405D6B" stroke-width="3"/>
+    <text x="320" y="806" text-anchor="middle" class="node-title" data-text-role="title">Application Service</text>
+    <text x="320" y="856" text-anchor="middle" class="node-type" data-text-role="type">应用层 / Shared Service</text>
   </g>
-  <g data-node-id="inventory-port" data-node-bounds="885 885 320 170">
-    <path d="M903 885H1187Q1205 885 1205 903V1037Q1205 1055 1187 1055H903Q885 1055 885 1037V903Q885 885 903 885Z" fill="#FFF7DA" stroke="#8B7855" stroke-width="3"/>
-    <text x="1045" y="951" text-anchor="middle" class="node-title" data-text-role="title">Inventory Port</text>
-    <text x="1045" y="1001" text-anchor="middle" class="node-type">Driven Port</text>
+  <g data-node-id="layered-repository" data-node-bounds="120 1010 400 170" data-type-label="共享数据访问 / Infrastructure">
+    <path d="M138 1010H502Q520 1010 520 1028V1162Q520 1180 502 1180H138Q120 1180 120 1162V1028Q120 1010 138 1010Z" fill="#FFF7DA" stroke="#8B7855" stroke-width="3"/>
+    <text x="320" y="1076" text-anchor="middle" class="node-title" data-text-role="title">Shared Repository</text>
+    <text x="320" y="1126" text-anchor="middle" class="node-type" data-text-role="type">共享数据访问 / Infrastructure</text>
   </g>
-  <g data-node-id="order-store" data-node-bounds="1380 885 280 170">
-    <path d="M1398 885H1642Q1660 885 1660 903V1037Q1660 1055 1642 1055H1398Q1380 1055 1380 1037V903Q1380 885 1398 885Z" fill="#FFF7DA" stroke="#8B7855" stroke-width="3"/>
-    <text x="1520" y="951" text-anchor="middle" class="node-title" data-text-role="title">Order Store</text>
-    <text x="1520" y="1001" text-anchor="middle" class="node-type">Persistence Port</text>
-  </g>
-  <g data-node-id="response-mapper" data-node-bounds="1300 1110 380 170">
-    <path d="M1318 1110H1662Q1680 1110 1680 1128V1262Q1680 1280 1662 1280H1318Q1300 1280 1300 1262V1128Q1300 1110 1318 1110Z" fill="#DCE7EA" stroke="#405D6B" stroke-width="3"/>
-    <text x="1490" y="1176" text-anchor="middle" class="node-title" data-text-role="title">Response Mapper</text>
-    <text x="1490" y="1226" text-anchor="middle" class="node-type">输出映射 / Presenter</text>
-  </g>
-  <g data-node-id="inventory-adapter" data-node-bounds="870 1110 380 170">
-    <path d="M888 1110H1232Q1250 1110 1250 1128V1262Q1250 1280 1232 1280H888Q870 1280 870 1262V1128Q870 1110 888 1110Z" fill="#ECE8E1" stroke="#77716A" stroke-width="3"/>
-    <text x="1060" y="1176" text-anchor="middle" class="node-title" data-text-role="title">Inventory Adapter</text>
-    <text x="1060" y="1226" text-anchor="middle" class="node-type">外部机制 / Adapter</text>
+  <g data-node-id="layered-database" data-node-bounds="120 1280 400 170" data-type-label="Shared Database">
+    <path d="M120 1310Q120 1280 320 1280T520 1310V1420Q520 1450 320 1450T120 1420Z" fill="#ECE8E1" stroke="#77716A" stroke-width="3"/>
+    <path d="M120 1310Q120 1340 320 1340T520 1310" fill="none" stroke="#77716A" stroke-width="3"/>
+    <text x="320" y="1360" text-anchor="middle" class="node-title" data-text-role="title">数据库</text>
+    <text x="320" y="1410" text-anchor="middle" class="node-type" data-text-role="type">Shared Database</text>
   </g>
 
-  <text x="550" y="334" text-anchor="start" class="edge-label" data-edge-id="layered-request">运行时控制流</text>
-  <text x="550" y="554" text-anchor="start" class="edge-label" data-edge-id="layered-controller-service">运行时控制流</text>
-  <text x="550" y="774" text-anchor="start" class="edge-label" data-edge-id="layered-service-repository">运行时控制流</text>
-  <text x="550" y="994" text-anchor="start" class="edge-label" data-edge-id="layered-repository-database">运行时控制流</text>
-  <text x="1520" y="394" text-anchor="start" class="edge-label" data-edge-id="slice-request-handler">运行时控制流</text>
-  <text x="1520" y="620" text-anchor="start" class="edge-label" data-edge-id="slice-handler-rules">运行时控制流</text>
-  <text x="830" y="865" text-anchor="end" class="edge-label" data-edge-id="slice-rules-inventory">运行时控制流</text>
-  <text x="830" y="915" text-anchor="end" class="edge-label" data-edge-id="slice-rules-store">运行时控制流</text>
-  <text x="830" y="965" text-anchor="end" class="edge-label" data-edge-id="slice-rules-response">运行时控制流</text>
-  <text x="700" y="770" text-anchor="middle" class="edge-label" fill="#2F6F9F" transform="rotate(-90 700 770)" data-edge-id="layered-repository-service-dependency">源码依赖</text>
-  <text x="770" y="1195" text-anchor="end" class="edge-label" fill="#2F6F9F" data-edge-id="inventory-adapter-port-dependency">源码依赖</text>
+  <g data-node-id="slice-http" data-node-bounds="1070 270 410 170" data-type-label="入口 / Request">
+    <path d="M1088 270H1462Q1480 270 1480 288V422Q1480 440 1462 440H1088Q1070 440 1070 422V288Q1070 270 1088 270Z" fill="#ECE8E1" stroke="#77716A" stroke-width="3"/>
+    <text x="1275" y="336" text-anchor="middle" class="node-title" data-text-role="title">HTTP 请求</text>
+    <text x="1275" y="386" text-anchor="middle" class="node-type" data-text-role="type">入口 / Request</text>
+  </g>
+  <g data-node-id="submit-order-handler" data-node-bounds="1069 540 412 170" data-type-label="切片入口 / Use Case Handler">
+    <path d="M1087 540H1463Q1481 540 1481 558V692Q1481 710 1463 710H1087Q1069 710 1069 692V558Q1069 540 1087 540Z" fill="#405D6B" stroke="#304854" stroke-width="3"/>
+    <text x="1275" y="606" text-anchor="middle" class="node-title" style="fill:#FFFFFF" data-text-role="title">SubmitOrder Handler</text>
+    <text x="1275" y="656" text-anchor="middle" class="node-type" style="fill:#DCE7EA" data-text-role="type">切片入口 / Use Case Handler</text>
+  </g>
+  <g data-node-id="order-rules" data-node-bounds="1075 830 400 170" data-type-label="领域规则 / Policy">
+    <path d="M1093 830H1457Q1475 830 1475 848V982Q1475 1000 1457 1000H1093Q1075 1000 1075 982V848Q1075 830 1093 830Z" fill="#D9E5DA" stroke="#64806B" stroke-width="3"/>
+    <text x="1275" y="896" text-anchor="middle" class="node-title" data-text-role="title">Order Rules</text>
+    <text x="1275" y="946" text-anchor="middle" class="node-type" data-text-role="type">领域规则 / Policy</text>
+  </g>
+  <g data-node-id="inventory-port" data-node-bounds="885 1160 320 170" data-type-label="Driven Port">
+    <path d="M903 1160H1187Q1205 1160 1205 1178V1312Q1205 1330 1187 1330H903Q885 1330 885 1312V1178Q885 1160 903 1160Z" fill="#FFF7DA" stroke="#8B7855" stroke-width="3"/>
+    <text x="1045" y="1226" text-anchor="middle" class="node-title" data-text-role="title">Inventory Port</text>
+    <text x="1045" y="1276" text-anchor="middle" class="node-type" data-text-role="type">Driven Port</text>
+  </g>
+  <g data-node-id="order-store" data-node-bounds="1380 1160 280 170" data-type-label="Persistence Port">
+    <path d="M1398 1160H1642Q1660 1160 1660 1178V1312Q1660 1330 1642 1330H1398Q1380 1330 1380 1312V1178Q1380 1160 1398 1160Z" fill="#FFF7DA" stroke="#8B7855" stroke-width="3"/>
+    <text x="1520" y="1226" text-anchor="middle" class="node-title" data-text-role="title">Order Store</text>
+    <text x="1520" y="1276" text-anchor="middle" class="node-type" data-text-role="type">Persistence Port</text>
+  </g>
+  <g data-node-id="response-mapper" data-node-bounds="1300 1470 380 170" data-type-label="输出映射 / Presenter">
+    <path d="M1318 1470H1662Q1680 1470 1680 1488V1622Q1680 1640 1662 1640H1318Q1300 1640 1300 1622V1488Q1300 1470 1318 1470Z" fill="#DCE7EA" stroke="#405D6B" stroke-width="3"/>
+    <text x="1490" y="1536" text-anchor="middle" class="node-title" data-text-role="title">Response Mapper</text>
+    <text x="1490" y="1586" text-anchor="middle" class="node-type" data-text-role="type">输出映射 / Presenter</text>
+  </g>
+  <g data-node-id="inventory-adapter" data-node-bounds="870 1470 380 170" data-type-label="外部机制 / Adapter">
+    <path d="M888 1470H1232Q1250 1470 1250 1488V1622Q1250 1640 1232 1640H888Q870 1640 870 1622V1488Q870 1470 888 1470Z" fill="#ECE8E1" stroke="#77716A" stroke-width="3"/>
+    <text x="1060" y="1536" text-anchor="middle" class="node-title" data-text-role="title">Inventory Adapter</text>
+    <text x="1060" y="1586" text-anchor="middle" class="node-type" data-text-role="type">外部机制 / Adapter</text>
+  </g>
 
-  <g data-node-id="legend-runtime" data-node-bounds="70 1360 250 42">
-    <path d="M70 1381H150" class="runtime"/>
-    <text x="175" y="1392" class="edge-label" data-text-role="title">运行时控制流</text>
-  </g>
-  <g data-node-id="legend-dependency" data-node-bounds="390 1360 190 42">
-    <path d="M390 1381H470" class="dependency"/>
-    <text x="500" y="1392" class="edge-label" fill="#2F6F9F" data-text-role="title">源码依赖</text>
-  </g>
-  <g data-node-id="deployment-note" data-node-bounds="1120 1350 570 52">
-    <text x="1405" y="1390" text-anchor="middle" class="edge-label" fill="#6A5A3E" data-text-role="title">切片不等于独立部署单元</text>
-  </g>
+  <text x="375" y="433" data-label-x="375" data-label-y="433" text-anchor="start" class="edge-label" data-edge-id="layered-request">接收请求</text>
+  <text x="375" y="703" data-label-x="375" data-label-y="703" text-anchor="start" class="edge-label" data-edge-id="layered-controller-service">调用应用</text>
+  <text x="375" y="973" data-label-x="375" data-label-y="973" text-anchor="start" class="edge-label" data-edge-id="layered-service-repository">访问仓储</text>
+  <text x="375" y="1243" data-label-x="375" data-label-y="1243" text-anchor="start" class="edge-label" data-edge-id="layered-repository-database">写入数据</text>
+  <text x="1330" y="503" data-label-x="1330" data-label-y="503" text-anchor="start" class="edge-label" data-edge-id="slice-request-handler">进入切片</text>
+  <text x="1640" y="765" data-label-x="1640" data-label-y="765" text-anchor="middle" class="edge-label" transform="rotate(-90 1640 765)" data-edge-id="slice-handler-rules">执行业务规则</text>
+  <text x="1110" y="1063" data-label-x="1110" data-label-y="1063" text-anchor="middle" class="edge-label" data-edge-id="slice-rules-inventory">查询库存</text>
+  <text x="1448" y="1063" data-label-x="1448" data-label-y="1063" text-anchor="middle" class="edge-label" data-edge-id="slice-rules-store">保存订单</text>
+  <text x="1585" y="1393" data-label-x="1585" data-label-y="1393" text-anchor="middle" class="edge-label" data-edge-id="slice-rules-response">映射响应</text>
+  <text x="720" y="960" data-label-x="720" data-label-y="960" text-anchor="middle" class="edge-label" fill="#2F6F9F" transform="rotate(-90 720 960)" data-edge-id="layered-repository-service-dependency">依赖抽象</text>
+  <text x="1095" y="1408" data-label-x="1095" data-label-y="1408" text-anchor="start" class="edge-label" fill="#2F6F9F" data-edge-id="inventory-adapter-port-dependency">实现端口</text>
+
+  <g data-node-id="legend-runtime-line" data-node-bounds="70 1835 110 1" data-type-label="" data-legend-line="runtime"><path d="M70 1835H180" class="runtime"/></g>
+  <g data-node-id="legend-dependency-line" data-node-bounds="430 1835 110 1" data-type-label="" data-legend-line="dependency"><path d="M430 1835H540" class="dependency"/></g>
+  <g data-node-id="legend-runtime" data-node-bounds="205 1814 250 42" data-type-label=""><text x="205" y="1846" class="edge-label" data-text-role="title">运行时控制流</text></g>
+  <g data-node-id="legend-dependency" data-node-bounds="565 1814 190 42" data-type-label=""><text x="565" y="1846" class="edge-label" fill="#2F6F9F" data-text-role="title">源码依赖</text></g>
+  <g data-node-id="deployment-note" data-node-bounds="1120 1805 570 52" data-type-label=""><text x="1405" y="1846" text-anchor="middle" class="edge-label" fill="#6A5A3E" data-text-role="title">切片不等于独立部署单元</text></g>
 </svg>
