@@ -33,27 +33,36 @@ const SOURCE_CONTRACTS = [
   {
     id: 'src-fowler-monolith-first',
     license: 'LicenseRef-All-Rights-Reserved',
+    licenseFamilyId: 'https://martinfowler.com/bliki/MonolithFirst.html',
+    licenseEvidenceUrl: 'https://martinfowler.com/bliki/MonolithFirst.html',
     copyrightPolicy: 'facts-and-short-quotation',
     allowedEvidenceRoles: ['comparison', 'method'],
     citationRoles: ['comparison', 'method'],
+    citationUsageMode: 'facts-summary',
     manifestPrimary: false,
     usageBoundary: 'Supports starting with a monolith, establishing boundaries before service extraction, and splitting only from observed evidence; it does not define a universal starting topology, prove production outcomes, or permit copied prose or diagrams.',
   },
   {
     id: 'src-spring-modulith-fundamentals',
     license: 'Apache-2.0',
+    licenseFamilyId: 'https://docs.spring.io/spring-modulith/reference/fundamentals.html',
+    licenseEvidenceUrl: 'https://github.com/spring-projects/spring-modulith/blob/main/LICENSE',
     copyrightPolicy: 'facts-and-short-quotation',
     allowedEvidenceRoles: ['definition', 'implementation', 'method'],
     citationRoles: ['definition', 'implementation', 'method'],
+    citationUsageMode: 'facts-summary',
     manifestPrimary: true,
     usageBoundary: 'Supports documented application modules, public and internal boundaries, allowed dependencies, and structural verification; Spring Modulith mechanisms are implementation evidence, not a universal Modular Monolith definition, and source code, diagrams, and directory layouts are not copied.',
   },
   {
     id: 'src-spring-modulith-events',
     license: 'Apache-2.0',
+    licenseFamilyId: 'https://docs.spring.io/spring-modulith/reference/events.html',
+    licenseEvidenceUrl: 'https://github.com/spring-projects/spring-modulith/blob/main/LICENSE',
     copyrightPolicy: 'facts-and-short-quotation',
     allowedEvidenceRoles: ['implementation', 'runtime-fact'],
     citationRoles: ['implementation', 'runtime-fact'],
+    citationUsageMode: 'facts-summary',
     manifestPrimary: false,
     usageBoundary: 'Supports documented event-publication registration, publication after transaction commit, completion tracking, and recovery mechanisms; it does not establish exactly-once delivery, arbitrary broker guarantees, or production outcomes.',
   },
@@ -106,15 +115,15 @@ const DIAGRAM_EDGES = [
 ];
 const PROHIBITED_CLAIMS = [
   ['module-to-service equivalence',
-    /(?:业务)?模块.{0,12}(?<!不)(?<!不能)(?<!无法)(?<!并非)(?:就是|即为|等于|等同于|相当于|意味着|代表着|必然成为|自动成为|=).{0,12}(?:微)?服务/iu],
+    /(?:业务)?模块.{0,12}(?<!不)(?<!不能)(?<!无法)(?<!并非)(?:是|就是|即为|等于|等同于|相当于|意味着|代表着|必然成为|自动成为|=).{0,12}(?:微)?服务/iu],
   ['service-to-module equivalence',
-    /(?:微)?服务.{0,12}(?<!不)(?<!不能)(?<!无法)(?<!并非)(?:就是|即为|等于|等同于|相当于|意味着|代表着|=).{0,12}(?:业务)?模块/iu],
+    /(?:微)?服务.{0,12}(?<!不)(?<!不能)(?<!无法)(?<!并非)(?:是|就是|即为|等于|等同于|相当于|意味着|代表着|=).{0,12}(?:业务)?模块/iu],
   ['module partition implies services',
     /(?:划分|建立|拥有).{0,8}(?:业务)?模块.{0,12}(?:就|便|即可|必然).{0,12}(?:成为|得到|获得).{0,8}(?:微)?服务/iu],
   ['shared database-to-model equivalence',
-    /共享(?:物理)?数据库.{0,12}(?<!不)(?<!不能)(?<!无法)(?<!并非)(?:就是|即为|等于|等同于|相当于|意味着|代表着|=).{0,12}共享(?:数据)?模型/iu],
+    /共享(?:物理)?数据库.{0,12}(?<!不)(?<!不能)(?<!无法)(?<!并非)(?:是|就是|即为|等于|等同于|相当于|意味着|代表着|=).{0,12}共享(?:数据)?模型/iu],
   ['shared model-to-database equivalence',
-    /共享(?:数据)?模型.{0,12}(?<!不)(?<!不能)(?<!无法)(?<!并非)(?:就是|即为|等于|等同于|相当于|意味着|代表着|=).{0,12}共享(?:物理)?数据库/iu],
+    /共享(?:数据)?模型.{0,12}(?<!不)(?<!不能)(?<!无法)(?<!并非)(?:是|就是|即为|等于|等同于|相当于|意味着|代表着|=).{0,12}共享(?:物理)?数据库/iu],
   ['shared database implies shared model',
     /(?:使用|采用|只要有).{0,8}共享(?:物理)?数据库.{0,12}(?:就|便|即可|必然).{0,12}(?:共享|共用).{0,6}(?:数据)?模型/iu],
   ['modular monolith implies runtime isolation',
@@ -224,7 +233,8 @@ function svgDiagramContract(source) {
 function cssDeclarations(source) {
   return new Map(source.split(';').map((declaration) => declaration.trim()).filter(Boolean).map((declaration) => {
     const separator = declaration.indexOf(':');
-    return [declaration.slice(0, separator).trim(), declaration.slice(separator + 1).trim()];
+    return [declaration.slice(0, separator).trim(),
+      declaration.slice(separator + 1).trim().replace(/\s*!important\s*$/iu, '')];
   }).filter(([property]) => property));
 }
 
@@ -269,8 +279,18 @@ function svgLegendDashArray(source, id) {
   return svgPresentationValue(source, line[1], line[2], 'stroke-dasharray', groupClasses);
 }
 
-function isDashedStroke(value) {
-  return value !== undefined && !/^(?:none|0(?:[ ,]+0)*)$/iu.test(value.trim());
+function strokeDashKind(value) {
+  if (typeof value !== 'string') return 'invalid';
+  const normalized = value.trim().toLowerCase();
+  if (normalized === 'none') return 'solid';
+  if (!normalized || /^(?:inherit|initial|revert|revert-layer|unset)$/u.test(normalized) || /(?:var|calc)\(/u.test(normalized)) {
+    return 'invalid';
+  }
+  const components = normalized.split(/[\s,]+/u);
+  const dashComponent = /^(?:\d+(?:\.\d*)?|\.\d+)(?:%|px|em|rem|ex|ch|vh|vw|vmin|vmax|cm|mm|q|in|pt|pc)?$/u;
+  if (components.some((component) => !dashComponent.test(component))) return 'invalid';
+  if (components.every((component) => Number.parseFloat(component) === 0)) return 'invalid';
+  return 'dashed';
 }
 
 function drawioCellGeometry(source, id) {
@@ -317,10 +337,20 @@ test('SVG presentation parser resolves stylesheet, presentation, inline, and inh
     <path data-edge-id="inline-sync" class="event" style="stroke-dasharray: none"></path>
     <g data-node-id="legend-event-line" class="legend-event"><line></line></g>
   </svg>`;
-  assert.equal(isDashedStroke(svgEdgeDashArray(fixture, 'sync-edge')), false, 'stylesheet overrides presentation attribute');
-  assert.equal(isDashedStroke(svgEdgeDashArray(fixture, 'event-edge')), true, 'stylesheet event dash');
-  assert.equal(isDashedStroke(svgEdgeDashArray(fixture, 'inline-sync')), false, 'inline style wins cascade');
-  assert.equal(isDashedStroke(svgLegendDashArray(fixture, 'legend-event-line')), true, 'legend inherits dash semantics');
+  assert.equal(strokeDashKind(svgEdgeDashArray(fixture, 'sync-edge')), 'solid',
+    'stylesheet overrides presentation attribute');
+  assert.equal(strokeDashKind(svgEdgeDashArray(fixture, 'event-edge')), 'dashed', 'stylesheet event dash');
+  assert.equal(strokeDashKind(svgEdgeDashArray(fixture, 'inline-sync')), 'solid', 'inline style wins cascade');
+  assert.equal(strokeDashKind(svgLegendDashArray(fixture, 'legend-event-line')), 'dashed',
+    'legend inherits dash semantics');
+  for (const dashed of ['8 4', '0 4', '2px, 1px', '.5em 25%']) {
+    assert.equal(strokeDashKind(dashed), 'dashed', `valid nonzero dash array: ${dashed}`);
+  }
+  assert.equal(strokeDashKind('none'), 'solid', 'explicitly resolved solid style');
+  for (const invalid of [
+    undefined, '', '   ', 'inherit', 'initial', 'unset', 'revert', 'revert-layer',
+    'var(--event-dash)', 'calc(4px + 1px) 2px', '4 invalid', '-1 3', '0', '0 0',
+  ]) assert.equal(strokeDashKind(invalid), 'invalid', `reject unresolved/invalid dash array: ${String(invalid)}`);
 });
 
 test('publishes exact STY-04 metadata, headings, and actionable published adjacency', () => {
@@ -390,9 +420,13 @@ test('rejects claims that erase module, data, deployment, or delivery boundaries
 
 test('prohibited-claim patterns cover equivalents while permitting explicit denials', () => {
   const positiveSamples = [
+    '业务模块是服务。',
+    '服务是业务模块。',
     '业务模块意味着微服务。',
     '微服务等同于业务模块。',
     '只要建立业务模块，就必然成为服务。',
+    '共享数据库是共享数据模型。',
+    '共享数据模型是共享数据库。',
     '共享物理数据库代表着共享数据模型。',
     '共享数据模型相当于共享数据库。',
     '采用共享数据库即可共用数据模型。',
@@ -406,7 +440,11 @@ test('prohibited-claim patterns cover equivalents while permitting explicit deni
     assert.ok(PROHIBITED_CLAIMS.some(([, pattern]) => pattern.test(sample)), `must reject: ${sample}`);
   }
   for (const denial of [
+    '业务模块不是服务。',
+    '服务不是业务模块。',
     '业务模块不等于服务。',
+    '共享数据库不是共享数据模型。',
+    '共享数据模型不是共享数据库。',
     '共享数据库不意味着共享数据模型。',
     '模块化单体不能保证独立部署。',
     'Outbox 不能保证 exactly-once。',
@@ -440,12 +478,17 @@ test('governs the three STY-04 sources with bounded evidence and one manifest pr
       'license_evidence_url', 'license_evidence_note', 'usage_boundary',
     ]) assert.ok(record[field]?.length, `${sourceId} ${field}`);
     assert.equal(record.license, sourceContract.license, `${sourceId} exact license`);
+    assert.equal(record.license_family_id, sourceContract.licenseFamilyId, `${sourceId} exact license family`);
+    assert.equal(record.license_evidence_url, sourceContract.licenseEvidenceUrl,
+      `${sourceId} exact license evidence URL`);
     assert.equal(record.copyright_policy, sourceContract.copyrightPolicy, `${sourceId} exact copyright policy`);
     assert.deepEqual(record.allowed_evidence_roles, sourceContract.allowedEvidenceRoles,
       `${sourceId} exact allowed evidence roles`);
     assert.equal(record.usage_boundary, sourceContract.usageBoundary, `${sourceId} exact usage boundary`);
     assert.ok(review.citations[index].roles?.length, `${sourceId} citation roles must not be empty`);
     assert.deepEqual(review.citations[index].roles, sourceContract.citationRoles, `${sourceId} exact citation roles`);
+    assert.equal(review.citations[index].usage_mode, sourceContract.citationUsageMode,
+      `${sourceId} exact citation usage mode`);
     assert.equal(review.citations[index].manifest_primary, sourceContract.manifestPrimary,
       `${sourceId} exact manifest-primary eligibility`);
     assert.ok(review.citations[index].attribution_note?.trim(), `${sourceId} attribution`);
@@ -547,7 +590,7 @@ test('publishes a synchronized, accessible Draw.io and SVG semantic inventory', 
     assert.equal(/(?:^|;)dashed=1(?:;|$)/u.test(drawioEdge?.style ?? ''), connectorClass === 'event',
       `Draw.io edge ${id} line class`);
     assert.ok(svgEdge?.className.split(/\s+/u).includes(connectorClass), `SVG edge ${id} ${connectorClass} class`);
-    assert.equal(isDashedStroke(svgEdgeDashArray(svg, id)), connectorClass === 'event',
+    assert.equal(strokeDashKind(svgEdgeDashArray(svg, id)), connectorClass === 'event' ? 'dashed' : 'solid',
       `SVG edge ${id} rendered stroke pattern`);
   }
 
@@ -583,7 +626,7 @@ test('publishes a synchronized, accessible Draw.io and SVG semantic inventory', 
     assert.match(svg,
       new RegExp(`<g\\b[^>]*data-node-id="${lineId}"[^>]*data-legend-line="${connectorClass}"[^>]*>`, 'u'),
       `SVG ${lineId}`);
-    assert.equal(isDashedStroke(svgLegendDashArray(svg, lineId)), connectorClass === 'event',
+    assert.equal(strokeDashKind(svgLegendDashArray(svg, lineId)), connectorClass === 'event' ? 'dashed' : 'solid',
       `SVG ${lineId} rendered stroke pattern`);
   }
 });
