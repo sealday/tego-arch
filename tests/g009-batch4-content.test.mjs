@@ -92,17 +92,17 @@ const DIAGRAM_NODES = [
   ['deployment-note', '切片不等于独立部署单元', ''],
 ];
 const DIAGRAM_EDGES = [
-  ['layered-request', 'layered-http', 'layered-controller', '接收请求', 375, 433],
-  ['layered-controller-service', 'layered-controller', 'layered-service', '调用应用', 375, 703],
-  ['layered-service-repository', 'layered-service', 'layered-repository', '访问仓储', 375, 973],
-  ['layered-repository-database', 'layered-repository', 'layered-database', '写入数据', 375, 1243],
-  ['slice-request-handler', 'slice-http', 'submit-order-handler', '进入切片', 1330, 503],
-  ['slice-handler-rules', 'submit-order-handler', 'order-rules', '执行业务规则', 1640, 765],
-  ['slice-rules-inventory', 'order-rules', 'inventory-port', '查询库存', 1110, 1063],
-  ['slice-rules-store', 'order-rules', 'order-store', '保存订单', 1448, 1063],
-  ['slice-rules-response', 'order-rules', 'response-mapper', '映射响应', 1585, 1393],
-  ['layered-repository-service-dependency', 'layered-repository', 'layered-service', '依赖抽象', 720, 960],
-  ['inventory-adapter-port-dependency', 'inventory-adapter', 'inventory-port', '实现端口', 1095, 1408],
+  ['layered-request', 'layered-http', 'layered-controller', '接收请求', [115, 0], [375, 433]],
+  ['layered-controller-service', 'layered-controller', 'layered-service', '调用应用', [115, 0], [375, 703]],
+  ['layered-service-repository', 'layered-service', 'layered-repository', '访问仓储', [115, 0], [375, 973]],
+  ['layered-repository-database', 'layered-repository', 'layered-database', '写入数据', [115, 0], [375, 1243]],
+  ['slice-request-handler', 'slice-http', 'submit-order-handler', '进入切片', [125, 0], [1330, 503]],
+  ['slice-handler-rules', 'submit-order-handler', 'order-rules', '执行业务规则', [365, 0], [1640, 765]],
+  ['slice-rules-inventory', 'order-rules', 'inventory-port', '查询库存', [0, -45], [1110, 1063]],
+  ['slice-rules-store', 'order-rules', 'order-store', '保存订单', [0, -45], [1448, 1063]],
+  ['slice-rules-response', 'order-rules', 'response-mapper', '映射响应', [0, -45], [1585, 1393]],
+  ['layered-repository-service-dependency', 'layered-repository', 'layered-service', '依赖抽象', [40, 0], [720, 960]],
+  ['inventory-adapter-port-dependency', 'inventory-adapter', 'inventory-port', '实现端口', [100, 0], [1095, 1408]],
 ];
 const DIAGRAM_BOUNDARIES = [
   ['deployment-boundary', '单体部署边界'],
@@ -205,14 +205,14 @@ function visibleSvgText(source) {
 
 function drawioDiagramContract(source) {
   const cells = visibleDrawioCells(source);
+  const typeCells = cells.filter(({attributes}) => attributes.get('dataRole') === 'type');
+  const typesByParent = new Map(typeCells.map(({attributes, label}) => [attributes.get('parent'), label]));
   return {
-    nodes: cells.filter(({attributes}) => attributes.get('vertex') === '1')
-      .map(({attributes, label}) => ({id: attributes.get('id'), label, typeLabel: decodeXmlText(attributes.get('typeLabel') ?? '')})),
+    nodes: cells.filter(({attributes}) => attributes.get('vertex') === '1' && attributes.get('dataRole') !== 'type')
+      .map(({attributes, label}) => ({id: attributes.get('id'), label, visibleTypeLabel: typesByParent.get(attributes.get('id')) ?? ''})),
+    typeCells: typeCells.map(({attributes, label}) => ({id: attributes.get('id'), parent: attributes.get('parent'), label, style: attributes.get('style') ?? ''})),
     edges: cells.filter(({attributes}) => attributes.get('edge') === '1')
-      .map(({attributes, label}) => ({
-        id: attributes.get('id'), label, source: attributes.get('source'), target: attributes.get('target'),
-        labelX: Number(attributes.get('labelX')), labelY: Number(attributes.get('labelY')),
-      })),
+      .map(({attributes, label}) => ({id: attributes.get('id'), label, source: attributes.get('source'), target: attributes.get('target')})),
   };
 }
 
@@ -233,7 +233,7 @@ function svgDiagramContract(source) {
     const labelAttributes = xmlAttributes(`${labelTag?.[1] ?? ''}${labelTag?.[2] ?? ''}`);
     return {
       id, label: labels.get(id) ?? '', source: attributes.get('data-source'), target: attributes.get('data-target'),
-      labelX: Number(labelAttributes.get('data-label-x')), labelY: Number(labelAttributes.get('data-label-y')),
+      labelX: Number(labelAttributes.get('x')), labelY: Number(labelAttributes.get('y')),
     };
   });
   return {nodes, edges};
@@ -248,7 +248,19 @@ function drawioEdgeGeometry(source, id) {
   const waypointSource = match[3].match(/<Array\b[^>]*as="points"[^>]*>([\s\S]*?)<\/Array>/u)?.[1] ?? '';
   const points = [...waypointSource.matchAll(/<mxPoint\b[^>]*x="([^"]+)"[^>]*y="([^"]+)"[^>]*\/>/gu)]
     .map(([, x, y]) => [Number(x), Number(y)]);
-  return {style, points};
+  const offsetTag = [...match[3].matchAll(/<mxPoint\b([^>]*)\/>/gu)]
+    .map(([, attributes]) => xmlAttributes(attributes)).find((attributes) => attributes.get('as') === 'offset');
+  return {style, points, offset: [Number(offsetTag?.get('x')), Number(offsetTag?.get('y'))]};
+}
+
+function drawioCellGeometry(source, id) {
+  const escapedId = id.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
+  const match = source.match(new RegExp(`<mxCell\\b[^>]*\\bid="${escapedId}"[^>]*>([\\s\\S]*?)<\\/mxCell>`, 'u'));
+  assert.ok(match, `Draw.io cell geometry ${id}`);
+  const geometryTag = match[1].match(/<mxGeometry\b([^>]*)\/>/u);
+  assert.ok(geometryTag, `Draw.io mxGeometry ${id}`);
+  const geometry = xmlAttributes(geometryTag[1]);
+  return Object.fromEntries(['x', 'y', 'width', 'height'].map((key) => [key, Number(geometry.get(key) ?? 0)]));
 }
 
 function sectionBody(source, heading, nextHeading) {
@@ -399,23 +411,34 @@ test('publishes the synchronized STY-03 diagram pair with the minimum inventory'
   for (const [id, label, typeLabel] of DIAGRAM_NODES) {
     assert.equal(drawioNodeMap.get(id)?.label, label, `Draw.io node ${id} title`);
     assert.equal(svgNodeMap.get(id)?.label, label, `SVG node ${id} title`);
-    assert.equal(drawioNodeMap.get(id)?.typeLabel, typeLabel, `Draw.io node ${id} type`);
+    assert.equal(drawioNodeMap.get(id)?.visibleTypeLabel, typeLabel, `Draw.io node ${id} visible type`);
     assert.equal(svgNodeMap.get(id)?.typeLabel, typeLabel, `SVG node ${id} data type`);
     assert.equal(svgNodeMap.get(id)?.visibleTypeLabel, typeLabel, `SVG node ${id} visible type`);
+    if (typeLabel) {
+      const typeCell = drawioContract.typeCells.find(({parent}) => parent === id);
+      assert.equal(typeCell?.label, typeLabel, `Draw.io node ${id} type child value`);
+      assert.match(typeCell?.style ?? '', /(?:^|;)text(?:;|$)/u, `Draw.io node ${id} type child is visible text`);
+      assert.match(typeCell?.style ?? '', /(?:^|;)fontSize=23(?:;|$)/u, `Draw.io node ${id} type child font size`);
+      const parentGeometry = drawioCellGeometry(drawio, id);
+      const childGeometry = drawioCellGeometry(drawio, `${id}-type`);
+      assert.ok(childGeometry.x >= 0 && childGeometry.y >= 0 &&
+        childGeometry.x + childGeometry.width <= parentGeometry.width &&
+        childGeometry.y + childGeometry.height <= parentGeometry.height, `Draw.io node ${id} type child stays inside parent`);
+    }
   }
   const drawioEdges = new Map(drawioContract.edges.map((edge) => [edge.id, edge]));
   const svgEdges = new Map(svgContract.edges.map((edge) => [edge.id, edge]));
   assert.equal(drawioEdges.size, drawioContract.edges.length, 'Draw.io edge IDs are unique');
   assert.equal(svgEdges.size, svgContract.edges.length, 'SVG edge IDs are unique');
-  for (const [id, source, target, label, labelX, labelY] of DIAGRAM_EDGES) {
+  for (const [id, source, target, label, drawioOffset, svgLabelPosition] of DIAGRAM_EDGES) {
     assert.equal(drawioEdges.get(id)?.source, source, `Draw.io edge ${id} source`);
     assert.equal(drawioEdges.get(id)?.target, target, `Draw.io edge ${id} target`);
     assert.equal(drawioEdges.get(id)?.label, label, `Draw.io edge ${id} label`);
     assert.equal(svgEdges.get(id)?.source, source, `SVG edge ${id} source`);
     assert.equal(svgEdges.get(id)?.target, target, `SVG edge ${id} target`);
     assert.equal(svgEdges.get(id)?.label, label, `SVG edge ${id} label`);
-    assert.deepEqual([drawioEdges.get(id)?.labelX, drawioEdges.get(id)?.labelY], [labelX, labelY], `Draw.io edge ${id} label lane`);
-    assert.deepEqual([svgEdges.get(id)?.labelX, svgEdges.get(id)?.labelY], [labelX, labelY], `SVG edge ${id} label lane`);
+    assert.deepEqual(drawioEdgeGeometry(drawio, id).offset, drawioOffset, `Draw.io edge ${id} actual label offset`);
+    assert.deepEqual([svgEdges.get(id)?.labelX, svgEdges.get(id)?.labelY], svgLabelPosition, `SVG edge ${id} actual text position`);
   }
   const visibleDrawioLabels = drawioContract.nodes.map(({label}) => label)
     .concat(drawioContract.edges.map(({label}) => label));
