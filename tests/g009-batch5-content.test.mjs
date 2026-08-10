@@ -70,35 +70,35 @@ const SOURCE_CONTRACTS = [
 const ADJACENT_TOPICS = ['STY-01', 'STY-02', 'STY-03'];
 const ADJACENT_ROUTES = ['/styles/sty-01', '/styles/sty-02', '/styles/sty-03'];
 const MODULES = ['order', 'inventory', 'payment', 'notification'];
-const DIAGRAM_VIEWBOX = '0 0 1200 1580';
+const DIAGRAM_VIEWBOX = '0 0 1200 1800';
 const DIAGRAM_RENDER_WIDTH = 800;
 const DIAGRAM_RENDER_SCALE = 2 / 3;
 const DIAGRAM_GEOMETRY = new Map([
-  ['deployment-boundary', [110, 70, 1060, 1350]],
-  ['order-module-boundary', [140, 170, 430, 610]],
-  ['inventory-module-boundary', [630, 170, 510, 610]],
-  ['payment-module-boundary', [140, 820, 430, 550]],
-  ['notification-module-boundary', [630, 820, 510, 550]],
-  ['order-public-contract', [165, 240, 375, 96]],
-  ['inventory-public-contract', [655, 240, 455, 96]],
-  ['payment-public-contract', [165, 890, 375, 96]],
-  ['notification-public-contract', [655, 890, 455, 96]],
-  ['order-internal-implementation', [165, 405, 375, 96]],
-  ['inventory-internal-implementation', [655, 405, 455, 96]],
-  ['payment-internal-implementation', [165, 1055, 375, 96]],
-  ['notification-internal-implementation', [655, 1055, 455, 96]],
-  ['order-owned-data', [165, 570, 375, 190]],
-  ['inventory-owned-data', [655, 570, 455, 170]],
-  ['payment-owned-data', [165, 1220, 375, 120]],
-  ['notification-owned-data', [655, 1220, 455, 120]],
-  ['outbox', [190, 655, 325, 90]],
-  ['event-publication', [920, 90, 220, 70]],
-  ['shared-process-failure-domain', [300, 90, 590, 58]],
-  ['submit-order-request', [5, 250, 95, 110]],
-  ['legend-sync-line', [140, 1470, 90, 24]],
-  ['legend-event-line', [140, 1515, 90, 24]],
-  ['legend-sync-label', [250, 1460, 390, 44]],
-  ['legend-event-label', [250, 1505, 390, 44]],
+  ['deployment-boundary', [130, 70, 1060, 1570]],
+  ['order-module-boundary', [160, 200, 430, 670]],
+  ['inventory-module-boundary', [650, 200, 510, 670]],
+  ['payment-module-boundary', [160, 970, 430, 610]],
+  ['notification-module-boundary', [650, 970, 510, 610]],
+  ['order-public-contract', [185, 270, 375, 96]],
+  ['inventory-public-contract', [675, 270, 455, 96]],
+  ['payment-public-contract', [185, 1040, 375, 96]],
+  ['notification-public-contract', [675, 1040, 455, 96]],
+  ['order-internal-implementation', [185, 465, 375, 96]],
+  ['inventory-internal-implementation', [675, 465, 455, 96]],
+  ['payment-internal-implementation', [185, 1235, 375, 96]],
+  ['notification-internal-implementation', [675, 1235, 455, 96]],
+  ['order-owned-data', [185, 660, 375, 190]],
+  ['inventory-owned-data', [675, 660, 455, 170]],
+  ['payment-owned-data', [185, 1430, 375, 120]],
+  ['notification-owned-data', [675, 1430, 455, 120]],
+  ['outbox', [210, 745, 325, 90]],
+  ['event-publication', [900, 90, 260, 90]],
+  ['shared-process-failure-domain', [430, 90, 450, 90]],
+  ['submit-order-request', [5, 270, 95, 110]],
+  ['legend-sync-line', [160, 1690, 90, 24]],
+  ['legend-event-line', [160, 1735, 90, 24]],
+  ['legend-sync-label', [270, 1680, 390, 44]],
+  ['legend-event-label', [270, 1725, 390, 44]],
 ]);
 const DIAGRAM_THRESHOLDS = new Map([
   ['data-node-padding-x-css', 16],
@@ -344,6 +344,18 @@ function drawioCellGeometry(source, id) {
   return Object.fromEntries(['x', 'y', 'width', 'height'].map((key) => [key, Number(geometry.get(key) ?? 0)]));
 }
 
+function drawioEdgeWaypoints(source, id) {
+  const escapedId = id.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
+  const block = source.match(new RegExp(
+    `<mxCell\\b[^>]*\\bid="${escapedId}"[^>]*>([\\s\\S]*?)<\\/mxCell>`, 'u',
+  ))?.[1] ?? '';
+  const points = block.match(/<Array\b[^>]*\bas="points"[^>]*>([\s\S]*?)<\/Array>/u)?.[1] ?? '';
+  return [...points.matchAll(/<mxPoint\b([^>]*)\/>/gu)].map(([, attributesSource]) => {
+    const attributes = xmlAttributes(attributesSource);
+    return {x: Number(attributes.get('x')), y: Number(attributes.get('y'))};
+  });
+}
+
 function svgCellGeometry(source, id) {
   const escapedId = id.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
   const match = source.match(new RegExp(`<g\\b[^>]*data-node-id="${escapedId}"[^>]*data-node-bounds="([^"]+)"`, 'u'));
@@ -361,6 +373,131 @@ function contains(outer, inner) {
 function overlaps(first, second) {
   return first.x < second.x + second.width && first.x + first.width > second.x &&
     first.y < second.y + second.height && first.y + first.height > second.y;
+}
+
+function parseOrthogonalPath(data) {
+  const tokens = data.match(/[MHV]|-?(?:\d+(?:\.\d*)?|\.\d+)/gu) ?? [];
+  const points = [];
+  let cursor = 0;
+  let x = 0;
+  let y = 0;
+  while (cursor < tokens.length) {
+    const command = tokens[cursor];
+    cursor += 1;
+    if (command === 'M') {
+      x = Number(tokens[cursor]);
+      y = Number(tokens[cursor + 1]);
+      cursor += 2;
+    } else if (command === 'H') {
+      x = Number(tokens[cursor]);
+      cursor += 1;
+    } else if (command === 'V') {
+      y = Number(tokens[cursor]);
+      cursor += 1;
+    } else {
+      throw new Error(`Unsupported path command ${command}`);
+    }
+    points.push({x, y});
+  }
+  return points;
+}
+
+function conservativeLabelBounds(tag, label, fontSize) {
+  const attributes = xmlAttributes(tag);
+  const x = Number(attributes.get('x'));
+  const bottom = Number(attributes.get('y'));
+  const width = [...label].length * fontSize;
+  const anchor = attributes.get('text-anchor') || 'start';
+  const left = anchor === 'middle' ? x - width / 2 : anchor === 'end' ? x - width : x;
+  return {bottom, left, right: left + width, top: bottom - fontSize};
+}
+
+function rectangleDistance(first, second) {
+  const horizontal = Math.max(second.left - first.right, first.left - second.right, 0);
+  const vertical = Math.max(second.top - first.bottom, first.top - second.bottom, 0);
+  return Math.hypot(horizontal, vertical);
+}
+
+function expandedRectangle(rectangle, expansion) {
+  return {
+    bottom: rectangle.bottom + expansion,
+    left: rectangle.left - expansion,
+    right: rectangle.right + expansion,
+    top: rectangle.top - expansion,
+  };
+}
+
+function boundaryStrokeDistance(label, boundary, strokeWidth) {
+  const inside = label.left >= boundary.left && label.right <= boundary.right &&
+    label.top >= boundary.top && label.bottom <= boundary.bottom;
+  if (inside) {
+    const halfStroke = strokeWidth / 2;
+    return Math.min(
+      label.left - boundary.left - halfStroke,
+      boundary.right - halfStroke - label.right,
+      label.top - boundary.top - halfStroke,
+      boundary.bottom - halfStroke - label.bottom,
+    );
+  }
+  return rectangleDistance(label, expandedRectangle(boundary, strokeWidth / 2));
+}
+
+function segmentDistance(label, start, end) {
+  return rectangleDistance(label, {
+    bottom: Math.max(start.y, end.y),
+    left: Math.min(start.x, end.x),
+    right: Math.max(start.x, end.x),
+    top: Math.min(start.y, end.y),
+  });
+}
+
+function projectedInterval(points, axis) {
+  const values = points.map((point) => point.x * axis.x + point.y * axis.y);
+  return {maximum: Math.max(...values), minimum: Math.min(...values)};
+}
+
+function intervalGap(first, second) {
+  return Math.max(second.minimum - first.maximum, first.minimum - second.maximum);
+}
+
+function markerGeometry(svg, connectorTag, points) {
+  const connector = xmlAttributes(connectorTag);
+  const markerId = svgPresentationValue(svg, 'path', connectorTag, 'marker-end')
+    ?.match(/^url\(#([^)]+)\)$/u)?.[1];
+  assert.ok(markerId, 'connector marker-end');
+  const markerBlock = svg.match(
+    new RegExp(`<marker\\b[^>]*\\bid="${markerId}"[^>]*>[\\s\\S]*?<\\/marker>`, 'u'),
+  )?.[0] ?? '';
+  const markerTag = markerBlock.match(/<marker\b[^>]*>/u)?.[0] ?? '';
+  const markerPath = markerBlock.match(/<path\b[^>]*>/u)?.[0] ?? '';
+  const markerAttributes = xmlAttributes(markerTag);
+  assert.ok(markerTag, `${markerId} marker definition`);
+  const coordinates = (xmlAttributes(markerPath).get('d')?.match(
+    /-?(?:\d+(?:\.\d*)?|\.\d+)/gu,
+  ) ?? []).map(Number);
+  const endpoint = points.at(-1);
+  const previous = points.at(-2);
+  const magnitude = Math.hypot(endpoint.x - previous.x, endpoint.y - previous.y);
+  const axis = {x: (endpoint.x - previous.x) / magnitude, y: (endpoint.y - previous.y) / magnitude};
+  const perpendicular = {x: -axis.y, y: axis.x};
+  const viewBox = (markerAttributes.get('viewBox') ?? '').split(/\s+/u).map(Number);
+  const scale = Number(markerAttributes.get('markerWidth')) / viewBox[2] *
+    Number(svgPresentationValue(svg, 'path', connectorTag, 'stroke-width'));
+  assert.ok(Number.isFinite(scale) && scale > 0, `${markerId} marker scale`);
+  const refX = Number(markerAttributes.get('refX'));
+  const refY = Number(markerAttributes.get('refY'));
+  const markerPoints = [];
+  for (let index = 0; index < coordinates.length; index += 2) {
+    markerPoints.push({
+      x: endpoint.x + axis.x * (coordinates[index] - refX) * scale +
+        perpendicular.x * (coordinates[index + 1] - refY) * scale,
+      y: endpoint.y + axis.y * (coordinates[index] - refX) * scale +
+        perpendicular.y * (coordinates[index + 1] - refY) * scale,
+    });
+  }
+  assert.ok(markerPoints.length >= 3 && markerPoints.every(({x, y}) => Number.isFinite(x) && Number.isFinite(y)),
+    `${markerId} marker points`);
+  return {axis, points: markerPoints};
 }
 
 function sectionBody(source, heading, nextHeading) {
@@ -648,6 +785,12 @@ test('publishes a synchronized, accessible Draw.io and SVG semantic inventory', 
     assert.equal(strokeDashKind(svgEdgeDashArray(svg, id)), connectorClass === 'event' ? 'dashed' : 'solid',
       `SVG edge ${id} rendered stroke pattern`);
   }
+  assert.deepEqual(drawioEdgeWaypoints(drawio, 'order-inventory-call'), [
+    {x: 620, y: 495}, {x: 620, y: 318},
+  ], 'Draw.io order-to-inventory upper lane');
+  assert.deepEqual(drawioEdgeWaypoints(drawio, 'outbox-event-publication'), [
+    {x: 372, y: 880}, {x: 1170, y: 880}, {x: 1170, y: 135},
+  ], 'Draw.io outbox publication inter-row and right-side lane');
 
   for (const geometryOf of [
     (id) => drawioCellGeometry(drawio, id),
@@ -694,5 +837,95 @@ test('publishes a synchronized, accessible Draw.io and SVG semantic inventory', 
       `SVG ${lineId}`);
     assert.equal(strokeDashKind(svgLegendDashArray(svg, lineId)), connectorClass === 'event' ? 'dashed' : 'solid',
       `SVG ${lineId} rendered stroke pattern`);
+  }
+});
+
+test('keeps all STY-04 relationship labels clear of connectors, markers, nodes, and boundaries', async () => {
+  const svg = await readFile(new URL(`../${SVG}`, import.meta.url), 'utf8');
+  const renderedScale = DIAGRAM_RENDER_SCALE;
+  const labelFontSize = Number.parseFloat(
+    svgPresentationValue(svg, 'text', 'class="edge-label"', 'font-size'),
+  );
+  const boundaryIds = new Set([
+    'deployment-boundary', ...MODULES.map((module) => `${module}-module-boundary`),
+  ]);
+  const ignoredNodeIds = new Set([
+    'legend-sync-line', 'legend-event-line', 'legend-sync-label', 'legend-event-label',
+  ]);
+  const nodeBounds = new Map();
+  const boundaryBounds = new Map();
+
+  for (const [, id, boundsValue, contents] of svg.matchAll(
+    /<g\b[^>]*data-node-id="([^"]+)"[^>]*data-node-bounds="([^"]+)"[^>]*>([\s\S]*?)<\/g>/gu,
+  )) {
+    if (ignoredNodeIds.has(id)) continue;
+    const [x, y, width, height] = boundsValue.split(/\s+/u).map(Number);
+    const rectangle = {bottom: y + height, left: x, right: x + width, top: y};
+    const outline = contents.match(/<(rect|path)\b([^>]*)>/u);
+    assert.ok(outline, `${id} visible outline`);
+    const strokeWidth = Number(svgPresentationValue(svg, outline[1], outline[2], 'stroke-width'));
+    assert.ok(Number.isFinite(strokeWidth) && strokeWidth > 0, `${id} visible stroke width`);
+    if (boundaryIds.has(id)) boundaryBounds.set(id, {rectangle, strokeWidth});
+    else nodeBounds.set(id, expandedRectangle(rectangle, strokeWidth / 2));
+  }
+
+  const connectorTags = new Map([...svg.matchAll(/<path\b[^>]*data-edge-id="([^"]+)"[^>]*>/gu)]
+    .map(([tag, id]) => [id, tag]));
+  assert.equal(connectorTags.size, DIAGRAM_EDGES.length, 'all relationship connector paths');
+  assert.deepEqual(parseOrthogonalPath(xmlAttributes(connectorTags.get('order-inventory-call')).get('d')), [
+    {x: 560, y: 495}, {x: 620, y: 495}, {x: 620, y: 318}, {x: 672, y: 318},
+  ], 'order-to-inventory owns its upper connector lane');
+  assert.deepEqual(parseOrthogonalPath(xmlAttributes(connectorTags.get('outbox-event-publication')).get('d')), [
+    {x: 372, y: 835}, {x: 372, y: 880}, {x: 1170, y: 880}, {x: 1170, y: 135}, {x: 1163, y: 135},
+  ], 'outbox publication owns its separate inter-row and right-side lane');
+
+  for (const [edgeId, , , expectedLabel] of DIAGRAM_EDGES) {
+    const connectorTag = connectorTags.get(edgeId) ?? '';
+    const labelMatch = svg.match(new RegExp(
+      `(<text\\b[^>]*data-edge-id="${edgeId}"[^>]*>)([^<]+)<\\/text>`, 'u',
+    )) ?? [];
+    const labelTag = labelMatch[1] ?? '';
+    const label = labelMatch[2] ?? '';
+    assert.equal(label, expectedLabel, `${edgeId} visible label`);
+    const labelBounds = conservativeLabelBounds(labelTag, label, labelFontSize);
+    const ownPoints = parseOrthogonalPath(xmlAttributes(connectorTag).get('d') ?? '');
+    const ownMarker = markerGeometry(svg, connectorTag, ownPoints);
+    const labelCorners = [
+      {x: labelBounds.left, y: labelBounds.top},
+      {x: labelBounds.right, y: labelBounds.top},
+      {x: labelBounds.right, y: labelBounds.bottom},
+      {x: labelBounds.left, y: labelBounds.bottom},
+    ];
+    const markerClearance = intervalGap(
+      projectedInterval(labelCorners, ownMarker.axis),
+      projectedInterval(ownMarker.points, ownMarker.axis),
+    ) * renderedScale;
+    assert.ok(markerClearance >= 16,
+      `${edgeId} has only ${markerClearance}px of real marker clearance`);
+
+    for (const [connectorId, otherConnectorTag] of connectorTags) {
+      const points = parseOrthogonalPath(xmlAttributes(otherConnectorTag).get('d') ?? '');
+      const halfStroke = Number(svgPresentationValue(
+        svg, 'path', otherConnectorTag, 'stroke-width',
+      )) / 2;
+      const strokeClearance = (Math.min(
+        ...points.slice(1).map((point, index) => segmentDistance(labelBounds, points[index], point)),
+      ) - halfStroke) * renderedScale;
+      assert.ok(strokeClearance >= 8,
+        `${edgeId} label has only ${strokeClearance}px clearance from ${connectorId} stroke`);
+    }
+
+    for (const [nodeId, rectangle] of nodeBounds) {
+      const renderedClearance = rectangleDistance(labelBounds, rectangle) * renderedScale;
+      assert.ok(renderedClearance >= 12,
+        `${edgeId} has only ${renderedClearance}px of ${nodeId} clearance`);
+    }
+    for (const [boundaryId, {rectangle, strokeWidth}] of boundaryBounds) {
+      const renderedClearance = boundaryStrokeDistance(
+        labelBounds, rectangle, strokeWidth,
+      ) * renderedScale;
+      assert.ok(renderedClearance >= 12,
+        `${edgeId} has only ${renderedClearance}px of ${boundaryId} stroke clearance`);
+    }
   }
 });
