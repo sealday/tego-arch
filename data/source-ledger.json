@@ -18863,15 +18863,15 @@
       "query_insensitive": false,
       "locator_aliases": [],
       "tombstone": null,
-      "title": "eShopOnWeb sample reference application",
+      "title": "eShopOnWeb archived historical reference application",
       "citation_titles": [
         "eShopOnWeb 示例参考应用"
       ],
-      "author_or_org": ".NET Foundation and contributors; Microsoft-maintained dotnet-architecture repository",
+      "author_or_org": ".NET Foundation and contributors; archived Microsoft reference, now community supported by NimblePros",
       "published_at": null,
       "registered_at": "2026-08-10",
       "checked_at": "2026-08-10",
-      "version": "Repository main at commit 4da8212117e87d808d4bbc7da6286fd2147ce606; repository checked 2026-08-10",
+      "version": "Archived repository main at commit 4da8212117e87d808d4bbc7da6286fd2147ce606; GitHub archived=true and pushed_at 2025-01-13T20:55:37Z confirmed 2026-08-10; README says active development moved to dotnet/eShop and identifies a new community-supported version",
       "source_kind": "official-repository",
       "tier": "primary",
       "allowed_evidence_roles": [
@@ -18889,11 +18889,43 @@
       "license_family_grouping": "identity",
       "family_grouping_evidence_url": null,
       "copyright_policy": "facts-and-short-quotation",
-      "usage_boundary": "Provides an implementation example for discussing use-case-oriented organization and boundaries; its ASP.NET Core choices and sample structure are examples, not normative vertical-slice requirements or production evidence.",
+      "usage_boundary": "Provides fixed historical implementation evidence for discussing use-case-oriented organization and boundaries; the archived repository's README points active development to dotnet/eShop and identifies a new community-supported version. Its ASP.NET Core choices and sample structure are examples, not current Microsoft maintenance, normative vertical-slice requirements, or production evidence.",
       "link_policy": "stable",
       "expected_final_transport_locator": "https://github.com/dotnet-architecture/eShopOnWeb",
       "expected_final_approved_at": "2026-08-10",
-      "expected_final_approval_note": "Reviewed canonical identity, repository version boundary, LICENSE evidence, and healthy GitHub transport on 2026-08-10."
+      "expected_final_approval_note": "Reviewed canonical identity, archived repository state, fixed version boundary, README maintenance notice, LICENSE evidence, and healthy GitHub transport on 2026-08-10."
+    },
+    {
+      "id": "src-atlas-sty03-vertical-slice-boundary",
+      "canonical_locator": "/img/diagrams/sty-03-vertical-slice-boundary.svg",
+      "transport_locator": "/img/diagrams/sty-03-vertical-slice-boundary.svg",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "分层架构与垂直切片的提交订单边界对照图",
+      "author_or_org": "Tego Arch maintainers",
+      "published_at": null,
+      "registered_at": "2026-08-10",
+      "checked_at": "2026-08-10",
+      "version": "Original Draw.io/SVG pair authored and QA-checked on 2026-08-10",
+      "source_kind": "original-illustration",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "illustration"
+      ],
+      "license": "LicenseRef-Atlas-Original",
+      "license_scope": "The named project-authored sty-03-vertical-slice-boundary.svg asset only",
+      "license_evidence_url": "https://github.com/sealday/tego-arch/blob/main/static/img/diagrams/sty-03-vertical-slice-boundary.svg",
+      "license_evidence_note": "The project-authored Draw.io/SVG pair contains no third-party reference image, icon, signature, watermark, or copied composition.",
+      "license_family_id": "/img/diagrams/sty-03-vertical-slice-boundary.svg",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "original-atlas",
+      "usage_boundary": "Explains the article's handler-centred control flow, source-dependency direction, shared invariant boundary, and single-monolith deployment relationship; it does not establish factual claims or represent a production implementation.",
+      "link_policy": null,
+      "expected_final_transport_locator": "/img/diagrams/sty-03-vertical-slice-boundary.svg",
+      "expected_final_approved_at": "2026-08-10",
+      "expected_final_approval_note": "Approved project-local original illustration locator after synchronized Draw.io/SVG semantic and responsive QA on 2026-08-10."
     }
   ],
   "documents": {
@@ -28663,8 +28695,21 @@
           ],
           "manifest_primary": true,
           "usage_mode": "facts-summary",
-          "attribution_note": "eShopOnWeb sample reference application, .NET Foundation and contributors / Microsoft-maintained dotnet-architecture repository",
+          "attribution_note": "eShopOnWeb archived historical reference application, .NET Foundation and contributors / archived Microsoft reference",
           "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-atlas-sty03-vertical-slice-boundary",
+          "citation_url": "/img/diagrams/sty-03-vertical-slice-boundary.svg",
+          "roles": [
+            "illustration"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "original-illustration",
+          "attribution_note": "分层架构与垂直切片的提交订单边界对照图，Tego Arch maintainers",
+          "modification_note": "Created as an original Draw.io and SVG pair for STY-03 from the project-authored remediation design; the composition was synchronized and QA-reviewed for handler-centred orchestration, boundary ownership, text, topology, and responsive readability without third-party reference imagery.",
           "excerpt": null,
           "quotation_reviewed": false
         }

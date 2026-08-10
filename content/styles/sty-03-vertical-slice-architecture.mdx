@@ -38,9 +38,9 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 
 # 垂直切片架构：按用例收拢变化边界
 
-垂直切片架构首先是一种**面向变化的代码边界**：把完成一个业务用例通常要共同修改的输入、处理、规则调用、数据访问与输出映射收拢在一起。它不是固定目录模板，也不是进程、服务、数据库、团队或部署单元的别名。Tego Arch 的[架构风格目录](/styles)用提交订单（`SubmitOrder`）说明这种组织方式如何回应高频的端到端变化，并以质量属性（Quality Attribute）讨论可维护性、可测试性与可部署性的权衡。
+垂直切片架构（[Vertical Slice Architecture](https://www.jimmybogard.com/vertical-slice-architecture/)）首先是一种**面向变化的代码边界**：把完成一个业务用例通常要共同修改的输入、处理、规则调用、数据访问与输出映射收拢在一起。它不是固定目录模板，也不是进程、服务、数据库、团队或部署单元的别名。Tego Arch 架构知识项目的[架构风格目录](/styles)用提交订单（`SubmitOrder`）说明这种组织方式如何回应高频的端到端变化，并以质量属性（Quality Attribute）讨论可维护性、可测试性与可部署性的权衡。
 
-**来源支持的事实：** [Vertical Slice Architecture，Jimmy Bogard](https://www.jimmybogard.com/vertical-slice-architecture/)把按请求或功能组织代码、降低跨功能共享层以及围绕请求处理边界组织变化作为主要工程意图。[eShopOnWeb 示例参考应用](https://github.com/dotnet-architecture/eShopOnWeb)则展示应用核心、领域逻辑、接口与基础设施实现可以保持职责边界。两项来源都只支持各自明确展示的工程事实，不把某个技术栈、目录结构或作者经验提升为普遍规范。
+**来源支持的事实：** [Vertical Slice Architecture，Jimmy Bogard](https://www.jimmybogard.com/vertical-slice-architecture/)把按请求或功能组织代码、降低跨功能共享层以及围绕请求处理边界组织变化作为主要工程意图。[eShopOnWeb 示例参考应用](https://github.com/dotnet-architecture/eShopOnWeb)是已归档的微软历史参考，其说明文件（README）指出活跃开发已迁移到 `dotnet/eShop`，并指出新版本当前由社区支持。两项来源都只支持各自明确展示的工程事实，不把某个技术栈、目录结构或作者经验提升为普遍规范。
 
 ## 学习问题
 
@@ -61,7 +61,7 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 
 ## 边界与控制流
 
-正常控制流是：HTTP 请求进入输入映射，形成只含用例所需字段的命令；`SubmitOrder Handler` 协调用例；订单规则检查客户、订单行与状态转换；库存端口查询或预留库存；订单存储端口保存合法结果；响应映射把应用结果转换为外部响应。切片负责一次请求从边界进入到结果离开的端到端行为，共享领域能力负责不应被单个用例私有化的不变量。
+**说明性场景（Tego Arch 分析）：** 正常控制流是：HTTP 请求进入输入映射，形成只含用例所需字段的命令；`SubmitOrder Handler` 协调用例；订单规则检查客户、订单行与状态转换；库存端口查询或预留库存；订单存储端口保存合法结果；响应映射把应用结果转换为外部响应。切片负责一次请求从边界进入到结果离开的端到端行为，共享领域能力负责不应被单个用例私有化的不变量。
 
 请求边界同时是失败翻译边界：格式或必填项错误映射为稳定的输入错误；领域规则拒绝映射为业务拒绝；库存超时或不可用映射为依赖失败；并发写入冲突映射为可识别的冲突结果；未预期异常记录关联信息后映射为不暴露内部细节的内部错误。框架异常、数据库异常和外部软件开发工具包（Software Development Kit，SDK）响应不得直接成为公开合同。哪些类别可重试（Retry）、由谁执行以及幂等键如何保存，必须另立运行合同，不能从“切片”二字推导。
 
@@ -120,7 +120,7 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 
 ## 对比案例
 
-下表把同一提交订单场景放在四种组织视角中。模块化单体描述部署形态与模块合同，垂直切片描述面向变化的用例代码边界；二者可以组合，不能互相替代。
+下表把同一提交订单场景放在三种组织视角中。模块化单体描述部署形态与模块合同，垂直切片描述面向变化的用例代码边界；二者可以组合，不能互相替代。
 
 <div className="table-wrapper table-wrapper--mapping diagram-wrapper--scroll-owner" role="region" aria-label="提交订单的分层、垂直切片与模块化单体比较表，可横向滚动" tabIndex={0} onKeyDown={handleHorizontalArrowKey}>
 
@@ -129,7 +129,7 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 | 组织单元 | 技术层 | 提交订单用例切片 | 能力模块 |
 | 控制流 | 请求横向穿过共享层 | 请求在切片内端到端流动 | 模块内封装用例 |
 | 依赖 | 业务依赖共享技术层 | 切片拥有用例所需依赖 | 模块依赖显式合同 |
-| 数据所有权 | 共享模型和仓储 | 切片或领域能力拥有数据 | 模块拥有数据边界 |
+| 数据所有权 | 共享模型和仓储 | 切片拥有用例专用模型；领域能力拥有权威状态 | 模块拥有数据边界 |
 | 一致性 | 跨层共享事务 | 在不变量边界内保持一致 | 模块合同约束一致性 |
 | 部署 | 通常是单体 | 可以共存于单体 | 通常是单体 |
 | 团队拓扑 | 按技术层分工 | 按业务能力分工 | 按模块责任分工 |
@@ -147,7 +147,7 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 
 [Vertical Slice Architecture，Jimmy Bogard](https://www.jimmybogard.com/vertical-slice-architecture/)用于核对按功能或请求组织代码、减少跨功能共享层以及围绕请求处理边界组织变化的工程意图。本文只作原创中文事实总结，不复制其文字、代码、图示、目录或结构，也不把作者的结果主张外推为普遍生产收益。
 
-[eShopOnWeb 示例参考应用](https://github.com/dotnet-architecture/eShopOnWeb)用于核对示例中的应用核心、领域逻辑、接口与基础设施实现边界。其微软技术栈、仓库结构和实现选择只作为可检查例证，不是垂直切片架构的规范要求，也不证明本文订单模型的生产效果。
+[eShopOnWeb 示例参考应用](https://github.com/dotnet-architecture/eShopOnWeb)是已归档的微软历史参考，用于核对固定版本示例中的应用核心、领域逻辑、接口与基础设施实现边界。仓库 README 说明活跃开发已迁移到 `dotnet/eShop`，并指出新版本当前由社区支持；原仓库的微软技术栈、结构和实现选择仍只作为历史可检查例证，不是垂直切片架构的规范要求，也不证明本文订单模型的生产效果。
 
 本文的提交订单场景、失败分类、迁移步骤、比较表和 Draw.io 工具所绘制的对照图均为本站原创综合。图示来源由仓库中的 `.drawio`/SVG 配对及提交历史追溯，不复制外部图示，且不是正文唯一的信息表达。
 

@@ -6,6 +6,7 @@ import {fileURLToPath} from 'node:url';
 import {findMarkdownHeadings, parseFrontMatter, readContentDocuments} from '../scripts/content-metadata.mjs';
 import {extractInternalLinks} from '../scripts/content-relations.mjs';
 import {extractExternalLinks} from '../scripts/source-ledger.mjs';
+import {parseMdxVisibleCopy} from '../scripts/visible-copy.mjs';
 
 const [ledger, linkHealth, licenseInventory] = await Promise.all([
   readFile(new URL('../data/source-ledger.json', import.meta.url), 'utf8').then(JSON.parse),
@@ -32,12 +33,15 @@ const STY03_SLUG = '/styles/sty-03';
 const SOURCE_IDS = [
   'src-bogard-vertical-slice-architecture',
   'src-microsoft-eshoponweb-architecture',
+  'src-atlas-sty03-vertical-slice-boundary',
 ];
 const SOURCE_URLS = [
   'https://www.jimmybogard.com/vertical-slice-architecture/',
   'https://github.com/dotnet-architecture/eShopOnWeb',
 ];
 const PROJECTED_SOURCE_URLS = [...SOURCE_URLS].sort((left, right) => left.localeCompare(right, 'en'));
+const ILLUSTRATION_SOURCE_ID = 'src-atlas-sty03-vertical-slice-boundary';
+const ILLUSTRATION_URL = '/img/diagrams/sty-03-vertical-slice-boundary.svg';
 const DIAGRAM_DRAWIO = 'diagrams/sty-03-vertical-slice-boundary.drawio';
 const DIAGRAM_SVG = 'static/img/diagrams/sty-03-vertical-slice-boundary.svg';
 const REQUIRED_HEADINGS = [
@@ -55,7 +59,7 @@ const COMPARISON_ROWS = [
   ['组织单元', '技术层', '提交订单用例切片', '能力模块'],
   ['控制流', '请求横向穿过共享层', '请求在切片内端到端流动', '模块内封装用例'],
   ['依赖', '业务依赖共享技术层', '切片拥有用例所需依赖', '模块依赖显式合同'],
-  ['数据所有权', '共享模型和仓储', '切片或领域能力拥有数据', '模块拥有数据边界'],
+  ['数据所有权', '共享模型和仓储', '切片拥有用例专用模型；领域能力拥有权威状态', '模块拥有数据边界'],
   ['一致性', '跨层共享事务', '在不变量边界内保持一致', '模块合同约束一致性'],
   ['部署', '通常是单体', '可以共存于单体', '通常是单体'],
   ['团队拓扑', '按技术层分工', '按业务能力分工', '按模块责任分工'],
@@ -330,6 +334,10 @@ test('publishes STY-03 metadata and the eleven-section style contract', () => {
 
 test('locks the four learning questions, order scenario, and comparison dimensions', () => {
   assert.ok(sty03);
+  const visibleCopy = parseMdxVisibleCopy(sty03.source, `content/${sty03.file}`).blocks
+    .map(({text}) => text).join('\n');
+  assert.match(visibleCopy, /垂直切片架构（Vertical Slice Architecture）/u, 'governed bilingual first use');
+  assert.match(visibleCopy, /Tego Arch 架构知识项目/u, 'governed project-name first use');
   const learningQuestions = [...sectionBody(sty03.source, '学习问题', '组件、连接器与约束')
     .matchAll(/^- (.+？)$/gmu)].map(([, question]) => question);
   assert.deepEqual(learningQuestions, LEARNING_QUESTIONS);
@@ -351,9 +359,10 @@ test('embeds the comparison diagram accessibly and separates knowledge claims', 
     /import \{handleHorizontalArrowKey\} from '@site\/src\/components\/KeyboardScrollableRegion\/handleHorizontalArrowKey\.mjs';/u);
   assert.match(sty03.source,
     /<div className="architecture-diagram-scroll" role="region" aria-label="分层架构与垂直切片的提交订单边界对照图，可横向滚动" tabIndex=\{0\} onKeyDown=\{handleHorizontalArrowKey\}>\s+!\[提交订单在分层架构与垂直切片架构中的边界、控制流与单体部署关系\]\(\/img\/diagrams\/sty-03-vertical-slice-boundary\.svg\)\s+<\/div>/u);
-  for (const marker of ['来源支持的事实', '证据推断', 'Tego Arch 分析', '未知生产结果']) {
+  for (const marker of ['来源支持的事实', '证据推断', '说明性场景（Tego Arch 分析）', '未知生产结果']) {
     assert.match(sty03.source, new RegExp(`\\*\\*${marker}：\\*\\*`, 'u'), `${marker} marker`);
   }
+  assert.match(sty03.source, /下表把同一提交订单场景放在三种组织视角中/u);
   assert.doesNotMatch(sty03.source, /当前骨架|后续(?:内容)?任务|本阶段只/u);
 });
 
@@ -369,15 +378,15 @@ test('requires STY-03 sources, citations, and reviewed transport evidence', () =
     'original-structure', 'quotation-boundary', 'attribution-complete', 'illustration-rights',
   ]);
   assert.deepEqual(documentReview.citations.map(({source_id}) => source_id), SOURCE_IDS);
-  assert.deepEqual(documentReview.citations.map(({manifest_primary}) => manifest_primary), [true, true]);
-  for (const citation of documentReview.citations) {
+  assert.deepEqual(documentReview.citations.map(({manifest_primary}) => manifest_primary), [true, true, false]);
+  for (const citation of documentReview.citations.slice(0, 2)) {
     assert.equal(citation.usage_mode, 'facts-summary');
     assert.equal(citation.modification_note, null);
     assert.equal(citation.excerpt, null);
     assert.equal(citation.quotation_reviewed, false);
     assert.ok(citation.attribution_note?.trim(), `${citation.source_id} attribution`);
   }
-  for (const [id, url] of SOURCE_IDS.map((id, index) => [id, SOURCE_URLS[index]])) {
+  for (const [id, url] of SOURCE_IDS.slice(0, 2).map((id, index) => [id, SOURCE_URLS[index]])) {
     const record = records.get(id);
     assert.ok(record, `${id} ledger record`);
     assert.equal(record.canonical_locator, url);
@@ -405,6 +414,35 @@ test('requires STY-03 sources, citations, and reviewed transport evidence', () =
     assert.match(licenseInventory, new RegExp(`^\\|\\s*${escapedFamily}\\s*\\|`, 'mu'), `${id} license inventory`);
     assert.ok(externalLinksOf(sty03).includes(url), `${id} visible citation`);
   }
+
+  const illustration = records.get(ILLUSTRATION_SOURCE_ID);
+  assert.ok(illustration, `${ILLUSTRATION_SOURCE_ID} ledger record`);
+  assert.equal(illustration.canonical_locator, ILLUSTRATION_URL);
+  assert.equal(illustration.transport_locator, ILLUSTRATION_URL);
+  assert.equal(illustration.source_kind, 'original-illustration');
+  assert.deepEqual(illustration.allowed_evidence_roles, ['illustration']);
+  assert.equal(illustration.license, 'LicenseRef-Atlas-Original');
+  assert.equal(illustration.license_family_id, ILLUSTRATION_URL);
+  assert.equal(illustration.copyright_policy, 'original-atlas');
+  assert.match(illustration.usage_boundary, /does not establish factual claims/u);
+  const illustrationCitation = documentReview.citations.at(-1);
+  assert.deepEqual(illustrationCitation.roles, ['illustration']);
+  assert.equal(illustrationCitation.usage_mode, 'original-illustration');
+  assert.ok(illustrationCitation.modification_note?.trim());
+  assert.equal(illustrationCitation.excerpt, null);
+  assert.equal(illustrationCitation.quotation_reviewed, false);
+  assert.match(licenseInventory, /^\|\s*\/img\/diagrams\/sty-03-vertical-slice-boundary\.svg\s*\|/mu);
+
+  const eShopOnWeb = records.get('src-microsoft-eshoponweb-architecture');
+  assert.equal(records.get('src-bogard-vertical-slice-architecture').title, 'Vertical Slice Architecture');
+  assert.match(eShopOnWeb.title, /archived historical/u);
+  assert.match(eShopOnWeb.author_or_org, /archived Microsoft reference/u);
+  assert.match(eShopOnWeb.version, /archived=true/u);
+  assert.match(eShopOnWeb.version, /pushed_at 2025-01-13T20:55:37Z/u);
+  assert.match(eShopOnWeb.usage_boundary, /community-supported version/u);
+  assert.match(sty03.source, /已归档的微软历史参考/u);
+  assert.match(sty03.source, /说明文件（README）/u);
+  assert.match(sty03.source, /当前由社区支持/u);
 });
 
 test('keeps adjacent relations reciprocal without activating STY-04', () => {
@@ -439,8 +477,8 @@ test('projects the published pre-closure STY-03 topic and exact Batch 4 counts',
   assert.deepEqual(styleIndexEntry?.primary_sources, PROJECTED_SOURCE_URLS);
   assert.equal(projectStatus.completed_topics, 55);
   assert.equal(projectStatus.content_documents, 98);
-  assert.equal(projectStatus.governed_sources, 508);
-  assert.equal(publicLedger.sources.length, 508);
+  assert.equal(projectStatus.governed_sources, 509);
+  assert.equal(publicLedger.sources.length, 509);
   assert.ok(indexes.style.some(({id, published, status}) =>
     id === STY03 && published && status.value === 'pending'));
 });
