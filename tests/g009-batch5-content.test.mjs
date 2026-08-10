@@ -29,6 +29,35 @@ const SOURCE_URLS = [
   'https://docs.spring.io/spring-modulith/reference/fundamentals.html',
   'https://docs.spring.io/spring-modulith/reference/events.html',
 ];
+const SOURCE_CONTRACTS = [
+  {
+    id: 'src-fowler-monolith-first',
+    license: 'LicenseRef-All-Rights-Reserved',
+    copyrightPolicy: 'facts-and-short-quotation',
+    allowedEvidenceRoles: ['comparison', 'method'],
+    citationRoles: ['comparison', 'method'],
+    manifestPrimary: false,
+    usageBoundary: 'Supports starting with a monolith, establishing boundaries before service extraction, and splitting only from observed evidence; it does not define a universal starting topology, prove production outcomes, or permit copied prose or diagrams.',
+  },
+  {
+    id: 'src-spring-modulith-fundamentals',
+    license: 'Apache-2.0',
+    copyrightPolicy: 'facts-and-short-quotation',
+    allowedEvidenceRoles: ['definition', 'implementation', 'method'],
+    citationRoles: ['definition', 'implementation', 'method'],
+    manifestPrimary: true,
+    usageBoundary: 'Supports documented application modules, public and internal boundaries, allowed dependencies, and structural verification; Spring Modulith mechanisms are implementation evidence, not a universal Modular Monolith definition, and source code, diagrams, and directory layouts are not copied.',
+  },
+  {
+    id: 'src-spring-modulith-events',
+    license: 'Apache-2.0',
+    copyrightPolicy: 'facts-and-short-quotation',
+    allowedEvidenceRoles: ['implementation', 'runtime-fact'],
+    citationRoles: ['implementation', 'runtime-fact'],
+    manifestPrimary: false,
+    usageBoundary: 'Supports documented event-publication registration, publication after transaction commit, completion tracking, and recovery mechanisms; it does not establish exactly-once delivery, arbitrary broker guarantees, or production outcomes.',
+  },
+];
 const ADJACENT_TOPICS = ['STY-01', 'STY-02', 'STY-03'];
 const ADJACENT_ROUTES = ['/styles/sty-01', '/styles/sty-02', '/styles/sty-03'];
 const MODULES = ['order', 'inventory', 'payment', 'notification'];
@@ -74,6 +103,30 @@ const DIAGRAM_EDGES = [
   ['inventory-owned-data-write', 'inventory-internal-implementation', 'inventory-owned-data', '写入库存数据', 'sync'],
   ['payment-owned-data-write', 'payment-internal-implementation', 'payment-owned-data', '写入支付数据', 'sync'],
   ['notification-owned-data-write', 'notification-internal-implementation', 'notification-owned-data', '写入通知数据', 'sync'],
+];
+const PROHIBITED_CLAIMS = [
+  ['module-to-service equivalence',
+    /(?:业务)?模块.{0,12}(?<!不)(?<!不能)(?<!无法)(?<!并非)(?:就是|即为|等于|等同于|相当于|意味着|代表着|必然成为|自动成为|=).{0,12}(?:微)?服务/iu],
+  ['service-to-module equivalence',
+    /(?:微)?服务.{0,12}(?<!不)(?<!不能)(?<!无法)(?<!并非)(?:就是|即为|等于|等同于|相当于|意味着|代表着|=).{0,12}(?:业务)?模块/iu],
+  ['module partition implies services',
+    /(?:划分|建立|拥有).{0,8}(?:业务)?模块.{0,12}(?:就|便|即可|必然).{0,12}(?:成为|得到|获得).{0,8}(?:微)?服务/iu],
+  ['shared database-to-model equivalence',
+    /共享(?:物理)?数据库.{0,12}(?<!不)(?<!不能)(?<!无法)(?<!并非)(?:就是|即为|等于|等同于|相当于|意味着|代表着|=).{0,12}共享(?:数据)?模型/iu],
+  ['shared model-to-database equivalence',
+    /共享(?:数据)?模型.{0,12}(?<!不)(?<!不能)(?<!无法)(?<!并非)(?:就是|即为|等于|等同于|相当于|意味着|代表着|=).{0,12}共享(?:物理)?数据库/iu],
+  ['shared database implies shared model',
+    /(?:使用|采用|只要有).{0,8}共享(?:物理)?数据库.{0,12}(?:就|便|即可|必然).{0,12}(?:共享|共用).{0,6}(?:数据)?模型/iu],
+  ['modular monolith implies runtime isolation',
+    /模块化单体.{0,16}(?<!不)(?<!不能)(?<!无法)(?<!并非)(?:就是|即为|等同于|意味着|保证|天然提供|自动获得|必然具备).{0,16}(?:独立部署|独立扩缩|独立伸缩|故障隔离)/iu],
+  ['adoption implies runtime isolation',
+    /(?:采用|使用|成为|只要是).{0,8}模块化单体.{0,16}(?:就|便|即可|必然).{0,16}(?:独立部署|独立扩缩|独立伸缩|故障隔离)/iu],
+  ['runtime isolation is inherent to modular monolith',
+    /(?:独立部署|独立扩缩|独立伸缩|故障隔离).{0,16}(?:是|属于).{0,12}模块化单体.{0,12}(?:固有|天然|默认|必然)/iu],
+  ['Outbox-to-exactly-once guarantee',
+    /Outbox.{0,28}(?<!不)(?<!不能)(?<!无法)(?<!并非)(?:保证|确保|实现|意味着|等同于|天然提供|自动提供|guarantees?|provides?|ensures?).{0,20}(?:exactly[- ]once|恰好一次|精确一次|仅一次)/iu],
+  ['reversed exactly-once guarantee',
+    /(?:exactly[- ]once|恰好一次|精确一次|仅一次).{0,24}(?<!不)(?<!不能)(?<!无法)(?:由|通过|依靠|is guaranteed by|is ensured by).{0,12}Outbox/iu],
 ];
 
 const [ledger, linkHealth, licenseInventory] = await Promise.all([
@@ -168,6 +221,58 @@ function svgDiagramContract(source) {
   return {nodes, edges};
 }
 
+function cssDeclarations(source) {
+  return new Map(source.split(';').map((declaration) => declaration.trim()).filter(Boolean).map((declaration) => {
+    const separator = declaration.indexOf(':');
+    return [declaration.slice(0, separator).trim(), declaration.slice(separator + 1).trim()];
+  }).filter(([property]) => property));
+}
+
+function svgPresentationValue(source, elementName, attributesSource, property, inheritedClasses = []) {
+  const attributes = xmlAttributes(attributesSource);
+  const inlineValue = cssDeclarations(attributes.get('style') ?? '').get(property);
+  if (inlineValue !== undefined) return inlineValue;
+  const classes = new Set([
+    ...inheritedClasses,
+    ...(attributes.get('class') ?? '').split(/\s+/u).filter(Boolean),
+  ]);
+  let resolved = attributes.get(property);
+  for (const [, stylesheet] of source.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/gu)) {
+    for (const [, selectors, declarationsSource] of stylesheet.matchAll(/([^{}]+)\{([^{}]*)\}/gu)) {
+      const declarations = cssDeclarations(declarationsSource);
+      if (!declarations.has(property)) continue;
+      for (const rawSelector of selectors.split(',')) {
+        const selector = rawSelector.trim();
+        if (/^[a-z][\w-]*/iu.test(selector) && !selector.startsWith(elementName)) continue;
+        const requiredClasses = [...selector.matchAll(/\.([\w-]+)/gu)].map(([, className]) => className);
+        if (requiredClasses.every((className) => classes.has(className))) resolved = declarations.get(property);
+      }
+    }
+  }
+  return resolved;
+}
+
+function svgEdgeDashArray(source, id) {
+  const escapedId = id.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
+  const match = source.match(new RegExp(`<path\\b([^>]*)data-edge-id="${escapedId}"([^>]*)>`, 'u'));
+  assert.ok(match, `SVG edge presentation ${id}`);
+  return svgPresentationValue(source, 'path', `${match[1]}${match[2]}`, 'stroke-dasharray');
+}
+
+function svgLegendDashArray(source, id) {
+  const escapedId = id.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
+  const group = source.match(new RegExp(`<g\\b([^>]*)data-node-id="${escapedId}"([^>]*)>([\\s\\S]*?)<\\/g>`, 'u'));
+  assert.ok(group, `SVG legend group ${id}`);
+  const groupClasses = xmlAttributes(`${group[1]}${group[2]}`).get('class')?.split(/\s+/u).filter(Boolean) ?? [];
+  const line = group[3].match(/<(path|line)\b([^>]*)>/u);
+  assert.ok(line, `SVG legend line ${id}`);
+  return svgPresentationValue(source, line[1], line[2], 'stroke-dasharray', groupClasses);
+}
+
+function isDashedStroke(value) {
+  return value !== undefined && !/^(?:none|0(?:[ ,]+0)*)$/iu.test(value.trim());
+}
+
 function drawioCellGeometry(source, id) {
   const escapedId = id.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
   const match = source.match(new RegExp(`<mxCell\\b[^>]*\\bid="${escapedId}"[^>]*>([\\s\\S]*?)<\\/mxCell>`, 'u'));
@@ -191,6 +296,32 @@ function contains(outer, inner) {
     inner.x + inner.width <= outer.x + outer.width &&
     inner.y + inner.height <= outer.y + outer.height;
 }
+
+function sectionBody(source, heading, nextHeading) {
+  const start = source.indexOf(`## ${heading}`);
+  assert.ok(start >= 0, `${heading} section`);
+  const end = nextHeading ? source.indexOf(`## ${nextHeading}`, start + heading.length + 3) : source.length;
+  assert.ok(end > start, `${heading} section end`);
+  return source.slice(start, end);
+}
+
+function markdownParagraphs(source) {
+  return source.split(/\r?\n\s*\r?\n/u).map((paragraph) => paragraph.trim()).filter(Boolean);
+}
+
+test('SVG presentation parser resolves stylesheet, presentation, inline, and inherited dash semantics', () => {
+  const fixture = `<svg>
+    <style>.sync { stroke-dasharray: none; } path.event { stroke-dasharray: 8 4; } .legend-event { stroke-dasharray: 6,3; }</style>
+    <path data-edge-id="sync-edge" class="sync" stroke-dasharray="9 9"></path>
+    <path data-edge-id="event-edge" class="event"></path>
+    <path data-edge-id="inline-sync" class="event" style="stroke-dasharray: none"></path>
+    <g data-node-id="legend-event-line" class="legend-event"><line></line></g>
+  </svg>`;
+  assert.equal(isDashedStroke(svgEdgeDashArray(fixture, 'sync-edge')), false, 'stylesheet overrides presentation attribute');
+  assert.equal(isDashedStroke(svgEdgeDashArray(fixture, 'event-edge')), true, 'stylesheet event dash');
+  assert.equal(isDashedStroke(svgEdgeDashArray(fixture, 'inline-sync')), false, 'inline style wins cascade');
+  assert.equal(isDashedStroke(svgLegendDashArray(fixture, 'legend-event-line')), true, 'legend inherits dash semantics');
+});
 
 test('publishes exact STY-04 metadata, headings, and actionable published adjacency', () => {
   assert.ok(article, `${ARTICLE} must exist after implementation`);
@@ -227,14 +358,24 @@ test('locks module contracts, data ownership, consistency, failure domain, and s
   assert.match(visibleCopy, /共享(?:物理)?数据库不等于共享(?:数据)?模型/u);
   assert.match(visibleCopy, /本地事务/u);
   assert.match(visibleCopy, /跨模块.*(?:原子)?事务.*耦合|本地事务.*跨模块.*耦合/u);
-  assert.match(visibleCopy, /Outbox/u);
-  for (const term of ['提交', '投递', '重复', '恢复']) assert.match(visibleCopy, new RegExp(term, 'u'), `Outbox boundary: ${term}`);
+  const consistencySection = sectionBody(article.source, '数据所有权与一致性', '部署单元与故障域');
+  const outboxParagraph = markdownParagraphs(consistencySection).find((paragraph) => /Outbox/u.test(paragraph));
+  assert.ok(outboxParagraph, 'Outbox lifecycle paragraph in the consistency section');
+  for (const term of ['提交', '投递', '重复', '恢复']) {
+    assert.match(outboxParagraph, new RegExp(term, 'u'), `Outbox lifecycle paragraph: ${term}`);
+  }
   assert.match(visibleCopy, /(?:单一|一个)(?:构建)?制品|一个部署制品/u);
   assert.match(visibleCopy, /共享进程故障域/u);
   for (const signal of [
     /协调等待|协调延迟/u, /独立发布/u, /非对称扩缩|资源曲线/u, /合规|数据驻留/u,
     /爆炸半径|故障影响半径/u, /团队自治/u, /迁移就绪|迁移准备/u, /回滚/u,
   ]) assert.match(visibleCopy, signal, `measurable split signal ${signal}`);
+  const migrationSection = sectionBody(article.source, '迁移路径', '禁用条件');
+  assert.match(migrationSection, /(?:拆分|提取|抽取)/u, 'split decision in migration section');
+  assert.match(migrationSection, /指标/u, 'split decisions name a metric');
+  assert.match(migrationSection, /阈值/u, 'split decisions name a threshold');
+  assert.match(migrationSection, /观察窗口|连续\s*\d+\s*(?:天|周|月|个迭代)/u,
+    'split decisions name an observation window');
   assert.match(article.source,
     /<div className="architecture-diagram-scroll" role="region" aria-label="模块化单体的模块合同、数据所有权与单一部署边界图，可横向滚动" tabIndex=\{0\} onKeyDown=\{handleHorizontalArrowKey\}>[\s\S]*?\/img\/diagrams\/sty-04-modular-monolith-boundaries\.svg[\s\S]*?<\/div>/u,
     'accessible diagram embed');
@@ -242,12 +383,35 @@ test('locks module contracts, data ownership, consistency, failure domain, and s
 
 test('rejects claims that erase module, data, deployment, or delivery boundaries', () => {
   assert.ok(article);
-  const visibleCopy = parseMdxVisibleCopy(article.source, ARTICLE).blocks.map(({text}) => text).join('\n');
-  assert.doesNotMatch(visibleCopy, /模块(?:就是|等同于|等于|=)服务/u);
-  assert.doesNotMatch(visibleCopy, /共享(?:物理)?数据库(?:就是|等同于|等于|=)共享(?:数据)?模型/u);
-  assert.doesNotMatch(visibleCopy,
-    /模块化单体(?:天然|自动)(?:获得|具备|支持|实现)?[^。；\n]*(?:独立部署|独立扩缩|故障隔离)/u);
-  assert.doesNotMatch(visibleCopy, /Outbox[^。；\n]*(?:保证|实现)[^。；\n]*exactly[- ]once/iu);
+  const visibleCopy = parseMdxVisibleCopy(article.source, ARTICLE).blocks.map(({text}) => text).join(' ')
+    .replace(/\s+/gu, ' ');
+  for (const [label, pattern] of PROHIBITED_CLAIMS) assert.doesNotMatch(visibleCopy, pattern, label);
+});
+
+test('prohibited-claim patterns cover equivalents while permitting explicit denials', () => {
+  const positiveSamples = [
+    '业务模块意味着微服务。',
+    '微服务等同于业务模块。',
+    '只要建立业务模块，就必然成为服务。',
+    '共享物理数据库代表着共享数据模型。',
+    '共享数据模型相当于共享数据库。',
+    '采用共享数据库即可共用数据模型。',
+    '模块化单体天然提供独立部署。',
+    '采用模块化单体就能故障隔离。',
+    '独立扩缩是模块化单体天然具备的能力。',
+    'Outbox guarantees exactly-once delivery.',
+    'exactly-once is guaranteed by Outbox.',
+  ];
+  for (const sample of positiveSamples) {
+    assert.ok(PROHIBITED_CLAIMS.some(([, pattern]) => pattern.test(sample)), `must reject: ${sample}`);
+  }
+  for (const denial of [
+    '业务模块不等于服务。',
+    '共享数据库不意味着共享数据模型。',
+    '模块化单体不能保证独立部署。',
+    'Outbox 不能保证 exactly-once。',
+    'exactly-once 不能由 Outbox 保证。',
+  ]) assert.ok(PROHIBITED_CLAIMS.every(([, pattern]) => !pattern.test(denial)), `must permit denial: ${denial}`);
 });
 
 test('governs the three STY-04 sources with bounded evidence and one manifest primary', () => {
@@ -257,6 +421,7 @@ test('governs the three STY-04 sources with bounded evidence and one manifest pr
   const review = ledger.documents[ARTICLE];
   assert.ok(review, `${ARTICLE} source review`);
   assert.deepEqual(review.citations.map(({source_id}) => source_id), SOURCE_IDS);
+  assert.deepEqual(SOURCE_CONTRACTS.map(({id}) => id), SOURCE_IDS, 'source contracts stay aligned with citation order');
   assert.equal(review.citations.filter(({manifest_primary}) => manifest_primary).length, 1,
     'exactly one manifest-primary citation');
   assert.deepEqual(review.copyright_checks, [
@@ -265,6 +430,7 @@ test('governs the three STY-04 sources with bounded evidence and one manifest pr
   assert.ok(article, `${ARTICLE} visible citations`);
   const citedDomains = new Set();
   for (const [index, sourceId] of SOURCE_IDS.entries()) {
+    const sourceContract = SOURCE_CONTRACTS[index];
     const record = records.get(sourceId);
     assert.ok(record, `${sourceId} ledger record`);
     assert.equal(record.canonical_locator, SOURCE_URLS[index]);
@@ -273,9 +439,15 @@ test('governs the three STY-04 sources with bounded evidence and one manifest pr
       'author_or_org', 'version', 'source_kind', 'copyright_policy', 'license', 'license_family_id',
       'license_evidence_url', 'license_evidence_note', 'usage_boundary',
     ]) assert.ok(record[field]?.length, `${sourceId} ${field}`);
-    assert.ok(record.allowed_evidence_roles?.length, `${sourceId} allowed_evidence_roles`);
-    assert.ok(review.citations[index].roles?.every((role) => record.allowed_evidence_roles.includes(role)),
-      `${sourceId} citation roles remain within ledger authority`);
+    assert.equal(record.license, sourceContract.license, `${sourceId} exact license`);
+    assert.equal(record.copyright_policy, sourceContract.copyrightPolicy, `${sourceId} exact copyright policy`);
+    assert.deepEqual(record.allowed_evidence_roles, sourceContract.allowedEvidenceRoles,
+      `${sourceId} exact allowed evidence roles`);
+    assert.equal(record.usage_boundary, sourceContract.usageBoundary, `${sourceId} exact usage boundary`);
+    assert.ok(review.citations[index].roles?.length, `${sourceId} citation roles must not be empty`);
+    assert.deepEqual(review.citations[index].roles, sourceContract.citationRoles, `${sourceId} exact citation roles`);
+    assert.equal(review.citations[index].manifest_primary, sourceContract.manifestPrimary,
+      `${sourceId} exact manifest-primary eligibility`);
     assert.ok(review.citations[index].attribution_note?.trim(), `${sourceId} attribution`);
     assert.equal(review.citations[index].excerpt, null, `${sourceId} no copied excerpt`);
     assert.equal(review.citations[index].quotation_reviewed, false, `${sourceId} no quotation`);
@@ -313,6 +485,9 @@ test('projects the exact pre-closure Stage A state', () => {
   assert.deepEqual(styleIndexEntry?.primary_sources, projectedPrimaryUrls);
   assert.equal(nextTopic?.published, false);
   assert.equal(nextTopic?.status.value, 'pending');
+  const nextStyleIndexEntry = indexes.style.find(({id}) => id === 'STY-05');
+  assert.equal(nextStyleIndexEntry?.published, false);
+  assert.equal(nextStyleIndexEntry?.status.value, 'pending');
   assert.equal(projectStatus.completed_topics, 56);
   assert.equal(projectStatus.content_documents, 99);
   assert.equal(projectStatus.governed_sources, 512);
@@ -372,6 +547,8 @@ test('publishes a synchronized, accessible Draw.io and SVG semantic inventory', 
     assert.equal(/(?:^|;)dashed=1(?:;|$)/u.test(drawioEdge?.style ?? ''), connectorClass === 'event',
       `Draw.io edge ${id} line class`);
     assert.ok(svgEdge?.className.split(/\s+/u).includes(connectorClass), `SVG edge ${id} ${connectorClass} class`);
+    assert.equal(isDashedStroke(svgEdgeDashArray(svg, id)), connectorClass === 'event',
+      `SVG edge ${id} rendered stroke pattern`);
   }
 
   for (const geometryOf of [
@@ -406,5 +583,7 @@ test('publishes a synchronized, accessible Draw.io and SVG semantic inventory', 
     assert.match(svg,
       new RegExp(`<g\\b[^>]*data-node-id="${lineId}"[^>]*data-legend-line="${connectorClass}"[^>]*>`, 'u'),
       `SVG ${lineId}`);
+    assert.equal(isDashedStroke(svgLegendDashArray(svg, lineId)), connectorClass === 'event',
+      `SVG ${lineId} rendered stroke pattern`);
   }
 });
