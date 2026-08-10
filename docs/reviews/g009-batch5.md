@@ -20,6 +20,7 @@
 - Final deterministic diagram-geometry implementation: `5556c98aa237fc8e865252eacf8dd6fe19d4c128`.
 - Initial Stage A projection/test commit: `36cc475` (`test: bind STY-04 Stage A projection`).
 - Stage A remediation implementation commit: `7669994f6b5cd29bc5515e2269d778579e954559` (`fix: remediate STY-04 Stage A findings`).
+- Final code-review remediation commit: `e33e11f452a3a3ef82e7e2f8a8e74eecff70d05e` (`test: bind STY-04 contrast to rendered roles`).
 
 ## Sources, licenses, and evidence boundaries
 
@@ -66,7 +67,7 @@
 - Code review: `PENDING` — leader must dispatch an independent code reviewer against the exact Stage A head.
 - Content/evidence review: `PENDING` — leader must dispatch an independent content/evidence reviewer against the exact Stage A head.
 - Architecture review: `PENDING` — leader must dispatch an independent architecture reviewer against the exact Stage A head.
-- Remediation commit: `7669994f6b5cd29bc5515e2269d778579e954559`; independent re-review remains `PENDING` until the leader dispatches fresh code, content/evidence, and architecture reviews.
+- Remediation commits: `7669994f6b5cd29bc5515e2269d778579e954559` and `e33e11f452a3a3ef82e7e2f8a8e74eecff70d05e`; independent re-review remains `PENDING` until the leader records the corresponding verdicts.
 - Final Stage A release judgment: `PENDING`.
 
 ## Release state
