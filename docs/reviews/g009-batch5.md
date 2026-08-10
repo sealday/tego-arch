@@ -19,7 +19,7 @@
 - Final article/payment-boundary implementation: `43c34e43236e8e510e39019ffb9372170ca05081`.
 - Final deterministic diagram-geometry implementation: `5556c98aa237fc8e865252eacf8dd6fe19d4c128`.
 - Initial Stage A projection/test commit: `36cc475` (`test: bind STY-04 Stage A projection`).
-- Stage A remediation implementation: this evidence record belongs to the local remediation commit headed by `fix: remediate STY-04 Stage A findings`; its exact immutable commit identity is recorded by the follow-up evidence commit after creation.
+- Stage A remediation implementation commit: `7669994f6b5cd29bc5515e2269d778579e954559` (`fix: remediate STY-04 Stage A findings`).
 
 ## Sources, licenses, and evidence boundaries
 
@@ -65,7 +65,7 @@
 - Code review: `PENDING` — leader must dispatch an independent code reviewer against the exact Stage A head.
 - Content/evidence review: `PENDING` — leader must dispatch an independent content/evidence reviewer against the exact Stage A head.
 - Architecture review: `PENDING` — leader must dispatch an independent architecture reviewer against the exact Stage A head.
-- Remediation review status: `PENDING` — the exact implementation commit will be recorded here by the follow-up evidence commit, then the leader must dispatch fresh independent reviews.
+- Remediation commit: `7669994f6b5cd29bc5515e2269d778579e954559`; independent re-review remains `PENDING` until the leader dispatches fresh code, content/evidence, and architecture reviews.
 - Final Stage A release judgment: `PENDING`.
 
 ## Release state
