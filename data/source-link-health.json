@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-07T03:33:27.018Z",
+  "generated_at": "2026-08-10T03:13:20.300Z",
   "results": [
     {
       "transport_locator": "https://a2a-protocol.org/latest/",
@@ -35370,6 +35370,37 @@
           "outcome": "healthy",
           "final_transport_locator": "https://github.com/donnemartin/system-design-primer",
           "http_status": 206,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://github.com/dotnet-architecture/eShopOnWeb",
+      "source_ids": [
+        "src-microsoft-eshoponweb-architecture"
+      ],
+      "last_attempt": {
+        "at": "2026-08-10T03:13:20.300Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://github.com/dotnet-architecture/eShopOnWeb",
+        "http_status": 200,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-10T03:13:20.300Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://github.com/dotnet-architecture/eShopOnWeb",
+        "http_status": 200,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-08-10T03:13:20.300Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://github.com/dotnet-architecture/eShopOnWeb",
+          "http_status": 200,
           "login_wall_detected": false
         }
       ],
@@ -77331,6 +77362,37 @@
           "at": "2026-08-06T21:30:02.583Z",
           "outcome": "healthy",
           "final_transport_locator": "https://www.informit.com/store/applying-domain-driven-design-and-patterns-with-examples-9780321268204",
+          "http_status": 200,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://www.jimmybogard.com/vertical-slice-architecture/",
+      "source_ids": [
+        "src-bogard-vertical-slice-architecture"
+      ],
+      "last_attempt": {
+        "at": "2026-08-10T03:13:20.300Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www.jimmybogard.com/vertical-slice-architecture/",
+        "http_status": 200,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-10T03:13:20.300Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www.jimmybogard.com/vertical-slice-architecture/",
+        "http_status": 200,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-08-10T03:13:20.300Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://www.jimmybogard.com/vertical-slice-architecture/",
           "http_status": 200,
           "login_wall_detected": false
         }

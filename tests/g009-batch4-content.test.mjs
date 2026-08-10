@@ -254,7 +254,7 @@ test('requires STY-03 sources, citations, and reviewed transport evidence', () =
   const records = new Map(ledger.sources.map((source) => [source.id, source]));
   const healthBySource = new Map(linkHealth.results.flatMap((result) =>
     result.source_ids.map((sourceId) => [sourceId, result])));
-  const documentReview = ledger.documents[sty03.file];
+  const documentReview = ledger.documents[`content/${sty03.file}`];
   assert.ok(documentReview, 'STY-03 source review record');
   assert.equal(documentReview.reviewed_at, '2026-08-08');
   assert.deepEqual(documentReview.copyright_checks, [
@@ -284,7 +284,7 @@ test('requires STY-03 sources, citations, and reviewed transport evidence', () =
     assert.equal(health?.last_attempt?.final_transport_locator, record.transport_locator, `${id} final transport`);
     assert.ok(health?.last_attempt?.at, `${id} health timestamp`);
     const escapedFamily = record.license_family_id.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
-    assert.match(licenseInventory, new RegExp(`^\\|[^|]+\\|[^|]+\\|${escapedFamily}\\|`, 'mu'), `${id} license inventory`);
+    assert.match(licenseInventory, new RegExp(`^\\|\\s*${escapedFamily}\\s*\\|`, 'mu'), `${id} license inventory`);
     assert.ok(externalLinksOf(sty03).includes(url), `${id} visible citation`);
   }
 });
