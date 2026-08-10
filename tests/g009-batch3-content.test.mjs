@@ -39,12 +39,12 @@ test('preserves STY-02 closure in the current Batch 4 projection', () => {
   ]);
   assert.equal(topics.get('STY-03')?.published, true);
   assert.equal(topics.get('STY-03')?.status.value, 'complete');
-  assert.equal(topics.get('STY-04')?.published, false);
+  assert.equal(topics.get('STY-04')?.published, true);
   assert.equal(topics.get('STY-04')?.status.value, 'pending');
   assert.equal(projectStatus.completed_topics, 56);
-  assert.equal(projectStatus.content_documents, 98);
-  assert.equal(projectStatus.governed_sources, 509);
-  assert.equal(publicLedger.sources.length, 509);
+  assert.equal(projectStatus.content_documents, 99);
+  assert.equal(projectStatus.governed_sources, 512);
+  assert.equal(publicLedger.sources.length, 512);
   assert.ok(indexes.style.some(({id, status}) => id === 'STY-02' && status.value === 'complete'));
 });
 
@@ -486,7 +486,7 @@ test('publishes the exact STY-02 metadata and eleven headings', () => {
   assert.equal(metadata.topic_id, 'STY-02');
   assert.equal(metadata.priority, 'P0');
   assert.deepEqual(metadata.depends_on, ['STY-00', 'STY-01']);
-  assert.deepEqual(metadata.adjacent_topics, ['STY-01', 'STY-03']);
+  assert.deepEqual(metadata.adjacent_topics, ['STY-01', 'STY-03', 'STY-04']);
   assert.deepEqual(metadata.related_cases, ['/cases/micro-frontends-single-spa']);
   assert.deepEqual(metadata.related_questions, []);
   assert.deepEqual(findMarkdownHeadings(sty02.body).map(({text}) => text), expectedHeadings);

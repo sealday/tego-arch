@@ -452,8 +452,8 @@ function assertStageBProjection(projectStatus, topicIndexes, content) {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
     completed_topics: 56,
-    content_documents: 98,
-    governed_sources: 509,
+    content_documents: 99,
+    governed_sources: 512,
     sources: {
       durable_stories: 'docs/content-backlog.md',
       completed_topics: 'docs/content-backlog.md',

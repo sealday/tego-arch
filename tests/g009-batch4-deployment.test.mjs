@@ -29,7 +29,7 @@ test('closes only STY-03 and advances the current backlog target', () => {
   assert.match(backlog, /^- \[ \] \*\*STY-04 /mu);
 });
 
-test('projects STY-03 published and complete while keeping STY-04 unpublished', () => {
+test('projects STY-03 complete while publishing STY-04 pending', () => {
   const topics = new Map(manifest.topics.map((topic) => [topic.id, topic]));
   const styleTopics = new Map(indexes.style.map((topic) => [topic.id, topic]));
 
@@ -37,9 +37,9 @@ test('projects STY-03 published and complete while keeping STY-04 unpublished', 
   assert.equal(topics.get('STY-03')?.status.value, 'complete');
   assert.equal(styleTopics.get('STY-03')?.published, true);
   assert.equal(styleTopics.get('STY-03')?.status.value, 'complete');
-  assert.equal(topics.get('STY-04')?.published, false);
+  assert.equal(topics.get('STY-04')?.published, true);
   assert.equal(topics.get('STY-04')?.status.value, 'pending');
-  assert.equal(styleTopics.get('STY-04')?.published, false);
+  assert.equal(styleTopics.get('STY-04')?.published, true);
   assert.equal(styleTopics.get('STY-04')?.status.value, 'pending');
 });
 
@@ -52,17 +52,17 @@ test('retains the published corpus and closes the deployed topic', () => {
     },
     {
       completed_topics: 56,
-      content_documents: 97 + 1,
-      governed_sources: 506 + 3,
+      content_documents: 98 + 1,
+      governed_sources: 509 + 3,
     },
   );
-  assert.equal(publicLedger.sources.length, 506 + 3);
+  assert.equal(publicLedger.sources.length, 509 + 3);
 });
 
 test('includes the canonical STY-03 route and SVG in the deployment inventory', async () => {
   assert.ok(deploymentInventory.routes.includes(STY03_ROUTE));
   assert.ok(deploymentInventory.assets.includes(STY03_ASSET));
-  assert.equal(deploymentInventory.routes.includes('/styles/sty-04'), false);
+  assert.equal(deploymentInventory.routes.includes('/styles/sty-04'), true);
   await access(new URL(`../static${STY03_ASSET}`, import.meta.url));
 });
 

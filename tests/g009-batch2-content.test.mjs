@@ -166,12 +166,12 @@ test('preserves the Batch 2 STY-01 facts in the current Batch 4 projection', () 
   assert.equal(manifest.topics.find(({id}) => id === 'STY-02')?.status.value, 'complete');
   assert.equal(manifest.topics.find(({id}) => id === 'STY-03')?.published, true);
   assert.equal(manifest.topics.find(({id}) => id === 'STY-03')?.status.value, 'complete');
-  assert.equal(manifest.topics.find(({id}) => id === 'STY-04')?.published, false);
+  assert.equal(manifest.topics.find(({id}) => id === 'STY-04')?.published, true);
   assert.equal(manifest.topics.find(({id}) => id === 'STY-04')?.status.value, 'pending');
   assert.equal(projectStatus.completed_topics, 56);
-  assert.equal(projectStatus.content_documents, 98);
-  assert.equal(projectStatus.governed_sources, 509);
-  assert.equal(publicLedger.sources.length, 509);
+  assert.equal(projectStatus.content_documents, 99);
+  assert.equal(projectStatus.governed_sources, 512);
+  assert.equal(publicLedger.sources.length, 512);
   assert.ok(indexes.style.some(({id, status}) => id === 'STY-01' && status.value === 'complete'));
   assert.ok(indexes.style.some(({id, status}) => id === 'STY-02' && status.value === 'complete'));
 });
@@ -194,7 +194,7 @@ test('publishes the approved STY-01 metadata and style headings', () => {
   assert.equal(metadata.slug, '/styles/sty-01');
   assert.equal(metadata.topic_id, 'STY-01');
   assert.deepEqual(metadata.depends_on, ['STY-00']);
-  assert.deepEqual(metadata.adjacent_topics, ['STY-00', 'STY-02', 'STY-03']);
+  assert.deepEqual(metadata.adjacent_topics, ['STY-00', 'STY-02', 'STY-03', 'STY-04']);
   assert.deepEqual(metadata.related_cases, ['/cases/micro-frontends-single-spa']);
   assert.deepEqual(findMarkdownHeadings(sty01.body).map(({text}) => text), expectedHeadings);
 });

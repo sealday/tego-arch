@@ -35322,6 +35322,62 @@
         }
       ]
     },
+    "content/styles/sty-04-modular-monolith.mdx": {
+      "title": "模块化单体：在一个部署单元内保护业务边界",
+      "slug": "/styles/sty-04",
+      "reviewed_at": "2026-08-11",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-fowler-monolith-first",
+          "citation_url": "https://martinfowler.com/bliki/MonolithFirst.html",
+          "roles": [
+            "comparison",
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Monolith First, Martin Fowler",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-spring-modulith-events",
+          "citation_url": "https://docs.spring.io/spring-modulith/reference/events.html",
+          "roles": [
+            "implementation",
+            "runtime-fact"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Working with Application Events, Spring Modulith reference documentation 2.1.0",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-spring-modulith-fundamentals",
+          "citation_url": "https://docs.spring.io/spring-modulith/reference/fundamentals.html",
+          "roles": [
+            "definition",
+            "implementation",
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Fundamentals, Spring Modulith reference documentation 2.1.0",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
     "content/terminology.mdx": {
       "title": "术语规范",
       "slug": "/terminology",

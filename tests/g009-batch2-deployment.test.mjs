@@ -286,14 +286,14 @@ test('preserves the STY-01 closure in the current Batch 4 projection', async () 
   assert.equal(topics.get('STY-02')?.status.value, 'complete');
   assert.equal(topics.get('STY-03')?.published, true);
   assert.equal(topics.get('STY-03')?.status.value, 'complete');
-  assert.equal(topics.get('STY-04')?.published, false);
+  assert.equal(topics.get('STY-04')?.published, true);
   assert.equal(topics.get('STY-04')?.status.value, 'pending');
   assert.deepEqual(status, {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
     completed_topics: 56,
-    content_documents: 98,
-    governed_sources: 509,
+    content_documents: 99,
+    governed_sources: 512,
     sources: {
       durable_stories: 'docs/content-backlog.md',
       completed_topics: 'docs/content-backlog.md',
@@ -301,7 +301,7 @@ test('preserves the STY-01 closure in the current Batch 4 projection', async () 
       governed_sources: 'data/source-ledger.json',
     },
   });
-  assert.equal(sourceLedger.sources.length, 509);
+  assert.equal(sourceLedger.sources.length, 512);
 });
 
 test('preserves the complete G009 Batch 1 and older release history', async () => {

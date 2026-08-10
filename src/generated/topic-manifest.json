@@ -924,27 +924,6 @@
       "presentation": {}
     },
     {
-      "id": "STY-04",
-      "type": "style",
-      "title": "Modular Monolith",
-      "slug": "/styles/sty-04",
-      "priority": "P0",
-      "status": {
-        "scope": "backlog-projection",
-        "value": "pending",
-        "source": "docs/content-backlog.md"
-      },
-      "dependencies": [],
-      "adjacent_topics": [],
-      "primary_sources": [],
-      "related_cases": [],
-      "related_questions": [],
-      "reviewed_at": null,
-      "review_policy": null,
-      "published": false,
-      "pattern_group": null
-    },
-    {
       "id": "STY-05",
       "type": "style",
       "title": "Microservices",
@@ -1288,7 +1267,8 @@
       "adjacent_topics": [
         "STY-00",
         "STY-02",
-        "STY-03"
+        "STY-03",
+        "STY-04"
       ],
       "primary_sources": [
         "https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/n-tier"
@@ -1486,7 +1466,8 @@
       ],
       "adjacent_topics": [
         "STY-01",
-        "STY-03"
+        "STY-03",
+        "STY-04"
       ],
       "primary_sources": [
         "https://alistair.cockburn.us/hexagonal-architecture/",
@@ -1520,7 +1501,8 @@
       ],
       "adjacent_topics": [
         "STY-01",
-        "STY-02"
+        "STY-02",
+        "STY-04"
       ],
       "primary_sources": [
         "https://github.com/dotnet-architecture/eShopOnWeb",
@@ -1704,6 +1686,39 @@
       ],
       "related_questions": [],
       "reviewed_at": "2026-07-24",
+      "review_policy": null,
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
+    },
+    {
+      "id": "STY-04",
+      "type": "style",
+      "title": "模块化单体：在一个部署单元内保护业务边界",
+      "slug": "/styles/sty-04",
+      "priority": "P0",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "pending",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "STY-00",
+        "STY-03"
+      ],
+      "adjacent_topics": [
+        "STY-01",
+        "STY-02",
+        "STY-03"
+      ],
+      "primary_sources": [
+        "https://docs.spring.io/spring-modulith/reference/fundamentals.html"
+      ],
+      "related_cases": [
+        "/cases/micro-frontends-single-spa"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-08-11",
       "review_policy": null,
       "published": true,
       "pattern_group": null,
@@ -3906,31 +3921,6 @@
       "presentation": {}
     },
     {
-      "id": "STY-14",
-      "type": "style",
-      "title": "风格选择矩阵",
-      "slug": "/styles/sty-14",
-      "priority": "P1",
-      "status": {
-        "scope": "backlog-projection",
-        "value": "pending",
-        "source": "docs/content-backlog.md"
-      },
-      "dependencies": [
-        "STY-04",
-        "STY-05",
-        "STY-06"
-      ],
-      "adjacent_topics": [],
-      "primary_sources": [],
-      "related_cases": [],
-      "related_questions": [],
-      "reviewed_at": null,
-      "review_policy": null,
-      "published": false,
-      "pattern_group": null
-    },
-    {
       "id": "PR-11",
       "type": "principle",
       "title": "命令查询分离、命令查询职责分离（Command Query Responsibility Segregation，CQRS）与读写分离",
@@ -4233,6 +4223,31 @@
       "published": true,
       "pattern_group": null,
       "presentation": {}
+    },
+    {
+      "id": "STY-14",
+      "type": "style",
+      "title": "风格选择矩阵",
+      "slug": "/styles/sty-14",
+      "priority": "P1",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "pending",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "STY-04",
+        "STY-05",
+        "STY-06"
+      ],
+      "adjacent_topics": [],
+      "primary_sources": [],
+      "related_cases": [],
+      "related_questions": [],
+      "reviewed_at": null,
+      "review_policy": null,
+      "published": false,
+      "pattern_group": null
     },
     {
       "id": "MOD-10",
