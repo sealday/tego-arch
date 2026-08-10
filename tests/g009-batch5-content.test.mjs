@@ -70,6 +70,47 @@ const SOURCE_CONTRACTS = [
 const ADJACENT_TOPICS = ['STY-01', 'STY-02', 'STY-03'];
 const ADJACENT_ROUTES = ['/styles/sty-01', '/styles/sty-02', '/styles/sty-03'];
 const MODULES = ['order', 'inventory', 'payment', 'notification'];
+const DIAGRAM_VIEWBOX = '0 0 1200 1580';
+const DIAGRAM_RENDER_WIDTH = 800;
+const DIAGRAM_RENDER_SCALE = 2 / 3;
+const DIAGRAM_GEOMETRY = new Map([
+  ['deployment-boundary', [110, 70, 1060, 1350]],
+  ['order-module-boundary', [140, 170, 430, 610]],
+  ['inventory-module-boundary', [630, 170, 510, 610]],
+  ['payment-module-boundary', [140, 820, 430, 550]],
+  ['notification-module-boundary', [630, 820, 510, 550]],
+  ['order-public-contract', [165, 240, 375, 96]],
+  ['inventory-public-contract', [655, 240, 455, 96]],
+  ['payment-public-contract', [165, 890, 375, 96]],
+  ['notification-public-contract', [655, 890, 455, 96]],
+  ['order-internal-implementation', [165, 405, 375, 96]],
+  ['inventory-internal-implementation', [655, 405, 455, 96]],
+  ['payment-internal-implementation', [165, 1055, 375, 96]],
+  ['notification-internal-implementation', [655, 1055, 455, 96]],
+  ['order-owned-data', [165, 570, 375, 190]],
+  ['inventory-owned-data', [655, 570, 455, 170]],
+  ['payment-owned-data', [165, 1220, 375, 120]],
+  ['notification-owned-data', [655, 1220, 455, 120]],
+  ['outbox', [190, 655, 325, 90]],
+  ['event-publication', [920, 90, 220, 70]],
+  ['shared-process-failure-domain', [300, 90, 590, 58]],
+  ['submit-order-request', [5, 250, 95, 110]],
+  ['legend-sync-line', [140, 1470, 90, 24]],
+  ['legend-event-line', [140, 1515, 90, 24]],
+  ['legend-sync-label', [250, 1460, 390, 44]],
+  ['legend-event-label', [250, 1505, 390, 44]],
+]);
+const DIAGRAM_THRESHOLDS = new Map([
+  ['data-node-padding-x-css', 16],
+  ['data-node-padding-y-css', 14],
+  ['data-baseline-gap-css', 22],
+  ['data-text-bottom-clearance-css', 14],
+  ['data-edge-stroke-clearance-css', 8],
+  ['data-edge-arrow-clearance-css', 16],
+  ['data-edge-node-clearance-css', 12],
+  ['data-body-font-min-css', 15],
+  ['data-type-font-min-css', 10],
+]);
 const DIAGRAM_NODES = [
   ['deployment-boundary', '单一部署单元', '部署边界 / Deployment Boundary'],
   ['order-module-boundary', '订单模块', '业务模块 / Module Boundary'],
@@ -317,6 +358,11 @@ function contains(outer, inner) {
     inner.y + inner.height <= outer.y + outer.height;
 }
 
+function overlaps(first, second) {
+  return first.x < second.x + second.width && first.x + first.width > second.x &&
+    first.y < second.y + second.height && first.y + first.height > second.y;
+}
+
 function sectionBody(source, heading, nextHeading) {
   const start = source.indexOf(`## ${heading}`);
   assert.ok(start >= 0, `${heading} section`);
@@ -546,7 +592,16 @@ test('publishes a synchronized, accessible Draw.io and SVG semantic inventory', 
   assert.match(svg, /<title\b[^>]*>[^<]*模块化单体[^<]*<\/title>/u);
   assert.match(svg, /<desc\b[^>]*>[^<]*(?=[^<]*单一部署)(?=[^<]*订单)(?=[^<]*库存)(?=[^<]*支付)(?=[^<]*通知)(?=[^<]*公开合同)(?=[^<]*数据)(?=[^<]*同步)(?=[^<]*异步)[^<]*<\/desc>/u);
   assert.match(svg, /<svg\b(?=[^>]*\bviewBox="0 0 [0-9.]+ [0-9.]+")(?=[^>]*\brole="img")(?=[^>]*\baria-labelledby="[^"]+")[^>]*>/u);
-  assert.doesNotMatch(svg.match(/<svg\b[^>]*>/u)?.[0] ?? '', /\b(?:width|height)="/u, 'responsive SVG root');
+  const svgRoot = svg.match(/<svg\b[^>]*>/u)?.[0] ?? '';
+  assert.equal(xmlAttributes(svgRoot).get('viewBox'), DIAGRAM_VIEWBOX, 'stable STY-04 SVG viewBox');
+  assert.doesNotMatch(svgRoot, /\b(?:width|height)="/u, 'responsive SVG root');
+  assert.equal(Number(xmlAttributes(svgRoot).get('data-render-width-css')), DIAGRAM_RENDER_WIDTH,
+    'planned article render width');
+  assert.equal(Number(xmlAttributes(svgRoot).get('data-authoring-to-render-scale')), DIAGRAM_RENDER_SCALE,
+    'authoring-to-rendered scale');
+  for (const [attribute, threshold] of DIAGRAM_THRESHOLDS) {
+    assert.equal(Number(xmlAttributes(svgRoot).get(attribute)), threshold, `${attribute} threshold`);
+  }
 
   const drawioContract = drawioDiagramContract(drawio);
   const svgContract = svgDiagramContract(svg);
@@ -598,6 +653,9 @@ test('publishes a synchronized, accessible Draw.io and SVG semantic inventory', 
     (id) => drawioCellGeometry(drawio, id),
     (id) => svgCellGeometry(svg, id),
   ]) {
+    for (const [id, expected] of DIAGRAM_GEOMETRY) {
+      assert.deepEqual(Object.values(geometryOf(id)), expected, `${id} exact source geometry`);
+    }
     const deployment = geometryOf('deployment-boundary');
     for (const id of [
       ...MODULES.map((module) => `${module}-module-boundary`),
@@ -610,6 +668,14 @@ test('publishes a synchronized, accessible Draw.io and SVG semantic inventory', 
       ]) assert.ok(contains(boundary, geometryOf(id)), `${module}-module-boundary contains ${id}`);
     }
     assert.ok(contains(geometryOf('order-owned-data'), geometryOf('outbox')), 'order-owned-data contains outbox');
+    for (let left = 0; left < MODULES.length; left += 1) {
+      for (let right = left + 1; right < MODULES.length; right += 1) {
+        assert.equal(overlaps(
+          geometryOf(`${MODULES[left]}-module-boundary`),
+          geometryOf(`${MODULES[right]}-module-boundary`),
+        ), false, `${MODULES[left]} and ${MODULES[right]} module regions do not overlap`);
+      }
+    }
   }
 
   for (const edge of [...drawioEdges.values(), ...svgEdges.values()]) {
