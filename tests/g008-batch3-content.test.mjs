@@ -702,7 +702,7 @@ test('projects the exact G008 Batch 3 Stage B repository state', () => {
   assert.deepEqual(status, {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
-    completed_topics: 55,
+    completed_topics: 56,
     content_documents: 98,
     governed_sources: 509,
     sources: {

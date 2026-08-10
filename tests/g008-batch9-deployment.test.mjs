@@ -154,17 +154,17 @@ function currentReleaseBaseline(source) {
   return baselines[0];
 }
 
-function currentG009Batch3Prefix(source) {
+function currentG009Batch4Prefix(source) {
   const baseline = currentReleaseBaseline(source);
-  const marker = '此前 G009 Batch 2 历史完成基线为：';
+  const marker = '此前 G009 Batch 3 历史完成基线为：';
   const end = baseline.indexOf(marker);
-  assert.notEqual(end, -1, 'G009 Batch 2 history boundary');
+  assert.notEqual(end, -1, 'G009 Batch 3 history boundary');
   return baseline.slice(0, end);
 }
 
-function mutateCurrentG009Batch3Prefix(source, replacement) {
-  const prefix = currentG009Batch3Prefix(source);
-  const mutatedPrefix = prefix.replace('下一项为 STY-03', replacement);
+function mutateCurrentG009Batch4Prefix(source, replacement) {
+  const prefix = currentG009Batch4Prefix(source);
+  const mutatedPrefix = prefix.replace('下一项为 STY-04', replacement);
   assert.notEqual(mutatedPrefix, prefix, 'current next-topic mutation must change prefix');
   return source.replace(prefix, mutatedPrefix);
 }
@@ -240,9 +240,9 @@ function assertBacklogClosure(source) {
   assert.match(source, /当前持久故事：\*\* `G009`/u);
   assert.match(source, /最近完成 `G008`/u);
   assert.equal(
-    currentG009Batch3Prefix(source).split('下一项为 STY-03').length - 1,
+    currentG009Batch4Prefix(source).split('下一项为 STY-04').length - 1,
     1,
-    'G009 Batch 3 current prefix must identify STY-03 as next',
+    'G009 Batch 4 current prefix must identify STY-04 as next',
   );
 }
 
@@ -263,7 +263,7 @@ function assertGeneratedState(manifestValue, statusValue) {
   assert.deepEqual(statusValue, {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
-    completed_topics: 55,
+    completed_topics: 56,
     content_documents: 98,
     governed_sources: 509,
     sources: {
@@ -352,7 +352,7 @@ test('rejects backlog evidence status and next-topic mutations', () => {
     backlog.replace('- [x] **MOD-12 ', '- [ ] **MOD-12 '),
     backlog.replace('- [x] **MOD-13 ', '- [ ] **MOD-13 '),
     backlog.replace('- **当前持久故事：** `G009`。', '- **当前持久故事：** `G008`。'),
-    mutateCurrentG009Batch3Prefix(backlog, '下一项为 STY-01'),
+    mutateCurrentG009Batch4Prefix(backlog, '下一项为 STY-01'),
     backlog.replace('- [x] **STY-00 ', '- [ ] **STY-00 '),
   ];
   assert.equal(
