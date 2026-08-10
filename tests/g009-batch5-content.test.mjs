@@ -81,10 +81,10 @@ const DIAGRAM_RENDER_WIDTH = 800;
 const DIAGRAM_RENDER_SCALE = 2 / 3;
 const DIAGRAM_GEOMETRY = new Map([
   ['deployment-boundary', [130, 70, 1060, 1570]],
-  ['order-module-boundary', [160, 180, 430, 690]],
-  ['inventory-module-boundary', [650, 180, 510, 690]],
-  ['payment-module-boundary', [160, 950, 430, 630]],
-  ['notification-module-boundary', [650, 950, 510, 630]],
+  ['order-module-boundary', [160, 182, 430, 688]],
+  ['inventory-module-boundary', [650, 182, 510, 688]],
+  ['payment-module-boundary', [160, 952, 430, 628]],
+  ['notification-module-boundary', [650, 952, 510, 628]],
   ['order-public-contract', [185, 270, 375, 96]],
   ['inventory-public-contract', [675, 270, 455, 96]],
   ['payment-public-contract', [185, 1040, 375, 96]],
@@ -98,8 +98,8 @@ const DIAGRAM_GEOMETRY = new Map([
   ['payment-owned-data', [185, 1430, 375, 120]],
   ['notification-owned-data', [675, 1430, 455, 120]],
   ['outbox', [210, 745, 325, 90]],
-  ['event-publication', [850, 75, 310, 101]],
-  ['shared-process-failure-domain', [430, 75, 400, 101]],
+  ['event-publication', [850, 75, 310, 104.25]],
+  ['shared-process-failure-domain', [430, 75, 400, 103]],
   ['submit-order-request', [5, 270, 95, 110]],
   ['legend-sync-line', [160, 1690, 90, 24]],
   ['legend-event-line', [160, 1735, 90, 24]],
@@ -868,6 +868,13 @@ test('keeps every measured STY-04 header above node-text padding and baseline th
     )) ?? [];
     const [x, y, width, height] = (group[1] ?? '').split(/\s+/u).map(Number);
     const contents = group[2] ?? '';
+    const outline = contents.match(/<(rect|path)\b([^>]*)>/u) ?? [];
+    const strokeWidth = Number.parseFloat(
+      svgPresentationValue(svg, outline[1], outline[2], 'stroke-width'),
+    );
+    assert.ok(Number.isFinite(strokeWidth) && strokeWidth > 0,
+      `${nodeId} measurable stroke width`);
+    const halfStroke = strokeWidth / 2;
     const titleMatch = contents.match(
       /(<text\b[^>]*data-text-role="title"[^>]*>)([^<]+)<\/text>/u,
     ) ?? [];
@@ -894,14 +901,17 @@ test('keeps every measured STY-04 header above node-text padding and baseline th
       const anchor = attributes.get('text-anchor') ?? 'start';
       const left = anchor === 'middle' ? textX - textWidth / 2 : anchor === 'end' ? textX - textWidth : textX;
       const right = left + textWidth;
-      const horizontalPadding = Math.min(left - x, x + width - right);
+      const horizontalPadding = Math.min(
+        left - (x + halfStroke),
+        x + width - halfStroke - right,
+      );
       assert.ok(horizontalPadding >= 24,
         `${nodeId} ${role} has only ${horizontalPadding} authoring units horizontal padding`);
     }
 
-    const topPadding = titleBaseline - titleFontSize - y;
+    const topPadding = titleBaseline - titleFontSize - (y + halfStroke);
     const baselineGap = typeBaseline - titleBaseline;
-    const bottomClearance = y + height - typeBaseline;
+    const bottomClearance = y + height - halfStroke - typeBaseline;
     assert.ok(topPadding >= 21,
       `${nodeId} title has only ${topPadding} authoring units vertical padding`);
     assert.ok(baselineGap >= 33,
