@@ -64,13 +64,14 @@
 
 ## Independent review
 
-- Code review: `PENDING` — leader must dispatch an independent code reviewer against the exact Stage A head.
-- Content/evidence review: `PENDING` — leader must dispatch an independent content/evidence reviewer against the exact Stage A head.
-- Architecture review: `PENDING` — leader must dispatch an independent architecture reviewer against the exact Stage A head.
-- Remediation commits: `7669994f6b5cd29bc5515e2269d778579e954559` and `e33e11f452a3a3ef82e7e2f8a8e74eecff70d05e`; independent re-review remains `PENDING` until the leader records the corresponding verdicts.
-- Final Stage A release judgment: `PENDING`.
+- Exact reviewed head: `2edba43`.
+- Independent code reviewer (`code-reviewer`): `READY / APPROVE`; findings: `0`. Evidence: the selector-bound contrast gate resolves the actual canvas, node backgrounds, text fills, sync/event strokes, legend inheritance, and opacity cascade; white `.event` and `.edge-label/.legend-label` mutations fail, while the complete four-state browser evidence records every wrapper, focus indicator, ArrowRight movement, and non-truncated diagnostic result.
+- Independent content and rights reviewer: `READY`; rights: `PASS`; findings: `0`. Evidence: original-illustration governance is complete across the ledger, document citation, public projection, and source-license inventory with `LicenseRef-Atlas-Original`, `original-atlas`, non-primary illustration-only limits; payment recovery distinguishes local transaction participants, durable intent ownership, never-attempted and unknown results, partial-failure continuation, compensation, reconciliation, deadlines, and manual disposition.
+- Independent architecture reviewer (`architect`): `CLEAR / READY`; findings: `0`. Evidence: invariant proof keeps the order row, inventory reservation row, payment-intent row, and Outbox record atomic inside the local transaction; external authorization remains post-commit, unknown results reconcile by stable idempotency key, Outbox explicitly does not guarantee exactly-once, consumers deduplicate and isolate poison messages, and the single deployment retains its shared failure domain.
+- Remediation commits reviewed: `7669994f6b5cd29bc5515e2269d778579e954559` and `e33e11f452a3a3ef82e7e2f8a8e74eecff70d05e`.
+- Final Stage A release judgment: `READY` — independent review is complete and the exact head may proceed to the deployment step; this verdict is not evidence that deployment ran.
 
 ## Release state
 
-- This record contains local Stage A evidence only. No Pages run, production observation, Stage B closure, or independent verdict is claimed.
-- Publication handoff is blocked only on the three leader-dispatched independent reviews and any resulting remediation.
+- This record contains local Stage A implementation and independent-review evidence only. No Pages run, production observation, Stage B closure, or production deployment is claimed.
+- Publication handoff is ready for the Stage A deployment step; deployment and production evidence must be recorded separately after they run.

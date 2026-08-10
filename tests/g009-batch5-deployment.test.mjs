@@ -105,7 +105,7 @@ test('preserves the pre-closure G009 backlog state', () => {
   assert.match(backlog, /^- \[ \] \*\*STY-05 /mu);
 });
 
-test('records deterministic Stage A evidence without fabricating independent verdicts', async () => {
+test('records the completed independent Stage A verdicts without claiming deployment', async () => {
   assert.match(review, /^# G009 Batch 5 Stage A Review$/mu);
   assert.match(section(review, 'Stage A projection'), /56 completed topics \/ 99 content documents \/ 513 governed sources/u);
   assert.match(section(review, 'Stage A projection'), /STY-04: `published \/ pending`/u);
@@ -126,11 +126,20 @@ test('records deterministic Stage A evidence without fabricating independent ver
   }
 
   const independentReview = section(review, 'Independent review');
-  assert.match(independentReview, /Code review: `PENDING`/u);
-  assert.match(independentReview, /Content\/evidence review: `PENDING`/u);
-  assert.match(independentReview, /Architecture review: `PENDING`/u);
-  assert.match(independentReview, /Final Stage A release judgment: `PENDING`/u);
-  assert.doesNotMatch(independentReview, /`(?:READY|APPROVE|CLEAR)`/u);
+  assert.match(independentReview, /Exact reviewed head: `2edba43`/u);
+  assert.match(independentReview,
+    /Independent code reviewer \(`code-reviewer`\): `READY \/ APPROVE`; findings: `0`/u);
+  assert.match(independentReview,
+    /selector-bound contrast.*four-state browser evidence/u);
+  assert.match(independentReview,
+    /Independent content and rights reviewer: `READY`; rights: `PASS`; findings: `0`/u);
+  assert.match(independentReview,
+    /original-illustration governance.*payment recovery/u);
+  assert.match(independentReview,
+    /Independent architecture reviewer \(`architect`\): `CLEAR \/ READY`; findings: `0`/u);
+  assert.match(independentReview, /invariant proof/u);
+  assert.match(independentReview, /Final Stage A release judgment: `READY`/u);
+  assert.doesNotMatch(independentReview, /`PENDING`/u);
   assert.doesNotMatch(
     review,
     /Stage B closure\s*[—:-]\s*PASS|Pages run:\s*\[`[0-9]+`\]|production smoke\s*[—:-]\s*PASS/iu,
