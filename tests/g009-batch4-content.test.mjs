@@ -524,9 +524,10 @@ test('publishes the synchronized STY-03 diagram pair with the minimum inventory'
     ['layered-boundary', ['layered-http', 'layered-controller', 'layered-service', 'layered-repository'], ['shared-database']],
     ['vertical-slice-boundary', ['submit-order-boundary', 'shared-domain-invariants', 'inventory-adapter', 'order-persistence-adapter'], ['shared-database']],
     ['submit-order-boundary', ['slice-http', 'submit-order-handler', 'inventory-port', 'order-store', 'response-mapper'],
-      ['order-rules', 'inventory-adapter', 'order-persistence-adapter', 'shared-database']],
+      ['shared-domain-invariants', 'order-rules', 'inventory-adapter', 'order-persistence-adapter', 'shared-database']],
     ['shared-domain-invariants', ['order-rules'],
-      ['inventory-port', 'order-store', 'response-mapper', 'inventory-adapter', 'order-persistence-adapter', 'shared-database']],
+      ['slice-http', 'submit-order-handler', 'inventory-port', 'order-store', 'response-mapper',
+        'inventory-adapter', 'order-persistence-adapter', 'shared-database']],
   ];
   for (const geometryOf of [
     (id) => drawioCellGeometry(drawio, id),
