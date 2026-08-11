@@ -18,13 +18,31 @@ const SOURCE_IDS = [
 ];
 const STATES = ['desktopLight', 'desktopDark', 'mobileLight', 'mobileDark'];
 const REVIEWED_HEAD = '40283eeadb9525df93ea884d23bd1953070d78a8';
+const IMPLEMENTATION_HEAD = 'e82760843a55ba98a09793215e5f13e0c1fbfaa8';
+const PAGES_RUN_ID = '31490981657';
+const PAGES_BUILD_JOB_ID = '93777183963';
+const PAGES_DEPLOY_JOB_ID = '93777844175';
 const BROWSER_ARTIFACT_HASH = 'b139a174432e1684d9a9387e839807fc22b22c6ba0b2cb6e18009536a416f767';
+const PRODUCTION_BROWSER_ARTIFACT_HASH = '638b6141975cba48c43e5956f78fe029b780f6d74b8d9c8ddb1afad4b7be2ff2';
 const SCREENSHOT_HASHES = {
   desktopLight: 'b2939596c3ddaadcd2700c32eb019ef943e89160a4e88c896957e8259030ac7e',
   desktopDark: '9f49172f0c2d631799c7b41b92d870913133dfa4ebf9d1d9429f99a3f98c375c',
   mobileLight: '438b4f50bee195a80aac053662d44dd95e75bba4a1bd9723678480f42a1d3b1b',
   mobileDark: '7262a8f5e2066ff57eca1bb287e3b8d7f9faa941f3fe043870b748fe286404d7',
 };
+const PRODUCTION_SCREENSHOT_HASHES = {
+  desktopLight: 'abb7a3b4a0280221c2eb2282917788e3427e5dc75cbddd6dbb9b5cc0e9e70da0',
+  desktopDark: '56d3f8184b7bf00d0247bc3521bec4c8c9f84eb9e323445c28819ad3f3839124',
+  mobileLight: '9953a1b1cae9bc858e622b2e592906a46ee39f391d0906e9224a48ef2f12c312',
+  mobileDark: 'c49b336de616c04c4e5df114844c2fe89828ee360acb12ce6702d034e85594ee',
+};
+const PRODUCTION_SOURCE_HREFS = [
+  'https://martinfowler.com/articles/microservices.html',
+  'https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/microservices',
+  'https://microservices.io/patterns/data/database-per-service.html',
+  'https://microservices.io/patterns/data/saga.html',
+  'https://docs.aws.amazon.com/prescriptive-guidance/latest/modernization-decomposing-monoliths/decompose-business-capability.html',
+];
 
 const [article, backlog, review, manifest, indexes, projectStatus, publicLedger] =
   await Promise.all([
@@ -118,6 +136,69 @@ function assertEvidenceProvenance(source) {
   assert.doesNotMatch(implementation, /hard-coded expected colors unrelated to the selected elements/u);
 }
 
+function assertProductionEvidence(source) {
+  const production = section(source, 'Production Stage A evidence');
+  for (const literal of [
+    `Exact implementation head: \`${IMPLEMENTATION_HEAD}\`.`,
+    'Workflow: `Verify and deploy Docusaurus to GitHub Pages`; event: `push`.',
+    `Run: \`${PAGES_RUN_ID}\`; status: \`completed\`; conclusion: \`success\`.`,
+    `Build job: \`${PAGES_BUILD_JOB_ID}\`; status: \`completed\`; conclusion: \`success\`.`,
+    `Deploy job: \`${PAGES_DEPLOY_JOB_ID}\`; status: \`completed\`; conclusion: \`success\`.`,
+    'HTTP probes: `9/9` returned `200`; HTML content types: `8/8`; SVG content types: `1/1`.',
+    'Production Browser states accepted: `4/4`.',
+    'Production wrapper interaction checks: `12/12`.',
+    'Production relation destination/H1/return checks: `16/16`.',
+    'Production source destinations resolved: `20/20` from five exact anchors and four unique hostnames per state.',
+    'STY-06 production actionable DOM count: `0` in every state.',
+    'Every production state recorded warning/error logs `0`, `Runtime.exceptionThrown=0`, `Log.entryAdded=0`, `hasMore=false`, and `truncated=false`.',
+    'Stage A deployment status: `SUCCESS`.',
+    'Stage B backlog closure status: `PENDING`.',
+  ]) {
+    assert.ok(production.includes(literal), `production literal: ${literal}`);
+  }
+  assert.match(
+    production,
+    /Live SVG: `36,867` bytes; SHA-256 `35bf03e73a1fda674701dd98a9f5dd016eaedbfb10a7a6f89485e110c5b9eb65`; exact reviewed-asset match: `true`\./u,
+  );
+
+  const stateRows = {
+    desktopLight: '`1440x1000` / `light` | `1440/1440` | `800/800`; `800/1024`; `800/1024` | `0→0`; `0→40`; `0→40`',
+    desktopDark: '`1440x1000` / `dark` | `1440/1440` | `800/800`; `800/1024`; `800/1024` | `0→0`; `0→40`; `0→40`',
+    mobileLight: '`390x844` / `light` | `390/390` | `358/800`; `358/1024`; `358/1024` | `0→40`; `0→40`; `0→40`',
+    mobileDark: '`390x844` / `dark` | `390/390` | `358/800`; `358/1024`; `358/1024` | `0→40`; `0→40`; `0→40`',
+  };
+  for (const state of STATES) {
+    assert.ok(production.includes(`| \`${state}\` | ${stateRows[state]} |`), `${state} production geometry`);
+    assert.ok(production.includes(
+      `${state} screenshot: \`.superpowers/sdd/task-6-production-${state}.jpg\`, SHA-256 \`${PRODUCTION_SCREENSHOT_HASHES[state]}\`.`,
+    ), `${state} production screenshot`);
+  }
+
+  for (const href of PRODUCTION_SOURCE_HREFS) {
+    assert.ok(
+      production.includes(`| \`${href}\` | \`_blank\` | \`noopener noreferrer\` | \`4/4\` |`),
+      `${href} exact production source destination`,
+    );
+  }
+  for (const [href, h1] of [
+    ['/tego-arch/styles', '架构风格'],
+    ['/tego-arch/styles/sty-04', '模块化单体：在一个部署单元内保护业务边界'],
+    ['/tego-arch/styles/sty-03', '垂直切片架构：按用例收拢变化边界'],
+    ['/tego-arch/cases/micro-frontends-single-spa', '微前端：用垂直业务切片约束跨团队所有权'],
+  ]) {
+    assert.ok(production.includes(`| \`${href}\` | \`${h1}\` | \`4/4\` |`), `${href} production relation return`);
+  }
+  assert.ok(production.includes(
+    'Relation fallback: `visible-DOM href selection + direct navigation (production offscreen relation audit fallback); browser history return; no physical relation click claimed`.',
+  ));
+  assert.ok(production.includes(
+    'Source fallback: `visible-DOM exact href selection + direct open of the same URL in an in-app Browser destination tab (_blank compatibility fallback); no physical source-anchor click claimed`.',
+  ));
+  assert.ok(production.includes(
+    `Raw production Browser JSON: \`.superpowers/sdd/task-6-production-evidence.json\`, SHA-256 \`${PRODUCTION_BROWSER_ARTIFACT_HASH}\`.`,
+  ));
+}
+
 test('projects the exact STY-05 Stage A inventory', () => {
   assert.deepEqual(
     {
@@ -206,5 +287,46 @@ test('rejects incomplete evidence, wrong hashes, weakened verdicts, stale PENDIN
       assertFinalIndependentReview(mutated);
       assert.doesNotMatch(mutated, /Deployment status: `SUCCESS`/u);
     }, {name: 'AssertionError'}, label);
+  }
+});
+
+test('binds the exact Stage A Pages, HTTP, and production Browser evidence', () => {
+  assertProductionEvidence(review);
+});
+
+test('rejects mutated production identity, outcomes, geometry, diagnostics, links, and screenshots', () => {
+  assertProductionEvidence(review);
+  const mutations = [
+    ['wrong implementation SHA', IMPLEMENTATION_HEAD, '0'.repeat(40)],
+    ['wrong Pages run', PAGES_RUN_ID, '31490981658'],
+    ['wrong build job', PAGES_BUILD_JOB_ID, '93777183964'],
+    ['wrong deploy job', PAGES_DEPLOY_JOB_ID, '93777844176'],
+    ['wrong workflow outcome', 'Run: `31490981657`; status: `completed`; conclusion: `success`.', 'Run: `31490981657`; status: `completed`; conclusion: `failure`.'],
+    [
+      'omitted production state',
+      '| `mobileDark` | `390x844` / `dark` | `390/390` | `358/800`; `358/1024`; `358/1024` | `0→40`; `0→40`; `0→40` | `0/0/0`; `hasMore=false`; `truncated=false` |',
+      '| `mobileMissing` | `390x844` / `dark` | `390/390` | `358/800`; `358/1024`; `358/1024` | `0→40`; `0→40`; `0→40` | `0/0/0`; `hasMore=false`; `truncated=false` |',
+    ],
+    [
+      'wrong mobile geometry',
+      '| `mobileLight` | `390x844` / `light` | `390/390` | `358/800`; `358/1024`; `358/1024` | `0→40`; `0→40`; `0→40` | `0/0/0`; `hasMore=false`; `truncated=false` |',
+      '| `mobileLight` | `390x844` / `light` | `390/391` | `358/800`; `358/1024`; `358/1024` | `0→40`; `0→40`; `0→40` | `0/0/0`; `hasMore=false`; `truncated=false` |',
+    ],
+    [
+      'truncated production diagnostics',
+      'Every production state recorded warning/error logs `0`, `Runtime.exceptionThrown=0`, `Log.entryAdded=0`, `hasMore=false`, and `truncated=false`.',
+      'Every production state recorded warning/error logs `0`, `Runtime.exceptionThrown=0`, `Log.entryAdded=0`, `hasMore=false`, and `truncated=true`.',
+    ],
+    ['missing relation return', '| `/tego-arch/styles` | `架构风格` | `4/4` |', '| `/tego-arch/styles` | `架构风格` | `3/4` |'],
+    ['changed source href', PRODUCTION_SOURCE_HREFS[0], 'https://example.com/microservices'],
+    ['weakened source target', '`_blank` | `noopener noreferrer`', '`_self` | `noopener noreferrer`'],
+    ['weakened source rel', '`_blank` | `noopener noreferrer`', '`_blank` | `noreferrer`'],
+    ['wrong production screenshot', PRODUCTION_SCREENSHOT_HASHES.mobileDark, '1'.repeat(64)],
+    ['fabricated STY-06 absence', 'STY-06 production actionable DOM count: `0` in every state.', 'STY-06 production actionable DOM count: `1` in every state.'],
+  ];
+  for (const [label, exact, replacement] of mutations) {
+    const mutated = review.replace(exact, replacement);
+    assert.notEqual(mutated, review, `${label} mutation must apply`);
+    assert.throws(() => assertProductionEvidence(mutated), {name: 'AssertionError'}, label);
   }
 });

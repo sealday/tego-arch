@@ -84,3 +84,75 @@ Every state exposed the exact five remote locators for Lewis/Fowler, Microsoft, 
 - Scope boundary: `STAGE_A_ONLY`; Stage B backlog closure and deployment have not run.
 - Deployment status: `NOT_RUN`.
 - These verdicts authorize only the next local Stage B step; they do not claim backlog closure, publication, production evidence, or deployment success.
+
+## Production Stage A evidence
+
+- Exact implementation head: `e82760843a55ba98a09793215e5f13e0c1fbfaa8`.
+- Workflow: `Verify and deploy Docusaurus to GitHub Pages`; event: `push`.
+- Run: `31490981657`; status: `completed`; conclusion: `success`.
+- Build job: `93777183963`; status: `completed`; conclusion: `success`.
+- Deploy job: `93777844175`; status: `completed`; conclusion: `success`.
+- Run URL: `https://github.com/sealday/tego-arch/actions/runs/31490981657`.
+- Stage A deployment status: `SUCCESS`.
+- Stage B backlog closure status: `PENDING`.
+
+HTTP probes: `9/9` returned `200`; HTML content types: `8/8`; SVG content types: `1/1`.
+
+| Route | Status | Content type | Bytes | SHA-256 |
+| --- | ---: | --- | ---: | --- |
+| `/` | `200` | `text/html; charset=utf-8` | `17,310` | `13d73ea045a747ea795fca2a76c3072917d5042b2571cd07a4e935e9ddd20935` |
+| `/styles` | `200` | `text/html; charset=utf-8` | `20,880` | `c527ee34a2f37ec5601968075ea7ee2417ed2c286d165b19c6277dcd96ccba9f` |
+| `/styles/sty-05` | `200` | `text/html; charset=utf-8` | `37,081` | `221ef647ea10832e17157ffff7267d4fb12e545b22fcfa2e4b5919960f800ed0` |
+| `/styles/sty-04` | `200` | `text/html; charset=utf-8` | `42,330` | `e338a3fd0e1345bf9885b99dca836b7ba1a144152b1643a8866312851fa42ce2` |
+| `/styles/sty-03` | `200` | `text/html; charset=utf-8` | `39,856` | `940e6ed0f3207edaa594bbd98f1dd96d5895f2681adefc7ffb33a42233cbf5c9` |
+| `/paths/module-boundaries` | `200` | `text/html; charset=utf-8` | `28,296` | `a18e4f44007df4d6c6a2676abc93425bcfa08c878b691eae05245fd1ae0101bd` |
+| `/references` | `200` | `text/html; charset=utf-8` | `23,533` | `f321a67506a8cc9afbb37a95685b17e228873fd68aeb19b78e18c77e9ecb92d1` |
+| `/cases/micro-frontends-single-spa` | `200` | `text/html; charset=utf-8` | `61,331` | `d31f69f3c86531f23309ac0d77f0103f96b974098cc9a6900bc5a6abc1f036a6` |
+| `/img/diagrams/sty-05-microservices-order-saga.svg` | `200` | `image/svg+xml` | `36,867` | `35bf03e73a1fda674701dd98a9f5dd016eaedbfb10a7a6f89485e110c5b9eb65` |
+
+Live SVG: `36,867` bytes; SHA-256 `35bf03e73a1fda674701dd98a9f5dd016eaedbfb10a7a6f89485e110c5b9eb65`; exact reviewed-asset match: `true`.
+
+- Production Browser surface: Codex in-app Browser against `https://sealday.github.io/tego-arch/styles/sty-05`.
+- Production Browser states accepted: `4/4`.
+- Production wrapper interaction checks: `12/12`.
+- Production relation destination/H1/return checks: `16/16`.
+- Production source destinations resolved: `20/20` from five exact anchors and four unique hostnames per state.
+- STY-06 production actionable DOM count: `0` in every state.
+- Every production state recorded warning/error logs `0`, `Runtime.exceptionThrown=0`, `Log.entryAdded=0`, `hasMore=false`, and `truncated=false`.
+- Every wrapper became the active `:focus-visible` element with a `3px solid` outline before `ArrowRight`; the same opaque SVG loaded at intrinsic `44x150` and rendered `800x2736` in every state.
+- Production visual inspection: `PASS` in light and dark themes. The four service boundaries, private-data nodes, distinct message/compensation lanes, recovery annotations, and legend remained readable without clipping or theme-dependent loss.
+
+| State | Viewport/theme | Document client/scroll | Diagram; table 1; table 2 client/scroll | ArrowRight before→after | Diagnostics |
+| --- | --- | --- | --- | --- | --- |
+| `desktopLight` | `1440x1000` / `light` | `1440/1440` | `800/800`; `800/1024`; `800/1024` | `0→0`; `0→40`; `0→40` | `0/0/0`; `hasMore=false`; `truncated=false` |
+| `desktopDark` | `1440x1000` / `dark` | `1440/1440` | `800/800`; `800/1024`; `800/1024` | `0→0`; `0→40`; `0→40` | `0/0/0`; `hasMore=false`; `truncated=false` |
+| `mobileLight` | `390x844` / `light` | `390/390` | `358/800`; `358/1024`; `358/1024` | `0→40`; `0→40`; `0→40` | `0/0/0`; `hasMore=false`; `truncated=false` |
+| `mobileDark` | `390x844` / `dark` | `390/390` | `358/800`; `358/1024`; `358/1024` | `0→40`; `0→40`; `0→40` | `0/0/0`; `hasMore=false`; `truncated=false` |
+
+Relation fallback: `visible-DOM href selection + direct navigation (production offscreen relation audit fallback); browser history return; no physical relation click claimed`.
+
+| Selected relation href | Exact destination H1 | Per-state return |
+| --- | --- | ---: |
+| `/tego-arch/styles` | `架构风格` | `4/4` |
+| `/tego-arch/styles/sty-04` | `模块化单体：在一个部署单元内保护业务边界` | `4/4` |
+| `/tego-arch/styles/sty-03` | `垂直切片架构：按用例收拢变化边界` | `4/4` |
+| `/tego-arch/cases/micro-frontends-single-spa` | `微前端：用垂直业务切片约束跨团队所有权` | `4/4` |
+
+Source fallback: `visible-DOM exact href selection + direct open of the same URL in an in-app Browser destination tab (_blank compatibility fallback); no physical source-anchor click claimed`.
+
+| Selected source href | Target | Rel | Exact destination resolved |
+| --- | --- | --- | ---: |
+| `https://martinfowler.com/articles/microservices.html` | `_blank` | `noopener noreferrer` | `4/4` |
+| `https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/microservices` | `_blank` | `noopener noreferrer` | `4/4` |
+| `https://microservices.io/patterns/data/database-per-service.html` | `_blank` | `noopener noreferrer` | `4/4` |
+| `https://microservices.io/patterns/data/saga.html` | `_blank` | `noopener noreferrer` | `4/4` |
+| `https://docs.aws.amazon.com/prescriptive-guidance/latest/modernization-decomposing-monoliths/decompose-business-capability.html` | `_blank` | `noopener noreferrer` | `4/4` |
+
+- Raw production Browser JSON: `.superpowers/sdd/task-6-production-evidence.json`, SHA-256 `638b6141975cba48c43e5956f78fe029b780f6d74b8d9c8ddb1afad4b7be2ff2`.
+- desktopLight screenshot: `.superpowers/sdd/task-6-production-desktopLight.jpg`, SHA-256 `abb7a3b4a0280221c2eb2282917788e3427e5dc75cbddd6dbb9b5cc0e9e70da0`.
+- desktopDark screenshot: `.superpowers/sdd/task-6-production-desktopDark.jpg`, SHA-256 `56d3f8184b7bf00d0247bc3521bec4c8c9f84eb9e323445c28819ad3f3839124`.
+- mobileLight screenshot: `.superpowers/sdd/task-6-production-mobileLight.jpg`, SHA-256 `9953a1b1cae9bc858e622b2e592906a46ee39f391d0906e9224a48ef2f12c312`.
+- mobileDark screenshot: `.superpowers/sdd/task-6-production-mobileDark.jpg`, SHA-256 `c49b336de616c04c4e5df114844c2fe89828ee360acb12ce6702d034e85594ee`.
+- Diagram light inspection screenshot: `.superpowers/sdd/task-6-production-diagram-light.jpg`, SHA-256 `c07446eb1828e2eb1738ac8f40fde78295e0b6a60c18302903510f18ce22329b`.
+- Diagram dark inspection screenshot: `.superpowers/sdd/task-6-production-diagram-dark.jpg`, SHA-256 `926e2ea49ef54b99f69ae85588911b3e1dead5064fdff403322a08cd000111aa`.
+- Full-page screenshot stitching repeated visible bands in the viewer, so the two focused viewport captures above bind the same production SVG to the light/dark visual inspection without claiming a different asset.
