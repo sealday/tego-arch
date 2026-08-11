@@ -47,6 +47,12 @@ const PROHIBITED = [
   'Saga 自动回滚外部副作用', 'Outbox 保证 exactly-once',
   '支付结果未知时直接重复扣款', '拆成服务后天然故障隔离',
 ];
+const ACCEPTED_DENIALS = [
+  '微服务不能由代码行数定义', '容器并不等于微服务', '远程调用不等于微服务',
+  '共享数据库不能由任意服务直接写入', '跨服务事务并非天然原子',
+  'Saga 不会自动回滚外部副作用', 'Outbox 不能保证 exactly-once',
+  '支付结果未知时不能直接重复扣款', '拆成服务后并不天然故障隔离',
+];
 
 const ILLUSTRATION_SOURCE_ID = 'src-atlas-sty05-microservices-order-saga';
 const ILLUSTRATION_URL = '/img/diagrams/sty-05-microservices-order-saga.svg';
@@ -113,6 +119,8 @@ const DIAGRAM_EDGES = [
   ['inventory-reserved-result', 'inventory-outbox', 'message-broker', 'InventoryReserved', 'message'],
   ['inventory-rejected-result', 'inventory-outbox', 'message-broker', 'InventoryRejected', 'message'],
   ['order-result-deduplication', 'message-broker', 'order-consumer-dedup', '结果去重', 'message'],
+  ['order-result-dispatch', 'order-consumer-dedup', 'order-handler', '推进持久 Saga', 'sync'],
+  ['reserve-inventory-publication', 'order-outbox', 'message-broker', 'ReserveInventory', 'message'],
   ['register-payment-intent', 'order-outbox', 'message-broker', 'RegisterPaymentIntent', 'message'],
   ['payment-command-delivery', 'message-broker', 'payment-contract', '登记支付意图', 'message'],
   ['payment-consumer-deduplication', 'payment-contract', 'payment-consumer-dedup', '消费去重', 'sync'],
@@ -131,7 +139,9 @@ const DIAGRAM_EDGES = [
   ['notification-contract-dispatch', 'notification-consumer-dedup', 'notification-worker', '重试投递', 'sync'],
   ['notification-owned-data-write', 'notification-worker', 'notification-data', '本地事务写投递状态', 'sync'],
   ['notification-outbox-write', 'notification-worker', 'notification-outbox', '同事务记录', 'sync'],
+  ['release-inventory-compensation-publication', 'order-outbox', 'message-broker', 'ReleaseInventory', 'compensation'],
   ['release-inventory-compensation', 'message-broker', 'inventory-contract', 'ReleaseInventory', 'compensation'],
+  ['payment-compensation-publication', 'order-outbox', 'message-broker', 'Void / Reversal / Refund', 'compensation'],
   ['payment-void-reversal-refund', 'message-broker', 'payment-contract', 'Void / Reversal / Refund', 'compensation'],
   ['poison-message-routing', 'message-broker', 'poison-message-isolation', '隔离毒消息', 'message'],
   ['order-observability-signal', 'order-handler', 'observability-platform', '日志 / 指标 / 追踪', 'message'],
@@ -140,23 +150,115 @@ const DIAGRAM_EDGES = [
   ['notification-observability-signal', 'notification-worker', 'observability-platform', '日志 / 指标 / 追踪', 'message'],
 ];
 const SOURCE_CONTRACTS = [
-  ['src-lewis-fowler-microservices', 'https://martinfowler.com/articles/microservices.html', 'LicenseRef-All-Rights-Reserved', 'facts-and-short-quotation', ['comparison', 'definition'], true],
-  ['src-microsoft-microservices-architecture-style', 'https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/microservices', 'CC-BY-4.0', 'vendor-claims-separated', ['comparison', 'runtime-fact'], false],
-  ['src-microservicesio-database-per-service', 'https://microservices.io/patterns/data/database-per-service.html', 'LicenseRef-All-Rights-Reserved', 'facts-and-short-quotation', ['method', 'runtime-fact'], false],
-  ['src-microservicesio-saga', 'https://microservices.io/patterns/data/saga.html', 'LicenseRef-All-Rights-Reserved', 'facts-and-short-quotation', ['method', 'runtime-fact'], false],
-  ['src-aws-decompose-business-capability', 'https://docs.aws.amazon.com/prescriptive-guidance/latest/modernization-decomposing-monoliths/decompose-business-capability.html', 'LicenseRef-All-Rights-Reserved', 'vendor-claims-separated', ['method'], false],
-  [ILLUSTRATION_SOURCE_ID, ILLUSTRATION_URL, 'LicenseRef-Atlas-Original', 'original-atlas', ['illustration'], false],
+  {
+    id: 'src-lewis-fowler-microservices',
+    locator: 'https://martinfowler.com/articles/microservices.html',
+    title: 'Microservices',
+    author: 'James Lewis and Martin Fowler', publishedAt: '2014-03-25',
+    version: 'Original article published 2014-03-25; author-hosted page checked 2026-08-11',
+    sourceKind: 'engineering-blog', tier: 'primary',
+    allowedRoles: ['comparison', 'definition', 'method', 'runtime-fact'],
+    license: 'LicenseRef-All-Rights-Reserved', licenseEvidenceUrl: 'https://martinfowler.com/articles/microservices.html',
+    licenseScope: 'The named James Lewis and Martin Fowler article and bibliographic facts only; prose, diagrams, images, examples, marks, linked works, and third-party material excluded',
+    licenseEvidenceNote: 'The author-hosted Microservices article exposes no reusable license; Tego Arch retains attribution, a link, and original Chinese factual summary only.',
+    copyrightPolicy: 'facts-and-short-quotation', citationRoles: ['comparison', 'definition', 'runtime-fact'],
+    usageBoundary: 'Supports commonly observed microservice characteristics including independent deployment, business-capability organization, product-style responsibility, decentralized data management, and designing for failure; it is not a formal standard or a guarantee of production outcomes.',
+    expectedApprovalNote: 'Reviewed article identity, authorship, publication date, copyright boundary, and healthy author-hosted transport on 2026-08-11.',
+    attribution: 'Microservices, James Lewis and Martin Fowler', usageMode: 'facts-summary', manifestPrimary: true,
+  },
+  {
+    id: 'src-microsoft-microservices-architecture-style',
+    locator: 'https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/microservices',
+    title: 'Microservices architecture style',
+    transport: 'https://raw.githubusercontent.com/MicrosoftDocs/architecture-center/f69851e7c8b27ca6e8983e7b7d91d35e99423a73/docs/guide/architecture-styles/microservices.md',
+    author: 'Microsoft', publishedAt: '2025-06-30',
+    version: 'MicrosoftDocs architecture-center commit f69851e7c8b27ca6e8983e7b7d91d35e99423a73; source ms.date 2025-06-30',
+    sourceKind: 'vendor-reference-architecture', tier: 'first-party',
+    allowedRoles: ['comparison', 'definition', 'implementation', 'learning', 'method', 'runtime-fact'],
+    license: 'CC-BY-4.0',
+    licenseEvidenceUrl: 'https://raw.githubusercontent.com/MicrosoftDocs/architecture-center/f69851e7c8b27ca6e8983e7b7d91d35e99423a73/LICENSE',
+    licenseScope: 'The named Microsoft Learn microservices page at the pinned official documentation commit; code, trademarks, linked works, media, and third-party assets excluded',
+    licenseEvidenceNote: 'The pinned official Architecture Center repository LICENSE applies CC BY 4.0 to the documentation repository.',
+    copyrightPolicy: 'vendor-claims-separated', citationRoles: ['comparison', 'definition', 'runtime-fact'],
+    usageBoundary: 'Supports Microsoft descriptions of autonomous services, private data, CI/CD, observability, conditional fault isolation, and distributed-system costs; Azure-specific choices and universal outcome claims are excluded.',
+    expectedApprovalNote: 'Pinned official source file and CC BY 4.0 repository license returned HTTP 200 on 2026-08-11.',
+    attribution: 'Microservices architecture style, Microsoft Azure Architecture Center',
+    usageMode: 'facts-summary', manifestPrimary: false,
+  },
+  {
+    id: 'src-microservicesio-database-per-service',
+    locator: 'https://microservices.io/patterns/data/database-per-service.html',
+    title: 'Pattern: Database per service',
+    author: 'Chris Richardson', publishedAt: null,
+    version: 'Current Database per Service pattern page checked 2026-08-11',
+    sourceKind: 'independent-blog', tier: 'primary',
+    allowedRoles: ['comparison', 'definition', 'method', 'runtime-fact'],
+    license: 'LicenseRef-All-Rights-Reserved', licenseEvidenceUrl: 'https://microservices.io/patterns/data/database-per-service.html',
+    licenseScope: 'The named Database per Service pattern page and bibliographic facts only; prose, diagrams, examples, linked works, and third-party material excluded',
+    licenseEvidenceNote: 'The checked Microservices.io footer states Copyright © 2026 Chris Richardson • All rights reserved; Tego Arch uses attribution, a link, and original factual summary only.',
+    copyrightPolicy: 'facts-and-short-quotation', citationRoles: ['definition', 'method', 'runtime-fact'],
+    usageBoundary: 'Supports private persistent data, access through service APIs, local transactions, and the cross-service transaction/query costs; it does not authorize copied diagrams or prove a universal storage topology.',
+    expectedApprovalNote: 'Reviewed canonical page identity, authorship, copyright footer, and healthy transport on 2026-08-11.',
+    attribution: 'Database per Service pattern, Chris Richardson', usageMode: 'facts-summary', manifestPrimary: false,
+  },
+  {
+    id: 'src-microservicesio-saga', locator: 'https://microservices.io/patterns/data/saga.html', title: 'Pattern: Saga',
+    author: 'Chris Richardson', publishedAt: null,
+    version: 'Current Saga pattern page checked 2026-08-11', sourceKind: 'independent-blog', tier: 'primary',
+    allowedRoles: ['definition', 'method', 'runtime-fact'],
+    license: 'LicenseRef-All-Rights-Reserved', licenseEvidenceUrl: 'https://microservices.io/patterns/data/saga.html',
+    licenseScope: 'The named Saga pattern page and bibliographic facts only; prose, diagrams, examples, linked works, and third-party material excluded',
+    licenseEvidenceNote: 'The checked Microservices.io footer states Copyright © 2026 Chris Richardson • All rights reserved; Tego Arch uses attribution, a link, and original factual summary only.',
+    copyrightPolicy: 'facts-and-short-quotation', citationRoles: ['method', 'runtime-fact'],
+    usageBoundary: 'Supports a sequence of local transactions, choreography or orchestration, compensation, lack of automatic rollback and isolation, and the database/message atomicity problem; it does not establish exactly-once delivery, automatic compensation, or production guarantees.',
+    expectedApprovalNote: 'Reviewed canonical page identity, authorship, copyright footer, and healthy transport on 2026-08-11.',
+    attribution: 'Saga pattern, Chris Richardson', usageMode: 'facts-summary', manifestPrimary: false,
+  },
+  {
+    id: 'src-aws-decompose-business-capability',
+    locator: 'https://docs.aws.amazon.com/prescriptive-guidance/latest/modernization-decomposing-monoliths/decompose-business-capability.html',
+    title: 'Decompose by business capability',
+    author: 'Amazon Web Services', publishedAt: null,
+    version: 'Current AWS Prescriptive Guidance page checked 2026-08-11',
+    sourceKind: 'vendor-reference-architecture', tier: 'first-party',
+    allowedRoles: ['comparison', 'method'], license: 'LicenseRef-All-Rights-Reserved',
+    licenseEvidenceUrl: 'https://aws.amazon.com/terms/', copyrightPolicy: 'vendor-claims-separated',
+    licenseScope: 'The named AWS Prescriptive Guidance page and bibliographic facts only; prose, diagrams, service marks, linked works, and third-party material excluded',
+    licenseEvidenceNote: 'AWS Site Terms govern the checked documentation and reserve rights outside their stated licenses; Tego Arch retains attribution, a link, and original factual summary only.',
+    usageBoundary: 'Supports business-capability stability, domain understanding, domain-expert participation, and cross-functional team prerequisites; AWS-specific implementation choices and universal outcome claims are excluded.',
+    expectedApprovalNote: 'Reviewed canonical identity, AWS Site Terms boundary, and healthy transport on 2026-08-11.',
+    attribution: 'Decompose by business capability, Amazon Web Services',
+    citationRoles: ['comparison', 'method'], usageMode: 'facts-summary', manifestPrimary: false,
+  },
+  {
+    id: ILLUSTRATION_SOURCE_ID, locator: ILLUSTRATION_URL,
+    title: '微服务订单 Saga 的独立部署、私有数据与恢复路径图',
+    author: 'Tego Arch maintainers', publishedAt: null,
+    version: 'Original Draw.io/SVG pair authored and checked on 2026-08-11',
+    sourceKind: 'original-illustration', tier: 'primary', allowedRoles: ['illustration'],
+    license: 'LicenseRef-Atlas-Original',
+    licenseEvidenceUrl: 'https://github.com/sealday/tego-arch/blob/main/static/img/diagrams/sty-05-microservices-order-saga.svg',
+    licenseScope: 'The named project-authored sty-05-microservices-order-saga.svg asset only',
+    licenseEvidenceNote: 'The project-authored Draw.io/SVG pair contains no third-party reference image, icon, signature, watermark, brand visual, or copied composition.',
+    copyrightPolicy: 'original-atlas',
+    usageBoundary: 'Original teaching illustration of independent service deployment, private authoritative data, local transaction and Outbox boundaries, durable Saga state, payment reconciliation, compensation, poison-message isolation, and observability; it is illustration-only and does not establish production outcomes.',
+    expectedApprovalNote: 'Approved the project-local original illustration locator after synchronized Draw.io/SVG semantics, contrast, geometry, and responsive QA on 2026-08-11.',
+    attribution: '微服务订单 Saga 的独立部署、私有数据与恢复路径图，Tego Arch maintainers',
+    modificationNote: 'Created as an original Draw.io and SVG pair for STY-05 without third-party reference imagery or copied composition.',
+    citationRoles: ['illustration'], usageMode: 'original-illustration',
+    manifestPrimary: false,
+  },
 ];
 const PROHIBITED_PATTERNS = [
-  /微服务.{0,12}(?:由|按).{0,8}代码行数定义/iu,
-  /容器.{0,8}(?:等于|就是|即为|天然成为).{0,8}微服务/iu,
-  /远程调用.{0,8}(?:等于|就是|即为|天然成为).{0,8}微服务/iu,
-  /共享数据库.{0,20}(?:任意|任何|所有)服务.{0,12}(?:直接)?写入/iu,
-  /跨服务事务.{0,12}(?:天然|自动|默认).{0,8}原子/iu,
-  /Saga.{0,12}(?:自动|天然).{0,8}回滚.{0,10}外部副作用/iu,
-  /Outbox.{0,16}(?:保证|确保|实现).{0,8}(?:exactly[- ]once|恰好一次|仅一次)/iu,
-  /支付结果未知.{0,16}(?:直接|立即|盲目).{0,8}重复(?:授权|扣款)/iu,
-  /拆成服务.{0,16}(?:天然|自动|必然).{0,8}故障隔离/iu,
+  /微服务.{0,12}(?<!不能)(?<!不可)(?<!不应)(?:由|按).{0,8}代码行数定义/iu,
+  /容器.{0,8}(?<!不)(?<!并不)(?<!不能)(?:等于|就是|即为|天然成为).{0,8}微服务/iu,
+  /远程调用.{0,8}(?<!不)(?<!并不)(?<!不能)(?:等于|就是|即为|天然成为).{0,8}微服务/iu,
+  /共享数据库.{0,12}(?<!不)(?<!不能)(?<!禁止)(?:仍可|可以|允许)由?(?:任意|任何|所有)服务.{0,12}(?:直接)?写入/iu,
+  /跨服务事务.{0,12}(?<!不)(?<!并非)(?<!不能)(?:天然|自动|默认).{0,8}原子/iu,
+  /Saga.{0,12}(?<!不)(?<!不会)(?<!不能)(?:自动|天然).{0,8}回滚.{0,10}外部副作用/iu,
+  /Outbox.{0,16}(?<!不)(?<!不能)(?<!无法)(?:保证|确保|实现).{0,8}(?:exactly[- ]once|恰好一次|仅一次)/iu,
+  /支付结果未知.{0,16}(?<!不)(?<!不能)(?<!禁止)(?:直接|立即|盲目).{0,8}重复(?:授权|扣款)/iu,
+  /拆成服务.{0,16}(?<!不)(?<!并不)(?<!不能)(?:天然|自动|必然).{0,8}故障隔离/iu,
 ];
 
 const [ledger, licenseInventory, manifest, projectStatus, indexes, publicLedger] = await Promise.all([
@@ -184,6 +286,19 @@ function externalLinksOf(document) {
 
 function assertNoProhibitedClaims(source) {
   for (const pattern of PROHIBITED_PATTERNS) assert.doesNotMatch(source, pattern, String(pattern));
+}
+
+function sectionBody(source, heading, nextHeading) {
+  const start = source.indexOf(`## ${heading}`);
+  assert.ok(start >= 0, `${heading} section`);
+  const end = nextHeading ? source.indexOf(`## ${nextHeading}`, start + heading.length + 3) : source.length;
+  assert.ok(end > start, `${heading} section end`);
+  return source.slice(start, end);
+}
+
+function assertCompoundParagraph(source, label, patterns) {
+  const paragraphs = source.split(/\r?\n\s*\r?\n/u).map((paragraph) => paragraph.trim()).filter(Boolean);
+  assert.ok(paragraphs.some((paragraph) => patterns.every((pattern) => pattern.test(paragraph))), label);
 }
 
 function xmlAttributes(source) {
@@ -494,17 +609,36 @@ test('locks microservice boundaries, the order Saga, and owned runtime responsib
     /服务合同.*数据.*部署.*值守.*恢复.*成本|端到端.*(?:值守|恢复)/u,
     /平台.*(?:不拥有|不能拥有).*业务状态/u,
   ]) assert.match(visible, requirement, `semantic contract ${requirement}`);
+  const consistency = sectionBody(article.source, '数据所有权与一致性', '部署单元与故障域');
+  assertCompoundParagraph(consistency, 'state and Outbox commit in the same local transaction', [
+    /本地事务/u, /(?:同一|同一个|原子地).{0,12}(?:Outbox|发件箱)|(?:Outbox|发件箱).{0,12}(?:同一|同一个|原子地)/u,
+  ]);
+  assertCompoundParagraph(consistency, 'unknown payment result reconciles before another side effect', [
+    /支付.{0,8}结果未知|未知.{0,8}支付结果/u, /查询|对账/u, /(?:禁止|不得|不能|不).{0,12}重复(?:授权|扣款)/u,
+  ]);
+  const deployment = sectionBody(article.source, '部署单元与故障域', '团队拓扑');
+  assertCompoundParagraph(deployment, 'independent delivery includes rollback and rejects lockstep release', [
+    /独立.{0,8}(?:构建|验证|发布)/u, /回滚/u, /锁步发布/u,
+  ]);
+  assertCompoundParagraph(deployment, 'distributed failure paragraph owns timeout, partial failure, backlog, and isolation', [
+    /网络超时/u, /部分成功|部分失败/u, /积压|背压/u, /隔离/u, /所有者|负责/u,
+  ]);
+  const teamTopology = sectionBody(article.source, '团队拓扑', '质量属性收益与成本');
+  assertCompoundParagraph(teamTopology, 'service owner owns observability and security while platform owns no business state', [
+    /(?:服务所有者|跨职能团队).{0,32}(?:负责|拥有|承担).{0,32}(?:日志|指标|追踪|可观测)|(?:日志|指标|追踪|可观测).{0,32}由(?:服务所有者|跨职能团队)(?:负责|拥有|承担)/u,
+    /安全/u,
+    /平台.{0,16}(?:不拥有|不能拥有|不得拥有).{0,8}业务状态/u,
+  ]);
   assertNoProhibitedClaims(visible);
 });
 
 test('prohibited claim mutations are rejected while explicit boundaries remain expressible', () => {
   assert.equal(PROHIBITED.length, PROHIBITED_PATTERNS.length);
+  assert.equal(ACCEPTED_DENIALS.length, PROHIBITED_PATTERNS.length);
   for (let index = 0; index < PROHIBITED.length; index += 1) {
     assert.throws(() => assertNoProhibitedClaims(PROHIBITED[index]), {name: 'AssertionError'}, PROHIBITED[index]);
+    assert.doesNotThrow(() => assertNoProhibitedClaims(ACCEPTED_DENIALS[index]), ACCEPTED_DENIALS[index]);
   }
-  assert.doesNotThrow(() => assertNoProhibitedClaims(
-    '容器并非微服务；跨服务事务不具备分布式原子性；Outbox 无法提供 exactly-once；禁止在未知支付结果时重复扣款。',
-  ));
 });
 
 test('governs six sources, three remote domains, rights, and one manifest primary', () => {
@@ -517,22 +651,85 @@ test('governs six sources, three remote domains, rights, and one manifest primar
   ]);
   assert.deepEqual(documentRecord.citations.map(({source_id}) => source_id).sort(), [...SOURCE_IDS].sort());
   assert.equal(documentRecord.citations.filter(({manifest_primary}) => manifest_primary).length, 1);
-  for (const [id, locator, license, copyrightPolicy, roles, manifestPrimary] of SOURCE_CONTRACTS) {
-    const source = ledger.sources.find((candidate) => candidate.id === id);
-    const citation = documentRecord.citations.find(({source_id}) => source_id === id);
-    assert.equal(source.canonical_locator, locator, `${id} locator`);
-    assert.equal(source.license, license, `${id} license`);
-    assert.equal(source.copyright_policy, copyrightPolicy, `${id} copyright policy`);
-    assert.ok(source.license_scope && source.license_evidence_url && source.license_evidence_note, `${id} license evidence`);
-    assert.ok(source.usage_boundary && source.expected_final_approval_note, `${id} evidence boundary`);
-    assert.deepEqual(citation.roles, roles, `${id} citation roles`);
-    assert.equal(citation.manifest_primary, manifestPrimary, `${id} primary eligibility`);
-    assert.ok(citation.attribution_note && citation.usage_mode, `${id} attribution and usage mode`);
-    assert.match(licenseInventory, new RegExp(`\\| \\x60${id}\\x60 \\|`, 'u'), `${id} license inventory`);
+  for (const contract of SOURCE_CONTRACTS) {
+    const source = ledger.sources.find(({id}) => id === contract.id);
+    const citation = documentRecord.citations.find(({source_id}) => source_id === contract.id);
+    assert.deepEqual({
+      id: source.id,
+      canonical_locator: source.canonical_locator,
+      transport_locator: source.transport_locator,
+      query_insensitive: source.query_insensitive,
+      locator_aliases: source.locator_aliases,
+      tombstone: source.tombstone,
+      title: source.title,
+      author_or_org: source.author_or_org,
+      published_at: source.published_at,
+      registered_at: source.registered_at,
+      checked_at: source.checked_at,
+      version: source.version,
+      source_kind: source.source_kind,
+      tier: source.tier,
+      allowed_evidence_roles: source.allowed_evidence_roles,
+      license: source.license,
+      license_scope: source.license_scope,
+      license_evidence_url: source.license_evidence_url,
+      license_evidence_note: source.license_evidence_note,
+      license_family_id: source.license_family_id,
+      license_family_grouping: source.license_family_grouping,
+      family_grouping_evidence_url: source.family_grouping_evidence_url,
+      copyright_policy: source.copyright_policy,
+      usage_boundary: source.usage_boundary,
+      link_policy: source.link_policy,
+      expected_final_transport_locator: source.expected_final_transport_locator,
+      expected_final_approved_at: source.expected_final_approved_at,
+      expected_final_approval_note: source.expected_final_approval_note,
+    }, {
+      id: contract.id,
+      canonical_locator: contract.locator,
+      transport_locator: contract.transport ?? contract.locator,
+      query_insensitive: false,
+      locator_aliases: [],
+      tombstone: null,
+      title: contract.title,
+      author_or_org: contract.author,
+      published_at: contract.publishedAt,
+      registered_at: '2026-08-11',
+      checked_at: '2026-08-11',
+      version: contract.version,
+      source_kind: contract.sourceKind,
+      tier: contract.tier,
+      allowed_evidence_roles: contract.allowedRoles,
+      license: contract.license,
+      license_scope: contract.licenseScope,
+      license_evidence_url: contract.licenseEvidenceUrl,
+      license_evidence_note: contract.licenseEvidenceNote,
+      license_family_id: contract.locator,
+      license_family_grouping: 'identity',
+      family_grouping_evidence_url: null,
+      copyright_policy: contract.copyrightPolicy,
+      usage_boundary: contract.usageBoundary,
+      link_policy: contract.sourceKind === 'original-illustration' ? null : 'stable',
+      expected_final_transport_locator: contract.transport ?? contract.locator,
+      expected_final_approved_at: '2026-08-11',
+      expected_final_approval_note: contract.expectedApprovalNote,
+    }, `${contract.id} exact governed source record`);
+    assert.deepEqual(citation, {
+      source_id: contract.id,
+      citation_url: contract.locator,
+      roles: contract.citationRoles,
+      manifest_primary: contract.manifestPrimary,
+      usage_mode: contract.usageMode,
+      attribution_note: contract.attribution,
+      modification_note: contract.modificationNote ?? null,
+      excerpt: null,
+      quotation_reviewed: false,
+    }, `${contract.id} exact citation record`);
+    assert.match(licenseInventory, new RegExp(`\\| \\x60${contract.id}\\x60 \\|`, 'u'), `${contract.id} license inventory`);
   }
+  assert.ok(article, `${ARTICLE} must exist before checking visible remote sources`);
   const remoteDomains = new Set(externalLinksOf(article).map((url) => new URL(url).hostname));
   assert.ok(remoteDomains.size >= 3, 'at least three independent remote source domains');
-  assert.deepEqual(externalLinksOf(article).sort(), SOURCE_CONTRACTS.slice(0, 5).map(([, url]) => url).sort());
+  assert.deepEqual(externalLinksOf(article).sort(), SOURCE_CONTRACTS.slice(0, 5).map(({locator}) => locator).sort());
 });
 
 test('projects the exact STY-05 Stage A pre-closure state', () => {
@@ -579,6 +776,8 @@ test('publishes synchronized Draw.io and SVG inventories, containment, and conne
   const svgContract = svgDiagramContract(svg);
   const drawioNodes = new Map(drawioContract.nodes.map((node) => [node.id, node]));
   const svgNodes = new Map(svgContract.nodes.map((node) => [node.id, node]));
+  assert.equal(drawioNodes.size, drawioContract.nodes.length, 'unique Draw.io node IDs');
+  assert.equal(svgNodes.size, svgContract.nodes.length, 'unique SVG node IDs');
   assert.deepEqual([...drawioNodes.keys()].sort(), DIAGRAM_NODES.map(([id]) => id).sort());
   assert.deepEqual([...svgNodes.keys()].sort(), DIAGRAM_NODES.map(([id]) => id).sort());
   for (const [id, label, typeLabel] of DIAGRAM_NODES) {
@@ -592,6 +791,8 @@ test('publishes synchronized Draw.io and SVG inventories, containment, and conne
 
   const drawioEdges = new Map(drawioContract.edges.map((edge) => [edge.id, edge]));
   const svgEdges = new Map(svgContract.edges.map((edge) => [edge.id, edge]));
+  assert.equal(drawioEdges.size, drawioContract.edges.length, 'unique Draw.io edge IDs');
+  assert.equal(svgEdges.size, svgContract.edges.length, 'unique SVG edge IDs');
   assert.deepEqual([...drawioEdges.keys()].sort(), DIAGRAM_EDGES.map(([id]) => id).sort());
   assert.deepEqual([...svgEdges.keys()].sort(), DIAGRAM_EDGES.map(([id]) => id).sort());
   for (const [id, source, target, label, connectorClass] of DIAGRAM_EDGES) {
