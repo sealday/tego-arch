@@ -906,6 +906,7 @@ test('publishes exact STY-05 metadata, headings, and actionable relations', () =
   assert.deepEqual(metadata.related_questions, []);
   assert.deepEqual(findMarkdownHeadings(article.body).map(({text}) => text), REQUIRED_HEADINGS);
   const links = internalLinksOf(article);
+  assert.ok(links.includes('/styles'), 'visible parent /styles');
   for (const route of [...ADJACENT_ROUTES, '/cases/micro-frontends-single-spa']) {
     assert.ok(links.includes(route), `visible relation ${route}`);
   }
@@ -928,11 +929,15 @@ test('rejects changed STY-05 labels and incomplete keyboard-scroll semantics', (
     article.source.replace('role="region"', 'role="group"'),
     article.source.replace(' tabIndex={0}', ''),
     article.source.replace('tabIndex={0}', 'tabIndex={-1}'),
+    article.source.replace('[架构风格目录](/styles)', '架构风格目录'),
+    article.source.replace('[架构风格目录](/styles)', '[架构风格目录](/stylez)'),
   ];
   for (const [index, mutation] of mutations.entries()) {
     assert.notEqual(mutation, article.source, `article literal mutation ${index + 1} applies`);
-    assert.throws(() => assertArticleLiteralContract(mutation), {name: 'AssertionError'},
-      `article literal mutation ${index + 1} is rejected`);
+    assert.throws(() => {
+      assertArticleLiteralContract(mutation);
+      assert.match(mutation, /\[架构风格目录\]\(\/styles\)/u, 'visible parent /styles');
+    }, {name: 'AssertionError'}, `article literal mutation ${index + 1} is rejected`);
   }
 });
 

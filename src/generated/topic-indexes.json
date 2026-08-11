@@ -2014,27 +2014,6 @@
       "presentation": {}
     },
     {
-      "id": "STY-05",
-      "type": "style",
-      "title": "Microservices",
-      "slug": "/styles/sty-05",
-      "priority": "P0",
-      "status": {
-        "scope": "backlog-projection",
-        "value": "pending",
-        "source": "docs/content-backlog.md"
-      },
-      "dependencies": [],
-      "adjacent_topics": [],
-      "primary_sources": [],
-      "related_cases": [],
-      "related_questions": [],
-      "reviewed_at": null,
-      "review_policy": null,
-      "published": false,
-      "pattern_group": null
-    },
-    {
       "id": "STY-06",
       "type": "style",
       "title": "Event-Driven Architecture",
@@ -2141,7 +2120,8 @@
       "adjacent_topics": [
         "STY-01",
         "STY-02",
-        "STY-04"
+        "STY-04",
+        "STY-05"
       ],
       "primary_sources": [
         "https://github.com/dotnet-architecture/eShopOnWeb",
@@ -2175,10 +2155,43 @@
       "adjacent_topics": [
         "STY-01",
         "STY-02",
-        "STY-03"
+        "STY-03",
+        "STY-05"
       ],
       "primary_sources": [
         "https://docs.spring.io/spring-modulith/reference/fundamentals.html"
+      ],
+      "related_cases": [
+        "/cases/micro-frontends-single-spa"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-08-11",
+      "review_policy": null,
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
+    },
+    {
+      "id": "STY-05",
+      "type": "style",
+      "title": "微服务：用独立部署换取自治，也承担分布式成本",
+      "slug": "/styles/sty-05",
+      "priority": "P0",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "pending",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "STY-00",
+        "STY-04"
+      ],
+      "adjacent_topics": [
+        "STY-03",
+        "STY-04"
+      ],
+      "primary_sources": [
+        "https://martinfowler.com/articles/microservices.html"
       ],
       "related_cases": [
         "/cases/micro-frontends-single-spa"

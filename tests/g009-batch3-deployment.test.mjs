@@ -329,8 +329,8 @@ test('preserves STY-02 closure in the current Batch 5 projection', async () => {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
     completed_topics: 57,
-    content_documents: 99,
-    governed_sources: 513,
+    content_documents: 100,
+    governed_sources: 519,
     sources: {
       durable_stories: 'docs/content-backlog.md',
       completed_topics: 'docs/content-backlog.md',
@@ -338,7 +338,7 @@ test('preserves STY-02 closure in the current Batch 5 projection', async () => {
       governed_sources: 'data/source-ledger.json',
     },
   });
-  assert.equal(sourceLedger.sources.length, 513);
+  assert.equal(sourceLedger.sources.length, 519);
   assert.ok(indexes.style.some(({id, published, status: topicStatus}) =>
     id === 'STY-02' && published === true && topicStatus.value === 'complete'));
   assert.ok(indexes.style.some(({id, published, status: topicStatus}) =>

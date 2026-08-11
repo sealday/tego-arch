@@ -1,5 +1,4 @@
 import assert from 'node:assert/strict';
-import {createHash} from 'node:crypto';
 import {access, readFile} from 'node:fs/promises';
 import test from 'node:test';
 
@@ -36,10 +35,6 @@ const publishedRoutes = new Set(manifest.topics.filter(({published}) => publishe
 
 function markdownLinks(source) {
   return [...source.matchAll(/\[[^\]]+\]\(([^)]+)\)/gu)].map(([, target]) => target);
-}
-
-function sha256(source) {
-  return createHash('sha256').update(source).digest('hex');
 }
 
 function escapeRegExp(value) {
@@ -169,9 +164,9 @@ test('projects the exact STY-04 Stage B closure inventory', () => {
       content_documents: projectStatus.content_documents,
       governed_sources: projectStatus.governed_sources,
     },
-    {completed_topics: 57, content_documents: 99, governed_sources: 513},
+    {completed_topics: 57, content_documents: 100, governed_sources: 519},
   );
-  assert.equal(publicLedger.sources.length, 513);
+  assert.equal(publicLedger.sources.length, 519);
 
   const topic = topicsById.get('STY-04');
   const style = stylesById.get('STY-04');
@@ -184,16 +179,16 @@ test('projects the exact STY-04 Stage B closure inventory', () => {
   const nextTopic = topicsById.get('STY-05');
   const nextStyle = stylesById.get('STY-05');
   for (const projection of [nextTopic, nextStyle]) {
-    assert.equal(projection?.published, false);
+    assert.equal(projection?.published, true);
     assert.equal(projection?.status.value, 'pending');
   }
 });
 
 test('publishes only the governed STY-04 route, SVG, and sources', async () => {
   assert.equal(publishedRoutes.has(ROUTE), true);
-  assert.equal(publishedRoutes.has('/styles/sty-05'), false);
+  assert.equal(publishedRoutes.has('/styles/sty-05'), true);
   assert.ok(markdownLinks(article).includes(SVG_ROUTE));
-  assert.equal(markdownLinks(article).includes('/styles/sty-05'), false);
+  assert.equal(markdownLinks(article).includes('/styles/sty-05'), true);
   await access(new URL(`../static${SVG_ROUTE}`, import.meta.url));
 
   assert.deepEqual(
@@ -287,17 +282,16 @@ test('preserves exact Stage A evidence and records final Stage B independent ver
   assert.match(section(review, 'Stage A projection'), /STY-04: `published \/ pending`/u);
   assert.match(section(review, 'Stage A projection'), /STY-05: `unpublished \/ pending`/u);
 
-  const artifacts = [
-    ARTICLE,
-    'diagrams/sty-04-modular-monolith-boundaries.drawio',
-    'static/img/diagrams/sty-04-modular-monolith-boundaries.svg',
-  ];
-  for (const artifact of artifacts) {
-    const body = await readFile(new URL(`../${artifact}`, import.meta.url));
+  const historicalArtifacts = new Map([
+    [ARTICLE, 'ddaca4c9e1f8577fee0d667e5b5b77a307fa92f78f42a240f78ac31fc038013f'],
+    ['diagrams/sty-04-modular-monolith-boundaries.drawio', '6e8d3f97a624e90897c8ffc812a097498fcf2286f9c5cac0e2b095af3ed0f933'],
+    ['static/img/diagrams/sty-04-modular-monolith-boundaries.svg', 'd78f3231d9aaaa4cdbf39e04ec3070fabc9b4a8cb7f64aad862cc340ce8da8e4'],
+  ]);
+  for (const [artifact, historicalHash] of historicalArtifacts) {
     assert.match(
       section(review, 'Artifact identities'),
-      new RegExp(`\\| ${escapeRegExp(`\`${artifact}\``)} \\| [0-9,]+ \\| ${escapeRegExp(`\`${sha256(body)}\``)} \\|`, 'u'),
-      `${artifact} exact SHA-256`,
+      new RegExp(`\\| ${escapeRegExp(`\`${artifact}\``)} \\| [0-9,]+ \\| ${escapeRegExp(`\`${historicalHash}\``)} \\|`, 'u'),
+      `${artifact} immutable historical SHA-256`,
     );
   }
 

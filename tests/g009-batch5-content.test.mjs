@@ -83,8 +83,8 @@ const SOURCE_CONTRACTS = [
     usageBoundary: 'Original teaching illustration of module contracts, authoritative data ownership, local transaction coupling, post-commit payment and publication recovery, consumer deduplication, and shared deployment failure scope; it is illustration-only and does not establish factual claims or represent a production implementation.',
   },
 ];
-const ADJACENT_TOPICS = ['STY-01', 'STY-02', 'STY-03'];
-const ADJACENT_ROUTES = ['/styles/sty-01', '/styles/sty-02', '/styles/sty-03'];
+const ADJACENT_TOPICS = ['STY-01', 'STY-02', 'STY-03', 'STY-05'];
+const ADJACENT_ROUTES = ['/styles/sty-01', '/styles/sty-02', '/styles/sty-03', '/styles/sty-05'];
 const MODULES = ['order', 'inventory', 'payment', 'notification'];
 const MEASURED_HEADER_NODES = [
   'deployment-boundary',
@@ -734,7 +734,7 @@ test('publishes exact STY-04 metadata, headings, and actionable published adjace
   assert.deepEqual(findMarkdownHeadings(article.body).map(({text}) => text), REQUIRED_HEADINGS);
   const links = internalLinksOf(article);
   for (const route of ADJACENT_ROUTES) assert.ok(links.includes(route), `actionable adjacency ${route}`);
-  assert.equal(links.includes('/styles/sty-05'), false, 'STY-05 stays non-actionable');
+  assert.equal(links.includes('/styles/sty-05'), true, 'STY-05 is now actionable');
   assert.ok(sty03 && parseFrontMatter(sty03.source).adjacent_topics.includes(TOPIC_ID), 'STY-03 reciprocal metadata');
   assert.ok(sty03 && internalLinksOf(sty03).includes(ROUTE), 'STY-03 reciprocal route');
   assert.ok(moduleBoundaries && internalLinksOf(moduleBoundaries).includes(ROUTE), 'module-boundaries path route');
@@ -927,15 +927,15 @@ test('projects the exact Stage B closure state', () => {
   assert.equal(styleIndexEntry?.published, true);
   assert.equal(styleIndexEntry?.status.value, 'complete');
   assert.deepEqual(styleIndexEntry?.primary_sources, projectedPrimaryUrls);
-  assert.equal(nextTopic?.published, false);
+  assert.equal(nextTopic?.published, true);
   assert.equal(nextTopic?.status.value, 'pending');
   const nextStyleIndexEntry = indexes.style.find(({id}) => id === 'STY-05');
-  assert.equal(nextStyleIndexEntry?.published, false);
+  assert.equal(nextStyleIndexEntry?.published, true);
   assert.equal(nextStyleIndexEntry?.status.value, 'pending');
   assert.equal(projectStatus.completed_topics, 57);
-  assert.equal(projectStatus.content_documents, 99);
-  assert.equal(projectStatus.governed_sources, 513);
-  assert.equal(publicLedger.sources.length, 513);
+  assert.equal(projectStatus.content_documents, 100);
+  assert.equal(projectStatus.governed_sources, 519);
+  assert.equal(publicLedger.sources.length, 519);
 });
 
 test('publishes a synchronized, accessible Draw.io and SVG semantic inventory', async () => {
