@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10000 21000" role="img" aria-labelledby="sty05-title sty05-desc" data-authoring-to-render-scale="0.08" data-edge-stroke-clearance-css="8" data-edge-marker-clearance-css="16" data-edge-node-clearance-css="12" data-edge-boundary-clearance-css="12" data-header-inner-stroke-padding-css="12">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10000 31500" role="img" aria-labelledby="sty05-title sty05-desc" data-authoring-to-render-scale="0.08" data-edge-stroke-clearance-css="8" data-edge-marker-clearance-css="16" data-edge-node-clearance-css="12" data-edge-boundary-clearance-css="12" data-header-inner-stroke-padding-css="12" data-edge-own-stroke-max-clearance-css="24">
   <title id="sty05-title">微服务订单 Saga：独立部署与显式恢复</title>
   <desc id="sty05-desc">订单、库存、支付和通知位于四个独立部署边界，各自拥有私有权威数据与 Outbox；订单服务持久化 Saga，消息中间件隔离毒消息，支付结果未知时先查询对账，失败通过补偿动作恢复。</desc>
   <defs>
@@ -22,95 +22,95 @@
     .edge-label { fill: #111827; font-size: 188px; font-weight: 600; }
     .legend-label { fill: #111827; font-size: 125px; }
   </style>
-  <rect data-canvas-role="background" x="0" y="0" width="10000" height="21000" fill="#FFFFFF"/>
-  <path class="edge sync" data-edge-id="request-entry" data-source="client" data-target="api-entry" d="M805 530 H2315 V530 H2455"/>
-  <text class="edge-label" data-edge-id="request-entry" x="6500" y="9260">提交订单（稳定幂等键）</text>
-  <path class="edge sync" data-edge-id="api-order-request" data-source="api-entry" data-target="order-contract" d="M2455 530 H1090 V2450 H1230"/>
-  <text class="edge-label" data-edge-id="api-order-request" x="6500" y="9510">提交订单请求</text>
-  <path class="edge sync" data-edge-id="order-contract-dispatch" data-source="order-contract" data-target="order-handler" d="M1230 2450 H1090 V3500 H1230"/>
-  <text class="edge-label" data-edge-id="order-contract-dispatch" x="6500" y="9760">处理请求</text>
-  <path class="edge sync" data-edge-id="order-owned-data-write" data-source="order-handler" data-target="order-data" d="M1230 3500 H1090 V4550 H1230"/>
-  <text class="edge-label" data-edge-id="order-owned-data-write" x="6500" y="10010">本地事务写订单</text>
-  <path class="edge sync" data-edge-id="order-saga-state-write" data-source="order-handler" data-target="order-saga-state" d="M1230 3500 H1090 V5600 H1230"/>
-  <text class="edge-label" data-edge-id="order-saga-state-write" x="6500" y="10260">持久化 Saga</text>
-  <path class="edge sync" data-edge-id="order-outbox-write" data-source="order-handler" data-target="order-outbox" d="M1230 3500 H1090 V6650 H1230"/>
-  <text class="edge-label" data-edge-id="order-outbox-write" x="6500" y="10510">同事务记录</text>
-  <path class="edge message" data-edge-id="order-created" data-source="order-outbox" data-target="message-broker" d="M1230 6650 H3965 V530 H4105"/>
-  <text class="edge-label" data-edge-id="order-created" x="6500" y="10760">OrderCreated</text>
-  <path class="edge message" data-edge-id="reserve-inventory-command" data-source="message-broker" data-target="inventory-contract" d="M4105 530 H3540 V2450 H3680"/>
-  <text class="edge-label" data-edge-id="reserve-inventory-command" x="6500" y="11010">ReserveInventory</text>
-  <path class="edge sync" data-edge-id="inventory-consumer-deduplication" data-source="inventory-contract" data-target="inventory-consumer-dedup" d="M3680 2450 H3540 V6650 H3680"/>
-  <text class="edge-label" data-edge-id="inventory-consumer-deduplication" x="6500" y="11260">消费去重</text>
-  <path class="edge sync" data-edge-id="inventory-contract-dispatch" data-source="inventory-consumer-dedup" data-target="inventory-handler" d="M3680 6650 H3540 V3500 H3680"/>
-  <text class="edge-label" data-edge-id="inventory-contract-dispatch" x="6500" y="11510">处理预留</text>
-  <path class="edge sync" data-edge-id="inventory-owned-data-write" data-source="inventory-handler" data-target="inventory-data" d="M3680 3500 H3540 V4550 H3680"/>
-  <text class="edge-label" data-edge-id="inventory-owned-data-write" x="6500" y="11760">本地事务写预留</text>
-  <path class="edge sync" data-edge-id="inventory-outbox-write" data-source="inventory-handler" data-target="inventory-outbox" d="M3680 3500 H3540 V5600 H3680"/>
-  <text class="edge-label" data-edge-id="inventory-outbox-write" x="6500" y="12010">同事务记录</text>
-  <path class="edge message" data-edge-id="inventory-reserved-result" data-source="inventory-outbox" data-target="message-broker" d="M3680 5600 H3965 V530 H4105"/>
-  <text class="edge-label" data-edge-id="inventory-reserved-result" x="6500" y="12260">InventoryReserved</text>
-  <path class="edge message" data-edge-id="inventory-rejected-result" data-source="inventory-outbox" data-target="message-broker" d="M3680 5600 H3965 V530 H4105"/>
-  <text class="edge-label" data-edge-id="inventory-rejected-result" x="6500" y="12510">InventoryRejected</text>
-  <path class="edge message" data-edge-id="order-result-deduplication" data-source="message-broker" data-target="order-consumer-dedup" d="M4105 530 H1090 V7700 H1230"/>
-  <text class="edge-label" data-edge-id="order-result-deduplication" x="6500" y="12760">结果去重</text>
-  <path class="edge sync" data-edge-id="order-result-dispatch" data-source="order-consumer-dedup" data-target="order-handler" d="M1230 7700 H1090 V3500 H1230"/>
-  <text class="edge-label" data-edge-id="order-result-dispatch" x="6500" y="13010">推进持久 Saga</text>
-  <path class="edge message" data-edge-id="reserve-inventory-publication" data-source="order-outbox" data-target="message-broker" d="M1230 6650 H3965 V530 H4105"/>
-  <text class="edge-label" data-edge-id="reserve-inventory-publication" x="6500" y="13260">ReserveInventory</text>
-  <path class="edge message" data-edge-id="register-payment-intent" data-source="order-outbox" data-target="message-broker" d="M1230 6650 H3965 V530 H4105"/>
-  <text class="edge-label" data-edge-id="register-payment-intent" x="6500" y="13510">RegisterPaymentIntent</text>
-  <path class="edge message" data-edge-id="payment-command-delivery" data-source="message-broker" data-target="payment-contract" d="M4105 530 H5990 V2450 H6130"/>
-  <text class="edge-label" data-edge-id="payment-command-delivery" x="4500" text-anchor="end" y="13760">登记支付意图</text>
-  <path class="edge sync" data-edge-id="payment-consumer-deduplication" data-source="payment-contract" data-target="payment-consumer-dedup" d="M6130 2450 H5990 V7700 H6130"/>
-  <text class="edge-label" data-edge-id="payment-consumer-deduplication" x="4500" text-anchor="end" y="14010">消费去重</text>
-  <path class="edge sync" data-edge-id="payment-contract-dispatch" data-source="payment-consumer-dedup" data-target="payment-dispatcher" d="M6130 7700 H5990 V3500 H6130"/>
-  <text class="edge-label" data-edge-id="payment-contract-dispatch" x="4500" text-anchor="end" y="14260">持久执行</text>
-  <path class="edge sync" data-edge-id="payment-owned-data-write" data-source="payment-dispatcher" data-target="payment-data" d="M6130 3500 H5990 V4550 H6130"/>
-  <text class="edge-label" data-edge-id="payment-owned-data-write" x="4500" text-anchor="end" y="14510">本地事务写意图</text>
-  <path class="edge sync" data-edge-id="payment-outbox-write" data-source="payment-dispatcher" data-target="payment-outbox" d="M6130 3500 H5990 V5600 H6130"/>
-  <text class="edge-label" data-edge-id="payment-outbox-write" x="4500" text-anchor="end" y="14760">同事务记录</text>
-  <path class="edge sync" data-edge-id="provider-authorization" data-source="payment-dispatcher" data-target="payment-provider" d="M6130 3500 H5615 V530 H5755"/>
-  <text class="edge-label" data-edge-id="provider-authorization" x="4500" text-anchor="end" y="15010">授权 / 扣款（稳定幂等键）</text>
-  <path class="edge sync" data-edge-id="provider-result" data-source="payment-provider" data-target="payment-dispatcher" d="M5755 530 H5990 V3500 H6130"/>
-  <text class="edge-label" data-edge-id="provider-result" x="4500" text-anchor="end" y="15260">确认 / 拒绝 / 未知</text>
-  <path class="edge sync" data-edge-id="payment-unknown-reconciliation" data-source="payment-dispatcher" data-target="payment-reconciliation" d="M6130 3500 H5990 V6650 H6130"/>
-  <text class="edge-label" data-edge-id="payment-unknown-reconciliation" x="4500" text-anchor="end" y="15510">未知结果先查询 / 对账</text>
-  <path class="edge message" data-edge-id="payment-confirmed" data-source="payment-outbox" data-target="message-broker" d="M6130 5600 H3965 V530 H4105"/>
-  <text class="edge-label" data-edge-id="payment-confirmed" x="6500" y="15760">PaymentConfirmed</text>
-  <path class="edge message" data-edge-id="payment-rejected" data-source="payment-outbox" data-target="message-broker" d="M6130 5600 H3965 V530 H4105"/>
-  <text class="edge-label" data-edge-id="payment-rejected" x="6500" y="16010">PaymentRejected</text>
-  <path class="edge message" data-edge-id="payment-unknown" data-source="payment-outbox" data-target="message-broker" d="M6130 5600 H3965 V530 H4105"/>
-  <text class="edge-label" data-edge-id="payment-unknown" x="6500" y="16260">PaymentUnknown</text>
-  <path class="edge message" data-edge-id="order-confirmed" data-source="order-outbox" data-target="message-broker" d="M1230 6650 H3965 V530 H4105"/>
-  <text class="edge-label" data-edge-id="order-confirmed" x="6500" y="16510">OrderConfirmed</text>
-  <path class="edge message" data-edge-id="notification-delivery" data-source="message-broker" data-target="notification-contract" d="M4105 530 H8440 V2450 H8580"/>
-  <text class="edge-label" data-edge-id="notification-delivery" x="4500" text-anchor="end" y="16760">DeliverNotification</text>
-  <path class="edge sync" data-edge-id="notification-consumer-deduplication" data-source="notification-contract" data-target="notification-consumer-dedup" d="M8580 2450 H8440 V6650 H8580"/>
-  <text class="edge-label" data-edge-id="notification-consumer-deduplication" x="4500" text-anchor="end" y="17010">消费去重</text>
-  <path class="edge sync" data-edge-id="notification-contract-dispatch" data-source="notification-consumer-dedup" data-target="notification-worker" d="M8580 6650 H8440 V3500 H8580"/>
-  <text class="edge-label" data-edge-id="notification-contract-dispatch" x="4500" text-anchor="end" y="17260">重试投递</text>
-  <path class="edge sync" data-edge-id="notification-owned-data-write" data-source="notification-worker" data-target="notification-data" d="M8580 3500 H8440 V4550 H8580"/>
-  <text class="edge-label" data-edge-id="notification-owned-data-write" x="4500" text-anchor="end" y="17510">本地事务写投递状态</text>
-  <path class="edge sync" data-edge-id="notification-outbox-write" data-source="notification-worker" data-target="notification-outbox" d="M8580 3500 H8440 V5600 H8580"/>
-  <text class="edge-label" data-edge-id="notification-outbox-write" x="4500" text-anchor="end" y="17760">同事务记录</text>
-  <path class="edge compensation" data-edge-id="release-inventory-compensation-publication" data-source="order-outbox" data-target="message-broker" d="M1230 6650 H3965 V530 H4105"/>
-  <text class="edge-label" data-edge-id="release-inventory-compensation-publication" x="6500" y="18010">ReleaseInventory</text>
-  <path class="edge compensation" data-edge-id="release-inventory-compensation" data-source="message-broker" data-target="inventory-contract" d="M4105 530 H3540 V2450 H3680"/>
-  <text class="edge-label" data-edge-id="release-inventory-compensation" x="6500" y="18260">ReleaseInventory</text>
-  <path class="edge compensation" data-edge-id="payment-compensation-publication" data-source="order-outbox" data-target="message-broker" d="M1230 6650 H3965 V530 H4105"/>
-  <text class="edge-label" data-edge-id="payment-compensation-publication" x="6500" y="18510">Void / Reversal / Refund</text>
-  <path class="edge compensation" data-edge-id="payment-void-reversal-refund" data-source="message-broker" data-target="payment-contract" d="M4105 530 H5990 V2450 H6130"/>
-  <text class="edge-label" data-edge-id="payment-void-reversal-refund" x="4500" text-anchor="end" y="18760">Void / Reversal / Refund</text>
-  <path class="edge message" data-edge-id="poison-message-routing" data-source="message-broker" data-target="poison-message-isolation" d="M4105 530 H8915 V530 H9055"/>
-  <text class="edge-label" data-edge-id="poison-message-routing" x="4500" text-anchor="end" y="19010">隔离毒消息</text>
-  <path class="edge message" data-edge-id="order-observability-signal" data-source="order-handler" data-target="observability-platform" d="M1230 3500 H7265 V530 H7405"/>
-  <text class="edge-label" data-edge-id="order-observability-signal" x="4500" text-anchor="end" y="19260">日志 / 指标 / 追踪</text>
-  <path class="edge message" data-edge-id="inventory-observability-signal" data-source="inventory-handler" data-target="observability-platform" d="M3680 3500 H7265 V530 H7405"/>
-  <text class="edge-label" data-edge-id="inventory-observability-signal" x="4500" text-anchor="end" y="19510">日志 / 指标 / 追踪</text>
-  <path class="edge message" data-edge-id="payment-observability-signal" data-source="payment-dispatcher" data-target="observability-platform" d="M6130 3500 H7265 V530 H7405"/>
-  <text class="edge-label" data-edge-id="payment-observability-signal" x="4500" text-anchor="end" y="19760">日志 / 指标 / 追踪</text>
-  <path class="edge message" data-edge-id="notification-observability-signal" data-source="notification-worker" data-target="observability-platform" d="M8580 3500 H7265 V530 H7405"/>
-  <text class="edge-label" data-edge-id="notification-observability-signal" x="4500" text-anchor="end" y="20010">日志 / 指标 / 追踪</text>
+  <rect data-canvas-role="background" x="0" y="0" width="10000" height="31500" fill="#FFFFFF"/>
+  <path class="edge sync" data-edge-id="request-entry" data-source="client" data-target="api-entry" d="M805 530 H100 V9500 H9950 V530 H2455"/>
+  <text class="edge-label" data-edge-id="request-entry" x="5500" y="9375" text-anchor="start">提交订单（稳定幂等键）</text>
+  <path class="edge sync" data-edge-id="api-order-request" data-source="api-entry" data-target="order-contract" d="M2455 530 H140 V10000 H9930 V2450 H1230"/>
+  <text class="edge-label" data-edge-id="api-order-request" x="5500" y="9875" text-anchor="start">提交订单请求</text>
+  <path class="edge sync" data-edge-id="order-contract-dispatch" data-source="order-contract" data-target="order-consumer-dedup" d="M1230 2450 H180 V10500 H9910 V7700 H1230"/>
+  <text class="edge-label" data-edge-id="order-contract-dispatch" x="5500" y="10375" text-anchor="start">请求 / 结果去重</text>
+  <path class="edge sync" data-edge-id="order-owned-data-write" data-source="order-handler" data-target="order-data" d="M1230 3500 H220 V11000 H9890 V4550 H1230"/>
+  <text class="edge-label" data-edge-id="order-owned-data-write" x="5500" y="10875" text-anchor="start">本地事务写订单</text>
+  <path class="edge sync" data-edge-id="order-saga-state-write" data-source="order-handler" data-target="order-saga-state" d="M1230 3500 H260 V11500 H9870 V5600 H1230"/>
+  <text class="edge-label" data-edge-id="order-saga-state-write" x="5500" y="11375" text-anchor="start">持久化 Saga</text>
+  <path class="edge sync" data-edge-id="order-outbox-write" data-source="order-handler" data-target="order-outbox" d="M1230 3500 H300 V12000 H9850 V6650 H1230"/>
+  <text class="edge-label" data-edge-id="order-outbox-write" x="5500" y="11875" text-anchor="start">同事务记录</text>
+  <path class="edge message" data-edge-id="order-created" data-source="order-outbox" data-target="message-broker" d="M1230 6650 H340 V12500 H9830 V530 H4105"/>
+  <text class="edge-label" data-edge-id="order-created" x="5500" y="12375" text-anchor="start">OrderCreated</text>
+  <path class="edge message" data-edge-id="reserve-inventory-command" data-source="message-broker" data-target="inventory-contract" d="M4105 530 H380 V13000 H9810 V2450 H3680"/>
+  <text class="edge-label" data-edge-id="reserve-inventory-command" x="5500" y="12875" text-anchor="start">ReserveInventory</text>
+  <path class="edge sync" data-edge-id="inventory-consumer-deduplication" data-source="inventory-contract" data-target="inventory-consumer-dedup" d="M3680 2450 H420 V13500 H9790 V6650 H3680"/>
+  <text class="edge-label" data-edge-id="inventory-consumer-deduplication" x="5500" y="13375" text-anchor="start">消费去重</text>
+  <path class="edge sync" data-edge-id="inventory-contract-dispatch" data-source="inventory-consumer-dedup" data-target="inventory-handler" d="M3680 6650 H460 V14000 H9770 V3500 H3680"/>
+  <text class="edge-label" data-edge-id="inventory-contract-dispatch" x="5500" y="13875" text-anchor="start">处理预留</text>
+  <path class="edge sync" data-edge-id="inventory-owned-data-write" data-source="inventory-handler" data-target="inventory-data" d="M3680 3500 H500 V14500 H9750 V4550 H3680"/>
+  <text class="edge-label" data-edge-id="inventory-owned-data-write" x="5500" y="14375" text-anchor="start">本地事务写预留</text>
+  <path class="edge sync" data-edge-id="inventory-outbox-write" data-source="inventory-handler" data-target="inventory-outbox" d="M3680 3500 H540 V15000 H9730 V5600 H3680"/>
+  <text class="edge-label" data-edge-id="inventory-outbox-write" x="5500" y="14875" text-anchor="start">同事务记录</text>
+  <path class="edge message" data-edge-id="inventory-reserved-result" data-source="inventory-outbox" data-target="message-broker" d="M3680 5600 H580 V15500 H9710 V530 H4105"/>
+  <text class="edge-label" data-edge-id="inventory-reserved-result" x="5500" y="15375" text-anchor="start">InventoryReserved</text>
+  <path class="edge message" data-edge-id="inventory-rejected-result" data-source="inventory-outbox" data-target="message-broker" d="M3680 5600 H620 V16000 H9690 V530 H4105"/>
+  <text class="edge-label" data-edge-id="inventory-rejected-result" x="5500" y="15875" text-anchor="start">InventoryRejected</text>
+  <path class="edge message" data-edge-id="order-result-deduplication" data-source="message-broker" data-target="order-contract" d="M4105 530 H660 V16500 H9670 V2450 H1230"/>
+  <text class="edge-label" data-edge-id="order-result-deduplication" x="5500" y="16375" text-anchor="start">订单结果进入公开合同</text>
+  <path class="edge sync" data-edge-id="order-result-dispatch" data-source="order-consumer-dedup" data-target="order-handler" d="M1230 7700 H700 V17000 H9650 V3500 H1230"/>
+  <text class="edge-label" data-edge-id="order-result-dispatch" x="5500" y="16875" text-anchor="start">处理请求 / 推进持久 Saga</text>
+  <path class="edge message" data-edge-id="reserve-inventory-publication" data-source="order-outbox" data-target="message-broker" d="M1230 6650 H740 V17500 H9630 V530 H4105"/>
+  <text class="edge-label" data-edge-id="reserve-inventory-publication" x="5500" y="17375" text-anchor="start">ReserveInventory</text>
+  <path class="edge message" data-edge-id="register-payment-intent" data-source="order-outbox" data-target="message-broker" d="M1230 6650 H780 V18000 H9610 V530 H4105"/>
+  <text class="edge-label" data-edge-id="register-payment-intent" x="5500" y="17875" text-anchor="start">RegisterPaymentIntent</text>
+  <path class="edge message" data-edge-id="payment-command-delivery" data-source="message-broker" data-target="payment-contract" d="M4105 530 H820 V18500 H9590 V2450 H6130"/>
+  <text class="edge-label" data-edge-id="payment-command-delivery" x="4500" y="18375" text-anchor="end">登记支付意图</text>
+  <path class="edge sync" data-edge-id="payment-consumer-deduplication" data-source="payment-contract" data-target="payment-consumer-dedup" d="M6130 2450 H860 V19000 H9570 V7700 H6130"/>
+  <text class="edge-label" data-edge-id="payment-consumer-deduplication" x="4500" y="18875" text-anchor="end">消费去重</text>
+  <path class="edge sync" data-edge-id="payment-contract-dispatch" data-source="payment-consumer-dedup" data-target="payment-dispatcher" d="M6130 7700 H900 V19500 H9550 V3500 H6130"/>
+  <text class="edge-label" data-edge-id="payment-contract-dispatch" x="4500" y="19375" text-anchor="end">持久执行</text>
+  <path class="edge sync" data-edge-id="payment-owned-data-write" data-source="payment-dispatcher" data-target="payment-data" d="M6130 3500 H940 V20000 H9530 V4550 H6130"/>
+  <text class="edge-label" data-edge-id="payment-owned-data-write" x="4500" y="19875" text-anchor="end">本地事务写意图</text>
+  <path class="edge sync" data-edge-id="payment-outbox-write" data-source="payment-dispatcher" data-target="payment-outbox" d="M6130 3500 H980 V20500 H9510 V5600 H6130"/>
+  <text class="edge-label" data-edge-id="payment-outbox-write" x="4500" y="20375" text-anchor="end">同事务记录</text>
+  <path class="edge sync" data-edge-id="provider-authorization" data-source="payment-dispatcher" data-target="payment-provider" d="M6130 3500 H1020 V21000 H9490 V530 H5755"/>
+  <text class="edge-label" data-edge-id="provider-authorization" x="4500" y="20875" text-anchor="end">授权 / 扣款（稳定幂等键）</text>
+  <path class="edge sync" data-edge-id="provider-result" data-source="payment-provider" data-target="payment-contract" d="M5755 530 H1060 V21500 H9470 V2450 H6130"/>
+  <text class="edge-label" data-edge-id="provider-result" x="4500" y="21375" text-anchor="end">确认 / 拒绝 / 未知</text>
+  <path class="edge sync" data-edge-id="payment-unknown-reconciliation" data-source="payment-dispatcher" data-target="payment-reconciliation" d="M6130 3500 H1100 V22000 H9450 V6650 H6130"/>
+  <text class="edge-label" data-edge-id="payment-unknown-reconciliation" x="4500" y="21875" text-anchor="end">未知结果先查询 / 对账</text>
+  <path class="edge message" data-edge-id="payment-confirmed" data-source="payment-outbox" data-target="message-broker" d="M6130 5600 H1140 V22500 H9430 V530 H4105"/>
+  <text class="edge-label" data-edge-id="payment-confirmed" x="5500" y="22375" text-anchor="start">PaymentConfirmed</text>
+  <path class="edge message" data-edge-id="payment-rejected" data-source="payment-outbox" data-target="message-broker" d="M6130 5600 H1180 V23000 H9410 V530 H4105"/>
+  <text class="edge-label" data-edge-id="payment-rejected" x="5500" y="22875" text-anchor="start">PaymentRejected</text>
+  <path class="edge message" data-edge-id="payment-unknown" data-source="payment-outbox" data-target="message-broker" d="M6130 5600 H1220 V23500 H9390 V530 H4105"/>
+  <text class="edge-label" data-edge-id="payment-unknown" x="5500" y="23375" text-anchor="start">PaymentUnknown</text>
+  <path class="edge message" data-edge-id="order-confirmed" data-source="order-outbox" data-target="message-broker" d="M1230 6650 H1260 V24000 H9370 V530 H4105"/>
+  <text class="edge-label" data-edge-id="order-confirmed" x="5500" y="23875" text-anchor="start">OrderConfirmed</text>
+  <path class="edge message" data-edge-id="notification-delivery" data-source="message-broker" data-target="notification-contract" d="M4105 530 H1300 V24500 H9350 V2450 H8580"/>
+  <text class="edge-label" data-edge-id="notification-delivery" x="4500" y="24375" text-anchor="end">DeliverNotification</text>
+  <path class="edge sync" data-edge-id="notification-consumer-deduplication" data-source="notification-contract" data-target="notification-consumer-dedup" d="M8580 2450 H1340 V25000 H9330 V6650 H8580"/>
+  <text class="edge-label" data-edge-id="notification-consumer-deduplication" x="4500" y="24875" text-anchor="end">消费去重</text>
+  <path class="edge sync" data-edge-id="notification-contract-dispatch" data-source="notification-consumer-dedup" data-target="notification-worker" d="M8580 6650 H1380 V25500 H9310 V3500 H8580"/>
+  <text class="edge-label" data-edge-id="notification-contract-dispatch" x="4500" y="25375" text-anchor="end">重试投递</text>
+  <path class="edge sync" data-edge-id="notification-owned-data-write" data-source="notification-worker" data-target="notification-data" d="M8580 3500 H1420 V26000 H9290 V4550 H8580"/>
+  <text class="edge-label" data-edge-id="notification-owned-data-write" x="4500" y="25875" text-anchor="end">本地事务写投递状态</text>
+  <path class="edge sync" data-edge-id="notification-outbox-write" data-source="notification-worker" data-target="notification-outbox" d="M8580 3500 H1460 V26500 H9270 V5600 H8580"/>
+  <text class="edge-label" data-edge-id="notification-outbox-write" x="4500" y="26375" text-anchor="end">同事务记录</text>
+  <path class="edge compensation" data-edge-id="release-inventory-compensation-publication" data-source="order-outbox" data-target="message-broker" d="M1230 6650 H1500 V27000 H9250 V530 H4105"/>
+  <text class="edge-label" data-edge-id="release-inventory-compensation-publication" x="5500" y="26875" text-anchor="start">ReleaseInventory</text>
+  <path class="edge compensation" data-edge-id="release-inventory-compensation" data-source="message-broker" data-target="inventory-contract" d="M4105 530 H1540 V27500 H9230 V2450 H3680"/>
+  <text class="edge-label" data-edge-id="release-inventory-compensation" x="5500" y="27375" text-anchor="start">ReleaseInventory</text>
+  <path class="edge compensation" data-edge-id="payment-compensation-publication" data-source="order-outbox" data-target="message-broker" d="M1230 6650 H1580 V28000 H9210 V530 H4105"/>
+  <text class="edge-label" data-edge-id="payment-compensation-publication" x="5500" y="27875" text-anchor="start">Void / Reversal / Refund</text>
+  <path class="edge compensation" data-edge-id="payment-void-reversal-refund" data-source="message-broker" data-target="payment-contract" d="M4105 530 H1620 V28500 H9190 V2450 H6130"/>
+  <text class="edge-label" data-edge-id="payment-void-reversal-refund" x="4500" y="28375" text-anchor="end">Void / Reversal / Refund</text>
+  <path class="edge message" data-edge-id="poison-message-routing" data-source="message-broker" data-target="poison-message-isolation" d="M4105 530 H1660 V29000 H9170 V530 H9055"/>
+  <text class="edge-label" data-edge-id="poison-message-routing" x="4500" y="28875" text-anchor="end">隔离毒消息</text>
+  <path class="edge message" data-edge-id="order-observability-signal" data-source="order-handler" data-target="observability-platform" d="M1230 3500 H1700 V29500 H9150 V530 H7405"/>
+  <text class="edge-label" data-edge-id="order-observability-signal" x="4500" y="29375" text-anchor="end">日志 / 指标 / 追踪</text>
+  <path class="edge message" data-edge-id="inventory-observability-signal" data-source="inventory-handler" data-target="observability-platform" d="M3680 3500 H1740 V30000 H9130 V530 H7405"/>
+  <text class="edge-label" data-edge-id="inventory-observability-signal" x="4500" y="29875" text-anchor="end">日志 / 指标 / 追踪</text>
+  <path class="edge message" data-edge-id="payment-observability-signal" data-source="payment-dispatcher" data-target="observability-platform" d="M6130 3500 H1780 V30500 H9110 V530 H7405"/>
+  <text class="edge-label" data-edge-id="payment-observability-signal" x="4500" y="30375" text-anchor="end">日志 / 指标 / 追踪</text>
+  <path class="edge message" data-edge-id="notification-observability-signal" data-source="notification-worker" data-target="observability-platform" d="M8580 3500 H1820 V31000 H9090 V530 H7405"/>
+  <text class="edge-label" data-edge-id="notification-observability-signal" x="4500" y="30875" text-anchor="end">日志 / 指标 / 追踪</text>
   <g data-node-id="client" data-type-label="请求方 / Client" data-node-bounds="80 80 1450 900">
     <rect class="process-node" x="80" y="80" width="1450" height="900" rx="28"/>
     <text class="node-title" data-text-role="title" x="805" y="460" text-anchor="middle" textLength="1210" lengthAdjust="spacingAndGlyphs">客户端</text>
@@ -266,10 +266,10 @@
     <text class="node-title" data-text-role="title" x="7405" y="460" text-anchor="middle" textLength="1210" lengthAdjust="spacingAndGlyphs">日志 / 指标 / 追踪</text>
     <text class="node-type" data-text-role="type" x="7405" y="760" text-anchor="middle" textLength="1210" lengthAdjust="spacingAndGlyphs">共享平台 / Observability</text>
   </g>
-  <g data-node-id="poison-message-isolation" data-type-label="修复 / 重放 / 人工终止" data-node-bounds="8330 80 1450 900">
+  <g data-node-id="poison-message-isolation" data-type-label="服务所有者负责 / 修复 / 手动重放 / 人工终止" data-node-bounds="8330 80 1450 900">
     <rect class="process-node" x="8330" y="80" width="1450" height="900" rx="28"/>
-    <text class="node-title" data-text-role="title" x="9055" y="460" text-anchor="middle" textLength="1210" lengthAdjust="spacingAndGlyphs">毒消息隔离</text>
-    <text class="node-type" data-text-role="type" x="9055" y="760" text-anchor="middle" textLength="1210" lengthAdjust="spacingAndGlyphs">修复 / 重放 / 人工终止</text>
+    <text class="node-title" data-text-role="title" x="9055" y="460" text-anchor="middle" textLength="1210" lengthAdjust="spacingAndGlyphs">毒消息隔离与受控重放</text>
+    <text class="node-type" data-text-role="type" x="9055" y="760" text-anchor="middle" textLength="1210" lengthAdjust="spacingAndGlyphs">服务所有者负责 / 修复 / 手动重放 / 人工终止</text>
   </g>
   <g data-node-id="legend-sync-line" data-type-label="" data-node-bounds="180 8500 1250 260" data-legend-line="sync"><line class="sync" x1="220" y1="8630" x2="700" y2="8630"/><text class="legend-label" data-text-role="title" x="780" y="8685"></text><text class="node-type" data-text-role="type" x="780" y="8725"></text></g>
   <g data-node-id="legend-message-line" data-type-label="" data-node-bounds="1800 8500 1250 260" data-legend-line="message"><line class="message" x1="1840" y1="8630" x2="2320" y2="8630"/><text class="legend-label" data-text-role="title" x="2400" y="8685"></text><text class="node-type" data-text-role="type" x="2400" y="8725"></text></g>

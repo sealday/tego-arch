@@ -114,7 +114,7 @@ const DIAGRAM_NODES = [
   ['message-broker', '消息中间件', '至少一次与重放边界 / Platform'],
   ['payment-provider', '外部支付提供方', '外部副作用 / External System'],
   ['observability-platform', '日志 / 指标 / 追踪', '共享平台 / Observability'],
-  ['poison-message-isolation', '毒消息隔离', '修复 / 重放 / 人工终止'],
+  ['poison-message-isolation', '毒消息隔离与受控重放', '服务所有者负责 / 修复 / 手动重放 / 人工终止'],
   ['legend-sync-line', '', ''],
   ['legend-message-line', '', ''],
   ['legend-compensation-line', '', ''],
@@ -122,7 +122,7 @@ const DIAGRAM_NODES = [
 const DIAGRAM_EDGES = [
   ['request-entry', 'client', 'api-entry', '提交订单（稳定幂等键）', 'sync'],
   ['api-order-request', 'api-entry', 'order-contract', '提交订单请求', 'sync'],
-  ['order-contract-dispatch', 'order-contract', 'order-handler', '处理请求', 'sync'],
+  ['order-contract-dispatch', 'order-contract', 'order-consumer-dedup', '请求 / 结果去重', 'sync'],
   ['order-owned-data-write', 'order-handler', 'order-data', '本地事务写订单', 'sync'],
   ['order-saga-state-write', 'order-handler', 'order-saga-state', '持久化 Saga', 'sync'],
   ['order-outbox-write', 'order-handler', 'order-outbox', '同事务记录', 'sync'],
@@ -134,8 +134,8 @@ const DIAGRAM_EDGES = [
   ['inventory-outbox-write', 'inventory-handler', 'inventory-outbox', '同事务记录', 'sync'],
   ['inventory-reserved-result', 'inventory-outbox', 'message-broker', 'InventoryReserved', 'message'],
   ['inventory-rejected-result', 'inventory-outbox', 'message-broker', 'InventoryRejected', 'message'],
-  ['order-result-deduplication', 'message-broker', 'order-consumer-dedup', '结果去重', 'message'],
-  ['order-result-dispatch', 'order-consumer-dedup', 'order-handler', '推进持久 Saga', 'sync'],
+  ['order-result-deduplication', 'message-broker', 'order-contract', '订单结果进入公开合同', 'message'],
+  ['order-result-dispatch', 'order-consumer-dedup', 'order-handler', '处理请求 / 推进持久 Saga', 'sync'],
   ['reserve-inventory-publication', 'order-outbox', 'message-broker', 'ReserveInventory', 'message'],
   ['register-payment-intent', 'order-outbox', 'message-broker', 'RegisterPaymentIntent', 'message'],
   ['payment-command-delivery', 'message-broker', 'payment-contract', '登记支付意图', 'message'],
@@ -144,7 +144,7 @@ const DIAGRAM_EDGES = [
   ['payment-owned-data-write', 'payment-dispatcher', 'payment-data', '本地事务写意图', 'sync'],
   ['payment-outbox-write', 'payment-dispatcher', 'payment-outbox', '同事务记录', 'sync'],
   ['provider-authorization', 'payment-dispatcher', 'payment-provider', '授权 / 扣款（稳定幂等键）', 'sync'],
-  ['provider-result', 'payment-provider', 'payment-dispatcher', '确认 / 拒绝 / 未知', 'sync'],
+  ['provider-result', 'payment-provider', 'payment-contract', '确认 / 拒绝 / 未知', 'sync'],
   ['payment-unknown-reconciliation', 'payment-dispatcher', 'payment-reconciliation', '未知结果先查询 / 对账', 'sync'],
   ['payment-confirmed', 'payment-outbox', 'message-broker', 'PaymentConfirmed', 'message'],
   ['payment-rejected', 'payment-outbox', 'message-broker', 'PaymentRejected', 'message'],
@@ -447,6 +447,24 @@ function cellGeometry(source, id, format) {
   return {x, y, width, height};
 }
 
+function drawioEdgeRoute(source, id) {
+  const escapedId = id.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
+  const blockMatch = source.match(new RegExp(`(<mxCell\\b[^>]*\\bid="${escapedId}"[^>]*>)([\\s\\S]*?)<\\/mxCell>`, 'u'));
+  assert.ok(blockMatch, `Draw.io edge route ${id}`);
+  const attributes = xmlAttributes(blockMatch[1]);
+  const sourceBounds = cellGeometry(source, attributes.get('source'), 'drawio');
+  const targetBounds = cellGeometry(source, attributes.get('target'), 'drawio');
+  const waypoints = [...blockMatch[2].matchAll(/<mxPoint\b([^>]*)\/>/gu)].map(([, raw]) => {
+    const point = xmlAttributes(raw);
+    return {x: Number(point.get('x')), y: Number(point.get('y'))};
+  });
+  return [
+    {x: sourceBounds.x + sourceBounds.width / 2, y: sourceBounds.y + sourceBounds.height / 2},
+    ...waypoints,
+    {x: targetBounds.x + targetBounds.width / 2, y: targetBounds.y + targetBounds.height / 2},
+  ];
+}
+
 function contains(outer, inner) {
   return inner.x >= outer.x && inner.y >= outer.y &&
     inner.x + inner.width <= outer.x + outer.width && inner.y + inner.height <= outer.y + outer.height;
@@ -557,6 +575,16 @@ function parseOrthogonalPath(data) {
   }
   assert.ok(points.length >= 2, `orthogonal connector has at least two points: ${data}`);
   return points;
+}
+
+function primaryHorizontalLane(points) {
+  const horizontal = points.slice(1).map((point, index) => ({
+    end: point,
+    length: Math.abs(point.x - points[index].x),
+    start: points[index],
+  })).filter(({end, length, start}) => end.y === start.y && length > 0);
+  assert.ok(horizontal.length > 0, 'connector has a horizontal routing lane');
+  return horizontal.sort((left, right) => right.length - left.length)[0];
 }
 
 function conservativeTextWidth(text, fontSize) {
@@ -927,6 +955,8 @@ test('publishes synchronized Draw.io and SVG inventories, containment, and conne
       assert.match(drawioEdge?.style ?? '', /(?:^|;)strokeColor=#[0-9A-Fa-f]{6}(?:;|$)/u, `${id} compensation color`);
       assert.match(svgEdge?.className ?? '', /(?:^|\s)compensation(?:\s|$)/u, `${id} compensation class`);
     }
+    const svgPath = svg.match(new RegExp(`<path\\b[^>]*data-edge-id="${id}"[^>]*\\bd="([^"]+)"`, 'u'))?.[1] ?? '';
+    assert.deepEqual(parseOrthogonalPath(svgPath), drawioEdgeRoute(drawio, id), `${id} synchronized route`);
   }
 
   for (const format of ['drawio', 'svg']) {
@@ -946,6 +976,14 @@ test('publishes synchronized Draw.io and SVG inventories, containment, and conne
     const dataTarget = edge.target?.match(/^(order|inventory|payment|notification)-data$/u);
     if (dataTarget) assert.match(edge.source ?? '', new RegExp(`^${dataTarget[1]}-`, 'u'), `${edge.id} owned-data writer`);
   }
+  const ownerByNode = new Map([...SERVICE_CHILDREN].flatMap(([owner, ids]) => ids.map((id) => [id, owner])));
+  for (const edge of [...drawioEdges.values(), ...svgEdges.values()]) {
+    const targetOwner = ownerByNode.get(edge.target);
+    const sourceOwner = ownerByNode.get(edge.source);
+    if (targetOwner && sourceOwner !== targetOwner) {
+      assert.equal(edge.target, `${targetOwner}-contract`, `${edge.id} cross-boundary ingress uses public contract`);
+    }
+  }
   for (const [id, connectorClass] of [['legend-sync-line', 'sync'], ['legend-message-line', 'message'], ['legend-compensation-line', 'compensation']]) {
     assert.match(drawio, new RegExp(`<mxCell\\b(?=[^>]*\\bid="${id}")(?=[^>]*\\blegendLine="${connectorClass}")[^>]*>`, 'u'));
     assert.match(svg, new RegExp(`<g\\b[^>]*data-node-id="${id}"[^>]*data-legend-line="${connectorClass}"[^>]*>`, 'u'));
@@ -960,6 +998,8 @@ test('keeps marker-aware label clearances and selector-bound contrast mutation-s
     ['data-edge-node-clearance-css', 12], ['data-edge-boundary-clearance-css', 12],
     ['data-header-inner-stroke-padding-css', 12],
   ]) assert.ok(Number(root.get(attribute)) >= minimum, `${attribute} >= ${minimum}`);
+  assert.ok(Number(root.get('data-edge-own-stroke-max-clearance-css')) <= 24,
+    'data-edge-own-stroke-max-clearance-css <= 24');
   const renderedScale = Number(root.get('data-authoring-to-render-scale'));
   assert.ok(Number.isFinite(renderedScale) && renderedScale > 0 && renderedScale <= 1,
     'positive authoring-to-render scale');
@@ -985,12 +1025,27 @@ test('keeps marker-aware label clearances and selector-bound contrast mutation-s
   const connectorTags = new Map([...svg.matchAll(/<path\b[^>]*data-edge-id="([^"]+)"[^>]*>/gu)]
     .map(([tag, id]) => [id, tag]));
   assert.deepEqual([...connectorTags.keys()].sort(), DIAGRAM_EDGES.map(([id]) => id).sort());
+  const pathData = [...connectorTags].map(([id, tag]) => [id, xmlAttributes(tag).get('d') ?? '']);
+  assert.equal(new Set(pathData.map(([, data]) => data)).size, DIAGRAM_EDGES.length,
+    'semantically distinct connectors do not share coincident paths');
+  const primaryLanes = pathData.map(([id, data]) => [id, primaryHorizontalLane(parseOrthogonalPath(data))]);
+  for (let left = 0; left < primaryLanes.length; left += 1) {
+    for (let right = left + 1; right < primaryLanes.length; right += 1) {
+      const laneGap = Math.abs(primaryLanes[left][1].start.y - primaryLanes[right][1].start.y) * renderedScale;
+      assert.ok(laneGap >= 24,
+        `${primaryLanes[left][0]} and ${primaryLanes[right][0]} primary lane separation ${laneGap}`);
+    }
+  }
   for (const [edgeId, , , expectedLabel] of DIAGRAM_EDGES) {
     const connectorTag = connectorTags.get(edgeId);
     const labelMatch = svg.match(new RegExp(`(<text\\b[^>]*data-edge-id="${edgeId}"[^>]*>)([^<]+)<\\/text>`, 'u'));
     assert.equal(decodeXmlText(labelMatch?.[2] ?? ''), expectedLabel, `${edgeId} visible label`);
     const bounds = labelBounds(labelMatch?.[1] ?? '', expectedLabel, fontSize);
     const ownPoints = parseOrthogonalPath(xmlAttributes(connectorTag).get('d') ?? '');
+    const ownHalfStroke = Number(svgPresentationValue(svg, 'path', connectorTag, 'stroke-width')) / 2;
+    const ownStrokeClearance = (Math.min(...ownPoints.slice(1).map((point, index) =>
+      segmentDistance(bounds, ownPoints[index], point))) - ownHalfStroke) * renderedScale;
+    assert.ok(ownStrokeClearance <= 24, `${edgeId} own-stroke association ${ownStrokeClearance}`);
     const ownMarker = markerGeometry(svg, connectorTag, ownPoints);
     const corners = [
       {x: bounds.left, y: bounds.top}, {x: bounds.right, y: bounds.top},
