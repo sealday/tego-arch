@@ -404,6 +404,12 @@ function assertArticleLiteralContract(source) {
   assert.equal(source.split(`![${DIAGRAM_ALT}](${ILLUSTRATION_URL})`).length - 1, 1, 'exact diagram alt text');
   assert.equal(source.split(`**${SCENARIO_LABEL}：**`).length - 1, 1, 'exact scenario label');
   assert.equal(wrappers.length, 3, 'exactly three keyboard-scroll wrappers');
+  for (const [index, tag] of wrappers.entries()) {
+    assert.match(tag, /(?:^|\s)role="region"(?=\s|>)/u,
+      `keyboard-scroll wrapper ${index + 1} exposes a region role`);
+    assert.match(tag, /(?:^|\s)tabIndex=\{0\}(?=\s|>)/u,
+      `keyboard-scroll wrapper ${index + 1} is keyboard focusable`);
+  }
   assert.ok(wrappers.every((tag) => tag.includes('onKeyDown={handleHorizontalArrowKey}')),
     'every diagram/table wrapper binds handleHorizontalArrowKey');
   assert.equal(source.match(/onKeyDown=\{handleHorizontalArrowKey\}/gu)?.length, 3,
@@ -911,13 +917,17 @@ test('publishes exact STY-05 metadata, headings, and actionable relations', () =
   assert.ok(moduleBoundaries && internalLinksOf(moduleBoundaries).includes(ROUTE), 'module-boundaries path route');
 });
 
-test('rejects changed STY-05 labels and missing keyboard-scroll handlers', () => {
+test('rejects changed STY-05 labels and incomplete keyboard-scroll semantics', () => {
   assert.ok(article);
   const mutations = [
     article.source.replace(DIAGRAM_ARIA, DIAGRAM_ARIA.replace('Saga', '长事务')),
     article.source.replace(DIAGRAM_ALT, DIAGRAM_ALT.replace('持久 Saga', '持久流程')),
     article.source.replace(SCENARIO_LABEL, '说明性场景（本站分析）'),
     article.source.replace('onKeyDown={handleHorizontalArrowKey}', ''),
+    article.source.replace(' role="region"', ''),
+    article.source.replace('role="region"', 'role="group"'),
+    article.source.replace(' tabIndex={0}', ''),
+    article.source.replace('tabIndex={0}', 'tabIndex={-1}'),
   ];
   for (const [index, mutation] of mutations.entries()) {
     assert.notEqual(mutation, article.source, `article literal mutation ${index + 1} applies`);
