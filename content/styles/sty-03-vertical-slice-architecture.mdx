@@ -29,6 +29,7 @@ adjacent_topics:
   - STY-01
   - STY-02
   - STY-04
+  - STY-05
 related_cases:
   - /cases/micro-frontends-single-spa
 related_questions: []
@@ -121,7 +122,7 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 
 ## 对比案例
 
-下表把同一提交订单场景放在三种组织视角中。[模块化单体](/styles/sty-04)描述部署形态与模块合同，垂直切片描述面向变化的用例代码边界；二者可以组合，不能互相替代。
+下表把同一提交订单场景放在三种组织视角中。[模块化单体](/styles/sty-04)描述单一部署内的模块合同，[微服务](/styles/sty-05)描述加入独立部署、私有数据和分布式恢复后的运行边界，垂直切片则描述面向变化的用例代码边界；三者可以组合，不能互相替代。
 
 <div className="table-wrapper table-wrapper--mapping diagram-wrapper--scroll-owner" role="region" aria-label="提交订单的分层、垂直切片与模块化单体比较表，可横向滚动" tabIndex={0} onKeyDown={handleHorizontalArrowKey}>
 

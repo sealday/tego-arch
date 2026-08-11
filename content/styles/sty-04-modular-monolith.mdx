@@ -31,6 +31,7 @@ adjacent_topics:
   - STY-01
   - STY-02
   - STY-03
+  - STY-05
 related_cases:
   - /cases/micro-frontends-single-spa
 related_questions: []
@@ -178,7 +179,7 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 
 读者应保留的决定是：需要业务边界不等于需要网络边界。[分层架构](/styles/sty-01)回答技术责任如何分离；[六边形架构、洋葱架构与整洁架构](/styles/sty-02)回答源码依赖应指向谁；[垂直切片架构](/styles/sty-03)回答一次用例变化如何收拢。一个订单模块可以同时包含垂直切片，并在内部使用依赖向内的端口。
 
-[生产中的微前端案例](/cases/micro-frontends-single-spa)只用于比较业务所有权、独立交付和共享运行时的张力，不证明后端订单模块应采用相同部署方式。STY-05 是待发布的下一主题；在该主题正式完成前，本文只固定拆分前要测量的问题，不替它预设微服务结论。
+[生产中的微前端案例](/cases/micro-frontends-single-spa)只用于比较业务所有权、独立交付和共享运行时的张力，不证明后端订单模块应采用相同部署方式。[微服务](/styles/sty-05)继续说明独立部署、私有数据和分布式恢复如何改变这些边界；本文仍负责固定拆分前要测量的问题，不替提取决定预设结论。
 
 ## 来源
 
