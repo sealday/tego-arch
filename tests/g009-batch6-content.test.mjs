@@ -779,6 +779,9 @@ function assertLegendClearance(svg, connectorTags, renderedScale) {
   });
   let minimumConnectorClearance = Number.POSITIVE_INFINITY;
   let minimumMarkerClearance = Number.POSITIVE_INFINITY;
+  let minimumForeignKeyClearance = Number.POSITIVE_INFINITY;
+  let minimumCaptionClearance = Number.POSITIVE_INFINITY;
+  const keys = new Map();
   for (const kind of ['sync', 'message', 'compensation']) {
     const group = svg.match(new RegExp(`<g\\b[^>]*data-legend-line="${kind}"[^>]*>([\\s\\S]*?)<\\/g>`, 'u'))?.[1] ?? '';
     const keyTag = group.match(/<path\b[^>]*>/u)?.[0] ?? '';
@@ -790,6 +793,7 @@ function assertLegendClearance(svg, connectorTags, renderedScale) {
     const fontSize = Number.parseFloat(svgPresentationValue(svg, 'text', caption[1], 'font-size'));
     const bounds = labelBounds(caption[1], decodeXmlText(caption[2]), fontSize);
     const marker = markerGeometry(svg, keyTag, keyPoints);
+    keys.set(kind, {halfStroke: keyHalfStroke, marker, points: keyPoints});
     const markerGap = intervalGap(projectedInterval(marker.points, marker.axis), projectedInterval([
       {x: bounds.left, y: bounds.top}, {x: bounds.right, y: bounds.top},
       {x: bounds.left, y: bounds.bottom}, {x: bounds.right, y: bounds.bottom},
@@ -805,7 +809,31 @@ function assertLegendClearance(svg, connectorTags, renderedScale) {
       assert.ok(keyGap >= 12, `${kind} legend key-to-connector clearance ${keyGap}`);
     }
   }
-  return {minimumConnectorClearance, minimumMarkerClearance};
+  const captions = [...svg.matchAll(/(<text\b[^>]*data-legend-entry="([^"]+)"[^>]*>)([^<]+)<\/text>/gu)]
+    .map(([, tag, id, value]) => {
+      const fontSize = Number.parseFloat(svgPresentationValue(svg, 'text', tag, 'font-size'));
+      return {bounds: labelBounds(tag, decodeXmlText(value), fontSize), id};
+    });
+  assert.equal(captions.length, 5, 'five measured legend captions');
+  for (let left = 0; left < captions.length; left += 1) {
+    for (let right = left + 1; right < captions.length; right += 1) {
+      const gap = rectangleDistance(captions[left].bounds, captions[right].bounds) * renderedScale;
+      minimumCaptionClearance = Math.min(minimumCaptionClearance, gap);
+      assert.ok(gap >= 8, `${captions[left].id}/${captions[right].id} legend caption clearance ${gap}`);
+    }
+    for (const [kind, key] of keys) {
+      if (captions[left].id === kind) continue;
+      const keyGap = (Math.min(...key.points.slice(1).map((point, index) =>
+        segmentDistance(captions[left].bounds, key.points[index], point))) - key.halfStroke) * renderedScale;
+      const markerGap = Math.min(...key.marker.points.map(({x, y}) => rectangleDistance(captions[left].bounds,
+        {bottom: y, left: x, right: x, top: y}))) * renderedScale;
+      minimumForeignKeyClearance = Math.min(minimumForeignKeyClearance, keyGap);
+      minimumMarkerClearance = Math.min(minimumMarkerClearance, markerGap);
+      assert.ok(keyGap >= 12, `${captions[left].id} caption-to-${kind}-key clearance ${keyGap}`);
+      assert.ok(markerGap >= 16, `${captions[left].id} caption-to-${kind}-marker clearance ${markerGap}`);
+    }
+  }
+  return {minimumCaptionClearance, minimumConnectorClearance, minimumForeignKeyClearance, minimumMarkerClearance};
 }
 
 test('publishes exact STY-05 metadata, headings, and actionable relations', () => {
@@ -1173,6 +1201,12 @@ test('keeps marker-aware label clearances and selector-bound contrast mutation-s
     'semantically distinct connectors do not share coincident paths');
   assertNoPositiveSegmentOverlap(connectorTags);
   assertLegendClearance(svg, connectorTags, renderedScale);
+  const foreignKeyMutation = svg.replace(/data-legend-entry="message" x="[^"]+" y="[^"]+"/u,
+    'data-legend-entry="message" x="500" y="32385"');
+  assert.throws(() => assertLegendClearance(foreignKeyMutation, connectorTags, renderedScale), {name: 'AssertionError'});
+  const captionOverlapMutation = svg.replace(/data-legend-entry="ownership" x="[^"]+" y="[^"]+"/u,
+    'data-legend-entry="ownership" x="950" y="32385"');
+  assert.throws(() => assertLegendClearance(captionOverlapMutation, connectorTags, renderedScale), {name: 'AssertionError'});
   const legendCrossingMutation = new Map(connectorTags);
   legendCrossingMutation.set('order-created', connectorTags.get('order-created').replace(/\bd="[^"]+"/u,
     'd="M 500 500 V 32330 H 700"'));

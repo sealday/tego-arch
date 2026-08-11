@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10000 33000" role="img" aria-labelledby="sty05-title sty05-desc" data-authoring-to-render-scale="0.08" data-edge-stroke-clearance-css="8" data-edge-marker-clearance-css="16" data-edge-node-clearance-css="12" data-edge-boundary-clearance-css="12" data-header-inner-stroke-padding-css="12" data-edge-own-stroke-max-clearance-css="24">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10000 34200" role="img" aria-labelledby="sty05-title sty05-desc" data-authoring-to-render-scale="0.08" data-edge-stroke-clearance-css="8" data-edge-marker-clearance-css="16" data-edge-node-clearance-css="12" data-edge-boundary-clearance-css="12" data-header-inner-stroke-padding-css="12" data-edge-own-stroke-max-clearance-css="24">
   <title id="sty05-title">微服务订单 Saga：独立部署与显式恢复</title>
   <desc id="sty05-desc">订单、库存、支付和通知位于四个独立部署边界，各自拥有私有权威数据与 Outbox；订单服务持久化 Saga，消息中间件隔离毒消息，支付结果未知时先查询对账，失败通过补偿动作恢复。</desc>
   <defs>
@@ -22,7 +22,7 @@
     .edge-label { fill: #111827; font-size: 188px; font-weight: 600; }
     .legend-label { fill: #111827; font-size: 125px; }
   </style>
-  <rect data-canvas-role="background" x="0" y="0" width="10000" height="33000" fill="#FFFFFF"/>
+  <rect data-canvas-role="background" x="0" y="0" width="10000" height="34200" fill="#FFFFFF"/>
   <path class="edge sync" data-edge-id="request-entry" data-source="client" data-target="api-entry" d="M805 1010 V9100 H50 V10100 H9950 V9400 H2455 V1010"/>
   <text class="edge-label" data-edge-id="request-entry" x="5000" y="9975" text-anchor="middle">提交订单（稳定幂等键）</text>
   <path class="edge sync" data-edge-id="api-order-request" data-source="api-entry" data-target="order-contract" d="M2455.1 1010 V9104 H70 V10600 H9930 V9404 H946.8 V3530"/>
@@ -272,11 +272,11 @@
     <text class="node-type" data-text-role="type" x="9055" text-anchor="middle"><tspan x="9055" y="955">服务所有者负责；</tspan><tspan x="9055" y="1110">修复 / 手动重放 / </tspan><tspan x="9055" y="1265">人工终止</tspan></text>
   </g>
   <g data-node-id="legend-sync-line" data-type-label="" data-node-bounds="180 32200 1250 260" data-legend-line="sync"><path class="sync" d="M 220 32330 H 700"/><text class="legend-label" data-text-role="title" x="780" y="32385"></text><text class="node-type" data-text-role="type" x="780" y="32425"></text></g>
-  <g data-node-id="legend-message-line" data-type-label="" data-node-bounds="1800 32200 1250 260" data-legend-line="message"><path class="message" d="M 1840 32330 H 2320"/><text class="legend-label" data-text-role="title" x="2400" y="32385"></text><text class="node-type" data-text-role="type" x="2400" y="32425"></text></g>
-  <g data-node-id="legend-compensation-line" data-type-label="" data-node-bounds="3420 32200 1600 260" data-legend-line="compensation"><path class="compensation" d="M 3460 32330 H 3940"/><text class="legend-label" data-text-role="title" x="4020" y="32385"></text><text class="node-type" data-text-role="type" x="4020" y="32425"></text></g>
-  <text class="legend-label" data-legend-for="sync" x="950" y="32385">同步调用（实线）</text>
-  <text class="legend-label" data-legend-for="message" x="2570" y="32385">命令 / 结果 / 事件（虚线）</text>
-  <text class="legend-label" data-legend-for="compensation" x="4210" y="32385">补偿是新的业务动作（点划线）</text>
-  <text class="legend-label" x="5900" y="32385">本地事务 + Outbox；至少一次 / 重放</text>
-  <text class="legend-label" x="7900" y="32385">私有权威数据；平台不拥有业务状态</text>
+  <g data-node-id="legend-message-line" data-type-label="" data-node-bounds="180 32550 1250 260" data-legend-line="message"><path class="message" d="M 220 32680 H 700"/><text class="legend-label" data-text-role="title" x="780" y="32735"></text><text class="node-type" data-text-role="type" x="780" y="32775"></text></g>
+  <g data-node-id="legend-compensation-line" data-type-label="" data-node-bounds="180 32900 1600 260" data-legend-line="compensation"><path class="compensation" d="M 220 33030 H 700"/><text class="legend-label" data-text-role="title" x="780" y="33085"></text><text class="node-type" data-text-role="type" x="780" y="33125"></text></g>
+  <text class="legend-label" data-legend-for="sync" data-legend-entry="sync" x="950" y="32385">同步调用（实线）</text>
+  <text class="legend-label" data-legend-for="message" data-legend-entry="message" x="950" y="32735">命令 / 结果 / 事件（虚线）</text>
+  <text class="legend-label" data-legend-for="compensation" data-legend-entry="compensation" x="950" y="33085">补偿是新的业务动作（点划线）</text>
+  <text class="legend-label" data-legend-entry="transaction" x="220" y="33435">本地事务 + Outbox；至少一次 / 重放</text>
+  <text class="legend-label" data-legend-entry="ownership" x="220" y="33785">私有权威数据；平台不拥有业务状态</text>
 </svg>
