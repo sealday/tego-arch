@@ -215,7 +215,8 @@ test('scopes hero typography, focus, responsive density, and reduced motion', as
   assert.match(tablet, /\.futureList\s*\{[^}]*grid-template-columns:\s*1fr;/u);
   assert.match(mobile, /\.heroTitle\s*\{[^}]*font-size:\s*clamp\(2\.25rem, 11vw, 3rem\);/u);
   assert.match(mobile, /\.heroTitle\s*\{[^}]*max-width:\s*100%;/u);
-  assert.match(mobile, /\.statusRail div:nth-child\(n \+ 3\)\s*\{[^}]*display:\s*none;/u);
+  assert.match(mobile, /\.statusRail\s*\{[^}]*display:\s*grid;[^}]*grid-template-columns:\s*repeat\(3, minmax\(0, 1fr\)\);/u);
+  assert.doesNotMatch(mobile, /\.statusRail div:nth-child\(n \+ 3\)\s*\{[^}]*display:\s*none;/u);
   assert.match(mobile, /\.entryRow p\s*\{[^}]*display:\s*none;/u);
   assert.match(reducedMotion, /\.entryRow,[\s\S]*\.primaryAction,[\s\S]*\.secondaryAction\s*\{[^}]*transition:\s*none;/u);
 });

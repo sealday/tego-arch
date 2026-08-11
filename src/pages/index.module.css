@@ -444,16 +444,14 @@
   }
 
   .statusRail {
-    gap: 1.25rem;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75rem;
   }
 
   .statusRail div {
     grid-template-columns: 1fr;
     gap: 0.15rem;
-  }
-
-  .statusRail div:nth-child(n + 3) {
-    display: none;
   }
 
   .pageSection {
