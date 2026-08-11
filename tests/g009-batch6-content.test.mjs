@@ -263,12 +263,12 @@ const SOURCE_CONTRACTS = [
     author: 'Amazon Web Services', publishedAt: null,
     version: 'Current AWS Prescriptive Guidance page checked 2026-08-11',
     sourceKind: 'vendor-reference-architecture', tier: 'first-party',
-    allowedRoles: ['comparison', 'method'], license: 'LicenseRef-All-Rights-Reserved',
-    licenseEvidenceUrl: 'https://aws.amazon.com/terms/', copyrightPolicy: 'vendor-claims-separated',
-    licenseScope: 'The named AWS Prescriptive Guidance page and bibliographic facts only; prose, diagrams, service marks, linked works, and third-party material excluded',
-    licenseEvidenceNote: 'AWS Site Terms govern the checked documentation and reserve rights outside their stated licenses; Tego Arch retains attribution, a link, and original factual summary only.',
+    allowedRoles: ['comparison', 'method'], license: 'CC-BY-SA-4.0',
+    licenseEvidenceUrl: 'https://aws.amazon.com/terms/', copyrightPolicy: 'adapt-sharealike-review',
+    licenseScope: 'The named current AWS Prescriptive Guidance documentation page text under CC BY-SA 4.0; code under MIT-0, and linked works, images, service marks, and third-party material under separate notices excluded',
+    licenseEvidenceNote: 'The AWS Site Terms state that documentation at docs.aws.amazon.com is licensed under CC BY-SA 4.0 and code in the documentation is licensed under MIT-0; this evidence applies to the named current Prescriptive Guidance page.',
     usageBoundary: 'Supports business-capability stability, domain understanding, domain-expert participation, and cross-functional team prerequisites; AWS-specific implementation choices and universal outcome claims are excluded.',
-    expectedApprovalNote: 'Reviewed canonical identity, AWS Site Terms boundary, and healthy transport on 2026-08-11.',
+    expectedApprovalNote: 'Reviewed canonical identity, the AWS Site Terms CC BY-SA 4.0 documentation and MIT-0 code boundary, and healthy transport on 2026-08-11.',
     attribution: 'Decompose by business capability, Amazon Web Services',
     citationRoles: ['comparison', 'method'], usageMode: 'facts-summary', manifestPrimary: false,
   },
@@ -1117,6 +1117,26 @@ test('governs six sources, three remote domains, rights, and one manifest primar
   const remoteDomains = new Set(externalLinksOf(article).map((url) => new URL(url).hostname));
   assert.ok(remoteDomains.size >= 3, 'at least three independent remote source domains');
   assert.deepEqual(externalLinksOf(article).sort(), SOURCE_CONTRACTS.slice(0, 5).map(({locator}) => locator).sort());
+});
+
+test('locks the AWS Prescriptive Guidance documentation license and rejects an ARR downgrade', () => {
+  const source = ledger.sources.find(({id}) => id === 'src-aws-decompose-business-capability');
+  const assertAwsDocumentationRights = (candidate) => assert.deepEqual({
+    license: candidate.license,
+    license_evidence_url: candidate.license_evidence_url,
+    copyright_policy: candidate.copyright_policy,
+  }, {
+    license: 'CC-BY-SA-4.0',
+    license_evidence_url: 'https://aws.amazon.com/terms/',
+    copyright_policy: 'adapt-sharealike-review',
+  });
+
+  assertAwsDocumentationRights(source);
+  assert.throws(() => assertAwsDocumentationRights({
+    ...source,
+    license: 'LicenseRef-All-Rights-Reserved',
+    copyright_policy: 'vendor-claims-separated',
+  }), {name: 'AssertionError'}, 'AWS documentation ARR downgrade');
 });
 
 test('projects the exact STY-05 Stage A pre-closure state', () => {

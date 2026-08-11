@@ -1258,6 +1258,18 @@ test('enforces license-specific copyright policies', () => {
     /src-vendor.*adapt-with-attribution.*vendor-claims-separated/i,
   );
 
+  const shareAlikeVendor = sourceFixture('src-sharealike-vendor', {
+    source_kind: 'vendor-reference-architecture',
+    tier: 'first-party',
+    license: 'CC-BY-SA-4.0',
+    copyright_policy: 'adapt-sharealike-review',
+  });
+  assert.doesNotMatch(
+    parseSourceLedger(ledger({sources: [shareAlikeVendor], documents: {}})).errors.join('\n'),
+    /src-sharealike-vendor.*copyright_policy/i,
+    'share-alike obligations take precedence over the vendor-claims policy',
+  );
+
   const original = sourceFixture('src-original', {
     canonical_locator: '/img/original.png',
     transport_locator: '/img/original.png',

@@ -630,9 +630,10 @@ function validateSource(source, index, errors) {
     `${label}: copyright_policy`,
     errors,
   );
-  const expectedCopyrightPolicy =
-    requiredPolicyByKind.get(source.source_kind) ??
-    requiredPolicyByLicense.get(source.license);
+  const licensePolicy = requiredPolicyByLicense.get(source.license);
+  const expectedCopyrightPolicy = source.license === 'CC-BY-SA-4.0'
+    ? licensePolicy
+    : requiredPolicyByKind.get(source.source_kind) ?? licensePolicy;
   if (
     expectedCopyrightPolicy !== undefined &&
     source.copyright_policy !== expectedCopyrightPolicy

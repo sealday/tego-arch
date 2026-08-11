@@ -47,7 +47,7 @@
 - `src-microsoft-microservices-architecture-style` — `https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/microservices`，Microsoft Azure Architecture Center；固定官方源码为 `https://raw.githubusercontent.com/MicrosoftDocs/architecture-center/f69851e7c8b27ca6e8983e7b7d91d35e99423a73/docs/guide/architecture-styles/microservices.md`，页面元数据 `ms.date: 06/30/2025`，仓库许可证 `CC-BY-4.0`。只支持 Microsoft 对自治服务、私有数据、CI/CD、观测、故障隔离条件和分布式成本的说明。
 - `src-microservicesio-database-per-service` — `https://microservices.io/patterns/data/database-per-service.html`，Chris Richardson；用于核对私有持久数据、只经 API 访问、独立事务以及跨服务事务/查询成本。`LicenseRef-All-Rights-Reserved`，原创事实总结，不复制来源图示或示例表达。
 - `src-microservicesio-saga` — `https://microservices.io/patterns/data/saga.html`，Chris Richardson；用于核对本地事务序列、编排/协同、补偿、缺少自动回滚与隔离、数据库和消息发布原子性问题。`LicenseRef-All-Rights-Reserved`，不外推为 exactly-once、自动补偿或订单场景生产保证。
-- `src-aws-decompose-business-capability` — `https://docs.aws.amazon.com/prescriptive-guidance/latest/modernization-decomposing-monoliths/decompose-business-capability.html`，Amazon Web Services；支持业务能力稳定性、领域理解、领域专家和跨职能团队前提。`LicenseRef-All-Rights-Reserved`，遵守 AWS Site Terms，只保留链接和原创事实总结，不复制其图示。
+- `src-aws-decompose-business-capability` — `https://docs.aws.amazon.com/prescriptive-guidance/latest/modernization-decomposing-monoliths/decompose-business-capability.html`，Amazon Web Services；支持业务能力稳定性、领域理解、领域专家和跨职能团队前提。AWS Site Terms 明确将 `docs.aws.amazon.com` 文档置于 `CC-BY-SA-4.0`、其中代码置于 `MIT-0`；本来源使用 `adapt-sharealike-review`，正文仍只保留链接和原创事实总结，不复制来源图示或代码。
 - `src-atlas-sty05-microservices-order-saga` — `/img/diagrams/sty-05-microservices-order-saga.svg`，Tego Arch maintainers；`LicenseRef-Atlas-Original`、`original-atlas`、`illustration-rights`，不含外部参考图、品牌视觉、签名、水印或复制构图。
 - 2026-08-11 已核对五个远程 URL 均 HTTP 200；Microservices.io 页脚明确 `Copyright © 2026 Chris Richardson • All rights reserved`。
 - 当前基线：57 completed topics / 99 content documents / 513 governed sources。
@@ -162,7 +162,7 @@
 
 - [ ] **Step 2: Add five complete source records.**
 
-  Copy the full schema of the existing Fowler, Microsoft Architecture Center and AWS records. Use `LicenseRef-All-Rights-Reserved` plus `facts-and-short-quotation` for Fowler/Microservices.io; use `CC-BY-4.0` plus `vendor-claims-separated` for Microsoft; use `LicenseRef-All-Rights-Reserved` plus `vendor-claims-separated` for AWS. Add only citation-title variants that appear verbatim in the planned article. Do not group different works under one license family merely because they share a domain.
+  Copy the full schema of the existing Fowler, Microsoft Architecture Center and AWS records. Use `LicenseRef-All-Rights-Reserved` plus `facts-and-short-quotation` for Fowler/Microservices.io; use `CC-BY-4.0` plus `vendor-claims-separated` for Microsoft; use `CC-BY-SA-4.0` plus `adapt-sharealike-review` for AWS documentation, with the AWS Site Terms as evidence and the embedded-code `MIT-0` boundary recorded separately. Add only citation-title variants that appear verbatim in the planned article. Do not group different works under one license family merely because they share a domain.
 
 - [ ] **Step 3: Add five health-cache observations.**
 

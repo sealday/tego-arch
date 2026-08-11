@@ -14,7 +14,7 @@
 | `content/styles/sty-05-microservices.mdx` | 13,651 | `493a227b19702a78d0141e6254eb2bb153ea0b00073c0b9773854e5c714e460f` |
 | `diagrams/sty-05-microservices-order-saga.drawio` | 55,145 | `3a5bb4db02eb8b81513807b59f879155c206607df7a28c6c78dce7b19a5436e5` |
 | `static/img/diagrams/sty-05-microservices-order-saga.svg` | 36,867 | `35bf03e73a1fda674701dd98a9f5dd016eaedbfb10a7a6f89485e110c5b9eb65` |
-| `data/source-ledger.json` | 1,515,156 | `b35b92e29d9db47a4a9d19c7ba9ee23e55569f436441f630f972bcabf04817c4` |
+| `data/source-ledger.json` | 1,515,289 | `21253b11dd39eebf75fba34e4f661d08bfbe19a95dc61cf5e2201c0d067d019c` |
 
 - Canonical source IDs: `src-lewis-fowler-microservices`, `src-microsoft-microservices-architecture-style`, `src-microservicesio-database-per-service`, `src-microservicesio-saga`, `src-aws-decompose-business-capability`, and `src-atlas-sty05-microservices-order-saga`.
 - The article exposes five governed remote anchors from four observed hostnames (`martinfowler.com`, `learn.microsoft.com`, `microservices.io`, and `docs.aws.amazon.com`), satisfying the minimum three-domain boundary. Fowler alone is `manifest_primary`; the local illustration is non-primary and illustration-only.
@@ -27,6 +27,15 @@
 - Generated projection changes are limited to the four canonical `src/generated/` files. The current/live project-status fixture advances to 57/100/519; immutable historical review payloads and hashes remain unchanged.
 - Selector-bound contrast provenance: the content contract resolves actual `.sync`, `.message`, `.compensation`, `.edge-label`, canvas, node, and legend presentation from the synchronized SVG. All expected contrast values are derived from those selected elements.
 - Deployment has not run. Local verification and Browser evidence establish only a candidate for independent review.
+
+## Independent review and remediation history
+
+- Candidate `7b4b96a54731af7ff983c6c7a15101f6cfc0ceaf`: code review and architecture review reported no blocking findings; content/evidence/rights review reported one `IMPORTANT` AWS documentation-license finding. Those observations are preserved as superseded checkpoint history, not final verdicts.
+- The finding was independently verified against the official [AWS Site Terms](https://aws.amazon.com/terms/), which state that documentation hosted on `docs.aws.amazon.com` is `CC-BY-SA-4.0` and code within that documentation is `MIT-0`.
+- Remediation corrects only `src-aws-decompose-business-capability`: `CC-BY-SA-4.0`, identity-scoped family, AWS Site Terms evidence, explicit documentation/code boundary, and `adapt-sharealike-review`. Source count, source kind, evidence roles, citation roles, remote locator, and `manifest_primary=false` remain unchanged.
+- The superseded `data/source-ledger.json` hash was `b35b92e29d9db47a4a9d19c7ba9ee23e55569f436441f630f972bcabf04817c4`; the corrected hash is recorded in Artifact identities. Historical Batch 1–5 review payloads and hashes remain byte-identical.
+- The corrected contract rejects downgrading this exact AWS source to `LicenseRef-All-Rights-Reserved`. A focused validator regression gives share-alike obligations precedence for a `CC-BY-SA-4.0` vendor reference without changing other vendor-license policies.
+- Remediation candidate identity: the commit containing this corrected review record; independent re-reviewers must bind the externally supplied full SHA. Code, content/evidence/rights, and architecture slots below remain `PENDING` until fresh verdicts are recorded against that exact commit.
 
 ## Local in-app Browser QA
 
