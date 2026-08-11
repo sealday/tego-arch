@@ -771,6 +771,43 @@ function assertMarkerOutsideTargetFill(svg, connectorTag, targetRectangle, rende
   return clearance;
 }
 
+function assertLegendClearance(svg, connectorTags, renderedScale) {
+  const connectorSegments = [...connectorTags.values()].flatMap((tag) => {
+    const points = parseOrthogonalPath(xmlAttributes(tag).get('d') ?? '');
+    const halfStroke = Number(svgPresentationValue(svg, 'path', tag, 'stroke-width')) / 2;
+    return points.slice(1).map((point, index) => ({end: point, halfStroke, start: points[index]}));
+  });
+  let minimumConnectorClearance = Number.POSITIVE_INFINITY;
+  let minimumMarkerClearance = Number.POSITIVE_INFINITY;
+  for (const kind of ['sync', 'message', 'compensation']) {
+    const group = svg.match(new RegExp(`<g\\b[^>]*data-legend-line="${kind}"[^>]*>([\\s\\S]*?)<\\/g>`, 'u'))?.[1] ?? '';
+    const keyTag = group.match(/<path\b[^>]*>/u)?.[0] ?? '';
+    assert.ok(keyTag, `${kind} legend path`);
+    const keyPoints = parseOrthogonalPath(xmlAttributes(keyTag).get('d') ?? '');
+    const keyHalfStroke = Number(svgPresentationValue(svg, 'path', keyTag, 'stroke-width')) / 2;
+    const caption = svg.match(new RegExp(`(<text\\b[^>]*data-legend-for="${kind}"[^>]*>)([^<]+)<\\/text>`, 'u'));
+    assert.ok(caption, `${kind} legend caption`);
+    const fontSize = Number.parseFloat(svgPresentationValue(svg, 'text', caption[1], 'font-size'));
+    const bounds = labelBounds(caption[1], decodeXmlText(caption[2]), fontSize);
+    const marker = markerGeometry(svg, keyTag, keyPoints);
+    const markerGap = intervalGap(projectedInterval(marker.points, marker.axis), projectedInterval([
+      {x: bounds.left, y: bounds.top}, {x: bounds.right, y: bounds.top},
+      {x: bounds.left, y: bounds.bottom}, {x: bounds.right, y: bounds.bottom},
+    ], marker.axis)) * renderedScale;
+    minimumMarkerClearance = Math.min(minimumMarkerClearance, markerGap);
+    assert.ok(markerGap >= 16, `${kind} legend marker-to-caption clearance ${markerGap}`);
+    for (const segment of connectorSegments) {
+      const captionGap = (segmentDistance(bounds, segment.start, segment.end) - segment.halfStroke) * renderedScale;
+      const keyGap = (segmentDistance({bottom: keyPoints[0].y, left: keyPoints[0].x,
+        right: keyPoints[1].x, top: keyPoints[0].y}, segment.start, segment.end) - keyHalfStroke - segment.halfStroke) * renderedScale;
+      minimumConnectorClearance = Math.min(minimumConnectorClearance, captionGap, keyGap);
+      assert.ok(captionGap >= 12, `${kind} legend caption-to-connector clearance ${captionGap}`);
+      assert.ok(keyGap >= 12, `${kind} legend key-to-connector clearance ${keyGap}`);
+    }
+  }
+  return {minimumConnectorClearance, minimumMarkerClearance};
+}
+
 test('publishes exact STY-05 metadata, headings, and actionable relations', () => {
   assert.ok(article, `${ARTICLE} must exist after implementation`);
   const metadata = parseFrontMatter(article.source);
@@ -1081,6 +1118,8 @@ test('publishes synchronized Draw.io and SVG inventories, containment, and conne
   for (const [id, connectorClass] of [['legend-sync-line', 'sync'], ['legend-message-line', 'message'], ['legend-compensation-line', 'compensation']]) {
     assert.match(drawio, new RegExp(`<mxCell\\b(?=[^>]*\\bid="${id}")(?=[^>]*\\blegendLine="${connectorClass}")[^>]*>`, 'u'));
     assert.match(svg, new RegExp(`<g\\b[^>]*data-node-id="${id}"[^>]*data-legend-line="${connectorClass}"[^>]*>`, 'u'));
+    assert.match(drawio, new RegExp(`<mxCell\\b(?=[^>]*\\bid="legend-${connectorClass}-caption")(?=[^>]*\\blegendFor="${connectorClass}")[^>]*>`, 'u'));
+    assert.match(svg, new RegExp(`<text\\b[^>]*data-legend-for="${connectorClass}"[^>]*>`, 'u'));
   }
 });
 
@@ -1133,6 +1172,11 @@ test('keeps marker-aware label clearances and selector-bound contrast mutation-s
   assert.equal(new Set(pathData.map(([, data]) => data)).size, DIAGRAM_EDGES.length,
     'semantically distinct connectors do not share coincident paths');
   assertNoPositiveSegmentOverlap(connectorTags);
+  assertLegendClearance(svg, connectorTags, renderedScale);
+  const legendCrossingMutation = new Map(connectorTags);
+  legendCrossingMutation.set('order-created', connectorTags.get('order-created').replace(/\bd="[^"]+"/u,
+    'd="M 500 500 V 32330 H 700"'));
+  assert.throws(() => assertLegendClearance(svg, legendCrossingMutation, renderedScale), {name: 'AssertionError'});
   const orderCreatedPath = xmlAttributes(connectorTags.get('order-created')).get('d');
   const overlapMutation = svg.replace(
     /(<path\b[^>]*data-edge-id="release-inventory-compensation-publication"[^>]*\bd=")[^"]+/u,
