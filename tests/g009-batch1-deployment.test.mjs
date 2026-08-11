@@ -223,7 +223,7 @@ test('rejects closure mutations accepted by the former weak predicates', async (
   }
 });
 
-test('preserves the Batch 1 closure in the current Batch 5 projection', async () => {
+test('preserves the Batch 1 closure in the current Batch 6 projection', async () => {
   const [backlog, manifest, status] = await Promise.all([
     readFile(new URL('../docs/content-backlog.md', import.meta.url), 'utf8'),
     readFile(new URL('../src/generated/topic-manifest.json', import.meta.url), 'utf8').then(JSON.parse),

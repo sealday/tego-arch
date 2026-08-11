@@ -28,7 +28,7 @@ const [manifest, projectStatus, indexes, publicLedger] = await Promise.all([
 const licenseScope = 'The named article/page and bibliographic facts only; prose, code, diagrams, images, marks, comments, linked works, and third-party material excluded';
 const migrationPolicy = 'Facts summary and reviewed short quotation only; no adaptation or copied structure';
 
-test('preserves STY-02 closure in the current Batch 5 projection', () => {
+test('preserves STY-02 closure in the current Batch 6 projection', () => {
   const topics = new Map(manifest.topics.map((topic) => [topic.id, topic]));
   assert.equal(topics.get('STY-02')?.published, true);
   assert.equal(topics.get('STY-02')?.status.value, 'complete');

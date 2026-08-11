@@ -271,7 +271,7 @@ test('rejects review and historical-baseline contradictions', async (t) => {
   }
 });
 
-test('preserves the STY-01 closure in the current Batch 5 projection', async () => {
+test('preserves the STY-01 closure in the current Batch 6 projection', async () => {
   const [backlog, manifest, status, sourceLedger] = await Promise.all([
     readFile(new URL('../docs/content-backlog.md', import.meta.url), 'utf8'),
     readFile(new URL('../src/generated/topic-manifest.json', import.meta.url), 'utf8').then(JSON.parse),

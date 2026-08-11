@@ -132,7 +132,7 @@ function currentG009Batch6Prefix(source) {
   const baseline = currentReleaseBaseline(source);
   const marker = '此前 G009 Batch 5 历史完成基线为：';
   const end = baseline.indexOf(marker);
-  assert.notEqual(end, -1, 'G009 Batch 4 history boundary');
+  assert.notEqual(end, -1, 'G009 Batch 5 history boundary');
   return baseline.slice(0, end);
 }
 

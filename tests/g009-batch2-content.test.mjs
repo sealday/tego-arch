@@ -156,7 +156,7 @@ test('governs the four approved STY-01 sources', () => {
   assert.equal(records.get('src-archunit-user-guide').version.includes('v1.5.0'), true);
 });
 
-test('preserves the Batch 2 STY-01 facts in the current Batch 5 projection', () => {
+test('preserves the Batch 2 STY-01 facts in the current Batch 6 projection', () => {
   const topic = manifest.topics.find(({id}) => id === 'STY-01');
   assert.equal(topic.published, true);
   assert.equal(topic.status.value, 'complete');

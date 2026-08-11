@@ -23,6 +23,7 @@ const PAGES_RUN_ID = '31490981657';
 const PAGES_BUILD_JOB_ID = '93777183963';
 const PAGES_DEPLOY_JOB_ID = '93777844175';
 const CLOSURE_HEAD_PLACEHOLDER = 'TO_BE_BOUND_AFTER_CLOSURE_COMMIT';
+const IMMEDIATE_HISTORICAL_BASELINE_HASH = '562b90de174139bc103000ff1c83e88b08349300ea67eee554fcd38772251c09';
 const HISTORICAL_BACKLOG_SUFFIX_HASH = '050238d189c4170c5d22da13181ce7ff7556f90e193c07358fb9b3d1fe133efa';
 const BROWSER_ARTIFACT_HASH = 'b139a174432e1684d9a9387e839807fc22b22c6ba0b2cb6e18009536a416f767';
 const PRODUCTION_BROWSER_ARTIFACT_HASH = '638b6141975cba48c43e5956f78fe029b780f6d74b8d9c8ddb1afad4b7be2ff2';
@@ -221,6 +222,24 @@ function assertStageBClosureCandidate(source) {
   return closure;
 }
 
+function assertHistoricalBacklogLocks(source) {
+  const currentBaseline = source.split(/\r?\n/u)
+    .find((line) => line.startsWith('- **当前发布基线：**'));
+  assert.ok(currentBaseline, 'current release baseline');
+
+  const immediateHistoryMarker = '此前 G009 Batch 5 历史完成基线为：';
+  const immediateHistoryStart = currentBaseline.indexOf(immediateHistoryMarker);
+  assert.notEqual(immediateHistoryStart, -1, 'G009 Batch 5 history marker');
+  const immediateHistory = currentBaseline.slice(immediateHistoryStart + immediateHistoryMarker.length);
+  assert.match(immediateHistory, /^2026-08-11 G009 Batch 5 已完成 STY-04/u);
+  assert.equal(sha256(immediateHistory), IMMEDIATE_HISTORICAL_BASELINE_HASH);
+
+  const historyMarker = '此前 G009 Batch 4 历史完成基线为：';
+  const historyStart = currentBaseline.indexOf(historyMarker);
+  assert.notEqual(historyStart, -1, 'G009 Batch 4-and-older history marker');
+  assert.equal(sha256(currentBaseline.slice(historyStart)), HISTORICAL_BACKLOG_SUFFIX_HASH);
+}
+
 test('projects the exact STY-05 Stage B closure inventory', () => {
   assert.deepEqual(
     {
@@ -279,11 +298,13 @@ test('closes only STY-05 and advances the G009 release baseline to STY-06', () =
     assert.ok(sty05Lines[0].includes(literal), `STY-05 closure literal: ${literal}`);
   }
 
-  const historyMarker = '此前 G009 Batch 4 历史完成基线为：';
-  const historyStart = currentBaseline.indexOf(historyMarker);
-  assert.notEqual(historyStart, -1, 'historical backlog suffix marker');
-  const baselineHistory = currentBaseline.slice(historyStart);
-  assert.equal(sha256(baselineHistory), HISTORICAL_BACKLOG_SUFFIX_HASH);
+  assertHistoricalBacklogLocks(backlog);
+});
+
+test('rejects mutation of the complete immediate G009 Batch 5 history', () => {
+  const mutated = backlog.replace('build job `93610482485`', 'build job `0`');
+  assert.notEqual(mutated, backlog, 'Batch 5 build-job mutation must apply');
+  assert.throws(() => assertHistoricalBacklogLocks(mutated), {name: 'AssertionError'});
 });
 
 test('binds exact local artifacts, four-state Browser evidence, and final exact-head review verdicts', async () => {

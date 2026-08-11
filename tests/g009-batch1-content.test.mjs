@@ -593,7 +593,7 @@ const [manifest, projectStatus, indexes, publicLedger] = await Promise.all([
   readFile(new URL('../src/generated/source-ledger.json', import.meta.url), 'utf8').then(JSON.parse),
 ]);
 
-test('preserves the STY-00 closure in the current Batch 5 projection', () => {
+test('preserves the STY-00 closure in the current Batch 6 projection', () => {
   const topic = manifest.topics.find(({id}) => id === 'STY-00');
   assert.equal(topic.published, true);
   assert.equal(topic.status.value, 'complete');
