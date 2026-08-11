@@ -196,6 +196,30 @@ test('requires Latin proper nouns to introduce a Chinese category or meaning', (
   );
 });
 
+test('registers Saga as an exact architecture-pattern name with Chinese-context guidance', () => {
+  const saga = repositoryTerms.get('saga');
+  assert.deepEqual(saga, {
+    id: 'saga',
+    canonical_zh: 'Saga',
+    english: null,
+    acronym: null,
+    kind: 'standard',
+    first_use: 'Saga',
+    subsequent_use: ['Saga'],
+    allowed_aliases: [],
+    forbidden_aliases: [],
+    note: '长事务协调模式保留稳定名称，由相邻中文语境解释其本地事务、补偿与恢复边界。',
+    order: 1600,
+  });
+  assert.deepEqual(parseTerminologyRegistry({schema_version: 1, terms: [saga]}).errors, []);
+
+  const mutated = parseTerminologyRegistry({
+    schema_version: 1,
+    terms: [{...saga, first_use: 'Saga 模式'}],
+  });
+  assert.ok(mutated.errors.some((error) => error.includes('first_use must exactly equal "Saga"')));
+});
+
 test('rejects bare canonical first use for every registered proper noun', () => {
   assert.equal(repositoryProperNouns.length, 39);
   for (const term of repositoryProperNouns) {

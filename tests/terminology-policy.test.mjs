@@ -149,7 +149,36 @@ test('no-argument CLI checks the repository default terminology scope', () => {
   );
   assert.equal(run.status, 0, run.stdout || run.stderr);
   assert.equal(run.stderr, '');
-  assert.match(run.stdout, /checked 102 files with 127 registered terms; 0 issues/u);
+  assert.match(run.stdout, /checked 102 files with 128 registered terms; 0 issues/u);
+});
+
+test('accepts governed Saga and reports it as unknown when the registry entry is removed', async () => {
+  const registry = JSON.parse(
+    await readFile(path.join(repositoryRoot, 'data/terminology.json'), 'utf8'),
+  );
+  const saga = registry.terms.find(({id}) => id === 'saga');
+  const source = 'Saga 用一系列本地事务协调业务过程。后续 Saga 由中文语境解释补偿与恢复边界。';
+  const governed = await withFixture(
+    {'content/example.mdx': source},
+    (root) => checkTerminology({root, paths: ['content/example.mdx']}),
+    [...terms, saga],
+  );
+  assert.deepEqual(governed.issues, []);
+
+  const mutated = await withFixture(
+    {'content/example.mdx': source},
+    (root) => checkTerminology({root, paths: ['content/example.mdx']}),
+    [...terms, {...saga, subsequent_use: []}],
+  );
+  assert.deepEqual(mutated.issues.map(({ruleId, matched, expected}) => ({ruleId, matched, expected})), [
+    {ruleId: 'first-use-required', matched: 'Saga', expected: 'Saga'},
+  ]);
+
+  const removed = await checkFixture(source);
+  assert.ok(removed.issues.length > 0);
+  assert.ok(removed.issues.every(({ruleId, matched}) => (
+    ruleId === 'unknown-english-term' && matched === 'Saga'
+  )));
 });
 
 test('requires bilingual first use and permits registered subsequent use', async () => {

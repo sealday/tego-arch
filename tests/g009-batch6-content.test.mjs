@@ -26,6 +26,32 @@ const REQUIRED_HEADINGS = [
   '部署单元与故障域', '团队拓扑', '质量属性收益与成本', '迁移路径',
   '禁用条件', '对比案例', '来源',
 ];
+const SUMMARY = '以提交订单为统一案例，说明微服务如何把业务能力、独立部署、私有数据和运行责任绑定，并解释 Saga、补偿与组织前提。';
+const EXPECTED_METADATA = {
+  title: '微服务：用独立部署换取自治，也承担分布式成本',
+  slug: ROUTE,
+  content_type: 'style',
+  status: 'reviewed',
+  difficulty: 'advanced',
+  analyzed_at: '2026-08-11',
+  source_cutoff: '2026-08-11',
+  confidence: 'high',
+  domains: ['software-architecture', 'distributed-systems'],
+  agent_patterns: [],
+  protocols: [],
+  quality_attributes: ['deployability', 'scalability', 'availability', 'maintainability', 'operability'],
+  tags: ['架构风格', '微服务', '服务边界', '分布式一致性'],
+  summary: SUMMARY,
+  topic_id: TOPIC_ID,
+  priority: 'P0',
+  depends_on: ['STY-00', 'STY-04'],
+  adjacent_topics: ['STY-03', 'STY-04'],
+  related_cases: ['/cases/micro-frontends-single-spa'],
+  related_questions: [],
+};
+const DIAGRAM_ARIA = '订单、库存、支付和通知微服务的独立部署、私有数据与 Saga 恢复图，可横向滚动';
+const DIAGRAM_ALT = '订单、库存、支付和通知作为独立部署服务，通过消息和持久 Saga 协作，各自拥有数据并显式执行补偿与恢复';
+const SCENARIO_LABEL = '说明性场景（Tego Arch 分析）';
 
 const DEPLOYMENT_IDS = [
   'order-service-boundary', 'inventory-service-boundary',
@@ -359,6 +385,29 @@ function visibleSectionBlocks(blocks, heading, nextHeading) {
 
 function assertCompoundVisibleBlock(blocks, label, patterns) {
   assert.ok(blocks.some(({text}) => patterns.every((pattern) => pattern.test(text))), label);
+}
+
+function assertArticleLiteralContract(source) {
+  const metadata = parseFrontMatter(source);
+  const semanticFrontMatter = parseMdxVisibleCopy(source, ARTICLE).frontMatter;
+  const semanticSummary = semanticFrontMatter.find(({field}) => field === 'summary')?.text;
+  assert.deepEqual({...metadata, summary: semanticSummary}, EXPECTED_METADATA, 'exact STY-05 front matter');
+  assert.equal(source.split(`summary: ${SUMMARY}`).length - 1, 1, 'exact literal summary line');
+  const diagramWrappers = [...source.matchAll(/<div\b[^>]*className="architecture-diagram-scroll"[^>]*>/gu)]
+    .map(([tag]) => tag);
+  const tableWrappers = [...source.matchAll(/<div\b[^>]*className="table-wrapper table-wrapper--mapping diagram-wrapper--scroll-owner"[^>]*>/gu)]
+    .map(([tag]) => tag);
+  const wrappers = [...diagramWrappers, ...tableWrappers];
+  assert.equal(diagramWrappers.length, 1, 'exactly one architecture diagram wrapper');
+  assert.equal(tableWrappers.length, 2, 'exactly two governed table wrappers');
+  assert.ok(diagramWrappers[0].includes(`aria-label="${DIAGRAM_ARIA}"`), 'exact diagram aria-label');
+  assert.equal(source.split(`![${DIAGRAM_ALT}](${ILLUSTRATION_URL})`).length - 1, 1, 'exact diagram alt text');
+  assert.equal(source.split(`**${SCENARIO_LABEL}：**`).length - 1, 1, 'exact scenario label');
+  assert.equal(wrappers.length, 3, 'exactly three keyboard-scroll wrappers');
+  assert.ok(wrappers.every((tag) => tag.includes('onKeyDown={handleHorizontalArrowKey}')),
+    'every diagram/table wrapper binds handleHorizontalArrowKey');
+  assert.equal(source.match(/onKeyDown=\{handleHorizontalArrowKey\}/gu)?.length, 3,
+    'no extra or missing horizontal-arrow handler bindings');
 }
 
 function licenseInventoryRows(markdown) {
@@ -838,6 +887,7 @@ function assertLegendClearance(svg, connectorTags, renderedScale) {
 
 test('publishes exact STY-05 metadata, headings, and actionable relations', () => {
   assert.ok(article, `${ARTICLE} must exist after implementation`);
+  assertArticleLiteralContract(article.source);
   const metadata = parseFrontMatter(article.source);
   assert.equal(metadata.topic_id, TOPIC_ID);
   assert.equal(metadata.slug, ROUTE);
@@ -859,6 +909,21 @@ test('publishes exact STY-05 metadata, headings, and actionable relations', () =
   assert.ok(sty04 && parseFrontMatter(sty04.source).adjacent_topics.includes(TOPIC_ID), 'STY-04 reciprocal metadata');
   assert.ok(sty04 && internalLinksOf(sty04).includes(ROUTE), 'STY-04 reciprocal route');
   assert.ok(moduleBoundaries && internalLinksOf(moduleBoundaries).includes(ROUTE), 'module-boundaries path route');
+});
+
+test('rejects changed STY-05 labels and missing keyboard-scroll handlers', () => {
+  assert.ok(article);
+  const mutations = [
+    article.source.replace(DIAGRAM_ARIA, DIAGRAM_ARIA.replace('Saga', '长事务')),
+    article.source.replace(DIAGRAM_ALT, DIAGRAM_ALT.replace('持久 Saga', '持久流程')),
+    article.source.replace(SCENARIO_LABEL, '说明性场景（本站分析）'),
+    article.source.replace('onKeyDown={handleHorizontalArrowKey}', ''),
+  ];
+  for (const [index, mutation] of mutations.entries()) {
+    assert.notEqual(mutation, article.source, `article literal mutation ${index + 1} applies`);
+    assert.throws(() => assertArticleLiteralContract(mutation), {name: 'AssertionError'},
+      `article literal mutation ${index + 1} is rejected`);
+  }
 });
 
 test('locks microservice boundaries, the order Saga, and owned runtime responsibility', () => {

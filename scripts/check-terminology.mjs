@@ -333,6 +333,7 @@ const termForms = (term) => [...new Set([
 const inspectFirstUse = (record, registry, introduced) => {
   const issues = [];
   for (const term of registry.registry.terms) {
+    const repeatableFirstUse = (term.subsequent_use ?? []).includes(term.first_use);
     const fullRanges = matchRanges(record.text, term.first_use);
     const candidates = [...new Set([
       term.canonical_zh,
@@ -351,7 +352,7 @@ const inspectFirstUse = (record, registry, introduced) => {
     let ready = introduced.has(term.id);
     for (const event of events) {
       if (event.type === 'full') {
-        if (ready) {
+        if (ready && !repeatableFirstUse) {
           issues.push(issue(
             record.file,
             record.line,

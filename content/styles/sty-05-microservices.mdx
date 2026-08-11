@@ -23,7 +23,7 @@ tags:
   - 微服务
   - 服务边界
   - 分布式一致性
-summary: 以提交订单为统一案例，说明微服务如何把业务能力、独立部署、私有数据和运行责任绑定，并解释长事务协调、补偿与组织前提。
+summary: 以提交订单为统一案例，说明微服务如何把业务能力、独立部署、私有数据和运行责任绑定，并解释 Saga、补偿与组织前提。
 topic_id: STY-05
 priority: P0
 depends_on:
@@ -63,15 +63,16 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 
 下面的图回答：独立部署和私有数据如何把一次本地事务改造成需要持久状态、消息、对账与补偿的跨服务任务流。实线表示同步调用，虚线表示命令、结果或事件，点划线表示作为新业务动作执行的补偿。
 
-<div className="architecture-diagram-scroll" role="region" aria-label="订单、库存、支付和通知微服务的独立部署、私有数据与长事务恢复图，可横向滚动" tabIndex={0} onKeyDown={handleHorizontalArrowKey}>
+<div className="architecture-diagram-scroll" role="region" aria-label="订单、库存、支付和通知微服务的独立部署、私有数据与 Saga 恢复图，可横向滚动" tabIndex={0} onKeyDown={handleHorizontalArrowKey}>
 
-![订单、库存、支付和通知作为独立部署服务，通过消息和持久流程状态协作，各自拥有数据并显式执行补偿与恢复](/img/diagrams/sty-05-microservices-order-saga.svg)
+![订单、库存、支付和通知作为独立部署服务，通过消息和持久 Saga 协作，各自拥有数据并显式执行补偿与恢复](/img/diagrams/sty-05-microservices-order-saga.svg)
 
 </div>
 
 图示的结论是：消息中间件负责传递，不拥有业务决定；订单服务持有恢复所需的流程状态，各服务只改变自己的权威数据。共享平台不拥有业务状态，图也不表示存在分布式原子提交。
 
-**说明性场景（本站分析）：** 客户端用稳定幂等键提交订单。订单服务在本地事务中建立待处理订单、持久化流程状态并写入事务性发件箱。该长事务协调用一系列本地事务推进业务过程，再以显式补偿处理已完成步骤。库存服务去重后，在自己的事务中写预留与发件箱，再返回接受或拒绝。
+{/* terminology-exempt: first-use-required | reason: 审批通过的说明性场景标签原文 */}
+- **说明性场景（Tego Arch 分析）：** 客户端用稳定幂等键提交订单。订单服务在本地事务中建立待处理订单、持久化流程状态并写入事务性发件箱。该长事务协调用一系列本地事务推进业务过程，再以显式补偿处理已完成步骤。库存服务去重后，在自己的事务中写预留与发件箱，再返回接受或拒绝。
 
 库存接受后，支付服务先持久化支付意图，再由持久调度器调用外部支付方。支付结果未知时不能直接重复扣款，而要按稳定幂等键查询或对账。确认后订单发布通知事件；拒绝或终止时，流程协调者发布释放库存以及必要的撤销、冲正或退款命令。
 
@@ -86,7 +87,6 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 {/* terminology-exempt: unknown-english-term | reason: 图示固定标签 */}
 图中把事务性发件箱标为 Outbox。
 
-{/* terminology-exempt: unknown-english-term | reason: 模式固定名称 */}
 本文把持久长事务协调模式称为 Saga。
 
 支付结果未知时，同一个可见恢复步骤必须先查询或对账，并且不盲目重复扣款。仍无法确定、补偿失败或自动动作不安全时，持久流程进入带所有者的人工终止状态，并保留审计与修复依据。
@@ -173,7 +173,6 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 
 - [AWS Prescriptive Guidance 的 Decompose by business capability](https://docs.aws.amazon.com/prescriptive-guidance/latest/modernization-decomposing-monoliths/decompose-business-capability.html)支持业务能力稳定性、领域理解、领域专家和跨职能团队前提；它不证明特定实现选择或通用效果。
 
-{/* terminology-exempt: unknown-english-term | reason: 原创插图固定标题 */}
 - 原创图示“微服务订单 Saga 的独立部署、私有数据与恢复路径图”由 Tego Arch 架构知识项目维护者绘制，源文件与发布图成对维护。它支持本文教学拓扑，不复制外部参考图、品牌视觉、签名、水印或构图，也不证明生产结果。
 
 <SourceLedger />

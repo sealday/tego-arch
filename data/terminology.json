@@ -1737,6 +1737,19 @@
       "forbidden_aliases": [],
       "note": "案例标题保留稳定官方身份，并以中文类别引入。",
       "order": 1590
+    },
+    {
+      "id": "saga",
+      "canonical_zh": "Saga",
+      "english": null,
+      "acronym": null,
+      "kind": "standard",
+      "first_use": "Saga",
+      "subsequent_use": ["Saga"],
+      "allowed_aliases": [],
+      "forbidden_aliases": [],
+      "note": "长事务协调模式保留稳定名称，由相邻中文语境解释其本地事务、补偿与恢复边界。",
+      "order": 1600
     }
   ]
 }
