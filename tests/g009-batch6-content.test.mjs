@@ -58,6 +58,17 @@ const ACCEPTED_DENIALS = [
   ['支付结果未知时不能直接重复扣款', '支付结果未知时不应该立即重复授权', '支付结果未知并非可以盲目重复扣款'],
   ['拆成服务后并不天然故障隔离', '拆成服务后不能自动获得故障隔离', '拆成服务并非必然具备故障隔离'],
 ];
+const MIXED_AFFIRMATIVE_VIOLATIONS = [
+  '微服务不只关心容器，也由代码行数定义',
+  '容器不能忽略资源成本，但就是微服务',
+  '远程调用不应该忽略延迟，但仍然就是微服务',
+  '共享数据库不负责只读投影，但仍可由任意服务直接写入',
+  '跨服务事务不能忽略网络失败，但天然原子',
+  'Saga 不只协调步骤，也自动回滚外部副作用',
+  'Outbox 不负责业务状态，但保证 exactly-once',
+  '支付结果未知不能忽略，但可以直接重复扣款',
+  '拆成服务后不能忽略运维成本，但天然故障隔离',
+];
 
 const ILLUSTRATION_SOURCE_ID = 'src-atlas-sty05-microservices-order-saga';
 const ILLUSTRATION_URL = '/img/diagrams/sty-05-microservices-order-saga.svg';
@@ -259,11 +270,11 @@ const CLAIM_PROPOSITIONS = [
   {subject: /容器/iu, predicate: /(?:等于|就是|即为|当作|视为|成为)?微服务/iu},
   {subject: /远程调用/iu, predicate: /(?:等于|就是|即为|当作|视为|成为)?微服务/iu},
   {subject: /共享数据库/iu, predicate: /(?:任意|任何|所有)服务.{0,12}(?:直接)?写入/iu},
-  {subject: /跨服务事务/iu, predicate: /(?:天然|自动|默认|假定为)?.{0,6}原子(?:性|事务)?/iu},
-  {subject: /Saga/iu, predicate: /(?:自动|天然)?.{0,6}回滚.{0,10}外部副作用|外部副作用.{0,10}自动回滚机制/iu},
+  {subject: /跨服务事务/iu, predicate: /(?:(?:天然|自动|默认|假定为).{0,4})?原子(?:性|事务)?/iu},
+  {subject: /Saga/iu, predicate: /(?:(?:自动|天然).{0,6})?回滚.{0,10}外部副作用|外部副作用.{0,10}自动回滚机制/iu},
   {subject: /Outbox/iu, predicate: /(?:保证|确保|实现|宣称为).{0,8}(?:exactly[- ]once|恰好一次|仅一次)|(?:exactly[- ]once|恰好一次|仅一次).{0,8}(?:保证|确保)/iu},
-  {subject: /支付结果未知/iu, predicate: /(?:直接|立即|盲目|可以)?.{0,8}重复(?:授权|扣款)/iu},
-  {subject: /拆成服务/iu, predicate: /(?:天然|自动|必然)?.{0,8}(?:获得|具备)?.{0,4}故障隔离/iu},
+  {subject: /支付结果未知/iu, predicate: /(?:(?:直接|立即|盲目|可以).{0,8})?重复(?:授权|扣款)/iu},
+  {subject: /拆成服务/iu, predicate: /(?:(?:天然|自动|必然).{0,8})?(?:(?:获得|具备).{0,4})?故障隔离/iu},
 ];
 
 const [ledger, licenseInventory, manifest, projectStatus, indexes, publicLedger] = await Promise.all([
@@ -289,25 +300,48 @@ function externalLinksOf(document) {
   return extractExternalLinks({body: document.body});
 }
 
-function classifyProposition(clause, {subject, predicate}) {
-  const subjectMatch = subject.exec(clause);
-  if (!subjectMatch) return null;
-  const predicateMatch = predicate.exec(clause.slice(subjectMatch.index + subjectMatch[0].length));
-  if (!predicateMatch) return null;
-  const predicateEnd = subjectMatch.index + subjectMatch[0].length + predicateMatch.index + predicateMatch[0].length;
-  const propositionSpan = clause.slice(subjectMatch.index, predicateEnd);
-  return /不|并非|并不|不能|不会|无法|禁止|不得|不可|未能|绝非/u.test(propositionSpan)
-    ? {classification: 'negated', propositionSpan}
-    : {classification: 'affirmative', propositionSpan};
+function predicateHasDirectNegation(segment, predicateStart) {
+  const prefix = segment.slice(0, predicateStart);
+  const negations = [...prefix.matchAll(/不应该|不应|不能|不会|并非|并不|不得|禁止|无法|不可|未能|绝非|不/gu)];
+  const negation = negations.at(-1);
+  if (!negation) return false;
+  const bridge = prefix.slice(negation.index + negation[0].length).trim();
+  return /^(?:(?:被|由|是|再|直接|立即|盲目|天然|自动|默认|允许|可以|必然|假定为|宣称为|视为|当作|获得|具备|都)\s*)*$/u
+    .test(bridge);
+}
+
+function propositionClassifications(source, {subject, predicate}) {
+  const results = [];
+  for (const sentence of source.split(/[。！？!?；;\n]+/u).map((value) => value.trim()).filter(Boolean)) {
+    let subjectActive = false;
+    const segments = sentence.split(/(?:[，,]+|但(?:是)?|不过|然而|却|而且|并且|同时|也|仍然|仍|还)/u)
+      .map((value) => value.trim()).filter(Boolean);
+    for (const segment of segments) {
+      const subjectMatch = subject.exec(segment);
+      if (subjectMatch) subjectActive = true;
+      if (!subjectActive) continue;
+      const predicateMatch = predicate.exec(segment);
+      if (!predicateMatch) continue;
+      const propositionSpan = segment.slice(subjectMatch?.index ?? 0,
+        predicateMatch.index + predicateMatch[0].length);
+      results.push({
+        classification: predicateHasDirectNegation(segment, predicateMatch.index) ? 'negated' : 'affirmative',
+        propositionSpan,
+      });
+    }
+  }
+  return results;
+}
+
+function classifyProposition(source, proposition) {
+  return propositionClassifications(source, proposition)[0] ?? null;
 }
 
 function assertNoProhibitedClaims(source) {
-  const clauses = source.split(/[。！？；\n]+/u).map((clause) => clause.trim()).filter(Boolean);
   for (const [index, proposition] of CLAIM_PROPOSITIONS.entries()) {
-    for (const clause of clauses) {
-      const result = classifyProposition(clause, proposition);
+    for (const result of propositionClassifications(source, proposition)) {
       assert.notEqual(result?.classification, 'affirmative',
-        `prohibited proposition ${index + 1}: ${result?.propositionSpan ?? clause}`);
+        `prohibited proposition ${index + 1}: ${result.propositionSpan}`);
     }
   }
 }
@@ -680,6 +714,7 @@ test('locks microservice boundaries, the order Saga, and owned runtime responsib
 test('prohibited claim mutations are rejected while explicit boundaries remain expressible', () => {
   assert.equal(PROHIBITED.length, CLAIM_PROPOSITIONS.length);
   assert.equal(ACCEPTED_DENIALS.length, CLAIM_PROPOSITIONS.length);
+  assert.equal(MIXED_AFFIRMATIVE_VIOLATIONS.length, CLAIM_PROPOSITIONS.length);
   for (let index = 0; index < PROHIBITED.length; index += 1) {
     assert.equal(classifyProposition(PROHIBITED[index], CLAIM_PROPOSITIONS[index])?.classification,
       'affirmative', PROHIBITED[index]);
@@ -690,6 +725,12 @@ test('prohibited claim mutations are rejected while explicit boundaries remain e
         .blocks.map(({text}) => text).join('\n');
       assert.doesNotThrow(() => assertNoProhibitedClaims(visibleDenial), denial);
     }
+    const mixedViolation = MIXED_AFFIRMATIVE_VIOLATIONS[index];
+    const mixedVisible = parseMdxVisibleCopy(`## 边界\n\n${mixedViolation}\n`, 'mixed-violation-fixture.mdx')
+      .blocks.map(({text}) => text).join('\n');
+    assert.ok(propositionClassifications(mixedVisible, CLAIM_PROPOSITIONS[index])
+      .some(({classification}) => classification === 'affirmative'), mixedViolation);
+    assert.throws(() => assertNoProhibitedClaims(mixedVisible), {name: 'AssertionError'}, mixedViolation);
   }
 });
 
