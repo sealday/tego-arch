@@ -17,6 +17,7 @@ const SOURCE_IDS = [
   'src-atlas-sty05-microservices-order-saga',
 ];
 const STATES = ['desktopLight', 'desktopDark', 'mobileLight', 'mobileDark'];
+const REVIEWED_HEAD = '40283eeadb9525df93ea884d23bd1953070d78a8';
 const BROWSER_ARTIFACT_HASH = 'b139a174432e1684d9a9387e839807fc22b22c6ba0b2cb6e18009536a416f767';
 const SCREENSHOT_HASHES = {
   desktopLight: 'b2939596c3ddaadcd2700c32eb019ef943e89160a4e88c896957e8259030ac7e',
@@ -63,18 +64,20 @@ function section(source, heading) {
   return source.slice(match.index + match[0].length, next?.index ?? source.length).trim();
 }
 
-function assertPendingIndependentReview(source) {
+function assertFinalIndependentReview(source) {
   const independent = section(source, 'Independent review checkpoint');
   for (const literal of [
-    'Code review (`code-reviewer`): `PENDING`.',
-    'Content, evidence, and rights review: `PENDING`.',
-    'Architecture review (`architect`): `PENDING`.',
-    'Stage A status: `READY_FOR_INDEPENDENT_REVIEW`.',
+    `Exact reviewed head: \`${REVIEWED_HEAD}\`.`,
+    'Independent code reviewer (`code-reviewer`): `READY / APPROVE`; findings: `0`.',
+    'Independent content, evidence, and rights reviewer: `CONTENT READY`; rights: `PASS`; findings: `0`.',
+    'Independent architecture reviewer (`architect`): `CLEAR / READY`; findings: `0`.',
+    'Final Stage A review judgment: `READY`.',
+    'Scope boundary: `STAGE_A_ONLY`; Stage B backlog closure and deployment have not run.',
     'Deployment status: `NOT_RUN`.',
   ]) {
     assert.ok(independent.includes(literal), `independent-review literal: ${literal}`);
   }
-  assert.doesNotMatch(independent, /READY \/ APPROVE|rights: `PASS`|CLEAR \/ READY|deployment status: `SUCCESS`/u);
+  assert.doesNotMatch(independent, /`PENDING`|Deployment status: `SUCCESS`/u);
 }
 
 function assertFourStateEvidence(source) {
@@ -155,7 +158,7 @@ test('keeps the backlog at the STY-05 pre-closure checkpoint', () => {
   assert.match(backlog, /^- \[ \] \*\*STY-06 /mu);
 });
 
-test('binds exact local artifacts, four-state Browser evidence, and PENDING review slots', async () => {
+test('binds exact local artifacts, four-state Browser evidence, and final exact-head review verdicts', async () => {
   assert.match(review, /^# G009 Batch 6 Stage A Review$/mu);
   const projection = section(review, 'Stage A projection');
   assert.match(projection, /57 completed topics \/ 100 content documents \/ 519 governed sources/u);
@@ -172,12 +175,12 @@ test('binds exact local artifacts, four-state Browser evidence, and PENDING revi
   }
   assertFourStateEvidence(review);
   assertEvidenceProvenance(review);
-  assertPendingIndependentReview(review);
+  assertFinalIndependentReview(review);
 });
 
-test('rejects incomplete evidence, wrong hashes, completed verdicts, and fabricated deployment', () => {
+test('rejects incomplete evidence, wrong hashes, weakened verdicts, stale PENDING, and fabricated deployment', () => {
   assertFourStateEvidence(review);
-  assertPendingIndependentReview(review);
+  assertFinalIndependentReview(review);
   const mutations = [
     ['missing state', '| `mobileDark` |', '| `mobileMissing` |'],
     ['incomplete state total', 'States accepted: `4/4`.', 'States accepted: `3/4`.'],
@@ -186,7 +189,12 @@ test('rejects incomplete evidence, wrong hashes, completed verdicts, and fabrica
     ['truncated diagnostics', '`truncated=false`', '`truncated=true`'],
     ['missing fallback provenance', 'visible-DOM href selection + direct navigation (local relation audit fallback)', 'unrecorded navigation'],
     ['unbound contrast colors', 'Selector-bound contrast provenance:', 'hard-coded expected colors unrelated to the selected elements:'],
-    ['code verdict fabricated', 'Code review (`code-reviewer`): `PENDING`.', 'Code review (`code-reviewer`): `READY / APPROVE`.'],
+    ['wrong reviewed head', `Exact reviewed head: \`${REVIEWED_HEAD}\`.`, `Exact reviewed head: \`${'0'.repeat(40)}\`.`],
+    ['weakened code verdict', '`READY / APPROVE`; findings: `0`.', '`READY / COMMENT`; findings: `0`.'],
+    ['weakened content verdict', '`CONTENT READY`; rights: `PASS`; findings: `0`.', '`CONTENT CHANGES`; rights: `PASS`; findings: `0`.'],
+    ['weakened rights verdict', 'rights: `PASS`; findings: `0`.', 'rights: `UNKNOWN`; findings: `0`.'],
+    ['weakened architecture verdict', '`CLEAR / READY`; findings: `0`.', '`BLOCKED`; findings: `1`.'],
+    ['stale PENDING final slot', 'Independent code reviewer (`code-reviewer`): `READY / APPROVE`; findings: `0`.', 'Code review (`code-reviewer`): `PENDING`.'],
     ['deployment fabricated', 'Deployment status: `NOT_RUN`.', 'Deployment status: `SUCCESS`.'],
   ];
   for (const [label, exact, replacement] of mutations) {
@@ -195,7 +203,7 @@ test('rejects incomplete evidence, wrong hashes, completed verdicts, and fabrica
     assert.throws(() => {
       assertFourStateEvidence(mutated);
       assertEvidenceProvenance(mutated);
-      assertPendingIndependentReview(mutated);
+      assertFinalIndependentReview(mutated);
       assert.doesNotMatch(mutated, /Deployment status: `SUCCESS`/u);
     }, {name: 'AssertionError'}, label);
   }

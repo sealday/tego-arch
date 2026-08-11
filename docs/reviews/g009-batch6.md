@@ -36,7 +36,7 @@
 - The superseded `data/source-ledger.json` hash was `b35b92e29d9db47a4a9d19c7ba9ee23e55569f436441f630f972bcabf04817c4`; the corrected hash is recorded in Artifact identities. Historical Batch 1–5 review payloads and hashes remain byte-identical.
 - The corrected contract rejects downgrading this exact AWS source to `LicenseRef-All-Rights-Reserved`. A focused validator regression gives share-alike obligations precedence for a `CC-BY-SA-4.0` vendor reference without changing other vendor-license policies.
 - AWS-license remediation candidate `bb5d5dae9ffe181aa5b1717d1f6a2bad885eb353`: content/evidence/rights and architecture re-reviews reported no blocking findings; code re-review reported one `IMPORTANT` validator-scope finding and one `MINOR` checkpoint-wording finding. The policy-scope remediation narrows the share-alike exception to a `CC-BY-SA-4.0` vendor reference and proves that an original illustration still requires `original-atlas`.
-- Current policy-scope remediation identity: the commit containing this review record; independent re-reviewers must bind the externally supplied full SHA. Code, content/evidence/rights, and architecture slots below remain `PENDING` until fresh verdicts are recorded against that exact commit.
+- Policy-scope remediation candidate `40283eeadb9525df93ea884d23bd1953070d78a8`: this became the exact reviewed head after the three independent re-reviews completed cleanly. The final exact-head verdicts are recorded in Independent review checkpoint below; earlier PENDING states remain preserved only as superseded history.
 
 ## Local in-app Browser QA
 
@@ -75,11 +75,12 @@ Every state exposed the exact five remote locators for Lewis/Fowler, Microsoft, 
 
 ## Independent review checkpoint
 
-- Candidate identity: the commit containing this review record; independent reviewers must bind the externally supplied full SHA before recording verdicts.
-- Code review (`code-reviewer`): `PENDING`.
-- Content, evidence, and rights review: `PENDING`.
-- Architecture review (`architect`): `PENDING`.
-- Remediation commits: none at this checkpoint; later reviewers must append findings and superseded verdicts rather than erase history.
-- Stage A status: `READY_FOR_INDEPENDENT_REVIEW`.
+- Exact reviewed head: `40283eeadb9525df93ea884d23bd1953070d78a8`.
+- Independent code reviewer (`code-reviewer`): `READY / APPROVE`; findings: `0`.
+- Independent content, evidence, and rights reviewer: `CONTENT READY`; rights: `PASS`; findings: `0`.
+- Independent architecture reviewer (`architect`): `CLEAR / READY`; findings: `0`.
+- Remediation commits reviewed: `bb5d5dae9ffe181aa5b1717d1f6a2bad885eb353` and `40283eeadb9525df93ea884d23bd1953070d78a8`.
+- Final Stage A review judgment: `READY`.
+- Scope boundary: `STAGE_A_ONLY`; Stage B backlog closure and deployment have not run.
 - Deployment status: `NOT_RUN`.
-- No final reviewer verdict is claimed in this checkpoint.
+- These verdicts authorize only the next local Stage B step; they do not claim backlog closure, publication, production evidence, or deployment success.
