@@ -631,7 +631,10 @@ function validateSource(source, index, errors) {
     errors,
   );
   const licensePolicy = requiredPolicyByLicense.get(source.license);
-  const expectedCopyrightPolicy = source.license === 'CC-BY-SA-4.0'
+  const isShareAlikeVendorReference =
+    source.source_kind === 'vendor-reference-architecture' &&
+    source.license === 'CC-BY-SA-4.0';
+  const expectedCopyrightPolicy = isShareAlikeVendorReference
     ? licensePolicy
     : requiredPolicyByKind.get(source.source_kind) ?? licensePolicy;
   if (

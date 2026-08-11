@@ -30,12 +30,13 @@
 
 ## Independent review and remediation history
 
-- Candidate `7b4b96a54731af7ff983c6c7a15101f6cfc0ceaf`: code review and architecture review reported no blocking findings; content/evidence/rights review reported one `IMPORTANT` AWS documentation-license finding. Those observations are preserved as superseded checkpoint history, not final verdicts.
+- Pre-remediation Stage A snapshot `7b4b96a54731af7ff983c6c7a15101f6cfc0ceaf`: code review and architecture review reported no blocking findings; content/evidence/rights review reported one `IMPORTANT` AWS documentation-license finding. That snapshot and its observations are superseded checkpoint history, not the current remediation candidate or final verdicts.
 - The finding was independently verified against the official [AWS Site Terms](https://aws.amazon.com/terms/), which state that documentation hosted on `docs.aws.amazon.com` is `CC-BY-SA-4.0` and code within that documentation is `MIT-0`.
 - Remediation corrects only `src-aws-decompose-business-capability`: `CC-BY-SA-4.0`, identity-scoped family, AWS Site Terms evidence, explicit documentation/code boundary, and `adapt-sharealike-review`. Source count, source kind, evidence roles, citation roles, remote locator, and `manifest_primary=false` remain unchanged.
 - The superseded `data/source-ledger.json` hash was `b35b92e29d9db47a4a9d19c7ba9ee23e55569f436441f630f972bcabf04817c4`; the corrected hash is recorded in Artifact identities. Historical Batch 1–5 review payloads and hashes remain byte-identical.
 - The corrected contract rejects downgrading this exact AWS source to `LicenseRef-All-Rights-Reserved`. A focused validator regression gives share-alike obligations precedence for a `CC-BY-SA-4.0` vendor reference without changing other vendor-license policies.
-- Remediation candidate identity: the commit containing this corrected review record; independent re-reviewers must bind the externally supplied full SHA. Code, content/evidence/rights, and architecture slots below remain `PENDING` until fresh verdicts are recorded against that exact commit.
+- AWS-license remediation candidate `bb5d5dae9ffe181aa5b1717d1f6a2bad885eb353`: content/evidence/rights and architecture re-reviews reported no blocking findings; code re-review reported one `IMPORTANT` validator-scope finding and one `MINOR` checkpoint-wording finding. The policy-scope remediation narrows the share-alike exception to a `CC-BY-SA-4.0` vendor reference and proves that an original illustration still requires `original-atlas`.
+- Current policy-scope remediation identity: the commit containing this review record; independent re-reviewers must bind the externally supplied full SHA. Code, content/evidence/rights, and architecture slots below remain `PENDING` until fresh verdicts are recorded against that exact commit.
 
 ## Local in-app Browser QA
 

@@ -1269,6 +1269,14 @@ test('enforces license-specific copyright policies', () => {
     /src-sharealike-vendor.*copyright_policy/i,
     'share-alike obligations take precedence over the vendor-claims policy',
   );
+  assert.match(
+    parseSourceLedger(ledger({
+      sources: [{...shareAlikeVendor, copyright_policy: 'vendor-claims-separated'}],
+      documents: {},
+    })).errors.join('\n'),
+    /src-sharealike-vendor.*vendor-claims-separated.*adapt-sharealike-review/i,
+    'share-alike vendor cannot retain the generic vendor-claims policy',
+  );
 
   const original = sourceFixture('src-original', {
     canonical_locator: '/img/original.png',
@@ -1284,6 +1292,18 @@ test('enforces license-specific copyright policies', () => {
   assert.match(
     parseSourceLedger(ledger({sources: [original], documents: {}})).errors.join('\n'),
     /src-original.*facts-and-short-quotation.*original-atlas/i,
+  );
+
+  const shareAlikeOriginal = {
+    ...original,
+    id: 'src-sharealike-original',
+    license: 'CC-BY-SA-4.0',
+    copyright_policy: 'adapt-sharealike-review',
+  };
+  assert.match(
+    parseSourceLedger(ledger({sources: [shareAlikeOriginal], documents: {}})).errors.join('\n'),
+    /src-sharealike-original.*adapt-sharealike-review.*original-atlas/i,
+    'share-alike license cannot bypass original illustration provenance policy',
   );
 
   const cc0 = sourceFixture('src-cc0-approved', {
