@@ -114,7 +114,7 @@ const DIAGRAM_NODES = [
   ['message-broker', '消息中间件', '至少一次与重放边界 / Platform'],
   ['payment-provider', '外部支付提供方', '外部副作用 / External System'],
   ['observability-platform', '日志 / 指标 / 追踪', '共享平台 / Observability'],
-  ['poison-message-isolation', '毒消息隔离与受控重放', '服务所有者负责 / 修复 / 手动重放 / 人工终止'],
+  ['poison-message-isolation', '毒消息隔离与受控重放', '服务所有者负责；修复 / 手动重放 / 人工终止'],
   ['legend-sync-line', '', ''],
   ['legend-message-line', '', ''],
   ['legend-compensation-line', '', ''],
@@ -418,9 +418,11 @@ function svgDiagramContract(source) {
   const nodes = [...source.matchAll(/<g\b([^>]*)data-node-id="([^"]+)"([^>]*)>([\s\S]*?)<\/g>/gu)]
     .map(([, before, id, after, contents]) => ({
       id,
-      label: decodeXmlText(contents.match(/<text\b[^>]*data-text-role="title"[^>]*>([^<]*)<\/text>/u)?.[1] ?? ''),
+      label: decodeXmlText((contents.match(/<text\b[^>]*data-text-role="title"[^>]*>([\s\S]*?)<\/text>/u)?.[1] ?? '')
+        .replace(/<[^>]+>/gu, '')),
       typeLabel: decodeXmlText(xmlAttributes(`${before}${after}`).get('data-type-label') ?? ''),
-      visibleTypeLabel: decodeXmlText(contents.match(/<text\b[^>]*data-text-role="type"[^>]*>([^<]*)<\/text>/u)?.[1] ?? ''),
+      visibleTypeLabel: decodeXmlText((contents.match(/<text\b[^>]*data-text-role="type"[^>]*>([\s\S]*?)<\/text>/u)?.[1] ?? '')
+        .replace(/<[^>]+>/gu, '')),
     }));
   const labels = new Map([...source.matchAll(/<text\b[^>]*data-edge-id="([^"]+)"[^>]*>([^<]*)<\/text>/gu)]
     .map(([, id, label]) => [id, decodeXmlText(label).trim()]));
@@ -459,9 +461,11 @@ function drawioEdgeRoute(source, id) {
     return {x: Number(point.get('x')), y: Number(point.get('y'))};
   });
   return [
-    {x: sourceBounds.x + sourceBounds.width / 2, y: sourceBounds.y + sourceBounds.height / 2},
+    {x: Number(attributes.get('routeSourceX') ?? sourceBounds.x + sourceBounds.width / 2),
+      y: Number(attributes.get('routeSourceY') ?? sourceBounds.y + sourceBounds.height / 2)},
     ...waypoints,
-    {x: targetBounds.x + targetBounds.width / 2, y: targetBounds.y + targetBounds.height / 2},
+    {x: Number(attributes.get('routeTargetX') ?? targetBounds.x + targetBounds.width / 2),
+      y: Number(attributes.get('routeTargetY') ?? targetBounds.y + targetBounds.height / 2)},
   ];
 }
 
@@ -587,6 +591,42 @@ function primaryHorizontalLane(points) {
   return horizontal.sort((left, right) => right.length - left.length)[0];
 }
 
+function positiveSegments(points) {
+  return points.slice(1).map((end, index) => ({end, start: points[index]}))
+    .filter(({end, start}) => end.x !== start.x || end.y !== start.y);
+}
+
+function collinearOverlapLength(left, right) {
+  if (left.start.y === left.end.y && right.start.y === right.end.y && left.start.y === right.start.y) {
+    return Math.max(0, Math.min(Math.max(left.start.x, left.end.x), Math.max(right.start.x, right.end.x)) -
+      Math.max(Math.min(left.start.x, left.end.x), Math.min(right.start.x, right.end.x)));
+  }
+  if (left.start.x === left.end.x && right.start.x === right.end.x && left.start.x === right.start.x) {
+    return Math.max(0, Math.min(Math.max(left.start.y, left.end.y), Math.max(right.start.y, right.end.y)) -
+      Math.max(Math.min(left.start.y, left.end.y), Math.min(right.start.y, right.end.y)));
+  }
+  return 0;
+}
+
+function assertNoPositiveSegmentOverlap(connectorTags) {
+  const routes = [...connectorTags].map(([id, tag]) => ({
+    className: xmlAttributes(tag).get('class') ?? '',
+    id,
+    segments: positiveSegments(parseOrthogonalPath(xmlAttributes(tag).get('d') ?? '')),
+  }));
+  for (let left = 0; left < routes.length; left += 1) {
+    for (let right = left + 1; right < routes.length; right += 1) {
+      for (const leftSegment of routes[left].segments) {
+        for (const rightSegment of routes[right].segments) {
+          const overlap = collinearOverlapLength(leftSegment, rightSegment);
+          assert.equal(overlap, 0,
+            `${routes[left].id} (${routes[left].className}) and ${routes[right].id} (${routes[right].className}) segment overlap ${overlap}`);
+        }
+      }
+    }
+  }
+}
+
 function conservativeTextWidth(text, fontSize) {
   return [...text].reduce((width, character) => {
     if (/\p{Script=Han}/u.test(character)) return width + fontSize;
@@ -606,10 +646,54 @@ function labelBounds(tag, label, fontSize) {
   return {bottom, left, right: left + width, top: bottom - fontSize};
 }
 
+function svgTextLineBounds(svg, contents, role) {
+  const block = contents.match(new RegExp(`(<text\\b[^>]*data-text-role="${role}"[^>]*>)([\\s\\S]*?)<\\/text>`, 'u'));
+  assert.ok(block, `${role} text block`);
+  const textAttributes = xmlAttributes(block[1]);
+  const fontSize = Number.parseFloat(svgPresentationValue(svg, 'text', block[1], 'font-size'));
+  const inheritedX = Number(textAttributes.get('x'));
+  const inheritedY = Number(textAttributes.get('y'));
+  const inheritedAnchor = textAttributes.get('text-anchor') || 'start';
+  const tspans = [...block[2].matchAll(/<tspan\b([^>]*)>([^<]*)<\/tspan>/gu)];
+  const lines = tspans.length > 0 ? tspans.map(([, raw, value]) => {
+    const attributes = xmlAttributes(raw);
+    return {anchor: attributes.get('text-anchor') || inheritedAnchor, text: decodeXmlText(value),
+      x: Number(attributes.get('x') ?? inheritedX), y: Number(attributes.get('y') ?? inheritedY)};
+  }) : [{anchor: inheritedAnchor, text: decodeXmlText(block[2]), x: inheritedX, y: inheritedY}];
+  return lines.map(({anchor, text, x, y}) => {
+    const width = conservativeTextWidth(text.trimEnd(), fontSize);
+    const left = anchor === 'middle' ? x - width / 2 : anchor === 'end' ? x - width : x;
+    return {bottom: y, left, right: left + width, top: y - fontSize};
+  });
+}
+
 function rectangleDistance(first, second) {
   const horizontal = Math.max(second.left - first.right, first.left - second.right, 0);
   const vertical = Math.max(second.top - first.bottom, first.top - second.bottom, 0);
   return Math.hypot(horizontal, vertical);
+}
+
+function assertPoisonTextGeometry(svg, renderedScale) {
+  const match = svg.match(/<g\b[^>]*data-node-id="poison-message-isolation"[^>]*data-node-bounds="([^"]+)"[^>]*>([\s\S]*?)<\/g>/u);
+  assert.ok(match, 'poison recovery node');
+  const [x, y, width, height] = match[1].split(/\s+/u).map(Number);
+  const outline = match[2].match(/<rect\b([^>]*)>/u);
+  assert.ok(outline, 'poison recovery outline');
+  const halfStroke = Number(svgPresentationValue(svg, 'rect', outline[1], 'stroke-width')) / 2;
+  const titleLines = svgTextLineBounds(svg, match[2], 'title');
+  const typeLines = svgTextLineBounds(svg, match[2], 'type');
+  for (const [role, lines] of [['title', titleLines], ['type', typeLines]]) {
+    for (const bounds of lines) {
+      const horizontalPadding = Math.min(bounds.left - x - halfStroke, x + width - halfStroke - bounds.right) * renderedScale;
+      assert.ok(horizontalPadding >= 12, `poison ${role} horizontal inner-stroke padding ${horizontalPadding}`);
+    }
+  }
+  const topPadding = (titleLines[0].top - y - halfStroke) * renderedScale;
+  const bottomPadding = (y + height - halfStroke - typeLines.at(-1).bottom) * renderedScale;
+  const titleTypeGap = (typeLines[0].bottom - titleLines.at(-1).bottom) * renderedScale;
+  assert.ok(topPadding >= 14, `poison title top padding ${topPadding}`);
+  assert.ok(bottomPadding >= 14, `poison type bottom padding ${bottomPadding}`);
+  assert.ok(titleTypeGap >= 22, `poison title/type baseline separation ${titleTypeGap}`);
 }
 
 function expandedRectangle(rectangle, expansion) {
@@ -675,6 +759,16 @@ function markerGeometry(svg, connectorTag, points) {
   assert.ok(markerPoints.length >= 3 && markerPoints.every(({x: pointX, y: pointY}) =>
     Number.isFinite(pointX) && Number.isFinite(pointY)), `${markerId} marker geometry`);
   return {axis, points: markerPoints};
+}
+
+function assertMarkerOutsideTargetFill(svg, connectorTag, targetRectangle, renderedScale, edgeId) {
+  const points = parseOrthogonalPath(xmlAttributes(connectorTag).get('d') ?? '');
+  const marker = markerGeometry(svg, connectorTag, points);
+  const clearance = Math.min(...marker.points.map(({x, y}) => rectangleDistance(
+    {bottom: y, left: x, right: x, top: y}, targetRectangle,
+  ))) * renderedScale;
+  assert.ok(clearance >= 2, `${edgeId} marker-to-target-fill visibility clearance ${clearance}`);
+  return clearance;
 }
 
 test('publishes exact STY-05 metadata, headings, and actionable relations', () => {
@@ -1008,6 +1102,7 @@ test('keeps marker-aware label clearances and selector-bound contrast mutation-s
   const boundaryIds = new Set(DEPLOYMENT_IDS);
   const ignoredNodes = new Set(LEGEND_IDS);
   const nodeBounds = new Map();
+  const nodeFillBounds = new Map();
   const boundaryBounds = new Map();
   for (const [, id, boundsValue, contents] of svg.matchAll(
     /<g\b[^>]*data-node-id="([^"]+)"[^>]*data-node-bounds="([^"]+)"[^>]*>([\s\S]*?)<\/g>/gu,
@@ -1020,14 +1115,32 @@ test('keeps marker-aware label clearances and selector-bound contrast mutation-s
     const strokeWidth = Number(svgPresentationValue(svg, outline[1], outline[2], 'stroke-width'));
     assert.ok(Number.isFinite(strokeWidth) && strokeWidth > 0, `${id} stroke width`);
     if (boundaryIds.has(id)) boundaryBounds.set(id, {rectangle, strokeWidth});
-    else nodeBounds.set(id, expandedRectangle(rectangle, strokeWidth / 2));
+    else {
+      nodeBounds.set(id, expandedRectangle(rectangle, strokeWidth / 2));
+      nodeFillBounds.set(id, rectangle);
+    }
   }
+  assertPoisonTextGeometry(svg, renderedScale);
+  const poisonOverflowMutation = svg.replace(
+    /(<tspan\b[^>]*>毒消息隔离)(<\/tspan>)/u, '$1毒消息隔离$2',
+  );
+  assert.notEqual(poisonOverflowMutation, svg, 'poison overflow mutation applies');
+  assert.throws(() => assertPoisonTextGeometry(poisonOverflowMutation, renderedScale), {name: 'AssertionError'});
   const connectorTags = new Map([...svg.matchAll(/<path\b[^>]*data-edge-id="([^"]+)"[^>]*>/gu)]
     .map(([tag, id]) => [id, tag]));
   assert.deepEqual([...connectorTags.keys()].sort(), DIAGRAM_EDGES.map(([id]) => id).sort());
   const pathData = [...connectorTags].map(([id, tag]) => [id, xmlAttributes(tag).get('d') ?? '']);
   assert.equal(new Set(pathData.map(([, data]) => data)).size, DIAGRAM_EDGES.length,
     'semantically distinct connectors do not share coincident paths');
+  assertNoPositiveSegmentOverlap(connectorTags);
+  const orderCreatedPath = xmlAttributes(connectorTags.get('order-created')).get('d');
+  const overlapMutation = svg.replace(
+    /(<path\b[^>]*data-edge-id="release-inventory-compensation-publication"[^>]*\bd=")[^"]+/u,
+    `$1${orderCreatedPath}`,
+  );
+  const overlapTags = new Map([...overlapMutation.matchAll(/<path\b[^>]*data-edge-id="([^"]+)"[^>]*>/gu)]
+    .map(([tag, id]) => [id, tag]));
+  assert.throws(() => assertNoPositiveSegmentOverlap(overlapTags), {name: 'AssertionError'});
   const primaryLanes = pathData.map(([id, data]) => [id, primaryHorizontalLane(parseOrthogonalPath(data))]);
   for (let left = 0; left < primaryLanes.length; left += 1) {
     for (let right = left + 1; right < primaryLanes.length; right += 1) {
@@ -1047,6 +1160,8 @@ test('keeps marker-aware label clearances and selector-bound contrast mutation-s
       segmentDistance(bounds, ownPoints[index], point))) - ownHalfStroke) * renderedScale;
     assert.ok(ownStrokeClearance <= 24, `${edgeId} own-stroke association ${ownStrokeClearance}`);
     const ownMarker = markerGeometry(svg, connectorTag, ownPoints);
+    const expectedTarget = DIAGRAM_EDGES.find(([id]) => id === edgeId)?.[2];
+    assertMarkerOutsideTargetFill(svg, connectorTag, nodeFillBounds.get(expectedTarget), renderedScale, edgeId);
     const corners = [
       {x: bounds.left, y: bounds.top}, {x: bounds.right, y: bounds.top},
       {x: bounds.right, y: bounds.bottom}, {x: bounds.left, y: bounds.bottom},
@@ -1071,6 +1186,14 @@ test('keeps marker-aware label clearances and selector-bound contrast mutation-s
       assert.ok(clearance >= 12, `${edgeId} to ${boundaryId} boundary clearance ${clearance}`);
     }
   }
+  const providerTag = connectorTags.get('provider-result');
+  const paymentContractFill = nodeFillBounds.get('payment-contract');
+  const hiddenProviderTag = providerTag.replace(/(\bV)-?[0-9.]+(?=[^V]*$)/u,
+    `$1${(paymentContractFill.top + paymentContractFill.bottom) / 2}`);
+  assert.notEqual(hiddenProviderTag, providerTag, 'hidden provider marker mutation applies');
+  assert.throws(() => assertMarkerOutsideTargetFill(
+    svg, hiddenProviderTag, paymentContractFill, renderedScale, 'provider-result mutation',
+  ), {name: 'AssertionError'});
   assertEssentialContrast(svg);
   assert.doesNotMatch(svg, /prefers-color-scheme|currentColor/u);
   const whiteMessage = svg.replace(/(\.message\s*\{[^}]*\bstroke\s*:\s*)#[0-9A-F]{6}/u, '$1#FFFFFF');
