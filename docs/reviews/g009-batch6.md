@@ -170,6 +170,50 @@ Source fallback: `visible-DOM exact href selection + direct open of the same URL
 - Independent Stage B architecture reviewer (`architect`): `CLEAR / READY`; findings: `0`.
 - Final Stage B review judgment: `READY`.
 - Stage B review/remediation history: initial closure candidate `53a6b811d2dee50ab43ca817abc39fbf397cea84` received code `NOT READY` with one `IMPORTANT` and one `MINOR`, content `READY` / rights `PASS` with one `MINOR`, and architecture `CLEAR / READY` with findings `0`; remediation head `2bf44177045039b6e1037af338350540a69ead3c` then received all clean exact-head verdicts recorded above.
-- Stage B deployment status: `PENDING`.
-- Local closure readiness: `READY_FOR_STAGE_B_DEPLOYMENT`.
-- Exact-head Stage B independent review is complete; no Stage B deployment success is recorded before push, Pages success, and production verification.
+- Stage B deployment status: `SUCCESS`.
+- Local closure status: `COMPLETE`.
+- Final Stage B closure judgment: `PASS`; scope: functional DOM, interaction, navigation, HTTP, and exact-head deployment. New final-head screenshot evidence remains `BLOCKED / NOT_AVAILABLE` and is not claimed as `PASS`.
+
+## Stage B production evidence
+
+- Exact deployed closure/remediation head: `43573370131e703d004b75d64a820f448235037f`.
+- Independent mobile-visibility fix review: `PASS / APPROVED`; findings: `0`.
+- Pages run: `31502633120`; event: `push`; status: `completed`; conclusion: `success`.
+- Build job: `93816247824`; status: `completed`; conclusion: `success`.
+- Deploy job: `93817077728`; status: `completed`; conclusion: `success`.
+- HTTP probes: `9/9` returned `200`; HTML content types: `8/8`; SVG content types: `1/1`.
+- Generated authority: `58` completed topics / `100` content documents / `519` governed sources; homepage intentionally renders only `100 / 519 / G009`.
+- Final production IAB states: `4/4`; wrapper focus/`:focus-visible`/3px outline/ArrowRight: `12/12`; relation exact href/H1/return: `16/16`; source exact href/target/rel/destination: `20/20`; extra route/H1 navigation: `8/8`.
+- Styles directory: STY-05 actionable and visible in every state; STY-06 text present with actionable href count `0` in every state.
+- Article: exact H1 in every state; SVG complete at intrinsic `44x150`, rendered `800x2736`; STY-06 actionable count `0`.
+- Mobile G009: visible `true` in light and dark, nonzero rectangles approximately `111.33x46.25`, and homepage document geometry `390/390` in both states.
+- Every final production state recorded warning/error logs `0`, `Runtime.exceptionThrown=0`, `Log.entryAdded=0`, `hasMore=false`, and `truncated=false`.
+
+| State | Viewport/theme | Homepage document; visible metrics | Article document | Diagram; table 1; table 2 client/scroll | ArrowRight before→after |
+| --- | --- | --- | --- | --- | --- |
+| `desktopLight` | `1440x1000` / `light` | `1440/1440`; `100/519/G009` visible | `1440/1440` | `800/800`; `800/1024`; `800/1024` | `0→0`; `0→40`; `0→40` |
+| `desktopDark` | `1440x1000` / `dark` | `1440/1440`; `100/519/G009` visible | `1440/1440` | `800/800`; `800/1024`; `800/1024` | `0→0`; `0→40`; `0→40` |
+| `mobileLight` | `390x844` / `light` | `390/390`; `100/519/G009` visible; G009 `111.34x46.25` | `390/390` | `358/800`; `358/1024`; `358/1024` | `0→40`; `0→40`; `0→40` |
+| `mobileDark` | `390x844` / `dark` | `390/390`; `100/519/G009` visible; G009 `111.34x46.25` | `390/390` | `358/800`; `358/1024`; `358/1024` | `0→40`; `0→40`; `0→40` |
+
+| Governed source href | Target | Rel | Exact destination resolution |
+| --- | --- | --- | ---: |
+| `https://martinfowler.com/articles/microservices.html` | `_blank` | `noopener noreferrer` | `4/4` |
+| `https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/microservices` | `_blank` | `noopener noreferrer` | `4/4` |
+| `https://microservices.io/patterns/data/database-per-service.html` | `_blank` | `noopener noreferrer` | `4/4` |
+| `https://microservices.io/patterns/data/saga.html` | `_blank` | `noopener noreferrer` | `4/4` |
+| `https://docs.aws.amazon.com/prescriptive-guidance/latest/modernization-decomposing-monoliths/decompose-business-capability.html` | `_blank` | `noopener noreferrer` | `4/4` |
+
+- Relation fallback: `visible-DOM href selection + direct navigation; return to exact article URL; no physical offscreen click claimed`.
+- Source fallback: `visible-DOM exact href selection + direct open of same URL in an in-app Browser destination tab; no physical _blank click claimed`.
+- Raw final Browser JSON: `.superpowers/sdd/task-7-production-final-evidence.json`, `45,556` bytes, SHA-256 `ddb8bb0230e03b7a14ea8d0f2f05706d61d209f8ff467dbe20b0ddbfdb691e09`.
+- Screenshot capture status: `BLOCKED`; per-state screenshot status: `NOT_AVAILABLE`; new screenshot artifacts: `0`.
+- Screenshot attempt 1: `desktopLight-fullPage` on fresh tab 12 -> `Page.captureScreenshot` timeout.
+- Screenshot attempt 2: `desktopDark-viewport` on fresh tab 13 -> `Page.captureScreenshot` timeout.
+- Screenshot attempt 3: `mobileLight-clip` on fresh tab 14 -> `Page.captureScreenshot` timeout.
+- Screenshot limitation: supported in-app Browser capture timed out on three fresh exact-head tabs; no alternate browser, external Playwright, old screenshot substitution, invented hash, or final-head visual PASS is claimed.
+- Historical visual baseline: Task 6 accepted article/diagram screenshots remain evidence only that the unchanged article and diagram assets were visually inspected before this final head; they are not final-head captures.
+- Functional production acceptance: `SUCCESS`.
+- Visual screenshot evidence: `BLOCKED / NOT_AVAILABLE`.
+- Stage B deployment status: `SUCCESS`.
+- Final Stage B closure judgment: `PASS` for functional DOM, interaction, navigation, HTTP, and exact-head deployment; screenshot evidence remains explicitly outside that PASS scope.

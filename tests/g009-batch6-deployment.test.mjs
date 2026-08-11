@@ -23,6 +23,11 @@ const PAGES_RUN_ID = '31490981657';
 const PAGES_BUILD_JOB_ID = '93777183963';
 const PAGES_DEPLOY_JOB_ID = '93777844175';
 const STAGE_B_REVIEWED_HEAD = '2bf44177045039b6e1037af338350540a69ead3c';
+const STAGE_B_DEPLOYED_HEAD = '43573370131e703d004b75d64a820f448235037f';
+const STAGE_B_PAGES_RUN_ID = '31502633120';
+const STAGE_B_BUILD_JOB_ID = '93816247824';
+const STAGE_B_DEPLOY_JOB_ID = '93817077728';
+const FINAL_BROWSER_ARTIFACT_HASH = 'ddb8bb0230e03b7a14ea8d0f2f05706d61d209f8ff467dbe20b0ddbfdb691e09';
 const IMMEDIATE_HISTORICAL_BASELINE_HASH = '562b90de174139bc103000ff1c83e88b08349300ea67eee554fcd38772251c09';
 const HISTORICAL_BACKLOG_SUFFIX_HASH = '050238d189c4170c5d22da13181ce7ff7556f90e193c07358fb9b3d1fe133efa';
 const BROWSER_ARTIFACT_HASH = 'b139a174432e1684d9a9387e839807fc22b22c6ba0b2cb6e18009536a416f767';
@@ -215,14 +220,85 @@ function assertStageBClosureReview(source) {
     'Independent Stage B architecture reviewer (`architect`): `CLEAR / READY`; findings: `0`.',
     'Final Stage B review judgment: `READY`.',
     'Stage B review/remediation history: initial closure candidate `53a6b811d2dee50ab43ca817abc39fbf397cea84` received code `NOT READY` with one `IMPORTANT` and one `MINOR`, content `READY` / rights `PASS` with one `MINOR`, and architecture `CLEAR / READY` with findings `0`; remediation head `2bf44177045039b6e1037af338350540a69ead3c` then received all clean exact-head verdicts recorded above.',
-    'Stage B deployment status: `PENDING`.',
-    'Local closure readiness: `READY_FOR_STAGE_B_DEPLOYMENT`.',
+    'Stage B deployment status: `SUCCESS`.',
+    'Local closure status: `COMPLETE`.',
+    'Final Stage B closure judgment: `PASS`; scope: functional DOM, interaction, navigation, HTTP, and exact-head deployment. New final-head screenshot evidence remains `BLOCKED / NOT_AVAILABLE` and is not claimed as `PASS`.',
   ]) {
     assert.ok(closure.includes(literal), `Stage B closure literal: ${literal}`);
   }
-  assert.doesNotMatch(closure, /review slot: `PENDING`/u);
-  assert.doesNotMatch(closure, /Stage B deployment status: `(?:SUCCESS|PASS|DEPLOYED)`/u);
+  assert.doesNotMatch(closure, /review slot: `PENDING`|Stage B deployment status: `PENDING`/u);
   return closure;
+}
+
+function assertStageBProductionEvidence(source) {
+  const production = section(source, 'Stage B production evidence');
+  for (const literal of [
+    'Exact deployed closure/remediation head: `43573370131e703d004b75d64a820f448235037f`.',
+    'Pages run: `31502633120`; event: `push`; status: `completed`; conclusion: `success`.',
+    'Build job: `93816247824`; status: `completed`; conclusion: `success`.',
+    'Deploy job: `93817077728`; status: `completed`; conclusion: `success`.',
+    'HTTP probes: `9/9` returned `200`; HTML content types: `8/8`; SVG content types: `1/1`.',
+    'Generated authority: `58` completed topics / `100` content documents / `519` governed sources; homepage intentionally renders only `100 / 519 / G009`.',
+    'Final production IAB states: `4/4`; wrapper focus/`:focus-visible`/3px outline/ArrowRight: `12/12`; relation exact href/H1/return: `16/16`; source exact href/target/rel/destination: `20/20`; extra route/H1 navigation: `8/8`.',
+    'Styles directory: STY-05 actionable and visible in every state; STY-06 text present with actionable href count `0` in every state.',
+    'Article: exact H1 in every state; SVG complete at intrinsic `44x150`, rendered `800x2736`; STY-06 actionable count `0`.',
+    'Mobile G009: visible `true` in light and dark, nonzero rectangles approximately `111.33x46.25`, and homepage document geometry `390/390` in both states.',
+    'Every final production state recorded warning/error logs `0`, `Runtime.exceptionThrown=0`, `Log.entryAdded=0`, `hasMore=false`, and `truncated=false`.',
+    'Relation fallback: `visible-DOM href selection + direct navigation; return to exact article URL; no physical offscreen click claimed`.',
+    'Source fallback: `visible-DOM exact href selection + direct open of same URL in an in-app Browser destination tab; no physical _blank click claimed`.',
+    'Raw final Browser JSON: `.superpowers/sdd/task-7-production-final-evidence.json`, `45,556` bytes, SHA-256 `ddb8bb0230e03b7a14ea8d0f2f05706d61d209f8ff467dbe20b0ddbfdb691e09`.',
+    'Screenshot capture status: `BLOCKED`; per-state screenshot status: `NOT_AVAILABLE`; new screenshot artifacts: `0`.',
+    'Screenshot attempt 1: `desktopLight-fullPage` on fresh tab 12 -> `Page.captureScreenshot` timeout.',
+    'Screenshot attempt 2: `desktopDark-viewport` on fresh tab 13 -> `Page.captureScreenshot` timeout.',
+    'Screenshot attempt 3: `mobileLight-clip` on fresh tab 14 -> `Page.captureScreenshot` timeout.',
+    'Screenshot limitation: supported in-app Browser capture timed out on three fresh exact-head tabs; no alternate browser, external Playwright, old screenshot substitution, invented hash, or final-head visual PASS is claimed.',
+    'Historical visual baseline: Task 6 accepted article/diagram screenshots remain evidence only that the unchanged article and diagram assets were visually inspected before this final head; they are not final-head captures.',
+    'Functional production acceptance: `SUCCESS`.',
+    'Visual screenshot evidence: `BLOCKED / NOT_AVAILABLE`.',
+    'Stage B deployment status: `SUCCESS`.',
+    'Final Stage B closure judgment: `PASS` for functional DOM, interaction, navigation, HTTP, and exact-head deployment; screenshot evidence remains explicitly outside that PASS scope.',
+  ]) {
+    assert.ok(production.includes(literal), `Stage B production literal: ${literal}`);
+  }
+
+  for (const row of [
+    '| `desktopLight` | `1440x1000` / `light` | `1440/1440`; `100/519/G009` visible | `1440/1440` | `800/800`; `800/1024`; `800/1024` | `0→0`; `0→40`; `0→40` |',
+    '| `desktopDark` | `1440x1000` / `dark` | `1440/1440`; `100/519/G009` visible | `1440/1440` | `800/800`; `800/1024`; `800/1024` | `0→0`; `0→40`; `0→40` |',
+    '| `mobileLight` | `390x844` / `light` | `390/390`; `100/519/G009` visible; G009 `111.34x46.25` | `390/390` | `358/800`; `358/1024`; `358/1024` | `0→40`; `0→40`; `0→40` |',
+    '| `mobileDark` | `390x844` / `dark` | `390/390`; `100/519/G009` visible; G009 `111.34x46.25` | `390/390` | `358/800`; `358/1024`; `358/1024` | `0→40`; `0→40`; `0→40` |',
+  ]) {
+    assert.ok(production.includes(row), `Stage B production state row: ${row}`);
+  }
+
+  for (const href of PRODUCTION_SOURCE_HREFS) {
+    assert.ok(
+      production.includes(`| \`${href}\` | \`_blank\` | \`noopener noreferrer\` | \`4/4\` |`),
+      `${href} final production source destination`,
+    );
+  }
+  assert.doesNotMatch(production, /task-7-production-final[^\n]*(?:\.png|\.jpg)[^\n]*SHA-256/u);
+  assert.doesNotMatch(production, /Final-head visual (?:inspection|screenshots?): `PASS`/u);
+  return production;
+}
+
+function assertCurrentStageBProductionBaseline(source) {
+  const currentBaseline = source.split(/\r?\n/u)
+    .find((line) => line.startsWith('- **当前发布基线：**'));
+  assert.ok(currentBaseline, 'current release baseline');
+  for (const literal of [
+    'Stage B exact deployed head [`43573370131e703d004b75d64a820f448235037f`]',
+    'Pages run [`31502633120`]',
+    'build job `93816247824`、deploy job `93817077728`',
+    'production HTTP probes `9/9`',
+    'final IAB states `4/4`、wrapper interactions `12/12`、relation checks `16/16`、source resolutions `20/20`、extra route checks `8/8`',
+    '首页 `100/519/G009` 四态均 visible',
+    'mobile G009 rect 约 `111.34x46.25` 且 document `390/390`',
+    'new screenshot artifacts `0`，capture status `BLOCKED / NOT_AVAILABLE`',
+    'Stage B deployment status 为 `SUCCESS`，functional closure verdict PASS，final-head screenshot evidence 明确不在 PASS scope',
+  ]) {
+    assert.ok(currentBaseline.includes(literal), `current Stage B production baseline literal: ${literal}`);
+  }
+  assert.doesNotMatch(currentBaseline, /final-head (?:screenshots?|visual)(?: status)? (?:为|:)?\s*`PASS`/iu);
 }
 
 function assertHistoricalBacklogLocks(source) {
@@ -302,12 +378,30 @@ test('closes only STY-05 and advances the G009 release baseline to STY-06', () =
   }
 
   assertHistoricalBacklogLocks(backlog);
+  assertCurrentStageBProductionBaseline(backlog);
 });
 
 test('rejects mutation of the complete immediate G009 Batch 5 history', () => {
   const mutated = backlog.replace('build job `93610482485`', 'build job `0`');
   assert.notEqual(mutated, backlog, 'Batch 5 build-job mutation must apply');
   assert.throws(() => assertHistoricalBacklogLocks(mutated), {name: 'AssertionError'});
+});
+
+test('rejects mutated current Stage B deployment and screenshot boundary', () => {
+  assertCurrentStageBProductionBaseline(backlog);
+  for (const [label, exact, replacement] of [
+    ['wrong deployed head', STAGE_B_DEPLOYED_HEAD, '0'.repeat(40)],
+    ['wrong Pages run', STAGE_B_PAGES_RUN_ID, '31502633121'],
+    ['wrong build job', STAGE_B_BUILD_JOB_ID, '93816247825'],
+    ['wrong deploy job', STAGE_B_DEPLOY_JOB_ID, '93817077729'],
+    ['hidden mobile G009', 'mobile G009 rect 约 `111.34x46.25`', 'mobile G009 rect `0x0`'],
+    ['fabricated screenshot PASS', 'capture status `BLOCKED / NOT_AVAILABLE`', 'capture status `PASS`'],
+    ['deployment regression', 'Stage B deployment status 为 `SUCCESS`', 'Stage B deployment status 为 `PENDING`'],
+  ]) {
+    const mutated = backlog.replace(exact, replacement);
+    assert.notEqual(mutated, backlog, `${label} backlog mutation must apply`);
+    assert.throws(() => assertCurrentStageBProductionBaseline(mutated), {name: 'AssertionError'}, label);
+  }
 });
 
 test('binds exact local artifacts, four-state Browser evidence, and final exact-head review verdicts', async () => {
@@ -329,6 +423,7 @@ test('binds exact local artifacts, four-state Browser evidence, and final exact-
   assertEvidenceProvenance(review);
   assertFinalIndependentReview(review);
   assertStageBClosureReview(review);
+  assertStageBProductionEvidence(review);
 });
 
 test('rejects wrong Stage B counts, reviewed head, evidence, weakened verdicts, stale final PENDING, and fabricated deployment', () => {
@@ -343,12 +438,44 @@ test('rejects wrong Stage B counts, reviewed head, evidence, weakened verdicts, 
     ['weakened rights verdict', 'Independent Stage B content/evidence/rights reviewer: `CONTENT READY`; rights: `PASS`; findings: `0`.', 'Independent Stage B content/evidence/rights reviewer: `CONTENT READY`; rights: `UNKNOWN`; findings: `0`.'],
     ['weakened architecture verdict', 'Independent Stage B architecture reviewer (`architect`): `CLEAR / READY`; findings: `0`.', 'Independent Stage B architecture reviewer (`architect`): `BLOCKED`; findings: `1`.'],
     ['stale final PENDING slot', 'Independent Stage B code reviewer (`code-reviewer`): `READY / APPROVE`; findings: `0`.', 'Code review slot: `PENDING`.'],
-    ['fabricated deployment', 'Stage B deployment status: `PENDING`.', 'Stage B deployment status: `SUCCESS`.'],
+    ['deployment regression', 'Stage B deployment status: `SUCCESS`.', 'Stage B deployment status: `PENDING`.'],
   ];
   for (const [label, exact, replacement] of mutations) {
     const mutated = review.replace(exact, replacement);
     assert.notEqual(mutated, review, `${label} mutation must apply`);
     assert.throws(() => assertStageBClosureReview(mutated), {name: 'AssertionError'}, label);
+  }
+});
+
+test('rejects mutated Stage B production identity, final DOM evidence, screenshot provenance, and PASS scope', () => {
+  assertStageBProductionEvidence(review);
+  const mutations = [
+    ['wrong deployed head', STAGE_B_DEPLOYED_HEAD, '0'.repeat(40)],
+    ['wrong Pages run', STAGE_B_PAGES_RUN_ID, '31502633121'],
+    ['wrong build job', STAGE_B_BUILD_JOB_ID, '93816247825'],
+    ['wrong deploy job', STAGE_B_DEPLOY_JOB_ID, '93817077729'],
+    ['wrong run outcome', 'Pages run: `31502633120`; event: `push`; status: `completed`; conclusion: `success`.', 'Pages run: `31502633120`; event: `push`; status: `completed`; conclusion: `failure`.'],
+    ['wrong HTTP total', 'Deploy job: `93817077728`; status: `completed`; conclusion: `success`.\n- HTTP probes: `9/9` returned `200`', 'Deploy job: `93817077728`; status: `completed`; conclusion: `success`.\n- HTTP probes: `8/9` returned `200`'],
+    ['wrong final raw hash', FINAL_BROWSER_ARTIFACT_HASH, 'f'.repeat(64)],
+    ['weakened state total', 'Final production IAB states: `4/4`', 'Final production IAB states: `3/4`'],
+    ['hidden mobile G009', 'Mobile G009: visible `true` in light and dark', 'Mobile G009: visible `false` in light and dark'],
+    ['zero mobile G009 rectangle', 'G009 `111.34x46.25`', 'G009 `0x0`'],
+    ['wrong mobile document geometry', '`390/390`; `100/519/G009` visible', '`390/391`; `100/519/G009` visible'],
+    ['fabricated completed homepage metric', 'homepage intentionally renders only `100 / 519 / G009`', 'homepage renders `58 / 100 / 519 / G009`'],
+    ['weakened interaction total', 'ArrowRight: `12/12`', 'ArrowRight: `11/12`'],
+    ['weakened relation total', 'return: `16/16`', 'return: `15/16`'],
+    ['weakened source total', 'destination: `20/20`', 'destination: `19/20`'],
+    ['weakened extra-route total', 'navigation: `8/8`', 'navigation: `7/8`'],
+    ['truncated diagnostics', 'Every final production state recorded warning/error logs `0`, `Runtime.exceptionThrown=0`, `Log.entryAdded=0`, `hasMore=false`, and `truncated=false`.', 'Every final production state recorded warning/error logs `0`, `Runtime.exceptionThrown=0`, `Log.entryAdded=0`, `hasMore=false`, and `truncated=true`.'],
+    ['missing screenshot blocker provenance', 'Screenshot limitation: supported in-app Browser capture timed out on three fresh exact-head tabs; no alternate browser, external Playwright, old screenshot substitution, invented hash, or final-head visual PASS is claimed.', 'Screenshot limitation: unavailable.'],
+    ['invented screenshot artifact', 'new screenshot artifacts: `0`', 'new screenshot artifacts: `1`; SHA-256 `0000000000000000000000000000000000000000000000000000000000000000`'],
+    ['fabricated visual PASS', 'Visual screenshot evidence: `BLOCKED / NOT_AVAILABLE`.', 'Final-head visual screenshots: `PASS`.'],
+    ['weakened functional PASS scope', 'for functional DOM, interaction, navigation, HTTP, and exact-head deployment; screenshot evidence remains explicitly outside that PASS scope', 'including final-head screenshots'],
+  ];
+  for (const [label, exact, replacement] of mutations) {
+    const mutated = review.replace(exact, replacement);
+    assert.notEqual(mutated, review, `${label} mutation must apply`);
+    assert.throws(() => assertStageBProductionEvidence(mutated), {name: 'AssertionError'}, label);
   }
 });
 

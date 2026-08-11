@@ -209,7 +209,7 @@ test('preserves the STY-04 closure evidence after the G009 baseline advances', (
   assert.match(currentBaseline, /Stage B 独立 code review verdict 为 READY\/APPROVE，findings `0`/u);
   assert.match(currentBaseline, /content review verdict 为 READY，rights PASS，blocking findings `0`/u);
   assert.match(currentBaseline, /architecture review verdict 为 CLEAR\/READY，blockers `0`/u);
-  assert.match(currentBaseline, /Stage B deployment status 为 `SUCCESS`/u);
+  assert.match(currentBaseline, /Stage B deployment status 为 `SUCCESS`，closure verdict PASS/u);
   assert.match(currentBaseline, /Stage B exact reviewed head \[`0ea5751c0c35486ee65f5bb8948b167df1daeeb9`\]/u);
   assert.match(currentBaseline, /Pages run \[`31443254424`\]/u);
   assert.match(currentBaseline, /build job `93632136039`、deploy job `93632580205`/u);
@@ -244,7 +244,7 @@ test('rejects stale Stage B review and fabricated deployment state in the canoni
     ['code verdict', 'READY/APPROVE，findings `0`', 'PENDING，findings `1`'],
     ['content verdict', 'READY，rights PASS，blocking findings `0`', 'PENDING，rights UNKNOWN，blocking findings `1`'],
     ['architecture verdict', 'CLEAR/READY，blockers `0`', 'BLOCKED，blockers `1`'],
-    ['deployment status', 'Stage B deployment status 为 `SUCCESS`', 'Stage B deployment status 仍为 `PENDING`'],
+    ['deployment status', 'Stage B deployment status 为 `SUCCESS`，closure verdict PASS', 'Stage B deployment status 仍为 `PENDING`，closure verdict PASS'],
     ['deployment head', '0ea5751c0c35486ee65f5bb8948b167df1daeeb9', '2a46df97720f7bedac5e80ad215c3c9d83345a34'],
     ['deployment run', 'Pages run [`31443254424`]', 'Pages run [`31443254425`]'],
     ['deployment jobs', 'build job `93632136039`、deploy job `93632580205`', 'build job `93632136040`、deploy job `93632580206`'],
@@ -263,7 +263,7 @@ test('rejects stale Stage B review and fabricated deployment state in the canoni
       assert.match(mutatedBaseline, /Stage B 独立 code review verdict 为 READY\/APPROVE，findings `0`/u);
       assert.match(mutatedBaseline, /content review verdict 为 READY，rights PASS，blocking findings `0`/u);
       assert.match(mutatedBaseline, /architecture review verdict 为 CLEAR\/READY，blockers `0`/u);
-      assert.match(mutatedBaseline, /Stage B deployment status 为 `SUCCESS`/u);
+      assert.match(mutatedBaseline, /Stage B deployment status 为 `SUCCESS`，closure verdict PASS/u);
       assert.match(mutatedBaseline, /Stage B exact reviewed head \[`0ea5751c0c35486ee65f5bb8948b167df1daeeb9`\]/u);
       assert.match(mutatedBaseline, /Pages run \[`31443254424`\]/u);
       assert.match(mutatedBaseline, /build job `93632136039`、deploy job `93632580205`/u);
