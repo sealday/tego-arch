@@ -266,7 +266,7 @@ test('preserves MOD-06 closure under the current G009 baseline', () => {
   assert.deepEqual(projectStatus, {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
-    completed_topics: 57,
+    completed_topics: 58,
     content_documents: 100,
     governed_sources: 519,
     sources: {

@@ -104,8 +104,8 @@ function assertBatch2HistoricalClosure(source) {
 
 function assertLiveReleaseState(source) {
   const baseline = currentReleaseBaseline(source);
-  assert.match(baseline, /^-\s\*\*当前发布基线：\*\* 2026-08-11 G009 Batch 5 已完成 STY-04/u);
-  assert.match(baseline, /当前 G009，下一项为 STY-05/u);
+  assert.match(baseline, /^-\s\*\*当前发布基线：\*\* 2026-08-11 G009 Batch 6 已完成 STY-05/u);
+  assert.match(baseline, /当前 G009，下一项为 STY-06/u);
 }
 
 test('records exact successful G008 Batch 2 deployment evidence', () => {
@@ -204,7 +204,7 @@ test('preserves Batch 2 closure history separately from the live projection', ()
   assert.equal(topicsById.get('STY-00')?.status.value, 'complete');
   assert.equal(topicsById.get('STY-01')?.published, true);
   assert.equal(topicsById.get('STY-01')?.status.value, 'complete');
-  assert.equal(projectStatus.completed_topics, 57);
+  assert.equal(projectStatus.completed_topics, 58);
   assert.equal(projectStatus.content_documents, 100);
   assert.equal(projectStatus.governed_sources, 519);
   assert.deepEqual(projectStatus.durable_stories, {

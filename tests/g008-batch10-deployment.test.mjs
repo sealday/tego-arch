@@ -79,7 +79,7 @@ const expectedAssets = [
 ];
 
 const expectedProjection = {
-  completed_topics: 57,
+  completed_topics: 58,
   content_documents: 100,
   governed_sources: 519,
   durable_stories: {completed: 8, total: 20},
@@ -183,17 +183,17 @@ function currentBaseline(source) {
   return lines[0];
 }
 
-function currentG009Batch5Prefix(source) {
+function currentG009Batch6Prefix(source) {
   const baseline = currentBaseline(source);
-  const marker = '此前 G009 Batch 4 历史完成基线为：';
+  const marker = '此前 G009 Batch 5 历史完成基线为：';
   const end = baseline.indexOf(marker);
   assert.notEqual(end, -1, 'G009 Batch 4 history boundary');
   return baseline.slice(0, end);
 }
 
-function mutateCurrentG009Batch5Prefix(source, replacement) {
-  const prefix = currentG009Batch5Prefix(source);
-  const mutatedPrefix = prefix.replace('下一项为 STY-05', replacement);
+function mutateCurrentG009Batch6Prefix(source, replacement) {
+  const prefix = currentG009Batch6Prefix(source);
+  const mutatedPrefix = prefix.replace('下一项为 STY-06', replacement);
   assert.notEqual(mutatedPrefix, prefix, 'current next-topic mutation must change prefix');
   return source.replace(prefix, mutatedPrefix);
 }
@@ -265,9 +265,9 @@ function assertBacklog(source) {
   assert.match(source, /当前持久故事：\*\* `G009`/u);
   assert.match(source, /最近完成 `G008`/u);
   assert.equal(
-    currentG009Batch5Prefix(source).split('下一项为 STY-05').length - 1,
+    currentG009Batch6Prefix(source).split('下一项为 STY-06').length - 1,
     1,
-    'G009 Batch 5 current prefix must identify STY-05 as next',
+    'G009 Batch 6 current prefix must identify STY-06 as next',
   );
 }
 
@@ -339,7 +339,7 @@ test('rejects every backlog evidence status and projection mutation', () => {
     backlog.replace('- [x] **MOD-12 ', '- [ ] **MOD-12 '),
     backlog.replace('- [x] **MOD-13 ', '- [ ] **MOD-13 '),
     backlog.replace('- **当前持久故事：** `G009`。', '- **当前持久故事：** `G008`。'),
-    mutateCurrentG009Batch5Prefix(backlog, '下一项为 STY-01'),
+    mutateCurrentG009Batch6Prefix(backlog, '下一项为 STY-01'),
     backlog.replace('- [x] **STY-00 ', '- [ ] **STY-00 '),
   ]) {
     assert.notEqual(mutation, backlog, 'backlog mutation must change source');

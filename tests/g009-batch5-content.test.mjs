@@ -928,11 +928,11 @@ test('projects the exact Stage B closure state', () => {
   assert.equal(styleIndexEntry?.status.value, 'complete');
   assert.deepEqual(styleIndexEntry?.primary_sources, projectedPrimaryUrls);
   assert.equal(nextTopic?.published, true);
-  assert.equal(nextTopic?.status.value, 'pending');
+  assert.equal(nextTopic?.status.value, 'complete');
   const nextStyleIndexEntry = indexes.style.find(({id}) => id === 'STY-05');
   assert.equal(nextStyleIndexEntry?.published, true);
-  assert.equal(nextStyleIndexEntry?.status.value, 'pending');
-  assert.equal(projectStatus.completed_topics, 57);
+  assert.equal(nextStyleIndexEntry?.status.value, 'complete');
+  assert.equal(projectStatus.completed_topics, 58);
   assert.equal(projectStatus.content_documents, 100);
   assert.equal(projectStatus.governed_sources, 519);
   assert.equal(publicLedger.sources.length, 519);

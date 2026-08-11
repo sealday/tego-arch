@@ -14,28 +14,28 @@ const [review, backlog, manifest, projectStatus] = await Promise.all([
 ]);
 const topicsById = new Map(manifest.topics.map((topic) => [topic.id, topic]));
 
-function currentG009Batch5Prefix(source) {
+function currentG009Batch6Prefix(source) {
   const baselines = source
     .split(/\r?\n/u)
     .filter((line) => line.startsWith('- **当前发布基线：**'));
   assert.equal(baselines.length, 1, 'backlog must contain one current release baseline');
-  const marker = '此前 G009 Batch 4 历史完成基线为：';
+  const marker = '此前 G009 Batch 5 历史完成基线为：';
   const end = baselines[0].indexOf(marker);
   assert.notEqual(end, -1, 'G009 Batch 4 history boundary');
   return baselines[0].slice(0, end);
 }
 
-function assertCurrentG009Batch5Prefix(source) {
+function assertCurrentG009Batch6Prefix(source) {
   assert.equal(
-    currentG009Batch5Prefix(source).split('下一项为 STY-05').length - 1,
+    currentG009Batch6Prefix(source).split('下一项为 STY-06').length - 1,
     1,
-    'G009 Batch 5 current prefix must identify STY-05 as next',
+    'G009 Batch 6 current prefix must identify STY-06 as next',
   );
 }
 
-function mutateCurrentG009Batch5Prefix(source, replacement) {
-  const prefix = currentG009Batch5Prefix(source);
-  const mutatedPrefix = prefix.replace('下一项为 STY-05', replacement);
+function mutateCurrentG009Batch6Prefix(source, replacement) {
+  const prefix = currentG009Batch6Prefix(source);
+  const mutatedPrefix = prefix.replace('下一项为 STY-06', replacement);
   assert.notEqual(mutatedPrefix, prefix, 'current next-topic mutation must change prefix');
   return source.replace(prefix, mutatedPrefix);
 }
@@ -105,7 +105,7 @@ test('closes exactly MOD-01 through MOD-03 without closing G008', () => {
       source: 'docs/content-backlog.md',
     });
   }
-  assert.equal(projectStatus.completed_topics, 57);
+  assert.equal(projectStatus.completed_topics, 58);
   assert.equal(projectStatus.content_documents, 100);
   assert.equal(projectStatus.governed_sources, 519);
   assert.deepEqual(projectStatus.durable_stories, {
@@ -114,9 +114,9 @@ test('closes exactly MOD-01 through MOD-03 without closing G008', () => {
     current: 'G009',
   });
   assert.match(backlog, /当前持久故事：\*\* `G009`/u);
-  assertCurrentG009Batch5Prefix(backlog);
-  assert.throws(() => assertCurrentG009Batch5Prefix(
-    mutateCurrentG009Batch5Prefix(backlog, '下一项为 STY-03'),
+  assertCurrentG009Batch6Prefix(backlog);
+  assert.throws(() => assertCurrentG009Batch6Prefix(
+    mutateCurrentG009Batch6Prefix(backlog, '下一项为 STY-03'),
   ));
   assert.match(backlog, /最近完成 `G008`/u);
 });

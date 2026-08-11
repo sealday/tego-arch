@@ -510,12 +510,12 @@ test('locks the generated MOD-13 Stage B projection', () => {
     current_goal: projectStatus.durable_stories.current,
     next_topic: currentNextTopic(backlog),
   }, {
-    completed_topics: 57,
+    completed_topics: 58,
     content_documents: 100,
     governed_sources: 519,
     durable_stories: {completed: 8, total: 20},
     current_goal: 'G009',
-    next_topic: 'STY-05',
+    next_topic: 'STY-06',
   });
   const topicsById = new Map(topicManifest.topics.map((topic) => [topic.id, topic]));
   assert.equal(topicsById.get('MOD-12').published, true);
@@ -526,7 +526,7 @@ test('locks the generated MOD-13 Stage B projection', () => {
   assert.equal(topicsById.get('STY-00').status.value, 'complete');
   assert.equal(topicsById.get('STY-01').published, true);
   assert.equal(topicsById.get('STY-01').status.value, 'complete');
-  const staleNextTopic = backlog.replace('下一项为 STY-05', '下一项为 STY-03');
+  const staleNextTopic = backlog.replace('下一项为 STY-06', '下一项为 STY-03');
   assert.notEqual(staleNextTopic, backlog, 'next-topic mutation must change backlog');
   assert.throws(
     () => assert.equal(

@@ -156,3 +156,18 @@ Source fallback: `visible-DOM exact href selection + direct open of the same URL
 - Diagram light inspection screenshot: `.superpowers/sdd/task-6-production-diagram-light.jpg`, SHA-256 `c07446eb1828e2eb1738ac8f40fde78295e0b6a60c18302903510f18ce22329b`.
 - Diagram dark inspection screenshot: `.superpowers/sdd/task-6-production-diagram-dark.jpg`, SHA-256 `926e2ea49ef54b99f69ae85588911b3e1dead5064fdff403322a08cd000111aa`.
 - Full-page screenshot stitching repeated visible bands in the viewer, so the two focused viewport captures above bind the same production SVG to the light/dark visual inspection without claiming a different asset.
+
+## Stage B closure candidate
+
+- Closure head binding: `TO_BE_BOUND_AFTER_CLOSURE_COMMIT`; replace this placeholder with the exact local closure commit only when independent reviewers bind verdicts to that immutable head.
+- Evidence authority: Stage A implementation `e82760843a55ba98a09793215e5f13e0c1fbfaa8`, Pages run `31490981657`, and the exact live route/SVG evidence recorded above.
+- The exact Stage A implementation head, successful Pages run, production HTTP/SVG evidence, four-state Browser QA, and final Stage A independent verdicts above authorize the canonical backlog closure without replacing historical evidence.
+- Projection: 58 completed topics / 100 content documents / 519 governed sources.
+- STY-05: `published / complete`.
+- STY-06: `unpublished / pending`; its checkbox and route remain non-actionable.
+- Code review slot: `PENDING`.
+- Content/evidence/rights review slot: `PENDING`.
+- Architecture review slot: `PENDING`.
+- Stage B deployment status: `PENDING`.
+- Local closure readiness: `READY_FOR_STAGE_B_REVIEW`.
+- No Stage B deployment success or final independent verdict is recorded before exact-head review, binding, push, Pages success, and production verification.

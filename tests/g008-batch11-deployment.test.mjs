@@ -54,12 +54,12 @@ const expectedReviewSections = [
 ];
 
 const expectedProjection = {
-  completed_topics: 57,
+  completed_topics: 58,
   content_documents: 100,
   governed_sources: 519,
   durable_stories: {completed: 8, total: 20, current: 'G009'},
   recently_completed: 'G008',
-  next_topic: 'STY-05',
+  next_topic: 'STY-06',
 };
 
 const expectedRoutes = [
@@ -240,9 +240,9 @@ function assertBacklog(source) {
   assert.equal(segment.split('下一项为 STY-00').length - 1, 1);
   assert.match(
     currentReleaseBaseline(source),
-    /^- \*\*当前发布基线：\*\* 2026-08-11 G009 Batch 5 已完成 STY-04/u,
+    /^- \*\*当前发布基线：\*\* 2026-08-11 G009 Batch 6 已完成 STY-05/u,
   );
-  assert.match(currentReleaseBaseline(source), /当前 G009，下一项为 STY-05/u);
+  assert.match(currentReleaseBaseline(source), /当前 G009，下一项为 STY-06/u);
 }
 
 function assertGeneratedState(manifestValue, statusValue) {
@@ -324,7 +324,7 @@ test('rejects every backlog evidence identity count state and history mutation',
     backlog.replace('- [x] **MOD-13 ', '- [ ] **MOD-13 '),
     backlog.replace('- [x] **STY-00 ', '- [ ] **STY-00 '),
     backlog.replace('- **当前持久故事：** `G009`。', '- **当前持久故事：** `G008`。'),
-    backlog.replace('下一项为 STY-05', '下一项为 STY-03'),
+    backlog.replace('下一项为 STY-06', '下一项为 STY-03'),
   ]) {
     assert.notEqual(mutation, backlog, 'backlog mutation must change source');
     assert.throws(() => assertBacklog(mutation));

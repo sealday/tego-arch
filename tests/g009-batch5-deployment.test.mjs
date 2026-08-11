@@ -164,7 +164,7 @@ test('projects the exact STY-04 Stage B closure inventory', () => {
       content_documents: projectStatus.content_documents,
       governed_sources: projectStatus.governed_sources,
     },
-    {completed_topics: 57, content_documents: 100, governed_sources: 519},
+    {completed_topics: 58, content_documents: 100, governed_sources: 519},
   );
   assert.equal(publicLedger.sources.length, 519);
 
@@ -180,7 +180,7 @@ test('projects the exact STY-04 Stage B closure inventory', () => {
   const nextStyle = stylesById.get('STY-05');
   for (const projection of [nextTopic, nextStyle]) {
     assert.equal(projection?.published, true);
-    assert.equal(projection?.status.value, 'pending');
+    assert.equal(projection?.status.value, 'complete');
   }
 });
 
@@ -197,15 +197,15 @@ test('publishes only the governed STY-04 route, SVG, and sources', async () => {
   );
 });
 
-test('closes only STY-04 and advances the G009 release baseline to STY-05', () => {
+test('preserves the STY-04 closure evidence after the G009 baseline advances', () => {
   const currentBaseline = backlog.split(/\r?\n/u)
     .find((line) => line.startsWith('- **当前发布基线：**'));
   assert.ok(currentBaseline, 'current release baseline');
-  assert.match(currentBaseline, /2026-08-11 G009 Batch 5 已完成 STY-04/u);
+  assert.match(currentBaseline, /此前 G009 Batch 5 历史完成基线为：2026-08-11 G009 Batch 5 已完成 STY-04/u);
   assert.match(currentBaseline, /57 个已完成主题、99 篇内容文档与 513 个受治理来源/u);
-  assert.match(currentBaseline, /当前 G009，下一项为 STY-05/u);
+  assert.match(currentBaseline, /当前 G009，下一项为 STY-06/u);
   assert.match(currentBaseline, /STY-04 为 published\/complete/u);
-  assert.match(currentBaseline, /STY-05 为 unpublished\/pending/u);
+  assert.match(currentBaseline, /STY-05 为 published\/complete/u);
   assert.match(currentBaseline, /Stage B 独立 code review verdict 为 READY\/APPROVE，findings `0`/u);
   assert.match(currentBaseline, /content review verdict 为 READY，rights PASS，blocking findings `0`/u);
   assert.match(currentBaseline, /architecture review verdict 为 CLEAR\/READY，blockers `0`/u);
@@ -219,7 +219,7 @@ test('closes only STY-04 and advances the G009 release baseline to STY-05', () =
   assert.match(currentBaseline, /Task 6 immutable interaction artifact `f2bfe05bd293c5f896cfedb591143bbcdd736d70aa8d88c69302ec44876879de`/u);
   assert.doesNotMatch(currentBaseline, /最终独立评审槽位保持 pending/u);
   assert.match(backlog, /^- \[x\] \*\*STY-03 /mu);
-  assert.match(backlog, /^- \[ \] \*\*STY-05 /mu);
+  assert.match(backlog, /^- \[x\] \*\*STY-05 /mu);
 
   const sty04Lines = backlog.split(/\r?\n/u)
     .filter((line) => /^- \[[ x]\] \*\*STY-04 /u.test(line));
