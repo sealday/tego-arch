@@ -22,7 +22,7 @@ const IMPLEMENTATION_HEAD = 'e82760843a55ba98a09793215e5f13e0c1fbfaa8';
 const PAGES_RUN_ID = '31490981657';
 const PAGES_BUILD_JOB_ID = '93777183963';
 const PAGES_DEPLOY_JOB_ID = '93777844175';
-const CLOSURE_HEAD_PLACEHOLDER = 'TO_BE_BOUND_AFTER_CLOSURE_COMMIT';
+const STAGE_B_REVIEWED_HEAD = '2bf44177045039b6e1037af338350540a69ead3c';
 const IMMEDIATE_HISTORICAL_BASELINE_HASH = '562b90de174139bc103000ff1c83e88b08349300ea67eee554fcd38772251c09';
 const HISTORICAL_BACKLOG_SUFFIX_HASH = '050238d189c4170c5d22da13181ce7ff7556f90e193c07358fb9b3d1fe133efa';
 const BROWSER_ARTIFACT_HASH = 'b139a174432e1684d9a9387e839807fc22b22c6ba0b2cb6e18009536a416f767';
@@ -202,22 +202,25 @@ function assertProductionEvidence(source) {
   ));
 }
 
-function assertStageBClosureCandidate(source) {
+function assertStageBClosureReview(source) {
   const closure = section(source, 'Stage B closure candidate');
   for (const literal of [
-    `Closure head binding: \`${CLOSURE_HEAD_PLACEHOLDER}\`; replace this placeholder with the exact local closure commit only when independent reviewers bind verdicts to that immutable head.`,
+    'Closure head binding: `2bf44177045039b6e1037af338350540a69ead3c`; all independent Stage B verdicts below bind to this immutable local closure/remediation head.',
     `Evidence authority: Stage A implementation \`${IMPLEMENTATION_HEAD}\`, Pages run \`${PAGES_RUN_ID}\`, and the exact live route/SVG evidence recorded above.`,
     'Projection: 58 completed topics / 100 content documents / 519 governed sources.',
     'STY-05: `published / complete`.',
     'STY-06: `unpublished / pending`; its checkbox and route remain non-actionable.',
-    'Code review slot: `PENDING`.',
-    'Content/evidence/rights review slot: `PENDING`.',
-    'Architecture review slot: `PENDING`.',
+    'Independent Stage B code reviewer (`code-reviewer`): `READY / APPROVE`; findings: `0`.',
+    'Independent Stage B content/evidence/rights reviewer: `CONTENT READY`; rights: `PASS`; findings: `0`.',
+    'Independent Stage B architecture reviewer (`architect`): `CLEAR / READY`; findings: `0`.',
+    'Final Stage B review judgment: `READY`.',
+    'Stage B review/remediation history: initial closure candidate `53a6b811d2dee50ab43ca817abc39fbf397cea84` received code `NOT READY` with one `IMPORTANT` and one `MINOR`, content `READY` / rights `PASS` with one `MINOR`, and architecture `CLEAR / READY` with findings `0`; remediation head `2bf44177045039b6e1037af338350540a69ead3c` then received all clean exact-head verdicts recorded above.',
     'Stage B deployment status: `PENDING`.',
-    'Local closure readiness: `READY_FOR_STAGE_B_REVIEW`.',
+    'Local closure readiness: `READY_FOR_STAGE_B_DEPLOYMENT`.',
   ]) {
     assert.ok(closure.includes(literal), `Stage B closure literal: ${literal}`);
   }
+  assert.doesNotMatch(closure, /review slot: `PENDING`/u);
   assert.doesNotMatch(closure, /Stage B deployment status: `(?:SUCCESS|PASS|DEPLOYED)`/u);
   return closure;
 }
@@ -325,31 +328,28 @@ test('binds exact local artifacts, four-state Browser evidence, and final exact-
   assertFourStateEvidence(review);
   assertEvidenceProvenance(review);
   assertFinalIndependentReview(review);
-  assertStageBClosureCandidate(review);
+  assertStageBClosureReview(review);
 });
 
-test('rejects wrong Stage B counts, head binding, evidence, stale later-bound PENDING, and fabricated deployment', () => {
-  const closure = assertStageBClosureCandidate(review);
+test('rejects wrong Stage B counts, reviewed head, evidence, weakened verdicts, stale final PENDING, and fabricated deployment', () => {
   const mutations = [
     ['wrong counts', '58 completed topics / 100 content documents / 519 governed sources', '57 completed topics / 100 content documents / 519 governed sources'],
     ['wrong STY-05 state', 'STY-05: `published / complete`.', 'STY-05: `published / pending`.'],
     ['wrong STY-06 state', 'STY-06: `unpublished / pending`; its checkbox and route remain non-actionable.', 'STY-06: `published / pending`; its checkbox and route remain non-actionable.'],
-    ['missing closure placeholder', CLOSURE_HEAD_PLACEHOLDER, 'UNKNOWN'],
+    ['wrong reviewed head', STAGE_B_REVIEWED_HEAD, '0'.repeat(40)],
     ['wrong Stage A evidence', `Evidence authority: Stage A implementation \`${IMPLEMENTATION_HEAD}\`, Pages run \`${PAGES_RUN_ID}\``, `Evidence authority: Stage A implementation \`${'0'.repeat(40)}\`, Pages run \`0\``],
+    ['weakened code verdict', 'Independent Stage B code reviewer (`code-reviewer`): `READY / APPROVE`; findings: `0`.', 'Independent Stage B code reviewer (`code-reviewer`): `NOT READY`; findings: `1`.'],
+    ['weakened content verdict', 'Independent Stage B content/evidence/rights reviewer: `CONTENT READY`; rights: `PASS`; findings: `0`.', 'Independent Stage B content/evidence/rights reviewer: `CHANGES`; rights: `PASS`; findings: `1`.'],
+    ['weakened rights verdict', 'Independent Stage B content/evidence/rights reviewer: `CONTENT READY`; rights: `PASS`; findings: `0`.', 'Independent Stage B content/evidence/rights reviewer: `CONTENT READY`; rights: `UNKNOWN`; findings: `0`.'],
+    ['weakened architecture verdict', 'Independent Stage B architecture reviewer (`architect`): `CLEAR / READY`; findings: `0`.', 'Independent Stage B architecture reviewer (`architect`): `BLOCKED`; findings: `1`.'],
+    ['stale final PENDING slot', 'Independent Stage B code reviewer (`code-reviewer`): `READY / APPROVE`; findings: `0`.', 'Code review slot: `PENDING`.'],
     ['fabricated deployment', 'Stage B deployment status: `PENDING`.', 'Stage B deployment status: `SUCCESS`.'],
   ];
   for (const [label, exact, replacement] of mutations) {
     const mutated = review.replace(exact, replacement);
     assert.notEqual(mutated, review, `${label} mutation must apply`);
-    assert.throws(() => assertStageBClosureCandidate(mutated), {name: 'AssertionError'}, label);
+    assert.throws(() => assertStageBClosureReview(mutated), {name: 'AssertionError'}, label);
   }
-
-  const laterBoundButStale = closure
-    .replace(CLOSURE_HEAD_PLACEHOLDER, '0'.repeat(40));
-  assert.match(laterBoundButStale, /Code review slot: `PENDING`/u);
-  assert.throws(() => {
-    assert.doesNotMatch(laterBoundButStale, /review slot: `PENDING`/u);
-  }, {name: 'AssertionError'}, 'later exact-head binding must reject stale PENDING verdict slots');
 });
 
 test('rejects incomplete evidence, wrong hashes, weakened verdicts, stale PENDING, and fabricated deployment', () => {

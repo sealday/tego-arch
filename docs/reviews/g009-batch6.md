@@ -159,15 +159,17 @@ Source fallback: `visible-DOM exact href selection + direct open of the same URL
 
 ## Stage B closure candidate
 
-- Closure head binding: `TO_BE_BOUND_AFTER_CLOSURE_COMMIT`; replace this placeholder with the exact local closure commit only when independent reviewers bind verdicts to that immutable head.
+- Closure head binding: `2bf44177045039b6e1037af338350540a69ead3c`; all independent Stage B verdicts below bind to this immutable local closure/remediation head.
 - Evidence authority: Stage A implementation `e82760843a55ba98a09793215e5f13e0c1fbfaa8`, Pages run `31490981657`, and the exact live route/SVG evidence recorded above.
 - The exact Stage A implementation head, successful Pages run, production HTTP/SVG evidence, four-state Browser QA, and final Stage A independent verdicts above authorize the canonical backlog closure without replacing historical evidence.
 - Projection: 58 completed topics / 100 content documents / 519 governed sources.
 - STY-05: `published / complete`.
 - STY-06: `unpublished / pending`; its checkbox and route remain non-actionable.
-- Code review slot: `PENDING`.
-- Content/evidence/rights review slot: `PENDING`.
-- Architecture review slot: `PENDING`.
+- Independent Stage B code reviewer (`code-reviewer`): `READY / APPROVE`; findings: `0`.
+- Independent Stage B content/evidence/rights reviewer: `CONTENT READY`; rights: `PASS`; findings: `0`.
+- Independent Stage B architecture reviewer (`architect`): `CLEAR / READY`; findings: `0`.
+- Final Stage B review judgment: `READY`.
+- Stage B review/remediation history: initial closure candidate `53a6b811d2dee50ab43ca817abc39fbf397cea84` received code `NOT READY` with one `IMPORTANT` and one `MINOR`, content `READY` / rights `PASS` with one `MINOR`, and architecture `CLEAR / READY` with findings `0`; remediation head `2bf44177045039b6e1037af338350540a69ead3c` then received all clean exact-head verdicts recorded above.
 - Stage B deployment status: `PENDING`.
-- Local closure readiness: `READY_FOR_STAGE_B_REVIEW`.
-- No Stage B deployment success or final independent verdict is recorded before exact-head review, binding, push, Pages success, and production verification.
+- Local closure readiness: `READY_FOR_STAGE_B_DEPLOYMENT`.
+- Exact-head Stage B independent review is complete; no Stage B deployment success is recorded before push, Pages success, and production verification.
