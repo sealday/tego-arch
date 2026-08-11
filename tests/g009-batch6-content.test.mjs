@@ -48,10 +48,15 @@ const PROHIBITED = [
   '支付结果未知时直接重复扣款', '拆成服务后天然故障隔离',
 ];
 const ACCEPTED_DENIALS = [
-  '微服务不能由代码行数定义', '容器并不等于微服务', '远程调用不等于微服务',
-  '共享数据库不能由任意服务直接写入', '跨服务事务并非天然原子',
-  'Saga 不会自动回滚外部副作用', 'Outbox 不能保证 exactly-once',
-  '支付结果未知时不能直接重复扣款', '拆成服务后并不天然故障隔离',
+  ['微服务不能由代码行数定义', '微服务不应该按代码行数定义', '微服务并非由代码行数定义'],
+  ['容器并不等于微服务', '容器不能被直接当作微服务', '容器并非微服务'],
+  ['远程调用不等于微服务', '远程调用不应该被视为微服务', '远程调用并非微服务'],
+  ['共享数据库不能由任意服务直接写入', '共享数据库不应该允许所有服务直接写入', '共享数据库并非任何服务都可以直接写入'],
+  ['跨服务事务并非天然原子', '跨服务事务不能自动获得原子性', '跨服务事务不应该被假定为原子事务'],
+  ['Saga 不会自动回滚外部副作用', 'Saga 不能天然回滚外部副作用', 'Saga 并非外部副作用的自动回滚机制'],
+  ['Outbox 不能保证 exactly-once', 'Outbox 不应该被宣称为恰好一次保证', 'Outbox 并非仅一次投递保证'],
+  ['支付结果未知时不能直接重复扣款', '支付结果未知时不应该立即重复授权', '支付结果未知并非可以盲目重复扣款'],
+  ['拆成服务后并不天然故障隔离', '拆成服务后不能自动获得故障隔离', '拆成服务并非必然具备故障隔离'],
 ];
 
 const ILLUSTRATION_SOURCE_ID = 'src-atlas-sty05-microservices-order-saga';
@@ -248,17 +253,17 @@ const SOURCE_CONTRACTS = [
     citationRoles: ['illustration'], usageMode: 'original-illustration',
     manifestPrimary: false,
   },
-];
-const PROHIBITED_PATTERNS = [
-  /微服务.{0,12}(?<!不能)(?<!不可)(?<!不应)(?:由|按).{0,8}代码行数定义/iu,
-  /容器.{0,8}(?<!不)(?<!并不)(?<!不能)(?:等于|就是|即为|天然成为).{0,8}微服务/iu,
-  /远程调用.{0,8}(?<!不)(?<!并不)(?<!不能)(?:等于|就是|即为|天然成为).{0,8}微服务/iu,
-  /共享数据库.{0,12}(?<!不)(?<!不能)(?<!禁止)(?:仍可|可以|允许)由?(?:任意|任何|所有)服务.{0,12}(?:直接)?写入/iu,
-  /跨服务事务.{0,12}(?<!不)(?<!并非)(?<!不能)(?:天然|自动|默认).{0,8}原子/iu,
-  /Saga.{0,12}(?<!不)(?<!不会)(?<!不能)(?:自动|天然).{0,8}回滚.{0,10}外部副作用/iu,
-  /Outbox.{0,16}(?<!不)(?<!不能)(?<!无法)(?:保证|确保|实现).{0,8}(?:exactly[- ]once|恰好一次|仅一次)/iu,
-  /支付结果未知.{0,16}(?<!不)(?<!不能)(?<!禁止)(?:直接|立即|盲目).{0,8}重复(?:授权|扣款)/iu,
-  /拆成服务.{0,16}(?<!不)(?<!并不)(?<!不能)(?:天然|自动|必然).{0,8}故障隔离/iu,
+].map((contract) => ({...contract, licenseFamilyId: contract.licenseFamilyId ?? contract.locator}));
+const CLAIM_PROPOSITIONS = [
+  {subject: /微服务/iu, predicate: /(?:由|按)代码行数定义/iu},
+  {subject: /容器/iu, predicate: /(?:等于|就是|即为|当作|视为|成为)?微服务/iu},
+  {subject: /远程调用/iu, predicate: /(?:等于|就是|即为|当作|视为|成为)?微服务/iu},
+  {subject: /共享数据库/iu, predicate: /(?:任意|任何|所有)服务.{0,12}(?:直接)?写入/iu},
+  {subject: /跨服务事务/iu, predicate: /(?:天然|自动|默认|假定为)?.{0,6}原子(?:性|事务)?/iu},
+  {subject: /Saga/iu, predicate: /(?:自动|天然)?.{0,6}回滚.{0,10}外部副作用|外部副作用.{0,10}自动回滚机制/iu},
+  {subject: /Outbox/iu, predicate: /(?:保证|确保|实现|宣称为).{0,8}(?:exactly[- ]once|恰好一次|仅一次)|(?:exactly[- ]once|恰好一次|仅一次).{0,8}(?:保证|确保)/iu},
+  {subject: /支付结果未知/iu, predicate: /(?:直接|立即|盲目|可以)?.{0,8}重复(?:授权|扣款)/iu},
+  {subject: /拆成服务/iu, predicate: /(?:天然|自动|必然)?.{0,8}(?:获得|具备)?.{0,4}故障隔离/iu},
 ];
 
 const [ledger, licenseInventory, manifest, projectStatus, indexes, publicLedger] = await Promise.all([
@@ -284,21 +289,59 @@ function externalLinksOf(document) {
   return extractExternalLinks({body: document.body});
 }
 
+function classifyProposition(clause, {subject, predicate}) {
+  const subjectMatch = subject.exec(clause);
+  if (!subjectMatch) return null;
+  const predicateMatch = predicate.exec(clause.slice(subjectMatch.index + subjectMatch[0].length));
+  if (!predicateMatch) return null;
+  const predicateEnd = subjectMatch.index + subjectMatch[0].length + predicateMatch.index + predicateMatch[0].length;
+  const propositionSpan = clause.slice(subjectMatch.index, predicateEnd);
+  return /不|并非|并不|不能|不会|无法|禁止|不得|不可|未能|绝非/u.test(propositionSpan)
+    ? {classification: 'negated', propositionSpan}
+    : {classification: 'affirmative', propositionSpan};
+}
+
 function assertNoProhibitedClaims(source) {
-  for (const pattern of PROHIBITED_PATTERNS) assert.doesNotMatch(source, pattern, String(pattern));
+  const clauses = source.split(/[。！？；\n]+/u).map((clause) => clause.trim()).filter(Boolean);
+  for (const [index, proposition] of CLAIM_PROPOSITIONS.entries()) {
+    for (const clause of clauses) {
+      const result = classifyProposition(clause, proposition);
+      assert.notEqual(result?.classification, 'affirmative',
+        `prohibited proposition ${index + 1}: ${result?.propositionSpan ?? clause}`);
+    }
+  }
 }
 
-function sectionBody(source, heading, nextHeading) {
-  const start = source.indexOf(`## ${heading}`);
-  assert.ok(start >= 0, `${heading} section`);
-  const end = nextHeading ? source.indexOf(`## ${nextHeading}`, start + heading.length + 3) : source.length;
-  assert.ok(end > start, `${heading} section end`);
-  return source.slice(start, end);
+function visibleSectionBlocks(blocks, heading, nextHeading) {
+  const start = blocks.findIndex(({text}) => text.trim() === heading);
+  assert.ok(start >= 0, `${heading} visible section`);
+  const relativeEnd = nextHeading
+    ? blocks.slice(start + 1).findIndex(({text}) => text.trim() === nextHeading)
+    : -1;
+  const end = relativeEnd < 0 ? blocks.length : start + 1 + relativeEnd;
+  assert.ok(end > start + 1, `${heading} visible section body`);
+  return blocks.slice(start + 1, end);
 }
 
-function assertCompoundParagraph(source, label, patterns) {
-  const paragraphs = source.split(/\r?\n\s*\r?\n/u).map((paragraph) => paragraph.trim()).filter(Boolean);
-  assert.ok(paragraphs.some((paragraph) => patterns.every((pattern) => pattern.test(paragraph))), label);
+function assertCompoundVisibleBlock(blocks, label, patterns) {
+  assert.ok(blocks.some(({text}) => patterns.every((pattern) => pattern.test(text))), label);
+}
+
+function licenseInventoryRows(markdown) {
+  const rows = [];
+  for (const line of markdown.split(/\r?\n/u)) {
+    if (!line.trim().startsWith('|') || !line.trim().endsWith('|')) continue;
+    const cells = line.trim().slice(1, -1).split('|').map((cell) => cell.trim());
+    if (cells.length !== 11 || cells[0] === 'source_family' || /^:?-{3,}:?$/u.test(cells[0])) continue;
+    rows.push({
+      source_family: cells[0],
+      current_urls: cells[1].split(/\s*<br\s*\/?>\s*/iu).filter(Boolean),
+      license_evidence_url: cells[3],
+      exact_license: cells[6],
+      family_grouping: cells[9],
+    });
+  }
+  return rows;
 }
 
 function xmlAttributes(source) {
@@ -599,9 +642,10 @@ test('publishes exact STY-05 metadata, headings, and actionable relations', () =
 
 test('locks microservice boundaries, the order Saga, and owned runtime responsibility', () => {
   assert.ok(article);
-  const visible = parseMdxVisibleCopy(article.source, ARTICLE).blocks.map(({text}) => text).join('\n');
+  const visibleBlocks = parseMdxVisibleCopy(article.source, ARTICLE, {includeStructure: true}).blocks;
+  const visible = visibleBlocks.map(({text}) => text).join('\n');
   for (const requirement of [
-    /业务能力|稳定子域/u, /稳定合同/u, /独立(?:构建|验证|发布)/u, /独立回滚/u, /锁步发布/u,
+    /业务能力|稳定子域/u, /稳定合同/u, /独立部署/u, /独立回滚/u, /锁步发布/u,
     /私有权威数据|权威状态.*唯一服务所有者/u, /禁止.*(?:共享表|跨服务直接写库|跨库连接)/u,
     /本地事务/u, /Outbox/u, /持久.*Saga|Saga.*持久/u, /稳定幂等键/u,
     /重复/u, /乱序/u, /部分成功/u, /毒消息/u, /补偿/u, /查询|对账/u, /人工终止/u,
@@ -609,22 +653,23 @@ test('locks microservice boundaries, the order Saga, and owned runtime responsib
     /服务合同.*数据.*部署.*值守.*恢复.*成本|端到端.*(?:值守|恢复)/u,
     /平台.*(?:不拥有|不能拥有).*业务状态/u,
   ]) assert.match(visible, requirement, `semantic contract ${requirement}`);
-  const consistency = sectionBody(article.source, '数据所有权与一致性', '部署单元与故障域');
-  assertCompoundParagraph(consistency, 'state and Outbox commit in the same local transaction', [
+  const consistency = visibleSectionBlocks(visibleBlocks, '数据所有权与一致性', '部署单元与故障域');
+  assertCompoundVisibleBlock(consistency, 'state and Outbox commit in the same local transaction', [
     /本地事务/u, /(?:同一|同一个|原子地).{0,12}(?:Outbox|发件箱)|(?:Outbox|发件箱).{0,12}(?:同一|同一个|原子地)/u,
   ]);
-  assertCompoundParagraph(consistency, 'unknown payment result reconciles before another side effect', [
+  assertCompoundVisibleBlock(consistency, 'unknown payment result reconciles before another side effect', [
     /支付.{0,8}结果未知|未知.{0,8}支付结果/u, /查询|对账/u, /(?:禁止|不得|不能|不).{0,12}重复(?:授权|扣款)/u,
   ]);
-  const deployment = sectionBody(article.source, '部署单元与故障域', '团队拓扑');
-  assertCompoundParagraph(deployment, 'independent delivery includes rollback and rejects lockstep release', [
-    /独立.{0,8}(?:构建|验证|发布)/u, /回滚/u, /锁步发布/u,
+  const deployment = visibleSectionBlocks(visibleBlocks, '部署单元与故障域', '团队拓扑');
+  assertCompoundVisibleBlock(deployment, 'independent deployment includes rollback and rejects lockstep release', [
+    /独立部署/u, /独立回滚|回滚.{0,8}独立|独立.{0,8}回滚/u,
+    /(?:不能|不得|不应|并非|禁止).{0,16}锁步发布|锁步发布.{0,16}(?:不能|不得|不应|并非|禁止)/u,
   ]);
-  assertCompoundParagraph(deployment, 'distributed failure paragraph owns timeout, partial failure, backlog, and isolation', [
+  assertCompoundVisibleBlock(deployment, 'distributed failure paragraph owns timeout, partial failure, backlog, and isolation', [
     /网络超时/u, /部分成功|部分失败/u, /积压|背压/u, /隔离/u, /所有者|负责/u,
   ]);
-  const teamTopology = sectionBody(article.source, '团队拓扑', '质量属性收益与成本');
-  assertCompoundParagraph(teamTopology, 'service owner owns observability and security while platform owns no business state', [
+  const teamTopology = visibleSectionBlocks(visibleBlocks, '团队拓扑', '质量属性收益与成本');
+  assertCompoundVisibleBlock(teamTopology, 'service owner owns observability and security while platform owns no business state', [
     /(?:服务所有者|跨职能团队).{0,32}(?:负责|拥有|承担).{0,32}(?:日志|指标|追踪|可观测)|(?:日志|指标|追踪|可观测).{0,32}由(?:服务所有者|跨职能团队)(?:负责|拥有|承担)/u,
     /安全/u,
     /平台.{0,16}(?:不拥有|不能拥有|不得拥有).{0,8}业务状态/u,
@@ -633,11 +678,37 @@ test('locks microservice boundaries, the order Saga, and owned runtime responsib
 });
 
 test('prohibited claim mutations are rejected while explicit boundaries remain expressible', () => {
-  assert.equal(PROHIBITED.length, PROHIBITED_PATTERNS.length);
-  assert.equal(ACCEPTED_DENIALS.length, PROHIBITED_PATTERNS.length);
+  assert.equal(PROHIBITED.length, CLAIM_PROPOSITIONS.length);
+  assert.equal(ACCEPTED_DENIALS.length, CLAIM_PROPOSITIONS.length);
   for (let index = 0; index < PROHIBITED.length; index += 1) {
+    assert.equal(classifyProposition(PROHIBITED[index], CLAIM_PROPOSITIONS[index])?.classification,
+      'affirmative', PROHIBITED[index]);
     assert.throws(() => assertNoProhibitedClaims(PROHIBITED[index]), {name: 'AssertionError'}, PROHIBITED[index]);
-    assert.doesNotThrow(() => assertNoProhibitedClaims(ACCEPTED_DENIALS[index]), ACCEPTED_DENIALS[index]);
+    for (const denial of ACCEPTED_DENIALS[index]) {
+      assert.equal(classifyProposition(denial, CLAIM_PROPOSITIONS[index])?.classification, 'negated', denial);
+      const visibleDenial = parseMdxVisibleCopy(`## 边界\n\n${denial}\n`, 'visible-denial-fixture.mdx')
+        .blocks.map(({text}) => text).join('\n');
+      assert.doesNotThrow(() => assertNoProhibitedClaims(visibleDenial), denial);
+    }
+  }
+});
+
+test('parses the current license inventory source-family and URL columns', () => {
+  const inventoryRows = licenseInventoryRows(licenseInventory);
+  for (const sourceId of [
+    'src-fowler-monolith-first',
+    'src-spring-modulith-fundamentals',
+    'src-spring-modulith-events',
+    'src-atlas-sty04-modular-monolith-boundaries',
+  ]) {
+    const source = ledger.sources.find(({id}) => id === sourceId);
+    assert.ok(source, `${sourceId} Batch-5 source record`);
+    const row = inventoryRows.find(({source_family}) => source_family === source.license_family_id);
+    assert.ok(row, `${sourceId} source_family column`);
+    assert.ok(row.current_urls.includes(source.canonical_locator), `${sourceId} current_urls column`);
+    assert.equal(row.license_evidence_url, source.license_evidence_url, `${sourceId} evidence column`);
+    assert.equal(row.exact_license, source.license, `${sourceId} exact_license column`);
+    assert.equal(row.family_grouping, 'identity', `${sourceId} family_grouping column`);
   }
 });
 
@@ -651,6 +722,7 @@ test('governs six sources, three remote domains, rights, and one manifest primar
   ]);
   assert.deepEqual(documentRecord.citations.map(({source_id}) => source_id).sort(), [...SOURCE_IDS].sort());
   assert.equal(documentRecord.citations.filter(({manifest_primary}) => manifest_primary).length, 1);
+  const inventoryRows = licenseInventoryRows(licenseInventory);
   for (const contract of SOURCE_CONTRACTS) {
     const source = ledger.sources.find(({id}) => id === contract.id);
     const citation = documentRecord.citations.find(({source_id}) => source_id === contract.id);
@@ -703,7 +775,7 @@ test('governs six sources, three remote domains, rights, and one manifest primar
       license_scope: contract.licenseScope,
       license_evidence_url: contract.licenseEvidenceUrl,
       license_evidence_note: contract.licenseEvidenceNote,
-      license_family_id: contract.locator,
+      license_family_id: contract.licenseFamilyId,
       license_family_grouping: 'identity',
       family_grouping_evidence_url: null,
       copyright_policy: contract.copyrightPolicy,
@@ -724,7 +796,14 @@ test('governs six sources, three remote domains, rights, and one manifest primar
       excerpt: null,
       quotation_reviewed: false,
     }, `${contract.id} exact citation record`);
-    assert.match(licenseInventory, new RegExp(`\\| \\x60${contract.id}\\x60 \\|`, 'u'), `${contract.id} license inventory`);
+    const inventoryRow = inventoryRows.find(({source_family}) => source_family === contract.licenseFamilyId);
+    assert.deepEqual(inventoryRow, {
+      source_family: contract.licenseFamilyId,
+      current_urls: [contract.locator],
+      license_evidence_url: contract.licenseEvidenceUrl,
+      exact_license: contract.license,
+      family_grouping: 'identity',
+    }, `${contract.id} exact source_family/current_urls/license inventory row`);
   }
   assert.ok(article, `${ARTICLE} must exist before checking visible remote sources`);
   const remoteDomains = new Set(externalLinksOf(article).map((url) => new URL(url).hostname));
