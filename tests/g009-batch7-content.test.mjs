@@ -604,6 +604,33 @@ function assertDiagramPresentation(source) {
   }
 }
 
+function assertLegendBindings(source) {
+  const expected = new Map([
+    ['command', 'command-edge'],
+    ['event-delivery', 'event-delivery-edge'],
+    ['sync-lookup', 'sync-lookup-edge'],
+    ['replay', 'replay-edge'],
+  ]);
+  for (const [kind, connectorClass] of expected) {
+    const key = source.match(new RegExp(`<path\\b(?=[^>]*\\bclass="[^"]*\\b${connectorClass}\\b)(?=[^>]*\\bdata-legend-key="${kind}")[^>]*>`, 'u'));
+    const caption = source.match(new RegExp(`<text\\b(?=[^>]*\\bdata-legend-for="${kind}")(?=[^>]*\\bdata-legend-entry="${kind}")[^>]*>`, 'u'));
+    assert.ok(key, `${kind} legend key binds ${connectorClass}`);
+    assert.ok(caption, `${kind} legend caption binding`);
+  }
+}
+
+function assertDistinctDiagramResponsibilities(source) {
+  const nodes = svgContract(source).nodes.map(({id}) => id);
+  assert.equal(nodes.filter((id) => id === 'event-store').length, 1, 'one event-store responsibility');
+  assert.equal(nodes.filter((id) => id === 'event-broker').length, 1, 'one event-broker responsibility');
+  assert.notEqual('event-store', 'event-broker');
+  for (const edge of svgContract(source).edges.filter(({id, attributes}) =>
+    id.includes('replay') || attributes.get('data-source') === 'replay-path')) {
+    assert.match(edge.attributes.get('data-target') ?? '', /^(?:aggregate|read-projection)$/u,
+      `${edge.id} replay target is reconstructable state only`);
+  }
+}
+
 async function runMutation(source, mutate, validator, label) {
   const mutated = mutate(source);
   assert.notEqual(mutated, source, `${label} mutation applies`);
@@ -908,4 +935,23 @@ test('keeps marker-aware label clearance and selector-bound effective contrast m
   assert.notEqual(translucentPaintMutation, svg, 'translucent background mutation applies');
   assert.throws(() => assertDiagramPresentation(translucentPaintMutation), {name: 'AssertionError'},
     'translucent backgrounds are alpha-composited');
+});
+
+test('binds color-independent legend keys and rejects responsibility/replay conflations', async () => {
+  const svg = await readFile(new URL(`../${SVG}`, import.meta.url), 'utf8');
+  assertLegendBindings(svg);
+  assertDistinctDiagramResponsibilities(svg);
+  const wrongLegend = svg.replace('data-legend-key="replay"', 'data-legend-key="command"');
+  assert.notEqual(wrongLegend, svg, 'wrong legend fixture applies');
+  assert.throws(() => assertLegendBindings(wrongLegend), {name: 'AssertionError'}, 'wrong legend class binding');
+  const mergedResponsibilities = svg.replaceAll('event-broker', 'event-store');
+  assert.notEqual(mergedResponsibilities, svg, 'merged responsibility fixture applies');
+  assert.throws(() => assertDistinctDiagramResponsibilities(mergedResponsibilities), {name: 'AssertionError'},
+    'event store and broker remain distinct');
+  const replaySideEffect = svg.replace(
+    /(data-edge-id="es-replay-projection"[^>]*data-target=")[^"]+/u, '$1forbidden-side-effects',
+  );
+  assert.notEqual(replaySideEffect, svg, 'replay side-effect fixture applies');
+  assert.throws(() => assertDistinctDiagramResponsibilities(replaySideEffect), {name: 'AssertionError'},
+    'replay cannot target payment/notification side effects');
 });
