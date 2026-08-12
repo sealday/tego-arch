@@ -513,6 +513,118 @@ function pointRectangleDistance(point, rectangle) {
   return Math.hypot(dx, dy);
 }
 
+function rectangleDistance(left, right) {
+  const dx = Math.max(left.left - right.right, right.left - left.right, 0);
+  const dy = Math.max(left.top - right.bottom, right.top - left.bottom, 0);
+  return Math.hypot(dx, dy);
+}
+
+function visibleTextBounds(source, element, label) {
+  const fontSize = Number.parseFloat(svgPresentationValue(source, element, 'font-size'));
+  const x = Number(element.attributes.get('x'));
+  const y = Number(element.attributes.get('y'));
+  const width = [...label].reduce((sum, character) => sum + (/^[\u0000-\u00ff]$/u.test(character) ? 0.62 : 1), 0) * fontSize;
+  const anchor = svgPresentationValue(source, element, 'text-anchor') ?? 'start';
+  const left = anchor === 'middle' ? x - width / 2 : (anchor === 'end' ? x - width : x);
+  return {bottom: y + fontSize * 0.3, left, right: left + width, top: y - fontSize};
+}
+
+function rectangleStrokeDistance(bounds, rectangle, strokeWidth, inner = false) {
+  const inset = strokeWidth / 2;
+  const sides = inner ? [
+    bounds.left - (rectangle.left + inset),
+    (rectangle.right - inset) - bounds.right,
+    bounds.top - (rectangle.top + inset),
+    (rectangle.bottom - inset) - bounds.bottom,
+  ] : [
+    rectangleDistance(bounds, {left: rectangle.left - inset, right: rectangle.right + inset,
+      top: rectangle.top - inset, bottom: rectangle.bottom + inset}),
+  ];
+  return Math.min(...sides);
+}
+
+function assertAllTextClearances(source) {
+  const elements = svgElements(source);
+  const edges = svgContract(source).edges;
+  const edgeGeometry = edges.map((edge) => {
+    const path = elements.find(({attributes, name}) => name === 'path' && attributes.get('data-edge-id') === edge.id);
+    const label = elements.find(({attributes, name}) => name === 'text' && attributes.get('data-edge-id') === edge.id);
+    return {edge, label, labelBounds: visibleTextBounds(source, label, edge.label), path,
+      points: parsePathPoints(path.attributes.get('d'))};
+  });
+  const nodeEnvelopes = svgContract(source).nodes.filter(({id}) =>
+    ![...COLUMN_IDS, ...ROW_IDS, 'canvas', 'legend-band'].includes(id) && !id.startsWith('legend-'))
+    .map(({id}) => {
+      const group = elements.find(({attributes, name}) => name === 'g' && attributes.get('data-node-id') === id);
+      const shape = elements.find(({name, parent}) => ['rect', 'ellipse', 'polygon'].includes(name) && parent === group);
+      return shape ? {id, rectangle: rectangleFromElement(shape), strokeWidth: Number(svgPresentationValue(source, shape, 'stroke-width') ?? 0)} : null;
+    }).filter(Boolean);
+  const boundaryEnvelopes = [...COLUMN_IDS, ...ROW_IDS].map((id) => {
+    const group = elements.find(({attributes, name}) => name === 'g' && attributes.get('data-node-id') === id);
+    const shape = elements.find(({name, parent}) => name === 'rect' && parent === group);
+    return {id, rectangle: rectangleFromElement(shape), strokeWidth: Number(svgPresentationValue(source, shape, 'stroke-width'))};
+  });
+  const minima = {boundary: Infinity, marker: Infinity, node: Infinity, stroke: Infinity};
+  const failures = [];
+  for (const current of edgeGeometry) {
+    for (const connector of edgeGeometry) for (const segment of pathSegments(connector.points)) {
+      const gap = segmentRectangleDistance(segment.left, segment.right, current.labelBounds);
+      minima.stroke = Math.min(minima.stroke, gap);
+      if (gap < 24) failures.push(`${current.edge.id}/stroke:${connector.edge.id}=${gap}`);
+    }
+    for (const connector of edgeGeometry) for (const point of markerGeometry(source, connector.path, connector.points)) {
+      const gap = pointRectangleDistance(point, current.labelBounds);
+      minima.marker = Math.min(minima.marker, gap);
+      if (gap < 48) failures.push(`${current.edge.id}/marker:${connector.edge.id}=${gap}`);
+    }
+    for (const node of nodeEnvelopes.filter(({id}) => ![current.edge.attributes.get('data-source'),
+      current.edge.attributes.get('data-target')].includes(id))) {
+      const gap = rectangleStrokeDistance(current.labelBounds, node.rectangle, node.strokeWidth);
+      minima.node = Math.min(minima.node, gap);
+      if (gap < 36) failures.push(`${current.edge.id}/node:${node.id}=${gap}`);
+    }
+    for (const boundary of boundaryEnvelopes) {
+      if (!(current.labelBounds.left >= boundary.rectangle.left && current.labelBounds.right <= boundary.rectangle.right &&
+        current.labelBounds.top >= boundary.rectangle.top && current.labelBounds.bottom <= boundary.rectangle.bottom)) continue;
+      const gap = rectangleStrokeDistance(current.labelBounds, boundary.rectangle, boundary.strokeWidth, true);
+      minima.boundary = Math.min(minima.boundary, gap);
+      if (gap < 36) failures.push(`${current.edge.id}/boundary:${boundary.id}=${gap}`);
+    }
+  }
+  assert.deepEqual(failures, [], `all conservative edge-label clearances:\n${failures.join('\n')}`);
+  return minima;
+}
+
+function assertLegendClearance(source) {
+  const elements = svgElements(source);
+  let minima = {captionKey: Infinity, foreignMarker: Infinity, markerCaption: Infinity};
+  const entries = ['command', 'event-delivery', 'sync-lookup', 'replay'].map((kind) => {
+    const key = elements.find(({attributes, name}) => name === 'path' && attributes.get('data-legend-key') === kind);
+    const caption = elements.find(({attributes, name}) => name === 'text' && attributes.get('data-legend-for') === kind);
+    const captionText = source.match(new RegExp(`<text\\b[^>]*data-legend-for="${kind}"[^>]*>([^<]*)<\\/text>`, 'u'))?.[1] ?? '';
+    return {caption, captionBounds: visibleTextBounds(source, caption, captionText), key, kind,
+      points: parsePathPoints(key.attributes.get('d'))};
+  });
+  for (const entry of entries) {
+    const ownGap = Math.min(...pathSegments(entry.points)
+      .map(({left, right}) => segmentRectangleDistance(left, right, entry.captionBounds)));
+    minima.captionKey = Math.min(minima.captionKey, ownGap);
+    assert.ok(ownGap >= 36, `${entry.kind} legend caption/key ${ownGap}`);
+    const ownMarkerGap = Math.min(...markerGeometry(source, entry.key, entry.points)
+      .map((point) => pointRectangleDistance(point, entry.captionBounds)));
+    minima.markerCaption = Math.min(minima.markerCaption, ownMarkerGap);
+    assert.ok(ownMarkerGap >= 48, `${entry.kind} legend marker/caption ${ownMarkerGap}`);
+    for (const foreign of entries.filter(({kind}) => kind !== entry.kind)) {
+      for (const point of markerGeometry(source, foreign.key, foreign.points)) {
+        const gap = pointRectangleDistance(point, entry.captionBounds);
+        minima.foreignMarker = Math.min(minima.foreignMarker, gap);
+        assert.ok(gap >= 48, `${entry.kind} legend foreign marker ${foreign.kind} ${gap}`);
+      }
+    }
+  }
+  return minima;
+}
+
 function segmentRectangleDistance(left, right, rectangle) {
   const horizontal = left.y === right.y;
   const vertical = left.x === right.x;
@@ -539,6 +651,180 @@ function canonicalSegment({left, right}) {
   return left.x === right.x
     ? `V:${left.x}:${Math.min(left.y, right.y)}:${Math.max(left.y, right.y)}`
     : `H:${left.y}:${Math.min(left.x, right.x)}:${Math.max(left.x, right.x)}`;
+}
+
+function collinearOverlapLength(left, right) {
+  const leftVertical = left.left.x === left.right.x;
+  const rightVertical = right.left.x === right.right.x;
+  if (leftVertical !== rightVertical) return 0;
+  if (leftVertical) {
+    if (left.left.x !== right.left.x) return 0;
+    return Math.max(0, Math.min(Math.max(left.left.y, left.right.y), Math.max(right.left.y, right.right.y)) -
+      Math.max(Math.min(left.left.y, left.right.y), Math.min(right.left.y, right.right.y)));
+  }
+  if (left.left.y !== right.left.y) return 0;
+  return Math.max(0, Math.min(Math.max(left.left.x, left.right.x), Math.max(right.left.x, right.right.x)) -
+    Math.max(Math.min(left.left.x, left.right.x), Math.min(right.left.x, right.right.x)));
+}
+
+function rectangleFromElement(element) {
+  const x = Number(element.attributes.get('x'));
+  const y = Number(element.attributes.get('y'));
+  const width = Number(element.attributes.get('width'));
+  const height = Number(element.attributes.get('height'));
+  assert.ok([x, y, width, height].every(Number.isFinite), 'finite rectangle geometry');
+  return {bottom: y + height, left: x, right: x + width, top: y};
+}
+
+function segmentIntersectsRectangle({left, right}, rectangle) {
+  if (left.x === right.x) return left.x >= rectangle.left && left.x <= rectangle.right &&
+    Math.max(Math.min(left.y, right.y), rectangle.top) <= Math.min(Math.max(left.y, right.y), rectangle.bottom);
+  return left.y >= rectangle.top && left.y <= rectangle.bottom &&
+    Math.max(Math.min(left.x, right.x), rectangle.left) <= Math.min(Math.max(left.x, right.x), rectangle.right);
+}
+
+function assertNoConnectorOverdraw(source) {
+  const elements = svgElements(source);
+  const segments = [];
+  for (const edge of svgContract(source).edges) {
+    const path = elements.find(({attributes, name}) => name === 'path' && attributes.get('data-edge-id') === edge.id);
+    segments.push(...pathSegments(parsePathPoints(path.attributes.get('d'))).map((segment) => ({...segment, edge: edge.id})));
+    for (const rectangle of elements.filter(({index, name}) => name === 'rect' && index > path.index)) {
+      const fill = svgPresentationValue(source, rectangle, 'fill');
+      const opacity = fill && fill !== 'none' ? effectiveOpacity(source, rectangle, 'fill') : 0;
+      assert.ok(opacity === 0 || !pathSegments(parsePathPoints(path.attributes.get('d')))
+        .some((segment) => segmentIntersectsRectangle(segment, rectangleFromElement(rectangle))),
+      `${edge.id} is not obscured by later-painted rectangle`);
+    }
+  }
+  for (let left = 0; left < segments.length; left += 1) for (let right = left + 1; right < segments.length; right += 1) {
+    if (segments[left].edge !== segments[right].edge) assert.equal(collinearOverlapLength(segments[left], segments[right]), 0,
+      `no partially overlapping connector interval ${segments[left].edge}/${segments[right].edge}`);
+  }
+}
+
+function drawioStyle(cell) {
+  return new Map((cell.attributes.get('style') ?? '').split(';').filter(Boolean).map((declaration) => {
+    const split = declaration.indexOf('=');
+    return [declaration.slice(0, split), declaration.slice(split + 1)];
+  }));
+}
+
+function assertNodeFillParity(drawio, svg) {
+  const svgElementsByNode = new Map([...svg.matchAll(/<g\b[^>]*data-node-id="([^"]+)"[^>]*>([\s\S]*?)<\/g>/gu)]
+    .map(([, id, body]) => [id, svgElements(`<svg>${body}</svg>`).find(({name}) => name === 'rect')]));
+  for (const cell of drawioContract(drawio).nodes) {
+    const id = cell.attributes.get('id');
+    const rectangle = svgElementsByNode.get(id);
+    if (!rectangle) continue;
+    const expected = drawioStyle(cell).get('fillColor');
+    if (expected && expected !== 'none') assert.equal(svgPresentationValue(svg, rectangle, 'fill'), expected,
+      `${id} fill parity`);
+  }
+}
+
+function nodeGroupBody(source, id) {
+  return source.match(new RegExp(`<g\\b[^>]*data-node-id="${escapeRegExp(id)}"[^>]*>([\\s\\S]*?)<\\/g>`, 'u'))?.[1] ?? '';
+}
+
+function visibleGroupLabel(source, id) {
+  return [...nodeGroupBody(source, id).matchAll(/<text\b[^>]*>([^<]*)<\/text>/gu)]
+    .map(([, label]) => decodeXmlText(label).trim()).filter(Boolean).join('｜');
+}
+
+function assertFullDrawioSvgParity(drawio, svg) {
+  const elements = svgElements(svg);
+  const svgNodes = new Map(svgContract(svg).nodes.map((node) => [node.id, node]));
+  for (const cell of drawioContract(drawio).nodes) {
+    const id = cell.attributes.get('id');
+    const svgNode = svgNodes.get(id);
+    assert.ok(svgNode, `${id} SVG parity node`);
+    assert.deepEqual(geometry(drawio, id, 'drawio'), geometry(svg, id, 'svg'), `${id} exact bounds parity`);
+    const group = elements.find(({attributes, name}) => name === 'g' && attributes.get('data-node-id') === id);
+    const shape = elements.find(({name, parent}) => ['rect', 'polygon', 'ellipse'].includes(name) && parent === group);
+    const text = elements.find(({name, parent}) => name === 'text' && parent === group);
+    const labelClass = elements.find(({name, parent}) => name === 'text' && parent?.attributes.get('data-node-id') === id)
+      ?.attributes.get('class');
+    const shapeClasses = (shape?.attributes.get('class') ?? '').split(/\s+/u);
+    const inferredRole = svgNode.attributes.get('data-role') ?? (id === 'canvas' || id.endsWith('-column') || ROW_IDS.includes(id)
+      ? 'boundary' : (['notification-authority', 'notification-authority-row', 'order-transition',
+        'carried-authority', 'event-store'].includes(id) ? 'authority' : ({note: 'note'}[labelClass] ??
+      (id.includes('participants') ? 'participants' : cell.attributes.get('dataRole')))));
+    assert.equal(inferredRole, cell.attributes.get('dataRole'), `${id} role parity`);
+    assert.equal(visibleGroupLabel(svg, id), cell.label, `${id} label parity`);
+    const drawioShape = drawioStyle(cell).get('shape') ?? ((cell.attributes.get('style') ?? '').startsWith('text;')
+      ? 'text' : (drawioStyle(cell).get('rounded') === '0' ? 'rectangle' : 'rounded'));
+    const svgShape = shape?.attributes.get('data-shape') ?? (shape?.name === 'rect'
+      ? (Number(shape.attributes.get('rx') ?? 0) > 0 ? 'rounded' : 'rectangle') : (shape?.name ?? 'text'));
+    assert.equal(svgShape, drawioShape, `${id} shape parity`);
+    if (shape) {
+      const expectedFill = drawioStyle(cell).get('fillColor');
+      const expectedStroke = drawioStyle(cell).get('strokeColor');
+      if (expectedFill) assert.equal(svgPresentationValue(svg, shape, 'fill'), expectedFill, `${id} fill parity`);
+      if (expectedStroke) assert.equal(svgPresentationValue(svg, shape, 'stroke'), expectedStroke, `${id} stroke parity`);
+      assert.equal(Number.parseFloat(svgPresentationValue(svg, shape, 'stroke-width')),
+        Number(drawioStyle(cell).get('strokeWidth') ?? 1), `${id} stroke width parity`);
+    }
+    if (text) {
+      assert.equal(svgPresentationValue(svg, text, 'fill'), drawioStyle(cell).get('fontColor'), `${id} font color parity`);
+      assert.equal(Number.parseFloat(svgPresentationValue(svg, text, 'font-size')),
+        Number(drawioStyle(cell).get('fontSize')), `${id} font size parity`);
+      assert.equal(svgPresentationValue(svg, text, 'font-weight'), '700', `${id} font weight parity`);
+      assert.equal(svgPresentationValue(svg, text, 'font-family')?.split(',')[0].trim(),
+        drawioStyle(cell).get('fontFamily'), `${id} font family parity`);
+    }
+  }
+  const svgEdges = new Map(svgContract(svg).edges.map((edge) => [edge.id, edge]));
+  const roleContract = new Map([
+    ['command', ['command-edge', 'arrow-command', '']],
+    ['eventDelivery', ['event-delivery-edge', 'arrow-event', '22 14']],
+    ['syncLookup', ['sync-lookup-edge', 'arrow-lookup', '']],
+    ['replay', ['replay-edge', 'arrow-replay', '5 15']],
+  ]);
+  for (const cell of drawioContract(drawio).edges) {
+    const id = cell.attributes.get('id');
+    const edge = svgEdges.get(id);
+    assert.ok(edge, `${id} SVG parity edge`);
+    const path = elements.find(({attributes, name}) => name === 'path' && attributes.get('data-edge-id') === id);
+    const label = elements.find(({attributes, name}) => name === 'text' && attributes.get('data-edge-id') === id);
+    const [expectedClass, expectedMarker, expectedDash] = roleContract.get(cell.attributes.get('dataRole')) ?? [];
+    assert.ok((path.attributes.get('class') ?? '').split(/\s+/u).includes(expectedClass), `${id} connector role parity`);
+    assert.equal(svgPresentationValue(svg, path, 'marker-end'), `url(#${expectedMarker})`, `${id} marker role parity`);
+    assert.equal(svgPresentationValue(svg, path, 'stroke-dasharray') ?? '', expectedDash, `${id} dash parity`);
+    assert.equal(svgPresentationValue(svg, path, 'stroke'), drawioStyle(cell).get('strokeColor'), `${id} stroke parity`);
+    assert.equal(Number.parseFloat(svgPresentationValue(svg, path, 'stroke-width')),
+      Number(drawioStyle(cell).get('strokeWidth')), `${id} stroke width parity`);
+    assert.equal(edge.label, cell.label, `${id} edge label parity`);
+    assert.equal(svgPresentationValue(svg, label, 'fill'), drawioStyle(cell).get('fontColor'), `${id} label fill parity`);
+    assert.equal(Number.parseFloat(svgPresentationValue(svg, label, 'font-size')),
+      Number(drawioStyle(cell).get('fontSize')), `${id} edge font parity`);
+    assert.equal(edge.attributes.get('d'), cell.attributes.get('dataRoute'), `${id} route parity`);
+  }
+}
+
+function assertParticipantPaths(source) {
+  const modes = ['notification', 'transition', 'carried', 'event-sourcing'];
+  const elements = svgElements(source);
+  for (const mode of modes) for (const participant of ['order', 'inventory', 'payment', 'notification']) {
+    assert.ok(elements.some(({attributes, name, parent}) => name === 'path' &&
+      attributes.get('data-participant') === participant && parent?.attributes.get('data-mode') === mode),
+    `${mode} structural ${participant} path`);
+  }
+}
+
+function assertColumnHeaderClearance(source) {
+  const elements = svgElements(source);
+  for (const columnId of COLUMN_IDS) {
+    const group = elements.find(({attributes, name}) => name === 'g' && attributes.get('data-node-id') === columnId);
+    const rectangle = elements.find(({name, parent}) => name === 'rect' && parent === group);
+    const label = elements.find(({attributes, name, parent}) => name === 'text' && parent === group &&
+      (attributes.get('class') ?? '').split(/\s+/u).includes('column-label'));
+    const bounds = labelBounds(label.tag, '', Number.parseFloat(svgPresentationValue(source, label, 'font-size')));
+    const box = rectangleFromElement(rectangle);
+    const halfStroke = Number(svgPresentationValue(source, rectangle, 'stroke-width')) / 2;
+    assert.ok(bounds.top - (box.top + halfStroke) >= 36, `${columnId} header top inner-stroke clearance`);
+    assert.ok((box.bottom - halfStroke) - bounds.bottom >= 36, `${columnId} header bottom inner-stroke clearance`);
+  }
 }
 
 function assertCompleteComparison(source) {
@@ -1077,21 +1363,114 @@ test('measures connector lanes, real markers, text size, segment uniqueness, and
   const svg = await readFile(new URL(`../${SVG}`, import.meta.url), 'utf8');
   assertMeasuredDiagramGeometry(svg);
   const first = svgContract(svg).edges[0];
-  const collision = svg.replace(new RegExp(`(<text\\b[^>]*data-edge-id="${first.id}"[^>]*\\bx=")[^"]+`, 'u'), '$1395');
+  const collision = svg.replace(new RegExp(`(<text\\b[^>]*data-edge-id="${first.id}"[^>]*\\bx=")[^"]+("[^>]*\\by=")[^"]+`, 'u'), '$1395$2520');
   assert.notEqual(collision, svg, 'stroke collision mutation applies');
   assert.throws(() => assertMeasuredDiagramGeometry(collision), {name: 'AssertionError'}, 'actual label-stroke bounds');
   const smallText = svg.replace(/(\.edge-label\s*\{[^}]*font-size:\s*)45px/u, '$130px');
   assert.notEqual(smallText, svg, 'small text mutation applies');
   assert.throws(() => assertMeasuredDiagramGeometry(smallText), {name: 'AssertionError'}, 'essential edge text >=15px');
-  const sharedSegment = svg.replace(/(data-edge-id="t-event"[^>]*d=")[^"]+/u, '$1M 395 355 H 410 V 500');
+  const sharedSegment = svg.replace(/(data-edge-id="t-event"[^>]*d=")[^"]+/u, '$1M 420 520 H 740 V 790 H 1025');
   assert.notEqual(sharedSegment, svg, 'shared segment mutation applies');
   assert.throws(() => assertMeasuredDiagramGeometry(sharedSegment), {name: 'AssertionError'}, 'partial/shared connector segment');
-  const legendIntrusion = svg.replace(/(data-edge-id="n-deliver"[^>]*d=")[^"]+/u, '$1M 395 355 H 410 V 1500');
+  const legendIntrusion = svg.replace(/(data-edge-id="n-deliver"[^>]*d=")[^"]+/u, '$1M 395 520 H 410 V 3650');
   assert.notEqual(legendIntrusion, svg, 'legend intrusion mutation applies');
   assert.throws(() => assertMeasuredDiagramGeometry(legendIntrusion), {name: 'AssertionError'}, 'connector-free legend band');
   const mask = svg.replace('<path class="event-delivery-edge edge"', '<rect data-mask-over-path="true" x="0" y="0" width="10" height="10"/><path class="event-delivery-edge edge"');
   assert.notEqual(mask, svg, 'mask mutation applies');
   assert.throws(() => assertMeasuredDiagramGeometry(mask), {name: 'AssertionError'}, 'mask-over-path prohibited');
+});
+
+test('rejects partial connector overlap and ordinary later-painted occluders', async () => {
+  const svg = await readFile(new URL(`../${SVG}`, import.meta.url), 'utf8');
+  assertNoConnectorOverdraw(svg);
+  const partialOverlap = svg.replace(/(data-edge-id="t-event"[^>]*d=")[^"]+/u,
+    '$1M 500 520 H 700 V 840 H 1015');
+  assert.notEqual(partialOverlap, svg, 'partial interval overlap mutation applies');
+  assert.throws(() => assertNoConnectorOverdraw(partialOverlap), {name: 'AssertionError'},
+    'partial collinear overlap is rejected');
+  const ordinaryWhiteOccluder = svg.replace(/(<path\b[^>]*data-edge-id="n-deliver"[^>]*>)/u,
+    '$1<rect x="400" y="510" width="20" height="40" fill="#FFFFFF"/>');
+  assert.notEqual(ordinaryWhiteOccluder, svg, 'ordinary white occluder mutation applies');
+  assert.throws(() => assertNoConnectorOverdraw(ordinaryWhiteOccluder), {name: 'AssertionError'},
+    'ordinary later-painted white rectangle is rejected');
+});
+
+test('enforces fill parity, structural participant paths, and actual column-header clearance', async () => {
+  const [drawio, svg] = await Promise.all([
+    readFile(new URL(`../${DRAWIO}`, import.meta.url), 'utf8'),
+    readFile(new URL(`../${SVG}`, import.meta.url), 'utf8'),
+  ]);
+  assertNodeFillParity(drawio, svg);
+  assertParticipantPaths(svg);
+  assertColumnHeaderClearance(svg);
+  const fillMutation = svg.replace('style="fill:#DBEAFE;stroke:#1D4ED8" x="300"',
+    'style="fill:#FFFFFF;stroke:#1D4ED8" x="300"');
+  assert.notEqual(fillMutation, svg, 'node fill mutation applies');
+  assert.throws(() => assertNodeFillParity(drawio, fillMutation), {name: 'AssertionError'}, 'node fill parity');
+  for (const mode of ['notification', 'transition', 'carried', 'event-sourcing']) {
+    for (const participant of ['order', 'inventory', 'payment', 'notification']) {
+      const participantMutation = svg.replace(new RegExp(
+        `(<g\\b[^>]*data-mode="${mode}"[^>]*>[\\s\\S]*?)\\sdata-participant="${participant}"`, 'u'), '$1');
+      assert.notEqual(participantMutation, svg, `${mode}/${participant} path mutation applies`);
+      assert.throws(() => assertParticipantPaths(participantMutation), {name: 'AssertionError'},
+        `${mode}/${participant} path is structural`);
+    }
+  }
+  const headerMutation = svg.replace(/(<g\b[^>]*data-node-id="notification-column"[^>]*>[\s\S]*?<text\b[^>]*\by=")[^"]+/u,
+    '$190');
+  assert.notEqual(headerMutation, svg, 'header clearance mutation applies');
+  assert.throws(() => assertColumnHeaderClearance(headerMutation), {name: 'AssertionError'}, 'header uses actual text bounds');
+});
+
+test('enforces complete Draw.io/SVG node and connector parity classes', async () => {
+  const [drawio, svg] = await Promise.all([
+    readFile(new URL(`../${DRAWIO}`, import.meta.url), 'utf8'),
+    readFile(new URL(`../${SVG}`, import.meta.url), 'utf8'),
+  ]);
+  assertFullDrawioSvgParity(drawio, svg);
+  for (const [label, mutation] of [
+    ['bounds', (source) => source.replace('data-node-bounds="300 440 240 80"', 'data-node-bounds="301 440 240 80"')],
+    ['label', (source) => source.replace('>订单权威</text>', '>订单写模型</text>')],
+    ['role', (source) => source.replace('data-node-id="notification-authority"',
+      'data-node-id="notification-authority" data-role="derived"')],
+    ['shape', (source) => source.replace(/(<g\b[^>]*data-node-id="notification-broker"[^>]*>)<rect/u, '$1<ellipse')],
+    ['route', (source) => source.replace('data-target="notification-event" d="M 420 520 H 740 V 790 H 495"',
+      'data-target="notification-event" d="M 420 520 H 730 V 790 H 495"')],
+    ['marker', (source) => source.replace('marker-end: url(#arrow-command)', 'marker-end: url(#arrow-replay)')],
+    ['dash', (source) => source.replace('stroke-dasharray: 22 14', 'stroke-dasharray: 5 15')],
+    ['stroke', (source) => source.replace('.command-edge { fill: none; stroke: #6B21A8',
+      '.command-edge { fill: none; stroke: #111827')],
+    ['font', (source) => source.replace('font-size: 45px', 'font-size: 44px')],
+  ]) {
+    const mutated = mutation(svg);
+    assert.notEqual(mutated, svg, `${label} parity mutation applies`);
+    assert.throws(() => assertFullDrawioSvgParity(drawio, mutated), {name: 'AssertionError'}, `${label} parity`);
+  }
+});
+
+test('measures every label against every connector, marker, node, boundary, and legend item', async () => {
+  const svg = await readFile(new URL(`../${SVG}`, import.meta.url), 'utf8');
+  const measuredClearances = assertAllTextClearances(svg);
+  const measuredLegend = assertLegendClearance(svg);
+  if (process.env.STY06_REPORT_MINIMA === '1') console.error(JSON.stringify({measuredClearances, measuredLegend}));
+  const foreignStroke = svg.replace(/(<text\b[^>]*data-edge-id="n-broker"[^>]*\bx=")[^"]+("[^>]*\by=")[^"]+/, '$1410$2520');
+  assert.notEqual(foreignStroke, svg, 'foreign connector collision mutation applies');
+  assert.throws(() => assertAllTextClearances(foreignStroke), {name: 'AssertionError'}, 'every foreign connector stroke');
+  const nodeCollision = svg.replace(/(<text\b[^>]*data-edge-id="n-broker"[^>]*\bx=")[^"]+("[^>]*\by=")[^"]+/, '$1595$2557');
+  assert.notEqual(nodeCollision, svg, 'node collision mutation applies');
+  assert.throws(() => assertAllTextClearances(nodeCollision), {name: 'AssertionError'}, 'every node envelope');
+  const boundaryCollision = svg.replace(/(<text\b[^>]*data-edge-id="n-deliver"[^>]*\bx=")[^"]+/, '$1285');
+  assert.notEqual(boundaryCollision, svg, 'boundary collision mutation applies');
+  assert.throws(() => assertAllTextClearances(boundaryCollision), {name: 'AssertionError'}, 'boundary inner stroke');
+  const rowBoundaryCollision = svg.replace(/(<text\b[^>]*data-edge-id="n-deliver"[^>]*\by=")[^"]+/, '$11250');
+  assert.notEqual(rowBoundaryCollision, svg, 'row-boundary collision mutation applies');
+  assert.throws(() => assertAllTextClearances(rowBoundaryCollision), {name: 'AssertionError'}, 'row boundary inner stroke');
+  const legendCollision = svg.replace(/(<text\b[^>]*data-legend-for="command"[^>]*\bx=")[^"]+/, '$1435');
+  assert.notEqual(legendCollision, svg, 'legend collision mutation applies');
+  assert.throws(() => assertLegendClearance(legendCollision), {name: 'AssertionError'}, 'legend caption/key');
+  const legendMarkerCollision = svg.replace(/(<text\b[^>]*data-legend-for="command"[^>]*\bx=")[^"]+/, '$1480');
+  assert.notEqual(legendMarkerCollision, svg, 'legend marker/caption collision mutation applies');
+  assert.throws(() => assertLegendClearance(legendMarkerCollision), {name: 'AssertionError'}, 'legend marker/caption');
 });
 
 test('keeps node, row, column, legend, and note labels readable on effective backgrounds', async () => {
