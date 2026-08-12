@@ -77,14 +77,19 @@ const RELIABILITY_PATTERNS = [
   /(?:延迟|lag)/iu,
   /投影水位|projection[- ]watermark/iu,
 ];
-const OWNED_FAILURE_PATTERNS = [
+const FAILURE_OWNER_PATTERNS = [
   /毒(?:消息|事件).{0,20}隔离.{0,20}(?:所有者|负责|责任)|(?:所有者|负责|责任).{0,20}毒(?:消息|事件).{0,20}隔离/u,
   /受控重放.{0,20}(?:所有者|负责|责任)|(?:所有者|负责|责任).{0,20}受控重放/u,
   /人工终止.{0,20}(?:所有者|负责|责任)|(?:所有者|负责|责任).{0,20}人工终止/u,
-  /(?:积压|lag|延迟).{0,24}(?:所有者|负责|责任)|(?:所有者|负责|责任).{0,24}(?:积压|lag|延迟)/iu,
-  /(?:顺序|乱序).{0,24}(?:所有者|负责|责任)|(?:所有者|负责|责任).{0,24}(?:顺序|乱序)/u,
-  /(?:模式|schema)演进.{0,24}(?:所有者|负责|责任)|(?:所有者|负责|责任).{0,24}(?:模式|schema)演进/iu,
 ];
+const RELIABILITY_OWNER_PATTERNS = new Map([
+  ['backlog', /积压.{0,24}(?:所有者|负责|责任)|(?:所有者|负责|责任).{0,24}积压/u],
+  ['lag/watermark', /(?:lag|投影水位).{0,24}(?:所有者|负责|责任)|(?:所有者|负责|责任).{0,24}(?:lag|投影水位)/iu],
+  ['at-least-once', /(?:至少一次|at-least-once).{0,24}(?:所有者|负责|责任)|(?:所有者|负责|责任).{0,24}(?:至少一次|at-least-once)/iu],
+  ['idempotency', /幂等.{0,24}(?:所有者|负责|责任)|(?:所有者|负责|责任).{0,24}幂等/u],
+  ['ordering', /(?:顺序|乱序).{0,24}(?:所有者|负责|责任)|(?:所有者|负责|责任).{0,24}(?:顺序|乱序)/u],
+  ['schema-evolution', /(?:模式|schema)演进.{0,24}(?:所有者|负责|责任)|(?:所有者|负责|责任).{0,24}(?:模式|schema)演进/iu],
+]);
 const MATRIX_ROWS = [
   /载荷/u, /回查|取数/u, /时间耦合.*模式耦合|模式耦合.*时间耦合/u,
   /权威|事实来源/u, /副本/u, /顺序/u, /重放/u, /审计/u, /隐私/u,
@@ -106,7 +111,6 @@ const TERM_PATTERNS = new Map([
   ['projection', /派生投影|读取投影/u],
 ]);
 const RESPONSIBILITY_PATTERNS = new Map([
-  ['teaching-framework', /(?:四种模式|四类).{0,24}(?:教学比较框架|教学框架).{0,24}(?:并非|不是|不构成).{0,16}(?:唯一|穷尽|成熟度阶梯)|(?:并非|不是|不构成).{0,16}(?:唯一|穷尽|成熟度阶梯).{0,24}(?:教学比较框架|教学框架)/u],
   ['command', /命令.{0,24}(?:意图|请求|要求).{0,24}(?:处理器|接收方|执行)/u],
   ['domain-event', /领域事件.{0,24}(?:聚合|领域).{0,24}(?:已经发生|事实|状态变化)/u],
   ['integration-event', /集成事件.{0,28}(?:边界外|外部消费者|跨边界|公开合同)/u],
@@ -118,6 +122,9 @@ const RESPONSIBILITY_PATTERNS = new Map([
   ['projection', /投影.{0,24}(?:事件|权威记录).{0,24}(?:派生|重建).{0,24}(?:读取|查询)|投影.{0,24}(?:读取模型|查询模型).{0,24}(?:派生|重建)/u],
   ['ordered-authority', /按聚合有序.{0,24}(?:事件流|领域事件).{0,24}(?:权威写入记录|权威事实|权威状态)|(?:权威写入记录|权威事实|权威状态).{0,24}按聚合有序.{0,24}(?:事件流|领域事件)/u],
 ]);
+const TEACHING_FRAMEWORK_PATTERN = /(?:四种模式|四类).{0,24}(?:教学比较框架|教学框架)/u;
+const NON_UNIQUE_TAXONOMY_PATTERN = /(?:四种模式|四类|教学比较框架|教学框架).{0,32}(?:并非|不是|不宣称为).{0,12}(?:唯一|穷尽)|(?:并非|不是|不宣称为).{0,12}(?:唯一|穷尽).{0,32}(?:四种模式|四类|教学比较框架|教学框架)/u;
+const NON_LADDER_PATTERN = /(?:四种模式|四类|教学比较框架|教学框架).{0,32}(?:不构成|不是|并非).{0,16}(?:成熟度阶梯|逐级升级|渐进升级)|(?:不构成|不是|并非).{0,16}(?:成熟度阶梯|逐级升级|渐进升级).{0,32}(?:四种模式|四类|教学比较框架|教学框架)/u;
 const NON_PROOF_PATTERNS = [
   /(?:完整载荷|完整数据|全量数据).{0,24}(?:不能|不等于|不足以|并不).{0,16}事件溯源|事件溯源.{0,24}(?:不能由|不由).{0,16}(?:完整载荷|完整数据|全量数据).{0,8}(?:证明|决定)/u,
   /(?:事件|消息)代理.{0,24}(?:不能|不等于|不足以|并不).{0,16}事件溯源|事件溯源.{0,24}(?:不能由|不由).{0,16}(?:事件|消息)代理.{0,8}(?:证明|决定)/u,
@@ -126,7 +133,11 @@ const NON_PROOF_PATTERNS = [
   /异步.{0,24}(?:不能|不等于|不足以|并不).{0,16}事件溯源|事件溯源.{0,24}(?:不能由|不由).{0,16}异步.{0,8}(?:证明|决定)/u,
   /可重放(?:日志|流).{0,24}(?:不能|不等于|不足以|并不).{0,16}事件溯源|事件溯源.{0,24}(?:不能由|不由).{0,16}可重放(?:日志|流).{0,8}(?:证明|决定)/u,
 ];
-const REPLAY_SAFETY_PATTERN = /回放.{0,40}(?:不得|不能|禁止|不会).{0,24}(?:再次|重新).{0,12}(?:扣款|支付|发短信|通知|不可逆外部副作用)|(?:扣款|支付|发短信|通知|不可逆外部副作用).{0,40}(?:不得|不能|禁止|不会).{0,16}(?:回放|再次执行)/u;
+const REPLAY_SAFETY_PATTERNS = new Map([
+  ['payment/charge', /回放.{0,40}(?:不得|不能|禁止|不会).{0,24}(?:再次|重新).{0,12}(?:扣款|支付)|(?:扣款|支付).{0,40}(?:不得|不能|禁止|不会).{0,16}(?:回放|再次执行)/u],
+  ['notification/SMS', /回放.{0,40}(?:不得|不能|禁止|不会).{0,24}(?:再次|重新).{0,12}(?:发短信|发送通知|通知)|(?:发短信|发送通知|通知).{0,40}(?:不得|不能|禁止|不会).{0,16}(?:回放|再次执行)/u],
+  ['irreversible external effects', /回放.{0,40}(?:不得|不能|禁止|不会).{0,24}(?:再次|重新).{0,12}(?:不可逆外部副作用|不可逆外部系统|外部副作用)|(?:不可逆外部副作用|不可逆外部系统|外部副作用).{0,40}(?:不得|不能|禁止|不会).{0,16}(?:回放|再次执行)/u],
+]);
 const MODE_BOUNDARY_PATTERNS = [
   /状态转移.{0,32}(?:不等于|不是|不能替代|不意味着).{0,20}事件携带状态|事件携带状态.{0,32}(?:不等于|不是|不能替代).{0,20}状态转移/u,
   /状态转移.{0,40}(?:from|to|前后状态|合法迁移|状态机).{0,32}(?:不携带|不要求|并非).{0,20}(?:完整快照|完整状态)|(?:完整快照|完整状态).{0,32}(?:不是|不等于).{0,20}状态转移/iu,
@@ -214,10 +225,13 @@ function assertSemanticContract(source) {
   }
   for (const prohibited of PROHIBITED) assert.equal(visible.includes(prohibited), false, `prohibited claim: ${prohibited}`);
   for (const [term, pattern] of TERM_PATTERNS) assert.match(visible, pattern, `${term} separate definition`);
+  assert.match(visible, TEACHING_FRAMEWORK_PATTERN, 'positive teaching framework');
+  assert.match(visible, NON_UNIQUE_TAXONOMY_PATTERN, 'taxonomy is neither unique nor exhaustive');
+  assert.match(visible, NON_LADDER_PATTERN, 'taxonomy is not a maturity ladder or progressive upgrade');
   for (const [responsibility, pattern] of RESPONSIBILITY_PATTERNS) assert.match(visible, pattern, `${responsibility} positive responsibility`);
   for (const pattern of NON_PROOF_PATTERNS) assert.match(visible, pattern, `event-sourcing non-proof ${pattern}`);
   for (const pattern of MODE_BOUNDARY_PATTERNS) assert.match(visible, pattern, `mode boundary ${pattern}`);
-  assert.match(visible, REPLAY_SAFETY_PATTERN, 'replay does not re-invoke irreversible external effects');
+  for (const [effect, pattern] of REPLAY_SAFETY_PATTERNS) assert.match(visible, pattern, `replay excludes ${effect}`);
   for (const conflation of CONFLATIONS) assert.doesNotMatch(visible, conflation, `critical conflation ${conflation}`);
 }
 
@@ -297,38 +311,102 @@ function svgElements(source) {
   for (const match of source.matchAll(/<\/?([A-Za-z][\w:-]*)\b([^>]*)>/gu)) {
     const [tag, name, rawAttributes] = match;
     if (tag.startsWith('</')) {
-      stack.pop();
+      if (stack.at(-1)?.name === name) stack.pop();
       continue;
     }
-    const element = {attributes: xmlAttributes(rawAttributes), name, parent: stack.at(-1) ?? null, tag};
+    const element = {attributes: xmlAttributes(rawAttributes), index: elements.length,
+      name, parent: stack.at(-1) ?? null, tag};
     elements.push(element);
     if (!tag.endsWith('/>') && !['path', 'rect'].includes(name)) stack.push(element);
   }
   return elements;
 }
 
-function selectorMatches(element, selector) {
-  const terminal = selector.trim().split(/\s+|>/u).at(-1);
-  const name = terminal.match(/^[A-Za-z][\w-]*/u)?.[0];
+function simpleSelectorMatches(element, selector) {
+  const name = selector.match(/^[A-Za-z][\w-]*/u)?.[0];
   if (name && name !== element.name) return false;
+  const id = selector.match(/#([\w-]+)/u)?.[1];
+  if (id && element.attributes.get('id') !== id) return false;
   const classes = new Set((element.attributes.get('class') ?? '').split(/\s+/u).filter(Boolean));
-  return [...terminal.matchAll(/\.([\w-]+)/gu)].every(([, className]) => classes.has(className));
+  if (![...selector.matchAll(/\.([\w-]+)/gu)].every(([, className]) => classes.has(className))) return false;
+  return [...selector.matchAll(/\[([\w:-]+)(?:="([^"]*)")?\]/gu)].every(([, key, value]) =>
+    element.attributes.has(key) && (value === undefined || element.attributes.get(key) === value));
 }
 
-function ownSvgPresentationValue(source, element, property) {
-  const inline = cssDeclarations(element.attributes.get('style') ?? '').get(property);
-  if (inline !== undefined) return inline.replace(/\s*!important\s*$/iu, '');
-  let resolved = element.attributes.get(property);
+function selectorMatches(element, selector) {
+  const parts = selector.trim().replace(/\s*>\s*/gu, ' > ').split(/\s+/u).filter(Boolean);
+  let candidate = element;
+  let cursor = parts.length - 1;
+  if (!simpleSelectorMatches(candidate, parts[cursor])) return false;
+  cursor -= 1;
+  while (cursor >= 0) {
+    if (parts[cursor] === '>') {
+      const expected = parts[cursor - 1];
+      candidate = candidate.parent;
+      if (!candidate || !simpleSelectorMatches(candidate, expected)) return false;
+      cursor -= 2;
+    } else {
+      const expected = parts[cursor];
+      candidate = candidate.parent;
+      while (candidate && !simpleSelectorMatches(candidate, expected)) candidate = candidate.parent;
+      if (!candidate) return false;
+      cursor -= 1;
+    }
+  }
+  return true;
+}
+
+function selectorSpecificity(selector) {
+  return [
+    [...selector.matchAll(/#[\w-]+/gu)].length,
+    [...selector.matchAll(/\.[\w-]+|\[[^\]]+\]/gu)].length,
+    selector.split(/\s+|>/u).filter((part) => /^[A-Za-z][\w-]*/u.test(part)).length,
+  ];
+}
+
+function compareSpecificity(left, right) {
+  for (let index = 0; index < 3; index += 1) {
+    if (left[index] !== right[index]) return left[index] - right[index];
+  }
+  return 0;
+}
+
+function styleRules(source) {
+  const rules = [];
+  let order = 0;
   for (const [, stylesheet] of source.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/gu)) {
     for (const [, selectors, declarations] of stylesheet.matchAll(/([^{}]+)\{([^{}]*)\}/gu)) {
-      const value = cssDeclarations(declarations).get(property);
-      if (value === undefined) continue;
-      for (const rawSelector of selectors.split(',')) {
-        if (selectorMatches(element, rawSelector)) resolved = value;
+      for (const selector of selectors.split(',').map((value) => value.trim())) {
+        rules.push({declarations: cssDeclarations(declarations), order: order++, selector,
+          specificity: selectorSpecificity(selector)});
       }
     }
   }
-  return resolved?.replace(/\s*!important\s*$/iu, '');
+  return rules;
+}
+
+function ownSvgPresentationValue(source, element, property) {
+  let winner = element.attributes.has(property)
+    ? {important: false, order: -2, specificity: [0, 0, 0], value: element.attributes.get(property)} : null;
+  for (const rule of styleRules(source)) {
+    const rawValue = rule.declarations.get(property);
+    if (rawValue === undefined || !selectorMatches(element, rule.selector)) continue;
+    const important = /\s*!important\s*$/iu.test(rawValue);
+    const candidate = {...rule, important, value: rawValue.replace(/\s*!important\s*$/iu, '')};
+    if (!winner || Number(candidate.important) > Number(winner.important) ||
+      (candidate.important === winner.important && (compareSpecificity(candidate.specificity, winner.specificity) > 0 ||
+      (compareSpecificity(candidate.specificity, winner.specificity) === 0 && candidate.order > winner.order)))) winner = candidate;
+  }
+  const inline = cssDeclarations(element.attributes.get('style') ?? '').get(property);
+  if (inline !== undefined) {
+    const candidate = {important: /\s*!important\s*$/iu.test(inline), order: Number.MAX_SAFE_INTEGER,
+      specificity: [1, 0, 0], value: inline.replace(/\s*!important\s*$/iu, '')};
+    if (!winner || Number(candidate.important) > Number(winner.important) ||
+      (candidate.important === winner.important && compareSpecificity(candidate.specificity, winner.specificity) >= 0)) {
+      winner = candidate;
+    }
+  }
+  return winner?.value;
 }
 
 function svgPresentationValue(source, element, property) {
@@ -339,10 +417,10 @@ function svgPresentationValue(source, element, property) {
   return undefined;
 }
 
-function effectiveOpacity(source, element) {
+function effectiveOpacity(source, element, paintKind) {
   let opacity = 1;
   for (let candidate = element; candidate; candidate = candidate.parent) {
-    for (const property of ['opacity', `${element.name === 'text' ? 'fill' : 'stroke'}-opacity`]) {
+    for (const property of ['opacity', `${paintKind}-opacity`]) {
       const value = ownSvgPresentationValue(source, candidate, property);
       if (value !== undefined) opacity *= Number(value);
     }
@@ -371,6 +449,10 @@ function blendHex(foreground, background, opacity) {
   return `#${foregroundChannels.map((value, index) => Math.round(
     value * opacity + backgroundChannels[index] * (1 - opacity),
   ).toString(16).padStart(2, '0')).join('')}`;
+}
+
+function compositePaints(paints, baseColor = '#FFFFFF') {
+  return paints.reduce((background, {color, opacity}) => blendHex(color, background, opacity), baseColor);
 }
 
 function parsePathPoints(data) {
@@ -450,21 +532,21 @@ function markerGeometry(source, edgeElement, points) {
 function localBackground(source, labelElement) {
   const x = Number(labelElement.attributes.get('x'));
   const y = Number(labelElement.attributes.get('y'));
-  const candidates = svgElements(source).filter(({attributes, name}) => {
+  const candidates = svgElements(source).filter(({attributes, index, name}) => {
     if (name !== 'rect') return false;
     const left = Number(attributes.get('x'));
     const top = Number(attributes.get('y'));
     const width = Number(attributes.get('width'));
     const height = Number(attributes.get('height'));
-    return [left, top, width, height].every(Number.isFinite) && x >= left && x <= left + width && y >= top && y <= top + height;
+    return index < labelElement.index && [left, top, width, height].every(Number.isFinite) &&
+      x >= left && x <= left + width && y >= top && y <= top + height;
   }).map((element) => ({
-    area: Number(element.attributes.get('width')) * Number(element.attributes.get('height')),
     color: svgPresentationValue(source, element, 'fill'),
-    element,
-  })).filter(({color, element}) => color && color !== 'none' && effectiveOpacity(source, element) === 1)
-    .sort((left, right) => left.area - right.area);
+    index: element.index,
+    opacity: effectiveOpacity(source, element, 'fill'),
+  })).filter(({color}) => color && color !== 'none').sort((left, right) => left.index - right.index);
   assert.ok(candidates.length > 0, `${labelElement.attributes.get('data-edge-id')} painted local background`);
-  return candidates[0].color;
+  return compositePaints(candidates);
 }
 
 function assertDiagramPresentation(source) {
@@ -482,9 +564,9 @@ function assertDiagramPresentation(source) {
     assert.ok(pathElement && labelElement, `${edge.id} visible edge and label`);
     const backgroundColor = localBackground(source, labelElement);
     const pathColor = blendHex(svgPresentationValue(source, pathElement, 'stroke'), backgroundColor,
-      effectiveOpacity(source, pathElement));
+      effectiveOpacity(source, pathElement, 'stroke'));
     const labelColor = blendHex(svgPresentationValue(source, labelElement, 'fill'), backgroundColor,
-      effectiveOpacity(source, labelElement));
+      effectiveOpacity(source, labelElement, 'fill'));
     assert.ok(contrastRatio(pathColor, backgroundColor) >= 3, `${edge.id} effective path contrast`);
     assert.ok(contrastRatio(labelColor, backgroundColor) >= 4.5, `${edge.id} effective label contrast`);
     const labelText = edge.label;
@@ -528,7 +610,8 @@ test('locks semantic boundaries, distinct responsibilities, prohibitions, and re
   assertSemanticContract(article.source);
   const visible = visibleTextOf(article.source);
   for (const pattern of RELIABILITY_PATTERNS) assert.match(visible, pattern, `reliability ${pattern}`);
-  for (const pattern of OWNED_FAILURE_PATTERNS) assert.match(visible, pattern, `explicit failure owner ${pattern}`);
+  for (const pattern of FAILURE_OWNER_PATTERNS) assert.match(visible, pattern, `explicit failure owner ${pattern}`);
+  for (const [concern, pattern] of RELIABILITY_OWNER_PATTERNS) assert.match(visible, pattern, `${concern} explicit owner`);
   for (const [index, conflation] of CONFLATIONS.entries()) {
     await runMutation(article.source, (source) => `${source}\n\n${[
       '命令就是领域事件。', '领域事件就是集成事件。', '事件代理就是事件存储。',
@@ -539,6 +622,8 @@ test('locks semantic boundaries, distinct responsibilities, prohibitions, and re
     await runMutation(article.source, (source) => `${source}\n\n${prohibited}。\n`, assertSemanticContract, prohibited);
   }
   const semanticMutations = [
+    ['taxonomy claimed unique/exhaustive', NON_UNIQUE_TAXONOMY_PATTERN, '这套教学分类是唯一且穷尽的分类。'],
+    ['taxonomy claimed maturity ladder', NON_LADDER_PATTERN, '四种模式构成成熟度阶梯并要求逐级升级。'],
     ['transition conflated with carried state', MODE_BOUNDARY_PATTERNS[0], '状态转移就是事件携带状态'],
     ['full payload proves event sourcing', NON_PROOF_PATTERNS[0], '完整数据就是事件溯源'],
     ['broker proves event sourcing', NON_PROOF_PATTERNS[1], '消息代理就是事件溯源'],
@@ -546,11 +631,14 @@ test('locks semantic boundaries, distinct responsibilities, prohibitions, and re
     ['CQRS proves event sourcing', NON_PROOF_PATTERNS[3], 'CQRS 必须使用事件溯源'],
     ['async proves event sourcing', NON_PROOF_PATTERNS[4], '异步就是事件溯源'],
     ['replayable log proves event sourcing', NON_PROOF_PATTERNS[5], '可重放日志就是事件溯源'],
-    ['replay invokes payment', REPLAY_SAFETY_PATTERN, '回放可以再次扣款、发短信并调用不可逆外部副作用'],
   ];
   for (const [label, pattern, replacement] of semanticMutations) {
     await runMutation(article.source,
       (source) => replaceFirstMatching(source, pattern, replacement, label), assertSemanticContract, label);
+  }
+  for (const [effect, pattern] of REPLAY_SAFETY_PATTERNS) {
+    await runMutation(article.source, (source) => replaceFirstMatching(source, pattern,
+      `回放可以重新执行 ${effect}。`, `replay ${effect}`), assertSemanticContract, `replay ${effect}`);
   }
 });
 
@@ -725,4 +813,30 @@ test('keeps marker-aware label clearance and selector-bound effective contrast m
   const opacityMutation = svg.replace(/(<text\b[^>]*data-edge-id="[^"]+"[^>]*)(>)/u, '$1 opacity="0.05"$2');
   assert.notEqual(opacityMutation, svg, 'edge-label opacity mutation applies');
   assert.throws(() => assertDiagramPresentation(opacityMutation), {name: 'AssertionError'}, 'effective opacity contrast');
+  const firstPath = svgElements(svg).find(({attributes, name}) => name === 'path' && attributes.has('data-edge-id'));
+  const firstLabel = svgElements(svg).find(({attributes, name}) => name === 'text' && attributes.has('data-edge-id'));
+  assert.ok(firstPath && firstLabel, 'cascade mutation edge and label');
+  const ancestorSelectorMutation = svg.replace(firstPath.tag, `<g class="ancestor-edge-mutation">${firstPath.tag}</g>`)
+    .replace('</style>', '.ancestor-edge-mutation path.edge { stroke: #FFFFFF; }\n</style>');
+  assert.notEqual(ancestorSelectorMutation, svg, 'ancestor-selector mutation applies');
+  assert.throws(() => assertDiagramPresentation(ancestorSelectorMutation), {name: 'AssertionError'},
+    'ancestor selector effective contrast');
+  const specificityMutation = svg.replace(firstLabel.tag, `<g class="ancestor-label-mutation">${firstLabel.tag}`)
+    .replace('</text>', '</text></g>')
+    .replace('</style>', '.ancestor-label-mutation text.edge-label { fill: #FFFFFF; }\n.edge-label { fill: #111827; }\n</style>');
+  assert.notEqual(specificityMutation, svg, 'specificity/source-order mutation applies');
+  assert.throws(() => assertDiagramPresentation(specificityMutation), {name: 'AssertionError'},
+    'specificity beats later lower-specificity rule');
+  const labelX = firstLabel.attributes.get('x');
+  const labelY = firstLabel.attributes.get('y');
+  const topmostPaintMutation = svg.replace(firstLabel.tag,
+    `<rect data-edge-label-background="paint-order-mutation" x="${Number(labelX) - 2000}" y="${Number(labelY) - 500}" width="4000" height="1000" fill="#111827"/>\n${firstLabel.tag}`);
+  assert.notEqual(topmostPaintMutation, svg, 'topmost paint-order mutation applies');
+  assert.throws(() => assertDiagramPresentation(topmostPaintMutation), {name: 'AssertionError'},
+    'topmost painted background wins by document order');
+  const translucentPaintMutation = svg.replace(firstLabel.tag,
+    `<rect data-edge-label-background="alpha-mutation" x="${Number(labelX) - 2000}" y="${Number(labelY) - 500}" width="4000" height="1000" fill="#111827" opacity="0.8"/>\n${firstLabel.tag}`);
+  assert.notEqual(translucentPaintMutation, svg, 'translucent background mutation applies');
+  assert.throws(() => assertDiagramPresentation(translucentPaintMutation), {name: 'AssertionError'},
+    'translucent backgrounds are alpha-composited');
 });
