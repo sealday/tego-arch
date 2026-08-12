@@ -546,12 +546,32 @@ function rectangleStrokeDistance(bounds, rectangle, strokeWidth, inner = false) 
 function assertAllTextClearances(source) {
   const elements = svgElements(source);
   const edges = svgContract(source).edges;
-  const edgeGeometry = edges.map((edge) => {
+  const semanticGeometry = edges.map((edge) => {
     const path = elements.find(({attributes, name}) => name === 'path' && attributes.get('data-edge-id') === edge.id);
     const label = elements.find(({attributes, name}) => name === 'text' && attributes.get('data-edge-id') === edge.id);
     return {edge, label, labelBounds: visibleTextBounds(source, label, edge.label), path,
       points: parsePathPoints(path.attributes.get('d'))};
   });
+  const structuralGeometry = elements.filter(({attributes, name}) => name === 'path' &&
+    attributes.has('data-structural-edge-id')).map((path) => ({
+    edge: {id: path.attributes.get('data-structural-edge-id'), attributes: new Map([
+      ['data-source', `${path.parent.attributes.get('data-mode')}-participants`],
+      ['data-target', path.attributes.get('data-target')],
+    ])},
+    path,
+    points: parsePathPoints(path.attributes.get('d')),
+  }));
+  const connectorGeometry = [...semanticGeometry, ...structuralGeometry];
+  const participantLabels = elements.filter(({attributes, name, parent}) => name === 'text' &&
+    attributes.has('data-participant-label') && parent?.attributes.has('data-mode')).map((label) => {
+    const participant = label.attributes.get('data-participant-label');
+    const mode = label.parent.attributes.get('data-mode');
+    const connector = structuralGeometry.find(({edge}) => edge.id === `${mode}-${participant}-participant-link`);
+    assert.ok(connector, `${mode}/${participant} clearance connector`);
+    return {...connector, label, labelBounds: visibleTextBounds(source, label, label.text ??
+      source.match(new RegExp(`${escapeRegExp(label.tag)}([^<]*)<\\/text>`, 'u'))?.[1] ?? '')};
+  });
+  const labelGeometry = [...semanticGeometry, ...participantLabels];
   const nodeEnvelopes = svgContract(source).nodes.filter(({id}) =>
     ![...COLUMN_IDS, ...ROW_IDS, 'canvas', 'legend-band'].includes(id) && !id.startsWith('legend-'))
     .map(({id}) => {
@@ -566,13 +586,13 @@ function assertAllTextClearances(source) {
   });
   const minima = {boundary: Infinity, marker: Infinity, node: Infinity, stroke: Infinity};
   const failures = [];
-  for (const current of edgeGeometry) {
-    for (const connector of edgeGeometry) for (const segment of pathSegments(connector.points)) {
+  for (const current of labelGeometry) {
+    for (const connector of connectorGeometry) for (const segment of pathSegments(connector.points)) {
       const gap = segmentRectangleDistance(segment.left, segment.right, current.labelBounds);
       minima.stroke = Math.min(minima.stroke, gap);
       if (gap < 24) failures.push(`${current.edge.id}/stroke:${connector.edge.id}=${gap}`);
     }
-    for (const connector of edgeGeometry) for (const point of markerGeometry(source, connector.path, connector.points)) {
+    for (const connector of semanticGeometry) for (const point of markerGeometry(source, connector.path, connector.points)) {
       const gap = pointRectangleDistance(point, current.labelBounds);
       minima.marker = Math.min(minima.marker, gap);
       if (gap < 48) failures.push(`${current.edge.id}/marker:${connector.edge.id}=${gap}`);
@@ -686,8 +706,10 @@ function segmentIntersectsRectangle({left, right}, rectangle) {
 function assertNoConnectorOverdraw(source) {
   const elements = svgElements(source);
   const segments = [];
-  for (const edge of svgContract(source).edges) {
-    const path = elements.find(({attributes, name}) => name === 'path' && attributes.get('data-edge-id') === edge.id);
+  const paths = elements.filter(({attributes, name}) => name === 'path' &&
+    (attributes.has('data-edge-id') || attributes.has('data-structural-edge-id')));
+  for (const path of paths) {
+    const edge = {id: path.attributes.get('data-edge-id') ?? path.attributes.get('data-structural-edge-id')};
     segments.push(...pathSegments(parsePathPoints(path.attributes.get('d'))).map((segment) => ({...segment, edge: edge.id})));
     for (const rectangle of elements.filter(({index, name}) => name === 'rect' && index > path.index)) {
       const fill = svgPresentationValue(source, rectangle, 'fill');
@@ -708,6 +730,33 @@ function drawioStyle(cell) {
     const split = declaration.indexOf('=');
     return [declaration.slice(0, split), declaration.slice(split + 1)];
   }));
+}
+
+function drawioEdgePoints(cell) {
+  const source = xmlAttributes(cell.body.match(/<mxPoint\b([^>]*)\bas="sourcePoint"[^>]*\/>/u)?.[1] ?? '');
+  const target = xmlAttributes(cell.body.match(/<mxPoint\b([^>]*)\bas="targetPoint"[^>]*\/>/u)?.[1] ?? '');
+  const array = cell.body.match(/<Array\b[^>]*\bas="points"[^>]*>([\s\S]*?)<\/Array>/u)?.[1] ?? '';
+  const waypoints = [...array.matchAll(/<mxPoint\b([^>]*)\/>/gu)].map(([, raw]) => xmlAttributes(raw));
+  const toPoint = (attributes, label) => {
+    const point = {x: Number(attributes.get('x')), y: Number(attributes.get('y'))};
+    assert.ok(Number.isFinite(point.x) && Number.isFinite(point.y), `${cell.attributes.get('id')} ${label}`);
+    return point;
+  };
+  return [toPoint(source, 'sourcePoint'), ...waypoints.map((point) => toPoint(point, 'waypoint')),
+    toPoint(target, 'targetPoint')];
+}
+
+function effectiveDrawioEdgeRole(cell) {
+  const style = drawioStyle(cell);
+  const arrow = style.get('endArrow');
+  const filled = style.get('endFill') ?? '1';
+  const dashed = style.get('dashed') === '1';
+  const dash = dashed ? (style.get('dashPattern') ?? '') : '';
+  if (arrow === 'diamond' && filled === '1' && dash === '5 15') return ['replay-edge', 'arrow-replay', dash];
+  if (arrow === 'block' && filled === '0' && !dashed) return ['sync-lookup-edge', 'arrow-lookup', ''];
+  if (arrow === 'block' && filled === '1' && dash === '22 14') return ['event-delivery-edge', 'arrow-event', dash];
+  if (arrow === 'block' && filled === '1' && !dashed) return ['command-edge', 'arrow-command', ''];
+  assert.fail(`${cell.attributes.get('id')} effective Draw.io marker/dash role`);
 }
 
 function assertNodeFillParity(drawio, svg) {
@@ -743,14 +792,8 @@ function assertFullDrawioSvgParity(drawio, svg) {
     const group = elements.find(({attributes, name}) => name === 'g' && attributes.get('data-node-id') === id);
     const shape = elements.find(({name, parent}) => ['rect', 'polygon', 'ellipse'].includes(name) && parent === group);
     const text = elements.find(({name, parent}) => name === 'text' && parent === group);
-    const labelClass = elements.find(({name, parent}) => name === 'text' && parent?.attributes.get('data-node-id') === id)
-      ?.attributes.get('class');
-    const shapeClasses = (shape?.attributes.get('class') ?? '').split(/\s+/u);
-    const inferredRole = svgNode.attributes.get('data-role') ?? (id === 'canvas' || id.endsWith('-column') || ROW_IDS.includes(id)
-      ? 'boundary' : (['notification-authority', 'notification-authority-row', 'order-transition',
-        'carried-authority', 'event-store'].includes(id) ? 'authority' : ({note: 'note'}[labelClass] ??
-      (id.includes('participants') ? 'participants' : cell.attributes.get('dataRole')))));
-    assert.equal(inferredRole, cell.attributes.get('dataRole'), `${id} role parity`);
+    assert.ok(svgNode.attributes.has('data-role'), `${id} explicit SVG role`);
+    assert.equal(svgNode.attributes.get('data-role'), cell.attributes.get('dataRole'), `${id} role parity`);
     assert.equal(visibleGroupLabel(svg, id), cell.label, `${id} label parity`);
     const drawioShape = drawioStyle(cell).get('shape') ?? ((cell.attributes.get('style') ?? '').startsWith('text;')
       ? 'text' : (drawioStyle(cell).get('rounded') === '0' ? 'rectangle' : 'rounded'));
@@ -775,19 +818,14 @@ function assertFullDrawioSvgParity(drawio, svg) {
     }
   }
   const svgEdges = new Map(svgContract(svg).edges.map((edge) => [edge.id, edge]));
-  const roleContract = new Map([
-    ['command', ['command-edge', 'arrow-command', '']],
-    ['eventDelivery', ['event-delivery-edge', 'arrow-event', '22 14']],
-    ['syncLookup', ['sync-lookup-edge', 'arrow-lookup', '']],
-    ['replay', ['replay-edge', 'arrow-replay', '5 15']],
-  ]);
   for (const cell of drawioContract(drawio).edges) {
     const id = cell.attributes.get('id');
+    if (cell.attributes.get('dataRole') === 'participantLink') continue;
     const edge = svgEdges.get(id);
     assert.ok(edge, `${id} SVG parity edge`);
     const path = elements.find(({attributes, name}) => name === 'path' && attributes.get('data-edge-id') === id);
     const label = elements.find(({attributes, name}) => name === 'text' && attributes.get('data-edge-id') === id);
-    const [expectedClass, expectedMarker, expectedDash] = roleContract.get(cell.attributes.get('dataRole')) ?? [];
+    const [expectedClass, expectedMarker, expectedDash] = effectiveDrawioEdgeRole(cell);
     assert.ok((path.attributes.get('class') ?? '').split(/\s+/u).includes(expectedClass), `${id} connector role parity`);
     assert.equal(svgPresentationValue(svg, path, 'marker-end'), `url(#${expectedMarker})`, `${id} marker role parity`);
     assert.equal(svgPresentationValue(svg, path, 'stroke-dasharray') ?? '', expectedDash, `${id} dash parity`);
@@ -798,17 +836,87 @@ function assertFullDrawioSvgParity(drawio, svg) {
     assert.equal(svgPresentationValue(svg, label, 'fill'), drawioStyle(cell).get('fontColor'), `${id} label fill parity`);
     assert.equal(Number.parseFloat(svgPresentationValue(svg, label, 'font-size')),
       Number(drawioStyle(cell).get('fontSize')), `${id} edge font parity`);
-    assert.equal(edge.attributes.get('d'), cell.attributes.get('dataRoute'), `${id} route parity`);
+    assert.equal(svgPresentationValue(svg, label, 'font-weight'), '700', `${id} edge font weight parity`);
+    assert.equal(svgPresentationValue(svg, label, 'font-family')?.split(',')[0].trim(),
+      drawioStyle(cell).get('fontFamily'), `${id} edge font family parity`);
+    assert.equal(cell.attributes.has('dataRoute'), false, `${id} has no self-reported dataRoute`);
+    assert.deepEqual(parsePathPoints(edge.attributes.get('d')), drawioEdgePoints(cell), `${id} effective route parity`);
   }
 }
 
-function assertParticipantPaths(source) {
+function pointOnRectangleBoundary(point, rectangle) {
+  const onHorizontal = (point.y === rectangle.top || point.y === rectangle.bottom) &&
+    point.x >= rectangle.left && point.x <= rectangle.right;
+  const onVertical = (point.x === rectangle.left || point.x === rectangle.right) &&
+    point.y >= rectangle.top && point.y <= rectangle.bottom;
+  return onHorizontal || onVertical;
+}
+
+function assertParticipantConnectivity(drawio, source) {
   const modes = ['notification', 'transition', 'carried', 'event-sourcing'];
+  const participantLabels = new Map([['order', '订单'], ['inventory', '库存'], ['payment', '支付'], ['notification', '通知']]);
+  const coreTargets = new Map([
+    ['notification', new Map([...participantLabels.keys()].map((participant) => [participant, 'notification-authority']))],
+    ['transition', new Map([...participantLabels.keys()].map((participant) => [participant, 'order-transition']))],
+    ['carried', new Map([...participantLabels.keys()].map((participant) => [participant, 'carried-authority']))],
+    ['event-sourcing', new Map([
+      ['order', 'command'], ['inventory', 'command-handler'], ['payment', 'aggregate'], ['notification', 'aggregate'],
+    ])],
+  ]);
+  const requiredReachable = new Map([
+    ['notification', 'notification-consumer'], ['transition', 'consumer-state-machine'],
+    ['carried', 'consumer-local-copy'], ['event-sourcing', 'external-consumers'],
+  ]);
   const elements = svgElements(source);
-  for (const mode of modes) for (const participant of ['order', 'inventory', 'payment', 'notification']) {
-    assert.ok(elements.some(({attributes, name, parent}) => name === 'path' &&
-      attributes.get('data-participant') === participant && parent?.attributes.get('data-mode') === mode),
-    `${mode} structural ${participant} path`);
+  const drawioEdges = new Map(drawioContract(drawio).edges.map((cell) => [cell.attributes.get('id'), cell]));
+  const adjacency = new Map();
+  for (const edge of svgContract(source).edges) {
+    const sourceId = edge.attributes.get('data-source');
+    if (!adjacency.has(sourceId)) adjacency.set(sourceId, new Set());
+    adjacency.get(sourceId).add(edge.attributes.get('data-target'));
+  }
+  for (const mode of modes) for (const [participant, visibleLabel] of participantLabels) {
+    const edgeId = `${mode}-${participant}-participant-link`;
+    const path = elements.find(({attributes, name, parent}) => name === 'path' &&
+      attributes.get('data-structural-edge-id') === edgeId && attributes.get('data-participant') === participant &&
+      parent?.attributes.get('data-mode') === mode);
+    assert.ok(path, `${mode} structural ${participant} edge`);
+    const label = elements.find(({attributes, name, parent}) => name === 'text' && parent === path.parent &&
+      attributes.get('data-participant-label') === participant);
+    assert.ok(label, `${mode}/${participant} visible participant label`);
+    const points = parsePathPoints(path.attributes.get('d'));
+    const labelBounds = visibleTextBounds(source, label, visibleLabel);
+    assert.ok(points[0].x >= labelBounds.left && points[0].x <= labelBounds.right &&
+      points[0].y - labelBounds.bottom >= 24 && points[0].y - labelBounds.bottom <= 30,
+    `${mode}/${participant} edge originates at participant label`);
+    const targetId = path.attributes.get('data-target');
+    assert.equal(targetId, coreTargets.get(mode).get(participant), `${mode}/${participant} targets mode core`);
+    const targetGroup = elements.find(({attributes, name}) => name === 'g' && attributes.get('data-node-id') === targetId);
+    const targetShape = elements.find(({name, parent}) => name === 'rect' && parent === targetGroup);
+    assert.ok(pointOnRectangleBoundary(points.at(-1), rectangleFromElement(targetShape)),
+      `${mode}/${participant} reaches mode core boundary`);
+    const reachable = new Set([targetId]);
+    for (const queue = [targetId]; queue.length > 0;) {
+      const current = queue.shift();
+      for (const next of adjacency.get(current) ?? []) if (!reachable.has(next)) {
+        reachable.add(next); queue.push(next);
+      }
+    }
+    assert.ok(reachable.has(requiredReachable.get(mode)),
+      `${mode}/${participant} traverses core flow to ${requiredReachable.get(mode)}`);
+    const drawioEdge = drawioEdges.get(edgeId);
+    assert.ok(drawioEdge, `${edgeId} Draw.io structural edge`);
+    assert.equal(drawioEdge.attributes.get('source'), `${mode}-${participant}-participant`, `${edgeId} Draw.io source`);
+    assert.equal(drawioEdge.attributes.get('target'), targetId, `${edgeId} Draw.io target`);
+    assert.deepEqual(drawioEdgePoints(drawioEdge), points, `${edgeId} Draw.io/SVG route`);
+    const style = drawioStyle(drawioEdge);
+    assert.equal(style.get('endArrow'), 'none', `${edgeId} effective marker`);
+    assert.notEqual(style.get('dashed'), '1', `${edgeId} effective dash`);
+    assert.equal(svgPresentationValue(source, path, 'marker-end'), undefined, `${edgeId} SVG marker`);
+    assert.equal(svgPresentationValue(source, path, 'stroke-dasharray'), undefined, `${edgeId} SVG dash`);
+    assert.equal(svgPresentationValue(source, path, 'stroke'), style.get('strokeColor'), `${edgeId} stroke parity`);
+    assert.equal(Number(svgPresentationValue(source, path, 'stroke-width')), Number(style.get('strokeWidth')),
+      `${edgeId} stroke-width parity`);
   }
 }
 
@@ -833,8 +941,10 @@ function assertCompleteComparison(source) {
     const prefix = column === 'carried-state-column' ? 'carried' : column.replace('-column', '');
     const participantNode = svgContract(source).nodes.find(({id}) => id === `${prefix}-participants`);
     assert.ok(participantNode, `${column} participant inventory`);
-    const group = source.match(new RegExp(`<g\\b[^>]*data-node-id="${prefix}-participants"[^>]*>([\\s\\S]*?)<\\/g>`, 'u'))?.[1] ?? '';
-    for (const participant of participants) assert.ok(group.includes(participant), `${column} visibly uses ${participant}`);
+    const modeParticipants = [...source.matchAll(new RegExp(
+      `<g\\b[^>]*data-mode="${prefix}"[^>]*>([\\s\\S]*?)<\\/g>`, 'gu'))].map(([, body]) => body).join('');
+    for (const participant of participants) assert.ok(modeParticipants.includes(participant),
+      `${column} visibly uses ${participant}`);
   }
   const placements = new Map([
     ['notification-column', ['notification-authority', 'notification-event', 'notification-consumer', 'notification-authority-row', 'notification-recovery']],
@@ -1238,7 +1348,8 @@ test('locks synchronized four-column/five-row diagram geometry and replay bounda
     assert.ok(svgNodes.has(id), `SVG ${id}`);
   }
   assert.deepEqual([...drawioNodes].sort(), [...svgNodes].sort(), 'Draw.io/SVG node ID parity');
-  const drawioEdges = drawioContract(drawio).edges.map(({attributes}) => ({
+  const drawioEdges = drawioContract(drawio).edges.filter(({attributes}) =>
+    attributes.get('dataRole') !== 'participantLink').map(({attributes}) => ({
     id: attributes.get('id'), source: attributes.get('source'), target: attributes.get('target'),
   }));
   const svgEdges = svgContract(svg).edges.map(({id, attributes}) => ({
@@ -1401,7 +1512,7 @@ test('enforces fill parity, structural participant paths, and actual column-head
     readFile(new URL(`../${SVG}`, import.meta.url), 'utf8'),
   ]);
   assertNodeFillParity(drawio, svg);
-  assertParticipantPaths(svg);
+  assertParticipantConnectivity(drawio, svg);
   assertColumnHeaderClearance(svg);
   const fillMutation = svg.replace('style="fill:#DBEAFE;stroke:#1D4ED8" x="300"',
     'style="fill:#FFFFFF;stroke:#1D4ED8" x="300"');
@@ -1410,12 +1521,43 @@ test('enforces fill parity, structural participant paths, and actual column-head
   for (const mode of ['notification', 'transition', 'carried', 'event-sourcing']) {
     for (const participant of ['order', 'inventory', 'payment', 'notification']) {
       const participantMutation = svg.replace(new RegExp(
-        `(<g\\b[^>]*data-mode="${mode}"[^>]*>[\\s\\S]*?)\\sdata-participant="${participant}"`, 'u'), '$1');
+        `<path\\b[^>]*data-structural-edge-id="${mode}-${participant}-participant-link"[^>]*/>`, 'u'), '');
       assert.notEqual(participantMutation, svg, `${mode}/${participant} path mutation applies`);
-      assert.throws(() => assertParticipantPaths(participantMutation), {name: 'AssertionError'},
+      assert.throws(() => assertParticipantConnectivity(drawio, participantMutation), {name: 'AssertionError'},
         `${mode}/${participant} path is structural`);
+      const detachedPathMutation = svg.replace(new RegExp(
+        `(data-structural-edge-id="${mode}-${participant}-participant-link"[^>]*d="M\\s+[0-9.]+\\s+)[0-9.]+`, 'u'),
+      '$1999');
+      assert.notEqual(detachedPathMutation, svg, `${mode}/${participant} detach mutation applies`);
+      assert.throws(() => assertParticipantConnectivity(drawio, detachedPathMutation), {name: 'AssertionError'},
+        `${mode}/${participant} edge cannot detach from participant node`);
+      const participantNodeMutation = svg.replace(new RegExp(
+        `(data-mode="${mode}"[\\s\\S]*?data-participant-label=")${participant}"`, 'u'), '$1removed');
+      assert.notEqual(participantNodeMutation, svg, `${mode}/${participant} node mutation applies`);
+      assert.throws(() => assertParticipantConnectivity(drawio, participantNodeMutation), {name: 'AssertionError'},
+        `${mode}/${participant} participant node is structural`);
     }
+    const flowEdge = new Map([
+      ['notification', 'n-consume'], ['transition', 't-consume'],
+      ['carried', 'c-copy'], ['event-sourcing', 'es-external-delivery'],
+    ]).get(mode);
+    const coreFlowMutation = svg.replace(new RegExp(`<path\\b[^>]*data-edge-id="${flowEdge}"[^>]*/>`), '');
+    assert.notEqual(coreFlowMutation, svg, `${mode} core flow mutation applies`);
+    assert.throws(() => assertParticipantConnectivity(drawio, coreFlowMutation), {name: 'AssertionError'},
+      `${mode} participants traverse actual core flow`);
   }
+  const participantStyleMutation = drawio.replace(
+    'id="notification-order-participant-link" value="" dataRole="participantLink" style="edgeStyle=orthogonalEdgeStyle;html=0;endArrow=none;strokeColor=#1D4ED8',
+    'id="notification-order-participant-link" value="" dataRole="participantLink" style="edgeStyle=orthogonalEdgeStyle;html=0;endArrow=block;strokeColor=#111827');
+  assert.notEqual(participantStyleMutation, drawio, 'participant effective-style mutation applies');
+  assert.throws(() => assertParticipantConnectivity(participantStyleMutation, svg), {name: 'AssertionError'},
+    'participant effective marker/stroke parity');
+  const participantDashMutation = svg.replace(
+    'data-structural-edge-id="notification-order-participant-link" data-participant="order"',
+    'data-structural-edge-id="notification-order-participant-link" data-participant="order" stroke-dasharray="5 15"');
+  assert.notEqual(participantDashMutation, svg, 'participant dash mutation applies');
+  assert.throws(() => assertParticipantConnectivity(drawio, participantDashMutation), {name: 'AssertionError'},
+    'participant effective dash parity');
   const headerMutation = svg.replace(/(<g\b[^>]*data-node-id="notification-column"[^>]*>[\s\S]*?<text\b[^>]*\by=")[^"]+/u,
     '$190');
   assert.notEqual(headerMutation, svg, 'header clearance mutation applies');
@@ -1431,8 +1573,10 @@ test('enforces complete Draw.io/SVG node and connector parity classes', async ()
   for (const [label, mutation] of [
     ['bounds', (source) => source.replace('data-node-bounds="300 440 240 80"', 'data-node-bounds="301 440 240 80"')],
     ['label', (source) => source.replace('>订单权威</text>', '>订单写模型</text>')],
-    ['role', (source) => source.replace('data-node-id="notification-authority"',
+    ['role', (source) => source.replace('data-node-id="notification-authority" data-role="authority"',
       'data-node-id="notification-authority" data-role="derived"')],
+    ['missing role', (source) => source.replace('data-node-id="notification-authority" data-role="authority"',
+      'data-node-id="notification-authority"')],
     ['shape', (source) => source.replace(/(<g\b[^>]*data-node-id="notification-broker"[^>]*>)<rect/u, '$1<ellipse')],
     ['route', (source) => source.replace('data-target="notification-event" d="M 420 520 H 740 V 790 H 495"',
       'data-target="notification-event" d="M 420 520 H 730 V 790 H 495"')],
@@ -1445,6 +1589,21 @@ test('enforces complete Draw.io/SVG node and connector parity classes', async ()
     const mutated = mutation(svg);
     assert.notEqual(mutated, svg, `${label} parity mutation applies`);
     assert.throws(() => assertFullDrawioSvgParity(drawio, mutated), {name: 'AssertionError'}, `${label} parity`);
+  }
+  for (const [label, mutation] of [
+    ['effective waypoint', (source) => source.replace('<mxPoint x="740" y="520"/>', '<mxPoint x="730" y="520"/>')],
+    ['effective marker', (source) => source.replace('id="es-command" value="命令" dataRole="command" style="edgeStyle=orthogonalEdgeStyle;html=0;endArrow=block',
+      'id="es-command" value="命令" dataRole="command" style="edgeStyle=orthogonalEdgeStyle;html=0;endArrow=diamond')],
+    ['effective dash', (source) => source.replace('id="n-deliver" value="发布" dataRole="eventDelivery" style="edgeStyle=orthogonalEdgeStyle;html=0;endArrow=block;endFill=1;dashed=1;dashPattern=22 14',
+      'id="n-deliver" value="发布" dataRole="eventDelivery" style="edgeStyle=orthogonalEdgeStyle;html=0;endArrow=block;endFill=1;dashed=1;dashPattern=5 15')],
+    ['effective stroke', (source) => source.replace('id="es-command" value="命令" dataRole="command" style="edgeStyle=orthogonalEdgeStyle;html=0;endArrow=block;endFill=1;dashed=0;strokeColor=#6B21A8',
+      'id="es-command" value="命令" dataRole="command" style="edgeStyle=orthogonalEdgeStyle;html=0;endArrow=block;endFill=1;dashed=0;strokeColor=#111827')],
+    ['effective font', (source) => source.replace('id="es-command" value="命令" dataRole="command" style="edgeStyle=orthogonalEdgeStyle;html=0;endArrow=block;endFill=1;dashed=0;strokeColor=#6B21A8;strokeWidth=7;fontColor=#111827;fontFamily=system-ui;fontStyle=1;fontSize=45',
+      'id="es-command" value="命令" dataRole="command" style="edgeStyle=orthogonalEdgeStyle;html=0;endArrow=block;endFill=1;dashed=0;strokeColor=#6B21A8;strokeWidth=7;fontColor=#111827;fontFamily=system-ui;fontStyle=1;fontSize=44')],
+  ]) {
+    const mutated = mutation(drawio);
+    assert.notEqual(mutated, drawio, `${label} Draw.io mutation applies`);
+    assert.throws(() => assertFullDrawioSvgParity(mutated, svg), {name: 'AssertionError'}, `${label} Draw.io parity`);
   }
 });
 
