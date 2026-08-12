@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-11T08:53:50.572Z",
+  "generated_at": "2026-08-12T00:00:00.000Z",
   "results": [
     {
       "transport_locator": "https://a2a-protocol.org/latest/",
@@ -80856,6 +80856,32 @@
     {"transport_locator":"https://microservices.io/patterns/data/database-per-service.html","source_ids":["src-microservicesio-database-per-service"],"last_attempt":{"at":"2026-08-11T08:53:50.572Z","outcome":"healthy","final_transport_locator":"https://microservices.io/patterns/data/database-per-service.html","http_status":206,"login_wall_detected":false,"redirects":[]},"last_success":{"at":"2026-08-11T08:53:50.572Z","outcome":"healthy","final_transport_locator":"https://microservices.io/patterns/data/database-per-service.html","http_status":206,"login_wall_detected":false},"attempt_history":[{"at":"2026-08-11T08:53:50.572Z","outcome":"healthy","final_transport_locator":"https://microservices.io/patterns/data/database-per-service.html","http_status":206,"login_wall_detected":false}],"review_status":"healthy"},
     {"transport_locator":"https://microservices.io/patterns/data/saga.html","source_ids":["src-microservicesio-saga"],"last_attempt":{"at":"2026-08-11T08:53:50.572Z","outcome":"healthy","final_transport_locator":"https://microservices.io/patterns/data/saga.html","http_status":206,"login_wall_detected":false,"redirects":[]},"last_success":{"at":"2026-08-11T08:53:50.572Z","outcome":"healthy","final_transport_locator":"https://microservices.io/patterns/data/saga.html","http_status":206,"login_wall_detected":false},"attempt_history":[{"at":"2026-08-11T08:53:50.572Z","outcome":"healthy","final_transport_locator":"https://microservices.io/patterns/data/saga.html","http_status":206,"login_wall_detected":false}],"review_status":"healthy"},
     {"transport_locator":"https://docs.aws.amazon.com/prescriptive-guidance/latest/modernization-decomposing-monoliths/decompose-business-capability.html","source_ids":["src-aws-decompose-business-capability"],"last_attempt":{"at":"2026-08-11T08:53:50.572Z","outcome":"healthy","final_transport_locator":"https://docs.aws.amazon.com/prescriptive-guidance/latest/modernization-decomposing-monoliths/decompose-business-capability.html","http_status":206,"login_wall_detected":false,"redirects":[]},"last_success":{"at":"2026-08-11T08:53:50.572Z","outcome":"healthy","final_transport_locator":"https://docs.aws.amazon.com/prescriptive-guidance/latest/modernization-decomposing-monoliths/decompose-business-capability.html","http_status":206,"login_wall_detected":false},"attempt_history":[{"at":"2026-08-11T08:53:50.572Z","outcome":"healthy","final_transport_locator":"https://docs.aws.amazon.com/prescriptive-guidance/latest/modernization-decomposing-monoliths/decompose-business-capability.html","http_status":206,"login_wall_detected":false}],"review_status":"healthy"}
+    ,{
+      "transport_locator":"https://martinfowler.com/articles/201701-event-driven.html","source_ids":["src-fowler-what-do-you-mean-event-driven"],
+      "last_attempt":{"at":"2026-08-12T00:00:00.000Z","outcome":"healthy","final_transport_locator":"https://martinfowler.com/articles/201701-event-driven.html","http_status":200,"login_wall_detected":false,"redirects":[]},
+      "last_success":{"at":"2026-08-12T00:00:00.000Z","outcome":"healthy","final_transport_locator":"https://martinfowler.com/articles/201701-event-driven.html","http_status":200,"login_wall_detected":false},
+      "attempt_history":[{"at":"2026-08-12T00:00:00.000Z","outcome":"healthy","final_transport_locator":"https://martinfowler.com/articles/201701-event-driven.html","http_status":200,"login_wall_detected":false}],"review_status":"healthy"
+    },{
+      "transport_locator":"https://raw.githubusercontent.com/MicrosoftDocs/architecture-center/7b4bf26469bc45810c64406ad3cebdae4f60fb6b/docs/guide/architecture-styles/event-driven.md","source_ids":["src-microsoft-event-driven-architecture-style"],
+      "last_attempt":{"at":"2026-08-12T00:00:00.000Z","outcome":"healthy","final_transport_locator":"https://raw.githubusercontent.com/MicrosoftDocs/architecture-center/7b4bf26469bc45810c64406ad3cebdae4f60fb6b/docs/guide/architecture-styles/event-driven.md","http_status":200,"login_wall_detected":false,"redirects":[]},
+      "last_success":{"at":"2026-08-12T00:00:00.000Z","outcome":"healthy","final_transport_locator":"https://raw.githubusercontent.com/MicrosoftDocs/architecture-center/7b4bf26469bc45810c64406ad3cebdae4f60fb6b/docs/guide/architecture-styles/event-driven.md","http_status":200,"login_wall_detected":false},
+      "attempt_history":[{"at":"2026-08-12T00:00:00.000Z","outcome":"healthy","final_transport_locator":"https://raw.githubusercontent.com/MicrosoftDocs/architecture-center/7b4bf26469bc45810c64406ad3cebdae4f60fb6b/docs/guide/architecture-styles/event-driven.md","http_status":200,"login_wall_detected":false}],"review_status":"healthy"
+    },{
+      "transport_locator":"https://raw.githubusercontent.com/MicrosoftDocs/architecture-center/7b4bf26469bc45810c64406ad3cebdae4f60fb6b/docs/patterns/event-sourcing.md","source_ids":["src-microsoft-event-sourcing-pattern"],
+      "last_attempt":{"at":"2026-08-12T00:00:00.000Z","outcome":"healthy","final_transport_locator":"https://raw.githubusercontent.com/MicrosoftDocs/architecture-center/7b4bf26469bc45810c64406ad3cebdae4f60fb6b/docs/patterns/event-sourcing.md","http_status":200,"login_wall_detected":false,"redirects":[]},
+      "last_success":{"at":"2026-08-12T00:00:00.000Z","outcome":"healthy","final_transport_locator":"https://raw.githubusercontent.com/MicrosoftDocs/architecture-center/7b4bf26469bc45810c64406ad3cebdae4f60fb6b/docs/patterns/event-sourcing.md","http_status":200,"login_wall_detected":false},
+      "attempt_history":[{"at":"2026-08-12T00:00:00.000Z","outcome":"healthy","final_transport_locator":"https://raw.githubusercontent.com/MicrosoftDocs/architecture-center/7b4bf26469bc45810c64406ad3cebdae4f60fb6b/docs/patterns/event-sourcing.md","http_status":200,"login_wall_detected":false}],"review_status":"healthy"
+    },{
+      "transport_locator":"https://raw.githubusercontent.com/cloudevents/spec/v1.0.2/cloudevents/spec.md","source_ids":["src-cncf-cloudevents-102-spec"],
+      "last_attempt":{"at":"2026-08-12T00:00:00.000Z","outcome":"healthy","final_transport_locator":"https://raw.githubusercontent.com/cloudevents/spec/v1.0.2/cloudevents/spec.md","http_status":200,"login_wall_detected":false,"redirects":[]},
+      "last_success":{"at":"2026-08-12T00:00:00.000Z","outcome":"healthy","final_transport_locator":"https://raw.githubusercontent.com/cloudevents/spec/v1.0.2/cloudevents/spec.md","http_status":200,"login_wall_detected":false},
+      "attempt_history":[{"at":"2026-08-12T00:00:00.000Z","outcome":"healthy","final_transport_locator":"https://raw.githubusercontent.com/cloudevents/spec/v1.0.2/cloudevents/spec.md","http_status":200,"login_wall_detected":false}],"review_status":"healthy"
+    },{
+      "transport_locator":"https://www.w3.org/TR/2015/REC-scxml-20150901/","source_ids":["src-w3c-scxml-2015"],
+      "last_attempt":{"at":"2026-08-12T00:00:00.000Z","outcome":"healthy","final_transport_locator":"https://www.w3.org/TR/2015/REC-scxml-20150901/","http_status":200,"login_wall_detected":false,"redirects":[]},
+      "last_success":{"at":"2026-08-12T00:00:00.000Z","outcome":"healthy","final_transport_locator":"https://www.w3.org/TR/2015/REC-scxml-20150901/","http_status":200,"login_wall_detected":false},
+      "attempt_history":[{"at":"2026-08-12T00:00:00.000Z","outcome":"healthy","final_transport_locator":"https://www.w3.org/TR/2015/REC-scxml-20150901/","http_status":200,"login_wall_detected":false}],"review_status":"healthy"
+    }
   ],
   "superseded_results": [
     {

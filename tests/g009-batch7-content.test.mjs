@@ -252,14 +252,16 @@ function assertAffirmativeOwnership(source) {
 }
 
 function replaceAffirmativeOwnerClause(source, concernPattern, replacement, concern) {
-  const matchingSentence = sentences(source).find((sentence) => concernPattern.test(sentence) &&
+  const matchingSentences = sentences(source).filter((sentence) => concernPattern.test(sentence) &&
     AFFIRMATIVE_OWNER_PATTERN.test(sentence) && !UNRESOLVED_OWNER_PATTERN.test(sentence));
-  assert.ok(matchingSentence, `${concern} ownership mutation fixture`);
-  const affirmativeClause = matchingSentence.match(AFFIRMATIVE_OWNER_PATTERN)?.[0];
-  assert.ok(affirmativeClause, `${concern} affirmative owner clause`);
-  const mutatedSentence = matchingSentence.replace(affirmativeClause, replacement);
-  assert.notEqual(mutatedSentence, matchingSentence, `${concern} owner clause replacement applies`);
-  return source.replace(matchingSentence, mutatedSentence);
+  assert.ok(matchingSentences.length > 0, `${concern} ownership mutation fixture`);
+  return matchingSentences.reduce((mutatedSource, matchingSentence) => {
+    const affirmativeClause = matchingSentence.match(AFFIRMATIVE_OWNER_PATTERN)?.[0];
+    assert.ok(affirmativeClause, `${concern} affirmative owner clause`);
+    const mutatedSentence = matchingSentence.replace(affirmativeClause, replacement);
+    assert.notEqual(mutatedSentence, matchingSentence, `${concern} owner clause replacement applies`);
+    return mutatedSource.replace(matchingSentence, mutatedSentence);
+  }, source);
 }
 
 function replaceFirstMatching(source, pattern, replacement, label) {
@@ -1250,7 +1252,7 @@ test('locks semantic boundaries, distinct responsibilities, prohibitions, and re
   for (const [index, conflation] of CONFLATIONS.entries()) {
     await runMutation(article.source, (source) => `${source}\n\n${[
       '命令就是领域事件。', '领域事件就是集成事件。', '事件代理就是事件存储。',
-      'Outbox 就是事件存储。', '本地副本就是权威状态。', '投影就是事件存储。',
+      'Outbox就是事件存储。', '本地副本就是权威状态。', '投影就是事件存储。',
     ][index]}\n`, assertSemanticContract, `critical conflation ${conflation}`);
   }
   for (const prohibited of PROHIBITED) {

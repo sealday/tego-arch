@@ -50,7 +50,7 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 
 ## 建模目标与输入
 
-本文承接 [MOD-07 统一建模语言（Unified Modeling Language，UML）选图指南](/modeling/mod-07)的证据边界：状态图用于评审单个观察对象的状态、事件、守卫和转换，不单独证明跨系统外部效果。教学场景是一笔跨边界长时转账：系统接受转账意图，提交外部扣款与入账动作，可能在取得结果前超时，然后通过只读查询、受控重试、补偿或人工决议收敛。
+本文承接 [MOD-07 统一建模语言（Unified Modeling Language，UML）选图指南](/modeling/mod-07)的证据边界：状态图用于评审单个观察对象的状态、事件、守卫和[状态转移](/styles/sty-06)，不单独证明跨系统外部效果。教学场景是一笔跨边界长时转账：系统接受转账意图，提交外部扣款与入账动作，可能在取得结果前超时，然后通过只读查询、受控重试、补偿或人工决议收敛。
 
 参与者、状态名、转换、时间预算、补偿条件和人工决议字段都是本站原创教学设定，不代表现有生产系统或 Temporal 工作流平台默认实现。输入至少包括稳定 `transfer_id`、每个外部效果的 `operation_id`、目标系统 `effect_ref`、证据截止时间、负责人与可核对的权威记录。
 
