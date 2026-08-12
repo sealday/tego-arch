@@ -513,6 +513,110 @@ function pointRectangleDistance(point, rectangle) {
   return Math.hypot(dx, dy);
 }
 
+function segmentRectangleDistance(left, right, rectangle) {
+  const horizontal = left.y === right.y;
+  const vertical = left.x === right.x;
+  assert.ok(horizontal || vertical, 'orthogonal segment');
+  if (horizontal) {
+    const segmentLeft = Math.min(left.x, right.x);
+    const segmentRight = Math.max(left.x, right.x);
+    const dx = Math.max(rectangle.left - segmentRight, 0, segmentLeft - rectangle.right);
+    const dy = Math.max(rectangle.top - left.y, 0, left.y - rectangle.bottom);
+    return Math.hypot(dx, dy);
+  }
+  const segmentTop = Math.min(left.y, right.y);
+  const segmentBottom = Math.max(left.y, right.y);
+  const dx = Math.max(rectangle.left - left.x, 0, left.x - rectangle.right);
+  const dy = Math.max(rectangle.top - segmentBottom, 0, segmentTop - rectangle.bottom);
+  return Math.hypot(dx, dy);
+}
+
+function pathSegments(points) {
+  return points.slice(1).map((point, index) => ({left: points[index], right: point}));
+}
+
+function canonicalSegment({left, right}) {
+  return left.x === right.x
+    ? `V:${left.x}:${Math.min(left.y, right.y)}:${Math.max(left.y, right.y)}`
+    : `H:${left.y}:${Math.min(left.x, right.x)}:${Math.max(left.x, right.x)}`;
+}
+
+function assertCompleteComparison(source) {
+  const participants = ['订单', '库存', '支付', '通知'];
+  for (const column of COLUMN_IDS) {
+    const prefix = column === 'carried-state-column' ? 'carried' : column.replace('-column', '');
+    const participantNode = svgContract(source).nodes.find(({id}) => id === `${prefix}-participants`);
+    assert.ok(participantNode, `${column} participant inventory`);
+    const group = source.match(new RegExp(`<g\\b[^>]*data-node-id="${prefix}-participants"[^>]*>([\\s\\S]*?)<\\/g>`, 'u'))?.[1] ?? '';
+    for (const participant of participants) assert.ok(group.includes(participant), `${column} visibly uses ${participant}`);
+  }
+  const placements = new Map([
+    ['notification-column', ['notification-authority', 'notification-event', 'notification-consumer', 'notification-authority-row', 'notification-recovery']],
+    ['transition-column', ['order-transition', 'transition-event', 'consumer-state-machine', 'transition-decision', 'transition-recovery']],
+    ['carried-state-column', ['carried-authority', 'state-snapshot-event', 'autonomous-read', 'consumer-local-copy', 'carried-recovery']],
+    ['event-sourcing-column', ['command-handler', 'integration-event', 'read-projection', 'event-store', 'replay-path']],
+  ]);
+  for (const [column, nodes] of placements) {
+    assert.equal(nodes.length, ROW_IDS.length, `${column} five row contents`);
+    nodes.forEach((node, index) => {
+      assert.ok(contains(geometry(source, column, 'svg'), geometry(source, node, 'svg')), `${column} contains ${node}`);
+      assert.ok(contains(geometry(source, ROW_IDS[index], 'svg'), geometry(source, node, 'svg')), `${ROW_IDS[index]} contains ${node}`);
+    });
+  }
+}
+
+function assertMeasuredDiagramGeometry(source) {
+  const elements = svgElements(source);
+  const scale = 800 / 2400;
+  const edges = svgContract(source).edges;
+  const allSegments = [];
+  let minima = {marker: Infinity, stroke: Infinity};
+  for (const edge of edges) {
+    const path = elements.find(({attributes, name}) => name === 'path' && attributes.get('data-edge-id') === edge.id);
+    const label = elements.find(({attributes, name}) => name === 'text' && attributes.get('data-edge-id') === edge.id);
+    const fontSize = Number.parseFloat(svgPresentationValue(source, label, 'font-size'));
+    assert.ok(fontSize * scale >= 15, `${edge.id} essential text >=15px`);
+    const bounds = labelBounds(label.tag, edge.label, fontSize);
+    const points = parsePathPoints(path.attributes.get('d'));
+    const ownSegments = pathSegments(points);
+    const strokeDistance = Math.min(...ownSegments.map(({left, right}) => segmentRectangleDistance(left, right, bounds)));
+    const markerDistance = Math.min(...markerGeometry(source, path, points).map((point) => pointRectangleDistance(point, bounds)));
+    minima.stroke = Math.min(minima.stroke, strokeDistance);
+    minima.marker = Math.min(minima.marker, markerDistance);
+    assert.ok(strokeDistance >= 24, `${edge.id} label-to-stroke ${strokeDistance}`);
+    assert.ok(markerDistance >= 48, `${edge.id} label-to-marker ${markerDistance}`);
+    allSegments.push(...ownSegments.map((segment) => ({...segment, edge: edge.id})));
+  }
+  for (let left = 0; left < allSegments.length; left += 1) for (let right = left + 1; right < allSegments.length; right += 1) {
+    if (allSegments[left].edge !== allSegments[right].edge) assert.notEqual(canonicalSegment(allSegments[left]),
+      canonicalSegment(allSegments[right]), `no shared connector segment ${allSegments[left].edge}/${allSegments[right].edge}`);
+  }
+  const legend = geometry(source, 'legend-band', 'svg');
+  for (const edge of edges) for (const point of parsePathPoints(edge.attributes.get('d'))) {
+    assert.ok(point.y < legend.y, `${edge.id} stays outside connector-free legend band`);
+  }
+  assert.doesNotMatch(source, /<rect\b[^>]*data-mask-over-path[^>]*>/u, 'no path-masking rectangles');
+  return minima;
+}
+
+function assertEssentialLabelPresentation(source) {
+  const elements = svgElements(source);
+  const scale = 800 / 2400;
+  const classes = ['node-label', 'small-label', 'column-label', 'row-label', 'legend-label', 'note'];
+  for (const className of classes) {
+    const labels = elements.filter(({attributes, name}) => name === 'text' &&
+      (attributes.get('class') ?? '').split(/\s+/u).includes(className));
+    assert.ok(labels.length > 0, `${className} labels exist`);
+    for (const label of labels) {
+      const fontSize = Number.parseFloat(svgPresentationValue(source, label, 'font-size'));
+      const foreground = svgPresentationValue(source, label, 'fill');
+      const background = localBackground(source, label);
+      assert.ok(fontSize * scale >= (className === 'column-label' ? 18 : 15), `${className} rendered font size`);
+      assert.ok(contrastRatio(foreground, background) >= 4.5, `${className} effective contrast`);
+    }
+  }
+}
+
 function markerGeometry(source, edgeElement, points) {
   const markerId = svgPresentationValue(source, edgeElement, 'marker-end')?.match(/^url\(#([^)]+)\)$/u)?.[1];
   assert.ok(markerId, `${edgeElement.attributes.get('data-edge-id')} marker-end resolves`);
@@ -954,4 +1058,48 @@ test('binds color-independent legend keys and rejects responsibility/replay conf
   assert.notEqual(replaySideEffect, svg, 'replay side-effect fixture applies');
   assert.throws(() => assertDistinctDiagramResponsibilities(replaySideEffect), {name: 'AssertionError'},
     'replay cannot target payment/notification side effects');
+});
+
+test('requires every participant and semantic row in every comparison column', async () => {
+  const svg = await readFile(new URL(`../${SVG}`, import.meta.url), 'utf8');
+  assertCompleteComparison(svg);
+  for (const participant of PARTICIPANTS) {
+    const mutated = svg.replace(new RegExp(`(<g\\b[^>]*data-node-id="notification-participants"[^>]*>[\\s\\S]*?)${participant}`, 'u'), '$1');
+    assert.notEqual(mutated, svg, `${participant} participant mutation applies`);
+    assert.throws(() => assertCompleteComparison(mutated), {name: 'AssertionError'}, `${participant} required in every column`);
+  }
+  const rowMutation = svg.replace('data-node-id="transition-recovery"', 'data-node-id="transition-recovery-removed"');
+  assert.notEqual(rowMutation, svg, 'row content mutation applies');
+  assert.throws(() => assertCompleteComparison(rowMutation), {name: 'AssertionError'}, 'every column has meaningful recovery row');
+});
+
+test('measures connector lanes, real markers, text size, segment uniqueness, and legend isolation', async () => {
+  const svg = await readFile(new URL(`../${SVG}`, import.meta.url), 'utf8');
+  assertMeasuredDiagramGeometry(svg);
+  const first = svgContract(svg).edges[0];
+  const collision = svg.replace(new RegExp(`(<text\\b[^>]*data-edge-id="${first.id}"[^>]*\\bx=")[^"]+`, 'u'), '$1395');
+  assert.notEqual(collision, svg, 'stroke collision mutation applies');
+  assert.throws(() => assertMeasuredDiagramGeometry(collision), {name: 'AssertionError'}, 'actual label-stroke bounds');
+  const smallText = svg.replace(/(\.edge-label\s*\{[^}]*font-size:\s*)45px/u, '$130px');
+  assert.notEqual(smallText, svg, 'small text mutation applies');
+  assert.throws(() => assertMeasuredDiagramGeometry(smallText), {name: 'AssertionError'}, 'essential edge text >=15px');
+  const sharedSegment = svg.replace(/(data-edge-id="t-event"[^>]*d=")[^"]+/u, '$1M 395 355 H 410 V 500');
+  assert.notEqual(sharedSegment, svg, 'shared segment mutation applies');
+  assert.throws(() => assertMeasuredDiagramGeometry(sharedSegment), {name: 'AssertionError'}, 'partial/shared connector segment');
+  const legendIntrusion = svg.replace(/(data-edge-id="n-deliver"[^>]*d=")[^"]+/u, '$1M 395 355 H 410 V 1500');
+  assert.notEqual(legendIntrusion, svg, 'legend intrusion mutation applies');
+  assert.throws(() => assertMeasuredDiagramGeometry(legendIntrusion), {name: 'AssertionError'}, 'connector-free legend band');
+  const mask = svg.replace('<path class="event-delivery-edge edge"', '<rect data-mask-over-path="true" x="0" y="0" width="10" height="10"/><path class="event-delivery-edge edge"');
+  assert.notEqual(mask, svg, 'mask mutation applies');
+  assert.throws(() => assertMeasuredDiagramGeometry(mask), {name: 'AssertionError'}, 'mask-over-path prohibited');
+});
+
+test('keeps node, row, column, legend, and note labels readable on effective backgrounds', async () => {
+  const svg = await readFile(new URL(`../${SVG}`, import.meta.url), 'utf8');
+  assertEssentialLabelPresentation(svg);
+  for (const className of ['node-label', 'small-label', 'column-label', 'row-label', 'legend-label', 'note']) {
+    const mutation = svg.replace(new RegExp(`(\\.${className}\\s*\\{[^}]*fill:\\s*)#[0-9A-Fa-f]{6}`, 'u'), '$1#FFFFFF');
+    assert.notEqual(mutation, svg, `${className} contrast mutation applies`);
+    assert.throws(() => assertEssentialLabelPresentation(mutation), {name: 'AssertionError'}, `${className} contrast`);
+  }
 });
