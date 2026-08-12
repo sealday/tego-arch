@@ -251,6 +251,17 @@ function assertAffirmativeOwnership(source) {
   }
 }
 
+function replaceAffirmativeOwnerClause(source, concernPattern, replacement, concern) {
+  const matchingSentence = sentences(source).find((sentence) => concernPattern.test(sentence) &&
+    AFFIRMATIVE_OWNER_PATTERN.test(sentence) && !UNRESOLVED_OWNER_PATTERN.test(sentence));
+  assert.ok(matchingSentence, `${concern} ownership mutation fixture`);
+  const affirmativeClause = matchingSentence.match(AFFIRMATIVE_OWNER_PATTERN)?.[0];
+  assert.ok(affirmativeClause, `${concern} affirmative owner clause`);
+  const mutatedSentence = matchingSentence.replace(affirmativeClause, replacement);
+  assert.notEqual(mutatedSentence, matchingSentence, `${concern} owner clause replacement applies`);
+  return source.replace(matchingSentence, mutatedSentence);
+}
+
 function replaceFirstMatching(source, pattern, replacement, label) {
   const mutated = source.replace(pattern, replacement);
   assert.notEqual(mutated, source, `${label} fixture phrase exists`);
@@ -618,6 +629,26 @@ test('resolves SVG inline and important author cascade precedence', () => {
     'removing inline tier lets high-specificity stylesheet rule win');
 });
 
+test('rejects every negated or unresolved reliability owner mutation', async () => {
+  const fixture = [
+    '积压由服务所有者负责处置。',
+    'lag 与投影水位由投影处理器负责维护。',
+    '至少一次投递由平台团队负责维护。',
+    '幂等由消费者负责维护。',
+    '乱序由消费者负责处置。',
+    '模式演进由模式负责人负责维护。',
+    '毒消息隔离由服务所有者负责处置。',
+    '受控重放由值班人员负责处置。',
+    '人工终止由服务所有者负责处置。',
+  ].join('\n');
+  assertAffirmativeOwnership(fixture);
+  for (const [concern, pattern] of OWNERSHIP_CONTRACTS) {
+    await runMutation(fixture, (source) => replaceAffirmativeOwnerClause(
+      source, pattern, '无人负责，所有者待定', concern,
+    ), assertAffirmativeOwnership, `${concern} owner clause is replaced`);
+  }
+});
+
 test('publishes exact STY-06 metadata, headings, relations, and one same-case comparison', async () => {
   assert.ok(article, `${ARTICLE} must exist after implementation`);
   const metadata = parseFrontMatter(article.source);
@@ -674,12 +705,9 @@ test('locks semantic boundaries, distinct responsibilities, prohibitions, and re
       `回放可以重新执行 ${effect}。`, `replay ${effect}`), assertSemanticContract, `replay ${effect}`);
   }
   for (const [concern, pattern] of OWNERSHIP_CONTRACTS) {
-    await runMutation(article.source, (source) => {
-      const matchingSentence = sentences(visibleTextOf(source)).find((sentence) => pattern.test(sentence) &&
-        AFFIRMATIVE_OWNER_PATTERN.test(sentence) && !UNRESOLVED_OWNER_PATTERN.test(sentence));
-      assert.ok(matchingSentence, `${concern} ownership mutation fixture`);
-      return source.replace(matchingSentence, `${matchingSentence}；没有所有者，责任待定`);
-    }, assertAffirmativeOwnership, `${concern} unresolved/negated owner`);
+    await runMutation(article.source, (source) => replaceAffirmativeOwnerClause(
+      source, pattern, '无人负责，所有者待定', concern,
+    ), assertAffirmativeOwnership, `${concern} unresolved/negated owner`);
   }
 });
 
