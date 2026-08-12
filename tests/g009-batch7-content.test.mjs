@@ -301,8 +301,11 @@ function drawioContract(source) {
 function svgContract(source) {
   const nodes = [...source.matchAll(/<g\b([^>]*)data-node-id="([^"]+)"([^>]*)>/gu)]
     .map(([, before, id, after]) => ({id, attributes: xmlAttributes(`${before}${after}`)}));
-  const labels = new Map([...source.matchAll(/<text\b[^>]*data-edge-id="([^"]+)"[^>]*>([^<]*)<\/text>/gu)]
-    .map(([, id, label]) => [id, decodeXmlText(label).trim()]));
+  const labels = new Map([...source.matchAll(/<text\b[^>]*data-edge-id="([^"]+)"[^>]*>([\s\S]*?)<\/text>/gu)]
+    .map(([, id, body]) => {
+      const lines = [...body.matchAll(/<tspan\b[^>]*>([^<]*)<\/tspan>/gu)].map(([, line]) => decodeXmlText(line).trim());
+      return [id, lines.length > 0 ? lines.join('｜') : decodeXmlText(body).trim()];
+    }));
   const edges = [...source.matchAll(/<path\b([^>]*)data-edge-id="([^"]+)"([^>]*)>/gu)]
     .map(([, before, id, after]) => ({id, attributes: xmlAttributes(`${before}${after}`), label: labels.get(id) ?? ''}));
   return {nodes, edges};
@@ -529,6 +532,15 @@ function visibleTextBounds(source, element, label) {
   return {bottom: y + fontSize * 0.3, left, right: left + width, top: y - fontSize};
 }
 
+function visibleTextBoxes(source, element, fallbackLabel) {
+  const children = svgElements(source).filter(({name, parent}) => name === 'tspan' && parent?.tag === element.tag);
+  if (children.length === 0) return [visibleTextBounds(source, element, fallbackLabel)];
+  return children.map((child) => {
+    const label = source.match(new RegExp(`${escapeRegExp(child.tag)}([^<]*)<\\/tspan>`, 'u'))?.[1] ?? '';
+    return visibleTextBounds(source, child, decodeXmlText(label).trim());
+  });
+}
+
 function rectangleStrokeDistance(bounds, rectangle, strokeWidth, inner = false) {
   const inset = strokeWidth / 2;
   const sides = inner ? [
@@ -549,8 +561,7 @@ function assertAllTextClearances(source) {
   const semanticGeometry = edges.map((edge) => {
     const path = elements.find(({attributes, name}) => name === 'path' && attributes.get('data-edge-id') === edge.id);
     const label = elements.find(({attributes, name}) => name === 'text' && attributes.get('data-edge-id') === edge.id);
-    return {edge, label, labelBounds: visibleTextBounds(source, label, edge.label), path,
-      points: parsePathPoints(path.attributes.get('d'))};
+    return {edge, label, path, points: parsePathPoints(path.attributes.get('d'))};
   });
   const structuralGeometry = elements.filter(({attributes, name}) => name === 'path' &&
     attributes.has('data-structural-edge-id')).map((path) => ({
@@ -571,7 +582,9 @@ function assertAllTextClearances(source) {
     return {...connector, label, labelBounds: visibleTextBounds(source, label, label.text ??
       source.match(new RegExp(`${escapeRegExp(label.tag)}([^<]*)<\\/text>`, 'u'))?.[1] ?? '')};
   });
-  const labelGeometry = [...semanticGeometry, ...participantLabels];
+  const semanticLabels = semanticGeometry.flatMap((geometry) => visibleTextBoxes(source, geometry.label, geometry.edge.label)
+    .map((labelBounds) => ({...geometry, labelBounds})));
+  const labelGeometry = [...semanticLabels, ...participantLabels];
   const nodeEnvelopes = svgContract(source).nodes.filter(({id}) =>
     ![...COLUMN_IDS, ...ROW_IDS, 'canvas', 'legend-band'].includes(id) && !id.startsWith('legend-'))
     .map(({id}) => {
@@ -853,7 +866,7 @@ function assertFullDrawioSvgParity(drawio, svg) {
     assert.equal(svgPresentationValue(svg, path, 'stroke'), drawioStyle(cell).get('strokeColor'), `${id} stroke parity`);
     assert.equal(Number.parseFloat(svgPresentationValue(svg, path, 'stroke-width')),
       Number(drawioStyle(cell).get('strokeWidth')), `${id} stroke width parity`);
-    assert.equal(edge.label, cell.label, `${id} edge label parity`);
+    assert.equal(edge.label.replace(/｜/gu, ''), cell.label.replace(/｜/gu, ''), `${id} edge label parity`);
     assert.equal(svgPresentationValue(svg, label, 'fill'), drawioStyle(cell).get('fontColor'), `${id} label fill parity`);
     assert.equal(Number.parseFloat(svgPresentationValue(svg, label, 'font-size')),
       Number(drawioStyle(cell).get('fontSize')), `${id} edge font parity`);
@@ -940,6 +953,16 @@ function assertParticipantConnectivity(drawio, source) {
     assert.equal(Number(svgPresentationValue(source, path, 'stroke-width')), Number(style.get('strokeWidth')),
       `${edgeId} stroke-width parity`);
   }
+}
+
+function assertExpectedVersionAppend(drawio, source) {
+  const drawioEdge = drawioContract(drawio).edges.find(({attributes}) => attributes.get('id') === 'es-append');
+  const svgEdge = svgContract(source).edges.find(({id}) => id === 'es-append');
+  assert.ok(drawioEdge && svgEdge, 'event-sourcing append edge exists in both assets');
+  assert.match(drawioEdge.label, /expectedVersion/u, 'Draw.io append declares expectedVersion');
+  assert.match(svgEdge.label, /expectedVersion/u, 'SVG append declares expectedVersion');
+  const normalize = (label) => label.replace(/[｜\s]/gu, '');
+  assert.equal(normalize(svgEdge.label), normalize(drawioEdge.label), 'expectedVersion append label parity');
 }
 
 function assertColumnHeaderClearance(source) {
@@ -1604,6 +1627,11 @@ test('enforces complete Draw.io/SVG node and connector parity classes', async ()
     readFile(new URL(`../${SVG}`, import.meta.url), 'utf8'),
   ]);
   assertFullDrawioSvgParity(drawio, svg);
+  assertExpectedVersionAppend(drawio, svg);
+  const expectedVersionMutation = svg.replace('expectedVersion', 'version');
+  assert.notEqual(expectedVersionMutation, svg, 'expectedVersion removal mutation applies');
+  assert.throws(() => assertExpectedVersionAppend(drawio, expectedVersionMutation), {name: 'AssertionError'},
+    'append must retain expectedVersion concurrency guard');
   for (const [label, mutation] of [
     ['bounds', (source) => source.replace('data-node-bounds="300 440 240 80"', 'data-node-bounds="301 440 240 80"')],
     ['label', (source) => source.replace('>订单权威</text>', '>订单写模型</text>')],
