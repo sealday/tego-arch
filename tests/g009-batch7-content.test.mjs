@@ -732,9 +732,29 @@ function drawioStyle(cell) {
   }));
 }
 
-function drawioEdgePoints(cell) {
-  const source = xmlAttributes(cell.body.match(/<mxPoint\b([^>]*)\bas="sourcePoint"[^>]*\/>/u)?.[1] ?? '');
-  const target = xmlAttributes(cell.body.match(/<mxPoint\b([^>]*)\bas="targetPoint"[^>]*\/>/u)?.[1] ?? '');
+function drawioTerminalPortPoint(drawio, cell, terminalKind) {
+  const style = drawioStyle(cell);
+  const prefix = terminalKind === 'source' ? 'exit' : 'entry';
+  const terminalId = cell.attributes.get(terminalKind);
+  const terminal = drawioContract(drawio).nodes.find(({attributes}) => attributes.get('id') === terminalId);
+  assert.ok(terminal, `${cell.attributes.get('id')} ${terminalKind} terminal`);
+  assert.equal(style.get(`${prefix}Perimeter`), '1', `${cell.attributes.get('id')} ${prefix} perimeter`);
+  assert.equal(style.get(`${prefix}Dx`), '0', `${cell.attributes.get('id')} ${prefix}Dx`);
+  assert.equal(style.get(`${prefix}Dy`), '0', `${cell.attributes.get('id')} ${prefix}Dy`);
+  const x = Number(style.get(`${prefix}X`));
+  const y = Number(style.get(`${prefix}Y`));
+  assert.ok(Number.isFinite(x) && Number.isFinite(y) && x >= 0 && x <= 1 && y >= 0 && y <= 1,
+    `${cell.attributes.get('id')} normalized ${prefix} port`);
+  assert.ok(x === 0 || x === 1 || y === 0 || y === 1, `${cell.attributes.get('id')} ${prefix} port on perimeter`);
+  return {
+    x: Number(terminal.geometry.get('x')) + Number(terminal.geometry.get('width')) * x,
+    y: Number(terminal.geometry.get('y')) + Number(terminal.geometry.get('height')) * y,
+  };
+}
+
+function drawioEdgePoints(drawio, cell) {
+  assert.doesNotMatch(cell.body, /<mxPoint\b[^>]*\bas="(?:sourcePoint|targetPoint)"/u,
+    `${cell.attributes.get('id')} has no ignored terminal fallback points`);
   const array = cell.body.match(/<Array\b[^>]*\bas="points"[^>]*>([\s\S]*?)<\/Array>/u)?.[1] ?? '';
   const waypoints = [...array.matchAll(/<mxPoint\b([^>]*)\/>/gu)].map(([, raw]) => xmlAttributes(raw));
   const toPoint = (attributes, label) => {
@@ -742,8 +762,9 @@ function drawioEdgePoints(cell) {
     assert.ok(Number.isFinite(point.x) && Number.isFinite(point.y), `${cell.attributes.get('id')} ${label}`);
     return point;
   };
-  return [toPoint(source, 'sourcePoint'), ...waypoints.map((point) => toPoint(point, 'waypoint')),
-    toPoint(target, 'targetPoint')];
+  return [drawioTerminalPortPoint(drawio, cell, 'source'),
+    ...waypoints.map((point) => toPoint(point, 'waypoint')),
+    drawioTerminalPortPoint(drawio, cell, 'target')];
 }
 
 function effectiveDrawioEdgeRole(cell) {
@@ -840,7 +861,8 @@ function assertFullDrawioSvgParity(drawio, svg) {
     assert.equal(svgPresentationValue(svg, label, 'font-family')?.split(',')[0].trim(),
       drawioStyle(cell).get('fontFamily'), `${id} edge font family parity`);
     assert.equal(cell.attributes.has('dataRoute'), false, `${id} has no self-reported dataRoute`);
-    assert.deepEqual(parsePathPoints(edge.attributes.get('d')), drawioEdgePoints(cell), `${id} effective route parity`);
+    assert.deepEqual(parsePathPoints(edge.attributes.get('d')), drawioEdgePoints(drawio, cell),
+      `${id} effective route parity`);
   }
 }
 
@@ -908,7 +930,7 @@ function assertParticipantConnectivity(drawio, source) {
     assert.ok(drawioEdge, `${edgeId} Draw.io structural edge`);
     assert.equal(drawioEdge.attributes.get('source'), `${mode}-${participant}-participant`, `${edgeId} Draw.io source`);
     assert.equal(drawioEdge.attributes.get('target'), targetId, `${edgeId} Draw.io target`);
-    assert.deepEqual(drawioEdgePoints(drawioEdge), points, `${edgeId} Draw.io/SVG route`);
+    assert.deepEqual(drawioEdgePoints(drawio, drawioEdge), points, `${edgeId} Draw.io/SVG route`);
     const style = drawioStyle(drawioEdge);
     assert.equal(style.get('endArrow'), 'none', `${edgeId} effective marker`);
     assert.notEqual(style.get('dashed'), '1', `${edgeId} effective dash`);
@@ -1547,11 +1569,23 @@ test('enforces fill parity, structural participant paths, and actual column-head
       `${mode} participants traverse actual core flow`);
   }
   const participantStyleMutation = drawio.replace(
-    'id="notification-order-participant-link" value="" dataRole="participantLink" style="edgeStyle=orthogonalEdgeStyle;html=0;endArrow=none;strokeColor=#1D4ED8',
-    'id="notification-order-participant-link" value="" dataRole="participantLink" style="edgeStyle=orthogonalEdgeStyle;html=0;endArrow=block;strokeColor=#111827');
+    'id="notification-order-participant-link" value="" dataRole="participantLink" style="edgeStyle=orthogonalEdgeStyle;exitX=0.5;exitY=1;exitDx=0;exitDy=0;exitPerimeter=1;entryX=0.125;entryY=0;entryDx=0;entryDy=0;entryPerimeter=1;html=0;endArrow=none;strokeColor=#1D4ED8',
+    'id="notification-order-participant-link" value="" dataRole="participantLink" style="edgeStyle=orthogonalEdgeStyle;exitX=0.5;exitY=1;exitDx=0;exitDy=0;exitPerimeter=1;entryX=0.125;entryY=0;entryDx=0;entryDy=0;entryPerimeter=1;html=0;endArrow=block;strokeColor=#111827');
   assert.notEqual(participantStyleMutation, drawio, 'participant effective-style mutation applies');
   assert.throws(() => assertParticipantConnectivity(participantStyleMutation, svg), {name: 'AssertionError'},
     'participant effective marker/stroke parity');
+  const participantPortMutation = drawio.replace(
+    'id="notification-order-participant-link" value="" dataRole="participantLink" style="edgeStyle=orthogonalEdgeStyle;exitX=0.5;exitY=1;',
+    'id="notification-order-participant-link" value="" dataRole="participantLink" style="edgeStyle=orthogonalEdgeStyle;exitX=0.6;exitY=1;');
+  assert.notEqual(participantPortMutation, drawio, 'participant effective-port mutation applies');
+  assert.throws(() => assertParticipantConnectivity(participantPortMutation, svg), {name: 'AssertionError'},
+    'participant effective terminal port parity');
+  const participantBoundsMutation = drawio.replace(
+    'id="notification-order-participant" value="订单" dataRole="participant" style="text;html=0;fontColor=#111827;fontFamily=system-ui;fontStyle=1;fontSize=45;" vertex="1" parent="1"><mxGeometry x="300" y="340" width="90" height="83"',
+    'id="notification-order-participant" value="订单" dataRole="participant" style="text;html=0;fontColor=#111827;fontFamily=system-ui;fontStyle=1;fontSize=45;" vertex="1" parent="1"><mxGeometry x="300" y="340" width="90" height="82"');
+  assert.notEqual(participantBoundsMutation, drawio, 'participant terminal-bounds mutation applies');
+  assert.throws(() => assertParticipantConnectivity(participantBoundsMutation, svg), {name: 'AssertionError'},
+    'participant terminal bounds determine effective endpoint');
   const participantDashMutation = svg.replace(
     'data-structural-edge-id="notification-order-participant-link" data-participant="order"',
     'data-structural-edge-id="notification-order-participant-link" data-participant="order" stroke-dasharray="5 15"');
@@ -1592,14 +1626,13 @@ test('enforces complete Draw.io/SVG node and connector parity classes', async ()
   }
   for (const [label, mutation] of [
     ['effective waypoint', (source) => source.replace('<mxPoint x="740" y="520"/>', '<mxPoint x="730" y="520"/>')],
-    ['effective marker', (source) => source.replace('id="es-command" value="命令" dataRole="command" style="edgeStyle=orthogonalEdgeStyle;html=0;endArrow=block',
-      'id="es-command" value="命令" dataRole="command" style="edgeStyle=orthogonalEdgeStyle;html=0;endArrow=diamond')],
-    ['effective dash', (source) => source.replace('id="n-deliver" value="发布" dataRole="eventDelivery" style="edgeStyle=orthogonalEdgeStyle;html=0;endArrow=block;endFill=1;dashed=1;dashPattern=22 14',
-      'id="n-deliver" value="发布" dataRole="eventDelivery" style="edgeStyle=orthogonalEdgeStyle;html=0;endArrow=block;endFill=1;dashed=1;dashPattern=5 15')],
-    ['effective stroke', (source) => source.replace('id="es-command" value="命令" dataRole="command" style="edgeStyle=orthogonalEdgeStyle;html=0;endArrow=block;endFill=1;dashed=0;strokeColor=#6B21A8',
-      'id="es-command" value="命令" dataRole="command" style="edgeStyle=orthogonalEdgeStyle;html=0;endArrow=block;endFill=1;dashed=0;strokeColor=#111827')],
-    ['effective font', (source) => source.replace('id="es-command" value="命令" dataRole="command" style="edgeStyle=orthogonalEdgeStyle;html=0;endArrow=block;endFill=1;dashed=0;strokeColor=#6B21A8;strokeWidth=7;fontColor=#111827;fontFamily=system-ui;fontStyle=1;fontSize=45',
-      'id="es-command" value="命令" dataRole="command" style="edgeStyle=orthogonalEdgeStyle;html=0;endArrow=block;endFill=1;dashed=0;strokeColor=#6B21A8;strokeWidth=7;fontColor=#111827;fontFamily=system-ui;fontStyle=1;fontSize=44')],
+    ['missing effective source port', (source) => source.replace('exitX=0.5;', '')],
+    ['changed effective target port', (source) => source.replace('entryX=0.5;entryY=0;',
+      'entryX=0.5;entryY=0.1;')],
+    ['effective marker', (source) => source.replace(/(id="es-command"[^>]*\bendArrow=)block/u, '$1diamond')],
+    ['effective dash', (source) => source.replace(/(id="n-deliver"[^>]*\bdashPattern=)22 14/u, '$15 15')],
+    ['effective stroke', (source) => source.replace(/(id="es-command"[^>]*\bstrokeColor=)#6B21A8/u, '$1#111827')],
+    ['effective font', (source) => source.replace(/(id="es-command"[^>]*\bfontSize=)45/u, '$144')],
   ]) {
     const mutated = mutation(drawio);
     assert.notEqual(mutated, drawio, `${label} Draw.io mutation applies`);
