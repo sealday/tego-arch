@@ -77,6 +77,14 @@ const RELIABILITY_PATTERNS = [
   /(?:延迟|lag)/iu,
   /投影水位|projection[- ]watermark/iu,
 ];
+const OWNED_FAILURE_PATTERNS = [
+  /毒(?:消息|事件).{0,20}隔离.{0,20}(?:所有者|负责|责任)|(?:所有者|负责|责任).{0,20}毒(?:消息|事件).{0,20}隔离/u,
+  /受控重放.{0,20}(?:所有者|负责|责任)|(?:所有者|负责|责任).{0,20}受控重放/u,
+  /人工终止.{0,20}(?:所有者|负责|责任)|(?:所有者|负责|责任).{0,20}人工终止/u,
+  /(?:积压|lag|延迟).{0,24}(?:所有者|负责|责任)|(?:所有者|负责|责任).{0,24}(?:积压|lag|延迟)/iu,
+  /(?:顺序|乱序).{0,24}(?:所有者|负责|责任)|(?:所有者|负责|责任).{0,24}(?:顺序|乱序)/u,
+  /(?:模式|schema)演进.{0,24}(?:所有者|负责|责任)|(?:所有者|负责|责任).{0,24}(?:模式|schema)演进/iu,
+];
 const MATRIX_ROWS = [
   /载荷/u, /回查|取数/u, /时间耦合.*模式耦合|模式耦合.*时间耦合/u,
   /权威|事实来源/u, /副本/u, /顺序/u, /重放/u, /审计/u, /隐私/u,
@@ -97,6 +105,33 @@ const TERM_PATTERNS = new Map([
   ['local-copy', /本地副本/u],
   ['projection', /派生投影|读取投影/u],
 ]);
+const RESPONSIBILITY_PATTERNS = new Map([
+  ['teaching-framework', /(?:四种模式|四类).{0,24}(?:教学比较框架|教学框架).{0,24}(?:并非|不是|不构成).{0,16}(?:唯一|穷尽|成熟度阶梯)|(?:并非|不是|不构成).{0,16}(?:唯一|穷尽|成熟度阶梯).{0,24}(?:教学比较框架|教学框架)/u],
+  ['command', /命令.{0,24}(?:意图|请求|要求).{0,24}(?:处理器|接收方|执行)/u],
+  ['domain-event', /领域事件.{0,24}(?:聚合|领域).{0,24}(?:已经发生|事实|状态变化)/u],
+  ['integration-event', /集成事件.{0,28}(?:边界外|外部消费者|跨边界|公开合同)/u],
+  ['broker', /(?:事件|消息)代理.{0,24}(?:传递|路由|投递).{0,24}(?:不拥有|不是权威|不决定).{0,16}(?:业务状态|业务语义)|(?:事件|消息)代理.{0,24}(?:不拥有|不是权威|不决定).{0,16}(?:业务状态|业务语义)/u],
+  ['outbox', /(?:Outbox|事务性发件箱).{0,24}(?:本地事务|同一事务).{0,24}(?:待发布|可靠发布|消息)|(?:本地事务|同一事务).{0,24}(?:Outbox|事务性发件箱).{0,24}(?:待发布|可靠发布|消息)/iu],
+  ['event-store', /事件存储.{0,24}(?:追加|有序事件流).{0,24}(?:权威|事实记录)|(?:权威|事实记录).{0,24}(?:追加|有序事件流).{0,24}事件存储/u],
+  ['authority', /权威(?:状态|写模型).{0,24}(?:唯一写入|业务决定|源服务|事件存储)|(?:唯一写入|业务决定|源服务|事件存储).{0,24}权威(?:状态|写模型)/u],
+  ['local-copy', /本地副本.{0,24}(?:派生|只读|消费者拥有).{0,24}(?:不取得|不是|不能成为).{0,16}(?:权威|写入权)|本地副本.{0,24}(?:不取得|不是|不能成为).{0,16}(?:权威|写入权)/u],
+  ['projection', /投影.{0,24}(?:事件|权威记录).{0,24}(?:派生|重建).{0,24}(?:读取|查询)|投影.{0,24}(?:读取模型|查询模型).{0,24}(?:派生|重建)/u],
+  ['ordered-authority', /按聚合有序.{0,24}(?:事件流|领域事件).{0,24}(?:权威写入记录|权威事实|权威状态)|(?:权威写入记录|权威事实|权威状态).{0,24}按聚合有序.{0,24}(?:事件流|领域事件)/u],
+]);
+const NON_PROOF_PATTERNS = [
+  /(?:完整载荷|完整数据|全量数据).{0,24}(?:不能|不等于|不足以|并不).{0,16}事件溯源|事件溯源.{0,24}(?:不能由|不由).{0,16}(?:完整载荷|完整数据|全量数据).{0,8}(?:证明|决定)/u,
+  /(?:事件|消息)代理.{0,24}(?:不能|不等于|不足以|并不).{0,16}事件溯源|事件溯源.{0,24}(?:不能由|不由).{0,16}(?:事件|消息)代理.{0,8}(?:证明|决定)/u,
+  /Outbox.{0,24}(?:不能|不等于|不足以|并不).{0,16}事件溯源|事件溯源.{0,24}(?:不能由|不由).{0,16}Outbox.{0,8}(?:证明|决定)/iu,
+  /CQRS.{0,24}(?:不要求|不等于|不能证明|并非必须).{0,16}事件溯源|事件溯源.{0,24}(?:不是|并非).{0,12}CQRS.{0,8}(?:必然|要求)/iu,
+  /异步.{0,24}(?:不能|不等于|不足以|并不).{0,16}事件溯源|事件溯源.{0,24}(?:不能由|不由).{0,16}异步.{0,8}(?:证明|决定)/u,
+  /可重放(?:日志|流).{0,24}(?:不能|不等于|不足以|并不).{0,16}事件溯源|事件溯源.{0,24}(?:不能由|不由).{0,16}可重放(?:日志|流).{0,8}(?:证明|决定)/u,
+];
+const REPLAY_SAFETY_PATTERN = /回放.{0,40}(?:不得|不能|禁止|不会).{0,24}(?:再次|重新).{0,12}(?:扣款|支付|发短信|通知|不可逆外部副作用)|(?:扣款|支付|发短信|通知|不可逆外部副作用).{0,40}(?:不得|不能|禁止|不会).{0,16}(?:回放|再次执行)/u;
+const MODE_BOUNDARY_PATTERNS = [
+  /状态转移.{0,32}(?:不等于|不是|不能替代|不意味着).{0,20}事件携带状态|事件携带状态.{0,32}(?:不等于|不是|不能替代).{0,20}状态转移/u,
+  /状态转移.{0,40}(?:from|to|前后状态|合法迁移|状态机).{0,32}(?:不携带|不要求|并非).{0,20}(?:完整快照|完整状态)|(?:完整快照|完整状态).{0,32}(?:不是|不等于).{0,20}状态转移/iu,
+  /事件携带状态.{0,40}(?:完整状态|所需字段|变化集).{0,32}(?:本地副本|正常路径不回查)/u,
+];
 const CONFLATIONS = [
   /命令(?:就是|等于|即为)领域事件/u,
   /领域事件(?:就是|等于|即为)集成事件/u,
@@ -151,6 +186,8 @@ function escapeRegExp(value) {
 
 function assertSameCaseComparison(source) {
   const comparison = section(source, '边界与控制流', '数据所有权与一致性');
+  const modeHeadings = findMarkdownHeadings(comparison).filter(({level}) => level === 3).map(({text}) => text);
+  assert.deepEqual(modeHeadings, MODES, 'exact four ordered mode H3 headings');
   for (let index = 0; index < MODES.length; index += 1) {
     const nextMode = MODES[index + 1];
     const start = comparison.search(new RegExp(`^### ${escapeRegExp(MODES[index])}\\s*$`, 'mu'));
@@ -160,7 +197,13 @@ function assertSameCaseComparison(source) {
     if (nextMode) assert.ok(end > 0, `${nextMode} follows ${MODES[index]}`);
     const modeSource = end > 0 ? rest.slice(0, end) : rest;
     for (const participant of PARTICIPANTS) assert.match(modeSource, new RegExp(participant, 'u'), `${MODES[index]} ${participant}`);
-    for (const question of QUESTIONS) assert.match(modeSource, new RegExp(question, 'u'), `${MODES[index]} answers ${question}`);
+    const answers = QUESTIONS.map((question) => {
+      const match = modeSource.match(new RegExp(`(?:^|\\n)(?:[-*]\\s*)?(?:\\*\\*)?${escapeRegExp(question)}(?:\\*\\*)?\\s*[：:]\\s*([^\\n]+)`, 'u'));
+      assert.ok(match, `${MODES[index]} structured answer for ${question}`);
+      assert.ok(match[1].trim().length >= 4, `${MODES[index]} non-empty answer for ${question}`);
+      return match[1].trim();
+    });
+    assert.equal(new Set(answers).size, QUESTIONS.length, `${MODES[index]} five distinct structured answers`);
   }
 }
 
@@ -171,7 +214,17 @@ function assertSemanticContract(source) {
   }
   for (const prohibited of PROHIBITED) assert.equal(visible.includes(prohibited), false, `prohibited claim: ${prohibited}`);
   for (const [term, pattern] of TERM_PATTERNS) assert.match(visible, pattern, `${term} separate definition`);
+  for (const [responsibility, pattern] of RESPONSIBILITY_PATTERNS) assert.match(visible, pattern, `${responsibility} positive responsibility`);
+  for (const pattern of NON_PROOF_PATTERNS) assert.match(visible, pattern, `event-sourcing non-proof ${pattern}`);
+  for (const pattern of MODE_BOUNDARY_PATTERNS) assert.match(visible, pattern, `mode boundary ${pattern}`);
+  assert.match(visible, REPLAY_SAFETY_PATTERN, 'replay does not re-invoke irreversible external effects');
   for (const conflation of CONFLATIONS) assert.doesNotMatch(visible, conflation, `critical conflation ${conflation}`);
+}
+
+function replaceFirstMatching(source, pattern, replacement, label) {
+  const mutated = source.replace(pattern, replacement);
+  assert.notEqual(mutated, source, `${label} fixture phrase exists`);
+  return mutated;
 }
 
 function markdownTable(source, label) {
@@ -238,25 +291,64 @@ function cssDeclarations(source) {
   }));
 }
 
-function svgPresentationValue(source, elementName, attributesSource, property) {
-  const attributes = xmlAttributes(attributesSource);
-  const inline = cssDeclarations(attributes.get('style') ?? '').get(property);
-  if (inline !== undefined) return inline;
-  const classes = new Set((attributes.get('class') ?? '').split(/\s+/u).filter(Boolean));
-  let resolved = attributes.get(property);
+function svgElements(source) {
+  const elements = [];
+  const stack = [];
+  for (const match of source.matchAll(/<\/?([A-Za-z][\w:-]*)\b([^>]*)>/gu)) {
+    const [tag, name, rawAttributes] = match;
+    if (tag.startsWith('</')) {
+      stack.pop();
+      continue;
+    }
+    const element = {attributes: xmlAttributes(rawAttributes), name, parent: stack.at(-1) ?? null, tag};
+    elements.push(element);
+    if (!tag.endsWith('/>') && !['path', 'rect'].includes(name)) stack.push(element);
+  }
+  return elements;
+}
+
+function selectorMatches(element, selector) {
+  const terminal = selector.trim().split(/\s+|>/u).at(-1);
+  const name = terminal.match(/^[A-Za-z][\w-]*/u)?.[0];
+  if (name && name !== element.name) return false;
+  const classes = new Set((element.attributes.get('class') ?? '').split(/\s+/u).filter(Boolean));
+  return [...terminal.matchAll(/\.([\w-]+)/gu)].every(([, className]) => classes.has(className));
+}
+
+function ownSvgPresentationValue(source, element, property) {
+  const inline = cssDeclarations(element.attributes.get('style') ?? '').get(property);
+  if (inline !== undefined) return inline.replace(/\s*!important\s*$/iu, '');
+  let resolved = element.attributes.get(property);
   for (const [, stylesheet] of source.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/gu)) {
     for (const [, selectors, declarations] of stylesheet.matchAll(/([^{}]+)\{([^{}]*)\}/gu)) {
       const value = cssDeclarations(declarations).get(property);
       if (value === undefined) continue;
       for (const rawSelector of selectors.split(',')) {
-        const selector = rawSelector.trim();
-        if (/^[a-z][\w-]*/iu.test(selector) && !selector.startsWith(elementName)) continue;
-        const requiredClasses = [...selector.matchAll(/\.([\w-]+)/gu)].map(([, className]) => className);
-        if (requiredClasses.every((className) => classes.has(className))) resolved = value;
+        if (selectorMatches(element, rawSelector)) resolved = value;
       }
     }
   }
   return resolved?.replace(/\s*!important\s*$/iu, '');
+}
+
+function svgPresentationValue(source, element, property) {
+  for (let candidate = element; candidate; candidate = candidate.parent) {
+    const value = ownSvgPresentationValue(source, candidate, property);
+    if (value !== undefined) return value;
+  }
+  return undefined;
+}
+
+function effectiveOpacity(source, element) {
+  let opacity = 1;
+  for (let candidate = element; candidate; candidate = candidate.parent) {
+    for (const property of ['opacity', `${element.name === 'text' ? 'fill' : 'stroke'}-opacity`]) {
+      const value = ownSvgPresentationValue(source, candidate, property);
+      if (value !== undefined) opacity *= Number(value);
+    }
+  }
+  assert.ok(Number.isFinite(opacity) && opacity > 0 && opacity <= 1, `${element.name} visible effective opacity`);
+  return opacity;
 }
 
 function luminance(color) {
@@ -270,6 +362,15 @@ function luminance(color) {
 function contrastRatio(left, right) {
   const values = [luminance(left), luminance(right)].sort((a, b) => b - a);
   return (values[0] + 0.05) / (values[1] + 0.05);
+}
+
+function blendHex(foreground, background, opacity) {
+  const channels = (color) => color.match(/[\da-f]{2}/giu).map((value) => Number.parseInt(value, 16));
+  const foregroundChannels = channels(foreground);
+  const backgroundChannels = channels(background);
+  return `#${foregroundChannels.map((value, index) => Math.round(
+    value * opacity + backgroundChannels[index] * (1 - opacity),
+  ).toString(16).padStart(2, '0')).join('')}`;
 }
 
 function parsePathPoints(data) {
@@ -305,27 +406,93 @@ function pointRectangleDistance(point, rectangle) {
   return Math.hypot(dx, dy);
 }
 
+function markerGeometry(source, edgeElement, points) {
+  const markerId = svgPresentationValue(source, edgeElement, 'marker-end')?.match(/^url\(#([^)]+)\)$/u)?.[1];
+  assert.ok(markerId, `${edgeElement.attributes.get('data-edge-id')} marker-end resolves`);
+  const elements = svgElements(source);
+  const marker = elements.find(({attributes, name}) => name === 'marker' && attributes.get('id') === markerId);
+  assert.ok(marker, `${markerId} marker definition`);
+  const markerPath = elements.find(({name, parent}) => name === 'path' && parent === marker);
+  assert.ok(markerPath, `${markerId} marker shape`);
+  const viewBox = (marker.attributes.get('viewBox') ?? '').split(/\s+/u).map(Number);
+  assert.equal(viewBox.length, 4, `${markerId} marker viewBox`);
+  const markerWidth = Number(marker.attributes.get('markerWidth'));
+  const markerHeight = Number(marker.attributes.get('markerHeight'));
+  assert.ok(markerWidth > 0 && markerHeight > 0 && markerWidth <= 16 && markerHeight <= 16,
+    `${markerId} bounded marker dimensions`);
+  const endpoint = points.at(-1);
+  const previous = points.at(-2);
+  const magnitude = Math.hypot(endpoint.x - previous.x, endpoint.y - previous.y);
+  assert.ok(magnitude > 0, `${markerId} non-zero terminal segment`);
+  const axis = {x: (endpoint.x - previous.x) / magnitude, y: (endpoint.y - previous.y) / magnitude};
+  const perpendicular = {x: -axis.y, y: axis.x};
+  const strokeWidth = Number(svgPresentationValue(source, edgeElement, 'stroke-width'));
+  const unitScale = marker.attributes.get('markerUnits') === 'userSpaceOnUse' ? 1 : strokeWidth;
+  const scaleX = markerWidth / viewBox[2] * unitScale;
+  const scaleY = markerHeight / viewBox[3] * unitScale;
+  const refX = Number(marker.attributes.get('refX'));
+  const refY = Number(marker.attributes.get('refY'));
+  const coordinates = (markerPath.attributes.get('d')?.match(/-?(?:\d+(?:\.\d*)?|\.\d+)/gu) ?? []).map(Number);
+  const pointsOnMarker = [];
+  for (let index = 0; index < coordinates.length; index += 2) {
+    const localX = (coordinates[index] - refX) * scaleX;
+    const localY = (coordinates[index + 1] - refY) * scaleY;
+    pointsOnMarker.push({
+      x: endpoint.x + axis.x * localX + perpendicular.x * localY,
+      y: endpoint.y + axis.y * localX + perpendicular.y * localY,
+    });
+  }
+  assert.ok(pointsOnMarker.length >= 3 && pointsOnMarker.every(({x, y}) => Number.isFinite(x) && Number.isFinite(y)),
+    `${markerId} actual marker bounds`);
+  return pointsOnMarker;
+}
+
+function localBackground(source, labelElement) {
+  const x = Number(labelElement.attributes.get('x'));
+  const y = Number(labelElement.attributes.get('y'));
+  const candidates = svgElements(source).filter(({attributes, name}) => {
+    if (name !== 'rect') return false;
+    const left = Number(attributes.get('x'));
+    const top = Number(attributes.get('y'));
+    const width = Number(attributes.get('width'));
+    const height = Number(attributes.get('height'));
+    return [left, top, width, height].every(Number.isFinite) && x >= left && x <= left + width && y >= top && y <= top + height;
+  }).map((element) => ({
+    area: Number(element.attributes.get('width')) * Number(element.attributes.get('height')),
+    color: svgPresentationValue(source, element, 'fill'),
+    element,
+  })).filter(({color, element}) => color && color !== 'none' && effectiveOpacity(source, element) === 1)
+    .sort((left, right) => left.area - right.area);
+  assert.ok(candidates.length > 0, `${labelElement.attributes.get('data-edge-id')} painted local background`);
+  return candidates[0].color;
+}
+
 function assertDiagramPresentation(source) {
-  const root = xmlAttributes(source.match(/<svg\b[^>]*>/u)?.[0] ?? '');
-  const scale = Number(root.get('data-authoring-to-render-scale'));
-  assert.ok(Number.isFinite(scale) && scale > 0 && scale <= 1, 'positive authoring-to-render scale');
-  const background = source.match(/<rect\b([^>]*)data-canvas-role="background"([^>]*)>/u);
-  assert.ok(background, 'opaque SVG canvas');
-  const backgroundColor = svgPresentationValue(source, 'rect', `${background[1]}${background[2]}`, 'fill');
+  const elements = svgElements(source);
+  const root = elements.find(({name}) => name === 'svg');
+  const viewBox = (root?.attributes.get('viewBox') ?? '').split(/\s+/u).map(Number);
+  assert.equal(viewBox.length, 4, 'SVG viewBox');
+  const scale = 800 / viewBox[2];
+  assert.ok(Number.isFinite(scale) && scale > 0 && scale <= 1, '800px/viewBox rendered scale');
   const edges = svgContract(source).edges;
   assert.equal(new Set(edges.map(({attributes}) => attributes.get('d'))).size, edges.length, 'unique connector paths');
-  const fontSize = Number.parseFloat(svgPresentationValue(source, 'text', 'class="edge-label"', 'font-size'));
   for (const edge of edges) {
-    const pathTag = source.match(new RegExp(`<path\\b[^>]*data-edge-id="${escapeRegExp(edge.id)}"[^>]*>`, 'u'))?.[0] ?? '';
-    const labelMatch = source.match(new RegExp(`(<text\\b[^>]*data-edge-id="${escapeRegExp(edge.id)}"[^>]*>)([^<]*)<\\/text>`, 'u'));
-    assert.ok(labelMatch, `${edge.id} visible edge label`);
-    const pathColor = svgPresentationValue(source, 'path', pathTag, 'stroke');
-    const labelColor = svgPresentationValue(source, 'text', labelMatch[1], 'fill');
-    assert.ok(contrastRatio(pathColor, backgroundColor) >= 3, `${edge.id} selector-bound path contrast`);
-    assert.ok(contrastRatio(labelColor, backgroundColor) >= 4.5, `${edge.id} selector-bound label contrast`);
-    const bounds = labelBounds(labelMatch[1], decodeXmlText(labelMatch[2]), fontSize);
+    const pathElement = elements.find(({attributes, name}) => name === 'path' && attributes.get('data-edge-id') === edge.id);
+    const labelElement = elements.find(({attributes, name}) => name === 'text' && attributes.get('data-edge-id') === edge.id);
+    assert.ok(pathElement && labelElement, `${edge.id} visible edge and label`);
+    const backgroundColor = localBackground(source, labelElement);
+    const pathColor = blendHex(svgPresentationValue(source, pathElement, 'stroke'), backgroundColor,
+      effectiveOpacity(source, pathElement));
+    const labelColor = blendHex(svgPresentationValue(source, labelElement, 'fill'), backgroundColor,
+      effectiveOpacity(source, labelElement));
+    assert.ok(contrastRatio(pathColor, backgroundColor) >= 3, `${edge.id} effective path contrast`);
+    assert.ok(contrastRatio(labelColor, backgroundColor) >= 4.5, `${edge.id} effective label contrast`);
+    const labelText = edge.label;
+    const fontSize = Number.parseFloat(svgPresentationValue(source, labelElement, 'font-size'));
+    const bounds = labelBounds(labelElement.tag, labelText, fontSize);
     const points = parsePathPoints(edge.attributes.get('d') ?? '');
-    const markerGap = pointRectangleDistance(points.at(-1), bounds) * scale;
+    const markerGap = Math.min(...markerGeometry(source, pathElement, points)
+      .map((point) => pointRectangleDistance(point, bounds))) * scale;
     assert.ok(markerGap >= 16, `${edge.id} marker-aware label clearance ${markerGap}`);
   }
 }
@@ -345,9 +512,10 @@ test('publishes exact STY-06 metadata, headings, relations, and one same-case co
   assert.equal(metadata.priority, 'P0');
   assert.equal(metadata.slug, ROUTE);
   for (const [field, value] of Object.entries(RELATION_METADATA)) assert.deepEqual(metadata[field], value, field);
-  const headings = findMarkdownHeadings(article.body).map(({text}) => text);
-  assert.deepEqual(headings, HEADINGS);
-  for (const heading of HEADINGS) assert.equal(headings.filter((candidate) => candidate === heading).length, 1, `${heading} once`);
+  const headings = findMarkdownHeadings(article.body);
+  const h2Headings = headings.filter(({level}) => level === 2).map(({text}) => text);
+  assert.deepEqual(h2Headings, HEADINGS, 'exact eleven ordered H2 headings');
+  for (const heading of HEADINGS) assert.equal(h2Headings.filter((candidate) => candidate === heading).length, 1, `${heading} H2 once`);
   assertSameCaseComparison(article.source);
   await runMutation(article.source, (source) => source.replace(
     /(^### 事件携带状态\s*$)([\s\S]*?)(?=^### 事件溯源\s*$)/mu,
@@ -360,6 +528,7 @@ test('locks semantic boundaries, distinct responsibilities, prohibitions, and re
   assertSemanticContract(article.source);
   const visible = visibleTextOf(article.source);
   for (const pattern of RELIABILITY_PATTERNS) assert.match(visible, pattern, `reliability ${pattern}`);
+  for (const pattern of OWNED_FAILURE_PATTERNS) assert.match(visible, pattern, `explicit failure owner ${pattern}`);
   for (const [index, conflation] of CONFLATIONS.entries()) {
     await runMutation(article.source, (source) => `${source}\n\n${[
       '命令就是领域事件。', '领域事件就是集成事件。', '事件代理就是事件存储。',
@@ -368,6 +537,20 @@ test('locks semantic boundaries, distinct responsibilities, prohibitions, and re
   }
   for (const prohibited of PROHIBITED) {
     await runMutation(article.source, (source) => `${source}\n\n${prohibited}。\n`, assertSemanticContract, prohibited);
+  }
+  const semanticMutations = [
+    ['transition conflated with carried state', MODE_BOUNDARY_PATTERNS[0], '状态转移就是事件携带状态'],
+    ['full payload proves event sourcing', NON_PROOF_PATTERNS[0], '完整数据就是事件溯源'],
+    ['broker proves event sourcing', NON_PROOF_PATTERNS[1], '消息代理就是事件溯源'],
+    ['Outbox proves event sourcing', NON_PROOF_PATTERNS[2], 'Outbox 就是事件溯源'],
+    ['CQRS proves event sourcing', NON_PROOF_PATTERNS[3], 'CQRS 必须使用事件溯源'],
+    ['async proves event sourcing', NON_PROOF_PATTERNS[4], '异步就是事件溯源'],
+    ['replayable log proves event sourcing', NON_PROOF_PATTERNS[5], '可重放日志就是事件溯源'],
+    ['replay invokes payment', REPLAY_SAFETY_PATTERN, '回放可以再次扣款、发短信并调用不可逆外部副作用'],
+  ];
+  for (const [label, pattern, replacement] of semanticMutations) {
+    await runMutation(article.source,
+      (source) => replaceFirstMatching(source, pattern, replacement, label), assertSemanticContract, label);
   }
 });
 
@@ -525,4 +708,21 @@ test('keeps marker-aware label clearance and selector-bound effective contrast m
   );
   assert.notEqual(hiddenLabel, svg, 'marker/label collision mutation applies');
   assert.throws(() => assertDiagramPresentation(hiddenLabel), {name: 'AssertionError'}, 'actual marker-aware label clearance');
+  const removedMarker = svg.replace(/(\.[\w-]+\s*\{[^}]*?)\s*marker-end\s*:\s*url\(#[^)]+\)\s*;/u, '$1');
+  assert.notEqual(removedMarker, svg, 'marker removal mutation applies');
+  assert.throws(() => assertDiagramPresentation(removedMarker), {name: 'AssertionError'}, 'missing effective marker-end');
+  const oversizedMarker = svg.replace(/(<marker\b[^>]*\bmarkerWidth=")[^"]+("[^>]*\bmarkerHeight=")[^"]+/u,
+    '$1999$2999');
+  assert.notEqual(oversizedMarker, svg, 'oversized marker mutation applies');
+  assert.throws(() => assertDiagramPresentation(oversizedMarker), {name: 'AssertionError'}, 'oversized actual marker bounds');
+  const localBackgroundMutation = svg.replace(
+    /(<rect\b(?=[^>]*(?:data-label-background|data-edge-label-background))[^>]*\bfill=")#[0-9A-Fa-f]{6}/u,
+    '$1#111827',
+  );
+  assert.notEqual(localBackgroundMutation, svg, 'local edge-label background mutation applies');
+  assert.throws(() => assertDiagramPresentation(localBackgroundMutation), {name: 'AssertionError'},
+    'local-background effective contrast');
+  const opacityMutation = svg.replace(/(<text\b[^>]*data-edge-id="[^"]+"[^>]*)(>)/u, '$1 opacity="0.05"$2');
+  assert.notEqual(opacityMutation, svg, 'edge-label opacity mutation applies');
+  assert.throws(() => assertDiagramPresentation(opacityMutation), {name: 'AssertionError'}, 'effective opacity contrast');
 });
