@@ -77,19 +77,19 @@ const RELIABILITY_PATTERNS = [
   /(?:延迟|lag)/iu,
   /投影水位|projection[- ]watermark/iu,
 ];
-const FAILURE_OWNER_PATTERNS = [
-  /毒(?:消息|事件).{0,20}隔离.{0,20}(?:所有者|负责|责任)|(?:所有者|负责|责任).{0,20}毒(?:消息|事件).{0,20}隔离/u,
-  /受控重放.{0,20}(?:所有者|负责|责任)|(?:所有者|负责|责任).{0,20}受控重放/u,
-  /人工终止.{0,20}(?:所有者|负责|责任)|(?:所有者|负责|责任).{0,20}人工终止/u,
-];
-const RELIABILITY_OWNER_PATTERNS = new Map([
-  ['backlog', /积压.{0,24}(?:所有者|负责|责任)|(?:所有者|负责|责任).{0,24}积压/u],
-  ['lag/watermark', /(?:lag|投影水位).{0,24}(?:所有者|负责|责任)|(?:所有者|负责|责任).{0,24}(?:lag|投影水位)/iu],
-  ['at-least-once', /(?:至少一次|at-least-once).{0,24}(?:所有者|负责|责任)|(?:所有者|负责|责任).{0,24}(?:至少一次|at-least-once)/iu],
-  ['idempotency', /幂等.{0,24}(?:所有者|负责|责任)|(?:所有者|负责|责任).{0,24}幂等/u],
-  ['ordering', /(?:顺序|乱序).{0,24}(?:所有者|负责|责任)|(?:所有者|负责|责任).{0,24}(?:顺序|乱序)/u],
-  ['schema-evolution', /(?:模式|schema)演进.{0,24}(?:所有者|负责|责任)|(?:所有者|负责|责任).{0,24}(?:模式|schema)演进/iu],
+const OWNERSHIP_CONTRACTS = new Map([
+  ['poison-isolation', /毒(?:消息|事件).{0,20}隔离/u],
+  ['controlled-replay', /受控重放/u],
+  ['manual-terminal', /人工终止/u],
+  ['backlog', /积压/u],
+  ['lag/watermark', /(?:lag|投影水位)/iu],
+  ['at-least-once', /(?:至少一次|at-least-once)/iu],
+  ['idempotency', /幂等/u],
+  ['ordering', /(?:顺序|乱序)/u],
+  ['schema-evolution', /(?:模式|schema)演进/iu],
 ]);
+const AFFIRMATIVE_OWNER_PATTERN = /(?:由|交由|归属|明确为).{0,16}(?:服务所有者|消费者|生产者|平台团队|运维团队|投影处理器|模式负责人|值班人员).{0,12}(?:负责|承担|处置|维护)|(?:服务所有者|消费者|生产者|平台团队|运维团队|投影处理器|模式负责人|值班人员).{0,12}(?:负责|承担|处置|维护)/u;
+const UNRESOLVED_OWNER_PATTERN = /不负责|没有所有者|无人负责|所有者待定|责任待定|待定|尚未明确|未指定/u;
 const MATRIX_ROWS = [
   /载荷/u, /回查|取数/u, /时间耦合.*模式耦合|模式耦合.*时间耦合/u,
   /权威|事实来源/u, /副本/u, /顺序/u, /重放/u, /审计/u, /隐私/u,
@@ -123,7 +123,8 @@ const RESPONSIBILITY_PATTERNS = new Map([
   ['ordered-authority', /按聚合有序.{0,24}(?:事件流|领域事件).{0,24}(?:权威写入记录|权威事实|权威状态)|(?:权威写入记录|权威事实|权威状态).{0,24}按聚合有序.{0,24}(?:事件流|领域事件)/u],
 ]);
 const TEACHING_FRAMEWORK_PATTERN = /(?:四种模式|四类).{0,24}(?:教学比较框架|教学框架)/u;
-const NON_UNIQUE_TAXONOMY_PATTERN = /(?:四种模式|四类|教学比较框架|教学框架).{0,32}(?:并非|不是|不宣称为).{0,12}(?:唯一|穷尽)|(?:并非|不是|不宣称为).{0,12}(?:唯一|穷尽).{0,32}(?:四种模式|四类|教学比较框架|教学框架)/u;
+const NON_UNIQUE_TAXONOMY_PATTERN = /(?:四种模式|四类|教学比较框架|教学框架).{0,32}(?:并非|不是|不宣称为).{0,12}唯一|(?:并非|不是|不宣称为).{0,12}唯一.{0,32}(?:四种模式|四类|教学比较框架|教学框架)/u;
+const NON_EXHAUSTIVE_TAXONOMY_PATTERN = /(?:四种模式|四类|教学比较框架|教学框架).{0,32}(?:并非|不是|不宣称为).{0,12}穷尽|(?:并非|不是|不宣称为).{0,12}穷尽.{0,32}(?:四种模式|四类|教学比较框架|教学框架)/u;
 const NON_LADDER_PATTERN = /(?:四种模式|四类|教学比较框架|教学框架).{0,32}(?:不构成|不是|并非).{0,16}(?:成熟度阶梯|逐级升级|渐进升级)|(?:不构成|不是|并非).{0,16}(?:成熟度阶梯|逐级升级|渐进升级).{0,32}(?:四种模式|四类|教学比较框架|教学框架)/u;
 const NON_PROOF_PATTERNS = [
   /(?:完整载荷|完整数据|全量数据).{0,24}(?:不能|不等于|不足以|并不).{0,16}事件溯源|事件溯源.{0,24}(?:不能由|不由).{0,16}(?:完整载荷|完整数据|全量数据).{0,8}(?:证明|决定)/u,
@@ -226,13 +227,28 @@ function assertSemanticContract(source) {
   for (const prohibited of PROHIBITED) assert.equal(visible.includes(prohibited), false, `prohibited claim: ${prohibited}`);
   for (const [term, pattern] of TERM_PATTERNS) assert.match(visible, pattern, `${term} separate definition`);
   assert.match(visible, TEACHING_FRAMEWORK_PATTERN, 'positive teaching framework');
-  assert.match(visible, NON_UNIQUE_TAXONOMY_PATTERN, 'taxonomy is neither unique nor exhaustive');
+  assert.match(visible, NON_UNIQUE_TAXONOMY_PATTERN, 'taxonomy is not unique');
+  assert.match(visible, NON_EXHAUSTIVE_TAXONOMY_PATTERN, 'taxonomy is not exhaustive');
   assert.match(visible, NON_LADDER_PATTERN, 'taxonomy is not a maturity ladder or progressive upgrade');
   for (const [responsibility, pattern] of RESPONSIBILITY_PATTERNS) assert.match(visible, pattern, `${responsibility} positive responsibility`);
   for (const pattern of NON_PROOF_PATTERNS) assert.match(visible, pattern, `event-sourcing non-proof ${pattern}`);
   for (const pattern of MODE_BOUNDARY_PATTERNS) assert.match(visible, pattern, `mode boundary ${pattern}`);
   for (const [effect, pattern] of REPLAY_SAFETY_PATTERNS) assert.match(visible, pattern, `replay excludes ${effect}`);
   for (const conflation of CONFLATIONS) assert.doesNotMatch(visible, conflation, `critical conflation ${conflation}`);
+}
+
+function sentences(source) {
+  return source.split(/[。！？!?；;\n]+/u).map((value) => value.trim()).filter(Boolean);
+}
+
+function assertAffirmativeOwnership(source) {
+  const visible = visibleTextOf(source);
+  for (const [concern, concernPattern] of OWNERSHIP_CONTRACTS) {
+    const candidates = sentences(visible).filter((sentence) => concernPattern.test(sentence));
+    assert.ok(candidates.length > 0, `${concern} ownership sentence`);
+    assert.ok(candidates.some((sentence) => AFFIRMATIVE_OWNER_PATTERN.test(sentence) &&
+      !UNRESOLVED_OWNER_PATTERN.test(sentence)), `${concern} affirmative named owner/component`);
+  }
 }
 
 function replaceFirstMatching(source, pattern, replacement, label) {
@@ -387,24 +403,22 @@ function styleRules(source) {
 
 function ownSvgPresentationValue(source, element, property) {
   let winner = element.attributes.has(property)
-    ? {important: false, order: -2, specificity: [0, 0, 0], value: element.attributes.get(property)} : null;
+    ? {precedence: 0, order: -2, specificity: [0, 0, 0], value: element.attributes.get(property)} : null;
   for (const rule of styleRules(source)) {
     const rawValue = rule.declarations.get(property);
     if (rawValue === undefined || !selectorMatches(element, rule.selector)) continue;
     const important = /\s*!important\s*$/iu.test(rawValue);
-    const candidate = {...rule, important, value: rawValue.replace(/\s*!important\s*$/iu, '')};
-    if (!winner || Number(candidate.important) > Number(winner.important) ||
-      (candidate.important === winner.important && (compareSpecificity(candidate.specificity, winner.specificity) > 0 ||
+    const candidate = {...rule, precedence: important ? 2 : 0,
+      value: rawValue.replace(/\s*!important\s*$/iu, '')};
+    if (!winner || candidate.precedence > winner.precedence ||
+      (candidate.precedence === winner.precedence && (compareSpecificity(candidate.specificity, winner.specificity) > 0 ||
       (compareSpecificity(candidate.specificity, winner.specificity) === 0 && candidate.order > winner.order)))) winner = candidate;
   }
   const inline = cssDeclarations(element.attributes.get('style') ?? '').get(property);
   if (inline !== undefined) {
-    const candidate = {important: /\s*!important\s*$/iu.test(inline), order: Number.MAX_SAFE_INTEGER,
-      specificity: [1, 0, 0], value: inline.replace(/\s*!important\s*$/iu, '')};
-    if (!winner || Number(candidate.important) > Number(winner.important) ||
-      (candidate.important === winner.important && compareSpecificity(candidate.specificity, winner.specificity) >= 0)) {
-      winner = candidate;
-    }
+    const candidate = {precedence: /\s*!important\s*$/iu.test(inline) ? 3 : 1,
+      value: inline.replace(/\s*!important\s*$/iu, '')};
+    if (!winner || candidate.precedence >= winner.precedence) winner = candidate;
   }
   return winner?.value;
 }
@@ -585,6 +599,25 @@ async function runMutation(source, mutate, validator, label) {
   await assert.rejects(async () => validator(mutated), {name: 'AssertionError'}, label);
 }
 
+test('resolves SVG inline and important author cascade precedence', () => {
+  const elementFrom = (source) => svgElements(source).find(({attributes}) => attributes.get('id') === 'cascade-target');
+  const normalInline = '<svg><style>#cascade-target.edge { stroke: #FFFFFF; }</style>' +
+    '<path id="cascade-target" class="edge" style="stroke: #334155"/></svg>';
+  assert.equal(ownSvgPresentationValue(normalInline, elementFrom(normalInline), 'stroke'), '#334155',
+    'normal inline declaration beats high-specificity normal stylesheet rule');
+  const stylesheetImportant = '<svg><style>#cascade-target.edge { stroke: #FFFFFF !important; }</style>' +
+    '<path id="cascade-target" class="edge" style="stroke: #334155"/></svg>';
+  assert.equal(ownSvgPresentationValue(stylesheetImportant, elementFrom(stylesheetImportant), 'stroke'), '#FFFFFF',
+    'stylesheet important beats normal inline declaration');
+  const inlineImportant = '<svg><style>#cascade-target.edge { stroke: #FFFFFF !important; }</style>' +
+    '<path id="cascade-target" class="edge" style="stroke: #334155 !important"/></svg>';
+  assert.equal(ownSvgPresentationValue(inlineImportant, elementFrom(inlineImportant), 'stroke'), '#334155',
+    'inline important beats stylesheet important declaration');
+  const brokenInlinePrecedence = normalInline.replace('style="stroke: #334155"', 'stroke="#334155"');
+  assert.notEqual(ownSvgPresentationValue(brokenInlinePrecedence, elementFrom(brokenInlinePrecedence), 'stroke'), '#334155',
+    'removing inline tier lets high-specificity stylesheet rule win');
+});
+
 test('publishes exact STY-06 metadata, headings, relations, and one same-case comparison', async () => {
   assert.ok(article, `${ARTICLE} must exist after implementation`);
   const metadata = parseFrontMatter(article.source);
@@ -608,10 +641,9 @@ test('publishes exact STY-06 metadata, headings, relations, and one same-case co
 test('locks semantic boundaries, distinct responsibilities, prohibitions, and reliability ownership', async () => {
   assert.ok(article, `${ARTICLE} must exist after implementation`);
   assertSemanticContract(article.source);
+  assertAffirmativeOwnership(article.source);
   const visible = visibleTextOf(article.source);
   for (const pattern of RELIABILITY_PATTERNS) assert.match(visible, pattern, `reliability ${pattern}`);
-  for (const pattern of FAILURE_OWNER_PATTERNS) assert.match(visible, pattern, `explicit failure owner ${pattern}`);
-  for (const [concern, pattern] of RELIABILITY_OWNER_PATTERNS) assert.match(visible, pattern, `${concern} explicit owner`);
   for (const [index, conflation] of CONFLATIONS.entries()) {
     await runMutation(article.source, (source) => `${source}\n\n${[
       '命令就是领域事件。', '领域事件就是集成事件。', '事件代理就是事件存储。',
@@ -622,7 +654,8 @@ test('locks semantic boundaries, distinct responsibilities, prohibitions, and re
     await runMutation(article.source, (source) => `${source}\n\n${prohibited}。\n`, assertSemanticContract, prohibited);
   }
   const semanticMutations = [
-    ['taxonomy claimed unique/exhaustive', NON_UNIQUE_TAXONOMY_PATTERN, '这套教学分类是唯一且穷尽的分类。'],
+    ['taxonomy claimed unique', NON_UNIQUE_TAXONOMY_PATTERN, '这套教学分类是唯一分类。'],
+    ['taxonomy claimed exhaustive', NON_EXHAUSTIVE_TAXONOMY_PATTERN, '这套教学分类是穷尽分类。'],
     ['taxonomy claimed maturity ladder', NON_LADDER_PATTERN, '四种模式构成成熟度阶梯并要求逐级升级。'],
     ['transition conflated with carried state', MODE_BOUNDARY_PATTERNS[0], '状态转移就是事件携带状态'],
     ['full payload proves event sourcing', NON_PROOF_PATTERNS[0], '完整数据就是事件溯源'],
@@ -639,6 +672,14 @@ test('locks semantic boundaries, distinct responsibilities, prohibitions, and re
   for (const [effect, pattern] of REPLAY_SAFETY_PATTERNS) {
     await runMutation(article.source, (source) => replaceFirstMatching(source, pattern,
       `回放可以重新执行 ${effect}。`, `replay ${effect}`), assertSemanticContract, `replay ${effect}`);
+  }
+  for (const [concern, pattern] of OWNERSHIP_CONTRACTS) {
+    await runMutation(article.source, (source) => {
+      const matchingSentence = sentences(visibleTextOf(source)).find((sentence) => pattern.test(sentence) &&
+        AFFIRMATIVE_OWNER_PATTERN.test(sentence) && !UNRESOLVED_OWNER_PATTERN.test(sentence));
+      assert.ok(matchingSentence, `${concern} ownership mutation fixture`);
+      return source.replace(matchingSentence, `${matchingSentence}；没有所有者，责任待定`);
+    }, assertAffirmativeOwnership, `${concern} unresolved/negated owner`);
   }
 });
 
