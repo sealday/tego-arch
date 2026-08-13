@@ -1139,7 +1139,7 @@ test('locks the AWS Prescriptive Guidance documentation license and rejects an A
   }), {name: 'AssertionError'}, 'AWS documentation ARR downgrade');
 });
 
-test('projects the exact STY-05 Stage B closure state', () => {
+test('preserves the STY-05 closure under the live STY-06 Stage B projection', () => {
   const topic = manifest.topics.find(({id}) => id === TOPIC_ID);
   assert.equal(topic?.slug, ROUTE);
   assert.equal(topic?.published, true);
@@ -1150,10 +1150,10 @@ test('projects the exact STY-05 Stage B closure state', () => {
   assert.deepEqual(topic?.primary_sources, ['https://martinfowler.com/articles/microservices.html']);
   const nextTopic = manifest.topics.find(({id}) => id === 'STY-06');
   assert.equal(nextTopic?.published, true);
-  assert.equal(nextTopic?.status.value, 'pending');
+  assert.equal(nextTopic?.status.value, 'complete');
   assert.equal(indexes.style.find(({id}) => id === TOPIC_ID)?.published, true);
   assert.equal(indexes.style.find(({id}) => id === 'STY-06')?.published, true);
-  assert.equal(projectStatus.completed_topics, 58);
+  assert.equal(projectStatus.completed_topics, 59);
   assert.equal(projectStatus.content_documents, 101);
   assert.equal(projectStatus.governed_sources, 525);
   assert.equal(publicLedger.sources.length, 525);

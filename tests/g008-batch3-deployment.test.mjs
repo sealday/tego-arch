@@ -167,9 +167,9 @@ function assertCurrentReleaseState(source) {
   const {prefix} = assertBatch3HistoricalSegment(source);
   assert.match(
     prefix,
-    /^- \*\*当前发布基线：\*\* 2026-08-11 G009 Batch 6 已完成 STY-05/u,
+    /^- \*\*当前发布基线：\*\* 2026-08-13 G009 Batch 7 已完成 STY-06/u,
   );
-  assert.match(prefix, /当前 G009，下一项为 STY-06/u);
+  assert.match(prefix, /当前 G009，下一项为 STY-07/u);
 }
 
 function assertBacklogClosure(source) {
@@ -284,7 +284,7 @@ test('preserves Batch 3 closure under the current G009 baseline', () => {
   assert.equal(topicsById.get('STY-00')?.status.value, 'complete');
   assert.equal(topicsById.get('STY-01')?.published, true);
   assert.equal(topicsById.get('STY-01')?.status.value, 'complete');
-  assert.equal(projectStatus.completed_topics, 58);
+  assert.equal(projectStatus.completed_topics, 59);
   assert.equal(projectStatus.content_documents, 101);
   assert.equal(projectStatus.governed_sources, 525);
   assert.deepEqual(projectStatus.durable_stories, {
@@ -299,7 +299,7 @@ test('preserves Batch 3 closure under the current G009 baseline', () => {
 
 test('rejects incomplete over-complete or terminal current mutations', () => {
   const staleNextTopic = backlog.replace(
-    '当前 G009，下一项为 STY-06',
+    '当前 G009，下一项为 STY-07',
     '当前 G009，下一项为 STY-03',
   );
   assert.notEqual(staleNextTopic, backlog, 'next-topic mutation must change backlog');

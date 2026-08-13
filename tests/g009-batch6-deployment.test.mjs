@@ -319,14 +319,14 @@ function assertHistoricalBacklogLocks(source) {
   assert.equal(sha256(currentBaseline.slice(historyStart)), HISTORICAL_BACKLOG_SUFFIX_HASH);
 }
 
-test('projects the exact STY-05 Stage B closure inventory', () => {
+test('preserves the exact STY-05 closure under the live STY-06 projection', () => {
   assert.deepEqual(
     {
       completed_topics: projectStatus.completed_topics,
       content_documents: projectStatus.content_documents,
       governed_sources: projectStatus.governed_sources,
     },
-    {completed_topics: 58, content_documents: 101, governed_sources: 525},
+    {completed_topics: 59, content_documents: 101, governed_sources: 525},
   );
   assert.equal(publicLedger.sources.length, 525);
 
@@ -337,7 +337,7 @@ test('projects the exact STY-05 Stage B closure inventory', () => {
   }
   for (const projection of [topicsById.get('STY-06'), stylesById.get('STY-06')]) {
     assert.equal(projection?.published, true);
-    assert.equal(projection?.status.value, 'pending');
+    assert.equal(projection?.status.value, 'complete');
   }
 });
 
@@ -360,7 +360,7 @@ test('closes only STY-05 and advances the G009 release baseline to STY-06', () =
   assert.match(currentBaseline, /STY-05 为 published\/complete/u);
   assert.match(currentBaseline, /STY-06 为 unpublished\/pending/u);
   assert.match(backlog, /^- \[x\] \*\*STY-05 /mu);
-  assert.match(backlog, /^- \[ \] \*\*STY-06 /mu);
+  assert.match(backlog, /^- \[x\] \*\*STY-06 /mu);
 
   const sty05Lines = backlog.split(/\r?\n/u)
     .filter((line) => /^- \[[ x]\] \*\*STY-05 /u.test(line));

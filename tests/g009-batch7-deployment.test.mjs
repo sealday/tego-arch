@@ -8,10 +8,12 @@ const DRAWIO = 'diagrams/sty-06-event-driven-four-patterns.drawio';
 const SVG = 'static/img/diagrams/sty-06-event-driven-four-patterns.svg';
 const LEDGER = 'data/source-ledger.json';
 const REVIEW = 'docs/reviews/g009-batch7.md';
+const BACKLOG = 'docs/content-backlog.md';
 const RAW_BROWSER = 'docs/reviews/evidence/g009-batch7-stage-a-browser.json';
 const PRODUCTION_BROWSER = 'docs/reviews/evidence/g009-batch7-stage-a-production-browser.json';
 const REVIEWED_HEAD = '44fcafbef24b68f14a9cbf4be0b3fba09cc6002d';
 const EVIDENCE_HEAD = 'f24b4d4a4ebd95bf454f6e87200c83476dc91971';
+const IMMEDIATE_STY05_HISTORY_HASH = 'dc7180a0503ebcc2e285d8425e4e37f87b6125339823ba5577eb822992aa7109';
 const STATES = ['desktopLight', 'desktopDark', 'mobileLight', 'mobileDark'];
 const WRAPPER_LABELS = [
   '订单事件的四种模式并排比较图，可横向滚动',
@@ -33,9 +35,10 @@ const SOURCE_IDS = [
   'src-atlas-sty06-event-driven-four-patterns',
 ];
 
-const [review, rawBrowserBytes, productionBrowserBytes, manifest, indexes, status, publicLedger] = await Promise.all([
+const [review, backlog, rawBrowserBytes, productionBrowserBytes, manifest, indexes, status, publicLedger] = await Promise.all([
   readFile(new URL(`../${REVIEW}`, import.meta.url), 'utf8').catch((error) =>
     error?.code === 'ENOENT' ? '' : Promise.reject(error)),
+  readFile(new URL(`../${BACKLOG}`, import.meta.url), 'utf8'),
   readFile(new URL(`../${RAW_BROWSER}`, import.meta.url)),
   readFile(new URL(`../${PRODUCTION_BROWSER}`, import.meta.url)),
   readFile(new URL('../src/generated/topic-manifest.json', import.meta.url), 'utf8').then(JSON.parse),
@@ -67,11 +70,11 @@ function assertProjection() {
     completed_topics: status.completed_topics,
     content_documents: status.content_documents,
     governed_sources: status.governed_sources,
-  }, {completed_topics: 58, content_documents: 101, governed_sources: 525});
+  }, {completed_topics: 59, content_documents: 101, governed_sources: 525});
   assert.equal(publicLedger.sources.length, 525);
   const sty06 = manifest.topics.find(({id}) => id === 'STY-06');
   const sty07 = manifest.topics.find(({id}) => id === 'STY-07');
-  assert.deepEqual([sty06?.published, sty06?.status.value, sty06?.slug], [true, 'pending', '/styles/sty-06']);
+  assert.deepEqual([sty06?.published, sty06?.status.value, sty06?.slug], [true, 'complete', '/styles/sty-06']);
   assert.deepEqual([sty07?.published, sty07?.status.value], [false, 'pending']);
   assert.equal(indexes.style.find(({id}) => id === 'STY-06')?.published, true);
   assert.equal(indexes.style.find(({id}) => id === 'STY-07')?.published, false);
@@ -226,7 +229,7 @@ async function assertArtifactIdentities(source) {
   }
 }
 
-test('projects the exact STY-06 Stage A candidate without closing Stage B', () => {
+test('projects the exact STY-06 Stage B closure while preserving Stage A evidence', () => {
   assertProjection();
   assert.equal(manifest.topics.filter(({published}) => published).some(({slug}) => slug === '/styles/sty-07'), false);
 });
@@ -335,5 +338,67 @@ test('rejects weakened or fabricated STY-06 production evidence', () => {
     const mutated = review.replace(before, after);
     assert.notEqual(mutated, review, `${label} mutation applies`);
     assert.throws(() => assertProductionDeployment(mutated), {name: 'AssertionError'}, label);
+  }
+});
+
+test('closes STY-06 only after Stage A production while keeping Stage B deployment pending', () => {
+  assert.deepEqual({
+    completed_topics: status.completed_topics,
+    content_documents: status.content_documents,
+    governed_sources: status.governed_sources,
+  }, {completed_topics: 59, content_documents: 101, governed_sources: 525});
+  const sty06 = manifest.topics.find(({id}) => id === 'STY-06');
+  const sty07 = manifest.topics.find(({id}) => id === 'STY-07');
+  assert.deepEqual([sty06?.published, sty06?.status.value], [true, 'complete']);
+  assert.deepEqual([sty07?.published, sty07?.status.value], [false, 'pending']);
+  const currentBaseline = backlog.split(/\r?\n/u).find((line) => line.startsWith('- **当前发布基线：**'));
+  assert.ok(currentBaseline, 'current release baseline');
+  for (const literal of [
+    '2026-08-13 G009 Batch 7 已完成 STY-06',
+    '59 个已完成主题、101 篇内容文档与 525 个受治理来源',
+    '当前 G009，下一项为 STY-07',
+    'STY-06 为 published/complete',
+    'STY-07 为 unpublished/pending',
+  ]) assert.ok(currentBaseline.includes(literal), `Stage B baseline literal: ${literal}`);
+  const immediateMarker = '此前 G009 Batch 6 历史完成基线为：';
+  const historyStart = currentBaseline.indexOf(immediateMarker);
+  assert.notEqual(historyStart, -1, 'immediate STY-05 history marker');
+  assert.equal(sha256(currentBaseline.slice(historyStart + immediateMarker.length)), IMMEDIATE_STY05_HISTORY_HASH);
+  const sty06Lines = backlog.split(/\r?\n/u).filter((line) => /^- \[[ x]\] \*\*STY-06 /u.test(line));
+  assert.equal(sty06Lines.length, 1);
+  for (const literal of ['- [x] **STY-06 ', '2026-08-13', '56773ffad24427b33444fb4e5d86aa524fea1577', '31668483971', '/styles/sty-06', '/img/diagrams/sty-06-event-driven-four-patterns.svg', 'Stage A production verdict PASS']) {
+    assert.ok(sty06Lines[0].includes(literal), `STY-06 closure literal: ${literal}`);
+  }
+  assert.match(backlog, /^- \[ \] \*\*STY-07 /mu);
+  assert.doesNotMatch(backlog, /\]\(\/styles\/sty-07\)/u);
+  const closure = section(review, 'Stage B closure candidate');
+  assert.match(closure, /59 completed topics \/ 101 content documents \/ 525 governed sources/u);
+  assert.match(closure, /STY-06 target: `published \/ complete`; STY-07 target: `unpublished \/ pending`, actionable count `0`/u);
+  assert.match(closure, /Independent Stage B code\/content-rights\/architecture review slots: `PENDING \/ NOT_RUN`/u);
+  assert.match(closure, /Final Stage B review judgment: `PENDING`/u);
+  assert.match(closure, /Stage B deployment status: `PENDING`/u);
+});
+
+test('rejects immediate-history drift and fabricated Stage B readiness or deployment', () => {
+  const mutations = [
+    ['history drift', backlog, backlog.replace('build job `93777183963`', 'build job `0`')],
+    ['wrong projection', review, review.replace('59 completed topics / 101 content documents / 525 governed sources', '58 completed topics / 101 content documents / 525 governed sources')],
+    ['fabricated review', review, review.replace('Final Stage B review judgment: `PENDING`.', 'Final Stage B review judgment: `READY`.')],
+    ['fabricated deployment', review, review.replace('Stage B deployment status: `PENDING`.', 'Stage B deployment status: `SUCCESS`.')],
+  ];
+  for (const [label, original, mutated] of mutations) {
+    assert.notEqual(mutated, original, `${label} mutation applies`);
+    if (label === 'history drift') {
+      const line = mutated.split(/\r?\n/u).find((entry) => entry.startsWith('- **当前发布基线：**'));
+      const marker = '此前 G009 Batch 6 历史完成基线为：';
+      assert.notEqual(sha256(line.slice(line.indexOf(marker) + marker.length)), IMMEDIATE_STY05_HISTORY_HASH);
+    } else {
+      const closure = section(mutated, 'Stage B closure candidate');
+      assert.throws(() => {
+        assert.match(closure, /59 completed topics \/ 101 content documents \/ 525 governed sources/u);
+        assert.match(closure, /Final Stage B review judgment: `PENDING`/u);
+        assert.match(closure, /Stage B deployment status: `PENDING`/u);
+      }, {name: 'AssertionError'}, label);
+    }
   }
 });

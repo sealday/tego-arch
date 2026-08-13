@@ -1573,17 +1573,17 @@ test('locks reciprocal visible links and excludes actionable STY-07', () => {
   }
 });
 
-test('projects the exact STY-06 Stage A pre-closure state', () => {
+test('projects the exact STY-06 Stage B closure state', () => {
   assert.deepEqual({
     completed_topics: projectStatus.completed_topics,
     content_documents: projectStatus.content_documents,
     governed_sources: projectStatus.governed_sources,
-  }, {completed_topics: 58, content_documents: 101, governed_sources: 525});
+  }, {completed_topics: 59, content_documents: 101, governed_sources: 525});
   assert.equal(publicLedger.sources.length, 525);
   const topic = manifest.topics.find(({id}) => id === TOPIC_ID);
   assert.equal(topic?.slug, ROUTE);
   assert.equal(topic?.published, true);
-  assert.equal(topic?.status.value, 'pending');
+  assert.equal(topic?.status.value, 'complete');
   assert.deepEqual(topic?.dependencies, RELATION_METADATA.depends_on);
   assert.deepEqual(topic?.adjacent_topics, RELATION_METADATA.adjacent_topics);
   assert.deepEqual(topic?.related_cases, RELATION_METADATA.related_cases);
