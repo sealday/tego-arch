@@ -16,6 +16,7 @@ const REVIEWED_HEAD = '44fcafbef24b68f14a9cbf4be0b3fba09cc6002d';
 const EVIDENCE_HEAD = 'f24b4d4a4ebd95bf454f6e87200c83476dc91971';
 const IMMEDIATE_STY05_HISTORY_HASH = 'dc7180a0503ebcc2e285d8425e4e37f87b6125339823ba5577eb822992aa7109';
 const IMMEDIATE_STY05_REVIEW_HASH = 'b8b16c04ecae53468b9283bcba0d831850c400762840c742f17e7c57933789b0';
+const STAGE_B_REVIEWED_HEAD = '9cee8a1ad64cb0fa20213a477087bb3cbae5657f';
 const STATES = ['desktopLight', 'desktopDark', 'mobileLight', 'mobileDark'];
 const WRAPPER_LABELS = [
   '订单事件的四种模式并排比较图，可横向滚动',
@@ -378,8 +379,11 @@ test('closes STY-06 only after Stage A production while keeping Stage B deployme
   const closure = section(review, 'Stage B closure candidate');
   assert.match(closure, /59 completed topics \/ 101 content documents \/ 525 governed sources/u);
   assert.match(closure, /STY-06 target: `published \/ complete`; STY-07 target: `unpublished \/ pending`, actionable count `0`/u);
-  assert.match(closure, /Independent Stage B code\/content-rights\/architecture review slots: `PENDING \/ NOT_RUN`/u);
-  assert.match(closure, /Final Stage B review judgment: `PENDING`/u);
+  assert.match(closure, new RegExp(`Exact Stage B reviewed head: \`${STAGE_B_REVIEWED_HEAD}\``, 'u'));
+  assert.match(closure, /Independent Stage B code reviewer: `READY \/ APPROVE`; findings: `0`/u);
+  assert.match(closure, /Independent Stage B content\/rights reviewer: `CONTENT READY`; rights: `PASS`; findings: `0`/u);
+  assert.match(closure, /Independent Stage B architecture reviewer: `CLEAR \/ READY`; blockers: `0`/u);
+  assert.match(closure, /Final Stage B review judgment: `READY`/u);
   assert.match(closure, /Stage B deployment status: `PENDING`/u);
 });
 
@@ -388,7 +392,7 @@ test('rejects immediate-history drift and fabricated Stage B readiness or deploy
   const mutations = [
     ['history drift', backlog, backlog.replace('build job `93777183963`', 'build job `0`')],
     ['wrong projection', review, review.replace('59 completed topics / 101 content documents / 525 governed sources', '58 completed topics / 101 content documents / 525 governed sources')],
-    ['fabricated review', review, review.replace('Final Stage B review judgment: `PENDING`.', 'Final Stage B review judgment: `READY`.')],
+    ['weakened review', review, review.replace('Final Stage B review judgment: `READY`.', 'Final Stage B review judgment: `PENDING`.')],
     ['fabricated deployment', review, review.replace('Stage B deployment status: `PENDING`.', 'Stage B deployment status: `SUCCESS`.')],
   ];
   for (const [label, original, mutated] of mutations) {
@@ -401,7 +405,7 @@ test('rejects immediate-history drift and fabricated Stage B readiness or deploy
       const closure = section(mutated, 'Stage B closure candidate');
       assert.throws(() => {
         assert.match(closure, /59 completed topics \/ 101 content documents \/ 525 governed sources/u);
-        assert.match(closure, /Final Stage B review judgment: `PENDING`/u);
+        assert.match(closure, /Final Stage B review judgment: `READY`/u);
         assert.match(closure, /Stage B deployment status: `PENDING`/u);
       }, {name: 'AssertionError'}, label);
     }

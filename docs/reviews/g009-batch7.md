@@ -75,6 +75,10 @@ This production result closes only Stage A publication. STY-06 remains pending u
 - Projection target: `59 completed topics / 101 content documents / 525 governed sources`.
 - STY-06 target: `published / complete`; STY-07 target: `unpublished / pending`, actionable count `0`.
 - Stage A evidence remains immutable: implementation `56773ffad24427b33444fb4e5d86aa524fea1577`, Pages run `31668483971`, live route and SVG HTTP `200` on 2026-08-13.
-- Independent Stage B code/content-rights/architecture review slots: `PENDING / NOT_RUN`.
-- Final Stage B review judgment: `PENDING`.
+- Exact Stage B reviewed head: `9cee8a1ad64cb0fa20213a477087bb3cbae5657f`.
+- Independent Stage B code reviewer: `READY / APPROVE`; findings: `0`.
+- Independent Stage B content/rights reviewer: `CONTENT READY`; rights: `PASS`; findings: `0`.
+- Independent Stage B architecture reviewer: `CLEAR / READY`; blockers: `0`.
+- Review history: initial closure head `c58672fa2e4a3c1904d148436405beac026388ce` was blocked only because the complete immediate STY-05 review lacked an exact byte lock; remediation head `9cee8a1ad64cb0fa20213a477087bb3cbae5657f` added that SHA-256 and mutation rejection, then received three zero-finding exact-head verdicts.
+- Final Stage B review judgment: `READY`.
 - Stage B deployment status: `PENDING`.
