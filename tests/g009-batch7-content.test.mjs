@@ -98,9 +98,26 @@ const REQUIRED_WRAPPERS = [
 ];
 const MODE_ANSWER_PATTERNS = new Map([
   ['事件通知', [/\u6700\u5c0f\u8f7d\u8377/u, /\u56de\u67e5\u8ba2\u5355\u670d\u52a1/u, /\u8ba2\u5355\u670d\u52a1.{0,16}\u6743\u5a01\u72b6\u6001/u, /\u4e0d\u53c2\u4e0e.{0,16}\u91cd\u5efa/u, /\u6709\u754c\u91cd\u8bd5.{0,32}\u964d\u7ea7.{0,40}\u4eba\u5de5\u5904\u7f6e/u]],
-  ['状态转移', [/\u524d\u540e\u72b6\u6001.{0,16}\u805a\u5408\u7248\u672c/u, /\u7248\u672c\u7f3a\u53e3.{0,16}\u8865\u53d6/u, /\u8ba2\u5355\u670d\u52a1.{0,16}\u6743\u5a01/u, /\u4e0d.{0,12}\u6743\u5a01\u5386\u53f2/u, /\u975e\u6cd5\u8fc1\u79fb.{0,24}\u4e8b\u4ef6\u5408\u540c\u8d1f\u8d23\u4eba/u]],
+  ['状态转移', [/\u524d\u540e\u72b6\u6001.{0,16}\u805a\u5408\u7248\u672c/u, /\u7248\u672c\u7f3a\u53e3.{0,16}\u8865\u53d6/u, /\u8ba2\u5355\u670d\u52a1.{0,16}\u6743\u5a01/u, /\u4e0d.{0,12}\u6743\u5a01\u5386\u53f2/u, /\u975e\u6cd5\u8fc1\u79fb.{0,96}\u4e8b\u4ef6\u5408\u540c\u8d1f\u8d23\u4eba/u]],
   ['事件携带状态', [/\u7248\u672c\u5316\u8ba2\u5355\u72b6\u6001.{0,16}\u6240\u9700\u5b57\u6bb5/u, /\u6b63\u5e38\u8def\u5f84\u4e0d\u56de\u67e5/u, /\u8ba2\u5355\u670d\u52a1.{0,16}\u6743\u5a01\u5199\u6a21\u578b/u, /\u91cd\u5efa\u6d88\u8d39\u8005\u526f\u672c.{0,16}\u4e0d.{0,16}\u6743\u5a01/u, /\u53bb\u91cd\u66f4\u65b0.{0,24}\u4e8b\u4ef6\u5408\u540c\u8d1f\u8d23\u4eba/u]],
   ['事件溯源', [/\u6309\u805a\u5408\u6709\u5e8f.{0,16}\u9886\u57df\u4e8b\u4ef6/u, /\u4e8b\u4ef6\u5b58\u50a8.{0,16}\u6062\u590d/u, /\u4e8b\u4ef6\u5b58\u50a8\u662f\u6743\u5a01/u, /\u56de\u653e\u91cd\u5efa\u805a\u5408\u4e0e\u6295\u5f71/u, /\u547d\u4ee4\u5904\u7406\u5668.{0,16}\u4e50\u89c2\u5e76\u53d1.{0,24}\u6295\u5f71\u5904\u7406\u5668/u]],
+]);
+const TRANSITION_FAILURE_CONTRACTS = new Map([
+  ['illegal transition rejection', /\u975e\u6cd5\u8fc1\u79fb.{0,8}\u62d2\u7edd/u],
+  ['same-version idempotent ignore', /\u540c\u7248\u672c\u91cd\u590d.{0,8}\u5e42\u7b49\u5ffd\u7565/u],
+  ['old-version rejection', /\u65e7\u7248\u672c.{0,8}(?:\u62d2\u7edd|\u4e22\u5f03)/u],
+  ['version-gap recovery', /\u7248\u672c\u7f3a\u53e3.{0,8}(?:\u6682\u5b58|\u7f13\u51b2).{0,8}\u8865\u53d6/u],
+]);
+const RELIABILITY_TABLE_ROWS = new Map([
+  ['\u4e8b\u4ef6\u901a\u77e5\u56de\u67e5\u5931\u8d25', [
+    /\u56de\u67e5.{0,12}(?:\u8d85\u65f6|\u4e0d\u53ef\u7528)/u, /\u6709\u754c\u91cd\u8bd5.{0,12}\u964d\u7ea7/u,
+    /\u8865\u507f.{0,12}\u4ecd.{0,8}(?:\u5931\u8d25|\u4e0d\u53ef\u7528)/u, /\u670d\u52a1\u6240\u6709\u8005/u,
+  ]],
+  ['\u91cd\u590d\u6295\u9012', [/\u4e8b\u4ef6\u6807\u8bc6.{0,8}\u5df2\u5904\u7406/u, /\u8fd4\u56de\u5df2\u6709\u7ed3\u679c/u, /\u53bb\u91cd\u8bb0\u5f55\u51b2\u7a81/u, /\u6d88\u8d39\u8005\u6240\u6709\u8005/u]],
+  ['\u4e71\u5e8f\u6216\u7248\u672c\u7f3a\u53e3', [/\u805a\u5408\u7248\u672c\u4e0d\u8fde\u7eed/u, /\u6682\u5b58.{0,8}\u8865\u53d6.{0,8}\u62d2\u7edd\u65e7\u7248/u, /\u7f3a\u53e3\u8d85\u8fc7\u4fdd\u7559\u7a97\u53e3/u, /\u6d88\u8d39\u8005\u6240\u6709\u8005/u]],
+  ['\u4e8b\u4ef6\u7ed3\u6784\u4e0d\u517c\u5bb9', [/\u672a\u8bc6\u522b\u4e8b\u4ef6\u7ed3\u6784\u7248\u672c/u, /\u517c\u5bb9\u8bfb\u53d6.{0,8}\u9694\u79bb/u, /\u65e0\u5b89\u5168\u5347\u7ea7\u8def\u5f84/u, /\u4e8b\u4ef6\u5408\u540c\u8d1f\u8d23\u4eba/u]],
+  ['\u6295\u5f71\u79ef\u538b\u6216\u5ef6\u8fdf', [/\u79ef\u538b.{0,12}\u5904\u7406\u5ef6\u8fdf.{0,12}\u5931\u8d25\u7387.{0,12}\u6295\u5f71\u6c34\u4f4d/u, /\u6269\u5bb9.{0,12}\u6682\u505c\u975e\u5173\u952e\u91cd\u5efa/u, /\u6c34\u4f4d\u6301\u7eed\u4e0d\u524d\u8fdb/u, /\u6295\u5f71\u5904\u7406\u5668/u]],
+  ['\u6bd2\u4e8b\u4ef6\u4e0e\u6b7b\u4fe1\u961f\u5217', [/\u91cd\u8bd5\u4e0a\u9650.{0,8}\u6b7b\u4fe1\u544a\u8b66/u, /\u9694\u79bb.{0,8}\u4fee\u590d.{0,8}\u53d7\u63a7\u91cd\u653e/u, /\u65e0\u6cd5\u8bc1\u660e\u5b89\u5168.{0,8}\u4eba\u5de5\u7ec8\u6b62/u, /\u670d\u52a1\u6240\u6709\u8005.{0,12}\u5904\u7f6e\u65f6\u9650\u56db\u5c0f\u65f6/u]],
 ]);
 const RECIPROCAL_FILES = [
   'styles/sty-05-microservices.mdx',
@@ -288,6 +305,37 @@ function assertRequiredWrappers(source) {
   }
 }
 
+function transitionFailureAnswer(source) {
+  const comparison = section(source, '\u8fb9\u754c\u4e0e\u63a7\u5236\u6d41', '\u6570\u636e\u6240\u6709\u6743\u4e0e\u4e00\u81f4\u6027');
+  const transition = comparison.match(/^### \u72b6\u6001\u8f6c\u79fb\s*$([\s\S]*?)(?=^### \u4e8b\u4ef6\u643a\u5e26\u72b6\u6001\s*$)/mu)?.[1] ?? '';
+  const answer = transition.match(/^- \*\*\u5931\u8d25\u8d23\u4efb\uff1a\*\*\s*([^\n]+)$/mu)?.[1] ?? '';
+  assert.ok(answer, 'state-transition failure answer');
+  for (const [label, pattern] of TRANSITION_FAILURE_CONTRACTS) assert.match(answer, pattern, label);
+  return answer;
+}
+
+function reliabilityTableRows(source) {
+  const reliability = section(source, '\u90e8\u7f72\u5355\u5143\u4e0e\u6545\u969c\u57df', '\u56e2\u961f\u62d3\u6251');
+  const table = [...reliability.matchAll(/(?:^|\n)(\|[^\n]+\|\n\|(?:\s*:?-{3,}:?\s*\|)+\n(?:\|[^\n]+\|\n?)+)/gu)]
+    .map(([, raw]) => raw.trim()).find((candidate) => candidate.startsWith('| \u6545\u969c\u7c7b |'));
+  assert.ok(table, 'reliability table');
+  const cells = table.split('\n').filter((_, index) => index !== 1)
+    .map((line) => line.slice(1, -1).split('|').map((cell) => cell.trim()));
+  assert.deepEqual(cells[0], ['\u6545\u969c\u7c7b', '\u68c0\u6d4b', '\u81ea\u52a8\u54cd\u5e94', '\u505c\u6b62\u6761\u4ef6', '\u4eba\u5de5\u6240\u6709\u8005'],
+    'exact reliability columns');
+  const rows = new Map(cells.slice(1).map((row) => [row[0], row]));
+  assert.deepEqual([...rows.keys()], [...RELIABILITY_TABLE_ROWS.keys()], 'exact reliability rows and order');
+  for (const [rowLabel, patterns] of RELIABILITY_TABLE_ROWS) {
+    const row = rows.get(rowLabel);
+    assert.equal(row.length, 5, `${rowLabel} five cells`);
+    for (let index = 1; index < row.length; index += 1) {
+      assert.ok(row[index].length > 0, `${rowLabel} nonempty cell ${index}`);
+      assert.match(row[index], patterns[index - 1], `${rowLabel} row-specific cell ${index}`);
+    }
+  }
+  return {rows, table};
+}
+
 const RELIABILITY_CONTRACTS = new Map([
   ['notification lookup bounded degradation', /\u4e8b\u4ef6\u901a\u77e5\u56de\u67e5\u5931\u8d25.{0,24}\u6709\u754c\u91cd\u8bd5.{0,24}\u964d\u7ea7.{0,24}\u4eba\u5de5\u5904\u7f6e/u],
   ['poison controlled lifecycle', /\u6bd2(?:\u6d88\u606f|\u4e8b\u4ef6).{0,24}\u9694\u79bb.{0,24}\u4fee\u590d.{0,24}\u53d7\u63a7\u91cd\u653e.{0,24}\u4eba\u5de5\u7ec8\u6b62/u],
@@ -300,11 +348,7 @@ function assertReliabilityContract(source) {
   const visible = visibleTextOf(source);
   for (const [label, pattern] of RELIABILITY_CONTRACTS) assert.match(visible, pattern, label);
   assert.doesNotMatch(visible, /\u6a21\u5f0f\u7248\u672c|\u6a21\u5f0f\u8d1f\u8d23\u4eba/u, 'no ambiguous mode version/owner terminology');
-  const reliability = section(source, '\u90e8\u7f72\u5355\u5143\u4e0e\u6545\u969c\u57df', '\u56e2\u961f\u62d3\u6251');
-  assert.match(reliability, /\| \u6545\u969c\u7c7b \| \u68c0\u6d4b \| \u81ea\u52a8\u54cd\u5e94 \| \u505c\u6b62\u6761\u4ef6 \| \u4eba\u5de5\u6240\u6709\u8005 \|/u,
-    'exact reliability responsibility columns');
-  assert.match(reliability, /\| \u6bd2\u4e8b\u4ef6\u4e0e\u6b7b\u4fe1 \|[^\n]*\u9694\u79bb[^\n]*\u4fee\u590d[^\n]*\u53d7\u63a7\u91cd\u653e[^\n]*\u4eba\u5de5\u7ec8\u6b62[^\n]*\u670d\u52a1\u6240\u6709\u8005[^\n]*\u5904\u7f6e\u65f6\u9650/u,
-    'poison row binds lifecycle, owner and deadline');
+  reliabilityTableRows(source);
 }
 
 function assertSemanticContract(source) {
@@ -1334,6 +1378,7 @@ test('publishes exact STY-06 metadata, headings, relations, and one same-case co
   assert.deepEqual(h2Headings, HEADINGS, 'exact eleven ordered H2 headings');
   for (const heading of HEADINGS) assert.equal(h2Headings.filter((candidate) => candidate === heading).length, 1, `${heading} H2 once`);
   assertSameCaseComparison(article.source);
+  transitionFailureAnswer(article.source);
   const comparison = section(article.source, '边界与控制流', '数据所有权与一致性');
   for (const mode of MODES) {
     const nextMode = MODES[MODES.indexOf(mode) + 1];
@@ -1357,6 +1402,17 @@ test('publishes exact STY-06 metadata, headings, relations, and one same-case co
     /(^### 事件携带状态\s*$)([\s\S]*?)(?=^### 事件溯源\s*$)/mu,
     '$1\n\n客户资料变更后，目录消费者更新商品分类。\n\n',
   ), assertSameCaseComparison, 'unrelated customer/catalog scenario');
+  for (const [label, pattern] of TRANSITION_FAILURE_CONTRACTS) {
+    await runMutation(article.source, (source) => {
+      const answer = transitionFailureAnswer(source);
+      return source.replace(answer, answer.replace(pattern, ''));
+    },
+      transitionFailureAnswer, `transition ${label} deletion`);
+    await runMutation(article.source, (source) => {
+      const answer = transitionFailureAnswer(source);
+      return source.replace(answer, answer.replace(pattern, '\u5e73\u53f0\u7edf\u4e00\u5904\u7406'));
+    }, transitionFailureAnswer, `transition ${label} semantic change`);
+  }
 });
 
 test('locks each required focusable wrapper and all four focus semantics', async () => {
@@ -1423,6 +1479,24 @@ test('locks semantic boundaries, distinct responsibilities, prohibitions, and re
     await runMutation(article.source, (source) => replaceEveryMatching(source, pattern, '', label),
       assertReliabilityContract, `${label} deletion`);
   }
+  const {rows} = reliabilityTableRows(article.source);
+  for (const [rowLabel, row] of rows) {
+    const rowLine = `| ${row.join(' | ')} |`;
+    await runMutation(article.source, (source) => source.replace(`${rowLine}\n`, ''),
+      assertReliabilityContract, `${rowLabel} row deletion`);
+    for (let cellIndex = 1; cellIndex <= 3; cellIndex += 1) {
+      const changed = [...row];
+      changed[cellIndex] = '\u65e0\u5173\u5904\u7406';
+      await runMutation(article.source, (source) => source.replace(rowLine, `| ${changed.join(' | ')} |`),
+        assertReliabilityContract, `${rowLabel} cell ${cellIndex} semantic change`);
+    }
+    const changedOwner = [...row];
+    changedOwner[4] = '\u5e73\u53f0\u56e2\u961f';
+    await runMutation(article.source, (source) => source.replace(rowLine, `| ${changedOwner.join(' | ')} |`),
+      assertReliabilityContract, `${rowLabel} owner mutation`);
+  }
+  await runMutation(article.source, (source) => source.replace(/\u5904\u7f6e\u65f6\u9650\u56db\u5c0f\u65f6/gu, '\u5904\u7f6e\u65f6\u9650\u516b\u5c0f\u65f6'),
+    assertReliabilityContract, 'dead-letter deadline four-to-eight mutation');
 });
 
 test('locks the four-mode decision matrix dimensions', () => {
