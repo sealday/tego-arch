@@ -9,11 +9,14 @@ const SVG = 'static/img/diagrams/sty-07-soa-microservices-order-fulfillment.svg'
 const LEDGER = 'data/source-ledger.json';
 const REVIEW = 'docs/reviews/g009-batch8.md';
 const RAW_BROWSER = 'docs/reviews/evidence/g009-batch8-stage-a-browser.json';
+const PRODUCTION_BROWSER = 'docs/reviews/evidence/g009-batch8-stage-a-production-browser.json';
 const IMMEDIATE_REVIEW = 'docs/reviews/g009-batch7.md';
 const BACKLOG = 'docs/content-backlog.md';
 const CANDIDATE_HEAD = '4398f045f0595043878102d59353bf1e3ae4de21';
 const EVIDENCE_HEAD = '570b55eddac0d888f5f5356b5e97a80106958259';
 const RAW_BROWSER_HASH = 'b2a09ad041c156faa1493867741dd7b1c74241fbd96005903335b3d5076d4122';
+const IMPLEMENTATION_HEAD = '087ebc19322bbb5660ba9f2997e8384d209e3494';
+const PRODUCTION_BROWSER_HASH = '753a94cf2ef53d054959dc6c115d4f29e484c651a06fe4c5c7d617358fd8b192';
 const IMMEDIATE_REVIEW_HASH = 'd8438c66127e9b4411d5dc121a19842aaaab4e03c31a2285cb02fcfde689cf6b';
 const IMMEDIATE_BACKLOG_SUFFIX_HASH = 'dc7180a0503ebcc2e285d8425e4e37f87b6125339823ba5577eb822992aa7109';
 const STATES = ['desktopLight', 'desktopDark', 'mobileLight', 'mobileDark'];
@@ -45,9 +48,10 @@ const SOURCE_LINKS = [
 ];
 
 const loadText = (path) => readFile(new URL(`../${path}`, import.meta.url), 'utf8').catch((error) => error?.code === 'ENOENT' ? '' : Promise.reject(error));
-const [review, browserBytes, immediateReviewBytes, backlog, status, manifest, indexes, publicLedger] = await Promise.all([
+const [review, browserBytes, productionBytes, immediateReviewBytes, backlog, status, manifest, indexes, publicLedger] = await Promise.all([
   loadText(REVIEW),
   readFile(new URL(`../${RAW_BROWSER}`, import.meta.url)).catch((error) => error?.code === 'ENOENT' ? Buffer.from('{}') : Promise.reject(error)),
+  readFile(new URL(`../${PRODUCTION_BROWSER}`, import.meta.url)).catch((error) => error?.code === 'ENOENT' ? Buffer.from('{}') : Promise.reject(error)),
   readFile(new URL(`../${IMMEDIATE_REVIEW}`, import.meta.url)),
   loadText(BACKLOG),
   readFile(new URL('../src/generated/project-status.json', import.meta.url), 'utf8').then(JSON.parse),
@@ -56,6 +60,7 @@ const [review, browserBytes, immediateReviewBytes, backlog, status, manifest, in
   readFile(new URL('../src/generated/source-ledger.json', import.meta.url), 'utf8').then(JSON.parse),
 ]);
 const browser = JSON.parse(browserBytes);
+const production = JSON.parse(productionBytes);
 const sha256 = (value) => createHash('sha256').update(value).digest('hex');
 const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
 
@@ -135,6 +140,43 @@ function assertBrowser(evidence) {
   }
 }
 
+function assertProduction(evidence) {
+  assert.equal(evidence.implementationHead, IMPLEMENTATION_HEAD);
+  assert.deepEqual(evidence.pages, {runId:31724488128,buildJobId:94529359551,deployJobId:94530100965,status:'completed',conclusion:'success'});
+  assert.deepEqual(evidence.probes.routes.map(({path,status,contentType}) => [path,status,contentType]), [
+    ['/',200,'text/html; charset=utf-8'], ['/tego-arch/',200,'text/html; charset=utf-8'], ['/tego-arch/styles',200,'text/html; charset=utf-8'],
+    ['/tego-arch/styles/sty-07',200,'text/html; charset=utf-8'], ['/tego-arch/styles/sty-04',200,'text/html; charset=utf-8'],
+    ['/tego-arch/styles/sty-05',200,'text/html; charset=utf-8'], ['/tego-arch/styles/sty-06',200,'text/html; charset=utf-8'],
+    ['/tego-arch/cases/temporal-saga-durable-execution',200,'text/html; charset=utf-8'], ['/tego-arch/references',200,'text/html; charset=utf-8'],
+  ]);
+  assert.deepEqual(evidence.probes.svg, {path:'/tego-arch/img/diagrams/sty-07-soa-microservices-order-fulfillment.svg',status:200,contentType:'image/svg+xml',bytes:29229,sha256:'b4827479133743999c7c14cf14b5d61abf91c7e217a540378ac0d4b9b77b3c8f',reviewedBytes:29229,reviewedSha256:'b4827479133743999c7c14cf14b5d61abf91c7e217a540378ac0d4b9b77b3c8f',exactMatch:true});
+  assert.deepEqual(Object.keys(evidence.states), STATES);
+  for (const [key, expected] of Object.entries({desktopLight:{theme:'light',width:1440,height:1000,clients:[800,800,800],scrolls:[800,1024,1024],deltas:[0,40,40]},desktopDark:{theme:'dark',width:1440,height:1000,clients:[800,800,800],scrolls:[800,1024,1024],deltas:[0,40,40]},mobileLight:{theme:'light',width:390,height:844,clients:[358,358,358],scrolls:[800,1024,1024],deltas:[40,40,40]},mobileDark:{theme:'dark',width:390,height:844,clients:[358,358,358],scrolls:[800,1024,1024],deltas:[40,40,40]}})) {
+    const state = evidence.states[key];
+    assert.deepEqual([state.theme,state.viewport.width,state.viewport.height],[expected.theme,expected.width,expected.height]);
+    assert.deepEqual(state.geometry.page,{clientWidth:expected.width,scrollWidth:expected.width});
+    assert.deepEqual(state.geometry.wrappers.map(({label})=>label),WRAPPERS);
+    assert.deepEqual(state.geometry.wrappers.map(({clientWidth})=>clientWidth),expected.clients);
+    assert.deepEqual(state.geometry.wrappers.map(({scrollWidth})=>scrollWidth),expected.scrolls);
+    assert.deepEqual(state.interactions.map((entry)=>entry.index),[0,1,2]);
+    for (const [index, interaction] of state.interactions.entries()) {
+      assert.deepEqual([interaction.before.focus,interaction.before.focusVisible,interaction.before.scrollLeft],[true,true,0]);
+      assert.deepEqual([interaction.after.focus,interaction.after.focusVisible,interaction.after.scrollLeft],[true,true,expected.deltas[index]]);
+      assert.match(interaction.before.outline,/solid 3px/u); assert.match(interaction.after.outline,/solid 3px/u);
+    }
+    assert.deepEqual([state.geometry.svg.loaded,state.geometry.svg.naturalWidth,state.geometry.svg.naturalHeight,state.geometry.svg.renderedWidth,state.geometry.svg.renderedHeight],[true,82,150,800,1466.6640625]);
+    assert.deepEqual(state.relations.map(({href,expectedH1})=>[href,expectedH1]),RELATIONS);
+    for (const relation of state.relations) { assert.equal(relation.h1,relation.expectedH1); assert.equal(relation.returnedToArticle,true); assert.match(relation.navigation,/no physical relation click claimed/u); }
+    assert.deepEqual(state.geometry.sources.map(({href})=>href),SOURCE_LINKS);
+    for (const source of state.geometry.sources) assert.deepEqual([source.target,source.rel],['_blank','noopener noreferrer']);
+    assert.equal(state.geometry.sty08,0); assert.deepEqual(state.logs,[]); assert.deepEqual(state.diagnostics,{events:[],hasMore:false,truncated:false});
+  }
+  assert.equal(evidence.screenshotEvidence.status,'BLOCKED / NOT_ACCEPTED');
+  assert.equal(evidence.screenshotEvidence.attempts.length,3);
+  assert.deepEqual(evidence.screenshotEvidence.attempts.map(({ordinal,state,status})=>[ordinal,state,status]),[[1,'desktopLight','CAPTURED_REJECTED'],[2,'desktopDark','CAPTURED_REJECTED'],[3,'mobileLight','CAPTURED_REJECTED']]);
+  for (const attempt of evidence.screenshotEvidence.attempts) { assert.ok(attempt.bytes>0); assert.match(attempt.sha256,/^[0-9a-f]{64}$/u); assert.ok(attempt.reason.length>0); }
+}
+
 async function assertReview(source) {
   assert.match(source, /^# G009 Batch 8 Stage A Review$/mu);
   assert.match(section(source, 'Stage A projection'), /59 completed topics \/ 102 content documents \/ 529 governed sources/u);
@@ -162,6 +204,26 @@ test('projects the exact STY-07 Stage A candidate and keeps STY-08 non-actionabl
 test('binds exact artifacts, raw Browser bytes, and final independent review verdicts', async () => { assertBrowser(browser); await assertReview(review); });
 test('binds the complete tracked raw Browser bytes to one fixed SHA-256', () => {
   assert.equal(sha256(browserBytes), RAW_BROWSER_HASH);
+});
+test('binds the exact successful STY-07 production deployment and functional evidence', () => {
+  assert.equal(sha256(productionBytes), PRODUCTION_BROWSER_HASH);
+  assertProduction(production);
+  const productionSection = section(review, 'Production Stage A evidence');
+  for (const literal of [IMPLEMENTATION_HEAD,'31724488128','94529359551','94530100965',PRODUCTION_BROWSER_HASH,'Stage A deployment status: `SUCCESS`.','Final Stage A production judgment: `PASS`','Stage B remains `NOT_RUN`']) assert.ok(productionSection.includes(literal),literal);
+});
+
+test('rejects mutated production SHA, run, jobs, routes, SVG, states and visual claims', () => {
+  assertProduction(production);
+  const mutations = [
+    (copy)=>copy.implementationHead='0'.repeat(40), (copy)=>copy.pages.runId=1, (copy)=>copy.pages.buildJobId=1, (copy)=>copy.pages.deployJobId=1,
+    (copy)=>copy.pages.conclusion='failure', (copy)=>copy.probes.routes.splice(2,1), (copy)=>copy.probes.routes[0].status=404,
+    (copy)=>copy.probes.svg.sha256='0'.repeat(64), (copy)=>copy.probes.svg.exactMatch=false, (copy)=>delete copy.states.mobileDark,
+    (copy)=>copy.states.desktopLight.geometry.wrappers[0].clientWidth=1, (copy)=>copy.states.mobileLight.relations[0].returnedToArticle=false,
+    (copy)=>copy.states.desktopDark.geometry.sources[0].rel='', (copy)=>copy.states.mobileDark.diagnostics.truncated=true,
+    (copy)=>copy.states.mobileDark.geometry.sty08=1, (copy)=>copy.screenshotEvidence.status='PASS', (copy)=>copy.screenshotEvidence.attempts.splice(1,1),
+  ];
+  for (const mutate of mutations) { const copy=structuredClone(production); mutate(copy); assert.throws(()=>assertProduction(copy),{name:'AssertionError'}); }
+  assert.notEqual(sha256(Buffer.concat([productionBytes,Buffer.from('x')])),PRODUCTION_BROWSER_HASH);
 });
 test('preserves the complete immediate STY-06 backlog suffix and Batch 7 review', () => {
   assert.equal(sha256(immediateReviewBytes), IMMEDIATE_REVIEW_HASH);
