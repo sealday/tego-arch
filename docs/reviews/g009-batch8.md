@@ -11,10 +11,10 @@
 
 | Artifact | Bytes | SHA-256 |
 | --- | ---: | --- |
-| `content/styles/sty-07-service-oriented-architecture.mdx` | 18,292 | `de19d3a5122ba6cadaf79f18730f4e3823392fa7135e62b6beb82fb973dc67b7` |
+| `content/styles/sty-07-service-oriented-architecture.mdx` | 18,643 | `f98c075a6bf38c4d7d345d792f3dbdba361b682eef2c458095b96bcd4dbb4bf4` |
 | `diagrams/sty-07-soa-microservices-order-fulfillment.drawio` | 34,359 | `b985dcaea8f5fe4ebd3601f34dcdc1eb51ff1f2a08acf7407dd4e309a51ed78e` |
 | `static/img/diagrams/sty-07-soa-microservices-order-fulfillment.svg` | 29,229 | `b4827479133743999c7c14cf14b5d61abf91c7e217a540378ac0d4b9b77b3c8f` |
-| `data/source-ledger.json` | 1,540,156 | `506bec97111761db298e04648da80e0ed97b8f0bdba14eff305c73a3a86b16f4` |
+| `data/source-ledger.json` | 1,540,278 | `52e33d9996222026ffe74e53b5d6da77a61e442d982fa9e93b14517216f5f778` |
 
 - Governed STY-07 sources: `6`; remote anchors per state: `5`; distinct remote domains: `4` (`docs.oasis-open.org`, `w3.org`, `martinfowler.com`, `learn.microsoft.com`).
 - Exactly one STY-07 citation is `manifest_primary`; the original diagram is governed separately as illustration rights.
@@ -34,8 +34,8 @@ The local production build had the exact render-affecting bytes committed at imp
 - SVG loaded in every state: intrinsic `82x150`; rendered `800x1466.6640625`.
 - Remote source anchors: `5` per state across at least `4` domains; STY-08 actionable count: `0` per state.
 - Every state recorded warning/error logs `0`, `Runtime.exceptionThrown=0`, `Log.entryAdded=0`, `hasMore=false`, and `truncated=false`.
-- Raw Browser JSON: `docs/reviews/evidence/g009-batch8-stage-a-browser.json`, SHA-256 `1af8841c1b35f980391e154de98f0c7695fe1bd58daff25375a2e88d55cac16a`.
-- Screenshot evidence: `CAPTURED / ACCEPTED`; four fresh images are stored outside tracked source with exact absolute paths, byte sizes, and SHA-256 identities in the raw JSON.
+- Raw Browser JSON: `docs/reviews/evidence/g009-batch8-stage-a-browser.json`, SHA-256 `067a0a461a250ff9a10e89e7d06f287a6ac8631e63167c578abbef9b1e90fce7`.
+- Screenshot evidence: `BLOCKED / NOT_ACCEPTED`. Inspection proved the captured full-page image started at “禁用条件” and did not cover the article opening or diagram; two subsequent supported IAB reconnect attempts reported the selector/family unavailable. The raw JSON records all three attempts, including the rejected image bytes/hash. No Chrome fallback, old image, or visual PASS is claimed.
 
 ## Independent review checkpoint
 

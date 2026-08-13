@@ -12,6 +12,7 @@ const RAW_BROWSER = 'docs/reviews/evidence/g009-batch8-stage-a-browser.json';
 const IMMEDIATE_REVIEW = 'docs/reviews/g009-batch7.md';
 const BACKLOG = 'docs/content-backlog.md';
 const CANDIDATE_HEAD = '76607c67242757e0e1da1f9e352844b36481fcef';
+const RAW_BROWSER_HASH = '067a0a461a250ff9a10e89e7d06f287a6ac8631e63167c578abbef9b1e90fce7';
 const IMMEDIATE_REVIEW_HASH = 'd8438c66127e9b4411d5dc121a19842aaaab4e03c31a2285cb02fcfde689cf6b';
 const IMMEDIATE_BACKLOG_SUFFIX_HASH = 'dc7180a0503ebcc2e285d8425e4e37f87b6125339823ba5577eb822992aa7109';
 const STATES = ['desktopLight', 'desktopDark', 'mobileLight', 'mobileDark'];
@@ -33,6 +34,13 @@ const SOURCE_IDS = [
   'src-lewis-fowler-microservices',
   'src-microsoft-microservices-architecture-style',
   'src-atlas-sty07-soa-microservices-order-fulfillment',
+];
+const SOURCE_LINKS = [
+  'https://docs.oasis-open.org/soa-rm/v1.0/soa-rm.html',
+  'https://docs.oasis-open.org/soa-rm/soa-ra/v1.0/soa-ra.html',
+  'https://www.w3.org/TR/ws-arch/',
+  'https://martinfowler.com/articles/microservices.html',
+  'https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/microservices',
 ];
 
 const loadText = (path) => readFile(new URL(`../${path}`, import.meta.url), 'utf8').catch((error) => error?.code === 'ENOENT' ? '' : Promise.reject(error));
@@ -71,35 +79,52 @@ function assertProjection() {
 function assertBrowser(evidence) {
   assert.equal(evidence.candidateHead, CANDIDATE_HEAD);
   assert.deepEqual(Object.keys(evidence.states), STATES);
-  assert.equal(evidence.screenshotEvidence.status, 'CAPTURED / ACCEPTED');
-  assert.deepEqual(Object.keys(evidence.screenshotEvidence.artifacts), STATES);
-  for (const artifact of Object.values(evidence.screenshotEvidence.artifacts)) {
-    assert.equal(artifact.status, 'CAPTURED');
-    assert.ok(artifact.path.startsWith('/'));
-    assert.ok(artifact.bytes > 0);
-    assert.match(artifact.sha256, /^[0-9a-f]{64}$/u);
-  }
-  for (const [key, expected] of Object.entries({desktopLight:['light',1440,1000], desktopDark:['dark',1440,1000], mobileLight:['light',390,844], mobileDark:['dark',390,844]})) {
+  assert.deepEqual(evidence.screenshotEvidence, {
+    status: 'BLOCKED / NOT_ACCEPTED',
+    reason: evidence.screenshotEvidence.reason,
+    attempts: evidence.screenshotEvidence.attempts,
+  });
+  assert.match(evidence.screenshotEvidence.reason, /did not cover the article opening and diagram|timeout/iu);
+  assert.ok(evidence.screenshotEvidence.attempts.length > 0 && evidence.screenshotEvidence.attempts.length <= 3);
+  assert.equal(evidence.screenshotEvidence.attempts.every(({accepted}) => accepted === false), true);
+  assert.deepEqual(evidence.screenshotEvidence.attempts[0], {
+    attempt: 1, status: 'CAPTURED_REJECTED', accepted: false,
+    bytes: 1143679, sha256: 'e888a002bc7964daed6e132fcad42f30ae768b1d73dba07903197a43dcc8b79a',
+    reason: 'The captured image did not cover the article opening and diagram; it started at 禁用条件.',
+  });
+  for (const [key, expected] of Object.entries({
+    desktopLight:{theme:'light',width:1440,height:1000,clients:[800,800,800],scrolls:[800,1024,1024],deltas:[0,40,40]},
+    desktopDark:{theme:'dark',width:1440,height:1000,clients:[800,800,800],scrolls:[800,1024,1024],deltas:[0,40,40]},
+    mobileLight:{theme:'light',width:390,height:844,clients:[358,358,358],scrolls:[800,1024,1024],deltas:[40,40,40]},
+    mobileDark:{theme:'dark',width:390,height:844,clients:[358,358,358],scrolls:[800,1024,1024],deltas:[40,40,40]},
+  })) {
     const state = evidence.states[key];
-    assert.deepEqual([state.theme, state.viewport.width, state.viewport.height], expected);
-    assert.deepEqual(state.geometry.page, {clientWidth: expected[1], scrollWidth: expected[1]});
+    assert.deepEqual([state.theme, state.viewport.width, state.viewport.height], [expected.theme, expected.width, expected.height]);
+    assert.deepEqual(state.geometry.page, {clientWidth: expected.width, scrollWidth: expected.width});
     assert.deepEqual(state.geometry.wrappers.map(({label}) => label), WRAPPERS);
+    assert.deepEqual(state.geometry.wrappers.map(({clientWidth}) => clientWidth), expected.clients);
+    assert.deepEqual(state.geometry.wrappers.map(({scrollWidth}) => scrollWidth), expected.scrolls);
     assert.equal(state.interactions.length, 3);
     for (const [index, interaction] of state.interactions.entries()) {
       assert.equal(interaction.index, index);
       assert.equal(interaction.before.focus, true);
+      assert.equal(interaction.before.focusVisible, true);
+      assert.match(interaction.before.outline, /solid 3px/u);
       assert.equal(interaction.after.focus, true);
+      assert.equal(interaction.after.focusVisible, true);
+      assert.match(interaction.after.outline, /solid 3px/u);
       assert.equal(interaction.before.scrollLeft, 0);
-      assert.equal(interaction.after.scrollLeft > 0, state.geometry.wrappers[index].scrollWidth > state.geometry.wrappers[index].clientWidth);
+      assert.equal(interaction.after.scrollLeft, expected.deltas[index]);
     }
     assert.equal(state.geometry.svg.loaded, true);
+    assert.deepEqual([state.geometry.svg.naturalWidth, state.geometry.svg.naturalHeight], [82,150]);
+    assert.deepEqual([state.geometry.svg.renderedWidth, state.geometry.svg.renderedHeight], [800,1466.6640625]);
     assert.deepEqual(state.relations.map(({href, expectedH1}) => [href, expectedH1]), RELATIONS);
     for (const relation of state.relations) {
       assert.equal(relation.h1, relation.expectedH1);
       assert.equal(relation.returnedToArticle, true);
     }
-    assert.equal(state.geometry.sources.length, 5);
-    assert.ok(new Set(state.geometry.sources.map(({href}) => new URL(href).hostname)).size >= 4);
+    assert.deepEqual(state.geometry.sources.map(({href}) => href), SOURCE_LINKS);
     for (const source of state.geometry.sources) assert.deepEqual([source.target, source.rel], ['_blank', 'noopener noreferrer']);
     assert.equal(state.geometry.sty08, 0);
     assert.deepEqual(state.logs, []);
@@ -133,6 +158,9 @@ async function assertReview(source) {
 
 test('projects the exact STY-07 Stage A candidate and keeps STY-08 non-actionable', assertProjection);
 test('binds exact artifacts, raw Browser bytes, and PENDING review slots', async () => { assertBrowser(browser); await assertReview(review); });
+test('binds the complete tracked raw Browser bytes to one fixed SHA-256', () => {
+  assert.equal(sha256(browserBytes), RAW_BROWSER_HASH);
+});
 test('preserves the complete immediate STY-06 backlog suffix and Batch 7 review', () => {
   assert.equal(sha256(immediateReviewBytes), IMMEDIATE_REVIEW_HASH);
   const line = backlog.split(/\r?\n/u).find((value) => value.startsWith('- **当前发布基线：**'));
@@ -147,13 +175,20 @@ test('rejects raw Browser semantic and diagnostic mutations', () => {
   assertBrowser(browser);
   const mutations = [
     (copy) => copy.states.desktopLight.geometry.wrappers.reverse(),
+    (copy) => copy.states.desktopLight.geometry.wrappers[1] = structuredClone(copy.states.desktopLight.geometry.wrappers[0]),
     (copy) => copy.states.desktopDark.interactions.reverse(),
+    (copy) => copy.states.desktopDark.interactions[1].after.scrollLeft = 41,
+    (copy) => copy.states.mobileDark.interactions[0].before.focusVisible = false,
     (copy) => copy.states.mobileLight.relations[0].returnedToArticle = false,
     (copy) => copy.states.mobileDark.relations[0] = {...copy.states.mobileDark.relations[0], href:'/tego-arch/styles/sty-99', h1:'fabricated', expectedH1:'fabricated'},
     (copy) => copy.states.desktopLight.geometry.svg.loaded = false,
+    (copy) => copy.states.desktopLight.geometry.svg.naturalWidth = 83,
+    (copy) => copy.states.desktopDark.geometry.sources[0].href = 'https://example.com/fabricated',
     (copy) => copy.states.desktopDark.diagnostics.truncated = true,
     (copy) => copy.states.mobileLight.geometry.sty08 = 1,
     (copy) => copy.screenshotEvidence.status = 'PASS',
+    (copy) => copy.screenshotEvidence.attempts[0].bytes = 1,
+    (copy) => copy.screenshotEvidence.attempts[0].sha256 = '0'.repeat(64),
   ];
   for (const mutate of mutations) { const copy = structuredClone(browser); mutate(copy); assert.throws(() => assertBrowser(copy), {name:'AssertionError'}); }
   assert.notEqual(sha256(Buffer.from(`${browserBytes} `)), sha256(browserBytes));

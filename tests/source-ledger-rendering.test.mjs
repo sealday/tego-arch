@@ -287,9 +287,9 @@ test('keeps every source and evidence field in the complete sorted model', async
       cards.filter((card) => card.sourceKind === sourceKind).length,
     ]),
     [
-      ['standard', 21],
+      ['standard', 20],
       ['paper', 20],
-      ['official-docs', 191],
+      ['official-docs', 192],
       ['official-repository', 34],
       ['source-code', 157],
       ['engineering-blog', 19],

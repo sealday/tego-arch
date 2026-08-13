@@ -600,12 +600,12 @@
     }
   },
   "screenshotEvidence": {
-    "status": "CAPTURED / ACCEPTED",
-    "artifacts": {
-      "desktopLight": {"status":"CAPTURED","path":"/var/folders/b3/y7kbcz5d3dn605_sks_vdm080000gn/T/sty07-iab-tUqIJ2/desktopLight.png","bytes":1143679,"sha256":"e888a002bc7964daed6e132fcad42f30ae768b1d73dba07903197a43dcc8b79a"},
-      "desktopDark": {"status":"CAPTURED","path":"/var/folders/b3/y7kbcz5d3dn605_sks_vdm080000gn/T/sty07-iab-tUqIJ2/desktopDark.png","bytes":1147197,"sha256":"e1caa8ab9861bc724d39c301608ee3f3ffd29ad103a9d90dddada77ce8ad3eae"},
-      "mobileLight": {"status":"CAPTURED","path":"/var/folders/b3/y7kbcz5d3dn605_sks_vdm080000gn/T/sty07-iab-tUqIJ2/mobileLight.png","bytes":500438,"sha256":"1a85d1c33490dc215e5d6cb6b0d943e3e8e8097653bbe89deeb48a0f1efe2a21"},
-      "mobileDark": {"status":"CAPTURED","path":"/var/folders/b3/y7kbcz5d3dn605_sks_vdm080000gn/T/sty07-iab-tUqIJ2/mobileDark.png","bytes":507174,"sha256":"e4360654ce4e1aed1a7677998f3af4e0c0bed5e8d5353f2249165a0583190b69"}
-    }
+    "status": "BLOCKED / NOT_ACCEPTED",
+    "reason": "The captured full-page images did not cover the article opening and diagram: inspection showed the 禁用条件 section repeated from the top. Two subsequent supported in-app Browser reconnection attempts reported the IAB selector unavailable, so no honest visual PASS is claimed.",
+    "attempts": [
+      {"attempt":1,"status":"CAPTURED_REJECTED","accepted":false,"bytes":1143679,"sha256":"e888a002bc7964daed6e132fcad42f30ae768b1d73dba07903197a43dcc8b79a","reason":"The captured image did not cover the article opening and diagram; it started at 禁用条件."},
+      {"attempt":2,"status":"FAILED","accepted":false,"reason":"Supported in-app Browser reconnect reported the previous exact IAB selector unavailable."},
+      {"attempt":3,"status":"FAILED","accepted":false,"reason":"Supported in-app Browser family reconnect reported IAB unavailable; no Chrome fallback was used."}
+    ]
   }
 }

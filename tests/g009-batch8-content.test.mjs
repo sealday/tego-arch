@@ -115,7 +115,7 @@ const REMOTE_SOURCE_CONTRACTS = Object.freeze({
   }),
   'src-w3c-web-services-architecture': Object.freeze({
     canonical_locator: 'https://www.w3.org/TR/ws-arch/', transport_locator: 'https://www.w3.org/TR/ws-arch/',
-    source_kind: 'standard', license: 'LicenseRef-Proprietary-Standard', copyright_policy: 'facts-and-short-quotation',
+    source_kind: 'official-docs', license: 'LicenseRef-Proprietary-Standard', copyright_policy: 'facts-and-short-quotation',
     allowed_evidence_roles: ['comparison', 'definition', 'method'], citation_roles: ['comparison', 'definition'],
     manifest_primary: false,
     license_evidence_note: 'The W3C document-use license governs W3C documents; Tego Arch conservatively uses attributed factual reference and original summary only.',

@@ -25538,7 +25538,7 @@
       "registered_at": "2026-08-13",
       "checked_at": "2026-08-13",
       "version": "W3C Working Group Note 11 February 2004",
-      "source_kind": "standard",
+      "source_kind": "official-docs",
       "tier": "primary",
       "allowed_evidence_roles": [
         "comparison",
@@ -25553,7 +25553,7 @@
       "license_family_grouping": "identity",
       "family_grouping_evidence_url": null,
       "copyright_policy": "facts-and-short-quotation",
-      "usage_boundary": "Supports web-service message, service-description, policy and participant relationships; it does not make Web Services equivalent to SOA or establish production outcomes.",
+      "usage_boundary": "Supports a historical Working Group Note's description of web-service message, service-description, policy and participant relationships; the Note records work in progress, is not a W3C endorsement, does not make Web Services equivalent to SOA and does not establish production outcomes.",
       "link_policy": "stable",
       "expected_final_transport_locator": "https://www.w3.org/TR/ws-arch/",
       "expected_final_approved_at": "2026-08-13",
