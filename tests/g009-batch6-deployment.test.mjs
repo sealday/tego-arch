@@ -411,11 +411,18 @@ test('binds exact local artifacts, four-state Browser evidence, and final exact-
   assert.match(projection, /STY-05: `published \/ pending`/u);
   assert.match(projection, /STY-06: `unpublished \/ pending`/u);
 
-  // Artifact hashes in this historical review bind the immutable Batch 6
-  // candidate. Later reciprocal metadata and source-ledger additions must not
-  // rewrite that payload or reinterpret those hashes as the live files.
-  assert.match(section(review, 'Artifact identities'), /`493a227b19702a78d0141e6254eb2bb153ea0b00073c0b9773854e5c714e460f`/u);
-  assert.match(section(review, 'Artifact identities'), /`21253b11dd39eebf75fba34e4f661d08bfbe19a95dc61cf5e2201c0d067d019c`/u);
+  const historicalIdentities = section(review, 'Artifact identities');
+  for (const row of [
+    '| `content/styles/sty-05-microservices.mdx` | 13,651 | `493a227b19702a78d0141e6254eb2bb153ea0b00073c0b9773854e5c714e460f` |',
+    '| `diagrams/sty-05-microservices-order-saga.drawio` | 55,145 | `3a5bb4db02eb8b81513807b59f879155c206607df7a28c6c78dce7b19a5436e5` |',
+    '| `static/img/diagrams/sty-05-microservices-order-saga.svg` | 36,867 | `35bf03e73a1fda674701dd98a9f5dd016eaedbfb10a7a6f89485e110c5b9eb65` |',
+    '| `data/source-ledger.json` | 1,515,289 | `21253b11dd39eebf75fba34e4f661d08bfbe19a95dc61cf5e2201c0d067d019c` |',
+  ]) assert.ok(historicalIdentities.includes(row), `historical artifact row: ${row}`);
+  assert.equal(
+    sha256(historicalIdentities),
+    '1b939ff784240c3b4ebec14a89438158c55951084a6736a06badb429374668d1',
+    'complete historical artifact section hash',
+  );
   assertFourStateEvidence(review);
   assertEvidenceProvenance(review);
   assertFinalIndependentReview(review);

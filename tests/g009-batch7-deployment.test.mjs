@@ -8,6 +8,8 @@ const DRAWIO = 'diagrams/sty-06-event-driven-four-patterns.drawio';
 const SVG = 'static/img/diagrams/sty-06-event-driven-four-patterns.svg';
 const LEDGER = 'data/source-ledger.json';
 const REVIEW = 'docs/reviews/g009-batch7.md';
+const RAW_BROWSER = '.superpowers/sdd/sty06-task-4-browser-qa.json';
+const REVIEWED_HEAD = '44fcafbef24b68f14a9cbf4be0b3fba09cc6002d';
 const STATES = ['desktopLight', 'desktopDark', 'mobileLight', 'mobileDark'];
 const SOURCE_IDS = [
   'src-fowler-what-do-you-mean-event-driven',
@@ -18,14 +20,16 @@ const SOURCE_IDS = [
   'src-atlas-sty06-event-driven-four-patterns',
 ];
 
-const [review, manifest, indexes, status, publicLedger] = await Promise.all([
+const [review, rawBrowserBytes, manifest, indexes, status, publicLedger] = await Promise.all([
   readFile(new URL(`../${REVIEW}`, import.meta.url), 'utf8').catch((error) =>
     error?.code === 'ENOENT' ? '' : Promise.reject(error)),
+  readFile(new URL(`../${RAW_BROWSER}`, import.meta.url)),
   readFile(new URL('../src/generated/topic-manifest.json', import.meta.url), 'utf8').then(JSON.parse),
   readFile(new URL('../src/generated/topic-indexes.json', import.meta.url), 'utf8').then(JSON.parse),
   readFile(new URL('../src/generated/project-status.json', import.meta.url), 'utf8').then(JSON.parse),
   readFile(new URL('../src/generated/source-ledger.json', import.meta.url), 'utf8').then(JSON.parse),
 ]);
+const rawBrowser = JSON.parse(rawBrowserBytes);
 
 function sha256(value) {
   return createHash('sha256').update(value).digest('hex');
@@ -59,7 +63,60 @@ function assertProjection() {
   assert.deepEqual(SOURCE_IDS.filter((id) => publicLedger.sources.some((source) => source.id === id)), SOURCE_IDS);
 }
 
-function assertBrowserEvidence(source) {
+function assertRawBrowserEvidence(evidence) {
+  assert.equal(evidence.candidateHead, REVIEWED_HEAD);
+  assert.deepEqual(Object.keys(evidence.states), STATES);
+  for (const [state, expected] of Object.entries({
+    desktopLight: {theme: 'light', width: 1440, height: 1000},
+    desktopDark: {theme: 'dark', width: 1440, height: 1000},
+    mobileLight: {theme: 'light', width: 390, height: 844},
+    mobileDark: {theme: 'dark', width: 390, height: 844},
+  })) {
+    const actual = evidence.states[state];
+    assert.deepEqual(actual.viewport, {width: expected.width, height: expected.height});
+    assert.equal(actual.theme, expected.theme);
+    assert.deepEqual(actual.geometry.page, {clientWidth: expected.width, scrollWidth: expected.width});
+    assert.equal(actual.geometry.wrappers.length, 3);
+    assert.equal(actual.interactions.length, 3);
+    for (const interaction of actual.interactions) {
+      assert.equal(interaction.before.focus, true);
+      assert.equal(interaction.before.focusVisible, true);
+      assert.match(interaction.before.outline, /solid 3px/u);
+      assert.equal(interaction.after.focus, true);
+      assert.equal(interaction.after.focusVisible, true);
+      assert.match(interaction.after.outline, /solid 3px/u);
+      assert.ok(interaction.after.scrollLeft >= interaction.before.scrollLeft);
+    }
+    assert.equal(actual.geometry.svg.loaded, true);
+    assert.deepEqual(
+      [actual.geometry.svg.naturalWidth, actual.geometry.svg.naturalHeight],
+      [92, 150],
+    );
+    assert.deepEqual(
+      [actual.geometry.svg.renderedWidth, actual.geometry.svg.renderedHeight],
+      [800, 1300],
+    );
+    assert.equal(actual.geometry.sources.length, 5);
+    assert.ok(new Set(actual.geometry.sources.map(({href}) => new URL(href).hostname)).size >= 4);
+    for (const source of actual.geometry.sources) {
+      assert.equal(source.target, '_blank');
+      assert.equal(source.rel, 'noopener noreferrer');
+    }
+    assert.equal(actual.geometry.sty07, 0);
+    assert.equal(actual.relations.length, 4);
+    for (const relation of actual.relations) {
+      assert.equal(relation.h1, relation.expectedH1);
+      assert.equal(relation.returnedToArticle, true);
+    }
+    assert.deepEqual(actual.logs, []);
+    assert.deepEqual(actual.diagnostics.events, []);
+    assert.equal(actual.diagnostics.hasMore, false);
+    assert.equal(actual.diagnostics.truncated, false);
+  }
+}
+
+function assertBrowserEvidence(source, evidence = rawBrowser, evidenceBytes = rawBrowserBytes) {
+  assertRawBrowserEvidence(evidence);
   const browser = section(source, 'Local in-app Browser QA');
   for (const state of STATES) {
     assert.ok(browser.includes(`| \`${state}\` |`), `${state} evidence row`);
@@ -73,13 +130,12 @@ function assertBrowserEvidence(source) {
     'Every state recorded warning/error logs `0`, `Runtime.exceptionThrown=0`, `Log.entryAdded=0`, `hasMore=false`, and `truncated=false`.',
     'Screenshot evidence: `BLOCKED / NOT_ACCEPTED`.',
   ]) assert.ok(browser.includes(literal), `Browser literal: ${literal}`);
-  assert.match(browser, /Raw Browser JSON: `\.superpowers\/sdd\/sty06-task-4-browser-qa\.json`, SHA-256 `[a-f0-9]{64}`\./u);
-  assert.ok(browser.includes('Desktop dark functional status: `acceptedFunctional=true`; `exactViewportFinalRead=false`.'));
+  assert.ok(browser.includes(`Raw Browser JSON: \`${RAW_BROWSER}\`, SHA-256 \`${sha256(evidenceBytes)}\`.`));
 }
 
 function assertFinalReview(source) {
   const checkpoint = section(source, 'Independent review checkpoint');
-  assert.match(checkpoint, /Exact reviewed head: `[a-f0-9]{40}`\./u);
+  assert.ok(checkpoint.includes(`Exact reviewed head: \`${REVIEWED_HEAD}\`.`));
   for (const literal of [
     'Independent code reviewer (`code-reviewer`): `PENDING`; findings: `NOT_RUN`.',
     'Independent content, evidence, and rights reviewer: `PENDING`; rights: `PENDING`; findings: `NOT_RUN`.',
@@ -124,7 +180,7 @@ test('rejects weakened or fabricated Stage A evidence', async () => {
     ['wrong artifact hash', sha256(await readFile(new URL(`../${SVG}`, import.meta.url))), '0'.repeat(64)],
     ['missing Browser state', '| `mobileDark` |', '| `mobileMissing` |'],
     ['truncated diagnostics', 'Every state recorded warning/error logs `0`, `Runtime.exceptionThrown=0`, `Log.entryAdded=0`, `hasMore=false`, and `truncated=false`.', 'Every state recorded warning/error logs `0`, `Runtime.exceptionThrown=0`, `Log.entryAdded=0`, `hasMore=false`, and `truncated=true`.'],
-    ['fabricated desktop dark exact read', '`acceptedFunctional=true`; `exactViewportFinalRead=false`', '`acceptedFunctional=true`; `exactViewportFinalRead=true`'],
+    ['wrong reviewed head', `Exact reviewed head: \`${REVIEWED_HEAD}\`.`, `Exact reviewed head: \`${'0'.repeat(40)}\`.`],
     ['fabricated STY-07 absence', 'STY-07 actionable count: `0` in every state.', 'STY-07 actionable count: `1` in every state.'],
     ['fabricated screenshot success', 'Screenshot evidence: `BLOCKED / NOT_ACCEPTED`.', 'Visual inspection: diagram `PASS` in light and dark themes.'],
     ['fabricated code verdict', '`PENDING`; findings: `NOT_RUN`.', '`READY / APPROVE`; findings: `0`.'],
@@ -143,4 +199,24 @@ test('rejects weakened or fabricated Stage A evidence', async () => {
       assert.doesNotMatch(mutated, /Visual inspection: diagram `PASS`/u);
     }, {name: 'AssertionError'}, label);
   }
+});
+
+test('rejects raw Browser count, return, load, diagnostic, and head mutations', () => {
+  assertRawBrowserEvidence(rawBrowser);
+  const mutations = [
+    ['wrong head', (copy) => copy.candidateHead = '0'.repeat(40)],
+    ['missing interaction', (copy) => copy.states.desktopDark.interactions.pop()],
+    ['missing relation', (copy) => copy.states.mobileLight.relations.pop()],
+    ['missing return', (copy) => copy.states.mobileDark.relations[0].returnedToArticle = false],
+    ['wrong viewport', (copy) => copy.states.desktopDark.geometry.page.clientWidth = 390],
+    ['unloaded SVG', (copy) => copy.states.mobileLight.geometry.svg.loaded = false],
+    ['truncated diagnostics', (copy) => copy.states.desktopLight.diagnostics.truncated = true],
+    ['fabricated STY-07 absence', (copy) => copy.states.desktopLight.geometry.sty07 = 1],
+  ];
+  for (const [label, mutate] of mutations) {
+    const copy = structuredClone(rawBrowser);
+    mutate(copy);
+    assert.throws(() => assertRawBrowserEvidence(copy), {name: 'AssertionError'}, label);
+  }
+  assert.notEqual(sha256(Buffer.from(`${rawBrowserBytes} `)), sha256(rawBrowserBytes));
 });

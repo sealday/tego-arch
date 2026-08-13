@@ -21,12 +21,12 @@
 
 ## Local in-app Browser QA
 
-The exact local production build was served from candidate head `d9d41d0629eba146cc19d63c73359baf898c118b` at `/tego-arch/styles/sty-06` using only the Codex in-app Browser.
+The exact local production build was served from candidate head `44fcafbef24b68f14a9cbf4be0b3fba09cc6002d` at `/tego-arch/styles/sty-06` using only the Codex in-app Browser.
 
 | State | Requested viewport/theme | Page client/scroll | Diagram; failure table; matrix client/scroll | ArrowRight before→after | Diagnostics |
 | --- | --- | --- | --- | --- | --- |
 | `desktopLight` | `1440x1000` / light | `1440/1440` | `800/800`; `800/1118`; `800/1342` | `0→0`; `0→40`; `0→40` | `0/0/0`; `hasMore=false`; `truncated=false` |
-| `desktopDark` | `1440x1000` / dark | preliminary state captured; final viewport reread blocked | preliminary wrapper evidence captured | preliminary interaction evidence captured | `0/0/0`; `hasMore=false`; `truncated=false` |
+| `desktopDark` | `1440x1000` / dark | `1440/1440` | `800/800`; `800/1118`; `800/1342` | `0→0`; `0→40`; `0→40` | `0/0/0`; `hasMore=false`; `truncated=false` |
 | `mobileLight` | `390x844` / light | `390/390` | `358/800`; `358/1118`; `358/1342` | `0→40`; `0→40`; `0→40` | `0/0/0`; `hasMore=false`; `truncated=false` |
 | `mobileDark` | `390x844` / dark | `390/390` | `358/800`; `358/1118`; `358/1342` | `0→40`; `0→40`; `0→40` | `0/0/0`; `hasMore=false`; `truncated=false` |
 
@@ -36,15 +36,14 @@ The exact local production build was served from candidate head `d9d41d0629eba14
 - Remote source anchors: `5` per state; unique remote domains: at least `4` per state.
 - STY-07 actionable count: `0` in every state.
 - Every state recorded warning/error logs `0`, `Runtime.exceptionThrown=0`, `Log.entryAdded=0`, `hasMore=false`, and `truncated=false`.
-- Desktop dark functional status: `acceptedFunctional=true`; `exactViewportFinalRead=false`.
-- SVG: loaded in the accepted desktop state; intrinsic `92x150`; rendered `800x1300`. Mobile lazy-load rereads reported rendered geometry but were not accepted as final loaded-state proof.
-- Raw Browser JSON: `.superpowers/sdd/sty06-task-4-browser-qa.json`, SHA-256 `157278ee6a49d741607ce09b49e8f2d0a71cfe1baccfca3f18343abb771647f4`.
+- SVG loaded in all four states; intrinsic `92x150`; rendered `800x1300`.
+- Raw Browser JSON: `.superpowers/sdd/sty06-task-4-browser-qa.json`, SHA-256 `7623333da9cd3515a2394dd0f6168cb1dd3e6cdb222fe5cdf65fe46293a4311b`.
 - Screenshot evidence: `BLOCKED / NOT_ACCEPTED`.
 - Screenshot limitation: four fresh files were created, but repeated in-app Browser viewport overrides changed other open tabs and the mobile light/dark captures became byte-identical. Those files are retained only as rejected diagnostic artifacts; no visual PASS or screenshot hash is claimed. No Chrome, standalone Playwright, old screenshot, or invented evidence was substituted.
 
 ## Independent review checkpoint
 
-- Exact reviewed head: `d9d41d0629eba146cc19d63c73359baf898c118b`.
+- Exact reviewed head: `44fcafbef24b68f14a9cbf4be0b3fba09cc6002d`.
 - Independent code reviewer (`code-reviewer`): `PENDING`; findings: `NOT_RUN`.
 - Independent content, evidence, and rights reviewer: `PENDING`; rights: `PENDING`; findings: `NOT_RUN`.
 - Independent architecture reviewer (`architect`): `PENDING`; findings: `NOT_RUN`.
