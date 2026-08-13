@@ -114,10 +114,10 @@ const CONNECTOR_STYLES = Object.freeze({
   compensation: Object.freeze({strokeColor: '#9A3412', strokeWidth: '4', dashed: '1', dashPattern: '12 6 3 6', endArrow: 'block', endFill: '1'}),
 });
 const LEGEND_INVENTORY = Object.freeze([
-  ['business-call', 'legend-key-business-call', 'legend-caption-business-call', '业务调用｜实线闭合箭头', [80, 4170, 180, 4170], [232, 4147, 396, 46.8]],
-  ['message', 'legend-key-message', 'legend-caption-message', '消息｜长虚线闭合箭头', [650, 4170, 750, 4170], [820, 4147, 360, 46.8]],
-  ['technical-route', 'legend-key-technical-route', 'legend-caption-technical-route', '技术路由｜短虚线开放箭头', [1220, 4170, 1320, 4170], [1374, 4147, 432, 46.8]],
-  ['compensation', 'legend-key-compensation', 'legend-caption-compensation', '补偿｜点划线闭合箭头', [1810, 4170, 1910, 4170], [1970, 4147, 360, 46.8]],
+  ['business-call', 'legend-key-business-call', 'legend-caption-business-call', '业务调用｜实线闭合箭头', [80, 4170, 130, 4170, 180, 4170], [232, 4147, 396, 46.8]],
+  ['message', 'legend-key-message', 'legend-caption-message', '消息｜长虚线闭合箭头', [650, 4170, 700, 4170, 750, 4170], [820, 4147, 360, 46.8]],
+  ['technical-route', 'legend-key-technical-route', 'legend-caption-technical-route', '技术路由｜短虚线开放箭头', [1220, 4170, 1270, 4170, 1320, 4170], [1374, 4147, 432, 46.8]],
+  ['compensation', 'legend-key-compensation', 'legend-caption-compensation', '补偿｜点划线闭合箭头', [1810, 4170, 1860, 4170, 1910, 4170], [1970, 4147, 360, 46.8]],
 ]);
 const CONNECTOR_INVENTORY = Object.freeze([
   ['soa-submit-order', 'soa-client', 'soa-orchestrator', 'business-call', '提交订单'],
@@ -376,13 +376,6 @@ export function drawioRoute(drawio, edge) {
   assert.ok(waypoints.length > 0 && waypoints.every(({x, y}) => Number.isFinite(x) && Number.isFinite(y)), `${edge.attributes.get('id')} actual waypoints`);
   return [drawioTerminalPoint(drawio, edge, 'source'), ...waypoints, drawioTerminalPoint(drawio, edge, 'target')];
 }
-function drawioPointRoute(edge) {
-  const source = attrs(edge.body.match(/<mxPoint\b([^>]*)\bas="sourcePoint"[^>]*\/>/u)?.[1] ?? '');
-  const target = attrs(edge.body.match(/<mxPoint\b([^>]*)\bas="targetPoint"[^>]*\/>/u)?.[1] ?? '');
-  const points = [source, target].map((point) => ({x: Number(point.get('x')), y: Number(point.get('y'))}));
-  assert.ok(points.every(({x, y}) => Number.isFinite(x) && Number.isFinite(y)), `${edge.attributes.get('id')} actual point geometry`);
-  return points;
-}
 export function parsePathPoints(data) {
   const tokens = data.match(/[MHV]|-?(?:\d+(?:\.\d*)?|\.\d+)/gu) ?? []; const points = []; let cursor = 0; let x = 0; let y = 0;
   while (cursor < tokens.length) { const command = tokens[cursor++]; if (command === 'M') { x = Number(tokens[cursor++]); y = Number(tokens[cursor++]); } else if (command === 'H') x = Number(tokens[cursor++]); else if (command === 'V') y = Number(tokens[cursor++]); else assert.fail(`unsupported connector path command ${command}`); points.push({x, y}); }
@@ -456,19 +449,23 @@ function assertStructuralOwnership(drawio, svg, source) {
 function assertLegendParity(drawio, svg, source) {
   const drawioKeys = drawio.edges.filter(({attributes}) => attributes.get('dataRole') === 'legend-key');
   const drawioCaptions = drawio.nodes.filter(({attributes}) => attributes.get('dataRole') === 'legend-caption');
+  const drawioAnchors = drawio.nodes.filter(({attributes}) => attributes.get('dataRole') === 'legend-anchor');
   const svgKeys = svg.elements.filter(({name, attributes}) => name === 'path' && attributes.has('data-legend-key'));
   const svgCaptions = svg.elements.filter(({name, attributes}) => name === 'text' && attributes.has('data-legend-for'));
   assert.deepEqual(drawioKeys.map(({attributes}) => attributes.get('id')), LEGEND_INVENTORY.map(([, keyId]) => keyId), 'exact Draw.io legend key inventory');
   assert.deepEqual(drawioCaptions.map(({attributes}) => attributes.get('id')), LEGEND_INVENTORY.map(([, , captionId]) => captionId), 'exact Draw.io legend caption inventory');
   assert.deepEqual(svgKeys.map(({attributes}) => attributes.get('id')), LEGEND_INVENTORY.map(([, keyId]) => keyId), 'exact SVG legend key inventory');
   assert.deepEqual(svgCaptions.map(({attributes}) => attributes.get('id')), LEGEND_INVENTORY.map(([, , captionId]) => captionId), 'exact SVG legend caption inventory');
+  assert.deepEqual(drawioAnchors.map(({attributes}) => attributes.get('id')), LEGEND_INVENTORY.flatMap(([role]) => [`legend-anchor-${role}-source`, `legend-anchor-${role}-target`]), 'exact Draw.io legend anchor inventory');
   for (const [role, keyId, captionId, label, route, bounds] of LEGEND_INVENTORY) {
     const key = drawioKeys.find(({attributes}) => attributes.get('id') === keyId); const path = svgKeys.find(({attributes}) => attributes.get('id') === keyId);
     const caption = drawioCaptions.find(({attributes}) => attributes.get('id') === captionId); const text = svgCaptions.find(({attributes}) => attributes.get('id') === captionId);
     assert.ok(key && path && caption && text, `${role} paired legend structure`);
+    const sourceId = `legend-anchor-${role}-source`; const targetId = `legend-anchor-${role}-target`; assert.equal(key.attributes.get('source'), sourceId, `${role} legend source terminal`); assert.equal(key.attributes.get('target'), targetId, `${role} legend target terminal`);
+    for (const [id, expectedX] of [[sourceId, route[0] - 1], [targetId, route.at(-2)]]) { const anchor = drawioAnchors.find(({attributes}) => attributes.get('id') === id); assert.ok(anchor, `${id} anchor`); assert.equal(anchor.attributes.get('legendFor'), role, `${id} role`); assert.deepEqual(numericBounds(anchor.geometry), {x: expectedX, y: route[1] - 1, width: 1, height: 2}, `${id} minimal geometry`); const anchorStyle = drawioStyle(anchor); assert.equal(anchorStyle.get('opacity'), '0', `${id} invisible`); assert.equal(anchorStyle.get('fillColor'), 'none', `${id} no fill`); assert.equal(anchorStyle.get('strokeColor'), 'none', `${id} no stroke`); }
     assert.equal(key.attributes.get('legendFor'), role, `${role} Draw.io key role`); assert.equal(path.attributes.get('data-legend-key'), role, `${role} SVG key role`); assert.equal(path.attributes.get('data-role'), key.attributes.get('dataRole'), `${role} key data role parity`);
     assert.equal(caption.attributes.get('legendFor'), role, `${role} Draw.io caption role`); assert.equal(text.attributes.get('data-legend-for'), role, `${role} SVG caption role`); assert.equal(text.attributes.get('data-role'), caption.attributes.get('dataRole'), `${role} caption data role parity`);
-    assert.deepEqual(drawioPointRoute(key).flatMap(({x, y}) => [x, y]), route, `${role} Draw.io key route`); assert.deepEqual(parsePathPoints(path.attributes.get('d')).flatMap(({x, y}) => [x, y]), route, `${role} SVG key route`);
+    assert.deepEqual(drawioRoute(drawio, key).flatMap(({x, y}) => [x, y]), route, `${role} Draw.io key route`); assert.deepEqual(parsePathPoints(path.attributes.get('d')).flatMap(({x, y}) => [x, y]), route, `${role} SVG key route`);
     assert.equal(caption.label, label, `${role} Draw.io caption label`); assert.equal(elementText(source, text), label, `${role} SVG caption label`);
     const geometry = numericBounds(caption.geometry); assert.deepEqual([geometry.x, geometry.y, geometry.width, geometry.height], bounds, `${role} Draw.io caption bounds`);
     const actualBounds = labelBox(source, text); const round = (value) => Math.round(value * 1e6) / 1e6; assert.deepEqual([actualBounds.left, actualBounds.top, actualBounds.right - actualBounds.left, actualBounds.bottom - actualBounds.top].map(round), bounds, `${role} actual SVG caption bounds`);
@@ -912,10 +909,15 @@ test('STY-07 Draw.io/SVG diagram locks SOA comparison semantics, geometry, and c
   assert.throws(() => assertDiagram(drawio, svg.replace(/(<text\b[^>]*data-legend-for="[^"]+"[^>]*\bx=")[^"]+/u, '$10')), assert.AssertionError, 'legend collision mutation rejected');
   assert.throws(() => assertDiagram(drawio.replace(/<mxCell\b[^>]*\bid="legend-key-business-call"[\s\S]*?<\/mxCell>/u, ''), svg), assert.AssertionError, 'missing Draw.io legend key rejected');
   assert.throws(() => assertDiagram(drawio, svg.replace(/<path\b[^>]*\bid="legend-key-business-call"[^>]*\/>/u, '')), assert.AssertionError, 'missing SVG legend key rejected');
+  assert.throws(() => assertDiagram(drawio.replace(/(<mxCell\b[^>]*\bid="legend-key-business-call"[^>]*?)\s+source="[^"]+"/u, '$1'), svg), assert.AssertionError, 'missing legend source terminal rejected');
+  const changedLegendPort = drawio.replace(/(<mxCell\b[^>]*\bid="legend-key-message"[^>]*\bexitX=)1(;)/u, '$10.5$2'); assert.notEqual(changedLegendPort, drawio, 'changed legend port mutation applies');
+  assert.throws(() => assertDiagram(changedLegendPort, svg), assert.AssertionError, 'changed legend port rejected');
+  assert.throws(() => assertDiagram(drawio.replace(/(<mxCell\b[^>]*\bid="legend-key-technical-route"[\s\S]*?<Array as="points">)[\s\S]*?(<\/Array>)/u, '$1$2'), svg), assert.AssertionError, 'missing legend waypoint rejected');
+  assert.throws(() => assertDiagram(drawio.replace(/(<mxCell\b[^>]*\bid="legend-key-compensation"[^>]*>[\s\S]*?<mxGeometry\b[^>]*>)/u, '$1<mxPoint x="0" y="0" as="sourcePoint"/>'), svg), assert.AssertionError, 'forbidden legend fallback point rejected');
   assert.throws(() => assertDiagram(drawio, svg.replace('id="legend-caption-business-call"', 'id="legend-caption-renamed"')), assert.AssertionError, 'wrong legend caption ID rejected');
   assert.throws(() => assertDiagram(drawio, svg.replace('业务调用｜实线闭合箭头</text>', '业务调用</text>')), assert.AssertionError, 'wrong legend caption label rejected');
   assert.throws(() => assertDiagram(drawio.replace(/(<mxCell\b[^>]*\bid="legend-caption-message"[\s\S]*?<mxGeometry\b[^>]*\bx=")[^"]+/u, '$10'), svg), assert.AssertionError, 'wrong legend caption bounds rejected');
-  assert.throws(() => assertDiagram(drawio, svg.replace('id="legend-key-message" class="message" data-legend-key="message" data-role="legend-key" d="M 650 4170 H 750"', 'id="legend-key-message" class="message" data-legend-key="message" data-role="legend-key" d="M 650 4160 H 750"')), assert.AssertionError, 'wrong legend key route rejected');
+  assert.throws(() => assertDiagram(drawio, svg.replace('id="legend-key-message" class="message" data-legend-key="message" data-role="legend-key" d="M 650 4170 H 700 H 750"', 'id="legend-key-message" class="message" data-legend-key="message" data-role="legend-key" d="M 650 4160 H 700 H 750"')), assert.AssertionError, 'wrong legend key route rejected');
   assert.throws(() => assertDiagram(drawio, svg.replace(/(<path\b[^>]*\bid="legend-key-business-call"[^>]*)(\/>)/u, '$1 style="marker-end:none"$2')), assert.AssertionError, 'missing legend key marker rejected');
   const wrongLegendCaptionRole = svg.replace(/(<text\b[^>]*\bid="legend-caption-message"[^>]*\bdata-legend-for=")message/u, '$1business-call'); assert.notEqual(wrongLegendCaptionRole, svg, 'wrong legend caption role mutation applies');
   assert.throws(() => assertDiagram(drawio, wrongLegendCaptionRole), assert.AssertionError, 'wrong legend caption role rejected');
