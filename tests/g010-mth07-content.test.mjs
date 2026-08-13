@@ -23,194 +23,108 @@ const FEEDBACK_IDS = ['feedback-rollout-to-acceptance','feedback-compliance-to-s
 const RESPONSIBILITY_IDS = ['owner-customer','owner-delivery','owner-product','owner-platform','owner-security-data'];
 const TOPIC_ID = 'MTH-07';
 const ROUTE = '/methods/mth-07';
-const SOURCE_IDS = [
-  'src-anthropic-enterprise-ai', 'src-openai-enterprise-ai',
-  'src-nist-ai-rmf-1-0', 'src-atlas-mth07-fde-delivery-gates',
-];
-const RELATIONS = {
-  depends_on: ['MTH-01', 'MTH-02', 'MTH-03'],
-  adjacent_topics: ['MTH-04', 'MTH-05', 'MTH-06'],
-  related_cases: ['/cases/microsoft-multi-agent-reference-architecture'],
-  related_questions: [],
-};
+const SOURCE_IDS = ['src-wechat-fde-12-core-capabilities', 'src-nist-ai-rmf-1-0', 'src-google-sre-canarying-releases', 'src-atlas-mth07-fde-delivery-gates'];
+const REMOTE_SOURCES = new Map([
+  ['src-wechat-fde-12-core-capabilities', {canonical_locator: 'https://mp.weixin.qq.com/s/6_-S0yIVlCtqW8U8JfwdGA', title: '一文读懂：FDE的12项核心能力', author_or_org: '李伟山', publisher: '腾讯云开发者', published_at: '2026-08-13', allowed: ['practice-framework', 'origin-context']}],
+  ['src-nist-ai-rmf-1-0', {canonical_locator: 'https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10', title: 'Artificial Intelligence Risk Management Framework (AI RMF 1.0)', author_or_org: 'National Institute of Standards and Technology', version: 'NIST AI 100-1', published_at: '2023-01-26'}],
+  ['src-google-sre-canarying-releases', {canonical_locator: 'https://sre.google/workbook/canarying-releases/', title: 'Canarying Releases', author_or_org: 'Google SRE'}],
+]);
+const RELATIONS = {depends_on: ['MTH-01', 'MTH-04', 'MTH-06'], adjacent_topics: ['MTH-01', 'MTH-04', 'MTH-06'], related_cases: ['/cases/temporal-saga-durable-execution'], related_questions: []};
 const EXACT_METADATA = {
-  title: '企业 AI 交付：把不确定性拆成可验证的交付门禁',
-  slug: ROUTE,
-  content_type: 'method',
-  status: 'reviewed',
-  difficulty: 'advanced',
-  analyzed_at: '2026-08-13',
-  source_cutoff: '2026-08-13',
-  confidence: 'high',
-  domains: ['software-architecture', 'enterprise-architecture', 'artificial-intelligence'],
-  agent_patterns: [], protocols: [],
-  quality_attributes: ['operability', 'reliability', 'security', 'evolvability'],
-  tags: ['交付方法', '企业 AI', '门禁', 'POC', '生产化'],
-  summary: '以十二个交付门禁把企业 AI 项目的需求、验收、责任、风险和复制路径拆成可验证的阶段性控制流。',
-  topic_id: TOPIC_ID, priority: 'P0', ...RELATIONS,
+  title: '企业 AI 前线部署：从 POC 到可复制系统的交付门禁', slug: ROUTE, content_type: 'method', status: 'reviewed', difficulty: 'advanced', analyzed_at: '2026-08-13', source_cutoff: '2026-08-13', review_policy: 'quarterly-version-sensitive', confidence: 'high', domains: ['software-architecture', 'ai-systems'], agent_patterns: ['human-in-the-loop'], protocols: [], quality_attributes: ['reliability', 'security', 'maintainability'], tags: ['企业 AI', 'FDE', '交付门禁', 'POC'], summary: '用四阶段十二门禁把企业 AI 的现场问题、验收证据、生产责任、渐进放量与复制边界连接成可停止的交付闭环。', topic_id: TOPIC_ID, priority: 'P1', ...RELATIONS,
 };
 const TABLE_COLUMNS = ['阶段', '门禁', '风险', '机制', '证据', '通过条件', '责任人', '失败/返回目标'];
 const GATE_ROWS = [
-  ['进场期', '需求考古', '把症状当需求', '访谈、工单与日志三角校验', '需求证据包', '可复述真实任务与约束', '客户业务负责人', '返回需求考古'],
-  ['进场期', '流程测绘', '局部自动化破坏全流程', '绘制现状、例外与人工队列', '流程图与例外清单', '关键分支有责任人', '交付负责人', '返回需求考古'],
-  ['进场期', '切口选择', '价值与可控性失配', '按价值、风险和可逆性排序', '切口决策记录', '选定可逆且可验收切口', '产品负责人', '返回流程测绘'],
-  ['立项期', '验收标准工程', '演示替代验收', '把任务转成可测案例与阈值', '验收集与基线', '验收条件可重复执行', '客户业务负责人', '返回切口选择'],
-  ['立项期', 'POC 纪律', 'POC 无限扩张', '固定范围、样本、时限和退出条件', 'POC 记录', 'POC 只验证假设', '交付负责人', '返回验收标准工程'],
-  ['立项期', '职责契约', '责任落在模糊接口', '程序、AI 与人工职责分离', '职责契约', '不可逆决定有人授权', '客户业务负责人', '返回验收标准工程'],
-  ['交付期', '知识结构化', '知识不可追溯', '来源、版本与适用边界结构化', '知识台账', '每项知识可追溯', '产品负责人', '返回职责契约'],
-  ['交付期', '人机分工设计', 'AI 越权执行', '候选、复核、授权与队列分层', '分工设计', '人工保留不可逆授权', '客户业务负责人', '返回职责契约'],
-  ['交付期', '合规与风险兜底', '风险在上线后暴露', '策略校验、审计、停机与降级', '风险评估与演练', '停止权可实际触发', '安全与数据负责人', '返回切口选择'],
-  ['放大期', '渐进放量', '一次性全量上线', '分批、观测、回滚与人工队列', '放量记录', '指标稳定且队列有界', '平台负责人', '返回验收标准工程'],
-  ['放大期', '信任运营', '用户绕过或滥用系统', '反馈、申诉、培训与透明度', '运营看板', '信任指标达标', '客户业务负责人', '返回人机分工设计'],
-  ['放大期', '资产化复制', '把个案误当通用方案', '沉淀模板、边界与复用检查', '复用包', '新场景重新通过门禁', '交付负责人', '返回职责契约'],
+  ['进场期','需求考古','把意向当需求','访谈、工单、流程记录交叉核验','问题与基线记录','问题、角色、基线和来源可追溯','客户业务负责人','停止或返回需求考古'],
+  ['进场期','流程测绘','局部自动化破坏全流程','测绘等待点、例外、决定和系统边界','现状流程图','明确失败回路与不可自动化步骤','交付/FDE 负责人','返回需求考古'],
+  ['进场期','切口选择','高价值切口不可控','按价值、可测量性、可逆性与合规风险评分','切口评分','可测、可逆且数据治理条件满足','产品工程负责人','返回流程测绘'],
+  ['立项期','验收标准工程','演示替代验收','建立评估集、阈值、预算和失败分级','可执行验收包','可复现并关联阶段退出条件','客户业务负责人','返回切口选择'],
+  ['立项期','POC 纪律','POC 无限外推','限定假设、样本、时间盒和退出标准','POC 假设卡','只验证声明范围内假设','交付/FDE 负责人','停止或返回验收标准工程'],
+  ['立项期','职责契约','共同负责导致无人负责','写明输入、决定、审批、值守和终止权','责任契约','每项风险有单一可停止的责任人','客户业务负责人','返回验收标准工程'],
+  ['交付期','知识结构化','知识不可追溯或无授权','固定来源、版本、冲突和撤回路径','知识来源清单','每项知识可追溯且有授权边界','产品工程负责人','返回职责契约'],
+  ['交付期','人机分工设计','模型输出越权执行','分离程序控制、AI 候选和人工授权','人机职责矩阵','不可逆动作有人授权与审计','客户业务负责人','返回职责契约'],
+  ['交付期','合规与风险兜底','风险在上线后暴露','审查数据、场景、降级、停机和复核','风险与合规决定','停止权、降级和回退可触发','安全与数据负责人','返回切口选择'],
+  ['放大期','渐进放量','一次性扩大影响半径','影子、白名单、对照、回滚和容量预算','放量/回滚计划','指标稳定且影响半径可控','平台与运维负责人','返回验收标准工程'],
+  ['放大期','信任运营','一次演示替代运行信任','监测质量、申诉、漂移、成本和人工负担','生产观测面板','质量、成本与人工负担不越界','客户业务负责人','返回人机分工设计'],
+  ['放大期','资产化复制','把客户特定逻辑当通用资产','分离通用核心、客户资产、许可证与运行责任','复制边界包','差异成本、数据边界和许可可估算','交付/FDE 负责人','返回职责契约'],
 ];
 const REQUIRED_WRAPPERS = [
-  {aria: '企业 AI 交付四阶段十二门禁图，可横向滚动', className: 'architecture-diagram-scroll'},
-  {aria: '企业 AI 交付门禁的证据、产物与责任表，可横向滚动', className: 'table-wrapper table-wrapper--mapping diagram-wrapper--scroll-owner'},
-  {aria: '企业 AI 交付架构决策与权衡表，可横向滚动', className: 'table-wrapper table-wrapper--mapping diagram-wrapper--scroll-owner'},
+  {aria: '企业 AI 四阶段十二门禁图，可横向滚动', className: 'architecture-diagram-scroll'},
+  {aria: '企业 AI 十二门禁执行表，可横向滚动', className: 'table-wrapper table-wrapper--mapping diagram-wrapper--scroll-owner'},
+  {aria: '人、AI 与程序职责及停止条件表，可横向滚动', className: 'table-wrapper table-wrapper--mapping diagram-wrapper--scroll-owner'},
 ];
 
 const contentRoot = fileURLToPath(new URL('../content/', import.meta.url));
-const [documents, ledger, manifest, projectStatus] = await Promise.all([
-  readContentDocuments(contentRoot),
-  readFile(new URL('../data/source-ledger.json', import.meta.url), 'utf8').then(JSON.parse),
-  readFile(new URL('../src/generated/topic-manifest.json', import.meta.url), 'utf8').then(JSON.parse),
-  readFile(new URL('../src/generated/project-status.json', import.meta.url), 'utf8').then(JSON.parse),
-]);
+const [documents, ledger, manifest, projectStatus] = await Promise.all([readContentDocuments(contentRoot), readFile(new URL('../data/source-ledger.json', import.meta.url), 'utf8').then(JSON.parse), readFile(new URL('../src/generated/topic-manifest.json', import.meta.url), 'utf8').then(JSON.parse), readFile(new URL('../src/generated/project-status.json', import.meta.url), 'utf8').then(JSON.parse)]);
 const article = documents.find(({file}) => `content/${file}` === ARTICLE);
 
-function visible(source) {
-  return parseMdxVisibleCopy(source, ARTICLE, {includeStructure: true}).blocks.map(({text}) => text).join('\n');
-}
-function headingOrder(source, level) { return findMarkdownHeadings(source).filter((item) => item.level === level).map(({text}) => text); }
+function visible(source) { return parseMdxVisibleCopy(source, ARTICLE, {includeStructure: true}).blocks.map(({text}) => text).join('\n'); }
 function requiredArticle() { assert.ok(article, `${ARTICLE} must exist after implementation`); return article; }
-function escapeRegExp(value) { return value.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&'); }
-function section(source, heading, next) {
-  const headings = findMarkdownHeadings(source).filter(({level}) => level === 2);
-  const index = headings.findIndex(({text}) => text === heading);
-  assert.notEqual(index, -1, `section ${heading}`);
-  const expectedNext = next ? headings.findIndex(({text}, candidate) => candidate > index && text === next) : -1;
-  if (next) assert.notEqual(expectedNext, -1, `section ${next}`);
-  const start = source.indexOf('\n', headings[index].offset) + 1;
-  const end = next ? headings[expectedNext].offset : source.length;
-  return source.slice(start, end);
+function headings(source, level) { return findMarkdownHeadings(source).filter((item) => item.level === level).map(({text}) => text); }
+function section(source, heading, next) { const list = findMarkdownHeadings(source).filter(({level}) => level === 2); const index = list.findIndex(({text}) => text === heading); assert.ok(index >= 0, heading); const end = next ? list.findIndex(({text}, i) => i > index && text === next) : -1; assert.ok(!next || end >= 0, next); return source.slice(source.indexOf('\n', list[index].offset) + 1, end >= 0 ? list[end].offset : source.length); }
+function table(source) { const raw = [...source.matchAll(/(?:^|\n)(\|[^\n]+\|\n\|(?:\s*:?-{3,}:?\s*\|)+\n(?:\|[^\n]+\|\n?)+)/gu)].map(([, value]) => value.trim()).find((value) => value.startsWith(`| ${TABLE_COLUMNS.join(' | ')} |`)); assert.ok(raw, 'twelve gate execution table'); return raw.split('\n').slice(2).map((line) => line.slice(1, -1).split('|').map((cell) => cell.trim())); }
+function assertMetadataAndHeadings(source) { assert.deepEqual(parseFrontMatter(source), EXACT_METADATA, 'exact canonical metadata'); assert.deepEqual(headings(source, 2), H2, 'MTH-07 only ten H2s'); assert.deepEqual(headings(source, 3), TRANSFER_H3, 'exact transfer H3s'); }
+function assertGateRows(source) { const rows = table(source); assert.deepEqual(rows, GATE_ROWS, 'auditable, exact ordered gate contracts'); for (const [index, row] of rows.entries()) { assert.equal(row.length, 8, `${GATES[index]} eight fields`); assert.equal(row[0], STAGES[Math.floor(index / 3)]); assert.equal(row[1], GATES[index]); for (let field = 2; field < 8; field += 1) assert.ok(row[field].length >= 2, `${GATES[index]} field ${field}`); } }
+function assertEvidenceAndResponsibilities(source) {
+  const text = visible(source); for (const label of ['来源事实', '独立证据', 'Tego Arch 推断']) assert.match(text, new RegExp(label, 'u'), `${label} label`);
+  const independentCitation = /(?:NIST|Google SRE|https:\/\/www\.nist\.gov|https:\/\/sre\.google)/iu;
+  for (const sentence of text.split(/[。！？!?\n]+/u)) if (/(?:市场|薪资|政策).{0,32}\d/u.test(sentence)) assert.match(sentence, independentCitation, 'numeric market/salary/policy claim needs an independent identity in the same claim');
+  const clauses = ['POC 成功不等于生产可用','生产可用不等于验收通过','验收通过不等于放量','放量不等于复制','程序负责权限校验、确定性规则、审计记录和回滚开关','AI 只负责检索、分类、生成候选或建议，不得最终授权不可逆动作','人负责授权不可逆动作、决定放量与终止','人工队列有上限、时限和能力约束','客户业务负责人拥有明确停止权'];
+  for (const clause of clauses) assert.ok(text.includes(clause), clause);
+  for (const forbidden of [/POC.{0,12}(?:就是|(?<!不)等于).{0,12}生产/u, /生产.{0,12}(?:就是|(?<!不)等于).{0,12}验收/u, /验收.{0,12}(?:就是|(?<!不)等于).{0,12}放量/u, /放量.{0,12}(?:就是|(?<!不)等于).{0,12}复制/u]) assert.doesNotMatch(text, forbidden, `conflation ${forbidden}`);
 }
-function markdownTable(source, header) {
-  const candidates = [...source.matchAll(/(?:^|\n)(\|[^\n]+\|\n\|(?:\s*:?-{3,}:?\s*\|)+\n(?:\|[^\n]+\|\n?)+)/gu)].map(([, raw]) => raw.trim());
-  const table = candidates.find((candidate) => candidate.split('\n')[0] === `| ${header.join(' | ')} |`);
-  assert.ok(table, `table with ${header.join('/')}`); return table;
+function arrowHandlerSource(source) { const match = source.match(/function\s+handleHorizontalArrowKey\s*\(event\)\s*\{([\s\S]*?)^\}/mu); assert.ok(match, 'named ArrowRight handler'); return match[0]; }
+function assertWrappersAndArrowBehavior(source) {
+  const handler = arrowHandlerSource(source); assert.match(handler, /event\.key\s*!==?\s*['"]ArrowRight['"]/u); assert.match(handler, /currentTarget\.scrollBy\s*\(\s*\{\s*left\s*:\s*40/u); assert.match(handler, /preventDefault\s*\(/u);
+  const invoke = Function(`return (${handler.replace(/^function\s+handleHorizontalArrowKey/u, 'function')})`)(); let left = 0; let prevented = false; invoke({key: 'ArrowRight', currentTarget: {scrollBy: ({left: delta}) => { left += delta; }}, preventDefault: () => { prevented = true; }}); assert.equal(left, 40, 'ArrowRight scrolls focused region'); assert.equal(prevented, true, 'ArrowRight prevents page scroll'); invoke({key: 'ArrowLeft', currentTarget: {scrollBy: ({left: delta}) => { left += delta; }}, preventDefault: () => { throw new Error('wrong key'); }}); assert.equal(left, 40, 'other key does not scroll');
+  for (const {aria, className} of REQUIRED_WRAPPERS) assert.equal(source.split(`<div className="${className}" role="region" aria-label="${aria}" tabIndex={0} onKeyDown={handleHorizontalArrowKey}>`).length - 1, 1, aria);
 }
-function tableRows(source) {
-  const lines = markdownTable(source, TABLE_COLUMNS).split('\n');
-  const rows = lines.slice(2).map((line) => line.slice(1, -1).split('|').map((cell) => cell.trim()));
-  assert.deepEqual(rows, GATE_ROWS, 'exact ordered twelve gate rows'); return rows;
-}
-function assertMetadataAndHeadings(source) {
-  assert.deepEqual(parseFrontMatter(source), EXACT_METADATA, 'exact complete MTH-07 front matter');
-  assert.deepEqual(headingOrder(source, 2), H2, 'exact MTH-07 H2 order');
-  assert.deepEqual(headingOrder(section(source, '可迁移经验', '来源'), 3), TRANSFER_H3, 'exact transfer H3 order');
-}
-function assertGateRows(source) {
-  const rows = tableRows(source);
-  for (const [index, row] of rows.entries()) {
-    assert.equal(row.length, 8, `${GATES[index]} has all eight contract fields`);
-    assert.equal(row[0], STAGES[Math.floor(index / 3)], `${GATES[index]} stage`);
-    assert.equal(row[1], GATES[index], `${GATES[index]} gate`);
-    for (const [cell, label] of [[2, 'risk'], [3, 'mechanism'], [4, 'evidence'], [5, 'pass condition'], [6, 'owner'], [7, 'failure/return target']]) assert.ok(row[cell], `${GATES[index]} ${label}`);
-  }
-}
-function assertEvidenceAndResponsibility(source) {
-  const text = visible(source);
-  for (const label of ['来源事实', '独立证据', 'Tego Arch 推断']) assert.match(text, new RegExp(label, 'u'), `${label} label`);
-  assert.doesNotMatch(text, /(?:薪资|市场|政策)\s*(?:为|达|超过)?\s*\d+[\d,.%亿元万]/u, 'numbers need an independently cited identity');
-  for (const literal of ['程序确定性负责执行', 'AI 只给候选建议，不得最终授权不可逆操作', '人工对不可逆操作最终授权', '人工队列有界并有上限', '客户业务负责人有明确停止权']) assert.ok(text.includes(literal), `exact responsibility clause ${literal}`);
-  for (const pattern of [
-    /POC.{0,24}(?:不是|不等于|不能替代).{0,24}生产/u,
-    /生产.{0,24}(?:不是|不等于|不能替代).{0,24}验收/u,
-    /验收.{0,24}(?:不是|不等于|不能替代).{0,24}放量/u,
-    /放量.{0,24}(?:不是|不等于|不能替代).{0,24}复制/u,
-    /程序.{0,36}(?:确定性|确定).{0,24}(?:负责|执行)/u,
-    /AI.{0,36}(?:候选|建议).{0,24}(?:不|不得|不能).{0,24}(?:最终|授权|不可逆)/u,
-    /人工.{0,36}(?:不可逆|最终).{0,24}(?:授权|批准)/u,
-    /人工队列.{0,24}(?:有界|上限)/u,
-    /(?:停止权.{0,24}客户业务负责人|客户业务负责人.{0,24}停止权)/u,
-  ]) assert.match(text, pattern, `responsibility/evidence boundary ${pattern}`);
-}
-function assertWrappers(source) {
-  assert.match(source, /function handleHorizontalArrowKey|const handleHorizontalArrowKey/u, 'ArrowRight handler definition');
-  for (const {aria, className} of REQUIRED_WRAPPERS) {
-    const exact = `<div className="${className}" role="region" aria-label="${aria}" tabIndex={0} onKeyDown={handleHorizontalArrowKey}>`;
-    assert.equal(source.split(exact).length - 1, 1, `${aria} exact wrapper`);
-  }
-}
-function xmlAttributes(source) { return new Map([...source.matchAll(/([\w:-]+)="([^"]*)"/gu)].map(([, key, value]) => [key, value])); }
-function drawioCells(source) { return [...source.matchAll(/<mxCell\b([^>]*)>([\s\S]*?)<\/mxCell>|<mxCell\b([^>]*)\/>/gu)].map((match) => ({attrs: xmlAttributes(match[1] ?? match[3] ?? ''), body: match[2] ?? ''})); }
-function svgNodes(source) { return [...source.matchAll(/<g\b([^>]*)data-node-id="([^"]+)"([^>]*)>/gu)].map(([, before, id, after]) => ({id, attrs: xmlAttributes(`${before}${after}`)})); }
-function svgEdges(source) { return [...source.matchAll(/<path\b([^>]*)data-edge-id="([^"]+)"([^>]*)>/gu)].map(([, before, id, after]) => ({id, attrs: xmlAttributes(`${before}${after}`)})); }
+function attrs(raw) { return new Map([...raw.matchAll(/([\w:-]+)="([^"]*)"/gu)].map(([, key, value]) => [key, value])); }
+function drawioCells(source) { return [...source.matchAll(/<mxCell\b([^>]*)>([\s\S]*?)<\/mxCell>|<mxCell\b([^>]*)\/>/gu)].map((match) => ({attrs: attrs(match[1] ?? match[3] ?? ''), geometry: attrs((match[2] ?? '').match(/<mxGeometry\b([^>]*)/u)?.[1] ?? ''), body: match[2] ?? ''})); }
+function svgElements(source, name) { return [...source.matchAll(new RegExp(`<${name}\\b([^>]*)>`, 'gu'))].map((match) => ({attrs: attrs(match[1]), index: match.index, raw: match[0]})); }
+function svgNodes(source) { return [...source.matchAll(/<g\b([^>]*)data-node-id="([^"]+)"([^>]*)>([\s\S]*?)<\/g>/gu)].map(([, before, id, after, body], index) => ({id, attrs: attrs(`${before}${after}`), body, index})); }
+function svgEdges(source) { return svgElements(source, 'path').filter(({attrs: item}) => item.has('data-edge-id')).map(({attrs: item, index}) => ({id: item.get('data-edge-id'), attrs: item, index})); }
+function rectFromNode(node) { const rect = node.body.match(/<rect\b([^>]*)\/>/u); assert.ok(rect, `${node.id} rendered rect`); const item = attrs(rect[1]); return Object.fromEntries(['x', 'y', 'width', 'height'].map((key) => [key, Number(item.get(key))])); }
+function boxContains(outer, inner) { return inner.x >= outer.x && inner.y >= outer.y && inner.x + inner.width <= outer.x + outer.width && inner.y + inner.height <= outer.y + outer.height; }
+function points(d) { return [...d.matchAll(/[ML]\s*([\d.]+)[ ,]([\d.]+)/gu)].map(([, x, y]) => ({x: Number(x), y: Number(y)})); }
+function pointToSegment(point, start, end) { const dx = end.x - start.x; const dy = end.y - start.y; const t = Math.max(0, Math.min(1, ((point.x - start.x) * dx + (point.y - start.y) * dy) / (dx * dx + dy * dy))); return Math.hypot(point.x - (start.x + t * dx), point.y - (start.y + t * dy)); }
+function cssRule(source, selector, property) { const rule = source.match(new RegExp(`${selector.replace('.', '\\.') }\\s*\\{([^}]*)\\}`, 'u')); assert.ok(rule, `${selector} rule`); const value = rule[1].match(new RegExp(`${property}:\\s*([^;]+)`, 'u'))?.[1]?.trim(); assert.ok(value, `${selector} ${property}`); return value; }
+function rgb(hex) { const value = hex.replace('#', ''); return [0, 2, 4].map((index) => Number.parseInt(value.slice(index, index + 2), 16) / 255).map((item) => item <= .03928 ? item / 12.92 : ((item + .055) / 1.055) ** 2.4); }
+function contrast(foreground, background) { const luminance = (color) => { const [r, g, b] = rgb(color); return .2126 * r + .7152 * g + .0722 * b; }; const [a, b] = [luminance(foreground), luminance(background)].sort((left, right) => right - left); return (a + .05) / (b + .05); }
+function segmentOverlap(a, b, c, d) { const cross = (p, q, r) => (q.x - p.x) * (r.y - p.y) - (q.y - p.y) * (r.x - p.x); if (Math.abs(cross(a, b, c)) > .01 || Math.abs(cross(a, b, d)) > .01) return false; const axis = Math.abs(a.x - b.x) > Math.abs(a.y - b.y) ? 'x' : 'y'; return Math.max(Math.min(a[axis], b[axis]), Math.min(c[axis], d[axis])) < Math.min(Math.max(a[axis], b[axis]), Math.max(c[axis], d[axis])) - .01; }
 function assertDiagram(drawio, svg) {
-  assert.match(drawio, /<mxfile\b/u, 'Draw.io XML'); assert.match(svg, /<svg\b[^>]*\brole="img"/u, 'accessible SVG');
-  const cells = drawioCells(drawio); const vertices = new Set(cells.filter(({attrs}) => attrs.get('vertex') === '1').map(({attrs}) => attrs.get('id')));
-  const edges = cells.filter(({attrs}) => attrs.get('edge') === '1'); const svgNodeIds = new Set(svgNodes(svg).map(({id}) => id)); const svgEdgeIds = new Set(svgEdges(svg).map(({id}) => id));
-  for (const id of [...STAGE_IDS, ...GATE_IDS, ...RESPONSIBILITY_IDS]) { assert.ok(vertices.has(id), `Draw.io ${id}`); assert.ok(svgNodeIds.has(id), `SVG ${id}`); }
-  for (const id of FEEDBACK_IDS) { assert.ok(edges.some(({attrs}) => attrs.get('id') === id), `Draw.io ${id}`); assert.ok(svgEdgeIds.has(id), `SVG ${id}`); }
-  assert.ok(vertices.has('stop-authority'), 'Draw.io stop authority'); assert.ok(svgNodeIds.has('stop-authority'), 'SVG stop authority');
-  assert.equal(new Set(FEEDBACK_IDS).size, 3, 'three distinct feedback route identities');
-  for (const gate of GATE_IDS) assert.ok(cells.some(({attrs}) => attrs.get('parent')?.startsWith('stage-') && attrs.get('id') === gate) || edges.some(({attrs}) => attrs.get('target') === gate), `${gate} is contained or connected`);
-  for (const edge of edges) if (FEEDBACK_IDS.includes(edge.attrs.get('id'))) {
-    assert.match(edge.body, /<mxPoint\b[^>]*as="(?:sourcePoint|targetPoint|points)"|<Array\b/u, `${edge.attrs.get('id')} terminal port/waypoint`);
-  }
-  for (const edge of svgEdges(svg)) {
-    assert.ok(edge.attrs.get('d')?.includes('L') || edge.attrs.get('d')?.includes('C'), `${edge.id} routed SVG path`);
-    assert.ok(edge.attrs.get('marker-end') || /marker-end/u.test(svg), `${edge.id} marker/style parity`);
-  }
-  for (const id of [...STAGE_IDS, ...GATE_IDS, ...RESPONSIBILITY_IDS, 'stop-authority']) {
-    const node = svgNodes(svg).find((candidate) => candidate.id === id); const size = Number(node?.attrs.get('data-font-size-css'));
-    assert.ok(size >= 15, `${id} 800px CSS text >=15px`); assert.ok(Number(node?.attrs.get('data-boundary-clearance-css')) >= 12, `${id} node/boundary clearance`);
-  }
-  for (const edge of svgEdges(svg)) { assert.ok(Number(edge.attrs.get('data-stroke-clearance-css')) >= 8, `${edge.id} label/stroke clearance`); assert.ok(Number(edge.attrs.get('data-marker-size-css')) >= 16, `${edge.id} marker size`); assert.ok(Number(edge.attrs.get('data-contrast-ratio')) >= 4.5, `${edge.id} selector-bound contrast`); }
-  assert.doesNotMatch(svg, /data-partial-shared-segment="true"|data-later-occluding-rect="true"/u, 'no shared segment or later occluder');
+  const cells = drawioCells(drawio); assert.match(drawio, /<mxfile\b/u); assert.match(svg, /<svg\b[^>]*role="img"/u);
+  const vertices = new Map(cells.filter(({attrs: item}) => item.get('vertex') === '1').map((cell) => [cell.attrs.get('id'), cell])); const drawEdges = new Map(cells.filter(({attrs: item}) => item.get('edge') === '1').map((cell) => [cell.attrs.get('id'), cell])); const nodes = new Map(svgNodes(svg).map((node) => [node.id, node])); const edges = new Map(svgEdges(svg).map((edge) => [edge.id, edge]));
+  for (const id of [...STAGE_IDS, ...GATE_IDS, ...RESPONSIBILITY_IDS, 'stop-authority']) { assert.ok(vertices.has(id), `Draw.io ${id}`); assert.ok(nodes.has(id), `SVG ${id}`); const dg = vertices.get(id).geometry; assert.deepEqual(rectFromNode(nodes.get(id)), Object.fromEntries(['x','y','width','height'].map((key) => [key, Number(dg.get(key))])), `${id} Draw.io/SVG bounds parity`); }
+  for (let index = 0; index < GATE_IDS.length; index += 1) assert.ok(boxContains(rectFromNode(nodes.get(STAGE_IDS[Math.floor(index / 3)])), rectFromNode(nodes.get(GATE_IDS[index]))), `${GATE_IDS[index]} contained in its stage`);
+  for (const id of FEEDBACK_IDS) { const edge = drawEdges.get(id); assert.ok(edge, `Draw.io feedback ${id}`); assert.ok(edges.has(id), `SVG feedback ${id}`); for (const port of ['source', 'target']) assert.ok(edge.attrs.get(port), `${id} ${port}`); assert.match(edge.attrs.get('style') ?? '', /exitX=|entryX=|exitY=|entryY=/u, `${id} actual terminal ports`); const waypoint = attrs(edge.body.match(/<mxPoint\b([^>]*)/u)?.[1] ?? ''); assert.ok(waypoint.size, `${id} actual waypoint array`); const path = points(edges.get(id).attrs.get('d')); assert.ok(path.length >= 3, `${id} routed SVG path`); const sourceRect = rectFromNode(nodes.get(edge.attrs.get('source'))); const exitX = Number((edge.attrs.get('style').match(/exitX=([\d.]+)/u) ?? [])[1]); const exitY = Number((edge.attrs.get('style').match(/exitY=([\d.]+)/u) ?? [])[1]); assert.deepEqual(path[0], {x: sourceRect.x + sourceRect.width * exitX, y: sourceRect.y + sourceRect.height * exitY}, `${id} SVG starts at Draw.io terminal`); assert.deepEqual(path[1], {x: Number(waypoint.get('x')), y: Number(waypoint.get('y'))}, `${id} SVG waypoint parity`); assert.equal(edges.get(id).attrs.get('data-source'), edge.attrs.get('source')); assert.equal(edges.get(id).attrs.get('data-target'), edge.attrs.get('target')); }
+  assert.equal(new Set(FEEDBACK_IDS).size, 3); assert.ok(nodes.has('stop-authority')); assert.equal(RESPONSIBILITY_IDS.every((id) => nodes.has(id)), true, 'responsibility band');
+  const canvas = svgElements(svg, 'rect').find(({attrs: item}) => item.get('data-canvas') === 'true'); assert.ok(canvas, 'opaque actual canvas'); const background = canvas.attrs.get('fill'); const edgeStroke = cssRule(svg, '.edge', 'stroke'); const labelFill = cssRule(svg, '.edge-label', 'fill'); assert.ok(contrast(edgeStroke, background) >= 4.5, 'effective edge contrast'); assert.ok(contrast(labelFill, background) >= 4.5, 'effective label contrast'); const marker = svg.match(/<marker\b([^>]*)>/u); assert.ok(marker); const markerAttrs = attrs(marker[1]); assert.ok(Number(markerAttrs.get('markerWidth')) >= 16 && Number(markerAttrs.get('markerHeight')) >= 16, 'actual marker dimensions');
+  const labels = svgElements(svg, 'text').filter(({attrs: item}) => item.has('data-edge-label')); for (const label of labels) { const edge = edges.get(label.attrs.get('data-edge-label')); assert.ok(edge); assert.ok(Number(label.attrs.get('font-size')) >= 15, 'actual 800px text size'); const path = points(edge.attrs.get('d')); const center = {x: Number(label.attrs.get('x')), y: Number(label.attrs.get('y'))}; assert.ok(Math.min(...path.slice(1).map((point, index) => pointToSegment(center, path[index], point))) >= 8, 'actual label-to-stroke clearance'); }
+  const allSegments = [...edges.values()].flatMap((edge) => points(edge.attrs.get('d')).slice(1).map((end, index) => ({id: edge.id, start: points(edge.attrs.get('d'))[index], end}))); for (let left = 0; left < allSegments.length; left += 1) for (let right = left + 1; right < allSegments.length; right += 1) if (allSegments[left].id !== allSegments[right].id) assert.equal(segmentOverlap(allSegments[left].start, allSegments[left].end, allSegments[right].start, allSegments[right].end), false, 'no partial shared segment');
+  const pathsLast = Math.max(...svgEdges(svg).map(({index}) => index)); for (const rect of svgElements(svg, 'rect').filter(({index, attrs: item}) => index > pathsLast && item.get('fill') !== 'none' && Number(item.get('opacity') ?? 1) > 0)) assert.fail(`later painted rect ${rect.index} can occlude connectors`);
 }
-function mutate(source, from, to, label) { const changed = source.replace(from, to); assert.notEqual(changed, source, `${label} fixture applies`); return changed; }
+function mutate(source, from, to, label) { const result = source.replace(from, to); assert.notEqual(result, source, `${label} mutation is non-no-op`); return result; }
+function fixtureArticle() { const headingText = H2.map((heading) => heading === '可迁移经验' ? `## ${heading}\n${TRANSFER_H3.map((item) => `### ${item}`).join('\n')}` : `## ${heading}`).join('\n\n'); const metadata = Object.entries(EXACT_METADATA).map(([key, value]) => Array.isArray(value) ? `${key}:\n${value.map((item) => `  - ${item}`).join('\n')}` : `${key}: ${value}`).join('\n'); return `---\n${metadata}\n---\n\n${headingText}\n\n| ${TABLE_COLUMNS.join(' | ')} |\n| ${TABLE_COLUMNS.map(() => '---').join(' | ')} |\n${GATE_ROWS.map((row) => `| ${row.join(' | ')} |`).join('\n')}\n\n来源事实。独立证据。Tego Arch 推断。POC 成功不等于生产可用。生产可用不等于验收通过。验收通过不等于放量。放量不等于复制。程序负责权限校验、确定性规则、审计记录和回滚开关。AI 只负责检索、分类、生成候选或建议，不得最终授权不可逆动作。人负责授权不可逆动作、决定放量与终止。人工队列有上限、时限和能力约束。客户业务负责人拥有明确停止权。\n\n\`\`\`js\nfunction handleHorizontalArrowKey(event) {\n  if (event.key !== 'ArrowRight') return;\n  event.currentTarget.scrollBy({left: 40, behavior: 'smooth'});\n  event.preventDefault();\n}\n\`\`\`\n\n${REQUIRED_WRAPPERS.map(({aria, className}) => `<div className="${className}" role="region" aria-label="${aria}" tabIndex={0} onKeyDown={handleHorizontalArrowKey}></div>`).join('\n')}`; }
+function fixtureDiagram() { const boxes = new Map(); STAGE_IDS.forEach((id, index) => boxes.set(id, {x: 20 + index * 190, y: 20, width: 180, height: 250})); GATE_IDS.forEach((id, index) => boxes.set(id, {x: 35 + Math.floor(index / 3) * 190, y: 50 + (index % 3) * 65, width: 150, height: 45})); RESPONSIBILITY_IDS.forEach((id, index) => boxes.set(id, {x: 20 + index * 145, y: 310, width: 130, height: 40})); boxes.set('stop-authority', {x: 720, y: 180, width: 100, height: 45}); const vertex = (id) => { const box = boxes.get(id); return `<mxCell id="${id}" vertex="1"><mxGeometry x="${box.x}" y="${box.y}" width="${box.width}" height="${box.height}" as="geometry"/></mxCell>`; }; const feedback = FEEDBACK_IDS.map((id, index) => { const source = ['gate-10','gate-09','gate-12'][index]; const target = ['gate-04','gate-03','gate-06'][index]; return `<mxCell id="${id}" edge="1" source="${source}" target="${target}" style="exitX=1;exitY=0.5;entryX=0;entryY=0.5;endArrow=block;"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="${600 + index * 10}" y="${110 + index * 20}"/></Array></mxGeometry></mxCell>`; }).join(''); const drawio = `<mxfile><diagram><mxGraphModel><root>${[...boxes.keys()].map(vertex).join('')}${feedback}</root></mxGraphModel></diagram></mxfile>`; const groups = [...boxes.keys()].map((id) => { const box = boxes.get(id); return `<g data-node-id="${id}"><rect x="${box.x}" y="${box.y}" width="${box.width}" height="${box.height}" fill="#ffffff"/><text x="${box.x + 8}" y="${box.y + 20}" font-size="15">${id}</text></g>`; }).join(''); const paths = FEEDBACK_IDS.map((id, index) => { const source = ['gate-10','gate-09','gate-12'][index]; const target = ['gate-04','gate-03','gate-06'][index]; const start = boxes.get(source); const end = boxes.get(target); const sx = start.x + start.width; const sy = start.y + start.height / 2; const tx = end.x; const ty = end.y + end.height / 2; const midX = 600 + index * 10; const midY = 110 + index * 20; return `<path class="edge" data-edge-id="${id}" data-source="${source}" data-target="${target}" d="M ${sx} ${sy} L ${midX} ${midY} L ${tx} ${ty}" marker-end="url(#arrow)"/><text class="edge-label" data-edge-label="${id}" x="${midX}" y="${midY - 12}" font-size="15">反馈</text>`; }).join(''); const svg = `<svg role="img" viewBox="0 0 840 380"><style>.edge { stroke: #1d4ed8; fill: none; stroke-width: 2; } .edge-label { fill: #111827; }</style><defs><marker id="arrow" markerWidth="16" markerHeight="16"></marker></defs><rect data-canvas="true" x="0" y="0" width="840" height="380" fill="#ffffff"/>${groups}${paths}</svg>`; return {drawio, svg}; }
 
-test('helper fixtures reject every MTH-07 contract mutation', () => {
-  const fixtureHeadings = H2.map((heading) => heading === '可迁移经验' ? `## ${heading}\n\n${TRANSFER_H3.map((subheading) => `### ${subheading}`).join('\n\n')}` : `## ${heading}`).join('\n\n');
-  const fixture = `---\n${Object.entries(EXACT_METADATA).map(([key, value]) => Array.isArray(value) ? `${key}:\n${value.map((item) => `  - ${item}`).join('\n')}` : `${key}: ${value}`).join('\n')}\n---\n\n${fixtureHeadings}\n\n${TABLE_COLUMNS.length ? `| ${TABLE_COLUMNS.join(' | ')} |\n| ${TABLE_COLUMNS.map(() => '---').join(' | ')} |\n${GATE_ROWS.map((row) => `| ${row.join(' | ')} |`).join('\n')}` : ''}\n\n来源事实；独立证据；Tego Arch 推断。POC 不等于生产。生产不等于验收。验收不等于放量。放量不等于复制。程序确定性负责执行。AI 只给候选建议，不得最终授权不可逆操作。人工对不可逆操作最终授权。人工队列有界并有上限。客户业务负责人有明确停止权。\n\nfunction handleHorizontalArrowKey() {}\n${REQUIRED_WRAPPERS.map(({aria, className}) => `<div className="${className}" role="region" aria-label="${aria}" tabIndex={0} onKeyDown={handleHorizontalArrowKey}></div>`).join('\n')}`;
-  assertMetadataAndHeadings(fixture); assertGateRows(fixture); assertEvidenceAndResponsibility(fixture); assertWrappers(fixture);
-  assert.throws(() => assertMetadataAndHeadings(mutate(fixture, 'topic_id: MTH-07', 'topic_id: MTH-99', 'topic id')), assert.AssertionError);
-  assert.throws(() => assertMetadataAndHeadings(mutate(fixture, '## 一页摘要', '## 组件、连接器与约束', 'normal headings')), assert.AssertionError);
-  assert.throws(() => assertMetadataAndHeadings(mutate(fixture, '### 不应照搬的部分', '### 关键源码导读', 'transfer H3')), assert.AssertionError);
-  for (const row of GATE_ROWS) { for (let index = 0; index < row.length; index += 1) { const changed = [...row]; changed[index] = '错误字段'; assert.throws(() => assertGateRows(mutate(fixture, `| ${row.join(' | ')} |`, `| ${changed.join(' | ')} |`, `${row[1]} field ${index}`)), assert.AssertionError); } assert.throws(() => assertGateRows(mutate(fixture, `| ${row.join(' | ')} |\n`, '', `${row[1]} deletion`)), assert.AssertionError); }
-  assert.throws(() => assertGateRows(`${fixture.replace(`| ${GATE_ROWS.at(-1).join(' | ')} |`, '| 放大期 | 资产化复制 | 风险 | 机制 | 证据 | 条件 |  | 返回 |')}\n| ${GATE_ROWS.at(-1).join(' | ')} |`), assert.AssertionError);
-  for (const [from, to] of [['POC 不等于生产', 'POC 就是生产'], ['人工对不可逆操作最终授权', 'AI 对可逆操作最终授权'], ['人工队列有界并有上限', '人工队列无限'], ['客户业务负责人有明确停止权', '停止权未指定']]) assert.throws(() => assertEvidenceAndResponsibility(mutate(fixture, from, to, from)), assert.AssertionError);
-  for (const wrapper of REQUIRED_WRAPPERS) assert.throws(() => assertWrappers(mutate(fixture, wrapper.aria, `${wrapper.aria}（错误）`, 'wrapper')), assert.AssertionError);
+test('MTH-07 helper contracts are green after non-no-op RED mutation fixtures', () => {
+  const source = fixtureArticle(); assertMetadataAndHeadings(source); assertGateRows(source); assertEvidenceAndResponsibilities(source); assertWrappersAndArrowBehavior(source);
+  const metadataMutations = [mutate(source, 'topic_id: MTH-07', 'topic_id: MTH-99', 'wrong topic'), mutate(source, 'content_type: method', 'content_type: style', 'wrong type'), mutate(source, '## 一页摘要', '## 完整演练', 'fallback headings'), mutate(source, '### 不应照搬的部分', '', 'missing transfer H3'), `${source}\n### 关键源码导读`]; metadataMutations.forEach((item) => assert.throws(() => assertMetadataAndHeadings(item), assert.AssertionError));
+  for (const row of GATE_ROWS) { for (let index = 0; index < row.length; index += 1) { const changed = [...row]; changed[index] = '错误字段'; const mutation = mutate(source, `| ${row.join(' | ')} |`, `| ${changed.join(' | ')} |`, `${row[1]} field`); assert.throws(() => assertGateRows(mutation), assert.AssertionError); } const deletion = mutate(source, `| ${row.join(' | ')} |\n`, '', `${row[1]} deletion`); assert.throws(() => assertGateRows(deletion), assert.AssertionError); }
+  const ownerlessDuplicate = mutate(source, `| ${GATE_ROWS.at(-1).join(' | ')} |`, `| ${GATE_ROWS.at(-1).slice(0, 6).join(' | ')} |  | ${GATE_ROWS.at(-1)[7]} |\n| ${GATE_ROWS.at(-1).join(' | ')} |`, 'ownerless duplicate'); assert.throws(() => assertGateRows(ownerlessDuplicate), assert.AssertionError);
+  for (const [from, to] of [['POC 成功不等于生产可用','POC 成功就是生产可用'], ['生产可用不等于验收通过','生产可用就是验收通过'], ['验收通过不等于放量','验收通过就是放量'], ['放量不等于复制','放量就是复制'], ['AI 只负责检索、分类、生成候选或建议，不得最终授权不可逆动作','AI 最终授权不可逆动作'], ['程序负责权限校验、确定性规则、审计记录和回滚开关','程序把确定性规则交给概率模型'], ['人工队列有上限、时限和能力约束','人工兜底无限且无时限'], ['客户业务负责人拥有明确停止权','停止权未指定']]) { const mutation = mutate(source, from, to, from); assert.throws(() => assertEvidenceAndResponsibilities(mutation), assert.AssertionError); }
+  const emptyHandler = mutate(source, "if (event.key !== 'ArrowRight') return;\n  event.currentTarget.scrollBy({left: 40, behavior: 'smooth'});\n  event.preventDefault();", '', 'empty ArrowRight handler'); assert.throws(() => assertWrappersAndArrowBehavior(emptyHandler), assert.AssertionError);
+  const {drawio, svg} = fixtureDiagram(); assertDiagram(drawio, svg); const laterMask = `${svg}<rect x="0" y="0" width="840" height="380" fill="#ffffff"/>`; assert.notEqual(laterMask, svg, 'later occluder mutation is non-no-op'); const diagramMutations = [['terminal port', mutate(drawio, 'exitX=1', 'exitX=0', 'terminal port'), svg], ['route identity', drawio, mutate(svg, 'data-edge-id="feedback-rollout-to-acceptance"', 'data-edge-id="feedback-copy"', 'route identity')], ['partial shared segment', drawio, mutate(svg, 'L 610 130 L 35 202.5', 'L 600 110 L 225 72.5', 'partial shared segment')], ['edge contrast', drawio, mutate(svg, '#1d4ed8', '#ffffff', 'edge contrast')], ['marker size', drawio, mutate(svg, 'markerWidth="16" markerHeight="16"', 'markerWidth="15" markerHeight="15"', 'marker size')], ['label collision and size', drawio, mutate(svg, 'x="600" y="98" font-size="15"', 'x="600" y="110" font-size="14"', 'label collision and size')], ['later opaque mask', drawio, laterMask]]; diagramMutations.forEach(([label, mutatedDrawio, mutatedSvg]) => assert.throws(() => assertDiagram(mutatedDrawio, mutatedSvg), assert.AssertionError, label));
 });
 
-test('locks the narrow MTH-07 method exception and leaves every other method on nine headings', () => {
-  const source = requiredArticle().source; assertMetadataAndHeadings(source);
-  for (const document of documents.filter(({metadata}) => metadata.content_type === 'method' && metadata.topic_id !== TOPIC_ID)) assert.deepEqual(document.headings.filter(({level}) => level === 2).map(({text}) => `## ${text}`), knowledgeTypeContracts.method, `${document.file} canonical method headings`);
+test('MTH-07 locks the narrow method exception while every other method retains nine headings', () => { const source = requiredArticle().source; assertMetadataAndHeadings(source); for (const document of documents.filter(({metadata}) => metadata.content_type === 'method' && metadata.topic_id !== TOPIC_ID)) assert.deepEqual(document.headings.filter(({level}) => level === 2).map(({text}) => `## ${text}`), knowledgeTypeContracts.method, document.file); });
+test('MTH-07 locks twelve auditable gate contracts', () => assertGateRows(requiredArticle().source));
+test('MTH-07 locks citation-aware evidence and responsibility boundaries', () => assertEvidenceAndResponsibilities(requiredArticle().source));
+test('MTH-07 locks governed source identities, exact relations, wrappers, density, and Stage A projection', () => {
+  const source = requiredArticle().source; const record = ledger.documents[ARTICLE]; assert.deepEqual(record?.citations.map(({source_id}) => source_id), SOURCE_IDS); const sources = new Map(SOURCE_IDS.map((id) => [id, ledger.sources.find((item) => item.id === id)]));
+  for (const [id, expected] of REMOTE_SOURCES) { const item = sources.get(id); assert.ok(item, id); for (const [field, value] of Object.entries(expected)) if (field !== 'allowed') assert.equal(item[field], value, `${id}.${field}`); }
+  assert.equal(new Set([...REMOTE_SOURCES.values()].map(({canonical_locator}) => new URL(canonical_locator).hostname)).size, 3, 'three independent remote domains'); const primary = record?.citations.filter(({manifest_primary}) => manifest_primary); assert.deepEqual(primary?.map(({source_id}) => source_id), ['src-wechat-fde-12-core-capabilities']); assert.deepEqual(primary?.[0]?.roles, ['practice-framework'], 'WeChat primary is practice-only'); const illustration = sources.get('src-atlas-mth07-fde-delivery-gates'); assert.equal(illustration?.source_kind, 'original-illustration'); assert.equal(illustration?.license, 'LicenseRef-Atlas-Original'); assert.equal(illustration?.copyright_policy, 'original-atlas');
+  assert.deepEqual(extractInternalLinks({body: article.body}), ['/cases/temporal-saga-durable-execution', '/methods', '/methods/mth-01', '/methods/mth-04', '/methods/mth-06']); const text = visible(source); assert.match(text, /Temporal.{0,60}(?:工程机制参照|不证明 FDE 组织模式)/u); assert.doesNotMatch(text, /QA-09/u); assert.deepEqual(extractExternalLinks({body: article.body}).sort(), [...REMOTE_SOURCES.values()].map(({canonical_locator}) => canonical_locator).sort()); assertWrappersAndArrowBehavior(source); assert.ok(analyzeCaseText(article.body).visualBalance.score > 90); assert.deepEqual({completed_topics: projectStatus.completed_topics, content_documents: projectStatus.content_documents, governed_sources: projectStatus.governed_sources}, {completed_topics: 59, content_documents: 102, governed_sources: 529}); const topic = manifest.topics.find(({id}) => id === TOPIC_ID); assert.equal(topic?.published, true); assert.equal(topic?.status?.value, 'pending');
 });
-
-test('locks all twelve five-part delivery-gate contracts and responsibility fields', () => { assertGateRows(requiredArticle().source); });
-
-test('locks evidence boundaries, non-conflation inequalities, and authority semantics', () => { assertEvidenceAndResponsibility(requiredArticle().source); });
-
-test('locks governed sources, exact relations, wrappers, density, and Stage A projection', () => {
-  const source = requiredArticle().source; const text = visible(source); const record = ledger.documents[ARTICLE];
-  assert.deepEqual(record?.citations.map(({source_id}) => source_id), SOURCE_IDS, 'exact source IDs');
-  const sources = SOURCE_IDS.map((id) => ledger.sources.find((sourceItem) => sourceItem.id === id));
-  assert.ok(sources.every(Boolean), 'all sources governed'); assert.equal(new Set(sources.slice(0, 3).map(({canonical_locator}) => new URL(canonical_locator).hostname)).size, 3, 'three remote domains');
-  assert.equal(record.citations.filter(({manifest_primary}) => manifest_primary).length, 1, 'sole manifest primary'); assert.match(record.citations.find(({manifest_primary}) => manifest_primary)?.source_id ?? '', /wechat|weixin/u, 'WeChat is sole primary');
-  const illustration = sources.at(-1); assert.equal(illustration.source_kind, 'original-illustration'); assert.equal(illustration.license, 'LicenseRef-Atlas-Original');
-  assert.deepEqual(parseFrontMatter(source), EXACT_METADATA); assert.deepEqual(extractInternalLinks({body: article.body}), ['/cases/microsoft-multi-agent-reference-architecture', '/methods', '/methods/mth-04', '/methods/mth-05', '/methods/mth-06'].sort()); assert.equal(text.includes('QA-09'), false, 'no QA-09 relation'); assert.match(text, /Temporal.{0,24}(?:边界|截至|截止)/iu, 'Temporal boundary'); assert.deepEqual(extractExternalLinks({body: article.body}).sort(), sources.slice(0, 3).map(({canonical_locator}) => canonical_locator).sort());
-  assertWrappers(source); assert.ok(analyzeCaseText(article.body).visualBalance.score > 90, 'visual-balance >90');
-  assert.deepEqual({completed_topics: projectStatus.completed_topics, content_documents: projectStatus.content_documents, governed_sources: projectStatus.governed_sources}, {completed_topics: 59, content_documents: 102, governed_sources: 529}); const topic = manifest.topics.find(({id}) => id === TOPIC_ID); assert.equal(topic?.published, false); assert.equal(topic?.status?.value, 'pending');
-});
-
-test('locks Draw.io/SVG delivery-gate parity, geometry, and mutation rejection', async () => {
-  const [drawio, svg] = await Promise.all([readFile(new URL(`../${DRAWIO}`, import.meta.url), 'utf8'), readFile(new URL(`../${SVG}`, import.meta.url), 'utf8')]); assertDiagram(drawio, svg);
-  assert.throws(() => assertDiagram(mutate(drawio, 'gate-01', 'gate-99', 'Draw.io gate'), svg), assert.AssertionError);
-  assert.throws(() => assertDiagram(drawio, mutate(svg, 'feedback-rollout-to-acceptance', 'feedback-duplicate', 'SVG feedback'),), assert.AssertionError);
-  assert.throws(() => assertDiagram(drawio, mutate(svg, 'data-stroke-clearance-css="8"', 'data-stroke-clearance-css="7"', 'stroke clearance')), assert.AssertionError);
-  assert.throws(() => assertDiagram(drawio, mutate(svg, 'data-marker-size-css="16"', 'data-marker-size-css="15"', 'marker size')), assert.AssertionError);
-  assert.throws(() => assertDiagram(drawio, `${svg}<rect data-later-occluding-rect="true"/>`), assert.AssertionError);
-});
+test('MTH-07 diagram parses actual Draw.io terminals and rendered SVG geometry/style/painter parity', async () => { const [drawio, svg] = await Promise.all([readFile(new URL(`../${DRAWIO}`, import.meta.url), 'utf8'), readFile(new URL(`../${SVG}`, import.meta.url), 'utf8')]); assertDiagram(drawio, svg); });
