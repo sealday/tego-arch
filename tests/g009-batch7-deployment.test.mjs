@@ -10,6 +10,7 @@ const LEDGER = 'data/source-ledger.json';
 const REVIEW = 'docs/reviews/g009-batch7.md';
 const RAW_BROWSER = 'docs/reviews/evidence/g009-batch7-stage-a-browser.json';
 const REVIEWED_HEAD = '44fcafbef24b68f14a9cbf4be0b3fba09cc6002d';
+const EVIDENCE_HEAD = 'f24b4d4a4ebd95bf454f6e87200c83476dc91971';
 const STATES = ['desktopLight', 'desktopDark', 'mobileLight', 'mobileDark'];
 const WRAPPER_LABELS = [
   '订单事件的四种模式并排比较图，可横向滚动',
@@ -162,14 +163,15 @@ function assertFinalReview(source) {
   const checkpoint = section(source, 'Independent review checkpoint');
   assert.ok(checkpoint.includes(`Exact reviewed head: \`${REVIEWED_HEAD}\`.`));
   for (const literal of [
-    'Independent code reviewer (`code-reviewer`): `PENDING`; findings: `NOT_RUN`.',
-    'Independent content, evidence, and rights reviewer: `PENDING`; rights: `PENDING`; findings: `NOT_RUN`.',
-    'Independent architecture reviewer (`architect`): `PENDING`; findings: `NOT_RUN`.',
-    'Final Stage A review judgment: `PENDING`.',
+    `Exact evidence/remediation head: \`${EVIDENCE_HEAD}\`.`,
+    'Independent code reviewer (`code-reviewer`): `READY / APPROVE`; findings: `0`.',
+    'Independent content, evidence, and rights reviewer: `CONTENT READY`; rights: `PASS`; findings: `0`.',
+    'Independent architecture reviewer (`architect`): `CLEAR / READY`; blockers: `0`.',
+    'Final Stage A review judgment: `READY`.',
     'Scope boundary: `STAGE_A_ONLY`; Stage B backlog closure and deployment have not run.',
     'Deployment status: `NOT_RUN`.',
   ]) assert.ok(checkpoint.includes(literal), `review literal: ${literal}`);
-  assert.doesNotMatch(checkpoint, /`READY \/ APPROVE`|`CONTENT READY`|`CLEAR \/ READY`/u);
+  assert.doesNotMatch(checkpoint, /`PENDING`|`NOT_RUN` findings/u);
 }
 
 async function assertArtifactIdentities(source) {
@@ -186,7 +188,7 @@ test('projects the exact STY-06 Stage A candidate without closing Stage B', () =
   assert.equal(manifest.topics.filter(({published}) => published).some(({slug}) => slug === '/styles/sty-07'), false);
 });
 
-test('binds exact artifacts, four local Browser states, and pending independent verdict slots', async () => {
+test('binds exact artifacts, four local Browser states, and final independent verdicts', async () => {
   assert.match(review, /^# G009 Batch 7 Stage A Review$/mu);
   assert.match(section(review, 'Stage A projection'), /58 completed topics \/ 101 content documents \/ 525 governed sources/u);
   assert.match(section(review, 'Stage A projection'), /STY-06: `published \/ pending`/u);
@@ -208,9 +210,11 @@ test('rejects weakened or fabricated Stage A evidence', async () => {
     ['wrong reviewed head', `Exact reviewed head: \`${REVIEWED_HEAD}\`.`, `Exact reviewed head: \`${'0'.repeat(40)}\`.`],
     ['fabricated STY-07 absence', 'STY-07 actionable count: `0` in every state.', 'STY-07 actionable count: `1` in every state.'],
     ['fabricated screenshot success', 'Screenshot evidence: `BLOCKED / NOT_ACCEPTED`.', 'Visual inspection: diagram `PASS` in light and dark themes.'],
-    ['fabricated code verdict', '`PENDING`; findings: `NOT_RUN`.', '`READY / APPROVE`; findings: `0`.'],
-    ['fabricated content verdict', '`PENDING`; rights: `PENDING`; findings: `NOT_RUN`.', '`CONTENT READY`; rights: `PASS`; findings: `0`.'],
-    ['fabricated architecture verdict', 'Independent architecture reviewer (`architect`): `PENDING`; findings: `NOT_RUN`.', 'Independent architecture reviewer (`architect`): `CLEAR / READY`; findings: `0`.'],
+    ['wrong evidence head', `Exact evidence/remediation head: \`${EVIDENCE_HEAD}\`.`, `Exact evidence/remediation head: \`${'0'.repeat(40)}\`.`],
+    ['weakened code verdict', '`READY / APPROVE`; findings: `0`.', '`READY / APPROVE`; findings: `1`.'],
+    ['weakened content verdict', '`CONTENT READY`; rights: `PASS`; findings: `0`.', '`CONTENT READY`; rights: `PENDING`; findings: `0`.'],
+    ['weakened architecture verdict', '`CLEAR / READY`; blockers: `0`.', '`CLEAR / READY`; blockers: `1`.'],
+    ['stale final verdict', 'Final Stage A review judgment: `READY`.', 'Final Stage A review judgment: `PENDING`.'],
     ['fabricated deployment', 'Deployment status: `NOT_RUN`.', 'Deployment status: `SUCCESS`.'],
   ];
   for (const [label, before, after] of mutations) {

@@ -44,11 +44,13 @@ The exact local production build was served from candidate head `44fcafbef24b68f
 ## Independent review checkpoint
 
 - Exact reviewed head: `44fcafbef24b68f14a9cbf4be0b3fba09cc6002d`.
-- Independent code reviewer (`code-reviewer`): `PENDING`; findings: `NOT_RUN`.
-- Independent content, evidence, and rights reviewer: `PENDING`; rights: `PENDING`; findings: `NOT_RUN`.
-- Independent architecture reviewer (`architect`): `PENDING`; findings: `NOT_RUN`.
-- Final Stage A review judgment: `PENDING`.
+- Exact evidence/remediation head: `f24b4d4a4ebd95bf454f6e87200c83476dc91971`.
+- Remediation history: `8cb36055d3aeafdbcecf39d7b370619bef3d4b60` bound the uniform four-state evidence and restored the historical Batch 6 artifact locks; `f24b4d4a4ebd95bf454f6e87200c83476dc91971` archived the raw evidence and tightened its exact semantic contract.
+- Independent code reviewer (`code-reviewer`): `READY / APPROVE`; findings: `0`.
+- Independent content, evidence, and rights reviewer: `CONTENT READY`; rights: `PASS`; findings: `0`.
+- Independent architecture reviewer (`architect`): `CLEAR / READY`; blockers: `0`.
+- Final Stage A review judgment: `READY`.
 - Scope boundary: `STAGE_A_ONLY`; Stage B backlog closure and deployment have not run.
 - Deployment status: `NOT_RUN`.
 
-The implementation agent does not issue any independent verdict. Root-owned reviewers must bind their results to one immutable candidate head and preserve remediation history before changing this section to final `READY`.
+The implementation agent did not issue any independent verdict. Root-owned reviewers bound their final results to the immutable implementation candidate and tracked evidence/remediation head above; Stage B closure and deployment remain outside this verdict.
