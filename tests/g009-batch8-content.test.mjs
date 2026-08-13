@@ -397,7 +397,7 @@ function rectangleDistance(left, right) { const dx = Math.max(left.left - right.
 function rectangleAxisClearance(left, right) { return {horizontal: Math.max(left.left - right.right, right.left - left.right, 0), vertical: Math.max(left.top - right.bottom, right.top - left.bottom, 0)}; }
 function pointRectangleDistance(point, rectangle) { return Math.hypot(Math.max(rectangle.left - point.x, 0, point.x - rectangle.right), Math.max(rectangle.top - point.y, 0, point.y - rectangle.bottom)); }
 function markerGeometry(source, path, points) {
-  const markerId = svgPresentationValue(source, path, 'marker-end')?.match(/^url\(#([^)]+)\)$/u)?.[1]; assert.ok(markerId, `${path.attributes.get('data-edge-id') ?? path.attributes.get('data-legend-key')} marker`);
+  const markerId = svgPresentationValue(source, path, 'marker-end')?.match(/^url\(#([^)]+)\)$/u)?.[1]; assert.ok(markerId, `${path.attributes.get('data-edge-id') ?? path.attributes.get('data-structural-edge-id') ?? path.attributes.get('data-legend-key')} marker`);
   const elements = parseSvg(source).elements; const marker = elements.find(({name, attributes}) => name === 'marker' && attributes.get('id') === markerId); const shape = elements.find(({name, parent}) => name === 'path' && parent === marker);
   assert.ok(marker && shape, `${markerId} actual marker shape`); const viewBox = (marker.attributes.get('viewBox') ?? '').split(/\s+/u).map(Number); assert.equal(viewBox.length, 4, `${markerId} marker viewBox`);
   const width = Number(marker.attributes.get('markerWidth')); const height = Number(marker.attributes.get('markerHeight')); assert.ok(width > 0 && height > 0 && width <= 16 && height <= 16, `${markerId} bounded dimensions`);
@@ -416,11 +416,20 @@ function routeBoundsCollision(points, rectangle, stroke = 0) {
 function assertStructuralOwnership(drawio, svg, source) {
   const actual = drawio.edges.filter(({attributes}) => attributes.get('dataRole')?.startsWith('structural-')).map((edge) => [edge.attributes.get('id'), edge.attributes.get('source'), edge.attributes.get('target'), edge.attributes.get('dataRole').slice('structural-'.length)]);
   assert.deepEqual(actual, STRUCTURAL_CONNECTOR_INVENTORY, 'exact structural ownership inventory');
+  assert.deepEqual(svg.elements.filter(({name, attributes}) => name === 'path' && attributes.has('data-structural-edge-id')).map(({attributes}) => attributes.get('data-structural-edge-id')), STRUCTURAL_CONNECTOR_INVENTORY.map(([id]) => id), 'exact SVG structural ownership inventory');
   for (const [id, sourceId, targetId, role] of STRUCTURAL_CONNECTOR_INVENTORY) {
     const edge = drawio.edges.find(({attributes}) => attributes.get('id') === id); assert.ok(edge, `Draw.io structural edge ${id}`); drawioRoute(drawio, edge);
     const path = svg.elements.find(({name, attributes}) => name === 'path' && attributes.get('data-structural-edge-id') === id); assert.ok(path, `SVG structural edge ${id}`);
     assert.deepEqual([path.attributes.get('data-source'), path.attributes.get('data-target'), path.attributes.get('data-role')], [sourceId, targetId, role], `${id} structural topology`);
     assert.deepEqual(parsePathPoints(path.attributes.get('d')), drawioRoute(drawio, edge), `${id} structural route parity`);
+    const style = drawioStyle(edge); assert.equal(svgPresentationValue(source, path, 'stroke'), style.get('strokeColor'), `${id} structural stroke`);
+    assert.equal(Number(svgPresentationValue(source, path, 'stroke-width')), Number(style.get('strokeWidth')), `${id} structural stroke width`);
+    assert.equal(svgPresentationValue(source, path, 'stroke-dasharray') ?? '', style.get('dashed') === '1' ? style.get('dashPattern') : '', `${id} structural dash`);
+    const markerId = svgPresentationValue(source, path, 'marker-end')?.match(/^url\(#([^)]+)\)$/u)?.[1]; assert.ok(markerId, `${id} structural marker`);
+    const marker = svg.elements.find(({name, attributes}) => name === 'marker' && attributes.get('id') === markerId); const markerPath = svg.elements.find(({name, parent}) => name === 'path' && parent === marker);
+    assert.ok(marker && markerPath, `${id} structural marker definition`); assert.equal(style.get('endArrow'), 'open', `${id} structural endArrow`);
+    assert.equal(svgPresentationValue(source, markerPath, 'fill'), style.get('endFill') === '0' ? 'none' : style.get('strokeColor'), `${id} structural marker fill`);
+    assert.equal(svgPresentationValue(source, markerPath, 'stroke'), style.get('strokeColor'), `${id} structural marker stroke`);
   }
   for (const side of ['soa', 'microservices']) for (const name of ['order', 'inventory', 'payment', 'notification']) {
     const owner = `${side}-${name}-${side === 'soa' ? 'system' : 'service'}`;
@@ -431,7 +440,7 @@ function assertStructuralOwnership(drawio, svg, source) {
   assert.match(source, /data-node-id="microservices-workflow-state"[\s\S]*?履约流程状态/u, 'microservices workflow state visible');
 }
 function assertNodeParity(drawio, svg, source) {
-  for (const id of DIAGRAM_NODES.filter((candidate) => candidate !== 'comparison-canvas')) {
+  for (const id of DIAGRAM_NODES) {
     const node = drawio.nodes.find(({attributes}) => attributes.get('id') === id); const group = svg.nodes.find(({attributes}) => attributes.get('data-node-id') === id); assert.ok(node && group, `${id} paired node`);
     const texts = svg.elements.filter(({name, parent, attributes}) => name === 'text' && parent === group && attributes.has('data-text-role'));
     assert.equal(texts.map((element) => elementText(source, element)).join('｜'), node.label, `${id} normalized visible label parity`);
@@ -521,7 +530,8 @@ function localBackground(source, label) {
 }
 function assertPhysicalGeometry(source, scale, enforceLabelAttachment = true) {
   const elements = parseSvg(source).elements; const paths = elements.filter(({name, attributes}) => name === 'path' && attributes.has('data-edge-id')); const labels = elements.filter(({name, attributes}) => name === 'text' && attributes.has('data-edge-id'));
-  const connectors = paths.map((path) => ({path, points: parsePathPoints(path.attributes.get('d')), markers: markerGeometry(source, path, parsePathPoints(path.attributes.get('d')))}));
+  const allPaths = elements.filter(({name, attributes}) => name === 'path' && (attributes.has('data-edge-id') || attributes.has('data-structural-edge-id')));
+  const connectors = allPaths.map((path) => ({path, id: path.attributes.get('data-edge-id') ?? path.attributes.get('data-structural-edge-id'), points: parsePathPoints(path.attributes.get('d')), markers: markerGeometry(source, path, parsePathPoints(path.attributes.get('d')))}));
   const nodeShapes = elements.filter(({name, parent}) => name === 'rect' && parent?.attributes.has('data-node-id')).map((shape) => ({id: shape.parent.attributes.get('data-node-id'), rectangle: rectangleFromElement(shape), stroke: Number(svgPresentationValue(source, shape, 'stroke-width') ?? 0)}));
   const boundaries = nodeShapes.filter(({id}) => ['soa-boundary', 'microservices-boundary', 'comparison-axis'].includes(id));
   for (const connector of connectors) {
@@ -541,7 +551,7 @@ function assertPhysicalGeometry(source, scale, enforceLabelAttachment = true) {
     const id = label.attributes.get('data-edge-id'); const own = paths.find(({attributes}) => attributes.get('data-edge-id') === id); assert.ok(own, `${id} path`); const bounds = labelBox(source, label);
     assert.equal(label.attributes.get('data-label-bounds'), [bounds.left, bounds.top, bounds.right, bounds.bottom].join(' '), `${id} actual label bounds parity`);
     for (const connector of connectors) for (const point of connector.points.slice(1)) { /* execute parsed geometry before segment loop */ assert.ok(Number.isFinite(point.x)); }
-    const connectorGaps = connectors.map(({path, points}) => ({id: path.attributes.get('data-edge-id'), gap: Math.min(...points.slice(1).map((point, index) => segmentDistance(points[index], point, bounds))) * scale}));
+    const connectorGaps = connectors.map(({id: connectorId, points}) => ({id: connectorId, gap: Math.min(...points.slice(1).map((point, index) => segmentDistance(points[index], point, bounds))) * scale}));
     const nearestConnector = connectorGaps.reduce((nearest, candidate) => candidate.gap < nearest.gap ? candidate : nearest); const strokeGap = nearestConnector.gap; assert.ok(strokeGap >= 8, `${id} label to own/foreign connector ${nearestConnector.id} ${strokeGap}`);
     const ownPoints = parsePathPoints(own.attributes.get('d')); const ownGap = Math.min(...ownPoints.slice(1).map((point, index) => segmentDistance(ownPoints[index], point, bounds))) * scale;
     const foreignGap = Math.min(...connectors.filter(({path}) => path !== own).flatMap(({points}) => points.slice(1).map((point, index) => segmentDistance(points[index], point, bounds)))) * scale;
@@ -877,6 +887,24 @@ test('STY-07 Draw.io/SVG diagram locks SOA comparison semantics, geometry, and c
   assert.throws(() => assertDiagram(drawio.replace(/<mxCell\b[^>]*\bid="soa-order-owner-store"[\s\S]*?<\/mxCell>/u, ''), svg), assert.AssertionError, 'detached SOA owner/store rejected');
   assert.throws(() => assertDiagram(drawio.replace(/<mxCell\b[^>]*\bid="microservices-order-contract-owner"[\s\S]*?<\/mxCell>/u, ''), svg), assert.AssertionError, 'detached microservices contract/owner rejected');
   assert.throws(() => assertDiagram(drawio.replace(/<mxCell\b[^>]*\bid="microservices-order-workflow"[\s\S]*?<\/mxCell>/u, ''), svg), assert.AssertionError, 'detached microservices workflow owner rejected');
+  const removedStructuralSvg = svg.replace(/<path\b[^>]*data-structural-edge-id="soa-order-contract-owner"[^>]*\/>/u, '');
+  assert.notEqual(removedStructuralSvg, svg, 'removed structural SVG edge mutation applies');
+  assert.throws(() => assertDiagram(drawio, removedStructuralSvg), assert.AssertionError, 'missing structural SVG edge rejected');
+  const missingStructuralMarker = svg.replace(/(<path\b[^>]*data-structural-edge-id="soa-order-contract-owner"[^>]*)(\/>)/u, '$1 style="marker-end:none"$2');
+  assert.notEqual(missingStructuralMarker, svg, 'missing structural marker mutation applies');
+  assert.throws(() => assertDiagram(drawio, missingStructuralMarker), assert.AssertionError, 'missing structural marker rejected');
+  const wrongStructuralColor = svg.replace(/(<path\b[^>]*data-structural-edge-id="microservices-order-workflow"[^>]*)(\/>)/u, '$1 style="stroke:#64748B"$2');
+  assert.notEqual(wrongStructuralColor, svg, 'wrong structural color mutation applies');
+  assert.throws(() => assertDiagram(drawio, wrongStructuralColor), assert.AssertionError, 'wrong structural color rejected');
+  const collidingStructuralDrawio = drawio.replace(/(<mxCell\b[^>]*\bid="microservices-order-workflow"[\s\S]*?<Array as="points">)[\s\S]*?(<\/Array>)/u, '$1<mxPoint x="1320" y="1800"/><mxPoint x="1320" y="590"/><mxPoint x="1660" y="590"/><mxPoint x="1660" y="450"/>$2');
+  const collidingStructuralSvg = svg.replace(/(<path\b[^>]*data-structural-edge-id="microservices-order-workflow"[^>]*\bd=")[^"]+/u, '$1M 1370 1800 H 1320 V 590 H 1660 V 450 H 1675');
+  assert.notEqual(collidingStructuralDrawio, drawio, 'structural label-collision Draw.io mutation applies');
+  assert.notEqual(collidingStructuralSvg, svg, 'structural label-collision SVG mutation applies');
+  assert.throws(
+    () => assertDiagram(collidingStructuralDrawio, collidingStructuralSvg),
+    { name: 'AssertionError', message: /microservices-submit-order label to own\/foreign connector microservices-order-workflow 5/u },
+    'structural route through semantic label rejected at the measured 5 CSS px gap',
+  );
   assert.throws(() => assertDiagram(drawio, svg.replace(/data-node-id="soa-order-store"([\s\S]*?)data-shape="cylinder"/u, 'data-node-id="soa-order-store"$1data-shape="rounded-rect"')), assert.AssertionError, 'store shape drift rejected');
   assert.throws(() => assertDiagram(drawio, svg.replace(/data-node-id="soa-integration"([\s\S]*?)>集成基础设施</u, 'data-node-id="soa-integration"$1>中央业务总线<')), assert.AssertionError, 'node label drift rejected');
   assert.throws(() => assertDiagram(drawio, svg.replace(/(<g\b[^>]*data-node-id="soa-orchestrator"[\s\S]*?<rect\b[^>]*fill=")#[0-9A-F]{6}/u, '$1#FFFFFF')), assert.AssertionError, 'node fill drift rejected');
@@ -884,6 +912,9 @@ test('STY-07 Draw.io/SVG diagram locks SOA comparison semantics, geometry, and c
   assert.throws(() => assertDiagram(drawio, svg.replace(/(<g\b[^>]*data-node-id="soa-order-system"[\s\S]*?<text\b[^>]*data-text-role="title"[^>]*\bx=")[^"]+/u, '$10')), assert.AssertionError, 'node horizontal padding mutation rejected');
   assert.throws(() => assertDiagram(drawio, svg.replace(/(<g\b[^>]*data-node-id="soa-order-system"[\s\S]*?<text\b[^>]*data-text-role="title"[^>]*\by=")[^"]+/u, '$11280')), assert.AssertionError, 'node top padding mutation rejected');
   assert.throws(() => assertDiagram(drawio, svg.replace(/(<g\b[^>]*data-node-id="soa-order-system"[\s\S]*?<text\b[^>]*data-text-role="type"[^>]*\by=")[^"]+/u, '$11390')), assert.AssertionError, 'node bottom padding mutation rejected');
+  const canvasFontDrift = svg.replace('.title{font-size:60px', '.title{font-size:48px');
+  assert.notEqual(canvasFontDrift, svg, 'canvas font drift mutation applies');
+  assert.throws(() => assertDiagram(drawio, canvasFontDrift), assert.AssertionError, 'canvas font drift rejected');
   const throughForeignNodeDrawio = drawio.replace(/(<mxCell\b[^>]*\bid="soa-reserve-inventory"[\s\S]*?<Array as="points">)[\s\S]*?(<\/Array>[\s\S]*?<\/mxCell>)/u, '$1<mxPoint x="600" y="528"/><mxPoint x="600" y="1460"/>$2');
   const throughForeignNodeSvg = svg.replace(/(<path\b[^>]*data-edge-id="soa-reserve-inventory"[^>]*\bd=")[^"]+(")/u, '$1M 410 528 H 600 V 1460 H 460$2');
   assert.notEqual(throughForeignNodeDrawio, drawio, 'business connector Draw.io collision mutation applies');
