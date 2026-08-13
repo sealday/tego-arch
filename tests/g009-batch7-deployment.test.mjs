@@ -74,6 +74,7 @@ function assertBrowserEvidence(source) {
     'Screenshot evidence: `BLOCKED / NOT_ACCEPTED`.',
   ]) assert.ok(browser.includes(literal), `Browser literal: ${literal}`);
   assert.match(browser, /Raw Browser JSON: `\.superpowers\/sdd\/sty06-task-4-browser-qa\.json`, SHA-256 `[a-f0-9]{64}`\./u);
+  assert.ok(browser.includes('Desktop dark functional status: `acceptedFunctional=true`; `exactViewportFinalRead=false`.'));
 }
 
 function assertFinalReview(source) {
@@ -122,7 +123,8 @@ test('rejects weakened or fabricated Stage A evidence', async () => {
     ['wrong count', '58 completed topics / 101 content documents / 525 governed sources', '58 completed topics / 100 content documents / 525 governed sources'],
     ['wrong artifact hash', sha256(await readFile(new URL(`../${SVG}`, import.meta.url))), '0'.repeat(64)],
     ['missing Browser state', '| `mobileDark` |', '| `mobileMissing` |'],
-    ['truncated diagnostics', '`truncated=false`', '`truncated=true`'],
+    ['truncated diagnostics', 'Every state recorded warning/error logs `0`, `Runtime.exceptionThrown=0`, `Log.entryAdded=0`, `hasMore=false`, and `truncated=false`.', 'Every state recorded warning/error logs `0`, `Runtime.exceptionThrown=0`, `Log.entryAdded=0`, `hasMore=false`, and `truncated=true`.'],
+    ['fabricated desktop dark exact read', '`acceptedFunctional=true`; `exactViewportFinalRead=false`', '`acceptedFunctional=true`; `exactViewportFinalRead=true`'],
     ['fabricated STY-07 absence', 'STY-07 actionable count: `0` in every state.', 'STY-07 actionable count: `1` in every state.'],
     ['fabricated screenshot success', 'Screenshot evidence: `BLOCKED / NOT_ACCEPTED`.', 'Visual inspection: diagram `PASS` in light and dark themes.'],
     ['fabricated code verdict', '`PENDING`; findings: `NOT_RUN`.', '`READY / APPROVE`; findings: `0`.'],

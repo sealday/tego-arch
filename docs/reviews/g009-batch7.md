@@ -36,6 +36,7 @@ The exact local production build was served from candidate head `d9d41d0629eba14
 - Remote source anchors: `5` per state; unique remote domains: at least `4` per state.
 - STY-07 actionable count: `0` in every state.
 - Every state recorded warning/error logs `0`, `Runtime.exceptionThrown=0`, `Log.entryAdded=0`, `hasMore=false`, and `truncated=false`.
+- Desktop dark functional status: `acceptedFunctional=true`; `exactViewportFinalRead=false`.
 - SVG: loaded in the accepted desktop state; intrinsic `92x150`; rendered `800x1300`. Mobile lazy-load rereads reported rendered geometry but were not accepted as final loaded-state proof.
 - Raw Browser JSON: `.superpowers/sdd/sty06-task-4-browser-qa.json`, SHA-256 `157278ee6a49d741607ce09b49e8f2d0a71cfe1baccfca3f18343abb771647f4`.
 - Screenshot evidence: `BLOCKED / NOT_ACCEPTED`.
