@@ -59,7 +59,7 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 - 消费者是否需要回查订单服务，运行时依赖落在哪里？
 - 当前状态的权威来源是谁，本地副本和投影能否写回？
 - 事件是否参与当前状态重建，回放又必须隔离哪些外部副作用？
-{/* terminology-exempt: unknown-english-term | reason: 审查契约要求事件结构版本保留 schema 字面量以消除模式版本歧义 */}
+{/* terminology-exempt: unknown-english-term | reason: 审查契约要求事件结构版本保留 schema 字面量以消除分类层级歧义 */}
 - 丢失、重复、乱序、事件结构（schema）版本变化与人工终止分别由谁负责？
 
 ## 组件、连接器与约束
@@ -104,7 +104,7 @@ flowchart LR
 | 事件存储 | 保存权威聚合事件流 | 不执行支付或通知 |
 | 本地副本与读取投影 | 支持自治读取或查询 | 不取得源状态写入权 |
 
-{/* terminology-exempt: unknown-english-term | reason: 审查契约要求事件结构版本保留 schema 字面量以消除模式版本歧义 */}
+{/* terminology-exempt: unknown-english-term | reason: 审查契约要求事件结构版本保留 schema 字面量以消除分类层级歧义 */}
 - 所有模式共享最小信封：事件标识、事件类型、发生时间、生产者、聚合键或业务键、事件结构（schema）版本、关联标识和因果标识。
 - 公共事件信封规范只支持这种协议无关上下文字段，不证明本文的业务分类。
 - 完整载荷不等于事件溯源；事件代理、事务性发件箱、异步或可重放日志都不足以证明事件溯源。
@@ -212,7 +212,7 @@ Outbox 不等于事件溯源。
 
 订单团队拥有事件的业务含义、权威状态和兼容承诺；库存、支付、通知团队分别拥有重复处理、本地副本或状态机和恢复手册。平台团队拥有事件代理、积压容量和投递机制，却不替业务团队决定事件语义。
 
-{/* terminology-exempt: unknown-english-term | reason: 审查契约要求跨团队合同保留 schema 字面量以消除模式版本歧义 */}
+{/* terminology-exempt: unknown-english-term | reason: 审查契约要求跨团队合同保留 schema 字面量以消除分类层级歧义 */}
 跨团队合同至少包含事件类型、事件结构（schema）版本、聚合键、关联标识、因果标识、所有者和退役窗口。一个团队不能以“平台保证投递”为由取消端到端对账，也不能把无人处理的死信队列当作恢复方案。
 
 ## 质量属性收益与成本
