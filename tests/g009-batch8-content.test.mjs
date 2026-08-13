@@ -101,12 +101,53 @@ const RECIPROCALS = Object.freeze([
   'content/styles/sty-06-event-driven-architecture.mdx', 'content/cases/temporal-saga-durable-execution.mdx',
 ]);
 const DIAGRAM_NODES = Object.freeze([
-  'soa-side', 'microservices-side', 'comparison-boundary', 'order-system', 'inventory-system',
-  'payment-system', 'notification-system', 'soa-orchestrator', 'integration-infrastructure',
-  'microservices-order', 'microservices-inventory', 'microservices-payment', 'microservices-notification',
-  'platform-guardrails', 'legend',
+  'comparison-canvas', 'soa-boundary', 'comparison-axis', 'microservices-boundary', 'legend-band',
+  'soa-client', 'soa-orchestrator', 'soa-integration', 'soa-process-state',
+  ...['order', 'inventory', 'payment', 'notification'].flatMap((name) => [`soa-${name}-contract`, `soa-${name}-system`, `soa-${name}-store`]),
+  ...['order', 'inventory', 'payment', 'notification'].flatMap((name) => [`microservices-${name}-contract`, `microservices-${name}-service`, `microservices-${name}-store`]),
+  'microservices-platform',
 ]);
-const DIAGRAM_EDGES = Object.freeze(['business-call', 'message', 'technical-route', 'compensation']);
+const CONNECTOR_STYLES = Object.freeze({
+  'business-call': Object.freeze({strokeColor: '#1D4ED8', strokeWidth: '4', dashed: '0', endArrow: 'block', endFill: '1'}),
+  message: Object.freeze({strokeColor: '#047857', strokeWidth: '4', dashed: '1', dashPattern: '12 8', endArrow: 'block', endFill: '1'}),
+  'technical-route': Object.freeze({strokeColor: '#64748B', strokeWidth: '3', dashed: '1', dashPattern: '4 6', endArrow: 'open', endFill: '0'}),
+  compensation: Object.freeze({strokeColor: '#9A3412', strokeWidth: '4', dashed: '1', dashPattern: '12 6 3 6', endArrow: 'block', endFill: '1'}),
+});
+const CONNECTOR_INVENTORY = Object.freeze([
+  ['soa-submit-order', 'soa-client', 'soa-orchestrator', 'business-call', '提交订单'],
+  ['soa-reserve-inventory', 'soa-orchestrator', 'soa-inventory-contract', 'business-call', '预留库存'],
+  ['soa-authorize-payment', 'soa-orchestrator', 'soa-payment-contract', 'business-call', '支付授权'],
+  ['soa-confirm-order', 'soa-orchestrator', 'soa-order-contract', 'business-call', '确认订单'],
+  ['soa-send-notification', 'soa-orchestrator', 'soa-notification-contract', 'message', '发送通知'],
+  ['soa-release-inventory', 'soa-orchestrator', 'soa-inventory-contract', 'compensation', '释放库存'],
+  ['soa-technical-routing', 'soa-integration', 'soa-inventory-contract', 'technical-route', '技术路由与转换'],
+  ['microservices-submit-order', 'soa-client', 'microservices-order-contract', 'business-call', '提交订单'],
+  ['microservices-reserve-inventory', 'microservices-order-contract', 'microservices-inventory-contract', 'business-call', '预留库存'],
+  ['microservices-authorize-payment', 'microservices-inventory-contract', 'microservices-payment-contract', 'business-call', '支付授权'],
+  ['microservices-confirm-order', 'microservices-payment-contract', 'microservices-order-contract', 'message', '确认订单'],
+  ['microservices-send-notification', 'microservices-order-contract', 'microservices-notification-contract', 'message', '发送通知'],
+  ['microservices-release-inventory', 'microservices-order-contract', 'microservices-inventory-contract', 'compensation', '释放库存'],
+]);
+const PARTICIPANT_NAMES = ['订单', '库存', '支付', '通知'];
+const FULFILLMENT_STEPS = ['提交订单', '预留库存', '支付授权', '确认订单', '发送通知', '释放库存'];
+const ILLUSTRATION = Object.freeze({
+  canonical_locator: '/img/diagrams/sty-07-soa-microservices-order-fulfillment.svg',
+  transport_locator: '/img/diagrams/sty-07-soa-microservices-order-fulfillment.svg',
+  source_kind: 'original-illustration', tier: 'primary', allowed_evidence_roles: ['illustration'],
+  license: 'LicenseRef-Atlas-Original',
+  license_scope: 'The named project-authored sty-07-soa-microservices-order-fulfillment.svg asset only',
+  license_evidence_url: 'https://github.com/sealday/tego-arch/blob/main/static/img/diagrams/sty-07-soa-microservices-order-fulfillment.svg',
+  license_evidence_note: 'The project-authored Draw.io/SVG pair contains no third-party topology, reference image, brand visual, signature, watermark, or copied composition.',
+  copyright_policy: 'original-atlas',
+  usage_boundary: 'Original teaching comparison of classic SOA and microservices order fulfillment; illustration-only and not evidence of a mandatory ESB topology or production outcomes.',
+});
+const ILLUSTRATION_CITATION = Object.freeze({
+  citation_url: ILLUSTRATION.canonical_locator, roles: ['illustration'], manifest_primary: false,
+  usage_mode: 'original-illustration',
+  attribution_note: '经典 SOA 与微服务的订单履约机制对照板，Tego Arch maintainers',
+  modification_note: 'Created as an original synchronized Draw.io/SVG pair without third-party topology, reference imagery, brand visuals, signatures, watermarks, or copied composition.',
+  excerpt: null, quotation_reviewed: false,
+});
 
 function file(path) { return existsSync(path) ? readFileSync(path, 'utf8') : undefined; }
 function articleParts(source) {
@@ -206,31 +247,63 @@ export function parseDrawio(source) {
   return {nodes: cells.filter(({attributes}) => attributes.get('vertex') === '1'), edges: cells.filter(({attributes}) => attributes.get('edge') === '1')};
 }
 export function parseSvg(source) {
-  const elements = [...source.matchAll(/<(svg|g|path|rect|text|marker)\b([^>]*)>/gu)].map((match, index) => ({name: match[1], attributes: attrs(match[2]), index, tag: match[0]}));
+  const elements = []; const stack = [];
+  for (const match of source.matchAll(/<\/?([A-Za-z][\w:-]*)\b([^>]*)>/gu)) {
+    const closing = match[0].startsWith('</'); const name = match[1];
+    if (closing) { if (stack.at(-1)?.name === name) stack.pop(); continue; }
+    const element = {name, attributes: attrs(match[2]), index: elements.length, tag: match[0], parent: stack.at(-1) ?? null}; elements.push(element);
+    if (!match[0].endsWith('/>') && !['path', 'rect'].includes(name)) stack.push(element);
+  }
   return {elements, nodes: elements.filter(({attributes}) => attributes.has('data-node-id')),
     edges: elements.filter(({attributes}) => attributes.has('data-edge-id'))};
 }
+function cssDeclarations(source) { return new Map(source.split(';').map((item) => item.trim()).filter(Boolean).map((declaration) => {
+  const split = declaration.indexOf(':'); return [declaration.slice(0, split).trim(), declaration.slice(split + 1).trim()];
+})); }
 function styleRules(source) {
-  const styles = [...source.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/gu)].map(([, css]) => css).join('\n');
-  return [...styles.matchAll(/([^{}]+)\{([^}]*)\}/gu)].map(([, selectors, declarations]) => ({selectors, declarations}));
+  const rules = []; let order = 0;
+  for (const [, stylesheet] of source.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/gu)) {
+    for (const [, selectors, declarations] of stylesheet.matchAll(/([^{}]+)\{([^{}]*)\}/gu)) {
+      for (const selector of selectors.split(',').map((value) => value.trim())) rules.push({selector, declarations: cssDeclarations(declarations), order: order++, specificity: selectorSpecificity(selector)});
+    }
+  }
+  return rules;
 }
-function selectorMatches(element, selector) {
+function selectorSpecificity(selector) { return [(selector.match(/#[\w-]+/gu) ?? []).length, (selector.match(/\.[\w-]+|\[[^\]]+\]/gu) ?? []).length, selector.split(/\s+|>/u).filter((part) => /^[A-Za-z][\w-]*/u.test(part)).length]; }
+function compareSpecificity(left, right) { return left[0] - right[0] || left[1] - right[1] || left[2] - right[2]; }
+function simpleSelectorMatches(element, selector) {
   const trimmed = selector.trim();
-  if (!trimmed || /[ >+~]/u.test(trimmed)) return false;
+  if (!trimmed || /[>+~]/u.test(trimmed)) return false;
   const id = trimmed.match(/#([\w-]+)/u)?.[1];
   const classes = [...trimmed.matchAll(/\.([\w-]+)/gu)].map((match) => match[1]);
-  return (!id || element.attributes.get('id') === id) && classes.every((value) => (element.attributes.get('class') ?? '').split(/\s+/u).includes(value));
+  const tag = trimmed.match(/^[A-Za-z][\w-]*/u)?.[0];
+  const attributes = [...trimmed.matchAll(/\[([\w:-]+)(?:="([^"]*)")?\]/gu)];
+  return (!tag || element.name === tag) && (!id || element.attributes.get('id') === id) && classes.every((value) => (element.attributes.get('class') ?? '').split(/\s+/u).includes(value)) && attributes.every(([, key, value]) => element.attributes.has(key) && (value === undefined || element.attributes.get(key) === value));
+}
+function selectorMatches(element, selector) {
+  const parts = selector.trim().replace(/\s*>\s*/gu, ' > ').split(/\s+/u).filter(Boolean);
+  let candidate = element; let cursor = parts.length - 1;
+  if (!simpleSelectorMatches(candidate, parts[cursor])) return false; cursor -= 1;
+  while (cursor >= 0) {
+    if (parts[cursor] === '>') { candidate = candidate.parent; if (!candidate || !simpleSelectorMatches(candidate, parts[cursor - 1])) return false; cursor -= 2; }
+    else { candidate = candidate.parent; while (candidate && !simpleSelectorMatches(candidate, parts[cursor])) candidate = candidate.parent; if (!candidate) return false; cursor -= 1; }
+  }
+  return true;
+}
+function ownSvgPresentationValue(source, element, property) {
+  let winner = element.attributes.has(property) ? {precedence: 0, order: -1, specificity: [0, 0, 0], value: element.attributes.get(property)} : null;
+  for (const rule of styleRules(source)) {
+    const raw = rule.declarations.get(property); if (raw === undefined || !selectorMatches(element, rule.selector)) continue;
+    const candidate = {...rule, precedence: /\s*!important\s*$/iu.test(raw) ? 2 : 0, value: raw.replace(/\s*!important\s*$/iu, '').trim()};
+    if (!winner || candidate.precedence > winner.precedence || (candidate.precedence === winner.precedence && (compareSpecificity(candidate.specificity, winner.specificity) > 0 || (compareSpecificity(candidate.specificity, winner.specificity) === 0 && candidate.order > winner.order)))) winner = candidate;
+  }
+  const inline = cssDeclarations(element.attributes.get('style') ?? '').get(property);
+  if (inline !== undefined) { const candidate = {precedence: /\s*!important\s*$/iu.test(inline) ? 3 : 1, value: inline.replace(/\s*!important\s*$/iu, '').trim()}; if (!winner || candidate.precedence >= winner.precedence) winner = candidate; }
+  return winner?.value;
 }
 export function svgPresentationValue(source, element, property) {
-  const candidates = [];
-  for (const rule of styleRules(source)) for (const selector of rule.selectors.split(',')) if (selectorMatches(element, selector)) {
-    const declaration = rule.declarations.match(new RegExp(`(?:^|;)\\s*${escapeRegExp(property)}\\s*:\\s*([^;]+)`, 'iu'))?.[1];
-    if (declaration) candidates.push({value: declaration.replace(/\s*!important\s*$/iu, '').trim(), important: /!important/iu.test(declaration), specificity: selector.split(/[.#]/u).length});
-  }
-  const inline = element.attributes.get('style')?.match(new RegExp(`(?:^|;)\\s*${escapeRegExp(property)}\\s*:\\s*([^;]+)`, 'iu'))?.[1];
-  if (inline) candidates.push({value: inline.replace(/\s*!important\s*$/iu, '').trim(), important: /!important/iu.test(inline), specificity: 99});
-  if (element.attributes.has(property)) candidates.push({value: element.attributes.get(property), important: false, specificity: 0});
-  return candidates.sort((left, right) => Number(right.important) - Number(left.important) || right.specificity - left.specificity)[0]?.value;
+  for (let candidate = element; candidate; candidate = candidate.parent) { const value = ownSvgPresentationValue(source, candidate, property); if (value !== undefined) return value; }
+  return undefined;
 }
 function alphaComposite(hex, alpha, background = '#FFFFFF') {
   const channel = (value, index) => Number.parseInt(value.slice(index, index + 2), 16);
@@ -277,16 +350,90 @@ function segmentDistance(left, right, box) {
   const dy = horizontal ? Math.max(box.top - left.y, left.y - box.bottom, 0) : Math.max(box.top - Math.max(left.y, right.y), Math.min(left.y, right.y) - box.bottom, 0);
   return Math.hypot(dx, dy);
 }
-function paintOpacity(source, element, kind) { return Number(svgPresentationValue(source, element, `${kind}-opacity`) ?? svgPresentationValue(source, element, 'opacity') ?? 1); }
+function paintOpacity(source, element, kind) { let opacity = 1; for (let candidate = element; candidate; candidate = candidate.parent) for (const property of ['opacity', `${kind}-opacity`]) { const value = ownSvgPresentationValue(source, candidate, property); if (value !== undefined) opacity *= Number(value); } assert.ok(Number.isFinite(opacity) && opacity >= 0 && opacity <= 1, 'valid effective opacity'); return opacity; }
 function blendHex(foreground, background, opacity) { const channels = (value) => value.match(/[\da-f]{2}/giu).map((entry) => Number.parseInt(entry, 16)); const left = channels(foreground); const right = channels(background); return `#${left.map((value, index) => Math.round(value * opacity + right[index] * (1 - opacity)).toString(16).padStart(2, '0')).join('')}`; }
 function luminance(color) { const rgb = color.match(/[\da-f]{2}/giu).map((entry) => Number.parseInt(entry, 16) / 255).map((value) => value <= .04045 ? value / 12.92 : ((value + .055) / 1.055) ** 2.4); return rgb[0] * .2126 + rgb[1] * .7152 + rgb[2] * .0722; }
 function contrastRatio(left, right) { const [light, dark] = [luminance(left), luminance(right)].sort((a, b) => b - a); return (light + .05) / (dark + .05); }
-function labelBox(element, label, fontSize) { const x = Number(element.attributes.get('x')); const y = Number(element.attributes.get('y')); return glyphBox({x, y, text: label, fontSize}); }
+function elementText(source, element) { return decodeXmlText(source.match(new RegExp(`${escapeRegExp(element.tag)}([^<]*)<\/${element.name}>`, 'u'))?.[1] ?? '').trim(); }
+function labelBox(source, element, label = elementText(source, element)) {
+  const fontSize = Number.parseFloat(svgPresentationValue(source, element, 'font-size')); const x = Number(element.attributes.get('x')); const y = Number(element.attributes.get('y'));
+  const width = [...label].reduce((sum, character) => sum + (/^[\u0000-\u00FF]$/u.test(character) ? .62 : 1), 0) * fontSize;
+  const anchor = svgPresentationValue(source, element, 'text-anchor') ?? 'start'; const left = anchor === 'middle' ? x - width / 2 : anchor === 'end' ? x - width : x;
+  return {left, right: left + width, top: y - fontSize, bottom: y + fontSize * .3};
+}
+function rectangleFromElement(element) { const bounds = numericBounds(element.attributes); return {left: bounds.x, right: bounds.x + bounds.width, top: bounds.y, bottom: bounds.y + bounds.height}; }
+function rectangleDistance(left, right) { const dx = Math.max(left.left - right.right, right.left - left.right, 0); const dy = Math.max(left.top - right.bottom, right.top - left.bottom, 0); return Math.hypot(dx, dy); }
+function pointRectangleDistance(point, rectangle) { return Math.hypot(Math.max(rectangle.left - point.x, 0, point.x - rectangle.right), Math.max(rectangle.top - point.y, 0, point.y - rectangle.bottom)); }
+function markerGeometry(source, path, points) {
+  const markerId = svgPresentationValue(source, path, 'marker-end')?.match(/^url\(#([^)]+)\)$/u)?.[1]; assert.ok(markerId, `${path.attributes.get('data-edge-id') ?? path.attributes.get('data-legend-key')} marker`);
+  const elements = parseSvg(source).elements; const marker = elements.find(({name, attributes}) => name === 'marker' && attributes.get('id') === markerId); const shape = elements.find(({name, parent}) => name === 'path' && parent === marker);
+  assert.ok(marker && shape, `${markerId} actual marker shape`); const viewBox = (marker.attributes.get('viewBox') ?? '').split(/\s+/u).map(Number); assert.equal(viewBox.length, 4, `${markerId} marker viewBox`);
+  const width = Number(marker.attributes.get('markerWidth')); const height = Number(marker.attributes.get('markerHeight')); assert.ok(width > 0 && height > 0 && width <= 16 && height <= 16, `${markerId} bounded dimensions`);
+  const endpoint = points.at(-1); const previous = points.at(-2); const magnitude = Math.hypot(endpoint.x - previous.x, endpoint.y - previous.y); assert.ok(magnitude > 0, `${markerId} terminal segment`);
+  const axis = {x: (endpoint.x - previous.x) / magnitude, y: (endpoint.y - previous.y) / magnitude}; const perpendicular = {x: -axis.y, y: axis.x};
+  const unit = marker.attributes.get('markerUnits') === 'userSpaceOnUse' ? 1 : Number(svgPresentationValue(source, path, 'stroke-width')); const refX = Number(marker.attributes.get('refX')); const refY = Number(marker.attributes.get('refY'));
+  const values = (shape.attributes.get('d')?.match(/-?(?:\d+(?:\.\d*)?|\.\d+)/gu) ?? []).map(Number); const result = [];
+  for (let index = 0; index < values.length; index += 2) { const localX = (values[index] - refX) * width / viewBox[2] * unit; const localY = (values[index + 1] - refY) * height / viewBox[3] * unit; result.push({x: endpoint.x + axis.x * localX + perpendicular.x * localY, y: endpoint.y + axis.y * localX + perpendicular.y * localY}); }
+  assert.ok(result.length >= 3 && result.every(({x, y}) => Number.isFinite(x) && Number.isFinite(y)), `${markerId} physical marker geometry`); return result;
+}
+function localBackground(source, label) {
+  const point = {x: Number(label.attributes.get('x')), y: Number(label.attributes.get('y'))}; const paints = parseSvg(source).elements.filter(({name, index}) => name === 'rect' && index < label.index).filter((element) => {
+    const rectangle = rectangleFromElement(element); return point.x >= rectangle.left && point.x <= rectangle.right && point.y >= rectangle.top && point.y <= rectangle.bottom;
+  }).map((element) => ({color: svgPresentationValue(source, element, 'fill'), opacity: paintOpacity(source, element, 'fill'), index: element.index})).filter(({color}) => color && color !== 'none').sort((left, right) => left.index - right.index);
+  assert.ok(paints.length > 0, 'painted local background'); return paints.reduce((background, paint) => blendHex(paint.color, background, paint.opacity), '#FFFFFF');
+}
+function assertPhysicalGeometry(source, scale) {
+  const elements = parseSvg(source).elements; const paths = elements.filter(({name, attributes}) => name === 'path' && attributes.has('data-edge-id')); const labels = elements.filter(({name, attributes}) => name === 'text' && attributes.has('data-edge-id'));
+  const connectors = paths.map((path) => ({path, points: parsePathPoints(path.attributes.get('d')), markers: markerGeometry(source, path, parsePathPoints(path.attributes.get('d')))}));
+  const nodeShapes = elements.filter(({name, parent}) => name === 'rect' && parent?.attributes.has('data-node-id')).map((shape) => ({id: shape.parent.attributes.get('data-node-id'), rectangle: rectangleFromElement(shape), stroke: Number(svgPresentationValue(source, shape, 'stroke-width') ?? 0)}));
+  const boundaries = nodeShapes.filter(({id}) => ['soa-boundary', 'microservices-boundary', 'comparison-axis'].includes(id));
+  for (const label of labels) {
+    const id = label.attributes.get('data-edge-id'); const own = paths.find(({attributes}) => attributes.get('data-edge-id') === id); assert.ok(own, `${id} path`); const bounds = labelBox(source, label);
+    assert.equal(label.attributes.get('data-label-bounds'), [bounds.left, bounds.top, bounds.right, bounds.bottom].join(' '), `${id} actual label bounds parity`);
+    for (const connector of connectors) for (const point of connector.points.slice(1)) { /* execute parsed geometry before segment loop */ assert.ok(Number.isFinite(point.x)); }
+    const strokeGap = Math.min(...connectors.flatMap(({points}) => points.slice(1).map((point, index) => segmentDistance(points[index], point, bounds)))) * scale; assert.ok(strokeGap >= 8, `${id} label to own/foreign connector ${strokeGap}`);
+    const markerGap = Math.min(...connectors.flatMap(({markers}) => markers.map((point) => pointRectangleDistance(point, bounds)))) * scale; assert.ok(markerGap >= 16, `${id} label to actual own/foreign marker ${markerGap}`);
+    for (const node of nodeShapes.filter(({id: nodeId}) => ![own.attributes.get('data-source'), own.attributes.get('data-target')].includes(nodeId) && !['soa-boundary', 'microservices-boundary', 'comparison-axis'].includes(nodeId))) assert.ok(rectangleDistance(bounds, {left: node.rectangle.left - node.stroke / 2, right: node.rectangle.right + node.stroke / 2, top: node.rectangle.top - node.stroke / 2, bottom: node.rectangle.bottom + node.stroke / 2}) * scale >= 12, `${id} foreign node ${node.id}`);
+    for (const boundary of boundaries) {
+      const contained = bounds.left >= boundary.rectangle.left && bounds.right <= boundary.rectangle.right && bounds.top >= boundary.rectangle.top && bounds.bottom <= boundary.rectangle.bottom;
+      const gap = contained ? Math.min(bounds.left - boundary.rectangle.left, boundary.rectangle.right - bounds.right, bounds.top - boundary.rectangle.top, boundary.rectangle.bottom - bounds.bottom) - boundary.stroke / 2 : rectangleDistance(bounds, boundary.rectangle) - boundary.stroke / 2;
+      assert.ok(gap * scale >= 12, `${id} boundary ${boundary.id}`);
+    }
+  }
+  for (const header of elements.filter(({name, attributes}) => name === 'text' && attributes.has('data-header-for'))) {
+    const boundary = nodeShapes.find(({id}) => id === header.attributes.get('data-header-for')); assert.ok(boundary, `${header.attributes.get('data-header-for')} header boundary`); const bounds = labelBox(source, header); const padding = Math.min(bounds.left - boundary.rectangle.left, boundary.rectangle.right - bounds.right, bounds.top - boundary.rectangle.top, boundary.rectangle.bottom - bounds.bottom) - boundary.stroke / 2; assert.ok(padding * scale >= 12, `${boundary.id} header inner-stroke padding`);
+  }
+  const legends = Object.keys(CONNECTOR_STYLES).map((role) => { const key = elements.find(({name, attributes}) => name === 'path' && attributes.get('data-legend-key') === role); const caption = elements.find(({name, attributes}) => name === 'text' && attributes.get('data-legend-for') === role); assert.ok(key && caption, `${role} legend key/caption`); const points = parsePathPoints(key.attributes.get('d')); return {role, key, caption, bounds: labelBox(source, caption), points, markers: markerGeometry(source, key, points)}; });
+  for (const legend of legends) {
+    const keyGap = Math.min(...legend.points.slice(1).map((point, index) => segmentDistance(legend.points[index], point, legend.bounds))) * scale; assert.ok(keyGap >= 12, `${legend.role} legend key-caption`);
+    assert.ok(Math.min(...legend.markers.map((point) => pointRectangleDistance(point, legend.bounds))) * scale >= 16, `${legend.role} own real marker-caption`);
+    for (const foreign of legends.filter(({role}) => role !== legend.role)) assert.ok(Math.min(...foreign.markers.map((point) => pointRectangleDistance(point, legend.bounds))) * scale >= 16, `${legend.role} foreign marker-caption ${foreign.role}`);
+  }
+}
 function assertNoOverdraw(source) {
   const {elements} = parseSvg(source); const paths = elements.filter(({name, attributes}) => name === 'path' && attributes.has('data-edge-id'));
   for (const path of paths) for (const mask of elements.filter(({name, index}) => name === 'rect' && index > path.index)) {
     const fill = svgPresentationValue(source, mask, 'fill'); const opacity = fill && fill !== 'none' ? paintOpacity(source, mask, 'fill') : 0;
     if (opacity > 0) { const bounds = numericBounds(mask.attributes); const points = parsePathPoints(path.attributes.get('d')); assert.ok(!points.slice(1).some((point, index) => segmentDistance(points[index], point, {left: bounds.x, right: bounds.x + bounds.width, top: bounds.y, bottom: bounds.y + bounds.height}) === 0), `${path.attributes.get('data-edge-id')} no later opaque/translucent mask`); }
+  }
+}
+function assertConnectorInventory(drawio, svg, source) {
+  const edges = drawio.edges.map((edge) => [edge.attributes.get('id'), edge.attributes.get('source'), edge.attributes.get('target'), edge.attributes.get('dataRole'), edge.label]);
+  assert.deepEqual(edges, CONNECTOR_INVENTORY, 'exact stable connector inventory');
+  assert.deepEqual(svg.elements.filter(({name, attributes}) => name === 'path' && attributes.has('data-edge-id')).map(({attributes}) => attributes.get('data-edge-id')), CONNECTOR_INVENTORY.map(([id]) => id), 'exact SVG connector inventory');
+  for (const [id, sourceId, targetId, role, label] of CONNECTOR_INVENTORY) {
+    const edge = drawio.edges.find(({attributes}) => attributes.get('id') === id); const style = drawioStyle(edge);
+    for (const [property, expected] of Object.entries(CONNECTOR_STYLES[role])) assert.equal(style.get(property), expected, `${id} ${property}`);
+    const path = svg.elements.find(({name, attributes}) => name === 'path' && attributes.get('data-edge-id') === id); assert.ok(path, `${id} SVG connector`);
+    assert.deepEqual([path.attributes.get('data-source'), path.attributes.get('data-target'), path.attributes.get('data-role')], [sourceId, targetId, role], `${id} SVG topology`);
+    assert.match(source, new RegExp(`<text\\b[^>]*data-edge-id="${escapeRegExp(id)}"[^>]*>${escapeRegExp(label)}<\\/text>`, 'u'), `${id} label`);
+  }
+  const stepInventory = (prefix) => CONNECTOR_INVENTORY.filter(([id, , , role]) => id.startsWith(prefix) && role !== 'technical-route').map(([, , , , label]) => label);
+  assert.deepEqual(stepInventory('soa-'), FULFILLMENT_STEPS, 'SOA fulfillment order'); assert.deepEqual(stepInventory('microservices-'), FULFILLMENT_STEPS, 'microservices fulfillment order');
+  assert.ok(CONNECTOR_INVENTORY.filter(([, , , role]) => role !== 'technical-route').some(([, sourceId, targetId]) => sourceId !== 'soa-integration' && targetId !== 'soa-integration'), 'business contracts are not forced through a mandatory ESB center');
+  for (const side of ['soa', 'microservices']) for (const [participant, name] of [['order', '订单'], ['inventory', '库存'], ['payment', '支付'], ['notification', '通知']]) {
+    const id = `${side}-${participant}-${side === 'soa' ? 'system' : 'service'}`; const group = svg.elements.find(({name: tag, attributes}) => tag === 'g' && attributes.get('data-node-id') === id); assert.ok(group, `${side} ${name} participant`);
+    const end = source.indexOf('</g>', source.indexOf(group.tag)); assert.ok(source.slice(source.indexOf(group.tag), end).includes(name), `${side} visibly includes ${name}`);
   }
 }
 function assertDiagram(sourceDrawio, sourceSvg) {
@@ -301,33 +448,34 @@ function assertDiagram(sourceDrawio, sourceSvg) {
     assert.equal(rendered.attributes.get('data-node-bounds'), `${node.geometry.get('x')} ${node.geometry.get('y')} ${node.geometry.get('width')} ${node.geometry.get('height')}`, `${id} bounds parity`);
   }
   const viewBox = root.match(/viewBox="0 0 ([0-9.]+) ([0-9.]+)"/u); const scale = 800 / Number(viewBox?.[1]);
-  for (const role of DIAGRAM_EDGES) {
-    const edge = drawio.edges.find(({attributes}) => attributes.get('dataRole') === role);
-    assert.ok(edge, `Draw.io ${role}`); const route = drawioRoute(drawio, edge); const id = edge.attributes.get('id');
+  assert.ok(Number.isFinite(scale) && scale > 0, '800px CSS scale');
+  assertConnectorInventory(drawio, svg, sourceSvg);
+  for (const [id, , , role] of CONNECTOR_INVENTORY) {
+    const edge = drawio.edges.find(({attributes}) => attributes.get('id') === id);
+    assert.ok(edge, `Draw.io ${id}`); const route = drawioRoute(drawio, edge);
     const path = svg.elements.find(({name, attributes}) => name === 'path' && attributes.get('data-edge-id') === id); const label = svg.elements.find(({name, attributes}) => name === 'text' && attributes.get('data-edge-id') === id);
     assert.ok(path && label, `SVG ${role} path/label`); assert.equal(path.attributes.get('data-source'), edge.attributes.get('source'), `${id} semantic source`); assert.equal(path.attributes.get('data-target'), edge.attributes.get('target'), `${id} semantic target`);
     assert.deepEqual(parsePathPoints(path.attributes.get('d')), route, `${id} actual route parity`); assert.equal(label.attributes.get('data-role'), role, `${id} label role`); assert.equal(path.attributes.get('data-role'), role, `${id} path role`);
-    const visibleLabel = decodeXmlText(sourceSvg.match(new RegExp(`${escapeRegExp(label.tag)}([^<]*)<\\/text>`, 'u'))?.[1] ?? ''); assert.equal(visibleLabel, edge.label, `${id} label parity`);
+    const visibleLabel = elementText(sourceSvg, label); assert.equal(visibleLabel, edge.label, `${id} label parity`);
     const style = drawioStyle(edge); assert.equal(svgPresentationValue(sourceSvg, path, 'stroke'), style.get('strokeColor'), `${id} effective stroke`); assert.equal(Number(svgPresentationValue(sourceSvg, path, 'stroke-width')), Number(style.get('strokeWidth')), `${id} stroke width`);
-    const markerId = svgPresentationValue(sourceSvg, path, 'marker-end')?.match(/^url\(#([^)]+)\)$/u)?.[1]; assert.ok(markerId, `${id} effective marker`); const marker = svg.elements.find(({name, attributes}) => name === 'marker' && attributes.get('id') === markerId); const markerRaw = sourceSvg.match(new RegExp(`<marker\\b[^>]*\\bid="${escapeRegExp(markerId)}"[^>]*>([\\s\\S]*?)<\\/marker>`, 'u'))?.[1] ?? ''; const markerPath = {attributes: attrs(markerRaw.match(/<path\\b([^>]*)>/u)?.[1] ?? '')};
-    assert.ok(marker && markerRaw && markerPath.attributes.size > 0, `${id} marker definition`); assert.equal(svgPresentationValue(sourceSvg, markerPath, 'fill'), style.get('endFill') === '0' ? 'none' : style.get('strokeColor'), `${id} marker fill`); assert.equal(svgPresentationValue(sourceSvg, markerPath, 'stroke'), style.get('strokeColor'), `${id} marker stroke`); assert.ok(Number(marker.attributes.get('markerWidth')) * scale <= 16 && Number(marker.attributes.get('markerHeight')) * scale <= 16, `${id} bounded marker`);
+    const markerId = svgPresentationValue(sourceSvg, path, 'marker-end')?.match(/^url\(#([^)]+)\)$/u)?.[1]; assert.ok(markerId, `${id} effective marker`); const marker = svg.elements.find(({name, attributes}) => name === 'marker' && attributes.get('id') === markerId); const markerPath = svg.elements.find(({name, parent}) => name === 'path' && parent === marker);
+    assert.ok(marker && markerPath, `${id} marker definition`); assert.equal(svgPresentationValue(sourceSvg, markerPath, 'fill'), style.get('endFill') === '0' ? 'none' : style.get('strokeColor'), `${id} marker fill`); assert.equal(svgPresentationValue(sourceSvg, markerPath, 'stroke'), style.get('strokeColor'), `${id} marker stroke`); assert.ok(Number(marker.attributes.get('markerWidth')) * scale <= 16 && Number(marker.attributes.get('markerHeight')) * scale <= 16, `${id} bounded marker`);
     assert.equal(svgPresentationValue(sourceSvg, path, 'stroke-dasharray') ?? '', style.get('dashed') === '1' ? style.get('dashPattern') : '', `${id} dash role`);
-    const fontSize = Number(svgPresentationValue(sourceSvg, label, 'font-size')); const text = sourceSvg.match(new RegExp(`${escapeRegExp(label.tag)}([^<]*)<\\/text>`, 'u'))?.[1] ?? ''; const box = labelBox(label, decodeXmlText(text), fontSize);
-    const points = parsePathPoints(path.attributes.get('d')); const strokeGap = Math.min(...points.slice(1).map((point, index) => segmentDistance(points[index], point, box))) * scale; assert.ok(strokeGap >= 8, `${id} connector clearance`); const markerGap = Math.hypot(points.at(-1).x - (box.left + box.right) / 2, points.at(-1).y - (box.top + box.bottom) / 2) * scale; assert.ok(markerGap >= 16, `${id} marker clearance`);
-    assert.ok(fontSize * scale >= (/图例|业务调用|消息|路由|补偿/u.test(text) ? 12 : 15), `${id} rendered font`);
+    const fontSize = Number.parseFloat(svgPresentationValue(sourceSvg, label, 'font-size')); assert.ok(fontSize * scale >= 15, `${id} rendered font`);
   }
   const canvas = sourceSvg.match(/<(?:rect|path)\b[^>]*\bid="(?:canvas|background)"[^>]*>/u)?.[0] ?? '';
   assert.ok(canvas && !/fill="(?:none|transparent)"/iu.test(canvas), 'opaque canvas');
   const canvasElement = svg.elements.find(({attributes}) => /^(?:canvas|background)$/u.test(attributes.get('id') ?? ''));
   const background = svgPresentationValue(sourceSvg, canvasElement, 'fill'); assert.ok(background && background !== 'none', 'effective canvas background');
-  const text = [...sourceSvg.matchAll(/<text\b([^>]*)>([^<]+)<\/text>/gu)];
-  for (const [, raw, label] of text) {
-    const attributes = attrs(raw); const rendered = {attributes}; const size = Number(svgPresentationValue(sourceSvg, rendered, 'font-size'));
+  const text = svg.elements.filter(({name}) => name === 'text');
+  for (const rendered of text) {
+    const label = elementText(sourceSvg, rendered); const size = Number.parseFloat(svgPresentationValue(sourceSvg, rendered, 'font-size'));
     if (/图例|业务调用|消息|路由|补偿/u.test(label)) assert.ok(size * scale >= 12, `legend text ${label}`);
     else assert.ok(size * scale >= 15, `essential text ${label}`);
-    assert.ok(contrastRatio(blendHex(svgPresentationValue(sourceSvg, rendered, 'fill'), background, paintOpacity(sourceSvg, rendered, 'fill')), background) >= 4.5, `effective text contrast ${label}`);
+    const local = localBackground(sourceSvg, rendered); assert.ok(contrastRatio(blendHex(svgPresentationValue(sourceSvg, rendered, 'fill'), local, paintOpacity(sourceSvg, rendered, 'fill')), local) >= 4.5, `effective text contrast ${label}`);
   }
   assertNoOverdraw(sourceSvg);
+  assertPhysicalGeometry(sourceSvg, scale);
   return {drawio, svg, alphaComposite};
 }
 async function mutation(source, transform, validator, label) {
@@ -335,10 +483,35 @@ async function mutation(source, transform, validator, label) {
   assert.throws(() => validator(changed), assert.AssertionError, label);
 }
 
+function physicalGeometryFixture() {
+  const legend = Object.keys(CONNECTOR_STYLES).map((role, index) => {
+    const y = 400 + index * 90;
+    return `<path class="legend-edge" data-legend-key="${role}" d="M 100 ${y} H 200"/><text data-legend-for="${role}" x="300" y="${y + 5}">${role}</text>`;
+  }).join('');
+  return `<svg role="img" viewBox="0 0 800 800"><style>
+    text { fill:#111827; font-size:20px; } .edge,.legend-edge { fill:none; stroke:#1D4ED8; stroke-width:2; marker-end:url(#arrow); }
+    .boundary { fill:none; stroke:#64748B; stroke-width:2; }
+  </style><defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M 0 0 L 10 5 L 0 10 Z" fill="#1D4ED8" stroke="#1D4ED8"/></marker></defs>
+  <rect id="canvas" x="0" y="0" width="800" height="800" fill="#FFFFFF"/>
+  <g data-node-id="soa-boundary" data-node-bounds="0 0 350 300"><rect class="boundary" x="0" y="0" width="350" height="300"/><text data-header-for="soa-boundary" x="80" y="40">SOA</text></g>
+  <g data-node-id="microservices-boundary" data-node-bounds="450 0 350 300"><rect class="boundary" x="450" y="0" width="350" height="300"/></g>
+  <g data-node-id="comparison-axis" data-node-bounds="360 0 80 300"><rect class="boundary" x="360" y="0" width="80" height="300"/></g>
+  <g data-node-id="foreign-node" data-node-bounds="600 40 80 50"><rect x="600" y="40" width="80" height="50" fill="#E2E8F0" stroke="#64748B" stroke-width="2"/></g>
+  <path class="edge" data-edge-id="edge-a" data-source="source-node" data-target="target-node" d="M 100 100 H 200"/>
+  <text data-edge-id="edge-a" data-label-bounds="393.8 40 406.2 66" x="400" y="60" text-anchor="middle">A</text>${legend}</svg>`;
+}
+
 test('SVG cascade, alpha composition, and conservative glyph geometry helpers are meaningful', () => {
-  const svg = '<svg><style>#x.edge { stroke: #FFFFFF !important; }</style><path id="x" class="edge" style="stroke: #334155"/></svg>';
+  const svg = '<svg><style>.edge { stroke: #111111; fill: #111111; } .outer .edge { font-weight: 700; } .panel > .edge { stroke: #222222; } #x.edge { stroke: #FFFFFF !important; } .late { fill: #333333; } .late { fill: #444444; }</style><g class="outer"><g class="panel" fill="#000000" font-size="18px"><path id="x" class="edge late" stroke="#0F172A" style="stroke: #334155"/></g></g></svg>';
   const element = parseSvg(svg).elements.find(({attributes}) => attributes.get('id') === 'x');
   assert.equal(svgPresentationValue(svg, element, 'stroke'), '#FFFFFF');
+  assert.equal(svgPresentationValue(svg, element, 'fill'), '#444444', 'specificity and source-order resolution');
+  assert.equal(svgPresentationValue(svg, element, 'font-weight'), '700', 'descendant selector ancestry');
+  assert.equal(svgPresentationValue(svg, element, 'font-size'), '18px', 'inherited presentation property');
+  assert.equal(svgPresentationValue(svg.replace('#x.edge { stroke: #FFFFFF !important; }', ''), element, 'stroke'), '#334155', 'inline style beats selector and presentation attribute');
+  const inlineImportant = svg.replace('style="stroke: #334155"', 'style="stroke: #334155 !important"');
+  assert.equal(svgPresentationValue(inlineImportant, parseSvg(inlineImportant).elements.find(({attributes}) => attributes.get('id') === 'x'), 'stroke'), '#334155', 'inline important beats stylesheet important');
+  assert.notEqual(svgPresentationValue(svg.replace('#x.edge { stroke: #FFFFFF !important; }', ''), element, 'stroke'), '#FFFFFF', 'specificity mutation changes effective paint');
   assert.equal(alphaComposite('#000000', .5), '#808080');
   assert.equal(blendHex('#000000', '#FFFFFF', .5), '#808080');
   assert.ok(contrastRatio('#000000', '#FFFFFF') >= 21, 'effective foreground/background contrast');
@@ -348,6 +521,9 @@ test('SVG cascade, alpha composition, and conservative glyph geometry helpers ar
   assert.throws(() => drawioRoute(drawio, {...edge, body: `${edge.body}<mxPoint as="sourcePoint" x="0" y="0"/>`}), assert.AssertionError, 'fallback terminal point rejected');
   const masked = '<svg><path data-edge-id="e" d="M 0 0 H 20"/><rect x="10" y="-1" width="2" height="2" fill="#000000" opacity="0.5"/></svg>';
   assert.throws(() => assertNoOverdraw(masked), assert.AssertionError, 'ordinary translucent later mask rejected');
+  const backgroundFixture = '<svg><rect id="canvas" x="0" y="0" width="100" height="100" fill="#FFFFFF"/><rect x="0" y="0" width="100" height="100" fill="#000000" opacity="0.5"/><text x="50" y="50">x</text></svg>';
+  const label = parseSvg(backgroundFixture).elements.find(({name}) => name === 'text'); assert.equal(localBackground(backgroundFixture, label).toUpperCase(), '#808080', 'local alpha-composited background');
+  assert.notEqual(localBackground(backgroundFixture.replace('opacity="0.5"', 'opacity="0.8"'), parseSvg(backgroundFixture.replace('opacity="0.5"', 'opacity="0.8"')).elements.find(({name}) => name === 'text')).toUpperCase(), '#808080', 'opacity mutation changes local background');
 });
 
 test('metadata, wrapper, ownership, and prohibition fixtures prove all mutations are non-no-op', () => {
@@ -369,6 +545,28 @@ test('metadata, wrapper, ownership, and prohibition fixtures prove all mutations
     '编排器拥有流程状态并负责恢复决策。集成基础设施负责路由、转换和技术传输。',
   ].join('');
   assertOwnership(ownership); assertProhibitions('SOA 不等于 ESB。SOA 不等于 Web Services。SOA 不等于消息中间件。SOA 不授权共享数据库写入。集成基础设施不拥有业务状态或业务结果。');
+});
+
+test('diagram inventory and geometry fixtures reject physical hazards', () => {
+  const fixture = physicalGeometryFixture(); assertPhysicalGeometry(fixture, 1);
+  for (const [label, changed] of [
+    ['moved label', fixture.replace('data-label-bounds="393.8 40 406.2 66" x="400" y="60"', 'data-label-bounds="193.8 75 206.2 101" x="200" y="95"')],
+    ['foreign node collision', fixture.replace('x="600" y="40" width="80" height="50" fill="#E2E8F0"', 'x="390" y="35" width="30" height="40" fill="#E2E8F0"')],
+    ['boundary collision', fixture.replace('x="360" y="0" width="80" height="300"', 'x="395" y="0" width="10" height="300"')],
+    ['header padding', fixture.replace('x="80" y="40">SOA', 'x="80" y="15">SOA')],
+    ['legend collision', fixture.replace('data-legend-for="business-call" x="300"', 'data-legend-for="business-call" x="195"')],
+    ['oversized marker', fixture.replace('markerWidth="8"', 'markerWidth="20"')],
+  ]) assert.throws(() => assertPhysicalGeometry(changed, 1), assert.AssertionError, `${label} rejected by helper fixture`);
+  const edges = CONNECTOR_INVENTORY.map((edge) => [...edge]); assert.deepEqual(edges, CONNECTOR_INVENTORY, 'exact connector inventory fixture');
+  assert.throws(() => assert.deepEqual(edges.slice(1), CONNECTOR_INVENTORY, 'missing connector'), assert.AssertionError, 'missing connector rejected');
+  const miswired = CONNECTOR_INVENTORY.map((edge) => [...edge]); miswired[0][2] = 'integration-infrastructure'; assert.throws(() => assert.deepEqual(miswired, CONNECTOR_INVENTORY, 'miswired connector'), assert.AssertionError, 'mandatory ESB center rejected');
+  const participants = {soa: [...PARTICIPANT_NAMES], microservices: [...PARTICIPANT_NAMES]}; const assertParticipants = (value) => { assert.deepEqual(value.soa, PARTICIPANT_NAMES); assert.deepEqual(value.microservices, PARTICIPANT_NAMES); };
+  assertParticipants(participants); assert.throws(() => assertParticipants({...participants, soa: participants.soa.slice(1)}), assert.AssertionError, 'SOA participant deletion');
+  assert.throws(() => assertParticipants({...participants, microservices: [participants.microservices[1], participants.microservices[0], ...participants.microservices.slice(2)]}), assert.AssertionError, 'microservices participant swap');
+  assert.throws(() => assertParticipants({...participants, soa: [...participants.soa, 'side-only']}), assert.AssertionError, 'side-only participant');
+  const steps = {soa: [...FULFILLMENT_STEPS], microservices: [...FULFILLMENT_STEPS]}; const assertSteps = (value) => { assert.deepEqual(value.soa, FULFILLMENT_STEPS); assert.deepEqual(value.microservices, FULFILLMENT_STEPS); };
+  assertSteps(steps); assert.throws(() => assertSteps({...steps, soa: steps.soa.slice(1)}), assert.AssertionError, 'fulfillment step deletion');
+  assert.throws(() => assertSteps({...steps, microservices: [steps.microservices[1], steps.microservices[0], ...steps.microservices.slice(2)]}), assert.AssertionError, 'fulfillment step swap');
 });
 
 test('locks exact STY-07 article metadata, headings, wrappers, ownership, and prose boundaries', async () => {
@@ -409,8 +607,9 @@ test('locks exact eight-row comparison and seven-row failure responsibilities', 
   }
   const failures = markdownTables(articleParts(source).body).find((candidate) => candidate[0]?.[0] === '失败类别').slice(2);
   for (const failure of failures) {
-    await mutation(source, (candidate) => candidate.replace(failure.at(-1), '平台团队'), assertFailureTable, `${failure[0]} owner changed`);
-    await mutation(source, (candidate) => candidate.replace(failure[3], '继续自动执行'), assertFailureTable, `${failure[0]} stop condition changed`);
+    const row = `| ${failure.join(' | ')} |`;
+    await mutation(source, (candidate) => candidate.replace(row, `| ${[...failure.slice(0, -1), '平台团队'].join(' | ')} |`), assertFailureTable, `${failure[0]} owner changed`);
+    await mutation(source, (candidate) => candidate.replace(row, `| ${[...failure.slice(0, 3), '继续自动执行', failure[4]].join(' | ')} |`), assertFailureTable, `${failure[0]} stop condition changed`);
   }
   await mutation(source, (candidate) => `${candidate}\nSOA 与微服务构成成熟度阶梯。\n`, assertComparisonTable, 'fabricated maturity ladder');
   await mutation(source, (candidate) => candidate.replace(/结果未知[^。；]*不盲目[^。；]*(重复支付|预留|补偿)/u, '结果未知时盲目重试'), assertFailureTable, 'unknown result blind retry');
@@ -435,7 +634,9 @@ test('governs STY-07 sources, reciprocal relations, and Stage A projection', asy
   }
   assert.ok(new Set(remote.map(({canonical_locator}) => new URL(canonical_locator).hostname)).size >= 4, 'four remote hosts');
   const illustration = ledger.sources.find(({id}) => id === SOURCE_IDS.at(-1));
-  assert.equal(illustration.license, 'LicenseRef-Atlas-Original'); assert.equal(illustration.copyright_policy, 'original-atlas');
+  for (const [field, expected] of Object.entries(ILLUSTRATION)) assert.deepEqual(illustration[field], expected, `${illustration.id}.${field} exact original-illustration policy`);
+  const illustrationCitation = document.citations.find(({source_id}) => source_id === illustration.id);
+  assert.deepEqual(illustrationCitation, {source_id: illustration.id, ...ILLUSTRATION_CITATION}, 'exact original-illustration citation use, role, attribution, and modification');
   assert.deepEqual(document.copyright_checks, COPYRIGHT_CHECKS, 'complete copyright checks');
   const article = documents.find(({file}) => file === ARTICLE); assert.ok(article, `${ARTICLE} article exists`);
   const links = extractInternalLinks(article); assert.ok(links.includes('/styles')); assert.ok(links.includes('/cases/temporal-saga-durable-execution')); assert.equal(links.includes('/styles/sty-08'), false);
@@ -464,10 +665,23 @@ test('locks Draw.io/SVG SOA comparison semantics, parity, ports, and presentatio
   assert.throws(() => assertDiagram(drawio.replace(/exitX=[^;]+/u, 'exitX=0.5'), svg), assert.AssertionError, 'changed terminal port rejected');
   assert.throws(() => assertDiagram(drawio.replace(/<Array as="points">/u, '<Array as="points"></Array><Array as="points">'), svg), assert.AssertionError, 'removed waypoint rejected');
   assert.throws(() => assertDiagram(drawio.replace(/<mxGeometry/u, '<mxPoint as="sourcePoint" x="0" y="0"/><mxGeometry'), svg), assert.AssertionError, 'ignored fallback rejected');
-  assert.throws(() => assertDiagram(drawio, svg.replace(/data-edge-id="([^"]+)"/u, 'data-edge-id="moved-label"')), assert.AssertionError, 'moved/retargeted label rejected');
+  assert.throws(() => assertDiagram(drawio, svg.replace(/data-edge-id="([^"]+)"/u, 'data-edge-id="moved-label"')), assert.AssertionError, 'retargeted label rejected');
+  assert.throws(() => assertDiagram(drawio, svg.replace(/(<text\b[^>]*data-edge-id="[^"]+"[^>]*\bx=")[^"]+("[^>]*\by=")[^"]+/u, '$10$20')), assert.AssertionError, 'physically moved label rejected');
+  assert.throws(() => assertDiagram(drawio, svg.replace(/(<g\b[^>]*data-node-id="[^"]+"[^>]*data-node-bounds=")[^"]+/u, '$10 0 1 1')), assert.AssertionError, 'node bounds mutation rejected');
+  assert.throws(() => assertDiagram(drawio, svg.replace(/(<text\b[^>]*data-header-for="[^"]+"[^>]*\by=")[^"]+/u, '$10')), assert.AssertionError, 'header padding mutation rejected');
+  assert.throws(() => assertDiagram(drawio, svg.replace(/(<text\b[^>]*data-legend-for="[^"]+"[^>]*\bx=")[^"]+/u, '$10')), assert.AssertionError, 'legend collision mutation rejected');
+  assert.throws(() => assertDiagram(drawio, svg.replace(/markerWidth="[^"]+"/u, 'markerWidth="999"')), assert.AssertionError, 'oversized physical marker rejected');
   assert.throws(() => assertDiagram(drawio, svg.replace(/stroke-dasharray:[^;}]+/u, 'stroke-dasharray: 1 1')), assert.AssertionError, 'selector dash mutation rejected');
   assert.throws(() => assertDiagram(drawio, svg.replace(/fill="#F8FAFC"/u, 'fill="transparent"')), assert.AssertionError, 'transparent canvas rejected');
   assert.throws(() => assertDiagram(drawio, svg.replace(/data-role="business-call"/u, 'data-role="removed"')), assert.AssertionError, 'removed role rejected');
   assert.throws(() => assertDiagram(drawio, `${svg.replace('</svg>', '<rect x="0" y="0" width="99999" height="99999" fill="#000000" opacity="0.5"/></svg>')}`), assert.AssertionError, 'later translucent mask rejected');
-  assert.throws(() => assertDiagram(drawio, svg.replace(/data-node-id="soa-side"/u, 'data-node-id="microservices-side"')), assert.AssertionError, 'swapped semantics rejected');
+  assert.throws(() => assertDiagram(drawio, svg.replace('data-node-id="soa-boundary"', 'data-node-id="microservices-boundary"')), assert.AssertionError, 'swapped side semantics rejected');
+  const firstInventory = CONNECTOR_INVENTORY[0];
+  assert.throws(() => assertDiagram(drawio.replace(new RegExp(`<mxCell\\b[^>]*\\bid="${firstInventory[0]}"[\\s\\S]*?<\\/mxCell>`, 'u'), ''), svg), assert.AssertionError, 'missing exact connector rejected');
+  assert.throws(() => assertDiagram(drawio.replace(`target="${firstInventory[2]}"`, 'target="soa-integration"'), svg), assert.AssertionError, 'miswired ESB-centered connector rejected');
+  const participantGroup = (side, participant) => new RegExp(`(<g\\b[^>]*data-node-id="${side}-${participant}-${side === 'soa' ? 'system' : 'service'}"[^>]*>[\\s\\S]*?)(<\\/g>)`, 'u');
+  assert.throws(() => assertDiagram(drawio, svg.replace(participantGroup('soa', 'order'), (group) => group.replace('订单', ''))), assert.AssertionError, 'one-side participant deletion rejected');
+  assert.throws(() => assertDiagram(drawio, svg.replace(participantGroup('microservices', 'inventory'), (group) => group.replace('库存', '支付'))), assert.AssertionError, 'one-side participant swap rejected');
+  assert.throws(() => assertDiagram(drawio, svg.replace(participantGroup('soa', 'notification'), '')), assert.AssertionError, 'side-only participant rejected');
+  assert.throws(() => assertDiagram(drawio.replace('value="提交订单"', 'value="预留库存"'), svg), assert.AssertionError, 'fulfillment step order swap rejected');
 });
