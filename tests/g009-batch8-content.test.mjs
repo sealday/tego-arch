@@ -113,6 +113,12 @@ const CONNECTOR_STYLES = Object.freeze({
   'technical-route': Object.freeze({strokeColor: '#64748B', strokeWidth: '3', dashed: '1', dashPattern: '4 6', endArrow: 'open', endFill: '0'}),
   compensation: Object.freeze({strokeColor: '#9A3412', strokeWidth: '4', dashed: '1', dashPattern: '12 6 3 6', endArrow: 'block', endFill: '1'}),
 });
+const LEGEND_INVENTORY = Object.freeze([
+  ['business-call', 'legend-key-business-call', 'legend-caption-business-call', '业务调用｜实线闭合箭头', [80, 4170, 180, 4170], [232, 4147, 396, 46.8]],
+  ['message', 'legend-key-message', 'legend-caption-message', '消息｜长虚线闭合箭头', [650, 4170, 750, 4170], [820, 4147, 360, 46.8]],
+  ['technical-route', 'legend-key-technical-route', 'legend-caption-technical-route', '技术路由｜短虚线开放箭头', [1220, 4170, 1320, 4170], [1374, 4147, 432, 46.8]],
+  ['compensation', 'legend-key-compensation', 'legend-caption-compensation', '补偿｜点划线闭合箭头', [1810, 4170, 1910, 4170], [1970, 4147, 360, 46.8]],
+]);
 const CONNECTOR_INVENTORY = Object.freeze([
   ['soa-submit-order', 'soa-client', 'soa-orchestrator', 'business-call', '提交订单'],
   ['soa-reserve-inventory', 'soa-orchestrator', 'soa-inventory-contract', 'business-call', '预留库存'],
@@ -370,6 +376,13 @@ export function drawioRoute(drawio, edge) {
   assert.ok(waypoints.length > 0 && waypoints.every(({x, y}) => Number.isFinite(x) && Number.isFinite(y)), `${edge.attributes.get('id')} actual waypoints`);
   return [drawioTerminalPoint(drawio, edge, 'source'), ...waypoints, drawioTerminalPoint(drawio, edge, 'target')];
 }
+function drawioPointRoute(edge) {
+  const source = attrs(edge.body.match(/<mxPoint\b([^>]*)\bas="sourcePoint"[^>]*\/>/u)?.[1] ?? '');
+  const target = attrs(edge.body.match(/<mxPoint\b([^>]*)\bas="targetPoint"[^>]*\/>/u)?.[1] ?? '');
+  const points = [source, target].map((point) => ({x: Number(point.get('x')), y: Number(point.get('y'))}));
+  assert.ok(points.every(({x, y}) => Number.isFinite(x) && Number.isFinite(y)), `${edge.attributes.get('id')} actual point geometry`);
+  return points;
+}
 export function parsePathPoints(data) {
   const tokens = data.match(/[MHV]|-?(?:\d+(?:\.\d*)?|\.\d+)/gu) ?? []; const points = []; let cursor = 0; let x = 0; let y = 0;
   while (cursor < tokens.length) { const command = tokens[cursor++]; if (command === 'M') { x = Number(tokens[cursor++]); y = Number(tokens[cursor++]); } else if (command === 'H') x = Number(tokens[cursor++]); else if (command === 'V') y = Number(tokens[cursor++]); else assert.fail(`unsupported connector path command ${command}`); points.push({x, y}); }
@@ -396,6 +409,7 @@ function rectangleFromElement(element) { const bounds = numericBounds(element.at
 function rectangleDistance(left, right) { const dx = Math.max(left.left - right.right, right.left - left.right, 0); const dy = Math.max(left.top - right.bottom, right.top - left.bottom, 0); return Math.hypot(dx, dy); }
 function rectangleAxisClearance(left, right) { return {horizontal: Math.max(left.left - right.right, right.left - left.right, 0), vertical: Math.max(left.top - right.bottom, right.top - left.bottom, 0)}; }
 function pointRectangleDistance(point, rectangle) { return Math.hypot(Math.max(rectangle.left - point.x, 0, point.x - rectangle.right), Math.max(rectangle.top - point.y, 0, point.y - rectangle.bottom)); }
+function markerBounds(points) { return {left: Math.min(...points.map(({x}) => x)), right: Math.max(...points.map(({x}) => x)), top: Math.min(...points.map(({y}) => y)), bottom: Math.max(...points.map(({y}) => y))}; }
 function markerGeometry(source, path, points) {
   const markerId = svgPresentationValue(source, path, 'marker-end')?.match(/^url\(#([^)]+)\)$/u)?.[1]; assert.ok(markerId, `${path.attributes.get('data-edge-id') ?? path.attributes.get('data-structural-edge-id') ?? path.attributes.get('data-legend-key')} marker`);
   const elements = parseSvg(source).elements; const marker = elements.find(({name, attributes}) => name === 'marker' && attributes.get('id') === markerId); const shape = elements.find(({name, parent}) => name === 'path' && parent === marker);
@@ -438,6 +452,34 @@ function assertStructuralOwnership(drawio, svg, source) {
   }
   assert.match(source, /data-node-id="microservices-workflow"[\s\S]*?履约协调/u, 'microservices workflow coordination visible');
   assert.match(source, /data-node-id="microservices-workflow-state"[\s\S]*?履约流程状态/u, 'microservices workflow state visible');
+}
+function assertLegendParity(drawio, svg, source) {
+  const drawioKeys = drawio.edges.filter(({attributes}) => attributes.get('dataRole') === 'legend-key');
+  const drawioCaptions = drawio.nodes.filter(({attributes}) => attributes.get('dataRole') === 'legend-caption');
+  const svgKeys = svg.elements.filter(({name, attributes}) => name === 'path' && attributes.has('data-legend-key'));
+  const svgCaptions = svg.elements.filter(({name, attributes}) => name === 'text' && attributes.has('data-legend-for'));
+  assert.deepEqual(drawioKeys.map(({attributes}) => attributes.get('id')), LEGEND_INVENTORY.map(([, keyId]) => keyId), 'exact Draw.io legend key inventory');
+  assert.deepEqual(drawioCaptions.map(({attributes}) => attributes.get('id')), LEGEND_INVENTORY.map(([, , captionId]) => captionId), 'exact Draw.io legend caption inventory');
+  assert.deepEqual(svgKeys.map(({attributes}) => attributes.get('id')), LEGEND_INVENTORY.map(([, keyId]) => keyId), 'exact SVG legend key inventory');
+  assert.deepEqual(svgCaptions.map(({attributes}) => attributes.get('id')), LEGEND_INVENTORY.map(([, , captionId]) => captionId), 'exact SVG legend caption inventory');
+  for (const [role, keyId, captionId, label, route, bounds] of LEGEND_INVENTORY) {
+    const key = drawioKeys.find(({attributes}) => attributes.get('id') === keyId); const path = svgKeys.find(({attributes}) => attributes.get('id') === keyId);
+    const caption = drawioCaptions.find(({attributes}) => attributes.get('id') === captionId); const text = svgCaptions.find(({attributes}) => attributes.get('id') === captionId);
+    assert.ok(key && path && caption && text, `${role} paired legend structure`);
+    assert.equal(key.attributes.get('legendFor'), role, `${role} Draw.io key role`); assert.equal(path.attributes.get('data-legend-key'), role, `${role} SVG key role`); assert.equal(path.attributes.get('data-role'), key.attributes.get('dataRole'), `${role} key data role parity`);
+    assert.equal(caption.attributes.get('legendFor'), role, `${role} Draw.io caption role`); assert.equal(text.attributes.get('data-legend-for'), role, `${role} SVG caption role`); assert.equal(text.attributes.get('data-role'), caption.attributes.get('dataRole'), `${role} caption data role parity`);
+    assert.deepEqual(drawioPointRoute(key).flatMap(({x, y}) => [x, y]), route, `${role} Draw.io key route`); assert.deepEqual(parsePathPoints(path.attributes.get('d')).flatMap(({x, y}) => [x, y]), route, `${role} SVG key route`);
+    assert.equal(caption.label, label, `${role} Draw.io caption label`); assert.equal(elementText(source, text), label, `${role} SVG caption label`);
+    const geometry = numericBounds(caption.geometry); assert.deepEqual([geometry.x, geometry.y, geometry.width, geometry.height], bounds, `${role} Draw.io caption bounds`);
+    const actualBounds = labelBox(source, text); const round = (value) => Math.round(value * 1e6) / 1e6; assert.deepEqual([actualBounds.left, actualBounds.top, actualBounds.right - actualBounds.left, actualBounds.bottom - actualBounds.top].map(round), bounds, `${role} actual SVG caption bounds`);
+    assert.equal(text.attributes.get('data-label-bounds'), `${bounds[0]} ${bounds[1]} ${bounds[0] + bounds[2]} ${bounds[1] + bounds[3]}`, `${role} SVG caption declared bounds`);
+    const style = drawioStyle(key); for (const [property, expected] of Object.entries(CONNECTOR_STYLES[role])) assert.equal(style.get(property), expected, `${role} Draw.io legend ${property}`);
+    assert.equal(svgPresentationValue(source, path, 'stroke'), style.get('strokeColor'), `${role} legend stroke`); assert.equal(Number(svgPresentationValue(source, path, 'stroke-width')), Number(style.get('strokeWidth')), `${role} legend stroke width`);
+    assert.equal(svgPresentationValue(source, path, 'stroke-dasharray') ?? '', style.get('dashed') === '1' ? style.get('dashPattern') : '', `${role} legend dash`);
+    const markerId = svgPresentationValue(source, path, 'marker-end')?.match(/^url\(#([^)]+)\)$/u)?.[1]; const marker = svg.elements.find(({name, attributes}) => name === 'marker' && attributes.get('id') === markerId); const markerPath = svg.elements.find(({name, parent}) => name === 'path' && parent === marker);
+    assert.ok(marker && markerPath, `${role} legend marker`); assert.equal(markerPath.attributes.get('d'), style.get('endArrow') === 'open' ? 'M 1 1 L 9 5 L 1 9' : 'M 0 0 L 10 5 L 0 10 Z', `${role} legend endArrow shape`); assert.equal(svgPresentationValue(source, markerPath, 'fill'), style.get('endFill') === '0' ? 'none' : style.get('strokeColor'), `${role} legend marker fill`); assert.equal(svgPresentationValue(source, markerPath, 'stroke'), style.get('strokeColor'), `${role} legend marker stroke`);
+    const textStyle = drawioStyle(caption); assert.equal(svgPresentationValue(source, text, 'fill'), textStyle.get('fontColor'), `${role} legend caption color`); assert.equal(Number.parseFloat(svgPresentationValue(source, text, 'font-size')), Number(textStyle.get('fontSize')), `${role} legend caption font size`); assert.equal(svgPresentationValue(source, text, 'font-weight'), textStyle.get('fontStyle') === '1' ? '700' : '400', `${role} legend caption font weight`);
+  }
 }
 function assertNodeParity(drawio, svg, source) {
   for (const id of DIAGRAM_NODES) {
@@ -530,13 +572,17 @@ function localBackground(source, label) {
 }
 function assertPhysicalGeometry(source, scale, enforceLabelAttachment = true) {
   const elements = parseSvg(source).elements; const paths = elements.filter(({name, attributes}) => name === 'path' && attributes.has('data-edge-id')); const labels = elements.filter(({name, attributes}) => name === 'text' && attributes.has('data-edge-id'));
-  const allPaths = elements.filter(({name, attributes}) => name === 'path' && (attributes.has('data-edge-id') || attributes.has('data-structural-edge-id')));
-  const connectors = allPaths.map((path) => ({path, id: path.attributes.get('data-edge-id') ?? path.attributes.get('data-structural-edge-id'), points: parsePathPoints(path.attributes.get('d')), markers: markerGeometry(source, path, parsePathPoints(path.attributes.get('d')))}));
+  const allPaths = elements.filter(({name, attributes}) => name === 'path' && (attributes.has('data-edge-id') || attributes.has('data-structural-edge-id') || attributes.has('data-legend-key')));
+  const connectors = allPaths.map((path) => ({path, id: path.attributes.get('data-edge-id') ?? path.attributes.get('data-structural-edge-id') ?? `legend-${path.attributes.get('data-legend-key')}`, points: parsePathPoints(path.attributes.get('d')), markers: markerGeometry(source, path, parsePathPoints(path.attributes.get('d')))}));
   const nodeShapes = elements.filter(({name, parent}) => name === 'rect' && parent?.attributes.has('data-node-id')).map((shape) => ({id: shape.parent.attributes.get('data-node-id'), rectangle: rectangleFromElement(shape), stroke: Number(svgPresentationValue(source, shape, 'stroke-width') ?? 0)}));
-  const boundaries = nodeShapes.filter(({id}) => ['soa-boundary', 'microservices-boundary', 'comparison-axis'].includes(id));
+  const boundaries = nodeShapes.filter(({id}) => ['soa-boundary', 'microservices-boundary', 'comparison-axis', 'legend-band'].includes(id));
   for (const connector of connectors) {
-    const sourceId = connector.path.attributes.get('data-source'); const targetId = connector.path.attributes.get('data-target'); const id = connector.path.attributes.get('data-edge-id');
-    for (const node of nodeShapes.filter(({id: nodeId}) => ![sourceId, targetId, 'comparison-canvas', 'legend-band', 'soa-boundary', 'microservices-boundary', 'comparison-axis'].includes(nodeId))) assert.equal(routeBoundsCollision(connector.points, node.rectangle, node.stroke), false, `${id} connector clears foreign node ${node.id}`);
+    const sourceId = connector.path.attributes.get('data-source'); const targetId = connector.path.attributes.get('data-target'); const id = connector.id;
+    for (const node of nodeShapes.filter(({id: nodeId}) => ![sourceId, targetId, 'comparison-canvas', 'legend-band', 'soa-boundary', 'microservices-boundary', 'comparison-axis'].includes(nodeId))) {
+      const envelope = {left: node.rectangle.left - node.stroke / 2, right: node.rectangle.right + node.stroke / 2, top: node.rectangle.top - node.stroke / 2, bottom: node.rectangle.bottom + node.stroke / 2};
+      assert.equal(routeBoundsCollision(connector.points, node.rectangle, node.stroke), false, `${id} connector clears foreign node ${node.id}`);
+      assert.ok(rectangleDistance(markerBounds(connector.markers), envelope) > 0, `${id} marker clears foreign node envelope ${node.id}`);
+    }
     for (const boundary of boundaries) {
       const stroke = boundary.stroke; const strips = [
         {left: boundary.rectangle.left - stroke / 2, right: boundary.rectangle.left + stroke / 2, top: boundary.rectangle.top - stroke / 2, bottom: boundary.rectangle.bottom + stroke / 2},
@@ -545,6 +591,7 @@ function assertPhysicalGeometry(source, scale, enforceLabelAttachment = true) {
         {left: boundary.rectangle.left - stroke / 2, right: boundary.rectangle.right + stroke / 2, top: boundary.rectangle.bottom - stroke / 2, bottom: boundary.rectangle.bottom + stroke / 2},
       ];
       assert.equal(strips.some((strip) => routeBoundsCollision(connector.points, strip)), false, `${id} connector clears boundary stroke ${boundary.id}`);
+      assert.equal(strips.some((strip) => rectangleDistance(markerBounds(connector.markers), strip) === 0), false, `${id} marker clears boundary stroke ${boundary.id}`);
     }
   }
   for (const label of labels) {
@@ -582,7 +629,7 @@ function assertNoOverdraw(source) {
   }
 }
 function assertConnectorInventory(drawio, svg, source) {
-  const edges = drawio.edges.filter(({attributes}) => !attributes.get('dataRole')?.startsWith('structural-')).map((edge) => [edge.attributes.get('id'), edge.attributes.get('source'), edge.attributes.get('target'), edge.attributes.get('dataRole'), edge.label]);
+  const edges = drawio.edges.filter(({attributes}) => !attributes.get('dataRole')?.startsWith('structural-') && attributes.get('dataRole') !== 'legend-key').map((edge) => [edge.attributes.get('id'), edge.attributes.get('source'), edge.attributes.get('target'), edge.attributes.get('dataRole'), edge.label]);
   assert.deepEqual(edges, CONNECTOR_INVENTORY, 'exact stable connector inventory');
   assert.deepEqual(svg.elements.filter(({name, attributes}) => name === 'path' && attributes.has('data-edge-id')).map(({attributes}) => attributes.get('data-edge-id')), CONNECTOR_INVENTORY.map(([id]) => id), 'exact SVG connector inventory');
   for (const [id, sourceId, targetId, role, label] of CONNECTOR_INVENTORY) {
@@ -632,6 +679,7 @@ function assertDiagram(sourceDrawio, sourceSvg) {
   assertConnectorInventory(drawio, svg, sourceSvg);
   assertDiagramOwnership(drawio, svg, sourceSvg);
   assertStructuralOwnership(drawio, svg, sourceSvg);
+  assertLegendParity(drawio, svg, sourceSvg);
   assertNodeParity(drawio, svg, sourceSvg);
   assertParticipantGrid(drawio, svg, sourceSvg, scale);
   for (const [id, , , role] of CONNECTOR_INVENTORY) {
@@ -741,6 +789,8 @@ test('STY-07 diagram inventory and geometry fixtures reject physical hazards', (
     ['header padding', fixture.replace('x="80" y="40">SOA', 'x="80" y="15">SOA')],
     ['legend collision', fixture.replace('data-legend-for="business-call" x="300"', 'data-legend-for="business-call" x="195"')],
     ['oversized marker', fixture.replace('markerWidth="8"', 'markerWidth="20"')],
+    ['shifted marker into foreign node', fixture.replace('refX="9" refY="5"', 'refX="-500" refY="15"')],
+    ['shifted marker into boundary stroke', fixture.replace('refX="9"', 'refX="-200"')],
   ]) assert.throws(() => assertPhysicalGeometry(changed, 1, false), assert.AssertionError, `${label} rejected by helper fixture`);
   const edges = CONNECTOR_INVENTORY.map((edge) => [...edge]); assert.deepEqual(edges, CONNECTOR_INVENTORY, 'exact connector inventory fixture');
   assert.throws(() => assert.deepEqual(edges.slice(1), CONNECTOR_INVENTORY, 'missing connector'), assert.AssertionError, 'missing connector rejected');
@@ -860,6 +910,20 @@ test('STY-07 Draw.io/SVG diagram locks SOA comparison semantics, geometry, and c
   assert.throws(() => assertDiagram(drawio, svg.replace(/(<g\b[^>]*data-node-id="[^"]+"[^>]*data-node-bounds=")[^"]+/u, '$10 0 1 1')), assert.AssertionError, 'node bounds mutation rejected');
   assert.throws(() => assertDiagram(drawio, svg.replace(/(<text\b[^>]*data-header-for="[^"]+"[^>]*\by=")[^"]+/u, '$10')), assert.AssertionError, 'header padding mutation rejected');
   assert.throws(() => assertDiagram(drawio, svg.replace(/(<text\b[^>]*data-legend-for="[^"]+"[^>]*\bx=")[^"]+/u, '$10')), assert.AssertionError, 'legend collision mutation rejected');
+  assert.throws(() => assertDiagram(drawio.replace(/<mxCell\b[^>]*\bid="legend-key-business-call"[\s\S]*?<\/mxCell>/u, ''), svg), assert.AssertionError, 'missing Draw.io legend key rejected');
+  assert.throws(() => assertDiagram(drawio, svg.replace(/<path\b[^>]*\bid="legend-key-business-call"[^>]*\/>/u, '')), assert.AssertionError, 'missing SVG legend key rejected');
+  assert.throws(() => assertDiagram(drawio, svg.replace('id="legend-caption-business-call"', 'id="legend-caption-renamed"')), assert.AssertionError, 'wrong legend caption ID rejected');
+  assert.throws(() => assertDiagram(drawio, svg.replace('业务调用｜实线闭合箭头</text>', '业务调用</text>')), assert.AssertionError, 'wrong legend caption label rejected');
+  assert.throws(() => assertDiagram(drawio.replace(/(<mxCell\b[^>]*\bid="legend-caption-message"[\s\S]*?<mxGeometry\b[^>]*\bx=")[^"]+/u, '$10'), svg), assert.AssertionError, 'wrong legend caption bounds rejected');
+  assert.throws(() => assertDiagram(drawio, svg.replace('id="legend-key-message" class="message" data-legend-key="message" data-role="legend-key" d="M 650 4170 H 750"', 'id="legend-key-message" class="message" data-legend-key="message" data-role="legend-key" d="M 650 4160 H 750"')), assert.AssertionError, 'wrong legend key route rejected');
+  assert.throws(() => assertDiagram(drawio, svg.replace(/(<path\b[^>]*\bid="legend-key-business-call"[^>]*)(\/>)/u, '$1 style="marker-end:none"$2')), assert.AssertionError, 'missing legend key marker rejected');
+  const wrongLegendCaptionRole = svg.replace(/(<text\b[^>]*\bid="legend-caption-message"[^>]*\bdata-legend-for=")message/u, '$1business-call'); assert.notEqual(wrongLegendCaptionRole, svg, 'wrong legend caption role mutation applies');
+  assert.throws(() => assertDiagram(drawio, wrongLegendCaptionRole), assert.AssertionError, 'wrong legend caption role rejected');
+  const wrongLegendKeyStyle = svg.replace(/(<path\b[^>]*\bid="legend-key-technical-route"[^>]*)(\/>)/u, '$1 style="stroke:#1D4ED8"$2'); assert.notEqual(wrongLegendKeyStyle, svg, 'wrong legend key style mutation applies');
+  assert.throws(() => assertDiagram(drawio, wrongLegendKeyStyle), assert.AssertionError, 'wrong legend key style rejected');
+  assert.throws(() => assertDiagram(drawio, svg.replace(/(<path\b[^>]*\bid="legend-key-compensation"[^>]*)(\/>)/u, '$1 style="stroke-dasharray:1 1"$2')), assert.AssertionError, 'wrong legend key dash rejected');
+  const wrongLegendCaptionStyle = svg.replace(/(<text\b[^>]*\bid="legend-caption-compensation"[^>]*)(>)/u, '$1 style="font-size:30px"$2'); assert.notEqual(wrongLegendCaptionStyle, svg, 'wrong legend caption text style mutation applies');
+  assert.throws(() => assertDiagram(drawio, wrongLegendCaptionStyle), assert.AssertionError, 'wrong legend caption text style rejected');
   assert.throws(() => assertDiagram(drawio, svg.replace(/markerWidth="[^"]+"/u, 'markerWidth="999"')), assert.AssertionError, 'oversized physical marker rejected');
   assert.throws(() => assertDiagram(drawio, svg.replace(/stroke-dasharray:[^;}]+/u, 'stroke-dasharray: 1 1')), assert.AssertionError, 'selector dash mutation rejected');
   assert.throws(() => assertDiagram(drawio, svg.replace(/stroke="#1D4ED8"/u, 'stroke="#64748B"')), assert.AssertionError, 'line style mismatch rejected');
