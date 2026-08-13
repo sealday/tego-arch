@@ -130,6 +130,14 @@ const CONNECTOR_INVENTORY = Object.freeze([
 ]);
 const PARTICIPANT_NAMES = ['订单', '库存', '支付', '通知'];
 const FULFILLMENT_STEPS = ['提交订单', '预留库存', '支付授权', '确认订单', '发送通知', '释放库存'];
+const BUSINESS_AUTHORITIES = Object.freeze([
+  ...['订单', '库存', '支付', '通知'].map((name) => `${name}权威状态`),
+  ...['订单', '库存', '支付', '通知'].map((name) => `${name}私有权威状态`),
+]);
+const NON_OWNERSHIP_LABELS = Object.freeze([
+  ['soa-integration', '集成层不拥有业务状态'],
+  ['microservices-platform', '共享平台不拥有业务决定'],
+]);
 const ILLUSTRATION = Object.freeze({
   canonical_locator: '/img/diagrams/sty-07-soa-microservices-order-fulfillment.svg',
   transport_locator: '/img/diagrams/sty-07-soa-microservices-order-fulfillment.svg',
@@ -377,10 +385,11 @@ function markerGeometry(source, path, points) {
   assert.ok(result.length >= 3 && result.every(({x, y}) => Number.isFinite(x) && Number.isFinite(y)), `${markerId} physical marker geometry`); return result;
 }
 function localBackground(source, label) {
-  const point = {x: Number(label.attributes.get('x')), y: Number(label.attributes.get('y'))}; const paints = parseSvg(source).elements.filter(({name, index}) => name === 'rect' && index < label.index).filter((element) => {
+  const point = {x: Number(label.attributes.get('x')), y: Number(label.attributes.get('y'))}; const paints = parseSvg(source).elements.filter((element) => element.name === 'rect' && element.index < label.index && !/^(?:canvas|background)$/u.test(element.attributes.get('id') ?? '')).filter((element) => {
     const rectangle = rectangleFromElement(element); return point.x >= rectangle.left && point.x <= rectangle.right && point.y >= rectangle.top && point.y <= rectangle.bottom;
   }).map((element) => ({color: svgPresentationValue(source, element, 'fill'), opacity: paintOpacity(source, element, 'fill'), index: element.index})).filter(({color}) => color && color !== 'none').sort((left, right) => left.index - right.index);
-  assert.ok(paints.length > 0, 'painted local background'); return paints.reduce((background, paint) => blendHex(paint.color, background, paint.opacity), '#FFFFFF');
+  const canvas = parseSvg(source).elements.find(({attributes}) => /^(?:canvas|background)$/u.test(attributes.get('id') ?? '')); const base = canvas ? blendHex(svgPresentationValue(source, canvas, 'fill'), '#FFFFFF', paintOpacity(source, canvas, 'fill')) : '#FFFFFF';
+  return paints.reduce((background, paint) => blendHex(paint.color, background, paint.opacity), base);
 }
 function assertPhysicalGeometry(source, scale) {
   const elements = parseSvg(source).elements; const paths = elements.filter(({name, attributes}) => name === 'path' && attributes.has('data-edge-id')); const labels = elements.filter(({name, attributes}) => name === 'text' && attributes.has('data-edge-id'));
@@ -393,7 +402,7 @@ function assertPhysicalGeometry(source, scale) {
     for (const connector of connectors) for (const point of connector.points.slice(1)) { /* execute parsed geometry before segment loop */ assert.ok(Number.isFinite(point.x)); }
     const strokeGap = Math.min(...connectors.flatMap(({points}) => points.slice(1).map((point, index) => segmentDistance(points[index], point, bounds)))) * scale; assert.ok(strokeGap >= 8, `${id} label to own/foreign connector ${strokeGap}`);
     const markerGap = Math.min(...connectors.flatMap(({markers}) => markers.map((point) => pointRectangleDistance(point, bounds)))) * scale; assert.ok(markerGap >= 16, `${id} label to actual own/foreign marker ${markerGap}`);
-    for (const node of nodeShapes.filter(({id: nodeId}) => ![own.attributes.get('data-source'), own.attributes.get('data-target')].includes(nodeId) && !['soa-boundary', 'microservices-boundary', 'comparison-axis'].includes(nodeId))) assert.ok(rectangleDistance(bounds, {left: node.rectangle.left - node.stroke / 2, right: node.rectangle.right + node.stroke / 2, top: node.rectangle.top - node.stroke / 2, bottom: node.rectangle.bottom + node.stroke / 2}) * scale >= 12, `${id} foreign node ${node.id}`);
+    for (const node of nodeShapes.filter(({id: nodeId}) => ![own.attributes.get('data-source'), own.attributes.get('data-target')].includes(nodeId) && !['comparison-canvas', 'legend-band', 'soa-boundary', 'microservices-boundary', 'comparison-axis'].includes(nodeId))) assert.ok(rectangleDistance(bounds, {left: node.rectangle.left - node.stroke / 2, right: node.rectangle.right + node.stroke / 2, top: node.rectangle.top - node.stroke / 2, bottom: node.rectangle.bottom + node.stroke / 2}) * scale >= 12, `${id} foreign node ${node.id}`);
     for (const boundary of boundaries) {
       const contained = bounds.left >= boundary.rectangle.left && bounds.right <= boundary.rectangle.right && bounds.top >= boundary.rectangle.top && bounds.bottom <= boundary.rectangle.bottom;
       const gap = contained ? Math.min(bounds.left - boundary.rectangle.left, boundary.rectangle.right - bounds.right, bounds.top - boundary.rectangle.top, boundary.rectangle.bottom - bounds.bottom) - boundary.stroke / 2 : rectangleDistance(bounds, boundary.rectangle) - boundary.stroke / 2;
@@ -436,6 +445,20 @@ function assertConnectorInventory(drawio, svg, source) {
     const end = source.indexOf('</g>', source.indexOf(group.tag)); assert.ok(source.slice(source.indexOf(group.tag), end).includes(name), `${side} visibly includes ${name}`);
   }
 }
+function assertDiagramOwnership(drawio, svg, source) {
+  for (const authority of BUSINESS_AUTHORITIES) {
+    assert.ok(drawio.nodes.some(({label}) => label === authority), `Draw.io business authority ${authority}`);
+    assert.match(source, new RegExp(`<text\\b[^>]*data-authority-label="[^"]+"[^>]*>${authority}<\\/text>`, 'u'), `visible SVG business authority ${authority}`);
+  }
+  for (const [id, label] of NON_OWNERSHIP_LABELS) {
+    const drawioNode = drawio.nodes.find(({attributes}) => attributes.get('id') === id);
+    assert.ok(drawioNode?.label.includes(label), `Draw.io ${id} non-ownership boundary`);
+    const group = svg.nodes.find(({attributes}) => attributes.get('data-node-id') === id); assert.ok(group, `SVG ${id}`);
+    const end = source.indexOf('</g>', source.indexOf(group.tag)); assert.ok(source.slice(source.indexOf(group.tag), end).includes(label), `visible SVG ${id} non-ownership boundary`);
+  }
+  assert.doesNotMatch(source, /(?:ESB|集成层|集成基础设施)[^<。；]*(?<!不)拥有[^<。；]*业务状态/u, 'ESB/integration layer cannot own business state');
+  assert.doesNotMatch(source, /共享平台[^<。；]*(?<!不)拥有[^<。；]*业务决定/u, 'shared platform cannot own business decisions');
+}
 function assertDiagram(sourceDrawio, sourceSvg) {
   assert.match(sourceDrawio, /<mxfile\b/u, 'Draw.io file');
   const root = sourceSvg.match(/<svg\b[^>]*>/u)?.[0] ?? '';
@@ -450,6 +473,7 @@ function assertDiagram(sourceDrawio, sourceSvg) {
   const viewBox = root.match(/viewBox="0 0 ([0-9.]+) ([0-9.]+)"/u); const scale = 800 / Number(viewBox?.[1]);
   assert.ok(Number.isFinite(scale) && scale > 0, '800px CSS scale');
   assertConnectorInventory(drawio, svg, sourceSvg);
+  assertDiagramOwnership(drawio, svg, sourceSvg);
   for (const [id, , , role] of CONNECTOR_INVENTORY) {
     const edge = drawio.edges.find(({attributes}) => attributes.get('id') === id);
     assert.ok(edge, `Draw.io ${id}`); const route = drawioRoute(drawio, edge);
@@ -547,7 +571,7 @@ test('metadata, wrapper, ownership, and prohibition fixtures prove all mutations
   assertOwnership(ownership); assertProhibitions('SOA 不等于 ESB。SOA 不等于 Web Services。SOA 不等于消息中间件。SOA 不授权共享数据库写入。集成基础设施不拥有业务状态或业务结果。');
 });
 
-test('diagram inventory and geometry fixtures reject physical hazards', () => {
+test('STY-07 diagram inventory and geometry fixtures reject physical hazards', () => {
   const fixture = physicalGeometryFixture(); assertPhysicalGeometry(fixture, 1);
   for (const [label, changed] of [
     ['moved label', fixture.replace('data-label-bounds="393.8 40 406.2 66" x="400" y="60"', 'data-label-bounds="193.8 75 206.2 101" x="200" y="95"')],
@@ -655,7 +679,7 @@ test('governs STY-07 sources, reciprocal relations, and Stage A projection', asy
   }
 });
 
-test('locks Draw.io/SVG SOA comparison semantics, parity, ports, and presentation geometry', () => {
+test('STY-07 Draw.io/SVG diagram locks SOA comparison semantics, geometry, and contrast', () => {
   const drawio = file(DRAWIO); const svg = file(SVG);
   assert.ok(drawio, `${DRAWIO} must exist after implementation`); assert.ok(svg, `${SVG} must exist after implementation`);
   assertDiagram(drawio, svg);
@@ -664,7 +688,8 @@ test('locks Draw.io/SVG SOA comparison semantics, parity, ports, and presentatio
   assert.throws(() => assertDiagram(drawio.replace(`source="${first.attributes.get('source')}"`, ''), svg), assert.AssertionError, 'detached port rejected');
   assert.throws(() => assertDiagram(drawio.replace(/exitX=[^;]+/u, 'exitX=0.5'), svg), assert.AssertionError, 'changed terminal port rejected');
   assert.throws(() => assertDiagram(drawio.replace(/<Array as="points">/u, '<Array as="points"></Array><Array as="points">'), svg), assert.AssertionError, 'removed waypoint rejected');
-  assert.throws(() => assertDiagram(drawio.replace(/<mxGeometry/u, '<mxPoint as="sourcePoint" x="0" y="0"/><mxGeometry'), svg), assert.AssertionError, 'ignored fallback rejected');
+  assert.throws(() => assertDiagram(drawio.replace(/(<mxPoint x=")[^"]+(" y="[^"]+"\/>)/u, '$10$2'), svg), assert.AssertionError, 'altered physical waypoint rejected');
+  assert.throws(() => assertDiagram(drawio.replace(/(<mxCell\b[^>]*\bedge="1"[^>]*>\s*)<mxGeometry/u, '$1<mxPoint as="sourcePoint" x="0" y="0"/><mxGeometry'), svg), assert.AssertionError, 'ignored fallback rejected');
   assert.throws(() => assertDiagram(drawio, svg.replace(/data-edge-id="([^"]+)"/u, 'data-edge-id="moved-label"')), assert.AssertionError, 'retargeted label rejected');
   assert.throws(() => assertDiagram(drawio, svg.replace(/(<text\b[^>]*data-edge-id="[^"]+"[^>]*\bx=")[^"]+("[^>]*\by=")[^"]+/u, '$10$20')), assert.AssertionError, 'physically moved label rejected');
   assert.throws(() => assertDiagram(drawio, svg.replace(/(<g\b[^>]*data-node-id="[^"]+"[^>]*data-node-bounds=")[^"]+/u, '$10 0 1 1')), assert.AssertionError, 'node bounds mutation rejected');
@@ -672,10 +697,16 @@ test('locks Draw.io/SVG SOA comparison semantics, parity, ports, and presentatio
   assert.throws(() => assertDiagram(drawio, svg.replace(/(<text\b[^>]*data-legend-for="[^"]+"[^>]*\bx=")[^"]+/u, '$10')), assert.AssertionError, 'legend collision mutation rejected');
   assert.throws(() => assertDiagram(drawio, svg.replace(/markerWidth="[^"]+"/u, 'markerWidth="999"')), assert.AssertionError, 'oversized physical marker rejected');
   assert.throws(() => assertDiagram(drawio, svg.replace(/stroke-dasharray:[^;}]+/u, 'stroke-dasharray: 1 1')), assert.AssertionError, 'selector dash mutation rejected');
+  assert.throws(() => assertDiagram(drawio, svg.replace(/stroke="#1D4ED8"/u, 'stroke="#64748B"')), assert.AssertionError, 'line style mismatch rejected');
+  assert.throws(() => assertDiagram(drawio, svg.replace(/(<marker\b[^>]*id="arrow-business"[\s\S]*?<path\b[^>]*fill=")#[0-9A-F]{6}/u, '$1#64748B')), assert.AssertionError, 'marker style mismatch rejected');
   assert.throws(() => assertDiagram(drawio, svg.replace(/fill="#F8FAFC"/u, 'fill="transparent"')), assert.AssertionError, 'transparent canvas rejected');
   assert.throws(() => assertDiagram(drawio, svg.replace(/data-role="business-call"/u, 'data-role="removed"')), assert.AssertionError, 'removed role rejected');
   assert.throws(() => assertDiagram(drawio, `${svg.replace('</svg>', '<rect x="0" y="0" width="99999" height="99999" fill="#000000" opacity="0.5"/></svg>')}`), assert.AssertionError, 'later translucent mask rejected');
   assert.throws(() => assertDiagram(drawio, svg.replace('data-node-id="soa-boundary"', 'data-node-id="microservices-boundary"')), assert.AssertionError, 'swapped side semantics rejected');
+  assert.throws(() => assertDiagram(drawio, svg.replace('订单权威状态', '订单普通存储')), assert.AssertionError, 'removed business authority rejected');
+  assert.throws(() => assertDiagram(drawio, svg.replace('集成层不拥有业务状态', 'ESB 拥有业务状态')), assert.AssertionError, 'ESB business-state ownership rejected');
+  assert.throws(() => assertDiagram(drawio, svg.replace('共享平台不拥有业务决定', '共享平台拥有业务决定')), assert.AssertionError, 'shared-platform business-decision ownership rejected');
+  assert.throws(() => assertDiagram(drawio, svg.replace('.essential-role { font-size: 48px;', '.essential-role { fill: #F8FAFC !important; font-size: 48px;')), assert.AssertionError, 'low-contrast essential role rejected');
   const firstInventory = CONNECTOR_INVENTORY[0];
   assert.throws(() => assertDiagram(drawio.replace(new RegExp(`<mxCell\\b[^>]*\\bid="${firstInventory[0]}"[\\s\\S]*?<\\/mxCell>`, 'u'), ''), svg), assert.AssertionError, 'missing exact connector rejected');
   assert.throws(() => assertDiagram(drawio.replace(`target="${firstInventory[2]}"`, 'target="soa-integration"'), svg), assert.AssertionError, 'miswired ESB-centered connector rejected');
