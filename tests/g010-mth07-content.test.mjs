@@ -29,6 +29,13 @@ const FEEDBACK_TOPOLOGY = new Map([
 const RESPONSIBILITY_IDS = ['owner-customer','owner-delivery','owner-product','owner-platform','owner-security-data'];
 const TOPIC_ID = 'MTH-07';
 const ROUTE = '/methods/mth-07';
+const ILLUSTRATION_SOURCE_ID = 'src-atlas-mth07-fde-delivery-gates';
+const ILLUSTRATION_LOCATOR = '/img/diagrams/mth-07-fde-enterprise-ai-delivery-gates.svg';
+const DOCUMENT_SCHEMA_FIELDS = ['citations', 'copyright_checks', 'reviewed_at'];
+const CITATION_SCHEMA_FIELDS = [
+  'attribution_note', 'citation_url', 'excerpt', 'manifest_primary', 'modification_note',
+  'quotation_reviewed', 'roles', 'source_id', 'usage_mode',
+];
 const SOURCE_IDS = ['src-wechat-fde-12-core-capabilities', 'src-nist-ai-rmf-1-0', 'src-google-sre-canarying-releases', 'src-atlas-mth07-fde-delivery-gates'];
 const REMOTE_SOURCES = new Map([
   ['src-wechat-fde-12-core-capabilities', {canonical_locator: 'https://mp.weixin.qq.com/s/6_-S0yIVlCtqW8U8JfwdGA', title: '一文读懂：FDE的12项核心能力', author_or_org: '李伟山（腾讯云开发者）', published_at: '2026-08-13', allowed: ['historical-context']}],
@@ -113,6 +120,8 @@ const DIAGRAM_FAILURE_CLASSES = new Map([
   ['mixed POC near boundary', /POC 纪律 inner node\/boundary gate-05/u],
   ['owner band below viewBox', /owner band contained in canvas\/viewBox/u],
   ['invalid opacity occluder', /supported SVG subset: opacity/u],
+  ['canvas after essentials', /opaque canvas paint precedes every essential node drawable and text/u],
+  ['node stroke clipped by viewBox', /stage-entry stroke-expanded node contained in canvas\/viewBox at 800px/u],
 ]);
 const REQUIRED_WRAPPERS = [
   {aria: '企业 AI 四阶段十二门禁图，可横向滚动', className: 'architecture-diagram-scroll'},
@@ -978,6 +987,32 @@ function boundsContain(outer, inner) {
   return inner.left >= outer.left && inner.right <= outer.right && inner.top >= outer.top && inner.bottom <= outer.bottom;
 }
 
+function scaledBounds(bounds, scale) {
+  return {
+    bottom: bounds.bottom * scale, left: bounds.left * scale,
+    right: bounds.right * scale, top: bounds.top * scale,
+  };
+}
+
+function maximumTransformScale(matrix) {
+  const squareScaleSum = matrix[0] ** 2 + matrix[1] ** 2 + matrix[2] ** 2 + matrix[3] ** 2;
+  const squareDeterminant = (matrix[0] * matrix[3] - matrix[1] * matrix[2]) ** 2;
+  return Math.sqrt(Math.max(0, (squareScaleSum +
+    Math.sqrt(Math.max(0, squareScaleSum ** 2 - 4 * squareDeterminant))) / 2));
+}
+
+function strokeExpandedBoundsAtScale(model, element, bounds, renderScale) {
+  const scaled = scaledBounds(bounds, renderScale);
+  const stroke = effectivePaint(model, element, 'stroke');
+  if (!stroke.color || stroke.opacity <= 0) return scaled;
+  const radius = svgUserUnits(svgValue(model, element, 'stroke-width'), `${element.name} stroke-expanded bounds`) *
+    maximumTransformScale(worldTransform(element, model)) * renderScale / 2;
+  return {
+    bottom: scaled.bottom + radius, left: scaled.left - radius,
+    right: scaled.right + radius, top: scaled.top - radius,
+  };
+}
+
 function visualTextWidth(text, fontSize) {
   return [...text].length * fontSize;
 }
@@ -1372,6 +1407,13 @@ function assertDiagram(drawio, svg) {
   assert.deepEqual([...edgeElements.keys()].sort(), [...FEEDBACK_IDS].sort(), 'exact three SVG feedback edges');
 
   const nodeIds = [...STAGE_IDS, ...GATE_IDS, ...RESPONSIBILITY_IDS, 'stop-authority'];
+  const canvas = model.elements.find(({attributes, name}) => name === 'rect' &&
+    attributes.get('data-canvas') === 'true');
+  assert.ok(canvas, 'actual canvas element');
+  assert.deepEqual(renderedGeometry(canvas, null, model).bounds, viewBoxBounds, 'canvas covers viewBox');
+  const canvasPaint = effectivePaint(model, canvas, 'fill');
+  assert.ok(canvasPaint.color && canvasPaint.opacity === 1, 'canvas is effectively opaque');
+  const viewBoxBoundsAt800 = scaledBounds(viewBoxBounds, renderScale);
   const simpleLabels = new Map([
     ...STAGE_IDS.map((id, index) => [id, [STAGES[index]]]),
     ...RESPONSIBILITY_IDS.map((id, index) => [id,
@@ -1399,6 +1441,8 @@ function assertDiagram(drawio, svg) {
     assert.deepEqual(visibleTextLines(labels[0]), expectedLines, `${id} visible name/risk/evidence/pass`);
     assert.deepEqual((cell.attributes.get('value') ?? '').split(/\r?\n/u), expectedLines,
       `${id} Draw.io visible label parity`);
+    assert.ok(canvas.index < shape.index && labels.every((label) => canvas.index < label.index),
+      'opaque canvas paint precedes every essential node drawable and text');
     assert.equal(xmlText(group).includes(id), false, `${id} machine ID is not visible`);
     const style = parsedDrawioStyle(cell);
     assertDrawioRectangleStyle(cell, style, id);
@@ -1431,15 +1475,10 @@ function assertDiagram(drawio, svg) {
   assert.ok(ownerBand.every(({bounds}) => boundsContain(viewBoxBounds, bounds)),
     'owner band contained in canvas/viewBox');
   for (const [id, node] of nodeShapes) {
-    assert.ok(boundsContain(viewBoxBounds, node.bounds), `${id} essential node contained in canvas/viewBox`);
+    assert.ok(boundsContain(viewBoxBoundsAt800,
+      strokeExpandedBoundsAtScale(model, node.shape, node.bounds, renderScale)),
+    `${id} stroke-expanded node contained in canvas/viewBox at 800px`);
   }
-
-  const canvas = model.elements.find(({attributes, name}) => name === 'rect' &&
-    attributes.get('data-canvas') === 'true');
-  assert.ok(canvas, 'actual canvas element');
-  assert.deepEqual(renderedGeometry(canvas, null, model).bounds, viewBoxBounds, 'canvas covers viewBox');
-  const canvasPaint = effectivePaint(model, canvas, 'fill');
-  assert.ok(canvasPaint.color && canvasPaint.opacity === 1, 'canvas is effectively opaque');
 
   const feedbackLabels = new Map();
   for (const id of FEEDBACK_IDS) {
@@ -1620,10 +1659,73 @@ function assertDiagram(drawio, svg) {
   }
 }
 function mutate(source, from, to, label) { const result = source.replace(from, to); assert.notEqual(result, source, `${label} mutation is non-no-op`); return result; }
+function movedElementToEnd(source, elementMarkup, label) {
+  const withoutElement = mutate(source, elementMarkup, '', `${label} remove original element`);
+  return mutate(withoutElement, '</svg>', `${elementMarkup}</svg>`, `${label} append element`);
+}
+function assertIllustrationGovernance(value) {
+  const illustration = value.sources.find(({id}) => id === ILLUSTRATION_SOURCE_ID);
+  assert.ok(illustration, 'MTH-07 original illustration identity');
+  assert.equal(illustration.canonical_locator, ILLUSTRATION_LOCATOR,
+    'MTH-07 original illustration exact canonical_locator');
+  assert.equal(illustration.source_kind, 'original-illustration', 'MTH-07 original illustration source_kind');
+  assert.deepEqual(illustration.allowed_evidence_roles, ['illustration'],
+    'MTH-07 original illustration exact allowed_evidence_roles');
+  assert.equal(illustration.license, 'LicenseRef-Atlas-Original', 'MTH-07 original illustration license');
+  assert.equal(illustration.copyright_policy, 'original-atlas', 'MTH-07 original illustration copyright policy');
+  const document = value.documents[ARTICLE];
+  assert.ok(document, 'MTH-07 exact governed document citation record');
+  assert.deepEqual(Object.keys(document).sort(), DOCUMENT_SCHEMA_FIELDS,
+    'MTH-07 governed document exact valid schema fields');
+  assert.equal(document.reviewed_at, '2026-08-13', 'MTH-07 governed document reviewed_at');
+  assert.deepEqual(document.copyright_checks,
+    ['original-structure', 'quotation-boundary', 'attribution-complete', 'illustration-rights'],
+    'MTH-07 governed document exact copyright checks');
+  const citations = document.citations.filter(({source_id: sourceId}) => sourceId === ILLUSTRATION_SOURCE_ID);
+  assert.equal(citations.length, 1, 'MTH-07 exactly one original illustration citation');
+  const citation = citations[0];
+  assert.deepEqual(Object.keys(citation).sort(), CITATION_SCHEMA_FIELDS,
+    'MTH-07 illustration citation exact valid schema fields');
+  assert.equal(citation.citation_url, ILLUSTRATION_LOCATOR, 'MTH-07 illustration exact citation_url');
+  assert.deepEqual(citation.roles, ['illustration'], 'MTH-07 illustration exact citation evidence role');
+  assert.equal(citation.manifest_primary, false, 'MTH-07 illustration is not manifest primary');
+  assert.equal(citation.usage_mode, 'original-illustration', 'MTH-07 illustration exact usage_mode');
+  assert.ok(citation.attribution_note?.trim(), 'MTH-07 illustration attribution_note');
+  assert.ok(citation.modification_note?.trim(), 'MTH-07 illustration creation modification_note');
+  assert.equal(citation.excerpt, null, 'MTH-07 illustration excerpt');
+  assert.equal(citation.quotation_reviewed, false, 'MTH-07 illustration quotation_reviewed');
+}
+function fixtureGovernance() {
+  return {
+    sources: [{
+      id: ILLUSTRATION_SOURCE_ID,
+      canonical_locator: ILLUSTRATION_LOCATOR,
+      source_kind: 'original-illustration',
+      allowed_evidence_roles: ['illustration'],
+      license: 'LicenseRef-Atlas-Original',
+      copyright_policy: 'original-atlas',
+    }],
+    documents: {[ARTICLE]: {
+      reviewed_at: '2026-08-13',
+      copyright_checks: ['original-structure', 'quotation-boundary', 'attribution-complete', 'illustration-rights'],
+      citations: [{
+        source_id: ILLUSTRATION_SOURCE_ID,
+        citation_url: ILLUSTRATION_LOCATOR,
+        roles: ['illustration'],
+        manifest_primary: false,
+        usage_mode: 'original-illustration',
+        attribution_note: '企业 AI 四阶段十二门禁图，Tego Arch maintainers',
+        modification_note: 'Created as an original Draw.io and SVG pair for MTH-07 without third-party reference imagery.',
+        excerpt: null,
+        quotation_reviewed: false,
+      }],
+    }},
+  };
+}
 function fixtureArticle() { const headingText = H2.map((heading) => heading === '可迁移经验' ? `## ${heading}\n${TRANSFER_H3.map((item) => `### ${item}`).join('\n')}` : `## ${heading}`).join('\n\n'); const metadata = Object.entries(EXACT_METADATA).map(([key, value]) => Array.isArray(value) ? `${key}:\n${value.map((item) => `  - ${item}`).join('\n')}` : `${key}: ${value}`).join('\n'); return `---\n${metadata}\n---\n\nimport {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableRegion/handleHorizontalArrowKey.mjs';\n\n${headingText}\n\n| ${TABLE_COLUMNS.join(' | ')} |\n| ${TABLE_COLUMNS.map(() => '---').join(' | ')} |\n${GATE_ROWS.map((row) => `| ${row.join(' | ')} |`).join('\n')}\n\n来源事实。独立证据。Tego Arch 推断。微信文章只作为 FDE 十二项能力的实践语境，不是独立证据，也不证明该框架普遍适用。NIST AI RMF 1.0 支持评估、监测与人工覆盖机制。POC 成功不等于生产可用。生产可用不等于验收通过。验收通过不等于放量。放量不等于复制。程序负责权限校验、确定性规则、审计记录和回滚开关。AI 只负责检索、分类、生成候选或建议，不得最终授权不可逆动作。人负责授权不可逆动作、决定放量与终止。人工队列有上限、时限和能力约束。客户业务负责人拥有明确停止权。\n\n${REQUIRED_WRAPPERS.map(({aria, className}) => `<div className="${className}" role="region" aria-label="${aria}" tabIndex={0} onKeyDown={handleHorizontalArrowKey}></div>`).join('\n')}`; }
 function fixtureDiagram() {
   const boxes = new Map();
-  STAGE_IDS.forEach((id, index) => boxes.set(id, {x: index * 500, y: 0, width: 480, height: 1780}));
+  STAGE_IDS.forEach((id, index) => boxes.set(id, {x: index * 500 + 2, y: 2, width: 476, height: 1776}));
   GATE_IDS.forEach((id, index) => boxes.set(id, {
     x: Math.floor(index / 3) * 500 + 20,
     y: [300, 760, 1400][index % 3],
@@ -1714,6 +1816,25 @@ function fixtureDiagram() {
 
 test('MTH-07 helper contracts are green after non-no-op RED mutation fixtures', () => {
   const source = fixtureArticle(); assertMetadataAndHeadings(source); assertGateRows(source); assertEvidenceAndResponsibilities(source); assertWrappersAndArrowBehavior(source);
+  const governance = fixtureGovernance();
+  assertIllustrationGovernance(governance);
+  const governanceMutations = [
+    ['illustration locator', (value) => { value.sources[0].canonical_locator = '/img/diagrams/wrong.svg'; }],
+    ['illustration source roles', (value) => { value.sources[0].allowed_evidence_roles.push('method'); }],
+    ['illustration citation URL', (value) => { value.documents[ARTICLE].citations[0].citation_url = '/img/diagrams/wrong.svg'; }],
+    ['illustration citation roles', (value) => { value.documents[ARTICLE].citations[0].roles.push('method'); }],
+    ['illustration usage mode', (value) => { value.documents[ARTICLE].citations[0].usage_mode = 'facts-summary'; }],
+    ['illustration citation fields', (value) => { value.documents[ARTICLE].citations[0].evidence_role = 'illustration'; }],
+    ['illustration missing citation field', (value) => { delete value.documents[ARTICLE].citations[0].attribution_note; }],
+    ['illustration document fields', (value) => { value.documents[ARTICLE].evidence_role = 'illustration'; }],
+    ['illustration missing document field', (value) => { delete value.documents[ARTICLE].reviewed_at; }],
+  ];
+  for (const [label, change] of governanceMutations) {
+    const mutation = structuredClone(governance);
+    change(mutation);
+    assert.notDeepEqual(mutation, governance, `${label} mutation is non-no-op`);
+    assert.throws(() => assertIllustrationGovernance(mutation), assert.AssertionError, label);
+  }
   const extraH3 = mutate(source, '### 不应照搬的部分', '### 关键源码导读\n\n### 不应照搬的部分', 'extra transfer H3'); const metadataMutations = [mutate(source, 'topic_id: MTH-07', 'topic_id: MTH-99', 'wrong topic'), mutate(source, 'content_type: method', 'content_type: style', 'wrong type'), mutate(source, '## 一页摘要', '## 完整演练', 'fallback headings'), mutate(source, '### 不应照搬的部分', '', 'missing transfer H3'), extraH3]; metadataMutations.forEach((item) => assert.throws(() => assertMetadataAndHeadings(item), assert.AssertionError));
   for (const row of GATE_ROWS) { for (let index = 0; index < row.length; index += 1) { const changed = [...row]; changed[index] = '错误字段'; const mutation = mutate(source, `| ${row.join(' | ')} |`, `| ${changed.join(' | ')} |`, `${row[1]} field`); assert.throws(() => assertGateRows(mutation), assert.AssertionError); } const deletion = mutate(source, `| ${row.join(' | ')} |\n`, '', `${row[1]} deletion`); assert.throws(() => assertGateRows(deletion), assert.AssertionError); }
   const ownerlessDuplicate = mutate(source, `| ${GATE_ROWS.at(-1).join(' | ')} |`, `| ${GATE_ROWS.at(-1).slice(0, 6).join(' | ')} |  | ${GATE_ROWS.at(-1)[7]} |\n| ${GATE_ROWS.at(-1).join(' | ')} |`, 'ownerless duplicate'); assert.throws(() => assertGateRows(ownerlessDuplicate), assert.AssertionError);
@@ -1884,6 +2005,11 @@ test('MTH-07 helper contracts are green after non-no-op RED mutation fixtures', 
     ['mixed POC near boundary', drawio, mutate(svg, '<tspan x="740" y="840">POC 纪律</tspan>', '<tspan x="815" y="840">POC 纪律</tspan>', 'mixed POC near boundary')],
     ['owner band below viewBox', ownersBelowDrawio, ownersBelowSvg],
     ['invalid opacity occluder', drawio, mutate(svg, '</svg>', '<rect x="1200" y="1880" width="200" height="120" fill="#FFFFFF" opacity="NaN"/></svg>', 'invalid opacity occluder')],
+    ['canvas after essentials', drawio, movedElementToEnd(svg,
+      '<rect data-canvas="true" x="0" y="0" width="2000" height="2580" fill="#FFFFFF"/>', 'canvas after essentials')],
+    ['node stroke clipped by viewBox',
+      mutate(drawio, '<mxGeometry x="2" y="2" width="476" height="1776" as="geometry"/>', '<mxGeometry x="0" y="2" width="476" height="1776" as="geometry"/>', 'stage-entry Draw.io centerline at border'),
+      mutate(svg, '<rect class="stage-shape" x="2" y="2" width="476" height="1776"/>', '<rect class="stage-shape" x="0" y="2" width="476" height="1776"/>', 'stage-entry SVG centerline at border')],
   ];
   for (const [label, mutatedDrawio, mutatedSvg] of diagramMutations) {
     if (DIAGRAM_FAILURE_CLASSES.has(label)) {
@@ -1914,6 +2040,7 @@ test('MTH-07 locks twelve auditable gate contracts', () => assertGateRows(requir
 test('MTH-07 locks citation-aware evidence and responsibility boundaries', () => assertEvidenceAndResponsibilities(requiredArticle().source));
 test('MTH-07 locks governed source identities, exact relations, wrappers, density, and Stage A projection', () => {
   const source = requiredArticle().source; const record = ledger.documents[ARTICLE]; assert.deepEqual(record?.citations.map(({source_id}) => source_id), SOURCE_IDS); const sources = new Map(SOURCE_IDS.map((id) => [id, ledger.sources.find((item) => item.id === id)]));
+  assertIllustrationGovernance(ledger);
   for (const [id, expected] of REMOTE_SOURCES) { const item = sources.get(id); assert.ok(item, id); for (const [field, value] of Object.entries(expected)) if (field !== 'allowed') assert.equal(item[field], value, `${id}.${field}`); assert.deepEqual(item.allowed_evidence_roles, expected.allowed ?? ['method'], `${id} schema-valid evidence roles`); assert.match(item.usage_boundary, /(?:摘要|summary|不.*(?:市场|薪资|政策)|not.*(?:market|salary|policy))/iu, `${id} citation boundary`); }
   assert.equal(new Set([...REMOTE_SOURCES.values()].map(({canonical_locator}) => new URL(canonical_locator).hostname)).size, 3, 'three independent remote domains'); const primary = record?.citations.filter(({manifest_primary}) => manifest_primary); assert.deepEqual(primary?.map(({source_id}) => source_id), ['src-wechat-fde-12-core-capabilities']); assert.deepEqual(primary?.[0]?.roles, ['historical-context'], 'WeChat primary is schema-valid practice context'); assert.equal(primary?.[0]?.usage_mode, 'facts-summary'); assert.match(primary?.[0]?.attribution_note ?? '', /实践框架|四阶段|十二/u); const illustration = sources.get('src-atlas-mth07-fde-delivery-gates'); assert.equal(illustration?.source_kind, 'original-illustration'); assert.equal(illustration?.license, 'LicenseRef-Atlas-Original'); assert.equal(illustration?.copyright_policy, 'original-atlas');
   assert.deepEqual(extractInternalLinks({body: article.body}), ['/cases/temporal-saga-durable-execution', '/methods', '/methods/mth-01', '/methods/mth-04', '/methods/mth-06']); const text = visible(source); assert.match(text, /Temporal.{0,60}(?:工程机制参照|不证明 FDE 组织模式)/u); assert.doesNotMatch(text, /QA-09/u); assert.deepEqual(extractExternalLinks({body: article.body}).sort(), [...REMOTE_SOURCES.values()].map(({canonical_locator}) => canonical_locator).sort()); assertWrappersAndArrowBehavior(source); assert.ok(analyzeCaseText(article.body).visualBalance.score > 90); assert.deepEqual({completed_topics: projectStatus.completed_topics, content_documents: projectStatus.content_documents, governed_sources: projectStatus.governed_sources}, {completed_topics: 59, content_documents: 102, governed_sources: 529}); const topic = manifest.topics.find(({id}) => id === TOPIC_ID); assert.equal(topic?.published, true); assert.equal(topic?.status?.value, 'pending');
