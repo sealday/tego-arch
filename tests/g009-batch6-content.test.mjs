@@ -45,7 +45,7 @@ const EXPECTED_METADATA = {
   topic_id: TOPIC_ID,
   priority: 'P0',
   depends_on: ['STY-00', 'STY-04'],
-  adjacent_topics: ['STY-03', 'STY-04'],
+  adjacent_topics: ['STY-03', 'STY-04', 'STY-06'],
   related_cases: ['/cases/micro-frontends-single-spa'],
   related_questions: [],
 };
@@ -98,7 +98,7 @@ const MIXED_AFFIRMATIVE_VIOLATIONS = [
 
 const ILLUSTRATION_SOURCE_ID = 'src-atlas-sty05-microservices-order-saga';
 const ILLUSTRATION_URL = '/img/diagrams/sty-05-microservices-order-saga.svg';
-const ADJACENT_TOPICS = ['STY-03', 'STY-04'];
+const ADJACENT_TOPICS = ['STY-03', 'STY-04', 'STY-06'];
 const ADJACENT_ROUTES = ['/styles/sty-03', '/styles/sty-04'];
 const SERVICE_KEYS = ['order', 'inventory', 'payment', 'notification'];
 const SERVICE_CHILDREN = new Map([
@@ -910,7 +910,7 @@ test('publishes exact STY-05 metadata, headings, and actionable relations', () =
   for (const route of [...ADJACENT_ROUTES, '/cases/micro-frontends-single-spa']) {
     assert.ok(links.includes(route), `visible relation ${route}`);
   }
-  assert.equal(links.includes('/styles/sty-06'), false, 'STY-06 stays non-actionable');
+  assert.equal(links.includes('/styles/sty-06'), true, 'STY-06 is now actionable');
   assert.ok(sty03 && parseFrontMatter(sty03.source).adjacent_topics.includes(TOPIC_ID), 'STY-03 reciprocal metadata');
   assert.ok(sty03 && internalLinksOf(sty03).includes(ROUTE), 'STY-03 reciprocal route');
   assert.ok(sty04 && parseFrontMatter(sty04.source).adjacent_topics.includes(TOPIC_ID), 'STY-04 reciprocal metadata');
@@ -1149,19 +1149,29 @@ test('projects the exact STY-05 Stage B closure state', () => {
   assert.deepEqual(topic?.related_cases, ['/cases/micro-frontends-single-spa']);
   assert.deepEqual(topic?.primary_sources, ['https://martinfowler.com/articles/microservices.html']);
   const nextTopic = manifest.topics.find(({id}) => id === 'STY-06');
-  assert.equal(nextTopic?.published, false);
+  assert.equal(nextTopic?.published, true);
   assert.equal(nextTopic?.status.value, 'pending');
   assert.equal(indexes.style.find(({id}) => id === TOPIC_ID)?.published, true);
-  assert.equal(indexes.style.find(({id}) => id === 'STY-06')?.published, false);
+  assert.equal(indexes.style.find(({id}) => id === 'STY-06')?.published, true);
   assert.equal(projectStatus.completed_topics, 58);
-  assert.equal(projectStatus.content_documents, 100);
-  assert.equal(projectStatus.governed_sources, 519);
-  assert.equal(publicLedger.sources.length, 519);
+  assert.equal(projectStatus.content_documents, 101);
+  assert.equal(projectStatus.governed_sources, 525);
+  assert.equal(publicLedger.sources.length, 525);
   const publishedRoutes = manifest.topics.filter(({published}) => published).map(({slug}) => slug);
   assert.ok(publishedRoutes.includes(ROUTE));
-  assert.equal(publishedRoutes.includes('/styles/sty-06'), false);
+  assert.equal(publishedRoutes.includes('/styles/sty-06'), true);
+  const sty06Reciprocals = new Set([
+    'styles/sty-04-modular-monolith.mdx',
+    'styles/sty-05-microservices.mdx',
+    'principles/pr-11-cqs-cqrs-read-write-separation.mdx',
+    'modeling/mod-08-state-machine-modeling.mdx',
+  ]);
   for (const document of documents) {
-    assert.equal(internalLinksOf(document).includes('/styles/sty-06'), false, `${document.file} STY-06 route`);
+    assert.equal(
+      internalLinksOf(document).includes('/styles/sty-06'),
+      sty06Reciprocals.has(document.file),
+      `${document.file} STY-06 route`,
+    );
   }
 });
 

@@ -326,9 +326,9 @@ test('projects the exact STY-05 Stage B closure inventory', () => {
       content_documents: projectStatus.content_documents,
       governed_sources: projectStatus.governed_sources,
     },
-    {completed_topics: 58, content_documents: 100, governed_sources: 519},
+    {completed_topics: 58, content_documents: 101, governed_sources: 525},
   );
-  assert.equal(publicLedger.sources.length, 519);
+  assert.equal(publicLedger.sources.length, 525);
 
   for (const projection of [topicsById.get('STY-05'), stylesById.get('STY-05')]) {
     assert.equal(projection?.published, true);
@@ -336,16 +336,16 @@ test('projects the exact STY-05 Stage B closure inventory', () => {
     assert.equal(projection?.slug, ROUTE);
   }
   for (const projection of [topicsById.get('STY-06'), stylesById.get('STY-06')]) {
-    assert.equal(projection?.published, false);
+    assert.equal(projection?.published, true);
     assert.equal(projection?.status.value, 'pending');
   }
 });
 
 test('publishes only the canonical STY-05 article, SVG, and six governed sources', async () => {
   assert.equal(publishedRoutes.has(ROUTE), true);
-  assert.equal(publishedRoutes.has('/styles/sty-06'), false);
+  assert.equal(publishedRoutes.has('/styles/sty-06'), true);
   assert.ok(markdownLinks(article).includes(SVG_ROUTE));
-  assert.equal(markdownLinks(article).includes('/styles/sty-06'), false);
+  assert.equal(markdownLinks(article).includes('/styles/sty-06'), true);
   await access(new URL(`../static${SVG_ROUTE}`, import.meta.url));
   assert.deepEqual(SOURCE_IDS.filter((sourceId) => publicSourcesById.has(sourceId)), SOURCE_IDS);
 });
@@ -411,14 +411,11 @@ test('binds exact local artifacts, four-state Browser evidence, and final exact-
   assert.match(projection, /STY-05: `published \/ pending`/u);
   assert.match(projection, /STY-06: `unpublished \/ pending`/u);
 
-  for (const artifact of [ARTICLE, DRAWIO, SVG, 'data/source-ledger.json']) {
-    const body = await readFile(new URL(`../${artifact}`, import.meta.url));
-    assert.match(
-      section(review, 'Artifact identities'),
-      new RegExp(`\\| ${escapeRegExp(`\`${artifact}\``)} \\| [0-9,]+ \\| ${escapeRegExp(`\`${sha256(body)}\``)} \\|`, 'u'),
-      `${artifact} exact SHA-256`,
-    );
-  }
+  // Artifact hashes in this historical review bind the immutable Batch 6
+  // candidate. Later reciprocal metadata and source-ledger additions must not
+  // rewrite that payload or reinterpret those hashes as the live files.
+  assert.match(section(review, 'Artifact identities'), /`493a227b19702a78d0141e6254eb2bb153ea0b00073c0b9773854e5c714e460f`/u);
+  assert.match(section(review, 'Artifact identities'), /`21253b11dd39eebf75fba34e4f661d08bfbe19a95dc61cf5e2201c0d067d019c`/u);
   assertFourStateEvidence(review);
   assertEvidenceProvenance(review);
   assertFinalIndependentReview(review);

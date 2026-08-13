@@ -924,27 +924,6 @@
       "presentation": {}
     },
     {
-      "id": "STY-06",
-      "type": "style",
-      "title": "Event-Driven Architecture",
-      "slug": "/styles/sty-06",
-      "priority": "P0",
-      "status": {
-        "scope": "backlog-projection",
-        "value": "pending",
-        "source": "docs/content-backlog.md"
-      },
-      "dependencies": [],
-      "adjacent_topics": [],
-      "primary_sources": [],
-      "related_cases": [],
-      "related_questions": [],
-      "reviewed_at": null,
-      "review_policy": null,
-      "published": false,
-      "pattern_group": null
-    },
-    {
       "id": "FND-02",
       "type": "concept",
       "title": "架构驱动力与架构重要需求（Architecturally Significant Requirement，ASR）",
@@ -1690,7 +1669,8 @@
         "STY-01",
         "STY-02",
         "STY-03",
-        "STY-05"
+        "STY-05",
+        "STY-06"
       ],
       "primary_sources": [
         "https://docs.spring.io/spring-modulith/reference/fundamentals.html"
@@ -1962,7 +1942,8 @@
       ],
       "adjacent_topics": [
         "STY-03",
-        "STY-04"
+        "STY-04",
+        "STY-06"
       ],
       "primary_sources": [
         "https://martinfowler.com/articles/microservices.html"
@@ -2045,6 +2026,40 @@
       "related_questions": [],
       "reviewed_at": "2026-07-27",
       "review_policy": "quarterly-version-sensitive",
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
+    },
+    {
+      "id": "STY-06",
+      "type": "style",
+      "title": "事件驱动架构：先分清事件携带什么，再决定状态放在哪里",
+      "slug": "/styles/sty-06",
+      "priority": "P0",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "pending",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "STY-00",
+        "STY-05"
+      ],
+      "adjacent_topics": [
+        "STY-04",
+        "STY-05",
+        "PR-11",
+        "MOD-08"
+      ],
+      "primary_sources": [
+        "https://martinfowler.com/articles/201701-event-driven.html"
+      ],
+      "related_cases": [
+        "/cases/apache-kafka-consumer-groups"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-08-12",
+      "review_policy": null,
       "published": true,
       "pattern_group": null,
       "presentation": {}
@@ -3951,7 +3966,8 @@
         "PR-03",
         "PR-04",
         "PR-10",
-        "PR-13"
+        "PR-13",
+        "STY-06"
       ],
       "primary_sources": [
         "https://martinfowler.com/bliki/CQRS.html"
@@ -4121,7 +4137,8 @@
         "MOD-10",
         "MOD-11",
         "PR-10",
-        "QA-02"
+        "QA-02",
+        "STY-06"
       ],
       "primary_sources": [
         "https://www.omg.org/spec/UML/2.5.1"
@@ -4404,31 +4421,6 @@
       "presentation": {}
     },
     {
-      "id": "STY-14",
-      "type": "style",
-      "title": "风格选择矩阵",
-      "slug": "/styles/sty-14",
-      "priority": "P1",
-      "status": {
-        "scope": "backlog-projection",
-        "value": "pending",
-        "source": "docs/content-backlog.md"
-      },
-      "dependencies": [
-        "STY-04",
-        "STY-05",
-        "STY-06"
-      ],
-      "adjacent_topics": [],
-      "primary_sources": [],
-      "related_cases": [],
-      "related_questions": [],
-      "reviewed_at": null,
-      "review_policy": null,
-      "published": false,
-      "pattern_group": null
-    },
-    {
       "id": "MOD-11",
       "type": "modeling",
       "title": "领域驱动设计上下文映射（DDD Context Map）",
@@ -4533,6 +4525,31 @@
       "published": true,
       "pattern_group": null,
       "presentation": {}
+    },
+    {
+      "id": "STY-14",
+      "type": "style",
+      "title": "风格选择矩阵",
+      "slug": "/styles/sty-14",
+      "priority": "P1",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "pending",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "STY-04",
+        "STY-05",
+        "STY-06"
+      ],
+      "adjacent_topics": [],
+      "primary_sources": [],
+      "related_cases": [],
+      "related_questions": [],
+      "reviewed_at": null,
+      "review_policy": null,
+      "published": false,
+      "pattern_group": null
     },
     {
       "id": "QA-07",

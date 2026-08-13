@@ -51,7 +51,7 @@ const h2 = [
 const relationships = new Map([
   ['PR-09', ['PR-04', 'PR-07', 'PR-10', 'PR-16']],
   ['PR-10', ['PR-07', 'PR-08', 'PR-09', 'PR-11', 'PR-16', 'MOD-08']],
-  ['PR-11', ['PR-03', 'PR-04', 'PR-10', 'PR-13']],
+  ['PR-11', ['PR-03', 'PR-04', 'PR-10', 'PR-13', 'STY-06']],
 ]);
 const routeByTopic = new Map([
   ['PR-03', '/principles/pr-03'],
@@ -63,6 +63,7 @@ const routeByTopic = new Map([
   ['PR-11', '/principles/pr-11'],
   ['PR-13', '/principles/pr-13'],
   ['PR-16', '/principles/pr-16'],
+  ['STY-06', '/styles/sty-06'],
   ['MOD-08', '/modeling/mod-08'],
 ]);
 const solePrimary = new Map([

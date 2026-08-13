@@ -604,8 +604,8 @@ test('preserves the STY-00 closure in the current Batch 6 projection', () => {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
     completed_topics: 58,
-    content_documents: 100,
-    governed_sources: 519,
+    content_documents: 101,
+    governed_sources: 525,
     sources: {
       durable_stories: 'docs/content-backlog.md',
       completed_topics: 'docs/content-backlog.md',
@@ -619,5 +619,5 @@ test('preserves the STY-00 closure in the current Batch 6 projection', () => {
     id === 'STY-03' && published === true && status.value === 'complete'));
   assert.ok(indexes.style.some(({id, published, status}) =>
     id === 'STY-04' && published === true && status.value === 'complete'));
-  assert.equal(publicLedger.sources.length, 519);
+  assert.equal(publicLedger.sources.length, 525);
 });

@@ -292,8 +292,8 @@ test('preserves the STY-01 closure in the current Batch 6 projection', async () 
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
     completed_topics: 58,
-    content_documents: 100,
-    governed_sources: 519,
+    content_documents: 101,
+    governed_sources: 525,
     sources: {
       durable_stories: 'docs/content-backlog.md',
       completed_topics: 'docs/content-backlog.md',
@@ -301,7 +301,7 @@ test('preserves the STY-01 closure in the current Batch 6 projection', async () 
       governed_sources: 'data/source-ledger.json',
     },
   });
-  assert.equal(sourceLedger.sources.length, 519);
+  assert.equal(sourceLedger.sources.length, 525);
 });
 
 test('preserves the complete G009 Batch 1 and older release history', async () => {

@@ -763,7 +763,8 @@
         "PR-03",
         "PR-04",
         "PR-10",
-        "PR-13"
+        "PR-13",
+        "STY-06"
       ],
       "primary_sources": [
         "https://martinfowler.com/bliki/CQRS.html"
@@ -1792,7 +1793,8 @@
         "MOD-10",
         "MOD-11",
         "PR-10",
-        "QA-02"
+        "QA-02",
+        "STY-06"
       ],
       "primary_sources": [
         "https://www.omg.org/spec/UML/2.5.1"
@@ -2014,27 +2016,6 @@
       "presentation": {}
     },
     {
-      "id": "STY-06",
-      "type": "style",
-      "title": "Event-Driven Architecture",
-      "slug": "/styles/sty-06",
-      "priority": "P0",
-      "status": {
-        "scope": "backlog-projection",
-        "value": "pending",
-        "source": "docs/content-backlog.md"
-      },
-      "dependencies": [],
-      "adjacent_topics": [],
-      "primary_sources": [],
-      "related_cases": [],
-      "related_questions": [],
-      "reviewed_at": null,
-      "review_policy": null,
-      "published": false,
-      "pattern_group": null
-    },
-    {
       "id": "STY-01",
       "type": "style",
       "title": "分层架构：用依赖方向约束职责分层",
@@ -2156,7 +2137,8 @@
         "STY-01",
         "STY-02",
         "STY-03",
-        "STY-05"
+        "STY-05",
+        "STY-06"
       ],
       "primary_sources": [
         "https://docs.spring.io/spring-modulith/reference/fundamentals.html"
@@ -2188,7 +2170,8 @@
       ],
       "adjacent_topics": [
         "STY-03",
-        "STY-04"
+        "STY-04",
+        "STY-06"
       ],
       "primary_sources": [
         "https://martinfowler.com/articles/microservices.html"
@@ -2198,6 +2181,40 @@
       ],
       "related_questions": [],
       "reviewed_at": "2026-08-11",
+      "review_policy": null,
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
+    },
+    {
+      "id": "STY-06",
+      "type": "style",
+      "title": "事件驱动架构：先分清事件携带什么，再决定状态放在哪里",
+      "slug": "/styles/sty-06",
+      "priority": "P0",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "pending",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "STY-00",
+        "STY-05"
+      ],
+      "adjacent_topics": [
+        "STY-04",
+        "STY-05",
+        "PR-11",
+        "MOD-08"
+      ],
+      "primary_sources": [
+        "https://martinfowler.com/articles/201701-event-driven.html"
+      ],
+      "related_cases": [
+        "/cases/apache-kafka-consumer-groups"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-08-12",
       "review_policy": null,
       "published": true,
       "pattern_group": null,

@@ -720,7 +720,7 @@ test('publishes reciprocal MOD-05/MOD-08 relations and actionable MOD-09/MOD-10 
   const mod09 = byTopic.get('MOD-09');
   const mod10 = byTopic.get('MOD-10');
   assert.deepEqual(parseFrontMatter(mod05.source).adjacent_topics, ['MOD-04', 'MOD-06', 'MOD-09', 'MOD-11', 'PR-13']);
-  assert.deepEqual(parseFrontMatter(mod08.source).adjacent_topics, ['MOD-07', 'MOD-09', 'MOD-10', 'MOD-11', 'PR-10', 'QA-02']);
+  assert.deepEqual(parseFrontMatter(mod08.source).adjacent_topics, ['MOD-07', 'MOD-09', 'MOD-10', 'MOD-11', 'PR-10', 'QA-02', 'STY-06']);
   assert.equal(extractInternalLinks(mod05).filter((link) => link === '/modeling/mod-11').length, 1);
   assert.equal(extractInternalLinks(mod08).filter((link) => link === '/modeling/mod-11').length, 1);
   assert.match(mod05.body, /\[MOD-11 领域驱动设计上下文映射（DDD Context Map）\]\(\/modeling\/mod-11\)：实体、关系与权威记录可以为上下文边界提供证据，但数据模型不能单独决定限界上下文。/u);
@@ -738,8 +738,8 @@ function assertStageBProjection(statusValue, manifestValue, mod11Document) {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
     completed_topics: 58,
-    content_documents: 100,
-    governed_sources: 519,
+    content_documents: 101,
+    governed_sources: 525,
     sources: {
       durable_stories: 'docs/content-backlog.md',
       completed_topics: 'docs/content-backlog.md',

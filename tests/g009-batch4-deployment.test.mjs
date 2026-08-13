@@ -53,11 +53,11 @@ test('retains the published corpus and closes the deployed topic', () => {
     },
     {
       completed_topics: 58,
-      content_documents: 100,
-      governed_sources: 519,
+      content_documents: 101,
+      governed_sources: 525,
     },
   );
-  assert.equal(publicLedger.sources.length, 519);
+  assert.equal(publicLedger.sources.length, 525);
 });
 
 test('includes the canonical STY-03 route and SVG in the deployment inventory', async () => {
