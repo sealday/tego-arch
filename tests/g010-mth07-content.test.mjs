@@ -38,9 +38,15 @@ const CITATION_SCHEMA_FIELDS = [
 ];
 const SOURCE_IDS = ['src-wechat-fde-12-core-capabilities', 'src-nist-ai-rmf-1-0', 'src-google-sre-canarying-releases', 'src-atlas-mth07-fde-delivery-gates'];
 const REMOTE_SOURCES = new Map([
-  ['src-wechat-fde-12-core-capabilities', {canonical_locator: 'https://mp.weixin.qq.com/s/6_-S0yIVlCtqW8U8JfwdGA', title: '一文读懂：FDE的12项核心能力', author_or_org: '李伟山（腾讯云开发者）', published_at: '2026-08-13', allowed: ['historical-context']}],
-  ['src-nist-ai-rmf-1-0', {canonical_locator: 'https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10', title: 'Artificial Intelligence Risk Management Framework (AI RMF 1.0)', author_or_org: 'National Institute of Standards and Technology', version: 'NIST AI 100-1', published_at: '2023-01-26'}],
-  ['src-google-sre-canarying-releases', {canonical_locator: 'https://sre.google/workbook/canarying-releases/', title: 'Canarying Releases', author_or_org: 'Google SRE'}],
+  ['src-wechat-fde-12-core-capabilities', {
+    canonical_locator: 'https://mp.weixin.qq.com/s/6_-S0yIVlCtqW8U8JfwdGA', title: '一文读懂：FDE的12项核心能力', author_or_org: '李伟山（腾讯云开发者）', published_at: '2026-08-13', version: 'Practice article identity checked 2026-08-13; available browser review returned an internal error.', source_kind: 'engineering-blog', tier: 'primary', allowed: ['historical-context'], license: 'LicenseRef-All-Rights-Reserved', license_family_id: 'https://mp.weixin.qq.com/s/6_-S0yIVlCtqW8U8JfwdGA', copyright_policy: 'facts-and-short-quotation', license_scope: 'The named WeChat article and bibliographic/practice-context facts only; prose, images, tables, marks, linked works, and third-party material excluded.', usage_boundary: 'Supports only the named FDE-practice context and an original facts summary; it is not independent evidence, does not establish a universal enterprise framework, and supports no market, salary, or policy numbers.', license_evidence_url: 'https://mp.weixin.qq.com/s/6_-S0yIVlCtqW8U8JfwdGA', license_evidence_note: 'The available browser returned an internal error, while a direct unauthenticated fetch exposed title, author, publisher, and date metadata but no reusable license notice; the source is conservatively treated as all rights reserved.', citation: {roles: ['historical-context'], manifest_primary: true, usage_mode: 'facts-summary', attribution_note: '李伟山（腾讯云开发者），《一文读懂：FDE的12项核心能力》；仅作 FDE 实践语境。'},
+  }],
+  ['src-nist-ai-rmf-1-0', {
+    canonical_locator: 'https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10', title: 'Artificial Intelligence Risk Management Framework (AI RMF 1.0)', author_or_org: 'National Institute of Standards and Technology', version: 'NIST AI 100-1', published_at: '2023-01-26', source_kind: 'standard', tier: 'primary', allowed: ['method'], license: 'LicenseRef-US-Gov-Public-Domain', license_family_id: 'https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10', copyright_policy: 'public-domain-with-provenance', license_scope: 'NIST-authored AI RMF publication material; third-party or separately marked copyrighted material, marks, and linked works excluded.', usage_boundary: 'Supports original factual summaries of AI RMF assessment, monitoring, and human-oversight mechanisms; it is voluntary, use-case agnostic guidance, not a universal enterprise-delivery process, and does not support market, salary, or policy numbers.', license_evidence_url: 'https://www.nist.gov/nist-research-library/library-faqs', license_evidence_note: 'NIST states that its publications are generally U.S. Government works in the public domain; original source attribution remains required and separately marked material is excluded.', citation: {roles: ['method'], manifest_primary: false, usage_mode: 'facts-summary', attribution_note: 'National Institute of Standards and Technology, AI RMF 1.0 (NIST AI 100-1).'},
+  }],
+  ['src-google-sre-canarying-releases', {
+    canonical_locator: 'https://sre.google/workbook/canarying-releases/', title: 'Canarying Releases', author_or_org: 'Google SRE', published_at: null, version: 'Google SRE Workbook online edition, Chapter 16; page footer Copyright 2018 Google, Inc.; checked 2026-08-13', source_kind: 'official-docs', tier: 'primary', allowed: ['method'], license: 'CC-BY-NC-ND-4.0', license_family_id: 'https://sre.google/workbook/canarying-releases/', copyright_policy: 'facts-and-short-quotation', license_scope: 'The named Google SRE Workbook chapter within its CC BY-NC-ND 4.0 notice; Google and O’Reilly marks, linked works, code, media, figures, and third-party material under separate notices are excluded.', usage_boundary: 'Supports original factual summaries of partial, time-limited canary evaluation, gradual exposure, and rollback considerations; it is not a universal rollout process or current Google policy, and supports no market, salary, or policy numbers.', license_evidence_url: 'https://sre.google/workbook/canarying-releases/', license_evidence_note: 'The official chapter footer identifies Copyright © 2018 Google, Inc., Published by O’Reilly Media, Inc., and CC BY-NC-ND 4.0.', citation: {roles: ['method'], manifest_primary: false, usage_mode: 'facts-summary', attribution_note: 'Google SRE Workbook, “Canarying Releases” (Chapter 16).'},
+  }],
 ]);
 const RELATIONS = {depends_on: ['MTH-01', 'MTH-04', 'MTH-06'], adjacent_topics: ['MTH-01', 'MTH-04', 'MTH-06'], related_cases: ['/cases/temporal-saga-durable-execution'], related_questions: []};
 const EXACT_METADATA = {
@@ -1745,6 +1751,40 @@ function assertIllustrationGovernance(value) {
   assert.equal(citation.excerpt, null, 'MTH-07 illustration excerpt');
   assert.equal(citation.quotation_reviewed, false, 'MTH-07 illustration quotation_reviewed');
 }
+function assertRemoteSourceContracts(sources, citations) {
+  assert.equal(sources.length, REMOTE_SOURCES.size, 'MTH-07 has exactly three remote source records');
+  for (const [id, expected] of REMOTE_SOURCES) {
+    const item = sources.find((source) => source.id === id);
+    assert.ok(item, id);
+    for (const [field, value] of Object.entries(expected)) {
+      if (field !== 'allowed' && field !== 'citation') assert.deepEqual(item[field], value, `${id}.${field}`);
+    }
+    assert.deepEqual(item.allowed_evidence_roles, expected.allowed, `${id} exact evidence roles`);
+    const matches = citations.filter(({source_id: sourceId}) => sourceId === id);
+    assert.equal(matches.length, 1, `${id} has exactly one citation`);
+    const citation = matches[0];
+    assert.deepEqual(Object.keys(citation).sort(), CITATION_SCHEMA_FIELDS, `${id} citation exact schema fields`);
+    assert.equal(citation.source_id, id, `${id} citation source ID`);
+    assert.equal(citation.citation_url, expected.canonical_locator, `${id} citation URL`);
+    for (const [field, value] of Object.entries(expected.citation)) assert.deepEqual(citation[field], value, `${id} citation.${field}`);
+    assert.equal(citation.modification_note, null, `${id} citation modification_note`);
+    assert.equal(citation.excerpt, null, `${id} citation excerpt`);
+    assert.equal(citation.quotation_reviewed, false, `${id} citation quotation_reviewed`);
+  }
+  assert.deepEqual(citations.filter(({manifest_primary}) => manifest_primary).map(({source_id}) => source_id),
+    ['src-wechat-fde-12-core-capabilities'], 'MTH-07 has the sole practice-context primary citation');
+}
+function fixtureRemoteGovernance() {
+  const sources = [...REMOTE_SOURCES].map(([id, expected]) => {
+    const {allowed, citation: _citation, ...source} = expected;
+    return {id, ...structuredClone(source), allowed_evidence_roles: [...allowed]};
+  });
+  const citations = [...REMOTE_SOURCES].map(([id, expected]) => ({
+    source_id: id, citation_url: expected.canonical_locator, ...structuredClone(expected.citation),
+    modification_note: null, excerpt: null, quotation_reviewed: false,
+  }));
+  return {sources, citations};
+}
 function fixtureGovernance() {
   return {
     sources: [{
@@ -1884,6 +1924,42 @@ test('MTH-07 helper contracts are green after non-no-op RED mutation fixtures', 
     change(mutation);
     assert.notDeepEqual(mutation, governance, `${label} mutation is non-no-op`);
     assert.throws(() => assertIllustrationGovernance(mutation), assert.AssertionError, label);
+  }
+  const remote = fixtureRemoteGovernance();
+  assertRemoteSourceContracts(remote.sources, remote.citations);
+  const remoteMutations = [];
+  for (const [id, expected] of REMOTE_SOURCES) {
+    for (const field of Object.keys(expected).filter((key) => !['allowed', 'citation'].includes(key))) {
+      remoteMutations.push([`${id}.${field}`, (value) => {
+        const source = value.sources.find((item) => item.id === id);
+        source[field] = field === 'published_at'
+          ? (source[field] === null ? '2026-08-13' : '2020-01-01')
+          : `${String(source[field])} (wrong)`;
+      }]);
+    }
+    remoteMutations.push([`${id}.allowed_evidence_roles`, (value) => {
+      value.sources.find((item) => item.id === id).allowed_evidence_roles = ['learning'];
+    }]);
+    for (const field of Object.keys(expected.citation)) {
+      remoteMutations.push([`${id}.citation.${field}`, (value) => {
+        const citation = value.citations.find((item) => item.source_id === id);
+        citation[field] = field === 'manifest_primary' ? !citation[field]
+          : field === 'roles' ? ['learning'] : `${String(citation[field])} (wrong)`;
+      }]);
+    }
+    for (const field of ['source_id', 'citation_url', 'modification_note', 'excerpt', 'quotation_reviewed']) {
+      remoteMutations.push([`${id}.citation.${field}`, (value) => {
+        const citation = value.citations.find((item) => item.source_id === id);
+        citation[field] = field === 'quotation_reviewed' ? true : `${String(citation[field])} (wrong)`;
+      }]);
+    }
+  }
+  remoteMutations.push(['sole primary citation', (value) => { value.citations.find((item) => item.source_id === 'src-nist-ai-rmf-1-0').manifest_primary = true; }]);
+  for (const [label, change] of remoteMutations) {
+    const mutation = structuredClone(remote);
+    change(mutation);
+    assert.notDeepEqual(mutation, remote, `${label} mutation is non-no-op`);
+    assert.throws(() => assertRemoteSourceContracts(mutation.sources, mutation.citations), assert.AssertionError, label);
   }
   const extraH3 = mutate(source, '### 不应照搬的部分', '### 关键源码导读\n\n### 不应照搬的部分', 'extra transfer H3'); const metadataMutations = [mutate(source, 'topic_id: MTH-07', 'topic_id: MTH-99', 'wrong topic'), mutate(source, 'content_type: method', 'content_type: style', 'wrong type'), mutate(source, '## 一页摘要', '## 完整演练', 'fallback headings'), mutate(source, '### 不应照搬的部分', '', 'missing transfer H3'), extraH3]; metadataMutations.forEach((item) => assert.throws(() => assertMetadataAndHeadings(item), assert.AssertionError));
   for (const row of GATE_ROWS) { for (let index = 0; index < row.length; index += 1) { const changed = [...row]; changed[index] = '错误字段'; const mutation = mutate(source, `| ${row.join(' | ')} |`, `| ${changed.join(' | ')} |`, `${row[1]} field`); assert.throws(() => assertGateRows(mutation), assert.AssertionError); } const deletion = mutate(source, `| ${row.join(' | ')} |\n`, '', `${row[1]} deletion`); assert.throws(() => assertGateRows(deletion), assert.AssertionError); }
@@ -2095,8 +2171,8 @@ test('MTH-07 locks citation-aware evidence and responsibility boundaries', () =>
 test('MTH-07 locks governed source identities, exact relations, wrappers, density, and Stage A projection', () => {
   const source = requiredArticle().source; const record = ledger.documents[ARTICLE]; assert.deepEqual(record?.citations.map(({source_id}) => source_id), SOURCE_IDS); const sources = new Map(SOURCE_IDS.map((id) => [id, ledger.sources.find((item) => item.id === id)]));
   assertIllustrationGovernance(ledger);
-  for (const [id, expected] of REMOTE_SOURCES) { const item = sources.get(id); assert.ok(item, id); for (const [field, value] of Object.entries(expected)) if (field !== 'allowed') assert.equal(item[field], value, `${id}.${field}`); assert.deepEqual(item.allowed_evidence_roles, expected.allowed ?? ['method'], `${id} schema-valid evidence roles`); assert.match(item.usage_boundary, /(?:摘要|summary|不.*(?:市场|薪资|政策)|not.*(?:market|salary|policy))/iu, `${id} citation boundary`); }
-  assert.equal(new Set([...REMOTE_SOURCES.values()].map(({canonical_locator}) => new URL(canonical_locator).hostname)).size, 3, 'three independent remote domains'); const primary = record?.citations.filter(({manifest_primary}) => manifest_primary); assert.deepEqual(primary?.map(({source_id}) => source_id), ['src-wechat-fde-12-core-capabilities']); assert.deepEqual(primary?.[0]?.roles, ['historical-context'], 'WeChat primary is schema-valid practice context'); assert.equal(primary?.[0]?.usage_mode, 'facts-summary'); assert.match(primary?.[0]?.attribution_note ?? '', /实践框架|四阶段|十二/u); const illustration = sources.get('src-atlas-mth07-fde-delivery-gates'); assert.equal(illustration?.source_kind, 'original-illustration'); assert.equal(illustration?.license, 'LicenseRef-Atlas-Original'); assert.equal(illustration?.copyright_policy, 'original-atlas');
+  assertRemoteSourceContracts([...REMOTE_SOURCES.keys()].map((id) => sources.get(id)), record?.citations ?? []);
+  assert.equal(new Set([...REMOTE_SOURCES.values()].map(({canonical_locator}) => new URL(canonical_locator).hostname)).size, 3, 'three independent remote domains'); const illustration = sources.get('src-atlas-mth07-fde-delivery-gates'); assert.equal(illustration?.source_kind, 'original-illustration'); assert.equal(illustration?.license, 'LicenseRef-Atlas-Original'); assert.equal(illustration?.copyright_policy, 'original-atlas');
   assert.deepEqual(extractInternalLinks({body: article.body}), ['/cases/temporal-saga-durable-execution', '/methods', '/methods/mth-01', '/methods/mth-04', '/methods/mth-06']); const text = visible(source); assert.match(text, /Temporal.{0,60}(?:工程机制参照|不证明 FDE 组织模式)/u); assert.doesNotMatch(text, /QA-09/u); assert.deepEqual(extractExternalLinks({body: article.body}).sort(), [...REMOTE_SOURCES.values()].map(({canonical_locator}) => canonical_locator).sort()); assertWrappersAndArrowBehavior(source); assert.ok(analyzeCaseText(article.body).visualBalance.score > 90); assert.deepEqual({completed_topics: projectStatus.completed_topics, content_documents: projectStatus.content_documents, governed_sources: projectStatus.governed_sources}, {completed_topics: 59, content_documents: 102, governed_sources: 529}); const topic = manifest.topics.find(({id}) => id === TOPIC_ID); assert.equal(topic?.published, true); assert.equal(topic?.status?.value, 'pending');
 });
 test('MTH-07 diagram parses actual Draw.io terminals and rendered SVG geometry/style/painter parity', async () => { const [drawio, svg] = await Promise.all([readFile(new URL(`../${DRAWIO}`, import.meta.url), 'utf8'), readFile(new URL(`../${SVG}`, import.meta.url), 'utf8')]); assertDiagram(drawio, svg); });
