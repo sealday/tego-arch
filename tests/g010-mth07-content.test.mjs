@@ -90,10 +90,27 @@ const DIAGRAM_FAILURE_CLASSES = new Map([
   ['text occluder', /supported SVG subset: semantic text/u],
   ['arrow rectangle', /canonical block marker/u],
   ['marker medium stroke', /stroke-expanded marker footprint/u],
-  ['percentage label coordinate', /supported SVG subset: text coordinates/u],
+  ['percentage label coordinate', /supported SVG subset: text x/u],
   ['letter spacing', /supported SVG subset: CSS property letter-spacing/u],
   ['triangle node', /gate-01 canonical rect node/u],
   ['owner displacement', /owner band exact spacing/u],
+  ['root viewBox percentage', /supported SVG subset: svg viewBox/u],
+  ['root viewBox junk', /supported SVG subset: svg viewBox/u],
+  ['rect x percentage', /supported SVG subset: rect x/u],
+  ['rect y junk', /supported SVG subset: rect y/u],
+  ['rect width unit', /supported SVG subset: rect width/u],
+  ['rect height junk', /supported SVG subset: rect height/u],
+  ['CSS font size percentage', /supported SVG subset: CSS property font-size/u],
+  ['font size percentage', /supported SVG subset: font-size/u],
+  ['translate percentage', /supported SVG subset: transform/u],
+  ['translate arity', /supported SVG subset: transform/u],
+  ['rotate dimensional junk', /supported SVG subset: transform/u],
+  ['rotate arity', /supported SVG subset: transform/u],
+  ['Draw.io ellipse node', /gate-01 Draw.io rectangle semantics/u],
+  ['Draw.io rhombus node', /gate-01 Draw.io rectangle semantics/u],
+  ['Draw.io rounded node', /gate-01 Draw.io rectangle semantics/u],
+  ['Draw.io conflicting node shape', /gate-01 Draw.io rectangle semantics/u],
+  ['mixed POC near boundary', /POC 纪律 inner node\/boundary gate-05/u],
 ]);
 const REQUIRED_WRAPPERS = [
   {aria: '企业 AI 四阶段十二门禁图，可横向滚动', className: 'architecture-diagram-scroll'},
@@ -207,6 +224,15 @@ function parsedDrawioStyle(cell) {
     const split = item.indexOf('=');
     return [split < 0 ? item : item.slice(0, split), split < 0 ? '1' : item.slice(split + 1)];
   }));
+}
+
+function assertDrawioRectangleStyle(cell, style, id) {
+  const diagnostic = `${id} Draw.io rectangle semantics`;
+  const styleItems = (cell.attributes.get('style') ?? '').split(';').map((item) => item.trim()).filter(Boolean);
+  assert.ok(styleItems.filter((item) => item.split('=', 1)[0] === 'shape').length <= 1, diagnostic);
+  assert.equal(style.get('shape') ?? 'rectangle', 'rectangle', diagnostic);
+  assert.equal(style.get('rounded') ?? '0', '0', diagnostic);
+  assert.equal(style.has('ellipse') || style.has('rhombus'), false, diagnostic);
 }
 
 function cssDeclarations(raw) {
@@ -387,6 +413,155 @@ const SUPPORTED_ATTRIBUTES = new Map([
   ['text', new Set(['id', 'class', 'data-edge-label', 'x', 'y', 'transform', 'style', 'fill', 'fill-opacity', 'font-family', 'font-size', 'font-style', 'font-weight', 'text-anchor', 'text-decoration', 'opacity', 'visibility'])],
   ['tspan', new Set(['x', 'y', 'dx', 'dy', 'transform', 'style', 'fill', 'fill-opacity', 'font-family', 'font-size', 'font-style', 'font-weight', 'text-anchor', 'text-decoration', 'opacity', 'visibility'])],
 ]);
+const SVG_NUMBER_SOURCE = String.raw`[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?`;
+const SVG_NUMBER = new RegExp(`^${SVG_NUMBER_SOURCE}$`, 'iu');
+
+function strictNumber(value, label) {
+  const source = String(value ?? '').trim();
+  assert.match(source, SVG_NUMBER, label);
+  const result = Number(source);
+  assert.ok(Number.isFinite(result), label);
+  return result;
+}
+
+function strictNumberList(value, label, allowedCounts) {
+  const source = String(value ?? '').trim();
+  assert.match(source, new RegExp(`^${SVG_NUMBER_SOURCE}(?:(?:\\s*,\\s*|\\s+)${SVG_NUMBER_SOURCE})*$`, 'iu'), label);
+  const result = source.split(/[\s,]+/u).map(Number);
+  assert.ok(result.every(Number.isFinite) && allowedCounts.includes(result.length), label);
+  return result;
+}
+
+function strictPositiveNumber(value, label) {
+  const result = strictNumber(value, label);
+  assert.ok(result > 0, label);
+  return result;
+}
+
+function strictUserLength(value, label, {positive = false} = {}) {
+  const source = String(value ?? '').trim();
+  const match = source.match(new RegExp(`^(${SVG_NUMBER_SOURCE})(?:px)?$`, 'iu'));
+  assert.ok(match, label);
+  const result = Number(match[1]);
+  assert.ok(Number.isFinite(result) && (!positive || result > 0), label);
+  return result;
+}
+
+function supportedTransformFunctions(value, label = 'supported SVG subset: transform') {
+  const source = String(value ?? '').trim();
+  if (source === 'none') return [];
+  const result = [];
+  let cursor = 0;
+  for (const match of source.matchAll(/([A-Za-z]+)\s*\(([^()]*)\)/gu)) {
+    assert.match(source.slice(cursor, match.index), /^[\s,]*$/u, label);
+    const [, name, raw] = match;
+    const allowedArities = new Map([
+      ['matrix', [6]], ['translate', [1, 2]], ['scale', [1, 2]], ['rotate', [1, 3]],
+    ]).get(name);
+    assert.ok(allowedArities, label);
+    const values = strictNumberList(raw, label, allowedArities);
+    result.push({name, values});
+    cursor = match.index + match[0].length;
+  }
+  assert.ok(result.length > 0, label);
+  assert.match(source.slice(cursor), /^\s*$/u, label);
+  return result;
+}
+
+function assertSupportedColor(value, label, {allowNone = true} = {}) {
+  const source = String(value ?? '').trim();
+  if (allowNone && /^(?:none|transparent)$/iu.test(source)) return;
+  if (/^(?:currentColor|white|black|#[\da-f]{3}|#[\da-f]{6})$/iu.test(source)) return;
+  const rgb = source.match(/^rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/u);
+  assert.ok(rgb && rgb.slice(1).every((channel) => Number(channel) <= 255), label);
+}
+
+function assertSupportedFontShorthand(value, label) {
+  const source = String(value ?? '').trim();
+  const match = source.match(new RegExp(`^(.*?)(${SVG_NUMBER_SOURCE}px)\\s+(.+)$`, 'iu'));
+  assert.ok(match, label);
+  const prefix = match[1].trim().split(/\s+/u).filter(Boolean);
+  assert.ok(prefix.every((token) => /^(?:normal|italic|oblique|bold|[1-9]00)$/iu.test(token)), label);
+  assert.ok(prefix.filter((token) => /^(?:italic|oblique)$/iu.test(token)).length <= 1, label);
+  assert.ok(prefix.filter((token) => /^(?:bold|[1-9]00)$/iu.test(token)).length <= 1, label);
+  strictUserLength(match[2], label, {positive: true});
+  assert.match(match[3].trim(), /^(?:['"]?[\w -]+['"]?)(?:\s*,\s*['"]?[\w -]+['"]?)*$/u, label);
+}
+
+function assertSupportedCssValue(property, value, label) {
+  const validators = new Map([
+    ['color', (item) => assertSupportedColor(item, label, {allowNone: false})],
+    ['display', (item) => assert.match(item, /^(?:inline|none)$/u, label)],
+    ['fill', (item) => assertSupportedColor(item, label)],
+    ['fill-opacity', (item) => { const number = strictNumber(item, label); assert.ok(number >= 0 && number <= 1, label); }],
+    ['font', (item) => assertSupportedFontShorthand(item, label)],
+    ['font-family', (item) => assert.match(item, /^(?:['"]?[\w -]+['"]?)(?:\s*,\s*['"]?[\w -]+['"]?)*$/u, label)],
+    ['font-size', (item) => strictUserLength(item, label, {positive: true})],
+    ['font-style', (item) => assert.match(item, /^(?:normal|italic|oblique)$/u, label)],
+    ['font-weight', (item) => assert.match(item, /^(?:normal|bold|[1-9]00)$/u, label)],
+    ['marker-end', (item) => assert.match(item, /^(?:none|url\(\s*#[\w.-]+\s*\))$/u, label)],
+    ['opacity', (item) => { const number = strictNumber(item, label); assert.ok(number >= 0 && number <= 1, label); }],
+    ['stroke', (item) => assertSupportedColor(item, label)],
+    ['stroke-dasharray', (item) => {
+      if (item === 'none') return;
+      const numbers = strictNumberList(item, label, [...Array(32)].map((_, index) => index + 1));
+      assert.ok(numbers.every((number) => number >= 0) && numbers.some((number) => number > 0), label);
+    }],
+    ['stroke-linecap', (item) => assert.match(item, /^(?:butt|round|square)$/u, label)],
+    ['stroke-linejoin', (item) => assert.match(item, /^(?:miter|round|bevel)$/u, label)],
+    ['stroke-opacity', (item) => { const number = strictNumber(item, label); assert.ok(number >= 0 && number <= 1, label); }],
+    ['stroke-width', (item) => { const number = strictUserLength(item, label); assert.ok(number >= 0, label); }],
+    ['text-anchor', (item) => assert.match(item, /^(?:start|middle|end)$/u, label)],
+    ['text-decoration', (item) => assert.match(item, /^(?:none|underline)$/u, label)],
+    ['transform', (item) => supportedTransformFunctions(item, label)],
+    ['visibility', (item) => assert.match(item, /^(?:visible|hidden|collapse)$/u, label)],
+  ]);
+  const validator = validators.get(property);
+  assert.ok(validator, `supported SVG subset: missing CSS value validator ${property}`);
+  validator(value);
+}
+
+function assertSupportedAttributeValue(element, attribute, value) {
+  const label = `supported SVG subset: ${element.name} ${attribute}`;
+  if (SVG_PRESENTATION_PROPERTIES.has(attribute)) {
+    assertSupportedCssValue(attribute, value, `supported SVG subset: ${attribute}`);
+    return;
+  }
+  if (['id', 'data-node-id', 'data-edge-id', 'data-edge-label', 'data-source', 'data-target'].includes(attribute)) {
+    assert.match(value, /^[\w.-]+$/u, label);
+  } else if (attribute === 'class') {
+    assert.match(value, /^[\w-]+(?:\s+[\w-]+)*$/u, label);
+  } else if (attribute === 'data-canvas') {
+    assert.equal(value, 'true', label);
+  } else if (attribute === 'role') {
+    assert.equal(value, 'img', label);
+  } else if (attribute === 'style') {
+    assertSupportedCssDeclarations(value);
+  } else if (attribute === 'viewBox') {
+    const numbers = strictNumberList(value, label, [4]);
+    assert.ok(numbers[2] > 0 && numbers[3] > 0, label);
+  } else if (['x', 'y', 'dx', 'dy', 'cx', 'cy', 'refX', 'refY'].includes(attribute)) {
+    strictNumber(value, label);
+  } else if (['width', 'height', 'r', 'markerWidth', 'markerHeight'].includes(attribute)) {
+    strictPositiveNumber(value, label);
+  } else if (attribute === 'transform') {
+    supportedTransformFunctions(value, 'supported SVG subset: transform');
+  } else if (attribute === 'markerUnits') {
+    assert.match(value, /^(?:strokeWidth|userSpaceOnUse)$/u, label);
+  } else if (attribute === 'orient') {
+    if (!/^(?:auto|auto-start-reverse)$/u.test(value)) strictNumber(value, label);
+  } else if (attribute === 'preserveAspectRatio') {
+    assert.match(value, /^(?:none|x(?:Min|Mid|Max)Y(?:Min|Mid|Max)(?:\s+(?:meet|slice))?)$/u, label);
+  } else if (attribute === 'points') {
+    const numbers = strictNumberList(value, label, [...Array(64)].map((_, index) => index + 1));
+    assert.ok(numbers.length >= 6 && numbers.length % 2 === 0, label);
+  } else if (attribute === 'd') {
+    const geometry = parsedPath(value, label);
+    assert.ok(geometry.points.length >= 2, label);
+  } else {
+    assert.fail(`supported SVG subset: missing attribute value validator ${element.name} ${attribute}`);
+  }
+}
 
 function assertSupportedSelector(selector) {
   assert.doesNotMatch(selector, /[@:+~*]|\(|\)/u, 'supported SVG subset: selector has no pseudo/functional/at-rule syntax');
@@ -403,11 +578,7 @@ function assertSupportedCssDeclarations(raw) {
     const property = item.slice(0, split).trim().toLowerCase();
     assert.ok(SUPPORTED_CSS_PROPERTIES.has(property), `supported SVG subset: CSS property ${property}`);
     const value = item.slice(split + 1).replace(/\s*!important\s*$/iu, '').trim();
-    if (property === 'transform') assert.match(value,
-      /^(?:none|(?:matrix|translate|scale|rotate)\([^)]*\)(?:\s+(?:matrix|translate|scale|rotate)\([^)]*\))*)$/u,
-      'supported SVG subset: CSS transform functions');
-    if (property === 'font-size') assert.match(value, /^\d+(?:\.\d+)?px?$/u,
-      'supported SVG subset: font-size user units/px');
+    assertSupportedCssValue(property, value, `supported SVG subset: CSS property ${property}`);
   }
 }
 
@@ -419,15 +590,9 @@ function assertSupportedSvgSubset(model) {
         `supported SVG subset: forbidden rendering effect ${attribute}`);
       assert.ok(SUPPORTED_ATTRIBUTES.get(element.name).has(attribute),
         `supported SVG subset: ${element.name} attribute ${attribute}`);
-      if (SVG_PRESENTATION_PROPERTIES.has(attribute)) assert.ok(SUPPORTED_CSS_PROPERTIES.has(attribute),
-        `supported SVG subset: presentation property ${attribute}`);
+      assertSupportedAttributeValue(element, attribute, element.attributes.get(attribute));
     }
-    if (element.attributes.has('style')) assertSupportedCssDeclarations(element.attributes.get('style'));
     if (['text', 'tspan'].includes(element.name)) {
-      for (const coordinate of ['x', 'y', 'dx', 'dy']) {
-        if (element.attributes.has(coordinate)) assert.match(element.attributes.get(coordinate),
-          /^-?(?:\d+(?:\.\d*)?|\.\d+)$/u, 'supported SVG subset: text coordinates are numeric user units');
-      }
       assert.equal(descendants(element).some((child) => !['tspan'].includes(child.name)), false,
         'supported SVG subset: semantic text children');
       if (element.name === 'tspan') assert.equal(descendants(element).length, 0,
@@ -522,28 +687,21 @@ function elementTransform(model, element) {
 
 function transformMatrix(value) {
   let matrix = IDENTITY_MATRIX;
-  const source = String(value ?? '');
-  const matches = [...source.matchAll(/([A-Za-z]+)\s*\(([^)]*)\)/gu)];
-  const unconsumed = matches.reduce((rest, match) => rest.replace(match[0], ''), source).replace(/[\s,]+/gu, '');
-  assert.equal(unconsumed, '', 'fully parsed SVG transform');
-  for (const [, name, raw] of matches) {
-    const values = numericTokens(raw);
+  const functions = String(value ?? '').trim() === '' ? [] : supportedTransformFunctions(value);
+  for (const {name, values} of functions) {
     let next;
     if (name === 'matrix') {
-      assert.equal(values.length, 6, 'matrix() arity');
       next = values;
     } else if (name === 'translate') {
-      next = [1, 0, 0, 1, values[0] ?? 0, values[1] ?? 0];
+      next = [1, 0, 0, 1, values[0], values[1] ?? 0];
     } else if (name === 'scale') {
       next = [values[0], 0, 0, values[1] ?? values[0], 0, 0];
     } else if (name === 'rotate') {
-      const radians = (values[0] ?? 0) * Math.PI / 180;
+      const radians = values[0] * Math.PI / 180;
       const rotation = [Math.cos(radians), Math.sin(radians), -Math.sin(radians), Math.cos(radians), 0, 0];
       next = values.length >= 3
         ? multiplyMatrices(multiplyMatrices([1, 0, 0, 1, values[1], values[2]], rotation), [1, 0, 0, 1, -values[1], -values[2]])
         : rotation;
-    } else {
-      assert.fail(`unsupported SVG transform ${name}`);
     }
     matrix = multiplyMatrices(matrix, next);
   }
@@ -818,10 +976,8 @@ function boundsContain(outer, inner) {
   return inner.left >= outer.left && inner.right <= outer.right && inner.top >= outer.top && inner.bottom <= outer.bottom;
 }
 
-function visualTextWidth(text, fontSize, weight) {
-  const bold = /^(?:bold|[6-9]00)$/iu.test(String(weight)) ? 1.06 : 1;
-  return [...text].reduce((sum, character) => sum +
-    (/\p{Script=Han}|[\u3040-\u30ff\uac00-\ud7af]/u.test(character) ? 1 : (/\s/u.test(character) ? .34 : .62)), 0) * fontSize * bold;
+function visualTextWidth(text, fontSize) {
+  return [...text].length * fontSize;
 }
 
 function visibleTextRuns(model, textElement) {
@@ -1239,6 +1395,7 @@ function assertDiagram(drawio, svg) {
       `${id} Draw.io visible label parity`);
     assert.equal(xmlText(group).includes(id), false, `${id} machine ID is not visible`);
     const style = parsedDrawioStyle(cell);
+    assertDrawioRectangleStyle(cell, style, id);
     const fill = effectivePaint(model, shape, 'fill');
     const stroke = effectivePaint(model, shape, 'stroke');
     assert.equal(fill.opacity, 1, `${id} node fill is effectively opaque`);
@@ -1685,6 +1842,23 @@ test('MTH-07 helper contracts are green after non-no-op RED mutation fixtures', 
     ['triangle node', drawio, mutate(svg, '<rect class="gate-shape" x="20" y="300" width="440" height="340"/>', '<polygon class="gate-shape" points="20,640 240,300 460,640"/>', 'triangle node')],
     ['owner displacement', mutate(drawio, '<mxGeometry x="410" y="2150" width="300" height="160" as="geometry"/>', '<mxGeometry x="510" y="2150" width="300" height="160" as="geometry"/>', 'owner displacement Draw.io'),
       mutate(svg, '<g data-node-id="owner-delivery">', '<g data-node-id="owner-delivery" transform="translate(100 0)">', 'owner displacement SVG')],
+    ['root viewBox percentage', drawio, mutate(svg, 'viewBox="0 0 2000 2580"', 'viewBox="0 0 2000 2580%"', 'root viewBox percentage')],
+    ['root viewBox junk', drawio, mutate(svg, 'viewBox="0 0 2000 2580"', 'viewBox="0 0 2000 2580 junk"', 'root viewBox junk')],
+    ['rect x percentage', drawio, mutate(svg, 'data-canvas="true" x="0" y="0"', 'data-canvas="true" x="0%" y="0"', 'rect x percentage')],
+    ['rect y junk', drawio, mutate(svg, 'data-canvas="true" x="0" y="0"', 'data-canvas="true" x="0" y="0junk"', 'rect y junk')],
+    ['rect width unit', drawio, mutate(svg, 'width="2000" height="2580" fill="#FFFFFF"', 'width="2000px" height="2580" fill="#FFFFFF"', 'rect width unit')],
+    ['rect height junk', drawio, mutate(svg, 'width="2000" height="2580" fill="#FFFFFF"', 'width="2000" height="2580junk" fill="#FFFFFF"', 'rect height junk')],
+    ['CSS font size percentage', drawio, mutate(svg, '</style>', '.gate-label { font-size: 38% !important; }</style>', 'CSS font size percentage')],
+    ['font size percentage', drawio, mutate(svg, '<tspan x="240" y="380">需求考古</tspan>', '<tspan x="240" y="380" font-size="38%">需求考古</tspan>', 'font size percentage')],
+    ['translate percentage', drawio, mutate(svg, 'transform="translate(0 1)" fill="#1D4ED8"', 'transform="translate(0% 1)" fill="#1D4ED8"', 'translate percentage')],
+    ['translate arity', drawio, mutate(svg, 'transform="translate(0 1)" fill="#1D4ED8"', 'transform="translate(0 1 2)" fill="#1D4ED8"', 'translate arity')],
+    ['rotate dimensional junk', drawio, mutate(svg, 'transform="translate(0 1)" fill="#1D4ED8"', 'transform="rotate(90deg junk)" fill="#1D4ED8"', 'rotate dimensional junk')],
+    ['rotate arity', drawio, mutate(svg, 'transform="translate(0 1)" fill="#1D4ED8"', 'transform="rotate(90 1)" fill="#1D4ED8"', 'rotate arity')],
+    ['Draw.io ellipse node', mutate(drawio, 'style="fillColor=#FFFFFF;strokeColor=#334155;', 'style="ellipse;fillColor=#FFFFFF;strokeColor=#334155;', 'Draw.io ellipse node'), svg],
+    ['Draw.io rhombus node', mutate(drawio, 'style="fillColor=#FFFFFF;strokeColor=#334155;', 'style="shape=rhombus;fillColor=#FFFFFF;strokeColor=#334155;', 'Draw.io rhombus node'), svg],
+    ['Draw.io rounded node', mutate(drawio, 'style="fillColor=#FFFFFF;strokeColor=#334155;', 'style="rounded=1;fillColor=#FFFFFF;strokeColor=#334155;', 'Draw.io rounded node'), svg],
+    ['Draw.io conflicting node shape', mutate(drawio, 'style="fillColor=#FFFFFF;strokeColor=#334155;', 'style="shape=ellipse;shape=rectangle;fillColor=#FFFFFF;strokeColor=#334155;', 'Draw.io conflicting node shape'), svg],
+    ['mixed POC near boundary', drawio, mutate(svg, '<tspan x="740" y="840">POC 纪律</tspan>', '<tspan x="815" y="840">POC 纪律</tspan>', 'mixed POC near boundary')],
   ];
   for (const [label, mutatedDrawio, mutatedSvg] of diagramMutations) {
     if (DIAGRAM_FAILURE_CLASSES.has(label)) {
