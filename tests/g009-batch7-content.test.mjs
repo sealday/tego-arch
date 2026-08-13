@@ -120,6 +120,7 @@ const RELIABILITY_TABLE_ROWS = new Map([
   ['\u6bd2\u4e8b\u4ef6\u4e0e\u6b7b\u4fe1\u961f\u5217', [/\u91cd\u8bd5\u4e0a\u9650.{0,8}\u6b7b\u4fe1\u544a\u8b66/u, /\u9694\u79bb.{0,8}\u4fee\u590d.{0,8}\u53d7\u63a7\u91cd\u653e/u, /\u65e0\u6cd5\u8bc1\u660e\u5b89\u5168.{0,8}\u4eba\u5de5\u7ec8\u6b62/u, /\u670d\u52a1\u6240\u6709\u8005.{0,12}\u5904\u7f6e\u65f6\u9650\u56db\u5c0f\u65f6/u]],
 ]);
 const RECIPROCAL_FILES = [
+  'styles/sty-04-modular-monolith.mdx',
   'styles/sty-05-microservices.mdx',
   'principles/pr-11-cqs-cqrs-read-write-separation.mdx',
   'modeling/mod-08-state-machine-modeling.mdx',
@@ -1560,7 +1561,11 @@ test('locks reciprocal visible links and excludes actionable STY-07', () => {
   for (const file of RECIPROCAL_FILES) {
     const document = documents.find((candidate) => candidate.file === file);
     assert.ok(document, `${file} reciprocal document`);
-    assert.ok(extractInternalLinks({body: document.body}).includes(ROUTE), `${file} visible ${ROUTE}`);
+    const metadata = parseFrontMatter(document.source);
+    assert.ok(metadata.adjacent_topics.includes(TOPIC_ID), `${file} reverse adjacency ${TOPIC_ID}`);
+    if (file !== 'styles/sty-04-modular-monolith.mdx') {
+      assert.ok(extractInternalLinks({body: document.body}).includes(ROUTE), `${file} visible ${ROUTE}`);
+    }
   }
   for (const document of documents) {
     assert.equal(extractInternalLinks({body: document.body}).includes('/styles/sty-07'), false,
