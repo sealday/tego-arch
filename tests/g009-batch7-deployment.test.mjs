@@ -8,12 +8,14 @@ const DRAWIO = 'diagrams/sty-06-event-driven-four-patterns.drawio';
 const SVG = 'static/img/diagrams/sty-06-event-driven-four-patterns.svg';
 const LEDGER = 'data/source-ledger.json';
 const REVIEW = 'docs/reviews/g009-batch7.md';
+const IMMEDIATE_STY05_REVIEW = 'docs/reviews/g009-batch6.md';
 const BACKLOG = 'docs/content-backlog.md';
 const RAW_BROWSER = 'docs/reviews/evidence/g009-batch7-stage-a-browser.json';
 const PRODUCTION_BROWSER = 'docs/reviews/evidence/g009-batch7-stage-a-production-browser.json';
 const REVIEWED_HEAD = '44fcafbef24b68f14a9cbf4be0b3fba09cc6002d';
 const EVIDENCE_HEAD = 'f24b4d4a4ebd95bf454f6e87200c83476dc91971';
 const IMMEDIATE_STY05_HISTORY_HASH = 'dc7180a0503ebcc2e285d8425e4e37f87b6125339823ba5577eb822992aa7109';
+const IMMEDIATE_STY05_REVIEW_HASH = 'b8b16c04ecae53468b9283bcba0d831850c400762840c742f17e7c57933789b0';
 const STATES = ['desktopLight', 'desktopDark', 'mobileLight', 'mobileDark'];
 const WRAPPER_LABELS = [
   '订单事件的四种模式并排比较图，可横向滚动',
@@ -35,9 +37,10 @@ const SOURCE_IDS = [
   'src-atlas-sty06-event-driven-four-patterns',
 ];
 
-const [review, backlog, rawBrowserBytes, productionBrowserBytes, manifest, indexes, status, publicLedger] = await Promise.all([
+const [review, immediateSty05ReviewBytes, backlog, rawBrowserBytes, productionBrowserBytes, manifest, indexes, status, publicLedger] = await Promise.all([
   readFile(new URL(`../${REVIEW}`, import.meta.url), 'utf8').catch((error) =>
     error?.code === 'ENOENT' ? '' : Promise.reject(error)),
+  readFile(new URL(`../${IMMEDIATE_STY05_REVIEW}`, import.meta.url)),
   readFile(new URL(`../${BACKLOG}`, import.meta.url), 'utf8'),
   readFile(new URL(`../${RAW_BROWSER}`, import.meta.url)),
   readFile(new URL(`../${PRODUCTION_BROWSER}`, import.meta.url)),
@@ -364,6 +367,7 @@ test('closes STY-06 only after Stage A production while keeping Stage B deployme
   const historyStart = currentBaseline.indexOf(immediateMarker);
   assert.notEqual(historyStart, -1, 'immediate STY-05 history marker');
   assert.equal(sha256(currentBaseline.slice(historyStart + immediateMarker.length)), IMMEDIATE_STY05_HISTORY_HASH);
+  assert.equal(sha256(immediateSty05ReviewBytes), IMMEDIATE_STY05_REVIEW_HASH);
   const sty06Lines = backlog.split(/\r?\n/u).filter((line) => /^- \[[ x]\] \*\*STY-06 /u.test(line));
   assert.equal(sty06Lines.length, 1);
   for (const literal of ['- [x] **STY-06 ', '2026-08-13', '56773ffad24427b33444fb4e5d86aa524fea1577', '31668483971', '/styles/sty-06', '/img/diagrams/sty-06-event-driven-four-patterns.svg', 'Stage A production verdict PASS']) {
@@ -380,6 +384,7 @@ test('closes STY-06 only after Stage A production while keeping Stage B deployme
 });
 
 test('rejects immediate-history drift and fabricated Stage B readiness or deployment', () => {
+  assert.notEqual(sha256(Buffer.concat([immediateSty05ReviewBytes, Buffer.from(' ')])), IMMEDIATE_STY05_REVIEW_HASH);
   const mutations = [
     ['history drift', backlog, backlog.replace('build job `93777183963`', 'build job `0`')],
     ['wrong projection', review, review.replace('59 completed topics / 101 content documents / 525 governed sources', '58 completed topics / 101 content documents / 525 governed sources')],
