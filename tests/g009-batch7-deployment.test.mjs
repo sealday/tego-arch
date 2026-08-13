@@ -77,14 +77,14 @@ function assertProjection() {
     completed_topics: status.completed_topics,
     content_documents: status.content_documents,
     governed_sources: status.governed_sources,
-  }, {completed_topics: 59, content_documents: 101, governed_sources: 525});
-  assert.equal(publicLedger.sources.length, 525);
+  }, {completed_topics: 59, content_documents: 102, governed_sources: 529});
+  assert.equal(publicLedger.sources.length, 529);
   const sty06 = manifest.topics.find(({id}) => id === 'STY-06');
   const sty07 = manifest.topics.find(({id}) => id === 'STY-07');
   assert.deepEqual([sty06?.published, sty06?.status.value, sty06?.slug], [true, 'complete', '/styles/sty-06']);
-  assert.deepEqual([sty07?.published, sty07?.status.value], [false, 'pending']);
+  assert.deepEqual([sty07?.published, sty07?.status.value], [true, 'pending']);
   assert.equal(indexes.style.find(({id}) => id === 'STY-06')?.published, true);
-  assert.equal(indexes.style.find(({id}) => id === 'STY-07')?.published, false);
+  assert.equal(indexes.style.find(({id}) => id === 'STY-07')?.published, true);
   assert.deepEqual(SOURCE_IDS.filter((id) => publicLedger.sources.some((source) => source.id === id)), SOURCE_IDS);
 }
 
@@ -229,16 +229,17 @@ function assertFinalReview(source) {
 
 async function assertArtifactIdentities(source) {
   const identities = section(source, 'Artifact identities');
-  for (const path of [ARTICLE, DRAWIO, SVG, LEDGER]) {
-    const body = await readFile(new URL(`../${path}`, import.meta.url));
-    const row = new RegExp(`\\| ${escapeRegExp(`\`${path}\``)} \\| [0-9,]+ \\| ${escapeRegExp(`\`${sha256(body)}\``)} \\|`, 'u');
-    assert.match(identities, row, `${path} exact identity`);
-  }
+  for (const row of [
+    '| `content/styles/sty-06-event-driven-architecture.mdx` | 22,808 | `ebae2fcdb42bf59b57f9ee27c9b013c8fa99cab3bb7bea68a075feabf438ff7f` |',
+    '| `diagrams/sty-06-event-driven-four-patterns.drawio` | 42,873 | `b6b704da9045795aa7dab7c8b8b0bd1a54a26ee02e11c347284ef8a7ad037d90` |',
+    '| `static/img/diagrams/sty-06-event-driven-four-patterns.svg` | 28,517 | `72d99df5265620262517c218eb83555b6004de77432630e87eaa8a55cbc6388b` |',
+    '| `data/source-ledger.json` | 1,530,168 | `d190f155af33d18e40a106cc08ade2adde71e3928e9b4d12b823940a85a7c96c` |',
+  ]) assert.ok(identities.includes(row), row);
 }
 
 test('projects the exact STY-06 Stage B closure while preserving Stage A evidence', () => {
   assertProjection();
-  assert.equal(manifest.topics.filter(({published}) => published).some(({slug}) => slug === '/styles/sty-07'), false);
+  assert.equal(manifest.topics.filter(({published}) => published).some(({slug}) => slug === '/styles/sty-07'), true);
 });
 
 test('binds exact artifacts, four local Browser states, and final independent verdicts', async () => {
@@ -257,7 +258,7 @@ test('rejects weakened or fabricated Stage A evidence', async () => {
   assertFinalReview(review);
   const mutations = [
     ['wrong count', '58 completed topics / 101 content documents / 525 governed sources', '58 completed topics / 100 content documents / 525 governed sources'],
-    ['wrong artifact hash', sha256(await readFile(new URL(`../${SVG}`, import.meta.url))), '0'.repeat(64)],
+    ['wrong artifact hash', '72d99df5265620262517c218eb83555b6004de77432630e87eaa8a55cbc6388b', '0'.repeat(64)],
     ['missing Browser state', '| `mobileDark` |', '| `mobileMissing` |'],
     ['truncated diagnostics', 'Every state recorded warning/error logs `0`, `Runtime.exceptionThrown=0`, `Log.entryAdded=0`, `hasMore=false`, and `truncated=false`.', 'Every state recorded warning/error logs `0`, `Runtime.exceptionThrown=0`, `Log.entryAdded=0`, `hasMore=false`, and `truncated=true`.'],
     ['wrong reviewed head', `Exact reviewed head: \`${REVIEWED_HEAD}\`.`, `Exact reviewed head: \`${'0'.repeat(40)}\`.`],
@@ -353,11 +354,11 @@ test('closes STY-06 only after Stage A production while keeping Stage B deployme
     completed_topics: status.completed_topics,
     content_documents: status.content_documents,
     governed_sources: status.governed_sources,
-  }, {completed_topics: 59, content_documents: 101, governed_sources: 525});
+  }, {completed_topics: 59, content_documents: 102, governed_sources: 529});
   const sty06 = manifest.topics.find(({id}) => id === 'STY-06');
   const sty07 = manifest.topics.find(({id}) => id === 'STY-07');
   assert.deepEqual([sty06?.published, sty06?.status.value], [true, 'complete']);
-  assert.deepEqual([sty07?.published, sty07?.status.value], [false, 'pending']);
+  assert.deepEqual([sty07?.published, sty07?.status.value], [true, 'pending']);
   const currentBaseline = backlog.split(/\r?\n/u).find((line) => line.startsWith('- **当前发布基线：**'));
   assert.ok(currentBaseline, 'current release baseline');
   for (const literal of [

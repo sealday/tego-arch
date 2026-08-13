@@ -45,7 +45,7 @@ const EXPECTED_METADATA = {
   topic_id: TOPIC_ID,
   priority: 'P0',
   depends_on: ['STY-00', 'STY-04'],
-  adjacent_topics: ['STY-03', 'STY-04', 'STY-06'],
+  adjacent_topics: ['STY-03', 'STY-04', 'STY-06', 'STY-07'],
   related_cases: ['/cases/micro-frontends-single-spa'],
   related_questions: [],
 };
@@ -98,8 +98,8 @@ const MIXED_AFFIRMATIVE_VIOLATIONS = [
 
 const ILLUSTRATION_SOURCE_ID = 'src-atlas-sty05-microservices-order-saga';
 const ILLUSTRATION_URL = '/img/diagrams/sty-05-microservices-order-saga.svg';
-const ADJACENT_TOPICS = ['STY-03', 'STY-04', 'STY-06'];
-const ADJACENT_ROUTES = ['/styles/sty-03', '/styles/sty-04'];
+const ADJACENT_TOPICS = ['STY-03', 'STY-04', 'STY-06', 'STY-07'];
+const ADJACENT_ROUTES = ['/styles/sty-03', '/styles/sty-04', '/styles/sty-07'];
 const SERVICE_KEYS = ['order', 'inventory', 'payment', 'notification'];
 const SERVICE_CHILDREN = new Map([
   ['order', ['order-contract', 'order-handler', 'order-data', 'order-saga-state', 'order-outbox', 'order-consumer-dedup']],
@@ -1154,9 +1154,9 @@ test('preserves the STY-05 closure under the live STY-06 Stage B projection', ()
   assert.equal(indexes.style.find(({id}) => id === TOPIC_ID)?.published, true);
   assert.equal(indexes.style.find(({id}) => id === 'STY-06')?.published, true);
   assert.equal(projectStatus.completed_topics, 59);
-  assert.equal(projectStatus.content_documents, 101);
-  assert.equal(projectStatus.governed_sources, 525);
-  assert.equal(publicLedger.sources.length, 525);
+  assert.equal(projectStatus.content_documents, 102);
+  assert.equal(projectStatus.governed_sources, 529);
+  assert.equal(publicLedger.sources.length, 529);
   const publishedRoutes = manifest.topics.filter(({published}) => published).map(({slug}) => slug);
   assert.ok(publishedRoutes.includes(ROUTE));
   assert.equal(publishedRoutes.includes('/styles/sty-06'), true);
@@ -1165,6 +1165,7 @@ test('preserves the STY-05 closure under the live STY-06 Stage B projection', ()
     'styles/sty-05-microservices.mdx',
     'principles/pr-11-cqs-cqrs-read-write-separation.mdx',
     'modeling/mod-08-state-machine-modeling.mdx',
+    'styles/sty-07-service-oriented-architecture.mdx',
   ]);
   for (const document of documents) {
     assert.equal(

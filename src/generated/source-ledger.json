@@ -2306,6 +2306,40 @@
       "health_checks": []
     },
     {
+      "id": "src-atlas-sty07-soa-microservices-order-fulfillment",
+      "canonical_locator": "/img/diagrams/sty-07-soa-microservices-order-fulfillment.svg",
+      "transport_locator": "/img/diagrams/sty-07-soa-microservices-order-fulfillment.svg",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "经典 SOA 与微服务的订单履约机制对照板",
+      "author_or_org": "Tego Arch maintainers",
+      "published_at": null,
+      "registered_at": "2026-08-13",
+      "checked_at": "2026-08-13",
+      "version": "Original synchronized Draw.io/SVG pair authored and checked on 2026-08-13",
+      "source_kind": "original-illustration",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "illustration"
+      ],
+      "license": "LicenseRef-Atlas-Original",
+      "license_scope": "The named project-authored sty-07-soa-microservices-order-fulfillment.svg asset only",
+      "license_evidence_url": "https://github.com/sealday/tego-arch/blob/main/static/img/diagrams/sty-07-soa-microservices-order-fulfillment.svg",
+      "license_evidence_note": "The project-authored Draw.io/SVG pair contains no third-party topology, reference image, brand visual, signature, watermark, or copied composition.",
+      "license_family_id": "/img/diagrams/sty-07-soa-microservices-order-fulfillment.svg",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "original-atlas",
+      "usage_boundary": "Original teaching comparison of classic SOA and microservices order fulfillment; illustration-only and not evidence of a mandatory ESB topology or production outcomes.",
+      "link_policy": null,
+      "expected_final_transport_locator": "/img/diagrams/sty-07-soa-microservices-order-fulfillment.svg",
+      "expected_final_approved_at": "2026-08-13",
+      "expected_final_approval_note": "Approved project-local original illustration after synchronized Draw.io/SVG semantic, geometry, contrast and raster QA.",
+      "health_summary": "healthy",
+      "health_checks": []
+    },
+    {
       "id": "src-aws-0ccf50a7d52b",
       "canonical_locator": "https://aws.amazon.com/blogs/architecture/shuffle-sharding-massive-and-magical-fault-isolation/",
       "transport_locator": "https://aws.amazon.com/blogs/architecture/shuffle-sharding-massive-and-magical-fault-isolation/",
@@ -22673,6 +22707,96 @@
       ]
     },
     {
+      "id": "src-oasis-soa-reference-architecture-foundation-1-0",
+      "canonical_locator": "https://docs.oasis-open.org/soa-rm/soa-ra/v1.0/soa-ra.html",
+      "transport_locator": "https://docs.oasis-open.org/soa-rm/soa-ra/v1.0/soa-ra.html",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Reference Architecture Foundation for Service Oriented Architecture 1.0",
+      "author_or_org": "OASIS Open",
+      "published_at": "2012-12-04",
+      "registered_at": "2026-08-13",
+      "checked_at": "2026-08-13",
+      "version": "OASIS Committee Specification 01, 4 December 2012",
+      "source_kind": "standard",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "comparison",
+        "definition",
+        "method"
+      ],
+      "license": "LicenseRef-Proprietary-Standard",
+      "license_scope": "The named OASIS Committee Specification and bibliographic facts only; normative prose, examples, diagrams, linked works, trademarks, and third-party material excluded",
+      "license_evidence_url": "https://www.oasis-open.org/policies-guidelines/ipr/",
+      "license_evidence_note": "OASIS IPR policies govern the specification; Tego Arch conservatively uses attributed bibliographic facts and original factual summary only.",
+      "license_family_id": "https://docs.oasis-open.org/soa-rm/soa-ra/v1.0/soa-ra.html",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports participant, governance, policy, service-description, interaction and cross-ownership responsibility concepts; it does not establish the article order topology as unique.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://docs.oasis-open.org/soa-rm/soa-ra/v1.0/soa-ra.html",
+      "expected_final_approved_at": "2026-08-13",
+      "expected_final_approval_note": "Dated OASIS specification identity, stable transport and conservative IPR boundary reviewed on 2026-08-13.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://docs.oasis-open.org/soa-rm/soa-ra/v1.0/soa-ra.html",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-13T00:00:00.000Z",
+          "last_success_at": "2026-08-13T00:00:00.000Z",
+          "http_status": 200,
+          "final_transport_locator": "https://docs.oasis-open.org/soa-rm/soa-ra/v1.0/soa-ra.html"
+        }
+      ]
+    },
+    {
+      "id": "src-oasis-soa-reference-model-1-0",
+      "canonical_locator": "https://docs.oasis-open.org/soa-rm/v1.0/soa-rm.html",
+      "transport_locator": "https://docs.oasis-open.org/soa-rm/v1.0/soa-rm.html",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Reference Model for Service Oriented Architecture 1.0",
+      "author_or_org": "OASIS Open",
+      "published_at": "2006-10-12",
+      "registered_at": "2026-08-13",
+      "checked_at": "2026-08-13",
+      "version": "OASIS Standard 12 October 2006",
+      "source_kind": "standard",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "comparison",
+        "definition",
+        "method"
+      ],
+      "license": "LicenseRef-Proprietary-Standard",
+      "license_scope": "The named OASIS Standard and bibliographic facts only; normative prose, examples, diagrams, linked works, trademarks, and third-party material excluded",
+      "license_evidence_url": "https://www.oasis-open.org/policies-guidelines/ipr/",
+      "license_evidence_note": "OASIS IPR policies govern the standard; Tego Arch conservatively uses attributed bibliographic facts and original factual summary only.",
+      "license_family_id": "https://docs.oasis-open.org/soa-rm/v1.0/soa-rm.html",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports service, capability access, visibility, interaction, real-world effect, contract and policy concepts; it does not require ESB, Web Services, centralized orchestration, or the article order topology.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://docs.oasis-open.org/soa-rm/v1.0/soa-rm.html",
+      "expected_final_approved_at": "2026-08-13",
+      "expected_final_approval_note": "Dated OASIS Standard identity, stable transport and conservative IPR boundary reviewed on 2026-08-13.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://docs.oasis-open.org/soa-rm/v1.0/soa-rm.html",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-13T00:00:00.000Z",
+          "last_success_at": "2026-08-13T00:00:00.000Z",
+          "http_status": 200,
+          "final_transport_locator": "https://docs.oasis-open.org/soa-rm/v1.0/soa-rm.html"
+        }
+      ]
+    },
+    {
       "query_insensitive": false,
       "locator_aliases": [],
       "tombstone": null,
@@ -25398,6 +25522,51 @@
           "last_success_at": "2026-08-12T00:00:00.000Z",
           "http_status": 200,
           "final_transport_locator": "https://www.w3.org/TR/2015/REC-scxml-20150901/"
+        }
+      ]
+    },
+    {
+      "id": "src-w3c-web-services-architecture",
+      "canonical_locator": "https://www.w3.org/TR/ws-arch/",
+      "transport_locator": "https://www.w3.org/TR/ws-arch/",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Web Services Architecture",
+      "author_or_org": "World Wide Web Consortium",
+      "published_at": "2004-02-11",
+      "registered_at": "2026-08-13",
+      "checked_at": "2026-08-13",
+      "version": "W3C Working Group Note 11 February 2004",
+      "source_kind": "standard",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "comparison",
+        "definition",
+        "method"
+      ],
+      "license": "LicenseRef-Proprietary-Standard",
+      "license_scope": "The named W3C Working Group Note and bibliographic facts only; normative prose, examples, diagrams, linked works, trademarks, and third-party material excluded",
+      "license_evidence_url": "https://www.w3.org/copyright/document-license-2023/",
+      "license_evidence_note": "The W3C document-use license governs W3C documents; Tego Arch conservatively uses attributed factual reference and original summary only.",
+      "license_family_id": "https://www.w3.org/TR/ws-arch/",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports web-service message, service-description, policy and participant relationships; it does not make Web Services equivalent to SOA or establish production outcomes.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://www.w3.org/TR/ws-arch/",
+      "expected_final_approved_at": "2026-08-13",
+      "expected_final_approval_note": "Dated W3C Note and document-use boundary reviewed on 2026-08-13.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://www.w3.org/TR/ws-arch/",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-13T00:00:00.000Z",
+          "last_success_at": "2026-08-13T00:00:00.000Z",
+          "http_status": 200,
+          "final_transport_locator": "https://www.w3.org/TR/ws-arch/"
         }
       ]
     }
@@ -36177,6 +36346,104 @@
           "usage_mode": "facts-summary",
           "attribution_note": "State Chart XML (SCXML), W3C Recommendation 2015",
           "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/styles/sty-07-service-oriented-architecture.mdx": {
+      "title": "面向服务架构：用稳定合同连接企业能力，也约束集中治理",
+      "slug": "/styles/sty-07",
+      "reviewed_at": "2026-08-13",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-atlas-sty07-soa-microservices-order-fulfillment",
+          "citation_url": "/img/diagrams/sty-07-soa-microservices-order-fulfillment.svg",
+          "roles": [
+            "illustration"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "original-illustration",
+          "attribution_note": "经典 SOA 与微服务的订单履约机制对照板，Tego Arch maintainers",
+          "modification_note": "Created as an original synchronized Draw.io/SVG pair without third-party topology, reference imagery, brand visuals, signatures, watermarks, or copied composition.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-lewis-fowler-microservices",
+          "citation_url": "https://martinfowler.com/articles/microservices.html",
+          "roles": [
+            "comparison",
+            "definition",
+            "runtime-fact"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Microservices, James Lewis and Martin Fowler",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-microsoft-microservices-architecture-style",
+          "citation_url": "https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/microservices",
+          "roles": [
+            "comparison",
+            "definition",
+            "runtime-fact"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Microservices architecture style, Microsoft Azure Architecture Center",
+          "modification_note": "Original Chinese synthesis; Azure-specific recommendations excluded.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-oasis-soa-reference-architecture-foundation-1-0",
+          "citation_url": "https://docs.oasis-open.org/soa-rm/soa-ra/v1.0/soa-ra.html",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "OASIS Reference Architecture Foundation for Service Oriented Architecture 1.0",
+          "modification_note": "Original Chinese factual summary; the teaching order topology is project-authored.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-oasis-soa-reference-model-1-0",
+          "citation_url": "https://docs.oasis-open.org/soa-rm/v1.0/soa-rm.html",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "OASIS Reference Model for Service Oriented Architecture 1.0",
+          "modification_note": "Original Chinese factual summary; no standard prose, examples, diagrams, or structure copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-w3c-web-services-architecture",
+          "citation_url": "https://www.w3.org/TR/ws-arch/",
+          "roles": [
+            "comparison",
+            "definition"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "W3C Web Services Architecture",
+          "modification_note": "Original Chinese factual summary; no W3C prose, examples, or diagrams copied.",
           "excerpt": null,
           "quotation_reviewed": false
         }

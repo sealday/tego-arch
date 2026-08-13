@@ -83,8 +83,8 @@ const SOURCE_CONTRACTS = [
     usageBoundary: 'Original teaching illustration of module contracts, authoritative data ownership, local transaction coupling, post-commit payment and publication recovery, consumer deduplication, and shared deployment failure scope; it is illustration-only and does not establish factual claims or represent a production implementation.',
   },
 ];
-const ADJACENT_TOPICS = ['STY-01', 'STY-02', 'STY-03', 'STY-05', 'STY-06'];
-const ADJACENT_ROUTES = ['/styles/sty-01', '/styles/sty-02', '/styles/sty-03', '/styles/sty-05'];
+const ADJACENT_TOPICS = ['STY-01', 'STY-02', 'STY-03', 'STY-05', 'STY-06', 'STY-07'];
+const ADJACENT_ROUTES = ['/styles/sty-01', '/styles/sty-02', '/styles/sty-03', '/styles/sty-05', '/styles/sty-07'];
 const MODULES = ['order', 'inventory', 'payment', 'notification'];
 const MEASURED_HEADER_NODES = [
   'deployment-boundary',
@@ -933,9 +933,9 @@ test('projects the exact Stage B closure state', () => {
   assert.equal(nextStyleIndexEntry?.published, true);
   assert.equal(nextStyleIndexEntry?.status.value, 'complete');
   assert.equal(projectStatus.completed_topics, 59);
-  assert.equal(projectStatus.content_documents, 101);
-  assert.equal(projectStatus.governed_sources, 525);
-  assert.equal(publicLedger.sources.length, 525);
+  assert.equal(projectStatus.content_documents, 102);
+  assert.equal(projectStatus.governed_sources, 529);
+  assert.equal(publicLedger.sources.length, 529);
 });
 
 test('publishes a synchronized, accessible Draw.io and SVG semantic inventory', async () => {

@@ -2138,7 +2138,8 @@
         "STY-02",
         "STY-03",
         "STY-05",
-        "STY-06"
+        "STY-06",
+        "STY-07"
       ],
       "primary_sources": [
         "https://docs.spring.io/spring-modulith/reference/fundamentals.html"
@@ -2171,7 +2172,8 @@
       "adjacent_topics": [
         "STY-03",
         "STY-04",
-        "STY-06"
+        "STY-06",
+        "STY-07"
       ],
       "primary_sources": [
         "https://martinfowler.com/articles/microservices.html"
@@ -2204,6 +2206,7 @@
       "adjacent_topics": [
         "STY-04",
         "STY-05",
+        "STY-07",
         "PR-11",
         "MOD-08"
       ],
@@ -2219,27 +2222,6 @@
       "published": true,
       "pattern_group": null,
       "presentation": {}
-    },
-    {
-      "id": "STY-07",
-      "type": "style",
-      "title": "Service-Oriented Architecture",
-      "slug": "/styles/sty-07",
-      "priority": "P1",
-      "status": {
-        "scope": "backlog-projection",
-        "value": "pending",
-        "source": "docs/content-backlog.md"
-      },
-      "dependencies": [],
-      "adjacent_topics": [],
-      "primary_sources": [],
-      "related_cases": [],
-      "related_questions": [],
-      "reviewed_at": null,
-      "review_policy": null,
-      "published": false,
-      "pattern_group": null
     },
     {
       "id": "STY-08",
@@ -2345,6 +2327,39 @@
       "review_policy": null,
       "published": false,
       "pattern_group": null
+    },
+    {
+      "id": "STY-07",
+      "type": "style",
+      "title": "面向服务架构：用稳定合同连接企业能力，也约束集中治理",
+      "slug": "/styles/sty-07",
+      "priority": "P1",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "pending",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "STY-00",
+        "STY-05"
+      ],
+      "adjacent_topics": [
+        "STY-04",
+        "STY-05",
+        "STY-06"
+      ],
+      "primary_sources": [
+        "https://docs.oasis-open.org/soa-rm/v1.0/soa-rm.html"
+      ],
+      "related_cases": [
+        "/cases/temporal-saga-durable-execution"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-08-13",
+      "review_policy": null,
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
     },
     {
       "id": "STY-14",

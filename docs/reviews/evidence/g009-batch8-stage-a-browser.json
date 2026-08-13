@@ -1,0 +1,611 @@
+{
+  "candidateHead": "2e4ba552853cd74de3a4b8781aee5af9601dbfcf",
+  "route": "http://127.0.0.1:3417/tego-arch/styles/sty-07",
+  "states": {
+    "desktopLight": {
+      "state": "desktopLight",
+      "theme": "light",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "geometry": {
+        "h1": "面向服务架构：用稳定合同连接企业能力，也约束集中治理",
+        "page": {
+          "clientWidth": 1440,
+          "scrollWidth": 1440
+        },
+        "sources": [
+          {
+            "href": "https://docs.oasis-open.org/soa-rm/v1.0/soa-rm.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://docs.oasis-open.org/soa-rm/soa-ra/v1.0/soa-ra.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://www.w3.org/TR/ws-arch/",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://martinfowler.com/articles/microservices.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/microservices",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          }
+        ],
+        "sty08": 0,
+        "svg": {
+          "loaded": true,
+          "naturalHeight": 150,
+          "naturalWidth": 82,
+          "renderedHeight": 1466.6640625,
+          "renderedWidth": 800
+        },
+        "wrappers": [
+          {
+            "clientWidth": 800,
+            "index": 0,
+            "label": "经典面向服务架构与微服务订单履约机制对照图，可横向滚动",
+            "scrollWidth": 800
+          },
+          {
+            "clientWidth": 800,
+            "index": 1,
+            "label": "经典面向服务架构与微服务八维机制对照表，可横向滚动",
+            "scrollWidth": 1024
+          },
+          {
+            "clientWidth": 800,
+            "index": 2,
+            "label": "面向服务架构采用、收紧与停止决策表，可横向滚动",
+            "scrollWidth": 1024
+          }
+        ]
+      },
+      "interactions": [
+        {
+          "index": 0,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 0
+          }
+        },
+        {
+          "index": 1,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 40
+          }
+        },
+        {
+          "index": 2,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 40
+          }
+        }
+      ],
+      "relations": [
+        {
+          "href": "/tego-arch/styles/sty-04",
+          "h1": "模块化单体：在一个部署单元内保护业务边界",
+          "expectedH1": "模块化单体：在一个部署单元内保护业务边界",
+          "returnedToArticle": true
+        },
+        {
+          "href": "/tego-arch/styles/sty-05",
+          "h1": "微服务：用独立部署换取自治，也承担分布式成本",
+          "expectedH1": "微服务：用独立部署换取自治，也承担分布式成本",
+          "returnedToArticle": true
+        },
+        {
+          "href": "/tego-arch/styles/sty-06",
+          "h1": "事件驱动架构：先分清事件携带什么，再决定状态放在哪里",
+          "expectedH1": "事件驱动架构：先分清事件携带什么，再决定状态放在哪里",
+          "returnedToArticle": true
+        },
+        {
+          "href": "/tego-arch/cases/temporal-saga-durable-execution",
+          "h1": "持久化执行与长事务：为长时智能体任务建立可恢复边界",
+          "expectedH1": "持久化执行与长事务：为长时智能体任务建立可恢复边界",
+          "returnedToArticle": true
+        }
+      ],
+      "logs": [],
+      "diagnostics": {
+        "events": [],
+        "hasMore": false,
+        "truncated": false
+      }
+    },
+    "desktopDark": {
+      "state": "desktopDark",
+      "theme": "dark",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "geometry": {
+        "h1": "面向服务架构：用稳定合同连接企业能力，也约束集中治理",
+        "page": {
+          "clientWidth": 1440,
+          "scrollWidth": 1440
+        },
+        "sources": [
+          {
+            "href": "https://docs.oasis-open.org/soa-rm/v1.0/soa-rm.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://docs.oasis-open.org/soa-rm/soa-ra/v1.0/soa-ra.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://www.w3.org/TR/ws-arch/",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://martinfowler.com/articles/microservices.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/microservices",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          }
+        ],
+        "sty08": 0,
+        "svg": {
+          "loaded": true,
+          "naturalHeight": 150,
+          "naturalWidth": 82,
+          "renderedHeight": 1466.6640625,
+          "renderedWidth": 800
+        },
+        "wrappers": [
+          {
+            "clientWidth": 800,
+            "index": 0,
+            "label": "经典面向服务架构与微服务订单履约机制对照图，可横向滚动",
+            "scrollWidth": 800
+          },
+          {
+            "clientWidth": 800,
+            "index": 1,
+            "label": "经典面向服务架构与微服务八维机制对照表，可横向滚动",
+            "scrollWidth": 1024
+          },
+          {
+            "clientWidth": 800,
+            "index": 2,
+            "label": "面向服务架构采用、收紧与停止决策表，可横向滚动",
+            "scrollWidth": 1024
+          }
+        ]
+      },
+      "interactions": [
+        {
+          "index": 0,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(227, 144, 125) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(227, 144, 125) solid 3px",
+            "scrollLeft": 0
+          }
+        },
+        {
+          "index": 1,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "scrollLeft": 40
+          }
+        },
+        {
+          "index": 2,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "scrollLeft": 40
+          }
+        }
+      ],
+      "relations": [
+        {
+          "href": "/tego-arch/styles/sty-04",
+          "h1": "模块化单体：在一个部署单元内保护业务边界",
+          "expectedH1": "模块化单体：在一个部署单元内保护业务边界",
+          "returnedToArticle": true
+        },
+        {
+          "href": "/tego-arch/styles/sty-05",
+          "h1": "微服务：用独立部署换取自治，也承担分布式成本",
+          "expectedH1": "微服务：用独立部署换取自治，也承担分布式成本",
+          "returnedToArticle": true
+        },
+        {
+          "href": "/tego-arch/styles/sty-06",
+          "h1": "事件驱动架构：先分清事件携带什么，再决定状态放在哪里",
+          "expectedH1": "事件驱动架构：先分清事件携带什么，再决定状态放在哪里",
+          "returnedToArticle": true
+        },
+        {
+          "href": "/tego-arch/cases/temporal-saga-durable-execution",
+          "h1": "持久化执行与长事务：为长时智能体任务建立可恢复边界",
+          "expectedH1": "持久化执行与长事务：为长时智能体任务建立可恢复边界",
+          "returnedToArticle": true
+        }
+      ],
+      "logs": [],
+      "diagnostics": {
+        "events": [],
+        "hasMore": false,
+        "truncated": false
+      }
+    },
+    "mobileLight": {
+      "state": "mobileLight",
+      "theme": "light",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "geometry": {
+        "h1": "面向服务架构：用稳定合同连接企业能力，也约束集中治理",
+        "page": {
+          "clientWidth": 390,
+          "scrollWidth": 390
+        },
+        "sources": [
+          {
+            "href": "https://docs.oasis-open.org/soa-rm/v1.0/soa-rm.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://docs.oasis-open.org/soa-rm/soa-ra/v1.0/soa-ra.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://www.w3.org/TR/ws-arch/",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://martinfowler.com/articles/microservices.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/microservices",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          }
+        ],
+        "sty08": 0,
+        "svg": {
+          "loaded": true,
+          "naturalHeight": 150,
+          "naturalWidth": 82,
+          "renderedHeight": 1466.6640625,
+          "renderedWidth": 800
+        },
+        "wrappers": [
+          {
+            "clientWidth": 358,
+            "index": 0,
+            "label": "经典面向服务架构与微服务订单履约机制对照图，可横向滚动",
+            "scrollWidth": 800
+          },
+          {
+            "clientWidth": 358,
+            "index": 1,
+            "label": "经典面向服务架构与微服务八维机制对照表，可横向滚动",
+            "scrollWidth": 1024
+          },
+          {
+            "clientWidth": 358,
+            "index": 2,
+            "label": "面向服务架构采用、收紧与停止决策表，可横向滚动",
+            "scrollWidth": 1024
+          }
+        ]
+      },
+      "interactions": [
+        {
+          "index": 0,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(227, 144, 125) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(227, 144, 125) solid 3px",
+            "scrollLeft": 40
+          }
+        },
+        {
+          "index": 1,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "scrollLeft": 40
+          }
+        },
+        {
+          "index": 2,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "scrollLeft": 40
+          }
+        }
+      ],
+      "relations": [
+        {
+          "href": "/tego-arch/styles/sty-04",
+          "h1": "模块化单体：在一个部署单元内保护业务边界",
+          "expectedH1": "模块化单体：在一个部署单元内保护业务边界",
+          "returnedToArticle": true
+        },
+        {
+          "href": "/tego-arch/styles/sty-05",
+          "h1": "微服务：用独立部署换取自治，也承担分布式成本",
+          "expectedH1": "微服务：用独立部署换取自治，也承担分布式成本",
+          "returnedToArticle": true
+        },
+        {
+          "href": "/tego-arch/styles/sty-06",
+          "h1": "事件驱动架构：先分清事件携带什么，再决定状态放在哪里",
+          "expectedH1": "事件驱动架构：先分清事件携带什么，再决定状态放在哪里",
+          "returnedToArticle": true
+        },
+        {
+          "href": "/tego-arch/cases/temporal-saga-durable-execution",
+          "h1": "持久化执行与长事务：为长时智能体任务建立可恢复边界",
+          "expectedH1": "持久化执行与长事务：为长时智能体任务建立可恢复边界",
+          "returnedToArticle": true
+        }
+      ],
+      "logs": [],
+      "diagnostics": {
+        "events": [],
+        "hasMore": false,
+        "truncated": false
+      }
+    },
+    "mobileDark": {
+      "state": "mobileDark",
+      "theme": "dark",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "geometry": {
+        "h1": "面向服务架构：用稳定合同连接企业能力，也约束集中治理",
+        "page": {
+          "clientWidth": 390,
+          "scrollWidth": 390
+        },
+        "sources": [
+          {
+            "href": "https://docs.oasis-open.org/soa-rm/v1.0/soa-rm.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://docs.oasis-open.org/soa-rm/soa-ra/v1.0/soa-ra.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://www.w3.org/TR/ws-arch/",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://martinfowler.com/articles/microservices.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/microservices",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          }
+        ],
+        "sty08": 0,
+        "svg": {
+          "loaded": true,
+          "naturalHeight": 150,
+          "naturalWidth": 82,
+          "renderedHeight": 1466.6640625,
+          "renderedWidth": 800
+        },
+        "wrappers": [
+          {
+            "clientWidth": 358,
+            "index": 0,
+            "label": "经典面向服务架构与微服务订单履约机制对照图，可横向滚动",
+            "scrollWidth": 800
+          },
+          {
+            "clientWidth": 358,
+            "index": 1,
+            "label": "经典面向服务架构与微服务八维机制对照表，可横向滚动",
+            "scrollWidth": 1024
+          },
+          {
+            "clientWidth": 358,
+            "index": 2,
+            "label": "面向服务架构采用、收紧与停止决策表，可横向滚动",
+            "scrollWidth": 1024
+          }
+        ]
+      },
+      "interactions": [
+        {
+          "index": 0,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 40
+          }
+        },
+        {
+          "index": 1,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 40
+          }
+        },
+        {
+          "index": 2,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 40
+          }
+        }
+      ],
+      "relations": [
+        {
+          "href": "/tego-arch/styles/sty-04",
+          "h1": "模块化单体：在一个部署单元内保护业务边界",
+          "expectedH1": "模块化单体：在一个部署单元内保护业务边界",
+          "returnedToArticle": true
+        },
+        {
+          "href": "/tego-arch/styles/sty-05",
+          "h1": "微服务：用独立部署换取自治，也承担分布式成本",
+          "expectedH1": "微服务：用独立部署换取自治，也承担分布式成本",
+          "returnedToArticle": true
+        },
+        {
+          "href": "/tego-arch/styles/sty-06",
+          "h1": "事件驱动架构：先分清事件携带什么，再决定状态放在哪里",
+          "expectedH1": "事件驱动架构：先分清事件携带什么，再决定状态放在哪里",
+          "returnedToArticle": true
+        },
+        {
+          "href": "/tego-arch/cases/temporal-saga-durable-execution",
+          "h1": "持久化执行与长事务：为长时智能体任务建立可恢复边界",
+          "expectedH1": "持久化执行与长事务：为长时智能体任务建立可恢复边界",
+          "returnedToArticle": true
+        }
+      ],
+      "logs": [],
+      "diagnostics": {
+        "events": [],
+        "hasMore": false,
+        "truncated": false
+      }
+    }
+  },
+  "screenshotEvidence": {
+    "status": "CAPTURED / ACCEPTED",
+    "artifacts": {
+      "desktopLight": {"status":"CAPTURED","path":"/var/folders/b3/y7kbcz5d3dn605_sks_vdm080000gn/T/sty07-iab-tUqIJ2/desktopLight.png","bytes":1143679,"sha256":"e888a002bc7964daed6e132fcad42f30ae768b1d73dba07903197a43dcc8b79a"},
+      "desktopDark": {"status":"CAPTURED","path":"/var/folders/b3/y7kbcz5d3dn605_sks_vdm080000gn/T/sty07-iab-tUqIJ2/desktopDark.png","bytes":1147197,"sha256":"e1caa8ab9861bc724d39c301608ee3f3ffd29ad103a9d90dddada77ce8ad3eae"},
+      "mobileLight": {"status":"CAPTURED","path":"/var/folders/b3/y7kbcz5d3dn605_sks_vdm080000gn/T/sty07-iab-tUqIJ2/mobileLight.png","bytes":500438,"sha256":"1a85d1c33490dc215e5d6cb6b0d943e3e8e8097653bbe89deeb48a0f1efe2a21"},
+      "mobileDark": {"status":"CAPTURED","path":"/var/folders/b3/y7kbcz5d3dn605_sks_vdm080000gn/T/sty07-iab-tUqIJ2/mobileDark.png","bytes":507174,"sha256":"e4360654ce4e1aed1a7677998f3af4e0c0bed5e8d5353f2249165a0583190b69"}
+    }
+  }
+}

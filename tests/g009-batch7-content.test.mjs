@@ -51,7 +51,7 @@ const MODE_KEYS = ['eventNotification', 'stateTransition', 'carriedState', 'even
 const PARTICIPANTS = ['订单', '库存', '支付', '通知'];
 const RELATION_METADATA = {
   depends_on: ['STY-00', 'STY-05'],
-  adjacent_topics: ['STY-04', 'STY-05', 'PR-11', 'MOD-08'],
+  adjacent_topics: ['STY-04', 'STY-05', 'STY-07', 'PR-11', 'MOD-08'],
   related_cases: ['/cases/apache-kafka-consumer-groups'],
   related_questions: [],
 };
@@ -87,7 +87,7 @@ const METADATA_YAML_TOKENS = new Map([
   ['summary', 'summary: 以同一订单案例并排区分事件通知、状态转移、事件携带状态和事件溯源，比较载荷、回查、权威状态、重建与恢复责任。\n'],
   ['topic_id', 'topic_id: STY-06\n'], ['priority', 'priority: P0\n'],
   ['depends_on', 'depends_on:\n  - STY-00\n  - STY-05\n'],
-  ['adjacent_topics', 'adjacent_topics:\n  - STY-04\n  - STY-05\n  - PR-11\n  - MOD-08\n'],
+  ['adjacent_topics', 'adjacent_topics:\n  - STY-04\n  - STY-05\n  - STY-07\n  - PR-11\n  - MOD-08\n'],
   ['related_cases', 'related_cases:\n  - /cases/apache-kafka-consumer-groups\n'],
   ['related_questions', 'related_questions: []\n'],
 ]);
@@ -1552,12 +1552,12 @@ test('governs six sources, independent hosts, evidence roles, rights, and one ma
   assert.deepEqual(extractExternalLinks({body: article.body}).sort(), remoteSources.map(({canonical_locator}) => canonical_locator).sort());
 });
 
-test('locks reciprocal visible links and excludes actionable STY-07', () => {
+test('locks reciprocal visible links and includes actionable STY-07', () => {
   assert.ok(article, `${ARTICLE} must exist after implementation`);
   const articleLinks = extractInternalLinks({body: article.body});
   assert.ok(articleLinks.includes('/styles'), 'visible parent styles route');
   assert.ok(articleLinks.includes('/cases/apache-kafka-consumer-groups'), 'visible related case');
-  assert.equal(articleLinks.includes('/styles/sty-07'), false, 'STY-07 is non-actionable');
+  assert.equal(articleLinks.includes('/styles/sty-07'), true, 'STY-07 is actionable');
   for (const file of RECIPROCAL_FILES) {
     const document = documents.find((candidate) => candidate.file === file);
     assert.ok(document, `${file} reciprocal document`);
@@ -1567,10 +1567,6 @@ test('locks reciprocal visible links and excludes actionable STY-07', () => {
       assert.ok(extractInternalLinks({body: document.body}).includes(ROUTE), `${file} visible ${ROUTE}`);
     }
   }
-  for (const document of documents) {
-    assert.equal(extractInternalLinks({body: document.body}).includes('/styles/sty-07'), false,
-      `${document.file} no actionable STY-07`);
-  }
 });
 
 test('projects the exact STY-06 Stage B closure state', () => {
@@ -1578,8 +1574,8 @@ test('projects the exact STY-06 Stage B closure state', () => {
     completed_topics: projectStatus.completed_topics,
     content_documents: projectStatus.content_documents,
     governed_sources: projectStatus.governed_sources,
-  }, {completed_topics: 59, content_documents: 101, governed_sources: 525});
-  assert.equal(publicLedger.sources.length, 525);
+  }, {completed_topics: 59, content_documents: 102, governed_sources: 529});
+  assert.equal(publicLedger.sources.length, 529);
   const topic = manifest.topics.find(({id}) => id === TOPIC_ID);
   assert.equal(topic?.slug, ROUTE);
   assert.equal(topic?.published, true);
@@ -1589,10 +1585,10 @@ test('projects the exact STY-06 Stage B closure state', () => {
   assert.deepEqual(topic?.related_cases, RELATION_METADATA.related_cases);
   assert.deepEqual(topic?.primary_sources, ['https://martinfowler.com/articles/201701-event-driven.html']);
   const nextTopic = manifest.topics.find(({id}) => id === 'STY-07');
-  assert.equal(nextTopic?.published, false);
+  assert.equal(nextTopic?.published, true);
   assert.equal(nextTopic?.status.value, 'pending');
   assert.equal(indexes.style.find(({id}) => id === TOPIC_ID)?.published, true);
-  assert.equal(indexes.style.find(({id}) => id === 'STY-07')?.published, false);
+  assert.equal(indexes.style.find(({id}) => id === 'STY-07')?.published, true);
 });
 
 test('locks synchronized four-column/five-row diagram geometry and replay boundaries', async () => {
