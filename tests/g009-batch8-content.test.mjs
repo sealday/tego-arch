@@ -96,6 +96,47 @@ const SOURCE_REQUIRED_FIELDS = ['canonical_locator', 'transport_locator', 'title
   'source_kind', 'tier', 'allowed_evidence_roles', 'license', 'license_scope', 'license_evidence_url',
   'license_evidence_note', 'copyright_policy', 'usage_boundary'];
 const COPYRIGHT_CHECKS = ['original-structure', 'quotation-boundary', 'attribution-complete', 'illustration-rights'];
+const REMOTE_SOURCE_CONTRACTS = Object.freeze({
+  'src-oasis-soa-reference-model-1-0': Object.freeze({
+    canonical_locator: 'https://docs.oasis-open.org/soa-rm/v1.0/soa-rm.html',
+    transport_locator: 'https://docs.oasis-open.org/soa-rm/v1.0/soa-rm.html', source_kind: 'standard',
+    license: 'LicenseRef-Proprietary-Standard', copyright_policy: 'facts-and-short-quotation',
+    allowed_evidence_roles: ['comparison', 'definition', 'method'], citation_roles: ['definition', 'method'],
+    manifest_primary: true,
+    license_evidence_note: 'OASIS IPR policies govern the standard; Tego Arch conservatively uses attributed bibliographic facts and original factual summary only.',
+  }),
+  'src-oasis-soa-reference-architecture-foundation-1-0': Object.freeze({
+    canonical_locator: 'https://docs.oasis-open.org/soa-rm/soa-ra/v1.0/soa-ra.html',
+    transport_locator: 'https://docs.oasis-open.org/soa-rm/soa-ra/v1.0/soa-ra.html', source_kind: 'standard',
+    license: 'LicenseRef-Proprietary-Standard', copyright_policy: 'facts-and-short-quotation',
+    allowed_evidence_roles: ['comparison', 'definition', 'method'], citation_roles: ['definition', 'method'],
+    manifest_primary: false,
+    license_evidence_note: 'OASIS IPR policies govern the specification; Tego Arch conservatively uses attributed bibliographic facts and original factual summary only.',
+  }),
+  'src-w3c-web-services-architecture': Object.freeze({
+    canonical_locator: 'https://www.w3.org/TR/ws-arch/', transport_locator: 'https://www.w3.org/TR/ws-arch/',
+    source_kind: 'standard', license: 'LicenseRef-Proprietary-Standard', copyright_policy: 'facts-and-short-quotation',
+    allowed_evidence_roles: ['comparison', 'definition', 'method'], citation_roles: ['comparison', 'definition'],
+    manifest_primary: false,
+    license_evidence_note: 'The W3C document-use license governs W3C documents; Tego Arch conservatively uses attributed factual reference and original summary only.',
+  }),
+  'src-lewis-fowler-microservices': Object.freeze({
+    canonical_locator: 'https://martinfowler.com/articles/microservices.html',
+    transport_locator: 'https://martinfowler.com/articles/microservices.html', source_kind: 'engineering-blog',
+    license: 'LicenseRef-All-Rights-Reserved', copyright_policy: 'facts-and-short-quotation',
+    allowed_evidence_roles: ['comparison', 'definition', 'method', 'runtime-fact'],
+    citation_roles: ['comparison', 'definition', 'runtime-fact'], manifest_primary: false,
+    license_evidence_note: 'The author-hosted Microservices article exposes no reusable license; Tego Arch retains attribution, a link, and original Chinese factual summary only.',
+  }),
+  'src-microsoft-microservices-architecture-style': Object.freeze({
+    canonical_locator: 'https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/microservices',
+    transport_locator: 'https://raw.githubusercontent.com/MicrosoftDocs/architecture-center/f69851e7c8b27ca6e8983e7b7d91d35e99423a73/docs/guide/architecture-styles/microservices.md',
+    source_kind: 'vendor-reference-architecture', license: 'CC-BY-4.0', copyright_policy: 'vendor-claims-separated',
+    allowed_evidence_roles: ['comparison', 'definition', 'implementation', 'learning', 'method', 'runtime-fact'],
+    citation_roles: ['comparison', 'definition', 'runtime-fact'], manifest_primary: false,
+    license_evidence_note: 'The pinned official Architecture Center repository LICENSE applies CC BY 4.0 to the documentation repository.',
+  }),
+});
 const RECIPROCALS = Object.freeze([
   'content/styles/sty-04-modular-monolith.mdx', 'content/styles/sty-05-microservices.mdx',
   'content/styles/sty-06-event-driven-architecture.mdx', 'content/cases/temporal-saga-durable-execution.mdx',
@@ -209,6 +250,34 @@ export function markdownTables(body) {
 }
 function exactWrapperTag(wrapper) {
   return `<div className="${wrapper.className}" role="region" aria-label="${wrapper.aria}" tabIndex={0} onKeyDown={handleHorizontalArrowKey}>`;
+}
+function inventoryRows(source) {
+  return source.split(/\r?\n/u).filter((line) => line.startsWith('| ')).map((line) =>
+    line.slice(2, -2).split(' | ').map((cell) => cell.trim()));
+}
+export function assertRemoteSourceContracts(ledger, inventorySource) {
+  const document = ledger.documents[ARTICLE]; assert.ok(document, `${ARTICLE} governed document`);
+  const remoteIds = SOURCE_IDS.slice(0, -1);
+  assert.equal(document.citations.filter(({manifest_primary}) => manifest_primary).length, 1, 'exactly one remote primary');
+  assert.equal(document.citations.find(({manifest_primary}) => manifest_primary)?.source_id, remoteIds[0], 'OASIS RM is primary');
+  const rows = inventoryRows(inventorySource);
+  for (const id of remoteIds) {
+    const expected = REMOTE_SOURCE_CONTRACTS[id]; const source = ledger.sources.find((entry) => entry.id === id);
+    const citation = document.citations.find((entry) => entry.source_id === id); assert.ok(source && citation, `${id} source and citation`);
+    for (const field of ['canonical_locator', 'transport_locator', 'source_kind', 'license', 'copyright_policy']) {
+      assert.equal(source[field], expected[field], `${id}.${field}`);
+    }
+    assert.deepEqual(source.allowed_evidence_roles, expected.allowed_evidence_roles, `${id} exact allowed evidence roles`);
+    assert.equal(source.license_evidence_note, expected.license_evidence_note, `${id} conservative/evidenced license note`);
+    assert.equal(citation.citation_url, expected.canonical_locator, `${id} citation canonical locator`);
+    assert.deepEqual(citation.roles, expected.citation_roles, `${id} exact citation roles`);
+    assert.equal(citation.manifest_primary, expected.manifest_primary, `${id} exact primary flag`);
+    assert.equal(citation.usage_mode, 'facts-summary', `${id} facts-summary only`);
+    const inventory = rows.find(([family]) => family === expected.canonical_locator); assert.ok(inventory, `${id} inventory identity`);
+    assert.equal(inventory[1], expected.canonical_locator, `${id} inventory governed current URL`);
+    assert.equal(inventory[4], expected.license_evidence_note, `${id} inventory evidence note`);
+    assert.equal(inventory[6], expected.license, `${id} inventory license`);
+  }
 }
 function removeFrontMatterField(source, field) {
   const fieldLine = new RegExp(`^${escapeRegExp(field)}:.*(?:\\r?\\n  - [^\\r\\n]+)*(?:\\r?\\n|$)`, 'mu');
@@ -850,6 +919,8 @@ test('locks exact eight-row comparison and seven-row failure responsibilities', 
 
 test('governs STY-07 sources, reciprocal relations, and Stage A projection', async () => {
   const ledger = JSON.parse(readFileSync('data/source-ledger.json', 'utf8'));
+  const inventorySource = readFileSync('docs/source-license-inventory.md', 'utf8');
+  assertRemoteSourceContracts(ledger, inventorySource);
   const documents = (await readContentDocuments('content')).map((entry) => ({...entry, file: `content/${entry.file}`}));
   const document = ledger.documents[ARTICLE]; assert.ok(document, `${ARTICLE} source ledger record`);
   assert.deepEqual(document.citations.map(({source_id}) => source_id), SOURCE_IDS);
@@ -886,6 +957,44 @@ test('governs STY-07 sources, reciprocal relations, and Stage A projection', asy
   for (const [id, published] of [[TOPIC_ID, true], [NEXT_TOPIC, false]]) {
     const topic = manifest.topics.find((entry) => entry.id === id); assert.equal(topic?.published, published, `${id} publication`); assert.equal(topic?.status.value, 'pending', `${id} pending`);
   }
+});
+
+test('STY-07 remote source contracts reject identity, rights, role, primary, and inventory drift', async () => {
+  const ledger = JSON.parse(readFileSync('data/source-ledger.json', 'utf8'));
+  const inventory = readFileSync('docs/source-license-inventory.md', 'utf8');
+  const changedLedger = (transform) => { const candidate = structuredClone(ledger); transform(candidate); return candidate; };
+  const source = (candidate, id = SOURCE_IDS[0]) => candidate.sources.find((entry) => entry.id === id);
+  const citation = (candidate, id = SOURCE_IDS[0]) => candidate.documents[ARTICLE].citations.find((entry) => entry.source_id === id);
+  for (const [label, transform] of [
+    ['canonical locator', (candidate) => { source(candidate).canonical_locator = 'https://example.invalid/soa'; }],
+    ['transport locator', (candidate) => { source(candidate).transport_locator = 'https://example.invalid/transport'; }],
+    ['license', (candidate) => { source(candidate).license = 'CC-BY-4.0'; }],
+    ['facts-summary policy', (candidate) => { citation(candidate).usage_mode = 'adapted-standard'; }],
+    ['allowed evidence role', (candidate) => { source(candidate).allowed_evidence_roles = ['definition']; }],
+    ['citation evidence role', (candidate) => { citation(candidate).roles = ['comparison']; }],
+    ['manifest primary', (candidate) => { citation(candidate).manifest_primary = false; citation(candidate, SOURCE_IDS[1]).manifest_primary = true; }],
+  ]) {
+    const candidate = changedLedger(transform);
+    assert.throws(() => assertRemoteSourceContracts(candidate, inventory), assert.AssertionError, `${label} mutation rejected`);
+  }
+  const selfConsistentReusable = changedLedger((candidate) => {
+    const item = source(candidate); item.license = 'CC-BY-4.0'; item.license_evidence_note = 'Reusable CC BY 4.0 license claimed.';
+  });
+  const reusableInventory = inventory.replace(
+    '| 2026-08-13 | LicenseRef-Proprietary-Standard | The named OASIS Standard',
+    '| 2026-08-13 | CC-BY-4.0 | The named OASIS Standard',
+  ).replace(
+    'OASIS IPR policies govern the standard; Tego Arch conservatively uses attributed bibliographic facts and original factual summary only.',
+    'Reusable CC BY 4.0 license claimed.',
+  );
+  assert.notEqual(reusableInventory, inventory, 'self-consistent reusable-license inventory mutation applies');
+  assert.throws(() => assertRemoteSourceContracts(selfConsistentReusable, reusableInventory), assert.AssertionError, 'unsupported reusable license rejected');
+  const inventoryMismatch = inventory.replace(
+    REMOTE_SOURCE_CONTRACTS[SOURCE_IDS[0]].license_evidence_note,
+    'Different inventory evidence note.',
+  );
+  assert.notEqual(inventoryMismatch, inventory, 'inventory mismatch mutation applies');
+  assert.throws(() => assertRemoteSourceContracts(ledger, inventoryMismatch), assert.AssertionError, 'inventory mismatch rejected');
 });
 
 test('STY-07 Draw.io/SVG diagram locks SOA comparison semantics, geometry, and contrast', () => {
