@@ -165,27 +165,25 @@ Baseline is `59 completed / 101 documents / 525 sources`. With one document and 
   git commit -m "test: define MTH-07 delivery-gate contract"
   ```
 
-## Task 2: Govern the Evidence Set
+## Task 2: Research and Lock the Evidence Contract
 
 **Files:**
-- Modify: `data/source-ledger.json`
-- Modify: `data/source-link-health.json`
-- Modify: `docs/source-license-inventory.md`
 - Modify: `tests/g010-mth07-content.test.mjs`
+- Create: `.superpowers/sdd/mth07-source-research.md` (ignored implementation evidence; do not commit)
 
 **Interfaces:**
 - Consumes: fixed identities in this plan and existing source schema.
-- Produces: four citable source records for article and generator tasks.
+- Produces: exact mutation-sensitive source contract and verified research handoff for Task 4; it deliberately does not register uncited sources because source governance rejects non-discovery identities without a live document citation.
 
 - [ ] **Step 1: Write source-governance mutations.** Require exact canonical locator, author/org, date/version, source kind, evidence role, license family, copyright policy, citation scope, non-copy boundary, unique primary and original illustration record.
-- [ ] **Step 2: Run source tests RED.** Run `node --test tests/source-governance-data.test.mjs tests/g010-mth07-content.test.mjs`; expect missing identities/citations.
-- [ ] **Step 3: Add the four complete ledger identities and license inventory rows.** Reuse existing NIST/Google families only if exact canonical identity already exists; never create a duplicate alias. Record WeChat as facts-only ARR and the SVG as original illustration.
-- [ ] **Step 4: Refresh only the four link-health observations.** Use the repository link-health command’s bounded exact-source mode; record WeChat auth/verification behavior honestly if applicable. Do not rewrite unrelated cache entries.
-- [ ] **Step 5: Verify and commit.** Run `node --test tests/source-governance-data.test.mjs tests/source-link-health.test.mjs tests/g010-mth07-content.test.mjs`; expect only article/diagram/projection RED.
+- [ ] **Step 2: Run source contract RED.** Run `node --test tests/g010-mth07-content.test.mjs`; expect missing source identities/citations alongside the still-missing article and diagram.
+- [ ] **Step 3: Research all four identities without mutating governance data.** Inspect existing ledger families for exact NIST/Google reuse, verify current official pages and license evidence, and record the complete proposed ledger/citation/health fields in `.superpowers/sdd/mth07-source-research.md`. Record WeChat verification-wall behavior honestly and do not probe unrelated cache entries.
+- [ ] **Step 4: Prove the governance ordering constraint.** In the report, cite the existing validator behavior that rejects an uncited non-discovery source and a ledger document key whose MDX does not exist. Do not commit knowingly invalid provisional source records.
+- [ ] **Step 5: Verify and commit only the strengthened contract.** Run `node --test tests/g010-mth07-content.test.mjs`; expected helper/source-contract tests pass and implementation tests remain RED only for absent article/source records/diagram/projection.
 
   ```bash
-  git add data/source-ledger.json data/source-link-health.json docs/source-license-inventory.md tests/g010-mth07-content.test.mjs
-  git commit -m "docs: govern MTH-07 delivery evidence"
+  git add tests/g010-mth07-content.test.mjs
+  git commit -m "test: bind MTH-07 evidence identities"
   ```
 
 ## Task 3: Build the Original Draw.io/SVG Gate Diagram
@@ -220,22 +218,26 @@ Baseline is `59 completed / 101 documents / 525 sources`. With one document and 
 - Modify: `content/methods/mth-04-architecture-fitness-functions.mdx`
 - Modify: `content/methods/mth-06-requirements-to-evolution-loop.mdx`
 - Modify: `content/cases/temporal-saga-durable-execution.mdx`
+- Modify: `data/source-ledger.json`
+- Modify: `data/source-link-health.json`
+- Modify: `docs/source-license-inventory.md`
 - Modify: `tests/g010-mth07-content.test.mjs`
 
 **Interfaces:**
-- Consumes: governed citations and SVG from Tasks 2–3.
-- Produces: independently readable publishable method page and valid relationship graph.
+- Consumes: verified source research/contract from Task 2 and SVG from Task 3.
+- Produces: independently readable publishable method page, four cited governed source records, and valid relationship graph.
 
 - [ ] **Step 1: Run article contract RED.** Run focused content test; expect metadata/headings/gates/wrappers/relations failures.
 - [ ] **Step 2: Write the exact front matter and ten sections.** Use the fixed metadata and heading order; create three wrappers with exact labels, `role="region"`, `tabIndex={0}` and the existing ArrowRight scroll handler.
 - [ ] **Step 3: Write the twelve-row gate table.** Each row carries risk/mechanism/evidence/pass/owner/failure return. Keep prose authoritative and diagram labels concise.
 - [ ] **Step 4: Write responsibility and stop-condition tables.** Bind program/AI/human duties; distinguish POC→production, production→rollout, customer→reuse; state measurable stop/re-entry conditions.
-- [ ] **Step 5: Add citations and boundary labels.** Cite WeChat only for the practice skeleton, NIST for risk/evaluation/monitoring/oversight, Google SRE for canary decisions, and label Tego Arch synthesis explicitly. Do not introduce unverified market/salary/policy figures.
+- [ ] **Step 5: Add citations and governed source records atomically.** Cite WeChat only for the practice skeleton, NIST for risk/evaluation/monitoring/oversight, Google SRE for canary decisions, and label Tego Arch synthesis explicitly. In the same change, add the four complete ledger identities, exact document citations, link-health observations and license inventory rows from Task 2 research. Reuse an exact existing NIST/Google family rather than duplicate it. Do not introduce unverified market/salary/policy figures.
 - [ ] **Step 6: Add reciprocal links.** Add exact metadata and visible links in MTH-01/04/06 and Temporal only where generator requires them; preserve each existing conclusion and avoid QA-09.
-- [ ] **Step 7: Verify density, content, terminology, links, typecheck and build.** Run:
+- [ ] **Step 7: Verify density, source governance, content, terminology, links, typecheck and build.** Run:
 
   ```bash
   node --test tests/g010-mth07-content.test.mjs
+  node --test tests/source-governance-data.test.mjs tests/source-link-health.test.mjs
   node scripts/content-density.mjs content/methods/mth-07-fde-enterprise-ai-delivery.mdx
   npm run validate:content
   npm run check:terminology
@@ -250,7 +252,7 @@ Baseline is `59 completed / 101 documents / 525 sources`. With one document and 
 - [ ] **Step 8: Commit.**
 
   ```bash
-  git add content/methods/mth-07-fde-enterprise-ai-delivery.mdx content/methods/index.mdx content/methods/mth-01-quality-attribute-workshop.mdx content/methods/mth-04-architecture-fitness-functions.mdx content/methods/mth-06-requirements-to-evolution-loop.mdx content/cases/temporal-saga-durable-execution.mdx tests/g010-mth07-content.test.mjs
+  git add content/methods/mth-07-fde-enterprise-ai-delivery.mdx content/methods/index.mdx content/methods/mth-01-quality-attribute-workshop.mdx content/methods/mth-04-architecture-fitness-functions.mdx content/methods/mth-06-requirements-to-evolution-loop.mdx content/cases/temporal-saga-durable-execution.mdx data/source-ledger.json data/source-link-health.json docs/source-license-inventory.md tests/g010-mth07-content.test.mjs
   git commit -m "docs: add MTH-07 enterprise AI delivery method"
   ```
 
