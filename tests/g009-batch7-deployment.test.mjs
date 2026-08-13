@@ -63,7 +63,6 @@ function assertBrowserEvidence(source) {
   const browser = section(source, 'Local in-app Browser QA');
   for (const state of STATES) {
     assert.ok(browser.includes(`| \`${state}\` |`), `${state} evidence row`);
-    assert.match(browser, new RegExp(`${state} screenshot: [^\\n]+SHA-256 [^\\n]*[a-f0-9]{64}`, 'u'));
   }
   for (const literal of [
     'States accepted: `4/4`.',
@@ -72,7 +71,7 @@ function assertBrowserEvidence(source) {
     'Remote source anchors: `5` per state; unique remote domains: at least `4` per state.',
     'STY-07 actionable count: `0` in every state.',
     'Every state recorded warning/error logs `0`, `Runtime.exceptionThrown=0`, `Log.entryAdded=0`, `hasMore=false`, and `truncated=false`.',
-    'Visual inspection: diagram `PASS` in light and dark themes.',
+    'Screenshot evidence: `BLOCKED / NOT_ACCEPTED`.',
   ]) assert.ok(browser.includes(literal), `Browser literal: ${literal}`);
   assert.match(browser, /Raw Browser JSON: `\.superpowers\/sdd\/sty06-task-4-browser-qa\.json`, SHA-256 `[a-f0-9]{64}`\./u);
 }
@@ -81,14 +80,14 @@ function assertFinalReview(source) {
   const checkpoint = section(source, 'Independent review checkpoint');
   assert.match(checkpoint, /Exact reviewed head: `[a-f0-9]{40}`\./u);
   for (const literal of [
-    'Independent code reviewer (`code-reviewer`): `READY / APPROVE`; findings: `0`.',
-    'Independent content, evidence, and rights reviewer: `CONTENT READY`; rights: `PASS`; findings: `0`.',
-    'Independent architecture reviewer (`architect`): `CLEAR / READY`; findings: `0`.',
-    'Final Stage A review judgment: `READY`.',
+    'Independent code reviewer (`code-reviewer`): `PENDING`; findings: `NOT_RUN`.',
+    'Independent content, evidence, and rights reviewer: `PENDING`; rights: `PENDING`; findings: `NOT_RUN`.',
+    'Independent architecture reviewer (`architect`): `PENDING`; findings: `NOT_RUN`.',
+    'Final Stage A review judgment: `PENDING`.',
     'Scope boundary: `STAGE_A_ONLY`; Stage B backlog closure and deployment have not run.',
     'Deployment status: `NOT_RUN`.',
   ]) assert.ok(checkpoint.includes(literal), `review literal: ${literal}`);
-  assert.doesNotMatch(checkpoint, /`PENDING`|`NOT_RUN` findings/u);
+  assert.doesNotMatch(checkpoint, /`READY \/ APPROVE`|`CONTENT READY`|`CLEAR \/ READY`/u);
 }
 
 async function assertArtifactIdentities(source) {
@@ -105,7 +104,7 @@ test('projects the exact STY-06 Stage A candidate without closing Stage B', () =
   assert.equal(manifest.topics.filter(({published}) => published).some(({slug}) => slug === '/styles/sty-07'), false);
 });
 
-test('binds exact artifacts, four local Browser states, and final independent verdicts', async () => {
+test('binds exact artifacts, four local Browser states, and pending independent verdict slots', async () => {
   assert.match(review, /^# G009 Batch 7 Stage A Review$/mu);
   assert.match(section(review, 'Stage A projection'), /58 completed topics \/ 101 content documents \/ 525 governed sources/u);
   assert.match(section(review, 'Stage A projection'), /STY-06: `published \/ pending`/u);
@@ -125,10 +124,10 @@ test('rejects weakened or fabricated Stage A evidence', async () => {
     ['missing Browser state', '| `mobileDark` |', '| `mobileMissing` |'],
     ['truncated diagnostics', '`truncated=false`', '`truncated=true`'],
     ['fabricated STY-07 absence', 'STY-07 actionable count: `0` in every state.', 'STY-07 actionable count: `1` in every state.'],
-    ['fabricated screenshot success', 'Visual inspection: diagram `PASS` in light and dark themes.', 'Screenshot capture failed but visual inspection: diagram `PASS` in light and dark themes.'],
-    ['weakened code verdict', '`READY / APPROVE`; findings: `0`.', '`READY / COMMENT`; findings: `0`.'],
-    ['weakened content verdict', '`CONTENT READY`; rights: `PASS`; findings: `0`.', '`CONTENT CHANGES`; rights: `PASS`; findings: `1`.'],
-    ['weakened architecture verdict', '`CLEAR / READY`; findings: `0`.', '`BLOCKED`; findings: `1`.'],
+    ['fabricated screenshot success', 'Screenshot evidence: `BLOCKED / NOT_ACCEPTED`.', 'Visual inspection: diagram `PASS` in light and dark themes.'],
+    ['fabricated code verdict', '`PENDING`; findings: `NOT_RUN`.', '`READY / APPROVE`; findings: `0`.'],
+    ['fabricated content verdict', '`PENDING`; rights: `PENDING`; findings: `NOT_RUN`.', '`CONTENT READY`; rights: `PASS`; findings: `0`.'],
+    ['fabricated architecture verdict', 'Independent architecture reviewer (`architect`): `PENDING`; findings: `NOT_RUN`.', 'Independent architecture reviewer (`architect`): `CLEAR / READY`; findings: `0`.'],
     ['fabricated deployment', 'Deployment status: `NOT_RUN`.', 'Deployment status: `SUCCESS`.'],
   ];
   for (const [label, before, after] of mutations) {
@@ -139,7 +138,7 @@ test('rejects weakened or fabricated Stage A evidence', async () => {
       await assertArtifactIdentities(mutated);
       assertBrowserEvidence(mutated);
       assertFinalReview(mutated);
-      assert.doesNotMatch(mutated, /Screenshot capture failed but visual inspection: diagram `PASS`/u);
+      assert.doesNotMatch(mutated, /Visual inspection: diagram `PASS`/u);
     }, {name: 'AssertionError'}, label);
   }
 });
