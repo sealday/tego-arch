@@ -105,7 +105,7 @@ const DIAGRAM_NODES = Object.freeze([
   'soa-client', 'soa-orchestrator', 'soa-integration', 'soa-process-state',
   ...['order', 'inventory', 'payment', 'notification'].flatMap((name) => [`soa-${name}-contract`, `soa-${name}-system`, `soa-${name}-store`]),
   ...['order', 'inventory', 'payment', 'notification'].flatMap((name) => [`microservices-${name}-contract`, `microservices-${name}-service`, `microservices-${name}-store`]),
-  'microservices-platform',
+  'microservices-client', 'microservices-workflow', 'microservices-workflow-state', 'microservices-platform',
 ]);
 const CONNECTOR_STYLES = Object.freeze({
   'business-call': Object.freeze({strokeColor: '#1D4ED8', strokeWidth: '4', dashed: '0', endArrow: 'block', endFill: '1'}),
@@ -121,13 +121,36 @@ const CONNECTOR_INVENTORY = Object.freeze([
   ['soa-send-notification', 'soa-orchestrator', 'soa-notification-contract', 'message', '发送通知'],
   ['soa-release-inventory', 'soa-orchestrator', 'soa-inventory-contract', 'compensation', '释放库存'],
   ['soa-technical-routing', 'soa-integration', 'soa-inventory-contract', 'technical-route', '技术路由与转换'],
-  ['microservices-submit-order', 'soa-client', 'microservices-order-contract', 'business-call', '提交订单'],
+  ['microservices-submit-order', 'microservices-client', 'microservices-order-contract', 'business-call', '提交订单'],
   ['microservices-reserve-inventory', 'microservices-order-contract', 'microservices-inventory-contract', 'business-call', '预留库存'],
   ['microservices-authorize-payment', 'microservices-inventory-contract', 'microservices-payment-contract', 'business-call', '支付授权'],
   ['microservices-confirm-order', 'microservices-payment-contract', 'microservices-order-contract', 'message', '确认订单'],
   ['microservices-send-notification', 'microservices-order-contract', 'microservices-notification-contract', 'message', '发送通知'],
   ['microservices-release-inventory', 'microservices-order-contract', 'microservices-inventory-contract', 'compensation', '释放库存'],
 ]);
+const STRUCTURAL_CONNECTOR_INVENTORY = Object.freeze([
+  ...['soa', 'microservices'].flatMap((side) => ['order', 'inventory', 'payment', 'notification'].flatMap((name) => {
+    const owner = `${side}-${name}-${side === 'soa' ? 'system' : 'service'}`;
+    return [
+      [`${side}-${name}-contract-owner`, `${side}-${name}-contract`, owner, 'contract-owner'],
+      [`${side}-${name}-owner-store`, owner, `${side}-${name}-store`, 'owner-store'],
+    ];
+  })),
+  ['soa-orchestrator-process-state', 'soa-orchestrator', 'soa-process-state', 'workflow-state'],
+  ['microservices-order-workflow', 'microservices-order-service', 'microservices-workflow', 'workflow-owner'],
+  ['microservices-workflow-state', 'microservices-workflow', 'microservices-workflow-state', 'workflow-state'],
+]);
+const MEASURED_NODE_IDS = Object.freeze([
+  'soa-orchestrator', 'soa-process-state', 'soa-integration', 'soa-order-system', 'soa-order-store',
+  'microservices-workflow', 'microservices-workflow-state', 'microservices-order-service', 'microservices-order-store', 'microservices-platform',
+]);
+const CONTRACT_TITLES = Object.freeze({
+  order: '订单合同', inventory: '库存合同', payment: '支付合同', notification: '通知合同',
+});
+const PARTICIPANT_GRID = Object.freeze({
+  order: Object.freeze({column: 0, row: 0}), inventory: Object.freeze({column: 1, row: 0}),
+  payment: Object.freeze({column: 0, row: 1}), notification: Object.freeze({column: 1, row: 1}),
+});
 const PARTICIPANT_NAMES = ['订单', '库存', '支付', '通知'];
 const FULFILLMENT_STEPS = ['提交订单', '预留库存', '支付授权', '确认订单', '发送通知', '释放库存'];
 const BUSINESS_AUTHORITIES = Object.freeze([
@@ -371,6 +394,7 @@ function labelBox(source, element, label = elementText(source, element)) {
 }
 function rectangleFromElement(element) { const bounds = numericBounds(element.attributes); return {left: bounds.x, right: bounds.x + bounds.width, top: bounds.y, bottom: bounds.y + bounds.height}; }
 function rectangleDistance(left, right) { const dx = Math.max(left.left - right.right, right.left - left.right, 0); const dy = Math.max(left.top - right.bottom, right.top - left.bottom, 0); return Math.hypot(dx, dy); }
+function rectangleAxisClearance(left, right) { return {horizontal: Math.max(left.left - right.right, right.left - left.right, 0), vertical: Math.max(left.top - right.bottom, right.top - left.bottom, 0)}; }
 function pointRectangleDistance(point, rectangle) { return Math.hypot(Math.max(rectangle.left - point.x, 0, point.x - rectangle.right), Math.max(rectangle.top - point.y, 0, point.y - rectangle.bottom)); }
 function markerGeometry(source, path, points) {
   const markerId = svgPresentationValue(source, path, 'marker-end')?.match(/^url\(#([^)]+)\)$/u)?.[1]; assert.ok(markerId, `${path.attributes.get('data-edge-id') ?? path.attributes.get('data-legend-key')} marker`);
@@ -384,6 +408,110 @@ function markerGeometry(source, path, points) {
   for (let index = 0; index < values.length; index += 2) { const localX = (values[index] - refX) * width / viewBox[2] * unit; const localY = (values[index + 1] - refY) * height / viewBox[3] * unit; result.push({x: endpoint.x + axis.x * localX + perpendicular.x * localY, y: endpoint.y + axis.y * localX + perpendicular.y * localY}); }
   assert.ok(result.length >= 3 && result.every(({x, y}) => Number.isFinite(x) && Number.isFinite(y)), `${markerId} physical marker geometry`); return result;
 }
+function nodeShape(elements, group) { return elements.find((element) => ['rect', 'path'].includes(element.name) && element.parent === group && element.attributes.has('data-shape')); }
+function routeBoundsCollision(points, rectangle, stroke = 0) {
+  const expanded = {left: rectangle.left - stroke / 2, right: rectangle.right + stroke / 2, top: rectangle.top - stroke / 2, bottom: rectangle.bottom + stroke / 2};
+  return points.slice(1).some((point, index) => segmentDistance(points[index], point, expanded) === 0);
+}
+function assertStructuralOwnership(drawio, svg, source) {
+  const actual = drawio.edges.filter(({attributes}) => attributes.get('dataRole')?.startsWith('structural-')).map((edge) => [edge.attributes.get('id'), edge.attributes.get('source'), edge.attributes.get('target'), edge.attributes.get('dataRole').slice('structural-'.length)]);
+  assert.deepEqual(actual, STRUCTURAL_CONNECTOR_INVENTORY, 'exact structural ownership inventory');
+  for (const [id, sourceId, targetId, role] of STRUCTURAL_CONNECTOR_INVENTORY) {
+    const edge = drawio.edges.find(({attributes}) => attributes.get('id') === id); assert.ok(edge, `Draw.io structural edge ${id}`); drawioRoute(drawio, edge);
+    const path = svg.elements.find(({name, attributes}) => name === 'path' && attributes.get('data-structural-edge-id') === id); assert.ok(path, `SVG structural edge ${id}`);
+    assert.deepEqual([path.attributes.get('data-source'), path.attributes.get('data-target'), path.attributes.get('data-role')], [sourceId, targetId, role], `${id} structural topology`);
+    assert.deepEqual(parsePathPoints(path.attributes.get('d')), drawioRoute(drawio, edge), `${id} structural route parity`);
+  }
+  for (const side of ['soa', 'microservices']) for (const name of ['order', 'inventory', 'payment', 'notification']) {
+    const owner = `${side}-${name}-${side === 'soa' ? 'system' : 'service'}`;
+    assert.ok(STRUCTURAL_CONNECTOR_INVENTORY.some(([, sourceId, targetId, role]) => sourceId === `${side}-${name}-contract` && targetId === owner && role === 'contract-owner'), `${side}-${name} contract reaches owner`);
+    assert.ok(STRUCTURAL_CONNECTOR_INVENTORY.some(([, sourceId, targetId, role]) => sourceId === owner && targetId === `${side}-${name}-store` && role === 'owner-store'), `${side}-${name} owner reaches store`);
+  }
+  assert.match(source, /data-node-id="microservices-workflow"[\s\S]*?履约协调/u, 'microservices workflow coordination visible');
+  assert.match(source, /data-node-id="microservices-workflow-state"[\s\S]*?履约流程状态/u, 'microservices workflow state visible');
+}
+function assertNodeParity(drawio, svg, source) {
+  for (const id of DIAGRAM_NODES.filter((candidate) => candidate !== 'comparison-canvas')) {
+    const node = drawio.nodes.find(({attributes}) => attributes.get('id') === id); const group = svg.nodes.find(({attributes}) => attributes.get('data-node-id') === id); assert.ok(node && group, `${id} paired node`);
+    const texts = svg.elements.filter(({name, parent, attributes}) => name === 'text' && parent === group && attributes.has('data-text-role'));
+    assert.equal(texts.map((element) => elementText(source, element)).join('｜'), node.label, `${id} normalized visible label parity`);
+    assert.equal(group.attributes.get('data-role'), node.attributes.get('dataRole'), `${id} role parity`);
+    const shape = nodeShape(svg.elements, group); assert.ok(shape, `${id} visible shape`); const style = drawioStyle(node);
+    assert.equal(shape.attributes.get('data-shape'), node.attributes.get('dataShape'), `${id} shape parity`);
+    assert.equal(svgPresentationValue(source, shape, 'fill'), style.get('fillColor'), `${id} fill parity`);
+    assert.equal(svgPresentationValue(source, shape, 'stroke'), style.get('strokeColor'), `${id} stroke parity`);
+    const title = texts.find(({attributes}) => attributes.get('data-text-role') === 'title'); assert.ok(title, `${id} title`);
+    assert.equal(Number.parseFloat(svgPresentationValue(source, title, 'font-size')), Number(node.attributes.get('dataTitleFont')), `${id} title font parity`);
+  }
+}
+function assertParticipantGrid(drawio, svg, source, scale) {
+  const get = (id) => {
+    const node = drawio.nodes.find(({attributes}) => attributes.get('id') === id);
+    const group = svg.nodes.find(({attributes}) => attributes.get('data-node-id') === id);
+    const shape = nodeShape(svg.elements, group);
+    assert.ok(node && group && shape, `${id} participant-grid node`);
+    return {node, group, shape, bounds: rectangleFromElement(shape)};
+  };
+  const textBoxes = (entry) => svg.elements.filter(({name, parent, attributes}) => name === 'text' && parent === entry.group && attributes.has('data-text-role')).map((element) => labelBox(source, element));
+  for (const side of ['soa', 'microservices']) {
+    const suffix = side === 'soa' ? 'system' : 'service';
+    const entries = Object.fromEntries(Object.keys(PARTICIPANT_GRID).map((name) => [name, {
+      contract: get(`${side}-${name}-contract`), owner: get(`${side}-${name}-${suffix}`), store: get(`${side}-${name}-store`),
+    }]));
+    for (const [name, position] of Object.entries(PARTICIPANT_GRID)) {
+      const entry = entries[name];
+      assert.equal(entry.contract.node.label, CONTRACT_TITLES[name], `${side}-${name} exact contract title`);
+      assert.equal(textBoxes(entry.contract).length, 1, `${side}-${name} one-line contract title`);
+      const contractText = textBoxes(entry.contract)[0]; const stroke = Number(svgPresentationValue(source, entry.contract.shape, 'stroke-width') ?? 0) / 2;
+      assert.ok(Math.min(contractText.left - entry.contract.bounds.left - stroke, entry.contract.bounds.right - stroke - contractText.right) * scale >= 16, `${side}-${name} contract horizontal padding`);
+      assert.ok(Math.min(contractText.top - entry.contract.bounds.top - stroke, entry.contract.bounds.bottom - stroke - contractText.bottom) * scale >= 14, `${side}-${name} contract vertical padding`);
+      assert.ok(entry.contract.bounds.bottom < entry.owner.bounds.top && entry.owner.bounds.bottom < entry.store.bounds.top, `${side}-${name} stacks contract owner store`);
+      const center = (bounds) => ({x: (bounds.left + bounds.right) / 2, y: (bounds.top + bounds.bottom) / 2});
+      for (const layer of ['contract', 'owner', 'store']) assert.ok(Math.abs(center(entry[layer].bounds).x - center(entry.contract.bounds).x) <= 1, `${side}-${name} ${layer} shares participant column`);
+      const expected = position;
+      for (const [otherName, otherPosition] of Object.entries(PARTICIPANT_GRID)) {
+        if (name === otherName) continue;
+        if (expected.row === otherPosition.row && expected.column < otherPosition.column) assert.ok(entry.contract.bounds.right < entries[otherName].contract.bounds.left, `${side} ${name}/${otherName} contract columns separated`);
+        if (expected.column === otherPosition.column && expected.row < otherPosition.row) assert.ok(entry.store.bounds.bottom < entries[otherName].contract.bounds.top, `${side} ${name}/${otherName} participant rows separated`);
+      }
+      const storeTexts = svg.elements.filter(({name: tag, parent, attributes}) => tag === 'text' && parent === entry.store.group && attributes.has('data-text-role'));
+      assert.equal(storeTexts.length, 2, `${side}-${name} store uses two visible lines`);
+      assert.equal(elementText(source, storeTexts[0]), PARTICIPANT_NAMES[Object.keys(PARTICIPANT_GRID).indexOf(name)], `${side}-${name} store participant line`);
+      assert.equal(elementText(source, storeTexts[1]), side === 'soa' ? '权威状态' : '私有权威状态', `${side}-${name} store authority line`);
+      assert.equal(entry.store.shape.attributes.get('data-shape'), 'cylinder', `${side}-${name} store cylinder parity`);
+    }
+    for (const layer of ['contract', 'store']) {
+      const boxes = Object.entries(entries).map(([name, entry]) => ({name, bounds: entry[layer].bounds, text: textBoxes(entry[layer])}));
+      for (let left = 0; left < boxes.length; left += 1) for (let right = left + 1; right < boxes.length; right += 1) {
+        const clearance = rectangleAxisClearance(boxes[left].bounds, boxes[right].bounds);
+        assert.ok(Math.max(clearance.horizontal, clearance.vertical) * scale >= 20, `${side} sibling ${layer} boxes clear ${boxes[left].name}/${boxes[right].name}`);
+        for (const leftText of boxes[left].text) for (const rightText of boxes[right].text) assert.ok(rectangleDistance(leftText, rightText) * scale >= 20, `${side} sibling ${layer} visible text clear ${boxes[left].name}/${boxes[right].name}`);
+      }
+    }
+  }
+  const labels = svg.elements.filter(({name, attributes}) => name === 'text' && ['soa-submit-order', 'microservices-submit-order'].includes(attributes.get('data-edge-id')));
+  for (const label of labels) {
+    const side = label.attributes.get('data-edge-id').startsWith('soa-') ? 'soa' : 'microservices'; const requester = get(`${side}-client`);
+    assert.ok(rectangleDistance(labelBox(source, label), requester.bounds) * scale >= 20, `${side} submit label clears requester`);
+  }
+}
+function typographyMetrics(svg, source, scale) {
+  const values = {horizontal: Infinity, top: Infinity, bottom: Infinity, baseline: Infinity};
+  for (const id of MEASURED_NODE_IDS) {
+    const group = svg.nodes.find(({attributes}) => attributes.get('data-node-id') === id); const shape = nodeShape(svg.elements, group); assert.ok(group && shape, `${id} measured node`); const bounds = rectangleFromElement(shape); const stroke = Number(svgPresentationValue(source, shape, 'stroke-width') ?? 0);
+    const texts = svg.elements.filter(({name, parent, attributes}) => name === 'text' && parent === group && attributes.has('data-text-role'));
+    const boxes = texts.map((element) => ({element, box: labelBox(source, element)}));
+    for (const {element, box} of boxes) {
+      assert.ok(Number.parseFloat(svgPresentationValue(source, element, 'font-size')) * scale >= (element.attributes.get('data-text-role') === 'title' ? 15 : 10), `${id} final text size`);
+      values.horizontal = Math.min(values.horizontal, (box.left - bounds.left - stroke / 2) * scale, (bounds.right - stroke / 2 - box.right) * scale);
+      values.top = Math.min(values.top, (box.top - bounds.top - stroke / 2) * scale); values.bottom = Math.min(values.bottom, (bounds.bottom - stroke / 2 - box.bottom) * scale);
+    }
+    const title = texts.find(({attributes}) => attributes.get('data-text-role') === 'title'); const type = texts.find(({attributes}) => attributes.get('data-text-role') === 'type');
+    if (type) values.baseline = Math.min(values.baseline, (Number(type.attributes.get('y')) - Number(title.attributes.get('y'))) * scale);
+  }
+  assert.ok(values.horizontal >= 16, `exact node horizontal padding ${values.horizontal}`); assert.ok(values.top >= 14, `exact node top clearance ${values.top}`); assert.ok(values.bottom >= 14, `exact node bottom clearance ${values.bottom}`); assert.ok(values.baseline >= 22, `exact title/type baseline gap ${values.baseline}`);
+  return values;
+}
 function localBackground(source, label) {
   const point = {x: Number(label.attributes.get('x')), y: Number(label.attributes.get('y'))}; const paints = parseSvg(source).elements.filter((element) => element.name === 'rect' && element.index < label.index && !/^(?:canvas|background)$/u.test(element.attributes.get('id') ?? '')).filter((element) => {
     const rectangle = rectangleFromElement(element); return point.x >= rectangle.left && point.x <= rectangle.right && point.y >= rectangle.top && point.y <= rectangle.bottom;
@@ -391,16 +519,33 @@ function localBackground(source, label) {
   const canvas = parseSvg(source).elements.find(({attributes}) => /^(?:canvas|background)$/u.test(attributes.get('id') ?? '')); const base = canvas ? blendHex(svgPresentationValue(source, canvas, 'fill'), '#FFFFFF', paintOpacity(source, canvas, 'fill')) : '#FFFFFF';
   return paints.reduce((background, paint) => blendHex(paint.color, background, paint.opacity), base);
 }
-function assertPhysicalGeometry(source, scale) {
+function assertPhysicalGeometry(source, scale, enforceLabelAttachment = true) {
   const elements = parseSvg(source).elements; const paths = elements.filter(({name, attributes}) => name === 'path' && attributes.has('data-edge-id')); const labels = elements.filter(({name, attributes}) => name === 'text' && attributes.has('data-edge-id'));
   const connectors = paths.map((path) => ({path, points: parsePathPoints(path.attributes.get('d')), markers: markerGeometry(source, path, parsePathPoints(path.attributes.get('d')))}));
   const nodeShapes = elements.filter(({name, parent}) => name === 'rect' && parent?.attributes.has('data-node-id')).map((shape) => ({id: shape.parent.attributes.get('data-node-id'), rectangle: rectangleFromElement(shape), stroke: Number(svgPresentationValue(source, shape, 'stroke-width') ?? 0)}));
   const boundaries = nodeShapes.filter(({id}) => ['soa-boundary', 'microservices-boundary', 'comparison-axis'].includes(id));
+  for (const connector of connectors) {
+    const sourceId = connector.path.attributes.get('data-source'); const targetId = connector.path.attributes.get('data-target'); const id = connector.path.attributes.get('data-edge-id');
+    for (const node of nodeShapes.filter(({id: nodeId}) => ![sourceId, targetId, 'comparison-canvas', 'legend-band', 'soa-boundary', 'microservices-boundary', 'comparison-axis'].includes(nodeId))) assert.equal(routeBoundsCollision(connector.points, node.rectangle, node.stroke), false, `${id} connector clears foreign node ${node.id}`);
+    for (const boundary of boundaries) {
+      const stroke = boundary.stroke; const strips = [
+        {left: boundary.rectangle.left - stroke / 2, right: boundary.rectangle.left + stroke / 2, top: boundary.rectangle.top - stroke / 2, bottom: boundary.rectangle.bottom + stroke / 2},
+        {left: boundary.rectangle.right - stroke / 2, right: boundary.rectangle.right + stroke / 2, top: boundary.rectangle.top - stroke / 2, bottom: boundary.rectangle.bottom + stroke / 2},
+        {left: boundary.rectangle.left - stroke / 2, right: boundary.rectangle.right + stroke / 2, top: boundary.rectangle.top - stroke / 2, bottom: boundary.rectangle.top + stroke / 2},
+        {left: boundary.rectangle.left - stroke / 2, right: boundary.rectangle.right + stroke / 2, top: boundary.rectangle.bottom - stroke / 2, bottom: boundary.rectangle.bottom + stroke / 2},
+      ];
+      assert.equal(strips.some((strip) => routeBoundsCollision(connector.points, strip)), false, `${id} connector clears boundary stroke ${boundary.id}`);
+    }
+  }
   for (const label of labels) {
     const id = label.attributes.get('data-edge-id'); const own = paths.find(({attributes}) => attributes.get('data-edge-id') === id); assert.ok(own, `${id} path`); const bounds = labelBox(source, label);
     assert.equal(label.attributes.get('data-label-bounds'), [bounds.left, bounds.top, bounds.right, bounds.bottom].join(' '), `${id} actual label bounds parity`);
     for (const connector of connectors) for (const point of connector.points.slice(1)) { /* execute parsed geometry before segment loop */ assert.ok(Number.isFinite(point.x)); }
-    const strokeGap = Math.min(...connectors.flatMap(({points}) => points.slice(1).map((point, index) => segmentDistance(points[index], point, bounds)))) * scale; assert.ok(strokeGap >= 8, `${id} label to own/foreign connector ${strokeGap}`);
+    const connectorGaps = connectors.map(({path, points}) => ({id: path.attributes.get('data-edge-id'), gap: Math.min(...points.slice(1).map((point, index) => segmentDistance(points[index], point, bounds))) * scale}));
+    const nearestConnector = connectorGaps.reduce((nearest, candidate) => candidate.gap < nearest.gap ? candidate : nearest); const strokeGap = nearestConnector.gap; assert.ok(strokeGap >= 8, `${id} label to own/foreign connector ${nearestConnector.id} ${strokeGap}`);
+    const ownPoints = parsePathPoints(own.attributes.get('d')); const ownGap = Math.min(...ownPoints.slice(1).map((point, index) => segmentDistance(ownPoints[index], point, bounds))) * scale;
+    const foreignGap = Math.min(...connectors.filter(({path}) => path !== own).flatMap(({points}) => points.slice(1).map((point, index) => segmentDistance(points[index], point, bounds)))) * scale;
+    if (enforceLabelAttachment) { assert.ok(ownGap <= 40, `${id} label remains attached to own route ${ownGap}`); assert.ok(ownGap < foreignGap, `${id} label uniquely nearest own route ${ownGap}/${foreignGap}`); }
     const markerGap = Math.min(...connectors.flatMap(({markers}) => markers.map((point) => pointRectangleDistance(point, bounds)))) * scale; assert.ok(markerGap >= 16, `${id} label to actual own/foreign marker ${markerGap}`);
     for (const node of nodeShapes.filter(({id: nodeId}) => ![own.attributes.get('data-source'), own.attributes.get('data-target')].includes(nodeId) && !['comparison-canvas', 'legend-band', 'soa-boundary', 'microservices-boundary', 'comparison-axis'].includes(nodeId))) assert.ok(rectangleDistance(bounds, {left: node.rectangle.left - node.stroke / 2, right: node.rectangle.right + node.stroke / 2, top: node.rectangle.top - node.stroke / 2, bottom: node.rectangle.bottom + node.stroke / 2}) * scale >= 12, `${id} foreign node ${node.id}`);
     for (const boundary of boundaries) {
@@ -427,7 +572,7 @@ function assertNoOverdraw(source) {
   }
 }
 function assertConnectorInventory(drawio, svg, source) {
-  const edges = drawio.edges.map((edge) => [edge.attributes.get('id'), edge.attributes.get('source'), edge.attributes.get('target'), edge.attributes.get('dataRole'), edge.label]);
+  const edges = drawio.edges.filter(({attributes}) => !attributes.get('dataRole')?.startsWith('structural-')).map((edge) => [edge.attributes.get('id'), edge.attributes.get('source'), edge.attributes.get('target'), edge.attributes.get('dataRole'), edge.label]);
   assert.deepEqual(edges, CONNECTOR_INVENTORY, 'exact stable connector inventory');
   assert.deepEqual(svg.elements.filter(({name, attributes}) => name === 'path' && attributes.has('data-edge-id')).map(({attributes}) => attributes.get('data-edge-id')), CONNECTOR_INVENTORY.map(([id]) => id), 'exact SVG connector inventory');
   for (const [id, sourceId, targetId, role, label] of CONNECTOR_INVENTORY) {
@@ -447,8 +592,10 @@ function assertConnectorInventory(drawio, svg, source) {
 }
 function assertDiagramOwnership(drawio, svg, source) {
   for (const authority of BUSINESS_AUTHORITIES) {
-    assert.ok(drawio.nodes.some(({label}) => label === authority), `Draw.io business authority ${authority}`);
-    assert.match(source, new RegExp(`<text\\b[^>]*data-authority-label="[^"]+"[^>]*>${authority}<\\/text>`, 'u'), `visible SVG business authority ${authority}`);
+    const drawioNode = drawio.nodes.find(({attributes}) => attributes.get('dataRole') === 'business-authority' && attributes.get('id')?.includes(PARTICIPANT_NAMES.find((name) => authority.startsWith(name)) === '订单' ? 'order' : PARTICIPANT_NAMES.find((name) => authority.startsWith(name)) === '库存' ? 'inventory' : PARTICIPANT_NAMES.find((name) => authority.startsWith(name)) === '支付' ? 'payment' : 'notification') && attributes.get('id')?.startsWith(authority.includes('私有') ? 'microservices-' : 'soa-'));
+    assert.equal(drawioNode?.label.replaceAll('｜', ''), authority, `Draw.io business authority ${authority}`);
+    const group = svg.nodes.find(({attributes}) => attributes.get('data-node-id') === drawioNode?.attributes.get('id')); const texts = svg.elements.filter(({name, parent, attributes}) => name === 'text' && parent === group && attributes.has('data-text-role'));
+    assert.equal(texts.map((element) => elementText(source, element)).join(''), authority, `visible SVG business authority ${authority}`);
   }
   for (const [id, label] of NON_OWNERSHIP_LABELS) {
     const drawioNode = drawio.nodes.find(({attributes}) => attributes.get('id') === id);
@@ -474,6 +621,9 @@ function assertDiagram(sourceDrawio, sourceSvg) {
   assert.ok(Number.isFinite(scale) && scale > 0, '800px CSS scale');
   assertConnectorInventory(drawio, svg, sourceSvg);
   assertDiagramOwnership(drawio, svg, sourceSvg);
+  assertStructuralOwnership(drawio, svg, sourceSvg);
+  assertNodeParity(drawio, svg, sourceSvg);
+  assertParticipantGrid(drawio, svg, sourceSvg, scale);
   for (const [id, , , role] of CONNECTOR_INVENTORY) {
     const edge = drawio.edges.find(({attributes}) => attributes.get('id') === id);
     assert.ok(edge, `Draw.io ${id}`); const route = drawioRoute(drawio, edge);
@@ -500,7 +650,8 @@ function assertDiagram(sourceDrawio, sourceSvg) {
   }
   assertNoOverdraw(sourceSvg);
   assertPhysicalGeometry(sourceSvg, scale);
-  return {drawio, svg, alphaComposite};
+  const typography = typographyMetrics(svg, sourceSvg, scale);
+  return {drawio, svg, alphaComposite, typography};
 }
 async function mutation(source, transform, validator, label) {
   const changed = transform(source); assert.notEqual(changed, source, `${label} mutation applies`);
@@ -572,7 +723,7 @@ test('metadata, wrapper, ownership, and prohibition fixtures prove all mutations
 });
 
 test('STY-07 diagram inventory and geometry fixtures reject physical hazards', () => {
-  const fixture = physicalGeometryFixture(); assertPhysicalGeometry(fixture, 1);
+  const fixture = physicalGeometryFixture(); assertPhysicalGeometry(fixture, 1, false);
   for (const [label, changed] of [
     ['moved label', fixture.replace('data-label-bounds="393.8 40 406.2 66" x="400" y="60"', 'data-label-bounds="193.8 75 206.2 101" x="200" y="95"')],
     ['foreign node collision', fixture.replace('x="600" y="40" width="80" height="50" fill="#E2E8F0"', 'x="390" y="35" width="30" height="40" fill="#E2E8F0"')],
@@ -580,7 +731,7 @@ test('STY-07 diagram inventory and geometry fixtures reject physical hazards', (
     ['header padding', fixture.replace('x="80" y="40">SOA', 'x="80" y="15">SOA')],
     ['legend collision', fixture.replace('data-legend-for="business-call" x="300"', 'data-legend-for="business-call" x="195"')],
     ['oversized marker', fixture.replace('markerWidth="8"', 'markerWidth="20"')],
-  ]) assert.throws(() => assertPhysicalGeometry(changed, 1), assert.AssertionError, `${label} rejected by helper fixture`);
+  ]) assert.throws(() => assertPhysicalGeometry(changed, 1, false), assert.AssertionError, `${label} rejected by helper fixture`);
   const edges = CONNECTOR_INVENTORY.map((edge) => [...edge]); assert.deepEqual(edges, CONNECTOR_INVENTORY, 'exact connector inventory fixture');
   assert.throws(() => assert.deepEqual(edges.slice(1), CONNECTOR_INVENTORY, 'missing connector'), assert.AssertionError, 'missing connector rejected');
   const miswired = CONNECTOR_INVENTORY.map((edge) => [...edge]); miswired[0][2] = 'integration-infrastructure'; assert.throws(() => assert.deepEqual(miswired, CONNECTOR_INVENTORY, 'miswired connector'), assert.AssertionError, 'mandatory ESB center rejected');
@@ -686,12 +837,16 @@ test('STY-07 Draw.io/SVG diagram locks SOA comparison semantics, geometry, and c
   const parsed = parseDrawio(drawio); const first = parsed.edges[0];
   assert.ok(first, 'diagram has edge');
   assert.throws(() => assertDiagram(drawio.replace(`source="${first.attributes.get('source')}"`, ''), svg), assert.AssertionError, 'detached port rejected');
-  assert.throws(() => assertDiagram(drawio.replace(/exitX=[^;]+/u, 'exitX=0.5'), svg), assert.AssertionError, 'changed terminal port rejected');
+  const changedTerminalPort = drawio.replace(/(<mxCell\b[^>]*\bid="soa-submit-order"[^>]*\bexitX=)([01](?:\.5)?)(;)/u,
+    (_, before, current, after) => `${before}${current === '0.5' ? '1' : '0.5'}${after}`);
+  assert.notEqual(changedTerminalPort, drawio, 'changed terminal port mutation applies');
+  assert.throws(() => assertDiagram(changedTerminalPort, svg), assert.AssertionError, 'changed terminal port rejected');
   assert.throws(() => assertDiagram(drawio.replace(/<Array as="points">/u, '<Array as="points"></Array><Array as="points">'), svg), assert.AssertionError, 'removed waypoint rejected');
   assert.throws(() => assertDiagram(drawio.replace(/(<mxPoint x=")[^"]+(" y="[^"]+"\/>)/u, '$10$2'), svg), assert.AssertionError, 'altered physical waypoint rejected');
   assert.throws(() => assertDiagram(drawio.replace(/(<mxCell\b[^>]*\bedge="1"[^>]*>\s*)<mxGeometry/u, '$1<mxPoint as="sourcePoint" x="0" y="0"/><mxGeometry'), svg), assert.AssertionError, 'ignored fallback rejected');
   assert.throws(() => assertDiagram(drawio, svg.replace(/data-edge-id="([^"]+)"/u, 'data-edge-id="moved-label"')), assert.AssertionError, 'retargeted label rejected');
   assert.throws(() => assertDiagram(drawio, svg.replace(/(<text\b[^>]*data-edge-id="[^"]+"[^>]*\bx=")[^"]+("[^>]*\by=")[^"]+/u, '$10$20')), assert.AssertionError, 'physically moved label rejected');
+  assert.throws(() => assertDiagram(drawio, svg.replace(/(<text\b[^>]*data-edge-id="soa-submit-order"[^>]*\bx=")[^"]+("[^>]*\by=")[^"]+/u, (_, beforeX, beforeY) => `${beforeX}1200${beforeY}1200`)), assert.AssertionError, 'detached fulfillment label rejected');
   assert.throws(() => assertDiagram(drawio, svg.replace(/(<g\b[^>]*data-node-id="[^"]+"[^>]*data-node-bounds=")[^"]+/u, '$10 0 1 1')), assert.AssertionError, 'node bounds mutation rejected');
   assert.throws(() => assertDiagram(drawio, svg.replace(/(<text\b[^>]*data-header-for="[^"]+"[^>]*\by=")[^"]+/u, '$10')), assert.AssertionError, 'header padding mutation rejected');
   assert.throws(() => assertDiagram(drawio, svg.replace(/(<text\b[^>]*data-legend-for="[^"]+"[^>]*\bx=")[^"]+/u, '$10')), assert.AssertionError, 'legend collision mutation rejected');
@@ -703,10 +858,14 @@ test('STY-07 Draw.io/SVG diagram locks SOA comparison semantics, geometry, and c
   assert.throws(() => assertDiagram(drawio, svg.replace(/data-role="business-call"/u, 'data-role="removed"')), assert.AssertionError, 'removed role rejected');
   assert.throws(() => assertDiagram(drawio, `${svg.replace('</svg>', '<rect x="0" y="0" width="99999" height="99999" fill="#000000" opacity="0.5"/></svg>')}`), assert.AssertionError, 'later translucent mask rejected');
   assert.throws(() => assertDiagram(drawio, svg.replace('data-node-id="soa-boundary"', 'data-node-id="microservices-boundary"')), assert.AssertionError, 'swapped side semantics rejected');
-  assert.throws(() => assertDiagram(drawio, svg.replace('订单权威状态', '订单普通存储')), assert.AssertionError, 'removed business authority rejected');
+  const removedBusinessAuthority = svg.replace(/(<g\b[^>]*data-node-id="soa-order-store"[\s\S]*?<text\b[^>]*data-text-role="type"[^>]*>)权威状态(<\/text>[\s\S]*?<\/g>)/u, '$1普通存储$2');
+  assert.notEqual(removedBusinessAuthority, svg, 'removed business authority mutation applies');
+  assert.throws(() => assertDiagram(drawio, removedBusinessAuthority), assert.AssertionError, 'removed business authority rejected');
   assert.throws(() => assertDiagram(drawio, svg.replace('集成层不拥有业务状态', 'ESB 拥有业务状态')), assert.AssertionError, 'ESB business-state ownership rejected');
   assert.throws(() => assertDiagram(drawio, svg.replace('共享平台不拥有业务决定', '共享平台拥有业务决定')), assert.AssertionError, 'shared-platform business-decision ownership rejected');
-  assert.throws(() => assertDiagram(drawio, svg.replace('.essential-role { font-size: 48px;', '.essential-role { fill: #F8FAFC !important; font-size: 48px;')), assert.AssertionError, 'low-contrast essential role rejected');
+  const lowContrastEssentialRole = svg.replace('.node-title{font-size:48px;font-weight:700}', '.node-title{font-size:48px;font-weight:700;fill:#F8FAFC}');
+  assert.notEqual(lowContrastEssentialRole, svg, 'low-contrast essential role mutation applies');
+  assert.throws(() => assertDiagram(drawio, lowContrastEssentialRole), assert.AssertionError, 'low-contrast essential role rejected');
   const firstInventory = CONNECTOR_INVENTORY[0];
   assert.throws(() => assertDiagram(drawio.replace(new RegExp(`<mxCell\\b[^>]*\\bid="${firstInventory[0]}"[\\s\\S]*?<\\/mxCell>`, 'u'), ''), svg), assert.AssertionError, 'missing exact connector rejected');
   assert.throws(() => assertDiagram(drawio.replace(`target="${firstInventory[2]}"`, 'target="soa-integration"'), svg), assert.AssertionError, 'miswired ESB-centered connector rejected');
@@ -715,4 +874,19 @@ test('STY-07 Draw.io/SVG diagram locks SOA comparison semantics, geometry, and c
   assert.throws(() => assertDiagram(drawio, svg.replace(participantGroup('microservices', 'inventory'), (group) => group.replace('库存', '支付'))), assert.AssertionError, 'one-side participant swap rejected');
   assert.throws(() => assertDiagram(drawio, svg.replace(participantGroup('soa', 'notification'), '')), assert.AssertionError, 'side-only participant rejected');
   assert.throws(() => assertDiagram(drawio.replace('value="提交订单"', 'value="预留库存"'), svg), assert.AssertionError, 'fulfillment step order swap rejected');
+  assert.throws(() => assertDiagram(drawio.replace(/<mxCell\b[^>]*\bid="soa-order-owner-store"[\s\S]*?<\/mxCell>/u, ''), svg), assert.AssertionError, 'detached SOA owner/store rejected');
+  assert.throws(() => assertDiagram(drawio.replace(/<mxCell\b[^>]*\bid="microservices-order-contract-owner"[\s\S]*?<\/mxCell>/u, ''), svg), assert.AssertionError, 'detached microservices contract/owner rejected');
+  assert.throws(() => assertDiagram(drawio.replace(/<mxCell\b[^>]*\bid="microservices-order-workflow"[\s\S]*?<\/mxCell>/u, ''), svg), assert.AssertionError, 'detached microservices workflow owner rejected');
+  assert.throws(() => assertDiagram(drawio, svg.replace(/data-node-id="soa-order-store"([\s\S]*?)data-shape="cylinder"/u, 'data-node-id="soa-order-store"$1data-shape="rounded-rect"')), assert.AssertionError, 'store shape drift rejected');
+  assert.throws(() => assertDiagram(drawio, svg.replace(/data-node-id="soa-integration"([\s\S]*?)>集成基础设施</u, 'data-node-id="soa-integration"$1>中央业务总线<')), assert.AssertionError, 'node label drift rejected');
+  assert.throws(() => assertDiagram(drawio, svg.replace(/(<g\b[^>]*data-node-id="soa-orchestrator"[\s\S]*?<rect\b[^>]*fill=")#[0-9A-F]{6}/u, '$1#FFFFFF')), assert.AssertionError, 'node fill drift rejected');
+  assert.throws(() => assertDiagram(drawio, svg.replace(/(<text\b[^>]*data-text-role="type"[^>]*\by=")[^"]+/u, '$10')), assert.AssertionError, 'title/type baseline mutation rejected');
+  assert.throws(() => assertDiagram(drawio, svg.replace(/(<g\b[^>]*data-node-id="soa-order-system"[\s\S]*?<text\b[^>]*data-text-role="title"[^>]*\bx=")[^"]+/u, '$10')), assert.AssertionError, 'node horizontal padding mutation rejected');
+  assert.throws(() => assertDiagram(drawio, svg.replace(/(<g\b[^>]*data-node-id="soa-order-system"[\s\S]*?<text\b[^>]*data-text-role="title"[^>]*\by=")[^"]+/u, '$11280')), assert.AssertionError, 'node top padding mutation rejected');
+  assert.throws(() => assertDiagram(drawio, svg.replace(/(<g\b[^>]*data-node-id="soa-order-system"[\s\S]*?<text\b[^>]*data-text-role="type"[^>]*\by=")[^"]+/u, '$11390')), assert.AssertionError, 'node bottom padding mutation rejected');
+  const throughForeignNodeDrawio = drawio.replace(/(<mxCell\b[^>]*\bid="soa-reserve-inventory"[\s\S]*?<Array as="points">)[\s\S]*?(<\/Array>[\s\S]*?<\/mxCell>)/u, '$1<mxPoint x="600" y="528"/><mxPoint x="600" y="1460"/>$2');
+  const throughForeignNodeSvg = svg.replace(/(<path\b[^>]*data-edge-id="soa-reserve-inventory"[^>]*\bd=")[^"]+(")/u, '$1M 410 528 H 600 V 1460 H 460$2');
+  assert.notEqual(throughForeignNodeDrawio, drawio, 'business connector Draw.io collision mutation applies');
+  assert.notEqual(throughForeignNodeSvg, svg, 'business connector SVG collision mutation applies');
+  assert.throws(() => assertDiagram(throughForeignNodeDrawio, throughForeignNodeSvg), assert.AssertionError, 'business connector through foreign node rejected');
 });
