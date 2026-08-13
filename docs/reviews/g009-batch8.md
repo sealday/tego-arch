@@ -21,7 +21,7 @@
 
 ## Local in-app Browser QA
 
-The exact local production build was served from candidate head `2e4ba552853cd74de3a4b8781aee5af9601dbfcf` at `/tego-arch/styles/sty-07` using only the Codex in-app Browser.
+The local production build had the exact render-affecting bytes committed at implementation candidate head `76607c67242757e0e1da1f9e352844b36481fcef` and was served at `/tego-arch/styles/sty-07` using only the Codex in-app Browser; the subsequent evidence-only commit does not change the build.
 
 | State | Viewport/theme | Page client/scroll | Diagram; comparison; decision client/scroll | ArrowRight before→after | Diagnostics |
 | --- | --- | --- | --- | --- | --- |
@@ -34,12 +34,12 @@ The exact local production build was served from candidate head `2e4ba552853cd74
 - SVG loaded in every state: intrinsic `82x150`; rendered `800x1466.6640625`.
 - Remote source anchors: `5` per state across at least `4` domains; STY-08 actionable count: `0` per state.
 - Every state recorded warning/error logs `0`, `Runtime.exceptionThrown=0`, `Log.entryAdded=0`, `hasMore=false`, and `truncated=false`.
-- Raw Browser JSON: `docs/reviews/evidence/g009-batch8-stage-a-browser.json`, SHA-256 `56d398adac20f3684bf4d776c4184602621b8dd5eba77638c08b31720969935b`.
+- Raw Browser JSON: `docs/reviews/evidence/g009-batch8-stage-a-browser.json`, SHA-256 `1af8841c1b35f980391e154de98f0c7695fe1bd58daff25375a2e88d55cac16a`.
 - Screenshot evidence: `CAPTURED / ACCEPTED`; four fresh images are stored outside tracked source with exact absolute paths, byte sizes, and SHA-256 identities in the raw JSON.
 
 ## Independent review checkpoint
 
-- Exact implementation candidate head: `2e4ba552853cd74de3a4b8781aee5af9601dbfcf`.
+- Exact implementation candidate head: `76607c67242757e0e1da1f9e352844b36481fcef`.
 - Evidence candidate: the tracked generated projection, deployment contract, review draft, and raw Browser artifact in this Task 4 commit.
 - Independent code/spec/security review: `PENDING`.
 - Independent content/evidence/rights review: `PENDING`.
