@@ -9,6 +9,7 @@ const SVG = 'static/img/diagrams/sty-06-event-driven-four-patterns.svg';
 const LEDGER = 'data/source-ledger.json';
 const REVIEW = 'docs/reviews/g009-batch7.md';
 const RAW_BROWSER = 'docs/reviews/evidence/g009-batch7-stage-a-browser.json';
+const PRODUCTION_BROWSER = 'docs/reviews/evidence/g009-batch7-stage-a-production-browser.json';
 const REVIEWED_HEAD = '44fcafbef24b68f14a9cbf4be0b3fba09cc6002d';
 const EVIDENCE_HEAD = 'f24b4d4a4ebd95bf454f6e87200c83476dc91971';
 const STATES = ['desktopLight', 'desktopDark', 'mobileLight', 'mobileDark'];
@@ -32,16 +33,18 @@ const SOURCE_IDS = [
   'src-atlas-sty06-event-driven-four-patterns',
 ];
 
-const [review, rawBrowserBytes, manifest, indexes, status, publicLedger] = await Promise.all([
+const [review, rawBrowserBytes, productionBrowserBytes, manifest, indexes, status, publicLedger] = await Promise.all([
   readFile(new URL(`../${REVIEW}`, import.meta.url), 'utf8').catch((error) =>
     error?.code === 'ENOENT' ? '' : Promise.reject(error)),
   readFile(new URL(`../${RAW_BROWSER}`, import.meta.url)),
+  readFile(new URL(`../${PRODUCTION_BROWSER}`, import.meta.url)),
   readFile(new URL('../src/generated/topic-manifest.json', import.meta.url), 'utf8').then(JSON.parse),
   readFile(new URL('../src/generated/topic-indexes.json', import.meta.url), 'utf8').then(JSON.parse),
   readFile(new URL('../src/generated/project-status.json', import.meta.url), 'utf8').then(JSON.parse),
   readFile(new URL('../src/generated/source-ledger.json', import.meta.url), 'utf8').then(JSON.parse),
 ]);
 const rawBrowser = JSON.parse(rawBrowserBytes);
+const productionBrowser = JSON.parse(productionBrowserBytes);
 
 function sha256(value) {
   return createHash('sha256').update(value).digest('hex');
@@ -139,6 +142,46 @@ function assertRawBrowserEvidence(evidence) {
     assert.equal(actual.diagnostics.hasMore, false);
     assert.equal(actual.diagnostics.truncated, false);
   }
+}
+
+function assertProductionBrowserEvidence(evidence) {
+  assert.equal(evidence.implementationHead, '56773ffad24427b33444fb4e5d86aa524fea1577');
+  assert.deepEqual(evidence.pages, {
+    runId: 31668483971,
+    buildJobId: 94348112279,
+    deployJobId: 94348514127,
+    status: 'completed',
+    conclusion: 'success',
+  });
+  assert.deepEqual(evidence.screenshotEvidence, {
+    status: 'BLOCKED / NOT_ACCEPTED',
+    reason: evidence.screenshotEvidence.reason,
+  });
+  assert.ok(evidence.screenshotEvidence.reason.trim().length > 0);
+  assert.doesNotMatch(evidence.screenshotEvidence.reason, /\bPASS\b/iu);
+  assertRawBrowserEvidence({
+    candidateHead: REVIEWED_HEAD,
+    states: evidence.states,
+    screenshotEvidence: evidence.screenshotEvidence,
+  });
+}
+
+function assertProductionDeployment(source, evidence = productionBrowser, evidenceBytes = productionBrowserBytes) {
+  assertProductionBrowserEvidence(evidence);
+  const deployment = section(source, 'Stage A production deployment');
+  const literals = [
+    'Implementation head: `56773ffad24427b33444fb4e5d86aa524fea1577`.',
+    'Pages run: `31668483971`; build job: `94348112279`; deploy job: `94348514127`; all `completed / success`.',
+    'HTTP probes: `9/9` returned `200` with expected content types.',
+    'Production Browser states: `4/4`; wrapper interactions: `12/12`; relation destination/H1/return checks: `16/16`.',
+    'Remote source anchors: `5` per state across at least `4` domains; STY-07 actionable count: `0` per state.',
+    'Diagnostics: warning/error logs `0`, `Runtime.exceptionThrown=0`, `Log.entryAdded=0`, `hasMore=false`, `truncated=false` in every state.',
+    'Screenshot evidence: `BLOCKED / NOT_ACCEPTED`; no production visual PASS is claimed.',
+    'Deployment status: `SUCCESS / PASS`.',
+  ];
+  for (const literal of literals) assert.ok(deployment.includes(literal), `production literal: ${literal}`);
+  assert.match(deployment, /Live SVG: `28,517` bytes; SHA-256 `72d99df5265620262517c218eb83555b6004de77432630e87eaa8a55cbc6388b`; exact reviewed-asset match\./u);
+  assert.ok(deployment.includes(`Raw production Browser JSON: \`${PRODUCTION_BROWSER}\`, SHA-256 \`${sha256(evidenceBytes)}\`.`));
 }
 
 function assertBrowserEvidence(source, evidence = rawBrowser, evidenceBytes = rawBrowserBytes) {
@@ -258,4 +301,39 @@ test('rejects raw Browser count, return, load, diagnostic, and head mutations', 
     assert.throws(() => assertRawBrowserEvidence(copy), {name: 'AssertionError'}, label);
   }
   assert.notEqual(sha256(Buffer.from(`${rawBrowserBytes} `)), sha256(rawBrowserBytes));
+});
+
+test('binds exact STY-06 Stage A production evidence', () => {
+  assertProductionDeployment(review);
+});
+
+test('rejects weakened or fabricated STY-06 production evidence', () => {
+  assertProductionDeployment(review);
+  const evidenceMutations = [
+    ['wrong implementation head', (copy) => copy.implementationHead = '0'.repeat(40)],
+    ['wrong run', (copy) => copy.pages.runId = 1],
+    ['wrong build job', (copy) => copy.pages.buildJobId = 1],
+    ['wrong deploy job', (copy) => copy.pages.deployJobId = 1],
+    ['failed conclusion', (copy) => copy.pages.conclusion = 'failure'],
+    ['missing state', (copy) => delete copy.states.mobileDark],
+    ['missing relation return', (copy) => copy.states.mobileLight.relations[0].returnedToArticle = false],
+    ['altered source rel', (copy) => copy.states.desktopDark.geometry.sources[0].rel = 'noopener'],
+    ['truncated diagnostics', (copy) => copy.states.mobileDark.diagnostics.truncated = true],
+    ['fabricated screenshot pass', (copy) => copy.screenshotEvidence.status = 'PASS'],
+  ];
+  for (const [label, mutate] of evidenceMutations) {
+    const copy = structuredClone(productionBrowser);
+    mutate(copy);
+    assert.throws(() => assertProductionBrowserEvidence(copy), {name: 'AssertionError'}, label);
+  }
+  for (const [label, before, after] of [
+    ['wrong HTTP total', 'HTTP probes: `9/9`', 'HTTP probes: `8/9`'],
+    ['wrong SVG hash', 'Live SVG: `28,517` bytes; SHA-256 `72d99df5265620262517c218eb83555b6004de77432630e87eaa8a55cbc6388b`', 'Live SVG: `28,517` bytes; SHA-256 `0000000000000000000000000000000000000000000000000000000000000000`'],
+    ['fabricated production visual pass', 'Screenshot evidence: `BLOCKED / NOT_ACCEPTED`; no production visual PASS is claimed.', 'Screenshot evidence: `PASS`.'],
+    ['weakened deployment', 'Deployment status: `SUCCESS / PASS`.', 'Deployment status: `PENDING`.'],
+  ]) {
+    const mutated = review.replace(before, after);
+    assert.notEqual(mutated, review, `${label} mutation applies`);
+    assert.throws(() => assertProductionDeployment(mutated), {name: 'AssertionError'}, label);
+  }
 });

@@ -54,3 +54,18 @@ The exact local production build was served from candidate head `44fcafbef24b68f
 - Deployment status: `NOT_RUN`.
 
 The implementation agent did not issue any independent verdict. Root-owned reviewers bound their final results to the immutable implementation candidate and tracked evidence/remediation head above; Stage B closure and deployment remain outside this verdict.
+
+## Stage A production deployment
+
+- Implementation head: `56773ffad24427b33444fb4e5d86aa524fea1577`.
+- Pages run: `31668483971`; build job: `94348112279`; deploy job: `94348514127`; all `completed / success`.
+- HTTP probes: `9/9` returned `200` with expected content types.
+- Live SVG: `28,517` bytes; SHA-256 `72d99df5265620262517c218eb83555b6004de77432630e87eaa8a55cbc6388b`; exact reviewed-asset match.
+- Production Browser states: `4/4`; wrapper interactions: `12/12`; relation destination/H1/return checks: `16/16`.
+- Remote source anchors: `5` per state across at least `4` domains; STY-07 actionable count: `0` per state.
+- Diagnostics: warning/error logs `0`, `Runtime.exceptionThrown=0`, `Log.entryAdded=0`, `hasMore=false`, `truncated=false` in every state.
+- Raw production Browser JSON: `docs/reviews/evidence/g009-batch7-stage-a-production-browser.json`, SHA-256 `4a58fc1d513ba35b530e8986f5a280e39138236aacb5467a9cf4dcaef1894548`.
+- Screenshot evidence: `BLOCKED / NOT_ACCEPTED`; no production visual PASS is claimed.
+- Deployment status: `SUCCESS / PASS`.
+
+This production result closes only Stage A publication. STY-06 remains pending until the separate Stage B backlog closure; STY-07 remains unpublished and non-actionable.
