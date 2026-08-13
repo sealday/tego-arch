@@ -62,13 +62,16 @@ export const OWNERSHIP = Object.freeze([
   ['payment-authority', /支付系统[^。；]*拥有[^。；]*支付/u],
   ['notification-authority', /通知系统[^。；]*拥有[^。；]*投递状态/u],
   ['orchestration-state', /编排器[^。；]*拥有[^。；]*流程状态|编排器[^。；]*持久化[^。；]*流程/u],
+  ['orchestration-recovery-decision', /编排器[^。；]*(?:负责|作出)[^。；]*(?:恢复决策|恢复|终止流程)/u],
   ['integration-transport', /集成基础设施[^。；]*负责[^。；]*(路由|转换|技术传输)/u],
 ]);
 const NEGATED_OWNER = /不负责|没有所有者|无人负责|责任待定|所有者待定|尚未明确|未指定/u;
 const PROHIBITIONS = Object.freeze([
   ['SOA is not ESB', /SOA[^。；]*(?:不等于|不是)[^。；]*ESB|ESB[^。；]*(?:不等于|不是)[^。；]*SOA/iu],
   ['SOA is not Web Services', /SOA[^。；]*(?:不等于|不是)[^。；]*Web Services|Web Services[^。；]*(?:不等于|不是)[^。；]*SOA/iu],
+  ['SOA is not messaging middleware', /SOA[^。；]*(?:不等于|不是)[^。；]*(?:消息中间件|Messaging Middleware)|(?:消息中间件|Messaging Middleware)[^。；]*(?:不等于|不是)[^。；]*SOA/iu],
   ['SOA does not authorize shared writes', /(?:不授权|禁止)[^。；]*(?:共享数据库写入|共享写入)|共享数据库写入[^。；]*(?:不被|不得|禁止)/u],
+  ['integration infrastructure does not own business outcomes', /集成基础设施[^。；]*(?:不拥有|不得拥有|不能拥有)[^。；]*(?:业务状态|业务结果|业务决定)|(?:业务状态|业务结果|业务决定)[^。；]*(?:不归|不属于)[^。；]*集成基础设施/u],
 ]);
 export const COMPARISON_ROWS = Object.freeze([
   ['优化尺度', /企业能力复用.*异构系统互操作/u, /单个团队.*快速自治交付/u],
@@ -92,9 +95,10 @@ export const FAILURE_ROWS = Object.freeze([
 const SOURCE_REQUIRED_FIELDS = ['canonical_locator', 'transport_locator', 'title', 'author_or_org', 'version',
   'source_kind', 'tier', 'allowed_evidence_roles', 'license', 'license_scope', 'license_evidence_url',
   'license_evidence_note', 'copyright_policy', 'usage_boundary'];
+const COPYRIGHT_CHECKS = ['original-structure', 'quotation-boundary', 'attribution-complete', 'illustration-rights'];
 const RECIPROCALS = Object.freeze([
-  'styles/sty-04-modular-monolith.mdx', 'styles/sty-05-microservices.mdx',
-  'styles/sty-06-event-driven-architecture.mdx', 'cases/temporal-saga-durable-execution.mdx',
+  'content/styles/sty-04-modular-monolith.mdx', 'content/styles/sty-05-microservices.mdx',
+  'content/styles/sty-06-event-driven-architecture.mdx', 'content/cases/temporal-saga-durable-execution.mdx',
 ]);
 const DIAGRAM_NODES = Object.freeze([
   'soa-side', 'microservices-side', 'comparison-boundary', 'order-system', 'inventory-system',
@@ -112,18 +116,7 @@ function articleParts(source) {
   return {source, body: source.slice(close + 4)};
 }
 function escapeRegExp(value) { return value.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&'); }
-export function markdownTable(body, label) {
-  const lines = body.split(/\r?\n/u);
-  const start = lines.findIndex((line) => /^\|[^|]+\|[^|]+\|[^|]+(?:\|[^|]+)?\|\s*$/u.test(line));
-  assert.ok(start >= 0, `${label} table exists`);
-  const table = [];
-  for (const line of lines.slice(start)) {
-    if (!/^\|/u.test(line)) break;
-    table.push(line.slice(1, -1).split('|').map((cell) => cell.trim()));
-  }
-  return table;
-}
-export function tables(body) {
+export function markdownTables(body) {
   const result = [];
   const lines = body.split(/\r?\n/u);
   for (let index = 0; index < lines.length; index += 1) {
@@ -134,7 +127,7 @@ export function tables(body) {
     }
     result.push(table); index -= 1;
   }
-  return result;
+  return result.filter((table) => table.length >= 3 && table[1].every((cell) => /^:?-{3,}:?$/u.test(cell)));
 }
 function exactWrapperTag(wrapper) {
   return `<div className="${wrapper.className}" role="region" aria-label="${wrapper.aria}" tabIndex={0} onKeyDown={handleHorizontalArrowKey}>`;
@@ -143,6 +136,22 @@ function removeFrontMatterField(source, field) {
   const fieldLine = new RegExp(`^${escapeRegExp(field)}:.*(?:\\r?\\n  - [^\\r\\n]+)*(?:\\r?\\n|$)`, 'mu');
   assert.match(source, fieldLine, `${field} front-matter field exists for deletion mutation`);
   return source.replace(fieldLine, '');
+}
+function changeFrontMatterField(source, field) {
+  const original = EXACT_METADATA[field];
+  if (Array.isArray(original)) {
+    if (original.length === 0) {
+      const token = `${field}: []`;
+      assert.ok(source.includes(token), `${field} empty-array field exists for change mutation`);
+      return source.replace(token, `${field}: [changed]`);
+    }
+    const token = `  - ${original[0]}`;
+    assert.ok(source.includes(token), `${field} first array item exists for change mutation`);
+    return source.replace(token, '  - changed');
+  }
+  const token = `${field}: ${original}`;
+  assert.ok(source.includes(token), `${field} scalar field exists for change mutation`);
+  return source.replace(token, `${field}: changed`);
 }
 export function assertExactMetadata(source) { assert.deepEqual(parseFrontMatter(source), EXACT_METADATA, 'exact STY-07 front matter'); }
 export function assertRequiredWrappers(source) {
@@ -156,7 +165,11 @@ export function assertOwnership(source) {
     assert.doesNotMatch(sentence, NEGATED_OWNER, `${name} cannot be negated or unresolved`);
   }
 }
-export function assertProhibitions(source) { for (const [name, pattern] of PROHIBITIONS) assert.match(source, pattern, name); }
+export function assertProhibitions(source) {
+  for (const [name, pattern] of PROHIBITIONS) assert.match(source, pattern, name);
+  assert.doesNotMatch(source, /(?:SOA|面向服务架构)[^。；]*(?:(?<!不)等于|就是)[^。；]*(?:ESB|Web Services|消息中间件)|(?:ESB|Web Services|消息中间件)[^。；]*(?:(?<!不)等于|就是)[^。；]*(?:SOA|面向服务架构)/iu, 'SOA product equivalence is forbidden');
+  assert.doesNotMatch(source, /集成基础设施[^。；]*(?:(?<!不)拥有|(?<!不)决定)[^。；]*(?:业务状态|业务结果|业务决定)/u, 'integration infrastructure cannot own business state/outcomes');
+}
 function exactRows(table, expected, heading, columns) {
   assert.deepEqual(table[0], heading, 'exact table header');
   assert.match(table[1].join('|'), /^-+/u, 'table divider');
@@ -168,24 +181,32 @@ function exactRows(table, expected, heading, columns) {
   }
 }
 export function assertComparisonTable(source) {
-  const table = tables(articleParts(source).body).find((candidate) => candidate[0]?.[0] === '问题');
+  const table = markdownTables(articleParts(source).body).find((candidate) => candidate[0]?.[0] === '问题');
   assert.ok(table, 'eight-row SOA/microservices comparison table');
   exactRows(table, COMPARISON_ROWS, ['问题', '经典 SOA', '微服务'], 3);
   assert.match(source, /不是成熟度阶梯/u, 'comparison is not a maturity ladder');
 }
 export function assertFailureTable(source) {
-  const table = tables(articleParts(source).body).find((candidate) => candidate[0]?.[0] === '失败类别');
+  const table = markdownTables(articleParts(source).body).find((candidate) => candidate[0]?.[0] === '失败类别');
   assert.ok(table, 'seven-row failure table');
   exactRows(table, FAILURE_ROWS, ['失败类别', '检测', '自动动作', '停止条件', '人工所有者'], 5);
   assert.match(source, /结果未知[^。；]*不盲目[^。；]*(重复支付|预留|补偿)/u, 'unknown result does not blind-retry');
 }
 function attrs(tag) { return new Map([...tag.matchAll(/([:\w-]+)="([^"]*)"/gu)].map(([, key, value]) => [key, value])); }
+function decodeXmlText(value) { return value.replace(/&(?:#(\d+)|#x([\da-f]+)|amp|lt|gt|quot);/giu, (entity, decimal, hex) => {
+  if (decimal) return String.fromCodePoint(Number(decimal));
+  if (hex) return String.fromCodePoint(Number.parseInt(hex, 16));
+  return ({'&amp;': '&', '&lt;': '<', '&gt;': '>', '&quot;': '"'})[entity] ?? entity;
+}); }
 export function parseDrawio(source) {
-  const cells = [...source.matchAll(/<mxCell\b([^>]*)(?:\/>|>([\s\S]*?)<\/mxCell>)/gu)].map((match) => ({attributes: attrs(match[1]), body: match[2] ?? ''}));
+  const cells = [...source.matchAll(/<mxCell\b([^>]*)(?:\/>|>([\s\S]*?)<\/mxCell>)/gu)].map((match) => {
+    const body = match[2] ?? ''; const geometryTag = body.match(/<mxGeometry\b([^>]*)/u)?.[1] ?? '';
+    return {attributes: attrs(match[1]), body, geometry: attrs(geometryTag), label: decodeXmlText(attrs(match[1]).get('value') ?? '')};
+  });
   return {nodes: cells.filter(({attributes}) => attributes.get('vertex') === '1'), edges: cells.filter(({attributes}) => attributes.get('edge') === '1')};
 }
 export function parseSvg(source) {
-  const elements = [...source.matchAll(/<(g|path|rect|text|marker)\b([^>]*)>/gu)].map((match) => ({name: match[1], attributes: attrs(match[2])}));
+  const elements = [...source.matchAll(/<(svg|g|path|rect|text|marker)\b([^>]*)>/gu)].map((match, index) => ({name: match[1], attributes: attrs(match[2]), index, tag: match[0]}));
   return {elements, nodes: elements.filter(({attributes}) => attributes.has('data-node-id')),
     edges: elements.filter(({attributes}) => attributes.has('data-edge-id'))};
 }
@@ -221,7 +242,53 @@ export function glyphBox({x, y, text, fontSize}) {
   const round = (value) => Math.round(value * 1e6) / 1e6;
   return {left: round(x - width / 2), right: round(x + width / 2), top: y - fontSize, bottom: y};
 }
-function geometry(attributes) { return Object.fromEntries(['x', 'y', 'width', 'height'].map((key) => [key, Number(attributes.get(key))])); }
+function numericBounds(attributes) {
+  const bounds = Object.fromEntries(['x', 'y', 'width', 'height'].map((key) => [key, Number(attributes.get(key))]));
+  assert.ok(Object.values(bounds).every(Number.isFinite), 'finite node bounds'); return bounds;
+}
+function drawioStyle(cell) { return new Map((cell.attributes.get('style') ?? '').split(';').filter(Boolean).map((entry) => entry.split(/=(.*)/su))); }
+export function drawioTerminalPoint(drawio, edge, kind) {
+  const style = drawioStyle(edge); const prefix = kind === 'source' ? 'exit' : 'entry'; const id = edge.attributes.get(kind);
+  const node = drawio.nodes.find(({attributes}) => attributes.get('id') === id); assert.ok(node, `${edge.attributes.get('id')} ${kind} terminal`);
+  for (const property of [`${prefix}X`, `${prefix}Y`, `${prefix}Dx`, `${prefix}Dy`, `${prefix}Perimeter`]) assert.ok(style.has(property), `${edge.attributes.get('id')} ${property}`);
+  assert.equal(style.get(`${prefix}Perimeter`), '1', `${edge.attributes.get('id')} ${prefix} perimeter`);
+  assert.equal(style.get(`${prefix}Dx`), '0', `${edge.attributes.get('id')} ${prefix}Dx`); assert.equal(style.get(`${prefix}Dy`), '0', `${edge.attributes.get('id')} ${prefix}Dy`);
+  const x = Number(style.get(`${prefix}X`)); const y = Number(style.get(`${prefix}Y`));
+  assert.ok([x, y].every((value) => Number.isFinite(value) && value >= 0 && value <= 1), `${edge.attributes.get('id')} normalized ${prefix} port`);
+  assert.ok(x === 0 || x === 1 || y === 0 || y === 1, `${edge.attributes.get('id')} ${prefix} port on perimeter`);
+  const bounds = numericBounds(node.geometry); return {x: bounds.x + bounds.width * x, y: bounds.y + bounds.height * y};
+}
+export function drawioRoute(drawio, edge) {
+  assert.doesNotMatch(edge.body, /<mxPoint\b[^>]*\bas="(?:sourcePoint|targetPoint)"/u, `${edge.attributes.get('id')} has no ignored fallback point`);
+  assert.equal(edge.attributes.has('dataRoute'), false, `${edge.attributes.get('id')} has no self-reported route`);
+  const array = edge.body.match(/<Array\b[^>]*\bas="points"[^>]*>([\s\S]*?)<\/Array>/u)?.[1]; assert.ok(array !== undefined, `${edge.attributes.get('id')} waypoint Array`);
+  const waypoints = [...array.matchAll(/<mxPoint\b([^>]*)\/>/gu)].map(([, raw]) => attrs(raw)).map((point) => ({x: Number(point.get('x')), y: Number(point.get('y'))}));
+  assert.ok(waypoints.length > 0 && waypoints.every(({x, y}) => Number.isFinite(x) && Number.isFinite(y)), `${edge.attributes.get('id')} actual waypoints`);
+  return [drawioTerminalPoint(drawio, edge, 'source'), ...waypoints, drawioTerminalPoint(drawio, edge, 'target')];
+}
+export function parsePathPoints(data) {
+  const tokens = data.match(/[MHV]|-?(?:\d+(?:\.\d*)?|\.\d+)/gu) ?? []; const points = []; let cursor = 0; let x = 0; let y = 0;
+  while (cursor < tokens.length) { const command = tokens[cursor++]; if (command === 'M') { x = Number(tokens[cursor++]); y = Number(tokens[cursor++]); } else if (command === 'H') x = Number(tokens[cursor++]); else if (command === 'V') y = Number(tokens[cursor++]); else assert.fail(`unsupported connector path command ${command}`); points.push({x, y}); }
+  assert.ok(points.length >= 2, `orthogonal connector path ${data}`); return points;
+}
+function segmentDistance(left, right, box) {
+  const horizontal = left.y === right.y; assert.ok(horizontal || left.x === right.x, 'orthogonal segment');
+  const dx = horizontal ? Math.max(box.left - Math.max(left.x, right.x), Math.min(left.x, right.x) - box.right, 0) : Math.max(box.left - left.x, left.x - box.right, 0);
+  const dy = horizontal ? Math.max(box.top - left.y, left.y - box.bottom, 0) : Math.max(box.top - Math.max(left.y, right.y), Math.min(left.y, right.y) - box.bottom, 0);
+  return Math.hypot(dx, dy);
+}
+function paintOpacity(source, element, kind) { return Number(svgPresentationValue(source, element, `${kind}-opacity`) ?? svgPresentationValue(source, element, 'opacity') ?? 1); }
+function blendHex(foreground, background, opacity) { const channels = (value) => value.match(/[\da-f]{2}/giu).map((entry) => Number.parseInt(entry, 16)); const left = channels(foreground); const right = channels(background); return `#${left.map((value, index) => Math.round(value * opacity + right[index] * (1 - opacity)).toString(16).padStart(2, '0')).join('')}`; }
+function luminance(color) { const rgb = color.match(/[\da-f]{2}/giu).map((entry) => Number.parseInt(entry, 16) / 255).map((value) => value <= .04045 ? value / 12.92 : ((value + .055) / 1.055) ** 2.4); return rgb[0] * .2126 + rgb[1] * .7152 + rgb[2] * .0722; }
+function contrastRatio(left, right) { const [light, dark] = [luminance(left), luminance(right)].sort((a, b) => b - a); return (light + .05) / (dark + .05); }
+function labelBox(element, label, fontSize) { const x = Number(element.attributes.get('x')); const y = Number(element.attributes.get('y')); return glyphBox({x, y, text: label, fontSize}); }
+function assertNoOverdraw(source) {
+  const {elements} = parseSvg(source); const paths = elements.filter(({name, attributes}) => name === 'path' && attributes.has('data-edge-id'));
+  for (const path of paths) for (const mask of elements.filter(({name, index}) => name === 'rect' && index > path.index)) {
+    const fill = svgPresentationValue(source, mask, 'fill'); const opacity = fill && fill !== 'none' ? paintOpacity(source, mask, 'fill') : 0;
+    if (opacity > 0) { const bounds = numericBounds(mask.attributes); const points = parsePathPoints(path.attributes.get('d')); assert.ok(!points.slice(1).some((point, index) => segmentDistance(points[index], point, {left: bounds.x, right: bounds.x + bounds.width, top: bounds.y, bottom: bounds.y + bounds.height}) === 0), `${path.attributes.get('data-edge-id')} no later opaque/translucent mask`); }
+  }
+}
 function assertDiagram(sourceDrawio, sourceSvg) {
   assert.match(sourceDrawio, /<mxfile\b/u, 'Draw.io file');
   const root = sourceSvg.match(/<svg\b[^>]*>/u)?.[0] ?? '';
@@ -229,29 +296,38 @@ function assertDiagram(sourceDrawio, sourceSvg) {
   assert.doesNotMatch(root, /(?:width|height)="/u, 'responsive SVG');
   const drawio = parseDrawio(sourceDrawio); const svg = parseSvg(sourceSvg);
   for (const id of DIAGRAM_NODES) {
-    assert.ok(drawio.nodes.some(({attributes}) => attributes.get('id') === id), `Draw.io node ${id}`);
-    assert.ok(svg.nodes.some(({attributes}) => attributes.get('data-node-id') === id), `SVG node ${id}`);
+    const node = drawio.nodes.find(({attributes}) => attributes.get('id') === id); const rendered = svg.nodes.find(({attributes}) => attributes.get('data-node-id') === id);
+    assert.ok(node, `Draw.io node ${id}`); assert.ok(rendered, `SVG node ${id}`);
+    assert.equal(rendered.attributes.get('data-node-bounds'), `${node.geometry.get('x')} ${node.geometry.get('y')} ${node.geometry.get('width')} ${node.geometry.get('height')}`, `${id} bounds parity`);
   }
+  const viewBox = root.match(/viewBox="0 0 ([0-9.]+) ([0-9.]+)"/u); const scale = 800 / Number(viewBox?.[1]);
   for (const role of DIAGRAM_EDGES) {
     const edge = drawio.edges.find(({attributes}) => attributes.get('dataRole') === role);
-    assert.ok(edge, `Draw.io ${role}`); assert.ok(edge.attributes.get('source') && edge.attributes.get('target'), `${role} real terminals`);
-    assert.match(edge.body, /<mxPoint[^>]*as="(?:sourcePoint|targetPoint)"/u, `${role} terminal port geometry`);
-    assert.ok(svg.edges.some(({attributes}) => attributes.get('data-edge-id') === edge.attributes.get('id')), `SVG ${role} parity`);
+    assert.ok(edge, `Draw.io ${role}`); const route = drawioRoute(drawio, edge); const id = edge.attributes.get('id');
+    const path = svg.elements.find(({name, attributes}) => name === 'path' && attributes.get('data-edge-id') === id); const label = svg.elements.find(({name, attributes}) => name === 'text' && attributes.get('data-edge-id') === id);
+    assert.ok(path && label, `SVG ${role} path/label`); assert.equal(path.attributes.get('data-source'), edge.attributes.get('source'), `${id} semantic source`); assert.equal(path.attributes.get('data-target'), edge.attributes.get('target'), `${id} semantic target`);
+    assert.deepEqual(parsePathPoints(path.attributes.get('d')), route, `${id} actual route parity`); assert.equal(label.attributes.get('data-role'), role, `${id} label role`); assert.equal(path.attributes.get('data-role'), role, `${id} path role`);
+    const visibleLabel = decodeXmlText(sourceSvg.match(new RegExp(`${escapeRegExp(label.tag)}([^<]*)<\\/text>`, 'u'))?.[1] ?? ''); assert.equal(visibleLabel, edge.label, `${id} label parity`);
+    const style = drawioStyle(edge); assert.equal(svgPresentationValue(sourceSvg, path, 'stroke'), style.get('strokeColor'), `${id} effective stroke`); assert.equal(Number(svgPresentationValue(sourceSvg, path, 'stroke-width')), Number(style.get('strokeWidth')), `${id} stroke width`);
+    const markerId = svgPresentationValue(sourceSvg, path, 'marker-end')?.match(/^url\(#([^)]+)\)$/u)?.[1]; assert.ok(markerId, `${id} effective marker`); const marker = svg.elements.find(({name, attributes}) => name === 'marker' && attributes.get('id') === markerId); const markerRaw = sourceSvg.match(new RegExp(`<marker\\b[^>]*\\bid="${escapeRegExp(markerId)}"[^>]*>([\\s\\S]*?)<\\/marker>`, 'u'))?.[1] ?? ''; const markerPath = {attributes: attrs(markerRaw.match(/<path\\b([^>]*)>/u)?.[1] ?? '')};
+    assert.ok(marker && markerRaw && markerPath.attributes.size > 0, `${id} marker definition`); assert.equal(svgPresentationValue(sourceSvg, markerPath, 'fill'), style.get('endFill') === '0' ? 'none' : style.get('strokeColor'), `${id} marker fill`); assert.equal(svgPresentationValue(sourceSvg, markerPath, 'stroke'), style.get('strokeColor'), `${id} marker stroke`); assert.ok(Number(marker.attributes.get('markerWidth')) * scale <= 16 && Number(marker.attributes.get('markerHeight')) * scale <= 16, `${id} bounded marker`);
+    assert.equal(svgPresentationValue(sourceSvg, path, 'stroke-dasharray') ?? '', style.get('dashed') === '1' ? style.get('dashPattern') : '', `${id} dash role`);
+    const fontSize = Number(svgPresentationValue(sourceSvg, label, 'font-size')); const text = sourceSvg.match(new RegExp(`${escapeRegExp(label.tag)}([^<]*)<\\/text>`, 'u'))?.[1] ?? ''; const box = labelBox(label, decodeXmlText(text), fontSize);
+    const points = parsePathPoints(path.attributes.get('d')); const strokeGap = Math.min(...points.slice(1).map((point, index) => segmentDistance(points[index], point, box))) * scale; assert.ok(strokeGap >= 8, `${id} connector clearance`); const markerGap = Math.hypot(points.at(-1).x - (box.left + box.right) / 2, points.at(-1).y - (box.top + box.bottom) / 2) * scale; assert.ok(markerGap >= 16, `${id} marker clearance`);
+    assert.ok(fontSize * scale >= (/图例|业务调用|消息|路由|补偿/u.test(text) ? 12 : 15), `${id} rendered font`);
   }
   const canvas = sourceSvg.match(/<(?:rect|path)\b[^>]*\bid="(?:canvas|background)"[^>]*>/u)?.[0] ?? '';
   assert.ok(canvas && !/fill="(?:none|transparent)"/iu.test(canvas), 'opaque canvas');
+  const canvasElement = svg.elements.find(({attributes}) => /^(?:canvas|background)$/u.test(attributes.get('id') ?? ''));
+  const background = svgPresentationValue(sourceSvg, canvasElement, 'fill'); assert.ok(background && background !== 'none', 'effective canvas background');
   const text = [...sourceSvg.matchAll(/<text\b([^>]*)>([^<]+)<\/text>/gu)];
   for (const [, raw, label] of text) {
-    const attributes = attrs(raw); const size = Number(svgPresentationValue(sourceSvg, {attributes}, 'font-size'));
-    if (/图例|业务调用|消息|路由|补偿/u.test(label)) assert.ok(size >= 12, `legend text ${label}`);
-    else assert.ok(size >= 15, `essential text ${label}`);
+    const attributes = attrs(raw); const rendered = {attributes}; const size = Number(svgPresentationValue(sourceSvg, rendered, 'font-size'));
+    if (/图例|业务调用|消息|路由|补偿/u.test(label)) assert.ok(size * scale >= 12, `legend text ${label}`);
+    else assert.ok(size * scale >= 15, `essential text ${label}`);
+    assert.ok(contrastRatio(blendHex(svgPresentationValue(sourceSvg, rendered, 'fill'), background, paintOpacity(sourceSvg, rendered, 'fill')), background) >= 4.5, `effective text contrast ${label}`);
   }
-  const edgePaths = [...sourceSvg.matchAll(/<path\b([^>]*)>/gu)].map((match) => ({attributes: attrs(match[1])}))
-    .filter(({attributes}) => attributes.has('data-edge-id'));
-  for (const path of edgePaths) {
-    assert.ok(svgPresentationValue(sourceSvg, path, 'stroke'), `${path.attributes.get('data-edge-id')} effective stroke`);
-    assert.match(svgPresentationValue(sourceSvg, path, 'marker-end') ?? '', /^url\(#.+\)$/u, 'real marker');
-  }
+  assertNoOverdraw(sourceSvg);
   return {drawio, svg, alphaComposite};
 }
 async function mutation(source, transform, validator, label) {
@@ -261,10 +337,38 @@ async function mutation(source, transform, validator, label) {
 
 test('SVG cascade, alpha composition, and conservative glyph geometry helpers are meaningful', () => {
   const svg = '<svg><style>#x.edge { stroke: #FFFFFF !important; }</style><path id="x" class="edge" style="stroke: #334155"/></svg>';
-  const element = parseSvg(svg).elements[0];
+  const element = parseSvg(svg).elements.find(({attributes}) => attributes.get('id') === 'x');
   assert.equal(svgPresentationValue(svg, element, 'stroke'), '#FFFFFF');
   assert.equal(alphaComposite('#000000', .5), '#808080');
+  assert.equal(blendHex('#000000', '#FFFFFF', .5), '#808080');
+  assert.ok(contrastRatio('#000000', '#FFFFFF') >= 21, 'effective foreground/background contrast');
   assert.deepEqual(glyphBox({x: 10, y: 20, text: 'A中', fontSize: 10}), {left: 1.9, right: 18.1, top: 10, bottom: 20});
+  const drawio = parseDrawio('<mxfile><mxCell id="a" vertex="1"><mxGeometry x="0" y="0" width="20" height="20"/></mxCell><mxCell id="b" vertex="1"><mxGeometry x="100" y="0" width="20" height="20"/></mxCell><mxCell id="e" edge="1" source="a" target="b" style="exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=1"><mxGeometry><Array as="points"><mxPoint x="60" y="10"/></Array></mxGeometry></mxCell></mxfile>');
+  const edge = drawio.edges[0]; assert.deepEqual(drawioRoute(drawio, edge), [{x: 20, y: 10}, {x: 60, y: 10}, {x: 100, y: 10}]);
+  assert.throws(() => drawioRoute(drawio, {...edge, body: `${edge.body}<mxPoint as="sourcePoint" x="0" y="0"/>`}), assert.AssertionError, 'fallback terminal point rejected');
+  const masked = '<svg><path data-edge-id="e" d="M 0 0 H 20"/><rect x="10" y="-1" width="2" height="2" fill="#000000" opacity="0.5"/></svg>';
+  assert.throws(() => assertNoOverdraw(masked), assert.AssertionError, 'ordinary translucent later mask rejected');
+});
+
+test('metadata, wrapper, ownership, and prohibition fixtures prove all mutations are non-no-op', () => {
+  const scalar = Object.entries(EXACT_METADATA).filter(([, value]) => !Array.isArray(value)).map(([field, value]) => `${field}: ${value}`);
+  const arrays = Object.entries(EXACT_METADATA).filter(([, value]) => Array.isArray(value)).flatMap(([field, values]) =>
+    values.length === 0 ? [`${field}: []`] : [`${field}:`, ...values.map((value) => `  - ${value}`)]);
+  const metadata = `---\n${[...scalar, ...arrays].join('\n')}\n---\n`;
+  assertExactMetadata(metadata);
+  for (const field of Object.keys(EXACT_METADATA)) {
+    const deleted = removeFrontMatterField(metadata, field); const changed = changeFrontMatterField(metadata, field);
+    assert.notEqual(deleted, metadata, `${field} deletion fixture mutates`); assert.notEqual(changed, metadata, `${field} change fixture mutates`);
+    assert.throws(() => assertExactMetadata(deleted), assert.AssertionError, `${field} deletion fixture rejects`);
+    assert.throws(() => assertExactMetadata(changed), assert.AssertionError, `${field} change fixture rejects`);
+  }
+  const wrappers = REQUIRED_WRAPPERS.map(exactWrapperTag).join('\n'); assertRequiredWrappers(wrappers);
+  for (const wrapper of REQUIRED_WRAPPERS) assert.throws(() => assertRequiredWrappers(wrappers.replace(' role="region"', ' role="group"')), assert.AssertionError, `${wrapper.aria} wrapper change fixture rejects`);
+  const ownership = [
+    '订单系统拥有订单状态。库存系统拥有预留。支付系统拥有支付结果。通知系统拥有投递状态。',
+    '编排器拥有流程状态并负责恢复决策。集成基础设施负责路由、转换和技术传输。',
+  ].join('');
+  assertOwnership(ownership); assertProhibitions('SOA 不等于 ESB。SOA 不等于 Web Services。SOA 不等于消息中间件。SOA 不授权共享数据库写入。集成基础设施不拥有业务状态或业务结果。');
 });
 
 test('locks exact STY-07 article metadata, headings, wrappers, ownership, and prose boundaries', async () => {
@@ -272,10 +376,9 @@ test('locks exact STY-07 article metadata, headings, wrappers, ownership, and pr
   assertExactMetadata(source);
   assert.deepEqual(findMarkdownHeadings(body).filter(({level}) => level === 2).map(({text}) => text), EXPECTED_HEADINGS);
   assertRequiredWrappers(source); assertOwnership(source); assertProhibitions(source);
-  for (const [field, value] of Object.entries(EXACT_METADATA)) {
-    const original = parseFrontMatter(source)[field];
+  for (const field of Object.keys(EXACT_METADATA)) {
     await mutation(source, (candidate) => removeFrontMatterField(candidate, field), assertExactMetadata, `${field} deleted`);
-    await mutation(source, (candidate) => candidate.replace(String(Array.isArray(original) ? original[0] : original), 'changed'), assertExactMetadata, `${field} changed`);
+    await mutation(source, (candidate) => changeFrontMatterField(candidate, field), assertExactMetadata, `${field} changed`);
   }
   for (const wrapper of REQUIRED_WRAPPERS) for (const [name, from, deleted, changed] of [
     ['role', ' role="region"', '', ' role="group"'], ['aria', ` aria-label="${wrapper.aria}"`, '', ` aria-label="${wrapper.aria} changed"`],
@@ -286,12 +389,13 @@ test('locks exact STY-07 article metadata, headings, wrappers, ownership, and pr
   }
   for (const [name, pattern] of OWNERSHIP) await mutation(source, (candidate) => candidate.replace(pattern, '责任待定'), assertOwnership, `${name} polarity reversal`);
   for (const [name, pattern] of PROHIBITIONS) await mutation(source, (candidate) => candidate.replace(pattern, 'SOA 等于 ESB'), assertProhibitions, name);
+  await mutation(source, (candidate) => `${candidate}\n集成基础设施拥有支付是否成功和订单终止等业务结果。\n`, assertProhibitions, 'integration business ownership introduced');
 });
 
 test('locks exact eight-row comparison and seven-row failure responsibilities', async () => {
   const source = file(ARTICLE); articleParts(source); assertComparisonTable(source); assertFailureTable(source);
   for (const validator of [assertComparisonTable, assertFailureTable]) {
-    const table = validator === assertComparisonTable ? tables(articleParts(source).body).find((candidate) => candidate[0]?.[0] === '问题') : tables(articleParts(source).body).find((candidate) => candidate[0]?.[0] === '失败类别');
+    const table = validator === assertComparisonTable ? markdownTables(articleParts(source).body).find((candidate) => candidate[0]?.[0] === '问题') : markdownTables(articleParts(source).body).find((candidate) => candidate[0]?.[0] === '失败类别');
     for (const cells of table.slice(2)) {
       const row = `| ${cells.join(' | ')} |`;
       await mutation(source, (candidate) => candidate.replace(`${row}\n`, ''), validator, `${cells[0]} deletion`);
@@ -303,7 +407,7 @@ test('locks exact eight-row comparison and seven-row failure responsibilities', 
         `| ${[cells[0], cells[2], cells[1], ...cells.slice(3)].join(' | ')} |`), validator, `${cells[0]} swapped cells`);
     }
   }
-  const failures = tables(articleParts(source).body).find((candidate) => candidate[0]?.[0] === '失败类别').slice(2);
+  const failures = markdownTables(articleParts(source).body).find((candidate) => candidate[0]?.[0] === '失败类别').slice(2);
   for (const failure of failures) {
     await mutation(source, (candidate) => candidate.replace(failure.at(-1), '平台团队'), assertFailureTable, `${failure[0]} owner changed`);
     await mutation(source, (candidate) => candidate.replace(failure[3], '继续自动执行'), assertFailureTable, `${failure[0]} stop condition changed`);
@@ -314,7 +418,7 @@ test('locks exact eight-row comparison and seven-row failure responsibilities', 
 
 test('governs STY-07 sources, reciprocal relations, and Stage A projection', async () => {
   const ledger = JSON.parse(readFileSync('data/source-ledger.json', 'utf8'));
-  const documents = await readContentDocuments('content');
+  const documents = (await readContentDocuments('content')).map((entry) => ({...entry, file: `content/${entry.file}`}));
   const document = ledger.documents[ARTICLE]; assert.ok(document, `${ARTICLE} source ledger record`);
   assert.deepEqual(document.citations.map(({source_id}) => source_id), SOURCE_IDS);
   assert.equal(document.citations.filter(({manifest_primary}) => manifest_primary).length, 1);
@@ -323,20 +427,25 @@ test('governs STY-07 sources, reciprocal relations, and Stage A projection', asy
   for (const id of SOURCE_IDS) {
     const source = ledger.sources.find((entry) => entry.id === id); const citation = document.citations.find((entry) => entry.source_id === id);
     assert.ok(source, `${id} source`); for (const field of SOURCE_REQUIRED_FIELDS) assert.ok(source[field]?.length !== 0 && source[field] !== undefined, `${id}.${field}`);
+    assert.ok(Array.isArray(source.allowed_evidence_roles) && source.allowed_evidence_roles.length > 0, `${id} allowed roles`);
+    assert.ok(Array.isArray(citation?.roles) && citation.roles.length > 0, `${id} nonempty citation roles`);
     assert.ok(citation.roles.every((role) => source.allowed_evidence_roles.includes(role)), `${id} evidence roles`);
+    assert.ok(typeof citation.usage_mode === 'string' && citation.usage_mode.length > 0, `${id} usage mode`);
+    assert.ok(typeof citation.attribution_note === 'string' && citation.attribution_note.length > 0, `${id} attribution`);
   }
   assert.ok(new Set(remote.map(({canonical_locator}) => new URL(canonical_locator).hostname)).size >= 4, 'four remote hosts');
   const illustration = ledger.sources.find(({id}) => id === SOURCE_IDS.at(-1));
   assert.equal(illustration.license, 'LicenseRef-Atlas-Original'); assert.equal(illustration.copyright_policy, 'original-atlas');
-  assert.ok(document.copyright_checks.includes('illustration-rights'), 'illustration rights');
+  assert.deepEqual(document.copyright_checks, COPYRIGHT_CHECKS, 'complete copyright checks');
   const article = documents.find(({file}) => file === ARTICLE); assert.ok(article, `${ARTICLE} article exists`);
   const links = extractInternalLinks(article); assert.ok(links.includes('/styles')); assert.ok(links.includes('/cases/temporal-saga-durable-execution')); assert.equal(links.includes('/styles/sty-08'), false);
   assert.deepEqual(extractExternalLinks({body: article.body}).sort(), remote.map(({canonical_locator}) => canonical_locator).sort());
   for (const path of RECIPROCALS) {
     const reciprocal = documents.find(({file}) => file === path); assert.ok(reciprocal, `${path} reciprocal`);
-    assert.ok(parseFrontMatter(reciprocal.source).adjacent_topics.includes(TOPIC_ID), `${path} metadata reciprocal`);
     assert.ok(extractInternalLinks(reciprocal).includes(ROUTE), `${path} visible reciprocal`);
+    if (path !== 'content/cases/temporal-saga-durable-execution.mdx') assert.ok(parseFrontMatter(reciprocal.source).adjacent_topics.includes(TOPIC_ID), `${path} metadata reciprocal`);
   }
+  for (const content of documents) assert.equal(extractInternalLinks(content).includes('/styles/sty-08'), false, `${content.file} STY-08 remains non-actionable`);
   const status = JSON.parse(readFileSync('src/generated/project-status.json', 'utf8'));
   assert.deepEqual(Object.fromEntries(Object.keys(EXPECTED_STAGE_A).map((key) => [key, status[key]])), EXPECTED_STAGE_A);
   const manifest = JSON.parse(readFileSync('src/generated/topic-manifest.json', 'utf8'));
@@ -352,5 +461,13 @@ test('locks Draw.io/SVG SOA comparison semantics, parity, ports, and presentatio
   const parsed = parseDrawio(drawio); const first = parsed.edges[0];
   assert.ok(first, 'diagram has edge');
   assert.throws(() => assertDiagram(drawio.replace(`source="${first.attributes.get('source')}"`, ''), svg), assert.AssertionError, 'detached port rejected');
+  assert.throws(() => assertDiagram(drawio.replace(/exitX=[^;]+/u, 'exitX=0.5'), svg), assert.AssertionError, 'changed terminal port rejected');
+  assert.throws(() => assertDiagram(drawio.replace(/<Array as="points">/u, '<Array as="points"></Array><Array as="points">'), svg), assert.AssertionError, 'removed waypoint rejected');
+  assert.throws(() => assertDiagram(drawio.replace(/<mxGeometry/u, '<mxPoint as="sourcePoint" x="0" y="0"/><mxGeometry'), svg), assert.AssertionError, 'ignored fallback rejected');
+  assert.throws(() => assertDiagram(drawio, svg.replace(/data-edge-id="([^"]+)"/u, 'data-edge-id="moved-label"')), assert.AssertionError, 'moved/retargeted label rejected');
+  assert.throws(() => assertDiagram(drawio, svg.replace(/stroke-dasharray:[^;}]+/u, 'stroke-dasharray: 1 1')), assert.AssertionError, 'selector dash mutation rejected');
+  assert.throws(() => assertDiagram(drawio, svg.replace(/fill="#F8FAFC"/u, 'fill="transparent"')), assert.AssertionError, 'transparent canvas rejected');
+  assert.throws(() => assertDiagram(drawio, svg.replace(/data-role="business-call"/u, 'data-role="removed"')), assert.AssertionError, 'removed role rejected');
+  assert.throws(() => assertDiagram(drawio, `${svg.replace('</svg>', '<rect x="0" y="0" width="99999" height="99999" fill="#000000" opacity="0.5"/></svg>')}`), assert.AssertionError, 'later translucent mask rejected');
   assert.throws(() => assertDiagram(drawio, svg.replace(/data-node-id="soa-side"/u, 'data-node-id="microservices-side"')), assert.AssertionError, 'swapped semantics rejected');
 });
