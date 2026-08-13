@@ -1,14 +1,8 @@
 {
-  "candidateHead": "76607c67242757e0e1da1f9e352844b36481fcef",
+  "candidateHead": "4398f045f0595043878102d59353bf1e3ae4de21",
   "route": "http://127.0.0.1:3417/tego-arch/styles/sty-07",
   "states": {
     "desktopLight": {
-      "state": "desktopLight",
-      "theme": "light",
-      "viewport": {
-        "width": 1440,
-        "height": 1000
-      },
       "geometry": {
         "h1": "面向服务架构：用稳定合同连接企业能力，也约束集中治理",
         "page": {
@@ -70,6 +64,12 @@
             "scrollWidth": 1024
           }
         ]
+      },
+      "state": "desktopLight",
+      "theme": "light",
+      "viewport": {
+        "height": 1000,
+        "width": 1440
       },
       "interactions": [
         {
@@ -152,12 +152,6 @@
       }
     },
     "desktopDark": {
-      "state": "desktopDark",
-      "theme": "dark",
-      "viewport": {
-        "width": 1440,
-        "height": 1000
-      },
       "geometry": {
         "h1": "面向服务架构：用稳定合同连接企业能力，也约束集中治理",
         "page": {
@@ -219,6 +213,12 @@
             "scrollWidth": 1024
           }
         ]
+      },
+      "state": "desktopDark",
+      "theme": "dark",
+      "viewport": {
+        "height": 1000,
+        "width": 1440
       },
       "interactions": [
         {
@@ -301,12 +301,6 @@
       }
     },
     "mobileLight": {
-      "state": "mobileLight",
-      "theme": "light",
-      "viewport": {
-        "width": 390,
-        "height": 844
-      },
       "geometry": {
         "h1": "面向服务架构：用稳定合同连接企业能力，也约束集中治理",
         "page": {
@@ -369,19 +363,25 @@
           }
         ]
       },
+      "state": "mobileLight",
+      "theme": "light",
+      "viewport": {
+        "height": 844,
+        "width": 390
+      },
       "interactions": [
         {
           "index": 0,
           "before": {
             "focus": true,
             "focusVisible": true,
-            "outline": "rgb(227, 144, 125) solid 3px",
+            "outline": "rgb(159, 63, 49) solid 3px",
             "scrollLeft": 0
           },
           "after": {
             "focus": true,
             "focusVisible": true,
-            "outline": "rgb(227, 144, 125) solid 3px",
+            "outline": "rgb(159, 63, 49) solid 3px",
             "scrollLeft": 40
           }
         },
@@ -390,13 +390,13 @@
           "before": {
             "focus": true,
             "focusVisible": true,
-            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "outline": "rgb(159, 63, 49) solid 3px",
             "scrollLeft": 0
           },
           "after": {
             "focus": true,
             "focusVisible": true,
-            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "outline": "rgb(159, 63, 49) solid 3px",
             "scrollLeft": 40
           }
         },
@@ -405,13 +405,13 @@
           "before": {
             "focus": true,
             "focusVisible": true,
-            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "outline": "rgb(159, 63, 49) solid 3px",
             "scrollLeft": 0
           },
           "after": {
             "focus": true,
             "focusVisible": true,
-            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "outline": "rgb(159, 63, 49) solid 3px",
             "scrollLeft": 40
           }
         }
@@ -450,12 +450,6 @@
       }
     },
     "mobileDark": {
-      "state": "mobileDark",
-      "theme": "dark",
-      "viewport": {
-        "width": 390,
-        "height": 844
-      },
       "geometry": {
         "h1": "面向服务架构：用稳定合同连接企业能力，也约束集中治理",
         "page": {
@@ -518,19 +512,25 @@
           }
         ]
       },
+      "state": "mobileDark",
+      "theme": "dark",
+      "viewport": {
+        "height": 844,
+        "width": 390
+      },
       "interactions": [
         {
           "index": 0,
           "before": {
             "focus": true,
             "focusVisible": true,
-            "outline": "rgb(159, 63, 49) solid 3px",
+            "outline": "rgb(227, 144, 125) solid 3px",
             "scrollLeft": 0
           },
           "after": {
             "focus": true,
             "focusVisible": true,
-            "outline": "rgb(159, 63, 49) solid 3px",
+            "outline": "rgb(227, 144, 125) solid 3px",
             "scrollLeft": 40
           }
         },
@@ -539,13 +539,13 @@
           "before": {
             "focus": true,
             "focusVisible": true,
-            "outline": "rgb(159, 63, 49) solid 3px",
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
             "scrollLeft": 0
           },
           "after": {
             "focus": true,
             "focusVisible": true,
-            "outline": "rgb(159, 63, 49) solid 3px",
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
             "scrollLeft": 40
           }
         },
@@ -554,13 +554,13 @@
           "before": {
             "focus": true,
             "focusVisible": true,
-            "outline": "rgb(159, 63, 49) solid 3px",
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
             "scrollLeft": 0
           },
           "after": {
             "focus": true,
             "focusVisible": true,
-            "outline": "rgb(159, 63, 49) solid 3px",
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
             "scrollLeft": 40
           }
         }
@@ -601,11 +601,50 @@
   },
   "screenshotEvidence": {
     "status": "BLOCKED / NOT_ACCEPTED",
-    "reason": "The captured full-page images did not cover the article opening and diagram: inspection showed the 禁用条件 section repeated from the top. Two subsequent supported in-app Browser reconnection attempts reported the IAB selector unavailable, so no honest visual PASS is claimed.",
+    "reason": "Three fresh in-app Browser full-page captures repeated viewport slices and did not provide trustworthy whole-page visual coverage of both the opening and architecture diagram; no Chrome fallback or prior screenshot was accepted.",
     "attempts": [
-      {"attempt":1,"status":"CAPTURED_REJECTED","accepted":false,"bytes":1143679,"sha256":"e888a002bc7964daed6e132fcad42f30ae768b1d73dba07903197a43dcc8b79a","reason":"The captured image did not cover the article opening and diagram; it started at 禁用条件."},
-      {"attempt":2,"status":"FAILED","accepted":false,"reason":"Supported in-app Browser reconnect reported the previous exact IAB selector unavailable."},
-      {"attempt":3,"status":"FAILED","accepted":false,"reason":"Supported in-app Browser family reconnect reported IAB unavailable; no Chrome fallback was used."}
+      {
+        "ordinal": 1,
+        "state": "desktopLight",
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "kind": "fullPage",
+        "status": "CAPTURED_REJECTED",
+        "reason": "The in-app Browser full-page capture repeated a viewport slice and did not provide trustworthy whole-page visual coverage of both the opening and architecture diagram.",
+        "path": "/Users/seal/projects/tego-arch/.worktrees/g009-styles-batch7/.superpowers/sdd/sty07-stage-a-4398f04-formal-1.png",
+        "bytes": 1299746,
+        "sha256": "1e7aff6f0a7dab8df27d309cd5df7ea991a6bf50cb0fa6de4513a9248c3af4da"
+      },
+      {
+        "ordinal": 2,
+        "state": "desktopDark",
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "kind": "fullPage",
+        "status": "CAPTURED_REJECTED",
+        "reason": "The in-app Browser full-page capture repeated a viewport slice and did not provide trustworthy whole-page visual coverage of both the opening and architecture diagram.",
+        "path": "/Users/seal/projects/tego-arch/.worktrees/g009-styles-batch7/.superpowers/sdd/sty07-stage-a-4398f04-formal-2.png",
+        "bytes": 1308256,
+        "sha256": "05ff527c85901a250c6355ec7d3d55b57b16950b166d220be52b919f21c15bd5"
+      },
+      {
+        "ordinal": 3,
+        "state": "mobileLight",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "kind": "fullPage",
+        "status": "CAPTURED_REJECTED",
+        "reason": "The in-app Browser full-page capture repeated a viewport slice and did not provide trustworthy whole-page visual coverage of both the opening and architecture diagram.",
+        "path": "/Users/seal/projects/tego-arch/.worktrees/g009-styles-batch7/.superpowers/sdd/sty07-stage-a-4398f04-formal-3.png",
+        "bytes": 642526,
+        "sha256": "6878290ee0846c74b25efb4fb674f2ee9e2e362b2069a572646f632307692b11"
+      }
     ]
   }
 }

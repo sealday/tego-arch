@@ -21,7 +21,7 @@
 
 ## Local in-app Browser QA
 
-The local production build had the exact render-affecting bytes committed at implementation candidate head `76607c67242757e0e1da1f9e352844b36481fcef` and was served at `/tego-arch/styles/sty-07` using only the Codex in-app Browser; the subsequent evidence-only commit does not change the build.
+The exact implementation candidate `4398f045f0595043878102d59353bf1e3ae4de21` was rebuilt and served at `/tego-arch/styles/sty-07`, then recollected from scratch using only the Codex in-app Browser.
 
 | State | Viewport/theme | Page client/scroll | Diagram; comparison; decision client/scroll | ArrowRight before→after | Diagnostics |
 | --- | --- | --- | --- | --- | --- |
@@ -34,12 +34,13 @@ The local production build had the exact render-affecting bytes committed at imp
 - SVG loaded in every state: intrinsic `82x150`; rendered `800x1466.6640625`.
 - Remote source anchors: `5` per state across at least `4` domains; STY-08 actionable count: `0` per state.
 - Every state recorded warning/error logs `0`, `Runtime.exceptionThrown=0`, `Log.entryAdded=0`, `hasMore=false`, and `truncated=false`.
-- Raw Browser JSON: `docs/reviews/evidence/g009-batch8-stage-a-browser.json`, SHA-256 `067a0a461a250ff9a10e89e7d06f287a6ac8631e63167c578abbef9b1e90fce7`.
-- Screenshot evidence: `BLOCKED / NOT_ACCEPTED`. Inspection proved the captured full-page image started at “禁用条件” and did not cover the article opening or diagram; two subsequent supported IAB reconnect attempts reported the selector/family unavailable. The raw JSON records all three attempts, including the rejected image bytes/hash. No Chrome fallback, old image, or visual PASS is claimed.
+- Raw Browser JSON: `docs/reviews/evidence/g009-batch8-stage-a-browser.json`, SHA-256 `b2a09ad041c156faa1493867741dd7b1c74241fbd96005903335b3d5076d4122`.
+- Screenshot evidence: `BLOCKED / NOT_ACCEPTED`. Exactly three fresh IAB full-page captures were returned but repeated viewport slices and could not prove whole-page coverage of both the opening and architecture diagram. Their exact state, viewport, path, byte size, hash, status and rejection reason are bound in the raw JSON. No Chrome fallback, prior functional raw, old screenshot or visual PASS is claimed.
 
 ## Independent review checkpoint
 
-- Exact implementation candidate head: `76607c67242757e0e1da1f9e352844b36481fcef`.
+- Exact implementation candidate head: `4398f045f0595043878102d59353bf1e3ae4de21`.
+- Evidence history: the earlier `76607c67242757e0e1da1f9e352844b36481fcef` observation and `56828172f3d7e7b5e1916b879c7fdcb07df20b91` binding were superseded after W3C wording changed render-affecting bytes; this artifact was recollected against `4398f045f0595043878102d59353bf1e3ae4de21`.
 - Evidence candidate: the tracked generated projection, deployment contract, review draft, and raw Browser artifact in this Task 4 commit.
 - Independent code/spec/security review: `PENDING`.
 - Independent content/evidence/rights review: `PENDING`.

@@ -11,8 +11,8 @@ const REVIEW = 'docs/reviews/g009-batch8.md';
 const RAW_BROWSER = 'docs/reviews/evidence/g009-batch8-stage-a-browser.json';
 const IMMEDIATE_REVIEW = 'docs/reviews/g009-batch7.md';
 const BACKLOG = 'docs/content-backlog.md';
-const CANDIDATE_HEAD = '76607c67242757e0e1da1f9e352844b36481fcef';
-const RAW_BROWSER_HASH = '067a0a461a250ff9a10e89e7d06f287a6ac8631e63167c578abbef9b1e90fce7';
+const CANDIDATE_HEAD = '4398f045f0595043878102d59353bf1e3ae4de21';
+const RAW_BROWSER_HASH = 'b2a09ad041c156faa1493867741dd7b1c74241fbd96005903335b3d5076d4122';
 const IMMEDIATE_REVIEW_HASH = 'd8438c66127e9b4411d5dc121a19842aaaab4e03c31a2285cb02fcfde689cf6b';
 const IMMEDIATE_BACKLOG_SUFFIX_HASH = 'dc7180a0503ebcc2e285d8425e4e37f87b6125339823ba5577eb822992aa7109';
 const STATES = ['desktopLight', 'desktopDark', 'mobileLight', 'mobileDark'];
@@ -84,14 +84,14 @@ function assertBrowser(evidence) {
     reason: evidence.screenshotEvidence.reason,
     attempts: evidence.screenshotEvidence.attempts,
   });
-  assert.match(evidence.screenshotEvidence.reason, /did not cover the article opening and diagram|timeout/iu);
-  assert.ok(evidence.screenshotEvidence.attempts.length > 0 && evidence.screenshotEvidence.attempts.length <= 3);
-  assert.equal(evidence.screenshotEvidence.attempts.every(({accepted}) => accepted === false), true);
-  assert.deepEqual(evidence.screenshotEvidence.attempts[0], {
-    attempt: 1, status: 'CAPTURED_REJECTED', accepted: false,
-    bytes: 1143679, sha256: 'e888a002bc7964daed6e132fcad42f30ae768b1d73dba07903197a43dcc8b79a',
-    reason: 'The captured image did not cover the article opening and diagram; it started at 禁用条件.',
-  });
+  assert.match(evidence.screenshotEvidence.reason, /Three fresh in-app Browser full-page captures repeated viewport slices/iu);
+  assert.equal(evidence.screenshotEvidence.attempts.length, 3);
+  const attemptReason = 'The in-app Browser full-page capture repeated a viewport slice and did not provide trustworthy whole-page visual coverage of both the opening and architecture diagram.';
+  assert.deepEqual(evidence.screenshotEvidence.attempts, [
+    {ordinal:1,state:'desktopLight',viewport:{width:1440,height:1000},kind:'fullPage',status:'CAPTURED_REJECTED',reason:attemptReason,path:'/Users/seal/projects/tego-arch/.worktrees/g009-styles-batch7/.superpowers/sdd/sty07-stage-a-4398f04-formal-1.png',bytes:1299746,sha256:'1e7aff6f0a7dab8df27d309cd5df7ea991a6bf50cb0fa6de4513a9248c3af4da'},
+    {ordinal:2,state:'desktopDark',viewport:{width:1440,height:1000},kind:'fullPage',status:'CAPTURED_REJECTED',reason:attemptReason,path:'/Users/seal/projects/tego-arch/.worktrees/g009-styles-batch7/.superpowers/sdd/sty07-stage-a-4398f04-formal-2.png',bytes:1308256,sha256:'05ff527c85901a250c6355ec7d3d55b57b16950b166d220be52b919f21c15bd5'},
+    {ordinal:3,state:'mobileLight',viewport:{width:390,height:844},kind:'fullPage',status:'CAPTURED_REJECTED',reason:attemptReason,path:'/Users/seal/projects/tego-arch/.worktrees/g009-styles-batch7/.superpowers/sdd/sty07-stage-a-4398f04-formal-3.png',bytes:642526,sha256:'6878290ee0846c74b25efb4fb674f2ee9e2e362b2069a572646f632307692b11'},
+  ]);
   for (const [key, expected] of Object.entries({
     desktopLight:{theme:'light',width:1440,height:1000,clients:[800,800,800],scrolls:[800,1024,1024],deltas:[0,40,40]},
     desktopDark:{theme:'dark',width:1440,height:1000,clients:[800,800,800],scrolls:[800,1024,1024],deltas:[0,40,40]},
@@ -189,6 +189,10 @@ test('rejects raw Browser semantic and diagnostic mutations', () => {
     (copy) => copy.screenshotEvidence.status = 'PASS',
     (copy) => copy.screenshotEvidence.attempts[0].bytes = 1,
     (copy) => copy.screenshotEvidence.attempts[0].sha256 = '0'.repeat(64),
+    (copy) => copy.screenshotEvidence.attempts.splice(1,1),
+    (copy) => copy.screenshotEvidence.attempts.splice(2,1),
+    (copy) => copy.screenshotEvidence.attempts[1].status = 'PASS',
+    (copy) => copy.screenshotEvidence.attempts[2].reason = 'changed',
   ];
   for (const mutate of mutations) { const copy = structuredClone(browser); mutate(copy); assert.throws(() => assertBrowser(copy), {name:'AssertionError'}); }
   assert.notEqual(sha256(Buffer.from(`${browserBytes} `)), sha256(browserBytes));
