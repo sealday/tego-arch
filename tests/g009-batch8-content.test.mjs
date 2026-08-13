@@ -263,6 +263,7 @@ export function assertComparisonTable(source) {
   assert.ok(table, 'eight-row SOA/microservices comparison table');
   exactRows(table, COMPARISON_ROWS, ['问题', '经典 SOA', '微服务'], 3);
   assert.match(source, /不是成熟度阶梯/u, 'comparison is not a maturity ladder');
+  assert.doesNotMatch(source, /(?:构成|形成|属于|(?<!不)是)(?:一条|一个|同一)?成熟度阶梯/u, 'comparison cannot fabricate a maturity ladder');
 }
 export function assertFailureTable(source) {
   const table = markdownTables(articleParts(source).body).find((candidate) => candidate[0]?.[0] === '失败类别');

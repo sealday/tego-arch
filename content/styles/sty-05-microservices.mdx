@@ -33,6 +33,7 @@ adjacent_topics:
   - STY-03
   - STY-04
   - STY-06
+  - STY-07
 related_cases:
   - /cases/micro-frontends-single-spa
 related_questions: []
@@ -161,6 +162,8 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 ## 对比案例
 
 同一订单能力可以先在模块化单体内形成四个模块，再只提取持续受压的支付服务。订单、库存和通知若没有同等证据，就继续保持模块，而不是为了拓扑对称一起拆出。[生产中的微前端案例](/cases/micro-frontends-single-spa)只比较业务所有权、独立交付和共享运行时的张力，不提供本文跨服务流程的生产证据。
+
+[STY-07 面向服务架构](/styles/sty-07)与微服务共享面向业务能力、显式合同和分布式失败治理；前者偏向企业能力复用与异构互操作，本文偏向团队自治、私有权威数据和独立部署，两者不是成熟度阶梯。
 
 ## 来源
 

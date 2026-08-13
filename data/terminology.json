@@ -1750,6 +1750,58 @@
       "forbidden_aliases": [],
       "note": "长事务协调模式保留稳定名称，由相邻中文语境解释其本地事务、补偿与恢复边界。",
       "order": 1600
+    },
+    {
+      "id": "service-oriented-architecture",
+      "canonical_zh": "面向服务架构",
+      "english": null,
+      "acronym": null,
+      "kind": "standard",
+      "first_use": "面向服务架构",
+      "subsequent_use": ["面向服务架构", "Service-Oriented Architecture", "SOA"],
+      "allowed_aliases": ["Service-Oriented Architecture", "SOA"],
+      "forbidden_aliases": [],
+      "note": "架构风格采用中文首称，并保留通行缩写用于产品等同禁令和机制比较。",
+      "order": 1610
+    },
+    {
+      "id": "enterprise-service-bus",
+      "canonical_zh": "企业服务总线",
+      "english": null,
+      "acronym": null,
+      "kind": "standard",
+      "first_use": "企业服务总线",
+      "subsequent_use": ["企业服务总线", "Enterprise Service Bus", "ESB"],
+      "allowed_aliases": ["Enterprise Service Bus", "ESB"],
+      "forbidden_aliases": [],
+      "note": "集成基础设施采用中文首称，缩写保留用于明确它不是 SOA 定义。",
+      "order": 1620
+    },
+    {
+      "id": "web-services",
+      "canonical_zh": "Web Services",
+      "english": null,
+      "acronym": null,
+      "kind": "standard",
+      "first_use": "Web Services",
+      "subsequent_use": ["Web Services"],
+      "allowed_aliases": [],
+      "forbidden_aliases": [],
+      "note": "标准实现族保留通行名称，并由相邻中文语境明确其不等于 SOA。",
+      "order": 1630
+    },
+    {
+      "id": "w3c-web-services-architecture",
+      "canonical_zh": "W3C Web Services Architecture",
+      "english": null,
+      "acronym": null,
+      "kind": "standard",
+      "first_use": "W3C Web Services Architecture",
+      "subsequent_use": ["W3C Web Services Architecture"],
+      "allowed_aliases": [],
+      "forbidden_aliases": [],
+      "note": "来源外链标签保留 W3C 标准正式标题，概念边界由相邻中文说明限定。",
+      "order": 1640
     }
   ]
 }
