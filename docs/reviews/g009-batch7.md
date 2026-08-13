@@ -37,7 +37,7 @@ The exact local production build was served from candidate head `44fcafbef24b68f
 - STY-07 actionable count: `0` in every state.
 - Every state recorded warning/error logs `0`, `Runtime.exceptionThrown=0`, `Log.entryAdded=0`, `hasMore=false`, and `truncated=false`.
 - SVG loaded in all four states; intrinsic `92x150`; rendered `800x1300`.
-- Raw Browser JSON: `.superpowers/sdd/sty06-task-4-browser-qa.json`, SHA-256 `7623333da9cd3515a2394dd0f6168cb1dd3e6cdb222fe5cdf65fe46293a4311b`.
+- Raw Browser JSON: `docs/reviews/evidence/g009-batch7-stage-a-browser.json`, SHA-256 `805a0f92b4e0f50847b5d013419584a3972641bf560fa9669ecd4c5228e5467c`.
 - Screenshot evidence: `BLOCKED / NOT_ACCEPTED`.
 - Screenshot limitation: four fresh files were created, but repeated in-app Browser viewport overrides changed other open tabs and the mobile light/dark captures became byte-identical. Those files are retained only as rejected diagnostic artifacts; no visual PASS or screenshot hash is claimed. No Chrome, standalone Playwright, old screenshot, or invented evidence was substituted.
 

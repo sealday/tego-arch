@@ -8,9 +8,20 @@ const DRAWIO = 'diagrams/sty-06-event-driven-four-patterns.drawio';
 const SVG = 'static/img/diagrams/sty-06-event-driven-four-patterns.svg';
 const LEDGER = 'data/source-ledger.json';
 const REVIEW = 'docs/reviews/g009-batch7.md';
-const RAW_BROWSER = '.superpowers/sdd/sty06-task-4-browser-qa.json';
+const RAW_BROWSER = 'docs/reviews/evidence/g009-batch7-stage-a-browser.json';
 const REVIEWED_HEAD = '44fcafbef24b68f14a9cbf4be0b3fba09cc6002d';
 const STATES = ['desktopLight', 'desktopDark', 'mobileLight', 'mobileDark'];
+const WRAPPER_LABELS = [
+  '订单事件的四种模式并排比较图，可横向滚动',
+  '事件驱动故障检测、自动响应、停止条件与人工责任表，可横向滚动',
+  '订单事件四种模式决策矩阵，可横向滚动',
+];
+const RELATIONS = [
+  ['/tego-arch/styles/sty-04', '模块化单体：在一个部署单元内保护业务边界'],
+  ['/tego-arch/styles/sty-05', '微服务：用独立部署换取自治，也承担分布式成本'],
+  ['/tego-arch/principles/pr-11', '命令查询分离、CQRS 与读写分离'],
+  ['/tego-arch/modeling/mod-08', '状态机建模'],
+];
 const SOURCE_IDS = [
   'src-fowler-what-do-you-mean-event-driven',
   'src-microsoft-event-driven-architecture-style',
@@ -65,27 +76,40 @@ function assertProjection() {
 
 function assertRawBrowserEvidence(evidence) {
   assert.equal(evidence.candidateHead, REVIEWED_HEAD);
+  assert.deepEqual(evidence.screenshotEvidence, {
+    status: 'BLOCKED / NOT_ACCEPTED',
+    reason: evidence.screenshotEvidence.reason,
+  });
+  assert.ok(evidence.screenshotEvidence.reason.trim().length > 0);
+  assert.doesNotMatch(evidence.screenshotEvidence.reason, /\bPASS\b/iu);
   assert.deepEqual(Object.keys(evidence.states), STATES);
   for (const [state, expected] of Object.entries({
-    desktopLight: {theme: 'light', width: 1440, height: 1000},
-    desktopDark: {theme: 'dark', width: 1440, height: 1000},
-    mobileLight: {theme: 'light', width: 390, height: 844},
-    mobileDark: {theme: 'dark', width: 390, height: 844},
+    desktopLight: {theme: 'light', width: 1440, height: 1000, clientWidths: [800, 800, 800], scrollLefts: [0, 40, 40]},
+    desktopDark: {theme: 'dark', width: 1440, height: 1000, clientWidths: [800, 800, 800], scrollLefts: [0, 40, 40]},
+    mobileLight: {theme: 'light', width: 390, height: 844, clientWidths: [358, 358, 358], scrollLefts: [40, 40, 40]},
+    mobileDark: {theme: 'dark', width: 390, height: 844, clientWidths: [358, 358, 358], scrollLefts: [40, 40, 40]},
   })) {
     const actual = evidence.states[state];
     assert.deepEqual(actual.viewport, {width: expected.width, height: expected.height});
     assert.equal(actual.theme, expected.theme);
     assert.deepEqual(actual.geometry.page, {clientWidth: expected.width, scrollWidth: expected.width});
-    assert.equal(actual.geometry.wrappers.length, 3);
+    assert.deepEqual(actual.geometry.wrappers.map(({label}) => label), WRAPPER_LABELS);
+    assert.deepEqual(actual.geometry.wrappers.map(({clientWidth}) => clientWidth), expected.clientWidths);
+    assert.deepEqual(actual.geometry.wrappers.map(({scrollWidth}) => scrollWidth), [800, 1118, 1342]);
     assert.equal(actual.interactions.length, 3);
-    for (const interaction of actual.interactions) {
+    for (const [index, interaction] of actual.interactions.entries()) {
       assert.equal(interaction.before.focus, true);
       assert.equal(interaction.before.focusVisible, true);
       assert.match(interaction.before.outline, /solid 3px/u);
       assert.equal(interaction.after.focus, true);
       assert.equal(interaction.after.focusVisible, true);
       assert.match(interaction.after.outline, /solid 3px/u);
-      assert.ok(interaction.after.scrollLeft >= interaction.before.scrollLeft);
+      assert.equal(interaction.before.scrollLeft, 0);
+      assert.equal(interaction.after.scrollLeft, expected.scrollLefts[index]);
+      assert.equal(
+        interaction.after.scrollLeft > interaction.before.scrollLeft,
+        actual.geometry.wrappers[index].scrollWidth > actual.geometry.wrappers[index].clientWidth,
+      );
     }
     assert.equal(actual.geometry.svg.loaded, true);
     assert.deepEqual(
@@ -103,9 +127,10 @@ function assertRawBrowserEvidence(evidence) {
       assert.equal(source.rel, 'noopener noreferrer');
     }
     assert.equal(actual.geometry.sty07, 0);
-    assert.equal(actual.relations.length, 4);
+    assert.deepEqual(actual.relations.map(({href, expectedH1}) => [href, expectedH1]), RELATIONS);
+    assert.equal(new Set(actual.relations.map(({href}) => href)).size, RELATIONS.length);
     for (const relation of actual.relations) {
-      assert.equal(relation.h1, relation.expectedH1);
+      assert.equal(relation.h1, RELATIONS.find(([href]) => href === relation.href)?.[1]);
       assert.equal(relation.returnedToArticle, true);
     }
     assert.deepEqual(actual.logs, []);
@@ -209,6 +234,16 @@ test('rejects raw Browser count, return, load, diagnostic, and head mutations', 
     ['missing relation', (copy) => copy.states.mobileLight.relations.pop()],
     ['missing return', (copy) => copy.states.mobileDark.relations[0].returnedToArticle = false],
     ['wrong viewport', (copy) => copy.states.desktopDark.geometry.page.clientWidth = 390],
+    ['duplicate wrapper', (copy) => copy.states.desktopLight.geometry.wrappers[1] = structuredClone(copy.states.desktopLight.geometry.wrappers[0])],
+    ['swapped wrappers', (copy) => copy.states.mobileLight.geometry.wrappers.reverse()],
+    ['swapped interactions', (copy) => copy.states.desktopLight.interactions.reverse()],
+    ['fabricated relation', (copy) => {
+      copy.states.desktopDark.relations[0].href = '/tego-arch/styles/sty-99';
+      copy.states.desktopDark.relations[0].h1 = '自洽但未经验证的标题';
+      copy.states.desktopDark.relations[0].expectedH1 = '自洽但未经验证的标题';
+    }],
+    ['fabricated screenshot pass', (copy) => copy.screenshotEvidence.status = 'PASS'],
+    ['missing screenshot reason', (copy) => copy.screenshotEvidence.reason = ''],
     ['unloaded SVG', (copy) => copy.states.mobileLight.geometry.svg.loaded = false],
     ['truncated diagnostics', (copy) => copy.states.desktopLight.diagnostics.truncated = true],
     ['fabricated STY-07 absence', (copy) => copy.states.desktopLight.geometry.sty07 = 1],
