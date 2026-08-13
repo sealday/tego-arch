@@ -40,13 +40,13 @@ The exact implementation candidate `4398f045f0595043878102d59353bf1e3ae4de21` wa
 ## Independent review checkpoint
 
 - Exact implementation candidate head: `4398f045f0595043878102d59353bf1e3ae4de21`.
-- Evidence history: the earlier `76607c67242757e0e1da1f9e352844b36481fcef` observation and `56828172f3d7e7b5e1916b879c7fdcb07df20b91` binding were superseded after W3C wording changed render-affecting bytes; this artifact was recollected against `4398f045f0595043878102d59353bf1e3ae4de21`.
-- Evidence candidate: the tracked generated projection, deployment contract, review draft, and raw Browser artifact in this Task 4 commit.
-- Independent code/spec/security review: `PENDING`.
-- Independent content/evidence/rights review: `PENDING`.
-- Independent architecture/invariant review: `PENDING`.
-- Final Stage A review judgment: `PENDING`.
+- Exact evidence head: `570b55eddac0d888f5f5356b5e97a80106958259`.
+- Evidence history: the earlier `76607c67242757e0e1da1f9e352844b36481fcef` observation and `56828172f3d7e7b5e1916b879c7fdcb07df20b91` binding were superseded after W3C wording changed render-affecting bytes. Commit `4398f045f0595043878102d59353bf1e3ae4de21` corrected the W3C Working Group Note classification and screenshot overclaim; `570b55eddac0d888f5f5356b5e97a80106958259` then bound fresh four-state in-app Browser functional evidence and all three rejected screenshot attempts to that exact implementation.
+- Independent code/spec/security review: `READY / APPROVE`; findings: `0`.
+- Independent content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`.
+- Independent architecture/invariant review: `CLEAR / READY`; blockers: `0`.
+- Final Stage A review judgment: `READY`.
 - Scope boundary: `STAGE_A_ONLY`; Stage B backlog closure and deployment have not run.
 - Deployment status: `NOT_RUN`.
 
-The implementation assessment found no runtime, geometry, relation, source-destination, rights-identity, or next-topic blocker in the exact candidate. The implementation agent does not issue any independent verdict; root-owned reviewers must bind all three slots to one exact head before final `READY` can be claimed.
+The three independent reviews found no runtime, geometry, relation, source-destination, rights-identity, or next-topic blocker in the exact implementation and evidence pair. Screenshot evidence remains `BLOCKED / NOT_ACCEPTED` for the reasons and rejected captures recorded above; this does not convert those captures into visual PASS evidence. The bound judgment is limited to Stage A and does not claim deployment or Stage B completion.

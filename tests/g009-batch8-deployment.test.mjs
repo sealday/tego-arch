@@ -12,6 +12,7 @@ const RAW_BROWSER = 'docs/reviews/evidence/g009-batch8-stage-a-browser.json';
 const IMMEDIATE_REVIEW = 'docs/reviews/g009-batch7.md';
 const BACKLOG = 'docs/content-backlog.md';
 const CANDIDATE_HEAD = '4398f045f0595043878102d59353bf1e3ae4de21';
+const EVIDENCE_HEAD = '570b55eddac0d888f5f5356b5e97a80106958259';
 const RAW_BROWSER_HASH = 'b2a09ad041c156faa1493867741dd7b1c74241fbd96005903335b3d5076d4122';
 const IMMEDIATE_REVIEW_HASH = 'd8438c66127e9b4411d5dc121a19842aaaab4e03c31a2285cb02fcfde689cf6b';
 const IMMEDIATE_BACKLOG_SUFFIX_HASH = 'dc7180a0503ebcc2e285d8425e4e37f87b6125339823ba5577eb822992aa7109';
@@ -145,10 +146,11 @@ async function assertReview(source) {
   const checkpoint = section(source, 'Independent review checkpoint');
   for (const literal of [
     `Exact implementation candidate head: \`${CANDIDATE_HEAD}\`.`,
-    'Independent code/spec/security review: `PENDING`.',
-    'Independent content/evidence/rights review: `PENDING`.',
-    'Independent architecture/invariant review: `PENDING`.',
-    'Final Stage A review judgment: `PENDING`.',
+    `Exact evidence head: \`${EVIDENCE_HEAD}\`.`,
+    'Independent code/spec/security review: `READY / APPROVE`; findings: `0`.',
+    'Independent content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`.',
+    'Independent architecture/invariant review: `CLEAR / READY`; blockers: `0`.',
+    'Final Stage A review judgment: `READY`.',
     'Scope boundary: `STAGE_A_ONLY`; Stage B backlog closure and deployment have not run.',
     'Deployment status: `NOT_RUN`.',
   ]) assert.ok(checkpoint.includes(literal), literal);
@@ -157,7 +159,7 @@ async function assertReview(source) {
 }
 
 test('projects the exact STY-07 Stage A candidate and keeps STY-08 non-actionable', assertProjection);
-test('binds exact artifacts, raw Browser bytes, and PENDING review slots', async () => { assertBrowser(browser); await assertReview(review); });
+test('binds exact artifacts, raw Browser bytes, and final independent review verdicts', async () => { assertBrowser(browser); await assertReview(review); });
 test('binds the complete tracked raw Browser bytes to one fixed SHA-256', () => {
   assert.equal(sha256(browserBytes), RAW_BROWSER_HASH);
 });
@@ -196,4 +198,21 @@ test('rejects raw Browser semantic and diagnostic mutations', () => {
   ];
   for (const mutate of mutations) { const copy = structuredClone(browser); mutate(copy); assert.throws(() => assertBrowser(copy), {name:'AssertionError'}); }
   assert.notEqual(sha256(Buffer.from(`${browserBytes} `)), sha256(browserBytes));
+});
+
+test('rejects wrong exact heads, weakened verdicts, stale PENDING, and fabricated deployment', async () => {
+  await assertReview(review);
+  for (const [before, after] of [
+    [`Exact implementation candidate head: \`${CANDIDATE_HEAD}\`.`, `Exact implementation candidate head: \`${'0'.repeat(40)}\`.`],
+    [`Exact evidence head: \`${EVIDENCE_HEAD}\`.`, `Exact evidence head: \`${'1'.repeat(40)}\`.`],
+    ['`READY / APPROVE`; findings: `0`.', '`READY / APPROVE`; findings: `1`.'],
+    ['`CONTENT READY`; rights: `PASS`; findings: `0`.', '`CONTENT READY`; rights: `PENDING`; findings: `0`.'],
+    ['`CLEAR / READY`; blockers: `0`.', '`CLEAR / READY`; blockers: `1`.'],
+    ['Final Stage A review judgment: `READY`.', 'Final Stage A review judgment: `PENDING`.'],
+    ['Deployment status: `NOT_RUN`.', 'Deployment status: `SUCCESS`.'],
+  ]) {
+    const mutated = review.replace(before, after);
+    assert.notEqual(mutated, review);
+    await assert.rejects(() => assertReview(mutated), {name:'AssertionError'});
+  }
 });
