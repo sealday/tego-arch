@@ -55,6 +55,53 @@ const RELATION_METADATA = {
   related_cases: ['/cases/apache-kafka-consumer-groups'],
   related_questions: [],
 };
+const EXACT_METADATA = {
+  title: '事件驱动架构：先分清事件携带什么，再决定状态放在哪里',
+  slug: ROUTE,
+  content_type: 'style',
+  status: 'reviewed',
+  difficulty: 'advanced',
+  analyzed_at: '2026-08-12',
+  source_cutoff: '2026-08-12',
+  confidence: 'high',
+  domains: ['software-architecture', 'distributed-systems', 'data-architecture'],
+  agent_patterns: [],
+  protocols: [],
+  quality_attributes: ['scalability', 'availability', 'evolvability', 'recoverability', 'operability'],
+  tags: ['架构风格', '事件驱动', '事件通知', '状态转移', '事件携带状态', '事件溯源'],
+  summary: '以同一订单案例并排区分事件通知、状态转移、事件携带状态和事件溯源，比较载荷、回查、权威状态、重建与恢复责任。',
+  topic_id: TOPIC_ID,
+  priority: 'P0',
+  ...RELATION_METADATA,
+};
+const METADATA_YAML_TOKENS = new Map([
+  ['title', 'title: 事件驱动架构：先分清事件携带什么，再决定状态放在哪里\n'],
+  ['slug', 'slug: /styles/sty-06\n'], ['content_type', 'content_type: style\n'],
+  ['status', 'status: reviewed\n'], ['difficulty', 'difficulty: advanced\n'],
+  ['analyzed_at', 'analyzed_at: 2026-08-12\n'], ['source_cutoff', 'source_cutoff: 2026-08-12\n'],
+  ['confidence', 'confidence: high\n'],
+  ['domains', 'domains:\n  - software-architecture\n  - distributed-systems\n  - data-architecture\n'],
+  ['agent_patterns', 'agent_patterns: []\n'], ['protocols', 'protocols: []\n'],
+  ['quality_attributes', 'quality_attributes:\n  - scalability\n  - availability\n  - evolvability\n  - recoverability\n  - operability\n'],
+  ['tags', 'tags:\n  - 架构风格\n  - 事件驱动\n  - 事件通知\n  - 状态转移\n  - 事件携带状态\n  - 事件溯源\n'],
+  ['summary', 'summary: 以同一订单案例并排区分事件通知、状态转移、事件携带状态和事件溯源，比较载荷、回查、权威状态、重建与恢复责任。\n'],
+  ['topic_id', 'topic_id: STY-06\n'], ['priority', 'priority: P0\n'],
+  ['depends_on', 'depends_on:\n  - STY-00\n  - STY-05\n'],
+  ['adjacent_topics', 'adjacent_topics:\n  - STY-04\n  - STY-05\n  - PR-11\n  - MOD-08\n'],
+  ['related_cases', 'related_cases:\n  - /cases/apache-kafka-consumer-groups\n'],
+  ['related_questions', 'related_questions: []\n'],
+]);
+const REQUIRED_WRAPPERS = [
+  {aria: '订单事件的四种模式并排比较图，可横向滚动', className: 'architecture-diagram-scroll'},
+  {aria: '事件驱动故障检测、自动响应、停止条件与人工责任表，可横向滚动', className: 'table-wrapper table-wrapper--mapping diagram-wrapper--scroll-owner'},
+  {aria: '订单事件四种模式决策矩阵，可横向滚动', className: 'table-wrapper table-wrapper--mapping diagram-wrapper--scroll-owner'},
+];
+const MODE_ANSWER_PATTERNS = new Map([
+  ['事件通知', [/\u6700\u5c0f\u8f7d\u8377/u, /\u56de\u67e5\u8ba2\u5355\u670d\u52a1/u, /\u8ba2\u5355\u670d\u52a1.{0,16}\u6743\u5a01\u72b6\u6001/u, /\u4e0d\u53c2\u4e0e.{0,16}\u91cd\u5efa/u, /\u6709\u754c\u91cd\u8bd5.{0,32}\u964d\u7ea7.{0,40}\u4eba\u5de5\u5904\u7f6e/u]],
+  ['状态转移', [/\u524d\u540e\u72b6\u6001.{0,16}\u805a\u5408\u7248\u672c/u, /\u7248\u672c\u7f3a\u53e3.{0,16}\u8865\u53d6/u, /\u8ba2\u5355\u670d\u52a1.{0,16}\u6743\u5a01/u, /\u4e0d.{0,12}\u6743\u5a01\u5386\u53f2/u, /\u975e\u6cd5\u8fc1\u79fb.{0,24}\u4e8b\u4ef6\u5408\u540c\u8d1f\u8d23\u4eba/u]],
+  ['事件携带状态', [/\u7248\u672c\u5316\u8ba2\u5355\u72b6\u6001.{0,16}\u6240\u9700\u5b57\u6bb5/u, /\u6b63\u5e38\u8def\u5f84\u4e0d\u56de\u67e5/u, /\u8ba2\u5355\u670d\u52a1.{0,16}\u6743\u5a01\u5199\u6a21\u578b/u, /\u91cd\u5efa\u6d88\u8d39\u8005\u526f\u672c.{0,16}\u4e0d.{0,16}\u6743\u5a01/u, /\u53bb\u91cd\u66f4\u65b0.{0,24}\u4e8b\u4ef6\u5408\u540c\u8d1f\u8d23\u4eba/u]],
+  ['事件溯源', [/\u6309\u805a\u5408\u6709\u5e8f.{0,16}\u9886\u57df\u4e8b\u4ef6/u, /\u4e8b\u4ef6\u5b58\u50a8.{0,16}\u6062\u590d/u, /\u4e8b\u4ef6\u5b58\u50a8\u662f\u6743\u5a01/u, /\u56de\u653e\u91cd\u5efa\u805a\u5408\u4e0e\u6295\u5f71/u, /\u547d\u4ee4\u5904\u7406\u5668.{0,16}\u4e50\u89c2\u5e76\u53d1.{0,24}\u6295\u5f71\u5904\u7406\u5668/u]],
+]);
 const RECIPROCAL_FILES = [
   'styles/sty-05-microservices.mdx',
   'principles/pr-11-cqs-cqrs-read-write-separation.mdx',
@@ -64,7 +111,7 @@ const RELIABILITY_PATTERNS = [
   /至少一次|at-least-once/iu,
   /事件\s*(?:ID|Id|id|标识)/u,
   /聚合(?:键|标识)|业务键/u,
-  /(?:模式|schema)版本/iu,
+  /事件结构（schema）版本/iu,
   /关联\s*(?:ID|Id|id|标识)|correlation\s*(?:ID|Id|id)/iu,
   /因果\s*(?:ID|Id|id|标识)|causation\s*(?:ID|Id|id)/iu,
   /幂等/u,
@@ -76,6 +123,7 @@ const RELIABILITY_PATTERNS = [
   /积压/u,
   /(?:延迟|lag)/iu,
   /投影水位|projection[- ]watermark/iu,
+  /失败率/u,
 ];
 const OWNERSHIP_CONTRACTS = new Map([
   ['poison-isolation', /毒(?:消息|事件).{0,20}隔离/u],
@@ -86,9 +134,9 @@ const OWNERSHIP_CONTRACTS = new Map([
   ['at-least-once', /(?:至少一次|at-least-once)/iu],
   ['idempotency', /幂等/u],
   ['ordering', /(?:顺序|乱序)/u],
-  ['schema-evolution', /(?:模式|schema)演进/iu],
+  ['schema-evolution', /事件结构（schema）演进/iu],
 ]);
-const AFFIRMATIVE_OWNER_PATTERN = /(?:由|交由|归属|明确为).{0,16}(?:服务所有者|消费者|生产者|平台团队|运维团队|投影处理器|模式负责人|值班人员).{0,12}(?:负责|承担|处置|维护)|(?:服务所有者|消费者|生产者|平台团队|运维团队|投影处理器|模式负责人|值班人员).{0,12}(?:负责|承担|处置|维护)/u;
+const AFFIRMATIVE_OWNER_PATTERN = /(?:由|交由|归属|明确为).{0,16}(?:服务所有者|消费者|生产者|平台团队|运维团队|投影处理器|事件合同负责人|值班人员).{0,12}(?:负责|承担|处置|维护)|(?:服务所有者|消费者|生产者|平台团队|运维团队|投影处理器|事件合同负责人|值班人员).{0,12}(?:负责|承担|处置|维护)/u;
 const UNRESOLVED_OWNER_PATTERN = /不负责|没有所有者|无人负责|所有者待定|责任待定|待定|尚未明确|未指定/u;
 const MATRIX_ROWS = [
   /载荷/u, /回查|取数/u, /时间耦合.*模式耦合|模式耦合.*时间耦合/u,
@@ -209,14 +257,54 @@ function assertSameCaseComparison(source) {
     if (nextMode) assert.ok(end > 0, `${nextMode} follows ${MODES[index]}`);
     const modeSource = end > 0 ? rest.slice(0, end) : rest;
     for (const participant of PARTICIPANTS) assert.match(modeSource, new RegExp(participant, 'u'), `${MODES[index]} ${participant}`);
-    const answers = QUESTIONS.map((question) => {
+    let previousQuestionIndex = -1;
+    const answers = QUESTIONS.map((question, questionIndex) => {
       const match = modeSource.match(new RegExp(`(?:^|\\n)(?:[-*]\\s*)?(?:\\*\\*)?${escapeRegExp(question)}(?:\\*\\*)?\\s*[：:]\\s*([^\\n]+)`, 'u'));
       assert.ok(match, `${MODES[index]} structured answer for ${question}`);
+      const questionPosition = modeSource.indexOf(match[0]);
+      assert.ok(questionPosition > previousQuestionIndex, `${MODES[index]} ${question} fixed question order`);
+      previousQuestionIndex = questionPosition;
       assert.ok(match[1].trim().length >= 4, `${MODES[index]} non-empty answer for ${question}`);
+      assert.match(match[1], MODE_ANSWER_PATTERNS.get(MODES[index])[questionIndex],
+        `${MODES[index]} mode-specific answer for ${question}`);
       return match[1].trim();
     });
     assert.equal(new Set(answers).size, QUESTIONS.length, `${MODES[index]} five distinct structured answers`);
   }
+}
+
+function assertExactMetadata(source) {
+  assert.deepEqual(parseFrontMatter(source), EXACT_METADATA, 'exact complete STY-06 frontmatter');
+}
+
+function exactWrapperTag({aria, className}) {
+  return `<div className="${className}" role="region" aria-label="${aria}" tabIndex={0} onKeyDown={handleHorizontalArrowKey}>`;
+}
+
+function assertRequiredWrappers(source) {
+  for (const wrapper of REQUIRED_WRAPPERS) {
+    const expected = exactWrapperTag(wrapper);
+    assert.equal(source.split(expected).length - 1, 1, `${wrapper.aria} exact focusable wrapper`);
+  }
+}
+
+const RELIABILITY_CONTRACTS = new Map([
+  ['notification lookup bounded degradation', /\u4e8b\u4ef6\u901a\u77e5\u56de\u67e5\u5931\u8d25.{0,24}\u6709\u754c\u91cd\u8bd5.{0,24}\u964d\u7ea7.{0,24}\u4eba\u5de5\u5904\u7f6e/u],
+  ['poison controlled lifecycle', /\u6bd2(?:\u6d88\u606f|\u4e8b\u4ef6).{0,24}\u9694\u79bb.{0,24}\u4fee\u590d.{0,24}\u53d7\u63a7\u91cd\u653e.{0,24}\u4eba\u5de5\u7ec8\u6b62/u],
+  ['DLQ owner alert deadline', /(?:DLQ|\u6b7b\u4fe1\u961f\u5217).{0,24}(?:\u670d\u52a1\u6240\u6709\u8005|\u6240\u6709\u8005).{0,24}\u544a\u8b66.{0,24}\u5904\u7f6e\u65f6\u9650/iu],
+  ['observability failure rate', /\u53ef\u89c2\u6d4b.{0,32}\u5931\u8d25\u7387/u],
+  ['schema owner', /\u4e8b\u4ef6\u7ed3\u6784\uff08schema\uff09(?:\u7248\u672c|\u6f14\u8fdb).{0,24}\u4e8b\u4ef6\u5408\u540c\u8d1f\u8d23\u4eba.{0,12}(?:\u8d1f\u8d23|\u7ef4\u62a4)/iu],
+]);
+
+function assertReliabilityContract(source) {
+  const visible = visibleTextOf(source);
+  for (const [label, pattern] of RELIABILITY_CONTRACTS) assert.match(visible, pattern, label);
+  assert.doesNotMatch(visible, /\u6a21\u5f0f\u7248\u672c|\u6a21\u5f0f\u8d1f\u8d23\u4eba/u, 'no ambiguous mode version/owner terminology');
+  const reliability = section(source, '\u90e8\u7f72\u5355\u5143\u4e0e\u6545\u969c\u57df', '\u56e2\u961f\u62d3\u6251');
+  assert.match(reliability, /\| \u6545\u969c\u7c7b \| \u68c0\u6d4b \| \u81ea\u52a8\u54cd\u5e94 \| \u505c\u6b62\u6761\u4ef6 \| \u4eba\u5de5\u6240\u6709\u8005 \|/u,
+    'exact reliability responsibility columns');
+  assert.match(reliability, /\| \u6bd2\u4e8b\u4ef6\u4e0e\u6b7b\u4fe1 \|[^\n]*\u9694\u79bb[^\n]*\u4fee\u590d[^\n]*\u53d7\u63a7\u91cd\u653e[^\n]*\u4eba\u5de5\u7ec8\u6b62[^\n]*\u670d\u52a1\u6240\u6709\u8005[^\n]*\u5904\u7f6e\u65f6\u9650/u,
+    'poison row binds lifecycle, owner and deadline');
 }
 
 function assertSemanticContract(source) {
@@ -266,6 +354,13 @@ function replaceAffirmativeOwnerClause(source, concernPattern, replacement, conc
 
 function replaceFirstMatching(source, pattern, replacement, label) {
   const mutated = source.replace(pattern, replacement);
+  assert.notEqual(mutated, source, `${label} fixture phrase exists`);
+  return mutated;
+}
+
+function replaceEveryMatching(source, pattern, replacement, label) {
+  const globalPattern = new RegExp(pattern.source, pattern.flags.includes('g') ? pattern.flags : `${pattern.flags}g`);
+  const mutated = source.replace(globalPattern, replacement);
   assert.notEqual(mutated, source, `${label} fixture phrase exists`);
   return mutated;
 }
@@ -1210,7 +1305,7 @@ test('rejects every negated or unresolved reliability owner mutation', async () 
     '至少一次投递由平台团队负责维护。',
     '幂等由消费者负责维护。',
     '乱序由消费者负责处置。',
-    '模式演进由模式负责人负责维护。',
+    '事件结构（schema）演进由事件合同负责人负责维护。',
     '毒消息隔离由服务所有者负责处置。',
     '受控重放由值班人员负责处置。',
     '人工终止由服务所有者负责处置。',
@@ -1225,28 +1320,69 @@ test('rejects every negated or unresolved reliability owner mutation', async () 
 
 test('publishes exact STY-06 metadata, headings, relations, and one same-case comparison', async () => {
   assert.ok(article, `${ARTICLE} must exist after implementation`);
-  const metadata = parseFrontMatter(article.source);
-  assert.equal(metadata.content_type, 'style');
-  assert.equal(metadata.status, 'reviewed');
-  assert.equal(metadata.topic_id, TOPIC_ID);
-  assert.equal(metadata.priority, 'P0');
-  assert.equal(metadata.slug, ROUTE);
-  for (const [field, value] of Object.entries(RELATION_METADATA)) assert.deepEqual(metadata[field], value, field);
+  assertExactMetadata(article.source);
+  for (const [field, token] of METADATA_YAML_TOKENS) {
+    await runMutation(article.source, (source) => source.replace(token, ''), assertExactMetadata,
+      `${field} metadata deletion`);
+    await runMutation(article.source, (source) => source.replace(token,
+      token.includes(': []') ? token.replace('[]', '[changed]') :
+        (token.includes('\n  - ') ? token.replace(/\n  - [^\n]+/u, '\n  - changed') : `${field}: changed\n`)),
+    assertExactMetadata, `${field} metadata change`);
+  }
   const headings = findMarkdownHeadings(article.body);
   const h2Headings = headings.filter(({level}) => level === 2).map(({text}) => text);
   assert.deepEqual(h2Headings, HEADINGS, 'exact eleven ordered H2 headings');
   for (const heading of HEADINGS) assert.equal(h2Headings.filter((candidate) => candidate === heading).length, 1, `${heading} H2 once`);
   assertSameCaseComparison(article.source);
+  const comparison = section(article.source, '边界与控制流', '数据所有权与一致性');
+  for (const mode of MODES) {
+    const nextMode = MODES[MODES.indexOf(mode) + 1];
+    const modeStart = comparison.search(new RegExp(`^### ${escapeRegExp(mode)}\\s*$`, 'mu'));
+    const rest = comparison.slice(modeStart);
+    const modeEnd = nextMode ? rest.search(new RegExp(`^### ${escapeRegExp(nextMode)}\\s*$`, 'mu')) : -1;
+    const modeSource = modeEnd > 0 ? rest.slice(0, modeEnd) : rest;
+    const answerLines = QUESTIONS.map((question) => modeSource.match(
+      new RegExp(`^- \\*\\*${escapeRegExp(question)}：\\*\\*[^\\n]+$`, 'mu'),
+    )?.[0]);
+    assert.ok(answerLines.every(Boolean), `${mode} mutation fixtures`);
+    await runMutation(article.source, (source) => source.replace(answerLines[0], ''),
+      assertSameCaseComparison, `${mode} question removal`);
+    await runMutation(article.source, (source) => source.replace(
+      `${answerLines[0]}\n${answerLines[1]}`, `${answerLines[1]}\n${answerLines[0]}`,
+    ), assertSameCaseComparison, `${mode} question swap`);
+    await runMutation(article.source, (source) => source.replace(answerLines[4],
+      '- **失败责任：** 平台团队统一负责所有失败。'), assertSameCaseComparison, `${mode} failure ownership`);
+  }
   await runMutation(article.source, (source) => source.replace(
     /(^### 事件携带状态\s*$)([\s\S]*?)(?=^### 事件溯源\s*$)/mu,
     '$1\n\n客户资料变更后，目录消费者更新商品分类。\n\n',
   ), assertSameCaseComparison, 'unrelated customer/catalog scenario');
 });
 
+test('locks each required focusable wrapper and all four focus semantics', async () => {
+  assert.ok(article, `${ARTICLE} must exist after implementation`);
+  assertRequiredWrappers(article.source);
+  for (const wrapper of REQUIRED_WRAPPERS) {
+    const exact = exactWrapperTag(wrapper);
+    for (const [label, from, to] of [
+      ['role removal', ' role="region"', ''], ['role change', 'role="region"', 'role="group"'],
+      ['aria removal', ` aria-label="${wrapper.aria}"`, ''],
+      ['aria change', `aria-label="${wrapper.aria}"`, `aria-label="${wrapper.aria} changed"`],
+      ['tabIndex removal', ' tabIndex={0}', ''], ['tabIndex change', 'tabIndex={0}', 'tabIndex={-1}'],
+      ['handler removal', ' onKeyDown={handleHorizontalArrowKey}', ''],
+      ['handler change', 'onKeyDown={handleHorizontalArrowKey}', 'onKeyDown={() => {}}'],
+    ]) {
+      await runMutation(article.source, (source) => source.replace(exact, exact.replace(from, to)),
+        assertRequiredWrappers, `${wrapper.aria} ${label}`);
+    }
+  }
+});
+
 test('locks semantic boundaries, distinct responsibilities, prohibitions, and reliability ownership', async () => {
   assert.ok(article, `${ARTICLE} must exist after implementation`);
   assertSemanticContract(article.source);
   assertAffirmativeOwnership(article.source);
+  assertReliabilityContract(article.source);
   const visible = visibleTextOf(article.source);
   for (const pattern of RELIABILITY_PATTERNS) assert.match(visible, pattern, `reliability ${pattern}`);
   for (const [index, conflation] of CONFLATIONS.entries()) {
@@ -1282,6 +1418,10 @@ test('locks semantic boundaries, distinct responsibilities, prohibitions, and re
     await runMutation(article.source, (source) => replaceAffirmativeOwnerClause(
       source, pattern, '无人负责，所有者待定', concern,
     ), assertAffirmativeOwnership, `${concern} unresolved/negated owner`);
+  }
+  for (const [label, pattern] of RELIABILITY_CONTRACTS) {
+    await runMutation(article.source, (source) => replaceEveryMatching(source, pattern, '', label),
+      assertReliabilityContract, `${label} deletion`);
   }
 });
 
