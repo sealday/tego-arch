@@ -111,6 +111,8 @@ const DIAGRAM_FAILURE_CLASSES = new Map([
   ['Draw.io rounded node', /gate-01 Draw.io rectangle semantics/u],
   ['Draw.io conflicting node shape', /gate-01 Draw.io rectangle semantics/u],
   ['mixed POC near boundary', /POC 纪律 inner node\/boundary gate-05/u],
+  ['owner band below viewBox', /owner band contained in canvas\/viewBox/u],
+  ['invalid opacity occluder', /supported SVG subset: opacity/u],
 ]);
 const REQUIRED_WRAPPERS = [
   {aria: '企业 AI 四阶段十二门禁图，可横向滚动', className: 'architecture-diagram-scroll'},
@@ -1344,6 +1346,10 @@ function assertDiagram(drawio, svg) {
   const model = parsedSvg(svg);
   const viewBox = numericTokens(model.root.attributes.get('viewBox'));
   assert.equal(viewBox.length, 4, 'SVG viewBox');
+  const viewBoxBounds = {
+    bottom: viewBox[1] + viewBox[3], left: viewBox[0],
+    right: viewBox[0] + viewBox[2], top: viewBox[1],
+  };
   const renderScale = 800 / viewBox[2];
   assert.ok(Number.isFinite(renderScale) && renderScale > 0, '800px render scale');
   const vertices = new Map(drawCells.filter(({attributes}) => attributes.get('vertex') === '1')
@@ -1420,14 +1426,18 @@ function assertDiagram(drawio, svg) {
     assert.ok(ownerBand[index - 1].bounds.right < ownerBand[index].bounds.left, 'owner band nonoverlap');
     assert.equal(ownerBand[index].bounds.left - ownerBand[index - 1].bounds.right, 90, 'owner band exact spacing');
   }
+  const stageBandBottom = Math.max(...STAGE_IDS.map((id) => nodeShapes.get(id).bounds.bottom));
+  assert.ok(ownerBand.every(({bounds}) => bounds.top > stageBandBottom), 'owner band below stage bands');
+  assert.ok(ownerBand.every(({bounds}) => boundsContain(viewBoxBounds, bounds)),
+    'owner band contained in canvas/viewBox');
+  for (const [id, node] of nodeShapes) {
+    assert.ok(boundsContain(viewBoxBounds, node.bounds), `${id} essential node contained in canvas/viewBox`);
+  }
 
   const canvas = model.elements.find(({attributes, name}) => name === 'rect' &&
     attributes.get('data-canvas') === 'true');
   assert.ok(canvas, 'actual canvas element');
-  assert.deepEqual(renderedGeometry(canvas, null, model).bounds, {
-    bottom: viewBox[1] + viewBox[3], left: viewBox[0],
-    right: viewBox[0] + viewBox[2], top: viewBox[1],
-  }, 'canvas covers viewBox');
+  assert.deepEqual(renderedGeometry(canvas, null, model).bounds, viewBoxBounds, 'canvas covers viewBox');
   const canvasPaint = effectivePaint(model, canvas, 'fill');
   assert.ok(canvasPaint.color && canvasPaint.opacity === 1, 'canvas is effectively opaque');
 
@@ -1525,6 +1535,7 @@ function assertDiagram(drawio, svg) {
   const runs = essentialTexts.flatMap((element) => visibleTextRuns(model, element));
   assert.ok(runs.length >= nodeIds.length + FEEDBACK_IDS.length, 'essential visible text runs');
   for (const run of runs) {
+    assert.ok(boundsContain(viewBoxBounds, run.bounds), `${run.text} essential text contained in canvas/viewBox`);
     assert.ok(run.fontSize * run.minimumScale * renderScale >= 15,
       `${run.text} effective transformed text >=15px at 800px`);
     const fill = effectivePaint(model, run.element, 'fill');
@@ -1745,6 +1756,18 @@ test('MTH-07 helper contracts are green after non-no-op RED mutation fixtures', 
     'fontSize=20;fontFamily=Arial;fontStyle=1;align=center;', 'node text shrink Draw.io');
   const shrinkSvg = mutate(svg, '</style>',
     'g[data-node-id="gate-01"] .gate-label { font-size: 20px !important; }</style>', 'node text shrink SVG');
+  const ownersBelowDrawio = RESPONSIBILITY_IDS.reduce((current, id, index) => mutate(
+    current,
+    `<mxGeometry x="${20 + index * 390}" y="2150" width="300" height="160" as="geometry"/>`,
+    `<mxGeometry x="${20 + index * 390}" y="2750" width="300" height="160" as="geometry"/>`,
+    `${id} Draw.io below viewBox`,
+  ), drawio);
+  const ownersBelowSvg = RESPONSIBILITY_IDS.reduce((current, id) => mutate(
+    current,
+    `<g data-node-id="${id}">`,
+    `<g data-node-id="${id}" transform="translate(0 600)">`,
+    `${id} SVG node/text below viewBox`,
+  ), svg);
   const diagramMutations = [
     ['source exit port', mutate(drawio, 'exitX=0.5;exitY=0;', 'exitX=0.2;exitY=0;', 'source exit port'), svg],
     ['target entry port', mutate(drawio, 'entryX=0.5;entryY=0;', 'entryX=0.8;entryY=0;', 'target entry port'), svg],
@@ -1859,6 +1882,8 @@ test('MTH-07 helper contracts are green after non-no-op RED mutation fixtures', 
     ['Draw.io rounded node', mutate(drawio, 'style="fillColor=#FFFFFF;strokeColor=#334155;', 'style="rounded=1;fillColor=#FFFFFF;strokeColor=#334155;', 'Draw.io rounded node'), svg],
     ['Draw.io conflicting node shape', mutate(drawio, 'style="fillColor=#FFFFFF;strokeColor=#334155;', 'style="shape=ellipse;shape=rectangle;fillColor=#FFFFFF;strokeColor=#334155;', 'Draw.io conflicting node shape'), svg],
     ['mixed POC near boundary', drawio, mutate(svg, '<tspan x="740" y="840">POC 纪律</tspan>', '<tspan x="815" y="840">POC 纪律</tspan>', 'mixed POC near boundary')],
+    ['owner band below viewBox', ownersBelowDrawio, ownersBelowSvg],
+    ['invalid opacity occluder', drawio, mutate(svg, '</svg>', '<rect x="1200" y="1880" width="200" height="120" fill="#FFFFFF" opacity="NaN"/></svg>', 'invalid opacity occluder')],
   ];
   for (const [label, mutatedDrawio, mutatedSvg] of diagramMutations) {
     if (DIAGRAM_FAILURE_CLASSES.has(label)) {
