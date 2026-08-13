@@ -122,6 +122,8 @@ const DIAGRAM_FAILURE_CLASSES = new Map([
   ['invalid opacity occluder', /supported SVG subset: opacity/u],
   ['canvas after essentials', /opaque canvas paint precedes every essential node drawable and text/u],
   ['node stroke clipped by viewBox', /stage-entry stroke-expanded node contained in canvas\/viewBox at 800px/u],
+  ['node-only occluder', /later painted rect cannot occlude essential node stage-entry/u],
+  ['text-only occluder', /later painted rect cannot occlude essential text 进场期/u],
 ]);
 const REQUIRED_WRAPPERS = [
   {aria: '企业 AI 四阶段十二门禁图，可横向滚动', className: 'architecture-diagram-scroll'},
@@ -1013,6 +1015,19 @@ function strokeExpandedBoundsAtScale(model, element, bounds, renderScale) {
   };
 }
 
+function paintedShapeIntersectsBoundsSurface(model, element, geometry, bounds, surfaceStrokeRadius = 0) {
+  const fill = effectivePaint(model, element, 'fill');
+  const stroke = effectivePaint(model, element, 'stroke');
+  const filledGeometry = {...geometry, closed: true};
+  const fillIntersects = fill.color && fill.opacity > 0 && geometry.points.length >= 3 &&
+    polygonArea(geometry.points) > 1e-7 && boundsToShapeDistance(bounds, filledGeometry) <= surfaceStrokeRadius;
+  if (fillIntersects) return true;
+  if (!stroke.color || stroke.opacity <= 0 || geometrySegments(geometry.points, geometry.closed).length === 0) return false;
+  const strokeRadius = svgUserUnits(svgValue(model, element, 'stroke-width'), `${element.name} painter stroke-width`) *
+    maximumTransformScale(worldTransform(element, model)) / 2;
+  return boundsToShapeDistance(bounds, geometry) <= surfaceStrokeRadius + strokeRadius;
+}
+
 function visualTextWidth(text, fontSize) {
   return [...text].length * fontSize;
 }
@@ -1634,6 +1649,41 @@ function assertDiagram(drawio, svg) {
 
   const paintable = model.elements.filter((element) => ['rect', 'polygon', 'path', 'circle'].includes(element.name) &&
     !inSvgDefinitions(element));
+  const essentialShapeIds = new Map([...nodeShapes].map(([id, {shape}]) => [shape, id]));
+  const feedbackEdgeElements = new Set(edgeElements.values());
+  const laterOccluderCandidates = paintable.filter((element) => !feedbackEdgeElements.has(element));
+  const essentialTextSurfaces = runs.map((run) => ({
+    bounds: run.bounds,
+    label: run.text,
+    paintIndex: run.element.index,
+  }));
+  const essentialNodeSurfaces = [...nodeShapes].map(([id, node]) => {
+    const stroke = effectivePaint(model, node.shape, 'stroke');
+    const strokeRadius = stroke.color && stroke.opacity > 0
+      ? svgUserUnits(svgValue(model, node.shape, 'stroke-width'), `${id} painter stroke-width`) *
+        maximumTransformScale(worldTransform(node.shape, model)) / 2
+      : 0;
+    return {bounds: node.bounds, id, paintIndex: node.shape.index, strokeRadius};
+  });
+  for (const surface of essentialTextSurfaces) {
+    for (const candidate of laterOccluderCandidates.filter(({index}) => index > surface.paintIndex)) {
+      const shape = renderedGeometry(candidate, null, model);
+      assert.equal(paintedShapeIntersectsBoundsSurface(model, candidate, shape, surface.bounds), false,
+        `${candidate.index} later painted ${candidate.name} cannot occlude essential text ${surface.label}`);
+    }
+  }
+  for (const surface of essentialNodeSurfaces) {
+    for (const candidate of laterOccluderCandidates.filter(({index}) => index > surface.paintIndex)) {
+      const candidateNodeId = essentialShapeIds.get(candidate);
+      const permittedNestedGate = candidateNodeId && GATE_IDS.includes(candidateNodeId) &&
+        surface.id === STAGE_IDS[Math.floor(GATE_IDS.indexOf(candidateNodeId) / 3)];
+      if (permittedNestedGate) continue;
+      const shape = renderedGeometry(candidate, null, model);
+      assert.equal(paintedShapeIntersectsBoundsSurface(
+        model, candidate, shape, surface.bounds, surface.strokeRadius), false,
+      `${candidate.index} later painted ${candidate.name} cannot occlude essential node ${surface.id}`);
+    }
+  }
   for (const [edgeId, geometry] of edgeGeometry) {
     const edgeStroke = Number.parseFloat(svgValue(model, geometry.edge, 'stroke-width'));
     for (const candidate of paintable.filter((element) => element.index > geometry.edge.index &&
@@ -2010,6 +2060,10 @@ test('MTH-07 helper contracts are green after non-no-op RED mutation fixtures', 
     ['node stroke clipped by viewBox',
       mutate(drawio, '<mxGeometry x="2" y="2" width="476" height="1776" as="geometry"/>', '<mxGeometry x="0" y="2" width="476" height="1776" as="geometry"/>', 'stage-entry Draw.io centerline at border'),
       mutate(svg, '<rect class="stage-shape" x="2" y="2" width="476" height="1776"/>', '<rect class="stage-shape" x="0" y="2" width="476" height="1776"/>', 'stage-entry SVG centerline at border')],
+    ['text-only occluder', drawio,
+      mutate(svg, '</svg>', '<rect x="200" y="45" width="80" height="45" fill="#FFFFFF"/></svg>', 'text-only occluder')],
+    ['node-only occluder', drawio,
+      mutate(svg, '</svg>', '<rect x="100" y="150" width="40" height="40" fill="#FFFFFF"/></svg>', 'node-only occluder')],
   ];
   for (const [label, mutatedDrawio, mutatedSvg] of diagramMutations) {
     if (DIAGRAM_FAILURE_CLASSES.has(label)) {
