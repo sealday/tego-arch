@@ -73,6 +73,28 @@ const FEEDBACK_LABELS = new Map([
   ['feedback-compliance-to-scope', '合规回切口'],
   ['feedback-reuse-to-contract', '复制回契约'],
 ]);
+const DIAGRAM_FAILURE_CLASSES = new Map([
+  ['route crossing', /no feedback route crossing/u],
+  ['boundary collision', /node\/boundary/u],
+  ['split duplicate feedback label', /exactly one visible semantic label/u],
+  [':is selector override', /supported SVG subset: selector/u],
+  ['at-rule override', /supported SVG subset: at-rule/u],
+  ['clip-path hiding', /supported SVG subset: forbidden rendering effect clip-path/u],
+  ['mask hiding', /supported SVG subset: forbidden rendering effect mask/u],
+  ['filter hiding', /supported SVG subset: forbidden rendering effect filter/u],
+  ['dual transform cascade', /gate-01 Draw.io\/SVG transformed bounds parity/u],
+  ['polyline occluder', /supported SVG subset: element polyline/u],
+  ['image occluder', /supported SVG subset: element image/u],
+  ['use occluder', /supported SVG subset: element use/u],
+  ['foreignObject occluder', /supported SVG subset: element foreignObject/u],
+  ['text occluder', /supported SVG subset: semantic text/u],
+  ['arrow rectangle', /canonical block marker/u],
+  ['marker medium stroke', /stroke-expanded marker footprint/u],
+  ['percentage label coordinate', /supported SVG subset: text coordinates/u],
+  ['letter spacing', /supported SVG subset: CSS property letter-spacing/u],
+  ['triangle node', /gate-01 canonical rect node/u],
+  ['owner displacement', /owner band exact spacing/u],
+]);
 const REQUIRED_WRAPPERS = [
   {aria: '企业 AI 四阶段十二门禁图，可横向滚动', className: 'architecture-diagram-scroll'},
   {aria: '企业 AI 十二门禁执行表，可横向滚动', className: 'table-wrapper table-wrapper--mapping diagram-wrapper--scroll-owner'},
@@ -296,7 +318,9 @@ function parsedSvg(source) {
       }
     }
   }
-  return {...model, root, rules};
+  const result = {...model, root, rules};
+  assertSupportedSvgSubset(result);
+  return result;
 }
 
 function ownSvgValue(model, element, property, includePresentation = true) {
@@ -342,6 +366,93 @@ const SVG_DEFAULTS = new Map([
   ['opacity', '1'], ['stroke', 'none'], ['stroke-dasharray', 'none'], ['stroke-opacity', '1'],
   ['stroke-width', '1'], ['text-anchor', 'start'], ['text-decoration', 'none'], ['visibility', 'visible'],
 ]);
+
+const SUPPORTED_SVG_ELEMENTS = new Set(['svg', 'style', 'defs', 'marker', 'g', 'rect', 'path', 'polygon', 'circle', 'text', 'tspan']);
+const SUPPORTED_CSS_PROPERTIES = new Set([
+  'color', 'display', 'fill', 'fill-opacity', 'font', 'font-family', 'font-size', 'font-style', 'font-weight',
+  'marker-end', 'opacity', 'stroke', 'stroke-dasharray', 'stroke-linecap', 'stroke-linejoin', 'stroke-opacity',
+  'stroke-width', 'text-anchor', 'text-decoration', 'transform', 'visibility',
+]);
+const SVG_PRESENTATION_PROPERTIES = new Set([...SUPPORTED_CSS_PROPERTIES].filter((property) => property !== 'font'));
+const SUPPORTED_ATTRIBUTES = new Map([
+  ['svg', new Set(['role', 'viewBox'])],
+  ['style', new Set([])],
+  ['defs', new Set([])],
+  ['marker', new Set(['id', 'markerUnits', 'markerWidth', 'markerHeight', 'viewBox', 'refX', 'refY', 'orient', 'preserveAspectRatio'])],
+  ['g', new Set(['class', 'data-node-id', 'transform', 'style', 'opacity', 'fill', 'fill-opacity', 'stroke', 'stroke-opacity', 'stroke-width'])],
+  ['rect', new Set(['id', 'class', 'data-canvas', 'data-edge-id', 'x', 'y', 'width', 'height', 'transform', 'style', 'fill', 'fill-opacity', 'stroke', 'stroke-opacity', 'stroke-width', 'opacity'])],
+  ['path', new Set(['id', 'class', 'data-edge-id', 'data-source', 'data-target', 'd', 'transform', 'style', 'fill', 'fill-opacity', 'stroke', 'stroke-opacity', 'stroke-width', 'stroke-dasharray', 'marker-end', 'opacity'])],
+  ['polygon', new Set(['id', 'class', 'points', 'transform', 'style', 'fill', 'fill-opacity', 'stroke', 'stroke-opacity', 'stroke-width', 'opacity'])],
+  ['circle', new Set(['id', 'class', 'cx', 'cy', 'r', 'transform', 'style', 'fill', 'fill-opacity', 'stroke', 'stroke-opacity', 'stroke-width', 'opacity'])],
+  ['text', new Set(['id', 'class', 'data-edge-label', 'x', 'y', 'transform', 'style', 'fill', 'fill-opacity', 'font-family', 'font-size', 'font-style', 'font-weight', 'text-anchor', 'text-decoration', 'opacity', 'visibility'])],
+  ['tspan', new Set(['x', 'y', 'dx', 'dy', 'transform', 'style', 'fill', 'fill-opacity', 'font-family', 'font-size', 'font-style', 'font-weight', 'text-anchor', 'text-decoration', 'opacity', 'visibility'])],
+]);
+
+function assertSupportedSelector(selector) {
+  assert.doesNotMatch(selector, /[@:+~*]|\(|\)/u, 'supported SVG subset: selector has no pseudo/functional/at-rule syntax');
+  for (const token of selectorTokens(selector).filter((token) => token !== '>')) {
+    assert.match(token, /^(?:[A-Za-z][\w-]*)?(?:#[\w-]+)?(?:\.[\w-]+)*(?:\[[\w:.-]+(?:=["']?[^\]"']+["']?)?\])*$/u,
+      'supported SVG subset: selector token');
+  }
+}
+
+function assertSupportedCssDeclarations(raw) {
+  for (const item of raw.split(';').map((value) => value.trim()).filter(Boolean)) {
+    const split = item.indexOf(':');
+    assert.ok(split > 0, `supported SVG subset: CSS declaration ${item}`);
+    const property = item.slice(0, split).trim().toLowerCase();
+    assert.ok(SUPPORTED_CSS_PROPERTIES.has(property), `supported SVG subset: CSS property ${property}`);
+    const value = item.slice(split + 1).replace(/\s*!important\s*$/iu, '').trim();
+    if (property === 'transform') assert.match(value,
+      /^(?:none|(?:matrix|translate|scale|rotate)\([^)]*\)(?:\s+(?:matrix|translate|scale|rotate)\([^)]*\))*)$/u,
+      'supported SVG subset: CSS transform functions');
+    if (property === 'font-size') assert.match(value, /^\d+(?:\.\d+)?px?$/u,
+      'supported SVG subset: font-size user units/px');
+  }
+}
+
+function assertSupportedSvgSubset(model) {
+  for (const element of model.elements) {
+    assert.ok(SUPPORTED_SVG_ELEMENTS.has(element.name), `supported SVG subset: element ${element.name}`);
+    for (const attribute of element.attributes.keys()) {
+      assert.equal(['clip-path', 'mask', 'filter'].includes(attribute), false,
+        `supported SVG subset: forbidden rendering effect ${attribute}`);
+      assert.ok(SUPPORTED_ATTRIBUTES.get(element.name).has(attribute),
+        `supported SVG subset: ${element.name} attribute ${attribute}`);
+      if (SVG_PRESENTATION_PROPERTIES.has(attribute)) assert.ok(SUPPORTED_CSS_PROPERTIES.has(attribute),
+        `supported SVG subset: presentation property ${attribute}`);
+    }
+    if (element.attributes.has('style')) assertSupportedCssDeclarations(element.attributes.get('style'));
+    if (['text', 'tspan'].includes(element.name)) {
+      for (const coordinate of ['x', 'y', 'dx', 'dy']) {
+        if (element.attributes.has(coordinate)) assert.match(element.attributes.get(coordinate),
+          /^-?(?:\d+(?:\.\d*)?|\.\d+)$/u, 'supported SVG subset: text coordinates are numeric user units');
+      }
+      assert.equal(descendants(element).some((child) => !['tspan'].includes(child.name)), false,
+        'supported SVG subset: semantic text children');
+      if (element.name === 'tspan') assert.equal(descendants(element).length, 0,
+        'supported SVG subset: flat tspan runs');
+    }
+  }
+  for (const style of model.elements.filter(({name}) => name === 'style')) {
+    const css = xmlText(style).replace(/\/\*[\s\S]*?\*\//gu, '');
+    assert.doesNotMatch(css, /@/u, 'supported SVG subset: at-rule');
+    const rules = [...css.matchAll(/([^{}]+)\{([^{}]*)\}/gu)];
+    assert.equal(rules.map((match) => match[0]).join('').replace(/\s+/gu, ''), css.replace(/\s+/gu, ''),
+      'supported SVG subset: flat CSS rules');
+    for (const rule of rules) {
+      for (const selector of rule[1].split(',').map((item) => item.trim()).filter(Boolean)) assertSupportedSelector(selector);
+      assertSupportedCssDeclarations(rule[2]);
+    }
+  }
+  const allowedDuplicateValues = [...FEEDBACK_LABELS.values()];
+  for (const element of model.elements.filter(({name}) => name === 'text')) {
+    if (!element.attributes.has('data-edge-label') && !owningNodeGroup(element)) {
+      assert.ok(allowedDuplicateValues.includes(visibleTextSemanticValue(element)),
+        'supported SVG subset: semantic text is only a feedback-cardinality probe');
+    }
+  }
+}
 
 function svgValue(model, element, property) {
   for (let current = element; current; current = INHERITED_SVG_PROPERTIES.has(property) ? current.parent : null) {
@@ -406,7 +517,7 @@ function multiplyMatrices(left, right) {
 function elementTransform(model, element) {
   const presentation = transformMatrix(element.attributes.get('transform'));
   const css = model ? ownSvgValue(model, element, 'transform', false) : undefined;
-  return multiplyMatrices(presentation, css === undefined || css === 'none' ? IDENTITY_MATRIX : transformMatrix(css));
+  return css === undefined ? presentation : (css === 'none' ? IDENTITY_MATRIX : transformMatrix(css));
 }
 
 function transformMatrix(value) {
@@ -973,6 +1084,13 @@ function actualMarkerFootprint(model, edge, route, renderScale) {
   const markers = fragments.filter(({name}) => name === 'marker');
   assert.equal(markers.length, 1, `${markerId} resolves once`);
   const marker = markers[0];
+  const markerDrawables = descendants(marker).filter((element) => ['rect', 'path', 'polygon', 'circle'].includes(element.name));
+  assert.equal(markerDrawables.length, 1, `${markerId} canonical block marker has one drawable`);
+  assert.equal(markerDrawables[0].name, 'path', `${markerId} canonical block marker uses a path`);
+  const canonicalArrow = parsedPath(markerDrawables[0].attributes.get('d'), `${markerId} canonical block marker`);
+  assert.equal(canonicalArrow.closed, true, `${markerId} canonical block marker is closed`);
+  assert.deepEqual(canonicalArrow.points, [{x: 0, y: 0}, {x: 26, y: 12}, {x: 0, y: 24}],
+    `${markerId} canonical block marker topology and tip direction`);
   const viewBox = numericTokens(marker.attributes.get('viewBox'));
   assert.equal(viewBox.length, 4, `${markerId} viewBox`);
   assert.ok(viewBox[2] > 0 && viewBox[3] > 0, `${markerId} positive viewBox`);
@@ -982,6 +1100,7 @@ function actualMarkerFootprint(model, edge, route, renderScale) {
   const refY = Number(marker.attributes.get('refY'));
   assert.ok([width, height, refX, refY].every(Number.isFinite) && width > 0 && height > 0,
     `${markerId} dimensions/ref`);
+  assert.deepEqual({refX, refY}, {refX: 26, refY: 13}, `${markerId} canonical block marker ref point`);
   const markerUnits = marker.attributes.get('markerUnits') ?? 'strokeWidth';
   assert.match(markerUnits, /^(?:strokeWidth|userSpaceOnUse)$/u, `${markerId} markerUnits`);
   const unitScale = markerUnits === 'strokeWidth'
@@ -1043,8 +1162,7 @@ function actualMarkerFootprint(model, edge, route, renderScale) {
       Math.max(scaleX, scaleY);
     const strokePainted = stroke.color && stroke.opacity > 0 && strokeWidth > 0 &&
       geometryLength(shapePoints, geometry.closed) > 1e-7;
-    assert.ok(!strokePainted || strokeWidth * renderScale < 16,
-      `${markerId} marker stroke does not dominate footprint/clearance`);
+    assert.equal(Boolean(strokePainted), false, `${markerId} stroke-expanded marker footprint is canonical fill-only`);
     return {...geometry, bounds: geometryBounds(shapePoints), fill, fillPainted,
       points: shapePoints, stroke, strokePainted, strokeWidth};
   }).filter(({fillPainted, strokePainted}) => fillPainted || strokePainted);
@@ -1104,11 +1222,15 @@ function assertDiagram(drawio, svg) {
     const group = nodeGroups.get(id);
     assert.ok(cell, `Draw.io ${id}`);
     assert.ok(group, `SVG ${id}`);
+    const nodeDrawables = descendants(group).filter((element) => ['rect', 'path', 'polygon', 'circle'].includes(element.name));
+    assert.equal(nodeDrawables.length, 1, `${id} exactly one canonical node drawable`);
     const shape = directNodeShape(group);
     assert.ok(shape, `${id} actual SVG shape`);
+    assert.equal(shape.name, 'rect', `${id} canonical rect node`);
     const geometry = renderedGeometry(shape, null, model);
     nodeShapes.set(id, {...geometry, group, shape});
     assert.deepEqual(geometry.bounds, actualDrawioBounds(cell), `${id} Draw.io/SVG transformed bounds parity`);
+    assert.deepEqual(geometry.points, boundsPoints(actualDrawioBounds(cell)), `${id} Draw.io/SVG exact rect points parity`);
     const labels = descendants(group, 'text');
     assert.equal(labels.length, 1, `${id} exactly one SVG label`);
     const expectedLines = GATE_IDS.includes(id) ? GATE_VISUALS[GATE_IDS.indexOf(id)] : simpleLabels.get(id);
@@ -1131,6 +1253,15 @@ function assertDiagram(drawio, svg) {
   for (let index = 0; index < GATE_IDS.length; index += 1) {
     assert.ok(boundsContain(nodeShapes.get(STAGE_IDS[Math.floor(index / 3)]).bounds,
       nodeShapes.get(GATE_IDS[index]).bounds), `${GATE_IDS[index]} contained in its stage`);
+  }
+  const ownerBand = RESPONSIBILITY_IDS.map((id) => nodeShapes.get(id));
+  assert.deepEqual(ownerBand.map(({bounds}) => bounds.left), [...ownerBand.map(({bounds}) => bounds.left)].sort((a, b) => a - b),
+    'owner band order');
+  assert.ok(ownerBand.every(({bounds}) => bounds.top === ownerBand[0].bounds.top && bounds.bottom === ownerBand[0].bounds.bottom),
+    'owner band aligned');
+  for (let index = 1; index < ownerBand.length; index += 1) {
+    assert.ok(ownerBand[index - 1].bounds.right < ownerBand[index].bounds.left, 'owner band nonoverlap');
+    assert.equal(ownerBand[index].bounds.left - ownerBand[index - 1].bounds.right, 90, 'owner band exact spacing');
   }
 
   const canvas = model.elements.find(({attributes, name}) => name === 'rect' &&
@@ -1535,17 +1666,31 @@ test('MTH-07 helper contracts are green after non-no-op RED mutation fixtures', 
     ['invalid transform suffix', drawio, mutate(svg, 'transform="translate(0 1)" fill="#1D4ED8"', 'transform="translate(0 1) INVALID" fill="#1D4ED8"', 'invalid transform suffix')],
     ['decoy edge occluder', drawio, mutate(svg, '</svg>', '<rect data-edge-id="decoy" x="1200" y="1880" width="200" height="120" fill="#FFFFFF"/></svg>', 'decoy edge occluder')],
     ['known edge ID occluder', drawio, mutate(svg, '</svg>', '<rect data-edge-id="feedback-rollout-to-acceptance" x="1200" y="1880" width="200" height="120" fill="#FFFFFF"/></svg>', 'known edge ID occluder')],
+    [':is selector override', drawio, mutate(svg, '</style>', ':is(.feedback-edge) { stroke: #FFFFFF !important; }</style>', ':is selector override')],
+    ['at-rule override', drawio, mutate(svg, '</style>', '@media all { .feedback-edge { stroke: #FFFFFF !important; } }</style>', 'at-rule override')],
+    ['clip-path hiding', drawio, mutate(svg, 'id="feedback-rollout-to-acceptance" class="feedback-edge"', 'id="feedback-rollout-to-acceptance" class="feedback-edge" clip-path="inset(100%)"', 'clip-path hiding')],
+    ['mask hiding', drawio, mutate(svg, 'id="feedback-rollout-to-acceptance" class="feedback-edge"', 'id="feedback-rollout-to-acceptance" class="feedback-edge" mask="url(#missing-mask)"', 'mask hiding')],
+    ['filter hiding', drawio, mutate(svg, 'id="feedback-rollout-to-acceptance" class="feedback-edge"', 'id="feedback-rollout-to-acceptance" class="feedback-edge" filter="opacity(0)"', 'filter hiding')],
+    ['dual transform cascade', drawio,
+      mutate(svg, '<g data-node-id="gate-01">', '<g data-node-id="gate-01" transform="translate(900 0)" style="transform:translate(100 0)">', 'dual transform SVG')],
+    ['polyline occluder', drawio, mutate(svg, '</svg>', '<polyline points="1200,1940 1400,1940" stroke="#FFFFFF" stroke-width="100"/></svg>', 'polyline occluder')],
+    ['image occluder', drawio, mutate(svg, '</svg>', '<image x="1200" y="1880" width="200" height="120" href="data:image/svg+xml,%3Csvg/%3E"/></svg>', 'image occluder')],
+    ['use occluder', drawio, mutate(svg, '</svg>', '<use href="#gate-01" x="1200" y="1880"/></svg>', 'use occluder')],
+    ['foreignObject occluder', drawio, mutate(svg, '</svg>', '<foreignObject x="1200" y="1880" width="200" height="120"></foreignObject></svg>', 'foreignObject occluder')],
+    ['text occluder', drawio, mutate(svg, '</svg>', '<text x="1200" y="1940" font-size="200" fill="#FFFFFF">████</text></svg>', 'text occluder')],
+    ['arrow rectangle', drawio, mutate(svg, '<path d="M 0 0 L 26 12 L 0 24 z"/>', '<rect x="0" y="0" width="26" height="24"/>', 'arrow rectangle')],
+    ['marker medium stroke', drawio, mutate(svg, 'd="M 0 0 L 26 12 L 0 24 z"', 'd="M 0 0 L 26 12 L 0 24 z" stroke="#1D4ED8" stroke-width="20"', 'marker medium stroke')],
+    ['percentage label coordinate', drawio, mutate(svg, 'data-edge-label="feedback-rollout-to-acceptance" x="1300"', 'data-edge-label="feedback-rollout-to-acceptance" x="1300%"', 'percentage label coordinate')],
+    ['letter spacing', drawio, mutate(svg, '</style>', '.feedback-label { letter-spacing: 100px; }</style>', 'letter spacing')],
+    ['triangle node', drawio, mutate(svg, '<rect class="gate-shape" x="20" y="300" width="440" height="340"/>', '<polygon class="gate-shape" points="20,640 240,300 460,640"/>', 'triangle node')],
+    ['owner displacement', mutate(drawio, '<mxGeometry x="410" y="2150" width="300" height="160" as="geometry"/>', '<mxGeometry x="510" y="2150" width="300" height="160" as="geometry"/>', 'owner displacement Draw.io'),
+      mutate(svg, '<g data-node-id="owner-delivery">', '<g data-node-id="owner-delivery" transform="translate(100 0)">', 'owner displacement SVG')],
   ];
-  const expectedFailure = new Map([
-    ['route crossing', /no feedback route crossing/u],
-    ['boundary collision', /node\/boundary/u],
-    ['split duplicate feedback label', /exactly one visible semantic label/u],
-  ]);
   for (const [label, mutatedDrawio, mutatedSvg] of diagramMutations) {
-    if (expectedFailure.has(label)) {
+    if (DIAGRAM_FAILURE_CLASSES.has(label)) {
       assert.throws(() => assertDiagram(mutatedDrawio, mutatedSvg), (error) => {
         assert.ok(error instanceof assert.AssertionError, `${label} AssertionError`);
-        assert.match(error.message, expectedFailure.get(label), `${label} diagnostic isolation`);
+        assert.match(error.message, DIAGRAM_FAILURE_CLASSES.get(label), `${label} diagnostic isolation`);
         return true;
       }, label);
     } else {
