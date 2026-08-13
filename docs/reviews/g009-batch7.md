@@ -82,3 +82,18 @@ This production result closes only Stage A publication. STY-06 remains pending u
 - Review history: initial closure head `c58672fa2e4a3c1904d148436405beac026388ce` was blocked only because the complete immediate STY-05 review lacked an exact byte lock; remediation head `9cee8a1ad64cb0fa20213a477087bb3cbae5657f` added that SHA-256 and mutation rejection, then received three zero-finding exact-head verdicts.
 - Final Stage B review judgment: `READY`.
 - Stage B deployment status: `PENDING`.
+
+## Stage B production deployment
+
+- Exact deployed head: `6d254d4689f0e7f41e3c0ed3973d0d9897887414`.
+- Pages run: `31673329108`; build job: `94362435390`; deploy job: `94362837626`; all `completed / success`.
+- HTTP probes: `9/9` returned `200` with expected HTML/SVG content types.
+- Production Browser states: `4/4`; wrapper focus/`:focus-visible`/3px outline/ArrowRight checks: `12/12`; exact relation href/H1/return checks: `16/16`.
+- Desktop page geometry: `1440/1440`; wrappers: `800/800`, `800/1118`, `800/1342`; ArrowRight: `0/40/40`.
+- Mobile page geometry: `390/390`; wrappers: `358/800`, `358/1118`, `358/1342`; ArrowRight: `40/40/40`.
+- Remote source checks: `20/20`, five anchors across four domains in every state with `_blank` and `noopener noreferrer`; STY-07 actionable count: `0` in every state.
+- SVG loaded in every state: intrinsic `92x150`, rendered `800x1300`.
+- Diagnostics: warning/error logs `0`, `Runtime.exceptionThrown=0`, `Log.entryAdded=0`, `hasMore=false`, `truncated=false` in every state.
+- Raw production Browser JSON: `docs/reviews/evidence/g009-batch7-stage-b-production-browser.json`, SHA-256 `45ebc52ef52b8d707ae845009812c4bfe28a734e4676ef0ef5c1617f6c92ef98`.
+- Screenshot evidence: `BLOCKED / NOT_ACCEPTED`; no Stage B visual PASS is claimed.
+- Functional Stage B deployment status: `SUCCESS / PASS`.

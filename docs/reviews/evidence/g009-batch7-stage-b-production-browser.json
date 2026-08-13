@@ -1,0 +1,19 @@
+{
+  "implementationHead": "6d254d4689f0e7f41e3c0ed3973d0d9897887414",
+  "pages": {"runId": 31673329108, "buildJobId": 94362435390, "deployJobId": 94362837626, "status": "completed", "conclusion": "success"},
+  "http": {"passed": 9, "total": 9, "status": 200},
+  "states": {
+    "desktopLight": {"viewport": [1440, 1000], "theme": "light", "page": [1440, 1440], "wrappers": [[800, 800], [800, 1118], [800, 1342]], "arrowRight": [0, 40, 40], "focusChecks": 3, "relations": 4, "sources": 5, "sourceDomains": 4, "sty07": 0, "svg": [true, 92, 150, 800, 1300], "diagnostics": [0, 0, false, false]},
+    "desktopDark": {"viewport": [1440, 1000], "theme": "dark", "page": [1440, 1440], "wrappers": [[800, 800], [800, 1118], [800, 1342]], "arrowRight": [0, 40, 40], "focusChecks": 3, "relations": 4, "sources": 5, "sourceDomains": 4, "sty07": 0, "svg": [true, 92, 150, 800, 1300], "diagnostics": [0, 0, false, false]},
+    "mobileLight": {"viewport": [390, 844], "theme": "light", "page": [390, 390], "wrappers": [[358, 800], [358, 1118], [358, 1342]], "arrowRight": [40, 40, 40], "focusChecks": 3, "relations": 4, "sources": 5, "sourceDomains": 4, "sty07": 0, "svg": [true, 92, 150, 800, 1300], "diagnostics": [0, 0, false, false]},
+    "mobileDark": {"viewport": [390, 844], "theme": "dark", "page": [390, 390], "wrappers": [[358, 800], [358, 1118], [358, 1342]], "arrowRight": [40, 40, 40], "focusChecks": 3, "relations": 4, "sources": 5, "sourceDomains": 4, "sty07": 0, "svg": [true, 92, 150, 800, 1300], "diagnostics": [0, 0, false, false]}
+  },
+  "relationMap": [
+    ["/tego-arch/styles/sty-04", "模块化单体：在一个部署单元内保护业务边界"],
+    ["/tego-arch/styles/sty-05", "微服务：用独立部署换取自治，也承担分布式成本"],
+    ["/tego-arch/principles/pr-11", "命令查询分离、CQRS 与读写分离"],
+    ["/tego-arch/modeling/mod-08", "状态机建模"]
+  ],
+  "sourceContract": {"target": "_blank", "rel": "noopener noreferrer", "checks": 20},
+  "screenshotEvidence": {"status": "BLOCKED / NOT_ACCEPTED", "reason": "Functional Stage B production QA is accepted; new visual screenshot evidence is not claimed."}
+}

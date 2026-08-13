@@ -12,6 +12,7 @@ const IMMEDIATE_STY05_REVIEW = 'docs/reviews/g009-batch6.md';
 const BACKLOG = 'docs/content-backlog.md';
 const RAW_BROWSER = 'docs/reviews/evidence/g009-batch7-stage-a-browser.json';
 const PRODUCTION_BROWSER = 'docs/reviews/evidence/g009-batch7-stage-a-production-browser.json';
+const STAGE_B_PRODUCTION_BROWSER = 'docs/reviews/evidence/g009-batch7-stage-b-production-browser.json';
 const REVIEWED_HEAD = '44fcafbef24b68f14a9cbf4be0b3fba09cc6002d';
 const EVIDENCE_HEAD = 'f24b4d4a4ebd95bf454f6e87200c83476dc91971';
 const IMMEDIATE_STY05_HISTORY_HASH = 'dc7180a0503ebcc2e285d8425e4e37f87b6125339823ba5577eb822992aa7109';
@@ -38,13 +39,14 @@ const SOURCE_IDS = [
   'src-atlas-sty06-event-driven-four-patterns',
 ];
 
-const [review, immediateSty05ReviewBytes, backlog, rawBrowserBytes, productionBrowserBytes, manifest, indexes, status, publicLedger] = await Promise.all([
+const [review, immediateSty05ReviewBytes, backlog, rawBrowserBytes, productionBrowserBytes, stageBProductionBrowserBytes, manifest, indexes, status, publicLedger] = await Promise.all([
   readFile(new URL(`../${REVIEW}`, import.meta.url), 'utf8').catch((error) =>
     error?.code === 'ENOENT' ? '' : Promise.reject(error)),
   readFile(new URL(`../${IMMEDIATE_STY05_REVIEW}`, import.meta.url)),
   readFile(new URL(`../${BACKLOG}`, import.meta.url), 'utf8'),
   readFile(new URL(`../${RAW_BROWSER}`, import.meta.url)),
   readFile(new URL(`../${PRODUCTION_BROWSER}`, import.meta.url)),
+  readFile(new URL(`../${STAGE_B_PRODUCTION_BROWSER}`, import.meta.url)),
   readFile(new URL('../src/generated/topic-manifest.json', import.meta.url), 'utf8').then(JSON.parse),
   readFile(new URL('../src/generated/topic-indexes.json', import.meta.url), 'utf8').then(JSON.parse),
   readFile(new URL('../src/generated/project-status.json', import.meta.url), 'utf8').then(JSON.parse),
@@ -52,6 +54,7 @@ const [review, immediateSty05ReviewBytes, backlog, rawBrowserBytes, productionBr
 ]);
 const rawBrowser = JSON.parse(rawBrowserBytes);
 const productionBrowser = JSON.parse(productionBrowserBytes);
+const stageBProductionBrowser = JSON.parse(stageBProductionBrowserBytes);
 
 function sha256(value) {
   return createHash('sha256').update(value).digest('hex');
@@ -410,4 +413,46 @@ test('rejects immediate-history drift and fabricated Stage B readiness or deploy
       }, {name: 'AssertionError'}, label);
     }
   }
+});
+
+function assertStageBProductionEvidence(evidence = stageBProductionBrowser, bytes = stageBProductionBrowserBytes, source = review) {
+  assert.equal(evidence.implementationHead, '6d254d4689f0e7f41e3c0ed3973d0d9897887414');
+  assert.deepEqual(evidence.pages, {runId: 31673329108, buildJobId: 94362435390, deployJobId: 94362837626, status: 'completed', conclusion: 'success'});
+  assert.deepEqual(evidence.http, {passed: 9, total: 9, status: 200});
+  assert.deepEqual(Object.keys(evidence.states), STATES);
+  for (const [name, expected] of Object.entries({desktopLight:[[1440,1000],[1440,1440],[[800,800],[800,1118],[800,1342]],[0,40,40]],desktopDark:[[1440,1000],[1440,1440],[[800,800],[800,1118],[800,1342]],[0,40,40]],mobileLight:[[390,844],[390,390],[[358,800],[358,1118],[358,1342]],[40,40,40]],mobileDark:[[390,844],[390,390],[[358,800],[358,1118],[358,1342]],[40,40,40]]})) {
+    const state = evidence.states[name];
+    assert.deepEqual(state.viewport, expected[0]);
+    assert.deepEqual(state.page, expected[1]);
+    assert.deepEqual(state.wrappers, expected[2]);
+    assert.deepEqual(state.arrowRight, expected[3]);
+    assert.equal(state.focusChecks, 3);
+    assert.equal(state.relations, 4);
+    assert.equal(state.sources, 5);
+    assert.equal(state.sourceDomains, 4);
+    assert.equal(state.sty07, 0);
+    assert.deepEqual(state.svg, [true,92,150,800,1300]);
+    assert.deepEqual(state.diagnostics, [0,0,false,false]);
+  }
+  assert.deepEqual(evidence.relationMap, RELATIONS);
+  assert.deepEqual(evidence.sourceContract, {target:'_blank', rel:'noopener noreferrer', checks:20});
+  assert.equal(evidence.screenshotEvidence.status, 'BLOCKED / NOT_ACCEPTED');
+  assert.doesNotMatch(evidence.screenshotEvidence.reason, /visual PASS/iu);
+  const deployment = section(source, 'Stage B production deployment');
+  for (const literal of ['Exact deployed head: `6d254d4689f0e7f41e3c0ed3973d0d9897887414`.','Pages run: `31673329108`; build job: `94362435390`; deploy job: `94362837626`; all `completed / success`.','HTTP probes: `9/9` returned `200`','Production Browser states: `4/4`','checks: `12/12`','checks: `16/16`','Remote source checks: `20/20`','STY-07 actionable count: `0`','Screenshot evidence: `BLOCKED / NOT_ACCEPTED`','Functional Stage B deployment status: `SUCCESS / PASS`']) assert.ok(deployment.includes(literal), literal);
+  assert.ok(deployment.includes(`Raw production Browser JSON: \`${STAGE_B_PRODUCTION_BROWSER}\`, SHA-256 \`${sha256(bytes)}\`.`));
+}
+
+test('binds exact STY-06 Stage B production identity and functional evidence', () => assertStageBProductionEvidence());
+
+test('rejects mutated Stage B production identity, geometry, links, diagnostics, or screenshot overclaim', () => {
+  const mutations = [
+    ['head', c=>c.implementationHead='0'.repeat(40)], ['run', c=>c.pages.runId=1], ['state', c=>delete c.states.mobileDark],
+    ['viewport', c=>c.states.desktopDark.viewport=[390,844]], ['wrapper', c=>c.states.mobileLight.wrappers[0]=[358,358]],
+    ['focus', c=>c.states.desktopLight.focusChecks=2], ['relation', c=>c.relationMap[0][0]='/tego-arch/fabricated'],
+    ['source', c=>c.sourceContract.checks=19], ['sty07', c=>c.states.mobileDark.sty07=1], ['svg', c=>c.states.mobileLight.svg[0]=false],
+    ['diagnostic', c=>c.states.desktopLight.diagnostics[3]=true], ['screenshot', c=>c.screenshotEvidence.status='PASS']
+  ];
+  for (const [label, mutate] of mutations) { const copy=structuredClone(stageBProductionBrowser); mutate(copy); assert.throws(()=>assertStageBProductionEvidence(copy), {name:'AssertionError'}, label); }
+  assert.notEqual(sha256(Buffer.concat([stageBProductionBrowserBytes,Buffer.from(' ')])), sha256(stageBProductionBrowserBytes));
 });
