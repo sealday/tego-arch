@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="mth07-title mth07-desc" viewBox="0 0 2000 2580">
+  <title id="mth07-title">企业 AI 四阶段十二门禁图</title>
+  <desc id="mth07-desc">四个阶段包含十二个门禁，下方责任带明确五类负责人，三条虚线反馈路径连接放量与验收、合规与切口、复制与契约，并保留停止回退节点。</desc>
+  <style>
+    .stage-shape { fill: #EAF2FF; stroke: #1D4ED8; stroke-width: 4; }
+    .gate-shape { fill: #FFFFFF; stroke: #334155; stroke-width: 4; }
+    .owner-shape { fill: #F1F5F9; stroke: #475569; stroke-width: 4; }
+    .legend-shape { fill: #F8FAFC; stroke: #64748B; stroke-width: 4; }
+    .stop-shape { fill: #FFF1F2; stroke: #BE123C; stroke-width: 4; }
+    .stage-label { fill: #0F172A; font: 700 42px Arial; text-anchor: middle; }
+    .gate-label, .owner-label, .legend-label, .feedback-label { fill: #0F172A; font: 700 38px Arial; text-anchor: middle; }
+    .feedback-label { stroke: none; }
+    .stop-label { fill: #881337; font: 700 38px Arial; text-anchor: middle; }
+    .feedback-layer { stroke: #1D4ED8; stroke-width: 5; }
+    .feedback-edge { fill: none; stroke-dasharray: 18 10; marker-end: url(#feedback-arrow); }
+  </style>
+  <defs>
+    <marker id="feedback-arrow" markerUnits="userSpaceOnUse" markerWidth="52" markerHeight="52" viewBox="0 0 26 26" refX="26" refY="13" orient="auto">
+      <g transform="translate(0 1)" fill="#1D4ED8">
+        <path d="M 0 0 L 26 12 L 0 24 z"/>
+      </g>
+    </marker>
+  </defs>
+  <rect data-canvas="true" x="0" y="0" width="2000" height="2580" fill="#FFFFFF"/>
+  <g data-node-id="stage-entry">
+    <rect class="stage-shape" x="2" y="2" width="476" height="1776"/>
+    <text class="stage-label" x="240" y="82"><tspan x="240" y="82">进场期</tspan></text>
+  </g>
+  <g data-node-id="stage-initiation">
+    <rect class="stage-shape" x="502" y="2" width="476" height="1776"/>
+    <text class="stage-label" x="740" y="82"><tspan x="740" y="82">立项期</tspan></text>
+  </g>
+  <g data-node-id="stage-delivery">
+    <rect class="stage-shape" x="1002" y="2" width="476" height="1776"/>
+    <text class="stage-label" x="1240" y="82"><tspan x="1240" y="82">交付期</tspan></text>
+  </g>
+  <g data-node-id="stage-scale">
+    <rect class="stage-shape" x="1502" y="2" width="476" height="1776"/>
+    <text class="stage-label" x="1740" y="82"><tspan x="1740" y="82">放大期</tspan></text>
+  </g>
+  <g data-node-id="gate-01">
+    <rect class="gate-shape" x="20" y="300" width="440" height="340"/>
+    <text class="gate-label" x="240" y="380">
+      <tspan x="240" y="380">需求考古</tspan>
+      <tspan x="240" y="445">风险：意向误判</tspan>
+      <tspan x="240" y="510">证据：基线记录</tspan>
+      <tspan x="240" y="575">通过：全链追溯</tspan>
+    </text>
+  </g>
+  <g data-node-id="gate-02">
+    <rect class="gate-shape" x="20" y="760" width="440" height="340"/>
+    <text class="gate-label" x="240" y="840">
+      <tspan x="240" y="840">流程测绘</tspan>
+      <tspan x="240" y="905">风险：局部伤全局</tspan>
+      <tspan x="240" y="970">证据：现状流程</tspan>
+      <tspan x="240" y="1035">通过：回路明示</tspan>
+    </text>
+  </g>
+  <g data-node-id="gate-03">
+    <rect class="gate-shape" x="20" y="1400" width="440" height="340"/>
+    <text class="gate-label" x="240" y="1480">
+      <tspan x="240" y="1480">切口选择</tspan>
+      <tspan x="240" y="1545">风险：切口失控</tspan>
+      <tspan x="240" y="1610">证据：切口评分</tspan>
+      <tspan x="240" y="1675">通过：可测可逆</tspan>
+    </text>
+  </g>
+  <g data-node-id="gate-04">
+    <rect class="gate-shape" x="520" y="300" width="440" height="340"/>
+    <text class="gate-label" x="740" y="380">
+      <tspan x="740" y="380">验收标准工程</tspan>
+      <tspan x="740" y="445">风险：演示冒充</tspan>
+      <tspan x="740" y="510">证据：验收包</tspan>
+      <tspan x="740" y="575">通过：复现退出</tspan>
+    </text>
+  </g>
+  <g data-node-id="gate-05">
+    <rect class="gate-shape" x="520" y="760" width="440" height="340"/>
+    <text class="gate-label" x="740" y="840">
+      <tspan x="740" y="840">POC 纪律</tspan>
+      <tspan x="740" y="905">风险：外推失真</tspan>
+      <tspan x="740" y="970">证据：假设卡</tspan>
+      <tspan x="740" y="1035">通过：限域验证</tspan>
+    </text>
+  </g>
+  <g data-node-id="gate-06">
+    <rect class="gate-shape" x="520" y="1400" width="440" height="340"/>
+    <text class="gate-label" x="740" y="1480">
+      <tspan x="740" y="1480">职责契约</tspan>
+      <tspan x="740" y="1545">风险：责任悬空</tspan>
+      <tspan x="740" y="1610">证据：责任契约</tspan>
+      <tspan x="740" y="1675">通过：单一责任</tspan>
+    </text>
+  </g>
+  <g data-node-id="gate-07">
+    <rect class="gate-shape" x="1020" y="300" width="440" height="340"/>
+    <text class="gate-label" x="1240" y="380">
+      <tspan x="1240" y="380">知识结构化</tspan>
+      <tspan x="1240" y="445">风险：知识越权</tspan>
+      <tspan x="1240" y="510">证据：来源清单</tspan>
+      <tspan x="1240" y="575">通过：授权追溯</tspan>
+    </text>
+  </g>
+  <g data-node-id="gate-08">
+    <rect class="gate-shape" x="1020" y="760" width="440" height="340"/>
+    <text class="gate-label" x="1240" y="840">
+      <tspan x="1240" y="840">人机分工设计</tspan>
+      <tspan x="1240" y="905">风险：模型越权</tspan>
+      <tspan x="1240" y="970">证据：职责矩阵</tspan>
+      <tspan x="1240" y="1035">通过：人工授权</tspan>
+    </text>
+  </g>
+  <g data-node-id="gate-09">
+    <rect class="gate-shape" x="1020" y="1400" width="440" height="340"/>
+    <text class="gate-label" x="1240" y="1480">
+      <tspan x="1240" y="1480">合规与风险兜底</tspan>
+      <tspan x="1240" y="1545">风险：上线暴露</tspan>
+      <tspan x="1240" y="1610">证据：合规决定</tspan>
+      <tspan x="1240" y="1675">通过：停机回退</tspan>
+    </text>
+  </g>
+  <g data-node-id="gate-10">
+    <rect class="gate-shape" x="1520" y="300" width="440" height="340"/>
+    <text class="gate-label" x="1740" y="380">
+      <tspan x="1740" y="380">渐进放量</tspan>
+      <tspan x="1740" y="445">风险：一次放大</tspan>
+      <tspan x="1740" y="510">证据：放量阈值</tspan>
+      <tspan x="1740" y="575">通过：阈值全过</tspan>
+    </text>
+  </g>
+  <g data-node-id="gate-11">
+    <rect class="gate-shape" x="1520" y="760" width="440" height="340"/>
+    <text class="gate-label" x="1740" y="840">
+      <tspan x="1740" y="840">信任运营</tspan>
+      <tspan x="1740" y="905">风险：演示冒充</tspan>
+      <tspan x="1740" y="970">证据：观测记录</tspan>
+      <tspan x="1740" y="1035">通过：运行达标</tspan>
+    </text>
+  </g>
+  <g data-node-id="gate-12">
+    <rect class="gate-shape" x="1520" y="1400" width="440" height="340"/>
+    <text class="gate-label" x="1740" y="1480">
+      <tspan x="1740" y="1480">资产化复制</tspan>
+      <tspan x="1740" y="1545">风险：特例泛化</tspan>
+      <tspan x="1740" y="1610">证据：成本上限</tspan>
+      <tspan x="1740" y="1675">通过：边界许可</tspan>
+    </text>
+  </g>
+  <g data-node-id="owner-customer">
+    <rect class="owner-shape" x="20" y="2150" width="320" height="160"/>
+    <text class="owner-label" x="180" y="2235"><tspan x="180" y="2235">客户业务</tspan></text>
+  </g>
+  <g data-node-id="owner-delivery">
+    <rect class="owner-shape" x="430" y="2150" width="320" height="160"/>
+    <text class="owner-label" x="590" y="2235"><tspan x="590" y="2235">交付/FDE</tspan></text>
+  </g>
+  <g data-node-id="owner-product">
+    <rect class="owner-shape" x="840" y="2150" width="320" height="160"/>
+    <text class="owner-label" x="1000" y="2235"><tspan x="1000" y="2235">产品工程</tspan></text>
+  </g>
+  <g data-node-id="owner-platform">
+    <rect class="owner-shape" x="1250" y="2150" width="320" height="160"/>
+    <text class="owner-label" x="1410" y="2235"><tspan x="1410" y="2235">平台与运维</tspan></text>
+  </g>
+  <g data-node-id="owner-security-data">
+    <rect class="owner-shape" x="1660" y="2150" width="320" height="160"/>
+    <text class="owner-label" x="1820" y="2235"><tspan x="1820" y="2235">安全与数据</tspan></text>
+  </g>
+  <g data-node-id="legend-band">
+    <rect class="legend-shape" x="20" y="2360" width="1500" height="180"/>
+    <text class="legend-label" x="770" y="2435">
+      <tspan x="770" y="2435">从左到右：阶段推进</tspan>
+      <tspan x="770" y="2490">虚线：未通过即返回</tspan>
+    </text>
+  </g>
+  <g data-node-id="stop-authority">
+    <rect class="stop-shape" x="1620" y="2360" width="300" height="180"/>
+    <text class="stop-label" x="1770" y="2465"><tspan x="1770" y="2465">停止/回退</tspan></text>
+  </g>
+  <g class="feedback-layer">
+    <path id="feedback-rollout-to-acceptance" class="feedback-edge" data-edge-id="feedback-rollout-to-acceptance" data-source="gate-10" data-target="gate-04" d="M 1740 300 L 1740 200 L 740 200 L 740 300"/>
+    <text class="feedback-label" data-edge-label="feedback-rollout-to-acceptance" x="1300" y="155">放量回验收</text>
+    <path id="feedback-compliance-to-scope" class="feedback-edge" data-edge-id="feedback-compliance-to-scope" data-source="gate-09" data-target="gate-03" d="M 1240 1740 L 1240 1940 L 240 1940 L 240 1740"/>
+    <text class="feedback-label" data-edge-label="feedback-compliance-to-scope" x="750" y="1870">合规回切口</text>
+    <path id="feedback-reuse-to-contract" class="feedback-edge" data-edge-id="feedback-reuse-to-contract" data-source="gate-12" data-target="gate-06" d="M 1740 1400 L 1740 1250 L 740 1250 L 740 1400"/>
+    <text class="feedback-label" data-edge-label="feedback-reuse-to-contract" x="1250" y="1190">复制回契约</text>
+  </g>
+</svg>

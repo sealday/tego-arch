@@ -91,6 +91,8 @@ const FEEDBACK_LABELS = new Map([
   ['feedback-compliance-to-scope', '合规回切口'],
   ['feedback-reuse-to-contract', '复制回契约'],
 ]);
+const LEGEND_ID = 'legend-band';
+const LEGEND_LINES = ['从左到右：阶段推进', '虚线：未通过即返回'];
 const DIAGRAM_FAILURE_CLASSES = new Map([
   ['route crossing', /no feedback route crossing/u],
   ['boundary collision', /node\/boundary/u],
@@ -417,7 +419,7 @@ const SVG_DEFAULTS = new Map([
   ['stroke-width', '1'], ['text-anchor', 'start'], ['text-decoration', 'none'], ['visibility', 'visible'],
 ]);
 
-const SUPPORTED_SVG_ELEMENTS = new Set(['svg', 'style', 'defs', 'marker', 'g', 'rect', 'path', 'polygon', 'circle', 'text', 'tspan']);
+const SUPPORTED_SVG_ELEMENTS = new Set(['svg', 'title', 'desc', 'style', 'defs', 'marker', 'g', 'rect', 'path', 'polygon', 'circle', 'text', 'tspan']);
 const SUPPORTED_CSS_PROPERTIES = new Set([
   'color', 'display', 'fill', 'fill-opacity', 'font', 'font-family', 'font-size', 'font-style', 'font-weight',
   'marker-end', 'opacity', 'stroke', 'stroke-dasharray', 'stroke-linecap', 'stroke-linejoin', 'stroke-opacity',
@@ -425,7 +427,9 @@ const SUPPORTED_CSS_PROPERTIES = new Set([
 ]);
 const SVG_PRESENTATION_PROPERTIES = new Set([...SUPPORTED_CSS_PROPERTIES].filter((property) => property !== 'font'));
 const SUPPORTED_ATTRIBUTES = new Map([
-  ['svg', new Set(['role', 'viewBox'])],
+  ['svg', new Set(['xmlns', 'role', 'aria-labelledby', 'viewBox'])],
+  ['title', new Set(['id'])],
+  ['desc', new Set(['id'])],
   ['style', new Set([])],
   ['defs', new Set([])],
   ['marker', new Set(['id', 'markerUnits', 'markerWidth', 'markerHeight', 'viewBox', 'refX', 'refY', 'orient', 'preserveAspectRatio'])],
@@ -553,6 +557,10 @@ function assertSupportedAttributeValue(element, attribute, value) {
   }
   if (['id', 'data-node-id', 'data-edge-id', 'data-edge-label', 'data-source', 'data-target'].includes(attribute)) {
     assert.match(value, /^[\w.-]+$/u, label);
+  } else if (attribute === 'xmlns') {
+    assert.equal(value, 'http://www.w3.org/2000/svg', label);
+  } else if (attribute === 'aria-labelledby') {
+    assert.match(value, /^[\w.-]+(?:\s+[\w.-]+)+$/u, label);
   } else if (attribute === 'class') {
     assert.match(value, /^[\w-]+(?:\s+[\w-]+)*$/u, label);
   } else if (attribute === 'data-canvas') {
@@ -1406,7 +1414,16 @@ function assertDiagram(drawio, svg) {
   const {cells: drawCells} = parsedDrawio(drawio);
   const model = parsedSvg(svg);
   const viewBox = numericTokens(model.root.attributes.get('viewBox'));
-  assert.equal(viewBox.length, 4, 'SVG viewBox');
+  assert.deepEqual(viewBox, [0, 0, 2000, 2580], 'SVG exact 2000x2580 viewBox');
+  const titles = model.elements.filter(({name}) => name === 'title');
+  const descriptions = model.elements.filter(({name}) => name === 'desc');
+  assert.equal(titles.length, 1, 'SVG exactly one accessible title');
+  assert.equal(descriptions.length, 1, 'SVG exactly one accessible description');
+  assert.ok(xmlText(titles[0]).trim(), 'SVG accessible title is nonempty');
+  assert.ok(xmlText(descriptions[0]).trim(), 'SVG accessible description is nonempty');
+  assert.deepEqual((model.root.attributes.get('aria-labelledby') ?? '').trim().split(/\s+/u),
+    [titles[0].attributes.get('id'), descriptions[0].attributes.get('id')],
+    'SVG aria-labelledby binds title and description');
   const viewBoxBounds = {
     bottom: viewBox[1] + viewBox[3], left: viewBox[0],
     right: viewBox[0] + viewBox[2], top: viewBox[1],
@@ -1432,7 +1449,7 @@ function assertDiagram(drawio, svg) {
   assert.deepEqual([...drawEdges.keys()].sort(), [...FEEDBACK_IDS].sort(), 'exact three Draw.io feedback edges');
   assert.deepEqual([...edgeElements.keys()].sort(), [...FEEDBACK_IDS].sort(), 'exact three SVG feedback edges');
 
-  const nodeIds = [...STAGE_IDS, ...GATE_IDS, ...RESPONSIBILITY_IDS, 'stop-authority'];
+  const nodeIds = [...STAGE_IDS, ...GATE_IDS, ...RESPONSIBILITY_IDS, LEGEND_ID, 'stop-authority'];
   const canvas = model.elements.find(({attributes, name}) => name === 'rect' &&
     attributes.get('data-canvas') === 'true');
   assert.ok(canvas, 'actual canvas element');
@@ -1445,6 +1462,7 @@ function assertDiagram(drawio, svg) {
     ...RESPONSIBILITY_IDS.map((id, index) => [id,
       [['客户业务', '交付/FDE', '产品工程', '平台与运维', '安全与数据'][index]]]),
     ['stop-authority', ['停止/回退']],
+    [LEGEND_ID, LEGEND_LINES],
   ]);
   const nodeShapes = new Map();
   for (const id of nodeIds) {
@@ -1515,6 +1533,8 @@ function assertDiagram(drawio, svg) {
     const semanticOccurrences = model.elements.filter(({name}) => name === 'text')
       .map(visibleTextSemanticValue).filter((line) => line === FEEDBACK_LABELS.get(id));
     assert.equal(semanticOccurrences.length, 1, `${id} exactly one visible semantic label`);
+    assert.equal(effectivePaint(model, labels[0], 'stroke').color, null,
+      `${id} feedback label has no inherited connector stroke`);
     feedbackLabels.set(id, labels[0]);
   }
   assert.deepEqual(model.elements.filter(({attributes, name}) => name === 'text' &&
@@ -1805,19 +1825,21 @@ function fixtureDiagram() {
     width: 440,
     height: 340,
   }));
-  RESPONSIBILITY_IDS.forEach((id, index) => boxes.set(id, {x: 20 + index * 390, y: 2150, width: 300, height: 160}));
-  boxes.set('stop-authority', {x: 1580, y: 2380, width: 300, height: 160});
+  RESPONSIBILITY_IDS.forEach((id, index) => boxes.set(id, {x: 20 + index * 410, y: 2150, width: 320, height: 160}));
+  boxes.set(LEGEND_ID, {x: 20, y: 2360, width: 1500, height: 180});
+  boxes.set('stop-authority', {x: 1620, y: 2360, width: 300, height: 180});
   const labels = new Map([
     ...STAGE_IDS.map((id, index) => [id, [STAGES[index]]]),
     ...GATE_IDS.map((id, index) => [id, GATE_VISUALS[index]]),
     ['owner-customer', ['客户业务']], ['owner-delivery', ['交付/FDE']],
     ['owner-product', ['产品工程']], ['owner-platform', ['平台与运维']],
-    ['owner-security-data', ['安全与数据']], ['stop-authority', ['停止/回退']],
+    ['owner-security-data', ['安全与数据']], [LEGEND_ID, LEGEND_LINES], ['stop-authority', ['停止/回退']],
   ]);
   const styleFor = (id) => {
-    if (STAGE_IDS.includes(id)) return 'fillColor=#EAF2FF;strokeColor=#1D4ED8;strokeWidth=4;fontColor=#0F172A;fontSize=42;fontFamily=Arial;fontStyle=1;align=center;';
+    if (STAGE_IDS.includes(id)) return 'fillColor=#EAF2FF;strokeColor=#1D4ED8;strokeWidth=4;fontColor=#0F172A;fontSize=42;fontFamily=Arial;fontStyle=1;align=center;verticalAlign=top;spacingTop=28;';
     if (GATE_IDS.includes(id)) return 'fillColor=#FFFFFF;strokeColor=#334155;strokeWidth=4;fontColor=#0F172A;fontSize=38;fontFamily=Arial;fontStyle=1;align=center;';
     if (id === 'stop-authority') return 'fillColor=#FFF1F2;strokeColor=#BE123C;strokeWidth=4;fontColor=#881337;fontSize=38;fontFamily=Arial;fontStyle=1;align=center;';
+    if (id === LEGEND_ID) return 'fillColor=#F8FAFC;strokeColor=#64748B;strokeWidth=4;fontColor=#0F172A;fontSize=38;fontFamily=Arial;fontStyle=1;align=center;';
     return 'fillColor=#F1F5F9;strokeColor=#475569;strokeWidth=4;fontColor=#0F172A;fontSize=38;fontFamily=Arial;fontStyle=1;align=center;';
   };
   const vertex = (id) => {
@@ -1845,11 +1867,11 @@ function fixtureDiagram() {
 
   const nodeGroups = [...boxes.keys()].map((id) => {
     const box = boxes.get(id);
-    const className = STAGE_IDS.includes(id) ? 'stage-shape' : (GATE_IDS.includes(id) ? 'gate-shape' : (id === 'stop-authority' ? 'stop-shape' : 'owner-shape'));
-    const labelClass = STAGE_IDS.includes(id) ? 'stage-label' : (GATE_IDS.includes(id) ? 'gate-label' : (id === 'stop-authority' ? 'stop-label' : 'owner-label'));
+    const className = STAGE_IDS.includes(id) ? 'stage-shape' : (GATE_IDS.includes(id) ? 'gate-shape' : (id === 'stop-authority' ? 'stop-shape' : (id === LEGEND_ID ? 'legend-shape' : 'owner-shape')));
+    const labelClass = STAGE_IDS.includes(id) ? 'stage-label' : (GATE_IDS.includes(id) ? 'gate-label' : (id === 'stop-authority' ? 'stop-label' : (id === LEGEND_ID ? 'legend-label' : 'owner-label')));
     const center = box.x + box.width / 2;
     const baselines = GATE_IDS.includes(id) ? [box.y + 80, box.y + 145, box.y + 210, box.y + 275]
-      : [STAGE_IDS.includes(id) ? 80 : (id === 'stop-authority' ? 2465 : 2235)];
+      : [STAGE_IDS.includes(id) ? 82 : (id === LEGEND_ID ? 2435 : (id === 'stop-authority' ? 2465 : 2235)), 2490];
     const tspans = labels.get(id).map((label, index) => `<tspan x="${center}" y="${baselines[index]}">${label}</tspan>`).join('');
     return `<g data-node-id="${id}"><rect class="${className}" x="${box.x}" y="${box.y}" width="${box.width}" height="${box.height}"/><text class="${labelClass}" x="${center}" y="${baselines[0]}">${tspans}</text></g>`;
   }).join('');
@@ -1862,7 +1884,7 @@ function fixtureDiagram() {
     return {x: node.x + node.width * x, y: node.y + node.height * y};
   };
   const feedbackLabelPositions = new Map([
-    ['feedback-rollout-to-acceptance', {x: 1300, y: 140}],
+    ['feedback-rollout-to-acceptance', {x: 1300, y: 155}],
     ['feedback-compliance-to-scope', {x: 750, y: 1870}],
     ['feedback-reuse-to-contract', {x: 1250, y: 1190}],
   ]);
@@ -1873,13 +1895,15 @@ function fixtureDiagram() {
     const label = feedbackLabelPositions.get(id);
     return `<path id="${id}" class="feedback-edge" data-edge-id="${id}" data-source="${source}" data-target="${target}" d="${d}"/><text class="feedback-label" data-edge-label="${id}" x="${label.x}" y="${label.y}">${FEEDBACK_LABELS.get(id)}</text>`;
   }).join('');
-  const svg = `<svg role="img" viewBox="0 0 2000 2580"><style>
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="mth07-title mth07-desc" viewBox="0 0 2000 2580"><title id="mth07-title">企业 AI 四阶段十二门禁图</title><desc id="mth07-desc">四个阶段包含十二个门禁，下方责任带明确五类负责人，三条虚线反馈路径连接放量与验收、合规与切口、复制与契约，并保留停止回退节点。</desc><style>
     .stage-shape { fill: #EAF2FF; stroke: #1D4ED8; stroke-width: 4; }
     .gate-shape { fill: #FFFFFF; stroke: #334155; stroke-width: 4; }
     .owner-shape { fill: #F1F5F9; stroke: #475569; stroke-width: 4; }
+    .legend-shape { fill: #F8FAFC; stroke: #64748B; stroke-width: 4; }
     .stop-shape { fill: #FFF1F2; stroke: #BE123C; stroke-width: 4; }
     .stage-label { fill: #0F172A; font: 700 42px Arial; text-anchor: middle; }
-    .gate-label, .owner-label, .feedback-label { fill: #0F172A; font: 700 38px Arial; text-anchor: middle; }
+    .gate-label, .owner-label, .legend-label, .feedback-label { fill: #0F172A; font: 700 38px Arial; text-anchor: middle; }
+    .feedback-label { stroke: none; }
     .stop-label { fill: #881337; font: 700 38px Arial; text-anchor: middle; }
     .feedback-layer { stroke: #1D4ED8; stroke-width: 5; }
     .feedback-edge { fill: none; stroke-dasharray: 18 10; marker-end: url(#feedback-arrow); }
@@ -1977,6 +2001,18 @@ test('MTH-07 helper contracts are green after non-no-op RED mutation fixtures', 
     'L 1240 1200 L 240 1200',
     'route crossing SVG',
   );
+  const partialSharedDrawio = mutate(
+    drawio,
+    '<mxPoint x="1240" y="1940"/><mxPoint x="240" y="1940"/>',
+    '<mxPoint x="1240" y="1250"/><mxPoint x="1000" y="1250"/><mxPoint x="1000" y="1940"/><mxPoint x="240" y="1940"/>',
+    'partial shared segment Draw.io',
+  );
+  const partialSharedSvg = mutate(
+    svg,
+    'M 1240 1740 L 1240 1940 L 240 1940 L 240 1740',
+    'M 1240 1740 L 1240 1250 L 1000 1250 L 1000 1940 L 240 1940 L 240 1740',
+    'partial shared segment SVG',
+  );
   const outsideDrawio = mutate(
     drawio,
     '<mxGeometry x="20" y="300" width="440" height="340" as="geometry"/>',
@@ -1995,8 +2031,8 @@ test('MTH-07 helper contracts are green after non-no-op RED mutation fixtures', 
     'g[data-node-id="gate-01"] .gate-label { font-size: 20px !important; }</style>', 'node text shrink SVG');
   const ownersBelowDrawio = RESPONSIBILITY_IDS.reduce((current, id, index) => mutate(
     current,
-    `<mxGeometry x="${20 + index * 390}" y="2150" width="300" height="160" as="geometry"/>`,
-    `<mxGeometry x="${20 + index * 390}" y="2750" width="300" height="160" as="geometry"/>`,
+    `<mxGeometry x="${20 + index * 410}" y="2150" width="320" height="160" as="geometry"/>`,
+    `<mxGeometry x="${20 + index * 410}" y="2750" width="320" height="160" as="geometry"/>`,
     `${id} Draw.io below viewBox`,
   ), drawio);
   const ownersBelowSvg = RESPONSIBILITY_IDS.reduce((current, id) => mutate(
@@ -2006,6 +2042,10 @@ test('MTH-07 helper contracts are green after non-no-op RED mutation fixtures', 
     `${id} SVG node/text below viewBox`,
   ), svg);
   const diagramMutations = [
+    ['missing accessible title', drawio, mutate(svg,
+      '<title id="mth07-title">企业 AI 四阶段十二门禁图</title>', '', 'missing accessible title')],
+    ['changed accessible binding', drawio, mutate(svg,
+      'aria-labelledby="mth07-title mth07-desc"', 'aria-labelledby="mth07-title wrong-desc"', 'changed accessible binding')],
     ['source exit port', mutate(drawio, 'exitX=0.5;exitY=0;', 'exitX=0.2;exitY=0;', 'source exit port'), svg],
     ['target entry port', mutate(drawio, 'entryX=0.5;entryY=0;', 'entryX=0.8;entryY=0;', 'target entry port'), svg],
     ['exit perimeter', mutate(drawio, 'exitPerimeter=1;', 'exitPerimeter=0;', 'exit perimeter'), svg],
@@ -2015,11 +2055,16 @@ test('MTH-07 helper contracts are green after non-no-op RED mutation fixtures', 
     ['only Array as=points', mutate(drawio, '<Array as="points">', '<Array as="controlPoints">', 'only Array as=points'), svg],
     ['extra non-points Array', mutate(drawio, '<Array as="points">', '<Array as="controlPoints"><mxPoint x="1" y="1"/></Array><Array as="points">', 'extra non-points Array'), svg],
     ['route crossing', crossingDrawio, crossingSvg],
+    ['partial shared segment', partialSharedDrawio, partialSharedSvg],
     ['gate outside stage', outsideDrawio, outsideSvg],
-    ['node collision', drawio, mutate(svg, 'data-edge-label="feedback-rollout-to-acceptance" x="1300" y="140"', 'data-edge-label="feedback-rollout-to-acceptance" x="1300" y="400"', 'node collision')],
-    ['boundary collision', drawio, mutate(svg, 'data-edge-label="feedback-rollout-to-acceptance" x="1300" y="140"', 'data-edge-label="feedback-rollout-to-acceptance" x="1390" y="140"', 'boundary collision')],
+    ['node collision', drawio, mutate(svg, 'data-edge-label="feedback-rollout-to-acceptance" x="1300" y="155"', 'data-edge-label="feedback-rollout-to-acceptance" x="1300" y="400"', 'node collision')],
+    ['caption/stroke collision', drawio, mutate(svg,
+      'data-edge-label="feedback-rollout-to-acceptance" x="1300" y="155"',
+      'data-edge-label="feedback-rollout-to-acceptance" x="1300" y="230"', 'caption/stroke collision')],
+    ['boundary collision', drawio, mutate(svg, 'data-edge-label="feedback-rollout-to-acceptance" x="1300" y="155"', 'data-edge-label="feedback-rollout-to-acceptance" x="1390" y="155"', 'boundary collision')],
     ['stop label loss', drawio, mutate(svg, '>停止/回退</tspan>', '>继续运行</tspan>', 'stop label loss')],
     ['owner label loss', drawio, mutate(svg, '>客户业务</tspan>', '>无人负责</tspan>', 'owner label loss')],
+    ['legend loss', drawio, mutate(svg, '>虚线：未通过即返回</tspan>', '>无返回路径</tspan>', 'legend loss')],
     ['node text shrink', shrinkDrawio, shrinkSvg],
     ['transformed text shrink', drawio, mutate(svg, '<text class="gate-label" x="240" y="380">', '<text class="gate-label" x="240" y="380" transform="translate(240 380) scale(.1) translate(-240 -380)">', 'transformed text shrink')],
     ['tspan font drift', drawio, mutate(svg, '<tspan x="240" y="380">需求考古</tspan>', '<tspan x="240" y="380" style="font-family:serif;font-weight:400">需求考古</tspan>', 'tspan font drift')],
@@ -2049,6 +2094,9 @@ test('MTH-07 helper contracts are green after non-no-op RED mutation fixtures', 
     ['marker painter occlusion', drawio, mutate(svg, '</g></marker>', '<path fill="#FFFFFF" d="M 0 1 L 26 13 L 0 25 z"/></g></marker>', 'marker painter occlusion')],
     ['node fill opacity drift', drawio, mutate(svg, '</style>', '.gate-shape { fill-opacity: .05 !important; }</style>', 'node fill opacity drift')],
     ['node stroke opacity drift', drawio, mutate(svg, '</style>', '.gate-shape { stroke-opacity: .05 !important; }</style>', 'node stroke opacity drift')],
+    ['white essential paint',
+      mutate(drawio, 'fontColor=#0F172A;fontSize=42;', 'fontColor=#FFFFFF;fontSize=42;', 'white essential paint Draw.io'),
+      mutate(svg, '.stage-label { fill: #0F172A;', '.stage-label { fill: #FFFFFF;', 'white essential paint SVG')],
     ['marker collision', drawio, mutate(svg, 'markerHeight="52" viewBox="0 0 26 26"', 'markerHeight="800" preserveAspectRatio="none" viewBox="0 0 26 26"', 'marker collision')],
     ['selector override', drawio, mutate(svg, '</style>', '#feedback-rollout-to-acceptance.feedback-edge { stroke: #FFFFFF !important; }</style>', 'selector override')],
     ['uppercase property override', drawio, mutate(svg, '</style>', '.feedback-edge { STROKE: #FFFFFF !important; }</style>', 'uppercase property override')],
@@ -2100,7 +2148,7 @@ test('MTH-07 helper contracts are green after non-no-op RED mutation fixtures', 
     ['percentage label coordinate', drawio, mutate(svg, 'data-edge-label="feedback-rollout-to-acceptance" x="1300"', 'data-edge-label="feedback-rollout-to-acceptance" x="1300%"', 'percentage label coordinate')],
     ['letter spacing', drawio, mutate(svg, '</style>', '.feedback-label { letter-spacing: 100px; }</style>', 'letter spacing')],
     ['triangle node', drawio, mutate(svg, '<rect class="gate-shape" x="20" y="300" width="440" height="340"/>', '<polygon class="gate-shape" points="20,640 240,300 460,640"/>', 'triangle node')],
-    ['owner displacement', mutate(drawio, '<mxGeometry x="410" y="2150" width="300" height="160" as="geometry"/>', '<mxGeometry x="510" y="2150" width="300" height="160" as="geometry"/>', 'owner displacement Draw.io'),
+    ['owner displacement', mutate(drawio, '<mxGeometry x="430" y="2150" width="320" height="160" as="geometry"/>', '<mxGeometry x="530" y="2150" width="320" height="160" as="geometry"/>', 'owner displacement Draw.io'),
       mutate(svg, '<g data-node-id="owner-delivery">', '<g data-node-id="owner-delivery" transform="translate(100 0)">', 'owner displacement SVG')],
     ['root viewBox percentage', drawio, mutate(svg, 'viewBox="0 0 2000 2580"', 'viewBox="0 0 2000 2580%"', 'root viewBox percentage')],
     ['root viewBox junk', drawio, mutate(svg, 'viewBox="0 0 2000 2580"', 'viewBox="0 0 2000 2580 junk"', 'root viewBox junk')],
@@ -2142,7 +2190,7 @@ test('MTH-07 helper contracts are green after non-no-op RED mutation fixtures', 
       assert.throws(() => assertDiagram(mutatedDrawio, mutatedSvg), assert.AssertionError, label);
     }
   }
-  const harmlessLegend = mutate(svg, '</svg>', '<rect x="20" y="2470" width="160" height="50" fill="#F1F5F9"/></svg>', 'harmless legend');
+  const harmlessLegend = mutate(svg, '</svg>', '<rect x="1540" y="2410" width="50" height="50" fill="#F1F5F9"/></svg>', 'harmless legend');
   assertDiagram(drawio, harmlessLegend);
   for (const [label, occluder] of [
     ['rect occluder', '<rect x="1200" y="1880" width="200" height="120" fill="#FFFFFF"/>'],

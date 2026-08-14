@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2026-08-14T00:00:00.000Z" agent="Tego Arch" version="28.0.0">
+  <diagram id="mth07-delivery-gates" name="企业 AI 四阶段十二门禁图">
+    <mxGraphModel dx="2000" dy="2580" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2000" pageHeight="2580" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="stage-entry" value="进场期" vertex="1" parent="1" style="fillColor=#EAF2FF;strokeColor=#1D4ED8;strokeWidth=4;fontColor=#0F172A;fontSize=42;fontFamily=Arial;fontStyle=1;align=center;verticalAlign=top;spacingTop=28;">
+          <mxGeometry x="2" y="2" width="476" height="1776" as="geometry"/>
+        </mxCell>
+        <mxCell id="stage-initiation" value="立项期" vertex="1" parent="1" style="fillColor=#EAF2FF;strokeColor=#1D4ED8;strokeWidth=4;fontColor=#0F172A;fontSize=42;fontFamily=Arial;fontStyle=1;align=center;verticalAlign=top;spacingTop=28;">
+          <mxGeometry x="502" y="2" width="476" height="1776" as="geometry"/>
+        </mxCell>
+        <mxCell id="stage-delivery" value="交付期" vertex="1" parent="1" style="fillColor=#EAF2FF;strokeColor=#1D4ED8;strokeWidth=4;fontColor=#0F172A;fontSize=42;fontFamily=Arial;fontStyle=1;align=center;verticalAlign=top;spacingTop=28;">
+          <mxGeometry x="1002" y="2" width="476" height="1776" as="geometry"/>
+        </mxCell>
+        <mxCell id="stage-scale" value="放大期" vertex="1" parent="1" style="fillColor=#EAF2FF;strokeColor=#1D4ED8;strokeWidth=4;fontColor=#0F172A;fontSize=42;fontFamily=Arial;fontStyle=1;align=center;verticalAlign=top;spacingTop=28;">
+          <mxGeometry x="1502" y="2" width="476" height="1776" as="geometry"/>
+        </mxCell>
+        <mxCell id="gate-01" value="需求考古&#10;风险：意向误判&#10;证据：基线记录&#10;通过：全链追溯" vertex="1" parent="1" style="fillColor=#FFFFFF;strokeColor=#334155;strokeWidth=4;fontColor=#0F172A;fontSize=38;fontFamily=Arial;fontStyle=1;align=center;">
+          <mxGeometry x="20" y="300" width="440" height="340" as="geometry"/>
+        </mxCell>
+        <mxCell id="gate-02" value="流程测绘&#10;风险：局部伤全局&#10;证据：现状流程&#10;通过：回路明示" vertex="1" parent="1" style="fillColor=#FFFFFF;strokeColor=#334155;strokeWidth=4;fontColor=#0F172A;fontSize=38;fontFamily=Arial;fontStyle=1;align=center;">
+          <mxGeometry x="20" y="760" width="440" height="340" as="geometry"/>
+        </mxCell>
+        <mxCell id="gate-03" value="切口选择&#10;风险：切口失控&#10;证据：切口评分&#10;通过：可测可逆" vertex="1" parent="1" style="fillColor=#FFFFFF;strokeColor=#334155;strokeWidth=4;fontColor=#0F172A;fontSize=38;fontFamily=Arial;fontStyle=1;align=center;">
+          <mxGeometry x="20" y="1400" width="440" height="340" as="geometry"/>
+        </mxCell>
+        <mxCell id="gate-04" value="验收标准工程&#10;风险：演示冒充&#10;证据：验收包&#10;通过：复现退出" vertex="1" parent="1" style="fillColor=#FFFFFF;strokeColor=#334155;strokeWidth=4;fontColor=#0F172A;fontSize=38;fontFamily=Arial;fontStyle=1;align=center;">
+          <mxGeometry x="520" y="300" width="440" height="340" as="geometry"/>
+        </mxCell>
+        <mxCell id="gate-05" value="POC 纪律&#10;风险：外推失真&#10;证据：假设卡&#10;通过：限域验证" vertex="1" parent="1" style="fillColor=#FFFFFF;strokeColor=#334155;strokeWidth=4;fontColor=#0F172A;fontSize=38;fontFamily=Arial;fontStyle=1;align=center;">
+          <mxGeometry x="520" y="760" width="440" height="340" as="geometry"/>
+        </mxCell>
+        <mxCell id="gate-06" value="职责契约&#10;风险：责任悬空&#10;证据：责任契约&#10;通过：单一责任" vertex="1" parent="1" style="fillColor=#FFFFFF;strokeColor=#334155;strokeWidth=4;fontColor=#0F172A;fontSize=38;fontFamily=Arial;fontStyle=1;align=center;">
+          <mxGeometry x="520" y="1400" width="440" height="340" as="geometry"/>
+        </mxCell>
+        <mxCell id="gate-07" value="知识结构化&#10;风险：知识越权&#10;证据：来源清单&#10;通过：授权追溯" vertex="1" parent="1" style="fillColor=#FFFFFF;strokeColor=#334155;strokeWidth=4;fontColor=#0F172A;fontSize=38;fontFamily=Arial;fontStyle=1;align=center;">
+          <mxGeometry x="1020" y="300" width="440" height="340" as="geometry"/>
+        </mxCell>
+        <mxCell id="gate-08" value="人机分工设计&#10;风险：模型越权&#10;证据：职责矩阵&#10;通过：人工授权" vertex="1" parent="1" style="fillColor=#FFFFFF;strokeColor=#334155;strokeWidth=4;fontColor=#0F172A;fontSize=38;fontFamily=Arial;fontStyle=1;align=center;">
+          <mxGeometry x="1020" y="760" width="440" height="340" as="geometry"/>
+        </mxCell>
+        <mxCell id="gate-09" value="合规与风险兜底&#10;风险：上线暴露&#10;证据：合规决定&#10;通过：停机回退" vertex="1" parent="1" style="fillColor=#FFFFFF;strokeColor=#334155;strokeWidth=4;fontColor=#0F172A;fontSize=38;fontFamily=Arial;fontStyle=1;align=center;">
+          <mxGeometry x="1020" y="1400" width="440" height="340" as="geometry"/>
+        </mxCell>
+        <mxCell id="gate-10" value="渐进放量&#10;风险：一次放大&#10;证据：放量阈值&#10;通过：阈值全过" vertex="1" parent="1" style="fillColor=#FFFFFF;strokeColor=#334155;strokeWidth=4;fontColor=#0F172A;fontSize=38;fontFamily=Arial;fontStyle=1;align=center;">
+          <mxGeometry x="1520" y="300" width="440" height="340" as="geometry"/>
+        </mxCell>
+        <mxCell id="gate-11" value="信任运营&#10;风险：演示冒充&#10;证据：观测记录&#10;通过：运行达标" vertex="1" parent="1" style="fillColor=#FFFFFF;strokeColor=#334155;strokeWidth=4;fontColor=#0F172A;fontSize=38;fontFamily=Arial;fontStyle=1;align=center;">
+          <mxGeometry x="1520" y="760" width="440" height="340" as="geometry"/>
+        </mxCell>
+        <mxCell id="gate-12" value="资产化复制&#10;风险：特例泛化&#10;证据：成本上限&#10;通过：边界许可" vertex="1" parent="1" style="fillColor=#FFFFFF;strokeColor=#334155;strokeWidth=4;fontColor=#0F172A;fontSize=38;fontFamily=Arial;fontStyle=1;align=center;">
+          <mxGeometry x="1520" y="1400" width="440" height="340" as="geometry"/>
+        </mxCell>
+        <mxCell id="owner-customer" value="客户业务" vertex="1" parent="1" style="fillColor=#F1F5F9;strokeColor=#475569;strokeWidth=4;fontColor=#0F172A;fontSize=38;fontFamily=Arial;fontStyle=1;align=center;">
+          <mxGeometry x="20" y="2150" width="320" height="160" as="geometry"/>
+        </mxCell>
+        <mxCell id="owner-delivery" value="交付/FDE" vertex="1" parent="1" style="fillColor=#F1F5F9;strokeColor=#475569;strokeWidth=4;fontColor=#0F172A;fontSize=38;fontFamily=Arial;fontStyle=1;align=center;">
+          <mxGeometry x="430" y="2150" width="320" height="160" as="geometry"/>
+        </mxCell>
+        <mxCell id="owner-product" value="产品工程" vertex="1" parent="1" style="fillColor=#F1F5F9;strokeColor=#475569;strokeWidth=4;fontColor=#0F172A;fontSize=38;fontFamily=Arial;fontStyle=1;align=center;">
+          <mxGeometry x="840" y="2150" width="320" height="160" as="geometry"/>
+        </mxCell>
+        <mxCell id="owner-platform" value="平台与运维" vertex="1" parent="1" style="fillColor=#F1F5F9;strokeColor=#475569;strokeWidth=4;fontColor=#0F172A;fontSize=38;fontFamily=Arial;fontStyle=1;align=center;">
+          <mxGeometry x="1250" y="2150" width="320" height="160" as="geometry"/>
+        </mxCell>
+        <mxCell id="owner-security-data" value="安全与数据" vertex="1" parent="1" style="fillColor=#F1F5F9;strokeColor=#475569;strokeWidth=4;fontColor=#0F172A;fontSize=38;fontFamily=Arial;fontStyle=1;align=center;">
+          <mxGeometry x="1660" y="2150" width="320" height="160" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend-band" value="从左到右：阶段推进&#10;虚线：未通过即返回" vertex="1" parent="1" style="fillColor=#F8FAFC;strokeColor=#64748B;strokeWidth=4;fontColor=#0F172A;fontSize=38;fontFamily=Arial;fontStyle=1;align=center;">
+          <mxGeometry x="20" y="2360" width="1500" height="180" as="geometry"/>
+        </mxCell>
+        <mxCell id="stop-authority" value="停止/回退" vertex="1" parent="1" style="fillColor=#FFF1F2;strokeColor=#BE123C;strokeWidth=4;fontColor=#881337;fontSize=38;fontFamily=Arial;fontStyle=1;align=center;">
+          <mxGeometry x="1620" y="2360" width="300" height="180" as="geometry"/>
+        </mxCell>
+        <mxCell id="feedback-rollout-to-acceptance" value="放量回验收" edge="1" source="gate-10" target="gate-04" parent="1" style="strokeColor=#1D4ED8;strokeWidth=5;dashed=1;dashPattern=18 10;endArrow=block;endFill=1;fontColor=#0F172A;fontSize=38;fontFamily=Arial;fontStyle=1;align=center;exitX=0.5;exitY=0;exitPerimeter=1;entryX=0.5;entryY=0;entryPerimeter=1;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1740" y="200"/>
+              <mxPoint x="740" y="200"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="feedback-compliance-to-scope" value="合规回切口" edge="1" source="gate-09" target="gate-03" parent="1" style="strokeColor=#1D4ED8;strokeWidth=5;dashed=1;dashPattern=18 10;endArrow=block;endFill=1;fontColor=#0F172A;fontSize=38;fontFamily=Arial;fontStyle=1;align=center;exitX=0.5;exitY=1;exitPerimeter=1;entryX=0.5;entryY=1;entryPerimeter=1;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1240" y="1940"/>
+              <mxPoint x="240" y="1940"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="feedback-reuse-to-contract" value="复制回契约" edge="1" source="gate-12" target="gate-06" parent="1" style="strokeColor=#1D4ED8;strokeWidth=5;dashed=1;dashPattern=18 10;endArrow=block;endFill=1;fontColor=#0F172A;fontSize=38;fontFamily=Arial;fontStyle=1;align=center;exitX=0.5;exitY=0;exitPerimeter=1;entryX=0.5;entryY=0;entryPerimeter=1;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1740" y="1250"/>
+              <mxPoint x="740" y="1250"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
