@@ -792,6 +792,7 @@ function localBackground(source, label) {
 }
 function assertPhysicalGeometry(source, scale, enforceLabelAttachment = true) {
   const elements = parseSvg(source).elements; const paths = elements.filter(({name, attributes}) => name === 'path' && attributes.has('data-edge-id')); const labels = elements.filter(({name, attributes}) => name === 'text' && attributes.has('data-edge-id'));
+  const geometryFailures = [];
   const allPaths = elements.filter(({name, attributes}) => name === 'path' && (attributes.has('data-edge-id') || attributes.has('data-structural-edge-id') || attributes.has('data-legend-key')));
   const connectors = allPaths.map((path) => { const points = renderedPathPoints(path); return {path, id: path.attributes.get('data-edge-id') ?? path.attributes.get('data-structural-edge-id') ?? `legend-${path.attributes.get('data-legend-key')}`, points, markers: markerGeometry(source, path, points), stroke: Number(svgPresentationValue(source, path, 'stroke-width') ?? 0)}; });
   const nodeShapes = elements.filter(({name, parent}) => ['rect', 'path', 'polygon', 'circle', 'ellipse'].includes(name) && parent?.attributes.has('data-node-id')).filter((element) => nodeShape(elements, element.parent) === element).map((shape) => ({id: shape.parent.attributes.get('data-node-id'), rectangle: rectangleFromElement(shape), stroke: Number(svgPresentationValue(source, shape, 'stroke-width') ?? 0)}));
@@ -806,8 +807,8 @@ function assertPhysicalGeometry(source, scale, enforceLabelAttachment = true) {
     const sourceId = connector.path.attributes.get('data-source'); const targetId = connector.path.attributes.get('data-target'); const id = connector.id;
     for (const node of nodeShapes.filter(({id: nodeId}) => ![sourceId, targetId, 'actor-canvas', ...boundaryIds].includes(nodeId))) {
       const envelope = {left: node.rectangle.left - node.stroke / 2, right: node.rectangle.right + node.stroke / 2, top: node.rectangle.top - node.stroke / 2, bottom: node.rectangle.bottom + node.stroke / 2};
-      assert.equal(routeBoundsCollision(connector.points, node.rectangle, node.stroke), false, `${id} connector clears foreign node ${node.id}`);
-      assert.ok(rectangleDistance(markerBounds(connector.markers), envelope) > 0, `${id} marker clears foreign node envelope ${node.id}`);
+      if (routeBoundsCollision(connector.points, node.rectangle, node.stroke)) geometryFailures.push(`${id} route/node ${node.id}`);
+      if (!(rectangleDistance(markerBounds(connector.markers), envelope) > 0)) geometryFailures.push(`${id} marker/node ${node.id}`);
     }
     for (const boundary of boundaries) {
       const stroke = boundary.stroke; const strips = [
@@ -816,39 +817,41 @@ function assertPhysicalGeometry(source, scale, enforceLabelAttachment = true) {
         {left: boundary.rectangle.left - stroke / 2, right: boundary.rectangle.right + stroke / 2, top: boundary.rectangle.top - stroke / 2, bottom: boundary.rectangle.top + stroke / 2},
         {left: boundary.rectangle.left - stroke / 2, right: boundary.rectangle.right + stroke / 2, top: boundary.rectangle.bottom - stroke / 2, bottom: boundary.rectangle.bottom + stroke / 2},
       ];
-      assert.equal(strips.some((strip) => routeBoundsCollision(connector.points, strip)), false, `${id} connector clears boundary stroke ${boundary.id}`);
-      assert.equal(strips.some((strip) => rectangleDistance(markerBounds(connector.markers), strip) === 0), false, `${id} marker clears boundary stroke ${boundary.id}`);
+      if (strips.some((strip) => routeBoundsCollision(connector.points, strip))) geometryFailures.push(`${id} route/boundary ${boundary.id}`);
+      if (strips.some((strip) => rectangleDistance(markerBounds(connector.markers), strip) === 0)) geometryFailures.push(`${id} marker/boundary ${boundary.id}`);
     }
   }
   for (const label of labels) {
     const id = label.attributes.get('data-edge-id'); const own = paths.find(({attributes}) => attributes.get('data-edge-id') === id); assert.ok(own, `${id} path`); const bounds = labelBox(source, label);
-    assert.equal(label.attributes.get('data-label-bounds'), [bounds.left, bounds.top, bounds.right, bounds.bottom].join(' '), `${id} actual label bounds parity`);
+    const actualBounds = [bounds.left, bounds.top, bounds.right, bounds.bottom].join(' '); if (label.attributes.get('data-label-bounds') !== actualBounds) geometryFailures.push(`${id} label/bounds ${label.attributes.get('data-label-bounds')} != ${actualBounds}`);
     for (const connector of connectors) for (const point of connector.points.slice(1)) { /* execute parsed geometry before segment loop */ assert.ok(Number.isFinite(point.x)); }
     const connectorGaps = connectors.map(({id: connectorId, points, stroke}) => ({id: connectorId, gap: (Math.min(...points.slice(1).map((point, index) => segmentDistance(points[index], point, bounds))) - stroke / 2) * scale}));
-    const nearestConnector = connectorGaps.reduce((nearest, candidate) => candidate.gap < nearest.gap ? candidate : nearest); const strokeGap = nearestConnector.gap; assert.ok(strokeGap >= 8, `${id} label to own/foreign connector ${nearestConnector.id} ${strokeGap}`);
+    const nearestConnector = connectorGaps.reduce((nearest, candidate) => candidate.gap < nearest.gap ? candidate : nearest); const strokeGap = nearestConnector.gap; if (!(strokeGap >= 8)) geometryFailures.push(`${id} label/stroke ${nearestConnector.id} ${strokeGap}`);
     const ownPoints = renderedPathPoints(own); const ownStroke = Number(svgPresentationValue(source, own, 'stroke-width') ?? 0); const ownGap = (Math.min(...ownPoints.slice(1).map((point, index) => segmentDistance(ownPoints[index], point, bounds))) - ownStroke / 2) * scale;
     const foreignGap = Math.min(...connectors.filter(({path}) => path !== own).flatMap(({points, stroke}) => points.slice(1).map((point, index) => segmentDistance(points[index], point, bounds) - stroke / 2))) * scale;
-    if (enforceLabelAttachment) { assert.ok(ownGap <= 40, `${id} label remains attached to own route ${ownGap}`); assert.ok(ownGap < foreignGap, `${id} label uniquely nearest own route ${ownGap}/${foreignGap}`); }
-    const markerGap = Math.min(...connectors.flatMap(({markers}) => markers.map((point) => pointRectangleDistance(point, bounds)))) * scale; assert.ok(markerGap >= 16, `${id} label to actual own/foreign marker ${markerGap}`);
-    for (const node of nodeShapes.filter(({id: nodeId}) => ![own.attributes.get('data-source'), own.attributes.get('data-target')].includes(nodeId) && !['actor-canvas', ...boundaryIds].includes(nodeId))) assert.ok(rectangleDistance(bounds, {left: node.rectangle.left - node.stroke / 2, right: node.rectangle.right + node.stroke / 2, top: node.rectangle.top - node.stroke / 2, bottom: node.rectangle.bottom + node.stroke / 2}) * scale >= 12, `${id} foreign node ${node.id}`);
+    if (enforceLabelAttachment) { if (!(ownGap <= 40)) geometryFailures.push(`${id} label/own-attachment ${ownGap}`); if (!(ownGap < foreignGap)) geometryFailures.push(`${id} label/unique-own ${ownGap}/${foreignGap}`); }
+    const markerGap = Math.min(...connectors.flatMap(({markers}) => markers.map((point) => pointRectangleDistance(point, bounds)))) * scale; if (!(markerGap >= 16)) geometryFailures.push(`${id} label/marker ${markerGap}`);
+    for (const node of nodeShapes.filter(({id: nodeId}) => ![own.attributes.get('data-source'), own.attributes.get('data-target')].includes(nodeId) && !['actor-canvas', ...boundaryIds].includes(nodeId))) { const gap = rectangleDistance(bounds, {left: node.rectangle.left - node.stroke / 2, right: node.rectangle.right + node.stroke / 2, top: node.rectangle.top - node.stroke / 2, bottom: node.rectangle.bottom + node.stroke / 2}) * scale; if (!(gap >= 12)) geometryFailures.push(`${id} label/node ${node.id} ${gap}`); }
     for (const boundary of boundaries) {
       const contained = bounds.left >= boundary.rectangle.left && bounds.right <= boundary.rectangle.right && bounds.top >= boundary.rectangle.top && bounds.bottom <= boundary.rectangle.bottom;
       const gap = contained ? Math.min(bounds.left - boundary.rectangle.left, boundary.rectangle.right - bounds.right, bounds.top - boundary.rectangle.top, boundary.rectangle.bottom - bounds.bottom) - boundary.stroke / 2 : rectangleDistance(bounds, boundary.rectangle) - boundary.stroke / 2;
-      assert.ok(gap * scale >= 12, `${id} boundary ${boundary.id}`);
+      if (!(gap * scale >= 12)) geometryFailures.push(`${id} label/boundary ${boundary.id} ${gap * scale}`);
     }
   }
   for (const header of elements.filter(({name, attributes}) => name === 'text' && attributes.has('data-header-for'))) {
-    const boundary = nodeShapes.find(({id}) => id === header.attributes.get('data-header-for')); assert.ok(boundary, `${header.attributes.get('data-header-for')} header boundary`); const bounds = labelBox(source, header); const padding = Math.min(bounds.left - boundary.rectangle.left, boundary.rectangle.right - bounds.right, bounds.top - boundary.rectangle.top, boundary.rectangle.bottom - bounds.bottom) - boundary.stroke / 2; assert.ok(padding * scale >= 12, `${boundary.id} header inner-stroke padding`);
+    const boundary = nodeShapes.find(({id}) => id === header.attributes.get('data-header-for')); assert.ok(boundary, `${header.attributes.get('data-header-for')} header boundary`); const bounds = labelBox(source, header); const padding = Math.min(bounds.left - boundary.rectangle.left, boundary.rectangle.right - bounds.right, bounds.top - boundary.rectangle.top, boundary.rectangle.bottom - bounds.bottom) - boundary.stroke / 2; if (!(padding * scale >= 12)) geometryFailures.push(`${boundary.id} header/boundary ${padding * scale}`);
   }
   const legends = Object.keys(CONNECTOR_STYLES).map((role) => { const key = elements.find(({name, attributes}) => name === 'path' && attributes.get('data-legend-key') === role); const caption = elements.find(({name, attributes}) => name === 'text' && attributes.get('data-legend-for') === role); assert.ok(key && caption, `${role} legend key/caption`); const points = renderedPathPoints(key); return {role, key, caption, bounds: labelBox(source, caption), points, markers: markerGeometry(source, key, points)}; });
   for (const legend of legends) {
-    const keyGap = (Math.min(...legend.points.slice(1).map((point, index) => segmentDistance(legend.points[index], point, legend.bounds))) - Number(svgPresentationValue(source, legend.key, 'stroke-width') ?? 0) / 2) * scale; assert.ok(keyGap >= 12, `${legend.role} legend key-caption`);
-    assert.ok(Math.min(...legend.markers.map((point) => pointRectangleDistance(point, legend.bounds))) * scale >= 16, `${legend.role} own real marker-caption`);
-    for (const foreign of legends.filter(({role}) => role !== legend.role)) assert.ok(Math.min(...foreign.markers.map((point) => pointRectangleDistance(point, legend.bounds))) * scale >= 16, `${legend.role} foreign marker-caption ${foreign.role}`);
+    const keyGap = (Math.min(...legend.points.slice(1).map((point, index) => segmentDistance(legend.points[index], point, legend.bounds))) - Number(svgPresentationValue(source, legend.key, 'stroke-width') ?? 0) / 2) * scale; if (!(keyGap >= 12)) geometryFailures.push(`${legend.role} legend/key-caption ${keyGap}`);
+    const ownMarkerGap = Math.min(...legend.markers.map((point) => pointRectangleDistance(point, legend.bounds))) * scale; if (!(ownMarkerGap >= 16)) geometryFailures.push(`${legend.role} legend/own-marker ${ownMarkerGap}`);
+    for (const foreign of legends.filter(({role}) => role !== legend.role)) { const gap = Math.min(...foreign.markers.map((point) => pointRectangleDistance(point, legend.bounds))) * scale; if (!(gap >= 16)) geometryFailures.push(`${legend.role} legend/foreign-marker ${foreign.role} ${gap}`); }
   }
+  assert.deepEqual(geometryFailures, [], `complete physical geometry table: ${geometryFailures.join(', ')}`);
 }
 function assertNoOverdraw(source) {
   const {elements} = parseSvg(source); const paths = elements.filter(({name, attributes}) => name === 'path' && (attributes.has('data-edge-id') || attributes.has('data-structural-edge-id') || attributes.has('data-legend-key')));
+  const collisions = [];
   for (const path of paths) for (const mask of elements.filter(({name, index, parent}) => ['rect', 'path', 'polygon', 'polyline', 'circle', 'ellipse'].includes(name) && parent?.name !== 'marker' && index > path.index)) {
     const fill = svgPresentationValue(source, mask, 'fill') ?? '#000000'; const fillOpacity = !['none', 'transparent'].includes(fill.toLowerCase()) ? paintOpacity(source, mask, 'fill') : 0;
     const stroke = svgPresentationValue(source, mask, 'stroke') ?? 'none'; const strokeWidth = Number(svgPresentationValue(source, mask, 'stroke-width') ?? 1); const strokeOpacity = !['none', 'transparent'].includes(stroke.toLowerCase()) && strokeWidth > 0 ? paintOpacity(source, mask, 'stroke') : 0;
@@ -857,9 +860,11 @@ function assertNoOverdraw(source) {
     if (strokeOpacity > 0) {
       const maskPoints = strokedGeometryPoints(mask); const gap = (strokeWidth + connectorWidth) / 2;
       const overlaps = points.slice(1).some((point, index) => maskPoints.slice(1).some((maskPoint, maskIndex) => lineSegmentDistance(points[index], point, maskPoints[maskIndex], maskPoint) <= gap));
-      assert.equal(overlaps, false, `${id} no later opaque/translucent ${mask.name} stroke mask`);
+      const maskId = mask.attributes.get('data-edge-id') ?? mask.attributes.get('data-structural-edge-id') ?? mask.attributes.get('data-legend-key') ?? mask.attributes.get('id') ?? mask.name;
+      if (overlaps) collisions.push(`${id} -> ${maskId}`);
     }
   }
+  assert.deepEqual(collisions, [], `no later opaque/translucent stroke masks: ${collisions.join(', ')}`);
 }
 function assertCanvasPaint(source) {
   const parsed = parseSvg(source); const canvas = parsed.elements.find(({attributes}) => /^(?:canvas|background)$/u.test(attributes.get('id') ?? '')); assert.ok(canvas, 'canvas paint exists');
@@ -1341,7 +1346,7 @@ test('STY-08 Draw.io/SVG locks Actor ownership, route parity, effective styles, 
   for (const [label, changedDrawio, changedSvg] of cases) {
     assert.ok(changedDrawio !== drawio || changedSvg !== svg, `${label} mutation applies`); assert.throws(() => assertDiagram(changedDrawio, changedSvg), assert.AssertionError, label);
   }
-  const portMutation = drawio.replace(/(<mxCell\b[^>]*\bid="submit-order-123"[^>]*\bexitX=)([01](?:\.5)?)(;)/u, (_, before, current, after) => `${before}${current === '0.5' ? '1' : '0.5'}${after}`);
+  const portMutation = drawio.replace(/(<mxCell\b[^>]*\bid="submit-order-123"[^>]*\bexitX=)(0(?:\.\d+)?|1(?:\.0+)?)(;)/u, (_, before, current, after) => `${before}${current === '0.5' ? '1' : '0.5'}${after}`);
   assert.notEqual(portMutation, drawio); assert.throws(() => assertDiagram(portMutation, svg), assert.AssertionError, 'changed port rejected');
   const wrongDrawio = drawio.replace(/(<mxCell\b[^>]*\bid="reconcile-payment"[^>]*\btarget=")payment-authority/u, '$1notification-authority');
   const wrongSvg = svg.replace(/(<path\b[^>]*data-edge-id="reconcile-payment"[^>]*\bdata-target=")payment-authority/u, '$1notification-authority');
