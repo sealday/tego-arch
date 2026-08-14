@@ -10,6 +10,7 @@ const REVIEW_PATH = 'docs/reviews/g010-mth07.md';
 const EVIDENCE_PATH = 'docs/reviews/evidence/g010-mth07-stage-a-browser.json';
 const EVIDENCE_SHA256 = '43985ea2e801e888e55a2cd6f62ed690133d3fdcda7db8f03a1e91ea466fa1b0';
 const BROWSER_BUILD_HEAD = 'f32e0cb7ae79fb92a2154c03dfe8bf7b5b203974';
+const REVIEWED_HEAD = '4c5c9f99148a32998ee03bd8f97b3db2ca29d500';
 const HISTORICAL_REVIEW_TREE_HASH = '675a88450c587b392cccc75bfeced523d32acc6bd78830de545586a308a85bff';
 const MTH07_STATUS = {
   scope: 'content-lifecycle',
@@ -52,15 +53,23 @@ const PRE_VERDICT_SECTION_SHA256 = new Map([
   ['Stage A projection', 'e228e91b90d08ba53c6b000fb45f9469a75a68d745d38e7c22a3ebf2ce8dca5f'],
   ['Local in-app Browser QA', 'e07d8232c0aaf2bed7dfdc39b76ee1433c64c30f7badecafb628b7c2332b322c'],
 ]);
-const PENDING_REVIEW_CHECKPOINT = [
-  '- Code review: `PENDING`.',
-  '- Content, evidence, and rights review: `PENDING`; rights: `PENDING`.',
-  '- Architecture review: `PENDING`.',
-  '- Final Stage A review judgment: `PENDING`.',
+const FINAL_REVIEW_CHECKPOINT = [
+  `- Exact Stage A reviewed head: \`${REVIEWED_HEAD}\`.`,
+  '- Finding `I1` (`CONFIRMED / REMEDIATED`): the Browser build provenance was not an exact reviewed-head identity.',
+  '- Finding `I2` (`CONFIRMED / REMEDIATED`): additive Browser-evidence fields could inject deployment or visual-success claims.',
+  '- Finding `I3` (`CONFIRMED / REMEDIATED`): displaced review prose could inject contradictory READY, SUCCESS, or PASS claims.',
+  '- Finding `I4` (`CONFIRMED / REMEDIATED`): the historical-tree helper would have absorbed future G010 production evidence.',
+  '- Finding `I5` (`CONFIRMED / REMEDIATED`): punctuation-equivalent `is`, `=`, and dash forms bypassed the global review-claim guards.',
+  '- Finding `M1` (`CONFIRMED / REMEDIATED`): two plan references named a missing density script instead of the canonical analyzer.',
+  '- Remediation lineage: pre-rebase review candidate `2cabbd18c5e304107fccdf34ff386b2d6fb141f4` (rebased counterpart `233d0e2`) → first remediation `c744ce2e6c6c1fd3c23b9907cd6cc365f17885eb` (rebased counterpart `844c2ca`) → syntax remediation `05c03e599f9bf87df763a270d3600f3223084c81` (rebased counterpart `fbe99c2`) → STY-07 integration `ff43419c482ccd0db731fb96ded1e1c0c6449fca` → density-path remediation and final reviewed head `4c5c9f99148a32998ee03bd8f97b3db2ca29d500`.',
+  '- Independent code/spec/security review: `READY / APPROVE`; findings: `0`; blockers: `0`.',
+  '- Independent content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`; blockers: `0`.',
+  '- Independent architecture/invariant review: `CLEAR / READY`; findings: `0`; blockers: `0`.',
+  '- Final Stage A review judgment: `READY`.',
   '- Scope boundary: `STAGE_A_ONLY`.',
   '- Deployment status: `NOT_RUN`.',
   '',
-  'This record is an implementation candidate and local functional Browser artifact only. It does not self-issue an independent verdict, close the MTH-07 backlog item, claim production publication, or claim deployment success.',
+  'The three independent final reviews found zero remaining findings or blockers at the exact reviewed head. Screenshot evidence remains `BLOCKED / NOT_ACCEPTED`; this Stage A judgment does not claim production publication, deployment success, visual PASS, backlog closure, or Stage B completion.',
 ].join('\n');
 const SCREENSHOT_REASON = 'The four ignored capture files are JPEG/JFIF bytes stored under .png names and contain repeated viewport strips rather than faithful continuous-page captures.';
 const SCREENSHOTS = {
@@ -469,7 +478,7 @@ async function assertReview(source) {
   assert.ok(browser.includes(`Raw Browser JSON: \`${EVIDENCE_PATH}\`, SHA-256 \`${sha256(evidenceBytes)}\`.`));
 
   const checkpoint = section(source, 'Independent review checkpoint');
-  assert.equal(checkpoint, PENDING_REVIEW_CHECKPOINT, 'one exact authoritative pending checkpoint');
+  assert.equal(checkpoint, FINAL_REVIEW_CHECKPOINT, 'one exact authoritative final review checkpoint');
   const outsideCheckpoint = source.slice(0, source.indexOf('## Independent review checkpoint'));
   for (const [label, pattern] of [
     ['displaced code verdict', /^\s*(?:-\s*)?Code review\s*:/imu],
@@ -481,14 +490,18 @@ async function assertReview(source) {
     ['fabricated visual review', /^\s*(?:-\s*)?Visual inspection\s*:\s*`?PASS\b/imu],
   ]) assert.doesNotMatch(outsideCheckpoint, pattern, label);
   for (const literal of [
-    'Code review: `PENDING`.',
-    'Content, evidence, and rights review: `PENDING`; rights: `PENDING`.',
-    'Architecture review: `PENDING`.',
-    'Final Stage A review judgment: `PENDING`.',
+    `Exact Stage A reviewed head: \`${REVIEWED_HEAD}\`.`,
+    'Independent code/spec/security review: `READY / APPROVE`; findings: `0`; blockers: `0`.',
+    'Independent content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`; blockers: `0`.',
+    'Independent architecture/invariant review: `CLEAR / READY`; findings: `0`; blockers: `0`.',
+    'Final Stage A review judgment: `READY`.',
     'Scope boundary: `STAGE_A_ONLY`.',
     'Deployment status: `NOT_RUN`.',
   ]) assert.ok(checkpoint.includes(literal), `checkpoint literal: ${literal}`);
-  assert.doesNotMatch(checkpoint, /\bREADY\b|\bAPPROVE(?:D)?\b|Deployment status: `SUCCESS`/u);
+  for (const finding of ['I1', 'I2', 'I3', 'I4', 'I5', 'M1']) {
+    assert.ok(checkpoint.includes(`Finding \`${finding}\` (\`CONFIRMED / REMEDIATED\`)`), `${finding} finding history`);
+  }
+  assert.doesNotMatch(checkpoint, /\bPENDING\b|Deployment status: `SUCCESS`/u);
   assert.doesNotMatch(source, /Visual inspection:.*`PASS`|Screenshot evidence: `PASS`|Deployment status: `SUCCESS`/iu);
 }
 
@@ -498,7 +511,7 @@ test('projects exact MTH-07 Stage A totals without publishing a fabricated next 
   assert.equal(publishedRoutes.has('/methods/mth-07'), true);
 });
 
-test('binds exact candidate artifacts, raw four-state Browser semantics, and pending review slots', async () => {
+test('binds exact candidate artifacts, raw four-state Browser semantics, and final independent review slots', async () => {
   assert.equal(sha256(evidenceBytes), EVIDENCE_SHA256);
   assertBrowserEvidence(evidence);
   await assertReview(review);
@@ -508,12 +521,14 @@ test('preserves every historical review and evidence artifact byte for byte', as
   assert.equal(await historicalReviewTreeHash(), HISTORICAL_REVIEW_TREE_HASH);
 });
 
-test('separates the Browser build provenance from the future exact reviewed head', () => {
+test('separates the Browser build provenance from the exact reviewed head', () => {
   assert.equal(evidence.browserBuildHead, BROWSER_BUILD_HEAD);
   assert.equal('candidateHead' in evidence, false);
   const identity = section(review, 'Candidate identity');
   assert.ok(identity.includes(`Exact Browser build head: \`${BROWSER_BUILD_HEAD}\`.`));
   assert.doesNotMatch(identity, /Exact candidate head:/u);
+  assert.ok(section(review, 'Independent review checkpoint').includes(`Exact Stage A reviewed head: \`${REVIEWED_HEAD}\`.`));
+  assert.notEqual(BROWSER_BUILD_HEAD, REVIEWED_HEAD);
 });
 
 test('rejects additive Browser evidence claims at every schema boundary', () => {
@@ -586,7 +601,7 @@ test('locks the exact pre-G010 review namespace against add edit and delete muta
   assert.notEqual(historicalReviewEntriesHash(deleted), HISTORICAL_REVIEW_TREE_HASH);
 });
 
-test('rejects Browser evidence mutations and any fabricated Stage A readiness or deployment', async () => {
+test('rejects Browser evidence mutations and weakened stale or fabricated Stage A review claims', async () => {
   assertBrowserEvidence(evidence);
   const evidenceMutations = [
     ['Browser build head', (copy) => copy.browserBuildHead = '0'.repeat(40)],
@@ -623,10 +638,13 @@ test('rejects Browser evidence mutations and any fabricated Stage A readiness or
   assert.notEqual(sha256(Buffer.concat([evidenceBytes, Buffer.from(' ')])), sha256(evidenceBytes));
 
   for (const [label, before, after] of [
-    ['code readiness', 'Code review: `PENDING`.', 'Code review: `READY / APPROVE`.'],
-    ['content readiness', 'Content, evidence, and rights review: `PENDING`; rights: `PENDING`.', 'Content, evidence, and rights review: `CONTENT READY`; rights: `PASS`.'],
-    ['architecture readiness', 'Architecture review: `PENDING`.', 'Architecture review: `CLEAR / READY`.'],
-    ['final readiness', 'Final Stage A review judgment: `PENDING`.', 'Final Stage A review judgment: `READY`.'],
+    ['wrong reviewed head', REVIEWED_HEAD, '0'.repeat(40)],
+    ['weakened code verdict', 'Independent code/spec/security review: `READY / APPROVE`; findings: `0`; blockers: `0`.', 'Independent code/spec/security review: `READY`; findings: `0`; blockers: `0`.'],
+    ['stale code slot', 'Independent code/spec/security review: `READY / APPROVE`; findings: `0`; blockers: `0`.', 'Independent code/spec/security review: `PENDING`; findings: `0`; blockers: `0`.'],
+    ['stale content slot', 'Independent content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`; blockers: `0`.', 'Independent content/evidence/rights review: `PENDING`; rights: `PASS`; findings: `0`; blockers: `0`.'],
+    ['rights failure', 'Independent content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`; blockers: `0`.', 'Independent content/evidence/rights review: `CONTENT READY`; rights: `FAIL`; findings: `0`; blockers: `0`.'],
+    ['stale architecture slot', 'Independent architecture/invariant review: `CLEAR / READY`; findings: `0`; blockers: `0`.', 'Independent architecture/invariant review: `PENDING`; findings: `0`; blockers: `0`.'],
+    ['stale final verdict', 'Final Stage A review judgment: `READY`.', 'Final Stage A review judgment: `PENDING`.'],
     ['fabricated deployment', 'Deployment status: `NOT_RUN`.', 'Deployment status: `SUCCESS`.'],
     ['review geometry drift', '`1440/1440`', '`1440/1441`'],
     ['generated hash drift', 'b75b31e532b97d09d957f7a883501421415edec6b0b5f3059a53cba80e5049f2', '0'.repeat(64)],
