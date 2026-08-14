@@ -6,7 +6,7 @@ import {fileURLToPath} from 'node:url';
 import {analyzeCaseText} from '../.codex/skills/writing-architecture-cases/scripts/analyze_case_density.mjs';
 import {findMarkdownHeadings, parseFrontMatter, readContentDocuments} from '../scripts/content-metadata.mjs';
 import {extractInternalLinks} from '../scripts/content-relations.mjs';
-import {extractExternalLinks} from '../scripts/source-ledger.mjs';
+import {extractExternalLinks, parseSourceLedger} from '../scripts/source-ledger.mjs';
 import {parseMdxVisibleCopy} from '../scripts/visible-copy.mjs';
 import {knowledgeTypeContracts} from '../scripts/content-schema.mjs';
 import {handleHorizontalArrowKey} from '../src/components/KeyboardScrollableRegion/handleHorizontalArrowKey.mjs';
@@ -36,17 +36,19 @@ const CITATION_SCHEMA_FIELDS = [
   'attribution_note', 'citation_url', 'excerpt', 'manifest_primary', 'modification_note',
   'quotation_reviewed', 'roles', 'source_id', 'usage_mode',
 ];
-const SOURCE_IDS = ['src-wechat-fde-12-core-capabilities', 'src-nist-ai-rmf-1-0', 'src-google-sre-canarying-releases', 'src-atlas-mth07-fde-delivery-gates'];
-const REMOTE_SOURCES = new Map([
-  ['src-wechat-fde-12-core-capabilities', {
-    canonical_locator: 'https://mp.weixin.qq.com/s/6_-S0yIVlCtqW8U8JfwdGA', title: '一文读懂：FDE的12项核心能力', author_or_org: '李伟山（腾讯云开发者）', published_at: '2026-08-13', version: 'Practice article identity checked 2026-08-13; available browser review returned an internal error.', source_kind: 'engineering-blog', tier: 'primary', allowed: ['historical-context'], license: 'LicenseRef-All-Rights-Reserved', license_family_id: 'https://mp.weixin.qq.com/s/6_-S0yIVlCtqW8U8JfwdGA', copyright_policy: 'facts-and-short-quotation', license_scope: 'The named WeChat article and bibliographic/practice-context facts only; prose, images, tables, marks, linked works, and third-party material excluded.', usage_boundary: 'Supports only the named FDE-practice context and an original facts summary; it is not independent evidence, does not establish a universal enterprise framework, and supports no market, salary, or policy numbers.', license_evidence_url: 'https://mp.weixin.qq.com/s/6_-S0yIVlCtqW8U8JfwdGA', license_evidence_note: 'The available browser returned an internal error, while a direct unauthenticated fetch exposed title, author, publisher, and date metadata but no reusable license notice; the source is conservatively treated as all rights reserved.', citation: {roles: ['historical-context'], manifest_primary: true, usage_mode: 'facts-summary', attribution_note: '李伟山（腾讯云开发者），《一文读懂：FDE的12项核心能力》；仅作 FDE 实践语境。'},
-  }],
-  ['src-nist-ai-rmf-1-0', {
-    canonical_locator: 'https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10', title: 'Artificial Intelligence Risk Management Framework (AI RMF 1.0)', author_or_org: 'National Institute of Standards and Technology', version: 'NIST AI 100-1', published_at: '2023-01-26', source_kind: 'standard', tier: 'primary', allowed: ['method'], license: 'LicenseRef-US-Gov-Public-Domain', license_family_id: 'https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10', copyright_policy: 'public-domain-with-provenance', license_scope: 'NIST-authored AI RMF publication material; third-party or separately marked copyrighted material, marks, and linked works excluded.', usage_boundary: 'Supports original factual summaries of AI RMF assessment, monitoring, and human-oversight mechanisms; it is voluntary, use-case agnostic guidance, not a universal enterprise-delivery process, and does not support market, salary, or policy numbers.', license_evidence_url: 'https://www.nist.gov/nist-research-library/library-faqs', license_evidence_note: 'NIST states that its publications are generally U.S. Government works in the public domain; original source attribution remains required and separately marked material is excluded.', citation: {roles: ['method'], manifest_primary: false, usage_mode: 'facts-summary', attribution_note: 'National Institute of Standards and Technology, AI RMF 1.0 (NIST AI 100-1).'},
-  }],
-  ['src-google-sre-canarying-releases', {
-    canonical_locator: 'https://sre.google/workbook/canarying-releases/', title: 'Canarying Releases', author_or_org: 'Google SRE', published_at: null, version: 'Google SRE Workbook online edition, Chapter 16; page footer Copyright 2018 Google, Inc.; checked 2026-08-13', source_kind: 'official-docs', tier: 'primary', allowed: ['method'], license: 'CC-BY-NC-ND-4.0', license_family_id: 'https://sre.google/workbook/canarying-releases/', copyright_policy: 'facts-and-short-quotation', license_scope: 'The named Google SRE Workbook chapter within its CC BY-NC-ND 4.0 notice; Google and O’Reilly marks, linked works, code, media, figures, and third-party material under separate notices are excluded.', usage_boundary: 'Supports original factual summaries of partial, time-limited canary evaluation, gradual exposure, and rollback considerations; it is not a universal rollout process or current Google policy, and supports no market, salary, or policy numbers.', license_evidence_url: 'https://sre.google/workbook/canarying-releases/', license_evidence_note: 'The official chapter footer identifies Copyright © 2018 Google, Inc., Published by O’Reilly Media, Inc., and CC BY-NC-ND 4.0.', citation: {roles: ['method'], manifest_primary: false, usage_mode: 'facts-summary', attribution_note: 'Google SRE Workbook, “Canarying Releases” (Chapter 16).'},
-  }],
+const SOURCE_SCHEMA_FIELDS = ['allowed_evidence_roles', 'author_or_org', 'canonical_locator', 'checked_at', 'copyright_policy', 'expected_final_approval_note', 'expected_final_approved_at', 'expected_final_transport_locator', 'family_grouping_evidence_url', 'id', 'license', 'license_evidence_note', 'license_evidence_url', 'license_family_grouping', 'license_family_id', 'license_scope', 'link_policy', 'locator_aliases', 'published_at', 'query_insensitive', 'registered_at', 'source_kind', 'tier', 'title', 'tombstone', 'transport_locator', 'usage_boundary', 'version'];
+const SOURCE_IDS = ['src-nist-ai-rmf-1-0', 'src-google-sre-canarying-releases', 'src-openai-evals-business-primer', 'src-atlas-mth07-fde-delivery-gates'];
+const SOURCE_CONTRACTS = new Map([
+  ['src-nist-ai-rmf-1-0', {id: 'src-nist-ai-rmf-1-0', canonical_locator: 'https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10', transport_locator: 'https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10', query_insensitive: false, locator_aliases: [], tombstone: null, title: 'Artificial Intelligence Risk Management Framework (AI RMF 1.0)', author_or_org: 'Elham Tabassi / National Institute of Standards and Technology', published_at: '2023-01-26', registered_at: '2026-08-14', checked_at: '2026-08-14', version: 'NIST AI 100-1 final publication dated 2023-01-26; checked 2026-08-14', source_kind: 'standard', tier: 'primary', allowed_evidence_roles: ['method'], license: 'LicenseRef-US-Gov-Public-Domain', license_scope: 'NIST-authored AI RMF publication material; third-party or separately marked copyrighted material, marks, and linked works excluded.', license_evidence_url: 'https://www.nist.gov/nist-research-library/nist-publications', license_evidence_note: 'NIST Technical Series policy grants worldwide reprint and derivative-work rights for NIST-authored works, while third-party works may remain protected.', license_family_id: 'https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10', license_family_grouping: 'identity', family_grouping_evidence_url: null, copyright_policy: 'public-domain-with-provenance', usage_boundary: 'Supports AI RMF risk, evaluation, monitoring, human-oversight, recovery, and decommissioning mechanisms; it does not define FDE, prescribe the twelve gates, or support market, salary, or policy numbers.', link_policy: 'stable', expected_final_transport_locator: 'https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10', expected_final_approved_at: '2026-08-14', expected_final_approval_note: 'Official NIST publication page checked directly on 2026-08-14.'}],
+  ['src-google-sre-canarying-releases', {id: 'src-google-sre-canarying-releases', canonical_locator: 'https://sre.google/workbook/canarying-releases/', transport_locator: 'https://sre.google/workbook/canarying-releases/', query_insensitive: false, locator_aliases: [], tombstone: null, title: 'Canarying Releases', author_or_org: 'Alec Warner and Štěpán Davidovič / Google SRE', published_at: null, registered_at: '2026-08-14', checked_at: '2026-08-14', version: 'Google SRE Workbook online edition, Chapter 16; footer Copyright 2018 Google, Inc.; checked 2026-08-14', source_kind: 'official-docs', tier: 'primary', allowed_evidence_roles: ['method'], license: 'CC-BY-NC-ND-4.0', license_scope: 'The named Google SRE Workbook chapter within its CC BY-NC-ND 4.0 notice; Google and O’Reilly marks, linked works, code, media, figures, and third-party material under separate notices are excluded.', license_evidence_url: 'https://sre.google/workbook/canarying-releases/', license_evidence_note: 'The official chapter footer identifies Copyright © 2018 Google, Inc., Published by O’Reilly Media, Inc., and CC BY-NC-ND 4.0.', license_family_id: 'https://sre.google/workbook/canarying-releases/', license_family_grouping: 'identity', family_grouping_evidence_url: null, copyright_policy: 'facts-and-short-quotation', usage_boundary: 'Supports original facts summaries of partial time-bounded rollout, control comparison, and proceed-or-stop decisions; it is not a universal rollout process or a requirement to copy Google’s organization.', link_policy: 'stable', expected_final_transport_locator: 'https://sre.google/workbook/canarying-releases/', expected_final_approved_at: '2026-08-14', expected_final_approval_note: 'Official Google SRE Workbook page checked directly on 2026-08-14.'}],
+  ['src-openai-evals-business-primer', {id: 'src-openai-evals-business-primer', canonical_locator: 'https://openai.com/index/evals-drive-next-chapter-of-ai/', transport_locator: 'https://openai.com/index/evals-drive-next-chapter-of-ai/', query_insensitive: false, locator_aliases: [], tombstone: null, title: 'How evals drive the next chapter in AI for businesses', author_or_org: 'OpenAI', published_at: '2025-11-19', registered_at: '2026-08-14', checked_at: '2026-08-14', version: 'OpenAI business evals primer published 2025-11-19; checked 2026-08-14', source_kind: 'engineering-blog', tier: 'primary', allowed_evidence_roles: ['method'], license: 'LicenseRef-All-Rights-Reserved', license_scope: 'The named OpenAI primer and its stated evaluation framing only; prose, images, marks, linked works, and third-party material excluded.', license_evidence_url: 'https://openai.com/policies/terms-of-use/', license_evidence_note: 'OpenAI Terms of Use reserve OpenAI rights in its Services and do not grant a reusable documentation license for this primer; retain an attributed original facts summary only.', license_family_id: 'https://openai.com/index/evals-drive-next-chapter-of-ai/', license_family_grouping: 'identity', family_grouping_evidence_url: null, copyright_policy: 'facts-and-short-quotation', usage_boundary: 'Supports specify-measure-improve evaluation framing and testing under real-world conditions; it does not prove product adoption, business benefit, or a universal business process.', link_policy: 'stable', expected_final_transport_locator: 'https://openai.com/index/evals-drive-next-chapter-of-ai/', expected_final_approved_at: '2026-08-14', expected_final_approval_note: 'Official OpenAI primer checked directly on 2026-08-14.'}],
+  [ILLUSTRATION_SOURCE_ID, {id: ILLUSTRATION_SOURCE_ID, canonical_locator: ILLUSTRATION_LOCATOR, transport_locator: ILLUSTRATION_LOCATOR, query_insensitive: false, locator_aliases: [], tombstone: null, title: '企业 AI 四阶段十二门禁图', author_or_org: 'Tego Arch maintainers', published_at: '2026-08-14', registered_at: '2026-08-14', checked_at: '2026-08-14', version: 'Original Draw.io and SVG pair for MTH-07', source_kind: 'original-illustration', tier: 'first-party', allowed_evidence_roles: ['illustration'], license: 'LicenseRef-Atlas-Original', license_scope: 'Original Tego Arch Draw.io and SVG assets for MTH-07; no third-party reference imagery.', license_evidence_url: null, license_evidence_note: 'Created as an original Draw.io and SVG pair for MTH-07 without third-party reference imagery.', license_family_id: ILLUSTRATION_LOCATOR, license_family_grouping: 'identity', family_grouping_evidence_url: null, copyright_policy: 'original-atlas', usage_boundary: 'Original MTH-07 illustration only; no third-party provenance or reuse rights are claimed.', link_policy: null, expected_final_transport_locator: ILLUSTRATION_LOCATOR, expected_final_approved_at: '2026-08-14', expected_final_approval_note: 'Original local asset approved on 2026-08-14; no external transport is required.'}],
+]);
+const CITATION_CONTRACTS = new Map([
+  ['src-nist-ai-rmf-1-0', {source_id: 'src-nist-ai-rmf-1-0', citation_url: 'https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10', roles: ['method'], manifest_primary: true, usage_mode: 'facts-summary', attribution_note: 'National Institute of Standards and Technology, AI RMF 1.0 (NIST AI 100-1).', modification_note: null, excerpt: null, quotation_reviewed: false}],
+  ['src-google-sre-canarying-releases', {source_id: 'src-google-sre-canarying-releases', citation_url: 'https://sre.google/workbook/canarying-releases/', roles: ['method'], manifest_primary: false, usage_mode: 'facts-summary', attribution_note: 'Google SRE Workbook, “Canarying Releases” (Chapter 16).', modification_note: null, excerpt: null, quotation_reviewed: false}],
+  ['src-openai-evals-business-primer', {source_id: 'src-openai-evals-business-primer', citation_url: 'https://openai.com/index/evals-drive-next-chapter-of-ai/', roles: ['method'], manifest_primary: false, usage_mode: 'facts-summary', attribution_note: 'OpenAI, “How evals drive the next chapter in AI for businesses.”', modification_note: null, excerpt: null, quotation_reviewed: false}],
+  [ILLUSTRATION_SOURCE_ID, {source_id: ILLUSTRATION_SOURCE_ID, citation_url: ILLUSTRATION_LOCATOR, roles: ['illustration'], manifest_primary: false, usage_mode: 'original-illustration', attribution_note: '企业 AI 四阶段十二门禁图，Tego Arch maintainers', modification_note: 'Created as an original Draw.io and SVG pair for MTH-07 without third-party reference imagery.', excerpt: null, quotation_reviewed: false}],
 ]);
 const RELATIONS = {depends_on: ['MTH-01', 'MTH-04', 'MTH-06'], adjacent_topics: ['MTH-01', 'MTH-04', 'MTH-06'], related_cases: ['/cases/temporal-saga-durable-execution'], related_questions: []};
 const EXACT_METADATA = {
@@ -152,10 +154,7 @@ function assertEvidenceAndResponsibilities(source) {
   const text = visible(source); for (const label of ['来源事实', '独立证据', 'Tego Arch 推断']) assert.match(text, new RegExp(label, 'u'), `${label} label`);
   for (const sentence of text.split(/[。！？!?\n]+/u)) assert.equal(/(?:市场|薪资|政策).{0,32}\d/u.test(sentence), false, 'current four-source set cannot support numeric market/salary/policy claims');
   assert.match(text, /NIST AI RMF 1\.0 支持评估、监测与人工覆盖机制/u, 'accepted nonnumeric independent claim');
-  assert.match(text, /微信文章只作为 FDE 十二项能力的实践语境，不是独立证据，也不证明该框架普遍适用/u,
-    'visible WeChat practice-only, non-independent, non-universal boundary');
-  assert.doesNotMatch(text, /微信文章.{0,24}(?<!不)(?:是|构成).{0,12}独立证据|微信文章.{0,32}(?<!不)(?:证明|证实).{0,16}(?:普遍|通用|所有企业)/u,
-    'WeChat cannot become independent or universal proof');
+  assert.doesNotMatch(text, /(?:\u5fae\u4fe1|\u0077\u0065\u0063\u0068\u0061\u0074|mp\.\u0077\u0065\u0069\u0078\u0069\u006e\.qq\.com)/iu, 'MTH-07 visible copy excludes the excluded channel');
   const clauses = ['POC 成功不等于生产可用','生产可用不等于验收通过','验收通过不等于放量','放量不等于复制','程序负责权限校验、确定性规则、审计记录和回滚开关','AI 只负责检索、分类、生成候选或建议，不得最终授权不可逆动作','人负责授权不可逆动作、决定放量与终止','人工队列有上限、时限和能力约束','客户业务负责人拥有明确停止权'];
   for (const clause of clauses) assert.ok(text.includes(clause), clause);
   for (const forbidden of [/POC.{0,12}(?:就是|(?<!不)等于).{0,12}生产/u, /生产.{0,12}(?:就是|(?<!不)等于).{0,12}验收/u, /验收.{0,12}(?:就是|(?<!不)等于).{0,12}放量/u, /放量.{0,12}(?:就是|(?<!不)等于).{0,12}复制/u]) assert.doesNotMatch(text, forbidden, `conflation ${forbidden}`);
@@ -1751,68 +1750,36 @@ function assertIllustrationGovernance(value) {
   assert.equal(citation.excerpt, null, 'MTH-07 illustration excerpt');
   assert.equal(citation.quotation_reviewed, false, 'MTH-07 illustration quotation_reviewed');
 }
-function assertRemoteSourceContracts(sources, citations) {
-  assert.equal(sources.length, REMOTE_SOURCES.size, 'MTH-07 has exactly three remote source records');
-  for (const [id, expected] of REMOTE_SOURCES) {
+function assertSourceContracts(sources, citations) {
+  assert.deepEqual(sources.map(({id}) => id), SOURCE_IDS, 'MTH-07 exact ordered source IDs');
+  for (const [id, expected] of SOURCE_CONTRACTS) {
     const item = sources.find((source) => source.id === id);
     assert.ok(item, id);
-    for (const [field, value] of Object.entries(expected)) {
-      if (field !== 'allowed' && field !== 'citation') assert.deepEqual(item[field], value, `${id}.${field}`);
-    }
-    assert.deepEqual(item.allowed_evidence_roles, expected.allowed, `${id} exact evidence roles`);
+    assert.deepEqual(Object.keys(item).sort(), SOURCE_SCHEMA_FIELDS, `${id} exact source schema fields`);
+    assert.deepEqual(item, expected, `${id} complete exact source record`);
     const matches = citations.filter(({source_id: sourceId}) => sourceId === id);
     assert.equal(matches.length, 1, `${id} has exactly one citation`);
-    const citation = matches[0];
-    assert.deepEqual(Object.keys(citation).sort(), CITATION_SCHEMA_FIELDS, `${id} citation exact schema fields`);
-    assert.equal(citation.source_id, id, `${id} citation source ID`);
-    assert.equal(citation.citation_url, expected.canonical_locator, `${id} citation URL`);
-    for (const [field, value] of Object.entries(expected.citation)) assert.deepEqual(citation[field], value, `${id} citation.${field}`);
-    assert.equal(citation.modification_note, null, `${id} citation modification_note`);
-    assert.equal(citation.excerpt, null, `${id} citation excerpt`);
-    assert.equal(citation.quotation_reviewed, false, `${id} citation quotation_reviewed`);
+    assert.deepEqual(Object.keys(matches[0]).sort(), CITATION_SCHEMA_FIELDS, `${id} citation exact schema fields`);
+    assert.deepEqual(matches[0], CITATION_CONTRACTS.get(id), `${id} complete exact citation`);
   }
+  assert.equal(citations.filter(({source_id}) => source_id === ILLUSTRATION_SOURCE_ID).length, 1,
+    'MTH-07 has exactly one original illustration citation');
   assert.deepEqual(citations.filter(({manifest_primary}) => manifest_primary).map(({source_id}) => source_id),
-    ['src-wechat-fde-12-core-capabilities'], 'MTH-07 has the sole practice-context primary citation');
-}
-function fixtureRemoteGovernance() {
-  const sources = [...REMOTE_SOURCES].map(([id, expected]) => {
-    const {allowed, citation: _citation, ...source} = expected;
-    return {id, ...structuredClone(source), allowed_evidence_roles: [...allowed]};
-  });
-  const citations = [...REMOTE_SOURCES].map(([id, expected]) => ({
-    source_id: id, citation_url: expected.canonical_locator, ...structuredClone(expected.citation),
-    modification_note: null, excerpt: null, quotation_reviewed: false,
-  }));
-  return {sources, citations};
+    ['src-nist-ai-rmf-1-0'], 'MTH-07 has NIST as its sole manifest primary citation');
+  assert.deepEqual(parseSourceLedger({schema_version: 1, sources, documents: {}, superseded_transports: []}).errors, [],
+    'MTH-07 complete source fixtures parse under the real ledger schema');
 }
 function fixtureGovernance() {
   return {
-    sources: [{
-      id: ILLUSTRATION_SOURCE_ID,
-      canonical_locator: ILLUSTRATION_LOCATOR,
-      source_kind: 'original-illustration',
-      allowed_evidence_roles: ['illustration'],
-      license: 'LicenseRef-Atlas-Original',
-      copyright_policy: 'original-atlas',
-    }],
+    sources: structuredClone([...SOURCE_CONTRACTS.values()]),
     documents: {[ARTICLE]: {
       reviewed_at: '2026-08-13',
       copyright_checks: ['original-structure', 'quotation-boundary', 'attribution-complete', 'illustration-rights'],
-      citations: [{
-        source_id: ILLUSTRATION_SOURCE_ID,
-        citation_url: ILLUSTRATION_LOCATOR,
-        roles: ['illustration'],
-        manifest_primary: false,
-        usage_mode: 'original-illustration',
-        attribution_note: '企业 AI 四阶段十二门禁图，Tego Arch maintainers',
-        modification_note: 'Created as an original Draw.io and SVG pair for MTH-07 without third-party reference imagery.',
-        excerpt: null,
-        quotation_reviewed: false,
-      }],
+      citations: structuredClone([...CITATION_CONTRACTS.values()]),
     }},
   };
 }
-function fixtureArticle() { const headingText = H2.map((heading) => heading === '可迁移经验' ? `## ${heading}\n${TRANSFER_H3.map((item) => `### ${item}`).join('\n')}` : `## ${heading}`).join('\n\n'); const metadata = Object.entries(EXACT_METADATA).map(([key, value]) => Array.isArray(value) ? `${key}:\n${value.map((item) => `  - ${item}`).join('\n')}` : `${key}: ${value}`).join('\n'); return `---\n${metadata}\n---\n\nimport {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableRegion/handleHorizontalArrowKey.mjs';\n\n${headingText}\n\n| ${TABLE_COLUMNS.join(' | ')} |\n| ${TABLE_COLUMNS.map(() => '---').join(' | ')} |\n${GATE_ROWS.map((row) => `| ${row.join(' | ')} |`).join('\n')}\n\n来源事实。独立证据。Tego Arch 推断。微信文章只作为 FDE 十二项能力的实践语境，不是独立证据，也不证明该框架普遍适用。NIST AI RMF 1.0 支持评估、监测与人工覆盖机制。POC 成功不等于生产可用。生产可用不等于验收通过。验收通过不等于放量。放量不等于复制。程序负责权限校验、确定性规则、审计记录和回滚开关。AI 只负责检索、分类、生成候选或建议，不得最终授权不可逆动作。人负责授权不可逆动作、决定放量与终止。人工队列有上限、时限和能力约束。客户业务负责人拥有明确停止权。\n\n${REQUIRED_WRAPPERS.map(({aria, className}) => `<div className="${className}" role="region" aria-label="${aria}" tabIndex={0} onKeyDown={handleHorizontalArrowKey}></div>`).join('\n')}`; }
+function fixtureArticle() { const headingText = H2.map((heading) => heading === '可迁移经验' ? `## ${heading}\n${TRANSFER_H3.map((item) => `### ${item}`).join('\n')}` : `## ${heading}`).join('\n\n'); const metadata = Object.entries(EXACT_METADATA).map(([key, value]) => Array.isArray(value) ? `${key}:\n${value.map((item) => `  - ${item}`).join('\n')}` : `${key}: ${value}`).join('\n'); return `---\n${metadata}\n---\n\nimport {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableRegion/handleHorizontalArrowKey.mjs';\n\n${headingText}\n\n| ${TABLE_COLUMNS.join(' | ')} |\n| ${TABLE_COLUMNS.map(() => '---').join(' | ')} |\n${GATE_ROWS.map((row) => `| ${row.join(' | ')} |`).join('\n')}\n\n来源事实。独立证据。Tego Arch 推断。NIST AI RMF 1.0 支持评估、监测与人工覆盖机制。POC 成功不等于生产可用。生产可用不等于验收通过。验收通过不等于放量。放量不等于复制。程序负责权限校验、确定性规则、审计记录和回滚开关。AI 只负责检索、分类、生成候选或建议，不得最终授权不可逆动作。人负责授权不可逆动作、决定放量与终止。人工队列有上限、时限和能力约束。客户业务负责人拥有明确停止权。\n\n${REQUIRED_WRAPPERS.map(({aria, className}) => `<div className="${className}" role="region" aria-label="${aria}" tabIndex={0} onKeyDown={handleHorizontalArrowKey}></div>`).join('\n')}`; }
 function fixtureDiagram() {
   const boxes = new Map();
   STAGE_IDS.forEach((id, index) => boxes.set(id, {x: index * 500 + 2, y: 2, width: 476, height: 1776}));
@@ -1908,14 +1875,15 @@ test('MTH-07 helper contracts are green after non-no-op RED mutation fixtures', 
   const source = fixtureArticle(); assertMetadataAndHeadings(source); assertGateRows(source); assertEvidenceAndResponsibilities(source); assertWrappersAndArrowBehavior(source);
   const governance = fixtureGovernance();
   assertIllustrationGovernance(governance);
+  assertSourceContracts(governance.sources, governance.documents[ARTICLE].citations);
   const governanceMutations = [
-    ['illustration locator', (value) => { value.sources[0].canonical_locator = '/img/diagrams/wrong.svg'; }],
-    ['illustration source roles', (value) => { value.sources[0].allowed_evidence_roles.push('method'); }],
-    ['illustration citation URL', (value) => { value.documents[ARTICLE].citations[0].citation_url = '/img/diagrams/wrong.svg'; }],
-    ['illustration citation roles', (value) => { value.documents[ARTICLE].citations[0].roles.push('method'); }],
-    ['illustration usage mode', (value) => { value.documents[ARTICLE].citations[0].usage_mode = 'facts-summary'; }],
-    ['illustration citation fields', (value) => { value.documents[ARTICLE].citations[0].evidence_role = 'illustration'; }],
-    ['illustration missing citation field', (value) => { delete value.documents[ARTICLE].citations[0].attribution_note; }],
+    ['illustration locator', (value) => { value.sources.find(({id}) => id === ILLUSTRATION_SOURCE_ID).canonical_locator = '/img/diagrams/wrong.svg'; }],
+    ['illustration source roles', (value) => { value.sources.find(({id}) => id === ILLUSTRATION_SOURCE_ID).allowed_evidence_roles.push('method'); }],
+    ['illustration citation URL', (value) => { value.documents[ARTICLE].citations.find(({source_id}) => source_id === ILLUSTRATION_SOURCE_ID).citation_url = '/img/diagrams/wrong.svg'; }],
+    ['illustration citation roles', (value) => { value.documents[ARTICLE].citations.find(({source_id}) => source_id === ILLUSTRATION_SOURCE_ID).roles.push('method'); }],
+    ['illustration usage mode', (value) => { value.documents[ARTICLE].citations.find(({source_id}) => source_id === ILLUSTRATION_SOURCE_ID).usage_mode = 'facts-summary'; }],
+    ['illustration citation fields', (value) => { value.documents[ARTICLE].citations.find(({source_id}) => source_id === ILLUSTRATION_SOURCE_ID).evidence_role = 'illustration'; }],
+    ['illustration missing citation field', (value) => { delete value.documents[ARTICLE].citations.find(({source_id}) => source_id === ILLUSTRATION_SOURCE_ID).attribution_note; }],
     ['illustration document fields', (value) => { value.documents[ARTICLE].evidence_role = 'illustration'; }],
     ['illustration missing document field', (value) => { delete value.documents[ARTICLE].reviewed_at; }],
   ];
@@ -1925,53 +1893,47 @@ test('MTH-07 helper contracts are green after non-no-op RED mutation fixtures', 
     assert.notDeepEqual(mutation, governance, `${label} mutation is non-no-op`);
     assert.throws(() => assertIllustrationGovernance(mutation), assert.AssertionError, label);
   }
-  const remote = fixtureRemoteGovernance();
-  assertRemoteSourceContracts(remote.sources, remote.citations);
-  const remoteMutations = [];
-  for (const [id, expected] of REMOTE_SOURCES) {
-    for (const field of Object.keys(expected).filter((key) => !['allowed', 'citation'].includes(key))) {
-      remoteMutations.push([`${id}.${field}`, (value) => {
-        const source = value.sources.find((item) => item.id === id);
-        source[field] = field === 'published_at'
-          ? (source[field] === null ? '2026-08-13' : '2020-01-01')
-          : `${String(source[field])} (wrong)`;
+  const sourceMutations = [];
+  for (const id of SOURCE_IDS) {
+    for (const field of SOURCE_SCHEMA_FIELDS) {
+      sourceMutations.push([`${id} missing ${field}`, (value) => {
+        delete value.sources.find((item) => item.id === id)[field];
       }]);
     }
-    remoteMutations.push([`${id}.allowed_evidence_roles`, (value) => {
-      value.sources.find((item) => item.id === id).allowed_evidence_roles = ['learning'];
+    sourceMutations.push([`${id} extra source field`, (value) => {
+      value.sources.find((item) => item.id === id).unexpected = true;
     }]);
-    for (const field of Object.keys(expected.citation)) {
-      remoteMutations.push([`${id}.citation.${field}`, (value) => {
-        const citation = value.citations.find((item) => item.source_id === id);
-        citation[field] = field === 'manifest_primary' ? !citation[field]
-          : field === 'roles' ? ['learning'] : `${String(citation[field])} (wrong)`;
+    sourceMutations.push([`${id} all source fields omitted`, (value) => {
+      const item = value.sources.find((source) => source.id === id);
+      for (const field of Object.keys(item)) delete item[field];
+    }]);
+    for (const field of CITATION_SCHEMA_FIELDS) {
+      sourceMutations.push([`${id} citation missing ${field}`, (value) => {
+        delete value.documents[ARTICLE].citations.find((citation) => citation.source_id === id)[field];
       }]);
     }
-    for (const field of ['source_id', 'citation_url', 'modification_note', 'excerpt', 'quotation_reviewed']) {
-      remoteMutations.push([`${id}.citation.${field}`, (value) => {
-        const citation = value.citations.find((item) => item.source_id === id);
-        citation[field] = field === 'quotation_reviewed' ? true : `${String(citation[field])} (wrong)`;
-      }]);
-    }
+    sourceMutations.push([`${id} citation extra field`, (value) => {
+      value.documents[ARTICLE].citations.find((citation) => citation.source_id === id).unexpected = true;
+    }]);
+    sourceMutations.push([`${id} citation all fields omitted`, (value) => {
+      const citation = value.documents[ARTICLE].citations.find((item) => item.source_id === id);
+      for (const field of Object.keys(citation)) delete citation[field];
+    }]);
   }
-  remoteMutations.push(['sole primary citation', (value) => { value.citations.find((item) => item.source_id === 'src-nist-ai-rmf-1-0').manifest_primary = true; }]);
-  for (const [label, change] of remoteMutations) {
-    const mutation = structuredClone(remote);
+  sourceMutations.push(['NIST is not primary', (value) => { value.documents[ARTICLE].citations.find(({source_id}) => source_id === 'src-nist-ai-rmf-1-0').manifest_primary = false; }]);
+  sourceMutations.push(['Google cannot become a second primary', (value) => { value.documents[ARTICLE].citations.find(({source_id}) => source_id === 'src-google-sre-canarying-releases').manifest_primary = true; }]);
+  for (const [label, change] of sourceMutations) {
+    const mutation = structuredClone(governance);
     change(mutation);
-    assert.notDeepEqual(mutation, remote, `${label} mutation is non-no-op`);
-    assert.throws(() => assertRemoteSourceContracts(mutation.sources, mutation.citations), assert.AssertionError, label);
+    assert.notDeepEqual(mutation, governance, `${label} mutation is non-no-op`);
+    assert.throws(() => assertSourceContracts(mutation.sources, mutation.documents[ARTICLE].citations), assert.AssertionError, label);
   }
   const extraH3 = mutate(source, '### 不应照搬的部分', '### 关键源码导读\n\n### 不应照搬的部分', 'extra transfer H3'); const metadataMutations = [mutate(source, 'topic_id: MTH-07', 'topic_id: MTH-99', 'wrong topic'), mutate(source, 'content_type: method', 'content_type: style', 'wrong type'), mutate(source, '## 一页摘要', '## 完整演练', 'fallback headings'), mutate(source, '### 不应照搬的部分', '', 'missing transfer H3'), extraH3]; metadataMutations.forEach((item) => assert.throws(() => assertMetadataAndHeadings(item), assert.AssertionError));
   for (const row of GATE_ROWS) { for (let index = 0; index < row.length; index += 1) { const changed = [...row]; changed[index] = '错误字段'; const mutation = mutate(source, `| ${row.join(' | ')} |`, `| ${changed.join(' | ')} |`, `${row[1]} field`); assert.throws(() => assertGateRows(mutation), assert.AssertionError); } const deletion = mutate(source, `| ${row.join(' | ')} |\n`, '', `${row[1]} deletion`); assert.throws(() => assertGateRows(deletion), assert.AssertionError); }
   const ownerlessDuplicate = mutate(source, `| ${GATE_ROWS.at(-1).join(' | ')} |`, `| ${GATE_ROWS.at(-1).slice(0, 6).join(' | ')} |  | ${GATE_ROWS.at(-1)[7]} |\n| ${GATE_ROWS.at(-1).join(' | ')} |`, 'ownerless duplicate'); assert.throws(() => assertGateRows(ownerlessDuplicate), assert.AssertionError);
   for (const [from, to] of [['POC 成功不等于生产可用','POC 成功就是生产可用'], ['生产可用不等于验收通过','生产可用就是验收通过'], ['验收通过不等于放量','验收通过就是放量'], ['放量不等于复制','放量就是复制'], ['AI 只负责检索、分类、生成候选或建议，不得最终授权不可逆动作','AI 最终授权不可逆动作'], ['程序负责权限校验、确定性规则、审计记录和回滚开关','程序把确定性规则交给概率模型'], ['人负责授权不可逆动作、决定放量与终止','AI 负责授权不可逆动作、决定放量与终止'], ['人工队列有上限、时限和能力约束','人工兜底无限且无时限'], ['客户业务负责人拥有明确停止权','停止权未指定'], ['NIST AI RMF 1.0 支持评估、监测与人工覆盖机制','NIST 说明市场规模为 100 亿元']]) { const mutation = mutate(source, from, to, from); assert.throws(() => assertEvidenceAndResponsibilities(mutation), assert.AssertionError); }
-  for (const [from, to, label] of [
-    ['NIST AI RMF 1.0 支持评估、监测与人工覆盖机制。', 'NIST AI RMF 1.0 支持评估、监测与人工覆盖机制。微信文章构成独立证据，也证明所有企业普遍适用。', 'WeChat independent/universal proof'],
-    ['微信文章只作为 FDE 十二项能力的实践语境，不是独立证据，也不证明该框架普遍适用', '', 'WeChat visible practice boundary loss'],
-  ]) {
-    const mutation = mutate(source, from, to, label);
-    assert.throws(() => assertEvidenceAndResponsibilities(mutation), assert.AssertionError, label);
-  }
+  const excludedAttribution = mutate(source, 'NIST AI RMF 1.0 支持评估、监测与人工覆盖机制。', 'NIST AI RMF 1.0 支持评估、监测与人工覆盖机制。\u5fae\u4fe1文章构成独立证据。', 'excluded attribution');
+  assert.throws(() => assertEvidenceAndResponsibilities(excludedAttribution), assert.AssertionError, 'excluded attribution');
   const detachedHandler = mutate(source, "onKeyDown={handleHorizontalArrowKey}", 'onKeyDown={() => {}}', 'detached ArrowRight handler'); assert.throws(() => assertWrappersAndArrowBehavior(detachedHandler), assert.AssertionError);
   const {drawio, svg} = fixtureDiagram();
   assertDiagram(drawio, svg);
@@ -2171,8 +2133,8 @@ test('MTH-07 locks citation-aware evidence and responsibility boundaries', () =>
 test('MTH-07 locks governed source identities, exact relations, wrappers, density, and Stage A projection', () => {
   const source = requiredArticle().source; const record = ledger.documents[ARTICLE]; assert.deepEqual(record?.citations.map(({source_id}) => source_id), SOURCE_IDS); const sources = new Map(SOURCE_IDS.map((id) => [id, ledger.sources.find((item) => item.id === id)]));
   assertIllustrationGovernance(ledger);
-  assertRemoteSourceContracts([...REMOTE_SOURCES.keys()].map((id) => sources.get(id)), record?.citations ?? []);
-  assert.equal(new Set([...REMOTE_SOURCES.values()].map(({canonical_locator}) => new URL(canonical_locator).hostname)).size, 3, 'three independent remote domains'); const illustration = sources.get('src-atlas-mth07-fde-delivery-gates'); assert.equal(illustration?.source_kind, 'original-illustration'); assert.equal(illustration?.license, 'LicenseRef-Atlas-Original'); assert.equal(illustration?.copyright_policy, 'original-atlas');
-  assert.deepEqual(extractInternalLinks({body: article.body}), ['/cases/temporal-saga-durable-execution', '/methods', '/methods/mth-01', '/methods/mth-04', '/methods/mth-06']); const text = visible(source); assert.match(text, /Temporal.{0,60}(?:工程机制参照|不证明 FDE 组织模式)/u); assert.doesNotMatch(text, /QA-09/u); assert.deepEqual(extractExternalLinks({body: article.body}).sort(), [...REMOTE_SOURCES.values()].map(({canonical_locator}) => canonical_locator).sort()); assertWrappersAndArrowBehavior(source); assert.ok(analyzeCaseText(article.body).visualBalance.score > 90); assert.deepEqual({completed_topics: projectStatus.completed_topics, content_documents: projectStatus.content_documents, governed_sources: projectStatus.governed_sources}, {completed_topics: 59, content_documents: 102, governed_sources: 529}); const topic = manifest.topics.find(({id}) => id === TOPIC_ID); assert.equal(topic?.published, true); assert.equal(topic?.status?.value, 'pending');
+  assertSourceContracts(SOURCE_IDS.map((id) => sources.get(id)), record?.citations ?? []);
+  assert.equal(new Set([...SOURCE_CONTRACTS.values()].filter(({canonical_locator}) => canonical_locator.startsWith('https://')).map(({canonical_locator}) => new URL(canonical_locator).hostname)).size, 3, 'three independent remote domains'); const illustration = sources.get(ILLUSTRATION_SOURCE_ID); assert.equal(illustration?.source_kind, 'original-illustration'); assert.equal(illustration?.license, 'LicenseRef-Atlas-Original'); assert.equal(illustration?.copyright_policy, 'original-atlas');
+  assert.deepEqual(extractInternalLinks({body: article.body}), ['/cases/temporal-saga-durable-execution', '/methods', '/methods/mth-01', '/methods/mth-04', '/methods/mth-06']); const text = visible(source); assert.match(text, /Temporal.{0,60}(?:工程机制参照|不证明 FDE 组织模式)/u); assert.doesNotMatch(text, /(?:\u5fae\u4fe1|\u0077\u0065\u0063\u0068\u0061\u0074|mp\.\u0077\u0065\u0069\u0078\u0069\u006e\.qq\.com)/iu); assert.doesNotMatch(text, /QA-09/u); assert.deepEqual(extractExternalLinks({body: article.body}).sort(), [...SOURCE_CONTRACTS.values()].filter(({canonical_locator}) => canonical_locator.startsWith('https://')).map(({canonical_locator}) => canonical_locator).sort()); assertWrappersAndArrowBehavior(source); assert.ok(analyzeCaseText(article.body).visualBalance.score > 90); assert.deepEqual({completed_topics: projectStatus.completed_topics, content_documents: projectStatus.content_documents, governed_sources: projectStatus.governed_sources}, {completed_topics: 59, content_documents: 102, governed_sources: 529}); const topic = manifest.topics.find(({id}) => id === TOPIC_ID); assert.equal(topic?.published, true); assert.equal(topic?.status?.value, 'pending');
 });
 test('MTH-07 diagram parses actual Draw.io terminals and rendered SVG geometry/style/painter parity', async () => { const [drawio, svg] = await Promise.all([readFile(new URL(`../${DRAWIO}`, import.meta.url), 'utf8'), readFile(new URL(`../${SVG}`, import.meta.url), 'utf8')]); assertDiagram(drawio, svg); });
