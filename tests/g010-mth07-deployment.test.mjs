@@ -300,6 +300,39 @@ function screenshotReviewRow(capture) {
   return `| \`${capture.path}\` | \`${capture.encodedFormat}\` | \`${capture.filenameExtension}\` | \`${capture.dimensions.width}x${capture.dimensions.height}\` | \`${capture.disposition}\` |`;
 }
 
+function assertBrowserReviewClosedWorld(browser) {
+  const forbiddenClaims = [
+    ['standalone screenshot acceptance', /\bACCEPTED\b/u],
+    [
+      'screenshot hash identity',
+      /^(?=[^\n]*(?:screenshot|capture))(?=[^\n]*(?:SHA-256|hash identity|hash\s*[:=]|hash\s+`[0-9a-f]{64}`))[^\n]*$/imu,
+    ],
+    [
+      'full-page visual PASS',
+      /^(?=[^\n]*\bfull-page\b)(?=[^\n]*(?::|=|\bis\b)\s*`?PASS\b)[^\n]*$/imu,
+    ],
+    [
+      'desktop visible or exact link-click claim',
+      /^(?=[^\n]*\bDesktop\b)(?=[^\n]*\blink clicks?\b)(?=[^\n]*\b(?:visible|exact)\b)[^\n]*$/imu,
+    ],
+    [
+      'mobile click failure claim',
+      /^\s*(?!-\s*No\b|No\b)(?:-\s*)?(?=[^\n]*\bMobile\b)(?=[^\n]*\bclick\b)(?=[^\n]*\b(?:failed|failure)\b)[^\n]*$/imu,
+    ],
+    [
+      'mobile Browser-back claim',
+      /^\s*(?!-\s*No\b|No\b)(?:-\s*)?(?=[^\n]*\bMobile\b)(?=[^\n]*\bafter Browser back\b)[^\n]*$/imu,
+    ],
+    ['non-zero warning diagnostics', /\b(?:warning\/error logs|warning logs|error logs)\s*[:=]?\s*`?[1-9][0-9]*\b/iu],
+    ['non-zero runtime diagnostics', /\bruntime exceptions?\s*[:=]?\s*`?[1-9][0-9]*\b/iu],
+    ['incomplete diagnostic pagination', /\bhasMore\s*=\s*`?true\b/iu],
+    ['truncated diagnostics', /\btruncated\s*=\s*`?true\b/iu],
+  ];
+  for (const [label, pattern] of forbiddenClaims) {
+    assert.doesNotMatch(browser, pattern, label);
+  }
+}
+
 async function assertReview(source) {
   assert.match(source, /^# G010 MTH-07 Stage A Review$/mu);
   const identity = section(source, 'Candidate identity');
@@ -333,6 +366,7 @@ async function assertReview(source) {
   }
 
   const browser = section(source, 'Local in-app Browser QA');
+  assertBrowserReviewClosedWorld(browser);
   for (const name of STATES) {
     assert.ok(browser.includes(browserReviewRow(name, evidence.states[name])), `${name} exact review row`);
   }
@@ -439,4 +473,41 @@ test('rejects Browser evidence mutations and any fabricated Stage A readiness or
     assert.notEqual(mutated, review, `${label} mutation applies`);
     await assert.rejects(() => assertReview(mutated), {name: 'AssertionError'}, label);
   }
+});
+
+test('keeps Browser review claims closed without governing non-Browser history', async () => {
+  const browser = section(review, 'Local in-app Browser QA');
+  assert.match(browser, /\bNOT_ACCEPTED\b/u);
+  assert.doesNotMatch(browser, /\bACCEPTED\b/u);
+
+  const checkpoint = '## Independent review checkpoint';
+  const additiveClaims = [
+    ['standalone acceptance', 'ACCEPTED'],
+    ['acceptance claim', 'Screenshot evidence claim: ACCEPTED.'],
+    ['screenshot SHA-256 identity', `Screenshot SHA-256: \`${'0'.repeat(64)}\`.`],
+    ['screenshot hash identity', `Screenshot hash identity: \`${'0'.repeat(64)}\`.`],
+    ['full-page visual pass', 'Full-page screenshot: PASS.'],
+    ['distant full-page visual pass', 'Full-page screenshot with a long compatibility explanation that is still not visual evidence: PASS.'],
+    ['desktop visible click claim', 'Desktop relations used visible link clicks.'],
+    ['desktop exact click claim', 'Desktop relations used exact link clicks.'],
+    ['mobile click failure claim', 'Mobile relation click failed.'],
+    ['mobile Browser-back claim', 'Mobile relation click stopped dispatching after Browser back.'],
+    ['warning diagnostics', 'Warning/error logs: 1.'],
+    ['runtime diagnostics', 'Runtime exceptions: 1.'],
+    ['pagination remainder', 'hasMore=true.'],
+    ['truncated diagnostics', 'truncated=true.'],
+  ];
+  for (const [label, addition] of additiveClaims) {
+    const mutated = review.replace(checkpoint, `${addition}\n\n${checkpoint}`);
+    assert.notEqual(mutated, review, `${label} mutation applies`);
+    await assert.rejects(() => assertReview(mutated), {name: 'AssertionError'}, label);
+  }
+
+  const historicalExamples = additiveClaims.map(([, claim]) => claim).join(' ');
+  const outsideBrowser = review.replace(
+    '## Stage A projection',
+    `Historical reviewer examples outside the Browser section: ${historicalExamples}\n\n## Stage A projection`,
+  );
+  assert.notEqual(outsideBrowser, review, 'non-Browser historical example mutation applies');
+  await assert.doesNotReject(() => assertReview(outsideBrowser));
 });
