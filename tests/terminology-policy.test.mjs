@@ -149,7 +149,7 @@ test('no-argument CLI checks the repository default terminology scope', () => {
   );
   assert.equal(run.status, 0, run.stdout || run.stderr);
   assert.equal(run.stderr, '');
-  assert.match(run.stdout, /checked 104 files with 132 registered terms; 0 issues/u);
+  assert.match(run.stdout, /checked 105 files with 135 registered terms; 0 issues/u);
 });
 
 test('accepts governed Saga and reports it as unknown when the registry entry is removed', async () => {

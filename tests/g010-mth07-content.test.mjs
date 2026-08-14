@@ -8,7 +8,7 @@ import {findMarkdownHeadings, parseFrontMatter, readContentDocuments} from '../s
 import {extractInternalLinks} from '../scripts/content-relations.mjs';
 import {extractExternalLinks, parseSourceLedger} from '../scripts/source-ledger.mjs';
 import {parseMdxVisibleCopy} from '../scripts/visible-copy.mjs';
-import {knowledgeTypeContracts} from '../scripts/content-schema.mjs';
+import {knowledgeHeadingContract, knowledgeTypeContracts} from '../scripts/content-schema.mjs';
 import {handleHorizontalArrowKey} from '../src/components/KeyboardScrollableRegion/handleHorizontalArrowKey.mjs';
 
 const ARTICLE = 'content/methods/mth-07-fde-enterprise-ai-delivery.mdx';
@@ -153,9 +153,14 @@ const REQUIRED_WRAPPERS = [
   {aria: '企业 AI 十二门禁执行表，可横向滚动', className: 'table-wrapper table-wrapper--mapping diagram-wrapper--scroll-owner'},
   {aria: '人、AI 与程序职责及停止条件表，可横向滚动', className: 'table-wrapper table-wrapper--mapping diagram-wrapper--scroll-owner'},
 ];
+const DELIVERY_TERM_CONTRACTS = new Map([
+  ['artificial-intelligence', {id: 'artificial-intelligence', canonical_zh: 'AI', english: null, acronym: null, kind: 'acronym', first_use: 'AI', subsequent_use: ['AI'], allowed_aliases: [], forbidden_aliases: [], note: 'MTH-07 的固定标题与元数据直接使用 AI，正文只在人机职责和企业交付语境中使用。', order: 1610}],
+  ['proof-of-concept', {id: 'proof-of-concept', canonical_zh: 'POC', english: null, acronym: null, kind: 'acronym', first_use: 'POC', subsequent_use: ['POC'], allowed_aliases: [], forbidden_aliases: [], note: 'MTH-07 的固定标题与门禁合同保留 POC，正文立即解释其验证范围与禁止外推边界。', order: 1620}],
+  ['forward-deployed-engineering', {id: 'forward-deployed-engineering', canonical_zh: 'FDE', english: null, acronym: null, kind: 'acronym', first_use: 'FDE', subsequent_use: ['FDE'], allowed_aliases: [], forbidden_aliases: [], note: 'MTH-07 把 FDE 定义为前线部署工程角色组合，不把职位名称当成成功条件。', order: 1630}],
+]);
 
 const contentRoot = fileURLToPath(new URL('../content/', import.meta.url));
-const [documents, ledger, manifest, projectStatus] = await Promise.all([readContentDocuments(contentRoot), readFile(new URL('../data/source-ledger.json', import.meta.url), 'utf8').then(JSON.parse), readFile(new URL('../src/generated/topic-manifest.json', import.meta.url), 'utf8').then(JSON.parse), readFile(new URL('../src/generated/project-status.json', import.meta.url), 'utf8').then(JSON.parse)]);
+const [documents, ledger, manifest, projectStatus, terminology] = await Promise.all([readContentDocuments(contentRoot), readFile(new URL('../data/source-ledger.json', import.meta.url), 'utf8').then(JSON.parse), readFile(new URL('../src/generated/topic-manifest.json', import.meta.url), 'utf8').then(JSON.parse), readFile(new URL('../src/generated/project-status.json', import.meta.url), 'utf8').then(JSON.parse), readFile(new URL('../data/terminology.json', import.meta.url), 'utf8').then(JSON.parse)]);
 const article = documents.find(({file}) => `content/${file}` === ARTICLE);
 
 function visible(source) { return parseMdxVisibleCopy(source, ARTICLE, {includeStructure: true}).blocks.map(({text}) => text).join('\n'); }
@@ -180,6 +185,20 @@ function assertEvidenceAndResponsibilities(source) {
 function assertWrappersAndArrowBehavior(source) {
   assert.match(source, /import \{handleHorizontalArrowKey\} from '@site\/src\/components\/KeyboardScrollableRegion\/handleHorizontalArrowKey\.mjs';/u, 'uses canonical handler import'); const region = {scrollLeft: 0, scrollWidth: 200, clientWidth: 100}; let prevented = false; handleHorizontalArrowKey({key: 'ArrowRight', target: region, currentTarget: region, altKey: false, ctrlKey: false, metaKey: false, shiftKey: false, preventDefault: () => { prevented = true; }}); assert.equal(region.scrollLeft, 40, 'canonical ArrowRight scrolls focused overflow region'); assert.equal(prevented, true, 'canonical handler prevents default');
   for (const {aria, className} of REQUIRED_WRAPPERS) assert.equal(source.split(`<div className="${className}" role="region" aria-label="${aria}" tabIndex={0} onKeyDown={handleHorizontalArrowKey}>`).length - 1, 1, aria);
+}
+function assertNarrowHeadingContract() {
+  const expected = H2.map((heading) => `## ${heading}`);
+  assert.deepEqual(knowledgeHeadingContract('method', TOPIC_ID), expected,
+    'MTH-07 exact method-only ten-H2 exception');
+  assert.deepEqual(knowledgeHeadingContract('method', 'MTH-06'), knowledgeTypeContracts.method,
+    'other methods retain the nine-H2 method contract');
+  assert.deepEqual(knowledgeHeadingContract('concept', TOPIC_ID), knowledgeTypeContracts.concept,
+    'MTH-07 topic_id cannot escape through non-method metadata');
+}
+function assertDeliveryTermContracts(value) {
+  for (const [id, expected] of DELIVERY_TERM_CONTRACTS) {
+    assert.deepEqual(value.terms.find((term) => term.id === id), expected, `${id} exact terminology contract`);
+  }
 }
 function decodeXml(value) {
   return value.replace(/&#x([\da-f]+);/giu, (_, hex) => String.fromCodePoint(Number.parseInt(hex, 16)))
@@ -1983,7 +2002,15 @@ function fixtureDiagram() {
 }
 
 test('MTH-07 helper contracts are green after non-no-op RED mutation fixtures', () => {
-  const source = fixtureArticle(); assertMetadataAndHeadings(source); assertGateRows(source); assertEvidenceAndResponsibilities(source); assertWrappersAndArrowBehavior(source);
+  const source = fixtureArticle(); assertMetadataAndHeadings(source); assertGateRows(source); assertEvidenceAndResponsibilities(source); assertWrappersAndArrowBehavior(source); assertNarrowHeadingContract(); assertDeliveryTermContracts(terminology);
+  for (const [id] of DELIVERY_TERM_CONTRACTS) {
+    const deleted = structuredClone(terminology);
+    deleted.terms = deleted.terms.filter((term) => term.id !== id);
+    assert.throws(() => assertDeliveryTermContracts(deleted), assert.AssertionError, `${id} deletion mutation`);
+    const mutated = structuredClone(terminology);
+    mutated.terms.find((term) => term.id === id).first_use += '-changed';
+    assert.throws(() => assertDeliveryTermContracts(mutated), assert.AssertionError, `${id} first-use mutation`);
+  }
   const governance = fixtureGovernance();
   assertIllustrationGovernance(governance);
   assertSourceContracts(governance.sources, governance.documents[ARTICLE].citations);
