@@ -34,7 +34,7 @@
 - Modify: `content/methods/index.mdx` — 增加 MTH-07 正式入口。
 - Modify: `content/methods/mth-01-quality-attribute-workshop.mdx`, `content/methods/mth-04-architecture-fitness-functions.mdx`, `content/methods/mth-06-requirements-to-evolution-loop.mdx` — 必要反向元数据和可见边界链接。
 - Modify: `content/cases/temporal-saga-durable-execution.mdx` — 只增加方法参照回链，不改变 Temporal 事实结论。
-- Modify: `data/source-ledger.json`, `data/source-link-health.json`, `docs/source-license-inventory.md` — 三个远程来源、一个原创插图及文档引用。
+- Modify: `data/source-ledger.json`, `data/source-link-health.json` — 三个远程来源、一个原创插图、文档引用及 checker 生成的健康结果；`docs/source-license-inventory.md` 是冻结迁移快照，本任务不回填。
 - Modify if exact terminology gate requires it: `data/terminology.json`, `tests/terminology-registry.test.mjs`, `tests/terminology-policy.test.mjs` — 只加精确 FDE 术语，不加通配或路径豁免。
 - Modify at Stage B only: `docs/content-backlog.md` — 增加并最终勾选 MTH-07，记录 exact evidence。
 - Regenerate: `src/generated/topic-manifest.json`, `src/generated/topic-indexes.json`, `src/generated/project-status.json`, `src/generated/source-ledger.json`.
@@ -220,7 +220,6 @@ Baseline is `59 completed / 101 documents / 525 sources`. With one document and 
 - Modify: `content/cases/temporal-saga-durable-execution.mdx`
 - Modify: `data/source-ledger.json`
 - Modify: `data/source-link-health.json`
-- Modify: `docs/source-license-inventory.md`
 - Modify: `tests/g010-mth07-content.test.mjs`
 
 **Interfaces:**
@@ -231,7 +230,7 @@ Baseline is `59 completed / 101 documents / 525 sources`. With one document and 
 - [ ] **Step 2: Write the exact front matter and ten sections.** Use the fixed metadata and heading order; create three wrappers with exact labels, `role="region"`, `tabIndex={0}` and the existing ArrowRight scroll handler.
 - [ ] **Step 3: Write the twelve-row gate table.** Each row carries risk/mechanism/evidence/pass/owner/failure return. Keep prose authoritative and diagram labels concise.
 - [ ] **Step 4: Write responsibility and stop-condition tables.** Bind program/AI/human duties; distinguish POC→production, production→rollout, customer→reuse; state measurable stop/re-entry conditions.
-- [ ] **Step 5: Add citations and governed source records atomically.** Cite NIST for risk/evaluation/monitoring/oversight, Google SRE for canary decisions, Microsoft Learn for pre-deployment and production evaluation mechanics, and label Tego Arch synthesis explicitly. Do not cite or link WeChat. In the same change, add the four complete ledger identities, exact document citations, link-health observations and license inventory rows from Task 2 research. Reuse an exact existing family rather than duplicate it. Do not introduce unverified market/salary/policy figures.
+- [ ] **Step 5: Add citations and governed source records atomically.** Cite NIST for risk/evaluation/monitoring/oversight, Google SRE for canary decisions, Microsoft Learn for pre-deployment and production evaluation mechanics, and label Tego Arch synthesis explicitly. Do not cite or link WeChat. In the same change, add the four complete ledger identities and exact document citations. Reuse an exact existing family rather than duplicate it. Then run the normal link-health checker and commit only its generated cache/provenance result; do not hand-copy candidate observations. Do not modify the frozen `docs/source-license-inventory.md`. Do not introduce unverified market/salary/policy figures.
 - [ ] **Step 6: Add reciprocal links.** Add exact metadata and visible links in MTH-01/04/06 and Temporal only where generator requires them; preserve each existing conclusion and avoid QA-09.
 - [ ] **Step 7: Verify density, source governance, content, terminology, links, typecheck and build.** Run:
 
@@ -252,7 +251,7 @@ Baseline is `59 completed / 101 documents / 525 sources`. With one document and 
 - [ ] **Step 8: Commit.**
 
   ```bash
-  git add content/methods/mth-07-fde-enterprise-ai-delivery.mdx content/methods/index.mdx content/methods/mth-01-quality-attribute-workshop.mdx content/methods/mth-04-architecture-fitness-functions.mdx content/methods/mth-06-requirements-to-evolution-loop.mdx content/cases/temporal-saga-durable-execution.mdx data/source-ledger.json data/source-link-health.json docs/source-license-inventory.md tests/g010-mth07-content.test.mjs
+  git add content/methods/mth-07-fde-enterprise-ai-delivery.mdx content/methods/index.mdx content/methods/mth-01-quality-attribute-workshop.mdx content/methods/mth-04-architecture-fitness-functions.mdx content/methods/mth-06-requirements-to-evolution-loop.mdx content/cases/temporal-saga-durable-execution.mdx data/source-ledger.json data/source-link-health.json tests/g010-mth07-content.test.mjs
   git commit -m "docs: add MTH-07 enterprise AI delivery method"
   ```
 
