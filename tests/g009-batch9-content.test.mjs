@@ -77,7 +77,7 @@ export const COMPARISON_ROWS = Object.freeze([
   ['线程与锁', /逻辑并发单元.*私有状态.*消息/u, /不固定绑定线程.*竞争资源.*容量/u],
   ['普通消息消费者', /稳定逻辑身份.*封装状态.*目标身份.*邮箱/u, /共享队列消费者.*不一定.*长期业务实体.*邮箱.*不自动持久/u],
   ['事件驱动架构', /谁拥有状态.*谁处理消息.*事实.*传播/u, /使用事件.*不等于.*Actor.*消息.*不一定.*领域事件/u],
-  ['微服务', /更细粒度.*运行时实体.*订单|设备|会话/u, /不天然.*独立制品.*部署.*数据边界.*团队所有权.*公开服务合同/u],
+  ['微服务', /更细粒度.*运行时实体.*(?:订单|设备|会话)/u, /不天然.*独立制品.*部署.*数据边界.*团队所有权.*公开服务合同/u],
 ]);
 export const OBSERVATION_POINTS = ['收到消息', '进入邮箱', '开始处理', '业务提交', '发送回复', '外部效果完成'];
 export const ADOPTION_ROWS = Object.freeze([
@@ -98,21 +98,24 @@ const REQUIRED_SEMANTIC_BOUNDARIES = Object.freeze([
   ['location limits', /位置透明[^。；]*(?:不隐藏|不能消除)[^。；]*容量[^。；]*状态迁移[^。；]*故障[^。；]*网络/u],
   ['framework scope', /(?:Akka|Orleans|Erlang\/OTP)[^。；]*(?:实现例证|框架例证|实现合同)[^。；]*(?:不是|不得外推为)[^。；]*(?:模型公理|统一保证)/u],
 ]);
+const MAILBOX_GUARANTEES = Object.freeze(['持久化', '可靠投递', '全局顺序', '恰好一次', '分布式事务', '外部副作用幂等']);
+const SUPERVISION_GUARANTEES = Object.freeze(['业务拒绝', '对账', '补偿', '业务恢复', '持久化恢复', '人工终止']);
+const LOCATION_HIDDEN_FACTS = Object.freeze(['延迟', '序列化', '网络', '安全', '容量', '放置', '状态迁移', '故障']);
 const FORBIDDEN_SEMANTIC_CLAIMS = Object.freeze([
   ['every class is Actor', /每个类[^。；]*(?:都|必须)[^。；]*(?:映射为|建模为|改写为)[^。；]*Actor/u],
   ['every request is Actor', /每个请求[^。；]*(?:都|必须)[^。；]*(?:映射为|建模为|改写为)[^。；]*Actor/u],
   ['every row is Actor', /每个数据库行[^。；]*(?:都|必须)[^。；]*(?:映射为|建模为|改写为)[^。；]*Actor/u],
   ['every service is Actor', /每个(?:微)?服务[^。；]*(?:都|必须)[^。；]*(?:映射为|建模为|改写为)[^。；]*Actor/u],
-  ...['持久化', '可靠投递', '全局顺序', '恰好一次', '分布式事务', '外部副作用幂等'].map((guarantee) => [`mailbox implies ${guarantee}`, new RegExp(`邮箱(?:串行)?(?:(?!不自动|不能|不保证)[^。；])*(?:意味着|保证|自动提供)[^。；]*${guarantee}`, 'u')]),
-  ...['业务拒绝', '对账', '补偿', '业务恢复', '人工终止'].map((guarantee) => [`supervision implies ${guarantee}`, new RegExp(`监督(?:(?!不代替|不能|不保证)[^。；])*(?:自动完成|保证|代替)[^。；]*${guarantee}`, 'u')]),
-  ...['容量', '状态迁移', '故障', '网络'].map((hidden) => [`location hides ${hidden}`, new RegExp(`位置透明(?:(?!不隐藏|不能消除)[^。；])*(?:隐藏|消除|无需考虑)[^。；]*${hidden}`, 'u')]),
+  ...MAILBOX_GUARANTEES.map((guarantee) => [`mailbox implies ${guarantee}`, new RegExp(`邮箱(?:串行)?(?:(?!不自动|不能|不保证)[^。；])*(?:意味着|保证|自动提供)[^。；]*${guarantee}`, 'u')]),
+  ...SUPERVISION_GUARANTEES.map((guarantee) => [`supervision implies ${guarantee}`, new RegExp(`监督(?:(?!不代替|不能|不保证)[^。；])*(?:自动完成|保证|代替)[^。；]*${guarantee}`, 'u')]),
+  ...LOCATION_HIDDEN_FACTS.map((hidden) => [`location hides ${hidden}`, new RegExp(`位置透明(?:(?!不隐藏|不能消除)[^。；])*(?:隐藏|消除|无需考虑)[^。；]*${hidden}`, 'u')]),
   ['framework axiom', /(?:Akka|Orleans|Erlang\/OTP)[^。；]*(?:默认行为|实现行为)[^。；]*(?:就是|等于|证明|构成)[^。；]*(?:Actor Model|模型)[^。；]*(?:公理|统一保证)/u],
 ]);
 const FALSE_SEMANTIC_FIXTURES = Object.freeze([
   '每个类都必须映射为 Actor。', '每个请求都必须建模为 Actor。', '每个数据库行都必须改写为 Actor。', '每个微服务都必须映射为 Actor。',
-  ...['持久化', '可靠投递', '全局顺序', '恰好一次', '分布式事务', '外部副作用幂等'].map((guarantee) => `邮箱串行自动提供${guarantee}。`),
-  ...['业务拒绝', '对账', '补偿', '业务恢复', '人工终止'].map((guarantee) => `监督自动完成${guarantee}。`),
-  ...['容量', '状态迁移', '故障', '网络'].map((hidden) => `位置透明无需考虑${hidden}。`),
+  ...MAILBOX_GUARANTEES.map((guarantee) => `邮箱串行自动提供${guarantee}。`),
+  ...SUPERVISION_GUARANTEES.map((guarantee) => `监督自动完成${guarantee}。`),
+  ...LOCATION_HIDDEN_FACTS.map((hidden) => `位置透明无需考虑${hidden}。`),
   'Akka 默认行为就是 Actor Model 的公理。',
 ]);
 const ORDER_FLOW_CONTRACTS = Object.freeze([
@@ -377,12 +380,32 @@ export function assertActorComponents(source) {
 }
 export function assertProhibitions(source) {
   for (const [name, pattern] of PROHIBITIONS) assert.match(source, pattern, name);
-  assert.doesNotMatch(source, /Actor[^。；]*(?:(?<!不)等于|就是)[^。；]*(?:线程|普通消息消费者|事件驱动架构|微服务)/iu, 'Actor equivalence is forbidden');
+  const counterpart = '(?:线程|普通消息消费者|事件驱动架构|微服务)'; const equality = '(?:就是|(?<!不)等于)'; const local = '[^。；\\n|]*';
+  assert.doesNotMatch(source, new RegExp(`(?:Actor${local}${equality}${local}${counterpart}|${counterpart}${local}${equality}${local}Actor)`, 'iu'), 'Actor/counterpart equivalence is forbidden in either direction');
+  assert.doesNotMatch(source, new RegExp(`(?:Actor${local}${counterpart}|${counterpart}${local}Actor)${local}(?:不能|不得)${local}(?:组合|共存)`, 'iu'), 'Actor/counterpart mutual exclusion is forbidden in either direction');
   assert.doesNotMatch(source, /(?:只能|必须)[^。；]*(?:Actor|线程|队列|事件驱动|微服务)[^。；]*(?:不能|不得)[^。；]*(?:组合|共存)/u, 'mechanisms cannot be made mutually exclusive');
+}
+function assertClauseLocalSemanticClaims(source) {
+  const domains = [
+    ['mailbox', /邮箱/u, MAILBOX_GUARANTEES, /保证|自动提供|意味着/gu],
+    ['supervision', /监督/u, SUPERVISION_GUARANTEES, /自动完成|保证|代替/gu],
+    ['location transparency', /位置透明/u, LOCATION_HIDDEN_FACTS, /隐藏|消除|无需考虑|不必考虑/gu],
+  ];
+  for (const sentence of source.split(/[。；\n]/u).filter(Boolean)) for (const [domain, subject, claims, positive] of domains) {
+    if (!subject.test(sentence)) continue;
+    for (const clause of sentence.split(/[，,]\s*|(?=但|却|而)/u).map((value) => value.trim()).filter(Boolean)) for (const claim of claims) {
+      if (!clause.includes(claim)) continue;
+      for (const verb of clause.matchAll(positive)) {
+        const inherentlyPositive = /^(?:无需考虑|不必考虑)$/u.test(verb[0]); const prefix = clause.slice(0, verb.index);
+        assert.ok(!inherentlyPositive && /(?:不|未|不得|不能)(?:自动)?\s*$/u.test(prefix), `${domain} ${claim} positive claim forbidden in its own clause`);
+      }
+    }
+  }
 }
 export function assertSemanticBoundaries(source) {
   for (const [name, pattern] of REQUIRED_SEMANTIC_BOUNDARIES) assert.match(source, pattern, `${name} explicit boundary`);
   for (const [name, pattern] of FORBIDDEN_SEMANTIC_CLAIMS) assert.doesNotMatch(source, pattern, `${name} contradiction forbidden`);
+  assertClauseLocalSemanticClaims(source);
 }
 function exactRows(table, expected, heading, columns, affirmativeCells = []) {
   assert.deepEqual(table[0], heading, 'exact table header');
@@ -533,14 +556,16 @@ function multiplyTransform(left, right) { return [
   left[0] * right[4] + left[2] * right[5] + left[4], left[1] * right[4] + left[3] * right[5] + left[5],
 ]; }
 function transformMatrix(value = '') {
-  let result = [1, 0, 0, 1, 0, 0];
-  for (const [, name, source] of value.matchAll(/(matrix|translate|scale)\(([^)]+)\)/gu)) {
+  const transform = value.trim(); let result = [1, 0, 0, 1, 0, 0]; let consumed = 0;
+  for (const match of transform.matchAll(/(matrix|translate|scale)\(([^)]+)\)/gu)) {
+    const [, name, source] = match; assert.equal(transform.slice(consumed, match.index).trim(), '', `unsupported SVG transform ${transform}`); consumed = match.index + match[0].length;
     const values = source.trim().split(/[\s,]+/u).map(Number); let next;
     if (name === 'matrix') { assert.equal(values.length, 6, 'six-value SVG matrix'); next = values; }
     else if (name === 'translate') next = [1, 0, 0, 1, values[0], values[1] ?? 0];
     else next = [values[0], 0, 0, values[1] ?? values[0], 0, 0];
     assert.ok(next.every(Number.isFinite), `finite ${name} transform`); result = multiplyTransform(result, next);
   }
+  assert.equal(transform.slice(consumed).trim(), '', `unsupported SVG transform ${transform}`);
   return result;
 }
 function elementTransform(element) {
@@ -585,11 +610,39 @@ export function parsePathPoints(data) {
   while (cursor < tokens.length) { const command = tokens[cursor++]; if (command === 'M') { x = Number(tokens[cursor++]); y = Number(tokens[cursor++]); } else if (command === 'H') x = Number(tokens[cursor++]); else if (command === 'V') y = Number(tokens[cursor++]); else assert.fail(`unsupported connector path command ${command}`); points.push({x, y}); }
   assert.ok(points.length >= 2, `orthogonal connector path ${data}`); return points;
 }
+function assertUntransformedGeometry(element, kind) {
+  for (let current = element; current; current = current.parent) assert.equal((current.attributes.get('transform') ?? '').trim(), '', `${kind} transform must be flattened into coordinates`);
+}
+function renderedPathPoints(element) { assertUntransformedGeometry(element, 'connector path'); return parsePathPoints(element.attributes.get('d')); }
 function segmentDistance(left, right, box) {
   const horizontal = left.y === right.y; assert.ok(horizontal || left.x === right.x, 'orthogonal segment');
   const dx = horizontal ? Math.max(box.left - Math.max(left.x, right.x), Math.min(left.x, right.x) - box.right, 0) : Math.max(box.left - left.x, left.x - box.right, 0);
   const dy = horizontal ? Math.max(box.top - left.y, left.y - box.bottom, 0) : Math.max(box.top - Math.max(left.y, right.y), Math.min(left.y, right.y) - box.bottom, 0);
   return Math.hypot(dx, dy);
+}
+function pointSegmentDistance(point, start, end) {
+  const dx = end.x - start.x; const dy = end.y - start.y; const lengthSquared = dx * dx + dy * dy;
+  if (lengthSquared === 0) return Math.hypot(point.x - start.x, point.y - start.y);
+  const offset = Math.max(0, Math.min(1, ((point.x - start.x) * dx + (point.y - start.y) * dy) / lengthSquared));
+  return Math.hypot(point.x - (start.x + offset * dx), point.y - (start.y + offset * dy));
+}
+function lineSegmentDistance(leftStart, leftEnd, rightStart, rightEnd) {
+  const cross = (a, b, c) => (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x); const epsilon = 1e-9;
+  const leftA = cross(leftStart, leftEnd, rightStart); const leftB = cross(leftStart, leftEnd, rightEnd); const rightA = cross(rightStart, rightEnd, leftStart); const rightB = cross(rightStart, rightEnd, leftEnd);
+  const onSegment = (point, start, end) => point.x >= Math.min(start.x, end.x) - epsilon && point.x <= Math.max(start.x, end.x) + epsilon && point.y >= Math.min(start.y, end.y) - epsilon && point.y <= Math.max(start.y, end.y) + epsilon;
+  const properIntersection = ((leftA > epsilon && leftB < -epsilon) || (leftA < -epsilon && leftB > epsilon)) && ((rightA > epsilon && rightB < -epsilon) || (rightA < -epsilon && rightB > epsilon));
+  if (properIntersection || (Math.abs(leftA) <= epsilon && onSegment(rightStart, leftStart, leftEnd)) || (Math.abs(leftB) <= epsilon && onSegment(rightEnd, leftStart, leftEnd)) || (Math.abs(rightA) <= epsilon && onSegment(leftStart, rightStart, rightEnd)) || (Math.abs(rightB) <= epsilon && onSegment(leftEnd, rightStart, rightEnd))) return 0;
+  return Math.min(pointSegmentDistance(leftStart, rightStart, rightEnd), pointSegmentDistance(leftEnd, rightStart, rightEnd), pointSegmentDistance(rightStart, leftStart, leftEnd), pointSegmentDistance(rightEnd, leftStart, leftEnd));
+}
+function strokedGeometryPoints(element) {
+  let points;
+  if (element.name === 'circle' || element.name === 'ellipse') {
+    const cx = Number(element.attributes.get('cx')); const cy = Number(element.attributes.get('cy')); const rx = element.name === 'circle' ? Number(element.attributes.get('r')) : Number(element.attributes.get('rx')); const ry = element.name === 'circle' ? rx : Number(element.attributes.get('ry'));
+    points = Array.from({length: 65}, (_, index) => { const angle = index / 64 * Math.PI * 2; return {x: cx + Math.cos(angle) * rx, y: cy + Math.sin(angle) * ry}; });
+  } else {
+    points = geometryPoints(element); if (['rect', 'polygon'].includes(element.name)) points = [...points, points[0]];
+  }
+  const matrix = elementTransform(element); const transformed = points.map((point) => transformPoint(matrix, point)); assert.ok(transformed.length >= 2 && transformed.every(({x, y}) => Number.isFinite(x) && Number.isFinite(y)), `${element.name} stroked geometry`); return transformed;
 }
 function paintOpacity(source, element, kind) { let opacity = 1; for (let candidate = element; candidate; candidate = candidate.parent) for (const property of ['opacity', `${kind}-opacity`]) { const value = ownSvgPresentationValue(source, candidate, property); if (value !== undefined) opacity *= Number(value); } assert.ok(Number.isFinite(opacity) && opacity >= 0 && opacity <= 1, 'valid effective opacity'); return opacity; }
 function blendHex(foreground, background, opacity) { const channels = (value) => value.match(/[\da-f]{2}/giu).map((entry) => Number.parseInt(entry, 16)); const left = channels(foreground); const right = channels(background); return `#${left.map((value, index) => Math.round(value * opacity + right[index] * (1 - opacity)).toString(16).padStart(2, '0')).join('')}`; }
@@ -597,6 +650,7 @@ function luminance(color) { const rgb = color.match(/[\da-f]{2}/giu).map((entry)
 function contrastRatio(left, right) { const [light, dark] = [luminance(left), luminance(right)].sort((a, b) => b - a); return (light + .05) / (dark + .05); }
 function elementText(source, element) { return decodeXmlText(source.match(new RegExp(`${escapeRegExp(element.tag)}([^<]*)<\/${element.name}>`, 'u'))?.[1] ?? '').trim(); }
 function labelBox(source, element, label = elementText(source, element)) {
+  assertUntransformedGeometry(element, 'text');
   const fontSize = Number.parseFloat(svgPresentationValue(source, element, 'font-size')); const x = Number(element.attributes.get('x')); const y = Number(element.attributes.get('y'));
   const width = [...label].reduce((sum, character) => sum + (/^[\u0000-\u00FF]$/u.test(character) ? .62 : 1), 0) * fontSize;
   const anchor = svgPresentationValue(source, element, 'text-anchor') ?? 'start'; const left = anchor === 'middle' ? x - width / 2 : anchor === 'end' ? x - width : x;
@@ -611,6 +665,7 @@ function markerGeometry(source, path, points) {
   const markerId = svgPresentationValue(source, path, 'marker-end')?.match(/^url\(#([^)]+)\)$/u)?.[1]; assert.ok(markerId, `${path.attributes.get('data-edge-id') ?? path.attributes.get('data-structural-edge-id') ?? path.attributes.get('data-legend-key')} marker`);
   const elements = parseSvg(source).elements; const marker = elements.find(({name, attributes}) => name === 'marker' && attributes.get('id') === markerId); const shape = elements.find(({name, parent}) => name === 'path' && parent === marker);
   assert.ok(marker && shape, `${markerId} actual marker shape`); const viewBox = (marker.attributes.get('viewBox') ?? '').split(/\s+/u).map(Number); assert.equal(viewBox.length, 4, `${markerId} marker viewBox`);
+  assertUntransformedGeometry(shape, `${markerId} marker shape`);
   const width = Number(marker.attributes.get('markerWidth')); const height = Number(marker.attributes.get('markerHeight')); assert.ok(width > 0 && height > 0 && width <= 16 && height <= 16, `${markerId} bounded dimensions`);
   const endpoint = points.at(-1); const previous = points.at(-2); const magnitude = Math.hypot(endpoint.x - previous.x, endpoint.y - previous.y); assert.ok(magnitude > 0, `${markerId} terminal segment`);
   const axis = {x: (endpoint.x - previous.x) / magnitude, y: (endpoint.y - previous.y) / magnitude}; const perpendicular = {x: -axis.y, y: axis.x};
@@ -639,7 +694,7 @@ function assertStructuralOwnership(drawio, svg, source) {
     const edge = drawio.edges.find(({attributes}) => attributes.get('id') === id); assert.ok(edge, `Draw.io structural edge ${id}`); drawioRoute(drawio, edge);
     const path = svg.elements.find(({name, attributes}) => name === 'path' && attributes.get('data-structural-edge-id') === id); assert.ok(path, `SVG structural edge ${id}`);
     assert.deepEqual([path.attributes.get('data-source'), path.attributes.get('data-target'), path.attributes.get('data-role')], [sourceId, targetId, role], `${id} structural topology`);
-    assert.deepEqual(parsePathPoints(path.attributes.get('d')), drawioRoute(drawio, edge), `${id} structural route parity`);
+    assert.deepEqual(renderedPathPoints(path), drawioRoute(drawio, edge), `${id} structural route parity`);
     const style = drawioStyle(edge); assert.equal(svgPresentationValue(source, path, 'stroke'), style.get('strokeColor'), `${id} structural stroke`);
     assert.equal(Number(svgPresentationValue(source, path, 'stroke-width')), Number(style.get('strokeWidth')), `${id} structural stroke width`);
     assert.equal(svgPresentationValue(source, path, 'stroke-dasharray') ?? '', style.get('dashed') === '1' ? style.get('dashPattern') : '', `${id} structural dash`);
@@ -674,7 +729,7 @@ function assertLegendParity(drawio, svg, source) {
     for (const id of [sourceId, targetId]) { const anchor = drawioAnchors.find(({attributes}) => attributes.get('id') === id); assert.ok(anchor, `${id} anchor`); assert.equal(anchor.attributes.get('legendFor'), role, `${id} role`); const anchorStyle = drawioStyle(anchor); assert.equal(anchorStyle.get('opacity'), '0', `${id} invisible`); assert.equal(anchorStyle.get('fillColor'), 'none', `${id} no fill`); assert.equal(anchorStyle.get('strokeColor'), 'none', `${id} no stroke`); }
     assert.equal(key.attributes.get('legendFor'), role, `${role} Draw.io key role`); assert.equal(path.attributes.get('data-legend-key'), role, `${role} SVG key role`); assert.equal(path.attributes.get('data-role'), key.attributes.get('dataRole'), `${role} key data role parity`);
     assert.equal(caption.attributes.get('legendFor'), role, `${role} Draw.io caption role`); assert.equal(text.attributes.get('data-legend-for'), role, `${role} SVG caption role`); assert.equal(text.attributes.get('data-role'), caption.attributes.get('dataRole'), `${role} caption data role parity`);
-    assert.deepEqual(parsePathPoints(path.attributes.get('d')), drawioRoute(drawio, key), `${role} key route parity`);
+    assert.deepEqual(renderedPathPoints(path), drawioRoute(drawio, key), `${role} key route parity`);
     assert.equal(caption.label, label, `${role} Draw.io caption label`); assert.equal(elementText(source, text), label, `${role} SVG caption label`);
     const geometry = numericBounds(caption.geometry); const actualBounds = labelBox(source, text); const round = (value) => Math.round(value * 1e6) / 1e6;
     assert.deepEqual([actualBounds.left, actualBounds.top, actualBounds.right - actualBounds.left, actualBounds.bottom - actualBounds.top].map(round), [geometry.x, geometry.y, geometry.width, geometry.height].map(round), `${role} actual caption bounds parity`);
@@ -738,7 +793,7 @@ function localBackground(source, label) {
 function assertPhysicalGeometry(source, scale, enforceLabelAttachment = true) {
   const elements = parseSvg(source).elements; const paths = elements.filter(({name, attributes}) => name === 'path' && attributes.has('data-edge-id')); const labels = elements.filter(({name, attributes}) => name === 'text' && attributes.has('data-edge-id'));
   const allPaths = elements.filter(({name, attributes}) => name === 'path' && (attributes.has('data-edge-id') || attributes.has('data-structural-edge-id') || attributes.has('data-legend-key')));
-  const connectors = allPaths.map((path) => ({path, id: path.attributes.get('data-edge-id') ?? path.attributes.get('data-structural-edge-id') ?? `legend-${path.attributes.get('data-legend-key')}`, points: parsePathPoints(path.attributes.get('d')), markers: markerGeometry(source, path, parsePathPoints(path.attributes.get('d'))), stroke: Number(svgPresentationValue(source, path, 'stroke-width') ?? 0)}));
+  const connectors = allPaths.map((path) => { const points = renderedPathPoints(path); return {path, id: path.attributes.get('data-edge-id') ?? path.attributes.get('data-structural-edge-id') ?? `legend-${path.attributes.get('data-legend-key')}`, points, markers: markerGeometry(source, path, points), stroke: Number(svgPresentationValue(source, path, 'stroke-width') ?? 0)}; });
   const nodeShapes = elements.filter(({name, parent}) => ['rect', 'path', 'polygon', 'circle', 'ellipse'].includes(name) && parent?.attributes.has('data-node-id')).filter((element) => nodeShape(elements, element.parent) === element).map((shape) => ({id: shape.parent.attributes.get('data-node-id'), rectangle: rectangleFromElement(shape), stroke: Number(svgPresentationValue(source, shape, 'stroke-width') ?? 0)}));
   const boundaryIds = ['shared-state-boundary', 'actor-runtime-boundary', 'external-authority-boundary', 'legend-band'];
   const boundaries = nodeShapes.filter(({id}) => boundaryIds.includes(id));
@@ -771,7 +826,7 @@ function assertPhysicalGeometry(source, scale, enforceLabelAttachment = true) {
     for (const connector of connectors) for (const point of connector.points.slice(1)) { /* execute parsed geometry before segment loop */ assert.ok(Number.isFinite(point.x)); }
     const connectorGaps = connectors.map(({id: connectorId, points, stroke}) => ({id: connectorId, gap: (Math.min(...points.slice(1).map((point, index) => segmentDistance(points[index], point, bounds))) - stroke / 2) * scale}));
     const nearestConnector = connectorGaps.reduce((nearest, candidate) => candidate.gap < nearest.gap ? candidate : nearest); const strokeGap = nearestConnector.gap; assert.ok(strokeGap >= 8, `${id} label to own/foreign connector ${nearestConnector.id} ${strokeGap}`);
-    const ownPoints = parsePathPoints(own.attributes.get('d')); const ownStroke = Number(svgPresentationValue(source, own, 'stroke-width') ?? 0); const ownGap = (Math.min(...ownPoints.slice(1).map((point, index) => segmentDistance(ownPoints[index], point, bounds))) - ownStroke / 2) * scale;
+    const ownPoints = renderedPathPoints(own); const ownStroke = Number(svgPresentationValue(source, own, 'stroke-width') ?? 0); const ownGap = (Math.min(...ownPoints.slice(1).map((point, index) => segmentDistance(ownPoints[index], point, bounds))) - ownStroke / 2) * scale;
     const foreignGap = Math.min(...connectors.filter(({path}) => path !== own).flatMap(({points, stroke}) => points.slice(1).map((point, index) => segmentDistance(points[index], point, bounds) - stroke / 2))) * scale;
     if (enforceLabelAttachment) { assert.ok(ownGap <= 40, `${id} label remains attached to own route ${ownGap}`); assert.ok(ownGap < foreignGap, `${id} label uniquely nearest own route ${ownGap}/${foreignGap}`); }
     const markerGap = Math.min(...connectors.flatMap(({markers}) => markers.map((point) => pointRectangleDistance(point, bounds)))) * scale; assert.ok(markerGap >= 16, `${id} label to actual own/foreign marker ${markerGap}`);
@@ -785,7 +840,7 @@ function assertPhysicalGeometry(source, scale, enforceLabelAttachment = true) {
   for (const header of elements.filter(({name, attributes}) => name === 'text' && attributes.has('data-header-for'))) {
     const boundary = nodeShapes.find(({id}) => id === header.attributes.get('data-header-for')); assert.ok(boundary, `${header.attributes.get('data-header-for')} header boundary`); const bounds = labelBox(source, header); const padding = Math.min(bounds.left - boundary.rectangle.left, boundary.rectangle.right - bounds.right, bounds.top - boundary.rectangle.top, boundary.rectangle.bottom - bounds.bottom) - boundary.stroke / 2; assert.ok(padding * scale >= 12, `${boundary.id} header inner-stroke padding`);
   }
-  const legends = Object.keys(CONNECTOR_STYLES).map((role) => { const key = elements.find(({name, attributes}) => name === 'path' && attributes.get('data-legend-key') === role); const caption = elements.find(({name, attributes}) => name === 'text' && attributes.get('data-legend-for') === role); assert.ok(key && caption, `${role} legend key/caption`); const points = parsePathPoints(key.attributes.get('d')); return {role, key, caption, bounds: labelBox(source, caption), points, markers: markerGeometry(source, key, points)}; });
+  const legends = Object.keys(CONNECTOR_STYLES).map((role) => { const key = elements.find(({name, attributes}) => name === 'path' && attributes.get('data-legend-key') === role); const caption = elements.find(({name, attributes}) => name === 'text' && attributes.get('data-legend-for') === role); assert.ok(key && caption, `${role} legend key/caption`); const points = renderedPathPoints(key); return {role, key, caption, bounds: labelBox(source, caption), points, markers: markerGeometry(source, key, points)}; });
   for (const legend of legends) {
     const keyGap = (Math.min(...legend.points.slice(1).map((point, index) => segmentDistance(legend.points[index], point, legend.bounds))) - Number(svgPresentationValue(source, legend.key, 'stroke-width') ?? 0) / 2) * scale; assert.ok(keyGap >= 12, `${legend.role} legend key-caption`);
     assert.ok(Math.min(...legend.markers.map((point) => pointRectangleDistance(point, legend.bounds))) * scale >= 16, `${legend.role} own real marker-caption`);
@@ -795,12 +850,20 @@ function assertPhysicalGeometry(source, scale, enforceLabelAttachment = true) {
 function assertNoOverdraw(source) {
   const {elements} = parseSvg(source); const paths = elements.filter(({name, attributes}) => name === 'path' && (attributes.has('data-edge-id') || attributes.has('data-structural-edge-id') || attributes.has('data-legend-key')));
   for (const path of paths) for (const mask of elements.filter(({name, index, parent}) => ['rect', 'path', 'polygon', 'polyline', 'circle', 'ellipse'].includes(name) && parent?.name !== 'marker' && index > path.index)) {
-    const fill = svgPresentationValue(source, mask, 'fill') ?? '#000000'; const opacity = !['none', 'transparent'].includes(fill.toLowerCase()) ? paintOpacity(source, mask, 'fill') : 0;
-    if (opacity > 0) { const bounds = visibleShapeBounds(mask); const points = parsePathPoints(path.attributes.get('d')); const id = path.attributes.get('data-edge-id') ?? path.attributes.get('data-structural-edge-id') ?? `legend-${path.attributes.get('data-legend-key')}`; assert.ok(!points.slice(1).some((point, index) => segmentDistance(points[index], point, bounds) === 0), `${id} no later opaque/translucent ${mask.name} mask`); }
+    const fill = svgPresentationValue(source, mask, 'fill') ?? '#000000'; const fillOpacity = !['none', 'transparent'].includes(fill.toLowerCase()) ? paintOpacity(source, mask, 'fill') : 0;
+    const stroke = svgPresentationValue(source, mask, 'stroke') ?? 'none'; const strokeWidth = Number(svgPresentationValue(source, mask, 'stroke-width') ?? 1); const strokeOpacity = !['none', 'transparent'].includes(stroke.toLowerCase()) && strokeWidth > 0 ? paintOpacity(source, mask, 'stroke') : 0;
+    const points = renderedPathPoints(path); const connectorWidth = Number(svgPresentationValue(source, path, 'stroke-width') ?? 1); const id = path.attributes.get('data-edge-id') ?? path.attributes.get('data-structural-edge-id') ?? `legend-${path.attributes.get('data-legend-key')}`;
+    if (fillOpacity > 0) { const bounds = visibleShapeBounds(mask); assert.ok(!points.slice(1).some((point, index) => segmentDistance(points[index], point, bounds) === 0), `${id} no later opaque/translucent ${mask.name} fill mask`); }
+    if (strokeOpacity > 0) {
+      const maskPoints = strokedGeometryPoints(mask); const gap = (strokeWidth + connectorWidth) / 2;
+      const overlaps = points.slice(1).some((point, index) => maskPoints.slice(1).some((maskPoint, maskIndex) => lineSegmentDistance(points[index], point, maskPoints[maskIndex], maskPoint) <= gap));
+      assert.equal(overlaps, false, `${id} no later opaque/translucent ${mask.name} stroke mask`);
+    }
   }
 }
 function assertCanvasPaint(source) {
   const parsed = parseSvg(source); const canvas = parsed.elements.find(({attributes}) => /^(?:canvas|background)$/u.test(attributes.get('id') ?? '')); assert.ok(canvas, 'canvas paint exists');
+  assertUntransformedGeometry(canvas, 'canvas');
   const fill = svgPresentationValue(source, canvas, 'fill'); assert.ok(fill && !['none', 'transparent'].includes(fill.toLowerCase()), 'effective canvas fill is painted');
   assert.ok(paintOpacity(source, canvas, 'fill') > 0, 'effective canvas opacity is nonzero');
 }
@@ -842,6 +905,7 @@ function assertDiagram(sourceDrawio, sourceSvg, {semanticOnly = false} = {}) {
   assert.match(root, /role="img"/u); assert.match(root, /viewBox="0 0 [0-9.]+ [0-9.]+"/u);
   assert.doesNotMatch(root, /(?:width|height)="/u, 'responsive SVG');
   const drawio = parseDrawio(sourceDrawio); const svg = parseSvg(sourceSvg);
+  for (const element of svg.elements.filter(({name}) => name === 'text')) assertUntransformedGeometry(element, 'text');
   assert.deepEqual(drawio.nodes.filter(({attributes}) => !['legend-anchor', 'legend-caption'].includes(attributes.get('dataRole'))).map(({attributes}) => attributes.get('id')), DIAGRAM_NODES, 'exact ordered Draw.io node inventory without extras');
   assert.deepEqual(svg.nodes.map(({attributes}) => attributes.get('data-node-id')), DIAGRAM_NODES, 'exact ordered SVG node inventory without extras');
   for (const id of DIAGRAM_NODES) {
@@ -854,7 +918,7 @@ function assertDiagram(sourceDrawio, sourceSvg, {semanticOnly = false} = {}) {
   assertConnectorInventory(drawio, svg, sourceSvg);
   for (const [id] of CONNECTOR_INVENTORY) {
     const edge = drawio.edges.find(({attributes}) => attributes.get('id') === id); const path = svg.elements.find(({name, attributes}) => name === 'path' && attributes.get('data-edge-id') === id);
-    assert.deepEqual(parsePathPoints(path.attributes.get('d')), drawioRoute(drawio, edge), `${id} semantic route parity`);
+    assert.deepEqual(renderedPathPoints(path), drawioRoute(drawio, edge), `${id} semantic route parity`);
   }
   if (semanticOnly) return {drawio, svg};
   assertDiagramOwnership(drawio, svg, sourceSvg);
@@ -866,7 +930,7 @@ function assertDiagram(sourceDrawio, sourceSvg, {semanticOnly = false} = {}) {
     assert.ok(edge, `Draw.io ${id}`); const route = drawioRoute(drawio, edge);
     const path = svg.elements.find(({name, attributes}) => name === 'path' && attributes.get('data-edge-id') === id); const label = svg.elements.find(({name, attributes}) => name === 'text' && attributes.get('data-edge-id') === id);
     assert.ok(path && label, `SVG ${role} path/label`); assert.equal(path.attributes.get('data-source'), edge.attributes.get('source'), `${id} semantic source`); assert.equal(path.attributes.get('data-target'), edge.attributes.get('target'), `${id} semantic target`);
-    assert.deepEqual(parsePathPoints(path.attributes.get('d')), route, `${id} actual route parity`); assert.equal(label.attributes.get('data-role'), role, `${id} label role`); assert.equal(path.attributes.get('data-role'), role, `${id} path role`);
+    assert.deepEqual(renderedPathPoints(path), route, `${id} actual route parity`); assert.equal(label.attributes.get('data-role'), role, `${id} label role`); assert.equal(path.attributes.get('data-role'), role, `${id} path role`);
     const visibleLabel = elementText(sourceSvg, label); assert.equal(visibleLabel, edge.label, `${id} label parity`);
     const style = drawioStyle(edge); assert.equal(svgPresentationValue(sourceSvg, path, 'stroke'), style.get('strokeColor'), `${id} effective stroke`); assert.equal(Number(svgPresentationValue(sourceSvg, path, 'stroke-width')), Number(style.get('strokeWidth')), `${id} stroke width`);
     const markerId = svgPresentationValue(sourceSvg, path, 'marker-end')?.match(/^url\(#([^)]+)\)$/u)?.[1]; assert.ok(markerId, `${id} effective marker`); const marker = svg.elements.find(({name, attributes}) => name === 'marker' && attributes.get('id') === markerId); const markerPath = svg.elements.find(({name, parent}) => name === 'path' && parent === marker);
@@ -1016,6 +1080,15 @@ test('SVG cascade, alpha composition, and conservative glyph geometry helpers ar
 test('semantic, comparison, failure, adoption, and migration fixtures execute contradiction-sensitive validators', async () => {
   const source = semanticArticleFixture(); assertActorComponents(source); assertProhibitions(source); assertSemanticBoundaries(source);
   assertComparisonTable(source); assertFailureTable(source); assertOrderFlow(source); assertRuntimeBoundaries(source); assertAdoptionContract(source);
+  for (const claim of [
+    '邮箱串行不自动提供持久化，但保证恰好一次。',
+    '监督不能代替业务恢复，但自动完成对账。',
+    '位置透明不隐藏延迟，但无需考虑容量。',
+  ]) await mutation(source, (candidate) => `${candidate}\n${claim}\n`, assertSemanticBoundaries, `clause-local mixed contradiction: ${claim}`);
+  for (const guarantee of ['持久化', '可靠投递', '全局顺序', '恰好一次', '分布式事务', '外部副作用幂等']) await mutation(source, (candidate) => `${candidate}\n邮箱不自动提供持久化，但保证${guarantee}。\n`, assertSemanticBoundaries, `clause-local mailbox ${guarantee}`);
+  for (const guarantee of ['业务拒绝', '对账', '补偿', '持久化恢复', '人工终止']) await mutation(source, (candidate) => `${candidate}\n监督不能代替业务恢复，但自动完成${guarantee}。\n`, assertSemanticBoundaries, `clause-local supervision ${guarantee}`);
+  for (const hidden of ['延迟', '序列化', '网络', '安全', '容量', '放置', '状态迁移', '故障']) await mutation(source, (candidate) => `${candidate}\n位置透明不隐藏延迟，但无需考虑${hidden}。\n`, assertSemanticBoundaries, `clause-local location ${hidden}`);
+  for (const counterpart of ['线程', '普通消息消费者', '事件驱动架构', '微服务']) for (const claim of [`Actor 就是${counterpart}。`, `${counterpart}就是 Actor。`, `Actor 与${counterpart}不能共存。`, `${counterpart}与 Actor 不能组合。`]) await mutation(source, (candidate) => `${candidate}\n${claim}\n`, assertProhibitions, `symmetric prohibition: ${claim}`);
   for (const [name, pattern] of REQUIRED_SEMANTIC_BOUNDARIES) await mutation(source, (candidate) => candidate.replace(pattern, ''), assertSemanticBoundaries, `${name} boundary deleted`);
   assert.equal(FALSE_SEMANTIC_FIXTURES.length, FORBIDDEN_SEMANTIC_CLAIMS.length, 'one false fixture per forbidden claim');
   for (const [index, [name]] of FORBIDDEN_SEMANTIC_CLAIMS.entries()) await mutation(source, (candidate) => `${candidate}\n${FALSE_SEMANTIC_FIXTURES[index]}\n`, assertSemanticBoundaries, `${name} contradiction`);
@@ -1025,6 +1098,8 @@ test('semantic, comparison, failure, adoption, and migration fixtures execute co
     for (let cell = 1; cell < row.length; cell += 1) { if ((validator === assertComparisonTable && cell === 1) || (validator === assertFailureTable && cell === 4)) continue; const changed = [...row]; changed[cell] = `不适用：${row[cell].slice(0, 2)}（诱饵）`; await mutation(source, (candidate) => candidate.replace(exact, `| ${changed.join(' | ')} |`), validator, `${row[0]} standalone cell ${cell} mutation`); }
   }
   for (const row of comparison.slice(2)) { const exact = `| ${row.join(' | ')} |`; const changed = [...row]; changed[1] = `${row[1]}，但不负责该状态或消息`; await mutation(source, (candidate) => candidate.replace(exact, `| ${changed.join(' | ')} |`), assertComparisonTable, `${row[0]} tempting negative decisive cell`); }
+  const microservice = comparison.find(([label]) => label === '微服务'); const exactMicroservice = `| ${microservice.join(' | ')} |`; const corruptMicroservice = [...microservice]; corruptMicroservice[1] = '设备';
+  await mutation(source, (candidate) => candidate.replace(exactMicroservice, `| ${corruptMicroservice.join(' | ')} |`), assertComparisonTable, 'microservice decisive cell requires grouped Actor distinction');
   for (const row of failures.slice(2)) { const exact = `| ${row.join(' | ')} |`; const changed = [...row]; changed[4] = `${row[4]}不负责处置`; await mutation(source, (candidate) => candidate.replace(exact, `| ${changed.join(' | ')} |`), assertFailureTable, `${row[0]} tempting negative owner`); }
   const firstAdoption = `| ${adoption[2].join(' | ')} |`; const secondAdoption = `| ${adoption[3].join(' | ')} |`;
   await mutation(source, (candidate) => candidate.replace(firstAdoption, '__ADOPT_SWAP__').replace(secondAdoption, firstAdoption).replace('__ADOPT_SWAP__', secondAdoption), assertAdoptionContract, 'adoption row order');
@@ -1064,9 +1139,16 @@ test('diagram semantic, visible-bounds, painted-stroke, canvas, and mask fixture
   const boundsDrawio = parseDrawio('<mxfile><mxCell id="n" vertex="1"><mxGeometry x="10" y="20" width="30" height="40"/></mxCell></mxfile>');
   const boundsSource = '<svg><g data-node-id="n" data-node-bounds="10 20 30 40" transform="translate(10 20)"><rect data-shape="rounded-rect" x="0" y="0" width="30" height="40"/></g></svg>'; const boundsSvg = parseSvg(boundsSource); assertVisibleNodeBounds(boundsDrawio, boundsSvg, 'n');
   for (const changed of [boundsSource.replace('x="0"', 'x="1"'), boundsSource.replace('width="30"', 'width="31"'), boundsSource.replace('translate(10 20)', 'translate(11 20)')]) assert.throws(() => assertVisibleNodeBounds(boundsDrawio, parseSvg(changed), 'n'), assert.AssertionError, 'actual visible shape drift rejected while metadata is unchanged');
+  for (const transform of ['rotate(15)', 'skewX(10)', 'skewY(10)']) { const transformed = boundsSource.replace('translate(10 20)', transform); assert.throws(() => assertVisibleNodeBounds(boundsDrawio, parseSvg(transformed), 'n'), assert.AssertionError, `${transform} cannot be silently ignored`); }
+  const transformedText = '<svg><text x="10" y="20" transform="translate(5 0)" font-size="10">label</text></svg>'; const textElement = parseSvg(transformedText).elements.find(({name}) => name === 'text'); assert.throws(() => labelBox(transformedText, textElement), assert.AssertionError, 'transformed text geometry explicitly rejected');
+  const transformedRoute = '<svg><path data-edge-id="e" d="M 0 0 H 20" transform="translate(5 0)"/></svg>'; const routeElement = parseSvg(transformedRoute).elements.find(({name}) => name === 'path'); assert.throws(() => renderedPathPoints(routeElement), assert.AssertionError, 'transformed route geometry explicitly rejected');
+  const transformedMarker = physicalGeometryFixture().replace('<path d="M 0 0 L 10 5 L 0 10 Z"', '<path transform="rotate(15)" d="M 0 0 L 10 5 L 0 10 Z"'); assert.notEqual(transformedMarker, physicalGeometryFixture(), 'transformed marker mutation applies'); assert.throws(() => assertPhysicalGeometry(transformedMarker, 1, false), assert.AssertionError, 'transformed marker geometry explicitly rejected');
   const canvas = '<svg><rect id="canvas" x="0" y="0" width="100" height="100" fill="#FFFFFF" opacity="1"/></svg>'; assertCanvasPaint(canvas); assert.throws(() => assertCanvasPaint(canvas.replace('opacity="1"', 'opacity="0"')), assert.AssertionError, 'zero effective canvas opacity rejected');
   const unmasked = '<svg><path data-edge-id="e" d="M 0 0 H 20" fill="none" stroke="#000000" stroke-width="2"/></svg>'; assertNoOverdraw(unmasked);
   for (const mask of ['<rect x="9" y="-1" width="2" height="2" fill="#000000"/>', '<path d="M 9 -1 H 11 V 1 H 9 V -1" fill="#000000"/>', '<polygon points="9,-1 11,-1 11,1 9,1" fill="#000000"/>', '<polyline points="9,-1 11,-1 11,1 9,1" fill="#000000"/>', '<circle cx="10" cy="0" r="1" fill="#000000"/>', '<ellipse cx="10" cy="0" rx="1" ry="2" fill="#000000"/>']) assert.throws(() => assertNoOverdraw(unmasked.replace('</svg>', `${mask}</svg>`)), assert.AssertionError, `${mask.slice(1, mask.indexOf(' '))} later painted mask rejected`);
+  for (const mask of ['<rect x="8" y="-3" width="4" height="6"/>', '<path d="M 10 -3 V 3"/>', '<polygon points="8,-3 12,0 8,3"/>', '<polyline points="10,-3 10,3"/>', '<circle cx="10" cy="0" r="3"/>', '<ellipse cx="10" cy="0" rx="3" ry="2"/>']) {
+    const paintedStroke = mask.replace('/>', ' fill="none" stroke="#FFFFFF" stroke-width="4" stroke-opacity="0.5"/>'); assert.throws(() => assertNoOverdraw(unmasked.replace('</svg>', `${paintedStroke}</svg>`)), assert.AssertionError, `${mask.slice(1, mask.indexOf(' '))} later translucent stroke mask rejected`);
+  }
   const geometry = physicalGeometryFixture(); const thickStroke = geometry.replace('stroke-width:2', 'stroke-width:400'); assert.notEqual(thickStroke, geometry, 'painted stroke mutation applies'); assert.throws(() => assertPhysicalGeometry(thickStroke, 1, false), assert.AssertionError, 'clearance measures painted stroke edge');
 });
 
