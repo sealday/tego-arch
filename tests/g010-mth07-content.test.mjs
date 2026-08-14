@@ -113,6 +113,9 @@ const DIAGRAM_FAILURE_CLASSES = new Map([
   ['Draw.io endSize drift', /from Draw\.io endSize/u],
   ['SVG marker footprint drift', /markerWidth painted footprint from Draw\.io endSize/u],
   ['SVG marker endpoint offset drift', /endpoint offset from Draw\.io block marker/u],
+  ['marker nonidentity translate', /feedback-arrow marker g transform is exactly identity translate\(0 0\)/u],
+  ['marker nonidentity scale', /feedback-arrow marker g transform is exactly identity translate\(0 0\)/u],
+  ['marker path nonidentity rotate', /feedback-arrow marker path transform is absent identity/u],
   ['percentage label coordinate', /supported SVG subset: text x/u],
   ['letter spacing', /supported SVG subset: CSS property letter-spacing/u],
   ['triangle node', /gate-01 canonical rect node/u],
@@ -1324,9 +1327,19 @@ function actualMarkerFootprint(model, edge, route, renderScale, drawioStyle) {
   const markers = fragments.filter(({name}) => name === 'marker');
   assert.equal(markers.length, 1, `${markerId} resolves once`);
   const marker = markers[0];
+  const markerGroups = descendants(marker).filter(({name}) => name === 'g');
+  assert.equal(markerGroups.length, 1, `${markerId} marker has exactly one canonical g`);
+  assert.equal(markerGroups[0].attributes.get('transform'), 'translate(0 0)',
+    `${markerId} marker g transform is exactly identity translate(0 0)`);
+  assert.deepEqual(elementTransform(model, markerGroups[0]), IDENTITY_MATRIX,
+    `${markerId} marker g effective transform is identity`);
   const markerDrawables = descendants(marker).filter((element) => ['rect', 'path', 'polygon', 'circle'].includes(element.name));
   assert.equal(markerDrawables.length, 1, `${markerId} canonical block marker has one drawable`);
   assert.equal(markerDrawables[0].name, 'path', `${markerId} canonical block marker uses a path`);
+  assert.equal(markerDrawables[0].attributes.has('transform'), false,
+    `${markerId} marker path transform is absent identity`);
+  assert.deepEqual(elementTransform(model, markerDrawables[0]), IDENTITY_MATRIX,
+    `${markerId} marker path effective transform is identity`);
   assert.ok(drawioStyle.has('endSize'), `${edge.attributes.get('data-edge-id')} Draw.io explicitly sets endSize`);
   const endSize = Number(drawioStyle.get('endSize'));
   const strokeWidth = Number(drawioStyle.get('strokeWidth'));
@@ -2184,6 +2197,16 @@ test('MTH-07 helper contracts are green after non-no-op RED mutation fixtures', 
     ['Draw.io endSize drift', mutate(drawio, 'endSize=40;', 'endSize=39;', 'Draw.io endSize drift'), svg],
     ['SVG marker footprint drift', drawio, mutate(svg, 'markerWidth="53.09016994374947"', 'markerWidth="52.09016994374947"', 'SVG marker footprint drift')],
     ['SVG marker endpoint offset drift', drawio, mutate(svg, 'refX="53.09"', 'refX="52.09"', 'SVG marker endpoint offset drift')],
+    ['marker nonidentity translate', drawio, mutate(svg,
+      'transform="translate(0 0)" fill="#1D4ED8"', 'transform="translate(10 0)" fill="#1D4ED8"',
+      'marker nonidentity translate')],
+    ['marker nonidentity scale', drawio, mutate(svg,
+      'transform="translate(0 0)" fill="#1D4ED8"', 'transform="scale(.5)" fill="#1D4ED8"',
+      'marker nonidentity scale')],
+    ['marker path nonidentity rotate', drawio, mutate(svg,
+      '<path d="M 47.5 26.545084971874736 L 2.5 4.045084971874737 L 2.5 49.045084971874736 z"/>',
+      '<path transform="rotate(15)" d="M 47.5 26.545084971874736 L 2.5 4.045084971874737 L 2.5 49.045084971874736 z"/>',
+      'marker path nonidentity rotate')],
     ['SVG marker drift', drawio, mutate(svg, 'transform="translate(0 0)" fill="#1D4ED8"', 'transform="translate(0 0)" fill="#DC2626"', 'SVG marker drift')],
     ['Draw.io label font drift', mutate(drawio, 'fontColor=#0F172A;fontSize=42;', 'fontColor=#0F172A;fontSize=30;', 'Draw.io label font drift'), svg],
     ['SVG label font drift', drawio, mutate(svg, 'font: 700 42px Arial;', 'font: 400 42px Arial;', 'SVG label font drift')],
