@@ -110,6 +110,9 @@ const DIAGRAM_FAILURE_CLASSES = new Map([
   ['text occluder', /supported SVG subset: semantic text/u],
   ['arrow rectangle', /canonical block marker/u],
   ['marker medium stroke', /stroke-expanded marker footprint/u],
+  ['Draw.io endSize drift', /from Draw\.io endSize/u],
+  ['SVG marker footprint drift', /markerWidth painted footprint from Draw\.io endSize/u],
+  ['SVG marker endpoint offset drift', /endpoint offset from Draw\.io block marker/u],
   ['percentage label coordinate', /supported SVG subset: text x/u],
   ['letter spacing', /supported SVG subset: CSS property letter-spacing/u],
   ['triangle node', /gate-01 canonical rect node/u],
@@ -130,13 +133,17 @@ const DIAGRAM_FAILURE_CLASSES = new Map([
   ['Draw.io rhombus node', /gate-01 Draw.io rectangle semantics/u],
   ['Draw.io rounded node', /gate-01 Draw.io rectangle semantics/u],
   ['Draw.io conflicting node shape', /gate-01 Draw.io rectangle semantics/u],
-  ['mixed POC near boundary', /POC 纪律 inner node\/boundary gate-05/u],
+  ['mixed POC near boundary', /(?:POC 纪律 inner node\/boundary gate-05|gate-05 right horizontal padding >=16px)/u],
   ['owner band below viewBox', /owner band contained in canvas\/viewBox/u],
   ['invalid opacity occluder', /supported SVG subset: opacity/u],
   ['canvas after essentials', /opaque canvas paint precedes every essential node drawable and text/u],
   ['node stroke clipped by viewBox', /stage-entry stroke-expanded node contained in canvas\/viewBox at 800px/u],
   ['node-only occluder', /later painted rect cannot occlude essential node stage-entry/u],
   ['text-only occluder', /later painted rect cannot occlude essential text 进场期/u],
+  ['owner horizontal padding 12.8px', /owner-delivery right horizontal padding >=16px/u],
+  ['legend baseline gap 18px', /legend-band ordered baseline gap 1 >=22px/u],
+  ['stage top padding 13.6px', /stage-entry top vertical padding >=14px/u],
+  ['legend bottom padding 13.84px', /legend-band final-line bottom clearance >=14px/u],
 ]);
 const REQUIRED_WRAPPERS = [
   {aria: '企业 AI 四阶段十二门禁图，可横向滚动', className: 'architecture-diagram-scroll'},
@@ -831,6 +838,11 @@ function geometryBounds(items) {
   };
 }
 
+function assertClose(actual, expected, label, tolerance = 1e-9) {
+  assert.ok(Number.isFinite(actual) && Number.isFinite(expected) && Math.abs(actual - expected) <= tolerance,
+    `${label}: expected ${expected}, received ${actual}`);
+}
+
 function renderedGeometry(element, relativeTo = null, model = null) {
   const attributes = element.attributes;
   let shapePoints;
@@ -1091,8 +1103,9 @@ function visibleTextRuns(model, textElement) {
     const squareDeterminant = (matrix[0] * matrix[3] - matrix[1] * matrix[2]) ** 2;
     const minimumScale = Math.sqrt(Math.max(0, (squareScaleSum -
       Math.sqrt(Math.max(0, squareScaleSum ** 2 - 4 * squareDeterminant))) / 2));
+    const baseline = transformedPoint(matrix, {x: cursorX, y: cursorY});
     cursorX += width;
-    return {bounds: geometryBounds(corners), element, fontSize, minimumScale, parentText: textElement, text, weight};
+    return {baseline, bounds: geometryBounds(corners), element, fontSize, minimumScale, parentText: textElement, text, weight};
   });
 }
 
@@ -1302,7 +1315,7 @@ function assertActualFontParity(model, element, style, label) {
   }
 }
 
-function actualMarkerFootprint(model, edge, route, renderScale) {
+function actualMarkerFootprint(model, edge, route, renderScale, drawioStyle) {
   const markerEnd = svgValue(model, edge, 'marker-end');
   const markerId = markerEnd?.match(/^url\(\s*#([\w.-]+)\s*\)$/u)?.[1];
   assert.ok(markerId, `${edge.attributes.get('data-edge-id')} exact marker-end URL`);
@@ -1314,44 +1327,65 @@ function actualMarkerFootprint(model, edge, route, renderScale) {
   const markerDrawables = descendants(marker).filter((element) => ['rect', 'path', 'polygon', 'circle'].includes(element.name));
   assert.equal(markerDrawables.length, 1, `${markerId} canonical block marker has one drawable`);
   assert.equal(markerDrawables[0].name, 'path', `${markerId} canonical block marker uses a path`);
+  assert.ok(drawioStyle.has('endSize'), `${edge.attributes.get('data-edge-id')} Draw.io explicitly sets endSize`);
+  const endSize = Number(drawioStyle.get('endSize'));
+  const strokeWidth = Number(drawioStyle.get('strokeWidth'));
+  assert.ok(Number.isFinite(endSize) && endSize > 0, `${edge.attributes.get('data-edge-id')} finite positive Draw.io endSize`);
+  assert.ok(Number.isFinite(strokeWidth) && strokeWidth > 0,
+    `${edge.attributes.get('data-edge-id')} finite positive Draw.io strokeWidth`);
+
+  // mxMarker.createArrow(2), used by the Draw.io "block" marker, expands size by the
+  // connector stroke, pulls the raw tip back by 1.118 strokes, then fillAndStroke paints
+  // a miter-joined triangle. These are the resulting 1:1 SVG user-space dimensions.
+  const rawLength = endSize + strokeWidth;
+  const strokeRadius = strokeWidth / 2;
+  const endpointOffset = strokeWidth * 1.118;
+  const tipMiter = strokeWidth * Math.sqrt(5) / 2;
+  const baseMiter = strokeWidth * (Math.sqrt(5) + 1) / 4;
+  const expectedFootprint = rawLength + strokeRadius + tipMiter;
+  const expectedRefX = strokeRadius + rawLength + endpointOffset;
+  const expectedCenter = expectedFootprint / 2;
+  const expectedRawPoints = [
+    {x: strokeRadius + rawLength, y: expectedCenter},
+    {x: strokeRadius, y: baseMiter},
+    {x: strokeRadius, y: baseMiter + rawLength},
+  ];
   const canonicalArrow = parsedPath(markerDrawables[0].attributes.get('d'), `${markerId} canonical block marker`);
   assert.equal(canonicalArrow.closed, true, `${markerId} canonical block marker is closed`);
-  assert.deepEqual(canonicalArrow.points, [{x: 0, y: 0}, {x: 26, y: 12}, {x: 0, y: 24}],
-    `${markerId} canonical block marker topology and tip direction`);
+  assert.equal(canonicalArrow.points.length, 3, `${markerId} canonical block marker topology`);
+  canonicalArrow.points.forEach((point, index) => {
+    assertClose(point.x, expectedRawPoints[index].x,
+      `${markerId} canonical block marker point ${index} x from Draw.io endSize`);
+    assertClose(point.y, expectedRawPoints[index].y,
+      `${markerId} canonical block marker point ${index} y from Draw.io endSize`);
+  });
   const viewBox = numericTokens(marker.attributes.get('viewBox'));
   assert.equal(viewBox.length, 4, `${markerId} viewBox`);
-  assert.ok(viewBox[2] > 0 && viewBox[3] > 0, `${markerId} positive viewBox`);
   const width = Number(marker.attributes.get('markerWidth'));
   const height = Number(marker.attributes.get('markerHeight'));
   const refX = Number(marker.attributes.get('refX'));
   const refY = Number(marker.attributes.get('refY'));
   assert.ok([width, height, refX, refY].every(Number.isFinite) && width > 0 && height > 0,
     `${markerId} dimensions/ref`);
-  assert.deepEqual({refX, refY}, {refX: 26, refY: 13}, `${markerId} canonical block marker ref point`);
-  const markerUnits = marker.attributes.get('markerUnits') ?? 'strokeWidth';
-  assert.match(markerUnits, /^(?:strokeWidth|userSpaceOnUse)$/u, `${markerId} markerUnits`);
-  const unitScale = markerUnits === 'strokeWidth'
-    ? svgUserUnits(svgValue(model, edge, 'stroke-width'), `${markerId} edge stroke-width`) : 1;
-  const viewportWidth = width * unitScale;
-  const viewportHeight = height * unitScale;
-  const preserve = marker.attributes.get('preserveAspectRatio') ?? 'xMidYMid meet';
-  let scaleX = viewportWidth / viewBox[2];
-  let scaleY = viewportHeight / viewBox[3];
-  let offsetX = 0;
-  let offsetY = 0;
-  if (preserve !== 'none') {
-    const uniform = /slice/u.test(preserve) ? Math.max(scaleX, scaleY) : Math.min(scaleX, scaleY);
-    const xAlignment = preserve.match(/x(?:Min|Mid|Max)/u)?.[0] ?? 'xMid';
-    const yAlignment = preserve.match(/Y(?:Min|Mid|Max)/u)?.[0] ?? 'YMid';
-    const factor = new Map([['xMin', 0], ['xMid', .5], ['xMax', 1], ['YMin', 0], ['YMid', .5], ['YMax', 1]]);
-    offsetX = (viewportWidth - viewBox[2] * uniform) * factor.get(xAlignment);
-    offsetY = (viewportHeight - viewBox[3] * uniform) * factor.get(yAlignment);
-    scaleX = uniform;
-    scaleY = uniform;
-  }
+  assert.equal(marker.attributes.get('markerUnits'), 'userSpaceOnUse', `${markerId} markerUnits is 1:1 user space`);
+  assert.equal(marker.attributes.get('preserveAspectRatio'), 'none', `${markerId} marker viewport has no implicit scaling`);
+  assertClose(viewBox[0], 0, `${markerId} viewBox x`);
+  assertClose(viewBox[1], 0, `${markerId} viewBox y`);
+  assertClose(viewBox[2], expectedFootprint, `${markerId} viewBox painted width from Draw.io endSize`);
+  assertClose(viewBox[3], expectedFootprint, `${markerId} viewBox painted height from Draw.io endSize`);
+  assertClose(width, expectedFootprint, `${markerId} markerWidth painted footprint from Draw.io endSize`);
+  assertClose(height, expectedFootprint, `${markerId} markerHeight painted footprint from Draw.io endSize`);
+  assertClose(refX, expectedRefX, `${markerId} endpoint offset from Draw.io block marker`);
+  assertClose(refY, expectedCenter, `${markerId} reference center from Draw.io block marker`);
+  assertClose(refX - canonicalArrow.points[0].x, endpointOffset,
+    `${markerId} raw-tip endpoint offset from Draw.io stroke`);
+  const viewportWidth = width;
+  const viewportHeight = height;
+  const scaleX = viewportWidth / viewBox[2];
+  const scaleY = viewportHeight / viewBox[3];
   const mapViewBox = (point) => ({
-    x: (point.x - viewBox[0]) * scaleX + offsetX,
-    y: (point.y - viewBox[1]) * scaleY + offsetY,
+    x: (point.x - viewBox[0]) * scaleX,
+    y: (point.y - viewBox[1]) * scaleY,
   });
   const reference = mapViewBox({x: refX, y: refY});
   const endpoint = route.at(-1);
@@ -1362,52 +1396,55 @@ function actualMarkerFootprint(model, edge, route, renderScale) {
     ? baseAngle
     : Number(orient) * Math.PI / 180;
   assert.ok(Number.isFinite(angle), `${markerId} finite orient`);
-  const viewport = {
-    left: 0, right: viewportWidth, top: 0, bottom: viewportHeight,
-  };
-  let markerShapes = descendants(marker).filter((element) =>
-    ['rect', 'polygon', 'polyline', 'circle', 'path'].includes(element.name)).map((element) => {
-    const geometry = renderedGeometry(element, marker, model);
-    const viewportPoints = geometry.points.map(mapViewBox);
-    assert.ok(viewportPoints.every((point) => point.x >= viewport.left && point.x <= viewport.right &&
-      point.y >= viewport.top && point.y <= viewport.bottom), `${markerId} painted geometry inside marker viewport`);
-    const shapePoints = viewportPoints.map((point) => {
+  const markerPath = markerDrawables[0];
+  const fill = effectivePaint(model, markerPath, 'fill');
+  const stroke = effectivePaint(model, markerPath, 'stroke');
+  const edgeOpacity = ancestorOpacity(model, edge);
+  fill.opacity *= edgeOpacity;
+  stroke.opacity *= edgeOpacity;
+  const edgeStroke = effectivePaint(model, edge, 'stroke');
+  assert.ok(fill.color && fill.opacity >= .8, `${markerId} block fill is visibly opaque`);
+  assert.ok(stroke.color && stroke.opacity >= .8, `${markerId} block stroke is visibly opaque`);
+  assert.equal(fill.color, edgeStroke.color, `${markerId} block fill matches connector stroke`);
+  assert.equal(stroke.color, edgeStroke.color, `${markerId} block outline matches connector stroke`);
+  assertClose(svgUserUnits(svgValue(model, markerPath, 'stroke-width'), `${markerId} marker stroke-width`),
+    strokeWidth, `${markerId} stroke-expanded marker footprint uses Draw.io strokeWidth`);
+  assert.equal(svgValue(model, markerPath, 'stroke-linejoin'), 'miter', `${markerId} block marker uses miter joins`);
+
+  const paintedOuterPoints = [
+    {x: expectedFootprint, y: expectedCenter},
+    {x: 0, y: 0},
+    {x: 0, y: expectedFootprint},
+  ];
+  const shapePoints = paintedOuterPoints.map(mapViewBox).map((point) => {
       const x = point.x - reference.x;
       const y = point.y - reference.y;
       return {
         x: endpoint.x + Math.cos(angle) * x - Math.sin(angle) * y,
         y: endpoint.y + Math.sin(angle) * x + Math.cos(angle) * y,
       };
-    });
-    const fill = effectivePaint(model, element, 'fill');
-    const stroke = effectivePaint(model, element, 'stroke');
-    const edgeOpacity = ancestorOpacity(model, edge);
-    fill.opacity *= edgeOpacity;
-    stroke.opacity *= edgeOpacity;
-    const fillPainted = fill.color && fill.opacity > 0 && shapePoints.length >= 3 && polygonArea(shapePoints) > 1e-7;
-    const strokeWidth = svgUserUnits(svgValue(model, element, 'stroke-width'), `${markerId} marker stroke-width`) *
-      Math.max(scaleX, scaleY);
-    const strokePainted = stroke.color && stroke.opacity > 0 && strokeWidth > 0 &&
-      geometryLength(shapePoints, geometry.closed) > 1e-7;
-    assert.equal(Boolean(strokePainted), false, `${markerId} stroke-expanded marker footprint is canonical fill-only`);
-    return {...geometry, bounds: geometryBounds(shapePoints), fill, fillPainted,
-      points: shapePoints, stroke, strokePainted, strokeWidth};
-  }).filter(({fillPainted, strokePainted}) => fillPainted || strokePainted);
-  assert.ok(markerShapes.length > 0, `${markerId} visible nonzero painted geometry`);
-  for (let index = 0; index < markerShapes.length; index += 1) {
-    for (const later of markerShapes.slice(index + 1)) {
-      assert.equal((later.fillPainted || later.strokePainted) && geometriesIntersect(markerShapes[index], later), false,
-        `${markerId} later marker paint cannot occlude earlier marker geometry`);
-    }
-  }
-  assert.ok(markerShapes.length > 0, `${markerId} has non-occluded painted geometry`);
-  assert.ok(markerShapes.every(({fill, stroke}) =>
-    (!fill.color || fill.opacity >= .2) && (!stroke.color || stroke.opacity >= .2)),
-  `${markerId} painted geometry is visibly opaque`);
-  const footprint = geometryBounds(markerShapes.flatMap(({points: shapePoints}) => shapePoints));
-  assert.ok((footprint.right - footprint.left) * renderScale >= 16 &&
-    (footprint.bottom - footprint.top) * renderScale >= 16, `${markerId} painted footprint >=16px at 800px`);
-  return {footprint, marker, markerId, shapes: markerShapes};
+  });
+  const markerShape = {
+    bounds: geometryBounds(shapePoints), closed: true, element: markerPath, fill, fillPainted: true,
+    points: shapePoints, stroke, strokePainted: true, strokeWidth,
+  };
+  const tangent = {x: Math.cos(baseAngle), y: Math.sin(baseAngle)};
+  const normal = {x: -tangent.y, y: tangent.x};
+  const relative = shapePoints.map((point) => ({x: point.x - endpoint.x, y: point.y - endpoint.y}));
+  const axialValues = relative.map((point) => point.x * tangent.x + point.y * tangent.y);
+  const transverseValues = relative.map((point) => point.x * normal.x + point.y * normal.y);
+  const paintedAxialCss = (Math.max(...axialValues) - Math.min(...axialValues)) * renderScale;
+  const paintedTransverseCss = (Math.max(...transverseValues) - Math.min(...transverseValues)) * renderScale;
+  assertClose(paintedAxialCss, expectedFootprint * renderScale,
+    `${markerId} painted axial footprint parity at 800px`);
+  assertClose(paintedTransverseCss, expectedFootprint * renderScale,
+    `${markerId} painted transverse footprint parity at 800px`);
+  assert.ok(paintedAxialCss >= 16 && paintedTransverseCss >= 16,
+    `${markerId} painted footprint >=16px at 800px`);
+  return {
+    endpoint, footprint: markerShape.bounds, marker, markerId, shapes: [markerShape],
+    terminalOvershoot: tipMiter - endpointOffset,
+  };
 }
 
 function assertDiagram(drawio, svg) {
@@ -1499,7 +1536,26 @@ function assertDiagram(drawio, svg) {
     assert.equal(Number.parseFloat(svgValue(model, shape, 'stroke-width')), Number(style.get('strokeWidth')),
       `${id} stroke width parity`);
     assertActualFontParity(model, labels[0], style, id);
-    for (const run of visibleTextRuns(model, labels[0])) assertActualFontParity(model, run.element, style, `${id} tspan`);
+    const nodeRuns = visibleTextRuns(model, labels[0]);
+    for (const run of nodeRuns) {
+      assertActualFontParity(model, run.element, style, `${id} tspan`);
+      const strokeRadius = Number.parseFloat(svgValue(model, shape, 'stroke-width')) / 2;
+      const leftPadding = (run.bounds.left - geometry.bounds.left - strokeRadius) * renderScale;
+      const rightPadding = (geometry.bounds.right - strokeRadius - run.bounds.right) * renderScale;
+      assert.ok(leftPadding >= 16, `${id} left horizontal padding >=16px (${run.text})`);
+      assert.ok(rightPadding >= 16, `${id} right horizontal padding >=16px (${run.text})`);
+    }
+    const strokeRadius = Number.parseFloat(svgValue(model, shape, 'stroke-width')) / 2;
+    const topPadding = (Math.min(...nodeRuns.map(({bounds}) => bounds.top)) -
+      geometry.bounds.top - strokeRadius) * renderScale;
+    const bottomPadding = (geometry.bounds.bottom - strokeRadius -
+      nodeRuns.at(-1).bounds.bottom) * renderScale;
+    assert.ok(topPadding >= 14, `${id} top vertical padding >=14px`);
+    assert.ok(bottomPadding >= 14, `${id} final-line bottom clearance >=14px`);
+    for (let runIndex = 1; runIndex < nodeRuns.length; runIndex += 1) {
+      const baselineGap = (nodeRuns[runIndex].baseline.y - nodeRuns[runIndex - 1].baseline.y) * renderScale;
+      assert.ok(baselineGap >= 22, `${id} ordered baseline gap ${runIndex} >=22px`);
+    }
   }
   for (let index = 0; index < GATE_IDS.length; index += 1) {
     assert.ok(boundsContain(nodeShapes.get(STAGE_IDS[Math.floor(index / 3)]).bounds,
@@ -1577,7 +1633,7 @@ function assertDiagram(drawio, svg) {
       `${id} dashed/dashPattern parity`);
     assert.equal(style.get('endArrow'), 'block', `${id} Draw.io endArrow`);
     assert.equal(style.get('endFill'), '1', `${id} Draw.io endFill`);
-    const marker = actualMarkerFootprint(model, edge, routeGeometry.points, renderScale);
+    const marker = actualMarkerFootprint(model, edge, routeGeometry.points, renderScale, style);
     assert.ok(marker.shapes.some(({fill, fillPainted}) => fillPainted && fill.color === stroke.color && fill.opacity > 0),
       `${id} filled block marker matches stroke`);
     markerGeometry.set(id, marker);
@@ -1667,9 +1723,11 @@ function assertDiagram(drawio, svg) {
       for (const [nodeId, node] of nodeShapes) {
         if (STAGE_IDS.includes(nodeId)) continue;
         if (nodeId === FEEDBACK_TOPOLOGY.get(edgeId)[1]) {
-          assert.equal(shape.points.some((point) => isPointStrictlyInPolygon(point, node.points)) ||
-            node.points.some((point) => isPointStrictlyInPolygon(point, shape.points)), false,
-          `${edgeId} marker does not paint inside target node`);
+          const insideMarkerPoints = shape.points.filter((point) => isPointStrictlyInPolygon(point, node.points));
+          assert.ok(insideMarkerPoints.every((point) =>
+            Math.hypot(point.x - marker.endpoint.x, point.y - marker.endpoint.y) <= marker.terminalOvershoot + 1e-9) &&
+            !node.points.some((point) => isPointStrictlyInPolygon(point, shape.points)),
+          `${edgeId} marker does not paint inside target node beyond mxGraph's 1.118-stroke tip tolerance`);
           continue;
         }
         assert.ok(boundsToShapeDistance(node.bounds, shape) * renderScale >= 16,
@@ -1856,7 +1914,7 @@ function fixtureDiagram() {
     ['feedback-compliance-to-scope', {entryX: .5, entryY: 1, exitX: .5, exitY: 1}],
     ['feedback-reuse-to-contract', {entryX: .5, entryY: 0, exitX: .5, exitY: 0}],
   ]);
-  const edgeStyle = 'strokeColor=#1D4ED8;strokeWidth=5;dashed=1;dashPattern=18 10;endArrow=block;endFill=1;fontColor=#0F172A;fontSize=38;fontFamily=Arial;fontStyle=1;align=center;';
+  const edgeStyle = 'strokeColor=#1D4ED8;strokeWidth=5;dashed=1;dashPattern=18 10;endArrow=block;endFill=1;endSize=40;fontColor=#0F172A;fontSize=38;fontFamily=Arial;fontStyle=1;align=center;';
   const feedback = FEEDBACK_IDS.map((id) => {
     const [source, target] = FEEDBACK_TOPOLOGY.get(id);
     const port = ports.get(id);
@@ -1907,7 +1965,7 @@ function fixtureDiagram() {
     .stop-label { fill: #881337; font: 700 38px Arial; text-anchor: middle; }
     .feedback-layer { stroke: #1D4ED8; stroke-width: 5; }
     .feedback-edge { fill: none; stroke-dasharray: 18 10; marker-end: url(#feedback-arrow); }
-  </style><defs><marker id="feedback-arrow" markerUnits="userSpaceOnUse" markerWidth="52" markerHeight="52" viewBox="0 0 26 26" refX="26" refY="13" orient="auto"><g transform="translate(0 1)" fill="#1D4ED8"><path d="M 0 0 L 26 12 L 0 24 z"/></g></marker></defs><rect data-canvas="true" x="0" y="0" width="2000" height="2580" fill="#FFFFFF"/>${nodeGroups}<g class="feedback-layer">${renderedEdges}</g></svg>`;
+  </style><defs><marker id="feedback-arrow" markerUnits="userSpaceOnUse" markerWidth="53.09016994374947" markerHeight="53.09016994374947" viewBox="0 0 53.09016994374947 53.09016994374947" refX="53.09" refY="26.545084971874736" orient="auto" preserveAspectRatio="none"><g transform="translate(0 0)" fill="#1D4ED8" stroke="#1D4ED8" stroke-width="5" style="stroke-linejoin:miter"><path d="M 47.5 26.545084971874736 L 2.5 4.045084971874737 L 2.5 49.045084971874736 z"/></g></marker></defs><rect data-canvas="true" x="0" y="0" width="2000" height="2580" fill="#FFFFFF"/>${nodeGroups}<g class="feedback-layer">${renderedEdges}</g></svg>`;
   return {drawio, svg};
 }
 
@@ -2083,21 +2141,21 @@ test('MTH-07 helper contracts are green after non-no-op RED mutation fixtures', 
     ['duplicate SVG node ID', drawio, mutate(svg, '</svg>', '<g data-node-id="gate-01"></g></svg>', 'duplicate SVG node ID')],
     ['marker missing', drawio, mutate(svg, '<marker id="feedback-arrow"', '<marker id="renamed-arrow"', 'marker missing')],
     ['marker dangling', drawio, mutate(svg, 'url(#feedback-arrow)', 'url(#missing-arrow)', 'marker dangling')],
-    ['marker invisible fill none', drawio, mutate(svg, 'transform="translate(0 1)" fill="#1D4ED8"', 'transform="translate(0 1)" fill="none"', 'marker invisible fill none')],
-    ['marker zero painted area', drawio, mutate(svg, 'd="M 0 0 L 26 12 L 0 24 z"', 'd="M 0 0 L 26 24 L 0 0 z"', 'marker zero painted area')],
+    ['marker invisible fill none', drawio, mutate(svg, 'transform="translate(0 0)" fill="#1D4ED8"', 'transform="translate(0 0)" fill="none"', 'marker invisible fill none')],
+    ['marker zero painted area', drawio, mutate(svg, 'd="M 47.5 26.545084971874736 L 2.5 4.045084971874737 L 2.5 49.045084971874736 z"', 'd="M 47.5 26.545084971874736 L 2.5 4.045084971874737 L 47.5 26.545084971874736 z"', 'marker zero painted area')],
     ['marker fragment ID collision', drawio, mutate(svg, '<defs>', '<path id="feedback-arrow" d="M 0 0 L 1 1"/><defs>', 'marker fragment ID collision')],
-    ['marker clipped outside viewport', drawio, mutate(svg, 'refX="26" refY="13"', 'refX="126" refY="13"', 'marker clipped ref')
-      .replace('d="M 0 0 L 26 12 L 0 24 z"', 'd="M 100 0 L 126 12 L 100 24 z"')],
-    ['marker near invisible', drawio, mutate(svg, 'transform="translate(0 1)" fill="#1D4ED8"', 'transform="translate(0 1)" fill="#1D4ED8" fill-opacity="0.001"', 'marker near invisible')],
-    ['marker huge stroke', drawio, mutate(svg, 'd="M 0 0 L 26 12 L 0 24 z"', 'd="M 0 0 L 26 12 L 0 24 z" stroke="#1D4ED8" stroke-width="200"', 'marker huge stroke')],
-    ['marker target collision', drawio, mutate(svg, 'refX="26" refY="13"', 'refX="0" refY="-87"', 'marker target collision')],
-    ['marker painter occlusion', drawio, mutate(svg, '</g></marker>', '<path fill="#FFFFFF" d="M 0 1 L 26 13 L 0 25 z"/></g></marker>', 'marker painter occlusion')],
+    ['marker clipped outside viewport', drawio, mutate(svg, 'refX="53.09" refY="26.545084971874736"', 'refX="153.09" refY="26.545084971874736"', 'marker clipped ref')
+      .replace('d="M 47.5 26.545084971874736 L 2.5 4.045084971874737 L 2.5 49.045084971874736 z"', 'd="M 147.5 26.545084971874736 L 102.5 4.045084971874737 L 102.5 49.045084971874736 z"')],
+    ['marker near invisible', drawio, mutate(svg, 'transform="translate(0 0)" fill="#1D4ED8"', 'transform="translate(0 0)" fill="#1D4ED8" fill-opacity="0.001"', 'marker near invisible')],
+    ['marker huge stroke', drawio, mutate(svg, 'stroke-width="5" style="stroke-linejoin:miter"', 'stroke-width="200" style="stroke-linejoin:miter"', 'marker huge stroke')],
+    ['marker target collision', drawio, mutate(svg, 'refX="53.09" refY="26.545084971874736"', 'refX="0" refY="-87"', 'marker target collision')],
+    ['marker painter occlusion', drawio, mutate(svg, '</g></marker>', '<path fill="#FFFFFF" d="M 47.5 26.545084971874736 L 2.5 4.045084971874737 L 2.5 49.045084971874736 z"/></g></marker>', 'marker painter occlusion')],
     ['node fill opacity drift', drawio, mutate(svg, '</style>', '.gate-shape { fill-opacity: .05 !important; }</style>', 'node fill opacity drift')],
     ['node stroke opacity drift', drawio, mutate(svg, '</style>', '.gate-shape { stroke-opacity: .05 !important; }</style>', 'node stroke opacity drift')],
     ['white essential paint',
       mutate(drawio, 'fontColor=#0F172A;fontSize=42;', 'fontColor=#FFFFFF;fontSize=42;', 'white essential paint Draw.io'),
       mutate(svg, '.stage-label { fill: #0F172A;', '.stage-label { fill: #FFFFFF;', 'white essential paint SVG')],
-    ['marker collision', drawio, mutate(svg, 'markerHeight="52" viewBox="0 0 26 26"', 'markerHeight="800" preserveAspectRatio="none" viewBox="0 0 26 26"', 'marker collision')],
+    ['marker collision', drawio, mutate(svg, 'markerHeight="53.09016994374947"', 'markerHeight="800"', 'marker collision')],
     ['selector override', drawio, mutate(svg, '</style>', '#feedback-rollout-to-acceptance.feedback-edge { stroke: #FFFFFF !important; }</style>', 'selector override')],
     ['uppercase property override', drawio, mutate(svg, '</style>', '.feedback-edge { STROKE: #FFFFFF !important; }</style>', 'uppercase property override')],
     [':not selector override', drawio, mutate(svg, '</style>', 'path.feedback-edge:not(.never) { stroke: #FFFFFF !important; }</style>', ':not selector override')],
@@ -2123,12 +2181,15 @@ test('MTH-07 helper contracts are green after non-no-op RED mutation fixtures', 
     ['Draw.io dash drift', mutate(drawio, 'dashPattern=18 10;', 'dashPattern=5 5;', 'Draw.io dash drift'), svg],
     ['SVG dash drift', drawio, mutate(svg, 'stroke-dasharray: 18 10;', 'stroke-dasharray: 5 5;', 'SVG dash drift')],
     ['Draw.io marker drift', mutate(drawio, 'endArrow=block;endFill=1;', 'endArrow=open;endFill=0;', 'Draw.io marker drift'), svg],
-    ['SVG marker drift', drawio, mutate(svg, 'transform="translate(0 1)" fill="#1D4ED8"', 'transform="translate(0 1)" fill="#DC2626"', 'SVG marker drift')],
+    ['Draw.io endSize drift', mutate(drawio, 'endSize=40;', 'endSize=39;', 'Draw.io endSize drift'), svg],
+    ['SVG marker footprint drift', drawio, mutate(svg, 'markerWidth="53.09016994374947"', 'markerWidth="52.09016994374947"', 'SVG marker footprint drift')],
+    ['SVG marker endpoint offset drift', drawio, mutate(svg, 'refX="53.09"', 'refX="52.09"', 'SVG marker endpoint offset drift')],
+    ['SVG marker drift', drawio, mutate(svg, 'transform="translate(0 0)" fill="#1D4ED8"', 'transform="translate(0 0)" fill="#DC2626"', 'SVG marker drift')],
     ['Draw.io label font drift', mutate(drawio, 'fontColor=#0F172A;fontSize=42;', 'fontColor=#0F172A;fontSize=30;', 'Draw.io label font drift'), svg],
     ['SVG label font drift', drawio, mutate(svg, 'font: 700 42px Arial;', 'font: 400 42px Arial;', 'SVG label font drift')],
     ['unsupported cubic route', drawio, mutate(svg, 'd="M 1740 300 L 1740 200 L 740 200 L 740 300"', 'd="M 1740 300 C 1740 200 740 200 740 300"', 'unsupported cubic route')],
     ['disconnected move route', drawio, mutate(svg, 'd="M 1740 300 L 1740 200 L 740 200 L 740 300"', 'd="M 1740 300 M 1740 200 M 740 200 M 740 300"', 'disconnected move route')],
-    ['invalid transform suffix', drawio, mutate(svg, 'transform="translate(0 1)" fill="#1D4ED8"', 'transform="translate(0 1) INVALID" fill="#1D4ED8"', 'invalid transform suffix')],
+    ['invalid transform suffix', drawio, mutate(svg, 'transform="translate(0 0)" fill="#1D4ED8"', 'transform="translate(0 0) INVALID" fill="#1D4ED8"', 'invalid transform suffix')],
     ['decoy edge occluder', drawio, mutate(svg, '</svg>', '<rect data-edge-id="decoy" x="1200" y="1880" width="200" height="120" fill="#FFFFFF"/></svg>', 'decoy edge occluder')],
     ['known edge ID occluder', drawio, mutate(svg, '</svg>', '<rect data-edge-id="feedback-rollout-to-acceptance" x="1200" y="1880" width="200" height="120" fill="#FFFFFF"/></svg>', 'known edge ID occluder')],
     [':is selector override', drawio, mutate(svg, '</style>', ':is(.feedback-edge) { stroke: #FFFFFF !important; }</style>', ':is selector override')],
@@ -2143,13 +2204,25 @@ test('MTH-07 helper contracts are green after non-no-op RED mutation fixtures', 
     ['use occluder', drawio, mutate(svg, '</svg>', '<use href="#gate-01" x="1200" y="1880"/></svg>', 'use occluder')],
     ['foreignObject occluder', drawio, mutate(svg, '</svg>', '<foreignObject x="1200" y="1880" width="200" height="120"></foreignObject></svg>', 'foreignObject occluder')],
     ['text occluder', drawio, mutate(svg, '</svg>', '<text x="1200" y="1940" font-size="200" fill="#FFFFFF">████</text></svg>', 'text occluder')],
-    ['arrow rectangle', drawio, mutate(svg, '<path d="M 0 0 L 26 12 L 0 24 z"/>', '<rect x="0" y="0" width="26" height="24"/>', 'arrow rectangle')],
-    ['marker medium stroke', drawio, mutate(svg, 'd="M 0 0 L 26 12 L 0 24 z"', 'd="M 0 0 L 26 12 L 0 24 z" stroke="#1D4ED8" stroke-width="20"', 'marker medium stroke')],
+    ['arrow rectangle', drawio, mutate(svg, '<path d="M 47.5 26.545084971874736 L 2.5 4.045084971874737 L 2.5 49.045084971874736 z"/>', '<rect x="0" y="0" width="53.09016994374947" height="53.09016994374947"/>', 'arrow rectangle')],
+    ['marker medium stroke', drawio, mutate(svg, 'stroke-width="5" style="stroke-linejoin:miter"', 'stroke-width="20" style="stroke-linejoin:miter"', 'marker medium stroke')],
     ['percentage label coordinate', drawio, mutate(svg, 'data-edge-label="feedback-rollout-to-acceptance" x="1300"', 'data-edge-label="feedback-rollout-to-acceptance" x="1300%"', 'percentage label coordinate')],
     ['letter spacing', drawio, mutate(svg, '</style>', '.feedback-label { letter-spacing: 100px; }</style>', 'letter spacing')],
     ['triangle node', drawio, mutate(svg, '<rect class="gate-shape" x="20" y="300" width="440" height="340"/>', '<polygon class="gate-shape" points="20,640 240,300 460,640"/>', 'triangle node')],
     ['owner displacement', mutate(drawio, '<mxGeometry x="430" y="2150" width="320" height="160" as="geometry"/>', '<mxGeometry x="530" y="2150" width="320" height="160" as="geometry"/>', 'owner displacement Draw.io'),
       mutate(svg, '<g data-node-id="owner-delivery">', '<g data-node-id="owner-delivery" transform="translate(100 0)">', 'owner displacement SVG')],
+    ['owner horizontal padding 12.8px', drawio, mutate(svg,
+      '<tspan x="590" y="2235">交付/FDE</tspan>', '<tspan x="602" y="2235">交付/FDE</tspan>',
+      'owner horizontal padding 12.8px')],
+    ['legend baseline gap 18px', drawio, mutate(svg,
+      '<tspan x="770" y="2490">虚线：未通过即返回</tspan>',
+      '<tspan x="770" y="2480">虚线：未通过即返回</tspan>', 'legend baseline gap 18px')],
+    ['stage top padding 13.6px', drawio, mutate(svg,
+      '<tspan x="240" y="82">进场期</tspan>', '<tspan x="240" y="80">进场期</tspan>',
+      'stage top padding 13.6px')],
+    ['legend bottom padding 13.84px', drawio, mutate(svg,
+      '<tspan x="770" y="2490">虚线：未通过即返回</tspan>',
+      '<tspan x="770" y="2492">虚线：未通过即返回</tspan>', 'legend bottom padding 13.84px')],
     ['root viewBox percentage', drawio, mutate(svg, 'viewBox="0 0 2000 2580"', 'viewBox="0 0 2000 2580%"', 'root viewBox percentage')],
     ['root viewBox junk', drawio, mutate(svg, 'viewBox="0 0 2000 2580"', 'viewBox="0 0 2000 2580 junk"', 'root viewBox junk')],
     ['rect x percentage', drawio, mutate(svg, 'data-canvas="true" x="0" y="0"', 'data-canvas="true" x="0%" y="0"', 'rect x percentage')],
@@ -2158,10 +2231,10 @@ test('MTH-07 helper contracts are green after non-no-op RED mutation fixtures', 
     ['rect height junk', drawio, mutate(svg, 'width="2000" height="2580" fill="#FFFFFF"', 'width="2000" height="2580junk" fill="#FFFFFF"', 'rect height junk')],
     ['CSS font size percentage', drawio, mutate(svg, '</style>', '.gate-label { font-size: 38% !important; }</style>', 'CSS font size percentage')],
     ['font size percentage', drawio, mutate(svg, '<tspan x="240" y="380">需求考古</tspan>', '<tspan x="240" y="380" font-size="38%">需求考古</tspan>', 'font size percentage')],
-    ['translate percentage', drawio, mutate(svg, 'transform="translate(0 1)" fill="#1D4ED8"', 'transform="translate(0% 1)" fill="#1D4ED8"', 'translate percentage')],
-    ['translate arity', drawio, mutate(svg, 'transform="translate(0 1)" fill="#1D4ED8"', 'transform="translate(0 1 2)" fill="#1D4ED8"', 'translate arity')],
-    ['rotate dimensional junk', drawio, mutate(svg, 'transform="translate(0 1)" fill="#1D4ED8"', 'transform="rotate(90deg junk)" fill="#1D4ED8"', 'rotate dimensional junk')],
-    ['rotate arity', drawio, mutate(svg, 'transform="translate(0 1)" fill="#1D4ED8"', 'transform="rotate(90 1)" fill="#1D4ED8"', 'rotate arity')],
+    ['translate percentage', drawio, mutate(svg, 'transform="translate(0 0)" fill="#1D4ED8"', 'transform="translate(0% 0)" fill="#1D4ED8"', 'translate percentage')],
+    ['translate arity', drawio, mutate(svg, 'transform="translate(0 0)" fill="#1D4ED8"', 'transform="translate(0 0 2)" fill="#1D4ED8"', 'translate arity')],
+    ['rotate dimensional junk', drawio, mutate(svg, 'transform="translate(0 0)" fill="#1D4ED8"', 'transform="rotate(90deg junk)" fill="#1D4ED8"', 'rotate dimensional junk')],
+    ['rotate arity', drawio, mutate(svg, 'transform="translate(0 0)" fill="#1D4ED8"', 'transform="rotate(90 1)" fill="#1D4ED8"', 'rotate arity')],
     ['Draw.io ellipse node', mutate(drawio, 'style="fillColor=#FFFFFF;strokeColor=#334155;', 'style="ellipse;fillColor=#FFFFFF;strokeColor=#334155;', 'Draw.io ellipse node'), svg],
     ['Draw.io rhombus node', mutate(drawio, 'style="fillColor=#FFFFFF;strokeColor=#334155;', 'style="shape=rhombus;fillColor=#FFFFFF;strokeColor=#334155;', 'Draw.io rhombus node'), svg],
     ['Draw.io rounded node', mutate(drawio, 'style="fillColor=#FFFFFF;strokeColor=#334155;', 'style="rounded=1;fillColor=#FFFFFF;strokeColor=#334155;', 'Draw.io rounded node'), svg],

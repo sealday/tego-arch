@@ -74,7 +74,7 @@
         <mxCell id="stop-authority" value="停止/回退" vertex="1" parent="1" style="fillColor=#FFF1F2;strokeColor=#BE123C;strokeWidth=4;fontColor=#881337;fontSize=38;fontFamily=Arial;fontStyle=1;align=center;">
           <mxGeometry x="1620" y="2360" width="300" height="180" as="geometry"/>
         </mxCell>
-        <mxCell id="feedback-rollout-to-acceptance" value="放量回验收" edge="1" source="gate-10" target="gate-04" parent="1" style="strokeColor=#1D4ED8;strokeWidth=5;dashed=1;dashPattern=18 10;endArrow=block;endFill=1;fontColor=#0F172A;fontSize=38;fontFamily=Arial;fontStyle=1;align=center;exitX=0.5;exitY=0;exitPerimeter=1;entryX=0.5;entryY=0;entryPerimeter=1;">
+        <mxCell id="feedback-rollout-to-acceptance" value="放量回验收" edge="1" source="gate-10" target="gate-04" parent="1" style="strokeColor=#1D4ED8;strokeWidth=5;dashed=1;dashPattern=18 10;endArrow=block;endFill=1;endSize=40;fontColor=#0F172A;fontSize=38;fontFamily=Arial;fontStyle=1;align=center;exitX=0.5;exitY=0;exitPerimeter=1;entryX=0.5;entryY=0;entryPerimeter=1;">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="1740" y="200"/>
@@ -82,7 +82,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="feedback-compliance-to-scope" value="合规回切口" edge="1" source="gate-09" target="gate-03" parent="1" style="strokeColor=#1D4ED8;strokeWidth=5;dashed=1;dashPattern=18 10;endArrow=block;endFill=1;fontColor=#0F172A;fontSize=38;fontFamily=Arial;fontStyle=1;align=center;exitX=0.5;exitY=1;exitPerimeter=1;entryX=0.5;entryY=1;entryPerimeter=1;">
+        <mxCell id="feedback-compliance-to-scope" value="合规回切口" edge="1" source="gate-09" target="gate-03" parent="1" style="strokeColor=#1D4ED8;strokeWidth=5;dashed=1;dashPattern=18 10;endArrow=block;endFill=1;endSize=40;fontColor=#0F172A;fontSize=38;fontFamily=Arial;fontStyle=1;align=center;exitX=0.5;exitY=1;exitPerimeter=1;entryX=0.5;entryY=1;entryPerimeter=1;">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="1240" y="1940"/>
@@ -90,7 +90,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="feedback-reuse-to-contract" value="复制回契约" edge="1" source="gate-12" target="gate-06" parent="1" style="strokeColor=#1D4ED8;strokeWidth=5;dashed=1;dashPattern=18 10;endArrow=block;endFill=1;fontColor=#0F172A;fontSize=38;fontFamily=Arial;fontStyle=1;align=center;exitX=0.5;exitY=0;exitPerimeter=1;entryX=0.5;entryY=0;entryPerimeter=1;">
+        <mxCell id="feedback-reuse-to-contract" value="复制回契约" edge="1" source="gate-12" target="gate-06" parent="1" style="strokeColor=#1D4ED8;strokeWidth=5;dashed=1;dashPattern=18 10;endArrow=block;endFill=1;endSize=40;fontColor=#0F172A;fontSize=38;fontFamily=Arial;fontStyle=1;align=center;exitX=0.5;exitY=0;exitPerimeter=1;entryX=0.5;entryY=0;entryPerimeter=1;">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="1740" y="1250"/>

@@ -16,9 +16,9 @@
     .feedback-edge { fill: none; stroke-dasharray: 18 10; marker-end: url(#feedback-arrow); }
   </style>
   <defs>
-    <marker id="feedback-arrow" markerUnits="userSpaceOnUse" markerWidth="52" markerHeight="52" viewBox="0 0 26 26" refX="26" refY="13" orient="auto">
-      <g transform="translate(0 1)" fill="#1D4ED8">
-        <path d="M 0 0 L 26 12 L 0 24 z"/>
+    <marker id="feedback-arrow" markerUnits="userSpaceOnUse" markerWidth="53.09016994374947" markerHeight="53.09016994374947" viewBox="0 0 53.09016994374947 53.09016994374947" refX="53.09" refY="26.545084971874736" orient="auto" preserveAspectRatio="none">
+      <g transform="translate(0 0)" fill="#1D4ED8" stroke="#1D4ED8" stroke-width="5" style="stroke-linejoin:miter">
+        <path d="M 47.5 26.545084971874736 L 2.5 4.045084971874737 L 2.5 49.045084971874736 z"/>
       </g>
     </marker>
   </defs>
