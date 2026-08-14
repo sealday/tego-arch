@@ -9,28 +9,41 @@
     "route": "http://127.0.0.1:4173/tego-arch/methods/mth-07"
   },
   "screenshotEvidence": {
-    "status": "ACCEPTED",
-    "basis": "The in-app Browser screenshot API returned non-empty Uint8Array bytes for all four full-page captures.",
+    "status": "BLOCKED",
+    "acceptance": "NOT_ACCEPTED",
+    "reason": "The four ignored capture files are JPEG/JFIF bytes stored under .png names and contain repeated viewport strips rather than faithful continuous-page captures.",
     "captures": {
       "desktopLight": {
         "path": ".superpowers/sdd/g010-mth07-stage-a-desktop-light.png",
-        "bytes": 1132132,
-        "sha256": "90133ff57a173f8676528c8ab96aa1b1d5c954715cda14c30a3fcc091075cc1e"
+        "encodedFormat": "JPEG/JFIF",
+        "filenameExtension": ".png",
+        "dimensions": {"width": 1440, "height": 7871},
+        "viewport": {"width": 1440, "height": 1000},
+        "disposition": "REJECTED_DIAGNOSTIC_ONLY"
       },
       "desktopDark": {
         "path": ".superpowers/sdd/g010-mth07-stage-a-desktop-dark.png",
-        "bytes": 1177629,
-        "sha256": "b463dc49bab7e85ef01e711507580299a2de350616ee45010ab56cd839af2816"
+        "encodedFormat": "JPEG/JFIF",
+        "filenameExtension": ".png",
+        "dimensions": {"width": 1440, "height": 7871},
+        "viewport": {"width": 1440, "height": 1000},
+        "disposition": "REJECTED_DIAGNOSTIC_ONLY"
       },
       "mobileLight": {
         "path": ".superpowers/sdd/g010-mth07-stage-a-mobile-light.png",
-        "bytes": 328573,
-        "sha256": "5910e866b76b31aac6bda6945ba2912582aa2e4e03f88bd850e0aaab49def078"
+        "encodedFormat": "JPEG/JFIF",
+        "filenameExtension": ".png",
+        "dimensions": {"width": 390, "height": 10889},
+        "viewport": {"width": 390, "height": 844},
+        "disposition": "REJECTED_DIAGNOSTIC_ONLY"
       },
       "mobileDark": {
         "path": ".superpowers/sdd/g010-mth07-stage-a-mobile-dark.png",
-        "bytes": 441763,
-        "sha256": "0a74a4b29227f9445fab5e513cc34a58f03d01932a4a60b6c40e805ee16057f9"
+        "encodedFormat": "JPEG/JFIF",
+        "filenameExtension": ".png",
+        "dimensions": {"width": 390, "height": 10889},
+        "viewport": {"width": 390, "height": 844},
+        "disposition": "REJECTED_DIAGNOSTIC_ONLY"
       }
     }
   },
@@ -62,10 +75,10 @@
         {"label": "人、AI 与程序职责及停止条件表，可横向滚动", "before": {"focus": true, "focusVisible": true, "outline": "rgb(159, 63, 49) solid 3px", "scrollLeft": 0}, "after": {"focus": true, "focusVisible": true, "outline": "rgb(159, 63, 49) solid 3px", "scrollLeft": 40}}
       ],
       "relations": [
-        {"href": "/tego-arch/methods/mth-01", "h1": "质量属性工作坊（Quality Attribute Workshop，QAW）", "expectedH1": "质量属性工作坊（Quality Attribute Workshop，QAW）", "returnedToArticle": true, "navigationMode": "link click"},
-        {"href": "/tego-arch/methods/mth-04", "h1": "架构适应度函数", "expectedH1": "架构适应度函数", "returnedToArticle": true, "navigationMode": "link click"},
-        {"href": "/tego-arch/methods/mth-06", "h1": "从需求到演进的架构闭环", "expectedH1": "从需求到演进的架构闭环", "returnedToArticle": true, "navigationMode": "link click"},
-        {"href": "/tego-arch/cases/temporal-saga-durable-execution", "h1": "持久化执行与长事务：为长时智能体任务建立可恢复边界", "expectedH1": "持久化执行与长事务：为长时智能体任务建立可恢复边界", "returnedToArticle": true, "navigationMode": "link click"}
+        {"href": "/tego-arch/methods/mth-01", "visibleHref": "/tego-arch/methods/mth-01", "actionability": {"status": "NOT_MEASURED", "reason": "Forced activation bypassed a pre-click visibility/actionability probe."}, "h1": "质量属性工作坊（Quality Attribute Workshop，QAW）", "expectedH1": "质量属性工作坊（Quality Attribute Workshop，QAW）", "returnedToArticle": true, "navigationMode": "forced link activation", "selectionReason": "The capture harness selected forced link activation for viewport width > 390.", "clickAttempted": true, "forceUsed": true, "navigationTarget": "/tego-arch/methods/mth-01", "navigationTargetEqualsVisibleHref": true, "fallbackTargetEqualsVisibleHref": null},
+        {"href": "/tego-arch/methods/mth-04", "visibleHref": "/tego-arch/methods/mth-04", "actionability": {"status": "NOT_MEASURED", "reason": "Forced activation bypassed a pre-click visibility/actionability probe."}, "h1": "架构适应度函数", "expectedH1": "架构适应度函数", "returnedToArticle": true, "navigationMode": "forced link activation", "selectionReason": "The capture harness selected forced link activation for viewport width > 390.", "clickAttempted": true, "forceUsed": true, "navigationTarget": "/tego-arch/methods/mth-04", "navigationTargetEqualsVisibleHref": true, "fallbackTargetEqualsVisibleHref": null},
+        {"href": "/tego-arch/methods/mth-06", "visibleHref": "/tego-arch/methods/mth-06", "actionability": {"status": "NOT_MEASURED", "reason": "Forced activation bypassed a pre-click visibility/actionability probe."}, "h1": "从需求到演进的架构闭环", "expectedH1": "从需求到演进的架构闭环", "returnedToArticle": true, "navigationMode": "forced link activation", "selectionReason": "The capture harness selected forced link activation for viewport width > 390.", "clickAttempted": true, "forceUsed": true, "navigationTarget": "/tego-arch/methods/mth-06", "navigationTargetEqualsVisibleHref": true, "fallbackTargetEqualsVisibleHref": null},
+        {"href": "/tego-arch/cases/temporal-saga-durable-execution", "visibleHref": "/tego-arch/cases/temporal-saga-durable-execution", "actionability": {"status": "NOT_MEASURED", "reason": "Forced activation bypassed a pre-click visibility/actionability probe."}, "h1": "持久化执行与长事务：为长时智能体任务建立可恢复边界", "expectedH1": "持久化执行与长事务：为长时智能体任务建立可恢复边界", "returnedToArticle": true, "navigationMode": "forced link activation", "selectionReason": "The capture harness selected forced link activation for viewport width > 390.", "clickAttempted": true, "forceUsed": true, "navigationTarget": "/tego-arch/cases/temporal-saga-durable-execution", "navigationTargetEqualsVisibleHref": true, "fallbackTargetEqualsVisibleHref": null}
       ],
       "logs": [],
       "diagnostics": {"runtimeExceptions": [], "logEntries": [], "events": [], "hasMore": false, "truncated": false}
@@ -97,10 +110,10 @@
         {"label": "人、AI 与程序职责及停止条件表，可横向滚动", "before": {"focus": true, "focusVisible": true, "outline": "rgba(227, 144, 125, 0.62) solid 3px", "scrollLeft": 0}, "after": {"focus": true, "focusVisible": true, "outline": "rgba(227, 144, 125, 0.62) solid 3px", "scrollLeft": 40}}
       ],
       "relations": [
-        {"href": "/tego-arch/methods/mth-01", "h1": "质量属性工作坊（Quality Attribute Workshop，QAW）", "expectedH1": "质量属性工作坊（Quality Attribute Workshop，QAW）", "returnedToArticle": true, "navigationMode": "link click"},
-        {"href": "/tego-arch/methods/mth-04", "h1": "架构适应度函数", "expectedH1": "架构适应度函数", "returnedToArticle": true, "navigationMode": "link click"},
-        {"href": "/tego-arch/methods/mth-06", "h1": "从需求到演进的架构闭环", "expectedH1": "从需求到演进的架构闭环", "returnedToArticle": true, "navigationMode": "link click"},
-        {"href": "/tego-arch/cases/temporal-saga-durable-execution", "h1": "持久化执行与长事务：为长时智能体任务建立可恢复边界", "expectedH1": "持久化执行与长事务：为长时智能体任务建立可恢复边界", "returnedToArticle": true, "navigationMode": "link click"}
+        {"href": "/tego-arch/methods/mth-01", "visibleHref": "/tego-arch/methods/mth-01", "actionability": {"status": "NOT_MEASURED", "reason": "Forced activation bypassed a pre-click visibility/actionability probe."}, "h1": "质量属性工作坊（Quality Attribute Workshop，QAW）", "expectedH1": "质量属性工作坊（Quality Attribute Workshop，QAW）", "returnedToArticle": true, "navigationMode": "forced link activation", "selectionReason": "The capture harness selected forced link activation for viewport width > 390.", "clickAttempted": true, "forceUsed": true, "navigationTarget": "/tego-arch/methods/mth-01", "navigationTargetEqualsVisibleHref": true, "fallbackTargetEqualsVisibleHref": null},
+        {"href": "/tego-arch/methods/mth-04", "visibleHref": "/tego-arch/methods/mth-04", "actionability": {"status": "NOT_MEASURED", "reason": "Forced activation bypassed a pre-click visibility/actionability probe."}, "h1": "架构适应度函数", "expectedH1": "架构适应度函数", "returnedToArticle": true, "navigationMode": "forced link activation", "selectionReason": "The capture harness selected forced link activation for viewport width > 390.", "clickAttempted": true, "forceUsed": true, "navigationTarget": "/tego-arch/methods/mth-04", "navigationTargetEqualsVisibleHref": true, "fallbackTargetEqualsVisibleHref": null},
+        {"href": "/tego-arch/methods/mth-06", "visibleHref": "/tego-arch/methods/mth-06", "actionability": {"status": "NOT_MEASURED", "reason": "Forced activation bypassed a pre-click visibility/actionability probe."}, "h1": "从需求到演进的架构闭环", "expectedH1": "从需求到演进的架构闭环", "returnedToArticle": true, "navigationMode": "forced link activation", "selectionReason": "The capture harness selected forced link activation for viewport width > 390.", "clickAttempted": true, "forceUsed": true, "navigationTarget": "/tego-arch/methods/mth-06", "navigationTargetEqualsVisibleHref": true, "fallbackTargetEqualsVisibleHref": null},
+        {"href": "/tego-arch/cases/temporal-saga-durable-execution", "visibleHref": "/tego-arch/cases/temporal-saga-durable-execution", "actionability": {"status": "NOT_MEASURED", "reason": "Forced activation bypassed a pre-click visibility/actionability probe."}, "h1": "持久化执行与长事务：为长时智能体任务建立可恢复边界", "expectedH1": "持久化执行与长事务：为长时智能体任务建立可恢复边界", "returnedToArticle": true, "navigationMode": "forced link activation", "selectionReason": "The capture harness selected forced link activation for viewport width > 390.", "clickAttempted": true, "forceUsed": true, "navigationTarget": "/tego-arch/cases/temporal-saga-durable-execution", "navigationTargetEqualsVisibleHref": true, "fallbackTargetEqualsVisibleHref": null}
       ],
       "logs": [],
       "diagnostics": {"runtimeExceptions": [], "logEntries": [], "events": [], "hasMore": false, "truncated": false}
@@ -132,10 +145,10 @@
         {"label": "人、AI 与程序职责及停止条件表，可横向滚动", "before": {"focus": true, "focusVisible": true, "outline": "rgb(159, 63, 49) solid 3px", "scrollLeft": 0}, "after": {"focus": true, "focusVisible": true, "outline": "rgb(159, 63, 49) solid 3px", "scrollLeft": 40}}
       ],
       "relations": [
-        {"href": "/tego-arch/methods/mth-01", "h1": "质量属性工作坊（Quality Attribute Workshop，QAW）", "expectedH1": "质量属性工作坊（Quality Attribute Workshop，QAW）", "returnedToArticle": true, "navigationMode": "visible href + direct navigation fallback"},
-        {"href": "/tego-arch/methods/mth-04", "h1": "架构适应度函数", "expectedH1": "架构适应度函数", "returnedToArticle": true, "navigationMode": "visible href + direct navigation fallback"},
-        {"href": "/tego-arch/methods/mth-06", "h1": "从需求到演进的架构闭环", "expectedH1": "从需求到演进的架构闭环", "returnedToArticle": true, "navigationMode": "visible href + direct navigation fallback"},
-        {"href": "/tego-arch/cases/temporal-saga-durable-execution", "h1": "持久化执行与长事务：为长时智能体任务建立可恢复边界", "expectedH1": "持久化执行与长事务：为长时智能体任务建立可恢复边界", "returnedToArticle": true, "navigationMode": "visible href + direct navigation fallback"}
+        {"href": "/tego-arch/methods/mth-01", "visibleHref": "/tego-arch/methods/mth-01", "actionability": {"status": "NOT_MEASURED", "reason": "The capture harness selected compatibility navigation before attempting a click."}, "h1": "质量属性工作坊（Quality Attribute Workshop，QAW）", "expectedH1": "质量属性工作坊（Quality Attribute Workshop，QAW）", "returnedToArticle": true, "navigationMode": "harness-selected compatibility navigation", "selectionReason": "The capture harness selected direct navigation for viewport width <= 390 before any click attempt.", "clickAttempted": false, "forceUsed": false, "navigationTarget": "/tego-arch/methods/mth-01", "navigationTargetEqualsVisibleHref": true, "fallbackTargetEqualsVisibleHref": true},
+        {"href": "/tego-arch/methods/mth-04", "visibleHref": "/tego-arch/methods/mth-04", "actionability": {"status": "NOT_MEASURED", "reason": "The capture harness selected compatibility navigation before attempting a click."}, "h1": "架构适应度函数", "expectedH1": "架构适应度函数", "returnedToArticle": true, "navigationMode": "harness-selected compatibility navigation", "selectionReason": "The capture harness selected direct navigation for viewport width <= 390 before any click attempt.", "clickAttempted": false, "forceUsed": false, "navigationTarget": "/tego-arch/methods/mth-04", "navigationTargetEqualsVisibleHref": true, "fallbackTargetEqualsVisibleHref": true},
+        {"href": "/tego-arch/methods/mth-06", "visibleHref": "/tego-arch/methods/mth-06", "actionability": {"status": "NOT_MEASURED", "reason": "The capture harness selected compatibility navigation before attempting a click."}, "h1": "从需求到演进的架构闭环", "expectedH1": "从需求到演进的架构闭环", "returnedToArticle": true, "navigationMode": "harness-selected compatibility navigation", "selectionReason": "The capture harness selected direct navigation for viewport width <= 390 before any click attempt.", "clickAttempted": false, "forceUsed": false, "navigationTarget": "/tego-arch/methods/mth-06", "navigationTargetEqualsVisibleHref": true, "fallbackTargetEqualsVisibleHref": true},
+        {"href": "/tego-arch/cases/temporal-saga-durable-execution", "visibleHref": "/tego-arch/cases/temporal-saga-durable-execution", "actionability": {"status": "NOT_MEASURED", "reason": "The capture harness selected compatibility navigation before attempting a click."}, "h1": "持久化执行与长事务：为长时智能体任务建立可恢复边界", "expectedH1": "持久化执行与长事务：为长时智能体任务建立可恢复边界", "returnedToArticle": true, "navigationMode": "harness-selected compatibility navigation", "selectionReason": "The capture harness selected direct navigation for viewport width <= 390 before any click attempt.", "clickAttempted": false, "forceUsed": false, "navigationTarget": "/tego-arch/cases/temporal-saga-durable-execution", "navigationTargetEqualsVisibleHref": true, "fallbackTargetEqualsVisibleHref": true}
       ],
       "logs": [],
       "diagnostics": {"runtimeExceptions": [], "logEntries": [], "events": [], "hasMore": false, "truncated": false}
@@ -167,10 +180,10 @@
         {"label": "人、AI 与程序职责及停止条件表，可横向滚动", "before": {"focus": true, "focusVisible": true, "outline": "rgba(227, 144, 125, 0.62) solid 3px", "scrollLeft": 0}, "after": {"focus": true, "focusVisible": true, "outline": "rgba(227, 144, 125, 0.62) solid 3px", "scrollLeft": 40}}
       ],
       "relations": [
-        {"href": "/tego-arch/methods/mth-01", "h1": "质量属性工作坊（Quality Attribute Workshop，QAW）", "expectedH1": "质量属性工作坊（Quality Attribute Workshop，QAW）", "returnedToArticle": true, "navigationMode": "visible href + direct navigation fallback"},
-        {"href": "/tego-arch/methods/mth-04", "h1": "架构适应度函数", "expectedH1": "架构适应度函数", "returnedToArticle": true, "navigationMode": "visible href + direct navigation fallback"},
-        {"href": "/tego-arch/methods/mth-06", "h1": "从需求到演进的架构闭环", "expectedH1": "从需求到演进的架构闭环", "returnedToArticle": true, "navigationMode": "visible href + direct navigation fallback"},
-        {"href": "/tego-arch/cases/temporal-saga-durable-execution", "h1": "持久化执行与长事务：为长时智能体任务建立可恢复边界", "expectedH1": "持久化执行与长事务：为长时智能体任务建立可恢复边界", "returnedToArticle": true, "navigationMode": "visible href + direct navigation fallback"}
+        {"href": "/tego-arch/methods/mth-01", "visibleHref": "/tego-arch/methods/mth-01", "actionability": {"status": "NOT_MEASURED", "reason": "The capture harness selected compatibility navigation before attempting a click."}, "h1": "质量属性工作坊（Quality Attribute Workshop，QAW）", "expectedH1": "质量属性工作坊（Quality Attribute Workshop，QAW）", "returnedToArticle": true, "navigationMode": "harness-selected compatibility navigation", "selectionReason": "The capture harness selected direct navigation for viewport width <= 390 before any click attempt.", "clickAttempted": false, "forceUsed": false, "navigationTarget": "/tego-arch/methods/mth-01", "navigationTargetEqualsVisibleHref": true, "fallbackTargetEqualsVisibleHref": true},
+        {"href": "/tego-arch/methods/mth-04", "visibleHref": "/tego-arch/methods/mth-04", "actionability": {"status": "NOT_MEASURED", "reason": "The capture harness selected compatibility navigation before attempting a click."}, "h1": "架构适应度函数", "expectedH1": "架构适应度函数", "returnedToArticle": true, "navigationMode": "harness-selected compatibility navigation", "selectionReason": "The capture harness selected direct navigation for viewport width <= 390 before any click attempt.", "clickAttempted": false, "forceUsed": false, "navigationTarget": "/tego-arch/methods/mth-04", "navigationTargetEqualsVisibleHref": true, "fallbackTargetEqualsVisibleHref": true},
+        {"href": "/tego-arch/methods/mth-06", "visibleHref": "/tego-arch/methods/mth-06", "actionability": {"status": "NOT_MEASURED", "reason": "The capture harness selected compatibility navigation before attempting a click."}, "h1": "从需求到演进的架构闭环", "expectedH1": "从需求到演进的架构闭环", "returnedToArticle": true, "navigationMode": "harness-selected compatibility navigation", "selectionReason": "The capture harness selected direct navigation for viewport width <= 390 before any click attempt.", "clickAttempted": false, "forceUsed": false, "navigationTarget": "/tego-arch/methods/mth-06", "navigationTargetEqualsVisibleHref": true, "fallbackTargetEqualsVisibleHref": true},
+        {"href": "/tego-arch/cases/temporal-saga-durable-execution", "visibleHref": "/tego-arch/cases/temporal-saga-durable-execution", "actionability": {"status": "NOT_MEASURED", "reason": "The capture harness selected compatibility navigation before attempting a click."}, "h1": "持久化执行与长事务：为长时智能体任务建立可恢复边界", "expectedH1": "持久化执行与长事务：为长时智能体任务建立可恢复边界", "returnedToArticle": true, "navigationMode": "harness-selected compatibility navigation", "selectionReason": "The capture harness selected direct navigation for viewport width <= 390 before any click attempt.", "clickAttempted": false, "forceUsed": false, "navigationTarget": "/tego-arch/cases/temporal-saga-durable-execution", "navigationTargetEqualsVisibleHref": true, "fallbackTargetEqualsVisibleHref": true}
       ],
       "logs": [],
       "diagnostics": {"runtimeExceptions": [], "logEntries": [], "events": [], "hasMore": false, "truncated": false}

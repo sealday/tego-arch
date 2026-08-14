@@ -8,9 +8,27 @@ import {fileURLToPath} from 'node:url';
 const ROOT = fileURLToPath(new URL('../', import.meta.url));
 const REVIEW_PATH = 'docs/reviews/g010-mth07.md';
 const EVIDENCE_PATH = 'docs/reviews/evidence/g010-mth07-stage-a-browser.json';
-const EVIDENCE_SHA256 = 'c897a83c73b10f5c5f1a9a9a7ea17d1cb22ec671cd05629c4d288dfc011908a8';
+const EVIDENCE_SHA256 = 'e16e99118a0ffb407b2363ca9eafe0035d6b68880814feae918d3703f02e6534';
 const CANDIDATE_HEAD = 'f32e0cb7ae79fb92a2154c03dfe8bf7b5b203974';
 const HISTORICAL_REVIEW_TREE_HASH = 'f02ecfe18e12e7ffaf9e1656f5a0fc718e2395c070655d5ede9c590c1d05bde5';
+const MTH07_STATUS = {
+  scope: 'content-lifecycle',
+  value: 'reviewed',
+  source: 'content/methods/mth-07-fde-enterprise-ai-delivery.mdx',
+};
+const PROJECT_STATUS = {
+  schema_version: 1,
+  durable_stories: {completed: 8, total: 20, current: 'G009'},
+  completed_topics: 59,
+  content_documents: 102,
+  governed_sources: 529,
+  sources: {
+    durable_stories: 'docs/content-backlog.md',
+    completed_topics: 'docs/content-backlog.md',
+    content_documents: 'content/**/*.{md,mdx}',
+    governed_sources: 'data/source-ledger.json',
+  },
+};
 const STATES = ['desktopLight', 'desktopDark', 'mobileLight', 'mobileDark'];
 const WRAPPER_LABELS = [
   '企业 AI 四阶段十二门禁图，可横向滚动',
@@ -28,11 +46,40 @@ const RELATIONS = [
   ['/tego-arch/methods/mth-06', '从需求到演进的架构闭环'],
   ['/tego-arch/cases/temporal-saga-durable-execution', '持久化执行与长事务：为长时智能体任务建立可恢复边界'],
 ];
+const SCREENSHOT_REASON = 'The four ignored capture files are JPEG/JFIF bytes stored under .png names and contain repeated viewport strips rather than faithful continuous-page captures.';
 const SCREENSHOTS = {
-  desktopLight: ['.superpowers/sdd/g010-mth07-stage-a-desktop-light.png', 1132132, '90133ff57a173f8676528c8ab96aa1b1d5c954715cda14c30a3fcc091075cc1e'],
-  desktopDark: ['.superpowers/sdd/g010-mth07-stage-a-desktop-dark.png', 1177629, 'b463dc49bab7e85ef01e711507580299a2de350616ee45010ab56cd839af2816'],
-  mobileLight: ['.superpowers/sdd/g010-mth07-stage-a-mobile-light.png', 328573, '5910e866b76b31aac6bda6945ba2912582aa2e4e03f88bd850e0aaab49def078'],
-  mobileDark: ['.superpowers/sdd/g010-mth07-stage-a-mobile-dark.png', 441763, '0a74a4b29227f9445fab5e513cc34a58f03d01932a4a60b6c40e805ee16057f9'],
+  desktopLight: {
+    path: '.superpowers/sdd/g010-mth07-stage-a-desktop-light.png',
+    encodedFormat: 'JPEG/JFIF',
+    filenameExtension: '.png',
+    dimensions: {width: 1440, height: 7871},
+    viewport: {width: 1440, height: 1000},
+    disposition: 'REJECTED_DIAGNOSTIC_ONLY',
+  },
+  desktopDark: {
+    path: '.superpowers/sdd/g010-mth07-stage-a-desktop-dark.png',
+    encodedFormat: 'JPEG/JFIF',
+    filenameExtension: '.png',
+    dimensions: {width: 1440, height: 7871},
+    viewport: {width: 1440, height: 1000},
+    disposition: 'REJECTED_DIAGNOSTIC_ONLY',
+  },
+  mobileLight: {
+    path: '.superpowers/sdd/g010-mth07-stage-a-mobile-light.png',
+    encodedFormat: 'JPEG/JFIF',
+    filenameExtension: '.png',
+    dimensions: {width: 390, height: 10889},
+    viewport: {width: 390, height: 844},
+    disposition: 'REJECTED_DIAGNOSTIC_ONLY',
+  },
+  mobileDark: {
+    path: '.superpowers/sdd/g010-mth07-stage-a-mobile-dark.png',
+    encodedFormat: 'JPEG/JFIF',
+    filenameExtension: '.png',
+    dimensions: {width: 390, height: 10889},
+    viewport: {width: 390, height: 844},
+    disposition: 'REJECTED_DIAGNOSTIC_ONLY',
+  },
 };
 const ARTIFACTS = new Map([
   ['content/methods/mth-07-fde-enterprise-ai-delivery.mdx', ['17,527', '427e4655402ed74f5a1bc7e798e84d42df9fb3f1d94de87c0a73e02f542dcf7a']],
@@ -40,14 +87,21 @@ const ARTIFACTS = new Map([
   ['static/img/diagrams/mth-07-fde-enterprise-ai-delivery-gates.svg', ['10,150', '56a914a2f15894ebd1be9453c648976773dfd616dd1d8718be560f62a84c8a7f']],
   ['data/source-ledger.json', ['1,539,273', 'fef9ec7b2414bc353e37c731fbe39c15d239ec70494938d72b320e7fd0c626d2']],
 ]);
+const GENERATED_ARTIFACTS = new Map([
+  ['src/generated/project-status.json', ['415', 'e1555ff13777d6a1d150a85f828529192aed8bdb3b35546636445db99cf981d7']],
+  ['src/generated/topic-manifest.json', ['220,139', '07612145e5715e9a089843f736bbcd85879198733dc2c6e880a366f39408827f']],
+  ['src/generated/topic-indexes.json', ['220,293', '2ce7843aec2c3d6b2e5cc194f7d433ca911e50da22c8f1d2c52071ca2708a4bd']],
+  ['src/generated/source-ledger.json', ['1,821,547', 'a629a7af1a849f9ce0e2730701cc9ef65f850d8266e10af5a22a9fd17d9c214e']],
+]);
 
-const [review, evidenceBytes, manifest, indexes, projectStatus, publicLedger] = await Promise.all([
+const [review, evidenceBytes, manifest, indexes, projectStatus, publicLedger, backlog] = await Promise.all([
   readFile(path.join(ROOT, REVIEW_PATH), 'utf8').catch((error) => error?.code === 'ENOENT' ? '' : Promise.reject(error)),
   readFile(path.join(ROOT, EVIDENCE_PATH)).catch((error) => error?.code === 'ENOENT' ? Buffer.from('{}') : Promise.reject(error)),
   readFile(path.join(ROOT, 'src/generated/topic-manifest.json'), 'utf8').then(JSON.parse),
   readFile(path.join(ROOT, 'src/generated/topic-indexes.json'), 'utf8').then(JSON.parse),
   readFile(path.join(ROOT, 'src/generated/project-status.json'), 'utf8').then(JSON.parse),
   readFile(path.join(ROOT, 'src/generated/source-ledger.json'), 'utf8').then(JSON.parse),
+  readFile(path.join(ROOT, 'docs/content-backlog.md'), 'utf8'),
 ]);
 const evidence = JSON.parse(evidenceBytes);
 
@@ -91,21 +145,16 @@ async function historicalReviewTreeHash() {
 }
 
 function assertProjection() {
-  assert.deepEqual({
-    completed_topics: projectStatus.completed_topics,
-    content_documents: projectStatus.content_documents,
-    governed_sources: projectStatus.governed_sources,
-  }, {completed_topics: 59, content_documents: 102, governed_sources: 529});
+  assert.deepEqual(projectStatus, PROJECT_STATUS);
   assert.equal(publicLedger.sources.length, 529);
   const mth07 = manifest.topics.find(({id}) => id === 'MTH-07');
-  assert.deepEqual(
-    [mth07?.published, mth07?.status?.value, mth07?.slug],
-    [true, 'reviewed', '/methods/mth-07'],
-  );
-  assert.deepEqual(
-    [indexes.method.find(({id}) => id === 'MTH-07')?.published, indexes.method.find(({id}) => id === 'MTH-07')?.status?.value],
-    [true, 'reviewed'],
-  );
+  assert.equal(mth07?.published, true);
+  assert.equal(mth07?.slug, '/methods/mth-07');
+  assert.deepEqual(mth07?.status, MTH07_STATUS);
+  const methodIndex = indexes.method.find(({id}) => id === 'MTH-07');
+  assert.equal(methodIndex?.published, true);
+  assert.deepEqual(methodIndex?.status, MTH07_STATUS);
+  assert.equal(/\bMTH-07\b/u.test(backlog), false, 'MTH-07 remains absent from the Stage A backlog');
 }
 
 function assertBrowserEvidence(actual) {
@@ -118,15 +167,17 @@ function assertBrowserEvidence(actual) {
     baseUrl: 'http://127.0.0.1:4173/tego-arch/',
     route: 'http://127.0.0.1:4173/tego-arch/methods/mth-07',
   });
-  assert.equal(actual.screenshotEvidence.status, 'ACCEPTED');
-  assert.match(actual.screenshotEvidence.basis, /non-empty Uint8Array bytes/u);
+  assert.equal(actual.screenshotEvidence.status, 'BLOCKED');
+  assert.equal(actual.screenshotEvidence.acceptance, 'NOT_ACCEPTED');
+  assert.equal(actual.screenshotEvidence.reason, SCREENSHOT_REASON);
   assert.deepEqual(Object.keys(actual.screenshotEvidence.captures), STATES);
   for (const [name, expected] of Object.entries(SCREENSHOTS)) {
     const capture = actual.screenshotEvidence.captures[name];
-    assert.deepEqual([capture.path, capture.bytes, capture.sha256], expected);
-    assert.ok(capture.bytes > 0);
-    assert.match(capture.sha256, /^[0-9a-f]{64}$/u);
+    assert.deepEqual(capture, expected);
   }
+  assert.equal('acceptedHashes' in actual.screenshotEvidence, false);
+  assert.equal(JSON.stringify(actual.screenshotEvidence).includes('sha256'), false);
+  assert.equal(JSON.stringify(actual.screenshotEvidence).includes('Uint8Array'), false);
   assert.deepEqual(Object.keys(actual.states), STATES);
 
   const expectedStates = {
@@ -184,10 +235,31 @@ function assertBrowserEvidence(actual) {
     for (const relation of state.relations) {
       assert.equal(relation.h1, relation.expectedH1);
       assert.equal(relation.returnedToArticle, true);
-      assert.equal(
-        relation.navigationMode,
-        name.startsWith('desktop') ? 'link click' : 'visible href + direct navigation fallback',
-      );
+      assert.equal(relation.visibleHref, relation.href);
+      assert.equal(relation.navigationTarget, relation.visibleHref);
+      assert.equal(relation.navigationTargetEqualsVisibleHref, true);
+      assert.equal(relation.actionability.status, 'NOT_MEASURED');
+      if (name.startsWith('desktop')) {
+        assert.equal(relation.navigationMode, 'forced link activation');
+        assert.deepEqual(relation.actionability, {
+          status: 'NOT_MEASURED',
+          reason: 'Forced activation bypassed a pre-click visibility/actionability probe.',
+        });
+        assert.equal(relation.selectionReason, 'The capture harness selected forced link activation for viewport width > 390.');
+        assert.equal(relation.clickAttempted, true);
+        assert.equal(relation.forceUsed, true);
+        assert.equal(relation.fallbackTargetEqualsVisibleHref, null);
+      } else {
+        assert.equal(relation.navigationMode, 'harness-selected compatibility navigation');
+        assert.deepEqual(relation.actionability, {
+          status: 'NOT_MEASURED',
+          reason: 'The capture harness selected compatibility navigation before attempting a click.',
+        });
+        assert.equal(relation.selectionReason, 'The capture harness selected direct navigation for viewport width <= 390 before any click attempt.');
+        assert.equal(relation.clickAttempted, false);
+        assert.equal(relation.forceUsed, false);
+        assert.equal(relation.fallbackTargetEqualsVisibleHref, true);
+      }
     }
     assert.deepEqual(state.logs, []);
     assert.deepEqual(state.diagnostics.runtimeExceptions, []);
@@ -203,6 +275,29 @@ function assertBrowserEvidence(actual) {
   assert.deepEqual(wrapperWidths[3], wrapperWidths[0], 'mobile dark retains exact wrapper scroll widths');
   const svgSizes = STATES.map((name) => actual.states[name].geometry.svg);
   for (const svg of svgSizes.slice(1)) assert.deepEqual(svg, svgSizes[0], 'SVG intrinsic/rendered geometry is exact across states');
+}
+
+function browserReviewRow(name, state) {
+  const sourceDomains = new Set(state.geometry.sources.map(({href}) => new URL(href).hostname));
+  const relationPasses = state.relations.filter(({h1, expectedH1, returnedToArticle}) =>
+    h1 === expectedH1 && returnedToArticle).length;
+  const diagnosticsComplete = !state.diagnostics.hasMore && !state.diagnostics.truncated;
+  return [
+    `\`${name}\``,
+    `\`${state.viewport.width}x${state.viewport.height}\` / \`${state.theme}\``,
+    `\`${state.geometry.page.clientWidth}/${state.geometry.page.scrollWidth}\``,
+    state.geometry.wrappers.map(({clientWidth, scrollWidth}) => `\`${clientWidth}/${scrollWidth}\``).join('; '),
+    state.interactions.map(({before, after}) => `\`${before.scrollLeft}→${after.scrollLeft}\``).join('; '),
+    `\`${state.geometry.svg.naturalWidth}x${state.geometry.svg.naturalHeight}\` / \`${state.geometry.svg.renderedWidth}x${state.geometry.svg.renderedHeight}\``,
+    `\`${state.geometry.sources.length}\`, domains \`${sourceDomains.size}\``,
+    `\`${relationPasses}/${state.relations.length}\``,
+    `\`${state.relations[0].navigationMode}\``,
+    `\`${state.logs.length}/${state.diagnostics.runtimeExceptions.length}\`, ${diagnosticsComplete ? 'complete' : 'incomplete'}`,
+  ].join(' | ').replace(/^/u, '| ').replace(/$/u, ' |');
+}
+
+function screenshotReviewRow(capture) {
+  return `| \`${capture.path}\` | \`${capture.encodedFormat}\` | \`${capture.filenameExtension}\` | \`${capture.dimensions.width}x${capture.dimensions.height}\` | \`${capture.disposition}\` |`;
 }
 
 async function assertReview(source) {
@@ -224,18 +319,40 @@ async function assertReview(source) {
   const projection = section(source, 'Stage A projection');
   assert.match(projection, /59 completed topics \/ 102 content documents \/ 529 governed sources/u);
   assert.match(projection, /MTH-07: `published \/ reviewed`; route: `\/methods\/mth-07`/u);
+  assert.ok(projection.includes(`Exact status object: \`${JSON.stringify(MTH07_STATUS)}\`.`));
+  assert.ok(projection.includes('MTH-07 is absent from `docs/content-backlog.md`; completed topics remain `59`.'));
+  for (const [artifact, [bytes, hash]] of GENERATED_ARTIFACTS) {
+    const body = await readFile(path.join(ROOT, artifact));
+    assert.equal(body.length.toLocaleString('en-US'), bytes, `${artifact} generated byte count fixture`);
+    assert.equal(sha256(body), hash, `${artifact} generated SHA-256 fixture`);
+    assert.match(
+      projection,
+      new RegExp(`\\| ${escapeRegExp(`\`${artifact}\``)} \\| ${escapeRegExp(bytes)} \\| ${escapeRegExp(`\`${hash}\``)} \\|`, 'u'),
+      `${artifact} generated review identity`,
+    );
+  }
 
   const browser = section(source, 'Local in-app Browser QA');
-  for (const name of STATES) assert.ok(browser.includes(`| \`${name}\` |`), `${name} review row`);
+  for (const name of STATES) {
+    assert.ok(browser.includes(browserReviewRow(name, evidence.states[name])), `${name} exact review row`);
+  }
   for (const literal of [
-    'States accepted: `4/4`.',
+    'Functional state records complete: `4/4`.',
     'Wrapper interaction checks: `12/12`.',
     'Relation destination/H1/return checks: `16/16`.',
     'Remote source anchors: `3` per state across exactly `3` domains.',
     'Next unpublished actionable link count: `0` in every state.',
     'Every state recorded warning/error logs `0`, runtime exceptions `0`, protocol log entries `0`, `hasMore=false`, and `truncated=false`.',
-    'Screenshot byte captures: `ACCEPTED`, `4/4`; no independent visual-review PASS is claimed.',
+    'Desktop navigation mode: `forced link activation`; the capture harness selected it for viewport width > 390, used `force=true`, and did not measure pre-click actionability.',
+    'Mobile navigation mode: `harness-selected compatibility navigation`; the capture harness selected direct navigation for viewport width <= 390 before any click attempt, and every fallback target exactly equaled the recorded visible href.',
+    'No click-dispatch failure is claimed for the mobile capture run.',
+    'Screenshot evidence status: `BLOCKED / NOT_ACCEPTED`.',
+    `Screenshot rejection reason: ${SCREENSHOT_REASON}`,
+    'The ignored captures remain rejected diagnostics only; no screenshot hash, continuous full-page capture, or independent visual-review PASS is accepted.',
   ]) assert.ok(browser.includes(literal), `Browser review literal: ${literal}`);
+  for (const name of STATES) {
+    assert.ok(browser.includes(screenshotReviewRow(evidence.screenshotEvidence.captures[name])), `${name} screenshot rejection row`);
+  }
   assert.ok(browser.includes(`Raw Browser JSON: \`${EVIDENCE_PATH}\`, SHA-256 \`${sha256(evidenceBytes)}\`.`));
 
   const checkpoint = section(source, 'Independent review checkpoint');
@@ -280,10 +397,21 @@ test('rejects Browser evidence mutations and any fabricated Stage A readiness or
     ['source drift', (copy) => copy.states.desktopDark.geometry.sources[0].href = 'https://example.com/fabricated'],
     ['relation H1 drift', (copy) => copy.states.mobileDark.relations[0].h1 = 'fabricated'],
     ['missing relation return', (copy) => copy.states.mobileLight.relations[0].returnedToArticle = false],
+    ['visible href drift', (copy) => copy.states.desktopLight.relations[0].visibleHref = '/tego-arch/fabricated'],
+    ['actionability overclaim', (copy) => copy.states.desktopDark.relations[0].actionability.status = 'ACTIONABLE'],
+    ['desktop mode overclaim', (copy) => copy.states.desktopLight.relations[0].navigationMode = 'link click'],
+    ['desktop selection reason drift', (copy) => copy.states.desktopDark.relations[0].selectionReason = 'fabricated'],
+    ['mobile click overclaim', (copy) => copy.states.mobileLight.relations[0].clickAttempted = true],
+    ['mobile compatibility reason drift', (copy) => copy.states.mobileDark.relations[0].selectionReason = 'fabricated'],
+    ['fallback target mismatch', (copy) => copy.states.mobileLight.relations[0].fallbackTargetEqualsVisibleHref = false],
     ['unpublished next link', (copy) => copy.states.desktopLight.geometry.nextUnpublishedActionable = 1],
     ['runtime exception', (copy) => copy.states.desktopLight.diagnostics.runtimeExceptions.push('boom')],
     ['truncated protocol log', (copy) => copy.states.desktopLight.diagnostics.truncated = true],
-    ['missing screenshot bytes', (copy) => copy.screenshotEvidence.captures.mobileDark.bytes = 0],
+    ['accepted screenshot status', (copy) => copy.screenshotEvidence.status = 'ACCEPTED'],
+    ['accepted screenshot disposition', (copy) => copy.screenshotEvidence.acceptance = 'ACCEPTED'],
+    ['screenshot reason drift', (copy) => copy.screenshotEvidence.reason = 'fabricated'],
+    ['screenshot identity drift', (copy) => copy.screenshotEvidence.captures.mobileDark.path = '.superpowers/sdd/fabricated.png'],
+    ['accepted screenshot hash', (copy) => copy.screenshotEvidence.captures.desktopLight.sha256 = '0'.repeat(64)],
   ];
   for (const [label, mutate] of evidenceMutations) {
     const copy = structuredClone(evidence);
@@ -298,7 +426,14 @@ test('rejects Browser evidence mutations and any fabricated Stage A readiness or
     ['architecture readiness', 'Architecture review: `PENDING`.', 'Architecture review: `CLEAR / READY`.'],
     ['final readiness', 'Final Stage A review judgment: `PENDING`.', 'Final Stage A review judgment: `READY`.'],
     ['fabricated deployment', 'Deployment status: `NOT_RUN`.', 'Deployment status: `SUCCESS`.'],
-    ['fabricated visual pass', 'Screenshot byte captures: `ACCEPTED`, `4/4`; no independent visual-review PASS is claimed.', 'Visual inspection: `PASS`.'],
+    ['review geometry drift', '`1440/1440`', '`1440/1441`'],
+    ['generated hash drift', 'e1555ff13777d6a1d150a85f828529192aed8bdb3b35546636445db99cf981d7', '0'.repeat(64)],
+    ['screenshot status overclaim', 'Screenshot evidence status: `BLOCKED / NOT_ACCEPTED`.', 'Screenshot evidence status: `ACCEPTED`.'],
+    ['screenshot identity drift', '.superpowers/sdd/g010-mth07-stage-a-mobile-dark.png', '.superpowers/sdd/fabricated.png'],
+    ['screenshot reason drift', SCREENSHOT_REASON, 'fabricated screenshot reason'],
+    ['desktop fallback wording drift', 'Desktop navigation mode: `forced link activation`;', 'Desktop navigation mode: `link click`;'],
+    ['mobile fallback wording drift', 'Mobile navigation mode: `harness-selected compatibility navigation`;', 'Mobile navigation mode: `link click`;'],
+    ['fabricated visual pass', 'The ignored captures remain rejected diagnostics only; no screenshot hash, continuous full-page capture, or independent visual-review PASS is accepted.', 'Visual inspection: `PASS`.'],
   ]) {
     const mutated = review.replace(before, after);
     assert.notEqual(mutated, review, `${label} mutation applies`);
