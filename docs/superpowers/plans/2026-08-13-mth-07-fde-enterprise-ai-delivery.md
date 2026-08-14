@@ -4,7 +4,7 @@
 
 **Goal:** 发布 MTH-07 企业 AI 前线部署方法页，把微信文章的四阶段十二能力框架重构为可验收、可运行、可停止、可复制的交付门禁闭环，并完成原创图、来源治理、独立审查和 Stage A/Stage B 线上发布。
 
-**Architecture:** 页面使用仅绑定 `MTH-07 + method` 的十节信息架构，正文以十二个统一五段门禁合同为权威说明，Draw.io/SVG 负责四阶段、三条反馈线和责任带的视觉解释。发布页来源层只使用 NIST、Google、OpenAI 一手机制资料并显式区分 Tego Arch 推断；微信文章仅留在内部构思记录，且与 STY-07 工作树完全隔离。
+**Architecture:** 页面使用仅绑定 `MTH-07 + method` 的十节信息架构，正文以十二个统一五段门禁合同为权威说明，Draw.io/SVG 负责四阶段、三条反馈线和责任带的视觉解释。发布页来源层只使用 NIST、Google、Microsoft Learn 一手机制资料并显式区分 Tego Arch 推断；微信文章仅留在内部构思记录，且与 STY-07 工作树完全隔离。
 
 **Tech Stack:** Docusaurus 3.10、MDX、React 19、Node 24 test runner、TypeScript、Draw.io XML/SVG、JSON source governance、GitHub Actions、GitHub Pages。
 
@@ -88,7 +88,7 @@ Use exactly these governed identities:
 
 - `src-nist-ai-rmf-1-0` — canonical `https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10`; report `NIST AI 100-1`, 2023-01-26; sole `manifest_primary`; support roles, TEVV, production monitoring, appeal/override, recovery and decommissioning; do not claim it defines FDE or the twelve gates.
 - `src-google-sre-canarying-releases` — canonical `https://sre.google/workbook/canarying-releases/`; support partial time-bounded rollout, control comparison and proceed/stop decisions; do not claim Google’s exact organization is required.
-- `src-openai-evals-business-primer` — canonical `https://openai.com/index/evals-drive-next-chapter-of-ai/`; support specify/measure/improve evaluation framing and real-world-condition testing; do not use product adoption or business-benefit claims as evidence.
+- `src-microsoft-foundry-run-evaluations` — canonical `https://learn.microsoft.com/en-us/azure/ai-studio/how-to/evaluate-generative-ai-app`; support test-data evaluation before deployment and production-quality monitoring; do not generalize Azure product steps into a universal process.
 - `src-atlas-mth07-fde-delivery-gates` — local `/img/diagrams/mth-07-fde-enterprise-ai-delivery-gates.svg`; `LicenseRef-Atlas-Original`, `original-atlas`, `illustration-rights`.
 
 Do not add the China generative-AI regulation source unless the final prose includes the exact “向境内公众提供生成式人工智能服务” applicability boundary. If it is needed, add CAC’s official `https://www.cac.gov.cn/2023-07/13/c_1690898327029107.htm` as a fifth governed source and update generated counts from actual output.
@@ -177,7 +177,7 @@ Baseline is `59 completed / 101 documents / 525 sources`. With one document and 
 
 - [ ] **Step 1: Write source-governance mutations.** Require exact canonical locator, author/org, date/version, source kind, evidence role, license family, copyright policy, citation scope, non-copy boundary, unique primary and original illustration record.
 - [ ] **Step 2: Run source contract RED.** Run `node --test tests/g010-mth07-content.test.mjs`; expect missing source identities/citations alongside the still-missing article and diagram.
-- [ ] **Step 3: Research all four identities without mutating governance data.** Inspect existing ledger families for exact NIST/Google/OpenAI reuse, verify current official pages and license evidence, and record the complete proposed ledger/citation/health fields in `.superpowers/sdd/mth07-source-research.md`. Record explicitly that WeChat is excluded from governed sources and do not probe unrelated cache entries.
+- [ ] **Step 3: Research all four identities without mutating governance data.** Inspect existing ledger families for exact NIST/Google/Microsoft Learn reuse, verify current official pages and license evidence, and record the complete proposed ledger/citation/health fields in `.superpowers/sdd/mth07-source-research.md`. Record explicitly that WeChat is excluded from governed sources and do not probe unrelated cache entries.
 - [ ] **Step 4: Prove the governance ordering constraint.** In the report, cite the existing validator behavior that rejects an uncited non-discovery source and a ledger document key whose MDX does not exist. Do not commit knowingly invalid provisional source records.
 - [ ] **Step 5: Verify and commit only the strengthened contract.** Run `node --test tests/g010-mth07-content.test.mjs`; expected helper/source-contract tests pass and implementation tests remain RED only for absent article/source records/diagram/projection.
 
@@ -231,7 +231,7 @@ Baseline is `59 completed / 101 documents / 525 sources`. With one document and 
 - [ ] **Step 2: Write the exact front matter and ten sections.** Use the fixed metadata and heading order; create three wrappers with exact labels, `role="region"`, `tabIndex={0}` and the existing ArrowRight scroll handler.
 - [ ] **Step 3: Write the twelve-row gate table.** Each row carries risk/mechanism/evidence/pass/owner/failure return. Keep prose authoritative and diagram labels concise.
 - [ ] **Step 4: Write responsibility and stop-condition tables.** Bind program/AI/human duties; distinguish POC→production, production→rollout, customer→reuse; state measurable stop/re-entry conditions.
-- [ ] **Step 5: Add citations and governed source records atomically.** Cite NIST for risk/evaluation/monitoring/oversight, Google SRE for canary decisions, OpenAI for the specify/measure/improve evaluation framing, and label Tego Arch synthesis explicitly. Do not cite or link WeChat. In the same change, add the four complete ledger identities, exact document citations, link-health observations and license inventory rows from Task 2 research. Reuse an exact existing family rather than duplicate it. Do not introduce unverified market/salary/policy figures.
+- [ ] **Step 5: Add citations and governed source records atomically.** Cite NIST for risk/evaluation/monitoring/oversight, Google SRE for canary decisions, Microsoft Learn for pre-deployment and production evaluation mechanics, and label Tego Arch synthesis explicitly. Do not cite or link WeChat. In the same change, add the four complete ledger identities, exact document citations, link-health observations and license inventory rows from Task 2 research. Reuse an exact existing family rather than duplicate it. Do not introduce unverified market/salary/policy figures.
 - [ ] **Step 6: Add reciprocal links.** Add exact metadata and visible links in MTH-01/04/06 and Temporal only where generator requires them; preserve each existing conclusion and avoid QA-09.
 - [ ] **Step 7: Verify density, source governance, content, terminology, links, typecheck and build.** Run:
 

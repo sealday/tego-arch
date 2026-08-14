@@ -151,7 +151,7 @@ MTH-07 的父级为 `/methods`。计划建立以下可见且必要的关系：
 
 1. NIST `Artificial Intelligence Risk Management Framework (AI RMF 1.0)`，作为唯一 primary，支持角色责任、测试评估、生产监控、人工覆盖和停止/退役机制；
 2. Google SRE Workbook `Canarying Releases`，支持局部限时发布、对照评价、继续或停止放量；
-3. OpenAI `How evals drive the next chapter in AI for businesses`，支持把业务目标转成 specify、measure、improve 的评估闭环，但不用于证明普遍商业效果；
+3. Microsoft Learn `Run evaluations from the Microsoft Foundry portal`，支持用测试数据与内置/自定义评估器在部署前验证、部署后监测质量；不把具体 Azure 产品步骤外推为普遍流程；
 4. 若正文确实讨论向中国境内公众提供生成式人工智能服务的适用边界，再引用国家互联网信息办公室《生成式人工智能服务管理暂行办法》；不得把它泛化到所有企业内部项目。
 
 最终至少使用三个独立远程域，且只设 NIST 为 `manifest_primary`。实施阶段必须逐项核查精确 URL、机构/作者、发布日期或版本、核查日期、许可与权利证据、引用角色、允许总结范围和禁止外推项。微信文章不得进入来源台账、正文链接、引用或图示构图。
