@@ -19,6 +19,8 @@ const IMPLEMENTATION_HEAD = '087ebc19322bbb5660ba9f2997e8384d209e3494';
 const PRODUCTION_BROWSER_HASH = '753a94cf2ef53d054959dc6c115d4f29e484c651a06fe4c5c7d617358fd8b192';
 const IMMEDIATE_REVIEW_HASH = 'd8438c66127e9b4411d5dc121a19842aaaab4e03c31a2285cb02fcfde689cf6b';
 const IMMEDIATE_BACKLOG_SUFFIX_HASH = '4f53eceafe34f274d494bacf5bc35be770a872666dacce54a818f796542e01c8';
+const STAGE_B_CANDIDATE_HEAD = '4b9d2c718d96adeba6910805bd02116b162f3c06';
+const STAGE_B_REVIEWED_HEAD = '44cfed91f9773e2e43d271b30a76a1ed1a70f10e';
 const STAGE_A_ARTIFACT_HASHES = new Map([
   [ARTICLE, 'f98c075a6bf38c4d7d345d792f3dbdba361b682eef2c458095b96bcd4dbb4bf4'],
   [DRAWIO, 'b985dcaea8f5fe4ebd3601f34dcdc1eb51ff1f2a08acf7407dd4e309a51ed78e'],
@@ -102,10 +104,12 @@ function assertStageBClosure(source = review, backlogSource = backlog) {
     'Projection: `60 completed topics / 102 content documents / 529 governed sources`.',
     'STY-07 target: `published / complete`.',
     'STY-08 target: `unpublished / pending`; actionable route count: `0`; sole next topic.',
-    'Independent Stage B code/spec/security review: `PENDING`.',
-    'Independent Stage B content/evidence/rights review: `PENDING`.',
-    'Independent Stage B architecture/invariant review: `PENDING`.',
-    'Final Stage B review judgment: `PENDING`.',
+    `Exact Stage B reviewed head: \`${STAGE_B_REVIEWED_HEAD}\`.`,
+    `Review history: initial closure candidate \`${STAGE_B_CANDIDATE_HEAD}\` was remediated by \`${STAGE_B_REVIEWED_HEAD}\`.`,
+    'Independent Stage B code/spec/security review: `READY / APPROVE`; findings: `0`.',
+    'Independent Stage B content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`.',
+    'Independent Stage B architecture/invariant review: `CLEAR / READY`; blockers: `0`.',
+    'Final Stage B review judgment: `READY`.',
     'Stage B deployment status: `PENDING`.',
   ]) assert.ok(projection.includes(literal), literal);
 
@@ -332,8 +336,13 @@ test('rejects Stage B history drift, stale next-topic state, weakened review slo
     ['checked STY-08', 'backlog', backlog, backlog.replace('- [ ] **STY-08 ', '- [x] **STY-08 ')],
     ['actionable STY-08', 'backlog', backlog, `${backlog}\n[Actor](/styles/sty-08)\n`],
     ['wrong projection', 'review', review, review.replace('60 completed topics / 102 content documents / 529 governed sources', '59 completed topics / 102 content documents / 529 governed sources')],
-    ['fabricated code verdict', 'review', review, review.replace('code/spec/security review: `PENDING`', 'code/spec/security review: `READY / APPROVE`')],
-    ['fabricated final verdict', 'review', review, review.replace('Final Stage B review judgment: `PENDING`', 'Final Stage B review judgment: `READY`')],
+    ['wrong reviewed head', 'review', review, review.replace(STAGE_B_REVIEWED_HEAD, '0'.repeat(40))],
+    ['weakened code verdict', 'review', review, review.replace('Independent Stage B code/spec/security review: `READY / APPROVE`; findings: `0`', 'Independent Stage B code/spec/security review: `NOT READY`; findings: `1`')],
+    ['weakened content verdict', 'review', review, review.replace('Independent Stage B content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`', 'Independent Stage B content/evidence/rights review: `CHANGES`; rights: `PASS`; findings: `1`')],
+    ['weakened rights', 'review', review, review.replace('Independent Stage B content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`', 'Independent Stage B content/evidence/rights review: `CONTENT READY`; rights: `UNKNOWN`; findings: `0`')],
+    ['weakened architecture verdict', 'review', review, review.replace('Independent Stage B architecture/invariant review: `CLEAR / READY`; blockers: `0`', 'Independent Stage B architecture/invariant review: `BLOCKED`; blockers: `1`')],
+    ['stale review slot', 'review', review, review.replace('Independent Stage B code/spec/security review: `READY / APPROVE`; findings: `0`', 'Independent Stage B code/spec/security review: `PENDING`')],
+    ['stale final verdict', 'review', review, review.replace('Final Stage B review judgment: `READY`', 'Final Stage B review judgment: `PENDING`')],
     ['fabricated deployment', 'review', review, review.replace('Stage B deployment status: `PENDING`', 'Stage B deployment status: `SUCCESS`')],
   ];
   for (const [label, target, original, mutated] of mutations) {
