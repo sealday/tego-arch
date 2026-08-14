@@ -104,8 +104,12 @@ function assertBatch2HistoricalClosure(source) {
 
 function assertLiveReleaseState(source) {
   const baseline = currentReleaseBaseline(source);
-  assert.match(baseline, /^-\s\*\*当前发布基线：\*\* 2026-08-14 G009 Batch 8 已完成 STY-07/u);
-  assert.match(baseline, /当前 G009，下一项为 STY-07/u);
+  const liveParts = baseline.split('此前 G009 Batch 7 历史完成基线为：');
+  assert.equal(liveParts.length, 2, 'one immutable Batch 7 history boundary');
+  const [prefix] = liveParts;
+  assert.match(prefix, /^-\s\*\*当前发布基线：\*\* 2026-08-14 G009 Batch 8 已完成 STY-07/u);
+  assert.match(prefix, /当前 G009，下一项为 STY-08/u);
+  assert.doesNotMatch(prefix, /下一项为 STY-07/u);
 }
 
 test('records exact successful G008 Batch 2 deployment evidence', () => {

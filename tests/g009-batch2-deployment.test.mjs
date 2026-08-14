@@ -197,9 +197,13 @@ function g009Batch1AndOlderHistory(source) {
 
 function assertBacklog(source) {
   const liveBaseline = currentReleaseBaseline(source);
-  assert.match(liveBaseline, /^- \*\*当前发布基线：\*\* 2026-08-14 G009 Batch 8 已完成 STY-07/u);
-  assert.match(liveBaseline, /Stage B closure 为 56 个已完成主题、98 篇内容文档与 509 个受治理来源/u);
-  assert.match(liveBaseline, /下一项为 STY-07/u);
+  const liveParts = liveBaseline.split('此前 G009 Batch 7 历史完成基线为：');
+  assert.equal(liveParts.length, 2, 'one immutable Batch 7 history boundary');
+  const [livePrefix] = liveParts;
+  assert.match(livePrefix, /^- \*\*当前发布基线：\*\* 2026-08-14 G009 Batch 8 已完成 STY-07/u);
+  assert.match(livePrefix, /Stage B local closure projection 为 60 个已完成主题、102 篇内容文档与 529 个受治理来源/u);
+  assert.match(livePrefix, /下一项为 STY-08/u);
+  assert.doesNotMatch(livePrefix, /下一项为 STY-07/u);
   assert.equal(liveBaseline.split('此前 G009 Batch 3 历史完成基线为：').length - 1, 1);
   const segment = currentG009Batch2Baseline(source);
   assert.equal(segment, expectedCurrentBaseline);
@@ -271,7 +275,7 @@ test('rejects review and historical-baseline contradictions', async (t) => {
   }
 });
 
-test('preserves the STY-01 closure in the current Batch 6 projection', async () => {
+test('preserves the STY-01 closure under the current STY-07 Stage B projection', async () => {
   const [backlog, manifest, status, sourceLedger] = await Promise.all([
     readFile(new URL('../docs/content-backlog.md', import.meta.url), 'utf8'),
     readFile(new URL('../src/generated/topic-manifest.json', import.meta.url), 'utf8').then(JSON.parse),

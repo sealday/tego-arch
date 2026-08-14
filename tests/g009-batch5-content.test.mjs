@@ -908,7 +908,7 @@ test('governs the STY-04 evidence and original illustration with one manifest pr
   assert.equal(illustrationCitation?.quotation_reviewed, false);
 });
 
-test('projects the exact Stage B closure state', () => {
+test('preserves the topic closure under the current STY-07 Stage B projection', () => {
   const topic = manifest.topics.find(({id}) => id === TOPIC_ID);
   const nextTopic = manifest.topics.find(({id}) => id === 'STY-05');
   assert.equal(topic?.published, true);

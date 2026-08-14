@@ -164,12 +164,17 @@ function replaceBatch3HistoricalLiteral(source, literal, replacement) {
 }
 
 function assertCurrentReleaseState(source) {
-  const {prefix} = assertBatch3HistoricalSegment(source);
+  assertBatch3HistoricalSegment(source);
+  const baseline = currentReleaseBaseline(source);
+  const liveParts = baseline.split('此前 G009 Batch 7 历史完成基线为：');
+  assert.equal(liveParts.length, 2, 'one immutable Batch 7 history boundary');
+  const [prefix] = liveParts;
   assert.match(
     prefix,
     /^- \*\*当前发布基线：\*\* 2026-08-14 G009 Batch 8 已完成 STY-07/u,
   );
-  assert.match(prefix, /当前 G009，下一项为 STY-07/u);
+  assert.match(prefix, /当前 G009，下一项为 STY-08/u);
+  assert.doesNotMatch(prefix, /下一项为 STY-07/u);
 }
 
 function assertBacklogClosure(source) {
@@ -299,8 +304,8 @@ test('preserves Batch 3 closure under the current G009 baseline', () => {
 
 test('rejects incomplete over-complete or terminal current mutations', () => {
   const staleNextTopic = backlog.replace(
+    '当前 G009，下一项为 STY-08',
     '当前 G009，下一项为 STY-07',
-    '当前 G009，下一项为 STY-03',
   );
   assert.notEqual(staleNextTopic, backlog, 'next-topic mutation must change backlog');
   assert.throws(

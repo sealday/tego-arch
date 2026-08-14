@@ -242,7 +242,11 @@ function assertBacklog(source) {
     currentReleaseBaseline(source),
     /^- \*\*当前发布基线：\*\* 2026-08-14 G009 Batch 8 已完成 STY-07/u,
   );
-  assert.match(currentReleaseBaseline(source), /当前 G009，下一项为 STY-07/u);
+  const liveParts = currentReleaseBaseline(source).split('此前 G009 Batch 7 历史完成基线为：');
+  assert.equal(liveParts.length, 2, 'one immutable Batch 7 history boundary');
+  const [livePrefix] = liveParts;
+  assert.match(livePrefix, /当前 G009，下一项为 STY-08/u);
+  assert.doesNotMatch(livePrefix, /下一项为 STY-07/u);
 }
 
 function assertGeneratedState(manifestValue, statusValue) {
@@ -304,7 +308,7 @@ test('rejects reordered extra or contradictory review content', () => {
   }
 });
 
-test('preserves G008 Batch 11 closure under the live STY-00 completion', () => {
+test('preserves G008 Batch 11 closure under the current STY-07 Stage B projection', () => {
   assertBacklog(backlog);
   assertGeneratedState(manifest, projectStatus);
 });
@@ -324,7 +328,7 @@ test('rejects every backlog evidence identity count state and history mutation',
     backlog.replace('- [x] **MOD-13 ', '- [ ] **MOD-13 '),
     backlog.replace('- [x] **STY-00 ', '- [ ] **STY-00 '),
     backlog.replace('- **当前持久故事：** `G009`。', '- **当前持久故事：** `G008`。'),
-    backlog.replace('下一项为 STY-07', '下一项为 STY-03'),
+    backlog.replace('下一项为 STY-08', '下一项为 STY-07'),
   ]) {
     assert.notEqual(mutation, backlog, 'backlog mutation must change source');
     assert.throws(() => assertBacklog(mutation));

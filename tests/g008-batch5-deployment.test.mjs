@@ -342,7 +342,7 @@ test('rejects segment-local review and interaction evidence mutations', () => {
   }
 });
 
-test('preserves Batch 5 evidence under the live Batch 7 projection', () => {
+test('preserves Batch 5 evidence under the current Batch 8 projection', () => {
   const {sha, run} = parseEvidence(review);
   const row = backlog.split(/\r?\n/u).find((line) => line.startsWith('- [x] **MOD-07 '));
   assert.ok(row?.includes(sha), 'MOD-07 exact Stage A SHA');

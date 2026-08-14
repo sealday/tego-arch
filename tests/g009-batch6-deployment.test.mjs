@@ -319,7 +319,7 @@ function assertHistoricalBacklogLocks(source) {
   assert.equal(sha256(currentBaseline.slice(historyStart)), HISTORICAL_BACKLOG_SUFFIX_HASH);
 }
 
-test('preserves the exact STY-05 closure under the live STY-06 projection', () => {
+test('preserves the exact STY-05 closure under the current STY-07 projection', () => {
   assert.deepEqual(
     {
       completed_topics: projectStatus.completed_topics,

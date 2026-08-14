@@ -233,7 +233,7 @@ test('rejects missing duplicate symbolic or weakened review evidence', () => {
   }
 });
 
-test('preserves Batch 6 evidence under the live Batch 7 projection', () => {
+test('preserves Batch 6 evidence under the current Batch 8 projection', () => {
   assertBacklogClosure(backlog);
   const row = backlog.split(/\r?\n/u).find((line) => line.startsWith('- [x] **MOD-08 '));
   assert.ok(row?.includes(expectedStageASha), 'MOD-08 exact Stage A SHA');

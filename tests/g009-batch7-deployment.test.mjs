@@ -361,13 +361,17 @@ test('preserves STY-06 Stage B history under the current STY-07 closure candidat
   assert.deepEqual([sty07?.published, sty07?.status.value], [true, 'complete']);
   const currentBaseline = backlog.split(/\r?\n/u).find((line) => line.startsWith('- **当前发布基线：**'));
   assert.ok(currentBaseline, 'current release baseline');
+  const batch7Marker = '此前 G009 Batch 7 历史完成基线为：';
+  const batch7Start = currentBaseline.indexOf(batch7Marker);
+  assert.notEqual(batch7Start, -1, 'immutable STY-06 history marker');
+  const batch7History = currentBaseline.slice(batch7Start + batch7Marker.length);
   for (const literal of [
-    '2026-08-14 G009 Batch 8 已完成 STY-07',
+    '2026-08-13 G009 Batch 7 已完成 STY-06',
     '59 个已完成主题、101 篇内容文档与 525 个受治理来源',
     '当前 G009，下一项为 STY-07',
     'STY-06 为 published/complete',
     'STY-07 为 unpublished/pending',
-  ]) assert.ok(currentBaseline.includes(literal), `Stage B baseline literal: ${literal}`);
+  ]) assert.ok(batch7History.includes(literal), `immutable Stage B history literal: ${literal}`);
   const immediateMarker = '此前 G009 Batch 6 历史完成基线为：';
   const historyStart = currentBaseline.indexOf(immediateMarker);
   assert.notEqual(historyStart, -1, 'immediate STY-05 history marker');
