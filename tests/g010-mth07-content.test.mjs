@@ -46,28 +46,32 @@ const PEER_CONTRACTS = [
     file: 'content/methods/mth-01-quality-attribute-workshop.mdx',
     adjacentTopics: ['FND-02', 'MTH-02', 'MTH-07'],
     backlink: '[企业 AI 前线部署交付门禁](/methods/mth-07)使用这些可测场景作为验收输入，但另行负责交付证据、生产责任和停止条件。',
-    overclaim: '[企业 AI 前线部署交付门禁](/methods/mth-07)使用这些可测场景作为验收输入，并证明交付成功。',
+    forbiddenClaim: '这些可测场景已经证明交付成功。',
+    forbiddenPattern: /可测场景.{0,12}(?:证明|保证).{0,8}交付成功/u,
     conclusion: '结果是一份排序场景集，而不是组件图。后续团队把场景甲、乙映射到候选架构，再用 MTH-02 评估隔离边界和策略执行点。',
   },
   {
     file: 'content/methods/mth-04-architecture-fitness-functions.mdx',
     adjacentTopics: ['MTH-03', 'MTH-06', 'MTH-07', 'PR-08'],
     backlink: '[企业 AI 前线部署交付门禁](/methods/mth-07)消费这些信号来决定停止、回退或放量，但适应度函数本身不定义客户验收。',
-    overclaim: '[企业 AI 前线部署交付门禁](/methods/mth-07)消费这些信号来决定停止、回退或放量，适应度函数即可证明客户验收。',
+    forbiddenClaim: '适应度函数即可证明客户验收。',
+    forbiddenPattern: /(?:适应度函数即可证明客户验收|适应度函数定义客户验收)/u,
     conclusion: '反馈表、阈值分层和演练是本站原创归纳。来源支持适应度函数作为演进反馈的概念，不证明某个测试、指标、监控、服务等级目标或发布门禁可以互相替代。',
   },
   {
     file: 'content/methods/mth-06-requirements-to-evolution-loop.mdx',
     adjacentTopics: ['MTH-04', 'MTH-05', 'MTH-07', 'FND-05', 'MOD-13'],
     backlink: '[企业 AI 前线部署交付门禁](/methods/mth-07)把这条演进反馈用于现场验收、生产放量与复制复核，但不替代问题发现。',
-    overclaim: '[企业 AI 前线部署交付门禁](/methods/mth-07)把这条演进反馈用于现场验收、生产放量与复制复核，并替代问题发现。',
+    forbiddenClaim: '这条演进反馈可以替代问题发现。',
+    forbiddenPattern: /(?:演进反馈可以替代问题发现|演进反馈替代问题发现|演进反馈取代问题发现)/u,
     conclusion: '闭环、反馈路由和停止条件是本站原创综合；来源分别支持局部方法，不主张存在一个由这些来源共同规定的固定流程。',
   },
   {
     file: 'content/cases/temporal-saga-durable-execution.mdx',
     adjacentTopics: null,
     backlink: '[企业 AI 前线部署交付门禁](/methods/mth-07)把本案例的长流程、重试、补偿和可观测责任作为工程机制参照；本案例不证明 FDE 组织模式或交付结果。',
-    overclaim: '[企业 AI 前线部署交付门禁](/methods/mth-07)把本案例的长流程、重试、补偿和可观测责任作为工程机制参照；本案例证明 FDE 组织模式和交付结果。',
+    forbiddenClaim: '本案例证明 FDE 组织模式和交付结果。',
+    forbiddenPattern: /(?:本案例证明 FDE 组织模式(?:和|与|或)交付结果|本案例保证 FDE 组织模式(?:和|与|或)交付结果)/u,
     conclusion: '[MOD-06 实体关系模型与关系边界](/modeling/mod-06)进一步说明 Temporal 事件历史是控制面恢复记录，不是带有效期的业务关系历史。',
   },
 ];
@@ -79,8 +83,20 @@ const UNSUPPORTED_CLAIM_MUTATIONS = [
   '一百亿元市场已经形成。',
   '市场规模达到 100 亿元。',
   '市场规模达到一百亿元。',
+  '行业规模达到 100 亿元。',
+  '产业规模已经达到百亿元。',
+  '赛道规模超过一百亿元。',
   '薪资普遍更高。',
+  '薪酬普遍更高。',
+  '年薪普遍超过 100 万元。',
+  '月薪普遍超过一万元。',
+  '工资普遍更高。',
+  '收入普遍更高。',
   '政策要求所有企业采用 FDE。',
+  '法规要求所有企业采用 FDE。',
+  '监管要求所有企业采用 FDE。',
+  '监管规定所有企业采用 FDE。',
+  '法律要求所有企业采用 FDE。',
 ];
 const SOURCE_CONTRACTS = new Map([
   ['src-nist-ai-rmf-1-0', {id: 'src-nist-ai-rmf-1-0', canonical_locator: 'https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10', transport_locator: 'https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10', query_insensitive: false, locator_aliases: [], tombstone: null, title: 'Artificial Intelligence Risk Management Framework (AI RMF 1.0)', author_or_org: 'Elham Tabassi / National Institute of Standards and Technology', published_at: '2023-01-26', registered_at: FIXTURE_TASK_DATE, checked_at: FIXTURE_TASK_DATE, version: 'NIST AI 100-1 final publication dated 2023-01-26', source_kind: 'standard', tier: 'primary', allowed_evidence_roles: ['method'], license: 'LicenseRef-US-Gov-Public-Domain', license_scope: 'NIST-authored AI RMF publication material; third-party or separately marked copyrighted material, marks, and linked works excluded.', license_evidence_url: 'https://www.nist.gov/nist-research-library/nist-publications', license_evidence_note: 'NIST Technical Series policy grants worldwide reprint and derivative-work rights for NIST-authored works, while third-party works may remain protected.', license_family_id: 'https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10', license_family_grouping: 'identity', family_grouping_evidence_url: null, copyright_policy: 'public-domain-with-provenance', usage_boundary: 'Supports AI RMF risk, evaluation, monitoring, human-oversight, recovery, and decommissioning mechanisms; it does not define FDE, prescribe the twelve gates, or support market, salary, or policy numbers.', link_policy: 'stable', expected_final_transport_locator: 'https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10', expected_final_approved_at: FIXTURE_TASK_DATE, expected_final_approval_note: 'Official NIST publication page must be checked directly when registered.'}],
@@ -206,6 +222,39 @@ const peerSources = new Map(await Promise.all(PEER_CONTRACTS.map(async ({file}) 
 const article = documents.find(({file}) => `content/${file}` === ARTICLE);
 
 function visible(source) { return parseMdxVisibleCopy(source, ARTICLE, {includeStructure: true}).blocks.map(({text}) => text).join('\n'); }
+function normalizedInternalRoute(value) {
+  if (typeof value !== 'string' || !value.startsWith('/')) return null;
+  const normalized = value.split(/[?#]/u, 1)[0].replace(/\/+$/u, '');
+  return normalized || '/';
+}
+function visibleRouteOccurrenceCount(source, file, route) {
+  const {ast} = parseMdxVisibleCopy(source, file, {includeAst: true});
+  const definitions = new Map();
+  const collectDefinitions = (node) => {
+    if (node.type === 'definition') definitions.set(node.identifier, node.url);
+    for (const child of node.children ?? []) collectDefinitions(child);
+  };
+  collectDefinitions(ast);
+  const containsImage = (node) => node.type === 'image'
+    || node.type === 'imageReference'
+    || ((node.type === 'mdxJsxFlowElement' || node.type === 'mdxJsxTextElement') && node.name === 'img')
+    || (node.children ?? []).some(containsImage);
+  let occurrences = 0;
+  const visit = (node) => {
+    if (node.type === 'link' || node.type === 'linkReference') {
+      const target = node.type === 'link' ? node.url : definitions.get(node.identifier);
+      if (!containsImage(node) && normalizedInternalRoute(target) === route) occurrences += 1;
+    } else if (node.type === 'mdxJsxFlowElement' || node.type === 'mdxJsxTextElement') {
+      for (const attribute of node.attributes ?? []) {
+        if (attribute.type !== 'mdxJsxAttribute' || !['href', 'to'].includes(attribute.name)) continue;
+        if (normalizedInternalRoute(attribute.value) === route) occurrences += 1;
+      }
+    }
+    for (const child of node.children ?? []) visit(child);
+  };
+  visit(ast);
+  return occurrences;
+}
 function requiredArticle() { assert.ok(article, `${ARTICLE} must exist after implementation`); return article; }
 function calendarDate(value, label) { assert.match(value, /^\d{4}-\d{2}-\d{2}$/u, label); const parsed = new Date(`${value}T00:00:00.000Z`); assert.equal(parsed.toISOString().slice(0, 10), value, label); return value; }
 function onOrAfter(value, minimum, label) { calendarDate(value, label); calendarDate(minimum, `${label} minimum`); assert.ok(value >= minimum, label); }
@@ -218,7 +267,11 @@ function assertGateRows(source) { const rows = table(source); assert.deepEqual(r
 function assertEvidenceAndResponsibilities(source) {
   const text = visible(source); for (const label of ['来源事实', '独立证据', 'Tego Arch 推断']) assert.match(text, new RegExp(label, 'u'), `${label} label`);
   assert.equal(text.split(UNSUPPORTED_CLAIM_BOUNDARY).length - 1, 1, 'one exact unsupported-claim boundary');
-  assert.doesNotMatch(text.replace(UNSUPPORTED_CLAIM_BOUNDARY, ''), /(?:市场|薪资|政策|交付成功率|商业收益)/u, 'current four-source set cannot support claim-bearing market, salary, policy, delivery-rate, or business-benefit copy');
+  assert.doesNotMatch(
+    text.replace(UNSUPPORTED_CLAIM_BOUNDARY, ''),
+    /(?:市场|行业规模|产业规模|赛道规模|薪资|薪酬|年薪|月薪|工资|收入|政策|法规|监管要求|监管规定|法律要求|交付成功率|商业收益)/u,
+    'current four-source set cannot support claim-bearing market or sector scale, compensation, policy or regulation, delivery-rate, or business-benefit copy',
+  );
   assert.equal(text.split(TEGO_ARCH_INTRO).length - 1, 1, 'natural Tego Arch introduction');
   assert.equal(text.split('Tego Arch 推断：').length - 1, 1, 'one exact Tego Arch inference label');
   assert.ok(text.indexOf(TEGO_ARCH_INTRO) < text.indexOf('Tego Arch 推断：'), 'project introduction precedes inference label');
@@ -230,13 +283,15 @@ function assertEvidenceAndResponsibilities(source) {
   for (const forbidden of [/POC.{0,12}(?:就是|(?<!不)等于).{0,12}生产/u, /生产.{0,12}(?:就是|(?<!不)等于).{0,12}验收/u, /验收.{0,12}(?:就是|(?<!不)等于).{0,12}放量/u, /放量.{0,12}(?:就是|(?<!不)等于).{0,12}复制/u]) assert.doesNotMatch(text, forbidden, `conflation ${forbidden}`);
 }
 function assertPeerRelations(sources) {
-  for (const {file, adjacentTopics, backlink, conclusion} of PEER_CONTRACTS) {
+  for (const {file, adjacentTopics, backlink, conclusion, forbiddenPattern} of PEER_CONTRACTS) {
     const source = sources.get(file);
     assert.ok(source, `${file} is read by the focused contract`);
     if (adjacentTopics) assert.deepEqual(parseFrontMatter(source).adjacent_topics, adjacentTopics, `${file} exact reverse metadata`);
-    assert.equal(extractInternalLinks({body: source}).filter((route) => route === ROUTE).length, 1, `${file} one visible MTH-07 route`);
+    assert.equal(visibleRouteOccurrenceCount(source, file, ROUTE), 1, `${file} exactly one raw visible MTH-07 route occurrence`);
     assert.equal(source.split(backlink).length - 1, 1, `${file} exact bounded backlink`);
     assert.equal(source.split(conclusion).length - 1, 1, `${file} preserves its conclusion`);
+    const text = parseMdxVisibleCopy(source, file, {includeStructure: true}).blocks.map(({text: block}) => block).join('\n');
+    assert.doesNotMatch(text, forbiddenPattern, `${file} preserves its bounded conclusion without the contradictory claim`);
   }
 }
 function assertWrappersAndArrowBehavior(source) {
@@ -2071,10 +2126,21 @@ test('MTH-07 helper contracts are green after non-no-op RED mutation fixtures', 
     assert.notEqual(deletedBacklink, current, `${contract.file} backlink deletion is non-no-op`);
     const deletedSources = new Map(peerSources).set(contract.file, deletedBacklink);
     assert.throws(() => assertPeerRelations(deletedSources), assert.AssertionError, `${contract.file} backlink deletion`);
-    const overclaimed = current.replace(contract.backlink, contract.overclaim);
+    const overclaimed = current.replace(contract.backlink, `${contract.backlink}\n\n${contract.forbiddenClaim}`);
     assert.notEqual(overclaimed, current, `${contract.file} overclaim mutation is non-no-op`);
+    assert.equal(overclaimed.split(contract.backlink).length - 1, 1, `${contract.file} additive overclaim retains the bounded backlink`);
+    assert.equal(visibleRouteOccurrenceCount(overclaimed, contract.file, ROUTE), 1, `${contract.file} additive overclaim retains exactly one route`);
+    assert.match(parseMdxVisibleCopy(overclaimed, contract.file, {includeStructure: true}).blocks.map(({text}) => text).join('\n'), contract.forbiddenPattern, `${contract.file} additive mutation contains the forbidden semantic claim`);
     const overclaimedSources = new Map(peerSources).set(contract.file, overclaimed);
     assert.throws(() => assertPeerRelations(overclaimedSources), assert.AssertionError, `${contract.file} overclaim`);
+    const duplicateRoute = `${current}\n\n[重复的 MTH-07 关系](${ROUTE})\n`;
+    assert.notEqual(duplicateRoute, current, `${contract.file} duplicate route mutation is non-no-op`);
+    assert.equal(visibleRouteOccurrenceCount(duplicateRoute, contract.file, ROUTE), 2, `${contract.file} duplicate route remains two raw occurrences`);
+    const duplicateRouteSources = new Map(peerSources).set(contract.file, duplicateRoute);
+    assert.throws(() => assertPeerRelations(duplicateRouteSources), assert.AssertionError, `${contract.file} duplicate visible route`);
+    const invisibleRoutes = `${current}\n\n\`[内联代码](${ROUTE})\`\n\n<!-- [注释](${ROUTE}) -->\n\n![图片](${ROUTE})\n\n\`\`\`md\n[代码块](${ROUTE})\n\`\`\`\n`;
+    assert.equal(visibleRouteOccurrenceCount(invisibleRoutes, contract.file, ROUTE), 1, `${contract.file} ignores code, comments, and images when counting visible routes`);
+    assert.doesNotThrow(() => assertPeerRelations(new Map(peerSources).set(contract.file, invisibleRoutes)), `${contract.file} invisible route lookalikes do not alter relations`);
     if (contract.adjacentTopics) {
       const deletedMetadata = current.replace('  - MTH-07\n', '');
       assert.notEqual(deletedMetadata, current, `${contract.file} metadata deletion is non-no-op`);
