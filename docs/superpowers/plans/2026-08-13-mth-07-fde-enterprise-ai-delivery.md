@@ -17,7 +17,7 @@
 - 图示固定为 Draw.io + SVG，一张主图、最多三张高密度表；visual-balance 必须严格大于 90。
 - 不新增 npm 依赖，不改变全站视觉 token、现有 URL、构建流程或历史发布证据。
 - `src/generated/` 只能由 `npm run generate:content` 更新。
-- Stage A 保持 MTH-07 pending；独立代码、内容/版权、架构评审均通过后才可 Stage B 标记 complete。
+- Stage A 保持 MTH-07 `published / content-lifecycle reviewed` 且不进入 backlog，完成数保持 59；独立代码、内容/版权、架构评审均通过后才可 Stage B 写入完成记录并标记 complete。
 - 浏览器必须使用 in-app Browser；截图不可用时如实记录，不以旧图或功能检查冒充视觉通过。
 
 ---
@@ -141,7 +141,7 @@ Baseline is `59 completed / 101 documents / 525 sources`. With one document and 
 
 - [ ] **Step 5: Lock sources, relations, wrappers, density, and projection.**
 
-  Require the four source IDs, three remote domains, sole NIST primary, no WeChat source/citation/link, original illustration rights, exact parent/relations, Temporal boundary text, no QA-09 relation, exact three wrappers and ArrowRight handler. Require visual-balance >90. Require Stage A `59/102/529`, MTH-07 published/pending.
+  Require the four source IDs, three remote domains, sole NIST primary, no WeChat source/citation/link, original illustration rights, exact parent/relations, Temporal boundary text, no QA-09 relation, exact three wrappers and ArrowRight handler. Require visual-balance >90. Require Stage A `59/102/529`, MTH-07 `published / content-lifecycle reviewed`, absent from backlog.
 
 - [ ] **Step 6: Define diagram contracts and mutations.**
 
@@ -266,9 +266,9 @@ Baseline is `59 completed / 101 documents / 525 sources`. With one document and 
 
 **Interfaces:**
 - Consumes: completed page/source/diagram/relations.
-- Produces: reviewed Stage A candidate with MTH-07 published/pending and reproducible local Browser evidence.
+- Produces: reviewed Stage A candidate with MTH-07 `published / content-lifecycle reviewed`, absent from backlog, and reproducible local Browser evidence.
 
-- [ ] **Step 1: Write deployment RED.** Require exact generated totals, MTH-07 published/pending, review slots PENDING, tracked raw Browser artifact, exact wrapper/relation/source/diagnostic schema and no fabricated deployment success.
+- [ ] **Step 1: Write deployment RED.** Require exact generated totals, complete MTH-07 status object `{scope: content-lifecycle, value: reviewed, source: content/methods/mth-07-fde-enterprise-ai-delivery.mdx}`, MTH-07 absent from backlog, 59 completed topics, review slots PENDING, tracked raw Browser artifact, exact wrapper/relation/source/diagnostic schema and no fabricated deployment success.
 - [ ] **Step 2: Generate canonical projection.** Run `npm run generate:content`; inspect actual totals and update only current projection assertions if they differ from `59/102/529` for an explained reason.
 - [ ] **Step 3: Run local production build and in-app Browser four-state QA.** At `1440x1000` light/dark and `390x844` light/dark record exact document width, three wrapper widths/focus/ArrowRight, SVG intrinsic/rendered size, sources, reciprocal relations with H1+return, zero broken next-topic link, logs, runtime exceptions and pagination completeness. Capture and hash screenshots only if IAB returns real bytes.
 - [ ] **Step 4: Track immutable raw evidence and review candidate.** Store the JSON under `docs/reviews/evidence/`, include exact candidate head/hash, keep code/content/architecture slots PENDING and deployment NOT_RUN.
