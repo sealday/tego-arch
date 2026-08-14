@@ -4,7 +4,7 @@
 
 **Goal:** 发布 MTH-07 企业 AI 前线部署方法页，把微信文章的四阶段十二能力框架重构为可验收、可运行、可停止、可复制的交付门禁闭环，并完成原创图、来源治理、独立审查和 Stage A/Stage B 线上发布。
 
-**Architecture:** 页面使用仅绑定 `MTH-07 + method` 的十节信息架构，正文以十二个统一五段门禁合同为权威说明，Draw.io/SVG 负责四阶段、三条反馈线和责任带的视觉解释。来源层严格区分微信实践框架、NIST/Google 一手机制证据与 Tego Arch 推断；发布沿用两阶段证据闭环，且与 STY-07 工作树完全隔离。
+**Architecture:** 页面使用仅绑定 `MTH-07 + method` 的十节信息架构，正文以十二个统一五段门禁合同为权威说明，Draw.io/SVG 负责四阶段、三条反馈线和责任带的视觉解释。发布页来源层只使用 NIST、Google、OpenAI 一手机制资料并显式区分 Tego Arch 推断；微信文章仅留在内部构思记录，且与 STY-07 工作树完全隔离。
 
 **Tech Stack:** Docusaurus 3.10、MDX、React 19、Node 24 test runner、TypeScript、Draw.io XML/SVG、JSON source governance、GitHub Actions、GitHub Pages。
 
