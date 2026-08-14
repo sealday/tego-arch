@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "candidateHead": "f32e0cb7ae79fb92a2154c03dfe8bf7b5b203974",
+  "browserBuildHead": "f32e0cb7ae79fb92a2154c03dfe8bf7b5b203974",
   "servedBuild": {
     "kind": "exact production build",
     "buildCommand": "npm run build",

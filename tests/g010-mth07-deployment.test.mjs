@@ -8,8 +8,8 @@ import {fileURLToPath} from 'node:url';
 const ROOT = fileURLToPath(new URL('../', import.meta.url));
 const REVIEW_PATH = 'docs/reviews/g010-mth07.md';
 const EVIDENCE_PATH = 'docs/reviews/evidence/g010-mth07-stage-a-browser.json';
-const EVIDENCE_SHA256 = 'e16e99118a0ffb407b2363ca9eafe0035d6b68880814feae918d3703f02e6534';
-const CANDIDATE_HEAD = 'f32e0cb7ae79fb92a2154c03dfe8bf7b5b203974';
+const EVIDENCE_SHA256 = '43985ea2e801e888e55a2cd6f62ed690133d3fdcda7db8f03a1e91ea466fa1b0';
+const BROWSER_BUILD_HEAD = 'f32e0cb7ae79fb92a2154c03dfe8bf7b5b203974';
 const HISTORICAL_REVIEW_TREE_HASH = 'f02ecfe18e12e7ffaf9e1656f5a0fc718e2395c070655d5ede9c590c1d05bde5';
 const MTH07_STATUS = {
   scope: 'content-lifecycle',
@@ -46,6 +46,17 @@ const RELATIONS = [
   ['/tego-arch/methods/mth-06', '从需求到演进的架构闭环'],
   ['/tego-arch/cases/temporal-saga-durable-execution', '持久化执行与长事务：为长时智能体任务建立可恢复边界'],
 ];
+const REVIEW_H2 = ['Candidate identity', 'Stage A projection', 'Local in-app Browser QA', 'Independent review checkpoint'];
+const PENDING_REVIEW_CHECKPOINT = [
+  '- Code review: `PENDING`.',
+  '- Content, evidence, and rights review: `PENDING`; rights: `PENDING`.',
+  '- Architecture review: `PENDING`.',
+  '- Final Stage A review judgment: `PENDING`.',
+  '- Scope boundary: `STAGE_A_ONLY`.',
+  '- Deployment status: `NOT_RUN`.',
+  '',
+  'This record is an implementation candidate and local functional Browser artifact only. It does not self-issue an independent verdict, close the MTH-07 backlog item, claim production publication, or claim deployment success.',
+].join('\n');
 const SCREENSHOT_REASON = 'The four ignored capture files are JPEG/JFIF bytes stored under .png names and contain repeated viewport strips rather than faithful continuous-page captures.';
 const SCREENSHOTS = {
   desktopLight: {
@@ -113,6 +124,10 @@ function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
 }
 
+function assertExactKeys(actual, expected, label) {
+  assert.deepEqual(Object.keys(actual), expected, `${label} exact keys`);
+}
+
 function section(source, heading) {
   const headings = [...source.matchAll(/^## ([^\n]+)$/gmu)];
   const matches = headings.filter((match) => match[1] === heading);
@@ -121,7 +136,13 @@ function section(source, heading) {
   return source.slice(matches[0].index + matches[0][0].length, next?.index ?? source.length).trim();
 }
 
-async function historicalReviewTreeHash() {
+function isHistoricalReviewArtifact(relative) {
+  return relative.startsWith('docs/reviews/') &&
+    relative !== REVIEW_PATH &&
+    !relative.startsWith('docs/reviews/evidence/g010-mth07-');
+}
+
+async function historicalReviewEntries() {
   const base = path.join(ROOT, 'docs/reviews');
   async function walk(directory) {
     const entries = await readdir(directory, {withFileTypes: true});
@@ -131,17 +152,27 @@ async function historicalReviewTreeHash() {
     }));
     return files.flat();
   }
-  const files = (await walk(base))
-    .filter((file) => ![REVIEW_PATH, EVIDENCE_PATH].includes(path.relative(ROOT, file)))
-    .sort();
+  const files = (await walk(base)).sort();
+  const entries = await Promise.all(files.map(async (file) => ({
+    relative: path.relative(ROOT, file),
+    bytes: await readFile(file),
+  })));
+  return entries.filter(({relative}) => isHistoricalReviewArtifact(relative));
+}
+
+function historicalReviewEntriesHash(entries) {
   const hash = createHash('sha256');
-  for (const file of files) {
-    hash.update(path.relative(ROOT, file));
+  for (const {relative, bytes} of [...entries].sort((left, right) => left.relative.localeCompare(right.relative))) {
+    hash.update(relative);
     hash.update('\0');
-    hash.update(await readFile(file));
+    hash.update(bytes);
     hash.update('\0');
   }
   return hash.digest('hex');
+}
+
+async function historicalReviewTreeHash() {
+  return historicalReviewEntriesHash(await historicalReviewEntries());
 }
 
 function assertProjection() {
@@ -158,8 +189,11 @@ function assertProjection() {
 }
 
 function assertBrowserEvidence(actual) {
+  assertExactKeys(actual, ['schemaVersion', 'browserBuildHead', 'servedBuild', 'screenshotEvidence', 'states'], 'Browser evidence root');
   assert.equal(actual.schemaVersion, 1);
-  assert.equal(actual.candidateHead, CANDIDATE_HEAD);
+  assert.equal(actual.browserBuildHead, BROWSER_BUILD_HEAD);
+  assert.equal('candidateHead' in actual, false);
+  assertExactKeys(actual.servedBuild, ['kind', 'buildCommand', 'serveCommand', 'baseUrl', 'route'], 'served build');
   assert.deepEqual(actual.servedBuild, {
     kind: 'exact production build',
     buildCommand: 'npm run build',
@@ -167,12 +201,16 @@ function assertBrowserEvidence(actual) {
     baseUrl: 'http://127.0.0.1:4173/tego-arch/',
     route: 'http://127.0.0.1:4173/tego-arch/methods/mth-07',
   });
+  assertExactKeys(actual.screenshotEvidence, ['status', 'acceptance', 'reason', 'captures'], 'screenshot evidence');
   assert.equal(actual.screenshotEvidence.status, 'BLOCKED');
   assert.equal(actual.screenshotEvidence.acceptance, 'NOT_ACCEPTED');
   assert.equal(actual.screenshotEvidence.reason, SCREENSHOT_REASON);
   assert.deepEqual(Object.keys(actual.screenshotEvidence.captures), STATES);
   for (const [name, expected] of Object.entries(SCREENSHOTS)) {
     const capture = actual.screenshotEvidence.captures[name];
+    assertExactKeys(capture, ['path', 'encodedFormat', 'filenameExtension', 'dimensions', 'viewport', 'disposition'], `${name} screenshot capture`);
+    assertExactKeys(capture.dimensions, ['width', 'height'], `${name} screenshot dimensions`);
+    assertExactKeys(capture.viewport, ['width', 'height'], `${name} screenshot viewport`);
     assert.deepEqual(capture, expected);
   }
   assert.equal('acceptedHashes' in actual.screenshotEvidence, false);
@@ -189,19 +227,27 @@ function assertBrowserEvidence(actual) {
 
   for (const [name, expected] of Object.entries(expectedStates)) {
     const state = actual.states[name];
+    assertExactKeys(state, ['state', 'theme', 'viewport', 'geometry', 'interactions', 'relations', 'logs', 'diagnostics'], `${name} state`);
+    assertExactKeys(state.viewport, ['width', 'height'], `${name} viewport`);
     assert.equal(state.state, name);
     assert.equal(state.theme, expected.theme);
     assert.deepEqual(state.viewport, expected.viewport);
     assert.equal(state.geometry.h1, '企业 AI 前线部署：从 POC 到可复制系统的交付门禁');
+    assertExactKeys(state.geometry, ['h1', 'page', 'wrappers', 'svg', 'sources', 'paginationNext', 'nextUnpublishedActionable'], `${name} geometry`);
+    assertExactKeys(state.geometry.page, ['clientWidth', 'scrollWidth'], `${name} page`);
     assert.deepEqual(state.geometry.page, {
       clientWidth: expected.viewport.width,
       scrollWidth: expected.viewport.width,
     });
+    for (const [index, wrapper] of state.geometry.wrappers.entries()) {
+      assertExactKeys(wrapper, ['clientWidth', 'label', 'scrollWidth'], `${name} wrapper ${index}`);
+    }
     assert.deepEqual(state.geometry.wrappers.map(({label}) => label), WRAPPER_LABELS);
     assert.deepEqual(state.geometry.wrappers.map(({clientWidth}) => clientWidth), [expected.clientWidth, expected.clientWidth, expected.clientWidth]);
     assert.deepEqual(state.geometry.wrappers.map(({scrollWidth}) => scrollWidth), [800, 1643, 2101]);
     assert.equal(state.interactions.length, 3);
     for (const [index, interaction] of state.interactions.entries()) {
+      assertExactKeys(interaction, ['label', 'before', 'after'], `${name} interaction ${index}`);
       assert.equal(interaction.label, WRAPPER_LABELS[index]);
       assert.deepEqual(Object.keys(interaction.before), ['focus', 'focusVisible', 'outline', 'scrollLeft']);
       assert.deepEqual(Object.keys(interaction.after), ['focus', 'focusVisible', 'outline', 'scrollLeft']);
@@ -215,6 +261,7 @@ function assertBrowserEvidence(actual) {
       assert.equal(interaction.after.scrollLeft, state.geometry.wrappers[index].scrollWidth > state.geometry.wrappers[index].clientWidth ? 40 : 0);
     }
     assert.equal(state.geometry.svg.loaded, true);
+    assertExactKeys(state.geometry.svg, ['loaded', 'naturalHeight', 'naturalWidth', 'renderedHeight', 'renderedWidth'], `${name} SVG`);
     assert.deepEqual(state.geometry.svg, {
       loaded: true,
       naturalHeight: 150,
@@ -225,6 +272,7 @@ function assertBrowserEvidence(actual) {
     assert.deepEqual(state.geometry.sources.map(({href}) => href), SOURCE_HREFS);
     assert.equal(new Set(state.geometry.sources.map(({href}) => new URL(href).hostname)).size, 3);
     for (const source of state.geometry.sources) {
+      assertExactKeys(source, ['href', 'rel', 'target'], `${name} source`);
       assert.equal(source.target, '_blank');
       assert.equal(source.rel, 'noopener noreferrer');
     }
@@ -233,6 +281,22 @@ function assertBrowserEvidence(actual) {
     assert.deepEqual(state.relations.map(({href, expectedH1}) => [href, expectedH1]), RELATIONS);
     assert.equal(new Set(state.relations.map(({href}) => href)).size, RELATIONS.length);
     for (const relation of state.relations) {
+      assertExactKeys(relation, [
+        'href',
+        'visibleHref',
+        'actionability',
+        'h1',
+        'expectedH1',
+        'returnedToArticle',
+        'navigationMode',
+        'selectionReason',
+        'clickAttempted',
+        'forceUsed',
+        'navigationTarget',
+        'navigationTargetEqualsVisibleHref',
+        'fallbackTargetEqualsVisibleHref',
+      ], `${name} relation`);
+      assertExactKeys(relation.actionability, ['status', 'reason'], `${name} relation actionability`);
       assert.equal(relation.h1, relation.expectedH1);
       assert.equal(relation.returnedToArticle, true);
       assert.equal(relation.visibleHref, relation.href);
@@ -262,6 +326,7 @@ function assertBrowserEvidence(actual) {
       }
     }
     assert.deepEqual(state.logs, []);
+    assertExactKeys(state.diagnostics, ['runtimeExceptions', 'logEntries', 'events', 'hasMore', 'truncated'], `${name} diagnostics`);
     assert.deepEqual(state.diagnostics.runtimeExceptions, []);
     assert.deepEqual(state.diagnostics.logEntries, []);
     assert.deepEqual(state.diagnostics.events, []);
@@ -335,8 +400,14 @@ function assertBrowserReviewClosedWorld(browser) {
 
 async function assertReview(source) {
   assert.match(source, /^# G010 MTH-07 Stage A Review$/mu);
+  assert.deepEqual([...source.matchAll(/^## ([^\n]+)$/gmu)].map((match) => match[1]), REVIEW_H2, 'current review H2 sequence');
+  const firstH2 = source.indexOf('\n## ');
+  assert.notEqual(firstH2, -1, 'current review has sections');
+  assert.equal(source.slice('# G010 MTH-07 Stage A Review'.length, firstH2).trim(), '', 'no claim-bearing preamble');
+  assertBrowserReviewClosedWorld(source);
   const identity = section(source, 'Candidate identity');
-  assert.ok(identity.includes(`Exact candidate head: \`${CANDIDATE_HEAD}\`.`));
+  assert.ok(identity.includes(`Exact Browser build head: \`${BROWSER_BUILD_HEAD}\`.`));
+  assert.doesNotMatch(identity, /Exact candidate head:/u);
   assert.ok(identity.includes(`Immutable historical review tree: \`${HISTORICAL_REVIEW_TREE_HASH}\`.`));
   for (const [artifact, [bytes, hash]] of ARTIFACTS) {
     const body = await readFile(path.join(ROOT, artifact));
@@ -390,6 +461,17 @@ async function assertReview(source) {
   assert.ok(browser.includes(`Raw Browser JSON: \`${EVIDENCE_PATH}\`, SHA-256 \`${sha256(evidenceBytes)}\`.`));
 
   const checkpoint = section(source, 'Independent review checkpoint');
+  assert.equal(checkpoint, PENDING_REVIEW_CHECKPOINT, 'one exact authoritative pending checkpoint');
+  const outsideCheckpoint = source.slice(0, source.indexOf('## Independent review checkpoint'));
+  for (const [label, pattern] of [
+    ['displaced code verdict', /^\s*(?:-\s*)?Code review\s*:/imu],
+    ['displaced content verdict', /^\s*(?:-\s*)?Content, evidence, and rights review\s*:/imu],
+    ['displaced architecture verdict', /^\s*(?:-\s*)?Architecture review\s*:/imu],
+    ['displaced final verdict', /^\s*(?:-\s*)?Final Stage A review judgment\s*:/imu],
+    ['displaced deployment status', /^\s*(?:-\s*)?Deployment status\s*:/imu],
+    ['fabricated production deployment', /^\s*(?:-\s*)?Production deployment\s*:\s*.*\bSUCCESS\b/imu],
+    ['fabricated visual review', /^\s*(?:-\s*)?Visual inspection\s*:\s*`?PASS\b/imu],
+  ]) assert.doesNotMatch(outsideCheckpoint, pattern, label);
   for (const literal of [
     'Code review: `PENDING`.',
     'Content, evidence, and rights review: `PENDING`; rights: `PENDING`.',
@@ -418,10 +500,79 @@ test('preserves every historical review and evidence artifact byte for byte', as
   assert.equal(await historicalReviewTreeHash(), HISTORICAL_REVIEW_TREE_HASH);
 });
 
+test('separates the Browser build provenance from the future exact reviewed head', () => {
+  assert.equal(evidence.browserBuildHead, BROWSER_BUILD_HEAD);
+  assert.equal('candidateHead' in evidence, false);
+  const identity = section(review, 'Candidate identity');
+  assert.ok(identity.includes(`Exact Browser build head: \`${BROWSER_BUILD_HEAD}\`.`));
+  assert.doesNotMatch(identity, /Exact candidate head:/u);
+});
+
+test('rejects additive Browser evidence claims at every schema boundary', () => {
+  const mutations = [
+    ['root deployment', (copy) => copy.deployment = {status: 'SUCCESS'}],
+    ['root visual inspection', (copy) => copy.visualInspection = 'PASS'],
+    ['served-build claim', (copy) => copy.servedBuild.deployment = 'SUCCESS'],
+    ['screenshot claim', (copy) => copy.screenshotEvidence.visualInspection = 'PASS'],
+    ['screenshot capture claim', (copy) => copy.screenshotEvidence.captures.desktopLight.sha256 = '0'.repeat(64)],
+    ['state claim', (copy) => copy.states.desktopLight.deployment = 'SUCCESS'],
+    ['viewport claim', (copy) => copy.states.desktopLight.viewport.device = 'desktop'],
+    ['geometry claim', (copy) => copy.states.desktopLight.geometry.visualInspection = 'PASS'],
+    ['page claim', (copy) => copy.states.desktopLight.geometry.page.overflow = 'PASS'],
+    ['wrapper claim', (copy) => copy.states.desktopLight.geometry.wrappers[0].actionable = true],
+    ['SVG claim', (copy) => copy.states.desktopLight.geometry.svg.visualInspection = 'PASS'],
+    ['source claim', (copy) => copy.states.desktopLight.geometry.sources[0].verified = true],
+    ['interaction claim', (copy) => copy.states.desktopLight.interactions[0].passed = true],
+    ['relation claim', (copy) => copy.states.desktopLight.relations[0].passed = true],
+    ['actionability claim', (copy) => copy.states.desktopLight.relations[0].actionability.measured = true],
+    ['diagnostic claim', (copy) => copy.states.desktopLight.diagnostics.clean = true],
+  ];
+  for (const [label, mutate] of mutations) {
+    const copy = structuredClone(evidence);
+    mutate(copy);
+    assert.notDeepEqual(copy, evidence, `${label} mutation applies`);
+    assert.throws(() => assertBrowserEvidence(copy), {name: 'AssertionError'}, label);
+  }
+});
+
+test('rejects displaced duplicated or contradictory current-review claims', async () => {
+  const additions = [
+    ['displaced code readiness', 'Code review: READY / APPROVE.'],
+    ['displaced deployment success', 'Production deployment: SUCCESS.'],
+    ['displaced visual pass', 'Visual inspection: PASS.'],
+    ['duplicate verdict heading', '## Independent review checkpoint\n\n- Final Stage A review judgment: `READY`.'],
+  ];
+  for (const [label, addition] of additions) {
+    const mutated = review.replace('## Stage A projection', `${addition}\n\n## Stage A projection`);
+    assert.notEqual(mutated, review, `${label} mutation applies`);
+    await assert.rejects(() => assertReview(mutated), {name: 'AssertionError'}, label);
+  }
+});
+
+test('locks the exact pre-G010 review namespace against add edit and delete mutations', async () => {
+  for (const currentPath of [
+    REVIEW_PATH,
+    EVIDENCE_PATH,
+    'docs/reviews/evidence/g010-mth07-stage-a-production-browser.json',
+    'docs/reviews/evidence/g010-mth07-stage-b-production-browser.json',
+  ]) assert.equal(isHistoricalReviewArtifact(currentPath), false, `${currentPath} is current G010 evidence`);
+  assert.equal(isHistoricalReviewArtifact('docs/reviews/g009-batch7.md'), true);
+
+  const entries = await historicalReviewEntries();
+  assert.equal(entries.length, 35);
+  assert.equal(historicalReviewEntriesHash(entries), HISTORICAL_REVIEW_TREE_HASH);
+  const added = [...entries, {relative: 'docs/reviews/fabricated-history.md', bytes: Buffer.from('fabricated')}];
+  const edited = entries.map((entry, index) => index === 0 ? {...entry, bytes: Buffer.concat([entry.bytes, Buffer.from(' ')])} : entry);
+  const deleted = entries.slice(1);
+  assert.notEqual(historicalReviewEntriesHash(added), HISTORICAL_REVIEW_TREE_HASH);
+  assert.notEqual(historicalReviewEntriesHash(edited), HISTORICAL_REVIEW_TREE_HASH);
+  assert.notEqual(historicalReviewEntriesHash(deleted), HISTORICAL_REVIEW_TREE_HASH);
+});
+
 test('rejects Browser evidence mutations and any fabricated Stage A readiness or deployment', async () => {
   assertBrowserEvidence(evidence);
   const evidenceMutations = [
-    ['candidate head', (copy) => copy.candidateHead = '0'.repeat(40)],
+    ['Browser build head', (copy) => copy.browserBuildHead = '0'.repeat(40)],
     ['missing state', (copy) => delete copy.states.mobileDark],
     ['wrong document width', (copy) => copy.states.desktopDark.geometry.page.scrollWidth += 1],
     ['missing wrapper', (copy) => copy.states.mobileLight.geometry.wrappers.pop()],
@@ -475,7 +626,7 @@ test('rejects Browser evidence mutations and any fabricated Stage A readiness or
   }
 });
 
-test('keeps Browser review claims closed without governing non-Browser history', async () => {
+test('keeps Browser review claims closed across the complete current review', async () => {
   const browser = section(review, 'Local in-app Browser QA');
   assert.match(browser, /\bNOT_ACCEPTED\b/u);
   assert.doesNotMatch(browser, /\bACCEPTED\b/u);
@@ -502,12 +653,4 @@ test('keeps Browser review claims closed without governing non-Browser history',
     assert.notEqual(mutated, review, `${label} mutation applies`);
     await assert.rejects(() => assertReview(mutated), {name: 'AssertionError'}, label);
   }
-
-  const historicalExamples = additiveClaims.map(([, claim]) => claim).join(' ');
-  const outsideBrowser = review.replace(
-    '## Stage A projection',
-    `Historical reviewer examples outside the Browser section: ${historicalExamples}\n\n## Stage A projection`,
-  );
-  assert.notEqual(outsideBrowser, review, 'non-Browser historical example mutation applies');
-  await assert.doesNotReject(() => assertReview(outsideBrowser));
 });
