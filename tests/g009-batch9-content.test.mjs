@@ -382,7 +382,10 @@ export function assertProhibitions(source) {
   for (const [name, pattern] of PROHIBITIONS) assert.match(source, pattern, name);
   const counterpart = '(?:线程|普通消息消费者|事件驱动架构|微服务)'; const equality = '(?:就是|(?<!不)等于)'; const local = '[^。；\\n|]*';
   assert.doesNotMatch(source, new RegExp(`(?:Actor${local}${equality}${local}${counterpart}|${counterpart}${local}${equality}${local}Actor)`, 'iu'), 'Actor/counterpart equivalence is forbidden in either direction');
-  assert.doesNotMatch(source, new RegExp(`(?:Actor${local}${counterpart}|${counterpart}${local}Actor)${local}(?:不能|不得)${local}(?:组合|共存)`, 'iu'), 'Actor/counterpart mutual exclusion is forbidden in either direction');
+  for (const clause of source.split(/[。；\n|]/u).map((value) => value.trim()).filter(Boolean)) for (const mechanism of COMPARISONS) {
+    const counterpartName = mechanism === '线程与锁' ? '线程' : mechanism; const excludesComposition = /(?:不能|不得)/u.test(clause) && /(?:组合|共存)/u.test(clause);
+    assert.ok(!(clause.includes('Actor') && clause.includes(counterpartName) && excludesComposition), `Actor/${counterpartName} mutual exclusion forbidden in any clause ordering`);
+  }
   assert.doesNotMatch(source, /(?:只能|必须)[^。；]*(?:Actor|线程|队列|事件驱动|微服务)[^。；]*(?:不能|不得)[^。；]*(?:组合|共存)/u, 'mechanisms cannot be made mutually exclusive');
 }
 function assertClauseLocalSemanticClaims(source) {
@@ -557,15 +560,12 @@ function multiplyTransform(left, right) { return [
 ]; }
 function transformMatrix(value = '') {
   const transform = value.trim(); let result = [1, 0, 0, 1, 0, 0]; let consumed = 0;
-  for (const match of transform.matchAll(/(matrix|translate|scale)\(([^)]+)\)/gu)) {
-    const [, name, source] = match; assert.equal(transform.slice(consumed, match.index).trim(), '', `unsupported SVG transform ${transform}`); consumed = match.index + match[0].length;
-    const values = source.trim().split(/[\s,]+/u).map(Number); let next;
-    if (name === 'matrix') { assert.equal(values.length, 6, 'six-value SVG matrix'); next = values; }
-    else if (name === 'translate') next = [1, 0, 0, 1, values[0], values[1] ?? 0];
-    else next = [values[0], 0, 0, values[1] ?? values[0], 0, 0];
-    assert.ok(next.every(Number.isFinite), `finite ${name} transform`); result = multiplyTransform(result, next);
+  for (const match of transform.matchAll(/translate\(([^)]+)\)/gu)) {
+    const source = match[1]; assert.equal(transform.slice(consumed, match.index).trim(), '', `unsupported non-translation SVG transform ${transform}`); consumed = match.index + match[0].length;
+    const values = source.trim().split(/[\s,]+/u).map(Number); assert.ok([1, 2].includes(values.length) && values.every(Number.isFinite), 'finite one/two-value translate transform');
+    result = multiplyTransform(result, [1, 0, 0, 1, values[0], values[1] ?? 0]);
   }
-  assert.equal(transform.slice(consumed).trim(), '', `unsupported SVG transform ${transform}`);
+  assert.equal(transform.slice(consumed).trim(), '', `unsupported non-translation SVG transform ${transform}`);
   return result;
 }
 function elementTransform(element) {
@@ -1088,7 +1088,7 @@ test('semantic, comparison, failure, adoption, and migration fixtures execute co
   for (const guarantee of ['持久化', '可靠投递', '全局顺序', '恰好一次', '分布式事务', '外部副作用幂等']) await mutation(source, (candidate) => `${candidate}\n邮箱不自动提供持久化，但保证${guarantee}。\n`, assertSemanticBoundaries, `clause-local mailbox ${guarantee}`);
   for (const guarantee of ['业务拒绝', '对账', '补偿', '持久化恢复', '人工终止']) await mutation(source, (candidate) => `${candidate}\n监督不能代替业务恢复，但自动完成${guarantee}。\n`, assertSemanticBoundaries, `clause-local supervision ${guarantee}`);
   for (const hidden of ['延迟', '序列化', '网络', '安全', '容量', '放置', '状态迁移', '故障']) await mutation(source, (candidate) => `${candidate}\n位置透明不隐藏延迟，但无需考虑${hidden}。\n`, assertSemanticBoundaries, `clause-local location ${hidden}`);
-  for (const counterpart of ['线程', '普通消息消费者', '事件驱动架构', '微服务']) for (const claim of [`Actor 就是${counterpart}。`, `${counterpart}就是 Actor。`, `Actor 与${counterpart}不能共存。`, `${counterpart}与 Actor 不能组合。`]) await mutation(source, (candidate) => `${candidate}\n${claim}\n`, assertProhibitions, `symmetric prohibition: ${claim}`);
+  for (const counterpart of ['线程', '普通消息消费者', '事件驱动架构', '微服务']) for (const claim of [`Actor 就是${counterpart}。`, `${counterpart}就是 Actor。`, `Actor 与${counterpart}不能共存。`, `${counterpart}与 Actor 不能组合。`, `Actor 不能与${counterpart}共存。`, `${counterpart}不能与 Actor 组合。`]) await mutation(source, (candidate) => `${candidate}\n${claim}\n`, assertProhibitions, `symmetric prohibition: ${claim}`);
   for (const [name, pattern] of REQUIRED_SEMANTIC_BOUNDARIES) await mutation(source, (candidate) => candidate.replace(pattern, ''), assertSemanticBoundaries, `${name} boundary deleted`);
   assert.equal(FALSE_SEMANTIC_FIXTURES.length, FORBIDDEN_SEMANTIC_CLAIMS.length, 'one false fixture per forbidden claim');
   for (const [index, [name]] of FORBIDDEN_SEMANTIC_CLAIMS.entries()) await mutation(source, (candidate) => `${candidate}\n${FALSE_SEMANTIC_FIXTURES[index]}\n`, assertSemanticBoundaries, `${name} contradiction`);
@@ -1140,6 +1140,10 @@ test('diagram semantic, visible-bounds, painted-stroke, canvas, and mask fixture
   const boundsSource = '<svg><g data-node-id="n" data-node-bounds="10 20 30 40" transform="translate(10 20)"><rect data-shape="rounded-rect" x="0" y="0" width="30" height="40"/></g></svg>'; const boundsSvg = parseSvg(boundsSource); assertVisibleNodeBounds(boundsDrawio, boundsSvg, 'n');
   for (const changed of [boundsSource.replace('x="0"', 'x="1"'), boundsSource.replace('width="30"', 'width="31"'), boundsSource.replace('translate(10 20)', 'translate(11 20)')]) assert.throws(() => assertVisibleNodeBounds(boundsDrawio, parseSvg(changed), 'n'), assert.AssertionError, 'actual visible shape drift rejected while metadata is unchanged');
   for (const transform of ['rotate(15)', 'skewX(10)', 'skewY(10)']) { const transformed = boundsSource.replace('translate(10 20)', transform); assert.throws(() => assertVisibleNodeBounds(boundsDrawio, parseSvg(transformed), 'n'), assert.AssertionError, `${transform} cannot be silently ignored`); }
+  for (const [shape, label] of [
+    ['<circle cx="10" cy="10" r="5" transform="matrix(0 1 -1 0 20 0)"/>', 'matrix-rotated circle'],
+    ['<ellipse cx="10" cy="10" rx="6" ry="3" transform="matrix(1 0.5 0.75 1 0 0)"/>', 'matrix-sheared ellipse'],
+  ]) { const transformed = `<svg>${shape}</svg>`; const element = parseSvg(transformed).elements.find(({name}) => name === shape.match(/^<(\w+)/u)[1]); assert.throws(() => visibleShapeBounds(element), assert.AssertionError, `${label} rejected before approximate bounds`); }
   const transformedText = '<svg><text x="10" y="20" transform="translate(5 0)" font-size="10">label</text></svg>'; const textElement = parseSvg(transformedText).elements.find(({name}) => name === 'text'); assert.throws(() => labelBox(transformedText, textElement), assert.AssertionError, 'transformed text geometry explicitly rejected');
   const transformedRoute = '<svg><path data-edge-id="e" d="M 0 0 H 20" transform="translate(5 0)"/></svg>'; const routeElement = parseSvg(transformedRoute).elements.find(({name}) => name === 'path'); assert.throws(() => renderedPathPoints(routeElement), assert.AssertionError, 'transformed route geometry explicitly rejected');
   const transformedMarker = physicalGeometryFixture().replace('<path d="M 0 0 L 10 5 L 0 10 Z"', '<path transform="rotate(15)" d="M 0 0 L 10 5 L 0 10 Z"'); assert.notEqual(transformedMarker, physicalGeometryFixture(), 'transformed marker mutation applies'); assert.throws(() => assertPhysicalGeometry(transformedMarker, 1, false), assert.AssertionError, 'transformed marker geometry explicitly rejected');
@@ -1148,6 +1152,9 @@ test('diagram semantic, visible-bounds, painted-stroke, canvas, and mask fixture
   for (const mask of ['<rect x="9" y="-1" width="2" height="2" fill="#000000"/>', '<path d="M 9 -1 H 11 V 1 H 9 V -1" fill="#000000"/>', '<polygon points="9,-1 11,-1 11,1 9,1" fill="#000000"/>', '<polyline points="9,-1 11,-1 11,1 9,1" fill="#000000"/>', '<circle cx="10" cy="0" r="1" fill="#000000"/>', '<ellipse cx="10" cy="0" rx="1" ry="2" fill="#000000"/>']) assert.throws(() => assertNoOverdraw(unmasked.replace('</svg>', `${mask}</svg>`)), assert.AssertionError, `${mask.slice(1, mask.indexOf(' '))} later painted mask rejected`);
   for (const mask of ['<rect x="8" y="-3" width="4" height="6"/>', '<path d="M 10 -3 V 3"/>', '<polygon points="8,-3 12,0 8,3"/>', '<polyline points="10,-3 10,3"/>', '<circle cx="10" cy="0" r="3"/>', '<ellipse cx="10" cy="0" rx="3" ry="2"/>']) {
     const paintedStroke = mask.replace('/>', ' fill="none" stroke="#FFFFFF" stroke-width="4" stroke-opacity="0.5"/>'); assert.throws(() => assertNoOverdraw(unmasked.replace('</svg>', `${paintedStroke}</svg>`)), assert.AssertionError, `${mask.slice(1, mask.indexOf(' '))} later translucent stroke mask rejected`);
+  }
+  for (const [transform, label] of [['matrix(1 0 0 10 0 0)', 'matrix-scaled'], ['scale(5)', 'uniformly scaled']]) {
+    const scaledMask = `<path d="M 5 1 H 15" transform="${transform}" fill="none" stroke="#FFFFFF" stroke-width="2"/>`; assert.throws(() => assertNoOverdraw(unmasked.replace('</svg>', `${scaledMask}</svg>`)), assert.AssertionError, `${label} thick-stroke mask rejected before under-measured footprint`);
   }
   const geometry = physicalGeometryFixture(); const thickStroke = geometry.replace('stroke-width:2', 'stroke-width:400'); assert.notEqual(thickStroke, geometry, 'painted stroke mutation applies'); assert.throws(() => assertPhysicalGeometry(thickStroke, 1, false), assert.AssertionError, 'clearance measures painted stroke edge');
 });
