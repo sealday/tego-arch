@@ -109,7 +109,7 @@ Baseline is `59 completed / 101 documents / 525 sources`. With one document and 
 
 **Files:**
 - Create: `tests/g010-mth07-content.test.mjs`
-- Read: `tests/g009-batch7-content.test.mjs`, `tests/g005-batch3-content.test.mjs`, `scripts/content-density.mjs`
+- Read: `tests/g009-batch7-content.test.mjs`, `tests/g005-batch3-content.test.mjs`, `.codex/skills/writing-architecture-cases/scripts/analyze_case_density.mjs`
 
 **Interfaces:**
 - Consumes: existing MDX/front-matter, relation, source-governance, XML/SVG and density helpers.
@@ -237,7 +237,7 @@ Baseline is `59 completed / 101 documents / 525 sources`. With one document and 
   ```bash
   node --test tests/g010-mth07-content.test.mjs
   node --test tests/source-governance-data.test.mjs tests/source-link-health.test.mjs
-  node scripts/content-density.mjs content/methods/mth-07-fde-enterprise-ai-delivery.mdx
+  node .codex/skills/writing-architecture-cases/scripts/analyze_case_density.mjs content/methods/mth-07-fde-enterprise-ai-delivery.mdx
   npm run validate:content
   npm run check:terminology
   npm run check:links

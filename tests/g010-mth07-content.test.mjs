@@ -14,6 +14,8 @@ import {handleHorizontalArrowKey} from '../src/components/KeyboardScrollableRegi
 const ARTICLE = 'content/methods/mth-07-fde-enterprise-ai-delivery.mdx';
 const DRAWIO = 'diagrams/mth-07-fde-enterprise-ai-delivery-gates.drawio';
 const SVG = 'static/img/diagrams/mth-07-fde-enterprise-ai-delivery-gates.svg';
+const PLAN = 'docs/superpowers/plans/2026-08-13-mth-07-fde-enterprise-ai-delivery.md';
+const DENSITY_ANALYZER = '.codex/skills/writing-architecture-cases/scripts/analyze_case_density.mjs';
 const H2 = ['学习问题','一页摘要','事实边界','交付门禁图','四阶段控制流','证据、产物与责任','架构决策与权衡','生产化分析','可迁移经验','来源'];
 const TRANSFER_H3 = ['可直接复用的机制','只能有限类比的部分','不应照搬的部分'];
 const STAGES = ['进场期','立项期','交付期','放大期'];
@@ -2480,5 +2482,14 @@ test('MTH-07 locks governed source identities, exact relations, wrappers, densit
   assertSourceContracts(SOURCE_IDS.map((id) => sources.get(id)), record?.citations ?? []);
   assert.equal(new Set([...SOURCE_CONTRACTS.values()].filter(({canonical_locator}) => canonical_locator.startsWith('https://')).map(({canonical_locator}) => new URL(canonical_locator).hostname)).size, 3, 'three independent remote domains'); const illustration = sources.get(ILLUSTRATION_SOURCE_ID); assert.equal(illustration?.source_kind, 'original-illustration'); assert.equal(illustration?.license, 'LicenseRef-Atlas-Original'); assert.equal(illustration?.copyright_policy, 'original-atlas');
   assert.deepEqual(extractInternalLinks({body: article.body}), ['/cases/temporal-saga-durable-execution', '/methods', '/methods/mth-01', '/methods/mth-04', '/methods/mth-06']); const text = visible(source); assert.match(text, /Temporal.{0,60}(?:工程机制参照|不证明 FDE 组织模式)/u); assert.doesNotMatch(text, /(?:\u5fae\u4fe1|\u0077\u0065\u0063\u0068\u0061\u0074|mp\.\u0077\u0065\u0069\u0078\u0069\u006e\.qq\.com)/iu); assert.doesNotMatch(text, /QA-09/u); assert.deepEqual(extractExternalLinks({body: article.body}).sort(), [...SOURCE_CONTRACTS.values()].filter(({canonical_locator}) => canonical_locator.startsWith('https://')).map(({canonical_locator}) => canonical_locator).sort()); assertWrappersAndArrowBehavior(source); assert.ok(analyzeCaseText(article.body).visualBalance.score > 90); assert.deepEqual({completed_topics: projectStatus.completed_topics, content_documents: projectStatus.content_documents, governed_sources: projectStatus.governed_sources}, {completed_topics: 60, content_documents: 103, governed_sources: 533}); const topic = manifest.topics.find(({id}) => id === TOPIC_ID); assert.equal(topic?.published, true); assert.equal(topic?.status?.value, 'reviewed');
+});
+test('MTH-07 plan pins the runnable canonical density analyzer', async () => {
+  const [plan, analyzer] = await Promise.all([
+    readFile(new URL(`../${PLAN}`, import.meta.url), 'utf8'),
+    readFile(new URL(`../${DENSITY_ANALYZER}`, import.meta.url), 'utf8'),
+  ]);
+  assert.ok(analyzer.length > 0, 'canonical density analyzer exists');
+  assert.doesNotMatch(plan, /scripts\/content-density\.mjs/u, 'stale missing density script');
+  assert.equal(plan.split(DENSITY_ANALYZER).length - 1, 2, 'both density-plan references use the canonical analyzer');
 });
 test('MTH-07 diagram parses actual Draw.io terminals and rendered SVG geometry/style/painter parity', async () => { const [drawio, svg] = await Promise.all([readFile(new URL(`../${DRAWIO}`, import.meta.url), 'utf8'), readFile(new URL(`../${SVG}`, import.meta.url), 'utf8')]); assertDiagram(drawio, svg); });
