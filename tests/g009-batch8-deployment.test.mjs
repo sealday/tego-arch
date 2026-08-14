@@ -10,6 +10,7 @@ const LEDGER = 'data/source-ledger.json';
 const REVIEW = 'docs/reviews/g009-batch8.md';
 const RAW_BROWSER = 'docs/reviews/evidence/g009-batch8-stage-a-browser.json';
 const PRODUCTION_BROWSER = 'docs/reviews/evidence/g009-batch8-stage-a-production-browser.json';
+const STAGE_B_PRODUCTION_BROWSER = 'docs/reviews/evidence/g009-batch8-stage-b-production-browser.json';
 const IMMEDIATE_REVIEW = 'docs/reviews/g009-batch7.md';
 const BACKLOG = 'docs/content-backlog.md';
 const CANDIDATE_HEAD = '4398f045f0595043878102d59353bf1e3ae4de21';
@@ -21,6 +22,8 @@ const IMMEDIATE_REVIEW_HASH = 'd8438c66127e9b4411d5dc121a19842aaaab4e03c31a2285c
 const IMMEDIATE_BACKLOG_SUFFIX_HASH = '4f53eceafe34f274d494bacf5bc35be770a872666dacce54a818f796542e01c8';
 const STAGE_B_CANDIDATE_HEAD = '4b9d2c718d96adeba6910805bd02116b162f3c06';
 const STAGE_B_REVIEWED_HEAD = '44cfed91f9773e2e43d271b30a76a1ed1a70f10e';
+const STAGE_B_DEPLOYED_HEAD = '01bc03fc7b4831aabc0b9239af9d3a6d804dedf9';
+const STAGE_B_PRODUCTION_BROWSER_HASH = 'b5605b255f87041524e25a898bd5f0b27ec912322b8d1fd814c3032abb88a99a';
 const STAGE_A_ARTIFACT_HASHES = new Map([
   [ARTICLE, 'f98c075a6bf38c4d7d345d792f3dbdba361b682eef2c458095b96bcd4dbb4bf4'],
   [DRAWIO, 'b985dcaea8f5fe4ebd3601f34dcdc1eb51ff1f2a08acf7407dd4e309a51ed78e'],
@@ -57,10 +60,11 @@ const SOURCE_LINKS = [
   'https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/microservices',
 ];
 
-const [review, browserBytes, productionBytes, immediateReviewBytes, backlog, status, manifest, indexes, publicLedger] = await Promise.all([
+const [review, browserBytes, productionBytes, stageBProductionBytes, immediateReviewBytes, backlog, status, manifest, indexes, publicLedger] = await Promise.all([
   readFile(new URL(`../${REVIEW}`, import.meta.url), 'utf8'),
   readFile(new URL(`../${RAW_BROWSER}`, import.meta.url)),
   readFile(new URL(`../${PRODUCTION_BROWSER}`, import.meta.url)),
+  readFile(new URL(`../${STAGE_B_PRODUCTION_BROWSER}`, import.meta.url)),
   readFile(new URL(`../${IMMEDIATE_REVIEW}`, import.meta.url)),
   readFile(new URL(`../${BACKLOG}`, import.meta.url), 'utf8'),
   readFile(new URL('../src/generated/project-status.json', import.meta.url), 'utf8').then(JSON.parse),
@@ -70,6 +74,7 @@ const [review, browserBytes, productionBytes, immediateReviewBytes, backlog, sta
 ]);
 const browser = JSON.parse(browserBytes);
 const production = JSON.parse(productionBytes);
+const stageBProduction = JSON.parse(stageBProductionBytes);
 const sha256 = (value) => createHash('sha256').update(value).digest('hex');
 const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
 
@@ -110,7 +115,7 @@ function assertStageBClosure(source = review, backlogSource = backlog) {
     'Independent Stage B content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`.',
     'Independent Stage B architecture/invariant review: `CLEAR / READY`; blockers: `0`.',
     'Final Stage B review judgment: `READY`.',
-    'Stage B deployment status: `PENDING`.',
+    'Stage B deployment status: `SUCCESS`.',
   ]) assert.ok(projection.includes(literal), literal);
 
   const baseline = currentReleaseBaseline(backlogSource);
@@ -252,6 +257,48 @@ function assertProduction(evidence) {
   for (const attempt of evidence.screenshotEvidence.attempts) { assert.ok(attempt.bytes>0); assert.match(attempt.sha256,/^[0-9a-f]{64}$/u); assert.ok(attempt.reason.length>0); }
 }
 
+function assertStageBProduction(evidence) {
+  assert.equal(evidence.implementationHead, STAGE_B_DEPLOYED_HEAD);
+  assert.deepEqual(evidence.pages, {runId:31766813992,buildJobId:94664311129,deployJobId:94664696586,status:'completed',conclusion:'success'});
+  assert.deepEqual(evidence.probes.routes.map(({path,status,contentType,bytes}) => [path,status,contentType,bytes]), [
+    ['/',200,'text/html; charset=utf-8',3561], ['/tego-arch/',200,'text/html; charset=utf-8',17310], ['/tego-arch/styles',200,'text/html; charset=utf-8',21731],
+    ['/tego-arch/styles/sty-07',200,'text/html; charset=utf-8',42698], ['/tego-arch/styles/sty-04',200,'text/html; charset=utf-8',43248],
+    ['/tego-arch/styles/sty-05',200,'text/html; charset=utf-8',38093], ['/tego-arch/styles/sty-06',200,'text/html; charset=utf-8',48025],
+    ['/tego-arch/cases/temporal-saga-durable-execution',200,'text/html; charset=utf-8',66018], ['/tego-arch/references',200,'text/html; charset=utf-8',23533],
+  ]);
+  assert.deepEqual(evidence.probes.svg, {path:'/tego-arch/img/diagrams/sty-07-soa-microservices-order-fulfillment.svg',status:200,contentType:'image/svg+xml',bytes:29229,sha256:'b4827479133743999c7c14cf14b5d61abf91c7e217a540378ac0d4b9b77b3c8f',reviewedBytes:29229,reviewedSha256:'b4827479133743999c7c14cf14b5d61abf91c7e217a540378ac0d4b9b77b3c8f',exactMatch:true});
+  assert.deepEqual(evidence.collection.extraRouteNavigations, evidence.probes.routes.map(({path}) => path));
+  assert.deepEqual([evidence.collection.browser,evidence.collection.freshStageB,evidence.collection.stageAArtifactReused], ['Codex in-app Browser only',true,false]);
+  assert.match(evidence.collection.svgProbeBoundary, /raw SVG.*outside the Docusaurus application QA states/iu);
+  assert.deepEqual(evidence.collection.svgProbeRuntimeException, {method:'Runtime.exceptionThrown',text:"Uncaught (in promise) TypeError: Cannot use 'in' operator to search for 'animation' in undefined"});
+  assert.deepEqual(Object.keys(evidence.states), STATES);
+  for (const [key, expected] of Object.entries({desktopLight:{theme:'light',width:1440,height:1000,clients:[800,800,800],scrolls:[800,1024,1024],deltas:[0,40,40]},desktopDark:{theme:'dark',width:1440,height:1000,clients:[800,800,800],scrolls:[800,1024,1024],deltas:[0,40,40]},mobileLight:{theme:'light',width:390,height:844,clients:[358,358,358],scrolls:[800,1024,1024],deltas:[40,40,40]},mobileDark:{theme:'dark',width:390,height:844,clients:[358,358,358],scrolls:[800,1024,1024],deltas:[40,40,40]}})) {
+    const state = evidence.states[key];
+    assert.deepEqual([state.theme,state.viewport.width,state.viewport.height],[expected.theme,expected.width,expected.height]);
+    assert.deepEqual(state.geometry.page,{clientWidth:expected.width,scrollWidth:expected.width});
+    assert.deepEqual(state.geometry.wrappers.map(({label})=>label),WRAPPERS);
+    assert.deepEqual(state.geometry.wrappers.map(({clientWidth})=>clientWidth),expected.clients);
+    assert.deepEqual(state.geometry.wrappers.map(({scrollWidth})=>scrollWidth),expected.scrolls);
+    assert.deepEqual(state.interactions.map((entry)=>entry.index),[0,1,2]);
+    for (const [index, interaction] of state.interactions.entries()) {
+      assert.deepEqual([interaction.before.focus,interaction.before.focusVisible,interaction.before.scrollLeft],[true,true,0]);
+      assert.deepEqual([interaction.after.focus,interaction.after.focusVisible,interaction.after.scrollLeft],[true,true,expected.deltas[index]]);
+      assert.match(interaction.before.outline,/solid 3px/u); assert.match(interaction.after.outline,/solid 3px/u);
+    }
+    assert.deepEqual([state.geometry.svg.loaded,state.geometry.svg.naturalWidth,state.geometry.svg.naturalHeight,state.geometry.svg.renderedWidth,state.geometry.svg.renderedHeight],[true,82,150,800,1466.6640625]);
+    assert.deepEqual(state.relations.map(({href,expectedH1})=>[href,expectedH1]),RELATIONS);
+    for (const relation of state.relations) { assert.equal(relation.h1,relation.expectedH1); assert.equal(relation.returnedToArticle,true); assert.match(relation.navigation,/no physical relation click claimed/u); }
+    assert.deepEqual(state.geometry.sources.map(({href})=>href),SOURCE_LINKS);
+    for (const source of state.geometry.sources) assert.deepEqual([source.target,source.rel],['_blank','noopener noreferrer']);
+    assert.equal(state.geometry.sty08,0); assert.deepEqual(state.logs,[]); assert.deepEqual(state.diagnostics,{events:[],hasMore:false,truncated:false});
+  }
+  assert.equal(evidence.screenshotEvidence.status,'BLOCKED / NOT_ACCEPTED');
+  assert.match(evidence.screenshotEvidence.reason,/Exactly three fresh Stage B in-app Browser full-page captures/iu);
+  assert.equal(evidence.screenshotEvidence.attempts.length,3);
+  assert.deepEqual(evidence.screenshotEvidence.attempts.map(({ordinal,state,status})=>[ordinal,state,status]),[[1,'desktopLight','CAPTURED_REJECTED'],[2,'desktopDark','CAPTURED_REJECTED'],[3,'mobileLight','CAPTURED_REJECTED']]);
+  for (const attempt of evidence.screenshotEvidence.attempts) { assert.ok(attempt.bytes>0); assert.match(attempt.sha256,/^[0-9a-f]{64}$/u); assert.ok(attempt.reason.length>0); assert.match(attempt.path,/sty07-stage-b-01bc03f-formal-/u); }
+}
+
 async function assertReview(source) {
   assert.match(source, /^# G009 Batch 8 Stage A Review$/mu);
   assert.match(section(source, 'Stage A projection'), /59 completed topics \/ 102 content documents \/ 529 governed sources/u);
@@ -292,6 +339,51 @@ test('binds the exact successful STY-07 production deployment and functional evi
   for (const literal of [IMPLEMENTATION_HEAD,'31724488128','94529359551','94530100965',PRODUCTION_BROWSER_HASH,'Stage A deployment status: `SUCCESS`.','Final Stage A production judgment: `PASS`','Stage B remains `NOT_RUN`']) assert.ok(productionSection.includes(literal),literal);
 });
 
+test('binds fresh exact-head Stage B production evidence and final PASS scope', () => {
+  assert.equal(sha256(stageBProductionBytes), STAGE_B_PRODUCTION_BROWSER_HASH);
+  assert.notEqual(STAGE_B_PRODUCTION_BROWSER_HASH, PRODUCTION_BROWSER_HASH);
+  assertStageBProduction(stageBProduction);
+  const productionSection = section(review, 'Stage B production evidence');
+  for (const literal of [
+    STAGE_B_DEPLOYED_HEAD, '31766813992', '94664311129', '94664696586',
+    STAGE_B_PRODUCTION_BROWSER_HASH, 'Production route probes: `9/9`.',
+    'Production Browser states: `4/4`.', 'Wrapper interactions: `12/12`.',
+    'Relation destination/H1/return checks: `16/16`.', 'Exact source destinations: `20/20`.',
+    'STY-08 actionable count: `0` in every state.', 'Stage B deployment status: `SUCCESS`.',
+    'Final Stage B closure judgment: `PASS` for exact-head deployment, HTTP/SVG identity, functional DOM, interaction, navigation, source attributes, STY-08 exclusion, and zero application-state diagnostics.',
+    'Screenshot evidence remains `BLOCKED / NOT_ACCEPTED` and explicitly outside that PASS scope.',
+  ]) assert.ok(productionSection.includes(literal), literal);
+});
+
+test('rejects reused Stage A evidence/head and every Stage B production evidence regression', () => {
+  assertStageBProduction(stageBProduction);
+  const mutations = [
+    (copy)=>copy.implementationHead=IMPLEMENTATION_HEAD,
+    (copy)=>copy.pages.runId=31724488128,
+    (copy)=>copy.pages.buildJobId=94529359551,
+    (copy)=>copy.pages.deployJobId=94530100965,
+    (copy)=>copy.pages.conclusion='failure',
+    (copy)=>copy.probes.routes.splice(2,1),
+    (copy)=>copy.probes.routes[0].status=404,
+    (copy)=>copy.probes.svg.sha256='0'.repeat(64),
+    (copy)=>copy.probes.svg.exactMatch=false,
+    (copy)=>copy.collection.freshStageB=false,
+    (copy)=>copy.collection.stageAArtifactReused=true,
+    (copy)=>delete copy.states.mobileDark,
+    (copy)=>copy.states.desktopLight.geometry.wrappers[0].clientWidth=1,
+    (copy)=>copy.states.mobileLight.relations[0].returnedToArticle=false,
+    (copy)=>copy.states.desktopDark.geometry.sources[0].rel='',
+    (copy)=>copy.states.mobileDark.diagnostics.truncated=true,
+    (copy)=>copy.states.mobileDark.geometry.sty08=1,
+    (copy)=>copy.screenshotEvidence.status='PASS',
+    (copy)=>copy.screenshotEvidence.attempts.splice(1,1),
+  ];
+  for (const mutate of mutations) { const copy=structuredClone(stageBProduction); mutate(copy); assert.throws(()=>assertStageBProduction(copy),{name:'AssertionError'}); }
+  assert.throws(()=>assertStageBProduction(production),{name:'AssertionError'});
+  assert.notEqual(sha256(productionBytes),STAGE_B_PRODUCTION_BROWSER_HASH);
+  assert.notEqual(sha256(Buffer.concat([stageBProductionBytes,Buffer.from('x')])),STAGE_B_PRODUCTION_BROWSER_HASH);
+});
+
 test('rejects mutated production SHA, run, jobs, routes, SVG, states and visual claims', () => {
   assertProduction(production);
   const mutations = [
@@ -329,7 +421,7 @@ test('closes only STY-07 at 60/102/529 and leaves STY-08 sole next and non-actio
   assertStageBClosure();
 });
 
-test('rejects Stage B history drift, stale next-topic state, weakened review slots, and fabricated deployment', () => {
+test('rejects Stage B history drift, stale next-topic state, weakened review slots, and stale deployment', () => {
   assertStageBClosure();
   const mutations = [
     ['history drift', 'backlog', backlog, mutateImmediateHistory(backlog)],
@@ -343,7 +435,7 @@ test('rejects Stage B history drift, stale next-topic state, weakened review slo
     ['weakened architecture verdict', 'review', review, review.replace('Independent Stage B architecture/invariant review: `CLEAR / READY`; blockers: `0`', 'Independent Stage B architecture/invariant review: `BLOCKED`; blockers: `1`')],
     ['stale review slot', 'review', review, review.replace('Independent Stage B code/spec/security review: `READY / APPROVE`; findings: `0`', 'Independent Stage B code/spec/security review: `PENDING`')],
     ['stale final verdict', 'review', review, review.replace('Final Stage B review judgment: `READY`', 'Final Stage B review judgment: `PENDING`')],
-    ['fabricated deployment', 'review', review, review.replace('Stage B deployment status: `PENDING`', 'Stage B deployment status: `SUCCESS`')],
+    ['stale deployment', 'review', review, review.replace('Stage B deployment status: `SUCCESS`', 'Stage B deployment status: `PENDING`')],
   ];
   for (const [label, target, original, mutated] of mutations) {
     assert.notEqual(mutated, original, `${label} mutation applies`);
