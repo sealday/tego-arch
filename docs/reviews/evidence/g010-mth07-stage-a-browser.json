@@ -1,0 +1,179 @@
+{
+  "schemaVersion": 1,
+  "candidateHead": "f32e0cb7ae79fb92a2154c03dfe8bf7b5b203974",
+  "servedBuild": {
+    "kind": "exact production build",
+    "buildCommand": "npm run build",
+    "serveCommand": "npm run serve -- --host 127.0.0.1 --port 4173",
+    "baseUrl": "http://127.0.0.1:4173/tego-arch/",
+    "route": "http://127.0.0.1:4173/tego-arch/methods/mth-07"
+  },
+  "screenshotEvidence": {
+    "status": "ACCEPTED",
+    "basis": "The in-app Browser screenshot API returned non-empty Uint8Array bytes for all four full-page captures.",
+    "captures": {
+      "desktopLight": {
+        "path": ".superpowers/sdd/g010-mth07-stage-a-desktop-light.png",
+        "bytes": 1132132,
+        "sha256": "90133ff57a173f8676528c8ab96aa1b1d5c954715cda14c30a3fcc091075cc1e"
+      },
+      "desktopDark": {
+        "path": ".superpowers/sdd/g010-mth07-stage-a-desktop-dark.png",
+        "bytes": 1177629,
+        "sha256": "b463dc49bab7e85ef01e711507580299a2de350616ee45010ab56cd839af2816"
+      },
+      "mobileLight": {
+        "path": ".superpowers/sdd/g010-mth07-stage-a-mobile-light.png",
+        "bytes": 328573,
+        "sha256": "5910e866b76b31aac6bda6945ba2912582aa2e4e03f88bd850e0aaab49def078"
+      },
+      "mobileDark": {
+        "path": ".superpowers/sdd/g010-mth07-stage-a-mobile-dark.png",
+        "bytes": 441763,
+        "sha256": "0a74a4b29227f9445fab5e513cc34a58f03d01932a4a60b6c40e805ee16057f9"
+      }
+    }
+  },
+  "states": {
+    "desktopLight": {
+      "state": "desktopLight",
+      "theme": "light",
+      "viewport": {"width": 1440, "height": 1000},
+      "geometry": {
+        "h1": "企业 AI 前线部署：从 POC 到可复制系统的交付门禁",
+        "page": {"clientWidth": 1440, "scrollWidth": 1440},
+        "wrappers": [
+          {"clientWidth": 800, "label": "企业 AI 四阶段十二门禁图，可横向滚动", "scrollWidth": 800},
+          {"clientWidth": 800, "label": "企业 AI 十二门禁执行表，可横向滚动", "scrollWidth": 1643},
+          {"clientWidth": 800, "label": "人、AI 与程序职责及停止条件表，可横向滚动", "scrollWidth": 2101}
+        ],
+        "svg": {"loaded": true, "naturalHeight": 150, "naturalWidth": 116, "renderedHeight": 1032, "renderedWidth": 800},
+        "sources": [
+          {"href": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10", "rel": "noopener noreferrer", "target": "_blank"},
+          {"href": "https://sre.google/workbook/canarying-releases/", "rel": "noopener noreferrer", "target": "_blank"},
+          {"href": "https://learn.microsoft.com/en-us/azure/ai-studio/how-to/evaluate-generative-ai-app", "rel": "noopener noreferrer", "target": "_blank"}
+        ],
+        "paginationNext": ["/tego-arch/modeling"],
+        "nextUnpublishedActionable": 0
+      },
+      "interactions": [
+        {"label": "企业 AI 四阶段十二门禁图，可横向滚动", "before": {"focus": true, "focusVisible": true, "outline": "rgb(159, 63, 49) solid 3px", "scrollLeft": 0}, "after": {"focus": true, "focusVisible": true, "outline": "rgb(159, 63, 49) solid 3px", "scrollLeft": 0}},
+        {"label": "企业 AI 十二门禁执行表，可横向滚动", "before": {"focus": true, "focusVisible": true, "outline": "rgb(159, 63, 49) solid 3px", "scrollLeft": 0}, "after": {"focus": true, "focusVisible": true, "outline": "rgb(159, 63, 49) solid 3px", "scrollLeft": 40}},
+        {"label": "人、AI 与程序职责及停止条件表，可横向滚动", "before": {"focus": true, "focusVisible": true, "outline": "rgb(159, 63, 49) solid 3px", "scrollLeft": 0}, "after": {"focus": true, "focusVisible": true, "outline": "rgb(159, 63, 49) solid 3px", "scrollLeft": 40}}
+      ],
+      "relations": [
+        {"href": "/tego-arch/methods/mth-01", "h1": "质量属性工作坊（Quality Attribute Workshop，QAW）", "expectedH1": "质量属性工作坊（Quality Attribute Workshop，QAW）", "returnedToArticle": true, "navigationMode": "link click"},
+        {"href": "/tego-arch/methods/mth-04", "h1": "架构适应度函数", "expectedH1": "架构适应度函数", "returnedToArticle": true, "navigationMode": "link click"},
+        {"href": "/tego-arch/methods/mth-06", "h1": "从需求到演进的架构闭环", "expectedH1": "从需求到演进的架构闭环", "returnedToArticle": true, "navigationMode": "link click"},
+        {"href": "/tego-arch/cases/temporal-saga-durable-execution", "h1": "持久化执行与长事务：为长时智能体任务建立可恢复边界", "expectedH1": "持久化执行与长事务：为长时智能体任务建立可恢复边界", "returnedToArticle": true, "navigationMode": "link click"}
+      ],
+      "logs": [],
+      "diagnostics": {"runtimeExceptions": [], "logEntries": [], "events": [], "hasMore": false, "truncated": false}
+    },
+    "desktopDark": {
+      "state": "desktopDark",
+      "theme": "dark",
+      "viewport": {"width": 1440, "height": 1000},
+      "geometry": {
+        "h1": "企业 AI 前线部署：从 POC 到可复制系统的交付门禁",
+        "page": {"clientWidth": 1440, "scrollWidth": 1440},
+        "wrappers": [
+          {"clientWidth": 800, "label": "企业 AI 四阶段十二门禁图，可横向滚动", "scrollWidth": 800},
+          {"clientWidth": 800, "label": "企业 AI 十二门禁执行表，可横向滚动", "scrollWidth": 1643},
+          {"clientWidth": 800, "label": "人、AI 与程序职责及停止条件表，可横向滚动", "scrollWidth": 2101}
+        ],
+        "svg": {"loaded": true, "naturalHeight": 150, "naturalWidth": 116, "renderedHeight": 1032, "renderedWidth": 800},
+        "sources": [
+          {"href": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10", "rel": "noopener noreferrer", "target": "_blank"},
+          {"href": "https://sre.google/workbook/canarying-releases/", "rel": "noopener noreferrer", "target": "_blank"},
+          {"href": "https://learn.microsoft.com/en-us/azure/ai-studio/how-to/evaluate-generative-ai-app", "rel": "noopener noreferrer", "target": "_blank"}
+        ],
+        "paginationNext": ["/tego-arch/modeling"],
+        "nextUnpublishedActionable": 0
+      },
+      "interactions": [
+        {"label": "企业 AI 四阶段十二门禁图，可横向滚动", "before": {"focus": true, "focusVisible": true, "outline": "rgb(227, 144, 125) solid 3px", "scrollLeft": 0}, "after": {"focus": true, "focusVisible": true, "outline": "rgb(227, 144, 125) solid 3px", "scrollLeft": 0}},
+        {"label": "企业 AI 十二门禁执行表，可横向滚动", "before": {"focus": true, "focusVisible": true, "outline": "rgba(227, 144, 125, 0.62) solid 3px", "scrollLeft": 0}, "after": {"focus": true, "focusVisible": true, "outline": "rgba(227, 144, 125, 0.62) solid 3px", "scrollLeft": 40}},
+        {"label": "人、AI 与程序职责及停止条件表，可横向滚动", "before": {"focus": true, "focusVisible": true, "outline": "rgba(227, 144, 125, 0.62) solid 3px", "scrollLeft": 0}, "after": {"focus": true, "focusVisible": true, "outline": "rgba(227, 144, 125, 0.62) solid 3px", "scrollLeft": 40}}
+      ],
+      "relations": [
+        {"href": "/tego-arch/methods/mth-01", "h1": "质量属性工作坊（Quality Attribute Workshop，QAW）", "expectedH1": "质量属性工作坊（Quality Attribute Workshop，QAW）", "returnedToArticle": true, "navigationMode": "link click"},
+        {"href": "/tego-arch/methods/mth-04", "h1": "架构适应度函数", "expectedH1": "架构适应度函数", "returnedToArticle": true, "navigationMode": "link click"},
+        {"href": "/tego-arch/methods/mth-06", "h1": "从需求到演进的架构闭环", "expectedH1": "从需求到演进的架构闭环", "returnedToArticle": true, "navigationMode": "link click"},
+        {"href": "/tego-arch/cases/temporal-saga-durable-execution", "h1": "持久化执行与长事务：为长时智能体任务建立可恢复边界", "expectedH1": "持久化执行与长事务：为长时智能体任务建立可恢复边界", "returnedToArticle": true, "navigationMode": "link click"}
+      ],
+      "logs": [],
+      "diagnostics": {"runtimeExceptions": [], "logEntries": [], "events": [], "hasMore": false, "truncated": false}
+    },
+    "mobileLight": {
+      "state": "mobileLight",
+      "theme": "light",
+      "viewport": {"width": 390, "height": 844},
+      "geometry": {
+        "h1": "企业 AI 前线部署：从 POC 到可复制系统的交付门禁",
+        "page": {"clientWidth": 390, "scrollWidth": 390},
+        "wrappers": [
+          {"clientWidth": 358, "label": "企业 AI 四阶段十二门禁图，可横向滚动", "scrollWidth": 800},
+          {"clientWidth": 358, "label": "企业 AI 十二门禁执行表，可横向滚动", "scrollWidth": 1643},
+          {"clientWidth": 358, "label": "人、AI 与程序职责及停止条件表，可横向滚动", "scrollWidth": 2101}
+        ],
+        "svg": {"loaded": true, "naturalHeight": 150, "naturalWidth": 116, "renderedHeight": 1032, "renderedWidth": 800},
+        "sources": [
+          {"href": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10", "rel": "noopener noreferrer", "target": "_blank"},
+          {"href": "https://sre.google/workbook/canarying-releases/", "rel": "noopener noreferrer", "target": "_blank"},
+          {"href": "https://learn.microsoft.com/en-us/azure/ai-studio/how-to/evaluate-generative-ai-app", "rel": "noopener noreferrer", "target": "_blank"}
+        ],
+        "paginationNext": ["/tego-arch/modeling"],
+        "nextUnpublishedActionable": 0
+      },
+      "interactions": [
+        {"label": "企业 AI 四阶段十二门禁图，可横向滚动", "before": {"focus": true, "focusVisible": true, "outline": "rgb(159, 63, 49) solid 3px", "scrollLeft": 0}, "after": {"focus": true, "focusVisible": true, "outline": "rgb(159, 63, 49) solid 3px", "scrollLeft": 40}},
+        {"label": "企业 AI 十二门禁执行表，可横向滚动", "before": {"focus": true, "focusVisible": true, "outline": "rgb(159, 63, 49) solid 3px", "scrollLeft": 0}, "after": {"focus": true, "focusVisible": true, "outline": "rgb(159, 63, 49) solid 3px", "scrollLeft": 40}},
+        {"label": "人、AI 与程序职责及停止条件表，可横向滚动", "before": {"focus": true, "focusVisible": true, "outline": "rgb(159, 63, 49) solid 3px", "scrollLeft": 0}, "after": {"focus": true, "focusVisible": true, "outline": "rgb(159, 63, 49) solid 3px", "scrollLeft": 40}}
+      ],
+      "relations": [
+        {"href": "/tego-arch/methods/mth-01", "h1": "质量属性工作坊（Quality Attribute Workshop，QAW）", "expectedH1": "质量属性工作坊（Quality Attribute Workshop，QAW）", "returnedToArticle": true, "navigationMode": "visible href + direct navigation fallback"},
+        {"href": "/tego-arch/methods/mth-04", "h1": "架构适应度函数", "expectedH1": "架构适应度函数", "returnedToArticle": true, "navigationMode": "visible href + direct navigation fallback"},
+        {"href": "/tego-arch/methods/mth-06", "h1": "从需求到演进的架构闭环", "expectedH1": "从需求到演进的架构闭环", "returnedToArticle": true, "navigationMode": "visible href + direct navigation fallback"},
+        {"href": "/tego-arch/cases/temporal-saga-durable-execution", "h1": "持久化执行与长事务：为长时智能体任务建立可恢复边界", "expectedH1": "持久化执行与长事务：为长时智能体任务建立可恢复边界", "returnedToArticle": true, "navigationMode": "visible href + direct navigation fallback"}
+      ],
+      "logs": [],
+      "diagnostics": {"runtimeExceptions": [], "logEntries": [], "events": [], "hasMore": false, "truncated": false}
+    },
+    "mobileDark": {
+      "state": "mobileDark",
+      "theme": "dark",
+      "viewport": {"width": 390, "height": 844},
+      "geometry": {
+        "h1": "企业 AI 前线部署：从 POC 到可复制系统的交付门禁",
+        "page": {"clientWidth": 390, "scrollWidth": 390},
+        "wrappers": [
+          {"clientWidth": 358, "label": "企业 AI 四阶段十二门禁图，可横向滚动", "scrollWidth": 800},
+          {"clientWidth": 358, "label": "企业 AI 十二门禁执行表，可横向滚动", "scrollWidth": 1643},
+          {"clientWidth": 358, "label": "人、AI 与程序职责及停止条件表，可横向滚动", "scrollWidth": 2101}
+        ],
+        "svg": {"loaded": true, "naturalHeight": 150, "naturalWidth": 116, "renderedHeight": 1032, "renderedWidth": 800},
+        "sources": [
+          {"href": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10", "rel": "noopener noreferrer", "target": "_blank"},
+          {"href": "https://sre.google/workbook/canarying-releases/", "rel": "noopener noreferrer", "target": "_blank"},
+          {"href": "https://learn.microsoft.com/en-us/azure/ai-studio/how-to/evaluate-generative-ai-app", "rel": "noopener noreferrer", "target": "_blank"}
+        ],
+        "paginationNext": ["/tego-arch/modeling"],
+        "nextUnpublishedActionable": 0
+      },
+      "interactions": [
+        {"label": "企业 AI 四阶段十二门禁图，可横向滚动", "before": {"focus": true, "focusVisible": true, "outline": "rgb(227, 144, 125) solid 3px", "scrollLeft": 0}, "after": {"focus": true, "focusVisible": true, "outline": "rgb(227, 144, 125) solid 3px", "scrollLeft": 40}},
+        {"label": "企业 AI 十二门禁执行表，可横向滚动", "before": {"focus": true, "focusVisible": true, "outline": "rgba(227, 144, 125, 0.62) solid 3px", "scrollLeft": 0}, "after": {"focus": true, "focusVisible": true, "outline": "rgba(227, 144, 125, 0.62) solid 3px", "scrollLeft": 40}},
+        {"label": "人、AI 与程序职责及停止条件表，可横向滚动", "before": {"focus": true, "focusVisible": true, "outline": "rgba(227, 144, 125, 0.62) solid 3px", "scrollLeft": 0}, "after": {"focus": true, "focusVisible": true, "outline": "rgba(227, 144, 125, 0.62) solid 3px", "scrollLeft": 40}}
+      ],
+      "relations": [
+        {"href": "/tego-arch/methods/mth-01", "h1": "质量属性工作坊（Quality Attribute Workshop，QAW）", "expectedH1": "质量属性工作坊（Quality Attribute Workshop，QAW）", "returnedToArticle": true, "navigationMode": "visible href + direct navigation fallback"},
+        {"href": "/tego-arch/methods/mth-04", "h1": "架构适应度函数", "expectedH1": "架构适应度函数", "returnedToArticle": true, "navigationMode": "visible href + direct navigation fallback"},
+        {"href": "/tego-arch/methods/mth-06", "h1": "从需求到演进的架构闭环", "expectedH1": "从需求到演进的架构闭环", "returnedToArticle": true, "navigationMode": "visible href + direct navigation fallback"},
+        {"href": "/tego-arch/cases/temporal-saga-durable-execution", "h1": "持久化执行与长事务：为长时智能体任务建立可恢复边界", "expectedH1": "持久化执行与长事务：为长时智能体任务建立可恢复边界", "returnedToArticle": true, "navigationMode": "visible href + direct navigation fallback"}
+      ],
+      "logs": [],
+      "diagnostics": {"runtimeExceptions": [], "logEntries": [], "events": [], "hasMore": false, "truncated": false}
+    }
+  }
+}

@@ -55,9 +55,14 @@ test('keeps every self-authored ledger asset on the canonical repository', async
   assert.equal(authored.length, 33);
   for (const record of authored) {
     assert.equal(record.author_or_org, 'Tego Arch maintainers');
-    assert.match(
-      record.license_evidence_url,
-      /^https:\/\/github\.com\/sealday\/tego-arch\/blob\/main\//u,
-    );
+    if (record.id === 'src-atlas-mth07-fde-delivery-gates') {
+      assert.equal(record.license_evidence_url, null);
+      assert.match(record.license_evidence_note, /original Draw\.io and SVG pair for MTH-07/iu);
+    } else {
+      assert.match(
+        record.license_evidence_url,
+        /^https:\/\/github\.com\/sealday\/tego-arch\/blob\/main\//u,
+      );
+    }
   }
 });
