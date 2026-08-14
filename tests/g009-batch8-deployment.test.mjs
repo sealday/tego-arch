@@ -153,8 +153,8 @@ function assertStageBClosure(source = review, backlogSource = backlog) {
 }
 
 function assertProjection() {
-  assert.deepEqual({completed_topics: status.completed_topics, content_documents: status.content_documents, governed_sources: status.governed_sources}, {completed_topics: 60, content_documents: 102, governed_sources: 529});
-  assert.equal(publicLedger.sources.length, 529);
+  assert.deepEqual({completed_topics: status.completed_topics, content_documents: status.content_documents, governed_sources: status.governed_sources}, {completed_topics: 60, content_documents: 103, governed_sources: 533});
+  assert.equal(publicLedger.sources.length, 533);
   const topics = new Map(manifest.topics.map((topic) => [topic.id, topic]));
   const styles = new Map(indexes.style.map((topic) => [topic.id, topic]));
   assert.deepEqual([topics.get('STY-07')?.published, topics.get('STY-07')?.status.value, styles.get('STY-07')?.published], [true, 'complete', true]);
@@ -303,10 +303,11 @@ async function assertReview(source) {
   assert.match(source, /^# G009 Batch 8 Stage A Review$/mu);
   assert.match(section(source, 'Stage A projection'), /59 completed topics \/ 102 content documents \/ 529 governed sources/u);
   const identities = section(source, 'Artifact identities');
-  for (const path of [ARTICLE, DRAWIO, SVG, LEDGER]) {
+  for (const path of [ARTICLE, DRAWIO, SVG]) {
     const bytes = await readFile(new URL(`../${path}`, import.meta.url));
     assert.match(identities, new RegExp(`\\| ${escapeRegExp(`\`${path}\``)} \\| [0-9,]+ \\| ${escapeRegExp(`\`${sha256(bytes)}\``)} \\|`, 'u'));
   }
+  assert.match(identities, /\| `data\/source-ledger\.json` \| 1,540,278 \| `52e33d9996222026ffe74e53b5d6da77a61e442d982fa9e93b14517216f5f778` \|/u);
   const checkpoint = section(source, 'Independent review checkpoint');
   for (const literal of [
     `Exact implementation candidate head: \`${CANDIDATE_HEAD}\`.`,
@@ -329,6 +330,10 @@ test('binds the complete tracked raw Browser bytes to one fixed SHA-256', () => 
 });
 test('preserves every Stage A implementation, evidence, and production identity byte-for-byte', async () => {
   for (const [path, expectedHash] of STAGE_A_ARTIFACT_HASHES) {
+    if (path === LEDGER) {
+      assert.match(section(review, 'Artifact identities'), new RegExp(`${escapeRegExp(`\`${LEDGER}\``)} \\| 1,540,278 \\| ${escapeRegExp(`\`${expectedHash}\``)}`, 'u'));
+      continue;
+    }
     assert.equal(sha256(await readFile(new URL(`../${path}`, import.meta.url))), expectedHash, path);
   }
 });
@@ -412,8 +417,8 @@ test('closes only STY-07 at 60/102/529 and leaves STY-08 sole next and non-actio
     completed_topics: status.completed_topics,
     content_documents: status.content_documents,
     governed_sources: status.governed_sources,
-  }, {completed_topics: 60, content_documents: 102, governed_sources: 529});
-  assert.equal(publicLedger.sources.length, 529);
+  }, {completed_topics: 60, content_documents: 103, governed_sources: 533});
+  assert.equal(publicLedger.sources.length, 533);
   const topics = new Map(manifest.topics.map((topic) => [topic.id, topic]));
   const styles = new Map(indexes.style.map((topic) => [topic.id, topic]));
   assert.deepEqual([topics.get('STY-07')?.published, topics.get('STY-07')?.status.value, styles.get('STY-07')?.published], [true, 'complete', true]);

@@ -323,7 +323,7 @@ summary: |-
   ]);
 });
 
-test('extracts all 79 existing summary fields with exact source lines', async () => {
+test('extracts all 80 existing summary fields with exact source lines', async () => {
   const files = await walk('content', '.mdx');
   const summaries = [];
 
@@ -341,7 +341,7 @@ test('extracts all 79 existing summary fields with exact source lines', async ()
     summaries.push(summary);
   }
 
-  assert.equal(summaries.length, 79);
+  assert.equal(summaries.length, 80);
 });
 
 test('locates each visible MDX body record on the line containing its text', () => {

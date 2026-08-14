@@ -285,8 +285,8 @@ test('serializes deterministic JSON and complete Markdown sections', () => {
 test('loads non-empty canonical review inputs through generator plumbing', async () => {
   const inputs = await loadContentReviewInputs(projectRoot);
   assert.deepEqual(inputs.errors, []);
-  assert.equal(inputs.documents.length, 102);
-  assert.equal(inputs.ledger.sources.length, 529);
+  assert.equal(inputs.documents.length, 103);
+  assert.equal(inputs.ledger.sources.length, 533);
   assert.equal(
     inputs.policyById.get('quarterly-version-sensitive')?.calendar_months,
     3,

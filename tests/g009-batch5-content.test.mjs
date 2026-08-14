@@ -933,9 +933,9 @@ test('preserves the topic closure under the current STY-07 Stage B projection', 
   assert.equal(nextStyleIndexEntry?.published, true);
   assert.equal(nextStyleIndexEntry?.status.value, 'complete');
   assert.equal(projectStatus.completed_topics, 60);
-  assert.equal(projectStatus.content_documents, 102);
-  assert.equal(projectStatus.governed_sources, 529);
-  assert.equal(publicLedger.sources.length, 529);
+  assert.equal(projectStatus.content_documents, 103);
+  assert.equal(projectStatus.governed_sources, 533);
+  assert.equal(publicLedger.sources.length, 533);
 });
 
 test('publishes a synchronized, accessible Draw.io and SVG semantic inventory', async () => {
