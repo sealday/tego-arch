@@ -150,7 +150,7 @@ function visible(source) { return parseMdxVisibleCopy(source, ARTICLE, {includeS
 function requiredArticle() { assert.ok(article, `${ARTICLE} must exist after implementation`); return article; }
 function calendarDate(value, label) { assert.match(value, /^\d{4}-\d{2}-\d{2}$/u, label); const parsed = new Date(`${value}T00:00:00.000Z`); assert.equal(parsed.toISOString().slice(0, 10), value, label); return value; }
 function onOrAfter(value, minimum, label) { calendarDate(value, label); calendarDate(minimum, `${label} minimum`); assert.ok(value >= minimum, label); }
-function sourceWithoutDynamicProvenance(source) { return Object.fromEntries(Object.entries(source).filter(([field]) => !DYNAMIC_PROVENANCE_DATE_FIELDS.has(field))); }
+function sourceWithoutDynamicProvenance(source) { return Object.fromEntries(Object.entries(source).filter(([field]) => !DYNAMIC_PROVENANCE_DATE_FIELDS.has(field) && !(source.source_kind === 'original-illustration' && field === 'published_at'))); }
 function headings(source, level) { return findMarkdownHeadings(source).filter((item) => item.level === level).map(({text}) => text); }
 function section(source, heading, next) { const list = findMarkdownHeadings(source).filter(({level}) => level === 2); const index = list.findIndex(({text}) => text === heading); assert.ok(index >= 0, heading); const end = next ? list.findIndex(({text}, i) => i > index && text === next) : -1; assert.ok(!next || end >= 0, next); return source.slice(source.indexOf('\n', list[index].offset) + 1, end >= 0 ? list[end].offset : source.length); }
 function table(source) { const raw = [...source.matchAll(/(?:^|\n)(\|[^\n]+\|\n\|(?:\s*:?-{3,}:?\s*\|)+\n(?:\|[^\n]+\|\n?)+)/gu)].map(([, value]) => value.trim()).find((value) => value.startsWith(`| ${TABLE_COLUMNS.join(' | ')} |`)); assert.ok(raw, 'twelve gate execution table'); return raw.split('\n').slice(2).map((line) => line.slice(1, -1).split('|').map((cell) => cell.trim())); }
@@ -1947,6 +1947,7 @@ test('MTH-07 helper contracts are green after non-no-op RED mutation fixtures', 
     }]);
   }
   sourceMutations.push(['illustration created before source cutoff', (value) => { value.sources.find(({id}) => id === ILLUSTRATION_SOURCE_ID).published_at = '2026-08-12'; }]);
+  sourceMutations.push(['illustration created after registration', (value) => { value.sources.find(({id}) => id === ILLUSTRATION_SOURCE_ID).published_at = '2026-08-15'; }]);
   sourceMutations.push(['NIST is not primary', (value) => { value.documents[ARTICLE].citations.find(({source_id}) => source_id === 'src-nist-ai-rmf-1-0').manifest_primary = false; }]);
   sourceMutations.push(['Google cannot become a second primary', (value) => { value.documents[ARTICLE].citations.find(({source_id}) => source_id === 'src-google-sre-canarying-releases').manifest_primary = true; }]);
   for (const [label, change] of sourceMutations) {
