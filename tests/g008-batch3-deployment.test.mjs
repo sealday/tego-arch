@@ -167,7 +167,7 @@ function assertCurrentReleaseState(source) {
   const {prefix} = assertBatch3HistoricalSegment(source);
   assert.match(
     prefix,
-    /^- \*\*当前发布基线：\*\* 2026-08-13 G009 Batch 7 已完成 STY-06/u,
+    /^- \*\*当前发布基线：\*\* 2026-08-14 G009 Batch 8 已完成 STY-07/u,
   );
   assert.match(prefix, /当前 G009，下一项为 STY-07/u);
 }
@@ -284,7 +284,7 @@ test('preserves Batch 3 closure under the current G009 baseline', () => {
   assert.equal(topicsById.get('STY-00')?.status.value, 'complete');
   assert.equal(topicsById.get('STY-01')?.published, true);
   assert.equal(topicsById.get('STY-01')?.status.value, 'complete');
-  assert.equal(projectStatus.completed_topics, 59);
+  assert.equal(projectStatus.completed_topics, 60);
   assert.equal(projectStatus.content_documents, 102);
   assert.equal(projectStatus.governed_sources, 529);
   assert.deepEqual(projectStatus.durable_stories, {

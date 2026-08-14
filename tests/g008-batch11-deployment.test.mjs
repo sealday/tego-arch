@@ -54,12 +54,12 @@ const expectedReviewSections = [
 ];
 
 const expectedProjection = {
-  completed_topics: 59,
+  completed_topics: 60,
   content_documents: 102,
   governed_sources: 529,
   durable_stories: {completed: 8, total: 20, current: 'G009'},
   recently_completed: 'G008',
-  next_topic: 'STY-07',
+  next_topic: 'STY-08',
 };
 
 const expectedRoutes = [
@@ -240,7 +240,7 @@ function assertBacklog(source) {
   assert.equal(segment.split('下一项为 STY-00').length - 1, 1);
   assert.match(
     currentReleaseBaseline(source),
-    /^- \*\*当前发布基线：\*\* 2026-08-13 G009 Batch 7 已完成 STY-06/u,
+    /^- \*\*当前发布基线：\*\* 2026-08-14 G009 Batch 8 已完成 STY-07/u,
   );
   assert.match(currentReleaseBaseline(source), /当前 G009，下一项为 STY-07/u);
 }

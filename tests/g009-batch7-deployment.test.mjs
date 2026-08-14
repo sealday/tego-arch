@@ -77,12 +77,12 @@ function assertProjection() {
     completed_topics: status.completed_topics,
     content_documents: status.content_documents,
     governed_sources: status.governed_sources,
-  }, {completed_topics: 59, content_documents: 102, governed_sources: 529});
+  }, {completed_topics: 60, content_documents: 102, governed_sources: 529});
   assert.equal(publicLedger.sources.length, 529);
   const sty06 = manifest.topics.find(({id}) => id === 'STY-06');
   const sty07 = manifest.topics.find(({id}) => id === 'STY-07');
   assert.deepEqual([sty06?.published, sty06?.status.value, sty06?.slug], [true, 'complete', '/styles/sty-06']);
-  assert.deepEqual([sty07?.published, sty07?.status.value], [true, 'pending']);
+  assert.deepEqual([sty07?.published, sty07?.status.value], [true, 'complete']);
   assert.equal(indexes.style.find(({id}) => id === 'STY-06')?.published, true);
   assert.equal(indexes.style.find(({id}) => id === 'STY-07')?.published, true);
   assert.deepEqual(SOURCE_IDS.filter((id) => publicLedger.sources.some((source) => source.id === id)), SOURCE_IDS);
@@ -237,7 +237,7 @@ async function assertArtifactIdentities(source) {
   ]) assert.ok(identities.includes(row), row);
 }
 
-test('projects the exact STY-06 Stage B closure while preserving Stage A evidence', () => {
+test('preserves the exact STY-06 closure under the current STY-07 projection', () => {
   assertProjection();
   assert.equal(manifest.topics.filter(({published}) => published).some(({slug}) => slug === '/styles/sty-07'), true);
 });
@@ -349,20 +349,20 @@ test('rejects weakened or fabricated STY-06 production evidence', () => {
   }
 });
 
-test('closes STY-06 only after Stage A production while keeping Stage B deployment pending', () => {
+test('preserves STY-06 Stage B history under the current STY-07 closure candidate', () => {
   assert.deepEqual({
     completed_topics: status.completed_topics,
     content_documents: status.content_documents,
     governed_sources: status.governed_sources,
-  }, {completed_topics: 59, content_documents: 102, governed_sources: 529});
+  }, {completed_topics: 60, content_documents: 102, governed_sources: 529});
   const sty06 = manifest.topics.find(({id}) => id === 'STY-06');
   const sty07 = manifest.topics.find(({id}) => id === 'STY-07');
   assert.deepEqual([sty06?.published, sty06?.status.value], [true, 'complete']);
-  assert.deepEqual([sty07?.published, sty07?.status.value], [true, 'pending']);
+  assert.deepEqual([sty07?.published, sty07?.status.value], [true, 'complete']);
   const currentBaseline = backlog.split(/\r?\n/u).find((line) => line.startsWith('- **当前发布基线：**'));
   assert.ok(currentBaseline, 'current release baseline');
   for (const literal of [
-    '2026-08-13 G009 Batch 7 已完成 STY-06',
+    '2026-08-14 G009 Batch 8 已完成 STY-07',
     '59 个已完成主题、101 篇内容文档与 525 个受治理来源',
     '当前 G009，下一项为 STY-07',
     'STY-06 为 published/complete',
@@ -378,7 +378,7 @@ test('closes STY-06 only after Stage A production while keeping Stage B deployme
   for (const literal of ['- [x] **STY-06 ', '2026-08-13', '56773ffad24427b33444fb4e5d86aa524fea1577', '31668483971', '/styles/sty-06', '/img/diagrams/sty-06-event-driven-four-patterns.svg', 'Stage A production verdict PASS']) {
     assert.ok(sty06Lines[0].includes(literal), `STY-06 closure literal: ${literal}`);
   }
-  assert.match(backlog, /^- \[ \] \*\*STY-07 /mu);
+  assert.match(backlog, /^- \[x\] \*\*STY-07 /mu);
   assert.doesNotMatch(backlog, /\]\(\/styles\/sty-07\)/u);
   const closure = section(review, 'Stage B closure candidate');
   assert.match(closure, /59 completed topics \/ 101 content documents \/ 525 governed sources/u);

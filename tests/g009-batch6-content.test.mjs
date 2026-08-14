@@ -1153,7 +1153,7 @@ test('preserves the STY-05 closure under the live STY-06 Stage B projection', ()
   assert.equal(nextTopic?.status.value, 'complete');
   assert.equal(indexes.style.find(({id}) => id === TOPIC_ID)?.published, true);
   assert.equal(indexes.style.find(({id}) => id === 'STY-06')?.published, true);
-  assert.equal(projectStatus.completed_topics, 59);
+  assert.equal(projectStatus.completed_topics, 60);
   assert.equal(projectStatus.content_documents, 102);
   assert.equal(projectStatus.governed_sources, 529);
   assert.equal(publicLedger.sources.length, 529);

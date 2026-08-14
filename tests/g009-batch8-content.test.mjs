@@ -25,7 +25,7 @@ export const SOURCE_IDS = [
   'src-atlas-sty07-soa-microservices-order-fulfillment',
 ];
 export const ROUTE = '/styles/sty-07';
-export const EXPECTED_STAGE_A = Object.freeze({completed_topics: 59, content_documents: 102, governed_sources: 529});
+export const EXPECTED_CURRENT_PROJECTION = Object.freeze({completed_topics: 60, content_documents: 102, governed_sources: 529});
 export const RELATIONS = Object.freeze({
   depends_on: ['STY-00', 'STY-05'],
   adjacent_topics: ['STY-04', 'STY-05', 'STY-06'],
@@ -917,7 +917,7 @@ test('locks exact eight-row comparison and seven-row failure responsibilities', 
   await mutation(source, (candidate) => candidate.replace(/结果未知[^。；]*不盲目[^。；]*(重复支付|预留|补偿)/u, '结果未知时盲目重试'), assertFailureTable, 'unknown result blind retry');
 });
 
-test('governs STY-07 sources, reciprocal relations, and Stage A projection', async () => {
+test('governs STY-07 sources, reciprocal relations, and current Stage B projection', async () => {
   const ledger = JSON.parse(readFileSync('data/source-ledger.json', 'utf8'));
   const inventorySource = readFileSync('docs/source-license-inventory.md', 'utf8');
   assertRemoteSourceContracts(ledger, inventorySource);
@@ -952,10 +952,10 @@ test('governs STY-07 sources, reciprocal relations, and Stage A projection', asy
   }
   for (const content of documents) assert.equal(extractInternalLinks(content).includes('/styles/sty-08'), false, `${content.file} STY-08 remains non-actionable`);
   const status = JSON.parse(readFileSync('src/generated/project-status.json', 'utf8'));
-  assert.deepEqual(Object.fromEntries(Object.keys(EXPECTED_STAGE_A).map((key) => [key, status[key]])), EXPECTED_STAGE_A);
+  assert.deepEqual(Object.fromEntries(Object.keys(EXPECTED_CURRENT_PROJECTION).map((key) => [key, status[key]])), EXPECTED_CURRENT_PROJECTION);
   const manifest = JSON.parse(readFileSync('src/generated/topic-manifest.json', 'utf8'));
-  for (const [id, published] of [[TOPIC_ID, true], [NEXT_TOPIC, false]]) {
-    const topic = manifest.topics.find((entry) => entry.id === id); assert.equal(topic?.published, published, `${id} publication`); assert.equal(topic?.status.value, 'pending', `${id} pending`);
+  for (const [id, published, topicStatus] of [[TOPIC_ID, true, 'complete'], [NEXT_TOPIC, false, 'pending']]) {
+    const topic = manifest.topics.find((entry) => entry.id === id); assert.equal(topic?.published, published, `${id} publication`); assert.equal(topic?.status.value, topicStatus, `${id} status`);
   }
 });
 

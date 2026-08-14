@@ -168,7 +168,7 @@ test('preserves the Batch 2 STY-01 facts in the current Batch 6 projection', () 
   assert.equal(manifest.topics.find(({id}) => id === 'STY-03')?.status.value, 'complete');
   assert.equal(manifest.topics.find(({id}) => id === 'STY-04')?.published, true);
   assert.equal(manifest.topics.find(({id}) => id === 'STY-04')?.status.value, 'complete');
-  assert.equal(projectStatus.completed_topics, 59);
+  assert.equal(projectStatus.completed_topics, 60);
   assert.equal(projectStatus.content_documents, 102);
   assert.equal(projectStatus.governed_sources, 529);
   assert.equal(publicLedger.sources.length, 529);

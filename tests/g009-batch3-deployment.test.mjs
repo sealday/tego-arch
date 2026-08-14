@@ -216,7 +216,7 @@ function g009Batch2AndOlderHistory(source) {
 
 function assertBacklog(source) {
   const liveBaseline = currentReleaseBaseline(source);
-  assert.match(liveBaseline, /^- \*\*当前发布基线：\*\* 2026-08-13 G009 Batch 7 已完成 STY-06/u);
+  assert.match(liveBaseline, /^- \*\*当前发布基线：\*\* 2026-08-14 G009 Batch 8 已完成 STY-07/u);
   assert.match(liveBaseline, /Stage B closure 为 56 个已完成主题、98 篇内容文档与 509 个受治理来源/u);
   assert.match(liveBaseline, /下一项为 STY-07/u);
   assert.equal(liveBaseline.split(batch3HistoryMarker).length - 1, 1);
@@ -328,7 +328,7 @@ test('preserves STY-02 closure in the current Batch 6 projection', async () => {
   assert.deepEqual(status, {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
-    completed_topics: 59,
+    completed_topics: 60,
     content_documents: 102,
     governed_sources: 529,
     sources: {

@@ -1569,12 +1569,12 @@ test('locks reciprocal visible links and includes actionable STY-07', () => {
   }
 });
 
-test('projects the exact STY-06 Stage B closure state', () => {
+test('preserves the STY-06 closure under the current STY-07 Stage B projection', () => {
   assert.deepEqual({
     completed_topics: projectStatus.completed_topics,
     content_documents: projectStatus.content_documents,
     governed_sources: projectStatus.governed_sources,
-  }, {completed_topics: 59, content_documents: 102, governed_sources: 529});
+  }, {completed_topics: 60, content_documents: 102, governed_sources: 529});
   assert.equal(publicLedger.sources.length, 529);
   const topic = manifest.topics.find(({id}) => id === TOPIC_ID);
   assert.equal(topic?.slug, ROUTE);
@@ -1586,7 +1586,7 @@ test('projects the exact STY-06 Stage B closure state', () => {
   assert.deepEqual(topic?.primary_sources, ['https://martinfowler.com/articles/201701-event-driven.html']);
   const nextTopic = manifest.topics.find(({id}) => id === 'STY-07');
   assert.equal(nextTopic?.published, true);
-  assert.equal(nextTopic?.status.value, 'pending');
+  assert.equal(nextTopic?.status.value, 'complete');
   assert.equal(indexes.style.find(({id}) => id === TOPIC_ID)?.published, true);
   assert.equal(indexes.style.find(({id}) => id === 'STY-07')?.published, true);
 });

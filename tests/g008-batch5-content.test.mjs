@@ -408,7 +408,7 @@ test('projects the current G009 counts after G008 closes', async () => {
   assert.deepEqual(status, {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
-    completed_topics: 59,
+    completed_topics: 60,
     content_documents: 102,
     governed_sources: 529,
     sources: {
