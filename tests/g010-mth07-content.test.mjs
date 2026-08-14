@@ -41,6 +41,47 @@ const CITATION_SCHEMA_FIELDS = [
 ];
 const SOURCE_SCHEMA_FIELDS = ['allowed_evidence_roles', 'author_or_org', 'canonical_locator', 'checked_at', 'copyright_policy', 'expected_final_approval_note', 'expected_final_approved_at', 'expected_final_transport_locator', 'family_grouping_evidence_url', 'id', 'license', 'license_evidence_note', 'license_evidence_url', 'license_family_grouping', 'license_family_id', 'license_scope', 'link_policy', 'locator_aliases', 'published_at', 'query_insensitive', 'registered_at', 'source_kind', 'tier', 'title', 'tombstone', 'transport_locator', 'usage_boundary', 'version'];
 const SOURCE_IDS = ['src-nist-ai-rmf-1-0', 'src-google-sre-canarying-releases', 'src-microsoft-foundry-run-evaluations', 'src-atlas-mth07-fde-delivery-gates'];
+const PEER_CONTRACTS = [
+  {
+    file: 'content/methods/mth-01-quality-attribute-workshop.mdx',
+    adjacentTopics: ['FND-02', 'MTH-02', 'MTH-07'],
+    backlink: '[企业 AI 前线部署交付门禁](/methods/mth-07)使用这些可测场景作为验收输入，但另行负责交付证据、生产责任和停止条件。',
+    overclaim: '[企业 AI 前线部署交付门禁](/methods/mth-07)使用这些可测场景作为验收输入，并证明交付成功。',
+    conclusion: '结果是一份排序场景集，而不是组件图。后续团队把场景甲、乙映射到候选架构，再用 MTH-02 评估隔离边界和策略执行点。',
+  },
+  {
+    file: 'content/methods/mth-04-architecture-fitness-functions.mdx',
+    adjacentTopics: ['MTH-03', 'MTH-06', 'MTH-07', 'PR-08'],
+    backlink: '[企业 AI 前线部署交付门禁](/methods/mth-07)消费这些信号来决定停止、回退或放量，但适应度函数本身不定义客户验收。',
+    overclaim: '[企业 AI 前线部署交付门禁](/methods/mth-07)消费这些信号来决定停止、回退或放量，适应度函数即可证明客户验收。',
+    conclusion: '反馈表、阈值分层和演练是本站原创归纳。来源支持适应度函数作为演进反馈的概念，不证明某个测试、指标、监控、服务等级目标或发布门禁可以互相替代。',
+  },
+  {
+    file: 'content/methods/mth-06-requirements-to-evolution-loop.mdx',
+    adjacentTopics: ['MTH-04', 'MTH-05', 'MTH-07', 'FND-05', 'MOD-13'],
+    backlink: '[企业 AI 前线部署交付门禁](/methods/mth-07)把这条演进反馈用于现场验收、生产放量与复制复核，但不替代问题发现。',
+    overclaim: '[企业 AI 前线部署交付门禁](/methods/mth-07)把这条演进反馈用于现场验收、生产放量与复制复核，并替代问题发现。',
+    conclusion: '闭环、反馈路由和停止条件是本站原创综合；来源分别支持局部方法，不主张存在一个由这些来源共同规定的固定流程。',
+  },
+  {
+    file: 'content/cases/temporal-saga-durable-execution.mdx',
+    adjacentTopics: null,
+    backlink: '[企业 AI 前线部署交付门禁](/methods/mth-07)把本案例的长流程、重试、补偿和可观测责任作为工程机制参照；本案例不证明 FDE 组织模式或交付结果。',
+    overclaim: '[企业 AI 前线部署交付门禁](/methods/mth-07)把本案例的长流程、重试、补偿和可观测责任作为工程机制参照；本案例证明 FDE 组织模式和交付结果。',
+    conclusion: '[MOD-06 实体关系模型与关系边界](/modeling/mod-06)进一步说明 Temporal 事件历史是控制面恢复记录，不是带有效期的业务关系历史。',
+  },
+];
+const UNSUPPORTED_CLAIM_BOUNDARY = '这些来源支持风险、评估、监测和渐进放量机制，不支持市场、薪资、政策数字、交付成功率或商业收益。';
+const TEGO_ARCH_INTRO = '以下边界由 Tego Arch 架构知识项目综合四项登记来源，并把独立事实与本站推断分开。';
+const UNSUPPORTED_CLAIM_MUTATIONS = [
+  '100 亿市场已经形成。',
+  '百亿市场已经形成。',
+  '一百亿元市场已经形成。',
+  '市场规模达到 100 亿元。',
+  '市场规模达到一百亿元。',
+  '薪资普遍更高。',
+  '政策要求所有企业采用 FDE。',
+];
 const SOURCE_CONTRACTS = new Map([
   ['src-nist-ai-rmf-1-0', {id: 'src-nist-ai-rmf-1-0', canonical_locator: 'https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10', transport_locator: 'https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10', query_insensitive: false, locator_aliases: [], tombstone: null, title: 'Artificial Intelligence Risk Management Framework (AI RMF 1.0)', author_or_org: 'Elham Tabassi / National Institute of Standards and Technology', published_at: '2023-01-26', registered_at: FIXTURE_TASK_DATE, checked_at: FIXTURE_TASK_DATE, version: 'NIST AI 100-1 final publication dated 2023-01-26', source_kind: 'standard', tier: 'primary', allowed_evidence_roles: ['method'], license: 'LicenseRef-US-Gov-Public-Domain', license_scope: 'NIST-authored AI RMF publication material; third-party or separately marked copyrighted material, marks, and linked works excluded.', license_evidence_url: 'https://www.nist.gov/nist-research-library/nist-publications', license_evidence_note: 'NIST Technical Series policy grants worldwide reprint and derivative-work rights for NIST-authored works, while third-party works may remain protected.', license_family_id: 'https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10', license_family_grouping: 'identity', family_grouping_evidence_url: null, copyright_policy: 'public-domain-with-provenance', usage_boundary: 'Supports AI RMF risk, evaluation, monitoring, human-oversight, recovery, and decommissioning mechanisms; it does not define FDE, prescribe the twelve gates, or support market, salary, or policy numbers.', link_policy: 'stable', expected_final_transport_locator: 'https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10', expected_final_approved_at: FIXTURE_TASK_DATE, expected_final_approval_note: 'Official NIST publication page must be checked directly when registered.'}],
   ['src-google-sre-canarying-releases', {id: 'src-google-sre-canarying-releases', canonical_locator: 'https://sre.google/workbook/canarying-releases/', transport_locator: 'https://sre.google/workbook/canarying-releases/', query_insensitive: false, locator_aliases: [], tombstone: null, title: 'Canarying Releases', author_or_org: 'Alec Warner and Štěpán Davidovič / Google SRE', published_at: null, registered_at: FIXTURE_TASK_DATE, checked_at: FIXTURE_TASK_DATE, version: 'Google SRE Workbook online edition, Chapter 16; footer Copyright 2018 Google, Inc.', source_kind: 'official-docs', tier: 'primary', allowed_evidence_roles: ['method'], license: 'CC-BY-NC-ND-4.0', license_scope: 'The named Google SRE Workbook chapter within its CC BY-NC-ND 4.0 notice; Google and O’Reilly marks, linked works, code, media, figures, and third-party material under separate notices are excluded.', license_evidence_url: 'https://sre.google/workbook/canarying-releases/', license_evidence_note: 'The official chapter footer identifies Copyright © 2018 Google, Inc., Published by O’Reilly Media, Inc., and CC BY-NC-ND 4.0.', license_family_id: 'https://sre.google/workbook/canarying-releases/', license_family_grouping: 'identity', family_grouping_evidence_url: null, copyright_policy: 'facts-and-short-quotation', usage_boundary: 'Supports original facts summaries of partial time-bounded rollout, control comparison, and proceed-or-stop decisions; it is not a universal rollout process or a requirement to copy Google’s organization.', link_policy: 'stable', expected_final_transport_locator: 'https://sre.google/workbook/canarying-releases/', expected_final_approved_at: FIXTURE_TASK_DATE, expected_final_approval_note: 'Official Google SRE Workbook page must be checked directly when registered.'}],
@@ -161,6 +202,7 @@ const DELIVERY_TERM_CONTRACTS = new Map([
 
 const contentRoot = fileURLToPath(new URL('../content/', import.meta.url));
 const [documents, ledger, manifest, projectStatus, terminology] = await Promise.all([readContentDocuments(contentRoot), readFile(new URL('../data/source-ledger.json', import.meta.url), 'utf8').then(JSON.parse), readFile(new URL('../src/generated/topic-manifest.json', import.meta.url), 'utf8').then(JSON.parse), readFile(new URL('../src/generated/project-status.json', import.meta.url), 'utf8').then(JSON.parse), readFile(new URL('../data/terminology.json', import.meta.url), 'utf8').then(JSON.parse)]);
+const peerSources = new Map(await Promise.all(PEER_CONTRACTS.map(async ({file}) => [file, await readFile(new URL(`../${file}`, import.meta.url), 'utf8')])));
 const article = documents.find(({file}) => `content/${file}` === ARTICLE);
 
 function visible(source) { return parseMdxVisibleCopy(source, ARTICLE, {includeStructure: true}).blocks.map(({text}) => text).join('\n'); }
@@ -175,12 +217,27 @@ function assertMetadataAndHeadings(source) { assert.deepEqual(parseFrontMatter(s
 function assertGateRows(source) { const rows = table(source); assert.deepEqual(rows, GATE_ROWS, 'auditable, exact ordered gate contracts'); for (const [index, row] of rows.entries()) { assert.equal(row.length, 8, `${GATES[index]} eight fields`); assert.equal(row[0], STAGES[Math.floor(index / 3)]); assert.equal(row[1], GATES[index]); for (let field = 2; field < 8; field += 1) assert.ok(row[field].length >= 2, `${GATES[index]} field ${field}`); } }
 function assertEvidenceAndResponsibilities(source) {
   const text = visible(source); for (const label of ['来源事实', '独立证据', 'Tego Arch 推断']) assert.match(text, new RegExp(label, 'u'), `${label} label`);
-  for (const sentence of text.split(/[。！？!?\n]+/u)) assert.equal(/(?:市场|薪资|政策).{0,32}\d/u.test(sentence), false, 'current four-source set cannot support numeric market/salary/policy claims');
+  assert.equal(text.split(UNSUPPORTED_CLAIM_BOUNDARY).length - 1, 1, 'one exact unsupported-claim boundary');
+  assert.doesNotMatch(text.replace(UNSUPPORTED_CLAIM_BOUNDARY, ''), /(?:市场|薪资|政策|交付成功率|商业收益)/u, 'current four-source set cannot support claim-bearing market, salary, policy, delivery-rate, or business-benefit copy');
+  assert.equal(text.split(TEGO_ARCH_INTRO).length - 1, 1, 'natural Tego Arch introduction');
+  assert.equal(text.split('Tego Arch 推断：').length - 1, 1, 'one exact Tego Arch inference label');
+  assert.ok(text.indexOf(TEGO_ARCH_INTRO) < text.indexOf('Tego Arch 推断：'), 'project introduction precedes inference label');
+  assert.equal(source.split('**Tego Arch 推断：**').length - 1, 1, 'exact standalone inference label');
   assert.match(text, /NIST AI RMF 1\.0 支持评估、监测与人工覆盖机制/u, 'accepted nonnumeric independent claim');
   assert.doesNotMatch(text, /(?:\u5fae\u4fe1|\u0077\u0065\u0063\u0068\u0061\u0074|mp\.\u0077\u0065\u0069\u0078\u0069\u006e\.qq\.com)/iu, 'MTH-07 visible copy excludes the excluded channel');
   const clauses = ['POC 成功不等于生产可用','生产可用不等于验收通过','验收通过不等于放量','放量不等于复制','程序负责权限校验、确定性规则、审计记录和回滚开关','AI 只负责检索、分类、生成候选或建议，不得最终授权不可逆动作','人负责授权不可逆动作、决定放量与终止','人工队列有上限、时限和能力约束','客户业务负责人拥有明确停止权'];
   for (const clause of clauses) assert.ok(text.includes(clause), clause);
   for (const forbidden of [/POC.{0,12}(?:就是|(?<!不)等于).{0,12}生产/u, /生产.{0,12}(?:就是|(?<!不)等于).{0,12}验收/u, /验收.{0,12}(?:就是|(?<!不)等于).{0,12}放量/u, /放量.{0,12}(?:就是|(?<!不)等于).{0,12}复制/u]) assert.doesNotMatch(text, forbidden, `conflation ${forbidden}`);
+}
+function assertPeerRelations(sources) {
+  for (const {file, adjacentTopics, backlink, conclusion} of PEER_CONTRACTS) {
+    const source = sources.get(file);
+    assert.ok(source, `${file} is read by the focused contract`);
+    if (adjacentTopics) assert.deepEqual(parseFrontMatter(source).adjacent_topics, adjacentTopics, `${file} exact reverse metadata`);
+    assert.equal(extractInternalLinks({body: source}).filter((route) => route === ROUTE).length, 1, `${file} one visible MTH-07 route`);
+    assert.equal(source.split(backlink).length - 1, 1, `${file} exact bounded backlink`);
+    assert.equal(source.split(conclusion).length - 1, 1, `${file} preserves its conclusion`);
+  }
 }
 function assertWrappersAndArrowBehavior(source) {
   assert.match(source, /import \{handleHorizontalArrowKey\} from '@site\/src\/components\/KeyboardScrollableRegion\/handleHorizontalArrowKey\.mjs';/u, 'uses canonical handler import'); const region = {scrollLeft: 0, scrollWidth: 200, clientWidth: 100}; let prevented = false; handleHorizontalArrowKey({key: 'ArrowRight', target: region, currentTarget: region, altKey: false, ctrlKey: false, metaKey: false, shiftKey: false, preventDefault: () => { prevented = true; }}); assert.equal(region.scrollLeft, 40, 'canonical ArrowRight scrolls focused overflow region'); assert.equal(prevented, true, 'canonical handler prevents default');
@@ -1905,7 +1962,7 @@ function fixtureGovernance() {
     }},
   };
 }
-function fixtureArticle() { const headingText = H2.map((heading) => heading === '可迁移经验' ? `## ${heading}\n${TRANSFER_H3.map((item) => `### ${item}`).join('\n')}` : `## ${heading}`).join('\n\n'); const metadata = Object.entries(EXACT_METADATA).map(([key, value]) => Array.isArray(value) ? `${key}:\n${value.map((item) => `  - ${item}`).join('\n')}` : `${key}: ${value}`).join('\n'); return `---\n${metadata}\n---\n\nimport {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableRegion/handleHorizontalArrowKey.mjs';\n\n${headingText}\n\n| ${TABLE_COLUMNS.join(' | ')} |\n| ${TABLE_COLUMNS.map(() => '---').join(' | ')} |\n${GATE_ROWS.map((row) => `| ${row.join(' | ')} |`).join('\n')}\n\n来源事实。独立证据。Tego Arch 推断。NIST AI RMF 1.0 支持评估、监测与人工覆盖机制。POC 成功不等于生产可用。生产可用不等于验收通过。验收通过不等于放量。放量不等于复制。程序负责权限校验、确定性规则、审计记录和回滚开关。AI 只负责检索、分类、生成候选或建议，不得最终授权不可逆动作。人负责授权不可逆动作、决定放量与终止。人工队列有上限、时限和能力约束。客户业务负责人拥有明确停止权。\n\n${REQUIRED_WRAPPERS.map(({aria, className}) => `<div className="${className}" role="region" aria-label="${aria}" tabIndex={0} onKeyDown={handleHorizontalArrowKey}></div>`).join('\n')}`; }
+function fixtureArticle() { const headingText = H2.map((heading) => heading === '可迁移经验' ? `## ${heading}\n${TRANSFER_H3.map((item) => `### ${item}`).join('\n')}` : `## ${heading}`).join('\n\n'); const metadata = Object.entries(EXACT_METADATA).map(([key, value]) => Array.isArray(value) ? `${key}:\n${value.map((item) => `  - ${item}`).join('\n')}` : `${key}: ${value}`).join('\n'); return `---\n${metadata}\n---\n\nimport {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableRegion/handleHorizontalArrowKey.mjs';\n\n${headingText}\n\n| ${TABLE_COLUMNS.join(' | ')} |\n| ${TABLE_COLUMNS.map(() => '---').join(' | ')} |\n${GATE_ROWS.map((row) => `| ${row.join(' | ')} |`).join('\n')}\n\n来源事实。独立证据。${TEGO_ARCH_INTRO}\n\n**Tego Arch 推断：** NIST AI RMF 1.0 支持评估、监测与人工覆盖机制。POC 成功不等于生产可用。生产可用不等于验收通过。验收通过不等于放量。放量不等于复制。程序负责权限校验、确定性规则、审计记录和回滚开关。AI 只负责检索、分类、生成候选或建议，不得最终授权不可逆动作。人负责授权不可逆动作、决定放量与终止。人工队列有上限、时限和能力约束。客户业务负责人拥有明确停止权。${UNSUPPORTED_CLAIM_BOUNDARY}\n\n${REQUIRED_WRAPPERS.map(({aria, className}) => `<div className="${className}" role="region" aria-label="${aria}" tabIndex={0} onKeyDown={handleHorizontalArrowKey}></div>`).join('\n')}`; }
 function fixtureDiagram() {
   const boxes = new Map();
   STAGE_IDS.forEach((id, index) => boxes.set(id, {x: index * 500 + 2, y: 2, width: 476, height: 1776}));
@@ -2002,7 +2059,29 @@ function fixtureDiagram() {
 }
 
 test('MTH-07 helper contracts are green after non-no-op RED mutation fixtures', () => {
-  const source = fixtureArticle(); assertMetadataAndHeadings(source); assertGateRows(source); assertEvidenceAndResponsibilities(source); assertWrappersAndArrowBehavior(source); assertNarrowHeadingContract(); assertDeliveryTermContracts(terminology);
+  const source = fixtureArticle(); assertMetadataAndHeadings(source); assertGateRows(source); assertEvidenceAndResponsibilities(source); assertWrappersAndArrowBehavior(source); assertNarrowHeadingContract(); assertDeliveryTermContracts(terminology); assertPeerRelations(peerSources);
+  for (const claim of UNSUPPORTED_CLAIM_MUTATIONS) {
+    const mutated = source.replace(UNSUPPORTED_CLAIM_BOUNDARY, `${UNSUPPORTED_CLAIM_BOUNDARY}${claim}`);
+    assert.notEqual(mutated, source, `${claim} mutation is non-no-op`);
+    assert.throws(() => assertEvidenceAndResponsibilities(mutated), assert.AssertionError, claim);
+  }
+  for (const contract of PEER_CONTRACTS) {
+    const current = peerSources.get(contract.file);
+    const deletedBacklink = current.replace(contract.backlink, '');
+    assert.notEqual(deletedBacklink, current, `${contract.file} backlink deletion is non-no-op`);
+    const deletedSources = new Map(peerSources).set(contract.file, deletedBacklink);
+    assert.throws(() => assertPeerRelations(deletedSources), assert.AssertionError, `${contract.file} backlink deletion`);
+    const overclaimed = current.replace(contract.backlink, contract.overclaim);
+    assert.notEqual(overclaimed, current, `${contract.file} overclaim mutation is non-no-op`);
+    const overclaimedSources = new Map(peerSources).set(contract.file, overclaimed);
+    assert.throws(() => assertPeerRelations(overclaimedSources), assert.AssertionError, `${contract.file} overclaim`);
+    if (contract.adjacentTopics) {
+      const deletedMetadata = current.replace('  - MTH-07\n', '');
+      assert.notEqual(deletedMetadata, current, `${contract.file} metadata deletion is non-no-op`);
+      const deletedMetadataSources = new Map(peerSources).set(contract.file, deletedMetadata);
+      assert.throws(() => assertPeerRelations(deletedMetadataSources), assert.AssertionError, `${contract.file} reverse metadata deletion`);
+    }
+  }
   for (const [id] of DELIVERY_TERM_CONTRACTS) {
     const deleted = structuredClone(terminology);
     deleted.terms = deleted.terms.filter((term) => term.id !== id);
