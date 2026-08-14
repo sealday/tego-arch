@@ -64,7 +64,7 @@ export const ACTOR_COMPONENTS = Object.freeze([
   ['behavior', /行为[^。；]*(处理一条消息|改变内部状态|发送后续消息)/u, /行为[^。；]*(不等于|不保证|不能)[^。；]*(业务流程原子|副作用只发生一次|全局事务)/u],
   ['supervision', /监督[^。；]*(重启|停止|升级)/u, /监督[^。；]*(不代替|不能|不保证)[^。；]*(业务恢复|补偿|对账|持久化恢复)/u],
 ]);
-const NEGATED_OWNER = /不负责|不拥有|不得拥有|不能拥有|不维护|不得维护|不能维护|不由|不得由|不能由|没有所有者|无人负责|责任待定|所有者待定|尚未明确|未指定/u;
+const NEGATED_OWNER = /不负责|不承担|不拥有|不得拥有|不能拥有|不维护|不得维护|不能维护|不由|不得由|不能由|没有所有者|无人负责|责任待定|所有者待定|尚未明确|未指定/u;
 const PROHIBITIONS = Object.freeze([
   ['Actor is not thread', /Actor[^。；]*(?:不等于|不是)[^。；]*线程|线程[^。；]*(?:不等于|不是)[^。；]*Actor/iu],
   ['Actor is not consumer', /Actor[^。；]*(?:不等于|不是)[^。；]*(?:普通)?消息消费者|(?:普通)?消息消费者[^。；]*(?:不等于|不是)[^。；]*Actor/iu],
@@ -80,6 +80,41 @@ export const COMPARISON_ROWS = Object.freeze([
   ['微服务', /更细粒度.*运行时实体.*订单|设备|会话/u, /不天然.*独立制品.*部署.*数据边界.*团队所有权.*公开服务合同/u],
 ]);
 export const OBSERVATION_POINTS = ['收到消息', '进入邮箱', '开始处理', '业务提交', '发送回复', '外部效果完成'];
+export const ADOPTION_ROWS = Object.freeze([
+  ['采用', '稳定身份、独立维护有限状态、单实体命令可串行', '身份回收、有界邮箱、状态权威与恢复', '活跃集合远小于逻辑实体全集'],
+  ['谨慎采用', '跨 Actor 查询需要协调、预留或补偿', '幂等、对账、升级、再平衡与故障演练', '热点 Actor 的单邮箱成为吞吐瓶颈'],
+  ['停止采用', '即时联接、扫描或聚合查询为主', '跨 Actor 不变量没有协调机制', '团队无法运营邮箱积压、监督预算、持久化恢复和集群放置'],
+]);
+const MIGRATION_STEPS = Object.freeze([
+  '固定消息合同、状态机、持久化和外部权威',
+  '把共享锁或并发写入口收敛为邮箱消息',
+  '验证积压、激活、恢复、重放和热点实体',
+]);
+const MIGRATION_SEQUENCE = `迁移第一步${MIGRATION_STEPS[0]}。第二步${MIGRATION_STEPS[1]}。第三步${MIGRATION_STEPS[2]}。`;
+const REQUIRED_SEMANTIC_BOUNDARIES = Object.freeze([
+  ['selective mapping', /不(?:把|要求)[^。；]*(?:每个类|每个请求|每个数据库行|每个服务|所有类|所有请求|所有服务)[^。；]*(?:映射|改写|建模)[^。；]*Actor/u],
+  ['mailbox limits', /邮箱(?:串行)?[^。；]*(?:不自动|不能)[^。；]*持久化[^。；]*可靠投递[^。；]*全局顺序[^。；]*恰好一次[^。；]*分布式事务[^。；]*外部副作用幂等/u],
+  ['supervision limits', /监督[^。；]*(?:不代替|不能)[^。；]*业务拒绝[^。；]*对账[^。；]*补偿[^。；]*(?:业务恢复|持久化恢复)[^。；]*人工终止/u],
+  ['location limits', /位置透明[^。；]*(?:不隐藏|不能消除)[^。；]*容量[^。；]*状态迁移[^。；]*故障[^。；]*网络/u],
+  ['framework scope', /(?:Akka|Orleans|Erlang\/OTP)[^。；]*(?:实现例证|框架例证|实现合同)[^。；]*(?:不是|不得外推为)[^。；]*(?:模型公理|统一保证)/u],
+]);
+const FORBIDDEN_SEMANTIC_CLAIMS = Object.freeze([
+  ['every class is Actor', /每个类[^。；]*(?:都|必须)[^。；]*(?:映射为|建模为|改写为)[^。；]*Actor/u],
+  ['every request is Actor', /每个请求[^。；]*(?:都|必须)[^。；]*(?:映射为|建模为|改写为)[^。；]*Actor/u],
+  ['every row is Actor', /每个数据库行[^。；]*(?:都|必须)[^。；]*(?:映射为|建模为|改写为)[^。；]*Actor/u],
+  ['every service is Actor', /每个(?:微)?服务[^。；]*(?:都|必须)[^。；]*(?:映射为|建模为|改写为)[^。；]*Actor/u],
+  ...['持久化', '可靠投递', '全局顺序', '恰好一次', '分布式事务', '外部副作用幂等'].map((guarantee) => [`mailbox implies ${guarantee}`, new RegExp(`邮箱(?:串行)?(?:(?!不自动|不能|不保证)[^。；])*(?:意味着|保证|自动提供)[^。；]*${guarantee}`, 'u')]),
+  ...['业务拒绝', '对账', '补偿', '业务恢复', '人工终止'].map((guarantee) => [`supervision implies ${guarantee}`, new RegExp(`监督(?:(?!不代替|不能|不保证)[^。；])*(?:自动完成|保证|代替)[^。；]*${guarantee}`, 'u')]),
+  ...['容量', '状态迁移', '故障', '网络'].map((hidden) => [`location hides ${hidden}`, new RegExp(`位置透明(?:(?!不隐藏|不能消除)[^。；])*(?:隐藏|消除|无需考虑)[^。；]*${hidden}`, 'u')]),
+  ['framework axiom', /(?:Akka|Orleans|Erlang\/OTP)[^。；]*(?:默认行为|实现行为)[^。；]*(?:就是|等于|证明|构成)[^。；]*(?:Actor Model|模型)[^。；]*(?:公理|统一保证)/u],
+]);
+const FALSE_SEMANTIC_FIXTURES = Object.freeze([
+  '每个类都必须映射为 Actor。', '每个请求都必须建模为 Actor。', '每个数据库行都必须改写为 Actor。', '每个微服务都必须映射为 Actor。',
+  ...['持久化', '可靠投递', '全局顺序', '恰好一次', '分布式事务', '外部副作用幂等'].map((guarantee) => `邮箱串行自动提供${guarantee}。`),
+  ...['业务拒绝', '对账', '补偿', '业务恢复', '人工终止'].map((guarantee) => `监督自动完成${guarantee}。`),
+  ...['容量', '状态迁移', '故障', '网络'].map((hidden) => `位置透明无需考虑${hidden}。`),
+  'Akka 默认行为就是 Actor Model 的公理。',
+]);
 const ORDER_FLOW_CONTRACTS = Object.freeze([
   ['logical order identity', /Order-123/u], ['command', /SubmitOrder/u], ['operation ID', /操作 ID/u],
   ['correlation ID', /关联 ID/u], ['expected order version', /期望订单版本/u], ['different-order parallelism', /Order-456[^。；]*(并行|同时运行)/u],
@@ -115,51 +150,70 @@ const REMOTE_SOURCE_CONTRACTS = Object.freeze({
   'src-hewitt-bishop-steiger-actor-formalism-1973': Object.freeze({
     canonical_locator: 'https://www.ijcai.org/Proceedings/73/Papers/027B.pdf',
     transport_locator: 'https://www.ijcai.org/Proceedings/73/Papers/027B.pdf', source_kind: 'research-paper',
-    license: 'LicenseRef-All-Rights-Reserved', copyright_policy: 'facts-and-short-quotation',
+    title: 'A Universal Modular ACTOR Formalism for Artificial Intelligence', author_or_org: 'Carl Hewitt, Peter Bishop, and Richard Steiger',
+    version: 'IJCAI 1973 proceedings paper; checked 2026-08-14', checked_at: '2026-08-14', tier: 'primary',
+    license: 'LicenseRef-All-Rights-Reserved', license_scope: 'The named IJCAI proceedings paper only; linked and third-party material excluded',
+    license_evidence_url: 'https://www.ijcai.org/Proceedings/73/Papers/027B.pdf', copyright_policy: 'facts-and-short-quotation',
     allowed_evidence_roles: ['definition', 'historical-context'], citation_roles: ['definition', 'historical-context'],
     manifest_primary: true,
     license_evidence_note: 'The IJCAI proceedings page exposes no reusable license; Tego Arch retains attribution and uses original factual summary only.',
     usage_boundary: 'Supports the 1973 Actor formalism and historical model boundary; it does not prove behavior, APIs, delivery, persistence, supervision, or production outcomes of a modern runtime.',
+    citation_attribution: 'A Universal Modular ACTOR Formalism for Artificial Intelligence, Carl Hewitt, Peter Bishop, and Richard Steiger',
   }),
   'src-akka-actor-model': Object.freeze({
     canonical_locator: 'https://doc.akka.io/libraries/akka-core/current/typed/actors.html',
     transport_locator: 'https://raw.githubusercontent.com/akka/akka/main/akka-docs/src/main/paradox/typed/actors.md', source_kind: 'official-docs',
-    license: 'Apache-2.0', copyright_policy: 'framework-claims-separated',
+    title: 'Introduction to Actors', author_or_org: 'Akka maintainers', version: 'Akka 2.10 documentation; checked 2026-08-14', checked_at: '2026-08-14', tier: 'primary',
+    license: 'Apache-2.0', license_scope: 'Official Akka repository documentation covered by Apache-2.0; trademarks, linked works, and third-party material excluded',
+    license_evidence_url: 'https://raw.githubusercontent.com/akka/akka/main/LICENSE', copyright_policy: 'framework-claims-separated',
     allowed_evidence_roles: ['definition', 'implementation', 'runtime-fact'], citation_roles: ['definition', 'implementation'], manifest_primary: false,
     license_evidence_note: 'The official Akka repository licenses the documentation under Apache License 2.0.',
     usage_boundary: 'Akka Typed implementation example for encapsulated state, behavior, messaging, and supervision; not a universal Actor Model guarantee.',
+    citation_attribution: 'Introduction to Actors, Akka maintainers',
   }),
   'src-akka-message-delivery-reliability': Object.freeze({
     canonical_locator: 'https://doc.akka.io/libraries/akka-core/current/general/message-delivery-reliability.html',
     transport_locator: 'https://raw.githubusercontent.com/akka/akka/main/akka-docs/src/main/paradox/general/message-delivery-reliability.md', source_kind: 'official-docs',
-    license: 'Apache-2.0', copyright_policy: 'framework-claims-separated',
+    title: 'Message Delivery Reliability', author_or_org: 'Akka maintainers', version: 'Akka 2.10 documentation; checked 2026-08-14', checked_at: '2026-08-14', tier: 'primary',
+    license: 'Apache-2.0', license_scope: 'Official Akka repository documentation covered by Apache-2.0; trademarks, linked works, and third-party material excluded',
+    license_evidence_url: 'https://raw.githubusercontent.com/akka/akka/main/LICENSE', copyright_policy: 'framework-claims-separated',
     allowed_evidence_roles: ['comparison', 'implementation', 'runtime-fact'], citation_roles: ['comparison', 'runtime-fact'], manifest_primary: false,
     license_evidence_note: 'The official Akka repository licenses the documentation under Apache License 2.0.',
     usage_boundary: 'Akka-scoped evidence for at-most-once delivery, sender-receiver ordering, dead letters, and local/remote differences; not a cross-framework guarantee.',
+    citation_attribution: 'Message Delivery Reliability, Akka maintainers',
   }),
   'src-akka-location-transparency': Object.freeze({
     canonical_locator: 'https://doc.akka.io/libraries/akka-core/current/general/remoting.html#location-transparency',
     transport_locator: 'https://raw.githubusercontent.com/akka/akka/main/akka-docs/src/main/paradox/general/remoting.md', source_kind: 'official-docs',
-    license: 'Apache-2.0', copyright_policy: 'framework-claims-separated',
+    title: 'Remoting — Location Transparency', author_or_org: 'Akka maintainers', version: 'Akka 2.10 documentation; checked 2026-08-14', checked_at: '2026-08-14', tier: 'primary',
+    license: 'Apache-2.0', license_scope: 'Official Akka repository documentation covered by Apache-2.0; trademarks, linked works, and third-party material excluded',
+    license_evidence_url: 'https://raw.githubusercontent.com/akka/akka/main/LICENSE', copyright_policy: 'framework-claims-separated',
     allowed_evidence_roles: ['comparison', 'implementation', 'runtime-fact'], citation_roles: ['comparison', 'runtime-fact'], manifest_primary: false,
     license_evidence_note: 'The official Akka repository licenses the documentation under Apache License 2.0.',
     usage_boundary: 'Akka-scoped logical addressing example; it does not hide latency, serialization, network failure, security, placement, or state-migration boundaries.',
+    citation_attribution: 'Remoting — Location Transparency, Akka maintainers',
   }),
   'src-microsoft-orleans-overview': Object.freeze({
     canonical_locator: 'https://learn.microsoft.com/en-us/dotnet/orleans/overview',
     transport_locator: 'https://raw.githubusercontent.com/dotnet/docs/main/docs/orleans/overview.md', source_kind: 'official-docs',
-    license: 'CC-BY-4.0', copyright_policy: 'vendor-claims-separated',
+    title: 'Orleans overview', author_or_org: 'Microsoft', version: 'Microsoft Orleans documentation; checked 2026-08-14', checked_at: '2026-08-14', tier: 'primary',
+    license: 'CC-BY-4.0', license_scope: 'The named Microsoft Learn documentation page under Microsoft documentation terms; trademarks, code, linked works, and third-party material excluded',
+    license_evidence_url: 'https://learn.microsoft.com/en-us/legal/termsofuse', copyright_policy: 'vendor-claims-separated',
     allowed_evidence_roles: ['comparison', 'implementation', 'runtime-fact'], citation_roles: ['comparison', 'implementation'], manifest_primary: false,
     license_evidence_note: 'Microsoft Learn documentation is used under the documented CC BY 4.0 terms for Microsoft documentation.',
     usage_boundary: 'Orleans framework example for virtual identity, activation, placement, and explicit persistence; not a universal Actor Model guarantee.',
+    citation_attribution: 'Orleans overview, Microsoft',
   }),
   'src-erlang-28f791c67609': Object.freeze({
     canonical_locator: 'https://www.erlang.org/doc/system/sup_princ.html',
     transport_locator: 'https://www.erlang.org/doc/system/sup_princ.html', source_kind: 'official-docs',
-    license: 'Apache-2.0', copyright_policy: 'facts-and-short-quotation',
+    title: 'Supervisor Behaviour — OTP Design Principles', author_or_org: 'Erlang/OTP maintainers', version: 'Current work/page checked on 2026-07-24', checked_at: '2026-07-24', tier: 'primary',
+    license: 'Apache-2.0', license_scope: 'The named work/page within the evidenced Apache-2.0 scope; trademarks, linked works, code or media under separate notices, and third-party assets excluded',
+    license_evidence_url: 'https://github.com/erlang/otp/blob/master/LICENSE.txt', copyright_policy: 'facts-and-short-quotation',
     allowed_evidence_roles: ['case-evidence', 'comparison', 'definition', 'historical-context', 'implementation', 'learning', 'method', 'runtime-fact'], citation_roles: ['comparison', 'runtime-fact'], manifest_primary: false,
     license_evidence_note: 'For “Supervisor Behaviour — OTP Design Principles” at https://www.erlang.org/doc/system/sup_princ.html, the official Erlang/OTP repository identifies Apache License 2.0 for the documented project material; evidence: https://github.com/erlang/otp/blob/master/LICENSE.txt.',
     usage_boundary: 'Erlang/OTP supervision-tree, escalation, and restart-intensity implementation evidence; not proof that all Actor runtimes use the same hierarchy or recovery semantics.',
+    citation_attribution: 'Supervisor Behaviour — OTP Design Principles, Erlang/OTP maintainers',
   }),
 });
 const RECIPROCALS = Object.freeze([
@@ -272,7 +326,7 @@ export function assertRemoteSourceContracts(ledger, inventorySource) {
   for (const id of remoteIds) {
     const expected = REMOTE_SOURCE_CONTRACTS[id]; const source = ledger.sources.find((entry) => entry.id === id);
     const citation = document.citations.find((entry) => entry.source_id === id); assert.ok(source && citation, `${id} source and citation`);
-    for (const field of ['canonical_locator', 'transport_locator', 'source_kind', 'license', 'copyright_policy']) {
+    for (const field of ['canonical_locator', 'transport_locator', 'title', 'author_or_org', 'version', 'checked_at', 'source_kind', 'tier', 'license', 'license_scope', 'license_evidence_url', 'license_evidence_note', 'copyright_policy', 'usage_boundary']) {
       assert.equal(source[field], expected[field], `${id}.${field}`);
     }
     assert.deepEqual(source.allowed_evidence_roles, expected.allowed_evidence_roles, `${id} exact allowed evidence roles`);
@@ -282,9 +336,10 @@ export function assertRemoteSourceContracts(ledger, inventorySource) {
     assert.deepEqual(citation.roles, expected.citation_roles, `${id} exact citation roles`);
     assert.equal(citation.manifest_primary, expected.manifest_primary, `${id} exact primary flag`);
     assert.equal(citation.usage_mode, 'facts-summary', `${id} facts-summary only`);
+    assert.equal(citation.attribution_note, expected.citation_attribution, `${id} exact citation attribution`);
     const inventory = rows.find(([family]) => family === expected.canonical_locator); assert.ok(inventory, `${id} inventory identity`);
-    assert.equal(inventory[1], expected.canonical_locator, `${id} inventory governed current URL`);
-    assert.equal(inventory[6], expected.license, `${id} inventory license`);
+    assert.deepEqual(inventory.slice(1, 9), [expected.canonical_locator, expected.author_or_org, expected.license_evidence_url,
+      expected.license_evidence_note, expected.checked_at, expected.license, expected.license_scope, expected.copyright_policy], `${id} exact inventory alignment`);
   }
 }
 function removeFrontMatterField(source, field) {
@@ -325,27 +380,35 @@ export function assertProhibitions(source) {
   assert.doesNotMatch(source, /Actor[^。；]*(?:(?<!不)等于|就是)[^。；]*(?:线程|普通消息消费者|事件驱动架构|微服务)/iu, 'Actor equivalence is forbidden');
   assert.doesNotMatch(source, /(?:只能|必须)[^。；]*(?:Actor|线程|队列|事件驱动|微服务)[^。；]*(?:不能|不得)[^。；]*(?:组合|共存)/u, 'mechanisms cannot be made mutually exclusive');
 }
-function exactRows(table, expected, heading, columns) {
+export function assertSemanticBoundaries(source) {
+  for (const [name, pattern] of REQUIRED_SEMANTIC_BOUNDARIES) assert.match(source, pattern, `${name} explicit boundary`);
+  for (const [name, pattern] of FORBIDDEN_SEMANTIC_CLAIMS) assert.doesNotMatch(source, pattern, `${name} contradiction forbidden`);
+}
+function exactRows(table, expected, heading, columns, affirmativeCells = []) {
   assert.deepEqual(table[0], heading, 'exact table header');
   assert.match(table[1].join('|'), /^-+/u, 'table divider');
   assert.equal(table.length, expected.length + 2, 'exact row count');
   for (const [index, [label, ...patterns]] of expected.entries()) {
     const row = table[index + 2]; assert.equal(row[0], label, `row ${index + 1} label/order`);
     assert.equal(row.length, columns, `${label} cell count`);
-    for (const [cell, pattern] of patterns.entries()) assert.match(row[cell + 1], pattern, `${label} cell ${cell + 1}`);
+    for (const [cell, pattern] of patterns.entries()) {
+      if (typeof pattern === 'string') assert.equal(row[cell + 1], pattern, `${label} exact cell ${cell + 1}`);
+      else assert.match(row[cell + 1], pattern, `${label} cell ${cell + 1}`);
+      if (affirmativeCells.includes(cell)) assert.doesNotMatch(row[cell + 1], NEGATED_OWNER, `${label} cell ${cell + 1} affirmative polarity`);
+    }
   }
 }
 export function assertComparisonTable(source) {
   const table = markdownTables(articleParts(source).body).find((candidate) => candidate[0]?.[0] === '对照对象');
   assert.ok(table, 'four-row Actor comparison table');
-  exactRows(table, COMPARISON_ROWS, ['对照对象', 'Actor Model 的决定性区别', '不得外推'], 3);
+  exactRows(table, COMPARISON_ROWS, ['对照对象', 'Actor Model 的决定性区别', '不得外推'], 3, [0]);
   assert.match(source, /不是成熟度阶梯/u, 'comparison is not a maturity ladder');
   assert.doesNotMatch(source, /(?:构成|形成|属于|(?<!不)是)(?:一条|一个|同一)?成熟度阶梯/u, 'comparison cannot fabricate a maturity ladder');
 }
 export function assertFailureTable(source) {
   const table = markdownTables(articleParts(source).body).find((candidate) => candidate[0]?.[0] === '失败类别');
   assert.ok(table, 'eight-row failure table');
-  exactRows(table, FAILURE_ROWS, ['失败类别', '检测', '自动动作', '停止条件', '人工所有者'], 5);
+  exactRows(table, FAILURE_ROWS, ['失败类别', '检测', '自动动作', '停止条件', '人工所有者'], 5, [3]);
   assert.doesNotMatch(source, /无限(?:重启|重试)|无预算(?:重启|重试)/u, 'unlimited restart/retry forbidden');
 }
 export function assertOrderFlow(source) {
@@ -360,11 +423,23 @@ export function assertOrderFlow(source) {
 }
 export function assertRuntimeBoundaries(source) {
   for (const [name, pattern] of RUNTIME_CONTRACTS) assert.match(source, pattern, name);
-  const clauses = source.split(/[。；\n]/u); const mailboxClauses = RUNTIME_CONTRACTS.slice(0, 3).map(([name, pattern]) => {
-    const index = clauses.findIndex((clause) => pattern.test(clause)); assert.ok(index >= 0, `${name} clause`); return index;
+  const clauses = source.split(/[。；\n]/u); const mailboxCandidates = RUNTIME_CONTRACTS.slice(0, 3).map(([name, pattern]) => {
+    const indices = clauses.flatMap((clause, index) => pattern.test(clause) ? [index] : []); assert.ok(indices.length > 0, `${name} clause`); return indices;
   });
-  assert.equal(new Set(mailboxClauses).size, mailboxClauses.length, 'mailbox capacity, persistence, and ordering use separate clauses');
+  assert.ok(mailboxCandidates[0].some((capacity) => mailboxCandidates[1].some((persistence) => persistence !== capacity && mailboxCandidates[2].some((ordering) => ordering !== capacity && ordering !== persistence))), 'mailbox capacity, persistence, and ordering use separate clauses');
   assert.doesNotMatch(source, /无限(?:重启|重试)|无预算(?:重启|重试)/u, 'unlimited restart/retry forbidden');
+}
+export function assertAdoptionContract(source) {
+  const table = markdownTables(articleParts(source).body).find((candidate) => candidate[0]?.[0] === '决策'); assert.ok(table, 'adoption/caution/stop matrix');
+  exactRows(table, ADOPTION_ROWS, ['决策', '适用信号', '前置责任', '停止或收紧条件'], 4);
+  assert.ok(source.includes(MIGRATION_SEQUENCE), 'exact ordered migration sequence');
+  assert.match(table.flat().join(' '), /热点 Actor/u, 'hotspot decision visible');
+  assert.match(table.flat().join(' '), /跨 Actor.*不变量/u, 'cross-Actor invariant decision visible');
+  assert.match(table.flat().join(' '), /团队无法运营.*邮箱积压.*监督预算.*持久化恢复.*集群放置/u, 'operational stopping condition visible');
+  assert.doesNotMatch(source, /热点 Actor[^。；]*(?:永远|一定)?不会[^。；]*吞吐瓶颈/u, 'hotspot contradiction forbidden');
+  assert.doesNotMatch(source, /跨 Actor[^。；]*不变量[^。；]*(?:无需|不必|没有必要)[^。；]*(?:协调|预留|补偿)/u, 'cross-Actor coordination contradiction forbidden');
+  assert.doesNotMatch(source, /团队[^。；]*(?:无需|不必)运营[^。；]*(?:邮箱积压|监督预算|持久化恢复|集群放置)/u, 'operational-responsibility contradiction forbidden');
+  assert.doesNotMatch(source, /先把(?:所有|每个)[^。；]*(?:服务|数据库行|实体)[^。；]*改写为 Actor/u, 'universal Actor migration forbidden');
 }
 function attrs(tag) { return new Map([...tag.matchAll(/([:\w-]+)="([^"]*)"/gu)].map(([, key, value]) => [key, value])); }
 function decodeXmlText(value) { return value.replace(/&(?:#(\d+)|#x([\da-f]+)|amp|lt|gt|quot);/giu, (entity, decimal, hex) => {
@@ -452,6 +527,39 @@ function numericBounds(attributes) {
   const bounds = Object.fromEntries(['x', 'y', 'width', 'height'].map((key) => [key, Number(attributes.get(key))]));
   assert.ok(Object.values(bounds).every(Number.isFinite), 'finite node bounds'); return bounds;
 }
+function multiplyTransform(left, right) { return [
+  left[0] * right[0] + left[2] * right[1], left[1] * right[0] + left[3] * right[1],
+  left[0] * right[2] + left[2] * right[3], left[1] * right[2] + left[3] * right[3],
+  left[0] * right[4] + left[2] * right[5] + left[4], left[1] * right[4] + left[3] * right[5] + left[5],
+]; }
+function transformMatrix(value = '') {
+  let result = [1, 0, 0, 1, 0, 0];
+  for (const [, name, source] of value.matchAll(/(matrix|translate|scale)\(([^)]+)\)/gu)) {
+    const values = source.trim().split(/[\s,]+/u).map(Number); let next;
+    if (name === 'matrix') { assert.equal(values.length, 6, 'six-value SVG matrix'); next = values; }
+    else if (name === 'translate') next = [1, 0, 0, 1, values[0], values[1] ?? 0];
+    else next = [values[0], 0, 0, values[1] ?? values[0], 0, 0];
+    assert.ok(next.every(Number.isFinite), `finite ${name} transform`); result = multiplyTransform(result, next);
+  }
+  return result;
+}
+function elementTransform(element) {
+  const chain = []; for (let current = element; current; current = current.parent) chain.unshift(transformMatrix(current.attributes.get('transform')));
+  return chain.reduce((matrix, next) => multiplyTransform(matrix, next), [1, 0, 0, 1, 0, 0]);
+}
+function transformPoint(matrix, {x, y}) { return {x: matrix[0] * x + matrix[2] * y + matrix[4], y: matrix[1] * x + matrix[3] * y + matrix[5]}; }
+function geometryPoints(element) {
+  if (element.name === 'rect') { const {x, y, width, height} = numericBounds(element.attributes); return [{x, y}, {x: x + width, y}, {x: x + width, y: y + height}, {x, y: y + height}]; }
+  if (element.name === 'circle') { const cx = Number(element.attributes.get('cx')); const cy = Number(element.attributes.get('cy')); const r = Number(element.attributes.get('r')); return [{x: cx - r, y: cy - r}, {x: cx + r, y: cy + r}]; }
+  if (element.name === 'ellipse') { const cx = Number(element.attributes.get('cx')); const cy = Number(element.attributes.get('cy')); const rx = Number(element.attributes.get('rx')); const ry = Number(element.attributes.get('ry')); return [{x: cx - rx, y: cy - ry}, {x: cx + rx, y: cy + ry}]; }
+  if (['polygon', 'polyline'].includes(element.name)) { const values = (element.attributes.get('points')?.match(/-?(?:\d+(?:\.\d*)?|\.\d+)/gu) ?? []).map(Number); return values.reduce((points, value, index) => { if (index % 2 === 0) points.push({x: value, y: values[index + 1]}); return points; }, []); }
+  if (element.name === 'path') return parsePathPoints(element.attributes.get('d'));
+  assert.fail(`unsupported painted geometry ${element.name}`);
+}
+function visibleShapeBounds(element) {
+  const points = geometryPoints(element).map((point) => transformPoint(elementTransform(element), point)); assert.ok(points.length >= 2 && points.every(({x, y}) => Number.isFinite(x) && Number.isFinite(y)), `${element.name} visible geometry`);
+  return {left: Math.min(...points.map(({x}) => x)), right: Math.max(...points.map(({x}) => x)), top: Math.min(...points.map(({y}) => y)), bottom: Math.max(...points.map(({y}) => y))};
+}
 function drawioStyle(cell) { return new Map((cell.attributes.get('style') ?? '').split(';').filter(Boolean).map((entry) => entry.split(/=(.*)/su))); }
 export function drawioTerminalPoint(drawio, edge, kind) {
   const style = drawioStyle(edge); const prefix = kind === 'source' ? 'exit' : 'entry'; const id = edge.attributes.get(kind);
@@ -494,7 +602,7 @@ function labelBox(source, element, label = elementText(source, element)) {
   const anchor = svgPresentationValue(source, element, 'text-anchor') ?? 'start'; const left = anchor === 'middle' ? x - width / 2 : anchor === 'end' ? x - width : x;
   return {left, right: left + width, top: y - fontSize, bottom: y + fontSize * .3};
 }
-function rectangleFromElement(element) { const bounds = numericBounds(element.attributes); return {left: bounds.x, right: bounds.x + bounds.width, top: bounds.y, bottom: bounds.y + bounds.height}; }
+function rectangleFromElement(element) { return visibleShapeBounds(element); }
 function rectangleDistance(left, right) { const dx = Math.max(left.left - right.right, right.left - left.right, 0); const dy = Math.max(left.top - right.bottom, right.top - left.bottom, 0); return Math.hypot(dx, dy); }
 function rectangleAxisClearance(left, right) { return {horizontal: Math.max(left.left - right.right, right.left - left.right, 0), vertical: Math.max(left.top - right.bottom, right.top - left.bottom, 0)}; }
 function pointRectangleDistance(point, rectangle) { return Math.hypot(Math.max(rectangle.left - point.x, 0, point.x - rectangle.right), Math.max(rectangle.top - point.y, 0, point.y - rectangle.bottom)); }
@@ -511,7 +619,7 @@ function markerGeometry(source, path, points) {
   for (let index = 0; index < values.length; index += 2) { const localX = (values[index] - refX) * width / viewBox[2] * unit; const localY = (values[index + 1] - refY) * height / viewBox[3] * unit; result.push({x: endpoint.x + axis.x * localX + perpendicular.x * localY, y: endpoint.y + axis.y * localX + perpendicular.y * localY}); }
   assert.ok(result.length >= 3 && result.every(({x, y}) => Number.isFinite(x) && Number.isFinite(y)), `${markerId} physical marker geometry`); return result;
 }
-function nodeShape(elements, group) { return elements.find((element) => ['rect', 'path'].includes(element.name) && element.parent === group && element.attributes.has('data-shape')); }
+function nodeShape(elements, group) { return elements.find((element) => ['rect', 'path', 'polygon', 'circle', 'ellipse'].includes(element.name) && element.parent === group && element.attributes.has('data-shape')); }
 function routeBoundsCollision(points, rectangle, stroke = 0) {
   const expanded = {left: rectangle.left - stroke / 2, right: rectangle.right + stroke / 2, top: rectangle.top - stroke / 2, bottom: rectangle.bottom + stroke / 2};
   return points.slice(1).some((point, index) => segmentDistance(points[index], point, expanded) === 0);
@@ -580,18 +688,28 @@ function assertLegendParity(drawio, svg, source) {
   }
 }
 function assertNodeParity(drawio, svg, source) {
+  const drawioIds = drawio.nodes.filter(({attributes}) => !['legend-anchor', 'legend-caption'].includes(attributes.get('dataRole'))).map(({attributes}) => attributes.get('id'));
+  const svgIds = svg.nodes.map(({attributes}) => attributes.get('data-node-id'));
+  assert.deepEqual(drawioIds, DIAGRAM_NODES, 'exact ordered Draw.io node inventory without extras');
+  assert.deepEqual(svgIds, DIAGRAM_NODES, 'exact ordered SVG node inventory without extras');
   for (const id of DIAGRAM_NODES) {
     const node = drawio.nodes.find(({attributes}) => attributes.get('id') === id); const group = svg.nodes.find(({attributes}) => attributes.get('data-node-id') === id); assert.ok(node && group, `${id} paired node`);
     const texts = svg.elements.filter(({name, parent, attributes}) => name === 'text' && parent === group && attributes.has('data-text-role'));
     assert.equal(texts.map((element) => elementText(source, element)).join('｜'), node.label, `${id} normalized visible label parity`);
     assert.equal(group.attributes.get('data-role'), node.attributes.get('dataRole'), `${id} role parity`);
-    const shape = nodeShape(svg.elements, group); assert.ok(shape, `${id} visible shape`); const style = drawioStyle(node);
+    const shape = nodeShape(svg.elements, group); assert.ok(shape, `${id} visible shape`); const style = drawioStyle(node); assertVisibleNodeBounds(drawio, svg, id);
     assert.equal(shape.attributes.get('data-shape'), node.attributes.get('dataShape'), `${id} shape parity`);
     assert.equal(svgPresentationValue(source, shape, 'fill'), style.get('fillColor'), `${id} fill parity`);
     assert.equal(svgPresentationValue(source, shape, 'stroke'), style.get('strokeColor'), `${id} stroke parity`);
     const title = texts.find(({attributes}) => attributes.get('data-text-role') === 'title'); assert.ok(title, `${id} title`);
     assert.equal(Number.parseFloat(svgPresentationValue(source, title, 'font-size')), Number(node.attributes.get('dataTitleFont')), `${id} title font parity`);
   }
+}
+function assertVisibleNodeBounds(drawio, svg, id) {
+  const node = drawio.nodes.find(({attributes}) => attributes.get('id') === id); const group = svg.nodes.find(({attributes}) => attributes.get('data-node-id') === id); const shape = nodeShape(svg.elements, group); assert.ok(node && group && shape, `${id} visible bounds fixture`);
+  const actual = visibleShapeBounds(shape); const geometry = numericBounds(node.geometry); const expected = [geometry.x, geometry.y, geometry.x + geometry.width, geometry.y + geometry.height]; const round = (value) => Math.round(value * 1e6) / 1e6;
+  assert.deepEqual([actual.left, actual.top, actual.right, actual.bottom].map(round), expected.map(round), `${id} actual transformed shape bounds match Draw.io`);
+  assert.equal(group.attributes.get('data-node-bounds'), `${geometry.x} ${geometry.y} ${geometry.width} ${geometry.height}`, `${id} declared bounds match Draw.io`);
 }
 function typographyMetrics(svg, source, scale) {
   const values = {horizontal: Infinity, top: Infinity, bottom: Infinity, baseline: Infinity};
@@ -611,7 +729,7 @@ function typographyMetrics(svg, source, scale) {
   return values;
 }
 function localBackground(source, label) {
-  const point = {x: Number(label.attributes.get('x')), y: Number(label.attributes.get('y'))}; const paints = parseSvg(source).elements.filter((element) => element.name === 'rect' && element.index < label.index && !/^(?:canvas|background)$/u.test(element.attributes.get('id') ?? '')).filter((element) => {
+  const point = {x: Number(label.attributes.get('x')), y: Number(label.attributes.get('y'))}; const paints = parseSvg(source).elements.filter((element) => ['rect', 'path', 'polygon', 'polyline', 'circle', 'ellipse'].includes(element.name) && element.parent?.name !== 'marker' && element.index < label.index && !/^(?:canvas|background)$/u.test(element.attributes.get('id') ?? '')).filter((element) => {
     const rectangle = rectangleFromElement(element); return point.x >= rectangle.left && point.x <= rectangle.right && point.y >= rectangle.top && point.y <= rectangle.bottom;
   }).map((element) => ({color: svgPresentationValue(source, element, 'fill'), opacity: paintOpacity(source, element, 'fill'), index: element.index})).filter(({color}) => color && color !== 'none').sort((left, right) => left.index - right.index);
   const canvas = parseSvg(source).elements.find(({attributes}) => /^(?:canvas|background)$/u.test(attributes.get('id') ?? '')); const base = canvas ? blendHex(svgPresentationValue(source, canvas, 'fill'), '#FFFFFF', paintOpacity(source, canvas, 'fill')) : '#FFFFFF';
@@ -620,8 +738,8 @@ function localBackground(source, label) {
 function assertPhysicalGeometry(source, scale, enforceLabelAttachment = true) {
   const elements = parseSvg(source).elements; const paths = elements.filter(({name, attributes}) => name === 'path' && attributes.has('data-edge-id')); const labels = elements.filter(({name, attributes}) => name === 'text' && attributes.has('data-edge-id'));
   const allPaths = elements.filter(({name, attributes}) => name === 'path' && (attributes.has('data-edge-id') || attributes.has('data-structural-edge-id') || attributes.has('data-legend-key')));
-  const connectors = allPaths.map((path) => ({path, id: path.attributes.get('data-edge-id') ?? path.attributes.get('data-structural-edge-id') ?? `legend-${path.attributes.get('data-legend-key')}`, points: parsePathPoints(path.attributes.get('d')), markers: markerGeometry(source, path, parsePathPoints(path.attributes.get('d')))}));
-  const nodeShapes = elements.filter(({name, parent}) => name === 'rect' && parent?.attributes.has('data-node-id')).map((shape) => ({id: shape.parent.attributes.get('data-node-id'), rectangle: rectangleFromElement(shape), stroke: Number(svgPresentationValue(source, shape, 'stroke-width') ?? 0)}));
+  const connectors = allPaths.map((path) => ({path, id: path.attributes.get('data-edge-id') ?? path.attributes.get('data-structural-edge-id') ?? `legend-${path.attributes.get('data-legend-key')}`, points: parsePathPoints(path.attributes.get('d')), markers: markerGeometry(source, path, parsePathPoints(path.attributes.get('d'))), stroke: Number(svgPresentationValue(source, path, 'stroke-width') ?? 0)}));
+  const nodeShapes = elements.filter(({name, parent}) => ['rect', 'path', 'polygon', 'circle', 'ellipse'].includes(name) && parent?.attributes.has('data-node-id')).filter((element) => nodeShape(elements, element.parent) === element).map((shape) => ({id: shape.parent.attributes.get('data-node-id'), rectangle: rectangleFromElement(shape), stroke: Number(svgPresentationValue(source, shape, 'stroke-width') ?? 0)}));
   const boundaryIds = ['shared-state-boundary', 'actor-runtime-boundary', 'external-authority-boundary', 'legend-band'];
   const boundaries = nodeShapes.filter(({id}) => boundaryIds.includes(id));
   for (let left = 0; left < connectors.length; left += 1) for (let right = left + 1; right < connectors.length; right += 1) {
@@ -651,10 +769,10 @@ function assertPhysicalGeometry(source, scale, enforceLabelAttachment = true) {
     const id = label.attributes.get('data-edge-id'); const own = paths.find(({attributes}) => attributes.get('data-edge-id') === id); assert.ok(own, `${id} path`); const bounds = labelBox(source, label);
     assert.equal(label.attributes.get('data-label-bounds'), [bounds.left, bounds.top, bounds.right, bounds.bottom].join(' '), `${id} actual label bounds parity`);
     for (const connector of connectors) for (const point of connector.points.slice(1)) { /* execute parsed geometry before segment loop */ assert.ok(Number.isFinite(point.x)); }
-    const connectorGaps = connectors.map(({id: connectorId, points}) => ({id: connectorId, gap: Math.min(...points.slice(1).map((point, index) => segmentDistance(points[index], point, bounds))) * scale}));
+    const connectorGaps = connectors.map(({id: connectorId, points, stroke}) => ({id: connectorId, gap: (Math.min(...points.slice(1).map((point, index) => segmentDistance(points[index], point, bounds))) - stroke / 2) * scale}));
     const nearestConnector = connectorGaps.reduce((nearest, candidate) => candidate.gap < nearest.gap ? candidate : nearest); const strokeGap = nearestConnector.gap; assert.ok(strokeGap >= 8, `${id} label to own/foreign connector ${nearestConnector.id} ${strokeGap}`);
-    const ownPoints = parsePathPoints(own.attributes.get('d')); const ownGap = Math.min(...ownPoints.slice(1).map((point, index) => segmentDistance(ownPoints[index], point, bounds))) * scale;
-    const foreignGap = Math.min(...connectors.filter(({path}) => path !== own).flatMap(({points}) => points.slice(1).map((point, index) => segmentDistance(points[index], point, bounds)))) * scale;
+    const ownPoints = parsePathPoints(own.attributes.get('d')); const ownStroke = Number(svgPresentationValue(source, own, 'stroke-width') ?? 0); const ownGap = (Math.min(...ownPoints.slice(1).map((point, index) => segmentDistance(ownPoints[index], point, bounds))) - ownStroke / 2) * scale;
+    const foreignGap = Math.min(...connectors.filter(({path}) => path !== own).flatMap(({points, stroke}) => points.slice(1).map((point, index) => segmentDistance(points[index], point, bounds) - stroke / 2))) * scale;
     if (enforceLabelAttachment) { assert.ok(ownGap <= 40, `${id} label remains attached to own route ${ownGap}`); assert.ok(ownGap < foreignGap, `${id} label uniquely nearest own route ${ownGap}/${foreignGap}`); }
     const markerGap = Math.min(...connectors.flatMap(({markers}) => markers.map((point) => pointRectangleDistance(point, bounds)))) * scale; assert.ok(markerGap >= 16, `${id} label to actual own/foreign marker ${markerGap}`);
     for (const node of nodeShapes.filter(({id: nodeId}) => ![own.attributes.get('data-source'), own.attributes.get('data-target')].includes(nodeId) && !['actor-canvas', ...boundaryIds].includes(nodeId))) assert.ok(rectangleDistance(bounds, {left: node.rectangle.left - node.stroke / 2, right: node.rectangle.right + node.stroke / 2, top: node.rectangle.top - node.stroke / 2, bottom: node.rectangle.bottom + node.stroke / 2}) * scale >= 12, `${id} foreign node ${node.id}`);
@@ -669,17 +787,22 @@ function assertPhysicalGeometry(source, scale, enforceLabelAttachment = true) {
   }
   const legends = Object.keys(CONNECTOR_STYLES).map((role) => { const key = elements.find(({name, attributes}) => name === 'path' && attributes.get('data-legend-key') === role); const caption = elements.find(({name, attributes}) => name === 'text' && attributes.get('data-legend-for') === role); assert.ok(key && caption, `${role} legend key/caption`); const points = parsePathPoints(key.attributes.get('d')); return {role, key, caption, bounds: labelBox(source, caption), points, markers: markerGeometry(source, key, points)}; });
   for (const legend of legends) {
-    const keyGap = Math.min(...legend.points.slice(1).map((point, index) => segmentDistance(legend.points[index], point, legend.bounds))) * scale; assert.ok(keyGap >= 12, `${legend.role} legend key-caption`);
+    const keyGap = (Math.min(...legend.points.slice(1).map((point, index) => segmentDistance(legend.points[index], point, legend.bounds))) - Number(svgPresentationValue(source, legend.key, 'stroke-width') ?? 0) / 2) * scale; assert.ok(keyGap >= 12, `${legend.role} legend key-caption`);
     assert.ok(Math.min(...legend.markers.map((point) => pointRectangleDistance(point, legend.bounds))) * scale >= 16, `${legend.role} own real marker-caption`);
     for (const foreign of legends.filter(({role}) => role !== legend.role)) assert.ok(Math.min(...foreign.markers.map((point) => pointRectangleDistance(point, legend.bounds))) * scale >= 16, `${legend.role} foreign marker-caption ${foreign.role}`);
   }
 }
 function assertNoOverdraw(source) {
   const {elements} = parseSvg(source); const paths = elements.filter(({name, attributes}) => name === 'path' && (attributes.has('data-edge-id') || attributes.has('data-structural-edge-id') || attributes.has('data-legend-key')));
-  for (const path of paths) for (const mask of elements.filter(({name, index}) => name === 'rect' && index > path.index)) {
-    const fill = svgPresentationValue(source, mask, 'fill'); const opacity = fill && fill !== 'none' ? paintOpacity(source, mask, 'fill') : 0;
-    if (opacity > 0) { const bounds = numericBounds(mask.attributes); const points = parsePathPoints(path.attributes.get('d')); const id = path.attributes.get('data-edge-id') ?? path.attributes.get('data-structural-edge-id') ?? `legend-${path.attributes.get('data-legend-key')}`; assert.ok(!points.slice(1).some((point, index) => segmentDistance(points[index], point, {left: bounds.x, right: bounds.x + bounds.width, top: bounds.y, bottom: bounds.y + bounds.height}) === 0), `${id} no later opaque/translucent mask`); }
+  for (const path of paths) for (const mask of elements.filter(({name, index, parent}) => ['rect', 'path', 'polygon', 'polyline', 'circle', 'ellipse'].includes(name) && parent?.name !== 'marker' && index > path.index)) {
+    const fill = svgPresentationValue(source, mask, 'fill') ?? '#000000'; const opacity = !['none', 'transparent'].includes(fill.toLowerCase()) ? paintOpacity(source, mask, 'fill') : 0;
+    if (opacity > 0) { const bounds = visibleShapeBounds(mask); const points = parsePathPoints(path.attributes.get('d')); const id = path.attributes.get('data-edge-id') ?? path.attributes.get('data-structural-edge-id') ?? `legend-${path.attributes.get('data-legend-key')}`; assert.ok(!points.slice(1).some((point, index) => segmentDistance(points[index], point, bounds) === 0), `${id} no later opaque/translucent ${mask.name} mask`); }
   }
+}
+function assertCanvasPaint(source) {
+  const parsed = parseSvg(source); const canvas = parsed.elements.find(({attributes}) => /^(?:canvas|background)$/u.test(attributes.get('id') ?? '')); assert.ok(canvas, 'canvas paint exists');
+  const fill = svgPresentationValue(source, canvas, 'fill'); assert.ok(fill && !['none', 'transparent'].includes(fill.toLowerCase()), 'effective canvas fill is painted');
+  assert.ok(paintOpacity(source, canvas, 'fill') > 0, 'effective canvas opacity is nonzero');
 }
 function assertConnectorInventory(drawio, svg, source) {
   const edges = drawio.edges.filter(({attributes}) => !attributes.get('dataRole')?.startsWith('structural-') && attributes.get('dataRole') !== 'legend-key').map((edge) => [edge.attributes.get('id'), edge.attributes.get('source'), edge.attributes.get('target'), edge.attributes.get('dataRole'), edge.label]);
@@ -713,12 +836,14 @@ function assertDiagramOwnership(drawio, svg, source) {
   assert.match(source, /data-node-id="shared-order-state"[\s\S]*?(锁竞争|所有权模糊|重复副作用)/u, 'shared-state anti-pattern remains explicit');
   assert.doesNotMatch(source, /订单 Actor[^<。；]*(?<!不)拥有[^<。；]*(库存|支付|通知)权威/u, 'order Actor cannot own external authority');
 }
-function assertDiagram(sourceDrawio, sourceSvg) {
+function assertDiagram(sourceDrawio, sourceSvg, {semanticOnly = false} = {}) {
   assert.match(sourceDrawio, /<mxfile\b/u, 'Draw.io file');
   const root = sourceSvg.match(/<svg\b[^>]*>/u)?.[0] ?? '';
   assert.match(root, /role="img"/u); assert.match(root, /viewBox="0 0 [0-9.]+ [0-9.]+"/u);
   assert.doesNotMatch(root, /(?:width|height)="/u, 'responsive SVG');
   const drawio = parseDrawio(sourceDrawio); const svg = parseSvg(sourceSvg);
+  assert.deepEqual(drawio.nodes.filter(({attributes}) => !['legend-anchor', 'legend-caption'].includes(attributes.get('dataRole'))).map(({attributes}) => attributes.get('id')), DIAGRAM_NODES, 'exact ordered Draw.io node inventory without extras');
+  assert.deepEqual(svg.nodes.map(({attributes}) => attributes.get('data-node-id')), DIAGRAM_NODES, 'exact ordered SVG node inventory without extras');
   for (const id of DIAGRAM_NODES) {
     const node = drawio.nodes.find(({attributes}) => attributes.get('id') === id); const rendered = svg.nodes.find(({attributes}) => attributes.get('data-node-id') === id);
     assert.ok(node, `Draw.io node ${id}`); assert.ok(rendered, `SVG node ${id}`);
@@ -727,6 +852,11 @@ function assertDiagram(sourceDrawio, sourceSvg) {
   const viewBox = root.match(/viewBox="0 0 ([0-9.]+) ([0-9.]+)"/u); const scale = 800 / Number(viewBox?.[1]);
   assert.ok(Number.isFinite(scale) && scale > 0, '800px CSS scale');
   assertConnectorInventory(drawio, svg, sourceSvg);
+  for (const [id] of CONNECTOR_INVENTORY) {
+    const edge = drawio.edges.find(({attributes}) => attributes.get('id') === id); const path = svg.elements.find(({name, attributes}) => name === 'path' && attributes.get('data-edge-id') === id);
+    assert.deepEqual(parsePathPoints(path.attributes.get('d')), drawioRoute(drawio, edge), `${id} semantic route parity`);
+  }
+  if (semanticOnly) return {drawio, svg};
   assertDiagramOwnership(drawio, svg, sourceSvg);
   assertStructuralOwnership(drawio, svg, sourceSvg);
   assertLegendParity(drawio, svg, sourceSvg);
@@ -744,8 +874,8 @@ function assertDiagram(sourceDrawio, sourceSvg) {
     assert.equal(svgPresentationValue(sourceSvg, path, 'stroke-dasharray') ?? '', style.get('dashed') === '1' ? style.get('dashPattern') : '', `${id} dash role`);
     const fontSize = Number.parseFloat(svgPresentationValue(sourceSvg, label, 'font-size')); assert.ok(fontSize * scale >= 15, `${id} rendered font`);
   }
-  const canvas = sourceSvg.match(/<(?:rect|path)\b[^>]*\bid="(?:canvas|background)"[^>]*>/u)?.[0] ?? '';
-  assert.ok(canvas && !/fill="(?:none|transparent)"/iu.test(canvas), 'opaque canvas');
+  const canvas = sourceSvg.match(/<(?:rect|path|polygon)\b[^>]*\bid="(?:canvas|background)"[^>]*>/u)?.[0] ?? '';
+  assert.ok(canvas, 'canvas element'); assertCanvasPaint(sourceSvg);
   const canvasElement = svg.elements.find(({attributes}) => /^(?:canvas|background)$/u.test(attributes.get('id') ?? ''));
   const background = svgPresentationValue(sourceSvg, canvasElement, 'fill'); assert.ok(background && background !== 'none', 'effective canvas background');
   const text = svg.elements.filter(({name}) => name === 'text');
@@ -765,6 +895,81 @@ async function mutation(source, transform, validator, label) {
   assert.throws(() => validator(changed), assert.AssertionError, label);
 }
 
+function semanticArticleFixture() {
+  return `---
+---
+逻辑身份通过稳定键寻址。逻辑身份不自动保证生命周期与位置。
+私有状态只能由 Actor 自身行为修改。私有状态不隔离共享数据库和外部服务。
+邮箱缓冲消息并逐条取得。邮箱不自动保证持久化、有界或 FIFO。
+行为处理一条消息并发送后续消息。行为不等于业务流程原子。
+监督按策略重启、停止或升级。监督不代替业务恢复与对账。
+Actor 不等于线程。Actor 不等于普通消息消费者。Actor 不等于事件驱动架构。Actor 不等于微服务。线程、队列消费者、事件、Actor 与微服务可以组合共存。四者不是成熟度阶梯。
+不把每个类、每个请求、每个数据库行或每个服务改写为 Actor。
+邮箱串行不自动提供持久化、可靠投递、全局顺序、恰好一次、分布式事务和外部副作用幂等。
+监督不代替业务拒绝、对账、补偿、业务恢复和人工终止。
+位置透明不隐藏容量、状态迁移、故障和网络边界。
+Akka 是实现例证而不是模型公理。
+Order-123 接收 SubmitOrder，携带操作 ID、关联 ID 和期望订单版本。Order-456 可以并行运行。
+库存边界拥有库存权威状态。支付边界拥有支付权威状态。通知边界拥有通知权威状态。订单 Actor 拥有订单状态与履约协调状态。
+超时表示结果未知，不等于目标未执行。接收者执行幂等判断，并先查询再对账。外部副作用具有人工停止路径。
+邮箱必须有界并定义容量与溢出策略。邮箱是否持久是独立配置问题。邮箱 FIFO 或优先顺序是独立合同。
+Akka 的至多一次投递只在框架实现范围内成立。同一发送者到同一接收者的顺序保证不能外推到跨发送者、重试或中介。死信必须可观测。
+监督动作包括重启、停止和向上升级。重启预算必须有限。毒消息进入隔离。业务错误不同于执行故障。状态恢复从持久化事实开始。外部效果未知时必须对账。
+位置透明通过逻辑身份寻址。位置透明不隐藏延迟。序列化是远程边界。网络分区必须处理。认证、授权与加密必须显式设计。需要显式放置约束。
+热点 Actor 必须监测。跨 Actor 不变量需要协调。团队无法运营邮箱积压、监督预算、持久化恢复和集群放置时停止采用。
+
+| 对照对象 | Actor Model 的决定性区别 | 不得外推 |
+| --- | --- | --- |
+| 线程与锁 | 逻辑并发单元通过私有状态和消息交互 | 不固定绑定线程，仍有竞争资源与容量约束 |
+| 普通消息消费者 | 稳定逻辑身份封装状态，按目标身份进入邮箱 | 共享队列消费者不一定是长期业务实体，邮箱不自动持久化 |
+| 事件驱动架构 | 回答谁拥有状态、谁处理消息；事件回答事实如何传播 | 使用事件不等于 Actor，Actor 消息不一定是领域事件 |
+| 微服务 | 更细粒度的运行时实体，可按订单、设备或会话建模 | 不天然具有独立制品、部署、数据边界、团队所有权与公开服务合同 |
+
+| 观察点 | 独立证据 |
+| --- | --- |
+${OBSERVATION_POINTS.map((point) => `| ${point} | 只证明当前检查点 |`).join('\n')}
+
+| 失败类别 | 检测 | 自动动作 | 停止条件 | 人工所有者 |
+| --- | --- | --- | --- | --- |
+| 邮箱溢出 | 邮箱容量、积压与丢弃 | 背压、拒绝或降级 | 容量预算仍超限 | Actor 运行平台所有者 |
+| 毒消息 | 同一消息重复失败与异常 | 隔离并停止自动重放 | 修复、验证与人工批准 | 消息合同所有者 |
+| Actor 崩溃 | 执行异常与健康信号 | 预算内重启、停止或向上升级 | 重启预算耗尽 | Actor 运行平台所有者 |
+| 状态恢复失败 | 快照、事件日志与版本冲突 | 停止激活、隔离并恢复 | 权威状态无法重建 | 订单状态所有者 |
+| 外部效果未知 | 超时且无权威结果 | 操作 ID 查询与对账 | 不可逆效果仍未知 | 履约流程所有者 |
+| 网络或目标不可用 | 超时、分区或目标不存在 | 有界重试、重新解析或降级 | 截止期后目标仍不可用 | 运行平台与目标所有者 |
+| 消息合同不兼容 | 反序列化、版本拒绝与合同测试 | 隔离、兼容版本并停止发送 | 无受支持兼容路径 | 合同生产者与消费者 |
+| 热点 Actor 积压 | 邮箱深度、最老消息与处理耗时 | 限流、拆分或转移查询 | 单邮箱持续违反目标 | 业务与运行平台所有者 |
+
+| 决策 | 适用信号 | 前置责任 | 停止或收紧条件 |
+| --- | --- | --- | --- |
+| 采用 | 稳定身份、独立维护有限状态、单实体命令可串行 | 身份回收、有界邮箱、状态权威与恢复 | 活跃集合远小于逻辑实体全集 |
+| 谨慎采用 | 跨 Actor 查询需要协调、预留或补偿 | 幂等、对账、升级、再平衡与故障演练 | 热点 Actor 的单邮箱成为吞吐瓶颈 |
+| 停止采用 | 即时联接、扫描或聚合查询为主 | 跨 Actor 不变量没有协调机制 | 团队无法运营邮箱积压、监督预算、持久化恢复和集群放置 |
+
+迁移第一步固定消息合同、状态机、持久化和外部权威。第二步把共享锁或并发写入口收敛为邮箱消息。第三步验证积压、激活、恢复、重放和热点实体。
+`;
+}
+
+function sourceContractFixture() {
+  const remoteIds = SOURCE_IDS.slice(0, -1); const sources = remoteIds.map((id) => {
+    const expected = REMOTE_SOURCE_CONTRACTS[id]; return {id, ...Object.fromEntries(['canonical_locator', 'transport_locator', 'title', 'author_or_org', 'version', 'checked_at', 'source_kind', 'tier', 'license', 'license_scope', 'license_evidence_url', 'license_evidence_note', 'copyright_policy', 'usage_boundary', 'allowed_evidence_roles'].map((field) => [field, expected[field]]))};
+  });
+  const citations = remoteIds.map((id) => { const expected = REMOTE_SOURCE_CONTRACTS[id]; return {source_id: id, citation_url: expected.canonical_locator, roles: expected.citation_roles, manifest_primary: expected.manifest_primary, usage_mode: 'facts-summary', attribution_note: expected.citation_attribution}; });
+  const rows = remoteIds.map((id) => { const expected = REMOTE_SOURCE_CONTRACTS[id]; return `| ${expected.canonical_locator} | ${expected.canonical_locator} | ${expected.author_or_org} | ${expected.license_evidence_url} | ${expected.license_evidence_note} | ${expected.checked_at} | ${expected.license} | ${expected.license_scope} | ${expected.copyright_policy} | identity | not-applicable |`; });
+  return {ledger: {sources, documents: {[ARTICLE]: {citations}}}, inventory: `| source_family | current_urls | author_or_org | license_evidence_url | license_evidence_note | checked_at | exact_license | scope_exclusions | migration_policy | family_grouping | grouping_evidence_url |\n| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n${rows.join('\n')}\n`};
+}
+
+function diagramSemanticFixture() {
+  const nodeIndex = new Map(DIAGRAM_NODES.map((id, index) => [id, index]));
+  const nodeCells = DIAGRAM_NODES.map((id, index) => `<mxCell id="${id}" value="${id}" vertex="1" dataRole="node" dataShape="rounded-rect" dataTitleFont="20"><mxGeometry x="${index * 20}" y="${index * 20}" width="10" height="10"/></mxCell>`).join('');
+  const route = (sourceId, targetId) => { const source = nodeIndex.get(sourceId) * 20; const target = nodeIndex.get(targetId) * 20; return {sourceX: source + 10, sourceY: source + 5, waypointX: source + 10, waypointY: target + 5, targetX: target, targetY: target + 5}; };
+  const edgeCells = CONNECTOR_INVENTORY.map(([id, sourceId, targetId, role, label]) => { const style = CONNECTOR_STYLES[role]; const point = route(sourceId, targetId); return `<mxCell id="${id}" value="${label}" edge="1" source="${sourceId}" target="${targetId}" dataRole="${role}" style="strokeColor=${style.strokeColor};strokeWidth=${style.strokeWidth};dashed=${style.dashed};dashPattern=${style.dashPattern ?? ''};endArrow=${style.endArrow};endFill=${style.endFill};exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=1"><mxGeometry><Array as="points"><mxPoint x="${point.waypointX}" y="${point.waypointY}"/></Array></mxGeometry></mxCell>`; }).join('');
+  const drawio = `<mxfile>${nodeCells}${edgeCells}</mxfile>`;
+  const nodes = DIAGRAM_NODES.map((id, index) => { const label = ({'inventory-authority': '库存权威', 'payment-authority': '支付权威', 'notification-authority': '通知权威'})[id] ?? id; return `<g data-node-id="${id}" data-node-bounds="${index * 20} ${index * 20} 10 10">${label}</g>`; }).join('');
+  const edges = CONNECTOR_INVENTORY.map(([id, sourceId, targetId, role, label]) => { const point = route(sourceId, targetId); return `<path data-edge-id="${id}" data-source="${sourceId}" data-target="${targetId}" data-role="${role}" d="M ${point.sourceX} ${point.sourceY} V ${point.waypointY} H ${point.targetX}"/><text data-edge-id="${id}">${label}</text>`; }).join('');
+  return {drawio, svg: `<svg role="img" viewBox="0 0 1000 1000">${nodes}${edges}</svg>`};
+}
+
 function physicalGeometryFixture() {
   const legend = Object.keys(CONNECTOR_STYLES).map((role, index) => {
     const y = 400 + index * 90;
@@ -775,10 +980,10 @@ function physicalGeometryFixture() {
     .boundary { fill:none; stroke:#64748B; stroke-width:2; }
   </style><defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M 0 0 L 10 5 L 0 10 Z" fill="#1D4ED8" stroke="#1D4ED8"/></marker></defs>
   <rect id="canvas" x="0" y="0" width="800" height="800" fill="#FFFFFF"/>
-  <g data-node-id="shared-state-boundary" data-node-bounds="0 0 350 300"><rect class="boundary" x="0" y="0" width="350" height="300"/><text data-header-for="shared-state-boundary" x="80" y="40">共享状态</text></g>
-  <g data-node-id="actor-runtime-boundary" data-node-bounds="450 0 350 300"><rect class="boundary" x="450" y="0" width="350" height="300"/></g>
-  <g data-node-id="external-authority-boundary" data-node-bounds="360 0 80 300"><rect class="boundary" x="360" y="0" width="80" height="300"/></g>
-  <g data-node-id="foreign-node" data-node-bounds="600 40 80 50"><rect x="600" y="40" width="80" height="50" fill="#E2E8F0" stroke="#64748B" stroke-width="2"/></g>
+  <g data-node-id="shared-state-boundary" data-node-bounds="0 0 350 300"><rect data-shape="boundary" class="boundary" x="0" y="0" width="350" height="300"/><text data-header-for="shared-state-boundary" x="80" y="40">共享状态</text></g>
+  <g data-node-id="actor-runtime-boundary" data-node-bounds="450 0 350 300"><rect data-shape="boundary" class="boundary" x="450" y="0" width="350" height="300"/></g>
+  <g data-node-id="external-authority-boundary" data-node-bounds="360 0 80 300"><rect data-shape="boundary" class="boundary" x="360" y="0" width="80" height="300"/></g>
+  <g data-node-id="foreign-node" data-node-bounds="600 40 80 50"><rect data-shape="rounded-rect" x="600" y="40" width="80" height="50" fill="#E2E8F0" stroke="#64748B" stroke-width="2"/></g>
   <path class="edge" data-edge-id="edge-a" data-source="source-node" data-target="target-node" d="M 100 100 H 200"/>
   <text data-edge-id="edge-a" data-label-bounds="393.8 40 406.2 66" x="400" y="60" text-anchor="middle">A</text>${legend}</svg>`;
 }
@@ -806,6 +1011,63 @@ test('SVG cascade, alpha composition, and conservative glyph geometry helpers ar
   const backgroundFixture = '<svg><rect id="canvas" x="0" y="0" width="100" height="100" fill="#FFFFFF"/><rect x="0" y="0" width="100" height="100" fill="#000000" opacity="0.5"/><text x="50" y="50">x</text></svg>';
   const label = parseSvg(backgroundFixture).elements.find(({name}) => name === 'text'); assert.equal(localBackground(backgroundFixture, label).toUpperCase(), '#808080', 'local alpha-composited background');
   assert.notEqual(localBackground(backgroundFixture.replace('opacity="0.5"', 'opacity="0.8"'), parseSvg(backgroundFixture.replace('opacity="0.5"', 'opacity="0.8"')).elements.find(({name}) => name === 'text')).toUpperCase(), '#808080', 'opacity mutation changes local background');
+});
+
+test('semantic, comparison, failure, adoption, and migration fixtures execute contradiction-sensitive validators', async () => {
+  const source = semanticArticleFixture(); assertActorComponents(source); assertProhibitions(source); assertSemanticBoundaries(source);
+  assertComparisonTable(source); assertFailureTable(source); assertOrderFlow(source); assertRuntimeBoundaries(source); assertAdoptionContract(source);
+  for (const [name, pattern] of REQUIRED_SEMANTIC_BOUNDARIES) await mutation(source, (candidate) => candidate.replace(pattern, ''), assertSemanticBoundaries, `${name} boundary deleted`);
+  assert.equal(FALSE_SEMANTIC_FIXTURES.length, FORBIDDEN_SEMANTIC_CLAIMS.length, 'one false fixture per forbidden claim');
+  for (const [index, [name]] of FORBIDDEN_SEMANTIC_CLAIMS.entries()) await mutation(source, (candidate) => `${candidate}\n${FALSE_SEMANTIC_FIXTURES[index]}\n`, assertSemanticBoundaries, `${name} contradiction`);
+  const tables = markdownTables(articleParts(source).body); const comparison = tables.find((table) => table[0][0] === '对照对象'); const failures = tables.find((table) => table[0][0] === '失败类别'); const adoption = tables.find((table) => table[0][0] === '决策');
+  for (const [table, validator] of [[comparison, assertComparisonTable], [failures, assertFailureTable], [adoption, assertAdoptionContract]]) for (const row of table.slice(2)) {
+    const exact = `| ${row.join(' | ')} |`; await mutation(source, (candidate) => candidate.replace(`${exact}\n`, ''), validator, `${row[0]} standalone row deletion`);
+    for (let cell = 1; cell < row.length; cell += 1) { if ((validator === assertComparisonTable && cell === 1) || (validator === assertFailureTable && cell === 4)) continue; const changed = [...row]; changed[cell] = `不适用：${row[cell].slice(0, 2)}（诱饵）`; await mutation(source, (candidate) => candidate.replace(exact, `| ${changed.join(' | ')} |`), validator, `${row[0]} standalone cell ${cell} mutation`); }
+  }
+  for (const row of comparison.slice(2)) { const exact = `| ${row.join(' | ')} |`; const changed = [...row]; changed[1] = `${row[1]}，但不负责该状态或消息`; await mutation(source, (candidate) => candidate.replace(exact, `| ${changed.join(' | ')} |`), assertComparisonTable, `${row[0]} tempting negative decisive cell`); }
+  for (const row of failures.slice(2)) { const exact = `| ${row.join(' | ')} |`; const changed = [...row]; changed[4] = `${row[4]}不负责处置`; await mutation(source, (candidate) => candidate.replace(exact, `| ${changed.join(' | ')} |`), assertFailureTable, `${row[0]} tempting negative owner`); }
+  const firstAdoption = `| ${adoption[2].join(' | ')} |`; const secondAdoption = `| ${adoption[3].join(' | ')} |`;
+  await mutation(source, (candidate) => candidate.replace(firstAdoption, '__ADOPT_SWAP__').replace(secondAdoption, firstAdoption).replace('__ADOPT_SWAP__', secondAdoption), assertAdoptionContract, 'adoption row order');
+  for (const claim of ['热点 Actor 的单邮箱永远不会成为吞吐瓶颈。', '跨 Actor 不变量无需协调、预留或补偿。', '团队无需运营邮箱积压与监督预算。', '先把所有服务改写为 Actor。']) await mutation(source, (candidate) => `${candidate}\n${claim}\n`, assertAdoptionContract, claim);
+  for (const [index, step] of MIGRATION_STEPS.entries()) await mutation(source, (candidate) => candidate.replace(step, `跳过第 ${index + 1} 步`), assertAdoptionContract, `migration step ${index + 1} semantic mutation`);
+  await mutation(source, (candidate) => candidate.replace('第一步固定消息合同、状态机、持久化和外部权威。第二步把共享锁或并发写入口收敛为邮箱消息。', '第二步把共享锁或并发写入口收敛为邮箱消息。第一步固定消息合同、状态机、持久化和外部权威。'), assertAdoptionContract, 'migration order swapped');
+});
+
+test('remote-source fixtures execute exact field, inventory, and self-consistent fabrication mutations', () => {
+  const fixture = sourceContractFixture(); assertRemoteSourceContracts(fixture.ledger, fixture.inventory);
+  const fields = ['canonical_locator', 'transport_locator', 'title', 'author_or_org', 'version', 'checked_at', 'source_kind', 'tier', 'license', 'license_scope', 'license_evidence_url', 'license_evidence_note', 'copyright_policy', 'usage_boundary'];
+  for (const field of fields) { const changed = structuredClone(fixture.ledger); changed.sources[0][field] = `${changed.sources[0][field]} changed`; assert.throws(() => assertRemoteSourceContracts(changed, fixture.inventory), assert.AssertionError, `${field} exact mutation`); }
+  for (const field of ['allowed_evidence_roles', 'roles']) { const changed = structuredClone(fixture.ledger); if (field === 'roles') changed.documents[ARTICLE].citations[0].roles = ['comparison']; else changed.sources[0][field] = ['comparison']; assert.throws(() => assertRemoteSourceContracts(changed, fixture.inventory), assert.AssertionError, `${field} exact mutation`); }
+  for (const [field, value] of [['citation_url', 'https://example.invalid/citation'], ['manifest_primary', false], ['usage_mode', 'verbatim'], ['attribution_note', 'fabricated attribution']]) {
+    const changed = structuredClone(fixture.ledger); changed.documents[ARTICLE].citations[0][field] = value; assert.throws(() => assertRemoteSourceContracts(changed, fixture.inventory), assert.AssertionError, `citation ${field} exact mutation`);
+  }
+  for (const [column, field] of ['current URL', 'author/org', 'license evidence URL', 'license evidence note', 'checked date', 'license', 'scope', 'policy'].entries()) {
+    const lines = fixture.inventory.split('\n'); const row = lines.findIndex((line) => line.startsWith(`| ${fixture.ledger.sources[0].canonical_locator} |`)); assert.ok(row > 1, `${field} governed inventory row`);
+    const cells = lines[row].split('|'); cells[column + 2] = `${cells[column + 2]} changed`; lines[row] = cells.join('|'); const changed = lines.join('\n');
+    assert.notEqual(changed, fixture.inventory, `${field} inventory mutation applies`); assert.throws(() => assertRemoteSourceContracts(fixture.ledger, changed), assert.AssertionError, `${field} inventory mutation rejected`);
+  }
+  const selfConsistent = structuredClone(fixture.ledger); const original = selfConsistent.sources[0].canonical_locator; selfConsistent.sources[0].canonical_locator = 'https://example.invalid/fabricated'; selfConsistent.documents[ARTICLE].citations[0].citation_url = selfConsistent.sources[0].canonical_locator;
+  const fabricatedInventory = fixture.inventory.replaceAll(original, selfConsistent.sources[0].canonical_locator); assert.notEqual(fabricatedInventory, fixture.inventory, 'self-consistent inventory fabrication applies');
+  assert.throws(() => assertRemoteSourceContracts(selfConsistent, fabricatedInventory), assert.AssertionError, 'self-consistent ledger/inventory fabrication rejected');
+});
+
+test('diagram semantic, visible-bounds, painted-stroke, canvas, and mask fixtures execute validators', () => {
+  const fixture = diagramSemanticFixture(); assertDiagram(fixture.drawio, fixture.svg, {semanticOnly: true});
+  const unsafeDrawio = fixture.drawio.replace(/(<mxCell\b[^>]*\bid="reconcile-payment"[^>]*\btarget=")payment-authority/u, '$1notification-authority').replace(/(<mxCell\b[^>]*\bid="reconcile-payment"[^>]*\bdataRole=")reconciliation/u, '$1external-effect');
+  const unsafeSvg = fixture.svg.replace(/(<path\b[^>]*data-edge-id="reconcile-payment"[^>]*\bdata-target=")payment-authority/u, '$1notification-authority').replace(/(<path\b[^>]*data-edge-id="reconcile-payment"[^>]*\bdata-role=")reconciliation/u, '$1external-effect').replace(/(<path\b[^>]*data-edge-id="reconcile-payment"[^>]*\bd=")[^"]+/u, '$1M 370 365 V 405 H 400');
+  assert.notEqual(unsafeDrawio, fixture.drawio, 'unsafe recovery Draw.io role/target/path mutation applies'); assert.notEqual(unsafeSvg, fixture.svg, 'unsafe recovery SVG role/target/path mutation applies');
+  assert.throws(() => assertDiagram(unsafeDrawio, unsafeSvg, {semanticOnly: true}), assert.AssertionError, 'assertDiagram rejects recovery to external effect');
+  const routeOnly = fixture.svg.replace(/(<path\b[^>]*data-edge-id="reconcile-payment"[^>]*\bd=")[^"]+/u, '$1M 370 365 V 405 H 400'); assert.notEqual(routeOnly, fixture.svg, 'unsafe recovery path-only mutation applies');
+  assert.throws(() => assertDiagram(fixture.drawio, routeOnly, {semanticOnly: true}), assert.AssertionError, 'assertDiagram independently rejects recovery path drift');
+  const extraNodeDrawio = fixture.drawio.replace('</mxfile>', '<mxCell id="extra-node" vertex="1" dataRole="node"><mxGeometry x="0" y="0" width="1" height="1"/></mxCell></mxfile>'); const extraNodeSvg = fixture.svg.replace('</svg>', '<g data-node-id="extra-node" data-node-bounds="0 0 1 1"></g></svg>');
+  assert.throws(() => assertDiagram(extraNodeDrawio, extraNodeSvg, {semanticOnly: true}), assert.AssertionError, 'extra node inventory rejected');
+  const boundsDrawio = parseDrawio('<mxfile><mxCell id="n" vertex="1"><mxGeometry x="10" y="20" width="30" height="40"/></mxCell></mxfile>');
+  const boundsSource = '<svg><g data-node-id="n" data-node-bounds="10 20 30 40" transform="translate(10 20)"><rect data-shape="rounded-rect" x="0" y="0" width="30" height="40"/></g></svg>'; const boundsSvg = parseSvg(boundsSource); assertVisibleNodeBounds(boundsDrawio, boundsSvg, 'n');
+  for (const changed of [boundsSource.replace('x="0"', 'x="1"'), boundsSource.replace('width="30"', 'width="31"'), boundsSource.replace('translate(10 20)', 'translate(11 20)')]) assert.throws(() => assertVisibleNodeBounds(boundsDrawio, parseSvg(changed), 'n'), assert.AssertionError, 'actual visible shape drift rejected while metadata is unchanged');
+  const canvas = '<svg><rect id="canvas" x="0" y="0" width="100" height="100" fill="#FFFFFF" opacity="1"/></svg>'; assertCanvasPaint(canvas); assert.throws(() => assertCanvasPaint(canvas.replace('opacity="1"', 'opacity="0"')), assert.AssertionError, 'zero effective canvas opacity rejected');
+  const unmasked = '<svg><path data-edge-id="e" d="M 0 0 H 20" fill="none" stroke="#000000" stroke-width="2"/></svg>'; assertNoOverdraw(unmasked);
+  for (const mask of ['<rect x="9" y="-1" width="2" height="2" fill="#000000"/>', '<path d="M 9 -1 H 11 V 1 H 9 V -1" fill="#000000"/>', '<polygon points="9,-1 11,-1 11,1 9,1" fill="#000000"/>', '<polyline points="9,-1 11,-1 11,1 9,1" fill="#000000"/>', '<circle cx="10" cy="0" r="1" fill="#000000"/>', '<ellipse cx="10" cy="0" rx="1" ry="2" fill="#000000"/>']) assert.throws(() => assertNoOverdraw(unmasked.replace('</svg>', `${mask}</svg>`)), assert.AssertionError, `${mask.slice(1, mask.indexOf(' '))} later painted mask rejected`);
+  const geometry = physicalGeometryFixture(); const thickStroke = geometry.replace('stroke-width:2', 'stroke-width:400'); assert.notEqual(thickStroke, geometry, 'painted stroke mutation applies'); assert.throws(() => assertPhysicalGeometry(thickStroke, 1, false), assert.AssertionError, 'clearance measures painted stroke edge');
 });
 
 test('metadata, wrapper, component, and prohibition fixtures prove mutations are non-no-op', () => {
@@ -870,7 +1132,7 @@ test('STY-08 diagram inventory and geometry fixtures reject physical hazards', (
 test('locks exact STY-08 metadata, headings, wrappers, components, order flow, and runtime boundaries', async () => {
   const source = file(ARTICLE); const {body} = articleParts(source); assertExactMetadata(source);
   assert.deepEqual(findMarkdownHeadings(body).filter(({level}) => level === 2).map(({text}) => text), EXPECTED_HEADINGS);
-  assertRequiredWrappers(source); assertActorComponents(source); assertProhibitions(source); assertOrderFlow(source); assertRuntimeBoundaries(source);
+  assertRequiredWrappers(source); assertActorComponents(source); assertProhibitions(source); assertSemanticBoundaries(source); assertOrderFlow(source); assertRuntimeBoundaries(source); assertAdoptionContract(source);
   for (const field of Object.keys(EXACT_METADATA)) {
     await mutation(source, (candidate) => removeFrontMatterField(candidate, field), assertExactMetadata, `${field} deleted`);
     await mutation(source, (candidate) => changeFrontMatterField(candidate, field), assertExactMetadata, `${field} changed`);
@@ -898,15 +1160,17 @@ test('locks exact STY-08 metadata, headings, wrappers, components, order flow, a
   for (const [name, pattern] of PROHIBITIONS) await mutation(source, (candidate) => candidate.replace(pattern, 'Actor 就是线程'), assertProhibitions, name);
   for (const equivalent of ['线程', '普通消息消费者', '事件驱动架构', '微服务']) await mutation(source, (candidate) => `${candidate}\nActor 就是${equivalent}。\n`, assertProhibitions, `Actor equals ${equivalent}`);
   await mutation(source, (candidate) => `${candidate}\n只能采用 Actor，线程、队列、事件驱动与微服务不能组合。\n`, assertProhibitions, 'mutual exclusion');
+  for (const [index, [name]] of FORBIDDEN_SEMANTIC_CLAIMS.entries()) await mutation(source, (candidate) => `${candidate}\n${FALSE_SEMANTIC_FIXTURES[index]}\n`, assertSemanticBoundaries, `${name} implementation contradiction`);
 });
 
-test('locks the four comparison rows, six checkpoints, and eight failure responsibilities', async () => {
-  const source = file(ARTICLE); articleParts(source); assertComparisonTable(source); assertFailureTable(source); assertOrderFlow(source);
+test('locks comparison, checkpoints, failure, adoption, and migration responsibilities', async () => {
+  const source = file(ARTICLE); articleParts(source); assertComparisonTable(source); assertFailureTable(source); assertOrderFlow(source); assertAdoptionContract(source);
   const comparison = markdownTables(articleParts(source).body).find((candidate) => candidate[0]?.[0] === '对照对象');
   const failure = markdownTables(articleParts(source).body).find((candidate) => candidate[0]?.[0] === '失败类别');
   for (const [table, validator] of [[comparison, assertComparisonTable], [failure, assertFailureTable]]) for (const cells of table.slice(2)) {
     const row = `| ${cells.join(' | ')} |`; await mutation(source, (candidate) => candidate.replace(`${row}\n`, ''), validator, `${cells[0]} row deleted`);
     for (let cell = 1; cell < cells.length; cell += 1) {
+      if ((validator === assertComparisonTable && cell === 1) || (validator === assertFailureTable && cell === 4)) continue;
       const changed = [...cells]; changed[cell] = '错误语义';
       await mutation(source, (candidate) => candidate.replace(row, `| ${changed.join(' | ')} |`), validator, `${cells[0]} cell ${cell} corrupted`);
     }
@@ -915,8 +1179,12 @@ test('locks the four comparison rows, six checkpoints, and eight failure respons
   await mutation(source, (candidate) => candidate.replace(first, '__SWAP__').replace(second, first).replace('__SWAP__', second), assertComparisonTable, 'comparison rows swapped');
   for (const row of failure.slice(2)) {
     const exact = `| ${row.join(' | ')} |`;
-    await mutation(source, (candidate) => candidate.replace(exact, `| ${[...row.slice(0, -1), '无人负责'].join(' | ')} |`), assertFailureTable, `${row[0]} negative owner`);
+    await mutation(source, (candidate) => candidate.replace(exact, `| ${[...row.slice(0, -1), `${row.at(-1)}不负责处置`].join(' | ')} |`), assertFailureTable, `${row[0]} tempting negative owner`);
   }
+  for (const row of comparison.slice(2)) { const exact = `| ${row.join(' | ')} |`; const changed = [...row]; changed[1] = `${row[1]}，但不负责该状态或消息`; await mutation(source, (candidate) => candidate.replace(exact, `| ${changed.join(' | ')} |`), assertComparisonTable, `${row[0]} tempting negative decisive cell`); }
+  const adoption = markdownTables(articleParts(source).body).find((candidate) => candidate[0]?.[0] === '决策');
+  for (const row of adoption.slice(2)) { const exact = `| ${row.join(' | ')} |`; await mutation(source, (candidate) => candidate.replace(`${exact}\n`, ''), assertAdoptionContract, `${row[0]} adoption deletion`); for (let cell = 1; cell < row.length; cell += 1) { const changed = [...row]; changed[cell] = '错误决策语义'; await mutation(source, (candidate) => candidate.replace(exact, `| ${changed.join(' | ')} |`), assertAdoptionContract, `${row[0]} adoption cell ${cell}`); } }
+  const firstAdoption = `| ${adoption[2].join(' | ')} |`; const secondAdoption = `| ${adoption[3].join(' | ')} |`; await mutation(source, (candidate) => candidate.replace(firstAdoption, '__SWAP__').replace(secondAdoption, firstAdoption).replace('__SWAP__', secondAdoption), assertAdoptionContract, 'adoption order');
   await mutation(source, (candidate) => `${candidate}\nActor、线程、消费者、事件驱动和微服务形成一条成熟度阶梯。\n`, assertComparisonTable, 'maturity ladder');
   await mutation(source, (candidate) => `${candidate}\n无限重启可以持续恢复 Actor。\n`, assertFailureTable, 'unlimited restart');
 });
