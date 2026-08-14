@@ -12,7 +12,7 @@
 
 - 只修改独立工作树 `/Users/seal/projects/tego-arch/.worktrees/mth-07-fde-delivery`；不得读取、暂存或提交 STY-07 工作树的未提交资产。
 - 固定 `topic_id: MTH-07`、`slug: /methods/mth-07`、`content_type: method`、`priority: P1`、标题“企业 AI 前线部署：从 POC 到可复制系统的交付门禁”。
-- 微信文章只作为四阶段十二能力的实践框架来源；不得复制其图片、表格、长段文字或版式，不得以其单独证明市场、薪资、政策、成功率或普遍效果。
+- 微信文章只作为内部 brainstorming 启发；不得进入来源台账、正文链接、引用或证据角色，也不得复制其图片、表格、长段文字或版式。
 - 每个门禁必须含风险、机制、证据、通过条件和单一责任人；POC、生产、验收、放量、复制不得互相等同。
 - 图示固定为 Draw.io + SVG，一张主图、最多三张高密度表；visual-balance 必须严格大于 90。
 - 不新增 npm 依赖，不改变全站视觉 token、现有 URL、构建流程或历史发布证据。
@@ -86,9 +86,9 @@ related_questions: []
 
 Use exactly these governed identities:
 
-- `src-wechat-fde-12-core-capabilities` — canonical user URL `https://mp.weixin.qq.com/s/6_-S0yIVlCtqW8U8JfwdGA`; title `一文读懂：FDE的12项核心能力`; author `李伟山`; publisher `腾讯云开发者`; published `2026-08-13`; conservative ARR/facts-only treatment; sole `manifest_primary`; evidence role limited to practice-framework/origin context.
-- `src-nist-ai-rmf-1-0` — canonical `https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10`; report `NIST AI 100-1`, 2023-01-26; support roles, TEVV, production monitoring, appeal/override, recovery and decommissioning; do not claim it defines FDE or the twelve gates.
+- `src-nist-ai-rmf-1-0` — canonical `https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10`; report `NIST AI 100-1`, 2023-01-26; sole `manifest_primary`; support roles, TEVV, production monitoring, appeal/override, recovery and decommissioning; do not claim it defines FDE or the twelve gates.
 - `src-google-sre-canarying-releases` — canonical `https://sre.google/workbook/canarying-releases/`; support partial time-bounded rollout, control comparison and proceed/stop decisions; do not claim Google’s exact organization is required.
+- `src-openai-evals-business-primer` — canonical `https://openai.com/index/evals-drive-next-chapter-of-ai/`; support specify/measure/improve evaluation framing and real-world-condition testing; do not use product adoption or business-benefit claims as evidence.
 - `src-atlas-mth07-fde-delivery-gates` — local `/img/diagrams/mth-07-fde-enterprise-ai-delivery-gates.svg`; `LicenseRef-Atlas-Original`, `original-atlas`, `illustration-rights`.
 
 Do not add the China generative-AI regulation source unless the final prose includes the exact “向境内公众提供生成式人工智能服务” applicability boundary. If it is needed, add CAC’s official `https://www.cac.gov.cn/2023-07/13/c_1690898327029107.htm` as a fifth governed source and update generated counts from actual output.
@@ -141,7 +141,7 @@ Baseline is `59 completed / 101 documents / 525 sources`. With one document and 
 
 - [ ] **Step 5: Lock sources, relations, wrappers, density, and projection.**
 
-  Require the four source IDs, three remote domains, sole WeChat primary, original illustration rights, exact parent/relations, Temporal boundary text, no QA-09 relation, exact three wrappers and ArrowRight handler. Require visual-balance >90. Require Stage A `59/102/529`, MTH-07 published/pending.
+  Require the four source IDs, three remote domains, sole NIST primary, no WeChat source/citation/link, original illustration rights, exact parent/relations, Temporal boundary text, no QA-09 relation, exact three wrappers and ArrowRight handler. Require visual-balance >90. Require Stage A `59/102/529`, MTH-07 published/pending.
 
 - [ ] **Step 6: Define diagram contracts and mutations.**
 
@@ -177,7 +177,7 @@ Baseline is `59 completed / 101 documents / 525 sources`. With one document and 
 
 - [ ] **Step 1: Write source-governance mutations.** Require exact canonical locator, author/org, date/version, source kind, evidence role, license family, copyright policy, citation scope, non-copy boundary, unique primary and original illustration record.
 - [ ] **Step 2: Run source contract RED.** Run `node --test tests/g010-mth07-content.test.mjs`; expect missing source identities/citations alongside the still-missing article and diagram.
-- [ ] **Step 3: Research all four identities without mutating governance data.** Inspect existing ledger families for exact NIST/Google reuse, verify current official pages and license evidence, and record the complete proposed ledger/citation/health fields in `.superpowers/sdd/mth07-source-research.md`. Record WeChat verification-wall behavior honestly and do not probe unrelated cache entries.
+- [ ] **Step 3: Research all four identities without mutating governance data.** Inspect existing ledger families for exact NIST/Google/OpenAI reuse, verify current official pages and license evidence, and record the complete proposed ledger/citation/health fields in `.superpowers/sdd/mth07-source-research.md`. Record explicitly that WeChat is excluded from governed sources and do not probe unrelated cache entries.
 - [ ] **Step 4: Prove the governance ordering constraint.** In the report, cite the existing validator behavior that rejects an uncited non-discovery source and a ledger document key whose MDX does not exist. Do not commit knowingly invalid provisional source records.
 - [ ] **Step 5: Verify and commit only the strengthened contract.** Run `node --test tests/g010-mth07-content.test.mjs`; expected helper/source-contract tests pass and implementation tests remain RED only for absent article/source records/diagram/projection.
 
@@ -231,7 +231,7 @@ Baseline is `59 completed / 101 documents / 525 sources`. With one document and 
 - [ ] **Step 2: Write the exact front matter and ten sections.** Use the fixed metadata and heading order; create three wrappers with exact labels, `role="region"`, `tabIndex={0}` and the existing ArrowRight scroll handler.
 - [ ] **Step 3: Write the twelve-row gate table.** Each row carries risk/mechanism/evidence/pass/owner/failure return. Keep prose authoritative and diagram labels concise.
 - [ ] **Step 4: Write responsibility and stop-condition tables.** Bind program/AI/human duties; distinguish POC→production, production→rollout, customer→reuse; state measurable stop/re-entry conditions.
-- [ ] **Step 5: Add citations and governed source records atomically.** Cite WeChat only for the practice skeleton, NIST for risk/evaluation/monitoring/oversight, Google SRE for canary decisions, and label Tego Arch synthesis explicitly. In the same change, add the four complete ledger identities, exact document citations, link-health observations and license inventory rows from Task 2 research. Reuse an exact existing NIST/Google family rather than duplicate it. Do not introduce unverified market/salary/policy figures.
+- [ ] **Step 5: Add citations and governed source records atomically.** Cite NIST for risk/evaluation/monitoring/oversight, Google SRE for canary decisions, OpenAI for the specify/measure/improve evaluation framing, and label Tego Arch synthesis explicitly. Do not cite or link WeChat. In the same change, add the four complete ledger identities, exact document citations, link-health observations and license inventory rows from Task 2 research. Reuse an exact existing family rather than duplicate it. Do not introduce unverified market/salary/policy figures.
 - [ ] **Step 6: Add reciprocal links.** Add exact metadata and visible links in MTH-01/04/06 and Temporal only where generator requires them; preserve each existing conclusion and avoid QA-09.
 - [ ] **Step 7: Verify density, source governance, content, terminology, links, typecheck and build.** Run:
 
