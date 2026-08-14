@@ -47,6 +47,11 @@ const RELATIONS = [
   ['/tego-arch/cases/temporal-saga-durable-execution', '持久化执行与长事务：为长时智能体任务建立可恢复边界'],
 ];
 const REVIEW_H2 = ['Candidate identity', 'Stage A projection', 'Local in-app Browser QA', 'Independent review checkpoint'];
+const PRE_VERDICT_SECTION_SHA256 = new Map([
+  ['Candidate identity', '2263282fa4de34f4ef7f1f59ca844ba600aa394b42b250fe0184eca0daccc3eb'],
+  ['Stage A projection', '1916960444c0955a11e35b48e5892831ec7069324a4f744b3def8b6b35cfa319'],
+  ['Local in-app Browser QA', 'e07d8232c0aaf2bed7dfdc39b76ee1433c64c30f7badecafb628b7c2332b322c'],
+]);
 const PENDING_REVIEW_CHECKPOINT = [
   '- Code review: `PENDING`.',
   '- Content, evidence, and rights review: `PENDING`; rights: `PENDING`.',
@@ -404,6 +409,9 @@ async function assertReview(source) {
   const firstH2 = source.indexOf('\n## ');
   assert.notEqual(firstH2, -1, 'current review has sections');
   assert.equal(source.slice('# G010 MTH-07 Stage A Review'.length, firstH2).trim(), '', 'no claim-bearing preamble');
+  for (const [heading, expected] of PRE_VERDICT_SECTION_SHA256) {
+    assert.equal(sha256(section(source, heading)), expected, `${heading} exact pre-verdict bytes`);
+  }
   assertBrowserReviewClosedWorld(source);
   const identity = section(source, 'Candidate identity');
   assert.ok(identity.includes(`Exact Browser build head: \`${BROWSER_BUILD_HEAD}\`.`));
@@ -538,8 +546,17 @@ test('rejects additive Browser evidence claims at every schema boundary', () => 
 test('rejects displaced duplicated or contradictory current-review claims', async () => {
   const additions = [
     ['displaced code readiness', 'Code review: READY / APPROVE.'],
+    ['displaced code readiness is-form', 'Code review is READY / APPROVE.'],
+    ['displaced code readiness equals-form', 'Code review = READY / APPROVE.'],
+    ['displaced code readiness dash-form', 'Code review — READY / APPROVE.'],
     ['displaced deployment success', 'Production deployment: SUCCESS.'],
+    ['displaced deployment success is-form', 'Production deployment is SUCCESS.'],
+    ['displaced deployment success equals-form', 'Production deployment = SUCCESS.'],
+    ['displaced deployment success dash-form', 'Production deployment — SUCCESS.'],
     ['displaced visual pass', 'Visual inspection: PASS.'],
+    ['displaced visual pass is-form', 'Visual inspection is PASS.'],
+    ['displaced visual pass equals-form', 'Visual inspection = PASS.'],
+    ['displaced visual pass dash-form', 'Visual inspection — PASS.'],
     ['duplicate verdict heading', '## Independent review checkpoint\n\n- Final Stage A review judgment: `READY`.'],
   ];
   for (const [label, addition] of additions) {
