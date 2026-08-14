@@ -1,0 +1,759 @@
+{
+  "schemaVersion": 1,
+  "collectedAt": "2026-08-14T09:42:31.079Z",
+  "freshProductionCapture": true,
+  "localEvidenceReused": false,
+  "implementationHead": "a413be060c93f7ddd20e7db5417e94f4166dc1e8",
+  "pages": {
+    "runId": 31786075868,
+    "buildJobId": 94722157542,
+    "deployJobId": 94722766883,
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "probes": {
+    "routes": [
+      {
+        "path": "/",
+        "deployedPath": "/tego-arch/",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8",
+        "bytes": 17310,
+        "sha256": "bdb717e4281f4f1814f4f32241985db71581777cb38d4c2fa22b00e61c0933cb"
+      },
+      {
+        "path": "/methods",
+        "deployedPath": "/tego-arch/methods",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8",
+        "bytes": 20582,
+        "sha256": "340081dc771e57fb9538aaaef2a520322a6eed4c4f3509f8851879d1a6dda876"
+      },
+      {
+        "path": "/methods/mth-07",
+        "deployedPath": "/tego-arch/methods/mth-07",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8",
+        "bytes": 41342,
+        "sha256": "e691982b1ffd8b0ddbd79cdcae9111bfd1f8a027d1bdf5d4833640c69f981614"
+      },
+      {
+        "path": "/methods/mth-01",
+        "deployedPath": "/tego-arch/methods/mth-01",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8",
+        "bytes": 30095,
+        "sha256": "d263c5eb3772d7d288783b34346ecf69688c19117611b7d5431976ce98cd8c98"
+      },
+      {
+        "path": "/methods/mth-04",
+        "deployedPath": "/tego-arch/methods/mth-04",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8",
+        "bytes": 29761,
+        "sha256": "8efd01a31c217b72107dca34de87da987bab94cd773816da1d689abed172c69c"
+      },
+      {
+        "path": "/methods/mth-06",
+        "deployedPath": "/tego-arch/methods/mth-06",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8",
+        "bytes": 30618,
+        "sha256": "191fce815edee2a8a891286580ffde3d2082df1f6e665ba97ee6fa4e250b3eb3"
+      },
+      {
+        "path": "/cases/temporal-saga-durable-execution",
+        "deployedPath": "/tego-arch/cases/temporal-saga-durable-execution",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8",
+        "bytes": 66247,
+        "sha256": "aa12adee92266efb5c1db3b71ae75c5b2b540a79281c890f5607690bb3740988"
+      },
+      {
+        "path": "/references",
+        "deployedPath": "/tego-arch/references",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8",
+        "bytes": 23533,
+        "sha256": "c4deed5f0cc6848389cdd7576fce56500178c2d458132cae6d54cfa5a653a709"
+      }
+    ],
+    "svg": {
+      "path": "/tego-arch/img/diagrams/mth-07-fde-enterprise-ai-delivery-gates.svg",
+      "status": 200,
+      "contentType": "image/svg+xml",
+      "bytes": 10150,
+      "sha256": "56a914a2f15894ebd1be9453c648976773dfd616dd1d8718be560f62a84c8a7f",
+      "reviewedBytes": 10150,
+      "reviewedSha256": "56a914a2f15894ebd1be9453c648976773dfd616dd1d8718be560f62a84c8a7f",
+      "exactMatch": true
+    }
+  },
+  "states": {
+    "desktopLight": {
+      "state": "desktopLight",
+      "theme": "light",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "actualViewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "geometry": {
+        "h1": "企业 AI 前线部署：从 POC 到可复制系统的交付门禁",
+        "page": {
+          "clientWidth": 1440,
+          "scrollWidth": 1440
+        },
+        "wrappers": [
+          {
+            "clientWidth": 800,
+            "label": "企业 AI 四阶段十二门禁图，可横向滚动",
+            "scrollWidth": 800
+          },
+          {
+            "clientWidth": 800,
+            "label": "企业 AI 十二门禁执行表，可横向滚动",
+            "scrollWidth": 1643
+          },
+          {
+            "clientWidth": 800,
+            "label": "人、AI 与程序职责及停止条件表，可横向滚动",
+            "scrollWidth": 2101
+          }
+        ],
+        "svg": {
+          "loaded": true,
+          "naturalHeight": 150,
+          "naturalWidth": 116,
+          "renderedHeight": 1032,
+          "renderedWidth": 800,
+          "src": "https://sealday.github.io/tego-arch/assets/images/mth-07-fde-enterprise-ai-delivery-gates-4cc0de890d42a0daf96c9eb73139d892.svg"
+        },
+        "sources": [
+          {
+            "href": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://sre.google/workbook/canarying-releases/",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://learn.microsoft.com/en-us/azure/ai-studio/how-to/evaluate-generative-ai-app",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          }
+        ],
+        "paginationNext": [
+          "/tego-arch/modeling"
+        ],
+        "nextUnpublishedActionable": 0
+      },
+      "interactions": [
+        {
+          "label": "企业 AI 四阶段十二门禁图，可横向滚动",
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 0
+          }
+        },
+        {
+          "label": "企业 AI 十二门禁执行表，可横向滚动",
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 40
+          }
+        },
+        {
+          "label": "人、AI 与程序职责及停止条件表，可横向滚动",
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 40
+          }
+        }
+      ],
+      "relations": [
+        {
+          "href": "/tego-arch/methods/mth-01",
+          "visibleHref": "/tego-arch/methods/mth-01",
+          "visibleText": "质量属性（Quality Attribute）协作工作坊",
+          "count": 1,
+          "expectedH1": "质量属性工作坊（Quality Attribute Workshop，QAW）"
+        },
+        {
+          "href": "/tego-arch/methods/mth-04",
+          "visibleHref": "/tego-arch/methods/mth-04",
+          "visibleText": "架构适应度函数",
+          "count": 1,
+          "expectedH1": "架构适应度函数"
+        },
+        {
+          "href": "/tego-arch/methods/mth-06",
+          "visibleHref": "/tego-arch/methods/mth-06",
+          "visibleText": "从需求到演进的架构闭环",
+          "count": 1,
+          "expectedH1": "从需求到演进的架构闭环"
+        },
+        {
+          "href": "/tego-arch/cases/temporal-saga-durable-execution",
+          "visibleHref": "/tego-arch/cases/temporal-saga-durable-execution",
+          "visibleText": "Temporal Durable Execution + Saga 长事务执行方案",
+          "count": 1,
+          "expectedH1": "持久化执行与长事务：为长时智能体任务建立可恢复边界"
+        }
+      ],
+      "logs": [],
+      "diagnostics": {
+        "runtimeExceptions": [],
+        "logEntries": [],
+        "events": [],
+        "hasMore": false,
+        "truncated": false
+      }
+    },
+    "desktopDark": {
+      "state": "desktopDark",
+      "theme": "dark",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "actualViewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "geometry": {
+        "h1": "企业 AI 前线部署：从 POC 到可复制系统的交付门禁",
+        "page": {
+          "clientWidth": 1440,
+          "scrollWidth": 1440
+        },
+        "wrappers": [
+          {
+            "clientWidth": 800,
+            "label": "企业 AI 四阶段十二门禁图，可横向滚动",
+            "scrollWidth": 800
+          },
+          {
+            "clientWidth": 800,
+            "label": "企业 AI 十二门禁执行表，可横向滚动",
+            "scrollWidth": 1643
+          },
+          {
+            "clientWidth": 800,
+            "label": "人、AI 与程序职责及停止条件表，可横向滚动",
+            "scrollWidth": 2101
+          }
+        ],
+        "svg": {
+          "loaded": true,
+          "naturalHeight": 150,
+          "naturalWidth": 116,
+          "renderedHeight": 1032,
+          "renderedWidth": 800,
+          "src": "https://sealday.github.io/tego-arch/assets/images/mth-07-fde-enterprise-ai-delivery-gates-4cc0de890d42a0daf96c9eb73139d892.svg"
+        },
+        "sources": [
+          {
+            "href": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://sre.google/workbook/canarying-releases/",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://learn.microsoft.com/en-us/azure/ai-studio/how-to/evaluate-generative-ai-app",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          }
+        ],
+        "paginationNext": [
+          "/tego-arch/modeling"
+        ],
+        "nextUnpublishedActionable": 0
+      },
+      "interactions": [
+        {
+          "label": "企业 AI 四阶段十二门禁图，可横向滚动",
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(227, 144, 125) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(227, 144, 125) solid 3px",
+            "scrollLeft": 0
+          }
+        },
+        {
+          "label": "企业 AI 十二门禁执行表，可横向滚动",
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "scrollLeft": 40
+          }
+        },
+        {
+          "label": "人、AI 与程序职责及停止条件表，可横向滚动",
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "scrollLeft": 40
+          }
+        }
+      ],
+      "relations": [
+        {
+          "href": "/tego-arch/methods/mth-01",
+          "visibleHref": "/tego-arch/methods/mth-01",
+          "visibleText": "质量属性（Quality Attribute）协作工作坊",
+          "count": 1,
+          "expectedH1": "质量属性工作坊（Quality Attribute Workshop，QAW）"
+        },
+        {
+          "href": "/tego-arch/methods/mth-04",
+          "visibleHref": "/tego-arch/methods/mth-04",
+          "visibleText": "架构适应度函数",
+          "count": 1,
+          "expectedH1": "架构适应度函数"
+        },
+        {
+          "href": "/tego-arch/methods/mth-06",
+          "visibleHref": "/tego-arch/methods/mth-06",
+          "visibleText": "从需求到演进的架构闭环",
+          "count": 1,
+          "expectedH1": "从需求到演进的架构闭环"
+        },
+        {
+          "href": "/tego-arch/cases/temporal-saga-durable-execution",
+          "visibleHref": "/tego-arch/cases/temporal-saga-durable-execution",
+          "visibleText": "Temporal Durable Execution + Saga 长事务执行方案",
+          "count": 1,
+          "expectedH1": "持久化执行与长事务：为长时智能体任务建立可恢复边界"
+        }
+      ],
+      "logs": [],
+      "diagnostics": {
+        "runtimeExceptions": [],
+        "logEntries": [],
+        "events": [],
+        "hasMore": false,
+        "truncated": false
+      }
+    },
+    "mobileLight": {
+      "state": "mobileLight",
+      "theme": "light",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "actualViewport": {
+        "width": 390,
+        "height": 844
+      },
+      "geometry": {
+        "h1": "企业 AI 前线部署：从 POC 到可复制系统的交付门禁",
+        "page": {
+          "clientWidth": 390,
+          "scrollWidth": 390
+        },
+        "wrappers": [
+          {
+            "clientWidth": 358,
+            "label": "企业 AI 四阶段十二门禁图，可横向滚动",
+            "scrollWidth": 800
+          },
+          {
+            "clientWidth": 358,
+            "label": "企业 AI 十二门禁执行表，可横向滚动",
+            "scrollWidth": 1643
+          },
+          {
+            "clientWidth": 358,
+            "label": "人、AI 与程序职责及停止条件表，可横向滚动",
+            "scrollWidth": 2101
+          }
+        ],
+        "svg": {
+          "loaded": true,
+          "naturalHeight": 150,
+          "naturalWidth": 116,
+          "renderedHeight": 1032,
+          "renderedWidth": 800,
+          "src": "https://sealday.github.io/tego-arch/assets/images/mth-07-fde-enterprise-ai-delivery-gates-4cc0de890d42a0daf96c9eb73139d892.svg"
+        },
+        "sources": [
+          {
+            "href": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://sre.google/workbook/canarying-releases/",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://learn.microsoft.com/en-us/azure/ai-studio/how-to/evaluate-generative-ai-app",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          }
+        ],
+        "paginationNext": [
+          "/tego-arch/modeling"
+        ],
+        "nextUnpublishedActionable": 0
+      },
+      "interactions": [
+        {
+          "label": "企业 AI 四阶段十二门禁图，可横向滚动",
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 40
+          }
+        },
+        {
+          "label": "企业 AI 十二门禁执行表，可横向滚动",
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 40
+          }
+        },
+        {
+          "label": "人、AI 与程序职责及停止条件表，可横向滚动",
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 40
+          }
+        }
+      ],
+      "relations": [
+        {
+          "href": "/tego-arch/methods/mth-01",
+          "visibleHref": "/tego-arch/methods/mth-01",
+          "visibleText": "质量属性（Quality Attribute）协作工作坊",
+          "count": 1,
+          "expectedH1": "质量属性工作坊（Quality Attribute Workshop，QAW）"
+        },
+        {
+          "href": "/tego-arch/methods/mth-04",
+          "visibleHref": "/tego-arch/methods/mth-04",
+          "visibleText": "架构适应度函数",
+          "count": 1,
+          "expectedH1": "架构适应度函数"
+        },
+        {
+          "href": "/tego-arch/methods/mth-06",
+          "visibleHref": "/tego-arch/methods/mth-06",
+          "visibleText": "从需求到演进的架构闭环",
+          "count": 1,
+          "expectedH1": "从需求到演进的架构闭环"
+        },
+        {
+          "href": "/tego-arch/cases/temporal-saga-durable-execution",
+          "visibleHref": "/tego-arch/cases/temporal-saga-durable-execution",
+          "visibleText": "Temporal Durable Execution + Saga 长事务执行方案",
+          "count": 1,
+          "expectedH1": "持久化执行与长事务：为长时智能体任务建立可恢复边界"
+        }
+      ],
+      "logs": [],
+      "diagnostics": {
+        "runtimeExceptions": [],
+        "logEntries": [],
+        "events": [],
+        "hasMore": false,
+        "truncated": false
+      }
+    },
+    "mobileDark": {
+      "state": "mobileDark",
+      "theme": "dark",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "actualViewport": {
+        "width": 390,
+        "height": 844
+      },
+      "geometry": {
+        "h1": "企业 AI 前线部署：从 POC 到可复制系统的交付门禁",
+        "page": {
+          "clientWidth": 390,
+          "scrollWidth": 390
+        },
+        "wrappers": [
+          {
+            "clientWidth": 358,
+            "label": "企业 AI 四阶段十二门禁图，可横向滚动",
+            "scrollWidth": 800
+          },
+          {
+            "clientWidth": 358,
+            "label": "企业 AI 十二门禁执行表，可横向滚动",
+            "scrollWidth": 1643
+          },
+          {
+            "clientWidth": 358,
+            "label": "人、AI 与程序职责及停止条件表，可横向滚动",
+            "scrollWidth": 2101
+          }
+        ],
+        "svg": {
+          "loaded": true,
+          "naturalHeight": 150,
+          "naturalWidth": 116,
+          "renderedHeight": 1032,
+          "renderedWidth": 800,
+          "src": "https://sealday.github.io/tego-arch/assets/images/mth-07-fde-enterprise-ai-delivery-gates-4cc0de890d42a0daf96c9eb73139d892.svg"
+        },
+        "sources": [
+          {
+            "href": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://sre.google/workbook/canarying-releases/",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://learn.microsoft.com/en-us/azure/ai-studio/how-to/evaluate-generative-ai-app",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          }
+        ],
+        "paginationNext": [
+          "/tego-arch/modeling"
+        ],
+        "nextUnpublishedActionable": 0
+      },
+      "interactions": [
+        {
+          "label": "企业 AI 四阶段十二门禁图，可横向滚动",
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(227, 144, 125) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(227, 144, 125) solid 3px",
+            "scrollLeft": 40
+          }
+        },
+        {
+          "label": "企业 AI 十二门禁执行表，可横向滚动",
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "scrollLeft": 40
+          }
+        },
+        {
+          "label": "人、AI 与程序职责及停止条件表，可横向滚动",
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "scrollLeft": 40
+          }
+        }
+      ],
+      "relations": [
+        {
+          "href": "/tego-arch/methods/mth-01",
+          "visibleHref": "/tego-arch/methods/mth-01",
+          "visibleText": "质量属性（Quality Attribute）协作工作坊",
+          "count": 1,
+          "expectedH1": "质量属性工作坊（Quality Attribute Workshop，QAW）"
+        },
+        {
+          "href": "/tego-arch/methods/mth-04",
+          "visibleHref": "/tego-arch/methods/mth-04",
+          "visibleText": "架构适应度函数",
+          "count": 1,
+          "expectedH1": "架构适应度函数"
+        },
+        {
+          "href": "/tego-arch/methods/mth-06",
+          "visibleHref": "/tego-arch/methods/mth-06",
+          "visibleText": "从需求到演进的架构闭环",
+          "count": 1,
+          "expectedH1": "从需求到演进的架构闭环"
+        },
+        {
+          "href": "/tego-arch/cases/temporal-saga-durable-execution",
+          "visibleHref": "/tego-arch/cases/temporal-saga-durable-execution",
+          "visibleText": "Temporal Durable Execution + Saga 长事务执行方案",
+          "count": 1,
+          "expectedH1": "持久化执行与长事务：为长时智能体任务建立可恢复边界"
+        }
+      ],
+      "logs": [],
+      "diagnostics": {
+        "runtimeExceptions": [],
+        "logEntries": [],
+        "events": [],
+        "hasMore": false,
+        "truncated": false
+      }
+    }
+  },
+  "navigationProbes": [
+    {
+      "href": "/tego-arch/methods/mth-01",
+      "expectedH1": "质量属性工作坊（Quality Attribute Workshop，QAW）",
+      "visibleHref": "/tego-arch/methods/mth-01",
+      "h1": "质量属性工作坊（Quality Attribute Workshop，QAW）",
+      "destinationUrl": "https://sealday.github.io/tego-arch/methods/mth-01",
+      "returnedH1": "企业 AI 前线部署：从 POC 到可复制系统的交付门禁",
+      "returnedToArticle": true,
+      "navigation": "direct exact-href navigation and direct article return; no physical relation click claimed",
+      "navigationTargetEqualsVisibleHref": true
+    },
+    {
+      "href": "/tego-arch/methods/mth-04",
+      "expectedH1": "架构适应度函数",
+      "visibleHref": "/tego-arch/methods/mth-04",
+      "h1": "架构适应度函数",
+      "destinationUrl": "https://sealday.github.io/tego-arch/methods/mth-04",
+      "returnedH1": "企业 AI 前线部署：从 POC 到可复制系统的交付门禁",
+      "returnedToArticle": true,
+      "navigation": "direct exact-href navigation and direct article return; no physical relation click claimed",
+      "navigationTargetEqualsVisibleHref": true
+    },
+    {
+      "href": "/tego-arch/methods/mth-06",
+      "expectedH1": "从需求到演进的架构闭环",
+      "visibleHref": "/tego-arch/methods/mth-06",
+      "h1": "从需求到演进的架构闭环",
+      "destinationUrl": "https://sealday.github.io/tego-arch/methods/mth-06",
+      "returnedH1": "企业 AI 前线部署：从 POC 到可复制系统的交付门禁",
+      "returnedToArticle": true,
+      "navigation": "direct exact-href navigation and direct article return; no physical relation click claimed",
+      "navigationTargetEqualsVisibleHref": true
+    },
+    {
+      "href": "/tego-arch/cases/temporal-saga-durable-execution",
+      "expectedH1": "持久化执行与长事务：为长时智能体任务建立可恢复边界",
+      "visibleHref": "/tego-arch/cases/temporal-saga-durable-execution",
+      "h1": "持久化执行与长事务：为长时智能体任务建立可恢复边界",
+      "destinationUrl": "https://sealday.github.io/tego-arch/cases/temporal-saga-durable-execution",
+      "returnedH1": "企业 AI 前线部署：从 POC 到可复制系统的交付门禁",
+      "returnedToArticle": true,
+      "navigation": "direct exact-href navigation and direct article return; no physical relation click claimed",
+      "navigationTargetEqualsVisibleHref": true
+    }
+  ],
+  "navigationDiagnostics": {
+    "logs": [],
+    "runtimeExceptions": [],
+    "logEntries": [],
+    "events": [],
+    "hasMore": false,
+    "truncated": false
+  },
+  "captureNotes": {
+    "successfulStrategy": "One fresh production tab; four responsive/theme states; four direct exact-href destination and article-return probes split into single navigation legs.",
+    "discardedAttempts": "Two earlier monolithic orchestration attempts exceeded the 60-second execution boundary and were discarded without reusing their partial state.",
+    "mobileThemeSelection": "The mobile navbar was opened to activate the visible theme toggle, then closed before geometry and interaction capture."
+  },
+  "screenshotEvidence": {
+    "status": "BLOCKED / NOT_ACCEPTED",
+    "trackedNewBytes": false,
+    "attempts": [],
+    "reason": "No new valid tracked screenshot bytes were captured in this production run. Prior ignored local captures remain rejected diagnostics and are not reused; no screenshot or independent visual-review PASS is claimed."
+  }
+}

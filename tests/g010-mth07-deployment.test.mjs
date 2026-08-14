@@ -9,6 +9,10 @@ const ROOT = fileURLToPath(new URL('../', import.meta.url));
 const REVIEW_PATH = 'docs/reviews/g010-mth07.md';
 const EVIDENCE_PATH = 'docs/reviews/evidence/g010-mth07-stage-a-browser.json';
 const EVIDENCE_SHA256 = '43985ea2e801e888e55a2cd6f62ed690133d3fdcda7db8f03a1e91ea466fa1b0';
+const PRODUCTION_EVIDENCE_PATH = 'docs/reviews/evidence/g010-mth07-stage-a-production-browser.json';
+const PRODUCTION_EVIDENCE_SHA256 = 'e3d28a498d23aec12d6df4b32c35fa69052d1fa4ec324a2ec6c53caa34beeeb2';
+const IMPLEMENTATION_HEAD = 'a413be060c93f7ddd20e7db5417e94f4166dc1e8';
+const PAGES = {runId: 31786075868, buildJobId: 94722157542, deployJobId: 94722766883};
 const BROWSER_BUILD_HEAD = 'f32e0cb7ae79fb92a2154c03dfe8bf7b5b203974';
 const REVIEWED_HEAD = '4c5c9f99148a32998ee03bd8f97b3db2ca29d500';
 const HISTORICAL_REVIEW_TREE_HASH = '675a88450c587b392cccc75bfeced523d32acc6bd78830de545586a308a85bff';
@@ -47,7 +51,28 @@ const RELATIONS = [
   ['/tego-arch/methods/mth-06', '从需求到演进的架构闭环'],
   ['/tego-arch/cases/temporal-saga-durable-execution', '持久化执行与长事务：为长时智能体任务建立可恢复边界'],
 ];
-const REVIEW_H2 = ['Candidate identity', 'Stage A projection', 'Local in-app Browser QA', 'Independent review checkpoint'];
+const PRODUCTION_ROUTES = [
+  ['/', '/tego-arch/', 17310, 'bdb717e4281f4f1814f4f32241985db71581777cb38d4c2fa22b00e61c0933cb'],
+  ['/methods', '/tego-arch/methods', 20582, '340081dc771e57fb9538aaaef2a520322a6eed4c4f3509f8851879d1a6dda876'],
+  ['/methods/mth-07', '/tego-arch/methods/mth-07', 41342, 'e691982b1ffd8b0ddbd79cdcae9111bfd1f8a027d1bdf5d4833640c69f981614'],
+  ['/methods/mth-01', '/tego-arch/methods/mth-01', 30095, 'd263c5eb3772d7d288783b34346ecf69688c19117611b7d5431976ce98cd8c98'],
+  ['/methods/mth-04', '/tego-arch/methods/mth-04', 29761, '8efd01a31c217b72107dca34de87da987bab94cd773816da1d689abed172c69c'],
+  ['/methods/mth-06', '/tego-arch/methods/mth-06', 30618, '191fce815edee2a8a891286580ffde3d2082df1f6e665ba97ee6fa4e250b3eb3'],
+  ['/cases/temporal-saga-durable-execution', '/tego-arch/cases/temporal-saga-durable-execution', 66247, 'aa12adee92266efb5c1db3b71ae75c5b2b540a79281c890f5607690bb3740988'],
+  ['/references', '/tego-arch/references', 23533, 'c4deed5f0cc6848389cdd7576fce56500178c2d458132cae6d54cfa5a653a709'],
+];
+const PRODUCTION_SVG = {
+  path: '/tego-arch/img/diagrams/mth-07-fde-enterprise-ai-delivery-gates.svg',
+  status: 200,
+  contentType: 'image/svg+xml',
+  bytes: 10150,
+  sha256: '56a914a2f15894ebd1be9453c648976773dfd616dd1d8718be560f62a84c8a7f',
+  reviewedBytes: 10150,
+  reviewedSha256: '56a914a2f15894ebd1be9453c648976773dfd616dd1d8718be560f62a84c8a7f',
+  exactMatch: true,
+};
+const PRODUCTION_SVG_SRC = 'https://sealday.github.io/tego-arch/assets/images/mth-07-fde-enterprise-ai-delivery-gates-4cc0de890d42a0daf96c9eb73139d892.svg';
+const REVIEW_H2 = ['Candidate identity', 'Stage A projection', 'Local in-app Browser QA', 'Independent review checkpoint', 'Production Stage A evidence'];
 const PRE_VERDICT_SECTION_SHA256 = new Map([
   ['Candidate identity', '5f2acd3a0da3deea6ced6eba26cb39ace264b78e4f5e399bac3b1a005e655de1'],
   ['Stage A projection', 'e228e91b90d08ba53c6b000fb45f9469a75a68d745d38e7c22a3ebf2ce8dca5f'],
@@ -119,9 +144,10 @@ const GENERATED_ARTIFACTS = new Map([
   ['src/generated/source-ledger.json', ['1,835,160', 'b4bb74d57a77f1ef2365da526f1547bfc063f19d162dac2a0518990509d14d2d']],
 ]);
 
-const [review, evidenceBytes, manifest, indexes, projectStatus, publicLedger, backlog] = await Promise.all([
+const [review, evidenceBytes, productionEvidenceBytes, manifest, indexes, projectStatus, publicLedger, backlog] = await Promise.all([
   readFile(path.join(ROOT, REVIEW_PATH), 'utf8').catch((error) => error?.code === 'ENOENT' ? '' : Promise.reject(error)),
   readFile(path.join(ROOT, EVIDENCE_PATH)).catch((error) => error?.code === 'ENOENT' ? Buffer.from('{}') : Promise.reject(error)),
+  readFile(path.join(ROOT, PRODUCTION_EVIDENCE_PATH)).catch((error) => error?.code === 'ENOENT' ? Buffer.from('{}') : Promise.reject(error)),
   readFile(path.join(ROOT, 'src/generated/topic-manifest.json'), 'utf8').then(JSON.parse),
   readFile(path.join(ROOT, 'src/generated/topic-indexes.json'), 'utf8').then(JSON.parse),
   readFile(path.join(ROOT, 'src/generated/project-status.json'), 'utf8').then(JSON.parse),
@@ -129,6 +155,7 @@ const [review, evidenceBytes, manifest, indexes, projectStatus, publicLedger, ba
   readFile(path.join(ROOT, 'docs/content-backlog.md'), 'utf8'),
 ]);
 const evidence = JSON.parse(evidenceBytes);
+const productionEvidence = JSON.parse(productionEvidenceBytes);
 
 function sha256(value) {
   return createHash('sha256').update(value).digest('hex');
@@ -356,6 +383,147 @@ function assertBrowserEvidence(actual) {
   for (const svg of svgSizes.slice(1)) assert.deepEqual(svg, svgSizes[0], 'SVG intrinsic/rendered geometry is exact across states');
 }
 
+function assertCleanDiagnostics(actual, label) {
+  assertExactKeys(actual, ['runtimeExceptions', 'logEntries', 'events', 'hasMore', 'truncated'], label);
+  assert.deepEqual(actual.runtimeExceptions, []);
+  assert.deepEqual(actual.logEntries, []);
+  assert.deepEqual(actual.events, []);
+  assert.equal(actual.hasMore, false);
+  assert.equal(actual.truncated, false);
+}
+
+function assertProductionEvidence(actual) {
+  assertExactKeys(actual, [
+    'schemaVersion',
+    'collectedAt',
+    'freshProductionCapture',
+    'localEvidenceReused',
+    'implementationHead',
+    'pages',
+    'probes',
+    'states',
+    'navigationProbes',
+    'navigationDiagnostics',
+    'captureNotes',
+    'screenshotEvidence',
+  ], 'production evidence root');
+  assert.equal(actual.schemaVersion, 1);
+  assert.equal(actual.collectedAt, '2026-08-14T09:42:31.079Z');
+  assert.equal(actual.freshProductionCapture, true);
+  assert.equal(actual.localEvidenceReused, false);
+  assert.equal(actual.implementationHead, IMPLEMENTATION_HEAD);
+  assertExactKeys(actual.pages, ['runId', 'buildJobId', 'deployJobId', 'status', 'conclusion'], 'production Pages');
+  assert.deepEqual(actual.pages, {...PAGES, status: 'completed', conclusion: 'success'});
+  assertExactKeys(actual.probes, ['routes', 'svg'], 'production probes');
+  assert.deepEqual(actual.probes.routes.map(({path: route, deployedPath, bytes, sha256: hash}) => [route, deployedPath, bytes, hash]), PRODUCTION_ROUTES);
+  for (const [index, route] of actual.probes.routes.entries()) {
+    assertExactKeys(route, ['path', 'deployedPath', 'status', 'contentType', 'bytes', 'sha256'], `production route ${index}`);
+    assert.equal(route.status, 200);
+    assert.equal(route.contentType, 'text/html; charset=utf-8');
+  }
+  assertExactKeys(actual.probes.svg, Object.keys(PRODUCTION_SVG), 'production SVG probe');
+  assert.deepEqual(actual.probes.svg, PRODUCTION_SVG);
+  assert.deepEqual(Object.keys(actual.states), STATES);
+
+  const expectedStates = {
+    desktopLight: {theme: 'light', viewport: {width: 1440, height: 1000}, clientWidth: 800},
+    desktopDark: {theme: 'dark', viewport: {width: 1440, height: 1000}, clientWidth: 800},
+    mobileLight: {theme: 'light', viewport: {width: 390, height: 844}, clientWidth: 358},
+    mobileDark: {theme: 'dark', viewport: {width: 390, height: 844}, clientWidth: 358},
+  };
+  for (const [name, expected] of Object.entries(expectedStates)) {
+    const state = actual.states[name];
+    assertExactKeys(state, ['state', 'theme', 'viewport', 'actualViewport', 'geometry', 'interactions', 'relations', 'logs', 'diagnostics'], `${name} production state`);
+    assert.equal(state.state, name);
+    assert.equal(state.theme, expected.theme);
+    assertExactKeys(state.viewport, ['width', 'height'], `${name} requested viewport`);
+    assertExactKeys(state.actualViewport, ['width', 'height'], `${name} actual viewport`);
+    assert.deepEqual(state.viewport, expected.viewport);
+    assert.deepEqual(state.actualViewport, expected.viewport);
+    assertExactKeys(state.geometry, ['h1', 'page', 'wrappers', 'svg', 'sources', 'paginationNext', 'nextUnpublishedActionable'], `${name} production geometry`);
+    assert.equal(state.geometry.h1, '企业 AI 前线部署：从 POC 到可复制系统的交付门禁');
+    assert.deepEqual(state.geometry.page, {clientWidth: expected.viewport.width, scrollWidth: expected.viewport.width});
+    assert.deepEqual(state.geometry.wrappers.map(({label}) => label), WRAPPER_LABELS);
+    assert.deepEqual(state.geometry.wrappers.map(({clientWidth}) => clientWidth), [expected.clientWidth, expected.clientWidth, expected.clientWidth]);
+    assert.deepEqual(state.geometry.wrappers.map(({scrollWidth}) => scrollWidth), [800, 1643, 2101]);
+    for (const [index, wrapper] of state.geometry.wrappers.entries()) {
+      assertExactKeys(wrapper, ['clientWidth', 'label', 'scrollWidth'], `${name} production wrapper ${index}`);
+    }
+    assertExactKeys(state.geometry.svg, ['loaded', 'naturalHeight', 'naturalWidth', 'renderedHeight', 'renderedWidth', 'src'], `${name} production SVG`);
+    assert.deepEqual(state.geometry.svg, {
+      loaded: true,
+      naturalHeight: 150,
+      naturalWidth: 116,
+      renderedHeight: 1032,
+      renderedWidth: 800,
+      src: PRODUCTION_SVG_SRC,
+    });
+    assert.deepEqual(state.geometry.sources.map(({href}) => href), SOURCE_HREFS);
+    for (const source of state.geometry.sources) {
+      assertExactKeys(source, ['href', 'rel', 'target'], `${name} production source`);
+      assert.equal(source.rel, 'noopener noreferrer');
+      assert.equal(source.target, '_blank');
+    }
+    assert.deepEqual(state.geometry.paginationNext, ['/tego-arch/modeling']);
+    assert.equal(state.geometry.nextUnpublishedActionable, 0);
+    assert.equal(state.interactions.length, 3);
+    for (const [index, interaction] of state.interactions.entries()) {
+      assertExactKeys(interaction, ['label', 'before', 'after'], `${name} production interaction ${index}`);
+      assert.equal(interaction.label, WRAPPER_LABELS[index]);
+      for (const phase of ['before', 'after']) {
+        assertExactKeys(interaction[phase], ['focus', 'focusVisible', 'outline', 'scrollLeft'], `${name} ${phase} interaction ${index}`);
+        assert.equal(interaction[phase].focus, true);
+        assert.equal(interaction[phase].focusVisible, true);
+        assert.match(interaction[phase].outline, /solid 3px/u);
+      }
+      assert.equal(interaction.before.scrollLeft, 0);
+      assert.equal(interaction.after.scrollLeft, state.geometry.wrappers[index].scrollWidth > state.geometry.wrappers[index].clientWidth ? 40 : 0);
+    }
+    assert.deepEqual(state.relations.map(({href, expectedH1}) => [href, expectedH1]), RELATIONS);
+    for (const relation of state.relations) {
+      assertExactKeys(relation, ['href', 'visibleHref', 'visibleText', 'count', 'expectedH1'], `${name} production relation`);
+      assert.equal(relation.visibleHref, relation.href);
+      assert.equal(relation.count, 1);
+      assert.ok(relation.visibleText.length > 0);
+    }
+    assert.deepEqual(state.logs, []);
+    assertCleanDiagnostics(state.diagnostics, `${name} production diagnostics`);
+  }
+
+  assert.equal(actual.navigationProbes.length, RELATIONS.length);
+  for (const [index, probe] of actual.navigationProbes.entries()) {
+    const [href, expectedH1] = RELATIONS[index];
+    assertExactKeys(probe, ['href', 'expectedH1', 'visibleHref', 'h1', 'destinationUrl', 'returnedH1', 'returnedToArticle', 'navigation', 'navigationTargetEqualsVisibleHref'], `production navigation ${index}`);
+    assert.equal(probe.href, href);
+    assert.equal(probe.visibleHref, href);
+    assert.equal(probe.expectedH1, expectedH1);
+    assert.equal(probe.h1, expectedH1);
+    assert.equal(new URL(probe.destinationUrl).pathname, href);
+    assert.equal(probe.returnedH1, '企业 AI 前线部署：从 POC 到可复制系统的交付门禁');
+    assert.equal(probe.returnedToArticle, true);
+    assert.equal(probe.navigation, 'direct exact-href navigation and direct article return; no physical relation click claimed');
+    assert.equal(probe.navigationTargetEqualsVisibleHref, true);
+  }
+  assertExactKeys(actual.navigationDiagnostics, ['logs', 'runtimeExceptions', 'logEntries', 'events', 'hasMore', 'truncated'], 'production navigation diagnostics');
+  assert.deepEqual(actual.navigationDiagnostics.logs, []);
+  assertCleanDiagnostics({
+    runtimeExceptions: actual.navigationDiagnostics.runtimeExceptions,
+    logEntries: actual.navigationDiagnostics.logEntries,
+    events: actual.navigationDiagnostics.events,
+    hasMore: actual.navigationDiagnostics.hasMore,
+    truncated: actual.navigationDiagnostics.truncated,
+  }, 'production navigation diagnostics body');
+  assertExactKeys(actual.captureNotes, ['successfulStrategy', 'discardedAttempts', 'mobileThemeSelection'], 'production capture notes');
+  assert.equal(actual.captureNotes.successfulStrategy, 'One fresh production tab; four responsive/theme states; four direct exact-href destination and article-return probes split into single navigation legs.');
+  assert.equal(actual.captureNotes.discardedAttempts, 'Two earlier monolithic orchestration attempts exceeded the 60-second execution boundary and were discarded without reusing their partial state.');
+  assert.equal(actual.captureNotes.mobileThemeSelection, 'The mobile navbar was opened to activate the visible theme toggle, then closed before geometry and interaction capture.');
+  assertExactKeys(actual.screenshotEvidence, ['status', 'trackedNewBytes', 'attempts', 'reason'], 'production screenshot evidence');
+  assert.equal(actual.screenshotEvidence.status, 'BLOCKED / NOT_ACCEPTED');
+  assert.equal(actual.screenshotEvidence.trackedNewBytes, false);
+  assert.deepEqual(actual.screenshotEvidence.attempts, []);
+  assert.equal(actual.screenshotEvidence.reason, 'No new valid tracked screenshot bytes were captured in this production run. Prior ignored local captures remain rejected diagnostics and are not reused; no screenshot or independent visual-review PASS is claimed.');
+}
+
 function browserReviewRow(name, state) {
   const sourceDomains = new Set(state.geometry.sources.map(({href}) => new URL(href).hostname));
   const relationPasses = state.relations.filter(({h1, expectedH1, returnedToArticle}) =>
@@ -503,6 +671,27 @@ async function assertReview(source) {
   }
   assert.doesNotMatch(checkpoint, /\bPENDING\b|Deployment status: `SUCCESS`/u);
   assert.doesNotMatch(source, /Visual inspection:.*`PASS`|Screenshot evidence: `PASS`|Deployment status: `SUCCESS`/iu);
+
+  const production = section(source, 'Production Stage A evidence');
+  for (const literal of [
+    `Exact production implementation head: \`${IMPLEMENTATION_HEAD}\`.`,
+    `Exact Pages run: \`${PAGES.runId}\`; build job: \`${PAGES.buildJobId}\`; deploy job: \`${PAGES.deployJobId}\`; every status: \`completed / success\`.`,
+    `Raw production Browser JSON: \`${PRODUCTION_EVIDENCE_PATH}\`; bytes: \`${productionEvidenceBytes.length.toLocaleString('en-US')}\`; SHA-256: \`${PRODUCTION_EVIDENCE_SHA256}\`.`,
+    'Production Browser capture: `4/4` responsive/theme states from one fresh production session; local evidence reused: `false`.',
+    'Exact viewport applications: `4/4`; wrapper geometry and ArrowRight interactions: `12/12`.',
+    'Visible relation href/count observations: `16/16`; exact destination H1/direct article-return probes: `4/4`.',
+    'Remote source target/rel observations: `12/12`; MTH-08 actionable links: `0` in every state.',
+    'State and navigation diagnostics: warning/error logs `0`, runtime exceptions `0`, protocol log entries `0`, `hasMore=false`, `truncated=false`.',
+    'Screenshot evidence: `BLOCKED / NOT_ACCEPTED`; new tracked screenshot bytes: `false`; accepted attempts: `0`.',
+    'Production deployment: `SUCCESS`.',
+    'Final production Stage A judgment: `PASS`, scoped to deployment, HTTP identity, and functional Browser evidence; screenshot and independent visual-review PASS remain excluded.',
+    'Stage B: `NOT_RUN`; MTH-07 remains `published / reviewed` and absent from the backlog.',
+  ]) assert.ok(production.includes(literal), `production review literal: ${literal}`);
+  for (const [route, deployedPath, bytes, hash] of PRODUCTION_ROUTES) {
+    assert.ok(production.includes(`| \`${route}\` | \`${deployedPath}\` | \`200\` | \`text/html; charset=utf-8\` | ${bytes.toLocaleString('en-US')} | \`${hash}\` |`), `${route} production HTTP row`);
+  }
+  assert.ok(production.includes(`| \`${PRODUCTION_SVG.path}\` | \`200\` | \`${PRODUCTION_SVG.contentType}\` | ${PRODUCTION_SVG.bytes.toLocaleString('en-US')} | \`${PRODUCTION_SVG.sha256}\` | \`true\` |`));
+  assert.doesNotMatch(production, /Screenshot evidence: `(?:ACCEPTED|PASS)`|Visual inspection:.*`PASS`/iu);
 }
 
 test('projects exact MTH-07 Stage A totals without publishing a fabricated next topic', () => {
@@ -514,6 +703,13 @@ test('projects exact MTH-07 Stage A totals without publishing a fabricated next 
 test('binds exact candidate artifacts, raw four-state Browser semantics, and final independent review slots', async () => {
   assert.equal(sha256(evidenceBytes), EVIDENCE_SHA256);
   assertBrowserEvidence(evidence);
+  await assertReview(review);
+});
+
+test('binds exact successful Pages, HTTP, SVG, and fresh production Browser evidence without screenshot overclaim', async () => {
+  assert.equal(productionEvidenceBytes.length, 26048);
+  assert.equal(sha256(productionEvidenceBytes), PRODUCTION_EVIDENCE_SHA256);
+  assertProductionEvidence(productionEvidence);
   await assertReview(review);
 });
 
@@ -685,6 +881,62 @@ test('keeps Browser review claims closed across the complete current review', as
   ];
   for (const [label, addition] of additiveClaims) {
     const mutated = review.replace(checkpoint, `${addition}\n\n${checkpoint}`);
+    assert.notEqual(mutated, review, `${label} mutation applies`);
+    await assert.rejects(() => assertReview(mutated), {name: 'AssertionError'}, label);
+  }
+});
+
+test('rejects production provenance, probe, Browser, navigation, screenshot, and review overclaim mutations', async () => {
+  const mutations = [
+    ['additive root claim', (copy) => copy.visualInspection = 'PASS'],
+    ['local evidence reuse', (copy) => copy.localEvidenceReused = true],
+    ['non-fresh capture', (copy) => copy.freshProductionCapture = false],
+    ['wrong implementation head', (copy) => copy.implementationHead = '0'.repeat(40)],
+    ['wrong Pages run', (copy) => copy.pages.runId += 1],
+    ['wrong build job', (copy) => copy.pages.buildJobId += 1],
+    ['failed deploy', (copy) => copy.pages.conclusion = 'failure'],
+    ['missing route', (copy) => copy.probes.routes.pop()],
+    ['route status drift', (copy) => copy.probes.routes[0].status = 404],
+    ['route hash drift', (copy) => copy.probes.routes[2].sha256 = '0'.repeat(64)],
+    ['SVG byte drift', (copy) => copy.probes.svg.bytes += 1],
+    ['SVG mismatch', (copy) => copy.probes.svg.exactMatch = false],
+    ['missing state', (copy) => delete copy.states.mobileDark],
+    ['actual viewport drift', (copy) => copy.states.desktopLight.actualViewport.width = 1280],
+    ['wrapper width drift', (copy) => copy.states.mobileLight.geometry.wrappers[1].scrollWidth += 1],
+    ['interaction focus-visible loss', (copy) => copy.states.desktopDark.interactions[1].before.focusVisible = false],
+    ['source rel drift', (copy) => copy.states.mobileDark.geometry.sources[0].rel = 'noreferrer'],
+    ['relation count drift', (copy) => copy.states.desktopLight.relations[0].count = 2],
+    ['unpublished next link', (copy) => copy.states.desktopDark.geometry.nextUnpublishedActionable = 1],
+    ['runtime exception', (copy) => copy.states.mobileLight.diagnostics.runtimeExceptions.push('boom')],
+    ['navigation target drift', (copy) => copy.navigationProbes[0].visibleHref = '/tego-arch/fabricated'],
+    ['navigation H1 drift', (copy) => copy.navigationProbes[1].h1 = 'fabricated'],
+    ['navigation return loss', (copy) => copy.navigationProbes[2].returnedToArticle = false],
+    ['navigation physical-click overclaim', (copy) => copy.navigationProbes[3].navigation = 'physical click'],
+    ['navigation diagnostics truncated', (copy) => copy.navigationDiagnostics.truncated = true],
+    ['capture fallback drift', (copy) => copy.captureNotes.discardedAttempts = 'No discarded attempts.'],
+    ['accepted screenshot status', (copy) => copy.screenshotEvidence.status = 'ACCEPTED'],
+    ['tracked screenshot overclaim', (copy) => copy.screenshotEvidence.trackedNewBytes = true],
+    ['fabricated screenshot attempt', (copy) => copy.screenshotEvidence.attempts.push({status: 'PASS'})],
+  ];
+  for (const [label, mutate] of mutations) {
+    const copy = structuredClone(productionEvidence);
+    mutate(copy);
+    assert.notDeepEqual(copy, productionEvidence, `${label} mutation applies`);
+    assert.throws(() => assertProductionEvidence(copy), {name: 'AssertionError'}, label);
+  }
+  assert.notEqual(sha256(Buffer.concat([productionEvidenceBytes, Buffer.from(' ')])), PRODUCTION_EVIDENCE_SHA256);
+
+  for (const [label, before, after] of [
+    ['production head drift', IMPLEMENTATION_HEAD, '0'.repeat(40)],
+    ['Pages run drift', String(PAGES.runId), String(PAGES.runId + 1)],
+    ['production evidence hash drift', PRODUCTION_EVIDENCE_SHA256, '0'.repeat(64)],
+    ['viewport total drift', 'Exact viewport applications: `4/4`;', 'Exact viewport applications: `3/4`;'],
+    ['navigation total drift', 'exact destination H1/direct article-return probes: `4/4`.', 'exact destination H1/direct article-return probes: `3/4`.'],
+    ['screenshot acceptance overclaim', 'Screenshot evidence: `BLOCKED / NOT_ACCEPTED`;', 'Screenshot evidence: `ACCEPTED`;'],
+    ['visual-review overclaim', 'No production screenshot or independent visual-review PASS is claimed.', 'Visual inspection: `PASS`.'],
+    ['Stage B overclaim', 'Stage B: `NOT_RUN`;', 'Stage B: `COMPLETE`;'],
+  ]) {
+    const mutated = review.replace(before, after);
     assert.notEqual(mutated, review, `${label} mutation applies`);
     await assert.rejects(() => assertReview(mutated), {name: 'AssertionError'}, label);
   }
