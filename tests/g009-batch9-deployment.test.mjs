@@ -20,6 +20,7 @@ const IMMEDIATE_STAGE_B_PRODUCTION_RAW = 'docs/reviews/evidence/g009-batch8-stag
 const BACKLOG = 'docs/content-backlog.md';
 const CANDIDATE_HEAD = 'bbb2f4234c4c24993dbea108d2a19a751e778409';
 const EVIDENCE_HEAD = '4923b7da22d79ecc32400669526196ca852885a4';
+const STAGE_B_REVIEWED_HEAD = '0d94d407177f71376a34ffd572d5a7a35a596903';
 const RAW_BROWSER_HASH = 'fa3fdecb77c55c8e2a013d95bbe9684afde05e3027583a9b3d1feb405a758932';
 const PRODUCTION_IMPLEMENTATION_HEAD = '70c9c61c55fa383b8619be0fbcddb02485918942';
 const PRODUCTION_RAW_BROWSER_BYTES = 27_342;
@@ -142,11 +143,12 @@ const STAGE_B_REVIEW_LINES = Object.freeze([
   '- STY-08 target: `published / complete`.',
   '- STY-09 target: `unpublished / pending / non-actionable`; actionable route count: `0`; sole next topic.',
   `- Immediate immutable history: complete Batch 8 review SHA-256 \`${IMMEDIATE_REVIEW_HASH}\`; Stage A raw \`${IMMEDIATE_STAGE_A_RAW_HASH}\`; Stage A production raw \`${IMMEDIATE_STAGE_A_PRODUCTION_RAW_HASH}\`; Stage B production raw \`${IMMEDIATE_STAGE_B_PRODUCTION_RAW_HASH}\`; backlog suffix \`${IMMEDIATE_BACKLOG_SUFFIX_HASH}\`.`,
-  '- Independent Stage B code/spec/security review: `PENDING`; findings: `PENDING`.',
-  '- Independent Stage B content/evidence/rights review: `PENDING`; rights: `PENDING`; findings: `PENDING`.',
-  '- Independent Stage B architecture/invariant review: `PENDING`; blockers: `PENDING`.',
-  '- Final Stage B review judgment: `PENDING`.',
-  '- Stage B scope boundary: `STAGE_B_CANDIDATE_ONLY`.',
+  `- Exact Stage B reviewed head: \`${STAGE_B_REVIEWED_HEAD}\`.`,
+  '- Independent Stage B code/spec/security review: `READY / APPROVE`; findings: `0`.',
+  '- Independent Stage B content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`.',
+  '- Independent Stage B architecture/invariant review: `CLEAR / READY`; blockers: `0`.',
+  '- Final Stage B review judgment: `READY`.',
+  '- Stage B scope boundary: `STAGE_B`.',
   '- Stage B deployment status: `PENDING / NOT_RUN`.',
 ]);
 
@@ -649,12 +651,20 @@ test('rejects Stage B production, projection, history, next-topic, verdict, depl
     ['Projection: `61 completed topics / 104 content documents / 539 governed sources`', 'Projection: `60 completed topics / 104 content documents / 539 governed sources`'],
     ['STY-08 target: `published / complete`', 'STY-08 target: `published / pending`'],
     ['STY-09 target: `unpublished / pending / non-actionable`', 'STY-09 target: `published / complete`'],
-    ['Independent Stage B code/spec/security review: `PENDING`', 'Independent Stage B code/spec/security review: `READY / APPROVE`'],
-    ['Independent Stage B content/evidence/rights review: `PENDING`', 'Independent Stage B content/evidence/rights review: `CONTENT READY`'],
-    ['rights: `PENDING`', 'rights: `PASS`'],
-    ['Independent Stage B architecture/invariant review: `PENDING`', 'Independent Stage B architecture/invariant review: `CLEAR / READY`'],
-    ['Final Stage B review judgment: `PENDING`', 'Final Stage B review judgment: `READY`'],
-    ['Stage B scope boundary: `STAGE_B_CANDIDATE_ONLY`', 'Stage B scope boundary: `STAGE_B_DEPLOYED`'],
+    [`Exact Stage B reviewed head: \`${STAGE_B_REVIEWED_HEAD}\``, `Exact Stage B reviewed head: \`${'0'.repeat(40)}\``],
+    ['Independent Stage B code/spec/security review: `READY / APPROVE`; findings: `0`', 'Independent Stage B code/spec/security review: `PENDING`; findings: `PENDING`'],
+    ['Independent Stage B code/spec/security review: `READY / APPROVE`; findings: `0`', 'Independent Stage B code/spec/security review: `NOT READY`; findings: `0`'],
+    ['Independent Stage B code/spec/security review: `READY / APPROVE`; findings: `0`', 'Independent Stage B code/spec/security review: `READY / APPROVE`; findings: `1`'],
+    ['Independent Stage B content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`', 'Independent Stage B content/evidence/rights review: `PENDING`; rights: `PENDING`; findings: `PENDING`'],
+    ['Independent Stage B content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`', 'Independent Stage B content/evidence/rights review: `CHANGES`; rights: `PASS`; findings: `0`'],
+    ['Independent Stage B content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`', 'Independent Stage B content/evidence/rights review: `CONTENT READY`; rights: `PENDING`; findings: `0`'],
+    ['Independent Stage B content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`', 'Independent Stage B content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `1`'],
+    ['Independent Stage B architecture/invariant review: `CLEAR / READY`; blockers: `0`', 'Independent Stage B architecture/invariant review: `PENDING`; blockers: `PENDING`'],
+    ['Independent Stage B architecture/invariant review: `CLEAR / READY`; blockers: `0`', 'Independent Stage B architecture/invariant review: `BLOCKED`; blockers: `0`'],
+    ['Independent Stage B architecture/invariant review: `CLEAR / READY`; blockers: `0`', 'Independent Stage B architecture/invariant review: `CLEAR / READY`; blockers: `1`'],
+    ['Final Stage B review judgment: `READY`', 'Final Stage B review judgment: `PENDING`'],
+    ['Stage B scope boundary: `STAGE_B`', 'Stage B scope boundary: `STAGE_B_CANDIDATE_ONLY`'],
+    ['Stage B scope boundary: `STAGE_B`', 'Stage B scope boundary: `STAGE_B_DEPLOYED`'],
     ['Stage B deployment status: `PENDING / NOT_RUN`', 'Stage B deployment status: `NOT_RUN`'],
     ['Stage B deployment status: `PENDING / NOT_RUN`', 'Stage B deployment status: `PENDING`'],
     ['Stage B deployment status: `PENDING / NOT_RUN`', 'Stage B deployment status: `READY / NOT_RUN`'],

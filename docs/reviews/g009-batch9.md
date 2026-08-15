@@ -142,9 +142,10 @@ This section records the non-destructive integration of the original STY-08 Stag
 - STY-08 target: `published / complete`.
 - STY-09 target: `unpublished / pending / non-actionable`; actionable route count: `0`; sole next topic.
 - Immediate immutable history: complete Batch 8 review SHA-256 `2915584034c0d480ee04713c9fadee2839f03d112ced139901a3fb2033d8ac7e`; Stage A raw `b2a09ad041c156faa1493867741dd7b1c74241fbd96005903335b3d5076d4122`; Stage A production raw `753a94cf2ef53d054959dc6c115d4f29e484c651a06fe4c5c7d617358fd8b192`; Stage B production raw `b5605b255f87041524e25a898bd5f0b27ec912322b8d1fd814c3032abb88a99a`; backlog suffix `dba312f190706ae7112ea057addefe58ceff4cdd15bad39264efbd58b129c354`.
-- Independent Stage B code/spec/security review: `PENDING`; findings: `PENDING`.
-- Independent Stage B content/evidence/rights review: `PENDING`; rights: `PENDING`; findings: `PENDING`.
-- Independent Stage B architecture/invariant review: `PENDING`; blockers: `PENDING`.
-- Final Stage B review judgment: `PENDING`.
-- Stage B scope boundary: `STAGE_B_CANDIDATE_ONLY`.
+- Exact Stage B reviewed head: `0d94d407177f71376a34ffd572d5a7a35a596903`.
+- Independent Stage B code/spec/security review: `READY / APPROVE`; findings: `0`.
+- Independent Stage B content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`.
+- Independent Stage B architecture/invariant review: `CLEAR / READY`; blockers: `0`.
+- Final Stage B review judgment: `READY`.
+- Stage B scope boundary: `STAGE_B`.
 - Stage B deployment status: `PENDING / NOT_RUN`.
