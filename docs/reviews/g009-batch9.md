@@ -87,9 +87,12 @@ This section records the non-destructive integration of the original STY-08 Stag
 
 ### Integration review checkpoint
 
-- Independent code/spec/security review for the integration bundle: `PENDING`.
-- Independent content/evidence/rights review for the integration bundle: `PENDING`; rights: `PENDING`.
-- Independent architecture/invariant review for the integration bundle: `PENDING`.
-- Final integration readiness: `PENDING`.
-- Scope boundary: `INTEGRATION_ONLY`; no Stage B backlog mutation is authorized or performed.
+- Exact reviewed integration head: `2b47267977fedfba933d2d01198a476254a670fc`.
+- Integration lineage: implementation `c1aebf57c638d30efe987d1c29e578f502bafb46`; evidence `1b002b8fa0f2c58019fc05e6e93efbae0bd23570`; binding/remediation `21bc9650236059afb0d0c94066394664a162e826` → `18978171ea236bbaa076b722e662ea51650ee317` → `2b47267977fedfba933d2d01198a476254a670fc`.
+- Integration review head coverage: all three reviews examined exactly `2b47267977fedfba933d2d01198a476254a670fc`; no verdict covers a later binding commit.
+- Independent code/spec/security review for the integration bundle: `READY / APPROVE`; findings: `0`.
+- Independent content/evidence/rights review for the integration bundle: `CONTENT READY`; rights: `PASS`; findings: `0`.
+- Independent architecture/invariant review for the integration bundle: `CLEAR / READY`; blockers: `0`.
+- Final integration readiness: `READY`.
+- Integration scope boundary: `INTEGRATION_ONLY`; no Stage B backlog mutation is authorized or performed.
 - Integration deployment status: `NOT_RUN`.

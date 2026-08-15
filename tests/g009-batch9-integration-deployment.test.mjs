@@ -8,6 +8,12 @@ const REVIEW = 'docs/reviews/g009-batch9.md';
 const RAW_BROWSER = 'docs/reviews/evidence/g009-batch9-integration-browser.json';
 const IMPLEMENTATION_HEAD = 'c1aebf57c638d30efe987d1c29e578f502bafb46';
 const EVIDENCE_HEAD = '1b002b8fa0f2c58019fc05e6e93efbae0bd23570';
+const REVIEWED_INTEGRATION_HEAD = '2b47267977fedfba933d2d01198a476254a670fc';
+const REMEDIATION_HEADS = Object.freeze([
+  '21bc9650236059afb0d0c94066394664a162e826',
+  '18978171ea236bbaa076b722e662ea51650ee317',
+  REVIEWED_INTEGRATION_HEAD,
+]);
 const RAW_BROWSER_SHA256 = '14a206017541f2c7f6f09b28a3e2ab34ce0e5c1b01973777b0b4759d9a576733';
 const MERGE_PARENTS = [
   'd83ac7d119f63745f8abb62a7a3fd029c1b32e8a',
@@ -122,11 +128,14 @@ const EXPECTED_REVIEW = Object.freeze({
         '- Integration screenshot evidence: `BLOCKED / NOT_ACCEPTED`. Exactly three fresh IAB full-page captures repeated the opening viewport rather than the complete page and architecture diagram. No visual PASS is claimed.',
       ],
       'Integration review checkpoint': [
-        '- Independent code/spec/security review for the integration bundle: `PENDING`.',
-        '- Independent content/evidence/rights review for the integration bundle: `PENDING`; rights: `PENDING`.',
-        '- Independent architecture/invariant review for the integration bundle: `PENDING`.',
-        '- Final integration readiness: `PENDING`.',
-        '- Scope boundary: `INTEGRATION_ONLY`; no Stage B backlog mutation is authorized or performed.',
+        `- Exact reviewed integration head: \`${REVIEWED_INTEGRATION_HEAD}\`.`,
+        `- Integration lineage: implementation \`${IMPLEMENTATION_HEAD}\`; evidence \`${EVIDENCE_HEAD}\`; binding/remediation \`${REMEDIATION_HEADS[0]}\` → \`${REMEDIATION_HEADS[1]}\` → \`${REMEDIATION_HEADS[2]}\`.`,
+        `- Integration review head coverage: all three reviews examined exactly \`${REVIEWED_INTEGRATION_HEAD}\`; no verdict covers a later binding commit.`,
+        '- Independent code/spec/security review for the integration bundle: `READY / APPROVE`; findings: `0`.',
+        '- Independent content/evidence/rights review for the integration bundle: `CONTENT READY`; rights: `PASS`; findings: `0`.',
+        '- Independent architecture/invariant review for the integration bundle: `CLEAR / READY`; blockers: `0`.',
+        '- Final integration readiness: `READY`.',
+        '- Integration scope boundary: `INTEGRATION_ONLY`; no Stage B backlog mutation is authorized or performed.',
         '- Integration deployment status: `NOT_RUN`.',
       ],
     }),
@@ -216,13 +225,24 @@ function parseIntegrationReview(source) {
   const next = h2.find((match) => match.index > integration[0].index);
   const end = next?.index ?? source.length;
   const body = source.slice(start, end).trim();
-  for (const label of ['Final integration readiness', 'Integration deployment status', 'Integration screenshot evidence']) {
+  for (const label of [
+    'Exact reviewed integration head',
+    'Integration lineage',
+    'Integration review head coverage',
+    'Independent code/spec/security review for the integration bundle',
+    'Independent content/evidence/rights review for the integration bundle',
+    'Independent architecture/invariant review for the integration bundle',
+    'Final integration readiness',
+    'Integration scope boundary',
+    'Integration deployment status',
+    'Integration screenshot evidence',
+  ]) {
     const escaped = label.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
     const claims = [...source.matchAll(new RegExp(`${escaped}:[^\\n]*`, 'gu'))];
     assert.equal(claims.length, 1, `${label} declared exactly once globally`);
     assert.ok(claims[0].index >= start && claims[0].index < end, `${label} belongs to the integration section`);
   }
-  assert.doesNotMatch(source, /Final integration readiness:\s*`?READY`?/u);
+  assert.doesNotMatch(source, /Final integration readiness:\s*`?PENDING`?/u);
   assert.doesNotMatch(source, /Integration deployment status:\s*`?SUCCESS`?/u);
   assert.doesNotMatch(source, /Integration screenshot evidence:\s*`?PASS`?/u);
   const h3 = [...body.matchAll(/^### ([^\n]+)$/gmu)];
@@ -264,7 +284,7 @@ test('projects the combined STY-08 and MTH-07 Stage A truth', () => {
   assertCombinedProjection();
 });
 
-test('binds exact closed integration Browser evidence and the unique pending review section', () => {
+test('binds exact closed integration Browser evidence and the unique final review section', () => {
   assert.equal(sha256(rawBrowserBytes), RAW_BROWSER_SHA256);
   assertBrowserEvidence(JSON.parse(rawBrowserBytes));
   assertIntegrationReview(review);
@@ -349,10 +369,19 @@ test('rejects MTH-07 job relabeling and any weakened, duplicated, displaced, or 
   const reviewMutations = [
     replaceRequired(review, `Integration implementation candidate: \`${IMPLEMENTATION_HEAD}\`.`, `Integration implementation candidate: \`${'0'.repeat(40)}\`.`),
     replaceRequired(review, `Integration evidence head: \`${EVIDENCE_HEAD}\`.`, `Integration evidence head: \`${'1'.repeat(40)}\`.`),
+    replaceRequired(review, `Exact reviewed integration head: \`${REVIEWED_INTEGRATION_HEAD}\`.`, `Exact reviewed integration head: \`${'3'.repeat(40)}\`.`),
     replaceRequired(review, RAW_BROWSER_SHA256, '2'.repeat(64)),
     replaceRequired(review, exactJobs, swappedJobs),
     replaceRequired(review, `build job: \`${MTH07_PRODUCTION.buildJob}\``, 'build job: `94722157543`'),
-    replaceRequired(review, 'Final integration readiness: `PENDING`.', 'Final integration readiness: `READY`.'),
+    replaceRequired(review, 'Independent code/spec/security review for the integration bundle: `READY / APPROVE`; findings: `0`.', 'Independent code/spec/security review for the integration bundle: `NOT READY`; findings: `0`.'),
+    replaceRequired(review, 'Independent code/spec/security review for the integration bundle: `READY / APPROVE`; findings: `0`.', 'Independent code/spec/security review for the integration bundle: `READY / APPROVE`; findings: `1`.'),
+    replaceRequired(review, 'Independent content/evidence/rights review for the integration bundle: `CONTENT READY`; rights: `PASS`; findings: `0`.', 'Independent content/evidence/rights review for the integration bundle: `CHANGES`; rights: `PASS`; findings: `0`.'),
+    replaceRequired(review, 'Independent content/evidence/rights review for the integration bundle: `CONTENT READY`; rights: `PASS`; findings: `0`.', 'Independent content/evidence/rights review for the integration bundle: `CONTENT READY`; rights: `PENDING`; findings: `0`.'),
+    replaceRequired(review, 'Independent content/evidence/rights review for the integration bundle: `CONTENT READY`; rights: `PASS`; findings: `0`.', 'Independent content/evidence/rights review for the integration bundle: `CONTENT READY`; rights: `PASS`; findings: `1`.'),
+    replaceRequired(review, 'Independent architecture/invariant review for the integration bundle: `CLEAR / READY`; blockers: `0`.', 'Independent architecture/invariant review for the integration bundle: `BLOCKED`; blockers: `0`.'),
+    replaceRequired(review, 'Independent architecture/invariant review for the integration bundle: `CLEAR / READY`; blockers: `0`.', 'Independent architecture/invariant review for the integration bundle: `CLEAR / READY`; blockers: `1`.'),
+    replaceRequired(review, 'Final integration readiness: `READY`.', 'Final integration readiness: `PENDING`.'),
+    replaceRequired(review, 'Integration scope boundary: `INTEGRATION_ONLY`;', 'Integration scope boundary: `STAGE_B`;'),
     replaceRequired(review, 'Integration deployment status: `NOT_RUN`.', 'Integration deployment status: `SUCCESS`.'),
     replaceRequired(
       review,
@@ -370,6 +399,12 @@ test('rejects MTH-07 job relabeling and any weakened, duplicated, displaced, or 
     insertBeforeIntegration('- Final integration readiness: `READY`.'),
     insertBeforeIntegration('- Integration deployment status: `SUCCESS`.'),
     insertBeforeIntegration('- Integration screenshot evidence: `PASS`.'),
+    insertBeforeIntegration([
+      `- Exact reviewed integration head: \`${REVIEWED_INTEGRATION_HEAD}\`.`,
+      '- Independent code/spec/security review for the integration bundle: `READY / APPROVE`; findings: `0`.',
+      '- Independent content/evidence/rights review for the integration bundle: `CONTENT READY`; rights: `PASS`; findings: `0`.',
+      '- Independent architecture/invariant review for the integration bundle: `CLEAR / READY`; blockers: `0`.',
+    ].join('\n')),
   ];
   for (const mutated of reviewMutations) {
     assert.notEqual(mutated, review, 'review mutation applies');
