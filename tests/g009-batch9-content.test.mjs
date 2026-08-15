@@ -149,6 +149,12 @@ const SOURCE_REQUIRED_FIELDS = ['canonical_locator', 'transport_locator', 'title
   'source_kind', 'tier', 'allowed_evidence_roles', 'license', 'license_scope', 'license_evidence_url',
   'license_evidence_note', 'copyright_policy', 'usage_boundary'];
 const COPYRIGHT_CHECKS = ['original-structure', 'quotation-boundary', 'attribution-complete', 'illustration-rights'];
+const AKKA_ACTOR_READING_ROW = Object.freeze([
+  '`Akka 2.10.21` Actor 文档',
+  '状态、行为、消息与逐条处理的实现例证',
+  '其他运行时采用相同状态、行为或消息处理合同',
+]);
+const AKKA_ACTOR_SOURCE_LINE = '- [Introduction to Actors](https://doc.akka.io/libraries/akka-core/2.10.21/typed/actors.html) 支持 `Akka Typed` 中的状态封装、行为、消息与逐条处理例证。';
 const REMOTE_SOURCE_CONTRACTS = Object.freeze({
   'src-hewitt-bishop-steiger-actor-formalism-1973': Object.freeze({
     canonical_locator: 'https://www.ijcai.org/Proceedings/73/Papers/027B.pdf',
@@ -171,7 +177,7 @@ const REMOTE_SOURCE_CONTRACTS = Object.freeze({
     license_evidence_url: 'https://raw.githubusercontent.com/akka/akka/v2.10.21/akka-docs/LICENSE', copyright_policy: 'facts-and-short-quotation',
     allowed_evidence_roles: ['definition', 'implementation', 'runtime-fact'], citation_roles: ['definition', 'implementation'], manifest_primary: false,
     license_evidence_note: 'The v2.10.21 akka-docs/LICENSE is the controlling subdirectory license and grants only limited documentation access/use; Tego Arch uses attributed factual summary without excerpt, adaptation, or redistribution.',
-    usage_boundary: 'Akka Typed implementation example for encapsulated state, behavior, messaging, and supervision; not a universal Actor Model guarantee.',
+    usage_boundary: 'Akka Typed implementation evidence for encapsulated state, behavior, messaging, and one-message-at-a-time processing; not supervision, failure recovery, or a universal Actor Model guarantee.',
     citation_attribution: 'Introduction to Actors, Akka maintainers',
   }),
   'src-akka-message-delivery-reliability': Object.freeze({
@@ -497,6 +503,14 @@ export function assertArticleStructure(source) {
     const section = expectedSections.get(label); const start = source.indexOf(`## ${section}\n`); const next = source.indexOf('\n## ', start + 4);
     assert.ok(matches[0].index > start && (next === -1 || matches[0].index < next), `${label} belongs to ${section}`);
   }
+}
+export function assertAkkaActorEvidenceScope(source) {
+  const body = articleParts(source).body;
+  assert.ok(body.includes(AKKA_ACTOR_SOURCE_LINE), 'Introduction to Actors exact supported scope');
+  const reading = markdownTables(body).find((candidate) => candidate[0]?.[0] === '阅读入口');
+  assert.ok(reading, 'decisive-source reading table');
+  assert.deepEqual(reading.find(([entry]) => entry === AKKA_ACTOR_READING_ROW[0]), AKKA_ACTOR_READING_ROW, 'Akka Actor reading row stays within pinned file scope');
+  assert.match(body, /Erlang\/OTP 28\.5 监督文档[^\n]*层级监督、向上升级与重启强度/u, 'Erlang/OTP remains the supervision implementation evidence');
 }
 function attrs(tag) { return new Map([...tag.matchAll(/([:\w-]+)="([^"]*)"/gu)].map(([, key, value]) => [key, value])); }
 function decodeXmlText(value) { return value.replace(/&(?:#(\d+)|#x([\da-f]+)|amp|lt|gt|quot);/giu, (entity, decimal, hex) => {
@@ -1243,6 +1257,9 @@ test('remote-source fixtures execute exact field, inventory, and self-consistent
   const selfConsistent = structuredClone(fixture.ledger); const original = selfConsistent.sources[0].canonical_locator; selfConsistent.sources[0].canonical_locator = 'https://example.invalid/fabricated'; selfConsistent.documents[ARTICLE].citations[0].citation_url = selfConsistent.sources[0].canonical_locator;
   const fabricatedInventory = fixture.inventory.replaceAll(original, selfConsistent.sources[0].canonical_locator); assert.notEqual(fabricatedInventory, fixture.inventory, 'self-consistent inventory fabrication applies');
   assert.throws(() => assertRemoteSourceContracts(selfConsistent, fabricatedInventory), assert.AssertionError, 'self-consistent ledger/inventory fabrication rejected');
+  const supervisionRole = structuredClone(fixture.ledger);
+  supervisionRole.sources.find(({id}) => id === 'src-akka-actor-model').usage_boundary = 'Akka Typed implementation evidence for encapsulated state, behavior, messaging, one-message-at-a-time processing, and supervision.';
+  assert.throws(() => assertRemoteSourceContracts(supervisionRole, fixture.inventory), assert.AssertionError, 'Akka Actor supervision-role mutation rejected');
 });
 
 test('diagram semantic, visible-bounds, painted-stroke, canvas, and mask fixtures execute validators', () => {
@@ -1384,7 +1401,7 @@ test('locks exact STY-08 metadata, wrappers, components, order flow, and runtime
 });
 
 test('locks comparison, checkpoints, failure, adoption, and migration responsibilities', async () => {
-  const source = file(ARTICLE); articleParts(source); assertComparisonTable(source); assertFailureTable(source); assertOrderFlow(source); assertAdoptionContract(source);
+  const source = file(ARTICLE); articleParts(source); assertComparisonTable(source); assertFailureTable(source); assertOrderFlow(source); assertAdoptionContract(source); assertAkkaActorEvidenceScope(source);
   const comparison = markdownTables(articleParts(source).body).find((candidate) => candidate[0]?.[0] === '对照对象');
   const failure = markdownTables(articleParts(source).body).find((candidate) => candidate[0]?.[0] === '失败类别');
   for (const [table, validator] of [[comparison, assertComparisonTable], [failure, assertFailureTable]]) for (const cells of table.slice(2)) {
@@ -1407,6 +1424,8 @@ test('locks comparison, checkpoints, failure, adoption, and migration responsibi
   const firstAdoption = `| ${adoption[2].join(' | ')} |`; const secondAdoption = `| ${adoption[3].join(' | ')} |`; await mutation(source, (candidate) => candidate.replace(firstAdoption, '__SWAP__').replace(secondAdoption, firstAdoption).replace('__SWAP__', secondAdoption), assertAdoptionContract, 'adoption order');
   await mutation(source, (candidate) => `${candidate}\nActor、线程、消费者、事件驱动和微服务形成一条成熟度阶梯。\n`, assertComparisonTable, 'maturity ladder');
   await mutation(source, (candidate) => `${candidate}\n无限重启可以持续恢复 Actor。\n`, assertFailureTable, 'unlimited restart');
+  await mutation(source, (candidate) => candidate.replace(AKKA_ACTOR_SOURCE_LINE, AKKA_ACTOR_SOURCE_LINE.replace('逐条处理', '监督')), assertAkkaActorEvidenceScope, 'Akka source line reintroduces supervision');
+  await mutation(source, (candidate) => candidate.replace(AKKA_ACTOR_READING_ROW[1], AKKA_ACTOR_READING_ROW[1].replace('逐条处理', '监督')), assertAkkaActorEvidenceScope, 'Akka reading row reintroduces supervision');
 });
 
 test('governs STY-08 sources, reciprocal relations, and Stage A projection', async () => {

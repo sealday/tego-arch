@@ -126,7 +126,7 @@ Actor 不等于线程。Actor 不等于普通消息消费者。Actor 不等于�
 
 | 阅读入口 | 可验证机制 | 不可证明的结论 |
 | --- | --- | --- |
-| `Akka 2.10.21` Actor 文档 | 状态、行为、消息与监督的实现例证 | 其他运行时采用相同生命周期或监督合同 |
+| `Akka 2.10.21` Actor 文档 | 状态、行为、消息与逐条处理的实现例证 | 其他运行时采用相同状态、行为或消息处理合同 |
 | `Akka 2.10.21` 投递与远程文档 | 至多一次、死信、顺序与位置透明边界 | 可靠投递、跨发送者全局顺序或物理故障消失 |
 | `Orleans` 固定文档提交 | 虚拟身份、激活、放置与显式持久化概览 | 任一运行时版本的默认配置或生产效果 |
 | Erlang/OTP 28.5 监督文档 | 层级监督、向上升级与重启强度 | 所有 Actor 运行时使用相同监督树 |
@@ -222,7 +222,7 @@ Actor 不等于线程。Actor 不等于普通消息消费者。Actor 不等于�
 
 ### 只能有限类比的部分
 
-`Akka` 的投递与死信、`Orleans` 的虚拟身份与激活、该运行时平台的监督树都能提供实现例证，但其默认持久化、放置、生命周期和失败语义不同。迁移设计要固定所选框架版本与消息版本，不能把一个框架行为外推为其他运行时的合同。
+`Akka` 的投递与死信、`Orleans` 的虚拟身份与激活、Erlang/OTP 的监督树都能提供实现例证，但其默认持久化、放置、生命周期和失败语义不同。迁移设计要固定所选框架版本与消息版本，不能把一个框架行为外推为其他运行时的合同。
 
 ### 不应照搬的部分
 
@@ -242,7 +242,7 @@ Actor 不等于线程。Actor 不等于普通消息消费者。Actor 不等于�
 
 **框架实现证据**
 
-- [Introduction to Actors](https://doc.akka.io/libraries/akka-core/2.10.21/typed/actors.html) 支持 `Akka Typed` 中的状态封装、行为、消息与监督例证。
+- [Introduction to Actors](https://doc.akka.io/libraries/akka-core/2.10.21/typed/actors.html) 支持 `Akka Typed` 中的状态封装、行为、消息与逐条处理例证。
 - [Message Delivery Reliability](https://doc.akka.io/libraries/akka-core/2.10.21/general/message-delivery-reliability.html) 支持 `Akka` 范围内的投递、顺序与死信边界。
 - [Remoting — Location Transparency](https://doc.akka.io/libraries/akka-core/2.10.21/general/remoting.html) 支持逻辑寻址例证，不消除物理分布问题。
 - [Orleans overview](https://learn.microsoft.com/en-us/dotnet/orleans/overview) 支持虚拟身份、激活、放置与显式持久化的框架例证。
