@@ -77,8 +77,8 @@ function assertProjection() {
     completed_topics: status.completed_topics,
     content_documents: status.content_documents,
     governed_sources: status.governed_sources,
-  }, {completed_topics: 60, content_documents: 102, governed_sources: 529});
-  assert.equal(publicLedger.sources.length, 529);
+  }, {completed_topics: 60, content_documents: 103, governed_sources: 535});
+  assert.equal(publicLedger.sources.length, 535);
   const sty06 = manifest.topics.find(({id}) => id === 'STY-06');
   const sty07 = manifest.topics.find(({id}) => id === 'STY-07');
   assert.deepEqual([sty06?.published, sty06?.status.value, sty06?.slug], [true, 'complete', '/styles/sty-06']);
@@ -354,7 +354,7 @@ test('preserves STY-06 Stage B history under the current STY-07 closure candidat
     completed_topics: status.completed_topics,
     content_documents: status.content_documents,
     governed_sources: status.governed_sources,
-  }, {completed_topics: 60, content_documents: 102, governed_sources: 529});
+  }, {completed_topics: 60, content_documents: 103, governed_sources: 535});
   const sty06 = manifest.topics.find(({id}) => id === 'STY-06');
   const sty07 = manifest.topics.find(({id}) => id === 'STY-07');
   assert.deepEqual([sty06?.published, sty06?.status.value], [true, 'complete']);

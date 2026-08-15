@@ -845,6 +845,141 @@
       ]
     },
     {
+      "id": "src-akka-actor-model",
+      "canonical_locator": "https://doc.akka.io/libraries/akka-core/2.10.21/typed/actors.html",
+      "transport_locator": "https://raw.githubusercontent.com/akka/akka/v2.10.21/akka-docs/src/main/paradox/typed/actors.md",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Introduction to Actors",
+      "author_or_org": "Akka maintainers",
+      "published_at": null,
+      "registered_at": "2026-08-14",
+      "checked_at": "2026-08-14",
+      "version": "Akka 2.10.21, tag v2.10.21, commit f585d64302bf4494b26be705a51ac4050e56d8d1; checked 2026-08-14",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "implementation",
+        "runtime-fact"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named Akka 2.10.21 documentation files under the Lightbend Commercial Software License Agreement in akka-docs/LICENSE; no reuse, adaptation, redistribution, code, trademarks, linked works, or third-party material",
+      "license_evidence_url": "https://raw.githubusercontent.com/akka/akka/v2.10.21/akka-docs/LICENSE",
+      "license_evidence_note": "The v2.10.21 akka-docs/LICENSE is the controlling subdirectory license and grants only limited documentation access/use; Tego Arch uses attributed factual summary without excerpt, adaptation, or redistribution.",
+      "license_family_id": "https://doc.akka.io/libraries/akka-core/2.10.21/typed/actors.html",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Akka Typed implementation evidence for encapsulated state, behavior, messaging, and one-message-at-a-time processing; not supervision, failure recovery, or a universal Actor Model guarantee.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://raw.githubusercontent.com/akka/akka/v2.10.21/akka-docs/src/main/paradox/typed/actors.md",
+      "expected_final_approved_at": "2026-08-14",
+      "expected_final_approval_note": "Pinned Akka v2.10.21 documentation and controlling akka-docs commercial license returned HTTP 200 on 2026-08-14.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://raw.githubusercontent.com/akka/akka/v2.10.21/akka-docs/src/main/paradox/typed/actors.md",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-14T00:00:00.000Z",
+          "last_success_at": "2026-08-14T00:00:00.000Z",
+          "http_status": 200,
+          "final_transport_locator": "https://raw.githubusercontent.com/akka/akka/v2.10.21/akka-docs/src/main/paradox/typed/actors.md"
+        }
+      ]
+    },
+    {
+      "id": "src-akka-location-transparency",
+      "canonical_locator": "https://doc.akka.io/libraries/akka-core/2.10.21/general/remoting.html",
+      "transport_locator": "https://raw.githubusercontent.com/akka/akka/v2.10.21/akka-docs/src/main/paradox/general/remoting.md",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Remoting — Location Transparency",
+      "author_or_org": "Akka maintainers",
+      "published_at": null,
+      "registered_at": "2026-08-14",
+      "checked_at": "2026-08-14",
+      "version": "Akka 2.10.21, tag v2.10.21, commit f585d64302bf4494b26be705a51ac4050e56d8d1; checked 2026-08-14",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "comparison",
+        "implementation",
+        "runtime-fact"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named Akka 2.10.21 documentation files under the Lightbend Commercial Software License Agreement in akka-docs/LICENSE; no reuse, adaptation, redistribution, code, trademarks, linked works, or third-party material",
+      "license_evidence_url": "https://raw.githubusercontent.com/akka/akka/v2.10.21/akka-docs/LICENSE",
+      "license_evidence_note": "The v2.10.21 akka-docs/LICENSE is the controlling subdirectory license and grants only limited documentation access/use; Tego Arch uses attributed factual summary without excerpt, adaptation, or redistribution.",
+      "license_family_id": "https://doc.akka.io/libraries/akka-core/2.10.21/general/remoting.html",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Akka-scoped logical addressing example; it does not hide latency, serialization, network failure, security, placement, or state-migration boundaries.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://raw.githubusercontent.com/akka/akka/v2.10.21/akka-docs/src/main/paradox/general/remoting.md",
+      "expected_final_approved_at": "2026-08-14",
+      "expected_final_approval_note": "Pinned Akka v2.10.21 documentation and controlling akka-docs commercial license returned HTTP 200 on 2026-08-14.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://raw.githubusercontent.com/akka/akka/v2.10.21/akka-docs/src/main/paradox/general/remoting.md",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-14T00:00:00.000Z",
+          "last_success_at": "2026-08-14T00:00:00.000Z",
+          "http_status": 200,
+          "final_transport_locator": "https://raw.githubusercontent.com/akka/akka/v2.10.21/akka-docs/src/main/paradox/general/remoting.md"
+        }
+      ]
+    },
+    {
+      "id": "src-akka-message-delivery-reliability",
+      "canonical_locator": "https://doc.akka.io/libraries/akka-core/2.10.21/general/message-delivery-reliability.html",
+      "transport_locator": "https://raw.githubusercontent.com/akka/akka/v2.10.21/akka-docs/src/main/paradox/general/message-delivery-reliability.md",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Message Delivery Reliability",
+      "author_or_org": "Akka maintainers",
+      "published_at": null,
+      "registered_at": "2026-08-14",
+      "checked_at": "2026-08-14",
+      "version": "Akka 2.10.21, tag v2.10.21, commit f585d64302bf4494b26be705a51ac4050e56d8d1; checked 2026-08-14",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "comparison",
+        "implementation",
+        "runtime-fact"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named Akka 2.10.21 documentation files under the Lightbend Commercial Software License Agreement in akka-docs/LICENSE; no reuse, adaptation, redistribution, code, trademarks, linked works, or third-party material",
+      "license_evidence_url": "https://raw.githubusercontent.com/akka/akka/v2.10.21/akka-docs/LICENSE",
+      "license_evidence_note": "The v2.10.21 akka-docs/LICENSE is the controlling subdirectory license and grants only limited documentation access/use; Tego Arch uses attributed factual summary without excerpt, adaptation, or redistribution.",
+      "license_family_id": "https://doc.akka.io/libraries/akka-core/2.10.21/general/message-delivery-reliability.html",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Akka-scoped evidence for at-most-once delivery, sender-receiver ordering, dead letters, and local/remote differences; not a cross-framework guarantee.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://raw.githubusercontent.com/akka/akka/v2.10.21/akka-docs/src/main/paradox/general/message-delivery-reliability.md",
+      "expected_final_approved_at": "2026-08-14",
+      "expected_final_approval_note": "Pinned Akka v2.10.21 documentation and controlling akka-docs commercial license returned HTTP 200 on 2026-08-14.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://raw.githubusercontent.com/akka/akka/v2.10.21/akka-docs/src/main/paradox/general/message-delivery-reliability.md",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-14T00:00:00.000Z",
+          "last_success_at": "2026-08-14T00:00:00.000Z",
+          "http_status": 200,
+          "final_transport_locator": "https://raw.githubusercontent.com/akka/akka/v2.10.21/akka-docs/src/main/paradox/general/message-delivery-reliability.md"
+        }
+      ]
+    },
+    {
       "id": "src-arc42-8b346f00707f",
       "canonical_locator": "https://arc42.org/",
       "transport_locator": "https://arc42.org/",
@@ -2335,6 +2470,40 @@
       "link_policy": null,
       "expected_final_transport_locator": "/img/diagrams/sty-07-soa-microservices-order-fulfillment.svg",
       "expected_final_approved_at": "2026-08-13",
+      "expected_final_approval_note": "Approved project-local original illustration after synchronized Draw.io/SVG semantic, geometry, contrast and raster QA.",
+      "health_summary": "healthy",
+      "health_checks": []
+    },
+    {
+      "id": "src-atlas-sty08-actor-order-fulfillment",
+      "canonical_locator": "/img/diagrams/sty-08-actor-order-fulfillment.svg",
+      "transport_locator": "/img/diagrams/sty-08-actor-order-fulfillment.svg",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "共享订单状态与订单 Actor 履约边界对照图",
+      "author_or_org": "Tego Arch maintainers",
+      "published_at": null,
+      "registered_at": "2026-08-14",
+      "checked_at": "2026-08-14",
+      "version": "Original synchronized Draw.io/SVG pair authored and checked on 2026-08-14",
+      "source_kind": "original-illustration",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "illustration"
+      ],
+      "license": "LicenseRef-Atlas-Original",
+      "license_scope": "The named project-authored sty-08-actor-order-fulfillment.svg asset only",
+      "license_evidence_url": "https://github.com/sealday/tego-arch/blob/main/static/img/diagrams/sty-08-actor-order-fulfillment.svg",
+      "license_evidence_note": "The project-authored Draw.io/SVG pair contains no third-party topology, reference image, brand visual, signature, watermark, or copied composition.",
+      "license_family_id": "/img/diagrams/sty-08-actor-order-fulfillment.svg",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "original-atlas",
+      "usage_boundary": "Original teaching comparison of shared order state and per-order Actors; illustration-only and not evidence of runtime guarantees or production outcomes.",
+      "link_policy": null,
+      "expected_final_transport_locator": "/img/diagrams/sty-08-actor-order-fulfillment.svg",
+      "expected_final_approved_at": "2026-08-14",
       "expected_final_approval_note": "Approved project-local original illustration after synchronized Draw.io/SVG semantic, geometry, contrast and raster QA.",
       "health_summary": "healthy",
       "health_checks": []
@@ -8895,7 +9064,7 @@
     {
       "id": "src-erlang-28f791c67609",
       "canonical_locator": "https://www.erlang.org/doc/system/sup_princ.html",
-      "transport_locator": "https://www.erlang.org/doc/system/sup_princ.html",
+      "transport_locator": "https://raw.githubusercontent.com/erlang/otp/OTP-28.5/system/doc/design_principles/sup_princ.md",
       "query_insensitive": false,
       "locator_aliases": [],
       "tombstone": null,
@@ -8903,8 +9072,8 @@
       "author_or_org": "Erlang/OTP maintainers",
       "published_at": null,
       "registered_at": "2026-07-24",
-      "checked_at": "2026-07-24",
-      "version": "Current work/page checked on 2026-07-24",
+      "checked_at": "2026-08-14",
+      "version": "Erlang/OTP 28.5, tag OTP-28.5, commit f4506ee46d68694a1d23ca81c314092fd83e8f85; checked 2026-08-14",
       "source_kind": "official-docs",
       "tier": "primary",
       "allowed_evidence_roles": [
@@ -8919,26 +9088,26 @@
       ],
       "license": "Apache-2.0",
       "license_scope": "The named work/page within the evidenced Apache-2.0 scope; trademarks, linked works, code or media under separate notices, and third-party assets excluded",
-      "license_evidence_url": "https://github.com/erlang/otp/blob/master/LICENSE.txt",
-      "license_evidence_note": "For “Supervisor Behaviour — OTP Design Principles” at https://www.erlang.org/doc/system/sup_princ.html, the official Erlang/OTP repository identifies Apache License 2.0 for the documented project material; evidence: https://github.com/erlang/otp/blob/master/LICENSE.txt.",
+      "license_evidence_url": "https://raw.githubusercontent.com/erlang/otp/OTP-28.5/LICENSE.txt",
+      "license_evidence_note": "The pinned OTP-28.5 source file carries an Apache-2.0 SPDX header and the same tag includes LICENSE.txt with Apache License 2.0.",
       "license_family_id": "https://www.erlang.org/doc/system/sup_princ.html",
       "license_family_grouping": "identity",
       "family_grouping_evidence_url": null,
       "copyright_policy": "facts-and-short-quotation",
-      "usage_boundary": "Supports documented semantics in “Supervisor Behaviour — OTP Design Principles” for the recorded page/version; it does not prove undocumented behavior or behavior in other versions.",
+      "usage_boundary": "Erlang/OTP supervision-tree, escalation, and restart-intensity implementation evidence; not proof that all Actor runtimes use the same hierarchy or recovery semantics.",
       "link_policy": "stable",
-      "expected_final_transport_locator": "https://www.erlang.org/doc/system/sup_princ.html",
-      "expected_final_approved_at": "2026-07-24",
-      "expected_final_approval_note": "Initial reviewed migration transport baseline",
+      "expected_final_transport_locator": "https://raw.githubusercontent.com/erlang/otp/OTP-28.5/system/doc/design_principles/sup_princ.md",
+      "expected_final_approved_at": "2026-08-14",
+      "expected_final_approval_note": "Pinned OTP-28.5 documentation and same-tag Apache-2.0 license evidence returned HTTP 200 on 2026-08-14.",
       "health_summary": "healthy",
       "health_checks": [
         {
-          "transport_locator": "https://www.erlang.org/doc/system/sup_princ.html",
+          "transport_locator": "https://raw.githubusercontent.com/erlang/otp/OTP-28.5/system/doc/design_principles/sup_princ.md",
           "status": "healthy",
-          "last_attempt_at": "2026-08-06T21:30:02.583Z",
-          "last_success_at": "2026-08-06T21:30:02.583Z",
-          "http_status": 206,
-          "final_transport_locator": "https://www.erlang.org/doc/system/sup_princ.html"
+          "last_attempt_at": "2026-08-14T00:00:00.000Z",
+          "last_success_at": "2026-08-14T00:00:00.000Z",
+          "http_status": 200,
+          "final_transport_locator": "https://raw.githubusercontent.com/erlang/otp/OTP-28.5/system/doc/design_principles/sup_princ.md"
         }
       ]
     },
@@ -19483,6 +19652,50 @@
       ]
     },
     {
+      "id": "src-hewitt-bishop-steiger-actor-formalism-1973",
+      "canonical_locator": "https://www.ijcai.org/Proceedings/73/Papers/027B.pdf",
+      "transport_locator": "https://www.ijcai.org/Proceedings/73/Papers/027B.pdf",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "A Universal Modular ACTOR Formalism for Artificial Intelligence",
+      "author_or_org": "Carl Hewitt, Peter Bishop, and Richard Steiger",
+      "published_at": "1973-08-20",
+      "registered_at": "2026-08-14",
+      "checked_at": "2026-08-14",
+      "version": "IJCAI 1973 proceedings paper 027B; SHA-256 84499709f4e01794f77ba4b623e60a12148c48eba4a86bfc0dc5998ae755bb1a; checked 2026-08-14",
+      "source_kind": "paper",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "historical-context"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named IJCAI proceedings paper only; linked and third-party material excluded",
+      "license_evidence_url": "https://www.ijcai.org/Proceedings/73/Papers/027B.pdf",
+      "license_evidence_note": "The IJCAI proceedings page exposes no reusable license; Tego Arch retains attribution and uses original factual summary only.",
+      "license_family_id": "https://www.ijcai.org/Proceedings/73/Papers/027B.pdf",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports the 1973 Actor formalism and historical model boundary; it does not prove behavior, APIs, delivery, persistence, supervision, or production outcomes of a modern runtime.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://www.ijcai.org/Proceedings/73/Papers/027B.pdf",
+      "expected_final_approved_at": "2026-08-14",
+      "expected_final_approval_note": "Canonical IJCAI paper transport returned HTTP 200; SHA-256 and conservative rights boundary were reviewed on 2026-08-14.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://www.ijcai.org/Proceedings/73/Papers/027B.pdf",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-14T00:00:00.000Z",
+          "last_success_at": "2026-08-14T00:00:00.000Z",
+          "http_status": 200,
+          "final_transport_locator": "https://www.ijcai.org/Proceedings/73/Papers/027B.pdf"
+        }
+      ]
+    },
+    {
       "id": "src-ibm-ida-logical-data-model-9-1-1",
       "canonical_locator": "https://www.ibm.com/docs/en/ida/9.1.1?topic=modeling-logical-data-models",
       "transport_locator": "https://www.ibm.com/docs/en/ida/9.1.1?topic=modeling-logical-data-models",
@@ -22085,6 +22298,51 @@
           "last_success_at": "2026-08-06T21:30:02.583Z",
           "http_status": 206,
           "final_transport_locator": "https://raw.githubusercontent.com/MicrosoftDocs/architecture-center/ef79621488119c618cd3ebeb8f81443f023cc452/docs/guide/architecture-styles/n-tier.md"
+        }
+      ]
+    },
+    {
+      "id": "src-microsoft-orleans-overview",
+      "canonical_locator": "https://learn.microsoft.com/en-us/dotnet/orleans/overview",
+      "transport_locator": "https://raw.githubusercontent.com/dotnet/docs/a4303ce92aa169102f57793c84aae0603c75c3a3/docs/orleans/overview.md",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Orleans overview",
+      "author_or_org": "Microsoft",
+      "published_at": null,
+      "registered_at": "2026-08-14",
+      "checked_at": "2026-08-14",
+      "version": "dotnet/docs commit a4303ce92aa169102f57793c84aae0603c75c3a3 (overview dated 2026-01-20; version pivots 7.0–10.0); checked 2026-08-14",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "comparison",
+        "implementation",
+        "runtime-fact"
+      ],
+      "license": "CC-BY-4.0",
+      "license_scope": "The named dotnet/docs Orleans overview file at commit a4303ce92aa169102f57793c84aae0603c75c3a3 under CC BY 4.0; code, trademarks, linked works, media, and third-party material excluded",
+      "license_evidence_url": "https://raw.githubusercontent.com/dotnet/docs/a4303ce92aa169102f57793c84aae0603c75c3a3/LICENSE",
+      "license_evidence_note": "The pinned dotnet/docs LICENSE at the same commit contains CC BY 4.0 and governs the repository documentation snapshot used here.",
+      "license_family_id": "https://learn.microsoft.com/en-us/dotnet/orleans/overview",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "adapt-with-attribution",
+      "usage_boundary": "Version-pivoted Microsoft Orleans overview at the pinned documentation commit for virtual identity, activation, placement, and persistence orientation; not proof of one runtime release defaults, configuration, or production outcomes.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://raw.githubusercontent.com/dotnet/docs/a4303ce92aa169102f57793c84aae0603c75c3a3/docs/orleans/overview.md",
+      "expected_final_approved_at": "2026-08-14",
+      "expected_final_approval_note": "Pinned dotnet/docs overview and same-commit CC BY 4.0 license returned HTTP 200 on 2026-08-14.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://raw.githubusercontent.com/dotnet/docs/a4303ce92aa169102f57793c84aae0603c75c3a3/docs/orleans/overview.md",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-14T00:00:00.000Z",
+          "last_success_at": "2026-08-14T00:00:00.000Z",
+          "http_status": 200,
+          "final_transport_locator": "https://raw.githubusercontent.com/dotnet/docs/a4303ce92aa169102f57793c84aae0603c75c3a3/docs/orleans/overview.md"
         }
       ]
     },
@@ -36444,6 +36702,116 @@
           "usage_mode": "facts-summary",
           "attribution_note": "W3C Web Services Architecture",
           "modification_note": "Original Chinese factual summary; no W3C prose, examples, or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/styles/sty-08-actor-model.mdx": {
+      "title": "Actor Model：用逻辑身份、私有状态与消息隔离并发",
+      "slug": "/styles/sty-08",
+      "reviewed_at": "2026-08-14",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-akka-actor-model",
+          "citation_url": "https://doc.akka.io/libraries/akka-core/2.10.21/typed/actors.html",
+          "roles": [
+            "definition",
+            "implementation"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Introduction to Actors, Akka maintainers",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-akka-location-transparency",
+          "citation_url": "https://doc.akka.io/libraries/akka-core/2.10.21/general/remoting.html",
+          "roles": [
+            "comparison",
+            "runtime-fact"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Remoting — Location Transparency, Akka maintainers",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-akka-message-delivery-reliability",
+          "citation_url": "https://doc.akka.io/libraries/akka-core/2.10.21/general/message-delivery-reliability.html",
+          "roles": [
+            "comparison",
+            "runtime-fact"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Message Delivery Reliability, Akka maintainers",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-atlas-sty08-actor-order-fulfillment",
+          "citation_url": "/img/diagrams/sty-08-actor-order-fulfillment.svg",
+          "roles": [
+            "illustration"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "original-illustration",
+          "attribution_note": "共享订单状态与订单 Actor 履约边界对照图，Tego Arch maintainers",
+          "modification_note": "Created as an original synchronized Draw.io/SVG pair without third-party topology, reference imagery, brand visuals, signatures, watermarks, or copied composition.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-erlang-28f791c67609",
+          "citation_url": "https://www.erlang.org/doc/system/sup_princ.html",
+          "roles": [
+            "comparison",
+            "runtime-fact"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Supervisor Behaviour — OTP Design Principles, Erlang/OTP maintainers",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-hewitt-bishop-steiger-actor-formalism-1973",
+          "citation_url": "https://www.ijcai.org/Proceedings/73/Papers/027B.pdf",
+          "roles": [
+            "definition",
+            "historical-context"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "A Universal Modular ACTOR Formalism for Artificial Intelligence, Carl Hewitt, Peter Bishop, and Richard Steiger",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-microsoft-orleans-overview",
+          "citation_url": "https://learn.microsoft.com/en-us/dotnet/orleans/overview",
+          "roles": [
+            "comparison",
+            "implementation"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Orleans overview, Microsoft",
+          "modification_note": null,
           "excerpt": null,
           "quotation_reviewed": false
         }

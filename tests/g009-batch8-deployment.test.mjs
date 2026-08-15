@@ -24,11 +24,15 @@ const STAGE_B_CANDIDATE_HEAD = '4b9d2c718d96adeba6910805bd02116b162f3c06';
 const STAGE_B_REVIEWED_HEAD = '44cfed91f9773e2e43d271b30a76a1ed1a70f10e';
 const STAGE_B_DEPLOYED_HEAD = '01bc03fc7b4831aabc0b9239af9d3a6d804dedf9';
 const STAGE_B_PRODUCTION_BROWSER_HASH = 'b5605b255f87041524e25a898bd5f0b27ec912322b8d1fd814c3032abb88a99a';
-const STAGE_A_ARTIFACT_HASHES = new Map([
-  [ARTICLE, 'f98c075a6bf38c4d7d345d792f3dbdba361b682eef2c458095b96bcd4dbb4bf4'],
+const STAGE_A_REVIEW_ARTIFACT_IDENTITIES = new Map([
+  [ARTICLE, [18_643, 'f98c075a6bf38c4d7d345d792f3dbdba361b682eef2c458095b96bcd4dbb4bf4']],
+  [DRAWIO, [34_359, 'b985dcaea8f5fe4ebd3601f34dcdc1eb51ff1f2a08acf7407dd4e309a51ed78e']],
+  [SVG, [29_229, 'b4827479133743999c7c14cf14b5d61abf91c7e217a540378ac0d4b9b77b3c8f']],
+  [LEDGER, [1_540_278, '52e33d9996222026ffe74e53b5d6da77a61e442d982fa9e93b14517216f5f778']],
+]);
+const STAGE_A_STABLE_ARTIFACT_HASHES = new Map([
   [DRAWIO, 'b985dcaea8f5fe4ebd3601f34dcdc1eb51ff1f2a08acf7407dd4e309a51ed78e'],
   [SVG, 'b4827479133743999c7c14cf14b5d61abf91c7e217a540378ac0d4b9b77b3c8f'],
-  [LEDGER, '52e33d9996222026ffe74e53b5d6da77a61e442d982fa9e93b14517216f5f778'],
   [RAW_BROWSER, RAW_BROWSER_HASH],
   [PRODUCTION_BROWSER, PRODUCTION_BROWSER_HASH],
 ]);
@@ -153,12 +157,12 @@ function assertStageBClosure(source = review, backlogSource = backlog) {
 }
 
 function assertProjection() {
-  assert.deepEqual({completed_topics: status.completed_topics, content_documents: status.content_documents, governed_sources: status.governed_sources}, {completed_topics: 60, content_documents: 102, governed_sources: 529});
-  assert.equal(publicLedger.sources.length, 529);
+  assert.deepEqual({completed_topics: status.completed_topics, content_documents: status.content_documents, governed_sources: status.governed_sources}, {completed_topics: 60, content_documents: 103, governed_sources: 535});
+  assert.equal(publicLedger.sources.length, 535);
   const topics = new Map(manifest.topics.map((topic) => [topic.id, topic]));
   const styles = new Map(indexes.style.map((topic) => [topic.id, topic]));
   assert.deepEqual([topics.get('STY-07')?.published, topics.get('STY-07')?.status.value, styles.get('STY-07')?.published], [true, 'complete', true]);
-  assert.deepEqual([topics.get('STY-08')?.published, topics.get('STY-08')?.status.value, styles.get('STY-08')?.published], [false, 'pending', false]);
+  assert.deepEqual([topics.get('STY-08')?.published, topics.get('STY-08')?.status.value, styles.get('STY-08')?.published], [true, 'pending', true]);
   assert.deepEqual(SOURCE_IDS.filter((id) => publicLedger.sources.some((source) => source.id === id)), SOURCE_IDS);
 }
 
@@ -303,9 +307,8 @@ async function assertReview(source) {
   assert.match(source, /^# G009 Batch 8 Stage A Review$/mu);
   assert.match(section(source, 'Stage A projection'), /59 completed topics \/ 102 content documents \/ 529 governed sources/u);
   const identities = section(source, 'Artifact identities');
-  for (const path of [ARTICLE, DRAWIO, SVG, LEDGER]) {
-    const bytes = await readFile(new URL(`../${path}`, import.meta.url));
-    assert.match(identities, new RegExp(`\\| ${escapeRegExp(`\`${path}\``)} \\| [0-9,]+ \\| ${escapeRegExp(`\`${sha256(bytes)}\``)} \\|`, 'u'));
+  for (const [path, [bytes, expectedHash]] of STAGE_A_REVIEW_ARTIFACT_IDENTITIES) {
+    assert.match(identities, new RegExp(`\\| ${escapeRegExp(`\`${path}\``)} \\| ${bytes.toLocaleString('en-US')} \\| ${escapeRegExp(`\`${expectedHash}\``)} \\|`, 'u'));
   }
   const checkpoint = section(source, 'Independent review checkpoint');
   for (const literal of [
@@ -322,13 +325,13 @@ async function assertReview(source) {
   assert.ok(qa.includes(`Raw Browser JSON: \`${RAW_BROWSER}\`, SHA-256 \`${sha256(browserBytes)}\`.`));
 }
 
-test('projects the exact STY-07 Stage B closure candidate and keeps STY-08 non-actionable', assertProjection);
+test('preserves the exact STY-07 Stage B closure record while the current projection advances to STY-08', assertProjection);
 test('binds exact artifacts, raw Browser bytes, and final independent review verdicts', async () => { assertBrowser(browser); await assertReview(review); });
 test('binds the complete tracked raw Browser bytes to one fixed SHA-256', () => {
   assert.equal(sha256(browserBytes), RAW_BROWSER_HASH);
 });
-test('preserves every Stage A implementation, evidence, and production identity byte-for-byte', async () => {
-  for (const [path, expectedHash] of STAGE_A_ARTIFACT_HASHES) {
+test('preserves every stable Stage A diagram, evidence, and production identity byte-for-byte', async () => {
+  for (const [path, expectedHash] of STAGE_A_STABLE_ARTIFACT_HASHES) {
     assert.equal(sha256(await readFile(new URL(`../${path}`, import.meta.url))), expectedHash, path);
   }
 });
@@ -407,17 +410,17 @@ test('preserves the complete immediate STY-06 backlog suffix and Batch 7 review'
   assert.notEqual(sha256(`${line.slice(line.indexOf(marker) + marker.length)}x`), IMMEDIATE_BACKLOG_SUFFIX_HASH);
 });
 
-test('closes only STY-07 at 60/102/529 and leaves STY-08 sole next and non-actionable', () => {
+test('preserves the STY-07 closure record while current generation advances to STY-08 at 60/103/535', () => {
   assert.deepEqual({
     completed_topics: status.completed_topics,
     content_documents: status.content_documents,
     governed_sources: status.governed_sources,
-  }, {completed_topics: 60, content_documents: 102, governed_sources: 529});
-  assert.equal(publicLedger.sources.length, 529);
+  }, {completed_topics: 60, content_documents: 103, governed_sources: 535});
+  assert.equal(publicLedger.sources.length, 535);
   const topics = new Map(manifest.topics.map((topic) => [topic.id, topic]));
   const styles = new Map(indexes.style.map((topic) => [topic.id, topic]));
   assert.deepEqual([topics.get('STY-07')?.published, topics.get('STY-07')?.status.value, styles.get('STY-07')?.published], [true, 'complete', true]);
-  assert.deepEqual([topics.get('STY-08')?.published, topics.get('STY-08')?.status.value, styles.get('STY-08')?.published], [false, 'pending', false]);
+  assert.deepEqual([topics.get('STY-08')?.published, topics.get('STY-08')?.status.value, styles.get('STY-08')?.published], [true, 'pending', true]);
   assertStageBClosure();
 });
 

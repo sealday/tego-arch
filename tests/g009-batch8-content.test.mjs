@@ -25,10 +25,10 @@ export const SOURCE_IDS = [
   'src-atlas-sty07-soa-microservices-order-fulfillment',
 ];
 export const ROUTE = '/styles/sty-07';
-export const EXPECTED_CURRENT_PROJECTION = Object.freeze({completed_topics: 60, content_documents: 102, governed_sources: 529});
+export const EXPECTED_CURRENT_PROJECTION = Object.freeze({completed_topics: 60, content_documents: 103, governed_sources: 535});
 export const RELATIONS = Object.freeze({
   depends_on: ['STY-00', 'STY-05'],
-  adjacent_topics: ['STY-04', 'STY-05', 'STY-06'],
+  adjacent_topics: ['STY-04', 'STY-05', 'STY-06', 'STY-08'],
   related_cases: ['/cases/temporal-saga-durable-execution'],
   related_questions: [],
 });
@@ -943,18 +943,27 @@ test('governs STY-07 sources, reciprocal relations, and current Stage B projecti
   assert.deepEqual(illustrationCitation, {source_id: illustration.id, ...ILLUSTRATION_CITATION}, 'exact original-illustration citation use, role, attribution, and modification');
   assert.deepEqual(document.copyright_checks, COPYRIGHT_CHECKS, 'complete copyright checks');
   const article = documents.find(({file}) => file === ARTICLE); assert.ok(article, `${ARTICLE} article exists`);
-  const links = extractInternalLinks(article); assert.ok(links.includes('/styles')); assert.ok(links.includes('/cases/temporal-saga-durable-execution')); assert.equal(links.includes('/styles/sty-08'), false);
+  const links = extractInternalLinks(article); assert.ok(links.includes('/styles')); assert.ok(links.includes('/cases/temporal-saga-durable-execution')); assert.equal(links.includes('/styles/sty-08'), true);
   assert.deepEqual(extractExternalLinks({body: article.body}).sort(), remote.map(({canonical_locator}) => canonical_locator).sort());
   for (const path of RECIPROCALS) {
     const reciprocal = documents.find(({file}) => file === path); assert.ok(reciprocal, `${path} reciprocal`);
     assert.ok(extractInternalLinks(reciprocal).includes(ROUTE), `${path} visible reciprocal`);
     if (path !== 'content/cases/temporal-saga-durable-execution.mdx') assert.ok(parseFrontMatter(reciprocal.source).adjacent_topics.includes(TOPIC_ID), `${path} metadata reciprocal`);
   }
-  for (const content of documents) assert.equal(extractInternalLinks(content).includes('/styles/sty-08'), false, `${content.file} STY-08 remains non-actionable`);
+  assert.deepEqual(
+    documents.filter((content) => extractInternalLinks(content).includes('/styles/sty-08')).map(({file}) => file).sort(),
+    [
+      'content/cases/erlang-otp-supervision-tree.mdx',
+      'content/styles/sty-05-microservices.mdx',
+      'content/styles/sty-06-event-driven-architecture.mdx',
+      'content/styles/sty-07-service-oriented-architecture.mdx',
+    ],
+    'only the four canonical reciprocal documents make STY-08 actionable',
+  );
   const status = JSON.parse(readFileSync('src/generated/project-status.json', 'utf8'));
   assert.deepEqual(Object.fromEntries(Object.keys(EXPECTED_CURRENT_PROJECTION).map((key) => [key, status[key]])), EXPECTED_CURRENT_PROJECTION);
   const manifest = JSON.parse(readFileSync('src/generated/topic-manifest.json', 'utf8'));
-  for (const [id, published, topicStatus] of [[TOPIC_ID, true, 'complete'], [NEXT_TOPIC, false, 'pending']]) {
+  for (const [id, published, topicStatus] of [[TOPIC_ID, true, 'complete'], [NEXT_TOPIC, true, 'pending']]) {
     const topic = manifest.topics.find((entry) => entry.id === id); assert.equal(topic?.published, published, `${id} publication`); assert.equal(topic?.status.value, topicStatus, `${id} status`);
   }
 });

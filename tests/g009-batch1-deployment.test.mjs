@@ -249,8 +249,8 @@ test('preserves the Batch 1 closure under the current STY-07 Stage B projection'
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
     completed_topics: 60,
-    content_documents: 102,
-    governed_sources: 529,
+    content_documents: 103,
+    governed_sources: 535,
     sources: {
       durable_stories: 'docs/content-backlog.md',
       completed_topics: 'docs/content-backlog.md',

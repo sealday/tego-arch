@@ -326,9 +326,9 @@ test('preserves the exact STY-05 closure under the current STY-07 projection', (
       content_documents: projectStatus.content_documents,
       governed_sources: projectStatus.governed_sources,
     },
-    {completed_topics: 60, content_documents: 102, governed_sources: 529},
+    {completed_topics: 60, content_documents: 103, governed_sources: 535},
   );
-  assert.equal(publicLedger.sources.length, 529);
+  assert.equal(publicLedger.sources.length, 535);
 
   for (const projection of [topicsById.get('STY-05'), stylesById.get('STY-05')]) {
     assert.equal(projection?.published, true);

@@ -51,7 +51,7 @@ const MODE_KEYS = ['eventNotification', 'stateTransition', 'carriedState', 'even
 const PARTICIPANTS = ['订单', '库存', '支付', '通知'];
 const RELATION_METADATA = {
   depends_on: ['STY-00', 'STY-05'],
-  adjacent_topics: ['STY-04', 'STY-05', 'STY-07', 'PR-11', 'MOD-08'],
+  adjacent_topics: ['STY-04', 'STY-05', 'STY-07', 'STY-08', 'PR-11', 'MOD-08'],
   related_cases: ['/cases/apache-kafka-consumer-groups'],
   related_questions: [],
 };
@@ -87,7 +87,7 @@ const METADATA_YAML_TOKENS = new Map([
   ['summary', 'summary: 以同一订单案例并排区分事件通知、状态转移、事件携带状态和事件溯源，比较载荷、回查、权威状态、重建与恢复责任。\n'],
   ['topic_id', 'topic_id: STY-06\n'], ['priority', 'priority: P0\n'],
   ['depends_on', 'depends_on:\n  - STY-00\n  - STY-05\n'],
-  ['adjacent_topics', 'adjacent_topics:\n  - STY-04\n  - STY-05\n  - STY-07\n  - PR-11\n  - MOD-08\n'],
+  ['adjacent_topics', 'adjacent_topics:\n  - STY-04\n  - STY-05\n  - STY-07\n  - STY-08\n  - PR-11\n  - MOD-08\n'],
   ['related_cases', 'related_cases:\n  - /cases/apache-kafka-consumer-groups\n'],
   ['related_questions', 'related_questions: []\n'],
 ]);
@@ -1574,8 +1574,8 @@ test('preserves the STY-06 closure under the current STY-07 Stage B projection',
     completed_topics: projectStatus.completed_topics,
     content_documents: projectStatus.content_documents,
     governed_sources: projectStatus.governed_sources,
-  }, {completed_topics: 60, content_documents: 102, governed_sources: 529});
-  assert.equal(publicLedger.sources.length, 529);
+  }, {completed_topics: 60, content_documents: 103, governed_sources: 535});
+  assert.equal(publicLedger.sources.length, 535);
   const topic = manifest.topics.find(({id}) => id === TOPIC_ID);
   assert.equal(topic?.slug, ROUTE);
   assert.equal(topic?.published, true);

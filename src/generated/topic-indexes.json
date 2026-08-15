@@ -2173,7 +2173,8 @@
         "STY-03",
         "STY-04",
         "STY-06",
-        "STY-07"
+        "STY-07",
+        "STY-08"
       ],
       "primary_sources": [
         "https://martinfowler.com/articles/microservices.html"
@@ -2207,6 +2208,7 @@
         "STY-04",
         "STY-05",
         "STY-07",
+        "STY-08",
         "PR-11",
         "MOD-08"
       ],
@@ -2222,27 +2224,6 @@
       "published": true,
       "pattern_group": null,
       "presentation": {}
-    },
-    {
-      "id": "STY-08",
-      "type": "style",
-      "title": "Actor Model",
-      "slug": "/styles/sty-08",
-      "priority": "P1",
-      "status": {
-        "scope": "backlog-projection",
-        "value": "pending",
-        "source": "docs/content-backlog.md"
-      },
-      "dependencies": [],
-      "adjacent_topics": [],
-      "primary_sources": [],
-      "related_cases": [],
-      "related_questions": [],
-      "reviewed_at": null,
-      "review_policy": null,
-      "published": false,
-      "pattern_group": null
     },
     {
       "id": "STY-09",
@@ -2346,7 +2327,8 @@
       "adjacent_topics": [
         "STY-04",
         "STY-05",
-        "STY-06"
+        "STY-06",
+        "STY-08"
       ],
       "primary_sources": [
         "https://docs.oasis-open.org/soa-rm/v1.0/soa-rm.html"
@@ -2356,6 +2338,39 @@
       ],
       "related_questions": [],
       "reviewed_at": "2026-08-13",
+      "review_policy": null,
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
+    },
+    {
+      "id": "STY-08",
+      "type": "style",
+      "title": "Actor Model：用逻辑身份、私有状态与消息隔离并发",
+      "slug": "/styles/sty-08",
+      "priority": "P1",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "pending",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "STY-00",
+        "STY-05"
+      ],
+      "adjacent_topics": [
+        "STY-05",
+        "STY-06",
+        "STY-07"
+      ],
+      "primary_sources": [
+        "https://www.ijcai.org/Proceedings/73/Papers/027B.pdf"
+      ],
+      "related_cases": [
+        "/cases/erlang-otp-supervision-tree"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-08-14",
       "review_policy": null,
       "published": true,
       "pattern_group": null,

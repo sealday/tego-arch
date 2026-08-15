@@ -1466,7 +1466,7 @@ test('governs STY-08 sources, reciprocal relations, and Stage A projection', asy
     ['canonical', 'canonical_locator', 'https://example.invalid/actor'],
     ['transport', 'transport_locator', 'https://example.invalid/transport'],
     ['version', 'version', 'floating version'],
-    ['license', 'license', 'CC-BY-4.0'],
+    ['license', 'license', 'LicenseRef-Fabricated'],
     ['license scope', 'license_scope', 'reusable without restriction'],
     ['license evidence URL', 'license_evidence_url', 'https://example.invalid/license'],
     ['license evidence note', 'license_evidence_note', 'changed'],

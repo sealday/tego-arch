@@ -85,7 +85,7 @@ const immutableFiles = new Map([
   ],
   [
     'scripts/content-schema.mjs',
-    '3402a4551117383fb4cd755a6a922d950229c4b4df47a6033561b4247f8cd549',
+    '24669bb80a4ebd52fbd633a27c89dcee75e7c48020b6f929d358a5a2341f990f',
   ],
   [
     'sidebars.ts',
