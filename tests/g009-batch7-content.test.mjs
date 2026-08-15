@@ -1569,12 +1569,12 @@ test('locks reciprocal visible links and includes actionable STY-07', () => {
   }
 });
 
-test('preserves the STY-06 closure under the current STY-07 Stage B projection', () => {
+test('preserves the STY-06 closure under the current STY-09 next-topic projection', () => {
   assert.deepEqual({
     completed_topics: projectStatus.completed_topics,
     content_documents: projectStatus.content_documents,
     governed_sources: projectStatus.governed_sources,
-  }, {completed_topics: 60, content_documents: 104, governed_sources: 539});
+  }, {completed_topics: 61, content_documents: 104, governed_sources: 539});
   assert.equal(publicLedger.sources.length, 539);
 
   const topic = manifest.topics.find(({id}) => id === TOPIC_ID);

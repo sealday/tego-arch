@@ -156,7 +156,7 @@ test('governs the four approved STY-01 sources', () => {
   assert.equal(records.get('src-archunit-user-guide').version.includes('v1.5.0'), true);
 });
 
-test('preserves the Batch 2 STY-01 facts under the current STY-07 Stage B projection', () => {
+test('preserves the Batch 2 STY-01 facts under the current STY-09 next-topic projection', () => {
   const topic = manifest.topics.find(({id}) => id === 'STY-01');
   assert.equal(topic.published, true);
   assert.equal(topic.status.value, 'complete');
@@ -168,7 +168,7 @@ test('preserves the Batch 2 STY-01 facts under the current STY-07 Stage B projec
   assert.equal(manifest.topics.find(({id}) => id === 'STY-03')?.status.value, 'complete');
   assert.equal(manifest.topics.find(({id}) => id === 'STY-04')?.published, true);
   assert.equal(manifest.topics.find(({id}) => id === 'STY-04')?.status.value, 'complete');
-  assert.equal(projectStatus.completed_topics, 60);
+  assert.equal(projectStatus.completed_topics, 61);
   assert.equal(projectStatus.content_documents, 104);
   assert.equal(projectStatus.governed_sources, 539);
   assert.equal(publicLedger.sources.length, 539);

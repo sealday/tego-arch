@@ -10,7 +10,7 @@ export const ARTICLE = 'content/styles/sty-07-service-oriented-architecture.mdx'
 export const DRAWIO = 'diagrams/sty-07-soa-microservices-order-fulfillment.drawio';
 export const SVG = 'static/img/diagrams/sty-07-soa-microservices-order-fulfillment.svg';
 export const TOPIC_ID = 'STY-07';
-export const NEXT_TOPIC = 'STY-08';
+export const NEXT_TOPIC = 'STY-09';
 export const EXPECTED_HEADINGS = [
   '学习问题', '组件、连接器与约束', '边界与控制流', '数据所有权与一致性',
   '部署单元与故障域', '团队拓扑', '质量属性收益与成本', '迁移路径',
@@ -25,7 +25,7 @@ export const SOURCE_IDS = [
   'src-atlas-sty07-soa-microservices-order-fulfillment',
 ];
 export const ROUTE = '/styles/sty-07';
-export const EXPECTED_CURRENT_PROJECTION = Object.freeze({completed_topics: 60, content_documents: 104, governed_sources: 539});
+export const EXPECTED_CURRENT_PROJECTION = Object.freeze({completed_topics: 61, content_documents: 104, governed_sources: 539});
 
 export const RELATIONS = Object.freeze({
   depends_on: ['STY-00', 'STY-05'],
@@ -918,7 +918,7 @@ test('locks exact eight-row comparison and seven-row failure responsibilities', 
   await mutation(source, (candidate) => candidate.replace(/结果未知[^。；]*不盲目[^。；]*(重复支付|预留|补偿)/u, '结果未知时盲目重试'), assertFailureTable, 'unknown result blind retry');
 });
 
-test('governs STY-07 sources, reciprocal relations, and current Stage B projection', async () => {
+test('governs STY-07 sources, reciprocal relations, and current STY-09 next-topic projection', async () => {
   const ledger = JSON.parse(readFileSync('data/source-ledger.json', 'utf8'));
   const inventorySource = readFileSync('docs/source-license-inventory.md', 'utf8');
   assertRemoteSourceContracts(ledger, inventorySource);
@@ -964,7 +964,7 @@ test('governs STY-07 sources, reciprocal relations, and current Stage B projecti
   const status = JSON.parse(readFileSync('src/generated/project-status.json', 'utf8'));
   assert.deepEqual(Object.fromEntries(Object.keys(EXPECTED_CURRENT_PROJECTION).map((key) => [key, status[key]])), EXPECTED_CURRENT_PROJECTION);
   const manifest = JSON.parse(readFileSync('src/generated/topic-manifest.json', 'utf8'));
-  for (const [id, published, topicStatus] of [[TOPIC_ID, true, 'complete'], [NEXT_TOPIC, true, 'pending']]) {
+  for (const [id, published, topicStatus] of [[TOPIC_ID, true, 'complete'], [NEXT_TOPIC, false, 'pending']]) {
     const topic = manifest.topics.find((entry) => entry.id === id); assert.equal(topic?.published, published, `${id} publication`); assert.equal(topic?.status.value, topicStatus, `${id} status`);
   }
 });

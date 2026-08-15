@@ -87,6 +87,7 @@ const REVIEW_H2 = [
   'Local in-app Browser QA',
   'Independent review checkpoint',
   'Integration candidate after origin/main divergence',
+  'Stage B closure candidate',
 ];
 const REVIEW_H3 = [
   'Historical heads and review boundary',
@@ -159,13 +160,13 @@ function assertKeys(value, expected, label) {
 function assertCombinedProjection(statusValue = status, manifestValue = manifest, indexesValue = indexes, ledgerValue = publicLedger) {
   assert.deepEqual(
     {completed: statusValue.completed_topics, documents: statusValue.content_documents, sources: statusValue.governed_sources},
-    {completed: 60, documents: 104, sources: 539},
+    {completed: 61, documents: 104, sources: 539},
   );
   assert.equal(ledgerValue.sources.length, 539);
   const topics = new Map(manifestValue.topics.map((topic) => [topic.id, topic]));
   const styles = new Map(indexesValue.style.map((topic) => [topic.id, topic]));
   const methods = new Map(indexesValue.method.map((topic) => [topic.id, topic]));
-  assert.deepEqual([topics.get('STY-08')?.published, topics.get('STY-08')?.status, styles.get('STY-08')?.published], [true, {scope: 'backlog-projection', value: 'pending', source: 'docs/content-backlog.md'}, true]);
+  assert.deepEqual([topics.get('STY-08')?.published, topics.get('STY-08')?.status, styles.get('STY-08')?.published], [true, {scope: 'backlog-projection', value: 'complete', source: 'docs/content-backlog.md'}, true]);
   assert.deepEqual([topics.get('STY-09')?.published, topics.get('STY-09')?.status, styles.get('STY-09')?.published], [false, {scope: 'backlog-projection', value: 'pending', source: 'docs/content-backlog.md'}, false]);
   assert.deepEqual([topics.get('MTH-07')?.published, topics.get('MTH-07')?.status, methods.get('MTH-07')?.published], [true, {scope: 'content-lifecycle', value: 'reviewed', source: 'content/methods/mth-07-fde-enterprise-ai-delivery.mdx'}, true]);
 }
@@ -390,7 +391,7 @@ test('rejects MTH-07 job relabeling and any weakened, duplicated, displaced, or 
     ),
     review.replace(/\n## Integration candidate after origin\/main divergence[\s\S]*$/u, (section) => `${section}\n${section}`),
     review.replace(/(\n## Independent review checkpoint[\s\S]*?)(\n## Integration candidate after origin\/main divergence[\s\S]*)$/u, '$2$1'),
-    `${review}\n- visualInspection: \`PASS\`.`,
+    replaceRequired(review, '\n## Stage B closure candidate', '\n- visualInspection: `PASS`.\n\n## Stage B closure candidate'),
     insertBeforeIntegration([
       '- Final integration readiness: `READY`.',
       '- Integration deployment status: `SUCCESS`.',

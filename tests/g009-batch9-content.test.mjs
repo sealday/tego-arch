@@ -27,7 +27,7 @@ export const SOURCE_IDS = [
 ];
 export const ROUTE = '/styles/sty-08';
 export const HISTORICAL_STAGE_A = Object.freeze({completed: 60, documents: 103, sources: 535});
-export const EXPECTED_CURRENT_PROJECTION = Object.freeze({completed: 60, documents: 104, sources: 539});
+export const EXPECTED_CURRENT_PROJECTION = Object.freeze({completed: 61, documents: 104, sources: 539});
 export const RELATIONS = Object.freeze({
   depends_on: ['STY-00', 'STY-05'],
   adjacent_topics: ['STY-05', 'STY-06', 'STY-07'],
@@ -1457,7 +1457,7 @@ test('governs STY-08 sources, reciprocal relations, and Stage A projection', asy
   for (const content of documents) assert.equal(extractInternalLinks(content).includes('/styles/sty-09'), false, `${content.file} STY-09 non-actionable`);
   const status = JSON.parse(readFileSync('src/generated/project-status.json', 'utf8')); assert.deepEqual({completed: status.completed_topics, documents: status.content_documents, sources: status.governed_sources}, EXPECTED_CURRENT_PROJECTION);
   const manifest = JSON.parse(readFileSync('src/generated/topic-manifest.json', 'utf8'));
-  for (const [id, published, topicStatus] of [[TOPIC_ID, true, 'pending'], [NEXT_TOPIC, false, 'pending']]) {
+  for (const [id, published, topicStatus] of [[TOPIC_ID, true, 'complete'], [NEXT_TOPIC, false, 'pending']]) {
     const topic = manifest.topics.find((entry) => entry.id === id); assert.equal(topic?.published, published); assert.equal(topic?.status.value, topicStatus);
   }
   const changedLedger = (transform) => { const candidate = structuredClone(ledger); transform(candidate); return candidate; };

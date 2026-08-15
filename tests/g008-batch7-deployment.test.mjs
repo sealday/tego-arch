@@ -266,7 +266,7 @@ function assertGeneratedState(manifestValue, statusValue) {
   assert.deepEqual(statusValue, {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
-    completed_topics: 60,
+    completed_topics: 61,
     content_documents: 104,
     governed_sources: 539,
 
@@ -331,7 +331,7 @@ test('rejects reordered extra or contradictory review content', () => {
   }
 });
 
-test('preserves Batch 7 evidence while accepting the live Batch 8 projection', () => {
+test('preserves Batch 7 evidence while accepting the live Batch 9 projection', () => {
   assertBacklogClosure(backlog);
   assertGeneratedState(manifest, projectStatus);
 });
