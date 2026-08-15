@@ -134,7 +134,7 @@ function assertStageBClosure(source = review, backlogSource = backlog) {
     'STY-08 为 published/complete',
     'STY-09 为 unpublished/pending/nonactionable',
     'review slots 与 final readiness 均为 `PENDING`',
-    'deployment status 为 `NOT_RUN`',
+    'deployment status 为 `PENDING / NOT_RUN`',
   ]) assert.ok(currentPrefix.includes(literal), literal);
 
   const batch8History = baseline.slice(batch8Start + batch8Marker.length);

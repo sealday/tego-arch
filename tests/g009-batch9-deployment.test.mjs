@@ -125,7 +125,7 @@ const PRODUCTION_SCREENSHOT_ATTEMPTS = Object.freeze([
   {ordinal: 3, state: 'mobileLight', viewport: {width: 390, height: 844}, kind: 'fullPage', status: 'CAPTURED_REJECTED', reason: SCREENSHOT_REJECTION_REASON, path: '/Users/seal/projects/tego-arch/.worktrees/g009-styles-batch7/.superpowers/sdd/sty08-production-70c9c61-mobile-light.png', bytes: 838206, sha256: 'c8f6898b8bab04415a0c4e6ae587690bbe5acbba5954545e4848a541492c943f'},
 ]);
 const STY08_CLOSURE_LINE = `- [x] **STY-08 P1｜Actor Model**：隔离状态、邮箱、监督、位置透明与分布式边界。Stage A 关闭证据：2026-08-16 review，commit [\`${PRODUCTION_IMPLEMENTATION_HEAD}\`](https://github.com/sealday/tego-arch/commit/${PRODUCTION_IMPLEMENTATION_HEAD})，Pages run [\`${PRODUCTION_PAGES.runId}\`](https://github.com/sealday/tego-arch/actions/runs/${PRODUCTION_PAGES.runId})，build job \`${PRODUCTION_PAGES.buildJobId}\`、deploy job \`${PRODUCTION_PAGES.deployJobId}\`，production HTML routes \`8/8\`，live route \`/styles/sty-08\` 与 \`/img/diagrams/sty-08-actor-order-fulfillment.svg\` 均为 HTTP 200，live SVG SHA-256 \`${PRODUCTION_SVG.sha256}\` 与 reviewed asset exact match，Stage A production functional verdict PASS；screenshot evidence BLOCKED / NOT_ACCEPTED。`;
-const CURRENT_BASELINE_PREFIX = `2026-08-16 G009 Batch 9 已完成 STY-08，Stage A 发布基线为 [\`${PRODUCTION_IMPLEMENTATION_HEAD}\`](https://github.com/sealday/tego-arch/commit/${PRODUCTION_IMPLEMENTATION_HEAD})，Pages run [\`${PRODUCTION_PAGES.runId}\`](https://github.com/sealday/tego-arch/actions/runs/${PRODUCTION_PAGES.runId})，exact \`headSha=${PRODUCTION_IMPLEMENTATION_HEAD}\`、\`event=push\`、\`status=completed\`、\`conclusion=success\`，build job \`${PRODUCTION_PAGES.buildJobId}\`、deploy job \`${PRODUCTION_PAGES.deployJobId}\`；2026-08-16 production HTTP probes \`8/8\`，live route \`/styles/sty-08\` 与 \`/img/diagrams/sty-08-actor-order-fulfillment.svg\` 均为 HTTP \`200\`，live SVG SHA-256 \`${PRODUCTION_SVG.sha256}\` 与 reviewed asset exact match。Production Browser states \`4/4\`、wrapper interactions \`12/12\`、relation destination/H1/return \`16/16\`、exact source destinations \`24/24\`，每个状态 STY-09 actionable count \`0\` 且 diagnostics 完整为零；Stage A production functional verdict \`PASS\`，screenshot evidence \`BLOCKED / NOT_ACCEPTED\`。Stage B local closure projection 为 61 个已完成主题、104 篇内容文档与 539 个受治理来源，持久故事进度仍为 \`8 / 20\`，当前 G009，下一项为 STY-09，STY-08 为 published/complete，STY-09 为 unpublished/pending/nonactionable；Stage B 三个独立 review slots 与 final readiness 均为 \`PENDING\`，deployment status 为 \`NOT_RUN\`。`;
+const CURRENT_BASELINE_PREFIX = `2026-08-16 G009 Batch 9 已完成 STY-08，Stage A 发布基线为 [\`${PRODUCTION_IMPLEMENTATION_HEAD}\`](https://github.com/sealday/tego-arch/commit/${PRODUCTION_IMPLEMENTATION_HEAD})，Pages run [\`${PRODUCTION_PAGES.runId}\`](https://github.com/sealday/tego-arch/actions/runs/${PRODUCTION_PAGES.runId})，exact \`headSha=${PRODUCTION_IMPLEMENTATION_HEAD}\`、\`event=push\`、\`status=completed\`、\`conclusion=success\`，build job \`${PRODUCTION_PAGES.buildJobId}\`、deploy job \`${PRODUCTION_PAGES.deployJobId}\`；2026-08-16 production HTTP probes \`8/8\`，live route \`/styles/sty-08\` 与 \`/img/diagrams/sty-08-actor-order-fulfillment.svg\` 均为 HTTP \`200\`，live SVG SHA-256 \`${PRODUCTION_SVG.sha256}\` 与 reviewed asset exact match。Production Browser states \`4/4\`、wrapper interactions \`12/12\`、relation destination/H1/return \`16/16\`、exact source destinations \`24/24\`，每个状态 STY-09 actionable count \`0\` 且 diagnostics 完整为零；Stage A production functional verdict \`PASS\`，screenshot evidence \`BLOCKED / NOT_ACCEPTED\`。Stage B local closure projection 为 61 个已完成主题、104 篇内容文档与 539 个受治理来源，持久故事进度仍为 \`8 / 20\`，当前 G009，下一项为 STY-09，STY-08 为 published/complete，STY-09 为 unpublished/pending/nonactionable；Stage B 三个独立 review slots 与 final readiness 均为 \`PENDING\`，deployment status 为 \`PENDING / NOT_RUN\`。`;
 const IMMEDIATE_BACKLOG_MARKER = '此前 G009 Batch 8 历史完成基线为：';
 const STAGE_B_REVIEW_LINES = Object.freeze([
   '- Closure date: `2026-08-16`.',
@@ -147,7 +147,7 @@ const STAGE_B_REVIEW_LINES = Object.freeze([
   '- Independent Stage B architecture/invariant review: `PENDING`; blockers: `PENDING`.',
   '- Final Stage B review judgment: `PENDING`.',
   '- Stage B scope boundary: `STAGE_B_CANDIDATE_ONLY`.',
-  '- Stage B deployment status: `NOT_RUN`.',
+  '- Stage B deployment status: `PENDING / NOT_RUN`.',
 ]);
 
 const rootUrl = new URL('../', import.meta.url);
@@ -617,7 +617,10 @@ test('rejects Stage B production, projection, history, next-topic, verdict, depl
     ['STY-09 为 unpublished/pending/nonactionable', 'STY-09 为 published/complete'],
     ['61 个已完成主题、104 篇内容文档与 539 个受治理来源', '60 个已完成主题、104 篇内容文档与 539 个受治理来源'],
     ['final readiness 均为 `PENDING`', 'final readiness 均为 `READY`'],
-    ['deployment status 为 `NOT_RUN`', 'deployment status 为 `SUCCESS`'],
+    ['deployment status 为 `PENDING / NOT_RUN`', 'deployment status 为 `NOT_RUN`'],
+    ['deployment status 为 `PENDING / NOT_RUN`', 'deployment status 为 `PENDING`'],
+    ['deployment status 为 `PENDING / NOT_RUN`', 'deployment status 为 `READY / NOT_RUN`'],
+    ['deployment status 为 `PENDING / NOT_RUN`', 'deployment status 为 `PENDING / SUCCESS`'],
   ];
   for (const [before, after] of backlogMutations) {
     const mutated = backlog.replace(before, after);
@@ -652,7 +655,10 @@ test('rejects Stage B production, projection, history, next-topic, verdict, depl
     ['Independent Stage B architecture/invariant review: `PENDING`', 'Independent Stage B architecture/invariant review: `CLEAR / READY`'],
     ['Final Stage B review judgment: `PENDING`', 'Final Stage B review judgment: `READY`'],
     ['Stage B scope boundary: `STAGE_B_CANDIDATE_ONLY`', 'Stage B scope boundary: `STAGE_B_DEPLOYED`'],
-    ['Stage B deployment status: `NOT_RUN`', 'Stage B deployment status: `SUCCESS`'],
+    ['Stage B deployment status: `PENDING / NOT_RUN`', 'Stage B deployment status: `NOT_RUN`'],
+    ['Stage B deployment status: `PENDING / NOT_RUN`', 'Stage B deployment status: `PENDING`'],
+    ['Stage B deployment status: `PENDING / NOT_RUN`', 'Stage B deployment status: `READY / NOT_RUN`'],
+    ['Stage B deployment status: `PENDING / NOT_RUN`', 'Stage B deployment status: `PENDING / SUCCESS`'],
     ['no visual PASS is claimed', 'visual PASS is claimed'],
   ];
   const stageBSource = section(review, 'Stage B closure candidate');

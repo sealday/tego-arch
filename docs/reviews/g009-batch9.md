@@ -147,4 +147,4 @@ This section records the non-destructive integration of the original STY-08 Stag
 - Independent Stage B architecture/invariant review: `PENDING`; blockers: `PENDING`.
 - Final Stage B review judgment: `PENDING`.
 - Stage B scope boundary: `STAGE_B_CANDIDATE_ONLY`.
-- Stage B deployment status: `NOT_RUN`.
+- Stage B deployment status: `PENDING / NOT_RUN`.
