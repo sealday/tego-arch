@@ -119,7 +119,7 @@ const EXPECTED_REVIEW = Object.freeze({
         '- The exact integration implementation candidate was built and served locally before fresh collection using only the Codex in-app Browser.',
         '- States accepted: `4/4`; wrapper focus checks: `12/12`; ArrowRight checks: `12/12`; relation destination/H1/return checks: `16/16`; exact remote href/target/rel checks: `24/24`.',
         '- STY-09 actionable link count: `0` in every state. Warning/error logs: `0`; diagnostic events: `0`; every diagnostic page reported `hasMore=false` and `truncated=false`.',
-        '- Screenshot evidence: `BLOCKED / NOT_ACCEPTED`. Exactly three fresh IAB full-page captures repeated the opening viewport rather than the complete page and architecture diagram. No visual PASS is claimed.',
+        '- Integration screenshot evidence: `BLOCKED / NOT_ACCEPTED`. Exactly three fresh IAB full-page captures repeated the opening viewport rather than the complete page and architecture diagram. No visual PASS is claimed.',
       ],
       'Integration review checkpoint': [
         '- Independent code/spec/security review for the integration bundle: `PENDING`.',
@@ -214,7 +214,17 @@ function parseIntegrationReview(source) {
   assert.equal(integration.length, 1, 'one integration section');
   const start = integration[0].index + integration[0][0].length;
   const next = h2.find((match) => match.index > integration[0].index);
-  const body = source.slice(start, next?.index ?? source.length).trim();
+  const end = next?.index ?? source.length;
+  const body = source.slice(start, end).trim();
+  for (const label of ['Final integration readiness', 'Integration deployment status', 'Integration screenshot evidence']) {
+    const escaped = label.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
+    const claims = [...source.matchAll(new RegExp(`${escaped}:[^\\n]*`, 'gu'))];
+    assert.equal(claims.length, 1, `${label} declared exactly once globally`);
+    assert.ok(claims[0].index >= start && claims[0].index < end, `${label} belongs to the integration section`);
+  }
+  assert.doesNotMatch(source, /Final integration readiness:\s*`?READY`?/u);
+  assert.doesNotMatch(source, /Integration deployment status:\s*`?SUCCESS`?/u);
+  assert.doesNotMatch(source, /Integration screenshot evidence:\s*`?PASS`?/u);
   const h3 = [...body.matchAll(/^### ([^\n]+)$/gmu)];
   assert.deepEqual(h3.map((match) => match[1]), REVIEW_H3, 'exact integration field headings');
   const fields = {};
@@ -331,6 +341,11 @@ test('rejects MTH-07 job relabeling and any weakened, duplicated, displaced, or 
   assertIntegrationReview(review);
   const exactJobs = `Exact Pages run: \`${MTH07_PRODUCTION.pagesRun}\`; build job: \`${MTH07_PRODUCTION.buildJob}\`; deploy job: \`${MTH07_PRODUCTION.deployJob}\`; every status: \`completed / success\`.`;
   const swappedJobs = `Exact Pages run: \`${MTH07_PRODUCTION.pagesRun}\`; build job: \`${MTH07_PRODUCTION.deployJob}\`; deploy job: \`${MTH07_PRODUCTION.buildJob}\`; every status: \`completed / success\`.`;
+  const insertBeforeIntegration = (claims) => replaceRequired(
+    review,
+    '\n## Integration candidate after origin/main divergence',
+    `\n${claims}\n\n## Integration candidate after origin/main divergence`,
+  );
   const reviewMutations = [
     replaceRequired(review, `Integration implementation candidate: \`${IMPLEMENTATION_HEAD}\`.`, `Integration implementation candidate: \`${'0'.repeat(40)}\`.`),
     replaceRequired(review, `Integration evidence head: \`${EVIDENCE_HEAD}\`.`, `Integration evidence head: \`${'1'.repeat(40)}\`.`),
@@ -341,12 +356,20 @@ test('rejects MTH-07 job relabeling and any weakened, duplicated, displaced, or 
     replaceRequired(review, 'Integration deployment status: `NOT_RUN`.', 'Integration deployment status: `SUCCESS`.'),
     replaceRequired(
       review,
-      '- Screenshot evidence: `BLOCKED / NOT_ACCEPTED`. Exactly three fresh IAB full-page captures repeated the opening viewport rather than the complete page and architecture diagram. No visual PASS is claimed.',
-      '- Screenshot evidence: `PASS`. Exactly three fresh IAB full-page captures repeated the opening viewport rather than the complete page and architecture diagram. Visual PASS is claimed.',
+      '- Integration screenshot evidence: `BLOCKED / NOT_ACCEPTED`. Exactly three fresh IAB full-page captures repeated the opening viewport rather than the complete page and architecture diagram. No visual PASS is claimed.',
+      '- Integration screenshot evidence: `PASS`. Exactly three fresh IAB full-page captures repeated the opening viewport rather than the complete page and architecture diagram. Visual PASS is claimed.',
     ),
     review.replace(/\n## Integration candidate after origin\/main divergence[\s\S]*$/u, (section) => `${section}\n${section}`),
     review.replace(/(\n## Independent review checkpoint[\s\S]*?)(\n## Integration candidate after origin\/main divergence[\s\S]*)$/u, '$2$1'),
     `${review}\n- visualInspection: \`PASS\`.`,
+    insertBeforeIntegration([
+      '- Final integration readiness: `READY`.',
+      '- Integration deployment status: `SUCCESS`.',
+      '- Integration screenshot evidence: `PASS`.',
+    ].join('\n')),
+    insertBeforeIntegration('- Final integration readiness: `READY`.'),
+    insertBeforeIntegration('- Integration deployment status: `SUCCESS`.'),
+    insertBeforeIntegration('- Integration screenshot evidence: `PASS`.'),
   ];
   for (const mutated of reviewMutations) {
     assert.notEqual(mutated, review, 'review mutation applies');

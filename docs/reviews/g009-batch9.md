@@ -83,7 +83,7 @@ This section records the non-destructive integration of the original STY-08 Stag
 - The exact integration implementation candidate was built and served locally before fresh collection using only the Codex in-app Browser.
 - States accepted: `4/4`; wrapper focus checks: `12/12`; ArrowRight checks: `12/12`; relation destination/H1/return checks: `16/16`; exact remote href/target/rel checks: `24/24`.
 - STY-09 actionable link count: `0` in every state. Warning/error logs: `0`; diagnostic events: `0`; every diagnostic page reported `hasMore=false` and `truncated=false`.
-- Screenshot evidence: `BLOCKED / NOT_ACCEPTED`. Exactly three fresh IAB full-page captures repeated the opening viewport rather than the complete page and architecture diagram. No visual PASS is claimed.
+- Integration screenshot evidence: `BLOCKED / NOT_ACCEPTED`. Exactly three fresh IAB full-page captures repeated the opening viewport rather than the complete page and architecture diagram. No visual PASS is claimed.
 
 ### Integration review checkpoint
 
