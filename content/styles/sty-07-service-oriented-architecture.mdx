@@ -34,6 +34,7 @@ adjacent_topics:
   - STY-04
   - STY-05
   - STY-06
+  - STY-08
 related_cases:
   - /cases/temporal-saga-durable-execution
 related_questions: []
@@ -199,6 +200,8 @@ SOA 的主要收益是异构互操作、稳定企业能力复用、统一政策�
 [STY-05 微服务](/styles/sty-05)与本文共享围绕业务能力、显式合同和分布式失败的思想；本文强调企业能力复用与异构互操作，微服务强调团队自治、私有权威数据和独立部署。两者可以重叠，但不能用一个标签替代具体约束检查。
 
 [STY-06 事件驱动架构](/styles/sty-06)回答边界之间传递何种消息；消息或事件不会自动形成 SOA，也不能决定合同、业务权威或治理责任。[Temporal 工作流平台的持久执行与 Saga 案例](/cases/temporal-saga-durable-execution)只用于比较持久编排、结果未知和补偿边界，不把产品能力当作 SOA 定义或生产证明。
+
+[STY-08 Actor Model](/styles/sty-08)把稳定逻辑身份和私有状态应用到更细粒度的运行时实体；Actor 可以参与服务实现，但不替代企业服务合同、跨所有权治理或部署边界。
 
 ## 来源
 

@@ -137,7 +137,7 @@ test('limits the default terminology governance gate to reader-facing entry poin
 
 test('default terminology checks cover all repository reader-facing entry points', async () => {
   const result = await checkTerminology({root: repositoryRoot});
-  assert.equal(result.checkedFiles.length, 104);
+  assert.equal(result.checkedFiles.length, 105);
   assert.deepEqual(result.issues, []);
 });
 
@@ -149,7 +149,7 @@ test('no-argument CLI checks the repository default terminology scope', () => {
   );
   assert.equal(run.status, 0, run.stdout || run.stderr);
   assert.equal(run.stderr, '');
-  assert.match(run.stdout, /checked 104 files with 132 registered terms; 0 issues/u);
+  assert.match(run.stdout, /checked 105 files with 133 registered terms; 0 issues/u);
 });
 
 test('accepts governed Saga and reports it as unknown when the registry entry is removed', async () => {
@@ -1017,6 +1017,7 @@ test('uses natural first-use forms and only same-concept aliases', async () => {
       'ros2-jazzy': ['Jazzy'],
       'service-oriented-architecture': ['Service-Oriented Architecture', 'SOA'],
       'enterprise-service-bus': ['Enterprise Service Bus', 'ESB'],
+      'actor-model': ['Actor'],
     },
   );
   for (const id of [

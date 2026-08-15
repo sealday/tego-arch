@@ -152,7 +152,7 @@ const COPYRIGHT_CHECKS = ['original-structure', 'quotation-boundary', 'attributi
 const REMOTE_SOURCE_CONTRACTS = Object.freeze({
   'src-hewitt-bishop-steiger-actor-formalism-1973': Object.freeze({
     canonical_locator: 'https://www.ijcai.org/Proceedings/73/Papers/027B.pdf',
-    transport_locator: 'https://www.ijcai.org/Proceedings/73/Papers/027B.pdf', source_kind: 'research-paper',
+    transport_locator: 'https://www.ijcai.org/Proceedings/73/Papers/027B.pdf', source_kind: 'paper',
     title: 'A Universal Modular ACTOR Formalism for Artificial Intelligence', author_or_org: 'Carl Hewitt, Peter Bishop, and Richard Steiger',
     version: 'IJCAI 1973 proceedings paper; checked 2026-08-14', checked_at: '2026-08-14', tier: 'primary',
     license: 'LicenseRef-All-Rights-Reserved', license_scope: 'The named IJCAI proceedings paper only; linked and third-party material excluded',
@@ -168,7 +168,7 @@ const REMOTE_SOURCE_CONTRACTS = Object.freeze({
     transport_locator: 'https://raw.githubusercontent.com/akka/akka/main/akka-docs/src/main/paradox/typed/actors.md', source_kind: 'official-docs',
     title: 'Introduction to Actors', author_or_org: 'Akka maintainers', version: 'Akka 2.10 documentation; checked 2026-08-14', checked_at: '2026-08-14', tier: 'primary',
     license: 'Apache-2.0', license_scope: 'Official Akka repository documentation covered by Apache-2.0; trademarks, linked works, and third-party material excluded',
-    license_evidence_url: 'https://raw.githubusercontent.com/akka/akka/main/LICENSE', copyright_policy: 'framework-claims-separated',
+    license_evidence_url: 'https://raw.githubusercontent.com/akka/akka/main/LICENSE', copyright_policy: 'facts-and-short-quotation',
     allowed_evidence_roles: ['definition', 'implementation', 'runtime-fact'], citation_roles: ['definition', 'implementation'], manifest_primary: false,
     license_evidence_note: 'The official Akka repository licenses the documentation under Apache License 2.0.',
     usage_boundary: 'Akka Typed implementation example for encapsulated state, behavior, messaging, and supervision; not a universal Actor Model guarantee.',
@@ -179,18 +179,18 @@ const REMOTE_SOURCE_CONTRACTS = Object.freeze({
     transport_locator: 'https://raw.githubusercontent.com/akka/akka/main/akka-docs/src/main/paradox/general/message-delivery-reliability.md', source_kind: 'official-docs',
     title: 'Message Delivery Reliability', author_or_org: 'Akka maintainers', version: 'Akka 2.10 documentation; checked 2026-08-14', checked_at: '2026-08-14', tier: 'primary',
     license: 'Apache-2.0', license_scope: 'Official Akka repository documentation covered by Apache-2.0; trademarks, linked works, and third-party material excluded',
-    license_evidence_url: 'https://raw.githubusercontent.com/akka/akka/main/LICENSE', copyright_policy: 'framework-claims-separated',
+    license_evidence_url: 'https://raw.githubusercontent.com/akka/akka/main/LICENSE', copyright_policy: 'facts-and-short-quotation',
     allowed_evidence_roles: ['comparison', 'implementation', 'runtime-fact'], citation_roles: ['comparison', 'runtime-fact'], manifest_primary: false,
     license_evidence_note: 'The official Akka repository licenses the documentation under Apache License 2.0.',
     usage_boundary: 'Akka-scoped evidence for at-most-once delivery, sender-receiver ordering, dead letters, and local/remote differences; not a cross-framework guarantee.',
     citation_attribution: 'Message Delivery Reliability, Akka maintainers',
   }),
   'src-akka-location-transparency': Object.freeze({
-    canonical_locator: 'https://doc.akka.io/libraries/akka-core/current/general/remoting.html#location-transparency',
+    canonical_locator: 'https://doc.akka.io/libraries/akka-core/current/general/remoting.html',
     transport_locator: 'https://raw.githubusercontent.com/akka/akka/main/akka-docs/src/main/paradox/general/remoting.md', source_kind: 'official-docs',
     title: 'Remoting — Location Transparency', author_or_org: 'Akka maintainers', version: 'Akka 2.10 documentation; checked 2026-08-14', checked_at: '2026-08-14', tier: 'primary',
     license: 'Apache-2.0', license_scope: 'Official Akka repository documentation covered by Apache-2.0; trademarks, linked works, and third-party material excluded',
-    license_evidence_url: 'https://raw.githubusercontent.com/akka/akka/main/LICENSE', copyright_policy: 'framework-claims-separated',
+    license_evidence_url: 'https://raw.githubusercontent.com/akka/akka/main/LICENSE', copyright_policy: 'facts-and-short-quotation',
     allowed_evidence_roles: ['comparison', 'implementation', 'runtime-fact'], citation_roles: ['comparison', 'runtime-fact'], manifest_primary: false,
     license_evidence_note: 'The official Akka repository licenses the documentation under Apache License 2.0.',
     usage_boundary: 'Akka-scoped logical addressing example; it does not hide latency, serialization, network failure, security, placement, or state-migration boundaries.',
@@ -201,7 +201,7 @@ const REMOTE_SOURCE_CONTRACTS = Object.freeze({
     transport_locator: 'https://raw.githubusercontent.com/dotnet/docs/main/docs/orleans/overview.md', source_kind: 'official-docs',
     title: 'Orleans overview', author_or_org: 'Microsoft', version: 'Microsoft Orleans documentation; checked 2026-08-14', checked_at: '2026-08-14', tier: 'primary',
     license: 'CC-BY-4.0', license_scope: 'The named Microsoft Learn documentation page under Microsoft documentation terms; trademarks, code, linked works, and third-party material excluded',
-    license_evidence_url: 'https://learn.microsoft.com/en-us/legal/termsofuse', copyright_policy: 'vendor-claims-separated',
+    license_evidence_url: 'https://learn.microsoft.com/en-us/legal/termsofuse', copyright_policy: 'adapt-with-attribution',
     allowed_evidence_roles: ['comparison', 'implementation', 'runtime-fact'], citation_roles: ['comparison', 'implementation'], manifest_primary: false,
     license_evidence_note: 'Microsoft Learn documentation is used under the documented CC BY 4.0 terms for Microsoft documentation.',
     usage_boundary: 'Orleans framework example for virtual identity, activation, placement, and explicit persistence; not a universal Actor Model guarantee.',
@@ -1060,6 +1060,10 @@ async function mutation(source, transform, validator, label) {
   const changed = transform(source); assert.notEqual(changed, source, `${label} mutation applies`);
   assert.throws(() => validator(changed), assert.AssertionError, label);
 }
+function replaceAllPatternMatches(source, pattern, replacement = '') {
+  const flags = pattern.flags.includes('g') ? pattern.flags : `${pattern.flags}g`;
+  return source.replace(new RegExp(pattern.source, flags), replacement);
+}
 
 function semanticArticleFixture() {
   return `---
@@ -1193,7 +1197,7 @@ test('semantic, comparison, failure, adoption, and migration fixtures execute co
   for (const guarantee of ['业务拒绝', '对账', '补偿', '持久化恢复', '人工终止']) await mutation(source, (candidate) => `${candidate}\n监督不能代替业务恢复，但自动完成${guarantee}。\n`, assertSemanticBoundaries, `clause-local supervision ${guarantee}`);
   for (const hidden of ['延迟', '序列化', '网络', '安全', '容量', '放置', '状态迁移', '故障']) await mutation(source, (candidate) => `${candidate}\n位置透明不隐藏延迟，但无需考虑${hidden}。\n`, assertSemanticBoundaries, `clause-local location ${hidden}`);
   for (const counterpart of ['线程', '普通消息消费者', '事件驱动架构', '微服务']) for (const claim of [`Actor 就是${counterpart}。`, `${counterpart}就是 Actor。`, `Actor 与${counterpart}不能共存。`, `${counterpart}与 Actor 不能组合。`, `Actor 不能与${counterpart}共存。`, `${counterpart}不能与 Actor 组合。`]) await mutation(source, (candidate) => `${candidate}\n${claim}\n`, assertProhibitions, `symmetric prohibition: ${claim}`);
-  for (const [name, pattern] of REQUIRED_SEMANTIC_BOUNDARIES) await mutation(source, (candidate) => candidate.replace(pattern, ''), assertSemanticBoundaries, `${name} boundary deleted`);
+  for (const [name, pattern] of REQUIRED_SEMANTIC_BOUNDARIES) await mutation(source, (candidate) => replaceAllPatternMatches(candidate, pattern), assertSemanticBoundaries, `${name} boundary deleted`);
   assert.equal(FALSE_SEMANTIC_FIXTURES.length, FORBIDDEN_SEMANTIC_CLAIMS.length, 'one false fixture per forbidden claim');
   for (const [index, [name]] of FORBIDDEN_SEMANTIC_CLAIMS.entries()) await mutation(source, (candidate) => `${candidate}\n${FALSE_SEMANTIC_FIXTURES[index]}\n`, assertSemanticBoundaries, `${name} contradiction`);
   const tables = markdownTables(articleParts(source).body); const comparison = tables.find((table) => table[0][0] === '对照对象'); const failures = tables.find((table) => table[0][0] === '失败类别'); const adoption = tables.find((table) => table[0][0] === '决策');
@@ -1343,16 +1347,16 @@ test('locks exact STY-08 metadata, headings, wrappers, components, order flow, a
     await mutation(source, (candidate) => candidate.replace(exactWrapperTag(wrapper), exactWrapperTag(wrapper).replace(from, changed)), assertRequiredWrappers, `${wrapper.aria} ${name} changed`);
   }
   for (const [name, positive, boundary] of ACTOR_COMPONENTS) {
-    await mutation(source, (candidate) => candidate.replace(positive, '责任待定'), assertActorComponents, `${name} responsibility removed`);
-    await mutation(source, (candidate) => candidate.replace(boundary, ''), assertActorComponents, `${name} non-guarantee removed`);
+    await mutation(source, (candidate) => replaceAllPatternMatches(candidate, positive, '责任待定'), assertActorComponents, `${name} responsibility removed`);
+    await mutation(source, (candidate) => replaceAllPatternMatches(candidate, boundary), assertActorComponents, `${name} non-guarantee removed`);
   }
-  for (const [name, pattern] of ORDER_FLOW_CONTRACTS) await mutation(source, (candidate) => candidate.replace(pattern, ''), assertOrderFlow, `${name} removed`);
-  for (const [name, pattern] of RUNTIME_CONTRACTS) await mutation(source, (candidate) => candidate.replace(pattern, ''), assertRuntimeBoundaries, `${name} removed`);
+  for (const [name, pattern] of ORDER_FLOW_CONTRACTS) await mutation(source, (candidate) => replaceAllPatternMatches(candidate, pattern), assertOrderFlow, `${name} removed`);
+  for (const [name, pattern] of RUNTIME_CONTRACTS) await mutation(source, (candidate) => replaceAllPatternMatches(candidate, pattern), assertRuntimeBoundaries, `${name} removed`);
   for (const point of OBSERVATION_POINTS) await mutation(source, (candidate) => candidate.replace(`| ${point} |`, '| 删除观察点 |'), assertOrderFlow, `${point} removed`);
   await mutation(source, (candidate) => `${candidate}\n进入邮箱即证明支付完成。\n`, assertOrderFlow, 'mailbox false implication');
   await mutation(source, (candidate) => `${candidate}\n超时证明目标未执行。\n`, assertOrderFlow, 'timeout false implication');
   await mutation(source, (candidate) => `${candidate}\n无限重启。\n`, assertRuntimeBoundaries, 'unlimited restart');
-  for (const [name, pattern] of PROHIBITIONS) await mutation(source, (candidate) => candidate.replace(pattern, 'Actor 就是线程'), assertProhibitions, name);
+  for (const [name, pattern] of PROHIBITIONS) await mutation(source, (candidate) => replaceAllPatternMatches(candidate, pattern, 'Actor 就是线程'), assertProhibitions, name);
   for (const equivalent of ['线程', '普通消息消费者', '事件驱动架构', '微服务']) await mutation(source, (candidate) => `${candidate}\nActor 就是${equivalent}。\n`, assertProhibitions, `Actor equals ${equivalent}`);
   await mutation(source, (candidate) => `${candidate}\n只能采用 Actor，线程、队列、事件驱动与微服务不能组合。\n`, assertProhibitions, 'mutual exclusion');
   for (const [index, [name]] of FORBIDDEN_SEMANTIC_CLAIMS.entries()) await mutation(source, (candidate) => `${candidate}\n${FALSE_SEMANTIC_FIXTURES[index]}\n`, assertSemanticBoundaries, `${name} implementation contradiction`);

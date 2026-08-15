@@ -1802,6 +1802,19 @@
       "forbidden_aliases": [],
       "note": "来源外链标签保留 W3C 标准正式标题，概念边界由相邻中文说明限定。",
       "order": 1640
+    },
+    {
+      "id": "actor-model",
+      "canonical_zh": "Actor Model",
+      "english": null,
+      "acronym": null,
+      "kind": "standard",
+      "first_use": "Actor Model",
+      "subsequent_use": ["Actor Model", "Actor"],
+      "allowed_aliases": ["Actor"],
+      "forbidden_aliases": [],
+      "note": "并发计算模型保留通行名称；Actor 作为模型中的逻辑实体简称，仅在首次引入 Actor Model 后使用。",
+      "order": 1650
     }
   ]
 }

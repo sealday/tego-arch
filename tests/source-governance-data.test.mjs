@@ -25,6 +25,7 @@ const approvedMicrosoftLicenseEvidenceUrls = new Set([
   'https://raw.githubusercontent.com/MicrosoftDocs/architecture-center/f69851e7c8b27ca6e8983e7b7d91d35e99423a73/LICENSE',
   'https://raw.githubusercontent.com/MicrosoftDocs/architecture-center/7b4bf26469bc45810c64406ad3cebdae4f60fb6b/LICENSE',
   'https://github.com/dotnet/docs/blob/main/LICENSE',
+  'https://learn.microsoft.com/en-us/legal/termsofuse',
 ]);
 
 async function governedData() {
@@ -116,7 +117,7 @@ test('records every official-license family found by the systematic ARR audit', 
   const corrected = inventory.entries
     .map((entry) => [entry, expectedLicense(entry.source_family)])
     .filter(([, expected]) => expected !== null);
-  assert.equal(corrected.length, 122);
+  assert.equal(corrected.length, 123);
   for (const [entry, expected] of corrected) {
     assert.equal(entry.exact_license, expected, entry.source_family);
   }
@@ -144,8 +145,8 @@ test('records all Microsoft Learn families as CC-BY-4.0 from official license ev
   const sources = ledger.sources.filter((source) =>
     source.license_family_id.startsWith('https://learn.microsoft.com/'));
 
-  assert.equal(rows.length, 7);
-  assert.equal(sources.length, 11);
+  assert.equal(rows.length, 8);
+  assert.equal(sources.length, 12);
   for (const item of [...rows, ...sources]) {
     assert.equal(item.exact_license ?? item.license, 'CC-BY-4.0');
     assert.equal(
