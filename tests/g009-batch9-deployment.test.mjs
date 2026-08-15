@@ -19,12 +19,12 @@ const EVIDENCE_HEAD = '4923b7da22d79ecc32400669526196ca852885a4';
 const RAW_BROWSER_HASH = 'fa3fdecb77c55c8e2a013d95bbe9684afde05e3027583a9b3d1feb405a758932';
 const IMMEDIATE_REVIEW_HASH = '2915584034c0d480ee04713c9fadee2839f03d112ced139901a3fb2033d8ac7e';
 const IMMEDIATE_BACKLOG_SUFFIX_HASH = 'dba312f190706ae7112ea057addefe58ceff4cdd15bad39264efbd58b129c354';
-const ARTIFACT_HASHES = new Map([
+const STABLE_ARTIFACT_HASHES = new Map([
   [ARTICLE, 'b9f0af60f535bdce6269e5ffce3ec4aee03730fde344957eee0d3f02196c377c'],
   [DRAWIO, 'd323a34b4130c843f3c3c96547bf61a690d97dcccd93794b9c228f435548e62b'],
   [SVG, '93a23b5c57334e96d08908146f82677faad887a30cb45b1f8066633b6e185e65'],
-  [LEDGER, '29b62da07c5dedbf8d87baaf56ccd4bce1036b5aadda176b1d7ee64ac908557e'],
 ]);
+const HISTORICAL_LEDGER_IDENTITY = Object.freeze({bytes: 1_555_131, sha256: '29b62da07c5dedbf8d87baaf56ccd4bce1036b5aadda176b1d7ee64ac908557e'});
 const STATES = ['desktopLight', 'desktopDark', 'mobileLight', 'mobileDark'];
 const WRAPPERS = [
   '共享订单状态与订单 Actor 履约边界对照图，可横向滚动',
@@ -107,8 +107,8 @@ const [review, browserBytes, immediateReviewBytes, backlog, status, manifest, in
 ]);
 
 function assertProjection() {
-  assert.deepEqual({completed_topics: status.completed_topics, content_documents: status.content_documents, governed_sources: status.governed_sources}, {completed_topics: 60, content_documents: 103, governed_sources: 535});
-  assert.equal(publicLedger.sources.length, 535);
+  assert.deepEqual({completed_topics: status.completed_topics, content_documents: status.content_documents, governed_sources: status.governed_sources}, {completed_topics: 60, content_documents: 104, governed_sources: 539});
+  assert.equal(publicLedger.sources.length, 539);
   const topics = new Map(manifest.topics.map((topic) => [topic.id, topic]));
   const styles = new Map(indexes.style.map((topic) => [topic.id, topic]));
   assert.deepEqual([topics.get('STY-08')?.published, topics.get('STY-08')?.status.value, styles.get('STY-08')?.published], [true, 'pending', true]);
@@ -177,11 +177,12 @@ async function assertReview(source) {
     'STY-09: `unpublished / pending / non-actionable`; actionable route count: `0`.',
   ]) assert.ok(projection.includes(literal), literal);
   const identities = section(source, 'Artifact identities');
-  for (const [path, expectedHash] of ARTIFACT_HASHES) {
+  for (const [path, expectedHash] of STABLE_ARTIFACT_HASHES) {
     const bytes = await required(path);
     assert.equal(sha256(bytes), expectedHash, `${path} immutable artifact bytes`);
     assert.match(identities, new RegExp(`\\| ${escapeRegExp(`\`${path}\``)} \\| ${bytes.length.toLocaleString('en-US')} \\| ${escapeRegExp(`\`${expectedHash}\``)} \\|`, 'u'));
   }
+  assert.match(identities, new RegExp(`\\| ${escapeRegExp(`\`${LEDGER}\``)} \\| ${HISTORICAL_LEDGER_IDENTITY.bytes.toLocaleString('en-US')} \\| ${escapeRegExp(`\`${HISTORICAL_LEDGER_IDENTITY.sha256}\``)} \\|`, 'u'));
   const qa = section(source, 'Local in-app Browser QA');
   assert.ok(browserBytes, `${RAW_BROWSER} exists`);
   for (const literal of [

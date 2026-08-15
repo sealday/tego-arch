@@ -157,8 +157,9 @@ function assertStageBClosure(source = review, backlogSource = backlog) {
 }
 
 function assertProjection() {
-  assert.deepEqual({completed_topics: status.completed_topics, content_documents: status.content_documents, governed_sources: status.governed_sources}, {completed_topics: 60, content_documents: 103, governed_sources: 535});
-  assert.equal(publicLedger.sources.length, 535);
+  assert.deepEqual({completed_topics: status.completed_topics, content_documents: status.content_documents, governed_sources: status.governed_sources}, {completed_topics: 60, content_documents: 104, governed_sources: 539});
+  assert.equal(publicLedger.sources.length, 539);
+
   const topics = new Map(manifest.topics.map((topic) => [topic.id, topic]));
   const styles = new Map(indexes.style.map((topic) => [topic.id, topic]));
   assert.deepEqual([topics.get('STY-07')?.published, topics.get('STY-07')?.status.value, styles.get('STY-07')?.published], [true, 'complete', true]);
@@ -309,7 +310,9 @@ async function assertReview(source) {
   const identities = section(source, 'Artifact identities');
   for (const [path, [bytes, expectedHash]] of STAGE_A_REVIEW_ARTIFACT_IDENTITIES) {
     assert.match(identities, new RegExp(`\\| ${escapeRegExp(`\`${path}\``)} \\| ${bytes.toLocaleString('en-US')} \\| ${escapeRegExp(`\`${expectedHash}\``)} \\|`, 'u'));
+
   }
+  assert.match(identities, /\| `data\/source-ledger\.json` \| 1,540,278 \| `52e33d9996222026ffe74e53b5d6da77a61e442d982fa9e93b14517216f5f778` \|/u);
   const checkpoint = section(source, 'Independent review checkpoint');
   for (const literal of [
     `Exact implementation candidate head: \`${CANDIDATE_HEAD}\`.`,
@@ -332,6 +335,7 @@ test('binds the complete tracked raw Browser bytes to one fixed SHA-256', () => 
 });
 test('preserves every stable Stage A diagram, evidence, and production identity byte-for-byte', async () => {
   for (const [path, expectedHash] of STAGE_A_STABLE_ARTIFACT_HASHES) {
+
     assert.equal(sha256(await readFile(new URL(`../${path}`, import.meta.url))), expectedHash, path);
   }
 });
@@ -415,8 +419,9 @@ test('preserves the STY-07 closure record while current generation advances to S
     completed_topics: status.completed_topics,
     content_documents: status.content_documents,
     governed_sources: status.governed_sources,
-  }, {completed_topics: 60, content_documents: 103, governed_sources: 535});
-  assert.equal(publicLedger.sources.length, 535);
+  }, {completed_topics: 60, content_documents: 104, governed_sources: 539});
+  assert.equal(publicLedger.sources.length, 539);
+
   const topics = new Map(manifest.topics.map((topic) => [topic.id, topic]));
   const styles = new Map(indexes.style.map((topic) => [topic.id, topic]));
   assert.deepEqual([topics.get('STY-07')?.published, topics.get('STY-07')?.status.value, styles.get('STY-07')?.published], [true, 'complete', true]);

@@ -8,9 +8,14 @@
       "acronym": null,
       "kind": "translated-term",
       "first_use": "质量属性（Quality Attribute）",
-      "subsequent_use": ["质量属性"],
+      "subsequent_use": [
+        "质量属性"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["quality attribute", "Quality Attribute"],
+      "forbidden_aliases": [
+        "quality attribute",
+        "Quality Attribute"
+      ],
       "note": "描述系统在运行或演化中的关键特性，不简称为“质量”。",
       "order": 10
     },
@@ -21,7 +26,10 @@
       "acronym": "ASR",
       "kind": "acronym",
       "first_use": "架构重要需求（Architecturally Significant Requirement，ASR）",
-      "subsequent_use": ["架构重要需求", "ASR"],
+      "subsequent_use": [
+        "架构重要需求",
+        "ASR"
+      ],
       "allowed_aliases": [],
       "forbidden_aliases": [
         "Architecturally Significant Requirement",
@@ -37,8 +45,13 @@
       "acronym": null,
       "kind": "proper-noun",
       "first_use": "Tego Arch 架构知识项目",
-      "subsequent_use": ["Tego Arch", "本项目"],
-      "allowed_aliases": ["Tego Arch"],
+      "subsequent_use": [
+        "Tego Arch",
+        "本项目"
+      ],
+      "allowed_aliases": [
+        "Tego Arch"
+      ],
       "forbidden_aliases": [],
       "note": "项目官方名称保持不变，首次出现使用自然中文类别说明，后续可使用官方名。",
       "order": 30
@@ -50,9 +63,14 @@
       "acronym": "ADR",
       "kind": "acronym",
       "first_use": "架构决策记录（Architecture Decision Record，ADR）",
-      "subsequent_use": ["架构决策记录", "ADR"],
+      "subsequent_use": [
+        "架构决策记录",
+        "ADR"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Architecture Decision Record"],
+      "forbidden_aliases": [
+        "Architecture Decision Record"
+      ],
       "note": "记录重要架构决策及其背景、取舍与后果。",
       "order": 40
     },
@@ -63,9 +81,14 @@
       "acronym": "QAW",
       "kind": "acronym",
       "first_use": "质量属性工作坊（Quality Attribute Workshop，QAW）",
-      "subsequent_use": ["质量属性工作坊", "QAW"],
+      "subsequent_use": [
+        "质量属性工作坊",
+        "QAW"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Quality Attribute Workshop"],
+      "forbidden_aliases": [
+        "Quality Attribute Workshop"
+      ],
       "note": "用于协作识别和排序质量属性场景的方法名称。",
       "order": 50
     },
@@ -76,9 +99,14 @@
       "acronym": "ATAM",
       "kind": "acronym",
       "first_use": "架构权衡分析方法（Architecture Tradeoff Analysis Method，ATAM）",
-      "subsequent_use": ["架构权衡分析方法", "ATAM"],
+      "subsequent_use": [
+        "架构权衡分析方法",
+        "ATAM"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Architecture Tradeoff Analysis Method"],
+      "forbidden_aliases": [
+        "Architecture Tradeoff Analysis Method"
+      ],
       "note": "用于评估架构决策与质量属性权衡的方法名称。",
       "order": 60
     },
@@ -89,9 +117,14 @@
       "acronym": "API",
       "kind": "acronym",
       "first_use": "应用程序编程接口（Application Programming Interface，API）",
-      "subsequent_use": ["应用程序编程接口", "API"],
+      "subsequent_use": [
+        "应用程序编程接口",
+        "API"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Application Programming Interface"],
+      "forbidden_aliases": [
+        "Application Programming Interface"
+      ],
       "note": "面向读者的概念说明使用中文主称；程序接口字面量不受此限制。",
       "order": 70
     },
@@ -102,9 +135,14 @@
       "acronym": "HTTP",
       "kind": "standard",
       "first_use": "超文本传输协议（Hypertext Transfer Protocol，HTTP）",
-      "subsequent_use": ["超文本传输协议", "HTTP"],
+      "subsequent_use": [
+        "超文本传输协议",
+        "HTTP"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Hypertext Transfer Protocol"],
+      "forbidden_aliases": [
+        "Hypertext Transfer Protocol"
+      ],
       "note": "协议概念首次说明完整名称，网址中的协议方案保持原样。",
       "order": 80
     },
@@ -115,9 +153,14 @@
       "acronym": "URL",
       "kind": "standard",
       "first_use": "统一资源定位符（Uniform Resource Locator，URL）",
-      "subsequent_use": ["统一资源定位符", "URL"],
+      "subsequent_use": [
+        "统一资源定位符",
+        "URL"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Uniform Resource Locator"],
+      "forbidden_aliases": [
+        "Uniform Resource Locator"
+      ],
       "note": "正文概念使用中文主称，实际网址保持原样。",
       "order": 90
     },
@@ -128,9 +171,13 @@
       "acronym": null,
       "kind": "standard",
       "first_use": "C4 架构模型（C4 Model）",
-      "subsequent_use": ["C4 架构模型"],
+      "subsequent_use": [
+        "C4 架构模型"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["C4 Model"],
+      "forbidden_aliases": [
+        "C4 Model"
+      ],
       "note": "使用中文类别说明该架构可视化模型。",
       "order": 100
     },
@@ -141,9 +188,14 @@
       "acronym": "UML",
       "kind": "standard",
       "first_use": "统一建模语言（Unified Modeling Language，UML）",
-      "subsequent_use": ["统一建模语言", "UML"],
+      "subsequent_use": [
+        "统一建模语言",
+        "UML"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Unified Modeling Language"],
+      "forbidden_aliases": [
+        "Unified Modeling Language"
+      ],
       "note": "标准名称首次出现时保留英文全称和公认缩写。",
       "order": 110
     },
@@ -154,9 +206,14 @@
       "acronym": "DDD",
       "kind": "acronym",
       "first_use": "领域驱动设计（Domain-Driven Design，DDD）",
-      "subsequent_use": ["领域驱动设计", "DDD"],
+      "subsequent_use": [
+        "领域驱动设计",
+        "DDD"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Domain-Driven Design"],
+      "forbidden_aliases": [
+        "Domain-Driven Design"
+      ],
       "note": "方法名称使用稳定中文译名。",
       "order": 120
     },
@@ -167,9 +224,14 @@
       "acronym": "CQRS",
       "kind": "acronym",
       "first_use": "命令查询职责分离（Command Query Responsibility Segregation，CQRS）",
-      "subsequent_use": ["命令查询职责分离", "CQRS"],
+      "subsequent_use": [
+        "命令查询职责分离",
+        "CQRS"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Command Query Responsibility Segregation"],
+      "forbidden_aliases": [
+        "Command Query Responsibility Segregation"
+      ],
       "note": "模式名称使用中文主称，缩写须先说明。",
       "order": 130
     },
@@ -180,9 +242,14 @@
       "acronym": "CRDT",
       "kind": "acronym",
       "first_use": "无冲突复制数据类型（Conflict-free Replicated Data Type，CRDT）",
-      "subsequent_use": ["无冲突复制数据类型", "CRDT"],
+      "subsequent_use": [
+        "无冲突复制数据类型",
+        "CRDT"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Conflict-free Replicated Data Type"],
+      "forbidden_aliases": [
+        "Conflict-free Replicated Data Type"
+      ],
       "note": "数据类型名称使用中文主称，保留公认缩写。",
       "order": 140
     },
@@ -193,9 +260,14 @@
       "acronym": "MCP",
       "kind": "standard",
       "first_use": "模型上下文协议（Model Context Protocol，MCP）",
-      "subsequent_use": ["模型上下文协议", "MCP"],
+      "subsequent_use": [
+        "模型上下文协议",
+        "MCP"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Model Context Protocol"],
+      "forbidden_aliases": [
+        "Model Context Protocol"
+      ],
       "note": "协议名称使用中文主称，缩写须先说明。",
       "order": 150
     },
@@ -206,9 +278,14 @@
       "acronym": "A2A",
       "kind": "standard",
       "first_use": "智能体间协议（Agent2Agent Protocol，A2A）",
-      "subsequent_use": ["智能体间协议", "A2A"],
+      "subsequent_use": [
+        "智能体间协议",
+        "A2A"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Agent2Agent Protocol"],
+      "forbidden_aliases": [
+        "Agent2Agent Protocol"
+      ],
       "note": "协议官方英文拼写仅在首次说明中出现。",
       "order": 160
     },
@@ -219,9 +296,13 @@
       "acronym": null,
       "kind": "translated-term",
       "first_use": "重试（Retry）",
-      "subsequent_use": ["重试"],
+      "subsequent_use": [
+        "重试"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Retry"],
+      "forbidden_aliases": [
+        "Retry"
+      ],
       "note": "运行机制使用中文主称，代码标识符中的 retry 保持原样。",
       "order": 170
     },
@@ -232,9 +313,13 @@
       "acronym": null,
       "kind": "translated-term",
       "first_use": "指数退避（Exponential Backoff）",
-      "subsequent_use": ["指数退避"],
+      "subsequent_use": [
+        "指数退避"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Exponential Backoff"],
+      "forbidden_aliases": [
+        "Exponential Backoff"
+      ],
       "note": "重试等待策略使用中文主称。",
       "order": 180
     },
@@ -245,9 +330,13 @@
       "acronym": null,
       "kind": "translated-term",
       "first_use": "抖动（Jitter）",
-      "subsequent_use": ["抖动"],
+      "subsequent_use": [
+        "抖动"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Jitter"],
+      "forbidden_aliases": [
+        "Jitter"
+      ],
       "note": "重试延迟中的随机扰动使用中文主称。",
       "order": 190
     },
@@ -258,9 +347,13 @@
       "acronym": null,
       "kind": "translated-term",
       "first_use": "快速失败（Fail Fast）",
-      "subsequent_use": ["快速失败"],
+      "subsequent_use": [
+        "快速失败"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Fail Fast"],
+      "forbidden_aliases": [
+        "Fail Fast"
+      ],
       "note": "失败处理策略使用中文主称。",
       "order": 200
     },
@@ -271,9 +364,13 @@
       "acronym": null,
       "kind": "translated-term",
       "first_use": "故障安全（Fail Safe）",
-      "subsequent_use": ["故障安全"],
+      "subsequent_use": [
+        "故障安全"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Fail Safe"],
+      "forbidden_aliases": [
+        "Fail Safe"
+      ],
       "note": "故障处置原则使用中文主称。",
       "order": 210
     },
@@ -284,9 +381,13 @@
       "acronym": null,
       "kind": "translated-term",
       "first_use": "优雅降级（Graceful Degradation）",
-      "subsequent_use": ["优雅降级"],
+      "subsequent_use": [
+        "优雅降级"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Graceful Degradation"],
+      "forbidden_aliases": [
+        "Graceful Degradation"
+      ],
       "note": "服务能力退化策略使用中文主称。",
       "order": 220
     },
@@ -297,9 +398,14 @@
       "acronym": null,
       "kind": "translated-term",
       "first_use": "人在回路（Human-in-the-loop）",
-      "subsequent_use": ["人在回路"],
+      "subsequent_use": [
+        "人在回路"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Human-in-the-loop", "人工在环"],
+      "forbidden_aliases": [
+        "Human-in-the-loop",
+        "人工在环"
+      ],
       "note": "人工参与控制或审核的模式使用中文主称。",
       "order": 230
     },
@@ -310,9 +416,13 @@
       "acronym": null,
       "kind": "translated-term",
       "first_use": "路由器（Router）",
-      "subsequent_use": ["路由器"],
+      "subsequent_use": [
+        "路由器"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Router"],
+      "forbidden_aliases": [
+        "Router"
+      ],
       "note": "智能体编排角色使用中文主称，不影响网络设备或代码标识符。",
       "order": 240
     },
@@ -323,9 +433,13 @@
       "acronym": null,
       "kind": "translated-term",
       "first_use": "监督者（Supervisor）",
-      "subsequent_use": ["监督者"],
+      "subsequent_use": [
+        "监督者"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Supervisor"],
+      "forbidden_aliases": [
+        "Supervisor"
+      ],
       "note": "智能体编排角色使用中文主称。",
       "order": 250
     },
@@ -336,9 +450,13 @@
       "acronym": null,
       "kind": "translated-term",
       "first_use": "移交（Handoff）",
-      "subsequent_use": ["移交"],
+      "subsequent_use": [
+        "移交"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Handoff"],
+      "forbidden_aliases": [
+        "Handoff"
+      ],
       "note": "任务或控制权转移使用中文主称。",
       "order": 260
     },
@@ -349,9 +467,13 @@
       "acronym": null,
       "kind": "translated-term",
       "first_use": "扇出与扇入（Fan-out/Fan-in）",
-      "subsequent_use": ["扇出与扇入"],
+      "subsequent_use": [
+        "扇出与扇入"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Fan-out/Fan-in"],
+      "forbidden_aliases": [
+        "Fan-out/Fan-in"
+      ],
       "note": "并行分派与汇聚模式使用中文主称。",
       "order": 270
     },
@@ -362,9 +484,13 @@
       "acronym": null,
       "kind": "translated-term",
       "first_use": "检查点器（Checkpointer）",
-      "subsequent_use": ["检查点器"],
+      "subsequent_use": [
+        "检查点器"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Checkpointer"],
+      "forbidden_aliases": [
+        "Checkpointer"
+      ],
       "note": "保存和恢复执行状态的角色使用中文主称。",
       "order": 280
     },
@@ -375,9 +501,13 @@
       "acronym": null,
       "kind": "translated-term",
       "first_use": "归约器（Reducer）",
-      "subsequent_use": ["归约器"],
+      "subsequent_use": [
+        "归约器"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Reducer"],
+      "forbidden_aliases": [
+        "Reducer"
+      ],
       "note": "合并状态更新的角色使用中文主称。",
       "order": 290
     },
@@ -388,9 +518,13 @@
       "acronym": null,
       "kind": "translated-term",
       "first_use": "工作流（Workflow）",
-      "subsequent_use": ["工作流"],
+      "subsequent_use": [
+        "工作流"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Workflow"],
+      "forbidden_aliases": [
+        "Workflow"
+      ],
       "note": "任务步骤和状态流转的概念使用中文主称。",
       "order": 300
     },
@@ -401,9 +535,13 @@
       "acronym": null,
       "kind": "translated-term",
       "first_use": "智能体（Agent）",
-      "subsequent_use": ["智能体"],
+      "subsequent_use": [
+        "智能体"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Agent"],
+      "forbidden_aliases": [
+        "Agent"
+      ],
       "note": "面向读者的自主执行实体使用“智能体”，代码和产品专名保持原样。",
       "order": 310
     },
@@ -414,9 +552,14 @@
       "acronym": "SDK",
       "kind": "acronym",
       "first_use": "软件开发工具包（Software Development Kit，SDK）",
-      "subsequent_use": ["软件开发工具包", "SDK"],
+      "subsequent_use": [
+        "软件开发工具包",
+        "SDK"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Software Development Kit"],
+      "forbidden_aliases": [
+        "Software Development Kit"
+      ],
       "note": "工具包概念使用中文主称，产品官方名称可另行登记。",
       "order": 320
     },
@@ -427,9 +570,13 @@
       "acronym": null,
       "kind": "translated-term",
       "first_use": "架构决策速查（Architecture Decision Quick Reference）",
-      "subsequent_use": ["架构决策速查"],
+      "subsequent_use": [
+        "架构决策速查"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Architecture Decision Quick Reference"],
+      "forbidden_aliases": [
+        "Architecture Decision Quick Reference"
+      ],
       "note": "长期复用的决策参考方向使用中文主称。",
       "order": 330
     },
@@ -440,9 +587,13 @@
       "acronym": null,
       "kind": "translated-term",
       "first_use": "精选学习路径（Curated Learning Paths）",
-      "subsequent_use": ["精选学习路径"],
+      "subsequent_use": [
+        "精选学习路径"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Curated Learning Paths"],
+      "forbidden_aliases": [
+        "Curated Learning Paths"
+      ],
       "note": "长期复用的学习路径方向使用中文主称。",
       "order": 340
     },
@@ -453,9 +604,13 @@
       "acronym": null,
       "kind": "translated-term",
       "first_use": "Tego 参考架构（Tego Reference Architecture）",
-      "subsequent_use": ["Tego 参考架构"],
+      "subsequent_use": [
+        "Tego 参考架构"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Tego Reference Architecture"],
+      "forbidden_aliases": [
+        "Tego Reference Architecture"
+      ],
       "note": "项目长期公开架构决策与验证结果的方向名称。",
       "order": 350
     },
@@ -466,7 +621,9 @@
       "acronym": null,
       "kind": "standard",
       "first_use": "质量属性场景字段",
-      "subsequent_use": ["场景字段"],
+      "subsequent_use": [
+        "场景字段"
+      ],
       "allowed_aliases": [],
       "forbidden_aliases": [],
       "note": "六个场景字段由各自术语独立治理，本条只描述字段集合。",
@@ -479,9 +636,13 @@
       "acronym": null,
       "kind": "translated-term",
       "first_use": "场景来源（Source）",
-      "subsequent_use": ["场景来源"],
+      "subsequent_use": [
+        "场景来源"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Source"],
+      "forbidden_aliases": [
+        "Source"
+      ],
       "note": "独立表示触发质量属性场景的人、系统或事件来源。",
       "order": 361
     },
@@ -492,9 +653,13 @@
       "acronym": null,
       "kind": "translated-term",
       "first_use": "触发刺激（Stimulus）",
-      "subsequent_use": ["触发刺激"],
+      "subsequent_use": [
+        "触发刺激"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Stimulus"],
+      "forbidden_aliases": [
+        "Stimulus"
+      ],
       "note": "独立表示触发质量属性场景的事件或条件。",
       "order": 362
     },
@@ -505,9 +670,13 @@
       "acronym": null,
       "kind": "translated-term",
       "first_use": "运行环境（Environment）",
-      "subsequent_use": ["运行环境"],
+      "subsequent_use": [
+        "运行环境"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Environment"],
+      "forbidden_aliases": [
+        "Environment"
+      ],
       "note": "独立表示刺激发生时系统所处的运行条件。",
       "order": 363
     },
@@ -518,9 +687,13 @@
       "acronym": null,
       "kind": "translated-term",
       "first_use": "受影响对象（Artifact）",
-      "subsequent_use": ["受影响对象"],
+      "subsequent_use": [
+        "受影响对象"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Artifact"],
+      "forbidden_aliases": [
+        "Artifact"
+      ],
       "note": "独立表示受到刺激影响的系统部分或工件。",
       "order": 364
     },
@@ -531,9 +704,13 @@
       "acronym": null,
       "kind": "translated-term",
       "first_use": "系统响应（Response）",
-      "subsequent_use": ["系统响应"],
+      "subsequent_use": [
+        "系统响应"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Response"],
+      "forbidden_aliases": [
+        "Response"
+      ],
       "note": "独立表示系统在场景中采取的行为。",
       "order": 365
     },
@@ -544,9 +721,14 @@
       "acronym": null,
       "kind": "translated-term",
       "first_use": "响应度量（Response Measure）",
-      "subsequent_use": ["响应度量"],
+      "subsequent_use": [
+        "响应度量"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Response Measure", "Response measure"],
+      "forbidden_aliases": [
+        "Response Measure",
+        "Response measure"
+      ],
       "note": "独立表示判断响应是否达标的可验证尺度。",
       "order": 366
     },
@@ -557,9 +739,13 @@
       "acronym": null,
       "kind": "translated-term",
       "first_use": "安全保障（Safety）",
-      "subsequent_use": ["安全保障"],
+      "subsequent_use": [
+        "安全保障"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Safety"],
+      "forbidden_aliases": [
+        "Safety"
+      ],
       "note": "与 Security 的安全性区分，特指防止系统行为造成不可接受的物理或环境损失。",
       "order": 370
     },
@@ -570,9 +756,13 @@
       "acronym": null,
       "kind": "translated-term",
       "first_use": "安全性（Security）",
-      "subsequent_use": ["安全性"],
+      "subsequent_use": [
+        "安全性"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Security"],
+      "forbidden_aliases": [
+        "Security"
+      ],
       "note": "保护资产、命令、身份与完整性的质量属性，不与 Safety 混用。",
       "order": 380
     },
@@ -583,9 +773,14 @@
       "acronym": null,
       "kind": "translated-term",
       "first_use": "隐私（Privacy）",
-      "subsequent_use": ["隐私"],
+      "subsequent_use": [
+        "隐私"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Privacy", "privacy"],
+      "forbidden_aliases": [
+        "Privacy",
+        "privacy"
+      ],
       "note": "关注数据处理对数据主体的影响，不与安全性或合规等同。",
       "order": 390
     },
@@ -596,9 +791,14 @@
       "acronym": "RTO",
       "kind": "acronym",
       "first_use": "恢复时间目标（Recovery Time Objective，RTO）",
-      "subsequent_use": ["恢复时间目标", "RTO"],
+      "subsequent_use": [
+        "恢复时间目标",
+        "RTO"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Recovery Time Objective"],
+      "forbidden_aliases": [
+        "Recovery Time Objective"
+      ],
       "note": "恢复时长目标首次使用中文、英文全称和缩写，后续使用中文或缩写。",
       "order": 400
     },
@@ -609,9 +809,14 @@
       "acronym": "RPO",
       "kind": "acronym",
       "first_use": "恢复点目标（Recovery Point Objective，RPO）",
-      "subsequent_use": ["恢复点目标", "RPO"],
+      "subsequent_use": [
+        "恢复点目标",
+        "RPO"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Recovery Point Objective"],
+      "forbidden_aliases": [
+        "Recovery Point Objective"
+      ],
       "note": "数据丢失窗口目标首次使用中文、英文全称和缩写，后续使用中文或缩写。",
       "order": 410
     },
@@ -622,9 +827,14 @@
       "acronym": "mTLS",
       "kind": "acronym",
       "first_use": "双向传输层安全（mutual TLS，mTLS）",
-      "subsequent_use": ["双向传输层安全", "mTLS"],
+      "subsequent_use": [
+        "双向传输层安全",
+        "mTLS"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["mutual TLS"],
+      "forbidden_aliases": [
+        "mutual TLS"
+      ],
       "note": "双向身份认证机制首次使用中文说明、通用英文名称和缩写。",
       "order": 420
     },
@@ -635,7 +845,9 @@
       "acronym": null,
       "kind": "proper-noun",
       "first_use": "STRIDE 威胁建模",
-      "subsequent_use": ["STRIDE"],
+      "subsequent_use": [
+        "STRIDE"
+      ],
       "allowed_aliases": [],
       "forbidden_aliases": [],
       "note": "保留 STRIDE 方法名称，并以中文说明其用途。",
@@ -648,9 +860,14 @@
       "acronym": null,
       "kind": "standard",
       "first_use": "OpenAPI 接口描述规范（OpenAPI Specification）",
-      "subsequent_use": ["OpenAPI 接口描述规范", "OpenAPI 规范"],
+      "subsequent_use": [
+        "OpenAPI 接口描述规范",
+        "OpenAPI 规范"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["OpenAPI"],
+      "forbidden_aliases": [
+        "OpenAPI"
+      ],
       "note": "规范名称首次以中文主称附官方名称，后续使用中文主称。",
       "order": 440
     },
@@ -661,9 +878,14 @@
       "acronym": "STPA",
       "kind": "acronym",
       "first_use": "系统理论过程分析（Systems-Theoretic Process Analysis，STPA）",
-      "subsequent_use": ["系统理论过程分析", "STPA"],
+      "subsequent_use": [
+        "系统理论过程分析",
+        "STPA"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Systems-Theoretic Process Analysis"],
+      "forbidden_aliases": [
+        "Systems-Theoretic Process Analysis"
+      ],
       "note": "系统安全分析方法首次使用中文、英文全称和缩写。",
       "order": 450
     },
@@ -674,9 +896,14 @@
       "acronym": "UCA",
       "kind": "acronym",
       "first_use": "不安全控制动作（Unsafe Control Action，UCA）",
-      "subsequent_use": ["不安全控制动作", "UCA"],
+      "subsequent_use": [
+        "不安全控制动作",
+        "UCA"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Unsafe Control Action"],
+      "forbidden_aliases": [
+        "Unsafe Control Action"
+      ],
       "note": "系统安全分析中的控制动作分类首次使用中文、英文全称和缩写。",
       "order": 460
     },
@@ -687,9 +914,13 @@
       "acronym": null,
       "kind": "translated-term",
       "first_use": "输入负载（offered load）",
-      "subsequent_use": ["输入负载"],
+      "subsequent_use": [
+        "输入负载"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["offered load"],
+      "forbidden_aliases": [
+        "offered load"
+      ],
       "note": "区分进入系统的输入负载与系统实际完成的吞吐。",
       "order": 470
     },
@@ -700,9 +931,13 @@
       "acronym": null,
       "kind": "translated-term",
       "first_use": "持久化无知（Persistence Ignorance）",
-      "subsequent_use": ["持久化无知"],
+      "subsequent_use": [
+        "持久化无知"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Persistence Ignorance"],
+      "forbidden_aliases": [
+        "Persistence Ignorance"
+      ],
       "note": "领域模型不直接依赖持久化机制的设计原则。",
       "order": 480
     },
@@ -713,9 +948,13 @@
       "acronym": null,
       "kind": "translated-term",
       "first_use": "安全内建（Secure by Design）",
-      "subsequent_use": ["安全内建"],
+      "subsequent_use": [
+        "安全内建"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Secure by Design"],
+      "forbidden_aliases": [
+        "Secure by Design"
+      ],
       "note": "在设计与交付全过程中系统纳入安全边界与验证。",
       "order": 490
     },
@@ -726,9 +965,13 @@
       "acronym": null,
       "kind": "translated-term",
       "first_use": "开闭原则（Open/Closed Principle）",
-      "subsequent_use": ["开闭原则"],
+      "subsequent_use": [
+        "开闭原则"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Open/Closed Principle"],
+      "forbidden_aliases": [
+        "Open/Closed Principle"
+      ],
       "note": "通过稳定抽象和明确扩展点控制变更影响。",
       "order": 500
     },
@@ -739,9 +982,13 @@
       "acronym": null,
       "kind": "translated-term",
       "first_use": "接口隔离原则（Interface Segregation Principle）",
-      "subsequent_use": ["接口隔离原则"],
+      "subsequent_use": [
+        "接口隔离原则"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Interface Segregation Principle"],
+      "forbidden_aliases": [
+        "Interface Segregation Principle"
+      ],
       "note": "使依赖方只承担其确实需要的能力契约。",
       "order": 510
     },
@@ -752,9 +999,13 @@
       "acronym": null,
       "kind": "translated-term",
       "first_use": "领域叙事（Domain Storytelling）",
-      "subsequent_use": ["领域叙事"],
+      "subsequent_use": [
+        "领域叙事"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Domain Storytelling"],
+      "forbidden_aliases": [
+        "Domain Storytelling"
+      ],
       "note": "用参与者、工作对象与活动共同讲述领域流程的协作建模方法。",
       "order": 520
     },
@@ -765,9 +1016,13 @@
       "acronym": null,
       "kind": "translated-term",
       "first_use": "领域驱动设计上下文映射（DDD Context Map）",
-      "subsequent_use": ["领域驱动设计上下文映射"],
+      "subsequent_use": [
+        "领域驱动设计上下文映射"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["DDD Context Map"],
+      "forbidden_aliases": [
+        "DDD Context Map"
+      ],
       "note": "表达限界上下文之间上下游与翻译关系的领域驱动设计模型。",
       "order": 530
     },
@@ -778,7 +1033,9 @@
       "acronym": null,
       "kind": "proper-noun",
       "first_use": "arc42 架构文档模板",
-      "subsequent_use": ["arc42"],
+      "subsequent_use": [
+        "arc42"
+      ],
       "allowed_aliases": [],
       "forbidden_aliases": [],
       "note": "保留产品名，并用中文说明其架构文档模板用途。",
@@ -791,9 +1048,13 @@
       "acronym": null,
       "kind": "translated-term",
       "first_use": "智能体作为工具（Agents as Tools）",
-      "subsequent_use": ["智能体作为工具"],
+      "subsequent_use": [
+        "智能体作为工具"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Agents as Tools"],
+      "forbidden_aliases": [
+        "Agents as Tools"
+      ],
       "note": "主智能体调用专业智能体并保留最终控制权的协作模式。",
       "order": 550
     },
@@ -804,9 +1065,13 @@
       "acronym": null,
       "kind": "translated-term",
       "first_use": "评估者—优化者（Evaluator-Optimizer）",
-      "subsequent_use": ["评估者—优化者"],
+      "subsequent_use": [
+        "评估者—优化者"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Evaluator-Optimizer"],
+      "forbidden_aliases": [
+        "Evaluator-Optimizer"
+      ],
       "note": "生成候选、按标准评估并迭代改进的控制模式。",
       "order": 560
     },
@@ -817,9 +1082,13 @@
       "acronym": null,
       "kind": "translated-term",
       "first_use": "分层团队（Hierarchical Teams）",
-      "subsequent_use": ["分层团队"],
+      "subsequent_use": [
+        "分层团队"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Hierarchical Teams"],
+      "forbidden_aliases": [
+        "Hierarchical Teams"
+      ],
       "note": "由顶层协调者和子团队管理者分层分配控制权的模式。",
       "order": 570
     },
@@ -830,9 +1099,14 @@
       "acronym": "GRASP",
       "kind": "acronym",
       "first_use": "通用职责分配软件模式（General Responsibility Assignment Software Patterns，GRASP）",
-      "subsequent_use": ["通用职责分配软件模式", "GRASP"],
+      "subsequent_use": [
+        "通用职责分配软件模式",
+        "GRASP"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["General Responsibility Assignment Software Patterns"],
+      "forbidden_aliases": [
+        "General Responsibility Assignment Software Patterns"
+      ],
       "note": "对象设计中九项责任分配模式的准确全称与缩写。",
       "order": 580
     },
@@ -843,7 +1117,10 @@
       "acronym": "CAP",
       "kind": "acronym",
       "first_use": "CAP 定理（Consistency, Availability, Partition Tolerance，CAP）",
-      "subsequent_use": ["CAP 定理", "CAP"],
+      "subsequent_use": [
+        "CAP 定理",
+        "CAP"
+      ],
       "allowed_aliases": [],
       "forbidden_aliases": [],
       "note": "分布式系统在分区假设下讨论一致性与可用性边界的术语。",
@@ -856,9 +1133,13 @@
       "acronym": null,
       "kind": "translated-term",
       "first_use": "介绍与目标（Introduction and Goals）",
-      "subsequent_use": ["介绍与目标"],
+      "subsequent_use": [
+        "介绍与目标"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Introduction and Goals"],
+      "forbidden_aliases": [
+        "Introduction and Goals"
+      ],
       "note": "arc42 第 1 个问题域的中文优先节名。",
       "order": 600
     },
@@ -869,9 +1150,13 @@
       "acronym": null,
       "kind": "translated-term",
       "first_use": "上下文与范围（Context and Scope）",
-      "subsequent_use": ["上下文与范围"],
+      "subsequent_use": [
+        "上下文与范围"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Context and Scope"],
+      "forbidden_aliases": [
+        "Context and Scope"
+      ],
       "note": "arc42 第 3 个问题域的中文优先节名。",
       "order": 610
     },
@@ -882,9 +1167,13 @@
       "acronym": null,
       "kind": "translated-term",
       "first_use": "质量要求（Quality Requirements）",
-      "subsequent_use": ["质量要求"],
+      "subsequent_use": [
+        "质量要求"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Quality Requirements"],
+      "forbidden_aliases": [
+        "Quality Requirements"
+      ],
       "note": "arc42 第 10 个问题域的中文优先节名。",
       "order": 620
     },
@@ -895,9 +1184,13 @@
       "acronym": null,
       "kind": "translated-term",
       "first_use": "风险与技术债务（Risks and Technical Debt）",
-      "subsequent_use": ["风险与技术债务"],
+      "subsequent_use": [
+        "风险与技术债务"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Risks and Technical Debt"],
+      "forbidden_aliases": [
+        "Risks and Technical Debt"
+      ],
       "note": "arc42 第 11 个问题域的中文优先节名。",
       "order": 630
     },
@@ -908,9 +1201,13 @@
       "acronym": null,
       "kind": "translated-term",
       "first_use": "术语表（Glossary）",
-      "subsequent_use": ["术语表"],
+      "subsequent_use": [
+        "术语表"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Glossary"],
+      "forbidden_aliases": [
+        "Glossary"
+      ],
       "note": "arc42 第 12 个问题域的中文优先节名。",
       "order": 640
     },
@@ -921,7 +1218,9 @@
       "acronym": null,
       "kind": "proper-noun",
       "first_use": "PostgreSQL 数据库",
-      "subsequent_use": ["PostgreSQL"],
+      "subsequent_use": [
+        "PostgreSQL"
+      ],
       "allowed_aliases": [],
       "forbidden_aliases": [],
       "note": "保留数据库产品名，并在首次出现时补充中文类别。",
@@ -934,7 +1233,9 @@
       "acronym": null,
       "kind": "proper-noun",
       "first_use": "Mermaid 图表工具",
-      "subsequent_use": ["Mermaid"],
+      "subsequent_use": [
+        "Mermaid"
+      ],
       "allowed_aliases": [],
       "forbidden_aliases": [],
       "note": "保留图表工具名称，并在首次出现时说明类别。",
@@ -947,7 +1248,9 @@
       "acronym": null,
       "kind": "proper-noun",
       "first_use": "Temporal 工作流平台",
-      "subsequent_use": ["Temporal"],
+      "subsequent_use": [
+        "Temporal"
+      ],
       "allowed_aliases": [],
       "forbidden_aliases": [],
       "note": "保留工作流平台名称，并在首次出现时说明类别。",
@@ -960,7 +1263,9 @@
       "acronym": null,
       "kind": "proper-noun",
       "first_use": "single-spa 微前端框架",
-      "subsequent_use": ["single-spa"],
+      "subsequent_use": [
+        "single-spa"
+      ],
       "allowed_aliases": [],
       "forbidden_aliases": [],
       "note": "保留框架名称，并在首次出现时说明其微前端用途。",
@@ -973,9 +1278,14 @@
       "acronym": null,
       "kind": "translated-term",
       "first_use": "多智能体管理者（Manager）",
-      "subsequent_use": ["多智能体管理者"],
+      "subsequent_use": [
+        "多智能体管理者"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Manager", "manager"],
+      "forbidden_aliases": [
+        "Manager",
+        "manager"
+      ],
       "note": "持有整体控制权并调用专业智能体的编排角色使用中文主称。",
       "order": 730
     },
@@ -986,9 +1296,16 @@
       "acronym": null,
       "kind": "translated-term",
       "first_use": "工作进程（worker）",
-      "subsequent_use": ["工作进程"],
+      "subsequent_use": [
+        "工作进程"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["worker", "Worker", "workers", "Workers"],
+      "forbidden_aliases": [
+        "worker",
+        "Worker",
+        "workers",
+        "Workers"
+      ],
       "note": "承担有界执行任务的进程或角色使用中文主称。",
       "order": 740
     },
@@ -999,9 +1316,16 @@
       "acronym": null,
       "kind": "translated-term",
       "first_use": "护栏（guardrail）",
-      "subsequent_use": ["护栏"],
+      "subsequent_use": [
+        "护栏"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["guardrail", "Guardrail", "guardrails", "Guardrails"],
+      "forbidden_aliases": [
+        "guardrail",
+        "Guardrail",
+        "guardrails",
+        "Guardrails"
+      ],
       "note": "在输入、输出或工具边界执行约束与阻断的机制使用中文主称。",
       "order": 750
     },
@@ -1012,7 +1336,9 @@
       "acronym": null,
       "kind": "proper-noun",
       "first_use": "Microsoft 公司",
-      "subsequent_use": ["Microsoft"],
+      "subsequent_use": [
+        "Microsoft"
+      ],
       "allowed_aliases": [],
       "forbidden_aliases": [],
       "note": "保留公司的官方名称，并由相邻中文说明具体产品或资料类别。",
@@ -1025,7 +1351,9 @@
       "acronym": "AWS",
       "kind": "acronym",
       "first_use": "亚马逊云服务（Amazon Web Services，AWS）",
-      "subsequent_use": ["AWS"],
+      "subsequent_use": [
+        "AWS"
+      ],
       "allowed_aliases": [],
       "forbidden_aliases": [],
       "note": "保留云服务品牌的官方缩写，并由相邻中文说明具体机制。",
@@ -1038,7 +1366,9 @@
       "acronym": null,
       "kind": "proper-noun",
       "first_use": "Kubernetes 容器编排系统",
-      "subsequent_use": ["Kubernetes"],
+      "subsequent_use": [
+        "Kubernetes"
+      ],
       "allowed_aliases": [],
       "forbidden_aliases": [],
       "note": "保留容器编排系统的官方名称，并在正文中配合中文机制说明。",
@@ -1051,7 +1381,9 @@
       "acronym": null,
       "kind": "proper-noun",
       "first_use": "OpenAI Agents SDK 智能体开发工具包",
-      "subsequent_use": ["OpenAI Agents SDK"],
+      "subsequent_use": [
+        "OpenAI Agents SDK"
+      ],
       "allowed_aliases": [],
       "forbidden_aliases": [],
       "note": "保留产品官方名称；正文另以中文说明其智能体编排用途。",
@@ -1064,7 +1396,10 @@
       "acronym": null,
       "kind": "proper-noun",
       "first_use": "Apache Kafka 事件流平台",
-      "subsequent_use": ["Apache Kafka", "Kafka"],
+      "subsequent_use": [
+        "Apache Kafka",
+        "Kafka"
+      ],
       "allowed_aliases": [],
       "forbidden_aliases": [],
       "note": "保留事件流平台官方名称，后续可使用其通用简称。",
@@ -1077,7 +1412,9 @@
       "acronym": null,
       "kind": "proper-noun",
       "first_use": "Yjs 协作数据框架",
-      "subsequent_use": ["Yjs"],
+      "subsequent_use": [
+        "Yjs"
+      ],
       "allowed_aliases": [],
       "forbidden_aliases": [],
       "note": "保留协作数据框架的官方名称，并由中文说明其机制。",
@@ -1090,7 +1427,11 @@
       "acronym": null,
       "kind": "proper-noun",
       "first_use": "Erlang/OTP 运行时平台",
-      "subsequent_use": ["Erlang/OTP", "Erlang", "OTP"],
+      "subsequent_use": [
+        "Erlang/OTP",
+        "Erlang",
+        "OTP"
+      ],
       "allowed_aliases": [],
       "forbidden_aliases": [],
       "note": "保留运行时平台官方名称，正文使用中文说明监督机制。",
@@ -1103,7 +1444,9 @@
       "acronym": null,
       "kind": "proper-noun",
       "first_use": "OpenAI 公司",
-      "subsequent_use": ["OpenAI"],
+      "subsequent_use": [
+        "OpenAI"
+      ],
       "allowed_aliases": [],
       "forbidden_aliases": [],
       "note": "保留公司的官方名称，并由相邻中文说明具体产品类别。",
@@ -1116,7 +1459,9 @@
       "acronym": null,
       "kind": "proper-noun",
       "first_use": "New API 模型网关",
-      "subsequent_use": ["New API"],
+      "subsequent_use": [
+        "New API"
+      ],
       "allowed_aliases": [],
       "forbidden_aliases": [],
       "note": "保留产品官方名称，并以中文说明其渠道池路由用途。",
@@ -1129,7 +1474,9 @@
       "acronym": null,
       "kind": "proper-noun",
       "first_use": "LiteLLM 模型网关",
-      "subsequent_use": ["LiteLLM"],
+      "subsequent_use": [
+        "LiteLLM"
+      ],
       "allowed_aliases": [],
       "forbidden_aliases": [],
       "note": "保留模型网关产品的官方名称，并以中文说明治理能力。",
@@ -1142,9 +1489,14 @@
       "acronym": "HPA",
       "kind": "acronym",
       "first_use": "水平自动扩缩器（Horizontal Pod Autoscaler，HPA）",
-      "subsequent_use": ["水平自动扩缩器", "HPA"],
+      "subsequent_use": [
+        "水平自动扩缩器",
+        "HPA"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Horizontal Pod Autoscaler"],
+      "forbidden_aliases": [
+        "Horizontal Pod Autoscaler"
+      ],
       "note": "依据工作负载指标调整副本数量的控制器使用中文主称。",
       "order": 1030
     },
@@ -1155,9 +1507,14 @@
       "acronym": "VPA",
       "kind": "acronym",
       "first_use": "垂直自动扩缩器（Vertical Pod Autoscaler，VPA）",
-      "subsequent_use": ["垂直自动扩缩器", "VPA"],
+      "subsequent_use": [
+        "垂直自动扩缩器",
+        "VPA"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Vertical Pod Autoscaler"],
+      "forbidden_aliases": [
+        "Vertical Pod Autoscaler"
+      ],
       "note": "调整工作负载资源请求的控制器使用中文主称。",
       "order": 1040
     },
@@ -1223,7 +1580,10 @@
       "acronym": null,
       "kind": "translated-term",
       "first_use": "Python 编程语言",
-      "subsequent_use": ["Python 编程语言", "Python"],
+      "subsequent_use": [
+        "Python 编程语言",
+        "Python"
+      ],
       "allowed_aliases": [],
       "forbidden_aliases": [],
       "note": "首次出现补充中文类别，后续可使用官方语言名。",
@@ -1252,7 +1612,10 @@
       "acronym": null,
       "kind": "translated-term",
       "first_use": "说明文件（README）",
-      "subsequent_use": ["说明文件", "README"],
+      "subsequent_use": [
+        "说明文件",
+        "README"
+      ],
       "allowed_aliases": [],
       "forbidden_aliases": [],
       "note": "首次出现补充中文类别，后续可保留仓库通用文件名。",
@@ -1265,9 +1628,14 @@
       "acronym": "QoS",
       "kind": "standard",
       "first_use": "服务质量（Quality of Service，QoS）",
-      "subsequent_use": ["服务质量", "QoS"],
+      "subsequent_use": [
+        "服务质量",
+        "QoS"
+      ],
       "allowed_aliases": [],
-      "forbidden_aliases": ["Quality of Service"],
+      "forbidden_aliases": [
+        "Quality of Service"
+      ],
       "note": "通信可靠性、历史深度、截止期等交付策略使用中文主称。",
       "order": 1090
     },
@@ -1278,7 +1646,9 @@
       "acronym": null,
       "kind": "proper-noun",
       "first_use": "Kong AI Gateway 人工智能网关",
-      "subsequent_use": ["Kong AI Gateway"],
+      "subsequent_use": [
+        "Kong AI Gateway"
+      ],
       "allowed_aliases": [],
       "forbidden_aliases": [],
       "note": "案例标题保留官方产品名，正文优先使用中文类别说明。",
@@ -1482,7 +1852,9 @@
       "acronym": null,
       "kind": "proper-noun",
       "first_use": "Cloudflare Workers 平台",
-      "subsequent_use": ["Cloudflare Workers"],
+      "subsequent_use": [
+        "Cloudflare Workers"
+      ],
       "allowed_aliases": [],
       "forbidden_aliases": [],
       "note": "独立登记边缘计算产品，不与通用工作进程或持久对象混为同一概念。",
@@ -1641,7 +2013,9 @@
       "acronym": null,
       "kind": "proper-noun",
       "first_use": "AWS Cell Architecture + Shuffle Sharding 架构方案",
-      "subsequent_use": ["AWS Cell Architecture + Shuffle Sharding"],
+      "subsequent_use": [
+        "AWS Cell Architecture + Shuffle Sharding"
+      ],
       "allowed_aliases": [],
       "forbidden_aliases": [],
       "note": "案例标题保留稳定官方身份，并以中文类别引入。",
@@ -1654,7 +2028,9 @@
       "acronym": null,
       "kind": "proper-noun",
       "first_use": "AWS Labs CLI Agent Orchestrator 多进程编排项目",
-      "subsequent_use": ["AWS Labs CLI Agent Orchestrator"],
+      "subsequent_use": [
+        "AWS Labs CLI Agent Orchestrator"
+      ],
       "allowed_aliases": [],
       "forbidden_aliases": [],
       "note": "案例标题保留稳定官方身份，并以中文类别引入。",
@@ -1667,7 +2043,9 @@
       "acronym": null,
       "kind": "proper-noun",
       "first_use": "Cloudflare Durable Objects + workerd 边缘协调方案",
-      "subsequent_use": ["Cloudflare Durable Objects + workerd"],
+      "subsequent_use": [
+        "Cloudflare Durable Objects + workerd"
+      ],
       "allowed_aliases": [],
       "forbidden_aliases": [],
       "note": "案例标题保留稳定官方身份，并以中文类别引入。",
@@ -1680,7 +2058,9 @@
       "acronym": null,
       "kind": "proper-noun",
       "first_use": "Google ADK 与 A2A 智能体协作方案",
-      "subsequent_use": ["Google ADK 与 A2A"],
+      "subsequent_use": [
+        "Google ADK 与 A2A"
+      ],
       "allowed_aliases": [],
       "forbidden_aliases": [],
       "note": "案例标题保留稳定官方身份，并以中文类别引入。",
@@ -1693,7 +2073,9 @@
       "acronym": null,
       "kind": "proper-noun",
       "first_use": "KubeEdge Cloud-Edge Autonomy 云边自治方案",
-      "subsequent_use": ["KubeEdge Cloud-Edge Autonomy"],
+      "subsequent_use": [
+        "KubeEdge Cloud-Edge Autonomy"
+      ],
       "allowed_aliases": [],
       "forbidden_aliases": [],
       "note": "案例标题保留稳定官方身份，并以中文类别引入。",
@@ -1706,7 +2088,9 @@
       "acronym": null,
       "kind": "proper-noun",
       "first_use": "LangGraph Supervisor 智能体编排方案",
-      "subsequent_use": ["LangGraph Supervisor"],
+      "subsequent_use": [
+        "LangGraph Supervisor"
+      ],
       "allowed_aliases": [],
       "forbidden_aliases": [],
       "note": "案例标题保留稳定官方身份，并以中文类别引入。",
@@ -1719,7 +2103,9 @@
       "acronym": null,
       "kind": "proper-noun",
       "first_use": "ROS 2 + DDS Agent Lifecycle 机器人智能体生命周期方案",
-      "subsequent_use": ["ROS 2 + DDS Agent Lifecycle"],
+      "subsequent_use": [
+        "ROS 2 + DDS Agent Lifecycle"
+      ],
       "allowed_aliases": [],
       "forbidden_aliases": [],
       "note": "案例标题保留稳定官方身份，并以中文类别引入。",
@@ -1732,7 +2118,9 @@
       "acronym": null,
       "kind": "proper-noun",
       "first_use": "Temporal Durable Execution + Saga 长事务执行方案",
-      "subsequent_use": ["Temporal Durable Execution + Saga"],
+      "subsequent_use": [
+        "Temporal Durable Execution + Saga"
+      ],
       "allowed_aliases": [],
       "forbidden_aliases": [],
       "note": "案例标题保留稳定官方身份，并以中文类别引入。",
@@ -1745,7 +2133,9 @@
       "acronym": null,
       "kind": "standard",
       "first_use": "Saga",
-      "subsequent_use": ["Saga"],
+      "subsequent_use": [
+        "Saga"
+      ],
       "allowed_aliases": [],
       "forbidden_aliases": [],
       "note": "长事务协调模式保留稳定名称，由相邻中文语境解释其本地事务、补偿与恢复边界。",
@@ -1758,8 +2148,15 @@
       "acronym": null,
       "kind": "standard",
       "first_use": "面向服务架构",
-      "subsequent_use": ["面向服务架构", "Service-Oriented Architecture", "SOA"],
-      "allowed_aliases": ["Service-Oriented Architecture", "SOA"],
+      "subsequent_use": [
+        "面向服务架构",
+        "Service-Oriented Architecture",
+        "SOA"
+      ],
+      "allowed_aliases": [
+        "Service-Oriented Architecture",
+        "SOA"
+      ],
       "forbidden_aliases": [],
       "note": "架构风格采用中文首称，并保留通行缩写用于产品等同禁令和机制比较。",
       "order": 1610
@@ -1771,8 +2168,15 @@
       "acronym": null,
       "kind": "standard",
       "first_use": "企业服务总线",
-      "subsequent_use": ["企业服务总线", "Enterprise Service Bus", "ESB"],
-      "allowed_aliases": ["Enterprise Service Bus", "ESB"],
+      "subsequent_use": [
+        "企业服务总线",
+        "Enterprise Service Bus",
+        "ESB"
+      ],
+      "allowed_aliases": [
+        "Enterprise Service Bus",
+        "ESB"
+      ],
       "forbidden_aliases": [],
       "note": "集成基础设施采用中文首称，缩写保留用于明确它不是 SOA 定义。",
       "order": 1620
@@ -1784,7 +2188,9 @@
       "acronym": null,
       "kind": "standard",
       "first_use": "Web Services",
-      "subsequent_use": ["Web Services"],
+      "subsequent_use": [
+        "Web Services"
+      ],
       "allowed_aliases": [],
       "forbidden_aliases": [],
       "note": "标准实现族保留通行名称，并由相邻中文语境明确其不等于 SOA。",
@@ -1797,11 +2203,58 @@
       "acronym": null,
       "kind": "standard",
       "first_use": "W3C Web Services Architecture",
-      "subsequent_use": ["W3C Web Services Architecture"],
+      "subsequent_use": [
+        "W3C Web Services Architecture"
+      ],
       "allowed_aliases": [],
       "forbidden_aliases": [],
       "note": "来源外链标签保留 W3C 标准正式标题，概念边界由相邻中文说明限定。",
       "order": 1640
+    },
+    {
+      "id": "artificial-intelligence",
+      "canonical_zh": "AI",
+      "english": null,
+      "acronym": null,
+      "kind": "acronym",
+      "first_use": "AI",
+      "subsequent_use": [
+        "AI"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [],
+      "note": "MTH-07 的固定标题与元数据直接使用 AI，正文只在人机职责和企业交付语境中使用。",
+      "order": 1650
+    },
+    {
+      "id": "proof-of-concept",
+      "canonical_zh": "POC",
+      "english": null,
+      "acronym": null,
+      "kind": "acronym",
+      "first_use": "POC",
+      "subsequent_use": [
+        "POC"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [],
+      "note": "MTH-07 的固定标题与门禁合同保留 POC，正文立即解释其验证范围与禁止外推边界。",
+      "order": 1660
+    },
+    {
+      "id": "forward-deployed-engineering",
+      "canonical_zh": "FDE",
+      "english": null,
+      "acronym": null,
+      "kind": "acronym",
+      "first_use": "FDE",
+      "subsequent_use": [
+        "FDE"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [],
+      "note": "MTH-07 把 FDE 定义为前线部署工程角色组合，不把职位名称当成成功条件。",
+      "order": 1670
     },
     {
       "id": "actor-model",
@@ -1810,11 +2263,16 @@
       "acronym": null,
       "kind": "standard",
       "first_use": "Actor Model",
-      "subsequent_use": ["Actor Model", "Actor"],
-      "allowed_aliases": ["Actor"],
+      "subsequent_use": [
+        "Actor Model",
+        "Actor"
+      ],
+      "allowed_aliases": [
+        "Actor"
+      ],
       "forbidden_aliases": [],
       "note": "并发计算模型保留通行名称；Actor 作为模型中的逻辑实体简称，仅在首次引入 Actor Model 后使用。",
-      "order": 1650
+      "order": 1680
     }
   ]
 }

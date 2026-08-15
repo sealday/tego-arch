@@ -1574,8 +1574,9 @@ test('preserves the STY-06 closure under the current STY-07 Stage B projection',
     completed_topics: projectStatus.completed_topics,
     content_documents: projectStatus.content_documents,
     governed_sources: projectStatus.governed_sources,
-  }, {completed_topics: 60, content_documents: 103, governed_sources: 535});
-  assert.equal(publicLedger.sources.length, 535);
+  }, {completed_topics: 60, content_documents: 104, governed_sources: 539});
+  assert.equal(publicLedger.sources.length, 539);
+
   const topic = manifest.topics.find(({id}) => id === TOPIC_ID);
   assert.equal(topic?.slug, ROUTE);
   assert.equal(topic?.published, true);

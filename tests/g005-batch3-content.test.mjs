@@ -18,7 +18,7 @@ const expectedMethods = new Map([
   [
     'MTH-04',
     {
-      adjacent: ['MTH-03', 'MTH-06', 'PR-08'],
+      adjacent: ['MTH-03', 'MTH-06', 'MTH-07', 'PR-08'],
       dependsOn: ['FND-05', 'QA-01'],
       file: 'methods/mth-04-architecture-fitness-functions.mdx',
       relatedCases: ['/cases/kubernetes-reconciliation-loop'],
@@ -38,7 +38,7 @@ const expectedMethods = new Map([
   [
     'MTH-06',
     {
-      adjacent: ['MTH-04', 'MTH-05', 'FND-05', 'MOD-13'],
+      adjacent: ['MTH-04', 'MTH-05', 'MTH-07', 'FND-05', 'MOD-13'],
       dependsOn: ['MTH-01', 'MTH-02', 'MTH-03', 'MTH-04'],
       file: 'methods/mth-06-requirements-to-evolution-loop.mdx',
       relatedCases: ['/cases/microsoft-multi-agent-reference-architecture'],
@@ -85,7 +85,8 @@ const immutableFiles = new Map([
   ],
   [
     'scripts/content-schema.mjs',
-    '24669bb80a4ebd52fbd633a27c89dcee75e7c48020b6f929d358a5a2341f990f',
+    '27919031046cdd381bfd0c51f1970fba0ca6b75eb2ec92ababe4bbef7ae26db2',
+
   ],
   [
     'sidebars.ts',

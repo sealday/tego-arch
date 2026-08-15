@@ -1348,7 +1348,8 @@
       ],
       "adjacent_topics": [
         "FND-02",
-        "MTH-02"
+        "MTH-02",
+        "MTH-07"
       ],
       "primary_sources": [
         "https://swehb.nasa.gov/spaces/SWEHBVD/pages/102695632/7.07%2B-%2BSoftware%2BArchitecture%2BDescription",
@@ -1450,6 +1451,7 @@
       "adjacent_topics": [
         "MTH-03",
         "MTH-06",
+        "MTH-07",
         "PR-08"
       ],
       "primary_sources": [
@@ -1515,6 +1517,7 @@
       "adjacent_topics": [
         "MTH-04",
         "MTH-05",
+        "MTH-07",
         "FND-05",
         "MOD-13"
       ],
@@ -1526,6 +1529,40 @@
       ],
       "related_questions": [],
       "reviewed_at": "2026-07-24",
+      "review_policy": "quarterly-version-sensitive",
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
+    },
+    {
+      "id": "MTH-07",
+      "type": "method",
+      "title": "企业 AI 前线部署：从 POC 到可复制系统的交付门禁",
+      "slug": "/methods/mth-07",
+      "priority": "P1",
+      "status": {
+        "scope": "content-lifecycle",
+        "value": "reviewed",
+        "source": "content/methods/mth-07-fde-enterprise-ai-delivery.mdx"
+      },
+      "dependencies": [
+        "MTH-01",
+        "MTH-04",
+        "MTH-06"
+      ],
+      "adjacent_topics": [
+        "MTH-01",
+        "MTH-04",
+        "MTH-06"
+      ],
+      "primary_sources": [
+        "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10"
+      ],
+      "related_cases": [
+        "/cases/temporal-saga-durable-execution"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-08-13",
       "review_policy": "quarterly-version-sensitive",
       "published": true,
       "pattern_group": null,

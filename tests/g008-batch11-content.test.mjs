@@ -629,7 +629,7 @@ test('publishes exact reciprocal MOD-13 relations without changing relation over
     ['modeling/mod-04-arc42-documentation-skeleton.mdx', ['MOD-03','MOD-05','MOD-13'], '/modeling/mod-13'],
     ['modeling/mod-12-architecture-diagram-review.mdx', ['MOD-11','QA-02','QA-05','MOD-13'], '/modeling/mod-13'],
     ['methods/mth-03-adr-lifecycle.mdx', ['FND-05','MTH-04','QA-01','PR-08','MOD-01','MOD-13'], '/modeling/mod-13'],
-    ['methods/mth-06-requirements-to-evolution-loop.mdx', ['MTH-04','MTH-05','FND-05','MOD-13'], '/modeling/mod-13'],
+    ['methods/mth-06-requirements-to-evolution-loop.mdx', ['MTH-04','MTH-05','MTH-07','FND-05','MOD-13'], '/modeling/mod-13'],
   ];
   for (const [file, adjacentTopics, backlink] of reciprocal) {
     const related = relatedDocuments.get(file);
@@ -645,8 +645,9 @@ test('publishes exact reciprocal MOD-13 relations without changing relation over
 
 test('locks the generated MOD-13 Stage B projection', () => {
   assert.equal(projectStatus.completed_topics, 60);
-  assert.equal(projectStatus.content_documents, 103);
-  assert.equal(projectStatus.governed_sources, 535);
+  assert.equal(projectStatus.content_documents, 104);
+  assert.equal(projectStatus.governed_sources, 539);
+
   assert.deepEqual(projectStatus.durable_stories, {completed:8,total:20,current:'G009'});
   const topicsById = new Map(topicManifest.topics.map((topic) => [topic.id, topic]));
   assert.equal(topicsById.get('MOD-13').published, true);

@@ -210,7 +210,23 @@ export const mod13ModelingHeadings = [
   '## 来源',
 ];
 
+export const mth07MethodHeadings = [
+  '## 学习问题',
+  '## 一页摘要',
+  '## 事实边界',
+  '## 交付门禁图',
+  '## 四阶段控制流',
+  '## 证据、产物与责任',
+  '## 架构决策与权衡',
+  '## 生产化分析',
+  '## 可迁移经验',
+  '## 来源',
+];
+
 export function knowledgeHeadingContract(type, topicId) {
+  if (type === 'method' && topicId === 'MTH-07') {
+    return mth07MethodHeadings;
+  }
   if (type === 'principle' && closingPrincipleTopicIds.has(topicId)) {
     return closingPrincipleHeadings;
   }

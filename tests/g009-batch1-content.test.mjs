@@ -604,8 +604,9 @@ test('preserves the STY-00 closure under the current STY-07 Stage B projection',
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
     completed_topics: 60,
-    content_documents: 103,
-    governed_sources: 535,
+    content_documents: 104,
+    governed_sources: 539,
+
     sources: {
       durable_stories: 'docs/content-backlog.md',
       completed_topics: 'docs/content-backlog.md',
@@ -619,5 +620,6 @@ test('preserves the STY-00 closure under the current STY-07 Stage B projection',
     id === 'STY-03' && published === true && status.value === 'complete'));
   assert.ok(indexes.style.some(({id, published, status}) =>
     id === 'STY-04' && published === true && status.value === 'complete'));
-  assert.equal(publicLedger.sources.length, 535);
+  assert.equal(publicLedger.sources.length, 539);
+
 });

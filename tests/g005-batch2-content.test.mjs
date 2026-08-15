@@ -43,7 +43,7 @@ const expectedTopics = new Map([
   [
     'MTH-01',
     {
-      adjacent: ['FND-02', 'MTH-02'],
+      adjacent: ['FND-02', 'MTH-02', 'MTH-07'],
       contentType: 'method',
       dependsOn: ['QA-01'],
       file: 'methods/mth-01-quality-attribute-workshop.mdx',
