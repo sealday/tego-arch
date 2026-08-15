@@ -76669,23 +76669,23 @@
       "review_status": "healthy"
     },
     {
-      "transport_locator": "https://www.erlang.org/doc/system/sup_princ.html",
+      "transport_locator": "https://raw.githubusercontent.com/erlang/otp/OTP-28.5/system/doc/design_principles/sup_princ.md",
       "source_ids": [
         "src-erlang-28f791c67609"
       ],
       "last_attempt": {
-        "at": "2026-08-06T21:30:02.583Z",
+        "at": "2026-08-14T00:00:00.000Z",
         "outcome": "healthy",
-        "final_transport_locator": "https://www.erlang.org/doc/system/sup_princ.html",
-        "http_status": 206,
+        "final_transport_locator": "https://raw.githubusercontent.com/erlang/otp/OTP-28.5/system/doc/design_principles/sup_princ.md",
+        "http_status": 200,
         "login_wall_detected": false,
         "redirects": []
       },
       "last_success": {
-        "at": "2026-08-06T21:30:02.583Z",
+        "at": "2026-08-14T00:00:00.000Z",
         "outcome": "healthy",
-        "final_transport_locator": "https://www.erlang.org/doc/system/sup_princ.html",
-        "http_status": 206,
+        "final_transport_locator": "https://raw.githubusercontent.com/erlang/otp/OTP-28.5/system/doc/design_principles/sup_princ.md",
+        "http_status": 200,
         "login_wall_detected": false
       },
       "attempt_history": [
@@ -76846,6 +76846,13 @@
           "outcome": "healthy",
           "final_transport_locator": "https://www.erlang.org/doc/system/sup_princ.html",
           "http_status": 206,
+          "login_wall_detected": false
+        },
+        {
+          "at": "2026-08-14T00:00:00.000Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://raw.githubusercontent.com/erlang/otp/OTP-28.5/system/doc/design_principles/sup_princ.md",
+          "http_status": 200,
           "login_wall_detected": false
         }
       ],
@@ -80886,10 +80893,10 @@
     ,{"transport_locator":"https://docs.oasis-open.org/soa-rm/soa-ra/v1.0/soa-ra.html","source_ids":["src-oasis-soa-reference-architecture-foundation-1-0"],"last_attempt":{"at":"2026-08-13T00:00:00.000Z","outcome":"healthy","final_transport_locator":"https://docs.oasis-open.org/soa-rm/soa-ra/v1.0/soa-ra.html","http_status":200,"login_wall_detected":false,"redirects":[]},"last_success":{"at":"2026-08-13T00:00:00.000Z","outcome":"healthy","final_transport_locator":"https://docs.oasis-open.org/soa-rm/soa-ra/v1.0/soa-ra.html","http_status":200,"login_wall_detected":false},"attempt_history":[{"at":"2026-08-13T00:00:00.000Z","outcome":"healthy","final_transport_locator":"https://docs.oasis-open.org/soa-rm/soa-ra/v1.0/soa-ra.html","http_status":200,"login_wall_detected":false}],"review_status":"healthy"}
     ,{"transport_locator":"https://www.w3.org/TR/ws-arch/","source_ids":["src-w3c-web-services-architecture"],"last_attempt":{"at":"2026-08-13T00:00:00.000Z","outcome":"healthy","final_transport_locator":"https://www.w3.org/TR/ws-arch/","http_status":200,"login_wall_detected":false,"redirects":[]},"last_success":{"at":"2026-08-13T00:00:00.000Z","outcome":"healthy","final_transport_locator":"https://www.w3.org/TR/ws-arch/","http_status":200,"login_wall_detected":false},"attempt_history":[{"at":"2026-08-13T00:00:00.000Z","outcome":"healthy","final_transport_locator":"https://www.w3.org/TR/ws-arch/","http_status":200,"login_wall_detected":false}],"review_status":"healthy"}
     ,{"transport_locator":"https://www.ijcai.org/Proceedings/73/Papers/027B.pdf","source_ids":["src-hewitt-bishop-steiger-actor-formalism-1973"],"last_attempt":{"at":"2026-08-14T00:00:00.000Z","outcome":"healthy","final_transport_locator":"https://www.ijcai.org/Proceedings/73/Papers/027B.pdf","http_status":200,"login_wall_detected":false,"redirects":[]},"last_success":{"at":"2026-08-14T00:00:00.000Z","outcome":"healthy","final_transport_locator":"https://www.ijcai.org/Proceedings/73/Papers/027B.pdf","http_status":200,"login_wall_detected":false},"attempt_history":[{"at":"2026-08-14T00:00:00.000Z","outcome":"healthy","final_transport_locator":"https://www.ijcai.org/Proceedings/73/Papers/027B.pdf","http_status":200,"login_wall_detected":false}],"review_status":"healthy"}
-    ,{"transport_locator":"https://raw.githubusercontent.com/akka/akka/main/akka-docs/src/main/paradox/typed/actors.md","source_ids":["src-akka-actor-model"],"last_attempt":{"at":"2026-08-14T00:00:00.000Z","outcome":"healthy","final_transport_locator":"https://raw.githubusercontent.com/akka/akka/main/akka-docs/src/main/paradox/typed/actors.md","http_status":200,"login_wall_detected":false,"redirects":[]},"last_success":{"at":"2026-08-14T00:00:00.000Z","outcome":"healthy","final_transport_locator":"https://raw.githubusercontent.com/akka/akka/main/akka-docs/src/main/paradox/typed/actors.md","http_status":200,"login_wall_detected":false},"attempt_history":[{"at":"2026-08-14T00:00:00.000Z","outcome":"healthy","final_transport_locator":"https://raw.githubusercontent.com/akka/akka/main/akka-docs/src/main/paradox/typed/actors.md","http_status":200,"login_wall_detected":false}],"review_status":"healthy"}
-    ,{"transport_locator":"https://raw.githubusercontent.com/akka/akka/main/akka-docs/src/main/paradox/general/message-delivery-reliability.md","source_ids":["src-akka-message-delivery-reliability"],"last_attempt":{"at":"2026-08-14T00:00:00.000Z","outcome":"healthy","final_transport_locator":"https://raw.githubusercontent.com/akka/akka/main/akka-docs/src/main/paradox/general/message-delivery-reliability.md","http_status":200,"login_wall_detected":false,"redirects":[]},"last_success":{"at":"2026-08-14T00:00:00.000Z","outcome":"healthy","final_transport_locator":"https://raw.githubusercontent.com/akka/akka/main/akka-docs/src/main/paradox/general/message-delivery-reliability.md","http_status":200,"login_wall_detected":false},"attempt_history":[{"at":"2026-08-14T00:00:00.000Z","outcome":"healthy","final_transport_locator":"https://raw.githubusercontent.com/akka/akka/main/akka-docs/src/main/paradox/general/message-delivery-reliability.md","http_status":200,"login_wall_detected":false}],"review_status":"healthy"}
-    ,{"transport_locator":"https://raw.githubusercontent.com/akka/akka/main/akka-docs/src/main/paradox/general/remoting.md","source_ids":["src-akka-location-transparency"],"last_attempt":{"at":"2026-08-14T00:00:00.000Z","outcome":"healthy","final_transport_locator":"https://raw.githubusercontent.com/akka/akka/main/akka-docs/src/main/paradox/general/remoting.md","http_status":200,"login_wall_detected":false,"redirects":[]},"last_success":{"at":"2026-08-14T00:00:00.000Z","outcome":"healthy","final_transport_locator":"https://raw.githubusercontent.com/akka/akka/main/akka-docs/src/main/paradox/general/remoting.md","http_status":200,"login_wall_detected":false},"attempt_history":[{"at":"2026-08-14T00:00:00.000Z","outcome":"healthy","final_transport_locator":"https://raw.githubusercontent.com/akka/akka/main/akka-docs/src/main/paradox/general/remoting.md","http_status":200,"login_wall_detected":false}],"review_status":"healthy"}
-    ,{"transport_locator":"https://raw.githubusercontent.com/dotnet/docs/main/docs/orleans/overview.md","source_ids":["src-microsoft-orleans-overview"],"last_attempt":{"at":"2026-08-14T00:00:00.000Z","outcome":"healthy","final_transport_locator":"https://raw.githubusercontent.com/dotnet/docs/main/docs/orleans/overview.md","http_status":200,"login_wall_detected":false,"redirects":[]},"last_success":{"at":"2026-08-14T00:00:00.000Z","outcome":"healthy","final_transport_locator":"https://raw.githubusercontent.com/dotnet/docs/main/docs/orleans/overview.md","http_status":200,"login_wall_detected":false},"attempt_history":[{"at":"2026-08-14T00:00:00.000Z","outcome":"healthy","final_transport_locator":"https://raw.githubusercontent.com/dotnet/docs/main/docs/orleans/overview.md","http_status":200,"login_wall_detected":false}],"review_status":"healthy"}
+    ,{"transport_locator":"https://raw.githubusercontent.com/akka/akka/v2.10.21/akka-docs/src/main/paradox/typed/actors.md","source_ids":["src-akka-actor-model"],"last_attempt":{"at":"2026-08-14T00:00:00.000Z","outcome":"healthy","final_transport_locator":"https://raw.githubusercontent.com/akka/akka/v2.10.21/akka-docs/src/main/paradox/typed/actors.md","http_status":200,"login_wall_detected":false,"redirects":[]},"last_success":{"at":"2026-08-14T00:00:00.000Z","outcome":"healthy","final_transport_locator":"https://raw.githubusercontent.com/akka/akka/v2.10.21/akka-docs/src/main/paradox/typed/actors.md","http_status":200,"login_wall_detected":false},"attempt_history":[{"at":"2026-08-14T00:00:00.000Z","outcome":"healthy","final_transport_locator":"https://raw.githubusercontent.com/akka/akka/v2.10.21/akka-docs/src/main/paradox/typed/actors.md","http_status":200,"login_wall_detected":false}],"review_status":"healthy"}
+    ,{"transport_locator":"https://raw.githubusercontent.com/akka/akka/v2.10.21/akka-docs/src/main/paradox/general/message-delivery-reliability.md","source_ids":["src-akka-message-delivery-reliability"],"last_attempt":{"at":"2026-08-14T00:00:00.000Z","outcome":"healthy","final_transport_locator":"https://raw.githubusercontent.com/akka/akka/v2.10.21/akka-docs/src/main/paradox/general/message-delivery-reliability.md","http_status":200,"login_wall_detected":false,"redirects":[]},"last_success":{"at":"2026-08-14T00:00:00.000Z","outcome":"healthy","final_transport_locator":"https://raw.githubusercontent.com/akka/akka/v2.10.21/akka-docs/src/main/paradox/general/message-delivery-reliability.md","http_status":200,"login_wall_detected":false},"attempt_history":[{"at":"2026-08-14T00:00:00.000Z","outcome":"healthy","final_transport_locator":"https://raw.githubusercontent.com/akka/akka/v2.10.21/akka-docs/src/main/paradox/general/message-delivery-reliability.md","http_status":200,"login_wall_detected":false}],"review_status":"healthy"}
+    ,{"transport_locator":"https://raw.githubusercontent.com/akka/akka/v2.10.21/akka-docs/src/main/paradox/general/remoting.md","source_ids":["src-akka-location-transparency"],"last_attempt":{"at":"2026-08-14T00:00:00.000Z","outcome":"healthy","final_transport_locator":"https://raw.githubusercontent.com/akka/akka/v2.10.21/akka-docs/src/main/paradox/general/remoting.md","http_status":200,"login_wall_detected":false,"redirects":[]},"last_success":{"at":"2026-08-14T00:00:00.000Z","outcome":"healthy","final_transport_locator":"https://raw.githubusercontent.com/akka/akka/v2.10.21/akka-docs/src/main/paradox/general/remoting.md","http_status":200,"login_wall_detected":false},"attempt_history":[{"at":"2026-08-14T00:00:00.000Z","outcome":"healthy","final_transport_locator":"https://raw.githubusercontent.com/akka/akka/v2.10.21/akka-docs/src/main/paradox/general/remoting.md","http_status":200,"login_wall_detected":false}],"review_status":"healthy"}
+    ,{"transport_locator":"https://raw.githubusercontent.com/dotnet/docs/a4303ce92aa169102f57793c84aae0603c75c3a3/docs/orleans/overview.md","source_ids":["src-microsoft-orleans-overview"],"last_attempt":{"at":"2026-08-14T00:00:00.000Z","outcome":"healthy","final_transport_locator":"https://raw.githubusercontent.com/dotnet/docs/a4303ce92aa169102f57793c84aae0603c75c3a3/docs/orleans/overview.md","http_status":200,"login_wall_detected":false,"redirects":[]},"last_success":{"at":"2026-08-14T00:00:00.000Z","outcome":"healthy","final_transport_locator":"https://raw.githubusercontent.com/dotnet/docs/a4303ce92aa169102f57793c84aae0603c75c3a3/docs/orleans/overview.md","http_status":200,"login_wall_detected":false},"attempt_history":[{"at":"2026-08-14T00:00:00.000Z","outcome":"healthy","final_transport_locator":"https://raw.githubusercontent.com/dotnet/docs/a4303ce92aa169102f57793c84aae0603c75c3a3/docs/orleans/overview.md","http_status":200,"login_wall_detected":false}],"review_status":"healthy"}
   ],
   "superseded_results": [
     {

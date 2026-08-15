@@ -7,6 +7,7 @@ import test from 'node:test';
 import {fileURLToPath} from 'node:url';
 
 import {
+  architectureCaseHeadings,
   knowledgeHeadingContract,
   mod13ModelingHeadings,
   mod12ModelingHeadings,
@@ -1014,6 +1015,8 @@ const closingPrincipleHeadings = [
   '## 来源',
 ];
 
+const architectureCaseTopicIds = ['STY-08'];
+
 const mod08Headings = [
   '## 学习问题',
   '## 建模目标与输入',
@@ -1446,6 +1449,67 @@ test('accepts the closing-principle contract only for PR-15 through PR-17', asyn
       const result = await validateContent(root);
 
       assert.deepEqual(result.errors, [], topicId);
+    });
+  }
+});
+
+test('accepts the exact ten-heading architecture-case contract only for registered style topics', async () => {
+  for (const topicId of architectureCaseTopicIds) {
+    assert.strictEqual(knowledgeHeadingContract('style', topicId), architectureCaseHeadings);
+    await withTempRoot(async (root) => {
+      await writeMdx(
+        root,
+        `styles/${topicId.toLowerCase()}.mdx`,
+        validKnowledgeFrontMatter('style', {
+          topic_id: topicId,
+          slug: `/styles/${topicId.toLowerCase()}`,
+        }),
+        [...architectureCaseHeadings.slice(0, -1), ...requiredMigrationHeadings, ...architectureCaseHeadings.slice(-1)].join('\n\n'),
+      );
+
+      assert.deepEqual((await validateContent(root)).errors, [], topicId);
+    });
+  }
+
+  assert.notStrictEqual(knowledgeHeadingContract('style', 'STY-07'), architectureCaseHeadings);
+});
+
+test('rejects missing, reordered, duplicate, and malformed migration headings for STY-08', async () => {
+  const validBody = [
+    ...architectureCaseHeadings.slice(0, -1),
+    ...requiredMigrationHeadings,
+    ...architectureCaseHeadings.slice(-1),
+  ];
+  const variants = [
+    {
+      name: 'missing',
+      body: validBody.filter((heading) => heading !== '## 架构图'),
+      expected: /expected exactly 10 ## 学习问题-contract H2 headings; found 9/u,
+    },
+    {
+      name: 'reordered',
+      body: [...validBody.slice(0, 2), validBody[3], validBody[2], ...validBody.slice(4)],
+      expected: /position 3; expected "## 事实边界", actual "## 架构图"/u,
+    },
+    {
+      name: 'duplicate',
+      body: [...validBody.slice(0, 3), validBody[2], ...validBody.slice(3)],
+      expected: /expected exactly 10 ## 学习问题-contract H2 headings; found 11/u,
+    },
+    {
+      name: 'migration',
+      body: validBody.filter((heading) => heading !== '### 不应照搬的部分'),
+      expected: /expected exactly 3 H3 headings under "## 可迁移经验"; found 2/u,
+    },
+  ];
+
+  for (const variant of variants) {
+    await withTempRoot(async (root) => {
+      await writeMdx(root, `styles/sty-08-${variant.name}.mdx`, validKnowledgeFrontMatter('style', {
+        topic_id: 'STY-08',
+        slug: `/styles/sty-08-${variant.name}`,
+      }), variant.body.join('\n\n'));
+      assert.match((await validateContent(root)).errors.join('\n'), variant.expected, variant.name);
     });
   }
 });

@@ -132,6 +132,9 @@ export const closingPrincipleHeadings = [
   '## 来源',
 ];
 
+export const architectureCaseTopicIds = new Set(['STY-08']);
+export const architectureCaseHeadings = closingPrincipleHeadings;
+
 export const mod08ModelingHeadings = [
   '## 学习问题',
   '## 建模目标与输入',
@@ -210,6 +213,9 @@ export const mod13ModelingHeadings = [
 export function knowledgeHeadingContract(type, topicId) {
   if (type === 'principle' && closingPrincipleTopicIds.has(topicId)) {
     return closingPrincipleHeadings;
+  }
+  if (type === 'style' && architectureCaseTopicIds.has(topicId)) {
+    return architectureCaseHeadings;
   }
   if (type === 'modeling' && topicId === 'MOD-08') {
     return mod08ModelingHeadings;

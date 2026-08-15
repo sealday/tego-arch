@@ -12,10 +12,10 @@ export const SVG = 'static/img/diagrams/sty-08-actor-order-fulfillment.svg';
 export const TOPIC_ID = 'STY-08';
 export const NEXT_TOPIC = 'STY-09';
 export const EXPECTED_HEADINGS = [
-  '学习问题', '组件、连接器与约束', '边界与控制流', '数据所有权与一致性',
-  '部署单元与故障域', '团队拓扑', '质量属性收益与成本', '迁移路径',
-  '禁用条件', '对比案例', '来源',
+  '学习问题', '一页摘要', '事实边界', '架构图', '控制权与任务流',
+  '关键源码导读', '架构决策与权衡', '生产化分析', '可迁移经验', '来源',
 ];
+export const EPISTEMIC_LABELS = ['已证实事实', '基于证据的推断', '个人分析'];
 export const SOURCE_IDS = [
   'src-hewitt-bishop-steiger-actor-formalism-1973',
   'src-akka-actor-model',
@@ -81,9 +81,9 @@ export const COMPARISON_ROWS = Object.freeze([
 ]);
 export const OBSERVATION_POINTS = ['收到消息', '进入邮箱', '开始处理', '业务提交', '发送回复', '外部效果完成'];
 export const ADOPTION_ROWS = Object.freeze([
-  ['采用', '稳定身份、独立维护有限状态、单实体命令可串行', '身份回收、有界邮箱、状态权威与恢复', '活跃集合远小于逻辑实体全集'],
+  ['采用', '稳定身份、独立维护有限状态、单实体命令可串行，且活跃集合远小于逻辑实体全集', '身份回收、有界邮箱、状态权威与恢复', '身份冲突、状态无法重建或活跃集合容量不可控'],
   ['谨慎采用', '跨 Actor 查询需要协调、预留或补偿', '幂等、对账、升级、再平衡与故障演练', '热点 Actor 的单邮箱成为吞吐瓶颈'],
-  ['停止采用', '即时联接、扫描或聚合查询为主', '跨 Actor 不变量没有协调机制', '团队无法运营邮箱积压、监督预算、持久化恢复和集群放置'],
+  ['停止采用', '即时联接、扫描或聚合查询为主', '评估替代查询与协调边界，并保留数据迁移和回退', '跨 Actor 不变量没有协调机制，或团队无法运营邮箱积压、监督预算、持久化恢复和集群放置'],
 ]);
 const MIGRATION_STEPS = Object.freeze([
   '固定消息合同、状态机、持久化和外部权威',
@@ -154,7 +154,7 @@ const REMOTE_SOURCE_CONTRACTS = Object.freeze({
     canonical_locator: 'https://www.ijcai.org/Proceedings/73/Papers/027B.pdf',
     transport_locator: 'https://www.ijcai.org/Proceedings/73/Papers/027B.pdf', source_kind: 'paper',
     title: 'A Universal Modular ACTOR Formalism for Artificial Intelligence', author_or_org: 'Carl Hewitt, Peter Bishop, and Richard Steiger',
-    version: 'IJCAI 1973 proceedings paper; checked 2026-08-14', checked_at: '2026-08-14', tier: 'primary',
+    version: 'IJCAI 1973 proceedings paper 027B; SHA-256 84499709f4e01794f77ba4b623e60a12148c48eba4a86bfc0dc5998ae755bb1a; checked 2026-08-14', checked_at: '2026-08-14', tier: 'primary',
     license: 'LicenseRef-All-Rights-Reserved', license_scope: 'The named IJCAI proceedings paper only; linked and third-party material excluded',
     license_evidence_url: 'https://www.ijcai.org/Proceedings/73/Papers/027B.pdf', copyright_policy: 'facts-and-short-quotation',
     allowed_evidence_roles: ['definition', 'historical-context'], citation_roles: ['definition', 'historical-context'],
@@ -164,57 +164,57 @@ const REMOTE_SOURCE_CONTRACTS = Object.freeze({
     citation_attribution: 'A Universal Modular ACTOR Formalism for Artificial Intelligence, Carl Hewitt, Peter Bishop, and Richard Steiger',
   }),
   'src-akka-actor-model': Object.freeze({
-    canonical_locator: 'https://doc.akka.io/libraries/akka-core/current/typed/actors.html',
-    transport_locator: 'https://raw.githubusercontent.com/akka/akka/main/akka-docs/src/main/paradox/typed/actors.md', source_kind: 'official-docs',
-    title: 'Introduction to Actors', author_or_org: 'Akka maintainers', version: 'Akka 2.10 documentation; checked 2026-08-14', checked_at: '2026-08-14', tier: 'primary',
-    license: 'Apache-2.0', license_scope: 'Official Akka repository documentation covered by Apache-2.0; trademarks, linked works, and third-party material excluded',
-    license_evidence_url: 'https://raw.githubusercontent.com/akka/akka/main/LICENSE', copyright_policy: 'facts-and-short-quotation',
+    canonical_locator: 'https://doc.akka.io/libraries/akka-core/2.10.21/typed/actors.html',
+    transport_locator: 'https://raw.githubusercontent.com/akka/akka/v2.10.21/akka-docs/src/main/paradox/typed/actors.md', source_kind: 'official-docs',
+    title: 'Introduction to Actors', author_or_org: 'Akka maintainers', version: 'Akka 2.10.21, tag v2.10.21, commit f585d64302bf4494b26be705a51ac4050e56d8d1; checked 2026-08-14', checked_at: '2026-08-14', tier: 'primary',
+    license: 'LicenseRef-All-Rights-Reserved', license_scope: 'The named Akka 2.10.21 documentation files under the Lightbend Commercial Software License Agreement in akka-docs/LICENSE; no reuse, adaptation, redistribution, code, trademarks, linked works, or third-party material',
+    license_evidence_url: 'https://raw.githubusercontent.com/akka/akka/v2.10.21/akka-docs/LICENSE', copyright_policy: 'facts-and-short-quotation',
     allowed_evidence_roles: ['definition', 'implementation', 'runtime-fact'], citation_roles: ['definition', 'implementation'], manifest_primary: false,
-    license_evidence_note: 'The official Akka repository licenses the documentation under Apache License 2.0.',
+    license_evidence_note: 'The v2.10.21 akka-docs/LICENSE is the controlling subdirectory license and grants only limited documentation access/use; Tego Arch uses attributed factual summary without excerpt, adaptation, or redistribution.',
     usage_boundary: 'Akka Typed implementation example for encapsulated state, behavior, messaging, and supervision; not a universal Actor Model guarantee.',
     citation_attribution: 'Introduction to Actors, Akka maintainers',
   }),
   'src-akka-message-delivery-reliability': Object.freeze({
-    canonical_locator: 'https://doc.akka.io/libraries/akka-core/current/general/message-delivery-reliability.html',
-    transport_locator: 'https://raw.githubusercontent.com/akka/akka/main/akka-docs/src/main/paradox/general/message-delivery-reliability.md', source_kind: 'official-docs',
-    title: 'Message Delivery Reliability', author_or_org: 'Akka maintainers', version: 'Akka 2.10 documentation; checked 2026-08-14', checked_at: '2026-08-14', tier: 'primary',
-    license: 'Apache-2.0', license_scope: 'Official Akka repository documentation covered by Apache-2.0; trademarks, linked works, and third-party material excluded',
-    license_evidence_url: 'https://raw.githubusercontent.com/akka/akka/main/LICENSE', copyright_policy: 'facts-and-short-quotation',
+    canonical_locator: 'https://doc.akka.io/libraries/akka-core/2.10.21/general/message-delivery-reliability.html',
+    transport_locator: 'https://raw.githubusercontent.com/akka/akka/v2.10.21/akka-docs/src/main/paradox/general/message-delivery-reliability.md', source_kind: 'official-docs',
+    title: 'Message Delivery Reliability', author_or_org: 'Akka maintainers', version: 'Akka 2.10.21, tag v2.10.21, commit f585d64302bf4494b26be705a51ac4050e56d8d1; checked 2026-08-14', checked_at: '2026-08-14', tier: 'primary',
+    license: 'LicenseRef-All-Rights-Reserved', license_scope: 'The named Akka 2.10.21 documentation files under the Lightbend Commercial Software License Agreement in akka-docs/LICENSE; no reuse, adaptation, redistribution, code, trademarks, linked works, or third-party material',
+    license_evidence_url: 'https://raw.githubusercontent.com/akka/akka/v2.10.21/akka-docs/LICENSE', copyright_policy: 'facts-and-short-quotation',
     allowed_evidence_roles: ['comparison', 'implementation', 'runtime-fact'], citation_roles: ['comparison', 'runtime-fact'], manifest_primary: false,
-    license_evidence_note: 'The official Akka repository licenses the documentation under Apache License 2.0.',
+    license_evidence_note: 'The v2.10.21 akka-docs/LICENSE is the controlling subdirectory license and grants only limited documentation access/use; Tego Arch uses attributed factual summary without excerpt, adaptation, or redistribution.',
     usage_boundary: 'Akka-scoped evidence for at-most-once delivery, sender-receiver ordering, dead letters, and local/remote differences; not a cross-framework guarantee.',
     citation_attribution: 'Message Delivery Reliability, Akka maintainers',
   }),
   'src-akka-location-transparency': Object.freeze({
-    canonical_locator: 'https://doc.akka.io/libraries/akka-core/current/general/remoting.html',
-    transport_locator: 'https://raw.githubusercontent.com/akka/akka/main/akka-docs/src/main/paradox/general/remoting.md', source_kind: 'official-docs',
-    title: 'Remoting — Location Transparency', author_or_org: 'Akka maintainers', version: 'Akka 2.10 documentation; checked 2026-08-14', checked_at: '2026-08-14', tier: 'primary',
-    license: 'Apache-2.0', license_scope: 'Official Akka repository documentation covered by Apache-2.0; trademarks, linked works, and third-party material excluded',
-    license_evidence_url: 'https://raw.githubusercontent.com/akka/akka/main/LICENSE', copyright_policy: 'facts-and-short-quotation',
+    canonical_locator: 'https://doc.akka.io/libraries/akka-core/2.10.21/general/remoting.html',
+    transport_locator: 'https://raw.githubusercontent.com/akka/akka/v2.10.21/akka-docs/src/main/paradox/general/remoting.md', source_kind: 'official-docs',
+    title: 'Remoting — Location Transparency', author_or_org: 'Akka maintainers', version: 'Akka 2.10.21, tag v2.10.21, commit f585d64302bf4494b26be705a51ac4050e56d8d1; checked 2026-08-14', checked_at: '2026-08-14', tier: 'primary',
+    license: 'LicenseRef-All-Rights-Reserved', license_scope: 'The named Akka 2.10.21 documentation files under the Lightbend Commercial Software License Agreement in akka-docs/LICENSE; no reuse, adaptation, redistribution, code, trademarks, linked works, or third-party material',
+    license_evidence_url: 'https://raw.githubusercontent.com/akka/akka/v2.10.21/akka-docs/LICENSE', copyright_policy: 'facts-and-short-quotation',
     allowed_evidence_roles: ['comparison', 'implementation', 'runtime-fact'], citation_roles: ['comparison', 'runtime-fact'], manifest_primary: false,
-    license_evidence_note: 'The official Akka repository licenses the documentation under Apache License 2.0.',
+    license_evidence_note: 'The v2.10.21 akka-docs/LICENSE is the controlling subdirectory license and grants only limited documentation access/use; Tego Arch uses attributed factual summary without excerpt, adaptation, or redistribution.',
     usage_boundary: 'Akka-scoped logical addressing example; it does not hide latency, serialization, network failure, security, placement, or state-migration boundaries.',
     citation_attribution: 'Remoting — Location Transparency, Akka maintainers',
   }),
   'src-microsoft-orleans-overview': Object.freeze({
     canonical_locator: 'https://learn.microsoft.com/en-us/dotnet/orleans/overview',
-    transport_locator: 'https://raw.githubusercontent.com/dotnet/docs/main/docs/orleans/overview.md', source_kind: 'official-docs',
-    title: 'Orleans overview', author_or_org: 'Microsoft', version: 'Microsoft Orleans documentation; checked 2026-08-14', checked_at: '2026-08-14', tier: 'primary',
-    license: 'CC-BY-4.0', license_scope: 'The named Microsoft Learn documentation page under Microsoft documentation terms; trademarks, code, linked works, and third-party material excluded',
-    license_evidence_url: 'https://learn.microsoft.com/en-us/legal/termsofuse', copyright_policy: 'adapt-with-attribution',
+    transport_locator: 'https://raw.githubusercontent.com/dotnet/docs/a4303ce92aa169102f57793c84aae0603c75c3a3/docs/orleans/overview.md', source_kind: 'official-docs',
+    title: 'Orleans overview', author_or_org: 'Microsoft', version: 'dotnet/docs commit a4303ce92aa169102f57793c84aae0603c75c3a3 (overview dated 2026-01-20; version pivots 7.0–10.0); checked 2026-08-14', checked_at: '2026-08-14', tier: 'primary',
+    license: 'CC-BY-4.0', license_scope: 'The named dotnet/docs Orleans overview file at commit a4303ce92aa169102f57793c84aae0603c75c3a3 under CC BY 4.0; code, trademarks, linked works, media, and third-party material excluded',
+    license_evidence_url: 'https://raw.githubusercontent.com/dotnet/docs/a4303ce92aa169102f57793c84aae0603c75c3a3/LICENSE', copyright_policy: 'adapt-with-attribution',
     allowed_evidence_roles: ['comparison', 'implementation', 'runtime-fact'], citation_roles: ['comparison', 'implementation'], manifest_primary: false,
-    license_evidence_note: 'Microsoft Learn documentation is used under the documented CC BY 4.0 terms for Microsoft documentation.',
-    usage_boundary: 'Orleans framework example for virtual identity, activation, placement, and explicit persistence; not a universal Actor Model guarantee.',
+    license_evidence_note: 'The pinned dotnet/docs LICENSE at the same commit contains CC BY 4.0 and governs the repository documentation snapshot used here.',
+    usage_boundary: 'Version-pivoted Microsoft Orleans overview at the pinned documentation commit for virtual identity, activation, placement, and persistence orientation; not proof of one runtime release defaults, configuration, or production outcomes.',
     citation_attribution: 'Orleans overview, Microsoft',
   }),
   'src-erlang-28f791c67609': Object.freeze({
     canonical_locator: 'https://www.erlang.org/doc/system/sup_princ.html',
-    transport_locator: 'https://www.erlang.org/doc/system/sup_princ.html', source_kind: 'official-docs',
-    title: 'Supervisor Behaviour — OTP Design Principles', author_or_org: 'Erlang/OTP maintainers', version: 'Current work/page checked on 2026-07-24', checked_at: '2026-07-24', tier: 'primary',
+    transport_locator: 'https://raw.githubusercontent.com/erlang/otp/OTP-28.5/system/doc/design_principles/sup_princ.md', source_kind: 'official-docs',
+    title: 'Supervisor Behaviour — OTP Design Principles', author_or_org: 'Erlang/OTP maintainers', version: 'Erlang/OTP 28.5, tag OTP-28.5, commit f4506ee46d68694a1d23ca81c314092fd83e8f85; checked 2026-08-14', checked_at: '2026-08-14', tier: 'primary',
     license: 'Apache-2.0', license_scope: 'The named work/page within the evidenced Apache-2.0 scope; trademarks, linked works, code or media under separate notices, and third-party assets excluded',
-    license_evidence_url: 'https://github.com/erlang/otp/blob/master/LICENSE.txt', copyright_policy: 'facts-and-short-quotation',
+    license_evidence_url: 'https://raw.githubusercontent.com/erlang/otp/OTP-28.5/LICENSE.txt', copyright_policy: 'facts-and-short-quotation',
     allowed_evidence_roles: ['case-evidence', 'comparison', 'definition', 'historical-context', 'implementation', 'learning', 'method', 'runtime-fact'], citation_roles: ['comparison', 'runtime-fact'], manifest_primary: false,
-    license_evidence_note: 'For “Supervisor Behaviour — OTP Design Principles” at https://www.erlang.org/doc/system/sup_princ.html, the official Erlang/OTP repository identifies Apache License 2.0 for the documented project material; evidence: https://github.com/erlang/otp/blob/master/LICENSE.txt.',
+    license_evidence_note: 'The pinned OTP-28.5 source file carries an Apache-2.0 SPDX header and the same tag includes LICENSE.txt with Apache License 2.0.',
     usage_boundary: 'Erlang/OTP supervision-tree, escalation, and restart-intensity implementation evidence; not proof that all Actor runtimes use the same hierarchy or recovery semantics.',
     citation_attribution: 'Supervisor Behaviour — OTP Design Principles, Erlang/OTP maintainers',
   }),
@@ -486,6 +486,17 @@ export function assertAdoptionContract(source) {
   assert.doesNotMatch(source, /跨 Actor[^。；]*不变量[^。；]*(?:无需|不必|没有必要)[^。；]*(?:协调|预留|补偿)/u, 'cross-Actor coordination contradiction forbidden');
   assert.doesNotMatch(source, /团队[^。；]*(?:无需|不必)运营[^。；]*(?:邮箱积压|监督预算|持久化恢复|集群放置)/u, 'operational-responsibility contradiction forbidden');
   assert.doesNotMatch(source, /先把(?:所有|每个)[^。；]*(?:服务|数据库行|实体)[^。；]*改写为 Actor/u, 'universal Actor migration forbidden');
+}
+export function assertArticleStructure(source) {
+  const headings = findMarkdownHeadings(articleParts(source).body).filter(({level}) => level === 2).map(({text}) => text);
+  assert.deepEqual(headings, EXPECTED_HEADINGS, 'exact ten-H2 architecture article contract');
+  const expectedSections = new Map([['已证实事实', '事实边界'], ['基于证据的推断', '架构决策与权衡'], ['个人分析', '控制权与任务流']]);
+  for (const label of EPISTEMIC_LABELS) {
+    const matches = [...source.matchAll(new RegExp(`\\*\\*${label}：\\*\\*`, 'gu'))];
+    assert.equal(matches.length, 1, `${label} appears exactly once without mechanical repetition`);
+    const section = expectedSections.get(label); const start = source.indexOf(`## ${section}\n`); const next = source.indexOf('\n## ', start + 4);
+    assert.ok(matches[0].index > start && (next === -1 || matches[0].index < next), `${label} belongs to ${section}`);
+  }
 }
 function attrs(tag) { return new Map([...tag.matchAll(/([:\w-]+)="([^"]*)"/gu)].map(([, key, value]) => [key, value])); }
 function decodeXmlText(value) { return value.replace(/&(?:#(\d+)|#x([\da-f]+)|amp|lt|gt|quot);/giu, (entity, decimal, hex) => {
@@ -1112,9 +1123,9 @@ ${OBSERVATION_POINTS.map((point) => `| ${point} | 只证明当前检查点 |`).j
 
 | 决策 | 适用信号 | 前置责任 | 停止或收紧条件 |
 | --- | --- | --- | --- |
-| 采用 | 稳定身份、独立维护有限状态、单实体命令可串行 | 身份回收、有界邮箱、状态权威与恢复 | 活跃集合远小于逻辑实体全集 |
+| 采用 | 稳定身份、独立维护有限状态、单实体命令可串行，且活跃集合远小于逻辑实体全集 | 身份回收、有界邮箱、状态权威与恢复 | 身份冲突、状态无法重建或活跃集合容量不可控 |
 | 谨慎采用 | 跨 Actor 查询需要协调、预留或补偿 | 幂等、对账、升级、再平衡与故障演练 | 热点 Actor 的单邮箱成为吞吐瓶颈 |
-| 停止采用 | 即时联接、扫描或聚合查询为主 | 跨 Actor 不变量没有协调机制 | 团队无法运营邮箱积压、监督预算、持久化恢复和集群放置 |
+| 停止采用 | 即时联接、扫描或聚合查询为主 | 评估替代查询与协调边界，并保留数据迁移和回退 | 跨 Actor 不变量没有协调机制，或团队无法运营邮箱积压、监督预算、持久化恢复和集群放置 |
 
 迁移第一步固定消息合同、状态机、持久化和外部权威。第二步把共享锁或并发写入口收敛为邮箱消息。第三步验证积压、激活、恢复、重放和热点实体。
 `;
@@ -1328,16 +1339,26 @@ test('STY-08 diagram inventory and geometry fixtures reject physical hazards', (
   assert.throws(() => assert.deepEqual(unsafe, CONNECTOR_INVENTORY), assert.AssertionError, 'recovery external effect rejected');
 });
 
-test('locks exact STY-08 metadata, headings, wrappers, components, order flow, and runtime boundaries', async () => {
+test('locks the exact ten-H2 article contract and non-mechanical epistemic labels', async () => {
+  const source = file(ARTICLE); assertArticleStructure(source);
+  for (const heading of EXPECTED_HEADINGS) await mutation(source, (candidate) => candidate.replace(`## ${heading}\n`, ''), assertArticleStructure, `${heading} heading deleted`);
+  await mutation(source, (candidate) => candidate.replace(`## ${EXPECTED_HEADINGS[0]}\n`, `## ${EXPECTED_HEADINGS[0]}（改）\n`), assertArticleStructure, 'heading renamed');
+  await mutation(source, (candidate) => candidate.replace(`## ${EXPECTED_HEADINGS[0]}\n`, '## __HEADING_SWAP__\n').replace(`## ${EXPECTED_HEADINGS[1]}\n`, `## ${EXPECTED_HEADINGS[0]}\n`).replace('## __HEADING_SWAP__\n', `## ${EXPECTED_HEADINGS[1]}\n`), assertArticleStructure, 'heading order changed');
+  await mutation(source, (candidate) => candidate.replace('## 来源\n', '## 额外章节\n\n## 来源\n'), assertArticleStructure, 'extra H2 inserted');
+  for (const label of EPISTEMIC_LABELS) {
+    await mutation(source, (candidate) => candidate.replace(`**${label}：**`, ''), assertArticleStructure, `${label} deleted`);
+    await mutation(source, (candidate) => `${candidate}\n**${label}：** 重复标签。\n`, assertArticleStructure, `${label} duplicated`);
+  }
+});
+
+test('locks exact STY-08 metadata, wrappers, components, order flow, and runtime boundaries', async () => {
   const source = file(ARTICLE); const {body} = articleParts(source); assertExactMetadata(source);
-  assert.deepEqual(findMarkdownHeadings(body).filter(({level}) => level === 2).map(({text}) => text), EXPECTED_HEADINGS);
+  assertArticleStructure(source);
   assertRequiredWrappers(source); assertActorComponents(source); assertProhibitions(source); assertSemanticBoundaries(source); assertOrderFlow(source); assertRuntimeBoundaries(source); assertAdoptionContract(source);
   for (const field of Object.keys(EXACT_METADATA)) {
     await mutation(source, (candidate) => removeFrontMatterField(candidate, field), assertExactMetadata, `${field} deleted`);
     await mutation(source, (candidate) => changeFrontMatterField(candidate, field), assertExactMetadata, `${field} changed`);
   }
-  for (const heading of EXPECTED_HEADINGS) await mutation(source, (candidate) => candidate.replace(`## ${heading}\n`, ''), (candidate) =>
-    assert.deepEqual(findMarkdownHeadings(articleParts(candidate).body).filter(({level}) => level === 2).map(({text}) => text), EXPECTED_HEADINGS), `${heading} heading deleted`);
   for (const wrapper of REQUIRED_WRAPPERS) for (const [name, from, deleted, changed] of [
     ['className', `className="${wrapper.className}"`, '', 'className="changed"'], ['role', ' role="region"', '', ' role="group"'],
     ['aria', ` aria-label="${wrapper.aria}"`, '', ` aria-label="${wrapper.aria} changed"`], ['tabIndex', ' tabIndex={0}', '', ' tabIndex={-1}'],
@@ -1390,9 +1411,16 @@ test('locks comparison, checkpoints, failure, adoption, and migration responsibi
 
 test('governs STY-08 sources, reciprocal relations, and Stage A projection', async () => {
   const ledger = JSON.parse(readFileSync('data/source-ledger.json', 'utf8')); const inventory = readFileSync('docs/source-license-inventory.md', 'utf8'); assertRemoteSourceContracts(ledger, inventory);
+  const linkHealth = JSON.parse(readFileSync('data/source-link-health.json', 'utf8'));
   const document = ledger.documents[ARTICLE]; assert.ok(document); assert.deepEqual(document.citations.map(({source_id}) => source_id), SOURCE_IDS);
   const documents = (await readContentDocuments('content')).map((entry) => ({...entry, file: `content/${entry.file}`}));
   const remote = SOURCE_IDS.slice(0, -1).map((id) => ledger.sources.find((entry) => entry.id === id));
+  for (const governed of remote) {
+    const health = linkHealth.results.find(({transport_locator}) => transport_locator === governed.transport_locator);
+    assert.ok(health, `${governed.id} exact pinned transport health`);
+    assert.deepEqual(health.source_ids, [governed.id], `${governed.id} exact health identity`);
+    assert.deepEqual([health.last_attempt?.outcome, health.last_attempt?.http_status, health.last_attempt?.final_transport_locator], ['healthy', 200, governed.transport_locator], `${governed.id} pinned transport healthy`);
+  }
   for (const id of SOURCE_IDS) {
     const governed = ledger.sources.find((entry) => entry.id === id); const citation = document.citations.find((entry) => entry.source_id === id);
     assert.ok(governed, `${id} source`); for (const field of SOURCE_REQUIRED_FIELDS) assert.ok(governed[field]?.length !== 0 && governed[field] !== undefined, `${id}.${field}`);
@@ -1415,12 +1443,18 @@ test('governs STY-08 sources, reciprocal relations, and Stage A projection', asy
   const changedLedger = (transform) => { const candidate = structuredClone(ledger); transform(candidate); return candidate; };
   const source = (candidate, id = SOURCE_IDS[0]) => candidate.sources.find((entry) => entry.id === id);
   const citation = (candidate, id = SOURCE_IDS[0]) => candidate.documents[ARTICLE].citations.find((entry) => entry.source_id === id);
+  for (const id of SOURCE_IDS.slice(0, -1)) for (const [label, field, value] of [
+    ['canonical', 'canonical_locator', 'https://example.invalid/actor'],
+    ['transport', 'transport_locator', 'https://example.invalid/transport'],
+    ['version', 'version', 'floating version'],
+    ['license', 'license', 'CC-BY-4.0'],
+    ['license scope', 'license_scope', 'reusable without restriction'],
+    ['license evidence URL', 'license_evidence_url', 'https://example.invalid/license'],
+    ['license evidence note', 'license_evidence_note', 'changed'],
+    ['copyright policy', 'copyright_policy', 'adapted-text'],
+    ['usage boundary', 'usage_boundary', 'universal guarantee'],
+  ]) assert.throws(() => assertRemoteSourceContracts(changedLedger((candidate) => { source(candidate, id)[field] = value; }), inventory), assert.AssertionError, `${id} ${label} mutation rejected`);
   for (const [label, transform] of [
-    ['canonical', (candidate) => { source(candidate).canonical_locator = 'https://example.invalid/actor'; }],
-    ['transport', (candidate) => { source(candidate).transport_locator = 'https://example.invalid/transport'; }],
-    ['license', (candidate) => { source(candidate).license = 'CC-BY-4.0'; }],
-    ['license evidence', (candidate) => { source(candidate).license_evidence_note = 'changed'; }],
-    ['usage boundary', (candidate) => { source(candidate).usage_boundary = 'universal guarantee'; }],
     ['allowed roles', (candidate) => { source(candidate).allowed_evidence_roles = ['definition']; }],
     ['citation roles', (candidate) => { citation(candidate).roles = ['comparison']; }],
     ['primary', (candidate) => { citation(candidate).manifest_primary = false; citation(candidate, SOURCE_IDS[1]).manifest_primary = true; }],

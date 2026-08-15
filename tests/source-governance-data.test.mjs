@@ -25,7 +25,7 @@ const approvedMicrosoftLicenseEvidenceUrls = new Set([
   'https://raw.githubusercontent.com/MicrosoftDocs/architecture-center/f69851e7c8b27ca6e8983e7b7d91d35e99423a73/LICENSE',
   'https://raw.githubusercontent.com/MicrosoftDocs/architecture-center/7b4bf26469bc45810c64406ad3cebdae4f60fb6b/LICENSE',
   'https://github.com/dotnet/docs/blob/main/LICENSE',
-  'https://learn.microsoft.com/en-us/legal/termsofuse',
+  'https://raw.githubusercontent.com/dotnet/docs/a4303ce92aa169102f57793c84aae0603c75c3a3/LICENSE',
 ]);
 
 async function governedData() {

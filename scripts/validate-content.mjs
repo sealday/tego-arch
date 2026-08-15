@@ -14,6 +14,7 @@ import {
   validateSourceGovernance,
 } from './source-ledger.mjs';
 import {
+  architectureCaseTopicIds,
   allowedPriorities,
   allowedSourceKinds,
   allowedValues,
@@ -429,6 +430,16 @@ export async function validateContent(
       );
 
       if (type === 'principle' && closingPrincipleTopicIds.has(metadata.topic_id)) {
+        validateSectionH3Contract(
+          file,
+          headings,
+          '## 可迁移经验',
+          requiredMigrationHeadings,
+          errors,
+        );
+      }
+
+      if (type === 'style' && architectureCaseTopicIds.has(metadata.topic_id)) {
         validateSectionH3Contract(
           file,
           headings,
