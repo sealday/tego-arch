@@ -21,13 +21,26 @@
 
 ## Local in-app Browser QA
 
-- Exact-head functional collection: `PENDING`.
-- Raw Browser JSON: `docs/reviews/evidence/g009-batch9-stage-a-browser.json`, SHA-256 `PENDING_RAW_BROWSER_SHA256`.
-- Screenshot evidence: `PENDING`; no visual PASS is claimed.
+The exact implementation candidate `bbb2f4234c4c24993dbea108d2a19a751e778409` was rebuilt and served at `http://127.0.0.1:3418/tego-arch/styles/sty-08`, then collected from scratch using only the Codex in-app Browser.
+
+| State | Viewport/theme | Page client/scroll | Diagram; comparison; decision client/scroll | ArrowRight before→after | Diagnostics |
+| --- | --- | --- | --- | --- | --- |
+| `desktopLight` | `1440x1000` / light | `1440/1440` | `800/800`; `800/1171`; `800/1764` | `0→0`; `0→40`; `0→40` | `0/0/0`; `hasMore=false`; `truncated=false` |
+| `desktopDark` | `1440x1000` / dark | `1440/1440` | `800/800`; `800/1171`; `800/1764` | `0→0`; `0→40`; `0→40` | `0/0/0`; `hasMore=false`; `truncated=false` |
+| `mobileLight` | `390x844` / light | `390/390` | `358/800`; `358/1171`; `358/1764` | `0→40`; `0→40`; `0→40` | `0/0/0`; `hasMore=false`; `truncated=false` |
+| `mobileDark` | `390x844` / dark | `390/390` | `358/800`; `358/1171`; `358/1764` | `0→40`; `0→40`; `0→40` | `0/0/0`; `hasMore=false`; `truncated=false` |
+
+- States accepted: `4/4`; wrapper interaction checks: `12/12`; every before/after state retained focus, `:focus-visible` and its exact `3px` outline.
+- Relation destination/H1/return checks: `16/16`. The Erlang/OTP case route's rendered H1 is `监督树：把失败恢复设计成层级控制协议`; its longer front matter title is not substituted for the observed H1.
+- SVG loaded in every state: intrinsic `48x150`; rendered `800x2480`.
+- Remote source anchors: `6` per state; exact href/`_blank`/`noopener noreferrer` checks: `24/24`; STY-09 actionable count: `0` per state.
+- Every state recorded warning/error logs `0`, `Runtime.exceptionThrown=0`, `Log.entryAdded=0`, `hasMore=false` and `truncated=false`.
+- Raw Browser JSON: `docs/reviews/evidence/g009-batch9-stage-a-browser.json`, SHA-256 `fa3fdecb77c55c8e2a013d95bbe9684afde05e3027583a9b3d1feb405a758932`.
+- Screenshot evidence: `BLOCKED / NOT_ACCEPTED`. Exactly three fresh IAB full-page captures repeated the opening viewport instead of covering the complete page and architecture diagram. Their exact state, viewport, path, byte size, SHA-256, status and rejection reason are bound in the raw JSON. No Chrome fallback, prior raw, old screenshot or visual PASS is claimed.
 
 ## Independent review checkpoint
 
-- Exact implementation candidate head: `PENDING_IMPLEMENTATION_COMMIT`.
+- Exact implementation candidate head: `bbb2f4234c4c24993dbea108d2a19a751e778409`.
 - Exact evidence head: `PENDING`.
 - Independent code/spec/security review: `PENDING`.
 - Independent content/evidence/rights review: `PENDING`; rights: `PENDING`.

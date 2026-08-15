@@ -1,0 +1,710 @@
+{
+  "candidateHead": "bbb2f4234c4c24993dbea108d2a19a751e778409",
+  "collection": {
+    "browser": "Codex in-app Browser only",
+    "fresh": true,
+    "servedUrl": "http://127.0.0.1:3418/tego-arch/styles/sty-08"
+  },
+  "states": {
+    "desktopLight": {
+      "theme": "light",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "geometry": {
+        "page": {
+          "clientWidth": 1440,
+          "scrollWidth": 1440
+        },
+        "wrappers": [
+          {
+            "clientWidth": 800,
+            "label": "共享订单状态与订单 Actor 履约边界对照图，可横向滚动",
+            "scrollWidth": 800
+          },
+          {
+            "clientWidth": 800,
+            "label": "Actor、线程、消息消费者、事件驱动与微服务机制对照表，可横向滚动",
+            "scrollWidth": 1171
+          },
+          {
+            "clientWidth": 800,
+            "label": "Actor Model 采用、谨慎采用与停止决策表，可横向滚动",
+            "scrollWidth": 1764
+          }
+        ],
+        "svg": {
+          "loaded": true,
+          "naturalHeight": 150,
+          "naturalWidth": 48,
+          "renderedHeight": 2480,
+          "renderedWidth": 800,
+          "src": "/tego-arch/assets/images/sty-08-actor-order-fulfillment-fa568ecfe3b507ce8ca88416844f5b3d.svg"
+        },
+        "sources": [
+          {
+            "href": "https://www.ijcai.org/Proceedings/73/Papers/027B.pdf",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://doc.akka.io/libraries/akka-core/2.10.21/typed/actors.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://doc.akka.io/libraries/akka-core/2.10.21/general/message-delivery-reliability.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://doc.akka.io/libraries/akka-core/2.10.21/general/remoting.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://learn.microsoft.com/en-us/dotnet/orleans/overview",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://www.erlang.org/doc/system/sup_princ.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          }
+        ],
+        "sty09": 0
+      },
+      "interactions": [
+        {
+          "index": 0,
+          "label": "共享订单状态与订单 Actor 履约边界对照图，可横向滚动",
+          "key": "ArrowRight",
+          "expectedScrollDelta": 0,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 0
+          }
+        },
+        {
+          "index": 1,
+          "label": "Actor、线程、消息消费者、事件驱动与微服务机制对照表，可横向滚动",
+          "key": "ArrowRight",
+          "expectedScrollDelta": 40,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 40
+          }
+        },
+        {
+          "index": 2,
+          "label": "Actor Model 采用、谨慎采用与停止决策表，可横向滚动",
+          "key": "ArrowRight",
+          "expectedScrollDelta": 40,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 40
+          }
+        }
+      ],
+      "relations": [
+        {
+          "href": "/tego-arch/styles/sty-05",
+          "expectedH1": "微服务：用独立部署换取自治，也承担分布式成本",
+          "h1": "微服务：用独立部署换取自治，也承担分布式成本",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/styles/sty-06",
+          "expectedH1": "事件驱动架构：先分清事件携带什么，再决定状态放在哪里",
+          "h1": "事件驱动架构：先分清事件携带什么，再决定状态放在哪里",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/styles/sty-07",
+          "expectedH1": "面向服务架构：用稳定合同连接企业能力，也约束集中治理",
+          "h1": "面向服务架构：用稳定合同连接企业能力，也约束集中治理",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/cases/erlang-otp-supervision-tree",
+          "expectedH1": "监督树：把失败恢复设计成层级控制协议",
+          "h1": "监督树：把失败恢复设计成层级控制协议",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        }
+      ],
+      "logs": [],
+      "diagnostics": {
+        "events": [],
+        "hasMore": false,
+        "truncated": false
+      }
+    },
+    "desktopDark": {
+      "theme": "dark",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "geometry": {
+        "page": {
+          "clientWidth": 1440,
+          "scrollWidth": 1440
+        },
+        "wrappers": [
+          {
+            "clientWidth": 800,
+            "label": "共享订单状态与订单 Actor 履约边界对照图，可横向滚动",
+            "scrollWidth": 800
+          },
+          {
+            "clientWidth": 800,
+            "label": "Actor、线程、消息消费者、事件驱动与微服务机制对照表，可横向滚动",
+            "scrollWidth": 1171
+          },
+          {
+            "clientWidth": 800,
+            "label": "Actor Model 采用、谨慎采用与停止决策表，可横向滚动",
+            "scrollWidth": 1764
+          }
+        ],
+        "svg": {
+          "loaded": true,
+          "naturalHeight": 150,
+          "naturalWidth": 48,
+          "renderedHeight": 2480,
+          "renderedWidth": 800,
+          "src": "/tego-arch/assets/images/sty-08-actor-order-fulfillment-fa568ecfe3b507ce8ca88416844f5b3d.svg"
+        },
+        "sources": [
+          {
+            "href": "https://www.ijcai.org/Proceedings/73/Papers/027B.pdf",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://doc.akka.io/libraries/akka-core/2.10.21/typed/actors.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://doc.akka.io/libraries/akka-core/2.10.21/general/message-delivery-reliability.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://doc.akka.io/libraries/akka-core/2.10.21/general/remoting.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://learn.microsoft.com/en-us/dotnet/orleans/overview",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://www.erlang.org/doc/system/sup_princ.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          }
+        ],
+        "sty09": 0
+      },
+      "interactions": [
+        {
+          "index": 0,
+          "label": "共享订单状态与订单 Actor 履约边界对照图，可横向滚动",
+          "key": "ArrowRight",
+          "expectedScrollDelta": 0,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(227, 144, 125) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(227, 144, 125) solid 3px",
+            "scrollLeft": 0
+          }
+        },
+        {
+          "index": 1,
+          "label": "Actor、线程、消息消费者、事件驱动与微服务机制对照表，可横向滚动",
+          "key": "ArrowRight",
+          "expectedScrollDelta": 40,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "scrollLeft": 40
+          }
+        },
+        {
+          "index": 2,
+          "label": "Actor Model 采用、谨慎采用与停止决策表，可横向滚动",
+          "key": "ArrowRight",
+          "expectedScrollDelta": 40,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "scrollLeft": 40
+          }
+        }
+      ],
+      "relations": [
+        {
+          "href": "/tego-arch/styles/sty-05",
+          "expectedH1": "微服务：用独立部署换取自治，也承担分布式成本",
+          "h1": "微服务：用独立部署换取自治，也承担分布式成本",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/styles/sty-06",
+          "expectedH1": "事件驱动架构：先分清事件携带什么，再决定状态放在哪里",
+          "h1": "事件驱动架构：先分清事件携带什么，再决定状态放在哪里",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/styles/sty-07",
+          "expectedH1": "面向服务架构：用稳定合同连接企业能力，也约束集中治理",
+          "h1": "面向服务架构：用稳定合同连接企业能力，也约束集中治理",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/cases/erlang-otp-supervision-tree",
+          "expectedH1": "监督树：把失败恢复设计成层级控制协议",
+          "h1": "监督树：把失败恢复设计成层级控制协议",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        }
+      ],
+      "logs": [],
+      "diagnostics": {
+        "events": [],
+        "hasMore": false,
+        "truncated": false
+      }
+    },
+    "mobileLight": {
+      "theme": "light",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "geometry": {
+        "page": {
+          "clientWidth": 390,
+          "scrollWidth": 390
+        },
+        "wrappers": [
+          {
+            "clientWidth": 358,
+            "label": "共享订单状态与订单 Actor 履约边界对照图，可横向滚动",
+            "scrollWidth": 800
+          },
+          {
+            "clientWidth": 358,
+            "label": "Actor、线程、消息消费者、事件驱动与微服务机制对照表，可横向滚动",
+            "scrollWidth": 1171
+          },
+          {
+            "clientWidth": 358,
+            "label": "Actor Model 采用、谨慎采用与停止决策表，可横向滚动",
+            "scrollWidth": 1764
+          }
+        ],
+        "svg": {
+          "loaded": true,
+          "naturalHeight": 150,
+          "naturalWidth": 48,
+          "renderedHeight": 2480,
+          "renderedWidth": 800,
+          "src": "/tego-arch/assets/images/sty-08-actor-order-fulfillment-fa568ecfe3b507ce8ca88416844f5b3d.svg"
+        },
+        "sources": [
+          {
+            "href": "https://www.ijcai.org/Proceedings/73/Papers/027B.pdf",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://doc.akka.io/libraries/akka-core/2.10.21/typed/actors.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://doc.akka.io/libraries/akka-core/2.10.21/general/message-delivery-reliability.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://doc.akka.io/libraries/akka-core/2.10.21/general/remoting.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://learn.microsoft.com/en-us/dotnet/orleans/overview",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://www.erlang.org/doc/system/sup_princ.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          }
+        ],
+        "sty09": 0
+      },
+      "interactions": [
+        {
+          "index": 0,
+          "label": "共享订单状态与订单 Actor 履约边界对照图，可横向滚动",
+          "key": "ArrowRight",
+          "expectedScrollDelta": 40,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 40
+          }
+        },
+        {
+          "index": 1,
+          "label": "Actor、线程、消息消费者、事件驱动与微服务机制对照表，可横向滚动",
+          "key": "ArrowRight",
+          "expectedScrollDelta": 40,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 40
+          }
+        },
+        {
+          "index": 2,
+          "label": "Actor Model 采用、谨慎采用与停止决策表，可横向滚动",
+          "key": "ArrowRight",
+          "expectedScrollDelta": 40,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 40
+          }
+        }
+      ],
+      "relations": [
+        {
+          "href": "/tego-arch/styles/sty-05",
+          "expectedH1": "微服务：用独立部署换取自治，也承担分布式成本",
+          "h1": "微服务：用独立部署换取自治，也承担分布式成本",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/styles/sty-06",
+          "expectedH1": "事件驱动架构：先分清事件携带什么，再决定状态放在哪里",
+          "h1": "事件驱动架构：先分清事件携带什么，再决定状态放在哪里",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/styles/sty-07",
+          "expectedH1": "面向服务架构：用稳定合同连接企业能力，也约束集中治理",
+          "h1": "面向服务架构：用稳定合同连接企业能力，也约束集中治理",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/cases/erlang-otp-supervision-tree",
+          "expectedH1": "监督树：把失败恢复设计成层级控制协议",
+          "h1": "监督树：把失败恢复设计成层级控制协议",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        }
+      ],
+      "logs": [],
+      "diagnostics": {
+        "events": [],
+        "hasMore": false,
+        "truncated": false
+      }
+    },
+    "mobileDark": {
+      "theme": "dark",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "geometry": {
+        "page": {
+          "clientWidth": 390,
+          "scrollWidth": 390
+        },
+        "wrappers": [
+          {
+            "clientWidth": 358,
+            "label": "共享订单状态与订单 Actor 履约边界对照图，可横向滚动",
+            "scrollWidth": 800
+          },
+          {
+            "clientWidth": 358,
+            "label": "Actor、线程、消息消费者、事件驱动与微服务机制对照表，可横向滚动",
+            "scrollWidth": 1171
+          },
+          {
+            "clientWidth": 358,
+            "label": "Actor Model 采用、谨慎采用与停止决策表，可横向滚动",
+            "scrollWidth": 1764
+          }
+        ],
+        "svg": {
+          "loaded": true,
+          "naturalHeight": 150,
+          "naturalWidth": 48,
+          "renderedHeight": 2480,
+          "renderedWidth": 800,
+          "src": "/tego-arch/assets/images/sty-08-actor-order-fulfillment-fa568ecfe3b507ce8ca88416844f5b3d.svg"
+        },
+        "sources": [
+          {
+            "href": "https://www.ijcai.org/Proceedings/73/Papers/027B.pdf",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://doc.akka.io/libraries/akka-core/2.10.21/typed/actors.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://doc.akka.io/libraries/akka-core/2.10.21/general/message-delivery-reliability.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://doc.akka.io/libraries/akka-core/2.10.21/general/remoting.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://learn.microsoft.com/en-us/dotnet/orleans/overview",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://www.erlang.org/doc/system/sup_princ.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          }
+        ],
+        "sty09": 0
+      },
+      "interactions": [
+        {
+          "index": 0,
+          "label": "共享订单状态与订单 Actor 履约边界对照图，可横向滚动",
+          "key": "ArrowRight",
+          "expectedScrollDelta": 40,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(227, 144, 125) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(227, 144, 125) solid 3px",
+            "scrollLeft": 40
+          }
+        },
+        {
+          "index": 1,
+          "label": "Actor、线程、消息消费者、事件驱动与微服务机制对照表，可横向滚动",
+          "key": "ArrowRight",
+          "expectedScrollDelta": 40,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "scrollLeft": 40
+          }
+        },
+        {
+          "index": 2,
+          "label": "Actor Model 采用、谨慎采用与停止决策表，可横向滚动",
+          "key": "ArrowRight",
+          "expectedScrollDelta": 40,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "scrollLeft": 40
+          }
+        }
+      ],
+      "relations": [
+        {
+          "href": "/tego-arch/styles/sty-05",
+          "expectedH1": "微服务：用独立部署换取自治，也承担分布式成本",
+          "h1": "微服务：用独立部署换取自治，也承担分布式成本",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/styles/sty-06",
+          "expectedH1": "事件驱动架构：先分清事件携带什么，再决定状态放在哪里",
+          "h1": "事件驱动架构：先分清事件携带什么，再决定状态放在哪里",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/styles/sty-07",
+          "expectedH1": "面向服务架构：用稳定合同连接企业能力，也约束集中治理",
+          "h1": "面向服务架构：用稳定合同连接企业能力，也约束集中治理",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/cases/erlang-otp-supervision-tree",
+          "expectedH1": "监督树：把失败恢复设计成层级控制协议",
+          "h1": "监督树：把失败恢复设计成层级控制协议",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        }
+      ],
+      "logs": [],
+      "diagnostics": {
+        "events": [],
+        "hasMore": false,
+        "truncated": false
+      }
+    }
+  },
+  "screenshotEvidence": {
+    "status": "BLOCKED / NOT_ACCEPTED",
+    "reason": "Exactly three fresh in-app Browser full-page captures repeated the opening viewport instead of covering the complete page and architecture diagram; no visual PASS is claimed.",
+    "attempts": [
+      {
+        "ordinal": 1,
+        "state": "desktopLight",
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "kind": "fullPage",
+        "status": "CAPTURED_REJECTED",
+        "reason": "The in-app Browser full-page capture repeated the opening viewport instead of covering the complete page and architecture diagram, so it cannot support trustworthy whole-page visual review.",
+        "path": "/Users/seal/projects/tego-arch/.worktrees/g009-styles-batch7/.superpowers/sdd/sty08-stage-a-bbb2f42-formal-1.png",
+        "bytes": 1778121,
+        "sha256": "baa706e8c005101211ea0f46b5af86bad5a1da1bdbc3ec6845cf60bf34c6dab2"
+      },
+      {
+        "ordinal": 2,
+        "state": "desktopDark",
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "kind": "fullPage",
+        "status": "CAPTURED_REJECTED",
+        "reason": "The in-app Browser full-page capture repeated the opening viewport instead of covering the complete page and architecture diagram, so it cannot support trustworthy whole-page visual review.",
+        "path": "/Users/seal/projects/tego-arch/.worktrees/g009-styles-batch7/.superpowers/sdd/sty08-stage-a-bbb2f42-formal-2.png",
+        "bytes": 1791254,
+        "sha256": "95889769eeea867285baaae655d300b0c0bcd1dc61ccab0dbbe23b43b46f9f51"
+      },
+      {
+        "ordinal": 3,
+        "state": "mobileLight",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "kind": "fullPage",
+        "status": "CAPTURED_REJECTED",
+        "reason": "The in-app Browser full-page capture repeated the opening viewport instead of covering the complete page and architecture diagram, so it cannot support trustworthy whole-page visual review.",
+        "path": "/Users/seal/projects/tego-arch/.worktrees/g009-styles-batch7/.superpowers/sdd/sty08-stage-a-bbb2f42-formal-3.png",
+        "bytes": 838206,
+        "sha256": "c8f6898b8bab04415a0c4e6ae587690bbe5acbba5954545e4848a541492c943f"
+      }
+    ]
+  }
+}

@@ -14,8 +14,8 @@ const REVIEW = 'docs/reviews/g009-batch9.md';
 const RAW_BROWSER = 'docs/reviews/evidence/g009-batch9-stage-a-browser.json';
 const IMMEDIATE_REVIEW = 'docs/reviews/g009-batch8.md';
 const BACKLOG = 'docs/content-backlog.md';
-const CANDIDATE_HEAD = 'PENDING_IMPLEMENTATION_COMMIT';
-const RAW_BROWSER_HASH = 'PENDING_RAW_BROWSER_SHA256';
+const CANDIDATE_HEAD = 'bbb2f4234c4c24993dbea108d2a19a751e778409';
+const RAW_BROWSER_HASH = 'fa3fdecb77c55c8e2a013d95bbe9684afde05e3027583a9b3d1feb405a758932';
 const IMMEDIATE_REVIEW_HASH = '2915584034c0d480ee04713c9fadee2839f03d112ced139901a3fb2033d8ac7e';
 const IMMEDIATE_BACKLOG_SUFFIX_HASH = 'dba312f190706ae7112ea057addefe58ceff4cdd15bad39264efbd58b129c354';
 const ARTIFACT_HASHES = new Map([
@@ -34,7 +34,7 @@ const RELATIONS = [
   ['/tego-arch/styles/sty-05', '微服务：用独立部署换取自治，也承担分布式成本'],
   ['/tego-arch/styles/sty-06', '事件驱动架构：先分清事件携带什么，再决定状态放在哪里'],
   ['/tego-arch/styles/sty-07', '面向服务架构：用稳定合同连接企业能力，也约束集中治理'],
-  ['/tego-arch/cases/erlang-otp-supervision-tree', 'Erlang/OTP 运行时平台：把失败恢复设计成层级控制协议'],
+  ['/tego-arch/cases/erlang-otp-supervision-tree', '监督树：把失败恢复设计成层级控制协议'],
 ];
 const SOURCE_LINKS = [
   'https://www.ijcai.org/Proceedings/73/Papers/027B.pdf',
@@ -44,6 +44,42 @@ const SOURCE_LINKS = [
   'https://learn.microsoft.com/en-us/dotnet/orleans/overview',
   'https://www.erlang.org/doc/system/sup_princ.html',
 ];
+const STATE_CONTRACTS = Object.freeze({
+  desktopLight: Object.freeze({
+    theme: 'light', width: 1440, height: 1000,
+    clients: [800, 800, 800], scrolls: [800, 1171, 1764], deltas: [0, 40, 40],
+    outlines: ['rgb(159, 63, 49) solid 3px', 'rgb(159, 63, 49) solid 3px', 'rgb(159, 63, 49) solid 3px'],
+  }),
+  desktopDark: Object.freeze({
+    theme: 'dark', width: 1440, height: 1000,
+    clients: [800, 800, 800], scrolls: [800, 1171, 1764], deltas: [0, 40, 40],
+    outlines: ['rgb(227, 144, 125) solid 3px', 'rgba(227, 144, 125, 0.62) solid 3px', 'rgba(227, 144, 125, 0.62) solid 3px'],
+  }),
+  mobileLight: Object.freeze({
+    theme: 'light', width: 390, height: 844,
+    clients: [358, 358, 358], scrolls: [800, 1171, 1764], deltas: [40, 40, 40],
+    outlines: ['rgb(159, 63, 49) solid 3px', 'rgb(159, 63, 49) solid 3px', 'rgb(159, 63, 49) solid 3px'],
+  }),
+  mobileDark: Object.freeze({
+    theme: 'dark', width: 390, height: 844,
+    clients: [358, 358, 358], scrolls: [800, 1171, 1764], deltas: [40, 40, 40],
+    outlines: ['rgb(227, 144, 125) solid 3px', 'rgba(227, 144, 125, 0.62) solid 3px', 'rgba(227, 144, 125, 0.62) solid 3px'],
+  }),
+});
+const SVG_GEOMETRY = Object.freeze({
+  src: '/tego-arch/assets/images/sty-08-actor-order-fulfillment-fa568ecfe3b507ce8ca88416844f5b3d.svg',
+  loaded: true,
+  naturalWidth: 48,
+  naturalHeight: 150,
+  renderedWidth: 800,
+  renderedHeight: 2480,
+});
+const SCREENSHOT_REJECTION_REASON = 'The in-app Browser full-page capture repeated the opening viewport instead of covering the complete page and architecture diagram, so it cannot support trustworthy whole-page visual review.';
+const SCREENSHOT_ATTEMPTS = Object.freeze([
+  {ordinal: 1, state: 'desktopLight', viewport: {width: 1440, height: 1000}, kind: 'fullPage', status: 'CAPTURED_REJECTED', reason: SCREENSHOT_REJECTION_REASON, path: '/Users/seal/projects/tego-arch/.worktrees/g009-styles-batch7/.superpowers/sdd/sty08-stage-a-bbb2f42-formal-1.png', bytes: 1778121, sha256: 'baa706e8c005101211ea0f46b5af86bad5a1da1bdbc3ec6845cf60bf34c6dab2'},
+  {ordinal: 2, state: 'desktopDark', viewport: {width: 1440, height: 1000}, kind: 'fullPage', status: 'CAPTURED_REJECTED', reason: SCREENSHOT_REJECTION_REASON, path: '/Users/seal/projects/tego-arch/.worktrees/g009-styles-batch7/.superpowers/sdd/sty08-stage-a-bbb2f42-formal-2.png', bytes: 1791254, sha256: '95889769eeea867285baaae655d300b0c0bcd1dc61ccab0dbbe23b43b46f9f51'},
+  {ordinal: 3, state: 'mobileLight', viewport: {width: 390, height: 844}, kind: 'fullPage', status: 'CAPTURED_REJECTED', reason: SCREENSHOT_REJECTION_REASON, path: '/Users/seal/projects/tego-arch/.worktrees/g009-styles-batch7/.superpowers/sdd/sty08-stage-a-bbb2f42-formal-3.png', bytes: 838206, sha256: 'c8f6898b8bab04415a0c4e6ae587690bbe5acbba5954545e4848a541492c943f'},
+]);
 
 const rootUrl = new URL('../', import.meta.url);
 const sha256 = (value) => createHash('sha256').update(value).digest('hex');
@@ -92,35 +128,31 @@ function assertBrowser(evidence) {
     fresh: true,
     servedUrl: 'http://127.0.0.1:3418/tego-arch/styles/sty-08',
   });
-  for (const [key, expected] of Object.entries({
-    desktopLight: {theme: 'light', width: 1440, height: 1000},
-    desktopDark: {theme: 'dark', width: 1440, height: 1000},
-    mobileLight: {theme: 'light', width: 390, height: 844},
-    mobileDark: {theme: 'dark', width: 390, height: 844},
-  })) {
+  for (const [key, expected] of Object.entries(STATE_CONTRACTS)) {
     const state = evidence.states[key];
     assert.deepEqual([state.theme, state.viewport.width, state.viewport.height], [expected.theme, expected.width, expected.height]);
     assert.deepEqual(state.geometry.page, {clientWidth: expected.width, scrollWidth: expected.width});
     assert.deepEqual(state.geometry.wrappers.map(({label}) => label), WRAPPERS);
+    assert.deepEqual(state.geometry.wrappers.map(({clientWidth}) => clientWidth), expected.clients);
+    assert.deepEqual(state.geometry.wrappers.map(({scrollWidth}) => scrollWidth), expected.scrolls);
     assert.deepEqual(state.interactions.map(({index}) => index), [0, 1, 2]);
     assert.equal(state.geometry.wrappers.length, state.interactions.length);
     for (const [index, interaction] of state.interactions.entries()) {
-      assert.equal(interaction.label, WRAPPERS[index]);
-      assert.equal(interaction.key, 'ArrowRight');
-      assert.deepEqual([interaction.before.focus, interaction.before.focusVisible, interaction.before.scrollLeft], [true, true, 0]);
-      assert.deepEqual([interaction.after.focus, interaction.after.focusVisible], [true, true]);
-      assert.match(interaction.before.outline, /solid 3px/u);
-      assert.match(interaction.after.outline, /solid 3px/u);
-      assert.equal(interaction.after.scrollLeft - interaction.before.scrollLeft, interaction.expectedScrollDelta);
-      assert.equal(interaction.expectedScrollDelta, state.geometry.wrappers[index].scrollWidth > state.geometry.wrappers[index].clientWidth ? 40 : 0);
+      assert.deepEqual(interaction, {
+        index,
+        label: WRAPPERS[index],
+        key: 'ArrowRight',
+        expectedScrollDelta: expected.deltas[index],
+        before: {focus: true, focusVisible: true, outline: expected.outlines[index], scrollLeft: 0},
+        after: {focus: true, focusVisible: true, outline: expected.outlines[index], scrollLeft: expected.deltas[index]},
+      });
     }
-    assert.equal(state.geometry.svg.loaded, true);
-    for (const dimension of ['naturalWidth', 'naturalHeight', 'renderedWidth', 'renderedHeight']) assert.ok(state.geometry.svg[dimension] > 0, `${key} SVG ${dimension}`);
+    assert.deepEqual(state.geometry.svg, SVG_GEOMETRY);
     assert.deepEqual(state.relations.map(({href, expectedH1}) => [href, expectedH1]), RELATIONS);
     for (const relation of state.relations) {
       assert.equal(relation.h1, relation.expectedH1);
       assert.equal(relation.returnedToArticle, true);
-      assert.match(relation.navigation, /direct exact-href navigation; no physical relation click claimed/u);
+      assert.equal(relation.navigation, 'direct exact-href navigation; no physical relation click claimed');
     }
     assert.deepEqual(state.geometry.sources.map(({href}) => href), SOURCE_LINKS);
     for (const source of state.geometry.sources) assert.deepEqual([source.target, source.rel], ['_blank', 'noopener noreferrer']);
@@ -128,17 +160,11 @@ function assertBrowser(evidence) {
     assert.deepEqual(state.logs, []);
     assert.deepEqual(state.diagnostics, {events: [], hasMore: false, truncated: false});
   }
-  assert.equal(evidence.screenshotEvidence.status, 'BLOCKED / NOT_ACCEPTED');
-  assert.ok(evidence.screenshotEvidence.reason.length > 0);
-  assert.equal(evidence.screenshotEvidence.attempts.length, 3);
-  assert.deepEqual(evidence.screenshotEvidence.attempts.map(({ordinal}) => ordinal), [1, 2, 3]);
-  for (const attempt of evidence.screenshotEvidence.attempts) {
-    assert.equal(attempt.kind, 'fullPage');
-    assert.equal(attempt.status, 'CAPTURED_REJECTED');
-    assert.ok(attempt.reason.length > 0);
-    assert.ok(attempt.bytes > 0);
-    assert.match(attempt.sha256, /^[0-9a-f]{64}$/u);
-  }
+  assert.deepEqual(evidence.screenshotEvidence, {
+    status: 'BLOCKED / NOT_ACCEPTED',
+    reason: 'Exactly three fresh in-app Browser full-page captures repeated the opening viewport instead of covering the complete page and architecture diagram; no visual PASS is claimed.',
+    attempts: SCREENSHOT_ATTEMPTS,
+  });
 }
 
 async function assertReview(source) {
@@ -157,7 +183,19 @@ async function assertReview(source) {
   }
   const qa = section(source, 'Local in-app Browser QA');
   assert.ok(browserBytes, `${RAW_BROWSER} exists`);
-  assert.ok(qa.includes(`Raw Browser JSON: \`${RAW_BROWSER}\`, SHA-256 \`${sha256(browserBytes)}\`.`));
+  for (const literal of [
+    `The exact implementation candidate \`${CANDIDATE_HEAD}\` was rebuilt and served at \`http://127.0.0.1:3418/tego-arch/styles/sty-08\``,
+    'States accepted: `4/4`; wrapper interaction checks: `12/12`',
+    'Relation destination/H1/return checks: `16/16`.',
+    'The Erlang/OTP case route\'s rendered H1 is `监督树：把失败恢复设计成层级控制协议`',
+    'SVG loaded in every state: intrinsic `48x150`; rendered `800x2480`.',
+    'exact href/`_blank`/`noopener noreferrer` checks: `24/24`; STY-09 actionable count: `0` per state.',
+    'warning/error logs `0`, `Runtime.exceptionThrown=0`, `Log.entryAdded=0`, `hasMore=false` and `truncated=false`.',
+    `Raw Browser JSON: \`${RAW_BROWSER}\`, SHA-256 \`${sha256(browserBytes)}\`.`,
+    'Screenshot evidence: `BLOCKED / NOT_ACCEPTED`.',
+    'Exactly three fresh IAB full-page captures repeated the opening viewport instead of covering the complete page and architecture diagram.',
+    'No Chrome fallback, prior raw, old screenshot or visual PASS is claimed.',
+  ]) assert.ok(qa.includes(literal), literal);
   const checkpoint = section(source, 'Independent review checkpoint');
   for (const literal of [
     `Exact implementation candidate head: \`${CANDIDATE_HEAD}\`.`,
@@ -212,19 +250,33 @@ test('rejects Browser semantic, diagnostic, screenshot, and exact-head mutations
     (copy) => { copy.states.desktopLight.geometry.page.scrollWidth += 1; },
     (copy) => { copy.states.desktopLight.geometry.wrappers.reverse(); },
     (copy) => { copy.states.desktopLight.geometry.wrappers[1] = structuredClone(copy.states.desktopLight.geometry.wrappers[0]); },
+    (copy) => { copy.states.desktopLight.geometry.wrappers[0].clientWidth += 1; },
+    (copy) => { copy.states.mobileLight.geometry.wrappers[2].scrollWidth += 1; },
     (copy) => { copy.states.desktopDark.interactions.reverse(); },
     (copy) => { copy.states.desktopDark.interactions[1].expectedScrollDelta += 1; },
+    (copy) => { copy.states.desktopLight.interactions[0].after.scrollLeft += 1; },
+    (copy) => { copy.states.desktopDark.interactions[2].before.outline = 'none'; },
     (copy) => { copy.states.mobileDark.interactions[0].before.focusVisible = false; },
     (copy) => { copy.states.mobileLight.relations[0].returnedToArticle = false; },
     (copy) => { copy.states.mobileDark.relations[0] = {...copy.states.mobileDark.relations[0], href: '/tego-arch/styles/sty-99', h1: 'fabricated', expectedH1: 'fabricated'}; },
+    (copy) => { copy.states.desktopLight.relations.reverse(); },
     (copy) => { copy.states.desktopLight.geometry.svg.loaded = false; },
     (copy) => { copy.states.desktopLight.geometry.svg.naturalWidth = 0; },
+    (copy) => { copy.states.desktopDark.geometry.svg.renderedHeight += 1; },
     (copy) => { copy.states.desktopDark.geometry.sources[0].href = 'https://example.com/fabricated'; },
     (copy) => { copy.states.desktopDark.geometry.sources[0].rel = ''; },
+    (copy) => { copy.states.mobileLight.geometry.sources.reverse(); },
+    (copy) => { copy.states.mobileDark.diagnostics.events.push({method: 'Runtime.exceptionThrown'}); },
+    (copy) => { copy.states.mobileDark.diagnostics.hasMore = true; },
     (copy) => { copy.states.mobileDark.diagnostics.truncated = true; },
     (copy) => { copy.states.mobileDark.geometry.sty09 = 1; },
     (copy) => { copy.screenshotEvidence.status = 'PASS'; },
+    (copy) => { copy.screenshotEvidence.reason = 'fabricated visual coverage'; },
     (copy) => { copy.screenshotEvidence.attempts.splice(1, 1); },
+    (copy) => { copy.screenshotEvidence.attempts[0].path = '/tmp/fabricated.png'; },
+    (copy) => { copy.screenshotEvidence.attempts[0].bytes += 1; },
+    (copy) => { copy.screenshotEvidence.attempts[1].sha256 = '0'.repeat(64); },
+    (copy) => { copy.screenshotEvidence.attempts[2].status = 'PASS'; },
   ];
   for (const mutate of mutations) {
     const copy = structuredClone(browser); mutate(copy);
