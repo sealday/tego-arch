@@ -12,11 +12,43 @@ const SVG = 'static/img/diagrams/sty-08-actor-order-fulfillment.svg';
 const LEDGER = 'data/source-ledger.json';
 const REVIEW = 'docs/reviews/g009-batch9.md';
 const RAW_BROWSER = 'docs/reviews/evidence/g009-batch9-stage-a-browser.json';
+const PRODUCTION_RAW_BROWSER = 'docs/reviews/evidence/g009-batch9-stage-a-production-browser.json';
 const IMMEDIATE_REVIEW = 'docs/reviews/g009-batch8.md';
 const BACKLOG = 'docs/content-backlog.md';
 const CANDIDATE_HEAD = 'bbb2f4234c4c24993dbea108d2a19a751e778409';
 const EVIDENCE_HEAD = '4923b7da22d79ecc32400669526196ca852885a4';
 const RAW_BROWSER_HASH = 'fa3fdecb77c55c8e2a013d95bbe9684afde05e3027583a9b3d1feb405a758932';
+const PRODUCTION_IMPLEMENTATION_HEAD = '70c9c61c55fa383b8619be0fbcddb02485918942';
+const PRODUCTION_RAW_BROWSER_BYTES = 27_342;
+const PRODUCTION_RAW_BROWSER_HASH = '3b3389d0bdfab77a07793f68161fcab6b8a0a198779af231783512553943e6ca';
+const PRODUCTION_PAGES = Object.freeze({
+  runId: 31_907_316_801,
+  status: 'completed',
+  conclusion: 'success',
+  buildJobId: 95_067_060_526,
+  buildStatus: 'completed',
+  buildConclusion: 'success',
+  deployJobId: 95_067_389_572,
+  deployStatus: 'completed',
+  deployConclusion: 'success',
+});
+const PRODUCTION_ROUTES = Object.freeze([
+  {path: '/', status: 200, contentType: 'text/html; charset=utf-8'},
+  {path: '/styles', status: 200, contentType: 'text/html; charset=utf-8'},
+  {path: '/styles/sty-08', status: 200, contentType: 'text/html; charset=utf-8'},
+  {path: '/styles/sty-05', status: 200, contentType: 'text/html; charset=utf-8'},
+  {path: '/styles/sty-06', status: 200, contentType: 'text/html; charset=utf-8'},
+  {path: '/styles/sty-07', status: 200, contentType: 'text/html; charset=utf-8'},
+  {path: '/cases/erlang-otp-supervision-tree', status: 200, contentType: 'text/html; charset=utf-8'},
+  {path: '/references', status: 200, contentType: 'text/html; charset=utf-8'},
+]);
+const PRODUCTION_SVG = Object.freeze({
+  url: 'https://sealday.github.io/tego-arch/img/diagrams/sty-08-actor-order-fulfillment.svg',
+  status: 200,
+  contentType: 'image/svg+xml',
+  bytes: 21_562,
+  sha256: '93a23b5c57334e96d08908146f82677faad887a30cb45b1f8066633b6e185e65',
+});
 const IMMEDIATE_REVIEW_HASH = '2915584034c0d480ee04713c9fadee2839f03d112ced139901a3fb2033d8ac7e';
 const IMMEDIATE_BACKLOG_SUFFIX_HASH = 'dba312f190706ae7112ea057addefe58ceff4cdd15bad39264efbd58b129c354';
 const STABLE_ARTIFACT_HASHES = new Map([
@@ -81,6 +113,11 @@ const SCREENSHOT_ATTEMPTS = Object.freeze([
   {ordinal: 2, state: 'desktopDark', viewport: {width: 1440, height: 1000}, kind: 'fullPage', status: 'CAPTURED_REJECTED', reason: SCREENSHOT_REJECTION_REASON, path: '/Users/seal/projects/tego-arch/.worktrees/g009-styles-batch7/.superpowers/sdd/sty08-stage-a-bbb2f42-formal-2.png', bytes: 1791254, sha256: '95889769eeea867285baaae655d300b0c0bcd1dc61ccab0dbbe23b43b46f9f51'},
   {ordinal: 3, state: 'mobileLight', viewport: {width: 390, height: 844}, kind: 'fullPage', status: 'CAPTURED_REJECTED', reason: SCREENSHOT_REJECTION_REASON, path: '/Users/seal/projects/tego-arch/.worktrees/g009-styles-batch7/.superpowers/sdd/sty08-stage-a-bbb2f42-formal-3.png', bytes: 838206, sha256: 'c8f6898b8bab04415a0c4e6ae587690bbe5acbba5954545e4848a541492c943f'},
 ]);
+const PRODUCTION_SCREENSHOT_ATTEMPTS = Object.freeze([
+  {ordinal: 1, state: 'desktopLight', viewport: {width: 1440, height: 1000}, kind: 'fullPage', status: 'CAPTURED_REJECTED', reason: SCREENSHOT_REJECTION_REASON, path: '/Users/seal/projects/tego-arch/.worktrees/g009-styles-batch7/.superpowers/sdd/sty08-production-70c9c61-desktop-light.png', bytes: 1858760, sha256: 'e65e1f2416d808d9cb23c163558e600aebc8f31f878f20bacad2008ecf564667'},
+  {ordinal: 2, state: 'desktopDark', viewport: {width: 1440, height: 1000}, kind: 'fullPage', status: 'CAPTURED_REJECTED', reason: SCREENSHOT_REJECTION_REASON, path: '/Users/seal/projects/tego-arch/.worktrees/g009-styles-batch7/.superpowers/sdd/sty08-production-70c9c61-desktop-dark.png', bytes: 1876063, sha256: '5fe642ee0925f6ea60150917a148ab846f6e9f31207c9a28e7151b689df59a10'},
+  {ordinal: 3, state: 'mobileLight', viewport: {width: 390, height: 844}, kind: 'fullPage', status: 'CAPTURED_REJECTED', reason: SCREENSHOT_REJECTION_REASON, path: '/Users/seal/projects/tego-arch/.worktrees/g009-styles-batch7/.superpowers/sdd/sty08-production-70c9c61-mobile-light.png', bytes: 838206, sha256: 'c8f6898b8bab04415a0c4e6ae587690bbe5acbba5954545e4848a541492c943f'},
+]);
 
 const rootUrl = new URL('../', import.meta.url);
 const sha256 = (value) => createHash('sha256').update(value).digest('hex');
@@ -98,8 +135,17 @@ function section(source, heading) {
   return source.slice(current[0].index + current[0][0].length, next?.index ?? source.length).trim();
 }
 
-const [review, browserBytes, immediateReviewBytes, backlog, status, manifest, indexes, publicLedger] = await Promise.all([
-  optional(REVIEW, 'utf8'), optional(RAW_BROWSER), required(IMMEDIATE_REVIEW), required(BACKLOG, 'utf8'),
+function subsection(source, heading) {
+  assert.ok(source, `${REVIEW} exists`);
+  const starts = [...source.matchAll(/^(#{2,3}) ([^\n]+)$/gmu)];
+  const current = starts.filter((match) => match[1] === '###' && match[2] === heading);
+  assert.equal(current.length, 1, `${heading} subsection`);
+  const next = starts.find((match) => match.index > current[0].index);
+  return source.slice(current[0].index + current[0][0].length, next?.index ?? source.length).trim();
+}
+
+const [review, browserBytes, productionBrowserBytes, immediateReviewBytes, backlog, status, manifest, indexes, publicLedger] = await Promise.all([
+  optional(REVIEW, 'utf8'), optional(RAW_BROWSER), optional(PRODUCTION_RAW_BROWSER), required(IMMEDIATE_REVIEW), required(BACKLOG, 'utf8'),
   required('src/generated/project-status.json', 'utf8').then(JSON.parse),
   required('src/generated/topic-manifest.json', 'utf8').then(JSON.parse),
   required('src/generated/topic-indexes.json', 'utf8').then(JSON.parse),
@@ -120,15 +166,8 @@ async function assertSty09NonActionable() {
   for (const document of documents) assert.equal(extractInternalLinks(document).includes('/styles/sty-09'), false, `${document.file} STY-09 non-actionable`);
 }
 
-function assertBrowser(evidence) {
-  assert.ok(evidence, `${RAW_BROWSER} exists and parses`);
-  assert.equal(evidence.candidateHead, CANDIDATE_HEAD);
+function assertFunctionalStates(evidence) {
   assert.deepEqual(Object.keys(evidence.states), STATES);
-  assert.deepEqual(evidence.collection, {
-    browser: 'Codex in-app Browser only',
-    fresh: true,
-    servedUrl: 'http://127.0.0.1:3418/tego-arch/styles/sty-08',
-  });
   for (const [key, expected] of Object.entries(STATE_CONTRACTS)) {
     const state = evidence.states[key];
     assert.deepEqual([state.theme, state.viewport.width, state.viewport.height], [expected.theme, expected.width, expected.height]);
@@ -161,10 +200,40 @@ function assertBrowser(evidence) {
     assert.deepEqual(state.logs, []);
     assert.deepEqual(state.diagnostics, {events: [], hasMore: false, truncated: false});
   }
+}
+
+function assertBrowser(evidence) {
+  assert.ok(evidence, `${RAW_BROWSER} exists and parses`);
+  assert.equal(evidence.candidateHead, CANDIDATE_HEAD);
+  assert.deepEqual(evidence.collection, {
+    browser: 'Codex in-app Browser only',
+    fresh: true,
+    servedUrl: 'http://127.0.0.1:3418/tego-arch/styles/sty-08',
+  });
+  assertFunctionalStates(evidence);
   assert.deepEqual(evidence.screenshotEvidence, {
     status: 'BLOCKED / NOT_ACCEPTED',
     reason: 'Exactly three fresh in-app Browser full-page captures repeated the opening viewport instead of covering the complete page and architecture diagram; no visual PASS is claimed.',
     attempts: SCREENSHOT_ATTEMPTS,
+  });
+}
+
+function assertProductionBrowser(evidence) {
+  assert.ok(evidence, `${PRODUCTION_RAW_BROWSER} exists and parses`);
+  assert.equal(evidence.implementationHead, PRODUCTION_IMPLEMENTATION_HEAD);
+  assert.deepEqual(evidence.pages, PRODUCTION_PAGES);
+  assert.deepEqual(evidence.probes, {routes: PRODUCTION_ROUTES, svg: PRODUCTION_SVG});
+  assert.deepEqual(evidence.collection, {
+    browser: 'Codex in-app Browser only',
+    fresh: true,
+    servedUrl: 'https://sealday.github.io/tego-arch/styles/sty-08',
+    build: `GitHub Pages exact implementation head ${PRODUCTION_IMPLEMENTATION_HEAD}; run ${PRODUCTION_PAGES.runId}; build job ${PRODUCTION_PAGES.buildJobId}; deploy job ${PRODUCTION_PAGES.deployJobId}`,
+  });
+  assertFunctionalStates(evidence);
+  assert.deepEqual(evidence.screenshotEvidence, {
+    status: 'BLOCKED / NOT_ACCEPTED',
+    reason: 'Exactly three fresh in-app Browser full-page captures repeated the opening viewport instead of covering the complete page and architecture diagram; no visual PASS is claimed.',
+    attempts: PRODUCTION_SCREENSHOT_ATTEMPTS,
   });
 }
 
@@ -209,6 +278,29 @@ async function assertReview(source) {
     'Scope boundary: `STAGE_A_ONLY`; Stage B backlog closure and deployment have not run.',
     'Deployment status: `NOT_RUN`.',
   ]) assert.ok(checkpoint.includes(literal), literal);
+}
+
+async function assertProductionReview(source) {
+  const production = subsection(source, 'Stage A production deployment');
+  for (const literal of [
+    `Exact implementation head: \`${PRODUCTION_IMPLEMENTATION_HEAD}\`.`,
+    `Exact Pages run: \`${PRODUCTION_PAGES.runId}\`; workflow: \`completed / success\`.`,
+    `Build job: \`${PRODUCTION_PAGES.buildJobId}\`; status: \`completed / success\`.`,
+    `Deploy job: \`${PRODUCTION_PAGES.deployJobId}\`; status: \`completed / success\`.`,
+    'Required HTML routes: `8/8`; every route returned `200` with `text/html; charset=utf-8`.',
+    `Reviewed SVG: \`${PRODUCTION_SVG.bytes.toLocaleString('en-US')}\` bytes; MIME \`${PRODUCTION_SVG.contentType}\`; SHA-256 \`${PRODUCTION_SVG.sha256}\`; exact reviewed byte identity: \`PASS\`.`,
+    `Production raw Browser JSON: \`${PRODUCTION_RAW_BROWSER}\`; \`${PRODUCTION_RAW_BROWSER_BYTES.toLocaleString('en-US')}\` bytes; SHA-256 \`${PRODUCTION_RAW_BROWSER_HASH}\`.`,
+    'Functional production QA: `PASS`; states `4/4`; wrapper focus/`:focus-visible`/3px/ArrowRight checks `12/12`; relation href/H1/return checks `16/16`; source href/target/rel checks `24/24`.',
+    'SVG geometry: intrinsic `48x150`; rendered `800x2480`; STY-09 actionable count `0` in every state; warning/error logs and diagnostic events `0`; every diagnostic page has `hasMore=false` and `truncated=false`.',
+    'Screenshot evidence: `BLOCKED / NOT_ACCEPTED`; exactly three fresh attempts are `CAPTURED_REJECTED` because each repeated the opening viewport instead of covering the complete page and architecture diagram.',
+    'No visual PASS is claimed.',
+    'Production status: `STAGE_A_FUNCTIONAL_PASS / SCREENSHOTS_BLOCKED_NOT_ACCEPTED`.',
+    'Scope remains `STAGE_A_ONLY`; backlog and Stage B are unchanged.',
+  ]) assert.ok(production.includes(literal), literal);
+
+  assert.ok(productionBrowserBytes, `${PRODUCTION_RAW_BROWSER} exists`);
+  assert.equal(productionBrowserBytes.length, PRODUCTION_RAW_BROWSER_BYTES);
+  assert.equal(sha256(productionBrowserBytes), PRODUCTION_RAW_BROWSER_HASH);
 }
 
 test('preserves the complete immediate STY-07 backlog suffix and Batch 8 review bytes', () => {
@@ -307,5 +399,94 @@ test('rejects wrong review heads, weakened verdicts, stale PENDING, fabricated d
     const mutated = review.replace(before, after);
     assert.notEqual(mutated, review, `${before} mutation applies`);
     await assert.rejects(() => assertReview(mutated), {name: 'AssertionError'});
+  }
+});
+
+test('binds exact Stage A production publication and functional IAB evidence', async () => {
+  assert.ok(productionBrowserBytes, `${PRODUCTION_RAW_BROWSER} exists`);
+  assert.equal(productionBrowserBytes.length, PRODUCTION_RAW_BROWSER_BYTES);
+  assert.equal(sha256(productionBrowserBytes), PRODUCTION_RAW_BROWSER_HASH);
+  assert.notEqual(sha256(Buffer.concat([productionBrowserBytes, Buffer.from('x')])), PRODUCTION_RAW_BROWSER_HASH);
+  assert.notEqual(sha256(productionBrowserBytes.subarray(0, -1)), PRODUCTION_RAW_BROWSER_HASH);
+  assertProductionBrowser(JSON.parse(productionBrowserBytes));
+  await assertProductionReview(review);
+});
+
+test('rejects production SHA, run, job, route, SVG, semantic, diagnostic, screenshot, and review mutations', async () => {
+  assert.ok(productionBrowserBytes, `${PRODUCTION_RAW_BROWSER} exists`);
+  const productionBrowser = JSON.parse(productionBrowserBytes);
+  assertProductionBrowser(productionBrowser);
+  const mutations = [
+    (copy) => { copy.implementationHead = '0'.repeat(40); },
+    (copy) => { copy.pages.runId += 1; },
+    (copy) => { copy.pages.status = 'in_progress'; },
+    (copy) => { copy.pages.conclusion = 'failure'; },
+    (copy) => { copy.pages.buildJobId += 1; },
+    (copy) => { copy.pages.buildStatus = 'queued'; },
+    (copy) => { copy.pages.buildConclusion = 'failure'; },
+    (copy) => { copy.pages.deployJobId += 1; },
+    (copy) => { copy.pages.deployStatus = 'queued'; },
+    (copy) => { copy.pages.deployConclusion = 'failure'; },
+    (copy) => { copy.probes.routes.pop(); },
+    (copy) => { copy.probes.routes.reverse(); },
+    (copy) => { copy.probes.routes[2].path = '/styles/sty-09'; },
+    (copy) => { copy.probes.routes[2].status = 404; },
+    (copy) => { copy.probes.routes[2].contentType = 'text/plain'; },
+    (copy) => { copy.probes.svg.url = 'https://example.com/fabricated.svg'; },
+    (copy) => { copy.probes.svg.status = 404; },
+    (copy) => { copy.probes.svg.contentType = 'text/html'; },
+    (copy) => { copy.probes.svg.bytes += 1; },
+    (copy) => { copy.probes.svg.sha256 = '0'.repeat(64); },
+    (copy) => { copy.collection.browser = 'Chrome'; },
+    (copy) => { copy.collection.servedUrl = 'http://127.0.0.1/'; },
+    (copy) => { copy.collection.build = 'later evidence run'; },
+    (copy) => { delete copy.states.mobileDark; },
+    (copy) => { copy.states.desktopLight.geometry.page.scrollWidth += 1; },
+    (copy) => { copy.states.desktopLight.geometry.wrappers.reverse(); },
+    (copy) => { copy.states.mobileLight.geometry.wrappers[0].clientWidth += 1; },
+    (copy) => { copy.states.desktopDark.interactions[1].after.scrollLeft += 1; },
+    (copy) => { copy.states.mobileDark.interactions[0].before.focusVisible = false; },
+    (copy) => { copy.states.mobileLight.relations[0].returnedToArticle = false; },
+    (copy) => { copy.states.desktopLight.relations[0].href = '/tego-arch/styles/sty-99'; },
+    (copy) => { copy.states.desktopLight.geometry.sources[0].target = '_self'; },
+    (copy) => { copy.states.desktopDark.geometry.sources[0].rel = ''; },
+    (copy) => { copy.states.desktopDark.geometry.svg.renderedHeight += 1; },
+    (copy) => { copy.states.mobileDark.geometry.sty09 = 1; },
+    (copy) => { copy.states.mobileDark.logs.push({level: 'error'}); },
+    (copy) => { copy.states.mobileDark.diagnostics.events.push({method: 'Runtime.exceptionThrown'}); },
+    (copy) => { copy.states.mobileDark.diagnostics.hasMore = true; },
+    (copy) => { copy.states.mobileDark.diagnostics.truncated = true; },
+    (copy) => { copy.screenshotEvidence.status = 'PASS'; },
+    (copy) => { copy.screenshotEvidence.reason = 'fabricated visual coverage'; },
+    (copy) => { copy.screenshotEvidence.attempts.pop(); },
+    (copy) => { copy.screenshotEvidence.attempts.reverse(); },
+    (copy) => { copy.screenshotEvidence.attempts[0].path = '/tmp/fabricated.png'; },
+    (copy) => { copy.screenshotEvidence.attempts[0].bytes += 1; },
+    (copy) => { copy.screenshotEvidence.attempts[1].sha256 = '0'.repeat(64); },
+    (copy) => { copy.screenshotEvidence.attempts[2].status = 'PASS'; },
+  ];
+  for (const mutate of mutations) {
+    const copy = structuredClone(productionBrowser); mutate(copy);
+    assert.throws(() => assertProductionBrowser(copy), {name: 'AssertionError'});
+  }
+
+  await assertProductionReview(review);
+  for (const [before, after] of [
+    [`Exact implementation head: \`${PRODUCTION_IMPLEMENTATION_HEAD}\`.`, `Exact implementation head: \`${'0'.repeat(40)}\`.`],
+    [`Exact Pages run: \`${PRODUCTION_PAGES.runId}\`;`, 'Exact Pages run: `0`;'],
+    [`Build job: \`${PRODUCTION_PAGES.buildJobId}\`;`, 'Build job: `0`;'],
+    [`Deploy job: \`${PRODUCTION_PAGES.deployJobId}\`;`, 'Deploy job: `0`;'],
+    ['Required HTML routes: `8/8`;', 'Required HTML routes: `7/8`;'],
+    [`Reviewed SVG: \`${PRODUCTION_SVG.bytes.toLocaleString('en-US')}\` bytes; MIME \`${PRODUCTION_SVG.contentType}\`; SHA-256 \`${PRODUCTION_SVG.sha256}\`; exact reviewed byte identity: \`PASS\`.`, `Reviewed SVG: \`${PRODUCTION_SVG.bytes.toLocaleString('en-US')}\` bytes; MIME \`${PRODUCTION_SVG.contentType}\`; SHA-256 \`${'0'.repeat(64)}\`; exact reviewed byte identity: \`PASS\`.`],
+    [`\`${PRODUCTION_RAW_BROWSER_BYTES.toLocaleString('en-US')}\` bytes;`, '`0` bytes;'],
+    [`SHA-256 \`${PRODUCTION_RAW_BROWSER_HASH}\`.`, `SHA-256 \`${'1'.repeat(64)}\`.`],
+    ['Functional production QA: `PASS`;', 'Functional production QA: `PENDING`;'],
+    ['Screenshot evidence: `BLOCKED / NOT_ACCEPTED`;', 'Screenshot evidence: `PASS`;'],
+    ['No Chrome fallback, prior raw, historical screenshot, or substituted browser surface supports this production record. No visual PASS is claimed.', 'No Chrome fallback, prior raw, historical screenshot, or substituted browser surface supports this production record. Visual PASS is claimed.'],
+    ['Scope remains `STAGE_A_ONLY`; backlog and Stage B are unchanged.', 'Scope is `STAGE_B`; backlog is closed.'],
+  ]) {
+    const mutated = review.replace(before, after);
+    assert.notEqual(mutated, review, `${before} production-review mutation applies`);
+    await assert.rejects(() => assertProductionReview(mutated), {name: 'AssertionError'}, `${before} production-review mutation rejected`);
   }
 });

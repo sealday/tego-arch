@@ -51,6 +51,36 @@ The exact implementation candidate `bbb2f4234c4c24993dbea108d2a19a751e778409` wa
 - Scope boundary: `STAGE_A_ONLY`; Stage B backlog closure and deployment have not run.
 - Deployment status: `NOT_RUN`.
 
+### Stage A production deployment
+
+- Exact implementation head: `70c9c61c55fa383b8619be0fbcddb02485918942`.
+- The preflight fetched `origin`, required a tracked-clean worktree, confirmed `origin/main` was the exact merge-base and an ancestor of the implementation head, and measured behind/ahead as `0/23`. The sole publication command was the non-force fast-forward `git push origin HEAD:main`.
+- Exact Pages run: `31907316801`; workflow: `completed / success`.
+- Build job: `95067060526`; status: `completed / success`.
+- Deploy job: `95067389572`; status: `completed / success`.
+- The workflow, build and deploy identities above are bound to the exact implementation head; no later evidence-only run is substituted for the implementation run.
+
+| Production route | Status | Content type |
+| --- | ---: | --- |
+| `/` | `200` | `text/html; charset=utf-8` |
+| `/styles` | `200` | `text/html; charset=utf-8` |
+| `/styles/sty-08` | `200` | `text/html; charset=utf-8` |
+| `/styles/sty-05` | `200` | `text/html; charset=utf-8` |
+| `/styles/sty-06` | `200` | `text/html; charset=utf-8` |
+| `/styles/sty-07` | `200` | `text/html; charset=utf-8` |
+| `/cases/erlang-otp-supervision-tree` | `200` | `text/html; charset=utf-8` |
+| `/references` | `200` | `text/html; charset=utf-8` |
+
+- Required HTML routes: `8/8`; every route returned `200` with `text/html; charset=utf-8`.
+- Reviewed SVG: `21,562` bytes; MIME `image/svg+xml`; SHA-256 `93a23b5c57334e96d08908146f82677faad887a30cb45b1f8066633b6e185e65`; exact reviewed byte identity: `PASS`.
+- Production raw Browser JSON: `docs/reviews/evidence/g009-batch9-stage-a-production-browser.json`; `27,342` bytes; SHA-256 `3b3389d0bdfab77a07793f68161fcab6b8a0a198779af231783512553943e6ca`.
+- Functional production QA: `PASS`; states `4/4`; wrapper focus/`:focus-visible`/3px/ArrowRight checks `12/12`; relation href/H1/return checks `16/16`; source href/target/rel checks `24/24`.
+- SVG geometry: intrinsic `48x150`; rendered `800x2480`; STY-09 actionable count `0` in every state; warning/error logs and diagnostic events `0`; every diagnostic page has `hasMore=false` and `truncated=false`.
+- Screenshot evidence: `BLOCKED / NOT_ACCEPTED`; exactly three fresh attempts are `CAPTURED_REJECTED` because each repeated the opening viewport instead of covering the complete page and architecture diagram.
+- No Chrome fallback, prior raw, historical screenshot, or substituted browser surface supports this production record. No visual PASS is claimed.
+- Production status: `STAGE_A_FUNCTIONAL_PASS / SCREENSHOTS_BLOCKED_NOT_ACCEPTED`.
+- Scope remains `STAGE_A_ONLY`; backlog and Stage B are unchanged.
+
 ## Integration candidate after origin/main divergence
 
 This section records the non-destructive integration of the original STY-08 Stage A line with the MTH-07 line already present on `origin/main`. It does not rewrite or widen the scope of the historical Stage A approval above.
