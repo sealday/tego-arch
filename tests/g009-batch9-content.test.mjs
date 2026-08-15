@@ -813,7 +813,8 @@ function assertNodeParity(drawio, svg, source) {
     assert.equal(svgPresentationValue(source, shape, 'fill'), style.get('fillColor'), `${id} fill parity`);
     assert.equal(svgPresentationValue(source, shape, 'stroke'), style.get('strokeColor'), `${id} stroke parity`);
     assert.ok(node.label.length > 0, `${id} stable semantic value`);
-    assert.equal(style.get('labelOpacity'), '0', `${id} effective primary label hidden behind editable text vertices`);
+    assert.equal(style.get('textOpacity'), '0', `${id} effective primary text hidden behind editable text vertices`);
+    assert.equal(style.has('labelOpacity'), false, `${id} no ignored labelOpacity style key`);
     if (style.get('shape') === 'cylinder') assert.ok(shape.name === 'path' && /\bC\b/u.test(shape.attributes.get('d') ?? ''), `${id} actual cylinder path geometry`);
     if (Object.hasOwn(REAL_PANEL_GEOMETRIES, id)) assert.deepEqual(Object.values(numericBounds(node.geometry)), REAL_PANEL_GEOMETRIES[id], `${id} actual editable panel geometry`);
   }
@@ -1455,8 +1456,8 @@ test('STY-08 Draw.io/SVG locks Actor ownership, route parity, effective styles, 
     ['self-reported shape', drawio.replace('id="shared-order-state"', 'id="shared-order-state" dataShape="cylinder"')],
     ['self-reported title font', drawio.replace('id="order-123-mailbox"', 'id="order-123-mailbox" dataTitleFont="48"')],
     ['removed effective shape', drawio.replace('shape=rectangle;rounded=0;', '')],
-    ['removed hidden primary label style', drawio.replace('labelOpacity=0;', '')],
-    ['changed hidden primary label to visible', drawio.replace('labelOpacity=0;', 'labelOpacity=100;')],
+    ['removed hidden primary text style', drawio.replace('textOpacity=0;', '')],
+    ['changed hidden primary text to visible', drawio.replace('textOpacity=0;', 'textOpacity=100;')],
     ['changed effective visible title font', drawio.replace('id="label-order-123-mailbox-title-1" value="邮箱" vertex="1" parent="1" dataRole="label-title" style="shape=rectangle;rounded=0;fontSize=48;', 'id="label-order-123-mailbox-title-1" value="邮箱" vertex="1" parent="1" dataRole="label-title" style="shape=rectangle;rounded=0;fontSize=47;')],
   ]) { assert.notEqual(changed, drawio, `${label} mutation applies`); assert.throws(() => assertDiagram(changed, svg), assert.AssertionError, `${label} rejected`); }
   const panelScale = 800 / 2400;
