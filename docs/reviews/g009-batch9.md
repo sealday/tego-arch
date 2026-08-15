@@ -61,7 +61,7 @@ This section records the non-destructive integration of the original STY-08 Stag
 - Original STY-08 evidence head: `4923b7da22d79ecc32400669526196ca852885a4`.
 - Original STY-08 final evidence-binding head: `d83ac7d119f63745f8abb62a7a3fd029c1b32e8a`.
 - The three independent approvals in `Independent review checkpoint` apply only to the original implementation/evidence bundle named there. They do not review or approve the integration bundle below.
-- MTH-07's existing published production record remains historical evidence: implementation `a413be060c93f7ddd20e7db5417e94f4166dc1e8`, Pages run `31786075868`, deploy job `94722157542`, and Pages build/deploy job `94722766883`. This integration neither weakens nor re-labels that production record.
+- MTH-07's existing published production record remains historical evidence: implementation `a413be060c93f7ddd20e7db5417e94f4166dc1e8`. Exact Pages run: `31786075868`; build job: `94722157542`; deploy job: `94722766883`; every status: `completed / success`. This integration neither weakens nor re-labels that production record.
 
 ### Exact integration identities
 
