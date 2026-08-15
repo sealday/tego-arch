@@ -50,3 +50,46 @@ The exact implementation candidate `bbb2f4234c4c24993dbea108d2a19a751e778409` wa
 - The final judgment covers the exact-head implementation, governed content and rights, functional IAB evidence and invariants. Screenshot evidence remains `BLOCKED / NOT_ACCEPTED` and outside visual PASS scope.
 - Scope boundary: `STAGE_A_ONLY`; Stage B backlog closure and deployment have not run.
 - Deployment status: `NOT_RUN`.
+
+## Integration candidate after origin/main divergence
+
+This section records the non-destructive integration of the original STY-08 Stage A line with the MTH-07 line already present on `origin/main`. It does not rewrite or widen the scope of the historical Stage A approval above.
+
+### Historical heads and review boundary
+
+- Original STY-08 implementation candidate: `bbb2f4234c4c24993dbea108d2a19a751e778409`.
+- Original STY-08 evidence head: `4923b7da22d79ecc32400669526196ca852885a4`.
+- Original STY-08 final evidence-binding head: `d83ac7d119f63745f8abb62a7a3fd029c1b32e8a`.
+- The three independent approvals in `Independent review checkpoint` apply only to the original implementation/evidence bundle named there. They do not review or approve the integration bundle below.
+- MTH-07's existing published production record remains historical evidence: implementation `a413be060c93f7ddd20e7db5417e94f4166dc1e8`, Pages run `31786075868`, deploy job `94722157542`, and Pages build/deploy job `94722766883`. This integration neither weakens nor re-labels that production record.
+
+### Exact integration identities
+
+- Integration implementation candidate: `c1aebf57c638d30efe987d1c29e578f502bafb46`.
+- Merge parents: `d83ac7d119f63745f8abb62a7a3fd029c1b32e8a` and `00da8b412394e89bf823c7899816026b78c71b74`.
+- Integration evidence head: `1b002b8fa0f2c58019fc05e6e93efbae0bd23570`.
+- Integration Browser raw: `docs/reviews/evidence/g009-batch9-integration-browser.json`, SHA-256 `14a206017541f2c7f6f09b28a3e2ab34ce0e5c1b01973777b0b4759d9a576733`.
+
+### Combined canonical projection and semantics
+
+- Projection: `60 completed topics / 104 content documents / 539 governed sources`.
+- STY-08 remains `published / pending`.
+- STY-09 remains `unpublished / pending / non-actionable`; actionable route count: `0`.
+- MTH-07 remains `published / reviewed` and retains its content, diagram, sources, review, evidence, tests, and production provenance.
+- Canonical ledgers were joined by stable record identity before regenerating derived content; neither branch's ledger or generated fixture was accepted as a whole-file replacement.
+
+### Integration in-app Browser QA
+
+- The exact integration implementation candidate was built and served locally before fresh collection using only the Codex in-app Browser.
+- States accepted: `4/4`; wrapper focus checks: `12/12`; ArrowRight checks: `12/12`; relation destination/H1/return checks: `16/16`; exact remote href/target/rel checks: `24/24`.
+- STY-09 actionable link count: `0` in every state. Warning/error logs: `0`; diagnostic events: `0`; every diagnostic page reported `hasMore=false` and `truncated=false`.
+- Screenshot evidence: `BLOCKED / NOT_ACCEPTED`. Exactly three fresh IAB full-page captures repeated the opening viewport rather than the complete page and architecture diagram. No visual PASS is claimed.
+
+### Integration review checkpoint
+
+- Independent code/spec/security review for the integration bundle: `PENDING`.
+- Independent content/evidence/rights review for the integration bundle: `PENDING`; rights: `PENDING`.
+- Independent architecture/invariant review for the integration bundle: `PENDING`.
+- Final integration readiness: `PENDING`.
+- Scope boundary: `INTEGRATION_ONLY`; no Stage B backlog mutation is authorized or performed.
+- Integration deployment status: `NOT_RUN`.
