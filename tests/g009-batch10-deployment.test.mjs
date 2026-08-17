@@ -22,6 +22,7 @@ const RAW_BROWSER_HASH = 'acc7c8154a8c6199cd92b8d68d258d7a0fb5e2e86eb8a1931219d3
 const PRODUCTION_HEAD = '50ba9d2b18617b3bed84c6e17ddb696665b5a434';
 const PRODUCTION_RAW_BROWSER_BYTES = 26_937;
 const PRODUCTION_RAW_BROWSER_HASH = 'f2c0e43de924aedb9afba39ec26500c869b42f170f4b46e3792003433aa953aa';
+const STAGE_A_RAW_BROWSER_HASH = RAW_BROWSER_HASH;
 const PRODUCTION_PAGES = Object.freeze({
   runId: 32_014_770_938,
   status: 'completed',
@@ -53,6 +54,7 @@ const PRODUCTION_SVG = Object.freeze({
 });
 const IMMEDIATE_REVIEW_HASH = 'f7d0aba59dd69d6479bbfbdb6f9f3cf1befadcf076c44ff5f97f31d6452778ed';
 const IMMEDIATE_BACKLOG_SUFFIX_HASH = '3a8d6ccda815614132a33ca8ec2c0dca286628c20900d9e32a4403f0ffd56c6b';
+const IMMEDIATE_BACKLOG_MARKER = '此前 G009 Batch 9 历史完成基线为：';
 const STABLE_ARTIFACT_HASHES = new Map([
   [ARTICLE, '1dcf55ace2a6b8f30da94e81d36d9f79a16db400bc419c35318cc8dbe8eba7b6'],
   [DRAWIO, '36da252d3fe71b1f0c3df6db5a887677b83def7ee11f542f938c9d3027fbf97c'],
@@ -119,6 +121,33 @@ const PRODUCTION_SCREENSHOT_ATTEMPTS = Object.freeze([
   {ordinal: 2, state: 'desktopDark', viewport: {width: 1440, height: 1000}, kind: 'fullPage', path: '/Users/seal/projects/tego-arch/.worktrees/g009-styles-batch7/.superpowers/sdd/sty09-stage-a-production-50ba9d2-desktop-dark.png', bytes: 1_536_917, sha256: '49ce10dac3e4f89a3b0ee121f30036ffc91fcf6b1cdc86a173a2d051bb55b6d9', status: 'CAPTURED_REJECTED', reason: SCREENSHOT_REJECTION_REASON},
   {ordinal: 3, state: 'mobileLight', viewport: {width: 390, height: 844}, kind: 'fullPage', path: '/Users/seal/projects/tego-arch/.worktrees/g009-styles-batch7/.superpowers/sdd/sty09-stage-a-production-50ba9d2-mobile-light.png', bytes: 658_511, sha256: 'c18edf54f2e3aa5b2233a65713175073c66e2669555269a001abccc34919c88e', status: 'CAPTURED_REJECTED', reason: SCREENSHOT_REJECTION_REASON},
 ]);
+const STY09_CLOSURE_LINE = `- [x] **STY-09 P1｜Pipes and Filters**：批处理、流处理、背压和错误传播。Stage A 关闭证据：2026-08-17 review，commit [\`${PRODUCTION_HEAD}\`](https://github.com/sealday/tego-arch/commit/${PRODUCTION_HEAD})，Pages run [\`${PRODUCTION_PAGES.runId}\`](https://github.com/sealday/tego-arch/actions/runs/${PRODUCTION_PAGES.runId})，build job \`${PRODUCTION_PAGES.buildJobId}\`、deploy job \`${PRODUCTION_PAGES.deployJobId}\`，production HTML routes \`9/9\`，live route \`/styles/sty-09\` 与 \`/img/diagrams/sty-09-pipes-filters-order-processing.svg\` 均为 HTTP 200，live SVG SHA-256 \`${PRODUCTION_SVG.sha256}\` 与 reviewed asset exact match，Stage A production Browser raw \`${PRODUCTION_RAW_BROWSER_BYTES.toLocaleString('en-US')}\` bytes / SHA-256 \`${PRODUCTION_RAW_BROWSER_HASH}\`，functional verdict PASS；screenshot evidence BLOCKED / NOT_ACCEPTED。`;
+const CURRENT_BASELINE_PREFIX = `2026-08-17 G009 Batch 10 已完成 STY-09，Stage A 发布基线为 [\`${PRODUCTION_HEAD}\`](https://github.com/sealday/tego-arch/commit/${PRODUCTION_HEAD})，Pages run [\`${PRODUCTION_PAGES.runId}\`](https://github.com/sealday/tego-arch/actions/runs/${PRODUCTION_PAGES.runId})，exact \`headSha=${PRODUCTION_HEAD}\`、\`event=push\`、\`status=completed\`、\`conclusion=success\`，build job \`${PRODUCTION_PAGES.buildJobId}\`、deploy job \`${PRODUCTION_PAGES.deployJobId}\`；2026-08-17 production HTTP probes \`9/9\`，live route \`/styles/sty-09\` 与 \`/img/diagrams/sty-09-pipes-filters-order-processing.svg\` 均为 HTTP \`200\`，live SVG SHA-256 \`${PRODUCTION_SVG.sha256}\` 与 reviewed asset exact match。Production Browser states \`4/4\`、wrapper interactions \`12/12\`、relation destination/H1/return \`20/20\`、exact source destinations \`16/16\`，每个状态 STY-10 actionable count \`0\` 且 diagnostics 完整为零；raw \`${PRODUCTION_RAW_BROWSER}\` 为 \`${PRODUCTION_RAW_BROWSER_BYTES.toLocaleString('en-US')}\` bytes / SHA-256 \`${PRODUCTION_RAW_BROWSER_HASH}\`，Stage A production functional verdict \`PASS\`，screenshot evidence \`BLOCKED / NOT_ACCEPTED\`。Stage B local closure projection 为 62 个已完成主题、105 篇内容文档与 544 个受治理来源，持久故事进度仍为 \`8 / 20\`，当前 G009，下一项为 STY-10，STY-09 为 published/complete，STY-10 为 unpublished/pending/nonactionable；Stage B 三个独立 review slots 与 final readiness 均为 \`PENDING\`，deployment status 为 \`PENDING / NOT_RUN\`。`;
+const PENDING_STAGE_B_REVIEW_LINES = Object.freeze([
+  '- Closure date: `2026-08-17`.',
+  `- Exact Stage A implementation head: \`${PRODUCTION_HEAD}\`.`,
+  `- Exact Pages run: \`${PRODUCTION_PAGES.runId}\`; workflow: \`completed / success\`.`,
+  `- Build job: \`${PRODUCTION_PAGES.buildJobId}\`; status: \`completed / success\`.`,
+  `- Deploy job: \`${PRODUCTION_PAGES.deployJobId}\`; status: \`completed / success\`.`,
+  '- Required production HTML routes: `9/9`; every route returned `200` with `text/html; charset=utf-8`.',
+  `- Reviewed production SVG: HTTP \`200\`; MIME \`${PRODUCTION_SVG.contentType}\`; \`${PRODUCTION_SVG.bytes.toLocaleString('en-US')}\` bytes; SHA-256 \`${PRODUCTION_SVG.sha256}\`; exact reviewed byte identity: \`PASS\`.`,
+  `- Stage A Browser raw: \`${RAW_BROWSER}\`; \`${RAW_BROWSER_BYTES.toLocaleString('en-US')}\` bytes; SHA-256 \`${STAGE_A_RAW_BROWSER_HASH}\`.`,
+  `- Stage A production Browser raw: \`${PRODUCTION_RAW_BROWSER}\`; \`${PRODUCTION_RAW_BROWSER_BYTES.toLocaleString('en-US')}\` bytes; SHA-256 \`${PRODUCTION_RAW_BROWSER_HASH}\`.`,
+  '- Functional production QA: `PASS`; states `4/4`; wrapper interactions `12/12`; relation checks `20/20`; exact source checks `16/16`; STY-10 actionable count `0`; diagnostics complete and empty.',
+  '- Stage A production screenshot evidence: `BLOCKED / NOT_ACCEPTED`; exactly three attempts were `CAPTURED_REJECTED`; no visual PASS is claimed.',
+  '- Projection: `62 completed topics / 105 content documents / 544 governed sources`.',
+  '- STY-09 target: `published / complete`.',
+  '- STY-10 target: `unpublished / pending / non-actionable`; actionable route count: `0`; sole next topic.',
+  `- Immediate immutable history: complete Batch 9 review SHA-256 \`${IMMEDIATE_REVIEW_HASH}\`; backlog suffix \`${IMMEDIATE_BACKLOG_SUFFIX_HASH}\`.`,
+  '- Exact Stage B reviewed head: `PENDING`.',
+  '- Independent Stage B code/spec/security review: `PENDING`; findings: `PENDING`.',
+  '- Independent Stage B content/evidence/rights review: `PENDING`; rights: `PENDING`; findings: `PENDING`.',
+  '- Independent Stage B architecture/invariant review: `PENDING`; blockers: `PENDING`.',
+  '- Final Stage B review judgment: `PENDING`.',
+  '- Stage B scope boundary: `STAGE_B`.',
+  '- Stage B deployment status: `PENDING / NOT_RUN`.',
+  '- Stage B screenshot status remains `BLOCKED / NOT_ACCEPTED`.',
+]);
 
 const rootUrl = new URL('../', import.meta.url);
 const sha256 = (value) => createHash('sha256').update(value).digest('hex');
@@ -139,30 +168,37 @@ function currentReleaseBaseline(source) {
   assert.equal(lines.length, 1, 'one current release baseline');
   return lines[0].slice('- **当前发布基线：** '.length);
 }
-function assertImmediateHistory(reviewBytes = immediateReviewBytes, backlogSource = backlog) {
+function assertStageBImmediateHistory(reviewBytes = immediateReviewBytes, backlogSource = backlog) {
   assert.equal(sha256(reviewBytes), IMMEDIATE_REVIEW_HASH, `${IMMEDIATE_REVIEW} complete immutable bytes`);
-  assert.equal(sha256(currentReleaseBaseline(backlogSource)), IMMEDIATE_BACKLOG_SUFFIX_HASH, 'complete immediate STY-08 backlog suffix');
+  const baseline = currentReleaseBaseline(backlogSource);
+  assert.ok(baseline.startsWith(CURRENT_BASELINE_PREFIX + IMMEDIATE_BACKLOG_MARKER), 'exact current Batch 10 prefix');
+  const suffix = baseline.slice((CURRENT_BASELINE_PREFIX + IMMEDIATE_BACKLOG_MARKER).length);
+  assert.match(suffix, /^2026-08-16 G009 Batch 9 已完成 STY-08/u);
+  assert.equal(sha256(suffix), IMMEDIATE_BACKLOG_SUFFIX_HASH, 'complete immediate STY-08 backlog suffix');
 }
-function assertStageABacklog(source = backlog) {
+function assertStageBBacklog(source = backlog) {
   const sty09 = source.split(/\r?\n/u).filter((line) => /^- \[[ x]\] \*\*STY-09 /u.test(line));
   const sty10 = source.split(/\r?\n/u).filter((line) => /^- \[[ x]\] \*\*STY-10 /u.test(line));
-  assert.equal(sty09.length, 1, 'one canonical STY-09 backlog line');
+  assert.deepEqual(sty09, [STY09_CLOSURE_LINE]);
   assert.equal(sty10.length, 1, 'one canonical STY-10 backlog line');
-  assert.match(sty09[0], /^- \[ \] \*\*STY-09 /u);
   assert.match(sty10[0], /^- \[ \] \*\*STY-10 /u);
   assert.doesNotMatch(source, /\]\(\/styles\/sty-10\)/u);
-  assertImmediateHistory(immediateReviewBytes, source);
+  assertStageBImmediateHistory(immediateReviewBytes, source);
 }
-function assertProjection() {
+function assertStageBProjection() {
   assert.deepEqual(
     {completed: status.completed_topics, documents: status.content_documents, sources: status.governed_sources},
-    {completed: 61, documents: 105, sources: 544},
+    {completed: 62, documents: 105, sources: 544},
   );
   assert.equal(publicLedger.sources.length, 544);
   const topics = new Map(manifest.topics.map((topic) => [topic.id, topic]));
   const styles = new Map(indexes.style.map((topic) => [topic.id, topic]));
-  assert.deepEqual([topics.get('STY-09')?.published, topics.get('STY-09')?.status.value, styles.get('STY-09')?.published], [true, 'pending', true]);
+  assert.deepEqual([topics.get('STY-09')?.published, topics.get('STY-09')?.status.value, styles.get('STY-09')?.published], [true, 'complete', true]);
   assert.deepEqual([topics.get('STY-10')?.published, topics.get('STY-10')?.status.value, styles.get('STY-10')?.published], [false, 'pending', false]);
+}
+function assertPendingStageBReview(source = review) {
+  assert.equal(section(source, 'Stage B closure candidate'), PENDING_STAGE_B_REVIEW_LINES.join('\n'), 'exact pending Stage B section');
+  assert.equal(source.split('## Stage B closure candidate').length - 1, 1, 'one Stage B closure section');
 }
 async function assertSty10NonActionable() {
   const documents = await readContentDocuments('content');
@@ -357,24 +393,25 @@ const [review, browserBytes, productionBrowserBytes, immediateReviewBytes, backl
   required('src/generated/source-ledger.json', 'utf8').then(JSON.parse),
 ]);
 
-test('locks complete immediate STY-08 review and backlog history with mutation sensitivity', () => {
-  assertImmediateHistory();
+test('locks complete immediate STY-08 review and backlog suffix with mutation sensitivity', () => {
+  assertStageBImmediateHistory();
   for (const changedReview of [Buffer.concat([immediateReviewBytes, Buffer.from('x')]), immediateReviewBytes.subarray(0, -1)]) {
-    assert.throws(() => assertImmediateHistory(changedReview), assert.AssertionError);
+    assert.throws(() => assertStageBImmediateHistory(changedReview), assert.AssertionError);
   }
   const baseline = currentReleaseBaseline(backlog);
-  for (const changedBaseline of [`${baseline}x`, baseline.slice(0, -1)]) {
-    const changedBacklog = backlog.replace(baseline, changedBaseline);
-    assert.throws(() => assertImmediateHistory(immediateReviewBytes, changedBacklog), assert.AssertionError);
+  const suffix = baseline.slice((CURRENT_BASELINE_PREFIX + IMMEDIATE_BACKLOG_MARKER).length);
+  for (const changedSuffix of [`${suffix}x`, suffix.slice(0, -1)]) {
+    const changedBacklog = backlog.replace(suffix, changedSuffix);
+    assert.throws(() => assertStageBImmediateHistory(immediateReviewBytes, changedBacklog), assert.AssertionError);
   }
   const changedCurrentSty10 = backlog.replace('- [ ] **STY-10 ', '- [x] **STY-10 ');
   assert.notEqual(changedCurrentSty10, backlog, 'current STY-10 mutation applies');
-  assert.throws(() => assertStageABacklog(changedCurrentSty10), assert.AssertionError);
+  assert.throws(() => assertStageBBacklog(changedCurrentSty10), assert.AssertionError);
 });
 
-test('projects canonical STY-09 Stage A truth while STY-10 remains pending and non-actionable', async () => {
-  assertProjection();
-  assertStageABacklog();
+test('projects canonical STY-09 Stage B truth while STY-10 remains pending and non-actionable', async () => {
+  assertStageBProjection();
+  assertStageBBacklog();
   await assertSty10NonActionable();
 });
 
@@ -470,7 +507,6 @@ test('binds exact reviewed-head Stage A production publication and functional IA
   assert.notEqual(sha256(productionBrowserBytes.subarray(0, -1)), PRODUCTION_RAW_BROWSER_HASH);
   assertProductionBrowser(JSON.parse(productionBrowserBytes));
   assertProductionReview(review);
-  assertStageABacklog();
 });
 
 test('rejects production head, run, job, route, SVG, semantic, diagnostic, screenshot and review mutations', () => {
@@ -530,4 +566,17 @@ test('rejects production head, run, job, route, SVG, semantic, diagnostic, scree
     assert.notEqual(mutated, review, `${before} production-review mutation applies`);
     assert.throws(() => assertProductionReview(mutated), {name: 'AssertionError'});
   }
+});
+
+test('closes only STY-09 from exact Stage A production evidence and preserves complete STY-08 history', () => {
+  assertStageBBacklog();
+});
+
+test('projects STY-09 complete with STY-10 as the sole pending non-actionable next topic', async () => {
+  assertStageBProjection();
+  await assertSty10NonActionable();
+});
+
+test('keeps every Stage B review slot, final judgment, and deployment pending before independent review', () => {
+  assertPendingStageBReview();
 });

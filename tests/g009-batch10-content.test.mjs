@@ -13,7 +13,7 @@ export const SVG = 'static/img/diagrams/sty-09-pipes-filters-order-processing.sv
 export const ROUTE = '/styles/sty-09';
 export const TOPIC_ID = 'STY-09';
 export const NEXT_TOPIC = 'STY-10';
-export const EXPECTED_STAGE_A = Object.freeze({completed: 61, documents: 105, sources: 544});
+export const EXPECTED_CURRENT_PROJECTION = Object.freeze({completed: 62, documents: 105, sources: 544});
 const CONTENT_ROOT = fileURLToPath(new URL('../content/', import.meta.url));
 const CONTENT_DOCUMENTS = (await readContentDocuments(CONTENT_ROOT)).map((document) => ({...document, file: `content/${document.file}`}));
 export const SOURCE_IDS = Object.freeze([
@@ -244,7 +244,7 @@ export function assertRelationsAndProjection() {
     ['content/cases/apache-kafka-consumer-groups.mdx', '/styles/sty-09'], ['content/quality-attributes/qa-03-performance-latency-throughput-capacity.mdx', '/styles/sty-09'], ['content/paths/04-reliability-state.mdx', '/styles/sty-09'],
   ];
   for (const [path, route] of reciprocal) { const target = documents.find((document) => document.file === path); assert.ok(target, `${path} exists`); assert.ok(extractInternalLinks(target).includes(route), `${path} reciprocates STY-09`); }
-  const status = JSON.parse(readFileSync('src/generated/project-status.json', 'utf8')); assert.deepEqual({completed: status.completed_topics, documents: status.content_documents, sources: status.governed_sources}, EXPECTED_STAGE_A, 'Stage A projection');
+  const status = JSON.parse(readFileSync('src/generated/project-status.json', 'utf8')); assert.deepEqual({completed: status.completed_topics, documents: status.content_documents, sources: status.governed_sources}, EXPECTED_CURRENT_PROJECTION, 'current Stage B projection');
 }
 
 function attributes(tag) { return new Map([...tag.matchAll(/([:\w-]+)\s*=\s*(?:"([^"]*)"|'([^']*)')/gu)].map(([, key, double, single]) => [key, double ?? single])); }
@@ -704,7 +704,7 @@ test('STY-09 article locks metadata, headings, wrappers, components and recovery
   ]) assert.throws(() => assertArticleHeadingContract(changed), assert.AssertionError, `${label} rejected`);
 });
 
-test('STY-09 source governance, reciprocal links, and Stage A projection are exact', () => {
+test('STY-09 source governance, reciprocal links, and current Stage B projection are exact', () => {
   const ledger = JSON.parse(readFileSync('data/source-ledger.json', 'utf8')); assertRemoteSourceContracts(ledger, readFileSync('docs/source-license-inventory.md', 'utf8')); assertSourceLinkHealth(JSON.parse(readFileSync('data/source-link-health.json', 'utf8'))); assertRelationsAndProjection();
   for (const source of CONTENT_DOCUMENTS) assert.equal(extractInternalLinks(source).includes('/styles/sty-10'), false, `${source.file} keeps STY-10 non-actionable`);
   const external = extractExternalLinks(CONTENT_DOCUMENTS.find(({file: path}) => path === ARTICLE)); for (const expected of Object.values(REMOTE_SOURCE_CONTRACTS)) assert.ok(external.includes(expected.canonical_locator), `article cites ${expected.canonical_locator}`);

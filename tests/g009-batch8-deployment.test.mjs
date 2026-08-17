@@ -123,21 +123,25 @@ function assertStageBClosure(source = review, backlogSource = backlog) {
   ]) assert.ok(projection.includes(literal), literal);
 
   const baseline = currentReleaseBaseline(backlogSource);
-  const batch8Marker = '此前 G009 Batch 8 历史完成基线为：';
-  const batch8Start = baseline.indexOf(batch8Marker);
-  assert.notEqual(batch8Start, -1, 'complete immediate STY-07 history marker');
-  const currentPrefix = baseline.slice(0, batch8Start);
+  const batch9Marker = '此前 G009 Batch 9 历史完成基线为：';
+  const batch9Start = baseline.indexOf(batch9Marker);
+  assert.notEqual(batch9Start, -1, 'complete immediate STY-08 history marker');
+  const currentPrefix = baseline.slice(0, batch9Start);
   for (const literal of [
-    '2026-08-16 G009 Batch 9 已完成 STY-08',
-    'Stage B local closure projection 为 61 个已完成主题、104 篇内容文档与 539 个受治理来源',
-    '当前 G009，下一项为 STY-09',
-    'STY-08 为 published/complete',
-    'STY-09 为 unpublished/pending/nonactionable',
+    '2026-08-17 G009 Batch 10 已完成 STY-09',
+    'Stage B local closure projection 为 62 个已完成主题、105 篇内容文档与 544 个受治理来源',
+    '当前 G009，下一项为 STY-10',
+    'STY-09 为 published/complete',
+    'STY-10 为 unpublished/pending/nonactionable',
     'review slots 与 final readiness 均为 `PENDING`',
     'deployment status 为 `PENDING / NOT_RUN`',
   ]) assert.ok(currentPrefix.includes(literal), literal);
 
-  const batch8History = baseline.slice(batch8Start + batch8Marker.length);
+  const batch8Marker = '此前 G009 Batch 8 历史完成基线为：';
+  const batch9History = baseline.slice(batch9Start + batch9Marker.length);
+  const batch8Start = batch9History.indexOf(batch8Marker);
+  assert.notEqual(batch8Start, -1, 'complete Batch 8 history boundary');
+  const batch8History = batch9History.slice(batch8Start + batch8Marker.length);
   for (const literal of [
     '2026-08-14 G009 Batch 8 已完成 STY-07',
     `Stage A 发布基线为 [\`${IMPLEMENTATION_HEAD}\`]`,
@@ -168,19 +172,20 @@ function assertStageBClosure(source = review, backlogSource = backlog) {
     'Stage A production verdict PASS',
   ]) assert.ok(sty07Lines[0].includes(literal), literal);
   assert.match(backlogSource, /^- \[x\] \*\*STY-08 /mu);
-  assert.match(backlogSource, /^- \[ \] \*\*STY-09 /mu);
-  assert.doesNotMatch(backlogSource, /\]\(\/styles\/sty-09\)/u);
+  assert.match(backlogSource, /^- \[x\] \*\*STY-09 /mu);
+  assert.match(backlogSource, /^- \[ \] \*\*STY-10 /mu);
+  assert.doesNotMatch(backlogSource, /\]\(\/styles\/sty-10\)/u);
 }
 
 function assertProjection() {
-  assert.deepEqual({completed_topics: status.completed_topics, content_documents: status.content_documents, governed_sources: status.governed_sources}, {completed_topics: 61, content_documents: 105, governed_sources: 544});
+  assert.deepEqual({completed_topics: status.completed_topics, content_documents: status.content_documents, governed_sources: status.governed_sources}, {completed_topics: 62, content_documents: 105, governed_sources: 544});
   assert.equal(publicLedger.sources.length, 544);
 
   const topics = new Map(manifest.topics.map((topic) => [topic.id, topic]));
   const styles = new Map(indexes.style.map((topic) => [topic.id, topic]));
   assert.deepEqual([topics.get('STY-07')?.published, topics.get('STY-07')?.status.value, styles.get('STY-07')?.published], [true, 'complete', true]);
   assert.deepEqual([topics.get('STY-08')?.published, topics.get('STY-08')?.status.value, styles.get('STY-08')?.published], [true, 'complete', true]);
-  assert.deepEqual([topics.get('STY-09')?.published, topics.get('STY-09')?.status.value, styles.get('STY-09')?.published], [true, 'pending', true]);
+  assert.deepEqual([topics.get('STY-09')?.published, topics.get('STY-09')?.status.value, styles.get('STY-09')?.published], [true, 'complete', true]);
   assert.deepEqual([topics.get('STY-10')?.published, topics.get('STY-10')?.status.value, styles.get('STY-10')?.published], [false, 'pending', false]);
   assert.deepEqual(SOURCE_IDS.filter((id) => publicLedger.sources.some((source) => source.id === id)), SOURCE_IDS);
 }
@@ -346,7 +351,7 @@ async function assertReview(source) {
   assert.ok(qa.includes(`Raw Browser JSON: \`${RAW_BROWSER}\`, SHA-256 \`${sha256(browserBytes)}\`.`));
 }
 
-test('preserves the exact STY-07 Stage B closure record while the current projection advances to STY-09', assertProjection);
+test('preserves the exact STY-07 Stage B closure record while the current projection advances to STY-10', assertProjection);
 test('binds exact artifacts, raw Browser bytes, and final independent review verdicts', async () => { assertBrowser(browser); await assertReview(review); });
 test('binds the complete tracked raw Browser bytes to one fixed SHA-256', () => {
   assert.equal(sha256(browserBytes), RAW_BROWSER_HASH);
@@ -432,19 +437,19 @@ test('preserves the complete immediate STY-06 backlog suffix and Batch 7 review'
   assert.notEqual(sha256(`${line.slice(line.indexOf(marker) + marker.length)}x`), IMMEDIATE_BACKLOG_SUFFIX_HASH);
 });
 
-test('preserves the STY-07 closure record while current generation publishes STY-09 at 61/105/544', () => {
+test('preserves the STY-07 closure record while current generation projects STY-10 next at 62/105/544', () => {
   assert.deepEqual({
     completed_topics: status.completed_topics,
     content_documents: status.content_documents,
     governed_sources: status.governed_sources,
-  }, {completed_topics: 61, content_documents: 105, governed_sources: 544});
+  }, {completed_topics: 62, content_documents: 105, governed_sources: 544});
   assert.equal(publicLedger.sources.length, 544);
 
   const topics = new Map(manifest.topics.map((topic) => [topic.id, topic]));
   const styles = new Map(indexes.style.map((topic) => [topic.id, topic]));
   assert.deepEqual([topics.get('STY-07')?.published, topics.get('STY-07')?.status.value, styles.get('STY-07')?.published], [true, 'complete', true]);
   assert.deepEqual([topics.get('STY-08')?.published, topics.get('STY-08')?.status.value, styles.get('STY-08')?.published], [true, 'complete', true]);
-  assert.deepEqual([topics.get('STY-09')?.published, topics.get('STY-09')?.status.value, styles.get('STY-09')?.published], [true, 'pending', true]);
+  assert.deepEqual([topics.get('STY-09')?.published, topics.get('STY-09')?.status.value, styles.get('STY-09')?.published], [true, 'complete', true]);
   assert.deepEqual([topics.get('STY-10')?.published, topics.get('STY-10')?.status.value, styles.get('STY-10')?.published], [false, 'pending', false]);
   assertStageBClosure();
 });
@@ -453,9 +458,9 @@ test('rejects Stage B history drift, stale next-topic state, weakened review slo
   assertStageBClosure();
   const mutations = [
     ['history drift', 'backlog', backlog, mutateImmediateHistory(backlog)],
-    ['checked STY-09', 'backlog', backlog, backlog.replace('- [ ] **STY-09 ', '- [x] **STY-09 ')],
-    ['actionable STY-09', 'backlog', backlog, `${backlog}\n[Pipes and Filters](/styles/sty-09)\n`],
-    ['stale current next topic', 'backlog', backlog, backlog.replace('下一项为 STY-09', '下一项为 STY-08')],
+    ['checked STY-10', 'backlog', backlog, backlog.replace('- [ ] **STY-10 ', '- [x] **STY-10 ')],
+    ['actionable STY-10', 'backlog', backlog, `${backlog}\n[Microkernel](/styles/sty-10)\n`],
+    ['stale current next topic', 'backlog', backlog, backlog.replace('下一项为 STY-10', '下一项为 STY-09')],
     ['wrong projection', 'review', review, review.replace('60 completed topics / 102 content documents / 529 governed sources', '59 completed topics / 102 content documents / 529 governed sources')],
     ['wrong reviewed head', 'review', review, review.replace(STAGE_B_REVIEWED_HEAD, '0'.repeat(40))],
     ['weakened code verdict', 'review', review, review.replace('Independent Stage B code/spec/security review: `READY / APPROVE`; findings: `0`', 'Independent Stage B code/spec/security review: `NOT READY`; findings: `1`')],

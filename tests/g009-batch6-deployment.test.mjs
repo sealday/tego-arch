@@ -319,14 +319,14 @@ function assertHistoricalBacklogLocks(source) {
   assert.equal(sha256(currentBaseline.slice(historyStart)), HISTORICAL_BACKLOG_SUFFIX_HASH);
 }
 
-test('preserves the exact STY-05 closure under the current STY-09 next-topic projection', () => {
+test('preserves the exact STY-05 closure under the current STY-10 next-topic projection', () => {
   assert.deepEqual(
     {
       completed_topics: projectStatus.completed_topics,
       content_documents: projectStatus.content_documents,
       governed_sources: projectStatus.governed_sources,
     },
-    {completed_topics: 61, content_documents: 105, governed_sources: 544},
+    {completed_topics: 62, content_documents: 105, governed_sources: 544},
   );
   assert.equal(publicLedger.sources.length, 544);
 

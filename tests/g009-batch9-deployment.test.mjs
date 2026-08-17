@@ -147,6 +147,7 @@ const STAGE_B_PRODUCTION_SCREENSHOT_ATTEMPTS = Object.freeze([
 ]);
 const STY08_CLOSURE_LINE = `- [x] **STY-08 P1｜Actor Model**：隔离状态、邮箱、监督、位置透明与分布式边界。Stage A 关闭证据：2026-08-16 review，commit [\`${PRODUCTION_IMPLEMENTATION_HEAD}\`](https://github.com/sealday/tego-arch/commit/${PRODUCTION_IMPLEMENTATION_HEAD})，Pages run [\`${PRODUCTION_PAGES.runId}\`](https://github.com/sealday/tego-arch/actions/runs/${PRODUCTION_PAGES.runId})，build job \`${PRODUCTION_PAGES.buildJobId}\`、deploy job \`${PRODUCTION_PAGES.deployJobId}\`，production HTML routes \`8/8\`，live route \`/styles/sty-08\` 与 \`/img/diagrams/sty-08-actor-order-fulfillment.svg\` 均为 HTTP 200，live SVG SHA-256 \`${PRODUCTION_SVG.sha256}\` 与 reviewed asset exact match，Stage A production functional verdict PASS；screenshot evidence BLOCKED / NOT_ACCEPTED。`;
 const CURRENT_BASELINE_PREFIX = `2026-08-16 G009 Batch 9 已完成 STY-08，Stage A 发布基线为 [\`${PRODUCTION_IMPLEMENTATION_HEAD}\`](https://github.com/sealday/tego-arch/commit/${PRODUCTION_IMPLEMENTATION_HEAD})，Pages run [\`${PRODUCTION_PAGES.runId}\`](https://github.com/sealday/tego-arch/actions/runs/${PRODUCTION_PAGES.runId})，exact \`headSha=${PRODUCTION_IMPLEMENTATION_HEAD}\`、\`event=push\`、\`status=completed\`、\`conclusion=success\`，build job \`${PRODUCTION_PAGES.buildJobId}\`、deploy job \`${PRODUCTION_PAGES.deployJobId}\`；2026-08-16 production HTTP probes \`8/8\`，live route \`/styles/sty-08\` 与 \`/img/diagrams/sty-08-actor-order-fulfillment.svg\` 均为 HTTP \`200\`，live SVG SHA-256 \`${PRODUCTION_SVG.sha256}\` 与 reviewed asset exact match。Production Browser states \`4/4\`、wrapper interactions \`12/12\`、relation destination/H1/return \`16/16\`、exact source destinations \`24/24\`，每个状态 STY-09 actionable count \`0\` 且 diagnostics 完整为零；Stage A production functional verdict \`PASS\`，screenshot evidence \`BLOCKED / NOT_ACCEPTED\`。Stage B local closure projection 为 61 个已完成主题、104 篇内容文档与 539 个受治理来源，持久故事进度仍为 \`8 / 20\`，当前 G009，下一项为 STY-09，STY-08 为 published/complete，STY-09 为 unpublished/pending/nonactionable；Stage B 三个独立 review slots 与 final readiness 均为 \`PENDING\`，deployment status 为 \`PENDING / NOT_RUN\`。`;
+const CURRENT_HISTORY_MARKER = '此前 G009 Batch 9 历史完成基线为：';
 const IMMEDIATE_BACKLOG_MARKER = '此前 G009 Batch 8 历史完成基线为：';
 const STAGE_B_REVIEW_LINES = Object.freeze([
   '- Closure date: `2026-08-16`.',
@@ -231,26 +232,40 @@ function assertStageBBacklog(source) {
   assert.deepEqual(sty08Lines, [STY08_CLOSURE_LINE]);
   const sty09Lines = source.split(/\r?\n/u).filter((line) => /^- \[[ x]\] \*\*STY-09 /u.test(line));
   assert.equal(sty09Lines.length, 1, 'one canonical STY-09 backlog line');
-  assert.match(sty09Lines[0], /^- \[ \] \*\*STY-09 /u);
-  assert.doesNotMatch(source, /\]\(\/styles\/sty-09\)/u);
+  assert.match(sty09Lines[0], /^- \[x\] \*\*STY-09 /u);
+  assert.match(source, /^- \[ \] \*\*STY-10 /mu);
+  assert.doesNotMatch(source, /\]\(\/styles\/sty-10\)/u);
 
   const baseline = currentReleaseBaseline(source);
-  assert.ok(baseline.startsWith(CURRENT_BASELINE_PREFIX + IMMEDIATE_BACKLOG_MARKER), 'exact current Batch 9 prefix');
-  const suffix = baseline.slice((CURRENT_BASELINE_PREFIX + IMMEDIATE_BACKLOG_MARKER).length);
+  const liveParts = baseline.split(CURRENT_HISTORY_MARKER);
+  assert.equal(liveParts.length, 2, 'one immutable Batch 9 history boundary');
+  assert.match(liveParts[0], /^2026-08-17 G009 Batch 10 已完成 STY-09/u);
+  assert.match(liveParts[0], /当前 G009，下一项为 STY-10/u);
+  assert.ok(liveParts[1].startsWith(CURRENT_BASELINE_PREFIX + IMMEDIATE_BACKLOG_MARKER), 'exact historical Batch 9 prefix');
+  const suffix = liveParts[1].slice((CURRENT_BASELINE_PREFIX + IMMEDIATE_BACKLOG_MARKER).length);
   assert.match(suffix, /^2026-08-14 G009 Batch 8 已完成 STY-07/u);
   assert.equal(sha256(suffix), IMMEDIATE_BACKLOG_SUFFIX_HASH, 'complete immediate STY-07 backlog suffix');
+}
+
+function replaceHistoricalBatch9Literal(source, before, after) {
+  const baseline = currentReleaseBaseline(source);
+  const parts = baseline.split(CURRENT_HISTORY_MARKER);
+  assert.equal(parts.length, 2, 'one immutable Batch 9 history boundary');
+  assert.ok(parts[1].includes(before), `${before} historical Batch 9 mutation applies`);
+  const mutatedBaseline = `${parts[0]}${CURRENT_HISTORY_MARKER}${parts[1].replace(before, after)}`;
+  return source.replace(baseline, mutatedBaseline);
 }
 
 function assertStageBProjection() {
   assert.deepEqual(
     {completed_topics: status.completed_topics, content_documents: status.content_documents, governed_sources: status.governed_sources},
-    {completed_topics: 61, content_documents: 105, governed_sources: 544},
+    {completed_topics: 62, content_documents: 105, governed_sources: 544},
   );
   assert.equal(publicLedger.sources.length, 544);
   const topics = new Map(manifest.topics.map((topic) => [topic.id, topic]));
   const styles = new Map(indexes.style.map((topic) => [topic.id, topic]));
   assert.deepEqual([topics.get('STY-08')?.published, topics.get('STY-08')?.status.value, styles.get('STY-08')?.published], [true, 'complete', true]);
-  assert.deepEqual([topics.get('STY-09')?.published, topics.get('STY-09')?.status.value, styles.get('STY-09')?.published], [true, 'pending', true]);
+  assert.deepEqual([topics.get('STY-09')?.published, topics.get('STY-09')?.status.value, styles.get('STY-09')?.published], [true, 'complete', true]);
   assert.deepEqual([topics.get('STY-10')?.published, topics.get('STY-10')?.status.value, styles.get('STY-10')?.published], [false, 'pending', false]);
 }
 
@@ -271,12 +286,12 @@ const IMMEDIATE_HISTORY = new Map([
 ]);
 
 function assertProjection() {
-  assert.deepEqual({completed_topics: status.completed_topics, content_documents: status.content_documents, governed_sources: status.governed_sources}, {completed_topics: 61, content_documents: 105, governed_sources: 544});
+  assert.deepEqual({completed_topics: status.completed_topics, content_documents: status.content_documents, governed_sources: status.governed_sources}, {completed_topics: 62, content_documents: 105, governed_sources: 544});
   assert.equal(publicLedger.sources.length, 544);
   const topics = new Map(manifest.topics.map((topic) => [topic.id, topic]));
   const styles = new Map(indexes.style.map((topic) => [topic.id, topic]));
   assert.deepEqual([topics.get('STY-08')?.published, topics.get('STY-08')?.status.value, styles.get('STY-08')?.published], [true, 'complete', true]);
-  assert.deepEqual([topics.get('STY-09')?.published, topics.get('STY-09')?.status.value, styles.get('STY-09')?.published], [true, 'pending', true]);
+  assert.deepEqual([topics.get('STY-09')?.published, topics.get('STY-09')?.status.value, styles.get('STY-09')?.published], [true, 'complete', true]);
   assert.deepEqual([topics.get('STY-10')?.published, topics.get('STY-10')?.status.value, styles.get('STY-10')?.published], [false, 'pending', false]);
 }
 
@@ -448,9 +463,12 @@ test('preserves the complete immediate STY-07 backlog suffix and Batch 8 review 
   assert.equal(lines.length, 1, 'one current release baseline');
   const marker = '- **当前发布基线：** ';
   assert.ok(lines[0].startsWith(marker));
+  const current = lines[0].slice(marker.length);
+  const historyParts = current.split(CURRENT_HISTORY_MARKER);
+  assert.equal(historyParts.length, 2, 'one immutable Batch 9 history boundary');
   const immediateMarker = CURRENT_BASELINE_PREFIX + IMMEDIATE_BACKLOG_MARKER;
-  assert.ok(lines[0].slice(marker.length).startsWith(immediateMarker));
-  const suffix = lines[0].slice(marker.length + immediateMarker.length);
+  assert.ok(historyParts[1].startsWith(immediateMarker));
+  const suffix = historyParts[1].slice(immediateMarker.length);
   assert.match(suffix, /^2026-08-14 G009 Batch 8 已完成 STY-07/u);
   assert.equal(sha256(suffix), IMMEDIATE_BACKLOG_SUFFIX_HASH);
   for (const mutated of [Buffer.concat([immediateReviewBytes, Buffer.from('x')]), immediateReviewBytes.subarray(0, -1)]) assert.notEqual(sha256(mutated), IMMEDIATE_REVIEW_HASH);
@@ -741,7 +759,8 @@ test('rejects Stage B production, projection, history, next-topic, verdict, depl
     ['deployment status 为 `PENDING / NOT_RUN`', 'deployment status 为 `PENDING / SUCCESS`'],
   ];
   for (const [before, after] of backlogMutations) {
-    const mutated = backlog.replace(before, after);
+    const historicalOnly = before.includes('final readiness') || before.includes('deployment status');
+    const mutated = historicalOnly ? replaceHistoricalBatch9Literal(backlog, before, after) : backlog.replace(before, after);
     assert.notEqual(mutated, backlog, `${before} backlog mutation applies`);
     assert.throws(() => assertStageBBacklog(mutated), {name: 'AssertionError'}, `${before} backlog mutation rejected`);
   }

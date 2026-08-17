@@ -644,7 +644,7 @@ test('publishes exact reciprocal MOD-13 relations without changing relation over
 });
 
 test('locks the generated MOD-13 Stage B projection', () => {
-  assert.equal(projectStatus.completed_topics, 61);
+  assert.equal(projectStatus.completed_topics, 62);
   assert.equal(projectStatus.content_documents, 105);
   assert.equal(projectStatus.governed_sources, 544);
 

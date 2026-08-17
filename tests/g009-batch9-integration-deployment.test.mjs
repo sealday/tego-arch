@@ -160,14 +160,14 @@ function assertKeys(value, expected, label) {
 function assertCombinedProjection(statusValue = status, manifestValue = manifest, indexesValue = indexes, ledgerValue = publicLedger) {
   assert.deepEqual(
     {completed: statusValue.completed_topics, documents: statusValue.content_documents, sources: statusValue.governed_sources},
-    {completed: 61, documents: 105, sources: 544},
+    {completed: 62, documents: 105, sources: 544},
   );
   assert.equal(ledgerValue.sources.length, 544);
   const topics = new Map(manifestValue.topics.map((topic) => [topic.id, topic]));
   const styles = new Map(indexesValue.style.map((topic) => [topic.id, topic]));
   const methods = new Map(indexesValue.method.map((topic) => [topic.id, topic]));
   assert.deepEqual([topics.get('STY-08')?.published, topics.get('STY-08')?.status, styles.get('STY-08')?.published], [true, {scope: 'backlog-projection', value: 'complete', source: 'docs/content-backlog.md'}, true]);
-  assert.deepEqual([topics.get('STY-09')?.published, topics.get('STY-09')?.status, styles.get('STY-09')?.published], [true, {scope: 'backlog-projection', value: 'pending', source: 'docs/content-backlog.md'}, true]);
+  assert.deepEqual([topics.get('STY-09')?.published, topics.get('STY-09')?.status, styles.get('STY-09')?.published], [true, {scope: 'backlog-projection', value: 'complete', source: 'docs/content-backlog.md'}, true]);
   assert.deepEqual([topics.get('STY-10')?.published, topics.get('STY-10')?.status, styles.get('STY-10')?.published], [false, {scope: 'backlog-projection', value: 'pending', source: 'docs/content-backlog.md'}, false]);
   assert.deepEqual([topics.get('MTH-07')?.published, topics.get('MTH-07')?.status, methods.get('MTH-07')?.published], [true, {scope: 'content-lifecycle', value: 'reviewed', source: 'content/methods/mth-07-fde-enterprise-ai-delivery.mdx'}, true]);
 }
@@ -282,7 +282,7 @@ function replaceRequired(source, before, after) {
   return source.replace(before, after);
 }
 
-test('projects the combined STY-08 and MTH-07 Stage A truth', () => {
+test('preserves combined STY-08 and MTH-07 history under the current Stage B truth', () => {
   assertCombinedProjection();
 });
 

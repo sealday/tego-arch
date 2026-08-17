@@ -233,7 +233,7 @@ test('rejects missing duplicate symbolic or weakened review evidence', () => {
   }
 });
 
-test('preserves Batch 6 evidence under the current Batch 9 projection', () => {
+test('preserves Batch 6 evidence under the current Batch 10 projection', () => {
   assertBacklogClosure(backlog);
   const row = backlog.split(/\r?\n/u).find((line) => line.startsWith('- [x] **MOD-08 '));
   assert.ok(row?.includes(expectedStageASha), 'MOD-08 exact Stage A SHA');
@@ -255,7 +255,7 @@ test('preserves Batch 6 evidence under the current Batch 9 projection', () => {
   assert.deepEqual(projectStatus, {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
-    completed_topics: 61,
+    completed_topics: 62,
     content_documents: 105,
     governed_sources: 544,
 

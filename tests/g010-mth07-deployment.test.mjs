@@ -24,7 +24,7 @@ const MTH07_STATUS = {
 const PROJECT_STATUS = {
   schema_version: 1,
   durable_stories: {completed: 8, total: 20, current: 'G009'},
-  completed_topics: 61,
+  completed_topics: 62,
   content_documents: 105,
   governed_sources: 544,
   sources: {
@@ -696,7 +696,7 @@ async function assertReview(source) {
   assert.doesNotMatch(production, /Screenshot evidence: `(?:ACCEPTED|PASS)`|Visual inspection:.*`PASS`/iu);
 }
 
-test('projects exact MTH-07 Stage A totals without publishing a fabricated next topic', () => {
+test('preserves exact MTH-07 history under current totals without publishing a fabricated next topic', () => {
   assertProjection();
   const publishedRoutes = new Set(manifest.topics.filter(({published}) => published).map(({slug}) => slug));
   assert.equal(publishedRoutes.has('/methods/mth-07'), true);

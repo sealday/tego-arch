@@ -28,7 +28,7 @@ const [manifest, projectStatus, indexes, publicLedger] = await Promise.all([
 const licenseScope = 'The named article/page and bibliographic facts only; prose, code, diagrams, images, marks, comments, linked works, and third-party material excluded';
 const migrationPolicy = 'Facts summary and reviewed short quotation only; no adaptation or copied structure';
 
-test('preserves STY-02 closure under the current STY-09 next-topic projection', () => {
+test('preserves STY-02 closure under the current STY-10 next-topic projection', () => {
   const topics = new Map(manifest.topics.map((topic) => [topic.id, topic]));
   assert.equal(topics.get('STY-02')?.published, true);
   assert.equal(topics.get('STY-02')?.status.value, 'complete');
@@ -41,7 +41,7 @@ test('preserves STY-02 closure under the current STY-09 next-topic projection', 
   assert.equal(topics.get('STY-03')?.status.value, 'complete');
   assert.equal(topics.get('STY-04')?.published, true);
   assert.equal(topics.get('STY-04')?.status.value, 'complete');
-  assert.equal(projectStatus.completed_topics, 61);
+  assert.equal(projectStatus.completed_topics, 62);
   assert.equal(projectStatus.content_documents, 105);
   assert.equal(projectStatus.governed_sources, 544);
   assert.equal(publicLedger.sources.length, 544);

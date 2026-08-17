@@ -908,7 +908,7 @@ test('governs the STY-04 evidence and original illustration with one manifest pr
   assert.equal(illustrationCitation?.quotation_reviewed, false);
 });
 
-test('preserves the topic closure under the current STY-09 next-topic projection', () => {
+test('preserves the topic closure under the current STY-10 next-topic projection', () => {
   const topic = manifest.topics.find(({id}) => id === TOPIC_ID);
   const nextTopic = manifest.topics.find(({id}) => id === 'STY-05');
   assert.equal(topic?.published, true);
@@ -932,7 +932,7 @@ test('preserves the topic closure under the current STY-09 next-topic projection
   const nextStyleIndexEntry = indexes.style.find(({id}) => id === 'STY-05');
   assert.equal(nextStyleIndexEntry?.published, true);
   assert.equal(nextStyleIndexEntry?.status.value, 'complete');
-  assert.equal(projectStatus.completed_topics, 61);
+  assert.equal(projectStatus.completed_topics, 62);
   assert.equal(projectStatus.content_documents, 105);
   assert.equal(projectStatus.governed_sources, 544);
   assert.equal(publicLedger.sources.length, 544);
