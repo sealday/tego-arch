@@ -64,3 +64,34 @@
 - Final Stage A review judgment: `READY`.
 - Scope boundary: `STAGE_A_ONLY`; Stage B backlog closure and deployment have not run.
 - Deployment status: `NOT_RUN`.
+
+## Stage A production deployment
+
+- Exact reviewed Stage A head: `50ba9d2b18617b3bed84c6e17ddb696665b5a434`.
+- Preflight: tracked clean; `origin/main` exact merge-base and ancestor; behind/ahead `0/20`; publication used one non-force fast-forward push.
+- Exact Pages run: `32014770938`; workflow: `completed / success`.
+- Build job: `95341784622`; status: `completed / success`.
+- Deploy job: `95342598744`; status: `completed / success`.
+- The workflow, build and deploy identities bind the reviewed Stage A head; no evidence-only run is substituted.
+
+| Production route | Status | Content type |
+| --- | ---: | --- |
+| `/` | `200` | `text/html; charset=utf-8` |
+| `/styles` | `200` | `text/html; charset=utf-8` |
+| `/styles/sty-09` | `200` | `text/html; charset=utf-8` |
+| `/styles/sty-05` | `200` | `text/html; charset=utf-8` |
+| `/styles/sty-06` | `200` | `text/html; charset=utf-8` |
+| `/cases/apache-kafka-consumer-groups` | `200` | `text/html; charset=utf-8` |
+| `/quality-attributes/qa-03` | `200` | `text/html; charset=utf-8` |
+| `/paths/reliability-state` | `200` | `text/html; charset=utf-8` |
+| `/references` | `200` | `text/html; charset=utf-8` |
+
+- Required HTML routes: `9/9`; every route returned `200` with `text/html; charset=utf-8`.
+- Reviewed SVG: `25,205` bytes; MIME `image/svg+xml`; SHA-256 `1568fc09dbb6637d54e66d0058d9479cbf2e59d990753489781a119a06fb1a29`; exact reviewed byte identity: `PASS`.
+- Production raw Browser JSON: `docs/reviews/evidence/g009-batch10-stage-a-production-browser.json`; `26,937` bytes; SHA-256 `f2c0e43de924aedb9afba39ec26500c869b42f170f4b46e3792003433aa953aa`.
+- Functional production QA: `PASS`; states `4/4`; wrapper focus/`:focus-visible`/3px/ArrowRight checks `12/12`; relation href/H1/return checks `20/20`; source href/target/rel checks `16/16`.
+- SVG geometry: intrinsic `120x150`; rendered `800x1000`; STY-10 actionable count `0` in every state; warning/error logs and diagnostic events `0`; every diagnostic page has `hasMore=false` and `truncated=false`.
+- Screenshot evidence: `BLOCKED / NOT_ACCEPTED`; exactly three fresh attempts are `CAPTURED_REJECTED` because each repeated viewport content and omitted complete architecture-diagram coverage.
+- No Chrome fallback, prior raw, historical screenshot, substituted browser surface or visual PASS is claimed.
+- Stage A deployment status: `SUCCESS`; functional production status: `PASS`; visual screenshot status remains separately `BLOCKED / NOT_ACCEPTED`.
+- Scope remains `STAGE_A_ONLY`; the STY-09 backlog checkbox and all Stage B/STY-10 state are unchanged.

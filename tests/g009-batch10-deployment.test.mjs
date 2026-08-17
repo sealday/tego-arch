@@ -12,12 +12,45 @@ const SVG = 'static/img/diagrams/sty-09-pipes-filters-order-processing.svg';
 const LEDGER = 'data/source-ledger.json';
 const REVIEW = 'docs/reviews/g009-batch10.md';
 const RAW_BROWSER = 'docs/reviews/evidence/g009-batch10-stage-a-browser.json';
+const PRODUCTION_RAW_BROWSER = 'docs/reviews/evidence/g009-batch10-stage-a-production-browser.json';
 const IMMEDIATE_REVIEW = 'docs/reviews/g009-batch9.md';
 const BACKLOG = 'docs/content-backlog.md';
 const IMPLEMENTATION_HEAD = 'd2748e204cd55654d1cd5b6dce4fdc88ca95bbb4';
 const EVIDENCE_HEAD = '1691a914037b25d363e33c6c3d5ab3b8a5bf2206';
 const RAW_BROWSER_BYTES = 24_971;
 const RAW_BROWSER_HASH = 'acc7c8154a8c6199cd92b8d68d258d7a0fb5e2e86eb8a1931219d36d9c72d7bf';
+const PRODUCTION_HEAD = '50ba9d2b18617b3bed84c6e17ddb696665b5a434';
+const PRODUCTION_RAW_BROWSER_BYTES = 26_937;
+const PRODUCTION_RAW_BROWSER_HASH = 'f2c0e43de924aedb9afba39ec26500c869b42f170f4b46e3792003433aa953aa';
+const PRODUCTION_PAGES = Object.freeze({
+  runId: 32_014_770_938,
+  status: 'completed',
+  conclusion: 'success',
+  buildJobId: 95_341_784_622,
+  buildStatus: 'completed',
+  buildConclusion: 'success',
+  deployJobId: 95_342_598_744,
+  deployStatus: 'completed',
+  deployConclusion: 'success',
+});
+const PRODUCTION_ROUTES = Object.freeze([
+  {path: '/', status: 200, contentType: 'text/html; charset=utf-8'},
+  {path: '/styles', status: 200, contentType: 'text/html; charset=utf-8'},
+  {path: '/styles/sty-09', status: 200, contentType: 'text/html; charset=utf-8'},
+  {path: '/styles/sty-05', status: 200, contentType: 'text/html; charset=utf-8'},
+  {path: '/styles/sty-06', status: 200, contentType: 'text/html; charset=utf-8'},
+  {path: '/cases/apache-kafka-consumer-groups', status: 200, contentType: 'text/html; charset=utf-8'},
+  {path: '/quality-attributes/qa-03', status: 200, contentType: 'text/html; charset=utf-8'},
+  {path: '/paths/reliability-state', status: 200, contentType: 'text/html; charset=utf-8'},
+  {path: '/references', status: 200, contentType: 'text/html; charset=utf-8'},
+]);
+const PRODUCTION_SVG = Object.freeze({
+  url: 'https://sealday.github.io/tego-arch/img/diagrams/sty-09-pipes-filters-order-processing.svg',
+  status: 200,
+  contentType: 'image/svg+xml',
+  bytes: 25_205,
+  sha256: '1568fc09dbb6637d54e66d0058d9479cbf2e59d990753489781a119a06fb1a29',
+});
 const IMMEDIATE_REVIEW_HASH = 'f7d0aba59dd69d6479bbfbdb6f9f3cf1befadcf076c44ff5f97f31d6452778ed';
 const IMMEDIATE_BACKLOG_SUFFIX_HASH = '3a8d6ccda815614132a33ca8ec2c0dca286628c20900d9e32a4403f0ffd56c6b';
 const STABLE_ARTIFACT_HASHES = new Map([
@@ -80,6 +113,11 @@ const SCREENSHOT_ATTEMPTS = Object.freeze([
   {ordinal: 1, state: 'desktopLight', viewport: {width: 1440, height: 1000}, kind: 'fullPage', path: '/Users/seal/projects/tego-arch/.worktrees/g009-styles-batch7/.superpowers/sdd/sty09-stage-a-d2748e2-desktop-light.png', bytes: 1_488_746, sha256: '22383e2430533ad43dae9eb9e1bfee235e050ea8228363aa8428fe2d2e6383e9', status: 'CAPTURED_REJECTED', reason: SCREENSHOT_REJECTION_REASON},
   {ordinal: 2, state: 'desktopDark', viewport: {width: 1440, height: 1000}, path: '/Users/seal/projects/tego-arch/.worktrees/g009-styles-batch7/.superpowers/sdd/sty09-stage-a-d2748e2-desktop-dark.png', bytes: 1_519_296, sha256: '456460787a2ecf5c30c006ef35a8a8d8764c68d471d6848b5ac81497c563b766', kind: 'fullPage', status: 'CAPTURED_REJECTED', reason: SCREENSHOT_REJECTION_REASON},
   {ordinal: 3, state: 'mobileLight', viewport: {width: 390, height: 844}, path: '/Users/seal/projects/tego-arch/.worktrees/g009-styles-batch7/.superpowers/sdd/sty09-stage-a-d2748e2-mobile-light.png', bytes: 618_851, sha256: '6e88baad8ec4f9899191936a82512edfc7bf096bf1cdf740e30d11e342a2a0fc', kind: 'fullPage', status: 'CAPTURED_REJECTED', reason: SCREENSHOT_REJECTION_REASON},
+]);
+const PRODUCTION_SCREENSHOT_ATTEMPTS = Object.freeze([
+  {ordinal: 1, state: 'desktopLight', viewport: {width: 1440, height: 1000}, kind: 'fullPage', path: '/Users/seal/projects/tego-arch/.worktrees/g009-styles-batch7/.superpowers/sdd/sty09-stage-a-production-50ba9d2-desktop-light.png', bytes: 1_522_487, sha256: 'd360b123a7368fede7338e885d9bae2f136b92de330b80b79331ca07489a2363', status: 'CAPTURED_REJECTED', reason: SCREENSHOT_REJECTION_REASON},
+  {ordinal: 2, state: 'desktopDark', viewport: {width: 1440, height: 1000}, kind: 'fullPage', path: '/Users/seal/projects/tego-arch/.worktrees/g009-styles-batch7/.superpowers/sdd/sty09-stage-a-production-50ba9d2-desktop-dark.png', bytes: 1_536_917, sha256: '49ce10dac3e4f89a3b0ee121f30036ffc91fcf6b1cdc86a173a2d051bb55b6d9', status: 'CAPTURED_REJECTED', reason: SCREENSHOT_REJECTION_REASON},
+  {ordinal: 3, state: 'mobileLight', viewport: {width: 390, height: 844}, kind: 'fullPage', path: '/Users/seal/projects/tego-arch/.worktrees/g009-styles-batch7/.superpowers/sdd/sty09-stage-a-production-50ba9d2-mobile-light.png', bytes: 658_511, sha256: 'c18edf54f2e3aa5b2233a65713175073c66e2669555269a001abccc34919c88e', status: 'CAPTURED_REJECTED', reason: SCREENSHOT_REJECTION_REASON},
 ]);
 
 const rootUrl = new URL('../', import.meta.url);
@@ -200,6 +238,25 @@ function assertBrowser(evidence) {
     attempts: SCREENSHOT_ATTEMPTS,
   });
 }
+function assertProductionBrowser(evidence) {
+  assert.ok(evidence, `${PRODUCTION_RAW_BROWSER} exists and parses`);
+  assert.deepEqual(Object.keys(evidence), ['implementationHead', 'pages', 'probes', 'collection', 'states', 'screenshotEvidence']);
+  assert.equal(evidence.implementationHead, PRODUCTION_HEAD);
+  assert.deepEqual(evidence.pages, PRODUCTION_PAGES);
+  assert.deepEqual(evidence.probes, {routes: PRODUCTION_ROUTES, svg: PRODUCTION_SVG});
+  assert.deepEqual(evidence.collection, {
+    browser: 'Codex in-app Browser only',
+    fresh: true,
+    servedUrl: 'https://sealday.github.io/tego-arch/styles/sty-09',
+    build: `GitHub Pages exact reviewed Stage A head ${PRODUCTION_HEAD}; run ${PRODUCTION_PAGES.runId}; build job ${PRODUCTION_PAGES.buildJobId}; deploy job ${PRODUCTION_PAGES.deployJobId}`,
+  });
+  assertFunctionalStates(evidence);
+  assert.deepEqual(evidence.screenshotEvidence, {
+    status: 'BLOCKED / NOT_ACCEPTED',
+    reason: 'Exactly three fresh in-app Browser full-page captures repeated viewport content and omitted complete architecture-diagram coverage; no visual PASS is claimed.',
+    attempts: PRODUCTION_SCREENSHOT_ATTEMPTS,
+  });
+}
 function assertReviewCommon(source) {
   assert.match(source, /^# G009 Batch 10 Stage A Review$/mu);
   assert.equal(source.match(/^# G009 Batch 10 Stage A Review$/gmu)?.length, 1, 'one review title');
@@ -261,9 +318,39 @@ function assertFinalReview(source) {
   ].map((literal) => `- ${literal}`).join('\n');
   assert.equal(checkpoint, expected, 'exact final checkpoint with no weakened or contradictory verdict');
 }
+function assertProductionReview(source) {
+  assertReviewCommon(source);
+  const production = section(source, 'Stage A production deployment');
+  const expected = [
+    `- Exact reviewed Stage A head: \`${PRODUCTION_HEAD}\`.`,
+    '- Preflight: tracked clean; `origin/main` exact merge-base and ancestor; behind/ahead `0/20`; publication used one non-force fast-forward push.',
+    `- Exact Pages run: \`${PRODUCTION_PAGES.runId}\`; workflow: \`completed / success\`.`,
+    `- Build job: \`${PRODUCTION_PAGES.buildJobId}\`; status: \`completed / success\`.`,
+    `- Deploy job: \`${PRODUCTION_PAGES.deployJobId}\`; status: \`completed / success\`.`,
+    '- The workflow, build and deploy identities bind the reviewed Stage A head; no evidence-only run is substituted.',
+    '',
+    '| Production route | Status | Content type |',
+    '| --- | ---: | --- |',
+    ...PRODUCTION_ROUTES.map(({path, status, contentType}) => `| \`${path}\` | \`${status}\` | \`${contentType}\` |`),
+    '',
+    '- Required HTML routes: `9/9`; every route returned `200` with `text/html; charset=utf-8`.',
+    `- Reviewed SVG: \`${PRODUCTION_SVG.bytes.toLocaleString('en-US')}\` bytes; MIME \`${PRODUCTION_SVG.contentType}\`; SHA-256 \`${PRODUCTION_SVG.sha256}\`; exact reviewed byte identity: \`PASS\`.`,
+    `- Production raw Browser JSON: \`${PRODUCTION_RAW_BROWSER}\`; \`${PRODUCTION_RAW_BROWSER_BYTES.toLocaleString('en-US')}\` bytes; SHA-256 \`${PRODUCTION_RAW_BROWSER_HASH}\`.`,
+    '- Functional production QA: `PASS`; states `4/4`; wrapper focus/`:focus-visible`/3px/ArrowRight checks `12/12`; relation href/H1/return checks `20/20`; source href/target/rel checks `16/16`.',
+    '- SVG geometry: intrinsic `120x150`; rendered `800x1000`; STY-10 actionable count `0` in every state; warning/error logs and diagnostic events `0`; every diagnostic page has `hasMore=false` and `truncated=false`.',
+    '- Screenshot evidence: `BLOCKED / NOT_ACCEPTED`; exactly three fresh attempts are `CAPTURED_REJECTED` because each repeated viewport content and omitted complete architecture-diagram coverage.',
+    '- No Chrome fallback, prior raw, historical screenshot, substituted browser surface or visual PASS is claimed.',
+    '- Stage A deployment status: `SUCCESS`; functional production status: `PASS`; visual screenshot status remains separately `BLOCKED / NOT_ACCEPTED`.',
+    '- Scope remains `STAGE_A_ONLY`; the STY-09 backlog checkbox and all Stage B/STY-10 state are unchanged.',
+  ].join('\n');
+  assert.equal(production, expected, 'exact Stage A production section with no substituted run or visual PASS');
+  assert.ok(productionBrowserBytes, `${PRODUCTION_RAW_BROWSER} exists`);
+  assert.equal(productionBrowserBytes.length, PRODUCTION_RAW_BROWSER_BYTES);
+  assert.equal(sha256(productionBrowserBytes), PRODUCTION_RAW_BROWSER_HASH);
+}
 
-const [review, browserBytes, immediateReviewBytes, backlog, status, manifest, indexes, publicLedger] = await Promise.all([
-  optional(REVIEW, 'utf8'), optional(RAW_BROWSER), required(IMMEDIATE_REVIEW), required(BACKLOG, 'utf8'),
+const [review, browserBytes, productionBrowserBytes, immediateReviewBytes, backlog, status, manifest, indexes, publicLedger] = await Promise.all([
+  optional(REVIEW, 'utf8'), optional(RAW_BROWSER), optional(PRODUCTION_RAW_BROWSER), required(IMMEDIATE_REVIEW), required(BACKLOG, 'utf8'),
   required('src/generated/project-status.json', 'utf8').then(JSON.parse),
   required('src/generated/topic-manifest.json', 'utf8').then(JSON.parse),
   required('src/generated/topic-indexes.json', 'utf8').then(JSON.parse),
@@ -372,5 +459,75 @@ test('rejects wrong review heads, weakened verdicts, deployment, scope and fabri
     const mutated = review.replace(before, after);
     assert.notEqual(mutated, review, `${before} mutation applies`);
     assert.throws(() => assertFinalReview(mutated), {name: 'AssertionError'});
+  }
+});
+
+test('binds exact reviewed-head Stage A production publication and functional IAB evidence', () => {
+  assert.ok(productionBrowserBytes, `${PRODUCTION_RAW_BROWSER} exists`);
+  assert.equal(productionBrowserBytes.length, PRODUCTION_RAW_BROWSER_BYTES);
+  assert.equal(sha256(productionBrowserBytes), PRODUCTION_RAW_BROWSER_HASH);
+  assert.notEqual(sha256(Buffer.concat([productionBrowserBytes, Buffer.from('x')])), PRODUCTION_RAW_BROWSER_HASH);
+  assert.notEqual(sha256(productionBrowserBytes.subarray(0, -1)), PRODUCTION_RAW_BROWSER_HASH);
+  assertProductionBrowser(JSON.parse(productionBrowserBytes));
+  assertProductionReview(review);
+  assertStageABacklog();
+});
+
+test('rejects production head, run, job, route, SVG, semantic, diagnostic, screenshot and review mutations', () => {
+  assert.ok(productionBrowserBytes, `${PRODUCTION_RAW_BROWSER} exists`);
+  const production = JSON.parse(productionBrowserBytes);
+  assertProductionBrowser(production);
+  const mutations = [
+    (copy) => { copy.implementationHead = '0'.repeat(40); },
+    (copy) => { copy.pages.runId = 0; },
+    (copy) => { copy.pages.buildConclusion = 'failure'; },
+    (copy) => { copy.pages.deployJobId = 0; },
+    (copy) => { copy.probes.routes.reverse(); },
+    (copy) => { copy.probes.routes[2].status = 404; },
+    (copy) => { copy.probes.routes[8].contentType = 'text/plain'; },
+    (copy) => { copy.probes.svg.bytes += 1; },
+    (copy) => { copy.probes.svg.sha256 = '0'.repeat(64); },
+    (copy) => { delete copy.states.mobileDark; },
+    (copy) => { copy.states.desktopLight.geometry.wrappers.reverse(); },
+    (copy) => { copy.states.desktopDark.interactions[1].after.scrollLeft += 1; },
+    (copy) => { copy.states.mobileLight.relations[0].h1 = 'fabricated'; },
+    (copy) => { copy.states.mobileDark.geometry.sources.reverse(); },
+    (copy) => { copy.states.desktopLight.geometry.svg.loaded = false; },
+    (copy) => { copy.states.mobileDark.geometry.sty10 = 1; },
+    (copy) => { copy.states.desktopDark.logs.push({level: 'error'}); },
+    (copy) => { copy.states.mobileLight.diagnostics.events.push({method: 'Runtime.exceptionThrown'}); },
+    (copy) => { copy.states.mobileDark.diagnostics.hasMore = true; },
+    (copy) => { copy.states.mobileDark.diagnostics.truncated = true; },
+    (copy) => { copy.screenshotEvidence.status = 'PASS'; },
+    (copy) => { copy.screenshotEvidence.attempts.splice(1, 1); },
+    (copy) => { copy.screenshotEvidence.attempts.reverse(); },
+    (copy) => { copy.screenshotEvidence.attempts[0].bytes += 1; },
+    (copy) => { copy.screenshotEvidence.attempts[1].sha256 = '1'.repeat(64); },
+    (copy) => { copy.screenshotEvidence.attempts[2].status = 'PASS'; },
+  ];
+  for (const mutate of mutations) {
+    const copy = structuredClone(production);
+    mutate(copy);
+    assert.throws(() => assertProductionBrowser(copy), {name: 'AssertionError'});
+  }
+
+  assertProductionReview(review);
+  for (const [before, after] of [
+    [`Exact reviewed Stage A head: \`${PRODUCTION_HEAD}\`.`, `Exact reviewed Stage A head: \`${'0'.repeat(40)}\`.`],
+    [`Exact Pages run: \`${PRODUCTION_PAGES.runId}\`;`, 'Exact Pages run: `0`;'],
+    [`Build job: \`${PRODUCTION_PAGES.buildJobId}\`;`, 'Build job: `0`;'],
+    [`Deploy job: \`${PRODUCTION_PAGES.deployJobId}\`;`, 'Deploy job: `0`;'],
+    ['Required HTML routes: `9/9`;', 'Required HTML routes: `8/9`;'],
+    [`Reviewed SVG: \`${PRODUCTION_SVG.bytes.toLocaleString('en-US')}\` bytes; MIME \`${PRODUCTION_SVG.contentType}\`; SHA-256 \`${PRODUCTION_SVG.sha256}\`; exact reviewed byte identity: \`PASS\`.`, `Reviewed SVG: \`${PRODUCTION_SVG.bytes.toLocaleString('en-US')}\` bytes; MIME \`${PRODUCTION_SVG.contentType}\`; SHA-256 \`${'0'.repeat(64)}\`; exact reviewed byte identity: \`PASS\`.`],
+    [PRODUCTION_RAW_BROWSER_HASH, '1'.repeat(64)],
+    ['Functional production QA: `PASS`;', 'Functional production QA: `PENDING`;'],
+    ['Screenshot evidence: `BLOCKED / NOT_ACCEPTED`;', 'Screenshot evidence: `PASS`;'],
+    ['No Chrome fallback, prior raw, historical screenshot, substituted browser surface or visual PASS is claimed.', 'Visual PASS is claimed.'],
+    ['Stage A deployment status: `SUCCESS`;', 'Stage A deployment status: `PENDING`;'],
+    ['Scope remains `STAGE_A_ONLY`;', 'Scope remains `STAGE_B`;'],
+  ]) {
+    const mutated = review.replace(before, after);
+    assert.notEqual(mutated, review, `${before} production-review mutation applies`);
+    assert.throws(() => assertProductionReview(mutated), {name: 'AssertionError'});
   }
 });
