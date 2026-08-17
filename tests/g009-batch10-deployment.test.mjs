@@ -15,7 +15,7 @@ const RAW_BROWSER = 'docs/reviews/evidence/g009-batch10-stage-a-browser.json';
 const IMMEDIATE_REVIEW = 'docs/reviews/g009-batch9.md';
 const BACKLOG = 'docs/content-backlog.md';
 const IMPLEMENTATION_HEAD = 'd2748e204cd55654d1cd5b6dce4fdc88ca95bbb4';
-const EVIDENCE_HEAD = 'PENDING';
+const EVIDENCE_HEAD = '13e4cddd0610cffd8ac0a1cda93a5a12d113c5a7';
 const RAW_BROWSER_BYTES = 24_971;
 const RAW_BROWSER_HASH = 'acc7c8154a8c6199cd92b8d68d258d7a0fb5e2e86eb8a1931219d36d9c72d7bf';
 const IMMEDIATE_REVIEW_HASH = 'f7d0aba59dd69d6479bbfbdb6f9f3cf1befadcf076c44ff5f97f31d6452778ed';
@@ -246,20 +246,20 @@ function assertReviewCommon(source) {
     '- No Chrome fallback, prior raw, historical screenshot or visual PASS is claimed.',
   ].join('\n'), 'exact local Browser QA section with no contradictory visual claim');
 }
-function assertPendingReview(source) {
+function assertFinalReview(source) {
   assertReviewCommon(source);
   const checkpoint = section(source, 'Independent review checkpoint');
   const expected = [
     `Exact implementation candidate head: \`${IMPLEMENTATION_HEAD}\`.`,
-    'Exact evidence head: `PENDING`.',
-    'Independent code/spec/security review: `PENDING`.',
-    'Independent content/evidence/rights review: `PENDING`.',
-    'Independent architecture/invariant review: `PENDING`.',
-    'Final Stage A review judgment: `PENDING`.',
+    `Exact evidence head: \`${EVIDENCE_HEAD}\`.`,
+    'Independent code/spec/security review: `READY / APPROVE`; findings: `0`.',
+    'Independent content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`.',
+    'Independent architecture/invariant review: `CLEAR / READY`; blockers: `0`.',
+    'Final Stage A review judgment: `READY`.',
     'Scope boundary: `STAGE_A_ONLY`; Stage B backlog closure and deployment have not run.',
     'Deployment status: `NOT_RUN`.',
   ].map((literal) => `- ${literal}`).join('\n');
-  assert.equal(checkpoint, expected, 'exact PENDING checkpoint with no contradictory appended verdict');
+  assert.equal(checkpoint, expected, 'exact final checkpoint with no weakened or contradictory verdict');
 }
 
 const [review, browserBytes, immediateReviewBytes, backlog, status, manifest, indexes, publicLedger] = await Promise.all([
@@ -291,12 +291,12 @@ test('projects canonical STY-09 Stage A truth while STY-10 remains pending and n
   await assertSty10NonActionable();
 });
 
-test('binds exact STY-09 artifacts, tracked Browser semantics, and PENDING review slots', async () => {
+test('binds exact STY-09 artifacts, tracked Browser semantics, and final independent review verdicts', async () => {
   assert.ok(browserBytes, `${RAW_BROWSER} exists`);
   assertBrowser(JSON.parse(browserBytes));
-  assertPendingReview(review);
+  assertFinalReview(review);
   await assertArtifactIdentities(review);
-  assert.equal(EVIDENCE_HEAD, 'PENDING');
+  assert.equal(EVIDENCE_HEAD, '13e4cddd0610cffd8ac0a1cda93a5a12d113c5a7');
 });
 
 test('binds complete tracked Browser bytes to one fixed SHA-256', () => {
@@ -349,16 +349,19 @@ test('rejects Browser head, state, geometry, interaction, relation, source, SVG,
   }
 });
 
-test('rejects review head, premature verdict, deployment, scope and fabricated visual PASS mutations', () => {
-  assertPendingReview(review);
+test('rejects wrong review heads, weakened verdicts, deployment, scope and fabricated visual PASS mutations', () => {
+  assertFinalReview(review);
   for (const [before, after] of [
     [`Exact implementation candidate head: \`${IMPLEMENTATION_HEAD}\`.`, `Exact implementation candidate head: \`${'0'.repeat(40)}\`.`],
-    ['Exact evidence head: `PENDING`.', `Exact evidence head: \`${'1'.repeat(40)}\`.`],
-    ['Independent code/spec/security review: `PENDING`.', 'Independent code/spec/security review: `READY / APPROVE`; findings: `0`.'],
-    ['Independent content/evidence/rights review: `PENDING`.', 'Independent content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`.'],
-    ['Independent architecture/invariant review: `PENDING`.', 'Independent architecture/invariant review: `CLEAR / READY`; blockers: `0`.'],
-    ['Final Stage A review judgment: `PENDING`.', 'Final Stage A review judgment: `READY`.'],
-    ['Final Stage A review judgment: `PENDING`.', 'Final Stage A review judgment: `PENDING`.\n- Final Stage A review judgment: `READY`.'],
+    [`Exact evidence head: \`${EVIDENCE_HEAD}\`.`, `Exact evidence head: \`${'1'.repeat(40)}\`.`],
+    ['Independent code/spec/security review: `READY / APPROVE`; findings: `0`.', 'Independent code/spec/security review: `NOT READY`; findings: `0`.'],
+    ['Independent code/spec/security review: `READY / APPROVE`; findings: `0`.', 'Independent code/spec/security review: `READY / APPROVE`; findings: `1`.'],
+    ['Independent content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`.', 'Independent content/evidence/rights review: `CHANGES`; rights: `PASS`; findings: `0`.'],
+    ['Independent content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`.', 'Independent content/evidence/rights review: `CONTENT READY`; rights: `PENDING`; findings: `0`.'],
+    ['Independent architecture/invariant review: `CLEAR / READY`; blockers: `0`.', 'Independent architecture/invariant review: `BLOCKED`; blockers: `0`.'],
+    ['Independent architecture/invariant review: `CLEAR / READY`; blockers: `0`.', 'Independent architecture/invariant review: `CLEAR / READY`; blockers: `1`.'],
+    ['Final Stage A review judgment: `READY`.', 'Final Stage A review judgment: `PENDING`.'],
+    ['Final Stage A review judgment: `READY`.', 'Final Stage A review judgment: `READY`.\n- Final Stage A review judgment: `PENDING`.'],
     ['Scope boundary: `STAGE_A_ONLY`;', 'Scope boundary: `STAGE_B`;'],
     ['Deployment status: `NOT_RUN`.', 'Deployment status: `NOT_RUN`.\n- Deployment status: `SUCCESS`.'],
     ['Deployment status: `NOT_RUN`.', 'Deployment status: `SUCCESS`.'],
@@ -368,6 +371,6 @@ test('rejects review head, premature verdict, deployment, scope and fabricated v
   ]) {
     const mutated = review.replace(before, after);
     assert.notEqual(mutated, review, `${before} mutation applies`);
-    assert.throws(() => assertPendingReview(mutated), {name: 'AssertionError'});
+    assert.throws(() => assertFinalReview(mutated), {name: 'AssertionError'});
   }
 });
