@@ -219,7 +219,7 @@ function assertReviewCommon(source) {
 function assertPendingReview(source) {
   assertReviewCommon(source);
   const checkpoint = section(source, 'Independent review checkpoint');
-  for (const literal of [
+  const expected = [
     `Exact implementation candidate head: \`${IMPLEMENTATION_HEAD}\`.`,
     'Exact evidence head: `PENDING`.',
     'Independent code/spec/security review: `PENDING`.',
@@ -228,7 +228,8 @@ function assertPendingReview(source) {
     'Final Stage A review judgment: `PENDING`.',
     'Scope boundary: `STAGE_A_ONLY`; Stage B backlog closure and deployment have not run.',
     'Deployment status: `NOT_RUN`.',
-  ]) assert.ok(checkpoint.includes(literal), literal);
+  ].map((literal) => `- ${literal}`).join('\n');
+  assert.equal(checkpoint, expected, 'exact PENDING checkpoint with no contradictory appended verdict');
 }
 
 const [review, browserBytes, immediateReviewBytes, backlog, status, manifest, indexes, publicLedger] = await Promise.all([
@@ -327,7 +328,9 @@ test('rejects review head, premature verdict, deployment, scope and fabricated v
     ['Independent content/evidence/rights review: `PENDING`.', 'Independent content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`.'],
     ['Independent architecture/invariant review: `PENDING`.', 'Independent architecture/invariant review: `CLEAR / READY`; blockers: `0`.'],
     ['Final Stage A review judgment: `PENDING`.', 'Final Stage A review judgment: `READY`.'],
+    ['Final Stage A review judgment: `PENDING`.', 'Final Stage A review judgment: `PENDING`.\n- Final Stage A review judgment: `READY`.'],
     ['Scope boundary: `STAGE_A_ONLY`;', 'Scope boundary: `STAGE_B`;'],
+    ['Deployment status: `NOT_RUN`.', 'Deployment status: `NOT_RUN`.\n- Deployment status: `SUCCESS`.'],
     ['Deployment status: `NOT_RUN`.', 'Deployment status: `SUCCESS`.'],
     ['Screenshot evidence: `BLOCKED / NOT_ACCEPTED`.', 'Screenshot evidence: `PASS`.'],
     ['No Chrome fallback, prior raw, historical screenshot or visual PASS is claimed.', 'Visual PASS is claimed.'],
