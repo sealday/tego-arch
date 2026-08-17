@@ -15,7 +15,7 @@ const RAW_BROWSER = 'docs/reviews/evidence/g009-batch10-stage-a-browser.json';
 const IMMEDIATE_REVIEW = 'docs/reviews/g009-batch9.md';
 const BACKLOG = 'docs/content-backlog.md';
 const IMPLEMENTATION_HEAD = 'd2748e204cd55654d1cd5b6dce4fdc88ca95bbb4';
-const EVIDENCE_HEAD = '13e4cddd0610cffd8ac0a1cda93a5a12d113c5a7';
+const EVIDENCE_HEAD = '1691a914037b25d363e33c6c3d5ab3b8a5bf2206';
 const RAW_BROWSER_BYTES = 24_971;
 const RAW_BROWSER_HASH = 'acc7c8154a8c6199cd92b8d68d258d7a0fb5e2e86eb8a1931219d36d9c72d7bf';
 const IMMEDIATE_REVIEW_HASH = 'f7d0aba59dd69d6479bbfbdb6f9f3cf1befadcf076c44ff5f97f31d6452778ed';
@@ -296,7 +296,7 @@ test('binds exact STY-09 artifacts, tracked Browser semantics, and final indepen
   assertBrowser(JSON.parse(browserBytes));
   assertFinalReview(review);
   await assertArtifactIdentities(review);
-  assert.equal(EVIDENCE_HEAD, '13e4cddd0610cffd8ac0a1cda93a5a12d113c5a7');
+  assert.equal(EVIDENCE_HEAD, '1691a914037b25d363e33c6c3d5ab3b8a5bf2206');
 });
 
 test('binds complete tracked Browser bytes to one fixed SHA-256', () => {

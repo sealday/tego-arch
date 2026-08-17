@@ -57,7 +57,7 @@
 ## Independent review checkpoint
 
 - Exact implementation candidate head: `d2748e204cd55654d1cd5b6dce4fdc88ca95bbb4`.
-- Exact evidence head: `13e4cddd0610cffd8ac0a1cda93a5a12d113c5a7`.
+- Exact evidence head: `1691a914037b25d363e33c6c3d5ab3b8a5bf2206`.
 - Independent code/spec/security review: `READY / APPROVE`; findings: `0`.
 - Independent content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`.
 - Independent architecture/invariant review: `CLEAR / READY`; blockers: `0`.
