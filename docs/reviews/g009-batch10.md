@@ -119,5 +119,36 @@
 - Independent Stage B architecture/invariant review: `CLEAR / READY`; blockers: `0`.
 - Final Stage B review judgment: `READY`.
 - Stage B scope boundary: `STAGE_B`.
-- Stage B deployment status: `PENDING / NOT_RUN`.
+- Stage B deployment status: `SUCCESS / PASS`.
 - Stage B screenshot status remains `BLOCKED / NOT_ACCEPTED`.
+
+## Stage B production deployment
+
+- Exact published Stage B READY head: `9ae646d6a0bc63c58f09839727517e8a88e4919f`.
+- Preflight: tracked and untracked clean; `origin/main` exact merge-base and ancestor; behind/ahead `0/2`; publication used one non-force fast-forward push.
+- Exact Pages run: `32020346025`; workflow: `completed / success`.
+- Build job: `95358529943`; status: `completed / success`.
+- Deploy job: `95359241767`; status: `completed / success`.
+- The workflow, build and deploy identities bind the exact Stage B READY head; no evidence-only run is substituted.
+
+| Production route | Status | Content type |
+| --- | ---: | --- |
+| `/` | `200` | `text/html; charset=utf-8` |
+| `/styles` | `200` | `text/html; charset=utf-8` |
+| `/styles/sty-09` | `200` | `text/html; charset=utf-8` |
+| `/styles/sty-05` | `200` | `text/html; charset=utf-8` |
+| `/styles/sty-06` | `200` | `text/html; charset=utf-8` |
+| `/cases/apache-kafka-consumer-groups` | `200` | `text/html; charset=utf-8` |
+| `/quality-attributes/qa-03` | `200` | `text/html; charset=utf-8` |
+| `/paths/reliability-state` | `200` | `text/html; charset=utf-8` |
+| `/references` | `200` | `text/html; charset=utf-8` |
+
+- Required HTML routes: `9/9`; every route returned `200` with `text/html; charset=utf-8`.
+- Reviewed SVG: `25,205` bytes; MIME `image/svg+xml`; SHA-256 `1568fc09dbb6637d54e66d0058d9479cbf2e59d990753489781a119a06fb1a29`; exact reviewed byte identity: `PASS`.
+- Stage B production raw Browser JSON: `docs/reviews/evidence/g009-batch10-stage-b-production-browser.json`; `26,934` bytes; SHA-256 `21be024eb552c15512d0c2773e8b9589bc3358ad15db335c5d46160fb32610a2`.
+- Functional production QA: `PASS`; states `4/4`; wrapper focus/`:focus-visible`/3px/ArrowRight checks `12/12`; relation href/H1/return checks `20/20`; source href/target/rel checks `16/16`.
+- SVG geometry: intrinsic `120x150`; rendered `800x1000`; STY-10 actionable count `0` in every state; warning/error logs and diagnostic events `0`; every diagnostic page has `hasMore=false` and `truncated=false`.
+- Screenshot evidence: `BLOCKED / NOT_ACCEPTED`; exactly three fresh attempts are `CAPTURED_REJECTED` because each repeated viewport content and omitted complete architecture-diagram coverage.
+- No Chrome fallback, prior raw, historical screenshot, substituted browser surface or visual PASS is claimed.
+- Stage B deployment status: `SUCCESS / PASS`; visual screenshot status remains separately `BLOCKED / NOT_ACCEPTED`.
+- Scope remains `STAGE_B`; STY-09 is published/complete and STY-10 remains the sole unpublished/pending/non-actionable next topic.

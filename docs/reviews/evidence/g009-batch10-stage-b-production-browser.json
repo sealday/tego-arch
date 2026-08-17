@@ -1,0 +1,766 @@
+{
+  "implementationHead": "9ae646d6a0bc63c58f09839727517e8a88e4919f",
+  "pages": {
+    "runId": 32020346025,
+    "status": "completed",
+    "conclusion": "success",
+    "buildJobId": 95358529943,
+    "buildStatus": "completed",
+    "buildConclusion": "success",
+    "deployJobId": 95359241767,
+    "deployStatus": "completed",
+    "deployConclusion": "success"
+  },
+  "probes": {
+    "routes": [
+      {
+        "path": "/",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8"
+      },
+      {
+        "path": "/styles",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8"
+      },
+      {
+        "path": "/styles/sty-09",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8"
+      },
+      {
+        "path": "/styles/sty-05",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8"
+      },
+      {
+        "path": "/styles/sty-06",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8"
+      },
+      {
+        "path": "/cases/apache-kafka-consumer-groups",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8"
+      },
+      {
+        "path": "/quality-attributes/qa-03",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8"
+      },
+      {
+        "path": "/paths/reliability-state",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8"
+      },
+      {
+        "path": "/references",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8"
+      }
+    ],
+    "svg": {
+      "url": "https://sealday.github.io/tego-arch/img/diagrams/sty-09-pipes-filters-order-processing.svg",
+      "status": 200,
+      "contentType": "image/svg+xml",
+      "bytes": 25205,
+      "sha256": "1568fc09dbb6637d54e66d0058d9479cbf2e59d990753489781a119a06fb1a29"
+    }
+  },
+  "collection": {
+    "browser": "Codex in-app Browser only",
+    "fresh": true,
+    "servedUrl": "https://sealday.github.io/tego-arch/styles/sty-09",
+    "build": "GitHub Pages exact Stage B READY head 9ae646d6a0bc63c58f09839727517e8a88e4919f; run 32020346025; build job 95358529943; deploy job 95359241767"
+  },
+  "states": {
+    "desktopLight": {
+      "theme": "light",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "geometry": {
+        "page": {
+          "clientWidth": 1440,
+          "scrollWidth": 1440
+        },
+        "sources": [
+          {
+            "href": "https://learn.microsoft.com/en-us/azure/architecture/patterns/pipes-and-filters",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://beam.apache.org/documentation/programming-guide/",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://www.reactive-streams.org/",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://www.gnu.org/software/bash/manual/html_node/Pipelines.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          }
+        ],
+        "sty10": 0,
+        "svg": {
+          "loaded": true,
+          "naturalHeight": 150,
+          "naturalWidth": 120,
+          "renderedHeight": 1000,
+          "renderedWidth": 800,
+          "src": "/tego-arch/assets/images/sty-09-pipes-filters-order-processing-a183aff7774b7e91150caf303ac06eb8.svg"
+        },
+        "wrappers": [
+          {
+            "clientWidth": 800,
+            "label": "订单数据批处理与流处理双轨管道图，可横向滚动",
+            "scrollWidth": 800
+          },
+          {
+            "clientWidth": 800,
+            "label": "批处理轨与流处理轨八维机制对照表，可横向滚动",
+            "scrollWidth": 1024
+          },
+          {
+            "clientWidth": 800,
+            "label": "Pipes and Filters 六类故障检测、响应、停止条件与人工所有者表，可横向滚动",
+            "scrollWidth": 1024
+          }
+        ]
+      },
+      "interactions": [
+        {
+          "index": 0,
+          "label": "订单数据批处理与流处理双轨管道图，可横向滚动",
+          "key": "ArrowRight",
+          "expectedScrollDelta": 0,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 0
+          }
+        },
+        {
+          "index": 1,
+          "label": "批处理轨与流处理轨八维机制对照表，可横向滚动",
+          "key": "ArrowRight",
+          "expectedScrollDelta": 40,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 40
+          }
+        },
+        {
+          "index": 2,
+          "label": "Pipes and Filters 六类故障检测、响应、停止条件与人工所有者表，可横向滚动",
+          "key": "ArrowRight",
+          "expectedScrollDelta": 40,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 40
+          }
+        }
+      ],
+      "relations": [
+        {
+          "href": "/tego-arch/styles/sty-05",
+          "expectedH1": "微服务：用独立部署换取自治，也承担分布式成本",
+          "h1": "微服务：用独立部署换取自治，也承担分布式成本",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/styles/sty-06",
+          "expectedH1": "事件驱动架构：先分清事件携带什么，再决定状态放在哪里",
+          "h1": "事件驱动架构：先分清事件携带什么，再决定状态放在哪里",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/cases/apache-kafka-consumer-groups",
+          "expectedH1": "消费者组：用分区所有权组织可重放的智能体工作",
+          "h1": "消费者组：用分区所有权组织可重放的智能体工作",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/quality-attributes/qa-03",
+          "expectedH1": "性能、延迟、吞吐与容量",
+          "h1": "性能、延迟、吞吐与容量",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/paths/reliability-state",
+          "expectedH1": "可靠性与状态管理",
+          "h1": "可靠性与状态管理",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        }
+      ],
+      "logs": [],
+      "diagnostics": {
+        "events": [],
+        "hasMore": false,
+        "truncated": false
+      }
+    },
+    "desktopDark": {
+      "theme": "dark",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "geometry": {
+        "page": {
+          "clientWidth": 1440,
+          "scrollWidth": 1440
+        },
+        "sources": [
+          {
+            "href": "https://learn.microsoft.com/en-us/azure/architecture/patterns/pipes-and-filters",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://beam.apache.org/documentation/programming-guide/",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://www.reactive-streams.org/",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://www.gnu.org/software/bash/manual/html_node/Pipelines.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          }
+        ],
+        "sty10": 0,
+        "svg": {
+          "loaded": true,
+          "naturalHeight": 150,
+          "naturalWidth": 120,
+          "renderedHeight": 1000,
+          "renderedWidth": 800,
+          "src": "/tego-arch/assets/images/sty-09-pipes-filters-order-processing-a183aff7774b7e91150caf303ac06eb8.svg"
+        },
+        "wrappers": [
+          {
+            "clientWidth": 800,
+            "label": "订单数据批处理与流处理双轨管道图，可横向滚动",
+            "scrollWidth": 800
+          },
+          {
+            "clientWidth": 800,
+            "label": "批处理轨与流处理轨八维机制对照表，可横向滚动",
+            "scrollWidth": 1024
+          },
+          {
+            "clientWidth": 800,
+            "label": "Pipes and Filters 六类故障检测、响应、停止条件与人工所有者表，可横向滚动",
+            "scrollWidth": 1024
+          }
+        ]
+      },
+      "interactions": [
+        {
+          "index": 0,
+          "label": "订单数据批处理与流处理双轨管道图，可横向滚动",
+          "key": "ArrowRight",
+          "expectedScrollDelta": 0,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(227, 144, 125) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(227, 144, 125) solid 3px",
+            "scrollLeft": 0
+          }
+        },
+        {
+          "index": 1,
+          "label": "批处理轨与流处理轨八维机制对照表，可横向滚动",
+          "key": "ArrowRight",
+          "expectedScrollDelta": 40,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "scrollLeft": 40
+          }
+        },
+        {
+          "index": 2,
+          "label": "Pipes and Filters 六类故障检测、响应、停止条件与人工所有者表，可横向滚动",
+          "key": "ArrowRight",
+          "expectedScrollDelta": 40,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "scrollLeft": 40
+          }
+        }
+      ],
+      "relations": [
+        {
+          "href": "/tego-arch/styles/sty-05",
+          "expectedH1": "微服务：用独立部署换取自治，也承担分布式成本",
+          "h1": "微服务：用独立部署换取自治，也承担分布式成本",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/styles/sty-06",
+          "expectedH1": "事件驱动架构：先分清事件携带什么，再决定状态放在哪里",
+          "h1": "事件驱动架构：先分清事件携带什么，再决定状态放在哪里",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/cases/apache-kafka-consumer-groups",
+          "expectedH1": "消费者组：用分区所有权组织可重放的智能体工作",
+          "h1": "消费者组：用分区所有权组织可重放的智能体工作",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/quality-attributes/qa-03",
+          "expectedH1": "性能、延迟、吞吐与容量",
+          "h1": "性能、延迟、吞吐与容量",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/paths/reliability-state",
+          "expectedH1": "可靠性与状态管理",
+          "h1": "可靠性与状态管理",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        }
+      ],
+      "logs": [],
+      "diagnostics": {
+        "events": [],
+        "hasMore": false,
+        "truncated": false
+      }
+    },
+    "mobileLight": {
+      "theme": "light",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "geometry": {
+        "page": {
+          "clientWidth": 390,
+          "scrollWidth": 390
+        },
+        "sources": [
+          {
+            "href": "https://learn.microsoft.com/en-us/azure/architecture/patterns/pipes-and-filters",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://beam.apache.org/documentation/programming-guide/",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://www.reactive-streams.org/",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://www.gnu.org/software/bash/manual/html_node/Pipelines.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          }
+        ],
+        "sty10": 0,
+        "svg": {
+          "loaded": true,
+          "naturalHeight": 150,
+          "naturalWidth": 120,
+          "renderedHeight": 1000,
+          "renderedWidth": 800,
+          "src": "/tego-arch/assets/images/sty-09-pipes-filters-order-processing-a183aff7774b7e91150caf303ac06eb8.svg"
+        },
+        "wrappers": [
+          {
+            "clientWidth": 358,
+            "label": "订单数据批处理与流处理双轨管道图，可横向滚动",
+            "scrollWidth": 800
+          },
+          {
+            "clientWidth": 358,
+            "label": "批处理轨与流处理轨八维机制对照表，可横向滚动",
+            "scrollWidth": 1024
+          },
+          {
+            "clientWidth": 358,
+            "label": "Pipes and Filters 六类故障检测、响应、停止条件与人工所有者表，可横向滚动",
+            "scrollWidth": 1024
+          }
+        ]
+      },
+      "interactions": [
+        {
+          "index": 0,
+          "label": "订单数据批处理与流处理双轨管道图，可横向滚动",
+          "key": "ArrowRight",
+          "expectedScrollDelta": 40,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 40
+          }
+        },
+        {
+          "index": 1,
+          "label": "批处理轨与流处理轨八维机制对照表，可横向滚动",
+          "key": "ArrowRight",
+          "expectedScrollDelta": 40,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 40
+          }
+        },
+        {
+          "index": 2,
+          "label": "Pipes and Filters 六类故障检测、响应、停止条件与人工所有者表，可横向滚动",
+          "key": "ArrowRight",
+          "expectedScrollDelta": 40,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 40
+          }
+        }
+      ],
+      "relations": [
+        {
+          "href": "/tego-arch/styles/sty-05",
+          "expectedH1": "微服务：用独立部署换取自治，也承担分布式成本",
+          "h1": "微服务：用独立部署换取自治，也承担分布式成本",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/styles/sty-06",
+          "expectedH1": "事件驱动架构：先分清事件携带什么，再决定状态放在哪里",
+          "h1": "事件驱动架构：先分清事件携带什么，再决定状态放在哪里",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/cases/apache-kafka-consumer-groups",
+          "expectedH1": "消费者组：用分区所有权组织可重放的智能体工作",
+          "h1": "消费者组：用分区所有权组织可重放的智能体工作",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/quality-attributes/qa-03",
+          "expectedH1": "性能、延迟、吞吐与容量",
+          "h1": "性能、延迟、吞吐与容量",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/paths/reliability-state",
+          "expectedH1": "可靠性与状态管理",
+          "h1": "可靠性与状态管理",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        }
+      ],
+      "logs": [],
+      "diagnostics": {
+        "events": [],
+        "hasMore": false,
+        "truncated": false
+      }
+    },
+    "mobileDark": {
+      "theme": "dark",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "geometry": {
+        "page": {
+          "clientWidth": 390,
+          "scrollWidth": 390
+        },
+        "sources": [
+          {
+            "href": "https://learn.microsoft.com/en-us/azure/architecture/patterns/pipes-and-filters",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://beam.apache.org/documentation/programming-guide/",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://www.reactive-streams.org/",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://www.gnu.org/software/bash/manual/html_node/Pipelines.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          }
+        ],
+        "sty10": 0,
+        "svg": {
+          "loaded": true,
+          "naturalHeight": 150,
+          "naturalWidth": 120,
+          "renderedHeight": 1000,
+          "renderedWidth": 800,
+          "src": "/tego-arch/assets/images/sty-09-pipes-filters-order-processing-a183aff7774b7e91150caf303ac06eb8.svg"
+        },
+        "wrappers": [
+          {
+            "clientWidth": 358,
+            "label": "订单数据批处理与流处理双轨管道图，可横向滚动",
+            "scrollWidth": 800
+          },
+          {
+            "clientWidth": 358,
+            "label": "批处理轨与流处理轨八维机制对照表，可横向滚动",
+            "scrollWidth": 1024
+          },
+          {
+            "clientWidth": 358,
+            "label": "Pipes and Filters 六类故障检测、响应、停止条件与人工所有者表，可横向滚动",
+            "scrollWidth": 1024
+          }
+        ]
+      },
+      "interactions": [
+        {
+          "index": 0,
+          "label": "订单数据批处理与流处理双轨管道图，可横向滚动",
+          "key": "ArrowRight",
+          "expectedScrollDelta": 40,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(227, 144, 125) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(227, 144, 125) solid 3px",
+            "scrollLeft": 40
+          }
+        },
+        {
+          "index": 1,
+          "label": "批处理轨与流处理轨八维机制对照表，可横向滚动",
+          "key": "ArrowRight",
+          "expectedScrollDelta": 40,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "scrollLeft": 40
+          }
+        },
+        {
+          "index": 2,
+          "label": "Pipes and Filters 六类故障检测、响应、停止条件与人工所有者表，可横向滚动",
+          "key": "ArrowRight",
+          "expectedScrollDelta": 40,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "scrollLeft": 40
+          }
+        }
+      ],
+      "relations": [
+        {
+          "href": "/tego-arch/styles/sty-05",
+          "expectedH1": "微服务：用独立部署换取自治，也承担分布式成本",
+          "h1": "微服务：用独立部署换取自治，也承担分布式成本",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/styles/sty-06",
+          "expectedH1": "事件驱动架构：先分清事件携带什么，再决定状态放在哪里",
+          "h1": "事件驱动架构：先分清事件携带什么，再决定状态放在哪里",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/cases/apache-kafka-consumer-groups",
+          "expectedH1": "消费者组：用分区所有权组织可重放的智能体工作",
+          "h1": "消费者组：用分区所有权组织可重放的智能体工作",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/quality-attributes/qa-03",
+          "expectedH1": "性能、延迟、吞吐与容量",
+          "h1": "性能、延迟、吞吐与容量",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/paths/reliability-state",
+          "expectedH1": "可靠性与状态管理",
+          "h1": "可靠性与状态管理",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        }
+      ],
+      "logs": [],
+      "diagnostics": {
+        "events": [],
+        "hasMore": false,
+        "truncated": false
+      }
+    }
+  },
+  "screenshotEvidence": {
+    "status": "BLOCKED / NOT_ACCEPTED",
+    "reason": "Exactly three fresh in-app Browser full-page captures repeated viewport content and omitted complete architecture-diagram coverage; no visual PASS is claimed.",
+    "attempts": [
+      {
+        "ordinal": 1,
+        "state": "desktopLight",
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "kind": "fullPage",
+        "path": "/Users/seal/projects/tego-arch/.worktrees/g009-styles-batch7/.superpowers/sdd/sty09-stage-b-production-9ae646d-desktop-light.png",
+        "bytes": 1666011,
+        "sha256": "910bcd967bd80a5ec062a16bc502f484397af3e9ffa7e4c28e6ef513e3ff8bdd",
+        "status": "CAPTURED_REJECTED",
+        "reason": "The in-app Browser full-page capture repeated viewport content and omitted complete architecture-diagram coverage, so the original bytes cannot support trustworthy whole-page visual review."
+      },
+      {
+        "ordinal": 2,
+        "state": "desktopDark",
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "kind": "fullPage",
+        "path": "/Users/seal/projects/tego-arch/.worktrees/g009-styles-batch7/.superpowers/sdd/sty09-stage-b-production-9ae646d-desktop-dark.png",
+        "bytes": 1681064,
+        "sha256": "4974f256e5f22dcf097dea1e9cdfff1ef48bcc97f2374a29b97d7c15385cd4a3",
+        "status": "CAPTURED_REJECTED",
+        "reason": "The in-app Browser full-page capture repeated viewport content and omitted complete architecture-diagram coverage, so the original bytes cannot support trustworthy whole-page visual review."
+      },
+      {
+        "ordinal": 3,
+        "state": "mobileLight",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "kind": "fullPage",
+        "path": "/Users/seal/projects/tego-arch/.worktrees/g009-styles-batch7/.superpowers/sdd/sty09-stage-b-production-9ae646d-mobile-light.png",
+        "bytes": 658511,
+        "sha256": "c18edf54f2e3aa5b2233a65713175073c66e2669555269a001abccc34919c88e",
+        "status": "CAPTURED_REJECTED",
+        "reason": "The in-app Browser full-page capture repeated viewport content and omitted complete architecture-diagram coverage, so the original bytes cannot support trustworthy whole-page visual review."
+      }
+    ]
+  }
+}
