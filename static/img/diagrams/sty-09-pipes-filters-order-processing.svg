@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2400 3000" role="img" aria-labelledby="sty09-title sty09-desc">
+  <title id="sty09-title">订单数据批处理与流处理双轨管道</title>
+  <desc id="sty09-desc">相同订单转换分别进入有限批次与持续事件轨；业务数据、逐边界背压、错误传播和恢复路径以文字和线型区分，恢复路径不会直接进入正式外部输出。</desc>
+  <style>
+    .diagram { font-family:Arial; }
+    .diagram .node-shape { stroke-width:3; }
+    .node-text,.edge-label { fill:#111827; font-size:45px; text-anchor:middle; }
+    .region-title { fill:#0F172A; font-size:45px; font-weight:700; }
+    .region-note { fill:#475569; font-size:36px; }
+    .region-batch { fill:#F0FDF4; stroke:#86EFAC; stroke-width:3; }
+    .region-stream { fill:#EFF6FF; stroke:#93C5FD; stroke-width:3; }
+    .region-capacity { fill:#FAF5FF; stroke:#C4B5FD; stroke-width:3; }
+    .region-failure { fill:#FFF7ED; stroke:#FDBA74; stroke-width:3; }
+    .region-legend { fill:#F8FAFC; stroke:#CBD5E1; stroke-width:3; }
+    .node-input { fill:#F8FAFC; stroke:#334155; }
+    .node-batch { fill:#ECFDF5; stroke:#047857; }
+    .node-stream { fill:#EFF6FF; stroke:#1D4ED8; }
+    .node-capacity { fill:#F5F3FF; stroke:#7C3AED; }
+    .node-error { fill:#FEF2F2; stroke:#B91C1C; }
+    .node-manual { fill:#FFF7ED; stroke:#9A3412; }
+    .node-recovery { fill:#F0F9FF; stroke:#0369A1; }
+    .node-legend-data { fill:#FFFFFF; stroke:#0F766E; }
+    .node-legend-backpressure { fill:#FFFFFF; stroke:#7C3AED; }
+    .node-legend-error { fill:#FFFFFF; stroke:#B91C1C; }
+    .node-legend-recovery { fill:#FFFFFF; stroke:#0369A1; }
+    .legend-sample { fill:none; stroke-width:6; }
+    .edge-layer > .edge { fill:none; stroke-width:3; }
+    .role-data-flow { stroke:#0F766E; stroke-dasharray:none; marker-end:url(#arrow-data-flow); }
+    .role-backpressure { stroke:#7C3AED; stroke-dasharray:8 6; marker-end:url(#arrow-backpressure); }
+    .role-error { stroke:#B91C1C; stroke-dasharray:4 4; marker-end:url(#arrow-error); }
+    .role-recovery { stroke:#0369A1; stroke-dasharray:10 5; marker-end:url(#arrow-recovery); }
+    .marker-data-flow .marker-shape { fill:#0F766E; stroke:#0F766E; }
+    .marker-backpressure .marker-shape { fill:#7C3AED; stroke:#7C3AED; }
+    .marker-error .marker-shape { fill:#B91C1C; stroke:#B91C1C; }
+    .marker-recovery .marker-shape { fill:#0369A1; stroke:#0369A1; }
+  </style>
+  <defs>
+    <marker id="arrow-data-flow" class="marker marker-data-flow" viewBox="0 0 12 12" refX="12" refY="6" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path class="marker-shape" d="M 0 0 L 12 6 L 0 12 z" stroke-width="1"/></marker>
+    <marker id="arrow-backpressure" class="marker marker-backpressure" viewBox="0 0 12 12" refX="12" refY="6" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path class="marker-shape" d="M 0 0 L 12 6 L 0 12 z" stroke-width="1"/></marker>
+    <marker id="arrow-error" class="marker marker-error" viewBox="0 0 12 12" refX="12" refY="6" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path class="marker-shape" d="M 0 0 L 12 6 L 0 12 z" stroke-width="1"/></marker>
+    <marker id="arrow-recovery" class="marker marker-recovery" viewBox="0 0 12 12" refX="12" refY="6" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path class="marker-shape" d="M 0 0 L 12 6 L 0 12 z" stroke-width="1"/></marker>
+  </defs>
+
+  <g class="diagram">
+    <g class="region-layer">
+      <rect x="0" y="0" width="2400" height="3000" fill="#FFFFFF"/>
+      <rect class="region-batch" x="2" y="60" width="2396" height="560" rx="28"/>
+      <rect class="region-stream" x="2" y="900" width="2396" height="650" rx="28"/>
+      <rect class="region-capacity" x="2" y="1570" width="500" height="840" rx="28"/>
+      <rect class="region-failure" x="512" y="1570" width="1886" height="840" rx="28"/>
+      <rect class="region-legend" x="2" y="2500" width="2396" height="400" rx="28"/>
+      <text class="region-title" x="42" y="120">批处理轨｜有限输入 → 完整性屏障 → 版本发布</text>
+      <text class="region-title" x="270" y="960">流处理轨｜持续输入 → 窗口状态 → 检查点 → 持续输出</text>
+      <text class="region-title" x="42" y="1625">容量控制</text>
+      <text class="region-title" x="552" y="1625">错误、恢复与人工终态</text>
+      <text class="region-title" x="42" y="2560">线型图例（颜色之外的独立编码）</text>
+    </g>
+
+    <g class="node-layer">
+      <g class="node" data-node-id="order-input"><rect class="node-shape node-input" x="2" y="700" width="236" height="260" rx="24"/><text class="node-text" data-header-for="order-input" x="120" y="790">订单</text><text class="node-text" data-type-for="order-input" x="120" y="862">输入</text></g>
+
+      <g class="node" data-node-id="batch-boundary"><rect class="node-shape node-batch" x="2" y="300" width="236" height="260" rx="24"/><text class="node-text" data-header-for="batch-boundary" x="120" y="390">批次</text><text class="node-text" data-type-for="batch-boundary" x="120" y="462">边界</text></g>
+      <g class="node" data-node-id="batch-validate"><rect class="node-shape node-batch" x="272" y="300" width="236" height="260" rx="24"/><text class="node-text" data-header-for="batch-validate" x="390" y="390">校验</text><text class="node-text" data-type-for="batch-validate" x="390" y="462">过滤器</text></g>
+      <g class="node" data-node-id="batch-normalize"><rect class="node-shape node-batch" x="542" y="300" width="236" height="260" rx="24"/><text class="node-text" data-header-for="batch-normalize" x="660" y="390">标准化</text><text class="node-text" data-type-for="batch-normalize" x="660" y="462">过滤器</text></g>
+      <g class="node" data-node-id="batch-price"><rect class="node-shape node-batch" x="812" y="300" width="236" height="260" rx="24"/><text class="node-text" data-header-for="batch-price" x="930" y="390">定价</text><text class="node-text" data-type-for="batch-price" x="930" y="462">过滤器</text></g>
+      <g class="node" data-node-id="batch-risk"><rect class="node-shape node-batch" x="1082" y="300" width="236" height="260" rx="24"/><text class="node-text" data-header-for="batch-risk" x="1200" y="390">风险</text><text class="node-text" data-type-for="batch-risk" x="1200" y="462">过滤器</text></g>
+      <g class="node" data-node-id="batch-output"><rect class="node-shape node-batch" x="1352" y="300" width="236" height="260" rx="24"/><text class="node-text" data-header-for="batch-output" x="1470" y="390">汇总</text><text class="node-text" data-type-for="batch-output" x="1470" y="462">过滤器</text></g>
+      <g class="node" data-node-id="batch-barrier"><rect class="node-shape node-batch" x="1622" y="300" width="236" height="260" rx="24"/><text class="node-text" data-header-for="batch-barrier" x="1740" y="390">屏障</text><text class="node-text" data-type-for="batch-barrier" x="1740" y="462">批状态</text></g>
+      <g class="node" data-node-id="batch-release"><rect class="node-shape node-batch" x="1892" y="300" width="236" height="260" rx="24"/><text class="node-text" data-header-for="batch-release" x="2010" y="390">发布门</text><text class="node-text" data-type-for="batch-release" x="2010" y="462">批控制</text></g>
+      <g class="node" data-node-id="batch-published-output"><rect class="node-shape node-batch" x="2162" y="300" width="236" height="260" rx="24"/><text class="node-text" data-header-for="batch-published-output" x="2280" y="390">版本</text><text class="node-text" data-type-for="batch-published-output" x="2280" y="462">输出</text></g>
+
+      <g class="node" data-node-id="stream-boundary"><rect class="node-shape node-stream" x="2" y="1100" width="236" height="260" rx="24"/><text class="node-text" data-header-for="stream-boundary" x="120" y="1190">事件</text><text class="node-text" data-type-for="stream-boundary" x="120" y="1262">边界</text></g>
+      <g class="node" data-node-id="stream-validate"><rect class="node-shape node-stream" x="272" y="1100" width="236" height="260" rx="24"/><text class="node-text" data-header-for="stream-validate" x="390" y="1190">校验</text><text class="node-text" data-type-for="stream-validate" x="390" y="1262">过滤器</text></g>
+      <g class="node" data-node-id="stream-normalize"><rect class="node-shape node-stream" x="542" y="1100" width="236" height="260" rx="24"/><text class="node-text" data-header-for="stream-normalize" x="660" y="1190">标准化</text><text class="node-text" data-type-for="stream-normalize" x="660" y="1262">过滤器</text></g>
+      <g class="node" data-node-id="stream-price"><rect class="node-shape node-stream" x="812" y="1100" width="236" height="260" rx="24"/><text class="node-text" data-header-for="stream-price" x="930" y="1190">定价</text><text class="node-text" data-type-for="stream-price" x="930" y="1262">过滤器</text></g>
+      <g class="node" data-node-id="stream-risk"><rect class="node-shape node-stream" x="1082" y="1100" width="236" height="260" rx="24"/><text class="node-text" data-header-for="stream-risk" x="1200" y="1190">风险</text><text class="node-text" data-type-for="stream-risk" x="1200" y="1262">过滤器</text></g>
+      <g class="node" data-node-id="stream-output"><rect class="node-shape node-stream" x="1352" y="1100" width="236" height="260" rx="24"/><text class="node-text" data-header-for="stream-output" x="1470" y="1190">聚合</text><text class="node-text" data-type-for="stream-output" x="1470" y="1262">过滤器</text></g>
+      <g class="node" data-node-id="stream-window-state"><rect class="node-shape node-stream" x="1622" y="1100" width="236" height="260" rx="24"/><text class="node-text" data-header-for="stream-window-state" x="1740" y="1190">窗口</text><text class="node-text" data-type-for="stream-window-state" x="1740" y="1262">流状态</text></g>
+      <g class="node" data-node-id="stream-checkpoint"><rect class="node-shape node-stream" x="1892" y="1100" width="236" height="260" rx="24"/><text class="node-text" data-header-for="stream-checkpoint" x="2010" y="1190">检查点</text><text class="node-text" data-type-for="stream-checkpoint" x="2010" y="1262">恢复点</text></g>
+      <g class="node" data-node-id="stream-continuous-output"><rect class="node-shape node-stream" x="2162" y="1100" width="236" height="260" rx="24"/><text class="node-text" data-header-for="stream-continuous-output" x="2280" y="1190">窗口</text><text class="node-text" data-type-for="stream-continuous-output" x="2280" y="1262">输出</text></g>
+
+      <g class="node" data-node-id="backpressure-controller"><rect class="node-shape node-capacity" x="2" y="1650" width="236" height="260" rx="24"/><text class="node-text" data-header-for="backpressure-controller" x="120" y="1740">容量</text><text class="node-text" data-type-for="backpressure-controller" x="120" y="1812">控制器</text></g>
+      <g class="node" data-node-id="bad-record-error"><rect class="node-shape node-error" x="542" y="1750" width="236" height="260" rx="24"/><text class="node-text" data-header-for="bad-record-error" x="660" y="1840">坏记录</text><text class="node-text" data-type-for="bad-record-error" x="660" y="1912">错误</text></g>
+      <g class="node" data-node-id="manual-terminal"><rect class="node-shape node-manual" x="812" y="1750" width="236" height="260" rx="24"/><text class="node-text" data-header-for="manual-terminal" x="930" y="1840">人工</text><text class="node-text" data-type-for="manual-terminal" x="930" y="1912">终态</text></g>
+      <g class="node" data-node-id="technical-failure-error"><rect class="node-shape node-error" x="1622" y="1750" width="236" height="260" rx="24"/><text class="node-text" data-header-for="technical-failure-error" x="1740" y="1840">技术</text><text class="node-text" data-type-for="technical-failure-error" x="1740" y="1912">失败</text></g>
+      <g class="node" data-node-id="checkpoint-recovery"><rect class="node-shape node-recovery" x="1892" y="1750" width="236" height="260" rx="24"/><text class="node-text" data-header-for="checkpoint-recovery" x="2010" y="1840">检查点</text><text class="node-text" data-type-for="checkpoint-recovery" x="2010" y="1912">恢复</text></g>
+      <g class="node" data-node-id="rerun-partition"><rect class="node-shape node-recovery" x="2" y="2150" width="236" height="260" rx="24"/><text class="node-text" data-header-for="rerun-partition" x="120" y="2240">分区</text><text class="node-text" data-type-for="rerun-partition" x="120" y="2312">重跑</text></g>
+      <g class="node" data-node-id="unknown-external-effect-error"><rect class="node-shape node-error" x="1082" y="2150" width="236" height="260" rx="24"/><text class="node-text" data-header-for="unknown-external-effect-error" x="1200" y="2240">外部</text><text class="node-text" data-type-for="unknown-external-effect-error" x="1200" y="2312">未知</text></g>
+      <g class="node" data-node-id="reconcile-authority"><rect class="node-shape node-recovery" x="1352" y="2150" width="236" height="260" rx="24"/><text class="node-text" data-header-for="reconcile-authority" x="1470" y="2240">查询</text><text class="node-text" data-type-for="reconcile-authority" x="1470" y="2312">对账</text></g>
+
+      <g class="node" data-node-id="legend-data-flow"><rect class="node-shape node-legend-data" x="2" y="2600" width="596" height="260" rx="24"/><text class="node-text" data-header-for="legend-data-flow" x="300" y="2690">实线</text><text class="node-text" data-type-for="legend-data-flow" x="300" y="2762">数据</text><line class="legend-sample role-data-flow" x1="170" y1="2815" x2="430" y2="2815"/></g>
+      <g class="node" data-node-id="legend-backpressure"><rect class="node-shape node-legend-backpressure" x="602" y="2600" width="596" height="260" rx="24"/><text class="node-text" data-header-for="legend-backpressure" x="900" y="2690">长虚线</text><text class="node-text" data-type-for="legend-backpressure" x="900" y="2762">背压</text><line class="legend-sample role-backpressure" x1="770" y1="2815" x2="1030" y2="2815"/></g>
+      <g class="node" data-node-id="legend-error"><rect class="node-shape node-legend-error" x="1202" y="2600" width="596" height="260" rx="24"/><text class="node-text" data-header-for="legend-error" x="1500" y="2690">短虚线</text><text class="node-text" data-type-for="legend-error" x="1500" y="2762">错误</text><line class="legend-sample role-error" x1="1370" y1="2815" x2="1630" y2="2815"/></g>
+      <g class="node" data-node-id="legend-recovery"><rect class="node-shape node-legend-recovery" x="1802" y="2600" width="596" height="260" rx="24"/><text class="node-text" data-header-for="legend-recovery" x="2100" y="2690">点划线</text><text class="node-text" data-type-for="legend-recovery" x="2100" y="2762">恢复</text><line class="legend-sample role-recovery" x1="1970" y1="2815" x2="2230" y2="2815"/></g>
+    </g>
+
+    <g class="edge-layer">
+      <path class="edge role-data-flow" data-edge-id="batch-input" data-source="order-input" data-target="batch-boundary" data-role="data-flow" d="M 61 700 L 61 560"/>
+      <path class="edge role-data-flow" data-edge-id="stream-input" data-source="order-input" data-target="stream-boundary" data-role="data-flow" d="M 179 960 L 179 1100"/>
+      <path class="edge role-data-flow" data-edge-id="batch-validate" data-source="batch-boundary" data-target="batch-validate" data-role="data-flow" d="M 238 430 L 272 430"/>
+      <path class="edge role-data-flow" data-edge-id="batch-normalize" data-source="batch-validate" data-target="batch-normalize" data-role="data-flow" d="M 508 430 L 542 430"/>
+      <path class="edge role-data-flow" data-edge-id="batch-price" data-source="batch-normalize" data-target="batch-price" data-role="data-flow" d="M 778 430 L 812 430"/>
+      <path class="edge role-data-flow" data-edge-id="batch-risk" data-source="batch-price" data-target="batch-risk" data-role="data-flow" d="M 1048 430 L 1082 430"/>
+      <path class="edge role-data-flow" data-edge-id="batch-output" data-source="batch-risk" data-target="batch-output" data-role="data-flow" d="M 1318 430 L 1352 430"/>
+      <path class="edge role-data-flow" data-edge-id="batch-output-barrier" data-source="batch-output" data-target="batch-barrier" data-role="data-flow" d="M 1588 430 L 1622 430"/>
+      <path class="edge role-data-flow" data-edge-id="batch-barrier-release" data-source="batch-barrier" data-target="batch-release" data-role="data-flow" d="M 1858 430 L 1892 430"/>
+      <path class="edge role-data-flow" data-edge-id="batch-publish" data-source="batch-release" data-target="batch-published-output" data-role="data-flow" d="M 2128 430 L 2162 430"/>
+      <path class="edge role-data-flow" data-edge-id="stream-validate" data-source="stream-boundary" data-target="stream-validate" data-role="data-flow" d="M 238 1230 L 272 1230"/>
+      <path class="edge role-data-flow" data-edge-id="stream-normalize" data-source="stream-validate" data-target="stream-normalize" data-role="data-flow" d="M 508 1230 L 542 1230"/>
+      <path class="edge role-data-flow" data-edge-id="stream-price" data-source="stream-normalize" data-target="stream-price" data-role="data-flow" d="M 778 1230 L 812 1230"/>
+      <path class="edge role-data-flow" data-edge-id="stream-risk" data-source="stream-price" data-target="stream-risk" data-role="data-flow" d="M 1048 1230 L 1082 1230"/>
+      <path class="edge role-data-flow" data-edge-id="stream-output" data-source="stream-risk" data-target="stream-output" data-role="data-flow" d="M 1318 1230 L 1352 1230"/>
+      <path class="edge role-data-flow" data-edge-id="stream-window" data-source="stream-output" data-target="stream-window-state" data-role="data-flow" d="M 1588 1230 L 1622 1230"/>
+      <path class="edge role-data-flow" data-edge-id="stream-checkpoint" data-source="stream-window-state" data-target="stream-checkpoint" data-role="data-flow" d="M 1858 1230 L 1892 1230"/>
+      <path class="edge role-data-flow" data-edge-id="stream-publish" data-source="stream-checkpoint" data-target="stream-continuous-output" data-role="data-flow" d="M 2128 1230 L 2162 1230"/>
+      <path class="edge role-backpressure" data-edge-id="backpressure-to-stream" data-source="backpressure-controller" data-target="stream-boundary" data-role="backpressure" d="M 61 1650 L 61 1360"/>
+      <path class="edge role-error" data-edge-id="bad-record-isolation" data-source="bad-record-error" data-target="manual-terminal" data-role="error" d="M 778 1880 L 812 1880"/>
+      <path class="edge role-recovery" data-edge-id="technical-recovery" data-source="technical-failure-error" data-target="checkpoint-recovery" data-role="recovery" d="M 1858 1880 L 1892 1880"/>
+      <path class="edge role-recovery" data-edge-id="unknown-effect-reconcile" data-source="unknown-external-effect-error" data-target="reconcile-authority" data-role="recovery" d="M 1318 2280 L 1352 2280"/>
+      <path class="edge role-recovery" data-edge-id="stream-checkpoint-recovery" data-source="stream-checkpoint" data-target="checkpoint-recovery" data-role="recovery" d="M 2092.6 1360 L 2092.6 1750"/>
+
+      <text class="edge-label" data-edge-id="batch-input" x="250" y="660">有限批次</text>
+      <text class="edge-label" data-edge-id="stream-input" x="300" y="1025">持续输入</text>
+      <text class="edge-label" data-edge-id="batch-validate" x="255" y="200">校验</text>
+      <text class="edge-label" data-edge-id="batch-normalize" x="525" y="200">标准化</text>
+      <text class="edge-label" data-edge-id="batch-price" x="795" y="200">定价</text>
+      <text class="edge-label" data-edge-id="batch-risk" x="1065" y="200">风险标记</text>
+      <text class="edge-label" data-edge-id="batch-output" x="1335" y="200">合格记录</text>
+      <text class="edge-label" data-edge-id="batch-output-barrier" x="1605" y="200">完整性检查</text>
+      <text class="edge-label" data-edge-id="batch-barrier-release" x="1875" y="200">发布合同</text>
+      <text class="edge-label" data-edge-id="batch-publish" x="2145" y="200">批次发布</text>
+      <text class="edge-label" data-edge-id="stream-validate" x="255" y="1530">校验流</text>
+      <text class="edge-label" data-edge-id="stream-normalize" x="525" y="1530">标准化流</text>
+      <text class="edge-label" data-edge-id="stream-price" x="795" y="1530">定价流</text>
+      <text class="edge-label" data-edge-id="stream-risk" x="1065" y="1530">风险标记流</text>
+      <text class="edge-label" data-edge-id="stream-output" x="1335" y="1530">合格事件</text>
+      <text class="edge-label" data-edge-id="stream-window" x="1605" y="1530">窗口聚合</text>
+      <text class="edge-label" data-edge-id="stream-checkpoint" x="1750" y="1460">写入检查点</text>
+      <text class="edge-label" data-edge-id="stream-publish" x="1950" y="1530">持续输出</text>
+      <text class="edge-label" data-edge-id="backpressure-to-stream" x="160" y="1460">背压</text>
+      <text class="edge-label" data-edge-id="bad-record-isolation" x="795" y="1670">人工终态</text>
+      <text class="edge-label" data-edge-id="technical-recovery" x="1700" y="1670">有界恢复</text>
+      <text class="edge-label" data-edge-id="unknown-effect-reconcile" x="1335" y="2070">查询/对账</text>
+      <text class="edge-label" data-edge-id="stream-checkpoint-recovery" x="1950" y="1700">受控重放</text>
+    </g>
+
+    <g class="note-layer">
+      <text class="region-note" x="42" y="2950">不保证全局顺序</text>
+      <text class="region-note" x="780" y="2950">不保证端到端 exactly-once 业务效果</text>
+      <text class="region-note" x="1770" y="2950">不替代跨步骤业务事务</text>
+    </g>
+  </g>
+</svg>

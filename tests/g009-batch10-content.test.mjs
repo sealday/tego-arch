@@ -450,6 +450,38 @@ test('STY-09 later non-rect paint masks are rejected', () => {
   const nodeTextMask = svg.replace('</svg>', '<ellipse cx="340" cy="65" rx="50" ry="30" fill="#FFFFFF"/></svg>'); assert.throws(() => assertDiagram(drawio, nodeTextMask), assert.AssertionError, 'later opaque non-rect mask over node text rejected');
 });
 
+test('STY-09 diagram inventory mutation fixtures reject semantic and geometric drift', () => {
+  const {drawio, svg} = fixtureDiagram();
+  const mutations = [
+    ['missing exit port', replaceOnce(drawio, 'exitX=1;', '', 'missing exit port'), svg],
+    ['changed entry port', replaceOnce(drawio, 'entryX=0;', 'entryX=0.3;', 'changed entry port'), svg],
+    ['missing waypoint array', replaceOnce(drawio, '<Array as="points"></Array>', '', 'missing waypoint array'), svg],
+    ['injected sourcePoint', replaceOnce(drawio, 'source="order-input"', 'source="order-input" sourcePoint="0,0"', 'injected sourcePoint'), svg],
+    ['swapped batch/stream Filter', replaceOnce(drawio, 'target="batch-normalize"', 'target="stream-normalize"', 'swapped batch/stream Filter'), svg],
+    ['removed backpressure arrow', drawio, replaceOnce(svg, 'marker-end:url(#arrow-backpressure);', '', 'removed backpressure arrow')],
+    ['backpressure rendered as forward business data', drawio, replaceOnce(svg, 'class="edge role-backpressure" data-edge-id="backpressure-to-stream" data-source="backpressure-controller" data-target="stream-boundary" data-role="backpressure"', 'class="edge role-data-flow" data-edge-id="backpressure-to-stream" data-source="backpressure-controller" data-target="stream-boundary" data-role="data-flow"', 'forward business-data backpressure')],
+    ['error branch without terminal', replaceOnce(drawio, 'target="manual-terminal"', 'target="batch-output"', 'error without terminal'), svg],
+    ['replay into external effect', replaceOnce(drawio, 'target="reconcile-authority"', 'target="stream-continuous-output"', 'unsafe replay'), svg],
+    ['legend drift', drawio, replaceOnce(svg, 'data-header-for="legend-data-flow" x="100" y="1430">节点</text>', 'data-header-for="legend-data-flow" x="100" y="1430">恢复</text>', 'legend drift')],
+    ['changed font', drawio.replaceAll('fontSize=45', 'fontSize=44.9'), replaceOnce(svg, 'font-size:45px', 'font-size:44.9px', 'changed font')],
+    ['opaque label mask', drawio, svg.replace('</svg>', '<rect x="430" y="170" width="60" height="60" fill="#FFFFFF"/></svg>')],
+    ['shifted marker into foreign node or boundary', drawio, replaceOnce(svg, 'refX="12"', 'refX="-1000"', 'shifted marker')],
+  ];
+  for (const [name, drawioMutation, svgMutation] of mutations) {
+    assert.notEqual(`${drawioMutation}\n${svgMutation}`, `${drawio}\n${svg}`, `${name} mutation applies`);
+    assert.throws(() => assertDiagram(drawioMutation, svgMutation), assert.AssertionError, `${name} rejected`);
+  }
+
+  const separated = [
+    {id: 'left', source: 'a', target: 'b', points: [{x: 0, y: 0}, {x: 10, y: 0}]},
+    {id: 'right', source: 'c', target: 'd', points: [{x: 20, y: 0}, {x: 30, y: 0}]},
+  ];
+  assert.doesNotThrow(() => assertRouteIntersections(separated), 'separated route baseline');
+  const partialOverlap = structuredClone(separated); partialOverlap[1].points[0].x = 5;
+  assert.notDeepEqual(partialOverlap, separated, 'partial collinear overlap mutation applies');
+  assert.throws(() => assertRouteIntersections(partialOverlap), assert.AssertionError, 'partial collinear overlap rejected');
+});
+
 test('STY-09 helper validators reject semantic, table, source, and geometry mutations', () => {
   const article = `---\n${frontMatterFixture(EXACT_METADATA)}\n---\n${REQUIRED_WRAPPERS.map(exactWrapperTag).join('\n')}\n## Filter、Pipe 与 Pipeline 合同\n说明性场景（Tego Arch 分析）。Filter 接受输入并执行转换或判定，产生输出、过滤原因或错误分类。Filter 不证明无状态、纯函数、幂等或并行。Pipe 传递输出并承载容量、缓冲、确认、顺序和错误。Pipe 不自动形成可靠消息队列或事务边界。Pipeline 组合或连接兼容输入合同和输出合同。Pipeline 不保证交换律或事务。Pipes and Filters 不等于消息队列、工作流引擎、事件驱动架构、ETL 产品、Saga 或 shell pipeline。输入结构及身份；成功输出与过滤原因；状态位置；容量和缓冲上限；重放与幂等边界；所有者。\n## 订单双轨：相同转换，不同运行合同\n批处理轨：校验、标准化、定价、风险标记、汇总/输出。流处理轨：校验、标准化、定价、风险标记、汇总/输出。\n${PROHIBITIONS.join('。')}。\n单体处理函数先提取一个 Filter，固定中间合同和幂等键，再建立有界 Pipe 与重放边界。${STOP_CONDITIONS.join('。')}。\n有界缓冲。暂停读取、降低并发、延迟确认、缩小准入、负载削减或拒绝。背压是逐边界容量协议，在不支持反馈的不兼容边界中断。\n| 维度 | 批处理轨 | 流处理轨 | 决策问题 |\n| --- | --- | --- | --- |\n${DIMENSION_ROWS.map((row) => `| ${row.join(' | ')} |`).join('\n')}\n\n| 故障 | 检测 | 自动响应 | 停止条件 | 人工所有者 |\n| --- | --- | --- | --- | --- |\n${FAILURE_ROWS.map((row) => `| ${row.join(' | ')} |`).join('\n')}`;
   assertExactMetadata(article); assertRequiredWrappers(article); assertConstructsAndOrder(article); assertDimensionMatrix(article); assertFailureContracts(article); assertNarrativeBoundaries(article);
@@ -506,7 +538,7 @@ test('STY-09 source governance, reciprocal links, and Stage A projection are exa
   const external = extractExternalLinks(readContentDocuments().find(({file: path}) => path === ARTICLE)); for (const expected of Object.values(REMOTE_SOURCE_CONTRACTS)) assert.ok(external.includes(expected.canonical_locator), `article cites ${expected.canonical_locator}`);
 });
 
-test('STY-09 Draw.io/SVG locks batch-stream inventory, terminals, ports, routes and recovery endpoints', () => {
+test('STY-09 Draw.io/SVG diagram locks batch-stream inventory, terminals, ports, routes and recovery endpoints', () => {
   const drawio = file(DRAWIO); const svg = file(SVG); assert.ok(drawio, `${DRAWIO} must exist after implementation`); assert.ok(svg, `${SVG} must exist after implementation`); assertDiagram(drawio, svg);
   const unsafe = replaceOnce(drawio, 'target="reconcile-authority"', 'target="stream-continuous-output"', 'replay endpoint'); assert.throws(() => assertDiagram(unsafe, svg), assert.AssertionError, 'replay cannot enter irreversible output');
 });
