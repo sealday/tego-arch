@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {readFile} from 'node:fs/promises';
 import test from 'node:test';
@@ -10,10 +11,38 @@ import {
   readContentDocuments,
 } from '../scripts/content-metadata.mjs';
 import {extractInternalLinks} from '../scripts/content-relations.mjs';
-import {knowledgeTypeContracts} from '../scripts/content-schema.mjs';
+import {
+  architectureCaseHeadings,
+  architectureCaseTopicIds,
+  knowledgeHeadingContract,
+  knowledgeTypeContracts,
+  requiredMigrationHeadings,
+} from '../scripts/content-schema.mjs';
 import {extractExternalLinks} from '../scripts/source-ledger.mjs';
 
 const contentRoot = fileURLToPath(new URL('../content/', import.meta.url));
+const repositoryRoot = fileURLToPath(new URL('../', import.meta.url));
+const G005_BATCH3_REVIEWED_HEAD = 'c4a76ac2dc33505b53f7b53d17c587038a871c9f';
+const G005_BATCH3_SCHEMA_PATH = 'scripts/content-schema.mjs';
+const G005_BATCH3_SCHEMA_SHA256 = '10aa4b2e17a59b57a2bfe5c13edc9abe38156a1ce26db04bbf15dd506240e8cf';
+const CURRENT_ARCHITECTURE_CASE_TOPIC_IDS = ['STY-08', 'STY-09'];
+const CURRENT_ARCHITECTURE_CASE_HEADINGS = [
+  '## 学习问题',
+  '## 一页摘要',
+  '## 事实边界',
+  '## 架构图',
+  '## 控制权与任务流',
+  '## 关键源码导读',
+  '## 架构决策与权衡',
+  '## 生产化分析',
+  '## 可迁移经验',
+  '## 来源',
+];
+const CURRENT_ARCHITECTURE_CASE_MIGRATION_HEADINGS = [
+  '### 可直接复用的机制',
+  '### 只能有限类比的部分',
+  '### 不应照搬的部分',
+];
 const expectedMethods = new Map([
   [
     'MTH-04',
@@ -84,15 +113,50 @@ const immutableFiles = new Map([
     '646086029ef8c3d26416f1307d150a54439658eb48c884cd040466f133d1a3b4',
   ],
   [
-    'scripts/content-schema.mjs',
-    '8cc9e66c98273a396580f1ee7da5716dca900a221dccdcd5ebb524e71e20b267',
-
-  ],
-  [
     'sidebars.ts',
     'd3a60c5e67a717544a2993953b66a9665befa348827d001a71a376cacf95382c',
   ],
 ]);
+
+function readGitObject(head, path) {
+  return execFileSync('git', ['show', `${head}:${path}`], {
+    cwd: repositoryRoot,
+    encoding: null,
+    maxBuffer: 4 * 1024 * 1024,
+    stdio: ['ignore', 'pipe', 'pipe'],
+  });
+}
+
+function assertHistoricalSchemaObject({
+  head = G005_BATCH3_REVIEWED_HEAD,
+  expectedHash = G005_BATCH3_SCHEMA_SHA256,
+  bytes = readGitObject(head, G005_BATCH3_SCHEMA_PATH),
+} = {}) {
+  assert.equal(head, G005_BATCH3_REVIEWED_HEAD, 'exact G005 Batch 3 reviewed head');
+  assert.equal(expectedHash, G005_BATCH3_SCHEMA_SHA256, 'original G005 schema SHA-256');
+  assert.equal(
+    createHash('sha256').update(bytes).digest('hex'),
+    expectedHash,
+    `${head}:${G005_BATCH3_SCHEMA_PATH}`,
+  );
+}
+
+function assertCurrentArchitectureCaseSchema({
+  topicIds = architectureCaseTopicIds,
+  headings = architectureCaseHeadings,
+  migrationHeadings = requiredMigrationHeadings,
+  headingContract = knowledgeHeadingContract,
+} = {}) {
+  assert.deepEqual([...topicIds], CURRENT_ARCHITECTURE_CASE_TOPIC_IDS, 'current architecture-case topic IDs');
+  assert.deepEqual(headings, CURRENT_ARCHITECTURE_CASE_HEADINGS, 'current exact 10-H2 contract');
+  assert.equal(headings.length, 10, 'architecture-case H2 count');
+  assert.deepEqual(migrationHeadings, CURRENT_ARCHITECTURE_CASE_MIGRATION_HEADINGS, 'current exact 3-H3 migration contract');
+  assert.equal(migrationHeadings.length, 3, 'architecture-case migration H3 count');
+  for (const topicId of CURRENT_ARCHITECTURE_CASE_TOPIC_IDS) {
+    assert.deepEqual(headingContract('style', topicId), CURRENT_ARCHITECTURE_CASE_HEADINGS, `${topicId} current heading behavior`);
+  }
+  assert.notDeepEqual(headingContract('style', 'STY-07'), CURRENT_ARCHITECTURE_CASE_HEADINGS, 'STY-07 remains on the standard style contract');
+}
 
 const [documents, manifest, sourceLedger, topicRelations] = await Promise.all([
   readContentDocuments(contentRoot),
@@ -489,7 +553,7 @@ test('governs two visible independent domains and an eligible primary per page',
   }
 });
 
-test('preserves cases QA-01 the knowledge schema and sidebar', async () => {
+test('preserves cases QA-01 and the historical G005 sidebar', async () => {
   const qa01Bytes = await readFile(
     new URL(
       '../content/quality-attributes/qa-01-scenario-writing.mdx',
@@ -507,4 +571,66 @@ test('preserves cases QA-01 the knowledge schema and sidebar', async () => {
     const actualHash = createHash('sha256').update(bytes).digest('hex');
     assert.equal(actualHash, expectedHash, file);
   }
+});
+
+test('binds the original G005 reviewed content-schema Git object with mutation sensitivity', () => {
+  const historicalBytes = readGitObject(G005_BATCH3_REVIEWED_HEAD, G005_BATCH3_SCHEMA_PATH);
+  assertHistoricalSchemaObject({bytes: historicalBytes});
+
+  assert.throws(
+    () => assertHistoricalSchemaObject({head: '0'.repeat(40), bytes: historicalBytes}),
+    assert.AssertionError,
+    'wrong historical head rejected',
+  );
+  assert.throws(
+    () => assertHistoricalSchemaObject({expectedHash: '0'.repeat(64), bytes: historicalBytes}),
+    assert.AssertionError,
+    'wrong historical hash rejected',
+  );
+  assert.throws(
+    () => assertHistoricalSchemaObject({bytes: Buffer.concat([historicalBytes, Buffer.from('mutation')])}),
+    assert.AssertionError,
+    'changed historical bytes rejected',
+  );
+});
+
+test('keeps the evolving current schema exact for STY-08 and STY-09 architecture cases', () => {
+  assertCurrentArchitectureCaseSchema();
+
+  assert.throws(
+    () => assertCurrentArchitectureCaseSchema({topicIds: new Set(['STY-08'])}),
+    assert.AssertionError,
+    'STY-09 registration deletion rejected',
+  );
+  assert.throws(
+    () => assertCurrentArchitectureCaseSchema({headings: CURRENT_ARCHITECTURE_CASE_HEADINGS.slice(0, -1)}),
+    assert.AssertionError,
+    '10-H2 deletion rejected',
+  );
+  const swappedHeadings = [...CURRENT_ARCHITECTURE_CASE_HEADINGS];
+  [swappedHeadings[2], swappedHeadings[3]] = [swappedHeadings[3], swappedHeadings[2]];
+  assert.throws(
+    () => assertCurrentArchitectureCaseSchema({headings: swappedHeadings}),
+    assert.AssertionError,
+    '10-H2 reorder rejected',
+  );
+  assert.throws(
+    () => assertCurrentArchitectureCaseSchema({migrationHeadings: CURRENT_ARCHITECTURE_CASE_MIGRATION_HEADINGS.slice(0, -1)}),
+    assert.AssertionError,
+    '3-H3 deletion rejected',
+  );
+  assert.throws(
+    () => assertCurrentArchitectureCaseSchema({
+      headingContract: (type, topicId) => topicId === 'STY-09' ? knowledgeTypeContracts.style : knowledgeHeadingContract(type, topicId),
+    }),
+    assert.AssertionError,
+    'STY-09 standard-style fallback rejected',
+  );
+  assert.throws(
+    () => assertCurrentArchitectureCaseSchema({
+      headingContract: (type, topicId) => topicId === 'STY-07' ? architectureCaseHeadings : knowledgeHeadingContract(type, topicId),
+    }),
+    assert.AssertionError,
+    'unregistered STY-07 architecture-case behavior rejected',
+  );
 });
