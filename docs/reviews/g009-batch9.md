@@ -148,4 +148,13 @@ This section records the non-destructive integration of the original STY-08 Stag
 - Independent Stage B architecture/invariant review: `CLEAR / READY`; blockers: `0`.
 - Final Stage B review judgment: `READY`.
 - Stage B scope boundary: `STAGE_B`.
-- Stage B deployment status: `PENDING / NOT_RUN`.
+- Exact Stage B implementation head: `beba7eade41029a307e762cf92bc1e4e76bcce05`.
+- Exact Stage B Pages run: `31910528440`; workflow: `completed / success`.
+- Stage B build job: `95074776397`; status: `completed / success`.
+- Stage B deploy job: `95075081532`; status: `completed / success`.
+- Stage B required production HTML routes: `8/8`; every route returned `200` with `text/html; charset=utf-8`.
+- Stage B reviewed production SVG: HTTP `200`; MIME `image/svg+xml`; `21,562` bytes; SHA-256 `93a23b5c57334e96d08908146f82677faad887a30cb45b1f8066633b6e185e65`; exact reviewed byte identity: `PASS`.
+- Stage B production raw: `docs/reviews/evidence/g009-batch9-stage-b-production-browser.json`; `27,333` bytes; SHA-256 `f2771bf2288bbd45e30f8ddb7fa2e82e78320437fbe64ecad681d1683489568a`.
+- Stage B functional production QA: `PASS`; states `4/4`; wrapper interactions `12/12`; relation checks `16/16`; exact source checks `24/24`; STY-09 actionable count `0`; diagnostics complete and empty.
+- Stage B production screenshot evidence: `BLOCKED / NOT_ACCEPTED`; exactly three attempts were `CAPTURED_REJECTED`; no visual PASS is claimed.
+- Stage B deployment status: `SUCCESS / PASS`; functional and HTTP production gates passed.
