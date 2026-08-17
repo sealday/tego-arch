@@ -113,11 +113,11 @@
 - STY-09 target: `published / complete`.
 - STY-10 target: `unpublished / pending / non-actionable`; actionable route count: `0`; sole next topic.
 - Immediate immutable history: complete Batch 9 review SHA-256 `f7d0aba59dd69d6479bbfbdb6f9f3cf1befadcf076c44ff5f97f31d6452778ed`; backlog suffix `3a8d6ccda815614132a33ca8ec2c0dca286628c20900d9e32a4403f0ffd56c6b`.
-- Exact Stage B reviewed head: `PENDING`.
-- Independent Stage B code/spec/security review: `PENDING`; findings: `PENDING`.
-- Independent Stage B content/evidence/rights review: `PENDING`; rights: `PENDING`; findings: `PENDING`.
-- Independent Stage B architecture/invariant review: `PENDING`; blockers: `PENDING`.
-- Final Stage B review judgment: `PENDING`.
+- Exact Stage B reviewed head: `534c76a95e5fd9d39cb0aa650f13ee9a1fa28368`.
+- Independent Stage B code/spec/security review: `READY / APPROVE`; findings: `0`.
+- Independent Stage B content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`.
+- Independent Stage B architecture/invariant review: `CLEAR / READY`; blockers: `0`.
+- Final Stage B review judgment: `READY`.
 - Stage B scope boundary: `STAGE_B`.
 - Stage B deployment status: `PENDING / NOT_RUN`.
 - Stage B screenshot status remains `BLOCKED / NOT_ACCEPTED`.

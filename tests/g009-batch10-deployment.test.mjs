@@ -148,6 +148,18 @@ const PENDING_STAGE_B_REVIEW_LINES = Object.freeze([
   '- Stage B deployment status: `PENDING / NOT_RUN`.',
   '- Stage B screenshot status remains `BLOCKED / NOT_ACCEPTED`.',
 ]);
+const STAGE_B_REVIEWED_HEAD = '534c76a95e5fd9d39cb0aa650f13ee9a1fa28368';
+const FINAL_STAGE_B_REVIEW_LINES = Object.freeze([
+  ...PENDING_STAGE_B_REVIEW_LINES.slice(0, 15),
+  `- Exact Stage B reviewed head: \`${STAGE_B_REVIEWED_HEAD}\`.`,
+  '- Independent Stage B code/spec/security review: `READY / APPROVE`; findings: `0`.',
+  '- Independent Stage B content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`.',
+  '- Independent Stage B architecture/invariant review: `CLEAR / READY`; blockers: `0`.',
+  '- Final Stage B review judgment: `READY`.',
+  '- Stage B scope boundary: `STAGE_B`.',
+  '- Stage B deployment status: `PENDING / NOT_RUN`.',
+  '- Stage B screenshot status remains `BLOCKED / NOT_ACCEPTED`.',
+]);
 
 const rootUrl = new URL('../', import.meta.url);
 const sha256 = (value) => createHash('sha256').update(value).digest('hex');
@@ -198,6 +210,10 @@ function assertStageBProjection() {
 }
 function assertPendingStageBReview(source = review) {
   assert.equal(section(source, 'Stage B closure candidate'), PENDING_STAGE_B_REVIEW_LINES.join('\n'), 'exact pending Stage B section');
+  assert.equal(source.split('## Stage B closure candidate').length - 1, 1, 'one Stage B closure section');
+}
+function assertFinalStageBReview(source = review) {
+  assert.equal(section(source, 'Stage B closure candidate'), FINAL_STAGE_B_REVIEW_LINES.join('\n'), 'exact final Stage B section');
   assert.equal(source.split('## Stage B closure candidate').length - 1, 1, 'one Stage B closure section');
 }
 async function assertSty10NonActionable() {
@@ -577,6 +593,40 @@ test('projects STY-09 complete with STY-10 as the sole pending non-actionable ne
   await assertSty10NonActionable();
 });
 
-test('keeps every Stage B review slot, final judgment, and deployment pending before independent review', () => {
-  assertPendingStageBReview();
+test('rejects the superseded all-PENDING Stage B checkpoint after independent review', () => {
+  assertFinalStageBReview();
+  let pendingReview = review;
+  for (let index = 15; index < 20; index += 1) {
+    pendingReview = pendingReview.replace(FINAL_STAGE_B_REVIEW_LINES[index], PENDING_STAGE_B_REVIEW_LINES[index]);
+  }
+  assert.notEqual(pendingReview, review, 'all-PENDING checkpoint mutation applies');
+  assertPendingStageBReview(pendingReview);
+  assert.throws(() => assertFinalStageBReview(pendingReview), {name: 'AssertionError'});
+});
+
+test('binds the exact independently reviewed Stage B head and zero-finding verdicts', () => {
+  assertFinalStageBReview();
+});
+
+test('rejects wrong Stage B head, weakened verdicts, stale PENDING, deployment drift, and visual fabrication', () => {
+  assertFinalStageBReview();
+  for (const [before, after] of [
+    [`Exact Stage B reviewed head: \`${STAGE_B_REVIEWED_HEAD}\`.`, `Exact Stage B reviewed head: \`${'0'.repeat(40)}\`.`],
+    ['Independent Stage B code/spec/security review: `READY / APPROVE`; findings: `0`.', 'Independent Stage B code/spec/security review: `PENDING`; findings: `PENDING`.'],
+    ['Independent Stage B code/spec/security review: `READY / APPROVE`; findings: `0`.', 'Independent Stage B code/spec/security review: `READY / APPROVE`; findings: `1`.'],
+    ['Independent Stage B content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`.', 'Independent Stage B content/evidence/rights review: `CHANGES`; rights: `PASS`; findings: `0`.'],
+    ['Independent Stage B content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`.', 'Independent Stage B content/evidence/rights review: `CONTENT READY`; rights: `PENDING`; findings: `0`.'],
+    ['Independent Stage B architecture/invariant review: `CLEAR / READY`; blockers: `0`.', 'Independent Stage B architecture/invariant review: `BLOCKED`; blockers: `0`.'],
+    ['Independent Stage B architecture/invariant review: `CLEAR / READY`; blockers: `0`.', 'Independent Stage B architecture/invariant review: `CLEAR / READY`; blockers: `1`.'],
+    ['Final Stage B review judgment: `READY`.', 'Final Stage B review judgment: `PENDING`.'],
+    ['Stage B scope boundary: `STAGE_B`.', 'Stage B scope boundary: `STAGE_B_DEPLOYED`.'],
+    ['Stage B deployment status: `PENDING / NOT_RUN`.', 'Stage B deployment status: `NOT_RUN`.'],
+    ['Stage B deployment status: `PENDING / NOT_RUN`.', 'Stage B deployment status: `READY / NOT_RUN`.'],
+    ['Stage B deployment status: `PENDING / NOT_RUN`.', 'Stage B deployment status: `PENDING / SUCCESS`.'],
+    ['Stage B screenshot status remains `BLOCKED / NOT_ACCEPTED`.', 'Stage B screenshot status remains `PASS`.'],
+  ]) {
+    const mutated = review.replace(before, after);
+    assert.notEqual(mutated, review, `${before} mutation applies`);
+    assert.throws(() => assertFinalStageBReview(mutated), {name: 'AssertionError'});
+  }
 });
