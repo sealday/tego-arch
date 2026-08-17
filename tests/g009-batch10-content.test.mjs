@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
+import {fileURLToPath} from 'node:url';
 import test from 'node:test';
 
 import {findMarkdownHeadings, parseFrontMatter, readContentDocuments} from '../scripts/content-metadata.mjs';
@@ -13,6 +14,8 @@ export const ROUTE = '/styles/sty-09';
 export const TOPIC_ID = 'STY-09';
 export const NEXT_TOPIC = 'STY-10';
 export const EXPECTED_STAGE_A = Object.freeze({completed: 61, documents: 105, sources: 544});
+const CONTENT_ROOT = fileURLToPath(new URL('../content/', import.meta.url));
+const CONTENT_DOCUMENTS = (await readContentDocuments(CONTENT_ROOT)).map((document) => ({...document, file: `content/${document.file}`}));
 export const SOURCE_IDS = Object.freeze([
   'src-microsoft-pipes-filters-pattern',
   'src-apache-beam-programming-guide',
@@ -21,15 +24,15 @@ export const SOURCE_IDS = Object.freeze([
   'src-atlas-sty09-pipes-filters-order-processing',
 ]);
 export const EXPECTED_HEADINGS = Object.freeze([
-  '学习问题', '一页摘要', 'Filter、Pipe 与 Pipeline 合同', '订单双轨：相同转换，不同运行合同',
-  '八维批流机制对照', '背压与容量传播', '错误、恢复与人工终态', '状态、顺序与输出边界',
-  '适用、迁移与停止条件', '对比与边界', '来源',
+  '学习问题', '组件、连接器与约束', '边界与控制流', '数据所有权与一致性',
+  '部署单元与故障域', '团队拓扑', '质量属性收益与成本', '迁移路径',
+  '禁用条件', '对比案例', '来源',
 ]);
 export const RELATIONS = Object.freeze({
   depends_on: ['STY-00', 'STY-05', 'STY-06'],
   adjacent_topics: ['STY-05', 'STY-06'],
   related_cases: ['/cases/apache-kafka-consumer-groups'],
-  related_questions: ['/quality-attributes/qa-03-performance-latency-throughput-capacity', '/paths/04-reliability-state'],
+  related_questions: [],
 });
 export const EXACT_METADATA = Object.freeze({
   title: 'Pipes and Filters：用明确合同拆分批处理与流处理',
@@ -158,7 +161,7 @@ export function assertRequiredWrappers(source) {
 }
 export function assertConstructsAndOrder(source) {
   for (const [name, affirmative, boundary] of CONSTRUCTS) { clause(source, affirmative, `${name} affirmative responsibility`); assert.match(source, boundary, `${name} explicit non-guarantee`); }
-  assert.match(source, /说明性场景（Tego Arch 分析）/u, 'illustrative scene label');
+  assert.match(source, /说明性场景（Tego Arch 架构知识项目分析）/u, 'illustrative scene label');
   for (const track of ['批处理轨', '流处理轨']) {
     const match = new RegExp(`${track}：([^。；\\n]+)`, 'u').exec(source); assert.ok(match, `${track} transformation list`);
     for (const step of ORDER_STEPS) assert.match(match[1], new RegExp(escapeRegExp(step), 'u'), `${track} includes ${step}`);
@@ -173,12 +176,12 @@ export function assertDimensionMatrix(source) {
   assert.doesNotMatch(source, /(?:批处理|流处理)[^。；\n]*(?:天然|自动)[^。；\n]*(?:相同|等价)|微批[^。；\n]*(?:等于|意味着)[^。；\n]*批流合同相同/u, 'batch/stream false equivalence');
 }
 export function assertFailureContracts(source) {
-  const filterSection = /(?:^|\n)## Filter、Pipe 与 Pipeline 合同\n([\s\S]*?)(?=\n## |$)/u.exec(source)?.[1]; assert.ok(filterSection, 'Filter contract section'); for (const item of FILTER_CONTRACTS) assert.match(filterSection, new RegExp(escapeRegExp(item), 'u'), `Filter contract: ${item}`);
+  const filterSection = /(?:^|\n)## (?:组件、连接器与约束|Filter、Pipe 与 Pipeline 合同)\n([\s\S]*?)(?=\n## |$)/u.exec(source)?.[1]; assert.ok(filterSection, 'Filter contract section'); for (const item of FILTER_CONTRACTS) assert.match(filterSection, new RegExp(escapeRegExp(item), 'u'), `Filter contract: ${item}`);
   assert.match(source, /(?:缓冲|队列)[^。；\n]*(?:有界|上限)|有界[^。；\n]*(?:缓冲|队列)/u, 'bounded capacity');
   for (const action of ['暂停读取', '降低并发', '延迟确认', '缩小准入', '负载削减', '拒绝']) assert.match(source, new RegExp(action, 'u'), `capacity response: ${action}`);
   assert.match(source, /背压[^。；\n]*(?:(?:中断|停止)[^。；\n]*(?:不支持|不兼容|无界写入|固定速率)|(?:不支持|不兼容|无界写入|固定速率)[^。；\n]*(?:中断|停止))/u, 'backpressure incompatible-boundary stop');
   assert.match(source, /背压[^。；\n]*(?:逐边界|容量协议)|(?:逐边界|容量协议)[^。；\n]*背压/u, 'backpressure is a per-boundary capacity protocol');
-  for (const forbidden of [/背压[^。；\n]*(?:业务数据|数据)[^。；\n]*(?:倒流|反向)/u, /背压[^。；\n]*(?:自动|天然)[^。；\n]*(?:端到端|跨(?:越)?不兼容|跨网络|跨队列)/u]) assert.doesNotMatch(source, forbidden, 'backpressure false propagation');
+  for (const forbidden of [/背压[^。；\n]*(?:使|让)(?:业务数据|数据)[^。；\n]*(?:倒流|反向)/u, /背压[^。；\n]*(?:自动|天然)[^。；\n]*(?:端到端|跨(?:越)?不兼容|跨网络|跨队列)/u]) assert.doesNotMatch(source, forbidden, 'backpressure false propagation');
   const rows = table(source, ['故障', '检测', '自动响应', '停止条件', '人工所有者']); exactRows(rows, FAILURE_ROWS, 'failure ownership');
   for (const forbidden of [/无限重试/u, /悄悄丢失/u, /默认值[^。；\n]*(?:成功|成功处理)/u, /(?:阶段重跑|恢复)[^。；\n]*(?:直接|盲目)重放[^。；\n]*(?:支付|通知|不可逆)/u]) assert.doesNotMatch(source, forbidden, 'unsafe recovery claim');
 }
@@ -189,10 +192,10 @@ export function assertNarrativeBoundaries(source) {
 }
 
 export const REMOTE_SOURCE_CONTRACTS = Object.freeze({
-  'src-microsoft-pipes-filters-pattern': Object.freeze({canonical_locator: 'https://learn.microsoft.com/en-us/azure/architecture/patterns/pipes-and-filters', transport_locator: 'https://learn.microsoft.com/en-us/azure/architecture/patterns/pipes-and-filters', title: 'Pipes and Filters pattern', author_or_org: 'Microsoft', version: '2026-08-17', checked_at: '2026-08-17', source_kind: 'documentation', tier: 'primary', license: 'CC-BY-4.0', license_scope: 'Microsoft Learn content license', license_evidence_url: 'https://learn.microsoft.com/en-us/legal/termsofuse', license_evidence_note: 'Microsoft Learn terms identify the applicable content license boundary; this article uses an attributed factual summary only.', copyright_policy: 'facts-summary', allowed_evidence_roles: ['definition', 'boundary'], citation_roles: ['definition', 'boundary'], manifest_primary: true, usage_boundary: 'Supports Filter/Pipe composition, schema, reordering conditions and duplicate-message risk; it does not prove a universal delivery, transaction, or backpressure guarantee.'}),
-  'src-apache-beam-programming-guide': Object.freeze({canonical_locator: 'https://beam.apache.org/documentation/programming-guide/', transport_locator: 'https://beam.apache.org/documentation/programming-guide/', title: 'Apache Beam Programming Guide', author_or_org: 'Apache Software Foundation', version: '2026-08-17', checked_at: '2026-08-17', source_kind: 'documentation', tier: 'primary', license: 'Apache-2.0', license_scope: 'Apache Beam documentation', license_evidence_url: 'https://www.apache.org/licenses/LICENSE-2.0', license_evidence_note: 'Apache License 2.0 is the recorded evidence boundary; this article does not copy guide text or code.', copyright_policy: 'facts-summary', allowed_evidence_roles: ['mechanism', 'boundary'], citation_roles: ['mechanism', 'boundary'], manifest_primary: false, usage_boundary: 'Supports bounded/unbounded input and windowing distinctions only; it does not require Beam or transfer Beam execution semantics to every pipeline.'}),
-  'src-reactive-streams-1-0-4': Object.freeze({canonical_locator: 'https://www.reactive-streams.org/', transport_locator: 'https://github.com/reactive-streams/reactive-streams-jvm/tree/v1.0.4', title: 'Reactive Streams Specification 1.0.4', author_or_org: 'Reactive Streams Initiative', version: '1.0.4', checked_at: '2026-08-17', source_kind: 'specification', tier: 'primary', license: 'CC-BY-4.0', license_scope: 'Reactive Streams specification and project site', license_evidence_url: 'https://github.com/reactive-streams/reactive-streams-jvm/blob/v1.0.4/LICENSE', license_evidence_note: 'The fixed 1.0.4 repository license is recorded for an attributed factual summary of the specification.', copyright_policy: 'facts-summary', allowed_evidence_roles: ['mechanism', 'boundary'], citation_roles: ['mechanism', 'boundary'], manifest_primary: false, usage_boundary: 'Supports the minimum non-blocking backpressure protocol and its exclusions; it does not prove end-to-end control across incompatible APIs, queues, or networks.'}),
-  'src-gnu-bash-pipelines': Object.freeze({canonical_locator: 'https://www.gnu.org/software/bash/manual/html_node/Pipelines.html', transport_locator: 'https://www.gnu.org/software/bash/manual/html_node/Pipelines.html', title: 'Pipelines', author_or_org: 'GNU Project', version: 'Bash manual checked 2026-08-17', checked_at: '2026-08-17', source_kind: 'documentation', tier: 'primary', license: 'GFDL-1.3-or-later', license_scope: 'GNU Bash Reference Manual', license_evidence_url: 'https://www.gnu.org/licenses/fdl-1.3.html', license_evidence_note: 'GNU Free Documentation License 1.3 is the recorded manual license boundary; this article uses no manual excerpt.', copyright_policy: 'facts-summary', allowed_evidence_roles: ['historical-context', 'boundary'], citation_roles: ['historical-context', 'boundary'], manifest_primary: false, usage_boundary: 'Supports the historical process-pipeline exit-status and pipefail example only; it does not define distributed Pipes and Filters semantics.'}),
+  'src-microsoft-pipes-filters-pattern': Object.freeze({canonical_locator: 'https://learn.microsoft.com/en-us/azure/architecture/patterns/pipes-and-filters', transport_locator: 'https://raw.githubusercontent.com/MicrosoftDocs/architecture-center/c8d425de181f581df8ec98953ec6cd5f1825f0ba/docs/patterns/pipes-and-filters-content.md', title: 'Pipes and Filters pattern', author_or_org: 'Microsoft', version: 'MicrosoftDocs architecture-center commit c8d425de181f581df8ec98953ec6cd5f1825f0ba; source ms.date 2024-04-10', checked_at: '2026-08-17', source_kind: 'vendor-reference-architecture', tier: 'first-party', license: 'CC-BY-4.0', license_scope: 'The named Microsoft Learn Pipes and Filters page at the pinned official documentation commit; code, trademarks, linked works, media, and third-party assets excluded', license_evidence_url: 'https://raw.githubusercontent.com/MicrosoftDocs/architecture-center/c8d425de181f581df8ec98953ec6cd5f1825f0ba/LICENSE', license_evidence_note: 'The pinned official Architecture Center repository LICENSE applies CC BY 4.0 to the documentation repository.', copyright_policy: 'vendor-claims-separated', allowed_evidence_roles: ['definition', 'runtime-fact'], citation_roles: ['definition', 'runtime-fact'], manifest_primary: true, usage_boundary: 'Supports Filter/Pipe composition, schema-compatible reordering conditions, and duplicate-message and failure considerations only; it does not prove a universal delivery, transaction, idempotency, ordering, or backpressure guarantee.'}),
+  'src-apache-beam-programming-guide': Object.freeze({canonical_locator: 'https://beam.apache.org/documentation/programming-guide/', transport_locator: 'https://raw.githubusercontent.com/apache/beam/befa812ecc546d19c4d47816388ffbb12bb7c11b/website/www/site/content/en/documentation/programming-guide.md', title: 'Apache Beam Programming Guide', author_or_org: 'Apache Software Foundation', version: 'apache/beam commit befa812ecc546d19c4d47816388ffbb12bb7c11b; Programming Guide last updated 2026-08-16', checked_at: '2026-08-17', source_kind: 'official-docs', tier: 'primary', license: 'Apache-2.0', license_scope: 'The named Apache Beam Programming Guide file at the pinned official repository commit; code samples, trademarks, linked works, media, and third-party assets excluded', license_evidence_url: 'https://raw.githubusercontent.com/apache/beam/befa812ecc546d19c4d47816388ffbb12bb7c11b/LICENSE', license_evidence_note: 'The pinned official Apache Beam repository LICENSE applies Apache License 2.0 to the named documentation file; this article copies no guide text or code.', copyright_policy: 'facts-and-short-quotation', allowed_evidence_roles: ['runtime-fact'], citation_roles: ['runtime-fact'], manifest_primary: false, usage_boundary: 'Supports bounded and unbounded input and windowing distinctions only; it does not require Beam or transfer Beam execution semantics to every pipeline.'}),
+  'src-reactive-streams-1-0-4': Object.freeze({canonical_locator: 'https://www.reactive-streams.org/', transport_locator: 'https://raw.githubusercontent.com/reactive-streams/reactive-streams-jvm/v1.0.4/README.md', title: 'Reactive Streams for the JVM 1.0.4', author_or_org: 'Reactive Streams Initiative', version: 'Reactive Streams for the JVM 1.0.4, released 2022-05-26; tag v1.0.4 at 944163a4b2477a2bebaaada86b0ba910b6302f2f', checked_at: '2026-08-17', source_kind: 'standard', tier: 'primary', license: 'MIT-0', license_scope: 'The Reactive Streams JVM v1.0.4 README specification; implementation code, TCK, examples, artifacts, trademarks, and linked works excluded', license_evidence_url: 'https://raw.githubusercontent.com/reactive-streams/reactive-streams-jvm/v1.0.4/LICENSE', license_evidence_note: 'The v1.0.4 project site and repository license identify MIT No Attribution (SPDX: MIT-0) for the specification and artifacts; this article uses a factual summary only.', copyright_policy: 'facts-and-short-quotation', allowed_evidence_roles: ['runtime-fact'], citation_roles: ['runtime-fact'], manifest_primary: false, usage_boundary: 'Supports the minimum asynchronous stream protocol with non-blocking backpressure and its stated exclusions only; it does not prove end-to-end control across incompatible APIs, queues, processes, or networks.'}),
+  'src-gnu-bash-pipelines': Object.freeze({canonical_locator: 'https://www.gnu.org/software/bash/manual/html_node/Pipelines.html', transport_locator: 'https://www.gnu.org/software/bash/manual/html_node/Pipelines.html', title: 'Pipelines', author_or_org: 'Free Software Foundation', version: 'GNU Bash Reference Manual Edition 5.3, last updated 2025-05-18', checked_at: '2026-08-17', source_kind: 'official-docs', tier: 'primary', license: 'GFDL-1.3-or-later', license_scope: 'GNU Bash Reference Manual Edition 5.3; Bash program source, linked works, and separately licensed material excluded', license_evidence_url: 'https://www.gnu.org/software/bash/manual/bash.html#GNU-Free-Documentation-License', license_evidence_note: 'The Bash Reference Manual identifies GNU Free Documentation License 1.3 or later; this article uses no manual excerpt or adaptation.', copyright_policy: 'facts-and-short-quotation', allowed_evidence_roles: ['historical-context'], citation_roles: ['historical-context'], manifest_primary: false, usage_boundary: 'Supports the process-pipeline exit-status and pipefail historical example only; it does not define distributed Pipes and Filters semantics.'}),
 });
 export const ILLUSTRATION = Object.freeze({canonical_locator: '/img/diagrams/sty-09-pipes-filters-order-processing.svg', transport_locator: '/img/diagrams/sty-09-pipes-filters-order-processing.svg', source_kind: 'original-illustration', tier: 'primary', allowed_evidence_roles: ['illustration'], license: 'LicenseRef-Atlas-Original', license_scope: 'The named project-authored sty-09-pipes-filters-order-processing.svg asset only', license_evidence_url: 'https://github.com/sealday/tego-arch/blob/main/static/img/diagrams/sty-09-pipes-filters-order-processing.svg', license_evidence_note: 'The project-authored Draw.io/SVG pair contains no third-party topology, reference image, brand visual, signature, watermark, or copied composition.', copyright_policy: 'original-atlas', usage_boundary: 'Original teaching comparison of order processing in batch and stream tracks; illustration-only and not evidence of production outcomes.'});
 function inventoryRows(source) { return source.split(/\r?\n/u).filter((line) => line.startsWith('| ')).map((line) => line.slice(2, -2).split(' | ').map((cell) => cell.trim())); }
@@ -211,16 +214,24 @@ export function assertRemoteSourceContracts(ledger, inventorySource) {
   const original = ledger.sources.find((entry) => entry.id === SOURCE_IDS.at(-1)); assert.ok(original, 'original illustration source');
   for (const field of Object.keys(ILLUSTRATION)) assert.deepEqual(original[field], ILLUSTRATION[field], `illustration ${field}`);
 }
+export function assertSourceLinkHealth(health) {
+  for (const [id, expected] of Object.entries(REMOTE_SOURCE_CONTRACTS)) {
+    const entry = health.results?.find(({transport_locator}) => transport_locator === expected.transport_locator); assert.ok(entry, `${id} link-health entry`); assert.deepEqual(entry.source_ids, [id], `${id} link-health source identity`);
+    assert.deepEqual(entry.last_attempt, {at: '2026-08-17T00:00:00.000Z', outcome: 'healthy', final_transport_locator: expected.transport_locator, http_status: 200, login_wall_detected: false, redirects: []}, `${id} audited attempt`);
+    assert.deepEqual(entry.last_success, {at: '2026-08-17T00:00:00.000Z', outcome: 'healthy', final_transport_locator: expected.transport_locator, http_status: 200, login_wall_detected: false}, `${id} audited success`);
+    assert.deepEqual(entry.attempt_history.at(-1), entry.last_success, `${id} audited history`); assert.equal(entry.review_status, 'healthy', `${id} review status`);
+  }
+}
 export function assertRelationsAndProjection() {
-  const documents = readContentDocuments(); const article = documents.find(({file: path}) => path === ARTICLE); assert.ok(article, 'STY-09 article appears in content documents');
-  const links = extractInternalLinks(article); for (const route of ['/styles/sty-05', '/styles/sty-06', '/cases/apache-kafka-consumer-groups', '/quality-attributes/qa-03-performance-latency-throughput-capacity', '/paths/04-reliability-state']) assert.ok(links.includes(route), `visible STY-09 link: ${route}`);
+  const documents = CONTENT_DOCUMENTS; const article = documents.find(({file: path}) => path === ARTICLE); assert.ok(article, 'STY-09 article appears in content documents');
+  const links = extractInternalLinks(article); for (const route of ['/styles/sty-05', '/styles/sty-06', '/cases/apache-kafka-consumer-groups', '/quality-attributes/qa-03', '/paths/reliability-state']) assert.ok(links.includes(route), `visible STY-09 link: ${route}`);
   assert.equal(links.includes('/styles/sty-10'), false, 'STY-10 remains non-actionable');
   const reciprocal = [
     ['content/styles/sty-05-microservices.mdx', '/styles/sty-09'], ['content/styles/sty-06-event-driven-architecture.mdx', '/styles/sty-09'],
     ['content/cases/apache-kafka-consumer-groups.mdx', '/styles/sty-09'], ['content/quality-attributes/qa-03-performance-latency-throughput-capacity.mdx', '/styles/sty-09'], ['content/paths/04-reliability-state.mdx', '/styles/sty-09'],
   ];
   for (const [path, route] of reciprocal) { const target = documents.find((document) => document.file === path); assert.ok(target, `${path} exists`); assert.ok(extractInternalLinks(target).includes(route), `${path} reciprocates STY-09`); }
-  const ledger = JSON.parse(readFileSync('src/generated/content-ledger.json', 'utf8')); assert.deepEqual({completed: ledger.summary.completedTopics, documents: ledger.summary.documents, sources: ledger.summary.sources}, EXPECTED_STAGE_A, 'Stage A projection');
+  const status = JSON.parse(readFileSync('src/generated/project-status.json', 'utf8')); assert.deepEqual({completed: status.completed_topics, documents: status.content_documents, sources: status.governed_sources}, EXPECTED_STAGE_A, 'Stage A projection');
 }
 
 function attributes(tag) { return new Map([...tag.matchAll(/([:\w-]+)\s*=\s*(?:"([^"]*)"|'([^']*)')/gu)].map(([, key, double, single]) => [key, double ?? single])); }
@@ -617,7 +628,7 @@ test('STY-09 diagram inventory uses real mxPoint fallback mutation fixtures', ()
 });
 
 test('STY-09 helper validators reject semantic, table, source, and geometry mutations', () => {
-  const article = `---\n${frontMatterFixture(EXACT_METADATA)}\n---\n${REQUIRED_WRAPPERS.map(exactWrapperTag).join('\n')}\n## Filter、Pipe 与 Pipeline 合同\n说明性场景（Tego Arch 分析）。Filter 接受输入并执行转换或判定，产生输出、过滤原因或错误分类。Filter 不证明无状态、纯函数、幂等或并行。Pipe 传递输出并承载容量、缓冲、确认、顺序和错误。Pipe 不自动形成可靠消息队列或事务边界。Pipeline 组合或连接兼容输入合同和输出合同。Pipeline 不保证交换律或事务。Pipes and Filters 不等于消息队列、工作流引擎、事件驱动架构、ETL 产品、Saga 或 shell pipeline。输入结构及身份；成功输出与过滤原因；状态位置；容量和缓冲上限；重放与幂等边界；所有者。\n## 订单双轨：相同转换，不同运行合同\n批处理轨：校验、标准化、定价、风险标记、汇总/输出。流处理轨：校验、标准化、定价、风险标记、汇总/输出。\n${PROHIBITIONS.join('。')}。\n单体处理函数先提取一个 Filter，固定中间合同和幂等键，再建立有界 Pipe 与重放边界。${STOP_CONDITIONS.join('。')}。\n有界缓冲。暂停读取、降低并发、延迟确认、缩小准入、负载削减或拒绝。背压是逐边界容量协议，在不支持反馈的不兼容边界中断。\n| 维度 | 批处理轨 | 流处理轨 | 决策问题 |\n| --- | --- | --- | --- |\n${DIMENSION_ROWS.map((row) => `| ${row.join(' | ')} |`).join('\n')}\n\n| 故障 | 检测 | 自动响应 | 停止条件 | 人工所有者 |\n| --- | --- | --- | --- | --- |\n${FAILURE_ROWS.map((row) => `| ${row.join(' | ')} |`).join('\n')}`;
+  const article = `---\n${frontMatterFixture(EXACT_METADATA)}\n---\n${REQUIRED_WRAPPERS.map(exactWrapperTag).join('\n')}\n## Filter、Pipe 与 Pipeline 合同\n说明性场景（Tego Arch 架构知识项目分析）。Filter 接受输入并执行转换或判定，产生输出、过滤原因或错误分类。Filter 不证明无状态、纯函数、幂等或并行。Pipe 传递输出并承载容量、缓冲、确认、顺序和错误。Pipe 不自动形成可靠消息队列或事务边界。Pipeline 组合或连接兼容输入合同和输出合同。Pipeline 不保证交换律或事务。Pipes and Filters 不等于消息队列、工作流引擎、事件驱动架构、ETL 产品、Saga 或 shell pipeline。输入结构及身份；成功输出与过滤原因；状态位置；容量和缓冲上限；重放与幂等边界；所有者。\n## 订单双轨：相同转换，不同运行合同\n批处理轨：校验、标准化、定价、风险标记、汇总/输出。流处理轨：校验、标准化、定价、风险标记、汇总/输出。\n${PROHIBITIONS.join('。')}。\n单体处理函数先提取一个 Filter，固定中间合同和幂等键，再建立有界 Pipe 与重放边界。${STOP_CONDITIONS.join('。')}。\n有界缓冲。暂停读取、降低并发、延迟确认、缩小准入、负载削减或拒绝。背压是逐边界容量协议，在不支持反馈的不兼容边界中断。\n| 维度 | 批处理轨 | 流处理轨 | 决策问题 |\n| --- | --- | --- | --- |\n${DIMENSION_ROWS.map((row) => `| ${row.join(' | ')} |`).join('\n')}\n\n| 故障 | 检测 | 自动响应 | 停止条件 | 人工所有者 |\n| --- | --- | --- | --- | --- |\n${FAILURE_ROWS.map((row) => `| ${row.join(' | ')} |`).join('\n')}`;
   assertExactMetadata(article); assertRequiredWrappers(article); assertConstructsAndOrder(article); assertDimensionMatrix(article); assertFailureContracts(article); assertNarrativeBoundaries(article);
   for (const key of Object.keys(EXACT_METADATA)) {
     const removed = removeFrontMatterField(article, key); assert.notEqual(removed, article, `${key} deletion mutation applies`); assert.throws(() => assertExactMetadata(removed), assert.AssertionError, `${key} deletion rejected`);
@@ -656,20 +667,24 @@ test('STY-09 helper validators reject semantic, table, source, and geometry muta
 
 test('STY-09 source fixture rejects coordinated identity, role, primary, and rights mutations', () => {
   const remoteIds = SOURCE_IDS.slice(0, -1); const ledger = {sources: [...remoteIds.map((id) => ({id, ...REMOTE_SOURCE_CONTRACTS[id]})), {id: SOURCE_IDS.at(-1), ...ILLUSTRATION}], documents: {[ARTICLE]: {citations: remoteIds.map((id) => ({source_id: id, citation_url: REMOTE_SOURCE_CONTRACTS[id].canonical_locator, roles: REMOTE_SOURCE_CONTRACTS[id].citation_roles, manifest_primary: REMOTE_SOURCE_CONTRACTS[id].manifest_primary}))}}};
-  const inventory = remoteIds.map((id) => `| ${REMOTE_SOURCE_CONTRACTS[id].canonical_locator} |`).join('\n'); assertRemoteSourceContracts(ledger, inventory);
-  const changed = structuredClone(ledger); changed.sources[0].canonical_locator = 'https://example.invalid/fabricated'; changed.documents[ARTICLE].citations[0].citation_url = 'https://example.invalid/fabricated'; assert.throws(() => assertRemoteSourceContracts(changed, inventory), assert.AssertionError, 'coordinated canonical fabrication rejected');
+  const inventory = remoteIds.map((id) => `| ${REMOTE_SOURCE_CONTRACTS[id].canonical_locator} |`).join('\n'); const health = {results: remoteIds.map((id) => { const expected = REMOTE_SOURCE_CONTRACTS[id]; const success = {at: '2026-08-17T00:00:00.000Z', outcome: 'healthy', final_transport_locator: expected.transport_locator, http_status: 200, login_wall_detected: false}; return {transport_locator: expected.transport_locator, source_ids: [id], last_attempt: {...success, redirects: []}, last_success: success, attempt_history: [success], review_status: 'healthy'}; })}; assertRemoteSourceContracts(ledger, inventory); assertSourceLinkHealth(health);
+  for (const id of SOURCE_IDS) { const deleted = structuredClone(ledger); deleted.sources = deleted.sources.filter((source) => source.id !== id); assert.throws(() => assertRemoteSourceContracts(deleted, inventory), assert.AssertionError, `${id} deletion rejected`); }
+  const changed = structuredClone(ledger); changed.sources[0].canonical_locator = 'https://example.invalid/fabricated'; changed.documents[ARTICLE].citations[0].citation_url = 'https://example.invalid/fabricated'; const fabricatedInventory = inventory.replace(REMOTE_SOURCE_CONTRACTS[remoteIds[0]].canonical_locator, 'https://example.invalid/fabricated'); assert.throws(() => assertRemoteSourceContracts(changed, fabricatedInventory), assert.AssertionError, 'coordinated ledger and inventory canonical fabrication rejected');
+  const role = structuredClone(ledger); role.sources[1].allowed_evidence_roles = ['learning']; role.documents[ARTICLE].citations[1].roles = ['learning']; assert.throws(() => assertRemoteSourceContracts(role, inventory), assert.AssertionError, 'coordinated source and citation role mutation rejected');
   const primary = structuredClone(ledger); primary.documents[ARTICLE].citations[0].manifest_primary = false; primary.documents[ARTICLE].citations[1].manifest_primary = true; assert.throws(() => assertRemoteSourceContracts(primary, inventory), assert.AssertionError, 'primary reassignment rejected');
   const rights = structuredClone(ledger); rights.sources.at(-1).license_evidence_note = 'fabricated rights'; assert.throws(() => assertRemoteSourceContracts(rights, inventory), assert.AssertionError, 'illustration rights mutation rejected');
+  const missingHealth = structuredClone(health); missingHealth.results.shift(); assert.throws(() => assertSourceLinkHealth(missingHealth), assert.AssertionError, 'link-health deletion rejected');
+  const changedHealth = structuredClone(health); changedHealth.results[0].last_attempt.final_transport_locator = 'https://example.invalid/fabricated'; assert.throws(() => assertSourceLinkHealth(changedHealth), assert.AssertionError, 'link-health transport fabrication rejected');
 });
 
 test('STY-09 article locks metadata, headings, wrappers, components and recovery semantics', () => {
-  const {source, body} = articleParts(file(ARTICLE)); assertExactMetadata(source); assert.deepEqual(findMarkdownHeadings(source).filter(({depth}) => depth === 2).map(({text}) => text), EXPECTED_HEADINGS, 'approved H2 order'); assertRequiredWrappers(source); assertConstructsAndOrder(body); assertDimensionMatrix(body); assertFailureContracts(body); assertNarrativeBoundaries(body);
+  const {source, body} = articleParts(file(ARTICLE)); assertExactMetadata(source); assert.deepEqual(findMarkdownHeadings(source).filter(({level}) => level === 2).map(({text}) => text), EXPECTED_HEADINGS, 'approved H2 order'); assertRequiredWrappers(source); assertConstructsAndOrder(body); assertDimensionMatrix(body); assertFailureContracts(body); assertNarrativeBoundaries(body);
 });
 
 test('STY-09 source governance, reciprocal links, and Stage A projection are exact', () => {
-  const ledger = JSON.parse(readFileSync('data/source-ledger.json', 'utf8')); assertRemoteSourceContracts(ledger, readFileSync('docs/source-license-inventory.md', 'utf8')); assertRelationsAndProjection();
-  for (const source of readContentDocuments()) assert.equal(extractInternalLinks(source).includes('/styles/sty-10'), false, `${source.file} keeps STY-10 non-actionable`);
-  const external = extractExternalLinks(readContentDocuments().find(({file: path}) => path === ARTICLE)); for (const expected of Object.values(REMOTE_SOURCE_CONTRACTS)) assert.ok(external.includes(expected.canonical_locator), `article cites ${expected.canonical_locator}`);
+  const ledger = JSON.parse(readFileSync('data/source-ledger.json', 'utf8')); assertRemoteSourceContracts(ledger, readFileSync('docs/source-license-inventory.md', 'utf8')); assertSourceLinkHealth(JSON.parse(readFileSync('data/source-link-health.json', 'utf8'))); assertRelationsAndProjection();
+  for (const source of CONTENT_DOCUMENTS) assert.equal(extractInternalLinks(source).includes('/styles/sty-10'), false, `${source.file} keeps STY-10 non-actionable`);
+  const external = extractExternalLinks(CONTENT_DOCUMENTS.find(({file: path}) => path === ARTICLE)); for (const expected of Object.values(REMOTE_SOURCE_CONTRACTS)) assert.ok(external.includes(expected.canonical_locator), `article cites ${expected.canonical_locator}`);
 });
 
 test('STY-09 Draw.io/SVG diagram locks batch-stream inventory, terminals, ports, routes and recovery endpoints', () => {

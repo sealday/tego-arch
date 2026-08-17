@@ -35,6 +35,7 @@ adjacent_topics:
   - STY-06
   - STY-07
   - STY-08
+  - STY-09
 related_cases:
   - /cases/micro-frontends-single-spa
 related_questions: []
@@ -167,6 +168,8 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 [STY-07 面向服务架构](/styles/sty-07)与微服务共享面向业务能力、显式合同和分布式失败治理；前者偏向企业能力复用与异构互操作，本文偏向团队自治、私有权威数据和独立部署，两者不是成熟度阶梯。
 
 [STY-08 Actor Model](/styles/sty-08)把稳定逻辑身份、私有状态与邮箱应用到更细粒度的运行时实体；Actor 可以运行在微服务内部，但不自动获得独立部署、私有数据或团队所有权。
+
+[STY-09 Pipes and Filters](/styles/sty-09)把数据处理拆成带输入、输出、容量与恢复合同的步骤。Filter 若跨服务部署，就同时承担网络、兼容版本、独立值守和数据所有权成本；步骤可组合不等于服务应被拆开。
 
 ## 来源
 

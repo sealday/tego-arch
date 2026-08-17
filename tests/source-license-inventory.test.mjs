@@ -66,6 +66,8 @@ test('accepts eleven-column license inventory rows with exact evidence', () => {
   assert.deepEqual(cc0Result.errors, []);
 
   for (const license of [
+    'MIT-0',
+    'GFDL-1.3-or-later',
     'CC-BY-NC-ND-4.0',
     'LicenseRef-CC-BY-NC-ND-Unversioned',
     'LicenseRef-MCP-Specification-Transition',
@@ -79,6 +81,13 @@ test('accepts eleven-column license inventory rows with exact evidence', () => {
     );
     assert.deepEqual(controlledResult.errors, []);
   }
+
+  const nearMiss = [...c4Row];
+  nearMiss[6] = 'GFDL-1.3';
+  assert.match(
+    validateSourceLicenseInventory(table([nearMiss]), ['https://c4model.com/#SystemContextDiagram']).errors.join('\n'),
+    /license.*allowlist/i,
+  );
 });
 
 test('rejects missing columns evidence license scope and migration policy', () => {

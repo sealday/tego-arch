@@ -2273,6 +2273,101 @@
       "forbidden_aliases": [],
       "note": "并发计算模型保留通行名称；Actor 作为模型中的逻辑实体简称，仅在首次引入 Actor Model 后使用。",
       "order": 1680
+    },
+    {
+      "id": "pipes-and-filters",
+      "canonical_zh": "Pipes and Filters",
+      "english": null,
+      "acronym": null,
+      "kind": "standard",
+      "first_use": "Pipes and Filters",
+      "subsequent_use": [
+        "Pipes and Filters",
+        "Filter",
+        "Pipe",
+        "Pipeline"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [],
+      "note": "架构风格保留通行名称；Filter、Pipe 与 Pipeline 只在已引入该风格的文章及关系说明中作为合同角色使用。",
+      "order": 1690
+    },
+    {
+      "id": "exactly-once",
+      "canonical_zh": "exactly-once",
+      "english": null,
+      "acronym": null,
+      "kind": "standard",
+      "first_use": "exactly-once",
+      "subsequent_use": [
+        "exactly-once"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [],
+      "note": "保留分布式处理语义的通行拼写；本站只在明确禁止从局部机制外推端到端业务效果时使用。",
+      "order": 1700
+    },
+    {
+      "id": "apache-beam",
+      "canonical_zh": "Apache Beam",
+      "english": null,
+      "acronym": null,
+      "kind": "proper-noun",
+      "first_use": "Apache Beam 数据处理框架",
+      "subsequent_use": [
+        "Apache Beam",
+        "Beam"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [],
+      "note": "保留项目官方名称；STY-09 只用其文档支持有限与无限输入以及窗口概念。",
+      "order": 1710
+    },
+    {
+      "id": "reactive-streams",
+      "canonical_zh": "Reactive Streams",
+      "english": null,
+      "acronym": null,
+      "kind": "proper-noun",
+      "first_use": "Reactive Streams 异步流规范",
+      "subsequent_use": [
+        "Reactive Streams"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [],
+      "note": "保留规范官方名称；STY-09 只用固定版本支持非阻塞背压及其明确排除项。",
+      "order": 1720
+    },
+    {
+      "id": "gnu-bash",
+      "canonical_zh": "GNU Bash",
+      "english": null,
+      "acronym": null,
+      "kind": "proper-noun",
+      "first_use": "GNU Bash 命令解释器",
+      "subsequent_use": [
+        "GNU Bash",
+        "Bash"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [],
+      "note": "保留软件官方名称；STY-09 仅把手册中的退出状态与 pipefail 作为进程管道历史例子。",
+      "order": 1730
+    },
+    {
+      "id": "java-virtual-machine-runtime",
+      "canonical_zh": "JVM",
+      "english": null,
+      "acronym": null,
+      "kind": "standard",
+      "first_use": "JVM",
+      "subsequent_use": [
+        "JVM"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [],
+      "note": "规范版本范围中保留 JVM 缩写，不把该运行时范围外推到所有流处理系统。",
+      "order": 1740
     }
   ]
 }

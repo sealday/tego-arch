@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-14T04:46:31.833Z",
+  "generated_at": "2026-08-17T00:00:00.000Z",
   "results": [
     {
       "transport_locator": "https://a2a-protocol.org/latest/",
@@ -95346,6 +95346,114 @@
           "login_wall_detected": false
         }
       ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://raw.githubusercontent.com/MicrosoftDocs/architecture-center/c8d425de181f581df8ec98953ec6cd5f1825f0ba/docs/patterns/pipes-and-filters-content.md",
+      "source_ids": ["src-microsoft-pipes-filters-pattern"],
+      "last_attempt": {
+        "at": "2026-08-17T00:00:00.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://raw.githubusercontent.com/MicrosoftDocs/architecture-center/c8d425de181f581df8ec98953ec6cd5f1825f0ba/docs/patterns/pipes-and-filters-content.md",
+        "http_status": 200,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-17T00:00:00.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://raw.githubusercontent.com/MicrosoftDocs/architecture-center/c8d425de181f581df8ec98953ec6cd5f1825f0ba/docs/patterns/pipes-and-filters-content.md",
+        "http_status": 200,
+        "login_wall_detected": false
+      },
+      "attempt_history": [{
+        "at": "2026-08-17T00:00:00.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://raw.githubusercontent.com/MicrosoftDocs/architecture-center/c8d425de181f581df8ec98953ec6cd5f1825f0ba/docs/patterns/pipes-and-filters-content.md",
+        "http_status": 200,
+        "login_wall_detected": false
+      }],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://raw.githubusercontent.com/apache/beam/befa812ecc546d19c4d47816388ffbb12bb7c11b/website/www/site/content/en/documentation/programming-guide.md",
+      "source_ids": ["src-apache-beam-programming-guide"],
+      "last_attempt": {
+        "at": "2026-08-17T00:00:00.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://raw.githubusercontent.com/apache/beam/befa812ecc546d19c4d47816388ffbb12bb7c11b/website/www/site/content/en/documentation/programming-guide.md",
+        "http_status": 200,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-17T00:00:00.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://raw.githubusercontent.com/apache/beam/befa812ecc546d19c4d47816388ffbb12bb7c11b/website/www/site/content/en/documentation/programming-guide.md",
+        "http_status": 200,
+        "login_wall_detected": false
+      },
+      "attempt_history": [{
+        "at": "2026-08-17T00:00:00.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://raw.githubusercontent.com/apache/beam/befa812ecc546d19c4d47816388ffbb12bb7c11b/website/www/site/content/en/documentation/programming-guide.md",
+        "http_status": 200,
+        "login_wall_detected": false
+      }],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://raw.githubusercontent.com/reactive-streams/reactive-streams-jvm/v1.0.4/README.md",
+      "source_ids": ["src-reactive-streams-1-0-4"],
+      "last_attempt": {
+        "at": "2026-08-17T00:00:00.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://raw.githubusercontent.com/reactive-streams/reactive-streams-jvm/v1.0.4/README.md",
+        "http_status": 200,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-17T00:00:00.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://raw.githubusercontent.com/reactive-streams/reactive-streams-jvm/v1.0.4/README.md",
+        "http_status": 200,
+        "login_wall_detected": false
+      },
+      "attempt_history": [{
+        "at": "2026-08-17T00:00:00.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://raw.githubusercontent.com/reactive-streams/reactive-streams-jvm/v1.0.4/README.md",
+        "http_status": 200,
+        "login_wall_detected": false
+      }],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://www.gnu.org/software/bash/manual/html_node/Pipelines.html",
+      "source_ids": ["src-gnu-bash-pipelines"],
+      "last_attempt": {
+        "at": "2026-08-17T00:00:00.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www.gnu.org/software/bash/manual/html_node/Pipelines.html",
+        "http_status": 200,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-17T00:00:00.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www.gnu.org/software/bash/manual/html_node/Pipelines.html",
+        "http_status": 200,
+        "login_wall_detected": false
+      },
+      "attempt_history": [{
+        "at": "2026-08-17T00:00:00.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www.gnu.org/software/bash/manual/html_node/Pipelines.html",
+        "http_status": 200,
+        "login_wall_detected": false
+      }],
       "review_status": "healthy"
     }
   ],

@@ -7,11 +7,13 @@ import {readContentDocuments} from './content-metadata.mjs';
 export const approvedInventoryLicenses = [
   'Apache-2.0',
   'MIT',
+  'MIT-0',
   'BSD-3-Clause',
   'EPL-2.0',
   'MPL-2.0',
   'AGPL-3.0-only',
   'GPL-3.0-only',
+  'GFDL-1.3-or-later',
   'CC-BY-4.0',
   'CC-BY-SA-4.0',
   'CC-BY-NC-ND-4.0',
