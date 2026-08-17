@@ -24,9 +24,11 @@ export const SOURCE_IDS = Object.freeze([
   'src-atlas-sty09-pipes-filters-order-processing',
 ]);
 export const EXPECTED_HEADINGS = Object.freeze([
-  '学习问题', '组件、连接器与约束', '边界与控制流', '数据所有权与一致性',
-  '部署单元与故障域', '团队拓扑', '质量属性收益与成本', '迁移路径',
-  '禁用条件', '对比案例', '来源',
+  '学习问题', '一页摘要', '事实边界', '架构图', '控制权与任务流',
+  '关键源码导读', '架构决策与权衡', '生产化分析', '可迁移经验', '来源',
+]);
+export const EXPECTED_MIGRATION_HEADINGS = Object.freeze([
+  '可直接复用的机制', '只能有限类比的部分', '不应照搬的部分',
 ]);
 export const RELATIONS = Object.freeze({
   depends_on: ['STY-00', 'STY-05', 'STY-06'],
@@ -155,6 +157,17 @@ function removeFrontMatterField(source, key) { const expression = new RegExp(`^$
 function changeFrontMatterField(source, key) { const value = EXACT_METADATA[key]; if (Array.isArray(value)) { const token = `  - ${value[0]}`; return replaceOnce(source, token, '  - changed', `${key} changed value`); } return replaceOnce(source, `${key}: ${value}`, `${key}: changed`, `${key} changed value`); }
 
 export function assertExactMetadata(source) { assert.deepEqual(parseFrontMatter(source), EXACT_METADATA, 'exact STY-09 front matter'); }
+export function assertArticleHeadingContract(source) {
+  const headings = findMarkdownHeadings(source);
+  assert.deepEqual(headings.filter(({level}) => level === 2).map(({text}) => text), EXPECTED_HEADINGS, 'approved H2 order');
+  const migration = headings.find(({level, text}) => level === 2 && text === '可迁移经验');
+  assert.ok(migration, '可迁移经验 H2');
+  const nextH2 = headings.find(({level, offset}) => level === 2 && offset > migration.offset);
+  const migrationHeadings = headings
+    .filter(({level, offset}) => level === 3 && offset > migration.offset && (!nextH2 || offset < nextH2.offset))
+    .map(({text}) => text);
+  assert.deepEqual(migrationHeadings, EXPECTED_MIGRATION_HEADINGS, 'approved H3 order under 可迁移经验');
+}
 export function assertRequiredWrappers(source) {
   for (const wrapper of REQUIRED_WRAPPERS) assert.ok(source.includes(exactWrapperTag(wrapper)), `exact scroll wrapper: ${wrapper.aria}`);
   assert.equal((source.match(/role="region"/gu) ?? []).length, 3, 'exactly three horizontal scroll owners');
@@ -176,7 +189,7 @@ export function assertDimensionMatrix(source) {
   assert.doesNotMatch(source, /(?:批处理|流处理)[^。；\n]*(?:天然|自动)[^。；\n]*(?:相同|等价)|微批[^。；\n]*(?:等于|意味着)[^。；\n]*批流合同相同/u, 'batch/stream false equivalence');
 }
 export function assertFailureContracts(source) {
-  const filterSection = /(?:^|\n)## (?:组件、连接器与约束|Filter、Pipe 与 Pipeline 合同)\n([\s\S]*?)(?=\n## |$)/u.exec(source)?.[1]; assert.ok(filterSection, 'Filter contract section'); for (const item of FILTER_CONTRACTS) assert.match(filterSection, new RegExp(escapeRegExp(item), 'u'), `Filter contract: ${item}`);
+  const filterSection = /(?:^|\n)## (?:控制权与任务流|Filter、Pipe 与 Pipeline 合同)\n([\s\S]*?)(?=\n## |$)/u.exec(source)?.[1]; assert.ok(filterSection, 'Filter contract section'); for (const item of FILTER_CONTRACTS) assert.match(filterSection, new RegExp(escapeRegExp(item), 'u'), `Filter contract: ${item}`);
   assert.match(source, /(?:缓冲|队列)[^。；\n]*(?:有界|上限)|有界[^。；\n]*(?:缓冲|队列)/u, 'bounded capacity');
   for (const action of ['暂停读取', '降低并发', '延迟确认', '缩小准入', '负载削减', '拒绝']) assert.match(source, new RegExp(action, 'u'), `capacity response: ${action}`);
   assert.match(source, /背压[^。；\n]*(?:(?:中断|停止)[^。；\n]*(?:不支持|不兼容|无界写入|固定速率)|(?:不支持|不兼容|无界写入|固定速率)[^。；\n]*(?:中断|停止))/u, 'backpressure incompatible-boundary stop');
@@ -678,7 +691,17 @@ test('STY-09 source fixture rejects coordinated identity, role, primary, and rig
 });
 
 test('STY-09 article locks metadata, headings, wrappers, components and recovery semantics', () => {
-  const {source, body} = articleParts(file(ARTICLE)); assertExactMetadata(source); assert.deepEqual(findMarkdownHeadings(source).filter(({level}) => level === 2).map(({text}) => text), EXPECTED_HEADINGS, 'approved H2 order'); assertRequiredWrappers(source); assertConstructsAndOrder(body); assertDimensionMatrix(body); assertFailureContracts(body); assertNarrativeBoundaries(body);
+  const {source, body} = articleParts(file(ARTICLE)); assertExactMetadata(source); assertArticleHeadingContract(source); assertRequiredWrappers(source); assertConstructsAndOrder(body); assertDimensionMatrix(body); assertFailureContracts(body); assertNarrativeBoundaries(body);
+  for (const [label, changed] of [
+    ['H2 deletion', replaceOnce(source, '## 事实边界\n', '', 'H2 deletion')],
+    ['H2 reorder', source.replace('## 事实边界', '__HEADING__').replace('## 架构图', '## 事实边界').replace('__HEADING__', '## 架构图')],
+    ['H2 duplicate', replaceOnce(source, '## 事实边界\n', '## 事实边界\n\n## 事实边界\n', 'H2 duplicate')],
+    ['H2 malformed', replaceOnce(source, '## 事实边界', '##事实边界', 'H2 malformed')],
+    ['H3 deletion', replaceOnce(source, '### 可直接复用的机制\n', '', 'H3 deletion')],
+    ['H3 reorder', source.replace('### 可直接复用的机制', '__MIGRATION__').replace('### 只能有限类比的部分', '### 可直接复用的机制').replace('__MIGRATION__', '### 只能有限类比的部分')],
+    ['H3 duplicate', replaceOnce(source, '### 可直接复用的机制\n', '### 可直接复用的机制\n\n### 可直接复用的机制\n', 'H3 duplicate')],
+    ['H3 malformed', replaceOnce(source, '### 可直接复用的机制', '###可直接复用的机制', 'H3 malformed')],
+  ]) assert.throws(() => assertArticleHeadingContract(changed), assert.AssertionError, `${label} rejected`);
 });
 
 test('STY-09 source governance, reciprocal links, and Stage A projection are exact', () => {

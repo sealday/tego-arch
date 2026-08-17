@@ -1015,7 +1015,7 @@ const closingPrincipleHeadings = [
   '## 来源',
 ];
 
-const architectureCaseTopicIds = ['STY-08'];
+const architectureCaseTopicIds = ['STY-08', 'STY-09'];
 
 const mod08Headings = [
   '## 学习问题',
@@ -1474,7 +1474,7 @@ test('accepts the exact ten-heading architecture-case contract only for register
   assert.notStrictEqual(knowledgeHeadingContract('style', 'STY-07'), architectureCaseHeadings);
 });
 
-test('rejects missing, reordered, duplicate, and malformed migration headings for STY-08', async () => {
+test('rejects missing, reordered, duplicate, and malformed migration headings for architecture-case styles', async () => {
   const validBody = [
     ...architectureCaseHeadings.slice(0, -1),
     ...requiredMigrationHeadings,
@@ -1503,14 +1503,16 @@ test('rejects missing, reordered, duplicate, and malformed migration headings fo
     },
   ];
 
-  for (const variant of variants) {
-    await withTempRoot(async (root) => {
-      await writeMdx(root, `styles/sty-08-${variant.name}.mdx`, validKnowledgeFrontMatter('style', {
-        topic_id: 'STY-08',
-        slug: `/styles/sty-08-${variant.name}`,
-      }), variant.body.join('\n\n'));
-      assert.match((await validateContent(root)).errors.join('\n'), variant.expected, variant.name);
-    });
+  for (const topicId of architectureCaseTopicIds) {
+    for (const variant of variants) {
+      await withTempRoot(async (root) => {
+        await writeMdx(root, `styles/${topicId.toLowerCase()}-${variant.name}.mdx`, validKnowledgeFrontMatter('style', {
+          topic_id: topicId,
+          slug: `/styles/${topicId.toLowerCase()}-${variant.name}`,
+        }), variant.body.join('\n\n'));
+        assert.match((await validateContent(root)).errors.join('\n'), variant.expected, `${topicId} ${variant.name}`);
+      });
+    }
   }
 });
 
