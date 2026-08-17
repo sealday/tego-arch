@@ -43,11 +43,20 @@
 
 ## Local in-app Browser QA
 
-- Status: `PENDING`; collection has not run.
+- The exact implementation candidate `d2748e204cd55654d1cd5b6dce4fdc88ca95bbb4` was rebuilt and served at `http://127.0.0.1:3420/tego-arch/styles/sty-09` through the Codex in-app Browser only.
+- States accepted: `4/4`; wrapper focus/`:focus-visible`/3px/ArrowRight checks: `12/12`.
+- Relation destination/H1/return checks: `20/20`.
+- SVG loaded in every state: intrinsic `120x150`; rendered `800x1000`.
+- Source href/`_blank`/`noopener noreferrer` checks: `16/16`; STY-10 actionable count: `0` per state.
+- Diagnostics are complete and empty in every state: warning/error logs `0`, `Runtime.exceptionThrown=0`, `Log.entryAdded=0`, `hasMore=false` and `truncated=false`.
+- Raw Browser JSON: `docs/reviews/evidence/g009-batch10-stage-a-browser.json`; `24,971` bytes; SHA-256 `acc7c8154a8c6199cd92b8d68d258d7a0fb5e2e86eb8a1931219d36d9c72d7bf`.
+- Screenshot evidence: `BLOCKED / NOT_ACCEPTED`.
+- Exactly three fresh IAB full-page captures repeated viewport content and omitted complete architecture-diagram coverage. Each original is recorded as `CAPTURED_REJECTED` with its exact path, byte count, SHA-256 and reason; no fourth attempt was made.
+- No Chrome fallback, prior raw, historical screenshot or visual PASS is claimed.
 
 ## Independent review checkpoint
 
-- Exact implementation candidate head: `PENDING`.
+- Exact implementation candidate head: `d2748e204cd55654d1cd5b6dce4fdc88ca95bbb4`.
 - Exact evidence head: `PENDING`.
 - Independent code/spec/security review: `PENDING`.
 - Independent content/evidence/rights review: `PENDING`.
