@@ -333,8 +333,8 @@ test('preserves STY-02 closure under the current STY-09 next-topic projection', 
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
     completed_topics: 61,
-    content_documents: 104,
-    governed_sources: 539,
+    content_documents: 105,
+    governed_sources: 544,
 
     sources: {
       durable_stories: 'docs/content-backlog.md',
@@ -343,7 +343,7 @@ test('preserves STY-02 closure under the current STY-09 next-topic projection', 
       governed_sources: 'data/source-ledger.json',
     },
   });
-  assert.equal(sourceLedger.sources.length, 539);
+  assert.equal(sourceLedger.sources.length, 544);
 
   assert.ok(indexes.style.some(({id, published, status: topicStatus}) =>
     id === 'STY-02' && published === true && topicStatus.value === 'complete'));

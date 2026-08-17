@@ -980,6 +980,49 @@
       ]
     },
     {
+      "id": "src-apache-beam-programming-guide",
+      "canonical_locator": "https://beam.apache.org/documentation/programming-guide/",
+      "transport_locator": "https://raw.githubusercontent.com/apache/beam/befa812ecc546d19c4d47816388ffbb12bb7c11b/website/www/site/content/en/documentation/programming-guide.md",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Apache Beam Programming Guide",
+      "author_or_org": "Apache Software Foundation",
+      "published_at": null,
+      "registered_at": "2026-08-17",
+      "checked_at": "2026-08-17",
+      "version": "apache/beam commit befa812ecc546d19c4d47816388ffbb12bb7c11b; Programming Guide last updated 2026-08-16",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "runtime-fact"
+      ],
+      "license": "Apache-2.0",
+      "license_scope": "The named Apache Beam Programming Guide file at the pinned official repository commit; code samples, trademarks, linked works, media, and third-party assets excluded",
+      "license_evidence_url": "https://raw.githubusercontent.com/apache/beam/befa812ecc546d19c4d47816388ffbb12bb7c11b/LICENSE",
+      "license_evidence_note": "The pinned official Apache Beam repository LICENSE applies Apache License 2.0 to the named documentation file; this article copies no guide text or code.",
+      "license_family_id": "https://beam.apache.org/documentation/programming-guide/",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports bounded and unbounded input and windowing distinctions only; it does not require Beam or transfer Beam execution semantics to every pipeline.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://raw.githubusercontent.com/apache/beam/befa812ecc546d19c4d47816388ffbb12bb7c11b/website/www/site/content/en/documentation/programming-guide.md",
+      "expected_final_approved_at": "2026-08-17",
+      "expected_final_approval_note": "Pinned official guide source and same-commit Apache-2.0 license returned HTTP 200 on 2026-08-17; the page update date was reviewed.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://raw.githubusercontent.com/apache/beam/befa812ecc546d19c4d47816388ffbb12bb7c11b/website/www/site/content/en/documentation/programming-guide.md",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-17T00:00:00.000Z",
+          "last_success_at": "2026-08-17T00:00:00.000Z",
+          "http_status": 200,
+          "final_transport_locator": "https://raw.githubusercontent.com/apache/beam/befa812ecc546d19c4d47816388ffbb12bb7c11b/website/www/site/content/en/documentation/programming-guide.md"
+        }
+      ]
+    },
+    {
       "id": "src-arc42-8b346f00707f",
       "canonical_locator": "https://arc42.org/",
       "transport_locator": "https://arc42.org/",
@@ -2538,6 +2581,40 @@
       "link_policy": null,
       "expected_final_transport_locator": "/img/diagrams/sty-08-actor-order-fulfillment.svg",
       "expected_final_approved_at": "2026-08-14",
+      "expected_final_approval_note": "Approved project-local original illustration after synchronized Draw.io/SVG semantic, geometry, contrast and raster QA.",
+      "health_summary": "healthy",
+      "health_checks": []
+    },
+    {
+      "id": "src-atlas-sty09-pipes-filters-order-processing",
+      "canonical_locator": "/img/diagrams/sty-09-pipes-filters-order-processing.svg",
+      "transport_locator": "/img/diagrams/sty-09-pipes-filters-order-processing.svg",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "订单数据批处理与流处理双轨管道图",
+      "author_or_org": "Tego Arch maintainers",
+      "published_at": "2026-08-17",
+      "registered_at": "2026-08-17",
+      "checked_at": "2026-08-17",
+      "version": "Original synchronized Draw.io/SVG pair authored and checked on 2026-08-17",
+      "source_kind": "original-illustration",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "illustration"
+      ],
+      "license": "LicenseRef-Atlas-Original",
+      "license_scope": "The named project-authored sty-09-pipes-filters-order-processing.svg asset only",
+      "license_evidence_url": "https://github.com/sealday/tego-arch/blob/main/static/img/diagrams/sty-09-pipes-filters-order-processing.svg",
+      "license_evidence_note": "The project-authored Draw.io/SVG pair contains no third-party topology, reference image, brand visual, signature, watermark, or copied composition.",
+      "license_family_id": "/img/diagrams/sty-09-pipes-filters-order-processing.svg",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "original-atlas",
+      "usage_boundary": "Original teaching comparison of order processing in batch and stream tracks; illustration-only and not evidence of production outcomes.",
+      "link_policy": null,
+      "expected_final_transport_locator": "/img/diagrams/sty-09-pipes-filters-order-processing.svg",
+      "expected_final_approved_at": "2026-08-17",
       "expected_final_approval_note": "Approved project-local original illustration after synchronized Draw.io/SVG semantic, geometry, contrast and raster QA.",
       "health_summary": "healthy",
       "health_checks": []
@@ -19356,6 +19433,49 @@
       ]
     },
     {
+      "id": "src-gnu-bash-pipelines",
+      "canonical_locator": "https://www.gnu.org/software/bash/manual/html_node/Pipelines.html",
+      "transport_locator": "https://www.gnu.org/software/bash/manual/html_node/Pipelines.html",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Pipelines",
+      "author_or_org": "Free Software Foundation",
+      "published_at": "2025-05-18",
+      "registered_at": "2026-08-17",
+      "checked_at": "2026-08-17",
+      "version": "GNU Bash Reference Manual Edition 5.3, last updated 2025-05-18",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "historical-context"
+      ],
+      "license": "GFDL-1.3-or-later",
+      "license_scope": "GNU Bash Reference Manual Edition 5.3; Bash program source, linked works, and separately licensed material excluded",
+      "license_evidence_url": "https://www.gnu.org/software/bash/manual/bash.html#GNU-Free-Documentation-License",
+      "license_evidence_note": "The Bash Reference Manual identifies GNU Free Documentation License 1.3 or later; this article uses no manual excerpt or adaptation.",
+      "license_family_id": "https://www.gnu.org/software/bash/manual/html_node/Pipelines.html",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports the process-pipeline exit-status and pipefail historical example only; it does not define distributed Pipes and Filters semantics.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://www.gnu.org/software/bash/manual/html_node/Pipelines.html",
+      "expected_final_approved_at": "2026-08-17",
+      "expected_final_approval_note": "GNU Bash manual Pipelines and full-manual GFDL evidence returned HTTP 200 on 2026-08-17; Edition 5.3 and its update date were reviewed.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://www.gnu.org/software/bash/manual/html_node/Pipelines.html",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-17T00:00:00.000Z",
+          "last_success_at": "2026-08-17T00:00:00.000Z",
+          "http_status": 200,
+          "final_transport_locator": "https://www.gnu.org/software/bash/manual/html_node/Pipelines.html"
+        }
+      ]
+    },
+    {
       "query_insensitive": false,
       "locator_aliases": [],
       "tombstone": null,
@@ -22467,6 +22587,50 @@
       ]
     },
     {
+      "id": "src-microsoft-pipes-filters-pattern",
+      "canonical_locator": "https://learn.microsoft.com/en-us/azure/architecture/patterns/pipes-and-filters",
+      "transport_locator": "https://raw.githubusercontent.com/MicrosoftDocs/architecture-center/c8d425de181f581df8ec98953ec6cd5f1825f0ba/docs/patterns/pipes-and-filters-content.md",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Pipes and Filters pattern",
+      "author_or_org": "Microsoft",
+      "published_at": "2024-04-10",
+      "registered_at": "2026-08-17",
+      "checked_at": "2026-08-17",
+      "version": "MicrosoftDocs architecture-center commit c8d425de181f581df8ec98953ec6cd5f1825f0ba; source ms.date 2024-04-10",
+      "source_kind": "vendor-reference-architecture",
+      "tier": "first-party",
+      "allowed_evidence_roles": [
+        "definition",
+        "runtime-fact"
+      ],
+      "license": "CC-BY-4.0",
+      "license_scope": "The named Microsoft Learn Pipes and Filters page at the pinned official documentation commit; code, trademarks, linked works, media, and third-party assets excluded",
+      "license_evidence_url": "https://raw.githubusercontent.com/MicrosoftDocs/architecture-center/c8d425de181f581df8ec98953ec6cd5f1825f0ba/LICENSE",
+      "license_evidence_note": "The pinned official Architecture Center repository LICENSE applies CC BY 4.0 to the documentation repository.",
+      "license_family_id": "https://learn.microsoft.com/en-us/azure/architecture/patterns/pipes-and-filters",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "vendor-claims-separated",
+      "usage_boundary": "Supports Filter/Pipe composition, schema-compatible reordering conditions, and duplicate-message and failure considerations only; it does not prove a universal delivery, transaction, idempotency, ordering, or backpressure guarantee.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://raw.githubusercontent.com/MicrosoftDocs/architecture-center/c8d425de181f581df8ec98953ec6cd5f1825f0ba/docs/patterns/pipes-and-filters-content.md",
+      "expected_final_approved_at": "2026-08-17",
+      "expected_final_approval_note": "Pinned official source and same-commit CC BY 4.0 license returned HTTP 200 on 2026-08-17; page title and ms.date were reviewed.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://raw.githubusercontent.com/MicrosoftDocs/architecture-center/c8d425de181f581df8ec98953ec6cd5f1825f0ba/docs/patterns/pipes-and-filters-content.md",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-17T00:00:00.000Z",
+          "last_success_at": "2026-08-17T00:00:00.000Z",
+          "http_status": 200,
+          "final_transport_locator": "https://raw.githubusercontent.com/MicrosoftDocs/architecture-center/c8d425de181f581df8ec98953ec6cd5f1825f0ba/docs/patterns/pipes-and-filters-content.md"
+        }
+      ]
+    },
+    {
       "id": "src-modelcontextprotocol-6a01ecb9df48",
       "canonical_locator": "https://modelcontextprotocol.io/specification/2025-06-18/architecture",
       "transport_locator": "https://modelcontextprotocol.io/specification/2025-06-18/architecture",
@@ -23910,6 +24074,49 @@
           "last_success_at": "2026-08-14T04:46:31.833Z",
           "http_status": 200,
           "final_transport_locator": "https://media.pragprog.com/titles/tpp20/dry.pdf"
+        }
+      ]
+    },
+    {
+      "id": "src-reactive-streams-1-0-4",
+      "canonical_locator": "https://www.reactive-streams.org/",
+      "transport_locator": "https://raw.githubusercontent.com/reactive-streams/reactive-streams-jvm/v1.0.4/README.md",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Reactive Streams for the JVM 1.0.4",
+      "author_or_org": "Reactive Streams Initiative",
+      "published_at": "2022-05-26",
+      "registered_at": "2026-08-17",
+      "checked_at": "2026-08-17",
+      "version": "Reactive Streams for the JVM 1.0.4, released 2022-05-26; tag v1.0.4 at 944163a4b2477a2bebaaada86b0ba910b6302f2f",
+      "source_kind": "standard",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "runtime-fact"
+      ],
+      "license": "MIT-0",
+      "license_scope": "The Reactive Streams JVM v1.0.4 README specification; implementation code, TCK, examples, artifacts, trademarks, and linked works excluded",
+      "license_evidence_url": "https://raw.githubusercontent.com/reactive-streams/reactive-streams-jvm/v1.0.4/LICENSE",
+      "license_evidence_note": "The v1.0.4 project site and repository license identify MIT No Attribution (SPDX: MIT-0) for the specification and artifacts; this article uses a factual summary only.",
+      "license_family_id": "https://www.reactive-streams.org/",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports the minimum asynchronous stream protocol with non-blocking backpressure and its stated exclusions only; it does not prove end-to-end control across incompatible APIs, queues, processes, or networks.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://raw.githubusercontent.com/reactive-streams/reactive-streams-jvm/v1.0.4/README.md",
+      "expected_final_approved_at": "2026-08-17",
+      "expected_final_approval_note": "The official site, v1.0.4 specification and exact MIT-0 license returned HTTP 200 on 2026-08-17; the tag identity and release date were reviewed.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://raw.githubusercontent.com/reactive-streams/reactive-streams-jvm/v1.0.4/README.md",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-17T00:00:00.000Z",
+          "last_success_at": "2026-08-17T00:00:00.000Z",
+          "http_status": 200,
+          "final_transport_locator": "https://raw.githubusercontent.com/reactive-streams/reactive-streams-jvm/v1.0.4/README.md"
         }
       ]
     },
@@ -37039,6 +37246,85 @@
           "manifest_primary": false,
           "usage_mode": "facts-summary",
           "attribution_note": "Orleans overview, Microsoft",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/styles/sty-09-pipes-and-filters.mdx": {
+      "title": "Pipes and Filters：用明确合同拆分批处理与流处理",
+      "slug": "/styles/sty-09",
+      "reviewed_at": "2026-08-17",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-apache-beam-programming-guide",
+          "citation_url": "https://beam.apache.org/documentation/programming-guide/",
+          "roles": [
+            "runtime-fact"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Apache Beam Programming Guide, Apache Software Foundation",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-atlas-sty09-pipes-filters-order-processing",
+          "citation_url": "/img/diagrams/sty-09-pipes-filters-order-processing.svg",
+          "roles": [
+            "illustration"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "original-illustration",
+          "attribution_note": "订单数据批处理与流处理双轨管道图，Tego Arch maintainers",
+          "modification_note": "Created as an original synchronized Draw.io/SVG pair without third-party topology, reference imagery, brand visuals, signatures, watermarks, or copied composition.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-gnu-bash-pipelines",
+          "citation_url": "https://www.gnu.org/software/bash/manual/html_node/Pipelines.html",
+          "roles": [
+            "historical-context"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Pipelines, GNU Bash Reference Manual Edition 5.3, Free Software Foundation",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-microsoft-pipes-filters-pattern",
+          "citation_url": "https://learn.microsoft.com/en-us/azure/architecture/patterns/pipes-and-filters",
+          "roles": [
+            "definition",
+            "runtime-fact"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Pipes and Filters pattern, Microsoft Azure Architecture Center",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-reactive-streams-1-0-4",
+          "citation_url": "https://www.reactive-streams.org/",
+          "roles": [
+            "runtime-fact"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Reactive Streams for the JVM 1.0.4, Reactive Streams Initiative",
           "modification_note": null,
           "excerpt": null,
           "quotation_reviewed": false

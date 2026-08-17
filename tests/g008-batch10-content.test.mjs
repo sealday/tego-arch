@@ -511,8 +511,8 @@ test('locks the generated MOD-13 Stage B projection', () => {
     next_topic: currentNextTopic(backlog),
   }, {
     completed_topics: 61,
-    content_documents: 104,
-    governed_sources: 539,
+    content_documents: 105,
+    governed_sources: 544,
 
     durable_stories: {completed: 8, total: 20},
     current_goal: 'G009',

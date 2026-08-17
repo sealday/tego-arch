@@ -2211,7 +2211,8 @@
         "STY-04",
         "STY-06",
         "STY-07",
-        "STY-08"
+        "STY-08",
+        "STY-09"
       ],
       "primary_sources": [
         "https://martinfowler.com/articles/microservices.html"
@@ -2246,6 +2247,7 @@
         "STY-05",
         "STY-07",
         "STY-08",
+        "STY-09",
         "PR-11",
         "MOD-08"
       ],
@@ -2261,27 +2263,6 @@
       "published": true,
       "pattern_group": null,
       "presentation": {}
-    },
-    {
-      "id": "STY-09",
-      "type": "style",
-      "title": "Pipes and Filters",
-      "slug": "/styles/sty-09",
-      "priority": "P1",
-      "status": {
-        "scope": "backlog-projection",
-        "value": "pending",
-        "source": "docs/content-backlog.md"
-      },
-      "dependencies": [],
-      "adjacent_topics": [],
-      "primary_sources": [],
-      "related_cases": [],
-      "related_questions": [],
-      "reviewed_at": null,
-      "review_policy": null,
-      "published": false,
-      "pattern_group": null
     },
     {
       "id": "STY-10",
@@ -2408,6 +2389,39 @@
       ],
       "related_questions": [],
       "reviewed_at": "2026-08-14",
+      "review_policy": null,
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
+    },
+    {
+      "id": "STY-09",
+      "type": "style",
+      "title": "Pipes and Filters：用明确合同拆分批处理与流处理",
+      "slug": "/styles/sty-09",
+      "priority": "P1",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "pending",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "STY-00",
+        "STY-05",
+        "STY-06"
+      ],
+      "adjacent_topics": [
+        "STY-05",
+        "STY-06"
+      ],
+      "primary_sources": [
+        "https://learn.microsoft.com/en-us/azure/architecture/patterns/pipes-and-filters"
+      ],
+      "related_cases": [
+        "/cases/apache-kafka-consumer-groups"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-08-17",
       "review_policy": null,
       "published": true,
       "pattern_group": null,

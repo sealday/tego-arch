@@ -244,13 +244,14 @@ function assertStageBBacklog(source) {
 function assertStageBProjection() {
   assert.deepEqual(
     {completed_topics: status.completed_topics, content_documents: status.content_documents, governed_sources: status.governed_sources},
-    {completed_topics: 61, content_documents: 104, governed_sources: 539},
+    {completed_topics: 61, content_documents: 105, governed_sources: 544},
   );
-  assert.equal(publicLedger.sources.length, 539);
+  assert.equal(publicLedger.sources.length, 544);
   const topics = new Map(manifest.topics.map((topic) => [topic.id, topic]));
   const styles = new Map(indexes.style.map((topic) => [topic.id, topic]));
   assert.deepEqual([topics.get('STY-08')?.published, topics.get('STY-08')?.status.value, styles.get('STY-08')?.published], [true, 'complete', true]);
-  assert.deepEqual([topics.get('STY-09')?.published, topics.get('STY-09')?.status.value, styles.get('STY-09')?.published], [false, 'pending', false]);
+  assert.deepEqual([topics.get('STY-09')?.published, topics.get('STY-09')?.status.value, styles.get('STY-09')?.published], [true, 'pending', true]);
+  assert.deepEqual([topics.get('STY-10')?.published, topics.get('STY-10')?.status.value, styles.get('STY-10')?.published], [false, 'pending', false]);
 }
 
 const [review, browserBytes, productionBrowserBytes, stageBProductionBrowserBytes, immediateReviewBytes, immediateStageARawBytes, immediateStageAProductionRawBytes, immediateStageBProductionRawBytes, backlog, status, manifest, indexes, publicLedger] = await Promise.all([
@@ -270,17 +271,18 @@ const IMMEDIATE_HISTORY = new Map([
 ]);
 
 function assertProjection() {
-  assert.deepEqual({completed_topics: status.completed_topics, content_documents: status.content_documents, governed_sources: status.governed_sources}, {completed_topics: 61, content_documents: 104, governed_sources: 539});
-  assert.equal(publicLedger.sources.length, 539);
+  assert.deepEqual({completed_topics: status.completed_topics, content_documents: status.content_documents, governed_sources: status.governed_sources}, {completed_topics: 61, content_documents: 105, governed_sources: 544});
+  assert.equal(publicLedger.sources.length, 544);
   const topics = new Map(manifest.topics.map((topic) => [topic.id, topic]));
   const styles = new Map(indexes.style.map((topic) => [topic.id, topic]));
   assert.deepEqual([topics.get('STY-08')?.published, topics.get('STY-08')?.status.value, styles.get('STY-08')?.published], [true, 'complete', true]);
-  assert.deepEqual([topics.get('STY-09')?.published, topics.get('STY-09')?.status.value, styles.get('STY-09')?.published], [false, 'pending', false]);
+  assert.deepEqual([topics.get('STY-09')?.published, topics.get('STY-09')?.status.value, styles.get('STY-09')?.published], [true, 'pending', true]);
+  assert.deepEqual([topics.get('STY-10')?.published, topics.get('STY-10')?.status.value, styles.get('STY-10')?.published], [false, 'pending', false]);
 }
 
-async function assertSty09NonActionable() {
+async function assertSty10NonActionable() {
   const documents = await readContentDocuments('content');
-  for (const document of documents) assert.equal(extractInternalLinks(document).includes('/styles/sty-09'), false, `${document.file} STY-09 non-actionable`);
+  for (const document of documents) assert.equal(extractInternalLinks(document).includes('/styles/sty-10'), false, `${document.file} STY-10 non-actionable`);
 }
 
 function assertFunctionalStates(evidence) {
@@ -455,9 +457,9 @@ test('preserves the complete immediate STY-07 backlog suffix and Batch 8 review 
   for (const mutated of [`${suffix}x`, suffix.slice(0, -1)]) assert.notEqual(sha256(mutated), IMMEDIATE_BACKLOG_SUFFIX_HASH);
 });
 
-test('preserves canonical STY-08 Stage A history while current closure leaves STY-09 pending and non-actionable', async () => {
+test('preserves canonical STY-08 Stage A history while current projection leaves STY-10 pending and non-actionable', async () => {
   assertProjection();
-  await assertSty09NonActionable();
+  await assertSty10NonActionable();
 });
 
 test('binds exact artifacts, tracked Browser bytes, and final independent review verdicts', async () => {
@@ -635,7 +637,7 @@ test('closes only STY-08 from exact Stage A production evidence and preserves co
   assertStageBBacklog(backlog);
   assertStageBProjection();
   assertStageBReview(review);
-  await assertSty09NonActionable();
+  await assertSty10NonActionable();
 });
 
 test('binds exact Stage B production publication and functional IAB evidence', () => {

@@ -221,7 +221,7 @@ test('registers Saga as an exact architecture-pattern name with Chinese-context 
 });
 
 test('rejects bare canonical first use for every registered proper noun', () => {
-  assert.equal(repositoryProperNouns.length, 39);
+  assert.equal(repositoryProperNouns.length, 42);
   for (const term of repositoryProperNouns) {
     const result = parseTerminologyRegistry({
       schema_version: 1,
