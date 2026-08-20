@@ -137,7 +137,7 @@ test('limits the default terminology governance gate to reader-facing entry poin
 
 test('default terminology checks cover all repository reader-facing entry points', async () => {
   const result = await checkTerminology({root: repositoryRoot});
-  assert.equal(result.checkedFiles.length, 107);
+  assert.equal(result.checkedFiles.length, 108);
   assert.deepEqual(result.issues, []);
 });
 
@@ -149,7 +149,7 @@ test('no-argument CLI checks the repository default terminology scope', () => {
   );
   assert.equal(run.status, 0, run.stdout || run.stderr);
   assert.equal(run.stderr, '');
-  assert.match(run.stdout, /checked 107 files with 142 registered terms; 0 issues/u);
+  assert.match(run.stdout, /checked 108 files with 145 registered terms; 0 issues/u);
 
 });
 
@@ -551,6 +551,27 @@ test('accepts an exclusive MDX-native suppression directive', async () => {
   const result = await checkFixture(`{/* terminology-exempt: unknown-english-term | reason: 官方界面原始标签 */}
 unknown worker`);
   assert.deepEqual(result.issues, []);
+});
+
+test('binds an exact-match suppression to one exact record and current file', async () => {
+  const directive = '{/* terminology-exempt: unknown-english-term | match: ID | record: 插件 ID 与 CPU。 | reason: STY-10 固定合同字段字面量 */}';
+  const result = await withFixture({
+    'content/sty-10.mdx': `${directive}\n插件 ID 与 CPU。\n\n后续 ID。`,
+    'content/unrelated.mdx': '另一个文件 ID。',
+  }, (root) => checkTerminology({root, paths: ['content']}));
+  assert.equal(result.issues.some(({file, line, matched}) => file === 'content/sty-10.mdx' && line === 2 && matched === 'ID'), false, 'exact ID hit is suppressed');
+  assert.ok(result.issues.some(({file, line, matched}) => file === 'content/sty-10.mdx' && line === 2 && matched === 'CPU'), 'different term in the same record remains governed');
+  assert.ok(result.issues.some(({file, line, matched}) => file === 'content/sty-10.mdx' && line === 4 && matched === 'ID'), 'later prose remains governed');
+  assert.ok(result.issues.some(({file, matched}) => file === 'content/unrelated.mdx' && matched === 'ID'), 'unrelated files remain governed');
+  assert.equal(result.issues.some(({ruleId}) => ruleId === 'invalid-suppression'), false, 'used exact suppression is valid');
+
+  const changedMatch = await checkFixture(`${directive.replace('match: ID', 'match: deadline')}\n插件 ID 与 CPU。`);
+  assert.ok(changedMatch.issues.some(({ruleId}) => ruleId === 'invalid-suppression'), 'non-matching exact suppression is rejected');
+  assert.ok(changedMatch.issues.some(({ruleId, matched}) => ruleId === 'unknown-english-term' && matched === 'ID'), 'non-matching term remains governed');
+
+  const changedRecord = await checkFixture(`${directive}\n插件 ID 与内存。`);
+  assert.ok(changedRecord.issues.some(({ruleId}) => ruleId === 'invalid-suppression'), 'changed exact record invalidates the suppression');
+  assert.ok(changedRecord.issues.some(({ruleId, matched}) => ruleId === 'unknown-english-term' && matched === 'ID'), 'changed record keeps the exact term governed');
 });
 
 test('rejects generic and consecutive bulk suppression directives', async () => {

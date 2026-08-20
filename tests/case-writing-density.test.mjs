@@ -35,6 +35,20 @@ const longIdentifier = 'code is excluded';
   assert.equal(result.warnings.filter(({kind}) => kind === 'long-sentence').length, 1);
 });
 
+test('does not count standalone HTML or MDX comments as reader-facing prose', () => {
+  const visible = `正文很短。
+
+![架构图](/img/diagrams/example.drawio.svg)
+`;
+  const source = `${visible}
+<!-- ${'不可见的治理注释'.repeat(80)} -->
+
+{/* terminology-exempt: unknown-english-term | match: ID | record: ${'不可见的精确记录'.repeat(80)} | reason: 精确合同例外 */}
+`;
+
+  assert.deepEqual(analyzeCaseText(source), analyzeCaseText(visible));
+});
+
 test('reports empty evidence cards', () => {
   const result = analyzeCaseText(
     '<details className="evidence-card"><summary>证据</summary></details>',

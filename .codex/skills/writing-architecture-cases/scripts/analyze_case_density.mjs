@@ -40,11 +40,17 @@ function excludedLineIndexes(lines) {
   const excluded = frontMatterLines(lines);
   let fence;
   let jsxOpeningTag;
+  let commentClosing;
 
   for (let index = 0; index < lines.length; index += 1) {
     if (excluded.has(index)) continue;
 
     const trimmed = lines[index].trim();
+    if (commentClosing) {
+      excluded.add(index);
+      if (trimmed.includes(commentClosing)) commentClosing = undefined;
+      continue;
+    }
     if (jsxOpeningTag) {
       excluded.add(index);
       if (trimmed.includes('>')) jsxOpeningTag = false;
@@ -65,7 +71,21 @@ function excludedLineIndexes(lines) {
       continue;
     }
 
-    if (fence) excluded.add(index);
+    if (fence) {
+      excluded.add(index);
+      continue;
+    }
+
+    const standaloneComment = [
+      {opening: '<!--', closing: '-->'},
+      {opening: '{/*', closing: '*/}'},
+    ].find(({opening}) => trimmed.startsWith(opening));
+    if (standaloneComment) {
+      excluded.add(index);
+      if (!trimmed.includes(standaloneComment.closing)) {
+        commentClosing = standaloneComment.closing;
+      }
+    }
   }
 
   for (let index = 1; index < lines.length; index += 1) {

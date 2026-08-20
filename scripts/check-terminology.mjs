@@ -414,19 +414,28 @@ const inspectUnknownEnglish = (record, registry) => {
 };
 
 const classifySuppression = ({raw, file, line, exclusive}) => {
-  const exact = raw.match(
+  const matchedRecord = raw.match(
+    /^(?:<!--\s*|\{\/\*\s*)terminology-exempt:\s*([^|\s]+)\s*\|\s*match:\s*([^|]+?)\s*\|\s*record:\s*(.*?)\s*\|\s*reason:\s*(.*?)\s*(?:-->|\*\/\})$/u,
+  );
+  const legacy = raw.match(
     /^(?:<!--\s*|\{\/\*\s*)terminology-exempt:\s*([^|\s]+)\s*\|\s*reason:\s*(.*?)\s*(?:-->|\*\/\})$/u,
   );
+  const ruleId = matchedRecord?.[1] ?? legacy?.[1];
+  const exactText = matchedRecord?.[2]?.trim();
+  const recordText = matchedRecord?.[3]?.trim();
+  const reason = matchedRecord?.[4] ?? legacy?.[2];
   if (
     !exclusive
-    || !exact
-    || !suppressibleRules.has(exact[1])
-    || exact[2].trim() === ''
-    || genericSuppressionReasons.has(exact[2].trim())
+    || (!matchedRecord && !legacy)
+    || !suppressibleRules.has(ruleId)
+    || (matchedRecord && exactText === '')
+    || (matchedRecord && recordText === '')
+    || reason.trim() === ''
+    || genericSuppressionReasons.has(reason.trim())
   ) {
     return {file, line, valid: false, matched: raw};
   }
-  return {file, line, valid: true, ruleId: exact[1], matched: raw};
+  return {file, line, valid: true, ruleId, exactText, recordText, matched: raw};
 };
 
 const parseSuppressions = (fileEntry) => {
@@ -467,10 +476,15 @@ const applySuppressions = (fileEntry, recordIssues) => {
       ));
       continue;
     }
-    const nextRecord = fileEntry.records.find((record) => record.line > suppression.line);
+    const targetRecord = suppression.recordText === undefined
+      ? fileEntry.records.find((record) => record.line > suppression.line)
+      : fileEntry.records.find((record) => (
+        record.line > suppression.line && record.text === suppression.recordText
+      ));
     const targetIndex = recordIssues.findIndex((candidate) => (
       candidate.ruleId === suppression.ruleId
-      && candidate._recordIndex === nextRecord?.recordIndex
+      && (suppression.exactText === undefined || candidate.matched === suppression.exactText)
+      && candidate._recordIndex === targetRecord?.recordIndex
       && !candidate.suppressed
     ));
     if (targetIndex === -1) {

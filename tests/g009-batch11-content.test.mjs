@@ -39,21 +39,30 @@ export const WRAPPERS = Object.freeze([
 ]);
 export const COMPONENTS = Object.freeze(['插件注册表', '供应链验证器', '策略与权限引擎', '发布控制器', '订单微内核宿主', '受控调用网关', '补偿队列', '税费插件', '支付插件', '库存插件', '通知插件']);
 export const GOVERNANCE_ROWS = Object.freeze([
-  ['身份与来源', '插件标识、发布者、摘要、签名', '信任根、来源和撤销检查', '隔离制品并拒绝激活'],
+  ['身份与来源', '插件 ID、发布者、摘要、签名', '信任根、来源和撤销检查', '隔离制品并拒绝激活'],
   ['协议/API', '支持的版本范围', '与宿主版本求交并运行合同测试', '使用已批准兼容版或拒绝'],
-  ['能力', '能力标识、版本、必需/可选标记', '扩展点需求与能力集合匹配', '可选能力降级，必需能力拒绝'],
+  ['能力', '能力 ID、版本、必需/可选标记', '扩展点需求与能力集合匹配', '可选能力降级，必需能力拒绝'],
   ['依赖', '插件/平台依赖及范围', '检查存在、兼容和循环', '拒绝或保持旧绑定'],
   ['权限', '数据、网络、凭证、文件需求', '与租户和环境策略求交', '缩小授权；无法运行则拒绝'],
-  ['资源', '处理器、内存、并发、响应大小', '配额、准入、超时与熔断', '限流、隔离或停止新流量'],
+  ['资源', 'CPU、内存、并发、响应大小', '配额、准入、超时与熔断', '限流、隔离或停止新流量'],
   ['数据与结果', '输入字段、输出结构、错误分类', '最小数据投影与结果校验', '拒绝请求或隔离响应'],
   ['生命周期', '健康、灰度、排空和回滚能力', '发布闸门与当前绑定状态', '停止推进并恢复旧绑定'],
 ]);
 export const FAILURE_ROWS = Object.freeze([
   ['版本/能力不兼容', '解析无交集、合同测试或结果结构失败', '保持旧绑定、拒绝候选或使用明确可选降级', '无批准兼容版本', '插件平台负责人'],
-  ['税费/支付/库存超时或失败', '期限、标准错误、熔断与结果查询', '有限重试；结果未知先查询/对账；关键步骤失败关闭', '预算耗尽或无法判定真实结果', '订单域负责人'],
+  ['税费/支付/库存超时或失败', 'deadline、标准错误、熔断与结果查询', '有限重试；结果未知先查询/对账；关键步骤失败关闭', '预算耗尽或无法判定真实结果', '订单域负责人'],
   ['通知插件失败', '超时、明确失败或不可用', '降级并写入补偿队列，按幂等键有界重试', '次数/时限耗尽或重复失败', '通知能力负责人'],
   ['权限、签名或来源异常', '签名/摘要/撤销/策略拒绝和异常访问', '隔离实例、撤销短期凭证、停止新流量并保留证据', '证据保存后禁止自动重放', '平台安全负责人'],
-  ['资源耗尽或崩溃风暴', '处理器/内存/并发/响应大小、退出率和重启率', '限流、熔断、停止新激活、隔离版本', '健康窗口内未恢复', '插件运营负责人'],
+  ['资源耗尽或崩溃风暴', 'CPU/内存/并发/响应大小、退出率和重启率', '限流、熔断、停止新激活、隔离版本', '健康窗口内未恢复', '插件运营负责人'],
+]);
+export const TERMINOLOGY_SCOPES = Object.freeze([
+  {match: 'ID', record: `| ${GOVERNANCE_ROWS[0].join(' | ')} |`, reason: 'STY-10 已批准八维治理矩阵固定使用插件 ID 字段文本'},
+  {match: 'ID', record: `| ${GOVERNANCE_ROWS[2].join(' | ')} |`, reason: 'STY-10 已批准八维治理矩阵固定使用能力 ID 字段文本'},
+  {match: 'CPU', record: `| ${GOVERNANCE_ROWS[5].join(' | ')} |`, reason: 'STY-10 已批准八维治理矩阵固定使用 CPU 资源文本'},
+  {match: 'ID', record: '宿主生成最小数据投影，例如订单 ID、地区、应税项目和合同版本。', reason: 'STY-10 已批准八步调用流固定使用订单 ID 字段文本'},
+  {match: 'ID', record: '网关加入操作 ID、幂等键、期限、短期凭证和 ，再发起本地进程间 gRPC 调用。', reason: 'STY-10 已批准八步调用流固定使用操作 ID 字段文本'},
+  {match: 'deadline', record: `| ${FAILURE_ROWS[1].join(' | ')} |`, reason: 'STY-10 已批准五类故障表固定使用 deadline 检测文本'},
+  {match: 'CPU', record: `| ${FAILURE_ROWS[4].join(' | ')} |`, reason: 'STY-10 已批准五类故障表固定使用 CPU 资源文本'},
 ]);
 export const LIFECYCLE = Object.freeze(['验证', '预热', '灰度', '排空', '卸载']);
 export const REGION_IDS = Object.freeze(['control-plane', 'execution-plane', 'plugin-processes', 'authority-boundary']);
@@ -92,6 +101,8 @@ function table(body, header) { const found = markdownTables(body).find((candidat
 function exactRows(actual, expected, name) { assert.deepEqual(actual.slice(2), expected, `${name} exact ordered rows`); }
 function section(source, heading) { const result = new RegExp(`(?:^|\\n)## ${escapeRegExp(heading)}\\n([\\s\\S]*?)(?=\\n## |$)`, 'u').exec(source)?.[1]; assert.ok(result, `${heading} section`); return result; }
 function includesOrdered(source, values, label) { let at = -1; for (const value of values) { const next = source.indexOf(value, at + 1); assert.ok(next > at, `${label}: ${value}`); at = next; } }
+function terminologyDirective({match, record, reason}) { return `{/* terminology-exempt: unknown-english-term | match: ${match} | record: ${record} | reason: ${reason} */}`; }
+export function assertScopedTerminologyExceptions(source) { const exactDirectives = source.match(/terminology-exempt:\s*unknown-english-term\s*\|\s*match:/gu) ?? []; assert.equal(exactDirectives.length, TERMINOLOGY_SCOPES.length, 'exactly seven STY-10 term-and-record exceptions'); for (const scope of TERMINOLOGY_SCOPES) assert.equal(source.split(terminologyDirective(scope)).length - 1, 1, `${scope.match} exact record exception`); }
 
 export function assertExactMetadata(source) { assert.deepEqual(parseFrontMatter(source), EXACT_METADATA, 'exact STY-10 front matter'); }
 export function assertArticleHeadings(source) { const headings = findMarkdownHeadings(source); assert.deepEqual(headings.filter(({level}) => level === 2).map(({text}) => text), EXPECTED_HEADINGS, 'approved exact H2 order'); const migration = headings.find(({level, text}) => level === 2 && text === '可迁移经验'); const next = headings.find(({level, offset}) => level === 2 && offset > migration.offset); assert.deepEqual(headings.filter(({level, offset}) => level === 3 && offset > migration.offset && (!next || offset < next.offset)).map(({text}) => text), MIGRATION_HEADINGS, 'approved exact H3 order'); }
@@ -112,8 +123,8 @@ export function assertOwnership(source) {
 }
 export function assertGovernance(source) { const rows = table(source, ['维度', '插件声明', '宿主/平台门禁', '不满足时']); exactRows(rows, GOVERNANCE_ROWS, 'eight-row governance matrix'); assert.deepEqual(rows.slice(2).map(([dimension]) => dimension), GOVERNANCE_ROWS.map(([dimension]) => dimension), 'governance row order'); assert.match(source, /未知(?:能力|字段)[^。；\n]*(?:拒绝|不允许|不能).*静默/u, 'unknown capability cannot silently pass'); assert.match(source, /(?:声明[^。；\n]*不决定授权|不允许声明[^。；\n]*自动扩大授权)/u, 'declaration is not authorization'); assert.doesNotMatch(source, /声明[^。；\n]*(?:就是|等于|自动成为)[^。；\n]*授权/u, 'declaration cannot become authorization'); assert.match(source, /没有安全相交范围[^。；\n]*拒绝激活/u, 'no forced adapter'); }
 export function assertInvocationFailureAndLifecycle(source) {
-  includesOrdered(source, ['订单宿主到达', '调用网关向控制面解析', '宿主生成最小数据投影', '网关加入操作标识、幂等键、期限', '插件返回版本化结果', '网关校验响应结构、大小', '宿主根据业务失败策略', '控制面只接收健康与策略信号'], 'eight-step invocation');
-  for (const item of ['订单标识、地区、应税项目和合同版本', '短期凭证', '期限', '结果未知先查询', '权威结果', '不能盲目重放']) assert.match(source, new RegExp(escapeRegExp(item), 'u'), `invocation boundary: ${item}`);
+  includesOrdered(source, ['订单宿主到达', '调用网关向控制面解析', '宿主生成最小数据投影', '网关加入操作 ID、幂等键、期限', '插件返回版本化结果', '网关校验响应结构、大小', '宿主根据业务失败策略', '控制面只接收健康与策略信号'], 'eight-step invocation');
+  for (const item of ['订单 ID、地区、应税项目和合同版本', '短期凭证', 'deadline', '结果未知先查询', '权威结果', '不能盲目重放']) assert.match(source, new RegExp(escapeRegExp(item), 'u'), `invocation boundary: ${item}`);
   exactRows(table(source, ['故障类别', '检测', '自动响应', '停止条件', '人工所有者']), FAILURE_ROWS, 'five-row failure ownership');
   includesOrdered(source, LIFECYCLE, 'controlled lifecycle');
   assert.match(source, /任何阶段失败[^。；\n]*(?:停止推进|恢复上一批准绑定)/u, 'lifecycle failure restores old binding');
@@ -207,7 +218,7 @@ export function assertDiagram(drawioSource, svgSource) {
 
 test('STY-10 helper contracts reject metadata, wrapper, table, ownership and recovery mutations', () => {
   const headings = `${EXPECTED_HEADINGS.map((heading) => heading === '可迁移经验' ? `## ${heading}\n${MIGRATION_HEADINGS.map((item) => `### ${item}`).join('\n')}` : `## ${heading}`).join('\n')}\n[生产中的微前端案例](/cases/micro-frontends-single-spa)只能有限类比独立交付的扩展边界，不等同于进程隔离的后端插件。`;
-  const article = `---\n${frontMatterFixture(EXACT_METADATA)}\n---\n${WRAPPERS.map(exactWrapper).join('\n')}\n${headings}\n插件注册表保存插件标识、制品摘要和状态，注册表不执行订单业务。供应链验证器检查来源、签名、摘要和撤销，通过验证不证明插件业务逻辑正确。策略与权限引擎授予最小数据、网络、凭证和资源范围，插件声明需求不决定授权。发布控制器执行验证、预热、灰度、排空和卸载，它不替订单域决定业务补偿。订单微内核宿主拥有订单流程、权威状态、提交和补偿，插件不拥有订单状态机。受控调用网关执行能力解析、协议协商、最小数据投影、幂等键和短期凭证，不取得订单业务决策权。补偿队列只承载通知类工作，不接受税费、支付或库存正确性结果的默认跳过。税费插件、支付插件、库存插件、通知插件每个插件只实现一个被批准的扩展能力。\n未知能力必须拒绝，不能静默接受。没有安全相交范围时拒绝激活，不允许声明自动扩大授权。\n| 维度 | 插件声明 | 宿主/平台门禁 | 不满足时 |\n| --- | --- | --- | --- |\n${GOVERNANCE_ROWS.map((row) => `| ${row.join(' | ')} |`).join('\n')}\n\n| 故障类别 | 检测 | 自动响应 | 停止条件 | 人工所有者 |\n| --- | --- | --- | --- | --- |\n${FAILURE_ROWS.map((row) => `| ${row.join(' | ')} |`).join('\n')}\n\n订单宿主到达扩展点。调用网关向控制面解析绑定。宿主生成最小数据投影：订单标识、地区、应税项目和合同版本。网关加入操作标识、幂等键、期限和短期凭证。插件返回版本化结果。网关校验响应结构、大小。宿主根据业务失败策略处理。控制面只接收健康与策略信号。超时后结果未知先查询权威结果，不能盲目重放。\n任何阶段失败停止推进并恢复上一批准绑定。回滚只改变新请求绑定，不会撤销已经产生的外部效果。\n插件不得不直连订单数据库，不互相调用或组成隐藏业务流程。进程外执行只提供进程故障边界，不自动形成安全沙箱。不为假想需求预建扩展点。\n收集真实变化和实现差异。在宿主内提取一个合同。固定业务所有权。引入清单、注册表。独立交付或第三方风险成立时，再迁移为进程外 RPC 插件。建立签名、最小权限、配额、灰度、排空、回滚和人工处置。`;
+  const article = `---\n${frontMatterFixture(EXACT_METADATA)}\n---\n${WRAPPERS.map(exactWrapper).join('\n')}\n${headings}\n插件注册表保存插件标识、制品摘要和状态，注册表不执行订单业务。供应链验证器检查来源、签名、摘要和撤销，通过验证不证明插件业务逻辑正确。策略与权限引擎授予最小数据、网络、凭证和资源范围，插件声明需求不决定授权。发布控制器执行验证、预热、灰度、排空和卸载，它不替订单域决定业务补偿。订单微内核宿主拥有订单流程、权威状态、提交和补偿，插件不拥有订单状态机。受控调用网关执行能力解析、协议协商、最小数据投影、幂等键和短期凭证，不取得订单业务决策权。补偿队列只承载通知类工作，不接受税费、支付或库存正确性结果的默认跳过。税费插件、支付插件、库存插件、通知插件每个插件只实现一个被批准的扩展能力。\n未知能力必须拒绝，不能静默接受。没有安全相交范围时拒绝激活，不允许声明自动扩大授权。\n| 维度 | 插件声明 | 宿主/平台门禁 | 不满足时 |\n| --- | --- | --- | --- |\n${GOVERNANCE_ROWS.map((row) => `| ${row.join(' | ')} |`).join('\n')}\n\n| 故障类别 | 检测 | 自动响应 | 停止条件 | 人工所有者 |\n| --- | --- | --- | --- | --- |\n${FAILURE_ROWS.map((row) => `| ${row.join(' | ')} |`).join('\n')}\n\n订单宿主到达扩展点。调用网关向控制面解析绑定。宿主生成最小数据投影：订单 ID、地区、应税项目和合同版本。网关加入操作 ID、幂等键、期限、deadline 和短期凭证。插件返回版本化结果。网关校验响应结构、大小。宿主根据业务失败策略处理。控制面只接收健康与策略信号。超时后结果未知先查询权威结果，不能盲目重放。\n任何阶段失败停止推进并恢复上一批准绑定。回滚只改变新请求绑定，不会撤销已经产生的外部效果。\n插件不得不直连订单数据库，不互相调用或组成隐藏业务流程。进程外执行只提供进程故障边界，不自动形成安全沙箱。不为假想需求预建扩展点。\n收集真实变化和实现差异。在宿主内提取一个合同。固定业务所有权。引入清单、注册表。独立交付或第三方风险成立时，再迁移为进程外 RPC 插件。建立签名、最小权限、配额、灰度、排空、回滚和人工处置。`;
   assertExactMetadata(article); assertArticleHeadings(article); assertWrappers(article); assertOwnership(article); assertGovernance(article); assertInvocationFailureAndLifecycle(article); assertNarrativeBoundaries(article);
   for (const key of Object.keys(EXACT_METADATA)) { const deleted = removeFrontMatterField(article, key); assert.notEqual(deleted, article, `${key} deletion applies`); assert.throws(() => assertExactMetadata(deleted), assert.AssertionError, `${key} deletion rejected`); assert.throws(() => assertExactMetadata(changeFrontMatterField(article, key)), assert.AssertionError, `${key} changed rejected`); }
   for (const heading of [...EXPECTED_HEADINGS, ...MIGRATION_HEADINGS]) { const token = `##${MIGRATION_HEADINGS.includes(heading) ? '#' : ''} ${heading}`; assert.throws(() => assertArticleHeadings(replaceOnce(article, token, '', `${heading} deletion`)), assert.AssertionError, `${heading} deletion rejected`); assert.throws(() => assertArticleHeadings(replaceOnce(article, token, `${token}（变更）`, `${heading} changed`)), assert.AssertionError, `${heading} changed-value rejected`); }
@@ -279,5 +290,6 @@ test('STY-10 diagram inventory production mutations reject unsafe topology and v
 });
 
 test('STY-10 article locks exact metadata, semantic contracts, and wrappers', () => { const {source, body} = articleParts(file(ARTICLE)); assertExactMetadata(source); assertArticleHeadings(source); assertWrappers(source); assertOwnership(body); assertGovernance(body); assertInvocationFailureAndLifecycle(body); assertNarrativeBoundaries(body); });
+test('STY-10 terminology exceptions lock only the seven approved literal records', () => { const source = file(ARTICLE); assertScopedTerminologyExceptions(source); for (const scope of TERMINOLOGY_SCOPES) { const directive = terminologyDirective(scope); assert.throws(() => assertScopedTerminologyExceptions(replaceOnce(source, directive, '', `${scope.match} scoped exception deletion`)), assert.AssertionError, `${scope.match} scoped exception deletion rejected`); assert.throws(() => assertScopedTerminologyExceptions(replaceOnce(source, directive, directive.replace(`match: ${scope.match}`, 'match: unrelated-term'), `${scope.match} scoped exception widening`)), assert.AssertionError, `${scope.match} scoped exception widening rejected`); } });
 test('STY-10 source governance, reciprocal relations, and Stage A projection are exact', async () => { assertSourceContracts(JSON.parse(readFileSync('data/source-ledger.json', 'utf8')), readFileSync(SOURCE_INVENTORY, 'utf8')); await assertRelationsAndStageA(); });
 test('STY-10 Draw.io/SVG diagram locks dual-plane inventory and physical source terminals', () => { const drawio = file(DRAWIO); const svg = file(SVG); assert.ok(drawio, `${DRAWIO} must exist after implementation`); assert.ok(svg, `${SVG} must exist after implementation`); assertDiagram(drawio, svg); });
