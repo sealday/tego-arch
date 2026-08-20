@@ -2415,51 +2415,6 @@
       "forbidden_aliases": [],
       "note": "保留项目官方大小写；STY-10 只把它作为受控的本地进程间调用协议示例。",
       "order": 1770
-    },
-    {
-      "id": "identifier-literal",
-      "canonical_zh": "ID",
-      "english": null,
-      "acronym": null,
-      "kind": "code-literal",
-      "first_use": "ID",
-      "subsequent_use": [
-        "ID"
-      ],
-      "allowed_aliases": [],
-      "forbidden_aliases": [],
-      "note": "STY-10 治理与调用合同中的字段标识字面量，保留固定大写形式。",
-      "order": 1780
-    },
-    {
-      "id": "cpu-literal",
-      "canonical_zh": "CPU",
-      "english": null,
-      "acronym": null,
-      "kind": "code-literal",
-      "first_use": "CPU",
-      "subsequent_use": [
-        "CPU"
-      ],
-      "allowed_aliases": [],
-      "forbidden_aliases": [],
-      "note": "STY-10 资源配额与故障信号中的计算资源指标字面量，保留固定大写形式。",
-      "order": 1790
-    },
-    {
-      "id": "deadline-literal",
-      "canonical_zh": "deadline",
-      "english": null,
-      "acronym": null,
-      "kind": "code-literal",
-      "first_use": "deadline",
-      "subsequent_use": [
-        "deadline"
-      ],
-      "allowed_aliases": [],
-      "forbidden_aliases": [],
-      "note": "STY-10 调用元数据和故障检测中的期限字段字面量，保留小写形式。",
-      "order": 1800
     }
   ]
 }
