@@ -13,10 +13,8 @@ export const REVIEW = 'docs/reviews/g009-batch11.md';
 export const LOCAL_RAW = 'docs/reviews/evidence/g009-batch11-stage-a-browser.json';
 
 const IMPLEMENTATION_HEAD = 'f2cdebb413c7cd96fcb630579c82f0f3b6199983';
-const EVIDENCE_HEAD = '09b043e8cbae280bc7a3df8c82d96c7d83843388';
-const REVIEW_HEAD = 'd9e1e7773d41d00a903a271078b96e035cf4bf07';
-const RAW_BROWSER_BYTES = 25_807;
-const RAW_BROWSER_HASH = '9c9054e8ed9386bf6aeb5c7d269603e7b4108f8f7bb0d84a7fe69e9048359a77';
+const RAW_BROWSER_BYTES = 26_211;
+const RAW_BROWSER_HASH = '3ae7ed0786d712e6e09cb1fbd4320473de44f6f6f7acd477b3f1ab35bd8b7e89';
 const STATES = ['desktopLight', 'desktopDark', 'mobileLight', 'mobileDark'];
 const WRAPPERS = [
   '订单平台双平面微内核与进程外插件图，可横向滚动',
@@ -61,6 +59,9 @@ const STATE_CONTRACTS = Object.freeze({
 });
 const SVG_GEOMETRY = Object.freeze({
   loaded: true,
+  viewBox: '0 0 2400 3900',
+  sourceWidth: 2400,
+  sourceHeight: 3900,
   naturalHeight: 150,
   naturalWidth: 92,
   renderedHeight: 1300,
@@ -149,22 +150,22 @@ function assertBrowser(evidence) {
     attempts: SCREENSHOT_ATTEMPTS,
   });
 }
-function assertFinalReview(source) {
+function assertPendingReview(source) {
   assert.equal(source.match(/^- Screenshot evidence: `BLOCKED \/ NOT_ACCEPTED`\.$/gmu)?.length, 1, 'one honest screenshot verdict');
   assert.equal(source.match(/^- No Chrome fallback, prior raw, historical screenshot or visual PASS is claimed\.$/gmu)?.length, 1, 'one no-overclaim statement');
   assert.doesNotMatch(source, /Screenshot evidence: `PASS`|^Visual PASS is claimed\.$/mu);
   const checkpoint = section(source, 'Independent review checkpoint');
   assert.equal(checkpoint, [
     `- Exact implementation candidate head: \`${IMPLEMENTATION_HEAD}\`.`,
-    `- Exact Browser evidence head: \`${EVIDENCE_HEAD}\`.`,
-    `- Exact independent review head: \`${REVIEW_HEAD}\`.`,
-    '- Independent code/spec/security review: `READY / APPROVE`; findings: `0`.',
-    '- Independent content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`.',
-    '- Independent architecture/invariant review: `CLEAR / READY`; blockers: `0`.',
-    '- Final Stage A review judgment: `READY`.',
+    '- Exact Browser evidence head: `PENDING`.',
+    '- Exact independent review head: `PENDING`.',
+    '- Independent code/spec/security review: `PENDING`; findings: `PENDING`.',
+    '- Independent content/evidence/rights review: `PENDING`; rights: `PENDING`; findings: `PENDING`.',
+    '- Independent architecture/invariant review: `PENDING`; blockers: `PENDING`.',
+    '- Final Stage A review judgment: `PENDING`.',
     '- Scope boundary: `STAGE_A_ONLY`; Stage B backlog closure and deployment have not run.',
     '- Deployment status: `NOT_RUN`.',
-  ].join('\n'), 'exact final Stage A checkpoint');
+  ].join('\n'), 'exact pending Stage A checkpoint');
 }
 
 const [review, raw, immediateReview, backlog, status, documents] = await Promise.all([
@@ -195,7 +196,7 @@ test('projects exact STY-10 Stage A while STY-11 remains unpublished and non-act
   assert.equal(documents.flatMap(extractInternalLinks).includes('/styles/sty-11'), false, 'STY-11 is non-actionable');
 });
 
-test('binds exact heads, final Stage A verdicts, and local Browser evidence', () => {
+test('binds the exact candidate, pending review checkpoint, and local Browser evidence', () => {
   assert.ok(review, `${REVIEW} exists`);
   assert.match(review, /^# G009 Batch 11 Stage A Review$/mu);
   assert.match(review, /Projection: `62 completed topics \/ 106 content documents \/ 550 governed sources`/u);
@@ -203,7 +204,7 @@ test('binds exact heads, final Stage A verdicts, and local Browser evidence', ()
   assert.match(review, /STY-11: `unpublished \/ pending \/ non-actionable`; actionable route count: `0`/u);
   assert.ok(review.includes(`Complete immediate STY-09 review SHA-256: \`${IMMEDIATE_REVIEW_HASH}\``));
   assert.ok(review.includes(`Complete immediate STY-09 backlog suffix SHA-256: \`${IMMEDIATE_BACKLOG_SUFFIX_HASH}\``));
-  assertFinalReview(review);
+  assertPendingReview(review);
   assert.ok(review.includes(`Raw Browser JSON: \`${LOCAL_RAW}\`; \`${RAW_BROWSER_BYTES.toLocaleString('en-US')}\` bytes; SHA-256 \`${RAW_BROWSER_HASH}\``));
   assert.match(review, /Screenshot evidence: `BLOCKED \/ NOT_ACCEPTED`/u);
   assert.match(review, /Exactly three fresh IAB full-page captures repeated viewport content and omitted complete architecture-diagram coverage/u);
@@ -214,26 +215,22 @@ test('binds exact heads, final Stage A verdicts, and local Browser evidence', ()
   assertBrowser(JSON.parse(raw));
 });
 
-test('rejects wrong review heads, weakened verdicts, findings, scope, deployment, and visual overclaim', () => {
-  assertFinalReview(review);
+test('rejects wrong pending checkpoint, scope, deployment, and visual overclaim', () => {
+  assertPendingReview(review);
   for (const [before, after] of [
     [`Exact implementation candidate head: \`${IMPLEMENTATION_HEAD}\`.`, `Exact implementation candidate head: \`${'0'.repeat(40)}\`.`],
-    [`Exact Browser evidence head: \`${EVIDENCE_HEAD}\`.`, `Exact Browser evidence head: \`${'1'.repeat(40)}\`.`],
-    [`Exact independent review head: \`${REVIEW_HEAD}\`.`, `Exact independent review head: \`${'2'.repeat(40)}\`.`],
-    ['Independent code/spec/security review: `READY / APPROVE`; findings: `0`.', 'Independent code/spec/security review: `NOT READY`; findings: `0`.'],
-    ['Independent code/spec/security review: `READY / APPROVE`; findings: `0`.', 'Independent code/spec/security review: `READY / APPROVE`; findings: `1`.'],
-    ['Independent content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`.', 'Independent content/evidence/rights review: `CHANGES`; rights: `PASS`; findings: `0`.'],
-    ['Independent content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`.', 'Independent content/evidence/rights review: `CONTENT READY`; rights: `FAIL`; findings: `0`.'],
-    ['Independent architecture/invariant review: `CLEAR / READY`; blockers: `0`.', 'Independent architecture/invariant review: `BLOCKED`; blockers: `0`.'],
-    ['Independent architecture/invariant review: `CLEAR / READY`; blockers: `0`.', 'Independent architecture/invariant review: `CLEAR / READY`; blockers: `1`.'],
-    ['Final Stage A review judgment: `READY`.', 'Final Stage A review judgment: `PENDING`.'],
-    ['Final Stage A review judgment: `READY`.', 'Final Stage A review judgment: `READY`.\n- Final Stage A review judgment: `PENDING`.'],
+    ['Exact Browser evidence head: `PENDING`.', `Exact Browser evidence head: \`${'1'.repeat(40)}\`.`],
+    ['Exact independent review head: `PENDING`.', `Exact independent review head: \`${'2'.repeat(40)}\`.`],
+    ['Independent code/spec/security review: `PENDING`; findings: `PENDING`.', 'Independent code/spec/security review: `READY / APPROVE`; findings: `0`.'],
+    ['Independent content/evidence/rights review: `PENDING`; rights: `PENDING`; findings: `PENDING`.', 'Independent content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`.'],
+    ['Independent architecture/invariant review: `PENDING`; blockers: `PENDING`.', 'Independent architecture/invariant review: `CLEAR / READY`; blockers: `0`.'],
+    ['Final Stage A review judgment: `PENDING`.', 'Final Stage A review judgment: `READY`.'],
     ['Scope boundary: `STAGE_A_ONLY`;', 'Scope boundary: `STAGE_B`;'],
     ['Deployment status: `NOT_RUN`.', 'Deployment status: `SUCCESS`.'],
   ]) {
     const mutated = review.replace(before, after);
     assert.notEqual(mutated, review, `${before} mutation applies`);
-    assert.throws(() => assertFinalReview(mutated), {name: 'AssertionError'});
+    assert.throws(() => assertPendingReview(mutated), {name: 'AssertionError'});
   }
   for (const [before, after] of [
     ['Screenshot evidence: `BLOCKED / NOT_ACCEPTED`.', 'Screenshot evidence: `PASS`.'],
@@ -241,7 +238,7 @@ test('rejects wrong review heads, weakened verdicts, findings, scope, deployment
   ]) {
     const mutated = review.replace(before, after);
     assert.notEqual(mutated, review, `${before} mutation applies`);
-    assert.throws(() => assertFinalReview(mutated), {name: 'AssertionError'});
+    assert.throws(() => assertPendingReview(mutated), {name: 'AssertionError'});
   }
 });
 
@@ -268,6 +265,12 @@ test('rejects Browser state, geometry, interaction, relation, source, SVG, diagn
     (copy) => { copy.states.desktopDark.geometry.sources[0].href = 'https://example.com/fabricated'; },
     (copy) => { copy.states.mobileLight.geometry.sources.reverse(); },
     (copy) => { copy.states.desktopLight.geometry.svg.loaded = false; },
+    (copy) => { copy.states.desktopLight.geometry.svg.viewBox = '0 0 2401 3900'; },
+    (copy) => { copy.states.desktopDark.geometry.svg.sourceWidth += 1; },
+    (copy) => { copy.states.mobileLight.geometry.svg.sourceHeight += 1; },
+    (copy) => { copy.states.desktopLight.geometry.svg.naturalWidth += 1; },
+    (copy) => { copy.states.desktopDark.geometry.svg.naturalHeight += 1; },
+    (copy) => { copy.states.mobileLight.geometry.svg.renderedWidth += 1; },
     (copy) => { copy.states.desktopDark.geometry.svg.renderedHeight += 1; },
     (copy) => { copy.states.mobileDark.geometry.sty11 = 1; },
     (copy) => { copy.states.mobileDark.logs.push({level: 'error'}); },
@@ -280,7 +283,7 @@ test('rejects Browser state, geometry, interaction, relation, source, SVG, diagn
     (copy) => { copy.screenshotEvidence.attempts[1].sha256 = '0'.repeat(64); },
     (copy) => { copy.screenshotEvidence.attempts[2].status = 'PASS'; },
   ];
-  assert.equal(mutations.length, 29, 'complete explicit Browser mutation inventory');
+  assert.equal(mutations.length, 35, 'complete explicit Browser mutation inventory');
   for (const mutate of mutations) {
     const copy = structuredClone(evidence);
     mutate(copy);
