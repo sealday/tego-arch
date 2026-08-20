@@ -25,6 +25,7 @@ const REVIEW_HEAD = 'c9a0deaea262fd802a5ad151f70818a314da1fe4';
 const RAW_BROWSER_BYTES = 26_211;
 const RAW_BROWSER_HASH = '3ae7ed0786d712e6e09cb1fbd4320473de44f6f6f7acd477b3f1ab35bd8b7e89';
 const READY_HEAD = '05bcd441c21aad16418f1b432af49304cdb0808b';
+const STAGE_B_REVIEWED_HEAD = '5150ccad86e7bd410ddfeb83f986ce2cf3b42df9';
 const PRODUCTION_RAW_BYTES = 28_696;
 const PRODUCTION_RAW_HASH = 'ccbec59b2392a21170b8fabfbc44ba7fd40ea45b54b69ea43632b33f78122eb7';
 const PRODUCTION_PAGES = Object.freeze({
@@ -163,6 +164,17 @@ const PENDING_STAGE_B_REVIEW_LINES = Object.freeze([
   '- Stage B deployment status: `PENDING / NOT_RUN`.',
   '- Stage B screenshot status remains `BLOCKED / NOT_ACCEPTED`.',
 ]);
+const FINAL_STAGE_B_REVIEW_LINES = Object.freeze([
+  ...PENDING_STAGE_B_REVIEW_LINES.slice(0, 15),
+  `- Exact Stage B reviewed head: \`${STAGE_B_REVIEWED_HEAD}\`.`,
+  '- Independent Stage B code/spec/security review: `READY / APPROVE`; findings: `0`.',
+  '- Independent Stage B content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`.',
+  '- Independent Stage B architecture/invariant review: `CLEAR / READY`; blockers: `0`.',
+  '- Final Stage B readiness: `READY`.',
+  '- Stage B scope boundary: `STAGE_B`.',
+  '- Deployment status: `PENDING / NOT_RUN`.',
+  '- Stage B screenshot status remains `BLOCKED / NOT_ACCEPTED`.',
+]);
 const rootUrl = new URL('../', import.meta.url);
 const sha256 = (value) => createHash('sha256').update(value).digest('hex');
 const required = (path, encoding) => readFile(new URL(path, rootUrl), encoding);
@@ -203,8 +215,8 @@ function assertStageBBacklog(source = backlog) {
   assert.doesNotMatch(source, /\]\(\/styles\/sty-11\)/u);
   assertImmediateHistory(immediateReview, source);
 }
-function assertPendingStageBReview(source = review) {
-  assert.equal(section(source, 'Stage B closure candidate'), PENDING_STAGE_B_REVIEW_LINES.join('\n'), 'exact pending Stage B section');
+function assertFinalStageBReview(source = review) {
+  assert.equal(section(source, 'Stage B closure candidate'), FINAL_STAGE_B_REVIEW_LINES.join('\n'), 'exact reviewed Stage B section');
   assert.equal(source.split('## Stage B closure candidate').length - 1, 1, 'one Stage B closure section');
 }
 function assertBrowser(evidence) {
@@ -404,9 +416,35 @@ test('binds exact heads, final Stage A verdicts, and local Browser evidence', ()
   assert.match(review, /Screenshot evidence: `BLOCKED \/ NOT_ACCEPTED`/u);
   assert.match(review, /Exactly three fresh IAB full-page captures repeated viewport content and omitted complete architecture-diagram coverage/u);
   assert.match(review, /No Chrome fallback, prior raw, historical screenshot or visual PASS is claimed/u);
-  assertPendingStageBReview(review);
+  assertFinalStageBReview(review);
   assert.ok(raw, `${LOCAL_RAW} exists`);
   assertBrowser(JSON.parse(raw));
+});
+
+test('rejects wrong Stage B head, weakened verdicts, stale pending, scope drift, deployment fabrication and visual overclaim', () => {
+  assertFinalStageBReview(review);
+  for (const [before, after] of [
+    [`Exact Stage B reviewed head: \`${STAGE_B_REVIEWED_HEAD}\`.`, `Exact Stage B reviewed head: \`${'0'.repeat(40)}\`.`],
+    ['Independent Stage B code/spec/security review: `READY / APPROVE`; findings: `0`.', 'Independent Stage B code/spec/security review: `NOT READY`; findings: `0`.'],
+    ['Independent Stage B code/spec/security review: `READY / APPROVE`; findings: `0`.', 'Independent Stage B code/spec/security review: `READY / APPROVE`; findings: `1`.'],
+    ['Independent Stage B content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`.', 'Independent Stage B content/evidence/rights review: `CHANGES`; rights: `PASS`; findings: `0`.'],
+    ['Independent Stage B content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`.', 'Independent Stage B content/evidence/rights review: `CONTENT READY`; rights: `FAIL`; findings: `0`.'],
+    ['Independent Stage B content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`.', 'Independent Stage B content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `1`.'],
+    ['Independent Stage B architecture/invariant review: `CLEAR / READY`; blockers: `0`.', 'Independent Stage B architecture/invariant review: `BLOCKED`; blockers: `0`.'],
+    ['Independent Stage B architecture/invariant review: `CLEAR / READY`; blockers: `0`.', 'Independent Stage B architecture/invariant review: `CLEAR / READY`; blockers: `1`.'],
+    ['Final Stage B readiness: `READY`.', 'Final Stage B readiness: `PENDING`.'],
+    ['Stage B scope boundary: `STAGE_B`.', 'Stage B scope boundary: `STAGE_A_ONLY`.'],
+    ['Deployment status: `PENDING / NOT_RUN`.', 'Deployment status: `SUCCESS`.'],
+    ['Deployment status: `PENDING / NOT_RUN`.', 'Deployment status: `READY / NOT_RUN`.'],
+    ['Stage B screenshot status remains `BLOCKED / NOT_ACCEPTED`.', 'Stage B screenshot status: `PASS`.'],
+  ]) {
+    const mutated = review.replace(before, after);
+    assert.notEqual(mutated, review, `${before} Stage B mutation applies`);
+    assert.throws(() => assertFinalStageBReview(mutated), {name: 'AssertionError'});
+  }
+  const stalePending = review.replace(FINAL_STAGE_B_REVIEW_LINES.join('\n'), PENDING_STAGE_B_REVIEW_LINES.join('\n'));
+  assert.notEqual(stalePending, review, 'stale pending Stage B section mutation applies');
+  assert.throws(() => assertFinalStageBReview(stalePending), {name: 'AssertionError'});
 });
 
 test('rejects wrong review heads, weakened verdicts, findings, scope, deployment, and visual overclaim', () => {
