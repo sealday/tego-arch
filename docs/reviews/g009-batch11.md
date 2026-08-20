@@ -57,10 +57,11 @@
 ## Independent review checkpoint
 
 - Exact implementation candidate head: `f2cdebb413c7cd96fcb630579c82f0f3b6199983`.
-- Exact evidence head: `PENDING`.
-- Independent code/spec/security review: `PENDING`; findings: `PENDING`.
-- Independent content/evidence/rights review: `PENDING`; rights: `PENDING`; findings: `PENDING`.
-- Independent architecture/invariant review: `PENDING`; blockers: `PENDING`.
-- Final Stage A review judgment: `PENDING`.
+- Exact Browser evidence head: `09b043e8cbae280bc7a3df8c82d96c7d83843388`.
+- Exact independent review head: `d9e1e7773d41d00a903a271078b96e035cf4bf07`.
+- Independent code/spec/security review: `READY / APPROVE`; findings: `0`.
+- Independent content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`.
+- Independent architecture/invariant review: `CLEAR / READY`; blockers: `0`.
+- Final Stage A review judgment: `READY`.
 - Scope boundary: `STAGE_A_ONLY`; Stage B backlog closure and deployment have not run.
 - Deployment status: `NOT_RUN`.
