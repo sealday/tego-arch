@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {readFile} from 'node:fs/promises';
 import test from 'node:test';
@@ -220,13 +221,14 @@ function assertStageBBacklog(source = backlog) {
 function assertStageBProjection() {
   assert.deepEqual(
     {completed: status.completed_topics, documents: status.content_documents, sources: status.governed_sources},
-    {completed: 62, documents: 105, sources: 544},
+    {completed: 62, documents: 106, sources: 550},
   );
-  assert.equal(publicLedger.sources.length, 544);
+  assert.equal(publicLedger.sources.length, 550);
   const topics = new Map(manifest.topics.map((topic) => [topic.id, topic]));
   const styles = new Map(indexes.style.map((topic) => [topic.id, topic]));
   assert.deepEqual([topics.get('STY-09')?.published, topics.get('STY-09')?.status.value, styles.get('STY-09')?.published], [true, 'complete', true]);
-  assert.deepEqual([topics.get('STY-10')?.published, topics.get('STY-10')?.status.value, styles.get('STY-10')?.published], [false, 'pending', false]);
+  assert.deepEqual([topics.get('STY-10')?.published, topics.get('STY-10')?.status.value, styles.get('STY-10')?.published], [true, 'pending', true]);
+  assert.deepEqual([topics.get('STY-11')?.published, topics.get('STY-11')?.status.value, styles.get('STY-11')?.published], [false, 'pending', false]);
 }
 function assertPendingStageBReview(source = review) {
   assert.equal(section(source, 'Stage B closure candidate'), PENDING_STAGE_B_REVIEW_LINES.join('\n'), 'exact pending Stage B section');
@@ -236,15 +238,18 @@ function assertFinalStageBReview(source = review) {
   assert.equal(section(source, 'Stage B closure candidate'), FINAL_STAGE_B_REVIEW_LINES.join('\n'), 'exact final Stage B section');
   assert.equal(source.split('## Stage B closure candidate').length - 1, 1, 'one Stage B closure section');
 }
-async function assertSty10NonActionable() {
+async function assertSty11NonActionable() {
   const documents = await readContentDocuments('content');
-  for (const document of documents) assert.equal(extractInternalLinks(document).includes('/styles/sty-10'), false, `${document.file} STY-10 non-actionable`);
+  for (const document of documents) assert.equal(extractInternalLinks(document).includes('/styles/sty-11'), false, `${document.file} STY-11 non-actionable`);
 }
 async function assertArtifactIdentities(source) {
   const identities = section(source, 'Artifact identities');
   const rows = [];
   for (const [path, expectedHash] of STABLE_ARTIFACT_HASHES) {
-    const bytes = await required(path);
+    const bytes = execFileSync('git', ['show', `${IMPLEMENTATION_HEAD}:${path}`], {
+      cwd: new URL('../', import.meta.url),
+      maxBuffer: 4 * 1024 * 1024,
+    });
     assert.equal(sha256(bytes), expectedHash, `${path} immutable artifact bytes`);
     rows.push(`| \`${path}\` | ${bytes.length.toLocaleString('en-US')} | \`${expectedHash}\` |`);
   }
@@ -494,10 +499,10 @@ test('locks complete immediate STY-08 review and backlog suffix with mutation se
   assert.throws(() => assertStageBBacklog(changedCurrentSty10), assert.AssertionError);
 });
 
-test('projects canonical STY-09 Stage B truth while STY-10 remains pending and non-actionable', async () => {
+test('projects canonical STY-09 history while current STY-10 is published/pending and STY-11 is non-actionable', async () => {
   assertStageBProjection();
   assertStageBBacklog();
-  await assertSty10NonActionable();
+  await assertSty11NonActionable();
 });
 
 test('binds exact STY-09 artifacts, tracked Browser semantics, and final independent review verdicts', async () => {
@@ -657,9 +662,9 @@ test('closes only STY-09 from exact Stage A production evidence and preserves co
   assertStageBBacklog();
 });
 
-test('projects STY-09 complete with STY-10 as the sole pending non-actionable next topic', async () => {
+test('projects STY-09 complete with STY-10 published/pending and STY-11 unpublished/non-actionable', async () => {
   assertStageBProjection();
-  await assertSty10NonActionable();
+  await assertSty11NonActionable();
 });
 
 test('rejects the superseded all-PENDING Stage B checkpoint after independent review', () => {

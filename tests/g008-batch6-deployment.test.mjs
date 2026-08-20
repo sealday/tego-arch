@@ -256,8 +256,8 @@ test('preserves Batch 6 evidence under the current Batch 10 projection', () => {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
     completed_topics: 62,
-    content_documents: 105,
-    governed_sources: 544,
+    content_documents: 106,
+    governed_sources: 550,
 
     sources: {
       durable_stories: 'docs/content-backlog.md',

@@ -45,7 +45,7 @@ const EXPECTED_METADATA = {
   topic_id: TOPIC_ID,
   priority: 'P0',
   depends_on: ['STY-00', 'STY-04'],
-    adjacent_topics: ['STY-03', 'STY-04', 'STY-06', 'STY-07', 'STY-08', 'STY-09'],
+    adjacent_topics: ['STY-03', 'STY-04', 'STY-06', 'STY-07', 'STY-08', 'STY-09', 'STY-10'],
   related_cases: ['/cases/micro-frontends-single-spa'],
   related_questions: [],
 };
@@ -98,8 +98,8 @@ const MIXED_AFFIRMATIVE_VIOLATIONS = [
 
 const ILLUSTRATION_SOURCE_ID = 'src-atlas-sty05-microservices-order-saga';
 const ILLUSTRATION_URL = '/img/diagrams/sty-05-microservices-order-saga.svg';
-const ADJACENT_TOPICS = ['STY-03', 'STY-04', 'STY-06', 'STY-07', 'STY-08', 'STY-09'];
-const ADJACENT_ROUTES = ['/styles/sty-03', '/styles/sty-04', '/styles/sty-07', '/styles/sty-08'];
+const ADJACENT_TOPICS = ['STY-03', 'STY-04', 'STY-06', 'STY-07', 'STY-08', 'STY-09', 'STY-10'];
+const ADJACENT_ROUTES = ['/styles/sty-03', '/styles/sty-04', '/styles/sty-07', '/styles/sty-08', '/styles/sty-10'];
 const SERVICE_KEYS = ['order', 'inventory', 'payment', 'notification'];
 const SERVICE_CHILDREN = new Map([
   ['order', ['order-contract', 'order-handler', 'order-data', 'order-saga-state', 'order-outbox', 'order-consumer-dedup']],
@@ -1154,9 +1154,9 @@ test('preserves the STY-05 closure under the current STY-10 next-topic projectio
   assert.equal(indexes.style.find(({id}) => id === TOPIC_ID)?.published, true);
   assert.equal(indexes.style.find(({id}) => id === 'STY-06')?.published, true);
   assert.equal(projectStatus.completed_topics, 62);
-  assert.equal(projectStatus.content_documents, 105);
-  assert.equal(projectStatus.governed_sources, 544);
-  assert.equal(publicLedger.sources.length, 544);
+  assert.equal(projectStatus.content_documents, 106);
+  assert.equal(projectStatus.governed_sources, 550);
+  assert.equal(publicLedger.sources.length, 550);
 
   const publishedRoutes = manifest.topics.filter(({published}) => published).map(({slug}) => slug);
   assert.ok(publishedRoutes.includes(ROUTE));

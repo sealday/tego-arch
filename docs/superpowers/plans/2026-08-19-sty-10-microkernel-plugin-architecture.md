@@ -421,13 +421,13 @@
 
 - [ ] **Step 4: Collect exact candidate IAB evidence**
 
-  Build and serve the exact candidate. Use in-app Browser only. Collect four states in this exact order: `desktopLight`, `desktopDark`, `mobileLight`, `mobileDark`; exact viewports `1440×1000` and `390×844`. For every state record page geometry, exact three wrapper labels/client/scroll widths, focus/`:focus-visible`/3px outline, ArrowRight before/after, four exact relation href→H1→return records, five exact remote href/target/rel records, SVG loaded/intrinsic/rendered dimensions, STY-11 zero, warnings/errors, Runtime/Log events, `hasMore=false`, `truncated=false`.
+  Build and serve the exact candidate. Use in-app Browser only. Collect four states in this exact order: `desktopLight`, `desktopDark`, `mobileLight`, `mobileDark`; exact viewports `1440×1000` and `390×844`. For every state record page geometry, exact three wrapper labels/client/scroll widths, focus/`:focus-visible`/3px outline, ArrowRight before/after, five exact relation href→H1→return records (STY-04, STY-05, PR-09, PR-12 and `/cases/micro-frontends-single-spa`), five exact remote href/target/rel records, SVG loaded/intrinsic/rendered dimensions, STY-11 zero, warnings/errors, Runtime/Log events, `hasMore=false`, `truncated=false`.
 
   Capture exactly three fresh full-page screenshots: desktop light, desktop dark, mobile light. Inspect original bytes. If repeated, cropped, blank or missing diagram coverage, mark each `CAPTURED_REJECTED` and overall `BLOCKED / NOT_ACCEPTED`; do not take a fourth screenshot.
 
 - [ ] **Step 5: Bind raw bytes and semantic mutations**
 
-  Track the JSON at `LOCAL_RAW`. Fix its byte length/SHA and candidate head in the test and review. Parse bytes rather than trusting Markdown counts. Assert exact state order, wrapper labels/geometries, interaction deltas, four relation maps, five source URLs, SVG `2400×3900` intrinsic ratio rendered at `800×1300`, diagnostics and all three screenshot attempts.
+  Track the JSON at `LOCAL_RAW`. Fix its byte length/SHA and candidate head in the test and review. Parse bytes rather than trusting Markdown counts. Assert exact state order, wrapper labels/geometries, interaction deltas, five relation maps (20 destination/H1/return observations across four states), five source URLs, SVG `2400×3900` intrinsic ratio rendered at `800×1300`, diagnostics and all three screenshot attempts.
 
   Add non-no-op mutations for wrong head/raw hash, duplicate/swap wrapper, changed client/scroll width, missing focus-visible/outline, changed delta, fabricated relation/H1, changed source, unloaded/resized SVG, STY-11 fabrication, truncated diagnostics, deleted/changed screenshot attempt and visual PASS.
 
@@ -513,7 +513,7 @@
 
 - [ ] **Step 5: TDD-bind production identity and semantics**
 
-  Add RED assertions for missing production review/raw. Then bind exact implementation head, run/build/deploy IDs, nine routes, SVG bytes/SHA, 4 states, 12 interactions, 16 relation checks, 20 source checks, SVG dimensions, STY-11 zero, diagnostics and three screenshot attempts. Add semantic and additive mutations for every group plus fabricated deployment/visual PASS.
+  Add RED assertions for missing production review/raw. Then bind exact implementation head, run/build/deploy IDs, nine routes, SVG bytes/SHA, 4 states, 12 interactions, 20 relation destination/H1/return checks, 20 source checks, SVG dimensions, STY-11 zero, diagnostics and three screenshot attempts. Add semantic and additive mutations for every group plus fabricated deployment/visual PASS.
 
 - [ ] **Step 6: Verify, commit and publish evidence only**
 
@@ -653,7 +653,7 @@
 
 - [ ] **Step 3: Collect fresh Stage B IAB evidence**
 
-  Do not reuse Stage A raw, screenshots or Browser state. Select the in-app Browser explicitly and collect four exact viewport/theme states, 12 wrapper interactions, 16 relation destination/H1/returns, 20 source href/target/rel checks, SVG intrinsic/rendered dimensions, STY-11 zero, and complete empty logs/runtime diagnostics. Capture exactly three fresh full-page screenshots and inspect original bytes; record `BLOCKED / NOT_ACCEPTED` if coverage repeats or omits the diagram. Do not fall back to Chrome or external Playwright.
+  Do not reuse Stage A raw, screenshots or Browser state. Select the in-app Browser explicitly and collect four exact viewport/theme states, 12 wrapper interactions, 20 relation destination/H1/returns across the exact five relations, 20 source href/target/rel checks, SVG intrinsic/rendered dimensions, STY-11 zero, and complete empty logs/runtime diagnostics. Capture exactly three fresh full-page screenshots and inspect original bytes; record `BLOCKED / NOT_ACCEPTED` if coverage repeats or omits the diagram. Do not fall back to Chrome or external Playwright.
 
 - [ ] **Step 4: TDD-bind the closed production contract**
 
@@ -702,7 +702,7 @@
 
 - [ ] **Perform a read-only end-to-end audit**
 
-  Audit the design parent through the final evidence head. Require zero code/spec/security, content/evidence/rights and architecture/invariant findings. Confirm every design section is implemented and mutation-bound: exact metadata/headings, three wrappers, dual-plane controls and execution, out-of-process trust boundary, capability negotiation, asymmetric failure policy, lifecycle sequence, governance/failure tables, prohibitions/migration, source rights, editable diagram parity, responsive keyboard behavior, Stage A/B identities and honest screenshot status.
+  Audit the design parent through the final evidence head. Require zero code/spec/security, content/evidence/rights and architecture/invariant findings. Confirm every design section is implemented and mutation-bound: exact metadata/headings, three wrappers, dual-plane controls and execution, out-of-process trust boundary, capability negotiation, asymmetric failure policy, lifecycle sequence, governance/failure tables, prohibitions/migration, source rights, the exact five-relation set with 20 four-state destination/H1/return observations, editable diagram parity, responsive keyboard behavior, Stage A/B identities and honest screenshot status.
 
 - [ ] **Accept completion only when all release invariants hold**
 

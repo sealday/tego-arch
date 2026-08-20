@@ -53,11 +53,11 @@ test('retains the published corpus and closes the deployed topic', () => {
     },
     {
       completed_topics: 62,
-      content_documents: 105,
-      governed_sources: 544,
+      content_documents: 106,
+      governed_sources: 550,
     },
   );
-  assert.equal(publicLedger.sources.length, 544);
+  assert.equal(publicLedger.sources.length, 550);
 
 });
 

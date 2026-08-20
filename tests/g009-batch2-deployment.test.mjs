@@ -296,8 +296,8 @@ test('preserves the STY-01 closure under the current STY-10 next-topic projectio
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
     completed_topics: 62,
-    content_documents: 105,
-    governed_sources: 544,
+    content_documents: 106,
+    governed_sources: 550,
 
     sources: {
       durable_stories: 'docs/content-backlog.md',
@@ -306,7 +306,7 @@ test('preserves the STY-01 closure under the current STY-10 next-topic projectio
       governed_sources: 'data/source-ledger.json',
     },
   });
-  assert.equal(sourceLedger.sources.length, 544);
+  assert.equal(sourceLedger.sources.length, 550);
 
 });
 

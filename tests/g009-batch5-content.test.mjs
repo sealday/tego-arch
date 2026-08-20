@@ -83,8 +83,8 @@ const SOURCE_CONTRACTS = [
     usageBoundary: 'Original teaching illustration of module contracts, authoritative data ownership, local transaction coupling, post-commit payment and publication recovery, consumer deduplication, and shared deployment failure scope; it is illustration-only and does not establish factual claims or represent a production implementation.',
   },
 ];
-const ADJACENT_TOPICS = ['STY-01', 'STY-02', 'STY-03', 'STY-05', 'STY-06', 'STY-07'];
-const ADJACENT_ROUTES = ['/styles/sty-01', '/styles/sty-02', '/styles/sty-03', '/styles/sty-05', '/styles/sty-07'];
+const ADJACENT_TOPICS = ['STY-01', 'STY-02', 'STY-03', 'STY-05', 'STY-06', 'STY-07', 'STY-10'];
+const ADJACENT_ROUTES = ['/styles/sty-01', '/styles/sty-02', '/styles/sty-03', '/styles/sty-05', '/styles/sty-07', '/styles/sty-10'];
 const MODULES = ['order', 'inventory', 'payment', 'notification'];
 const MEASURED_HEADER_NODES = [
   'deployment-boundary',
@@ -933,9 +933,9 @@ test('preserves the topic closure under the current STY-10 next-topic projection
   assert.equal(nextStyleIndexEntry?.published, true);
   assert.equal(nextStyleIndexEntry?.status.value, 'complete');
   assert.equal(projectStatus.completed_topics, 62);
-  assert.equal(projectStatus.content_documents, 105);
-  assert.equal(projectStatus.governed_sources, 544);
-  assert.equal(publicLedger.sources.length, 544);
+  assert.equal(projectStatus.content_documents, 106);
+  assert.equal(projectStatus.governed_sources, 550);
+  assert.equal(publicLedger.sources.length, 550);
 
 });
 

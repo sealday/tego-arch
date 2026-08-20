@@ -2620,6 +2620,40 @@
       "health_checks": []
     },
     {
+      "id": "src-atlas-sty10-microkernel-order-plugins",
+      "canonical_locator": "/img/diagrams/sty-10-microkernel-order-plugins.svg",
+      "transport_locator": "/img/diagrams/sty-10-microkernel-order-plugins.svg",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "订单平台双平面微内核与进程外插件图",
+      "author_or_org": "Tego Arch maintainers",
+      "published_at": "2026-08-19",
+      "registered_at": "2026-08-19",
+      "checked_at": "2026-08-19",
+      "version": "Original synchronized Draw.io/SVG pair authored and checked on 2026-08-19",
+      "source_kind": "original-illustration",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "illustration"
+      ],
+      "license": "LicenseRef-Atlas-Original",
+      "license_scope": "The named project-authored sty-10-microkernel-order-plugins.svg asset only",
+      "license_evidence_url": "https://github.com/sealday/tego-arch/blob/main/static/img/diagrams/sty-10-microkernel-order-plugins.svg",
+      "license_evidence_note": "The project-authored Draw.io/SVG pair contains no third-party topology, reference image, brand visual, signature, watermark, or copied composition.",
+      "license_family_id": "/img/diagrams/sty-10-microkernel-order-plugins.svg",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "original-atlas",
+      "usage_boundary": "Original teaching topology for an order microkernel, control plane, controlled invocation gateway and process-isolated plug-ins; illustration-only and not evidence of production outcomes.",
+      "link_policy": null,
+      "expected_final_transport_locator": "/img/diagrams/sty-10-microkernel-order-plugins.svg",
+      "expected_final_approved_at": "2026-08-19",
+      "expected_final_approval_note": "Approved project-local original illustration after synchronized Draw.io/SVG semantic, geometry, contrast and raster QA.",
+      "health_summary": "healthy",
+      "health_checks": []
+    },
+    {
       "id": "src-aws-0ccf50a7d52b",
       "canonical_locator": "https://aws.amazon.com/blogs/architecture/shuffle-sharding-massive-and-magical-fault-isolation/",
       "transport_locator": "https://aws.amazon.com/blogs/architecture/shuffle-sharding-massive-and-magical-fault-isolation/",
@@ -9169,6 +9203,50 @@
           "last_success_at": "2026-08-14T04:46:31.833Z",
           "http_status": 403,
           "final_transport_locator": "https://dl.acm.org/doi/10.1145/38713.38742"
+        }
+      ]
+    },
+    {
+      "id": "src-eclipse-plugin-architecture",
+      "canonical_locator": "https://www.eclipse.org/articles/Article-Plug-in-architecture/plugin_architecture.html",
+      "transport_locator": "https://www.eclipse.org/articles/Article-Plug-in-architecture/plugin_architecture.html",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Notes on the Eclipse Plug-in Architecture",
+      "author_or_org": "Azad Bolour / Bolour Computing / Eclipse Corner",
+      "published_at": "2003-07-03",
+      "registered_at": "2026-08-19",
+      "checked_at": "2026-08-19",
+      "version": "Eclipse Corner article dated 2003-07-03; checked 2026-08-19",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "historical-context"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named Eclipse Corner article and bibliographic facts only; prose, source excerpts, diagrams, examples, linked works, marks, and third-party material excluded",
+      "license_evidence_url": "https://www.eclipse.org/articles/Article-Plug-in-architecture/plugin_architecture.html",
+      "license_evidence_note": "The checked article identifies Copyright © 2003 Bolour Computing and exposes no reusable license; Tego Arch retains attribution and uses an original factual summary only.",
+      "license_family_id": "https://www.eclipse.org/articles/Article-Plug-in-architecture/plugin_architecture.html",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports the historical relationship among core, host and extender plug-ins, manifests, a registry and extension points only; it does not support process isolation, security, or the original order-platform design.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://www.eclipse.org/articles/Article-Plug-in-architecture/plugin_architecture.html",
+      "expected_final_approved_at": "2026-08-19",
+      "expected_final_approval_note": "The original Eclipse Corner article returned HTTP 200 on 2026-08-19; publication date, copyright notice and absence of a reusable license were reviewed.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://www.eclipse.org/articles/Article-Plug-in-architecture/plugin_architecture.html",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-19T00:00:00.000Z",
+          "last_success_at": "2026-08-19T00:00:00.000Z",
+          "http_status": 200,
+          "final_transport_locator": "https://www.eclipse.org/articles/Article-Plug-in-architecture/plugin_architecture.html"
         }
       ]
     },
@@ -19803,6 +19881,50 @@
       ]
     },
     {
+      "id": "src-hashicorp-go-plugin",
+      "canonical_locator": "https://github.com/hashicorp/go-plugin",
+      "transport_locator": "https://raw.githubusercontent.com/hashicorp/go-plugin/dd3617ad0257b2e8fe63d5afe805b16a146c3ab9/README.md",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "go-plugin",
+      "author_or_org": "HashiCorp / IBM contributors",
+      "published_at": null,
+      "registered_at": "2026-08-19",
+      "checked_at": "2026-08-19",
+      "version": "hashicorp/go-plugin commit dd3617ad0257b2e8fe63d5afe805b16a146c3ab9",
+      "source_kind": "official-repository",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "implementation",
+        "runtime-fact"
+      ],
+      "license": "MPL-2.0",
+      "license_scope": "The hashicorp/go-plugin repository at commit dd3617ad0257b2e8fe63d5afe805b16a146c3ab9 under MPL-2.0; trademarks, linked works and third-party material excluded",
+      "license_evidence_url": "https://raw.githubusercontent.com/hashicorp/go-plugin/dd3617ad0257b2e8fe63d5afe805b16a146c3ab9/LICENSE",
+      "license_evidence_note": "The exact repository commit LICENSE contains Mozilla Public License Version 2.0; this article summarizes mechanisms without copying code, examples, prose or brand visuals.",
+      "license_family_id": "github:hashicorp/go-plugin",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports subprocess RPC or gRPC, protocol versioning, checksum or TLS options, local reliable-network assumptions and a process-crash boundary only; it does not prove remote-network behavior or a complete security sandbox.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://raw.githubusercontent.com/hashicorp/go-plugin/dd3617ad0257b2e8fe63d5afe805b16a146c3ab9/README.md",
+      "expected_final_approved_at": "2026-08-19",
+      "expected_final_approval_note": "The pinned README and same-commit MPL-2.0 LICENSE returned HTTP 200 on 2026-08-19; commit identity and mechanism limits were reviewed.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://raw.githubusercontent.com/hashicorp/go-plugin/dd3617ad0257b2e8fe63d5afe805b16a146c3ab9/README.md",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-19T00:00:00.000Z",
+          "last_success_at": "2026-08-19T00:00:00.000Z",
+          "http_status": 200,
+          "final_transport_locator": "https://raw.githubusercontent.com/hashicorp/go-plugin/dd3617ad0257b2e8fe63d5afe805b16a146c3ab9/README.md"
+        }
+      ]
+    },
+    {
       "id": "src-hbr-081d06c5edff",
       "canonical_locator": "https://hbr.org/2007/09/performing-a-project-premortem",
       "transport_locator": "https://hbr.org/2007/09/performing-a-project-premortem",
@@ -23798,6 +23920,92 @@
       ]
     },
     {
+      "id": "src-osgi-core-7-lifecycle",
+      "canonical_locator": "https://docs.osgi.org/specification/osgi.core/7.0.0/framework.lifecycle.html",
+      "transport_locator": "https://docs.osgi.org/specification/osgi.core/7.0.0/framework.lifecycle.html",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "OSGi Core Release 7: Life Cycle Layer",
+      "author_or_org": "OSGi Alliance",
+      "published_at": null,
+      "registered_at": "2026-08-19",
+      "checked_at": "2026-08-19",
+      "version": "OSGi Core Release 7, Life Cycle Layer Version 1.9",
+      "source_kind": "standard",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "runtime-fact"
+      ],
+      "license": "LicenseRef-Proprietary-Standard",
+      "license_scope": "The named OSGi Core Release 7 Life Cycle Layer and bibliographic facts only; normative prose, examples, diagrams, code, linked works, marks, and third-party material excluded",
+      "license_evidence_url": "https://docs.osgi.org/specification/osgi.core/7.0.0/",
+      "license_evidence_note": "The official OSGi Core Release 7 specification identifies the OSGi Specification License Version 2.0; Tego Arch uses attributed factual summary without adaptation or copied structure.",
+      "license_family_id": "https://docs.osgi.org/specification/osgi.core/7.0.0/framework.lifecycle.html",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports installation, start, stop, update, uninstall, lifecycle events and fine-grained permission context only; it does not require OSGi or prove order-platform behavior.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://docs.osgi.org/specification/osgi.core/7.0.0/framework.lifecycle.html",
+      "expected_final_approved_at": "2026-08-19",
+      "expected_final_approval_note": "The exact OSGi Core Release 7 lifecycle page returned HTTP 200 on 2026-08-19; release and Life Cycle Layer version were reviewed.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://docs.osgi.org/specification/osgi.core/7.0.0/framework.lifecycle.html",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-19T00:00:00.000Z",
+          "last_success_at": "2026-08-19T00:00:00.000Z",
+          "http_status": 200,
+          "final_transport_locator": "https://docs.osgi.org/specification/osgi.core/7.0.0/framework.lifecycle.html"
+        }
+      ]
+    },
+    {
+      "id": "src-osgi-semantic-versioning",
+      "canonical_locator": "https://docs.osgi.org/whitepaper/semantic-versioning/040-semantic-versions.html",
+      "transport_locator": "https://docs.osgi.org/whitepaper/semantic-versioning/040-semantic-versions.html",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Semantic Versioning",
+      "author_or_org": "OSGi Alliance",
+      "published_at": null,
+      "registered_at": "2026-08-19",
+      "checked_at": "2026-08-19",
+      "version": "OSGi Semantic Versioning whitepaper; checked 2026-08-19",
+      "source_kind": "standard",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "method"
+      ],
+      "license": "LicenseRef-Proprietary-Standard",
+      "license_scope": "The named OSGi Semantic Versioning whitepaper page and bibliographic facts only; prose, examples, diagrams, code, linked works, marks, and third-party material excluded",
+      "license_evidence_url": "https://docs.osgi.org/whitepaper/semantic-versioning/040-semantic-versions.html",
+      "license_evidence_note": "The official OSGi whitepaper page retains copyright and exposes no reusable page license; Tego Arch uses attribution and an original factual summary only.",
+      "license_family_id": "https://docs.osgi.org/whitepaper/semantic-versioning/040-semantic-versions.html",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports the distinction between exporter versions, importer ranges and compatibility commitments only; it does not prove behavioral or business compatibility.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://docs.osgi.org/whitepaper/semantic-versioning/040-semantic-versions.html",
+      "expected_final_approved_at": "2026-08-19",
+      "expected_final_approval_note": "The exact OSGi Semantic Versioning page returned HTTP 200 on 2026-08-19; page copyright and narrow method role were reviewed.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://docs.osgi.org/whitepaper/semantic-versioning/040-semantic-versions.html",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-19T00:00:00.000Z",
+          "last_success_at": "2026-08-19T00:00:00.000Z",
+          "http_status": 200,
+          "final_transport_locator": "https://docs.osgi.org/whitepaper/semantic-versioning/040-semantic-versions.html"
+        }
+      ]
+    },
+    {
       "id": "src-palermo-onion-architecture-part-1",
       "canonical_locator": "https://jeffreypalermo.com/2008/07/the-onion-architecture-part-1/",
       "transport_locator": "https://jeffreypalermo.com/2008/07/the-onion-architecture-part-1/",
@@ -26103,6 +26311,50 @@
           "last_success_at": "2026-08-14T04:46:31.833Z",
           "http_status": 206,
           "final_transport_locator": "https://www.thoughtworks.com/en-us/insights/articles/fitness-function-driven-development"
+        }
+      ]
+    },
+    {
+      "id": "src-vscode-extension-host",
+      "canonical_locator": "https://code.visualstudio.com/api/advanced-topics/extension-host",
+      "transport_locator": "https://raw.githubusercontent.com/microsoft/vscode-docs/dfa58f8fa332a514f01393202c705928f1d2f8f7/api/advanced-topics/extension-host.md",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Extension Host",
+      "author_or_org": "Microsoft",
+      "published_at": "2026-08-19",
+      "registered_at": "2026-08-19",
+      "checked_at": "2026-08-19",
+      "version": "microsoft/vscode-docs commit dfa58f8fa332a514f01393202c705928f1d2f8f7; DateApproved 2026-08-19",
+      "source_kind": "official-docs",
+      "tier": "first-party",
+      "allowed_evidence_roles": [
+        "implementation",
+        "comparison"
+      ],
+      "license": "CC-BY-3.0-US",
+      "license_scope": "The named vscode-docs Extension Host page at commit dfa58f8fa332a514f01393202c705928f1d2f8f7 under CC BY 3.0 US; code, trademarks, media, linked works and third-party material excluded",
+      "license_evidence_url": "https://raw.githubusercontent.com/microsoft/vscode-docs/dfa58f8fa332a514f01393202c705928f1d2f8f7/LICENSE.md",
+      "license_evidence_note": "The same-commit vscode-docs LICENSE.md applies Creative Commons Attribution 3.0 United States to the documentation; this article preserves attribution and uses an original factual summary only.",
+      "license_family_id": "https://code.visualstudio.com/api/advanced-topics/extension-host",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "adapt-with-attribution",
+      "usage_boundary": "Supports local, web and remote extension-host locations, capability-based placement and lazy activation only; it does not prove one process per extension, an order-platform design or a security guarantee.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://raw.githubusercontent.com/microsoft/vscode-docs/dfa58f8fa332a514f01393202c705928f1d2f8f7/api/advanced-topics/extension-host.md",
+      "expected_final_approved_at": "2026-08-19",
+      "expected_final_approval_note": "The pinned Extension Host source and same-commit CC-BY-3.0-US license returned HTTP 200 on 2026-08-19; commit, DateApproved and usage scope were reviewed.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://raw.githubusercontent.com/microsoft/vscode-docs/dfa58f8fa332a514f01393202c705928f1d2f8f7/api/advanced-topics/extension-host.md",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-19T00:00:00.000Z",
+          "last_success_at": "2026-08-19T00:00:00.000Z",
+          "http_status": 200,
+          "final_transport_locator": "https://raw.githubusercontent.com/microsoft/vscode-docs/dfa58f8fa332a514f01393202c705928f1d2f8f7/api/advanced-topics/extension-host.md"
         }
       ]
     },
@@ -37325,6 +37577,100 @@
           "manifest_primary": false,
           "usage_mode": "facts-summary",
           "attribution_note": "Reactive Streams for the JVM 1.0.4, Reactive Streams Initiative",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/styles/sty-10-microkernel-plugin-architecture.mdx": {
+      "title": "Microkernel / Plug-in Architecture：让扩展能力可替换，也让风险止步于边界",
+      "slug": "/styles/sty-10",
+      "reviewed_at": "2026-08-19",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-atlas-sty10-microkernel-order-plugins",
+          "citation_url": "/img/diagrams/sty-10-microkernel-order-plugins.svg",
+          "roles": [
+            "illustration"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "original-illustration",
+          "attribution_note": "订单平台双平面微内核与进程外插件图，Tego Arch maintainers",
+          "modification_note": "Created as an original synchronized Draw.io/SVG pair without third-party topology, reference imagery, brand visuals, signatures, watermarks, or copied composition.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-eclipse-plugin-architecture",
+          "citation_url": "https://www.eclipse.org/articles/Article-Plug-in-architecture/plugin_architecture.html",
+          "roles": [
+            "definition",
+            "historical-context"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Notes on the Eclipse Plug-in Architecture, Azad Bolour / Bolour Computing / Eclipse Corner",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-hashicorp-go-plugin",
+          "citation_url": "https://github.com/hashicorp/go-plugin",
+          "roles": [
+            "implementation",
+            "runtime-fact"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "go-plugin, HashiCorp / IBM contributors",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-osgi-core-7-lifecycle",
+          "citation_url": "https://docs.osgi.org/specification/osgi.core/7.0.0/framework.lifecycle.html",
+          "roles": [
+            "runtime-fact"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "OSGi Core Release 7: Life Cycle Layer, OSGi Alliance",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-osgi-semantic-versioning",
+          "citation_url": "https://docs.osgi.org/whitepaper/semantic-versioning/040-semantic-versions.html",
+          "roles": [
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Semantic Versioning whitepaper, OSGi Alliance",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-vscode-extension-host",
+          "citation_url": "https://code.visualstudio.com/api/advanced-topics/extension-host",
+          "roles": [
+            "implementation",
+            "comparison"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Extension Host, Microsoft Visual Studio Code documentation",
           "modification_note": null,
           "excerpt": null,
           "quotation_reviewed": false

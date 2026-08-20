@@ -1671,7 +1671,8 @@
         "STY-03",
         "STY-05",
         "STY-06",
-        "STY-07"
+        "STY-07",
+        "STY-10"
       ],
       "primary_sources": [
         "https://docs.spring.io/spring-modulith/reference/fundamentals.html"
@@ -1948,7 +1949,8 @@
         "STY-06",
         "STY-07",
         "STY-08",
-        "STY-09"
+        "STY-09",
+        "STY-10"
       ],
       "primary_sources": [
         "https://martinfowler.com/articles/microservices.html"
@@ -3795,27 +3797,6 @@
       "pattern_group": "reliability"
     },
     {
-      "id": "STY-10",
-      "type": "style",
-      "title": "Microkernel / Plug-in Architecture",
-      "slug": "/styles/sty-10",
-      "priority": "P1",
-      "status": {
-        "scope": "backlog-projection",
-        "value": "pending",
-        "source": "docs/content-backlog.md"
-      },
-      "dependencies": [],
-      "adjacent_topics": [],
-      "primary_sources": [],
-      "related_cases": [],
-      "related_questions": [],
-      "reviewed_at": null,
-      "review_policy": null,
-      "published": false,
-      "pattern_group": null
-    },
-    {
       "id": "STY-11",
       "type": "style",
       "title": "Serverless Architecture",
@@ -4429,6 +4410,39 @@
       ],
       "related_questions": [],
       "reviewed_at": "2026-08-14",
+      "review_policy": null,
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
+    },
+    {
+      "id": "STY-10",
+      "type": "style",
+      "title": "Microkernel / Plug-in Architecture：让扩展能力可替换，也让风险止步于边界",
+      "slug": "/styles/sty-10",
+      "priority": "P1",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "pending",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "STY-00",
+        "STY-04",
+        "STY-05"
+      ],
+      "adjacent_topics": [
+        "STY-04",
+        "STY-05"
+      ],
+      "primary_sources": [
+        "https://www.eclipse.org/articles/Article-Plug-in-architecture/plugin_architecture.html"
+      ],
+      "related_cases": [
+        "/cases/micro-frontends-single-spa"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-08-19",
       "review_policy": null,
       "published": true,
       "pattern_group": null,

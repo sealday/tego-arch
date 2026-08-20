@@ -48,6 +48,8 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 
 # Microkernel / Plug-in Architecture：让扩展能力可替换，也让风险止步于边界
 
+从[架构风格目录](/styles)可以返回同类主题入口。
+
 稳定宿主与受控扩展之间的冲突，决定了 Microkernel / Plug-in Architecture 是否成立。插件可以替换能力，但不能顺势取得订单状态、提交或补偿的所有权。扩展性来自宿主拥有的窄扩展点，不来自把内部函数全部开放。
 
 进程外执行只提供进程故障边界，不自动形成安全沙箱。身份、来源、网络、文件、凭证和资源仍要分别约束；插件声明需求不决定授权，声明也不能绕过控制面的门禁。
