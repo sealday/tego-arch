@@ -216,13 +216,13 @@ function g009Batch2AndOlderHistory(source) {
 
 function assertBacklog(source) {
   const liveBaseline = currentReleaseBaseline(source);
-  const liveParts = liveBaseline.split('此前 G009 Batch 9 历史完成基线为：');
-  assert.equal(liveParts.length, 2, 'one immutable Batch 9 history boundary');
+  const liveParts = liveBaseline.split('此前 G009 Batch 10 历史完成基线为：');
+  assert.equal(liveParts.length, 2, 'split live Batch 11 prefix from immutable Batch 10 history');
   const [livePrefix] = liveParts;
-  assert.match(livePrefix, /^- \*\*当前发布基线：\*\* 2026-08-17 G009 Batch 10 已完成 STY-09/u);
-  assert.match(livePrefix, /Stage B local closure projection 为 62 个已完成主题、105 篇内容文档与 544 个受治理来源/u);
-  assert.match(livePrefix, /下一项为 STY-10/u);
-  assert.doesNotMatch(livePrefix, /下一项为 STY-09/u);
+  assert.match(livePrefix, /^- \*\*当前发布基线：\*\* 2026-08-20 G009 Batch 11 已完成 STY-10/u);
+  assert.match(livePrefix, /Stage B local closure projection 为 63 个已完成主题、106 篇内容文档与 550 个受治理来源/u);
+  assert.match(livePrefix, /下一项为 STY-11/u);
+  assert.doesNotMatch(livePrefix, /下一项为 STY-10/u);
   assert.equal(liveBaseline.split(batch3HistoryMarker).length - 1, 1);
   const segment = currentG009Batch3Baseline(source);
   assert.equal(segment, expectedCurrentBaseline);
@@ -332,7 +332,7 @@ test('preserves STY-02 closure under the current STY-10 next-topic projection', 
   assert.deepEqual(status, {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
-    completed_topics: 62,
+    completed_topics: 63,
     content_documents: 106,
     governed_sources: 550,
 

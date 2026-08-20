@@ -71,6 +71,7 @@ const PRODUCTION_SVG = Object.freeze({
 const IMMEDIATE_REVIEW_HASH = 'f7d0aba59dd69d6479bbfbdb6f9f3cf1befadcf076c44ff5f97f31d6452778ed';
 const IMMEDIATE_BACKLOG_SUFFIX_HASH = '3a8d6ccda815614132a33ca8ec2c0dca286628c20900d9e32a4403f0ffd56c6b';
 const IMMEDIATE_BACKLOG_MARKER = '此前 G009 Batch 9 历史完成基线为：';
+const LIVE_BATCH11_HISTORY_MARKER = '此前 G009 Batch 10 历史完成基线为：';
 const STABLE_ARTIFACT_HASHES = new Map([
   [ARTICLE, '1dcf55ace2a6b8f30da94e81d36d9f79a16db400bc419c35318cc8dbe8eba7b6'],
   [DRAWIO, '36da252d3fe71b1f0c3df6db5a887677b83def7ee11f542f938c9d3027fbf97c'],
@@ -204,30 +205,45 @@ function currentReleaseBaseline(source) {
 function assertStageBImmediateHistory(reviewBytes = immediateReviewBytes, backlogSource = backlog) {
   assert.equal(sha256(reviewBytes), IMMEDIATE_REVIEW_HASH, `${IMMEDIATE_REVIEW} complete immutable bytes`);
   const baseline = currentReleaseBaseline(backlogSource);
-  assert.ok(baseline.startsWith(CURRENT_BASELINE_PREFIX + IMMEDIATE_BACKLOG_MARKER), 'exact current Batch 10 prefix');
-  const suffix = baseline.slice((CURRENT_BASELINE_PREFIX + IMMEDIATE_BACKLOG_MARKER).length);
+  const liveParts = baseline.split(LIVE_BATCH11_HISTORY_MARKER);
+  assert.equal(liveParts.length, 2, 'split live Batch 11 prefix from immutable Batch 10 history');
+  const [livePrefix, batch10History] = liveParts;
+  for (const literal of [
+    '2026-08-20 G009 Batch 11 已完成 STY-10',
+    'Stage B local closure projection 为 63 个已完成主题、106 篇内容文档与 550 个受治理来源',
+    '当前 G009，下一项为 STY-11',
+    'STY-10 为 published/complete',
+    'STY-11 为 unpublished/pending/nonactionable',
+    'deployment status 为 `PENDING / NOT_RUN`',
+  ]) assert.ok(livePrefix.includes(literal), `live Batch 11 literal: ${literal}`);
+  assert.doesNotMatch(livePrefix, /下一项为 STY-10/u);
+  assert.ok(batch10History.startsWith(CURRENT_BASELINE_PREFIX + IMMEDIATE_BACKLOG_MARKER), 'exact historical Batch 10 prefix');
+  const suffix = batch10History.slice((CURRENT_BASELINE_PREFIX + IMMEDIATE_BACKLOG_MARKER).length);
   assert.match(suffix, /^2026-08-16 G009 Batch 9 已完成 STY-08/u);
   assert.equal(sha256(suffix), IMMEDIATE_BACKLOG_SUFFIX_HASH, 'complete immediate STY-08 backlog suffix');
 }
 function assertStageBBacklog(source = backlog) {
   const sty09 = source.split(/\r?\n/u).filter((line) => /^- \[[ x]\] \*\*STY-09 /u.test(line));
   const sty10 = source.split(/\r?\n/u).filter((line) => /^- \[[ x]\] \*\*STY-10 /u.test(line));
+  const sty11 = source.split(/\r?\n/u).filter((line) => /^- \[[ x]\] \*\*STY-11 /u.test(line));
   assert.deepEqual(sty09, [STY09_CLOSURE_LINE]);
   assert.equal(sty10.length, 1, 'one canonical STY-10 backlog line');
-  assert.match(sty10[0], /^- \[ \] \*\*STY-10 /u);
-  assert.doesNotMatch(source, /\]\(\/styles\/sty-10\)/u);
+  assert.match(sty10[0], /^- \[x\] \*\*STY-10 /u);
+  assert.equal(sty11.length, 1, 'one canonical STY-11 backlog line');
+  assert.match(sty11[0], /^- \[ \] \*\*STY-11 /u);
+  assert.doesNotMatch(source, /\]\(\/styles\/sty-11\)/u);
   assertStageBImmediateHistory(immediateReviewBytes, source);
 }
 function assertStageBProjection() {
   assert.deepEqual(
     {completed: status.completed_topics, documents: status.content_documents, sources: status.governed_sources},
-    {completed: 62, documents: 106, sources: 550},
+    {completed: 63, documents: 106, sources: 550},
   );
   assert.equal(publicLedger.sources.length, 550);
   const topics = new Map(manifest.topics.map((topic) => [topic.id, topic]));
   const styles = new Map(indexes.style.map((topic) => [topic.id, topic]));
   assert.deepEqual([topics.get('STY-09')?.published, topics.get('STY-09')?.status.value, styles.get('STY-09')?.published], [true, 'complete', true]);
-  assert.deepEqual([topics.get('STY-10')?.published, topics.get('STY-10')?.status.value, styles.get('STY-10')?.published], [true, 'pending', true]);
+  assert.deepEqual([topics.get('STY-10')?.published, topics.get('STY-10')?.status.value, styles.get('STY-10')?.published], [true, 'complete', true]);
   assert.deepEqual([topics.get('STY-11')?.published, topics.get('STY-11')?.status.value, styles.get('STY-11')?.published], [false, 'pending', false]);
 }
 function assertPendingStageBReview(source = review) {
@@ -489,17 +505,18 @@ test('locks complete immediate STY-08 review and backlog suffix with mutation se
     assert.throws(() => assertStageBImmediateHistory(changedReview), assert.AssertionError);
   }
   const baseline = currentReleaseBaseline(backlog);
-  const suffix = baseline.slice((CURRENT_BASELINE_PREFIX + IMMEDIATE_BACKLOG_MARKER).length);
+  const batch10History = baseline.split(LIVE_BATCH11_HISTORY_MARKER)[1];
+  const suffix = batch10History.slice((CURRENT_BASELINE_PREFIX + IMMEDIATE_BACKLOG_MARKER).length);
   for (const changedSuffix of [`${suffix}x`, suffix.slice(0, -1)]) {
     const changedBacklog = backlog.replace(suffix, changedSuffix);
     assert.throws(() => assertStageBImmediateHistory(immediateReviewBytes, changedBacklog), assert.AssertionError);
   }
-  const changedCurrentSty10 = backlog.replace('- [ ] **STY-10 ', '- [x] **STY-10 ');
-  assert.notEqual(changedCurrentSty10, backlog, 'current STY-10 mutation applies');
-  assert.throws(() => assertStageBBacklog(changedCurrentSty10), assert.AssertionError);
+  const staleCurrentNext = backlog.replace('下一项为 STY-11', '下一项为 STY-10');
+  assert.notEqual(staleCurrentNext, backlog, 'current next-topic mutation applies');
+  assert.throws(() => assertStageBBacklog(staleCurrentNext), assert.AssertionError);
 });
 
-test('projects canonical STY-09 history while current STY-10 is published/pending and STY-11 is non-actionable', async () => {
+test('preserves canonical STY-09 history while current STY-10 is complete and STY-11 is pending non-actionable', async () => {
   assertStageBProjection();
   assertStageBBacklog();
   await assertSty11NonActionable();
@@ -662,7 +679,7 @@ test('closes only STY-09 from exact Stage A production evidence and preserves co
   assertStageBBacklog();
 });
 
-test('projects STY-09 complete with STY-10 published/pending and STY-11 unpublished/non-actionable', async () => {
+test('projects STY-09 and STY-10 complete with STY-11 unpublished/non-actionable', async () => {
   assertStageBProjection();
   await assertSty11NonActionable();
 });

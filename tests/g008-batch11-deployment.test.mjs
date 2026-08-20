@@ -54,7 +54,7 @@ const expectedReviewSections = [
 ];
 
 const expectedProjection = {
-  completed_topics: 62,
+  completed_topics: 63,
   content_documents: 106,
   governed_sources: 550,
 
@@ -241,13 +241,13 @@ function assertBacklog(source) {
   assert.equal(segment.split('下一项为 STY-00').length - 1, 1);
   assert.match(
     currentReleaseBaseline(source),
-    /^- \*\*当前发布基线：\*\* 2026-08-17 G009 Batch 10 已完成 STY-09/u,
+    /^- \*\*当前发布基线：\*\* 2026-08-20 G009 Batch 11 已完成 STY-10/u,
   );
-  const liveParts = currentReleaseBaseline(source).split('此前 G009 Batch 9 历史完成基线为：');
-  assert.equal(liveParts.length, 2, 'one immutable Batch 9 history boundary');
+  const liveParts = currentReleaseBaseline(source).split('此前 G009 Batch 10 历史完成基线为：');
+  assert.equal(liveParts.length, 2, 'split live Batch 11 prefix from immutable Batch 10 history');
   const [livePrefix] = liveParts;
-  assert.match(livePrefix, /当前 G009，下一项为 STY-10/u);
-  assert.doesNotMatch(livePrefix, /下一项为 STY-09/u);
+  assert.match(livePrefix, /当前 G009，下一项为 STY-11/u);
+  assert.doesNotMatch(livePrefix, /下一项为 STY-10/u);
 }
 
 function assertGeneratedState(manifestValue, statusValue) {
@@ -309,7 +309,7 @@ test('rejects reordered extra or contradictory review content', () => {
   }
 });
 
-test('preserves G008 Batch 11 closure under the current STY-10 next-topic projection', () => {
+test('preserves G008 Batch 11 closure under the current STY-11 next-topic projection', () => {
   assertBacklog(backlog);
   assertGeneratedState(manifest, projectStatus);
 });
@@ -329,7 +329,7 @@ test('rejects every backlog evidence identity count state and history mutation',
     backlog.replace('- [x] **MOD-13 ', '- [ ] **MOD-13 '),
     backlog.replace('- [x] **STY-00 ', '- [ ] **STY-00 '),
     backlog.replace('- **当前持久故事：** `G009`。', '- **当前持久故事：** `G008`。'),
-    backlog.replace('下一项为 STY-10', '下一项为 STY-09'),
+    backlog.replace('下一项为 STY-11', '下一项为 STY-10'),
   ]) {
     assert.notEqual(mutation, backlog, 'backlog mutation must change source');
     assert.throws(() => assertBacklog(mutation));

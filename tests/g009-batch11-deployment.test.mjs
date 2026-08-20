@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {readFile} from 'node:fs/promises';
 import test from 'node:test';
@@ -7,11 +8,16 @@ import {readContentDocuments} from '../scripts/content-metadata.mjs';
 import {extractInternalLinks} from '../scripts/content-relations.mjs';
 
 export const EXPECTED_STAGE_A = Object.freeze({completed: 62, documents: 106, sources: 550});
+export const EXPECTED_STAGE_B = Object.freeze({completed: 63, documents: 106, sources: 550});
 export const CURRENT_TOPIC = 'STY-10';
 export const NEXT_TOPIC = 'STY-11';
 export const REVIEW = 'docs/reviews/g009-batch11.md';
 export const LOCAL_RAW = 'docs/reviews/evidence/g009-batch11-stage-a-browser.json';
 export const PRODUCTION_RAW = 'docs/reviews/evidence/g009-batch11-stage-a-production-browser.json';
+const ARTICLE = 'content/styles/sty-10-microkernel-plugin-architecture.mdx';
+const LEDGER = 'data/source-ledger.json';
+const DRAWIO = 'diagrams/sty-10-microkernel-order-plugins.drawio';
+const SVG = 'static/img/diagrams/sty-10-microkernel-order-plugins.svg';
 
 const IMPLEMENTATION_HEAD = 'f2cdebb413c7cd96fcb630579c82f0f3b6199983';
 const EVIDENCE_HEAD = 'c9a0deaea262fd802a5ad151f70818a314da1fe4';
@@ -121,6 +127,42 @@ const IMMEDIATE_REVIEW = 'docs/reviews/g009-batch10.md';
 const BACKLOG = 'docs/content-backlog.md';
 const IMMEDIATE_REVIEW_HASH = '69ba4168aa672413d1ed1251365b04f0a85c84eb5aa23d49cc38534d9252337f';
 const IMMEDIATE_BACKLOG_SUFFIX_HASH = 'cd2fadcfbf44800645ca45b6e2b610f38b9af775bb22cef41225bc91dcfdbee5';
+const IMMEDIATE_BACKLOG_MARKER = '此前 G009 Batch 10 历史完成基线为：';
+const STABLE_IDENTITIES = new Map([
+  [ARTICLE, [22_961, 'd106eb2c3b40b34aaa73e50b59ed41f644b5641f50c25790bbefa4a73d1e3e34']],
+  [LEDGER, [1_616_387, '92a69680ec25d8c02326e26bb8217354908e8f1c465dc88decf98d97e7912691']],
+  [DRAWIO, [40_844, '59678250b3e4046f9eb834f54b09002d2d13a070528ddc8f5303eaa5475dbdcd']],
+  [SVG, [20_285, '69080badd0f6500f24b59f4045463c65e17669659da77616ee4520bd4d2c802c']],
+  [LOCAL_RAW, [RAW_BROWSER_BYTES, RAW_BROWSER_HASH]],
+  [PRODUCTION_RAW, [PRODUCTION_RAW_BYTES, PRODUCTION_RAW_HASH]],
+]);
+const STY10_CLOSURE_LINE = `- [x] **STY-10 P1｜Microkernel / Plug-in Architecture**：扩展点、兼容性和插件隔离。Stage A 关闭证据：2026-08-20 review，commit [\`${READY_HEAD}\`](https://github.com/sealday/tego-arch/commit/${READY_HEAD})，Pages run [\`${PRODUCTION_PAGES.runId}\`](https://github.com/sealday/tego-arch/actions/runs/${PRODUCTION_PAGES.runId})，build job \`${PRODUCTION_PAGES.buildJobId}\`、deploy job \`${PRODUCTION_PAGES.deployJobId}\`，production HTML routes \`9/9\`，live route \`/styles/sty-10\` 与 \`/img/diagrams/sty-10-microkernel-order-plugins.svg\` 均为 HTTP 200，live SVG SHA-256 \`${PRODUCTION_SVG.sha256}\` 与 reviewed asset exact match，Stage A production Browser raw \`${PRODUCTION_RAW_BYTES.toLocaleString('en-US')}\` bytes / SHA-256 \`${PRODUCTION_RAW_HASH}\`，functional verdict PASS；screenshot evidence BLOCKED / NOT_ACCEPTED。`;
+const CURRENT_BASELINE_PREFIX = `2026-08-20 G009 Batch 11 已完成 STY-10，Stage A 发布基线为 [\`${READY_HEAD}\`](https://github.com/sealday/tego-arch/commit/${READY_HEAD})，Pages run [\`${PRODUCTION_PAGES.runId}\`](https://github.com/sealday/tego-arch/actions/runs/${PRODUCTION_PAGES.runId})，exact \`headSha=${READY_HEAD}\`、\`event=push\`、\`status=completed\`、\`conclusion=success\`，build job \`${PRODUCTION_PAGES.buildJobId}\`、deploy job \`${PRODUCTION_PAGES.deployJobId}\`；2026-08-20 production HTTP probes \`9/9\`，live route \`/styles/sty-10\` 与 \`/img/diagrams/sty-10-microkernel-order-plugins.svg\` 均为 HTTP \`200\`，live SVG SHA-256 \`${PRODUCTION_SVG.sha256}\` 与 reviewed asset exact match。Production Browser states \`4/4\`、wrapper interactions \`12/12\`、relation destination/H1/return \`20/20\`、exact source destinations \`20/20\`，每个状态 STY-11 actionable count \`0\` 且 diagnostics 完整为零；raw \`${PRODUCTION_RAW}\` 为 \`${PRODUCTION_RAW_BYTES.toLocaleString('en-US')}\` bytes / SHA-256 \`${PRODUCTION_RAW_HASH}\`，Stage A production functional verdict \`PASS\`，screenshot evidence \`BLOCKED / NOT_ACCEPTED\`。Stage B local closure projection 为 63 个已完成主题、106 篇内容文档与 550 个受治理来源，持久故事进度仍为 \`8 / 20\`，当前 G009，下一项为 STY-11，STY-10 为 published/complete，STY-11 为 unpublished/pending/nonactionable；Stage B 三个独立 review slots 与 final readiness 均为 \`PENDING\`，deployment status 为 \`PENDING / NOT_RUN\`。`;
+const PENDING_STAGE_B_REVIEW_LINES = Object.freeze([
+  '- Closure date: `2026-08-20`.',
+  `- Exact Stage A implementation head: \`${READY_HEAD}\`.`,
+  `- Exact Pages run: \`${PRODUCTION_PAGES.runId}\`; workflow: \`completed / success\`.`,
+  `- Build job: \`${PRODUCTION_PAGES.buildJobId}\`; status: \`completed / success\`.`,
+  `- Deploy job: \`${PRODUCTION_PAGES.deployJobId}\`; status: \`completed / success\`.`,
+  '- Required production HTML routes: `9/9`; every route returned `200` with `text/html; charset=utf-8`.',
+  `- Reviewed production SVG: HTTP \`200\`; MIME \`${PRODUCTION_SVG.contentType}\`; \`${PRODUCTION_SVG.bytes.toLocaleString('en-US')}\` bytes; SHA-256 \`${PRODUCTION_SVG.sha256}\`; exact reviewed byte identity: \`PASS\`.`,
+  `- Stage A Browser raw: \`${LOCAL_RAW}\`; \`${RAW_BROWSER_BYTES.toLocaleString('en-US')}\` bytes; SHA-256 \`${RAW_BROWSER_HASH}\`.`,
+  `- Stage A production Browser raw: \`${PRODUCTION_RAW}\`; \`${PRODUCTION_RAW_BYTES.toLocaleString('en-US')}\` bytes; SHA-256 \`${PRODUCTION_RAW_HASH}\`.`,
+  '- Functional production QA: `PASS`; states `4/4`; wrapper interactions `12/12`; relation checks `20/20`; exact source checks `20/20`; STY-11 actionable count `0`; diagnostics complete and empty.',
+  '- Stage A production screenshot evidence: `BLOCKED / NOT_ACCEPTED`; exactly three attempts were `CAPTURED_REJECTED`; no visual PASS is claimed.',
+  '- Projection: `63 completed topics / 106 content documents / 550 governed sources`.',
+  '- STY-10 target: `published / complete`.',
+  '- STY-11 target: `unpublished / pending / non-actionable`; actionable route count: `0`; sole next topic.',
+  `- Immediate immutable history: complete Batch 10 review SHA-256 \`${IMMEDIATE_REVIEW_HASH}\`; backlog suffix \`${IMMEDIATE_BACKLOG_SUFFIX_HASH}\`.`,
+  '- Exact Stage B reviewed head: `PENDING`.',
+  '- Independent Stage B code/spec/security review: `PENDING`; findings: `PENDING`.',
+  '- Independent Stage B content/evidence/rights review: `PENDING`; rights: `PENDING`; findings: `PENDING`.',
+  '- Independent Stage B architecture/invariant review: `PENDING`; blockers: `PENDING`.',
+  '- Final Stage B review judgment: `PENDING`.',
+  '- Stage B scope boundary: `STAGE_B`.',
+  '- Stage B deployment status: `PENDING / NOT_RUN`.',
+  '- Stage B screenshot status remains `BLOCKED / NOT_ACCEPTED`.',
+]);
 const rootUrl = new URL('../', import.meta.url);
 const sha256 = (value) => createHash('sha256').update(value).digest('hex');
 const required = (path, encoding) => readFile(new URL(path, rootUrl), encoding);
@@ -143,6 +185,27 @@ function currentReleaseBaseline(source) {
   const lines = source.split(/\r?\n/u).filter((line) => line.startsWith('- **当前发布基线：** '));
   assert.equal(lines.length, 1, 'one current release baseline');
   return lines[0].slice('- **当前发布基线：** '.length);
+}
+function assertImmediateHistory(reviewBytes = immediateReview, backlogSource = backlog) {
+  assert.equal(sha256(reviewBytes), IMMEDIATE_REVIEW_HASH, 'complete immediate Batch 10 review bytes');
+  const baseline = currentReleaseBaseline(backlogSource);
+  assert.ok(baseline.startsWith(CURRENT_BASELINE_PREFIX + IMMEDIATE_BACKLOG_MARKER), 'exact current Batch 11 prefix');
+  const suffix = baseline.slice((CURRENT_BASELINE_PREFIX + IMMEDIATE_BACKLOG_MARKER).length);
+  assert.match(suffix, /^2026-08-17 G009 Batch 10 已完成 STY-09/u);
+  assert.equal(sha256(suffix), IMMEDIATE_BACKLOG_SUFFIX_HASH, 'complete immediate STY-09 backlog suffix');
+}
+function assertStageBBacklog(source = backlog) {
+  const sty10 = source.split(/\r?\n/u).filter((line) => /^- \[[ x]\] \*\*STY-10 /u.test(line));
+  const sty11 = source.split(/\r?\n/u).filter((line) => /^- \[[ x]\] \*\*STY-11 /u.test(line));
+  assert.deepEqual(sty10, [STY10_CLOSURE_LINE]);
+  assert.equal(sty11.length, 1, 'one canonical STY-11 backlog line');
+  assert.match(sty11[0], /^- \[ \] \*\*STY-11 /u);
+  assert.doesNotMatch(source, /\]\(\/styles\/sty-11\)/u);
+  assertImmediateHistory(immediateReview, source);
+}
+function assertPendingStageBReview(source = review) {
+  assert.equal(section(source, 'Stage B closure candidate'), PENDING_STAGE_B_REVIEW_LINES.join('\n'), 'exact pending Stage B section');
+  assert.equal(source.split('## Stage B closure candidate').length - 1, 1, 'one Stage B closure section');
 }
 function assertBrowser(evidence) {
   assert.deepEqual(Object.keys(evidence), ['candidateHead', 'collection', 'states', 'screenshotEvidence']);
@@ -264,33 +327,68 @@ function assertProductionReview(source) {
   ].join('\n'), 'exact Stage A production section');
 }
 
-const [review, raw, productionRaw, immediateReview, backlog, status, documents] = await Promise.all([
+const [review, raw, productionRaw, immediateReview, backlog, status, manifest, indexes, publicLedger, documents] = await Promise.all([
   optional(REVIEW, 'utf8'),
   optional(LOCAL_RAW),
   optional(PRODUCTION_RAW),
   required(IMMEDIATE_REVIEW),
   required(BACKLOG, 'utf8'),
   required('src/generated/project-status.json', 'utf8').then(JSON.parse),
+  required('src/generated/topic-manifest.json', 'utf8').then(JSON.parse),
+  required('src/generated/topic-indexes.json', 'utf8').then(JSON.parse),
+  required('src/generated/source-ledger.json', 'utf8').then(JSON.parse),
   readContentDocuments('content'),
 ]);
 
-test('locks the complete immediate STY-09 review and backlog suffix', () => {
-  assert.equal(sha256(immediateReview), IMMEDIATE_REVIEW_HASH, 'complete immediate review bytes');
-  assert.equal(sha256(currentReleaseBaseline(backlog)), IMMEDIATE_BACKLOG_SUFFIX_HASH, 'complete immediate STY-09 backlog suffix');
+test('locks the complete immediate STY-09 review and backlog suffix with mutation sensitivity', () => {
+  assertImmediateHistory();
+  for (const changedReview of [Buffer.concat([immediateReview, Buffer.from('x')]), immediateReview.subarray(0, -1)]) {
+    assert.throws(() => assertImmediateHistory(changedReview), assert.AssertionError);
+  }
+  const baseline = currentReleaseBaseline(backlog);
+  const suffix = baseline.slice((CURRENT_BASELINE_PREFIX + IMMEDIATE_BACKLOG_MARKER).length);
+  for (const changedSuffix of [`${suffix}x`, suffix.slice(0, -1)]) {
+    const changedBacklog = backlog.replace(suffix, changedSuffix);
+    assert.notEqual(changedBacklog, backlog, 'historical suffix mutation applies');
+    assert.throws(() => assertImmediateHistory(immediateReview, changedBacklog), assert.AssertionError);
+  }
 });
 
-test('projects exact STY-10 Stage A while STY-11 remains unpublished and non-actionable', () => {
+test('projects exact STY-10 Stage B closure while STY-11 remains sole unpublished pending non-actionable next', () => {
   assert.deepEqual({
     completed: status.completed_topics,
     documents: status.content_documents,
     sources: status.governed_sources,
-  }, EXPECTED_STAGE_A);
+  }, EXPECTED_STAGE_B);
+  assert.equal(publicLedger.sources.length, EXPECTED_STAGE_B.sources);
+  const topics = new Map(manifest.topics.map((topic) => [topic.id, topic]));
+  const styles = new Map(indexes.style.map((topic) => [topic.id, topic]));
+  assert.deepEqual([topics.get(CURRENT_TOPIC)?.published, topics.get(CURRENT_TOPIC)?.status.value, styles.get(CURRENT_TOPIC)?.published], [true, 'complete', true]);
+  assert.deepEqual([topics.get(NEXT_TOPIC)?.published, topics.get(NEXT_TOPIC)?.status.value, styles.get(NEXT_TOPIC)?.published], [false, 'pending', false]);
   const current = documents.find(({metadata}) => metadata.topic_id === CURRENT_TOPIC);
   assert.ok(current, 'STY-10 is published as a content document');
-  assert.match(backlog, /^- \[ \] \*\*STY-10 P1\uff5cMicrokernel \/ Plug-in Architecture\*\*/mu);
+  assertStageBBacklog();
   assert.equal(documents.some(({metadata}) => metadata.topic_id === NEXT_TOPIC), false, 'STY-11 is unpublished');
   assert.match(backlog, /^- \[ \] \*\*STY-11 P1\uff5cServerless Architecture\*\*/mu);
   assert.equal(documents.flatMap(extractInternalLinks).includes('/styles/sty-11'), false, 'STY-11 is non-actionable');
+  const staleNext = backlog.replace('下一项为 STY-11', '下一项为 STY-10');
+  assert.notEqual(staleNext, backlog, 'current next-topic mutation applies');
+  assert.throws(() => assertStageBBacklog(staleNext), assert.AssertionError);
+});
+
+test('locks exact STY-10 article, ledger, Draw.io/SVG and Stage A raw byte identities', async () => {
+  for (const [path, [expectedBytes, expectedHash]] of STABLE_IDENTITIES) {
+    const bytes = await required(path);
+    assert.equal(bytes.length, expectedBytes, `${path} exact bytes`);
+    assert.equal(sha256(bytes), expectedHash, `${path} exact SHA-256`);
+    for (const changed of [Buffer.concat([bytes, Buffer.from('x')]), bytes.subarray(0, -1)]) {
+      assert.notEqual(sha256(changed), expectedHash, `${path} identity mutation is non-no-op`);
+    }
+  }
+  for (const path of [ARTICLE, LEDGER, DRAWIO, SVG]) {
+    const historical = execFileSync('git', ['show', `${IMPLEMENTATION_HEAD}:${path}`], {cwd: new URL('../', import.meta.url), maxBuffer: 4 * 1024 * 1024});
+    assert.deepEqual(historical, await required(path), `${path} matches immutable Stage A implementation bytes`);
+  }
 });
 
 test('binds exact heads, final Stage A verdicts, and local Browser evidence', () => {
@@ -306,8 +404,7 @@ test('binds exact heads, final Stage A verdicts, and local Browser evidence', ()
   assert.match(review, /Screenshot evidence: `BLOCKED \/ NOT_ACCEPTED`/u);
   assert.match(review, /Exactly three fresh IAB full-page captures repeated viewport content and omitted complete architecture-diagram coverage/u);
   assert.match(review, /No Chrome fallback, prior raw, historical screenshot or visual PASS is claimed/u);
-  assert.doesNotMatch(review, /^## Stage B/mu);
-  assert.doesNotMatch(review, /Stage B (?:review judgment|deployment status): `(?!PENDING|NOT_RUN)/u);
+  assertPendingStageBReview(review);
   assert.ok(raw, `${LOCAL_RAW} exists`);
   assertBrowser(JSON.parse(raw));
 });

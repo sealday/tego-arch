@@ -15,7 +15,7 @@ export const ROUTE = '/styles/sty-10';
 export const TOPIC_ID = 'STY-10';
 export const NEXT_TOPIC = 'STY-11';
 export const RELATED_CASE = '/cases/micro-frontends-single-spa';
-export const EXPECTED_STAGE_A = Object.freeze({completed: 62, documents: 106, sources: 550});
+export const EXPECTED_STAGE_A = Object.freeze({completed: 63, documents: 106, sources: 550});
 export const SOURCE_IDS = Object.freeze([
   'src-eclipse-plugin-architecture', 'src-osgi-core-7-lifecycle', 'src-osgi-semantic-versioning',
   'src-hashicorp-go-plugin', 'src-vscode-extension-host', 'src-atlas-sty10-microkernel-order-plugins',

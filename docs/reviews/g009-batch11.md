@@ -96,3 +96,29 @@
 - No Chrome fallback, prior raw, historical screenshot, substituted browser surface or visual PASS is claimed.
 - Stage A deployment status: `SUCCESS`; functional production status: `PASS`; visual screenshot status remains separately `BLOCKED / NOT_ACCEPTED`.
 - Scope remains `STAGE_A_ONLY`; backlog, Stage B and STY-11 are unchanged.
+
+## Stage B closure candidate
+
+- Closure date: `2026-08-20`.
+- Exact Stage A implementation head: `05bcd441c21aad16418f1b432af49304cdb0808b`.
+- Exact Pages run: `32358912394`; workflow: `completed / success`.
+- Build job: `96394049449`; status: `completed / success`.
+- Deploy job: `96394492501`; status: `completed / success`.
+- Required production HTML routes: `9/9`; every route returned `200` with `text/html; charset=utf-8`.
+- Reviewed production SVG: HTTP `200`; MIME `image/svg+xml`; `20,285` bytes; SHA-256 `69080badd0f6500f24b59f4045463c65e17669659da77616ee4520bd4d2c802c`; exact reviewed byte identity: `PASS`.
+- Stage A Browser raw: `docs/reviews/evidence/g009-batch11-stage-a-browser.json`; `26,211` bytes; SHA-256 `3ae7ed0786d712e6e09cb1fbd4320473de44f6f6f7acd477b3f1ab35bd8b7e89`.
+- Stage A production Browser raw: `docs/reviews/evidence/g009-batch11-stage-a-production-browser.json`; `28,696` bytes; SHA-256 `ccbec59b2392a21170b8fabfbc44ba7fd40ea45b54b69ea43632b33f78122eb7`.
+- Functional production QA: `PASS`; states `4/4`; wrapper interactions `12/12`; relation checks `20/20`; exact source checks `20/20`; STY-11 actionable count `0`; diagnostics complete and empty.
+- Stage A production screenshot evidence: `BLOCKED / NOT_ACCEPTED`; exactly three attempts were `CAPTURED_REJECTED`; no visual PASS is claimed.
+- Projection: `63 completed topics / 106 content documents / 550 governed sources`.
+- STY-10 target: `published / complete`.
+- STY-11 target: `unpublished / pending / non-actionable`; actionable route count: `0`; sole next topic.
+- Immediate immutable history: complete Batch 10 review SHA-256 `69ba4168aa672413d1ed1251365b04f0a85c84eb5aa23d49cc38534d9252337f`; backlog suffix `cd2fadcfbf44800645ca45b6e2b610f38b9af775bb22cef41225bc91dcfdbee5`.
+- Exact Stage B reviewed head: `PENDING`.
+- Independent Stage B code/spec/security review: `PENDING`; findings: `PENDING`.
+- Independent Stage B content/evidence/rights review: `PENDING`; rights: `PENDING`; findings: `PENDING`.
+- Independent Stage B architecture/invariant review: `PENDING`; blockers: `PENDING`.
+- Final Stage B review judgment: `PENDING`.
+- Stage B scope boundary: `STAGE_B`.
+- Stage B deployment status: `PENDING / NOT_RUN`.
+- Stage B screenshot status remains `BLOCKED / NOT_ACCEPTED`.
