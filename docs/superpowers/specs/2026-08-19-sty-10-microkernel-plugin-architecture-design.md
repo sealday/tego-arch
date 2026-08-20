@@ -170,7 +170,7 @@
 - **priority：** `P1`
 - **depends_on：** `STY-00`、`STY-04`、`STY-05`
 - **adjacent_topics：** `STY-04`、`STY-05`
-- **related_cases / related_questions：** 保持空数组；PR-09、PR-12 使用正文可见关系，不伪装成案例或问题。
+- **related_cases / related_questions：** `related_cases` 固定为 `/cases/micro-frontends-single-spa`，`related_questions` 保持空数组。该案例只有限类比独立交付的扩展边界，不把 UI 微前端等同于进程隔离的后端插件；STY-10 与案例正文保留可见互惠链接。PR-09、PR-12 继续使用正文可见关系，不伪装成案例或问题。
 
 正文固定使用十个 H2，顺序不得变化：
 

@@ -43,6 +43,7 @@ export const approvedLicenses = [
   'AGPL-3.0-only',
   'GPL-3.0-only',
   'GFDL-1.3-or-later',
+  'CC-BY-3.0-US',
   'CC-BY-4.0',
   'CC-BY-SA-4.0',
   'CC-BY-NC-ND-4.0',
@@ -82,6 +83,7 @@ const usageModes = [
 ];
 
 const requiredPolicyByLicense = new Map([
+  ['CC-BY-3.0-US', 'adapt-with-attribution'],
   ['CC-BY-4.0', 'adapt-with-attribution'],
   ['CC-BY-SA-4.0', 'adapt-sharealike-review'],
   ['PostgreSQL', 'adapt-with-attribution'],
@@ -140,6 +142,7 @@ function expectedLicenseFamily(source) {
 }
 
 const explicitAdaptLicenses = new Set([
+  'CC-BY-3.0-US',
   'CC-BY-4.0',
   'CC-BY-SA-4.0',
   'PostgreSQL',

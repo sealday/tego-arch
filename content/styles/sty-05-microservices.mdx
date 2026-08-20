@@ -171,6 +171,8 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 
 [STY-09 Pipes and Filters](/styles/sty-09) 把数据处理拆成带输入、输出、容量与恢复合同的步骤。Filter 若跨服务部署，就同时承担网络、兼容版本、独立值守和数据所有权成本；步骤可组合不等于服务应被拆开。
 
+[Microkernel / Plug-in Architecture](/styles/sty-10)中的进程外插件同样承担序列化、超时、兼容、观测与发布成本，但仍受宿主扩展点和业务流程控制；它不因跨进程就自动成为拥有独立业务能力与私有权威数据的微服务。
+
 ## 来源
 
 - [James Lewis 与 Martin Fowler 的 Microservices](https://martinfowler.com/articles/microservices.html)（2014-03-25）支持独立部署、按业务能力组织、产品式责任、去中心化数据管理与为故障设计等共同特征；它不是形式标准，也不证明生产效果。

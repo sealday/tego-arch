@@ -66,6 +66,7 @@ test('accepts eleven-column license inventory rows with exact evidence', () => {
   assert.deepEqual(cc0Result.errors, []);
 
   for (const license of [
+    'CC-BY-3.0-US',
     'MIT-0',
     'GFDL-1.3-or-later',
     'CC-BY-NC-ND-4.0',

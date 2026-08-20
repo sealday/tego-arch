@@ -101,6 +101,8 @@ related_questions: []
 
 [信息隐藏与封装](/principles/pr-01)把可能变化的决策留给明确所有者；[高内聚与低耦合](/principles/pr-02)检查接口划分后的传播；[单一职责与关注点分离](/principles/pr-03)为扩展与客户端契约命名责任主体；[依赖倒置、控制反转与依赖注入](/principles/pr-04)约束策略与实现的依赖方向；[组合优于继承](/principles/pr-05)提供承载扩展实现的对象结构；[为演化设计](/principles/pr-08)管理兼容窗口、观测与退出；[通用职责分配软件模式（General Responsibility Assignment Software Patterns，GRASP）责任分配](/principles/pr-14)从责任启发式复核扩展点所有权。PR-12 只在上述精确相邻图内讨论扩展边界。
 
+[Microkernel / Plug-in Architecture](/styles/sty-10)展示扩展原则的运行时后果：只有真实变体、内聚消费者合同与明确所有者同时成立，才把策略接口升级为受控插件点；能力清单、兼容窗口、权限门禁和退出条件共同防止万能插件面。
+
 ## 说明性场景
 
 一个结算平台已支持两家提供商，历史记录显示二者会独立增加“预授权后部分捕获”能力。平台把 `captureAuthorized(amount)` 加入由结算政策拥有的版本化能力扩展，提供商适配器实现该契约；合同测试固定金额、不变量与失败语义，发布窗口分别观测两种实现，超阈值即可回滚。新增第三家已支持提供商时，稳定结算政策无需认识其软件开发工具包（Software Development Kit，SDK）。

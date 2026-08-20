@@ -1211,6 +1211,7 @@ test('keeps approved checker transports separate from canonical citation identit
 
 test('enforces license-specific copyright policies', () => {
   const cases = [
+    ['CC-BY-3.0-US', 'facts-and-short-quotation', 'adapt-with-attribution'],
     ['CC-BY-4.0', 'facts-and-short-quotation', 'adapt-with-attribution'],
     ['CC-BY-SA-4.0', 'facts-and-short-quotation', 'adapt-sharealike-review'],
     ['PostgreSQL', 'facts-and-short-quotation', 'adapt-with-attribution'],

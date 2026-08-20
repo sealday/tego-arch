@@ -2368,6 +2368,98 @@
       "forbidden_aliases": [],
       "note": "规范版本范围中保留 JVM 缩写，不把该运行时范围外推到所有流处理系统。",
       "order": 1740
+    },
+    {
+      "id": "microkernel",
+      "canonical_zh": "Microkernel",
+      "english": null,
+      "acronym": null,
+      "kind": "standard",
+      "first_use": "Microkernel",
+      "subsequent_use": [
+        "Microkernel",
+        "微内核"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [],
+      "note": "架构风格保留通行英文名称；首次说明中文含义后，可按语境使用 Microkernel 或微内核。",
+      "order": 1750
+    },
+    {
+      "id": "plug-in-architecture",
+      "canonical_zh": "Plug-in Architecture",
+      "english": null,
+      "acronym": null,
+      "kind": "standard",
+      "first_use": "Plug-in Architecture",
+      "subsequent_use": [
+        "Plug-in Architecture",
+        "插件架构"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [],
+      "note": "架构风格保留带连字符的通行英文名称；插件只指宿主拥有的受控扩展角色。",
+      "order": 1760
+    },
+    {
+      "id": "grpc",
+      "canonical_zh": "gRPC",
+      "english": null,
+      "acronym": null,
+      "kind": "standard",
+      "first_use": "gRPC",
+      "subsequent_use": [
+        "gRPC"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [],
+      "note": "保留项目官方大小写；STY-10 只把它作为受控的本地进程间调用协议示例。",
+      "order": 1770
+    },
+    {
+      "id": "identifier-literal",
+      "canonical_zh": "ID",
+      "english": null,
+      "acronym": null,
+      "kind": "code-literal",
+      "first_use": "ID",
+      "subsequent_use": [
+        "ID"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [],
+      "note": "STY-10 治理与调用合同中的字段标识字面量，保留固定大写形式。",
+      "order": 1780
+    },
+    {
+      "id": "cpu-literal",
+      "canonical_zh": "CPU",
+      "english": null,
+      "acronym": null,
+      "kind": "code-literal",
+      "first_use": "CPU",
+      "subsequent_use": [
+        "CPU"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [],
+      "note": "STY-10 资源配额与故障信号中的计算资源指标字面量，保留固定大写形式。",
+      "order": 1790
+    },
+    {
+      "id": "deadline-literal",
+      "canonical_zh": "deadline",
+      "english": null,
+      "acronym": null,
+      "kind": "code-literal",
+      "first_use": "deadline",
+      "subsequent_use": [
+        "deadline"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [],
+      "note": "STY-10 调用元数据和故障检测中的期限字段字面量，保留小写形式。",
+      "order": 1800
     }
   ]
 }

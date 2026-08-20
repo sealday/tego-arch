@@ -184,6 +184,8 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 
 [STY-07 面向服务架构](/styles/sty-07)进一步说明：稳定服务合同和唯一数据所有权可以先在模块化单体内建立，网络或企业集成平台都不是边界起点。
 
+[Microkernel / Plug-in Architecture](/styles/sty-10)继续追问一个模块内策略何时值得成为宿主拥有的扩展点：应先在同一部署内验证真实变化、内聚合同与固定业务所有权，只有独立交付或第三方风险成立时才引入进程外插件，不能从模块边界直接跳到插件进程。
+
 ## 来源
 
 [Martin Fowler 的 Monolith First](https://martinfowler.com/bliki/MonolithFirst.html)（2015-06-03）用于支持从单体起步、先通过实际使用理解边界、再依据观察证据拆分的比较与方法论。该页保留作者版权；本文只作原创中文事实总结，不复制原文、图示或示例，也不把该论述解释为所有系统都必须从单体开始。

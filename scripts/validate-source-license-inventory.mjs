@@ -14,6 +14,7 @@ export const approvedInventoryLicenses = [
   'AGPL-3.0-only',
   'GPL-3.0-only',
   'GFDL-1.3-or-later',
+  'CC-BY-3.0-US',
   'CC-BY-4.0',
   'CC-BY-SA-4.0',
   'CC-BY-NC-ND-4.0',

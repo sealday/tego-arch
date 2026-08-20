@@ -120,7 +120,7 @@
     priority: 'P1',
     depends_on: ['STY-00', 'STY-04', 'STY-05'],
     adjacent_topics: ['STY-04', 'STY-05'],
-    related_cases: [],
+    related_cases: ['/cases/micro-frontends-single-spa'],
     related_questions: [],
   };
   ```
