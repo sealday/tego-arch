@@ -43,15 +43,20 @@
 
 ## Local in-app Browser QA
 
-- Exact implementation candidate head: `PENDING`.
-- Raw Browser JSON: `NOT_RUN`.
-- Functional state collection: `NOT_RUN`.
-- Screenshot evidence: `NOT_RUN`.
+- The exact implementation candidate `f2cdebb413c7cd96fcb630579c82f0f3b6199983` was rebuilt and served at `http://127.0.0.1:3421/tego-arch/styles/sty-10` through the Codex in-app Browser only.
+- States accepted: `4/4`; wrapper focus/`:focus-visible`/3px/ArrowRight checks: `12/12`.
+- Relation destination/H1/return checks: `20/20` across the five exact destinations in every state.
+- SVG loaded in every state: intrinsic `92x150`; rendered `800x1300`.
+- Source href/`_blank`/`noopener noreferrer` checks: `20/20`; STY-11 actionable count: `0` per state.
+- Diagnostics are complete and empty in every state: warning/error logs `0`, `Runtime.exceptionThrown=0`, `Log.entryAdded=0`, `hasMore=false` and `truncated=false`.
+- Raw Browser JSON: `docs/reviews/evidence/g009-batch11-stage-a-browser.json`; `25,807` bytes; SHA-256 `9c9054e8ed9386bf6aeb5c7d269603e7b4108f8f7bb0d84a7fe69e9048359a77`.
+- Screenshot evidence: `BLOCKED / NOT_ACCEPTED`.
+- Exactly three fresh IAB full-page captures repeated viewport content and omitted complete architecture-diagram coverage. Each original is recorded as `CAPTURED_REJECTED` with its exact path, byte count, SHA-256 and reason; no fourth attempt was made.
 - No Chrome fallback, prior raw, historical screenshot or visual PASS is claimed.
 
 ## Independent review checkpoint
 
-- Exact implementation candidate head: `PENDING`.
+- Exact implementation candidate head: `f2cdebb413c7cd96fcb630579c82f0f3b6199983`.
 - Exact evidence head: `PENDING`.
 - Independent code/spec/security review: `PENDING`; findings: `PENDING`.
 - Independent content/evidence/rights review: `PENDING`; rights: `PENDING`; findings: `PENDING`.
