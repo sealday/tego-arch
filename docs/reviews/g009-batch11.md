@@ -122,3 +122,35 @@
 - Stage B scope boundary: `STAGE_B`.
 - Deployment status: `PENDING / NOT_RUN`.
 - Stage B screenshot status remains `BLOCKED / NOT_ACCEPTED`.
+
+## Stage B production deployment
+
+- Exact published Stage B READY head: `fa3faafcd584fecdce593107ff64d764a85ee043`.
+- Preflight: tracked and untracked clean; `origin/main` exact merge-base and ancestor; behind/ahead `0/2`; publication used one non-force fast-forward push.
+- Exact Pages push run: `32367610144`; `headSha=fa3faafcd584fecdce593107ff64d764a85ee043`; workflow: `completed / success`.
+- Build job: `96420522665`; status: `completed / success`.
+- Deploy job: `96421392775`; status: `completed / success`.
+- The workflow, build and deploy identities bind the exact Stage B READY head; no evidence-only run is substituted.
+
+| Production route | Status | Content type |
+| --- | ---: | --- |
+| `/tego-arch/` | `200` | `text/html; charset=utf-8` |
+| `/tego-arch/styles` | `200` | `text/html; charset=utf-8` |
+| `/tego-arch/styles/sty-04` | `200` | `text/html; charset=utf-8` |
+| `/tego-arch/styles/sty-05` | `200` | `text/html; charset=utf-8` |
+| `/tego-arch/styles/sty-10` | `200` | `text/html; charset=utf-8` |
+| `/tego-arch/principles` | `200` | `text/html; charset=utf-8` |
+| `/tego-arch/principles/pr-09` | `200` | `text/html; charset=utf-8` |
+| `/tego-arch/principles/pr-12` | `200` | `text/html; charset=utf-8` |
+| `/tego-arch/references` | `200` | `text/html; charset=utf-8` |
+
+- Required HTML routes: `9/9`; every route returned `200` with `text/html; charset=utf-8`.
+- Reviewed SVG: `20,285` bytes; MIME `image/svg+xml`; SHA-256 `69080badd0f6500f24b59f4045463c65e17669659da77616ee4520bd4d2c802c`; exact reviewed byte identity: `PASS`.
+- Stage B production raw Browser JSON: `docs/reviews/evidence/g009-batch11-stage-b-production-browser.json`; `30,700` bytes; SHA-256 `d97bb9ee5b3f32dc5c98a4754891170419aeffa293462e9866753a827144773e`.
+- Projection: `63 completed topics / 106 content documents / 550 governed sources`; STY-10 is `published / complete`; STY-11 is `unpublished / pending / non-actionable` with actionable count `0`.
+- Functional production QA: `PASS`; states `4/4`; wrapper focus/`:focus-visible`/3px/ArrowRight checks `12/12`; relation href/H1/return checks `20/20`; source href/target/rel checks `20/20`.
+- SVG geometry: source `viewBox="0 0 2400 3900"` and `2400x3900`; Browser-natural `92x150`; rendered `800x1300`; STY-11 actionable count `0` in every state; warning/error logs and diagnostic events `0`; every diagnostic page has `hasMore=false` and `truncated=false`.
+- Screenshot evidence: `BLOCKED / NOT_ACCEPTED`; exactly three fresh full-page attempts are `CAPTURE_TIMEOUT_NO_BYTES`; none returned original bytes, so no screenshot is accepted and no visual PASS is claimed.
+- No Chrome fallback, external Playwright, prior raw, historical screenshot, substituted browser surface or fabricated success is claimed.
+- Stage B deployment status: `SUCCESS`; functional production status: `PASS`; visual screenshot status remains separately `BLOCKED / NOT_ACCEPTED`.
+- Scope is closed at `STAGE_B`; STY-11 remains untouched and non-actionable.

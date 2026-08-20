@@ -1,0 +1,895 @@
+{
+  "implementationHead": "fa3faafcd584fecdce593107ff64d764a85ee043",
+  "pages": {
+    "runId": 32367610144,
+    "event": "push",
+    "headSha": "fa3faafcd584fecdce593107ff64d764a85ee043",
+    "status": "completed",
+    "conclusion": "success",
+    "buildJobId": 96420522665,
+    "buildStatus": "completed",
+    "buildConclusion": "success",
+    "deployJobId": 96421392775,
+    "deployStatus": "completed",
+    "deployConclusion": "success"
+  },
+  "probes": {
+    "routes": [
+      {
+        "path": "/tego-arch/",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8"
+      },
+      {
+        "path": "/tego-arch/styles",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8"
+      },
+      {
+        "path": "/tego-arch/styles/sty-04",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8"
+      },
+      {
+        "path": "/tego-arch/styles/sty-05",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8"
+      },
+      {
+        "path": "/tego-arch/styles/sty-10",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8"
+      },
+      {
+        "path": "/tego-arch/principles",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8"
+      },
+      {
+        "path": "/tego-arch/principles/pr-09",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8"
+      },
+      {
+        "path": "/tego-arch/principles/pr-12",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8"
+      },
+      {
+        "path": "/tego-arch/references",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8"
+      }
+    ],
+    "svg": {
+      "url": "https://sealday.github.io/tego-arch/img/diagrams/sty-10-microkernel-order-plugins.svg",
+      "status": 200,
+      "contentType": "image/svg+xml",
+      "bytes": 20285,
+      "sha256": "69080badd0f6500f24b59f4045463c65e17669659da77616ee4520bd4d2c802c"
+    }
+  },
+  "projection": {
+    "completed": 63,
+    "documents": 106,
+    "sources": 550,
+    "current": {
+      "id": "STY-10",
+      "published": true,
+      "status": "complete"
+    },
+    "next": {
+      "id": "STY-11",
+      "published": false,
+      "status": "pending",
+      "actionableCount": 0
+    }
+  },
+  "collection": {
+    "browser": "Codex in-app Browser only",
+    "fresh": true,
+    "servedUrl": "https://sealday.github.io/tego-arch/styles/sty-10",
+    "build": "GitHub Pages exact Stage B READY head fa3faafcd584fecdce593107ff64d764a85ee043; push run 32367610144; build job 96420522665; deploy job 96421392775"
+  },
+  "states": {
+    "desktopLight": {
+      "theme": "light",
+      "viewport": {
+        "height": 1000,
+        "width": 1440
+      },
+      "geometry": {
+        "page": {
+          "clientWidth": 1440,
+          "scrollWidth": 1440
+        },
+        "sources": [
+          {
+            "href": "https://www.eclipse.org/articles/Article-Plug-in-architecture/plugin_architecture.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://docs.osgi.org/specification/osgi.core/7.0.0/framework.lifecycle.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://docs.osgi.org/whitepaper/semantic-versioning/040-semantic-versions.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://github.com/hashicorp/go-plugin",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://code.visualstudio.com/api/advanced-topics/extension-host",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          }
+        ],
+        "sty11": 0,
+        "svg": {
+          "loaded": true,
+          "naturalHeight": 150,
+          "naturalWidth": 92,
+          "renderedHeight": 1300,
+          "renderedWidth": 800,
+          "sourceHeight": 3900,
+          "sourceWidth": 2400,
+          "src": "/tego-arch/assets/images/sty-10-microkernel-order-plugins-afa21c8c80186b5f3074ae295d54919e.svg",
+          "viewBox": "0 0 2400 3900"
+        },
+        "wrappers": [
+          {
+            "clientWidth": 800,
+            "label": "订单平台双平面微内核与进程外插件图，可横向滚动",
+            "scrollWidth": 800
+          },
+          {
+            "clientWidth": 800,
+            "label": "插件能力、兼容、权限与生命周期八维治理矩阵，可横向滚动",
+            "scrollWidth": 1024
+          },
+          {
+            "clientWidth": 800,
+            "label": "插件五类故障检测、响应、停止条件与人工所有者表，可横向滚动",
+            "scrollWidth": 1305
+          }
+        ]
+      },
+      "interactions": [
+        {
+          "index": 0,
+          "label": "订单平台双平面微内核与进程外插件图，可横向滚动",
+          "key": "ArrowRight",
+          "expectedScrollDelta": 0,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 0
+          }
+        },
+        {
+          "index": 1,
+          "label": "插件能力、兼容、权限与生命周期八维治理矩阵，可横向滚动",
+          "key": "ArrowRight",
+          "expectedScrollDelta": 40,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 40
+          }
+        },
+        {
+          "index": 2,
+          "label": "插件五类故障检测、响应、停止条件与人工所有者表，可横向滚动",
+          "key": "ArrowRight",
+          "expectedScrollDelta": 40,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 40
+          }
+        }
+      ],
+      "relations": [
+        {
+          "href": "/tego-arch/styles/sty-04",
+          "expectedH1": "模块化单体：在一个部署单元内保护业务边界",
+          "h1": "模块化单体：在一个部署单元内保护业务边界",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/styles/sty-05",
+          "expectedH1": "微服务：用独立部署换取自治，也承担分布式成本",
+          "h1": "微服务：用独立部署换取自治，也承担分布式成本",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/principles/pr-09",
+          "expectedH1": "最小权限、安全默认值与纵深防御",
+          "h1": "最小权限、安全默认值与纵深防御",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/principles/pr-12",
+          "expectedH1": "开闭原则与接口隔离原则",
+          "h1": "开闭原则与接口隔离原则",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/cases/micro-frontends-single-spa",
+          "expectedH1": "微前端：用垂直业务切片约束跨团队所有权",
+          "h1": "微前端：用垂直业务切片约束跨团队所有权",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        }
+      ],
+      "logs": [],
+      "diagnostics": {
+        "events": [],
+        "hasMore": false,
+        "truncated": false
+      },
+      "provenance": {
+        "stage": "STAGE_B_PRODUCTION",
+        "fresh": true,
+        "reusedPriorState": false,
+        "collectionId": "sty10-stage-b-fa3faaf-desktop-light",
+        "ordinal": 1,
+        "implementationHead": "fa3faafcd584fecdce593107ff64d764a85ee043",
+        "pagesRunId": 32367610144,
+        "browser": "Codex in-app Browser only",
+        "startedAt": "2026-08-20T12:59:40.867Z",
+        "completedAt": "2026-08-20T12:59:50.900Z",
+        "diagnosticCursorStart": 1038,
+        "diagnosticCursorEnd": 1158
+      }
+    },
+    "desktopDark": {
+      "theme": "dark",
+      "viewport": {
+        "height": 1000,
+        "width": 1440
+      },
+      "geometry": {
+        "page": {
+          "clientWidth": 1440,
+          "scrollWidth": 1440
+        },
+        "sources": [
+          {
+            "href": "https://www.eclipse.org/articles/Article-Plug-in-architecture/plugin_architecture.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://docs.osgi.org/specification/osgi.core/7.0.0/framework.lifecycle.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://docs.osgi.org/whitepaper/semantic-versioning/040-semantic-versions.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://github.com/hashicorp/go-plugin",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://code.visualstudio.com/api/advanced-topics/extension-host",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          }
+        ],
+        "sty11": 0,
+        "svg": {
+          "loaded": true,
+          "naturalHeight": 150,
+          "naturalWidth": 92,
+          "renderedHeight": 1300,
+          "renderedWidth": 800,
+          "sourceHeight": 3900,
+          "sourceWidth": 2400,
+          "src": "/tego-arch/assets/images/sty-10-microkernel-order-plugins-afa21c8c80186b5f3074ae295d54919e.svg",
+          "viewBox": "0 0 2400 3900"
+        },
+        "wrappers": [
+          {
+            "clientWidth": 800,
+            "label": "订单平台双平面微内核与进程外插件图，可横向滚动",
+            "scrollWidth": 800
+          },
+          {
+            "clientWidth": 800,
+            "label": "插件能力、兼容、权限与生命周期八维治理矩阵，可横向滚动",
+            "scrollWidth": 1024
+          },
+          {
+            "clientWidth": 800,
+            "label": "插件五类故障检测、响应、停止条件与人工所有者表，可横向滚动",
+            "scrollWidth": 1305
+          }
+        ]
+      },
+      "interactions": [
+        {
+          "index": 0,
+          "label": "订单平台双平面微内核与进程外插件图，可横向滚动",
+          "key": "ArrowRight",
+          "expectedScrollDelta": 0,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(227, 144, 125) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(227, 144, 125) solid 3px",
+            "scrollLeft": 0
+          }
+        },
+        {
+          "index": 1,
+          "label": "插件能力、兼容、权限与生命周期八维治理矩阵，可横向滚动",
+          "key": "ArrowRight",
+          "expectedScrollDelta": 40,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "scrollLeft": 40
+          }
+        },
+        {
+          "index": 2,
+          "label": "插件五类故障检测、响应、停止条件与人工所有者表，可横向滚动",
+          "key": "ArrowRight",
+          "expectedScrollDelta": 40,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "scrollLeft": 40
+          }
+        }
+      ],
+      "relations": [
+        {
+          "href": "/tego-arch/styles/sty-04",
+          "expectedH1": "模块化单体：在一个部署单元内保护业务边界",
+          "h1": "模块化单体：在一个部署单元内保护业务边界",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/styles/sty-05",
+          "expectedH1": "微服务：用独立部署换取自治，也承担分布式成本",
+          "h1": "微服务：用独立部署换取自治，也承担分布式成本",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/principles/pr-09",
+          "expectedH1": "最小权限、安全默认值与纵深防御",
+          "h1": "最小权限、安全默认值与纵深防御",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/principles/pr-12",
+          "expectedH1": "开闭原则与接口隔离原则",
+          "h1": "开闭原则与接口隔离原则",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/cases/micro-frontends-single-spa",
+          "expectedH1": "微前端：用垂直业务切片约束跨团队所有权",
+          "h1": "微前端：用垂直业务切片约束跨团队所有权",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        }
+      ],
+      "logs": [],
+      "diagnostics": {
+        "events": [],
+        "hasMore": false,
+        "truncated": false
+      },
+      "provenance": {
+        "stage": "STAGE_B_PRODUCTION",
+        "fresh": true,
+        "reusedPriorState": false,
+        "collectionId": "sty10-stage-b-fa3faaf-desktop-dark",
+        "ordinal": 2,
+        "implementationHead": "fa3faafcd584fecdce593107ff64d764a85ee043",
+        "pagesRunId": 32367610144,
+        "browser": "Codex in-app Browser only",
+        "startedAt": "2026-08-20T13:00:11.319Z",
+        "completedAt": "2026-08-20T13:00:16.510Z",
+        "diagnosticCursorStart": 1170,
+        "diagnosticCursorEnd": 1290
+      }
+    },
+    "mobileLight": {
+      "theme": "light",
+      "viewport": {
+        "height": 844,
+        "width": 390
+      },
+      "geometry": {
+        "page": {
+          "clientWidth": 390,
+          "scrollWidth": 390
+        },
+        "sources": [
+          {
+            "href": "https://www.eclipse.org/articles/Article-Plug-in-architecture/plugin_architecture.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://docs.osgi.org/specification/osgi.core/7.0.0/framework.lifecycle.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://docs.osgi.org/whitepaper/semantic-versioning/040-semantic-versions.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://github.com/hashicorp/go-plugin",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://code.visualstudio.com/api/advanced-topics/extension-host",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          }
+        ],
+        "sty11": 0,
+        "svg": {
+          "loaded": true,
+          "naturalHeight": 150,
+          "naturalWidth": 92,
+          "renderedHeight": 1300,
+          "renderedWidth": 800,
+          "sourceHeight": 3900,
+          "sourceWidth": 2400,
+          "src": "/tego-arch/assets/images/sty-10-microkernel-order-plugins-afa21c8c80186b5f3074ae295d54919e.svg",
+          "viewBox": "0 0 2400 3900"
+        },
+        "wrappers": [
+          {
+            "clientWidth": 358,
+            "label": "订单平台双平面微内核与进程外插件图，可横向滚动",
+            "scrollWidth": 800
+          },
+          {
+            "clientWidth": 358,
+            "label": "插件能力、兼容、权限与生命周期八维治理矩阵，可横向滚动",
+            "scrollWidth": 1024
+          },
+          {
+            "clientWidth": 358,
+            "label": "插件五类故障检测、响应、停止条件与人工所有者表，可横向滚动",
+            "scrollWidth": 1305
+          }
+        ]
+      },
+      "interactions": [
+        {
+          "index": 0,
+          "label": "订单平台双平面微内核与进程外插件图，可横向滚动",
+          "key": "ArrowRight",
+          "expectedScrollDelta": 40,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 40
+          }
+        },
+        {
+          "index": 1,
+          "label": "插件能力、兼容、权限与生命周期八维治理矩阵，可横向滚动",
+          "key": "ArrowRight",
+          "expectedScrollDelta": 40,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 40
+          }
+        },
+        {
+          "index": 2,
+          "label": "插件五类故障检测、响应、停止条件与人工所有者表，可横向滚动",
+          "key": "ArrowRight",
+          "expectedScrollDelta": 40,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "scrollLeft": 40
+          }
+        }
+      ],
+      "relations": [
+        {
+          "href": "/tego-arch/styles/sty-04",
+          "expectedH1": "模块化单体：在一个部署单元内保护业务边界",
+          "h1": "模块化单体：在一个部署单元内保护业务边界",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/styles/sty-05",
+          "expectedH1": "微服务：用独立部署换取自治，也承担分布式成本",
+          "h1": "微服务：用独立部署换取自治，也承担分布式成本",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/principles/pr-09",
+          "expectedH1": "最小权限、安全默认值与纵深防御",
+          "h1": "最小权限、安全默认值与纵深防御",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/principles/pr-12",
+          "expectedH1": "开闭原则与接口隔离原则",
+          "h1": "开闭原则与接口隔离原则",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/cases/micro-frontends-single-spa",
+          "expectedH1": "微前端：用垂直业务切片约束跨团队所有权",
+          "h1": "微前端：用垂直业务切片约束跨团队所有权",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        }
+      ],
+      "logs": [],
+      "diagnostics": {
+        "events": [],
+        "hasMore": false,
+        "truncated": false
+      },
+      "provenance": {
+        "stage": "STAGE_B_PRODUCTION",
+        "fresh": true,
+        "reusedPriorState": false,
+        "collectionId": "sty10-stage-b-fa3faaf-mobile-light",
+        "ordinal": 3,
+        "implementationHead": "fa3faafcd584fecdce593107ff64d764a85ee043",
+        "pagesRunId": 32367610144,
+        "browser": "Codex in-app Browser only",
+        "startedAt": "2026-08-20T13:02:01.553Z",
+        "completedAt": "2026-08-20T13:02:05.763Z",
+        "diagnosticCursorStart": 1322,
+        "diagnosticCursorEnd": 1442
+      }
+    },
+    "mobileDark": {
+      "theme": "dark",
+      "viewport": {
+        "height": 844,
+        "width": 390
+      },
+      "geometry": {
+        "page": {
+          "clientWidth": 390,
+          "scrollWidth": 390
+        },
+        "sources": [
+          {
+            "href": "https://www.eclipse.org/articles/Article-Plug-in-architecture/plugin_architecture.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://docs.osgi.org/specification/osgi.core/7.0.0/framework.lifecycle.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://docs.osgi.org/whitepaper/semantic-versioning/040-semantic-versions.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://github.com/hashicorp/go-plugin",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://code.visualstudio.com/api/advanced-topics/extension-host",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          }
+        ],
+        "sty11": 0,
+        "svg": {
+          "loaded": true,
+          "naturalHeight": 150,
+          "naturalWidth": 92,
+          "renderedHeight": 1300,
+          "renderedWidth": 800,
+          "sourceHeight": 3900,
+          "sourceWidth": 2400,
+          "src": "/tego-arch/assets/images/sty-10-microkernel-order-plugins-afa21c8c80186b5f3074ae295d54919e.svg",
+          "viewBox": "0 0 2400 3900"
+        },
+        "wrappers": [
+          {
+            "clientWidth": 358,
+            "label": "订单平台双平面微内核与进程外插件图，可横向滚动",
+            "scrollWidth": 800
+          },
+          {
+            "clientWidth": 358,
+            "label": "插件能力、兼容、权限与生命周期八维治理矩阵，可横向滚动",
+            "scrollWidth": 1024
+          },
+          {
+            "clientWidth": 358,
+            "label": "插件五类故障检测、响应、停止条件与人工所有者表，可横向滚动",
+            "scrollWidth": 1305
+          }
+        ]
+      },
+      "interactions": [
+        {
+          "index": 0,
+          "label": "订单平台双平面微内核与进程外插件图，可横向滚动",
+          "key": "ArrowRight",
+          "expectedScrollDelta": 40,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(227, 144, 125) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(227, 144, 125) solid 3px",
+            "scrollLeft": 40
+          }
+        },
+        {
+          "index": 1,
+          "label": "插件能力、兼容、权限与生命周期八维治理矩阵，可横向滚动",
+          "key": "ArrowRight",
+          "expectedScrollDelta": 40,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "scrollLeft": 40
+          }
+        },
+        {
+          "index": 2,
+          "label": "插件五类故障检测、响应、停止条件与人工所有者表，可横向滚动",
+          "key": "ArrowRight",
+          "expectedScrollDelta": 40,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "scrollLeft": 40
+          }
+        }
+      ],
+      "relations": [
+        {
+          "href": "/tego-arch/styles/sty-04",
+          "expectedH1": "模块化单体：在一个部署单元内保护业务边界",
+          "h1": "模块化单体：在一个部署单元内保护业务边界",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/styles/sty-05",
+          "expectedH1": "微服务：用独立部署换取自治，也承担分布式成本",
+          "h1": "微服务：用独立部署换取自治，也承担分布式成本",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/principles/pr-09",
+          "expectedH1": "最小权限、安全默认值与纵深防御",
+          "h1": "最小权限、安全默认值与纵深防御",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/principles/pr-12",
+          "expectedH1": "开闭原则与接口隔离原则",
+          "h1": "开闭原则与接口隔离原则",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/cases/micro-frontends-single-spa",
+          "expectedH1": "微前端：用垂直业务切片约束跨团队所有权",
+          "h1": "微前端：用垂直业务切片约束跨团队所有权",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation; no physical relation click claimed"
+        }
+      ],
+      "logs": [],
+      "diagnostics": {
+        "events": [],
+        "hasMore": false,
+        "truncated": false
+      },
+      "provenance": {
+        "stage": "STAGE_B_PRODUCTION",
+        "fresh": true,
+        "reusedPriorState": false,
+        "collectionId": "sty10-stage-b-fa3faaf-mobile-dark",
+        "ordinal": 4,
+        "implementationHead": "fa3faafcd584fecdce593107ff64d764a85ee043",
+        "pagesRunId": 32367610144,
+        "browser": "Codex in-app Browser only",
+        "startedAt": "2026-08-20T13:02:56.870Z",
+        "completedAt": "2026-08-20T13:03:01.263Z",
+        "diagnosticCursorStart": 1473,
+        "diagnosticCursorEnd": 1593
+      }
+    }
+  },
+  "screenshotEvidence": {
+    "status": "BLOCKED / NOT_ACCEPTED",
+    "reason": "Exactly three fresh in-app Browser full-page capture attempts timed out before returning original bytes; no screenshot was accepted and no visual PASS is claimed.",
+    "attempts": [
+      {
+        "ordinal": 1,
+        "state": "desktopLight",
+        "requestedViewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "observedViewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "kind": "fullPage",
+        "method": "Tab.screenshot",
+        "path": null,
+        "bytes": null,
+        "sha256": null,
+        "status": "CAPTURE_TIMEOUT_NO_BYTES",
+        "reason": "The in-app Browser full-page capture timed out before returning original bytes, so no screenshot artifact exists to inspect or accept."
+      },
+      {
+        "ordinal": 2,
+        "state": "desktopLight",
+        "requestedViewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "observedViewport": {
+          "width": 1280,
+          "height": 720
+        },
+        "observedScrollHeight": 11289,
+        "kind": "fullPage",
+        "method": "Tab.screenshot",
+        "path": null,
+        "bytes": null,
+        "sha256": null,
+        "status": "CAPTURE_TIMEOUT_NO_BYTES",
+        "reason": "The in-app Browser full-page capture timed out before returning original bytes, so no screenshot artifact exists to inspect or accept."
+      },
+      {
+        "ordinal": 3,
+        "state": "mobileDark",
+        "requestedViewport": {
+          "width": 390,
+          "height": 844
+        },
+        "observedViewport": {
+          "width": 390,
+          "height": 844
+        },
+        "observedScrollHeight": 16288,
+        "layoutContentSize": {
+          "x": 0,
+          "y": 0,
+          "width": 780,
+          "height": 32576
+        },
+        "kind": "fullPage",
+        "method": "CDP Page.captureScreenshot",
+        "path": null,
+        "bytes": null,
+        "sha256": null,
+        "status": "CAPTURE_TIMEOUT_NO_BYTES",
+        "reason": "The in-app Browser full-page capture timed out before returning original bytes, so no screenshot artifact exists to inspect or accept."
+      }
+    ]
+  }
+}

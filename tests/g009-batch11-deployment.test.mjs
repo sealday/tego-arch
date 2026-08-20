@@ -14,6 +14,7 @@ export const NEXT_TOPIC = 'STY-11';
 export const REVIEW = 'docs/reviews/g009-batch11.md';
 export const LOCAL_RAW = 'docs/reviews/evidence/g009-batch11-stage-a-browser.json';
 export const PRODUCTION_RAW = 'docs/reviews/evidence/g009-batch11-stage-a-production-browser.json';
+export const STAGE_B_PRODUCTION_RAW = 'docs/reviews/evidence/g009-batch11-stage-b-production-browser.json';
 const ARTICLE = 'content/styles/sty-10-microkernel-plugin-architecture.mdx';
 const LEDGER = 'data/source-ledger.json';
 const DRAWIO = 'diagrams/sty-10-microkernel-order-plugins.drawio';
@@ -26,6 +27,7 @@ const RAW_BROWSER_BYTES = 26_211;
 const RAW_BROWSER_HASH = '3ae7ed0786d712e6e09cb1fbd4320473de44f6f6f7acd477b3f1ab35bd8b7e89';
 const READY_HEAD = '05bcd441c21aad16418f1b432af49304cdb0808b';
 const STAGE_B_REVIEWED_HEAD = '5150ccad86e7bd410ddfeb83f986ce2cf3b42df9';
+const STAGE_B_READY_HEAD = 'fa3faafcd584fecdce593107ff64d764a85ee043';
 const PRODUCTION_RAW_BYTES = 28_696;
 const PRODUCTION_RAW_HASH = 'ccbec59b2392a21170b8fabfbc44ba7fd40ea45b54b69ea43632b33f78122eb7';
 const PRODUCTION_PAGES = Object.freeze({
@@ -38,6 +40,21 @@ const PRODUCTION_PAGES = Object.freeze({
   buildStatus: 'completed',
   buildConclusion: 'success',
   deployJobId: 96_394_492_501,
+  deployStatus: 'completed',
+  deployConclusion: 'success',
+});
+const STAGE_B_PRODUCTION_RAW_BYTES = 30_700;
+const STAGE_B_PRODUCTION_RAW_HASH = 'd97bb9ee5b3f32dc5c98a4754891170419aeffa293462e9866753a827144773e';
+const STAGE_B_PRODUCTION_PAGES = Object.freeze({
+  runId: 32_367_610_144,
+  event: 'push',
+  headSha: STAGE_B_READY_HEAD,
+  status: 'completed',
+  conclusion: 'success',
+  buildJobId: 96_420_522_665,
+  buildStatus: 'completed',
+  buildConclusion: 'success',
+  deployJobId: 96_421_392_775,
   deployStatus: 'completed',
   deployConclusion: 'success',
 });
@@ -123,6 +140,25 @@ const PRODUCTION_SCREENSHOT_ATTEMPTS = Object.freeze([
   {ordinal: 2, state: 'desktopDark', viewport: {width: 1440, height: 1000}, observedViewport: {width: 1440, height: 1000}, kind: 'fullPage', path: '/Users/seal/projects/tego-arch/.worktrees/g009-styles-batch7/.superpowers/sdd/sty10-stage-a-production-05bcd44-desktop-dark.png', bytes: 1_715_623, sha256: 'bcb16ff5ea130ce4ed0facdc00bee8189e5571778d767a7cdd74e1777cc455c1', status: 'CAPTURED_REJECTED', reason: SCREENSHOT_REJECTION_REASON},
   {ordinal: 3, state: 'mobileLight', viewport: {width: 390, height: 844}, observedViewport: {width: 1440, height: 1000}, kind: 'fullPage', path: '/Users/seal/projects/tego-arch/.worktrees/g009-styles-batch7/.superpowers/sdd/sty10-stage-a-production-05bcd44-mobile-light.png', bytes: 1_699_955, sha256: '67ea689dde9ca13046bb05218e95360b2d360c824cb58cc59a08fb555f53bc30', status: 'CAPTURED_REJECTED', reason: 'The in-app Browser full-page capture ignored the requested 390x844 viewport, repeated the 1440x1000 opening viewport bytes, and omitted complete architecture-diagram coverage, so it cannot support trustworthy mobile or whole-page visual review.'},
 ]);
+const STAGE_B_SCREENSHOT_TIMEOUT_REASON = 'The in-app Browser full-page capture timed out before returning original bytes, so no screenshot artifact exists to inspect or accept.';
+const STAGE_B_SCREENSHOT_ATTEMPTS = Object.freeze([
+  {ordinal: 1, state: 'desktopLight', requestedViewport: {width: 1440, height: 1000}, observedViewport: {width: 1440, height: 1000}, kind: 'fullPage', method: 'Tab.screenshot', path: null, bytes: null, sha256: null, status: 'CAPTURE_TIMEOUT_NO_BYTES', reason: STAGE_B_SCREENSHOT_TIMEOUT_REASON},
+  {ordinal: 2, state: 'desktopLight', requestedViewport: {width: 1440, height: 1000}, observedViewport: {width: 1280, height: 720}, observedScrollHeight: 11_289, kind: 'fullPage', method: 'Tab.screenshot', path: null, bytes: null, sha256: null, status: 'CAPTURE_TIMEOUT_NO_BYTES', reason: STAGE_B_SCREENSHOT_TIMEOUT_REASON},
+  {ordinal: 3, state: 'mobileDark', requestedViewport: {width: 390, height: 844}, observedViewport: {width: 390, height: 844}, observedScrollHeight: 16_288, layoutContentSize: {x: 0, y: 0, width: 780, height: 32_576}, kind: 'fullPage', method: 'CDP Page.captureScreenshot', path: null, bytes: null, sha256: null, status: 'CAPTURE_TIMEOUT_NO_BYTES', reason: STAGE_B_SCREENSHOT_TIMEOUT_REASON},
+]);
+const STAGE_B_PROJECTION = Object.freeze({
+  completed: 63,
+  documents: 106,
+  sources: 550,
+  current: {id: 'STY-10', published: true, status: 'complete'},
+  next: {id: 'STY-11', published: false, status: 'pending', actionableCount: 0},
+});
+const STAGE_B_STATE_PROVENANCE = Object.freeze({
+  desktopLight: {stage: 'STAGE_B_PRODUCTION', fresh: true, reusedPriorState: false, collectionId: 'sty10-stage-b-fa3faaf-desktop-light', ordinal: 1, implementationHead: STAGE_B_READY_HEAD, pagesRunId: STAGE_B_PRODUCTION_PAGES.runId, browser: 'Codex in-app Browser only', startedAt: '2026-08-20T12:59:40.867Z', completedAt: '2026-08-20T12:59:50.900Z', diagnosticCursorStart: 1038, diagnosticCursorEnd: 1158},
+  desktopDark: {stage: 'STAGE_B_PRODUCTION', fresh: true, reusedPriorState: false, collectionId: 'sty10-stage-b-fa3faaf-desktop-dark', ordinal: 2, implementationHead: STAGE_B_READY_HEAD, pagesRunId: STAGE_B_PRODUCTION_PAGES.runId, browser: 'Codex in-app Browser only', startedAt: '2026-08-20T13:00:11.319Z', completedAt: '2026-08-20T13:00:16.510Z', diagnosticCursorStart: 1170, diagnosticCursorEnd: 1290},
+  mobileLight: {stage: 'STAGE_B_PRODUCTION', fresh: true, reusedPriorState: false, collectionId: 'sty10-stage-b-fa3faaf-mobile-light', ordinal: 3, implementationHead: STAGE_B_READY_HEAD, pagesRunId: STAGE_B_PRODUCTION_PAGES.runId, browser: 'Codex in-app Browser only', startedAt: '2026-08-20T13:02:01.553Z', completedAt: '2026-08-20T13:02:05.763Z', diagnosticCursorStart: 1322, diagnosticCursorEnd: 1442},
+  mobileDark: {stage: 'STAGE_B_PRODUCTION', fresh: true, reusedPriorState: false, collectionId: 'sty10-stage-b-fa3faaf-mobile-dark', ordinal: 4, implementationHead: STAGE_B_READY_HEAD, pagesRunId: STAGE_B_PRODUCTION_PAGES.runId, browser: 'Codex in-app Browser only', startedAt: '2026-08-20T13:02:56.870Z', completedAt: '2026-08-20T13:03:01.263Z', diagnosticCursorStart: 1473, diagnosticCursorEnd: 1593},
+});
 
 const IMMEDIATE_REVIEW = 'docs/reviews/g009-batch10.md';
 const BACKLOG = 'docs/content-backlog.md';
@@ -177,6 +213,9 @@ const FINAL_STAGE_B_REVIEW_LINES = Object.freeze([
 ]);
 const rootUrl = new URL('../', import.meta.url);
 const sha256 = (value) => createHash('sha256').update(value).digest('hex');
+function assertExactKeys(value, expected, label) {
+  assert.deepEqual(Object.keys(value).sort(), [...expected].sort(), `${label} exact keys`);
+}
 const required = (path, encoding) => readFile(new URL(path, rootUrl), encoding);
 async function optional(path, encoding) {
   try {
@@ -295,6 +334,56 @@ function assertProductionBrowser(evidence) {
     attempts: PRODUCTION_SCREENSHOT_ATTEMPTS,
   });
 }
+function assertStageBProductionBrowser(evidence) {
+  assert.ok(evidence, `${STAGE_B_PRODUCTION_RAW} exists and parses`);
+  assert.deepEqual(Object.keys(evidence), ['implementationHead', 'pages', 'probes', 'projection', 'collection', 'states', 'screenshotEvidence']);
+  assert.equal(evidence.implementationHead, STAGE_B_READY_HEAD);
+  assert.deepEqual(evidence.pages, STAGE_B_PRODUCTION_PAGES);
+  assert.deepEqual(evidence.probes, {routes: PRODUCTION_ROUTES, svg: PRODUCTION_SVG});
+  assert.deepEqual(evidence.projection, STAGE_B_PROJECTION);
+  assert.deepEqual(evidence.collection, {
+    browser: 'Codex in-app Browser only',
+    fresh: true,
+    servedUrl: 'https://sealday.github.io/tego-arch/styles/sty-10',
+    build: `GitHub Pages exact Stage B READY head ${STAGE_B_READY_HEAD}; push run ${STAGE_B_PRODUCTION_PAGES.runId}; build job ${STAGE_B_PRODUCTION_PAGES.buildJobId}; deploy job ${STAGE_B_PRODUCTION_PAGES.deployJobId}`,
+  });
+  assert.notDeepEqual(evidence.states, JSON.parse(productionRaw.toString('utf8')).states, 'Stage B states carry independent fresh-production provenance');
+  for (const [key, state] of Object.entries(evidence.states)) {
+    assertExactKeys(state, ['theme', 'viewport', 'geometry', 'interactions', 'relations', 'logs', 'diagnostics', 'provenance'], `${key} state`);
+    assertExactKeys(state.viewport, ['width', 'height'], `${key} viewport`);
+    assertExactKeys(state.geometry, ['page', 'sources', 'sty11', 'svg', 'wrappers'], `${key} geometry`);
+    assertExactKeys(state.geometry.page, ['clientWidth', 'scrollWidth'], `${key} page geometry`);
+    assertExactKeys(state.geometry.svg, ['loaded', 'viewBox', 'sourceWidth', 'sourceHeight', 'naturalHeight', 'naturalWidth', 'renderedHeight', 'renderedWidth', 'src'], `${key} SVG geometry`);
+    for (const wrapper of state.geometry.wrappers) assertExactKeys(wrapper, ['clientWidth', 'label', 'scrollWidth'], `${key} wrapper`);
+    for (const source of state.geometry.sources) assertExactKeys(source, ['href', 'rel', 'target'], `${key} source`);
+    for (const interaction of state.interactions) {
+      assertExactKeys(interaction, ['index', 'label', 'key', 'expectedScrollDelta', 'before', 'after'], `${key} interaction`);
+      assertExactKeys(interaction.before, ['focus', 'focusVisible', 'outline', 'scrollLeft'], `${key} interaction before`);
+      assertExactKeys(interaction.after, ['focus', 'focusVisible', 'outline', 'scrollLeft'], `${key} interaction after`);
+    }
+    for (const relation of state.relations) assertExactKeys(relation, ['href', 'expectedH1', 'h1', 'returnedToArticle', 'navigation'], `${key} relation`);
+    assertExactKeys(state.diagnostics, ['events', 'hasMore', 'truncated'], `${key} diagnostics`);
+    assertExactKeys(state.provenance, ['stage', 'fresh', 'reusedPriorState', 'collectionId', 'ordinal', 'implementationHead', 'pagesRunId', 'browser', 'startedAt', 'completedAt', 'diagnosticCursorStart', 'diagnosticCursorEnd'], `${key} provenance`);
+    assert.deepEqual(state.provenance, STAGE_B_STATE_PROVENANCE[key], `${key} exact fresh Stage B provenance`);
+    assert.ok(Date.parse(state.provenance.startedAt) < Date.parse(state.provenance.completedAt), `${key} collection interval`);
+    assert.ok(state.provenance.diagnosticCursorStart < state.provenance.diagnosticCursorEnd, `${key} diagnostic cursor interval`);
+  }
+  assertBrowser({
+    candidateHead: IMPLEMENTATION_HEAD,
+    collection: {browser: 'Codex in-app Browser only', fresh: true, servedUrl: 'http://127.0.0.1:3421/tego-arch/styles/sty-10'},
+    states: evidence.states,
+    screenshotEvidence: {
+      status: 'BLOCKED / NOT_ACCEPTED',
+      reason: 'Exactly three fresh in-app Browser full-page captures repeated viewport content and omitted complete architecture-diagram coverage; no visual PASS is claimed.',
+      attempts: SCREENSHOT_ATTEMPTS,
+    },
+  });
+  assert.deepEqual(evidence.screenshotEvidence, {
+    status: 'BLOCKED / NOT_ACCEPTED',
+    reason: 'Exactly three fresh in-app Browser full-page capture attempts timed out before returning original bytes; no screenshot was accepted and no visual PASS is claimed.',
+    attempts: STAGE_B_SCREENSHOT_ATTEMPTS,
+  });
+}
 function assertFinalReview(source) {
   assert.equal(source.match(/^- Screenshot evidence: `BLOCKED \/ NOT_ACCEPTED`\.$/gmu)?.length, 1, 'one honest screenshot verdict');
   assert.equal(source.match(/^- No Chrome fallback, prior raw, historical screenshot or visual PASS is claimed\.$/gmu)?.length, 1, 'one no-overclaim statement');
@@ -338,11 +427,40 @@ function assertProductionReview(source) {
     '- Scope remains `STAGE_A_ONLY`; backlog, Stage B and STY-11 are unchanged.',
   ].join('\n'), 'exact Stage A production section');
 }
+function assertStageBProductionReview(source) {
+  assertProductionReview(source);
+  assertFinalStageBReview(source);
+  const production = section(source, 'Stage B production deployment');
+  assert.equal(production, [
+    `- Exact published Stage B READY head: \`${STAGE_B_READY_HEAD}\`.`,
+    '- Preflight: tracked and untracked clean; `origin/main` exact merge-base and ancestor; behind/ahead `0/2`; publication used one non-force fast-forward push.',
+    `- Exact Pages push run: \`${STAGE_B_PRODUCTION_PAGES.runId}\`; \`headSha=${STAGE_B_READY_HEAD}\`; workflow: \`completed / success\`.`,
+    `- Build job: \`${STAGE_B_PRODUCTION_PAGES.buildJobId}\`; status: \`completed / success\`.`,
+    `- Deploy job: \`${STAGE_B_PRODUCTION_PAGES.deployJobId}\`; status: \`completed / success\`.`,
+    '- The workflow, build and deploy identities bind the exact Stage B READY head; no evidence-only run is substituted.',
+    '',
+    '| Production route | Status | Content type |',
+    '| --- | ---: | --- |',
+    ...PRODUCTION_ROUTES.map(({path, status, contentType}) => `| \`${path}\` | \`${status}\` | \`${contentType}\` |`),
+    '',
+    '- Required HTML routes: `9/9`; every route returned `200` with `text/html; charset=utf-8`.',
+    `- Reviewed SVG: \`${PRODUCTION_SVG.bytes.toLocaleString('en-US')}\` bytes; MIME \`${PRODUCTION_SVG.contentType}\`; SHA-256 \`${PRODUCTION_SVG.sha256}\`; exact reviewed byte identity: \`PASS\`.`,
+    `- Stage B production raw Browser JSON: \`${STAGE_B_PRODUCTION_RAW}\`; \`${STAGE_B_PRODUCTION_RAW_BYTES.toLocaleString('en-US')}\` bytes; SHA-256 \`${STAGE_B_PRODUCTION_RAW_HASH}\`.`,
+    '- Projection: `63 completed topics / 106 content documents / 550 governed sources`; STY-10 is `published / complete`; STY-11 is `unpublished / pending / non-actionable` with actionable count `0`.',
+    '- Functional production QA: `PASS`; states `4/4`; wrapper focus/`:focus-visible`/3px/ArrowRight checks `12/12`; relation href/H1/return checks `20/20`; source href/target/rel checks `20/20`.',
+    '- SVG geometry: source `viewBox="0 0 2400 3900"` and `2400x3900`; Browser-natural `92x150`; rendered `800x1300`; STY-11 actionable count `0` in every state; warning/error logs and diagnostic events `0`; every diagnostic page has `hasMore=false` and `truncated=false`.',
+    '- Screenshot evidence: `BLOCKED / NOT_ACCEPTED`; exactly three fresh full-page attempts are `CAPTURE_TIMEOUT_NO_BYTES`; none returned original bytes, so no screenshot is accepted and no visual PASS is claimed.',
+    '- No Chrome fallback, external Playwright, prior raw, historical screenshot, substituted browser surface or fabricated success is claimed.',
+    '- Stage B deployment status: `SUCCESS`; functional production status: `PASS`; visual screenshot status remains separately `BLOCKED / NOT_ACCEPTED`.',
+    '- Scope is closed at `STAGE_B`; STY-11 remains untouched and non-actionable.',
+  ].join('\n'), 'exact Stage B production section');
+}
 
-const [review, raw, productionRaw, immediateReview, backlog, status, manifest, indexes, publicLedger, documents] = await Promise.all([
+const [review, raw, productionRaw, stageBProductionRaw, immediateReview, backlog, status, manifest, indexes, publicLedger, documents] = await Promise.all([
   optional(REVIEW, 'utf8'),
   optional(LOCAL_RAW),
   optional(PRODUCTION_RAW),
+  optional(STAGE_B_PRODUCTION_RAW),
   required(IMMEDIATE_REVIEW),
   required(BACKLOG, 'utf8'),
   required('src/generated/project-status.json', 'utf8').then(JSON.parse),
@@ -615,4 +733,135 @@ test('rejects production deployment, probe, semantic, additive, diagnostic, scre
     assert.notEqual(mutated, review, `${before} production-review mutation applies`);
     assert.throws(() => assertProductionReview(mutated), {name: 'AssertionError'});
   }
+});
+
+test('binds the exact Stage B READY-head publication, projection and fresh production IAB evidence', () => {
+  assert.ok(stageBProductionRaw, `${STAGE_B_PRODUCTION_RAW} exists`);
+  assert.equal(stageBProductionRaw.length, STAGE_B_PRODUCTION_RAW_BYTES);
+  assert.equal(sha256(stageBProductionRaw), STAGE_B_PRODUCTION_RAW_HASH);
+  assert.notEqual(sha256(Buffer.concat([stageBProductionRaw, Buffer.from('x')])), STAGE_B_PRODUCTION_RAW_HASH);
+  assert.notEqual(sha256(stageBProductionRaw.subarray(0, -1)), STAGE_B_PRODUCTION_RAW_HASH);
+  assertStageBProductionBrowser(JSON.parse(stageBProductionRaw));
+  assertStageBProductionReview(review);
+});
+
+test('rejects every Stage B production semantic, additive, fabricated-success and screenshot-attempt mutation', () => {
+  assert.ok(stageBProductionRaw, `${STAGE_B_PRODUCTION_RAW} exists`);
+  const production = JSON.parse(stageBProductionRaw);
+  assertStageBProductionBrowser(production);
+  const mutations = [
+    (copy) => { copy.implementationHead = '0'.repeat(40); },
+    (copy) => { copy.fabricated = true; },
+    (copy) => { copy.pages.runId += 1; },
+    (copy) => { copy.pages.event = 'workflow_dispatch'; },
+    (copy) => { copy.pages.headSha = '1'.repeat(40); },
+    (copy) => { copy.pages.status = 'in_progress'; },
+    (copy) => { copy.pages.conclusion = 'failure'; },
+    (copy) => { copy.pages.buildJobId += 1; },
+    (copy) => { copy.pages.buildStatus = 'queued'; },
+    (copy) => { copy.pages.buildConclusion = 'failure'; },
+    (copy) => { copy.pages.deployJobId += 1; },
+    (copy) => { copy.pages.deployStatus = 'queued'; },
+    (copy) => { copy.pages.deployConclusion = 'failure'; },
+    (copy) => { copy.pages.fabricatedSuccess = true; },
+    (copy) => { copy.probes.routes.reverse(); },
+    (copy) => { copy.probes.routes[4].path = '/tego-arch/styles/sty-11'; },
+    (copy) => { copy.probes.routes[4].status = 404; },
+    (copy) => { copy.probes.routes[8].contentType = 'text/plain'; },
+    (copy) => { copy.probes.routes.push({path: '/fabricated', status: 200, contentType: 'text/html; charset=utf-8'}); },
+    (copy) => { copy.probes.svg.bytes += 1; },
+    (copy) => { copy.probes.svg.sha256 = '2'.repeat(64); },
+    (copy) => { copy.probes.svg.status = 404; },
+    (copy) => { copy.probes.svg.fabricated = true; },
+    (copy) => { copy.projection.completed -= 1; },
+    (copy) => { copy.projection.documents += 1; },
+    (copy) => { copy.projection.sources += 1; },
+    (copy) => { copy.projection.current.published = false; },
+    (copy) => { copy.projection.current.status = 'pending'; },
+    (copy) => { copy.projection.next.published = true; },
+    (copy) => { copy.projection.next.status = 'complete'; },
+    (copy) => { copy.projection.next.actionableCount = 1; },
+    (copy) => { copy.projection.fabricated = true; },
+    (copy) => { copy.collection.browser = 'Chrome'; },
+    (copy) => { copy.collection.fresh = false; },
+    (copy) => { copy.collection.build = 'fabricated success'; },
+    (copy) => { copy.collection.fabricated = true; },
+    (copy) => { delete copy.states.mobileDark; },
+    (copy) => { copy.states.fabricated = structuredClone(copy.states.desktopLight); },
+    (copy) => { copy.states.desktopLight.fabricated = true; },
+    (copy) => { copy.states.desktopLight.viewport.fabricated = true; },
+    (copy) => { copy.states.desktopLight.geometry.fabricated = true; },
+    (copy) => { copy.states.desktopLight.geometry.page.fabricated = true; },
+    (copy) => { copy.states.desktopLight.geometry.wrappers[0].fabricated = true; },
+    (copy) => { copy.states.desktopLight.geometry.svg.fabricated = true; },
+    (copy) => { copy.states.desktopLight.interactions[0].fabricated = true; },
+    (copy) => { copy.states.desktopLight.interactions[0].before.fabricated = true; },
+    (copy) => { copy.states.desktopLight.interactions[0].after.fabricated = true; },
+    (copy) => { copy.states.desktopLight.relations[0].fabricated = true; },
+    (copy) => { copy.states.desktopLight.geometry.sources[0].fabricated = true; },
+    (copy) => { copy.states.desktopLight.diagnostics.fabricated = true; },
+    (copy) => { copy.states.desktopLight.provenance.fabricated = true; },
+    (copy) => { copy.states.desktopLight.provenance.reusedPriorState = true; },
+    (copy) => { copy.states.desktopLight.provenance.collectionId = 'stage-a-reuse'; },
+    (copy) => { copy.states.desktopLight.geometry.wrappers.reverse(); },
+    (copy) => { copy.states.desktopDark.interactions[1].after.scrollLeft += 1; },
+    (copy) => { copy.states.mobileLight.relations[0].h1 = 'fabricated'; },
+    (copy) => { copy.states.mobileDark.geometry.sources.reverse(); },
+    (copy) => { copy.states.desktopLight.geometry.svg.viewBox = '0 0 2401 3900'; },
+    (copy) => { copy.states.mobileDark.geometry.sty11 = 1; },
+    (copy) => { copy.states.desktopDark.logs.push({level: 'error'}); },
+    (copy) => { copy.states.mobileLight.diagnostics.events.push({method: 'Runtime.exceptionThrown'}); },
+    (copy) => { copy.states.mobileDark.diagnostics.hasMore = true; },
+    (copy) => { copy.states.mobileDark.diagnostics.truncated = true; },
+    (copy) => { copy.screenshotEvidence.status = 'PASS'; },
+    (copy) => { copy.screenshotEvidence.reason = 'fabricated visual success'; },
+    (copy) => { copy.screenshotEvidence.attempts.splice(1, 1); },
+    (copy) => { copy.screenshotEvidence.attempts.reverse(); },
+    (copy) => { copy.screenshotEvidence.attempts.push(structuredClone(copy.screenshotEvidence.attempts[0])); },
+    (copy) => { copy.screenshotEvidence.attempts[0].status = 'CAPTURED_ACCEPTED'; },
+    (copy) => { copy.screenshotEvidence.attempts[0].requestedViewport.width += 1; },
+    (copy) => { copy.screenshotEvidence.attempts[1].observedViewport.width += 1; },
+    (copy) => { copy.screenshotEvidence.attempts[2].method = 'external Playwright'; },
+    (copy) => { copy.screenshotEvidence.attempts[0].bytes = 1; },
+    (copy) => { copy.screenshotEvidence.attempts[1].sha256 = '3'.repeat(64); },
+    (copy) => { copy.screenshotEvidence.attempts[2].path = '/fabricated.png'; },
+    (copy) => { copy.screenshotEvidence.fabricatedVisualPass = true; },
+  ];
+  assert.equal(mutations.length, 76, 'complete explicit Stage B production mutation inventory');
+  for (const mutate of mutations) {
+    const copy = structuredClone(production);
+    mutate(copy);
+    assert.notDeepEqual(copy, production, 'Stage B production mutation is non-no-op');
+    assert.throws(() => assertStageBProductionBrowser(copy), {name: 'AssertionError'});
+  }
+});
+
+test('rejects Stage B production review fabrication, visual PASS, and duplicate or displaced readiness lines', () => {
+  assertStageBProductionReview(review);
+  for (const [before, after] of [
+    [`Exact published Stage B READY head: \`${STAGE_B_READY_HEAD}\`.`, `Exact published Stage B READY head: \`${'0'.repeat(40)}\`.`],
+    [`Exact Pages push run: \`${STAGE_B_PRODUCTION_PAGES.runId}\`;`, 'Exact Pages push run: `0`;'],
+    [`Build job: \`${STAGE_B_PRODUCTION_PAGES.buildJobId}\`;`, 'Build job: `0`;'],
+    [`Deploy job: \`${STAGE_B_PRODUCTION_PAGES.deployJobId}\`;`, 'Deploy job: `0`;'],
+    ['Required HTML routes: `9/9`;', 'Required HTML routes: `8/9`;'],
+    [STAGE_B_PRODUCTION_RAW_HASH, '4'.repeat(64)],
+    ['Projection: `63 completed topics / 106 content documents / 550 governed sources`;', 'Projection: `62 completed topics / 106 content documents / 550 governed sources`;'],
+    ['Functional production QA: `PASS`;', 'Functional production QA: `PENDING`;'],
+    ['Screenshot evidence: `BLOCKED / NOT_ACCEPTED`;', 'Screenshot evidence: `PASS`;'],
+    ['none returned original bytes, so no screenshot is accepted and no visual PASS is claimed.', 'all screenshots prove a fabricated visual PASS.'],
+    ['No Chrome fallback, external Playwright, prior raw, historical screenshot, substituted browser surface or fabricated success is claimed.', 'Fabricated success is claimed.'],
+    ['Stage B deployment status: `SUCCESS`;', 'Stage B deployment status: `PENDING`;'],
+    ['Scope is closed at `STAGE_B`;', 'Scope is closed at `STAGE_A_ONLY`;'],
+  ]) {
+    const mutated = review.replace(before, after);
+    assert.notEqual(mutated, review, `${before} Stage B production-review mutation applies`);
+    assert.throws(() => assertStageBProductionReview(mutated), {name: 'AssertionError'});
+  }
+  const readiness = '- Final Stage B readiness: `READY`.';
+  const duplicatedReadiness = review.replace(readiness, `${readiness}\n${readiness}`);
+  assert.notEqual(duplicatedReadiness, review, 'duplicate readiness mutation applies');
+  assert.throws(() => assertStageBProductionReview(duplicatedReadiness), {name: 'AssertionError'});
+  const displacedReadiness = `${review.replace(`${readiness}\n`, '')}\n${readiness}\n`;
+  assert.notEqual(displacedReadiness, review, 'displaced readiness mutation applies');
+  assert.throws(() => assertStageBProductionReview(displacedReadiness), {name: 'AssertionError'});
 });
