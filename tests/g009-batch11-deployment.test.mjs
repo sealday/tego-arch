@@ -203,10 +203,16 @@ test('rejects Browser state, geometry, interaction, relation, source, SVG, diagn
     (copy) => { delete copy.states.mobileDark; },
     (copy) => { copy.states.desktopLight.geometry.page.scrollWidth += 1; },
     (copy) => { copy.states.desktopLight.geometry.wrappers.reverse(); },
+    (copy) => { copy.states.desktopLight.geometry.wrappers[1] = structuredClone(copy.states.desktopLight.geometry.wrappers[0]); },
+    (copy) => { copy.states.desktopLight.geometry.wrappers[0].clientWidth += 1; },
     (copy) => { copy.states.mobileLight.geometry.wrappers[2].scrollWidth += 1; },
     (copy) => { copy.states.desktopDark.interactions[1].expectedScrollDelta += 1; },
+    (copy) => { delete copy.states.desktopDark.interactions[1].before.outline; },
+    (copy) => { copy.states.desktopDark.interactions[1].after.outline = 'none'; },
     (copy) => { copy.states.mobileDark.interactions[0].before.focusVisible = false; },
     (copy) => { copy.states.mobileLight.relations[4].returnedToArticle = false; },
+    (copy) => { copy.states.mobileDark.relations[0].href = '/tego-arch/styles/sty-99'; },
+    (copy) => { copy.states.mobileDark.relations[0].h1 = 'fabricated'; },
     (copy) => { copy.states.desktopLight.relations.reverse(); },
     (copy) => { copy.states.desktopDark.geometry.sources[0].href = 'https://example.com/fabricated'; },
     (copy) => { copy.states.mobileLight.geometry.sources.reverse(); },
@@ -216,15 +222,18 @@ test('rejects Browser state, geometry, interaction, relation, source, SVG, diagn
     (copy) => { copy.states.mobileDark.logs.push({level: 'error'}); },
     (copy) => { copy.states.mobileDark.diagnostics.events.push({method: 'Runtime.exceptionThrown'}); },
     (copy) => { copy.states.mobileDark.diagnostics.hasMore = true; },
+    (copy) => { copy.states.mobileDark.diagnostics.truncated = true; },
     (copy) => { copy.screenshotEvidence.status = 'PASS'; },
     (copy) => { copy.screenshotEvidence.attempts.splice(1, 1); },
     (copy) => { copy.screenshotEvidence.attempts[0].bytes += 1; },
     (copy) => { copy.screenshotEvidence.attempts[1].sha256 = '0'.repeat(64); },
     (copy) => { copy.screenshotEvidence.attempts[2].status = 'PASS'; },
   ];
+  assert.equal(mutations.length, 29, 'complete explicit Browser mutation inventory');
   for (const mutate of mutations) {
     const copy = structuredClone(evidence);
     mutate(copy);
+    assert.notDeepEqual(copy, evidence, 'mutation fixture is non-no-op');
     assert.throws(() => assertBrowser(copy), {name: 'AssertionError'});
   }
 });
