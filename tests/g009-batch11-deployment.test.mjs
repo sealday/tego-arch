@@ -11,12 +11,47 @@ export const CURRENT_TOPIC = 'STY-10';
 export const NEXT_TOPIC = 'STY-11';
 export const REVIEW = 'docs/reviews/g009-batch11.md';
 export const LOCAL_RAW = 'docs/reviews/evidence/g009-batch11-stage-a-browser.json';
+export const PRODUCTION_RAW = 'docs/reviews/evidence/g009-batch11-stage-a-production-browser.json';
 
 const IMPLEMENTATION_HEAD = 'f2cdebb413c7cd96fcb630579c82f0f3b6199983';
 const EVIDENCE_HEAD = 'c9a0deaea262fd802a5ad151f70818a314da1fe4';
 const REVIEW_HEAD = 'c9a0deaea262fd802a5ad151f70818a314da1fe4';
 const RAW_BROWSER_BYTES = 26_211;
 const RAW_BROWSER_HASH = '3ae7ed0786d712e6e09cb1fbd4320473de44f6f6f7acd477b3f1ab35bd8b7e89';
+const READY_HEAD = '05bcd441c21aad16418f1b432af49304cdb0808b';
+const PRODUCTION_RAW_BYTES = 28_696;
+const PRODUCTION_RAW_HASH = 'ccbec59b2392a21170b8fabfbc44ba7fd40ea45b54b69ea43632b33f78122eb7';
+const PRODUCTION_PAGES = Object.freeze({
+  runId: 32_358_912_394,
+  event: 'push',
+  headSha: READY_HEAD,
+  status: 'completed',
+  conclusion: 'success',
+  buildJobId: 96_394_049_449,
+  buildStatus: 'completed',
+  buildConclusion: 'success',
+  deployJobId: 96_394_492_501,
+  deployStatus: 'completed',
+  deployConclusion: 'success',
+});
+const PRODUCTION_ROUTES = Object.freeze([
+  {path: '/tego-arch/', status: 200, contentType: 'text/html; charset=utf-8'},
+  {path: '/tego-arch/styles', status: 200, contentType: 'text/html; charset=utf-8'},
+  {path: '/tego-arch/styles/sty-04', status: 200, contentType: 'text/html; charset=utf-8'},
+  {path: '/tego-arch/styles/sty-05', status: 200, contentType: 'text/html; charset=utf-8'},
+  {path: '/tego-arch/styles/sty-10', status: 200, contentType: 'text/html; charset=utf-8'},
+  {path: '/tego-arch/principles', status: 200, contentType: 'text/html; charset=utf-8'},
+  {path: '/tego-arch/principles/pr-09', status: 200, contentType: 'text/html; charset=utf-8'},
+  {path: '/tego-arch/principles/pr-12', status: 200, contentType: 'text/html; charset=utf-8'},
+  {path: '/tego-arch/references', status: 200, contentType: 'text/html; charset=utf-8'},
+]);
+const PRODUCTION_SVG = Object.freeze({
+  url: 'https://sealday.github.io/tego-arch/img/diagrams/sty-10-microkernel-order-plugins.svg',
+  status: 200,
+  contentType: 'image/svg+xml',
+  bytes: 20_285,
+  sha256: '69080badd0f6500f24b59f4045463c65e17669659da77616ee4520bd4d2c802c',
+});
 const STATES = ['desktopLight', 'desktopDark', 'mobileLight', 'mobileDark'];
 const WRAPPERS = [
   '订单平台双平面微内核与进程外插件图，可横向滚动',
@@ -75,6 +110,11 @@ const SCREENSHOT_ATTEMPTS = Object.freeze([
   {ordinal: 1, state: 'desktopLight', viewport: {width: 1440, height: 1000}, kind: 'fullPage', path: '/Users/seal/projects/tego-arch/.worktrees/g009-styles-batch7/.superpowers/sdd/sty10-stage-a-f2cdebb-desktop-light.png', bytes: 1_531_340, sha256: '6fff5ee287070ad1e25ca9215ed07d1f492fc4d6467183ac408828bb8dcdf332', status: 'CAPTURED_REJECTED', reason: SCREENSHOT_REJECTION_REASON},
   {ordinal: 2, state: 'desktopDark', viewport: {width: 1440, height: 1000}, kind: 'fullPage', path: '/Users/seal/projects/tego-arch/.worktrees/g009-styles-batch7/.superpowers/sdd/sty10-stage-a-f2cdebb-desktop-dark.png', bytes: 1_547_151, sha256: '4d24cd3ae4bcb319aa087d2f6a216a41c1fa3aed614a7b947be30f429a5ba180', status: 'CAPTURED_REJECTED', reason: SCREENSHOT_REJECTION_REASON},
   {ordinal: 3, state: 'mobileLight', viewport: {width: 390, height: 844}, kind: 'fullPage', path: '/Users/seal/projects/tego-arch/.worktrees/g009-styles-batch7/.superpowers/sdd/sty10-stage-a-f2cdebb-mobile-light.png', bytes: 716_251, sha256: '7ca3d681422f16fcd55731e87dba1bb4cf5a3a2cca387e9793db0190ff8812a4', status: 'CAPTURED_REJECTED', reason: SCREENSHOT_REJECTION_REASON},
+]);
+const PRODUCTION_SCREENSHOT_ATTEMPTS = Object.freeze([
+  {ordinal: 1, state: 'desktopLight', viewport: {width: 1440, height: 1000}, observedViewport: {width: 1440, height: 1000}, kind: 'fullPage', path: '/Users/seal/projects/tego-arch/.worktrees/g009-styles-batch7/.superpowers/sdd/sty10-stage-a-production-05bcd44-desktop-light.png', bytes: 1_699_955, sha256: '67ea689dde9ca13046bb05218e95360b2d360c824cb58cc59a08fb555f53bc30', status: 'CAPTURED_REJECTED', reason: SCREENSHOT_REJECTION_REASON},
+  {ordinal: 2, state: 'desktopDark', viewport: {width: 1440, height: 1000}, observedViewport: {width: 1440, height: 1000}, kind: 'fullPage', path: '/Users/seal/projects/tego-arch/.worktrees/g009-styles-batch7/.superpowers/sdd/sty10-stage-a-production-05bcd44-desktop-dark.png', bytes: 1_715_623, sha256: 'bcb16ff5ea130ce4ed0facdc00bee8189e5571778d767a7cdd74e1777cc455c1', status: 'CAPTURED_REJECTED', reason: SCREENSHOT_REJECTION_REASON},
+  {ordinal: 3, state: 'mobileLight', viewport: {width: 390, height: 844}, observedViewport: {width: 1440, height: 1000}, kind: 'fullPage', path: '/Users/seal/projects/tego-arch/.worktrees/g009-styles-batch7/.superpowers/sdd/sty10-stage-a-production-05bcd44-mobile-light.png', bytes: 1_699_955, sha256: '67ea689dde9ca13046bb05218e95360b2d360c824cb58cc59a08fb555f53bc30', status: 'CAPTURED_REJECTED', reason: 'The in-app Browser full-page capture ignored the requested 390x844 viewport, repeated the 1440x1000 opening viewport bytes, and omitted complete architecture-diagram coverage, so it cannot support trustworthy mobile or whole-page visual review.'},
 ]);
 
 const IMMEDIATE_REVIEW = 'docs/reviews/g009-batch10.md';
@@ -152,6 +192,34 @@ function assertBrowser(evidence) {
     attempts: SCREENSHOT_ATTEMPTS,
   });
 }
+function assertProductionBrowser(evidence) {
+  assert.ok(evidence, `${PRODUCTION_RAW} exists and parses`);
+  assert.deepEqual(Object.keys(evidence), ['implementationHead', 'pages', 'probes', 'collection', 'states', 'screenshotEvidence']);
+  assert.equal(evidence.implementationHead, READY_HEAD);
+  assert.deepEqual(evidence.pages, PRODUCTION_PAGES);
+  assert.deepEqual(evidence.probes, {routes: PRODUCTION_ROUTES, svg: PRODUCTION_SVG});
+  assert.deepEqual(evidence.collection, {
+    browser: 'Codex in-app Browser only',
+    fresh: true,
+    servedUrl: 'https://sealday.github.io/tego-arch/styles/sty-10',
+    build: `GitHub Pages exact Stage A READY head ${READY_HEAD}; push run ${PRODUCTION_PAGES.runId}; build job ${PRODUCTION_PAGES.buildJobId}; deploy job ${PRODUCTION_PAGES.deployJobId}`,
+  });
+  assertBrowser({
+    candidateHead: IMPLEMENTATION_HEAD,
+    collection: {browser: 'Codex in-app Browser only', fresh: true, servedUrl: 'http://127.0.0.1:3421/tego-arch/styles/sty-10'},
+    states: evidence.states,
+    screenshotEvidence: {
+      status: 'BLOCKED / NOT_ACCEPTED',
+      reason: 'Exactly three fresh in-app Browser full-page captures repeated viewport content and omitted complete architecture-diagram coverage; no visual PASS is claimed.',
+      attempts: SCREENSHOT_ATTEMPTS,
+    },
+  });
+  assert.deepEqual(evidence.screenshotEvidence, {
+    status: 'BLOCKED / NOT_ACCEPTED',
+    reason: 'Exactly three fresh in-app Browser full-page captures repeated viewport content and omitted complete architecture-diagram coverage; the third capture also ignored the requested mobile viewport; no visual PASS is claimed.',
+    attempts: PRODUCTION_SCREENSHOT_ATTEMPTS,
+  });
+}
 function assertFinalReview(source) {
   assert.equal(source.match(/^- Screenshot evidence: `BLOCKED \/ NOT_ACCEPTED`\.$/gmu)?.length, 1, 'one honest screenshot verdict');
   assert.equal(source.match(/^- No Chrome fallback, prior raw, historical screenshot or visual PASS is claimed\.$/gmu)?.length, 1, 'one no-overclaim statement');
@@ -165,14 +233,41 @@ function assertFinalReview(source) {
     '- Independent content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`.',
     '- Independent architecture/invariant review: `CLEAR / READY`; blockers: `0`.',
     '- Final Stage A review judgment: `READY`.',
-    '- Scope boundary: `STAGE_A_ONLY`; Stage B backlog closure and deployment have not run.',
-    '- Deployment status: `NOT_RUN`.',
+    '- Scope boundary: `STAGE_A_ONLY`; Stage B backlog closure and Stage B deployment have not run.',
+    '- Deployment status: `STAGE_A_SUCCESS / STAGE_B_NOT_RUN`.',
   ].join('\n'), 'exact final Stage A checkpoint');
 }
+function assertProductionReview(source) {
+  assertFinalReview(source);
+  const production = section(source, 'Stage A production deployment');
+  assert.equal(production, [
+    `- Exact published Stage A READY head: \`${READY_HEAD}\`.`,
+    '- Preflight: tracked and untracked clean; `origin/main` exact merge-base and ancestor; behind/ahead `0/19`; publication used one non-force fast-forward push.',
+    `- Exact Pages push run: \`${PRODUCTION_PAGES.runId}\`; \`headSha=${READY_HEAD}\`; workflow: \`completed / success\`.`,
+    `- Build job: \`${PRODUCTION_PAGES.buildJobId}\`; status: \`completed / success\`.`,
+    `- Deploy job: \`${PRODUCTION_PAGES.deployJobId}\`; status: \`completed / success\`.`,
+    '- The workflow, build and deploy identities bind the exact reviewed READY head; no evidence-only run is substituted.',
+    '',
+    '| Production route | Status | Content type |',
+    '| --- | ---: | --- |',
+    ...PRODUCTION_ROUTES.map(({path, status, contentType}) => `| \`${path}\` | \`${status}\` | \`${contentType}\` |`),
+    '',
+    '- Required HTML routes: `9/9`; every route returned `200` with `text/html; charset=utf-8`.',
+    `- Reviewed SVG: \`${PRODUCTION_SVG.bytes.toLocaleString('en-US')}\` bytes; MIME \`${PRODUCTION_SVG.contentType}\`; SHA-256 \`${PRODUCTION_SVG.sha256}\`; exact reviewed byte identity: \`PASS\`.`,
+    `- Production raw Browser JSON: \`${PRODUCTION_RAW}\`; \`${PRODUCTION_RAW_BYTES.toLocaleString('en-US')}\` bytes; SHA-256 \`${PRODUCTION_RAW_HASH}\`.`,
+    '- Functional production QA: `PASS`; states `4/4`; wrapper focus/`:focus-visible`/3px/ArrowRight checks `12/12`; relation href/H1/return checks `20/20`; source href/target/rel checks `20/20`.',
+    '- SVG geometry: source `viewBox="0 0 2400 3900"` and `2400x3900`; Browser-natural `92x150`; rendered `800x1300`; STY-11 actionable count `0` in every state; warning/error logs and diagnostic events `0`; every diagnostic page has `hasMore=false` and `truncated=false`.',
+    '- Screenshot evidence: `BLOCKED / NOT_ACCEPTED`; exactly three fresh attempts are `CAPTURED_REJECTED`; all repeated viewport content and omitted complete diagram coverage, and the third ignored the requested mobile viewport.',
+    '- No Chrome fallback, prior raw, historical screenshot, substituted browser surface or visual PASS is claimed.',
+    '- Stage A deployment status: `SUCCESS`; functional production status: `PASS`; visual screenshot status remains separately `BLOCKED / NOT_ACCEPTED`.',
+    '- Scope remains `STAGE_A_ONLY`; backlog, Stage B and STY-11 are unchanged.',
+  ].join('\n'), 'exact Stage A production section');
+}
 
-const [review, raw, immediateReview, backlog, status, documents] = await Promise.all([
+const [review, raw, productionRaw, immediateReview, backlog, status, documents] = await Promise.all([
   optional(REVIEW, 'utf8'),
   optional(LOCAL_RAW),
+  optional(PRODUCTION_RAW),
   required(IMMEDIATE_REVIEW),
   required(BACKLOG, 'utf8'),
   required('src/generated/project-status.json', 'utf8').then(JSON.parse),
@@ -232,7 +327,7 @@ test('rejects wrong review heads, weakened verdicts, findings, scope, deployment
     ['Final Stage A review judgment: `READY`.', 'Final Stage A review judgment: `PENDING`.'],
     ['Final Stage A review judgment: `READY`.', 'Final Stage A review judgment: `READY`.\n- Final Stage A review judgment: `PENDING`.'],
     ['Scope boundary: `STAGE_A_ONLY`;', 'Scope boundary: `STAGE_B`;'],
-    ['Deployment status: `NOT_RUN`.', 'Deployment status: `SUCCESS`.'],
+    ['Deployment status: `STAGE_A_SUCCESS / STAGE_B_NOT_RUN`.', 'Deployment status: `STAGE_B_SUCCESS`.'],
   ]) {
     const mutated = review.replace(before, after);
     assert.notEqual(mutated, review, `${before} mutation applies`);
@@ -304,4 +399,85 @@ test('binds the complete tracked Browser bytes to one fixed SHA-256', () => {
   assert.equal(sha256(raw), RAW_BROWSER_HASH);
   assert.notEqual(sha256(Buffer.concat([raw, Buffer.from('x')])), RAW_BROWSER_HASH);
   assert.notEqual(sha256(raw.subarray(0, -1)), RAW_BROWSER_HASH);
+});
+
+test('binds the exact READY-head production publication, probes and functional IAB evidence', () => {
+  assert.ok(productionRaw, `${PRODUCTION_RAW} exists`);
+  assert.equal(productionRaw.length, PRODUCTION_RAW_BYTES);
+  assert.equal(sha256(productionRaw), PRODUCTION_RAW_HASH);
+  assert.notEqual(sha256(Buffer.concat([productionRaw, Buffer.from('x')])), PRODUCTION_RAW_HASH);
+  assert.notEqual(sha256(productionRaw.subarray(0, -1)), PRODUCTION_RAW_HASH);
+  assertProductionBrowser(JSON.parse(productionRaw));
+  assertProductionReview(review);
+});
+
+test('rejects production deployment, probe, semantic, additive, diagnostic, screenshot and review mutations', () => {
+  assert.ok(productionRaw, `${PRODUCTION_RAW} exists`);
+  const production = JSON.parse(productionRaw);
+  assertProductionBrowser(production);
+  const mutations = [
+    (copy) => { copy.implementationHead = '0'.repeat(40); },
+    (copy) => { copy.fabricated = true; },
+    (copy) => { copy.pages.runId += 1; },
+    (copy) => { copy.pages.event = 'workflow_dispatch'; },
+    (copy) => { copy.pages.headSha = '1'.repeat(40); },
+    (copy) => { copy.pages.buildConclusion = 'failure'; },
+    (copy) => { copy.pages.deployJobId += 1; },
+    (copy) => { copy.pages.fabricated = 'PASS'; },
+    (copy) => { copy.probes.routes.reverse(); },
+    (copy) => { copy.probes.routes[4].path = '/tego-arch/styles/sty-11'; },
+    (copy) => { copy.probes.routes[4].status = 404; },
+    (copy) => { copy.probes.routes[8].contentType = 'text/plain'; },
+    (copy) => { copy.probes.routes.push({path: '/fabricated', status: 200, contentType: 'text/html; charset=utf-8'}); },
+    (copy) => { copy.probes.svg.bytes += 1; },
+    (copy) => { copy.probes.svg.sha256 = '2'.repeat(64); },
+    (copy) => { copy.probes.svg.fabricated = true; },
+    (copy) => { copy.collection.browser = 'Chrome'; },
+    (copy) => { copy.collection.fabricated = 'PASS'; },
+    (copy) => { delete copy.states.mobileDark; },
+    (copy) => { copy.states.fabricated = structuredClone(copy.states.desktopLight); },
+    (copy) => { copy.states.desktopLight.geometry.wrappers.reverse(); },
+    (copy) => { copy.states.desktopDark.interactions[1].after.scrollLeft += 1; },
+    (copy) => { copy.states.mobileLight.relations[0].h1 = 'fabricated'; },
+    (copy) => { copy.states.mobileDark.geometry.sources.reverse(); },
+    (copy) => { copy.states.desktopLight.geometry.svg.viewBox = '0 0 2401 3900'; },
+    (copy) => { copy.states.mobileDark.geometry.sty11 = 1; },
+    (copy) => { copy.states.desktopDark.logs.push({level: 'error'}); },
+    (copy) => { copy.states.mobileLight.diagnostics.events.push({method: 'Runtime.exceptionThrown'}); },
+    (copy) => { copy.states.mobileDark.diagnostics.hasMore = true; },
+    (copy) => { copy.states.mobileDark.diagnostics.truncated = true; },
+    (copy) => { copy.screenshotEvidence.status = 'PASS'; },
+    (copy) => { copy.screenshotEvidence.attempts.splice(1, 1); },
+    (copy) => { copy.screenshotEvidence.attempts.reverse(); },
+    (copy) => { copy.screenshotEvidence.attempts.push(structuredClone(copy.screenshotEvidence.attempts[0])); },
+    (copy) => { copy.screenshotEvidence.attempts[0].bytes += 1; },
+    (copy) => { copy.screenshotEvidence.attempts[1].sha256 = '3'.repeat(64); },
+    (copy) => { copy.screenshotEvidence.attempts[2].observedViewport.width = 390; },
+    (copy) => { copy.screenshotEvidence.fabricatedVisualPass = true; },
+  ];
+  for (const mutate of mutations) {
+    const copy = structuredClone(production);
+    mutate(copy);
+    assert.notDeepEqual(copy, production, 'production mutation is non-no-op');
+    assert.throws(() => assertProductionBrowser(copy), {name: 'AssertionError'});
+  }
+
+  assertProductionReview(review);
+  for (const [before, after] of [
+    [`Exact published Stage A READY head: \`${READY_HEAD}\`.`, `Exact published Stage A READY head: \`${'0'.repeat(40)}\`.`],
+    [`Exact Pages push run: \`${PRODUCTION_PAGES.runId}\`;`, 'Exact Pages push run: `0`;'],
+    [`Build job: \`${PRODUCTION_PAGES.buildJobId}\`;`, 'Build job: `0`;'],
+    [`Deploy job: \`${PRODUCTION_PAGES.deployJobId}\`;`, 'Deploy job: `0`;'],
+    ['Required HTML routes: `9/9`;', 'Required HTML routes: `8/9`;'],
+    [PRODUCTION_RAW_HASH, '4'.repeat(64)],
+    ['Functional production QA: `PASS`;', 'Functional production QA: `PENDING`;'],
+    ['Screenshot evidence: `BLOCKED / NOT_ACCEPTED`;', 'Screenshot evidence: `PASS`;'],
+    ['No Chrome fallback, prior raw, historical screenshot, substituted browser surface or visual PASS is claimed.', 'Fabricated deployment and visual PASS are claimed.'],
+    ['Stage A deployment status: `SUCCESS`;', 'Stage A deployment status: `PENDING`;'],
+    ['Scope remains `STAGE_A_ONLY`;', 'Scope remains `STAGE_B`;'],
+  ]) {
+    const mutated = review.replace(before, after);
+    assert.notEqual(mutated, review, `${before} production-review mutation applies`);
+    assert.throws(() => assertProductionReview(mutated), {name: 'AssertionError'});
+  }
 });
