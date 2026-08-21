@@ -14,6 +14,34 @@ const analyzerScript = fileURLToPath(
     import.meta.url,
   ),
 );
+const repositoryDensityChecker = fileURLToPath(
+  new URL('../scripts/check-content-density.mjs', import.meta.url),
+);
+
+test('repository final-gate density checker passes reviewed content and rejects warnings', async () => {
+  const productionPath = fileURLToPath(
+    new URL('../content/styles/sty-10-microkernel-plugin-architecture.mdx', import.meta.url),
+  );
+  const production = spawnSync(process.execPath, [repositoryDensityChecker, productionPath], {
+    encoding: 'utf8',
+  });
+  assert.equal(production.status, 0, production.stderr);
+  assert.match(production.stdout, /Checked .*sty-10-microkernel-plugin-architecture\.mdx: 0 density warnings/u);
+
+  const root = await mkdtemp(path.join(tmpdir(), 'repository-density-checker-'));
+  const fixture = path.join(root, 'dense.mdx');
+  try {
+    await writeFile(fixture, `${'这是需要被拒绝的超长正文'.repeat(40)}。\n`);
+    const rejected = spawnSync(process.execPath, [repositoryDensityChecker, fixture], {
+      encoding: 'utf8',
+    });
+    assert.equal(rejected.status, 1);
+    assert.match(rejected.stderr, /dense\.mdx:1 \[long-sentence\]/u);
+    assert.match(rejected.stderr, /Density check failed with [1-9][0-9]* warning/u);
+  } finally {
+    await rm(root, {recursive: true, force: true});
+  }
+});
 
 test('reports long prose without counting front matter, tables, or code', () => {
   const source = `---

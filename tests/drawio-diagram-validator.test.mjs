@@ -12,6 +12,9 @@ const validatorPath = fileURLToPath(
     import.meta.url,
   ),
 );
+const repositoryValidatorPath = fileURLToPath(
+  new URL('../scripts/validate_drawio_svg.mjs', import.meta.url),
+);
 const fixtureDirectory = new URL(
   './fixtures/drawio-diagram-validator/',
   import.meta.url,
@@ -37,6 +40,33 @@ function runValidatorPaths(drawioPath, svgPath, ...args) {
     {encoding: 'utf8'},
   );
 }
+
+test('repository final-gate entrypoint validates the production pair and rejects drift', () => {
+  const production = spawnSync(
+    process.execPath,
+    [
+      repositoryValidatorPath,
+      fileURLToPath(new URL('../diagrams/sty-10-microkernel-order-plugins.drawio', import.meta.url)),
+      fileURLToPath(new URL('../static/img/diagrams/sty-10-microkernel-order-plugins.svg', import.meta.url)),
+    ],
+    {encoding: 'utf8'},
+  );
+  assert.equal(production.status, 0, production.stderr);
+  assert.match(production.stdout, /Validated sty-10-microkernel-order-plugins/u);
+
+  const drift = spawnSync(
+    process.execPath,
+    [
+      repositoryValidatorPath,
+      fileURLToPath(new URL('invalid.drawio', fixtureDirectory)),
+      fileURLToPath(new URL('mismatched.svg', fixtureDirectory)),
+    ],
+    {encoding: 'utf8'},
+  );
+  assert.equal(drift.status, 1);
+  assert.match(drift.stderr, /matching slug/u);
+  assert.match(drift.stderr, /accessible title and description/u);
+});
 
 test('rejects mismatched, inaccessible, fixed-size diagram pairs', () => {
   const result = runValidator('invalid.drawio', 'mismatched.svg');

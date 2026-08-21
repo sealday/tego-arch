@@ -146,11 +146,13 @@
 
 - Required HTML routes: `9/9`; every route returned `200` with `text/html; charset=utf-8`.
 - Reviewed SVG: `20,285` bytes; MIME `image/svg+xml`; SHA-256 `69080badd0f6500f24b59f4045463c65e17669659da77616ee4520bd4d2c802c`; exact reviewed byte identity: `PASS`.
-- Stage B production raw Browser JSON: `docs/reviews/evidence/g009-batch11-stage-b-production-browser.json`; `30,700` bytes; SHA-256 `d97bb9ee5b3f32dc5c98a4754891170419aeffa293462e9866753a827144773e`.
+- Stage B production raw Browser JSON: `docs/reviews/evidence/g009-batch11-stage-b-production-browser.json`; `79,574` bytes; SHA-256 `e595943e83c1411f5695ea397761b0be130d2da298382015328d45f7b8eb942d`.
+- Fresh IAB append-only operation ledger: session `sty10-stage-b-repair-iab-20260821T062920628Z`; operations `27/27`; state operations `24/24`; screenshot operations `3/3`; monotonic cursor range `0..53`; every state field is observation-linked and sealed by functional payload bytes/SHA-256.
+- Exact final-gate repository CLIs: `scripts/validate_drawio_svg.mjs` `PASS`; `scripts/check-content-density.mjs` `PASS` with `0` density warnings.
 - Projection: `63 completed topics / 106 content documents / 550 governed sources`; STY-10 is `published / complete`; STY-11 is `unpublished / pending / non-actionable` with actionable count `0`.
 - Functional production QA: `PASS`; states `4/4`; wrapper focus/`:focus-visible`/3px/ArrowRight checks `12/12`; relation href/H1/return checks `20/20`; source href/target/rel checks `20/20`.
 - SVG geometry: source `viewBox="0 0 2400 3900"` and `2400x3900`; Browser-natural `92x150`; rendered `800x1300`; STY-11 actionable count `0` in every state; warning/error logs and diagnostic events `0`; every diagnostic page has `hasMore=false` and `truncated=false`.
-- Screenshot evidence: `BLOCKED / NOT_ACCEPTED`; exactly three fresh full-page attempts are `CAPTURE_TIMEOUT_NO_BYTES`; none returned original bytes, so no screenshot is accepted and no visual PASS is claimed.
+- Screenshot evidence: `BLOCKED / NOT_ACCEPTED`; exactly three fresh full-page attempts are `CAPTURED_REJECTED`; original bytes were inspected and all repeated opening viewport slices while omitting complete architecture-diagram coverage, so no visual PASS is claimed.
 - No Chrome fallback, external Playwright, prior raw, historical screenshot, substituted browser surface or fabricated success is claimed.
 - Stage B deployment status: `SUCCESS`; functional production status: `PASS`; visual screenshot status remains separately `BLOCKED / NOT_ACCEPTED`.
 - Scope is closed at `STAGE_B`; STY-11 remains untouched and non-actionable.

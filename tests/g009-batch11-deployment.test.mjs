@@ -43,8 +43,8 @@ const PRODUCTION_PAGES = Object.freeze({
   deployStatus: 'completed',
   deployConclusion: 'success',
 });
-const STAGE_B_PRODUCTION_RAW_BYTES = 30_700;
-const STAGE_B_PRODUCTION_RAW_HASH = 'd97bb9ee5b3f32dc5c98a4754891170419aeffa293462e9866753a827144773e';
+const STAGE_B_PRODUCTION_RAW_BYTES = 79_574;
+const STAGE_B_PRODUCTION_RAW_HASH = 'e595943e83c1411f5695ea397761b0be130d2da298382015328d45f7b8eb942d';
 const STAGE_B_PRODUCTION_PAGES = Object.freeze({
   runId: 32_367_610_144,
   event: 'push',
@@ -140,11 +140,12 @@ const PRODUCTION_SCREENSHOT_ATTEMPTS = Object.freeze([
   {ordinal: 2, state: 'desktopDark', viewport: {width: 1440, height: 1000}, observedViewport: {width: 1440, height: 1000}, kind: 'fullPage', path: '/Users/seal/projects/tego-arch/.worktrees/g009-styles-batch7/.superpowers/sdd/sty10-stage-a-production-05bcd44-desktop-dark.png', bytes: 1_715_623, sha256: 'bcb16ff5ea130ce4ed0facdc00bee8189e5571778d767a7cdd74e1777cc455c1', status: 'CAPTURED_REJECTED', reason: SCREENSHOT_REJECTION_REASON},
   {ordinal: 3, state: 'mobileLight', viewport: {width: 390, height: 844}, observedViewport: {width: 1440, height: 1000}, kind: 'fullPage', path: '/Users/seal/projects/tego-arch/.worktrees/g009-styles-batch7/.superpowers/sdd/sty10-stage-a-production-05bcd44-mobile-light.png', bytes: 1_699_955, sha256: '67ea689dde9ca13046bb05218e95360b2d360c824cb58cc59a08fb555f53bc30', status: 'CAPTURED_REJECTED', reason: 'The in-app Browser full-page capture ignored the requested 390x844 viewport, repeated the 1440x1000 opening viewport bytes, and omitted complete architecture-diagram coverage, so it cannot support trustworthy mobile or whole-page visual review.'},
 ]);
-const STAGE_B_SCREENSHOT_TIMEOUT_REASON = 'The in-app Browser full-page capture timed out before returning original bytes, so no screenshot artifact exists to inspect or accept.';
+const STAGE_B_REPAIR_SESSION_ID = 'sty10-stage-b-repair-iab-20260821T062920628Z';
+const STAGE_B_SCREENSHOT_REJECTION_REASON = 'Original-size inspection shows repeated opening viewport slices and omits complete architecture-diagram coverage.';
 const STAGE_B_SCREENSHOT_ATTEMPTS = Object.freeze([
-  {ordinal: 1, state: 'desktopLight', requestedViewport: {width: 1440, height: 1000}, observedViewport: {width: 1440, height: 1000}, kind: 'fullPage', method: 'Tab.screenshot', path: null, bytes: null, sha256: null, status: 'CAPTURE_TIMEOUT_NO_BYTES', reason: STAGE_B_SCREENSHOT_TIMEOUT_REASON},
-  {ordinal: 2, state: 'desktopLight', requestedViewport: {width: 1440, height: 1000}, observedViewport: {width: 1280, height: 720}, observedScrollHeight: 11_289, kind: 'fullPage', method: 'Tab.screenshot', path: null, bytes: null, sha256: null, status: 'CAPTURE_TIMEOUT_NO_BYTES', reason: STAGE_B_SCREENSHOT_TIMEOUT_REASON},
-  {ordinal: 3, state: 'mobileDark', requestedViewport: {width: 390, height: 844}, observedViewport: {width: 390, height: 844}, observedScrollHeight: 16_288, layoutContentSize: {x: 0, y: 0, width: 780, height: 32_576}, kind: 'fullPage', method: 'CDP Page.captureScreenshot', path: null, bytes: null, sha256: null, status: 'CAPTURE_TIMEOUT_NO_BYTES', reason: STAGE_B_SCREENSHOT_TIMEOUT_REASON},
+  {ordinal: 1, state: 'desktopLight', viewport: {width: 1440, height: 1000}, fullPage: true, status: 'CAPTURED_REJECTED', reason: STAGE_B_SCREENSHOT_REJECTION_REASON, artifactPath: '/Users/seal/projects/tego-arch/.worktrees/g009-styles-batch7/.superpowers/sdd/sty10-stage-b-repair-desktopLight.png', bytes: 1_531_340, sha256: '6fff5ee287070ad1e25ca9215ed07d1f492fc4d6467183ac408828bb8dcdf332'},
+  {ordinal: 2, state: 'desktopDark', viewport: {width: 1440, height: 1000}, fullPage: true, status: 'CAPTURED_REJECTED', reason: STAGE_B_SCREENSHOT_REJECTION_REASON, artifactPath: '/Users/seal/projects/tego-arch/.worktrees/g009-styles-batch7/.superpowers/sdd/sty10-stage-b-repair-desktopDark.png', bytes: 1_547_151, sha256: '4d24cd3ae4bcb319aa087d2f6a216a41c1fa3aed614a7b947be30f429a5ba180'},
+  {ordinal: 3, state: 'mobileLight', viewport: {width: 390, height: 844}, fullPage: true, status: 'CAPTURED_REJECTED', reason: 'Original-size inspection shows repeated mobile opening viewport slices and omits complete architecture-diagram coverage.', artifactPath: '/Users/seal/projects/tego-arch/.worktrees/g009-styles-batch7/.superpowers/sdd/sty10-stage-b-repair-mobileLight.png', bytes: 716_251, sha256: '7ca3d681422f16fcd55731e87dba1bb4cf5a3a2cca387e9793db0190ff8812a4'},
 ]);
 const STAGE_B_PROJECTION = Object.freeze({
   completed: 63,
@@ -153,13 +154,6 @@ const STAGE_B_PROJECTION = Object.freeze({
   current: {id: 'STY-10', published: true, status: 'complete'},
   next: {id: 'STY-11', published: false, status: 'pending', actionableCount: 0},
 });
-const STAGE_B_STATE_PROVENANCE = Object.freeze({
-  desktopLight: {stage: 'STAGE_B_PRODUCTION', fresh: true, reusedPriorState: false, collectionId: 'sty10-stage-b-fa3faaf-desktop-light', ordinal: 1, implementationHead: STAGE_B_READY_HEAD, pagesRunId: STAGE_B_PRODUCTION_PAGES.runId, browser: 'Codex in-app Browser only', startedAt: '2026-08-20T12:59:40.867Z', completedAt: '2026-08-20T12:59:50.900Z', diagnosticCursorStart: 1038, diagnosticCursorEnd: 1158},
-  desktopDark: {stage: 'STAGE_B_PRODUCTION', fresh: true, reusedPriorState: false, collectionId: 'sty10-stage-b-fa3faaf-desktop-dark', ordinal: 2, implementationHead: STAGE_B_READY_HEAD, pagesRunId: STAGE_B_PRODUCTION_PAGES.runId, browser: 'Codex in-app Browser only', startedAt: '2026-08-20T13:00:11.319Z', completedAt: '2026-08-20T13:00:16.510Z', diagnosticCursorStart: 1170, diagnosticCursorEnd: 1290},
-  mobileLight: {stage: 'STAGE_B_PRODUCTION', fresh: true, reusedPriorState: false, collectionId: 'sty10-stage-b-fa3faaf-mobile-light', ordinal: 3, implementationHead: STAGE_B_READY_HEAD, pagesRunId: STAGE_B_PRODUCTION_PAGES.runId, browser: 'Codex in-app Browser only', startedAt: '2026-08-20T13:02:01.553Z', completedAt: '2026-08-20T13:02:05.763Z', diagnosticCursorStart: 1322, diagnosticCursorEnd: 1442},
-  mobileDark: {stage: 'STAGE_B_PRODUCTION', fresh: true, reusedPriorState: false, collectionId: 'sty10-stage-b-fa3faaf-mobile-dark', ordinal: 4, implementationHead: STAGE_B_READY_HEAD, pagesRunId: STAGE_B_PRODUCTION_PAGES.runId, browser: 'Codex in-app Browser only', startedAt: '2026-08-20T13:02:56.870Z', completedAt: '2026-08-20T13:03:01.263Z', diagnosticCursorStart: 1473, diagnosticCursorEnd: 1593},
-});
-
 const IMMEDIATE_REVIEW = 'docs/reviews/g009-batch10.md';
 const BACKLOG = 'docs/content-backlog.md';
 const IMMEDIATE_REVIEW_HASH = '69ba4168aa672413d1ed1251365b04f0a85c84eb5aa23d49cc38534d9252337f';
@@ -214,7 +208,110 @@ const FINAL_STAGE_B_REVIEW_LINES = Object.freeze([
 const rootUrl = new URL('../', import.meta.url);
 const sha256 = (value) => createHash('sha256').update(value).digest('hex');
 function assertExactKeys(value, expected, label) {
+  assert.ok(value && typeof value === 'object' && !Array.isArray(value), `${label} is an object`);
   assert.deepEqual(Object.keys(value).sort(), [...expected].sort(), `${label} exact keys`);
+}
+function stageBFunctionalPayload(state) {
+  return {
+    theme: state.theme,
+    viewport: state.viewport,
+    geometry: state.geometry,
+    interactions: state.interactions,
+    relations: state.relations,
+    logs: state.logs,
+    diagnostics: state.diagnostics,
+  };
+}
+function assertStageBOperationLog(evidence) {
+  const log = evidence.operationLog;
+  assertExactKeys(log, ['schemaVersion', 'sessionId', 'browser', 'appendOnly', 'targetUrl', 'startedAt', 'completedAt', 'cursorStart', 'cursorEnd', 'entries'], 'Stage B operation log');
+  assert.equal(log.schemaVersion, 1);
+  assert.equal(log.sessionId, STAGE_B_REPAIR_SESSION_ID);
+  assert.equal(log.browser, 'Codex in-app Browser only');
+  assert.equal(log.appendOnly, true);
+  assert.equal(log.targetUrl, 'https://sealday.github.io/tego-arch/styles/sty-10');
+  assert.equal(log.startedAt, '2026-08-21T06:29:20.628Z');
+  assert.equal(log.completedAt, '2026-08-21T06:32:08.472Z');
+  assert.equal(log.entries.length, 27, 'six operations per state plus exactly three screenshots');
+  assert.equal(log.cursorStart, log.entries[0].cursorStart);
+  assert.equal(log.cursorEnd, log.entries.at(-1).cursorEnd);
+  assert.ok(Date.parse(log.startedAt) <= Date.parse(log.entries[0].startedAt), 'session starts before its first operation');
+  assert.ok(Date.parse(log.completedAt) >= Date.parse(log.entries.at(-1).completedAt), 'session completes after screenshot inspection');
+
+  const operationIds = new Set();
+  let previousCompletedAt = -Infinity;
+  let previousCursorEnd = -Infinity;
+  for (const [index, entry] of log.entries.entries()) {
+    assertExactKeys(entry, ['sequence', 'operationId', 'state', 'kind', 'startedAt', 'completedAt', 'cursorStart', 'cursorEnd', 'request', 'observation'], `operation ${index + 1}`);
+    assert.equal(entry.sequence, index + 1, `operation ${index + 1} append-only sequence`);
+    assert.match(entry.operationId, /^sty10-stage-b-repair-op-[0-9]{3}$/u);
+    assert.equal(operationIds.has(entry.operationId), false, `unique operation ID ${entry.operationId}`);
+    operationIds.add(entry.operationId);
+    const startedAt = Date.parse(entry.startedAt);
+    const completedAt = Date.parse(entry.completedAt);
+    assert.ok(Number.isFinite(startedAt) && Number.isFinite(completedAt), `${entry.operationId} timestamps parse`);
+    assert.ok(startedAt >= previousCompletedAt, `${entry.operationId} start timestamp is monotonic`);
+    assert.ok(completedAt >= startedAt, `${entry.operationId} completion does not precede start`);
+    assert.ok(entry.cursorStart >= previousCursorEnd, `${entry.operationId} cursor start is monotonic`);
+    assert.ok(entry.cursorEnd > entry.cursorStart, `${entry.operationId} cursor interval advances`);
+    previousCompletedAt = completedAt;
+    previousCursorEnd = entry.cursorEnd;
+  }
+
+  const stateKinds = ['configure-state', 'observe-geometry', 'exercise-wrappers', 'exercise-relations', 'read-diagnostics', 'seal-state'];
+  for (const key of STATES) {
+    const state = evidence.states[key];
+    assert.ok(state, `${key} state exists`);
+    assertExactKeys(state.observationRefs, ['configure', 'geometry', 'interactions', 'relations', 'diagnostics', 'sealed'], `${key} observation references`);
+    const entries = Object.values(state.observationRefs).map((operationId) => {
+      const entry = log.entries.find((candidate) => candidate.operationId === operationId);
+      assert.ok(entry, `${key} references existing operation ${operationId}`);
+      assert.equal(entry.state, key, `${operationId} state binding`);
+      return entry;
+    });
+    assert.deepEqual(entries.map(({kind}) => kind), stateKinds, `${key} exact operation sequence`);
+    assert.deepEqual(entries[0].request, {targetUrl: log.targetUrl, viewport: state.viewport, theme: state.theme});
+    assert.deepEqual(entries[0].observation, {url: log.targetUrl, viewport: state.viewport, theme: state.theme});
+    assert.deepEqual(entries[1].request, {labels: WRAPPERS, sourceCount: SOURCE_LINKS.length, svgIdentity: 'sty-10-microkernel-order-plugins'});
+    assert.deepEqual(entries[1].observation, {geometry: state.geometry}, `${key} geometry comes from its observation`);
+    assert.deepEqual(entries[2].request, {labels: WRAPPERS, key: 'ArrowRight'});
+    assert.deepEqual(entries[2].observation, {interactions: state.interactions}, `${key} interactions come from their observation`);
+    assert.deepEqual(entries[3].request, {relations: RELATIONS.map(([href, expectedH1]) => ({href, expectedH1}))});
+    assert.deepEqual(entries[3].observation, {relations: state.relations}, `${key} relations come from their observation`);
+    assert.deepEqual(entries[4].request, {levels: ['warn', 'error'], methods: ['Runtime.exceptionThrown', 'Log.entryAdded'], limit: 100});
+    assert.deepEqual(entries[4].observation, {logs: state.logs, diagnostics: state.diagnostics}, `${key} diagnostics come from their observation`);
+    const payload = stageBFunctionalPayload(state);
+    const payloadBytes = Buffer.from(JSON.stringify(payload));
+    assert.deepEqual(entries[5].request, {
+      observationRefs: {
+        configure: entries[0].operationId,
+        geometry: entries[1].operationId,
+        interactions: entries[2].operationId,
+        relations: entries[3].operationId,
+        diagnostics: entries[4].operationId,
+      },
+    });
+    assert.deepEqual(entries[5].observation, {functionalBytes: payloadBytes.length, functionalSha256: sha256(payloadBytes)});
+  }
+
+  const screenshotEntries = log.entries.filter(({kind}) => kind === 'capture-screenshot');
+  assert.equal(screenshotEntries.length, 3);
+  for (const [index, entry] of screenshotEntries.entries()) {
+    const attempt = evidence.screenshotEvidence.attempts[index];
+    assert.equal(entry.state, attempt.state);
+    assert.deepEqual(entry.request, {
+      state: attempt.state,
+      requestedViewport: attempt.viewport,
+      kind: 'fullPage',
+      method: 'Codex in-app Browser screenshot',
+    });
+    assert.deepEqual(entry.observation, {attempt});
+  }
+
+  const stageAStates = JSON.parse(productionRaw.toString('utf8')).states;
+  for (const key of STATES) {
+    assert.notDeepEqual(evidence.states[key], stageAStates[key], `${key} is not a reused Stage A state payload`);
+  }
 }
 const required = (path, encoding) => readFile(new URL(path, rootUrl), encoding);
 async function optional(path, encoding) {
@@ -336,7 +433,7 @@ function assertProductionBrowser(evidence) {
 }
 function assertStageBProductionBrowser(evidence) {
   assert.ok(evidence, `${STAGE_B_PRODUCTION_RAW} exists and parses`);
-  assert.deepEqual(Object.keys(evidence), ['implementationHead', 'pages', 'probes', 'projection', 'collection', 'states', 'screenshotEvidence']);
+  assert.deepEqual(Object.keys(evidence), ['implementationHead', 'pages', 'probes', 'projection', 'collection', 'operationLog', 'states', 'screenshotEvidence']);
   assert.equal(evidence.implementationHead, STAGE_B_READY_HEAD);
   assert.deepEqual(evidence.pages, STAGE_B_PRODUCTION_PAGES);
   assert.deepEqual(evidence.probes, {routes: PRODUCTION_ROUTES, svg: PRODUCTION_SVG});
@@ -347,9 +444,10 @@ function assertStageBProductionBrowser(evidence) {
     servedUrl: 'https://sealday.github.io/tego-arch/styles/sty-10',
     build: `GitHub Pages exact Stage B READY head ${STAGE_B_READY_HEAD}; push run ${STAGE_B_PRODUCTION_PAGES.runId}; build job ${STAGE_B_PRODUCTION_PAGES.buildJobId}; deploy job ${STAGE_B_PRODUCTION_PAGES.deployJobId}`,
   });
-  assert.notDeepEqual(evidence.states, JSON.parse(productionRaw.toString('utf8')).states, 'Stage B states carry independent fresh-production provenance');
+  assertStageBOperationLog(evidence);
+  assert.notDeepEqual(evidence.states, JSON.parse(productionRaw.toString('utf8')).states, 'Stage B states carry independent operation-bound observations');
   for (const [key, state] of Object.entries(evidence.states)) {
-    assertExactKeys(state, ['theme', 'viewport', 'geometry', 'interactions', 'relations', 'logs', 'diagnostics', 'provenance'], `${key} state`);
+    assertExactKeys(state, ['theme', 'viewport', 'geometry', 'interactions', 'relations', 'logs', 'diagnostics', 'observationRefs'], `${key} state`);
     assertExactKeys(state.viewport, ['width', 'height'], `${key} viewport`);
     assertExactKeys(state.geometry, ['page', 'sources', 'sty11', 'svg', 'wrappers'], `${key} geometry`);
     assertExactKeys(state.geometry.page, ['clientWidth', 'scrollWidth'], `${key} page geometry`);
@@ -363,10 +461,6 @@ function assertStageBProductionBrowser(evidence) {
     }
     for (const relation of state.relations) assertExactKeys(relation, ['href', 'expectedH1', 'h1', 'returnedToArticle', 'navigation'], `${key} relation`);
     assertExactKeys(state.diagnostics, ['events', 'hasMore', 'truncated'], `${key} diagnostics`);
-    assertExactKeys(state.provenance, ['stage', 'fresh', 'reusedPriorState', 'collectionId', 'ordinal', 'implementationHead', 'pagesRunId', 'browser', 'startedAt', 'completedAt', 'diagnosticCursorStart', 'diagnosticCursorEnd'], `${key} provenance`);
-    assert.deepEqual(state.provenance, STAGE_B_STATE_PROVENANCE[key], `${key} exact fresh Stage B provenance`);
-    assert.ok(Date.parse(state.provenance.startedAt) < Date.parse(state.provenance.completedAt), `${key} collection interval`);
-    assert.ok(state.provenance.diagnosticCursorStart < state.provenance.diagnosticCursorEnd, `${key} diagnostic cursor interval`);
   }
   assertBrowser({
     candidateHead: IMPLEMENTATION_HEAD,
@@ -379,8 +473,9 @@ function assertStageBProductionBrowser(evidence) {
     },
   });
   assert.deepEqual(evidence.screenshotEvidence, {
-    status: 'BLOCKED / NOT_ACCEPTED',
-    reason: 'Exactly three fresh in-app Browser full-page capture attempts timed out before returning original bytes; no screenshot was accepted and no visual PASS is claimed.',
+    status: 'BLOCKED',
+    acceptance: 'NOT_ACCEPTED',
+    reason: 'Exactly three fresh in-app Browser full-page captures were inspected at original size; all repeat the opening viewport and omit trustworthy complete architecture-diagram coverage.',
     attempts: STAGE_B_SCREENSHOT_ATTEMPTS,
   });
 }
@@ -446,10 +541,12 @@ function assertStageBProductionReview(source) {
     '- Required HTML routes: `9/9`; every route returned `200` with `text/html; charset=utf-8`.',
     `- Reviewed SVG: \`${PRODUCTION_SVG.bytes.toLocaleString('en-US')}\` bytes; MIME \`${PRODUCTION_SVG.contentType}\`; SHA-256 \`${PRODUCTION_SVG.sha256}\`; exact reviewed byte identity: \`PASS\`.`,
     `- Stage B production raw Browser JSON: \`${STAGE_B_PRODUCTION_RAW}\`; \`${STAGE_B_PRODUCTION_RAW_BYTES.toLocaleString('en-US')}\` bytes; SHA-256 \`${STAGE_B_PRODUCTION_RAW_HASH}\`.`,
+    `- Fresh IAB append-only operation ledger: session \`${STAGE_B_REPAIR_SESSION_ID}\`; operations \`27/27\`; state operations \`24/24\`; screenshot operations \`3/3\`; monotonic cursor range \`0..53\`; every state field is observation-linked and sealed by functional payload bytes/SHA-256.`,
+    '- Exact final-gate repository CLIs: `scripts/validate_drawio_svg.mjs` `PASS`; `scripts/check-content-density.mjs` `PASS` with `0` density warnings.',
     '- Projection: `63 completed topics / 106 content documents / 550 governed sources`; STY-10 is `published / complete`; STY-11 is `unpublished / pending / non-actionable` with actionable count `0`.',
     '- Functional production QA: `PASS`; states `4/4`; wrapper focus/`:focus-visible`/3px/ArrowRight checks `12/12`; relation href/H1/return checks `20/20`; source href/target/rel checks `20/20`.',
     '- SVG geometry: source `viewBox="0 0 2400 3900"` and `2400x3900`; Browser-natural `92x150`; rendered `800x1300`; STY-11 actionable count `0` in every state; warning/error logs and diagnostic events `0`; every diagnostic page has `hasMore=false` and `truncated=false`.',
-    '- Screenshot evidence: `BLOCKED / NOT_ACCEPTED`; exactly three fresh full-page attempts are `CAPTURE_TIMEOUT_NO_BYTES`; none returned original bytes, so no screenshot is accepted and no visual PASS is claimed.',
+    '- Screenshot evidence: `BLOCKED / NOT_ACCEPTED`; exactly three fresh full-page attempts are `CAPTURED_REJECTED`; original bytes were inspected and all repeated opening viewport slices while omitting complete architecture-diagram coverage, so no visual PASS is claimed.',
     '- No Chrome fallback, external Playwright, prior raw, historical screenshot, substituted browser surface or fabricated success is claimed.',
     '- Stage B deployment status: `SUCCESS`; functional production status: `PASS`; visual screenshot status remains separately `BLOCKED / NOT_ACCEPTED`.',
     '- Scope is closed at `STAGE_B`; STY-11 remains untouched and non-actionable.',
@@ -786,6 +883,34 @@ test('rejects every Stage B production semantic, additive, fabricated-success an
     (copy) => { copy.collection.fresh = false; },
     (copy) => { copy.collection.build = 'fabricated success'; },
     (copy) => { copy.collection.fabricated = true; },
+    (copy) => { copy.operationLog.schemaVersion += 1; },
+    (copy) => { copy.operationLog.sessionId = 'stage-a-reuse'; },
+    (copy) => { copy.operationLog.browser = 'Chrome'; },
+    (copy) => { copy.operationLog.appendOnly = false; },
+    (copy) => { copy.operationLog.targetUrl = 'http://127.0.0.1/reused'; },
+    (copy) => { copy.operationLog.startedAt = '2026-08-20T00:00:00.000Z'; },
+    (copy) => { copy.operationLog.cursorStart -= 1; },
+    (copy) => { copy.operationLog.entries.pop(); },
+    (copy) => { copy.operationLog.entries.reverse(); },
+    (copy) => { copy.operationLog.entries.push(structuredClone(copy.operationLog.entries.at(-1))); },
+    (copy) => { copy.operationLog.entries[1].operationId = copy.operationLog.entries[0].operationId; },
+    (copy) => { copy.operationLog.entries[1].sequence += 1; },
+    (copy) => { copy.operationLog.entries[1].state = 'desktopDark'; },
+    (copy) => { copy.operationLog.entries[1].kind = 'fabricated-observation'; },
+    (copy) => { copy.operationLog.entries[1].startedAt = copy.operationLog.entries[0].startedAt; },
+    (copy) => { copy.operationLog.entries[1].completedAt = new Date(Date.parse(copy.operationLog.entries[1].startedAt) - 1).toISOString(); },
+    (copy) => { copy.operationLog.entries[1].cursorStart = copy.operationLog.entries[0].cursorEnd - 1; },
+    (copy) => { copy.operationLog.entries[1].cursorEnd = copy.operationLog.entries[1].cursorStart; },
+    (copy) => { copy.operationLog.entries[0].request.viewport.width += 1; },
+    (copy) => { copy.operationLog.entries[0].observation.viewport.width += 1; },
+    (copy) => { copy.operationLog.entries[1].observation.geometry.page.scrollWidth += 1; },
+    (copy) => { copy.operationLog.entries[2].observation.interactions[0].after.scrollLeft += 1; },
+    (copy) => { copy.operationLog.entries[3].observation.relations[0].h1 = 'fabricated'; },
+    (copy) => { copy.operationLog.entries[4].observation.logs.push({level: 'error'}); },
+    (copy) => { copy.operationLog.entries[5].request.observationRefs.geometry = copy.operationLog.entries[5].request.observationRefs.interactions; },
+    (copy) => { copy.operationLog.entries[5].observation.functionalSha256 = '5'.repeat(64); },
+    (copy) => { copy.states.desktopLight.observationRefs.configure = copy.states.desktopDark.observationRefs.configure; },
+    (copy) => { copy.states.desktopLight = structuredClone(JSON.parse(productionRaw.toString('utf8')).states.desktopLight); },
     (copy) => { delete copy.states.mobileDark; },
     (copy) => { copy.states.fabricated = structuredClone(copy.states.desktopLight); },
     (copy) => { copy.states.desktopLight.fabricated = true; },
@@ -800,9 +925,9 @@ test('rejects every Stage B production semantic, additive, fabricated-success an
     (copy) => { copy.states.desktopLight.relations[0].fabricated = true; },
     (copy) => { copy.states.desktopLight.geometry.sources[0].fabricated = true; },
     (copy) => { copy.states.desktopLight.diagnostics.fabricated = true; },
-    (copy) => { copy.states.desktopLight.provenance.fabricated = true; },
-    (copy) => { copy.states.desktopLight.provenance.reusedPriorState = true; },
-    (copy) => { copy.states.desktopLight.provenance.collectionId = 'stage-a-reuse'; },
+    (copy) => { copy.states.desktopLight.observationRefs.fabricated = 'sty10-stage-b-repair-op-999'; },
+    (copy) => { copy.states.desktopLight.observationRefs.geometry = copy.states.desktopLight.observationRefs.interactions; },
+    (copy) => { copy.states.desktopLight.observationRefs.sealed = copy.states.desktopLight.observationRefs.diagnostics; },
     (copy) => { copy.states.desktopLight.geometry.wrappers.reverse(); },
     (copy) => { copy.states.desktopDark.interactions[1].after.scrollLeft += 1; },
     (copy) => { copy.states.mobileLight.relations[0].h1 = 'fabricated'; },
@@ -819,20 +944,20 @@ test('rejects every Stage B production semantic, additive, fabricated-success an
     (copy) => { copy.screenshotEvidence.attempts.reverse(); },
     (copy) => { copy.screenshotEvidence.attempts.push(structuredClone(copy.screenshotEvidence.attempts[0])); },
     (copy) => { copy.screenshotEvidence.attempts[0].status = 'CAPTURED_ACCEPTED'; },
-    (copy) => { copy.screenshotEvidence.attempts[0].requestedViewport.width += 1; },
-    (copy) => { copy.screenshotEvidence.attempts[1].observedViewport.width += 1; },
+    (copy) => { copy.screenshotEvidence.attempts[0].viewport.width += 1; },
+    (copy) => { copy.screenshotEvidence.attempts[1].viewport.width += 1; },
     (copy) => { copy.screenshotEvidence.attempts[2].method = 'external Playwright'; },
     (copy) => { copy.screenshotEvidence.attempts[0].bytes = 1; },
     (copy) => { copy.screenshotEvidence.attempts[1].sha256 = '3'.repeat(64); },
     (copy) => { copy.screenshotEvidence.attempts[2].path = '/fabricated.png'; },
     (copy) => { copy.screenshotEvidence.fabricatedVisualPass = true; },
   ];
-  assert.equal(mutations.length, 76, 'complete explicit Stage B production mutation inventory');
-  for (const mutate of mutations) {
+  assert.equal(mutations.length, 104, 'complete explicit Stage B production mutation inventory');
+  for (const [index, mutate] of mutations.entries()) {
     const copy = structuredClone(production);
     mutate(copy);
-    assert.notDeepEqual(copy, production, 'Stage B production mutation is non-no-op');
-    assert.throws(() => assertStageBProductionBrowser(copy), {name: 'AssertionError'});
+    assert.notDeepEqual(copy, production, `Stage B production mutation ${index + 1} is non-no-op`);
+    assert.throws(() => assertStageBProductionBrowser(copy), {name: 'AssertionError'}, `Stage B production mutation ${index + 1} is rejected`);
   }
 });
 
@@ -845,10 +970,14 @@ test('rejects Stage B production review fabrication, visual PASS, and duplicate 
     [`Deploy job: \`${STAGE_B_PRODUCTION_PAGES.deployJobId}\`;`, 'Deploy job: `0`;'],
     ['Required HTML routes: `9/9`;', 'Required HTML routes: `8/9`;'],
     [STAGE_B_PRODUCTION_RAW_HASH, '4'.repeat(64)],
+    [`session \`${STAGE_B_REPAIR_SESSION_ID}\`;`, 'session `stage-a-reuse`;'],
+    ['operations `27/27`;', 'operations `26/27`;'],
+    ['`scripts/validate_drawio_svg.mjs` `PASS`;', '`scripts/validate_drawio_svg.mjs` `FAIL`;'],
+    ['`scripts/check-content-density.mjs` `PASS`', '`scripts/check-content-density.mjs` `FAIL`'],
     ['Projection: `63 completed topics / 106 content documents / 550 governed sources`;', 'Projection: `62 completed topics / 106 content documents / 550 governed sources`;'],
     ['Functional production QA: `PASS`;', 'Functional production QA: `PENDING`;'],
     ['Screenshot evidence: `BLOCKED / NOT_ACCEPTED`;', 'Screenshot evidence: `PASS`;'],
-    ['none returned original bytes, so no screenshot is accepted and no visual PASS is claimed.', 'all screenshots prove a fabricated visual PASS.'],
+    ['original bytes were inspected and all repeated opening viewport slices while omitting complete architecture-diagram coverage, so no visual PASS is claimed.', 'all screenshots prove a fabricated visual PASS.'],
     ['No Chrome fallback, external Playwright, prior raw, historical screenshot, substituted browser surface or fabricated success is claimed.', 'Fabricated success is claimed.'],
     ['Stage B deployment status: `SUCCESS`;', 'Stage B deployment status: `PENDING`;'],
     ['Scope is closed at `STAGE_B`;', 'Scope is closed at `STAGE_A_ONLY`;'],
