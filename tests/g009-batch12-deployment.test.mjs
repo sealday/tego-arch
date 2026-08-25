@@ -14,6 +14,39 @@ export const LOCAL_RAW = 'docs/reviews/evidence/g009-batch12-stage-a-browser.jso
 export const PRODUCTION_RAW = 'docs/reviews/evidence/g009-batch12-stage-a-production-browser.json';
 export const STAGE_B_PRODUCTION_RAW = 'docs/reviews/evidence/g009-batch12-stage-b-production-browser.json';
 export const STATES = Object.freeze(['desktopLight', 'desktopDark', 'mobileLight', 'mobileDark']);
+export const CANDIDATE_HEAD = 'ac9fd538721c1bb41503eff9dc9789354f48f700';
+export const LOCAL_RAW_BYTES = 34_985;
+export const LOCAL_RAW_SHA256 = 'b0db5d8e7010f227ed87464d77c1b25364dd9c13c62c70ad87364d3ce1350e5b';
+
+const WRAPPER_LABELS = Object.freeze([
+  '订单结算与异步履约 Serverless 边界图，可横向滚动',
+  'Serverless 执行与状态责任矩阵，可横向滚动',
+  'Serverless 七类故障、响应、停止条件与责任表，可横向滚动',
+  '冷启动与成本决策表，可横向滚动',
+]);
+const WRAPPER_SCROLL_WIDTHS = Object.freeze([800, 1024, 1381, 1024]);
+const SOURCE_HREFS = Object.freeze([
+  'https://github.com/cncf/wg-serverless/blob/79c8a13c26be9066a8723c5896d8aaa0e2ab9e08/whitepapers/serverless-overview/cncf_serverless_whitepaper_v1.0.pdf',
+  'https://glossary.cncf.io/serverless/',
+  'https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtime-environment.html',
+  'https://docs.aws.amazon.com/lambda/latest/dg/invocation-retries.html',
+  'https://docs.aws.amazon.com/lambda/latest/dg/lambda-concurrency.html',
+  'https://aws.amazon.com/lambda/pricing/',
+  'https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale',
+  'https://cloud.google.com/run/docs/about-concurrency',
+  'https://github.com/cloudevents/spec/blob/v1.0.2/cloudevents/spec.md',
+  'https://github.com/open-workflow-specification/specification/blob/2dd2c84170d5f3e05d58e913e9ca298dcf8d543a/schema/workflow.yaml',
+]);
+const RELATIONS = Object.freeze([
+  ['/tego-arch/styles/sty-06', '事件驱动架构：先分清事件携带什么，再决定状态放在哪里'],
+  ['/tego-arch/styles/sty-09', 'Pipes and Filters：用明确合同拆分批处理与流处理'],
+  ['/tego-arch/cases/cloudflare-durable-objects-workerd', '把边缘协调收敛到身份寻址的状态单元'],
+]);
+const SCREENSHOT_ATTEMPTS = Object.freeze([
+  ['desktopLight', 838_534, '8640ae56458788dae909a992855e3596a176b38792a1298d1e439b801fcb0bd0', 1440, 10_831],
+  ['desktopDark', 839_953, '56b2927cb9d673f16bfcd8f784fe66a523ff1f5b26994af0bc5a99cd2da3190d', 1440, 10_831],
+  ['mobileLight', 563_157, 'e27bac3d9ce728cf8b3802eb89ad1c9a7964883d5236d2cf8084b1cdce87f5df', 390, 15_619],
+]);
 
 const ARTICLE = 'content/styles/sty-11-serverless-architecture.mdx';
 const LEDGER = 'data/source-ledger.json';
@@ -65,17 +98,100 @@ function assertPendingReview(source = review) {
   assert.ok(source.includes(`Complete immediate STY-10 backlog suffix SHA-256: \`${IMMEDIATE_BACKLOG_SUFFIX_HASH}\``));
   assert.match(source, /Governed STY-11 sources: `11`; remote anchors per state: `10`/u);
   assert.match(source, /Exactly one STY-11 citation is `manifest_primary`/u);
+  assert.ok(source.includes(`Exact implementation candidate head: \`${CANDIDATE_HEAD}\``));
+  assert.ok(source.includes(`Raw Browser JSON: \`${LOCAL_RAW}\`; bytes: \`${LOCAL_RAW_BYTES.toLocaleString('en-US')}\`; SHA-256: \`${LOCAL_RAW_SHA256}\``));
+  assert.match(source, /Functional Browser QA: `PASS`; states `4\/4`; wrapper interactions `16\/16`; relation href\/H1\/return observations `12\/12`; source href\/target\/rel observations `40\/40`/u);
+  assert.match(source, /SVG loaded in every state: source `2400x3600`; rendered `800x1200`; observed asset bytes `20,933`/u);
+  assert.match(source, /STY-12 actionable count: `0` per state/u);
+  assert.match(source, /Diagnostics are complete and empty in every state: warning\/error logs `0`, Runtime\/Log events `0`, `hasMore=false`, `truncated=false`/u);
+  assert.match(source, /Screenshot evidence: `BLOCKED \/ NOT_ACCEPTED`/u);
+  assert.match(source, /Exactly three fresh full-page attempts are `CAPTURED_REJECTED`; original bytes were inspected; no fourth attempt was made/u);
   assert.match(source, /Independent code\/spec\/security review: `PENDING`; findings: `PENDING`/u);
   assert.match(source, /Independent content\/evidence\/rights review: `PENDING`; rights: `PENDING`; findings: `PENDING`/u);
   assert.match(source, /Independent architecture\/invariant review: `PENDING`; blockers: `PENDING`/u);
   assert.match(source, /Final Stage A review judgment: `PENDING`/u);
   assert.match(source, /Scope boundary: `STAGE_A_ONLY`/u);
   assert.match(source, /Deployment status: `NOT_RUN`/u);
-  assert.match(source, /Raw Browser JSON: `NOT_RUN`/u);
-  assert.match(source, /Screenshot evidence: `NOT_RUN`/u);
   assert.doesNotMatch(source, /^## Stage B/mu);
   assert.doesNotMatch(source, /Stage B (?:review judgment|deployment status): `(?!PENDING|NOT_RUN)/u);
   assert.doesNotMatch(source, /(?:READY \/ APPROVE|CONTENT READY|CLEAR \/ READY|Final Stage A review judgment: `READY`)/u);
+}
+
+function assertLocalEvidence(value) {
+  assert.ok(value, `${LOCAL_RAW} exists`);
+  assert.equal(value.candidateHead, CANDIDATE_HEAD);
+  assert.deepEqual(value.stateOrder, STATES);
+  assert.deepEqual(value.collection.observedSvgAsset, {
+    source: 'Browser pageAssets bundle',
+    contentType: 'image/svg+xml',
+    bytes: 20_933,
+    sha256: STABLE_IDENTITIES.get(SVG)[1],
+    viewBox: '0 0 2400 3600',
+    bundleFailures: 0,
+  });
+  assert.deepEqual(value.collection.diagnosticContinuity, [
+    {afterSequence: 14, cursor: 86, count: 0, hasMore: false, truncated: false, scope: 'desktopLight'},
+    {afterSequence: 86, cursor: 162, count: 0, hasMore: false, truncated: false, scope: 'desktopDark'},
+    {afterSequence: 162, cursor: 239, count: 0, hasMore: false, truncated: false, scope: 'discarded mobile theme-restoration probe'},
+    {afterSequence: 239, cursor: 311, count: 0, hasMore: false, truncated: false, scope: 'mobileLight'},
+    {afterSequence: 311, cursor: 385, count: 0, hasMore: false, truncated: false, scope: 'mobileDark'},
+  ]);
+  for (const [index, stateName] of STATES.entries()) {
+    const state = value.states[stateName];
+    assert.ok(state, `${stateName} exists`);
+    const desktop = stateName.startsWith('desktop');
+    assert.equal(state.theme, stateName.endsWith('Light') ? 'light' : 'dark', `${stateName} theme`);
+    assert.deepEqual(state.viewport, desktop ? {width: 1440, height: 1000} : {width: 390, height: 844}, `${stateName} viewport`);
+    assert.deepEqual(state.geometry.page, desktop
+      ? {clientWidth: 1440, scrollWidth: 1440, clientHeight: 1000, scrollHeight: 10_831}
+      : {clientWidth: 390, scrollWidth: 390, clientHeight: 844, scrollHeight: 15_619}, `${stateName} page geometry`);
+    assert.deepEqual(state.geometry.wrappers, WRAPPER_LABELS.map((label, wrapperIndex) => ({
+      label,
+      clientWidth: desktop ? 800 : 358,
+      scrollWidth: WRAPPER_SCROLL_WIDTHS[wrapperIndex],
+    })), `${stateName} exact wrapper geometry`);
+    assert.equal(state.interactions.length, 4, `${stateName} interactions`);
+    for (const [wrapperIndex, interaction] of state.interactions.entries()) {
+      const expectedDelta = desktop && wrapperIndex === 0 ? 0 : 40;
+      assert.equal(interaction.index, wrapperIndex);
+      assert.equal(interaction.label, WRAPPER_LABELS[wrapperIndex]);
+      assert.equal(interaction.key, 'ArrowRight');
+      assert.equal(interaction.delta, expectedDelta);
+      assert.deepEqual({focus: interaction.before.focus, focusVisible: interaction.before.focusVisible, outlineWidth: interaction.before.outlineWidth, scrollLeft: interaction.before.scrollLeft}, {focus: true, focusVisible: true, outlineWidth: '3px', scrollLeft: 0});
+      assert.deepEqual({focus: interaction.after.focus, focusVisible: interaction.after.focusVisible, outlineWidth: interaction.after.outlineWidth, scrollLeft: interaction.after.scrollLeft}, {focus: true, focusVisible: true, outlineWidth: '3px', scrollLeft: expectedDelta});
+      assert.match(interaction.before.outline, /solid 3px$/u);
+      assert.match(interaction.after.outline, /solid 3px$/u);
+    }
+    assert.deepEqual(state.relations.map(({href, expectedH1, h1, visibleCount, returnedToArticle}) => [href, expectedH1, h1, visibleCount, returnedToArticle]), RELATIONS.map(([href, h1]) => [href, h1, h1, 1, true]), `${stateName} exact relation destination/H1/return`);
+    assert.deepEqual(state.geometry.sources, SOURCE_HREFS.map((href) => ({href, target: '_blank', rel: 'noopener noreferrer'})), `${stateName} exact source links`);
+    assert.deepEqual(state.geometry.svg, {
+      loaded: true,
+      viewBox: '0 0 2400 3600',
+      sourceWidth: 2400,
+      sourceHeight: 3600,
+      naturalWidth: 100,
+      naturalHeight: 150,
+      renderedWidth: 800,
+      renderedHeight: 1200,
+      src: '/tego-arch/assets/images/sty-11-serverless-order-fulfillment-dc98eac9a8e157072fe5a6ff2e7084b0.svg',
+      observedAssetBytes: 20_933,
+    }, `${stateName} exact SVG`);
+    assert.equal(state.geometry.sty12, 0, `${stateName} STY-12 actionable count`);
+    assert.deepEqual(state.logs, [], `${stateName} warning/error logs`);
+    assert.deepEqual(state.diagnostics.events, [], `${stateName} Runtime/Log events`);
+    assert.equal(state.diagnostics.pages.length, 1, `${stateName} diagnostic pagination`);
+    assert.deepEqual({hasMore: state.diagnostics.hasMore, truncated: state.diagnostics.truncated}, {hasMore: false, truncated: false});
+    assert.deepEqual({count: state.diagnostics.pages[0].count, hasMore: state.diagnostics.pages[0].hasMore, truncated: state.diagnostics.pages[0].truncated}, {count: 0, hasMore: false, truncated: false});
+    assert.equal(index, STATES.indexOf(stateName));
+  }
+  assert.deepEqual(value.functionalSummary, {status: 'PASS', states: 4, wrapperInteractions: 16, relationObservations: 12, sourceObservations: 40, sty12ActionableTotal: 0, warningErrorLogs: 0, runtimeAndLogEvents: 0, diagnosticPagesTerminal: true, diagnosticsTruncated: false});
+  assert.deepEqual({status: value.screenshotEvidence.status, attempted: value.screenshotEvidence.attempted, accepted: value.screenshotEvidence.accepted, noFourthAttempt: value.screenshotEvidence.noFourthAttempt, originalBytesInspected: value.screenshotEvidence.originalBytesInspected}, {status: 'BLOCKED / NOT_ACCEPTED', attempted: 3, accepted: 0, noFourthAttempt: true, originalBytesInspected: true});
+  assert.equal(value.screenshotEvidence.attempts.length, 3);
+  for (const [index, attempt] of value.screenshotEvidence.attempts.entries()) {
+    const [state, bytes, hash, width, height] = SCREENSHOT_ATTEMPTS[index];
+    assert.deepEqual({state: attempt.state, status: attempt.status, bytes: attempt.bytes, sha256: attempt.sha256, format: attempt.format, width: attempt.width, height: attempt.height, magic: attempt.magic, uniqueByteValues: attempt.uniqueByteValues}, {state, status: 'CAPTURED_REJECTED', bytes, sha256: hash, format: 'JPEG/JFIF', width, height, magic: 'ffd8ffe000104a4649460001', uniqueByteValues: 256});
+    assert.match(attempt.reason, /repeat|blank|omit/iu);
+  }
 }
 
 const [review, raw, productionRaw, stageBProductionRaw, immediateReview, backlog, status, manifest, documents, stableBytes] = await Promise.all([
@@ -139,9 +255,11 @@ test('locks exact STY-11 article, ledger, Draw.io and SVG identities', () => {
   }
 });
 
-test('requires the pending Stage A review while every Browser and deployment artifact remains absent', () => {
+test('requires exact-candidate local Browser evidence while production and Stage B artifacts remain absent', () => {
   assertPendingReview();
-  assert.equal(raw, undefined, `${LOCAL_RAW} remains absent before Browser collection`);
+  assert.equal(raw.length, LOCAL_RAW_BYTES, `${LOCAL_RAW} exact bytes`);
+  assert.equal(sha256(raw), LOCAL_RAW_SHA256, `${LOCAL_RAW} exact SHA-256`);
+  assertLocalEvidence(raw && JSON.parse(raw));
   assert.equal(productionRaw, undefined, `${PRODUCTION_RAW} remains absent before deployment`);
   assert.equal(stageBProductionRaw, undefined, `${STAGE_B_PRODUCTION_RAW} remains absent before Stage B`);
 });
@@ -157,8 +275,8 @@ test('rejects pending review verdict, history, scope, deployment and Stage B fab
     ['Final Stage A review judgment: `PENDING`', 'Final Stage A review judgment: `READY`'],
     ['Scope boundary: `STAGE_A_ONLY`', 'Scope boundary: `STAGE_B`'],
     ['Deployment status: `NOT_RUN`', 'Deployment status: `SUCCESS`'],
-    ['Raw Browser JSON: `NOT_RUN`', `Raw Browser JSON: \`${LOCAL_RAW}\``],
-    ['Screenshot evidence: `NOT_RUN`', 'Screenshot evidence: `PASS`'],
+    ['Functional Browser QA: `PASS`', 'Functional Browser QA: `FAIL`'],
+    ['Screenshot evidence: `BLOCKED / NOT_ACCEPTED`', 'Screenshot evidence: `PASS`'],
   ]) {
     const mutated = review.replace(before, after);
     assert.notEqual(mutated, review, `${before} mutation applies`);
@@ -166,5 +284,40 @@ test('rejects pending review verdict, history, scope, deployment and Stage B fab
   }
   for (const addition of ['\n## Stage B closure candidate\n', '\nStage B deployment status: `SUCCESS`.\n']) {
     assert.throws(() => assertPendingReview(`${review}${addition}`), assert.AssertionError);
+  }
+});
+
+test('rejects Browser head, state, geometry, interaction, navigation, source, SVG, diagnostics and screenshot mutations', () => {
+  const evidence = raw && JSON.parse(raw);
+  assertLocalEvidence(evidence);
+  const mutations = [
+    ['candidate head', (copy) => copy.candidateHead = '0'.repeat(40)],
+    ['missing state', (copy) => delete copy.states.mobileDark],
+    ['state order', (copy) => [copy.stateOrder[0], copy.stateOrder[1]] = [copy.stateOrder[1], copy.stateOrder[0]]],
+    ['duplicate wrapper', (copy) => copy.states.desktopLight.geometry.wrappers.push(structuredClone(copy.states.desktopLight.geometry.wrappers[0]))],
+    ['wrapper order', (copy) => [copy.states.desktopDark.geometry.wrappers[0], copy.states.desktopDark.geometry.wrappers[1]] = [copy.states.desktopDark.geometry.wrappers[1], copy.states.desktopDark.geometry.wrappers[0]]],
+    ['client width', (copy) => copy.states.mobileLight.geometry.wrappers[0].clientWidth += 1],
+    ['scroll width', (copy) => copy.states.desktopLight.geometry.wrappers[1].scrollWidth += 1],
+    ['focus visible', (copy) => copy.states.mobileDark.interactions[0].before.focusVisible = false],
+    ['outline', (copy) => copy.states.desktopDark.interactions[1].after.outlineWidth = '2px'],
+    ['ArrowRight delta', (copy) => copy.states.mobileLight.interactions[0].delta = 39],
+    ['relation H1', (copy) => copy.states.desktopLight.relations[0].h1 = 'fabricated'],
+    ['relation return', (copy) => copy.states.mobileDark.relations[1].returnedToArticle = false],
+    ['source href', (copy) => copy.states.desktopDark.geometry.sources[0].href = 'https://example.invalid/fabricated'],
+    ['unloaded SVG', (copy) => copy.states.mobileLight.geometry.svg.loaded = false],
+    ['resized SVG', (copy) => copy.states.desktopDark.geometry.svg.renderedWidth = 799],
+    ['STY-12 fabrication', (copy) => copy.states.desktopLight.geometry.sty12 = 1],
+    ['runtime event', (copy) => copy.states.mobileDark.diagnostics.events.push({method: 'Runtime.exceptionThrown'})],
+    ['diagnostic continuation', (copy) => copy.states.desktopLight.diagnostics.hasMore = true],
+    ['truncated diagnostics', (copy) => copy.states.mobileLight.diagnostics.truncated = true],
+    ['deleted screenshot attempt', (copy) => copy.screenshotEvidence.attempts.pop()],
+    ['changed screenshot attempt', (copy) => copy.screenshotEvidence.attempts[0].sha256 = '1'.repeat(64)],
+    ['visual PASS', (copy) => copy.screenshotEvidence.status = 'PASS'],
+  ];
+  for (const [label, mutate] of mutations) {
+    const copy = structuredClone(evidence);
+    mutate(copy);
+    assert.notDeepEqual(copy, evidence, `${label} mutation applies`);
+    assert.throws(() => assertLocalEvidence(copy), assert.AssertionError, label);
   }
 });

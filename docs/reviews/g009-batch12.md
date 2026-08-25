@@ -43,15 +43,27 @@
 
 ## Local in-app Browser QA
 
-- Exact implementation candidate head: `PENDING`.
-- Raw Browser JSON: `NOT_RUN`.
-- Functional Browser QA: `NOT_RUN`.
-- Screenshot evidence: `NOT_RUN`.
+- Exact implementation candidate head: `ac9fd538721c1bb41503eff9dc9789354f48f700`.
+- Raw Browser JSON: `docs/reviews/evidence/g009-batch12-stage-a-browser.json`; bytes: `34,985`; SHA-256: `b0db5d8e7010f227ed87464d77c1b25364dd9c13c62c70ad87364d3ce1350e5b`.
+- Functional Browser QA: `PASS`; states `4/4`; wrapper interactions `16/16`; relation href/H1/return observations `12/12`; source href/target/rel observations `40/40`.
+- SVG loaded in every state: source `2400x3600`; rendered `800x1200`; observed asset bytes `20,933`; exact reviewed SVG SHA-256 match: `PASS`.
+- STY-12 actionable count: `0` per state.
+- Diagnostics are complete and empty in every state: warning/error logs `0`, Runtime/Log events `0`, `hasMore=false`, `truncated=false`.
+- Screenshot evidence: `BLOCKED / NOT_ACCEPTED`.
+- Exactly three fresh full-page attempts are `CAPTURED_REJECTED`; original bytes were inspected; no fourth attempt was made.
+
+| Screenshot attempt | Encoded bytes | Dimensions | SHA-256 | Result |
+| --- | ---: | ---: | --- | --- |
+| `desktopLight` | 838,534 | `1440x10831` | `8640ae56458788dae909a992855e3596a176b38792a1298d1e439b801fcb0bd0` | `CAPTURED_REJECTED`: repeated article sections and architecture diagram |
+| `desktopDark` | 839,953 | `1440x10831` | `56b2927cb9d673f16bfcd8f784fe66a523ff1f5b26994af0bc5a99cd2da3190d` | `CAPTURED_REJECTED`: repeated article sections and architecture diagram |
+| `mobileLight` | 563,157 | `390x15619` | `e27bac3d9ce728cf8b3802eb89ad1c9a7964883d5236d2cf8084b1cdce87f5df` | `CAPTURED_REJECTED`: repeated sections, large blank interval and missing faithful continuous diagram coverage |
+
+- The rejected screenshot originals remain untracked; their exact in-memory Browser bytes were inspected and bound in the raw record by format, dimensions, byte count and SHA-256.
 - No Chrome fallback, prior raw, historical screenshot, substituted browser surface or visual PASS is claimed.
 
 ## Independent review checkpoint
 
-- Exact implementation candidate head: `PENDING`.
+- Exact implementation candidate head: `ac9fd538721c1bb41503eff9dc9789354f48f700`.
 - Exact Browser evidence head: `PENDING`.
 - Exact independent review head: `PENDING`.
 - Independent code/spec/security review: `PENDING`; findings: `PENDING`.
