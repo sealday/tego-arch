@@ -31,6 +31,27 @@ export const REGION_IDS = Object.freeze(['request-boundary','durable-control','f
 export const NODE_IDS = Object.freeze(['client','sync-ingress','admission-store','durable-workflow','order-state','task-queue','payment-function','inventory-function','notification-function','payment-authority','inventory-authority','notification-provider','capacity-cost-observability','reconciliation','manual-terminal']);
 export const EDGE_IDS = Object.freeze(['submit-order','idempotent-accept','start-workflow','read-order-state','enqueue-payment','deliver-payment','invoke-payment','payment-receipt','enqueue-inventory','deliver-inventory','reserve-inventory','inventory-receipt','enqueue-notification','deliver-notification','send-notification','query-unknown-result','reconcile-manually','close-manual-terminal','limit-ingress','limit-execution','limit-downstream']);
 export const LEGEND_ROLES = Object.freeze(['request','work','receipt','recovery','budget']);
+export const REGION_LABELS = Object.freeze({
+  'request-boundary': '请求边界：同步只受理', 'durable-control': '持久控制：进度与恢复',
+  'function-execution': '函数执行：一次一个有界步骤', 'authority-boundary': '权威边界：外部事实与人工终态',
+});
+export const NODE_COPY = Object.freeze({
+  client: ['客户端', '提交订单'], 'sync-ingress': ['同步入口函数', '认证与幂等受理'], 'admission-store': ['幂等受理记录', '订单操作标识'],
+  'durable-workflow': ['持久工作流', '步骤、期限与恢复'], 'order-state': ['订单状态记录', '版本与步骤回执'], 'task-queue': ['队列与任务分发', '缓冲与消费限速'],
+  'payment-function': ['支付步骤函数', '单步有界执行'], 'inventory-function': ['库存步骤函数', '单步有界执行'], 'notification-function': ['通知步骤函数', '提交后异步通知'],
+  'payment-authority': ['支付权威系统', '原子结果与查询'], 'inventory-authority': ['库存权威系统', '原子预留与查询'], 'notification-provider': ['通知权威系统', '投递事实'],
+  'capacity-cost-observability': ['容量与成本观测', '预算控制，不改终态'], reconciliation: ['结果查询与对账', '结果未知时查权威'], 'manual-terminal': ['人工终态', '有证据地停止'],
+});
+export const EDGE_LABELS = Object.freeze({
+  'submit-order': '提交订单', 'idempotent-accept': '幂等受理', 'start-workflow': '启动流程', 'read-order-state': '读写状态版本',
+  'enqueue-payment': '生成支付任务', 'deliver-payment': '交付支付任务', 'invoke-payment': '执行业务操作', 'payment-receipt': '支付回执',
+  'enqueue-inventory': '生成库存任务', 'deliver-inventory': '交付库存任务', 'reserve-inventory': '原子预留库存', 'inventory-receipt': '库存回执',
+  'enqueue-notification': '生成通知任务', 'deliver-notification': '交付通知任务', 'send-notification': '发送通知',
+  'query-unknown-result': '查询未知结果', 'reconcile-manually': '提交人工核对', 'close-manual-terminal': '写入人工终态',
+  'limit-ingress': '入口准入预算', 'limit-execution': '执行并发预算', 'limit-downstream': '下游容量预算',
+});
+export const LEGEND_LABELS = Object.freeze({request: '同步受理', work: '有界任务', receipt: '权威回执', recovery: '查询与人工恢复', budget: '容量预算'});
+export const NOTE_COPY = Object.freeze({'volatile-state': '函数内存 ≠ 业务状态', 'finite-capacity': '自动扩缩 ≠ 无限容量', 'unknown-effect': '超时 ≠ 外部效果未发生'});
 export const EDGE_CONTRACTS = Object.freeze({
   'submit-order': ['client','sync-ingress','request'], 'idempotent-accept': ['sync-ingress','admission-store','request'], 'start-workflow': ['sync-ingress','durable-workflow','request'], 'read-order-state': ['durable-workflow','order-state','receipt'],
   'enqueue-payment': ['durable-workflow','task-queue','work'], 'deliver-payment': ['task-queue','payment-function','work'], 'invoke-payment': ['payment-function','payment-authority','work'], 'payment-receipt': ['payment-authority','durable-workflow','receipt'],
@@ -89,7 +110,7 @@ export function assertFlattenedSvg(elements) { for (const element of elements) a
 export function parsePathPoints(data) { assert.doesNotMatch(data ?? '', /[CQSAZ]/iu, 'connector path uses only M/L/H/V'); const tokens = data.match(/[A-Za-z]|-?(?:\d+(?:\.\d*)?|\.\d+)/gu) ?? []; const points = []; let cursor = 0; let command; let current = {x: 0, y: 0}; while (cursor < tokens.length) { if (/^[A-Za-z]$/u.test(tokens[cursor])) command = tokens[cursor++]; const relative = command === command?.toLowerCase(); const take = () => number(tokens[cursor++], 'path coordinate'); if (command?.toUpperCase() === 'M' || command?.toUpperCase() === 'L') { const x = take(); const y = take(); current = {x: relative ? current.x + x : x, y: relative ? current.y + y : y}; points.push(current); if (command?.toUpperCase() === 'M') command = relative ? 'l' : 'L'; } else if (command?.toUpperCase() === 'H') { const x = take(); current = {x: relative ? current.x + x : x, y: current.y}; points.push(current); } else if (command?.toUpperCase() === 'V') { const y = take(); current = {x: current.x, y: relative ? current.y + y : y}; points.push(current); } else assert.fail(`unsupported path command ${command}`); } assert.ok(points.length >= 2, 'visible connector path'); return points; }
 function shapeBounds(element) { if (element.name === 'rect') return numericBounds(element.attributes, 'rect'); if (element.name === 'circle' || element.name === 'ellipse') { const cx = number(element.attributes.get('cx'), 'shape cx'); const cy = number(element.attributes.get('cy'), 'shape cy'); const rx = number(element.attributes.get(element.name === 'circle' ? 'r' : 'rx'), 'shape rx'); const ry = element.name === 'circle' ? rx : number(element.attributes.get('ry'), 'shape ry'); return {left: cx - rx, right: cx + rx, top: cy - ry, bottom: cy + ry}; } if (element.name === 'path') { const points = parsePathPoints(element.attributes.get('d')); return {left: Math.min(...points.map(({x}) => x)), right: Math.max(...points.map(({x}) => x)), top: Math.min(...points.map(({y}) => y)), bottom: Math.max(...points.map(({y}) => y))}; } assert.fail(`unsupported visible shape ${element.name}`); }
 function terminalPoint(node, edge, side) { const box = numericBounds(node.geometry, node.attributes.get('id')); const style = styleMap(edge.attributes.get('style')); for (const key of [`${side}X`, `${side}Y`, `${side}Dx`, `${side}Dy`, `${side}Perimeter`]) assert.ok(style.has(key), `${edge.attributes.get('id')} ${key}`); assert.equal(style.get(`${side}Dx`), '0', 'terminal dx'); assert.equal(style.get(`${side}Dy`), '0', 'terminal dy'); assert.equal(style.get(`${side}Perimeter`), '1', 'terminal perimeter'); const x = number(style.get(`${side}X`), 'normalized terminal x'); const y = number(style.get(`${side}Y`), 'normalized terminal y'); assert.ok(x >= 0 && x <= 1 && y >= 0 && y <= 1 && (x === 0 || x === 1 || y === 0 || y === 1), 'normalized terminal on perimeter'); return {x: box.x + box.width * x, y: box.y + box.height * y}; }
-export function drawioRoute(edge, nodeById) { const source = nodeById.get(edge.attributes.get('source')); const target = nodeById.get(edge.attributes.get('target')); assert.ok(source && target, `${edge.attributes.get('id')} real terminals`); assert.ok(edge.hasPointsArray, `${edge.attributes.get('id')} waypoint array`); assert.equal(edge.misplacedPoints, 0, `${edge.attributes.get('id')} points only in waypoint array`); assert.equal(edge.points.some((point) => ['sourcePoint', 'targetPoint'].includes(point.get('as'))), false, `${edge.attributes.get('id')} no fallback points`); return [terminalPoint(source, edge, 'exit'), ...edge.points.map((point) => ({x: number(point.get('x'), 'waypoint x'), y: number(point.get('y'), 'waypoint y')})), terminalPoint(target, edge, 'entry')]; }
+export function drawioRoute(edge, nodeById) { const source = nodeById.get(edge.attributes.get('source')); const target = nodeById.get(edge.attributes.get('target')); assert.ok(source && target, `${edge.attributes.get('id')} real terminals`); assert.ok(edge.hasPointsArray, `${edge.attributes.get('id')} waypoint array`); assert.ok(edge.points.length > 0, `${edge.attributes.get('id')} explicit waypoint`); assert.equal(edge.misplacedPoints, 0, `${edge.attributes.get('id')} points only in waypoint array`); assert.equal(edge.points.some((point) => ['sourcePoint', 'targetPoint'].includes(point.get('as'))), false, `${edge.attributes.get('id')} no fallback points`); return [terminalPoint(source, edge, 'exit'), ...edge.points.map((point) => ({x: number(point.get('x'), 'waypoint x'), y: number(point.get('y'), 'waypoint y')})), terminalPoint(target, edge, 'entry')]; }
 export function glyphBox({x, y, text, fontSize, anchor = 'start'}) { const width = [...text].reduce((total, character) => total + (/^[\u0000-\u00ff]$/u.test(character) ? .64 : 1), 0) * fontSize; const left = anchor === 'middle' ? x - width / 2 : anchor === 'end' ? x - width : x; return {left, right: left + width, top: y - fontSize * .82, bottom: y + fontSize * .22}; }
 export function alphaCompose(backdrop, foreground) { const alpha = foreground.alpha + backdrop.alpha * (1 - foreground.alpha); if (alpha === 0) return {red: 0, green: 0, blue: 0, alpha: 0}; return {red: (foreground.red * foreground.alpha + backdrop.red * backdrop.alpha * (1 - foreground.alpha)) / alpha, green: (foreground.green * foreground.alpha + backdrop.green * backdrop.alpha * (1 - foreground.alpha)) / alpha, blue: (foreground.blue * foreground.alpha + backdrop.blue * backdrop.alpha * (1 - foreground.alpha)) / alpha, alpha}; }
 export function markerEnvelope(endpoint, previous, {width, height, refX, refY, viewBox = [0, 0, width, height], pathBounds = {left: viewBox[0], top: viewBox[1], right: viewBox[0] + viewBox[2], bottom: viewBox[1] + viewBox[3]}, preserveAspectRatio = 'xMidYMid meet'}) { const dx = endpoint.x - previous.x; const dy = endpoint.y - previous.y; const length = Math.hypot(dx, dy); assert.ok(length > 0, 'marker terminal direction'); const [, , viewWidth, viewHeight] = viewBox; assert.ok(viewWidth > 0 && viewHeight > 0 && width > 0 && height > 0, 'positive marker viewport and viewBox'); const unit = {x: dx / length, y: dy / length}; const normal = {x: -unit.y, y: unit.x}; const [scaleX, scaleY] = preserveAspectRatio === 'none' ? [width / viewWidth, height / viewHeight] : (assert.equal(preserveAspectRatio, 'xMidYMid meet', 'supported marker preserveAspectRatio'), close(width / viewWidth, height / viewHeight, 'meet marker aspect ratio'), [width / viewWidth, height / viewHeight]); const points = [[pathBounds.left, pathBounds.top], [pathBounds.right, pathBounds.top], [pathBounds.right, pathBounds.bottom], [pathBounds.left, pathBounds.bottom]].map(([x, y]) => ({x: endpoint.x + unit.x * (x - refX) * scaleX + normal.x * (y - refY) * scaleY, y: endpoint.y + unit.y * (x - refX) * scaleX + normal.y * (y - refY) * scaleY})); return {left: Math.min(...points.map(({x}) => x)), right: Math.max(...points.map(({x}) => x)), top: Math.min(...points.map(({y}) => y)), bottom: Math.max(...points.map(({y}) => y))}; }
@@ -175,11 +196,15 @@ function assertServerlessDiagram(drawioSource, svgSource) {
   const svg = parseSvg(svgSource); assertFlattenedSvg(svg.elements);
   const root = svg.elements.find(({name}) => name === 'svg');
   assert.deepEqual((root?.attributes.get('viewBox') ?? '').split(/\s+/u).map(Number), [0, 0, 2400, 3600], '2400x3600 source canvas renders at 800x1200 CSS pixels');
+  assert.equal(root?.attributes.has('width'), false, 'responsive SVG root has no fixed width');
+  assert.equal(root?.attributes.has('height'), false, 'responsive SVG root has no fixed height');
   for (const id of REGION_IDS) {
     const cell = nodes.get(id); const rendered = svg.elements.find(({attributes}) => attributes.get('data-region-id') === id);
     assert.ok(cell && rendered, id + ' Draw.io/SVG region pair'); assert.equal(semanticRole(cell), 'region', id + ' semantic region');
     const left = numericBounds(cell.geometry, id); const right = svgBoundsFor(rendered, svg.elements);
     for (const key of ['left', 'top', 'right', 'bottom']) close(left[key], right[key], id + ' region bounds');
+    const drawioLabel = nodes.get('region-label-' + id); const svgLabel = svg.elements.find(({name, attributes}) => name === 'text' && attributes.get('data-region-label-for') === id);
+    assert.ok(drawioLabel && svgLabel, id + ' explicit region label pair'); assert.equal(drawioLabel.label, REGION_LABELS[id], id + ' Draw.io region copy'); assert.equal(elementText(svgSource, svgLabel), REGION_LABELS[id], id + ' SVG region copy');
   }
   const nodeBounds = new Map();
   for (const id of NODE_IDS) {
@@ -190,6 +215,8 @@ function assertServerlessDiagram(drawioSource, svgSource) {
     const title = svg.elements.find(({name, attributes}) => name === 'text' && attributes.get('data-header-for') === 'node-' + id);
     const type = svg.elements.find(({name, attributes}) => name === 'text' && attributes.get('data-type-for') === 'node-' + id);
     assert.ok(title && type, id + ' title/type labels');
+    assert.equal(nodes.get('text-' + id + '-title')?.label, NODE_COPY[id][0], id + ' editable Draw.io title'); assert.equal(nodes.get('text-' + id + '-type')?.label, NODE_COPY[id][1], id + ' editable Draw.io type');
+    assert.equal(elementText(svgSource, title), NODE_COPY[id][0], id + ' SVG title'); assert.equal(elementText(svgSource, type), NODE_COPY[id][1], id + ' SVG type');
     const titleFont = number(svgPresentationValue(svgSource, title, 'font-size'), id + ' title font'); const typeFont = number(svgPresentationValue(svgSource, type, 'font-size'), id + ' type font');
     assert.ok(titleFont >= 45 && typeFont >= 45, id + ' body/title/type text is at least 15 CSS pixels');
     const titleBox = glyphBox({x: number(title.attributes.get('x'), id + ' title x'), y: number(title.attributes.get('y'), id + ' title y'), text: elementText(svgSource, title), fontSize: titleFont, anchor: svgPresentationValue(svgSource, title, 'text-anchor') ?? 'start'});
@@ -204,21 +231,58 @@ function assertServerlessDiagram(drawioSource, svgSource) {
     const route = drawioRoute(edge, nodes); const svgRoute = parsePathPoints(rendered.attributes.get('d')); equalRoute(svgRoute, route, id + ' route');
     const style = styleMap(edge.attributes.get('style')); assert.equal(svgPresentationValue(svgSource, rendered, 'stroke'), style.get('strokeColor'), id + ' effective stroke'); close(number(svgPresentationValue(svgSource, rendered, 'stroke-width'), id + ' SVG width'), number(style.get('strokeWidth'), id + ' Draw.io width'), id + ' line width'); assert.equal(svgPresentationValue(svgSource, rendered, 'stroke-dasharray') ?? '', style.get('dashPattern') || '', id + ' dash');
     const marker = markerBounds(svgSource, svg.elements, rendered, svgRoute); const label = svg.elements.find(({name, attributes}) => name === 'text' && attributes.get('data-edge-id') === id); assert.ok(label, id + ' edge label');
+    assert.equal(nodes.get('edge-label-' + id)?.label, EDGE_LABELS[id], id + ' editable Draw.io edge label'); assert.equal(elementText(svgSource, label), EDGE_LABELS[id], id + ' SVG edge label');
     const labelBox = glyphBox({x: number(label.attributes.get('x'), id + ' label x'), y: number(label.attributes.get('y'), id + ' label y'), text: elementText(svgSource, label), fontSize: number(svgPresentationValue(svgSource, label, 'font-size'), id + ' edge font'), anchor: svgPresentationValue(svgSource, label, 'text-anchor') ?? 'start'});
     assert.ok(number(svgPresentationValue(svgSource, label, 'font-size'), id + ' edge font') >= 45, id + ' 15px edge text'); assertRouteGlyphClearance(svgRoute, labelBox, id); assert.ok(boxDistance(labelBox, marker) >= 48, id + ' 16px arrow clearance');
-    for (const [foreign, box] of nodeBounds) if (foreign !== source && foreign !== target) { assert.ok(routeBoxDistance(svgRoute, box) >= 36 && boxDistance(labelBox, box) >= 36, id + ' 12px foreign-node clearance'); assert.equal(overlaps(marker, box), false, id + ' marker footprint'); }
+    for (const [foreign, box] of nodeBounds) if (foreign !== source && foreign !== target) { assert.ok(routeBoxDistance(svgRoute, box) >= 36 && boxDistance(labelBox, box) >= 36, id + ' 12px foreign-node clearance: ' + foreign); assert.equal(overlaps(marker, box), false, id + ' marker footprint: ' + foreign); }
     routes.push({id, source: 'node-' + source, target: 'node-' + target, points: svgRoute, rendered});
   }
   for (const role of LEGEND_ROLES) {
     const edge = edges.get('legend-edge-' + role); const rendered = svg.elements.find(({name, attributes}) => name === 'path' && attributes.get('data-legend-edge-id') === 'legend-edge-' + role); const label = svg.elements.find(({name, attributes}) => name === 'text' && attributes.get('data-legend-label-for') === 'legend-edge-' + role);
     assert.ok(edge && rendered && label, role + ' complete legend pair'); assert.equal(styleMap(edge.attributes.get('style')).get('legendRole'), role, role + ' Draw.io legend role'); assert.equal(rendered.attributes.get('data-edge-role'), role, role + ' SVG legend role');
+    assert.equal(nodes.get('legend-label-' + role)?.label, LEGEND_LABELS[role], role + ' editable Draw.io legend label'); assert.equal(elementText(svgSource, label), LEGEND_LABELS[role], role + ' SVG legend label');
     const legendRoute = drawioRoute(edge, nodes); const svgRoute = parsePathPoints(rendered.attributes.get('d')); equalRoute(svgRoute, legendRoute, role + ' legend route');
     const style = styleMap(edge.attributes.get('style')); assert.equal(svgPresentationValue(svgSource, rendered, 'stroke'), style.get('strokeColor'), role + ' effective legend stroke'); close(number(svgPresentationValue(svgSource, rendered, 'stroke-width'), role + ' legend SVG width'), number(style.get('strokeWidth'), role + ' legend Draw.io width'), role + ' legend width'); assert.equal(svgPresentationValue(svgSource, rendered, 'stroke-dasharray') ?? '', style.get('dashPattern') || '', role + ' legend dash');
     const marker = markerBounds(svgSource, svg.elements, rendered, svgRoute); const font = number(svgPresentationValue(svgSource, label, 'font-size'), role + ' legend label font'); assert.ok(font >= 45, role + ' legend 15px text'); const labelBox = glyphBox({x: number(label.attributes.get('x'), role + ' legend label x'), y: number(label.attributes.get('y'), role + ' legend label y'), text: elementText(svgSource, label), fontSize: font, anchor: svgPresentationValue(svgSource, label, 'text-anchor') ?? 'start'}); assertRouteGlyphClearance(svgRoute, labelBox, role + ' legend'); assert.ok(boxDistance(labelBox, marker) >= 48, role + ' legend label-to-arrow clearance');
     routes.push({id: 'legend-edge-' + role, source: edge.attributes.get('source'), target: edge.attributes.get('target'), points: svgRoute, rendered});
   }
-  for (let left = 0; left < routes.length; left += 1) for (let right = left + 1; right < routes.length; right += 1) for (let a = 1; a < routes[left].points.length; a += 1) for (let b = 1; b < routes[right].points.length; b += 1) { const first = routes[left].points[a - 1]; const second = routes[left].points[a]; const third = routes[right].points[b - 1]; const fourth = routes[right].points[b]; assert.equal(partialCollinearOverlap(first, second, third, fourth), false, 'no partial collinear overlap'); if (segmentsCross(first, second, third, fourth)) assert.equal(exactSharedTerminalContact(routes[left], routes[right], first, second, third, fourth), true, 'only shared terminals intersect'); }
+  for (const [id, copy] of Object.entries(NOTE_COPY)) {
+    const owner = nodes.get('note-' + id); const drawioText = nodes.get('note-text-' + id); const rendered = svg.elements.find(({attributes}) => attributes.get('data-note-id') === id); const svgText = svg.elements.find(({name, attributes}) => name === 'text' && attributes.get('data-note-text-for') === id);
+    assert.ok(owner && drawioText && rendered && svgText, id + ' synchronized prohibition note'); assert.equal(semanticRole(owner), 'note-card', id + ' note owner role'); assert.equal(owner.label, '', id + ' owner shape has no duplicate visible copy'); assert.equal(drawioText.label, copy, id + ' editable Draw.io note copy'); assert.equal(elementText(svgSource, svgText), copy, id + ' SVG note copy');
+  }
+  for (let left = 0; left < routes.length; left += 1) for (let right = left + 1; right < routes.length; right += 1) for (let a = 1; a < routes[left].points.length; a += 1) for (let b = 1; b < routes[right].points.length; b += 1) { const first = routes[left].points[a - 1]; const second = routes[left].points[a]; const third = routes[right].points[b - 1]; const fourth = routes[right].points[b]; const pair = routes[left].id + ' / ' + routes[right].id; assert.equal(partialCollinearOverlap(first, second, third, fourth), false, 'no partial collinear overlap: ' + pair); if (segmentsCross(first, second, third, fourth)) assert.equal(exactSharedTerminalContact(routes[left], routes[right], first, second, third, fourth), true, 'only shared terminals intersect: ' + pair); }
   for (const route of routes) { const masks = svg.elements.filter((element) => element.index > route.rendered.index && ['rect', 'circle', 'ellipse', 'path'].includes(element.name) && svgPresentationValue(svgSource, element, 'fill') !== 'none').map((element) => ({...shapeBounds(element), alpha: number(svgPresentationValue(svgSource, element, 'fill-opacity') ?? 1, 'mask alpha')})); assertNoLaterPaintMask(route.points, masks); }
+}
+
+function assertDiagramMutationRejected(drawioSource, svgSource) {
+  const edgeMutation = (id, mutate, label) => assert.throws(() => assertServerlessDiagram(mutateDrawioCell(drawioSource, id, mutate, label), svgSource), assert.AssertionError, label + ' rejected');
+  edgeMutation('submit-order', (raw) => raw.replace(/exitX=[^;]+;/u, ''), 'missing port');
+  edgeMutation('submit-order', (raw) => raw.replace('exitPerimeter=1', 'exitPerimeter=0'), 'changed port');
+  edgeMutation('submit-order', (raw) => raw.replace(/<Array as="points">[\s\S]*?<\/Array>/u, '<Array as="points"></Array>'), 'missing waypoint');
+  edgeMutation('submit-order', (raw) => raw.replace('</mxGeometry>', '<mxPoint x="0" y="0" as="sourcePoint"/></mxGeometry>'), 'injected sourcePoint');
+  edgeMutation('invoke-payment', (raw) => raw.replace(/target="[^"]+"/u, 'target="node-order-state"'), 'function-to-order-store edge');
+  edgeMutation('deliver-payment', (raw) => raw.replace(/target="[^"]+"/u, 'target="node-order-state"'), 'queue-declares-success edge');
+  edgeMutation('query-unknown-result', (raw) => raw.replace(/target="[^"]+"/u, 'target="node-payment-function"'), 'timeout-direct-retry edge');
+  edgeMutation('limit-ingress', (raw) => { const source = /source="([^"]+)"/u.exec(raw)?.[1]; const target = /target="([^"]+)"/u.exec(raw)?.[1]; return raw.replace(`source="${source}"`, `source="${target}"`).replace(`target="${target}"`, `target="${source}"`); }, 'budget arrow reversed into observability');
+  edgeMutation('payment-receipt', (raw) => raw.replace(/source="[^"]+"/u, 'source="node-payment-function"'), 'detached authoritative receipt');
+
+  const parsed = parseDrawio(drawioSource); const manual = parsed.cells.find(({attributes: item}) => item.get('id') === 'node-manual-terminal'); assert.ok(manual, 'manual terminal mutation applies');
+  assert.throws(() => assertServerlessDiagram(replaceOnce(drawioSource, manual.raw, '', 'missing manual terminal'), svgSource), assert.AssertionError, 'missing manual terminal rejected');
+  edgeMutation('legend-edge-request', (raw) => raw.replace('legendRole=request', 'legendRole=work'), 'legend drift');
+
+  const changedFont = mutateSvgElement(svgSource, ({name, attributes: item}) => name === 'text' && item.get('data-header-for') === 'node-sync-ingress', (open) => open.replace(/font-size="[^"]+"/u, 'font-size="44"'), 'changed font');
+  assert.throws(() => assertServerlessDiagram(drawioSource, changedFont), assert.AssertionError, 'changed font rejected');
+
+  const drawio = parseDrawio(drawioSource); const nodes = new Map(drawio.nodes.map((node) => [node.attributes.get('id'), node])); const firstRoute = drawioRoute(drawio.edges.find(({attributes: item}) => item.get('id') === 'submit-order'), nodes); const maskPoint = firstRoute[1];
+  const masked = replaceOnce(svgSource, '</svg>', `<rect x="${maskPoint.x - 12}" y="${maskPoint.y - 12}" width="24" height="24" fill="#FFFFFF" fill-opacity="1"/></svg>`, 'opaque label mask');
+  assert.throws(() => assertServerlessDiagram(drawioSource, masked), assert.AssertionError, 'opaque label mask rejected');
+
+  const firstSvgEdge = parseSvg(svgSource).edges.find(({attributes: item}) => item.get('data-edge-id') === 'submit-order'); const firstPoints = parsePathPoints(firstSvgEdge.attributes.get('d')); const secondId = 'idempotent-accept';
+  const overlapped = mutateSvgElement(svgSource, ({name, attributes: item}) => name === 'path' && item.get('data-edge-id') === secondId, (open) => open.replace(/d="[^"]+"/u, `d="M ${firstPoints[0].x} ${firstPoints[0].y} L ${firstPoints[1].x} ${firstPoints[1].y} L ${firstPoints.at(-1).x} ${firstPoints.at(-1).y}"`), 'partial overlap');
+  assert.throws(() => assertServerlessDiagram(drawioSource, overlapped), assert.AssertionError, 'partial overlap rejected');
+
+  const shiftedMarker = mutateSvgElement(svgSource, ({name, attributes: item}) => name === 'marker' && item.has('id'), (open) => open.replace(/markerWidth="[^"]+"/u, 'markerWidth="600"').replace(/markerHeight="[^"]+"/u, 'markerHeight="600"'), 'shifted marker');
+  assert.throws(() => assertServerlessDiagram(drawioSource, shiftedMarker), assert.AssertionError, 'shifted marker into foreign node or boundary rejected');
 }
 
 function fixtureArticle() {
@@ -263,7 +327,7 @@ test('STY-11 source fixture locks the eleven identities and citation roles', () 
   const roles = structuredClone(ledger); roles.sources[0].allowed_evidence_roles = ['comparison']; roles.documents[ARTICLE].citations[0].roles = ['comparison']; assert.throws(() => assertServerlessSources(roles), assert.AssertionError, 'source and citation role drift rejected');
 });
 
-test('STY-11 diagram helpers reject terminal, style, collision, and paint mutations', () => {
+test('STY-11 SVG cascade and diagram inventory helpers reject terminal, style, collision, and paint mutations', () => {
   const source = '<svg><style>#host > .edge[data-edge-id="x"] { stroke:#0F766E !important; font-size:45px; }</style><g id="host"><path class="edge" data-edge-id="x" style="stroke:#000" d="M 0 0 L 30 0"/></g></svg>';
   const svg = parseSvg(source); const edge = svg.edges.find(({attributes}) => attributes.get('data-edge-id') === 'x');
   assert.equal(svgPresentationValue(source, edge, 'stroke'), '#0F766E', 'effective cascade style');
@@ -278,6 +342,11 @@ test('STY-11 diagram helpers reject terminal, style, collision, and paint mutati
   assert.equal(partialCollinearOverlap({x: 0, y: 0}, {x: 20, y: 0}, {x: 10, y: 0}, {x: 30, y: 0}), true, 'partial collinear overlap measured');
   assert.throws(() => assertNoLaterPaintMask([{x: 0, y: 0}, {x: 30, y: 0}], [{left: 10, right: 20, top: -1, bottom: 1, alpha: 1}]), assert.AssertionError, 'later paint mask rejected');
   assert.deepEqual(alphaCompose({red: 0, green: 0, blue: 0, alpha: 0}, {red: 255, green: 255, blue: 255, alpha: .5}), {red: 255, green: 255, blue: 255, alpha: .5}, 'source-over alpha');
+});
+
+test('STY-11 Draw.io/SVG diagram satisfies synchronized inventory and mutation contract', () => {
+  const diagram = file(DRAWIO); const svg = file(SVG); assert.ok(diagram && svg, 'STY-11 diagram pair');
+  assertServerlessDiagram(diagram, svg); assertDiagramMutationRejected(diagram, svg);
 });
 
 test('STY-11 implementation remains RED until its article, sources, relations, diagram, and projection exist', async () => {
