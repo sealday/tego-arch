@@ -2415,6 +2415,52 @@
       "forbidden_aliases": [],
       "note": "保留项目官方大小写；STY-10 只把它作为受控的本地进程间调用协议示例。",
       "order": 1770
+    },
+    {
+      "id": "serverless-architecture",
+      "canonical_zh": "Serverless Architecture",
+      "english": null,
+      "acronym": null,
+      "kind": "standard",
+      "first_use": "Serverless Architecture",
+      "subsequent_use": [
+        "Serverless Architecture",
+        "Serverless"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [],
+      "note": "架构风格保留通行英文名称；本站把它定义为平台运行责任、持久业务状态和权威下游共同构成的系统边界。",
+      "order": 1780
+    },
+    {
+      "id": "functions-as-a-service",
+      "canonical_zh": "Functions as a Service",
+      "english": "FaaS",
+      "acronym": null,
+      "kind": "standard",
+      "first_use": "Functions as a Service（FaaS）",
+      "subsequent_use": [
+        "FaaS"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [],
+      "note": "函数执行形态首次同时给出英文全称与缩写；它只是 Serverless 系统边界的一部分。",
+      "order": 1790
+    },
+    {
+      "id": "finops",
+      "canonical_zh": "FinOps",
+      "english": null,
+      "acronym": null,
+      "kind": "standard",
+      "first_use": "FinOps",
+      "subsequent_use": [
+        "FinOps"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [],
+      "note": "保留云财务运营实践的通行名称；本文只用它表示容量与成本归因的协作责任。",
+      "order": 1800
     }
   ]
 }

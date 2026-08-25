@@ -274,6 +274,8 @@ Outbox 不等于事件溯源。
 
 [STY-09 Pipes and Filters](/styles/sty-09) 说明相邻转换怎样通过数据与容量合同组合。事件可以承载某个 Pipe 的数据，却不会自动决定事件载荷、业务权威、窗口完成或外部效果恢复。
 
+[STY-11 Serverless Architecture](/styles/sty-11)把事件放回同步受理、持久工作流（Workflow）、队列和权威下游的完整边界；本文负责事件类型与交付语义，STY-11 负责订单进度、并发预算和结果未知时的恢复所有权。
+
 [PR-11 命令查询职责分离](/principles/pr-11)说明读写模型为何分离，CQRS 不要求事件溯源；[MOD-08 状态机建模](/modeling/mod-08)说明状态、守卫与终态如何接受评审，状态图本身仍不能证明跨系统效果。[Apache Kafka 事件流平台消费者组案例](/cases/apache-kafka-consumer-groups)只用于观察分区、消费位置与恢复机制，不把事件流平台或代理日志当作业务事件存储。返回[架构风格目录](/styles)可与其他风格按统一维度比较。
 
 ## 来源

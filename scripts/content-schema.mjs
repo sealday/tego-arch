@@ -132,7 +132,7 @@ export const closingPrincipleHeadings = [
   '## 来源',
 ];
 
-export const architectureCaseTopicIds = new Set(['STY-08', 'STY-09', 'STY-10']);
+export const architectureCaseTopicIds = new Set(['STY-08', 'STY-09', 'STY-10', 'STY-11']);
 export const architectureCaseHeadings = closingPrincipleHeadings;
 
 export const sty10ArchitectureCaseHeadings = [
