@@ -47,7 +47,7 @@
 - `scripts/content-schema.mjs` — 将 STY-11 加入精确 architecture-case 10-H2 合同。
 - `data/source-ledger.json` — 九个新远程来源、一项原创插图及 STY-11 文档引用；复用现有 CloudEvents 记录。
 - `data/source-link-health.json` — 九个新 remote transport 的健康记录。
-- `docs/source-license-inventory.md` — 新来源与原创插图的许可证/版权边界。
+- `data/source-ledger.json` 是 STY-11 新来源与原创插图许可证/版权边界的唯一权威记录；不得回填冻结的 G003 迁移快照 `docs/source-license-inventory.md`。
 - `data/terminology.json` — 登记 Serverless Architecture、Functions as a Service（FaaS）和 FinOps 所需的最小首次使用合同；已有同义项必须复用。
 - `content/styles/sty-06-event-driven-architecture.mdx` — 事件合同和交付语义不由函数运行时自动决定的可见反向关系。
 - `content/styles/sty-09-pipes-and-filters.mdx` — 队列、背压和恢复单位边界的可见反向关系。
@@ -312,7 +312,6 @@
 - Modify: `scripts/content-schema.mjs`
 - Modify: `data/source-ledger.json`
 - Modify: `data/source-link-health.json`
-- Modify: `docs/source-license-inventory.md`
 - Modify: `data/terminology.json`
 - Modify: `content/styles/sty-06-event-driven-architecture.mdx`
 - Modify: `content/styles/sty-09-pipes-and-filters.mdx`
@@ -370,7 +369,7 @@
 
   Implement the ten exact H2s and three H3s. Within the first three paragraphs state: Serverless transfers capacity provisioning and part of runtime responsibility; durable business state remains explicit; the order scenario is original and not production evidence. Place the main diagram immediately after the paragraph that names the ownership path to inspect.
 
-  Wrap only the main diagram, seven-row ownership matrix, seven-row failure table and five-row cold/cost table with the exact Task 1 labels and keyboard handler. Use evidence cards for version/license/source seams; keep state ownership, concurrency limits, unknown-result recovery, cost stop conditions and exit rules visible.
+  Wrap only the main diagram, seven-row ownership matrix, seven-row failure table and five-row cold/cost table with the exact Task 1 labels and keyboard handler. Use evidence cards for version/license/source seams; keep state ownership, concurrency limits, unknown-result recovery, cost stop conditions and exit rules visible. Validate all new-source and original-illustration rights from `data/source-ledger.json`, the sole runtime authority; do not modify or require entries in the frozen G003 migration snapshot `docs/source-license-inventory.md`.
 
 - [ ] **Step 4: Add reciprocal links and terminology**
 
@@ -400,7 +399,7 @@
 
   ```bash
   git add content/styles/sty-11-serverless-architecture.mdx scripts/content-schema.mjs \
-    data/source-ledger.json data/source-link-health.json docs/source-license-inventory.md \
+    data/source-ledger.json data/source-link-health.json \
     data/terminology.json content/styles/sty-06-event-driven-architecture.mdx \
     content/styles/sty-09-pipes-and-filters.mdx content/cases/cloudflare-durable-objects-workerd.mdx \
     tests/g009-batch12-content.test.mjs
