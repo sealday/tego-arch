@@ -174,8 +174,9 @@ function assertServerlessDiagram(drawioSource, svgSource) {
   const edges = new Map(drawio.edges.map((edge) => [edge.attributes.get('id'), edge]));
   const svg = parseSvg(svgSource); assertFlattenedSvg(svg.elements);
   const root = svg.elements.find(({name}) => name === 'svg');
-  assert.deepEqual((root?.attributes.get('viewBox') ?? '').split(/\s+/u).map(Number), [0, 0, 2400, 3900], '2400x3900 source canvas renders at 800 CSS pixels');
+  assert.deepEqual((root?.attributes.get('viewBox') ?? '').split(/\s+/u).map(Number), [0, 0, 2400, 3600], '2400x3600 source canvas renders at 800x1200 CSS pixels');
   assert.equal(root?.attributes.get('width'), '2400', 'source width uses 3x 800 CSS-pixel basis');
+  assert.equal(root?.attributes.get('height'), '3600', 'source height uses 3x 1200 CSS-pixel basis');
   for (const id of REGION_IDS) {
     const cell = nodes.get(id); const rendered = svg.elements.find(({attributes}) => attributes.get('data-region-id') === id);
     assert.ok(cell && rendered, id + ' Draw.io/SVG region pair'); assert.equal(semanticRole(cell), 'region', id + ' semantic region');
@@ -201,7 +202,7 @@ function assertServerlessDiagram(drawioSource, svgSource) {
   const routes = [];
   for (const id of EDGE_IDS) {
     const [source, target, role] = EDGE_CONTRACTS[id]; const edge = edges.get(id); const rendered = svg.edges.find(({attributes}) => attributes.get('data-edge-id') === id);
-    assert.ok(edge && rendered, id + ' Draw.io/SVG edge pair'); assert.equal(edge.attributes.get('source'), 'node-' + source, id + ' source'); assert.equal(edge.attributes.get('target'), 'node-' + target, id + ' target'); assert.equal(semanticRole(edge), role, id + ' Draw.io role'); assert.equal(rendered.attributes.get('data-role'), role, id + ' SVG role');
+    assert.ok(edge && rendered, id + ' Draw.io/SVG edge pair'); assert.equal(edge.attributes.get('source'), 'node-' + source, id + ' source'); assert.equal(edge.attributes.get('target'), 'node-' + target, id + ' target'); assert.equal(semanticRole(edge), role, id + ' Draw.io role'); assert.equal(rendered.attributes.get('data-edge-role'), role, id + ' SVG role');
     const route = drawioRoute(edge, nodes); const svgRoute = parsePathPoints(rendered.attributes.get('d')); equalRoute(svgRoute, route, id + ' route');
     const style = styleMap(edge.attributes.get('style')); assert.equal(svgPresentationValue(svgSource, rendered, 'stroke'), style.get('strokeColor'), id + ' effective stroke'); close(number(svgPresentationValue(svgSource, rendered, 'stroke-width'), id + ' SVG width'), number(style.get('strokeWidth'), id + ' Draw.io width'), id + ' line width'); assert.equal(svgPresentationValue(svgSource, rendered, 'stroke-dasharray') ?? '', style.get('dashPattern') || '', id + ' dash');
     const marker = markerBounds(svgSource, svg.elements, rendered, svgRoute); const label = svg.elements.find(({name, attributes}) => name === 'text' && attributes.get('data-edge-id') === id); assert.ok(label, id + ' edge label');
@@ -212,7 +213,7 @@ function assertServerlessDiagram(drawioSource, svgSource) {
   }
   for (const role of LEGEND_ROLES) {
     const edge = edges.get('legend-edge-' + role); const rendered = svg.elements.find(({name, attributes}) => name === 'path' && attributes.get('data-legend-edge-id') === 'legend-edge-' + role); const label = svg.elements.find(({name, attributes}) => name === 'text' && attributes.get('data-legend-label-for') === 'legend-edge-' + role);
-    assert.ok(edge && rendered && label, role + ' complete legend pair'); assert.equal(styleMap(edge.attributes.get('style')).get('legendRole'), role, role + ' Draw.io legend role'); assert.equal(rendered.attributes.get('data-role'), role, role + ' SVG legend role');
+    assert.ok(edge && rendered && label, role + ' complete legend pair'); assert.equal(styleMap(edge.attributes.get('style')).get('legendRole'), role, role + ' Draw.io legend role'); assert.equal(rendered.attributes.get('data-edge-role'), role, role + ' SVG legend role');
     const legendRoute = drawioRoute(edge, nodes); const svgRoute = parsePathPoints(rendered.attributes.get('d')); equalRoute(svgRoute, legendRoute, role + ' legend route');
     const style = styleMap(edge.attributes.get('style')); assert.equal(svgPresentationValue(svgSource, rendered, 'stroke'), style.get('strokeColor'), role + ' effective legend stroke'); close(number(svgPresentationValue(svgSource, rendered, 'stroke-width'), role + ' legend SVG width'), number(style.get('strokeWidth'), role + ' legend Draw.io width'), role + ' legend width'); assert.equal(svgPresentationValue(svgSource, rendered, 'stroke-dasharray') ?? '', style.get('dashPattern') || '', role + ' legend dash');
     const marker = markerBounds(svgSource, svg.elements, rendered, svgRoute); const font = number(svgPresentationValue(svgSource, label, 'font-size'), role + ' legend label font'); assert.ok(font >= 45, role + ' legend 15px text'); const labelBox = glyphBox({x: number(label.attributes.get('x'), role + ' legend label x'), y: number(label.attributes.get('y'), role + ' legend label y'), text: elementText(svgSource, label), fontSize: font, anchor: svgPresentationValue(svgSource, label, 'text-anchor') ?? 'start'}); assertRouteGlyphClearance(svgRoute, labelBox, role + ' legend'); assert.ok(boxDistance(labelBox, marker) >= 48, role + ' legend label-to-arrow clearance');
