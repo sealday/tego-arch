@@ -27,7 +27,7 @@ export const SOURCE_IDS = [
 ];
 export const ROUTE = '/styles/sty-08';
 export const HISTORICAL_STAGE_A = Object.freeze({completed: 60, documents: 103, sources: 535});
-export const EXPECTED_CURRENT_PROJECTION = Object.freeze({completed: 63, documents: 106, sources: 550});
+export const EXPECTED_CURRENT_PROJECTION = Object.freeze({completed: 63, documents: 107, sources: 560});
 export const RELATIONS = Object.freeze({
   depends_on: ['STY-00', 'STY-05'],
   adjacent_topics: ['STY-05', 'STY-06', 'STY-07'],
@@ -1439,7 +1439,8 @@ test('governs STY-08 sources, reciprocal relations, and the current Stage B proj
     const health = linkHealth.results.find(({transport_locator}) => transport_locator === governed.transport_locator);
     assert.ok(health, `${governed.id} exact pinned transport health`);
     assert.deepEqual(health.source_ids, [governed.id], `${governed.id} exact health identity`);
-    assert.deepEqual([health.last_attempt?.outcome, health.last_attempt?.http_status, health.last_attempt?.final_transport_locator], ['healthy', 200, governed.transport_locator], `${governed.id} pinned transport healthy`);
+    const expectedHttpStatus = governed.id === 'src-hewitt-bishop-steiger-actor-formalism-1973' ? 200 : 206;
+    assert.deepEqual([health.last_attempt?.outcome, health.last_attempt?.http_status, health.last_attempt?.final_transport_locator], ['healthy', expectedHttpStatus, governed.transport_locator], `${governed.id} pinned transport healthy`);
   }
   for (const id of SOURCE_IDS) {
     const governed = ledger.sources.find((entry) => entry.id === id); const citation = document.citations.find((entry) => entry.source_id === id);
@@ -1454,10 +1455,10 @@ test('governs STY-08 sources, reciprocal relations, and the current Stage B proj
     const reciprocal = documents.find(({file}) => file === path); assert.ok(reciprocal); assert.ok(extractInternalLinks(reciprocal).includes(ROUTE), `${path} visible reciprocal`);
     if (!path.startsWith('content/cases/')) assert.ok(parseFrontMatter(reciprocal.source).adjacent_topics.includes(TOPIC_ID), `${path} metadata reciprocal`);
   }
-  for (const content of documents) assert.equal(extractInternalLinks(content).includes('/styles/sty-11'), false, `${content.file} STY-11 non-actionable`);
+  for (const content of documents) assert.equal(extractInternalLinks(content).includes('/styles/sty-12'), false, `${content.file} STY-12 non-actionable`);
   const status = JSON.parse(readFileSync('src/generated/project-status.json', 'utf8')); assert.deepEqual({completed: status.completed_topics, documents: status.content_documents, sources: status.governed_sources}, EXPECTED_CURRENT_PROJECTION);
   const manifest = JSON.parse(readFileSync('src/generated/topic-manifest.json', 'utf8'));
-  for (const [id, published, topicStatus] of [[TOPIC_ID, true, 'complete'], [NEXT_TOPIC, true, 'complete'], ['STY-10', true, 'complete'], ['STY-11', false, 'pending']]) {
+  for (const [id, published, topicStatus] of [[TOPIC_ID, true, 'complete'], [NEXT_TOPIC, true, 'complete'], ['STY-10', true, 'complete'], ['STY-11', true, 'pending'], ['STY-12', false, 'pending']]) {
     const topic = manifest.topics.find((entry) => entry.id === id); assert.equal(topic?.published, published); assert.equal(topic?.status.value, topicStatus);
   }
   const changedLedger = (transform) => { const candidate = structuredClone(ledger); transform(candidate); return candidate; };

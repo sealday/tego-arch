@@ -1154,9 +1154,9 @@ test('preserves the STY-05 closure under the current STY-10 next-topic projectio
   assert.equal(indexes.style.find(({id}) => id === TOPIC_ID)?.published, true);
   assert.equal(indexes.style.find(({id}) => id === 'STY-06')?.published, true);
   assert.equal(projectStatus.completed_topics, 63);
-  assert.equal(projectStatus.content_documents, 106);
-  assert.equal(projectStatus.governed_sources, 550);
-  assert.equal(publicLedger.sources.length, 550);
+  assert.equal(projectStatus.content_documents, 107);
+  assert.equal(projectStatus.governed_sources, 560);
+  assert.equal(publicLedger.sources.length, 560);
 
   const publishedRoutes = manifest.topics.filter(({published}) => published).map(({slug}) => slug);
   assert.ok(publishedRoutes.includes(ROUTE));
@@ -1169,6 +1169,7 @@ test('preserves the STY-05 closure under the current STY-10 next-topic projectio
     'styles/sty-07-service-oriented-architecture.mdx',
     'styles/sty-08-actor-model.mdx',
     'styles/sty-09-pipes-and-filters.mdx',
+    'styles/sty-11-serverless-architecture.mdx',
   ]);
   for (const document of documents) {
     assert.equal(

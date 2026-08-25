@@ -139,7 +139,7 @@ test('records the known Micro Frontends author and publication date consistently
   );
 });
 
-test('records all Microsoft Learn families as CC-BY-4.0 from official license evidence', async () => {
+test('preserves frozen Microsoft Learn CC-BY families while keeping the reviewed Azure Functions page conservative', async () => {
   const {inventory, ledger} = await governedData();
   const rows = inventory.entries.filter((entry) =>
     entry.source_family.startsWith('https://learn.microsoft.com/'));
@@ -147,8 +147,18 @@ test('records all Microsoft Learn families as CC-BY-4.0 from official license ev
     source.license_family_id.startsWith('https://learn.microsoft.com/'));
 
   assert.equal(rows.length, 9);
-  assert.equal(sources.length, 13);
-  for (const item of [...rows, ...sources]) {
+  assert.equal(sources.length, 14);
+  const azureFunctions = sources.find(({id}) => id === 'src-azure-functions-scale-hosting');
+  assert.deepEqual({
+    license: azureFunctions?.license,
+    copyright_policy: azureFunctions?.copyright_policy,
+    license_evidence_url: azureFunctions?.license_evidence_url,
+  }, {
+    license: 'LicenseRef-All-Rights-Reserved',
+    copyright_policy: 'facts-and-short-quotation',
+    license_evidence_url: 'https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale',
+  });
+  for (const item of [...rows, ...sources.filter(({id}) => id !== 'src-azure-functions-scale-hosting')]) {
     assert.equal(item.exact_license ?? item.license, 'CC-BY-4.0');
     assert.equal(
       approvedMicrosoftLicenseEvidenceUrls.has(item.license_evidence_url),

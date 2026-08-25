@@ -9,8 +9,10 @@ import {extractInternalLinks} from '../scripts/content-relations.mjs';
 
 export const EXPECTED_STAGE_A = Object.freeze({completed: 62, documents: 106, sources: 550});
 export const EXPECTED_STAGE_B = Object.freeze({completed: 63, documents: 106, sources: 550});
+export const EXPECTED_CURRENT_PROJECTION = Object.freeze({completed: 63, documents: 107, sources: 560});
 export const CURRENT_TOPIC = 'STY-10';
 export const NEXT_TOPIC = 'STY-11';
+export const LATEST_TOPIC = 'STY-12';
 export const REVIEW = 'docs/reviews/g009-batch11.md';
 export const LOCAL_RAW = 'docs/reviews/evidence/g009-batch11-stage-a-browser.json';
 export const PRODUCTION_RAW = 'docs/reviews/evidence/g009-batch11-stage-a-production-browser.json';
@@ -581,23 +583,25 @@ test('locks the complete immediate STY-09 review and backlog suffix with mutatio
   }
 });
 
-test('projects exact STY-10 Stage B closure while STY-11 remains sole unpublished pending non-actionable next', () => {
+test('preserves exact STY-10 Stage B history while current STY-11 is published pending and STY-12 remains non-actionable', () => {
   assert.deepEqual({
     completed: status.completed_topics,
     documents: status.content_documents,
     sources: status.governed_sources,
-  }, EXPECTED_STAGE_B);
-  assert.equal(publicLedger.sources.length, EXPECTED_STAGE_B.sources);
+  }, EXPECTED_CURRENT_PROJECTION);
+  assert.equal(publicLedger.sources.length, EXPECTED_CURRENT_PROJECTION.sources);
   const topics = new Map(manifest.topics.map((topic) => [topic.id, topic]));
   const styles = new Map(indexes.style.map((topic) => [topic.id, topic]));
   assert.deepEqual([topics.get(CURRENT_TOPIC)?.published, topics.get(CURRENT_TOPIC)?.status.value, styles.get(CURRENT_TOPIC)?.published], [true, 'complete', true]);
-  assert.deepEqual([topics.get(NEXT_TOPIC)?.published, topics.get(NEXT_TOPIC)?.status.value, styles.get(NEXT_TOPIC)?.published], [false, 'pending', false]);
+  assert.deepEqual([topics.get(NEXT_TOPIC)?.published, topics.get(NEXT_TOPIC)?.status.value, styles.get(NEXT_TOPIC)?.published], [true, 'pending', true]);
+  assert.deepEqual([topics.get(LATEST_TOPIC)?.published, topics.get(LATEST_TOPIC)?.status.value, styles.get(LATEST_TOPIC)?.published], [false, 'pending', false]);
   const current = documents.find(({metadata}) => metadata.topic_id === CURRENT_TOPIC);
   assert.ok(current, 'STY-10 is published as a content document');
   assertStageBBacklog();
-  assert.equal(documents.some(({metadata}) => metadata.topic_id === NEXT_TOPIC), false, 'STY-11 is unpublished');
-  assert.match(backlog, /^- \[ \] \*\*STY-11 P1\uff5cServerless Architecture\*\*/mu);
-  assert.equal(documents.flatMap(extractInternalLinks).includes('/styles/sty-11'), false, 'STY-11 is non-actionable');
+  assert.ok(documents.some(({metadata}) => metadata.topic_id === NEXT_TOPIC), 'STY-11 is published');
+  assert.equal(documents.some(({metadata}) => metadata.topic_id === LATEST_TOPIC), false, 'STY-12 is unpublished');
+  assert.match(backlog, /^- \[ \] \*\*STY-12 P1\uff5cMicro-Frontend\*\*/mu);
+  assert.equal(documents.flatMap(extractInternalLinks).includes('/styles/sty-12'), false, 'STY-12 is non-actionable');
   const staleNext = backlog.replace('下一项为 STY-11', '下一项为 STY-10');
   assert.notEqual(staleNext, backlog, 'current next-topic mutation applies');
   assert.throws(() => assertStageBBacklog(staleNext), assert.AssertionError);
@@ -605,16 +609,14 @@ test('projects exact STY-10 Stage B closure while STY-11 remains sole unpublishe
 
 test('locks exact STY-10 article, ledger, Draw.io/SVG and Stage A raw byte identities', async () => {
   for (const [path, [expectedBytes, expectedHash]] of STABLE_IDENTITIES) {
-    const bytes = await required(path);
+    const bytes = [LOCAL_RAW, PRODUCTION_RAW].includes(path)
+      ? await required(path)
+      : execFileSync('git', ['show', `${IMPLEMENTATION_HEAD}:${path}`], {cwd: new URL('../', import.meta.url), maxBuffer: 4 * 1024 * 1024});
     assert.equal(bytes.length, expectedBytes, `${path} exact bytes`);
     assert.equal(sha256(bytes), expectedHash, `${path} exact SHA-256`);
     for (const changed of [Buffer.concat([bytes, Buffer.from('x')]), bytes.subarray(0, -1)]) {
       assert.notEqual(sha256(changed), expectedHash, `${path} identity mutation is non-no-op`);
     }
-  }
-  for (const path of [ARTICLE, LEDGER, DRAWIO, SVG]) {
-    const historical = execFileSync('git', ['show', `${IMPLEMENTATION_HEAD}:${path}`], {cwd: new URL('../', import.meta.url), maxBuffer: 4 * 1024 * 1024});
-    assert.deepEqual(historical, await required(path), `${path} matches immutable Stage A implementation bytes`);
   }
 });
 

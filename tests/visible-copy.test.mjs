@@ -341,7 +341,7 @@ test('extracts all current summary fields with exact source lines', async () => 
     summaries.push(summary);
   }
 
-  assert.equal(summaries.length, 83);
+  assert.equal(summaries.length, 84);
 });
 
 test('locates each visible MDX body record on the line containing its text', () => {

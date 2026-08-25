@@ -933,9 +933,9 @@ test('preserves the topic closure under the current STY-10 next-topic projection
   assert.equal(nextStyleIndexEntry?.published, true);
   assert.equal(nextStyleIndexEntry?.status.value, 'complete');
   assert.equal(projectStatus.completed_topics, 63);
-  assert.equal(projectStatus.content_documents, 106);
-  assert.equal(projectStatus.governed_sources, 550);
-  assert.equal(publicLedger.sources.length, 550);
+  assert.equal(projectStatus.content_documents, 107);
+  assert.equal(projectStatus.governed_sources, 560);
+  assert.equal(publicLedger.sources.length, 560);
 
 });
 

@@ -25,7 +25,7 @@ const repositoryRoot = fileURLToPath(new URL('../', import.meta.url));
 const G005_BATCH3_REVIEWED_HEAD = 'c4a76ac2dc33505b53f7b53d17c587038a871c9f';
 const G005_BATCH3_SCHEMA_PATH = 'scripts/content-schema.mjs';
 const G005_BATCH3_SCHEMA_SHA256 = '10aa4b2e17a59b57a2bfe5c13edc9abe38156a1ce26db04bbf15dd506240e8cf';
-const CURRENT_ARCHITECTURE_CASE_TOPIC_IDS = ['STY-08', 'STY-09', 'STY-10'];
+const CURRENT_ARCHITECTURE_CASE_TOPIC_IDS = ['STY-08', 'STY-09', 'STY-10', 'STY-11'];
 const CURRENT_ARCHITECTURE_CASE_HEADINGS = [
   '## 学习问题',
   '## 一页摘要',

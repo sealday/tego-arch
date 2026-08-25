@@ -13,7 +13,7 @@ export const SVG = 'static/img/diagrams/sty-09-pipes-filters-order-processing.sv
 export const ROUTE = '/styles/sty-09';
 export const TOPIC_ID = 'STY-09';
 export const NEXT_TOPIC = 'STY-10';
-export const EXPECTED_CURRENT_PROJECTION = Object.freeze({completed: 63, documents: 106, sources: 550});
+export const EXPECTED_CURRENT_PROJECTION = Object.freeze({completed: 63, documents: 107, sources: 560});
 const CONTENT_ROOT = fileURLToPath(new URL('../content/', import.meta.url));
 const CONTENT_DOCUMENTS = (await readContentDocuments(CONTENT_ROOT)).map((document) => ({...document, file: `content/${document.file}`}));
 export const SOURCE_IDS = Object.freeze([
@@ -32,7 +32,7 @@ export const EXPECTED_MIGRATION_HEADINGS = Object.freeze([
 ]);
 export const RELATIONS = Object.freeze({
   depends_on: ['STY-00', 'STY-05', 'STY-06'],
-  adjacent_topics: ['STY-05', 'STY-06'],
+  adjacent_topics: ['STY-05', 'STY-06', 'STY-11'],
   related_cases: ['/cases/apache-kafka-consumer-groups'],
   related_questions: [],
 });
@@ -230,8 +230,8 @@ export function assertRemoteSourceContracts(ledger, inventorySource) {
 export function assertSourceLinkHealth(health) {
   for (const [id, expected] of Object.entries(REMOTE_SOURCE_CONTRACTS)) {
     const entry = health.results?.find(({transport_locator}) => transport_locator === expected.transport_locator); assert.ok(entry, `${id} link-health entry`); assert.deepEqual(entry.source_ids, [id], `${id} link-health source identity`);
-    assert.deepEqual(entry.last_attempt, {at: '2026-08-17T00:00:00.000Z', outcome: 'healthy', final_transport_locator: expected.transport_locator, http_status: 200, login_wall_detected: false, redirects: []}, `${id} audited attempt`);
-    assert.deepEqual(entry.last_success, {at: '2026-08-17T00:00:00.000Z', outcome: 'healthy', final_transport_locator: expected.transport_locator, http_status: 200, login_wall_detected: false}, `${id} audited success`);
+    assert.deepEqual(entry.last_attempt, {at: '2026-08-25T12:07:24.531Z', outcome: 'healthy', final_transport_locator: expected.transport_locator, http_status: 206, login_wall_detected: false, redirects: []}, `${id} audited attempt`);
+    assert.deepEqual(entry.last_success, {at: '2026-08-25T12:07:24.531Z', outcome: 'healthy', final_transport_locator: expected.transport_locator, http_status: 206, login_wall_detected: false}, `${id} audited success`);
     assert.deepEqual(entry.attempt_history.at(-1), entry.last_success, `${id} audited history`); assert.equal(entry.review_status, 'healthy', `${id} review status`);
   }
 }
@@ -680,7 +680,7 @@ test('STY-09 helper validators reject semantic, table, source, and geometry muta
 
 test('STY-09 source fixture rejects coordinated identity, role, primary, and rights mutations', () => {
   const remoteIds = SOURCE_IDS.slice(0, -1); const ledger = {sources: [...remoteIds.map((id) => ({id, ...REMOTE_SOURCE_CONTRACTS[id]})), {id: SOURCE_IDS.at(-1), ...ILLUSTRATION}], documents: {[ARTICLE]: {citations: remoteIds.map((id) => ({source_id: id, citation_url: REMOTE_SOURCE_CONTRACTS[id].canonical_locator, roles: REMOTE_SOURCE_CONTRACTS[id].citation_roles, manifest_primary: REMOTE_SOURCE_CONTRACTS[id].manifest_primary}))}}};
-  const inventory = remoteIds.map((id) => `| ${REMOTE_SOURCE_CONTRACTS[id].canonical_locator} |`).join('\n'); const health = {results: remoteIds.map((id) => { const expected = REMOTE_SOURCE_CONTRACTS[id]; const success = {at: '2026-08-17T00:00:00.000Z', outcome: 'healthy', final_transport_locator: expected.transport_locator, http_status: 200, login_wall_detected: false}; return {transport_locator: expected.transport_locator, source_ids: [id], last_attempt: {...success, redirects: []}, last_success: success, attempt_history: [success], review_status: 'healthy'}; })}; assertRemoteSourceContracts(ledger, inventory); assertSourceLinkHealth(health);
+  const inventory = remoteIds.map((id) => `| ${REMOTE_SOURCE_CONTRACTS[id].canonical_locator} |`).join('\n'); const health = {results: remoteIds.map((id) => { const expected = REMOTE_SOURCE_CONTRACTS[id]; const success = {at: '2026-08-25T12:07:24.531Z', outcome: 'healthy', final_transport_locator: expected.transport_locator, http_status: 206, login_wall_detected: false}; return {transport_locator: expected.transport_locator, source_ids: [id], last_attempt: {...success, redirects: []}, last_success: success, attempt_history: [success], review_status: 'healthy'}; })}; assertRemoteSourceContracts(ledger, inventory); assertSourceLinkHealth(health);
   for (const id of SOURCE_IDS) { const deleted = structuredClone(ledger); deleted.sources = deleted.sources.filter((source) => source.id !== id); assert.throws(() => assertRemoteSourceContracts(deleted, inventory), assert.AssertionError, `${id} deletion rejected`); }
   const changed = structuredClone(ledger); changed.sources[0].canonical_locator = 'https://example.invalid/fabricated'; changed.documents[ARTICLE].citations[0].citation_url = 'https://example.invalid/fabricated'; const fabricatedInventory = inventory.replace(REMOTE_SOURCE_CONTRACTS[remoteIds[0]].canonical_locator, 'https://example.invalid/fabricated'); assert.throws(() => assertRemoteSourceContracts(changed, fabricatedInventory), assert.AssertionError, 'coordinated ledger and inventory canonical fabrication rejected');
   const role = structuredClone(ledger); role.sources[1].allowed_evidence_roles = ['learning']; role.documents[ARTICLE].citations[1].roles = ['learning']; assert.throws(() => assertRemoteSourceContracts(role, inventory), assert.AssertionError, 'coordinated source and citation role mutation rejected');
@@ -706,7 +706,7 @@ test('STY-09 article locks metadata, headings, wrappers, components and recovery
 
 test('STY-09 source governance, reciprocal links, and current Stage B projection are exact', () => {
   const ledger = JSON.parse(readFileSync('data/source-ledger.json', 'utf8')); assertRemoteSourceContracts(ledger, readFileSync('docs/source-license-inventory.md', 'utf8')); assertSourceLinkHealth(JSON.parse(readFileSync('data/source-link-health.json', 'utf8'))); assertRelationsAndProjection();
-  for (const source of CONTENT_DOCUMENTS) assert.equal(extractInternalLinks(source).includes('/styles/sty-11'), false, `${source.file} keeps STY-11 non-actionable`);
+  for (const source of CONTENT_DOCUMENTS) assert.equal(extractInternalLinks(source).includes('/styles/sty-12'), false, `${source.file} keeps STY-12 non-actionable`);
   const external = extractExternalLinks(CONTENT_DOCUMENTS.find(({file: path}) => path === ARTICLE)); for (const expected of Object.values(REMOTE_SOURCE_CONTRACTS)) assert.ok(external.includes(expected.canonical_locator), `article cites ${expected.canonical_locator}`);
 });
 

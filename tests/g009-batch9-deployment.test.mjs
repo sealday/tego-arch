@@ -265,15 +265,16 @@ function replaceHistoricalBatch9Literal(source, before, after) {
 function assertStageBProjection() {
   assert.deepEqual(
     {completed_topics: status.completed_topics, content_documents: status.content_documents, governed_sources: status.governed_sources},
-    {completed_topics: 63, content_documents: 106, governed_sources: 550},
+    {completed_topics: 63, content_documents: 107, governed_sources: 560},
   );
-  assert.equal(publicLedger.sources.length, 550);
+  assert.equal(publicLedger.sources.length, 560);
   const topics = new Map(manifest.topics.map((topic) => [topic.id, topic]));
   const styles = new Map(indexes.style.map((topic) => [topic.id, topic]));
   assert.deepEqual([topics.get('STY-08')?.published, topics.get('STY-08')?.status.value, styles.get('STY-08')?.published], [true, 'complete', true]);
   assert.deepEqual([topics.get('STY-09')?.published, topics.get('STY-09')?.status.value, styles.get('STY-09')?.published], [true, 'complete', true]);
   assert.deepEqual([topics.get('STY-10')?.published, topics.get('STY-10')?.status.value, styles.get('STY-10')?.published], [true, 'complete', true]);
-  assert.deepEqual([topics.get('STY-11')?.published, topics.get('STY-11')?.status.value, styles.get('STY-11')?.published], [false, 'pending', false]);
+  assert.deepEqual([topics.get('STY-11')?.published, topics.get('STY-11')?.status.value, styles.get('STY-11')?.published], [true, 'pending', true]);
+  assert.deepEqual([topics.get('STY-12')?.published, topics.get('STY-12')?.status.value, styles.get('STY-12')?.published], [false, 'pending', false]);
 }
 
 const [review, browserBytes, productionBrowserBytes, stageBProductionBrowserBytes, immediateReviewBytes, immediateStageARawBytes, immediateStageAProductionRawBytes, immediateStageBProductionRawBytes, backlog, status, manifest, indexes, publicLedger] = await Promise.all([
@@ -293,19 +294,20 @@ const IMMEDIATE_HISTORY = new Map([
 ]);
 
 function assertProjection() {
-  assert.deepEqual({completed_topics: status.completed_topics, content_documents: status.content_documents, governed_sources: status.governed_sources}, {completed_topics: 63, content_documents: 106, governed_sources: 550});
-  assert.equal(publicLedger.sources.length, 550);
+  assert.deepEqual({completed_topics: status.completed_topics, content_documents: status.content_documents, governed_sources: status.governed_sources}, {completed_topics: 63, content_documents: 107, governed_sources: 560});
+  assert.equal(publicLedger.sources.length, 560);
   const topics = new Map(manifest.topics.map((topic) => [topic.id, topic]));
   const styles = new Map(indexes.style.map((topic) => [topic.id, topic]));
   assert.deepEqual([topics.get('STY-08')?.published, topics.get('STY-08')?.status.value, styles.get('STY-08')?.published], [true, 'complete', true]);
   assert.deepEqual([topics.get('STY-09')?.published, topics.get('STY-09')?.status.value, styles.get('STY-09')?.published], [true, 'complete', true]);
   assert.deepEqual([topics.get('STY-10')?.published, topics.get('STY-10')?.status.value, styles.get('STY-10')?.published], [true, 'complete', true]);
-  assert.deepEqual([topics.get('STY-11')?.published, topics.get('STY-11')?.status.value, styles.get('STY-11')?.published], [false, 'pending', false]);
+  assert.deepEqual([topics.get('STY-11')?.published, topics.get('STY-11')?.status.value, styles.get('STY-11')?.published], [true, 'pending', true]);
+  assert.deepEqual([topics.get('STY-12')?.published, topics.get('STY-12')?.status.value, styles.get('STY-12')?.published], [false, 'pending', false]);
 }
 
 async function assertSty11NonActionable() {
   const documents = await readContentDocuments('content');
-  for (const document of documents) assert.equal(extractInternalLinks(document).includes('/styles/sty-11'), false, `${document.file} STY-11 non-actionable`);
+  for (const document of documents) assert.equal(extractInternalLinks(document).includes('/styles/sty-12'), false, `${document.file} STY-12 non-actionable`);
 }
 
 function assertFunctionalStates(evidence) {

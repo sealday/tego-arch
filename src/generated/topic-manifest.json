@@ -2058,6 +2058,7 @@
         "STY-07",
         "STY-08",
         "STY-09",
+        "STY-11",
         "PR-11",
         "MOD-08"
       ],
@@ -3797,27 +3798,6 @@
       "pattern_group": "reliability"
     },
     {
-      "id": "STY-11",
-      "type": "style",
-      "title": "Serverless Architecture",
-      "slug": "/styles/sty-11",
-      "priority": "P1",
-      "status": {
-        "scope": "backlog-projection",
-        "value": "pending",
-        "source": "docs/content-backlog.md"
-      },
-      "dependencies": [],
-      "adjacent_topics": [],
-      "primary_sources": [],
-      "related_cases": [],
-      "related_questions": [],
-      "reviewed_at": null,
-      "review_policy": null,
-      "published": false,
-      "pattern_group": null
-    },
-    {
       "id": "STY-12",
       "type": "style",
       "title": "Micro-Frontend",
@@ -4606,7 +4586,8 @@
       ],
       "adjacent_topics": [
         "STY-05",
-        "STY-06"
+        "STY-06",
+        "STY-11"
       ],
       "primary_sources": [
         "https://learn.microsoft.com/en-us/azure/architecture/patterns/pipes-and-filters"
@@ -4616,6 +4597,38 @@
       ],
       "related_questions": [],
       "reviewed_at": "2026-08-17",
+      "review_policy": null,
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
+    },
+    {
+      "id": "STY-11",
+      "type": "style",
+      "title": "Serverless Architecture：把运行责任交给平台，不把业务边界一并交出去",
+      "slug": "/styles/sty-11",
+      "priority": "P1",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "pending",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "STY-00",
+        "STY-06"
+      ],
+      "adjacent_topics": [
+        "STY-06",
+        "STY-09"
+      ],
+      "primary_sources": [
+        "https://github.com/cncf/wg-serverless/blob/79c8a13c26be9066a8723c5896d8aaa0e2ab9e08/whitepapers/serverless-overview/cncf_serverless_whitepaper_v1.0.pdf"
+      ],
+      "related_cases": [
+        "/cases/cloudflare-durable-objects-workerd"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-08-25",
       "review_policy": null,
       "published": true,
       "pattern_group": null,
