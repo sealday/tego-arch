@@ -60,6 +60,10 @@ export const NODE_REGIONS = Object.freeze({
 });
 export const REGION_NODE_PADDING = 18;
 export const EDGE_LABEL_ASSOCIATION_MAX = 96;
+const NODE_TEXT_HORIZONTAL_INSET = 48;
+const NODE_TEXT_BOX_EXTRA_HEIGHT = 25;
+const NODE_TEXT_BOX_TOP_OFFSET = Object.freeze({title: 50, type: 170});
+const NODE_TEXT_GLYPH_TOLERANCE_RATIO = .05;
 export const EDGE_CONTRACTS = Object.freeze({
   'submit-order': ['client','sync-ingress','request'], 'idempotent-accept': ['sync-ingress','admission-store','request'], 'start-workflow': ['sync-ingress','durable-workflow','request'], 'read-order-state': ['durable-workflow','order-state','receipt'],
   'enqueue-payment': ['durable-workflow','task-queue','work'], 'deliver-payment': ['task-queue','payment-function','work'], 'invoke-payment': ['payment-function','payment-authority','work'], 'payment-receipt': ['payment-authority','durable-workflow','receipt'],
@@ -151,12 +155,18 @@ function assertRoundedShapeSync(drawioStyle, svgSource, svgShape, label) {
   close(number(svgPresentationValue(svgSource, svgShape, 'stroke-width'), `${label} SVG stroke width`), number(drawioStyle.get('strokeWidth'), `${label} Draw.io stroke width`), `${label} stroke-width style sync`);
   close(number(svgShape.attributes.get('rx'), `${label} rx`), number(drawioStyle.get('arcSize'), `${label} arcSize`) / 2, `${label} rounded corner rx sync`); close(number(svgShape.attributes.get('ry'), `${label} ry`), number(drawioStyle.get('arcSize'), `${label} arcSize`) / 2, `${label} rounded corner ry sync`);
 }
-function assertTextStyleSync(drawioText, svgSource, svgText, label) {
+function normalizedFontWeight(value, label) { if (value === undefined || value === 'normal') return 400; if (value === 'bold') return 700; const result = Number(value); assert.ok(Number.isInteger(result) && result >= 1 && result <= 1000, `${label} supported font weight`); return result; }
+function assertTextStyleSync(drawioText, svgSource, svgText, label, kind, owner) {
   const style = styleMap(drawioText.attributes.get('style')); const geometry = numericBounds(drawioText.geometry, label); const anchor = ({left: 'start', center: 'middle', right: 'end'})[style.get('align')];
-  assert.ok(anchor, `${label} supported Draw.io anchor`); const expectedX = anchor === 'start' ? geometry.left : anchor === 'end' ? geometry.right : (geometry.left + geometry.right) / 2;
-  close(number(svgText.attributes.get('x'), `${label} SVG x`), expectedX, `${label} text x position sync`); close(number(svgText.attributes.get('y'), `${label} SVG y`), (geometry.top + geometry.bottom) / 2, `${label} text y position sync`);
-  assert.equal(svgPresentationValue(svgSource, svgText, 'fill'), style.get('fontColor'), `${label} effective fill sync`); close(number(svgPresentationValue(svgSource, svgText, 'font-size'), `${label} SVG font size`), number(style.get('fontSize'), `${label} Draw.io font size`), `${label} font-size style sync`);
+  assert.ok(anchor, `${label} supported Draw.io anchor`); const svgFontSize = number(svgPresentationValue(svgSource, svgText, 'font-size'), `${label} SVG font size`); const drawioFontSize = number(style.get('fontSize'), `${label} Draw.io font size`);
+  assert.equal(svgPresentationValue(svgSource, svgText, 'fill'), style.get('fontColor'), `${label} effective fill sync`); close(svgFontSize, drawioFontSize, `${label} font-size style sync`);
+  const drawioFontStyle = number(style.get('fontStyle') ?? '0', `${label} Draw.io fontStyle`); assert.equal(drawioFontStyle, kind === 'title' ? 1 : 0, `${label} Draw.io font-weight style sync`); assert.equal(normalizedFontWeight(svgPresentationValue(svgSource, svgText, 'font-weight'), label), drawioFontStyle === 1 ? 700 : 400, `${label} effective font-weight style sync`);
   assert.equal((svgPresentationValue(svgSource, svgText, 'font-family') ?? '').split(',')[0].trim(), style.get('fontFamily'), `${label} font-family style sync`); assert.equal(svgPresentationValue(svgSource, svgText, 'text-anchor') ?? 'start', anchor, `${label} anchor style sync`);
+  const expectedHeight = drawioFontSize + NODE_TEXT_BOX_EXTRA_HEIGHT; close(geometry.width, owner.width - NODE_TEXT_HORIZONTAL_INSET * 2, `${label} text box width sync`); close(geometry.height, expectedHeight, `${label} text box height sync`); close(geometry.left, owner.left + NODE_TEXT_HORIZONTAL_INSET, `${label} text box left sync`); close(geometry.top, owner.top + NODE_TEXT_BOX_TOP_OFFSET[kind], `${label} text box top sync`);
+  const expectedX = anchor === 'start' ? geometry.left : anchor === 'end' ? geometry.right : (geometry.left + geometry.right) / 2; const svgX = number(svgText.attributes.get('x'), `${label} SVG x`); const svgY = number(svgText.attributes.get('y'), `${label} SVG y`); close(svgX, expectedX, `${label} text x position sync`); close(svgY, (geometry.top + geometry.bottom) / 2, `${label} text y position sync`);
+  const visible = glyphBox({x: svgX, y: svgY, text: elementText(svgSource, svgText), fontSize: svgFontSize, anchor}); const conservativeBox = expandedBox(geometry, svgFontSize * NODE_TEXT_GLYPH_TOLERANCE_RATIO);
+  assert.ok(visible.left >= conservativeBox.left, `${label} visible glyph containment left`); assert.ok(visible.right <= conservativeBox.right, `${label} visible glyph containment right`); assert.ok(visible.top >= conservativeBox.top, `${label} visible glyph containment top`); assert.ok(visible.bottom <= conservativeBox.bottom, `${label} visible glyph containment bottom`);
+  return visible;
 }
 function samePoint(left, right) { return Math.abs(left.x - right.x) < 1e-9 && Math.abs(left.y - right.y) < 1e-9; }
 function partialCollinearOverlap(a, b, c, d) { const cross = (p, q, r) => (q.x - p.x) * (r.y - p.y) - (q.y - p.y) * (r.x - p.x); if (Math.abs(cross(a, b, c)) > 1e-9 || Math.abs(cross(a, b, d)) > 1e-9) return false; const axis = Math.abs(b.x - a.x) >= Math.abs(b.y - a.y) ? 'x' : 'y'; const first = [a[axis], b[axis]].sort((left, right) => left - right); const second = [c[axis], d[axis]].sort((left, right) => left - right); return Math.min(first[1], second[1]) - Math.max(first[0], second[0]) > 1e-9; }
@@ -252,11 +262,9 @@ function assertServerlessDiagram(drawioSource, svgSource) {
     assert.ok(title && type, id + ' title/type labels');
     const drawioTitle = nodes.get('text-' + id + '-title'); const drawioType = nodes.get('text-' + id + '-type'); assert.equal(drawioTitle?.label, NODE_COPY[id][0], id + ' editable Draw.io title'); assert.equal(drawioType?.label, NODE_COPY[id][1], id + ' editable Draw.io type');
     assert.equal(elementText(svgSource, title), NODE_COPY[id][0], id + ' SVG title'); assert.equal(elementText(svgSource, type), NODE_COPY[id][1], id + ' SVG type');
-    assertTextStyleSync(drawioTitle, svgSource, title, id + ' title'); assertTextStyleSync(drawioType, svgSource, type, id + ' type');
+    const titleBox = assertTextStyleSync(drawioTitle, svgSource, title, id + ' title', 'title', left); const typeBox = assertTextStyleSync(drawioType, svgSource, type, id + ' type', 'type', left);
     const titleFont = number(svgPresentationValue(svgSource, title, 'font-size'), id + ' title font'); const typeFont = number(svgPresentationValue(svgSource, type, 'font-size'), id + ' type font');
     assert.ok(titleFont >= 45 && typeFont >= 45, id + ' body/title/type text is at least 15 CSS pixels');
-    const titleBox = glyphBox({x: number(title.attributes.get('x'), id + ' title x'), y: number(title.attributes.get('y'), id + ' title y'), text: elementText(svgSource, title), fontSize: titleFont, anchor: svgPresentationValue(svgSource, title, 'text-anchor') ?? 'start'});
-    const typeBox = glyphBox({x: number(type.attributes.get('x'), id + ' type x'), y: number(type.attributes.get('y'), id + ' type y'), text: elementText(svgSource, type), fontSize: typeFont, anchor: svgPresentationValue(svgSource, type, 'text-anchor') ?? 'start'});
     assert.ok(titleBox.left - left.left >= 48 && left.right - titleBox.right >= 48 && typeBox.left - left.left >= 48 && left.right - typeBox.right >= 48 && titleBox.top - left.top >= 42 && typeBox.top - titleBox.bottom >= 66 && left.bottom - typeBox.bottom >= 42, id + ' 16/14 padding and 22px baseline');
     nodeBounds.set(id, left);
   }
@@ -332,10 +340,24 @@ function assertDiagramMutationRejected(drawioSource, svgSource) {
 
   const movedTitle = mutateSvgElement(svgSource, ({name, attributes: item}) => name === 'text' && item.get('data-header-for') === 'node-sync-ingress', (open) => open.replace('x="990"', 'x="991"'), 'title position drift');
   assert.throws(() => assertServerlessDiagram(drawioSource, movedTitle), /text x position sync/u, 'title position drift rejected');
+  const narrowedTitleBox = mutateDrawioCell(drawioSource, 'text-inventory-function-title', (raw) => raw.replace('x="1178" y="1800" width="274" height="70"', 'x="1183" y="1800" width="264" height="70"'), 'same-center narrowed title box');
+  assert.throws(() => assertServerlessDiagram(narrowedTitleBox, svgSource), /text box width sync/u, 'same-center narrowed title box rejected');
+  const shortenedTypeBox = mutateDrawioCell(drawioSource, 'text-inventory-function-type', (raw) => raw.replace('x="1178" y="1920" width="274" height="70"', 'x="1178" y="1925" width="274" height="60"'), 'same-center shortened type box');
+  assert.throws(() => assertServerlessDiagram(shortenedTypeBox, svgSource), /text box height sync/u, 'same-center shortened type box rejected');
   const changedFont = mutateSvgElement(svgSource, ({name, attributes: item}) => name === 'text' && item.get('data-header-for') === 'node-sync-ingress', (open) => open.replace('font-size="45"', 'font-size="46"'), 'SVG font drift');
   assert.throws(() => assertServerlessDiagram(drawioSource, changedFont), /font-size style sync/u, 'SVG font drift rejected above minimum size');
   const changedDrawioFont = mutateDrawioCell(drawioSource, 'text-sync-ingress-title', (raw) => raw.replace('fontSize=45', 'fontSize=46'), 'Draw.io font drift');
   assert.throws(() => assertServerlessDiagram(changedDrawioFont, svgSource), /font-size style sync/u, 'Draw.io font drift rejected above minimum size');
+  const removedTitleWeight = mutateDrawioCell(drawioSource, 'text-sync-ingress-title', (raw) => raw.replace('fontStyle=1;', ''), 'deleted Draw.io title weight');
+  assert.throws(() => assertServerlessDiagram(removedTitleWeight, svgSource), /font-weight style sync/u, 'deleted Draw.io title weight rejected');
+  const changedTitleWeight = mutateDrawioCell(drawioSource, 'text-sync-ingress-title', (raw) => raw.replace('fontStyle=1', 'fontStyle=0'), 'changed Draw.io title weight');
+  assert.throws(() => assertServerlessDiagram(changedTitleWeight, svgSource), /font-weight style sync/u, 'changed Draw.io title weight rejected');
+  const changedTypeWeight = mutateDrawioCell(drawioSource, 'text-sync-ingress-type', (raw) => raw.replace('fontSize=45;', 'fontSize=45;fontStyle=1;'), 'changed Draw.io type weight');
+  assert.throws(() => assertServerlessDiagram(changedTypeWeight, svgSource), /font-weight style sync/u, 'changed Draw.io type weight rejected');
+  const changedSvgTitleWeight = mutateSvgElement(svgSource, ({name, attributes: item}) => name === 'text' && item.get('data-header-for') === 'node-sync-ingress', (open) => open.replace('font-weight="700"', 'font-weight="600"'), 'changed SVG title weight');
+  assert.throws(() => assertServerlessDiagram(drawioSource, changedSvgTitleWeight), /font-weight style sync/u, 'changed SVG title weight rejected');
+  const changedSvgTypeWeight = mutateSvgElement(svgSource, ({name, attributes: item}) => name === 'text' && item.get('data-type-for') === 'node-sync-ingress', (open) => open.replace('font-size="45"', 'font-size="45" font-weight="700"'), 'changed SVG type weight');
+  assert.throws(() => assertServerlessDiagram(drawioSource, changedSvgTypeWeight), /font-weight style sync/u, 'changed SVG type weight rejected');
   const typeFillDrift = mutateSvgElement(svgSource, ({name, attributes: item}) => name === 'text' && item.get('data-type-for') === 'node-sync-ingress', (open) => open.replace('fill="#475569"', 'fill="#334155"'), 'type fill drift');
   assert.throws(() => assertServerlessDiagram(drawioSource, typeFillDrift), /effective fill sync/u, 'type fill drift rejected');
   const familyDrift = mutateSvgElement(svgSource, ({name, attributes: item}) => name === 'text' && item.get('data-type-for') === 'node-sync-ingress', (open) => open.replace('font-family="Arial, sans-serif"', 'font-family="Courier, monospace"'), 'font family drift');
