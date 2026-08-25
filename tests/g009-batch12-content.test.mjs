@@ -10,7 +10,6 @@ import {architectureCaseTopicIds, knowledgeHeadingContract} from '../scripts/con
 export const ARTICLE = 'content/styles/sty-11-serverless-architecture.mdx';
 export const DRAWIO = 'diagrams/sty-11-serverless-order-fulfillment.drawio';
 export const SVG = 'static/img/diagrams/sty-11-serverless-order-fulfillment.svg';
-export const SOURCE_INVENTORY = 'docs/source-license-inventory.md';
 export const ROUTE = '/styles/sty-11'; export const TOPIC_ID = 'STY-11'; export const NEXT_TOPIC = 'STY-12'; export const RELATED_CASE = '/cases/cloudflare-durable-objects-workerd';
 export const EXPECTED_STAGE_A = Object.freeze({completed: 63, documents: 107, sources: 560});
 export const SOURCE_IDS = Object.freeze(['src-cncf-serverless-whitepaper-v1','src-cncf-serverless-glossary','src-aws-lambda-runtime-lifecycle','src-aws-lambda-invocation-retries','src-aws-lambda-concurrency','src-aws-lambda-pricing','src-azure-functions-scale-hosting','src-google-cloud-run-concurrency','src-cncf-cloudevents-102-spec','src-open-workflow-specification-103','src-atlas-sty11-serverless-order-fulfillment']);
@@ -137,23 +136,20 @@ function assertServerlessArticle(source) {
   for (const unsafe of ['函数内存作为业务状态', '同步等待整条履约链', '队列就是成功', '事件标识就是业务幂等', '盲目重放', '函数扩容决定库存', '缺少条件状态转移', '下游预算高于权威容量', '无限重试不受限制', '关键步骤失败开放', '通知回滚已确认订单', '毒消息重试', '默认预热', '只比较价格', '人工负责人待定', 'CloudEvents意味着投递', '工作流 DSL 意味着运行时等价', '强制可移植适配', '只迁移函数']) assert.doesNotMatch(source, new RegExp(escapeRegExp(unsafe), 'u'), unsafe + ' is rejected');
 }
 
-function assertServerlessSources(ledger, inventory) {
+function assertServerlessSources(ledger) {
   const document = ledger.documents?.[ARTICLE];
   assert.ok(document, 'STY-11 governed source document');
   assert.deepEqual(document.citations.map(({source_id}) => source_id), SOURCE_IDS, 'exact ordered source citations');
   assert.equal(document.citations.filter(({source_id}) => source_id !== SOURCE_IDS.at(-1)).length, 10, 'exactly ten remote citations');
   assert.deepEqual(document.citations.filter(({manifest_primary}) => manifest_primary).map(({source_id}) => source_id), ['src-cncf-serverless-whitepaper-v1'], 'whitepaper is sole primary');
-  const inventoryRows = inventory.split(/\r?\n/u).filter((line) => line.startsWith('|') && !line.includes('---')).map((line) => line.slice(1, -1).split('|').map((cell) => cell.trim())).filter((row) => row.length === 11).map((row) => ({source_family: row[0], current_urls: row[1], exact_license: row[6], migration_policy: row[8]}));
   for (const [id, expected] of Object.entries(REMOTE_SOURCES)) {
     const source = ledger.sources.find((item) => item.id === id); const citation = document.citations.find((item) => item.source_id === id); assert.ok(source && citation, id + ' record and citation');
     assert.deepEqual({canonical_locator: source.canonical_locator, transport_locator: source.transport_locator, expected_final_transport_locator: source.expected_final_transport_locator, version: source.version, license: source.license, copyright_policy: source.copyright_policy, allowed_evidence_roles: source.allowed_evidence_roles, usage_boundary: source.usage_boundary}, {canonical_locator: expected.canonical_locator, transport_locator: expected.transport_locator, expected_final_transport_locator: expected.transport_locator, version: expected.version, license: expected.license, copyright_policy: expected.copyright_policy, allowed_evidence_roles: expected.roles, usage_boundary: expected.usage_boundary}, id + ' exact source governance');
     assert.deepEqual(citation.roles, expected.roles, id + ' used evidence role'); assert.equal(citation.usage_mode, 'facts-summary', id + ' conservative facts-summary');
-    const row = inventoryRows.find((item) => item.source_family === source.license_family_id); assert.ok(row, id + ' structured inventory family'); assert.ok(row.current_urls.includes(expected.canonical_locator), id + ' structured inventory URL'); assert.equal(row.exact_license, expected.license, id + ' structured inventory license'); assert.match(row.migration_policy, /Facts summary/u, id + ' structured inventory policy');
   }
   const source = ledger.sources.find((item) => item.id === SOURCE_IDS.at(-1)); const citation = document.citations.find((item) => item.source_id === SOURCE_IDS.at(-1)); assert.ok(source && citation, 'original illustration record and citation');
   assert.deepEqual({canonical_locator: source.canonical_locator, transport_locator: source.transport_locator, expected_final_transport_locator: source.expected_final_transport_locator, version: source.version, license: source.license, copyright_policy: source.copyright_policy, allowed_evidence_roles: source.allowed_evidence_roles, usage_boundary: source.usage_boundary}, {canonical_locator: ORIGINAL_SOURCE.canonical_locator, transport_locator: ORIGINAL_SOURCE.transport_locator, expected_final_transport_locator: ORIGINAL_SOURCE.transport_locator, version: ORIGINAL_SOURCE.version, license: ORIGINAL_SOURCE.license, copyright_policy: ORIGINAL_SOURCE.copyright_policy, allowed_evidence_roles: ORIGINAL_SOURCE.roles, usage_boundary: ORIGINAL_SOURCE.usage_boundary}, 'original illustration rights fields');
   assert.deepEqual(citation.roles, ORIGINAL_SOURCE.roles, 'original illustration role'); assert.equal(citation.usage_mode, 'original-illustration', 'original illustration usage');
-  const row = inventoryRows.find((item) => item.source_family === source.license_family_id); assert.ok(row && row.current_urls.includes(ORIGINAL_SOURCE.canonical_locator) && row.exact_license === ORIGINAL_SOURCE.license && /Original illustration/u.test(row.migration_policy), 'original illustration structured inventory rights');
 }
 
 async function assertServerlessRelationsAndStageA() {
@@ -259,12 +255,13 @@ test('STY-11 source fixture locks the eleven identities and citation roles', () 
   const remote = Object.entries(REMOTE_SOURCES).map(([id, expected]) => ({id, ...expected, expected_final_transport_locator: expected.transport_locator, license_family_id: id + '-family', allowed_evidence_roles: expected.roles}));
   const original = {id: SOURCE_IDS.at(-1), ...ORIGINAL_SOURCE, expected_final_transport_locator: ORIGINAL_SOURCE.transport_locator, license_family_id: 'original-family', allowed_evidence_roles: ORIGINAL_SOURCE.roles};
   const ledger = {sources: [...remote, original], documents: {[ARTICLE]: {citations: [...remote.map(({id, roles}, index) => ({source_id: id, roles, manifest_primary: index === 0, usage_mode: 'facts-summary'})), {source_id: original.id, roles: ORIGINAL_SOURCE.roles, manifest_primary: false, usage_mode: 'original-illustration'}]}}};
-  const inventory = ['| source_family | current_urls | author | evidence | note | checked | exact_license | exclusions | migration_policy | grouping | grouping_evidence |', ...[...remote, original].map((source) => '| ' + source.license_family_id + ' | ' + source.canonical_locator + ' | owner | evidence | note | 2026-08-25 | ' + source.license + ' | scope | ' + (source.id === original.id ? 'Original illustration use only' : 'Facts summary only') + ' | identity | none |')].join('\n');
-  assertServerlessSources(ledger, inventory);
-  for (const id of SOURCE_IDS) { const changed = structuredClone(ledger); changed.sources = changed.sources.filter((source) => source.id !== id); assert.throws(() => assertServerlessSources(changed, inventory), assert.AssertionError, id + ' source deletion rejected'); }
-  const changed = structuredClone(ledger); changed.documents[ARTICLE].citations[0].manifest_primary = false; changed.documents[ARTICLE].citations[1].manifest_primary = true; assert.throws(() => assertServerlessSources(changed, inventory), assert.AssertionError, 'primary mutation rejected');
-  const copied = structuredClone(ledger); copied.documents[ARTICLE].citations[0].usage_mode = 'copied-text'; assert.throws(() => assertServerlessSources(copied, inventory), assert.AssertionError, 'non-conservative citation rejected');
-  const boundary = structuredClone(ledger); boundary.sources[0].usage_boundary = 'unrestricted copied diagrams and guarantees'; assert.throws(() => assertServerlessSources(boundary, inventory), assert.AssertionError, 'usage-boundary mutation rejected');
+  assertServerlessSources(ledger);
+  for (const id of SOURCE_IDS) { const changed = structuredClone(ledger); changed.sources = changed.sources.filter((source) => source.id !== id); assert.throws(() => assertServerlessSources(changed), assert.AssertionError, id + ' source deletion rejected'); }
+  const changed = structuredClone(ledger); changed.documents[ARTICLE].citations[0].manifest_primary = false; changed.documents[ARTICLE].citations[1].manifest_primary = true; assert.throws(() => assertServerlessSources(changed), assert.AssertionError, 'primary mutation rejected');
+  const copied = structuredClone(ledger); copied.documents[ARTICLE].citations[0].usage_mode = 'copied-text'; assert.throws(() => assertServerlessSources(copied), assert.AssertionError, 'non-conservative citation rejected');
+  const boundary = structuredClone(ledger); boundary.sources[0].usage_boundary = 'unrestricted copied diagrams and guarantees'; assert.throws(() => assertServerlessSources(boundary), assert.AssertionError, 'usage-boundary mutation rejected');
+  for (const field of ['canonical_locator', 'transport_locator', 'expected_final_transport_locator', 'version', 'license', 'copyright_policy']) { const drift = structuredClone(ledger); drift.sources[0][field] = 'drifted'; assert.throws(() => assertServerlessSources(drift), assert.AssertionError, field + ' source-rights drift rejected'); }
+  const roles = structuredClone(ledger); roles.sources[0].allowed_evidence_roles = ['comparison']; roles.documents[ARTICLE].citations[0].roles = ['comparison']; assert.throws(() => assertServerlessSources(roles), assert.AssertionError, 'source and citation role drift rejected');
 });
 
 test('STY-11 diagram helpers reject terminal, style, collision, and paint mutations', () => {
@@ -287,7 +284,7 @@ test('STY-11 diagram helpers reject terminal, style, collision, and paint mutati
 test('STY-11 implementation remains RED until its article, sources, relations, diagram, and projection exist', async () => {
   const source = file(ARTICLE); assert.ok(source, ARTICLE + ' must exist after implementation');
   assertServerlessArticle(source);
-  const ledger = JSON.parse(readFileSync('data/source-ledger.json', 'utf8')); assertServerlessSources(ledger, readFileSync(SOURCE_INVENTORY, 'utf8'));
+  const ledger = JSON.parse(readFileSync('data/source-ledger.json', 'utf8')); assertServerlessSources(ledger);
   const diagram = file(DRAWIO); const svg = file(SVG); assert.ok(diagram && svg, 'STY-11 diagram pair');
   assertServerlessDiagram(diagram, svg);
   await assertServerlessRelationsAndStageA();
