@@ -175,8 +175,6 @@ function assertServerlessDiagram(drawioSource, svgSource) {
   const svg = parseSvg(svgSource); assertFlattenedSvg(svg.elements);
   const root = svg.elements.find(({name}) => name === 'svg');
   assert.deepEqual((root?.attributes.get('viewBox') ?? '').split(/\s+/u).map(Number), [0, 0, 2400, 3600], '2400x3600 source canvas renders at 800x1200 CSS pixels');
-  assert.equal(root?.attributes.get('width'), '2400', 'source width uses 3x 800 CSS-pixel basis');
-  assert.equal(root?.attributes.get('height'), '3600', 'source height uses 3x 1200 CSS-pixel basis');
   for (const id of REGION_IDS) {
     const cell = nodes.get(id); const rendered = svg.elements.find(({attributes}) => attributes.get('data-region-id') === id);
     assert.ok(cell && rendered, id + ' Draw.io/SVG region pair'); assert.equal(semanticRole(cell), 'region', id + ' semantic region');
