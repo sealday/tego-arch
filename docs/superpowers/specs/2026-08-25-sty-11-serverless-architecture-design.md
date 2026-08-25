@@ -225,7 +225,7 @@ Cloudflare Durable Objects + workerd 案例只补充有状态 Serverless 的身�
 8. Open Workflow Specification `1.0.3`：只支持供应商中立工作流描述、事件、任务、超时、错误和重试等可表达机制；不证明任意运行时实现相同的持久化、故障恢复或迁移语义；
 9. 原创图“订单结算与异步履约 Serverless 边界”，用于本站教学，不证明生产效果。
 
-实施前必须固定每项 canonical URL、transport URL、版本/提交或核查日期、来源类型、许可、版权策略、证据角色和禁止外推项。动态供应商文档按 2026-08-25 核查并登记 review policy；CloudEvents 固定 `ce@v1.0.2`，Open Workflow 固定 DSL schema `1.0.3` 及实施时的精确仓库提交。CNCF 是唯一 `manifest_primary` 的模式范围来源；供应商与规范文档只承担 `mechanism`、`comparison`、`compatibility`、`cost-boundary` 或 `portability-boundary` 等窄角色。
+实施前必须固定每项 canonical URL、transport URL、版本/提交或核查日期、来源类型、许可、版权策略、证据角色和禁止外推项。动态供应商文档按 2026-08-25 核查并登记 review policy；CloudEvents 固定 `ce@v1.0.2`，Open Workflow 固定 DSL schema `1.0.3` 及实施时的精确仓库提交。CNCF 是唯一 `manifest_primary` 的模式范围来源；供应商与规范文档只承担全局来源账本已经登记的 `runtime-fact`、`comparison`、`method`、`definition` 或 `implementation` 等窄角色。AWS 价格页使用 `comparison`，Open Workflow 使用 `method`；不得为单篇文章扩大全局角色枚举。
 
 版权策略为原创中文事实总结、原创订单场景、原创矩阵、原创故障表和原创图示。不复制供应商图、长段落、示例程序、品牌视觉、签名、水印或构图。原创图登记 `LicenseRef-Atlas-Original`、`original-atlas` 与 `illustration-rights`。
 

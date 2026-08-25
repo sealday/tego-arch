@@ -116,7 +116,7 @@
     agent_patterns: [], protocols: [],
     quality_attributes: ['scalability', 'performance', 'reliability', 'recoverability', 'operability', 'cost-efficiency'],
     tags: ['架构风格', 'Serverless', 'FaaS', '事件驱动', '幂等', '冷启动', '成本治理'],
-    summary: '以订单结算与异步履约说明 Serverless：同步入口只受理，持久工作流保存进度，队列和三层并发预算保护下游，有界函数执行单步任务，并把冷启动、成本与供应商退出放进同一决策。',
+    summary: '以订单结算与异步履约说明 Serverless：同步入口只受理，持久工作流（Workflow）保存进度，队列和三层并发预算保护下游，有界函数执行单步任务，并把冷启动、成本与供应商退出放进同一决策。',
     topic_id: 'STY-11', priority: 'P1', depends_on: ['STY-00', 'STY-06'],
     adjacent_topics: ['STY-06', 'STY-09'], related_cases: [RELATED_CASE], related_questions: [],
   });
@@ -363,7 +363,7 @@
     canonical/transport: /img/diagrams/sty-11-serverless-order-fulfillment.svg
   ```
 
-  Rights policy: CNCF whitepaper and Open Workflow use pinned Apache-2.0 repository evidence; CNCF Glossary documentation uses CC-BY-4.0 with its pinned README evidence; Google documentation uses the page's CC-BY-4.0 notice; AWS and Microsoft pages use conservative `LicenseRef-All-Rights-Reserved`; the original illustration uses `LicenseRef-Atlas-Original`. All remotes use facts-summary only, no copied diagrams, code or long excerpts. Only the CNCF whitepaper is `manifest_primary`.
+  Rights policy: CNCF whitepaper and Open Workflow use pinned Apache-2.0 repository evidence; CNCF Glossary documentation uses CC-BY-4.0 with its pinned README evidence; Google documentation uses the page's CC-BY-4.0 notice; AWS and Microsoft pages use conservative `LicenseRef-All-Rights-Reserved`; the original illustration uses `LicenseRef-Atlas-Original`. In the ledger's copyright-policy field, AWS and Microsoft use `facts-and-short-quotation`, CNCF Glossary and Google use `adapt-with-attribution`, and the Apache-2.0 records retain their approved policy. In document citations, every remote uses `usage_mode: facts-summary`; no copied diagrams, code or long excerpts. Map the AWS pricing source to the registered `comparison` evidence role and Open Workflow to `method`; do not expand the global role enum. Only the CNCF whitepaper is `manifest_primary`.
 
 - [ ] **Step 3: Write the article and four exact wrappers**
 
