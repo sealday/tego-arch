@@ -10,6 +10,7 @@ import {knowledgeTypeContracts} from '../scripts/content-schema.mjs';
 
 const articlePath = 'content/concepts/agt-c-01-agent-system-boundary.mdx';
 const harnessArticlePath = 'content/concepts/agt-c-02-agent-harness.mdx';
+const loopArticlePath = 'content/concepts/agt-c-03-agent-loop.mdx';
 const drawioPath = 'diagrams/agt-c-01-agent-system-boundary.drawio';
 const svgPath = 'static/img/diagrams/agt-c-01-agent-system-boundary.svg';
 const requiredDiagramLabels = [
@@ -93,6 +94,30 @@ const harnessSourceContracts = [
     title: 'Scaling Managed Agents: Decoupling the brain from the hands',
     locator: 'https://www.anthropic.com/engineering/managed-agents',
   },
+];
+const loopPhases = [
+  ['PLAN', 'Plan', '计划'],
+  ['ACT', 'Act', '行动'],
+  ['OBSERVE', 'Observe', '观察'],
+  ['EVALUATE', 'Evaluate', '评估'],
+  ['TERMINATE', 'Terminate', '终止'],
+];
+const loopTerminalOutcomes = [
+  ['SUCCESS', 'success', '成功'],
+  ['FAILURE', 'failure', '失败'],
+  ['BUDGET_EXHAUSTED', 'budget exhausted', '预算耗尽'],
+  ['HUMAN_STOP', 'human stop', '人工停止'],
+];
+const loopEdges = [
+  'PLAN->ACT',
+  'ACT->OBSERVE',
+  'OBSERVE->EVALUATE',
+  'EVALUATE->PLAN',
+  'EVALUATE->TERMINATE',
+  'TERMINATE->SUCCESS',
+  'TERMINATE->FAILURE',
+  'TERMINATE->BUDGET_EXHAUSTED',
+  'TERMINATE->HUMAN_STOP',
 ];
 
 const registry = JSON.parse(
@@ -402,4 +427,136 @@ test('AGT-C-02 governs exact Anthropic engineering sources and matching health t
     assert.equal(result.last_attempt.http_status, 200);
     assert.equal(result.last_attempt.final_transport_locator, contract.locator);
   }
+});
+
+function assertAgentLoopContract(source) {
+  const metadata = parseFrontMatter(source);
+  assert.equal(metadata.topic_id, 'AGT-C-03');
+  assert.equal(metadata.slug, '/concepts/agt-c-03');
+  assert.equal(metadata.content_type, 'concept');
+  assert.deepEqual(metadata.depends_on, ['AGT-C-01', 'AGT-C-02']);
+
+  const headings = findMarkdownHeadings(source)
+    .filter(({level}) => level === 2)
+    .map(({text}) => `## ${text}`);
+  assert.deepEqual(headings, knowledgeTypeContracts.concept);
+
+  const mermaid = source.match(/```mermaid\n([\s\S]*?)```/u)?.[1];
+  assert.ok(mermaid, 'Mermaid Agent Loop');
+  for (const [, phase, chinese] of loopPhases) {
+    assert.match(
+      mermaid,
+      new RegExp(`\\["${chinese}"\\]`, 'u'),
+      `loop phase: ${phase}`,
+    );
+    assert.ok(source.includes(`\`${phase}\``), `canonical phase vocabulary: ${phase}`);
+  }
+  for (const [, outcome, chinese] of loopTerminalOutcomes) {
+    assert.match(mermaid, new RegExp(`\\["${chinese}"\\]`, 'u'), `terminal: ${outcome}`);
+    assert.ok(source.includes(`\`${outcome}\``), `documented terminal: ${outcome}`);
+  }
+
+  const actualEdges = [...mermaid.matchAll(
+    /^\s*([A-Z][A-Z_]*)\s*(?:\[[^\n]*?\])?\s*-->(?:\|[^|]+\|)?\s*([A-Z][A-Z_]*)(?:\[[^\n]*?\])?\s*$/gmu,
+  )].map(([, from, to]) => `${from}->${to}`);
+  assert.deepEqual(actualEdges.sort(), [...loopEdges].sort());
+
+  assert.match(source, /观察是结构化环境反馈/u);
+  assert.match(source, /模型选择[“"]下一步做什么[”"]/u);
+  assert.match(source, /代码强制执行[“"]还能不能继续[”"]/u);
+  assert.match(source, /拒绝[“"]直到足够好[”"]的无限循环/u);
+  assert.match(source, /ReAct[^\n]*提示与交互模式[^\n]*不是生产运行时保证/u);
+}
+
+test('AGT-C-03 publishes the canonical five-phase Agent Loop and terminal contract', () => {
+  assert.ok(existsSync(loopArticlePath), `Missing ${loopArticlePath}`);
+  assertAgentLoopContract(readFileSync(loopArticlePath, 'utf8'));
+});
+
+test('AGT-C-03 rejects phase, terminal, and evaluation-bypass topology mutations', () => {
+  const source = readFileSync(loopArticlePath, 'utf8');
+  const mutations = [
+    source.replace('PLAN["计划"]', 'PLAN["思考"]'),
+    source.replace('TERMINATE --> SUCCESS["成功"]', 'TERMINATE --> SUCCESS["完成"]'),
+    source.replace('OBSERVE --> EVALUATE', 'OBSERVE --> PLAN'),
+    source.replace('EVALUATE -->|继续| PLAN', 'ACT -->|继续| PLAN'),
+    source.replace('EVALUATE -->|停止| TERMINATE', 'OBSERVE -->|停止| TERMINATE'),
+    source.replace('ACT --> OBSERVE', 'ACT --> OBSERVE\n    ACT --> TERMINATE'),
+  ];
+  for (const mutant of mutations) {
+    assert.notEqual(mutant, source, 'mutation fixture must alter the article');
+    assert.throws(() => assertAgentLoopContract(mutant));
+  }
+});
+
+test('AGT-C-03 governs ReAct and reuses the exact Anthropic workflow/agent source', () => {
+  const ledger = JSON.parse(readFileSync('data/source-ledger.json', 'utf8'));
+  const health = JSON.parse(readFileSync('data/source-link-health.json', 'utf8'));
+  const document = ledger.documents[loopArticlePath];
+  assert.ok(document, `${loopArticlePath} source document`);
+  assert.deepEqual(document.citations.map(({source_id}) => source_id), [
+    'src-react-reasoning-acting-language-models',
+    'src-anthropic-building-effective-agents',
+  ]);
+  assert.ok(document.citations.every(({usage_mode}) => usage_mode === 'facts-summary'));
+
+  const react = ledger.sources.find(
+    ({id}) => id === 'src-react-reasoning-acting-language-models',
+  );
+  assert.ok(react, 'src-react-reasoning-acting-language-models');
+  assert.equal(react.canonical_locator, 'https://arxiv.org/abs/2210.03629');
+  assert.equal(react.title, 'ReAct: Synergizing Reasoning and Acting in Language Models');
+  assert.equal(react.author_or_org, 'Shunyu Yao et al.');
+  assert.equal(react.source_kind, 'paper');
+  assert.equal(react.tier, 'primary');
+  assert.equal(react.license, 'CC-BY-4.0');
+  assert.equal(react.copyright_policy, 'adapt-with-attribution');
+  assert.match(react.usage_boundary, /prompting and interaction pattern/u);
+  assert.match(react.usage_boundary, /production runtime guarantees/u);
+  const reactHealth = health.results.find(
+    ({source_ids: sourceIds}) => sourceIds.includes(react.id),
+  );
+  assert.ok(reactHealth, `${react.id} health observation`);
+  assert.equal(reactHealth.transport_locator, react.transport_locator);
+  assert.deepEqual(reactHealth.source_ids, [react.id]);
+  assert.equal(reactHealth.last_attempt.outcome, 'healthy');
+  assert.equal(
+    reactHealth.last_attempt.final_transport_locator,
+    react.expected_final_transport_locator,
+  );
+
+  const anthropic = ledger.sources.filter(
+    ({id}) => id === 'src-anthropic-building-effective-agents',
+  );
+  assert.equal(anthropic.length, 1);
+  assert.deepEqual(anthropic[0], {
+    id: 'src-anthropic-building-effective-agents',
+    canonical_locator: 'https://www.anthropic.com/engineering/building-effective-agents',
+    transport_locator: 'https://www.anthropic.com/engineering/building-effective-agents',
+    query_insensitive: false,
+    locator_aliases: [],
+    tombstone: null,
+    title: 'Building Effective Agents',
+    author_or_org: 'Anthropic',
+    published_at: '2024-12-19',
+    registered_at: '2026-08-26',
+    checked_at: '2026-08-26',
+    version: 'Official engineering article published 2024-12-19 and checked directly in a browser on 2026-08-26',
+    source_kind: 'official-docs',
+    tier: 'first-party',
+    allowed_evidence_roles: ['definition', 'method'],
+    license: 'LicenseRef-All-Rights-Reserved',
+    license_scope: 'The named Anthropic engineering article and bibliographic facts only; prose, examples, diagrams, linked works, trademarks and third-party material excluded',
+    license_evidence_url: 'https://www.anthropic.com/engineering/building-effective-agents',
+    license_evidence_note: 'The official page exposes no reusable page license; Tego Arch uses attributed factual summary without copying prose, examples, structure or diagrams.',
+    license_family_id: 'https://www.anthropic.com/engineering/building-effective-agents',
+    license_family_grouping: 'identity',
+    family_grouping_evidence_url: null,
+    copyright_policy: 'facts-and-short-quotation',
+    usage_boundary: "Supports Anthropic's stated workflow/agent distinction and augmented-LLM building block; it does not establish the article's Harness/Loop ownership model or prove production outcomes.",
+    link_policy: 'floating',
+    expected_final_transport_locator: 'https://www.anthropic.com/engineering/building-effective-agents',
+    expected_final_approved_at: '2026-08-26',
+    expected_final_approval_note: 'The exact canonical article returned HTTP 200 and exposed the expected title and workflow/agent distinction in a real browser on 2026-08-26; no non-equivalent companion page is used as health evidence.',
+  });
 });
