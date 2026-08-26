@@ -59,6 +59,7 @@ export const EDGE_LABELS = Object.freeze({
 });
 export const LEGEND_LABELS = Object.freeze({request: '同步受理', work: '有界任务', receipt: '权威回执', recovery: '查询与人工恢复', budget: '容量预算'});
 export const NOTE_COPY = Object.freeze({'volatile-state': '函数内存 ≠ 业务状态', 'finite-capacity': '自动扩缩 ≠ 无限容量', 'unknown-effect': '超时 ≠ 外部效果未发生'});
+export const SVG_DESC = '同步入口只做幂等受理，持久工作流和订单状态保存进度，队列向三个有界函数分发任务，支付、库存与通知事实留在权威系统；结果未知进入查询、对账和人工终态。支付权威系统向容量与成本观测提供下游预算，观测面向入口发送准入控制，并向队列发送执行控制。';
 export const NODE_REGIONS = Object.freeze({
   client: 'request-boundary', 'sync-ingress': 'request-boundary', 'admission-store': 'request-boundary',
   'durable-workflow': 'durable-control', 'order-state': 'durable-control', 'task-queue': 'durable-control', reconciliation: 'durable-control', 'manual-terminal': 'durable-control',
@@ -248,8 +249,19 @@ function assertServerlessDiagram(drawioSource, svgSource) {
   const nodes = new Map(drawio.nodes.map((node) => [node.attributes.get('id'), node]));
   const edges = new Map(drawio.edges.map((edge) => [edge.attributes.get('id'), edge]));
   const svg = parseSvg(svgSource); assertFlattenedSvg(svg.elements);
+  const root = svg.elements.find(({name}) => name === 'svg');
   const drawioRole = (cell) => styleMap(cell.attributes.get('style')).get('semanticRole');
   const expectedLegendIds = LEGEND_ROLES.map((role) => 'legend-edge-' + role);
+  const expectedEdgeUnion = [...EDGE_IDS, ...expectedLegendIds];
+  assertExactDuplicateFreeIds(drawio.edges.map((cell) => cell.attributes.get('id')), expectedEdgeUnion, 'Draw.io complete edge union');
+  for (const edge of drawio.edges) {
+    const id = edge.attributes.get('id'); const role = drawioRole(edge);
+    if (EDGE_IDS.includes(id)) assert.ok(LEGEND_ROLES.includes(role), `${id} semantic edge role is one of the five roles`);
+    else { assert.equal(role, 'legend', `${id} legend semantic role`); assert.ok(LEGEND_ROLES.includes(styleMap(edge.attributes.get('style')).get('legendRole')), `${id} valid legendRole`); }
+  }
+  const svgConnectorPaths = svg.elements.filter(({name, parent}) => name === 'path' && parent === root);
+  for (const {attributes: item} of svgConnectorPaths) assert.notEqual(item.has('data-edge-id'), item.has('data-legend-edge-id'), 'every SVG connector has exactly one edge identity kind');
+  assertExactDuplicateFreeIds(svgConnectorPaths.map(({attributes: item}) => item.get('data-edge-id') ?? item.get('data-legend-edge-id')), expectedEdgeUnion, 'SVG complete edge union');
   assertExactDuplicateFreeIds(drawio.nodes.filter((cell) => drawioRole(cell) === 'region').map((cell) => cell.attributes.get('id')), REGION_IDS, 'Draw.io regions');
   assertExactDuplicateFreeIds(drawio.nodes.filter((cell) => drawioRole(cell) === 'region-label').map((cell) => cell.attributes.get('id').replace(/^region-label-/u, '')), REGION_IDS, 'Draw.io region labels');
   assertExactDuplicateFreeIds(svg.elements.filter(({attributes: item}) => item.has('data-region-id')).map(({attributes: item}) => item.get('data-region-id')), REGION_IDS, 'SVG regions');
@@ -272,10 +284,11 @@ function assertServerlessDiagram(drawioSource, svgSource) {
   assertExactDuplicateFreeIds(drawio.nodes.filter((cell) => drawioRole(cell) === 'note-text').map((cell) => cell.attributes.get('id').replace(/^note-text-/u, '')), Object.keys(NOTE_COPY), 'Draw.io note labels');
   assertExactDuplicateFreeIds(svg.elements.filter(({attributes: item}) => item.has('data-note-id')).map(({attributes: item}) => item.get('data-note-id')), Object.keys(NOTE_COPY), 'SVG notes');
   assertExactDuplicateFreeIds(svg.elements.filter(({attributes: item}) => item.has('data-note-text-for')).map(({attributes: item}) => item.get('data-note-text-for')), Object.keys(NOTE_COPY), 'SVG note labels');
-  const root = svg.elements.find(({name}) => name === 'svg');
   assert.deepEqual((root?.attributes.get('viewBox') ?? '').split(/\s+/u).map(Number), [0, 0, 2400, 3600], '2400x3600 source canvas renders at 800x1200 CSS pixels');
   assert.equal(root?.attributes.has('width'), false, 'responsive SVG root has no fixed width');
   assert.equal(root?.attributes.has('height'), false, 'responsive SVG root has no fixed height');
+  const description = svg.elements.find(({name, attributes: item}) => name === 'desc' && item.get('id') === 'sty11-desc');
+  assert.ok(description, 'accessible SVG description'); assert.equal(elementText(svgSource, description), SVG_DESC, 'exact authority-owned budget description');
   const regionBounds = new Map(); const regionStrokes = new Map();
   for (const id of REGION_IDS) {
     const cell = nodes.get(id); const rendered = svg.elements.find(({attributes}) => attributes.get('data-region-id') === id);
@@ -307,7 +320,7 @@ function assertServerlessDiagram(drawioSource, svgSource) {
   const routes = [];
   for (const id of EDGE_IDS) {
     const [source, target, role] = EDGE_CONTRACTS[id]; const edge = edges.get(id); const rendered = svg.edges.find(({attributes}) => attributes.get('data-edge-id') === id);
-    assert.ok(edge && rendered, id + ' Draw.io/SVG edge pair'); assert.equal(edge.attributes.get('source'), 'node-' + source, id + ' source'); assert.equal(edge.attributes.get('target'), 'node-' + target, id + ' target'); assert.equal(semanticRole(edge), role, id + ' Draw.io role'); assert.equal(rendered.attributes.get('data-edge-role'), role, id + ' SVG role');
+    assert.ok(edge && rendered, id + ' Draw.io/SVG edge pair'); assert.equal(edge.attributes.get('source'), 'node-' + source, id + ' source'); assert.equal(edge.attributes.get('target'), 'node-' + target, id + ' target'); assert.ok(LEGEND_ROLES.includes(semanticRole(edge)), id + ' Draw.io role belongs to the five semantic roles'); assert.equal(semanticRole(edge), role, id + ' Draw.io role'); assert.equal(rendered.attributes.get('data-edge-role'), role, id + ' SVG role');
     const route = drawioRoute(edge, nodes); const svgRoute = parsePathPoints(rendered.attributes.get('d')); equalRoute(svgRoute, route, id + ' route');
     const style = styleMap(edge.attributes.get('style')); assert.equal(svgPresentationValue(svgSource, rendered, 'stroke'), style.get('strokeColor'), id + ' effective stroke'); close(number(svgPresentationValue(svgSource, rendered, 'stroke-width'), id + ' SVG width'), number(style.get('strokeWidth'), id + ' Draw.io width'), id + ' line width'); assert.equal(svgPresentationValue(svgSource, rendered, 'stroke-dasharray') ?? '', style.get('dashPattern') || '', id + ' dash');
     const marker = markerBounds(svgSource, svg.elements, rendered, svgRoute); for (const [foreign, box] of nodeBounds) if (foreign !== source && foreign !== target) assert.equal(overlaps(marker, box), false, id + ' marker footprint: ' + foreign);
@@ -321,7 +334,7 @@ function assertServerlessDiagram(drawioSource, svgSource) {
   }
   for (const role of LEGEND_ROLES) {
     const edge = edges.get('legend-edge-' + role); const rendered = svg.elements.find(({name, attributes}) => name === 'path' && attributes.get('data-legend-edge-id') === 'legend-edge-' + role); const label = svg.elements.find(({name, attributes}) => name === 'text' && attributes.get('data-legend-label-for') === 'legend-edge-' + role);
-    assert.ok(edge && rendered && label, role + ' complete legend pair'); assert.equal(styleMap(edge.attributes.get('style')).get('legendRole'), role, role + ' Draw.io legend role'); assert.equal(rendered.attributes.get('data-edge-role'), role, role + ' SVG legend role');
+    assert.ok(edge && rendered && label, role + ' complete legend pair'); assert.equal(semanticRole(edge), 'legend', role + ' Draw.io legend semantic role'); assert.equal(styleMap(edge.attributes.get('style')).get('legendRole'), role, role + ' Draw.io legend role'); assert.equal(rendered.attributes.get('data-edge-role'), role, role + ' SVG legend role');
     assert.equal(nodes.get('legend-label-' + role)?.label, LEGEND_LABELS[role], role + ' editable Draw.io legend label'); assert.equal(elementText(svgSource, label), LEGEND_LABELS[role], role + ' SVG legend label');
     const legendRoute = drawioRoute(edge, nodes); const svgRoute = parsePathPoints(rendered.attributes.get('d')); equalRoute(svgRoute, legendRoute, role + ' legend route');
     const style = styleMap(edge.attributes.get('style')); assert.equal(svgPresentationValue(svgSource, rendered, 'stroke'), style.get('strokeColor'), role + ' effective legend stroke'); close(number(svgPresentationValue(svgSource, rendered, 'stroke-width'), role + ' legend SVG width'), number(style.get('strokeWidth'), role + ' legend Draw.io width'), role + ' legend width'); assert.equal(svgPresentationValue(svgSource, rendered, 'stroke-dasharray') ?? '', style.get('dashPattern') || '', role + ' legend dash');
@@ -355,11 +368,17 @@ function assertDiagramMutationRejected(drawioSource, svgSource) {
   const duplicateNode = appendDrawioCell(clientCell.raw, 'duplicate Draw.io node identity');
   assert.throws(() => assertServerlessDiagram(duplicateNode, svgSource), /Draw\.io nodes identities are duplicate-free/u, 'duplicate Draw.io node identity rejected');
   const unsafeExtraEdge = appendDrawioCell('<mxCell id="rogue-function-order-state" edge="1" source="node-payment-function" target="node-order-state" style="semanticRole=work"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1000" y="1000"></mxPoint></Array></mxGeometry></mxCell>', 'additional function-to-order-state edge');
-  assert.throws(() => assertServerlessDiagram(unsafeExtraEdge, svgSource), /Draw\.io semantic edges exact identity set/u, 'additional function-to-order-state edge rejected');
+  assert.throws(() => assertServerlessDiagram(unsafeExtraEdge, svgSource), /Draw\.io complete edge union exact identity set/u, 'additional function-to-order-state edge rejected');
+  for (const [label, style] of [['missing semantic role', ''], ['unknown semantic role', 'semanticRole=rogue']]) {
+    const rogue = appendDrawioCell(`<mxCell id="rogue-function-order-state-${label.replaceAll(' ', '-')}" edge="1" source="node-payment-function" target="node-order-state" style="${style}"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1000" y="1000"></mxPoint></Array></mxGeometry></mxCell>`, label + ' function-to-order-state edge');
+    assert.throws(() => assertServerlessDiagram(rogue, svgSource), assert.AssertionError, label + ' function-to-order-state edge rejected');
+  }
   const extraLegend = replaceOnce(svgSource, '</svg>', '<path data-legend-edge-id="legend-edge-rogue" data-edge-role="work" d="M 0 0 L 1 1"/></svg>', 'additional SVG legend identity');
-  assert.throws(() => assertServerlessDiagram(drawioSource, extraLegend), /SVG legend edges exact identity set/u, 'additional SVG legend identity rejected');
+  assert.throws(() => assertServerlessDiagram(drawioSource, extraLegend), /SVG complete edge union exact identity set/u, 'additional SVG legend identity rejected');
   const duplicateNote = replaceOnce(svgSource, '</svg>', '<g data-note-id="volatile-state"></g></svg>', 'duplicate SVG note identity');
   assert.throws(() => assertServerlessDiagram(drawioSource, duplicateNote), /SVG notes identities are duplicate-free/u, 'duplicate SVG note identity rejected');
+  const wrongDescription = replaceOnce(svgSource, SVG_DESC, '观测面拥有并发送全部三层预算。', 'observer-owned budget description');
+  assert.throws(() => assertServerlessDiagram(drawioSource, wrongDescription), assert.AssertionError, 'observer-owned budget description rejected');
 
   const parsed = parseDrawio(drawioSource); const manual = parsed.cells.find(({attributes: item}) => item.get('id') === 'node-manual-terminal'); assert.ok(manual, 'manual terminal mutation applies');
   assert.throws(() => assertServerlessDiagram(replaceOnce(drawioSource, manual.raw, '', 'missing manual terminal'), svgSource), assert.AssertionError, 'missing manual terminal rejected');

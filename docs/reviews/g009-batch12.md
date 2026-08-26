@@ -14,7 +14,7 @@
 | `content/styles/sty-11-serverless-architecture.mdx` | 23,126 | `85561b6c44acc1518f416e12cb507b6c4a2a57369c6cdda8c8df176165d2bbd6` |
 | `data/source-ledger.json` | 1,644,284 | `0f3856dc6291e1e8f78622c08c2fa0da8af54d11cc24cbd679a3557ab920beef` |
 | `diagrams/sty-11-serverless-order-fulfillment.drawio` | 47,529 | `9862fcb5be62941553780b2a58751a3f9af2ba7a32dace3549cc3ca6d1daa00e` |
-| `static/img/diagrams/sty-11-serverless-order-fulfillment.svg` | 21,797 | `cab720062be02939b78988613102852453d86aa984ab38226ffc273a856ac251` |
+| `static/img/diagrams/sty-11-serverless-order-fulfillment.svg` | 21,881 | `6a166a208e31cb1c6313cd2a21ff17ce124ab6b463821bb3b108275000fa2094` |
 
 - Governed STY-11 sources: `11`; remote anchors per state: `10`; original diagram rights remain governed separately.
 - Exactly one STY-11 citation is `manifest_primary`.
@@ -43,27 +43,15 @@
 
 ## Local in-app Browser QA
 
-- Exact remediation implementation candidate head: `a84f24b5bfae09f3d58a1dbb1d8ef14795727d9f`.
-- Raw Browser JSON: `docs/reviews/evidence/g009-batch12-stage-a-browser.json`; bytes: `34,350`; SHA-256: `7e3f4c9243eaaf0e9028e29b9ff1d8c08bf3c5aaf47002023eaecddaa7f6738c`.
-- Functional Browser QA: `PASS`; states `4/4`; wrapper interactions `16/16`; relation href/H1/return observations `12/12`; source href/target/rel observations `40/40`.
-- SVG loaded in every state: source `2400x3600`; rendered `800x1200`; observed asset bytes `21,797`; exact reviewed SVG SHA-256 match: `PASS`.
-- STY-12 actionable count: `0` per state.
-- Diagnostics are complete and empty in every state: warning/error logs `0`, Runtime/Log events `0`, `hasMore=false`, `truncated=false`.
-- Screenshot evidence: `BLOCKED / NOT_ACCEPTED`.
-- Exactly three fresh full-page attempts are `CAPTURED_REJECTED`; original bytes were inspected; no fourth attempt was made.
-
-| Screenshot attempt | Encoded bytes | Dimensions | SHA-256 | Result |
-| --- | ---: | ---: | --- | --- |
-| `desktopLight` | 839,763 | `1440x10881` | `269ad548942a6e5ffe6ba8608d40b06c23b6e2c24b0b442be3de2718c7a9af69` | `CAPTURED_REJECTED`: repeated article sections and architecture diagram |
-| `desktopDark` | 841,946 | `1440x10881` | `0e491d3c8f0fd25d8a2949df7bda40b00de04f9753fe383d879e3ca6ee94978c` | `CAPTURED_REJECTED`: repeated article sections and architecture diagram |
-| `mobileLight` | 599,835 | `390x15730` | `e649e892ed2f16ebc0cce8432c87688d888518c9d51213a622b2a478ce344572` | `CAPTURED_REJECTED`: repeated sections, large blank interval and missing faithful continuous diagram coverage |
-
-- The rejected screenshot originals remain untracked; their exact in-memory Browser bytes were inspected and bound in the raw record by format, dimensions, byte count and SHA-256.
+- Exact remediation implementation candidate head: `PENDING`.
+- Raw Browser JSON: `NOT_RUN`.
+- Functional Browser QA: `NOT_RUN`.
+- Screenshot evidence: `NOT_RUN`.
 - The prior candidate's raw observations and screenshot attempts are not accepted for this render-changing remediation. No Chrome fallback, prior raw, historical screenshot, substituted browser surface or visual PASS is claimed.
 
 ## Independent review checkpoint
 
-- Exact implementation candidate head: `a84f24b5bfae09f3d58a1dbb1d8ef14795727d9f`.
+- Exact implementation candidate head: `PENDING`.
 - Exact Browser evidence head: `PENDING`.
 - Exact independent review head: `PENDING`.
 - Independent code/spec/security review: `PENDING`; findings: `PENDING`.
