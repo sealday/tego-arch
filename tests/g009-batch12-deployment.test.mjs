@@ -15,6 +15,8 @@ export const PRODUCTION_RAW = 'docs/reviews/evidence/g009-batch12-stage-a-produc
 export const STAGE_B_PRODUCTION_RAW = 'docs/reviews/evidence/g009-batch12-stage-b-production-browser.json';
 export const STATES = Object.freeze(['desktopLight', 'desktopDark', 'mobileLight', 'mobileDark']);
 export const CANDIDATE_HEAD = '4405d38bc70a3eb3711319c00c54f069e333a8aa';
+export const EVIDENCE_HEAD = '0e074a91731ae5fe77bca550bf905c213eca5af1';
+export const REVIEW_GUARD_HEAD = 'c4431c9d13998ec88cebe716db9156700917b6c2';
 export const LOCAL_RAW_BYTES = 34_866;
 export const LOCAL_RAW_SHA256 = 'a4c80875fbcf06b3f524a55f3a55a80639f3b3335a3ac7e6d173a4f4b98bbe4d';
 
@@ -68,6 +70,28 @@ const STABLE_IDENTITIES = new Map([
   [DRAWIO, [47_529, '9862fcb5be62941553780b2a58751a3f9af2ba7a32dace3549cc3ca6d1daa00e']],
   [SVG, [21_881, '6a166a208e31cb1c6313cd2a21ff17ce124ab6b463821bb3b108275000fa2094']],
 ]);
+const FINAL_STAGE_A_CHECKPOINT = Object.freeze([
+  `- Exact implementation candidate head: \`${CANDIDATE_HEAD}\`.`,
+  `- Exact Browser evidence head: \`${EVIDENCE_HEAD}\`.`,
+  `- Exact independent review head: \`${REVIEW_GUARD_HEAD}\`.`,
+  '- Independent code/spec/security review: `READY / APPROVE`; findings: `0`.',
+  '- Independent content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`.',
+  '- Independent architecture/invariant review: `CLEAR / READY`; blockers: `0`.',
+  '- Final Stage A review judgment: `READY`.',
+  '- Scope boundary: `STAGE_A_ONLY`.',
+  '- Deployment status: `NOT_RUN`.',
+]);
+const PENDING_STAGE_A_CHECKPOINT = Object.freeze([
+  `- Exact implementation candidate head: \`${CANDIDATE_HEAD}\`.`,
+  '- Exact Browser evidence head: `PENDING`.',
+  '- Exact independent review head: `PENDING`.',
+  '- Independent code/spec/security review: `PENDING`; findings: `PENDING`.',
+  '- Independent content/evidence/rights review: `PENDING`; rights: `PENDING`; findings: `PENDING`.',
+  '- Independent architecture/invariant review: `PENDING`; blockers: `PENDING`.',
+  '- Final Stage A review judgment: `PENDING`.',
+  '- Scope boundary: `STAGE_A_ONLY`.',
+  '- Deployment status: `NOT_RUN`.',
+]);
 
 const rootUrl = new URL('../', import.meta.url);
 const sha256 = (value) => createHash('sha256').update(value).digest('hex');
@@ -91,12 +115,21 @@ function assertImmediateHistory(reviewBytes = immediateReview, backlogSource = b
   assert.match(suffix, /^2026-08-20 G009 Batch 11 已完成 STY-10/u);
   assert.equal(sha256(suffix), IMMEDIATE_BACKLOG_SUFFIX_HASH, 'complete immediate STY-10 backlog suffix');
 }
-function assertPendingReview(source = review) {
+function markdownSection(source, heading) {
+  const marker = `## ${heading}\n\n`;
+  const start = source.indexOf(marker);
+  assert.notEqual(start, -1, `${heading} section exists`);
+  const contentStart = start + marker.length;
+  const end = source.indexOf('\n## ', contentStart);
+  return source.slice(contentStart, end === -1 ? source.length : end).trim();
+}
+function assertFinalReview(source = review) {
   assert.ok(source, `${REVIEW} exists`);
   assert.match(source, /^# G009 Batch 12 Stage A Review$/mu);
   assert.match(source, /Projection: `63 completed topics \/ 107 content documents \/ 560 governed sources`/u);
   assert.match(source, /STY-11: `published \/ pending`/u);
   assert.match(source, /STY-12: `unpublished \/ pending \/ non-actionable`; actionable route count: `0`/u);
+  assert.match(source, /This record binds the exact candidate, Browser evidence, regression-guard head and three zero-finding independent reviews as the final Stage A READY checkpoint\. It does not close the backlog, merge, publish or run Stage B\./u);
   for (const [path, [bytes, hash]] of STABLE_IDENTITIES) {
     assert.ok(source.includes(`| \`${path}\` | ${bytes.toLocaleString('en-US')} | \`${hash}\` |`), `${path} exact identity`);
   }
@@ -112,15 +145,10 @@ function assertPendingReview(source = review) {
   assert.match(source, /Diagnostics are complete and empty in every state: warning\/error logs `0`, Runtime\/Log events `0`, `hasMore=false`, `truncated=false`/u);
   assert.match(source, /Screenshot evidence: `BLOCKED \/ NOT_ACCEPTED`/u);
   assert.match(source, /Exactly three fresh full-page attempts are `CAPTURED_REJECTED`; original bytes were inspected; no fourth attempt was made/u);
-  assert.match(source, /Independent code\/spec\/security review: `PENDING`; findings: `PENDING`/u);
-  assert.match(source, /Independent content\/evidence\/rights review: `PENDING`; rights: `PENDING`; findings: `PENDING`/u);
-  assert.match(source, /Independent architecture\/invariant review: `PENDING`; blockers: `PENDING`/u);
-  assert.match(source, /Final Stage A review judgment: `PENDING`/u);
-  assert.match(source, /Scope boundary: `STAGE_A_ONLY`/u);
-  assert.match(source, /Deployment status: `NOT_RUN`/u);
+  assert.equal(markdownSection(source, 'Independent review checkpoint'), FINAL_STAGE_A_CHECKPOINT.join('\n'), 'exact final Stage A checkpoint');
   assert.doesNotMatch(source, /^## Stage B/mu);
   assert.doesNotMatch(source, /Stage B (?:review judgment|deployment status): `(?!PENDING|NOT_RUN)/u);
-  assert.doesNotMatch(source, /(?:READY \/ APPROVE|CONTENT READY|CLEAR \/ READY|Final Stage A review judgment: `READY`)/u);
+  assert.doesNotMatch(source, /Screenshot evidence: `PASS`|Deployment status: `SUCCESS`/u);
 }
 
 function assertLocalEvidence(value) {
@@ -264,7 +292,7 @@ test('locks exact STY-11 article, ledger, Draw.io and SVG identities', () => {
 });
 
 test('requires exact-candidate remediation Browser evidence while production and Stage B artifacts remain absent', () => {
-  assertPendingReview();
+  assertFinalReview();
   assert.equal(raw.length, LOCAL_RAW_BYTES, `${LOCAL_RAW} exact bytes`);
   assert.equal(sha256(raw), LOCAL_RAW_SHA256, `${LOCAL_RAW} exact SHA-256`);
   assertLocalEvidence(raw && JSON.parse(raw));
@@ -272,15 +300,22 @@ test('requires exact-candidate remediation Browser evidence while production and
   assert.equal(stageBProductionRaw, undefined, `${STAGE_B_PRODUCTION_RAW} remains absent before Stage B`);
 });
 
-test('rejects pending review verdict, history, scope, deployment and Stage B fabrication mutations', () => {
-  assertPendingReview();
+test('rejects wrong review heads, weakened final verdicts, scope, deployment and visual overclaim mutations', () => {
+  assertFinalReview();
   for (const [before, after] of [
     [IMMEDIATE_REVIEW_HASH, '0'.repeat(64)],
     [IMMEDIATE_BACKLOG_SUFFIX_HASH, '1'.repeat(64)],
-    ['Independent code/spec/security review: `PENDING`; findings: `PENDING`', 'Independent code/spec/security review: `READY / APPROVE`; findings: `0`'],
-    ['Independent content/evidence/rights review: `PENDING`; rights: `PENDING`; findings: `PENDING`', 'Independent content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`'],
-    ['Independent architecture/invariant review: `PENDING`; blockers: `PENDING`', 'Independent architecture/invariant review: `CLEAR / READY`; blockers: `0`'],
-    ['Final Stage A review judgment: `PENDING`', 'Final Stage A review judgment: `READY`'],
+    [`Exact implementation candidate head: \`${CANDIDATE_HEAD}\`.`, `Exact implementation candidate head: \`${'0'.repeat(40)}\`.`],
+    [`Exact Browser evidence head: \`${EVIDENCE_HEAD}\`.`, `Exact Browser evidence head: \`${'1'.repeat(40)}\`.`],
+    [`Exact independent review head: \`${REVIEW_GUARD_HEAD}\`.`, `Exact independent review head: \`${'2'.repeat(40)}\`.`],
+    ['Independent code/spec/security review: `READY / APPROVE`; findings: `0`', 'Independent code/spec/security review: `NOT READY`; findings: `0`'],
+    ['Independent code/spec/security review: `READY / APPROVE`; findings: `0`', 'Independent code/spec/security review: `READY / APPROVE`; findings: `1`'],
+    ['Independent content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`', 'Independent content/evidence/rights review: `CHANGES`; rights: `PASS`; findings: `0`'],
+    ['Independent content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`', 'Independent content/evidence/rights review: `CONTENT READY`; rights: `FAIL`; findings: `0`'],
+    ['Independent content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`', 'Independent content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `1`'],
+    ['Independent architecture/invariant review: `CLEAR / READY`; blockers: `0`', 'Independent architecture/invariant review: `BLOCKED`; blockers: `0`'],
+    ['Independent architecture/invariant review: `CLEAR / READY`; blockers: `0`', 'Independent architecture/invariant review: `CLEAR / READY`; blockers: `1`'],
+    ['Final Stage A review judgment: `READY`', 'Final Stage A review judgment: `PENDING`'],
     ['Scope boundary: `STAGE_A_ONLY`', 'Scope boundary: `STAGE_B`'],
     ['Deployment status: `NOT_RUN`', 'Deployment status: `SUCCESS`'],
     ['Functional Browser QA: `PASS`', 'Functional Browser QA: `FAIL`'],
@@ -288,10 +323,13 @@ test('rejects pending review verdict, history, scope, deployment and Stage B fab
   ]) {
     const mutated = review.replace(before, after);
     assert.notEqual(mutated, review, `${before} mutation applies`);
-    assert.throws(() => assertPendingReview(mutated), assert.AssertionError);
+    assert.throws(() => assertFinalReview(mutated), assert.AssertionError);
   }
+  const stalePending = review.replace(FINAL_STAGE_A_CHECKPOINT.join('\n'), PENDING_STAGE_A_CHECKPOINT.join('\n'));
+  assert.notEqual(stalePending, review, 'stale pending Stage A checkpoint mutation applies');
+  assert.throws(() => assertFinalReview(stalePending), assert.AssertionError);
   for (const addition of ['\n## Stage B closure candidate\n', '\nStage B deployment status: `SUCCESS`.\n']) {
-    assert.throws(() => assertPendingReview(`${review}${addition}`), assert.AssertionError);
+    assert.throws(() => assertFinalReview(`${review}${addition}`), assert.AssertionError);
   }
 });
 

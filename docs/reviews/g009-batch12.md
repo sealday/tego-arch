@@ -5,7 +5,7 @@
 - Projection: `63 completed topics / 107 content documents / 560 governed sources`.
 - STY-11: `published / pending`.
 - STY-12: `unpublished / pending / non-actionable`; actionable route count: `0`.
-- This record is the implementation-candidate checkpoint. Browser evidence and independent review verdicts remain pending, and it does not close the backlog or authorize deployment.
+- This record binds the exact candidate, Browser evidence, regression-guard head and three zero-finding independent reviews as the final Stage A READY checkpoint. It does not close the backlog, merge, publish or run Stage B.
 
 ## Artifact identities
 
@@ -63,11 +63,11 @@
 ## Independent review checkpoint
 
 - Exact implementation candidate head: `4405d38bc70a3eb3711319c00c54f069e333a8aa`.
-- Exact Browser evidence head: `PENDING`.
-- Exact independent review head: `PENDING`.
-- Independent code/spec/security review: `PENDING`; findings: `PENDING`.
-- Independent content/evidence/rights review: `PENDING`; rights: `PENDING`; findings: `PENDING`.
-- Independent architecture/invariant review: `PENDING`; blockers: `PENDING`.
-- Final Stage A review judgment: `PENDING`.
+- Exact Browser evidence head: `0e074a91731ae5fe77bca550bf905c213eca5af1`.
+- Exact independent review head: `c4431c9d13998ec88cebe716db9156700917b6c2`.
+- Independent code/spec/security review: `READY / APPROVE`; findings: `0`.
+- Independent content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`.
+- Independent architecture/invariant review: `CLEAR / READY`; blockers: `0`.
+- Final Stage A review judgment: `READY`.
 - Scope boundary: `STAGE_A_ONLY`.
 - Deployment status: `NOT_RUN`.
