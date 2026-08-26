@@ -363,27 +363,96 @@ function visibleBodyRecords(source) {
     .filter(Boolean);
 }
 
+const qualityGovernanceVisibleHtmlContainers = new Set([
+  'a',
+  'article',
+  'aside',
+  'blockquote',
+  'div',
+  'em',
+  'footer',
+  'header',
+  'li',
+  'main',
+  'ol',
+  'p',
+  'section',
+  'span',
+  'strong',
+  'ul',
+]);
+
 function visibleQualityGovernance(ast) {
   const excluded = new Set([
     'code',
     'definition',
     'html',
+    'inlineCode',
     'mdxFlowExpression',
     'mdxTextExpression',
-    'mdxJsxFlowElement',
-    'mdxJsxTextElement',
     'mdxjsEsm',
   ]);
   const text = (node) => {
     assert.ok(node && typeof node === 'object' && typeof node.type === 'string');
     if (excluded.has(node.type)) return '';
-    if (node.type === 'text' || node.type === 'inlineCode') return node.value;
+    if (node.type === 'text') return node.value;
+    if (node.type === 'mdxJsxFlowElement' || node.type === 'mdxJsxTextElement') {
+      if (isReaderHiddenJsx(node)) return '';
+      if (
+        node.name !== null
+        && !qualityGovernanceVisibleHtmlContainers.has(node.name)
+      ) {
+        return '';
+      }
+    }
     return (node.children ?? []).map(text).join('');
   };
   return ast.children.map(text)
     .map((value) => value.replace(/\s+/gu, ' ').trim())
     .filter(Boolean)
     .join('\n');
+}
+
+function mdxJsxAttribute(node, name) {
+  return (node.attributes ?? []).find((attribute) =>
+    attribute.type === 'mdxJsxAttribute' && attribute.name === name);
+}
+
+function mdxJsxAttributeText(attribute) {
+  if (!attribute) return null;
+  if (attribute.value === null) return '';
+  if (typeof attribute.value === 'string') return attribute.value;
+  if (attribute.value?.type === 'mdxJsxAttributeValueExpression') {
+    return attribute.value.value;
+  }
+  assert.fail(`unsupported MDX JSX attribute value for ${attribute.name}`);
+}
+
+function isReaderHiddenJsx(node) {
+  if ((node.attributes ?? []).some(({type}) => type !== 'mdxJsxAttribute')) {
+    return true;
+  }
+  const hidden = mdxJsxAttribute(node, 'hidden');
+  if (hidden) {
+    const value = mdxJsxAttributeText(hidden).trim().toLowerCase();
+    if (hidden.value === null || value !== 'false') return true;
+  }
+  const ariaHidden = mdxJsxAttribute(node, 'aria-hidden');
+  if (ariaHidden) {
+    const value = mdxJsxAttributeText(ariaHidden).trim().replace(/^['"]|['"]$/gu, '');
+    if (value !== 'false') return true;
+  }
+  const style = mdxJsxAttribute(node, 'style');
+  if (style) {
+    const value = mdxJsxAttributeText(style);
+    if (
+      /display\s*[:=]\s*['"]?none\b/iu.test(value)
+      || /visibility\s*[:=]\s*['"]?hidden\b/iu.test(value)
+    ) {
+      return true;
+    }
+  }
+  return false;
 }
 
 function parseQualityGovernanceAst(source) {
@@ -452,7 +521,7 @@ function assertPhysicalQualityTable(body, tableNode, columnCount, dataRowCount) 
 }
 
 function assertNoQualityGovernanceVisuals(ast, source) {
-  const visualComponent = /(?:img|svg|picture|image|figure|diagram|mermaid)/iu;
+  const visualResource = /(?:^data:image\/|(?:^|[\/_.-])(?:diagram|diagrams|figure|figures|image|images|img|svg|visual|visuals)(?=$|[^A-Za-z0-9])|\.(?:avif|bmp|gif|ico|jpe?g|png|svg|webp)\b)/iu;
   const visit = (node) => {
     assert.ok(node && typeof node === 'object' && typeof node.type === 'string');
     assert.ok(
@@ -465,12 +534,41 @@ function assertNoQualityGovernanceVisuals(ast, source) {
     );
     if (node.type === 'mdxJsxFlowElement' || node.type === 'mdxJsxTextElement') {
       assert.ok(
-        typeof node.name !== 'string' || !visualComponent.test(node.name),
-        `AGT-C-06 must not embed visual component ${node.name}`,
+        node.name === null || qualityGovernanceVisibleHtmlContainers.has(node.name),
+        `AGT-C-06 permits only non-visual semantic HTML containers; found ${node.name}`,
       );
+      for (const attribute of node.attributes ?? []) {
+        if (attribute.type !== 'mdxJsxAttribute') continue;
+        const value = mdxJsxAttributeText(attribute);
+        if (['data', 'poster', 'src', 'srcSet', 'srcset'].includes(attribute.name)) {
+          assert.ok(
+            !visualResource.test(value),
+            `AGT-C-06 must not embed visual resource through ${attribute.name}`,
+          );
+        }
+        if (attribute.name === 'style') {
+          const hasBackgroundUrl = /background(?:-?image)?\s*[:=][\s\S]*url\s*\(/iu.test(value);
+          assert.ok(
+            !hasBackgroundUrl || !visualResource.test(value),
+            'AGT-C-06 must not embed a visual background resource',
+          );
+        }
+      }
     }
     if (node.type === 'html') {
-      assert.doesNotMatch(node.value, /<(?:img|svg|picture|figure)\b/iu);
+      assert.doesNotMatch(
+        node.value,
+        /<(?:canvas|embed|figure|iframe|img|object|picture|svg|video)\b/iu,
+      );
+      for (const match of node.value.matchAll(/\b(?:data|poster|src|srcset)\s*=\s*(['"])(.*?)\1/giu)) {
+        assert.ok(!visualResource.test(match[2]), 'raw HTML visual resource');
+      }
+      const style = node.value.match(/\bstyle\s*=\s*(['"])(.*?)\1/iu)?.[2] ?? '';
+      assert.ok(
+        !/background(?:-?image)?\s*:[\s\S]*url\s*\(/iu.test(style)
+          || !visualResource.test(style),
+        'raw HTML visual background resource',
+      );
     }
     for (const child of node.children ?? []) visit(child);
   };
@@ -1619,6 +1717,17 @@ function assertQualityGovernanceContract(source) {
   assertNoQualityGovernanceVisuals(ast, source);
 
   const tables = rootQualityGovernanceTables(ast);
+  assert.equal(tables.length, 3, 'exactly three root-level AGT-C-06 tables');
+  assert.deepEqual(
+    tables.map(({rows: [header]}) => header?.[0]).sort((left, right) =>
+      left.localeCompare(right, 'en')),
+    [
+      qualityResponsibilityHeader[0],
+      evaluationModeHeader[0],
+      '关联字段',
+    ].sort((left, right) => left.localeCompare(right, 'en')),
+    'root-level AGT-C-06 table identity set',
+  );
   const responsibilityTables = tables.filter(
     ({rows: [header]}) => header?.[0] === qualityResponsibilityHeader[0],
   );
@@ -1819,6 +1928,27 @@ test('AGT-C-06 rejects hidden evidence, physical table drift, and visual embeddi
       ),
     ],
     [
+      'evaluation claim nested in aria-hidden JSX',
+      source.replace(
+        boundaryParagraph,
+        '本文固定三条边界。追踪只记录证据，不自动判断质量，也不执行约束。\n\n<section aria-hidden="true">\n\n评测将追踪、结果和参考标准转为质量判断，不拥有工具执行权。\n\n</section>\n\n执行约束在模型或工具动作之前和之后强制政策，不把模型自律当执行点。',
+      ),
+    ],
+    [
+      'trace claim nested in visibility-hidden JSX',
+      source.replace(
+        boundaryParagraph,
+        "本文固定三条边界。\n\n<div style={{visibility: 'hidden'}}>\n\n追踪只记录证据，不自动判断质量，也不执行约束。\n\n</div>\n\n评测将追踪、结果和参考标准转为质量判断，不拥有工具执行权。执行约束在模型或工具动作之前和之后强制政策，不把模型自律当执行点。",
+      ),
+    ],
+    [
+      'trace claim only in inline code',
+      source.replace(
+        '追踪只记录证据，不自动判断质量，也不执行约束。',
+        '`追踪只记录证据，不自动判断质量，也不执行约束。`',
+      ),
+    ],
+    [
       'hidden responsibility table plus visible pseudo-table',
       source.replace(
         responsibilityTable,
@@ -1849,11 +1979,31 @@ test('AGT-C-06 rejects hidden evidence, physical table drift, and visual embeddi
       removeQualityTablePhysicalCell(source, modeHeader, 2),
     ],
     ['extra required evaluation table', `${source}\n\n${modeTable}\n`],
+    [
+      'arbitrary fourth root table',
+      `${source}\n\n| 附录字段 | 说明 |\n| --- | --- |\n| owner | 不属于三张契约表 |\n`,
+    ],
     ['Markdown image', `${source}\n\n![architecture](https://example.com/visual.svg)\n`],
     ['HTML img', `${source}\n\n<img src="https://example.com/visual.svg" alt="architecture" />\n`],
     ['Picture component', `${source}\n\n<Picture src="/visual.webp" alt="architecture" />\n`],
     ['architecture component', `${source}\n\n<ArchitectureDiagram />\n`],
     ['architecture diagram wrapper', `${source}\n\n<ArchitectureDiagramScroll />\n`],
+    ['iframe visual resource', `${source}\n\n<iframe src="/assets/incident-diagram.svg" />\n`],
+    ['object visual resource', `${source}\n\n<object data="/assets/incident-diagram.svg" />\n`],
+    ['embed visual resource', `${source}\n\n<embed src="/assets/incident-diagram.svg" />\n`],
+    ['canvas visual surface', `${source}\n\n<canvas aria-label="architecture" />\n`],
+    [
+      'JSX background image',
+      `${source}\n\n<div style={{backgroundImage: "url('/assets/incident-diagram.svg')"}}>背景</div>\n`,
+    ],
+    [
+      'JSX poster resource',
+      `${source}\n\n<section poster="/assets/incident-diagram.svg">背景</section>\n`,
+    ],
+    [
+      'JSX expression image resource',
+      `${source}\n\n<section src={'/assets/architecture.svg'}>背景</section>\n`,
+    ],
     ['invalid MDX fails closed', `${source}\n\n<div hidden>\n`],
   ];
   const survivors = [];
@@ -1867,6 +2017,30 @@ test('AGT-C-06 rejects hidden evidence, physical table drift, and visual embeddi
     }
   }
   assert.deepEqual(survivors, []);
+});
+
+test('AGT-C-06 accepts visible semantic wrappers and ordinary diagram links', () => {
+  const source = readFileSync(qualityGovernanceArticlePath, 'utf8');
+  const boundaryParagraph = '本文固定三条边界。追踪只记录证据，不自动判断质量，也不执行约束。评测将追踪、结果和参考标准转为质量判断，不拥有工具执行权。执行约束在模型或工具动作之前和之后强制政策，不把模型自律当执行点。';
+  const wrapped = source.replace(
+    boundaryParagraph,
+    '<section>\n\n本文固定三条边界。追踪只记录证据，不自动判断质量，也不执行约束。评测将追踪、结果和参考标准转为质量判断，不拥有工具执行权。执行约束在模型或工具动作之前和之后强制政策，不把模型自律当执行点。\n\n</section>',
+  );
+  const linked = `${source}\n\n[diagram naming guide](https://example.com/diagram)\n`;
+  const prose = `${source}\n\n“diagram” 在这里是普通正文术语，不是视觉嵌入。\n`;
+  assert.notEqual(wrapped, source, 'visible section fixture must alter the article');
+  assert.doesNotThrow(
+    () => assertQualityGovernanceContract(wrapped),
+    'visible semantic wrapper contributes reader-visible copy',
+  );
+  assert.doesNotThrow(
+    () => assertQualityGovernanceContract(linked),
+    'ordinary href containing diagram is not a visual embed',
+  );
+  assert.doesNotThrow(
+    () => assertQualityGovernanceContract(prose),
+    'ordinary prose containing diagram is not a visual embed',
+  );
 });
 
 function assertQualityGovernanceSourceContract(ledger, health) {
