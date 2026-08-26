@@ -189,12 +189,12 @@ function assertStageBClosure(source = review, backlogSource = backlog) {
   assert.match(backlogSource, /^- \[x\] \*\*STY-08 /mu);
   assert.match(backlogSource, /^- \[x\] \*\*STY-09 /mu);
   assert.match(backlogSource, /^- \[x\] \*\*STY-10 /mu);
-  assert.match(backlogSource, /^- \[ \] \*\*STY-11 /mu);
+  assert.match(backlogSource, /^- \[x\] \*\*STY-11 /mu);
   assert.doesNotMatch(backlogSource, /\]\(\/styles\/sty-11\)/u);
 }
 
 function assertProjection() {
-  assert.deepEqual({completed_topics: status.completed_topics, content_documents: status.content_documents, governed_sources: status.governed_sources}, {completed_topics: 63, content_documents: 107, governed_sources: 560});
+  assert.deepEqual({completed_topics: status.completed_topics, content_documents: status.content_documents, governed_sources: status.governed_sources}, {completed_topics: 64, content_documents: 107, governed_sources: 560});
   assert.equal(publicLedger.sources.length, 560);
 
   const topics = new Map(manifest.topics.map((topic) => [topic.id, topic]));
@@ -203,7 +203,7 @@ function assertProjection() {
   assert.deepEqual([topics.get('STY-08')?.published, topics.get('STY-08')?.status.value, styles.get('STY-08')?.published], [true, 'complete', true]);
   assert.deepEqual([topics.get('STY-09')?.published, topics.get('STY-09')?.status.value, styles.get('STY-09')?.published], [true, 'complete', true]);
   assert.deepEqual([topics.get('STY-10')?.published, topics.get('STY-10')?.status.value, styles.get('STY-10')?.published], [true, 'complete', true]);
-  assert.deepEqual([topics.get('STY-11')?.published, topics.get('STY-11')?.status.value, styles.get('STY-11')?.published], [true, 'pending', true]);
+  assert.deepEqual([topics.get('STY-11')?.published, topics.get('STY-11')?.status.value, styles.get('STY-11')?.published], [true, 'complete', true]);
   assert.deepEqual([topics.get('STY-12')?.published, topics.get('STY-12')?.status.value, styles.get('STY-12')?.published], [false, 'pending', false]);
   assert.deepEqual(SOURCE_IDS.filter((id) => publicLedger.sources.some((source) => source.id === id)), SOURCE_IDS);
 }
@@ -460,7 +460,7 @@ test('preserves the STY-07 closure record while current generation projects STY-
     completed_topics: status.completed_topics,
     content_documents: status.content_documents,
     governed_sources: status.governed_sources,
-  }, {completed_topics: 63, content_documents: 107, governed_sources: 560});
+  }, {completed_topics: 64, content_documents: 107, governed_sources: 560});
   assert.equal(publicLedger.sources.length, 560);
 
   const topics = new Map(manifest.topics.map((topic) => [topic.id, topic]));
@@ -469,7 +469,7 @@ test('preserves the STY-07 closure record while current generation projects STY-
   assert.deepEqual([topics.get('STY-08')?.published, topics.get('STY-08')?.status.value, styles.get('STY-08')?.published], [true, 'complete', true]);
   assert.deepEqual([topics.get('STY-09')?.published, topics.get('STY-09')?.status.value, styles.get('STY-09')?.published], [true, 'complete', true]);
   assert.deepEqual([topics.get('STY-10')?.published, topics.get('STY-10')?.status.value, styles.get('STY-10')?.published], [true, 'complete', true]);
-  assert.deepEqual([topics.get('STY-11')?.published, topics.get('STY-11')?.status.value, styles.get('STY-11')?.published], [true, 'pending', true]);
+  assert.deepEqual([topics.get('STY-11')?.published, topics.get('STY-11')?.status.value, styles.get('STY-11')?.published], [true, 'complete', true]);
   assert.deepEqual([topics.get('STY-12')?.published, topics.get('STY-12')?.status.value, styles.get('STY-12')?.published], [false, 'pending', false]);
   assertStageBClosure();
 });
@@ -478,7 +478,7 @@ test('rejects Stage B history drift, stale next-topic state, weakened review slo
   assertStageBClosure();
   const mutations = [
     ['history drift', 'backlog', backlog, mutateImmediateHistory(backlog)],
-    ['checked STY-11', 'backlog', backlog, backlog.replace('- [ ] **STY-11 ', '- [x] **STY-11 ')],
+    ['unchecked STY-11', 'backlog', backlog, backlog.replace('- [x] **STY-11 ', '- [ ] **STY-11 ')],
     ['actionable STY-11', 'backlog', backlog, `${backlog}\n[Serverless](/styles/sty-11)\n`],
     ['stale current next topic', 'backlog', backlog, backlog.replace('下一项为 STY-11', '下一项为 STY-10')],
     ['wrong projection', 'review', review, review.replace('60 completed topics / 102 content documents / 529 governed sources', '59 completed topics / 102 content documents / 529 governed sources')],

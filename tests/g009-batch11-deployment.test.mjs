@@ -9,7 +9,7 @@ import {extractInternalLinks} from '../scripts/content-relations.mjs';
 
 export const EXPECTED_STAGE_A = Object.freeze({completed: 62, documents: 106, sources: 550});
 export const EXPECTED_STAGE_B = Object.freeze({completed: 63, documents: 106, sources: 550});
-export const EXPECTED_CURRENT_PROJECTION = Object.freeze({completed: 63, documents: 107, sources: 560});
+export const EXPECTED_CURRENT_PROJECTION = Object.freeze({completed: 64, documents: 107, sources: 560});
 export const CURRENT_TOPIC = 'STY-10';
 export const NEXT_TOPIC = 'STY-11';
 export const LATEST_TOPIC = 'STY-12';
@@ -349,7 +349,7 @@ function assertStageBBacklog(source = backlog) {
   const sty11 = source.split(/\r?\n/u).filter((line) => /^- \[[ x]\] \*\*STY-11 /u.test(line));
   assert.deepEqual(sty10, [STY10_CLOSURE_LINE]);
   assert.equal(sty11.length, 1, 'one canonical STY-11 backlog line');
-  assert.match(sty11[0], /^- \[ \] \*\*STY-11 /u);
+  assert.match(sty11[0], /^- \[x\] \*\*STY-11 /u);
   assert.doesNotMatch(source, /\]\(\/styles\/sty-11\)/u);
   assertImmediateHistory(immediateReview, source);
 }
@@ -583,7 +583,7 @@ test('locks the complete immediate STY-09 review and backlog suffix with mutatio
   }
 });
 
-test('preserves exact STY-10 Stage B history while current STY-11 is published pending and STY-12 remains non-actionable', () => {
+test('preserves exact STY-10 Stage B history while current STY-11 is complete and STY-12 remains non-actionable', () => {
   assert.deepEqual({
     completed: status.completed_topics,
     documents: status.content_documents,
@@ -593,7 +593,7 @@ test('preserves exact STY-10 Stage B history while current STY-11 is published p
   const topics = new Map(manifest.topics.map((topic) => [topic.id, topic]));
   const styles = new Map(indexes.style.map((topic) => [topic.id, topic]));
   assert.deepEqual([topics.get(CURRENT_TOPIC)?.published, topics.get(CURRENT_TOPIC)?.status.value, styles.get(CURRENT_TOPIC)?.published], [true, 'complete', true]);
-  assert.deepEqual([topics.get(NEXT_TOPIC)?.published, topics.get(NEXT_TOPIC)?.status.value, styles.get(NEXT_TOPIC)?.published], [true, 'pending', true]);
+  assert.deepEqual([topics.get(NEXT_TOPIC)?.published, topics.get(NEXT_TOPIC)?.status.value, styles.get(NEXT_TOPIC)?.published], [true, 'complete', true]);
   assert.deepEqual([topics.get(LATEST_TOPIC)?.published, topics.get(LATEST_TOPIC)?.status.value, styles.get(LATEST_TOPIC)?.published], [false, 'pending', false]);
   const current = documents.find(({metadata}) => metadata.topic_id === CURRENT_TOPIC);
   assert.ok(current, 'STY-10 is published as a content document');

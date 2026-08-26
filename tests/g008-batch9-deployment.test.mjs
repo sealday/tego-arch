@@ -263,7 +263,7 @@ function assertGeneratedState(manifestValue, statusValue) {
   assert.deepEqual(statusValue, {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
-    completed_topics: 63,
+    completed_topics: 64,
     content_documents: 107,
     governed_sources: 560,
 
