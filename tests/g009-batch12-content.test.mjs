@@ -27,9 +27,16 @@ export const IDENTITY_SEMANTICS = Object.freeze([
 ]);
 export const APPLICABILITY_SIGNALS = Object.freeze(['事件驱动负载', '明显峰谷', '有界任务', '可拆分状态', '能够接受托管服务约束']);
 export const STOP_ADOPTION_CONDITIONS = Object.freeze(['持续稳定高负载', '极严格且无法吸收的尾延迟', '长时间计算', '需要本地专用资源', '跨步骤共享内存或事务', '执行模型与运行时限制不兼容', '团队无法运营队列、幂等、成本和人工恢复', '迁移所需状态和外部回执不能导出', '供应商专有语义已经无法被业务合同解释或验证']);
+export const SEMANTIC_PROSE = Object.freeze([
+  '入口幂等键用于收敛重复受理。订单操作标识用于返回同一受理结果。步骤操作标识用于查询真实结果。事件标识只标识一次投递。',
+  '工作流只接受与当前订单版本相符的回执，再推进下一步。',
+  '结果查询与对账从持久流程接手未知结果，并分别查询支付权威系统与库存权威系统的真实结果。',
+  '自动重试同时受次数、总时长、业务期限与成本预算限制；任何无法证明真实外部效果的步骤最终进入查询、对账或人工终态。',
+  '函数内存与临时文件只能用作可丢失缓存；队列积压表示待处理事实，不表示业务成功。',
+]);
 export const REGION_IDS = Object.freeze(['request-boundary','durable-control','function-execution','authority-boundary']);
 export const NODE_IDS = Object.freeze(['client','sync-ingress','admission-store','durable-workflow','order-state','task-queue','payment-function','inventory-function','notification-function','payment-authority','inventory-authority','notification-provider','capacity-cost-observability','reconciliation','manual-terminal']);
-export const EDGE_IDS = Object.freeze(['submit-order','idempotent-accept','start-workflow','read-order-state','enqueue-payment','deliver-payment','invoke-payment','payment-receipt','enqueue-inventory','deliver-inventory','reserve-inventory','inventory-receipt','enqueue-notification','deliver-notification','send-notification','query-unknown-result','reconcile-manually','close-manual-terminal','limit-ingress','limit-execution','limit-downstream']);
+export const EDGE_IDS = Object.freeze(['submit-order','idempotent-accept','start-workflow','read-order-state','enqueue-payment','deliver-payment','invoke-payment','payment-receipt','enqueue-inventory','deliver-inventory','reserve-inventory','inventory-receipt','enqueue-notification','deliver-notification','send-notification','query-unknown-result','query-payment-authority','query-inventory-authority','reconcile-manually','close-manual-terminal','limit-ingress','limit-execution','limit-downstream']);
 export const LEGEND_ROLES = Object.freeze(['request','work','receipt','recovery','budget']);
 export const REGION_LABELS = Object.freeze({
   'request-boundary': '请求边界：同步只受理', 'durable-control': '持久控制：进度与恢复',
@@ -47,8 +54,8 @@ export const EDGE_LABELS = Object.freeze({
   'enqueue-payment': '生成支付任务', 'deliver-payment': '交付支付任务', 'invoke-payment': '执行业务操作', 'payment-receipt': '支付回执',
   'enqueue-inventory': '生成库存任务', 'deliver-inventory': '交付库存任务', 'reserve-inventory': '原子预留库存', 'inventory-receipt': '库存回执',
   'enqueue-notification': '生成通知任务', 'deliver-notification': '交付通知任务', 'send-notification': '发送通知',
-  'query-unknown-result': '查询未知结果', 'reconcile-manually': '提交人工核对', 'close-manual-terminal': '写入人工终态',
-  'limit-ingress': '入口准入预算', 'limit-execution': '执行并发预算', 'limit-downstream': '下游容量预算',
+  'query-unknown-result': '查询未知结果', 'query-payment-authority': '查询支付权威结果', 'query-inventory-authority': '查询库存权威结果', 'reconcile-manually': '提交人工核对', 'close-manual-terminal': '写入人工终态',
+  'limit-ingress': '入口准入预算', 'limit-execution': '执行并发预算', 'limit-downstream': '支付权威容量预算',
 });
 export const LEGEND_LABELS = Object.freeze({request: '同步受理', work: '有界任务', receipt: '权威回执', recovery: '查询与人工恢复', budget: '容量预算'});
 export const NOTE_COPY = Object.freeze({'volatile-state': '函数内存 ≠ 业务状态', 'finite-capacity': '自动扩缩 ≠ 无限容量', 'unknown-effect': '超时 ≠ 外部效果未发生'});
@@ -69,8 +76,8 @@ export const EDGE_CONTRACTS = Object.freeze({
   'enqueue-payment': ['durable-workflow','task-queue','work'], 'deliver-payment': ['task-queue','payment-function','work'], 'invoke-payment': ['payment-function','payment-authority','work'], 'payment-receipt': ['payment-authority','durable-workflow','receipt'],
   'enqueue-inventory': ['durable-workflow','task-queue','work'], 'deliver-inventory': ['task-queue','inventory-function','work'], 'reserve-inventory': ['inventory-function','inventory-authority','work'], 'inventory-receipt': ['inventory-authority','durable-workflow','receipt'],
   'enqueue-notification': ['durable-workflow','task-queue','work'], 'deliver-notification': ['task-queue','notification-function','work'], 'send-notification': ['notification-function','notification-provider','work'],
-  'query-unknown-result': ['durable-workflow','reconciliation','recovery'], 'reconcile-manually': ['reconciliation','manual-terminal','recovery'], 'close-manual-terminal': ['manual-terminal','order-state','recovery'],
-  'limit-ingress': ['capacity-cost-observability','sync-ingress','budget'], 'limit-execution': ['capacity-cost-observability','task-queue','budget'], 'limit-downstream': ['capacity-cost-observability','payment-authority','budget'],
+  'query-unknown-result': ['durable-workflow','reconciliation','recovery'], 'query-payment-authority': ['reconciliation','payment-authority','recovery'], 'query-inventory-authority': ['reconciliation','inventory-authority','recovery'], 'reconcile-manually': ['reconciliation','manual-terminal','recovery'], 'close-manual-terminal': ['manual-terminal','order-state','recovery'],
+  'limit-ingress': ['capacity-cost-observability','sync-ingress','budget'], 'limit-execution': ['capacity-cost-observability','task-queue','budget'], 'limit-downstream': ['payment-authority','capacity-cost-observability','budget'],
 });
 export const REMOTE_SOURCES = Object.freeze({
   'src-cncf-serverless-whitepaper-v1': {canonical_locator: 'https://github.com/cncf/wg-serverless/blob/79c8a13c26be9066a8723c5896d8aaa0e2ab9e08/whitepapers/serverless-overview/cncf_serverless_whitepaper_v1.0.pdf', transport_locator: 'https://raw.githubusercontent.com/cncf/wg-serverless/79c8a13c26be9066a8723c5896d8aaa0e2ab9e08/whitepapers/serverless-overview/cncf_serverless_whitepaper_v1.0.pdf', version: 'cncf/wg-serverless@79c8a13c26be9066a8723c5896d8aaa0e2ab9e08; checked 2026-08-25', license: 'Apache-2.0', copyright_policy: 'facts-and-short-quotation', roles: ['definition'], usage_boundary: 'Supports the Serverless scope, platform execution, scaling and billing definition only; it does not prove any provider behavior, order outcome, portability, or production guarantee.'},
@@ -177,6 +184,10 @@ function svgBoundsFor(owner, elements) { const shape = elements.find((element) =
 function markerPathBounds(marker, elements, markerId) { const paths = elements.filter((element) => descendant(marker, element) && element.name === 'path'); assert.equal(paths.length, 1, `${markerId} one visible marker path`); const shape = paths[0]; assert.equal(shape.attributes.get('transform') ?? '', '', `${markerId} marker path transform`); const data = shape.attributes.get('d') ?? ''; assert.doesNotMatch(data, /[CQSA]/iu, `${markerId} marker path is linear`); const points = parsePathPoints(data.replace(/[Zz]/gu, '')); return {left: Math.min(...points.map(({x}) => x)), right: Math.max(...points.map(({x}) => x)), top: Math.min(...points.map(({y}) => y)), bottom: Math.max(...points.map(({y}) => y))}; }
 function markerBounds(svgSource, elements, path, points) { const markerId = svgPresentationValue(svgSource, path, 'marker-end')?.match(/^url\(#([^)]+)\)$/u)?.[1]; assert.ok(markerId, `${path.attributes.get('data-edge-id') ?? path.attributes.get('data-legend-edge-id')} marker`); const marker = elements.find(({name, attributes: item}) => name === 'marker' && item.get('id') === markerId); assert.ok(marker, `${markerId} definition`); assert.equal(marker.attributes.get('markerUnits'), 'userSpaceOnUse', `${markerId} markerUnits`); assert.equal(marker.attributes.get('transform') ?? '', '', `${markerId} marker transform`); const viewBox = (marker.attributes.get('viewBox') ?? '').trim().split(/[\s,]+/u).filter(Boolean).map(Number); assert.equal(viewBox.length, 4, `${markerId} viewBox arity`); assert.ok(viewBox.every(Number.isFinite) && viewBox[2] > 0 && viewBox[3] > 0, `${markerId} positive viewBox`); const width = number(marker.attributes.get('markerWidth'), `${markerId} marker width`); const height = number(marker.attributes.get('markerHeight'), `${markerId} marker height`); const refX = number(marker.attributes.get('refX'), `${markerId} marker refX`); const refY = number(marker.attributes.get('refY'), `${markerId} marker refY`); const preserveAspectRatio = marker.attributes.get('preserveAspectRatio') ?? 'xMidYMid meet'; assert.ok(['none', 'xMidYMid meet'].includes(preserveAspectRatio), `${markerId} supported preserveAspectRatio`); assert.ok(refX >= viewBox[0] && refX <= viewBox[0] + viewBox[2] && refY >= viewBox[1] && refY <= viewBox[1] + viewBox[3], `${markerId} marker reference lies in viewBox`); assert.equal(marker.attributes.get('orient'), 'auto', `${markerId} marker orient`); const pathBounds = markerPathBounds(marker, elements, markerId); assert.ok(pathBounds.left >= viewBox[0] && pathBounds.right <= viewBox[0] + viewBox[2] && pathBounds.top >= viewBox[1] && pathBounds.bottom <= viewBox[1] + viewBox[3], `${markerId} marker path fits viewBox`); return markerEnvelope(points.at(-1), points.at(-2), {width, height, refX, refY, viewBox, pathBounds, preserveAspectRatio}); }
 function semanticRole(cell) { const role = styleMap(cell.attributes.get('style')).get('semanticRole'); assert.ok(role, `${cell.attributes.get('id')} semantic role`); return role; }
+function assertExactDuplicateFreeIds(actual, expected, label) {
+  assert.equal(new Set(actual).size, actual.length, `${label} identities are duplicate-free`);
+  assert.deepEqual([...actual].sort(), [...expected].sort(), `${label} exact identity set`);
+}
 function assertServerlessArticle(source) {
   assert.deepEqual(parseFrontMatter(source), EXACT_METADATA, 'exact STY-11 front matter');
   const headings = findMarkdownHeadings(source);
@@ -192,6 +203,7 @@ function assertServerlessArticle(source) {
   includesOrdered(source, ORDER_FLOW, 'nine-step order flow'); includesOrdered(source, CONCURRENCY_LAYERS, 'three concurrency budgets');
   for (const [identity, meaning] of IDENTITY_SEMANTICS) assert.match(source, new RegExp(escapeRegExp(identity) + '[^。；\n]*' + escapeRegExp(meaning), 'u'), identity + ' has distinct visible semantics');
   assert.equal(new Set(IDENTITY_SEMANTICS.map(([, meaning]) => meaning)).size, IDENTITY_SEMANTICS.length, 'identity semantics are distinct');
+  for (const prose of SEMANTIC_PROSE) assert.match(source, new RegExp(escapeRegExp(prose), 'u'), 'exact affirmative semantic contract: ' + prose);
   includesOrdered(source, ['必须保持可导出', '可以合理适配', '可以明确绑定'], 'vendor boundaries');
   includesOrdered(source, ['导出当前订单状态与未完成操作', '冻结新流程版本', '暂停或排空旧消费者', '迁移事件合同、幂等身份和外部回执', '在新执行面恢复未完成步骤', '验证旧事件或迟到结果不会覆盖新状态', '撤销旧触发器、凭证和写权限'], 'exit drill');
   for (const signal of APPLICABILITY_SIGNALS) assert.match(source, new RegExp(escapeRegExp(signal), 'u'), 'Serverless applicability: ' + signal);
@@ -236,6 +248,30 @@ function assertServerlessDiagram(drawioSource, svgSource) {
   const nodes = new Map(drawio.nodes.map((node) => [node.attributes.get('id'), node]));
   const edges = new Map(drawio.edges.map((edge) => [edge.attributes.get('id'), edge]));
   const svg = parseSvg(svgSource); assertFlattenedSvg(svg.elements);
+  const drawioRole = (cell) => styleMap(cell.attributes.get('style')).get('semanticRole');
+  const expectedLegendIds = LEGEND_ROLES.map((role) => 'legend-edge-' + role);
+  assertExactDuplicateFreeIds(drawio.nodes.filter((cell) => drawioRole(cell) === 'region').map((cell) => cell.attributes.get('id')), REGION_IDS, 'Draw.io regions');
+  assertExactDuplicateFreeIds(drawio.nodes.filter((cell) => drawioRole(cell) === 'region-label').map((cell) => cell.attributes.get('id').replace(/^region-label-/u, '')), REGION_IDS, 'Draw.io region labels');
+  assertExactDuplicateFreeIds(svg.elements.filter(({attributes: item}) => item.has('data-region-id')).map(({attributes: item}) => item.get('data-region-id')), REGION_IDS, 'SVG regions');
+  assertExactDuplicateFreeIds(svg.elements.filter(({attributes: item}) => item.has('data-region-label-for')).map(({attributes: item}) => item.get('data-region-label-for')), REGION_IDS, 'SVG region labels');
+  assertExactDuplicateFreeIds(drawio.nodes.filter((cell) => drawioRole(cell) === 'node-shape').map((cell) => cell.attributes.get('id').replace(/^node-/u, '')), NODE_IDS, 'Draw.io nodes');
+  assertExactDuplicateFreeIds(drawio.nodes.filter((cell) => drawioRole(cell) === 'node-title').map((cell) => cell.attributes.get('id')), NODE_IDS.map((id) => `text-${id}-title`), 'Draw.io node titles');
+  assertExactDuplicateFreeIds(drawio.nodes.filter((cell) => drawioRole(cell) === 'node-type').map((cell) => cell.attributes.get('id')), NODE_IDS.map((id) => `text-${id}-type`), 'Draw.io node types');
+  assertExactDuplicateFreeIds(svg.elements.filter(({attributes: item}) => item.has('data-node-id')).map(({attributes: item}) => item.get('data-node-id')), NODE_IDS, 'SVG nodes');
+  assertExactDuplicateFreeIds(svg.elements.filter(({attributes: item}) => item.has('data-header-for')).map(({attributes: item}) => item.get('data-header-for')), NODE_IDS.map((id) => 'node-' + id), 'SVG node titles');
+  assertExactDuplicateFreeIds(svg.elements.filter(({attributes: item}) => item.has('data-type-for')).map(({attributes: item}) => item.get('data-type-for')), NODE_IDS.map((id) => 'node-' + id), 'SVG node types');
+  assertExactDuplicateFreeIds(drawio.edges.filter((cell) => LEGEND_ROLES.includes(drawioRole(cell))).map((cell) => cell.attributes.get('id')), EDGE_IDS, 'Draw.io semantic edges');
+  assertExactDuplicateFreeIds(drawio.nodes.filter((cell) => drawioRole(cell) === 'edge-label').map((cell) => cell.attributes.get('id').replace(/^edge-label-/u, '')), EDGE_IDS, 'Draw.io semantic edge labels');
+  assertExactDuplicateFreeIds(svg.elements.filter(({name, attributes: item}) => name === 'path' && item.has('data-edge-id')).map(({attributes: item}) => item.get('data-edge-id')), EDGE_IDS, 'SVG semantic edges');
+  assertExactDuplicateFreeIds(svg.elements.filter(({name, attributes: item}) => name === 'text' && item.has('data-edge-id')).map(({attributes: item}) => item.get('data-edge-id')), EDGE_IDS, 'SVG semantic edge labels');
+  assertExactDuplicateFreeIds(drawio.edges.filter((cell) => drawioRole(cell) === 'legend').map((cell) => cell.attributes.get('id')), expectedLegendIds, 'Draw.io legend edges');
+  assertExactDuplicateFreeIds(drawio.nodes.filter((cell) => drawioRole(cell) === 'legend-label').map((cell) => cell.attributes.get('id')), LEGEND_ROLES.map((role) => 'legend-label-' + role), 'Draw.io legend labels');
+  assertExactDuplicateFreeIds(svg.elements.filter(({attributes: item}) => item.has('data-legend-edge-id')).map(({attributes: item}) => item.get('data-legend-edge-id')), expectedLegendIds, 'SVG legend edges');
+  assertExactDuplicateFreeIds(svg.elements.filter(({attributes: item}) => item.has('data-legend-label-for')).map(({attributes: item}) => item.get('data-legend-label-for')), expectedLegendIds, 'SVG legend labels');
+  assertExactDuplicateFreeIds(drawio.nodes.filter((cell) => drawioRole(cell) === 'note-card').map((cell) => cell.attributes.get('id').replace(/^note-/u, '')), Object.keys(NOTE_COPY), 'Draw.io notes');
+  assertExactDuplicateFreeIds(drawio.nodes.filter((cell) => drawioRole(cell) === 'note-text').map((cell) => cell.attributes.get('id').replace(/^note-text-/u, '')), Object.keys(NOTE_COPY), 'Draw.io note labels');
+  assertExactDuplicateFreeIds(svg.elements.filter(({attributes: item}) => item.has('data-note-id')).map(({attributes: item}) => item.get('data-note-id')), Object.keys(NOTE_COPY), 'SVG notes');
+  assertExactDuplicateFreeIds(svg.elements.filter(({attributes: item}) => item.has('data-note-text-for')).map(({attributes: item}) => item.get('data-note-text-for')), Object.keys(NOTE_COPY), 'SVG note labels');
   const root = svg.elements.find(({name}) => name === 'svg');
   assert.deepEqual((root?.attributes.get('viewBox') ?? '').split(/\s+/u).map(Number), [0, 0, 2400, 3600], '2400x3600 source canvas renders at 800x1200 CSS pixels');
   assert.equal(root?.attributes.has('width'), false, 'responsive SVG root has no fixed width');
@@ -302,6 +338,7 @@ function assertServerlessDiagram(drawioSource, svgSource) {
 
 function assertDiagramMutationRejected(drawioSource, svgSource) {
   const edgeMutation = (id, mutate, label) => assert.throws(() => assertServerlessDiagram(mutateDrawioCell(drawioSource, id, mutate, label), svgSource), assert.AssertionError, label + ' rejected');
+  const appendDrawioCell = (cell, label) => replaceOnce(drawioSource, '</root>', cell + '</root>', label);
   edgeMutation('submit-order', (raw) => raw.replace(/exitX=[^;]+;/u, ''), 'missing port');
   edgeMutation('submit-order', (raw) => raw.replace('exitPerimeter=1', 'exitPerimeter=0'), 'changed port');
   edgeMutation('submit-order', (raw) => raw.replace(/<Array as="points">[\s\S]*?<\/Array>/u, '<Array as="points"></Array>'), 'missing waypoint');
@@ -311,6 +348,18 @@ function assertDiagramMutationRejected(drawioSource, svgSource) {
   edgeMutation('query-unknown-result', (raw) => raw.replace(/target="[^"]+"/u, 'target="node-payment-function"'), 'timeout-direct-retry edge');
   edgeMutation('limit-ingress', (raw) => { const source = /source="([^"]+)"/u.exec(raw)?.[1]; const target = /target="([^"]+)"/u.exec(raw)?.[1]; return raw.replace(`source="${source}"`, `source="${target}"`).replace(`target="${target}"`, `target="${source}"`); }, 'budget arrow reversed into observability');
   edgeMutation('payment-receipt', (raw) => raw.replace(/source="[^"]+"/u, 'source="node-payment-function"'), 'detached authoritative receipt');
+
+  const extraRegion = appendDrawioCell('<mxCell id="rogue-region" vertex="1" style="semanticRole=region"><mxGeometry x="0" y="0" width="1" height="1" as="geometry"><Array as="points"></Array></mxGeometry></mxCell>', 'additional Draw.io region identity');
+  assert.throws(() => assertServerlessDiagram(extraRegion, svgSource), /Draw\.io regions exact identity set/u, 'additional Draw.io region identity rejected');
+  const clientCell = parseDrawio(drawioSource).cells.find(({attributes: item}) => item.get('id') === 'node-client'); assert.ok(clientCell, 'duplicate Draw.io node fixture');
+  const duplicateNode = appendDrawioCell(clientCell.raw, 'duplicate Draw.io node identity');
+  assert.throws(() => assertServerlessDiagram(duplicateNode, svgSource), /Draw\.io nodes identities are duplicate-free/u, 'duplicate Draw.io node identity rejected');
+  const unsafeExtraEdge = appendDrawioCell('<mxCell id="rogue-function-order-state" edge="1" source="node-payment-function" target="node-order-state" style="semanticRole=work"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1000" y="1000"></mxPoint></Array></mxGeometry></mxCell>', 'additional function-to-order-state edge');
+  assert.throws(() => assertServerlessDiagram(unsafeExtraEdge, svgSource), /Draw\.io semantic edges exact identity set/u, 'additional function-to-order-state edge rejected');
+  const extraLegend = replaceOnce(svgSource, '</svg>', '<path data-legend-edge-id="legend-edge-rogue" data-edge-role="work" d="M 0 0 L 1 1"/></svg>', 'additional SVG legend identity');
+  assert.throws(() => assertServerlessDiagram(drawioSource, extraLegend), /SVG legend edges exact identity set/u, 'additional SVG legend identity rejected');
+  const duplicateNote = replaceOnce(svgSource, '</svg>', '<g data-note-id="volatile-state"></g></svg>', 'duplicate SVG note identity');
+  assert.throws(() => assertServerlessDiagram(drawioSource, duplicateNote), /SVG notes identities are duplicate-free/u, 'duplicate SVG note identity rejected');
 
   const parsed = parseDrawio(drawioSource); const manual = parsed.cells.find(({attributes: item}) => item.get('id') === 'node-manual-terminal'); assert.ok(manual, 'manual terminal mutation applies');
   assert.throws(() => assertServerlessDiagram(replaceOnce(drawioSource, manual.raw, '', 'missing manual terminal'), svgSource), assert.AssertionError, 'missing manual terminal rejected');
@@ -386,7 +435,7 @@ function fixtureArticle() {
   const ownership = OWNERSHIP_ROWS.map((row) => '| ' + row.join(' | ') + ' |').join('\n');
   const failures = FAILURE_ROWS.map((row) => '| ' + row.join(' | ') + ' |').join('\n');
   const cost = COLD_COST_ROWS.map((row) => '| ' + row.join(' | ') + ' |').join('\n');
-  return '---\n' + front + '\n---\n' + sections + '\n' + wrappers + '\n| 构件 | 正向责任 | 持久事实 | 明确不拥有 |\n| --- | --- | --- | --- |\n' + ownership + '\n' + ORDER_FLOW.join('\n') + '\n' + CONCURRENCY_LAYERS.join('\n') + '\n' + IDENTITY_SEMANTICS.map(([identity, meaning]) => identity + meaning).join('。') + '。\n| 故障 | 检测 | 自动响应 | 停止条件 | 最终责任人 |\n| --- | --- | --- | --- | --- |\n' + failures + '\n\n| 观察 | 先验证 | 首选动作 | 升级条件 |\n| --- | --- | --- | --- |\n' + cost + '\n必须保持可导出\n可以合理适配\n可以明确绑定\n导出当前订单状态与未完成操作\n冻结新流程版本\n暂停或排空旧消费者\n迁移事件合同、幂等身份和外部回执\n在新执行面恢复未完成步骤\n验证旧事件或迟到结果不会覆盖新状态\n撤销旧触发器、凭证和写权限\n' + APPLICABILITY_SIGNALS.join('、') + '。\n' + STOP_ADOPTION_CONDITIONS.join('；') + '。';
+  return '---\n' + front + '\n---\n' + sections + '\n' + wrappers + '\n| 构件 | 正向责任 | 持久事实 | 明确不拥有 |\n| --- | --- | --- | --- |\n' + ownership + '\n' + ORDER_FLOW.join('\n') + '\n' + CONCURRENCY_LAYERS.join('\n') + '\n' + IDENTITY_SEMANTICS.map(([identity, meaning]) => identity + meaning).join('。') + '。\n' + SEMANTIC_PROSE.join('\n') + '\n| 故障 | 检测 | 自动响应 | 停止条件 | 最终责任人 |\n| --- | --- | --- | --- | --- |\n' + failures + '\n\n| 观察 | 先验证 | 首选动作 | 升级条件 |\n| --- | --- | --- | --- |\n' + cost + '\n必须保持可导出\n可以合理适配\n可以明确绑定\n导出当前订单状态与未完成操作\n冻结新流程版本\n暂停或排空旧消费者\n迁移事件合同、幂等身份和外部回执\n在新执行面恢复未完成步骤\n验证旧事件或迟到结果不会覆盖新状态\n撤销旧触发器、凭证和写权限\n' + APPLICABILITY_SIGNALS.join('、') + '。\n' + STOP_ADOPTION_CONDITIONS.join('；') + '。';
 }
 
 test('STY-11 helper and mutation fixtures lock the approved content contract', () => {
@@ -405,7 +454,14 @@ test('STY-11 helper and mutation fixtures lock the approved content contract', (
     assert.throws(() => assertServerlessArticle(replaceOnce(fixture, exact, '| ' + deleted.join(' | ') + ' |', row[0] + ' deletion')), assert.AssertionError, row[0] + ' cell deletion rejected');
     assert.throws(() => assertServerlessArticle(replaceOnce(fixture, exact, '| ' + changed.join(' | ') + ' |', row[0] + ' change')), assert.AssertionError, row[0] + ' cell changed-value rejected');
   }
-  for (const unsafe of ['函数内存作为业务状态', '同步等待整条履约链', '队列就是成功', '事件标识就是业务幂等', '盲目重放', '函数扩容决定库存', '缺少条件状态转移', '下游预算高于权威容量', '无限重试不受限制', '关键步骤失败开放', '通知回滚已确认订单', '毒消息重试', '默认预热', '只比较价格', '人工负责人待定', 'CloudEvents意味着投递', '工作流 DSL 意味着运行时等价', '强制可移植适配', '只迁移函数']) assert.throws(() => assertServerlessArticle(fixture + '\n' + unsafe), assert.AssertionError, unsafe + ' rejected');
+  const semanticMutations = [
+    ['入口幂等键用于收敛重复受理。', '入口幂等键只用于标记一次受理。', 'idempotency meaning'],
+    ['工作流只接受与当前订单版本相符的回执，再推进下一步。', '工作流接受任意订单版本的回执，再推进下一步。', 'conditional transition and version meaning'],
+    ['结果查询与对账从持久流程接手未知结果，并分别查询支付权威系统与库存权威系统的真实结果。', '结果查询与对账从持久流程接手未知结果，并分别再次调用支付步骤函数与库存步骤函数。', 'authoritative query meaning'],
+    ['自动重试同时受次数、总时长、业务期限与成本预算限制；任何无法证明真实外部效果的步骤最终进入查询、对账或人工终态。', '自动重试只受总时长限制；无法证明外部效果时继续自动推进。', 'retry budgets and stop meaning'],
+    ['函数内存与临时文件只能用作可丢失缓存；队列积压表示待处理事实，不表示业务成功。', '函数内存与临时文件保存订单进度；队列积压表示业务成功。', 'function-memory ownership meaning'],
+  ];
+  for (const [affirmative, changed, label] of semanticMutations) assert.throws(() => assertServerlessArticle(replaceOnce(fixture, affirmative, changed, label)), assert.AssertionError, label + ' transformed meaning rejected');
 });
 
 test('STY-11 source fixture locks the eleven identities and citation roles', () => {
