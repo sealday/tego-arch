@@ -132,7 +132,7 @@ export const closingPrincipleHeadings = [
   '## 来源',
 ];
 
-export const architectureCaseTopicIds = new Set(['STY-08', 'STY-09', 'STY-10', 'STY-11']);
+export const architectureCaseTopicIds = new Set(['STY-08', 'STY-09', 'STY-10', 'STY-11', 'STY-12']);
 export const architectureCaseHeadings = closingPrincipleHeadings;
 
 export const sty10ArchitectureCaseHeadings = [
@@ -141,6 +141,19 @@ export const sty10ArchitectureCaseHeadings = [
   '## 事实边界',
   '## 架构图',
   '## 扩展合同与运行流',
+  '## 关键机制导读',
+  '## 架构决策与权衡',
+  '## 生产化分析',
+  '## 可迁移经验',
+  '## 来源',
+];
+
+export const sty12ArchitectureCaseHeadings = [
+  '## 学习问题',
+  '## 一页摘要',
+  '## 事实边界',
+  '## 架构图',
+  '## 运行时组合与发布流',
   '## 关键机制导读',
   '## 架构决策与权衡',
   '## 生产化分析',
@@ -245,6 +258,9 @@ export function knowledgeHeadingContract(type, topicId) {
   }
   if (type === 'style' && topicId === 'STY-10') {
     return sty10ArchitectureCaseHeadings;
+  }
+  if (type === 'style' && topicId === 'STY-12') {
+    return sty12ArchitectureCaseHeadings;
   }
   if (type === 'style' && architectureCaseTopicIds.has(topicId)) {
     return architectureCaseHeadings;
