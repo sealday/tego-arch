@@ -11,6 +11,7 @@ import {knowledgeTypeContracts} from '../scripts/content-schema.mjs';
 const articlePath = 'content/concepts/agt-c-01-agent-system-boundary.mdx';
 const harnessArticlePath = 'content/concepts/agt-c-02-agent-harness.mdx';
 const loopArticlePath = 'content/concepts/agt-c-03-agent-loop.mdx';
+const reactApprovedLocator = 'https://arxiv.org/abs/2210.03629';
 const drawioPath = 'diagrams/agt-c-01-agent-system-boundary.drawio';
 const svgPath = 'static/img/diagrams/agt-c-01-agent-system-boundary.svg';
 const requiredDiagramLabels = [
@@ -429,6 +430,39 @@ test('AGT-C-02 governs exact Anthropic engineering sources and matching health t
   }
 });
 
+function parseMermaidFlowchart(mermaid) {
+  const labelsById = new Map();
+  for (const [, id, label] of mermaid.matchAll(
+    /\b([A-Z][A-Z_]*)\["([^"\n]+)"\]/gu,
+  )) {
+    const labels = labelsById.get(id) ?? new Set();
+    labels.add(label);
+    labelsById.set(id, labels);
+  }
+
+  const edges = [];
+  for (const line of mermaid.split(/\r?\n/u)) {
+    if (!line.includes('-->')) continue;
+    const segments = line.trim().split(/\s*-->(?:\|[^|\n]+\|)?\s*/u);
+    assert.ok(segments.length >= 2, `unparsed Mermaid edge line: ${line}`);
+    const nodeIds = segments.map((segment) => {
+      const match = segment.match(/^([A-Z][A-Z_]*)(?:\["[^"\n]+"\])?$/u);
+      assert.ok(match, `unparsed Mermaid node segment: ${segment}`);
+      return match[1];
+    });
+    for (let index = 1; index < nodeIds.length; index += 1) {
+      edges.push(`${nodeIds[index - 1]}->${nodeIds[index]}`);
+    }
+  }
+
+  return {
+    edges,
+    labelsById: new Map(
+      [...labelsById].map(([id, labels]) => [id, [...labels].sort()]),
+    ),
+  };
+}
+
 function assertAgentLoopContract(source) {
   const metadata = parseFrontMatter(source);
   assert.equal(metadata.topic_id, 'AGT-C-03');
@@ -443,29 +477,40 @@ function assertAgentLoopContract(source) {
 
   const mermaid = source.match(/```mermaid\n([\s\S]*?)```/u)?.[1];
   assert.ok(mermaid, 'Mermaid Agent Loop');
-  for (const [, phase, chinese] of loopPhases) {
-    assert.match(
-      mermaid,
-      new RegExp(`\\["${chinese}"\\]`, 'u'),
-      `loop phase: ${phase}`,
-    );
+  const graph = parseMermaidFlowchart(mermaid);
+  for (const [id, phase, chinese] of loopPhases) {
+    assert.deepEqual(graph.labelsById.get(id), [chinese], `loop phase: ${phase}`);
     assert.ok(source.includes(`\`${phase}\``), `canonical phase vocabulary: ${phase}`);
   }
-  for (const [, outcome, chinese] of loopTerminalOutcomes) {
-    assert.match(mermaid, new RegExp(`\\["${chinese}"\\]`, 'u'), `terminal: ${outcome}`);
+  for (const [id, outcome, chinese] of loopTerminalOutcomes) {
+    assert.deepEqual(graph.labelsById.get(id), [chinese], `terminal: ${outcome}`);
     assert.ok(source.includes(`\`${outcome}\``), `documented terminal: ${outcome}`);
   }
 
-  const actualEdges = [...mermaid.matchAll(
-    /^\s*([A-Z][A-Z_]*)\s*(?:\[[^\n]*?\])?\s*-->(?:\|[^|]+\|)?\s*([A-Z][A-Z_]*)(?:\[[^\n]*?\])?\s*$/gmu,
-  )].map(([, from, to]) => `${from}->${to}`);
-  assert.deepEqual(actualEdges.sort(), [...loopEdges].sort());
+  assert.deepEqual(graph.edges.sort(), [...loopEdges].sort());
 
-  assert.match(source, /观察是结构化环境反馈/u);
+  assert.match(source, /观察是结构化环境反馈[^\n]*不自动等于真相/u);
   assert.match(source, /模型选择[“"]下一步做什么[”"]/u);
   assert.match(source, /代码强制执行[“"]还能不能继续[”"]/u);
   assert.match(source, /拒绝[“"]直到足够好[”"]的无限循环/u);
   assert.match(source, /ReAct[^\n]*提示与交互模式[^\n]*不是生产运行时保证/u);
+  assert.match(
+    source,
+    /Building Effective Agents[^\n]*支持工作流主要沿代码预定路径运行、智能体让模型动态控制过程和工具使用的区分；不建立本文的五阶段拓扑/u,
+  );
+}
+
+function assertReactLocatorPins(react, reactHealth) {
+  const locatorPins = [
+    ['canonical locator', react.canonical_locator],
+    ['transport locator', react.transport_locator],
+    ['expected-final locator', react.expected_final_transport_locator],
+    ['cache transport', reactHealth.transport_locator],
+    ['observed final transport', reactHealth.last_attempt.final_transport_locator],
+  ];
+  for (const [label, actual] of locatorPins) {
+    assert.equal(actual, reactApprovedLocator, `ReAct ${label}`);
+  }
 }
 
 test('AGT-C-03 publishes the canonical five-phase Agent Loop and terminal contract', () => {
@@ -482,6 +527,30 @@ test('AGT-C-03 rejects phase, terminal, and evaluation-bypass topology mutations
     source.replace('EVALUATE -->|继续| PLAN', 'ACT -->|继续| PLAN'),
     source.replace('EVALUATE -->|停止| TERMINATE', 'OBSERVE -->|停止| TERMINATE'),
     source.replace('ACT --> OBSERVE', 'ACT --> OBSERVE\n    ACT --> TERMINATE'),
+    source.replace(
+      'ACT --> OBSERVE["观察"]',
+      'ACT --> OBSERVE["观察"]\n    ACT --> TERMINATE --> FAILURE',
+    ),
+    source.replace(
+      'PLAN["计划"] --> ACT["行动"]',
+      'PLAN["思考"] --> ACT["行动"]\n    DECOY["计划"]',
+    ),
+  ];
+  for (const mutant of mutations) {
+    assert.notEqual(mutant, source, 'mutation fixture must alter the article');
+    assert.throws(() => assertAgentLoopContract(mutant));
+  }
+});
+
+test('AGT-C-03 rejects observation-truth and Anthropic evidence-boundary mutations', () => {
+  const source = readFileSync(loopArticlePath, 'utf8');
+  const mutations = [
+    source.replace('也不自动等于真相', '因此自动等于真相'),
+    source.replace(
+      '支持工作流主要沿代码预定路径运行、智能体让模型动态控制过程和工具使用的区分',
+      '支持固定五阶段生产运行时',
+    ),
+    source.replace('不建立本文的五阶段拓扑', '建立本文的五阶段拓扑'),
   ];
   for (const mutant of mutations) {
     assert.notEqual(mutant, source, 'mutation fixture must alter the article');
@@ -504,7 +573,6 @@ test('AGT-C-03 governs ReAct and reuses the exact Anthropic workflow/agent sourc
     ({id}) => id === 'src-react-reasoning-acting-language-models',
   );
   assert.ok(react, 'src-react-reasoning-acting-language-models');
-  assert.equal(react.canonical_locator, 'https://arxiv.org/abs/2210.03629');
   assert.equal(react.title, 'ReAct: Synergizing Reasoning and Acting in Language Models');
   assert.equal(react.author_or_org, 'Shunyu Yao et al.');
   assert.equal(react.source_kind, 'paper');
@@ -517,13 +585,9 @@ test('AGT-C-03 governs ReAct and reuses the exact Anthropic workflow/agent sourc
     ({source_ids: sourceIds}) => sourceIds.includes(react.id),
   );
   assert.ok(reactHealth, `${react.id} health observation`);
-  assert.equal(reactHealth.transport_locator, react.transport_locator);
+  assertReactLocatorPins(react, reactHealth);
   assert.deepEqual(reactHealth.source_ids, [react.id]);
   assert.equal(reactHealth.last_attempt.outcome, 'healthy');
-  assert.equal(
-    reactHealth.last_attempt.final_transport_locator,
-    react.expected_final_transport_locator,
-  );
 
   const anthropic = ledger.sources.filter(
     ({id}) => id === 'src-anthropic-building-effective-agents',
@@ -559,4 +623,26 @@ test('AGT-C-03 governs ReAct and reuses the exact Anthropic workflow/agent sourc
     expected_final_approved_at: '2026-08-26',
     expected_final_approval_note: 'The exact canonical article returned HTTP 200 and exposed the expected title and workflow/agent distinction in a real browser on 2026-08-26; no non-equivalent companion page is used as health evidence.',
   });
+});
+
+test('AGT-C-03 rejects coordinated drift from the approved ReAct transport', () => {
+  const ledger = JSON.parse(readFileSync('data/source-ledger.json', 'utf8'));
+  const health = JSON.parse(readFileSync('data/source-link-health.json', 'utf8'));
+  const react = ledger.sources.find(
+    ({id}) => id === 'src-react-reasoning-acting-language-models',
+  );
+  const reactHealth = health.results.find(
+    ({source_ids: sourceIds}) => sourceIds.includes(react.id),
+  );
+  const driftedReact = structuredClone(react);
+  const driftedHealth = structuredClone(reactHealth);
+  const driftedLocator = 'https://arxiv.org/abs/2210.03629v3';
+  driftedReact.transport_locator = driftedLocator;
+  driftedReact.expected_final_transport_locator = driftedLocator;
+  driftedHealth.transport_locator = driftedLocator;
+  driftedHealth.last_attempt.final_transport_locator = driftedLocator;
+
+  assert.notDeepEqual(driftedReact, react);
+  assert.notDeepEqual(driftedHealth, reactHealth);
+  assert.throws(() => assertReactLocatorPins(driftedReact, driftedHealth));
 });
