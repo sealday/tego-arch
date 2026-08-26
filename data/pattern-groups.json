@@ -116,9 +116,18 @@
     {
       "id": "agent-control",
       "label": "Agent 控制与协作模式",
-      "description": "Router、Supervisor、Handoff、A2A 与 MCP 等现有控制概览。",
+      "description": "从确定性工作流到检索循环、多 Agent 控制与可恢复执行。",
       "order": 60,
-      "topic_ids": []
+      "topic_ids": [
+        "AGT-P-01",
+        "AGT-P-02",
+        "AGT-P-03",
+        "AGT-P-04",
+        "AGT-P-05",
+        "AGT-P-06",
+        "AGT-P-07",
+        "AGT-P-08"
+      ]
     }
   ]
 }
