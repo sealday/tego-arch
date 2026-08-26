@@ -80,7 +80,7 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 
 图中 Agent Harness 持有运行时和约束责任：它接收 User / Event，执行 Policy & Routing、预算与终止、人工批准，装配上下文，暴露经权限限定的工具，并为恢复与评测留下挂钩。Agent Loop 是被包住的任务推进机制：Plan → Act → Observe → Evaluate → Terminate。Loop 可以调用 Knowledge / Retrieval、Tools / Sandbox 或 Human / Other Agents，但不能越过 Harness 获得更多权限、预算或时间。
 
-State、Memory、Checkpoint 与 Trace / Evaluation / Guardrail 是跨切底座，不是模型隐藏“记住”的一团数据。State 保存当前任务事实，Memory 保存允许跨任务复用的偏好或摘要，Checkpoint 保存可恢复执行位置，Trace 记录发生了什么，Evaluation 判断质量，Guardrail 执行约束。
+State、Memory、Checkpoint 与 Trace / Evaluation / Guardrail 是跨切底座，不是模型隐藏“记住”的一团数据。模型输出不能在未经外部验证时成为权威业务状态。State 保存当前任务事实，Memory 保存允许跨任务复用的偏好或摘要，Checkpoint 保存可恢复执行位置，Trace 记录发生了什么，Evaluation 判断质量，Guardrail 执行约束。
 
 | 架构平面 | 主要所有者 | 必须显式化的合同 |
 | --- | --- | --- |

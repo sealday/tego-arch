@@ -21056,7 +21056,7 @@
     {
       "id": "src-anthropic-building-effective-agents",
       "canonical_locator": "https://www.anthropic.com/engineering/building-effective-agents",
-      "transport_locator": "https://github.com/anthropics/claude-cookbooks/blob/main/patterns/agents/README.md",
+      "transport_locator": "https://www.anthropic.com/engineering/building-effective-agents",
       "query_insensitive": false,
       "locator_aliases": [],
       "tombstone": null,
@@ -21065,7 +21065,7 @@
       "published_at": "2024-12-19",
       "registered_at": "2026-08-26",
       "checked_at": "2026-08-26",
-      "version": "Official engineering article published 2024-12-19; canonical page and official companion repository checked 2026-08-26",
+      "version": "Official engineering article published 2024-12-19 and checked directly in a browser on 2026-08-26",
       "source_kind": "official-docs",
       "tier": "first-party",
       "allowed_evidence_roles": [
@@ -21082,9 +21082,9 @@
       "copyright_policy": "facts-and-short-quotation",
       "usage_boundary": "Supports Anthropic's stated workflow/agent distinction and augmented-LLM building block; it does not establish the article's Harness/Loop ownership model or prove production outcomes.",
       "link_policy": "floating",
-      "expected_final_transport_locator": "https://github.com/anthropics/claude-cookbooks/blob/main/patterns/agents/README.md",
+      "expected_final_transport_locator": "https://www.anthropic.com/engineering/building-effective-agents",
       "expected_final_approved_at": "2026-08-26",
-      "expected_final_approval_note": "The canonical article was reviewed through the web reader, while the official Anthropic cookbook companion returned HTTP 206 as the stable transport on 2026-08-26; the companion transport identifies the named article and its authors but is not used to broaden the article's evidence scope."
+      "expected_final_approval_note": "The exact canonical article returned HTTP 200 and exposed the expected title and workflow/agent distinction in a real browser on 2026-08-26; no non-equivalent companion page is used as health evidence."
     },
     {
       "id": "src-openai-practical-guide-building-agents",
