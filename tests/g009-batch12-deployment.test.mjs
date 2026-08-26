@@ -139,9 +139,10 @@ const PENDING_STAGE_A_CHECKPOINT = Object.freeze([
   '- Deployment status: `NOT_RUN`.',
 ]);
 const STAGE_B_CLOSURE_BASELINE_LABEL = '- **G009 Batch 12 Stage B 当前关闭候选：** ';
+const STAGE_B_REVIEWED_HEAD = 'fabd8adc8338ecaa7dddf0baff98ad7bd68996f7';
 const STY11_CLOSURE_LINE = `- [x] **STY-11 P1｜Serverless Architecture**：执行模型、状态、并发、冷启动、成本和供应商边界。Stage A 关闭证据：2026-08-26 review，commit [\`${READY_HEAD}\`](https://github.com/sealday/tego-arch/commit/${READY_HEAD})，Pages run [\`${PRODUCTION_PAGES.runId}\`](https://github.com/sealday/tego-arch/actions/runs/${PRODUCTION_PAGES.runId})，build job \`${PRODUCTION_PAGES.buildJobId}\`、deploy job \`${PRODUCTION_PAGES.deployJobId}\`，production HTML routes \`8/8\`，live route \`/styles/sty-11\` 与 \`/img/diagrams/sty-11-serverless-order-fulfillment.svg\` 均为 HTTP 200，live SVG SHA-256 \`${PRODUCTION_SVG.sha256}\` 与 reviewed asset exact match，Stage A production Browser raw \`${PRODUCTION_RAW_BYTES.toLocaleString('en-US')}\` bytes / SHA-256 \`${PRODUCTION_RAW_SHA256}\`，functional verdict PASS；screenshot evidence BLOCKED / NOT_ACCEPTED。`;
 const CURRENT_BASELINE_PREFIX = `2026-08-26 G009 Batch 12 已完成 STY-11，Stage A 发布基线为 [\`${READY_HEAD}\`](https://github.com/sealday/tego-arch/commit/${READY_HEAD})，Pages run [\`${PRODUCTION_PAGES.runId}\`](https://github.com/sealday/tego-arch/actions/runs/${PRODUCTION_PAGES.runId})，exact \`headSha=${READY_HEAD}\`、\`event=push\`、\`status=completed\`、\`conclusion=success\`，build job \`${PRODUCTION_PAGES.buildJobId}\`、deploy job \`${PRODUCTION_PAGES.deployJobId}\`；2026-08-26 production HTTP probes \`8/8\`，live route \`/styles/sty-11\` 与 \`/img/diagrams/sty-11-serverless-order-fulfillment.svg\` 均为 HTTP \`200\`，live SVG SHA-256 \`${PRODUCTION_SVG.sha256}\` 与 reviewed asset exact match。Production Browser states \`4/4\`、wrapper interactions \`16/16\`、relation destination/H1/return \`12/12\`、exact source destinations \`40/40\`，每个状态 STY-12 actionable count \`0\` 且 diagnostics 完整为零；raw \`${PRODUCTION_RAW}\` 为 \`${PRODUCTION_RAW_BYTES.toLocaleString('en-US')}\` bytes / SHA-256 \`${PRODUCTION_RAW_SHA256}\`，Stage A production functional verdict \`PASS\`，screenshot evidence \`BLOCKED / NOT_ACCEPTED\`。Stage B local closure projection 为 64 个已完成主题、107 篇内容文档与 560 个受治理来源，持久故事进度仍为 \`8 / 20\`，当前 G009，下一项为 STY-12，STY-11 为 published/complete，STY-12 为 unpublished/pending/nonactionable；Stage B 三个独立 review slots 与 final readiness 均为 \`PENDING\`，deployment status 为 \`PENDING / NOT_RUN\`。`;
-const PENDING_STAGE_B_REVIEW_LINES = Object.freeze([
+const READY_STAGE_B_REVIEW_LINES = Object.freeze([
   '- Closure date: `2026-08-26`.',
   `- Exact Stage A implementation head: \`${READY_HEAD}\`.`,
   `- Exact Pages run: \`${PRODUCTION_PAGES.runId}\`; workflow: \`completed / success\`.`,
@@ -157,11 +158,11 @@ const PENDING_STAGE_B_REVIEW_LINES = Object.freeze([
   '- STY-11 target: `published / complete`.',
   '- STY-12 target: `unpublished / pending / non-actionable`; actionable route count: `0`; sole next topic.',
   `- Immediate immutable history: complete Batch 11 review SHA-256 \`${IMMEDIATE_REVIEW_HASH}\`; backlog suffix \`${IMMEDIATE_BACKLOG_SUFFIX_HASH}\`.`,
-  '- Exact Stage B reviewed head: `PENDING`.',
-  '- Independent Stage B code/spec/security review: `PENDING`; findings: `PENDING`.',
-  '- Independent Stage B content/evidence/rights review: `PENDING`; rights: `PENDING`; findings: `PENDING`.',
-  '- Independent Stage B architecture/invariant review: `PENDING`; blockers: `PENDING`.',
-  '- Final Stage B review judgment: `PENDING`.',
+  `- Exact Stage B reviewed head: \`${STAGE_B_REVIEWED_HEAD}\`.`,
+  '- Independent Stage B code/spec/security review: `READY / APPROVE`; findings: `0`.',
+  '- Independent Stage B content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`.',
+  '- Independent Stage B architecture/invariant review: `ARCHITECTURE READY`; findings: `0`; blockers: `0`.',
+  '- Final Stage B readiness: `READY`.',
   '- Stage B scope boundary: `STAGE_B`.',
   '- Stage B deployment status: `PENDING / NOT_RUN`.',
   '- Stage B screenshot status remains `BLOCKED / NOT_ACCEPTED`.',
@@ -237,12 +238,12 @@ function assertFinalReview(source = review) {
   assert.doesNotMatch(source, /Screenshot evidence: `PASS`|Stage B deployment status: `SUCCESS`/u);
 }
 
-function assertPendingStageBReview(source = review) {
+function assertReadyStageBReview(source = review) {
   assertProductionReview(source);
-  assert.equal(markdownSection(source, 'Stage B closure candidate'), PENDING_STAGE_B_REVIEW_LINES.join('\n'), 'exact pending Stage B closure section');
+  assert.equal(markdownSection(source, 'Stage B closure candidate'), READY_STAGE_B_REVIEW_LINES.join('\n'), 'exact READY Stage B closure section');
   assert.equal(source.split('## Stage B closure candidate').length - 1, 1, 'one Stage B closure section');
   assert.doesNotMatch(source, /^## Stage B production deployment$/mu);
-  assert.doesNotMatch(source, /Independent Stage B .*`(?:READY|APPROVE|CONTENT READY|CLEAR)|Final Stage B (?:review judgment|readiness): `READY`|Stage B deployment status: `SUCCESS`/u);
+  assert.doesNotMatch(source, /Independent Stage B .*`(?:PENDING|NOT READY|CHANGES|BLOCKED)|Final Stage B (?:review judgment|readiness): `PENDING`|Stage B deployment status: `SUCCESS`/u);
 }
 
 function assertProductionReview(source = review) {
@@ -523,8 +524,8 @@ test('locks exact STY-11 article, ledger, Draw.io and SVG identities', () => {
   }
 });
 
-test('binds exact Stage A evidence and pending Stage B closure while Stage B production remains absent', () => {
-  assertPendingStageBReview();
+test('binds exact Stage A evidence and READY Stage B closure while Stage B production remains absent', () => {
+  assertReadyStageBReview();
   assert.equal(raw.length, LOCAL_RAW_BYTES, `${LOCAL_RAW} exact bytes`);
   assert.equal(sha256(raw), LOCAL_RAW_SHA256, `${LOCAL_RAW} exact SHA-256`);
   assertLocalEvidence(raw && JSON.parse(raw));
@@ -567,8 +568,8 @@ test('rejects wrong review heads, weakened final verdicts, scope, deployment and
   }
 });
 
-test('rejects changed Stage B evidence, stale next topic, premature verdicts, deployment and visual claims', () => {
-  assertPendingStageBReview();
+test('rejects changed Stage B evidence, wrong or weakened verdicts, stale pending, deployment and visual claims', () => {
+  assertReadyStageBReview();
   for (const [before, after] of [
     [`Exact Stage A implementation head: \`${READY_HEAD}\`.`, `Exact Stage A implementation head: \`${'0'.repeat(40)}\`.`],
     [`Exact Pages run: \`${PRODUCTION_PAGES.runId}\`;`, 'Exact Pages run: `0`;'],
@@ -580,20 +581,27 @@ test('rejects changed Stage B evidence, stale next topic, premature verdicts, de
     ['Projection: `64 completed topics / 107 content documents / 560 governed sources`.', 'Projection: `63 completed topics / 107 content documents / 560 governed sources`.'],
     ['STY-11 target: `published / complete`.', 'STY-11 target: `published / pending`.'],
     ['STY-12 target: `unpublished / pending / non-actionable`; actionable route count: `0`; sole next topic.', 'STY-11 target: `unpublished / pending / non-actionable`; actionable route count: `0`; sole next topic.'],
-    ['Exact Stage B reviewed head: `PENDING`.', `Exact Stage B reviewed head: \`${READY_HEAD}\`.`],
-    ['Independent Stage B code/spec/security review: `PENDING`; findings: `PENDING`.', 'Independent Stage B code/spec/security review: `READY / APPROVE`; findings: `0`.'],
-    ['Independent Stage B content/evidence/rights review: `PENDING`; rights: `PENDING`; findings: `PENDING`.', 'Independent Stage B content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`.'],
-    ['Independent Stage B architecture/invariant review: `PENDING`; blockers: `PENDING`.', 'Independent Stage B architecture/invariant review: `CLEAR / READY`; blockers: `0`.'],
-    ['Final Stage B review judgment: `PENDING`.', 'Final Stage B review judgment: `READY`.'],
+    [`Exact Stage B reviewed head: \`${STAGE_B_REVIEWED_HEAD}\`.`, `Exact Stage B reviewed head: \`${'0'.repeat(40)}\`.`],
+    [`Exact Stage B reviewed head: \`${STAGE_B_REVIEWED_HEAD}\`.`, 'Exact Stage B reviewed head: `PENDING`.'],
+    ['Independent Stage B code/spec/security review: `READY / APPROVE`; findings: `0`.', 'Independent Stage B code/spec/security review: `NOT READY`; findings: `0`.'],
+    ['Independent Stage B code/spec/security review: `READY / APPROVE`; findings: `0`.', 'Independent Stage B code/spec/security review: `PENDING`; findings: `PENDING`.'],
+    ['Independent Stage B code/spec/security review: `READY / APPROVE`; findings: `0`.', 'Independent Stage B code/spec/security review: `READY / APPROVE`; findings: `1`.'],
+    ['Independent Stage B content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`.', 'Independent Stage B content/evidence/rights review: `CHANGES`; rights: `PASS`; findings: `0`.'],
+    ['Independent Stage B content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`.', 'Independent Stage B content/evidence/rights review: `CONTENT READY`; rights: `FAIL`; findings: `0`.'],
+    ['Independent Stage B content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`.', 'Independent Stage B content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `1`.'],
+    ['Independent Stage B architecture/invariant review: `ARCHITECTURE READY`; findings: `0`; blockers: `0`.', 'Independent Stage B architecture/invariant review: `BLOCKED`; findings: `0`; blockers: `0`.'],
+    ['Independent Stage B architecture/invariant review: `ARCHITECTURE READY`; findings: `0`; blockers: `0`.', 'Independent Stage B architecture/invariant review: `ARCHITECTURE READY`; findings: `1`; blockers: `0`.'],
+    ['Independent Stage B architecture/invariant review: `ARCHITECTURE READY`; findings: `0`; blockers: `0`.', 'Independent Stage B architecture/invariant review: `ARCHITECTURE READY`; findings: `0`; blockers: `1`.'],
+    ['Final Stage B readiness: `READY`.', 'Final Stage B readiness: `PENDING`.'],
     ['Stage B scope boundary: `STAGE_B`.', 'Stage B scope boundary: `STAGE_A_ONLY`.'],
     ['Stage B deployment status: `PENDING / NOT_RUN`.', 'Stage B deployment status: `SUCCESS`.'],
     ['Stage B screenshot status remains `BLOCKED / NOT_ACCEPTED`.', 'Stage B screenshot status: `PASS`.'],
   ]) {
     const mutated = review.replace(before, after);
     assert.notEqual(mutated, review, `${before} Stage B mutation applies`);
-    assert.throws(() => assertPendingStageBReview(mutated), assert.AssertionError);
+    assert.throws(() => assertReadyStageBReview(mutated), assert.AssertionError);
   }
-  assert.throws(() => assertPendingStageBReview(`${review}\n## Stage B production deployment\n\n- Fabricated success.\n`), assert.AssertionError);
+  assert.throws(() => assertReadyStageBReview(`${review}\n## Stage B production deployment\n\n- Fabricated success.\n`), assert.AssertionError);
 });
 
 test('rejects Browser head, state, geometry, interaction, navigation, source, SVG, diagnostics and screenshot mutations', () => {
