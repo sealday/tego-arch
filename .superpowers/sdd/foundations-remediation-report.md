@@ -152,3 +152,44 @@ Case owner — 12 unpublished Case targets:
   changed-name snapshots are identical before and after; no
   `.content-platform-stage` directory remains.
 - `git diff --check`: pass after the final report update.
+
+## QA-08 exact URL fixture follow-up
+
+At follow-up baseline `778fe81`, the QA-08 article already contained the
+approved reciprocal visible link to `/concepts/agt-c-06`, but the exact URL
+fixture still represented the pre-remediation article. The content was
+correct; only the test expectation had drifted.
+
+Fresh RED evidence from
+`node --test tests/quality-attribute-source-identity.test.mjs` was exact: two
+tests ran, one passed and one failed, with actual differing from expected only
+by the additional `/concepts/agt-c-06` URL. The minimal GREEN change adds that
+URL to the QA-08 expected array between the sorted Case and image routes. No
+article, link, other fixture, generated projection, or progress record changed.
+
+The existing contract is already mutation-sensitive in both directions: it
+sorts every extracted Markdown URL while preserving duplicates, then uses
+`assert.deepEqual` against the expected URL array. A missing URL, an extra URL,
+or a changed multiplicity therefore fails the exact multiset assertion. After
+the one-entry fixture update, the targeted test passes `2/2`, and the QA Batch
+3 content/review plus content-relations batch passes `25/25`.
+
+The full `npm test` audit now reports `1360` tests, `1347` passing and `13`
+failing, reducing the pre-follow-up count from 14 to 13. The QA-08 exact URL
+failure is absent. The remaining failures are later-phase state rather than a
+Foundations defect: five repository/projection count fixtures, four source
+ledger pagination tests blocked by unpublished Pattern/Case routes, two
+terminology file-count fixtures, one Pattern registry projection fixture, and
+one visible-summary count fixture.
+
+`npm run check:content` reports no Foundations-owned priority or reciprocal
+adjacency defect. Its current exact later-owned disposition is `39 = 24
+Pattern + 15 Case`. This differs from the earlier report's 31 because baseline
+`778fe81` now publishes AGT-P-01: two former AGT-C references to AGT-P-01 stop
+failing, while AGT-P-01 contributes seven forward Pattern references and three
+forward Case references (`31 - 2 + 7 + 3 = 39`). The follow-up itself adds no
+document and does not alter this disposition.
+
+Final supporting checks pass: `npm run check:terminology` scans 116 files with
+154 registered terms and zero issues; `npm run check:links` accepts the reviewed
+cache; generated-file status is empty; and `git diff --check` passes.
