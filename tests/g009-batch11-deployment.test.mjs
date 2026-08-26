@@ -336,9 +336,14 @@ function currentReleaseBaseline(source) {
   assert.equal(lines.length, 1, 'one current release baseline');
   return lines[0].slice('- **当前发布基线：** '.length);
 }
+function g009Batch11HistoricalBaseline(source) {
+  const parts = currentReleaseBaseline(source).split('此前 G009 Batch 11 历史完成基线为：');
+  assert.equal(parts.length, 2, 'one exact G009 Batch 11 history marker');
+  return parts[1];
+}
 function assertImmediateHistory(reviewBytes = immediateReview, backlogSource = backlog) {
   assert.equal(sha256(reviewBytes), IMMEDIATE_REVIEW_HASH, 'complete immediate Batch 10 review bytes');
-  const baseline = currentReleaseBaseline(backlogSource);
+  const baseline = g009Batch11HistoricalBaseline(backlogSource);
   assert.ok(baseline.startsWith(CURRENT_BASELINE_PREFIX + IMMEDIATE_BACKLOG_MARKER), 'exact current Batch 11 prefix');
   const suffix = baseline.slice((CURRENT_BASELINE_PREFIX + IMMEDIATE_BACKLOG_MARKER).length);
   assert.match(suffix, /^2026-08-17 G009 Batch 10 已完成 STY-09/u);
@@ -574,7 +579,7 @@ test('locks the complete immediate STY-09 review and backlog suffix with mutatio
   for (const changedReview of [Buffer.concat([immediateReview, Buffer.from('x')]), immediateReview.subarray(0, -1)]) {
     assert.throws(() => assertImmediateHistory(changedReview), assert.AssertionError);
   }
-  const baseline = currentReleaseBaseline(backlog);
+  const baseline = g009Batch11HistoricalBaseline(backlog);
   const suffix = baseline.slice((CURRENT_BASELINE_PREFIX + IMMEDIATE_BACKLOG_MARKER).length);
   for (const changedSuffix of [`${suffix}x`, suffix.slice(0, -1)]) {
     const changedBacklog = backlog.replace(suffix, changedSuffix);

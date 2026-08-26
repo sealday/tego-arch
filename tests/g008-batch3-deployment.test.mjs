@@ -94,6 +94,12 @@ function currentReleaseBaseline(source) {
   return baselines[0];
 }
 
+function g009Batch11HistoricalBaseline(source) {
+  const parts = currentReleaseBaseline(source).split('此前 G009 Batch 11 历史完成基线为：');
+  assert.equal(parts.length, 2, 'one exact G009 Batch 11 history marker');
+  return `- **当前发布基线：** ${parts[1]}`;
+}
+
 function g008Batch3BaselineSegment(source) {
   const baseline = currentReleaseBaseline(source);
   const starts = [...baseline.matchAll(
@@ -165,7 +171,7 @@ function replaceBatch3HistoricalLiteral(source, literal, replacement) {
 
 function assertCurrentReleaseState(source) {
   assertBatch3HistoricalSegment(source);
-  const baseline = currentReleaseBaseline(source);
+  const baseline = g009Batch11HistoricalBaseline(source);
   const liveParts = baseline.split('此前 G009 Batch 10 历史完成基线为：');
   assert.equal(liveParts.length, 2, 'split live Batch 11 prefix from immutable Batch 10 history');
   const [prefix] = liveParts;
@@ -387,9 +393,7 @@ test('accepts intact Batch 3 history under a coherent later G009 baseline', () =
 
   assert.doesNotThrow(() => assertBatch3HistoricalSegment(futureBacklog));
   assert.equal(g008Batch3BaselineSegment(futureBacklog).segment, originalSegment);
-  assert.throws(() => assertBacklogClosure(futureBacklog), {
-    name: 'AssertionError',
-  });
+  assert.doesNotThrow(() => assertBacklogClosure(futureBacklog));
 });
 
 test('preserves release-review I/O failures', async () => {

@@ -176,6 +176,12 @@ function currentReleaseBaseline(source) {
   return lines[0];
 }
 
+function g009Batch11HistoricalBaseline(source) {
+  const parts = currentReleaseBaseline(source).split('此前 G009 Batch 11 历史完成基线为：');
+  assert.equal(parts.length, 2, 'one exact G009 Batch 11 history marker');
+  return `- **当前发布基线：** ${parts[1]}`;
+}
+
 function batch11Segment(source) {
   const baseline = currentReleaseBaseline(source);
   const marker = '此前 G008 Batch 11 历史完成基线为：';
@@ -240,10 +246,10 @@ function assertBacklog(source) {
   assert.match(source, /^- \*\*当前持久故事：\*\* `G009`。$/mu);
   assert.equal(segment.split('下一项为 STY-00').length - 1, 1);
   assert.match(
-    currentReleaseBaseline(source),
+    g009Batch11HistoricalBaseline(source),
     /^- \*\*当前发布基线：\*\* 2026-08-20 G009 Batch 11 已完成 STY-10/u,
   );
-  const liveParts = currentReleaseBaseline(source).split('此前 G009 Batch 10 历史完成基线为：');
+  const liveParts = g009Batch11HistoricalBaseline(source).split('此前 G009 Batch 10 历史完成基线为：');
   assert.equal(liveParts.length, 2, 'split live Batch 11 prefix from immutable Batch 10 history');
   const [livePrefix] = liveParts;
   assert.match(livePrefix, /当前 G009，下一项为 STY-11/u);

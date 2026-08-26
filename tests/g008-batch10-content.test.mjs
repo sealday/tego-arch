@@ -516,7 +516,7 @@ test('locks the generated MOD-13 Stage B projection', () => {
 
     durable_stories: {completed: 8, total: 20},
     current_goal: 'G009',
-    next_topic: 'STY-11',
+    next_topic: 'STY-12',
   });
   const topicsById = new Map(topicManifest.topics.map((topic) => [topic.id, topic]));
   assert.equal(topicsById.get('MOD-12').published, true);

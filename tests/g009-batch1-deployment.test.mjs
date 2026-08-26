@@ -159,7 +159,7 @@ function currentG009Baseline(source) {
 }
 
 function assertBacklog(source) {
-  const liveBaseline = currentReleaseBaseline(source);
+  const liveBaseline = g009Batch11HistoricalBaseline(source);
   const liveParts = liveBaseline.split('此前 G009 Batch 10 历史完成基线为：');
   assert.equal(liveParts.length, 2, 'split live Batch 11 prefix from immutable Batch 10 history');
   const [livePrefix] = liveParts;
@@ -270,6 +270,12 @@ function currentReleaseBaseline(source) {
   );
   assert.equal(lines.length, 1, 'one current release baseline');
   return lines[0];
+}
+
+function g009Batch11HistoricalBaseline(source) {
+  const parts = currentReleaseBaseline(source).split('此前 G009 Batch 11 历史完成基线为：');
+  assert.equal(parts.length, 2, 'one exact G009 Batch 11 history marker');
+  return `- **当前发布基线：** ${parts[1]}`;
 }
 
 function g008AndOlderHistory(source) {
