@@ -259,9 +259,12 @@ function assertServerlessDiagram(drawioSource, svgSource) {
     if (EDGE_IDS.includes(id)) assert.ok(LEGEND_ROLES.includes(role), `${id} semantic edge role is one of the five roles`);
     else { assert.equal(role, 'legend', `${id} legend semantic role`); assert.ok(LEGEND_ROLES.includes(styleMap(edge.attributes.get('style')).get('legendRole')), `${id} valid legendRole`); }
   }
-  const svgConnectorPaths = svg.elements.filter(({name, parent}) => name === 'path' && parent === root);
-  for (const {attributes: item} of svgConnectorPaths) assert.notEqual(item.has('data-edge-id'), item.has('data-legend-edge-id'), 'every SVG connector has exactly one edge identity kind');
-  assertExactDuplicateFreeIds(svgConnectorPaths.map(({attributes: item}) => item.get('data-edge-id') ?? item.get('data-legend-edge-id')), expectedEdgeUnion, 'SVG complete edge union');
+  const svgConnectorShapes = svg.elements.filter(({name, parent}) => ['path', 'line', 'polyline'].includes(name) && parent?.name !== 'marker');
+  for (const {name, parent, attributes: item} of svgConnectorShapes) {
+    assert.equal(name === 'path' && parent === root, true, 'SVG connectors use only root-level path elements');
+    assert.notEqual(item.has('data-edge-id'), item.has('data-legend-edge-id'), 'every SVG connector has exactly one edge identity kind');
+  }
+  assertExactDuplicateFreeIds(svgConnectorShapes.map(({attributes: item}) => item.get('data-edge-id') ?? item.get('data-legend-edge-id')), expectedEdgeUnion, 'SVG complete edge union');
   assertExactDuplicateFreeIds(drawio.nodes.filter((cell) => drawioRole(cell) === 'region').map((cell) => cell.attributes.get('id')), REGION_IDS, 'Draw.io regions');
   assertExactDuplicateFreeIds(drawio.nodes.filter((cell) => drawioRole(cell) === 'region-label').map((cell) => cell.attributes.get('id').replace(/^region-label-/u, '')), REGION_IDS, 'Draw.io region labels');
   assertExactDuplicateFreeIds(svg.elements.filter(({attributes: item}) => item.has('data-region-id')).map(({attributes: item}) => item.get('data-region-id')), REGION_IDS, 'SVG regions');
@@ -375,6 +378,14 @@ function assertDiagramMutationRejected(drawioSource, svgSource) {
   }
   const extraLegend = replaceOnce(svgSource, '</svg>', '<path data-legend-edge-id="legend-edge-rogue" data-edge-role="work" d="M 0 0 L 1 1"/></svg>', 'additional SVG legend identity');
   assert.throws(() => assertServerlessDiagram(drawioSource, extraLegend), /SVG complete edge union exact identity set/u, 'additional SVG legend identity rejected');
+  for (const [label, connector] of [
+    ['nested path connector', '<g><path d="M 0 0 L 1 1" fill="none" stroke="#0F766E"/></g>'],
+    ['line connector', '<line x1="0" y1="0" x2="1" y2="1" stroke="#0F766E"/>'],
+    ['polyline connector', '<polyline points="0,0 1,1" fill="none" stroke="#0F766E"/>'],
+  ]) {
+    const unsupportedConnector = replaceOnce(svgSource, '</svg>', `${connector}</svg>`, label);
+    assert.throws(() => assertServerlessDiagram(drawioSource, unsupportedConnector), /SVG connectors use only root-level path elements/u, `${label} rejected`);
+  }
   const duplicateNote = replaceOnce(svgSource, '</svg>', '<g data-note-id="volatile-state"></g></svg>', 'duplicate SVG note identity');
   assert.throws(() => assertServerlessDiagram(drawioSource, duplicateNote), /SVG notes identities are duplicate-free/u, 'duplicate SVG note identity rejected');
   const wrongDescription = replaceOnce(svgSource, SVG_DESC, '观测面拥有并发送全部三层预算。', 'observer-owned budget description');
