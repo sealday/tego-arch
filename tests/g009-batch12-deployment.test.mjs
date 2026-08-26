@@ -8,6 +8,7 @@ import {extractInternalLinks} from '../scripts/content-relations.mjs';
 
 export const EXPECTED_STAGE_A = Object.freeze({completed: 63, documents: 107, sources: 560});
 export const EXPECTED_STAGE_B = Object.freeze({completed: 64, documents: 107, sources: 560});
+const CURRENT_REPOSITORY_PROJECTION = Object.freeze({completed: 64, documents: 113, sources: 569});
 export const CURRENT_TOPIC = 'STY-11';
 export const NEXT_TOPIC = 'STY-12';
 export const REVIEW = 'docs/reviews/g009-batch12.md';
@@ -137,12 +138,15 @@ const IMMEDIATE_REVIEW = 'docs/reviews/g009-batch11.md';
 const BACKLOG = 'docs/content-backlog.md';
 const IMMEDIATE_REVIEW_HASH = '9276cb7b4c6e66ac50375a4f58df8220255644afd1f45cb46c943db610c10a39';
 const IMMEDIATE_BACKLOG_SUFFIX_HASH = 'aa6c304cf11bca2472f884cba795782e03b579415b859864c5c4e5d0d60a978f';
-const STABLE_IDENTITIES = new Map([
+const HISTORICAL_REVIEW_IDENTITIES = new Map([
   [ARTICLE, [23_126, '85561b6c44acc1518f416e12cb507b6c4a2a57369c6cdda8c8df176165d2bbd6']],
   [LEDGER, [1_644_284, '0f3856dc6291e1e8f78622c08c2fa0da8af54d11cc24cbd679a3557ab920beef']],
   [DRAWIO, [47_529, '9862fcb5be62941553780b2a58751a3f9af2ba7a32dace3549cc3ca6d1daa00e']],
   [SVG, [21_881, '6a166a208e31cb1c6313cd2a21ff17ce124ab6b463821bb3b108275000fa2094']],
 ]);
+const STABLE_IDENTITIES = new Map(
+  [...HISTORICAL_REVIEW_IDENTITIES].filter(([path]) => path !== LEDGER),
+);
 const FINAL_STAGE_A_CHECKPOINT = Object.freeze([
   `- Exact implementation candidate head: \`${CANDIDATE_HEAD}\`.`,
   `- Exact Browser evidence head: \`${EVIDENCE_HEAD}\`.`,
@@ -268,7 +272,7 @@ function assertFinalReview(source = review) {
   assert.match(source, /STY-11: `published \/ pending`/u);
   assert.match(source, /STY-12: `unpublished \/ pending \/ non-actionable`; actionable route count: `0`/u);
   assert.match(source, /This record binds the exact candidate, Browser evidence, regression-guard head and three zero-finding independent reviews as the final Stage A READY checkpoint, and now binds its exact production publication below\. It does not close the backlog or run Stage B\./u);
-  for (const [path, [bytes, hash]] of STABLE_IDENTITIES) {
+  for (const [path, [bytes, hash]] of HISTORICAL_REVIEW_IDENTITIES) {
     assert.ok(source.includes(`| \`${path}\` | ${bytes.toLocaleString('en-US')} | \`${hash}\` |`), `${path} exact identity`);
   }
   assert.ok(source.includes(`Complete immediate STY-10 review SHA-256: \`${IMMEDIATE_REVIEW_HASH}\``));
@@ -587,7 +591,7 @@ test('projects exact STY-11 Stage B closure while STY-12 remains sole unpublishe
     completed: status.completed_topics,
     documents: status.content_documents,
     sources: status.governed_sources,
-  }, EXPECTED_STAGE_B);
+  }, CURRENT_REPOSITORY_PROJECTION);
   const current = documents.find(({metadata}) => metadata.topic_id === CURRENT_TOPIC);
   assert.ok(current, 'STY-11 is published as a content document');
   assertStageBBacklog();
@@ -613,7 +617,7 @@ test('requires published reciprocal adjacency metadata for both STY-11 adjacent 
   }
 });
 
-test('locks exact STY-11 article, ledger, Draw.io and SVG identities', () => {
+test('locks exact STY-11 article, Draw.io and SVG identities', () => {
   for (const [[path, [bytes, hash]], value] of [...STABLE_IDENTITIES].map((entry, index) => [entry, stableBytes[index]])) {
     assert.equal(value.length, bytes, `${path} bytes`);
     assert.equal(sha256(value), hash, `${path} SHA-256`);
