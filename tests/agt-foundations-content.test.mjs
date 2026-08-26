@@ -22,6 +22,8 @@ const informationLifecycleArticlePath =
   'content/concepts/agt-c-04-context-memory-state-checkpoint.mdx';
 const actionBoundaryArticlePath =
   'content/concepts/agt-c-05-tool-sandbox-permission-side-effect.mdx';
+const qualityGovernanceArticlePath =
+  'content/concepts/agt-c-06-trace-evaluation-guardrail.mdx';
 const reactApprovedLocator = 'https://arxiv.org/abs/2210.03629';
 const drawioPath = 'diagrams/agt-c-01-agent-system-boundary.drawio';
 const svgPath = 'static/img/diagrams/agt-c-01-agent-system-boundary.svg';
@@ -245,6 +247,57 @@ const actionBoundarySourceIds = [
   'src-aws-making-retries-safe-idempotent-apis-2020',
   'src-nist-ai-rmf-1-0',
 ];
+const qualityResponsibilityHeader = [
+  '机制',
+  '唯一职责',
+  '输入',
+  '输出',
+  '不能替代',
+];
+const qualityResponsibilityRows = [
+  '追踪（Trace）',
+  '评测（Evaluation）',
+  '执行约束（Guardrail）',
+];
+const evaluationModeHeader = [
+  '评测模式',
+  '触发时点',
+  '输入样本',
+  '主要用途',
+  '反馈路径',
+  '失败边界',
+];
+const evaluationModeRows = ['离线评测（offline evaluation）', '在线评测（online evaluation）'];
+const traceCorrelationFields = [
+  'trace_id',
+  'span_id',
+  'parent_span_id',
+  'task_id',
+  'run_id',
+  'agent_version',
+  'model_version',
+  'tool_name',
+  'tool_version',
+  'operation_id',
+];
+const qualityGovernanceSourceContracts = [
+  {
+    id: 'src-anthropic-demystifying-evals-ai-agents',
+    title: 'Demystifying evals for AI agents',
+    locator: 'https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents',
+    author: 'Anthropic',
+    publishedAt: '2026-01-09',
+    license: 'LicenseRef-All-Rights-Reserved',
+  },
+  {
+    id: 'src-opentelemetry-genai-agent-semconv',
+    title: 'Semantic Conventions for GenAI agent and framework spans',
+    locator: 'https://github.com/open-telemetry/semantic-conventions-genai/blob/56d6b11a02129319bf371083fa134b7ce989c976/docs/gen-ai/gen-ai-agent-spans.md',
+    author: 'OpenTelemetry Authors',
+    publishedAt: null,
+    license: 'Apache-2.0',
+  },
+];
 
 const registry = JSON.parse(
   readFileSync('tests/fixtures/agentic-topic-system.json', 'utf8'),
@@ -305,6 +358,13 @@ function visibleBodyRecords(source) {
   return parseMdxVisibleCopy(source, informationLifecycleArticlePath).blocks
     .map(({text}) => text.replace(/\s+/gu, ' ').trim())
     .filter(Boolean);
+}
+
+function visibleQualityGovernance(source) {
+  return parseMdxVisibleCopy(source, qualityGovernanceArticlePath).blocks
+    .map(({text}) => text.replace(/\s+/gu, ' ').trim())
+    .filter(Boolean)
+    .join('\n');
 }
 
 test('agentic topic registry is exact and globally unique', () => {
@@ -1412,4 +1472,211 @@ test('AGT-C-05 reuses governed MCP, OpenAI, PR-09, PR-10, and NIST sources', () 
       `${sourceId} supports the cited evidence role`,
     );
   }
+});
+
+function assertQualityGovernanceContract(source) {
+  const metadata = parseFrontMatter(source);
+  assert.equal(metadata.topic_id, 'AGT-C-06');
+  assert.equal(metadata.slug, '/concepts/agt-c-06');
+  assert.equal(metadata.content_type, 'concept');
+  assert.equal(metadata.status, 'reviewed');
+  assert.deepEqual(metadata.depends_on, [
+    'AGT-C-01',
+    'AGT-C-02',
+    'AGT-C-03',
+    'AGT-C-04',
+    'AGT-C-05',
+  ]);
+  assert.deepEqual(metadata.adjacent_topics, [
+    'AGT-P-02',
+    'AGT-P-04',
+    'AGT-P-08',
+    'QA-08',
+    'PR-07',
+  ]);
+  assert.deepEqual(metadata.related_cases, [
+    '/cases/multi-agent-research-system',
+    '/cases/long-running-coding-agent',
+    '/cases/production-incident-response-agent',
+  ]);
+
+  const headings = findMarkdownHeadings(source)
+    .filter(({level}) => level === 2)
+    .map(({text}) => `## ${text}`);
+  assert.deepEqual(headings, knowledgeTypeContracts.concept);
+  assert.doesNotMatch(source, /```mermaid|architecture-diagram-scroll|\/img\//u);
+
+  const tables = markdownTables(source);
+  const responsibilityTables = tables.filter(
+    ([header]) => header?.[0] === qualityResponsibilityHeader[0],
+  );
+  assert.equal(responsibilityTables.length, 1, 'exactly one responsibility table');
+  const [responsibilityHeader, ...responsibilityRows] = responsibilityTables[0];
+  assert.deepEqual(responsibilityHeader, qualityResponsibilityHeader);
+  assert.equal(responsibilityRows.length, 3, 'exactly three responsibility rows');
+  assert.deepEqual(
+    responsibilityRows.map(([identity]) => identity),
+    qualityResponsibilityRows,
+  );
+  for (const [rowIndex, row] of responsibilityRows.entries()) {
+    assert.equal(row.length, 5, `responsibility row ${rowIndex + 1} has five cells`);
+    assert.ok(row.every(Boolean), `responsibility row ${rowIndex + 1} has no empty cell`);
+  }
+  assert.match(responsibilityRows[0][1], /记录[\s\S]*证据/u);
+  assert.doesNotMatch(responsibilityRows[0][1], /判断质量|执行约束/u);
+  assert.match(responsibilityRows[1][1], /将[\s\S]*证据[\s\S]*转为[\s\S]*质量判断/u);
+  assert.doesNotMatch(responsibilityRows[1][1], /记录证据|执行约束/u);
+  assert.match(
+    responsibilityRows[2][1],
+    /模型或工具动作[\s\S]*之前和之后[\s\S]*执行约束/u,
+  );
+  assert.doesNotMatch(responsibilityRows[2][1], /记录证据|判断质量/u);
+
+  const evaluationTables = tables.filter(
+    ([header]) => header?.[0] === evaluationModeHeader[0],
+  );
+  assert.equal(evaluationTables.length, 1, 'exactly one evaluation mode table');
+  const [evaluationHeader, ...evaluationRows] = evaluationTables[0];
+  assert.deepEqual(evaluationHeader, evaluationModeHeader);
+  assert.equal(evaluationRows.length, 2, 'exactly two evaluation mode rows');
+  assert.deepEqual(evaluationRows.map(([identity]) => identity), evaluationModeRows);
+  for (const [rowIndex, row] of evaluationRows.entries()) {
+    assert.equal(row.length, 6, `evaluation row ${rowIndex + 1} has six cells`);
+    assert.ok(row.every(Boolean), `evaluation row ${rowIndex + 1} has no empty cell`);
+  }
+  assert.match(evaluationRows[0][1], /发布前|变更前/u);
+  assert.match(evaluationRows[0][2], /固定[\s\S]*数据集[\s\S]*多次试验/u);
+  assert.match(evaluationRows[0][3], /基线[\s\S]*回归[\s\S]*版本比较/u);
+  assert.match(evaluationRows[0][4], /发布门[\s\S]*缺陷样本/u);
+  assert.match(evaluationRows[0][5], /分布变化[\s\S]*不能代表生产/u);
+  assert.match(evaluationRows[1][1], /生产请求[\s\S]*运行中或完成后/u);
+  assert.match(evaluationRows[1][2], /真实流量[\s\S]*抽样[\s\S]*反馈/u);
+  assert.match(evaluationRows[1][3], /漂移[\s\S]*长尾[\s\S]*风险/u);
+  assert.match(evaluationRows[1][4], /告警[\s\S]*回灌离线数据集/u);
+  assert.match(evaluationRows[1][5], /不能把用户暴露当实验前提[\s\S]*不替代发布前评测/u);
+
+  const correlationTables = tables.filter(
+    ([header]) => header?.[0] === '关联字段',
+  );
+  assert.equal(correlationTables.length, 1, 'exactly one trace correlation table');
+  const [correlationHeader, ...correlationRows] = correlationTables[0];
+  assert.deepEqual(correlationHeader, ['关联字段', '关联问题']);
+  assert.deepEqual(correlationRows.map(([field]) => field), traceCorrelationFields);
+  assert.ok(correlationRows.every((row) => row.length === 2 && row.every(Boolean)));
+
+  const visible = visibleQualityGovernance(source);
+  for (const contract of [
+    /追踪只记录证据，不自动判断质量，也不执行约束/u,
+    /评测将追踪、结果和参考标准转为质量判断，不拥有工具执行权/u,
+    /执行约束在模型或工具动作之前和之后强制政策，不把模型自律当执行点/u,
+    /缺失追踪片段[\s\S]*不能把未记录解释为未发生/u,
+    /评测器漂移[\s\S]*裁判偏差/u,
+    /政策绕过[\s\S]*未经过同一执行约束点/u,
+    /误报[\s\S]*不能静默放宽安全关键政策/u,
+    /安全关键执行约束[\s\S]*超时、不可用、策略无匹配或证据不足[\s\S]*fail-closed[\s\S]*不能 fail-open/u,
+    /fail-open 只允许[\s\S]*非安全关键[\s\S]*不产生外部效果[\s\S]*告警/u,
+    /高风险动作[\s\S]*执行约束无法判定[\s\S]*评测器与人工分歧[\s\S]*升级人工/u,
+    /Anthropic[\s\S]*作者指导[\s\S]*不构成实现保证/u,
+    /OpenTelemetry[\s\S]*Development[\s\S]*字段与命名语义[\s\S]*不保证埋点完整、关联正确或生产安全/u,
+    /AI RMF 1\.0[\s\S]*风险、监测、评测与人工监督[\s\S]*不规定本文职责表、阈值或执行拓扑/u,
+  ]) {
+    assert.match(visible, contract);
+  }
+}
+
+function replaceQualityTableCell(source, header, rowIndex, columnIndex, replacement) {
+  const lines = source.split(/\r?\n/u);
+  const headerIndex = lines.indexOf(header);
+  assert.notEqual(headerIndex, -1, `table header: ${header}`);
+  const lineIndex = headerIndex + 2 + rowIndex;
+  const cells = lines[lineIndex].slice(1, -1).split('|').map((cell) => cell.trim());
+  cells[columnIndex] = replacement;
+  lines[lineIndex] = `| ${cells.join(' | ')} |`;
+  return lines.join('\n');
+}
+
+test('AGT-C-06 publishes distinct trace, evaluation, and guardrail contracts', () => {
+  assert.ok(
+    existsSync(qualityGovernanceArticlePath),
+    `Missing ${qualityGovernanceArticlePath}`,
+  );
+  assertQualityGovernanceContract(
+    readFileSync(qualityGovernanceArticlePath, 'utf8'),
+  );
+});
+
+test('AGT-C-06 rejects responsibility, evaluation-mode, correlation, and bypass mutations', () => {
+  const source = readFileSync(qualityGovernanceArticlePath, 'utf8');
+  const responsibilityHeader = '| 机制 | 唯一职责 | 输入 | 输出 | 不能替代 |';
+  const modeHeader = '| 评测模式 | 触发时点 | 输入样本 | 主要用途 | 反馈路径 | 失败边界 |';
+  const mutations = [
+    ['trace judges quality', replaceQualityTableCell(source, responsibilityHeader, 0, 1, '记录证据并判断质量')],
+    ['evaluation enforces policy', replaceQualityTableCell(source, responsibilityHeader, 1, 1, '将证据转为质量判断并执行约束')],
+    ['guardrail only advises', replaceQualityTableCell(source, responsibilityHeader, 2, 1, '给模型提供一条约束建议')],
+    ['offline loses fixed trials', replaceQualityTableCell(source, modeHeader, 0, 2, '临时抽样')],
+    ['online becomes pre-release', replaceQualityTableCell(source, modeHeader, 1, 1, '只在发布前')],
+    ['deleted correlation field', source.replace('| `operation_id` |', '| `request_note` |')],
+    ['missing spans become absence proof', source.replace('不能把未记录解释为未发生', '可以把未记录解释为未发生')],
+    ['safety gate fails open', source.replace('必须 fail-closed', '可以 fail-open')],
+    ['policy bypass ignored', source.replace('未经过同一执行约束点', '仍可视为已经受控')],
+    ['human escalation removed', source.replace('评测器与人工分歧', '评测器单独决定')],
+    [
+      'visible trace boundary moved to hidden comment',
+      source.replace(
+        '追踪只记录证据，不自动判断质量，也不执行约束。',
+        '{/* 追踪只记录证据，不自动判断质量，也不执行约束。 */}',
+      ),
+    ],
+    [
+      'unsafe visible boundary backed by hidden original',
+      source.replace(
+        '执行约束在模型或工具动作之前和之后强制政策，不把模型自律当执行点。',
+        '执行约束只给模型建议。{/* 执行约束在模型或工具动作之前和之后强制政策，不把模型自律当执行点。 */}',
+      ),
+    ],
+  ];
+  for (const [label, mutant] of mutations) {
+    assert.notEqual(mutant, source, `${label} fixture must alter the article`);
+    assert.throws(() => assertQualityGovernanceContract(mutant), undefined, label);
+  }
+});
+
+test('AGT-C-06 governs exact Anthropic, OpenTelemetry, and NIST source boundaries', () => {
+  const ledger = JSON.parse(readFileSync('data/source-ledger.json', 'utf8'));
+  const health = JSON.parse(readFileSync('data/source-link-health.json', 'utf8'));
+  const document = ledger.documents[qualityGovernanceArticlePath];
+  assert.ok(document, `${qualityGovernanceArticlePath} source document`);
+  assert.deepEqual(document.citations.map(({source_id}) => source_id), [
+    ...qualityGovernanceSourceContracts.map(({id}) => id),
+    'src-nist-ai-rmf-1-0',
+  ]);
+  assert.ok(document.citations.every(({usage_mode}) => usage_mode === 'facts-summary'));
+  assert.equal(document.citations.filter(({manifest_primary}) => manifest_primary).length, 1);
+
+  for (const contract of qualityGovernanceSourceContracts) {
+    const governedSource = ledger.sources.find(({id}) => id === contract.id);
+    assert.ok(governedSource, contract.id);
+    assert.equal(governedSource.title, contract.title);
+    assert.equal(governedSource.author_or_org, contract.author);
+    assert.equal(governedSource.published_at, contract.publishedAt);
+    assert.equal(governedSource.registered_at, '2026-08-26');
+    assert.equal(governedSource.checked_at, '2026-08-26');
+    assert.equal(governedSource.canonical_locator, contract.locator);
+    assert.equal(governedSource.transport_locator, contract.locator);
+    assert.equal(governedSource.expected_final_transport_locator, contract.locator);
+    assert.equal(governedSource.license, contract.license);
+    assert.equal(governedSource.copyright_policy, 'facts-and-short-quotation');
+    assert.match(governedSource.usage_boundary, /does not guarantee|does not prove/u);
+
+    const observation = health.results.find(({source_ids}) =>
+      source_ids.includes(contract.id));
+    assert.ok(observation, `${contract.id} health observation`);
+    assert.deepEqual(observation.source_ids, [contract.id]);
+    assert.equal(observation.transport_locator, contract.locator);
+    assert.equal(observation.last_attempt.outcome, 'healthy');
+    assert.equal(observation.last_attempt.final_transport_locator, contract.locator);
+  }
+
+  const nist = ledger.sources.filter(({id}) => id === 'src-nist-ai-rmf-1-0');
+  assert.equal(nist.length, 1, 'reuse exactly one NIST AI RMF identity');
 });
