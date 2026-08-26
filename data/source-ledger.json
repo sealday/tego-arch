@@ -29270,6 +29270,45 @@
         }
       ]
     },
+    "content/patterns/agt-p-01-workflow-vs-autonomous-agent.mdx": {
+      "reviewed_at": "2026-08-27",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-anthropic-building-effective-agents",
+          "citation_url": "https://www.anthropic.com/engineering/building-effective-agents",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Building Effective Agents, Anthropic",
+          "modification_note": "Original Chinese synthesis of the workflow/agent boundary and incremental-complexity guidance; no source prose, examples, structure, taxonomy layout or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-openai-practical-guide-building-agents",
+          "citation_url": "https://openai.com/business/guides-and-resources/a-practical-guide-to-building-ai-agents/",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "A Practical Guide to Building Agents, OpenAI",
+          "modification_note": "Original Chinese synthesis of agent control, tool-selection, loop, exit-condition and deterministic-fallback boundaries; no source prose, examples, code, structure, taxonomy layout or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
     "content/patterns/index.mdx": {
       "reviewed_at": "2026-07-24",
       "copyright_checks": [
