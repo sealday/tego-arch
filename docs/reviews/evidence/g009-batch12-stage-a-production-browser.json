@@ -1,0 +1,1091 @@
+{
+  "implementationHead": "1cf010f13c6e9e98240de7e1d5e7d1c380bdc073",
+  "pages": {
+    "runId": 32936647570,
+    "event": "push",
+    "headSha": "1cf010f13c6e9e98240de7e1d5e7d1c380bdc073",
+    "status": "completed",
+    "conclusion": "success",
+    "buildJobId": 98079000160,
+    "buildStatus": "completed",
+    "buildConclusion": "success",
+    "deployJobId": 98079641183,
+    "deployStatus": "completed",
+    "deployConclusion": "success"
+  },
+  "probes": {
+    "routes": [
+      {
+        "path": "/tego-arch/",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8"
+      },
+      {
+        "path": "/tego-arch/styles",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8"
+      },
+      {
+        "path": "/tego-arch/styles/sty-06",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8"
+      },
+      {
+        "path": "/tego-arch/styles/sty-09",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8"
+      },
+      {
+        "path": "/tego-arch/styles/sty-11",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8"
+      },
+      {
+        "path": "/tego-arch/cases",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8"
+      },
+      {
+        "path": "/tego-arch/cases/cloudflare-durable-objects-workerd",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8"
+      },
+      {
+        "path": "/tego-arch/references",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8"
+      }
+    ],
+    "svg": {
+      "url": "https://sealday.github.io/tego-arch/img/diagrams/sty-11-serverless-order-fulfillment.svg",
+      "status": 200,
+      "contentType": "image/svg+xml",
+      "bytes": 21881,
+      "sha256": "6a166a208e31cb1c6313cd2a21ff17ce124ab6b463821bb3b108275000fa2094"
+    }
+  },
+  "collection": {
+    "browser": "Codex in-app Browser only",
+    "fresh": true,
+    "servedUrl": "https://sealday.github.io/tego-arch/styles/sty-11",
+    "session": "sty11-stage-a-production-iab-20260826",
+    "build": "GitHub Pages exact Stage A READY head 1cf010f13c6e9e98240de7e1d5e7d1c380bdc073; push run 32936647570; build job 98079000160; deploy job 98079641183",
+    "browserBindingId": "-4688-49ea-8e04-9ca7ed8efe48",
+    "observedSvgAsset": {
+      "source": "production Browser pageAssets bundle",
+      "contentType": "image/svg+xml",
+      "bytes": 21881,
+      "sha256": "6a166a208e31cb1c6313cd2a21ff17ce124ab6b463821bb3b108275000fa2094",
+      "viewBox": "0 0 2400 3600",
+      "bundleFailures": 0
+    },
+    "diagnosticContinuity": [
+      {
+        "afterSequence": 27,
+        "cursor": 98,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false,
+        "scope": "desktopLight"
+      },
+      {
+        "afterSequence": 98,
+        "cursor": 184,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false,
+        "scope": "desktopDark"
+      },
+      {
+        "afterSequence": 184,
+        "cursor": 283,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false,
+        "scope": "mobileLight"
+      },
+      {
+        "afterSequence": 283,
+        "cursor": 369,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false,
+        "scope": "mobileDark"
+      },
+      {
+        "afterSequence": 27,
+        "cursor": 369,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false,
+        "scope": "whole session"
+      }
+    ]
+  },
+  "stateOrder": [
+    "desktopLight",
+    "desktopDark",
+    "mobileLight",
+    "mobileDark"
+  ],
+  "states": {
+    "desktopLight": {
+      "theme": "light",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "geometry": {
+        "page": {
+          "clientHeight": 1000,
+          "clientWidth": 1440,
+          "scrollHeight": 10881,
+          "scrollWidth": 1440
+        },
+        "sources": [
+          {
+            "href": "https://github.com/cncf/wg-serverless/blob/79c8a13c26be9066a8723c5896d8aaa0e2ab9e08/whitepapers/serverless-overview/cncf_serverless_whitepaper_v1.0.pdf",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://glossary.cncf.io/serverless/",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtime-environment.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://docs.aws.amazon.com/lambda/latest/dg/invocation-retries.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://docs.aws.amazon.com/lambda/latest/dg/lambda-concurrency.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://aws.amazon.com/lambda/pricing/",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://cloud.google.com/run/docs/about-concurrency",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://github.com/cloudevents/spec/blob/v1.0.2/cloudevents/spec.md",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://github.com/open-workflow-specification/specification/blob/2dd2c84170d5f3e05d58e913e9ca298dcf8d543a/schema/workflow.yaml",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          }
+        ],
+        "sty12": 0,
+        "svg": {
+          "loaded": true,
+          "naturalHeight": 150,
+          "naturalWidth": 100,
+          "renderedHeight": 1200,
+          "renderedWidth": 800,
+          "sourceHeight": 3600,
+          "sourceWidth": 2400,
+          "src": "/tego-arch/assets/images/sty-11-serverless-order-fulfillment-a95eeababb40ed1cd544b8cd067271d5.svg",
+          "viewBox": "0 0 2400 3600",
+          "observedAssetBytes": 21881
+        },
+        "wrappers": [
+          {
+            "clientWidth": 800,
+            "label": "订单结算与异步履约 Serverless 边界图，可横向滚动",
+            "scrollWidth": 800
+          },
+          {
+            "clientWidth": 800,
+            "label": "Serverless 执行与状态责任矩阵，可横向滚动",
+            "scrollWidth": 1024
+          },
+          {
+            "clientWidth": 800,
+            "label": "Serverless 七类故障、响应、停止条件与责任表，可横向滚动",
+            "scrollWidth": 1381
+          },
+          {
+            "clientWidth": 800,
+            "label": "冷启动与成本决策表，可横向滚动",
+            "scrollWidth": 1024
+          }
+        ]
+      },
+      "interactions": [
+        {
+          "index": 0,
+          "label": "订单结算与异步履约 Serverless 边界图，可横向滚动",
+          "key": "ArrowRight",
+          "delta": 0,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "outlineWidth": "3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "outlineWidth": "3px",
+            "scrollLeft": 0
+          }
+        },
+        {
+          "index": 1,
+          "label": "Serverless 执行与状态责任矩阵，可横向滚动",
+          "key": "ArrowRight",
+          "delta": 40,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "outlineWidth": "3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "outlineWidth": "3px",
+            "scrollLeft": 40
+          }
+        },
+        {
+          "index": 2,
+          "label": "Serverless 七类故障、响应、停止条件与责任表，可横向滚动",
+          "key": "ArrowRight",
+          "delta": 40,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "outlineWidth": "3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "outlineWidth": "3px",
+            "scrollLeft": 40
+          }
+        },
+        {
+          "index": 3,
+          "label": "冷启动与成本决策表，可横向滚动",
+          "key": "ArrowRight",
+          "delta": 40,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "outlineWidth": "3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "outlineWidth": "3px",
+            "scrollLeft": 40
+          }
+        }
+      ],
+      "relations": [
+        {
+          "href": "/tego-arch/styles/sty-06",
+          "expectedH1": "事件驱动架构：先分清事件携带什么，再决定状态放在哪里",
+          "visibleCount": 1,
+          "h1": "事件驱动架构：先分清事件携带什么，再决定状态放在哪里",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation followed by Browser back; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/styles/sty-09",
+          "expectedH1": "Pipes and Filters：用明确合同拆分批处理与流处理",
+          "visibleCount": 1,
+          "h1": "Pipes and Filters：用明确合同拆分批处理与流处理",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation followed by Browser back; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/cases/cloudflare-durable-objects-workerd",
+          "expectedH1": "把边缘协调收敛到身份寻址的状态单元",
+          "visibleCount": 1,
+          "h1": "把边缘协调收敛到身份寻址的状态单元",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation followed by Browser back; no physical relation click claimed"
+        }
+      ],
+      "logs": [],
+      "diagnostics": {
+        "events": [],
+        "pages": [
+          {
+            "afterSequence": 27,
+            "cursor": 98,
+            "count": 0,
+            "hasMore": false,
+            "truncated": false
+          }
+        ],
+        "hasMore": false,
+        "truncated": false
+      }
+    },
+    "desktopDark": {
+      "theme": "dark",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "geometry": {
+        "page": {
+          "clientHeight": 1000,
+          "clientWidth": 1440,
+          "scrollHeight": 10881,
+          "scrollWidth": 1440
+        },
+        "sources": [
+          {
+            "href": "https://github.com/cncf/wg-serverless/blob/79c8a13c26be9066a8723c5896d8aaa0e2ab9e08/whitepapers/serverless-overview/cncf_serverless_whitepaper_v1.0.pdf",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://glossary.cncf.io/serverless/",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtime-environment.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://docs.aws.amazon.com/lambda/latest/dg/invocation-retries.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://docs.aws.amazon.com/lambda/latest/dg/lambda-concurrency.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://aws.amazon.com/lambda/pricing/",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://cloud.google.com/run/docs/about-concurrency",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://github.com/cloudevents/spec/blob/v1.0.2/cloudevents/spec.md",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://github.com/open-workflow-specification/specification/blob/2dd2c84170d5f3e05d58e913e9ca298dcf8d543a/schema/workflow.yaml",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          }
+        ],
+        "sty12": 0,
+        "svg": {
+          "loaded": true,
+          "naturalHeight": 150,
+          "naturalWidth": 100,
+          "renderedHeight": 1200,
+          "renderedWidth": 800,
+          "sourceHeight": 3600,
+          "sourceWidth": 2400,
+          "src": "/tego-arch/assets/images/sty-11-serverless-order-fulfillment-a95eeababb40ed1cd544b8cd067271d5.svg",
+          "viewBox": "0 0 2400 3600",
+          "observedAssetBytes": 21881
+        },
+        "wrappers": [
+          {
+            "clientWidth": 800,
+            "label": "订单结算与异步履约 Serverless 边界图，可横向滚动",
+            "scrollWidth": 800
+          },
+          {
+            "clientWidth": 800,
+            "label": "Serverless 执行与状态责任矩阵，可横向滚动",
+            "scrollWidth": 1024
+          },
+          {
+            "clientWidth": 800,
+            "label": "Serverless 七类故障、响应、停止条件与责任表，可横向滚动",
+            "scrollWidth": 1381
+          },
+          {
+            "clientWidth": 800,
+            "label": "冷启动与成本决策表，可横向滚动",
+            "scrollWidth": 1024
+          }
+        ]
+      },
+      "interactions": [
+        {
+          "index": 0,
+          "label": "订单结算与异步履约 Serverless 边界图，可横向滚动",
+          "key": "ArrowRight",
+          "delta": 0,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(227, 144, 125) solid 3px",
+            "outlineWidth": "3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(227, 144, 125) solid 3px",
+            "outlineWidth": "3px",
+            "scrollLeft": 0
+          }
+        },
+        {
+          "index": 1,
+          "label": "Serverless 执行与状态责任矩阵，可横向滚动",
+          "key": "ArrowRight",
+          "delta": 40,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "outlineWidth": "3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "outlineWidth": "3px",
+            "scrollLeft": 40
+          }
+        },
+        {
+          "index": 2,
+          "label": "Serverless 七类故障、响应、停止条件与责任表，可横向滚动",
+          "key": "ArrowRight",
+          "delta": 40,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "outlineWidth": "3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "outlineWidth": "3px",
+            "scrollLeft": 40
+          }
+        },
+        {
+          "index": 3,
+          "label": "冷启动与成本决策表，可横向滚动",
+          "key": "ArrowRight",
+          "delta": 40,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "outlineWidth": "3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "outlineWidth": "3px",
+            "scrollLeft": 40
+          }
+        }
+      ],
+      "relations": [
+        {
+          "href": "/tego-arch/styles/sty-06",
+          "expectedH1": "事件驱动架构：先分清事件携带什么，再决定状态放在哪里",
+          "visibleCount": 1,
+          "h1": "事件驱动架构：先分清事件携带什么，再决定状态放在哪里",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation followed by Browser back; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/styles/sty-09",
+          "expectedH1": "Pipes and Filters：用明确合同拆分批处理与流处理",
+          "visibleCount": 1,
+          "h1": "Pipes and Filters：用明确合同拆分批处理与流处理",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation followed by Browser back; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/cases/cloudflare-durable-objects-workerd",
+          "expectedH1": "把边缘协调收敛到身份寻址的状态单元",
+          "visibleCount": 1,
+          "h1": "把边缘协调收敛到身份寻址的状态单元",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation followed by Browser back; no physical relation click claimed"
+        }
+      ],
+      "logs": [],
+      "diagnostics": {
+        "events": [],
+        "pages": [
+          {
+            "afterSequence": 98,
+            "cursor": 184,
+            "count": 0,
+            "hasMore": false,
+            "truncated": false
+          }
+        ],
+        "hasMore": false,
+        "truncated": false
+      }
+    },
+    "mobileLight": {
+      "theme": "light",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "geometry": {
+        "page": {
+          "clientHeight": 844,
+          "clientWidth": 390,
+          "scrollHeight": 15730,
+          "scrollWidth": 390
+        },
+        "sources": [
+          {
+            "href": "https://github.com/cncf/wg-serverless/blob/79c8a13c26be9066a8723c5896d8aaa0e2ab9e08/whitepapers/serverless-overview/cncf_serverless_whitepaper_v1.0.pdf",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://glossary.cncf.io/serverless/",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtime-environment.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://docs.aws.amazon.com/lambda/latest/dg/invocation-retries.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://docs.aws.amazon.com/lambda/latest/dg/lambda-concurrency.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://aws.amazon.com/lambda/pricing/",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://cloud.google.com/run/docs/about-concurrency",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://github.com/cloudevents/spec/blob/v1.0.2/cloudevents/spec.md",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://github.com/open-workflow-specification/specification/blob/2dd2c84170d5f3e05d58e913e9ca298dcf8d543a/schema/workflow.yaml",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          }
+        ],
+        "sty12": 0,
+        "svg": {
+          "loaded": true,
+          "naturalHeight": 150,
+          "naturalWidth": 100,
+          "renderedHeight": 1200,
+          "renderedWidth": 800,
+          "sourceHeight": 3600,
+          "sourceWidth": 2400,
+          "src": "/tego-arch/assets/images/sty-11-serverless-order-fulfillment-a95eeababb40ed1cd544b8cd067271d5.svg",
+          "viewBox": "0 0 2400 3600",
+          "observedAssetBytes": 21881
+        },
+        "wrappers": [
+          {
+            "clientWidth": 358,
+            "label": "订单结算与异步履约 Serverless 边界图，可横向滚动",
+            "scrollWidth": 800
+          },
+          {
+            "clientWidth": 358,
+            "label": "Serverless 执行与状态责任矩阵，可横向滚动",
+            "scrollWidth": 1024
+          },
+          {
+            "clientWidth": 358,
+            "label": "Serverless 七类故障、响应、停止条件与责任表，可横向滚动",
+            "scrollWidth": 1381
+          },
+          {
+            "clientWidth": 358,
+            "label": "冷启动与成本决策表，可横向滚动",
+            "scrollWidth": 1024
+          }
+        ]
+      },
+      "interactions": [
+        {
+          "index": 0,
+          "label": "订单结算与异步履约 Serverless 边界图，可横向滚动",
+          "key": "ArrowRight",
+          "delta": 40,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "outlineWidth": "3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "outlineWidth": "3px",
+            "scrollLeft": 40
+          }
+        },
+        {
+          "index": 1,
+          "label": "Serverless 执行与状态责任矩阵，可横向滚动",
+          "key": "ArrowRight",
+          "delta": 40,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "outlineWidth": "3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "outlineWidth": "3px",
+            "scrollLeft": 40
+          }
+        },
+        {
+          "index": 2,
+          "label": "Serverless 七类故障、响应、停止条件与责任表，可横向滚动",
+          "key": "ArrowRight",
+          "delta": 40,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "outlineWidth": "3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "outlineWidth": "3px",
+            "scrollLeft": 40
+          }
+        },
+        {
+          "index": 3,
+          "label": "冷启动与成本决策表，可横向滚动",
+          "key": "ArrowRight",
+          "delta": 40,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "outlineWidth": "3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(159, 63, 49) solid 3px",
+            "outlineWidth": "3px",
+            "scrollLeft": 40
+          }
+        }
+      ],
+      "relations": [
+        {
+          "href": "/tego-arch/styles/sty-06",
+          "expectedH1": "事件驱动架构：先分清事件携带什么，再决定状态放在哪里",
+          "visibleCount": 1,
+          "h1": "事件驱动架构：先分清事件携带什么，再决定状态放在哪里",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation followed by Browser back; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/styles/sty-09",
+          "expectedH1": "Pipes and Filters：用明确合同拆分批处理与流处理",
+          "visibleCount": 1,
+          "h1": "Pipes and Filters：用明确合同拆分批处理与流处理",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation followed by Browser back; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/cases/cloudflare-durable-objects-workerd",
+          "expectedH1": "把边缘协调收敛到身份寻址的状态单元",
+          "visibleCount": 1,
+          "h1": "把边缘协调收敛到身份寻址的状态单元",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation followed by Browser back; no physical relation click claimed"
+        }
+      ],
+      "logs": [],
+      "diagnostics": {
+        "events": [],
+        "pages": [
+          {
+            "afterSequence": 184,
+            "cursor": 283,
+            "count": 0,
+            "hasMore": false,
+            "truncated": false
+          }
+        ],
+        "hasMore": false,
+        "truncated": false
+      }
+    },
+    "mobileDark": {
+      "theme": "dark",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "geometry": {
+        "page": {
+          "clientHeight": 844,
+          "clientWidth": 390,
+          "scrollHeight": 15730,
+          "scrollWidth": 390
+        },
+        "sources": [
+          {
+            "href": "https://github.com/cncf/wg-serverless/blob/79c8a13c26be9066a8723c5896d8aaa0e2ab9e08/whitepapers/serverless-overview/cncf_serverless_whitepaper_v1.0.pdf",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://glossary.cncf.io/serverless/",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtime-environment.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://docs.aws.amazon.com/lambda/latest/dg/invocation-retries.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://docs.aws.amazon.com/lambda/latest/dg/lambda-concurrency.html",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://aws.amazon.com/lambda/pricing/",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://cloud.google.com/run/docs/about-concurrency",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://github.com/cloudevents/spec/blob/v1.0.2/cloudevents/spec.md",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          },
+          {
+            "href": "https://github.com/open-workflow-specification/specification/blob/2dd2c84170d5f3e05d58e913e9ca298dcf8d543a/schema/workflow.yaml",
+            "rel": "noopener noreferrer",
+            "target": "_blank"
+          }
+        ],
+        "sty12": 0,
+        "svg": {
+          "loaded": true,
+          "naturalHeight": 150,
+          "naturalWidth": 100,
+          "renderedHeight": 1200,
+          "renderedWidth": 800,
+          "sourceHeight": 3600,
+          "sourceWidth": 2400,
+          "src": "/tego-arch/assets/images/sty-11-serverless-order-fulfillment-a95eeababb40ed1cd544b8cd067271d5.svg",
+          "viewBox": "0 0 2400 3600",
+          "observedAssetBytes": 21881
+        },
+        "wrappers": [
+          {
+            "clientWidth": 358,
+            "label": "订单结算与异步履约 Serverless 边界图，可横向滚动",
+            "scrollWidth": 800
+          },
+          {
+            "clientWidth": 358,
+            "label": "Serverless 执行与状态责任矩阵，可横向滚动",
+            "scrollWidth": 1024
+          },
+          {
+            "clientWidth": 358,
+            "label": "Serverless 七类故障、响应、停止条件与责任表，可横向滚动",
+            "scrollWidth": 1381
+          },
+          {
+            "clientWidth": 358,
+            "label": "冷启动与成本决策表，可横向滚动",
+            "scrollWidth": 1024
+          }
+        ]
+      },
+      "interactions": [
+        {
+          "index": 0,
+          "label": "订单结算与异步履约 Serverless 边界图，可横向滚动",
+          "key": "ArrowRight",
+          "delta": 40,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(227, 144, 125) solid 3px",
+            "outlineWidth": "3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgb(227, 144, 125) solid 3px",
+            "outlineWidth": "3px",
+            "scrollLeft": 40
+          }
+        },
+        {
+          "index": 1,
+          "label": "Serverless 执行与状态责任矩阵，可横向滚动",
+          "key": "ArrowRight",
+          "delta": 40,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "outlineWidth": "3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "outlineWidth": "3px",
+            "scrollLeft": 40
+          }
+        },
+        {
+          "index": 2,
+          "label": "Serverless 七类故障、响应、停止条件与责任表，可横向滚动",
+          "key": "ArrowRight",
+          "delta": 40,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "outlineWidth": "3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "outlineWidth": "3px",
+            "scrollLeft": 40
+          }
+        },
+        {
+          "index": 3,
+          "label": "冷启动与成本决策表，可横向滚动",
+          "key": "ArrowRight",
+          "delta": 40,
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "outlineWidth": "3px",
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outline": "rgba(227, 144, 125, 0.62) solid 3px",
+            "outlineWidth": "3px",
+            "scrollLeft": 40
+          }
+        }
+      ],
+      "relations": [
+        {
+          "href": "/tego-arch/styles/sty-06",
+          "expectedH1": "事件驱动架构：先分清事件携带什么，再决定状态放在哪里",
+          "visibleCount": 1,
+          "h1": "事件驱动架构：先分清事件携带什么，再决定状态放在哪里",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation followed by Browser back; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/styles/sty-09",
+          "expectedH1": "Pipes and Filters：用明确合同拆分批处理与流处理",
+          "visibleCount": 1,
+          "h1": "Pipes and Filters：用明确合同拆分批处理与流处理",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation followed by Browser back; no physical relation click claimed"
+        },
+        {
+          "href": "/tego-arch/cases/cloudflare-durable-objects-workerd",
+          "expectedH1": "把边缘协调收敛到身份寻址的状态单元",
+          "visibleCount": 1,
+          "h1": "把边缘协调收敛到身份寻址的状态单元",
+          "returnedToArticle": true,
+          "navigation": "direct exact-href navigation followed by Browser back; no physical relation click claimed"
+        }
+      ],
+      "logs": [],
+      "diagnostics": {
+        "events": [],
+        "pages": [
+          {
+            "afterSequence": 283,
+            "cursor": 369,
+            "count": 0,
+            "hasMore": false,
+            "truncated": false
+          }
+        ],
+        "hasMore": false,
+        "truncated": false
+      }
+    }
+  },
+  "screenshotEvidence": {
+    "status": "BLOCKED / NOT_ACCEPTED",
+    "attempted": 3,
+    "accepted": 0,
+    "noFourthAttempt": true,
+    "originalBytesInspected": true,
+    "storage": "Rejected screenshot originals retained only in the active IAB production evidence session; no screenshot file is tracked.",
+    "attempts": [
+      {
+        "state": "desktopLight",
+        "status": "CAPTURED_REJECTED",
+        "reason": "Original full-page bytes repeat article sections and the architecture diagram, so the capture is not a faithful continuous-page image.",
+        "bytes": 848152,
+        "sha256": "a12389466cfbe167150ad468bbadd7c3448374b8ebfe4183a00ad6a4458aa8f7",
+        "format": "JPEG/JFIF",
+        "width": 1440,
+        "height": 10881,
+        "magic": "ffd8ffe000104a4649460001",
+        "uniqueByteValues": 256
+      },
+      {
+        "state": "desktopDark",
+        "status": "CAPTURED_REJECTED",
+        "reason": "Original full-page bytes repeat article sections and the architecture diagram, so the capture is not a faithful continuous-page image.",
+        "bytes": 850353,
+        "sha256": "2a3637b74a7437f00dc87370e3c5afe187cb5ad4745bdaee9c2f130ae562e406",
+        "format": "JPEG/JFIF",
+        "width": 1440,
+        "height": 10881,
+        "magic": "ffd8ffe000104a4649460001",
+        "uniqueByteValues": 256
+      },
+      {
+        "state": "mobileLight",
+        "status": "CAPTURED_REJECTED",
+        "reason": "Original full-page bytes repeat article sections, contain a large blank interval, and omit faithful continuous architecture-diagram coverage.",
+        "bytes": 599835,
+        "sha256": "e649e892ed2f16ebc0cce8432c87688d888518c9d51213a622b2a478ce344572",
+        "format": "JPEG/JFIF",
+        "width": 390,
+        "height": 15730,
+        "magic": "ffd8ffe000104a4649460001",
+        "uniqueByteValues": 256
+      }
+    ]
+  },
+  "functionalSummary": {
+    "status": "PASS",
+    "states": 4,
+    "wrapperInteractions": 16,
+    "relationObservations": 12,
+    "sourceObservations": 40,
+    "sty12ActionableTotal": 0,
+    "warningErrorLogs": 0,
+    "runtimeAndLogEvents": 0,
+    "diagnosticPagesTerminal": true,
+    "diagnosticsTruncated": false
+  }
+}

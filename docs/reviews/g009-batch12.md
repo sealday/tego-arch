@@ -5,7 +5,7 @@
 - Projection: `63 completed topics / 107 content documents / 560 governed sources`.
 - STY-11: `published / pending`.
 - STY-12: `unpublished / pending / non-actionable`; actionable route count: `0`.
-- This record binds the exact candidate, Browser evidence, regression-guard head and three zero-finding independent reviews as the final Stage A READY checkpoint. It does not close the backlog, merge, publish or run Stage B.
+- This record binds the exact candidate, Browser evidence, regression-guard head and three zero-finding independent reviews as the final Stage A READY checkpoint, and now binds its exact production publication below. It does not close the backlog or run Stage B.
 
 ## Artifact identities
 
@@ -70,4 +70,34 @@
 - Independent architecture/invariant review: `CLEAR / READY`; blockers: `0`.
 - Final Stage A review judgment: `READY`.
 - Scope boundary: `STAGE_A_ONLY`.
-- Deployment status: `NOT_RUN`.
+- Deployment status: `STAGE_A_SUCCESS / STAGE_B_NOT_RUN`.
+
+## Stage A production deployment
+
+- Exact published Stage A READY head: `1cf010f13c6e9e98240de7e1d5e7d1c380bdc073`.
+- Exact Pages push run: `32936647570`; `headSha=1cf010f13c6e9e98240de7e1d5e7d1c380bdc073`; workflow: `completed / success`.
+- Build job: `98079000160`; status: `completed / success`.
+- Deploy job: `98079641183`; status: `completed / success`.
+- The workflow, build and deploy identities bind the exact reviewed READY head; no evidence-only run is substituted.
+
+| Production route | Status | Content type |
+| --- | ---: | --- |
+| `/tego-arch/` | `200` | `text/html; charset=utf-8` |
+| `/tego-arch/styles` | `200` | `text/html; charset=utf-8` |
+| `/tego-arch/styles/sty-06` | `200` | `text/html; charset=utf-8` |
+| `/tego-arch/styles/sty-09` | `200` | `text/html; charset=utf-8` |
+| `/tego-arch/styles/sty-11` | `200` | `text/html; charset=utf-8` |
+| `/tego-arch/cases` | `200` | `text/html; charset=utf-8` |
+| `/tego-arch/cases/cloudflare-durable-objects-workerd` | `200` | `text/html; charset=utf-8` |
+| `/tego-arch/references` | `200` | `text/html; charset=utf-8` |
+
+- Required HTML routes: `8/8`; every route returned `200` with `text/html; charset=utf-8`.
+- Reviewed SVG: `21,881` bytes; MIME `image/svg+xml`; SHA-256 `6a166a208e31cb1c6313cd2a21ff17ce124ab6b463821bb3b108275000fa2094`; exact reviewed byte identity: `PASS`.
+- Production raw Browser JSON: `docs/reviews/evidence/g009-batch12-stage-a-production-browser.json`; `36,313` bytes; SHA-256 `31c7ac54204040af70b529a45ef2fbba2cb92b4635a52f0f0086385f1bee346e`.
+- Functional production QA: `PASS`; states `4/4`; wrapper focus/`:focus-visible`/3px/ArrowRight checks `16/16`; relation href/H1/return checks `12/12`; source href/target/rel checks `40/40`.
+- Relation destinations used direct exact-href navigation followed by Browser back; no physical relation click is claimed.
+- SVG geometry: source `viewBox="0 0 2400 3600"` and `2400x3600`; Browser-natural `100x150`; rendered `800x1200`; STY-12 actionable count `0` in every state; warning/error logs and diagnostic events `0`; every diagnostic page has `hasMore=false` and `truncated=false`.
+- Screenshot evidence: `BLOCKED / NOT_ACCEPTED`; exactly three fresh attempts are `CAPTURED_REJECTED`; all repeated article sections or the architecture diagram, and the mobile attempt also contained a large blank interval and omitted faithful continuous diagram coverage.
+- No Chrome fallback, prior raw, historical screenshot, substituted browser surface or visual PASS is claimed.
+- Stage A deployment status: `SUCCESS`; functional production status: `PASS`; visual screenshot status remains separately `BLOCKED / NOT_ACCEPTED`.
+- Scope remains `STAGE_A_ONLY`; backlog, generated projection, Stage B and STY-12 are unchanged.
