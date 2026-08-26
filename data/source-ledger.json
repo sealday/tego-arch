@@ -32655,6 +32655,114 @@
           "quotation_reviewed": false
         }
       ]
+    },
+    "content/concepts/agt-c-05-tool-sandbox-permission-side-effect.mdx": {
+      "reviewed_at": "2026-08-26",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-modelcontextprotocol-6a01ecb9df48",
+          "citation_url": "https://modelcontextprotocol.io/specification/2025-06-18/architecture",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "MCP Architecture（2025-06-18 版）, Model Context Protocol maintainers",
+          "modification_note": "Original Chinese summary of the host-client-server and capability-negotiation architecture; no specification prose, message examples, diagrams, structure or visual layout copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-github-3c46e2b98a84",
+          "citation_url": "https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/docs/tools.md",
+          "roles": [
+            "implementation",
+            "runtime-fact"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Tools / Agents as tools, OpenAI",
+          "modification_note": "Original Chinese summary of the documented function-tool schema and invocation shape at the pinned commit; no prose, code, examples, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-github-bc8615c2a73c",
+          "citation_url": "https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/docs/guardrails.md",
+          "roles": [
+            "implementation",
+            "runtime-fact"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Guardrails, OpenAI",
+          "modification_note": "Original Chinese summary of documented input, output and function-tool guardrail scope at the pinned commit; no prose, code, examples, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-saltzer-schroeder-protection-1975",
+          "citation_url": "https://web.mit.edu/Saltzer/www/publications/protection/",
+          "roles": [
+            "definition",
+            "historical-context"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "The Protection of Information in Computer Systems, Jerome H. Saltzer and Michael D. Schroeder",
+          "modification_note": "Original Chinese factual summary of fail-safe defaults and least privilege; no source prose, examples, figures, table, structure or scan copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-nist-sp-800-160-v1r1-2022",
+          "citation_url": "https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "NIST SP 800-160 Vol. 1 Rev. 1, Engineering Trustworthy Secure Systems",
+          "modification_note": "Original Chinese factual summary of lifecycle systems-security engineering, verification and risk treatment; no source prose, figures, tables or structure copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-aws-making-retries-safe-idempotent-apis-2020",
+          "citation_url": "https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-APIs/",
+          "roles": [
+            "implementation",
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Making retries safe with idempotent APIs, Malcolm Featonby / Amazon Web Services",
+          "modification_note": "Original Chinese factual summary of caller-provided request identity and semantic-equivalence boundaries; no source prose, examples, diagrams, code or structure copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-nist-ai-rmf-1-0",
+          "citation_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "roles": [
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Artificial Intelligence Risk Management Framework (AI RMF 1.0), Elham Tabassi / National Institute of Standards and Technology",
+          "modification_note": "Original Chinese factual summary of risk, monitoring, human-oversight, recovery and decommissioning mechanisms; no source prose, figures, tables or framework structure copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
     }
   },
   "superseded_transports": [

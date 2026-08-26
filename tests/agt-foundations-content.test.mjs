@@ -20,6 +20,8 @@ const harnessArticlePath = 'content/concepts/agt-c-02-agent-harness.mdx';
 const loopArticlePath = 'content/concepts/agt-c-03-agent-loop.mdx';
 const informationLifecycleArticlePath =
   'content/concepts/agt-c-04-context-memory-state-checkpoint.mdx';
+const actionBoundaryArticlePath =
+  'content/concepts/agt-c-05-tool-sandbox-permission-side-effect.mdx';
 const reactApprovedLocator = 'https://arxiv.org/abs/2210.03629';
 const drawioPath = 'diagrams/agt-c-01-agent-system-boundary.drawio';
 const svgPath = 'static/img/diagrams/agt-c-01-agent-system-boundary.svg';
@@ -172,6 +174,76 @@ const informationLifecycleSourceIds = [
   'src-docs-99e58642fe77',
   'src-docs-7dd57631bd24',
   'src-docs-8050933565ee',
+];
+const actionBoundaryHeader = [
+  '动作级别',
+  '外部效果',
+  '权限与批准',
+  '隔离与凭据',
+  '重放与核对',
+  '失败与恢复',
+];
+const actionBoundaryRows = [
+  '只读（read）',
+  '写入（write）',
+  '破坏性（destructive）',
+];
+const actionBoundaryCellContracts = [
+  [
+    /不改变权威业务状态/u,
+    /最小只读范围[\s\S]*默认拒绝/u,
+    /只读凭据[\s\S]*网络与文件范围/u,
+    /新鲜度[\s\S]*有界重试/u,
+    /超时[\s\S]*不升级为已知失败/u,
+  ],
+  [
+    /创建或修改[\s\S]*可补偿/u,
+    /主体、资源、动作、范围与到期[\s\S]*风险决定批准/u,
+    /窄权限凭据[\s\S]*不暴露平台主凭据/u,
+    /稳定操作标识[\s\S]*传输请求标识[\s\S]*幂等[\s\S]*结果查询/u,
+    /结果未知[\s\S]*先查询[\s\S]*补偿/u,
+  ],
+  [
+    /删除、发布或不可逆外部效果/u,
+    /不可逆副作用之前[\s\S]*人工批准[\s\S]*缺失或过期[\s\S]*拒绝/u,
+    /一次性或短时凭据[\s\S]*撤销/u,
+    /禁止盲目重试[\s\S]*权威回执或结果查询/u,
+    /停止自动化[\s\S]*人工核对[\s\S]*补偿[\s\S]*吊销凭据/u,
+  ],
+];
+const actionBoundaryNodes = new Map([
+  ['INTENT', ['意图']],
+  ['POLICY', ['策略']],
+  ['APPROVAL', ['人工批准']],
+  ['SANDBOX', ['隔离沙箱']],
+  ['TOOL', ['工具']],
+  ['AUTHORITY', ['权威系统']],
+  ['RESULT_VERIFICATION', ['结果验证']],
+  ['REJECTED', ['拒绝']],
+  ['CONFIRMED', ['已确认']],
+  ['UNKNOWN', ['未知 / 不匹配']],
+]);
+const actionBoundaryEdges = [
+  'INTENT->POLICY',
+  'POLICY->SANDBOX',
+  'POLICY->APPROVAL',
+  'POLICY->REJECTED',
+  'APPROVAL->SANDBOX',
+  'APPROVAL->REJECTED',
+  'SANDBOX->TOOL',
+  'TOOL->AUTHORITY',
+  'AUTHORITY->RESULT_VERIFICATION',
+  'RESULT_VERIFICATION->CONFIRMED',
+  'RESULT_VERIFICATION->UNKNOWN',
+];
+const actionBoundarySourceIds = [
+  'src-modelcontextprotocol-6a01ecb9df48',
+  'src-github-3c46e2b98a84',
+  'src-github-bc8615c2a73c',
+  'src-saltzer-schroeder-protection-1975',
+  'src-nist-sp-800-160-v1r1-2022',
+  'src-aws-making-retries-safe-idempotent-apis-2020',
+  'src-nist-ai-rmf-1-0',
 ];
 
 const registry = JSON.parse(
@@ -508,7 +580,7 @@ test('AGT-C-02 governs exact Anthropic engineering sources and matching health t
   }
 });
 
-function parseMermaidFlowchart(mermaid) {
+function parseMermaidFlowchart(mermaid, direction = 'LR') {
   const labelsById = new Map();
   const edges = [];
   let headerSeen = false;
@@ -522,7 +594,7 @@ function parseMermaidFlowchart(mermaid) {
   for (const line of mermaid.split(/\r?\n/u)) {
     const statement = line.trim();
     if (!statement) continue;
-    if (!headerSeen && statement === 'flowchart LR') {
+    if (!headerSeen && statement === `flowchart ${direction}`) {
       headerSeen = true;
       continue;
     }
@@ -549,7 +621,7 @@ function parseMermaidFlowchart(mermaid) {
       edges.push(`${nodeIds[index - 1]}->${nodeIds[index]}`);
     }
   }
-  assert.ok(headerSeen, 'Mermaid flowchart LR header');
+  assert.ok(headerSeen, `Mermaid flowchart ${direction} header`);
 
   return {
     edges,
@@ -1027,6 +1099,228 @@ test('AGT-C-04 reuses the governed LangGraph persistence sources without changin
     assert.equal(
       observation.last_attempt.final_transport_locator,
       governedSource.expected_final_transport_locator,
+    );
+  }
+});
+
+function directedPaths(edges, start, terminal) {
+  const adjacency = new Map();
+  for (const edge of edges) {
+    const [source, target] = edge.split('->');
+    adjacency.set(source, [...(adjacency.get(source) ?? []), target]);
+  }
+  const paths = [];
+  const visit = (node, path) => {
+    assert.ok(!path.includes(node), `side-effect flow must be acyclic at ${node}`);
+    const nextPath = [...path, node];
+    if (node === terminal) {
+      paths.push(nextPath);
+      return;
+    }
+    for (const next of adjacency.get(node) ?? []) visit(next, nextPath);
+  };
+  visit(start, []);
+  return paths;
+}
+
+function visibleActionBoundary(source) {
+  return parseMdxVisibleCopy(source, actionBoundaryArticlePath).blocks
+    .map(({text}) => text.replace(/\s+/gu, ' ').trim())
+    .filter(Boolean)
+    .join('\n');
+}
+
+function assertActionBoundaryContract(source) {
+  const metadata = parseFrontMatter(source);
+  assert.equal(metadata.topic_id, 'AGT-C-05');
+  assert.equal(metadata.slug, '/concepts/agt-c-05');
+  assert.equal(metadata.content_type, 'concept');
+  assert.equal(metadata.status, 'reviewed');
+  assert.deepEqual(metadata.depends_on, ['AGT-C-01', 'AGT-C-02', 'AGT-C-03']);
+  assert.deepEqual(metadata.adjacent_topics, [
+    'AGT-C-04',
+    'AGT-C-06',
+    'AGT-P-08',
+    'PR-09',
+    'PR-10',
+  ]);
+  assert.deepEqual(metadata.related_cases, [
+    '/cases/long-running-coding-agent',
+    '/cases/production-incident-response-agent',
+  ]);
+
+  const headings = findMarkdownHeadings(source)
+    .filter(({level}) => level === 2)
+    .map(({text}) => `## ${text}`);
+  assert.deepEqual(headings, knowledgeTypeContracts.concept);
+
+  const actionTables = markdownTables(source).filter(
+    ([header]) => header?.[0] === actionBoundaryHeader[0],
+  );
+  assert.equal(actionTables.length, 1, 'exactly one action boundary matrix');
+  const [header, ...rows] = actionTables[0];
+  assert.deepEqual(header, actionBoundaryHeader);
+  assert.equal(rows.length, 3, 'exactly three action-level rows');
+  for (const [rowIndex, row] of rows.entries()) {
+    assert.equal(row.length, 6, `action row ${rowIndex + 1} has six cells`);
+    for (const [columnIndex, cell] of row.entries()) {
+      assert.notEqual(cell, '', `action row ${rowIndex + 1} column ${columnIndex + 1} is non-empty`);
+    }
+  }
+  assert.deepEqual(rows.map(([identity]) => identity), actionBoundaryRows);
+  for (const [rowIndex, contracts] of actionBoundaryCellContracts.entries()) {
+    for (const [contractIndex, contract] of contracts.entries()) {
+      assert.match(
+        rows[rowIndex][contractIndex + 1],
+        contract,
+        `action semantic row ${rowIndex + 1} column ${contractIndex + 2}`,
+      );
+    }
+  }
+  assert.match(
+    source,
+    /import \{handleHorizontalArrowKey\} from '@site\/src\/components\/KeyboardScrollableRegion\/handleHorizontalArrowKey\.mjs';/u,
+  );
+  assert.match(
+    source,
+    /<div className="table-wrapper table-wrapper--mapping diagram-wrapper--scroll-owner" role="region" aria-label="只读、写入与破坏性动作安全矩阵，可横向滚动" tabIndex=\{0\} onKeyDown=\{handleHorizontalArrowKey\}>[\s\S]*\| 动作级别 \| 外部效果 \| 权限与批准 \| 隔离与凭据 \| 重放与核对 \| 失败与恢复 \|[\s\S]*<\/div>/u,
+  );
+
+  const mermaid = source.match(/```mermaid\n([\s\S]*?)```/u)?.[1];
+  assert.ok(mermaid, 'Mermaid action boundary flow');
+  const graph = parseMermaidFlowchart(mermaid, 'TB');
+  assert.deepEqual(graph.labelsById, actionBoundaryNodes);
+  assert.deepEqual(graph.edges.sort(), [...actionBoundaryEdges].sort());
+  assert.match(mermaid, /POLICY -->\|只读 \/ 可补偿写入\| SANDBOX/u);
+  assert.match(mermaid, /POLICY -->\|不可逆副作用\| APPROVAL/u);
+  assert.match(mermaid, /POLICY -->\|拒绝 \/ 控制故障\| REJECTED/u);
+  assert.match(mermaid, /APPROVAL -->\|批准有效\| SANDBOX/u);
+  assert.match(mermaid, /APPROVAL -->\|拒绝 \/ 过期\| REJECTED/u);
+  assert.match(mermaid, /RESULT_VERIFICATION -->\|一致\| CONFIRMED/u);
+  assert.match(mermaid, /RESULT_VERIFICATION -->\|未知 \/ 不一致\| UNKNOWN/u);
+
+  for (const terminal of ['CONFIRMED', 'UNKNOWN']) {
+    const paths = directedPaths(graph.edges, 'INTENT', terminal);
+    assert.ok(paths.length > 0, `reachable side-effect terminal: ${terminal}`);
+    for (const path of paths) {
+      for (const mandatory of ['POLICY', 'SANDBOX', 'TOOL', 'AUTHORITY', 'RESULT_VERIFICATION']) {
+        assert.ok(path.includes(mandatory), `${terminal} path includes ${mandatory}`);
+      }
+    }
+  }
+  const destructivePath = ['INTENT', 'POLICY', 'APPROVAL', 'SANDBOX', 'TOOL', 'AUTHORITY', 'RESULT_VERIFICATION'];
+  for (let index = 1; index < destructivePath.length; index += 1) {
+    assert.ok(
+      graph.edges.includes(`${destructivePath[index - 1]}->${destructivePath[index]}`),
+      `approval ordering edge ${destructivePath[index - 1]}->${destructivePath[index]}`,
+    );
+  }
+
+  const visible = visibleActionBoundary(source);
+  for (const contract of [
+    /工具模式只描述名称、参数与结果合同，不等于授权/u,
+    /隔离沙箱约束执行环境，不等于主体身份/u,
+    /超时只说明观察者没有得到结果，不等于已知失败/u,
+    /稳定操作标识代表一次逻辑效果，传输请求标识只代表一次网络尝试/u,
+    /MCP 暴露能力不自动授予安全授权/u,
+    /最小权限[\s\S]*默认拒绝[\s\S]*幂等[\s\S]*结果查询[\s\S]*补偿[\s\S]*凭据撤销/u,
+    /MCP Architecture[\s\S]*主机、客户端与服务端[\s\S]*不证明授权、安全性（Security）或生产适用性/u,
+    /OpenAI Agents SDK[\s\S]*工具文档[\s\S]*函数工具的模式与调用形态[\s\S]*不授予业务权限/u,
+    /Guardrails[\s\S]*输入、输出与函数工具护栏[\s\S]*不等于资源级业务授权或副作用批准/u,
+    /Saltzer[\s\S]*基于许可的默认值与完成工作所需最低权限[\s\S]*不证明已部署策略/u,
+    /NIST SP 800-160[\s\S]*生命周期安全工程、验证与风险处置[\s\S]*不规定本文拓扑/u,
+    /Making retries safe with idempotent APIs[\s\S]*调用者提供请求身份与语义等价[\s\S]*不提供普遍恰好一次/u,
+    /AI RMF 1\.0[\s\S]*风险、监测、人工监督、恢复与退役[\s\S]*不规定动作矩阵或批准阈值/u,
+  ]) {
+    assert.match(visible, contract);
+  }
+}
+
+function replaceActionCell(source, rowIndex, columnIndex, replacement) {
+  const lines = source.split(/\r?\n/u);
+  const headerIndex = lines.indexOf('| 动作级别 | 外部效果 | 权限与批准 | 隔离与凭据 | 重放与核对 | 失败与恢复 |');
+  assert.notEqual(headerIndex, -1, 'action boundary table header');
+  const lineIndex = headerIndex + 2 + rowIndex;
+  const cells = lines[lineIndex].slice(1, -1).split('|').map((cell) => cell.trim());
+  assert.equal(cells.length, 6, `action row ${rowIndex + 1} fixture`);
+  cells[columnIndex] = replacement;
+  lines[lineIndex] = `| ${cells.join(' | ')} |`;
+  return lines.join('\n');
+}
+
+function deleteActionRow(source, rowIndex) {
+  const lines = source.split(/\r?\n/u);
+  const headerIndex = lines.indexOf('| 动作级别 | 外部效果 | 权限与批准 | 隔离与凭据 | 重放与核对 | 失败与恢复 |');
+  assert.notEqual(headerIndex, -1, 'action boundary table header');
+  lines.splice(headerIndex + 2 + rowIndex, 1);
+  return lines.join('\n');
+}
+
+test('AGT-C-05 publishes a fail-closed tool, sandbox, permission, and side-effect contract', () => {
+  assert.ok(existsSync(actionBoundaryArticlePath), `Missing ${actionBoundaryArticlePath}`);
+  assertActionBoundaryContract(readFileSync(actionBoundaryArticlePath, 'utf8'));
+});
+
+test('AGT-C-05 rejects action-matrix, authority-bypass, and approval-order mutations', () => {
+  const source = readFileSync(actionBoundaryArticlePath, 'utf8');
+  const mutations = [];
+  for (let rowIndex = 0; rowIndex < 3; rowIndex += 1) {
+    for (let columnIndex = 0; columnIndex < 6; columnIndex += 1) {
+      mutations.push([
+        `empty action row ${rowIndex + 1} column ${columnIndex + 1}`,
+        replaceActionCell(source, rowIndex, columnIndex, ''),
+      ]);
+    }
+    for (let columnIndex = 1; columnIndex < 6; columnIndex += 1) {
+      mutations.push([
+        `wrong action semantic row ${rowIndex + 1} column ${columnIndex + 1}`,
+        replaceActionCell(source, rowIndex, columnIndex, '非空但错误'),
+      ]);
+    }
+    mutations.push([`deleted action row ${rowIndex + 1}`, deleteActionRow(source, rowIndex)]);
+  }
+  mutations.push(
+    ['policy bypass', source.replace('INTENT["意图"] --> POLICY["策略"]', 'INTENT["意图"] --> SANDBOX["隔离沙箱"]')],
+    ['sandbox bypass', source.replace('SANDBOX --> TOOL["工具"]', 'POLICY --> TOOL["工具"]')],
+    ['authority bypass', source.replace('TOOL --> AUTHORITY["权威系统"]', 'TOOL --> RESULT_VERIFICATION["结果验证"]')],
+    ['verification bypass', source.replace('AUTHORITY --> RESULT_VERIFICATION["结果验证"]', 'AUTHORITY --> CONFIRMED["已确认"]')],
+    ['approval after tool', source.replace('POLICY -->|不可逆副作用| APPROVAL["人工批准"]', 'TOOL -->|不可逆副作用| APPROVAL["人工批准"]')],
+    ['approval bypass', source.replace('APPROVAL -->|批准有效| SANDBOX', 'APPROVAL -->|批准有效| AUTHORITY')],
+    ['alternate solid connector bypass', source.replace('SANDBOX --> TOOL["工具"]', 'SANDBOX --> TOOL["工具"]\n    POLICY ==> AUTHORITY')],
+    ['alternate dotted connector bypass', source.replace('SANDBOX --> TOOL["工具"]', 'SANDBOX --> TOOL["工具"]\n    POLICY -.-> AUTHORITY')],
+    ['alternate bidirectional connector bypass', source.replace('SANDBOX --> TOOL["工具"]', 'SANDBOX --> TOOL["工具"]\n    POLICY <--> AUTHORITY')],
+    ['alternate circle connector bypass', source.replace('SANDBOX --> TOOL["工具"]', 'SANDBOX --> TOOL["工具"]\n    POLICY --o AUTHORITY')],
+    ['alternate cross connector bypass', source.replace('SANDBOX --> TOOL["工具"]', 'SANDBOX --> TOOL["工具"]\n    POLICY --x AUTHORITY')],
+    ['decoy stable identity', source.replace('INTENT["意图"] --> POLICY["策略"]', 'INTENT["意图"] --> FAKE_POLICY["策略"]')],
+    ['mobile table wrapper removed', source.replace('table-wrapper table-wrapper--mapping diagram-wrapper--scroll-owner', 'table-wrapper')],
+    ['MCP auto-authorization', source.replace('MCP 暴露能力不自动授予安全授权', 'MCP 暴露能力会自动授予安全授权')],
+    ['hidden original MCP boundary', source.replace('MCP 暴露能力不自动授予安全授权', 'MCP 暴露能力会自动授予安全授权{/* MCP 暴露能力不自动授予安全授权 */}')],
+  );
+
+  for (const [label, mutant] of mutations) {
+    assert.notEqual(mutant, source, `${label} fixture must alter the article`);
+    assert.throws(() => assertActionBoundaryContract(mutant), undefined, label);
+  }
+});
+
+test('AGT-C-05 reuses governed MCP, OpenAI, PR-09, PR-10, and NIST sources', () => {
+  const ledger = JSON.parse(readFileSync('data/source-ledger.json', 'utf8'));
+  const document = ledger.documents[actionBoundaryArticlePath];
+  assert.ok(document, `${actionBoundaryArticlePath} source document`);
+  assert.deepEqual(
+    document.citations.map(({source_id}) => source_id),
+    actionBoundarySourceIds,
+  );
+  assert.ok(document.citations.every(({usage_mode}) => usage_mode === 'facts-summary'));
+  assert.equal(document.citations.filter(({manifest_primary}) => manifest_primary).length, 1);
+
+  for (const sourceId of actionBoundarySourceIds) {
+    const governedSource = ledger.sources.find(({id}) => id === sourceId);
+    assert.ok(governedSource, sourceId);
+    assert.ok(
+      governedSource.allowed_evidence_roles.some((role) =>
+        ['definition', 'implementation', 'method', 'runtime-fact'].includes(role)),
+      `${sourceId} supports the cited evidence role`,
     );
   }
 });
