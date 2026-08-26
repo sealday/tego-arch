@@ -11,6 +11,8 @@ import {knowledgeTypeContracts} from '../scripts/content-schema.mjs';
 const articlePath = 'content/concepts/agt-c-01-agent-system-boundary.mdx';
 const harnessArticlePath = 'content/concepts/agt-c-02-agent-harness.mdx';
 const loopArticlePath = 'content/concepts/agt-c-03-agent-loop.mdx';
+const informationLifecycleArticlePath =
+  'content/concepts/agt-c-04-context-memory-state-checkpoint.mdx';
 const reactApprovedLocator = 'https://arxiv.org/abs/2210.03629';
 const drawioPath = 'diagrams/agt-c-01-agent-system-boundary.drawio';
 const svgPath = 'static/img/diagrams/agt-c-01-agent-system-boundary.svg';
@@ -119,6 +121,17 @@ const loopEdges = [
   'TERMINATE->FAILURE',
   'TERMINATE->BUDGET_EXHAUSTED',
   'TERMINATE->HUMAN_STOP',
+];
+const informationLifecycleRows = [
+  '上下文（Context）',
+  '记忆（Memory）',
+  '状态（State）',
+  '执行检查点（Checkpoint）',
+];
+const informationLifecycleSourceIds = [
+  'src-docs-99e58642fe77',
+  'src-docs-7dd57631bd24',
+  'src-docs-8050933565ee',
 ];
 
 const registry = JSON.parse(
@@ -691,4 +704,85 @@ test('AGT-C-03 rejects coordinated drift from the approved ReAct transport', () 
   assert.notDeepEqual(driftedReact, react);
   assert.notDeepEqual(driftedHealth, reactHealth);
   assert.throws(() => assertReactLocatorPins(driftedReact, driftedHealth));
+});
+
+test('AGT-C-04 publishes the four-part information lifecycle and recovery contract', () => {
+  assert.ok(
+    existsSync(informationLifecycleArticlePath),
+    `Missing ${informationLifecycleArticlePath}`,
+  );
+  const source = readFileSync(informationLifecycleArticlePath, 'utf8');
+  const metadata = parseFrontMatter(source);
+  assert.equal(metadata.topic_id, 'AGT-C-04');
+  assert.equal(metadata.slug, '/concepts/agt-c-04');
+  assert.equal(metadata.content_type, 'concept');
+  assert.equal(metadata.status, 'reviewed');
+  assert.deepEqual(metadata.depends_on, ['AGT-C-01', 'AGT-C-02', 'AGT-C-03']);
+  assert.deepEqual(metadata.adjacent_topics, [
+    'AGT-C-05',
+    'AGT-C-06',
+    'AGT-P-02',
+    'AGT-P-06',
+    'AGT-P-07',
+    'AGT-P-08',
+  ]);
+  assert.deepEqual(metadata.related_cases, [
+    '/cases/multi-agent-research-system',
+    '/cases/long-running-coding-agent',
+    '/cases/production-incident-response-agent',
+  ]);
+
+  const headings = findMarkdownHeadings(source)
+    .filter(({level}) => level === 2)
+    .map(({text}) => `## ${text}`);
+  assert.deepEqual(headings, knowledgeTypeContracts.concept);
+
+  const lifecycleRows = markdownTableRows(
+    source,
+    '| 内容 | 生命周期 | 权威性 | 写入者 | 恢复用途 |',
+  );
+  assert.equal(lifecycleRows.length, 4);
+  assert.deepEqual(
+    lifecycleRows.map((row) => row.split('|')[1].trim().replaceAll('`', '')),
+    informationLifecycleRows,
+  );
+
+  assert.match(source, /Memory 不承载共享业务真相/u);
+  assert.match(source, /过时记忆（`stale memory`）/u);
+  assert.match(source, /检查点与模式漂移（`checkpoint\/schema drift`）/u);
+  assert.match(source, /重放（`replay`）/u);
+  assert.match(source, /删除与保留/u);
+  assert.match(source, /LangGraph 文档只支持上述框架行为，不定义所有智能体的通用状态模型/u);
+  assert.doesNotMatch(source, /```mermaid|architecture-diagram-scroll|\/img\//u);
+});
+
+test('AGT-C-04 reuses the governed LangGraph persistence sources without changing health cache', () => {
+  const ledger = JSON.parse(readFileSync('data/source-ledger.json', 'utf8'));
+  const health = JSON.parse(readFileSync('data/source-link-health.json', 'utf8'));
+  const document = ledger.documents[informationLifecycleArticlePath];
+  assert.ok(document, `${informationLifecycleArticlePath} source document`);
+  assert.deepEqual(
+    document.citations.map(({source_id}) => source_id),
+    informationLifecycleSourceIds,
+  );
+  assert.ok(document.citations.every(({usage_mode}) => usage_mode === 'facts-summary'));
+
+  for (const sourceId of informationLifecycleSourceIds) {
+    const governedSource = ledger.sources.find(({id}) => id === sourceId);
+    assert.ok(governedSource, sourceId);
+    assert.equal(governedSource.author_or_org, 'LangChain');
+    assert.equal(governedSource.source_kind, 'official-docs');
+    assert.equal(governedSource.tier, 'primary');
+    assert.equal(governedSource.license, 'MIT');
+    assert.equal(governedSource.copyright_policy, 'facts-and-short-quotation');
+    const observation = health.results.find(({source_ids: sourceIds}) =>
+      sourceIds.includes(sourceId));
+    assert.ok(observation, `${sourceId} health observation`);
+    assert.equal(observation.transport_locator, governedSource.transport_locator);
+    assert.equal(observation.last_attempt.outcome, 'healthy');
+    assert.equal(
+      observation.last_attempt.final_transport_locator,
+      governedSource.expected_final_transport_locator,
+    );
+  }
 });

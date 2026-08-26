@@ -32605,6 +32605,56 @@
           "quotation_reviewed": false
         }
       ]
+    },
+    "content/concepts/agt-c-04-context-memory-state-checkpoint.mdx": {
+      "reviewed_at": "2026-08-26",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-docs-99e58642fe77",
+          "citation_url": "https://docs.langchain.com/oss/python/langgraph/persistence",
+          "roles": [
+            "runtime-fact"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Persistence, LangChain",
+          "modification_note": "Original Chinese summary of documented checkpointer, graph-state snapshot, store and recovery behavior; no source prose, code, examples, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-docs-7dd57631bd24",
+          "citation_url": "https://docs.langchain.com/oss/python/langgraph/interrupts",
+          "roles": [
+            "runtime-fact"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Interrupts, LangChain",
+          "modification_note": "Original Chinese summary of documented pause, checkpoint-backed resume, node re-execution and idempotency behavior; no source prose, code, examples, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-docs-8050933565ee",
+          "citation_url": "https://docs.langchain.com/oss/python/langgraph/fault-tolerance",
+          "roles": [
+            "runtime-fact"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Fault tolerance, LangChain",
+          "modification_note": "Original Chinese summary of documented retry, timeout and error-handler behavior; no source prose, code, examples, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
     }
   },
   "superseded_transports": [
