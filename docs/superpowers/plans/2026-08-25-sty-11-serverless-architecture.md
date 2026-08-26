@@ -207,13 +207,14 @@
     'enqueue-payment', 'deliver-payment', 'invoke-payment', 'payment-receipt',
     'enqueue-inventory', 'deliver-inventory', 'reserve-inventory', 'inventory-receipt',
     'enqueue-notification', 'deliver-notification', 'send-notification',
-    'query-unknown-result', 'reconcile-manually', 'close-manual-terminal',
+    'query-unknown-result', 'query-payment-authority', 'query-inventory-authority',
+    'reconcile-manually', 'close-manual-terminal',
     'limit-ingress', 'limit-execution', 'limit-downstream',
   ]);
   export const LEGEND_ROLES = Object.freeze(['request', 'work', 'receipt', 'recovery', 'budget']);
   ```
 
-  Define an `EDGE_CONTRACTS` object that maps every edge above to exact source node, target node and one legend role. Derive Draw.io endpoints from source/target bounds and normalized ports; compare SVG route points, roles, bounds, line/marker/font styles and paint order. At 800 CSS-pixel render width require node padding `16/14px`, title/type baseline `22px`, text bottom `14px`, label-to-stroke/arrow/node `8/16/12px`, and body/edge text `15px`. Check semantic/structural/legend intersections, marker footprints, partial collinear overlaps and later paint masks.
+  Define an `EDGE_CONTRACTS` object that maps every edge above to exact source node, target node and one legend role. The two new recovery edges are `reconciliation → payment-authority` and `reconciliation → inventory-authority`; `limit-downstream` is `payment-authority → capacity-cost-observability`, after which `limit-execution` applies the received budget to the queue. Require exact, duplicate-free set equality for Draw.io and SVG regions, nodes, semantic edges, legend edges and notes so additional unsafe topology cannot be ignored. Derive Draw.io endpoints from source/target bounds and normalized ports; compare SVG route points, roles, bounds, line/marker/font styles and paint order. At 800 CSS-pixel render width require node padding `16/14px`, title/type baseline `22px`, text bottom `14px`, label-to-stroke/arrow/node `8/16/12px`, and body/edge text `15px`. Check semantic/structural/legend intersections, marker footprints, partial collinear overlaps and later paint masks. Semantic prose mutations must transform the existing affirmative claim (ownership, idempotency, conditional transition, authoritative query, stop condition) and prove the contract rejects the changed meaning; appending a separately forbidden literal is insufficient.
 
 - [ ] **Step 7: Run focused tests and commit meaningful RED**
 
@@ -247,13 +248,13 @@
 
 - [ ] **Step 1: Read the required diagram skill and freeze layout data**
 
-  Read `creating-drawio-architecture-diagrams/SKILL.md` completely, then both references listed above. Record the four regions, fifteen nodes, twenty-one semantic edges, five legend roles, three prohibition notes, exact text and paths in `.superpowers/sdd/sty11-task2-inventory.md`.
+  Read `creating-drawio-architecture-diagrams/SKILL.md` completely, then both references listed above. Record the four regions, fifteen nodes, twenty-three semantic edges, five legend roles, three prohibition notes, exact text and paths in `.superpowers/sdd/sty11-task2-inventory.md`.
 
-  Use a `2400×3600` authoring canvas and this region order: request boundary top, durable control center-left, function execution center-right, authority boundary bottom. The capacity/cost observer sits outside the business path and sends only budget controls; reconciliation and manual terminal sit in the recovery corridor.
+  Use a `2400×3600` authoring canvas and this region order: request boundary top, durable control center-left, function execution center-right, authority boundary bottom. The capacity/cost observer sits outside the business path: it receives the downstream authority budget and sends ingress/execution controls. Reconciliation and manual terminal sit in the recovery corridor, with explicit recovery queries from reconciliation to both payment and inventory authorities.
 
 - [ ] **Step 2: Add diagram-specific RED mutations**
 
-  Add non-no-op mutations for missing/changed ports, missing waypoint, injected `sourcePoint`, function-to-order-store edge, queue-declares-success edge, timeout-direct-retry edge, budget arrow reversed into observability, detached receipt, missing manual terminal, legend drift, changed font, opaque label mask, partial overlap and shifted marker into a foreign node or boundary.
+  Add non-no-op mutations for missing/changed ports, missing waypoint, injected `sourcePoint`, function-to-order-store edge, queue-declares-success edge, timeout-direct-retry edge, downstream budget reversed away from observability, missing payment/inventory authority query, detached receipt, missing manual terminal, duplicate or extra semantic identity, legend drift, changed font, opaque label mask, partial overlap and shifted marker into a foreign node or boundary.
 
   ```bash
   node --test --test-name-pattern='SVG cascade|diagram inventory|Draw.io/SVG diagram' tests/g009-batch12-content.test.mjs
