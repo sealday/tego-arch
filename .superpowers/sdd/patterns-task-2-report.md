@@ -55,11 +55,11 @@ The contract now locks:
   - `开放步骤/可验证结果`;
   - `高风险副作用`;
   - `长时可恢复任务`;
-- every decision cell is non-empty; the four axes and recommended control form preserve row-specific semantics;
-- physical GFM column counts, AST table identity, structural mutations, semantic mutations, empty-cell mutations, an extra-column mutation, and missing-row identities;
+- every decision cell is non-empty; the four axes and recommended control form preserve the approved row-specific copy;
+- physical GFM column counts, AST table identity, structural mutations, empty and incorrect mutations for each approved cell, an extra-column mutation, and missing-row identities;
 - reader-visible progressive path `deterministic code → workflow with model step → bounded agent loop → durable/multi-agent`;
 - hidden HTML comments, fenced code, and `hidden` JSX cannot satisfy decision or progression contracts;
-- no Markdown image, image reference, Mermaid diagram, or JSX visual embed.
+- no Markdown image, image reference, case-insensitive Mermaid diagram, renderable MDX expression, visual ESM import, unresolved JSX attribute, visual resource attribute, image role, background URL, or unknown custom component.
 
 Additional focused repository evidence:
 
@@ -67,7 +67,7 @@ Additional focused repository evidence:
 node --test tests/agt-patterns-content.test.mjs tests/agt-foundations-content.test.mjs \
   tests/content-registries.test.mjs tests/topic-manifest.test.mjs \
   tests/content-relations.test.mjs tests/content-validation.test.mjs
-tests 125; pass 125; fail 0
+tests 126; pass 126; fail 0
 
 node --test tests/agt-patterns-content.test.mjs tests/source-ledger.test.mjs \
   tests/source-license-inventory.test.mjs tests/source-link-health.test.mjs
@@ -155,5 +155,97 @@ There are zero AGT-P-01 content, metadata, reciprocal-edge, citation, source-hea
 - Safety: model-selected steps do not own hard limits, authority state, or write authorization; unknown effects stop automation.
 - Visuals: no visual asset or hidden visual embed was introduced.
 - Governance: health cache and generated projections are untouched; no unresolved drafting marker or copied structure was added.
-- Test quality: mutation suite rejects empty cells, wrong semantics, extra columns, hidden/comment/code decoys, and no-visual escapes.
+- Test quality: the original suite protected structure and selected recommendations; the corrective suite below records the broader per-cell and fail-closed guarantees added after review.
 - Formatting: `git diff --check` passes.
+
+## Corrective quality review
+
+### Corrective RED
+
+The review identified that the first contract used permissive cell regexes and a narrow visual-tag denylist. Tests were changed first, without changing the contract implementation. The focused run then failed exactly as intended:
+
+```text
+node --test tests/agt-patterns-content.test.mjs
+tests 8; pass 6; fail 2
+```
+
+The first failing test reported all five reviewer survivors:
+
+- high-risk verification changed from `执行前后均须权威验证` to `无需任何验证`;
+- long-running side effects changed from `只允许可去重、可补偿动作` to `允许不可逆写入`;
+- the known-step recommendation changed to `自治优先<span hidden>确定性代码</span>`;
+- an `ArchitectureDiagram` custom component was added;
+- a static semantic container was changed to `role="img"`.
+
+The second failing test reported all four public metadata survivors: `title`, `tags`, `summary`, and `related_questions`.
+
+### Corrective GREEN and exact protection
+
+The final focused contract passes:
+
+```text
+node --test tests/agt-patterns-content.test.mjs
+tests 11; pass 11; fail 0
+```
+
+The decision matrix now compares its AST-derived, reader-visible rows with the exact approved 4-by-6 matrix. This protects all four identities and all five non-identity cells per row. The systematic mutation set supplies both an empty value and a non-empty wrong value for every cell, including the 20 required non-identity cells. The two reviewer prose substitutions and hidden-text recommendation are also explicit named regressions.
+
+Cell text uses the AGT-C-06-reviewed fail-closed reader model: `hidden`, non-false `aria-hidden`, `display: none`, `visibility: hidden`, unresolved attributes, code, inline code, MDX expressions, ESM, raw HTML, and unknown custom components cannot contribute decision evidence. Dedicated mutants exercise static and object styles, inline code, a renderable text expression, and a dynamic hidden state.
+
+The no-visual AST contract now rejects Markdown images and references, case-insensitive Mermaid, unknown/custom visual components, direct or fallback-list `role="img"`, `src`, `data`, `poster`, `srcSet`, dynamic or spread attributes, direct or CSS-variable background resources, dynamic styles, renderable flow/text expressions, and relevant visual component or asset ESM imports. Imported custom-component bindings require exact approved provenance, and local declarations cannot impersonate `Callout`. Static known non-visual `Callout` and ordinary `div.table-wrapper` containers remain accepted. Twenty-six representative visual or indeterminate mutants have zero survivors.
+
+Exact public metadata is now asserted and mutation-tested. The canonical fixture and backlog establish the AGT-P-01 identity and route; the design and Pattern plan establish the Workflow-versus-Agent scope and no-visual disposition; the reviewed article supplies the approved Chinese public title, ordered tags, summary, and empty `related_questions` value.
+
+Fresh corrective verification:
+
+```text
+node --test tests/agt-patterns-content.test.mjs tests/agt-foundations-content.test.mjs \
+  tests/content-registries.test.mjs tests/topic-manifest.test.mjs \
+  tests/content-relations.test.mjs tests/content-validation.test.mjs
+tests 131; pass 131; fail 0
+
+node --test tests/agt-patterns-content.test.mjs tests/source-ledger.test.mjs \
+  tests/source-license-inventory.test.mjs tests/source-link-health.test.mjs
+tests 114; pass 114; fail 0
+
+npm run validate:content
+Validated 114 content document(s) and 569 registered source(s).
+
+npm run check:terminology
+checked 116 files with 154 registered terms; 0 issues
+
+npm run check:links
+PASS
+
+git diff --check
+PASS
+```
+
+The earlier relation evidence is corrected from the stale `125/125` transcription to its fresh pre-corrective `126/126` result. The five additional corrective tests account exactly for the current `131/131` result.
+
+### Corrective source, visual, and blocker disposition
+
+The article and governed source projection did not need correction. The contract still reuses only `src-anthropic-building-effective-agents` and `src-openai-practical-guide-building-agents` within their first-party definition/method boundaries. No source identity, citation, transport, license, or link-health observation changed.
+
+The `无需图` disposition is unchanged. The corrective work strengthens enforcement only; it adds no illustration, diagram, asset, visual citation, or health entry.
+
+`npm run check:content` still exits 1 with the same 39 later-owned unpublished-target diagnostics documented above: 10 AGT-P-01 outbound edges and 29 pre-existing Foundation edges. No new diagnostic appeared, and neither previously removed reciprocal edge returned. Generated files remain untouched.
+
+Corrective self-review found no article wording or source-boundary change necessary. The diff is limited to the Pattern contract and this report, the reviewer survivors are named tests, all 20 non-identity matrix cells receive empty and wrong mutations, visible evidence is fail-closed, the no-visual rule has explicit acceptance fixtures, and the requested focused/governance checks are fresh.
+
+### Independent review follow-up
+
+The pre-commit read-only review found three additional fail-closed classes: visibility delegated through a CSS custom property, a background URL delegated through a CSS custom property, and unknown ESM bindings that could impersonate `Callout` or import `Chart`. These were again added to the mutation suites before the helpers changed. The focused RED result was:
+
+```text
+tests 11; pass 9; fail 2
+decision survivors: custom-property hidden display
+visual survivors: custom-property background URL; externally unresolved background variable;
+  unknown renderer aliases the Callout binding; Chart component import
+```
+
+The reader model now treats `var()` and `env()` in `display` or `visibility` as indeterminate and therefore non-evidence. The visual contract rejects visual-resource functions in every inline-style value, rejects indeterminate background values, extends visual ESM identities to charts and graphs, requires exact source/name provenance for imported custom components, and rejects local declarations that shadow an approved component identity. A local-`Callout` declaration mutant was added as a further binding-provenance check.
+
+After those fixes, focused tests returned `11/11`, relations/manifest/content contracts `131/131`, source governance `114/114`, content validation and link cache passed, terminology returned `116 files / 154 terms / 0 issues`, `git diff --check` passed, and `check:content` remained the same exact 39 later-owned diagnostics.
+
+A second read-only pass found CSS comments after `display:none`, an ARIA fallback role list containing `img`, and the missing `.ico` asset extension. Adding those three valid-MDX mutants first produced `11 tests / 9 pass / 2 fail` with exactly those survivors. Static CSS comments now fail closed, role values are tokenized, and the visual extension set covers APNG, AVIF, BMP, GIF, HEIC/HEIF, ICO, JPEG, JXL, PNG, SVG, TIFF, and WebP. The final focused rerun returned `11/11` and `git diff --check` passed.
