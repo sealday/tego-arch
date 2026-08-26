@@ -148,6 +148,58 @@ test('AGT-C-01 keeps the full shared label set visible and connectors above the 
   }
 });
 
+test('AGT-C-01 preserves measured padding geometry and connector endpoint identities', () => {
+  const drawio = readFileSync(drawioPath, 'utf8');
+  const svg = readFileSync(svgPath, 'utf8');
+
+  const widenedNodes = [
+    ['budget', '580', '45', '318', '120'],
+    ['approval', '924', '45', '256', '120'],
+    ['knowledge', '110', '550', '318', '110'],
+    ['human-agents', '760', '550', '330', '110'],
+    ['checkpoint', '440', '780', '190', '74'],
+  ];
+  for (const [nodeId, x, y, width, height] of widenedNodes) {
+    assert.match(
+      drawio,
+      new RegExp(`id="${nodeId}"[\\s\\S]*?<mxGeometry x="${x}" y="${y}" width="${width}" height="${height}"`, 'u'),
+    );
+    assert.match(
+      svg,
+      new RegExp(`data-node-id="${nodeId}" x="${x}" y="${y}" width="${width}" height="${height}"`, 'u'),
+    );
+  }
+
+  for (const nodeId of ['state', 'memory', 'trace']) {
+    assert.match(
+      drawio,
+      new RegExp(`id="${nodeId}"[\\s\\S]*?<mxGeometry[^>]*y="780"[^>]*height="74"`, 'u'),
+    );
+    assert.match(
+      svg,
+      new RegExp(`data-node-id="${nodeId}"[^>]*y="780"[^>]*height="74"`, 'u'),
+    );
+  }
+  assert.match(svg, /data-node-id="foundation"[\s\S]*?<text x="110" y="760"/u);
+  assert.match(svg, /data-node-id="state"[\s\S]*?<text x="165" y="825\.5"/u);
+
+  const endpoints = [
+    ['edge-loop-knowledge', 'loop', 'knowledge'],
+    ['edge-loop-tools', 'loop', 'tools'],
+    ['edge-loop-human', 'loop', 'human-agents'],
+  ];
+  for (const [edgeId, sourceId, targetId] of endpoints) {
+    assert.match(
+      drawio,
+      new RegExp(`id="${edgeId}"[^>]*source="${sourceId}" target="${targetId}"`, 'u'),
+    );
+    assert.match(
+      svg,
+      new RegExp(`data-edge-id="${edgeId}" data-source="${sourceId}" data-target="${targetId}"`, 'u'),
+    );
+  }
+});
+
 test('AGT-C-01 source health observes the cited Anthropic article, not a companion work', () => {
   const ledger = JSON.parse(readFileSync('data/source-ledger.json', 'utf8'));
   const health = JSON.parse(readFileSync('data/source-link-health.json', 'utf8'));
