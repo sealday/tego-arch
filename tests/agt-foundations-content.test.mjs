@@ -2,11 +2,18 @@ import assert from 'node:assert/strict';
 import {existsSync, readFileSync} from 'node:fs';
 import test from 'node:test';
 
+import {unified} from 'unified';
+import remarkGfm from 'remark-gfm';
+import remarkMdx from 'remark-mdx';
+import remarkParse from 'remark-parse';
+
 import {
+  extractMarkdownBody,
   findMarkdownHeadings,
   parseFrontMatter,
 } from '../scripts/content-metadata.mjs';
 import {knowledgeTypeContracts} from '../scripts/content-schema.mjs';
+import {parseMdxVisibleCopy} from '../scripts/visible-copy.mjs';
 
 const articlePath = 'content/concepts/agt-c-01-agent-system-boundary.mdx';
 const harnessArticlePath = 'content/concepts/agt-c-02-agent-harness.mdx';
@@ -128,6 +135,39 @@ const informationLifecycleRows = [
   '状态（State）',
   '执行检查点（Checkpoint）',
 ];
+const informationLifecycleHeader = [
+  '内容',
+  '生命周期',
+  '权威性',
+  '写入者',
+  '恢复用途',
+];
+const informationLifecycleCellContracts = [
+  [
+    /单次推理调用[\s\S]*重新装配、裁剪或替换/u,
+    /继承各来源的权威性[\s\S]*看见不等于事实成立/u,
+    /智能体运行框架按策略装配[\s\S]*用户[\s\S]*检索器[\s\S]*状态服务[\s\S]*工具/u,
+    /状态、记忆和新鲜证据[\s\S]*重建当前窗口[\s\S]*不是恢复源/u,
+  ],
+  [
+    /跨轮或跨任务保留[\s\S]*用途[\s\S]*同意[\s\S]*时效[\s\S]*删除策略/u,
+    /个体化线索或经验[\s\S]*低于当前指令、显式状态和权威数据源/u,
+    /用户确认、受控提取器或应用服务[\s\S]*模型只能提出候选记忆/u,
+    /偏好和经验连续性[\s\S]*不决定任务进度或共享业务事实/u,
+  ],
+  [
+    /任务或业务实体生命周期[\s\S]*显式转换演进/u,
+    /经校验字段可成为任务事实[\s\S]*业务事实仍以其权威系统为准/u,
+    /状态机、受权工具、应用服务或人工批准者/u,
+    /已完成、待处理、失败和外部效果状态[\s\S]*驱动下一步/u,
+  ],
+  [
+    /稳定执行边界生成[\s\S]*恢复窗口、审计或删除策略到期/u,
+    /快照及位置有记录权威[\s\S]*不自动证明外部效果/u,
+    /运行时或检查点器[\s\S]*提交协议/u,
+    /执行位置和必要状态[\s\S]*模式、权限与外部效果/u,
+  ],
+];
 const informationLifecycleSourceIds = [
   'src-docs-99e58642fe77',
   'src-docs-7dd57631bd24',
@@ -138,6 +178,7 @@ const registry = JSON.parse(
   readFileSync('tests/fixtures/agentic-topic-system.json', 'utf8'),
 );
 const backlog = readFileSync('docs/content-backlog.md', 'utf8');
+const markdownParser = unified().use(remarkParse).use(remarkGfm).use(remarkMdx);
 
 function markdownTableRows(source, header) {
   const lines = source.split(/\r?\n/u);
@@ -149,6 +190,30 @@ function markdownTableRows(source, header) {
     rows.push(lines[cursor]);
   }
   return rows;
+}
+
+function nodeVisibleText(node) {
+  if (node.type === 'text' || node.type === 'inlineCode') return node.value;
+  return (node.children ?? []).map(nodeVisibleText).join('');
+}
+
+function markdownTables(source) {
+  const tables = [];
+  const visit = (node) => {
+    if (node.type === 'table') {
+      tables.push(node.children.map((row) =>
+        row.children.map((cell) => nodeVisibleText(cell).replace(/\s+/gu, ' ').trim())));
+    }
+    for (const child of node.children ?? []) visit(child);
+  };
+  visit(markdownParser.parse(extractMarkdownBody(source)));
+  return tables;
+}
+
+function visibleBodyRecords(source) {
+  return parseMdxVisibleCopy(source, informationLifecycleArticlePath).blocks
+    .map(({text}) => text.replace(/\s+/gu, ' ').trim())
+    .filter(Boolean);
 }
 
 test('agentic topic registry is exact and globally unique', () => {
@@ -706,12 +771,7 @@ test('AGT-C-03 rejects coordinated drift from the approved ReAct transport', () 
   assert.throws(() => assertReactLocatorPins(driftedReact, driftedHealth));
 });
 
-test('AGT-C-04 publishes the four-part information lifecycle and recovery contract', () => {
-  assert.ok(
-    existsSync(informationLifecycleArticlePath),
-    `Missing ${informationLifecycleArticlePath}`,
-  );
-  const source = readFileSync(informationLifecycleArticlePath, 'utf8');
+function assertInformationLifecycleContract(source) {
   const metadata = parseFrontMatter(source);
   assert.equal(metadata.topic_id, 'AGT-C-04');
   assert.equal(metadata.slug, '/concepts/agt-c-04');
@@ -737,23 +797,207 @@ test('AGT-C-04 publishes the four-part information lifecycle and recovery contra
     .map(({text}) => `## ${text}`);
   assert.deepEqual(headings, knowledgeTypeContracts.concept);
 
-  const lifecycleRows = markdownTableRows(
-    source,
-    '| 内容 | 生命周期 | 权威性 | 写入者 | 恢复用途 |',
+  const lifecycleTables = markdownTables(source).filter(
+    ([header]) => header?.[0] === informationLifecycleHeader[0],
   );
-  assert.equal(lifecycleRows.length, 4);
+  assert.equal(lifecycleTables.length, 1, 'exactly one information lifecycle table');
+  const [header, ...lifecycleRows] = lifecycleTables[0];
+  assert.deepEqual(header, informationLifecycleHeader);
+  assert.equal(lifecycleRows.length, 4, 'exactly four lifecycle data rows');
+  for (const [rowIndex, row] of lifecycleRows.entries()) {
+    assert.equal(row.length, 5, `lifecycle row ${rowIndex + 1} has five cells`);
+    for (const [columnIndex, cell] of row.entries()) {
+      assert.notEqual(
+        cell,
+        '',
+        `lifecycle row ${rowIndex + 1} column ${columnIndex + 1} is non-empty`,
+      );
+    }
+  }
   assert.deepEqual(
-    lifecycleRows.map((row) => row.split('|')[1].trim().replaceAll('`', '')),
+    lifecycleRows.map(([identity]) => identity),
     informationLifecycleRows,
   );
+  for (const [rowIndex, contracts] of informationLifecycleCellContracts.entries()) {
+    for (const [contractIndex, contract] of contracts.entries()) {
+      assert.match(
+        lifecycleRows[rowIndex][contractIndex + 1],
+        contract,
+        `lifecycle semantic row ${rowIndex + 1} column ${contractIndex + 2}`,
+      );
+    }
+  }
 
-  assert.match(source, /Memory 不承载共享业务真相/u);
-  assert.match(source, /过时记忆（`stale memory`）/u);
-  assert.match(source, /检查点与模式漂移（`checkpoint\/schema drift`）/u);
-  assert.match(source, /重放（`replay`）/u);
-  assert.match(source, /删除与保留/u);
-  assert.match(source, /LangGraph 文档只支持上述框架行为，不定义所有智能体的通用状态模型/u);
+  const visibleRecords = visibleBodyRecords(source);
+  const exactMemoryBoundary = 'Memory 不承载共享业务真相';
+  assert.equal(
+    visibleRecords.filter((record) => record === exactMemoryBoundary).length,
+    1,
+    'exact Memory authority sentence is visible once',
+  );
+  const visibleBody = visibleRecords.join('\n');
+  assert.match(
+    visibleBody,
+    /过时记忆[\s\S]*与当前指令或权威状态冲突时隔离该记忆、重新确认或删除，不能让模型按旧偏好继续/u,
+  );
+  assert.match(
+    visibleBody,
+    /检查点与模式漂移[\s\S]*不能安全解释就停止自动恢复并升级人工/u,
+  );
+  assert.match(
+    visibleBody,
+    /重放[\s\S]*写操作先用幂等键、回执或权威系统查询核对是否已生效[\s\S]*结果仍未知时暂停/u,
+  );
+  assert.match(
+    visibleBody,
+    /删除与保留[\s\S]*原始记录、派生摘要、向量表示、检查点副本、缓存和备份各自的删除语义与完成证据/u,
+  );
+  assert.match(
+    visibleBody,
+    /不能证明本文四分法是 LangGraph 自身的定义[\s\S]*LangGraph 文档只支持上述框架行为，不定义所有智能体的通用状态模型/u,
+  );
+  assert.match(visibleBody, /不证明任意外部写入具备恰好一次语义/u);
   assert.doesNotMatch(source, /```mermaid|architecture-diagram-scroll|\/img\//u);
+}
+
+function replaceLifecycleCell(source, rowIndex, columnIndex, replacement) {
+  const lines = source.split(/\r?\n/u);
+  const headerIndex = lines.indexOf('| 内容 | 生命周期 | 权威性 | 写入者 | 恢复用途 |');
+  assert.notEqual(headerIndex, -1, 'lifecycle table header');
+  const lineIndex = headerIndex + 2 + rowIndex;
+  const cells = lines[lineIndex].slice(1, -1).split('|').map((cell) => cell.trim());
+  assert.equal(cells.length, 5, `lifecycle row ${rowIndex + 1} fixture`);
+  cells[columnIndex] = replacement;
+  lines[lineIndex] = `| ${cells.join(' | ')} |`;
+  return lines.join('\n');
+}
+
+function addLifecycleColumn(source) {
+  const lines = source.split(/\r?\n/u);
+  const headerIndex = lines.indexOf('| 内容 | 生命周期 | 权威性 | 写入者 | 恢复用途 |');
+  assert.notEqual(headerIndex, -1, 'lifecycle table header');
+  lines[headerIndex] = '| 内容 | 生命周期 | 权威性 | 写入者 | 恢复用途 | 备注 |';
+  lines[headerIndex + 1] = '| --- | --- | --- | --- | --- | --- |';
+  for (let rowIndex = 0; rowIndex < 4; rowIndex += 1) {
+    lines[headerIndex + 2 + rowIndex] = lines[headerIndex + 2 + rowIndex]
+      .replace(/\|$/u, '| 新增信息 |');
+  }
+  return lines.join('\n');
+}
+
+function deleteLifecycleRow(source, rowIndex) {
+  const lines = source.split(/\r?\n/u);
+  const headerIndex = lines.indexOf('| 内容 | 生命周期 | 权威性 | 写入者 | 恢复用途 |');
+  assert.notEqual(headerIndex, -1, 'lifecycle table header');
+  lines.splice(headerIndex + 2 + rowIndex, 1);
+  return lines.join('\n');
+}
+
+test('AGT-C-04 publishes the four-part information lifecycle and recovery contract', () => {
+  assert.ok(
+    existsSync(informationLifecycleArticlePath),
+    `Missing ${informationLifecycleArticlePath}`,
+  );
+  assertInformationLifecycleContract(
+    readFileSync(informationLifecycleArticlePath, 'utf8'),
+  );
+});
+
+test('AGT-C-04 rejects lifecycle-table, hidden-copy, and recovery-boundary mutations', () => {
+  const source = readFileSync(informationLifecycleArticlePath, 'utf8');
+  const mutations = [];
+
+  for (let rowIndex = 0; rowIndex < 4; rowIndex += 1) {
+    for (let columnIndex = 0; columnIndex < 5; columnIndex += 1) {
+      mutations.push([
+        `empty row ${rowIndex + 1} column ${columnIndex + 1}`,
+        replaceLifecycleCell(source, rowIndex, columnIndex, ''),
+      ]);
+    }
+    for (let columnIndex = 1; columnIndex < 5; columnIndex += 1) {
+      mutations.push([
+        `wrong semantic row ${rowIndex + 1} column ${columnIndex + 1}`,
+        replaceLifecycleCell(source, rowIndex, columnIndex, '非空但错误'),
+      ]);
+    }
+  }
+  mutations.push(
+    ['sixth column', addLifecycleColumn(source)],
+    [
+      'visible Memory sentence moved to a hidden comment',
+      source.replace(
+        '> Memory 不承载共享业务真相',
+        '{/* Memory 不承载共享业务真相 */}',
+      ),
+    ],
+    [
+      'stale memory can override current truth',
+      source.replace(
+        '与当前指令或权威状态冲突时隔离该记忆、重新确认或删除，不能让模型按旧偏好继续',
+        '与当前指令或权威状态冲突时仍让模型按旧偏好继续',
+      ),
+    ],
+    [
+      'schema drift resumes without a safe interpretation',
+      source.replace(
+        '不能安全解释就停止自动恢复并升级人工',
+        '不能安全解释时仍继续自动恢复',
+      ),
+    ],
+    [
+      'replay blindly resends writes',
+      source.replace(
+        '写操作先用幂等键、回执或权威系统查询核对是否已生效',
+        '写操作无需核对便直接重发',
+      ),
+    ],
+    [
+      'deletion ignores derived and backup copies',
+      source.replace(
+        '原始记录、派生摘要、向量表示、检查点副本、缓存和备份各自的删除语义与完成证据',
+        '当前检索索引的删除结果',
+      ),
+    ],
+    [
+      'LangGraph is generalized through a hidden original boundary',
+      source.replace(
+        'LangGraph 文档只支持上述框架行为，不定义所有智能体的通用状态模型。',
+        'LangGraph 文档定义所有智能体的通用状态模型。{/* LangGraph 文档只支持上述框架行为，不定义所有智能体的通用状态模型 */}',
+      ),
+    ],
+    [
+      'LangGraph is generalized to exactly-once effects',
+      source.replace(
+        '不证明任意外部写入具备恰好一次语义',
+        '证明任意外部写入天然具备恰好一次语义',
+      ),
+    ],
+  );
+  for (let rowIndex = 0; rowIndex < 4; rowIndex += 1) {
+    mutations.push([
+      `deleted row ${rowIndex + 1}`,
+      deleteLifecycleRow(source, rowIndex),
+    ]);
+    mutations.push([
+      `changed row ${rowIndex + 1} identity`,
+      replaceLifecycleCell(
+        source,
+        rowIndex,
+        0,
+        informationLifecycleRows[(rowIndex + 1) % informationLifecycleRows.length]
+          .replace(/([A-Za-z]+)/gu, '`$1`'),
+      ),
+    ]);
+  }
+
+  for (const [label, mutant] of mutations) {
+    assert.notEqual(mutant, source, `${label} fixture must alter the article`);
+    assert.throws(
+      () => assertInformationLifecycleContract(mutant),
+      undefined,
+      label,
+    );
+  }
 });
 
 test('AGT-C-04 reuses the governed LangGraph persistence sources without changing health cache', () => {
