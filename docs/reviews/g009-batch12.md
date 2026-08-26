@@ -127,3 +127,34 @@
 - Stage B scope boundary: `STAGE_B`.
 - Stage B deployment status: `PENDING / NOT_RUN`.
 - Stage B screenshot status remains `BLOCKED / NOT_ACCEPTED`.
+
+## Stage B production deployment
+
+- Exact published Stage B READY head: `0b0127d4d658d0300d6d20395080000955f0fc47`.
+- Exact Pages push run: `32941341129`; `headSha=0b0127d4d658d0300d6d20395080000955f0fc47`; workflow: `completed / success`.
+- Build job: `98092768863`; status: `completed / success`.
+- Deploy job: `98093498138`; status: `completed / success`.
+- The workflow, build and deploy identities bind the exact Stage B READY head; no evidence-only run is substituted.
+
+| Production route | Status | Content type |
+| --- | ---: | --- |
+| `/tego-arch/` | `200` | `text/html; charset=utf-8` |
+| `/tego-arch/styles` | `200` | `text/html; charset=utf-8` |
+| `/tego-arch/styles/sty-06` | `200` | `text/html; charset=utf-8` |
+| `/tego-arch/styles/sty-09` | `200` | `text/html; charset=utf-8` |
+| `/tego-arch/styles/sty-11` | `200` | `text/html; charset=utf-8` |
+| `/tego-arch/cases` | `200` | `text/html; charset=utf-8` |
+| `/tego-arch/cases/cloudflare-durable-objects-workerd` | `200` | `text/html; charset=utf-8` |
+| `/tego-arch/references` | `200` | `text/html; charset=utf-8` |
+
+- Required HTML routes: `8/8`; every route returned `200` with `text/html; charset=utf-8`.
+- Reviewed SVG: `21,881` bytes; MIME `image/svg+xml`; SHA-256 `6a166a208e31cb1c6313cd2a21ff17ce124ab6b463821bb3b108275000fa2094`; exact reviewed byte identity: `PASS`.
+- Stage B production raw Browser JSON: `docs/reviews/evidence/g009-batch12-stage-b-production-browser.json`; `36,594` bytes; SHA-256 `f3616447f2b5db750c5d6a66b9befe15105beda023255c83d3888903a9e7e4e3`.
+- Projection: `64 completed topics / 107 content documents / 560 governed sources`; STY-11 is `published / complete`; STY-12 is `unpublished / pending / non-actionable` with actionable count `0`.
+- Functional production QA: `PASS`; states `4/4`; wrapper focus/`:focus-visible`/3px/ArrowRight checks `16/16`; relation href/H1/return checks `12/12`; source href/target/rel checks `40/40`.
+- Relation destinations used direct exact-href navigation followed by Browser back; no physical relation click is claimed.
+- SVG geometry: source `viewBox="0 0 2400 3600"` and `2400x3600`; Browser-natural `100x150`; rendered `800x1200`; STY-12 actionable count `0` in every state; warning/error logs and diagnostic events `0`; every diagnostic page has `hasMore=false` and `truncated=false`.
+- Screenshot evidence: `BLOCKED / NOT_ACCEPTED`; exactly three fresh full-page attempts are `CAPTURED_REJECTED`; original bytes were inspected; all repeated article sections or the architecture diagram, and the mobile attempt also contained a large blank interval and omitted faithful continuous diagram coverage; no fourth attempt was made and no visual PASS is claimed.
+- No Chrome fallback, external Playwright, prior raw, historical screenshot, substituted browser surface or fabricated success is claimed.
+- Stage B deployment status: `SUCCESS`; functional production status: `PASS`; visual screenshot status remains separately `BLOCKED / NOT_ACCEPTED`.
+- Scope is closed at `STAGE_B`; STY-12 remains untouched, unpublished, pending and non-actionable.

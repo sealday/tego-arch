@@ -19,10 +19,13 @@ export const CANDIDATE_HEAD = '4405d38bc70a3eb3711319c00c54f069e333a8aa';
 export const EVIDENCE_HEAD = '0e074a91731ae5fe77bca550bf905c213eca5af1';
 export const REVIEW_GUARD_HEAD = 'c4431c9d13998ec88cebe716db9156700917b6c2';
 export const READY_HEAD = '1cf010f13c6e9e98240de7e1d5e7d1c380bdc073';
+export const STAGE_B_READY_HEAD = '0b0127d4d658d0300d6d20395080000955f0fc47';
 export const LOCAL_RAW_BYTES = 34_866;
 export const LOCAL_RAW_SHA256 = 'a4c80875fbcf06b3f524a55f3a55a80639f3b3335a3ac7e6d173a4f4b98bbe4d';
 export const PRODUCTION_RAW_BYTES = 36_313;
 export const PRODUCTION_RAW_SHA256 = '31c7ac54204040af70b529a45ef2fbba2cb92b4635a52f0f0086385f1bee346e';
+export const STAGE_B_PRODUCTION_RAW_BYTES = 36_594;
+export const STAGE_B_PRODUCTION_RAW_SHA256 = 'f3616447f2b5db750c5d6a66b9befe15105beda023255c83d3888903a9e7e4e3';
 
 const PRODUCTION_PAGES = Object.freeze({
   runId: 32_936_647_570,
@@ -34,6 +37,19 @@ const PRODUCTION_PAGES = Object.freeze({
   buildStatus: 'completed',
   buildConclusion: 'success',
   deployJobId: 98_079_641_183,
+  deployStatus: 'completed',
+  deployConclusion: 'success',
+});
+const STAGE_B_PRODUCTION_PAGES = Object.freeze({
+  runId: 32_941_341_129,
+  event: 'push',
+  headSha: STAGE_B_READY_HEAD,
+  status: 'completed',
+  conclusion: 'success',
+  buildJobId: 98_092_768_863,
+  buildStatus: 'completed',
+  buildConclusion: 'success',
+  deployJobId: 98_093_498_138,
   deployStatus: 'completed',
   deployConclusion: 'success',
 });
@@ -96,10 +112,21 @@ const PRODUCTION_DIAGNOSTIC_PAGES = Object.freeze([
   [184, 283],
   [283, 369],
 ]);
+const STAGE_B_PRODUCTION_DIAGNOSTIC_PAGES = Object.freeze([
+  [70, 143],
+  [143, 226],
+  [226, 333],
+  [333, 439],
+]);
 const PRODUCTION_SCREENSHOT_ATTEMPTS = Object.freeze([
   ['desktopLight', 848_152, 'a12389466cfbe167150ad468bbadd7c3448374b8ebfe4183a00ad6a4458aa8f7', 1440, 10_881],
   ['desktopDark', 850_353, '2a3637b74a7437f00dc87370e3c5afe187cb5ad4745bdaee9c2f130ae562e406', 1440, 10_881],
   ['mobileLight', 599_835, 'e649e892ed2f16ebc0cce8432c87688d888518c9d51213a622b2a478ce344572', 390, 15_730],
+]);
+const STAGE_B_PRODUCTION_SCREENSHOT_ATTEMPTS = Object.freeze([
+  ['desktopLight', 770_093, 'd0ac50ff2a67b5cbf73717b2ec0b7824dd21973554e456997df4e9c4efb9a9db', 1440, 10_881],
+  ['desktopDark', 767_673, '240ce955f61719efd0767366889505f204a4aef4f2845079422a62cd221840af', 1440, 10_881],
+  ['mobileLight', 601_033, 'b31d8b50e78dd13ecbeebb854a7ae0c5853ca1390441bc7b2a28a57b2f586ae6', 390, 15_730],
 ]);
 
 const ARTICLE = 'content/styles/sty-11-serverless-architecture.mdx';
@@ -166,6 +193,29 @@ const READY_STAGE_B_REVIEW_LINES = Object.freeze([
   '- Stage B scope boundary: `STAGE_B`.',
   '- Stage B deployment status: `PENDING / NOT_RUN`.',
   '- Stage B screenshot status remains `BLOCKED / NOT_ACCEPTED`.',
+]);
+const STAGE_B_PRODUCTION_REVIEW_LINES = Object.freeze([
+  `- Exact published Stage B READY head: \`${STAGE_B_READY_HEAD}\`.`,
+  `- Exact Pages push run: \`${STAGE_B_PRODUCTION_PAGES.runId}\`; \`headSha=${STAGE_B_READY_HEAD}\`; workflow: \`completed / success\`.`,
+  `- Build job: \`${STAGE_B_PRODUCTION_PAGES.buildJobId}\`; status: \`completed / success\`.`,
+  `- Deploy job: \`${STAGE_B_PRODUCTION_PAGES.deployJobId}\`; status: \`completed / success\`.`,
+  '- The workflow, build and deploy identities bind the exact Stage B READY head; no evidence-only run is substituted.',
+  '',
+  '| Production route | Status | Content type |',
+  '| --- | ---: | --- |',
+  ...PRODUCTION_ROUTES.map(({path, status, contentType}) => `| \`${path}\` | \`${status}\` | \`${contentType}\` |`),
+  '',
+  '- Required HTML routes: `8/8`; every route returned `200` with `text/html; charset=utf-8`.',
+  `- Reviewed SVG: \`${PRODUCTION_SVG.bytes.toLocaleString('en-US')}\` bytes; MIME \`${PRODUCTION_SVG.contentType}\`; SHA-256 \`${PRODUCTION_SVG.sha256}\`; exact reviewed byte identity: \`PASS\`.`,
+  `- Stage B production raw Browser JSON: \`${STAGE_B_PRODUCTION_RAW}\`; \`${STAGE_B_PRODUCTION_RAW_BYTES.toLocaleString('en-US')}\` bytes; SHA-256 \`${STAGE_B_PRODUCTION_RAW_SHA256}\`.`,
+  '- Projection: `64 completed topics / 107 content documents / 560 governed sources`; STY-11 is `published / complete`; STY-12 is `unpublished / pending / non-actionable` with actionable count `0`.',
+  '- Functional production QA: `PASS`; states `4/4`; wrapper focus/`:focus-visible`/3px/ArrowRight checks `16/16`; relation href/H1/return checks `12/12`; source href/target/rel checks `40/40`.',
+  '- Relation destinations used direct exact-href navigation followed by Browser back; no physical relation click is claimed.',
+  '- SVG geometry: source `viewBox="0 0 2400 3600"` and `2400x3600`; Browser-natural `100x150`; rendered `800x1200`; STY-12 actionable count `0` in every state; warning/error logs and diagnostic events `0`; every diagnostic page has `hasMore=false` and `truncated=false`.',
+  '- Screenshot evidence: `BLOCKED / NOT_ACCEPTED`; exactly three fresh full-page attempts are `CAPTURED_REJECTED`; original bytes were inspected; all repeated article sections or the architecture diagram, and the mobile attempt also contained a large blank interval and omitted faithful continuous diagram coverage; no fourth attempt was made and no visual PASS is claimed.',
+  '- No Chrome fallback, external Playwright, prior raw, historical screenshot, substituted browser surface or fabricated success is claimed.',
+  '- Stage B deployment status: `SUCCESS`; functional production status: `PASS`; visual screenshot status remains separately `BLOCKED / NOT_ACCEPTED`.',
+  '- Scope is closed at `STAGE_B`; STY-12 remains untouched, unpublished, pending and non-actionable.',
 ]);
 
 const rootUrl = new URL('../', import.meta.url);
@@ -234,16 +284,26 @@ function assertFinalReview(source = review) {
   assert.match(source, /Screenshot evidence: `BLOCKED \/ NOT_ACCEPTED`/u);
   assert.match(source, /Exactly three fresh full-page attempts are `CAPTURED_REJECTED`; original bytes were inspected; no fourth attempt was made/u);
   assert.equal(markdownSection(source, 'Independent review checkpoint'), FINAL_STAGE_A_CHECKPOINT.join('\n'), 'exact final Stage A checkpoint');
-  assert.doesNotMatch(source, /Stage B (?:review judgment|deployment status): `(?!PENDING|NOT_RUN)/u);
-  assert.doesNotMatch(source, /Screenshot evidence: `PASS`|Stage B deployment status: `SUCCESS`/u);
+  assert.doesNotMatch(source, /Screenshot evidence: `PASS`/u);
 }
 
 function assertReadyStageBReview(source = review) {
   assertProductionReview(source);
   assert.equal(markdownSection(source, 'Stage B closure candidate'), READY_STAGE_B_REVIEW_LINES.join('\n'), 'exact READY Stage B closure section');
   assert.equal(source.split('## Stage B closure candidate').length - 1, 1, 'one Stage B closure section');
-  assert.doesNotMatch(source, /^## Stage B production deployment$/mu);
-  assert.doesNotMatch(source, /Independent Stage B .*`(?:PENDING|NOT READY|CHANGES|BLOCKED)|Final Stage B (?:review judgment|readiness): `PENDING`|Stage B deployment status: `SUCCESS`/u);
+  assert.doesNotMatch(source, /Independent Stage B .*`(?:PENDING|NOT READY|CHANGES|BLOCKED)|Final Stage B (?:review judgment|readiness): `PENDING`/u);
+}
+
+function assertFinalStageBReview(source = review) {
+  assertReadyStageBReview(source);
+  assert.equal(markdownSection(source, 'Stage B production deployment'), STAGE_B_PRODUCTION_REVIEW_LINES.join('\n'), 'exact Stage B production section');
+  assert.equal(source.split('## Stage B production deployment').length - 1, 1, 'one Stage B production section');
+  for (const line of [
+    `- Exact Stage B reviewed head: \`${STAGE_B_REVIEWED_HEAD}\`.`,
+    '- Final Stage B readiness: `READY`.',
+    `- Exact published Stage B READY head: \`${STAGE_B_READY_HEAD}\`.`,
+  ]) assert.equal(source.split(line).length - 1, 1, `${line} appears exactly once`);
+  assert.doesNotMatch(source, /Stage B screenshot (?:status|evidence): `PASS`/u);
 }
 
 function assertProductionReview(source = review) {
@@ -351,12 +411,23 @@ function assertLocalEvidence(value) {
   }
 }
 
-function assertProductionEvidence(value) {
-  assert.ok(value, `${PRODUCTION_RAW} exists`);
-  assertExactKeys(value, ['implementationHead', 'pages', 'probes', 'collection', 'stateOrder', 'states', 'functionalSummary', 'screenshotEvidence'], 'production evidence');
-  assert.equal(value.implementationHead, READY_HEAD);
-  assertExactKeys(value.pages, Object.keys(PRODUCTION_PAGES), 'production Pages identity');
-  assert.deepEqual(value.pages, PRODUCTION_PAGES);
+function assertProductionEvidence(value, {
+  rawPath = PRODUCTION_RAW,
+  implementationHead = READY_HEAD,
+  pages = PRODUCTION_PAGES,
+  stage = 'Stage A',
+  session = 'sty11-stage-a-production-iab-20260826',
+  diagnosticPages = PRODUCTION_DIAGNOSTIC_PAGES,
+  screenshotAttempts = PRODUCTION_SCREENSHOT_ATTEMPTS,
+  projection,
+} = {}) {
+  assert.ok(value, `${rawPath} exists`);
+  const topLevelKeys = ['implementationHead', 'pages', 'probes', 'collection', 'stateOrder', 'states', 'functionalSummary', 'screenshotEvidence'];
+  if (projection) topLevelKeys.push('projection');
+  assertExactKeys(value, topLevelKeys, `${stage} production evidence`);
+  assert.equal(value.implementationHead, implementationHead);
+  assertExactKeys(value.pages, Object.keys(pages), `${stage} production Pages identity`);
+  assert.deepEqual(value.pages, pages);
   assertExactKeys(value.probes, ['routes', 'svg'], 'production probes');
   assert.deepEqual(value.probes.routes, PRODUCTION_ROUTES);
   for (const route of value.probes.routes) assertExactKeys(route, ['path', 'status', 'contentType'], `route ${route.path}`);
@@ -366,8 +437,8 @@ function assertProductionEvidence(value) {
   assert.equal(value.collection.browser, 'Codex in-app Browser only');
   assert.equal(value.collection.fresh, true);
   assert.equal(value.collection.servedUrl, 'https://sealday.github.io/tego-arch/styles/sty-11');
-  assert.equal(value.collection.session, 'sty11-stage-a-production-iab-20260826');
-  assert.equal(value.collection.build, `GitHub Pages exact Stage A READY head ${READY_HEAD}; push run ${PRODUCTION_PAGES.runId}; build job ${PRODUCTION_PAGES.buildJobId}; deploy job ${PRODUCTION_PAGES.deployJobId}`);
+  assert.equal(value.collection.session, session);
+  assert.equal(value.collection.build, `GitHub Pages exact ${stage} READY head ${implementationHead}; push run ${pages.runId}; build job ${pages.buildJobId}; deploy job ${pages.deployJobId}`);
   assert.equal(value.collection.browserBindingId, '-4688-49ea-8e04-9ca7ed8efe48');
   assertExactKeys(value.collection.observedSvgAsset, ['source', 'contentType', 'bytes', 'sha256', 'viewBox', 'bundleFailures'], 'observed production SVG');
   assert.deepEqual(value.collection.observedSvgAsset, {
@@ -379,12 +450,12 @@ function assertProductionEvidence(value) {
     bundleFailures: 0,
   });
   const stateDiagnosticContinuity = STATES.map((scope, index) => {
-    const [afterSequence, cursor] = PRODUCTION_DIAGNOSTIC_PAGES[index];
+    const [afterSequence, cursor] = diagnosticPages[index];
     return {afterSequence, cursor, count: 0, hasMore: false, truncated: false, scope};
   });
   assert.deepEqual(value.collection.diagnosticContinuity, [
     ...stateDiagnosticContinuity,
-    {afterSequence: 27, cursor: 369, count: 0, hasMore: false, truncated: false, scope: 'whole session'},
+    {afterSequence: diagnosticPages[0][0], cursor: diagnosticPages.at(-1)[1], count: 0, hasMore: false, truncated: false, scope: 'whole session'},
   ]);
   for (const page of value.collection.diagnosticContinuity) assertExactKeys(page, ['afterSequence', 'cursor', 'count', 'hasMore', 'truncated', 'scope'], `diagnostic continuity ${page.scope}`);
   assert.deepEqual(value.stateOrder, STATES);
@@ -443,21 +514,46 @@ function assertProductionEvidence(value) {
     assertExactKeys(state.diagnostics, ['events', 'pages', 'hasMore', 'truncated'], `${stateName} diagnostics`);
     assert.deepEqual(state.diagnostics.events, [], `${stateName} diagnostic events`);
     assert.deepEqual({hasMore: state.diagnostics.hasMore, truncated: state.diagnostics.truncated}, {hasMore: false, truncated: false});
-    const [afterSequence, cursor] = PRODUCTION_DIAGNOSTIC_PAGES[index];
+    const [afterSequence, cursor] = diagnosticPages[index];
     assert.deepEqual(state.diagnostics.pages, [{afterSequence, cursor, count: 0, hasMore: false, truncated: false}], `${stateName} diagnostic page`);
     assertExactKeys(state.diagnostics.pages[0], ['afterSequence', 'cursor', 'count', 'hasMore', 'truncated'], `${stateName} diagnostic page`);
   }
   assertExactKeys(value.functionalSummary, ['status', 'states', 'wrapperInteractions', 'relationObservations', 'sourceObservations', 'sty12ActionableTotal', 'warningErrorLogs', 'runtimeAndLogEvents', 'diagnosticPagesTerminal', 'diagnosticsTruncated'], 'production functional summary');
   assert.deepEqual(value.functionalSummary, {status: 'PASS', states: 4, wrapperInteractions: 16, relationObservations: 12, sourceObservations: 40, sty12ActionableTotal: 0, warningErrorLogs: 0, runtimeAndLogEvents: 0, diagnosticPagesTerminal: true, diagnosticsTruncated: false});
+  if (projection) {
+    assertExactKeys(value.projection, ['completedTopics', 'contentDocuments', 'governedSources', 'sty11', 'sty12'], 'Stage B production projection');
+    assertExactKeys(value.projection.sty11, ['published', 'status'], 'Stage B STY-11 projection');
+    assertExactKeys(value.projection.sty12, ['published', 'status', 'actionable'], 'Stage B STY-12 projection');
+    assert.deepEqual(value.projection, projection);
+  }
   assertExactKeys(value.screenshotEvidence, ['status', 'attempted', 'accepted', 'noFourthAttempt', 'originalBytesInspected', 'storage', 'attempts'], 'production screenshots');
   assert.deepEqual({status: value.screenshotEvidence.status, attempted: value.screenshotEvidence.attempted, accepted: value.screenshotEvidence.accepted, noFourthAttempt: value.screenshotEvidence.noFourthAttempt, originalBytesInspected: value.screenshotEvidence.originalBytesInspected, storage: value.screenshotEvidence.storage}, {status: 'BLOCKED / NOT_ACCEPTED', attempted: 3, accepted: 0, noFourthAttempt: true, originalBytesInspected: true, storage: 'Rejected screenshot originals retained only in the active IAB production evidence session; no screenshot file is tracked.'});
   assert.equal(value.screenshotEvidence.attempts.length, 3);
   for (const [index, attempt] of value.screenshotEvidence.attempts.entries()) {
-    const [state, bytes, hash, width, height] = PRODUCTION_SCREENSHOT_ATTEMPTS[index];
+    const [state, bytes, hash, width, height] = screenshotAttempts[index];
     assertExactKeys(attempt, ['state', 'status', 'reason', 'bytes', 'sha256', 'format', 'width', 'height', 'magic', 'uniqueByteValues'], `production screenshot ${index + 1}`);
     assert.deepEqual({state: attempt.state, status: attempt.status, bytes: attempt.bytes, sha256: attempt.sha256, format: attempt.format, width: attempt.width, height: attempt.height, magic: attempt.magic, uniqueByteValues: attempt.uniqueByteValues}, {state, status: 'CAPTURED_REJECTED', bytes, sha256: hash, format: 'JPEG/JFIF', width, height, magic: 'ffd8ffe000104a4649460001', uniqueByteValues: 256});
     assert.match(attempt.reason, /repeat|blank|omit/iu);
   }
+}
+
+function assertStageBProductionEvidence(value) {
+  assertProductionEvidence(value, {
+    rawPath: STAGE_B_PRODUCTION_RAW,
+    implementationHead: STAGE_B_READY_HEAD,
+    pages: STAGE_B_PRODUCTION_PAGES,
+    stage: 'Stage B',
+    session: 'sty11-stage-b-production-iab-20260826',
+    diagnosticPages: STAGE_B_PRODUCTION_DIAGNOSTIC_PAGES,
+    screenshotAttempts: STAGE_B_PRODUCTION_SCREENSHOT_ATTEMPTS,
+    projection: {
+      completedTopics: 64,
+      contentDocuments: 107,
+      governedSources: 560,
+      sty11: {published: true, status: 'complete'},
+      sty12: {published: false, status: 'pending', actionable: 0},
+    },
+  });
 }
 
 const [review, raw, productionRaw, stageBProductionRaw, immediateReview, backlog, status, manifest, documents, stableBytes] = await Promise.all([
@@ -524,15 +620,17 @@ test('locks exact STY-11 article, ledger, Draw.io and SVG identities', () => {
   }
 });
 
-test('binds exact Stage A evidence and READY Stage B closure while Stage B production remains absent', () => {
-  assertReadyStageBReview();
+test('binds exact Stage A evidence and final Stage B production closure', () => {
+  assertFinalStageBReview();
   assert.equal(raw.length, LOCAL_RAW_BYTES, `${LOCAL_RAW} exact bytes`);
   assert.equal(sha256(raw), LOCAL_RAW_SHA256, `${LOCAL_RAW} exact SHA-256`);
   assertLocalEvidence(raw && JSON.parse(raw));
   assert.equal(productionRaw.length, PRODUCTION_RAW_BYTES, `${PRODUCTION_RAW} exact bytes`);
   assert.equal(sha256(productionRaw), PRODUCTION_RAW_SHA256, `${PRODUCTION_RAW} exact SHA-256`);
   assertProductionEvidence(productionRaw && JSON.parse(productionRaw));
-  assert.equal(stageBProductionRaw, undefined, `${STAGE_B_PRODUCTION_RAW} remains absent before Stage B deployment`);
+  assert.equal(stageBProductionRaw.length, STAGE_B_PRODUCTION_RAW_BYTES, `${STAGE_B_PRODUCTION_RAW} exact bytes`);
+  assert.equal(sha256(stageBProductionRaw), STAGE_B_PRODUCTION_RAW_SHA256, `${STAGE_B_PRODUCTION_RAW} exact SHA-256`);
+  assertStageBProductionEvidence(stageBProductionRaw && JSON.parse(stageBProductionRaw));
 });
 
 test('rejects wrong review heads, weakened final verdicts, scope, deployment and visual overclaim mutations', () => {
@@ -563,13 +661,10 @@ test('rejects wrong review heads, weakened final verdicts, scope, deployment and
   const stalePending = review.replace(FINAL_STAGE_A_CHECKPOINT.join('\n'), PENDING_STAGE_A_CHECKPOINT.join('\n'));
   assert.notEqual(stalePending, review, 'stale pending Stage A checkpoint mutation applies');
   assert.throws(() => assertFinalReview(stalePending), assert.AssertionError);
-  for (const addition of ['\nStage B deployment status: `SUCCESS`.\n']) {
-    assert.throws(() => assertFinalReview(`${review}${addition}`), assert.AssertionError);
-  }
 });
 
-test('rejects changed Stage B evidence, wrong or weakened verdicts, stale pending, deployment and visual claims', () => {
-  assertReadyStageBReview();
+test('rejects changed Stage B evidence, wrong or weakened verdicts, stale pending, scope and visual claims', () => {
+  assertFinalStageBReview();
   for (const [before, after] of [
     [`Exact Stage A implementation head: \`${READY_HEAD}\`.`, `Exact Stage A implementation head: \`${'0'.repeat(40)}\`.`],
     [`Exact Pages run: \`${PRODUCTION_PAGES.runId}\`;`, 'Exact Pages run: `0`;'],
@@ -599,9 +694,12 @@ test('rejects changed Stage B evidence, wrong or weakened verdicts, stale pendin
   ]) {
     const mutated = review.replace(before, after);
     assert.notEqual(mutated, review, `${before} Stage B mutation applies`);
-    assert.throws(() => assertReadyStageBReview(mutated), assert.AssertionError);
+    assert.throws(() => assertFinalStageBReview(mutated), assert.AssertionError);
   }
-  assert.throws(() => assertReadyStageBReview(`${review}\n## Stage B production deployment\n\n- Fabricated success.\n`), assert.AssertionError);
+  for (const line of [
+    `- Exact Stage B reviewed head: \`${STAGE_B_REVIEWED_HEAD}\`.`,
+    '- Final Stage B readiness: `READY`.',
+  ]) assert.throws(() => assertFinalStageBReview(`${line}\n${review}`), assert.AssertionError);
 });
 
 test('rejects Browser head, state, geometry, interaction, navigation, source, SVG, diagnostics and screenshot mutations', () => {
@@ -714,4 +812,113 @@ test('rejects production deployment, probe, semantic, additive, diagnostic, scre
     assert.notEqual(mutated, review, `${before} production-review mutation applies`);
     assert.throws(() => assertProductionReview(mutated), assert.AssertionError);
   }
+});
+
+test('rejects Stage B production identity, projection, semantics, diagnostics, screenshots and review overclaims', () => {
+  const evidence = stageBProductionRaw && JSON.parse(stageBProductionRaw);
+  assertStageBProductionEvidence(evidence);
+  const mutations = [
+    ['implementation head', (copy) => copy.implementationHead = '0'.repeat(40)],
+    ['additive top-level claim', (copy) => copy.fabricatedSuccess = true],
+    ['Pages run', (copy) => copy.pages.runId += 1],
+    ['Pages event', (copy) => copy.pages.event = 'workflow_dispatch'],
+    ['Pages head', (copy) => copy.pages.headSha = '1'.repeat(40)],
+    ['Pages conclusion', (copy) => copy.pages.conclusion = 'failure'],
+    ['build job', (copy) => copy.pages.buildJobId += 1],
+    ['build status', (copy) => copy.pages.buildStatus = 'queued'],
+    ['deploy job', (copy) => copy.pages.deployJobId += 1],
+    ['deploy conclusion', (copy) => copy.pages.deployConclusion = 'failure'],
+    ['additive Pages claim', (copy) => copy.pages.fabricated = 'PASS'],
+    ['route order', (copy) => copy.probes.routes.reverse()],
+    ['route path', (copy) => copy.probes.routes[4].path = '/tego-arch/styles/sty-12'],
+    ['route status', (copy) => copy.probes.routes[4].status = 404],
+    ['route type', (copy) => copy.probes.routes[7].contentType = 'text/plain'],
+    ['additive route', (copy) => copy.probes.routes.push({path: '/fabricated', status: 200, contentType: 'text/html; charset=utf-8'})],
+    ['SVG bytes', (copy) => copy.probes.svg.bytes += 1],
+    ['SVG hash', (copy) => copy.probes.svg.sha256 = '2'.repeat(64)],
+    ['additive SVG claim', (copy) => copy.probes.svg.fabricated = true],
+    ['completed projection', (copy) => copy.projection.completedTopics = 63],
+    ['document projection', (copy) => copy.projection.contentDocuments = 106],
+    ['source projection', (copy) => copy.projection.governedSources = 559],
+    ['STY-11 publication', (copy) => copy.projection.sty11.published = false],
+    ['STY-11 status', (copy) => copy.projection.sty11.status = 'pending'],
+    ['STY-12 publication', (copy) => copy.projection.sty12.published = true],
+    ['STY-12 status', (copy) => copy.projection.sty12.status = 'complete'],
+    ['STY-12 actionable', (copy) => copy.projection.sty12.actionable = 1],
+    ['additive projection claim', (copy) => copy.projection.fabricated = true],
+    ['browser surface', (copy) => copy.collection.browser = 'Chrome'],
+    ['collection freshness', (copy) => copy.collection.fresh = false],
+    ['collection session', (copy) => copy.collection.session = 'sty11-stage-a-production-iab-20260826'],
+    ['build binding', (copy) => copy.collection.build = 'fabricated'],
+    ['observed SVG bytes', (copy) => copy.collection.observedSvgAsset.bytes += 1],
+    ['additive collection claim', (copy) => copy.collection.fabricated = 'PASS'],
+    ['missing state', (copy) => delete copy.states.mobileDark],
+    ['additive state', (copy) => copy.states.fabricated = structuredClone(copy.states.desktopLight)],
+    ['state order', (copy) => copy.stateOrder.reverse()],
+    ['wrapper order', (copy) => copy.states.desktopLight.geometry.wrappers.reverse()],
+    ['interaction focus', (copy) => copy.states.mobileLight.interactions[0].before.focusVisible = false],
+    ['interaction delta', (copy) => copy.states.desktopDark.interactions[1].after.scrollLeft += 1],
+    ['relation H1', (copy) => copy.states.mobileLight.relations[0].h1 = 'fabricated'],
+    ['relation return', (copy) => copy.states.mobileDark.relations[1].returnedToArticle = false],
+    ['relation navigation overclaim', (copy) => copy.states.mobileDark.relations[0].navigation = 'physically clicked'],
+    ['source order', (copy) => copy.states.mobileDark.geometry.sources.reverse()],
+    ['source rel', (copy) => copy.states.desktopDark.geometry.sources[0].rel = 'opener'],
+    ['SVG render', (copy) => copy.states.desktopLight.geometry.svg.renderedWidth = 799],
+    ['STY-12 fabrication', (copy) => copy.states.mobileDark.geometry.sty12 = 1],
+    ['warning log', (copy) => copy.states.desktopLight.logs.push({level: 'warning'})],
+    ['state continuity cursor', (copy) => copy.collection.diagnosticContinuity[2].cursor -= 1],
+    ['whole-session continuity cursor', (copy) => copy.collection.diagnosticContinuity[4].cursor -= 1],
+    ['diagnostic event', (copy) => copy.states.mobileLight.diagnostics.events.push({method: 'Runtime.exceptionThrown'})],
+    ['diagnostic continuation', (copy) => copy.states.mobileDark.diagnostics.hasMore = true],
+    ['diagnostic truncation', (copy) => copy.states.mobileDark.diagnostics.truncated = true],
+    ['diagnostic page', (copy) => copy.states.desktopLight.diagnostics.pages[0].cursor -= 1],
+    ['functional status', (copy) => copy.functionalSummary.status = 'FAIL'],
+    ['functional interactions', (copy) => copy.functionalSummary.wrapperInteractions = 15],
+    ['functional relations', (copy) => copy.functionalSummary.relationObservations = 11],
+    ['functional sources', (copy) => copy.functionalSummary.sourceObservations = 39],
+    ['visual PASS', (copy) => copy.screenshotEvidence.status = 'PASS'],
+    ['missing screenshot', (copy) => copy.screenshotEvidence.attempts.pop()],
+    ['fourth screenshot', (copy) => copy.screenshotEvidence.attempts.push(structuredClone(copy.screenshotEvidence.attempts[0]))],
+    ['screenshot order', (copy) => copy.screenshotEvidence.attempts.reverse()],
+    ['screenshot bytes', (copy) => copy.screenshotEvidence.attempts[0].bytes += 1],
+    ['screenshot hash', (copy) => copy.screenshotEvidence.attempts[1].sha256 = '3'.repeat(64)],
+    ['fourth-attempt claim', (copy) => copy.screenshotEvidence.noFourthAttempt = false],
+    ['additive visual claim', (copy) => copy.screenshotEvidence.fabricatedVisualPass = true],
+  ];
+  assert.ok(mutations.length >= 60, 'Stage B production mutations cover every identity and evidence group');
+  for (const [label, mutate] of mutations) {
+    const copy = structuredClone(evidence);
+    mutate(copy);
+    assert.notDeepEqual(copy, evidence, `${label} mutation applies`);
+    assert.throws(() => assertStageBProductionEvidence(copy), assert.AssertionError, label);
+  }
+
+  assertFinalStageBReview();
+  for (const [before, after] of [
+    [`Exact published Stage B READY head: \`${STAGE_B_READY_HEAD}\`.`, `Exact published Stage B READY head: \`${'0'.repeat(40)}\`.`],
+    [`Exact Pages push run: \`${STAGE_B_PRODUCTION_PAGES.runId}\`;`, 'Exact Pages push run: `0`;'],
+    [`Build job: \`${STAGE_B_PRODUCTION_PAGES.buildJobId}\`;`, 'Build job: `0`;'],
+    [`Deploy job: \`${STAGE_B_PRODUCTION_PAGES.deployJobId}\`;`, 'Deploy job: `0`;'],
+    ['Required HTML routes: `8/8`;', 'Required HTML routes: `7/8`;'],
+    [STAGE_B_PRODUCTION_RAW_SHA256, '4'.repeat(64)],
+    ['Projection: `64 completed topics / 107 content documents / 560 governed sources`;', 'Projection: `63 completed topics / 107 content documents / 560 governed sources`;'],
+    ['STY-11 is `published / complete`;', 'STY-11 is `published / pending`;'],
+    ['STY-12 is `unpublished / pending / non-actionable` with actionable count `0`.', 'STY-12 is `published / complete / actionable` with actionable count `1`.'],
+    ['Functional production QA: `PASS`; states `4/4`;', 'Functional production QA: `PASS`; states `3/4`;'],
+    ['wrapper focus/`:focus-visible`/3px/ArrowRight checks `16/16`;', 'wrapper focus/`:focus-visible`/3px/ArrowRight checks `15/16`;'],
+    ['relation href/H1/return checks `12/12`;', 'relation href/H1/return checks `11/12`;'],
+    ['source href/target/rel checks `40/40`.', 'source href/target/rel checks `39/40`.'],
+    ['warning/error logs and diagnostic events `0`;', 'warning/error logs and diagnostic events `1`;'],
+    ['exactly three fresh full-page attempts are `CAPTURED_REJECTED`;', 'exactly four fresh full-page attempts are `CAPTURED_REJECTED`;'],
+    ['no fourth attempt was made and no visual PASS is claimed.', 'a fourth attempt was made and visual PASS is claimed.'],
+    ['Stage B deployment status: `SUCCESS`;', 'Stage B deployment status: `PENDING`;'],
+    ['functional production status: `PASS`;', 'functional production status: `FAIL`;'],
+    ['visual screenshot status remains separately `BLOCKED / NOT_ACCEPTED`.', 'visual screenshot status: `PASS`.'],
+    ['Scope is closed at `STAGE_B`;', 'Scope is closed at `STAGE_A_ONLY`;'],
+  ]) {
+    const mutated = review.replace(before, after);
+    assert.notEqual(mutated, review, `${before} Stage B production-review mutation applies`);
+    assert.throws(() => assertFinalStageBReview(mutated), assert.AssertionError);
+  }
+  assert.throws(() => assertFinalStageBReview(`${review}\n## Stage B production deployment\n\n- Fabricated duplicate.\n`), assert.AssertionError);
 });
