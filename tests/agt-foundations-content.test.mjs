@@ -598,6 +598,19 @@ function assertNoQualityGovernanceVisuals(ast) {
   const embeddingAttributes = new Set(['data', 'poster', 'src', 'srcset']);
   const visit = (node) => {
     assert.ok(node && typeof node === 'object' && typeof node.type === 'string');
+    if (node.type === 'mdxFlowExpression' || node.type === 'mdxTextExpression') {
+      const expressionProgram = node.data?.estree;
+      const isNonRenderingAnnotation = node.type === 'mdxFlowExpression'
+        && expressionProgram?.type === 'Program'
+        && expressionProgram.body?.length === 0
+        && expressionProgram.comments?.length === 1
+        && expressionProgram.comments[0]?.type === 'Block'
+        && /^\/\*(?:(?!\*\/)[\s\S])*\*\/$/u.test(node.value.trim());
+      assert.ok(
+        isNonRenderingAnnotation,
+        'AGT-C-06 permits only non-rendering block comments as MDX expressions',
+      );
+    }
     assert.ok(
       node.type !== 'image' && node.type !== 'imageReference',
       'AGT-C-06 must not embed Markdown images',
@@ -2143,6 +2156,30 @@ test('AGT-C-06 rejects hidden evidence, physical table drift, and visual embeddi
     [
       'JSX expression image resource',
       `${source}\n\n<section src={'/assets/architecture.svg'}>背景</section>\n`,
+    ],
+    [
+      'flow expression returns intrinsic image',
+      `${source}\n\n{<img src='/assets/visual.svg' alt='architecture' />}\n`,
+    ],
+    [
+      'flow expression returns uncounted table',
+      `${source}\n\n{<table><tbody><tr><td>绕过表格清单</td></tr></tbody></table>}\n`,
+    ],
+    [
+      'flow expression returns Picture component',
+      `${source}\n\n{<Picture src='/assets/visual.svg' alt='architecture' />}\n`,
+    ],
+    [
+      'flow expression surrounds a visual with comments',
+      `${source}\n\n{/* before */ <img src='/assets/visual.svg' alt='architecture' /> /* after */}\n`,
+    ],
+    [
+      'text expression returns intrinsic image',
+      `${source}\n\n正文 {<img src='/assets/visual.svg' alt='architecture' />} 绕过。\n`,
+    ],
+    [
+      'non-comment rendering expression',
+      `${source}\n\n{'普通可渲染表达式'}\n`,
     ],
     ['case-insensitive Mermaid fence', `${source}\n\n\`\`\`Mermaid\ngraph TD\n  A --> B\n\`\`\`\n`],
     ['invalid MDX fails closed', `${source}\n\n<div hidden>\n`],
