@@ -21120,6 +21120,103 @@
       "expected_final_approval_note": "The official OpenAI PDF transport returned HTTP 200 on 2026-08-26 and is the same named guide as the canonical web edition; definition/method scope and conservative rights boundary were reviewed."
     },
     {
+      "id": "src-anthropic-effective-harnesses-long-running-agents",
+      "canonical_locator": "https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents",
+      "transport_locator": "https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Effective harnesses for long-running agents",
+      "author_or_org": "Anthropic",
+      "published_at": "2025-11-26",
+      "registered_at": "2026-08-26",
+      "checked_at": "2026-08-26",
+      "version": "Official engineering article published 2025-11-26 and checked directly in a browser on 2026-08-26",
+      "source_kind": "official-docs",
+      "tier": "first-party",
+      "allowed_evidence_roles": [
+        "method"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named Anthropic engineering article and bibliographic facts only; prose, code, examples, diagrams, linked works, trademarks and third-party material excluded",
+      "license_evidence_url": "https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents",
+      "license_evidence_note": "The official page exposes no reusable page license; Tego Arch uses attributed factual summary without copying prose, code, examples, structure or diagrams.",
+      "license_family_id": "https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports the reported initializer/coding-agent split, incremental work, progress artifacts, version history and cross-context handoff in Anthropic's long-running coding experiment only; it does not establish a universal Harness responsibility model, generalize beyond the experiment, or prove production outcomes.",
+      "link_policy": "floating",
+      "expected_final_transport_locator": "https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents",
+      "expected_final_approved_at": "2026-08-26",
+      "expected_final_approval_note": "The exact canonical engineering article returned HTTP 200 and exposed the expected title and publication date in a real browser on 2026-08-26; no query-decorated result, quickstart, index or companion page is used as health evidence."
+    },
+    {
+      "id": "src-anthropic-harness-design-long-running-apps",
+      "canonical_locator": "https://www.anthropic.com/engineering/harness-design-long-running-apps",
+      "transport_locator": "https://www.anthropic.com/engineering/harness-design-long-running-apps",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Harness design for long-running application development",
+      "author_or_org": "Anthropic",
+      "published_at": "2026-03-24",
+      "registered_at": "2026-08-26",
+      "checked_at": "2026-08-26",
+      "version": "Official engineering article published 2026-03-24 and checked directly in a browser on 2026-08-26",
+      "source_kind": "official-docs",
+      "tier": "first-party",
+      "allowed_evidence_roles": [
+        "method"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named Anthropic engineering article and bibliographic facts only; prose, code, prompts, examples, diagrams, linked works, trademarks and third-party material excluded",
+      "license_evidence_url": "https://www.anthropic.com/engineering/harness-design-long-running-apps",
+      "license_evidence_note": "The official page exposes no reusable page license; Tego Arch uses attributed factual summary without copying prose, code, prompts, examples, structure or diagrams.",
+      "license_family_id": "https://www.anthropic.com/engineering/harness-design-long-running-apps",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports the reported planner/generator/evaluator experiments, structured file handoffs, context reset versus compaction distinction, and removal of stale harness assumptions for newer models only; it does not make the roles, costs, quality observations or model behavior universal.",
+      "link_policy": "floating",
+      "expected_final_transport_locator": "https://www.anthropic.com/engineering/harness-design-long-running-apps",
+      "expected_final_approved_at": "2026-08-26",
+      "expected_final_approval_note": "The exact canonical engineering article returned HTTP 200 and exposed the expected title and publication date in a real browser on 2026-08-26; no engineering index or earlier harness article is used as health evidence."
+    },
+    {
+      "id": "src-anthropic-managed-agents",
+      "canonical_locator": "https://www.anthropic.com/engineering/managed-agents",
+      "transport_locator": "https://www.anthropic.com/engineering/managed-agents",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Scaling Managed Agents: Decoupling the brain from the hands",
+      "author_or_org": "Anthropic",
+      "published_at": "2026-04-08",
+      "registered_at": "2026-08-26",
+      "checked_at": "2026-08-26",
+      "version": "Official engineering article published 2026-04-08 and checked directly in a browser on 2026-08-26",
+      "source_kind": "official-docs",
+      "tier": "first-party",
+      "allowed_evidence_roles": [
+        "implementation",
+        "method"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named Anthropic engineering article and bibliographic facts only; prose, code, interfaces, examples, diagrams, metrics, linked works, trademarks and third-party material excluded",
+      "license_evidence_url": "https://www.anthropic.com/engineering/managed-agents",
+      "license_evidence_note": "The official page exposes no reusable page license; Tego Arch uses attributed factual summary without copying prose, code, interface notation, examples, structure, diagrams or performance figures.",
+      "license_family_id": "https://www.anthropic.com/engineering/managed-agents",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports Anthropic's reported Managed Agents design separating a durable session log, harness and sandbox, plus rebuilding a failed harness from the external log; it does not establish a vendor-neutral architecture, support copied interfaces or metrics, or prove every deployment reliable or secure.",
+      "link_policy": "floating",
+      "expected_final_transport_locator": "https://www.anthropic.com/engineering/managed-agents",
+      "expected_final_approved_at": "2026-08-26",
+      "expected_final_approval_note": "The exact canonical engineering article returned HTTP 200 and exposed the expected title and publication date in a real browser on 2026-08-26; the Managed Agents documentation and engineering index are related but are not substituted as health transports."
+    },
+    {
       "id": "src-atlas-agt-c-01-agent-system-boundary",
       "canonical_locator": "/img/diagrams/agt-c-01-agent-system-boundary.svg",
       "transport_locator": "/img/diagrams/agt-c-01-agent-system-boundary.svg",
@@ -32381,6 +32478,57 @@
           "usage_mode": "original-illustration",
           "attribution_note": "Agent system boundary reference architecture, Tego Arch maintainers",
           "modification_note": "Created as an original synchronized Draw.io/SVG pair without third-party topology, reference imagery, icons, brand visuals, signatures, watermarks or copied composition.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/concepts/agt-c-02-agent-harness.mdx": {
+      "reviewed_at": "2026-08-26",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-anthropic-effective-harnesses-long-running-agents",
+          "citation_url": "https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents",
+          "roles": [
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Effective harnesses for long-running agents, Anthropic",
+          "modification_note": "Original Chinese summary of the reported initializer/coding-agent split, incremental progress and cross-context artifacts; no source prose, code, examples, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-anthropic-harness-design-long-running-apps",
+          "citation_url": "https://www.anthropic.com/engineering/harness-design-long-running-apps",
+          "roles": [
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Harness design for long-running application development, Anthropic",
+          "modification_note": "Original Chinese summary of the reported role separation, structured handoff, context management and harness-reduction experiments; no source prose, code, prompts, examples, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-anthropic-managed-agents",
+          "citation_url": "https://www.anthropic.com/engineering/managed-agents",
+          "roles": [
+            "implementation",
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Scaling Managed Agents: Decoupling the brain from the hands, Anthropic",
+          "modification_note": "Original Chinese summary of the reported durable-session, harness and sandbox separation and crash-recovery design; no source prose, code, interface notation, examples, metrics, structure or diagrams copied.",
           "excerpt": null,
           "quotation_reviewed": false
         }

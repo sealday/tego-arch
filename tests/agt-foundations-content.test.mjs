@@ -9,6 +9,7 @@ import {
 import {knowledgeTypeContracts} from '../scripts/content-schema.mjs';
 
 const articlePath = 'content/concepts/agt-c-01-agent-system-boundary.mdx';
+const harnessArticlePath = 'content/concepts/agt-c-02-agent-harness.mdx';
 const drawioPath = 'diagrams/agt-c-01-agent-system-boundary.drawio';
 const svgPath = 'static/img/diagrams/agt-c-01-agent-system-boundary.svg';
 const requiredDiagramLabels = [
@@ -29,6 +30,31 @@ const requiredClaims = [
   'Workflow 的步骤和分支主要由代码预先定义',
   'Agent 让模型在受约束边界内选择下一步动作',
   '自治程度是连续谱，不是四个互斥产品类别',
+];
+const harnessResponsibilities = [
+  '运行时',
+  '上下文装配',
+  '工具注册与协议',
+  '权限与沙箱',
+  '检查点与恢复',
+  '追踪与评测钩子',
+];
+const harnessSourceContracts = [
+  {
+    id: 'src-anthropic-effective-harnesses-long-running-agents',
+    title: 'Effective harnesses for long-running agents',
+    locator: 'https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents',
+  },
+  {
+    id: 'src-anthropic-harness-design-long-running-apps',
+    title: 'Harness design for long-running application development',
+    locator: 'https://www.anthropic.com/engineering/harness-design-long-running-apps',
+  },
+  {
+    id: 'src-anthropic-managed-agents',
+    title: 'Scaling Managed Agents: Decoupling the brain from the hands',
+    locator: 'https://www.anthropic.com/engineering/managed-agents',
+  },
 ];
 
 const registry = JSON.parse(
@@ -214,4 +240,117 @@ test('AGT-C-01 source health observes the cited Anthropic article, not a compani
   assert.ok(result, `${id} health observation`);
   assert.equal(result.transport_locator, expected);
   assert.equal(result.last_attempt.final_transport_locator, expected);
+});
+
+function assertAgentHarnessContract(source) {
+  const metadata = parseFrontMatter(source);
+  assert.equal(metadata.topic_id, 'AGT-C-02');
+  assert.equal(metadata.slug, '/concepts/agt-c-02');
+  assert.equal(metadata.content_type, 'concept');
+  assert.deepEqual(metadata.depends_on, ['AGT-C-01']);
+
+  const headings = findMarkdownHeadings(source)
+    .filter(({level}) => level === 2)
+    .map(({text}) => `## ${text}`);
+  assert.deepEqual(headings, knowledgeTypeContracts.concept);
+  assert.match(source, /Harness 约束并运行 Loop；它本身不决定任务/u);
+
+  const responsibilityRows = markdownTableRows(
+    source,
+    '| Harness 责任 | 输入 / 资产 | 强制合同 | 失败时行为 |',
+  );
+  assert.equal(responsibilityRows.length, 6);
+  assert.deepEqual(
+    responsibilityRows.map((row) => row.split('|')[1].trim()),
+    harnessResponsibilities,
+  );
+
+  const mermaid = source.match(/```mermaid\n([\s\S]*?)```/u)?.[1];
+  assert.ok(mermaid, 'Mermaid layered flow');
+  assert.match(mermaid, /subgraph HARNESS\["Agent Harness"\]/u);
+  assert.match(mermaid, /subgraph LOOP\["Agent Loop"\]/u);
+  for (const responsibility of harnessResponsibilities) {
+    assert.match(mermaid, new RegExp(responsibility, 'u'));
+  }
+  assert.match(mermaid, /运行时[\s\S]*上下文装配[\s\S]*Agent Loop/u);
+  assert.match(mermaid, /Agent Loop[\s\S]*工具注册与协议[\s\S]*权限与沙箱/u);
+  assert.match(mermaid, /CR\["检查点与恢复"\][\s\S]*CR --> EXIT\["恢复或升级人工"\]/u);
+  assert.doesNotMatch(mermaid, /CR .*\.-> RT/u);
+  assert.match(source, /末端分支表示核对后恢复或升级人工/u);
+  assert.doesNotMatch(source, /图中的回边/u);
+
+  assert.match(source, /### 薄 SDK 反例/u);
+  assert.match(source, /只转发模型请求[\s\S]*不是 Agent Harness/u);
+  assert.match(source, /上下文预算[\s\S]*工具预算[\s\S]*Harness/u);
+  assert.match(source, /工具调用真正执行之前[\s\S]*权限与沙箱/u);
+  assert.match(source, /副作用账本[\s\S]*恢复时[\s\S]*不盲目重试/u);
+
+  const evidenceRows = markdownTableRows(
+    source,
+    '| Harness 能证明 | Harness 不能证明 |',
+  );
+  assert.equal(evidenceRows.length, 4);
+  for (const boundary of [
+    '请求经过已声明的运行与权限边界',
+    '上下文和工具消耗受预算约束',
+    '可从已确认检查点恢复',
+    '执行链留下可评测 Trace',
+    '模型选择的动作正确',
+    '工具结果天然可信',
+    '恢复一定不会重复副作用',
+    '一次评测代表生产质量',
+  ]) {
+    assert.match(evidenceRows.join('\n'), new RegExp(boundary, 'u'));
+  }
+}
+
+test('AGT-C-02 publishes the Agent Harness responsibility contract and layered Mermaid', () => {
+  assert.ok(existsSync(harnessArticlePath), `Missing ${harnessArticlePath}`);
+  assertAgentHarnessContract(readFileSync(harnessArticlePath, 'utf8'));
+});
+
+test('AGT-C-02 contract rejects responsibility, SDK, recovery, and evidence-boundary mutations', () => {
+  const source = readFileSync(harnessArticlePath, 'utf8');
+  const mutations = [
+    ...harnessResponsibilities.map((label) => source.replaceAll(label, `${label}（缺失）`)),
+    source.replace('### 薄 SDK 反例', '### SDK 包装'),
+    source.replaceAll('副作用账本', '运行日志'),
+    source.replace('模型选择的动作正确', '模型输出可用'),
+  ];
+  for (const mutant of mutations) {
+    assert.throws(() => assertAgentHarnessContract(mutant));
+  }
+});
+
+test('AGT-C-02 governs exact Anthropic engineering sources and matching health transports', () => {
+  const ledger = JSON.parse(readFileSync('data/source-ledger.json', 'utf8'));
+  const health = JSON.parse(readFileSync('data/source-link-health.json', 'utf8'));
+  const document = ledger.documents[harnessArticlePath];
+  assert.ok(document, `${harnessArticlePath} source document`);
+  assert.deepEqual(
+    document.citations.map(({source_id}) => source_id),
+    harnessSourceContracts.map(({id}) => id),
+  );
+  assert.ok(document.citations.every(({usage_mode}) => usage_mode === 'facts-summary'));
+
+  for (const contract of harnessSourceContracts) {
+    const source = ledger.sources.find(({id}) => id === contract.id);
+    assert.ok(source, contract.id);
+    assert.equal(source.title, contract.title);
+    assert.equal(source.author_or_org, 'Anthropic');
+    assert.equal(source.tier, 'first-party');
+    assert.equal(source.license, 'LicenseRef-All-Rights-Reserved');
+    assert.equal(source.copyright_policy, 'facts-and-short-quotation');
+    assert.equal(source.canonical_locator, contract.locator);
+    assert.equal(source.transport_locator, contract.locator);
+    assert.equal(source.expected_final_transport_locator, contract.locator);
+
+    const result = health.results.find(({source_ids}) => source_ids.includes(contract.id));
+    assert.ok(result, `${contract.id} health observation`);
+    assert.deepEqual(result.source_ids, [contract.id]);
+    assert.equal(result.transport_locator, contract.locator);
+    assert.equal(result.last_attempt.outcome, 'healthy');
+    assert.equal(result.last_attempt.http_status, 200);
+    assert.equal(result.last_attempt.final_transport_locator, contract.locator);
+  }
 });
