@@ -61,6 +61,11 @@ function hasAccessibleMetadata(svgRoot) {
   );
 }
 
+function hasFixedRootDimensions(svgRoot) {
+  const width = (svgRoot.attributes.get('width') ?? '').trim();
+  return svgRoot.attributes.has('height') || (width !== '' && !/^\d+(?:\.\d+)?%$/u.test(width));
+}
+
 export async function validatePair({drawioPath, svgPath, labels}) {
   const errors = [];
   let drawio = '';
@@ -129,7 +134,7 @@ export async function validatePair({drawioPath, svgPath, labels}) {
   if (svgVisible && !svgRoot.attributes.get('viewBox')) {
     errors.push('SVG root must include a viewBox');
   }
-  if (svgVisible && (svgRoot.attributes.has('width') || svgRoot.attributes.has('height'))) {
+  if (svgVisible && hasFixedRootDimensions(svgRoot)) {
     errors.push('SVG root must not include fixed root width or height');
   }
   if (svgVisible && !hasAccessibleMetadata(svgRoot)) {
