@@ -10,7 +10,7 @@
 
 ## Global Constraints
 
-- Execute after `2026-08-26-agentic-architecture-foundations.md` passes `npm run verify`.
+- Execute after `2026-08-26-agentic-architecture-foundations.md` records scoped Foundations PASS: zero Foundations defects, completed browser QA, and only the finite later-owned Pattern-group/generated-projection/forward-route blockers defined by the master plan.
 - Work only in `.worktrees/agentic-architecture-topic-system` on `codex/agentic-architecture-topic-system`.
 - Use globally unique IDs `AGT-P-01` through `AGT-P-08` and exact routes `/patterns/agt-p-01` through `/patterns/agt-p-08`.
 - Every pattern states the control owner, state owner, allowed side effects, loop/branch termination, failure and recovery path, quality trade-offs, migration path, and deterministic fallback.
@@ -18,6 +18,8 @@
 - Protocols demonstrate interoperability contracts only; they do not prove authorization, consistency, reliability, or governance.
 - Use primary papers, specifications, official repositories, and first-party engineering material; separate facts, inference, and guidance.
 - Apply TDD and commit each independently reviewable pattern.
+- Close with a scoped Patterns gate: all Pattern-focused contracts and both Draw.io browser checks pass, generation is audited after Task 1 supplies the group prerequisite, and any remaining repository-wide failures form an exact finite set owned by Cases Tasks 2–4 or Release Tasks 1–4. Do not weaken validators, remove forward Case metadata, or create stubs.
+- Fresh complete `npm run verify` PASS remains mandatory in Release Task 5 and before merge/publish.
 
 ---
 
@@ -207,7 +209,10 @@ node --test tests/agt-patterns-content.test.mjs tests/drawio-diagram-validator.t
 
 **Files:** Modify only defects found in the eight pattern pages, two diagram pairs, pattern group, or their governed sources.
 
-- [ ] Run `node --test tests/agt-patterns-content.test.mjs tests/content-registries.test.mjs tests/topic-manifest.test.mjs tests/content-validation.test.mjs tests/source-ledger.test.mjs tests/source-license-inventory.test.mjs`.
-- [ ] Run `npm run generate:content`, inspect the topic manifest and pattern registry projections, then run `npm run verify`; expect PASS.
-- [ ] Serve production build and inspect all eight routes at `1440x1000` and `390x844`. For both Draw.io routes, record exact 800px desktop width, scale, named-node geometry, label clearance, local mobile scroll, fixed document width, focus indicator, keyboard scroll, visible labels, HTTP 200, and zero console errors.
+- [ ] Run `node --test tests/agt-patterns-content.test.mjs tests/content-registries.test.mjs tests/topic-manifest.test.mjs tests/content-validation.test.mjs tests/source-ledger.test.mjs tests/source-license-inventory.test.mjs`; require zero Pattern-owned failures.
+- [ ] Run `npm run generate:content` after the exact eight-ID Pattern group exists, inspect every topic-manifest and Pattern-registry diff, and keep only deterministic current projections.
+- [ ] Run `npm run verify` as a downstream-blocker audit. A scoped Patterns PASS permits only an exact finite failure set caused by unpublished Case routes owned by Cases Tasks 2–4 or final reciprocal/index/path work owned by Release Tasks 1–4; any Pattern-owned failure must be fixed.
+- [ ] Attempt the production build without changing broken-link policy. Serve it when successful; if only later-owned Case routes block it, record the exact routes and use the compiled development site for browser QA.
+- [ ] Inspect all eight routes at `1440x1000` and `390x844`. For both Draw.io routes, record exact 800px desktop width, scale, named-node geometry, label clearance, local mobile scroll, fixed document width, focus indicator, keyboard scroll, visible labels, HTTP 200, and zero console errors.
+- [ ] Declare scoped Patterns PASS only when focused defects are zero, deterministic generation and browser evidence are recorded, and every remaining repository-wide failure has one later named owner. Do not claim full verification PASS.
 - [ ] Commit deterministic generated files or verified corrections as `test(agentic): verify agent control patterns`.

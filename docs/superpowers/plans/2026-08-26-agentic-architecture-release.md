@@ -18,7 +18,7 @@
 - Reciprocal links state the exact mechanism or boundary being connected; do not use generic “相关阅读” lists.
 - Existing vendor/project cases remain implementation evidence; do not rewrite their proven facts or historical source boundaries.
 - `src/generated/` is changed only by `npm run generate:content`.
-- No release claim is made before fresh `npm run verify`, desktop/mobile Browser evidence, independent reviews, exact-head GitHub Pages success, and production route checks.
+- Release Task 5 is the first mandatory fresh complete `npm run verify` PASS for the assembled 17-page system; fresh complete PASS remains mandatory again before merge/publish. No release claim is made before that evidence, desktop/mobile Browser evidence, independent reviews, exact-head GitHub Pages success, and production route checks.
 - Use `requesting-code-review` before merge, `verification-before-completion` before completion claims, and `finishing-a-development-branch` for integration.
 
 ---

@@ -16,7 +16,9 @@
 - Every knowledge article follows the repository heading contract and covers the relevant interaction, control, knowledge/context, state/memory, action/tools, and governance/evaluation planes.
 - Model output is not business truth; every loop has explicit success, failure, budget-exhausted, and human-stop outcomes.
 - Distinguish source fact, evidence-based inference, and author guidance; do not invent customers, production metrics, incidents, or guarantees.
-- Use TDD, focused verification, `npm run verify` at phase gates, and frequent commits.
+- Use TDD, focused verification, scoped phase gates, and frequent commits. A scoped Foundations PASS requires zero Foundations defects plus an exact finite audit of later-owned failures; it does not require or imply a green repository-wide `npm run verify`.
+- Preserve atomic-release metadata and fail-closed validators. The approved Foundations downstream blockers are the `AGT-P-01...AGT-P-08` group assignment owned by Patterns Task 1 and missing forward Pattern/Case routes owned by Patterns Tasks 2–9 and Cases Tasks 2–4.
+- Fresh complete `npm run verify` PASS remains mandatory in Release Task 5 and before merge/publish.
 - For every visual, record exactly one of `无需图`, `Mermaid`, `Draw.io + SVG`, or `位图`; use the smallest form that teaches the architectural judgment.
 - For Draw.io work, read and follow `creating-drawio-architecture-diagrams`, keep `.drawio` and `.svg` synchronized, and measure desktop/mobile rendering.
 
@@ -305,8 +307,10 @@ git commit -m "feat(agentic): add agent system boundary concept"
 
 **Files:** Modify only files needed to fix phase defects; do not add cross-links to unpublished pattern/case routes yet.
 
-- [ ] Run `node --test tests/agt-foundations-content.test.mjs tests/topic-manifest.test.mjs tests/content-validation.test.mjs tests/source-ledger.test.mjs tests/source-license-inventory.test.mjs tests/source-link-health.test.mjs`.
-- [ ] Run `npm run generate:content` and inspect generated changes; keep only deterministic projections caused by the six published concepts and the 17-item backlog registry.
-- [ ] Run `npm run verify`; expect PASS.
-- [ ] Serve the build and inspect `/tego-arch/concepts/agt-c-01` through `/agt-c-06` at `1440x1000` and `390x844`; for AGT-C-01 record exact 800px desktop SVG width, local mobile overflow, no document overflow, keyboard focus/scroll, label visibility, and measured geometry.
+- [ ] Run `node --test tests/agt-foundations-content.test.mjs tests/topic-manifest.test.mjs tests/content-validation.test.mjs tests/source-ledger.test.mjs tests/source-license-inventory.test.mjs tests/source-link-health.test.mjs`; require every Foundations-owned contract to pass and classify any failure against the approved downstream set instead of changing later-owned data.
+- [ ] Run `npm run generate:content` and inspect generated changes. When registry prerequisites allow generation, keep only deterministic projections caused by the six published concepts and the 17-item backlog registry; when the approved Pattern-group dependency blocks generation before write, record the exact diagnostics and zero generated diff.
+- [ ] Run `npm run verify` as a repository-wide blocker audit, not as the Foundations scoped-PASS criterion. Record the exact failing tests/routes and require that every remaining failure is caused only by the Pattern-group assignment owned by Patterns Task 1, its blocked generated projections, or the approved forward Pattern/Case routes owned by Patterns Tasks 2–9 and Cases Tasks 2–4.
+- [ ] Attempt the production build without relaxing broken-link behavior. If it is blocked only by the approved absent forward routes, record that finite set and serve the successfully compiled development site for QA; otherwise fix the Foundations defect before proceeding.
+- [ ] Inspect `/tego-arch/concepts/agt-c-01` through `/agt-c-06` at `1440x1000` and `390x844`; for AGT-C-01 record exact 800px desktop SVG width, local mobile overflow, no document overflow, keyboard focus/scroll, label visibility, and live measured geometry.
+- [ ] Declare scoped Foundations PASS only when focused defects are zero, browser QA passes, generated diff disposition is recorded, and the remaining repository-wide failures exactly match the finite later-owned set above. This permits Patterns Task 1 to begin but does not claim full verification PASS.
 - [ ] Record defects and fixes in the commit body, then commit generated projections or QA corrections as `test(agentic): verify foundation concepts`.

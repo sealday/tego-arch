@@ -10,7 +10,7 @@
 
 ## Global Constraints
 
-- Execute after foundation and pattern plans pass `npm run verify`.
+- Execute after the foundation and pattern plans record scoped phase PASS with zero own-phase defects and exact finite downstream-blocker audits.
 - Use `writing-architecture-cases` for every case and `creating-drawio-architecture-diagrams` for every asset pair.
 - Work only in `.worktrees/agentic-architecture-topic-system` on `codex/agentic-architecture-topic-system`.
 - Case frontmatter uses `content_type: case`, `series: ai-native`, global `catalog_order` 19, 20, and 21, and no fabricated `topic_id`.
@@ -19,6 +19,8 @@
 - `可迁移经验` contains exactly: 可直接复用的机制、只能有限类比的部分、不应照搬的部分.
 - Each case includes degraded operation, timeout, partial failure, recovery verification, and a condition for stopping automation.
 - Draw.io/SVG geometry is measured in final CSS pixels at 800px desktop width and inspected at desktop `1440x1000` and mobile `390x844`.
+- Close with a scoped Cases gate: all Case-focused contracts, density/source checks, generated catalog diffs, and three-route browser checks pass; every remaining repository-wide failure must be an exact finite integration item owned by Release Tasks 1–4. Do not weaken validators, remove atomic-release metadata, or create stubs.
+- Fresh complete `npm run verify` PASS remains mandatory in Release Task 5 and before merge/publish.
 
 ---
 
@@ -143,6 +145,9 @@ git commit -m "test(agentic): define reference case inventory"
 - [ ] Run the complete `node --test tests/agt-reference-cases.test.mjs`; expect all three named contracts and shared contract PASS.
 - [ ] Run `npm run report:writing-density`; require every new case to remain above the repository’s accepted density threshold and manually inspect any low-information block.
 - [ ] Run all three Draw.io/SVG validator commands with each case’s required labels, then `node --test tests/drawio-diagram-validator.test.mjs tests/case-catalog.test.mjs tests/case-prose-boundaries.test.mjs`.
-- [ ] Run `npm run generate:content` and `npm run verify`; expect PASS.
-- [ ] Serve the build and inspect all three routes at desktop/mobile. Record exact 800px desktop widths, final scales, named-node baselines/clearances, local mobile scroll, no document overflow, focus/keyboard scroll, visible failure/recovery paths, HTTP 200, and zero console errors.
+- [ ] Run `npm run generate:content`, inspect every catalog/topic/status diff, and keep only deterministic projections from the three cases and already-approved concept/pattern inputs.
+- [ ] Run `npm run verify` as a downstream-blocker audit. Fix every Case-owned failure; a scoped Cases PASS permits only an exact finite set owned by Release Tasks 1–4, such as final reciprocal links, indexes, learning path, terminology/source refresh, or their generated projections.
+- [ ] Attempt and serve the production build when all current routes resolve. If a later Release integration item alone blocks it, record the exact item and use the compiled development site for QA without changing broken-link behavior.
+- [ ] Inspect all three routes at desktop/mobile. Record exact 800px desktop widths, final scales, named-node baselines/clearances, local mobile scroll, no document overflow, focus/keyboard scroll, visible failure/recovery paths, HTTP 200, and zero console errors.
+- [ ] Declare scoped Cases PASS only when focused defects are zero, deterministic generation and browser evidence are recorded, and every remaining repository-wide failure has one later Release-task owner. Do not claim full verification PASS.
 - [ ] Commit deterministic catalog projections and verified corrections as `test(agentic): verify reference cases`.
