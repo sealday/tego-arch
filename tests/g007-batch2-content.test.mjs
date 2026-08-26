@@ -35,7 +35,7 @@ const h2 = [
 ];
 const relationships = new Map([
   ['PR-06', ['PR-01', 'PR-02', 'PR-05', 'PR-08']],
-  ['PR-07', ['PR-02', 'PR-04', 'PR-09', 'PR-10', 'PR-16', 'QA-01']],
+  ['PR-07', ['PR-02', 'PR-04', 'PR-09', 'PR-10', 'PR-16', 'QA-01', 'AGT-C-06']],
   ['PR-08', ['PR-01', 'PR-04', 'PR-05', 'PR-06', 'PR-10', 'PR-12', 'PR-15', 'PR-17', 'MTH-03', 'MTH-04']],
 ]);
 const solePrimary = new Map([
@@ -59,6 +59,7 @@ const routeByTopic = new Map([
   ['QA-01', '/quality-attributes/qa-01'],
   ['MTH-03', '/methods/mth-03'],
   ['MTH-04', '/methods/mth-04'],
+  ['AGT-C-06', '/concepts/agt-c-06'],
 ]);
 const misconceptionContracts = new Map([
   [

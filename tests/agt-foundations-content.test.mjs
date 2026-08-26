@@ -11,7 +11,9 @@ import {
   extractMarkdownBody,
   findMarkdownHeadings,
   parseFrontMatter,
+  readContentDocuments,
 } from '../scripts/content-metadata.mjs';
+import {parseBacklogTopics} from '../scripts/backlog-topics.mjs';
 import {knowledgeTypeContracts} from '../scripts/content-schema.mjs';
 import {parseMdxVisibleCopy} from '../scripts/visible-copy.mjs';
 
@@ -306,6 +308,15 @@ const registry = JSON.parse(
   readFileSync('tests/fixtures/agentic-topic-system.json', 'utf8'),
 );
 const backlog = readFileSync('docs/content-backlog.md', 'utf8');
+const contentDocuments = await readContentDocuments('content');
+const expectedFoundationAdjacency = new Map([
+  ['AGT-C-01', ['AGT-C-02', 'AGT-C-03', 'AGT-P-01']],
+  ['AGT-C-02', ['AGT-C-01', 'AGT-C-03', 'AGT-C-04', 'AGT-C-05', 'AGT-C-06', 'AGT-P-06', 'AGT-P-08']],
+  ['AGT-C-03', ['AGT-C-01', 'AGT-C-02', 'AGT-C-04', 'AGT-C-05', 'AGT-C-06', 'AGT-P-01', 'AGT-P-02', 'AGT-P-03', 'AGT-P-04', 'AGT-P-05', 'AGT-P-06', 'AGT-P-07', 'AGT-P-08']],
+  ['AGT-C-04', ['AGT-C-02', 'AGT-C-03', 'AGT-C-05', 'AGT-C-06', 'AGT-P-02', 'AGT-P-06', 'AGT-P-07', 'AGT-P-08']],
+  ['AGT-C-05', ['AGT-C-02', 'AGT-C-03', 'AGT-C-04', 'AGT-C-06', 'AGT-P-08', 'PR-09', 'PR-10']],
+  ['AGT-C-06', ['AGT-C-02', 'AGT-C-03', 'AGT-C-04', 'AGT-C-05', 'AGT-P-02', 'AGT-P-04', 'AGT-P-08', 'QA-08', 'PR-07']],
+]);
 const markdownParser = unified().use(remarkParse).use(remarkGfm).use(remarkMdx);
 
 function markdownTableRows(source, header) {
@@ -693,6 +704,57 @@ test('agentic topic registry is exact and globally unique', () => {
       backlog,
       new RegExp(`- \\[[ x]\\] \\*\\*${item.backlog_id} P[0-3]`),
     );
+  }
+});
+
+test('foundation priorities follow the canonical backlog', () => {
+  const parsedBacklog = parseBacklogTopics(backlog, 'docs/content-backlog.md');
+  assert.deepEqual(parsedBacklog.errors, []);
+  const backlogById = new Map(parsedBacklog.topics.map((topic) => [topic.id, topic]));
+  const documentsById = new Map(
+    contentDocuments
+      .filter(({metadata}) => typeof metadata.topic_id === 'string')
+      .map((document) => [document.metadata.topic_id, document]),
+  );
+
+  for (const topicId of expectedFoundationAdjacency.keys()) {
+    const document = documentsById.get(topicId);
+    const backlogTopic = backlogById.get(topicId);
+    assert.ok(document, `${topicId} published document`);
+    assert.ok(backlogTopic, `${topicId} canonical backlog row`);
+    assert.equal(backlogTopic.priority, 'P1', `${topicId} canonical backlog priority`);
+    assert.equal(
+      document.metadata.priority,
+      backlogTopic.priority,
+      `${topicId} frontmatter priority follows the canonical backlog`,
+    );
+  }
+});
+
+test('published foundation adjacency is exact and reciprocal', () => {
+  const documentsById = new Map(
+    contentDocuments
+      .filter(({metadata}) => typeof metadata.topic_id === 'string')
+      .map((document) => [document.metadata.topic_id, document]),
+  );
+
+  for (const [topicId, expectedAdjacentTopics] of expectedFoundationAdjacency) {
+    const document = documentsById.get(topicId);
+    assert.ok(document, `${topicId} published document`);
+    assert.deepEqual(
+      document.metadata.adjacent_topics,
+      expectedAdjacentTopics,
+      `${topicId} preserves the approved adjacency set and canonical order`,
+    );
+
+    for (const adjacentTopicId of expectedAdjacentTopics) {
+      const target = documentsById.get(adjacentTopicId);
+      if (!target) continue;
+      assert.ok(
+        target.metadata.adjacent_topics?.includes(topicId),
+        `${topicId} -> ${adjacentTopicId} has reverse edge ${adjacentTopicId} -> ${topicId}`,
+      );
+    }
   }
 });
 
@@ -1249,6 +1311,8 @@ function assertInformationLifecycleContract(source) {
   assert.equal(metadata.status, 'reviewed');
   assert.deepEqual(metadata.depends_on, ['AGT-C-01', 'AGT-C-02', 'AGT-C-03']);
   assert.deepEqual(metadata.adjacent_topics, [
+    'AGT-C-02',
+    'AGT-C-03',
     'AGT-C-05',
     'AGT-C-06',
     'AGT-P-02',
@@ -1536,6 +1600,8 @@ function assertActionBoundaryContract(source) {
   assert.equal(metadata.status, 'reviewed');
   assert.deepEqual(metadata.depends_on, ['AGT-C-01', 'AGT-C-02', 'AGT-C-03']);
   assert.deepEqual(metadata.adjacent_topics, [
+    'AGT-C-02',
+    'AGT-C-03',
     'AGT-C-04',
     'AGT-C-06',
     'AGT-P-08',
@@ -1794,6 +1860,10 @@ function assertQualityGovernanceContract(source) {
     'AGT-C-05',
   ]);
   assert.deepEqual(metadata.adjacent_topics, [
+    'AGT-C-02',
+    'AGT-C-03',
+    'AGT-C-04',
+    'AGT-C-05',
     'AGT-P-02',
     'AGT-P-04',
     'AGT-P-08',

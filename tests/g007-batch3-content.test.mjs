@@ -49,8 +49,8 @@ const h2 = [
   '来源',
 ];
 const relationships = new Map([
-  ['PR-09', ['PR-04', 'PR-07', 'PR-10', 'PR-16']],
-  ['PR-10', ['PR-07', 'PR-08', 'PR-09', 'PR-11', 'PR-16', 'MOD-08']],
+  ['PR-09', ['PR-04', 'PR-07', 'PR-10', 'PR-16', 'AGT-C-05']],
+  ['PR-10', ['PR-07', 'PR-08', 'PR-09', 'PR-11', 'PR-16', 'MOD-08', 'AGT-C-05']],
   ['PR-11', ['PR-03', 'PR-04', 'PR-10', 'PR-13', 'STY-06']],
 ]);
 const routeByTopic = new Map([
@@ -65,6 +65,7 @@ const routeByTopic = new Map([
   ['PR-16', '/principles/pr-16'],
   ['STY-06', '/styles/sty-06'],
   ['MOD-08', '/modeling/mod-08'],
+  ['AGT-C-05', '/concepts/agt-c-05'],
 ]);
 const solePrimary = new Map([
   ['PR-09', 'src-saltzer-schroeder-protection-1975'],

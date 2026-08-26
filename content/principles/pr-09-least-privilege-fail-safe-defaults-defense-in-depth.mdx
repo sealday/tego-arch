@@ -29,6 +29,7 @@ adjacent_topics:
   - PR-07
   - PR-10
   - PR-16
+  - AGT-C-05
 related_cases:
   - /cases/litellm-virtual-keys-governance
 related_questions: []
@@ -95,6 +96,8 @@ related_questions: []
 [依赖倒置、控制反转与依赖注入](/principles/pr-04)让授权政策不依赖具体身份或云厂商软件开发工具包（Software Development Kit，SDK）；[快速失败（Fail Fast）、故障安全（Fail Safe）与优雅降级（Graceful Degradation）](/principles/pr-07)帮助在策略缺失和控制故障时选择保守且可观察的响应；[幂等与最小协调](/principles/pr-10)继续约束已获授权副作用的重试（Retry）、重放和并发边界。PR-09 只回答谁能以何种能力发起效果，不替代效果执行后的协调规则。
 
 [安全设计主题](/principles/pr-16)把安全默认值与最小权限纳入生命周期安全。
+
+[工具、隔离沙箱（Sandbox）、权限与副作用](/concepts/agt-c-05)把最小权限、默认拒绝和独立执行边界落实到智能体（Agent）工具调用与外部效果链。
 
 [Microkernel / Plug-in Architecture](/styles/sty-10)把这些原则落实到插件身份、来源、短期凭证、网络、文件和资源门禁：声明只表达需求，授权必须由宿主策略缩小；签名、权限或来源异常时停止新流量并隔离，进程边界本身不算安全沙箱。
 
