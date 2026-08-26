@@ -282,24 +282,22 @@ function markdownTables(source) {
   return tables;
 }
 
-function readerVisibleMermaidCodeBlocks(source) {
+function rootMermaidCodeBlocks(source) {
+  const root = markdownParser.parse(extractMarkdownBody(source));
+  assert.equal(root.type, 'root', 'MDX document root');
+  assert.ok(Array.isArray(root.children), 'MDX document root children');
   const blocks = [];
-  const visit = (node) => {
+  for (const node of root.children) {
     assert.ok(
       node && typeof node === 'object' && typeof node.type === 'string',
-      'unknown MDX AST node',
+      'unknown root MDX AST node',
     );
     if (node.type === 'code' && node.lang === 'mermaid') {
       assert.equal(typeof node.value, 'string', 'Mermaid code node value');
       assert.notEqual(node.value.trim(), '', 'Mermaid code node must not be empty');
       blocks.push(node.value);
     }
-    if ('children' in node) {
-      assert.ok(Array.isArray(node.children), `${node.type} children must be an array`);
-      for (const child of node.children) visit(child);
-    }
-  };
-  visit(markdownParser.parse(extractMarkdownBody(source)));
+  }
   return blocks;
 }
 
@@ -1220,13 +1218,13 @@ function assertActionBoundaryContract(source) {
     /<div className="table-wrapper table-wrapper--mapping diagram-wrapper--scroll-owner" role="region" aria-label="只读、写入与破坏性动作安全矩阵，可横向滚动" tabIndex=\{0\} onKeyDown=\{handleHorizontalArrowKey\}>[\s\S]*\| 动作级别 \| 外部效果 \| 权限与批准 \| 隔离与凭据 \| 重放与核对 \| 失败与恢复 \|[\s\S]*<\/div>/u,
   );
 
-  const visibleMermaidBlocks = readerVisibleMermaidCodeBlocks(source);
+  const rootMermaidBlocks = rootMermaidCodeBlocks(source);
   assert.equal(
-    visibleMermaidBlocks.length,
+    rootMermaidBlocks.length,
     1,
-    'exactly one reader-visible Mermaid action boundary flow',
+    'exactly one root-level Mermaid action boundary flow',
   );
-  const [mermaid] = visibleMermaidBlocks;
+  const [mermaid] = rootMermaidBlocks;
   const graph = parseMermaidFlowchart(mermaid, 'TB');
   assert.deepEqual(graph.labelsById, actionBoundaryNodes);
   assert.deepEqual(graph.edges.sort(), [...actionBoundaryEdges].sort());
@@ -1300,9 +1298,9 @@ test('AGT-C-05 publishes a fail-closed tool, sandbox, permission, and side-effec
   assertActionBoundaryContract(readFileSync(actionBoundaryArticlePath, 'utf8'));
 });
 
-test('AGT-C-05 requires exactly one reader-visible Mermaid topology', () => {
+test('AGT-C-05 requires exactly one root-level Mermaid topology', () => {
   const source = readFileSync(actionBoundaryArticlePath, 'utf8');
-  const [compliantMermaid] = readerVisibleMermaidCodeBlocks(source);
+  const [compliantMermaid] = rootMermaidCodeBlocks(source);
   assert.ok(compliantMermaid, 'AGT-C-05 Mermaid mutation fixture');
   const compliantMermaidFence = `\`\`\`mermaid\n${compliantMermaid}\n\`\`\``;
   assert.ok(source.includes(compliantMermaidFence), 'AGT-C-05 Mermaid fence fixture');
@@ -1311,15 +1309,23 @@ flowchart TB
     INTENT["意图"] --> AUTHORITY["权威系统"] --> CONFIRMED["已确认"]
 \`\`\``;
   const hiddenCompliantMermaid = `{/*\n${compliantMermaidFence}\n*/}`;
+  const hiddenDivCompliantMermaid = `<div hidden>\n\n${compliantMermaidFence}\n\n</div>`;
+  const displayNoneCompliantMermaid = `<div style={{display: 'none'}}>\n\n${compliantMermaidFence}\n\n</div>`;
   const mutations = [
     ['zero visible Mermaid diagrams', source.replace(compliantMermaidFence, '')],
     ['multiple visible Mermaid diagrams with bypass', `${source}\n\n${bypassMermaidFence}\n`],
     ['only compliant Mermaid diagram hidden', source.replace(compliantMermaidFence, hiddenCompliantMermaid)],
     ['hidden compliant Mermaid plus visible bypass', `${source.replace(compliantMermaidFence, hiddenCompliantMermaid)}\n\n${bypassMermaidFence}\n`],
+    ['compliant Mermaid nested in hidden JSX container', source.replace(compliantMermaidFence, hiddenDivCompliantMermaid)],
+    ['compliant Mermaid nested in display-none JSX container', source.replace(compliantMermaidFence, displayNoneCompliantMermaid)],
   ];
   const survivors = [];
   for (const [label, mutant] of mutations) {
     assert.notEqual(mutant, source, `${label} fixture must alter the article`);
+    assert.doesNotThrow(
+      () => markdownParser.parse(extractMarkdownBody(mutant)),
+      `${label} must be valid MDX`,
+    );
     try {
       assertActionBoundaryContract(mutant);
       survivors.push(label);
@@ -1328,6 +1334,20 @@ flowchart TB
     }
   }
   assert.deepEqual(survivors, []);
+});
+
+test('AGT-C-05 ignores a nested hidden Mermaid when the root topology remains', () => {
+  const source = readFileSync(actionBoundaryArticlePath, 'utf8');
+  const hiddenBypass = `<div hidden>\n\n\`\`\`mermaid
+flowchart TB
+    INTENT["意图"] --> AUTHORITY["权威系统"] --> CONFIRMED["已确认"]
+\`\`\`\n\n</div>`;
+  const mutant = `${source}\n\n${hiddenBypass}\n`;
+  assert.doesNotThrow(
+    () => markdownParser.parse(extractMarkdownBody(mutant)),
+    'hidden bypass fixture must be valid MDX',
+  );
+  assert.doesNotThrow(() => assertActionBoundaryContract(mutant));
 });
 
 test('AGT-C-05 rejects action-matrix, authority-bypass, and approval-order mutations', () => {
