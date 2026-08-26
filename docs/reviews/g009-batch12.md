@@ -43,15 +43,26 @@
 
 ## Local in-app Browser QA
 
-- Exact remediation implementation candidate head: `PENDING`.
-- Raw Browser JSON: `NOT_RUN`.
-- Functional Browser QA: `NOT_RUN`.
-- Screenshot evidence: `NOT_RUN`.
-- The prior candidate's raw observations and screenshot attempts are not accepted for this render-changing remediation. No Chrome fallback, prior raw, historical screenshot, substituted browser surface or visual PASS is claimed.
+- Exact remediation implementation candidate head: `4405d38bc70a3eb3711319c00c54f069e333a8aa`.
+- Raw Browser JSON: `docs/reviews/evidence/g009-batch12-stage-a-browser.json`; bytes: `34,866`; SHA-256: `a4c80875fbcf06b3f524a55f3a55a80639f3b3335a3ac7e6d173a4f4b98bbe4d`.
+- Functional Browser QA: `PASS`; states `4/4`; wrapper interactions `16/16`; relation href/H1/return observations `12/12`; source href/target/rel observations `40/40`.
+- SVG loaded in every state: source `2400x3600`; rendered `800x1200`; observed asset bytes `21,881`; observed SHA-256 matches the canonical artifact identity.
+- STY-12 actionable count: `0` per state.
+- Diagnostics are complete and empty in every state: warning/error logs `0`, Runtime/Log events `0`, `hasMore=false`, `truncated=false`.
+- Screenshot evidence: `BLOCKED / NOT_ACCEPTED`.
+- Exactly three fresh full-page attempts are `CAPTURED_REJECTED`; original bytes were inspected; no fourth attempt was made.
+
+| State | Bytes | SHA-256 | Dimensions | Judgment |
+| --- | ---: | --- | --- | --- |
+| `desktopLight` | 839,708 | `d73aa6857bd8aedf7bd0f63b330e4712e485c29ffe121f1f3df3257612f4fc71` | `1440x10881` | Rejected: repeated article sections and architecture diagram. |
+| `desktopDark` | 842,052 | `619545ee7e57f01eaceca1cdb6b5969e8fb1534c9b0b207403f15870687be5c9` | `1440x10881` | Rejected: repeated article sections and architecture diagram. |
+| `mobileLight` | 599,835 | `e649e892ed2f16ebc0cce8432c87688d888518c9d51213a622b2a478ce344572` | `390x15730` | Rejected: repeated sections, a large blank interval, and omitted faithful continuous diagram coverage. |
+
+- Rejected screenshot originals remain untracked in the active in-app Browser evidence session; no Chrome fallback, prior raw, historical screenshot, substituted browser surface or visual PASS is claimed.
 
 ## Independent review checkpoint
 
-- Exact implementation candidate head: `PENDING`.
+- Exact implementation candidate head: `4405d38bc70a3eb3711319c00c54f069e333a8aa`.
 - Exact Browser evidence head: `PENDING`.
 - Exact independent review head: `PENDING`.
 - Independent code/spec/security review: `PENDING`; findings: `PENDING`.

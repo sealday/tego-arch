@@ -14,9 +14,9 @@ export const LOCAL_RAW = 'docs/reviews/evidence/g009-batch12-stage-a-browser.jso
 export const PRODUCTION_RAW = 'docs/reviews/evidence/g009-batch12-stage-a-production-browser.json';
 export const STAGE_B_PRODUCTION_RAW = 'docs/reviews/evidence/g009-batch12-stage-b-production-browser.json';
 export const STATES = Object.freeze(['desktopLight', 'desktopDark', 'mobileLight', 'mobileDark']);
-export const CANDIDATE_HEAD = 'PENDING';
-export const LOCAL_RAW_BYTES = 0;
-export const LOCAL_RAW_SHA256 = 'PENDING';
+export const CANDIDATE_HEAD = '4405d38bc70a3eb3711319c00c54f069e333a8aa';
+export const LOCAL_RAW_BYTES = 34_866;
+export const LOCAL_RAW_SHA256 = 'a4c80875fbcf06b3f524a55f3a55a80639f3b3335a3ac7e6d173a4f4b98bbe4d';
 
 const WRAPPER_LABELS = Object.freeze([
   '订单结算与异步履约 Serverless 边界图，可横向滚动',
@@ -43,15 +43,15 @@ const RELATIONS = Object.freeze([
   ['/tego-arch/cases/cloudflare-durable-objects-workerd', '把边缘协调收敛到身份寻址的状态单元'],
 ]);
 const SCREENSHOT_ATTEMPTS = Object.freeze([
-  ['desktopLight', 839_763, '269ad548942a6e5ffe6ba8608d40b06c23b6e2c24b0b442be3de2718c7a9af69', 1440, 10_881],
-  ['desktopDark', 841_946, '0e491d3c8f0fd25d8a2949df7bda40b00de04f9753fe383d879e3ca6ee94978c', 1440, 10_881],
+  ['desktopLight', 839_708, 'd73aa6857bd8aedf7bd0f63b330e4712e485c29ffe121f1f3df3257612f4fc71', 1440, 10_881],
+  ['desktopDark', 842_052, '619545ee7e57f01eaceca1cdb6b5969e8fb1534c9b0b207403f15870687be5c9', 1440, 10_881],
   ['mobileLight', 599_835, 'e649e892ed2f16ebc0cce8432c87688d888518c9d51213a622b2a478ce344572', 390, 15_730],
 ]);
 const DIAGNOSTIC_PAGES = Object.freeze([
-  [14, 87],
-  [235, 307],
-  [324, 396],
-  [494, 566],
+  [25, 97],
+  [97, 185],
+  [185, 286],
+  [286, 372],
 ]);
 
 const ARTICLE = 'content/styles/sty-11-serverless-architecture.mdx';
@@ -104,10 +104,14 @@ function assertPendingReview(source = review) {
   assert.ok(source.includes(`Complete immediate STY-10 backlog suffix SHA-256: \`${IMMEDIATE_BACKLOG_SUFFIX_HASH}\``));
   assert.match(source, /Governed STY-11 sources: `11`; remote anchors per state: `10`/u);
   assert.match(source, /Exactly one STY-11 citation is `manifest_primary`/u);
-  assert.match(source, /Exact remediation implementation candidate head: `PENDING`/u);
-  assert.match(source, /Raw Browser JSON: `NOT_RUN`/u);
-  assert.match(source, /Functional Browser QA: `NOT_RUN`/u);
-  assert.match(source, /Screenshot evidence: `NOT_RUN`/u);
+  assert.ok(source.includes(`Exact remediation implementation candidate head: \`${CANDIDATE_HEAD}\``));
+  assert.ok(source.includes(`Raw Browser JSON: \`${LOCAL_RAW}\`; bytes: \`${LOCAL_RAW_BYTES.toLocaleString('en-US')}\`; SHA-256: \`${LOCAL_RAW_SHA256}\``));
+  assert.match(source, /Functional Browser QA: `PASS`; states `4\/4`; wrapper interactions `16\/16`; relation href\/H1\/return observations `12\/12`; source href\/target\/rel observations `40\/40`/u);
+  assert.match(source, /SVG loaded in every state: source `2400x3600`; rendered `800x1200`; observed asset bytes `21,881`/u);
+  assert.match(source, /STY-12 actionable count: `0` per state/u);
+  assert.match(source, /Diagnostics are complete and empty in every state: warning\/error logs `0`, Runtime\/Log events `0`, `hasMore=false`, `truncated=false`/u);
+  assert.match(source, /Screenshot evidence: `BLOCKED \/ NOT_ACCEPTED`/u);
+  assert.match(source, /Exactly three fresh full-page attempts are `CAPTURED_REJECTED`; original bytes were inspected; no fourth attempt was made/u);
   assert.match(source, /Independent code\/spec\/security review: `PENDING`; findings: `PENDING`/u);
   assert.match(source, /Independent content\/evidence\/rights review: `PENDING`; rights: `PENDING`; findings: `PENDING`/u);
   assert.match(source, /Independent architecture\/invariant review: `PENDING`; blockers: `PENDING`/u);
@@ -126,13 +130,18 @@ function assertLocalEvidence(value) {
   assert.deepEqual(value.collection.observedSvgAsset, {
     source: 'Browser pageAssets bundle',
     contentType: 'image/svg+xml',
-    bytes: 21_797,
+    bytes: 21_881,
     sha256: STABLE_IDENTITIES.get(SVG)[1],
     viewBox: '0 0 2400 3600',
     bundleFailures: 0,
   });
+  const stateDiagnosticContinuity = STATES.map((scope, index) => {
+    const [afterSequence, cursor] = DIAGNOSTIC_PAGES[index];
+    return {afterSequence, cursor, count: 0, hasMore: false, truncated: false, scope};
+  });
   assert.deepEqual(value.collection.diagnosticContinuity, [
-    {afterSequence: 14, cursor: 566, count: 0, hasMore: false, truncated: false, scope: 'whole exact-candidate collection'},
+    ...stateDiagnosticContinuity,
+    {afterSequence: 25, cursor: 372, count: 0, hasMore: false, truncated: false, scope: 'whole session'},
   ]);
   for (const [index, stateName] of STATES.entries()) {
     const state = value.states[stateName];
@@ -171,8 +180,8 @@ function assertLocalEvidence(value) {
       naturalHeight: 150,
       renderedWidth: 800,
       renderedHeight: 1200,
-      src: '/tego-arch/assets/images/sty-11-serverless-order-fulfillment-7c3085de35a3d63e095507e25ae0101f.svg',
-      observedAssetBytes: 21_797,
+      src: '/tego-arch/assets/images/sty-11-serverless-order-fulfillment-a95eeababb40ed1cd544b8cd067271d5.svg',
+      observedAssetBytes: 21_881,
     }, `${stateName} exact SVG`);
     assert.equal(state.geometry.sty12, 0, `${stateName} STY-12 actionable count`);
     assert.deepEqual(state.logs, [], `${stateName} warning/error logs`);
@@ -254,9 +263,11 @@ test('locks exact STY-11 article, ledger, Draw.io and SVG identities', () => {
   }
 });
 
-test('requires fresh remediation Browser evidence to remain absent before exact-candidate collection', () => {
+test('requires exact-candidate remediation Browser evidence while production and Stage B artifacts remain absent', () => {
   assertPendingReview();
-  assert.equal(raw, undefined, `${LOCAL_RAW} remains absent before remediation Browser collection`);
+  assert.equal(raw.length, LOCAL_RAW_BYTES, `${LOCAL_RAW} exact bytes`);
+  assert.equal(sha256(raw), LOCAL_RAW_SHA256, `${LOCAL_RAW} exact SHA-256`);
+  assertLocalEvidence(raw && JSON.parse(raw));
   assert.equal(productionRaw, undefined, `${PRODUCTION_RAW} remains absent before deployment`);
   assert.equal(stageBProductionRaw, undefined, `${STAGE_B_PRODUCTION_RAW} remains absent before Stage B`);
 });
@@ -272,8 +283,8 @@ test('rejects pending review verdict, history, scope, deployment and Stage B fab
     ['Final Stage A review judgment: `PENDING`', 'Final Stage A review judgment: `READY`'],
     ['Scope boundary: `STAGE_A_ONLY`', 'Scope boundary: `STAGE_B`'],
     ['Deployment status: `NOT_RUN`', 'Deployment status: `SUCCESS`'],
-    ['Functional Browser QA: `NOT_RUN`', 'Functional Browser QA: `PASS`'],
-    ['Screenshot evidence: `NOT_RUN`', 'Screenshot evidence: `PASS`'],
+    ['Functional Browser QA: `PASS`', 'Functional Browser QA: `FAIL`'],
+    ['Screenshot evidence: `BLOCKED / NOT_ACCEPTED`', 'Screenshot evidence: `PASS`'],
   ]) {
     const mutated = review.replace(before, after);
     assert.notEqual(mutated, review, `${before} mutation applies`);
@@ -284,6 +295,41 @@ test('rejects pending review verdict, history, scope, deployment and Stage B fab
   }
 });
 
-test('does not accept the prior candidate Browser raw after render-changing remediation', () => {
-  assert.equal(raw, undefined, `${LOCAL_RAW} is deliberately absent`);
+test('rejects Browser head, state, geometry, interaction, navigation, source, SVG, diagnostics and screenshot mutations', () => {
+  const evidence = raw && JSON.parse(raw);
+  assertLocalEvidence(evidence);
+  const mutations = [
+    ['candidate head', (copy) => copy.candidateHead = '0'.repeat(40)],
+    ['missing state', (copy) => delete copy.states.mobileDark],
+    ['state order', (copy) => [copy.stateOrder[0], copy.stateOrder[1]] = [copy.stateOrder[1], copy.stateOrder[0]]],
+    ['duplicate wrapper', (copy) => copy.states.desktopLight.geometry.wrappers.push(structuredClone(copy.states.desktopLight.geometry.wrappers[0]))],
+    ['wrapper order', (copy) => [copy.states.desktopDark.geometry.wrappers[0], copy.states.desktopDark.geometry.wrappers[1]] = [copy.states.desktopDark.geometry.wrappers[1], copy.states.desktopDark.geometry.wrappers[0]]],
+    ['client width', (copy) => copy.states.mobileLight.geometry.wrappers[0].clientWidth += 1],
+    ['scroll width', (copy) => copy.states.desktopLight.geometry.wrappers[1].scrollWidth += 1],
+    ['focus visible', (copy) => copy.states.mobileDark.interactions[0].before.focusVisible = false],
+    ['outline', (copy) => copy.states.desktopDark.interactions[1].after.outlineWidth = '2px'],
+    ['ArrowRight delta', (copy) => copy.states.mobileLight.interactions[0].delta = 39],
+    ['relation H1', (copy) => copy.states.desktopLight.relations[0].h1 = 'fabricated'],
+    ['relation return', (copy) => copy.states.mobileDark.relations[1].returnedToArticle = false],
+    ['source href', (copy) => copy.states.desktopDark.geometry.sources[0].href = 'https://example.invalid/fabricated'],
+    ['unloaded SVG', (copy) => copy.states.mobileLight.geometry.svg.loaded = false],
+    ['resized SVG', (copy) => copy.states.desktopDark.geometry.svg.renderedWidth = 799],
+    ['STY-12 fabrication', (copy) => copy.states.desktopLight.geometry.sty12 = 1],
+    ['state continuity cursor', (copy) => copy.collection.diagnosticContinuity[2].cursor -= 1],
+    ['whole-session diagnostic cursor', (copy) => copy.collection.diagnosticContinuity[4].cursor -= 1],
+    ['state diagnostic afterSequence', (copy) => copy.states.desktopDark.diagnostics.pages[0].afterSequence -= 1],
+    ['runtime event', (copy) => copy.states.mobileDark.diagnostics.events.push({method: 'Runtime.exceptionThrown'})],
+    ['diagnostic continuation', (copy) => copy.states.desktopLight.diagnostics.hasMore = true],
+    ['truncated diagnostics', (copy) => copy.states.mobileLight.diagnostics.truncated = true],
+    ['deleted screenshot attempt', (copy) => copy.screenshotEvidence.attempts.pop()],
+    ['changed screenshot attempt', (copy) => copy.screenshotEvidence.attempts[0].sha256 = '1'.repeat(64)],
+    ['visual PASS', (copy) => copy.screenshotEvidence.status = 'PASS'],
+  ];
+  assert.ok(mutations.length >= 22, 'at least 22 semantic Browser evidence mutations');
+  for (const [label, mutate] of mutations) {
+    const copy = structuredClone(evidence);
+    mutate(copy);
+    assert.notDeepEqual(copy, evidence, `${label} mutation applies`);
+    assert.throws(() => assertLocalEvidence(copy), assert.AssertionError, label);
+  }
 });
