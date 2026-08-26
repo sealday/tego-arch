@@ -40,6 +40,8 @@
 **Modify**
 
 - `docs/content-backlog.md` — add 14 knowledge topics and three case release tasks without altering existing `AGT-01...AGT-06` platform items.
+- `scripts/backlog-topics.mjs` — map `AGT-C` to concepts and `AGT-P` to patterns while preserving legacy `AGT` paths.
+- `tests/backlog-topics.test.mjs` — prove longest-prefix parsing, type, and route behavior for all three Agent prefixes.
 - `data/source-ledger.json` — register new primary/first-party sources, six concept citation records, and the original diagram.
 - `data/source-link-health.json` — refreshed transport checks for newly registered remote sources.
 
@@ -60,13 +62,15 @@
 - Create: `tests/fixtures/agentic-topic-system.json`
 - Create: `tests/agt-foundations-content.test.mjs`
 - Modify: `docs/content-backlog.md`
+- Modify: `scripts/backlog-topics.mjs`
+- Modify: `tests/backlog-topics.test.mjs`
 
 **Interfaces:**
 - Produces: JSON object `{schema_version: 1, concepts: Topic[], patterns: Topic[], cases: Case[]}` consumed by all later topic-system tests.
 - `Topic` fields: `{id, file, route, title, order, visual}`.
 - `Case` fields: `{backlog_id, file, route, title, order, visual}`.
 
-- [ ] **Step 1: Write the failing registry test**
+- [ ] **Step 1: Write the failing registry and prefix tests**
 
 ```js
 import assert from 'node:assert/strict';
@@ -94,11 +98,30 @@ test('agentic topic registry is exact and globally unique', () => {
 });
 ```
 
+Extend `tests/backlog-topics.test.mjs` with:
+
+```js
+test('parses Agent concept, pattern, and legacy path prefixes independently', () => {
+  const source = [
+    '- [ ] **AGT-C-01 P1｜AI Agent 系统边界**。',
+    '- [ ] **AGT-P-01 P1｜Workflow vs Agent**。',
+    '- [ ] **AGT-01 P1｜Agent 平台约束验证**。',
+  ].join('\n');
+  const result = parseBacklogTopics(source, 'docs/content-backlog.md');
+  assert.deepEqual(result.errors, []);
+  assert.deepEqual(result.topics.map(({id, type, slug}) => ({id, type, slug})), [
+    {id: 'AGT-C-01', type: 'concept', slug: '/concepts/agt-c-01'},
+    {id: 'AGT-P-01', type: 'pattern', slug: '/patterns/agt-p-01'},
+    {id: 'AGT-01', type: 'path', slug: '/paths/agt-01'},
+  ]);
+});
+```
+
 - [ ] **Step 2: Run the test and verify the fixture/backlog contract fails**
 
 Run: `node --test tests/agt-foundations-content.test.mjs`
 
-Expected: FAIL because `tests/fixtures/agentic-topic-system.json` does not exist.
+Expected: FAIL because the fixture does not exist and `AGT-C` / `AGT-P` still resolve through legacy `AGT`.
 
 - [ ] **Step 3: Add the exact inventory and backlog rows**
 
@@ -133,7 +156,7 @@ The fixture must list these routes in order:
 }
 ```
 
-Add unchecked backlog rows for all 17 items. Keep the existing `AGT-01...AGT-06` Agent platform rows unchanged.
+Add `['AGT-C', ['concept', 'concepts']]` and `['AGT-P', ['pattern', 'patterns']]` before the legacy `AGT` entry in `topicPrefixTypes`; longest-prefix sorting must select them without changing `AGT-01...AGT-06`. Add unchecked backlog rows for all 17 items and keep the existing Agent platform rows unchanged.
 
 - [ ] **Step 4: Run registry and global backlog tests**
 
@@ -144,7 +167,7 @@ Expected: PASS.
 - [ ] **Step 5: Commit the inventory**
 
 ```bash
-git add docs/content-backlog.md tests/fixtures/agentic-topic-system.json tests/agt-foundations-content.test.mjs
+git add docs/content-backlog.md scripts/backlog-topics.mjs tests/backlog-topics.test.mjs tests/fixtures/agentic-topic-system.json tests/agt-foundations-content.test.mjs
 git commit -m "test(agentic): register topic-system release inventory"
 ```
 

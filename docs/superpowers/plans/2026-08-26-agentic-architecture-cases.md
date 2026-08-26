@@ -51,49 +51,42 @@ All three cases use `Draw.io + SVG`: each has more than seven primary nodes, mul
 
 **Files:** Create `tests/agt-reference-cases.test.mjs`.
 
-**Interfaces:** Consumes `tests/fixtures/agentic-topic-system.json`; produces shared assertions for all three case tasks.
+**Interfaces:** Consumes `tests/fixtures/agentic-topic-system.json`; produces a green inventory gate that later tasks extend with one red-green case contract at a time.
 
-- [ ] **Step 1: Write the failing inventory and heading test**
+- [ ] **Step 1: Write the green case-inventory test**
 
 ```js
 import assert from 'node:assert/strict';
-import {existsSync, readFileSync} from 'node:fs';
+import {readFileSync} from 'node:fs';
 import test from 'node:test';
-import {findMarkdownHeadings, parseFrontMatter} from '../scripts/content-metadata.mjs';
 
 const registry = JSON.parse(readFileSync('tests/fixtures/agentic-topic-system.json', 'utf8'));
-const expectedH2 = ['学习问题','一页摘要','事实边界','架构图','控制权与任务流','关键源码导读','架构决策与权衡','生产化分析','可迁移经验','来源'];
 
-test('the three approved reference cases exist with the fixed contract', () => {
-  for (const item of registry.cases) {
-    assert.equal(existsSync(item.file), true, item.file);
-    const source = readFileSync(item.file, 'utf8');
-    assert.equal(parseFrontMatter(source).content_type, 'case');
-    assert.deepEqual(findMarkdownHeadings(source).filter(({level}) => level === 2).map(({text}) => text), expectedH2);
-    assert.match(source, /参考设计/u);
-    assert.match(source, /不证明.*生产/u);
-  }
+test('the three approved reference cases have unique routes and global catalog order', () => {
+  assert.deepEqual(registry.cases.map(({backlog_id}) => backlog_id), ['CASE-21','CASE-22','CASE-23']);
+  assert.deepEqual(registry.cases.map(({order}) => order), [19,20,21]);
+  assert.equal(new Set(registry.cases.map(({route}) => route)).size, 3);
+  assert.equal(new Set(registry.cases.map(({file}) => file)).size, 3);
+  assert.ok(registry.cases.every(({visual}) => visual === 'Draw.io + SVG'));
 });
 ```
 
-- [ ] **Step 2: Run and verify failure**
+- [ ] **Step 2: Run and verify the inventory gate passes**
 
 Run: `node --test tests/agt-reference-cases.test.mjs`
 
-Expected: FAIL on the first missing case.
+Expected: PASS.
 
-- [ ] **Step 3: Add reusable assertions**
+- [ ] **Step 3: Record the shared case contract for later task additions**
 
-Add helpers that assert exact route, series `ai-native`, catalog order, evidence labels `已证实事实` / `基于证据的推断` / `个人分析`, the three transfer H3s, one responsive diagram wrapper, five required failure categories, and a governed `data/source-ledger.json` document record.
+In the Task 1 report, record that each later named test must assert exact route, series `ai-native`, catalog order, evidence labels `已证实事实` / `基于证据的推断` / `个人分析`, the three transfer H3s, one responsive diagram wrapper, five required failure categories, and a governed `data/source-ledger.json` document record. Do not add unused helper code before the first case test consumes it.
 
-- [ ] **Step 4: Commit the red contract**
+- [ ] **Step 4: Commit the green inventory gate**
 
 ```bash
 git add tests/agt-reference-cases.test.mjs
-git commit -m "test(agentic): define reference case contracts"
+git commit -m "test(agentic): define reference case inventory"
 ```
-
-The test intentionally remains red until Tasks 2–4 finish; run the per-case test names added in each task to keep each intermediate commit green for its own scope.
 
 ### Task 2: Publish the multi-agent research system reference case
 
