@@ -282,6 +282,27 @@ function markdownTables(source) {
   return tables;
 }
 
+function readerVisibleMermaidCodeBlocks(source) {
+  const blocks = [];
+  const visit = (node) => {
+    assert.ok(
+      node && typeof node === 'object' && typeof node.type === 'string',
+      'unknown MDX AST node',
+    );
+    if (node.type === 'code' && node.lang === 'mermaid') {
+      assert.equal(typeof node.value, 'string', 'Mermaid code node value');
+      assert.notEqual(node.value.trim(), '', 'Mermaid code node must not be empty');
+      blocks.push(node.value);
+    }
+    if ('children' in node) {
+      assert.ok(Array.isArray(node.children), `${node.type} children must be an array`);
+      for (const child of node.children) visit(child);
+    }
+  };
+  visit(markdownParser.parse(extractMarkdownBody(source)));
+  return blocks;
+}
+
 function visibleBodyRecords(source) {
   return parseMdxVisibleCopy(source, informationLifecycleArticlePath).blocks
     .map(({text}) => text.replace(/\s+/gu, ' ').trim())
@@ -630,6 +651,19 @@ function parseMermaidFlowchart(mermaid, direction = 'LR') {
     ),
   };
 }
+
+test('foundation Mermaid topology parser preserves legal chained edges', () => {
+  const graph = parseMermaidFlowchart(
+    'flowchart TB\n    INTENT["意图"] -->|策略检查| POLICY["策略"] --> SANDBOX["隔离沙箱"]',
+    'TB',
+  );
+  assert.deepEqual(graph.edges, ['INTENT->POLICY', 'POLICY->SANDBOX']);
+  assert.deepEqual(graph.labelsById, new Map([
+    ['INTENT', ['意图']],
+    ['POLICY', ['策略']],
+    ['SANDBOX', ['隔离沙箱']],
+  ]));
+});
 
 function assertAgentLoopContract(source) {
   const metadata = parseFrontMatter(source);
@@ -1186,8 +1220,13 @@ function assertActionBoundaryContract(source) {
     /<div className="table-wrapper table-wrapper--mapping diagram-wrapper--scroll-owner" role="region" aria-label="只读、写入与破坏性动作安全矩阵，可横向滚动" tabIndex=\{0\} onKeyDown=\{handleHorizontalArrowKey\}>[\s\S]*\| 动作级别 \| 外部效果 \| 权限与批准 \| 隔离与凭据 \| 重放与核对 \| 失败与恢复 \|[\s\S]*<\/div>/u,
   );
 
-  const mermaid = source.match(/```mermaid\n([\s\S]*?)```/u)?.[1];
-  assert.ok(mermaid, 'Mermaid action boundary flow');
+  const visibleMermaidBlocks = readerVisibleMermaidCodeBlocks(source);
+  assert.equal(
+    visibleMermaidBlocks.length,
+    1,
+    'exactly one reader-visible Mermaid action boundary flow',
+  );
+  const [mermaid] = visibleMermaidBlocks;
   const graph = parseMermaidFlowchart(mermaid, 'TB');
   assert.deepEqual(graph.labelsById, actionBoundaryNodes);
   assert.deepEqual(graph.edges.sort(), [...actionBoundaryEdges].sort());
@@ -1259,6 +1298,36 @@ function deleteActionRow(source, rowIndex) {
 test('AGT-C-05 publishes a fail-closed tool, sandbox, permission, and side-effect contract', () => {
   assert.ok(existsSync(actionBoundaryArticlePath), `Missing ${actionBoundaryArticlePath}`);
   assertActionBoundaryContract(readFileSync(actionBoundaryArticlePath, 'utf8'));
+});
+
+test('AGT-C-05 requires exactly one reader-visible Mermaid topology', () => {
+  const source = readFileSync(actionBoundaryArticlePath, 'utf8');
+  const [compliantMermaid] = readerVisibleMermaidCodeBlocks(source);
+  assert.ok(compliantMermaid, 'AGT-C-05 Mermaid mutation fixture');
+  const compliantMermaidFence = `\`\`\`mermaid\n${compliantMermaid}\n\`\`\``;
+  assert.ok(source.includes(compliantMermaidFence), 'AGT-C-05 Mermaid fence fixture');
+  const bypassMermaidFence = `\`\`\`mermaid
+flowchart TB
+    INTENT["意图"] --> AUTHORITY["权威系统"] --> CONFIRMED["已确认"]
+\`\`\``;
+  const hiddenCompliantMermaid = `{/*\n${compliantMermaidFence}\n*/}`;
+  const mutations = [
+    ['zero visible Mermaid diagrams', source.replace(compliantMermaidFence, '')],
+    ['multiple visible Mermaid diagrams with bypass', `${source}\n\n${bypassMermaidFence}\n`],
+    ['only compliant Mermaid diagram hidden', source.replace(compliantMermaidFence, hiddenCompliantMermaid)],
+    ['hidden compliant Mermaid plus visible bypass', `${source.replace(compliantMermaidFence, hiddenCompliantMermaid)}\n\n${bypassMermaidFence}\n`],
+  ];
+  const survivors = [];
+  for (const [label, mutant] of mutations) {
+    assert.notEqual(mutant, source, `${label} fixture must alter the article`);
+    try {
+      assertActionBoundaryContract(mutant);
+      survivors.push(label);
+    } catch {
+      // Expected: every visibility/cardinality mutant is rejected.
+    }
+  }
+  assert.deepEqual(survivors, []);
 });
 
 test('AGT-C-05 rejects action-matrix, authority-bypass, and approval-order mutations', () => {
