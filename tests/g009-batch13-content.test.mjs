@@ -74,6 +74,47 @@ export const NODE_IDS = Object.freeze([
   'shared-runtime', 'slice-fallback', 'catalog-api', 'cart-api', 'order-api', 'account-api',
 ]);
 export const LEGEND_ROLES = Object.freeze(['release', 'resolve', 'business', 'recovery']);
+export const EDGE_IDS = Object.freeze([
+  'catalog-release', 'cart-release', 'checkout-release', 'account-release',
+  'store-artifacts', 'validate-candidate', 'publish-manifest', 'promote-manifest',
+  'resolve-manifest', 'route-control', 'activate-catalog', 'activate-cart',
+  'activate-checkout', 'activate-account', 'share-runtime-catalog', 'share-runtime-cart',
+  'share-runtime-checkout', 'share-runtime-account', 'checkout-read-cart',
+  'checkout-submit-order', 'catalog-query', 'cart-query', 'account-query',
+  'load-failure', 'rollback-manifest', 'return-catalog', 'return-cart-version',
+  'return-order-id', 'return-account',
+]);
+export const EDGE_CONTRACTS = Object.freeze([
+  ['catalog-release', 'catalog-pipeline', 'immutable-artifacts', 'release', '商品制品'],
+  ['cart-release', 'cart-pipeline', 'immutable-artifacts', 'release', '购物车制品'],
+  ['checkout-release', 'checkout-pipeline', 'immutable-artifacts', 'release', '结算制品'],
+  ['account-release', 'account-pipeline', 'immutable-artifacts', 'release', '账户制品'],
+  ['store-artifacts', 'immutable-artifacts', 'compatibility-gate', 'release', '存储不可变制品'],
+  ['validate-candidate', 'compatibility-gate', 'versioned-manifest', 'release', '验证候选组合'],
+  ['publish-manifest', 'versioned-manifest', 'atomic-promotion', 'release', '生成完整清单'],
+  ['promote-manifest', 'atomic-promotion', 'shell', 'release', '原子提升'],
+  ['resolve-manifest', 'versioned-manifest', 'shell', 'resolve', '解析批准清单'],
+  ['route-control', 'shell', 'top-router', 'resolve', '匹配顶层路由'],
+  ['activate-catalog', 'top-router', 'catalog-slice', 'resolve', '挂载商品'],
+  ['activate-cart', 'top-router', 'cart-slice', 'resolve', '挂载购物车'],
+  ['activate-checkout', 'top-router', 'checkout-slice', 'resolve', '挂载结算'],
+  ['activate-account', 'top-router', 'account-slice', 'resolve', '挂载账户'],
+  ['share-runtime-catalog', 'shared-runtime', 'catalog-slice', 'resolve', '共享商品运行时'],
+  ['share-runtime-cart', 'shared-runtime', 'cart-slice', 'resolve', '共享购物车运行时'],
+  ['share-runtime-checkout', 'shared-runtime', 'checkout-slice', 'resolve', '共享结算运行时'],
+  ['share-runtime-account', 'shared-runtime', 'account-slice', 'resolve', '共享账户运行时'],
+  ['checkout-read-cart', 'checkout-slice', 'cart-api', 'business', '购物车 ID + 预期版本'],
+  ['checkout-submit-order', 'checkout-slice', 'order-api', 'business', '购物车 ID + 幂等键'],
+  ['catalog-query', 'catalog-slice', 'catalog-api', 'business', '查询商品'],
+  ['cart-query', 'cart-slice', 'cart-api', 'business', '查询购物车'],
+  ['account-query', 'account-slice', 'account-api', 'business', '查询账户'],
+  ['load-failure', 'checkout-slice', 'slice-fallback', 'recovery', '加载失败'],
+  ['rollback-manifest', 'slice-fallback', 'atomic-promotion', 'recovery', '回退完整清单'],
+  ['return-catalog', 'catalog-api', 'catalog-slice', 'business', '返回商品事实'],
+  ['return-cart-version', 'cart-api', 'checkout-slice', 'business', '返回带版本购物车'],
+  ['return-order-id', 'order-api', 'checkout-slice', 'business', '返回订单 ID'],
+  ['return-account', 'account-api', 'account-slice', 'business', '返回账户事实'],
+]);
 export const NOTE_COPY = Object.freeze({
   'authority-note': '稳定 ID 跨切片；业务真相留在后端',
   'isolation-warning': '非隔离边界：主线程、DOM、全局 CSS、同源存储与网络会话',
@@ -110,13 +151,123 @@ function selectorMatches(element, selector) { const parts = selector.trim().repl
 function ownSvgPresentationValue(source, element, property) { let winner = element.attributes.has(property) ? {tier: 0, specificity: [0, 0, 0], order: -1, value: element.attributes.get(property)} : null; for (const rule of styleRules(source)) { const declaration = rule.declarations.get(property); if (!declaration || !selectorMatches(element, rule.selector)) continue; const candidate = {tier: declaration.important ? 3 : 1, specificity: rule.specificity, order: rule.order, value: declaration.value}; if (!winner || candidate.tier > winner.tier || candidate.tier === winner.tier && (compareSpecificity(candidate.specificity, winner.specificity) > 0 || compareSpecificity(candidate.specificity, winner.specificity) === 0 && candidate.order > winner.order)) winner = candidate; } const inline = cssDeclarations(element.attributes.get('style')).get(property); if (inline) { const candidate = {tier: inline.important ? 4 : 2, specificity: [1, 0, 0], order: Number.MAX_SAFE_INTEGER, value: inline.value}; if (!winner || candidate.tier >= winner.tier) winner = candidate; } return winner?.value; }
 const INHERITED_SVG_PROPERTIES = new Set(['color', 'fill', 'fill-opacity', 'font-family', 'font-size', 'font-style', 'font-weight', 'marker-end', 'marker-mid', 'marker-start', 'stroke', 'stroke-dasharray', 'stroke-linecap', 'stroke-linejoin', 'stroke-opacity', 'stroke-width', 'text-anchor', 'visibility']);
 export function svgPresentationValue(source, element, property) { const own = ownSvgPresentationValue(source, element, property); if (own !== undefined && !['inherit', 'unset'].includes(own)) return own === 'initial' ? undefined : own; if ((own === 'inherit' || own === 'unset' && INHERITED_SVG_PROPERTIES.has(property) || own === undefined && INHERITED_SVG_PROPERTIES.has(property)) && element.parent) return svgPresentationValue(source, element.parent, property); return undefined; }
-function terminalPoint(node, edge, side) { const box = numericBounds(node.geometry, node.attributes.get('id')); const style = styleMap(edge.attributes.get('style')); for (const key of [`${side}X`, `${side}Y`, `${side}Dx`, `${side}Dy`, `${side}Perimeter`]) assert.ok(style.has(key), `${edge.attributes.get('id')} ${key}`); assert.equal(style.get(`${side}Dx`), '0', 'terminal dx'); assert.equal(style.get(`${side}Dy`), '0', 'terminal dy'); assert.equal(style.get(`${side}Perimeter`), '1', 'terminal perimeter'); const x = number(style.get(`${side}X`), 'normalized terminal x'); const y = number(style.get(`${side}Y`), 'normalized terminal y'); assert.ok(x >= 0 && x <= 1 && y >= 0 && y <= 1 && (x === 0 || x === 1 || y === 0 || y === 1), 'normalized terminal on perimeter'); return {x: box.x + box.width * x, y: box.y + box.height * y}; }
-export function drawioRoute(edge, nodeById) { const source = nodeById.get(edge.attributes.get('source')); const target = nodeById.get(edge.attributes.get('target')); assert.ok(source && target, `${edge.attributes.get('id')} real terminals`); assert.ok(edge.hasPointsArray, `${edge.attributes.get('id')} waypoint array`); assert.ok(edge.points.length > 0, `${edge.attributes.get('id')} explicit waypoint`); assert.equal(edge.misplacedPoints, 0, `${edge.attributes.get('id')} points only in waypoint array`); assert.equal(edge.points.some((point) => ['sourcePoint', 'targetPoint'].includes(point.get('as'))), false, `${edge.attributes.get('id')} no fallback points`); return [terminalPoint(source, edge, 'exit'), ...edge.points.map((point) => ({x: number(point.get('x'), 'waypoint x'), y: number(point.get('y'), 'waypoint y')})), terminalPoint(target, edge, 'entry')]; }
+function absoluteDrawioBounds(node, nodeById) { const box = numericBounds(node.geometry, node.attributes.get('id')); const parent = nodeById.get(node.attributes.get('parent')); if (!parent || styleMap(parent.attributes.get('style')).get('semanticRole') !== 'region') return box; const parentBox = numericBounds(parent.geometry, parent.attributes.get('id')); return {...box, x: box.x + parentBox.x, y: box.y + parentBox.y, left: box.left + parentBox.x, right: box.right + parentBox.x, top: box.top + parentBox.y, bottom: box.bottom + parentBox.y}; }
+function terminalPoint(node, edge, side, nodeById) { const box = absoluteDrawioBounds(node, nodeById); const style = styleMap(edge.attributes.get('style')); for (const key of [`${side}X`, `${side}Y`, `${side}Dx`, `${side}Dy`, `${side}Perimeter`]) assert.ok(style.has(key), `${edge.attributes.get('id')} ${key}`); assert.equal(style.get(`${side}Dx`), '0', 'terminal dx'); assert.equal(style.get(`${side}Dy`), '0', 'terminal dy'); assert.equal(style.get(`${side}Perimeter`), '1', 'terminal perimeter'); const x = number(style.get(`${side}X`), 'normalized terminal x'); const y = number(style.get(`${side}Y`), 'normalized terminal y'); assert.ok(x >= 0 && x <= 1 && y >= 0 && y <= 1 && (x === 0 || x === 1 || y === 0 || y === 1), 'normalized terminal on perimeter'); return {x: box.x + box.width * x, y: box.y + box.height * y}; }
+export function drawioRoute(edge, nodeById) { const source = nodeById.get(edge.attributes.get('source')); const target = nodeById.get(edge.attributes.get('target')); assert.ok(source && target, `${edge.attributes.get('id')} real terminals`); assert.ok(edge.hasPointsArray, `${edge.attributes.get('id')} waypoint array`); assert.ok(edge.points.length > 0, `${edge.attributes.get('id')} explicit waypoint`); assert.equal(edge.misplacedPoints, 0, `${edge.attributes.get('id')} points only in waypoint array`); assert.equal(edge.points.some((point) => ['sourcePoint', 'targetPoint'].includes(point.get('as'))), false, `${edge.attributes.get('id')} no fallback points`); return [terminalPoint(source, edge, 'exit', nodeById), ...edge.points.map((point) => ({x: number(point.get('x'), 'waypoint x'), y: number(point.get('y'), 'waypoint y')})), terminalPoint(target, edge, 'entry', nodeById)]; }
 export function glyphBox({x, y, text, fontSize, anchor = 'start'}) { const width = [...text].reduce((total, character) => total + (/^[\u0000-\u00ff]$/u.test(character) ? .64 : 1), 0) * fontSize; const left = anchor === 'middle' ? x - width / 2 : anchor === 'end' ? x - width : x; return {left, right: left + width, top: y - fontSize * .82, bottom: y + fontSize * .22}; }
 export function alphaCompose(backdrop, foreground) { const alpha = foreground.alpha + backdrop.alpha * (1 - foreground.alpha); if (alpha === 0) return {red: 0, green: 0, blue: 0, alpha: 0}; return {red: (foreground.red * foreground.alpha + backdrop.red * backdrop.alpha * (1 - foreground.alpha)) / alpha, green: (foreground.green * foreground.alpha + backdrop.green * backdrop.alpha * (1 - foreground.alpha)) / alpha, blue: (foreground.blue * foreground.alpha + backdrop.blue * backdrop.alpha * (1 - foreground.alpha)) / alpha, alpha}; }
 function close(left, right, label) { assert.ok(Math.abs(left - right) < .01, `${label}: ${left} !== ${right}`); }
 export function markerEnvelope(endpoint, previous, {width, height, refX, refY, viewBox = [0, 0, width, height], pathBounds = {left: viewBox[0], top: viewBox[1], right: viewBox[0] + viewBox[2], bottom: viewBox[1] + viewBox[3]}, preserveAspectRatio = 'xMidYMid meet'}) { const dx = endpoint.x - previous.x; const dy = endpoint.y - previous.y; const length = Math.hypot(dx, dy); assert.ok(length > 0, 'marker terminal direction'); const [, , viewWidth, viewHeight] = viewBox; assert.ok(viewWidth > 0 && viewHeight > 0 && width > 0 && height > 0, 'positive marker viewport and viewBox'); const unit = {x: dx / length, y: dy / length}; const normal = {x: -unit.y, y: unit.x}; const [scaleX, scaleY] = preserveAspectRatio === 'none' ? [width / viewWidth, height / viewHeight] : (assert.equal(preserveAspectRatio, 'xMidYMid meet', 'supported marker preserveAspectRatio'), close(width / viewWidth, height / viewHeight, 'meet marker aspect ratio'), [width / viewWidth, height / viewHeight]); const points = [[pathBounds.left, pathBounds.top], [pathBounds.right, pathBounds.top], [pathBounds.right, pathBounds.bottom], [pathBounds.left, pathBounds.bottom]].map(([x, y]) => ({x: endpoint.x + unit.x * (x - refX) * scaleX + normal.x * (y - refY) * scaleY, y: endpoint.y + unit.y * (x - refX) * scaleX + normal.y * (y - refY) * scaleY})); return {left: Math.min(...points.map(({x}) => x)), right: Math.max(...points.map(({x}) => x)), top: Math.min(...points.map(({y}) => y)), bottom: Math.max(...points.map(({y}) => y))}; }
 function assertExactDuplicateFreeIds(actual, expected, label) { assert.equal(new Set(actual).size, actual.length, `${label} identities are duplicate-free`); assert.deepEqual([...actual].sort(), [...expected].sort(), `${label} exact identity set`); }
+
+function hiddenDrawioCell(cell) {
+  const style = styleMap(cell.attributes.get('style'));
+  return cell.attributes.get('visible') === '0' || style.get('visible') === '0' || style.get('opacity') === '0';
+}
+
+function hiddenSvgElement(source, element) {
+  return element.attributes.get('aria-hidden') === 'true'
+    || svgPresentationValue(source, element, 'display') === 'none'
+    || ['hidden', 'collapse'].includes(svgPresentationValue(source, element, 'visibility'))
+    || number(svgPresentationValue(source, element, 'opacity') ?? '1', 'SVG opacity') === 0;
+}
+
+function logicalDrawioNodeId(value) { return value?.replace(/^node-/u, ''); }
+function assertRoutesClose(actual, expected, label) { assert.equal(actual.length, expected.length, `${label} point count`); for (let index = 0; index < actual.length; index += 1) { assert.ok(Math.abs(actual[index].x - expected[index].x) <= .01, `${label} point ${index} x`); assert.ok(Math.abs(actual[index].y - expected[index].y) <= .01, `${label} point ${index} y`); } }
+function elementText(source, element) { return decodeXmlText(source.slice(element.openEnd, element.closeIndex).replace(/<[^>]+>/gu, '').trim()); }
+
+function positiveCollinearOverlap(leftStart, leftEnd, rightStart, rightEnd) {
+  if (leftStart.x === leftEnd.x && rightStart.x === rightEnd.x && leftStart.x === rightStart.x) return Math.min(Math.max(leftStart.y, leftEnd.y), Math.max(rightStart.y, rightEnd.y)) - Math.max(Math.min(leftStart.y, leftEnd.y), Math.min(rightStart.y, rightEnd.y));
+  if (leftStart.y === leftEnd.y && rightStart.y === rightEnd.y && leftStart.y === rightStart.y) return Math.min(Math.max(leftStart.x, leftEnd.x), Math.max(rightStart.x, rightEnd.x)) - Math.max(Math.min(leftStart.x, leftEnd.x), Math.min(rightStart.x, rightEnd.x));
+  return 0;
+}
+
+function segmentCrossesBox(start, end, box) {
+  if (start.x === end.x) return start.x > box.left && start.x < box.right && Math.max(Math.min(start.y, end.y), box.top) < Math.min(Math.max(start.y, end.y), box.bottom);
+  if (start.y === end.y) return start.y > box.top && start.y < box.bottom && Math.max(Math.min(start.x, end.x), box.left) < Math.min(Math.max(start.x, end.x), box.right);
+  assert.fail('semantic connectors must remain orthogonal');
+}
+
+function assertRenderedGeometry(svgSource, svg) {
+  const scale = 800 / 2400;
+  const root = svg.elements.find(({name}) => name === 'svg');
+  assert.ok(Math.abs(number(root.attributes.get('data-authoring-to-render-scale'), 'render scale') - scale) < 1e-9, '800px / 2400 authoring-unit scale');
+  for (const [attribute, minimum] of [
+    ['data-node-padding-horizontal-css', 16], ['data-node-padding-vertical-css', 14],
+    ['data-title-type-baseline-gap-css', 22], ['data-text-bottom-clearance-css', 14],
+    ['data-edge-stroke-clearance-css', 8], ['data-edge-marker-clearance-css', 16],
+    ['data-edge-node-clearance-css', 12], ['data-legend-marker-clearance-css', 16],
+  ]) assert.ok(number(root.attributes.get(attribute), attribute) >= minimum, `${attribute} >= ${minimum}px`);
+  const regionBounds = new Map(svg.elements.filter(({attributes}) => attributes.has('data-region-bounds')).map((region) => [region.attributes.get('data-region-id'), numericBounds(new Map(['x', 'y', 'width', 'height'].map((key, index) => [key, region.attributes.get('data-region-bounds').split(/\s+/u)[index]])), region.attributes.get('data-region-id'))]));
+  for (const node of svg.nodes) {
+    const id = node.attributes.get('data-node-id'); const values = node.attributes.get('data-node-bounds').split(/\s+/u);
+    const box = numericBounds(new Map(['x', 'y', 'width', 'height'].map((key, index) => [key, values[index]])), id);
+    const region = regionBounds.get(node.parent.attributes.get('data-region-id'));
+    assert.ok(Math.min(box.left - region.left, region.right - box.right, box.top - region.top, region.bottom - box.bottom) * scale >= 12, `${id} >= 12px node-to-region clearance`);
+    const title = svg.elements.find((element) => element.parent === node && element.attributes.get('data-node-title-for') === id);
+    const type = svg.elements.find((element) => element.parent === node && element.attributes.get('data-node-type-for') === id);
+    assert.ok(title && type, `${id} title/type pair`);
+    const titleFont = number(svgPresentationValue(svgSource, title, 'font-size'), `${id} title font`);
+    const typeFont = number(svgPresentationValue(svgSource, type, 'font-size'), `${id} type font`);
+    assert.ok(titleFont * scale >= 15 && typeFont * scale >= 10, `${id} rendered fonts >= 15px / 10px`);
+    const titleBox = glyphBox({x: number(title.attributes.get('x'), `${id} title x`), y: number(title.attributes.get('y'), `${id} title y`), text: elementText(svgSource, title), fontSize: titleFont, anchor: title.attributes.get('text-anchor')});
+    const typeBox = glyphBox({x: number(type.attributes.get('x'), `${id} type x`), y: number(type.attributes.get('y'), `${id} type y`), text: elementText(svgSource, type), fontSize: typeFont, anchor: type.attributes.get('text-anchor')});
+    assert.ok(Math.min(titleBox.left - box.left, box.right - titleBox.right) * scale >= 16, `${id} >= 16px horizontal title padding`);
+    assert.ok((titleBox.top - box.top) * scale >= 14, `${id} >= 14px title top padding`);
+    assert.ok((number(type.attributes.get('y'), `${id} type baseline`) - number(title.attributes.get('y'), `${id} title baseline`)) * scale >= 22, `${id} >= 22px title/type baseline gap`);
+    assert.ok((box.bottom - typeBox.bottom) * scale >= 14, `${id} >= 14px text bottom clearance`);
+  }
+  const segments = svg.edges.flatMap((edge) => { const points = parsePathPoints(edge.attributes.get('d')); return points.slice(1).map((end, index) => ({id: edge.attributes.get('data-edge-id'), source: edge.attributes.get('data-source'), target: edge.attributes.get('data-target'), start: points[index], end})); });
+  const nodeBounds = new Map(svg.nodes.map((node) => { const values = node.attributes.get('data-node-bounds').split(/\s+/u); return [node.attributes.get('data-node-id'), numericBounds(new Map(['x', 'y', 'width', 'height'].map((key, index) => [key, values[index]])), node.attributes.get('data-node-id'))]; }));
+  for (const segment of segments) for (const [id, box] of nodeBounds) if (![segment.source, segment.target].includes(id)) assert.equal(segmentCrossesBox(segment.start, segment.end, box), false, `${segment.id} does not cross unrelated ${id}`);
+  for (let left = 0; left < segments.length; left += 1) for (let right = left + 1; right < segments.length; right += 1) if (segments[left].id !== segments[right].id) assert.ok(positiveCollinearOverlap(segments[left].start, segments[left].end, segments[right].start, segments[right].end) <= 0, `${segments[left].id}/${segments[right].id} no positive collinear overlap`);
+  assert.ok(svg.edges.every((edge) => edge.index > Math.max(...svg.nodes.map(({index}) => index))), 'semantic routes paint after nodes; no later node mask can erase a route');
+  const rolePatterns = new Map();
+  for (const role of LEGEND_ROLES) { const representative = svg.edges.find(({attributes}) => attributes.get('data-edge-role') === role); assert.ok(representative, `${role} representative edge`); rolePatterns.set(role, `${representative.attributes.get('stroke-dasharray') ?? 'solid'}|${representative.attributes.get('marker-end')}`); }
+  assert.equal(new Set(rolePatterns.values()).size, LEGEND_ROLES.length, 'line patterns and markers encode all roles without color');
+  for (const role of LEGEND_ROLES) { const caption = svg.elements.find(({attributes}) => attributes.get('data-legend-caption-for') === role); const marker = svg.elements.find(({attributes}) => attributes.get('data-legend-role') === role); const captionFont = number(svgPresentationValue(svgSource, caption, 'font-size'), `${role} caption font`); const captionBox = glyphBox({x: number(caption.attributes.get('x'), `${role} caption x`), y: number(caption.attributes.get('y'), `${role} caption y`), text: elementText(svgSource, caption), fontSize: captionFont, anchor: caption.attributes.get('text-anchor')}); const path = parsePathPoints(marker.attributes.get('d')); const markerBox = markerEnvelope(path.at(-1), path.at(-2), {width: 36, height: 36, refX: 32, refY: 18, viewBox: [0, 0, 36, 36]}); assert.ok((markerBox.top - captionBox.bottom) * scale >= 16, `${role} caption-to-marker clearance >= 16px`); }
+}
+
+function assertEdgeInventory(drawio, svg, svgSource) {
+  assert.equal(EDGE_CONTRACTS.length, EDGE_IDS.length, 'one endpoint/role contract per edge identity');
+  assertExactDuplicateFreeIds(EDGE_CONTRACTS.map(([id]) => id), EDGE_IDS, 'edge contracts');
+  const drawioEdges = drawio.edges.filter(({attributes}) => EDGE_IDS.includes(attributes.get('id')));
+  assertExactDuplicateFreeIds(drawioEdges.map(({attributes}) => attributes.get('id')), EDGE_IDS, 'Draw.io semantic edges');
+  assertExactDuplicateFreeIds(svg.edges.map(({attributes}) => attributes.get('data-edge-id')), EDGE_IDS, 'SVG semantic edges');
+  const drawioById = new Map(drawioEdges.map((edge) => [edge.attributes.get('id'), edge]));
+  const svgById = new Map(svg.edges.map((edge) => [edge.attributes.get('data-edge-id'), edge]));
+  const nodeById = new Map(drawio.nodes.map((node) => [node.attributes.get('id'), node]));
+  for (const [id, source, target, role, label] of EDGE_CONTRACTS) {
+    const drawioEdge = drawioById.get(id); const svgEdge = svgById.get(id);
+    assert.ok(drawioEdge && svgEdge, `${id} paired edge`);
+    assert.equal(hiddenDrawioCell(drawioEdge), false, `${id} Draw.io edge visible`);
+    assert.equal(hiddenSvgElement(svgSource, svgEdge), false, `${id} SVG edge visible`);
+    assert.deepEqual([
+      logicalDrawioNodeId(drawioEdge.attributes.get('source')),
+      logicalDrawioNodeId(drawioEdge.attributes.get('target')),
+      styleMap(drawioEdge.attributes.get('style')).get('semanticRole'), drawioEdge.label,
+    ], [source, target, role, label], `${id} Draw.io endpoint/role/label contract`);
+    assert.deepEqual([
+      svgEdge.attributes.get('data-source'), svgEdge.attributes.get('data-target'),
+      svgEdge.attributes.get('data-edge-role'),
+    ], [source, target, role], `${id} SVG endpoint/role contract`);
+    assert.ok(svg.elements.some((element) => element.name === 'text' && element.attributes.get('data-edge-label-for') === id && !hiddenSvgElement(svgSource, element)), `${id} visible SVG label`);
+    const drawioRoutePoints = drawioRoute(drawioEdge, nodeById);
+    const svgRoutePoints = parsePathPoints(svgEdge.attributes.get('d'));
+    assertRoutesClose(svgRoutePoints, drawioRoutePoints, `${id} synchronized orthogonal route`);
+  }
+}
+
+function assertDirectRegionChildren(drawio, svg) {
+  const drawioRegionIds = new Set(REGION_IDS);
+  for (const node of drawio.nodes.filter(({attributes}) => styleMap(attributes.get('style')).get('semanticRole') === 'node-shape')) {
+    assert.ok(drawioRegionIds.has(node.attributes.get('parent')), `${node.attributes.get('id')} direct Draw.io region child`);
+  }
+  for (const node of svg.nodes) {
+    assert.ok(node.parent?.attributes.has('data-region-id'), `${node.attributes.get('data-node-id')} direct SVG region child`);
+    assert.ok(REGION_IDS.includes(node.parent.attributes.get('data-region-id')), `${node.attributes.get('data-node-id')} declared SVG region`);
+  }
+}
 
 function assertMicroFrontendArticle(source) {
   const {body} = articleParts(source);
@@ -159,13 +310,25 @@ function assertMicroFrontendSourcePolicy(ledger) {
 
 function assertMicroFrontendDiagram(drawioSource, svgSource) {
   const drawio = parseDrawio(drawioSource); const svg = parseSvg(svgSource); assertFlattenedSvg(svg.elements);
+  const root = svg.elements.find(({name}) => name === 'svg');
+  assert.equal(root?.attributes.get('viewBox'), '0 0 2400 3600', 'exact 2400 × 3600 viewBox');
+  assert.equal(root?.attributes.has('height'), false, 'no fixed rendered SVG height');
+  assert.equal(root?.attributes.has('width'), false, 'no fixed rendered SVG width; article CSS owns responsive width');
+  assert.equal(root?.attributes.get('role'), 'img', 'accessible SVG role');
+  assert.equal(root?.attributes.get('aria-labelledby'), 'sty12-title sty12-desc', 'accessible SVG labelling');
+  assert.match(svgSource, /<title id="sty12-title">Micro-Frontend 电商运行时、发布与权威状态边界<\/title>/u);
+  assert.match(svgSource, /<desc id="sty12-desc">四条独立流水线生成不可变制品，兼容门禁产生完整版本化清单并原子提升；薄 Shell 在共享浏览器环境加载商品、购物车、结算和账户切片，稳定标识连接权威后端，失败只降级对应槽位并可回退整份清单。<\/desc>/u);
+  assert.doesNotMatch(svgSource, /<(?:foreignObject|image|script)\b|@font-face|Logo|logo|watermark|水印/iu, 'no embedded HTML, image, script, external font, logo, or watermark');
   assertExactDuplicateFreeIds(drawio.nodes.filter(({attributes}) => styleMap(attributes.get('style')).get('semanticRole') === 'region').map(({attributes}) => attributes.get('id')), REGION_IDS, 'Draw.io regions');
   assertExactDuplicateFreeIds(svg.elements.filter(({attributes}) => attributes.has('data-region-id')).map(({attributes}) => attributes.get('data-region-id')), REGION_IDS, 'SVG regions');
   assertExactDuplicateFreeIds(drawio.nodes.filter(({attributes}) => styleMap(attributes.get('style')).get('semanticRole') === 'node-shape').map(({attributes}) => attributes.get('id').replace(/^node-/u, '')), NODE_IDS, 'Draw.io nodes');
   assertExactDuplicateFreeIds(svg.nodes.map(({attributes}) => attributes.get('data-node-id')), NODE_IDS, 'SVG nodes');
-  assertExactDuplicateFreeIds(drawio.edges.filter(({attributes}) => LEGEND_ROLES.includes(styleMap(attributes.get('style')).get('semanticRole'))).map(({attributes}) => attributes.get('id')), LEGEND_ROLES.map((role) => `legend-edge-${role}`), 'Draw.io legend edges');
+  assertExactDuplicateFreeIds(drawio.edges.filter(({attributes}) => attributes.get('id')?.startsWith('legend-edge-')).map(({attributes}) => attributes.get('id')), LEGEND_ROLES.map((role) => `legend-edge-${role}`), 'Draw.io legend edges');
   assertExactDuplicateFreeIds(svg.elements.filter(({attributes}) => attributes.has('data-legend-role')).map(({attributes}) => attributes.get('data-legend-role')), LEGEND_ROLES, 'SVG legend roles');
   for (const [id, copy] of Object.entries(NOTE_COPY)) { assert.ok(drawio.nodes.some(({attributes, label}) => attributes.get('id') === `note-text-${id}` && label === copy), `${id} Draw.io note`); assert.ok(svg.elements.some(({attributes}) => attributes.get('data-note-text-for') === id), `${id} SVG note`); }
+  assertDirectRegionChildren(drawio, svg);
+  assertEdgeInventory(drawio, svg, svgSource);
+  assertRenderedGeometry(svgSource, svg);
 }
 
 function fixtureArticle() {
@@ -198,7 +361,7 @@ test('STY-12 governed sources use the executable WHATWG license policy without q
   assertMicroFrontendSourcePolicy(JSON.parse(readFileSync('data/source-ledger.json', 'utf8')));
 });
 
-test('STY-12 implementation remains RED until its article, sources, relations, diagram, and projection exist', async () => {
+test('STY-12 publication asset binds article, sources, relations, and the exact synchronized diagram', async () => {
   const source = file(ARTICLE); assert.ok(source, ARTICLE + ' must exist after implementation'); assertMicroFrontendArticle(source);
   assertMicroFrontendSources(JSON.parse(readFileSync('data/source-ledger.json', 'utf8')));
   const documents = await readContentDocuments(CONTENT_ROOT); const article = documents.find(({file: path}) => 'content/' + path === ARTICLE);
@@ -206,5 +369,8 @@ test('STY-12 implementation remains RED until its article, sources, relations, d
   for (const path of ['content/styles/sty-03-vertical-slice-architecture.mdx', 'content/styles/sty-10-microkernel-plugin-architecture.mdx', 'content/cases/micro-frontends-single-spa.mdx']) { const target = documents.find(({file: documentPath}) => 'content/' + documentPath === path); assert.ok(target, `${path} exists`); assert.ok(extractInternalLinks(target).includes(ROUTE), `${path} visibly reciprocates STY-12`); }
   assert.equal(documents.flatMap(extractInternalLinks).includes('/styles/sty-13'), false, 'STY-13 remains non-actionable');
   const diagram = file(DRAWIO); const svg = file(SVG); assert.ok(diagram && svg, 'STY-12 diagram pair'); assertMicroFrontendDiagram(diagram, svg);
+});
+
+test('STY-12 Task 4 Stage A projection remains RED until generated artifacts are refreshed', () => {
   const status = JSON.parse(readFileSync('src/generated/project-status.json', 'utf8')); assert.deepEqual({completed: status.completed_topics, documents: status.content_documents, sources: status.governed_sources}, EXPECTED_STAGE_A, 'exact Stage A projection');
 });
