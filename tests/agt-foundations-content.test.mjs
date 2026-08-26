@@ -288,6 +288,7 @@ const qualityGovernanceSourceContracts = [
     author: 'Anthropic',
     publishedAt: '2026-01-09',
     license: 'LicenseRef-All-Rights-Reserved',
+    licenseEvidenceLocator: 'https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents',
   },
   {
     id: 'src-opentelemetry-genai-agent-semconv',
@@ -295,7 +296,9 @@ const qualityGovernanceSourceContracts = [
     locator: 'https://github.com/open-telemetry/semantic-conventions-genai/blob/56d6b11a02129319bf371083fa134b7ce989c976/docs/gen-ai/gen-ai-agent-spans.md',
     author: 'OpenTelemetry Authors',
     publishedAt: null,
+    version: 'semantic-conventions-genai commit 56d6b11a02129319bf371083fa134b7ce989c976 checked on 2026-08-26; document status Development',
     license: 'Apache-2.0',
+    licenseEvidenceLocator: 'https://github.com/open-telemetry/semantic-conventions-genai/blob/56d6b11a02129319bf371083fa134b7ce989c976/LICENSE',
   },
 ];
 
@@ -360,11 +363,119 @@ function visibleBodyRecords(source) {
     .filter(Boolean);
 }
 
-function visibleQualityGovernance(source) {
-  return parseMdxVisibleCopy(source, qualityGovernanceArticlePath).blocks
-    .map(({text}) => text.replace(/\s+/gu, ' ').trim())
+function visibleQualityGovernance(ast) {
+  const excluded = new Set([
+    'code',
+    'definition',
+    'html',
+    'mdxFlowExpression',
+    'mdxTextExpression',
+    'mdxJsxFlowElement',
+    'mdxJsxTextElement',
+    'mdxjsEsm',
+  ]);
+  const text = (node) => {
+    assert.ok(node && typeof node === 'object' && typeof node.type === 'string');
+    if (excluded.has(node.type)) return '';
+    if (node.type === 'text' || node.type === 'inlineCode') return node.value;
+    return (node.children ?? []).map(text).join('');
+  };
+  return ast.children.map(text)
+    .map((value) => value.replace(/\s+/gu, ' ').trim())
     .filter(Boolean)
     .join('\n');
+}
+
+function parseQualityGovernanceAst(source) {
+  const body = extractMarkdownBody(source);
+  const ast = markdownParser.parse(body);
+  assert.equal(ast.type, 'root', 'AGT-C-06 MDX document root');
+  assert.ok(Array.isArray(ast.children), 'AGT-C-06 MDX root children');
+  return {ast, body};
+}
+
+function rootQualityGovernanceTables(ast) {
+  return ast.children
+    .filter(({type}) => type === 'table')
+    .map((node) => ({
+      node,
+      rows: node.children.map((row) =>
+        row.children.map((cell) => nodeVisibleText(cell).replace(/\s+/gu, ' ').trim())),
+    }));
+}
+
+function physicalGfmCells(line) {
+  const trimmed = line.trim();
+  assert.match(trimmed, /^\|.*\|$/u, 'GFM table row owns leading and trailing pipes');
+  const cells = [''];
+  let codeFenceLength = 0;
+  for (let index = 1; index < trimmed.length - 1; index += 1) {
+    const character = trimmed[index];
+    if (character === '\\' && index + 1 < trimmed.length - 1) {
+      cells[cells.length - 1] += `${character}${trimmed[index + 1]}`;
+      index += 1;
+      continue;
+    }
+    if (character === '`') {
+      let end = index + 1;
+      while (trimmed[end] === '`') end += 1;
+      const runLength = end - index;
+      if (codeFenceLength === 0) codeFenceLength = runLength;
+      else if (codeFenceLength === runLength) codeFenceLength = 0;
+      index = end - 1;
+      continue;
+    }
+    if (character === '|' && codeFenceLength === 0) cells.push('');
+    else cells[cells.length - 1] += character;
+  }
+  assert.equal(codeFenceLength, 0, 'GFM table row closes inline code');
+  return cells.map((cell) => cell.trim());
+}
+
+function assertPhysicalQualityTable(body, tableNode, columnCount, dataRowCount) {
+  const startLine = tableNode.position?.start.line;
+  const endLine = tableNode.position?.end.line;
+  assert.ok(Number.isInteger(startLine) && Number.isInteger(endLine));
+  const lines = body.split(/\r?\n/u).slice(startLine - 1, endLine);
+  assert.equal(lines.length, dataRowCount + 2, 'physical header, delimiter, and data rows');
+  for (const [rowIndex, line] of lines.entries()) {
+    assert.equal(
+      physicalGfmCells(line).length,
+      columnCount,
+      `physical table line ${rowIndex + 1} has exactly ${columnCount} cells`,
+    );
+  }
+  assert.ok(
+    physicalGfmCells(lines[1]).every((cell) => /^:?-{3,}:?$/u.test(cell)),
+    'physical delimiter row contains only GFM delimiters',
+  );
+}
+
+function assertNoQualityGovernanceVisuals(ast, source) {
+  const visualComponent = /(?:img|svg|picture|image|figure|diagram|mermaid)/iu;
+  const visit = (node) => {
+    assert.ok(node && typeof node === 'object' && typeof node.type === 'string');
+    assert.ok(
+      node.type !== 'image' && node.type !== 'imageReference',
+      'AGT-C-06 must not embed Markdown images',
+    );
+    assert.ok(
+      node.type !== 'code' || node.lang !== 'mermaid',
+      'AGT-C-06 must not embed Mermaid diagrams',
+    );
+    if (node.type === 'mdxJsxFlowElement' || node.type === 'mdxJsxTextElement') {
+      assert.ok(
+        typeof node.name !== 'string' || !visualComponent.test(node.name),
+        `AGT-C-06 must not embed visual component ${node.name}`,
+      );
+    }
+    if (node.type === 'html') {
+      assert.doesNotMatch(node.value, /<(?:img|svg|picture|figure)\b/iu);
+    }
+    for (const child of node.children ?? []) visit(child);
+  };
+  visit(ast);
+  assert.doesNotMatch(source, /architecture-diagram-scroll|\/img\//u);
 }
 
 test('agentic topic registry is exact and globally unique', () => {
@@ -1504,14 +1615,17 @@ function assertQualityGovernanceContract(source) {
     .filter(({level}) => level === 2)
     .map(({text}) => `## ${text}`);
   assert.deepEqual(headings, knowledgeTypeContracts.concept);
-  assert.doesNotMatch(source, /```mermaid|architecture-diagram-scroll|\/img\//u);
+  const {ast, body} = parseQualityGovernanceAst(source);
+  assertNoQualityGovernanceVisuals(ast, source);
 
-  const tables = markdownTables(source);
+  const tables = rootQualityGovernanceTables(ast);
   const responsibilityTables = tables.filter(
-    ([header]) => header?.[0] === qualityResponsibilityHeader[0],
+    ({rows: [header]}) => header?.[0] === qualityResponsibilityHeader[0],
   );
   assert.equal(responsibilityTables.length, 1, 'exactly one responsibility table');
-  const [responsibilityHeader, ...responsibilityRows] = responsibilityTables[0];
+  const [{node: responsibilityNode, rows: responsibilityTable}] = responsibilityTables;
+  const [responsibilityHeader, ...responsibilityRows] = responsibilityTable;
+  assertPhysicalQualityTable(body, responsibilityNode, 5, 3);
   assert.deepEqual(responsibilityHeader, qualityResponsibilityHeader);
   assert.equal(responsibilityRows.length, 3, 'exactly three responsibility rows');
   assert.deepEqual(
@@ -1533,10 +1647,12 @@ function assertQualityGovernanceContract(source) {
   assert.doesNotMatch(responsibilityRows[2][1], /记录证据|判断质量/u);
 
   const evaluationTables = tables.filter(
-    ([header]) => header?.[0] === evaluationModeHeader[0],
+    ({rows: [header]}) => header?.[0] === evaluationModeHeader[0],
   );
   assert.equal(evaluationTables.length, 1, 'exactly one evaluation mode table');
-  const [evaluationHeader, ...evaluationRows] = evaluationTables[0];
+  const [{node: evaluationNode, rows: evaluationTable}] = evaluationTables;
+  const [evaluationHeader, ...evaluationRows] = evaluationTable;
+  assertPhysicalQualityTable(body, evaluationNode, 6, 2);
   assert.deepEqual(evaluationHeader, evaluationModeHeader);
   assert.equal(evaluationRows.length, 2, 'exactly two evaluation mode rows');
   assert.deepEqual(evaluationRows.map(([identity]) => identity), evaluationModeRows);
@@ -1556,15 +1672,17 @@ function assertQualityGovernanceContract(source) {
   assert.match(evaluationRows[1][5], /不能把用户暴露当实验前提[\s\S]*不替代发布前评测/u);
 
   const correlationTables = tables.filter(
-    ([header]) => header?.[0] === '关联字段',
+    ({rows: [header]}) => header?.[0] === '关联字段',
   );
   assert.equal(correlationTables.length, 1, 'exactly one trace correlation table');
-  const [correlationHeader, ...correlationRows] = correlationTables[0];
+  const [{node: correlationNode, rows: correlationTable}] = correlationTables;
+  const [correlationHeader, ...correlationRows] = correlationTable;
+  assertPhysicalQualityTable(body, correlationNode, 2, 10);
   assert.deepEqual(correlationHeader, ['关联字段', '关联问题']);
   assert.deepEqual(correlationRows.map(([field]) => field), traceCorrelationFields);
   assert.ok(correlationRows.every((row) => row.length === 2 && row.every(Boolean)));
 
-  const visible = visibleQualityGovernance(source);
+  const visible = visibleQualityGovernance(ast);
   for (const contract of [
     /追踪只记录证据，不自动判断质量，也不执行约束/u,
     /评测将追踪、结果和参考标准转为质量判断，不拥有工具执行权/u,
@@ -1591,6 +1709,35 @@ function replaceQualityTableCell(source, header, rowIndex, columnIndex, replacem
   const lineIndex = headerIndex + 2 + rowIndex;
   const cells = lines[lineIndex].slice(1, -1).split('|').map((cell) => cell.trim());
   cells[columnIndex] = replacement;
+  lines[lineIndex] = `| ${cells.join(' | ')} |`;
+  return lines.join('\n');
+}
+
+function qualityTableBlock(source, header) {
+  const lines = source.split(/\r?\n/u);
+  const headerIndex = lines.indexOf(header);
+  assert.notEqual(headerIndex, -1, `table header: ${header}`);
+  let endIndex = headerIndex;
+  while (/^\|.*\|$/u.test(lines[endIndex] ?? '')) endIndex += 1;
+  return lines.slice(headerIndex, endIndex).join('\n');
+}
+
+function addQualityTablePhysicalCell(source, header, lineOffset, value) {
+  const lines = source.split(/\r?\n/u);
+  const headerIndex = lines.indexOf(header);
+  assert.notEqual(headerIndex, -1, `table header: ${header}`);
+  const lineIndex = headerIndex + lineOffset;
+  lines[lineIndex] = lines[lineIndex].replace(/\|$/u, `| ${value} |`);
+  return lines.join('\n');
+}
+
+function removeQualityTablePhysicalCell(source, header, lineOffset) {
+  const lines = source.split(/\r?\n/u);
+  const headerIndex = lines.indexOf(header);
+  assert.notEqual(headerIndex, -1, `table header: ${header}`);
+  const lineIndex = headerIndex + lineOffset;
+  const cells = lines[lineIndex].slice(1, -1).split('|').map((cell) => cell.trim());
+  cells.pop();
   lines[lineIndex] = `| ${cells.join(' | ')} |`;
   return lines.join('\n');
 }
@@ -1641,9 +1788,88 @@ test('AGT-C-06 rejects responsibility, evaluation-mode, correlation, and bypass 
   }
 });
 
-test('AGT-C-06 governs exact Anthropic, OpenTelemetry, and NIST source boundaries', () => {
-  const ledger = JSON.parse(readFileSync('data/source-ledger.json', 'utf8'));
-  const health = JSON.parse(readFileSync('data/source-link-health.json', 'utf8'));
+test('AGT-C-06 rejects hidden evidence, physical table drift, and visual embeddings', () => {
+  const source = readFileSync(qualityGovernanceArticlePath, 'utf8');
+  const responsibilityHeader = '| 机制 | 唯一职责 | 输入 | 输出 | 不能替代 |';
+  const modeHeader = '| 评测模式 | 触发时点 | 输入样本 | 主要用途 | 反馈路径 | 失败边界 |';
+  const responsibilityTable = qualityTableBlock(source, responsibilityHeader);
+  const modeTable = qualityTableBlock(source, modeHeader);
+  const pseudoResponsibilityTable = responsibilityTable.replace(
+    responsibilityHeader,
+    '| 可见伪表 | 唯一职责 | 输入 | 输出 | 不能替代 |',
+  );
+  const pseudoModeTable = modeTable.replace(
+    modeHeader,
+    '| 可见伪评测表 | 触发时点 | 输入样本 | 主要用途 | 反馈路径 | 失败边界 |',
+  );
+  const boundaryParagraph = '本文固定三条边界。追踪只记录证据，不自动判断质量，也不执行约束。评测将追踪、结果和参考标准转为质量判断，不拥有工具执行权。执行约束在模型或工具动作之前和之后强制政策，不把模型自律当执行点。';
+  const mutations = [
+    [
+      'trace claim nested in hidden JSX',
+      source.replace(
+        boundaryParagraph,
+        '本文固定三条边界。\n\n<div hidden>\n\n追踪只记录证据，不自动判断质量，也不执行约束。\n\n</div>\n\n评测将追踪、结果和参考标准转为质量判断，不拥有工具执行权。执行约束在模型或工具动作之前和之后强制政策，不把模型自律当执行点。',
+      ),
+    ],
+    [
+      'guardrail claim nested in display-none JSX',
+      source.replace(
+        boundaryParagraph,
+        "本文固定三条边界。追踪只记录证据，不自动判断质量，也不执行约束。评测将追踪、结果和参考标准转为质量判断，不拥有工具执行权。\n\n<div style={{display: 'none'}}>\n\n执行约束在模型或工具动作之前和之后强制政策，不把模型自律当执行点。\n\n</div>",
+      ),
+    ],
+    [
+      'hidden responsibility table plus visible pseudo-table',
+      source.replace(
+        responsibilityTable,
+        `<div hidden>\n\n${responsibilityTable}\n\n</div>\n\n${pseudoResponsibilityTable}`,
+      ),
+    ],
+    [
+      'display-none evaluation table plus visible pseudo-table',
+      source.replace(
+        modeTable,
+        `<div style={{display: 'none'}}>\n\n${modeTable}\n\n</div>\n\n${pseudoModeTable}`,
+      ),
+    ],
+    [
+      'seventh physical online-evaluation cell',
+      addQualityTablePhysicalCell(source, modeHeader, 3, '不应存在的第七列'),
+    ],
+    [
+      'seventh physical evaluation header cell',
+      addQualityTablePhysicalCell(source, modeHeader, 0, '不应存在的第七列表头'),
+    ],
+    [
+      'seventh physical evaluation delimiter cell',
+      addQualityTablePhysicalCell(source, modeHeader, 1, '---'),
+    ],
+    [
+      'missing physical offline-evaluation cell',
+      removeQualityTablePhysicalCell(source, modeHeader, 2),
+    ],
+    ['extra required evaluation table', `${source}\n\n${modeTable}\n`],
+    ['Markdown image', `${source}\n\n![architecture](https://example.com/visual.svg)\n`],
+    ['HTML img', `${source}\n\n<img src="https://example.com/visual.svg" alt="architecture" />\n`],
+    ['Picture component', `${source}\n\n<Picture src="/visual.webp" alt="architecture" />\n`],
+    ['architecture component', `${source}\n\n<ArchitectureDiagram />\n`],
+    ['architecture diagram wrapper', `${source}\n\n<ArchitectureDiagramScroll />\n`],
+    ['invalid MDX fails closed', `${source}\n\n<div hidden>\n`],
+  ];
+  const survivors = [];
+  for (const [label, mutant] of mutations) {
+    assert.notEqual(mutant, source, `${label} fixture must alter the article`);
+    try {
+      assertQualityGovernanceContract(mutant);
+      survivors.push(label);
+    } catch {
+      // Expected: reader-hidden, malformed, over-wide, duplicate, and visual mutants fail closed.
+    }
+  }
+  assert.deepEqual(survivors, []);
+});
+
+function assertQualityGovernanceSourceContract(ledger, health) {
   const document = ledger.documents[qualityGovernanceArticlePath];
   assert.ok(document, `${qualityGovernanceArticlePath} source document`);
   assert.deepEqual(document.citations.map(({source_id}) => source_id), [
@@ -1661,10 +1887,14 @@ test('AGT-C-06 governs exact Anthropic, OpenTelemetry, and NIST source boundarie
     assert.equal(governedSource.published_at, contract.publishedAt);
     assert.equal(governedSource.registered_at, '2026-08-26');
     assert.equal(governedSource.checked_at, '2026-08-26');
+    if (contract.version !== undefined) {
+      assert.equal(governedSource.version, contract.version);
+    }
     assert.equal(governedSource.canonical_locator, contract.locator);
     assert.equal(governedSource.transport_locator, contract.locator);
     assert.equal(governedSource.expected_final_transport_locator, contract.locator);
     assert.equal(governedSource.license, contract.license);
+    assert.equal(governedSource.license_evidence_url, contract.licenseEvidenceLocator);
     assert.equal(governedSource.copyright_policy, 'facts-and-short-quotation');
     assert.match(governedSource.usage_boundary, /does not guarantee|does not prove/u);
 
@@ -1679,4 +1909,27 @@ test('AGT-C-06 governs exact Anthropic, OpenTelemetry, and NIST source boundarie
 
   const nist = ledger.sources.filter(({id}) => id === 'src-nist-ai-rmf-1-0');
   assert.equal(nist.length, 1, 'reuse exactly one NIST AI RMF identity');
+}
+
+test('AGT-C-06 governs exact Anthropic, OpenTelemetry, and NIST source boundaries', () => {
+  const ledger = JSON.parse(readFileSync('data/source-ledger.json', 'utf8'));
+  const health = JSON.parse(readFileSync('data/source-link-health.json', 'utf8'));
+  assertQualityGovernanceSourceContract(ledger, health);
+});
+
+test('AGT-C-06 rejects OpenTelemetry Development-status drift', () => {
+  const ledger = JSON.parse(readFileSync('data/source-ledger.json', 'utf8'));
+  const health = JSON.parse(readFileSync('data/source-link-health.json', 'utf8'));
+  const drifted = structuredClone(ledger);
+  const openTelemetry = drifted.sources.find(
+    ({id}) => id === 'src-opentelemetry-genai-agent-semconv',
+  );
+  assert.ok(openTelemetry, 'OpenTelemetry mutation fixture');
+  openTelemetry.version = openTelemetry.version.replace('Development', 'Stable');
+  assert.notDeepEqual(drifted, ledger, 'OpenTelemetry status fixture must drift');
+  assert.throws(
+    () => assertQualityGovernanceSourceContract(drifted, health),
+    undefined,
+    'OpenTelemetry Development status is pinned',
+  );
 });
