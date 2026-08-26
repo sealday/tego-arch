@@ -2461,6 +2461,110 @@
       "forbidden_aliases": [],
       "note": "保留云财务运营实践的通行名称；本文只用它表示容量与成本归因的协作责任。",
       "order": 1800
+    },
+    {
+      "id": "agent-harness",
+      "canonical_zh": "智能体运行框架",
+      "english": "Agent Harness",
+      "acronym": null,
+      "kind": "translated-term",
+      "first_use": "智能体运行框架（Agent Harness）",
+      "subsequent_use": [
+        "智能体运行框架"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [
+        "Agent Harness",
+        "Harness"
+      ],
+      "note": "包住并约束智能体循环的运行时与治理责任边界。",
+      "order": 1810
+    },
+    {
+      "id": "agent-loop",
+      "canonical_zh": "智能体循环",
+      "english": "Agent Loop",
+      "acronym": null,
+      "kind": "translated-term",
+      "first_use": "智能体循环（Agent Loop）",
+      "subsequent_use": [
+        "智能体循环"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [
+        "Agent Loop",
+        "Loop"
+      ],
+      "note": "智能体在受约束边界内反复计划、行动、观察、评估并终止任务的推进机制。",
+      "order": 1820
+    },
+    {
+      "id": "checkpoint",
+      "canonical_zh": "执行检查点",
+      "english": "Checkpoint",
+      "acronym": null,
+      "kind": "translated-term",
+      "first_use": "执行检查点（Checkpoint）",
+      "subsequent_use": [
+        "执行检查点"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [
+        "Checkpoint"
+      ],
+      "note": "记录已确认的可恢复执行位置，不等同于副作用已生效的证明。",
+      "order": 1830
+    },
+    {
+      "id": "sandbox",
+      "canonical_zh": "隔离沙箱",
+      "english": "Sandbox",
+      "acronym": null,
+      "kind": "translated-term",
+      "first_use": "隔离沙箱（Sandbox）",
+      "subsequent_use": [
+        "隔离沙箱"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [
+        "Sandbox"
+      ],
+      "note": "在受限网络、文件、凭据与资源边界内执行工具的隔离环境。",
+      "order": 1840
+    },
+    {
+      "id": "augmented-large-language-model",
+      "canonical_zh": "增强型大语言模型",
+      "english": "Augmented LLM",
+      "acronym": null,
+      "kind": "translated-term",
+      "first_use": "增强型大语言模型（Augmented LLM）",
+      "subsequent_use": [
+        "增强型大语言模型"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [
+        "Augmented LLM"
+      ],
+      "note": "在模型调用上增加检索、工具或记忆能力，但不必拥有多步循环。",
+      "order": 1850
+    },
+    {
+      "id": "agentic-rag",
+      "canonical_zh": "智能体检索增强生成",
+      "english": "Agentic RAG",
+      "acronym": null,
+      "kind": "translated-term",
+      "first_use": "智能体检索增强生成（Agentic RAG）",
+      "subsequent_use": [
+        "智能体检索增强生成"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [
+        "Agentic RAG"
+      ],
+      "note": "智能体循环围绕证据充分性反复检索、阅读、评估并作答或拒答的具象。",
+      "order": 1860
     }
   ]
 }

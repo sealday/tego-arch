@@ -25,11 +25,49 @@ const requiredDiagramLabels = [
   'Trace / Evaluation / Guardrail',
 ];
 const requiredClaims = [
-  'Model 生成候选输出，不拥有任务控制权',
-  'Augmented LLM 增加检索、工具或记忆能力，但不必拥有循环',
-  'Workflow 的步骤和分支主要由代码预先定义',
-  'Agent 让模型在受约束边界内选择下一步动作',
+  '模型生成候选输出，不拥有任务控制权',
+  '增强型大语言模型增加检索、工具或记忆能力，但不必拥有循环',
+  '工作流的步骤和分支主要由代码预先定义',
+  '智能体让模型在受约束边界内选择下一步动作',
   '自治程度是连续谱，不是四个互斥产品类别',
+];
+const requiredTerminologyContracts = [
+  {
+    id: 'agent-harness', canonical_zh: '智能体运行框架', english: 'Agent Harness', acronym: null,
+    kind: 'translated-term', first_use: '智能体运行框架（Agent Harness）', subsequent_use: ['智能体运行框架'],
+    allowed_aliases: [], forbidden_aliases: ['Agent Harness', 'Harness'],
+    note: '包住并约束智能体循环的运行时与治理责任边界。', order: 1810,
+  },
+  {
+    id: 'agent-loop', canonical_zh: '智能体循环', english: 'Agent Loop', acronym: null,
+    kind: 'translated-term', first_use: '智能体循环（Agent Loop）', subsequent_use: ['智能体循环'],
+    allowed_aliases: [], forbidden_aliases: ['Agent Loop', 'Loop'],
+    note: '智能体在受约束边界内反复计划、行动、观察、评估并终止任务的推进机制。', order: 1820,
+  },
+  {
+    id: 'checkpoint', canonical_zh: '执行检查点', english: 'Checkpoint', acronym: null,
+    kind: 'translated-term', first_use: '执行检查点（Checkpoint）', subsequent_use: ['执行检查点'],
+    allowed_aliases: [], forbidden_aliases: ['Checkpoint'],
+    note: '记录已确认的可恢复执行位置，不等同于副作用已生效的证明。', order: 1830,
+  },
+  {
+    id: 'sandbox', canonical_zh: '隔离沙箱', english: 'Sandbox', acronym: null,
+    kind: 'translated-term', first_use: '隔离沙箱（Sandbox）', subsequent_use: ['隔离沙箱'],
+    allowed_aliases: [], forbidden_aliases: ['Sandbox'],
+    note: '在受限网络、文件、凭据与资源边界内执行工具的隔离环境。', order: 1840,
+  },
+  {
+    id: 'augmented-large-language-model', canonical_zh: '增强型大语言模型', english: 'Augmented LLM', acronym: null,
+    kind: 'translated-term', first_use: '增强型大语言模型（Augmented LLM）', subsequent_use: ['增强型大语言模型'],
+    allowed_aliases: [], forbidden_aliases: ['Augmented LLM'],
+    note: '在模型调用上增加检索、工具或记忆能力，但不必拥有多步循环。', order: 1850,
+  },
+  {
+    id: 'agentic-rag', canonical_zh: '智能体检索增强生成', english: 'Agentic RAG', acronym: null,
+    kind: 'translated-term', first_use: '智能体检索增强生成（Agentic RAG）', subsequent_use: ['智能体检索增强生成'],
+    allowed_aliases: [], forbidden_aliases: ['Agentic RAG'],
+    note: '智能体循环围绕证据充分性反复检索、阅读、评估并作答或拒答的具象。', order: 1860,
+  },
 ];
 const harnessResponsibilities = [
   '运行时',
@@ -127,6 +165,17 @@ test('AGT-C-01 publishes the canonical agent-system boundary and diagram pair', 
   assert.match(source, /\/img\/diagrams\/agt-c-01-agent-system-boundary\.svg/u);
 });
 
+test('registers exact reusable terminology contracts for the agent foundations', () => {
+  const terminology = JSON.parse(readFileSync('data/terminology.json', 'utf8'));
+  for (const expected of requiredTerminologyContracts) {
+    assert.deepEqual(
+      terminology.terms.find(({id}) => id === expected.id),
+      expected,
+      `${expected.id} exact terminology contract`,
+    );
+  }
+});
+
 test('AGT-C-01 protects the complete boundary, ownership, and runtime contracts', () => {
   const source = readFileSync(articlePath, 'utf8');
   const boundaryRows = markdownTableRows(
@@ -134,7 +183,7 @@ test('AGT-C-01 protects the complete boundary, ownership, and runtime contracts'
     '| 边界 | 候选能力 | 下一步由谁决定 | 不自动证明 |',
   );
   assert.deepEqual(boundaryRows.map((row) => row.split('|')[1].trim()), [
-    'Model', 'Augmented LLM', 'Workflow', 'Agent',
+    '模型', '增强型大语言模型', '工作流', '智能体',
   ]);
 
   const ownershipRows = markdownTableRows(
@@ -148,9 +197,9 @@ test('AGT-C-01 protects the complete boundary, ownership, and runtime contracts'
   for (const terminal of ['成功', '明确失败', '预算耗尽', '人工中止']) {
     assert.match(source, new RegExp(terminal, 'u'), `terminal outcome: ${terminal}`);
   }
-  assert.match(source, /Harness 包住并约束 Loop/u);
-  assert.match(source, /Agentic RAG 不是与 Harness 和 Loop 并列的底层构件/u);
-  assert.match(source, /停止 Loop[^\n]*预定步骤[^\n]*显式分支[^\n]*人工批准的 Workflow/u);
+  assert.match(source, /智能体运行框架包住并约束智能体循环/u);
+  assert.match(source, /智能体检索增强生成（Agentic RAG）不是与智能体运行框架和智能体循环并列的底层构件/u);
+  assert.match(source, /停止智能体循环[^\n]*预定步骤[^\n]*显式分支[^\n]*人工批准的工作流/u);
   assert.match(source, /模型输出不能在未经外部验证时成为权威业务状态/u);
 });
 
@@ -253,11 +302,11 @@ function assertAgentHarnessContract(source) {
     .filter(({level}) => level === 2)
     .map(({text}) => `## ${text}`);
   assert.deepEqual(headings, knowledgeTypeContracts.concept);
-  assert.match(source, /Harness 约束并运行 Loop；它本身不决定任务/u);
+  assert.match(source, /智能体运行框架约束并运行智能体循环；它本身不决定任务/u);
 
   const responsibilityRows = markdownTableRows(
     source,
-    '| Harness 责任 | 输入 / 资产 | 强制合同 | 失败时行为 |',
+    '| 智能体运行框架责任 | 输入 / 资产 | 强制合同 | 失败时行为 |',
   );
   assert.equal(responsibilityRows.length, 6);
   assert.deepEqual(
@@ -267,34 +316,34 @@ function assertAgentHarnessContract(source) {
 
   const mermaid = source.match(/```mermaid\n([\s\S]*?)```/u)?.[1];
   assert.ok(mermaid, 'Mermaid layered flow');
-  assert.match(mermaid, /subgraph HARNESS\["Agent Harness"\]/u);
-  assert.match(mermaid, /subgraph LOOP\["Agent Loop"\]/u);
+  assert.match(mermaid, /subgraph HARNESS\["智能体运行框架"\]/u);
+  assert.match(mermaid, /subgraph LOOP\["智能体循环"\]/u);
   for (const responsibility of harnessResponsibilities) {
     assert.match(mermaid, new RegExp(responsibility, 'u'));
   }
-  assert.match(mermaid, /运行时[\s\S]*上下文装配[\s\S]*Agent Loop/u);
-  assert.match(mermaid, /Agent Loop[\s\S]*工具注册与协议[\s\S]*权限与沙箱/u);
+  assert.match(mermaid, /运行时[\s\S]*上下文装配[\s\S]*智能体循环/u);
+  assert.match(mermaid, /智能体循环[\s\S]*工具注册与协议[\s\S]*权限与沙箱/u);
   assert.match(mermaid, /CR\["检查点与恢复"\][\s\S]*CR --> EXIT\["恢复或升级人工"\]/u);
   assert.doesNotMatch(mermaid, /CR .*\.-> RT/u);
   assert.match(source, /末端分支表示核对后恢复或升级人工/u);
   assert.doesNotMatch(source, /图中的回边/u);
 
   assert.match(source, /### 薄 SDK 反例/u);
-  assert.match(source, /只转发模型请求[\s\S]*不是 Agent Harness/u);
-  assert.match(source, /上下文预算[\s\S]*工具预算[\s\S]*Harness/u);
+  assert.match(source, /只转发模型请求[\s\S]*不是智能体运行框架/u);
+  assert.match(source, /上下文预算[\s\S]*工具预算[\s\S]*智能体运行框架/u);
   assert.match(source, /工具调用真正执行之前[\s\S]*权限与沙箱/u);
   assert.match(source, /副作用账本[\s\S]*恢复时[\s\S]*不盲目重试/u);
 
   const evidenceRows = markdownTableRows(
     source,
-    '| Harness 能证明 | Harness 不能证明 |',
+    '| 智能体运行框架能证明 | 智能体运行框架不能证明 |',
   );
   assert.equal(evidenceRows.length, 4);
   for (const boundary of [
     '请求经过已声明的运行与权限边界',
     '上下文和工具消耗受预算约束',
     '可从已确认检查点恢复',
-    '执行链留下可评测 Trace',
+    '执行链留下可评测追踪',
     '模型选择的动作正确',
     '工具结果天然可信',
     '恢复一定不会重复副作用',
