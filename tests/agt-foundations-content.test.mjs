@@ -432,28 +432,46 @@ test('AGT-C-02 governs exact Anthropic engineering sources and matching health t
 
 function parseMermaidFlowchart(mermaid) {
   const labelsById = new Map();
-  for (const [, id, label] of mermaid.matchAll(
-    /\b([A-Z][A-Z_]*)\["([^"\n]+)"\]/gu,
-  )) {
-    const labels = labelsById.get(id) ?? new Set();
-    labels.add(label);
-    labelsById.set(id, labels);
-  }
-
   const edges = [];
+  let headerSeen = false;
+  const nodeSegmentPattern = '[A-Z][A-Z_]*(?:\\["[^"\\n]+"\\])?';
+  const nodeSegment = /^([A-Z][A-Z_]*)(?:\["([^"\n]+)"\])?$/u;
+  const approvedEdgeStatement = new RegExp(
+    `^${nodeSegmentPattern}(?:\\s*-->(?:\\|[^|\\n]+\\|)?\\s*${nodeSegmentPattern})+$`,
+    'u',
+  );
+
   for (const line of mermaid.split(/\r?\n/u)) {
-    if (!line.includes('-->')) continue;
-    const segments = line.trim().split(/\s*-->(?:\|[^|\n]+\|)?\s*/u);
+    const statement = line.trim();
+    if (!statement) continue;
+    if (!headerSeen && statement === 'flowchart LR') {
+      headerSeen = true;
+      continue;
+    }
+
+    assert.match(
+      statement,
+      approvedEdgeStatement,
+      `unparsed Mermaid statement: ${line}`,
+    );
+    const segments = statement.split(/\s*-->(?:\|[^|\n]+\|)?\s*/u);
     assert.ok(segments.length >= 2, `unparsed Mermaid edge line: ${line}`);
     const nodeIds = segments.map((segment) => {
-      const match = segment.match(/^([A-Z][A-Z_]*)(?:\["[^"\n]+"\])?$/u);
+      const match = segment.match(nodeSegment);
       assert.ok(match, `unparsed Mermaid node segment: ${segment}`);
-      return match[1];
+      const [, id, label] = match;
+      if (label !== undefined) {
+        const labels = labelsById.get(id) ?? new Set();
+        labels.add(label);
+        labelsById.set(id, labels);
+      }
+      return id;
     });
     for (let index = 1; index < nodeIds.length; index += 1) {
       edges.push(`${nodeIds[index - 1]}->${nodeIds[index]}`);
     }
   }
+  assert.ok(headerSeen, 'Mermaid flowchart LR header');
 
   return {
     edges,
@@ -534,6 +552,34 @@ test('AGT-C-03 rejects phase, terminal, and evaluation-bypass topology mutations
     source.replace(
       'PLAN["计划"] --> ACT["行动"]',
       'PLAN["思考"] --> ACT["行动"]\n    DECOY["计划"]',
+    ),
+    source.replace(
+      'ACT --> OBSERVE["观察"]',
+      'ACT --> OBSERVE["观察"]\n    ACT ==> TERMINATE',
+    ),
+    source.replace(
+      'ACT --> OBSERVE["观察"]',
+      'ACT --> OBSERVE["观察"]\n    ACT -.-> TERMINATE',
+    ),
+    source.replace(
+      'ACT --> OBSERVE["观察"]',
+      'ACT --> OBSERVE["观察"]\n    ACT <--> TERMINATE',
+    ),
+    source.replace(
+      'ACT --> OBSERVE["观察"]',
+      'ACT --> OBSERVE["观察"]\n    ACT --o TERMINATE',
+    ),
+    source.replace(
+      'ACT --> OBSERVE["观察"]',
+      'ACT --> OBSERVE["观察"]\n    ACT --x TERMINATE',
+    ),
+    source.replace(
+      'ACT --> OBSERVE["观察"]',
+      'ACT --> OBSERVE["观察"]\n    ACT ==>|旁路| TERMINATE',
+    ),
+    source.replace(
+      'ACT --> OBSERVE["观察"]',
+      'ACT --> OBSERVE["观察"]\n    ACT -.->|旁路| TERMINATE',
     ),
   ];
   for (const mutant of mutations) {
