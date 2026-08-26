@@ -368,6 +368,8 @@ const qualityGovernanceVisibleHtmlContainers = new Set([
   'article',
   'aside',
   'blockquote',
+  'Callout',
+  'details',
   'div',
   'em',
   'footer',
@@ -379,31 +381,34 @@ const qualityGovernanceVisibleHtmlContainers = new Set([
   'section',
   'span',
   'strong',
+  'summary',
   'ul',
 ]);
+// Any custom component outside this explicit reader-visible set fails closed because
+// its rendering and embedding behavior cannot be established from the MDX source.
+
+const qualityGovernanceInvisibleAstTypes = new Set([
+  'code',
+  'definition',
+  'html',
+  'inlineCode',
+  'mdxFlowExpression',
+  'mdxTextExpression',
+  'mdxjsEsm',
+]);
+
+function isQualityGovernanceContainer(node) {
+  return node.name === null || qualityGovernanceVisibleHtmlContainers.has(node.name);
+}
 
 function visibleQualityGovernance(ast) {
-  const excluded = new Set([
-    'code',
-    'definition',
-    'html',
-    'inlineCode',
-    'mdxFlowExpression',
-    'mdxTextExpression',
-    'mdxjsEsm',
-  ]);
   const text = (node) => {
     assert.ok(node && typeof node === 'object' && typeof node.type === 'string');
-    if (excluded.has(node.type)) return '';
+    if (qualityGovernanceInvisibleAstTypes.has(node.type)) return '';
     if (node.type === 'text') return node.value;
     if (node.type === 'mdxJsxFlowElement' || node.type === 'mdxJsxTextElement') {
       if (isReaderHiddenJsx(node)) return '';
-      if (
-        node.name !== null
-        && !qualityGovernanceVisibleHtmlContainers.has(node.name)
-      ) {
-        return '';
-      }
+      if (!isQualityGovernanceContainer(node)) return '';
     }
     return (node.children ?? []).map(text).join('');
   };
@@ -414,42 +419,99 @@ function visibleQualityGovernance(ast) {
 }
 
 function mdxJsxAttribute(node, name) {
+  const normalizedName = name.toLowerCase();
   return (node.attributes ?? []).find((attribute) =>
-    attribute.type === 'mdxJsxAttribute' && attribute.name === name);
+    attribute.type === 'mdxJsxAttribute'
+      && attribute.name.toLowerCase() === normalizedName);
 }
 
-function mdxJsxAttributeText(attribute) {
-  if (!attribute) return null;
-  if (attribute.value === null) return '';
-  if (typeof attribute.value === 'string') return attribute.value;
-  if (attribute.value?.type === 'mdxJsxAttributeValueExpression') {
-    return attribute.value.value;
+function mdxJsxAttributeExpression(attribute) {
+  const program = attribute.value?.data?.estree;
+  if (
+    program?.type !== 'Program'
+    || program.body?.length !== 1
+    || program.body[0]?.type !== 'ExpressionStatement'
+  ) {
+    return null;
   }
-  assert.fail(`unsupported MDX JSX attribute value for ${attribute.name}`);
+  return program.body[0].expression;
+}
+
+function staticMdxJsxAttributeValue(attribute) {
+  if (attribute.value === null) return {known: true, value: true};
+  if (typeof attribute.value === 'string') return {known: true, value: attribute.value};
+  const expression = mdxJsxAttributeExpression(attribute);
+  if (expression?.type === 'Literal') return {known: true, value: expression.value};
+  return {known: false, value: null};
+}
+
+function staticStyleEntries(attribute) {
+  if (typeof attribute.value === 'string') {
+    const entries = [];
+    for (const declaration of attribute.value.split(';')) {
+      const separator = declaration.indexOf(':');
+      if (separator === -1) {
+        if (declaration.trim()) return null;
+        continue;
+      }
+      entries.push([
+        declaration.slice(0, separator).trim(),
+        declaration.slice(separator + 1).trim(),
+      ]);
+    }
+    return entries;
+  }
+  const expression = mdxJsxAttributeExpression(attribute);
+  if (expression?.type !== 'ObjectExpression') return null;
+  const entries = [];
+  for (const property of expression.properties ?? []) {
+    if (
+      property.type !== 'Property'
+      || property.computed
+      || property.kind !== 'init'
+      || property.value?.type !== 'Literal'
+    ) {
+      return null;
+    }
+    const key = property.key?.type === 'Identifier'
+      ? property.key.name
+      : property.key?.type === 'Literal' ? property.key.value : null;
+    if (typeof key !== 'string') return null;
+    if (!['string', 'number'].includes(typeof property.value.value)) return null;
+    entries.push([key, String(property.value.value)]);
+  }
+  return entries;
+}
+
+function hasUnresolvedQualityGovernanceAttribute(node) {
+  return (node.attributes ?? []).some((attribute) => {
+    if (attribute.type !== 'mdxJsxAttribute') return true;
+    if (attribute.name.toLowerCase() === 'style') {
+      return staticStyleEntries(attribute) === null;
+    }
+    return !staticMdxJsxAttributeValue(attribute).known;
+  });
 }
 
 function isReaderHiddenJsx(node) {
-  if ((node.attributes ?? []).some(({type}) => type !== 'mdxJsxAttribute')) {
-    return true;
-  }
-  const hidden = mdxJsxAttribute(node, 'hidden');
-  if (hidden) {
-    const value = mdxJsxAttributeText(hidden).trim().toLowerCase();
-    if (hidden.value === null || value !== 'false') return true;
-  }
+  if (hasUnresolvedQualityGovernanceAttribute(node)) return true;
+  if (mdxJsxAttribute(node, 'hidden')) return true;
   const ariaHidden = mdxJsxAttribute(node, 'aria-hidden');
   if (ariaHidden) {
-    const value = mdxJsxAttributeText(ariaHidden).trim().replace(/^['"]|['"]$/gu, '');
-    if (value !== 'false') return true;
+    const {known, value} = staticMdxJsxAttributeValue(ariaHidden);
+    if (!known || String(value).trim().toLowerCase() !== 'false') return true;
   }
   const style = mdxJsxAttribute(node, 'style');
   if (style) {
-    const value = mdxJsxAttributeText(style);
-    if (
-      /display\s*[:=]\s*['"]?none\b/iu.test(value)
-      || /visibility\s*[:=]\s*['"]?hidden\b/iu.test(value)
-    ) {
-      return true;
+    for (const [name, value] of staticStyleEntries(style)) {
+      const normalizedName = name.replace(/-/gu, '').toLowerCase();
+      const normalizedValue = value.trim().toLowerCase().replace(/\s*!important\s*$/u, '');
+      if (
+        (normalizedName === 'display' && normalizedValue === 'none')
+        || (normalizedName === 'visibility' && normalizedValue === 'hidden')
+      ) {
+        return true;
+      }
     }
   }
   return false;
@@ -463,14 +525,26 @@ function parseQualityGovernanceAst(source) {
   return {ast, body};
 }
 
-function rootQualityGovernanceTables(ast) {
-  return ast.children
-    .filter(({type}) => type === 'table')
-    .map((node) => ({
-      node,
-      rows: node.children.map((row) =>
-        row.children.map((cell) => nodeVisibleText(cell).replace(/\s+/gu, ' ').trim())),
-    }));
+function readerVisibleQualityGovernanceTables(ast) {
+  const tables = [];
+  const visit = (node) => {
+    assert.ok(node && typeof node === 'object' && typeof node.type === 'string');
+    if (qualityGovernanceInvisibleAstTypes.has(node.type)) return;
+    if (node.type === 'mdxJsxFlowElement' || node.type === 'mdxJsxTextElement') {
+      if (isReaderHiddenJsx(node) || !isQualityGovernanceContainer(node)) return;
+    }
+    if (node.type === 'table') {
+      tables.push({
+        node,
+        rows: node.children.map((row) =>
+          row.children.map((cell) => nodeVisibleText(cell).replace(/\s+/gu, ' ').trim())),
+      });
+      return;
+    }
+    for (const child of node.children ?? []) visit(child);
+  };
+  visit(ast);
+  return tables;
 }
 
 function physicalGfmCells(line) {
@@ -520,8 +594,8 @@ function assertPhysicalQualityTable(body, tableNode, columnCount, dataRowCount) 
   );
 }
 
-function assertNoQualityGovernanceVisuals(ast, source) {
-  const visualResource = /(?:^data:image\/|(?:^|[\/_.-])(?:diagram|diagrams|figure|figures|image|images|img|svg|visual|visuals)(?=$|[^A-Za-z0-9])|\.(?:avif|bmp|gif|ico|jpe?g|png|svg|webp)\b)/iu;
+function assertNoQualityGovernanceVisuals(ast) {
+  const embeddingAttributes = new Set(['data', 'poster', 'src', 'srcset']);
   const visit = (node) => {
     assert.ok(node && typeof node === 'object' && typeof node.type === 'string');
     assert.ok(
@@ -529,28 +603,42 @@ function assertNoQualityGovernanceVisuals(ast, source) {
       'AGT-C-06 must not embed Markdown images',
     );
     assert.ok(
-      node.type !== 'code' || node.lang !== 'mermaid',
+      node.type !== 'code'
+        || typeof node.lang !== 'string'
+        || node.lang.toLowerCase() !== 'mermaid',
       'AGT-C-06 must not embed Mermaid diagrams',
     );
     if (node.type === 'mdxJsxFlowElement' || node.type === 'mdxJsxTextElement') {
       assert.ok(
-        node.name === null || qualityGovernanceVisibleHtmlContainers.has(node.name),
+        isQualityGovernanceContainer(node),
         `AGT-C-06 permits only non-visual semantic HTML containers; found ${node.name}`,
       );
       for (const attribute of node.attributes ?? []) {
-        if (attribute.type !== 'mdxJsxAttribute') continue;
-        const value = mdxJsxAttributeText(attribute);
-        if (['data', 'poster', 'src', 'srcSet', 'srcset'].includes(attribute.name)) {
+        assert.equal(
+          attribute.type,
+          'mdxJsxAttribute',
+          'AGT-C-06 JSX spreads fail the no-visual contract closed',
+        );
+        const name = attribute.name.toLowerCase();
+        assert.ok(
+          !embeddingAttributes.has(name),
+          `AGT-C-06 must not declare embedding attribute ${attribute.name}`,
+        );
+        if (name === 'style') {
+          const entries = staticStyleEntries(attribute);
+          assert.ok(entries, 'AGT-C-06 dynamic JSX style fails the no-visual contract closed');
+          for (const [property, value] of entries) {
+            const normalizedProperty = property.replace(/-/gu, '').toLowerCase();
+            assert.ok(
+              !['background', 'backgroundimage'].includes(normalizedProperty)
+                || !/url\s*\(/iu.test(value),
+              'AGT-C-06 must not embed any background URL',
+            );
+          }
+        } else {
           assert.ok(
-            !visualResource.test(value),
-            `AGT-C-06 must not embed visual resource through ${attribute.name}`,
-          );
-        }
-        if (attribute.name === 'style') {
-          const hasBackgroundUrl = /background(?:-?image)?\s*[:=][\s\S]*url\s*\(/iu.test(value);
-          assert.ok(
-            !hasBackgroundUrl || !visualResource.test(value),
-            'AGT-C-06 must not embed a visual background resource',
+            staticMdxJsxAttributeValue(attribute).known,
+            `AGT-C-06 unresolved ${attribute.name} attribute fails closed`,
           );
         }
       }
@@ -560,20 +648,16 @@ function assertNoQualityGovernanceVisuals(ast, source) {
         node.value,
         /<(?:canvas|embed|figure|iframe|img|object|picture|svg|video)\b/iu,
       );
-      for (const match of node.value.matchAll(/\b(?:data|poster|src|srcset)\s*=\s*(['"])(.*?)\1/giu)) {
-        assert.ok(!visualResource.test(match[2]), 'raw HTML visual resource');
-      }
+      assert.doesNotMatch(node.value, /\b(?:data|poster|src|srcset)\s*=/iu);
       const style = node.value.match(/\bstyle\s*=\s*(['"])(.*?)\1/iu)?.[2] ?? '';
       assert.ok(
-        !/background(?:-?image)?\s*:[\s\S]*url\s*\(/iu.test(style)
-          || !visualResource.test(style),
+        !/background(?:-?image)?\s*:[\s\S]*url\s*\(/iu.test(style),
         'raw HTML visual background resource',
       );
     }
     for (const child of node.children ?? []) visit(child);
   };
   visit(ast);
-  assert.doesNotMatch(source, /architecture-diagram-scroll|\/img\//u);
 }
 
 test('agentic topic registry is exact and globally unique', () => {
@@ -1714,10 +1798,10 @@ function assertQualityGovernanceContract(source) {
     .map(({text}) => `## ${text}`);
   assert.deepEqual(headings, knowledgeTypeContracts.concept);
   const {ast, body} = parseQualityGovernanceAst(source);
-  assertNoQualityGovernanceVisuals(ast, source);
+  assertNoQualityGovernanceVisuals(ast);
 
-  const tables = rootQualityGovernanceTables(ast);
-  assert.equal(tables.length, 3, 'exactly three root-level AGT-C-06 tables');
+  const tables = readerVisibleQualityGovernanceTables(ast);
+  assert.equal(tables.length, 3, 'exactly three reader-visible AGT-C-06 tables');
   assert.deepEqual(
     tables.map(({rows: [header]}) => header?.[0]).sort((left, right) =>
       left.localeCompare(right, 'en')),
@@ -1726,7 +1810,7 @@ function assertQualityGovernanceContract(source) {
       evaluationModeHeader[0],
       '关联字段',
     ].sort((left, right) => left.localeCompare(right, 'en')),
-    'root-level AGT-C-06 table identity set',
+    'reader-visible AGT-C-06 table identity set',
   );
   const responsibilityTables = tables.filter(
     ({rows: [header]}) => header?.[0] === qualityResponsibilityHeader[0],
@@ -1942,6 +2026,34 @@ test('AGT-C-06 rejects hidden evidence, physical table drift, and visual embeddi
       ),
     ],
     [
+      'trace claim nested under present false-valued hidden attribute',
+      source.replace(
+        boundaryParagraph,
+        '本文固定三条边界。\n\n<section hidden="false">\n\n追踪只记录证据，不自动判断质量，也不执行约束。\n\n</section>\n\n评测将追踪、结果和参考标准转为质量判断，不拥有工具执行权。执行约束在模型或工具动作之前和之后强制政策，不把模型自律当执行点。',
+      ),
+    ],
+    [
+      'guardrail claim nested under ESM-referenced hidden style',
+      `${source.replace(
+        boundaryParagraph,
+        '本文固定三条边界。追踪只记录证据，不自动判断质量，也不执行约束。评测将追踪、结果和参考标准转为质量判断，不拥有工具执行权。\n\n<section style={hiddenEvidenceStyle}>\n\n执行约束在模型或工具动作之前和之后强制政策，不把模型自律当执行点。\n\n</section>',
+      )}\n\nexport const hiddenEvidenceStyle = {display: 'none'};\n`,
+    ],
+    [
+      'guardrail claim nested under computed hidden style property',
+      `${source.replace(
+        boundaryParagraph,
+        "本文固定三条边界。追踪只记录证据，不自动判断质量，也不执行约束。评测将追踪、结果和参考标准转为质量判断，不拥有工具执行权。\n\n<section style={{display: computedDisplay}}>\n\n执行约束在模型或工具动作之前和之后强制政策，不把模型自律当执行点。\n\n</section>",
+      )}\n\nexport const computedDisplay = 'none';\n`,
+    ],
+    [
+      'evaluation claim nested under computed aria-hidden value',
+      `${source.replace(
+        boundaryParagraph,
+        '本文固定三条边界。追踪只记录证据，不自动判断质量，也不执行约束。\n\n<section aria-hidden={computedHidden}>\n\n评测将追踪、结果和参考标准转为质量判断，不拥有工具执行权。\n\n</section>\n\n执行约束在模型或工具动作之前和之后强制政策，不把模型自律当执行点。',
+      )}\n\nexport const computedHidden = false;\n`,
+    ],
+    [
       'trace claim only in inline code',
       source.replace(
         '追踪只记录证据，不自动判断质量，也不执行约束。',
@@ -1983,6 +2095,18 @@ test('AGT-C-06 rejects hidden evidence, physical table drift, and visual embeddi
       'arbitrary fourth root table',
       `${source}\n\n| 附录字段 | 说明 |\n| --- | --- |\n| owner | 不属于三张契约表 |\n`,
     ],
+    [
+      'arbitrary fourth table nested in a visible section',
+      `${source}\n\n<section>\n\n| 附录字段 | 说明 |\n| --- | --- |\n| owner | 不属于三张契约表 |\n\n</section>\n`,
+    ],
+    [
+      'arbitrary fourth table nested in visible details',
+      `${source}\n\n<details>\n\n| 附录字段 | 说明 |\n| --- | --- |\n| owner | 不属于三张契约表 |\n\n</details>\n`,
+    ],
+    [
+      'arbitrary fourth table nested in visible Callout',
+      `${source}\n\n<Callout>\n\n| 附录字段 | 说明 |\n| --- | --- |\n| owner | 不属于三张契约表 |\n\n</Callout>\n`,
+    ],
     ['Markdown image', `${source}\n\n![architecture](https://example.com/visual.svg)\n`],
     ['HTML img', `${source}\n\n<img src="https://example.com/visual.svg" alt="architecture" />\n`],
     ['Picture component', `${source}\n\n<Picture src="/visual.webp" alt="architecture" />\n`],
@@ -1997,6 +2121,22 @@ test('AGT-C-06 rejects hidden evidence, physical table drift, and visual embeddi
       `${source}\n\n<div style={{backgroundImage: "url('/assets/incident-diagram.svg')"}}>背景</div>\n`,
     ],
     [
+      'JSX generic background URL',
+      `${source}\n\n<div style={{backgroundImage: "url('/assets/texture.bin')"}}>背景</div>\n`,
+    ],
+    [
+      'JSX ESM-referenced visual style',
+      `${source}\n\n<section style={computedVisualStyle}>背景</section>\n\nexport const computedVisualStyle = {backgroundImage: "url('/assets/texture.bin')"};\n`,
+    ],
+    [
+      'JSX ESM-referenced source attribute',
+      `${source}\n\n<section src={computedVisualSource}>背景</section>\n\nexport const computedVisualSource = '/assets/texture.bin';\n`,
+    ],
+    [
+      'JSX spread may carry visual attributes',
+      `${source}\n\n<section {...visualProps}>背景</section>\n\nexport const visualProps = {src: '/assets/texture.bin'};\n`,
+    ],
+    [
       'JSX poster resource',
       `${source}\n\n<section poster="/assets/incident-diagram.svg">背景</section>\n`,
     ],
@@ -2004,11 +2144,26 @@ test('AGT-C-06 rejects hidden evidence, physical table drift, and visual embeddi
       'JSX expression image resource',
       `${source}\n\n<section src={'/assets/architecture.svg'}>背景</section>\n`,
     ],
+    ['case-insensitive Mermaid fence', `${source}\n\n\`\`\`Mermaid\ngraph TD\n  A --> B\n\`\`\`\n`],
     ['invalid MDX fails closed', `${source}\n\n<div hidden>\n`],
   ];
+  const readerHiddenClaims = new Map([
+    ['trace claim nested under present false-valued hidden attribute', /追踪只记录证据，不自动判断质量，也不执行约束/u],
+    ['guardrail claim nested under ESM-referenced hidden style', /执行约束在模型或工具动作之前和之后强制政策，不把模型自律当执行点/u],
+    ['guardrail claim nested under computed hidden style property', /执行约束在模型或工具动作之前和之后强制政策，不把模型自律当执行点/u],
+    ['evaluation claim nested under computed aria-hidden value', /评测将追踪、结果和参考标准转为质量判断，不拥有工具执行权/u],
+  ]);
   const survivors = [];
   for (const [label, mutant] of mutations) {
     assert.notEqual(mutant, source, `${label} fixture must alter the article`);
+    if (readerHiddenClaims.has(label)) {
+      const {ast} = parseQualityGovernanceAst(mutant);
+      assert.doesNotMatch(
+        visibleQualityGovernance(ast),
+        readerHiddenClaims.get(label),
+        `${label} cannot contribute critical reader-visible evidence`,
+      );
+    }
     try {
       assertQualityGovernanceContract(mutant);
       survivors.push(label);
@@ -2026,12 +2181,49 @@ test('AGT-C-06 accepts visible semantic wrappers and ordinary diagram links', ()
     boundaryParagraph,
     '<section>\n\n本文固定三条边界。追踪只记录证据，不自动判断质量，也不执行约束。评测将追踪、结果和参考标准转为质量判断，不拥有工具执行权。执行约束在模型或工具动作之前和之后强制政策，不把模型自律当执行点。\n\n</section>',
   );
+  const detailsWrapped = source.replace(
+    boundaryParagraph,
+    '<details className="evidence-card">\n\n本文固定三条边界。追踪只记录证据，不自动判断质量，也不执行约束。评测将追踪、结果和参考标准转为质量判断，不拥有工具执行权。执行约束在模型或工具动作之前和之后强制政策，不把模型自律当执行点。\n\n</details>',
+  );
+  const calloutWrapped = source.replace(
+    boundaryParagraph,
+    '<Callout>\n\n本文固定三条边界。追踪只记录证据，不自动判断质量，也不执行约束。评测将追踪、结果和参考标准转为质量判断，不拥有工具执行权。执行约束在模型或工具动作之前和之后强制政策，不把模型自律当执行点。\n\n</Callout>',
+  );
+  const staticallyVisibleStyle = source.replace(
+    boundaryParagraph,
+    "<section style={{color: 'red'}}>\n\n本文固定三条边界。追踪只记录证据，不自动判断质量，也不执行约束。评测将追踪、结果和参考标准转为质量判断，不拥有工具执行权。执行约束在模型或工具动作之前和之后强制政策，不把模型自律当执行点。\n\n</section>",
+  );
+  const explicitVisibleAria = source.replace(
+    boundaryParagraph,
+    '<section aria-hidden={false}>\n\n本文固定三条边界。追踪只记录证据，不自动判断质量，也不执行约束。评测将追踪、结果和参考标准转为质量判断，不拥有工具执行权。执行约束在模型或工具动作之前和之后强制政策，不把模型自律当执行点。\n\n</section>',
+  );
+  const hiddenAppendixTable = `${source}\n\n<section hidden="false">\n\n| 隐藏附录 | 说明 |\n| --- | --- |\n| owner | 不进入可见表格清单 |\n\n</section>\n`;
   const linked = `${source}\n\n[diagram naming guide](https://example.com/diagram)\n`;
   const prose = `${source}\n\n“diagram” 在这里是普通正文术语，不是视觉嵌入。\n`;
   assert.notEqual(wrapped, source, 'visible section fixture must alter the article');
   assert.doesNotThrow(
     () => assertQualityGovernanceContract(wrapped),
     'visible semantic wrapper contributes reader-visible copy',
+  );
+  assert.doesNotThrow(
+    () => assertQualityGovernanceContract(detailsWrapped),
+    'visible details wrapper contributes reader-visible copy',
+  );
+  assert.doesNotThrow(
+    () => assertQualityGovernanceContract(calloutWrapped),
+    'visible Callout wrapper contributes reader-visible copy',
+  );
+  assert.doesNotThrow(
+    () => assertQualityGovernanceContract(staticallyVisibleStyle),
+    'statically visible style contributes reader-visible copy',
+  );
+  assert.doesNotThrow(
+    () => assertQualityGovernanceContract(explicitVisibleAria),
+    'explicit false aria-hidden contributes reader-visible copy',
+  );
+  assert.doesNotThrow(
+    () => assertQualityGovernanceContract(hiddenAppendixTable),
+    'a present hidden attribute excludes its table regardless of attribute value',
   );
   assert.doesNotThrow(
     () => assertQualityGovernanceContract(linked),
