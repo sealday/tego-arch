@@ -21052,6 +21052,104 @@
       "expected_final_transport_locator": "/img/diagrams/sty-11-serverless-order-fulfillment.svg",
       "expected_final_approved_at": "2026-08-25",
       "expected_final_approval_note": "Approved project-local original illustration after synchronized Draw.io/SVG semantic, geometry, contrast and raster QA."
+    },
+    {
+      "id": "src-anthropic-building-effective-agents",
+      "canonical_locator": "https://www.anthropic.com/engineering/building-effective-agents",
+      "transport_locator": "https://github.com/anthropics/claude-cookbooks/blob/main/patterns/agents/README.md",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Building Effective Agents",
+      "author_or_org": "Anthropic",
+      "published_at": "2024-12-19",
+      "registered_at": "2026-08-26",
+      "checked_at": "2026-08-26",
+      "version": "Official engineering article published 2024-12-19; canonical page and official companion repository checked 2026-08-26",
+      "source_kind": "official-docs",
+      "tier": "first-party",
+      "allowed_evidence_roles": [
+        "definition",
+        "method"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named Anthropic engineering article and bibliographic facts only; prose, examples, diagrams, linked works, trademarks and third-party material excluded",
+      "license_evidence_url": "https://www.anthropic.com/engineering/building-effective-agents",
+      "license_evidence_note": "The official page exposes no reusable page license; Tego Arch uses attributed factual summary without copying prose, examples, structure or diagrams.",
+      "license_family_id": "https://www.anthropic.com/engineering/building-effective-agents",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports Anthropic's stated workflow/agent distinction and augmented-LLM building block; it does not establish the article's Harness/Loop ownership model or prove production outcomes.",
+      "link_policy": "floating",
+      "expected_final_transport_locator": "https://github.com/anthropics/claude-cookbooks/blob/main/patterns/agents/README.md",
+      "expected_final_approved_at": "2026-08-26",
+      "expected_final_approval_note": "The canonical article was reviewed through the web reader, while the official Anthropic cookbook companion returned HTTP 206 as the stable transport on 2026-08-26; the companion transport identifies the named article and its authors but is not used to broaden the article's evidence scope."
+    },
+    {
+      "id": "src-openai-practical-guide-building-agents",
+      "canonical_locator": "https://openai.com/business/guides-and-resources/a-practical-guide-to-building-ai-agents/",
+      "transport_locator": "https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf?file=a-practical-guide-to-building-agents.pdf",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "A Practical Guide to Building Agents",
+      "author_or_org": "OpenAI",
+      "published_at": null,
+      "registered_at": "2026-08-26",
+      "checked_at": "2026-08-26",
+      "version": "Official web guide and PDF edition checked 2026-08-26",
+      "source_kind": "official-docs",
+      "tier": "first-party",
+      "allowed_evidence_roles": [
+        "definition",
+        "method"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named OpenAI guide and bibliographic facts only; prose, examples, diagrams, code, linked works, trademarks and third-party material excluded",
+      "license_evidence_url": "https://openai.com/business/guides-and-resources/a-practical-guide-to-building-ai-agents/",
+      "license_evidence_note": "The official guide exposes no reusable page license for this record; Tego Arch uses attributed factual summary without copying prose, examples, code, structure or diagrams.",
+      "license_family_id": "https://openai.com/business/guides-and-resources/a-practical-guide-to-building-ai-agents/",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports OpenAI's stated agent control, tool-selection, loop, exit-condition and deterministic-fallback boundaries; it does not prove any implementation's production reliability.",
+      "link_policy": "floating",
+      "expected_final_transport_locator": "https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf?file=a-practical-guide-to-building-agents.pdf",
+      "expected_final_approved_at": "2026-08-26",
+      "expected_final_approval_note": "The official OpenAI PDF transport returned HTTP 200 on 2026-08-26 and is the same named guide as the canonical web edition; definition/method scope and conservative rights boundary were reviewed."
+    },
+    {
+      "id": "src-atlas-agt-c-01-agent-system-boundary",
+      "canonical_locator": "/img/diagrams/agt-c-01-agent-system-boundary.svg",
+      "transport_locator": "/img/diagrams/agt-c-01-agent-system-boundary.svg",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Agent system boundary reference architecture",
+      "author_or_org": "Tego Arch maintainers",
+      "published_at": "2026-08-26",
+      "registered_at": "2026-08-26",
+      "checked_at": "2026-08-26",
+      "version": "Original synchronized Draw.io/SVG pair authored and deterministically checked on 2026-08-26",
+      "source_kind": "original-illustration",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "illustration"
+      ],
+      "license": "LicenseRef-Atlas-Original",
+      "license_scope": "The named project-authored agt-c-01-agent-system-boundary.svg asset only",
+      "license_evidence_url": "https://github.com/sealday/tego-arch/blob/main/static/img/diagrams/agt-c-01-agent-system-boundary.svg",
+      "license_evidence_note": "The project-authored Draw.io/SVG pair contains no third-party topology, reference image, icon, brand visual, signature, watermark or copied composition.",
+      "license_family_id": "/img/diagrams/agt-c-01-agent-system-boundary.svg",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "original-atlas",
+      "usage_boundary": "Original teaching architecture for the Model/Augmented LLM/Workflow/Agent boundary, Harness containment of Loop, capability edges and cross-cutting state/governance foundation; illustration-only and not evidence of a production implementation.",
+      "link_policy": null,
+      "expected_final_transport_locator": "/img/diagrams/agt-c-01-agent-system-boundary.svg",
+      "expected_final_approved_at": "2026-08-26",
+      "expected_final_approval_note": "Approved project-local original illustration after synchronized Draw.io/SVG semantic and deterministic pair validation on 2026-08-26."
     }
   ],
   "documents": {
@@ -32231,6 +32329,58 @@
           "usage_mode": "original-illustration",
           "attribution_note": "企业 AI 四阶段十二门禁图，Tego Arch maintainers",
           "modification_note": "Created as an original Draw.io and SVG pair for MTH-07 without third-party reference imagery.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/concepts/agt-c-01-agent-system-boundary.mdx": {
+      "reviewed_at": "2026-08-26",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-anthropic-building-effective-agents",
+          "citation_url": "https://www.anthropic.com/engineering/building-effective-agents",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Building Effective Agents, Anthropic",
+          "modification_note": "Original Chinese synthesis of the workflow/agent and augmented-LLM boundaries; no source prose, structure, examples or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-openai-practical-guide-building-agents",
+          "citation_url": "https://openai.com/business/guides-and-resources/a-practical-guide-to-building-ai-agents/",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "A Practical Guide to Building Agents, OpenAI",
+          "modification_note": "Original Chinese synthesis of agent control, tool-selection, loop, exit-condition and deterministic-fallback boundaries; no source prose, structure, examples, code or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-atlas-agt-c-01-agent-system-boundary",
+          "citation_url": "/img/diagrams/agt-c-01-agent-system-boundary.svg",
+          "roles": [
+            "illustration"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "original-illustration",
+          "attribution_note": "Agent system boundary reference architecture, Tego Arch maintainers",
+          "modification_note": "Created as an original synchronized Draw.io/SVG pair without third-party topology, reference imagery, icons, brand visuals, signatures, watermarks or copied composition.",
           "excerpt": null,
           "quotation_reviewed": false
         }

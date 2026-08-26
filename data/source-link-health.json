@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-25T12:12:17.342Z",
+  "generated_at": "2026-08-26T08:24:01.325Z",
   "results": [
     {
       "transport_locator": "https://a2a-protocol.org/latest/",
@@ -6592,6 +6592,37 @@
           "at": "2026-08-25T12:07:24.531Z",
           "outcome": "healthy",
           "final_transport_locator": "https://c4model.com/diagrams/notation",
+          "http_status": 200,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf?file=a-practical-guide-to-building-agents.pdf",
+      "source_ids": [
+        "src-openai-practical-guide-building-agents"
+      ],
+      "last_attempt": {
+        "at": "2026-08-26T08:24:01.325Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf?file=a-practical-guide-to-building-agents.pdf",
+        "http_status": 200,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-26T08:24:01.325Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf?file=a-practical-guide-to-building-agents.pdf",
+        "http_status": 200,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-08-26T08:24:01.325Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf?file=a-practical-guide-to-building-agents.pdf",
           "http_status": 200,
           "login_wall_detected": false
         }
@@ -34369,6 +34400,37 @@
           "at": "2026-08-25T12:07:24.531Z",
           "outcome": "healthy",
           "final_transport_locator": "https://github.com/a2aproject/A2A/tree/af112d9491c1fd4b2a568ac65755af4a62790490",
+          "http_status": 206,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://github.com/anthropics/claude-cookbooks/blob/main/patterns/agents/README.md",
+      "source_ids": [
+        "src-anthropic-building-effective-agents"
+      ],
+      "last_attempt": {
+        "at": "2026-08-26T08:24:01.325Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://github.com/anthropics/claude-cookbooks/blob/main/patterns/agents/README.md",
+        "http_status": 206,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-26T08:24:01.325Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://github.com/anthropics/claude-cookbooks/blob/main/patterns/agents/README.md",
+        "http_status": 206,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-08-26T08:24:01.325Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://github.com/anthropics/claude-cookbooks/blob/main/patterns/agents/README.md",
           "http_status": 206,
           "login_wall_detected": false
         }
