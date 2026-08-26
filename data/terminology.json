@@ -2461,6 +2461,74 @@
       "forbidden_aliases": [],
       "note": "保留云财务运营实践的通行名称；本文只用它表示容量与成本归因的协作责任。",
       "order": 1800
+    },
+    {
+      "id": "micro-frontend",
+      "canonical_zh": "Micro-Frontend",
+      "english": null,
+      "acronym": null,
+      "kind": "standard",
+      "first_use": "Micro-Frontend",
+      "subsequent_use": [
+        "Micro-Frontend"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [],
+      "note": "保留本批次批准的架构风格拼写；正文明确解释其微前端组织与发布含义。",
+      "order": 1810
+    },
+    {
+      "id": "import-map",
+      "canonical_zh": "导入映射",
+      "english": "Import Map",
+      "acronym": null,
+      "kind": "translated-term",
+      "first_use": "导入映射（Import Map）",
+      "subsequent_use": [
+        "导入映射"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [
+        "Import Map"
+      ],
+      "note": "首次出现给出中英文名称；本文只把它用于浏览器模块说明符解析。",
+      "order": 1820
+    },
+    {
+      "id": "subresource-integrity",
+      "canonical_zh": "子资源完整性",
+      "english": "Subresource Integrity",
+      "acronym": "SRI",
+      "kind": "acronym",
+      "first_use": "子资源完整性（Subresource Integrity，SRI）",
+      "subsequent_use": [
+        "子资源完整性",
+        "SRI"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [
+        "Subresource Integrity"
+      ],
+      "note": "首次出现给出中英文全称与缩写；本文只把它用于摘要响应验证。",
+      "order": 1830
+    },
+    {
+      "id": "content-security-policy",
+      "canonical_zh": "内容安全策略",
+      "english": "Content Security Policy",
+      "acronym": "CSP",
+      "kind": "acronym",
+      "first_use": "内容安全策略（Content Security Policy，CSP）",
+      "subsequent_use": [
+        "内容安全策略",
+        "CSP"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [
+        "Content Security Policy"
+      ],
+      "note": "首次出现给出中英文全称与缩写；本文把它限定为浏览器纵深防御策略。",
+      "order": 1840
     }
   ]
 }

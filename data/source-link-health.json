@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-25T12:12:17.342Z",
+  "generated_at": "2026-08-26T11:41:39.787Z",
   "results": [
     {
       "transport_locator": "https://a2a-protocol.org/latest/",
@@ -80254,6 +80254,37 @@
       "review_status": "healthy"
     },
     {
+      "transport_locator": "https://html.spec.whatwg.org/multipage/webappapis.html",
+      "source_ids": [
+        "src-whatwg-html-import-maps"
+      ],
+      "last_attempt": {
+        "at": "2026-08-26T11:41:39.787Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://html.spec.whatwg.org/multipage/webappapis.html",
+        "http_status": 206,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-26T11:41:39.787Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://html.spec.whatwg.org/multipage/webappapis.html",
+        "http_status": 206,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-08-26T11:41:39.787Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://html.spec.whatwg.org/multipage/webappapis.html",
+          "http_status": 206,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
       "transport_locator": "https://ieeexplore.ieee.org/document/5388187/",
       "source_ids": [
         "src-ibm-structured-design-1974"
@@ -106570,6 +106601,105 @@
           "outcome": "healthy",
           "final_transport_locator": "https://www.w3.org/TR/2015/REC-scxml-20150901/",
           "http_status": 200,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://www.w3.org/TR/CSP3/",
+      "source_ids": [
+        "src-w3c-content-security-policy-3"
+      ],
+      "last_attempt": {
+        "at": "2026-08-26T11:41:39.787Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www.w3.org/TR/CSP3/",
+        "http_status": 200,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-26T11:41:39.787Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www.w3.org/TR/CSP3/",
+        "http_status": 200,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-08-26T11:41:39.787Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://www.w3.org/TR/CSP3/",
+          "http_status": 200,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://www.w3.org/TR/longtasks-1/",
+      "source_ids": [
+        "src-w3c-long-tasks-api"
+      ],
+      "last_attempt": {
+        "at": "2026-08-26T11:41:39.787Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www.w3.org/TR/longtasks-1/",
+        "http_status": 206,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-26T11:41:39.787Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www.w3.org/TR/longtasks-1/",
+        "http_status": 206,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-08-26T11:41:39.787Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://www.w3.org/TR/longtasks-1/",
+          "http_status": 206,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://www.w3.org/TR/SRI/",
+      "source_ids": [
+        "src-w3c-subresource-integrity"
+      ],
+      "last_attempt": {
+        "at": "2026-08-26T11:41:39.787Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www.w3.org/TR/sri/",
+        "http_status": 206,
+        "login_wall_detected": false,
+        "redirects": [
+          {
+            "status": 301,
+            "from": "https://www.w3.org/TR/SRI/",
+            "to": "https://www.w3.org/TR/sri/"
+          }
+        ]
+      },
+      "last_success": {
+        "at": "2026-08-26T11:41:39.787Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www.w3.org/TR/sri/",
+        "http_status": 206,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-08-26T11:41:39.787Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://www.w3.org/TR/sri/",
+          "http_status": 206,
           "login_wall_detected": false
         }
       ],

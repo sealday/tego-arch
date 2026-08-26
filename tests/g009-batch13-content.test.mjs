@@ -34,7 +34,7 @@ export const EXACT_METADATA = Object.freeze({
   agent_patterns: [], protocols: ['https', 'es-modules'],
   quality_attributes: ['deployability', 'modularity', 'reliability', 'operability', 'security', 'performance'],
   tags: ['架构风格', 'Micro-Frontend', '运行时组合', '独立部署', '共享依赖', '故障隔离'],
-  summary: '以商品、购物车、结算和账户切片说明 Micro-Frontend：薄 Shell 通过完整版本化清单组合不可变制品，业务真相与授权留在后端，公共运行时保持最小，同页错误只做有限降级。',
+  summary: '以商品、购物车、结算和账户切片说明 Micro-Frontend：薄共享应用外壳通过完整版本化清单组合不可变制品，业务真相与授权留在后端，公共运行时保持最小，同页错误只做有限降级。',
   topic_id: TOPIC_ID, priority: 'P1', depends_on: ['STY-00', 'STY-03', 'STY-04'],
   adjacent_topics: ['STY-03', 'STY-10'], related_cases: [RELATED_CASE], related_questions: [],
 });
@@ -141,6 +141,22 @@ function assertMicroFrontendSources(ledger) {
   assert.deepEqual(document.citations.filter(({manifest_primary}) => manifest_primary).map(({source_id}) => source_id), ['src-single-spa-03f49f2c5ddb'], 'single-spa is sole primary');
 }
 
+function assertMicroFrontendSourcePolicy(ledger) {
+  const source = ledger.sources.find(({id}) => id === 'src-whatwg-html-import-maps');
+  assert.ok(source, 'WHATWG import-map source');
+  assert.deepEqual({canonical_locator: source.canonical_locator, transport_locator: source.transport_locator, license: source.license, copyright_policy: source.copyright_policy}, {
+    canonical_locator: 'https://html.spec.whatwg.org/multipage/webappapis.html',
+    transport_locator: 'https://html.spec.whatwg.org/multipage/webappapis.html',
+    license: 'CC-BY-4.0',
+    copyright_policy: 'adapt-with-attribution',
+  }, 'WHATWG fragment-free locator and schema-compatible license policy');
+  const citations = ledger.documents?.[ARTICLE]?.citations;
+  assert.ok(citations, 'STY-12 governed citations');
+  const citation = citations.find(({source_id}) => source_id === source.id);
+  assert.equal(citation?.citation_url, 'https://html.spec.whatwg.org/multipage/webappapis.html#import-maps', 'article citation retains the import-map fragment');
+  assert.ok(citations.every(({excerpt, quotation_reviewed}) => excerpt === null && quotation_reviewed === false), 'STY-12 uses no quotation excerpts');
+}
+
 function assertMicroFrontendDiagram(drawioSource, svgSource) {
   const drawio = parseDrawio(drawioSource); const svg = parseSvg(svgSource); assertFlattenedSvg(svg.elements);
   assertExactDuplicateFreeIds(drawio.nodes.filter(({attributes}) => styleMap(attributes.get('style')).get('semanticRole') === 'region').map(({attributes}) => attributes.get('id')), REGION_IDS, 'Draw.io regions');
@@ -176,6 +192,10 @@ test('STY-12 helper fixture locks its public content contract', () => {
   const fixture = fixtureArticle(); assertMicroFrontendArticle(fixture);
   for (const key of Object.keys(EXACT_METADATA)) { assert.throws(() => assertMicroFrontendArticle(removeFrontMatterField(fixture, key)), assert.AssertionError, `${key} deletion rejected`); assert.throws(() => assertMicroFrontendArticle(changeFrontMatterField(fixture, key)), assert.AssertionError, `${key} change rejected`); }
   for (const rows of [COMPOSITION_ROWS, OWNER_ROWS, FAILURE_ROWS]) for (const row of rows) { const exact = '| ' + row.join(' | ') + ' |'; assert.throws(() => assertMicroFrontendArticle(replaceOnce(fixture, exact, '| ' + [...row.slice(0, -1), '错误的合同值'].join(' | ') + ' |', `${row[0]} mutation`)), assert.AssertionError, `${row[0]} change rejected`); }
+});
+
+test('STY-12 governed sources use the executable WHATWG license policy without quotations', () => {
+  assertMicroFrontendSourcePolicy(JSON.parse(readFileSync('data/source-ledger.json', 'utf8')));
 });
 
 test('STY-12 implementation remains RED until its article, sources, relations, diagram, and projection exist', async () => {

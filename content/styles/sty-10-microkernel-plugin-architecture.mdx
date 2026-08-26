@@ -38,6 +38,7 @@ depends_on:
 adjacent_topics:
   - STY-04
   - STY-05
+  - STY-12
 related_cases:
   - /cases/micro-frontends-single-spa
 related_questions: []
@@ -243,6 +244,10 @@ Microkernel（微内核）保留稳定业务政策和权威状态，Plug-in Arch
 进程外插件与微服务都面对序列化、超时、兼容、观测和发布成本，但控制权不同。微服务通常拥有业务能力与权威数据，本文插件仍由订单宿主决定何时调用、如何解释结果和何时停止。
 
 [生产中的微前端案例](/cases/micro-frontends-single-spa)只能有限类比独立交付的扩展边界，不等同于进程隔离的后端插件。浏览器切片共享进程与文档对象模型，本文插件则通过宿主控制的进程间协议执行；两者都要治理版本与生命周期，但不能互换安全、状态或故障结论。
+
+{/* terminology-exempt: unknown-english-term | match: Shell | record: Micro-Frontend 架构决策比较薄 Shell 与独立业务切片；它与插件宿主都治理版本和生命周期，但同页切片共享浏览器资源，不能复用本文的进程隔离结论。 | reason: STY-12 批次批准的可见反向链接句固定使用薄 Shell 表述 */}
+
+[Micro-Frontend 架构决策](/styles/sty-12)比较薄 Shell 与独立业务切片；它与插件宿主都治理版本和生命周期，但同页切片共享浏览器资源，不能复用本文的进程隔离结论。
 
 ### 不应照搬的部分
 
