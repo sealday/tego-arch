@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "concepts": [
+    {"id":"AGT-C-01","file":"content/concepts/agt-c-01-agent-system-boundary.mdx","route":"/concepts/agt-c-01","title":"AI Agent 系统边界","order":1,"visual":"Draw.io + SVG"},
+    {"id":"AGT-C-02","file":"content/concepts/agt-c-02-agent-harness.mdx","route":"/concepts/agt-c-02","title":"Agent Harness","order":2,"visual":"Mermaid"},
+    {"id":"AGT-C-03","file":"content/concepts/agt-c-03-agent-loop.mdx","route":"/concepts/agt-c-03","title":"Agent Loop","order":3,"visual":"Mermaid"},
+    {"id":"AGT-C-04","file":"content/concepts/agt-c-04-context-memory-state-checkpoint.mdx","route":"/concepts/agt-c-04","title":"Context、Memory、State 与 Checkpoint","order":4,"visual":"无需图"},
+    {"id":"AGT-C-05","file":"content/concepts/agt-c-05-tool-sandbox-permission-side-effect.mdx","route":"/concepts/agt-c-05","title":"Tool、Sandbox、Permission 与 Side Effect","order":5,"visual":"Mermaid"},
+    {"id":"AGT-C-06","file":"content/concepts/agt-c-06-trace-evaluation-guardrail.mdx","route":"/concepts/agt-c-06","title":"Trace、Evaluation 与 Guardrail","order":6,"visual":"无需图"}
+  ],
+  "patterns": [
+    {"id":"AGT-P-01","file":"content/patterns/agt-p-01-workflow-vs-autonomous-agent.mdx","route":"/patterns/agt-p-01","title":"Deterministic Workflow vs Autonomous Agent","order":1,"visual":"无需图"},
+    {"id":"AGT-P-02","file":"content/patterns/agt-p-02-agentic-rag.mdx","route":"/patterns/agt-p-02","title":"Agentic RAG","order":2,"visual":"Mermaid"},
+    {"id":"AGT-P-03","file":"content/patterns/agt-p-03-planner-executor.mdx","route":"/patterns/agt-p-03","title":"Planner–Executor","order":3,"visual":"Mermaid"},
+    {"id":"AGT-P-04","file":"content/patterns/agt-p-04-evaluator-optimizer.mdx","route":"/patterns/agt-p-04","title":"Evaluator–Optimizer","order":4,"visual":"Mermaid"},
+    {"id":"AGT-P-05","file":"content/patterns/agt-p-05-router-model-dispatch.mdx","route":"/patterns/agt-p-05","title":"Router 与模型驱动分发","order":5,"visual":"Mermaid"},
+    {"id":"AGT-P-06","file":"content/patterns/agt-p-06-supervisor-handoff-agents-as-tools.mdx","route":"/patterns/agt-p-06","title":"Supervisor、Handoff 与 Agents-as-Tools","order":6,"visual":"Draw.io + SVG"},
+    {"id":"AGT-P-07","file":"content/patterns/agt-p-07-orchestrator-workers-fanout-fanin.mdx","route":"/patterns/agt-p-07","title":"Orchestrator–Workers 与 Fan-out/Fan-in","order":7,"visual":"Mermaid"},
+    {"id":"AGT-P-08","file":"content/patterns/agt-p-08-durable-agent-hitl.mdx","route":"/patterns/agt-p-08","title":"Durable Agent 与 Human-in-the-loop","order":8,"visual":"Draw.io + SVG"}
+  ],
+  "cases": [
+    {"backlog_id":"CASE-21","file":"content/cases/multi-agent-research-system.mdx","route":"/cases/multi-agent-research-system","title":"多智能体研究系统","order":19,"visual":"Draw.io + SVG"},
+    {"backlog_id":"CASE-22","file":"content/cases/long-running-coding-agent.mdx","route":"/cases/long-running-coding-agent","title":"长时运行 Coding Agent","order":20,"visual":"Draw.io + SVG"},
+    {"backlog_id":"CASE-23","file":"content/cases/production-incident-response-agent.mdx","route":"/cases/production-incident-response-agent","title":"生产事故响应 Agent","order":21,"visual":"Draw.io + SVG"}
+  ]
+}

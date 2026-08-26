@@ -401,6 +401,23 @@
 - [ ] **AGT-05 P1｜离线评估、在线反馈、追踪、成本和安全事件关联到同一任务**。
 - [ ] **AGT-06 P1｜多租户执行沙箱、缓存/记忆泄漏和故障半径验证**。
 
+### Agentic Architecture 专题
+
+- [ ] **AGT-C-01 P1｜AI Agent 系统边界**。
+- [ ] **AGT-C-02 P1｜Agent Harness**。
+- [ ] **AGT-C-03 P1｜Agent Loop**。
+- [ ] **AGT-C-04 P1｜Context、Memory、State 与 Checkpoint**。
+- [ ] **AGT-C-05 P1｜Tool、Sandbox、Permission 与 Side Effect**。
+- [ ] **AGT-C-06 P1｜Trace、Evaluation 与 Guardrail**。
+- [ ] **AGT-P-01 P1｜Deterministic Workflow vs Autonomous Agent**。
+- [ ] **AGT-P-02 P1｜Agentic RAG**。
+- [ ] **AGT-P-03 P1｜Planner–Executor**。
+- [ ] **AGT-P-04 P1｜Evaluator–Optimizer**。
+- [ ] **AGT-P-05 P1｜Router 与模型驱动分发**。
+- [ ] **AGT-P-06 P1｜Supervisor、Handoff 与 Agents-as-Tools**。
+- [ ] **AGT-P-07 P1｜Orchestrator–Workers 与 Fan-out/Fan-in**。
+- [ ] **AGT-P-08 P1｜Durable Agent 与 Human-in-the-loop**。
+
 ## E10：真实案例候选池
 
 候选进入写作前先做 go/no-go 评审：至少具备明确问题、约束、机制、时间或版本边界、结果或失败证据，以及两个可交叉核验的来源。只有产品宣传页、架构图无上下文或无法区分事实与推断时，留在候选池而不写。
@@ -425,6 +442,9 @@
 - [ ] **CASE-18 P2｜平台 API 与 GitOps 漂移案例**。
 - [ ] **CASE-19 P2｜多租户 Agent 沙箱与泄漏边界案例**。
 - [ ] **CASE-20 P2｜边缘断网、重连与物理安全链案例**。
+- [ ] **CASE-21 P1｜多智能体研究系统**。
+- [ ] **CASE-22 P1｜长时运行 Coding Agent**。
+- [ ] **CASE-23 P1｜生产事故响应 Agent**。
 
 案例发现来源包括：
 [CNCF Reference Architecture](https://architecture.cncf.io/)、

@@ -21,6 +21,8 @@ export const topicPrefixTypes = new Map([
   ['CLD', ['path', 'paths']],
   ['FE', ['path', 'paths']],
   ['EDGE', ['path', 'paths']],
+  ['AGT-C', ['concept', 'concepts']],
+  ['AGT-P', ['pattern', 'patterns']],
   ['AGT', ['path', 'paths']],
 ]);
 
