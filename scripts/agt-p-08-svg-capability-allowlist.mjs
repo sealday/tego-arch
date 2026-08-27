@@ -7,6 +7,8 @@ const XHTML_NS = 'http://www.w3.org/1999/xhtml';
 const EXTENSIBILITY = 'http://www.w3.org/TR/SVG11/feature#Extensibility';
 const ACCESSIBLE_TITLE = 'Durable agent recovery and human approval control flow';
 const ACCESSIBLE_DESCRIPTION = 'The durable control plane checkpoints execution, waits for approval, resumes through a sandbox, reconciles external business truth, recovers safely, and sends rejection, timeout, or unknown effects to a manual terminal.';
+const RAW_XML_DECLARATION = '<?xml version="1.0" encoding="UTF-8"?>';
+const FALLBACK_DATA_URL_PREFIX = 'data:image/png;base64,';
 const FALLBACKS = new Map(Object.entries({
   'Durable control plane|23|24.5': '10f759f292bac7b40fba45ea7504ca45c474440490377b7743b6194bf888aa41',
   'External business truth|923|24.5': '2c60095547246e218635d34ac51b3c1f958acc75a49892fd0a060ce9c4f6e690',
@@ -96,6 +98,15 @@ const expectDeclarations = (element, expected, label) => {
   const actual = strictDeclarations(element.attributes.get('style'), label);
   if (!same([...actual], Object.entries(expected))) fail(`${label} inline-property/value allowlist drift`);
 };
+
+export function assertRawDocumentBoundary(source) {
+  if (!source.startsWith(RAW_XML_DECLARATION)) fail('raw XML declaration must be exact and start at byte zero');
+  if (source.slice(RAW_XML_DECLARATION.length).includes('<?')) fail('raw export contains an unsupported processing instruction');
+}
+
+export function assertPublishedDocumentBoundary(source) {
+  if (source.includes('<?')) fail('published SVG contains an unsupported processing instruction');
+}
 
 export function assertPublishedCapabilityAllowlist(context, model, drawioSha256) {
   const {root} = context;
@@ -355,10 +366,14 @@ export function assertRawCapabilityAllowlist(context, model, groups, idMap) {
     innerExpected['word-wrap'] = 'normal';
     expectDeclarations(divs[2], innerExpected, `${item.id} inner XHTML div`);
     const href = image.attributes.get('xlink:href') ?? '';
-    if (!href.startsWith('data:image/png;base64,')) fail(`${item.id} fallback image media capability drift`);
+    if (!href.startsWith(FALLBACK_DATA_URL_PREFIX)) fail(`${item.id} fallback image media capability drift`);
     const key = `${compact(xmlText(foreignObject))}|${image.attributes.get('x')}|${image.attributes.get('y')}`;
     const expectedHash = FALLBACKS.get(key);
-    const imageBytes = Buffer.from(href.slice('data:image/png;base64,'.length), 'base64');
+    const payload = href.slice(FALLBACK_DATA_URL_PREFIX.length);
+    const canonicalBase64 = /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/u.test(payload)
+      && payload.length > 0 && Buffer.from(payload, 'base64').toString('base64') === payload;
+    if (!canonicalBase64) fail(`${item.id} fallback image Base64 capability drift`);
+    const imageBytes = Buffer.from(payload, 'base64');
     const imageHash = createHash('sha256').update(imageBytes).digest('hex');
     const fallbackWidth = number(image.attributes.get('width'), `${item.id}.fallback.width`);
     const fallbackHeight = number(image.attributes.get('height'), `${item.id}.fallback.height`);

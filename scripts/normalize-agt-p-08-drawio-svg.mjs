@@ -5,7 +5,10 @@ import {parseXml, xmlElements} from '../.codex/skills/creating-drawio-architectu
 import {
   SVG_NS, escapeXml, fail, number, parseDrawioModel, xmlText,
 } from './agt-p-08-diagram-model.mjs';
-import {assertRawCapabilityAllowlist} from './agt-p-08-svg-capability-allowlist.mjs';
+import {
+  assertRawCapabilityAllowlist,
+  assertRawDocumentBoundary,
+} from './agt-p-08-svg-capability-allowlist.mjs';
 import {
   parseSvgRenderedModel,
   parseViewBox,
@@ -47,6 +50,7 @@ const geometrySnapshot = (cell) => ({
 
 const drawio = await readFile(drawioPath, 'utf8');
 const rawSvg = await readFile(rawSvgPath, 'utf8');
+assertRawDocumentBoundary(rawSvg);
 const drawioSha256 = sha256(drawio);
 const rawSha256 = sha256(rawSvg);
 const model = parseDrawioModel(drawio, drawioPath);

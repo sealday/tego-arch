@@ -4,7 +4,10 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 
 import {SVG_NS, fail, number, parseDrawioModel, xmlText} from './agt-p-08-diagram-model.mjs';
-import {assertPublishedCapabilityAllowlist} from './agt-p-08-svg-capability-allowlist.mjs';
+import {
+  assertPublishedCapabilityAllowlist,
+  assertPublishedDocumentBoundary,
+} from './agt-p-08-svg-capability-allowlist.mjs';
 import {parseSvgRenderedModel, renderedMarker} from './agt-p-08-svg-rendered-model.mjs';
 
 const SCALE = 800 / 1400;
@@ -39,6 +42,7 @@ const geometryValues = (box) => ({
 const normalizedDash = (value) => String(value ?? 'none').trim().replace(/[ ,]+/gu, ' ');
 
 export function assertDurableAgentDiagramGeometry(drawio, svg) {
+  assertPublishedDocumentBoundary(svg);
   const model = parseDrawioModel(drawio);
   const context = parseSvgRenderedModel(svg, '<agt-p-08.svg>');
   const {root} = context;

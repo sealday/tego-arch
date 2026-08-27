@@ -72,6 +72,13 @@ function mutateRawCell(value, mutate, label) {
   return `${raw.slice(0, start)}${changed}${raw.slice(end)}`;
 }
 
+function mutateRawFallbackPayload(mutate, label) {
+  return mutateRawCell('Unknown effect', (segment) => segment.replace(
+    /(xlink:href="data:image\/png;base64,)([^"]+)"/u,
+    (match, prefix, payload) => `${prefix}${mutate(payload)}"`,
+  ), label);
+}
+
 function rejectedPublishedMutants(mutations) {
   const survivors = [];
   for (const [label, published] of mutations) {
@@ -351,6 +358,61 @@ test('AGT-P-08 raw XHTML and switch fallback are exact per semantic cell', () =>
     ['fallback image move', mutateRawCell('Unknown effect', (segment) => segment.replace(/<image x="[^"]+"/u, '<image x="0"'), 'raw fallback move')],
     ['fallback image resize', mutateRawCell('Unknown effect', (segment) => segment.replace(/(<image[^>]*\bwidth=")[^"]+"/u, '$11"'), 'raw fallback resize')],
     ['fallback image corruption', mutateRawCell('Unknown effect', (segment) => segment.replace('data:image/png;base64,iVBOR', 'data:image/png;base64,jVBOR'), 'raw fallback bytes')],
+  ];
+  assert.deepEqual(rejectedRawMutants(mutations), []);
+});
+
+test('AGT-P-08 raw document permits only its exact byte-zero XML declaration and no other PI', () => {
+  assertLegitimateRawPasses();
+  const declaration = '<?xml version="1.0" encoding="UTF-8"?>';
+  const mutations = [
+    ['PI before declaration', `<?probe boundary?>${raw}`],
+    ['PI before root', replaceOnce(raw, '<svg xmlns=', '<?probe boundary?>\n<svg xmlns=', 'raw PI before root')],
+    ['PI inside root', replaceOnce(raw, '<style type="text/css">', '<?probe boundary?><style type="text/css">', 'raw PI inside root')],
+    ['PI inside group', replaceOnce(raw, '<g>', '<g><?probe boundary?>', 'raw PI inside group')],
+    ['stylesheet data href', replaceOnce(raw, `${declaration}\n`, `${declaration}\n<?xml-stylesheet href="data:text/css,svg{}"?>\n`, 'raw stylesheet data PI')],
+    ['stylesheet external href', replaceOnce(raw, `${declaration}\n`, `${declaration}\n<?xml-stylesheet href="https://example.invalid/diagram.css"?>\n`, 'raw stylesheet external PI')],
+    ['declaration case variant', replaceOnce(raw, '<?xml version=', '<?XML version=', 'raw declaration case')],
+    ['declaration spacing variant', replaceOnce(raw, '<?xml version=', '<?xml  version=', 'raw declaration spacing')],
+    ['declaration location variant', `\n${raw}`],
+  ];
+  assert.deepEqual(rejectedRawMutants(mutations), []);
+});
+
+test('AGT-P-08 published document rejects every processing instruction', () => {
+  assert.doesNotThrow(() => assertDurableAgentDiagramGeometry(drawio, svg));
+  const mutations = [
+    ['PI before root', `<?probe boundary?>${svg}`],
+    ['PI inside root', replaceOnce(svg, '<title id="agt-p-08-title">', '<?probe boundary?><title id="agt-p-08-title">', 'published PI inside root')],
+    ['PI inside group', replaceOnce(svg, '<g font-family="system-ui, sans-serif">', '<g font-family="system-ui, sans-serif"><?probe boundary?>', 'published PI inside group')],
+    ['stylesheet data href', `<?xml-stylesheet href="data:text/css,svg{}"?>${svg}`],
+    ['stylesheet external href', `<?xml-stylesheet href="https://example.invalid/diagram.css"?>${svg}`],
+    ['PI case variant', `<?XML-STYLESHEET href="data:text/css,svg{}"?>${svg}`],
+    ['PI spacing variant', `<?xml-stylesheet  href="data:text/css,svg{}" ?>${svg}`],
+  ];
+  assert.deepEqual(rejectedPublishedMutants(mutations), []);
+});
+
+test('AGT-P-08 accepts all 23 canonical fallback payloads and rejects non-canonical Base64', () => {
+  assertLegitimateRawPasses();
+  const rawRoot = parseXml(raw.replace(/<!DOCTYPE[^>]*>\s*/u, '')).root;
+  const payloads = xmlElements(rawRoot, 'image', SVG_NS).map((image) => {
+    const href = image.attributes.get('xlink:href') ?? '';
+    assert.match(href, /^data:image\/png;base64,/u);
+    return href.slice('data:image/png;base64,'.length);
+  });
+  assert.equal(payloads.length, 23);
+  for (const payload of payloads) assert.equal(Buffer.from(payload, 'base64').toString('base64'), payload);
+  const mutations = [
+    ['invalid exclamation', mutateRawFallbackPayload((payload) => `${payload.slice(0, 80)}!${payload.slice(80)}`, 'fallback exclamation')],
+    ['embedded whitespace', mutateRawFallbackPayload((payload) => `${payload.slice(0, 80)} \n${payload.slice(80)}`, 'fallback whitespace')],
+    ['missing padding', mutateRawFallbackPayload((payload) => payload.slice(0, -1), 'fallback missing padding')],
+    ['extra padding', mutateRawFallbackPayload((payload) => `${payload}=`, 'fallback extra padding')],
+    ['URL-safe hyphen', mutateRawFallbackPayload((payload) => payload.replace('+', '-'), 'fallback URL-safe hyphen')],
+    ['URL-safe underscore', mutateRawFallbackPayload((payload) => payload.replace('/', '_'), 'fallback URL-safe underscore')],
+    ['percent encoding', mutateRawFallbackPayload((payload) => `${payload}%3D`, 'fallback percent encoding')],
+    ['trailing fragment', mutateRawFallbackPayload((payload) => `${payload}#fragment`, 'fallback fragment')],
+    ['trailing junk', mutateRawFallbackPayload((payload) => `${payload}junk`, 'fallback junk')],
   ];
   assert.deepEqual(rejectedRawMutants(mutations), []);
 });
