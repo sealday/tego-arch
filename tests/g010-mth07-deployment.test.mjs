@@ -12,9 +12,10 @@ const EVIDENCE_SHA256 = '43985ea2e801e888e55a2cd6f62ed690133d3fdcda7db8f03a1e91e
 const PRODUCTION_EVIDENCE_PATH = 'docs/reviews/evidence/g010-mth07-stage-a-production-browser.json';
 const PRODUCTION_EVIDENCE_SHA256 = 'e3d28a498d23aec12d6df4b32c35fa69052d1fa4ec324a2ec6c53caa34beeeb2';
 const POST_G010_G009_ARTIFACTS = new Map([
-  ['docs/reviews/g009-batch13.md', [11_281, 'beffcd508c620af81c18728c25648b1e04eebba2e1eed5f2914f939ab99a1fa3']],
+  ['docs/reviews/g009-batch13.md', [14_502, '688c800ecafcfc3ed66529e2896d49fd247680412f9eba6c5a25da357e8ae44c']],
   ['docs/reviews/evidence/g009-batch13-stage-a-browser.json', [17_260, 'a0de2d5ea069b2af87ad4aa4ef4696a9a22e6ff99ba96b616763262f1814ed38']],
   ['docs/reviews/evidence/g009-batch13-stage-a-production-browser.json', [33_721, 'a28bb3269f2b7545b7d77f2ec506ce5b1bd737924a5db6945481ee8ec5763560']],
+  ['docs/reviews/evidence/g009-batch13-stage-b-production-browser.json', [47_997, '93540ff26f5d7a6fddb2ca5310a838304d04afa6994788fcf1fb8d0b4a6ff958']],
 ]);
 const IMPLEMENTATION_HEAD = 'a413be060c93f7ddd20e7db5417e94f4166dc1e8';
 const PAGES = {runId: 31786075868, buildJobId: 94722157542, deployJobId: 94722766883};
@@ -802,6 +803,7 @@ test('locks the exact pre-G010 review namespace against add edit and delete muta
     'docs/reviews/g009-batch13.md',
     'docs/reviews/evidence/g009-batch13-stage-a-browser.json',
     'docs/reviews/evidence/g009-batch13-stage-a-production-browser.json',
+    'docs/reviews/evidence/g009-batch13-stage-b-production-browser.json',
     'docs/reviews/evidence/g010-mth07-stage-a-production-browser.json',
     'docs/reviews/evidence/g010-mth07-stage-b-production-browser.json',
   ]) assert.equal(isHistoricalReviewArtifact(currentPath), false, `${currentPath} is excluded from exact pre-G010 history`);

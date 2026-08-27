@@ -124,5 +124,32 @@ The code/security review initially reported two Important contract gaps: securit
 - Review finding totals: Critical `0`; Important `0`; Minor `0`; ⚠️ `0`.
 - Final Stage B review judgment: `READY`.
 - Stage B scope boundary: `STAGE_B`.
-- Stage B deployment status: `PENDING / NOT_RUN`.
+- Exact Stage B published head: `8c4ac2856b85375f0b1c8f29c25670ea8e8e967f`.
+- Exact Stage B Pages run: `33072843112`; workflow: `completed / success`; build job: `98519258993`; deploy job: `98520089444`.
+- Stage B production raw: `docs/reviews/evidence/g009-batch13-stage-b-production-browser.json`; `47,997` bytes; SHA-256 `93540ff26f5d7a6fddb2ca5310a838304d04afa6994788fcf1fb8d0b4a6ff958`.
+- Stage B deployment status: `SUCCESS`.
 - Stage B screenshot status: `PASS / ACCEPTED`; accepted production captures: `4/4`.
+
+## Stage B production publication
+
+- Exact published Stage B head: `8c4ac2856b85375f0b1c8f29c25670ea8e8e967f`.
+- Exact Pages workflow/run: `Verify and deploy Docusaurus to GitHub Pages`; [`33072843112`](https://github.com/sealday/tego-arch/actions/runs/33072843112); `headSha=8c4ac2856b85375f0b1c8f29c25670ea8e8e967f`; `event=push`; `status=completed`; `conclusion=success`.
+- Exact jobs: build `98519258993` `completed/success`; deploy `98520089444` `completed/success`.
+- Production HTTP probes: `8/8` HTML routes returned `200` with `text/html; charset=utf-8`; canonical SVG returned `200` with `image/svg+xml`, `35,407` bytes and SHA-256 `c5347b1bf84890cb8e72be387185f2737afefadfdb57090b4fff3d5693e156b3`, an exact reviewed-head asset match.
+- Exact-head project-status probe: HTTP `200`; `415` bytes; SHA-256 `985dd9fe7d24f341c915c7a383577e919f326efe22526b588906ca76191dcc96`; `65 / 108 / 565`.
+- STY-13 direct route probe: HTTP `404`; `9,172` bytes; SHA-256 `9aea3db7eb1cc6966780729a89421a3b1e1e0cf60dcbc7f8edc207b930bfc2de`; no published or actionable STY-13 route is claimed.
+- Stage B production raw Browser JSON: `docs/reviews/evidence/g009-batch13-stage-b-production-browser.json`; bytes: `47,997`; SHA-256: `93540ff26f5d7a6fddb2ca5310a838304d04afa6994788fcf1fb8d0b4a6ff958`.
+- Functional verdict: `PASS`; states `4/4`; wrapper interactions `16/16`; relation observations `12/12`; source observations `28/28`; STY-13 actionable total `0`.
+- Diagnostics: `37/37` deliberately paged Runtime/Log pages are complete and empty; whole-session terminal `353 -> 353`; `hasMore=false`; `truncated=false`.
+- Relation destinations used exact href direct navigation plus Browser back; no physical-click claim is made.
+- PageAssets: inventory `f7454ef5-7dfd-4a7f-bedf-1667eaa46b2c`; asset `faffe609e627d4f9`; `35,407` bytes; SHA-256 `c5347b1bf84890cb8e72be387185f2737afefadfdb57090b4fff3d5693e156b3`; bundle `1 requested / 1 downloaded / 0 failed`.
+- Screenshot evidence: `PASS / ACCEPTED`; accepted `4/4`; fallback used: `false`; fresh viewport captures honestly cover the production-analysis table section restored by browser history, not the opening or full page.
+
+| State | Bytes | SHA-256 | Judgment |
+| --- | ---: | --- | --- |
+| `desktopLight` | 160,898 | `fc5cb49ed49f502659450c841b100327c0a889009256129b3964897a85b86a9d` | `CAPTURED_ACCEPTED` |
+| `desktopDark` | 163,194 | `f7b37d7ae87b5fa2ce239d46a500f9ba50b09b84dc204bfb122844c8aa6827d3` | `CAPTURED_ACCEPTED` |
+| `mobileLight` | 38,704 | `10735fbe083f6d7786ac9c0a3d42a8772847061a1f670774800aca98412eec85` | `CAPTURED_ACCEPTED` |
+| `mobileDark` | 38,233 | `e5f5b9a77e2764366551e7e9a3174ba11df9b88763a94ff7720073094812f1b2` | `CAPTURED_ACCEPTED` |
+
+- Current release status: `STAGE_B_SUCCESS`; STY-12 is `published / complete`; STY-13 is `unpublished / pending / non-actionable`.

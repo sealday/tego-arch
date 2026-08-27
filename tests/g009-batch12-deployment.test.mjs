@@ -260,8 +260,10 @@ function assertImmediateHistory(reviewBytes = immediateReview, backlogSource = b
   assert.equal(sha256(suffix), IMMEDIATE_BACKLOG_SUFFIX_HASH, 'complete immediate STY-10 backlog suffix');
 }
 function assertFinalReleaseBaseline(source = backlog) {
-  const baseline = currentReleaseBaseline(source);
-  assert.ok(baseline.startsWith(`${FINAL_RELEASE_BASELINE_PREFIX}${IMMEDIATE_HISTORY_LABEL}`), 'Batch 12 Stage B is the current release recovery baseline');
+  const current = currentReleaseBaseline(source);
+  const marker = '此前 G009 Batch 12 历史完成基线为：';
+  const baseline = current.includes(marker) ? current.slice(current.indexOf(marker) + marker.length) : current;
+  assert.ok(baseline.startsWith(`${FINAL_RELEASE_BASELINE_PREFIX}${IMMEDIATE_HISTORY_LABEL}`), 'Batch 12 Stage B is preserved as the immediate historical recovery baseline');
   assertImmediateHistory(immediateReview, source);
 }
 function assertStageBBacklog(source = backlog) {
@@ -270,8 +272,8 @@ function assertStageBBacklog(source = backlog) {
   assert.deepEqual(sty11, [STY11_CLOSURE_LINE], 'one exact checked STY-11 closure line');
   assert.equal(sty12.length, 1, 'one canonical STY-12 backlog line');
   assert.match(sty12[0], /^- \[x\] \*\*STY-12 P1｜Micro-Frontend\*\*/u);
-  const closureBaselines = source.split(/\r?\n/u).filter((line) => line.startsWith(STAGE_B_CLOSURE_BASELINE_LABEL));
-  assert.deepEqual(closureBaselines, [`${STAGE_B_CLOSURE_BASELINE_LABEL}${FINAL_RELEASE_BASELINE_PREFIX}`], 'one exact final Batch 12 closure baseline');
+  const current = currentReleaseBaseline(source);
+  assert.ok(current.includes(`此前 G009 Batch 12 历史完成基线为：${FINAL_RELEASE_BASELINE_PREFIX}`), 'one exact historical Batch 12 closure baseline');
   assertFinalReleaseBaseline(source);
 }
 function markdownSection(source, heading) {
@@ -621,7 +623,7 @@ test('publishes the exact Stage B recovery baseline while locking immediate STY-
   }
   for (const changedCurrent of [
     backlog.replace(STAGE_B_READY_HEAD, READY_HEAD),
-    backlog.replace('deployment status 为 `SUCCESS`', 'deployment status 为 `PENDING / NOT_RUN`'),
+    backlog.replace(FINAL_RELEASE_BASELINE_PREFIX, FINAL_RELEASE_BASELINE_PREFIX.replace('deployment status 为 `SUCCESS`', 'deployment status 为 `PENDING / NOT_RUN`')),
     backlog.replace('screenshot evidence `BLOCKED / NOT_ACCEPTED`', 'screenshot evidence `PASS`'),
   ]) {
     assert.notEqual(changedCurrent, backlog, 'current baseline mutation applies');

@@ -60,12 +60,60 @@ export const STAGE_A_EVIDENCE_PAGES = Object.freeze({
   build: Object.freeze({jobId: 98509359301, status: 'completed', conclusion: 'success'}),
   deploy: Object.freeze({jobId: 98510157813, status: 'completed', conclusion: 'success'}),
 });
+export const STAGE_B_PUBLISHED_HEAD = '8c4ac2856b85375f0b1c8f29c25670ea8e8e967f';
+export const STAGE_B_PRODUCTION_PAGES = Object.freeze({
+  workflow: 'Verify and deploy Docusaurus to GitHub Pages',
+  runId: 33072843112,
+  runUrl: 'https://github.com/sealday/tego-arch/actions/runs/33072843112',
+  event: 'push',
+  headSha: STAGE_B_PUBLISHED_HEAD,
+  status: 'completed',
+  conclusion: 'success',
+  build: Object.freeze({jobId: 98519258993, status: 'completed', conclusion: 'success'}),
+  deploy: Object.freeze({jobId: 98520089444, status: 'completed', conclusion: 'success'}),
+});
+export const STAGE_B_PRODUCTION_RAW_BYTES = 47_997;
+export const STAGE_B_PRODUCTION_RAW_SHA256 = '93540ff26f5d7a6fddb2ca5310a838304d04afa6994788fcf1fb8d0b4a6ff958';
+const STAGE_B_PRODUCTION_ROUTES = Object.freeze([
+  Object.freeze({path: '/tego-arch/', bytes: 17_310, sha256: 'e9e3610a3acf73a93bc5529076119cf04b10f5a89a43da53b5e20cf905698443'}),
+  Object.freeze({path: '/tego-arch/styles', bytes: 23_854, sha256: '0ca62370045e6e91d28e373d6865160829241615c46b5453218d1264ee7a855b'}),
+  Object.freeze({path: '/tego-arch/styles/sty-03', bytes: 41_952, sha256: '235a3fe3a23fc4ab9b6ab7a22fb81b8c6b2dc31c99d0103a07eea73eac0d7164'}),
+  Object.freeze({path: '/tego-arch/styles/sty-10', bytes: 48_594, sha256: '2264beaa4cb9666588da3db7d3ae3fa96f018dce86da81eca0ea3d0d37fd074a'}),
+  Object.freeze({path: '/tego-arch/styles/sty-12', bytes: 46_875, sha256: 'c4ba329039501faf85081948dd54ddc59170d6da94769e1ee288b4c066954da3'}),
+  Object.freeze({path: '/tego-arch/cases', bytes: 47_702, sha256: 'c6d146bd7456bb68396727371e81bc03a6c513a3acc6c61b80d8cbfeabd3d363'}),
+  Object.freeze({path: '/tego-arch/cases/micro-frontends-single-spa', bytes: 62_040, sha256: '5f68d60e0ac4fb8e0787ac57f2d66d698ec99641534768f06b0ad5062ff23d94'}),
+  Object.freeze({path: '/tego-arch/references', bytes: 23_533, sha256: 'e07c213f24c3bbe4f60a663a4c820165c2c59ed2261bee65024747830b0a7c90'}),
+]);
+const diagnosticPage = (scope, afterSequence, cursor) => Object.freeze({scope, afterSequence, cursor, count: 0, hasMore: false, truncated: false});
+const STAGE_B_DIAGNOSTICS = Object.freeze([
+  diagnosticPage('desktopLight:prepare', 13, 26), diagnosticPage('desktopLight:interactions', 26, 26),
+  diagnosticPage('desktopLight:relation0:destination', 26, 38), diagnosticPage('desktopLight:relation0:return', 38, 50),
+  diagnosticPage('desktopLight:relation1:destination', 50, 62), diagnosticPage('desktopLight:relation1:return', 62, 74),
+  diagnosticPage('desktopLight:relation2:destination', 74, 86), diagnosticPage('desktopLight:relation2:return', 86, 98),
+  diagnosticPage('desktopLight:screenshot', 98, 98),
+  diagnosticPage('desktopDark:prepare', 98, 110), diagnosticPage('desktopDark:interactions', 110, 110),
+  diagnosticPage('desktopDark:relation0:destination', 110, 122), diagnosticPage('desktopDark:relation0:return', 122, 134),
+  diagnosticPage('desktopDark:relation1:destination', 134, 146), diagnosticPage('desktopDark:relation1:return', 146, 158),
+  diagnosticPage('desktopDark:relation2:destination', 158, 170), diagnosticPage('desktopDark:relation2:return', 170, 182),
+  diagnosticPage('desktopDark:screenshot', 182, 182),
+  diagnosticPage('mobileLight:prepare', 182, 195), diagnosticPage('mobileLight:interactions', 195, 195),
+  diagnosticPage('mobileLight:relation0:destination', 195, 207), diagnosticPage('mobileLight:relation0:return', 207, 219),
+  diagnosticPage('mobileLight:relation1:destination', 219, 231), diagnosticPage('mobileLight:relation1:return', 231, 243),
+  diagnosticPage('mobileLight:relation2:destination', 243, 255), diagnosticPage('mobileLight:relation2:return', 255, 267),
+  diagnosticPage('mobileLight:screenshot', 267, 267),
+  diagnosticPage('mobileDark:prepare', 267, 281), diagnosticPage('mobileDark:interactions', 281, 281),
+  diagnosticPage('mobileDark:relation0:destination', 281, 293), diagnosticPage('mobileDark:relation0:return', 293, 305),
+  diagnosticPage('mobileDark:relation1:destination', 305, 317), diagnosticPage('mobileDark:relation1:return', 317, 329),
+  diagnosticPage('mobileDark:relation2:destination', 329, 341), diagnosticPage('mobileDark:relation2:return', 341, 353),
+  diagnosticPage('mobileDark:screenshot', 353, 353), diagnosticPage('whole-session terminal', 353, 353),
+]);
 export const STAGE_A_PRODUCTION_SCREENSHOTS = Object.freeze([
   Object.freeze({state: 'desktopLight', bytes: 160_898, sha256: 'fc5cb49ed49f502659450c841b100327c0a889009256129b3964897a85b86a9d'}),
   Object.freeze({state: 'desktopDark', bytes: 163_194, sha256: 'f7b37d7ae87b5fa2ce239d46a500f9ba50b09b84dc204bfb122844c8aa6827d3'}),
   Object.freeze({state: 'mobileLight', bytes: 38_704, sha256: '10735fbe083f6d7786ac9c0a3d42a8772847061a1f670774800aca98412eec85'}),
   Object.freeze({state: 'mobileDark', bytes: 38_233, sha256: 'e5f5b9a77e2764366551e7e9a3174ba11df9b88763a94ff7720073094812f1b2'}),
 ]);
+const STAGE_B_SCREENSHOTS = STAGE_A_PRODUCTION_SCREENSHOTS;
 const STAGE_A_PRODUCTION_DIAGNOSTICS = Object.freeze([
   Object.freeze({scope: 'desktopLight', afterSequence: 13, cursor: 133, count: 0, hasMore: false, truncated: false}),
   Object.freeze({scope: 'desktopDark', afterSequence: 133, cursor: 216, count: 0, hasMore: false, truncated: false}),
@@ -135,7 +183,9 @@ function currentReleaseBaseline(source) {
 }
 function assertImmediateBatch12History(reviewBytes = immediateReview, backlogSource = backlog) {
   assert.equal(sha256(reviewBytes), IMMEDIATE_REVIEW_HASH, 'complete immediate Batch 12 review bytes');
-  const baseline = currentReleaseBaseline(backlogSource);
+  const current = currentReleaseBaseline(backlogSource);
+  const marker = '此前 G009 Batch 12 历史完成基线为：';
+  const baseline = current.includes(marker) ? current.slice(current.indexOf(marker) + marker.length) : current;
   assert.equal(Buffer.byteLength(baseline), IMMEDIATE_BASELINE_BYTES, 'complete immediate Batch 12 baseline bytes');
   assert.equal(sha256(baseline), IMMEDIATE_BASELINE_HASH, 'complete immediate Batch 12 baseline SHA-256');
   assert.match(baseline, /^2026-08-26 G009 Batch 12 已完成 STY-11/u);
@@ -173,12 +223,45 @@ const READY_STAGE_B_REVIEW_LINES = Object.freeze([
   '- Review finding totals: Critical `0`; Important `0`; Minor `0`; ⚠️ `0`.',
   '- Final Stage B review judgment: `READY`.',
   '- Stage B scope boundary: `STAGE_B`.',
-  '- Stage B deployment status: `PENDING / NOT_RUN`.',
+  `- Exact Stage B published head: \`${STAGE_B_PUBLISHED_HEAD}\`.`,
+  `- Exact Stage B Pages run: \`${STAGE_B_PRODUCTION_PAGES.runId}\`; workflow: \`${STAGE_B_PRODUCTION_PAGES.status} / ${STAGE_B_PRODUCTION_PAGES.conclusion}\`; build job: \`${STAGE_B_PRODUCTION_PAGES.build.jobId}\`; deploy job: \`${STAGE_B_PRODUCTION_PAGES.deploy.jobId}\`.`,
+  `- Stage B production raw: \`${STAGE_B_PRODUCTION_RAW}\`; \`${STAGE_B_PRODUCTION_RAW_BYTES.toLocaleString('en-US')}\` bytes; SHA-256 \`${STAGE_B_PRODUCTION_RAW_SHA256}\`.`,
+  '- Stage B deployment status: `SUCCESS`.',
   '- Stage B screenshot status: `PASS / ACCEPTED`; accepted production captures: `4/4`.',
 ]);
 function assertReadyStageBCandidate(source = review) {
   assert.equal(markdownSection(source, 'Stage B closure candidate'), READY_STAGE_B_REVIEW_LINES.join('\n'), 'exact reviewed Stage B candidate section');
   assert.equal(source.split('## Stage B closure candidate').length - 1, 1, 'one Stage B candidate section');
+}
+const FINAL_BASELINE_PREFIX = `2026-08-27 G009 Batch 13 已完成 STY-12，Stage B 发布基线为 [\`${STAGE_B_PUBLISHED_HEAD}\`](https://github.com/sealday/tego-arch/commit/${STAGE_B_PUBLISHED_HEAD})，Pages run [\`${STAGE_B_PRODUCTION_PAGES.runId}\`](${STAGE_B_PRODUCTION_PAGES.runUrl})，exact \`headSha=${STAGE_B_PUBLISHED_HEAD}\`、\`event=push\`、\`status=completed\`、\`conclusion=success\`，build job \`${STAGE_B_PRODUCTION_PAGES.build.jobId}\`、deploy job \`${STAGE_B_PRODUCTION_PAGES.deploy.jobId}\`；2026-08-27 Stage B production HTTP probes \`8/8\`，live route \`/styles/sty-12\` 与 \`/img/diagrams/sty-12-micro-frontend-commerce-runtime.svg\` 均为 HTTP \`200\`，live SVG SHA-256 \`${SVG_SHA256}\` 与 reviewed asset exact match。Production Browser states \`4/4\`、wrapper interactions \`16/16\`、relation destination/H1/return \`12/12\`、exact source destinations \`28/28\`，每个状态 STY-13 actionable count \`0\` 且 diagnostics \`37/37\` 完整为零；raw \`${STAGE_B_PRODUCTION_RAW}\` 为 \`${STAGE_B_PRODUCTION_RAW_BYTES.toLocaleString('en-US')}\` bytes / SHA-256 \`${STAGE_B_PRODUCTION_RAW_SHA256}\`，Stage B production functional verdict \`PASS\`，screenshot evidence \`PASS / ACCEPTED\`（\`4/4\`，fallback \`false\`，production-analysis table-section viewport scope）。Stage B closure projection 为 65 个已完成主题、108 篇内容文档与 565 个受治理来源，持久故事进度仍为 \`8 / 20\`，当前 G009，下一项为 STY-13，STY-12 为 published/complete，STY-13 为 unpublished/pending/nonactionable；Stage B 三个独立 review slots 与 final readiness 均为 \`READY\`，findings \`0\`，deployment status 为 \`SUCCESS\`。`;
+function assertFinalStageBReview(source = review, rawBytes = stageBProductionRaw) {
+  assertReadyStageBCandidate(source);
+  assert.equal(rawBytes?.length, STAGE_B_PRODUCTION_RAW_BYTES, 'exact Stage B raw bytes');
+  assert.equal(rawBytes && sha256(rawBytes), STAGE_B_PRODUCTION_RAW_SHA256, 'exact Stage B raw SHA-256');
+  const section = markdownSection(source, 'Stage B production publication');
+  for (const literal of [
+    `- Exact published Stage B head: \`${STAGE_B_PUBLISHED_HEAD}\`.`,
+    `- Exact Pages workflow/run: \`${STAGE_B_PRODUCTION_PAGES.workflow}\`; [\`${STAGE_B_PRODUCTION_PAGES.runId}\`](${STAGE_B_PRODUCTION_PAGES.runUrl}); \`headSha=${STAGE_B_PUBLISHED_HEAD}\`; \`event=push\`; \`status=completed\`; \`conclusion=success\`.`,
+    `- Exact jobs: build \`${STAGE_B_PRODUCTION_PAGES.build.jobId}\` \`completed/success\`; deploy \`${STAGE_B_PRODUCTION_PAGES.deploy.jobId}\` \`completed/success\`.`,
+    `- Stage B production raw Browser JSON: \`${STAGE_B_PRODUCTION_RAW}\`; bytes: \`${STAGE_B_PRODUCTION_RAW_BYTES.toLocaleString('en-US')}\`; SHA-256: \`${STAGE_B_PRODUCTION_RAW_SHA256}\`.`,
+    '- Functional verdict: `PASS`; states `4/4`; wrapper interactions `16/16`; relation observations `12/12`; source observations `28/28`; STY-13 actionable total `0`.',
+    '- Diagnostics: `37/37` deliberately paged Runtime/Log pages are complete and empty; whole-session terminal `353 -> 353`; `hasMore=false`; `truncated=false`.',
+    '- Relation destinations used exact href direct navigation plus Browser back; no physical-click claim is made.',
+    `- PageAssets: inventory \`f7454ef5-7dfd-4a7f-bedf-1667eaa46b2c\`; asset \`faffe609e627d4f9\`; \`${SVG_BYTES.toLocaleString('en-US')}\` bytes; SHA-256 \`${SVG_SHA256}\`; bundle \`1 requested / 1 downloaded / 0 failed\`.`,
+    '- Screenshot evidence: `PASS / ACCEPTED`; accepted `4/4`; fallback used: `false`; fresh viewport captures honestly cover the production-analysis table section restored by browser history, not the opening or full page.',
+    '- Current release status: `STAGE_B_SUCCESS`; STY-12 is `published / complete`; STY-13 is `unpublished / pending / non-actionable`.',
+  ]) assert.ok(section.includes(literal), `Stage B production review literal: ${literal}`);
+  assert.doesNotMatch(section, /PENDING|NOT_RUN|BLOCKED|FULL_PAGE|OPENING|physically clicked/u);
+}
+function assertFinalRecoveryBaseline(source = backlog) {
+  const baseline = currentReleaseBaseline(source);
+  const marker = '此前 G009 Batch 12 历史完成基线为：';
+  assert.ok(baseline.startsWith(`${FINAL_BASELINE_PREFIX}${marker}`), 'exact current Stage B recovery baseline prefix');
+  const history = baseline.slice((FINAL_BASELINE_PREFIX + marker).length);
+  assert.equal(Buffer.byteLength(history), IMMEDIATE_BASELINE_BYTES, 'complete Batch 12 history suffix bytes');
+  assert.equal(sha256(history), IMMEDIATE_BASELINE_HASH, 'complete Batch 12 history suffix SHA-256');
+  const candidates = source.split(/\r?\n/u).filter((line) => /^- \*\*G009 Batch .* Stage B 当前关闭候选：\*\*/u.test(line));
+  assert.deepEqual(candidates, [`- **G009 Batch 13 Stage B 当前关闭候选：** ${FINAL_BASELINE_PREFIX}`]);
 }
 function assertReview(source = review, rawBytes = raw) {
   assert.ok(source, `${REVIEW} is missing; record real reviews only after Browser evidence exists`);
@@ -456,6 +539,89 @@ function assertStageAProductionEvidence(value) {
   }
 }
 
+function assertStageBProductionEvidence(value) {
+  assert.ok(value, `${STAGE_B_PRODUCTION_RAW} is missing; capture fresh Stage B production evidence`);
+  exactKeys(value, ['implementationHead', 'pages', 'probes', 'projectStatus', 'collection', 'stateOrder', 'states', 'functionalSummary', 'screenshotEvidence', 'projection'], 'Stage B production evidence');
+  assert.equal(value.implementationHead, STAGE_B_PUBLISHED_HEAD, 'exact published Stage B head');
+  assert.deepEqual(value.pages, STAGE_B_PRODUCTION_PAGES, 'exact Stage B Pages run/jobs');
+  exactKeys(value.probes, ['routes', 'svg', 'sty13'], 'Stage B probes');
+  assert.deepEqual(value.probes.routes, STAGE_B_PRODUCTION_ROUTES.map((route) => ({...route, status: 200, contentType: 'text/html; charset=utf-8'})), 'exact Stage B route identities');
+  assert.deepEqual(value.probes.svg, {
+    path: '/tego-arch/img/diagrams/sty-12-micro-frontend-commerce-runtime.svg',
+    url: 'https://sealday.github.io/tego-arch/img/diagrams/sty-12-micro-frontend-commerce-runtime.svg',
+    status: 200, contentType: 'image/svg+xml', bytes: SVG_BYTES, sha256: SVG_SHA256, exactHeadAssetMatch: true,
+  });
+  assert.deepEqual(value.probes.sty13, {
+    path: '/tego-arch/styles/sty-13', status: 404, contentType: 'text/html; charset=utf-8', bytes: 9_172,
+    sha256: '9aea3db7eb1cc6966780729a89421a3b1e1e0cf60dcbc7f8edc207b930bfc2de',
+  });
+  assert.deepEqual(value.projectStatus, {
+    url: `https://raw.githubusercontent.com/sealday/tego-arch/${STAGE_B_PUBLISHED_HEAD}/src/generated/project-status.json`,
+    status: 200, bytes: 415, sha256: '985dd9fe7d24f341c915c7a383577e919f326efe22526b588906ca76191dcc96',
+    completedTopics: 65, contentDocuments: 108, governedSources: 565,
+  });
+  exactKeys(value.collection, ['browser', 'fresh', 'session', 'servedUrl', 'build', 'navigationMethod', 'observedSvgAsset', 'diagnosticContinuity'], 'Stage B collection');
+  assert.deepEqual({browser: value.collection.browser, fresh: value.collection.fresh, session: value.collection.session}, {
+    browser: 'Codex in-app Browser only', fresh: true, session: 'fresh Stage B production session; Stage A tab and evidence were not reused',
+  });
+  assert.equal(value.collection.servedUrl, 'https://sealday.github.io/tego-arch/styles/sty-12');
+  assert.equal(value.collection.build, `GitHub Pages exact Stage B head ${STAGE_B_PUBLISHED_HEAD}; push run ${STAGE_B_PRODUCTION_PAGES.runId}; build job ${STAGE_B_PRODUCTION_PAGES.build.jobId}; deploy job ${STAGE_B_PRODUCTION_PAGES.deploy.jobId}`);
+  assert.equal(value.collection.navigationMethod, 'Relation destinations were opened by exact href direct navigation and returned with Browser back; no physical link click is claimed.');
+  assert.deepEqual(value.collection.observedSvgAsset, {
+    source: 'production Browser pageAssets bundle', inventoryId: 'f7454ef5-7dfd-4a7f-bedf-1667eaa46b2c', assetId: 'faffe609e627d4f9',
+    contentType: 'image/svg+xml', bytes: SVG_BYTES, sha256: SVG_SHA256, viewBox: '0 0 2400 3600', requested: 1, downloaded: 1, failed: 0,
+  });
+  assert.deepEqual(value.collection.diagnosticContinuity, STAGE_B_DIAGNOSTICS, 'exact 37-page Stage B diagnostic continuity');
+  assert.deepEqual(value.stateOrder, STATES);
+  exactKeys(value.states, STATES, 'Stage B states');
+  for (const [stateIndex, stateName] of STATES.entries()) {
+    const state = value.states[stateName];
+    exactKeys(state, ['theme', 'viewport', 'geometry', 'interactions', 'relations', 'logs', 'diagnostics'], `${stateName} Stage B state`);
+    const mobile = stateName.startsWith('mobile');
+    assert.deepEqual(state.viewport, mobile ? {width: 390, height: 844} : {width: 1440, height: 1000});
+    assert.deepEqual(state.geometry.page, mobile ? {clientWidth: 390, scrollWidth: 390} : {clientWidth: 1440, scrollWidth: 1440});
+    assert.deepEqual(state.geometry.wrappers.map(({clientWidth, scrollWidth}) => [clientWidth, scrollWidth]), mobile
+      ? [[358, 358], [358, 800], [358, 358], [358, 358]]
+      : [[800, 800], [800, 800], [800, 800], [800, 800]]);
+    assert.deepEqual(state.interactions.map(({delta}) => delta), mobile ? [0, 40, 0, 0] : [0, 0, 0, 0]);
+    for (const interaction of state.interactions) {
+      assert.equal(interaction.before.focus, true); assert.equal(interaction.before.focusVisible, true);
+      assert.equal(interaction.after.focus, true); assert.equal(interaction.after.focusVisible, true);
+      assert.equal(interaction.before.outlineWidth, '3px'); assert.equal(interaction.after.outlineWidth, '3px');
+    }
+    assert.deepEqual(state.relations.map(({href, expectedH1}) => [href, expectedH1]), RELATIONS);
+    assert.ok(state.relations.every(({h1, expectedH1, visibleCount, returnedToArticle}) => h1 === expectedH1 && visibleCount === 1 && returnedToArticle === true));
+    assert.deepEqual(state.geometry.sources, SOURCE_HREFS.map((href) => ({href, target: '_blank', rel: 'noopener noreferrer'})));
+    assert.equal(state.geometry.sty13, 0);
+    assert.deepEqual(state.logs, []);
+    const expectedPages = STAGE_B_DIAGNOSTICS.filter(({scope}) => scope.startsWith(`${stateName}:`));
+    assert.deepEqual(state.diagnostics, {events: [], pages: expectedPages, hasMore: false, truncated: false});
+    assert.deepEqual(state.geometry.svg, {
+      loaded: true, viewBox: '0 0 2400 3600', sourceWidth: 2400, sourceHeight: 3600, naturalWidth: 100, naturalHeight: 150,
+      renderedWidth: 800, renderedHeight: 1200,
+      src: 'https://sealday.github.io/tego-arch/assets/images/sty-12-micro-frontend-commerce-runtime-f59e777fca88537fe0a140fab619968f.svg',
+      observedAssetBytes: SVG_BYTES,
+    });
+    assert.equal(state.theme, stateIndex % 2 === 0 ? 'light' : 'dark');
+  }
+  assert.deepEqual(value.functionalSummary, {
+    status: 'PASS', states: 4, wrapperInteractions: 16, relationObservations: 12, sourceObservations: 28,
+    sty13ActionableTotal: 0, warningErrorLogs: 0, runtimeAndLogEvents: 0, diagnosticPages: 37,
+    diagnosticPagesTerminal: true, diagnosticsTruncated: false,
+  });
+  assert.deepEqual(value.screenshotEvidence, {
+    status: 'PASS / ACCEPTED', attempted: 4, accepted: 4, fallbackUsed: false,
+    storage: 'Codex in-app Browser captures retained in the task conversation; no substituted surface or repository screenshot file.',
+    captureScope: 'Faithful viewport captures of the production-analysis table section reached through browser history restoration; not opening or full-page screenshots.',
+    attempts: STAGE_B_SCREENSHOTS.map((shot) => ({...shot, status: 'CAPTURED_ACCEPTED', reason: 'Fresh Stage B viewport capture inspected at original dimensions; content, theme, crop and typography matched the visible production-analysis table section restored by browser history.'})),
+  });
+  assert.deepEqual(value.projection, {
+    completedTopics: 65, contentDocuments: 108, governedSources: 565,
+    sty12: {published: true, status: 'complete'},
+    sty13: {published: false, status: 'pending', actionable: false},
+  });
+}
+
 const [review, raw, immediateReview, backlog, status, manifest, documents, svgBytes] = await Promise.all([
   optional(REVIEW, 'utf8'),
   optional(LOCAL_RAW),
@@ -467,6 +633,7 @@ const [review, raw, immediateReview, backlog, status, manifest, documents, svgBy
   required(SVG),
 ]);
 const productionRaw = await optional(PRODUCTION_RAW);
+const stageBProductionRaw = await optional(STAGE_B_PRODUCTION_RAW);
 
 test('preserves immutable Batch 12 history and closes only STY-12 in the Stage B projection', () => {
   assertImmediateBatch12History();
@@ -503,7 +670,7 @@ test('binds the exact Stage B candidate to three independent zero-finding verdic
   assertReadyStageBCandidate();
 });
 
-test('rejects wrong Stage B heads, nonzero findings, stale PENDING and fabricated deployment', () => {
+test('rejects wrong Stage B heads, nonzero findings, stale PENDING and deployment mutations', () => {
   assertReadyStageBCandidate();
   for (const [before, after] of [
     [`Exact Stage B candidate tree identity: \`${STAGE_B_REVIEWED_HEAD}\`.`, `Exact Stage B candidate tree identity: \`${'0'.repeat(40)}\`.`],
@@ -512,7 +679,7 @@ test('rejects wrong Stage B heads, nonzero findings, stale PENDING and fabricate
     ['Independent Stage B architecture/invariant review: `CLEAR / READY`; blockers: `0`.', 'Independent Stage B architecture/invariant review: `CLEAR / READY`; blockers: `1`.'],
     ['Review finding totals: Critical `0`; Important `0`; Minor `0`; ⚠️ `0`.', 'Review finding totals: Critical `0`; Important `1`; Minor `0`; ⚠️ `0`.'],
     ['Final Stage B review judgment: `READY`.', 'Final Stage B review judgment: `PENDING`.'],
-    ['Stage B deployment status: `PENDING / NOT_RUN`.', 'Stage B deployment status: `SUCCESS`.'],
+    ['Stage B deployment status: `SUCCESS`.', 'Stage B deployment status: `PENDING / NOT_RUN`.'],
     ['Stage B screenshot status: `PASS / ACCEPTED`; accepted production captures: `4/4`.', 'Stage B screenshot status: `PASS`; accepted production captures: `0/4`.'],
   ]) {
     const mutated = review.replace(before, after);
@@ -616,6 +783,59 @@ test('requires exact-head Stage A Pages, HTTP/SVG probes and fresh production Br
   assert.equal(productionRaw && sha256(productionRaw), STAGE_A_PRODUCTION_RAW_SHA256, `${PRODUCTION_RAW} exact SHA-256`);
   assertStageAProductionEvidence(productionRaw && JSON.parse(productionRaw));
   assertStageAProductionReview();
+});
+
+test('requires exact-head Stage B Pages, probes, fresh Browser evidence and final projection', () => {
+  assertStageBProductionEvidence(stageBProductionRaw && JSON.parse(stageBProductionRaw));
+  assertFinalStageBReview();
+  assertFinalRecoveryBaseline();
+});
+
+test('rejects Stage B production identity, diagnostics, semantics, screenshot and projection mutations', {skip: !stageBProductionRaw}, () => {
+  const evidence = JSON.parse(stageBProductionRaw);
+  assertStageBProductionEvidence(evidence);
+  const mutations = [
+    (copy) => { copy.implementationHead = '0'.repeat(40); },
+    (copy) => { copy.pages.runId += 1; },
+    (copy) => { copy.probes.routes[4].sha256 = '0'.repeat(64); },
+    (copy) => { copy.probes.svg.exactHeadAssetMatch = false; },
+    (copy) => { copy.probes.sty13.status = 200; },
+    (copy) => { copy.projectStatus.completedTopics = 64; },
+    (copy) => { copy.collection.fresh = false; },
+    (copy) => { copy.collection.navigationMethod = 'Relations were physically clicked.'; },
+    (copy) => { copy.collection.diagnosticContinuity[2].cursor += 1; },
+    (copy) => { copy.states.mobileDark.diagnostics.pages[0].truncated = true; },
+    (copy) => { copy.states.mobileLight.interactions[1].delta = 0; },
+    (copy) => { copy.states.desktopLight.relations[0].returnedToArticle = false; },
+    (copy) => { copy.states.desktopDark.geometry.sources[0].target = '_self'; },
+    (copy) => { copy.states.mobileDark.geometry.sty13 = 1; },
+    (copy) => { copy.screenshotEvidence.captureScope = 'Opening full-page screenshots.'; },
+    (copy) => { copy.screenshotEvidence.attempts[0].sha256 = '0'.repeat(64); },
+    (copy) => { copy.projection.sty12.status = 'pending'; },
+  ];
+  for (const mutate of mutations) {
+    const copy = structuredClone(evidence); mutate(copy);
+    assert.throws(() => assertStageBProductionEvidence(copy), assert.AssertionError);
+  }
+});
+
+test('rejects Stage B final review and recovery-baseline mutations', () => {
+  assertFinalStageBReview();
+  assertFinalRecoveryBaseline();
+  for (const [before, after] of [
+    [`Exact published Stage B head: \`${STAGE_B_PUBLISHED_HEAD}\`.`, `Exact published Stage B head: \`${'0'.repeat(40)}\`.`],
+    ['Functional verdict: `PASS`', 'Functional verdict: `PENDING`'],
+    ['Diagnostics: `37/37`', 'Diagnostics: `36/37`'],
+    ['no physical-click claim is made.', 'relations were physically clicked.'],
+    ['not the opening or full page.', 'Screenshot capture scope: `FULL_PAGE`.'],
+    ['Current release status: `STAGE_B_SUCCESS`', 'Current release status: `STAGE_B_NOT_RUN`'],
+  ]) {
+    const mutated = review.replace(before, after);
+    assert.notEqual(mutated, review, `${before} review mutation applies`);
+    assert.throws(() => assertFinalStageBReview(mutated), assert.AssertionError);
+  }
+  const baseline = currentReleaseBaseline(backlog);
+  assert.throws(() => assertFinalRecoveryBaseline(backlog.replace(baseline, `${baseline}x`)), assert.AssertionError);
 });
 
 test('rejects Stage A production identity, probe, Browser, diagnostic, interaction and screenshot mutations', {skip: !productionRaw}, () => {
