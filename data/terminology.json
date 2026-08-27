@@ -2565,6 +2565,159 @@
       ],
       "note": "智能体循环围绕证据充分性反复检索、阅读、评估并作答或拒答的具象。",
       "order": 1860
+    },
+    {
+      "id": "planner-executor",
+      "canonical_zh": "规划者–执行者",
+      "english": "Planner–Executor",
+      "acronym": null,
+      "kind": "translated-term",
+      "first_use": "规划者–执行者（Planner–Executor）",
+      "subsequent_use": [
+        "规划者–执行者"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [
+        "Planner–Executor"
+      ],
+      "note": "把候选步骤规划与受限工具执行分开，并以版本、验证与停止合同连接两者。",
+      "order": 1870
+    },
+    {
+      "id": "agent-goal",
+      "canonical_zh": "智能体目标节点",
+      "english": "Goal",
+      "acronym": null,
+      "kind": "translated-term",
+      "first_use": "智能体目标节点（Goal）",
+      "subsequent_use": [
+        "智能体目标节点"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [
+        "Goal"
+      ],
+      "note": "智能体运行开始时由调用者给出的期望结果与硬约束。",
+      "order": 1880
+    },
+    {
+      "id": "agent-planner",
+      "canonical_zh": "规划者节点",
+      "english": "Planner",
+      "acronym": null,
+      "kind": "translated-term",
+      "first_use": "规划者节点（Planner）",
+      "subsequent_use": [
+        "规划者节点"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [
+        "Planner"
+      ],
+      "note": "依据目标、约束与观察提出候选步骤的控制角色。",
+      "order": 1890
+    },
+    {
+      "id": "versioned-plan",
+      "canonical_zh": "版本化计划节点",
+      "english": "Versioned plan",
+      "acronym": null,
+      "kind": "translated-term",
+      "first_use": "版本化计划节点（Versioned plan）",
+      "subsequent_use": [
+        "版本化计划节点"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [
+        "Versioned plan"
+      ],
+      "note": "带稳定版本与步骤身份、可被陈旧检测拒绝的候选执行计划。",
+      "order": 1900
+    },
+    {
+      "id": "agent-executor",
+      "canonical_zh": "执行者节点",
+      "english": "Executor",
+      "acronym": null,
+      "kind": "translated-term",
+      "first_use": "执行者节点（Executor）",
+      "subsequent_use": [
+        "执行者节点"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [
+        "Executor"
+      ],
+      "note": "在单步范围与最小权限内调用工具并返回观察的受限角色。",
+      "order": 1910
+    },
+    {
+      "id": "result-validator",
+      "canonical_zh": "结果验证者节点",
+      "english": "Result validator",
+      "acronym": null,
+      "kind": "translated-term",
+      "first_use": "结果验证者节点（Result validator）",
+      "subsequent_use": [
+        "结果验证者节点"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [
+        "Result validator"
+      ],
+      "note": "把结构化观察同步骤预期和权威任务状态比较的角色。",
+      "order": 1920
+    },
+    {
+      "id": "agent-continue-branch",
+      "canonical_zh": "继续分支",
+      "english": "continue",
+      "acronym": null,
+      "kind": "translated-term",
+      "first_use": "继续分支（continue）",
+      "subsequent_use": [
+        "继续分支"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [
+        "continue"
+      ],
+      "note": "结果验证后在当前计划版本中领取下一步的控制分支。",
+      "order": 1930
+    },
+    {
+      "id": "agent-replan-branch",
+      "canonical_zh": "重规划分支",
+      "english": "replan",
+      "acronym": null,
+      "kind": "translated-term",
+      "first_use": "重规划分支（replan）",
+      "subsequent_use": [
+        "重规划分支"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [
+        "replan"
+      ],
+      "note": "在剩余预算内依据新观察生成新计划版本的控制分支。",
+      "order": 1940
+    },
+    {
+      "id": "agent-stop-branch",
+      "canonical_zh": "规划执行停止分支",
+      "english": "stop",
+      "acronym": null,
+      "kind": "translated-term",
+      "first_use": "规划执行停止分支（stop）",
+      "subsequent_use": [
+        "规划执行停止分支"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [
+        "stop"
+      ],
+      "note": "把成功、拒绝、预算耗尽或需人工处置归入显式终态的控制分支。",
+      "order": 1950
     }
   ]
 }

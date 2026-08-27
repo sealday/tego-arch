@@ -161,6 +161,36 @@ const agenticRagSourceContracts = [
     healthAttemptAt: '2026-08-26T18:19:10.000Z',
   },
 ];
+const plannerExecutorArticlePath = 'content/patterns/agt-p-03-planner-executor.mdx';
+const plannerExecutorMermaidAccTitle = '规划者–执行者版本化计划、重规划与安全停止控制流';
+const plannerExecutorNodes = new Map([
+  ['GOAL', ['智能体目标节点（Goal）']],
+  ['PLANNER', ['规划者节点（Planner）']],
+  ['VERSIONED_PLAN', ['版本化计划节点（Versioned plan）']],
+  ['EXECUTOR', ['执行者节点（Executor）']],
+  ['RESULT_VALIDATOR', ['结果验证者节点（Result validator）']],
+  ['REPLAN_BUDGET', ['重规划预算门']],
+  ['UNKNOWN_SIDE_EFFECT', ['未知副作用']],
+  ['SAFE_STOP', ['安全停止']],
+]);
+const plannerExecutorEdges = [
+  ['GOAL', 'PLANNER', null],
+  ['PLANNER', 'VERSIONED_PLAN', null],
+  ['VERSIONED_PLAN', 'EXECUTOR', null],
+  ['EXECUTOR', 'RESULT_VALIDATOR', null],
+  ['EXECUTOR', 'UNKNOWN_SIDE_EFFECT', '结果未知'],
+  ['RESULT_VALIDATOR', 'VERSIONED_PLAN', '继续分支（continue）'],
+  ['RESULT_VALIDATOR', 'REPLAN_BUDGET', '重规划分支（replan）'],
+  ['RESULT_VALIDATOR', 'SAFE_STOP', '规划执行停止分支（stop）'],
+  ['REPLAN_BUDGET', 'PLANNER', '预算可用'],
+  ['REPLAN_BUDGET', 'SAFE_STOP', '预算耗尽'],
+  ['UNKNOWN_SIDE_EFFECT', 'SAFE_STOP', null],
+];
+const plannerExecutorSourceIds = [
+  'src-anthropic-building-effective-agents',
+  'src-openai-practical-guide-building-agents',
+  'src-github-27d330c0760f',
+];
 const markdownParser = unified().use(remarkParse).use(remarkGfm).use(remarkMdx);
 
 const registry = JSON.parse(
@@ -566,6 +596,140 @@ function parseAgenticRagMermaid(mermaid) {
     labelsById: new Map([...labelsById].map(([id, labels]) => [id, [...labels].sort()])),
     edges,
   };
+}
+
+function parsePlannerExecutorMermaid(mermaid) {
+  const labelsById = new Map();
+  const edges = [];
+  let headerSeen = false;
+  let accTitle = null;
+  const nodePattern = '[A-Z][A-Z_]*(?:\\["[^"\\n]+"\\])?';
+  const nodeSegment = /^([A-Z][A-Z_]*)(?:\["([^"\n]+)"\])?$/u;
+  const edgeStatement = new RegExp(
+    `^${nodePattern}(?:\\s*-->(?:\\|[^|\\n]+\\|)?\\s*${nodePattern})+$`,
+    'u',
+  );
+
+  for (const line of mermaid.split(/\r?\n/u)) {
+    const statement = line.trim();
+    if (!statement) continue;
+    if (!headerSeen && statement === 'flowchart TB') {
+      headerSeen = true;
+      continue;
+    }
+    if (statement.startsWith('accTitle:')) {
+      assert.equal(accTitle, null, 'Planner–Executor Mermaid has one accTitle declaration');
+      accTitle = statement.slice('accTitle:'.length).trim();
+      continue;
+    }
+    assert.match(statement, edgeStatement, `unparsed Planner–Executor Mermaid: ${line}`);
+    const parts = statement.split(/\s*-->(?:\|([^|\n]+)\|)?\s*/u);
+    const nodeSegments = [];
+    const edgeLabels = [];
+    for (let index = 0; index < parts.length; index += 2) {
+      nodeSegments.push(parts[index]);
+      if (index + 1 < parts.length) edgeLabels.push(parts[index + 1] ?? null);
+    }
+    const nodeIds = nodeSegments.map((segment) => {
+      const match = segment.match(nodeSegment);
+      assert.ok(match, `unparsed Planner–Executor node: ${segment}`);
+      const [, id, label] = match;
+      if (label !== undefined) {
+        const knownLabels = labelsById.get(id) ?? new Set();
+        knownLabels.add(label);
+        labelsById.set(id, knownLabels);
+      }
+      return id;
+    });
+    for (let index = 1; index < nodeIds.length; index += 1) {
+      edges.push([nodeIds[index - 1], nodeIds[index], edgeLabels[index - 1]]);
+    }
+  }
+  assert.ok(headerSeen, 'Planner–Executor Mermaid flowchart TB header');
+  assert.equal(
+    accTitle,
+    plannerExecutorMermaidAccTitle,
+    'Planner–Executor Mermaid exact accessible title',
+  );
+  return {
+    labelsById: new Map([...labelsById].map(([id, labels]) => [id, [...labels].sort()])),
+    edges,
+  };
+}
+
+function assertPlannerExecutorContract(source) {
+  const metadata = parseFrontMatter(source);
+  assert.equal(metadata.title, '规划者–执行者（Planner–Executor）：用版本化计划约束重规划');
+  assert.equal(metadata.topic_id, 'AGT-P-03');
+  assert.equal(metadata.slug, '/patterns/agt-p-03');
+  assert.equal(metadata.content_type, 'pattern');
+  assert.equal(metadata.status, 'reviewed');
+  assert.equal(metadata.difficulty, 'advanced');
+  assert.equal(metadata.analyzed_at, '2026-08-26');
+  assert.equal(metadata.source_cutoff, '2026-08-26');
+  assert.equal(metadata.confidence, 'high');
+  assert.equal(metadata.priority, 'P1');
+  assert.deepEqual(metadata.domains, ['software-architecture', 'artificial-intelligence']);
+  assert.deepEqual(metadata.agent_patterns, ['agent-loop', 'planner-executor']);
+  assert.deepEqual(metadata.protocols, []);
+  assert.deepEqual(metadata.quality_attributes, ['reliability', 'safety', 'operability']);
+  assert.deepEqual(metadata.depends_on, ['AGT-C-03']);
+  assert.deepEqual(metadata.adjacent_topics, [
+    'AGT-C-03',
+    'AGT-P-01',
+    'AGT-P-04',
+    'AGT-P-05',
+    'AGT-P-07',
+    'AGT-P-08',
+  ]);
+  assert.deepEqual(metadata.related_cases, [
+    '/cases/long-running-coding-agent',
+    '/cases/production-incident-response-agent',
+  ]);
+  assert.deepEqual(metadata.related_questions, []);
+  assert.deepEqual(
+    findMarkdownHeadings(source)
+      .filter(({level}) => level === 2)
+      .map(({text}) => `## ${text}`),
+    knowledgeTypeContracts.pattern,
+  );
+
+  const mermaidBlocks = readerVisibleMermaidCodeBlocks(source);
+  assert.equal(mermaidBlocks.length, 1, 'exactly one reader-visible Planner–Executor Mermaid');
+  assert.equal(mermaidBlocks[0].rootDirect, true, 'Planner–Executor Mermaid remains root-direct');
+  const graph = parsePlannerExecutorMermaid(mermaidBlocks[0].value);
+  assert.deepEqual(graph.labelsById, plannerExecutorNodes);
+  assert.deepEqual(graph.edges, plannerExecutorEdges);
+  assert.deepEqual(
+    graph.edges.filter(([, target]) => target === 'SAFE_STOP'),
+    [
+      ['RESULT_VALIDATOR', 'SAFE_STOP', '规划执行停止分支（stop）'],
+      ['REPLAN_BUDGET', 'SAFE_STOP', '预算耗尽'],
+      ['UNKNOWN_SIDE_EFFECT', 'SAFE_STOP', null],
+    ],
+    'all terminal paths converge on the safe stop owner',
+  );
+
+  const visible = parseMdxVisibleCopy(source, plannerExecutorArticlePath, {
+    includeStructure: true,
+  }).blocks.map(({text}) => text).join('\n');
+  for (const contract of [
+    /计划[^。\n]{0,100}(?:不是|不等于)[^。\n]{0,100}(?:权威任务状态|任务真相)/u,
+    /有界计划规模/u,
+    /步骤前置条件/u,
+    /执行者[^。\n]{0,100}最小权限/u,
+    /观察模式/u,
+    /陈旧计划检测/u,
+    /重规划预算/u,
+    /未知副作用[^。\n]{0,100}(?:停止|故障关闭)/u,
+    /控制所有者/u,
+    /状态所有者/u,
+    /终止责任/u,
+    /失败[^。\n]{0,160}恢复/u,
+    /确定性工作流/u,
+    /实现证据[^。\n]{0,160}(?:不证明|不能证明)[^。\n]{0,100}生产/u,
+    /分类[^。\n]{0,100}(?:不是|不等于)行业标准/u,
+  ]) assert.match(visible, contract);
 }
 
 function assertPhysicalTable(body, tableNode, expectedRows, expectedColumns, label) {
@@ -1482,6 +1646,104 @@ flowchart TB
   const mutant = `${source}\n\n${hiddenBypass}\n`;
   assert.doesNotThrow(() => markdownParser.parse(extractMarkdownBody(mutant)));
   assert.doesNotThrow(() => assertAgenticRagContract(mutant));
+});
+
+test('AGT-P-03 publishes the exact versioned Planner–Executor contract', () => {
+  assert.ok(existsSync(plannerExecutorArticlePath), `Missing ${plannerExecutorArticlePath}`);
+  assertPlannerExecutorContract(readFileSync(plannerExecutorArticlePath, 'utf8'));
+});
+
+test('AGT-P-03 rejects hidden, duplicate, unnamed, and fail-open Mermaid mutations', () => {
+  assert.ok(existsSync(plannerExecutorArticlePath), `Missing ${plannerExecutorArticlePath}`);
+  const source = readFileSync(plannerExecutorArticlePath, 'utf8');
+  const [{value: mermaid}] = readerVisibleMermaidCodeBlocks(source);
+  assert.ok(mermaid, 'Planner–Executor Mermaid fixture');
+  const fence = `\`\`\`mermaid\n${mermaid}\n\`\`\``;
+  const bypassFence = `\`\`\`mermaid
+flowchart TB
+    GOAL["Goal"] --> SAFE_STOP["Safe stop"]
+\`\`\``;
+  const mutations = [
+    ['zero reader-visible Mermaid', source.replace(fence, '')],
+    ['duplicate reader-visible Mermaid', `${source}\n\n${bypassFence}\n`],
+    ['only nested Mermaid', source.replace(fence, `<div>\n${fence}\n</div>`) ],
+    ['only hidden Mermaid', source.replace(fence, `<div hidden>\n\n${fence}\n\n</div>`) ],
+    ['accessible name removed', source.replace(
+      `    accTitle: ${plannerExecutorMermaidAccTitle}\n`,
+      '',
+    )],
+    ['continue bypasses the versioned plan', source.replace(
+      'RESULT_VALIDATOR -->|继续分支（continue）| VERSIONED_PLAN',
+      'RESULT_VALIDATOR -->|继续分支（continue）| EXECUTOR',
+    )],
+    ['replan bypasses its budget', source.replace(
+      'RESULT_VALIDATOR -->|重规划分支（replan）| REPLAN_BUDGET["重规划预算门"]',
+      'RESULT_VALIDATOR -->|重规划分支（replan）| PLANNER',
+    )],
+    ['unknown side effect resumes execution', source.replace(
+      'UNKNOWN_SIDE_EFFECT --> SAFE_STOP',
+      'UNKNOWN_SIDE_EFFECT --> EXECUTOR',
+    )],
+    ['budget exhaustion resumes planning', source.replace(
+      'REPLAN_BUDGET -->|预算耗尽| SAFE_STOP',
+      'REPLAN_BUDGET -->|预算耗尽| PLANNER',
+    )],
+    ['alternate connector creates a stop bypass', source.replace(
+      'GOAL["智能体目标节点（Goal）"] --> PLANNER["规划者节点（Planner）"]',
+      'GOAL["智能体目标节点（Goal）"] --> PLANNER["规划者节点（Planner）"]\n    EXECUTOR -.-> SAFE_STOP',
+    )],
+  ];
+  const survivors = [];
+  for (const [label, mutant] of mutations) {
+    assert.notEqual(mutant, source, `${label} fixture must alter the article`);
+    assert.doesNotThrow(
+      () => markdownParser.parse(extractMarkdownBody(mutant)),
+      `${label} fixture remains valid MDX`,
+    );
+    try {
+      assertPlannerExecutorContract(mutant);
+      survivors.push(label);
+    } catch {
+      // Expected: visibility, cardinality, grammar, stable identity, and topology mutants fail.
+    }
+  }
+  assert.deepEqual(survivors, []);
+});
+
+test('AGT-P-03 reuses governed pattern sources and bounds the deterministic example', () => {
+  const ledger = JSON.parse(readFileSync('data/source-ledger.json', 'utf8'));
+  const document = ledger.documents[plannerExecutorArticlePath];
+  assert.ok(document, `${plannerExecutorArticlePath} source document`);
+  assert.deepEqual(
+    document.citations.map(({source_id: sourceId}) => sourceId),
+    plannerExecutorSourceIds,
+  );
+  assert.ok(document.citations.every(({usage_mode: usageMode}) => usageMode === 'facts-summary'));
+  assert.equal(document.citations.filter(({manifest_primary: primary}) => primary).length, 1);
+  assert.deepEqual(document.citations[0].roles, ['definition', 'method']);
+  assert.deepEqual(document.citations[1].roles, ['definition', 'method']);
+  assert.deepEqual(document.citations[2].roles, ['implementation']);
+  assert.equal(document.citations[2].manifest_primary, false);
+
+  const example = ledger.sources.find(({id}) => id === 'src-github-27d330c0760f');
+  assert.ok(example, 'fixed OpenAI deterministic-flow example');
+  assert.equal(example.version, 'Git commit 2fa463571e76dae8ff267622f1018eaf06ffeb9f');
+  assert.deepEqual(example.allowed_evidence_roles, [
+    'case-evidence',
+    'comparison',
+    'definition',
+    'historical-context',
+    'implementation',
+    'learning',
+    'method',
+    'runtime-fact',
+  ]);
+  assert.match(example.usage_boundary, /does not alone prove runtime guarantees or deployment fitness/u);
+  const health = JSON.parse(readFileSync('data/source-link-health.json', 'utf8'));
+  const observation = health.results.find(({source_ids: sourceIds}) =>
+    sourceIds.includes(example.id));
+  assert.ok(observation, `${example.id} health observation`);
+  assert.equal(observation.review_status, 'healthy');
 });
 
 test('AGT-P-02 registers four primary papers and one discovery-only survey', () => {
