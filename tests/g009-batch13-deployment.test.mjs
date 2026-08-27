@@ -17,6 +17,8 @@ export const EXPECTED_STAGE_A = Object.freeze({completed: 64, documents: 108, so
 export const EXPECTED_STAGE_B = Object.freeze({completed: 65, documents: 108, sources: 565});
 
 export const CANDIDATE_HEAD = 'd672c63a737ae39dcfa0a9a9dd365d1f378f0182';
+export const EVIDENCE_HEAD = '7f679b1452584bce633df8835ebef10668bbc46b';
+export const INDEPENDENT_REVIEW_HEAD = 'f61c4cf83c1f3e97caa8abe494725db3d61305f3';
 export const STATES = Object.freeze(['desktopLight', 'desktopDark', 'mobileLight', 'mobileDark']);
 export const DIAGNOSTIC_STATE_ORDER = Object.freeze(['mobileDark', 'mobileLight', 'desktopLight', 'desktopDark']);
 export const DIAGNOSTIC_CONTINUITY = Object.freeze([
@@ -116,8 +118,8 @@ function assertReview(source = review, rawBytes = raw) {
   assert.doesNotMatch(source, /Screenshot evidence: `BLOCKED \/ NOT_ACCEPTED`|Browser: `(?:Chrome|Playwright)`/u);
   const checkpoint = markdownSection(source, 'Independent review checkpoint');
   assert.match(checkpoint, new RegExp('^- Exact implementation candidate head: `' + CANDIDATE_HEAD + '`\\.$', 'mu'));
-  assert.match(checkpoint, /^- Exact Browser evidence head: `[0-9a-f]{40}`\.$/mu);
-  assert.match(checkpoint, /^- Exact independent review head: `[0-9a-f]{40}`\.$/mu);
+  assert.match(checkpoint, new RegExp('^- Exact Browser evidence head: `' + EVIDENCE_HEAD + '`\\.$', 'mu'));
+  assert.match(checkpoint, new RegExp('^- Exact independent review head: `' + INDEPENDENT_REVIEW_HEAD + '`\\.$', 'mu'));
   assert.match(checkpoint, /^- Independent code\/spec\/security review: `READY \/ APPROVE`; findings: `0`\.$/mu);
   assert.match(checkpoint, /^- Independent content\/evidence\/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`\.$/mu);
   assert.match(checkpoint, /^- Independent architecture\/invariant review: `CLEAR \/ READY`; blockers: `0`\.$/mu);
@@ -127,6 +129,7 @@ function assertReview(source = review, rawBytes = raw) {
   assert.doesNotMatch(checkpoint, /PENDING|findings: `[1-9]|blockers: `[1-9]|SUCCESS|STAGE_B/u);
 }
 function assertDiagnostics(state, stateName) {
+  exactKeys(state.diagnostics, ['events', 'pages', 'hasMore', 'truncated'], `${stateName} diagnostics`);
   assert.deepEqual(state.logs, [], `${stateName} warning/error logs`);
   assert.deepEqual(state.diagnostics.events, [], `${stateName} Runtime/Log events`);
   assert.ok(state.diagnostics.pages.length >= 1, `${stateName} diagnostic pagination exists`);
@@ -181,14 +184,22 @@ function assertLocalEvidence(value) {
   for (const stateName of STATES) {
     const state = value.states[stateName];
     const desktop = stateName.startsWith('desktop');
+    exactKeys(state, ['theme', 'viewport', 'geometry', 'interactions', 'relations', 'logs', 'diagnostics'], `${stateName} state`);
+    exactKeys(state.viewport, ['height', 'width'], `${stateName} viewport`);
+    exactKeys(state.geometry, ['page', 'wrappers', 'svg', 'sources', 'sty13'], `${stateName} geometry`);
+    exactKeys(state.geometry.page, ['clientWidth', 'scrollWidth'], `${stateName} page geometry`);
     assert.equal(state.theme, stateName.endsWith('Light') ? 'light' : 'dark', `${stateName} theme`);
     assert.deepEqual(state.viewport, desktop ? {width: 1440, height: 1000} : {width: 390, height: 844}, `${stateName} viewport`);
     assert.equal(state.geometry.page.clientWidth, desktop ? 1440 : 390, `${stateName} document width`);
     assert.equal(state.geometry.page.scrollWidth, desktop ? 1440 : 390, `${stateName} no document overflow`);
     assert.deepEqual(state.geometry.wrappers.map(({label}) => label), WRAPPER_LABELS, `${stateName} wrapper order`);
     assert.equal(state.geometry.wrappers.length, 4, `${stateName} wrappers`);
+    for (const wrapper of state.geometry.wrappers) exactKeys(wrapper, ['label', 'clientWidth', 'scrollWidth'], `${stateName} wrapper`);
     assert.equal(state.interactions.length, 4, `${stateName} wrapper interactions`);
     for (const [index, interaction] of state.interactions.entries()) {
+      exactKeys(interaction, ['index', 'label', 'key', 'before', 'after', 'delta'], `${stateName} interaction ${index}`);
+      exactKeys(interaction.before, ['focus', 'focusVisible', 'outlineWidth', 'scrollLeft'], `${stateName} interaction ${index} before`);
+      exactKeys(interaction.after, ['focus', 'focusVisible', 'outlineWidth', 'scrollLeft'], `${stateName} interaction ${index} after`);
       assert.equal(interaction.index, index);
       assert.equal(interaction.label, WRAPPER_LABELS[index]);
       assert.equal(interaction.key, 'ArrowRight');
@@ -197,8 +208,11 @@ function assertLocalEvidence(value) {
       assert.equal(interaction.after.scrollLeft - interaction.before.scrollLeft, interaction.delta, `${stateName} ArrowRight delta`);
       assert.ok(interaction.delta === 0 || interaction.delta === 40, `${stateName} honest ArrowRight result`);
     }
+    for (const relation of state.relations) exactKeys(relation, ['href', 'expectedH1', 'h1', 'returnedToArticle', 'visibleCount'], `${stateName} relation`);
     assert.deepEqual(state.relations.map(({href, expectedH1, h1, visibleCount, returnedToArticle}) => [href, expectedH1, h1, visibleCount, returnedToArticle]), RELATIONS.map(([href, h1]) => [href, h1, h1, 1, true]), `${stateName} exact relation destination/H1/return`);
+    for (const source of state.geometry.sources) exactKeys(source, ['href', 'rel', 'target'], `${stateName} source`);
     assert.deepEqual(state.geometry.sources, SOURCE_HREFS.map((href) => ({href, target: '_blank', rel: 'noopener noreferrer'})), `${stateName} exact source links`);
+    exactKeys(state.geometry.svg, ['loaded', 'viewBox', 'sourceWidth', 'sourceHeight', 'naturalWidth', 'naturalHeight', 'renderedWidth', 'renderedHeight', 'src', 'observedAssetBytes'], `${stateName} SVG`);
     assert.deepEqual(state.geometry.svg, {
       loaded: true, viewBox: '0 0 2400 3600', sourceWidth: 2400, sourceHeight: 3600,
       naturalWidth: 100, naturalHeight: 150, renderedWidth: 800, renderedHeight: 1200,
@@ -272,6 +286,8 @@ test('rejects review head, verdict, pending, deployment and screenshot understat
   assertReview();
   for (const [before, after] of [
     [`Exact implementation candidate head: \`${CANDIDATE_HEAD}\`.`, `Exact implementation candidate head: \`${'0'.repeat(40)}\`.`],
+    [`Exact Browser evidence head: \`${EVIDENCE_HEAD}\`.`, `Exact Browser evidence head: \`${'0'.repeat(40)}\`.`],
+    [`Exact independent review head: \`${INDEPENDENT_REVIEW_HEAD}\`.`, `Exact independent review head: \`${'0'.repeat(40)}\`.`],
     ['findings: `0`.', 'findings: `1`.'],
     ['blockers: `0`.', 'blockers: `1`.'],
     ['Final Stage A review judgment: `READY`.', 'Final Stage A review judgment: `PENDING`.'],
@@ -289,6 +305,22 @@ test('rejects substituted Browser, incomplete diagnostics, STY-13 actions and sc
   const evidence = JSON.parse(raw);
   assertLocalEvidence(evidence);
   const mutations = [
+    ['root deployment overclaim', (copy) => copy.deployment = 'SUCCESS'],
+    ['state visual-inspection overclaim', (copy) => copy.states.desktopLight.visualInspection = 'PASS'],
+    ['viewport verification overclaim', (copy) => copy.states.desktopLight.viewport.verified = true],
+    ['geometry visual-inspection overclaim', (copy) => copy.states.desktopLight.geometry.visualInspection = 'PASS'],
+    ['page verification overclaim', (copy) => copy.states.desktopLight.geometry.page.verified = true],
+    ['wrapper verification overclaim', (copy) => copy.states.desktopLight.geometry.wrappers[0].verified = true],
+    ['SVG visual-inspection overclaim', (copy) => copy.states.desktopLight.geometry.svg.visualInspection = 'PASS'],
+    ['source verification overclaim', (copy) => copy.states.desktopLight.geometry.sources[0].verified = true],
+    ['interaction PASS overclaim', (copy) => copy.states.desktopLight.interactions[0].PASS = true],
+    ['interaction-before verification overclaim', (copy) => copy.states.desktopLight.interactions[0].before.verified = true],
+    ['interaction-after verification overclaim', (copy) => copy.states.desktopLight.interactions[0].after.verified = true],
+    ['relation verification overclaim', (copy) => copy.states.desktopLight.relations[0].verified = true],
+    ['diagnostics verification overclaim', (copy) => copy.states.desktopLight.diagnostics.verified = true],
+    ['diagnostic-page verification overclaim', (copy) => copy.states.desktopLight.diagnostics.pages[0].verified = true],
+    ['diagnostic-continuity verification overclaim', (copy) => copy.collection.diagnosticContinuity[0].verified = true],
+    ['screenshot-attempt visual-inspection overclaim', (copy) => copy.screenshotEvidence.attempts[0].visualInspection = 'PASS'],
     ['candidate head', (copy) => copy.candidateHead = '0'.repeat(40)],
     ['substituted browser', (copy) => copy.collection.browser = 'Chrome'],
     ['missing state', (copy) => delete copy.states.mobileDark],

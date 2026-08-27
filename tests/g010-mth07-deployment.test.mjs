@@ -11,6 +11,10 @@ const EVIDENCE_PATH = 'docs/reviews/evidence/g010-mth07-stage-a-browser.json';
 const EVIDENCE_SHA256 = '43985ea2e801e888e55a2cd6f62ed690133d3fdcda7db8f03a1e91ea466fa1b0';
 const PRODUCTION_EVIDENCE_PATH = 'docs/reviews/evidence/g010-mth07-stage-a-production-browser.json';
 const PRODUCTION_EVIDENCE_SHA256 = 'e3d28a498d23aec12d6df4b32c35fa69052d1fa4ec324a2ec6c53caa34beeeb2';
+const POST_G010_G009_ARTIFACTS = new Map([
+  ['docs/reviews/g009-batch13.md', [5_972, 'f63a2129cc15deaf4345f891a709d51e9e4f19b9b96aa8960bba6958c3168e6f']],
+  ['docs/reviews/evidence/g009-batch13-stage-a-browser.json', [17_260, 'a0de2d5ea069b2af87ad4aa4ef4696a9a22e6ff99ba96b616763262f1814ed38']],
+]);
 const IMPLEMENTATION_HEAD = 'a413be060c93f7ddd20e7db5417e94f4166dc1e8';
 const PAGES = {runId: 31786075868, buildJobId: 94722157542, deployJobId: 94722766883};
 const BROWSER_BUILD_HEAD = 'f32e0cb7ae79fb92a2154c03dfe8bf7b5b203974';
@@ -184,12 +188,11 @@ function isHistoricalReviewArtifact(relative) {
     relative !== 'docs/reviews/g009-batch10.md' &&
     relative !== 'docs/reviews/g009-batch11.md' &&
     relative !== 'docs/reviews/g009-batch12.md' &&
-    relative !== 'docs/reviews/g009-batch13.md' &&
+    !POST_G010_G009_ARTIFACTS.has(relative) &&
     !relative.startsWith('docs/reviews/evidence/g009-batch9-') &&
     !relative.startsWith('docs/reviews/evidence/g009-batch10-') &&
     !relative.startsWith('docs/reviews/evidence/g009-batch11-') &&
     !relative.startsWith('docs/reviews/evidence/g009-batch12-') &&
-    !relative.startsWith('docs/reviews/evidence/g009-batch13-') &&
     !relative.startsWith('docs/reviews/evidence/g010-mth07-');
 }
 
@@ -799,8 +802,16 @@ test('locks the exact pre-G010 review namespace against add edit and delete muta
     'docs/reviews/evidence/g009-batch13-stage-a-browser.json',
     'docs/reviews/evidence/g010-mth07-stage-a-production-browser.json',
     'docs/reviews/evidence/g010-mth07-stage-b-production-browser.json',
-  ]) assert.equal(isHistoricalReviewArtifact(currentPath), false, `${currentPath} is current G010 evidence`);
+  ]) assert.equal(isHistoricalReviewArtifact(currentPath), false, `${currentPath} is excluded from exact pre-G010 history`);
   assert.equal(isHistoricalReviewArtifact('docs/reviews/g009-batch7.md'), true);
+  assert.equal(isHistoricalReviewArtifact('docs/reviews/evidence/g009-batch13-fabricated.json'), true, 'unallowlisted Batch 13 prefix remains historical');
+
+  for (const [currentPath, [expectedBytes, expectedSha256]] of POST_G010_G009_ARTIFACTS) {
+    const bytes = await readFile(path.join(ROOT, currentPath));
+    assert.equal(isHistoricalReviewArtifact(currentPath), false, `${currentPath} is current post-G010 G009 evidence`);
+    assert.equal(bytes.length, expectedBytes, `${currentPath} exact bytes`);
+    assert.equal(sha256(bytes), expectedSha256, `${currentPath} exact SHA-256`);
+  }
 
   const entries = await historicalReviewEntries();
   assert.equal(entries.length, 39);
