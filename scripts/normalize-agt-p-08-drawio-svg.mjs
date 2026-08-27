@@ -1,136 +1,220 @@
 import {createHash} from 'node:crypto';
 import {readFile, writeFile} from 'node:fs/promises';
 
+import {parseXml, xmlElements} from '../.codex/skills/creating-drawio-architecture-diagrams/scripts/xml-visible-copy.mjs';
 import {
-  parseXml,
-  xmlElements,
-} from '../.codex/skills/creating-drawio-architecture-diagrams/scripts/xml-visible-copy.mjs';
+  SVG_NS, escapeXml, fail, number, parseDrawioModel, parsePath, xmlText,
+} from './agt-p-08-diagram-model.mjs';
 
 const [drawioPath, rawSvgPath, outputPath] = process.argv.slice(2);
 if (!drawioPath || !rawSvgPath || !outputPath) {
   throw new Error('usage: normalize-agt-p-08-drawio-svg.mjs <source.drawio> <raw.svg> <published.svg>');
 }
 
+const sha256 = (value) => createHash('sha256').update(value).digest('hex');
+const close = (actual, expected, label, tolerance = 0.06) => {
+  if (Math.abs(actual - expected) > tolerance) fail(`${label} expected ${expected}, received ${actual}`);
+};
+const compact = (value) => value.replace(/\s+/gu, ' ').trim();
+const stripRawDoctype = (value) => value.replace(/<!DOCTYPE svg PUBLIC "-\/\/W3C\/\/DTD SVG 1\.1\/\/EN" "http:\/\/www\.w3\.org\/Graphics\/SVG\/1\.1\/DTD\/svg11\.dtd">\s*/u, '');
+const attrObject = (element, omitted = new Set()) => Object.fromEntries([...element.attributes]
+  .filter(([name]) => !omitted.has(name)).sort(([a], [b]) => a.localeCompare(b)));
+const geometrySnapshot = (cell) => ({
+  geometries: xmlElements(cell, 'mxGeometry', '').map((item) => attrObject(item)),
+  points: xmlElements(cell, 'mxPoint', '').map((item) => attrObject(item)),
+});
+
 const drawio = await readFile(drawioPath, 'utf8');
 const rawSvg = await readFile(rawSvgPath, 'utf8');
-const drawioSha256 = createHash('sha256').update(drawio).digest('hex');
-const rawSha256 = createHash('sha256').update(rawSvg).digest('hex');
-const decodeAttribute = (value) => value
-  .replace(/&#x([a-f0-9]+);/giu, (_, digits) => String.fromCodePoint(Number.parseInt(digits, 16)))
-  .replace(/&#([0-9]+);/gu, (_, digits) => String.fromCodePoint(Number(digits)))
-  .replaceAll('&quot;', '"').replaceAll('&apos;', "'")
-  .replaceAll('&lt;', '<').replaceAll('&gt;', '>').replaceAll('&amp;', '&');
-const embeddedMatch = rawSvg.match(/\bcontent="([^"]+)"/u);
-if (!embeddedMatch) throw new Error('Raw diagrams.net SVG must embed its source XML');
+const drawioSha256 = sha256(drawio);
+const rawSha256 = sha256(rawSvg);
+const model = parseDrawioModel(drawio, drawioPath);
+const rawRoot = parseXml(stripRawDoctype(rawSvg), rawSvgPath).root;
+if (rawRoot.localName !== 'svg' || rawRoot.namespace !== SVG_NS) fail('raw export root must be an SVG element');
+if (!(rawRoot.attributes.get('id') ?? '').startsWith('ge-svg-')) fail('raw export must carry a diagrams.net ge-svg root identifier');
+const embedded = rawRoot.attributes.get('content');
+if (!embedded) fail('raw diagrams.net SVG must embed its source XML');
+const embeddedRoot = parseXml(embedded, `${rawSvgPath}#content`).root;
+if (embeddedRoot.localName !== 'mxfile' || xmlElements(embeddedRoot, 'diagram', '').length !== 1) fail('raw embedded source must be a one-page mxfile');
+const embeddedCells = xmlElements(embeddedRoot, 'mxCell', '');
+if (embeddedCells.length !== model.cells.size) fail('raw embedded cell count differs from editable source');
+const idMap = new Map([['0', '0'], ['1', '1']]);
+const matchedEmbeddedIds = new Set(['0', '1']);
+const sameGeometry = (source, candidate) => JSON.stringify(geometrySnapshot(source)) === JSON.stringify(geometrySnapshot(candidate));
+const sameAttributes = (source, candidate, omitted) => JSON.stringify(attrObject(source, omitted)) === JSON.stringify(attrObject(candidate, omitted));
+const visibleCells = [...model.regions, ...model.nodes, ...model.captions, ...model.edgeLabels];
+for (const item of visibleCells) {
+  const candidates = embeddedCells.filter((cell) =>
+    cell.attributes.get('vertex') === '1'
+    && cell.attributes.get('value') === item.value
+    && sameGeometry(item.cell, cell));
+  if (candidates.length !== 1) fail(`raw embedded source cannot uniquely map visible cell ${item.id}`);
+  const candidate = candidates[0];
+  if (!sameAttributes(item.cell, candidate, new Set(['id', 'parent']))) fail(`raw embedded style/semantic drift for ${item.id}`);
+  idMap.set(item.id, candidate.attributes.get('id'));
+  matchedEmbeddedIds.add(candidate.attributes.get('id'));
+}
+for (const edge of model.edges) {
+  const candidates = embeddedCells.filter((cell) =>
+    cell.attributes.get('edge') === '1'
+    && cell.attributes.get('source') === idMap.get(edge.sourceId)
+    && cell.attributes.get('target') === idMap.get(edge.targetId)
+    && sameGeometry(edge.cell, cell));
+  if (candidates.length !== 1) fail(`raw embedded source cannot uniquely map edge ${edge.id}`);
+  const candidate = candidates[0];
+  if (!sameAttributes(edge.cell, candidate, new Set(['id', 'parent', 'source', 'target']))) fail(`raw embedded route/style drift for ${edge.id}`);
+  idMap.set(edge.id, candidate.attributes.get('id'));
+  matchedEmbeddedIds.add(candidate.attributes.get('id'));
+}
+if (matchedEmbeddedIds.size !== embeddedCells.length) fail('raw embedded source contains unmapped cells');
 
-const sourceRoot = parseXml(drawio, drawioPath).root;
-const embeddedRoot = parseXml(decodeAttribute(embeddedMatch[1]), `${rawSvgPath}#content`).root;
-const sourceCells = new Map(xmlElements(sourceRoot, 'mxCell', '').map((cell) => [cell.attributes.get('id'), cell]));
-const embeddedCells = new Map(xmlElements(embeddedRoot, 'mxCell', '').map((cell) => [cell.attributes.get('id'), cell]));
-const nodeIds = [
-  'control-store', 'checkpoint', 'approval-service', 'sandbox-tool',
-  'authority-system', 'reconciliation', 'completed', 'manual-terminal',
-];
-const edgeContracts = [
-  ['edge-checkpoint', 'control-store', 'checkpoint'],
-  ['edge-approval', 'checkpoint', 'approval-service'],
-  ['edge-resume', 'approval-service', 'sandbox-tool'],
-  ['edge-reject', 'approval-service', 'manual-terminal'],
-  ['edge-effect', 'sandbox-tool', 'authority-system'],
-  ['edge-reconcile', 'authority-system', 'reconciliation'],
-  ['edge-recovery', 'reconciliation', 'control-store'],
-  ['edge-unknown', 'reconciliation', 'manual-terminal'],
-  ['edge-complete', 'control-store', 'completed'],
-];
-const geometry = (cell) => xmlElements(cell, 'mxGeometry', '')[0]?.attributes;
-for (const id of ['control-plane', 'business-plane', ...nodeIds]) {
-  const source = sourceCells.get(id);
-  const embedded = embeddedCells.get(id);
-  if (!source || !embedded || source.attributes.get('value') !== embedded.attributes.get('value')) {
-    throw new Error(`Raw export semantic drift for ${id}`);
+const groups = new Map();
+for (const group of xmlElements(rawRoot, 'g', SVG_NS)) {
+  const id = group.attributes.get('data-cell-id');
+  if (!id) continue;
+  if (groups.has(id)) fail(`raw export duplicates data-cell-id ${id}`);
+  groups.set(id, group);
+}
+for (const item of visibleCells) {
+  const group = groups.get(idMap.get(item.id));
+  if (!group) fail(`raw export lacks visible group ${item.id}`);
+  const foreignObjects = xmlElements(group, 'foreignObject', SVG_NS);
+  if (foreignObjects.length !== 1) fail(`raw export ${item.id} must have exactly one visible text object`);
+  if (compact(xmlText(foreignObjects[0])) !== item.value) fail(`raw visible label drift for ${item.id}`);
+}
+const expectedGroupIds = embeddedCells.map((cell) => cell.attributes.get('id')).sort();
+const actualGroupIds = [...groups.keys()].sort();
+if (JSON.stringify(actualGroupIds) !== JSON.stringify(expectedGroupIds)) fail('raw visible cell inventory differs from embedded/source cells');
+const rawVisibleLabels = visibleCells.flatMap((item) => xmlElements(groups.get(idMap.get(item.id)), 'foreignObject', SVG_NS))
+  .map((foreignObject) => compact(xmlText(foreignObject))).filter(Boolean).sort();
+const sourceVisibleLabels = [...model.cells.values()].map((cell) => cell.attributes.get('value') ?? '').filter(Boolean).sort();
+if (JSON.stringify(rawVisibleLabels) !== JSON.stringify(sourceVisibleLabels)) fail('raw/source visible-label multiset drift');
+
+const rawNodeRect = (id) => {
+  const rects = xmlElements(groups.get(idMap.get(id)), 'rect', SVG_NS);
+  if (rects.length !== 1) fail(`raw export ${id} must contain one node rectangle`);
+  return rects[0];
+};
+const anchor = model.nodes[0];
+const anchorRect = rawNodeRect(anchor.id);
+const translateX = anchor.geometry.x - number(anchorRect.attributes.get('x'), `${anchor.id}.raw.x`);
+const translateY = anchor.geometry.y - number(anchorRect.attributes.get('y'), `${anchor.id}.raw.y`);
+for (const node of model.nodes) {
+  const rect = rawNodeRect(node.id);
+  close(number(rect.attributes.get('x'), `${node.id}.raw.x`) + translateX, node.geometry.x, `${node.id}.raw.x`);
+  close(number(rect.attributes.get('y'), `${node.id}.raw.y`) + translateY, node.geometry.y, `${node.id}.raw.y`);
+  close(number(rect.attributes.get('width'), `${node.id}.raw.width`), node.geometry.width, `${node.id}.raw.width`);
+  close(number(rect.attributes.get('height'), `${node.id}.raw.height`), node.geometry.height, `${node.id}.raw.height`);
+}
+for (const label of model.edgeLabels) {
+  const rects = xmlElements(groups.get(idMap.get(label.id)), 'rect', SVG_NS);
+  if (rects.length !== 1) fail(`raw export ${label.id} must contain one visible label box`);
+  const rect = rects[0];
+  close(number(rect.attributes.get('x'), `${label.id}.raw.x`) + translateX, label.geometry.x, `${label.id}.raw.x`);
+  close(number(rect.attributes.get('y'), `${label.id}.raw.y`) + translateY, label.geometry.y, `${label.id}.raw.y`);
+  close(number(rect.attributes.get('width'), `${label.id}.raw.width`), label.geometry.width, `${label.id}.raw.width`);
+  close(number(rect.attributes.get('height'), `${label.id}.raw.height`), label.geometry.height, `${label.id}.raw.height`);
+}
+
+for (const edge of model.edges) {
+  const group = groups.get(idMap.get(edge.id));
+  if (!group) fail(`raw export lacks ${edge.id}`);
+  const paths = xmlElements(group, 'path', SVG_NS);
+  if (paths.length !== 2) fail(`raw export ${edge.id} must contain exactly one connector and one arrow`);
+  const connector = paths.find((item) => (item.attributes.get('fill') ?? '').toLowerCase() === 'none');
+  const arrow = paths.find((item) => item !== connector);
+  if (!connector || !arrow) fail(`raw export ${edge.id} connector/arrow structure drift`);
+  const sourceWidth = number(edge.style.get('strokeWidth'), `${edge.id}.source.strokeWidth`);
+  close(number(connector.attributes.get('stroke-width'), `${edge.id}.raw.strokeWidth`), sourceWidth, `${edge.id}.raw.strokeWidth`);
+  const sourceColor = edge.style.get('strokeColor')?.toLowerCase();
+  if (connector.attributes.get('stroke')?.toLowerCase() !== sourceColor || arrow.attributes.get('fill')?.toLowerCase() !== sourceColor) fail(`${edge.id} raw color drift`);
+  const translated = parsePath(connector.attributes.get('d'), `${edge.id}.raw.connector`).map(([x, y]) => [x + translateX, y + translateY]);
+  const expected = edge.route;
+  if (translated.length !== expected.length) fail(`${edge.id} raw route point count drift`);
+  for (let index = 0; index < expected.length - 1; index += 1) {
+    close(translated[index][0], expected[index][0], `${edge.id}.raw.point${index}.x`);
+    close(translated[index][1], expected[index][1], `${edge.id}.raw.point${index}.y`);
   }
-  for (const key of ['x', 'y', 'width', 'height']) {
-    if (geometry(source)?.get(key) !== geometry(embedded)?.get(key)) {
-      throw new Error(`Raw export geometry drift for ${id}.${key}`);
-    }
+  const penultimate = expected.at(-2);
+  const target = expected.at(-1);
+  const rawEnd = translated.at(-1);
+  const horizontal = penultimate[1] === target[1];
+  if (horizontal) {
+    close(rawEnd[1], target[1], `${edge.id}.raw.end.y`);
+    if ((rawEnd[0] - penultimate[0]) * (target[0] - rawEnd[0]) < 0) fail(`${edge.id} raw arrow base is off the final segment`);
+  } else {
+    close(rawEnd[0], target[0], `${edge.id}.raw.end.x`);
+    if ((rawEnd[1] - penultimate[1]) * (target[1] - rawEnd[1]) < 0) fail(`${edge.id} raw arrow base is off the final segment`);
+  }
+  const arrowPoints = parsePath(arrow.attributes.get('d'), `${edge.id}.raw.arrow`);
+  if (arrowPoints.length !== 3) fail(`${edge.id} raw arrow must be a three-point filled triangle`);
+  const baseMidpoint = [(arrowPoints[1][0] + arrowPoints[2][0]) / 2, (arrowPoints[1][1] + arrowPoints[2][1]) / 2];
+  close(Math.hypot(arrowPoints[0][0] - baseMidpoint[0], arrowPoints[0][1] - baseMidpoint[1]), 10, `${edge.id}.raw.arrow.length`);
+  close(Math.hypot(arrowPoints[1][0] - arrowPoints[2][0], arrowPoints[1][1] - arrowPoints[2][1]), 10, `${edge.id}.raw.arrow.width`);
+}
+
+const markerId = (edge) => `arrow-${edge.id}`;
+const linePath = (points) => points.map(([x, y], index) => `${index === 0 ? 'M' : 'L'} ${x} ${y}`).join(' ');
+const styleNumber = (item, name, fallback = '0') => number(item.style.get(name) ?? fallback, `${item.id}.${name}`);
+const nodeTitleLength = (item) => Math.min(item.geometry.width - 64, item.value.length * 14);
+const captionLength = (item) => Math.min(item.geometry.width - 24, item.value.length * 10);
+const edgeLabelLength = (item) => item.geometry.width - 20;
+
+const output = [];
+output.push(`<svg xmlns="${SVG_NS}" viewBox="0 0 1400 900" role="img" aria-labelledby="agt-p-08-title agt-p-08-desc" data-drawio-sha256="${drawioSha256}" data-raw-export-sha256="${rawSha256}">`);
+output.push('  <title id="agt-p-08-title">Durable agent recovery and human approval control flow</title>');
+output.push('  <desc id="agt-p-08-desc">The durable control plane checkpoints execution, waits for approval, resumes through a sandbox, reconciles external business truth, recovers safely, and sends rejection, timeout, or unknown effects to a manual terminal.</desc>');
+output.push('  <defs>');
+for (const edge of model.edges) {
+  const color = edge.style.get('strokeColor');
+  output.push(`    <marker id="${markerId(edge)}" markerUnits="userSpaceOnUse" viewBox="0 0 16 16" markerWidth="16" markerHeight="16" refX="14" refY="8" orient="auto"><path d="M 0 0 L 16 8 L 0 16 Z" fill="${color}"/></marker>`);
+}
+output.push('  </defs>');
+for (const region of model.regions) {
+  output.push(`  <rect data-region-id="${region.id}" x="${region.geometry.x}" y="${region.geometry.y}" width="${region.geometry.width}" height="${region.geometry.height}" rx="24" fill="${region.style.get('fillColor')}" stroke="${region.style.get('strokeColor')}" stroke-width="${styleNumber(region, 'strokeWidth')}" stroke-dasharray="${region.style.get('dashPattern')}"/>`);
+}
+output.push('  <g font-family="system-ui, sans-serif">');
+for (const region of model.regions) {
+  output.push(`    <text data-region-label-for="${region.id}" x="${region.geometry.x + 28}" y="${region.geometry.y + 42}" font-size="${styleNumber(region, 'fontSize')}" font-weight="700" fill="#17202A">${escapeXml(region.value)}</text>`);
+}
+const sharedEdgeWidth = styleNumber(model.edges[0], 'strokeWidth');
+if (model.edges.some((edge) => styleNumber(edge, 'strokeWidth') !== sharedEdgeWidth)) fail('edges must share one auditable inherited stroke width');
+output.push(`    <g fill="none" stroke-linejoin="round" stroke-linecap="round" stroke-width="${sharedEdgeWidth}">`);
+for (const edge of model.edges) {
+  const dash = edge.style.get('dashed') === '1' ? ` stroke-dasharray="${edge.style.get('dashPattern')}"` : '';
+  output.push(`      <path data-edge-id="${edge.id}" data-source="${edge.sourceId}" data-target="${edge.targetId}" d="${linePath(edge.route)}" stroke="${edge.style.get('strokeColor')}"${dash} marker-end="url(#${markerId(edge)})"/>`);
+}
+output.push('    </g>');
+output.push('    <g fill="#FFFFFF">');
+for (const node of model.nodes) {
+  output.push(`      <rect data-node-id="${node.id}" data-padding-horizontal-css="16" data-padding-vertical-css="14" x="${node.geometry.x}" y="${node.geometry.y}" width="${node.geometry.width}" height="${node.geometry.height}" rx="20" fill="${node.style.get('fillColor')}" stroke="${node.style.get('strokeColor')}" stroke-width="${styleNumber(node, 'strokeWidth')}"/>`);
+}
+output.push('    </g>');
+output.push('    <g text-anchor="middle" fill="#17202A">');
+for (const node of model.nodes) {
+  const caption = model.captions.find((item) => item.nodeId === node.id);
+  const titleX = node.geometry.x + node.geometry.width / 2;
+  const wrappedCaption = caption.geometry.width === 220 && caption.value.length > 25;
+  output.push(`      <text data-title-for="${node.id}" x="${titleX}" y="${node.geometry.y + (wrappedCaption ? 35 : 45)}" font-size="${styleNumber(node, 'fontSize')}" font-weight="700" textLength="${nodeTitleLength(node)}" lengthAdjust="spacingAndGlyphs">${escapeXml(node.value)}</text>`);
+  if (wrappedCaption) {
+    const words = caption.value.split(' ');
+    const split = Math.ceil(words.length / 2);
+    const first = `${words.slice(0, split).join(' ')} `;
+    const second = words.slice(split).join(' ');
+    const x = caption.geometry.x + caption.geometry.width / 2;
+    output.push(`      <text data-type-for="${node.id}" x="${x}" y="${caption.geometry.y + 5}" font-size="${styleNumber(caption, 'fontSize')}"><tspan x="${x}" y="${caption.geometry.y + 5}" textLength="${Math.min(caption.geometry.width - 40, first.length * 10)}" lengthAdjust="spacingAndGlyphs">${escapeXml(first)}</tspan><tspan x="${x}" y="${caption.geometry.y + 23}" textLength="${Math.min(caption.geometry.width - 40, second.length * 10)}" lengthAdjust="spacingAndGlyphs">${escapeXml(second)}</tspan></text>`);
+  } else {
+    output.push(`      <text data-type-for="${node.id}" x="${caption.geometry.x + caption.geometry.width / 2}" y="${caption.geometry.y + 20}" font-size="${styleNumber(caption, 'fontSize')}" textLength="${captionLength(caption)}" lengthAdjust="spacingAndGlyphs">${escapeXml(caption.value)}</text>`);
   }
 }
-for (const [id, sourceId, targetId] of edgeContracts) {
-  const source = sourceCells.get(id);
-  const embedded = embeddedCells.get(id);
-  if (!source || !embedded) throw new Error(`Raw export lacks ${id}`);
-  for (const key of ['value', 'source', 'target']) {
-    if (source.attributes.get(key) !== embedded.attributes.get(key)) {
-      throw new Error(`Raw export edge drift for ${id}.${key}`);
-    }
-  }
-  if (source.attributes.get('source') !== sourceId || source.attributes.get('target') !== targetId) {
-    throw new Error(`Source endpoint drift for ${id}`);
-  }
+output.push('    </g>');
+output.push('    <g font-weight="650" fill="#17202A" text-anchor="middle">');
+for (const label of model.edgeLabels) {
+  output.push(`      <text data-edge-label-for="${label.edgeId}" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12" x="${label.geometry.x + label.geometry.width / 2}" y="${label.geometry.y + label.geometry.height * 0.75}" font-size="${styleNumber(label, 'fontSize')}" textLength="${edgeLabelLength(label)}" lengthAdjust="spacingAndGlyphs">${escapeXml(label.value)}</text>`);
 }
-
-const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 900" role="img" aria-labelledby="agt-p-08-title agt-p-08-desc" data-drawio-sha256="${drawioSha256}" data-raw-export-sha256="${rawSha256}">
-  <title id="agt-p-08-title">Durable agent recovery and human approval control flow</title>
-  <desc id="agt-p-08-desc">The durable control plane checkpoints execution, waits for approval, resumes through a sandbox, reconciles external business truth, recovers safely, and ends rejection, timeout, or unknown effects at a manual terminal.</desc>
-  <defs>
-    <marker id="arrow-control" markerUnits="userSpaceOnUse" viewBox="0 0 16 16" markerWidth="16" markerHeight="16" refX="14" refY="8" orient="auto"><path d="M 0 0 L 16 8 L 0 16 Z" fill="#5B3FD6"/></marker>
-    <marker id="arrow-action" markerUnits="userSpaceOnUse" viewBox="0 0 16 16" markerWidth="16" markerHeight="16" refX="14" refY="8" orient="auto"><path d="M 0 0 L 16 8 L 0 16 Z" fill="#2365A7"/></marker>
-    <marker id="arrow-truth" markerUnits="userSpaceOnUse" viewBox="0 0 16 16" markerWidth="16" markerHeight="16" refX="14" refY="8" orient="auto"><path d="M 0 0 L 16 8 L 0 16 Z" fill="#227A4B"/></marker>
-    <marker id="arrow-stop" markerUnits="userSpaceOnUse" viewBox="0 0 16 16" markerWidth="16" markerHeight="16" refX="14" refY="8" orient="auto"><path d="M 0 0 L 16 8 L 0 16 Z" fill="#B4232C"/></marker>
-  </defs>
-  <rect x="20" y="20" width="860" height="850" rx="24" fill="#F7F3FF" stroke="#6B4EFF" stroke-width="3" stroke-dasharray="10 8"/>
-  <rect x="920" y="20" width="460" height="850" rx="24" fill="#F2FBF6" stroke="#227A4B" stroke-width="3" stroke-dasharray="10 8"/>
-  <g font-family="system-ui, sans-serif">
-    <text x="48" y="62" font-size="28" font-weight="700" fill="#34204D">Durable control plane</text>
-    <text x="948" y="62" font-size="28" font-weight="700" fill="#173D2D">External business truth</text>
-    <g fill="none" stroke-linejoin="round" stroke-linecap="round" stroke-width="4">
-      <path data-edge-id="edge-checkpoint" data-source="control-store" data-target="checkpoint" d="M 350 130 L 330 130 L 330 310" stroke="#5B3FD6" marker-end="url(#arrow-control)"/>
-      <path data-edge-id="edge-approval" data-source="checkpoint" data-target="approval-service" d="M 330 310 L 390 310" stroke="#B66A00" marker-end="url(#arrow-stop)"/>
-      <path data-edge-id="edge-resume" data-source="approval-service" data-target="sandbox-tool" d="M 435 370 L 435 430 L 350 430 L 350 540 L 330 540" stroke="#2365A7" marker-end="url(#arrow-action)"/>
-      <path data-edge-id="edge-reject" data-source="approval-service" data-target="manual-terminal" d="M 690 310 L 850 310 L 850 650 L 1160 650 L 1160 700" stroke="#B4232C" stroke-dasharray="10 8" marker-end="url(#arrow-stop)"/>
-      <path data-edge-id="edge-effect" data-source="sandbox-tool" data-target="authority-system" d="M 200 600 L 200 640 L 940 640 L 940 310 L 1010 310" stroke="#2365A7" marker-end="url(#arrow-action)"/>
-      <path data-edge-id="edge-reconcile" data-source="authority-system" data-target="reconciliation" d="M 1160 370 L 1160 440 L 760 440 L 760 540 L 690 540" stroke="#227A4B" marker-end="url(#arrow-truth)"/>
-      <path data-edge-id="edge-recovery" data-source="reconciliation" data-target="control-store" d="M 690 510 L 740 510 L 740 130 L 650 130" stroke="#5B3FD6" stroke-dasharray="10 8" marker-end="url(#arrow-control)"/>
-      <path data-edge-id="edge-unknown" data-source="reconciliation" data-target="manual-terminal" d="M 690 570 L 820 570 L 820 760 L 1010 760" stroke="#B4232C" stroke-dasharray="10 8" marker-end="url(#arrow-stop)"/>
-      <path data-edge-id="edge-complete" data-source="control-store" data-target="completed" d="M 605 190 L 810 190 L 810 650 L 540 650 L 540 700" stroke="#227A4B" marker-end="url(#arrow-truth)"/>
-    </g>
-    <g fill="#FFFFFF" stroke="#334155" stroke-width="3">
-      <rect data-node-id="control-store" data-padding-horizontal-css="16" data-padding-vertical-css="14" x="350" y="70" width="300" height="120" rx="20" fill="#EDE8FF" stroke="#5B3FD6"/>
-      <rect data-node-id="checkpoint" data-padding-horizontal-css="16" data-padding-vertical-css="14" x="70" y="250" width="260" height="120" rx="20"/>
-      <rect data-node-id="approval-service" data-padding-horizontal-css="16" data-padding-vertical-css="14" x="390" y="250" width="300" height="120" rx="20" fill="#FFF7E6" stroke="#B66A00"/>
-      <rect data-node-id="sandbox-tool" data-padding-horizontal-css="16" data-padding-vertical-css="14" x="70" y="480" width="260" height="120" rx="20" fill="#E8F3FF" stroke="#2365A7"/>
-      <rect data-node-id="authority-system" data-padding-horizontal-css="16" data-padding-vertical-css="14" x="1010" y="250" width="300" height="120" rx="20" fill="#E6F7ED" stroke="#227A4B"/>
-      <rect data-node-id="reconciliation" data-padding-horizontal-css="16" data-padding-vertical-css="14" x="390" y="480" width="300" height="120" rx="20"/>
-      <rect data-node-id="completed" data-padding-horizontal-css="16" data-padding-vertical-css="14" x="390" y="700" width="300" height="120" rx="20" fill="#E6F7ED" stroke="#227A4B"/>
-      <rect data-node-id="manual-terminal" data-padding-horizontal-css="16" data-padding-vertical-css="14" x="1010" y="700" width="300" height="120" rx="20" fill="#FFF0F0" stroke="#B4232C"/>
-    </g>
-    <g text-anchor="middle" fill="#17202A">
-      <text data-title-for="control-store" x="500" y="115" font-size="28" font-weight="700" textLength="238" lengthAdjust="spacingAndGlyphs">Durable control store</text>
-      <text data-type-for="control-store" x="500" y="155" font-size="20" textLength="244" lengthAdjust="spacingAndGlyphs">Control state + checkpoint refs</text>
-      <text data-title-for="checkpoint" x="200" y="295" font-size="28" font-weight="700" textLength="150" lengthAdjust="spacingAndGlyphs">Checkpoint</text>
-      <text data-type-for="checkpoint" x="200" y="335" font-size="20" textLength="196" lengthAdjust="spacingAndGlyphs">Schema + version + operation ID</text>
-      <text data-title-for="approval-service" x="540" y="295" font-size="28" font-weight="700" textLength="220" lengthAdjust="spacingAndGlyphs">Approval required</text>
-      <text data-type-for="approval-service" x="540" y="335" font-size="20" textLength="224" lengthAdjust="spacingAndGlyphs">Context + authority + deadline</text>
-      <text data-title-for="sandbox-tool" x="200" y="525" font-size="28" font-weight="700" textLength="190" lengthAdjust="spacingAndGlyphs">Sandbox / Tool</text>
-      <text data-type-for="sandbox-tool" x="200" y="565" font-size="20" textLength="184" lengthAdjust="spacingAndGlyphs">Scoped, idempotent action</text>
-      <text data-title-for="authority-system" x="1160" y="295" font-size="28" font-weight="700" textLength="220" lengthAdjust="spacingAndGlyphs">Authority system</text>
-      <text data-type-for="authority-system" x="1160" y="335" font-size="20" textLength="220" lengthAdjust="spacingAndGlyphs">External business truth</text>
-      <text data-title-for="reconciliation" x="540" y="525" font-size="28" font-weight="700" textLength="238" lengthAdjust="spacingAndGlyphs">Result reconciliation</text>
-      <text data-type-for="reconciliation" x="540" y="565" font-size="20" textLength="210" lengthAdjust="spacingAndGlyphs">Read back before retry</text>
-      <text data-title-for="completed" x="540" y="745" font-size="28" font-weight="700" textLength="150" lengthAdjust="spacingAndGlyphs">Completed</text>
-      <text data-type-for="completed" x="540" y="785" font-size="20" textLength="210" lengthAdjust="spacingAndGlyphs">Verified durable terminal</text>
-      <text data-title-for="manual-terminal" x="1160" y="745" font-size="28" font-weight="700" textLength="210" lengthAdjust="spacingAndGlyphs">Manual terminal</text>
-      <text data-type-for="manual-terminal" x="1160" y="785" font-size="20" textLength="230" lengthAdjust="spacingAndGlyphs">Reject, timeout, or unknown</text>
-    </g>
-    <g font-size="28" font-weight="650" fill="#17202A">
-      <text data-edge-label-for="edge-resume" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12" font-size="28" x="210" y="430" textLength="110" lengthAdjust="spacingAndGlyphs">Resume</text>
-      <text data-edge-label-for="edge-reject" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12" text-anchor="end" font-size="28" x="830" y="500" textLength="60" lengthAdjust="spacingAndGlyphs">Reject</text>
-      <text data-edge-label-for="edge-reconcile" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12" font-size="28" x="780" y="405" textLength="200" lengthAdjust="spacingAndGlyphs">Authoritative read</text>
-      <text data-edge-label-for="edge-recovery" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12" font-size="28" x="520" y="430" textLength="190" lengthAdjust="spacingAndGlyphs">Recovery / replay</text>
-    </g>
-  </g>
-</svg>
-`;
-
+output.push('    </g>');
+output.push('  </g>');
+output.push('</svg>');
+const svg = `${output.join('\n')}\n`;
 await writeFile(outputPath, svg, 'utf8');
-console.log(`Normalized AGT-P-08 SVG from raw export ${rawSha256} with Draw.io SHA-256 ${drawioSha256}`);
+console.log(`Normalized authenticated AGT-P-08 visible raw export ${rawSha256} with Draw.io SHA-256 ${drawioSha256}`);

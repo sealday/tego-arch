@@ -4207,7 +4207,7 @@ function assertDurableAgentDiagramPair(drawio, svg) {
 
   for (const [id, x, y, width, height, textX, titleY, typeY] of [
     ['control-store', 350, 70, 300, 120, 500, 115, 155],
-    ['checkpoint', 70, 250, 260, 120, 200, 295, 335],
+    ['checkpoint', 70, 250, 260, 120, 200, 285, 320],
     ['approval-service', 390, 250, 300, 120, 540, 295, 335],
     ['sandbox-tool', 70, 480, 260, 120, 200, 525, 565],
     ['authority-system', 1010, 250, 300, 120, 1160, 295, 335],
@@ -4235,7 +4235,7 @@ function assertDurableAgentDiagramPair(drawio, svg) {
     assert.match(drawio, new RegExp(`<mxCell(?=[^>]*\\bid="${edgeId}")(?=[^>]*\\bsource="${sourceId}")(?=[^>]*\\btarget="${targetId}")[^>]*>`, 'u'));
     assert.match(svg, new RegExp(`data-edge-id="${edgeId}" data-source="${sourceId}" data-target="${targetId}"`, 'u'));
   }
-  for (const edgeId of ['edge-resume', 'edge-reject', 'edge-reconcile', 'edge-recovery']) {
+  for (const edgeId of ['edge-resume', 'edge-reject', 'edge-reconcile', 'edge-recovery', 'edge-unknown']) {
     assert.match(svg, new RegExp(`data-edge-label-for="${edgeId}"[^>]*data-stroke-clearance-css="8"[^>]*data-arrow-clearance-css="16"[^>]*data-node-clearance-css="12"`, 'u'));
   }
 }
@@ -4325,7 +4325,7 @@ test('AGT-P-08 diagram pair rejects geometry, source, SVG label, hidden, duplica
     ['duplicate label', `${drawio.replace('</root>', '<mxCell id="duplicate-checkpoint" value="Checkpoint" vertex="1" parent="1"/><\/root>')}`, svg],
     ['geometry drift', drawio, svg.replace('data-node-id="approval-service" data-padding-horizontal-css="16" data-padding-vertical-css="14" x="390"', 'data-node-id="approval-service" data-padding-horizontal-css="16" data-padding-vertical-css="14" x="700"')],
     ['geometry data bypass', drawio, svg.replace('data-title-for="manual-terminal" x="1160" y="745"', 'data-title-for="manual-terminal" x="1320" y="745"')],
-    ['label overlap with clearance data preserved', drawio, svg.replace('data-edge-label-for="edge-recovery" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12" font-size="28" x="520"', 'data-edge-label-for="edge-recovery" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12" font-size="28" x="650"')],
+    ['label overlap with clearance data preserved', drawio, svg.replace('data-edge-label-for="edge-recovery" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12" x="600" y="420.5"', 'data-edge-label-for="edge-recovery" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12" x="670" y="420.5"')],
     ['approval bypass', drawio.replace('id="edge-resume" edge="1" parent="1" source="approval-service"', 'id="edge-resume" edge="1" parent="1" source="checkpoint"'), svg],
     ['published rejection bypass', drawio, svg.replace('data-edge-id="edge-reject" data-source="approval-service" data-target="manual-terminal"', 'data-edge-id="edge-reject" data-source="approval-service" data-target="completed"')],
     ['terminal re-entry', drawio.replace('</root>', '<mxCell id="edge-reenter" value="Retry" edge="1" parent="1" source="manual-terminal" target="control-store"><mxGeometry relative="1" as="geometry"/></mxCell><\/root>'), svg],
