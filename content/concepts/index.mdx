@@ -22,11 +22,11 @@ import TopicIndex from '@site/src/components/TopicIndex';
 
 # 基础概念
 
-Agentic Architecture 的基础概念用于判断系统边界、运行责任与治理机制，不是某个产品或框架的使用指南。先用下面六篇建立共同语言，再把具体实现放回模式和案例中核验：
+自主式系统的基础概念用于判断系统边界、运行责任与治理机制，不是某个产品或框架的使用指南。先区分智能体（Agent）、增强型大语言模型（Augmented LLM）与工作流（Workflow），再用下面六篇建立共同语言，把具体实现放回模式和案例中核验：
 
-1. [AI Agent 系统边界](/concepts/agt-c-01)：区分模型、增强型大语言模型、工作流与 Agent 的责任边界。
-2. [Agent Harness](/concepts/agt-c-02)：识别模型之外承载生命周期、上下文、工具与策略的运行外壳。
-3. [Agent Loop](/concepts/agt-c-03)：判断谁决定下一步、何时停止，以及失败后从哪里继续。
+1. [AI Agent 系统边界](/concepts/agt-c-01)：区分模型、增强型大语言模型、工作流与智能体的责任边界。
+2. 智能体运行框架（[Agent Harness](/concepts/agt-c-02)）：识别模型之外承载生命周期、上下文、工具与策略的运行外壳。
+3. 智能体循环（[Agent Loop](/concepts/agt-c-03)）：判断谁决定下一步、何时停止，以及失败后从哪里继续。
 4. [Context、Memory、State 与 Checkpoint](/concepts/agt-c-04)：分开短期输入、长期记忆、业务事实与恢复位置。
 5. [Tool、Sandbox、Permission 与 Side Effect](/concepts/agt-c-05)：把能力接入与执行隔离、授权和副作用责任放在同一张边界图中。
 6. [Trace、Evaluation 与 Guardrail](/concepts/agt-c-06)：区分运行观测、质量判断与在线约束各自承担的治理职责。
