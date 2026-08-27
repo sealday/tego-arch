@@ -307,13 +307,37 @@ function validateGeometry(drawio, svg) {
   }
 
   const allNodeBoxes = [...nodeBoxes.entries()];
+  const relationEdgeIds = [...new Set(inventory.relationEdges.values())];
+  assert.equal(relationEdgeIds.length, 12, 'all twelve unique relation routes');
+  const edgeGeometry = relationEdgeIds.map((edgeId) => {
+    const edgeGroup = groups.get(edgeId);
+    assert.ok(edgeGroup, `rendered edge group ${edgeId}`);
+    const route = firstPaintedPath(edgeGroup, (element) => (
+      (element.attributes.get('fill') ?? 'none') === 'none'
+    ));
+    const marker = firstPaintedPath(edgeGroup, (element, inherited) => (
+      (element.attributes.get('fill') ?? inherited.fill ?? 'none') !== 'none'
+    ));
+    assert.ok(route && marker, `route and marker for edge ${edgeId}`);
+    const routePoints = pathPoints(route.element).map((point) => ({
+      x: point.x + route.offset.x,
+      y: point.y + route.offset.y,
+    }));
+    assert.ok(routePoints.length >= 2, `measurable route for edge ${edgeId}`);
+    return {
+      edgeId,
+      markerBox: elementBox(marker),
+      routePoints,
+      routeStroke: Number(
+        route.element.attributes.get('stroke-width') ?? route.inherited.strokeWidth ?? 0,
+      ),
+    };
+  });
   const labelBoxes = [];
   for (const label of relationLabels) {
     const labelId = inventory.byValue.get(label).attributes.get('id');
-    const edgeId = inventory.relationEdges.get(label);
     const labelGroup = groups.get(labelId);
-    const edgeGroup = groups.get(edgeId);
-    assert.ok(labelGroup && edgeGroup, `rendered relation groups for ${label}`);
+    assert.ok(labelGroup, `rendered relation group for ${label}`);
     const labelBox = textBox(labelGroup);
     labelBoxes.push([label, labelBox]);
     const opaqueBackgrounds = descendants(labelGroup).filter(({element, inherited}) => {
@@ -324,23 +348,24 @@ function validateGeometry(drawio, svg) {
     });
     if (opaqueBackgrounds.length) failures.push(`${label}: opaque label background`);
 
-    const route = firstPaintedPath(edgeGroup, (element) => (element.attributes.get('fill') ?? 'none') === 'none');
-    const marker = firstPaintedPath(edgeGroup, (element, inherited) => (
-      (element.attributes.get('fill') ?? inherited.fill ?? 'none') !== 'none'
-    ));
-    assert.ok(route && marker, `route and marker for ${label}`);
-    const routePoints = pathPoints(route.element).map((point) => ({
-      x: point.x + route.offset.x,
-      y: point.y + route.offset.y,
+    const connectorClearances = edgeGeometry.map(({edgeId, routePoints, routeStroke}) => ({
+      clearance: Math.min(...routePoints.slice(1).map((end, index) => (
+        segmentBoxDistance(routePoints[index], end, labelBox) - routeStroke / 2
+      ))) * scale,
+      edgeId,
     }));
-    const routeStroke = Number(route.element.attributes.get('stroke-width') ?? route.inherited.strokeWidth ?? 0);
-    const routeClearance = Math.min(...routePoints.slice(1).map((end, index) => (
-      segmentBoxDistance(routePoints[index], end, labelBox) - routeStroke / 2
-    ))) * scale;
-    if (routeClearance < 8) failures.push(`${label}: connector clearance ${routeClearance}`);
-    const markerBox = elementBox(marker);
-    const markerClearance = boxDistance(labelBox, markerBox) * scale;
-    if (markerClearance < 16) failures.push(`${label}: arrow clearance ${markerClearance}`);
+    const arrowClearances = edgeGeometry.map(({edgeId, markerBox}) => ({
+      clearance: boxDistance(labelBox, markerBox) * scale,
+      edgeId,
+    }));
+    for (const {clearance, edgeId} of connectorClearances) {
+      if (clearance < 8) failures.push(`${label}: connector ${edgeId} clearance ${clearance}`);
+    }
+    for (const {clearance, edgeId} of arrowClearances) {
+      if (clearance < 16) failures.push(`${label}: arrow ${edgeId} clearance ${clearance}`);
+    }
+    const routeClearance = Math.min(...connectorClearances.map(({clearance}) => clearance));
+    const markerClearance = Math.min(...arrowClearances.map(({clearance}) => clearance));
     const nodeClearance = Math.min(...allNodeBoxes.map(([, box]) => boxDistance(labelBox, box))) * scale;
     if (nodeClearance < 12) failures.push(`${label}: node clearance ${nodeClearance}`);
     relationMeasurements.push({
@@ -378,17 +403,27 @@ test('multi-agent research diagram enforces measured geometry for all nodes and 
   assert.deepEqual(audit.failures, []);
 });
 
-test('multi-agent research geometry rejects node, arrow, and opaque-background mutants', () => {
+test('multi-agent research geometry rejects node, arrow, foreign-connector, and opaque-background mutants', () => {
   const drawio = readFileSync(drawioPath, 'utf8');
   const svg = readFileSync(svgPath, 'utf8');
-  const {byValue, nodeShapes} = cellInventory(parseXml(drawio, drawioPath).root);
+  const {byValue, nodeShapes, relationEdges} = cellInventory(parseXml(drawio, drawioPath).root);
 
   const movedLedger = mutateGroup(svg, nodeShapes.get('Task Ledger'), (start) => `${start} transform="translate(0 80)"`);
   assert.ok(validateGeometry(drawio, movedLedger).failures.some((failure) => failure.startsWith('Task Ledger: node clearance')));
 
   const labelId = byValue.get('coverage / conflict').attributes.get('id');
   const nearArrow = mutateGroup(svg, labelId, (start) => `${start} transform="translate(-20 92)"`);
-  assert.ok(validateGeometry(drawio, nearArrow).failures.some((failure) => failure.startsWith('coverage / conflict: arrow clearance')));
+  assert.ok(validateGeometry(drawio, nearArrow).failures.some((failure) => failure.startsWith('coverage / conflict: arrow ')));
+
+  const unrelatedEdgeId = relationEdges.get('evidence + source identity');
+  const crossedByForeignConnector = mutateGroup(
+    svg,
+    unrelatedEdgeId,
+    (start) => `${start} transform="translate(0 475)"`,
+  );
+  assert.ok(validateGeometry(drawio, crossedByForeignConnector).failures.some((failure) => (
+    failure.startsWith(`citations verified: connector ${unrelatedEdgeId} clearance`)
+  )));
 
   const backgroundId = byValue.get('bounded retrieval round').attributes.get('id');
   const escaped = backgroundId.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
