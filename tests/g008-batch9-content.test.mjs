@@ -379,7 +379,7 @@ function assertContextGraphContract(body) {
   const members = [];
   let inSubgraph = false;
   let subgraphCount = 0;
-  for (const line of diagram.split('\n').slice(1).filter((item) => item.trim())) {
+  for (const line of diagram.split('\n').slice(1).filter((item) => item.trim() && !item.trim().startsWith('accTitle:'))) {
     let match = line.match(/^\s*subgraph\s+expense_system\["费用申报系统（权威系统边界）"\]\s*$/u);
     if (match) {
       assert.equal(inSubgraph, false, 'nested subgraph');

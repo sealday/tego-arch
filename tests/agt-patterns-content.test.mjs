@@ -1407,7 +1407,10 @@ flowchart TB
     ['only compliant Mermaid hidden in comment', source.replace(fence, `{/*\n${fence}\n*/}`)],
     ['only compliant Mermaid hidden in JSX', source.replace(fence, `<div hidden>\n\n${fence}\n\n</div>`)],
     ['Mermaid accTitle removed', source.replace(`  accTitle: ${agenticRagMermaidAccTitle}\n`, '')],
-    ['Mermaid accTitle drifted', source.replace(agenticRagMermaidAccTitle, '错误图表名称')],
+    ['Mermaid accTitle drifted', source.replace(
+      `accTitle: ${agenticRagMermaidAccTitle}`,
+      'accTitle: 错误图表名称',
+    )],
     ['answer bypasses sufficiency', source.replace(
       'FORM_QUERY["形成查询"] --> RETRIEVE["检索"]',
       'FORM_QUERY["形成查询"] --> ANSWER["回答"]',

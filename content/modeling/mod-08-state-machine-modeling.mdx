@@ -69,6 +69,7 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 
 ```mermaid
 stateDiagram-v2
+  accTitle: 业务意图状态机
   state "已请求" as requested
   state "已接受" as accepted
   state "待结算" as settlement_pending
@@ -96,6 +97,7 @@ stateDiagram-v2
 
 ```mermaid
 stateDiagram-v2
+  accTitle: 执行与恢复状态机
   state "就绪" as ready
   state "尝试执行" as attempting
   state "等待回执" as awaiting_receipt

@@ -149,6 +149,7 @@ const expectedScenarioJudgments = [
   ],
 ];
 const expectedMermaid = `flowchart TD
+  accTitle: 架构风格比较决策流程
   scenarios[质量属性场景] --> profiles[候选架构剖面]
   profiles --> constraints[硬约束检查]
   constraints --> compare[机制与证据比较]

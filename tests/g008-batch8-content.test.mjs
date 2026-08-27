@@ -290,7 +290,7 @@ function assertStoryGraphContract(body) {
   const declared = new Set();
   const endpoints = [];
   const activityNumbers = [];
-  for (const line of storyDiagram(body).split('\n').slice(1).filter((item) => item.trim())) {
+  for (const line of storyDiagram(body).split('\n').slice(1).filter((item) => item.trim() && !item.trim().startsWith('accTitle:'))) {
     let match = line.match(/^\s*([a-z_]+)\(\["参与者<br\/>((?:[^"\n])+?)"\]\)\s*$/u);
     if (match) {
       assert.ok(!declared.has(match[1]), `duplicate declaration: ${match[1]}`);

@@ -108,6 +108,7 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 
 ```mermaid
 flowchart LR
+  accTitle: 费用支付过程模型
   finance_person["人员<br/>财务人员"] --> pending_read_model["读模型<br/>待支付费用"]
   pending_read_model --> request_payment["命令<br/>请求支付"]
   request_payment --> expense_system["系统<br/>费用申报系统"]

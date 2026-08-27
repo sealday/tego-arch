@@ -193,7 +193,7 @@ function stateDiagrams(body) {
 }
 
 function parseStateDiagram(graph) {
-  const [header, ...lines] = graph.split('\n').filter((line) => line.trim() !== '');
+  const [header, ...lines] = graph.split('\n').filter((line) => line.trim() !== '' && !line.trim().startsWith('accTitle:'));
   assert.equal(header, 'stateDiagram-v2', '状态 diagram header');
 
   const declarations = [];

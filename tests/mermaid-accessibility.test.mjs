@@ -10,6 +10,16 @@ import {handleHorizontalArrowKey} from '../src/components/KeyboardScrollableRegi
 
 const root = new URL('../', import.meta.url);
 const contentRoot = new URL('../content/', import.meta.url);
+const migratedMermaidTitles = new Map([
+  ['content/modeling/mod-06-er-model-relationship-boundaries.mdx', ['费用申报实体关系教学模型']],
+  ['content/modeling/mod-07-uml-diagram-selection-guide.mdx', ['UML 选图决策流']],
+  ['content/modeling/mod-08-state-machine-modeling.mdx', ['业务意图状态机', '执行与恢复状态机']],
+  ['content/modeling/mod-09-eventstorming.mdx', ['费用支付过程模型']],
+  ['content/modeling/mod-10-domain-storytelling.mdx', ['费用支付领域故事']],
+  ['content/modeling/mod-11-ddd-context-map.mdx', ['费用申报系统上下文映射']],
+  ['content/styles/sty-00-comparison-framework.mdx', ['架构风格比较决策流程']],
+  ['content/styles/sty-01-layered-architecture.mdx', ['单一部署单元内的封闭层与只读查询例外']],
+]);
 
 async function source(path) {
   return readFile(new URL(path, root), 'utf8');
@@ -167,4 +177,32 @@ test('no Mermaid fence remains inside a focusable or landmark MDX wrapper', asyn
     }
   }
   assert.deepEqual(offenders, [], 'theme Mermaid is the sole focusable scroll region for each Mermaid fence');
+});
+
+test('migrated Mermaid diagrams preserve their former descriptive region names as exact accTitles', async () => {
+  for (const [path, expectedTitles] of migratedMermaidTitles) {
+    const text = await source(path);
+    const titles = [...text.matchAll(/```mermaid\n[^\n]+\n\s*accTitle:\s*(.+)\n/gu)]
+      .map((match) => match[1].trim());
+    assert.deepEqual(titles, expectedTitles, path);
+    assert.equal(new Set(titles).size, titles.length, `${path} Mermaid accTitles are unique`);
+    for (const title of titles) {
+      assert.throws(
+        () => assert.deepEqual(
+          [...text.replace(`accTitle: ${title}\n`, '').matchAll(/```mermaid\n[^\n]+\n\s*accTitle:\s*(.+)\n/gu)].map((match) => match[1].trim()),
+          expectedTitles,
+        ),
+        assert.AssertionError,
+        `${path} removes ${title} fail closed`,
+      );
+      assert.throws(
+        () => assert.deepEqual(
+          [...text.replace(`accTitle: ${title}`, 'accTitle: 错误 Mermaid 标题').matchAll(/```mermaid\n[^\n]+\n\s*accTitle:\s*(.+)\n/gu)].map((match) => match[1].trim()),
+          expectedTitles,
+        ),
+        assert.AssertionError,
+        `${path} drifts ${title} fail closed`,
+      );
+    }
+  }
 });

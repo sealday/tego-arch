@@ -300,7 +300,7 @@ function processDiagram(body) {
 }
 
 function assertProcessContract(body) {
-  const lines = processDiagram(body).split('\n').slice(1).filter((line) => line.trim());
+  const lines = processDiagram(body).split('\n').slice(1).filter((line) => line.trim() && !line.trim().startsWith('accTitle:'));
   const declarations = new Map();
   const edges = [];
   for (const line of lines) {

@@ -82,6 +82,7 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 
 ```mermaid
 flowchart TD
+  accTitle: 单一部署单元内的封闭层与只读查询例外
   subgraph DEPLOY["单一部署单元"]
     PRESENTATION["表示层"] --> APPLICATION["应用层"]
     APPLICATION --> DOMAIN["领域层"]
