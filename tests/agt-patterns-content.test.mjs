@@ -64,6 +64,76 @@ const workflowAgentSourceIds = [
   'src-anthropic-building-effective-agents',
   'src-openai-practical-guide-building-agents',
 ];
+const agenticRagArticlePath = 'content/patterns/agt-p-02-agentic-rag.mdx';
+const agenticRagComparisonHeader = [
+  '比较维度',
+  '基础 RAG',
+  '智能体检索增强生成',
+];
+const agenticRagComparisonCells = [
+  ['控制路径', '一次形成查询、检索并生成', '围绕证据充分性循环检索、读取、评估并终止'],
+  ['检索时机', '按预定步骤检索一次', '依据证据缺口决定是否继续检索'],
+  ['查询策略', '使用初始查询', '在预算门内改写或扩展查询'],
+  ['证据判断', '召回结果直接进入生成上下文', '按覆盖度、权威性、新鲜度、一致性与可归因性评估'],
+  ['终止输出', '生成答案', '回答、拒答、人工澄清或拒绝并隔离'],
+];
+const agenticRagNodes = new Map([
+  ['FORM_QUERY', ['形成查询']],
+  ['RETRIEVE', ['检索']],
+  ['READ_ATTRIBUTE', ['读取与归因']],
+  ['SUFFICIENCY', ['证据充分性评估']],
+  ['BUDGET_GATE', ['预算门']],
+  ['REFORMULATE', ['改写或扩展查询']],
+  ['ANSWER', ['回答']],
+  ['REFUSE', ['拒答']],
+  ['HUMAN_CLARIFY', ['人工澄清']],
+  ['REJECT_QUARANTINE', ['拒绝并隔离']],
+]);
+const agenticRagEdges = [
+  ['FORM_QUERY', 'RETRIEVE', null],
+  ['RETRIEVE', 'READ_ATTRIBUTE', null],
+  ['READ_ATTRIBUTE', 'SUFFICIENCY', null],
+  ['SUFFICIENCY', 'ANSWER', '证据充分'],
+  ['SUFFICIENCY', 'BUDGET_GATE', '证据不足'],
+  ['SUFFICIENCY', 'HUMAN_CLARIFY', '证据矛盾'],
+  ['SUFFICIENCY', 'REJECT_QUARANTINE', '证据不安全'],
+  ['BUDGET_GATE', 'REFORMULATE', '预算可用'],
+  ['BUDGET_GATE', 'REFUSE', '预算耗尽'],
+  ['REFORMULATE', 'FORM_QUERY', null],
+  ['HUMAN_CLARIFY', 'REFUSE', '无法澄清'],
+];
+const agenticRagSourceContracts = [
+  {
+    id: 'src-rag-knowledge-intensive-nlp-tasks',
+    locator: 'https://arxiv.org/abs/2005.11401',
+    title: 'Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks',
+    tier: 'primary',
+  },
+  {
+    id: 'src-flare-active-retrieval-augmented-generation',
+    locator: 'https://arxiv.org/abs/2305.06983',
+    title: 'Active Retrieval Augmented Generation',
+    tier: 'primary',
+  },
+  {
+    id: 'src-self-rag-retrieve-generate-critique',
+    locator: 'https://arxiv.org/abs/2310.11511',
+    title: 'Self-RAG: Learning to Retrieve, Generate, and Critique through Self-Reflection',
+    tier: 'primary',
+  },
+  {
+    id: 'src-react-reasoning-acting-language-models',
+    locator: 'https://arxiv.org/abs/2210.03629',
+    title: 'ReAct: Synergizing Reasoning and Acting in Language Models',
+    tier: 'primary',
+  },
+  {
+    id: 'src-agentic-rag-survey',
+    locator: 'https://arxiv.org/abs/2501.09136',
+    title: 'Agentic Retrieval-Augmented Generation: A Survey on Agentic RAG',
+    tier: 'discovery',
+  },
+];
 const markdownParser = unified().use(remarkParse).use(remarkGfm).use(remarkMdx);
 
 const registry = JSON.parse(
@@ -325,6 +395,182 @@ function readerVisibleTables(source) {
   };
   visit(ast);
   return {ast, body, tables};
+}
+
+function rootMermaidCodeBlocks(source) {
+  const ast = markdownParser.parse(extractMarkdownBody(source));
+  assert.equal(ast.type, 'root', 'MDX document root');
+  assert.ok(Array.isArray(ast.children), 'MDX document root children');
+  return ast.children.flatMap((node) => {
+    assert.ok(node && typeof node === 'object' && typeof node.type === 'string');
+    if (node.type !== 'code' || node.lang !== 'mermaid') return [];
+    assert.equal(typeof node.value, 'string');
+    assert.notEqual(node.value.trim(), '');
+    return [node.value];
+  });
+}
+
+function parseAgenticRagMermaid(mermaid) {
+  const labelsById = new Map();
+  const edges = [];
+  let headerSeen = false;
+  const nodePattern = '[A-Z][A-Z_]*(?:\\["[^"\\n]+"\\])?';
+  const nodeSegment = /^([A-Z][A-Z_]*)(?:\["([^"\n]+)"\])?$/u;
+  const edgeStatement = new RegExp(
+    `^${nodePattern}(?:\\s*-->(?:\\|[^|\\n]+\\|)?\\s*${nodePattern})+$`,
+    'u',
+  );
+
+  for (const line of mermaid.split(/\r?\n/u)) {
+    const statement = line.trim();
+    if (!statement) continue;
+    if (!headerSeen && statement === 'flowchart TB') {
+      headerSeen = true;
+      continue;
+    }
+    assert.match(statement, edgeStatement, `unparsed Agentic RAG Mermaid: ${line}`);
+    const parts = statement.split(/\s*-->(?:\|([^|\n]+)\|)?\s*/u);
+    const nodeSegments = [];
+    const labels = [];
+    for (let index = 0; index < parts.length; index += 2) {
+      nodeSegments.push(parts[index]);
+      if (index + 1 < parts.length) labels.push(parts[index + 1] ?? null);
+    }
+    assert.ok(nodeSegments.length >= 2, `unparsed Agentic RAG edge: ${line}`);
+    const nodeIds = nodeSegments.map((segment) => {
+      const match = segment.match(nodeSegment);
+      assert.ok(match, `unparsed Agentic RAG node: ${segment}`);
+      const [, id, label] = match;
+      if (label !== undefined) {
+        const knownLabels = labelsById.get(id) ?? new Set();
+        knownLabels.add(label);
+        labelsById.set(id, knownLabels);
+      }
+      return id;
+    });
+    for (let index = 1; index < nodeIds.length; index += 1) {
+      edges.push([nodeIds[index - 1], nodeIds[index], labels[index - 1]]);
+    }
+  }
+  assert.ok(headerSeen, 'Agentic RAG Mermaid flowchart TB header');
+  return {
+    labelsById: new Map([...labelsById].map(([id, labels]) => [id, [...labels].sort()])),
+    edges,
+  };
+}
+
+function assertPhysicalTable(body, tableNode, expectedRows, expectedColumns, label) {
+  const startLine = tableNode.position?.start.line;
+  const endLine = tableNode.position?.end.line;
+  assert.ok(Number.isInteger(startLine) && Number.isInteger(endLine));
+  const lines = body.split(/\r?\n/u).slice(startLine - 1, endLine);
+  assert.equal(lines.length, expectedRows + 2, `${label} physical row count`);
+  for (const [index, line] of lines.entries()) {
+    assert.equal(
+      physicalGfmCells(line).length,
+      expectedColumns,
+      `${label} physical row ${index + 1} cell count`,
+    );
+  }
+  assert.ok(
+    physicalGfmCells(lines[1]).every((cell) => /^:?-{3,}:?$/u.test(cell)),
+    `${label} physical delimiter row`,
+  );
+}
+
+function assertAgenticRagContract(source) {
+  const metadata = parseFrontMatter(source);
+  assert.equal(metadata.title, '智能体检索增强生成（Agentic RAG）：用证据充分性约束检索循环');
+  assert.equal(metadata.topic_id, 'AGT-P-02');
+  assert.equal(metadata.slug, '/patterns/agt-p-02');
+  assert.equal(metadata.content_type, 'pattern');
+  assert.equal(metadata.status, 'reviewed');
+  assert.equal(metadata.difficulty, 'advanced');
+  assert.equal(metadata.analyzed_at, '2026-08-26');
+  assert.equal(metadata.source_cutoff, '2026-08-26');
+  assert.equal(metadata.confidence, 'high');
+  assert.equal(metadata.priority, 'P1');
+  assert.deepEqual(metadata.domains, ['software-architecture', 'artificial-intelligence']);
+  assert.deepEqual(metadata.agent_patterns, ['agent-loop', 'agentic-rag']);
+  assert.deepEqual(metadata.protocols, []);
+  assert.deepEqual(metadata.quality_attributes, ['reliability', 'safety', 'cost-efficiency']);
+  assert.deepEqual(metadata.tags, [
+    '智能体检索增强生成',
+    '证据充分性',
+    '检索循环',
+    '来源归因',
+    '拒答',
+  ]);
+  assert.equal(
+    metadata.summary,
+    '把智能体检索增强生成定义为以证据充分性为终止判断的有界智能体循环（Agent Loop），用覆盖度、权威性、新鲜度、一致性与可归因性控制继续检索、回答、拒答、澄清或隔离。',
+  );
+  assert.deepEqual(metadata.depends_on, ['AGT-C-03', 'AGT-C-04', 'AGT-C-06']);
+  assert.deepEqual(metadata.adjacent_topics, [
+    'AGT-C-03',
+    'AGT-C-04',
+    'AGT-C-06',
+    'AGT-P-01',
+    'AGT-P-04',
+    'AGT-P-07',
+  ]);
+  assert.deepEqual(metadata.related_cases, ['/cases/multi-agent-research-system']);
+  assert.deepEqual(metadata.related_questions, []);
+
+  assert.deepEqual(
+    findMarkdownHeadings(source)
+      .filter(({level}) => level === 2)
+      .map(({text}) => `## ${text}`),
+    knowledgeTypeContracts.pattern,
+  );
+
+  const {body, tables} = readerVisibleTables(source);
+  const comparisonTables = tables.filter(({rows: [header]}) =>
+    header?.[0] === agenticRagComparisonHeader[0]);
+  assert.equal(comparisonTables.length, 1, 'exactly one reader-visible RAG comparison table');
+  const [{node, rows: [header, ...rows]}] = comparisonTables;
+  assertPhysicalTable(
+    body,
+    node,
+    agenticRagComparisonCells.length,
+    agenticRagComparisonHeader.length,
+    'RAG comparison table',
+  );
+  assert.deepEqual(header, agenticRagComparisonHeader);
+  assert.deepEqual(rows, agenticRagComparisonCells);
+
+  const mermaidBlocks = rootMermaidCodeBlocks(source);
+  assert.equal(mermaidBlocks.length, 1, 'exactly one root-level visible Agentic RAG Mermaid');
+  const graph = parseAgenticRagMermaid(mermaidBlocks[0]);
+  assert.deepEqual(graph.labelsById, agenticRagNodes);
+  assert.deepEqual(graph.edges, agenticRagEdges);
+  assert.deepEqual(
+    graph.edges.filter(([, target]) => target === 'ANSWER'),
+    [['SUFFICIENCY', 'ANSWER', '证据充分']],
+    'answer has exactly one sufficiency-gated predecessor',
+  );
+  assert.ok(
+    graph.edges.some(([sourceId, target]) =>
+      sourceId === 'REFORMULATE' && target === 'FORM_QUERY'),
+    'query-rewrite loop returns through the budget gate',
+  );
+
+  const visible = parseMdxVisibleCopy(source, agenticRagArticlePath, {
+    includeStructure: true,
+  }).blocks.map(({text}) => text).join('\n');
+  for (const contract of [
+    /覆盖度[\s\S]*权威性[\s\S]*新鲜度[\s\S]*一致性[\s\S]*可归因性/u,
+    /评测器[\s\S]*(?:会出错|可错|并非事实裁判)/u,
+    /查询次数[\s\S]*词元成本[\s\S]*经过时间[\s\S]*来源多样性/u,
+    /提示注入[\s\S]*投毒检索/u,
+    /控制所有者/u,
+    /状态所有者/u,
+    /只读/u,
+    /终止/u,
+    /失败[\s\S]*恢复/u,
+    /确定性工作流/u,
+    /综述[\s\S]*(?:分类|谱系)[\s\S]*发现[\s\S]*不替代[\s\S]*原始论文/u,
+  ]) assert.match(visible, contract);
 }
 
 function physicalGfmCells(line) {
@@ -960,4 +1206,193 @@ test('AGT-P-01 reuses the two governed first-party taxonomy sources without a vi
     assert.deepEqual(result.source_ids, [source.id]);
     assert.equal(result.review_status, 'healthy');
   }
+});
+
+test('Agentic RAG Mermaid parser preserves legal chained edges', () => {
+  const graph = parseAgenticRagMermaid(
+    'flowchart TB\n    FORM_QUERY["形成查询"] --> RETRIEVE["检索"] --> READ_ATTRIBUTE["读取与归因"]',
+  );
+  assert.deepEqual(graph.edges, [
+    ['FORM_QUERY', 'RETRIEVE', null],
+    ['RETRIEVE', 'READ_ATTRIBUTE', null],
+  ]);
+  assert.deepEqual(graph.labelsById, new Map([
+    ['FORM_QUERY', ['形成查询']],
+    ['RETRIEVE', ['检索']],
+    ['READ_ATTRIBUTE', ['读取与归因']],
+  ]));
+});
+
+test('AGT-P-02 publishes the exact evidence-bounded Agentic RAG contract', () => {
+  assert.ok(existsSync(agenticRagArticlePath), `Missing ${agenticRagArticlePath}`);
+  assertAgenticRagContract(readFileSync(agenticRagArticlePath, 'utf8'));
+});
+
+test('AGT-P-02 comparison table rejects structural, semantic, and hidden-copy mutations', () => {
+  assert.ok(existsSync(agenticRagArticlePath), `Missing ${agenticRagArticlePath}`);
+  const source = readFileSync(agenticRagArticlePath, 'utf8');
+  const lines = source.split(/\r?\n/u);
+  const headerIndex = lines.indexOf(`| ${agenticRagComparisonHeader.join(' | ')} |`);
+  assert.notEqual(headerIndex, -1, 'Agentic RAG comparison table header fixture');
+  const mutateCell = (rowIndex, columnIndex, replacement) => {
+    const candidate = [...lines];
+    const lineIndex = headerIndex + 2 + rowIndex;
+    const cells = physicalGfmCells(candidate[lineIndex]);
+    cells[columnIndex] = replacement;
+    candidate[lineIndex] = `| ${cells.join(' | ')} |`;
+    return candidate.join('\n');
+  };
+  const mutations = [];
+  for (let rowIndex = 0; rowIndex < agenticRagComparisonCells.length; rowIndex += 1) {
+    for (let columnIndex = 0; columnIndex < agenticRagComparisonHeader.length; columnIndex += 1) {
+      mutations.push([
+        `empty comparison row ${rowIndex + 1} column ${columnIndex + 1}`,
+        mutateCell(rowIndex, columnIndex, ''),
+      ], [
+        `wrong comparison row ${rowIndex + 1} column ${columnIndex + 1}`,
+        mutateCell(rowIndex, columnIndex, '非空但错误'),
+      ]);
+    }
+  }
+  mutations.push([
+    'hidden exact cell backs wrong visible semantics',
+    mutateCell(
+      0,
+      2,
+      `错误控制路径<span hidden>${agenticRagComparisonCells[0][2]}</span>`,
+    ),
+  ], [
+    'extra physical column',
+    source
+      .replace(
+        `| ${agenticRagComparisonHeader.join(' | ')} |`,
+        `| ${agenticRagComparisonHeader.join(' | ')} | 冗余 |`,
+      )
+      .replace('| --- | --- | --- |', '| --- | --- | --- | --- |'),
+  ]);
+
+  for (const [label, mutant] of mutations) {
+    assert.notEqual(mutant, source, `${label} fixture must alter the article`);
+    assert.throws(() => assertAgenticRagContract(mutant), undefined, label);
+  }
+});
+
+test('AGT-P-02 requires one root-visible Mermaid and rejects topology bypasses fail closed', () => {
+  assert.ok(existsSync(agenticRagArticlePath), `Missing ${agenticRagArticlePath}`);
+  const source = readFileSync(agenticRagArticlePath, 'utf8');
+  const [mermaid] = rootMermaidCodeBlocks(source);
+  assert.ok(mermaid, 'Agentic RAG Mermaid fixture');
+  const fence = `\`\`\`mermaid\n${mermaid}\n\`\`\``;
+  const bypassFence = `\`\`\`mermaid
+flowchart TB
+    FORM_QUERY["形成查询"] --> ANSWER["回答"]
+\`\`\``;
+  const mutations = [
+    ['zero root-visible Mermaid', source.replace(fence, '')],
+    ['multiple root-visible Mermaid', `${source}\n\n${bypassFence}\n`],
+    ['only compliant Mermaid hidden in comment', source.replace(fence, `{/*\n${fence}\n*/}`)],
+    ['only compliant Mermaid hidden in JSX', source.replace(fence, `<div hidden>\n\n${fence}\n\n</div>`)],
+    ['answer bypasses sufficiency', source.replace(
+      'FORM_QUERY["形成查询"] --> RETRIEVE["检索"]',
+      'FORM_QUERY["形成查询"] --> ANSWER["回答"]',
+    )],
+    ['budget gate bypassed', source.replace(
+      'SUFFICIENCY -->|证据不足| BUDGET_GATE["预算门"]',
+      'SUFFICIENCY -->|证据不足| REFORMULATE["改写或扩展查询"]',
+    )],
+    ['decoy stable identity', source.replace(
+      'READ_ATTRIBUTE --> SUFFICIENCY["证据充分性评估"]',
+      'READ_ATTRIBUTE --> FAKE_SUFFICIENCY["证据充分性评估"]',
+    )],
+    ['chained answer bypass', source.replace(
+      'FORM_QUERY["形成查询"] --> RETRIEVE["检索"]',
+      'FORM_QUERY["形成查询"] --> RETRIEVE["检索"] --> ANSWER',
+    )],
+    ['alternate solid connector bypass', source.replace(
+      'FORM_QUERY["形成查询"] --> RETRIEVE["检索"]',
+      'FORM_QUERY["形成查询"] --> RETRIEVE["检索"]\n    RETRIEVE ==> ANSWER',
+    )],
+    ['alternate dotted connector bypass', source.replace(
+      'FORM_QUERY["形成查询"] --> RETRIEVE["检索"]',
+      'FORM_QUERY["形成查询"] --> RETRIEVE["检索"]\n    RETRIEVE -.-> ANSWER',
+    )],
+    ['alternate bidirectional connector bypass', source.replace(
+      'FORM_QUERY["形成查询"] --> RETRIEVE["检索"]',
+      'FORM_QUERY["形成查询"] --> RETRIEVE["检索"]\n    RETRIEVE <--> ANSWER',
+    )],
+    ['alternate circle connector bypass', source.replace(
+      'FORM_QUERY["形成查询"] --> RETRIEVE["检索"]',
+      'FORM_QUERY["形成查询"] --> RETRIEVE["检索"]\n    RETRIEVE --o ANSWER',
+    )],
+    ['alternate cross connector bypass', source.replace(
+      'FORM_QUERY["形成查询"] --> RETRIEVE["检索"]',
+      'FORM_QUERY["形成查询"] --> RETRIEVE["检索"]\n    RETRIEVE --x ANSWER',
+    )],
+  ];
+  const survivors = [];
+  for (const [label, mutant] of mutations) {
+    assert.notEqual(mutant, source, `${label} fixture must alter the article`);
+    assert.doesNotThrow(
+      () => markdownParser.parse(extractMarkdownBody(mutant)),
+      `${label} fixture remains valid MDX`,
+    );
+    try {
+      assertAgenticRagContract(mutant);
+      survivors.push(label);
+    } catch {
+      // Expected: visibility, cardinality, grammar, stable identity, and bypass mutants fail.
+    }
+  }
+  assert.deepEqual(survivors, []);
+});
+
+test('AGT-P-02 ignores a nested hidden Mermaid when the root topology remains', () => {
+  const source = readFileSync(agenticRagArticlePath, 'utf8');
+  const hiddenBypass = `<div hidden>\n\n\`\`\`mermaid
+flowchart TB
+    FORM_QUERY["形成查询"] --> ANSWER["回答"]
+\`\`\`\n\n</div>`;
+  const mutant = `${source}\n\n${hiddenBypass}\n`;
+  assert.doesNotThrow(() => markdownParser.parse(extractMarkdownBody(mutant)));
+  assert.doesNotThrow(() => assertAgenticRagContract(mutant));
+});
+
+test('AGT-P-02 registers four primary papers and one discovery-only survey', () => {
+  assert.ok(existsSync(agenticRagArticlePath), `Missing ${agenticRagArticlePath}`);
+  const ledger = JSON.parse(readFileSync('data/source-ledger.json', 'utf8'));
+  const document = ledger.documents[agenticRagArticlePath];
+  assert.ok(document, `${agenticRagArticlePath} source document`);
+  assert.deepEqual(
+    document.citations.map(({source_id: sourceId}) => sourceId),
+    agenticRagSourceContracts.map(({id}) => id),
+  );
+  assert.ok(document.citations.every(({usage_mode: usageMode}) => usageMode === 'facts-summary'));
+  assert.equal(document.citations.filter(({manifest_primary: primary}) => primary).length, 1);
+
+  const health = JSON.parse(readFileSync('data/source-link-health.json', 'utf8'));
+  for (const contract of agenticRagSourceContracts) {
+    const source = ledger.sources.find(({id}) => id === contract.id);
+    assert.ok(source, contract.id);
+    assert.equal(source.canonical_locator, contract.locator, contract.id);
+    assert.equal(source.transport_locator, contract.locator, contract.id);
+    assert.equal(source.expected_final_transport_locator, contract.locator, contract.id);
+    assert.equal(source.title, contract.title, contract.id);
+    assert.equal(source.source_kind, 'paper', contract.id);
+    assert.equal(source.tier, contract.tier, contract.id);
+    const observation = health.results.find(({source_ids: sourceIds}) =>
+      sourceIds.includes(contract.id));
+    assert.ok(observation, `${contract.id} health observation`);
+    assert.equal(observation.transport_locator, contract.locator, contract.id);
+    assert.equal(observation.last_attempt.outcome, 'healthy', contract.id);
+    assert.equal(observation.last_attempt.final_transport_locator, contract.locator, contract.id);
+  }
+
+  const survey = ledger.sources.find(({id}) => id === 'src-agentic-rag-survey');
+  assert.deepEqual(survey.allowed_evidence_roles, ['discovery']);
+  assert.match(survey.usage_boundary, /taxonomy and discovery only/u);
+  assert.match(survey.usage_boundary, /does not replace the original papers/u);
+  const surveyCitation = document.citations.find(({source_id: sourceId}) =>
+    sourceId === survey.id);
+  assert.deepEqual(surveyCitation.roles, ['discovery']);
+  assert.equal(surveyCitation.manifest_primary, false);
 });
