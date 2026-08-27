@@ -3747,3 +3747,341 @@ test('AGT-P-06 source governance rejects identity, license, citation, document a
   }
   assert.deepEqual(survivors, []);
 });
+
+const orchestratorWorkersArticlePath =
+  'content/patterns/agt-p-07-orchestrator-workers-fanout-fanin.mdx';
+const orchestratorWorkersSummary =
+  '由编排者动态分解未知子任务，以稳定任务标识、任务账本、并发预算和隔离上下文约束三个有界工作者，再经扇入、去重与冲突解决形成完整、部分或预算耗尽终态。';
+const orchestratorWorkersTags = [
+  '编排者–工作者',
+  '扇出/扇入',
+  '动态分解',
+  '任务账本',
+  '冲突解决',
+];
+const orchestratorWorkersMermaidAccTitle =
+  '编排者动态分解、三个有界工作者、扇入冲突解决与三类终止控制流';
+const orchestratorWorkersNodes = new Map([
+  ['REQUEST', ['受控任务请求']],
+  ['ORCHESTRATOR', ['编排者（Orchestrator）']],
+  ['TASK_LEDGER', ['任务账本（Task ledger）']],
+  ['CONCURRENCY_BUDGET', ['并发与总预算门']],
+  ['WORKER_A', ['有界工作者甲']],
+  ['WORKER_B', ['有界工作者乙']],
+  ['WORKER_C', ['有界工作者丙']],
+  ['FAN_IN', ['扇入（Fan-in）']],
+  ['DUPLICATE_SUPPRESSION', ['重复抑制']],
+  ['CONFLICT_RESOLVER', ['冲突解决器（Conflict resolver）']],
+  ['COMPLETE', ['完整（complete）']],
+  ['PARTIAL', ['部分（partial）']],
+  ['BUDGET_EXHAUSTED', ['预算耗尽（budget exhausted）']],
+]);
+const orchestratorWorkersEdges = [
+  ['REQUEST', 'ORCHESTRATOR', null],
+  ['ORCHESTRATOR', 'TASK_LEDGER', '动态分解与登记'],
+  ['TASK_LEDGER', 'CONCURRENCY_BUDGET', '待执行子任务'],
+  ['CONCURRENCY_BUDGET', 'WORKER_A', '槽位甲'],
+  ['CONCURRENCY_BUDGET', 'WORKER_B', '槽位乙'],
+  ['CONCURRENCY_BUDGET', 'WORKER_C', '槽位丙'],
+  ['CONCURRENCY_BUDGET', 'BUDGET_EXHAUSTED', '总预算耗尽'],
+  ['WORKER_A', 'FAN_IN', '结构化结果'],
+  ['WORKER_B', 'FAN_IN', '结构化结果'],
+  ['WORKER_C', 'FAN_IN', '结构化结果'],
+  ['FAN_IN', 'DUPLICATE_SUPPRESSION', null],
+  ['DUPLICATE_SUPPRESSION', 'COMPLETE', '齐全且一致'],
+  ['DUPLICATE_SUPPRESSION', 'PARTIAL', '缺失但策略允许'],
+  ['DUPLICATE_SUPPRESSION', 'CONFLICT_RESOLVER', '结果冲突'],
+  ['CONFLICT_RESOLVER', 'COMPLETE', '冲突已解决'],
+  ['CONFLICT_RESOLVER', 'PARTIAL', '未解决且允许部分'],
+  ['CONFLICT_RESOLVER', 'BUDGET_EXHAUSTED', '解决预算耗尽'],
+];
+const orchestratorWorkersSourceIds = [
+  'src-anthropic-building-effective-agents',
+  'src-github-4d3dfe89f2a4',
+  'src-github-fe00e370c994',
+];
+const orchestratorWorkersDocumentContract = {
+  reviewed_at: '2026-08-27',
+  copyright_checks: [
+    'original-structure',
+    'quotation-boundary',
+    'attribution-complete',
+    'illustration-rights',
+  ],
+  citations: [
+    {
+      source_id: 'src-anthropic-building-effective-agents',
+      citation_url: 'https://www.anthropic.com/engineering/building-effective-agents',
+      roles: ['definition', 'method'],
+      manifest_primary: true,
+      usage_mode: 'facts-summary',
+      attribution_note: 'Building Effective Agents, Anthropic',
+      modification_note: 'Original Chinese synthesis of parallelization and orchestrator–workers boundaries; no source prose, examples, structure, taxonomy layout or diagrams copied.',
+      excerpt: null,
+      quotation_reviewed: false,
+    },
+    {
+      source_id: 'src-github-4d3dfe89f2a4',
+      citation_url: 'https://github.com/microsoft/multi-agent-reference-architecture/blob/ed3613b54b46b595dd223aaff8772def376a8c37/docs/building-blocks/Building-Blocks.md',
+      roles: ['case-evidence', 'comparison'],
+      manifest_primary: false,
+      usage_mode: 'facts-summary',
+      attribution_note: 'Building Blocks at fixed commit, Microsoft',
+      modification_note: 'Original Chinese comparison with the reference architecture orchestrator and specialist-agent boundary; no source prose, examples, tables, structure or diagrams copied.',
+      excerpt: null,
+      quotation_reviewed: false,
+    },
+    {
+      source_id: 'src-github-fe00e370c994',
+      citation_url: 'https://github.com/awslabs/cli-agent-orchestrator/blob/bae80071a17e001380367c461b32d64bc6b54433/README.md',
+      roles: ['case-evidence', 'implementation'],
+      manifest_primary: false,
+      usage_mode: 'facts-summary',
+      attribution_note: 'CLI Agent Orchestrator README at fixed commit, Amazon Web Services',
+      modification_note: 'Bounded implementation-evidence summary of supervisor–worker assignment and isolated terminal sessions; no source prose, code, examples, structure or diagrams copied.',
+      excerpt: null,
+      quotation_reviewed: false,
+    },
+  ],
+};
+
+function parseOrchestratorWorkersMermaid(mermaid) {
+  const labelsById = new Map();
+  const edges = [];
+  let direction = null;
+  let accTitle = null;
+  const nodePattern = '[A-Z][A-Z_]*(?:\\["[^"\\n]+"\\])?';
+  const nodeSegment = /^([A-Z][A-Z_]*)(?:\["([^"\n]+)"\])?$/u;
+  const edgeStatement = new RegExp(
+    `^${nodePattern}(?:\\s*-->(?:\\|[^|\\n]+\\|)?\\s*${nodePattern})+$`,
+    'u',
+  );
+
+  for (const line of mermaid.split(/\r?\n/u)) {
+    const statement = line.trim();
+    if (!statement) continue;
+    if (direction === null && /^flowchart\s+(?:TB|LR)$/u.test(statement)) {
+      direction = statement.slice('flowchart '.length);
+      continue;
+    }
+    if (statement.startsWith('accTitle:')) {
+      assert.equal(accTitle, null, 'Orchestrator–Workers Mermaid has one accTitle');
+      accTitle = statement.slice('accTitle:'.length).trim();
+      continue;
+    }
+    assert.match(statement, edgeStatement, `unparsed Orchestrator–Workers Mermaid: ${line}`);
+    const parts = statement.split(/\s*-->(?:\|([^|\n]+)\|)?\s*/u);
+    const nodeSegments = [];
+    const edgeLabels = [];
+    for (let index = 0; index < parts.length; index += 2) {
+      nodeSegments.push(parts[index]);
+      if (index + 1 < parts.length) edgeLabels.push(parts[index + 1] ?? null);
+    }
+    const nodeIds = nodeSegments.map((segment) => {
+      const match = segment.match(nodeSegment);
+      assert.ok(match, `unparsed Orchestrator–Workers node: ${segment}`);
+      const [, id, label] = match;
+      if (label !== undefined) {
+        const knownLabels = labelsById.get(id) ?? new Set();
+        knownLabels.add(label);
+        labelsById.set(id, knownLabels);
+      }
+      return id;
+    });
+    for (let index = 1; index < nodeIds.length; index += 1) {
+      edges.push([nodeIds[index - 1], nodeIds[index], edgeLabels[index - 1]]);
+    }
+  }
+  assert.equal(direction, 'TB', 'Orchestrator–Workers Mermaid uses readable vertical flow');
+  assert.equal(accTitle, orchestratorWorkersMermaidAccTitle);
+  return {
+    labelsById: new Map([...labelsById].map(([id, labels]) => [id, [...labels].sort()])),
+    edges,
+  };
+}
+
+function assertOrchestratorWorkersArticleContract(source) {
+  const metadata = parseFrontMatter(source);
+  assert.equal(metadata.title, '编排者–工作者与扇出/扇入：并行不是无界广播');
+  assert.equal(metadata.slug, '/patterns/agt-p-07');
+  assert.equal(metadata.content_type, 'pattern');
+  assert.equal(metadata.status, 'reviewed');
+  assert.equal(metadata.difficulty, 'advanced');
+  assert.equal(metadata.analyzed_at, '2026-08-26');
+  assert.equal(metadata.source_cutoff, '2026-08-26');
+  assert.equal(metadata.confidence, 'high');
+  assert.equal(metadata.topic_id, 'AGT-P-07');
+  assert.equal(metadata.priority, 'P1');
+  assert.deepEqual(metadata.domains, ['software-architecture', 'artificial-intelligence']);
+  assert.deepEqual(metadata.agent_patterns, [
+    'agent-loop', 'orchestrator-workers', 'fan-out-fan-in',
+  ]);
+  assert.deepEqual(metadata.protocols, []);
+  assert.deepEqual(metadata.quality_attributes, [
+    'performance', 'reliability', 'safety', 'operability',
+  ]);
+  assert.deepEqual(metadata.tags, orchestratorWorkersTags);
+  assert.equal(metadata.summary, orchestratorWorkersSummary);
+  assert.deepEqual(metadata.depends_on, ['AGT-C-03', 'AGT-C-04']);
+  assert.deepEqual(metadata.adjacent_topics, [
+    'AGT-C-03', 'AGT-C-04', 'AGT-P-01', 'AGT-P-02', 'AGT-P-03', 'AGT-P-04',
+    'AGT-P-05', 'AGT-P-06', 'AGT-P-08',
+  ]);
+  assert.deepEqual(metadata.related_cases, [
+    '/cases/multi-agent-research-system',
+    '/cases/aws-cli-agent-orchestrator',
+    '/cases/microsoft-multi-agent-reference-architecture',
+  ]);
+  assert.deepEqual(metadata.related_questions, []);
+  assert.deepEqual(
+    findMarkdownHeadings(source).filter(({level}) => level === 2)
+      .map(({text}) => `## ${text}`),
+    knowledgeTypeContracts.pattern,
+  );
+
+  const mermaidBlocks = readerVisibleMermaidCodeBlocks(source);
+  assert.equal(mermaidBlocks.length, 1, 'exactly one reader-visible Orchestrator–Workers Mermaid');
+  assert.equal(mermaidBlocks[0].rootDirect, true, 'Orchestrator–Workers Mermaid remains root-direct');
+  const graph = parseOrchestratorWorkersMermaid(mermaidBlocks[0].value);
+  assert.deepEqual(graph.labelsById, orchestratorWorkersNodes);
+  assert.deepEqual(graph.edges, orchestratorWorkersEdges);
+  assert.deepEqual(
+    graph.edges.filter(([sourceId, targetId]) =>
+      sourceId === 'CONCURRENCY_BUDGET' && /^WORKER_[ABC]$/u.test(targetId)),
+    [
+      ['CONCURRENCY_BUDGET', 'WORKER_A', '槽位甲'],
+      ['CONCURRENCY_BUDGET', 'WORKER_B', '槽位乙'],
+      ['CONCURRENCY_BUDGET', 'WORKER_C', '槽位丙'],
+    ],
+    'fan-out is exactly three bounded worker slots',
+  );
+  for (const terminal of ['COMPLETE', 'PARTIAL', 'BUDGET_EXHAUSTED']) {
+    assert.equal(graph.edges.some(([sourceId]) => sourceId === terminal), false, `${terminal} is terminal`);
+  }
+
+  const visible = parseMdxVisibleCopy(source, orchestratorWorkersArticlePath, {
+    includeStructure: true,
+  }).blocks.map(({text}) => text).join('\n');
+  for (const contract of [
+    /动态(?:任务)?分解[^。\n]{0,180}静态并行/u,
+    /稳定任务(?:标识| ID)/u,
+    /并发预算/u,
+    /隔离[^。\n]{0,80}工作者[^。\n]{0,80}上下文|工作者[^。\n]{0,80}上下文[^。\n]{0,80}隔离/u,
+    /重复抑制/u,
+    /部分结果策略/u,
+    /冲突解决/u,
+    /取消传播/u,
+    /控制所有者/u,
+    /状态所有者/u,
+    /权限/u,
+    /副作用/u,
+    /终止责任/u,
+    /失败[^。\n]{0,180}恢复/u,
+    /质量属性/u,
+    /迁移/u,
+    /确定性回退/u,
+    /实现证据[^。\n]{0,180}(?:不证明|不能证明)[^。\n]{0,100}生产/u,
+  ]) assert.match(visible, contract);
+}
+
+function assertOrchestratorWorkersSourceContract(ledger) {
+  assert.deepEqual(
+    ledger.documents[orchestratorWorkersArticlePath],
+    orchestratorWorkersDocumentContract,
+  );
+  assert.deepEqual(
+    ledger.documents[orchestratorWorkersArticlePath].citations.map(({source_id: id}) => id),
+    orchestratorWorkersSourceIds,
+  );
+  const expectedSources = [
+    ['src-anthropic-building-effective-agents', 'Building Effective Agents', 'Anthropic', 'official-docs', 'first-party', 'LicenseRef-All-Rights-Reserved'],
+    ['src-github-4d3dfe89f2a4', 'Building Blocks', 'Microsoft', 'source-code', 'primary', 'MIT'],
+    ['src-github-fe00e370c994', 'README.md', 'Amazon Web Services', 'source-code', 'primary', 'Apache-2.0'],
+  ];
+  for (const [id, title, author, kind, tier, license] of expectedSources) {
+    const source = ledger.sources.find((candidate) => candidate.id === id);
+    assert.ok(source, id);
+    assert.deepEqual(
+      [source.id, source.title, source.author_or_org, source.source_kind, source.tier, source.license],
+      [id, title, author, kind, tier, license],
+    );
+    assert.match(source.usage_boundary, /(?:does not|it does not)/u);
+  }
+}
+
+test('AGT-P-07 publishes exact bounded fan-out, fan-in, conflict and terminal semantics', () => {
+  assert.ok(existsSync(orchestratorWorkersArticlePath), `Missing ${orchestratorWorkersArticlePath}`);
+  const source = readFileSync(orchestratorWorkersArticlePath, 'utf8');
+  assert.doesNotThrow(() => markdownParser.parse(extractMarkdownBody(source)));
+  assertOrchestratorWorkersArticleContract(source);
+});
+
+test('AGT-P-07 fails closed on hidden, duplicate, bypass and unbounded Mermaid mutations', () => {
+  const source = readFileSync(orchestratorWorkersArticlePath, 'utf8');
+  const mermaid = readerVisibleMermaidCodeBlocks(source)[0].value;
+  const fence = `\`\`\`mermaid\n${mermaid}\n\`\`\``;
+  const mutations = [
+    ['zero Mermaid', source.replace(fence, '')],
+    ['duplicate Mermaid', `${source}\n\n${fence}\n`],
+    ['nested Mermaid', source.replace(fence, `<div>\n${fence}\n</div>`) ],
+    ['hidden Mermaid', source.replace(fence, `<div hidden>\n\n${fence}\n\n</div>`) ],
+    ['dynamic decomposition bypass', source.replace(
+      'ORCHESTRATOR -->|动态分解与登记| TASK_LEDGER',
+      'ORCHESTRATOR -->|动态分解与登记| CONCURRENCY_BUDGET',
+    )],
+    ['fourth worker', source.replace(
+      'CONCURRENCY_BUDGET -->|槽位丙| WORKER_C["有界工作者丙"]',
+      'CONCURRENCY_BUDGET -->|槽位丙| WORKER_C["有界工作者丙"]\n    CONCURRENCY_BUDGET --> WORKER_D["无界工作者丁"]',
+    )],
+    ['worker bypasses fan-in', source.replace(
+      'WORKER_C -->|结构化结果| FAN_IN',
+      'WORKER_C -->|结构化结果| COMPLETE',
+    )],
+    ['conflict bypasses resolver', source.replace(
+      'DUPLICATE_SUPPRESSION -->|结果冲突| CONFLICT_RESOLVER',
+      'DUPLICATE_SUPPRESSION -->|结果冲突| COMPLETE',
+    )],
+    ['complete re-enters orchestration', source.replace(
+      'CONFLICT_RESOLVER -->|冲突已解决| COMPLETE',
+      'CONFLICT_RESOLVER -->|冲突已解决| COMPLETE\n    COMPLETE --> ORCHESTRATOR',
+    )],
+  ];
+  const survivors = [];
+  for (const [label, mutant] of mutations) {
+    assert.notEqual(mutant, source, `${label} fixture mutates article`);
+    assert.doesNotThrow(() => markdownParser.parse(extractMarkdownBody(mutant)));
+    try { assertOrchestratorWorkersArticleContract(mutant); survivors.push(label); } catch {}
+  }
+  assert.deepEqual(survivors, []);
+});
+
+test('AGT-P-07 reuses governed Anthropic, Microsoft and AWS evidence', () => {
+  assertOrchestratorWorkersSourceContract(
+    JSON.parse(readFileSync('data/source-ledger.json', 'utf8')),
+  );
+});
+
+test('AGT-P-07 source and citation governance rejects drift', () => {
+  const ledger = JSON.parse(readFileSync('data/source-ledger.json', 'utf8'));
+  const mutations = [];
+  for (const [sourceId, field, value] of [
+    ['src-anthropic-building-effective-agents', 'title', 'Wrong title'],
+    ['src-github-4d3dfe89f2a4', 'author_or_org', 'Wrong org'],
+    ['src-github-fe00e370c994', 'license', 'MIT'],
+  ]) {
+    const mutant = structuredClone(ledger);
+    mutant.sources.find(({id}) => id === sourceId)[field] = value;
+    mutations.push([`${sourceId} ${field}`, mutant]);
+  }
+  const citationMutant = structuredClone(ledger);
+  citationMutant.documents[orchestratorWorkersArticlePath].citations[0].roles = ['implementation'];
+  mutations.push(['citation role', citationMutant]);
+  const documentMutant = structuredClone(ledger);
+  documentMutant.documents[orchestratorWorkersArticlePath].reviewed_at = '2099-01-01';
+  mutations.push(['document review', documentMutant]);
+  const survivors = [];
+  for (const [label, mutant] of mutations) {
+    try { assertOrchestratorWorkersSourceContract(mutant); survivors.push(label); } catch {}
+  }
+  assert.deepEqual(survivors, []);
+});

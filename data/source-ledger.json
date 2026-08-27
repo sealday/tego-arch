@@ -8297,6 +8297,9 @@
       "locator_aliases": [],
       "tombstone": null,
       "title": "Building Blocks",
+      "citation_titles": [
+        "Microsoft 多智能体参考架构构件文档"
+      ],
       "author_or_org": "Microsoft",
       "published_at": null,
       "registered_at": "2026-07-24",
@@ -13540,6 +13543,9 @@
       "locator_aliases": [],
       "tombstone": null,
       "title": "README.md",
+      "citation_titles": [
+        "AWS 命令行智能体编排器固定说明文件（README）"
+      ],
       "author_or_org": "Amazon Web Services",
       "published_at": null,
       "registered_at": "2026-07-24",
@@ -33370,6 +33376,59 @@
           "usage_mode": "original-illustration",
           "attribution_note": "Multi-agent control ownership models, Tego Arch maintainers",
           "modification_note": "Created as an original synchronized Draw.io/SVG pair without third-party topology, reference imagery, icons, brand visuals, signatures, watermarks or copied composition.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/patterns/agt-p-07-orchestrator-workers-fanout-fanin.mdx": {
+      "reviewed_at": "2026-08-27",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-anthropic-building-effective-agents",
+          "citation_url": "https://www.anthropic.com/engineering/building-effective-agents",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Building Effective Agents, Anthropic",
+          "modification_note": "Original Chinese synthesis of parallelization and orchestrator–workers boundaries; no source prose, examples, structure, taxonomy layout or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-github-4d3dfe89f2a4",
+          "citation_url": "https://github.com/microsoft/multi-agent-reference-architecture/blob/ed3613b54b46b595dd223aaff8772def376a8c37/docs/building-blocks/Building-Blocks.md",
+          "roles": [
+            "case-evidence",
+            "comparison"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Building Blocks at fixed commit, Microsoft",
+          "modification_note": "Original Chinese comparison with the reference architecture orchestrator and specialist-agent boundary; no source prose, examples, tables, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-github-fe00e370c994",
+          "citation_url": "https://github.com/awslabs/cli-agent-orchestrator/blob/bae80071a17e001380367c461b32d64bc6b54433/README.md",
+          "roles": [
+            "case-evidence",
+            "implementation"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "CLI Agent Orchestrator README at fixed commit, Amazon Web Services",
+          "modification_note": "Bounded implementation-evidence summary of supervisor–worker assignment and isolated terminal sessions; no source prose, code, examples, structure or diagrams copied.",
           "excerpt": null,
           "quotation_reviewed": false
         }
