@@ -48,7 +48,13 @@ export const parseStyle = (value = '') => new Map(value.split(';').filter(Boolea
   const index = item.indexOf('=');
   return index === -1 ? [item, '1'] : [item.slice(0, index), item.slice(index + 1)];
 }));
-export const elementsById = (root) => new Map(xmlElements(root, 'mxCell', '').map((cell) => [cell.attributes.get('id'), cell]));
+export const elementsById = (root) => {
+  const cells = xmlElements(root, 'mxCell', '');
+  const ids = cells.map((cell) => cell.attributes.get('id'));
+  if (ids.some((id) => !id)) fail('every source cell must have an ID');
+  if (new Set(ids).size !== ids.length) fail('source cell IDs must be globally unique');
+  return new Map(cells.map((cell) => [cell.attributes.get('id'), cell]));
+};
 export const geometryOf = (cell, label) => {
   const geometry = xmlElements(cell, 'mxGeometry', '')[0];
   if (!geometry) fail(`${label} lacks mxGeometry`);
@@ -97,6 +103,16 @@ export function parseDrawioModel(source, file = '<agt-p-08.drawio>', {strictPage
   if (diagram.length !== 1) fail('source must contain exactly one diagram page');
   if (strictPageName && diagram[0].attributes.get('name') !== 'AGT-P-08 durable agent and human approval') fail('diagram page name drift');
   const cells = elementsById(root);
+  const expectedIds = [
+    '0', '1', ...REGION_IDS, ...NODE_IDS,
+    ...[...CAPTIONS.values()].map(([id]) => id),
+    ...[...EDGE_LABELS.values()].map(([id]) => id),
+    ...EDGE_CONTRACTS.map(([id]) => id),
+  ].sort();
+  const actualIds = [...cells.keys()].sort();
+  if (JSON.stringify(actualIds) !== JSON.stringify(expectedIds)) fail('source cell inventory drift');
+  if (cells.get('0').attributes.size !== 1) fail('source root cell drift');
+  if (cells.get('1').attributes.get('parent') !== '0') fail('source default parent drift');
   const regions = REGION_IDS.map((id) => ({id, ...readCell(cells, id)}));
   const nodes = NODE_IDS.map((id) => ({id, ...readCell(cells, id)}));
   const captions = NODE_IDS.map((nodeId) => {
@@ -117,8 +133,17 @@ export function parseDrawioModel(source, file = '<agt-p-08.drawio>', {strictPage
     if (label.value !== expected) fail(`${id} label drift`);
     return label;
   });
+  const visibleCells = [...regions, ...nodes, ...captions, ...edgeLabels];
+  if (visibleCells.some(({cell, value}) => cell.attributes.get('vertex') !== '1' || cell.attributes.get('visible') === '0' || !value)) {
+    fail('source visible-cell inventory drift');
+  }
+  const sourceVisibleLabels = [...cells.values()]
+    .filter((cell) => cell.attributes.get('visible') !== '0')
+    .map((cell) => cell.attributes.get('value') ?? '').filter(Boolean).sort();
+  const modeledVisibleLabels = visibleCells.map(({value}) => value).sort();
+  if (JSON.stringify(sourceVisibleLabels) !== JSON.stringify(modeledVisibleLabels)) fail('source visible-label multiset drift');
   if (edges.some(({sourceId}) => sourceId === 'manual-terminal')) fail('manual terminal must not have an automatic outgoing edge');
-  return {root, cells, regions, nodes, captions, edges, edgeLabels};
+  return {root, cells, regions, nodes, captions, edges, edgeLabels, visibleCells, visibleLabels: sourceVisibleLabels};
 }
 
 export const xmlText = (element) => element.content.map((item) => item.type === 'text' ? item.text : xmlText(item)).join('');
