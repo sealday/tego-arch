@@ -2718,6 +2718,201 @@
       ],
       "note": "把成功、拒绝、预算耗尽或需人工处置归入显式终态的控制分支。",
       "order": 1950
+    },
+    {
+      "id": "agent-system-boundary-label",
+      "canonical_zh": "AI Agent 系统边界",
+      "english": null,
+      "acronym": null,
+      "kind": "standard",
+      "first_use": "AI Agent 系统边界",
+      "subsequent_use": [
+        "AI Agent 系统边界"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [],
+      "note": "Agentic Architecture 路径与主题入口使用的固定主题标签；只治理该完整标签，不放宽普通 Agent 用法。",
+      "order": 1960
+    },
+    {
+      "id": "single-agent-foundation-stage-label",
+      "canonical_zh": "单 Agent 基础",
+      "english": null,
+      "acronym": null,
+      "kind": "standard",
+      "first_use": "单 Agent 基础",
+      "subsequent_use": [
+        "单 Agent 基础"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [],
+      "note": "Agentic Architecture 学习路径的固定阶段标签；只治理该完整标题。",
+      "order": 1970
+    },
+    {
+      "id": "agent-state-lifecycle-label",
+      "canonical_zh": "Context、Memory、State 与 Checkpoint",
+      "english": null,
+      "acronym": null,
+      "kind": "standard",
+      "first_use": "Context、Memory、State 与 Checkpoint",
+      "subsequent_use": [
+        "Context、Memory、State 与 Checkpoint"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [],
+      "note": "AGT-C-04 的固定主题标签；只治理完整标签，不把其中英文词登记为通用别名。",
+      "order": 1980
+    },
+    {
+      "id": "agent-tool-authority-label",
+      "canonical_zh": "Tool、Sandbox、Permission 与 Side Effect",
+      "english": null,
+      "acronym": null,
+      "kind": "standard",
+      "first_use": "Tool、Sandbox、Permission 与 Side Effect",
+      "subsequent_use": [
+        "Tool、Sandbox、Permission 与 Side Effect"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [],
+      "note": "AGT-C-05 的固定主题标签；只治理完整标签，不把其中英文词登记为通用别名。",
+      "order": 1990
+    },
+    {
+      "id": "agent-observability-governance-label",
+      "canonical_zh": "Trace、Evaluation 与 Guardrail",
+      "english": null,
+      "acronym": null,
+      "kind": "standard",
+      "first_use": "Trace、Evaluation 与 Guardrail",
+      "subsequent_use": [
+        "Trace、Evaluation 与 Guardrail"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [],
+      "note": "AGT-C-06 的固定主题标签；只治理完整标签，不把其中英文词登记为通用别名。",
+      "order": 2000
+    },
+    {
+      "id": "workflow-autonomy-pattern-label",
+      "canonical_zh": "Deterministic Workflow vs Autonomous Agent",
+      "english": null,
+      "acronym": null,
+      "kind": "standard",
+      "first_use": "Deterministic Workflow vs Autonomous Agent",
+      "subsequent_use": [
+        "Deterministic Workflow vs Autonomous Agent"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [],
+      "note": "AGT-P-01 的固定模式标签；只治理完整标签，不放宽普通 Workflow 或 Agent 用法。",
+      "order": 2010
+    },
+    {
+      "id": "evaluator-optimizer-pattern-label",
+      "canonical_zh": "Evaluator–Optimizer",
+      "english": null,
+      "acronym": null,
+      "kind": "standard",
+      "first_use": "Evaluator–Optimizer",
+      "subsequent_use": [
+        "Evaluator–Optimizer"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [],
+      "note": "AGT-P-04 的固定模式标签，保留主题合同使用的 en dash；不替代中文主称。",
+      "order": 2020
+    },
+    {
+      "id": "router-model-dispatch-pattern-label",
+      "canonical_zh": "Router 与模型驱动分发",
+      "english": null,
+      "acronym": null,
+      "kind": "standard",
+      "first_use": "Router 与模型驱动分发",
+      "subsequent_use": [
+        "Router 与模型驱动分发"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [],
+      "note": "AGT-P-05 的固定模式标签；只治理完整标签，不放宽普通 Router 用法。",
+      "order": 2030
+    },
+    {
+      "id": "agent-control-ownership-pattern-label",
+      "canonical_zh": "Supervisor、Handoff 与 Agents-as-Tools",
+      "english": null,
+      "acronym": null,
+      "kind": "standard",
+      "first_use": "Supervisor、Handoff 与 Agents-as-Tools",
+      "subsequent_use": [
+        "Supervisor、Handoff 与 Agents-as-Tools"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [],
+      "note": "AGT-P-06 的固定模式标签；只治理完整标签，不放宽其中角色名的普通用法。",
+      "order": 2040
+    },
+    {
+      "id": "orchestrator-workers-pattern-label",
+      "canonical_zh": "Orchestrator–Workers 与 Fan-out/Fan-in",
+      "english": null,
+      "acronym": null,
+      "kind": "standard",
+      "first_use": "Orchestrator–Workers 与 Fan-out/Fan-in",
+      "subsequent_use": [
+        "Orchestrator–Workers 与 Fan-out/Fan-in"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [],
+      "note": "AGT-P-07 的固定模式标签；只治理完整标签，不放宽其中英文角色名的普通用法。",
+      "order": 2050
+    },
+    {
+      "id": "durable-agent-hitl-pattern-label",
+      "canonical_zh": "Durable Agent 与 Human-in-the-loop",
+      "english": null,
+      "acronym": null,
+      "kind": "standard",
+      "first_use": "Durable Agent 与 Human-in-the-loop",
+      "subsequent_use": [
+        "Durable Agent 与 Human-in-the-loop"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [],
+      "note": "AGT-P-08 的固定模式标签；只治理完整标签，不放宽普通 Agent 或人在回路英文用法。",
+      "order": 2060
+    },
+    {
+      "id": "long-running-coding-agent-case-label",
+      "canonical_zh": "长时运行 Coding Agent",
+      "english": null,
+      "acronym": null,
+      "kind": "standard",
+      "first_use": "长时运行 Coding Agent",
+      "subsequent_use": [
+        "长时运行 Coding Agent"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [],
+      "note": "CASE-22 的固定参考设计标签；只治理完整标签，不放宽普通 Coding 或 Agent 用法。",
+      "order": 2070
+    },
+    {
+      "id": "production-incident-agent-case-label",
+      "canonical_zh": "生产事故响应 Agent",
+      "english": null,
+      "acronym": null,
+      "kind": "standard",
+      "first_use": "生产事故响应 Agent",
+      "subsequent_use": [
+        "生产事故响应 Agent"
+      ],
+      "allowed_aliases": [],
+      "forbidden_aliases": [],
+      "note": "CASE-23 的固定参考设计标签；只治理完整标签，不放宽普通 Agent 用法。",
+      "order": 2080
     }
   ]
 }

@@ -160,9 +160,9 @@ function assertKeys(value, expected, label) {
 function assertCombinedProjection(statusValue = status, manifestValue = manifest, indexesValue = indexes, ledgerValue = publicLedger) {
   assert.deepEqual(
     {completed: statusValue.completed_topics, documents: statusValue.content_documents, sources: statusValue.governed_sources},
-    {completed: 64, documents: 113, sources: 569},
+    {completed: 64, documents: 124, sources: 586},
   );
-  assert.equal(ledgerValue.sources.length, 569);
+  assert.equal(ledgerValue.sources.length, 586);
   const topics = new Map(manifestValue.topics.map((topic) => [topic.id, topic]));
   const styles = new Map(indexesValue.style.map((topic) => [topic.id, topic]));
   const methods = new Map(indexesValue.method.map((topic) => [topic.id, topic]));

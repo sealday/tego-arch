@@ -237,9 +237,9 @@ function assertStageBBacklog(source = backlog) {
 function assertStageBProjection() {
   assert.deepEqual(
     {completed: status.completed_topics, documents: status.content_documents, sources: status.governed_sources},
-    {completed: 64, documents: 107, sources: 560},
+    {completed: 64, documents: 124, sources: 586},
   );
-  assert.equal(publicLedger.sources.length, 560);
+  assert.equal(publicLedger.sources.length, 586);
   const topics = new Map(manifest.topics.map((topic) => [topic.id, topic]));
   const styles = new Map(indexes.style.map((topic) => [topic.id, topic]));
   assert.deepEqual([topics.get('STY-09')?.published, topics.get('STY-09')?.status.value, styles.get('STY-09')?.published], [true, 'complete', true]);

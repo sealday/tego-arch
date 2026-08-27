@@ -194,8 +194,8 @@ function assertStageBClosure(source = review, backlogSource = backlog) {
 }
 
 function assertProjection() {
-  assert.deepEqual({completed_topics: status.completed_topics, content_documents: status.content_documents, governed_sources: status.governed_sources}, {completed_topics: 64, content_documents: 107, governed_sources: 560});
-  assert.equal(publicLedger.sources.length, 560);
+  assert.deepEqual({completed_topics: status.completed_topics, content_documents: status.content_documents, governed_sources: status.governed_sources}, {completed_topics: 64, content_documents: 124, governed_sources: 586});
+  assert.equal(publicLedger.sources.length, 586);
 
   const topics = new Map(manifest.topics.map((topic) => [topic.id, topic]));
   const styles = new Map(indexes.style.map((topic) => [topic.id, topic]));
@@ -460,8 +460,8 @@ test('preserves the STY-07 closure record while current generation projects STY-
     completed_topics: status.completed_topics,
     content_documents: status.content_documents,
     governed_sources: status.governed_sources,
-  }, {completed_topics: 64, content_documents: 107, governed_sources: 560});
-  assert.equal(publicLedger.sources.length, 560);
+  }, {completed_topics: 64, content_documents: 124, governed_sources: 586});
+  assert.equal(publicLedger.sources.length, 586);
 
   const topics = new Map(manifest.topics.map((topic) => [topic.id, topic]));
   const styles = new Map(indexes.style.map((topic) => [topic.id, topic]));

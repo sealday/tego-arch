@@ -194,8 +194,8 @@ test('canonical Pattern registry exactly matches every generated assignment and 
   ).flatMap(({topics}) => topics);
   assert.equal(
     canonicalViews.length,
-    80,
-    'the Pattern index must expose every assignment in the canonical closed set',
+    72,
+    'the generated Pattern component excludes the separately rendered agent-control group',
   );
   assert.ok(canonicalViews.some(({published}) => !published));
   assert.ok(

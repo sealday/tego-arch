@@ -13,12 +13,21 @@ export type CaseSeriesEntry = {
 
 export type CaseDifficulty = 'beginner' | 'intermediate' | 'advanced';
 
-export type SourceKind =
-  | 'official-docs'
-  | 'open-source-project'
-  | 'classic-paper'
-  | 'engineering-blog'
-  | 'reference-architecture';
+export const caseSourceKinds = [
+  'official-docs',
+  'open-source-project',
+  'classic-paper',
+  'engineering-blog',
+  'reference-architecture',
+  'paper',
+  'standard',
+  'textbook',
+  'official-repository',
+  'source-code',
+  'original-illustration',
+] as const;
+
+export type SourceKind = (typeof caseSourceKinds)[number];
 
 export type CaseCatalogEntry = {
   title: string;
@@ -142,16 +151,16 @@ export const sourceKindLabels: Record<SourceKind, string> = {
   'classic-paper': '经典论文',
   'engineering-blog': '工程博客',
   'reference-architecture': '参考架构',
+  paper: '论文',
+  standard: '标准',
+  textbook: '教材',
+  'official-repository': '官方仓库',
+  'source-code': '源码',
+  'original-illustration': '本站原创插图',
 };
 
 const difficulties = new Set<CaseDifficulty>(['beginner', 'intermediate', 'advanced']);
-const sourceKinds = new Set<SourceKind>([
-  'official-docs',
-  'open-source-project',
-  'classic-paper',
-  'engineering-blog',
-  'reference-architecture',
-]);
+const sourceKinds = new Set<SourceKind>(caseSourceKinds);
 
 function isStringArray(value: unknown): value is string[] {
   return Array.isArray(value) && value.every((item) => typeof item === 'string');

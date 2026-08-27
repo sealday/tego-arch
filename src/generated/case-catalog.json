@@ -476,5 +476,88 @@
       "failover",
       "circuit-breaker"
     ]
+  },
+  {
+    "title": "多智能体研究系统：让证据完成度而不是工作者数量决定终止",
+    "slug": "/cases/multi-agent-research-system",
+    "summary": "一套以任务账本、隔离研究工作者、证据身份、覆盖与冲突门、引文核验和人工终止构成的多智能体（Agent）研究参考设计；工作者只提交证据记录，编排器保留任务完成与最终答案控制权。",
+    "difficulty": "advanced",
+    "series": "ai-native",
+    "catalog_order": 19,
+    "featured": false,
+    "source_kinds": [
+      "paper",
+      "engineering-blog",
+      "official-repository",
+      "original-illustration"
+    ],
+    "migration_targets": [
+      "task-decomposition",
+      "evidence-sufficiency",
+      "fan-out-fan-in"
+    ],
+    "tags": [
+      "多智能体研究",
+      "任务分解",
+      "证据充分性",
+      "引文核验",
+      "有界检索"
+    ]
+  },
+  {
+    "title": "长任务编码智能体：把完成状态留在上下文窗口之外",
+    "slug": "/cases/long-running-coding-agent",
+    "summary": "一套把长任务编码智能体（Agent）限制在工作树与沙箱内，并以计划账本、结构化测试观察、提交检查点、人工批准和恢复核对维持连续性的参考设计；模型上下文从不充当唯一完成记录。",
+    "difficulty": "advanced",
+    "series": "ai-native",
+    "catalog_order": 20,
+    "featured": false,
+    "source_kinds": [
+      "engineering-blog",
+      "official-repository",
+      "source-code",
+      "original-illustration"
+    ],
+    "migration_targets": [
+      "agent-harness",
+      "sandboxed-execution",
+      "checkpoint-recovery",
+      "test-feedback"
+    ],
+    "tags": [
+      "编码智能体",
+      "任务恢复",
+      "沙箱",
+      "工作树",
+      "测试反馈"
+    ]
+  },
+  {
+    "title": "生产事故响应智能体：把诊断建议与变更授权分成两条身份链",
+    "slug": "/cases/production-incident-response-agent",
+    "summary": "一套以只读诊断、版本化假设、人工最终授权、窄幅幂等变更和独立恢复验证约束生产事故响应智能体（Agent）的说明性参考设计；结合亚马逊云服务（Amazon Web Services，AWS）、Temporal 工作流平台、Kong AI Gateway 人工智能网关、重试（Retry）、应用程序编程接口（Application Programming Interface，API）、超文本传输协议（Hypertext Transfer Protocol，HTTP）与路由器（Router）机制，但诊断身份永远不能借道成为生产写入身份。",
+    "difficulty": "advanced",
+    "series": "ai-native",
+    "catalog_order": 21,
+    "featured": false,
+    "source_kinds": [
+      "textbook",
+      "standard",
+      "official-docs",
+      "original-illustration"
+    ],
+    "migration_targets": [
+      "read-only-diagnosis",
+      "hypothesis-evaluation",
+      "human-approval",
+      "recovery-verification"
+    ],
+    "tags": [
+      "事故响应",
+      "只读诊断",
+      "人工批准",
+      "幂等变更",
+      "恢复验证"
+    ]
   }
 ]

@@ -210,10 +210,14 @@ test('labels discovery indexes as navigation rather than factual evidence', asyn
   ]);
   assert.deepEqual(discoveryOnly.map(({tier}) => tier), ['discovery']);
   assert.equal(discovery.warning, '选题/学习导航，不是事实证据');
-  assert.ok(
-    discovery.sources.every(
-      ({sourceKind}) => sourceKind === 'community-index',
+  assert.deepEqual(
+    Object.fromEntries(
+      ['community-index', 'paper'].map((kind) => [
+        kind,
+        discovery.sources.filter(({sourceKind}) => sourceKind === kind).length,
+      ]),
     ),
+    {'community-index': 7, paper: 1},
   );
   assert.equal(localIllustration.externalHref, null);
   assert.ok(
@@ -264,7 +268,7 @@ test('keeps every source and evidence field in the complete sorted model', async
     ({sources}) => sources,
   );
 
-  assert.equal(cards.length, 560);
+  assert.equal(cards.length, 586);
 
   assert.deepEqual(
     cards.map(({id}) => id),
@@ -276,11 +280,11 @@ test('keeps every source and evidence field in the complete sorted model', async
       cards.filter((card) => card.tier === tier).length,
     ]),
     [
-      ['primary', 501],
-      ['first-party', 44],
+      ['primary', 519],
+      ['first-party', 51],
 
       ['secondary', 8],
-      ['discovery', 7],
+      ['discovery', 8],
     ],
   );
   assert.deepEqual(
@@ -290,21 +294,21 @@ test('keeps every source and evidence field in the complete sorted model', async
     ]),
     [
       ['standard', 25],
-      ['paper', 22],
-      ['official-docs', 209],
+      ['paper', 27],
+      ['official-docs', 216],
 
-      ['official-repository', 35],
-      ['source-code', 157],
-      ['engineering-blog', 19],
+      ['official-repository', 37],
+      ['source-code', 160],
+      ['engineering-blog', 21],
       ['incident-report', 0],
       ['vendor-reference-architecture', 27],
-      ['textbook', 7],
+      ['textbook', 8],
       ['independent-blog', 14],
       ['community-index', 7],
-      ['original-illustration', 38],
+      ['original-illustration', 44],
     ],
   );
-  assert.equal(new Set(cards.map(({id}) => id)).size, 560);
+  assert.equal(new Set(cards.map(({id}) => id)).size, 586);
 
   for (const card of cards) {
     for (const field of [
