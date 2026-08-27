@@ -237,7 +237,7 @@ function assertStageBBacklog(source = backlog) {
 function assertStageBProjection() {
   assert.deepEqual(
     {completed: status.completed_topics, documents: status.content_documents, sources: status.governed_sources},
-    {completed: 64, documents: 108, sources: 565},
+    {completed: 65, documents: 108, sources: 565},
   );
   assert.equal(publicLedger.sources.length, 565);
   const topics = new Map(manifest.topics.map((topic) => [topic.id, topic]));
@@ -245,7 +245,7 @@ function assertStageBProjection() {
   assert.deepEqual([topics.get('STY-09')?.published, topics.get('STY-09')?.status.value, styles.get('STY-09')?.published], [true, 'complete', true]);
   assert.deepEqual([topics.get('STY-10')?.published, topics.get('STY-10')?.status.value, styles.get('STY-10')?.published], [true, 'complete', true]);
   assert.deepEqual([topics.get('STY-11')?.published, topics.get('STY-11')?.status.value, styles.get('STY-11')?.published], [true, 'complete', true]);
-  assert.deepEqual([topics.get('STY-12')?.published, topics.get('STY-12')?.status.value, styles.get('STY-12')?.published], [true, 'pending', true]);
+  assert.deepEqual([topics.get('STY-12')?.published, topics.get('STY-12')?.status.value, styles.get('STY-12')?.published], [true, 'complete', true]);
   assert.deepEqual([topics.get('STY-13')?.published, topics.get('STY-13')?.status.value, styles.get('STY-13')?.published], [false, 'pending', false]);
 }
 function assertPendingStageBReview(source = review) {

@@ -255,7 +255,7 @@ test('preserves Batch 6 evidence under the current Batch 10 projection', () => {
   assert.deepEqual(projectStatus, {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
-    completed_topics: 64,
+    completed_topics: 65,
     content_documents: 108,
     governed_sources: 565,
 

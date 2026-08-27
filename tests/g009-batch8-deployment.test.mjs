@@ -194,7 +194,7 @@ function assertStageBClosure(source = review, backlogSource = backlog) {
 }
 
 function assertProjection() {
-  assert.deepEqual({completed_topics: status.completed_topics, content_documents: status.content_documents, governed_sources: status.governed_sources}, {completed_topics: 64, content_documents: 108, governed_sources: 565});
+  assert.deepEqual({completed_topics: status.completed_topics, content_documents: status.content_documents, governed_sources: status.governed_sources}, {completed_topics: 65, content_documents: 108, governed_sources: 565});
   assert.equal(publicLedger.sources.length, 565);
 
   const topics = new Map(manifest.topics.map((topic) => [topic.id, topic]));
@@ -204,7 +204,7 @@ function assertProjection() {
   assert.deepEqual([topics.get('STY-09')?.published, topics.get('STY-09')?.status.value, styles.get('STY-09')?.published], [true, 'complete', true]);
   assert.deepEqual([topics.get('STY-10')?.published, topics.get('STY-10')?.status.value, styles.get('STY-10')?.published], [true, 'complete', true]);
   assert.deepEqual([topics.get('STY-11')?.published, topics.get('STY-11')?.status.value, styles.get('STY-11')?.published], [true, 'complete', true]);
-  assert.deepEqual([topics.get('STY-12')?.published, topics.get('STY-12')?.status.value, styles.get('STY-12')?.published], [true, 'pending', true]);
+  assert.deepEqual([topics.get('STY-12')?.published, topics.get('STY-12')?.status.value, styles.get('STY-12')?.published], [true, 'complete', true]);
   assert.deepEqual([topics.get('STY-13')?.published, topics.get('STY-13')?.status.value, styles.get('STY-13')?.published], [false, 'pending', false]);
   assert.deepEqual(SOURCE_IDS.filter((id) => publicLedger.sources.some((source) => source.id === id)), SOURCE_IDS);
 }
@@ -461,7 +461,7 @@ test('preserves the STY-07 closure record while current generation projects STY-
     completed_topics: status.completed_topics,
     content_documents: status.content_documents,
     governed_sources: status.governed_sources,
-  }, {completed_topics: 64, content_documents: 108, governed_sources: 565});
+  }, {completed_topics: 65, content_documents: 108, governed_sources: 565});
   assert.equal(publicLedger.sources.length, 565);
 
   const topics = new Map(manifest.topics.map((topic) => [topic.id, topic]));
@@ -471,7 +471,7 @@ test('preserves the STY-07 closure record while current generation projects STY-
   assert.deepEqual([topics.get('STY-09')?.published, topics.get('STY-09')?.status.value, styles.get('STY-09')?.published], [true, 'complete', true]);
   assert.deepEqual([topics.get('STY-10')?.published, topics.get('STY-10')?.status.value, styles.get('STY-10')?.published], [true, 'complete', true]);
   assert.deepEqual([topics.get('STY-11')?.published, topics.get('STY-11')?.status.value, styles.get('STY-11')?.published], [true, 'complete', true]);
-  assert.deepEqual([topics.get('STY-12')?.published, topics.get('STY-12')?.status.value, styles.get('STY-12')?.published], [true, 'pending', true]);
+  assert.deepEqual([topics.get('STY-12')?.published, topics.get('STY-12')?.status.value, styles.get('STY-12')?.published], [true, 'complete', true]);
   assert.deepEqual([topics.get('STY-13')?.published, topics.get('STY-13')?.status.value, styles.get('STY-13')?.published], [false, 'pending', false]);
   assertStageBClosure();
 });

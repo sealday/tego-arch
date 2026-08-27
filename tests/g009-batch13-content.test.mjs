@@ -18,7 +18,7 @@ export const ROUTE = '/styles/sty-12';
 export const TOPIC_ID = 'STY-12';
 export const NEXT_TOPIC = 'STY-13';
 export const RELATED_CASE = '/cases/micro-frontends-single-spa';
-export const EXPECTED_STAGE_A = Object.freeze({completed: 64, documents: 108, sources: 565});
+export const EXPECTED_STAGE_A = Object.freeze({completed: 65, documents: 108, sources: 565});
 export const EXPECTED_HEADINGS = Object.freeze([
   '学习问题', '一页摘要', '事实边界', '架构图', '运行时组合与发布流',
   '关键机制导读', '架构决策与权衡', '生产化分析', '可迁移经验', '来源',

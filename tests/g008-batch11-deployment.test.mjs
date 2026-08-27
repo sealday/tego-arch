@@ -54,13 +54,13 @@ const expectedReviewSections = [
 ];
 
 const expectedProjection = {
-  completed_topics: 64,
+  completed_topics: 65,
   content_documents: 108,
   governed_sources: 565,
 
   durable_stories: {completed: 8, total: 20, current: 'G009'},
   recently_completed: 'G008',
-  next_topic: 'STY-10',
+  next_topic: 'STY-13',
 };
 
 const expectedRoutes = [

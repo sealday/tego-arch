@@ -100,3 +100,28 @@
 This checkpoint is the immutable pre-publication review record. Its `NOT_RUN` deployment status describes only the moment of that review and does not contradict the later Stage A production publication section.
 
 The code/security review initially reported two Important contract gaps: security-critical article semantics and diagnostic cursor continuity were not mutation-sensitive. Commit `f61c4cf83c1f3e97caa8abe494725db3d61305f3` added thirteen visible boundary contracts plus negative mutations, and bound the five diagnostic pages to their exact state sequence and terminal cursor. The independent re-review closed both findings with no contract weakening.
+
+## Stage B closure candidate
+
+- Closure date: `2026-08-27`.
+- Exact Stage A implementation head: `f8fa62a1c116f1d3bca8633623ed2910af29bedc`.
+- Exact Stage A Pages run: `33067038136`; workflow: `completed / success`; build job: `98499561708`; deploy job: `98500236998`.
+- Exact Stage A evidence head: `0e26d10c5d1e569f94ee68a309937a2ba27c48a0`.
+- Exact Stage A evidence Pages run: `33069962061`; workflow: `completed / success`; build job: `98509359301`; deploy job: `98510157813`.
+- Required production HTML routes: `8/8`; every route returned `200` with `text/html; charset=utf-8`.
+- Reviewed production SVG: HTTP `200`; MIME `image/svg+xml`; `35,407` bytes; SHA-256 `c5347b1bf84890cb8e72be387185f2737afefadfdb57090b4fff3d5693e156b3`; exact reviewed byte identity: `PASS`.
+- Stage A production Browser raw: `docs/reviews/evidence/g009-batch13-stage-a-production-browser.json`; `33,721` bytes; SHA-256 `a28bb3269f2b7545b7d77f2ec506ce5b1bd737924a5db6945481ee8ec5763560`.
+- Functional production QA: `PASS`; states `4/4`; wrapper interactions `16/16`; relation checks `12/12`; exact source checks `28/28`; STY-13 actionable count `0`; diagnostics complete and empty.
+- Stage A production screenshot evidence: `PASS / ACCEPTED`; accepted `4/4`; fallback used: `false`.
+- Projection: `65 completed topics / 108 content documents / 565 governed sources`.
+- STY-12 target: `published / complete`.
+- STY-13 target: `unpublished / pending / non-actionable`; actionable route count: `0`; sole next topic.
+- Immediate immutable history: complete Batch 12 review SHA-256 `12b4aa1736041226f6ea574b158815e9fa835469b0e02db66f481d304ac89d87`; release-baseline SHA-256 `0210fad170e4aeefe2f042be2fe6e01552165905bd0083b38bdd6d3b8182d231`.
+- Exact Stage B candidate tree identity: `PENDING_REVIEW_HEAD`.
+- Independent Stage B code/spec/security review: `PENDING`; findings: `PENDING`.
+- Independent Stage B content/evidence/rights review: `PENDING`; rights: `PENDING`; findings: `PENDING`.
+- Independent Stage B architecture/invariant review: `PENDING`; blockers: `PENDING`.
+- Final Stage B review judgment: `PENDING`.
+- Stage B scope boundary: `STAGE_B`.
+- Stage B deployment status: `PENDING / NOT_RUN`.
+- Stage B screenshot status: `PASS / ACCEPTED`; accepted production captures: `4/4`.

@@ -52,7 +52,7 @@ test('retains the published corpus and closes the deployed topic', () => {
       governed_sources: projectStatus.governed_sources,
     },
     {
-      completed_topics: 64,
+      completed_topics: 65,
       content_documents: 108,
       governed_sources: 565,
     },
