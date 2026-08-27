@@ -328,6 +328,150 @@ const plannerExecutorDocumentContract = {
     },
   ],
 };
+const evaluatorOptimizerArticlePath = 'content/patterns/agt-p-04-evaluator-optimizer.mdx';
+const evaluatorOptimizerSummary =
+  '把候选生成、外部量表评估、结构化反馈与版本化修订组成有界循环，保留候选历史和评估不确定性，并以独立检查、修订预算、拒绝、人工复核与确定性回退控制终止。';
+const evaluatorOptimizerTags = [
+  '评估者—优化者',
+  '外部量表',
+  '版本化候选',
+  '修订预算',
+  '独立检查',
+];
+const evaluatorOptimizerMermaidAccTitle = '评估者—优化者外部量表、修订预算与四类终止控制流';
+const evaluatorOptimizerNodes = new Map([
+  ['GENERATE', ['生成候选（Generate）']],
+  ['VERSION_HISTORY', ['候选与版本历史']],
+  ['EXTERNAL_RUBRIC', ['外部量表']],
+  ['EVALUATE', ['评估候选（Evaluate）']],
+  ['FEEDBACK', ['结构化反馈（Feedback）']],
+  ['REVISION_BUDGET', ['修订预算门']],
+  ['REVISE', ['修订新版本（Revise）']],
+  ['INDEPENDENT_CHECK', ['高风险独立检查']],
+  ['ACCEPT', ['接受（accept）']],
+  ['REJECT', ['拒绝（reject）']],
+  ['BUDGET_EXHAUSTED', ['预算耗尽（budget exhausted）']],
+  ['HUMAN_REVIEW', ['人工复核（human review）']],
+]);
+const evaluatorOptimizerEdges = [
+  ['GENERATE', 'VERSION_HISTORY', null],
+  ['VERSION_HISTORY', 'EVALUATE', null],
+  ['EXTERNAL_RUBRIC', 'EVALUATE', null],
+  ['EVALUATE', 'ACCEPT', '符合且低风险'],
+  ['EVALUATE', 'FEEDBACK', '不符合且可修订'],
+  ['FEEDBACK', 'REVISION_BUDGET', null],
+  ['REVISION_BUDGET', 'REVISE', '预算可用'],
+  ['REVISION_BUDGET', 'BUDGET_EXHAUSTED', '预算耗尽'],
+  ['REVISE', 'VERSION_HISTORY', null],
+  ['EVALUATE', 'INDEPENDENT_CHECK', '高风险候选'],
+  ['INDEPENDENT_CHECK', 'ACCEPT', '检查通过'],
+  ['INDEPENDENT_CHECK', 'REJECT', '检查失败'],
+  ['INDEPENDENT_CHECK', 'HUMAN_REVIEW', '检查不确定'],
+  ['EVALUATE', 'REJECT', '不可修复或策略拒绝'],
+  ['EVALUATE', 'HUMAN_REVIEW', '不确定或未知'],
+];
+const evaluatorOptimizerSourceIds = [
+  'src-anthropic-building-effective-agents',
+  'src-anthropic-demystifying-evals-ai-agents',
+  'src-github-0e9e961ee207',
+];
+const evaluatorOptimizerSourceContracts = [
+  {
+    id: 'src-anthropic-building-effective-agents',
+    canonical_locator: 'https://www.anthropic.com/engineering/building-effective-agents',
+    transport_locator: 'https://www.anthropic.com/engineering/building-effective-agents',
+    expected_final_transport_locator: 'https://www.anthropic.com/engineering/building-effective-agents',
+    title: 'Building Effective Agents',
+    author_or_org: 'Anthropic',
+    published_at: '2024-12-19',
+    version: 'Official engineering article published 2024-12-19 and checked directly in a browser on 2026-08-26',
+    source_kind: 'official-docs',
+    tier: 'first-party',
+    allowed_evidence_roles: ['definition', 'method'],
+    license: 'LicenseRef-All-Rights-Reserved',
+    usage_boundary: "Supports Anthropic's stated workflow/agent distinction and augmented-LLM building block; it does not establish the article's Harness/Loop ownership model or prove production outcomes.",
+    health: {at: '2026-08-26T08:49:28.000Z', status: 200},
+  },
+  {
+    id: 'src-anthropic-demystifying-evals-ai-agents',
+    canonical_locator: 'https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents',
+    transport_locator: 'https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents',
+    expected_final_transport_locator: 'https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents',
+    title: 'Demystifying evals for AI agents',
+    author_or_org: 'Anthropic',
+    published_at: '2026-01-09',
+    version: 'Current official engineering article retrieved and checked on 2026-08-26',
+    source_kind: 'engineering-blog',
+    tier: 'first-party',
+    allowed_evidence_roles: ['definition', 'method'],
+    license: 'LicenseRef-All-Rights-Reserved',
+    usage_boundary: "Supports Anthropic's definitions of tasks, trials, graders, traces or trajectories, outcomes and evaluation harnesses, plus its reported grader-selection and human-calibration guidance; it does not guarantee evaluator accuracy, production quality, or the article's Trace/Evaluation/Guardrail responsibility model.",
+    health: {at: '2026-08-26T13:19:25.000Z', status: 200},
+  },
+  {
+    id: 'src-github-0e9e961ee207',
+    canonical_locator: 'https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/examples/agent_patterns/llm_as_a_judge.py',
+    transport_locator: 'https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/examples/agent_patterns/llm_as_a_judge.py',
+    expected_final_transport_locator: 'https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/examples/agent_patterns/llm_as_a_judge.py',
+    title: 'LLM-as-a-judge',
+    author_or_org: 'OpenAI',
+    published_at: null,
+    version: 'Git commit 2fa463571e76dae8ff267622f1018eaf06ffeb9f',
+    source_kind: 'source-code',
+    tier: 'primary',
+    allowed_evidence_roles: [
+      'case-evidence', 'comparison', 'definition', 'historical-context',
+      'implementation', 'learning', 'method', 'runtime-fact',
+    ],
+    license: 'MIT',
+    usage_boundary: 'Shows the implementation in “LLM-as-a-judge” at the recorded commit or file version; it does not alone prove runtime guarantees or deployment fitness.',
+    health: {at: '2026-08-25T12:07:24.531Z', status: 206},
+  },
+];
+const evaluatorOptimizerDocumentContract = {
+  reviewed_at: '2026-08-27',
+  copyright_checks: [
+    'original-structure',
+    'quotation-boundary',
+    'attribution-complete',
+    'illustration-rights',
+  ],
+  citations: [
+    {
+      source_id: 'src-anthropic-building-effective-agents',
+      citation_url: 'https://www.anthropic.com/engineering/building-effective-agents',
+      roles: ['definition', 'method'],
+      manifest_primary: true,
+      usage_mode: 'facts-summary',
+      attribution_note: 'Building Effective Agents, Anthropic',
+      modification_note: 'Original Chinese synthesis of the evaluator–optimizer feedback-loop boundary; no source prose, examples, structure, taxonomy layout or diagrams copied.',
+      excerpt: null,
+      quotation_reviewed: false,
+    },
+    {
+      source_id: 'src-anthropic-demystifying-evals-ai-agents',
+      citation_url: 'https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents',
+      roles: ['definition', 'method'],
+      manifest_primary: false,
+      usage_mode: 'facts-summary',
+      attribution_note: 'Demystifying evals for AI agents, Anthropic',
+      modification_note: 'Original Chinese synthesis of evaluation vocabulary, grader selection and human-calibration boundaries; no source prose, examples, tables, images, structure or diagrams copied.',
+      excerpt: null,
+      quotation_reviewed: false,
+    },
+    {
+      source_id: 'src-github-0e9e961ee207',
+      citation_url: 'https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/examples/agent_patterns/llm_as_a_judge.py',
+      roles: ['implementation'],
+      manifest_primary: false,
+      usage_mode: 'facts-summary',
+      attribution_note: 'LLM-as-a-judge, OpenAI',
+      modification_note: 'Bounded implementation-evidence summary of the fixed code example; no code, prompt, output, example task, control structure or repository layout copied.',
+      excerpt: null,
+      quotation_reviewed: false,
+    },
+  ],
+};
 const markdownParser = unified().use(remarkParse).use(remarkGfm).use(remarkMdx);
 
 const registry = JSON.parse(
@@ -792,6 +936,238 @@ function parsePlannerExecutorMermaid(mermaid) {
     labelsById: new Map([...labelsById].map(([id, labels]) => [id, [...labels].sort()])),
     edges,
   };
+}
+
+function parseEvaluatorOptimizerMermaid(mermaid) {
+  const labelsById = new Map();
+  const edges = [];
+  let headerSeen = false;
+  let accTitle = null;
+  const nodePattern = '[A-Z][A-Z_]*(?:\\["[^"\\n]+"\\])?';
+  const nodeSegment = /^([A-Z][A-Z_]*)(?:\["([^"\n]+)"\])?$/u;
+  const edgeStatement = new RegExp(
+    `^${nodePattern}(?:\\s*-->(?:\\|[^|\\n]+\\|)?\\s*${nodePattern})+$`,
+    'u',
+  );
+
+  for (const line of mermaid.split(/\r?\n/u)) {
+    const statement = line.trim();
+    if (!statement) continue;
+    if (!headerSeen && statement === 'flowchart LR') {
+      headerSeen = true;
+      continue;
+    }
+    if (statement.startsWith('accTitle:')) {
+      assert.equal(accTitle, null, 'Evaluator–Optimizer Mermaid has one accTitle declaration');
+      accTitle = statement.slice('accTitle:'.length).trim();
+      continue;
+    }
+    assert.match(statement, edgeStatement, `unparsed Evaluator–Optimizer Mermaid: ${line}`);
+    const parts = statement.split(/\s*-->(?:\|([^|\n]+)\|)?\s*/u);
+    const nodeSegments = [];
+    const edgeLabels = [];
+    for (let index = 0; index < parts.length; index += 2) {
+      nodeSegments.push(parts[index]);
+      if (index + 1 < parts.length) edgeLabels.push(parts[index + 1] ?? null);
+    }
+    const nodeIds = nodeSegments.map((segment) => {
+      const match = segment.match(nodeSegment);
+      assert.ok(match, `unparsed Evaluator–Optimizer node: ${segment}`);
+      const [, id, label] = match;
+      if (label !== undefined) {
+        const knownLabels = labelsById.get(id) ?? new Set();
+        knownLabels.add(label);
+        labelsById.set(id, knownLabels);
+      }
+      return id;
+    });
+    for (let index = 1; index < nodeIds.length; index += 1) {
+      edges.push([nodeIds[index - 1], nodeIds[index], edgeLabels[index - 1]]);
+    }
+  }
+  assert.ok(headerSeen, 'Evaluator–Optimizer Mermaid flowchart LR header');
+  assert.equal(
+    accTitle,
+    evaluatorOptimizerMermaidAccTitle,
+    'Evaluator–Optimizer Mermaid exact accessible title',
+  );
+  return {
+    labelsById: new Map([...labelsById].map(([id, labels]) => [id, [...labels].sort()])),
+    edges,
+  };
+}
+
+function assertEvaluatorOptimizerContract(source) {
+  const metadata = parseFrontMatter(source);
+  assert.equal(metadata.title, '评估者—优化者（Evaluator-Optimizer）：用外部量表与修订预算约束反馈循环');
+  assert.equal(metadata.topic_id, 'AGT-P-04');
+  assert.equal(metadata.slug, '/patterns/agt-p-04');
+  assert.equal(metadata.content_type, 'pattern');
+  assert.equal(metadata.status, 'reviewed');
+  assert.equal(metadata.difficulty, 'advanced');
+  assert.equal(metadata.analyzed_at, '2026-08-26');
+  assert.equal(metadata.source_cutoff, '2026-08-26');
+  assert.equal(metadata.confidence, 'high');
+  assert.equal(metadata.priority, 'P1');
+  assert.deepEqual(metadata.domains, ['software-architecture', 'artificial-intelligence']);
+  assert.deepEqual(metadata.agent_patterns, ['agent-loop', 'evaluator-optimizer']);
+  assert.deepEqual(metadata.protocols, []);
+  assert.deepEqual(metadata.quality_attributes, ['reliability', 'safety', 'operability']);
+  assert.deepEqual(metadata.tags, evaluatorOptimizerTags);
+  assert.equal(metadata.summary, evaluatorOptimizerSummary);
+  assert.deepEqual(metadata.depends_on, ['AGT-C-03', 'AGT-C-06']);
+  assert.deepEqual(metadata.adjacent_topics, [
+    'AGT-C-03',
+    'AGT-C-06',
+    'AGT-P-01',
+    'AGT-P-02',
+    'AGT-P-03',
+    'AGT-P-07',
+    'AGT-P-08',
+  ]);
+  assert.deepEqual(metadata.related_cases, [
+    '/cases/multi-agent-research-system',
+    '/cases/long-running-coding-agent',
+  ]);
+  assert.deepEqual(metadata.related_questions, []);
+  assert.deepEqual(
+    findMarkdownHeadings(source)
+      .filter(({level}) => level === 2)
+      .map(({text}) => `## ${text}`),
+    knowledgeTypeContracts.pattern,
+  );
+
+  const mermaidBlocks = readerVisibleMermaidCodeBlocks(source);
+  assert.equal(mermaidBlocks.length, 1, 'exactly one reader-visible Evaluator–Optimizer Mermaid');
+  assert.equal(mermaidBlocks[0].rootDirect, true, 'Evaluator–Optimizer Mermaid remains root-direct');
+  const graph = parseEvaluatorOptimizerMermaid(mermaidBlocks[0].value);
+  assert.deepEqual(graph.labelsById, evaluatorOptimizerNodes);
+  assert.deepEqual(graph.edges, evaluatorOptimizerEdges);
+  assert.deepEqual(
+    graph.edges.filter(([, target]) => target === 'ACCEPT'),
+    [
+      ['EVALUATE', 'ACCEPT', '符合且低风险'],
+      ['INDEPENDENT_CHECK', 'ACCEPT', '检查通过'],
+    ],
+    'accept is reachable only after rubric-backed evaluation and any required independent check',
+  );
+  assert.deepEqual(
+    graph.edges.filter(([sourceId]) => sourceId === 'REVISION_BUDGET'),
+    [
+      ['REVISION_BUDGET', 'REVISE', '预算可用'],
+      ['REVISION_BUDGET', 'BUDGET_EXHAUSTED', '预算耗尽'],
+    ],
+    'revision budget has one retry path and one terminal exhausted path',
+  );
+  assert.equal(
+    graph.edges.some(([sourceId]) => sourceId === 'BUDGET_EXHAUSTED'),
+    false,
+    'budget exhausted is terminal',
+  );
+
+  const visible = parseMdxVisibleCopy(source, evaluatorOptimizerArticlePath, {
+    includeStructure: true,
+  }).blocks.map(({text}) => text).join('\n');
+  for (const contract of [
+    /外部量表/u,
+    /候选[^。\n]{0,80}版本历史/u,
+    /评估者[^。\n]{0,100}(?:不确定|未知)/u,
+    /高风险[^。\n]{0,120}(?:独立检查|人工复核)/u,
+    /相关(?:性)?模型错误|相关错误/u,
+    /(?:judge score|评估分数)[^。\n]{0,80}(?:不是|不等于)[^。\n]{0,40}(?:真相|事实)/iu,
+    /回归测试/u,
+    /控制所有者/u,
+    /状态所有者/u,
+    /终止责任/u,
+    /权限/u,
+    /副作用/u,
+    /失败[^。\n]{0,160}恢复/u,
+    /确定性回退/u,
+    /迁移/u,
+    /行业标准/u,
+    /实现证据[^。\n]{0,160}(?:不证明|不能证明)[^。\n]{0,100}生产/u,
+  ]) assert.match(visible, contract);
+}
+
+function assertEvaluatorOptimizerSourceContract(ledger, health) {
+  const document = ledger.documents[evaluatorOptimizerArticlePath];
+  assert.ok(document, `${evaluatorOptimizerArticlePath} source document`);
+  assert.deepEqual(document, evaluatorOptimizerDocumentContract);
+  assert.deepEqual(
+    document.citations.map(({source_id: sourceId}) => sourceId),
+    evaluatorOptimizerSourceIds,
+  );
+
+  for (const contract of evaluatorOptimizerSourceContracts) {
+    const source = ledger.sources.find(({id}) => id === contract.id);
+    assert.ok(source, contract.id);
+    assert.deepEqual(
+      {
+        id: source.id,
+        canonical_locator: source.canonical_locator,
+        transport_locator: source.transport_locator,
+        expected_final_transport_locator: source.expected_final_transport_locator,
+        title: source.title,
+        author_or_org: source.author_or_org,
+        published_at: source.published_at,
+        version: source.version,
+        source_kind: source.source_kind,
+        tier: source.tier,
+        allowed_evidence_roles: source.allowed_evidence_roles,
+        license: source.license,
+        usage_boundary: source.usage_boundary,
+      },
+      {
+        id: contract.id,
+        canonical_locator: contract.canonical_locator,
+        transport_locator: contract.transport_locator,
+        expected_final_transport_locator: contract.expected_final_transport_locator,
+        title: contract.title,
+        author_or_org: contract.author_or_org,
+        published_at: contract.published_at,
+        version: contract.version,
+        source_kind: contract.source_kind,
+        tier: contract.tier,
+        allowed_evidence_roles: contract.allowed_evidence_roles,
+        license: contract.license,
+        usage_boundary: contract.usage_boundary,
+      },
+      `${contract.id} governed identity and evidence boundary`,
+    );
+    const observation = health.results.find(({source_ids: sourceIds}) =>
+      sourceIds.includes(contract.id));
+    assert.ok(observation, `${contract.id} health observation`);
+    assert.deepEqual(
+      {
+        transport_locator: observation.transport_locator,
+        source_ids: observation.source_ids,
+        last_attempt: observation.last_attempt,
+        last_success: observation.last_success,
+        review_status: observation.review_status,
+      },
+      {
+        transport_locator: contract.transport_locator,
+        source_ids: [contract.id],
+        last_attempt: {
+          at: contract.health.at,
+          outcome: 'healthy',
+          final_transport_locator: contract.transport_locator,
+          http_status: contract.health.status,
+          login_wall_detected: false,
+          redirects: [],
+        },
+        last_success: {
+          at: contract.health.at,
+          outcome: 'healthy',
+          final_transport_locator: contract.transport_locator,
+          http_status: contract.health.status,
+          login_wall_detected: false,
+        },
+        review_status: 'healthy',
+      },
+      `${contract.id} exact current health observation`,
+    );
+  }
 }
 
 function assertPlannerExecutorContract(source) {
@@ -2074,6 +2450,201 @@ test('AGT-P-03 rejects source identity, evidence, health, and document-boundary 
       survivors.push(label);
     } catch {
       // Expected after every governed field and observation is locked.
+    }
+  }
+  assert.deepEqual(survivors, []);
+});
+
+test('AGT-P-04 publishes the exact rubric-bounded Evaluator–Optimizer contract', () => {
+  assert.ok(existsSync(evaluatorOptimizerArticlePath), `Missing ${evaluatorOptimizerArticlePath}`);
+  assertEvaluatorOptimizerContract(readFileSync(evaluatorOptimizerArticlePath, 'utf8'));
+});
+
+test('AGT-P-04 rejects metadata drift and hidden, duplicate, or bypass Mermaid mutations', () => {
+  assert.ok(existsSync(evaluatorOptimizerArticlePath), `Missing ${evaluatorOptimizerArticlePath}`);
+  const source = readFileSync(evaluatorOptimizerArticlePath, 'utf8');
+  const [{value: mermaid}] = readerVisibleMermaidCodeBlocks(source);
+  assert.ok(mermaid, 'Evaluator–Optimizer Mermaid fixture');
+  const fence = `\`\`\`mermaid\n${mermaid}\n\`\`\``;
+  const decoyFence = `\`\`\`mermaid
+flowchart LR
+    GENERATE["Generate"] --> ACCEPT["accept"]
+\`\`\``;
+  const mutations = [
+    ['summary drift', source.replace(
+      `summary: ${evaluatorOptimizerSummary}`,
+      'summary: 结构有效但完全错误的摘要。',
+    )],
+    ['tag missing', source.replace('  - 独立检查\nsummary:', 'summary:')],
+    ['tag reorder', source.replace(
+      '  - 评估者—优化者\n  - 外部量表',
+      '  - 外部量表\n  - 评估者—优化者',
+    )],
+    ['depends_on drift', source.replace(
+      'depends_on:\n  - AGT-C-03\n  - AGT-C-06',
+      'depends_on:\n  - AGT-C-03',
+    )],
+    ['zero reader-visible Mermaid', source.replace(fence, '')],
+    ['duplicate reader-visible Mermaid', `${source}\n\n${decoyFence}\n`],
+    ['only nested Mermaid', source.replace(fence, `<div>\n${fence}\n</div>`) ],
+    ['only hidden Mermaid', source.replace(fence, `<div hidden>\n\n${fence}\n\n</div>`) ],
+    ['accessible name drift', source.replace(
+      `accTitle: ${evaluatorOptimizerMermaidAccTitle}`,
+      'accTitle: 通用反馈循环',
+    )],
+    ['accept bypasses evaluation', source.replace(
+      'GENERATE["生成候选（Generate）"] --> VERSION_HISTORY["候选与版本历史"]',
+      'GENERATE["生成候选（Generate）"] --> ACCEPT["接受（accept）"]',
+    )],
+    ['rubric bypasses evaluation', source.replace(
+      'EXTERNAL_RUBRIC["外部量表"] --> EVALUATE',
+      'EXTERNAL_RUBRIC["外部量表"] --> ACCEPT',
+    )],
+    ['revision bypasses budget', source.replace(
+      'FEEDBACK --> REVISION_BUDGET["修订预算门"]',
+      'FEEDBACK --> REVISE["修订新版本（Revise）"]',
+    )],
+    ['uncertainty auto-accepts', source.replace(
+      'EVALUATE -->|不确定或未知| HUMAN_REVIEW',
+      'EVALUATE -->|不确定或未知| ACCEPT',
+    )],
+    ['budget exhaustion re-enters loop', source.replace(
+      'REVISION_BUDGET -->|预算耗尽| BUDGET_EXHAUSTED["预算耗尽（budget exhausted）"]',
+      'REVISION_BUDGET -->|预算耗尽| GENERATE',
+    )],
+    ['high-risk branch bypasses independent check', source.replace(
+      'EVALUATE -->|高风险候选| INDEPENDENT_CHECK["高风险独立检查"]',
+      'EVALUATE -->|高风险候选| ACCEPT',
+    )],
+    ['decoy evaluator identity', source.replace(
+      'VERSION_HISTORY --> EVALUATE["评估候选（Evaluate）"]',
+      'VERSION_HISTORY --> FAKE_EVALUATE["评估候选（Evaluate）"]',
+    )],
+    ['alternate connector creates an accept bypass', source.replace(
+      'GENERATE["生成候选（Generate）"] --> VERSION_HISTORY["候选与版本历史"]',
+      'GENERATE["生成候选（Generate）"] --> VERSION_HISTORY["候选与版本历史"]\n    GENERATE -.-> ACCEPT',
+    )],
+  ];
+  const survivors = [];
+  for (const [label, mutant] of mutations) {
+    assert.notEqual(mutant, source, `${label} fixture must alter the article`);
+    assert.doesNotThrow(
+      () => markdownParser.parse(extractMarkdownBody(mutant)),
+      `${label} fixture remains valid MDX`,
+    );
+    try {
+      assertEvaluatorOptimizerContract(mutant);
+      survivors.push(label);
+    } catch {
+      // Expected: public metadata, visibility, grammar, node identity and topology fail closed.
+    }
+  }
+  assert.deepEqual(survivors, []);
+});
+
+test('AGT-P-04 locks source identities, health, roles, and citation boundaries', () => {
+  const ledger = JSON.parse(readFileSync('data/source-ledger.json', 'utf8'));
+  const health = JSON.parse(readFileSync('data/source-link-health.json', 'utf8'));
+  assertEvaluatorOptimizerSourceContract(ledger, health);
+});
+
+test('AGT-P-04 rejects source and document citation boundary drift', () => {
+  const ledger = JSON.parse(readFileSync('data/source-ledger.json', 'utf8'));
+  const health = JSON.parse(readFileSync('data/source-link-health.json', 'utf8'));
+  assert.ok(
+    ledger.documents[evaluatorOptimizerArticlePath],
+    `${evaluatorOptimizerArticlePath} source document`,
+  );
+  const mutateSource = (sourceId, field, value) => {
+    const mutant = structuredClone(ledger);
+    mutant.sources.find(({id}) => id === sourceId)[field] = value;
+    return mutant;
+  };
+  const mutateCitation = (sourceId, field, value) => {
+    const mutant = structuredClone(ledger);
+    mutant.documents[evaluatorOptimizerArticlePath].citations
+      .find(({source_id: id}) => id === sourceId)[field] = value;
+    return mutant;
+  };
+  const mutations = [
+    ['source title drift', mutateSource(
+      'src-anthropic-demystifying-evals-ai-agents', 'title', 'Wrong title',
+    ), health],
+    ['source organization drift', mutateSource(
+      'src-anthropic-demystifying-evals-ai-agents', 'author_or_org', 'Wrong org',
+    ), health],
+    ['source publication date drift', mutateSource(
+      'src-anthropic-demystifying-evals-ai-agents', 'published_at', '2099-01-01',
+    ), health],
+    ['source version drift', mutateSource(
+      'src-github-0e9e961ee207', 'version', 'Git commit deadbeef',
+    ), health],
+    ['source license drift', mutateSource(
+      'src-github-0e9e961ee207', 'license', 'LicenseRef-Drift',
+    ), health],
+    ['source tier drift', mutateSource(
+      'src-anthropic-building-effective-agents', 'tier', 'secondary',
+    ), health],
+    ['source canonical URL drift', mutateSource(
+      'src-github-0e9e961ee207', 'canonical_locator', 'https://example.test/drift',
+    ), health],
+    ['source transport URL drift', mutateSource(
+      'src-github-0e9e961ee207', 'transport_locator', 'https://example.test/drift',
+    ), health],
+    ['source expected-final URL drift', mutateSource(
+      'src-github-0e9e961ee207', 'expected_final_transport_locator', 'https://example.test/drift',
+    ), health],
+    ['source role drift', mutateSource(
+      'src-anthropic-building-effective-agents', 'allowed_evidence_roles', ['definition'],
+    ), health],
+    ['source usage boundary drift', mutateSource(
+      'src-github-0e9e961ee207', 'usage_boundary', 'Proves production reliability.',
+    ), health],
+    ['citation URL drift', mutateCitation(
+      'src-github-0e9e961ee207', 'citation_url', 'https://example.test/drift',
+    ), health],
+    ['citation role drift', mutateCitation(
+      'src-github-0e9e961ee207', 'roles', ['definition'],
+    ), health],
+    ['citation usage drift', mutateCitation(
+      'src-github-0e9e961ee207', 'usage_mode', 'quotation',
+    ), health],
+    ['citation attribution drift', mutateCitation(
+      'src-github-0e9e961ee207', 'attribution_note', 'Wrong attribution',
+    ), health],
+    ['citation modification drift', mutateCitation(
+      'src-github-0e9e961ee207', 'modification_note', 'Copied code.',
+    ), health],
+    ['citation excerpt drift', mutateCitation(
+      'src-github-0e9e961ee207', 'excerpt', 'Copied excerpt',
+    ), health],
+    ['citation quotation review drift', mutateCitation(
+      'src-github-0e9e961ee207', 'quotation_reviewed', true,
+    ), health],
+    ['document review drift', (() => {
+      const mutant = structuredClone(ledger);
+      mutant.documents[evaluatorOptimizerArticlePath].reviewed_at = '2026-08-26';
+      return mutant;
+    })(), health],
+    ['document copyright drift', (() => {
+      const mutant = structuredClone(ledger);
+      mutant.documents[evaluatorOptimizerArticlePath].copyright_checks = ['original-structure'];
+      return mutant;
+    })(), health],
+    ['health drift', ledger, (() => {
+      const mutant = structuredClone(health);
+      mutant.results.find(({source_ids: ids}) =>
+        ids.includes('src-github-0e9e961ee207')).last_attempt.http_status = 200;
+      return mutant;
+    })()],
+  ];
+  const survivors = [];
+  for (const [label, ledgerMutant, healthMutant] of mutations) {
+    try {
+      assertEvaluatorOptimizerSourceContract(ledgerMutant, healthMutant);
+      survivors.push(label);
+    } catch {
+      // Expected: every governed source, health and citation field fails closed.
     }
   }
   assert.deepEqual(survivors, []);

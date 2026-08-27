@@ -29547,6 +29547,58 @@
         }
       ]
     },
+    "content/patterns/agt-p-04-evaluator-optimizer.mdx": {
+      "reviewed_at": "2026-08-27",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-anthropic-building-effective-agents",
+          "citation_url": "https://www.anthropic.com/engineering/building-effective-agents",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Building Effective Agents, Anthropic",
+          "modification_note": "Original Chinese synthesis of the evaluator–optimizer feedback-loop boundary; no source prose, examples, structure, taxonomy layout or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-anthropic-demystifying-evals-ai-agents",
+          "citation_url": "https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Demystifying evals for AI agents, Anthropic",
+          "modification_note": "Original Chinese synthesis of evaluation vocabulary, grader selection and human-calibration boundaries; no source prose, examples, tables, images, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-github-0e9e961ee207",
+          "citation_url": "https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/examples/agent_patterns/llm_as_a_judge.py",
+          "roles": [
+            "implementation"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "LLM-as-a-judge, OpenAI",
+          "modification_note": "Bounded implementation-evidence summary of the fixed code example; no code, prompt, output, example task, control structure or repository layout copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
     "content/patterns/index.mdx": {
       "reviewed_at": "2026-07-24",
       "copyright_checks": [
