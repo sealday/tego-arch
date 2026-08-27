@@ -123,9 +123,9 @@ function assertLayerContract(source) {
   assert.match(source, /物理层级或部署单元/u);
   assert.match(source, /subgraph DEPLOY\["单一部署单元"\]/u);
   assert.doesNotMatch(source, /表示层独立部署|应用层独立部署|领域层独立部署|基础设施层独立部署/u);
-  assert.equal((source.match(/diagram-wrapper--scroll-owner/g) ?? []).length, 3);
-  assert.equal((source.match(/tabIndex=\{0\}/g) ?? []).length, 3);
-  assert.equal((source.match(/onKeyDown=\{handleHorizontalArrowKey\}/g) ?? []).length, 3);
+  assert.equal((source.match(/diagram-wrapper--scroll-owner/g) ?? []).length, 2);
+  assert.equal((source.match(/tabIndex=\{0\}/g) ?? []).length, 2);
+  assert.equal((source.match(/onKeyDown=\{handleHorizontalArrowKey\}/g) ?? []).length, 2);
   assertInOrder(source, dimensions.map((dimension) => `| ${dimension} |`), 'dimension order');
   assert.match(source, /同一本地事务/u);
   assert.match(source, /格式错误[\s\S]*流程失败[\s\S]*业务拒绝[\s\S]*稳定错误类别/u);

@@ -156,7 +156,6 @@ const nonProofSentences = [
 
 const expectedWrapperLabels = [
   '费用支付故事句子表，可横向滚动',
-  '费用支付领域故事，可横向滚动',
   '领域叙事四模型比较表，可横向滚动',
 ];
 
@@ -350,20 +349,19 @@ function wrappers(body) {
 function assertInteractionContract(body) {
   assert.match(body, /import \{handleHorizontalArrowKey\} from '@site\/src\/components\/KeyboardScrollableRegion\/handleHorizontalArrowKey\.mjs';/u);
   const regions = wrappers(body);
-  assert.equal(regions.length, 3, 'MOD-10 must have exactly three accessible overflow wrappers');
+  assert.equal(regions.length, 2, 'only tables retain article-local accessible overflow wrappers');
   assert.deepEqual(regions.map(({label}) => label), expectedWrapperLabels);
   assert.deepEqual(regions.map(({className}) => className), [
     'table-wrapper table-wrapper--mapping',
-    'diagram-wrapper diagram-wrapper--scroll-owner',
     'table-wrapper table-wrapper--mapping',
   ]);
-  assert.equal(new Set(regions.map(({label}) => label)).size, 3, 'wrapper labels must be unique');
-  assert.equal([...visibleContractLines(body).join('\n').matchAll(/className="(?:diagram-wrapper diagram-wrapper--scroll-owner|table-wrapper table-wrapper--mapping)"/gu)].length, 3, 'no unvalidated overflow wrappers');
+  assert.equal(new Set(regions.map(({label}) => label)).size, 2, 'wrapper labels must be unique');
+  assert.equal([...visibleContractLines(body).join('\n').matchAll(/className="(?:diagram-wrapper|table-wrapper table-wrapper--mapping)"/gu)].length, 3, 'one non-focusable Mermaid wrapper and two table regions');
   const storyTables = markdownTables(regions[0].content);
   assert.equal(storyTables.length, 1, 'story wrapper must contain exactly the story table');
   assert.deepEqual(records(storyTables[0], ['序号', '主体参与者', '活动', '工作对象', '协作参与者', '证据说明']), expectedStoryRows);
-  assertStoryGraphContract(regions[1].content);
-  const comparisonTables = markdownTables(regions[2].content);
+  assertStoryGraphContract(body);
+  const comparisonTables = markdownTables(regions[1].content);
   assert.equal(comparisonTables.length, 1, 'comparison wrapper must contain exactly the comparison table');
   assert.deepEqual(records(comparisonTables[0], ['模型', '主要问题', '典型输入', '核心产物', '适合发现什么', '明确不证明什么']), expectedComparisonRows);
 }
@@ -371,12 +369,12 @@ function assertInteractionContract(body) {
 function assertDiagramScrollOwnership(css) {
   assert.match(
     css,
-    /\.theme-doc-markdown \.diagram-wrapper--scroll-owner \{[^}]*max-width: 100%;[^}]*overflow-x: auto;[^}]*\}/su,
-    'focused diagram wrapper must own horizontal overflow',
+    /\.theme-doc-markdown \.keyboard-scroll-region--mermaid \{[^}]*max-width: 100%;[^}]*overflow-x: auto;[^}]*\}/su,
+    'theme Mermaid wrapper must own horizontal overflow',
   );
   assert.match(
     css,
-    /\.theme-doc-markdown \.diagram-wrapper--scroll-owner > \.docusaurus-mermaid-container,[\s\S]*?\.theme-doc-markdown \.diagram-wrapper--scroll-owner > \.docusaurus-mermaid-container > \.mermaid,[\s\S]*?\.theme-doc-markdown \.diagram-wrapper--scroll-owner > \.mermaid \{[^}]*width: max-content;[^}]*max-width: none;[^}]*overflow-x: visible;[^}]*\}/u,
+    /\.keyboard-scroll-region--mermaid > \.docusaurus-mermaid-container \{[^}]*width: max-content;[^}]*max-width: none;[^}]*overflow-x: visible;[^}]*\}/u,
     'nested Mermaid containers must not retain horizontal overflow',
   );
 }
@@ -556,8 +554,8 @@ test('makes the focused diagram wrapper the real horizontal scroll owner', () =>
   assertDiagramScrollOwnership(customCss);
   assert.throws(
     () => assertDiagramScrollOwnership(customCss.replace(
-      '.theme-doc-markdown .diagram-wrapper--scroll-owner {\n  max-width: 100%;\n  overflow-x: auto;',
-      '.theme-doc-markdown .diagram-wrapper--scroll-owner {\n  max-width: 100%;\n  overflow-x: visible;',
+      '.theme-doc-markdown .keyboard-scroll-region--mermaid {\n  max-width: 100%;\n  overflow-x: auto;',
+      '.theme-doc-markdown .keyboard-scroll-region--mermaid {\n  max-width: 100%;\n  overflow-x: visible;',
     )),
     {name: 'AssertionError'},
     'outer wrapper stopped owning horizontal overflow',
@@ -676,7 +674,6 @@ test('rejects controlled article mutations', () => {
     ['removed collaborator edge', body.replace('  receipt_object -.-> expense_actor\n', ''), assertStoryGraphContract],
     ['attached collaborator to 活动 5', body.replace('  expense_actor -->|"6 展示"|', '  result_create_object -.-> finance_actor\n  expense_actor -->|"6 展示"|'), assertStoryGraphContract],
     ['removed 注释 rule', body.replace(annotationRule, ''), assertWorkshopAndNonProofContracts],
-    ['removed diagram scroll-owner modifier', body.replace('diagram-wrapper diagram-wrapper--scroll-owner', 'diagram-wrapper'), assertInteractionContract],
     ['removed tabIndex', body.replace('  tabIndex={0}\n', ''), assertInteractionContract],
     ['removed onKeyDown', body.replace('  onKeyDown={handleHorizontalArrowKey}\n', ''), assertInteractionContract],
   ];
@@ -709,8 +706,7 @@ test('rejects review regressions that the original contract missed', () => {
   for (const [label, mutation] of [
     ['premature story close', body.replace('>\n\n| 序号 |', '>\n\n</div>\n\n| 序号 |')],
     ['story table after wrapper', moveWrapperContentOutside(body, expectedWrapperLabels[0])],
-    ['Mermaid before wrapper', moveWrapperContentOutside(body, expectedWrapperLabels[1], 'before')],
-    ['comparison table after wrapper', moveWrapperContentOutside(body, expectedWrapperLabels[2])],
+    ['comparison table after wrapper', moveWrapperContentOutside(body, expectedWrapperLabels[1])],
   ]) {
     assert.throws(() => assertInteractionContract(mutation), {name: 'AssertionError'}, label);
   }
@@ -782,11 +778,4 @@ test('rejects review regressions that the original contract missed', () => {
     assert.throws(() => assertTableContracts(mutation), {name: 'AssertionError'}, label);
   }
 
-  for (const [label, mutation] of [
-    ['diagram wrapper hidden in outer fence', hideWrapper(body, expectedWrapperLabels[1], 'fence')],
-    ['diagram wrapper hidden in comment', hideWrapper(body, expectedWrapperLabels[1], 'comment')],
-  ]) {
-    assert.throws(() => assertInteractionContract(mutation), {name: 'AssertionError'}, label);
-    assert.throws(() => assertStoryGraphContract(mutation), {name: 'AssertionError'}, `${label}: graph visibility`);
-  }
 });

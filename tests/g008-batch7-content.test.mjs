@@ -186,7 +186,6 @@ const publishedPendingModelingTopics = ['MOD-13'];
 
 const expectedWrapperLabels = [
   '费用申报全景事件表，可横向滚动',
-  '费用支付过程模型，可横向滚动',
   '事件风暴候选边界假设表，可横向滚动',
 ];
 
@@ -329,7 +328,7 @@ function wrappers(body) {
 function assertInteractionContract(body) {
   assert.match(body, /import \{handleHorizontalArrowKey\} from '@site\/src\/components\/KeyboardScrollableRegion\/handleHorizontalArrowKey\.mjs';/u);
   const regions = wrappers(body);
-  assert.equal(regions.length, 3, 'MOD-09 must have exactly three accessible overflow wrappers');
+  assert.equal(regions.length, 2, 'only tables retain article-local accessible overflow wrappers');
   assert.deepEqual(regions.map((match) => match[1]), expectedWrapperLabels);
   assert.equal(new Set(expectedWrapperLabels).size, expectedWrapperLabels.length, 'wrapper aria-label values must be unique');
   assert.equal([...body.matchAll(/className="(?:diagram-wrapper|table-wrapper table-wrapper--mapping)"/gu)].length, 3, 'no unvalidated overflow wrappers');
@@ -680,7 +679,6 @@ test('rejects heading, table, graph, wrapper, terminology and non-proof mutation
   assert.throws(() => assertTableContracts(body.replace('不作为边界证据', '已批准边界')), {name: 'AssertionError'}, 'invalid 处置');
   assert.throws(() => assertInteractionContract(body.replace('  tabIndex={0}\n', '')), {name: 'AssertionError'}, 'removed tabIndex');
   assert.throws(() => assertInteractionContract(body.replace('  onKeyDown={handleHorizontalArrowKey}\n', '')), {name: 'AssertionError'}, 'removed onKeyDown');
-  assert.throws(() => assertInteractionContract(body.replace('aria-label="费用支付过程模型，可横向滚动"', 'aria-label="任意标签"')), {name: 'AssertionError'}, 'changed wrapper aria-label');
   assert.throws(() => assertTerminologyAndNonProof(body.replaceAll('人员', 'Person')), {name: 'AssertionError'}, 'Person mutation');
   const disclaimer = processNonProofStatement;
   const affirmative = '能够证明运行时顺序、同步或异步协议、事务边界、服务边界或组织 负责人。';

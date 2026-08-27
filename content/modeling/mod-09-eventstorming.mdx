@@ -104,13 +104,7 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 
 第二项产物是从“支付已请求”开始的过程模型。每个节点都保留语法类型与业务标签，便于评审者区分人、读取视图、意图、事实、系统和政策。图只能表达工作坊中讨论的关系，不能证明运行时顺序、同步或异步协议、事务边界、服务边界或组织负责人。
 
-<div
-  className="diagram-wrapper"
-  role="region"
-  aria-label="费用支付过程模型，可横向滚动"
-  tabIndex={0}
-  onKeyDown={handleHorizontalArrowKey}
->
+<div className="diagram-wrapper">
 
 ```mermaid
 flowchart LR

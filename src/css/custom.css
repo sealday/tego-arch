@@ -265,19 +265,32 @@ button:focus-visible,
 .theme-doc-markdown .docusaurus-mermaid-container,
 .theme-doc-markdown .mermaid {
   max-width: 100%;
+  overflow-x: visible;
+  padding: 0;
+}
+
+.theme-doc-markdown .keyboard-scroll-region--mermaid {
+  max-width: 100%;
   overflow-x: auto;
+  margin: 1.5rem 0;
   padding: 1rem 0;
   -webkit-overflow-scrolling: touch;
 }
 
-.theme-doc-markdown .docusaurus-mermaid-container:focus-visible {
+.theme-doc-markdown .keyboard-scroll-region--mermaid:focus-visible {
   outline: 3px solid var(--ifm-color-primary);
   outline-offset: 4px;
 }
 
-.theme-doc-markdown .docusaurus-mermaid-container svg,
-.theme-doc-markdown .mermaid svg {
+.theme-doc-markdown .keyboard-scroll-region--mermaid > .docusaurus-mermaid-container {
+  width: max-content;
+  max-width: none;
+  overflow-x: visible;
+}
+
+.theme-doc-markdown .keyboard-scroll-region--mermaid > .docusaurus-mermaid-container svg {
   min-width: 42rem;
+  max-width: none;
   height: auto;
 }
 

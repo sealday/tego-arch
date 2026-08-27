@@ -165,13 +165,6 @@ const expectedRegionContracts = [
     onKeyDown: 'handleHorizontalArrowKey',
   },
   {
-    className: 'diagram-wrapper diagram-wrapper--scroll-owner',
-    role: 'region',
-    'aria-label': '架构风格比较决策流程，可横向滚动',
-    tabIndex: '0',
-    onKeyDown: 'handleHorizontalArrowKey',
-  },
-  {
     className: 'table-wrapper table-wrapper--mapping',
     role: 'region',
     'aria-label': '场景响应比较矩阵，可横向滚动',
@@ -446,11 +439,11 @@ test('locks the Mermaid recovery loop and accessible local overflow owners', () 
   for (const label of flowLabels) assert.match(document.source, new RegExp(label, 'u'));
   assert.match(document.source, /证据足够.*-->\|否\|.*原型、测量或故障演练/su);
   assert.match(document.source, /validate --> compare/u);
-  assert.equal((document.source.match(/role="region"/gmu) ?? []).length, 3);
-  assert.equal((document.source.match(/tabIndex=\{0\}/gmu) ?? []).length, 3);
+  assert.equal((document.source.match(/role="region"/gmu) ?? []).length, 2);
+  assert.equal((document.source.match(/tabIndex=\{0\}/gmu) ?? []).length, 2);
   assert.equal(
     (document.source.match(/onKeyDown=\{handleHorizontalArrowKey\}/gmu) ?? []).length,
-    3,
+    2,
   );
   const region = {scrollWidth: 900, clientWidth: 360, scrollLeft: 0};
   let prevented = false;
@@ -504,13 +497,6 @@ test('rejects reviewed method-contract mutations', async (t) => {
       source: document.source.replace(
         '| 报表消费者隔离与恢复 | 候选二',
         '| 报表消费者隔离与恢复 | 候选一',
-      ),
-    },
-    {
-      name: 'remove scroll-owner class',
-      source: document.source.replace(
-        'diagram-wrapper diagram-wrapper--scroll-owner',
-        'diagram-wrapper',
       ),
     },
     {

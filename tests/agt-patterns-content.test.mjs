@@ -423,17 +423,30 @@ function readerVisibleTables(source) {
   return {ast, body, tables};
 }
 
-function rootMermaidCodeBlocks(source) {
+function readerVisibleMermaidCodeBlocks(source) {
   const ast = markdownParser.parse(extractMarkdownBody(source));
   assert.equal(ast.type, 'root', 'MDX document root');
   assert.ok(Array.isArray(ast.children), 'MDX document root children');
-  return ast.children.flatMap((node) => {
+  const mermaidBlocks = [];
+  const visit = (node, parent = null) => {
     assert.ok(node && typeof node === 'object' && typeof node.type === 'string');
-    if (node.type !== 'code' || node.lang !== 'mermaid') return [];
-    assert.equal(typeof node.value, 'string');
-    assert.notEqual(node.value.trim(), '');
-    return [node.value];
-  });
+    if (node.type === 'code' && node.lang === 'mermaid') {
+      assert.equal(typeof node.value, 'string');
+      assert.notEqual(node.value.trim(), '');
+      mermaidBlocks.push({
+        value: node.value,
+        rootDirect: parent?.type === 'root',
+      });
+      return;
+    }
+    if (workflowAgentInvisibleAstTypes.has(node.type)) return;
+    if (node.type === 'mdxJsxFlowElement' || node.type === 'mdxJsxTextElement') {
+      if (isReaderHiddenJsx(node) || !isWorkflowAgentContainer(node)) return;
+    }
+    for (const child of node.children ?? []) visit(child, node);
+  };
+  visit(ast);
+  return mermaidBlocks;
 }
 
 function assertAgenticRagSourceRecords(ledger, health) {
@@ -627,9 +640,10 @@ function assertAgenticRagContract(source) {
   assert.deepEqual(header, agenticRagComparisonHeader);
   assert.deepEqual(rows, agenticRagComparisonCells);
 
-  const mermaidBlocks = rootMermaidCodeBlocks(source);
-  assert.equal(mermaidBlocks.length, 1, 'exactly one root-level visible Agentic RAG Mermaid');
-  const graph = parseAgenticRagMermaid(mermaidBlocks[0]);
+  const mermaidBlocks = readerVisibleMermaidCodeBlocks(source);
+  assert.equal(mermaidBlocks.length, 1, 'exactly one reader-visible Agentic RAG Mermaid');
+  assert.equal(mermaidBlocks[0].rootDirect, true, 'the unique Mermaid remains root-direct for stable layout');
+  const graph = parseAgenticRagMermaid(mermaidBlocks[0].value);
   assert.deepEqual(graph.labelsById, agenticRagNodes);
   assert.deepEqual(graph.edges, agenticRagEdges);
   assert.deepEqual(
@@ -1367,10 +1381,10 @@ test('AGT-P-02 comparison table rejects structural, semantic, and hidden-copy mu
   }
 });
 
-test('AGT-P-02 requires one root-visible Mermaid and rejects topology bypasses fail closed', () => {
+test('AGT-P-02 requires one reader-visible root-direct Mermaid and rejects topology bypasses fail closed', () => {
   assert.ok(existsSync(agenticRagArticlePath), `Missing ${agenticRagArticlePath}`);
   const source = readFileSync(agenticRagArticlePath, 'utf8');
-  const [mermaid] = rootMermaidCodeBlocks(source);
+  const [{value: mermaid}] = readerVisibleMermaidCodeBlocks(source);
   assert.ok(mermaid, 'Agentic RAG Mermaid fixture');
   const fence = `\`\`\`mermaid\n${mermaid}\n\`\`\``;
   const bypassFence = `\`\`\`mermaid
@@ -1378,8 +1392,10 @@ flowchart TB
     FORM_QUERY["形成查询"] --> ANSWER["回答"]
 \`\`\``;
   const mutations = [
-    ['zero root-visible Mermaid', source.replace(fence, '')],
+    ['zero reader-visible Mermaid', source.replace(fence, '')],
     ['multiple root-visible Mermaid', `${source}\n\n${bypassFence}\n`],
+    ['extra nested reader-visible Mermaid', `${source}\n\n<div>\n${bypassFence}\n</div>\n`],
+    ['only nested reader-visible Mermaid', source.replace(fence, `<div>\n${fence}\n</div>`)],
     ['only compliant Mermaid hidden in comment', source.replace(fence, `{/*\n${fence}\n*/}`)],
     ['only compliant Mermaid hidden in JSX', source.replace(fence, `<div hidden>\n\n${fence}\n\n</div>`)],
     ['answer bypasses sufficiency', source.replace(

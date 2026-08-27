@@ -1,36 +1,82 @@
 import assert from 'node:assert/strict';
-import {readFile} from 'node:fs/promises';
+import {readdir, readFile} from 'node:fs/promises';
+import {join} from 'node:path';
 import test from 'node:test';
+
+import React from 'react';
+import {renderToStaticMarkup} from 'react-dom/server';
 
 import {handleHorizontalArrowKey} from '../src/components/KeyboardScrollableRegion/handleHorizontalArrowKey.mjs';
 
 const root = new URL('../', import.meta.url);
+const contentRoot = new URL('../content/', import.meta.url);
 
 async function source(path) {
   return readFile(new URL(path, root), 'utf8');
 }
 
-function assertThemeMermaidAccessibility(component, css) {
+async function contentFiles(directory = contentRoot) {
+  const entries = await readdir(directory, {withFileTypes: true});
+  const files = await Promise.all(entries.map(async (entry) => {
+    if (entry.isDirectory()) return contentFiles(new URL(`${entry.name}/`, directory));
+    return entry.name.endsWith('.mdx') ? [new URL(entry.name, directory)] : [];
+  }));
+  return files.flat();
+}
+
+function mermaidWrappers(sourceText) {
+  const wrappers = [];
+  const stack = [];
+  const tokens = /<\/?div\b[^>]*>|```mermaid/gu;
+  let token;
+  while ((token = tokens.exec(sourceText))) {
+    if (token[0] === '```mermaid') {
+      wrappers.push(...stack);
+      continue;
+    }
+    if (token[0].startsWith('</')) {
+      stack.pop();
+      continue;
+    }
+    stack.push({tag: token[0], start: token.index, end: tokens.lastIndex});
+  }
+  return wrappers;
+}
+
+function assertThinThemeComposition(component) {
+  assert.match(component, /import OriginalMermaid from '@theme-original\/Mermaid';/u);
   assert.match(
     component,
-    /from '@site\/src\/components\/KeyboardScrollableRegion\/handleHorizontalArrowKey\.mjs';/u,
-    'theme Mermaid renderer reuses the shared horizontal-scroll controller',
+    /import \{KeyboardScrollableRegion, mermaidAccessibleName\} from '@site\/src\/components\/KeyboardScrollableRegion\/KeyboardScrollableRegion\.mjs';/u,
   );
-  for (const contract of [
-    'role="region"',
-    'aria-label={MERMAID_SCROLL_REGION_LABEL}',
-    'tabIndex={0}',
-    'onKeyDown={handleHorizontalArrowKey}',
-  ]) assert.ok(component.includes(contract), `theme Mermaid ${contract}`);
+  assert.match(component, /<KeyboardScrollableRegion label=\{mermaidAccessibleName\(props\.value\)\}>/u);
+  assert.match(component, /<OriginalMermaid \{\.\.\.props\} \/>/u);
+  for (const forbidden of [
+    '@docusaurus/theme-mermaid/client',
+    'useMermaidRenderResult',
+    'MermaidContainerClassName',
+    'dangerouslySetInnerHTML',
+    'ErrorBoundary',
+    'Copyright',
+  ]) assert.doesNotMatch(component, new RegExp(forbidden, 'u'), `${forbidden} is not copied into the theme`);
+}
+
+function assertSingleMermaidScrollOwner(css) {
   assert.match(
-    component,
-    /const MERMAID_SCROLL_REGION_LABEL = 'Mermaid 图表，可使用左右方向键、Home 或 End 横向滚动';/u,
-    'every Mermaid has a stable accessible fallback name',
+    css,
+    /\.theme-doc-markdown \.keyboard-scroll-region--mermaid\s*\{[^}]*max-width:\s*100%;[^}]*overflow-x:\s*auto;[^}]*\}/su,
   );
   assert.match(
     css,
-    /\.theme-doc-markdown \.docusaurus-mermaid-container:focus-visible\s*\{[^}]*outline:\s*3px solid var\(--ifm-color-primary\);[^}]*outline-offset:\s*4px;[^}]*\}/su,
-    'focused Mermaid scroll owner has an unmistakable visible focus ring',
+    /\.theme-doc-markdown \.keyboard-scroll-region--mermaid:focus-visible\s*\{[^}]*outline:\s*3px solid var\(--ifm-color-primary\);[^}]*outline-offset:\s*4px;[^}]*\}/su,
+  );
+  assert.match(
+    css,
+    /\.keyboard-scroll-region--mermaid > \.docusaurus-mermaid-container\s*\{[^}]*width:\s*max-content;[^}]*max-width:\s*none;[^}]*overflow-x:\s*visible;[^}]*\}/su,
+  );
+  assert.match(
+    css,
+    /\.keyboard-scroll-region--mermaid > \.docusaurus-mermaid-container svg\s*\{[^}]*min-width:\s*42rem;[^}]*\}/su,
   );
 }
 
@@ -45,61 +91,80 @@ function keyboardEvent(region, key) {
       ctrlKey: false,
       metaKey: false,
       shiftKey: false,
-      preventDefault: () => {
-        prevented = true;
-      },
+      preventDefault: () => { prevented = true; },
     },
     prevented: () => prevented,
   };
 }
 
-test('theme Mermaid owns keyboard-accessible local horizontal overflow', async () => {
+test('theme Mermaid is a thin composition with one keyboard-scroll owner', async () => {
   const [component, css] = await Promise.all([
     source('src/theme/Mermaid/index.tsx'),
     source('src/css/custom.css'),
   ]);
-  assertThemeMermaidAccessibility(component, css);
+  assertThinThemeComposition(component);
+  assertSingleMermaidScrollOwner(css);
 
-  for (const [label, from, to] of [
-    ['role', 'role="region"', 'role="group"'],
-    ['accessible name', 'aria-label={MERMAID_SCROLL_REGION_LABEL}', 'aria-label="changed"'],
-    ['tab order', 'tabIndex={0}', 'tabIndex={-1}'],
-    ['key controller', 'onKeyDown={handleHorizontalArrowKey}', 'onKeyDown={undefined}'],
-  ]) {
-    assert.throws(
-      () => assertThemeMermaidAccessibility(component.replace(from, to), css),
-      assert.AssertionError,
-      `${label} drift fails closed`,
-    );
-  }
+  assert.throws(
+    () => assertThinThemeComposition(component.replace('@theme-original/Mermaid', '@docusaurus/theme-mermaid/client')),
+    assert.AssertionError,
+  );
+  assert.throws(
+    () => assertSingleMermaidScrollOwner(css.replace(
+      '.theme-doc-markdown .keyboard-scroll-region--mermaid > .docusaurus-mermaid-container {\n  width: max-content;\n  max-width: none;\n  overflow-x: visible;',
+      '.theme-doc-markdown .keyboard-scroll-region--mermaid > .docusaurus-mermaid-container {\n  width: max-content;\n  max-width: none;\n  overflow-x: auto;',
+    )),
+    assert.AssertionError,
+  );
+});
+
+test('the local Mermaid region renders actual accessible DOM and derives distinct accTitle names', async () => {
+  const {
+    KeyboardScrollableRegion,
+    mermaidAccessibleName,
+    MERMAID_SCROLL_REGION_LABEL,
+  } = await import('../src/components/KeyboardScrollableRegion/KeyboardScrollableRegion.mjs');
+  const firstTitle = '第一张图';
+  const secondTitle = '第二张图';
+  assert.equal(mermaidAccessibleName(`flowchart LR\n  accTitle: ${firstTitle}`), firstTitle);
+  assert.equal(mermaidAccessibleName(`flowchart LR\n  accTitle: ${secondTitle}`), secondTitle);
+  assert.equal(mermaidAccessibleName('flowchart LR\n  A --> B'), MERMAID_SCROLL_REGION_LABEL);
+
+  const element = KeyboardScrollableRegion({
+    label: firstTitle,
+    children: React.createElement('span', null, 'child'),
+  });
+  assert.equal(element.type, 'div');
+  assert.equal(element.props.role, 'region');
+  assert.equal(element.props['aria-label'], firstTitle);
+  assert.equal(element.props.tabIndex, 0);
+  assert.equal(element.props.onKeyDown, handleHorizontalArrowKey);
+  assert.match(
+    renderToStaticMarkup(element),
+    /<div class="keyboard-scroll-region keyboard-scroll-region--mermaid" role="region" aria-label="第一张图" tabindex="0"><span>child<\/span><\/div>/u,
+  );
 });
 
 test('shared horizontal-scroll controller bounds ArrowLeft/Right and Home/End locally', () => {
   const region = {scrollLeft: 0, scrollWidth: 200, clientWidth: 100};
+  for (const [key, expected] of [['ArrowRight', 40], ['End', 100], ['ArrowLeft', 60], ['Home', 0]]) {
+    const event = keyboardEvent(region, key);
+    handleHorizontalArrowKey(event.event);
+    assert.equal(region.scrollLeft, expected, key);
+    assert.equal(event.prevented(), true, key);
+  }
+});
 
-  const right = keyboardEvent(region, 'ArrowRight');
-  handleHorizontalArrowKey(right.event);
-  assert.equal(region.scrollLeft, 40);
-  assert.equal(right.prevented(), true);
-
-  const end = keyboardEvent(region, 'End');
-  handleHorizontalArrowKey(end.event);
-  assert.equal(region.scrollLeft, 100);
-  assert.equal(end.prevented(), true);
-
-  const left = keyboardEvent(region, 'ArrowLeft');
-  handleHorizontalArrowKey(left.event);
-  assert.equal(region.scrollLeft, 60);
-  assert.equal(left.prevented(), true);
-
-  const home = keyboardEvent(region, 'Home');
-  handleHorizontalArrowKey(home.event);
-  assert.equal(region.scrollLeft, 0);
-  assert.equal(home.prevented(), true);
-
-  const staticRegion = {scrollLeft: 0, scrollWidth: 100, clientWidth: 100};
-  const staticEnd = keyboardEvent(staticRegion, 'End');
-  handleHorizontalArrowKey(staticEnd.event);
-  assert.equal(staticRegion.scrollLeft, 0);
-  assert.equal(staticEnd.prevented(), false);
+test('no Mermaid fence remains inside a focusable or landmark MDX wrapper', async () => {
+  const files = await contentFiles();
+  const offenders = [];
+  for (const file of files) {
+    const body = await readFile(file, 'utf8');
+    for (const wrapper of mermaidWrappers(body)) {
+      if (/\brole="region"|\btabIndex=\{0\}|\bonKeyDown=\{handleHorizontalArrowKey\}|diagram-wrapper--scroll-owner/u.test(wrapper.tag)) {
+        offenders.push(`${join(file.pathname, '')}:${wrapper.tag}`);
+      }
+    }
+  }
+  assert.deepEqual(offenders, [], 'theme Mermaid is the sole focusable scroll region for each Mermaid fence');
 });

@@ -65,13 +65,7 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 
 第一张图的观察对象是单个转账业务意图，事实截止时间为本次评审记录所标注的时刻。
 
-<div
-  className="diagram-wrapper"
-  role="region"
-  aria-label="业务意图状态机，可横向滚动"
-  tabIndex={0}
-  onKeyDown={handleHorizontalArrowKey}
->
+<div className="diagram-wrapper">
 
 ```mermaid
 stateDiagram-v2
@@ -98,13 +92,7 @@ stateDiagram-v2
 
 第二张图的观察对象是一个稳定 `operation_id` 对应的执行与恢复过程，事实截止时间与同一评审记录一致。
 
-<div
-  className="diagram-wrapper"
-  role="region"
-  aria-label="执行与恢复状态机，可横向滚动"
-  tabIndex={0}
-  onKeyDown={handleHorizontalArrowKey}
->
+<div className="diagram-wrapper">
 
 ```mermaid
 stateDiagram-v2
