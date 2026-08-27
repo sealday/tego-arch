@@ -608,8 +608,9 @@ function assertStageBProductionEvidence(value) {
       }, `${stateName} interaction ${index} exact after geometry`);
       assert.equal(interaction.delta, interactionDeltas[index], `${stateName} interaction ${index} delta`);
     }
-    assert.deepEqual(state.relations.map(({href, expectedH1}) => [href, expectedH1]), RELATIONS);
-    assert.ok(state.relations.every(({h1, expectedH1, visibleCount, returnedToArticle}) => h1 === expectedH1 && visibleCount === 1 && returnedToArticle === true));
+    assert.deepEqual(state.relations, RELATIONS.map(([href, expectedH1]) => ({
+      href, expectedH1, h1: expectedH1, visibleCount: 1, returnedToArticle: true,
+    })), `${stateName} exact Stage B relations`);
     assert.deepEqual(state.geometry.sources, SOURCE_HREFS.map((href) => ({href, target: '_blank', rel: 'noopener noreferrer'})));
     assert.equal(state.geometry.sty13, 0);
     assert.deepEqual(state.logs, []);
@@ -856,6 +857,7 @@ test('rejects Stage B nested geometry and interaction schema mutations', {skip: 
     ['after clientWidth', (copy) => { copy.states.desktopLight.interactions[0].after.clientWidth += 1; }],
     ['after scrollWidth', (copy) => { copy.states.desktopLight.interactions[0].after.scrollWidth += 1; }],
     ['after scrollLeft', (copy) => { copy.states.mobileLight.interactions[1].after.scrollLeft += 1; }],
+    ['relation additive physical-click overclaim', (copy) => { copy.states.desktopLight.relations[0].physicallyClicked = true; }],
   ];
   for (const [label, mutate] of mutations) {
     const copy = structuredClone(evidence);
