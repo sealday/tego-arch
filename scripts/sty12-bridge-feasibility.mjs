@@ -6,6 +6,7 @@ const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const SVG_PATH = resolve(ROOT, 'static/img/diagrams/sty-12-micro-frontend-commerce-runtime.svg');
 const STROKE_WIDTH = 7;
 const SAMPLE_MINIMUM = 7;
+const PUBLISHED_ACTIVATE_ACCOUNT_OWNER_CORRIDOR = Object.freeze({from: 1365, to: 1840, y: 1920});
 
 const SEMANTIC_ENDPOINT_CONTRACT = Object.freeze([
   ['catalog-release', 'catalog-pipeline', 'immutable-artifacts'], ['cart-release', 'cart-pipeline', 'immutable-artifacts'],
@@ -94,12 +95,12 @@ function activateAccountOwnerCorridor(semanticEdges, tags, bridge) {
   if (!primary || !continuation) throw new Error('activate-account fixed owner corridor route segments');
   const primarySegments = pathSegments(pathPoints(attribute(primary, 'd')));
   const continuationSegments = pathSegments(pathPoints(attribute(continuation, 'd')));
-  const vertical = primarySegments.find(({start, end}) => start.x === end.x && end.y === bridge.at.y);
+  const vertical = primarySegments.find(({start, end}) => start.x === end.x && end.y === PUBLISHED_ACTIVATE_ACCOUNT_OWNER_CORRIDOR.y);
   const leftArcTerminal = {x: bridge.at.x - 18, y: bridge.at.y}; const rightArcTerminal = {x: bridge.at.x + 18, y: bridge.at.y};
   const hasLeftCorridor = primarySegments.some(({start, end}) => samePoint(start, vertical?.end ?? {}) && samePoint(end, leftArcTerminal));
   const rightCorridor = continuationSegments.find(({start, end}) => samePoint(start, rightArcTerminal) && start.y === end.y);
-  if (!vertical || !hasLeftCorridor || !rightCorridor || vertical.start.y !== 1600 || rightCorridor.end.x !== 1840) throw new Error('activate-account fixed owner corridor');
-  return {id: 'activate-account', horizontal: {from: vertical.start.x, to: rightCorridor.end.x, y: bridge.at.y}};
+  if (!vertical || bridge.at.y !== PUBLISHED_ACTIVATE_ACCOUNT_OWNER_CORRIDOR.y || !hasLeftCorridor || !rightCorridor || vertical.start.x !== PUBLISHED_ACTIVATE_ACCOUNT_OWNER_CORRIDOR.from || vertical.start.y !== 1600 || rightCorridor.end.x !== PUBLISHED_ACTIVATE_ACCOUNT_OWNER_CORRIDOR.to) throw new Error('activate-account fixed owner corridor');
+  return {id: 'activate-account', horizontal: {from: vertical.start.x, to: rightCorridor.end.x, y: PUBLISHED_ACTIVATE_ACCOUNT_OWNER_CORRIDOR.y}};
 }
 
 function loadFailureRoute(tags) {

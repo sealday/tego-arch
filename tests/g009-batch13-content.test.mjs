@@ -485,8 +485,6 @@ function sampledArcUnderClearance(arc, underSegments, ownerStrokeWidth, underStr
   return {centerlineToUnderStroke, paintedStrokeToUnderStroke: centerlineToUnderStroke - ownerStrokeWidth / 2};
 }
 
-const DRAWABLE_SVG_GEOMETRIES = new Set(['path', 'rect', 'line', 'polyline', 'polygon', 'circle', 'ellipse']);
-
 function underSvgAncestor(element, predicate) {
   for (let current = element.parent; current; current = current.parent) if (predicate(current)) return true;
   return false;
@@ -498,20 +496,34 @@ function legendDoesNotCoverSemanticRoutes(svgSource, svg, legend) {
   assert.ok(legendSegments.every((legendSegment) => semanticEnvelopes.every((semanticSegment) => boxDistance(legendSegment, semanticSegment) > 0)), `${legend.attributes.get('data-legend-role')} legend geometry does not cover a semantic route`);
 }
 
-function assertNoPostSemanticAnonymousGeometry(svgSource, svg) {
+function assertPostSemanticLayerStructure(svgSource, svg) {
   const semanticLayer = svg.elements.find(({name, attributes}) => name === 'g' && attributes.get('data-edge-layer') === 'semantic-routes');
   assert.ok(semanticLayer, 'semantic route paint layer exists');
-  const postSemanticDrawables = svg.elements.filter((element) => DRAWABLE_SVG_GEOMETRIES.has(element.name)
-    && element.sourceIndex > semanticLayer.closeIndex
-    && !underSvgAncestor(element, ({name}) => name === 'defs'));
-  for (const element of postSemanticDrawables) {
-    const directBridgeLayer = element.parent?.name === 'g' && element.parent.attributes.get('data-bridge-layer') === 'explicit-crossovers';
-    const directLegendLayer = element.parent?.name === 'g' && element.parent.attributes.get('data-legend-layer') === 'relationship-semantics';
-    const legalBridge = directBridgeLayer && element.name === 'path' && element.attributes.has('data-bridge-for');
-    const legalLegend = directLegendLayer && element.name === 'path' && element.attributes.has('data-legend-role');
-    assert.ok(legalBridge || legalLegend, `post-semantic anonymous drawable geometry <${element.name}> cannot cover semantic routes`);
-    if (legalLegend) legendDoesNotCoverSemanticRoutes(svgSource, svg, element);
+  const layerContract = [
+    ['data-bridge-layer', 'explicit-crossovers'], ['data-edge-label-layer', 'reserved-label-lanes'], ['data-legend-layer', 'relationship-semantics'],
+  ];
+  const layers = svg.elements.filter((element) => element.parent === semanticLayer.parent && element.sourceIndex > semanticLayer.closeIndex);
+  assert.equal(layers.length, layerContract.length, 'post-semantic layer structure has exactly three known layers');
+  for (const [index, [attribute, value]] of layerContract.entries()) {
+    const layer = layers[index];
+    assert.equal(layer.name, 'g', `post-semantic layer structure ${index + 1} is a group`);
+    assert.equal(layer.attributes.get(attribute), value, `post-semantic layer structure ${index + 1} identity`);
+    for (const [otherAttribute] of layerContract.filter(([candidate]) => candidate !== attribute)) assert.equal(layer.attributes.has(otherAttribute), false, `post-semantic layer structure ${index + 1} has no second layer identity`);
   }
+  const directChildren = (layer) => svg.elements.filter(({parent}) => parent === layer);
+  const descendants = (layer) => svg.elements.filter((element) => underSvgAncestor(element, (ancestor) => ancestor === layer));
+  const [bridgeLayer, labelLayer, legendLayer] = layers;
+  const bridgeChildren = directChildren(bridgeLayer);
+  assert.equal(bridgeChildren.length, 6, 'post-semantic bridge layer has exactly six paths');
+  assert.ok(bridgeChildren.every((element) => element.name === 'path' && element.attributes.has('data-bridge-for')), 'post-semantic bridge layer permits only explicit bridge paths');
+  assert.ok(descendants(bridgeLayer).every((element) => bridgeChildren.includes(element)), 'post-semantic bridge layer has no nested structure');
+  const labelChildren = directChildren(labelLayer);
+  assert.ok(labelChildren.every((element) => element.name === 'text' && element.attributes.has('data-edge-label-for')), 'post-semantic edge-label layer permits only named label text');
+  assert.ok(descendants(labelLayer).every((element) => labelChildren.includes(element) || element.name === 'tspan' && labelChildren.includes(element.parent)), 'post-semantic edge-label layer permits only direct label tspans');
+  const legendChildren = directChildren(legendLayer);
+  assert.ok(legendChildren.every((element) => element.name === 'text' && element.attributes.has('data-legend-caption-for') || element.name === 'path' && element.attributes.has('data-legend-role')), 'post-semantic legend layer permits only named caption text and paths');
+  assert.ok(descendants(legendLayer).every((element) => legendChildren.includes(element) || element.name === 'tspan' && legendChildren.includes(element.parent) && element.parent.name === 'text'), 'post-semantic legend layer permits only direct legend tspans');
+  for (const legend of legendChildren.filter(({attributes}) => attributes.has('data-legend-role'))) legendDoesNotCoverSemanticRoutes(svgSource, svg, legend);
 }
 
 function segmentContainsPoint(segment, point) {
@@ -521,7 +533,7 @@ function segmentContainsPoint(segment, point) {
 
 function assertBridgeInventory(drawio, svgSource, svg) {
   assert.equal(svg.elements.some(({attributes}) => attributes.has('data-bridge-mask-for')), false, 'no declared bridge mask or background-color erasure');
-  assertNoPostSemanticAnonymousGeometry(svgSource, svg);
+  assertPostSemanticLayerStructure(svgSource, svg);
   const expected = BRIDGE_CONTRACTS.map(([owner, under, x, y]) => intersectionIdentity(owner, under, {x, y})).sort();
   const bridges = svg.elements.filter(({attributes}) => attributes.has('data-bridge-for'));
   assert.equal(bridges.length, BRIDGE_CONTRACTS.length, 'exact justified minimal bridge budget');
@@ -676,7 +688,7 @@ function assertBridgeMutationGuards(drawioSource, svgSource) {
   const bridge = bridgePattern.exec(svgSource)?.[0];
   assert.ok(bridge, 'bridge mutation fixture exists');
   const removed = svgSource.replace(bridge, '');
-  assert.throws(() => assertBridgeInventory(parseDrawio(drawioSource), removed, parseSvg(removed)), /exact justified minimal bridge budget|exact allowlisted bridge topology/u, 'removed bridge exposes a naked intersection');
+  assert.throws(() => assertBridgeInventory(parseDrawio(drawioSource), removed, parseSvg(removed)), /post-semantic bridge layer has exactly six paths|exact justified minimal bridge budget|exact allowlisted bridge topology/u, 'removed bridge exposes a naked intersection');
   const misidentified = svgSource.replace(bridge, bridge.replace(/data-crosses-edge="[^"]+"/u, 'data-crosses-edge="catalog-release"'));
   assert.throws(() => assertBridgeInventory(parseDrawio(drawioSource), misidentified, parseSvg(misidentified)), /fixed resolve-fanout\/business-boundary allowlist|exact allowlisted bridge topology|stable bridge identity/u, 'misidentified bridge cannot satisfy another crossing');
   const hidden = svgSource.replace(bridge, bridge.replace(/\bstroke="[^"]+"/u, 'stroke="none"'));
@@ -690,17 +702,19 @@ function assertBridgeMutationGuards(drawioSource, svgSource) {
     ['plane background path', '    <path d="M 40 1120 L 2360 1120 L 2360 2720 L 40 2720 Z" fill="#F0F9FF"/>'],
     ['inherited white-stroke group/path', '    <g stroke="#FFFFFF" stroke-width="24"><path d="M 742 2320 L 778 2320" fill="none"/></g>'],
     ['white-fill rectangle', '    <rect x="742" y="2310" width="36" height="20" fill="#FFFFFF"/>'],
+    ['late definition and use', '    <defs><rect id="late-cover" x="742" y="2310" width="36" height="20" fill="#FFFFFF"/></defs><use href="#late-cover"/>'],
   ];
   for (const [label, paint] of postSemanticPaintProbes) {
     const mutated = svgSource.replace(/(\s*<g data-bridge-layer="explicit-crossovers")/u, `${paint}$1`);
     assert.notEqual(mutated, svgSource, `${label} post-semantic paint mutation applies`);
-    assert.throws(() => assertBridgeInventory(parseDrawio(drawioSource), mutated, parseSvg(mutated)), /post-semantic anonymous drawable geometry/u, `${label} cannot cover semantic routes`);
+    assert.throws(() => assertBridgeInventory(parseDrawio(drawioSource), mutated, parseSvg(mutated)), /post-semantic layer structure/u, `${label} cannot cover semantic routes`);
   }
 }
 
 function assertBridgeSearchMutationGuards(svgSource) {
   const probes = [
     ['owner corridor', svgSource.replace(/(<path\b[^>]*data-edge-id="activate-account"[^>]*\bd="[^"]*)L 1365 1920/u, '$1L 1365 1918'), /activate-account fixed owner corridor/u],
+    ['translated owner corridor', svgSource.replace(/(<path\b[^>]*data-edge-id="activate-account"[^>]*\bd=")([^"]+)(")/u, (whole, prefix, route, suffix) => `${prefix}${route.replaceAll('1365', '1360')}${suffix}`), /activate-account fixed owner corridor/u],
     ['first bridge allowlist', svgSource.replace(/data-bridge-for="share-runtime-catalog"/u, 'data-bridge-for="share-runtime-cart"'), /first five bridge allowlist/u],
     ['semantic endpoint contract', svgSource.replace(/(<path\b[^>]*data-edge-id="catalog-release"[^>]*data-source=")[^"]+/u, '$1cart-pipeline'), /semantic endpoint contract/u],
   ];
