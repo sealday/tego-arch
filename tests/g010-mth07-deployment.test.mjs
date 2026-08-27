@@ -184,10 +184,12 @@ function isHistoricalReviewArtifact(relative) {
     relative !== 'docs/reviews/g009-batch10.md' &&
     relative !== 'docs/reviews/g009-batch11.md' &&
     relative !== 'docs/reviews/g009-batch12.md' &&
+    relative !== 'docs/reviews/g009-batch13.md' &&
     !relative.startsWith('docs/reviews/evidence/g009-batch9-') &&
     !relative.startsWith('docs/reviews/evidence/g009-batch10-') &&
     !relative.startsWith('docs/reviews/evidence/g009-batch11-') &&
     !relative.startsWith('docs/reviews/evidence/g009-batch12-') &&
+    !relative.startsWith('docs/reviews/evidence/g009-batch13-') &&
     !relative.startsWith('docs/reviews/evidence/g010-mth07-');
 }
 
@@ -793,6 +795,8 @@ test('locks the exact pre-G010 review namespace against add edit and delete muta
     'docs/reviews/evidence/g009-batch11-stage-a-browser.json',
     'docs/reviews/g009-batch12.md',
     'docs/reviews/evidence/g009-batch12-stage-a-browser.json',
+    'docs/reviews/g009-batch13.md',
+    'docs/reviews/evidence/g009-batch13-stage-a-browser.json',
     'docs/reviews/evidence/g010-mth07-stage-a-production-browser.json',
     'docs/reviews/evidence/g010-mth07-stage-b-production-browser.json',
   ]) assert.equal(isHistoricalReviewArtifact(currentPath), false, `${currentPath} is current G010 evidence`);
