@@ -96,7 +96,7 @@ related_questions: []
 插图判定：**Mermaid 图表工具**。计划明确要求使用 Mermaid；图的核心是一个经常随路由合同变化的有向控制流，必须精确审查策略门先后、唯一目的地、失败分支和终态。该图为本站原创综合，不复制来源图示，也不证明任何模型会正确分类。
 
 ```mermaid
-flowchart LR
+flowchart TB
     accTitle: 路由与模型驱动分发的策略门、唯一目的地与故障关闭控制流
     REQUEST["待分发请求"] --> POLICY_GATE["确定性策略门"]
     POLICY_GATE -->|策略允许| MODEL_ROUTER["路由模型"]

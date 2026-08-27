@@ -557,14 +557,14 @@ const routerDispatchSourceContracts = [
     canonical_locator: 'https://github.com/QuantumNous/new-api/blob/1721144221ec5c94dd87891a7ae1bee228e7bb63/service/channel_select.go',
     transport_locator: 'https://github.com/QuantumNous/new-api/blob/1721144221ec5c94dd87891a7ae1bee228e7bb63/service/channel_select.go',
     expected_final_transport_locator: 'https://github.com/QuantumNous/new-api/blob/1721144221ec5c94dd87891a7ae1bee228e7bb63/service/channel_select.go',
-    title: 'service/channelselect.go',
+    title: 'service/channel_select.go',
     author_or_org: 'QuantumNous / New API maintainers',
     published_at: null,
     version: 'Git commit 1721144221ec5c94dd87891a7ae1bee228e7bb63',
     source_kind: 'source-code',
     tier: 'primary',
     license: 'AGPL-3.0-only',
-    usage_boundary: 'Shows the implementation in “service/channelselect.go” at the recorded commit or file version; it does not alone prove runtime guarantees or deployment fitness.',
+    usage_boundary: 'Shows the implementation in “service/channel_select.go” at the recorded commit or file version; it does not alone prove runtime guarantees or deployment fitness.',
     health: {at: '2026-08-25T12:07:24.531Z', status: 206},
   },
 ];
@@ -609,7 +609,7 @@ const routerDispatchDocumentContract = {
       roles: ['case-evidence', 'comparison'],
       manifest_primary: false,
       usage_mode: 'facts-summary',
-      attribution_note: 'service/channelselect.go, QuantumNous / New API maintainers',
+      attribution_note: 'service/channel_select.go, QuantumNous / New API maintainers',
       modification_note: 'Original Chinese comparison of channel selection with task-control routing; no source code, examples, control structure, repository layout or diagrams copied.',
       excerpt: null,
       quotation_reviewed: false,
@@ -1317,7 +1317,7 @@ function assertEvaluatorOptimizerSourceContract(ledger, health) {
 function parseRouterDispatchMermaid(mermaid) {
   const labelsById = new Map();
   const edges = [];
-  let headerSeen = false;
+  let direction = null;
   let accTitle = null;
   const nodePattern = '[A-Z][A-Z_]*(?:\\["[^"\\n]+"\\])?';
   const nodeSegment = /^([A-Z][A-Z_]*)(?:\["([^"\n]+)"\])?$/u;
@@ -1329,8 +1329,8 @@ function parseRouterDispatchMermaid(mermaid) {
   for (const line of mermaid.split(/\r?\n/u)) {
     const statement = line.trim();
     if (!statement) continue;
-    if (!headerSeen && statement === 'flowchart LR') {
-      headerSeen = true;
+    if (direction === null && /^flowchart\s+(?:TB|LR)$/u.test(statement)) {
+      direction = statement.slice('flowchart '.length);
       continue;
     }
     if (statement.startsWith('accTitle:')) {
@@ -1361,12 +1361,45 @@ function parseRouterDispatchMermaid(mermaid) {
       edges.push([nodeIds[index - 1], nodeIds[index], edgeLabels[index - 1]]);
     }
   }
-  assert.ok(headerSeen, 'Router Mermaid flowchart LR header');
+  assert.ok(direction, 'Router Mermaid flowchart direction header');
   assert.equal(accTitle, routerDispatchMermaidAccTitle, 'Router Mermaid exact accessible title');
   return {
+    direction,
     labelsById: new Map([...labelsById].map(([id, labels]) => [id, [...labels].sort()])),
     edges,
   };
+}
+
+function assertRouterDispatchReadableLayout(graph) {
+  assert.equal(graph.direction, 'TB', 'Router Mermaid uses vertical flow to preserve readable text');
+  const nodeIds = [...routerDispatchNodes.keys()];
+  const indegree = new Map(nodeIds.map((id) => [id, 0]));
+  const successors = new Map(nodeIds.map((id) => [id, []]));
+  for (const [sourceId, targetId] of graph.edges) {
+    indegree.set(targetId, indegree.get(targetId) + 1);
+    successors.get(sourceId).push(targetId);
+  }
+  const queue = nodeIds.filter((id) => indegree.get(id) === 0);
+  const rankById = new Map(nodeIds.map((id) => [id, 0]));
+  let visited = 0;
+  while (queue.length > 0) {
+    const sourceId = queue.shift();
+    visited += 1;
+    for (const targetId of successors.get(sourceId)) {
+      rankById.set(targetId, Math.max(rankById.get(targetId), rankById.get(sourceId) + 1));
+      indegree.set(targetId, indegree.get(targetId) - 1);
+      if (indegree.get(targetId) === 0) queue.push(targetId);
+    }
+  }
+  assert.equal(visited, nodeIds.length, 'Router Mermaid readability ranks cover an acyclic graph');
+  const rankCounts = new Map();
+  for (const rank of rankById.values()) rankCounts.set(rank, (rankCounts.get(rank) ?? 0) + 1);
+  assert.ok(Math.max(...rankCounts.values()) <= 3, 'no horizontal rank exceeds three nodes');
+  assert.ok(Math.max(...rankCounts.keys()) >= 5, 'vertical flow has enough depth to avoid a flat strip');
+  assert.ok(
+    [...graph.labelsById.values()].flat().every((label) => [...label].length <= 24),
+    'node labels remain short enough for readable vertical cards',
+  );
 }
 
 function assertRouterDispatchContract(source) {
@@ -1411,6 +1444,7 @@ function assertRouterDispatchContract(source) {
   assert.equal(mermaidBlocks.length, 1, 'exactly one reader-visible Router Mermaid');
   assert.equal(mermaidBlocks[0].rootDirect, true, 'Router Mermaid remains root-direct');
   const graph = parseRouterDispatchMermaid(mermaidBlocks[0].value);
+  assertRouterDispatchReadableLayout(graph);
   assert.deepEqual(graph.labelsById, routerDispatchNodes);
   assert.deepEqual(graph.edges, routerDispatchEdges);
   assert.deepEqual(
@@ -1467,6 +1501,24 @@ function assertRouterDispatchSourceContract(ledger, health) {
   assert.ok(document, `${routerDispatchArticlePath} source document`);
   assert.deepEqual(document, routerDispatchDocumentContract);
   assert.deepEqual(document.citations.map(({source_id: sourceId}) => sourceId), routerDispatchSourceIds);
+  assert.deepEqual(
+    Object.entries(ledger.documents)
+      .flatMap(([path, item]) => item.citations
+        .filter(({source_id: sourceId}) => sourceId === 'src-github-32ae2040f2fa')
+        .map(({attribution_note: attributionNote}) => [path, attributionNote]))
+      .sort(([left], [right]) => left.localeCompare(right)),
+    [
+      [
+        'content/cases/new-api-channel-pool-routing.mdx',
+        'service/channel_select.go, QuantumNous / New API maintainers',
+      ],
+      [
+        routerDispatchArticlePath,
+        'service/channel_select.go, QuantumNous / New API maintainers',
+      ],
+    ],
+    'every direct citation uses the exact fixed source filename identity',
+  );
 
   for (const contract of routerDispatchSourceContracts) {
     const source = ledger.sources.find(({id}) => id === contract.id);
@@ -3140,6 +3192,14 @@ flowchart LR
     ['alternate label bypass', source.replace(
       'CONFIDENCE_GATE -->|未知或低置信| DETERMINISTIC_FALLBACK',
       'CONFIDENCE_GATE -->|高置信| DETERMINISTIC_FALLBACK',
+    )],
+    ['complete terminal re-enters model routing', source.replace(
+      'VERIFY -->|结果已确认| COMPLETE["完成"]',
+      'VERIFY -->|结果已确认| COMPLETE["完成"]\n    COMPLETE --> MODEL_ROUTER',
+    )],
+    ['safe-stop terminal re-enters model routing', source.replace(
+      'POLICY_GATE -->|策略拒绝或对抗输入| SAFE_STOP["安全停止"]',
+      'POLICY_GATE -->|策略拒绝或对抗输入| SAFE_STOP["安全停止"]\n    SAFE_STOP --> MODEL_ROUTER',
     )],
   ];
   const survivors = [];
