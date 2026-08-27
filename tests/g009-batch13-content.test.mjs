@@ -1,12 +1,15 @@
 import assert from 'node:assert/strict';
 import {spawnSync} from 'node:child_process';
-import {readFileSync} from 'node:fs';
+import {mkdtempSync, readFileSync, rmSync, writeFileSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
 import test from 'node:test';
 
 import {findMarkdownHeadings, parseFrontMatter, readContentDocuments} from '../scripts/content-metadata.mjs';
 import {extractInternalLinks} from '../scripts/content-relations.mjs';
 import {architectureCaseTopicIds, knowledgeHeadingContract, sty12ArchitectureCaseHeadings} from '../scripts/content-schema.mjs';
+import {runBridgeFeasibilitySearch} from '../scripts/sty12-bridge-feasibility.mjs';
 
 export const ARTICLE = 'content/styles/sty-12-micro-frontend-architecture.mdx';
 export const DRAWIO = 'diagrams/sty-12-micro-frontend-commerce-runtime.drawio';
@@ -482,19 +485,33 @@ function sampledArcUnderClearance(arc, underSegments, ownerStrokeWidth, underStr
   return {centerlineToUnderStroke, paintedStrokeToUnderStroke: centerlineToUnderStroke - ownerStrokeWidth / 2};
 }
 
-function opaqueWhiteStroke(source, element) {
-  const stroke = (svgPresentationValue(source, element, 'stroke') ?? '').replace(/\s+/gu, '').toLowerCase();
-  const opaque = number(svgPresentationValue(source, element, 'opacity') ?? '1', 'anonymous path opacity') * number(svgPresentationValue(source, element, 'stroke-opacity') ?? '1', 'anonymous path stroke opacity') >= .999;
-  return opaque && ['#fff', '#ffffff', 'white', 'rgb(255,255,255)', 'rgba(255,255,255,1)'].includes(stroke)
-    && number(svgPresentationValue(source, element, 'stroke-width') ?? '0', 'anonymous path stroke width') >= 7;
+const DRAWABLE_SVG_GEOMETRIES = new Set(['path', 'rect', 'line', 'polyline', 'polygon', 'circle', 'ellipse']);
+
+function underSvgAncestor(element, predicate) {
+  for (let current = element.parent; current; current = current.parent) if (predicate(current)) return true;
+  return false;
 }
 
-function assertNoAnonymousWhiteErasers(svgSource, svg) {
-  const semanticPaintEnd = Math.max(...svg.edges.flatMap((edge) => edgePathElements(svg, edge.attributes.get('data-edge-id')).map(({index}) => index)));
-  const erasers = svg.elements.filter(({name, attributes, index}) => name === 'path' && index > semanticPaintEnd
-    && !['data-edge-id', 'data-edge-segment-for', 'data-bridge-for', 'data-legend-role'].some((attribute) => attributes.has(attribute))
-    && opaqueWhiteStroke(svgSource, {attributes, name}));
-  assert.equal(erasers.length, 0, 'no semantic-layer-later anonymous opaque white wide-stroke eraser path');
+function legendDoesNotCoverSemanticRoutes(svgSource, svg, legend) {
+  const legendSegments = parsePathPoints(legend.attributes.get('d')).slice(1).map((end, index, points) => segmentEnvelope(points[index], end, number(svgPresentationValue(svgSource, legend, 'stroke-width'), `${legend.attributes.get('data-legend-role')} legend stroke width`) / 2));
+  const semanticEnvelopes = semanticSegments(svg).map((segment) => segmentEnvelope(segment.start, segment.end, number(svgPresentationValue(svgSource, svg.edges.find(({attributes}) => attributes.get('data-edge-id') === segment.id), 'stroke-width'), `${segment.id} semantic stroke width`) / 2));
+  assert.ok(legendSegments.every((legendSegment) => semanticEnvelopes.every((semanticSegment) => boxDistance(legendSegment, semanticSegment) > 0)), `${legend.attributes.get('data-legend-role')} legend geometry does not cover a semantic route`);
+}
+
+function assertNoPostSemanticAnonymousGeometry(svgSource, svg) {
+  const semanticLayer = svg.elements.find(({name, attributes}) => name === 'g' && attributes.get('data-edge-layer') === 'semantic-routes');
+  assert.ok(semanticLayer, 'semantic route paint layer exists');
+  const postSemanticDrawables = svg.elements.filter((element) => DRAWABLE_SVG_GEOMETRIES.has(element.name)
+    && element.sourceIndex > semanticLayer.closeIndex
+    && !underSvgAncestor(element, ({name}) => name === 'defs'));
+  for (const element of postSemanticDrawables) {
+    const directBridgeLayer = element.parent?.name === 'g' && element.parent.attributes.get('data-bridge-layer') === 'explicit-crossovers';
+    const directLegendLayer = element.parent?.name === 'g' && element.parent.attributes.get('data-legend-layer') === 'relationship-semantics';
+    const legalBridge = directBridgeLayer && element.name === 'path' && element.attributes.has('data-bridge-for');
+    const legalLegend = directLegendLayer && element.name === 'path' && element.attributes.has('data-legend-role');
+    assert.ok(legalBridge || legalLegend, `post-semantic anonymous drawable geometry <${element.name}> cannot cover semantic routes`);
+    if (legalLegend) legendDoesNotCoverSemanticRoutes(svgSource, svg, element);
+  }
 }
 
 function segmentContainsPoint(segment, point) {
@@ -504,7 +521,7 @@ function segmentContainsPoint(segment, point) {
 
 function assertBridgeInventory(drawio, svgSource, svg) {
   assert.equal(svg.elements.some(({attributes}) => attributes.has('data-bridge-mask-for')), false, 'no declared bridge mask or background-color erasure');
-  assertNoAnonymousWhiteErasers(svgSource, svg);
+  assertNoPostSemanticAnonymousGeometry(svgSource, svg);
   const expected = BRIDGE_CONTRACTS.map(([owner, under, x, y]) => intersectionIdentity(owner, under, {x, y})).sort();
   const bridges = svg.elements.filter(({attributes}) => attributes.has('data-bridge-for'));
   assert.equal(bridges.length, BRIDGE_CONTRACTS.length, 'exact justified minimal bridge budget');
@@ -669,9 +686,36 @@ function assertBridgeMutationGuards(drawioSource, svgSource) {
   const extendedToArcCenter = svgSource.replace(/(<path\b[^>]*data-edge-id="cart-query"[^>]*\bd="[^"]*)L 760 2296/u, '$1L 760 2320');
   assert.notEqual(extendedToArcCenter, svgSource, 'under-route extension-to-arc-center mutation applies');
   assert.throws(() => assertBridgeInventory(parseDrawio(drawioSource), extendedToArcCenter, parseSvg(extendedToArcCenter)), /sampled arc centerline clears the under-route rendered stroke envelope/u, 'semantic route cannot extend into the bridge arc center');
-  const anonymousWhiteEraser = svgSource.replace(/(\s*<g data-bridge-layer="explicit-crossovers")/u, '    <path d="M 742 2320 L 778 2320" fill="none" stroke="#FFFFFF" stroke-width="24"/>$1');
-  assert.notEqual(anonymousWhiteEraser, svgSource, 'anonymous semantic-layer-later white eraser mutation applies');
-  assert.throws(() => assertBridgeInventory(parseDrawio(drawioSource), anonymousWhiteEraser, parseSvg(anonymousWhiteEraser)), /anonymous opaque white wide-stroke eraser path/u, 'anonymous white stroke cannot erase a semantic route after its paint layer');
+  const postSemanticPaintProbes = [
+    ['plane background path', '    <path d="M 40 1120 L 2360 1120 L 2360 2720 L 40 2720 Z" fill="#F0F9FF"/>'],
+    ['inherited white-stroke group/path', '    <g stroke="#FFFFFF" stroke-width="24"><path d="M 742 2320 L 778 2320" fill="none"/></g>'],
+    ['white-fill rectangle', '    <rect x="742" y="2310" width="36" height="20" fill="#FFFFFF"/>'],
+  ];
+  for (const [label, paint] of postSemanticPaintProbes) {
+    const mutated = svgSource.replace(/(\s*<g data-bridge-layer="explicit-crossovers")/u, `${paint}$1`);
+    assert.notEqual(mutated, svgSource, `${label} post-semantic paint mutation applies`);
+    assert.throws(() => assertBridgeInventory(parseDrawio(drawioSource), mutated, parseSvg(mutated)), /post-semantic anonymous drawable geometry/u, `${label} cannot cover semantic routes`);
+  }
+}
+
+function assertBridgeSearchMutationGuards(svgSource) {
+  const probes = [
+    ['owner corridor', svgSource.replace(/(<path\b[^>]*data-edge-id="activate-account"[^>]*\bd="[^"]*)L 1365 1920/u, '$1L 1365 1918'), /activate-account fixed owner corridor/u],
+    ['first bridge allowlist', svgSource.replace(/data-bridge-for="share-runtime-catalog"/u, 'data-bridge-for="share-runtime-cart"'), /first five bridge allowlist/u],
+    ['semantic endpoint contract', svgSource.replace(/(<path\b[^>]*data-edge-id="catalog-release"[^>]*data-source=")[^"]+/u, '$1cart-pipeline'), /semantic endpoint contract/u],
+  ];
+  for (const [label, mutated, expected] of probes) {
+    assert.notEqual(mutated, svgSource, `${label} bridge-search mutation applies`);
+    assert.throws(() => runBridgeFeasibilitySearch(mutated), expected, `${label} mutation makes the bridge-search command fail`);
+    const directory = mkdtempSync(join(tmpdir(), 'sty12-bridge-search-'));
+    try {
+      const fixture = join(directory, `${label.replace(/\s+/gu, '-')}.svg`);
+      writeFileSync(fixture, mutated);
+      const result = spawnSync(process.execPath, ['scripts/sty12-bridge-feasibility.mjs', '--svg', fixture], {cwd: process.cwd(), encoding: 'utf8'});
+      assert.notEqual(result.status, 0, `${label} mutated bridge-search CLI exits nonzero`);
+      assert.match(result.stderr, expected, `${label} mutated bridge-search CLI reports its violated parsed constraint`);
+    } finally { rmSync(directory, {recursive: true, force: true}); }
+  }
 }
 
 function assertMicroFrontendArticle(source) {
@@ -793,6 +837,7 @@ test('STY-12 crossing bridges are explicit, singular, visible, and synchronized'
 });
 
 test('STY-12 bounded bridge search proves the five-to-six bridge transition', () => {
+  assertBridgeSearchMutationGuards(file(SVG));
   const result = spawnSync(process.execPath, ['scripts/sty12-bridge-feasibility.mjs'], {cwd: process.cwd(), encoding: 'utf8'});
   assert.equal(result.status, 0, result.stderr || 'bounded bridge-search command exits successfully');
   const report = JSON.parse(result.stdout);
