@@ -472,6 +472,150 @@ const evaluatorOptimizerDocumentContract = {
     },
   ],
 };
+const routerDispatchArticlePath = 'content/patterns/agt-p-05-router-model-dispatch.mdx';
+const routerDispatchSummary =
+  '以确定性策略门先约束请求，再让模型提出候选路由；通过置信度、能力可用性和版本门只选择一个目的地，并把未知、低置信、不可用、漂移与对抗输入收敛到确定性回退或安全停止。';
+const routerDispatchTags = [
+  '路由',
+  '模型驱动分发',
+  '策略门',
+  '能力发现',
+  '确定性回退',
+];
+const routerDispatchMermaidAccTitle = '路由与模型驱动分发的策略门、唯一目的地与故障关闭控制流';
+const routerDispatchNodes = new Map([
+  ['REQUEST', ['待分发请求']],
+  ['POLICY_GATE', ['确定性策略门']],
+  ['MODEL_ROUTER', ['路由模型']],
+  ['CONFIDENCE_GATE', ['置信度与未知门']],
+  ['CAPABILITY_REGISTRY', ['版本化能力目录']],
+  ['CAPABILITY_CHECK', ['能力与可用性校验']],
+  ['SELECTED_DESTINATION', ['唯一选定目的地']],
+  ['VERSION_GATE', ['目的地版本门']],
+  ['EXECUTE', ['受限执行']],
+  ['VERIFY', ['结果与副作用核验']],
+  ['COMPLETE', ['完成']],
+  ['DETERMINISTIC_FALLBACK', ['确定性回退：澄清、静态队列或安全停止']],
+  ['SAFE_STOP', ['安全停止']],
+]);
+const routerDispatchEdges = [
+  ['REQUEST', 'POLICY_GATE', null],
+  ['POLICY_GATE', 'MODEL_ROUTER', '策略允许'],
+  ['POLICY_GATE', 'SAFE_STOP', '策略拒绝或对抗输入'],
+  ['MODEL_ROUTER', 'CONFIDENCE_GATE', '候选路由'],
+  ['CONFIDENCE_GATE', 'CAPABILITY_CHECK', '已知且高置信'],
+  ['CONFIDENCE_GATE', 'DETERMINISTIC_FALLBACK', '未知或低置信'],
+  ['CAPABILITY_REGISTRY', 'CAPABILITY_CHECK', null],
+  ['CAPABILITY_CHECK', 'SELECTED_DESTINATION', '恰好一个可用目标'],
+  ['CAPABILITY_CHECK', 'DETERMINISTIC_FALLBACK', '目标不可用或多目标冲突'],
+  ['SELECTED_DESTINATION', 'VERSION_GATE', null],
+  ['VERSION_GATE', 'EXECUTE', '版本一致'],
+  ['VERSION_GATE', 'DETERMINISTIC_FALLBACK', '版本漂移'],
+  ['EXECUTE', 'VERIFY', null],
+  ['VERIFY', 'COMPLETE', '结果已确认'],
+  ['VERIFY', 'SAFE_STOP', '失败或副作用未知'],
+  ['DETERMINISTIC_FALLBACK', 'SAFE_STOP', null],
+];
+const routerDispatchSourceIds = [
+  'src-github-199e95b0a693',
+  'src-github-ee60ab199780',
+  'src-github-32ae2040f2fa',
+];
+const routerDispatchSourceContracts = [
+  {
+    id: 'src-github-199e95b0a693',
+    canonical_locator: 'https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/examples/agent_patterns/routing.py',
+    transport_locator: 'https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/examples/agent_patterns/routing.py',
+    expected_final_transport_locator: 'https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/examples/agent_patterns/routing.py',
+    title: 'Handoff routing',
+    author_or_org: 'OpenAI',
+    published_at: null,
+    version: 'Git commit 2fa463571e76dae8ff267622f1018eaf06ffeb9f',
+    source_kind: 'source-code',
+    tier: 'primary',
+    license: 'MIT',
+    usage_boundary: 'Shows the implementation in “Handoff routing” at the recorded commit or file version; it does not alone prove runtime guarantees or deployment fitness.',
+    health: {at: '2026-08-25T12:07:24.531Z', status: 206},
+  },
+  {
+    id: 'src-github-ee60ab199780',
+    canonical_locator: 'https://github.com/Kong/developer.konghq.com/blob/f144a33379d5b599efaacf92642a2f9b41018fd6/app/ai-gateway/load-balancing.md',
+    transport_locator: 'https://github.com/Kong/developer.konghq.com/blob/f144a33379d5b599efaacf92642a2f9b41018fd6/app/ai-gateway/load-balancing.md',
+    expected_final_transport_locator: 'https://github.com/Kong/developer.konghq.com/blob/f144a33379d5b599efaacf92642a2f9b41018fd6/app/ai-gateway/load-balancing.md',
+    title: 'app/ai-gateway/load-balancing.md@f144a33',
+    author_or_org: 'Kong Inc.',
+    published_at: null,
+    version: 'Git commit f144a33379d5b599efaacf92642a2f9b41018fd6',
+    source_kind: 'source-code',
+    tier: 'primary',
+    license: 'MIT',
+    usage_boundary: 'Shows the implementation in “app/ai-gateway/load-balancing.md@f144a33” at the recorded commit or file version; it does not alone prove runtime guarantees or deployment fitness.',
+    health: {at: '2026-08-25T12:07:24.531Z', status: 206},
+  },
+  {
+    id: 'src-github-32ae2040f2fa',
+    canonical_locator: 'https://github.com/QuantumNous/new-api/blob/1721144221ec5c94dd87891a7ae1bee228e7bb63/service/channel_select.go',
+    transport_locator: 'https://github.com/QuantumNous/new-api/blob/1721144221ec5c94dd87891a7ae1bee228e7bb63/service/channel_select.go',
+    expected_final_transport_locator: 'https://github.com/QuantumNous/new-api/blob/1721144221ec5c94dd87891a7ae1bee228e7bb63/service/channel_select.go',
+    title: 'service/channelselect.go',
+    author_or_org: 'QuantumNous / New API maintainers',
+    published_at: null,
+    version: 'Git commit 1721144221ec5c94dd87891a7ae1bee228e7bb63',
+    source_kind: 'source-code',
+    tier: 'primary',
+    license: 'AGPL-3.0-only',
+    usage_boundary: 'Shows the implementation in “service/channelselect.go” at the recorded commit or file version; it does not alone prove runtime guarantees or deployment fitness.',
+    health: {at: '2026-08-25T12:07:24.531Z', status: 206},
+  },
+];
+const routerDispatchAllowedRoles = [
+  'case-evidence', 'comparison', 'definition', 'historical-context',
+  'implementation', 'learning', 'method', 'runtime-fact',
+];
+const routerDispatchDocumentContract = {
+  reviewed_at: '2026-08-27',
+  copyright_checks: [
+    'original-structure',
+    'quotation-boundary',
+    'attribution-complete',
+    'illustration-rights',
+  ],
+  citations: [
+    {
+      source_id: 'src-github-199e95b0a693',
+      citation_url: 'https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/examples/agent_patterns/routing.py',
+      roles: ['implementation'],
+      manifest_primary: true,
+      usage_mode: 'facts-summary',
+      attribution_note: 'Handoff routing, OpenAI',
+      modification_note: 'Bounded implementation-evidence summary of the fixed routing example; no code, prompt, output, example task, control structure or repository layout copied.',
+      excerpt: null,
+      quotation_reviewed: false,
+    },
+    {
+      source_id: 'src-github-ee60ab199780',
+      citation_url: 'https://github.com/Kong/developer.konghq.com/blob/f144a33379d5b599efaacf92642a2f9b41018fd6/app/ai-gateway/load-balancing.md',
+      roles: ['case-evidence', 'comparison'],
+      manifest_primary: false,
+      usage_mode: 'facts-summary',
+      attribution_note: 'AI Gateway load-balancing documentation source, Kong Inc.',
+      modification_note: 'Original Chinese comparison of traffic-selection mechanics with task-control routing; no source prose, examples, tables, structure or diagrams copied.',
+      excerpt: null,
+      quotation_reviewed: false,
+    },
+    {
+      source_id: 'src-github-32ae2040f2fa',
+      citation_url: 'https://github.com/QuantumNous/new-api/blob/1721144221ec5c94dd87891a7ae1bee228e7bb63/service/channel_select.go',
+      roles: ['case-evidence', 'comparison'],
+      manifest_primary: false,
+      usage_mode: 'facts-summary',
+      attribution_note: 'service/channelselect.go, QuantumNous / New API maintainers',
+      modification_note: 'Original Chinese comparison of channel selection with task-control routing; no source code, examples, control structure, repository layout or diagrams copied.',
+      excerpt: null,
+      quotation_reviewed: false,
+    },
+  ],
+};
 const markdownParser = unified().use(remarkParse).use(remarkGfm).use(remarkMdx);
 
 const registry = JSON.parse(
@@ -1166,6 +1310,218 @@ function assertEvaluatorOptimizerSourceContract(ledger, health) {
         review_status: 'healthy',
       },
       `${contract.id} exact current health observation`,
+    );
+  }
+}
+
+function parseRouterDispatchMermaid(mermaid) {
+  const labelsById = new Map();
+  const edges = [];
+  let headerSeen = false;
+  let accTitle = null;
+  const nodePattern = '[A-Z][A-Z_]*(?:\\["[^"\\n]+"\\])?';
+  const nodeSegment = /^([A-Z][A-Z_]*)(?:\["([^"\n]+)"\])?$/u;
+  const edgeStatement = new RegExp(
+    `^${nodePattern}(?:\\s*-->(?:\\|[^|\\n]+\\|)?\\s*${nodePattern})+$`,
+    'u',
+  );
+
+  for (const line of mermaid.split(/\r?\n/u)) {
+    const statement = line.trim();
+    if (!statement) continue;
+    if (!headerSeen && statement === 'flowchart LR') {
+      headerSeen = true;
+      continue;
+    }
+    if (statement.startsWith('accTitle:')) {
+      assert.equal(accTitle, null, 'Router Mermaid has one accTitle declaration');
+      accTitle = statement.slice('accTitle:'.length).trim();
+      continue;
+    }
+    assert.match(statement, edgeStatement, `unparsed Router Mermaid: ${line}`);
+    const parts = statement.split(/\s*-->(?:\|([^|\n]+)\|)?\s*/u);
+    const nodeSegments = [];
+    const edgeLabels = [];
+    for (let index = 0; index < parts.length; index += 2) {
+      nodeSegments.push(parts[index]);
+      if (index + 1 < parts.length) edgeLabels.push(parts[index + 1] ?? null);
+    }
+    const nodeIds = nodeSegments.map((segment) => {
+      const match = segment.match(nodeSegment);
+      assert.ok(match, `unparsed Router node: ${segment}`);
+      const [, id, label] = match;
+      if (label !== undefined) {
+        const knownLabels = labelsById.get(id) ?? new Set();
+        knownLabels.add(label);
+        labelsById.set(id, knownLabels);
+      }
+      return id;
+    });
+    for (let index = 1; index < nodeIds.length; index += 1) {
+      edges.push([nodeIds[index - 1], nodeIds[index], edgeLabels[index - 1]]);
+    }
+  }
+  assert.ok(headerSeen, 'Router Mermaid flowchart LR header');
+  assert.equal(accTitle, routerDispatchMermaidAccTitle, 'Router Mermaid exact accessible title');
+  return {
+    labelsById: new Map([...labelsById].map(([id, labels]) => [id, [...labels].sort()])),
+    edges,
+  };
+}
+
+function assertRouterDispatchContract(source) {
+  const metadata = parseFrontMatter(source);
+  assert.equal(metadata.title, '路由与模型驱动分发：先过策略门，再选择唯一目的地');
+  assert.equal(metadata.topic_id, 'AGT-P-05');
+  assert.equal(metadata.slug, '/patterns/agt-p-05');
+  assert.equal(metadata.content_type, 'pattern');
+  assert.equal(metadata.status, 'reviewed');
+  assert.equal(metadata.difficulty, 'advanced');
+  assert.equal(metadata.analyzed_at, '2026-08-26');
+  assert.equal(metadata.source_cutoff, '2026-08-26');
+  assert.equal(metadata.confidence, 'high');
+  assert.equal(metadata.priority, 'P1');
+  assert.deepEqual(metadata.domains, ['software-architecture', 'artificial-intelligence']);
+  assert.deepEqual(metadata.agent_patterns, ['agent-loop', 'model-routing', 'capability-routing']);
+  assert.deepEqual(metadata.protocols, []);
+  assert.deepEqual(metadata.quality_attributes, ['reliability', 'safety', 'operability']);
+  assert.deepEqual(metadata.tags, routerDispatchTags);
+  assert.equal(metadata.summary, routerDispatchSummary);
+  assert.deepEqual(metadata.depends_on, ['AGT-C-03']);
+  assert.deepEqual(metadata.adjacent_topics, [
+    'AGT-C-03',
+    'AGT-P-01',
+    'AGT-P-03',
+    'AGT-P-06',
+    'AGT-P-07',
+  ]);
+  assert.deepEqual(metadata.related_cases, [
+    '/cases/kong-ai-gateway-routing-resilience',
+    '/cases/new-api-channel-pool-routing',
+  ]);
+  assert.deepEqual(metadata.related_questions, []);
+  assert.deepEqual(
+    findMarkdownHeadings(source)
+      .filter(({level}) => level === 2)
+      .map(({text}) => `## ${text}`),
+    knowledgeTypeContracts.pattern,
+  );
+
+  const mermaidBlocks = readerVisibleMermaidCodeBlocks(source);
+  assert.equal(mermaidBlocks.length, 1, 'exactly one reader-visible Router Mermaid');
+  assert.equal(mermaidBlocks[0].rootDirect, true, 'Router Mermaid remains root-direct');
+  const graph = parseRouterDispatchMermaid(mermaidBlocks[0].value);
+  assert.deepEqual(graph.labelsById, routerDispatchNodes);
+  assert.deepEqual(graph.edges, routerDispatchEdges);
+  assert.deepEqual(
+    graph.edges.filter(([, target]) => target === 'MODEL_ROUTER'),
+    [['POLICY_GATE', 'MODEL_ROUTER', '策略允许']],
+    'the deterministic policy gate is the only entry to model routing',
+  );
+  assert.deepEqual(
+    graph.edges.filter(([, target]) => target === 'SELECTED_DESTINATION'),
+    [['CAPABILITY_CHECK', 'SELECTED_DESTINATION', '恰好一个可用目标']],
+    'exactly one selected destination can emerge from the availability check',
+  );
+  assert.deepEqual(
+    graph.edges.filter(([, target]) => target === 'EXECUTE'),
+    [['VERSION_GATE', 'EXECUTE', '版本一致']],
+    'execution has one version-checked entry and cannot fan out',
+  );
+  assert.equal(
+    graph.edges.some(([sourceId]) => sourceId === 'SAFE_STOP'),
+    false,
+    'safe stop is terminal',
+  );
+
+  const visible = parseMdxVisibleCopy(source, routerDispatchArticlePath, {
+    includeStructure: true,
+  }).blocks.map(({text}) => text).join('\n');
+  for (const contract of [
+    /策略路由/u,
+    /语义分类/u,
+    /能力发现/u,
+    /负载[^。\n]{0,40}成本路由/u,
+    /歧义输入/u,
+    /目的地不可用/u,
+    /版本漂移/u,
+    /对抗(?:性)?路由|对抗输入/u,
+    /路由级评测/u,
+    /控制所有者/u,
+    /状态所有者/u,
+    /终止责任/u,
+    /权限/u,
+    /副作用/u,
+    /失败[^。\n]{0,160}恢复/u,
+    /确定性回退/u,
+    /迁移/u,
+    /流量路由[^。\n]{0,180}任务控制路由/u,
+    /状态[^。\n]{0,80}失败[^。\n]{0,80}副作用[^。\n]{0,80}终止/u,
+    /实现证据[^。\n]{0,180}(?:不证明|不能证明)[^。\n]{0,120}生产/u,
+    /行业标准/u,
+  ]) assert.match(visible, contract);
+}
+
+function assertRouterDispatchSourceContract(ledger, health) {
+  const document = ledger.documents[routerDispatchArticlePath];
+  assert.ok(document, `${routerDispatchArticlePath} source document`);
+  assert.deepEqual(document, routerDispatchDocumentContract);
+  assert.deepEqual(document.citations.map(({source_id: sourceId}) => sourceId), routerDispatchSourceIds);
+
+  for (const contract of routerDispatchSourceContracts) {
+    const source = ledger.sources.find(({id}) => id === contract.id);
+    assert.ok(source, contract.id);
+    const {health: _health, ...sourceContract} = contract;
+    assert.deepEqual(
+      {
+        id: source.id,
+        canonical_locator: source.canonical_locator,
+        transport_locator: source.transport_locator,
+        expected_final_transport_locator: source.expected_final_transport_locator,
+        title: source.title,
+        author_or_org: source.author_or_org,
+        published_at: source.published_at,
+        version: source.version,
+        source_kind: source.source_kind,
+        tier: source.tier,
+        allowed_evidence_roles: source.allowed_evidence_roles,
+        license: source.license,
+        usage_boundary: source.usage_boundary,
+      },
+      {...sourceContract, allowed_evidence_roles: routerDispatchAllowedRoles},
+      `${contract.id} governed identity and evidence boundary`,
+    );
+    const observation = health.results.find(({source_ids: ids}) => ids.includes(contract.id));
+    assert.ok(observation, `${contract.id} health observation`);
+    assert.deepEqual(
+      {
+        transport_locator: observation.transport_locator,
+        source_ids: observation.source_ids,
+        last_attempt: observation.last_attempt,
+        last_success: observation.last_success,
+        review_status: observation.review_status,
+      },
+      {
+        transport_locator: contract.transport_locator,
+        source_ids: [contract.id],
+        last_attempt: {
+          at: contract.health.at,
+          outcome: 'healthy',
+          final_transport_locator: contract.transport_locator,
+          http_status: contract.health.status,
+          login_wall_detected: false,
+          redirects: [],
+        },
+        last_success: {
+          at: contract.health.at,
+          outcome: 'healthy',
+          final_transport_locator: contract.transport_locator,
+          http_status: contract.health.status,
+          login_wall_detected: false,
+        },
+        review_status: 'healthy',
+      },
+      `${contract.id} governed health observation`,
     );
   }
 }
@@ -2711,4 +3067,162 @@ test('AGT-P-02 source identity and health contract rejects drift for every paper
       `survey ${label} drift fails closed`,
     );
   }
+});
+
+test('AGT-P-05 publishes the exact fail-closed Router contract', () => {
+  assert.ok(existsSync(routerDispatchArticlePath), `Missing ${routerDispatchArticlePath}`);
+  const source = readFileSync(routerDispatchArticlePath, 'utf8');
+  assert.doesNotThrow(
+    () => markdownParser.parse(extractMarkdownBody(source)),
+    'the legal P05 article remains valid MDX',
+  );
+  assertRouterDispatchContract(source);
+});
+
+test('AGT-P-05 rejects metadata, visibility, identity, and routing-topology drift', () => {
+  assert.ok(existsSync(routerDispatchArticlePath), `Missing ${routerDispatchArticlePath}`);
+  const source = readFileSync(routerDispatchArticlePath, 'utf8');
+  const [{value: mermaid}] = readerVisibleMermaidCodeBlocks(source);
+  assert.ok(mermaid, 'Router Mermaid fixture');
+  const fence = `\`\`\`mermaid\n${mermaid}\n\`\`\``;
+  const decoyFence = `\`\`\`mermaid
+flowchart LR
+    REQUEST["待分发请求"] --> EXECUTE["受限执行"]
+\`\`\``;
+  const mutations = [
+    ['summary drift', source.replace(
+      `summary: ${routerDispatchSummary}`,
+      'summary: 让模型自由选择任意多个目的地。',
+    )],
+    ['tag missing', source.replace('  - 确定性回退\nsummary:', 'summary:')],
+    ['tag reorder', source.replace(
+      '  - 路由\n  - 模型驱动分发',
+      '  - 模型驱动分发\n  - 路由',
+    )],
+    ['depends_on drift', source.replace('depends_on:\n  - AGT-C-03', 'depends_on: []')],
+    ['zero reader-visible Mermaid', source.replace(fence, '')],
+    ['duplicate reader-visible Mermaid', `${source}\n\n${decoyFence}\n`],
+    ['only nested Mermaid', source.replace(fence, `<div>\n${fence}\n</div>`) ],
+    ['only hidden Mermaid', source.replace(fence, `<div hidden>\n\n${fence}\n\n</div>`) ],
+    ['component Mermaid decoy', source.replace(fence, `<ArchitectureDiagram>\n${fence}\n</ArchitectureDiagram>`) ],
+    ['accessible name drift', source.replace(
+      `accTitle: ${routerDispatchMermaidAccTitle}`,
+      'accTitle: 通用模型路由',
+    )],
+    ['policy gate bypass', source.replace(
+      'REQUEST["待分发请求"] --> POLICY_GATE["确定性策略门"]',
+      'REQUEST["待分发请求"] --> MODEL_ROUTER["路由模型"]',
+    )],
+    ['multi-destination fan-out', source.replace(
+      'CAPABILITY_CHECK -->|恰好一个可用目标| SELECTED_DESTINATION["唯一选定目的地"]',
+      'CAPABILITY_CHECK -->|恰好一个可用目标| SELECTED_DESTINATION["唯一选定目的地"]\n    CAPABILITY_CHECK --> EXECUTE',
+    )],
+    ['unknown confidence bypass', source.replace(
+      'CONFIDENCE_GATE -->|未知或低置信| DETERMINISTIC_FALLBACK',
+      'CONFIDENCE_GATE -->|未知或低置信| EXECUTE',
+    )],
+    ['unavailable destination auto-executes', source.replace(
+      'CAPABILITY_CHECK -->|目标不可用或多目标冲突| DETERMINISTIC_FALLBACK',
+      'CAPABILITY_CHECK -->|目标不可用或多目标冲突| EXECUTE',
+    )],
+    ['version drift re-enters execution', source.replace(
+      'VERSION_GATE -->|版本漂移| DETERMINISTIC_FALLBACK',
+      'VERSION_GATE -->|版本漂移| EXECUTE',
+    )],
+    ['adversarial input bypasses safe stop', source.replace(
+      'POLICY_GATE -->|策略拒绝或对抗输入| SAFE_STOP',
+      'POLICY_GATE -->|策略拒绝或对抗输入| MODEL_ROUTER',
+    )],
+    ['alternate connector bypass', source.replace(
+      'REQUEST["待分发请求"] --> POLICY_GATE["确定性策略门"]',
+      'REQUEST["待分发请求"] --> POLICY_GATE["确定性策略门"]\n    REQUEST -.-> EXECUTE',
+    )],
+    ['alternate label bypass', source.replace(
+      'CONFIDENCE_GATE -->|未知或低置信| DETERMINISTIC_FALLBACK',
+      'CONFIDENCE_GATE -->|高置信| DETERMINISTIC_FALLBACK',
+    )],
+  ];
+  const survivors = [];
+  for (const [label, mutant] of mutations) {
+    assert.notEqual(mutant, source, `${label} fixture must alter the article`);
+    assert.doesNotThrow(
+      () => markdownParser.parse(extractMarkdownBody(mutant)),
+      `${label} fixture remains syntactically valid MDX`,
+    );
+    try {
+      assertRouterDispatchContract(mutant);
+      survivors.push(label);
+    } catch {
+      // Expected: exact public metadata, visibility, node identity, labels and topology fail closed.
+    }
+  }
+  assert.deepEqual(survivors, []);
+});
+
+test('AGT-P-05 locks governed source identities, health, roles, and document boundaries', () => {
+  const ledger = JSON.parse(readFileSync('data/source-ledger.json', 'utf8'));
+  const health = JSON.parse(readFileSync('data/source-link-health.json', 'utf8'));
+  assertRouterDispatchSourceContract(ledger, health);
+});
+
+test('AGT-P-05 rejects every governed source and citation boundary drift', () => {
+  const ledger = JSON.parse(readFileSync('data/source-ledger.json', 'utf8'));
+  const health = JSON.parse(readFileSync('data/source-link-health.json', 'utf8'));
+  const mutateSource = (sourceId, field, value) => {
+    const mutant = structuredClone(ledger);
+    mutant.sources.find(({id}) => id === sourceId)[field] = value;
+    return mutant;
+  };
+  const mutateCitation = (sourceId, field, value) => {
+    const mutant = structuredClone(ledger);
+    mutant.documents[routerDispatchArticlePath].citations
+      .find(({source_id: id}) => id === sourceId)[field] = value;
+    return mutant;
+  };
+  const mutations = [
+    ['source title drift', mutateSource('src-github-199e95b0a693', 'title', 'Wrong title'), health],
+    ['source organization drift', mutateSource('src-github-ee60ab199780', 'author_or_org', 'Wrong org'), health],
+    ['source date drift', mutateSource('src-github-32ae2040f2fa', 'published_at', '2099-01-01'), health],
+    ['source version drift', mutateSource('src-github-199e95b0a693', 'version', 'Git commit deadbeef'), health],
+    ['source license drift', mutateSource('src-github-32ae2040f2fa', 'license', 'MIT'), health],
+    ['source tier drift', mutateSource('src-github-ee60ab199780', 'tier', 'secondary'), health],
+    ['source canonical drift', mutateSource('src-github-199e95b0a693', 'canonical_locator', 'https://example.test/drift'), health],
+    ['source transport drift', mutateSource('src-github-ee60ab199780', 'transport_locator', 'https://example.test/drift'), health],
+    ['source expected-final drift', mutateSource('src-github-32ae2040f2fa', 'expected_final_transport_locator', 'https://example.test/drift'), health],
+    ['source role drift', mutateSource('src-github-199e95b0a693', 'allowed_evidence_roles', ['implementation']), health],
+    ['source usage boundary drift', mutateSource('src-github-ee60ab199780', 'usage_boundary', 'Proves all production guarantees.'), health],
+    ['citation URL drift', mutateCitation('src-github-199e95b0a693', 'citation_url', 'https://example.test/drift'), health],
+    ['citation role drift', mutateCitation('src-github-ee60ab199780', 'roles', ['implementation']), health],
+    ['citation usage drift', mutateCitation('src-github-32ae2040f2fa', 'usage_mode', 'quotation'), health],
+    ['citation attribution drift', mutateCitation('src-github-199e95b0a693', 'attribution_note', 'Wrong attribution'), health],
+    ['citation modification drift', mutateCitation('src-github-ee60ab199780', 'modification_note', 'Copied source.'), health],
+    ['citation excerpt drift', mutateCitation('src-github-32ae2040f2fa', 'excerpt', 'Copied excerpt'), health],
+    ['citation quotation-review drift', mutateCitation('src-github-199e95b0a693', 'quotation_reviewed', true), health],
+    ['document review drift', (() => {
+      const mutant = structuredClone(ledger);
+      mutant.documents[routerDispatchArticlePath].reviewed_at = '2026-08-26';
+      return mutant;
+    })(), health],
+    ['document copyright drift', (() => {
+      const mutant = structuredClone(ledger);
+      mutant.documents[routerDispatchArticlePath].copyright_checks = ['original-structure'];
+      return mutant;
+    })(), health],
+    ['health drift', ledger, (() => {
+      const mutant = structuredClone(health);
+      mutant.results.find(({source_ids: ids}) => ids.includes('src-github-199e95b0a693'))
+        .last_attempt.final_transport_locator = 'https://example.test/drift';
+      return mutant;
+    })()],
+  ];
+  const survivors = [];
+  for (const [label, ledgerMutant, healthMutant] of mutations) {
+    try {
+      assertRouterDispatchSourceContract(ledgerMutant, healthMutant);
+      survivors.push(label);
+    } catch {
+      // Expected: every governed source, observation and document field fails closed.
+    }
+  }
+  assert.deepEqual(survivors, []);
 });

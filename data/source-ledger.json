@@ -29599,6 +29599,58 @@
         }
       ]
     },
+    "content/patterns/agt-p-05-router-model-dispatch.mdx": {
+      "reviewed_at": "2026-08-27",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-github-199e95b0a693",
+          "citation_url": "https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/examples/agent_patterns/routing.py",
+          "roles": [
+            "implementation"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Handoff routing, OpenAI",
+          "modification_note": "Bounded implementation-evidence summary of the fixed routing example; no code, prompt, output, example task, control structure or repository layout copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-github-ee60ab199780",
+          "citation_url": "https://github.com/Kong/developer.konghq.com/blob/f144a33379d5b599efaacf92642a2f9b41018fd6/app/ai-gateway/load-balancing.md",
+          "roles": [
+            "case-evidence",
+            "comparison"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "AI Gateway load-balancing documentation source, Kong Inc.",
+          "modification_note": "Original Chinese comparison of traffic-selection mechanics with task-control routing; no source prose, examples, tables, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-github-32ae2040f2fa",
+          "citation_url": "https://github.com/QuantumNous/new-api/blob/1721144221ec5c94dd87891a7ae1bee228e7bb63/service/channel_select.go",
+          "roles": [
+            "case-evidence",
+            "comparison"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "service/channelselect.go, QuantumNous / New API maintainers",
+          "modification_note": "Original Chinese comparison of channel selection with task-control routing; no source code, examples, control structure, repository layout or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
     "content/patterns/index.mdx": {
       "reviewed_at": "2026-07-24",
       "copyright_checks": [
