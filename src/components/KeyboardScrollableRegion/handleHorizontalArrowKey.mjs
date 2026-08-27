@@ -11,20 +11,24 @@ export function handleHorizontalArrowKey(event) {
     return;
   }
 
-  const direction = event.key === 'ArrowRight'
-    ? 1
-    : event.key === 'ArrowLeft'
-      ? -1
-      : 0;
-  if (direction === 0) return;
-
   const region = event.currentTarget;
   if (region.scrollWidth <= region.clientWidth) return;
 
+  const maximumScrollLeft = region.scrollWidth - region.clientWidth;
+  const nextScrollLeft = event.key === 'Home'
+    ? 0
+    : event.key === 'End'
+      ? maximumScrollLeft
+      : event.key === 'ArrowRight'
+        ? region.scrollLeft + HORIZONTAL_SCROLL_STEP
+        : event.key === 'ArrowLeft'
+          ? region.scrollLeft - HORIZONTAL_SCROLL_STEP
+          : null;
+  if (nextScrollLeft === null) return;
+
   event.preventDefault();
-  const nextScrollLeft = region.scrollLeft + direction * HORIZONTAL_SCROLL_STEP;
   region.scrollLeft = Math.min(
-    region.scrollWidth - region.clientWidth,
+    maximumScrollLeft,
     Math.max(0, nextScrollLeft),
   );
 }

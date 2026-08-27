@@ -270,6 +270,11 @@ button:focus-visible,
   -webkit-overflow-scrolling: touch;
 }
 
+.theme-doc-markdown .docusaurus-mermaid-container:focus-visible {
+  outline: 3px solid var(--ifm-color-primary);
+  outline-offset: 4px;
+}
+
 .theme-doc-markdown .docusaurus-mermaid-container svg,
 .theme-doc-markdown .mermaid svg {
   min-width: 42rem;

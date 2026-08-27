@@ -100,38 +100,64 @@ const agenticRagEdges = [
   ['BUDGET_GATE', 'REFORMULATE', '预算可用'],
   ['BUDGET_GATE', 'REFUSE', '预算耗尽'],
   ['REFORMULATE', 'FORM_QUERY', null],
-  ['HUMAN_CLARIFY', 'REFUSE', '无法澄清'],
+  ['HUMAN_CLARIFY', 'BUDGET_GATE', '已澄清并恢复'],
+  ['HUMAN_CLARIFY', 'REFUSE', '超时或无法澄清'],
 ];
 const agenticRagSourceContracts = [
   {
     id: 'src-rag-knowledge-intensive-nlp-tasks',
     locator: 'https://arxiv.org/abs/2005.11401',
     title: 'Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks',
+    authorOrOrg: 'Patrick Lewis et al.',
+    publishedAt: '2021-04-12',
+    version: 'arXiv:2005.11401v4, NeurIPS 2020 paper revision dated 2021-04-12',
+    license: 'LicenseRef-All-Rights-Reserved',
     tier: 'primary',
+    healthAttemptAt: '2026-08-26T18:19:10.000Z',
   },
   {
     id: 'src-flare-active-retrieval-augmented-generation',
     locator: 'https://arxiv.org/abs/2305.06983',
     title: 'Active Retrieval Augmented Generation',
+    authorOrOrg: 'Zhengbao Jiang et al.',
+    publishedAt: '2023-10-22',
+    version: 'arXiv:2305.06983v2, EMNLP 2023 revision dated 2023-10-22',
+    license: 'LicenseRef-All-Rights-Reserved',
     tier: 'primary',
+    healthAttemptAt: '2026-08-26T18:19:10.000Z',
   },
   {
     id: 'src-self-rag-retrieve-generate-critique',
     locator: 'https://arxiv.org/abs/2310.11511',
     title: 'Self-RAG: Learning to Retrieve, Generate, and Critique through Self-Reflection',
+    authorOrOrg: 'Akari Asai et al.',
+    publishedAt: '2023-10-17',
+    version: 'arXiv:2310.11511v1 dated 2023-10-17',
+    license: 'CC-BY-4.0',
     tier: 'primary',
+    healthAttemptAt: '2026-08-26T18:19:10.000Z',
   },
   {
     id: 'src-react-reasoning-acting-language-models',
     locator: 'https://arxiv.org/abs/2210.03629',
     title: 'ReAct: Synergizing Reasoning and Acting in Language Models',
+    authorOrOrg: 'Shunyu Yao et al.',
+    publishedAt: '2023-03-10',
+    version: 'arXiv:2210.03629v3, ICLR 2023 camera-ready revision dated 2023-03-10',
+    license: 'CC-BY-4.0',
     tier: 'primary',
+    healthAttemptAt: '2026-08-26T11:09:57.957Z',
   },
   {
     id: 'src-agentic-rag-survey',
     locator: 'https://arxiv.org/abs/2501.09136',
     title: 'Agentic Retrieval-Augmented Generation: A Survey on Agentic RAG',
+    authorOrOrg: 'Aditi Singh et al.',
+    publishedAt: '2026-04-01',
+    version: 'arXiv:2501.09136v4 survey revision dated 2026-04-01',
+    license: 'LicenseRef-All-Rights-Reserved',
     tier: 'discovery',
+    healthAttemptAt: '2026-08-26T18:19:10.000Z',
   },
 ];
 const markdownParser = unified().use(remarkParse).use(remarkGfm).use(remarkMdx);
@@ -410,6 +436,68 @@ function rootMermaidCodeBlocks(source) {
   });
 }
 
+function assertAgenticRagSourceRecords(ledger, health) {
+  for (const contract of agenticRagSourceContracts) {
+    const source = ledger.sources.find(({id}) => id === contract.id);
+    assert.ok(source, contract.id);
+    assert.deepEqual(
+      {
+        canonical_locator: source.canonical_locator,
+        transport_locator: source.transport_locator,
+        expected_final_transport_locator: source.expected_final_transport_locator,
+        title: source.title,
+        author_or_org: source.author_or_org,
+        published_at: source.published_at,
+        version: source.version,
+        source_kind: source.source_kind,
+        tier: source.tier,
+        license: source.license,
+      },
+      {
+        canonical_locator: contract.locator,
+        transport_locator: contract.locator,
+        expected_final_transport_locator: contract.locator,
+        title: contract.title,
+        author_or_org: contract.authorOrOrg,
+        published_at: contract.publishedAt,
+        version: contract.version,
+        source_kind: 'paper',
+        tier: contract.tier,
+        license: contract.license,
+      },
+      contract.id,
+    );
+    const observation = health.results.find(({source_ids: sourceIds}) =>
+      sourceIds.includes(contract.id));
+    assert.ok(observation, `${contract.id} health observation`);
+    assert.equal(observation.transport_locator, contract.locator, contract.id);
+    assert.deepEqual(
+      observation.last_attempt,
+      {
+        at: contract.healthAttemptAt,
+        outcome: 'healthy',
+        final_transport_locator: contract.locator,
+        http_status: 206,
+        login_wall_detected: false,
+        redirects: [],
+      },
+      `${contract.id} last attempt`,
+    );
+    assert.deepEqual(
+      observation.last_success,
+      {
+        at: contract.healthAttemptAt,
+        outcome: 'healthy',
+        final_transport_locator: contract.locator,
+        http_status: 206,
+        login_wall_detected: false,
+      },
+      `${contract.id} last success`,
+    );
+    assert.equal(observation.review_status, 'healthy', `${contract.id} health review status`);
+  }
+}
+
 function parseAgenticRagMermaid(mermaid) {
   const labelsById = new Map();
   const edges = [];
@@ -568,6 +656,8 @@ function assertAgenticRagContract(source) {
     /只读/u,
     /终止/u,
     /失败[\s\S]*恢复/u,
+    /自动循环[\s\S]*安全暂停/u,
+    /外部新输入[\s\S]*预算门/u,
     /确定性工作流/u,
     /综述[\s\S]*(?:分类|谱系)[\s\S]*发现[\s\S]*不替代[\s\S]*原始论文/u,
   ]) assert.match(visible, contract);
@@ -1300,6 +1390,14 @@ flowchart TB
       'SUFFICIENCY -->|证据不足| BUDGET_GATE["预算门"]',
       'SUFFICIENCY -->|证据不足| REFORMULATE["改写或扩展查询"]',
     )],
+    ['human clarification bypasses the budget gate', source.replace(
+      'HUMAN_CLARIFY -->|已澄清并恢复| BUDGET_GATE',
+      'HUMAN_CLARIFY -->|已澄清并恢复| FORM_QUERY',
+    )],
+    ['human clarification timeout bypasses refusal', source.replace(
+      'HUMAN_CLARIFY -->|超时或无法澄清| REFUSE',
+      'HUMAN_CLARIFY -->|超时后继续| FORM_QUERY',
+    )],
     ['decoy stable identity', source.replace(
       'READ_ATTRIBUTE --> SUFFICIENCY["证据充分性评估"]',
       'READ_ATTRIBUTE --> FAKE_SUFFICIENCY["证据充分性评估"]',
@@ -1370,22 +1468,7 @@ test('AGT-P-02 registers four primary papers and one discovery-only survey', () 
   assert.equal(document.citations.filter(({manifest_primary: primary}) => primary).length, 1);
 
   const health = JSON.parse(readFileSync('data/source-link-health.json', 'utf8'));
-  for (const contract of agenticRagSourceContracts) {
-    const source = ledger.sources.find(({id}) => id === contract.id);
-    assert.ok(source, contract.id);
-    assert.equal(source.canonical_locator, contract.locator, contract.id);
-    assert.equal(source.transport_locator, contract.locator, contract.id);
-    assert.equal(source.expected_final_transport_locator, contract.locator, contract.id);
-    assert.equal(source.title, contract.title, contract.id);
-    assert.equal(source.source_kind, 'paper', contract.id);
-    assert.equal(source.tier, contract.tier, contract.id);
-    const observation = health.results.find(({source_ids: sourceIds}) =>
-      sourceIds.includes(contract.id));
-    assert.ok(observation, `${contract.id} health observation`);
-    assert.equal(observation.transport_locator, contract.locator, contract.id);
-    assert.equal(observation.last_attempt.outcome, 'healthy', contract.id);
-    assert.equal(observation.last_attempt.final_transport_locator, contract.locator, contract.id);
-  }
+  assertAgenticRagSourceRecords(ledger, health);
 
   const survey = ledger.sources.find(({id}) => id === 'src-agentic-rag-survey');
   assert.deepEqual(survey.allowed_evidence_roles, ['discovery']);
@@ -1395,4 +1478,42 @@ test('AGT-P-02 registers four primary papers and one discovery-only survey', () 
     sourceId === survey.id);
   assert.deepEqual(surveyCitation.roles, ['discovery']);
   assert.equal(surveyCitation.manifest_primary, false);
+});
+
+test('AGT-P-02 source identity and health contract rejects drift for every paper', () => {
+  const ledger = JSON.parse(readFileSync('data/source-ledger.json', 'utf8'));
+  const health = JSON.parse(readFileSync('data/source-link-health.json', 'utf8'));
+  const sourceFieldMutants = [
+    ['author', 'author_or_org', 'Drift author'],
+    ['publication date', 'published_at', '2099-01-01'],
+    ['version', 'version', 'Drift version'],
+    ['license', 'license', 'LicenseRef-Drift'],
+    ['tier', 'tier', 'secondary'],
+    ['canonical URL', 'canonical_locator', 'https://example.test/drift'],
+  ];
+  for (const [label, field, value] of sourceFieldMutants) {
+    const mutatedLedger = structuredClone(ledger);
+    mutatedLedger.sources.find(({id}) => id === 'src-react-reasoning-acting-language-models')[field] = value;
+    assert.throws(
+      () => assertAgenticRagSourceRecords(mutatedLedger, health),
+      assert.AssertionError,
+      `ReAct reuse ${label} drift fails closed`,
+    );
+  }
+
+  for (const [label, mutate] of [
+    ['attempt timestamp', (result) => { result.last_attempt.at = '2099-01-01T00:00:00.000Z'; }],
+    ['HTTP result', (result) => { result.last_attempt.http_status = 200; }],
+    ['health outcome', (result) => { result.last_attempt.outcome = 'stale'; }],
+    ['health review', (result) => { result.review_status = 'stale'; }],
+  ]) {
+    const mutatedHealth = structuredClone(health);
+    mutate(mutatedHealth.results.find(({source_ids: sourceIds}) =>
+      sourceIds.includes('src-agentic-rag-survey')));
+    assert.throws(
+      () => assertAgenticRagSourceRecords(ledger, mutatedHealth),
+      assert.AssertionError,
+      `survey ${label} drift fails closed`,
+    );
+  }
 });
