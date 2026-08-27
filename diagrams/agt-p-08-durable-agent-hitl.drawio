@@ -1,0 +1,108 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="AGT-P-08 durable agent and human approval" id="jFXKnFSar-NECaO1P5Gs">
+    <mxGraphModel dx="774" dy="552" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="control-plane" parent="1" style="rounded=1;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=20;spacingTop=16;fontSize=28;fontStyle=1;fillColor=#F7F3FF;strokeColor=#6B4EFF;strokeWidth=3;dashed=1;dashPattern=10 8;" value="Durable control plane" vertex="1">
+          <mxGeometry height="850" width="860" x="20" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="business-plane" parent="1" style="rounded=1;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=20;spacingTop=16;fontSize=28;fontStyle=1;fillColor=#F2FBF6;strokeColor=#227A4B;strokeWidth=3;dashed=1;dashPattern=10 8;" value="External business truth" vertex="1">
+          <mxGeometry height="850" width="460" x="920" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="control-store" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=26;fontStyle=1;fillColor=#EDE8FF;strokeColor=#5B3FD6;strokeWidth=3;" value="Durable control store" vertex="1">
+          <mxGeometry height="120" width="300" x="350" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="checkpoint" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=26;fontStyle=1;fillColor=#FFFFFF;strokeColor=#334155;strokeWidth=3;" value="Checkpoint" vertex="1">
+          <mxGeometry height="120" width="260" x="70" y="250" as="geometry" />
+        </mxCell>
+        <mxCell id="approval-service" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=26;fontStyle=1;fillColor=#FFF7E6;strokeColor=#B66A00;strokeWidth=3;" value="Approval required" vertex="1">
+          <mxGeometry height="120" width="300" x="390" y="250" as="geometry" />
+        </mxCell>
+        <mxCell id="sandbox-tool" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=26;fontStyle=1;fillColor=#E8F3FF;strokeColor=#2365A7;strokeWidth=3;" value="Sandbox / Tool" vertex="1">
+          <mxGeometry height="120" width="260" x="70" y="480" as="geometry" />
+        </mxCell>
+        <mxCell id="authority-system" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=26;fontStyle=1;fillColor=#E6F7ED;strokeColor=#227A4B;strokeWidth=3;" value="Authority system" vertex="1">
+          <mxGeometry height="120" width="300" x="1010" y="250" as="geometry" />
+        </mxCell>
+        <mxCell id="reconciliation" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=26;fontStyle=1;fillColor=#FFFFFF;strokeColor=#334155;strokeWidth=3;" value="Result reconciliation" vertex="1">
+          <mxGeometry height="120" width="300" x="390" y="480" as="geometry" />
+        </mxCell>
+        <mxCell id="completed" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=26;fontStyle=1;fillColor=#E6F7ED;strokeColor=#227A4B;strokeWidth=3;" value="Completed" vertex="1">
+          <mxGeometry height="120" width="300" x="390" y="700" as="geometry" />
+        </mxCell>
+        <mxCell id="manual-terminal" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=26;fontStyle=1;fillColor=#FFF0F0;strokeColor=#B4232C;strokeWidth=3;" value="Manual terminal" vertex="1">
+          <mxGeometry height="120" width="300" x="1010" y="700" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-checkpoint" edge="1" parent="1" source="control-store" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#5B3FD6;strokeWidth=4;endArrow=block;endFill=1;fontSize=22;exitX=0;exitY=0.5;entryX=1;entryY=0.5;" target="checkpoint" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-approval" edge="1" parent="1" source="checkpoint" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#B66A00;strokeWidth=4;endArrow=block;endFill=1;fontSize=22;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="approval-service" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-resume" edge="1" parent="1" source="approval-service" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#2365A7;strokeWidth=4;endArrow=block;endFill=1;fontSize=22;labelBackgroundColor=#FFFFFF;exitX=0.15;exitY=1;entryX=1;entryY=0.5;" target="sandbox-tool" value="Resume">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="360" y="430" />
+              <mxPoint x="360" y="540" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge-reject" edge="1" parent="1" source="approval-service" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#B4232C;strokeWidth=4;dashed=1;dashPattern=10 8;endArrow=block;endFill=1;fontSize=22;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0.5;entryY=0;" target="manual-terminal" value="Reject / timeout">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="850" y="310" />
+              <mxPoint x="850" y="650" />
+              <mxPoint x="1160" y="650" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge-effect" edge="1" parent="1" source="sandbox-tool" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#2365A7;strokeWidth=4;endArrow=block;endFill=1;fontSize=22;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="authority-system" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="760" y="540" />
+              <mxPoint x="760" y="420" />
+              <mxPoint x="950" y="420" />
+              <mxPoint x="950" y="310" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge-reconcile" edge="1" parent="1" source="authority-system" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#227A4B;strokeWidth=4;endArrow=block;endFill=1;fontSize=22;exitX=0.5;exitY=1;entryX=1;entryY=0.5;" target="reconciliation" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1160" y="440" />
+              <mxPoint x="760" y="440" />
+              <mxPoint x="760" y="540" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge-recovery" edge="1" parent="1" source="reconciliation" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#5B3FD6;strokeWidth=4;dashed=1;dashPattern=10 8;endArrow=block;endFill=1;fontSize=22;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.25;entryX=1;entryY=0.5;" target="control-store" value="Recovery / replay">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="70" as="offset" />
+            <Array as="points">
+              <mxPoint x="740" y="510" />
+              <mxPoint x="740" y="130" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge-unknown" edge="1" parent="1" source="reconciliation" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#B4232C;strokeWidth=4;dashed=1;dashPattern=10 8;endArrow=block;endFill=1;fontSize=22;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.75;entryX=0;entryY=0.5;" target="manual-terminal" value="Unknown effect">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="820" y="570" />
+              <mxPoint x="820" y="760" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge-complete" edge="1" parent="1" source="control-store" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#227A4B;strokeWidth=4;endArrow=block;endFill=1;fontSize=22;exitX=0.85;exitY=1;entryX=0.5;entryY=0;" target="completed" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="810" y="210" />
+              <mxPoint x="810" y="650" />
+              <mxPoint x="540" y="650" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

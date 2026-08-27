@@ -21504,6 +21504,38 @@
       "expected_final_transport_locator": "/img/diagrams/agt-p-06-control-ownership-models.svg",
       "expected_final_approved_at": "2026-08-27",
       "expected_final_approval_note": "Approved project-local original illustration after synchronized Draw.io/SVG semantic, geometry, accessibility and deterministic pair validation on 2026-08-27."
+    },
+    {
+      "id": "src-atlas-agt-p-08-durable-agent-hitl",
+      "canonical_locator": "/img/diagrams/agt-p-08-durable-agent-hitl.svg",
+      "transport_locator": "/img/diagrams/agt-p-08-durable-agent-hitl.svg",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Durable agent recovery and human approval control flow",
+      "author_or_org": "Tego Arch maintainers",
+      "published_at": "2026-08-27",
+      "registered_at": "2026-08-27",
+      "checked_at": "2026-08-27",
+      "version": "Original synchronized Draw.io/SVG pair authored in and exported from diagrams.net, normalized and deterministically checked on 2026-08-27",
+      "source_kind": "original-illustration",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "illustration"
+      ],
+      "license": "LicenseRef-Atlas-Original",
+      "license_scope": "The named project-authored agt-p-08-durable-agent-hitl.svg asset only",
+      "license_evidence_url": "https://github.com/sealday/tego-arch/blob/main/static/img/diagrams/agt-p-08-durable-agent-hitl.svg",
+      "license_evidence_note": "The project-authored Draw.io/SVG pair contains no third-party topology, reference image, icon, brand visual, signature, watermark or copied composition.",
+      "license_family_id": "/img/diagrams/agt-p-08-durable-agent-hitl.svg",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "original-atlas",
+      "usage_boundary": "Original durable-agent control-state, approval, recovery, reconciliation, rejection and manual-terminal topology; illustration-only and not evidence of protocol conformance, authorization, reliability, governance or production outcomes.",
+      "link_policy": null,
+      "expected_final_transport_locator": "/img/diagrams/agt-p-08-durable-agent-hitl.svg",
+      "expected_final_approved_at": "2026-08-27",
+      "expected_final_approval_note": "Approved project-local original illustration after real diagrams.net source/export provenance, synchronized semantics, geometry, accessibility, deterministic pair validation and desktop/mobile browser QA on 2026-08-27."
     }
   ],
   "documents": {
@@ -33429,6 +33461,122 @@
           "usage_mode": "facts-summary",
           "attribution_note": "CLI Agent Orchestrator README at fixed commit, Amazon Web Services",
           "modification_note": "Bounded implementation-evidence summary of supervisor–worker assignment and isolated terminal sessions; no source prose, code, examples, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/patterns/agt-p-08-durable-agent-hitl.mdx": {
+      "reviewed_at": "2026-08-27",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-anthropic-effective-harnesses-long-running-agents",
+          "citation_url": "https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents",
+          "roles": [
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Effective harnesses for long-running agents, Anthropic",
+          "modification_note": "Original Chinese synthesis of structured progress artifacts and cross-context long-running task boundaries; no source prose, examples, code, prompts, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-anthropic-managed-agents",
+          "citation_url": "https://www.anthropic.com/engineering/managed-agents",
+          "roles": [
+            "implementation",
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Scaling Managed Agents: Decoupling the brain from the hands, Anthropic",
+          "modification_note": "Original Chinese synthesis of durable-session log, harness, sandbox and crash-rebuild boundaries; no source prose, code, interfaces, examples, metrics, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-docs-99e58642fe77",
+          "citation_url": "https://docs.langchain.com/oss/python/langgraph/persistence",
+          "roles": [
+            "runtime-fact"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Persistence, LangChain",
+          "modification_note": "Original Chinese summary of documented checkpointer, graph-state snapshot and recovery behavior; no source prose, code, examples, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-docs-7dd57631bd24",
+          "citation_url": "https://docs.langchain.com/oss/python/langgraph/interrupts",
+          "roles": [
+            "runtime-fact"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Interrupts, LangChain",
+          "modification_note": "Original Chinese summary of documented pause, checkpoint-backed resume, node re-execution and idempotency guidance; no source prose, code, examples, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-docs-abd3e18c34a9",
+          "citation_url": "https://docs.temporal.io/workflows",
+          "roles": [
+            "runtime-fact"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Temporal Workflow, Temporal Technologies",
+          "modification_note": "Original Chinese summary of documented workflow-state and replay behavior; no source prose, code, examples, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-docs-f58d7138ba8f",
+          "citation_url": "https://docs.temporal.io/encyclopedia/event-history",
+          "roles": [
+            "runtime-fact"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Temporal Event History, Temporal Technologies",
+          "modification_note": "Original Chinese summary of documented event-history state-reconstruction behavior; no source prose, code, examples, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-github-06f3f1f4928e",
+          "citation_url": "https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/docs/human_in_the_loop.md",
+          "roles": [
+            "implementation"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Human-in-the-loop documentation at fixed commit, OpenAI",
+          "modification_note": "Original Chinese summary of tool-approval, interrupted-state and resume interface behavior at the fixed commit; no source prose, code, examples, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-atlas-agt-p-08-durable-agent-hitl",
+          "citation_url": "/img/diagrams/agt-p-08-durable-agent-hitl.svg",
+          "roles": [
+            "illustration"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "original-illustration",
+          "attribution_note": "Durable agent recovery and human approval control flow, Tego Arch maintainers",
+          "modification_note": "Created as an original synchronized Draw.io/SVG pair without third-party topology, reference imagery, icons, brand visuals, signatures, watermarks or copied composition.",
           "excerpt": null,
           "quotation_reviewed": false
         }

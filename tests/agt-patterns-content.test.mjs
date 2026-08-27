@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
 import {existsSync, readFileSync} from 'node:fs';
 import test from 'node:test';
 
@@ -15,6 +16,7 @@ import {
 import {knowledgeTypeContracts} from '../scripts/content-schema.mjs';
 import {parseMdxVisibleCopy} from '../scripts/visible-copy.mjs';
 import {assertControlOwnershipDiagramGeometry} from '../scripts/validate-agt-p-06-control-ownership-diagram.mjs';
+import {assertDurableAgentDiagramGeometry} from '../scripts/validate-agt-p-08-durable-agent-diagram.mjs';
 
 const workflowAgentArticlePath =
   'content/patterns/agt-p-01-workflow-vs-autonomous-agent.mdx';
@@ -4094,4 +4096,249 @@ test('AGT-P-07 source and citation governance rejects drift', () => {
     try { assertOrchestratorWorkersSourceContract(mutant); survivors.push(label); } catch {}
   }
   assert.deepEqual(survivors, []);
+});
+
+const durableAgentArticlePath = 'content/patterns/agt-p-08-durable-agent-hitl.mdx';
+const durableAgentDrawioPath = 'diagrams/agt-p-08-durable-agent-hitl.drawio';
+const durableAgentSvgPath = 'static/img/diagrams/agt-p-08-durable-agent-hitl.svg';
+const durableAgentStates = [
+  'running',
+  'waiting',
+  'approval required',
+  'paused',
+  'resuming',
+  'completed',
+  'failed',
+  'manual terminal',
+];
+const durableAgentLabels = [
+  'Checkpoint',
+  'Approval required',
+  'Resume',
+  'Result reconciliation',
+  'Manual terminal',
+];
+const durableAgentSourceIds = [
+  'src-anthropic-effective-harnesses-long-running-agents',
+  'src-anthropic-managed-agents',
+  'src-docs-99e58642fe77',
+  'src-docs-7dd57631bd24',
+  'src-docs-abd3e18c34a9',
+  'src-docs-f58d7138ba8f',
+  'src-github-06f3f1f4928e',
+  'src-atlas-agt-p-08-durable-agent-hitl',
+];
+
+function assertDurableAgentArticleContract(source) {
+  const metadata = parseFrontMatter(source);
+  assert.equal(metadata.slug, '/patterns/agt-p-08');
+  assert.equal(metadata.content_type, 'pattern');
+  assert.equal(metadata.status, 'reviewed');
+  assert.equal(metadata.difficulty, 'advanced');
+  assert.equal(metadata.topic_id, 'AGT-P-08');
+  assert.equal(metadata.priority, 'P1');
+  assert.deepEqual(metadata.depends_on, ['AGT-C-02', 'AGT-C-04', 'AGT-C-05', 'AGT-C-06']);
+  assert.deepEqual(
+    findMarkdownHeadings(source).filter(({level}) => level === 2)
+      .map(({text}) => `## ${text}`),
+    knowledgeTypeContracts.pattern,
+  );
+
+  const {tables} = readerVisibleTables(source);
+  const stateTables = tables.filter(({rows: [header]}) => header?.[0] === '状态');
+  assert.equal(stateTables.length, 1, 'exactly one reader-visible durable state table');
+  const [[header, ...rows]] = stateTables.map(({rows}) => rows);
+  assert.deepEqual(header, ['状态', '含义', '允许的下一步', '恢复与终止合同']);
+  assert.deepEqual(rows.map(([state]) => state), durableAgentStates);
+
+  assert.match(
+    source,
+    /import \{handleHorizontalArrowKey\} from '@site\/src\/components\/KeyboardScrollableRegion\/handleHorizontalArrowKey\.mjs';[\s\S]*<div className="architecture-diagram-scroll" role="region" aria-label="持久智能体恢复、批准、拒绝与人工终止图，可使用左右方向键及首尾键横向滚动" tabIndex=\{0\} onKeyDown=\{handleHorizontalArrowKey\}>[\s\S]*!\[[^\]]+\]\(\/img\/diagrams\/agt-p-08-durable-agent-hitl\.svg\)[\s\S]*<\/div>/u,
+  );
+  assert.equal([...source.matchAll(/\/img\/diagrams\/agt-p-08-durable-agent-hitl\.svg/gu)].length, 1);
+  assert.doesNotMatch(source, /```mermaid/u);
+
+  const visible = parseMdxVisibleCopy(source, durableAgentArticlePath, {
+    includeStructure: true,
+  }).blocks.map(({text}) => text).join('\n');
+  for (const field of ['operation_id', 'checkpoint_schema', 'checkpoint_version']) {
+    assert.match(source, new RegExp(`\\b${field}\\b`, 'u'));
+  }
+  for (const contract of [
+    /持久控制状态[\s\S]*外部业务真相/u,
+    /检查点[\s\S]*时机/u,
+    /确定性重放[\s\S]*边界/u,
+    /代码[\s\S]*模型[\s\S]*版本漂移/u,
+    /凭证[\s\S]*(?:过期|失效)/u,
+    /批准上下文/u,
+    /等待[\s\S]*超时/u,
+    /幂等[\s\S]*恢复/u,
+    /取消/u,
+    /未知[\s\S]*副作用[\s\S]*对账/u,
+    /控制所有者/u,
+    /状态所有者/u,
+    /副作用所有者/u,
+    /终止责任/u,
+    /失败[\s\S]*恢复/u,
+    /权衡/u,
+    /迁移/u,
+    /确定性回退/u,
+    /(?:协议|工具|示例)[\s\S]*(?:不证明|不能证明)[\s\S]*(?:授权|可靠性|治理)/u,
+  ]) assert.match(visible, contract);
+}
+
+function assertDurableAgentDiagramPair(drawio, svg) {
+  assertDurableAgentDiagramGeometry(drawio, svg);
+  const sourceHash = createHash('sha256').update(drawio).digest('hex');
+  assert.match(drawio, /<mxfile\b/u);
+  assert.match(svg, /<svg\b(?=[^>]*viewBox="0 0 1400 900")(?=[^>]*role="img")(?=[^>]*aria-labelledby="agt-p-08-title agt-p-08-desc")(?=[^>]*data-drawio-sha256="[a-f0-9]{64}")(?![^>]*\bwidth=)(?![^>]*\bheight=)[^>]*>/u);
+  assert.match(svg, new RegExp(`data-drawio-sha256="${sourceHash}"`, 'u'));
+  assert.match(svg, /<title id="agt-p-08-title">[^<]+<\/title>/u);
+  assert.match(svg, /<desc id="agt-p-08-desc">[^<]+<\/desc>/u);
+  assert.doesNotMatch(svg, /\b(?:display="none"|visibility="(?:hidden|collapse)"|aria-hidden="true")/u);
+  assert.doesNotMatch(drawio, /\bsource="manual-terminal"/u);
+  assert.doesNotMatch(svg, /\bdata-source="manual-terminal"/u);
+
+  for (const label of durableAgentLabels) {
+    const escaped = label.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
+    assert.equal([...drawio.matchAll(new RegExp(`\\bvalue="${escaped}"`, 'gu'))].length, 1, `${label} Draw.io label count`);
+    assert.equal([...svg.matchAll(new RegExp(`>${escaped}<`, 'gu'))].length, 1, `${label} SVG label count`);
+  }
+
+  for (const [id, x, y, width, height, textX, titleY, typeY] of [
+    ['control-store', 350, 70, 300, 120, 500, 115, 155],
+    ['checkpoint', 70, 250, 260, 120, 200, 295, 335],
+    ['approval-service', 390, 250, 300, 120, 540, 295, 335],
+    ['sandbox-tool', 70, 480, 260, 120, 200, 525, 565],
+    ['authority-system', 1010, 250, 300, 120, 1160, 295, 335],
+    ['reconciliation', 390, 480, 300, 120, 540, 525, 565],
+    ['completed', 390, 700, 300, 120, 540, 745, 785],
+    ['manual-terminal', 1010, 700, 300, 120, 1160, 745, 785],
+  ]) {
+    assert.match(drawio, new RegExp(`id="${id}"[\\s\\S]*?<mxGeometry(?=[^>]*\\bx="${x}")(?=[^>]*\\by="${y}")(?=[^>]*\\bwidth="${width}")(?=[^>]*\\bheight="${height}")[^>]*>`, 'u'));
+    assert.match(svg, new RegExp(`data-node-id="${id}"[^>]*data-padding-horizontal-css="16"[^>]*data-padding-vertical-css="14"[^>]*x="${x}" y="${y}" width="${width}" height="${height}"`, 'u'));
+    assert.match(svg, new RegExp(`data-title-for="${id}"[^>]*x="${textX}" y="${titleY}"`, 'u'));
+    assert.match(svg, new RegExp(`data-type-for="${id}"[^>]*x="${textX}" y="${typeY}"`, 'u'));
+  }
+
+  for (const [edgeId, sourceId, targetId] of [
+    ['edge-checkpoint', 'control-store', 'checkpoint'],
+    ['edge-approval', 'checkpoint', 'approval-service'],
+    ['edge-resume', 'approval-service', 'sandbox-tool'],
+    ['edge-reject', 'approval-service', 'manual-terminal'],
+    ['edge-effect', 'sandbox-tool', 'authority-system'],
+    ['edge-reconcile', 'authority-system', 'reconciliation'],
+    ['edge-recovery', 'reconciliation', 'control-store'],
+    ['edge-unknown', 'reconciliation', 'manual-terminal'],
+    ['edge-complete', 'control-store', 'completed'],
+  ]) {
+    assert.match(drawio, new RegExp(`<mxCell(?=[^>]*\\bid="${edgeId}")(?=[^>]*\\bsource="${sourceId}")(?=[^>]*\\btarget="${targetId}")[^>]*>`, 'u'));
+    assert.match(svg, new RegExp(`data-edge-id="${edgeId}" data-source="${sourceId}" data-target="${targetId}"`, 'u'));
+  }
+  for (const edgeId of ['edge-resume', 'edge-reject', 'edge-reconcile', 'edge-recovery']) {
+    assert.match(svg, new RegExp(`data-edge-label-for="${edgeId}"[^>]*data-stroke-clearance-css="8"[^>]*data-arrow-clearance-css="16"[^>]*data-node-clearance-css="12"`, 'u'));
+  }
+}
+
+function assertDurableAgentSources(ledger) {
+  const document = ledger.documents[durableAgentArticlePath];
+  assert.ok(document, 'AGT-P-08 document ledger entry');
+  assert.equal(document.reviewed_at, '2026-08-27');
+  assert.deepEqual(document.copyright_checks, [
+    'original-structure', 'quotation-boundary', 'attribution-complete', 'illustration-rights',
+  ]);
+  assert.deepEqual(document.citations.map(({source_id: id}) => id), durableAgentSourceIds);
+  for (const citation of document.citations) {
+    assert.equal(citation.excerpt, null);
+    assert.equal(citation.quotation_reviewed, false);
+    assert.ok(citation.attribution_note);
+    assert.match(citation.modification_note, /Original|Created/u);
+  }
+  const original = ledger.sources.find(({id}) => id === 'src-atlas-agt-p-08-durable-agent-hitl');
+  assert.deepEqual({
+    id: original?.id,
+    canonical_locator: original?.canonical_locator,
+    transport_locator: original?.transport_locator,
+    title: original?.title,
+    author_or_org: original?.author_or_org,
+    source_kind: original?.source_kind,
+    tier: original?.tier,
+    allowed_evidence_roles: original?.allowed_evidence_roles,
+    license: original?.license,
+    copyright_policy: original?.copyright_policy,
+  }, {
+    id: 'src-atlas-agt-p-08-durable-agent-hitl',
+    canonical_locator: '/img/diagrams/agt-p-08-durable-agent-hitl.svg',
+    transport_locator: '/img/diagrams/agt-p-08-durable-agent-hitl.svg',
+    title: 'Durable agent recovery and human approval control flow',
+    author_or_org: 'Tego Arch maintainers',
+    source_kind: 'original-illustration',
+    tier: 'primary',
+    allowed_evidence_roles: ['illustration'],
+    license: 'LicenseRef-Atlas-Original',
+    copyright_policy: 'original-atlas',
+  });
+  for (const sourceId of durableAgentSourceIds.slice(0, -1)) {
+    assert.ok(ledger.sources.some(({id}) => id === sourceId), sourceId);
+  }
+}
+
+test('AGT-P-08 publishes durable state rows, operation identity, checkpoint versioning, article and paired assets', () => {
+  for (const file of [durableAgentArticlePath, durableAgentDrawioPath, durableAgentSvgPath]) {
+    assert.ok(existsSync(file), `Missing ${file}`);
+  }
+  const source = readFileSync(durableAgentArticlePath, 'utf8');
+  assert.doesNotThrow(() => markdownParser.parse(extractMarkdownBody(source)));
+  assertDurableAgentArticleContract(source);
+  assertDurableAgentDiagramPair(
+    readFileSync(durableAgentDrawioPath, 'utf8'),
+    readFileSync(durableAgentSvgPath, 'utf8'),
+  );
+});
+
+test('AGT-P-08 rejects article state, hidden, duplicate, bypass and terminal re-entry mutants', () => {
+  const source = readFileSync(durableAgentArticlePath, 'utf8');
+  const mutations = [
+    ['state drift', source.replace('\n| waiting |', '\n| queued |')],
+    ['missing operation identity', source.replaceAll('operation_id', 'action_key')],
+    ['missing checkpoint schema', source.replaceAll('checkpoint_schema', 'snapshot_shape')],
+    ['hidden table', source.replace('| 状态 | 含义 | 允许的下一步 | 恢复与终止合同 |', '<div hidden>\n\n| 状态 | 含义 | 允许的下一步 | 恢复与终止合同 |').replace('| manual terminal |', '| manual terminal |') + '\n\n</div>'],
+    ['duplicate diagram', `${source}\n\n![重复图](/img/diagrams/agt-p-08-durable-agent-hitl.svg)\n`],
+    ['responsive wrapper bypass', source.replace('className="architecture-diagram-scroll"', 'className="diagram"')],
+  ];
+  const survivors = [];
+  for (const [label, mutant] of mutations) {
+    assert.notEqual(mutant, source, `${label} fixture mutates article`);
+    assert.doesNotThrow(() => markdownParser.parse(extractMarkdownBody(mutant)));
+    try { assertDurableAgentArticleContract(mutant); survivors.push(label); } catch {}
+  }
+  assert.deepEqual(survivors, []);
+});
+
+test('AGT-P-08 diagram pair rejects geometry, source, SVG label, hidden, duplicate, bypass and terminal re-entry mutants', () => {
+  const drawio = readFileSync(durableAgentDrawioPath, 'utf8');
+  const svg = readFileSync(durableAgentSvgPath, 'utf8');
+  const mutations = [
+    ['source label drift', drawio.replace('value="Checkpoint"', 'value="Snapshot"'), svg],
+    ['SVG label drift', drawio, svg.replace('>Resume<', '>Continue<')],
+    ['hidden label', drawio, svg.replace('>Approval required<', ' visibility="hidden">Approval required<')],
+    ['duplicate label', `${drawio.replace('</root>', '<mxCell id="duplicate-checkpoint" value="Checkpoint" vertex="1" parent="1"/><\/root>')}`, svg],
+    ['geometry drift', drawio, svg.replace('data-node-id="approval-service" data-padding-horizontal-css="16" data-padding-vertical-css="14" x="390"', 'data-node-id="approval-service" data-padding-horizontal-css="16" data-padding-vertical-css="14" x="700"')],
+    ['geometry data bypass', drawio, svg.replace('data-title-for="manual-terminal" x="1160" y="745"', 'data-title-for="manual-terminal" x="1320" y="745"')],
+    ['label overlap with clearance data preserved', drawio, svg.replace('data-edge-label-for="edge-recovery" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12" font-size="28" x="520"', 'data-edge-label-for="edge-recovery" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12" font-size="28" x="650"')],
+    ['approval bypass', drawio.replace('id="edge-resume" edge="1" parent="1" source="approval-service"', 'id="edge-resume" edge="1" parent="1" source="checkpoint"'), svg],
+    ['published rejection bypass', drawio, svg.replace('data-edge-id="edge-reject" data-source="approval-service" data-target="manual-terminal"', 'data-edge-id="edge-reject" data-source="approval-service" data-target="completed"')],
+    ['terminal re-entry', drawio.replace('</root>', '<mxCell id="edge-reenter" value="Retry" edge="1" parent="1" source="manual-terminal" target="control-store"><mxGeometry relative="1" as="geometry"/></mxCell><\/root>'), svg],
+    ['embedded source hash drift', drawio, svg.replace(/data-drawio-sha256="[a-f0-9]{64}"/u, `data-drawio-sha256="${'0'.repeat(64)}"`)],
+  ];
+  const survivors = [];
+  for (const [label, drawioMutant, svgMutant] of mutations) {
+    assert.ok(drawioMutant !== drawio || svgMutant !== svg, `${label} mutates pair`);
+    try { assertDurableAgentDiagramPair(drawioMutant, svgMutant); survivors.push(label); } catch {}
+  }
+  assert.deepEqual(survivors, []);
+});
+
+test('AGT-P-08 reuses governed evidence and registers original illustration without source drift', () => {
+  assertDurableAgentSources(JSON.parse(readFileSync('data/source-ledger.json', 'utf8')));
 });
