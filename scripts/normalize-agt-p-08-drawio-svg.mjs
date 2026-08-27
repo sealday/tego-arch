@@ -5,6 +5,7 @@ import {parseXml, xmlElements} from '../.codex/skills/creating-drawio-architectu
 import {
   SVG_NS, escapeXml, fail, number, parseDrawioModel, xmlText,
 } from './agt-p-08-diagram-model.mjs';
+import {assertRawCapabilityAllowlist} from './agt-p-08-svg-capability-allowlist.mjs';
 import {
   parseSvgRenderedModel,
   parseViewBox,
@@ -107,6 +108,7 @@ if (!wrapper || wrapper.localName !== 'g' || wrapper.attributes.has('data-cell-i
 const directCellGroups = groupOne.children.filter((item) => item.localName === 'g' && item.namespace === SVG_NS);
 if (directCellGroups.length !== expectedGroupIds.length - 2
   || directCellGroups.some((item) => !actualGroupIds.includes(item.attributes.get('data-cell-id')))) fail('raw export direct cell-group inventory drift');
+assertRawCapabilityAllowlist(rawContext, model, groups, idMap);
 for (const group of allGroups) {
   if (rawContext.state(group).hidden || rawContext.effective(group, 'clip-path') !== 'none') fail('raw export contains a hidden or clipped group');
 }

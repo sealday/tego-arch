@@ -4,6 +4,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 
 import {SVG_NS, fail, number, parseDrawioModel, xmlText} from './agt-p-08-diagram-model.mjs';
+import {assertPublishedCapabilityAllowlist} from './agt-p-08-svg-capability-allowlist.mjs';
 import {parseSvgRenderedModel, renderedMarker} from './agt-p-08-svg-rendered-model.mjs';
 
 const SCALE = 800 / 1400;
@@ -41,6 +42,7 @@ export function assertDurableAgentDiagramGeometry(drawio, svg) {
   const model = parseDrawioModel(drawio);
   const context = parseSvgRenderedModel(svg, '<agt-p-08.svg>');
   const {root} = context;
+  assertPublishedCapabilityAllowlist(context, model, sha256(drawio));
   if (root.attributes.get('viewBox') !== '0 0 1400 900') fail('viewBox must remain 1400×900');
   if (root.attributes.has('width') || root.attributes.has('height')) fail('published root must remain responsive');
   if (context.state(root).hidden || context.effective(root, 'clip-path') !== 'none') fail('published root must remain visible and unclipped');

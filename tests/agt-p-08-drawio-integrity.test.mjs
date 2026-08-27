@@ -275,3 +275,82 @@ test('AGT-P-08 authenticates raw connector and arrow continuity and rejects cros
   ];
   assert.deepEqual(rejectedRawMutants(mutations), []);
 });
+
+test('AGT-P-08 published SVG rejects every capability outside its exact allowlist', () => {
+  assert.doesNotThrow(() => assertDurableAgentDiagramGeometry(drawio, svg));
+  const mutations = [
+    ['root CSS transform', replaceOnce(svg, '<svg xmlns=', '<svg style="transform:scale(.5)" xmlns=', 'published root CSS transform')],
+    ['path CSS transform', replaceOnce(svg, 'data-edge-id="edge-effect"', 'data-edge-id="edge-effect" style="transform:translateX(1px)"', 'published path CSS transform')],
+    ['text CSS transform', replaceOnce(svg, 'data-edge-label-for="edge-unknown"', 'data-edge-label-for="edge-unknown" style="transform:translateX(1px)"', 'published text CSS transform')],
+    ['leaf clip attribute', replaceOnce(svg, 'data-node-id="checkpoint"', 'data-node-id="checkpoint" clip-path="none"', 'published leaf clip')],
+    ['leaf filter attribute', replaceOnce(svg, 'data-edge-id="edge-approval"', 'data-edge-id="edge-approval" filter="none"', 'published leaf filter')],
+    ['leaf mask attribute', replaceOnce(svg, 'data-type-for="completed"', 'data-type-for="completed" mask="none"', 'published leaf mask')],
+    ['animation property', replaceOnce(svg, 'data-region-id="control-plane"', 'data-region-id="control-plane" style="animation:none;transition:none"', 'published animation')],
+    ['transition property', replaceOnce(svg, 'data-region-id="business-plane"', 'data-region-id="business-plane" style="transition:none"', 'published transition')],
+    ['stylesheet element', replaceOnce(svg, '<defs>', '<style>text { font-size: 1px; }</style>\n  <defs>', 'published stylesheet')],
+    ['inverse path plus vector effect', replaceOnce(svg,
+      'data-edge-id="edge-checkpoint" data-source="control-store" data-target="checkpoint" d="M 350 130 L 330 130 L 330 220 L 350 220 L 350 310 L 330 310"',
+      'data-edge-id="edge-checkpoint" data-source="control-store" data-target="checkpoint" transform="scale(.5)" vector-effect="non-scaling-stroke" d="M 700 260 L 660 260 L 660 440 L 700 440 L 700 620 L 660 620"',
+      'published inverse vector effect')],
+    ['inverse transformed label', replaceOnce(svg,
+      'data-edge-label-for="edge-resume" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12" x="250" y="420.5" font-size="28" textLength="100"',
+      'data-edge-label-for="edge-resume" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12" transform="scale(.5)" x="500" y="841" font-size="56" textLength="200"',
+      'published inverse label')],
+  ];
+  assert.deepEqual(rejectedPublishedMutants(mutations), []);
+});
+
+test('AGT-P-08 published typography is exact for title, tspan, labels, anchors and text lengths', () => {
+  assert.doesNotThrow(() => assertDurableAgentDiagramGeometry(drawio, svg));
+  const mutations = [
+    ['accessible title drift', replaceOnce(svg, 'Durable agent recovery and human approval control flow', 'Durable agent control diagram', 'published title')],
+    ['node title font weight', replaceOnce(svg, 'data-title-for="control-store" x="500" y="115" font-size="28" font-weight="700"', 'data-title-for="control-store" x="500" y="115" font-size="28" font-weight="400"', 'published node title font')],
+    ['edge-label font size', replaceOnce(svg, 'data-edge-label-for="edge-resume" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12" x="250" y="420.5" font-size="28"', 'data-edge-label-for="edge-resume" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12" x="250" y="420.5" font-size="29"', 'published edge-label font')],
+    ['tspan font size', replaceOnce(svg, '<tspan x="200" y="320" textLength="170"', '<tspan font-size="24" x="200" y="320" textLength="170"', 'published tspan font')],
+    ['text length drift', replaceOnce(svg, 'data-title-for="completed" x="540" y="745" font-size="28" font-weight="700" textLength="126"', 'data-title-for="completed" x="540" y="745" font-size="28" font-weight="700" textLength="120"', 'published text length')],
+    ['text anchor drift', replaceOnce(svg, 'data-title-for="completed"', 'data-title-for="completed" text-anchor="start"', 'published text anchor')],
+  ];
+  assert.deepEqual(rejectedPublishedMutants(mutations), []);
+});
+
+test('AGT-P-08 raw CSS and transform syntax is a strict current-export allowlist', () => {
+  assertLegitimateRawPasses();
+  const rootId = raw.match(/\bid="(ge-svg-[^"]+)"/u)?.[1];
+  assert.ok(rootId, 'genuine raw has diagrams.net root ID');
+  const selector = `#${rootId}`;
+  const mutations = [
+    ['root CSS transform', replaceOnce(raw, 'color-scheme: light dark;', 'color-scheme: light dark; transform:scale(.5);', 'raw root CSS transform')],
+    ['path CSS transform', replaceOnce(raw, 'pointer-events="stroke" style="stroke: light-dark(rgb(91, 63, 214), rgb(178, 154, 255));"', 'pointer-events="stroke" style="stroke: light-dark(rgb(91, 63, 214), rgb(178, 154, 255)); transform:translateX(1px);"', 'raw path CSS transform')],
+    ['unknown inline property', replaceOnce(raw, 'color-scheme: light dark;', 'color-scheme: light dark; unknown-render-property:1;', 'raw unknown inline property')],
+    ['leaf clip attribute', replaceOnce(raw, 'pointer-events="stroke" style="stroke: light-dark(rgb(91, 63, 214), rgb(178, 154, 255));"', 'pointer-events="stroke" clip-path="none" style="stroke: light-dark(rgb(91, 63, 214), rgb(178, 154, 255));"', 'raw leaf clip')],
+    ['leaf filter attribute', replaceOnce(raw, 'pointer-events="stroke" style="stroke: light-dark(rgb(91, 63, 214), rgb(178, 154, 255));"', 'pointer-events="stroke" filter="none" style="stroke: light-dark(rgb(91, 63, 214), rgb(178, 154, 255));"', 'raw leaf filter')],
+    ['no-op attribute transform', replaceOnce(raw, 'pointer-events="stroke" style="stroke: light-dark(rgb(91, 63, 214), rgb(178, 154, 255));"', 'pointer-events="stroke" transform="translate(0,0)" style="stroke: light-dark(rgb(91, 63, 214), rgb(178, 154, 255));"', 'raw no-op transform')],
+    ['adjacent selector', replaceOnce(raw, selector, `svg + ${selector}`, 'raw adjacent selector')],
+    ['sibling selector', replaceOnce(raw, selector, `svg ~ ${selector}`, 'raw sibling selector')],
+    ['pseudo selector', replaceOnce(raw, selector, `${selector}:hover`, 'raw pseudo selector')],
+    ['unknown at-rule', replaceOnce(raw, '</style>', `@media (min-width:0px) { ${selector} { opacity:1; } }</style>`, 'raw at-rule')],
+    ['unknown stylesheet property', replaceOnce(raw, '--ge-adaptive-bg:', 'unknown-render-property:1; --ge-adaptive-bg:', 'raw stylesheet property')],
+    ['stylesheet font override', replaceOnce(raw, '--ge-adaptive-bg:', 'font-size:1px; --ge-adaptive-bg:', 'raw stylesheet font')],
+  ];
+  assert.deepEqual(rejectedRawMutants(mutations), []);
+});
+
+test('AGT-P-08 raw XHTML and switch fallback are exact per semantic cell', () => {
+  assertLegitimateRawPasses();
+  const mutations = [
+    ['div CSS transform', mutateRawCell('Unknown effect', (segment) => segment.replace('display: flex;', 'display: flex; transform:translateX(1px);'), 'raw div CSS transform')],
+    ['div font family', mutateRawCell('Unknown effect', (segment) => segment.replace('font-family: Helvetica;', 'font-family: serif;'), 'raw div font')],
+    ['div animation', mutateRawCell('Unknown effect', (segment) => segment.replace('white-space: normal;', 'white-space: normal; animation:none;'), 'raw div animation')],
+    ['div opacity', mutateRawCell('Unknown effect', (segment) => segment.replace('white-space: normal;', 'white-space: normal; opacity:1;'), 'raw div opacity')],
+    ['div filter', mutateRawCell('Unknown effect', (segment) => segment.replace('white-space: normal;', 'white-space: normal; filter:none;'), 'raw div filter')],
+    ['div clip', mutateRawCell('Unknown effect', (segment) => segment.replace('white-space: normal;', 'white-space: normal; clip:auto;'), 'raw div clip')],
+    ['div unknown property', mutateRawCell('Unknown effect', (segment) => segment.replace('white-space: normal;', 'white-space: normal; unknown-render-property:1;'), 'raw div unknown property')],
+    ['div forbidden attribute', mutateRawCell('Unknown effect', (segment) => segment.replace('<div style=', '<div data-unknown="1" style='), 'raw div attribute')],
+    ['requiredFeatures drift', mutateRawCell('Unknown effect', (segment) => segment.replace('requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"', 'requiredFeatures="urn:unsupported"'), 'raw requiredFeatures')],
+    ['switch child reorder', mutateRawCell('Unknown effect', (segment) => segment.replace(/<switch>(<foreignObject[\s\S]*?<\/foreignObject>)(<image[^>]*\/>)[\s]*<\/switch>/u, '<switch>$2$1</switch>'), 'raw switch reorder')],
+    ['fallback image move', mutateRawCell('Unknown effect', (segment) => segment.replace(/<image x="[^"]+"/u, '<image x="0"'), 'raw fallback move')],
+    ['fallback image resize', mutateRawCell('Unknown effect', (segment) => segment.replace(/(<image[^>]*\bwidth=")[^"]+"/u, '$11"'), 'raw fallback resize')],
+    ['fallback image corruption', mutateRawCell('Unknown effect', (segment) => segment.replace('data:image/png;base64,iVBOR', 'data:image/png;base64,jVBOR'), 'raw fallback bytes')],
+  ];
+  assert.deepEqual(rejectedRawMutants(mutations), []);
+});
