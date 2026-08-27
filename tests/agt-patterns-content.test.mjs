@@ -3982,6 +3982,16 @@ function assertOrchestratorWorkersArticleContract(source) {
     /确定性回退/u,
     /实现证据[^。\n]{0,180}(?:不证明|不能证明)[^。\n]{0,100}生产/u,
   ]) assert.match(visible, contract);
+  assert.match(
+    visible,
+    /Anthropic[^。\n]{0,160}并行化[^。\n]{0,160}编排者[–—-]工作者/u,
+    'reader-visible copy attributes the two pattern descriptions to Anthropic',
+  );
+  assert.match(
+    visible,
+    /Anthropic[^。\n]{0,240}(?:不是|不构成|并非)行业标准/u,
+    'reader-visible Anthropic attribution remains bounded as non-standard guidance',
+  );
 }
 
 function assertOrchestratorWorkersSourceContract(ledger) {

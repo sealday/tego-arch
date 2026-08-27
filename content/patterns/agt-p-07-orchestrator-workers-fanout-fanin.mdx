@@ -68,7 +68,9 @@ related_questions: []
 
 编排者拥有全局控制权：产生有界子任务、登记任务、核发并发槽位、传播取消并决定何时扇入。它不拥有事实真相，也不能仅凭工作者自报便发布结果。状态所有者是持久任务账本与结果存储，而不是编排者的对话上下文。任务账本保存稳定任务标识、父任务、输入摘要、依赖、状态、尝试、租约、预算、权限、结果摘要和终态。工作者只能提交结构化候选结果，扇入器核对齐备性，冲突解决器按预定规则提出决议，最终终止责任仍属于确定性控制器。
 
-该来源机构的官方工程材料分别描述了并行化与编排者–工作者：前者适合可独立拆开的已知子任务，后者由中央模型动态拆分任务并综合结果。这是来源机构的模式描述，不是行业标准。本文的任务账本、并发门、三类终态、取消与副作用恢复是面向生产控制的原创架构综合。
+{/* terminology-exempt: unknown-english-term | reason: 审查要求读者可见正文明确保留 Anthropic 正式机构身份 */}
+
+Anthropic 公司的官方工程材料分别描述了并行化与编排者–工作者：前者适合可独立拆开的已知子任务，后者由中央模型动态拆分任务并综合结果；这只是该公司的模式描述，不是行业标准。本文的任务账本、并发门、三类终态、取消与副作用恢复是面向生产控制的原创架构综合。
 
 ## 约束与驱动力
 
@@ -210,7 +212,9 @@ Microsoft 公司固定提交的构件文档把编排器、专业智能体和注�
 
 ## 来源
 
-- [Building Effective Agents](https://www.anthropic.com/engineering/building-effective-agents)（`facts-summary`，`definition`，`method`）：支持该机构公开区分并行化与编排者–工作者模式及其动态分解描述；不建立本文的任务账本、预算、权限、三类终态或生产保证，该分类不是行业标准。
+{/* terminology-exempt: unknown-english-term | reason: 审查要求来源项明确保留 Anthropic 正式机构身份 */}
+
+- Anthropic 公司：[Building Effective Agents](https://www.anthropic.com/engineering/building-effective-agents)（`facts-summary`，`definition`，`method`）：支持该公司公开区分并行化与编排者–工作者模式及其动态分解描述；不建立本文的任务账本、预算、权限、三类终态或生产保证，该分类不是行业标准。
 - [Microsoft 多智能体参考架构构件文档](https://github.com/microsoft/multi-agent-reference-architecture/blob/ed3613b54b46b595dd223aaff8772def376a8c37/docs/building-blocks/Building-Blocks.md)（`facts-summary`，`case-evidence`，`comparison`）：固定提交材料支持编排器、专业智能体和注册表的构件边界；不证明运行时行为、结果正确性或本文的汇聚合同。
 - [AWS 命令行智能体编排器固定说明文件（README）](https://github.com/awslabs/cli-agent-orchestrator/blob/bae80071a17e001380367c461b32d64bc6b54433/README.md)（`facts-summary`，`case-evidence`，`implementation`）：固定提交说明监督者–工作进程与隔离终端会话的实现形态；只作有界实现证据，不能证明生产规模、可靠性、恰好一次、冲突解决或部署适用性。
 
