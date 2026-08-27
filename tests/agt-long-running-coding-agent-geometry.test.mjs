@@ -22,6 +22,12 @@ const nodeTitles = [
   'Version Control',
   'Recovery / Reconcile',
 ];
+const boundaryTitles = [
+  'Harness control',
+  'Isolated execution',
+  'Durable state',
+  'External authority',
+];
 const relationLabels = [
   'intake / bound',
   'context / tools',
@@ -298,6 +304,7 @@ function validateGeometry(drawio, svg) {
   const groups = groupMap(svgRoot);
   const inventory = cellInventory(drawioRoot);
   const failures = [];
+  const boundaryTitleMeasurements = [];
   const nodeBoxes = new Map();
   const nodeMeasurements = [];
   const relationMeasurements = [];
@@ -392,6 +399,48 @@ function validateGeometry(drawio, svg) {
       ),
     };
   });
+  const boundaryTitleBoxes = boundaryTitles.map((title) => {
+    const titleCell = inventory.byValue.get(title);
+    const titleGroup = groups.get(titleCell?.attributes.get('id'));
+    assert.ok(titleGroup, `rendered boundary title group for ${title}`);
+    const titleBox = textBox(titleGroup);
+    const connectorClearances = edgeGeometry.map(({edgeId, routePoints, routeStroke}) => ({
+      clearance: Math.min(...routePoints.slice(1).map((end, index) => (
+        segmentBoxDistance(routePoints[index], end, titleBox) - routeStroke / 2
+      ))) * scale,
+      edgeId,
+    }));
+    const arrowClearances = edgeGeometry.map(({edgeId, markerBox}) => ({
+      clearance: boxDistance(titleBox, markerBox) * scale,
+      edgeId,
+    }));
+    for (const {clearance, edgeId} of connectorClearances) {
+      if (clearance < 8) {
+        failures.push(`${title}: boundary-title connector ${edgeId} clearance ${clearance}`);
+      }
+    }
+    for (const {clearance, edgeId} of arrowClearances) {
+      if (clearance < 16) {
+        failures.push(`${title}: boundary-title arrow ${edgeId} clearance ${clearance}`);
+      }
+    }
+    const nodeClearance = Math.min(
+      ...allNodeBoxes.map(([, box]) => boxDistance(titleBox, box)),
+    ) * scale;
+    if (nodeClearance < 12) {
+      failures.push(`${title}: boundary-title node clearance ${nodeClearance}`);
+    }
+    const font = titleBox.fontSize * scale;
+    if (font < 10) failures.push(`${title}: boundary-title type too small`);
+    boundaryTitleMeasurements.push({
+      title,
+      arrow: Math.min(...arrowClearances.map(({clearance}) => clearance)),
+      connector: Math.min(...connectorClearances.map(({clearance}) => clearance)),
+      font,
+      node: nodeClearance,
+    });
+    return [title, titleBox];
+  });
   const labelBoxes = [];
   for (const {labelId, value: label} of inventory.relationRecords) {
     const labelGroup = groups.get(labelId);
@@ -455,7 +504,14 @@ function validateGeometry(drawio, svg) {
       }
     }
   }
-  return {failures, nodeMeasurements, relationMeasurements, scale};
+  for (const [title, titleBox] of boundaryTitleBoxes) {
+    for (const [label, labelBox] of labelBoxes) {
+      if (boxDistance(titleBox, labelBox) === 0) {
+        failures.push(`${title}: boundary-title overlaps label ${label}`);
+      }
+    }
+  }
+  return {boundaryTitleMeasurements, failures, nodeMeasurements, relationMeasurements, scale};
 }
 
 function mutateGroup(svg, cellId, mutation) {
@@ -475,7 +531,7 @@ test('long-running coding agent diagram enforces measured geometry for all nodes
   assert.deepEqual(audit.failures, []);
 });
 
-test('long-running coding agent geometry rejects node, arrow, boundary, foreign-connector, and opaque-background mutants', () => {
+test('long-running coding agent geometry rejects node, arrow, boundary-title, boundary, foreign-connector, and opaque-background mutants', () => {
   const drawio = readFileSync(drawioPath, 'utf8');
   const svg = readFileSync(svgPath, 'utf8');
   const {boundaryShapes, byValue, nodeShapes, relationEdges} = cellInventory(parseXml(drawio, drawioPath).root);
@@ -486,6 +542,16 @@ test('long-running coding agent geometry rejects node, arrow, boundary, foreign-
   const labelId = byValue.get('test feedback').attributes.get('id');
   const nearArrow = mutateGroup(svg, labelId, (start) => `${start} transform="translate(-150 50)"`);
   assert.ok(validateGeometry(drawio, nearArrow).failures.some((failure) => failure.startsWith('test feedback: arrow ')));
+
+  const intakeEdgeId = relationEdges.get('intake / bound');
+  const crossedBoundaryTitle = mutateGroup(
+    svg,
+    intakeEdgeId,
+    (start) => `${start} transform="translate(-230 -240)"`,
+  );
+  assert.ok(validateGeometry(drawio, crossedBoundaryTitle).failures.some((failure) => (
+    failure.startsWith(`Harness control: boundary-title connector ${intakeEdgeId} clearance`)
+  )));
 
   const durableBoundaryId = boundaryShapes[3];
   const crossedByBoundary = mutateGroup(

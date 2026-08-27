@@ -17,10 +17,10 @@
           <mxGeometry height="1370" width="850" x="930" y="1110" as="geometry" />
         </mxCell>
         <mxCell id="O_z5GWIOrLaeX1oQE0i6-5" parent="1" style="text;html=0;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=28;fontStyle=1;fontColor=#24185F;" value="Harness control" vertex="1">
-          <mxGeometry height="40" width="360" x="50" y="40" as="geometry" />
+          <mxGeometry height="40" width="360" x="180" y="40" as="geometry" />
         </mxCell>
         <mxCell id="O_z5GWIOrLaeX1oQE0i6-6" parent="1" style="text;html=0;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=28;fontStyle=1;fontColor=#153E66;" value="Isolated execution" vertex="1">
-          <mxGeometry height="40" width="500" x="960" y="40" as="geometry" />
+          <mxGeometry height="40" width="500" x="1090" y="40" as="geometry" />
         </mxCell>
         <mxCell id="O_z5GWIOrLaeX1oQE0i6-7" parent="1" style="text;html=0;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=28;fontStyle=1;fontColor=#155333;" value="Durable state" vertex="1">
           <mxGeometry height="40" width="500" x="50" y="1130" as="geometry" />
@@ -29,13 +29,13 @@
           <mxGeometry height="40" width="500" x="960" y="1130" as="geometry" />
         </mxCell>
         <mxCell id="O_z5GWIOrLaeX1oQE0i6-9" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#EDE8FF;strokeColor=#5B3FD6;strokeWidth=4;" value="" vertex="1">
-          <mxGeometry height="180" width="700" x="70" y="110" as="geometry" />
+          <mxGeometry height="180" width="700" x="70" y="120" as="geometry" />
         </mxCell>
         <mxCell id="O_z5GWIOrLaeX1oQE0i6-10" parent="1" style="text;html=0;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=34;fontStyle=1;fontColor=#24185F;" value="Task Intake" vertex="1">
-          <mxGeometry height="44" width="630" x="105" y="145" as="geometry" />
+          <mxGeometry height="44" width="630" x="105" y="155" as="geometry" />
         </mxCell>
         <mxCell id="O_z5GWIOrLaeX1oQE0i6-11" parent="1" style="text;html=0;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=24;fontColor=#51458B;" value="bounded repository task" vertex="1">
-          <mxGeometry height="32" width="630" x="105" y="211" as="geometry" />
+          <mxGeometry height="32" width="630" x="105" y="221" as="geometry" />
         </mxCell>
         <mxCell id="O_z5GWIOrLaeX1oQE0i6-12" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#FFFFFF;strokeColor=#5B3FD6;strokeWidth=4;" value="" vertex="1">
           <mxGeometry height="180" width="700" x="70" y="440" as="geometry" />
@@ -56,13 +56,13 @@
           <mxGeometry height="32" width="630" x="105" y="881" as="geometry" />
         </mxCell>
         <mxCell id="O_z5GWIOrLaeX1oQE0i6-18" parent="1" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=0;fillColor=#E8F3FF;strokeColor=#2365A7;strokeWidth=4;" value="" vertex="1">
-          <mxGeometry height="180" width="740" x="980" y="110" as="geometry" />
+          <mxGeometry height="180" width="740" x="980" y="120" as="geometry" />
         </mxCell>
         <mxCell id="O_z5GWIOrLaeX1oQE0i6-19" parent="1" style="text;html=0;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=34;fontStyle=1;fontColor=#153E66;" value="Coding Loop" vertex="1">
-          <mxGeometry height="44" width="660" x="1020" y="145" as="geometry" />
+          <mxGeometry height="44" width="660" x="1020" y="155" as="geometry" />
         </mxCell>
         <mxCell id="O_z5GWIOrLaeX1oQE0i6-20" parent="1" style="text;html=0;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=24;fontColor=#315E87;" value="edit / observe loop" vertex="1">
-          <mxGeometry height="32" width="660" x="1020" y="211" as="geometry" />
+          <mxGeometry height="32" width="660" x="1020" y="221" as="geometry" />
         </mxCell>
         <mxCell id="O_z5GWIOrLaeX1oQE0i6-21" parent="1" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#FFFFFF;strokeColor=#2365A7;strokeWidth=4;dashed=1;dashPattern=10 8;" value="" vertex="1">
           <mxGeometry height="190" width="740" x="980" y="500" as="geometry" />
@@ -232,8 +232,8 @@
             <Array as="points">
               <mxPoint x="1145" y="1850" />
               <mxPoint x="1770" y="1850" />
-              <mxPoint x="1770" y="70" />
-              <mxPoint x="850" y="70" />
+              <mxPoint x="1770" y="320" />
+              <mxPoint x="850" y="320" />
             </Array>
           </mxGeometry>
         </mxCell>
