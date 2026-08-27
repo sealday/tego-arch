@@ -72,6 +72,31 @@ export const BROWSER_OWNED_EDGE_IDS = Object.freeze([
   'share-runtime-catalog', 'share-runtime-cart', 'share-runtime-checkout', 'share-runtime-account',
   'load-failure',
 ]);
+export const BRIDGE_CONTRACTS = Object.freeze([
+  ['share-runtime-catalog', 'cart-query', 760, 2320],
+  ['share-runtime-account', 'checkout-read-cart', 1500, 2320],
+  ['share-runtime-account', 'return-cart-version', 1580, 2320],
+  ['share-runtime-account', 'return-order-id', 1660, 2320],
+  ['share-runtime-account', 'checkout-submit-order', 1740, 2320],
+  ['activate-account', 'load-failure', 1680, 1920],
+]);
+export const EDGE_LABEL_REGIONS = Object.freeze({
+  'catalog-release': 'release-control-plane', 'cart-release': 'release-control-plane',
+  'checkout-release': 'release-control-plane', 'account-release': 'release-control-plane',
+  'store-artifacts': 'release-control-plane', 'validate-candidate': 'release-control-plane',
+  'publish-manifest': 'release-control-plane', 'resolve-manifest': 'release-control-plane',
+  'promote-manifest': 'browser-runtime-plane', 'route-control': 'browser-runtime-plane',
+  'activate-catalog': 'browser-runtime-plane', 'activate-cart': 'browser-runtime-plane',
+  'activate-checkout': 'browser-runtime-plane', 'activate-account': 'browser-runtime-plane',
+  'share-runtime-catalog': 'browser-runtime-plane', 'share-runtime-cart': 'browser-runtime-plane',
+  'share-runtime-checkout': 'browser-runtime-plane', 'share-runtime-account': 'browser-runtime-plane',
+  'checkout-read-cart': 'browser-runtime-plane', 'checkout-submit-order': 'browser-runtime-plane',
+  'catalog-query': 'browser-runtime-plane', 'cart-query': 'browser-runtime-plane',
+  'account-query': 'browser-runtime-plane', 'load-failure': 'browser-runtime-plane',
+  'rollback-manifest': 'browser-runtime-plane', 'return-catalog': 'authority-business-plane',
+  'return-cart-version': 'authority-business-plane', 'return-order-id': 'authority-business-plane',
+  'return-account': 'authority-business-plane',
+});
 export const NODE_IDS = Object.freeze([
   'catalog-pipeline', 'cart-pipeline', 'checkout-pipeline', 'account-pipeline',
   'immutable-artifacts', 'compatibility-gate', 'versioned-manifest', 'atomic-promotion',
@@ -209,13 +234,32 @@ function intersectionIdentity(leftId, rightId, point) {
   return `${first}|${second}|${point.x}|${point.y}`;
 }
 
+function edgePathElements(svg, id) {
+  const primary = svg.edges.find(({attributes}) => attributes.get('data-edge-id') === id);
+  assert.ok(primary, `${id} primary semantic path`);
+  const segments = svg.elements.filter(({name, attributes: item}) => name === 'path' && item.get('data-edge-segment-for') === id)
+    .sort((left, right) => number(left.attributes.get('data-segment-order'), `${id} segment order`) - number(right.attributes.get('data-segment-order'), `${id} segment order`));
+  assert.deepEqual(segments.map(({attributes: item}) => number(item.get('data-segment-order'), `${id} segment order`)), segments.map((_, index) => index + 2), `${id} contiguous additional segment order`);
+  return [primary, ...segments];
+}
+
+function logicalSvgRoute(svg, id) {
+  return edgePathElements(svg, id).flatMap((path, index) => {
+    const points = parsePathPoints(path.attributes.get('d'));
+    return index === 0 ? points : points;
+  });
+}
+
 function semanticSegments(svg) {
   return svg.edges.flatMap((edge) => {
-    const points = parsePathPoints(edge.attributes.get('d'));
-    return points.slice(1).map((end, index) => ({
-      id: edge.attributes.get('data-edge-id'), source: edge.attributes.get('data-source'), target: edge.attributes.get('data-target'),
-      start: points[index], end,
-    }));
+    const id = edge.attributes.get('data-edge-id');
+    return edgePathElements(svg, id).flatMap((path) => {
+      const points = parsePathPoints(path.attributes.get('d'));
+      return points.slice(1).map((end, index) => ({
+        id, source: edge.attributes.get('data-source'), target: edge.attributes.get('data-target'),
+        start: points[index], end,
+      }));
+    });
   });
 }
 
@@ -356,7 +400,22 @@ function assertRenderedGeometry(svgSource, svg) {
 
   const labelElements = svg.elements.filter((element) => element.name === 'text' && element.attributes.has('data-edge-label-for'));
   assertExactDuplicateFreeIds(labelElements.map(({attributes}) => attributes.get('data-edge-label-for')), EDGE_IDS, 'SVG edge labels');
-  const markerBoxes = svg.edges.map((edge) => [edge.attributes.get('data-edge-id'), transformedMarkerBox(svgSource, svg, edge)]);
+  assertExactDuplicateFreeIds(Object.keys(EDGE_LABEL_REGIONS), EDGE_IDS, 'edge label region contracts');
+  const labelBoxes = new Map(labelElements.map((element) => [element.attributes.get('data-edge-label-for'), glyphBounds(element, `${element.attributes.get('data-edge-label-for')} edge label`)]));
+  for (let left = 0; left < labelElements.length; left += 1) for (let right = left + 1; right < labelElements.length; right += 1) {
+    const leftId = labelElements[left].attributes.get('data-edge-label-for'); const rightId = labelElements[right].attributes.get('data-edge-label-for');
+    assert.ok(boxDistance(labelBoxes.get(leftId), labelBoxes.get(rightId)) * scale >= 6, `${leftId}/${rightId} edge labels have >= 6px separation`);
+  }
+  for (const [id, box] of labelBoxes) {
+    const regionId = EDGE_LABEL_REGIONS[id]; const region = regionBounds.get(regionId);
+    const boundaryClearance = Math.min(box.left - region.left, region.right - box.right, box.top - region.top, region.bottom - box.bottom) * scale;
+    assert.ok(boundaryClearance >= 12, `${id} label remains inside ${regionId} with >= 12px boundary clearance`);
+  }
+  const markerBoxes = svg.edges.map((edge) => {
+    const id = edge.attributes.get('data-edge-id'); const markerPaths = edgePathElements(svg, id).filter((path) => path.attributes.has('marker-end'));
+    assert.equal(markerPaths.length, 1, `${id} exactly one terminal marker across split segments`);
+    return [id, transformedMarkerBox(svgSource, svg, markerPaths[0])];
+  });
   for (const labelElement of labelElements) {
     const id = labelElement.attributes.get('data-edge-label-for'); const labelBox = glyphBounds(labelElement, `${id} edge label`);
     assert.ok(number(svgPresentationValue(svgSource, labelElement, 'font-size'), `${id} label font`) * scale >= 15, `${id} rendered label font >= 15px`);
@@ -378,45 +437,63 @@ function assertRenderedGeometry(svgSource, svg) {
   }
   assert.ok(svg.edges.every((edge) => edge.index > Math.max(...svg.nodes.map(({index}) => index))), 'semantic routes paint after nodes; no later node mask can erase a route');
   const rolePatterns = new Map();
-  for (const role of LEGEND_ROLES) { const representative = svg.edges.find(({attributes}) => attributes.get('data-edge-role') === role); assert.ok(representative, `${role} representative edge`); rolePatterns.set(role, `${representative.attributes.get('stroke-dasharray') ?? 'solid'}|${representative.attributes.get('marker-end')}`); }
+  for (const role of LEGEND_ROLES) { const representative = svg.edges.find(({attributes}) => attributes.get('data-edge-role') === role); assert.ok(representative, `${role} representative edge`); const markerPath = edgePathElements(svg, representative.attributes.get('data-edge-id')).find((path) => path.attributes.has('marker-end')); rolePatterns.set(role, `${representative.attributes.get('stroke-dasharray') ?? 'solid'}|${markerPath?.attributes.get('marker-end')}`); }
   assert.equal(new Set(rolePatterns.values()).size, LEGEND_ROLES.length, 'line patterns and markers encode all roles without color');
   for (const role of LEGEND_ROLES) { const caption = svg.elements.find(({attributes}) => attributes.get('data-legend-caption-for') === role); const marker = svg.elements.find(({attributes}) => attributes.get('data-legend-role') === role); const captionFont = number(svgPresentationValue(svgSource, caption, 'font-size'), `${role} caption font`); assert.ok(captionFont * scale >= 10, `${role} rendered legend caption >= 10px`); const captionBox = glyphBox({x: number(caption.attributes.get('x'), `${role} caption x`), y: number(caption.attributes.get('y'), `${role} caption y`), text: elementText(svgSource, caption), fontSize: captionFont, anchor: caption.attributes.get('text-anchor')}); const path = parsePathPoints(marker.attributes.get('d')); const markerBox = transformedMarkerBox(svgSource, svg, {...marker, attributes: new Map([...marker.attributes, ['marker-end', marker.attributes.get('marker-end')]])}); const swatchSegments = path.slice(1).map((end, index) => segmentEnvelope(path[index], end, number(svgPresentationValue(svgSource, marker, 'stroke-width'), `${role} legend stroke width`) / 2)); assert.ok(boxDistance(captionBox, markerBox) * scale >= 16, `${role} caption-to-marker clearance >= 16px`); assert.ok(Math.min(...swatchSegments.map((box) => boxDistance(captionBox, box))) * scale >= 8, `${role} caption-to-swatch clearance >= 8px`); }
   if (process.env.STY12_GEOMETRY_REPORT === '1') console.log(`STY12_GEOMETRY ${JSON.stringify({nodeMetrics, edgeLabelMetrics})}`);
 }
 
+function parseBridgeArc(data, label) {
+  const match = /^M\s*(-?(?:\d+(?:\.\d*)?|\.\d+))\s+(-?(?:\d+(?:\.\d*)?|\.\d+))\s+L\s*(-?(?:\d+(?:\.\d*)?|\.\d+))\s+(-?(?:\d+(?:\.\d*)?|\.\d+))\s+Q\s*(-?(?:\d+(?:\.\d*)?|\.\d+))\s+(-?(?:\d+(?:\.\d*)?|\.\d+))\s+(-?(?:\d+(?:\.\d*)?|\.\d+))\s+(-?(?:\d+(?:\.\d*)?|\.\d+))\s+L\s*(-?(?:\d+(?:\.\d*)?|\.\d+))\s+(-?(?:\d+(?:\.\d*)?|\.\d+))$/u.exec(data ?? '');
+  assert.ok(match, `${label} actual M/L/Q/L bridge arc geometry`);
+  const values = match.slice(1).map(Number); assert.ok(values.every(Number.isFinite), `${label} finite arc geometry`);
+  return {start: {x: values[0], y: values[1]}, shoulder: {x: values[2], y: values[3]}, control: {x: values[4], y: values[5]}, curveEnd: {x: values[6], y: values[7]}, end: {x: values[8], y: values[9]}};
+}
+
+function segmentContainsPoint(segment, point) {
+  return point.x >= Math.min(segment.start.x, segment.end.x) && point.x <= Math.max(segment.start.x, segment.end.x)
+    && point.y >= Math.min(segment.start.y, segment.end.y) && point.y <= Math.max(segment.start.y, segment.end.y);
+}
+
 function assertBridgeInventory(drawio, svgSource, svg) {
-  const segments = semanticSegments(svg);
-  const intersections = new Map();
-  for (let left = 0; left < segments.length; left += 1) for (let right = left + 1; right < segments.length; right += 1) {
-    if (segments[left].id === segments[right].id) continue;
-    const point = perpendicularIntersection(segments[left].start, segments[left].end, segments[right].start, segments[right].end);
-    if (!point || sharedEndpointIntersection(segments[left], segments[right], point)) continue;
-    intersections.set(intersectionIdentity(segments[left].id, segments[right].id, point), {left: segments[left].id, right: segments[right].id, point});
-  }
+  assert.equal(svg.elements.some(({attributes}) => attributes.has('data-bridge-mask-for')), false, 'no later-painted bridge mask or background-color erasure');
+  const expected = BRIDGE_CONTRACTS.map(([owner, under, x, y]) => intersectionIdentity(owner, under, {x, y})).sort();
   const bridges = svg.elements.filter(({attributes}) => attributes.has('data-bridge-for'));
-  const bridgesByIntersection = new Map();
+  assert.equal(bridges.length, BRIDGE_CONTRACTS.length, 'exact justified minimal bridge budget');
+  const actual = [];
+  const drawnSegments = semanticSegments(svg);
   for (const bridge of bridges) {
     const bridgeFor = bridge.attributes.get('data-bridge-for'); const crosses = bridge.attributes.get('data-crosses-edge');
-    assert.ok(EDGE_IDS.includes(bridgeFor) && EDGE_IDS.includes(crosses) && bridgeFor !== crosses, `${bridge.attributes.get('id')} exact bridge route identities`);
     const coordinates = (bridge.attributes.get('data-bridge-at') ?? '').split(/\s+/u).map(Number);
     assert.equal(coordinates.length, 2, `${bridge.attributes.get('id')} exact bridge coordinates`);
     assert.ok(coordinates.every(Number.isFinite), `${bridge.attributes.get('id')} finite bridge coordinates`);
-    const size = number(bridge.attributes.get('data-bridge-size'), `${bridge.attributes.get('id')} bridge size`);
-    assert.equal(size, 24, `${bridge.attributes.get('id')} synchronized 24-unit bridge geometry`);
-    const point = {x: coordinates[0], y: coordinates[1]}; const key = intersectionIdentity(bridgeFor, crosses, point);
+    const point = {x: coordinates[0], y: coordinates[1]}; const key = intersectionIdentity(bridgeFor, crosses, point); actual.push(key);
+    assert.ok(expected.includes(key), `${key} belongs to the fixed resolve-fanout/business-boundary allowlist`);
     assert.equal(bridge.attributes.get('id'), `bridge-${bridgeFor}-over-${crosses}-at-${point.x}-${point.y}`, `${key} stable bridge identity`);
+    assert.equal(number(bridge.attributes.get('data-bridge-size'), `${key} bridge size`), 24, `${key} synchronized 24-unit bridge height`);
     assert.equal(hiddenSvgElement(svgSource, bridge), false, `${key} visible bridge glyph`);
-    const matches = bridgesByIntersection.get(key) ?? []; matches.push(bridge); bridgesByIntersection.set(key, matches);
+    const owner = svg.edges.find(({attributes}) => attributes.get('data-edge-id') === bridgeFor);
+    assert.equal(owner?.attributes.get('data-edge-role'), 'resolve', `${key} owner is resolve fanout`);
+    const expectedUnderRole = bridgeFor === 'activate-account' ? 'recovery' : 'business';
+    assert.equal(svg.edges.find(({attributes}) => attributes.get('data-edge-id') === crosses)?.attributes.get('data-edge-role'), expectedUnderRole, `${key} under-route has the explicitly allowlisted ${expectedUnderRole} role`);
+    assert.equal(svgPresentationValue(svgSource, bridge, 'stroke'), svgPresentationValue(svgSource, owner, 'stroke'), `${key} arc stroke matches owner`);
+    assert.equal(number(svgPresentationValue(svgSource, bridge, 'stroke-width'), `${key} arc stroke width`), number(svgPresentationValue(svgSource, owner, 'stroke-width'), `${key} owner stroke width`), `${key} arc stroke width matches owner`);
+    const arc = parseBridgeArc(bridge.attributes.get('d'), key);
+    assert.deepEqual(arc, {start: {x: point.x - 18, y: point.y}, shoulder: {x: point.x - 12, y: point.y}, control: {x: point.x, y: point.y - 24}, curveEnd: {x: point.x + 12, y: point.y}, end: {x: point.x + 18, y: point.y}}, `${key} exact visible arc endpoints/span/height`);
+    const ownerSegments = drawnSegments.filter(({id}) => id === bridgeFor); const underSegments = drawnSegments.filter(({id}) => id === crosses);
+    assert.ok(ownerSegments.some((segment) => segment.start.x === point.x - 18 && segment.start.y === point.y || segment.end.x === point.x - 18 && segment.end.y === point.y), `${key} owner route ends at left arc terminal`);
+    assert.ok(ownerSegments.some((segment) => segment.start.x === point.x + 18 && segment.start.y === point.y || segment.end.x === point.x + 18 && segment.end.y === point.y), `${key} owner route resumes at right arc terminal`);
+    assert.equal(ownerSegments.some((segment) => segmentContainsPoint(segment, point)), false, `${key} owner straight stroke is replaced by the arc`);
+    assert.ok(underSegments.some((segment) => segment.start.x === point.x && segment.start.y === point.y - 18 || segment.end.x === point.x && segment.end.y === point.y - 18), `${key} under-route ends above exact gap`);
+    assert.ok(underSegments.some((segment) => segment.start.x === point.x && segment.start.y === point.y + 18 || segment.end.x === point.x && segment.end.y === point.y + 18), `${key} under-route resumes below exact gap`);
+    assert.equal(underSegments.some((segment) => segmentContainsPoint(segment, point)), false, `${key} under-route has a real unpainted gap`);
   }
-  assert.ok(intersections.size > 0, 'crossing bridge contract exercises at least one nontrivial intersection');
-  for (const [key, intersection] of intersections) {
-    const bridgesAtCrossing = bridgesByIntersection.get(key) ?? [];
-    assert.equal(bridgesAtCrossing.length, 1, `${key} has exactly one explicit bridge; no naked or ambiguous double crossing`);
-    const bridge = bridgesAtCrossing[0];
-    assert.ok([intersection.left, intersection.right].includes(bridge.attributes.get('data-bridge-for')), `${key} bridge belongs to one crossing route`);
-    assert.ok([intersection.left, intersection.right].includes(bridge.attributes.get('data-crosses-edge')), `${key} bridge names the crossed route`);
+  assert.deepEqual(actual.sort(), expected, 'exact allowlisted bridge topology and coordinate budget');
+  for (let left = 0; left < drawnSegments.length; left += 1) for (let right = left + 1; right < drawnSegments.length; right += 1) {
+    if (drawnSegments[left].id === drawnSegments[right].id) continue;
+    const point = perpendicularIntersection(drawnSegments[left].start, drawnSegments[left].end, drawnSegments[right].start, drawnSegments[right].end);
+    assert.ok(!point || sharedEndpointIntersection(drawnSegments[left], drawnSegments[right], point), `${intersectionIdentity(drawnSegments[left].id, drawnSegments[right].id, point ?? {x: 'none', y: 'none'})} no naked rendered intersection`);
   }
-  assert.deepEqual([...bridgesByIntersection.keys()].sort(), [...intersections.keys()].sort(), 'no extra or misplaced bridge glyphs');
   const bridgedRouteIds = new Set(bridges.map(({attributes}) => attributes.get('data-bridge-for')));
   const drawioJumpIds = new Set(drawio.edges.filter((edge) => EDGE_IDS.includes(edge.attributes.get('id')) && styleMap(edge.attributes.get('style')).get('jumpStyle') === 'arc').map(({attributes}) => attributes.get('id')));
   assert.deepEqual([...drawioJumpIds].sort(), [...bridgedRouteIds].sort(), 'Draw.io jump routes exactly match SVG bridge owners');
@@ -451,8 +528,15 @@ function assertEdgeInventory(drawio, svg, svgSource) {
     ], [source, target, role], `${id} SVG endpoint/role contract`);
     const svgLabel = svgLabelById.get(id); assert.ok(svgLabel && !hiddenSvgElement(svgSource, svgLabel), `${id} visible SVG label`);
     assert.equal(elementText(svgSource, svgLabel), label, `${id} exact visible SVG label text`);
+    const svgPaths = edgePathElements(svg, id);
+    for (const [index, path] of svgPaths.entries()) {
+      assert.equal(hiddenSvgElement(svgSource, path), false, `${id} visible SVG route segment ${index + 1}`);
+      assert.equal(svgPresentationValue(svgSource, path, 'stroke'), svgPresentationValue(svgSource, svgEdge, 'stroke'), `${id} split segment ${index + 1} stroke sync`);
+      assert.equal(svgPresentationValue(svgSource, path, 'stroke-width'), svgPresentationValue(svgSource, svgEdge, 'stroke-width'), `${id} split segment ${index + 1} stroke-width sync`);
+      assert.equal(svgPresentationValue(svgSource, path, 'stroke-dasharray'), svgPresentationValue(svgSource, svgEdge, 'stroke-dasharray'), `${id} split segment ${index + 1} dash sync`);
+    }
     const drawioRoutePoints = drawioRoute(drawioEdge, nodeById);
-    const svgRoutePoints = parsePathPoints(svgEdge.attributes.get('d'));
+    const svgRoutePoints = logicalSvgRoute(svg, id);
     assertRoutesClose(svgRoutePoints, drawioRoutePoints, `${id} synchronized orthogonal route`);
   }
 }
@@ -500,7 +584,7 @@ function assertDirectRegionChildren(drawio, svg) {
 }
 
 function assertGeometryMutationGuards(svgSource) {
-  const labelMoved = svgSource.replace(/<text\b[^>]*data-edge-label-for="store-artifacts"[^>]*>/u, (tag) => tag.replace(/\bx="[^"]+"/u, 'x="10"').replace(/\by="[^"]+"/u, 'y="10"'));
+  const labelMoved = svgSource.replace(/<text\b[^>]*data-edge-label-for="store-artifacts"[^>]*>/u, (tag) => tag.replace(/\bx="[^"]+"/u, 'x="1800"').replace(/\by="[^"]+"/u, 'y="1000"'));
   assert.notEqual(labelMoved, svgSource, 'edge-label association mutation applies');
   assert.throws(() => assertRenderedGeometry(labelMoved, parseSvg(labelMoved)), /store-artifacts own-route association gap|store-artifacts own route is the unambiguous nearest/u, 'far label rejected by its own semantic route association');
 
@@ -517,11 +601,16 @@ function assertBridgeMutationGuards(drawioSource, svgSource) {
   const bridge = bridgePattern.exec(svgSource)?.[0];
   assert.ok(bridge, 'bridge mutation fixture exists');
   const removed = svgSource.replace(bridge, '');
-  assert.throws(() => assertBridgeInventory(parseDrawio(drawioSource), removed, parseSvg(removed)), /exactly one explicit bridge/u, 'removed bridge exposes a naked intersection');
+  assert.throws(() => assertBridgeInventory(parseDrawio(drawioSource), removed, parseSvg(removed)), /exact justified minimal bridge budget|exact allowlisted bridge topology/u, 'removed bridge exposes a naked intersection');
   const misidentified = svgSource.replace(bridge, bridge.replace(/data-crosses-edge="[^"]+"/u, 'data-crosses-edge="catalog-release"'));
-  assert.throws(() => assertBridgeInventory(parseDrawio(drawioSource), misidentified, parseSvg(misidentified)), /exactly one explicit bridge|no extra or misplaced bridge glyphs|stable bridge identity/u, 'misidentified bridge cannot satisfy another crossing');
+  assert.throws(() => assertBridgeInventory(parseDrawio(drawioSource), misidentified, parseSvg(misidentified)), /fixed resolve-fanout\/business-boundary allowlist|exact allowlisted bridge topology|stable bridge identity/u, 'misidentified bridge cannot satisfy another crossing');
   const hidden = svgSource.replace(bridge, bridge.replace(/\bstroke="[^"]+"/u, 'stroke="none"'));
   assert.throws(() => assertBridgeInventory(parseDrawio(drawioSource), hidden, parseSvg(hidden)), /visible bridge glyph/u, 'hidden bridge glyph rejected');
+  const malformedArc = svgSource.replace(bridge, bridge.replace(/\bd="[^"]+"/u, 'd="M 0 0 L 1 1"'));
+  assert.throws(() => assertBridgeInventory(parseDrawio(drawioSource), malformedArc, parseSvg(malformedArc)), /actual M\/L\/Q\/L bridge arc geometry/u, 'metadata cannot substitute for actual bridge geometry');
+  const filledGap = svgSource.replace(/(<path\b[^>]*data-edge-segment-for="cart-query"[^>]*data-segment-order="2"[^>]*\bd=")M 760 2338/u, '$1M 760 2302');
+  assert.notEqual(filledGap, svgSource, 'under-route gap mutation applies');
+  assert.throws(() => assertBridgeInventory(parseDrawio(drawioSource), filledGap, parseSvg(filledGap)), /under-route has a real unpainted gap|under-route resumes below exact gap/u, 'under-route gap is executable geometry');
 }
 
 function assertMicroFrontendArticle(source) {
