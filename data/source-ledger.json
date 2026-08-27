@@ -21709,7 +21709,7 @@
       "author_or_org": "LangChain",
       "published_at": null,
       "registered_at": "2026-08-28",
-      "checked_at": "2026-07-24",
+      "checked_at": "2026-08-28",
       "version": "langchain-ai/langgraph commit bdb8a9c7a4aa1390af225f6a5d292e5088659bd5 dated 2026-08-26; checkpoint base file SHA-256 d29511015e2801630f6580353c107104d4ecc86e4bd14e15cd54e2b861a48e26",
       "source_kind": "source-code",
       "tier": "primary",

@@ -197,10 +197,10 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="O_z5GWIOrLaeX1oQE0i6-56" parent="1" style="text;html=0;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=34;fontColor=#7A1820;" value="progress checkpoint" vertex="1">
-          <mxGeometry height="40" width="300" x="950" y="970" as="geometry" />
+          <mxGeometry height="40" width="300" x="980" y="880" as="geometry" />
         </mxCell>
         <mxCell id="O_z5GWIOrLaeX1oQE0i6-57" parent="1" style="text;html=0;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=34;fontColor=#7A1820;" value="commit checkpoint" vertex="1">
-          <mxGeometry height="40" width="390" x="470" y="1005" as="geometry" />
+          <mxGeometry height="40" width="390" x="1200" y="1035" as="geometry" />
         </mxCell>
         <mxCell id="O_z5GWIOrLaeX1oQE0i6-58" edge="1" parent="1" source="O_z5GWIOrLaeX1oQE0i6-30" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#B4232C;strokeWidth=5;endArrow=block;endFill=1;exitX=0.22;exitY=1;entryX=0.5;entryY=0;" target="O_z5GWIOrLaeX1oQE0i6-33" value="">
           <mxGeometry relative="1" as="geometry">
@@ -238,7 +238,7 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="O_z5GWIOrLaeX1oQE0i6-64" parent="1" style="text;html=0;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=34;fontColor=#24185F;" value="rerun verification" vertex="1">
-          <mxGeometry height="40" width="400" x="1320" y="980" as="geometry" />
+          <mxGeometry height="40" width="400" x="1320" y="820" as="geometry" />
         </mxCell>
         <mxCell id="O_z5GWIOrLaeX1oQE0i6-65" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#EDE8FF;strokeColor=#5B3FD6;strokeWidth=4;" value="" vertex="1">
           <mxGeometry height="190" width="740" x="980" y="2000" as="geometry" />
@@ -266,7 +266,7 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="O_z5GWIOrLaeX1oQE0i6-71" parent="1" style="text;html=0;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=34;fontColor=#24185F;" value="rerun verification" vertex="1">
-          <mxGeometry height="40" width="300" x="900" y="2310" as="geometry" />
+          <mxGeometry height="40" width="300" x="1070" y="2310" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

@@ -335,6 +335,18 @@ test('treats inventory membership as a frozen migration snapshot', () => {
     [],
   );
 
+  const reviewedAfterSnapshot = {
+    ...matchingSource,
+    checked_at: '2026-08-28',
+  };
+  assert.deepEqual(
+    validateInventoryLedgerConsistency(
+      inventory.entries,
+      [reviewedAfterSnapshot],
+    ).errors,
+    [],
+  );
+
   assert.match(
     validateInventoryLedgerConsistency(inventory.entries, []).errors.join('\n'),
     /snapshot family.*missing from.*ledger/i,

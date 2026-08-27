@@ -97,6 +97,11 @@ function cellInventory(drawioRoot) {
   const nodeShapes = new Map();
   const relationEdges = new Map();
   const relationRecords = [];
+  const boundaryShapes = cells.filter((cell) => {
+    if (cell.attributes.get('vertex') !== '1' || cell.attributes.get('value')) return false;
+    const geometry = xmlElements(cell, 'mxGeometry', '')[0];
+    return number(geometry, 'width') >= 800 && number(geometry, 'height') >= 800;
+  }).map((cell) => cell.attributes.get('id'));
   let lastShape;
   let lastEdge;
   for (const cell of cells) {
@@ -112,7 +117,7 @@ function cellInventory(drawioRoot) {
     }
     if (cell.attributes.get('vertex') === '1' && !value) lastShape = cell.attributes.get('id');
   }
-  return {byValue, nodeShapes, relationEdges, relationRecords};
+  return {boundaryShapes, byValue, nodeShapes, relationEdges, relationRecords};
 }
 
 function pathPoints(path) {
@@ -253,6 +258,31 @@ function segmentBoxDistance(start, end, box) {
   return Math.min(endpointDistance, ...corners.map((corner) => pointSegmentDistance(corner, start, end)));
 }
 
+function roundedRectPoints(record) {
+  const {element, offset} = record;
+  const x = number(element, 'x') + offset.x;
+  const y = number(element, 'y') + offset.y;
+  const width = number(element, 'width');
+  const height = number(element, 'height');
+  const rx = Math.min(number(element, 'rx'), width / 2);
+  const ry = Math.min(number(element, 'ry'), height / 2);
+  const points = [{x: x + rx, y}, {x: x + width - rx, y}];
+  const arc = (centerX, centerY, start, end) => {
+    for (let step = 1; step <= 16; step += 1) {
+      const angle = start + (end - start) * step / 16;
+      points.push({x: centerX + Math.cos(angle) * rx, y: centerY + Math.sin(angle) * ry});
+    }
+  };
+  arc(x + width - rx, y + ry, -Math.PI / 2, 0);
+  points.push({x: x + width, y: y + height - ry});
+  arc(x + width - rx, y + height - ry, 0, Math.PI / 2);
+  points.push({x: x + rx, y: y + height});
+  arc(x + rx, y + height - ry, Math.PI / 2, Math.PI);
+  points.push({x, y: y + ry});
+  arc(x + rx, y + ry, Math.PI, Math.PI * 1.5);
+  return points;
+}
+
 function firstPaintedPath(group, predicate) {
   return descendants(group).find(({element, inherited}) => (
     element.localName === 'path' && predicate(element, inherited)
@@ -278,6 +308,7 @@ function validateGeometry(drawio, svg) {
     [...relationLabels].sort(),
     'all sixteen relation-label mappings',
   );
+  assert.equal(inventory.boundaryShapes.length, 4, 'all four visible boundary shapes');
 
   for (const title of nodeTitles) {
     const titleCell = inventory.byValue.get(title);
@@ -346,6 +377,21 @@ function validateGeometry(drawio, svg) {
       ),
     };
   });
+  const boundaryGeometry = inventory.boundaryShapes.map((boundaryId) => {
+    const boundaryGroup = groups.get(boundaryId);
+    assert.ok(boundaryGroup, `rendered boundary group ${boundaryId}`);
+    const boundary = descendants(boundaryGroup).find(({element, inherited}) => (
+      element.localName === 'rect' && inherited.stroke !== 'none'
+    ));
+    assert.ok(boundary, `visible stroked rectangle for boundary ${boundaryId}`);
+    return {
+      boundaryId,
+      boundaryPoints: roundedRectPoints(boundary),
+      boundaryStroke: Number(
+        boundary.element.attributes.get('stroke-width') ?? boundary.inherited.strokeWidth ?? 0,
+      ),
+    };
+  });
   const labelBoxes = [];
   for (const {labelId, value: label} of inventory.relationRecords) {
     const labelGroup = groups.get(labelId);
@@ -370,11 +416,24 @@ function validateGeometry(drawio, svg) {
       clearance: boxDistance(labelBox, markerBox) * scale,
       edgeId,
     }));
+    const boundaryClearances = boundaryGeometry.map(({boundaryId, boundaryPoints, boundaryStroke}) => ({
+      boundaryId,
+      clearance: Math.min(...boundaryPoints.map((end, index) => (
+        segmentBoxDistance(
+          boundaryPoints[(index + boundaryPoints.length - 1) % boundaryPoints.length],
+          end,
+          labelBox,
+        ) - boundaryStroke / 2
+      ))) * scale,
+    }));
     for (const {clearance, edgeId} of connectorClearances) {
       if (clearance < 8) failures.push(`${label}: connector ${edgeId} clearance ${clearance}`);
     }
     for (const {clearance, edgeId} of arrowClearances) {
       if (clearance < 16) failures.push(`${label}: arrow ${edgeId} clearance ${clearance}`);
+    }
+    for (const {boundaryId, clearance} of boundaryClearances) {
+      if (clearance < 8) failures.push(`${label}: boundary ${boundaryId} clearance ${clearance}`);
     }
     const routeClearance = Math.min(...connectorClearances.map(({clearance}) => clearance));
     const markerClearance = Math.min(...arrowClearances.map(({clearance}) => clearance));
@@ -383,6 +442,7 @@ function validateGeometry(drawio, svg) {
     relationMeasurements.push({
       label,
       arrow: markerClearance,
+      boundary: Math.min(...boundaryClearances.map(({clearance}) => clearance)),
       connector: routeClearance,
       node: nodeClearance,
       transparent: opaqueBackgrounds.length === 0,
@@ -415,10 +475,10 @@ test('long-running coding agent diagram enforces measured geometry for all nodes
   assert.deepEqual(audit.failures, []);
 });
 
-test('long-running coding agent geometry rejects node, arrow, foreign-connector, and opaque-background mutants', () => {
+test('long-running coding agent geometry rejects node, arrow, boundary, foreign-connector, and opaque-background mutants', () => {
   const drawio = readFileSync(drawioPath, 'utf8');
   const svg = readFileSync(svgPath, 'utf8');
-  const {byValue, nodeShapes, relationEdges} = cellInventory(parseXml(drawio, drawioPath).root);
+  const {boundaryShapes, byValue, nodeShapes, relationEdges} = cellInventory(parseXml(drawio, drawioPath).root);
 
   const movedLedger = mutateGroup(svg, nodeShapes.get('Plan / Progress Ledger'), (start) => `${start} transform="translate(0 80)"`);
   assert.ok(validateGeometry(drawio, movedLedger).failures.some((failure) => failure.startsWith('Plan / Progress Ledger: node clearance')));
@@ -426,6 +486,16 @@ test('long-running coding agent geometry rejects node, arrow, foreign-connector,
   const labelId = byValue.get('test feedback').attributes.get('id');
   const nearArrow = mutateGroup(svg, labelId, (start) => `${start} transform="translate(-150 50)"`);
   assert.ok(validateGeometry(drawio, nearArrow).failures.some((failure) => failure.startsWith('test feedback: arrow ')));
+
+  const durableBoundaryId = boundaryShapes[3];
+  const crossedByBoundary = mutateGroup(
+    svg,
+    durableBoundaryId,
+    (start) => `${start} transform="translate(0 -220)"`,
+  );
+  assert.ok(validateGeometry(drawio, crossedByBoundary).failures.some((failure) => (
+    failure.startsWith(`progress checkpoint: boundary ${durableBoundaryId} clearance`)
+  )));
 
   const unrelatedEdgeId = relationEdges.get('commit checkpoint');
   const crossedByForeignConnector = mutateGroup(
