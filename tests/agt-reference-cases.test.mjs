@@ -86,6 +86,7 @@ test('multi-agent research case contract', () => {
   const headings = findMarkdownHeadings(extractMarkdownBody(source));
 
   assert.equal(metadata.slug, '/cases/multi-agent-research-system');
+  assert.equal(metadata.title, '多智能体研究系统：让证据完成度而不是工作者数量决定终止');
   assert.equal(metadata.content_type, 'case');
   assert.equal(metadata.series, 'ai-native');
   assert.equal(metadata.catalog_order, 19);
@@ -119,6 +120,11 @@ test('multi-agent research case contract', () => {
   assert.match(source, /拒答/u);
   assert.match(source, /证据权威性不足[^。]*停止自动化/u);
   assert.match(source, /重大矛盾[^。]*无法解决[^。]*停止自动化/u);
+  assert.match(
+    source,
+    /`open_deep_research` 固定提交 `1b7d2e80db9faa586165c60e09096dbbfd483a64`/u,
+    'the prose owns the fixed implementation seam instead of leaving it only in the source list',
+  );
 
   for (const failure of [
     '重复问题',

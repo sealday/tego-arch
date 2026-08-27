@@ -1,5 +1,6 @@
 ---
-title: 多智能体（Agent）研究系统：让证据完成度而不是工作者数量决定终止
+summary: 一套以任务账本、隔离研究工作者、证据身份、覆盖与冲突门、引文核验和人工终止构成的多智能体（Agent）研究参考设计；工作者只提交证据记录，编排器保留任务完成与最终答案控制权。
+title: 多智能体研究系统：让证据完成度而不是工作者数量决定终止
 sidebar_label: 多智能体研究系统
 slug: /cases/multi-agent-research-system
 content_type: case
@@ -9,7 +10,6 @@ analyzed_at: 2026-08-28
 source_cutoff: 2026-08-28
 review_policy: quarterly-version-sensitive
 confidence: high
-summary: 一套以任务账本、隔离研究工作者、证据身份、覆盖与冲突门、引文核验和人工终止构成的多智能体研究参考设计；工作者只提交证据记录，编排器保留任务完成与最终答案控制权。
 series: ai-native
 catalog_order: 19
 featured: false
@@ -67,7 +67,9 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 
 ## 一页摘要
 
-**已证实事实**：`ReAct` 论文展示推理与面向环境的动作交错进行；`Self-RAG` 论文展示按需检索并用反思标记评价检索片段和生成。`Anthropic` 的第一方工程文章描述由主智能体协调并行子智能体、汇总发现并交给引文智能体的研究系统；该官方仓库的旧版多智能体实现则展示监督者（Supervisor）、并行研究者与扇入状态。
+**已证实事实**：`ReAct` 论文展示推理与面向环境的动作交错进行；`Self-RAG` 论文展示按需检索并用反思标记评价检索片段和生成。
+
+`Anthropic` 的第一方工程文章描述由主智能体协调并行子智能体、汇总发现并交给引文智能体的研究系统；`open_deep_research` 固定提交 `1b7d2e80db9faa586165c60e09096dbbfd483a64` 的旧版多智能体实现则展示监督者（Supervisor）、并行研究者与扇入状态。
 
 这些来源共同支持若干组件，却不共同证明下图已经作为一个系统部署。参考设计增加确定性任务账本、独立证据库、覆盖与冲突门及引文核验器。预算停止节点与人工审阅则让模型判断不能自行绕过任务、证据和终止合同。
 

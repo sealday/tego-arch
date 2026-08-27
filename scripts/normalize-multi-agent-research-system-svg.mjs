@@ -58,8 +58,8 @@ if (!(rawRoot.attributes.get('id') ?? '').startsWith('ge-svg-')) {
 }
 if (
   rawRoot.attributes.get('width') !== '1764px'
-  || rawRoot.attributes.get('height') !== '1634px'
-  || rawRoot.attributes.get('viewBox') !== '0 0 1764 1634'
+  || rawRoot.attributes.get('height') !== '1894px'
+  || rawRoot.attributes.get('viewBox') !== '0 0 1764 1894'
 ) {
   fail('raw export dimensions drifted from the reviewed 800px layout');
 }
