@@ -12,7 +12,7 @@ const EVIDENCE_SHA256 = '43985ea2e801e888e55a2cd6f62ed690133d3fdcda7db8f03a1e91e
 const PRODUCTION_EVIDENCE_PATH = 'docs/reviews/evidence/g010-mth07-stage-a-production-browser.json';
 const PRODUCTION_EVIDENCE_SHA256 = 'e3d28a498d23aec12d6df4b32c35fa69052d1fa4ec324a2ec6c53caa34beeeb2';
 const POST_G010_G009_ARTIFACTS = new Map([
-  ['docs/reviews/g009-batch13.md', [11_186, '6f170924ccfccd3d824c12f95490f95a7287d24d2ec45dd036cb5d926314c7c0']],
+  ['docs/reviews/g009-batch13.md', [11_281, 'beffcd508c620af81c18728c25648b1e04eebba2e1eed5f2914f939ab99a1fa3']],
   ['docs/reviews/evidence/g009-batch13-stage-a-browser.json', [17_260, 'a0de2d5ea069b2af87ad4aa4ef4696a9a22e6ff99ba96b616763262f1814ed38']],
   ['docs/reviews/evidence/g009-batch13-stage-a-production-browser.json', [33_721, 'a28bb3269f2b7545b7d77f2ec506ce5b1bd737924a5db6945481ee8ec5763560']],
 ]);

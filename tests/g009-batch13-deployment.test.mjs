@@ -150,7 +150,8 @@ function markdownSection(source, heading) {
   return source.slice(contentStart, end === -1 ? source.length : end).trim();
 }
 const STY12_CLOSURE_LINE = `- [x] **STY-12 P1｜Micro-Frontend**：运行时组合、团队所有权、共享依赖和故障隔离。Stage A 关闭证据：2026-08-27 review，implementation commit [\`${STAGE_A_PUBLISHED_HEAD}\`](https://github.com/sealday/tego-arch/commit/${STAGE_A_PUBLISHED_HEAD})，Pages run [\`${STAGE_A_PRODUCTION_PAGES.runId}\`](${STAGE_A_PRODUCTION_PAGES.runUrl})，build job \`${STAGE_A_PRODUCTION_PAGES.build.jobId}\`、deploy job \`${STAGE_A_PRODUCTION_PAGES.deploy.jobId}\`；evidence commit [\`${STAGE_A_EVIDENCE_HEAD}\`](https://github.com/sealday/tego-arch/commit/${STAGE_A_EVIDENCE_HEAD})，Pages run [\`${STAGE_A_EVIDENCE_PAGES.runId}\`](${STAGE_A_EVIDENCE_PAGES.runUrl})，build job \`${STAGE_A_EVIDENCE_PAGES.build.jobId}\`、deploy job \`${STAGE_A_EVIDENCE_PAGES.deploy.jobId}\`；production HTML routes \`8/8\`，live route \`/styles/sty-12\` 与 \`/img/diagrams/sty-12-micro-frontend-commerce-runtime.svg\` 均为 HTTP 200，live SVG \`${SVG_BYTES.toLocaleString('en-US')}\` bytes / SHA-256 \`${SVG_SHA256}\` 与 reviewed asset exact match，Stage A production Browser raw \`${STAGE_A_PRODUCTION_RAW_BYTES.toLocaleString('en-US')}\` bytes / SHA-256 \`${STAGE_A_PRODUCTION_RAW_SHA256}\`，functional verdict PASS；screenshot evidence PASS / ACCEPTED（\`4/4\`）。`;
-const PENDING_STAGE_B_REVIEW_LINES = Object.freeze([
+const STAGE_B_REVIEWED_HEAD = 'd3376731a07cb7b6af31c904c1ffe01131e0f9fc';
+const READY_STAGE_B_REVIEW_LINES = Object.freeze([
   '- Closure date: `2026-08-27`.',
   `- Exact Stage A implementation head: \`${STAGE_A_PUBLISHED_HEAD}\`.`,
   `- Exact Stage A Pages run: \`${STAGE_A_PRODUCTION_PAGES.runId}\`; workflow: \`${STAGE_A_PRODUCTION_PAGES.status} / ${STAGE_A_PRODUCTION_PAGES.conclusion}\`; build job: \`${STAGE_A_PRODUCTION_PAGES.build.jobId}\`; deploy job: \`${STAGE_A_PRODUCTION_PAGES.deploy.jobId}\`.`,
@@ -165,17 +166,18 @@ const PENDING_STAGE_B_REVIEW_LINES = Object.freeze([
   '- STY-12 target: `published / complete`.',
   '- STY-13 target: `unpublished / pending / non-actionable`; actionable route count: `0`; sole next topic.',
   `- Immediate immutable history: complete Batch 12 review SHA-256 \`${IMMEDIATE_REVIEW_HASH}\`; release-baseline SHA-256 \`${IMMEDIATE_BASELINE_HASH}\`.`,
-  '- Exact Stage B candidate tree identity: `PENDING_REVIEW_HEAD`.',
-  '- Independent Stage B code/spec/security review: `PENDING`; findings: `PENDING`.',
-  '- Independent Stage B content/evidence/rights review: `PENDING`; rights: `PENDING`; findings: `PENDING`.',
-  '- Independent Stage B architecture/invariant review: `PENDING`; blockers: `PENDING`.',
-  '- Final Stage B review judgment: `PENDING`.',
+  `- Exact Stage B candidate tree identity: \`${STAGE_B_REVIEWED_HEAD}\`.`,
+  '- Independent Stage B code/spec/security review: `READY / APPROVE`; findings: `0`.',
+  '- Independent Stage B content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`.',
+  '- Independent Stage B architecture/invariant review: `CLEAR / READY`; blockers: `0`.',
+  '- Review finding totals: Critical `0`; Important `0`; Minor `0`; ⚠️ `0`.',
+  '- Final Stage B review judgment: `READY`.',
   '- Stage B scope boundary: `STAGE_B`.',
   '- Stage B deployment status: `PENDING / NOT_RUN`.',
   '- Stage B screenshot status: `PASS / ACCEPTED`; accepted production captures: `4/4`.',
 ]);
-function assertPendingStageBCandidate(source = review) {
-  assert.equal(markdownSection(source, 'Stage B closure candidate'), PENDING_STAGE_B_REVIEW_LINES.join('\n'), 'exact pending Stage B candidate section');
+function assertReadyStageBCandidate(source = review) {
+  assert.equal(markdownSection(source, 'Stage B closure candidate'), READY_STAGE_B_REVIEW_LINES.join('\n'), 'exact reviewed Stage B candidate section');
   assert.equal(source.split('## Stage B closure candidate').length - 1, 1, 'one Stage B candidate section');
 }
 function assertReview(source = review, rawBytes = raw) {
@@ -497,24 +499,25 @@ test('preserves immutable Batch 12 history and closes only STY-12 in the Stage B
   assert.equal(sha256(svgBytes), SVG_SHA256, 'reviewed STY-12 SVG exact SHA-256');
 });
 
-test('records the exact pending Stage B candidate without fabricating independent verdicts', () => {
-  assertPendingStageBCandidate();
+test('binds the exact Stage B candidate to three independent zero-finding verdicts', () => {
+  assertReadyStageBCandidate();
 });
 
-test('rejects premature Stage B READY claims, nonzero findings and stale candidate identities', () => {
-  assertPendingStageBCandidate();
+test('rejects wrong Stage B heads, nonzero findings, stale PENDING and fabricated deployment', () => {
+  assertReadyStageBCandidate();
   for (const [before, after] of [
-    ['Exact Stage B candidate tree identity: `PENDING_REVIEW_HEAD`.', `Exact Stage B candidate tree identity: \`${'0'.repeat(40)}\`.`],
-    ['Independent Stage B code/spec/security review: `PENDING`; findings: `PENDING`.', 'Independent Stage B code/spec/security review: `READY / APPROVE`; findings: `0`.'],
-    ['Independent Stage B content/evidence/rights review: `PENDING`; rights: `PENDING`; findings: `PENDING`.', 'Independent Stage B content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `1`.'],
-    ['Independent Stage B architecture/invariant review: `PENDING`; blockers: `PENDING`.', 'Independent Stage B architecture/invariant review: `CLEAR / READY`; blockers: `1`.'],
-    ['Final Stage B review judgment: `PENDING`.', 'Final Stage B review judgment: `READY`.'],
+    [`Exact Stage B candidate tree identity: \`${STAGE_B_REVIEWED_HEAD}\`.`, `Exact Stage B candidate tree identity: \`${'0'.repeat(40)}\`.`],
+    ['Independent Stage B code/spec/security review: `READY / APPROVE`; findings: `0`.', 'Independent Stage B code/spec/security review: `PENDING`; findings: `PENDING`.'],
+    ['Independent Stage B content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`.', 'Independent Stage B content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `1`.'],
+    ['Independent Stage B architecture/invariant review: `CLEAR / READY`; blockers: `0`.', 'Independent Stage B architecture/invariant review: `CLEAR / READY`; blockers: `1`.'],
+    ['Review finding totals: Critical `0`; Important `0`; Minor `0`; ⚠️ `0`.', 'Review finding totals: Critical `0`; Important `1`; Minor `0`; ⚠️ `0`.'],
+    ['Final Stage B review judgment: `READY`.', 'Final Stage B review judgment: `PENDING`.'],
     ['Stage B deployment status: `PENDING / NOT_RUN`.', 'Stage B deployment status: `SUCCESS`.'],
     ['Stage B screenshot status: `PASS / ACCEPTED`; accepted production captures: `4/4`.', 'Stage B screenshot status: `PASS`; accepted production captures: `0/4`.'],
   ]) {
     const mutated = review.replace(before, after);
     assert.notEqual(mutated, review, `${before} mutation applies`);
-    assert.throws(() => assertPendingStageBCandidate(mutated), assert.AssertionError);
+    assert.throws(() => assertReadyStageBCandidate(mutated), assert.AssertionError);
   }
 });
 
