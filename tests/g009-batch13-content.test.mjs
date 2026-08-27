@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {spawnSync} from 'node:child_process';
 import {readFileSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import test from 'node:test';
@@ -80,6 +81,14 @@ export const BRIDGE_CONTRACTS = Object.freeze([
   ['share-runtime-account', 'checkout-submit-order', 1740, 2320],
   ['activate-account', 'load-failure', 1680, 1920],
 ]);
+export const BRIDGE_GEOMETRY = Object.freeze({
+  'share-runtime-catalog|cart-query|760|2320': Object.freeze({arcDirection: -1, controlOffset: 24, underOffsets: [-24, 24]}),
+  'share-runtime-account|checkout-read-cart|1500|2320': Object.freeze({arcDirection: -1, controlOffset: 24, underOffsets: [-24, 24]}),
+  'share-runtime-account|return-cart-version|1580|2320': Object.freeze({arcDirection: -1, controlOffset: 24, underOffsets: [-24, 24]}),
+  'share-runtime-account|return-order-id|1660|2320': Object.freeze({arcDirection: -1, controlOffset: 24, underOffsets: [-24, 24]}),
+  'share-runtime-account|checkout-submit-order|1740|2320': Object.freeze({arcDirection: -1, controlOffset: 24, underOffsets: [-24, 24]}),
+  'activate-account|load-failure|1680|1920': Object.freeze({arcDirection: 1, controlOffset: 24, underOffsets: [-10, 24]}),
+});
 export const EDGE_LABEL_REGIONS = Object.freeze({
   'catalog-release': 'release-control-plane', 'cart-release': 'release-control-plane',
   'checkout-release': 'release-control-plane', 'account-release': 'release-control-plane',
@@ -450,13 +459,52 @@ function parseBridgeArc(data, label) {
   return {start: {x: values[0], y: values[1]}, shoulder: {x: values[2], y: values[3]}, control: {x: values[4], y: values[5]}, curveEnd: {x: values[6], y: values[7]}, end: {x: values[8], y: values[9]}};
 }
 
+function bridgeGeometryKey(owner, under, x, y) { return `${owner}|${under}|${x}|${y}`; }
+
+function quadraticPoint({shoulder, control, curveEnd}, t) {
+  const inverse = 1 - t;
+  return {
+    x: inverse * inverse * shoulder.x + 2 * inverse * t * control.x + t * t * curveEnd.x,
+    y: inverse * inverse * shoulder.y + 2 * inverse * t * control.y + t * t * curveEnd.y,
+  };
+}
+
+function pointToBoxDistance(point, box) {
+  return Math.hypot(Math.max(0, box.left - point.x, point.x - box.right), Math.max(0, box.top - point.y, point.y - box.bottom));
+}
+
+function sampledArcUnderClearance(arc, underSegments, ownerStrokeWidth, underStrokeWidth) {
+  const underEnvelopes = underSegments.map(({start, end}) => segmentEnvelope(start, end, underStrokeWidth / 2));
+  const centerlineToUnderStroke = Math.min(...Array.from({length: 257}, (_, index) => {
+    const point = quadraticPoint(arc, index / 256);
+    return Math.min(...underEnvelopes.map((envelope) => pointToBoxDistance(point, envelope)));
+  }));
+  return {centerlineToUnderStroke, paintedStrokeToUnderStroke: centerlineToUnderStroke - ownerStrokeWidth / 2};
+}
+
+function opaqueWhiteStroke(source, element) {
+  const stroke = (svgPresentationValue(source, element, 'stroke') ?? '').replace(/\s+/gu, '').toLowerCase();
+  const opaque = number(svgPresentationValue(source, element, 'opacity') ?? '1', 'anonymous path opacity') * number(svgPresentationValue(source, element, 'stroke-opacity') ?? '1', 'anonymous path stroke opacity') >= .999;
+  return opaque && ['#fff', '#ffffff', 'white', 'rgb(255,255,255)', 'rgba(255,255,255,1)'].includes(stroke)
+    && number(svgPresentationValue(source, element, 'stroke-width') ?? '0', 'anonymous path stroke width') >= 7;
+}
+
+function assertNoAnonymousWhiteErasers(svgSource, svg) {
+  const semanticPaintEnd = Math.max(...svg.edges.flatMap((edge) => edgePathElements(svg, edge.attributes.get('data-edge-id')).map(({index}) => index)));
+  const erasers = svg.elements.filter(({name, attributes, index}) => name === 'path' && index > semanticPaintEnd
+    && !['data-edge-id', 'data-edge-segment-for', 'data-bridge-for', 'data-legend-role'].some((attribute) => attributes.has(attribute))
+    && opaqueWhiteStroke(svgSource, {attributes, name}));
+  assert.equal(erasers.length, 0, 'no semantic-layer-later anonymous opaque white wide-stroke eraser path');
+}
+
 function segmentContainsPoint(segment, point) {
   return point.x >= Math.min(segment.start.x, segment.end.x) && point.x <= Math.max(segment.start.x, segment.end.x)
     && point.y >= Math.min(segment.start.y, segment.end.y) && point.y <= Math.max(segment.start.y, segment.end.y);
 }
 
 function assertBridgeInventory(drawio, svgSource, svg) {
-  assert.equal(svg.elements.some(({attributes}) => attributes.has('data-bridge-mask-for')), false, 'no later-painted bridge mask or background-color erasure');
+  assert.equal(svg.elements.some(({attributes}) => attributes.has('data-bridge-mask-for')), false, 'no declared bridge mask or background-color erasure');
+  assertNoAnonymousWhiteErasers(svgSource, svg);
   const expected = BRIDGE_CONTRACTS.map(([owner, under, x, y]) => intersectionIdentity(owner, under, {x, y})).sort();
   const bridges = svg.elements.filter(({attributes}) => attributes.has('data-bridge-for'));
   assert.equal(bridges.length, BRIDGE_CONTRACTS.length, 'exact justified minimal bridge budget');
@@ -470,7 +518,9 @@ function assertBridgeInventory(drawio, svgSource, svg) {
     const point = {x: coordinates[0], y: coordinates[1]}; const key = intersectionIdentity(bridgeFor, crosses, point); actual.push(key);
     assert.ok(expected.includes(key), `${key} belongs to the fixed resolve-fanout/business-boundary allowlist`);
     assert.equal(bridge.attributes.get('id'), `bridge-${bridgeFor}-over-${crosses}-at-${point.x}-${point.y}`, `${key} stable bridge identity`);
-    assert.equal(number(bridge.attributes.get('data-bridge-size'), `${key} bridge size`), 24, `${key} synchronized 24-unit bridge height`);
+    const geometry = BRIDGE_GEOMETRY[bridgeGeometryKey(bridgeFor, crosses, point.x, point.y)];
+    assert.ok(geometry, `${key} exact bridge geometry contract`);
+    assert.equal(number(bridge.attributes.get('data-bridge-size'), `${key} bridge size`), geometry.controlOffset, `${key} synchronized bridge control size`);
     assert.equal(hiddenSvgElement(svgSource, bridge), false, `${key} visible bridge glyph`);
     const owner = svg.edges.find(({attributes}) => attributes.get('data-edge-id') === bridgeFor);
     assert.equal(owner?.attributes.get('data-edge-role'), 'resolve', `${key} owner is resolve fanout`);
@@ -478,14 +528,22 @@ function assertBridgeInventory(drawio, svgSource, svg) {
     assert.equal(svg.edges.find(({attributes}) => attributes.get('data-edge-id') === crosses)?.attributes.get('data-edge-role'), expectedUnderRole, `${key} under-route has the explicitly allowlisted ${expectedUnderRole} role`);
     assert.equal(svgPresentationValue(svgSource, bridge, 'stroke'), svgPresentationValue(svgSource, owner, 'stroke'), `${key} arc stroke matches owner`);
     assert.equal(number(svgPresentationValue(svgSource, bridge, 'stroke-width'), `${key} arc stroke width`), number(svgPresentationValue(svgSource, owner, 'stroke-width'), `${key} owner stroke width`), `${key} arc stroke width matches owner`);
+    assert.equal(svgPresentationValue(svgSource, bridge, 'stroke-dasharray'), svgPresentationValue(svgSource, owner, 'stroke-dasharray'), `${key} arc dash style matches owner`);
+    const drawioOwner = drawio.edges.find(({attributes}) => attributes.get('id') === bridgeFor); const drawioStyle = styleMap(drawioOwner?.attributes.get('style'));
+    assert.equal(drawioStyle.get('dashed'), '1', `${key} Draw.io owner is dashed`);
+    assert.equal(drawioStyle.get('dashPattern'), svgPresentationValue(svgSource, bridge, 'stroke-dasharray'), `${key} Draw.io/SVG bridge dash sync`);
     const arc = parseBridgeArc(bridge.attributes.get('d'), key);
-    assert.deepEqual(arc, {start: {x: point.x - 18, y: point.y}, shoulder: {x: point.x - 12, y: point.y}, control: {x: point.x, y: point.y - 24}, curveEnd: {x: point.x + 12, y: point.y}, end: {x: point.x + 18, y: point.y}}, `${key} exact visible arc endpoints/span/height`);
+    assert.deepEqual(arc, {start: {x: point.x - 18, y: point.y}, shoulder: {x: point.x - 12, y: point.y}, control: {x: point.x, y: point.y + geometry.arcDirection * geometry.controlOffset}, curveEnd: {x: point.x + 12, y: point.y}, end: {x: point.x + 18, y: point.y}}, `${key} exact visible quadratic arc geometry`);
+    const actualArcCenter = quadraticPoint(arc, .5);
+    assert.deepEqual(actualArcCenter, {x: point.x, y: point.y + geometry.arcDirection * geometry.controlOffset / 2}, `${key} actual quadratic center is half the control offset`);
     const ownerSegments = drawnSegments.filter(({id}) => id === bridgeFor); const underSegments = drawnSegments.filter(({id}) => id === crosses);
+    const clearance = sampledArcUnderClearance(arc, underSegments, number(svgPresentationValue(svgSource, bridge, 'stroke-width'), `${key} arc stroke width`), number(svgPresentationValue(svgSource, svg.edges.find(({attributes}) => attributes.get('data-edge-id') === crosses), 'stroke-width'), `${key} under stroke width`));
+    assert.ok(clearance.centerlineToUnderStroke >= 7, `${key} sampled arc centerline clears the under-route rendered stroke envelope by ${clearance.centerlineToUnderStroke} >= 7`);
+    assert.ok(clearance.paintedStrokeToUnderStroke > 0, `${key} rendered arc stroke physically clears the under-route rendered stroke envelope by ${clearance.paintedStrokeToUnderStroke}`);
     assert.ok(ownerSegments.some((segment) => segment.start.x === point.x - 18 && segment.start.y === point.y || segment.end.x === point.x - 18 && segment.end.y === point.y), `${key} owner route ends at left arc terminal`);
     assert.ok(ownerSegments.some((segment) => segment.start.x === point.x + 18 && segment.start.y === point.y || segment.end.x === point.x + 18 && segment.end.y === point.y), `${key} owner route resumes at right arc terminal`);
     assert.equal(ownerSegments.some((segment) => segmentContainsPoint(segment, point)), false, `${key} owner straight stroke is replaced by the arc`);
-    assert.ok(underSegments.some((segment) => segment.start.x === point.x && segment.start.y === point.y - 18 || segment.end.x === point.x && segment.end.y === point.y - 18), `${key} under-route ends above exact gap`);
-    assert.ok(underSegments.some((segment) => segment.start.x === point.x && segment.start.y === point.y + 18 || segment.end.x === point.x && segment.end.y === point.y + 18), `${key} under-route resumes below exact gap`);
+    for (const offset of geometry.underOffsets) assert.ok(underSegments.some((segment) => segment.start.x === point.x && segment.start.y === point.y + offset || segment.end.x === point.x && segment.end.y === point.y + offset), `${key} under-route has the exact physical gap terminal ${offset}`);
     assert.equal(underSegments.some((segment) => segmentContainsPoint(segment, point)), false, `${key} under-route has a real unpainted gap`);
   }
   assert.deepEqual(actual.sort(), expected, 'exact allowlisted bridge topology and coordinate budget');
@@ -608,9 +666,12 @@ function assertBridgeMutationGuards(drawioSource, svgSource) {
   assert.throws(() => assertBridgeInventory(parseDrawio(drawioSource), hidden, parseSvg(hidden)), /visible bridge glyph/u, 'hidden bridge glyph rejected');
   const malformedArc = svgSource.replace(bridge, bridge.replace(/\bd="[^"]+"/u, 'd="M 0 0 L 1 1"'));
   assert.throws(() => assertBridgeInventory(parseDrawio(drawioSource), malformedArc, parseSvg(malformedArc)), /actual M\/L\/Q\/L bridge arc geometry/u, 'metadata cannot substitute for actual bridge geometry');
-  const filledGap = svgSource.replace(/(<path\b[^>]*data-edge-segment-for="cart-query"[^>]*data-segment-order="2"[^>]*\bd=")M 760 2338/u, '$1M 760 2302');
-  assert.notEqual(filledGap, svgSource, 'under-route gap mutation applies');
-  assert.throws(() => assertBridgeInventory(parseDrawio(drawioSource), filledGap, parseSvg(filledGap)), /under-route has a real unpainted gap|under-route resumes below exact gap/u, 'under-route gap is executable geometry');
+  const extendedToArcCenter = svgSource.replace(/(<path\b[^>]*data-edge-id="cart-query"[^>]*\bd="[^"]*)L 760 2296/u, '$1L 760 2320');
+  assert.notEqual(extendedToArcCenter, svgSource, 'under-route extension-to-arc-center mutation applies');
+  assert.throws(() => assertBridgeInventory(parseDrawio(drawioSource), extendedToArcCenter, parseSvg(extendedToArcCenter)), /sampled arc centerline clears the under-route rendered stroke envelope/u, 'semantic route cannot extend into the bridge arc center');
+  const anonymousWhiteEraser = svgSource.replace(/(\s*<g data-bridge-layer="explicit-crossovers")/u, '    <path d="M 742 2320 L 778 2320" fill="none" stroke="#FFFFFF" stroke-width="24"/>$1');
+  assert.notEqual(anonymousWhiteEraser, svgSource, 'anonymous semantic-layer-later white eraser mutation applies');
+  assert.throws(() => assertBridgeInventory(parseDrawio(drawioSource), anonymousWhiteEraser, parseSvg(anonymousWhiteEraser)), /anonymous opaque white wide-stroke eraser path/u, 'anonymous white stroke cannot erase a semantic route after its paint layer');
 }
 
 function assertMicroFrontendArticle(source) {
@@ -729,6 +790,26 @@ test('STY-12 publication asset binds article, sources, relations, and the exact 
 test('STY-12 crossing bridges are explicit, singular, visible, and synchronized', () => {
   const drawioSource = file(DRAWIO); const svgSource = file(SVG);
   assertBridgeInventory(parseDrawio(drawioSource), svgSource, parseSvg(svgSource));
+});
+
+test('STY-12 bounded bridge search proves the five-to-six bridge transition', () => {
+  const result = spawnSync(process.execPath, ['scripts/sty12-bridge-feasibility.mjs'], {cwd: process.cwd(), encoding: 'utf8'});
+  assert.equal(result.status, 0, result.stderr || 'bounded bridge-search command exits successfully');
+  const report = JSON.parse(result.stdout);
+  assert.deepEqual(report.domain, {
+    fixedOwner: {id: 'activate-account', horizontal: {from: 1365, to: 1840, y: 1920}},
+    recovery: {source: {x: 1700, y: 1960}, target: {x: 1680, y: 1910}, laneX: [1660, 1680, 1700], lowerShelfY: [1940, 1941, 1942, 1943, 1944, 1945, 1946, 1947, 1948], upperStartY: [1898, 1900, 1902, 1904]},
+    bridge: {owner: 'activate-account', under: 'load-failure', at: {x: 1680, y: 1920}, sampleMinimum: 7},
+  }, 'bounded search domain is explicit and stable');
+  assert.deepEqual(report.constraints, [
+    'all 29 semantic endpoints and the first five bridge identities/coordinates remain fixed',
+    'activate-account keeps its fixed horizontal owner corridor x=1365..1840 at y=1920',
+    'load-failure uses one local vertical lane between its fixed source and slice-fallback target',
+    'five-bridge candidates may not leave a naked perpendicular intersection',
+    'six-bridge candidates may use only activate-account over load-failure at (1680,1920) and require sampled clearance >= 7u',
+  ], 'bounded search constraints are executable output');
+  assert.deepEqual(report.fiveBridge, {candidates: 108, feasible: 0}, 'five-bridge domain has no noncrossing recovery candidate');
+  assert.deepEqual(report.sixBridge, {candidates: 108, feasible: 24, witness: {laneX: 1680, lowerShelfY: 1944, upperStartY: 1902, sampledCenterlineToUnderEnvelope: 8.5, allowlistedBridge: {owner: 'activate-account', under: 'load-failure', at: {x: 1680, y: 1920}, sampleMinimum: 7}}}, 'sixth allowlisted recovery bridge makes the bounded witness feasible');
 });
 
 test('STY-12 Task 4 Stage A projection remains RED until generated artifacts are refreshed', () => {
