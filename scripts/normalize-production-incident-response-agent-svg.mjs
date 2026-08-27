@@ -54,7 +54,7 @@ if (rawParsed.root.localName !== 'svg' || rawParsed.root.namespace !== SVG_NAMES
 }
 const rawRoot = rawParsed.root;
 const exportId = rawRoot.attributes.get('id');
-if (exportId && !exportId.startsWith('ge-svg-')) {
+if (exportId !== undefined && !/^ge-svg-[\w-]+$/u.test(exportId)) {
   fail('raw artifact has an unexpected diagrams.net export identity');
 }
 if (
