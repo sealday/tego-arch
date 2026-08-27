@@ -18,6 +18,12 @@ export const EXPECTED_STAGE_B = Object.freeze({completed: 65, documents: 108, so
 
 export const CANDIDATE_HEAD = 'd672c63a737ae39dcfa0a9a9dd365d1f378f0182';
 export const STATES = Object.freeze(['desktopLight', 'desktopDark', 'mobileLight', 'mobileDark']);
+export const SCREENSHOTS = Object.freeze([
+  Object.freeze({state: 'desktopLight', bytes: 160_987, sha256: '401930b11532de59e113b1a4d4896b3de2c6f00fb23720094abb51b4edfc04da'}),
+  Object.freeze({state: 'desktopDark', bytes: 163_811, sha256: '1bf6b508dfc7858f88fcc8bdd7cc042321836e0c8964504a823a8db2147117a0'}),
+  Object.freeze({state: 'mobileLight', bytes: 54_856, sha256: 'd3d889a7a1dd5d25cffa87d751f271ef2b0083e3ec5954099eaeb7834dcf35f2'}),
+  Object.freeze({state: 'mobileDark', bytes: 54_827, sha256: '5a7bd0b6334206b1bdde52f6a072d3faff38952ac6ec6b138b06f66de1348bad'}),
+]);
 
 const BACKLOG = 'docs/content-backlog.md';
 const IMMEDIATE_REVIEW = 'docs/reviews/g009-batch12.md';
@@ -98,8 +104,8 @@ function assertReview(source = review, rawBytes = raw) {
   assert.match(source, /Functional Browser QA: `PASS`; states `4\/4`; wrapper interactions `16\/16`; relation href\/H1\/return observations `12\/12`; source href\/target\/rel observations `28\/28`/u);
   assert.match(source, /STY-13 actionable count: `0` per state/u);
   assert.match(source, /Diagnostics are complete and empty in every state: warning\/error logs `0`, Runtime\/Log events `0`, `hasMore=false`, `truncated=false`/u);
-  assert.match(source, /Screenshot evidence: `BLOCKED \/ NOT_ACCEPTED`/u);
-  assert.doesNotMatch(source, /Screenshot evidence: `PASS`|Browser: `(?:Chrome|Playwright)`/u);
+  assert.match(source, /Screenshot evidence: `PASS \/ ACCEPTED`; accepted `4\/4`; fallback used: `false`/u);
+  assert.doesNotMatch(source, /Screenshot evidence: `BLOCKED \/ NOT_ACCEPTED`|Browser: `(?:Chrome|Playwright)`/u);
   const checkpoint = markdownSection(source, 'Independent review checkpoint');
   assert.match(checkpoint, new RegExp('^- Exact implementation candidate head: `' + CANDIDATE_HEAD + '`\\.$', 'mu'));
   assert.match(checkpoint, /^- Exact Browser evidence head: `[0-9a-f]{40}`\.$/mu);
@@ -183,17 +189,21 @@ function assertLocalEvidence(value) {
     runtimeAndLogEvents: 0, diagnosticPagesTerminal: true, diagnosticsTruncated: false,
   });
   const screenshot = value.screenshotEvidence;
-  assert.equal(screenshot.status, 'BLOCKED / NOT_ACCEPTED', 'screenshot status is separate from functional PASS');
-  assert.equal(screenshot.accepted, 0, 'no rejected screenshot is promoted');
-  assert.equal(screenshot.attempted, screenshot.attempts.length, 'all attempts are recorded');
-  assert.ok(screenshot.attempted >= 0 && screenshot.attempted <= 4, 'at most one honest attempt per state');
+  exactKeys(screenshot, ['status', 'attempted', 'accepted', 'fallbackUsed', 'storage', 'attempts'], 'screenshot evidence');
+  assert.equal(screenshot.status, 'PASS / ACCEPTED', 'exact accepted visual-evidence status');
+  assert.equal(screenshot.attempted, 4, 'exactly one fresh screenshot per state');
+  assert.equal(screenshot.accepted, 4, 'all four faithful captures were accepted');
+  assert.equal(screenshot.attempts.length, 4, 'all four attempts are recorded');
   assert.equal(screenshot.fallbackUsed, false, 'no substituted screenshot surface');
-  for (const attempt of screenshot.attempts) {
-    assert.equal(attempt.status, 'CAPTURED_REJECTED');
-    assert.ok(STATES.includes(attempt.state));
-    assert.ok(Number.isInteger(attempt.bytes) && attempt.bytes > 0);
-    assert.match(attempt.sha256, /^[0-9a-f]{64}$/u);
-    assert.ok(typeof attempt.reason === 'string' && attempt.reason.length > 0);
+  assert.equal(screenshot.storage, 'Codex in-app Browser captures retained in the task conversation; no substituted surface or repository screenshot file.');
+  for (const [index, attempt] of screenshot.attempts.entries()) {
+    exactKeys(attempt, ['state', 'status', 'bytes', 'sha256', 'reason'], `${STATES[index]} screenshot attempt`);
+    assert.deepEqual(
+      {state: attempt.state, status: attempt.status, bytes: attempt.bytes, sha256: attempt.sha256},
+      {...SCREENSHOTS[index], status: 'CAPTURED_ACCEPTED'},
+      `${STATES[index]} exact accepted screenshot identity`,
+    );
+    assert.equal(attempt.reason, 'Faithful viewport capture inspected at original dimensions; content, theme, crop and typography matched the visible state.');
   }
 }
 
@@ -228,11 +238,11 @@ test('requires the missing STY-12 Stage A review with exact heads and three zero
   assertReview();
 });
 
-test('requires the missing STY-12 four-state local Browser evidence without screenshot overclaim', () => {
+test('requires exact STY-12 four-state local Browser and accepted screenshot evidence', () => {
   assertLocalEvidence(raw && JSON.parse(raw));
 });
 
-test('rejects review head, verdict, pending, deployment and screenshot overclaim mutations', {skip: !review || !raw}, () => {
+test('rejects review head, verdict, pending, deployment and screenshot understatement mutations', {skip: !review || !raw}, () => {
   assertReview();
   for (const [before, after] of [
     [`Exact implementation candidate head: \`${CANDIDATE_HEAD}\`.`, `Exact implementation candidate head: \`${'0'.repeat(40)}\`.`],
@@ -241,7 +251,7 @@ test('rejects review head, verdict, pending, deployment and screenshot overclaim
     ['Final Stage A review judgment: `READY`.', 'Final Stage A review judgment: `PENDING`.'],
     ['Scope boundary: `STAGE_A_ONLY`.', 'Scope boundary: `STAGE_B`.'],
     ['Deployment status: `NOT_RUN`.', 'Deployment status: `SUCCESS`.'],
-    ['Screenshot evidence: `BLOCKED / NOT_ACCEPTED`', 'Screenshot evidence: `PASS`'],
+    ['Screenshot evidence: `PASS / ACCEPTED`; accepted `4/4`; fallback used: `false`', 'Screenshot evidence: `BLOCKED / NOT_ACCEPTED`; accepted `0/4`; fallback used: `false`'],
   ]) {
     const mutated = review.replace(before, after);
     assert.notEqual(mutated, review, `${before} mutation applies`);
@@ -249,7 +259,7 @@ test('rejects review head, verdict, pending, deployment and screenshot overclaim
   }
 });
 
-test('rejects substituted Browser, incomplete diagnostics, STY-13 actions and visual overclaim mutations', {skip: !raw}, () => {
+test('rejects substituted Browser, incomplete diagnostics, STY-13 actions and screenshot integrity mutations', {skip: !raw}, () => {
   const evidence = JSON.parse(raw);
   assertLocalEvidence(evidence);
   const mutations = [
@@ -265,8 +275,16 @@ test('rejects substituted Browser, incomplete diagnostics, STY-13 actions and vi
     ['runtime diagnostic', (copy) => copy.states.mobileDark.diagnostics.events.push({method: 'Runtime.exceptionThrown'})],
     ['diagnostic continuation', (copy) => copy.states.desktopDark.diagnostics.hasMore = true],
     ['truncated diagnostics', (copy) => copy.states.mobileLight.diagnostics.truncated = true],
-    ['visual PASS', (copy) => copy.screenshotEvidence.status = 'PASS'],
+    ['generic visual PASS', (copy) => copy.screenshotEvidence.status = 'PASS'],
+    ['screenshot understatement', (copy) => copy.screenshotEvidence.status = 'BLOCKED / NOT_ACCEPTED'],
+    ['accepted overclaim', (copy) => copy.screenshotEvidence.accepted = 5],
+    ['attempted overclaim', (copy) => copy.screenshotEvidence.attempted = 5],
     ['screenshot fallback', (copy) => copy.screenshotEvidence.fallbackUsed = true],
+    ['screenshot storage overclaim', (copy) => copy.screenshotEvidence.storage = 'Repository screenshot files'],
+    ['screenshot status', (copy) => copy.screenshotEvidence.attempts[0].status = 'CAPTURED_REJECTED'],
+    ['screenshot bytes', (copy) => copy.screenshotEvidence.attempts[1].bytes += 1],
+    ['screenshot hash', (copy) => copy.screenshotEvidence.attempts[2].sha256 = '0'.repeat(64)],
+    ['screenshot state order', (copy) => [copy.screenshotEvidence.attempts[2], copy.screenshotEvidence.attempts[3]] = [copy.screenshotEvidence.attempts[3], copy.screenshotEvidence.attempts[2]]],
   ];
   for (const [label, mutate] of mutations) {
     const copy = structuredClone(evidence);
