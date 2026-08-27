@@ -308,6 +308,8 @@ export const allowedSourceKinds = [
   'engineering-blog',
   'reference-architecture',
   'paper',
+  'standard',
+  'textbook',
   'official-repository',
   'source-code',
   'original-illustration',

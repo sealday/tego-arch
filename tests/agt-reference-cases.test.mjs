@@ -24,6 +24,9 @@ const researchSvgPath = 'static/img/diagrams/multi-agent-research-system.svg';
 const codingCasePath = 'content/cases/long-running-coding-agent.mdx';
 const codingDrawioPath = 'diagrams/long-running-coding-agent.drawio';
 const codingSvgPath = 'static/img/diagrams/long-running-coding-agent.svg';
+const incidentCasePath = 'content/cases/production-incident-response-agent.mdx';
+const incidentDrawioPath = 'diagrams/production-incident-response-agent.drawio';
+const incidentSvgPath = 'static/img/diagrams/production-incident-response-agent.svg';
 const researchDiagramLabels = [
   'Research Orchestrator',
   'Question Decomposer',
@@ -60,6 +63,26 @@ const codingDiagramRegions = [
   'Isolated execution',
   'Durable state',
   'External authority',
+];
+const incidentDiagramLabels = [
+  'Alert / Incident',
+  'Policy Router',
+  'Read-only Diagnostic Agent',
+  'Telemetry',
+  'Hypothesis Ledger',
+  'Evaluator',
+  'Incident Commander',
+  'Approval Gate',
+  'Change Executor',
+  'Authority Systems',
+  'Recovery Verifier',
+  'Manual Control',
+];
+const incidentDiagramRegions = [
+  'Read-only control',
+  'Human command',
+  'Write execution',
+  'Service authority',
 ];
 const caseH2s = [
   '学习问题',
@@ -359,4 +382,145 @@ test('long-running coding agent case contract', () => {
     source_id === 'src-atlas-long-running-coding-agent'
     && roles.includes('illustration')
     && usage_mode === 'original-illustration'));
+});
+
+test('incident response agent case contract', () => {
+  const source = readRequired(incidentCasePath);
+  const drawio = readRequired(incidentDrawioPath);
+  const svg = readRequired(incidentSvgPath);
+  const metadata = parseFrontMatter(source);
+  const headings = findMarkdownHeadings(extractMarkdownBody(source));
+
+  assert.equal(metadata.slug, '/cases/production-incident-response-agent');
+  assert.equal(metadata.title, '生产事故响应智能体：把诊断建议与变更授权分成两条身份链');
+  assert.equal(metadata.content_type, 'case');
+  assert.equal(metadata.series, 'ai-native');
+  assert.equal(metadata.catalog_order, 21);
+  assert.equal(metadata.topic_id, undefined, 'reference cases do not fabricate topic ids');
+  assert.deepEqual(metadata.source_kinds, [
+    'textbook',
+    'standard',
+    'official-docs',
+    'original-illustration',
+  ]);
+  assert.deepEqual(metadata.migration_targets, [
+    'read-only-diagnosis',
+    'hypothesis-evaluation',
+    'human-approval',
+    'recovery-verification',
+  ]);
+  assert.deepEqual(headings.filter(({level}) => level === 2).map(({text}) => text), caseH2s);
+  assert.deepEqual(
+    headings.filter(({level, text}) => level === 3 && transferH3s.includes(text)).map(({text}) => text),
+    transferH3s,
+  );
+
+  for (const label of ['已证实事实', '基于证据的推断', '个人分析']) {
+    assert.match(source, new RegExp(`\\*\\*${label}\\*\\*`, 'u'), `reader-visible evidence label: ${label}`);
+  }
+  assert.match(source, /说明性参考设计/u);
+  assert.match(source, /不是(?:真实|特定)客户部署/u);
+  assert.match(source, /没有任何(?:单一)?来源证明(?:这张图|本文|该设计)的完整拓扑/u);
+  assert.match(source, /事故与结果均为说明性/u);
+  assert.match(source, /诊断身份[^。]*变更身份[^。]*分离/u);
+  assert.match(source, /人工指挥[^。]*最终授权/u);
+  assert.match(source, /只读证据/u);
+  assert.match(source, /版本化假设/u);
+  assert.match(source, /反证/u);
+  assert.match(source, /窄(?:幅|小|化)?[^。]*幂等/u);
+  assert.match(source, /服务指标[^。]*恢复验证/u);
+  assert.match(source, /回滚[^。]*Manual Control/u);
+  assert.match(source, /数据不确定|权威冲突|安全边界|变更预算耗尽/u);
+  assert.match(source, /停止自动化/u);
+  assert.match(source, /明确弃权/u);
+
+  for (const failure of [
+    '遥测陈旧',
+    '缺少追踪关联',
+    '告警风暴',
+    '看似合理但错误的假设',
+    '批准超时',
+    '并发人工变更',
+    '变更结果未知',
+    '回滚失败',
+    '假恢复',
+  ]) {
+    assert.match(source, new RegExp(`\\|\\s*${failure}\\s*\\|`, 'u'), `failure row: ${failure}`);
+  }
+  for (const required of ['降级运行', '超时', '部分失败', '恢复验证']) {
+    assert.match(source, new RegExp(required, 'u'), `operational contract: ${required}`);
+  }
+
+  assert.equal((source.match(/className="architecture-diagram-scroll"/gu) ?? []).length, 1);
+  assert.match(source, /import \{handleHorizontalArrowKey\} from '@site\/src\/components\/KeyboardScrollableRegion\/handleHorizontalArrowKey\.mjs';/u);
+  assert.match(source, /tabIndex=\{0\} onKeyDown=\{handleHorizontalArrowKey\}/u);
+  assert.match(source, /\/img\/diagrams\/production-incident-response-agent\.svg/u);
+
+  for (const label of [...incidentDiagramRegions, ...incidentDiagramLabels]) {
+    assert.ok(drawio.includes(label), `Draw.io label: ${label}`);
+    assert.ok(svg.includes(label), `SVG label: ${label}`);
+  }
+
+  const drawioParsed = parseXml(drawio, incidentDrawioPath);
+  const svgParsed = parseXml(svg, incidentSvgPath);
+  assert.match(svg, /^<svg\b/u, 'published SVG begins with its image root for build-time sizing');
+  assert.equal(svgParsed.root.attributes.has('content'), false, 'published SVG strips the source copy');
+  assert.equal(
+    svgParsed.root.attributes.get('data-source-sha256'),
+    createHash('sha256').update(drawio).digest('hex'),
+    'published provenance binds the exact Draw.io source',
+  );
+  assert.match(svgParsed.root.attributes.get('data-raw-sha256') ?? '', /^[a-f0-9]{64}$/u);
+  assert.equal(svgParsed.root.attributes.has('width'), false, 'published SVG has no fixed width');
+  assert.equal(svgParsed.root.attributes.has('height'), false, 'published SVG has no fixed height');
+  assert.equal(xmlElements(svgParsed.root, 'foreignObject', 'http://www.w3.org/2000/svg').length, 0);
+  const renderedCellIds = xmlElements(svgParsed.root, 'g', 'http://www.w3.org/2000/svg')
+    .filter((element) => element.attributes.has('data-cell-id'))
+    .map((element) => element.attributes.get('data-cell-id')).sort();
+  const sourceCellIds = xmlElements(drawioParsed.root, 'mxCell', '')
+    .map((element) => element.attributes.get('id')).sort();
+  assert.deepEqual(renderedCellIds, sourceCellIds, 'every source cell owns one UI-exported group');
+  assert.deepEqual(
+    collectXmlVisibleCopy(svgParsed, incidentSvgPath, 'svg').records.map(({text}) => text).sort(),
+    collectDrawioPairValidation(drawioParsed, incidentDrawioPath).records.map(({text}) => text).sort(),
+    'all and only source labels remain visibly rendered',
+  );
+
+  const illustration = ledger.sources.find(({id}) => id === 'src-atlas-production-incident-response-agent');
+  assert.ok(illustration, 'original illustration source');
+  assert.deepEqual({
+    source_kind: illustration.source_kind,
+    tier: illustration.tier,
+    allowed_evidence_roles: illustration.allowed_evidence_roles,
+    license: illustration.license,
+    copyright_policy: illustration.copyright_policy,
+  }, {
+    source_kind: 'original-illustration',
+    tier: 'primary',
+    allowed_evidence_roles: ['illustration'],
+    license: 'LicenseRef-Atlas-Original',
+    copyright_policy: 'original-atlas',
+  });
+
+  const document = ledger.documents[incidentCasePath];
+  assert.ok(document, 'governed case document');
+  assert.ok(document.copyright_checks.includes('illustration-rights'));
+  const sourcesById = new Map(ledger.sources.map((record) => [record.id, record]));
+  assert.deepEqual(
+    [...new Set(document.citations.map(({source_id}) => sourcesById.get(source_id)?.source_kind))].sort(),
+    ['official-docs', 'original-illustration', 'standard', 'textbook'],
+  );
+  assert.ok(document.citations.some(({source_id, roles, usage_mode}) =>
+    source_id === 'src-atlas-production-incident-response-agent'
+    && roles.includes('illustration')
+    && usage_mode === 'original-illustration'));
+
+  const healthByLocator = new Map(JSON.parse(readFileSync('data/source-link-health.json', 'utf8'))
+    .results.map((record) => [record.transport_locator, record]));
+  for (const citation of document.citations.filter(({citation_url}) => citation_url.startsWith('https://'))) {
+    const sourceRecord = sourcesById.get(citation.source_id);
+    const health = healthByLocator.get(sourceRecord?.transport_locator);
+    assert.ok(health, `link-health record for ${citation.source_id}`);
+    assert.equal(health.last_attempt.outcome, 'healthy', `healthy current source: ${citation.source_id}`);
+  }
 });

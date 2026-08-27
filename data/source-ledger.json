@@ -21793,6 +21793,104 @@
       "expected_final_transport_locator": "/img/diagrams/long-running-coding-agent.svg",
       "expected_final_approved_at": "2026-08-28",
       "expected_final_approval_note": "Approved project-local original illustration after real diagrams.net source/export provenance, synchronized semantics, geometry, accessibility, deterministic pair validation and controller-owned desktop/mobile browser QA on 2026-08-28."
+    },
+    {
+      "id": "src-google-sre-books",
+      "canonical_locator": "https://sre.google/books/",
+      "transport_locator": "https://sre.google/books/",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Google SRE Books",
+      "author_or_org": "Google",
+      "published_at": null,
+      "registered_at": "2026-08-28",
+      "checked_at": "2026-08-28",
+      "version": "Official SRE Books landing page checked 2026-08-28; Site Reliability Engineering online edition copyright 2017 Google and O'Reilly",
+      "source_kind": "textbook",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "learning",
+        "method"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named Google SRE Books landing page and bibliographic facts only; book chapters, prose, diagrams, images, marks, linked works and third-party material excluded",
+      "license_evidence_url": "https://sre.google/books/",
+      "license_evidence_note": "The official landing page identifies the SRE books and editors but exposes no reusable license for the landing page; Tego Arch uses attributed bibliographic facts only. Separately linked online book chapters carry their own CC BY-NC-ND 4.0 notices and source records.",
+      "license_family_id": "https://sre.google/books/",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Establishes the official Google SRE textbook collection, online Site Reliability Engineering entry and editors; it does not support this article's incident-response-agent topology, authorization design, production deployment, metrics or outcomes.",
+      "link_policy": "floating",
+      "expected_final_transport_locator": "https://sre.google/books/",
+      "expected_final_approved_at": "2026-08-28",
+      "expected_final_approval_note": "The exact official Google SRE Books page returned the SRE Books title, Site Reliability Engineering entry, online-book link and editor names on 2026-08-28; no search result, mirror or third-party bookseller is used as health evidence."
+    },
+    {
+      "id": "src-aws-iam-security-best-practices",
+      "canonical_locator": "https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html",
+      "transport_locator": "https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Security best practices in IAM",
+      "author_or_org": "Amazon Web Services",
+      "published_at": null,
+      "registered_at": "2026-08-28",
+      "checked_at": "2026-08-28",
+      "version": "Current AWS IAM User Guide page checked 2026-08-28",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "implementation",
+        "method"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named AWS IAM User Guide page and bibliographic facts only; prose, code, diagrams, screenshots, service marks, linked works and third-party material excluded",
+      "license_evidence_url": "https://aws.amazon.com/terms/",
+      "license_evidence_note": "AWS Site Terms reserve rights outside expressly stated permissions; Tego Arch uses attribution, a direct link and original factual summary only.",
+      "license_family_id": "https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports granting only permissions required for a task and restricting actions, resources and conditions; it does not prove a concrete policy is least privilege, prevent credential misuse, or implement this article's separate diagnostic and change identities.",
+      "link_policy": "floating",
+      "expected_final_transport_locator": "https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html",
+      "expected_final_approved_at": "2026-08-28",
+      "expected_final_approval_note": "The exact official AWS IAM User Guide page returned the security-best-practices page and least-privilege guidance on 2026-08-28; no search result, mirror or third-party summary is used as health evidence."
+    },
+    {
+      "id": "src-atlas-production-incident-response-agent",
+      "canonical_locator": "/img/diagrams/production-incident-response-agent.svg",
+      "transport_locator": "/img/diagrams/production-incident-response-agent.svg",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Production incident response agent authority and recovery topology",
+      "author_or_org": "Tego Arch maintainers",
+      "published_at": "2026-08-28",
+      "registered_at": "2026-08-28",
+      "checked_at": "2026-08-28",
+      "version": "Original synchronized Draw.io/SVG pair authored in and exported from diagrams.net, normalized and deterministically checked on 2026-08-28",
+      "source_kind": "original-illustration",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "illustration"
+      ],
+      "license": "LicenseRef-Atlas-Original",
+      "license_scope": "The named project-authored production-incident-response-agent.svg asset only",
+      "license_evidence_url": "https://github.com/sealday/tego-arch/blob/main/static/img/diagrams/production-incident-response-agent.svg",
+      "license_evidence_note": "The project-authored Draw.io/SVG pair contains no third-party topology, reference image, icon, brand visual, signature, watermark or copied composition.",
+      "license_family_id": "/img/diagrams/production-incident-response-agent.svg",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "original-atlas",
+      "usage_boundary": "Original illustrative reference topology for read-only diagnosis, versioned hypotheses, human command, narrow idempotent change, service authority, recovery verification, rollback and manual control; illustration-only and not evidence of a customer deployment, real incident, model accuracy, production reliability or source implementation.",
+      "link_policy": null,
+      "expected_final_transport_locator": "/img/diagrams/production-incident-response-agent.svg",
+      "expected_final_approved_at": "2026-08-28",
+      "expected_final_approval_note": "Approved project-local original illustration after real diagrams.net source/export provenance, synchronized semantics, geometry, accessibility, deterministic pair validation and controller-owned desktop/mobile browser QA on 2026-08-28."
     }
   ],
   "documents": {
@@ -34013,6 +34111,121 @@
           "usage_mode": "original-illustration",
           "attribution_note": "Long-running coding agent control and recovery topology, Tego Arch maintainers",
           "modification_note": "Created as an original synchronized Draw.io/SVG pair for this case without third-party topology, reference imagery, icons, brand visuals, signatures, watermarks or copied composition.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/cases/production-incident-response-agent.mdx": {
+      "reviewed_at": "2026-08-28",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-google-sre-books",
+          "citation_url": "https://sre.google/books/",
+          "roles": [
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Google SRE Books, Google",
+          "modification_note": "Original Chinese bibliographic summary of the official SRE textbook collection, online Site Reliability Engineering entry and editors; no source prose, book text, diagrams, images, examples, structure or composition copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-sre-managing-incidents",
+          "citation_url": "https://sre.google/sre-book/managing-incidents/",
+          "roles": [
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Chapter 14 - Managing Incidents, Andrew Stribblehill / Google SRE Book",
+          "modification_note": "Original Chinese summary of documented incident command, recursive responsibility separation, designated operational work and live incident state; no chapter prose, examples, scenario, lists, diagrams, tables or structure copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-sre-monitoring-distributed-systems",
+          "citation_url": "https://sre.google/sre-book/monitoring-distributed-systems/",
+          "roles": [
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Chapter 6 - Monitoring Distributed Systems, Rob Ewaschuk / Google SRE Book",
+          "modification_note": "Original Chinese summary of documented monitoring, alerting, black-box symptoms and white-box internal signals; no chapter prose, examples, lists, diagrams, tables or structure copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-nist-ai-rmf-1-0",
+          "citation_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "roles": [
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Artificial Intelligence Risk Management Framework (AI RMF 1.0), Elham Tabassi / NIST",
+          "modification_note": "Original Chinese summary of the voluntary risk-governance, measurement, monitoring and human-oversight boundary; no framework prose, tables, figures, profiles or structure copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-aws-iam-security-best-practices",
+          "citation_url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html",
+          "roles": [
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Security best practices in IAM, Amazon Web Services",
+          "modification_note": "Original Chinese summary of task-scoped actions, resources and conditions for least-privilege permissions; no source prose, policy examples, screenshots, diagrams or structure copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-docs-7e6ec8bd95c9",
+          "citation_url": "https://docs.temporal.io/activity-definition",
+          "roles": [
+            "implementation"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Activity Definition, Temporal Technologies",
+          "modification_note": "Original Chinese summary of documented failure-prone activities, automatic retries and the recommendation that activities be idempotent; no source prose, code, examples, diagrams or structure copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-developer-164d57c518cb",
+          "citation_url": "https://developer.konghq.com/ai-gateway/monitor-ai-llm-metrics/",
+          "roles": [
+            "implementation"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Monitor AI LLM metrics, Kong Inc.",
+          "modification_note": "Original Chinese summary of the documented monitoring-metrics interface as a limited observability seam; no source prose, configuration, screenshots, diagrams, examples or structure copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-atlas-production-incident-response-agent",
+          "citation_url": "/img/diagrams/production-incident-response-agent.svg",
+          "roles": [
+            "illustration"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "original-illustration",
+          "attribution_note": "Production incident response agent authority and recovery topology, Tego Arch maintainers",
+          "modification_note": "Created as an original synchronized Draw.io/SVG pair for this illustrative case without third-party topology, reference imagery, icons, brand visuals, signatures, watermarks or copied composition.",
           "excerpt": null,
           "quotation_reviewed": false
         }
