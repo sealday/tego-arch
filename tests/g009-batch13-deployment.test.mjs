@@ -18,6 +18,14 @@ export const EXPECTED_STAGE_B = Object.freeze({completed: 65, documents: 108, so
 
 export const CANDIDATE_HEAD = 'd672c63a737ae39dcfa0a9a9dd365d1f378f0182';
 export const STATES = Object.freeze(['desktopLight', 'desktopDark', 'mobileLight', 'mobileDark']);
+export const DIAGNOSTIC_STATE_ORDER = Object.freeze(['mobileDark', 'mobileLight', 'desktopLight', 'desktopDark']);
+export const DIAGNOSTIC_CONTINUITY = Object.freeze([
+  Object.freeze({afterSequence: 177, cursor: 178, count: 0, hasMore: false, truncated: false}),
+  Object.freeze({afterSequence: 178, cursor: 212, count: 0, hasMore: false, truncated: false}),
+  Object.freeze({afterSequence: 212, cursor: 247, count: 0, hasMore: false, truncated: false}),
+  Object.freeze({afterSequence: 247, cursor: 268, count: 0, hasMore: false, truncated: false}),
+  Object.freeze({afterSequence: 268, cursor: 268, count: 0, hasMore: false, truncated: false}),
+]);
 export const SCREENSHOTS = Object.freeze([
   Object.freeze({state: 'desktopLight', bytes: 160_987, sha256: '401930b11532de59e113b1a4d4896b3de2c6f00fb23720094abb51b4edfc04da'}),
   Object.freeze({state: 'desktopDark', bytes: 163_811, sha256: '1bf6b508dfc7858f88fcc8bdd7cc042321836e0c8964504a823a8db2147117a0'}),
@@ -127,7 +135,9 @@ function assertDiagnostics(state, stateName) {
     assert.equal(page.count, 0, `${stateName} diagnostic page count`);
     assert.equal(page.hasMore, false, `${stateName} diagnostic page terminal`);
     assert.equal(page.truncated, false, `${stateName} diagnostic page complete`);
-    assert.ok(Number.isInteger(page.afterSequence) && Number.isInteger(page.cursor), `${stateName} diagnostic cursors`);
+    assert.ok(Number.isInteger(page.afterSequence) && page.afterSequence >= 0, `${stateName} diagnostic afterSequence is a non-negative integer`);
+    assert.ok(Number.isInteger(page.cursor) && page.cursor >= 0, `${stateName} diagnostic cursor is a non-negative integer`);
+    assert.ok(page.cursor >= page.afterSequence, `${stateName} diagnostic cursor never precedes its request`);
   }
   assert.deepEqual({hasMore: state.diagnostics.hasMore, truncated: state.diagnostics.truncated}, {hasMore: false, truncated: false});
 }
@@ -148,10 +158,26 @@ function assertLocalEvidence(value) {
   });
   assert.equal(value.collection.diagnosticContinuity.length, 5, 'four states plus whole-session diagnostic continuity');
   for (const page of value.collection.diagnosticContinuity) {
+    exactKeys(page, ['afterSequence', 'cursor', 'count', 'hasMore', 'truncated'], 'collection diagnostic continuity page');
+    assert.ok(Number.isInteger(page.afterSequence) && page.afterSequence >= 0, 'collection afterSequence is a non-negative integer');
+    assert.ok(Number.isInteger(page.cursor) && page.cursor >= page.afterSequence, 'collection cursor is a non-negative integer at or after its request');
     assert.equal(page.count, 0);
     assert.equal(page.hasMore, false, 'diagnostic continuity terminal');
     assert.equal(page.truncated, false, 'diagnostic continuity complete');
   }
+  assert.deepEqual(value.collection.diagnosticContinuity, DIAGNOSTIC_CONTINUITY, 'exact four-state collection order plus whole-session terminal page');
+  for (const [index, stateName] of DIAGNOSTIC_STATE_ORDER.entries()) assert.deepEqual(
+    value.states[stateName].diagnostics.pages,
+    [value.collection.diagnosticContinuity[index]],
+    `${stateName} diagnostic page binds collection continuity page ${index + 1}`,
+  );
+  assert.deepEqual(value.collection.diagnosticContinuity.at(-1), {
+    afterSequence: value.collection.diagnosticContinuity.at(-2).cursor,
+    cursor: value.collection.diagnosticContinuity.at(-2).cursor,
+    count: 0,
+    hasMore: false,
+    truncated: false,
+  }, 'whole-session diagnostics terminate at the final state cursor');
   for (const stateName of STATES) {
     const state = value.states[stateName];
     const desktop = stateName.startsWith('desktop');
@@ -275,6 +301,11 @@ test('rejects substituted Browser, incomplete diagnostics, STY-13 actions and sc
     ['runtime diagnostic', (copy) => copy.states.mobileDark.diagnostics.events.push({method: 'Runtime.exceptionThrown'})],
     ['diagnostic continuation', (copy) => copy.states.desktopDark.diagnostics.hasMore = true],
     ['truncated diagnostics', (copy) => copy.states.mobileLight.diagnostics.truncated = true],
+    ['negative diagnostic cursor', (copy) => copy.states.mobileDark.diagnostics.pages[0].afterSequence = -1],
+    ['diagnostic cursor behind request', (copy) => copy.states.mobileDark.diagnostics.pages[0] = {...copy.states.mobileDark.diagnostics.pages[0], afterSequence: 999, cursor: 0}],
+    ['collection 999-to-0 cursor regression', (copy) => copy.collection.diagnosticContinuity[0] = {...copy.collection.diagnosticContinuity[0], afterSequence: 999, cursor: 0}],
+    ['arbitrary collection continuity cursor', (copy) => copy.collection.diagnosticContinuity[1].cursor += 1],
+    ['state page detached from collection', (copy) => copy.states.desktopLight.diagnostics.pages[0].afterSequence += 1],
     ['generic visual PASS', (copy) => copy.screenshotEvidence.status = 'PASS'],
     ['screenshot understatement', (copy) => copy.screenshotEvidence.status = 'BLOCKED / NOT_ACCEPTED'],
     ['accepted overclaim', (copy) => copy.screenshotEvidence.accepted = 5],

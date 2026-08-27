@@ -162,11 +162,27 @@ export const NOTE_COPY = Object.freeze({
   'isolation-warning': '非隔离边界：主线程、DOM、全局 CSS、同源存储与网络会话',
   'auth-warning': '切片已挂载 ≠ 已获业务权限',
 });
+export const ARTICLE_BOUNDARY_CONTRACTS = Object.freeze([
+  ['backend authority', '购物车和订单真相留在权威后端', '购物车和订单真相留在浏览器'],
+  ['stable identifiers', '切片之间只交换稳定标识、预期版本和幂等键', '切片之间广播完整可变对象'],
+  ['minimal sharing', '共享应用外壳只传最小只读会话上下文和购物车稳定标识', '共享应用外壳广播完整可变购物车对象'],
+  ['no mutable shared domain state', '领域模型与可变业务状态不进入公共层', '领域模型与可变业务状态进入公共层'],
+  ['complete atomic manifest', '候选发布以整份清单原子提升或回滚', '候选发布逐项提升或回滚'],
+  ['no latest resolution', '生产 Shell 不解析漂移的 latest，也不拼接未知组合', '生产 Shell 解析漂移的 latest 并拼接未知组合'],
+  ['slice-scoped degradation', '错误边界可以限制槽位影响', '错误边界只能触发整页故障'],
+  ['per-request authorization', '订单后端逐请求验证会话、租户、资源权限和业务不变量', '订单后端相信浏览器挂载状态'],
+  ['mount is not authorization', '切片挂载成功只说明界面生命周期完成，不代表后端授权通过', '切片挂载成功即可证明后端授权通过'],
+  ['same-page non-isolation', '同一主线程、DOM、全局 CSS、同源存储和网络会话不构成安全沙箱', '同页切片构成安全沙箱'],
+  ['frontend rollback cannot undo effects', '不能撤销已经发生的订单、支付或库存效果', '可以撤销已经发生的订单、支付或库存效果'],
+  ['non-adoption signal', '若否，保持模块化前端单体', '若否，仍采用浏览器运行时组合'],
+  ['exit signal', '触发后应合并切片、收窄公共层或退回模块化单体', '触发后应继续增加组合层'],
+]);
 
 const CONTENT_ROOT = fileURLToPath(new URL('../content/', import.meta.url));
 function file(path) { try { return readFileSync(path, 'utf8'); } catch (error) { if (error?.code === 'ENOENT') return undefined; throw error; } }
 function escapeRegExp(value) { return value.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&'); }
 function articleParts(source) { assert.ok(source, `${ARTICLE} must exist after implementation`); const close = source.indexOf('\n---', 3); assert.ok(close >= 0, 'front matter closes'); return {body: source.slice(close + 4)}; }
+function visibleArticleBody(body) { return body.replace(/\{\/\*[\s\S]*?\*\/\}/gu, ''); }
 function exactWrapper(label) { return `<div role="region" aria-label="${label}" tabIndex={0} onKeyDown={handleHorizontalArrowKey}>`; }
 function replaceOnce(source, oldValue, newValue, label) { const changed = source.replace(oldValue, newValue); assert.notEqual(changed, source, `${label} mutation applies`); return changed; }
 function frontMatterFixture(metadata) { return Object.entries(metadata).flatMap(([key, value]) => Array.isArray(value) ? value.length ? [`${key}:`, ...value.map((item) => `  - ${item}`)] : [`${key}: []`] : [`${key}: ${value}`]).join('\n'); }
@@ -766,6 +782,7 @@ function assertBridgeSearchMutationGuards(svgSource) {
 
 function assertMicroFrontendArticle(source) {
   const {body} = articleParts(source);
+  const visibleBody = visibleArticleBody(body);
   assert.deepEqual(parseFrontMatter(source), EXACT_METADATA, 'exact STY-12 front matter');
   const headings = findMarkdownHeadings(source);
   assert.deepEqual(headings.filter(({level}) => level === 2).map(({text}) => text), EXPECTED_HEADINGS, 'exact H2 order');
@@ -777,6 +794,7 @@ function assertMicroFrontendArticle(source) {
   exactRows(table(body, ['组合方式', '适用条件', '组合时机', '隔离成本', '停止采用信号']), COMPOSITION_ROWS, 'composition table');
   exactRows(table(body, ['构件', '拥有', '明确不拥有']), OWNER_ROWS, 'ownership table');
   exactRows(table(body, ['故障', '检测', '自动响应', '停止条件', '最终责任人']), FAILURE_ROWS, 'failure table');
+  for (const [label, required] of ARTICLE_BOUNDARY_CONTRACTS) assert.ok(visibleBody.includes(required), `${label} visible semantic boundary`);
 }
 
 function assertMicroFrontendSources(ledger) {
@@ -840,7 +858,7 @@ function assertMicroFrontendDiagram(drawioSource, svgSource) {
 function fixtureArticle() {
   const sections = EXPECTED_HEADINGS.map((heading) => '## ' + heading + (heading === '可迁移经验' ? '\n### ' + MIGRATION_HEADINGS.join('\n### ') : '')).join('\n');
   const rows = (items) => items.map((row) => '| ' + row.join(' | ') + ' |').join('\n');
-  return `---\n${frontMatterFixture(EXACT_METADATA)}\n---\n${sections}\n${WRAPPERS.map(exactWrapper).join('\n')}\n| 组合方式 | 适用条件 | 组合时机 | 隔离成本 | 停止采用信号 |\n| --- | --- | --- | --- | --- |\n${rows(COMPOSITION_ROWS)}\n\n| 构件 | 拥有 | 明确不拥有 |\n| --- | --- | --- |\n${rows(OWNER_ROWS)}\n\n| 故障 | 检测 | 自动响应 | 停止条件 | 最终责任人 |\n| --- | --- | --- | --- | --- |\n${rows(FAILURE_ROWS)}`;
+  return `---\n${frontMatterFixture(EXACT_METADATA)}\n---\n${sections}\n${WRAPPERS.map(exactWrapper).join('\n')}\n| 组合方式 | 适用条件 | 组合时机 | 隔离成本 | 停止采用信号 |\n| --- | --- | --- | --- | --- |\n${rows(COMPOSITION_ROWS)}\n\n| 构件 | 拥有 | 明确不拥有 |\n| --- | --- | --- |\n${rows(OWNER_ROWS)}\n\n| 故障 | 检测 | 自动响应 | 停止条件 | 最终责任人 |\n| --- | --- | --- | --- | --- |\n${rows(FAILURE_ROWS)}\n${ARTICLE_BOUNDARY_CONTRACTS.map(([, required]) => required).join('\n')}`;
 }
 
 function assertGenericHelperRejections() {
@@ -861,6 +879,11 @@ test('STY-12 helper fixture locks its public content contract', () => {
   const fixture = fixtureArticle(); assertMicroFrontendArticle(fixture);
   for (const key of Object.keys(EXACT_METADATA)) { assert.throws(() => assertMicroFrontendArticle(removeFrontMatterField(fixture, key)), assert.AssertionError, `${key} deletion rejected`); assert.throws(() => assertMicroFrontendArticle(changeFrontMatterField(fixture, key)), assert.AssertionError, `${key} change rejected`); }
   for (const rows of [COMPOSITION_ROWS, OWNER_ROWS, FAILURE_ROWS]) for (const row of rows) { const exact = '| ' + row.join(' | ') + ' |'; assert.throws(() => assertMicroFrontendArticle(replaceOnce(fixture, exact, '| ' + [...row.slice(0, -1), '错误的合同值'].join(' | ') + ' |', `${row[0]} mutation`)), assert.AssertionError, `${row[0]} change rejected`); }
+  for (const [label, required, mutation] of ARTICLE_BOUNDARY_CONTRACTS) assert.throws(
+    () => assertMicroFrontendArticle(replaceOnce(fixture, required, mutation, label)),
+    assert.AssertionError,
+    `${label} mutation rejected`,
+  );
 });
 
 test('STY-12 governed sources use the executable WHATWG license policy without quotations', () => {
