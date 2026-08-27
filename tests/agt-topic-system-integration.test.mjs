@@ -3,6 +3,10 @@ import {readFileSync} from 'node:fs';
 import test from 'node:test';
 import {fileURLToPath} from 'node:url';
 
+import {unified} from 'unified';
+import remarkMdx from 'remark-mdx';
+import remarkParse from 'remark-parse';
+
 import {readContentDocuments} from '../scripts/content-metadata.mjs';
 import {extractInternalLinks} from '../scripts/content-relations.mjs';
 import {visibleMdxLines} from '../scripts/source-ledger.mjs';
@@ -28,7 +32,6 @@ const inventory = [
   ...registry.cases,
 ];
 const inventoryRoutes = inventory.map(({route}) => route);
-const knowledge = [...registry.concepts, ...registry.patterns];
 const learningRoutes = [
   ...registry.concepts.map(({route}) => route),
   '/patterns/agt-p-01',
@@ -40,6 +43,18 @@ const learningRoutes = [
   '/patterns/agt-p-07',
   '/patterns/agt-p-08',
   ...registry.cases.map(({route}) => route),
+];
+const topicIndexBuckets = [
+  'concept',
+  'principle',
+  'quality-attribute',
+  'method',
+  'modeling',
+  'style',
+  'pattern',
+  'case',
+  'question',
+  'path',
 ];
 const reciprocal = {
   '/cases/openai-agents-sdk': ['/concepts/agt-c-03', '/patterns/agt-p-06'],
@@ -76,9 +91,42 @@ function requiredDocument(route) {
   return document;
 }
 
+const visibleDocumentCache = new WeakMap();
+
+function withoutTopLevelMdxEsm(document) {
+  const cached = visibleDocumentCache.get(document);
+  if (cached) return cached;
+
+  const body = String(document?.body ?? '');
+  const parseableBody = body.replace(
+    /<!--[\s\S]*?(?:-->|$)/gu,
+    (comment) => comment.replace(/[^\r\n]/gu, ' '),
+  );
+  const tree = unified().use(remarkParse).use(remarkMdx).parse(parseableBody);
+  const ranges = tree.children
+    .filter(({type}) => type === 'mdxjsEsm')
+    .map(({position}) => [position.start.offset, position.end.offset]);
+  let cursor = 0;
+  let filtered = '';
+  for (const [start, end] of ranges) {
+    filtered += body.slice(cursor, start);
+    filtered += body.slice(start, end).replace(/[^\r\n]/gu, ' ');
+    cursor = end;
+  }
+  filtered += body.slice(cursor);
+
+  const visibleDocument = {...document, body: filtered};
+  visibleDocumentCache.set(document, visibleDocument);
+  return visibleDocument;
+}
+
+function visibleInternalLinks(document) {
+  return extractInternalLinks(withoutTopLevelMdxEsm(document));
+}
+
 function visibleMarkdownLinks(document) {
   const links = [];
-  for (const line of visibleMdxLines(document)) {
+  for (const line of visibleMdxLines(withoutTopLevelMdxEsm(document))) {
     const withoutInlineCode = line.replace(/(`+)(?:(?!\1)[\s\S])*\1/gu, '');
     const withoutImages = withoutInlineCode.replace(
       /!\[((?:\\.|[^\]\\])*)\]\((?:\\.|[^)\s])+(?:\s+["'][^"']*["'])?\)/gu,
@@ -111,16 +159,66 @@ function assertExactCategoryEntrance(document, expectedItems) {
   );
 }
 
-function assertProjection(projection, label) {
+function assertUniqueProjection(projection, label) {
   const ids = projection.map(({id}) => id);
   const slugs = projection.map(({slug}) => slug);
   assert.equal(new Set(ids).size, ids.length, `${label} rejects duplicate IDs`);
   assert.equal(new Set(slugs).size, slugs.length, `${label} rejects duplicate slugs`);
+}
 
-  for (const {id, route} of knowledge) {
-    const matches = projection.filter((topic) => topic.id === id);
-    assert.equal(matches.length, 1, `${label} resolves ${id} exactly once`);
-    assert.equal(matches[0].slug, route, `${label} maps ${id} to ${route}`);
+function assertGeneratedProjection(actualManifest, actualIndexes) {
+  assert.ok(actualManifest && !Array.isArray(actualManifest), 'topic manifest is an object');
+  assert.deepEqual(Object.keys(actualManifest).toSorted(), ['schema_version', 'topics']);
+  assert.equal(actualManifest.schema_version, 1);
+  assert.ok(Array.isArray(actualManifest.topics), 'topic manifest topics is an array');
+
+  assert.ok(actualIndexes && !Array.isArray(actualIndexes), 'topic indexes is an object');
+  assert.deepEqual(Object.keys(actualIndexes).toSorted(), topicIndexBuckets.toSorted());
+  for (const bucket of topicIndexBuckets) {
+    assert.ok(Array.isArray(actualIndexes[bucket]), `topic indexes ${bucket} is an array`);
+    for (const topic of actualIndexes[bucket]) {
+      assert.equal(topic.type, bucket, `${topic.id} belongs to its ${bucket} type bucket`);
+    }
+  }
+
+  assertUniqueProjection(actualManifest.topics, 'topic manifest');
+  const indexedTopics = topicIndexBuckets.flatMap((bucket) => actualIndexes[bucket]);
+  assertUniqueProjection(indexedTopics, 'topic indexes');
+
+  for (const {id, route} of registry.concepts) {
+    const manifestMatches = actualManifest.topics.filter((topic) => topic.id === id);
+    assert.equal(manifestMatches.length, 1, `topic manifest resolves ${id} exactly once`);
+    assert.equal(manifestMatches[0].type, 'concept', `${id} manifest type`);
+    assert.equal(manifestMatches[0].slug, route, `${id} manifest slug`);
+
+    const conceptMatches = actualIndexes.concept.filter((topic) => topic.id === id);
+    assert.equal(conceptMatches.length, 1, `concept index resolves ${id} exactly once`);
+    assert.equal(conceptMatches[0].slug, route, `${id} concept index slug`);
+    for (const bucket of topicIndexBuckets.filter((name) => name !== 'concept')) {
+      assert.equal(
+        actualIndexes[bucket].filter((topic) => topic.id === id).length,
+        0,
+        `${id} is absent from ${bucket}`,
+      );
+    }
+  }
+
+  for (const {id, route} of registry.patterns) {
+    const manifestMatches = actualManifest.topics.filter((topic) => topic.id === id);
+    assert.equal(manifestMatches.length, 1, `topic manifest resolves ${id} exactly once`);
+    assert.equal(manifestMatches[0].type, 'pattern', `${id} manifest type`);
+    assert.equal(manifestMatches[0].slug, route, `${id} manifest slug`);
+
+    const patternMatches = actualIndexes.pattern.filter((topic) => topic.id === id);
+    assert.equal(patternMatches.length, 1, `pattern index resolves ${id} exactly once`);
+    assert.equal(patternMatches[0].slug, route, `${id} pattern index slug`);
+    for (const bucket of topicIndexBuckets.filter((name) => name !== 'pattern')) {
+      assert.equal(
+        actualIndexes[bucket].filter((topic) => topic.id === id).length,
+        0,
+        `${id} is absent from ${bucket}`,
+      );
+    }
   }
 }
 
@@ -148,7 +246,7 @@ test('all 17 routes have real inbound links and emit navigation links', () => {
   const inbound = new Map(inventoryRoutes.map((route) => [route, new Set()]));
   for (const document of documents) {
     const sourceRoute = document.metadata.slug;
-    for (const route of extractInternalLinks(document)) {
+    for (const route of visibleInternalLinks(document)) {
       if (inbound.has(route) && sourceRoute !== route) inbound.get(route).add(sourceRoute);
     }
   }
@@ -161,7 +259,7 @@ test('all 17 routes have real inbound links and emit navigation links', () => {
       item.file,
       `${item.route} resolves to its canonical fixture file`,
     );
-    const links = new Set(extractInternalLinks(document));
+    const links = new Set(visibleInternalLinks(document));
     assert.ok(links.size >= 2, `${item.route} emits at least two distinct visible internal links`);
     assert.ok(
       links.has('/paths/agentic-architecture'),
@@ -174,7 +272,7 @@ test('all 17 routes have real inbound links and emit navigation links', () => {
 
 test('existing evidence cases expose the exact required reciprocal edges', () => {
   for (const [route, requiredEdges] of Object.entries(reciprocal)) {
-    const links = new Set(extractInternalLinks(requiredDocument(route)));
+    const links = new Set(visibleInternalLinks(requiredDocument(route)));
     for (const edge of requiredEdges) {
       assert.ok(links.has(edge), `${route} visibly links ${edge}`);
     }
@@ -195,14 +293,65 @@ test('agent-control contains exactly the eight canonical patterns', () => {
   assert.notDeepEqual(expectedIds.toReversed(), expectedIds, 'canonical order is significant');
 });
 
-test('generated manifest and indexes resolve the 14 knowledge topics uniquely', () => {
-  assertProjection(manifest.topics, 'topic manifest');
-  assertProjection(Object.values(topicIndexes).flat(), 'topic indexes');
+test('visibility checks reject non-rendered MDX link strings and code forms', () => {
+  const exportedMarkdown = {
+    body: `export const hiddenMarkdown = '[fake](/concepts/agt-c-01)';`,
+  };
+  const exportedJsx = {
+    body: `export const hiddenJsx = '<Link to="/patterns/agt-p-01">fake</Link>';`,
+  };
+  const otherHiddenForms = {
+    body: [
+      '<!-- [comment](/concepts/agt-c-01) -->',
+      '```md',
+      '[fence](/patterns/agt-p-01)',
+      '```',
+      '`[inline](/cases/multi-agent-research-system)`',
+      '![image](/cases/long-running-coding-agent)',
+    ].join('\n'),
+  };
 
-  const duplicate = [...manifest.topics, structuredClone(manifest.topics[0])];
+  assert.deepEqual(visibleMarkdownLinks(exportedMarkdown), []);
+  assert.deepEqual(visibleInternalLinks(exportedMarkdown), []);
+  assert.deepEqual(visibleInternalLinks(exportedJsx), []);
+  assert.deepEqual(visibleMarkdownLinks(otherHiddenForms), []);
+  assert.deepEqual(visibleInternalLinks(otherHiddenForms), []);
+});
+
+test('generated manifest and indexes resolve the 14 knowledge topics uniquely', () => {
+  assertGeneratedProjection(manifest, topicIndexes);
+
+  const duplicateManifest = structuredClone(manifest);
+  duplicateManifest.topics.push(structuredClone(manifest.topics[0]));
   assert.throws(
-    () => assertProjection(duplicate, 'mutated manifest'),
+    () => assertGeneratedProjection(duplicateManifest, topicIndexes),
     assert.AssertionError,
-    'the projection contract rejects duplicate IDs and slugs',
+    'the projection contract rejects a duplicate manifest topic',
+  );
+
+  const duplicateIndex = structuredClone(topicIndexes);
+  duplicateIndex.concept.push(structuredClone(duplicateIndex.concept[0]));
+  assert.throws(
+    () => assertGeneratedProjection(manifest, duplicateIndex),
+    assert.AssertionError,
+    'the projection contract rejects a duplicate index topic',
+  );
+
+  const wrongBucket = structuredClone(topicIndexes);
+  const moved = wrongBucket.concept.find(({id}) => id === registry.concepts[0].id);
+  wrongBucket.concept = wrongBucket.concept.filter(({id}) => id !== moved.id);
+  wrongBucket.pattern.push(moved);
+  assert.throws(
+    () => assertGeneratedProjection(manifest, wrongBucket),
+    assert.AssertionError,
+    'the projection contract rejects a topic moved into the wrong bucket',
+  );
+
+  const malformedBucket = structuredClone(topicIndexes);
+  malformedBucket.concept = {};
+  assert.throws(
+    () => assertGeneratedProjection(manifest, malformedBucket),
+    assert.AssertionError,
+    'the projection contract rejects a malformed bucket',
   );
 });
