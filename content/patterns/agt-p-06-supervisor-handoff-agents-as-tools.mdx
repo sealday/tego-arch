@@ -1,0 +1,236 @@
+---
+title: 智能体（Agent）的监督者（Supervisor）、移交（Handoff）与智能体作为工具（Agents as Tools）：先决定控制权归谁
+slug: /patterns/agt-p-06
+content_type: pattern
+status: reviewed
+difficulty: advanced
+analyzed_at: 2026-08-26
+source_cutoff: 2026-08-26
+confidence: high
+domains:
+  - software-architecture
+  - artificial-intelligence
+agent_patterns:
+  - supervisor
+  - handoff
+  - agents-as-tools
+protocols:
+  - a2a
+quality_attributes:
+  - reliability
+  - safety
+  - operability
+tags:
+  - 监督者
+  - 移交
+  - 智能体作为工具
+  - 控制权所有权
+  - 多智能体
+summary: 比较监督者、移交与智能体作为工具三种多智能体控制权模型：分别固定下一步控制者、当前会话所有者、专家结果返回点、共享状态和停止责任，并用有界上下文、权限、副作用、恢复与人工升级约束混合拓扑。
+topic_id: AGT-P-06
+priority: P1
+depends_on:
+  - AGT-C-02
+  - AGT-C-03
+  - AGT-C-04
+adjacent_topics:
+  - AGT-C-02
+  - AGT-C-03
+  - AGT-C-04
+  - AGT-P-01
+  - AGT-P-05
+  - AGT-P-07
+  - AGT-P-08
+related_cases:
+  - /cases/openai-agents-sdk
+  - /cases/langgraph-supervisor
+  - /cases/google-adk-a2a
+  - /cases/microsoft-multi-agent-reference-architecture
+related_questions: []
+---
+
+import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableRegion/handleHorizontalArrowKey.mjs';
+
+# 监督者、移交与智能体作为工具：多智能体首先是控制权设计
+
+把多个智能体连起来并不自动形成可靠协作。真正决定系统行为的是：谁选择下一步、谁拥有当前会话、专家结果回到哪里、共享状态由谁写、谁有权停止。监督者、移交与智能体作为工具不是三个近义接口，而是三种控制权所有权合同。
+
+## 学习问题
+
+- 监督者、移交与智能体作为工具分别把下一步控制权和当前会话交给谁？
+- 专家智能体可以看到哪些上下文、使用哪些权限、产生哪些副作用？
+- 三种形态混合时，怎样避免上下文泄漏、乒乓移交和监督者瓶颈？
+- 失败、结果未知或预算耗尽时，谁负责恢复、确定性回退、重试（Retry）与人工升级？
+
+## 问题与适用上下文
+
+当一个任务需要多个专业能力时，先问“控制权是否需要移动”，再问“用哪个框架”。监督者适合一个全局负责人需要反复委派专业子任务、综合结果并保留全局控制的场景。移交适合当前接待者不再是合适负责人，需要把活动会话和控制权转移给另一个活动智能体的场景。智能体作为工具适合父智能体只需要一个有界专家结果，调用完成后仍继续原任务的场景。
+
+这三种模式都不是权限系统、业务事务或共享真相。多智能体通信也不意味着控制权已经移动；消息送达更不证明授权、状态一致性、可靠性或治理。若步骤、分支与承接者都可预先枚举，确定性工作流（Workflow）通常比多智能体拓扑更清楚。
+
+控制所有者必须是可记录的运行实体，而不是提示词中的角色描述。状态所有者必须是任务账本、会话记录或权威业务系统，而不是某个模型“记得”的内容。最终负责人要能在成功、失败、预算耗尽、结果未知或人工中止时写下唯一终态。
+
+## 约束与驱动力
+
+采用多智能体控制前固定以下合同：
+
+1. **稳定任务身份：** 每次委派、移交和工具调用都有 `task_id`、`run_id`、`operation_id`、来源智能体、目标智能体与拓扑类型；重试不能换身份掩盖重复动作。
+2. **最小上下文：** 工作者智能体或工具智能体只接收子任务需要的投影；移交只转移经策略筛选的会话摘要、未决事项和授权范围，避免上下文泄漏。
+3. **最小权限：** 控制权移动不等于权限继承。目标智能体重新通过身份、租户、数据范围、工具和风险门；写入与破坏性副作用仍需稳定操作标识、批准和权威回读。
+4. **唯一当前所有者：** 每个时刻只能有一个当前会话所有者。移交使用版本或租约完成原子转移；旧所有者随后不得继续回复或执行。
+5. **有界委派：** 监督者限制委派轮数、深度、总时长、费用和重复专家；智能体作为工具限制子任务输入、工具范围、输出模式和返回期限。
+6. **结构化返回：** 专家返回结果、依据、置信、已执行动作、外部效果确定性和未解决问题。自然语言“完成了”不是验收证据。
+7. **硬终止与升级：** 全局运行框架强制预算、策略和人工停止；当前控制所有者负责业务终止。权限不足、连续失败、所有权冲突、不可逆动作或副作用未知时人工升级。
+
+驱动力是把专业能力隔离在更小的上下文和权限范围内，而不是增加智能体数量。只有当隔离收益高于通信、评测、状态同步与恢复成本时，才值得升级到多智能体。
+
+## 结构与协作关系
+
+{/* terminology-exempt: bare-english-term | match: Supervisor | record: | Supervisor | Supervisor；可在全局预算内反复委派 | Supervisor | Worker Agent 的结构化结果返回 Supervisor | Supervisor 保留全局任务状态；Worker Agent 只持有受限子任务投影 | Supervisor 终止、降级或升级人工 | | reason: P06 精确比较矩阵按任务合同保留英文控制角色 */}
+
+{/* terminology-exempt: bare-english-term | match: Supervisor | record: | Supervisor | Supervisor；可在全局预算内反复委派 | Supervisor | Worker Agent 的结构化结果返回 Supervisor | Supervisor 保留全局任务状态；Worker Agent 只持有受限子任务投影 | Supervisor 终止、降级或升级人工 | | reason: P06 精确比较矩阵按任务合同保留英文控制角色 */}
+
+{/* terminology-exempt: bare-english-term | match: Supervisor | record: | Supervisor | Supervisor；可在全局预算内反复委派 | Supervisor | Worker Agent 的结构化结果返回 Supervisor | Supervisor 保留全局任务状态；Worker Agent 只持有受限子任务投影 | Supervisor 终止、降级或升级人工 | | reason: P06 精确比较矩阵按任务合同保留英文控制角色 */}
+
+{/* terminology-exempt: bare-english-term | match: Supervisor | record: | Supervisor | Supervisor；可在全局预算内反复委派 | Supervisor | Worker Agent 的结构化结果返回 Supervisor | Supervisor 保留全局任务状态；Worker Agent 只持有受限子任务投影 | Supervisor 终止、降级或升级人工 | | reason: P06 精确比较矩阵按任务合同保留英文控制角色 */}
+
+{/* terminology-exempt: bare-english-term | match: Supervisor | record: | Supervisor | Supervisor；可在全局预算内反复委派 | Supervisor | Worker Agent 的结构化结果返回 Supervisor | Supervisor 保留全局任务状态；Worker Agent 只持有受限子任务投影 | Supervisor 终止、降级或升级人工 | | reason: P06 精确比较矩阵按任务合同保留英文控制角色 */}
+
+{/* terminology-exempt: bare-english-term | match: Supervisor | record: | Supervisor | Supervisor；可在全局预算内反复委派 | Supervisor | Worker Agent 的结构化结果返回 Supervisor | Supervisor 保留全局任务状态；Worker Agent 只持有受限子任务投影 | Supervisor 终止、降级或升级人工 | | reason: P06 精确比较矩阵按任务合同保留英文控制角色 */}
+
+{/* terminology-exempt: bare-english-term | match: Worker | record: | Supervisor | Supervisor；可在全局预算内反复委派 | Supervisor | Worker Agent 的结构化结果返回 Supervisor | Supervisor 保留全局任务状态；Worker Agent 只持有受限子任务投影 | Supervisor 终止、降级或升级人工 | | reason: P06 精确比较矩阵按任务合同保留英文控制角色 */}
+
+{/* terminology-exempt: bare-english-term | match: Worker | record: | Supervisor | Supervisor；可在全局预算内反复委派 | Supervisor | Worker Agent 的结构化结果返回 Supervisor | Supervisor 保留全局任务状态；Worker Agent 只持有受限子任务投影 | Supervisor 终止、降级或升级人工 | | reason: P06 精确比较矩阵按任务合同保留英文控制角色 */}
+
+{/* terminology-exempt: bare-english-term | match: Agent | record: | Supervisor | Supervisor；可在全局预算内反复委派 | Supervisor | Worker Agent 的结构化结果返回 Supervisor | Supervisor 保留全局任务状态；Worker Agent 只持有受限子任务投影 | Supervisor 终止、降级或升级人工 | | reason: P06 精确比较矩阵按任务合同保留英文控制角色 */}
+
+{/* terminology-exempt: bare-english-term | match: Agent | record: | Supervisor | Supervisor；可在全局预算内反复委派 | Supervisor | Worker Agent 的结构化结果返回 Supervisor | Supervisor 保留全局任务状态；Worker Agent 只持有受限子任务投影 | Supervisor 终止、降级或升级人工 | | reason: P06 精确比较矩阵按任务合同保留英文控制角色 */}
+
+{/* terminology-exempt: bare-english-term | match: Handoff | record: | Handoff | Handoff 后的 Active Agent | Handoff 后的 Active Agent | 当前会话不返回原智能体；由 Active Agent 继续 | 会话状态按移交合同转移；业务真相仍在权威状态 | Active Agent 对当前会话终止负责；运行框架强制全局预算 | | reason: P06 精确比较矩阵按任务合同保留英文控制角色 */}
+
+{/* terminology-exempt: bare-english-term | match: Handoff | record: | Handoff | Handoff 后的 Active Agent | Handoff 后的 Active Agent | 当前会话不返回原智能体；由 Active Agent 继续 | 会话状态按移交合同转移；业务真相仍在权威状态 | Active Agent 对当前会话终止负责；运行框架强制全局预算 | | reason: P06 精确比较矩阵按任务合同保留英文控制角色 */}
+
+{/* terminology-exempt: bare-english-term | match: Handoff | record: | Handoff | Handoff 后的 Active Agent | Handoff 后的 Active Agent | 当前会话不返回原智能体；由 Active Agent 继续 | 会话状态按移交合同转移；业务真相仍在权威状态 | Active Agent 对当前会话终止负责；运行框架强制全局预算 | | reason: P06 精确比较矩阵按任务合同保留英文控制角色 */}
+
+{/* terminology-exempt: unknown-english-term | match: Active | record: | Handoff | Handoff 后的 Active Agent | Handoff 后的 Active Agent | 当前会话不返回原智能体；由 Active Agent 继续 | 会话状态按移交合同转移；业务真相仍在权威状态 | Active Agent 对当前会话终止负责；运行框架强制全局预算 | | reason: P06 精确比较矩阵按任务合同保留英文控制角色 */}
+
+{/* terminology-exempt: unknown-english-term | match: Active | record: | Handoff | Handoff 后的 Active Agent | Handoff 后的 Active Agent | 当前会话不返回原智能体；由 Active Agent 继续 | 会话状态按移交合同转移；业务真相仍在权威状态 | Active Agent 对当前会话终止负责；运行框架强制全局预算 | | reason: P06 精确比较矩阵按任务合同保留英文控制角色 */}
+
+{/* terminology-exempt: unknown-english-term | match: Active | record: | Handoff | Handoff 后的 Active Agent | Handoff 后的 Active Agent | 当前会话不返回原智能体；由 Active Agent 继续 | 会话状态按移交合同转移；业务真相仍在权威状态 | Active Agent 对当前会话终止负责；运行框架强制全局预算 | | reason: P06 精确比较矩阵按任务合同保留英文控制角色 */}
+
+{/* terminology-exempt: unknown-english-term | match: Active | record: | Handoff | Handoff 后的 Active Agent | Handoff 后的 Active Agent | 当前会话不返回原智能体；由 Active Agent 继续 | 会话状态按移交合同转移；业务真相仍在权威状态 | Active Agent 对当前会话终止负责；运行框架强制全局预算 | | reason: P06 精确比较矩阵按任务合同保留英文控制角色 */}
+
+{/* terminology-exempt: bare-english-term | match: Agent | record: | Handoff | Handoff 后的 Active Agent | Handoff 后的 Active Agent | 当前会话不返回原智能体；由 Active Agent 继续 | 会话状态按移交合同转移；业务真相仍在权威状态 | Active Agent 对当前会话终止负责；运行框架强制全局预算 | | reason: P06 精确比较矩阵按任务合同保留英文控制角色 */}
+
+{/* terminology-exempt: bare-english-term | match: Agent | record: | Handoff | Handoff 后的 Active Agent | Handoff 后的 Active Agent | 当前会话不返回原智能体；由 Active Agent 继续 | 会话状态按移交合同转移；业务真相仍在权威状态 | Active Agent 对当前会话终止负责；运行框架强制全局预算 | | reason: P06 精确比较矩阵按任务合同保留英文控制角色 */}
+
+{/* terminology-exempt: bare-english-term | match: Agent | record: | Handoff | Handoff 后的 Active Agent | Handoff 后的 Active Agent | 当前会话不返回原智能体；由 Active Agent 继续 | 会话状态按移交合同转移；业务真相仍在权威状态 | Active Agent 对当前会话终止负责；运行框架强制全局预算 | | reason: P06 精确比较矩阵按任务合同保留英文控制角色 */}
+
+{/* terminology-exempt: bare-english-term | match: Agent | record: | Handoff | Handoff 后的 Active Agent | Handoff 后的 Active Agent | 当前会话不返回原智能体；由 Active Agent 继续 | 会话状态按移交合同转移；业务真相仍在权威状态 | Active Agent 对当前会话终止负责；运行框架强制全局预算 | | reason: P06 精确比较矩阵按任务合同保留英文控制角色 */}
+
+{/* terminology-exempt: unknown-english-term | match: as Tool | record: | Agent as Tool | Parent Agent | Parent Agent | 有界子任务结果返回 Parent Agent | Parent Agent 保留任务状态；工具智能体只见最小输入 | Parent Agent 验收并终止；工具智能体只终止子任务 | | reason: P06 精确比较矩阵按任务合同保留英文控制角色 */}
+
+{/* terminology-exempt: unknown-english-term | match: Parent | record: | Agent as Tool | Parent Agent | Parent Agent | 有界子任务结果返回 Parent Agent | Parent Agent 保留任务状态；工具智能体只见最小输入 | Parent Agent 验收并终止；工具智能体只终止子任务 | | reason: P06 精确比较矩阵按任务合同保留英文控制角色 */}
+
+{/* terminology-exempt: unknown-english-term | match: Parent | record: | Agent as Tool | Parent Agent | Parent Agent | 有界子任务结果返回 Parent Agent | Parent Agent 保留任务状态；工具智能体只见最小输入 | Parent Agent 验收并终止；工具智能体只终止子任务 | | reason: P06 精确比较矩阵按任务合同保留英文控制角色 */}
+
+{/* terminology-exempt: unknown-english-term | match: Parent | record: | Agent as Tool | Parent Agent | Parent Agent | 有界子任务结果返回 Parent Agent | Parent Agent 保留任务状态；工具智能体只见最小输入 | Parent Agent 验收并终止；工具智能体只终止子任务 | | reason: P06 精确比较矩阵按任务合同保留英文控制角色 */}
+
+{/* terminology-exempt: unknown-english-term | match: Parent | record: | Agent as Tool | Parent Agent | Parent Agent | 有界子任务结果返回 Parent Agent | Parent Agent 保留任务状态；工具智能体只见最小输入 | Parent Agent 验收并终止；工具智能体只终止子任务 | | reason: P06 精确比较矩阵按任务合同保留英文控制角色 */}
+
+{/* terminology-exempt: unknown-english-term | match: Parent | record: | Agent as Tool | Parent Agent | Parent Agent | 有界子任务结果返回 Parent Agent | Parent Agent 保留任务状态；工具智能体只见最小输入 | Parent Agent 验收并终止；工具智能体只终止子任务 | | reason: P06 精确比较矩阵按任务合同保留英文控制角色 */}
+
+{/* terminology-exempt: bare-english-term | match: Agent | record: | Agent as Tool | Parent Agent | Parent Agent | 有界子任务结果返回 Parent Agent | Parent Agent 保留任务状态；工具智能体只见最小输入 | Parent Agent 验收并终止；工具智能体只终止子任务 | | reason: P06 精确比较矩阵按任务合同保留英文控制角色 */}
+
+{/* terminology-exempt: bare-english-term | match: Agent | record: | Agent as Tool | Parent Agent | Parent Agent | 有界子任务结果返回 Parent Agent | Parent Agent 保留任务状态；工具智能体只见最小输入 | Parent Agent 验收并终止；工具智能体只终止子任务 | | reason: P06 精确比较矩阵按任务合同保留英文控制角色 */}
+
+{/* terminology-exempt: bare-english-term | match: Agent | record: | Agent as Tool | Parent Agent | Parent Agent | 有界子任务结果返回 Parent Agent | Parent Agent 保留任务状态；工具智能体只见最小输入 | Parent Agent 验收并终止；工具智能体只终止子任务 | | reason: P06 精确比较矩阵按任务合同保留英文控制角色 */}
+
+{/* terminology-exempt: bare-english-term | match: Agent | record: | Agent as Tool | Parent Agent | Parent Agent | 有界子任务结果返回 Parent Agent | Parent Agent 保留任务状态；工具智能体只见最小输入 | Parent Agent 验收并终止；工具智能体只终止子任务 | | reason: P06 精确比较矩阵按任务合同保留英文控制角色 */}
+
+{/* terminology-exempt: bare-english-term | match: Agent | record: | Agent as Tool | Parent Agent | Parent Agent | 有界子任务结果返回 Parent Agent | Parent Agent 保留任务状态；工具智能体只见最小输入 | Parent Agent 验收并终止；工具智能体只终止子任务 | | reason: P06 精确比较矩阵按任务合同保留英文控制角色 */}
+
+{/* terminology-exempt: bare-english-term | match: Agent | record: | Agent as Tool | Parent Agent | Parent Agent | 有界子任务结果返回 Parent Agent | Parent Agent 保留任务状态；工具智能体只见最小输入 | Parent Agent 验收并终止；工具智能体只终止子任务 | | reason: P06 精确比较矩阵按任务合同保留英文控制角色 */}
+
+| 控制形态 | 下一步控制者 | 当前会话所有者 | 专家结果返回点 | 共享状态 | 停止责任 |
+| --- | --- | --- | --- | --- | --- |
+| Supervisor | Supervisor；可在全局预算内反复委派 | Supervisor | Worker Agent 的结构化结果返回 Supervisor | Supervisor 保留全局任务状态；Worker Agent 只持有受限子任务投影 | Supervisor 终止、降级或升级人工 |
+| Handoff | Handoff 后的 Active Agent | Handoff 后的 Active Agent | 当前会话不返回原智能体；由 Active Agent 继续 | 会话状态按移交合同转移；业务真相仍在权威状态 | Active Agent 对当前会话终止负责；运行框架强制全局预算 |
+| Agent as Tool | Parent Agent | Parent Agent | 有界子任务结果返回 Parent Agent | Parent Agent 保留任务状态；工具智能体只见最小输入 | Parent Agent 验收并终止；工具智能体只终止子任务 |
+
+六个架构平面各有唯一责任：交互平面由当前会话所有者回应用户；控制平面由表中的下一步控制者选择分支、重试和终止；知识与上下文平面由运行框架裁剪输入并标注来源；状态与记忆平面由任务账本、会话所有权记录和权威业务系统持有；动作与工具平面由权限网关和隔离沙箱（Sandbox）限制副作用；治理与评测平面记录跨智能体追踪、评估路由与结果、执行预算和人工升级。
+
+共享状态只保存已校验事实、所有权版本、委派记录和外部效果。工作者智能体的推断、活动智能体的会话摘要或工具智能体的候选答案必须经过拥有者验收后才能进入任务事实。共享内存不是把全部历史复制给每个智能体。
+
+## 运行机制
+
+插图判定：**Draw.io + 矢量图**。三种模型需要三个分离区域、六个主要节点、不同方向的委派、移动与返回关系，并以位置和连接方向表达控制层级；它是核心教学资产，需精确布局和可读标签。图为本站原创综合，不复制来源拓扑，也不证明任何框架具备生产保证。
+
+<div className="architecture-diagram-scroll" role="region" aria-label="三种多智能体控制权模型，可使用左右方向键及首尾键横向滚动" tabIndex={0} onKeyDown={handleHorizontalArrowKey}>
+
+![三列对比监督者保留控制、移交移动会话控制以及智能体作为工具返回父智能体的控制权模型](/img/diagrams/agt-p-06-control-ownership-models.svg)
+
+</div>
+
+监督者的正常路径是：接收目标并写入全局任务状态；选择一个工作者智能体；发送最小子任务投影和预算；工作者执行允许动作并返回结构化结果；监督者验收后可反复委派、合并结果、停止或人工升级。工作者不直接接管当前会话，也不能重置全局预算。
+
+移交的正常路径是：当前所有者生成可审计移交包；策略核对目标能力、权限和会话版本；所有权记录从旧智能体原子移动到活动智能体；新所有者从明确恢复点继续当前会话并承担停止责任。旧所有者收到所有权丢失后只能观察，不能再输出或产生副作用。
+
+智能体作为工具的正常路径是：父智能体把一个有界子任务转换为工具调用；工具智能体在隔离上下文和权限中运行；结果、依据与效果确定性返回父智能体；父智能体验收后决定继续、重试、降级或停止。工具智能体的“完成”只终止子任务，不终止父任务。
+
+混合拓扑必须显式声明每一条边的语义。例如监督者可以把一个受限子任务交给工具智能体，也可以决定把整个当前会话移交给活动智能体；一旦发生移交，原监督者不再暗中保留对同一会话的控制。若业务确实需要独立的外层监管者，必须把“平台策略监管”与“当前会话控制”拆成不同状态和权限，而不是让两个智能体同时自称所有者。
+
+## 失败模式与误用
+
+**上下文泄漏。** 监督者把全局历史、其他租户资料或平台凭据完整复制给工作者；移交又把隐藏策略当普通消息转移。恢复方式是按目标能力构造白名单投影，敏感字段引用权威存储而不复制，目标侧再次执行数据与权限策略。
+
+**乒乓移交。** 两个活动智能体因低置信或能力声明重叠而来回移交。每次移交消耗同一个全局预算，记录已访问所有者和原因；重复边或超过次数上限时确定性回退到人工分诊，不能换会话标识继续循环。
+
+**监督者瓶颈。** 监督者串行读取全部细节、反复重写上下文并成为吞吐与单点故障。应让工作者返回有界模式、保留可并行的只读工作，并在任务需要大量并行分解时升级到编排者–工作者模式；不能通过复制多个无共享账本的监督者来假装扩展。
+
+**返回点不清。** 工具智能体直接回复用户，父智能体同时继续；或工作者把结果写入共享状态却绕过监督者验收。适配器必须按拓扑限制输出通道与写权限，所有非所有者结果先回唯一拥有者。
+
+**控制权即权限。** 移交后目标智能体继承源智能体的长时凭据，或监督者以“专家需要”为由扩大工作者权限。控制所有权只决定下一步，不产生授权；权限令牌按目标、资源、动作、范围和期限重新签发。
+
+**副作用未知后盲重试。** 跨智能体调用超时，拥有者把未知当失败并换一个专家重做写操作。系统应停止自动化，用相同 `operation_id` 查询权威系统，确认未执行才允许在剩余预算内恢复；已执行则读取结果，无法确认则人工升级。
+
+## 质量属性（Quality Attribute）权衡
+
+监督者提供统一策略、全局状态和较清楚的终止点，代价是延迟、上下文集中、监督者瓶颈和相关错误。移交让专业智能体直接拥有后续会话，减少中间转述，却增加所有权转移、会话一致性和乒乓移交风险。智能体作为工具保持父任务控制并容易限制输入输出，代价是专家只能看到有限上下文，父智能体还需正确验收与综合。
+
+评测至少分开记录：路由或委派正确率、所有权冲突、未授权写入、上下文越界、重复副作用、结果返回模式错误、移交次数、乒乓率、监督者排队时延、工具子任务超时、预算终态、人工升级率与恢复成功率。平均任务成功率不能掩盖一次跨租户泄漏或不可逆重复动作。
+
+协议互操作和框架示例只能证明公开接口或实现形态。智能体间协议（Agent2Agent Protocol，A2A）可支持智能体发现、消息与任务生命周期等通信合同，但 A2A 互操作不证明授权、权限、业务状态一致性、可靠性或治理完成。相同地，软件开发工具包（Software Development Kit，SDK）或参考架构出现某个模式，不代表本文的预算、恢复和安全不变量已经由实现自动提供。
+
+## 实现与迁移提示
+
+迁移从单智能体基线开始：先记录下一步控制者、当前会话所有者、状态写入者、工具权限、终止原因和外部效果。第二步只把一个低风险、只读、结果可验证的专家封装为工具智能体；父智能体仍保留原工作流和回退路径。第三步在委派需求稳定、全局综合确有价值时引入监督者，并用影子模式比较委派选择与原确定性分支。
+
+只有当用户确实需要由专门角色连续接管后续交互时才开放移交。先以人工确认完成所有权转移，再逐步自动化低风险类别；保留版本化能力目录、移交上限和人工分诊队列。混合拓扑逐边注册，不允许框架默认行为隐式改变会话所有权。
+
+确定性回退包括：关闭模型委派并恢复静态专家映射；禁止移交并把请求送入人工队列；把智能体专家降级为只读函数或检索服务；在副作用未知时停止并进入权威核对。若隔离上下文无法满足专家需要、所有权冲突持续、监督者时延不可接受、结果难以验收或多数路径可枚举，应退回确定性工作流。
+
+## 相邻模式与反模式
+
+本文依赖[智能体运行框架（Agent Harness）](/concepts/agt-c-02)强制上下文、权限、预算与恢复边界，依赖[智能体循环（Agent Loop）](/concepts/agt-c-03)定义每个拥有者内部的有界推进，并依赖[上下文、记忆、状态与执行检查点（Checkpoint）](/concepts/agt-c-04)区分会话材料与权威恢复状态。
+
+[确定性工作流与自治智能体](/patterns/agt-p-01)先判断多智能体是否有必要；[路由与模型驱动分发](/patterns/agt-p-05)选择候选目的地，却不自动决定控制权是否移动。[编排者–工作者与扇出/扇入](/patterns/agt-p-07)适合动态分解和有界并行；[持久智能体与人在回路（Human-in-the-loop）](/patterns/agt-p-08)处理跨进程等待、批准与恢复。反模式包括共享全部上下文、两个当前所有者、无限嵌套委派、移交即授权、结果直接写真相和超时即重做。
+
+[OpenAI Agents SDK 智能体开发工具包控制权案例](/cases/openai-agents-sdk)检验移交与智能体作为工具的实现差异；[LangGraph Supervisor 智能体编排方案案例](/cases/langgraph-supervisor)检验显式图状态和监督者委派；[Google ADK 与 A2A 智能体协作方案案例](/cases/google-adk-a2a)检验进程内编排与跨系统互操作边界；[Microsoft 公司多智能体参考架构案例](/cases/microsoft-multi-agent-reference-architecture)检验注册、通信、记忆与治理构件。它们提供实现证据，不证明本文控制合同的生产结果。本文属于[模式目录](/patterns)，并位于[智能体架构学习路径](/paths/agentic-architecture)的能力扩展阶段。
+
+## 说明性场景
+
+一个企业支持任务由父智能体接待。用户先询问合同条款；父智能体把“定位相关条款并给出出处”作为只读有界子任务调用工具智能体。专家只看到合同标识与问题，结果返回父智能体；父智能体验证出处后继续当前会话。专家无权回复用户或修改合同。
+
+用户随后要求变更付款主体。规则显示该类别必须由合规专员持续收集材料，于是系统准备移交：生成最小会话摘要，核对目标权限，以所有权版本 `17→18` 把当前会话移动给活动智能体。原父智能体失去写入租约；若它稍后收到延迟结果，也只能附加为候选证据，不能再次回复。
+
+合规专员需要税务与法务两项独立核对。外层业务把它们交给监督者；监督者在同一全局预算内反复委派两个工作者智能体，接收结构化结果并解决冲突。某次税务写入超时且副作用未知，监督者不换工作者重做，而停止自动化，用原 `operation_id` 查询权威系统；仍无法确认时人工升级。该场景展示所有权和恢复合同，不代表真实客户、指标或生产结果。
+
+## 来源
+
+- [OpenAI Agents SDK 多智能体固定提交文档](https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/docs/multi_agent.md)（`facts-summary`，`implementation`，`comparison`）：展示管理者式智能体作为工具与移交的公开实现区分；仅作有界实现证据，不能证明权限、恢复或生产可靠性。
+- [LangGraph Supervisor 固定提交说明文件（README）](https://github.com/langchain-ai/langgraph-supervisor-py/blob/88859b34017ac3569bbd4a3092c7e77593a0a960/README.md)（`facts-summary`，`implementation`，`comparison`）：展示监督者与专业智能体的公开委派形态；不能证明本文的状态、预算、副作用或终止合同。
+- [A2A 固定提交规范](https://github.com/a2aproject/A2A/blob/af112d9491c1fd4b2a568ac65755af4a62790490/docs/specification.md)（`facts-summary`，`definition`，`comparison`）：支持协议通信与任务合同边界；不证明授权、状态一致性、可靠性、治理或生产适用性。
+- [Microsoft 多智能体参考架构固定仓库](https://github.com/microsoft/multi-agent-reference-architecture/tree/ed3613b54b46b595dd223aaff8772def376a8c37)（`facts-summary`，`case-evidence`，`comparison`）：提供注册、通信、记忆、治理等参考构件入口；不证明某种拓扑的生产结果。
+
+本文的三类控制权矩阵、六平面责任、混合拓扑约束、失败恢复、迁移步骤、确定性回退、说明性场景和配对 Draw.io/SVG 图均为 Tego Arch 架构知识项目的原创综合。本站没有复制来源原文、代码、示例、结构、分类布局或图示，也不把协议、SDK 和参考架构外推为行业标准或生产保证。

@@ -616,6 +616,170 @@ const routerDispatchDocumentContract = {
     },
   ],
 };
+const controlOwnershipArticlePath =
+  'content/patterns/agt-p-06-supervisor-handoff-agents-as-tools.mdx';
+const controlOwnershipDrawioPath =
+  'diagrams/agt-p-06-control-ownership-models.drawio';
+const controlOwnershipSvgPath =
+  'static/img/diagrams/agt-p-06-control-ownership-models.svg';
+const controlOwnershipSummary =
+  '比较监督者、移交与智能体作为工具三种多智能体控制权模型：分别固定下一步控制者、当前会话所有者、专家结果返回点、共享状态和停止责任，并用有界上下文、权限、副作用、恢复与人工升级约束混合拓扑。';
+const controlOwnershipTags = [
+  '监督者',
+  '移交',
+  '智能体作为工具',
+  '控制权所有权',
+  '多智能体',
+];
+const controlOwnershipMatrixHeader = [
+  '控制形态',
+  '下一步控制者',
+  '当前会话所有者',
+  '专家结果返回点',
+  '共享状态',
+  '停止责任',
+];
+const controlOwnershipMatrixCells = [
+  [
+    'Supervisor',
+    'Supervisor；可在全局预算内反复委派',
+    'Supervisor',
+    'Worker Agent 的结构化结果返回 Supervisor',
+    'Supervisor 保留全局任务状态；Worker Agent 只持有受限子任务投影',
+    'Supervisor 终止、降级或升级人工',
+  ],
+  [
+    'Handoff',
+    'Handoff 后的 Active Agent',
+    'Handoff 后的 Active Agent',
+    '当前会话不返回原智能体；由 Active Agent 继续',
+    '会话状态按移交合同转移；业务真相仍在权威状态',
+    'Active Agent 对当前会话终止负责；运行框架强制全局预算',
+  ],
+  [
+    'Agent as Tool',
+    'Parent Agent',
+    'Parent Agent',
+    '有界子任务结果返回 Parent Agent',
+    'Parent Agent 保留任务状态；工具智能体只见最小输入',
+    'Parent Agent 验收并终止；工具智能体只终止子任务',
+  ],
+];
+const controlOwnershipRequiredLabels = [
+  'Supervisor',
+  'Worker Agent',
+  'Handoff',
+  'Active Agent',
+  'Agent as Tool',
+  'Parent Agent',
+];
+const controlOwnershipSourceIds = [
+  'src-github-ef3d4ce19335',
+  'src-github-f832ac155523',
+  'src-github-bb9d33890d3e',
+  'src-github-70740975c052',
+  'src-atlas-agt-p-06-control-ownership-models',
+];
+const controlOwnershipSourceContracts = [
+  {
+    id: 'src-github-ef3d4ce19335',
+    locator: 'https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/docs/multi_agent.md',
+    title: '固定提交文档', author: 'OpenAI', version: 'Git commit 2fa463571e76dae8ff267622f1018eaf06ffeb9f',
+    kind: 'source-code', tier: 'primary', license: 'MIT',
+    usage: 'Shows the implementation in “固定提交文档” at the recorded commit or file version; it does not alone prove runtime guarantees or deployment fitness.',
+  },
+  {
+    id: 'src-github-f832ac155523',
+    locator: 'https://github.com/langchain-ai/langgraph-supervisor-py/blob/88859b34017ac3569bbd4a3092c7e77593a0a960/README.md',
+    title: 'langgraph-supervisor-py README', author: 'LangChain', version: 'Git commit 88859b34017ac3569bbd4a3092c7e77593a0a960',
+    kind: 'source-code', tier: 'primary', license: 'MIT',
+    usage: 'Shows the implementation in “langgraph-supervisor-py README” at the recorded commit or file version; it does not alone prove runtime guarantees or deployment fitness.',
+  },
+  {
+    id: 'src-github-bb9d33890d3e',
+    locator: 'https://github.com/a2aproject/A2A/blob/af112d9491c1fd4b2a568ac65755af4a62790490/docs/specification.md',
+    title: 'docs/specification.md', author: 'A2A Project', version: 'Git commit af112d9491c1fd4b2a568ac65755af4a62790490',
+    kind: 'source-code', tier: 'primary', license: 'Apache-2.0',
+    usage: 'Shows the implementation in “docs/specification.md” at the recorded commit or file version; it does not alone prove runtime guarantees or deployment fitness.',
+  },
+  {
+    id: 'src-github-70740975c052',
+    locator: 'https://github.com/microsoft/multi-agent-reference-architecture/tree/ed3613b54b46b595dd223aaff8772def376a8c37',
+    title: 'Microsoft Multi-Agent Reference Architecture 仓库与 README', author: 'Microsoft', version: 'Git commit ed3613b54b46b595dd223aaff8772def376a8c37',
+    kind: 'official-repository', tier: 'primary', license: 'MIT',
+    usage: 'Establishes repository structure or release context through “Microsoft Multi-Agent Reference Architecture 仓库与 README”; it does not cover linked third-party works or alone prove runtime behavior.',
+  },
+];
+const controlOwnershipAllowedRoles = [
+  'case-evidence', 'comparison', 'definition', 'historical-context',
+  'implementation', 'learning', 'method', 'runtime-fact',
+];
+const controlOwnershipDocumentContract = {
+  reviewed_at: '2026-08-27',
+  copyright_checks: [
+    'original-structure',
+    'quotation-boundary',
+    'attribution-complete',
+    'illustration-rights',
+  ],
+  citations: [
+    {
+      source_id: 'src-github-ef3d4ce19335',
+      citation_url: 'https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/docs/multi_agent.md',
+      roles: ['implementation', 'comparison'],
+      manifest_primary: true,
+      usage_mode: 'facts-summary',
+      attribution_note: 'Multi-agent patterns documentation at fixed commit, OpenAI',
+      modification_note: 'Original Chinese comparison of manager-style agents-as-tools and handoff control ownership; no source prose, code, examples, structure, taxonomy layout or diagrams copied.',
+      excerpt: null,
+      quotation_reviewed: false,
+    },
+    {
+      source_id: 'src-github-f832ac155523',
+      citation_url: 'https://github.com/langchain-ai/langgraph-supervisor-py/blob/88859b34017ac3569bbd4a3092c7e77593a0a960/README.md',
+      roles: ['implementation', 'comparison'],
+      manifest_primary: true,
+      usage_mode: 'facts-summary',
+      attribution_note: 'langgraph-supervisor-py README at fixed commit, LangChain',
+      modification_note: 'Bounded implementation-evidence summary of supervisor delegation and return semantics; no source prose, code, examples, topology, repository layout or diagrams copied.',
+      excerpt: null,
+      quotation_reviewed: false,
+    },
+    {
+      source_id: 'src-github-bb9d33890d3e',
+      citation_url: 'https://github.com/a2aproject/A2A/blob/af112d9491c1fd4b2a568ac65755af4a62790490/docs/specification.md',
+      roles: ['definition', 'comparison'],
+      manifest_primary: false,
+      usage_mode: 'facts-summary',
+      attribution_note: 'A2A specification at fixed commit, A2A Project',
+      modification_note: 'Original Chinese explanation of protocol interoperability boundaries; no specification prose, examples, schemas, structure or diagrams copied.',
+      excerpt: null,
+      quotation_reviewed: false,
+    },
+    {
+      source_id: 'src-github-70740975c052',
+      citation_url: 'https://github.com/microsoft/multi-agent-reference-architecture/tree/ed3613b54b46b595dd223aaff8772def376a8c37',
+      roles: ['case-evidence', 'comparison'],
+      manifest_primary: false,
+      usage_mode: 'facts-summary',
+      attribution_note: 'Microsoft Multi-Agent Reference Architecture repository at fixed commit, Microsoft',
+      modification_note: 'Original Chinese comparison of reference-architecture building blocks, communication and governance boundaries; no source prose, code, examples, topology, repository layout or diagrams copied.',
+      excerpt: null,
+      quotation_reviewed: false,
+    },
+    {
+      source_id: 'src-atlas-agt-p-06-control-ownership-models',
+      citation_url: '/img/diagrams/agt-p-06-control-ownership-models.svg',
+      roles: ['illustration'],
+      manifest_primary: false,
+      usage_mode: 'original-illustration',
+      attribution_note: 'Multi-agent control ownership models, Tego Arch maintainers',
+      modification_note: 'Created as an original synchronized Draw.io/SVG pair without third-party topology, reference imagery, icons, brand visuals, signatures, watermarks or copied composition.',
+      excerpt: null,
+      quotation_reviewed: false,
+    },
+  ],
+};
 const markdownParser = unified().use(remarkParse).use(remarkGfm).use(remarkMdx);
 
 const registry = JSON.parse(
@@ -3283,6 +3447,293 @@ test('AGT-P-05 rejects every governed source and citation boundary drift', () =>
     } catch {
       // Expected: every governed source, observation and document field fails closed.
     }
+  }
+  assert.deepEqual(survivors, []);
+});
+
+function assertControlOwnershipArticleContract(source) {
+  const metadata = parseFrontMatter(source);
+  assert.equal(metadata.title, '智能体（Agent）的监督者（Supervisor）、移交（Handoff）与智能体作为工具（Agents as Tools）：先决定控制权归谁');
+  assert.equal(metadata.slug, '/patterns/agt-p-06');
+  assert.equal(metadata.content_type, 'pattern');
+  assert.equal(metadata.status, 'reviewed');
+  assert.equal(metadata.difficulty, 'advanced');
+  assert.equal(metadata.analyzed_at, '2026-08-26');
+  assert.equal(metadata.source_cutoff, '2026-08-26');
+  assert.equal(metadata.confidence, 'high');
+  assert.equal(metadata.topic_id, 'AGT-P-06');
+  assert.equal(metadata.priority, 'P1');
+  assert.deepEqual(metadata.domains, ['software-architecture', 'artificial-intelligence']);
+  assert.deepEqual(metadata.agent_patterns, [
+    'supervisor', 'handoff', 'agents-as-tools',
+  ]);
+  assert.deepEqual(metadata.protocols, ['a2a']);
+  assert.deepEqual(metadata.quality_attributes, ['reliability', 'safety', 'operability']);
+  assert.deepEqual(metadata.tags, controlOwnershipTags);
+  assert.equal(metadata.summary, controlOwnershipSummary);
+  assert.deepEqual(metadata.depends_on, ['AGT-C-02', 'AGT-C-03', 'AGT-C-04']);
+  assert.deepEqual(metadata.adjacent_topics, [
+    'AGT-C-02', 'AGT-C-03', 'AGT-C-04', 'AGT-P-01', 'AGT-P-05', 'AGT-P-07', 'AGT-P-08',
+  ]);
+  assert.deepEqual(metadata.related_cases, [
+    '/cases/openai-agents-sdk',
+    '/cases/langgraph-supervisor',
+    '/cases/google-adk-a2a',
+    '/cases/microsoft-multi-agent-reference-architecture',
+  ]);
+  assert.deepEqual(metadata.related_questions, []);
+  assert.deepEqual(
+    findMarkdownHeadings(source).filter(({level}) => level === 2)
+      .map(({text}) => `## ${text}`),
+    knowledgeTypeContracts.pattern,
+  );
+
+  const {body, tables} = readerVisibleTables(source);
+  const matrices = tables.filter(({rows: [header]}) =>
+    header?.[0] === controlOwnershipMatrixHeader[0]);
+  assert.equal(matrices.length, 1, 'exactly one reader-visible control ownership matrix');
+  const [{node, rows: [header, ...rows]}] = matrices;
+  assertPhysicalTable(body, node, controlOwnershipMatrixCells.length, 6, 'control ownership matrix');
+  assert.deepEqual(header, controlOwnershipMatrixHeader);
+  assert.deepEqual(rows, controlOwnershipMatrixCells);
+
+  assert.match(
+    source,
+    /import \{handleHorizontalArrowKey\} from '@site\/src\/components\/KeyboardScrollableRegion\/handleHorizontalArrowKey\.mjs';[\s\S]*<div className="architecture-diagram-scroll" role="region" aria-label="三种多智能体控制权模型，可使用左右方向键及首尾键横向滚动" tabIndex=\{0\} onKeyDown=\{handleHorizontalArrowKey\}>[\s\S]*!\[[^\]]+\]\(\/img\/diagrams\/agt-p-06-control-ownership-models\.svg\)[\s\S]*<\/div>/u,
+  );
+  assert.equal(
+    [...source.matchAll(/\/img\/diagrams\/agt-p-06-control-ownership-models\.svg/gu)].length,
+    1,
+  );
+  assert.doesNotMatch(source, /```mermaid/u);
+
+  const visible = parseMdxVisibleCopy(source, controlOwnershipArticlePath, {
+    includeStructure: true,
+  }).blocks.map(({text}) => text).join('\n');
+  for (const contract of [
+    /监督者[\s\S]*反复委派[\s\S]*保留全局控制/u,
+    /移交[\s\S]*(?:转移|移动)[\s\S]*(?:当前|活动)会话[\s\S]*控制权/u,
+    /智能体作为工具[\s\S]*有界子任务[\s\S]*返回[\s\S]*父智能体/u,
+    /混合拓扑/u, /上下文泄漏/u, /乒乓移交/u, /监督者瓶颈/u, /人工升级/u,
+    /控制所有者/u, /状态所有者/u, /权限/u, /副作用/u, /终止/u,
+    /失败[\s\S]*恢复/u, /确定性回退/u, /迁移/u,
+    /A2A[\s\S]*(?:互操作|通信)[\s\S]*(?:不证明|不等于)[\s\S]*(?:授权|权限)/u,
+    /实现证据[\s\S]*(?:不证明|不能证明)[\s\S]*生产/u,
+  ]) assert.match(visible, contract);
+}
+
+function assertControlOwnershipDiagramPair(drawio, svg) {
+  assert.match(drawio, /<mxfile\b/u);
+  assert.match(svg, /<svg\b(?=[^>]*viewBox="0 0 1200 720")(?=[^>]*role="img")(?=[^>]*aria-labelledby="agt-p-06-title agt-p-06-desc")(?![^>]*\bwidth=)(?![^>]*\bheight=)[^>]*>/u);
+  assert.match(svg, /<title id="agt-p-06-title">[^<]+<\/title>/u);
+  assert.match(svg, /<desc id="agt-p-06-desc">[^<]+<\/desc>/u);
+  assert.match(svg, /<g transform="translate\(19 29\)">/u);
+  for (const label of controlOwnershipRequiredLabels) {
+    const escapedXml = label.replaceAll('&', '&amp;');
+    const escapedRegex = escapedXml.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
+    assert.match(drawio, new RegExp(`\\bvalue="${escapedRegex}"`, 'u'));
+    assert.match(svg, new RegExp(`>${escapedRegex}<`, 'u'));
+  }
+  for (const [id, label] of [
+    ['supervisor-region', '1 · Supervisor：保留控制'],
+    ['handoff-region', '2 · Handoff：移动控制'],
+    ['tool-region', '3 · Agent as Tool：调用后返回'],
+  ]) {
+    assert.match(drawio, new RegExp(`id="${id}"[^>]*value="${label.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&')}"`, 'u'));
+    assert.match(svg, new RegExp(`data-region-id="${id}"`, 'u'));
+    assert.match(svg, new RegExp(`>${label.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&')}<`, 'u'));
+  }
+  for (const [edgeId, sourceId, targetId, label] of [
+    ['edge-supervisor-delegate', 'supervisor', 'worker', '反复委派'],
+    ['edge-worker-return', 'worker', 'supervisor', '结构化结果返回'],
+    ['edge-handoff-move', 'handoff', 'active-agent', '当前会话与控制权移动'],
+    ['edge-parent-call', 'parent-agent', 'agent-as-tool', '调用有界子任务'],
+    ['edge-tool-return', 'agent-as-tool', 'parent-agent', '结果返回 Parent'],
+  ]) {
+    assert.match(drawio, new RegExp(`id="${edgeId}"[^>]*value="${label}"[^>]*source="${sourceId}" target="${targetId}"`, 'u'));
+    assert.match(svg, new RegExp(`data-edge-id="${edgeId}" data-source="${sourceId}" data-target="${targetId}"`, 'u'));
+    assert.match(svg, new RegExp(`data-edge-label-for="${edgeId}"[^>]*data-stroke-clearance-css="8"[^>]*data-arrow-clearance-css="16"[^>]*data-node-clearance-css="12"`, 'u'));
+  }
+  for (const [nodeId, x, y, width, height, titleY, typeY] of [
+    ['supervisor', '60', '150', '280', '110', '190', '230'],
+    ['worker', '60', '440', '280', '110', '480', '520'],
+    ['handoff', '460', '150', '280', '110', '190', '230'],
+    ['active-agent', '460', '440', '280', '110', '480', '520'],
+    ['parent-agent', '860', '150', '280', '110', '190', '230'],
+    ['agent-as-tool', '860', '440', '280', '110', '480', '520'],
+  ]) {
+    assert.match(drawio, new RegExp(`id="${nodeId}"[\\s\\S]*?<mxGeometry x="${x}" y="${y}" width="${width}" height="${height}"`, 'u'));
+    // diagrams.net's drawing-bounds export preserves the half-pixel stroke
+    // alignment and the fractional cropped origin; lock the real export rather
+    // than a hand-rounded reconstruction of the source coordinates.
+    const exportedX = String(Number(x) - 18.65);
+    const exportedY = String(Number(y) - 28.5);
+    assert.match(svg, new RegExp(`data-node-id="${nodeId}"[^>]*data-padding-horizontal-css="16"[^>]*data-padding-vertical-css="14"[^>]*x="${exportedX}" y="${exportedY}" width="${width}" height="${height}"`, 'u'));
+    assert.match(svg, new RegExp(`data-title-for="${nodeId}"[^>]*y="${titleY}"`, 'u'));
+    assert.match(svg, new RegExp(`data-type-for="${nodeId}"[^>]*data-bottom-clearance-css="20"[^>]*y="${Number(typeY) - 28.5}"`, 'u'));
+  }
+}
+
+function assertControlOwnershipSources(ledger, health) {
+  assert.deepEqual(ledger.documents[controlOwnershipArticlePath], controlOwnershipDocumentContract);
+  assert.deepEqual(
+    ledger.documents[controlOwnershipArticlePath].citations.map(({source_id: id}) => id),
+    controlOwnershipSourceIds,
+  );
+  for (const contract of controlOwnershipSourceContracts) {
+    const source = ledger.sources.find(({id}) => id === contract.id);
+    assert.ok(source, contract.id);
+    assert.deepEqual({
+      canonical_locator: source.canonical_locator,
+      transport_locator: source.transport_locator,
+      expected_final_transport_locator: source.expected_final_transport_locator,
+      title: source.title, author: source.author_or_org, published_at: source.published_at,
+      version: source.version, kind: source.source_kind, tier: source.tier,
+      roles: source.allowed_evidence_roles, license: source.license, usage: source.usage_boundary,
+    }, {
+      canonical_locator: contract.locator,
+      transport_locator: contract.locator,
+      expected_final_transport_locator: contract.locator,
+      title: contract.title, author: contract.author, published_at: null,
+      version: contract.version, kind: contract.kind, tier: contract.tier,
+      roles: controlOwnershipAllowedRoles, license: contract.license, usage: contract.usage,
+    });
+    const observation = health.results.find(({source_ids: ids}) => ids.includes(contract.id));
+    assert.ok(observation, `${contract.id} health`);
+    assert.deepEqual({
+      transport_locator: observation.transport_locator,
+      source_ids: observation.source_ids,
+      last_attempt: observation.last_attempt,
+      last_success: observation.last_success,
+      review_status: observation.review_status,
+    }, {
+      transport_locator: contract.locator,
+      source_ids: [contract.id],
+      last_attempt: {at: '2026-08-25T12:07:24.531Z', outcome: 'healthy', final_transport_locator: contract.locator, http_status: 206, login_wall_detected: false, redirects: []},
+      last_success: {at: '2026-08-25T12:07:24.531Z', outcome: 'healthy', final_transport_locator: contract.locator, http_status: 206, login_wall_detected: false},
+      review_status: 'healthy',
+    });
+  }
+  const original = ledger.sources.find(({id}) =>
+    id === 'src-atlas-agt-p-06-control-ownership-models');
+  assert.deepEqual(original, {
+    id: 'src-atlas-agt-p-06-control-ownership-models',
+    canonical_locator: '/img/diagrams/agt-p-06-control-ownership-models.svg',
+    transport_locator: '/img/diagrams/agt-p-06-control-ownership-models.svg',
+    query_insensitive: false, locator_aliases: [], tombstone: null,
+    title: 'Multi-agent control ownership models', author_or_org: 'Tego Arch maintainers',
+    published_at: '2026-08-27', registered_at: '2026-08-27', checked_at: '2026-08-27',
+    version: 'Original synchronized Draw.io/SVG pair authored, exported and deterministically checked on 2026-08-27',
+    source_kind: 'original-illustration', tier: 'primary', allowed_evidence_roles: ['illustration'],
+    license: 'LicenseRef-Atlas-Original',
+    license_scope: 'The named project-authored agt-p-06-control-ownership-models.svg asset only',
+    license_evidence_url: 'https://github.com/sealday/tego-arch/blob/main/static/img/diagrams/agt-p-06-control-ownership-models.svg',
+    license_evidence_note: 'The project-authored Draw.io/SVG pair contains no third-party topology, reference image, icon, brand visual, signature, watermark or copied composition.',
+    license_family_id: '/img/diagrams/agt-p-06-control-ownership-models.svg',
+    license_family_grouping: 'identity', family_grouping_evidence_url: null,
+    copyright_policy: 'original-atlas',
+    usage_boundary: 'Original comparison of Supervisor, Handoff and Agent-as-Tool control, conversation ownership and return semantics; illustration-only and not evidence of protocol conformance, authorization, reliability, governance or production outcomes.',
+    link_policy: null,
+    expected_final_transport_locator: '/img/diagrams/agt-p-06-control-ownership-models.svg',
+    expected_final_approved_at: '2026-08-27',
+    expected_final_approval_note: 'Approved project-local original illustration after synchronized Draw.io/SVG semantic, geometry, accessibility and deterministic pair validation on 2026-08-27.',
+  });
+}
+
+test('AGT-P-06 publishes the exact control ownership matrix and synchronized diagram', () => {
+  assert.ok(existsSync(controlOwnershipArticlePath), `Missing ${controlOwnershipArticlePath}`);
+  assert.ok(existsSync(controlOwnershipDrawioPath), `Missing ${controlOwnershipDrawioPath}`);
+  assert.ok(existsSync(controlOwnershipSvgPath), `Missing ${controlOwnershipSvgPath}`);
+  const source = readFileSync(controlOwnershipArticlePath, 'utf8');
+  assert.doesNotThrow(() => markdownParser.parse(extractMarkdownBody(source)));
+  assertControlOwnershipArticleContract(source);
+  assertControlOwnershipDiagramPair(
+    readFileSync(controlOwnershipDrawioPath, 'utf8'),
+    readFileSync(controlOwnershipSvgPath, 'utf8'),
+  );
+});
+
+test('AGT-P-06 locks source identities, evidence boundaries, health and original illustration rights', () => {
+  assertControlOwnershipSources(
+    JSON.parse(readFileSync('data/source-ledger.json', 'utf8')),
+    JSON.parse(readFileSync('data/source-link-health.json', 'utf8')),
+  );
+});
+
+test('AGT-P-06 rejects metadata and exact matrix-cell drift without rejecting legal MDX', () => {
+  const source = readFileSync(controlOwnershipArticlePath, 'utf8');
+  const legal = `${source}\n\n<aside>补充说明：拓扑选择仍须服从同一运行预算。</aside>\n`;
+  assert.doesNotThrow(() => markdownParser.parse(extractMarkdownBody(legal)));
+  assert.doesNotThrow(() => assertControlOwnershipArticleContract(legal));
+  const mutations = [
+    source.replace(`summary: ${controlOwnershipSummary}`, 'summary: 三种模式可以自由混用。'),
+    source.replace('  - 控制权所有权\n  - 多智能体', '  - 多智能体\n  - 控制权所有权'),
+    source.replace('depends_on:\n  - AGT-C-02\n  - AGT-C-03\n  - AGT-C-04', 'depends_on:\n  - AGT-C-03'),
+    source.replace('| 下一步控制者 |', '| 谁决定 |'),
+    source.replaceAll('Supervisor；可在全局预算内反复委派', 'Worker Agent 自行决定'),
+    source.replaceAll('当前会话不返回原智能体；由 Active Agent 继续', '结果返回原智能体'),
+    source.replaceAll('有界子任务结果返回 Parent Agent', '工具智能体直接回复用户'),
+    source.replace('className="architecture-diagram-scroll"', 'className="diagram"'),
+  ];
+  const survivors = [];
+  for (const [index, mutant] of mutations.entries()) {
+    assert.notEqual(mutant, source);
+    assert.doesNotThrow(() => markdownParser.parse(extractMarkdownBody(mutant)));
+    try { assertControlOwnershipArticleContract(mutant); survivors.push(index); } catch {}
+  }
+  assert.deepEqual(survivors, []);
+});
+
+test('AGT-P-06 diagram pair fails closed on missing, drifted, inaccessible, or cramped assets', () => {
+  const drawio = readFileSync(controlOwnershipDrawioPath, 'utf8');
+  const svg = readFileSync(controlOwnershipSvgPath, 'utf8');
+  const mutations = [
+    ['missing SVG', drawio, ''],
+    ['Draw.io label drift', drawio.replace('value="Worker Agent"', 'value="Worker"'), svg],
+    ['SVG label drift', drawio, svg.replace('>Active Agent<', '>Active Worker<')],
+    ['region drift', drawio, svg.replace('data-region-id="tool-region"', 'data-region-id="other-region"')],
+    ['pair topology drift', drawio, svg.replace('data-target="worker"', 'data-target="active-agent"')],
+    ['accessibility drift', drawio, svg.replace(' role="img"', '')],
+    ['width drift', drawio, svg.replace('viewBox="0 0 1200 720"', 'viewBox="0 0 1199 720"')],
+    ['padding drift', drawio, svg.replace('data-padding-horizontal-css="16"', 'data-padding-horizontal-css="15"')],
+    ['label clearance drift', drawio, svg.replace('data-arrow-clearance-css="16"', 'data-arrow-clearance-css="15"')],
+    ['direction drift', drawio.replace('source="agent-as-tool" target="parent-agent"', 'source="parent-agent" target="agent-as-tool"'), svg],
+  ];
+  const survivors = [];
+  for (const [label, drawioMutant, svgMutant] of mutations) {
+    try { assertControlOwnershipDiagramPair(drawioMutant, svgMutant); survivors.push(label); } catch {}
+  }
+  assert.deepEqual(survivors, []);
+});
+
+test('AGT-P-06 source governance rejects identity, license, citation, document and health drift', () => {
+  const ledger = JSON.parse(readFileSync('data/source-ledger.json', 'utf8'));
+  const health = JSON.parse(readFileSync('data/source-link-health.json', 'utf8'));
+  const mutations = [];
+  for (const [sourceId, field, value] of [
+    ['src-github-ef3d4ce19335', 'canonical_locator', 'https://example.test/drift'],
+    ['src-github-f832ac155523', 'allowed_evidence_roles', ['implementation']],
+    ['src-github-bb9d33890d3e', 'license', 'MIT'],
+    ['src-github-70740975c052', 'usage_boundary', 'Proves production outcomes.'],
+    ['src-atlas-agt-p-06-control-ownership-models', 'version', 'Untracked asset'],
+  ]) {
+    const mutant = structuredClone(ledger);
+    mutant.sources.find(({id}) => id === sourceId)[field] = value;
+    mutations.push([`${sourceId} ${field}`, mutant, health]);
+  }
+  const citationMutant = structuredClone(ledger);
+  citationMutant.documents[controlOwnershipArticlePath].citations[0].roles = ['definition'];
+  mutations.push(['citation role', citationMutant, health]);
+  const documentMutant = structuredClone(ledger);
+  documentMutant.documents[controlOwnershipArticlePath].reviewed_at = '2099-01-01';
+  mutations.push(['document review', documentMutant, health]);
+  const healthMutant = structuredClone(health);
+  healthMutant.results.find(({source_ids: ids}) => ids.includes('src-github-f832ac155523'))
+    .last_attempt.http_status = 200;
+  mutations.push(['source health', ledger, healthMutant]);
+  const survivors = [];
+  for (const [label, ledgerMutant, healthState] of mutations) {
+    try { assertControlOwnershipSources(ledgerMutant, healthState); survivors.push(label); } catch {}
   }
   assert.deepEqual(survivors, []);
 });

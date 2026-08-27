@@ -21466,6 +21466,38 @@
       "expected_final_transport_locator": "https://github.com/open-telemetry/semantic-conventions-genai/blob/56d6b11a02129319bf371083fa134b7ce989c976/docs/gen-ai/gen-ai-agent-spans.md",
       "expected_final_approved_at": "2026-08-26",
       "expected_final_approval_note": "The exact pinned GitHub documentation file returned HTTP 200 and exposed the expected title, Development status and generated semantic-convention tables on 2026-08-26."
+    },
+    {
+      "id": "src-atlas-agt-p-06-control-ownership-models",
+      "canonical_locator": "/img/diagrams/agt-p-06-control-ownership-models.svg",
+      "transport_locator": "/img/diagrams/agt-p-06-control-ownership-models.svg",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Multi-agent control ownership models",
+      "author_or_org": "Tego Arch maintainers",
+      "published_at": "2026-08-27",
+      "registered_at": "2026-08-27",
+      "checked_at": "2026-08-27",
+      "version": "Original synchronized Draw.io/SVG pair authored, exported and deterministically checked on 2026-08-27",
+      "source_kind": "original-illustration",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "illustration"
+      ],
+      "license": "LicenseRef-Atlas-Original",
+      "license_scope": "The named project-authored agt-p-06-control-ownership-models.svg asset only",
+      "license_evidence_url": "https://github.com/sealday/tego-arch/blob/main/static/img/diagrams/agt-p-06-control-ownership-models.svg",
+      "license_evidence_note": "The project-authored Draw.io/SVG pair contains no third-party topology, reference image, icon, brand visual, signature, watermark or copied composition.",
+      "license_family_id": "/img/diagrams/agt-p-06-control-ownership-models.svg",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "original-atlas",
+      "usage_boundary": "Original comparison of Supervisor, Handoff and Agent-as-Tool control, conversation ownership and return semantics; illustration-only and not evidence of protocol conformance, authorization, reliability, governance or production outcomes.",
+      "link_policy": null,
+      "expected_final_transport_locator": "/img/diagrams/agt-p-06-control-ownership-models.svg",
+      "expected_final_approved_at": "2026-08-27",
+      "expected_final_approval_note": "Approved project-local original illustration after synchronized Draw.io/SVG semantic, geometry, accessibility and deterministic pair validation on 2026-08-27."
     }
   ],
   "documents": {
@@ -33258,6 +33290,86 @@
           "usage_mode": "facts-summary",
           "attribution_note": "Artificial Intelligence Risk Management Framework (AI RMF 1.0), Elham Tabassi / National Institute of Standards and Technology",
           "modification_note": "Original Chinese factual summary of risk, monitoring, evaluation and human-oversight mechanisms; no source prose, figures, tables or framework structure copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/patterns/agt-p-06-supervisor-handoff-agents-as-tools.mdx": {
+      "reviewed_at": "2026-08-27",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-github-ef3d4ce19335",
+          "citation_url": "https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/docs/multi_agent.md",
+          "roles": [
+            "implementation",
+            "comparison"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Multi-agent patterns documentation at fixed commit, OpenAI",
+          "modification_note": "Original Chinese comparison of manager-style agents-as-tools and handoff control ownership; no source prose, code, examples, structure, taxonomy layout or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-github-f832ac155523",
+          "citation_url": "https://github.com/langchain-ai/langgraph-supervisor-py/blob/88859b34017ac3569bbd4a3092c7e77593a0a960/README.md",
+          "roles": [
+            "implementation",
+            "comparison"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "langgraph-supervisor-py README at fixed commit, LangChain",
+          "modification_note": "Bounded implementation-evidence summary of supervisor delegation and return semantics; no source prose, code, examples, topology, repository layout or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-github-bb9d33890d3e",
+          "citation_url": "https://github.com/a2aproject/A2A/blob/af112d9491c1fd4b2a568ac65755af4a62790490/docs/specification.md",
+          "roles": [
+            "definition",
+            "comparison"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "A2A specification at fixed commit, A2A Project",
+          "modification_note": "Original Chinese explanation of protocol interoperability boundaries; no specification prose, examples, schemas, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-github-70740975c052",
+          "citation_url": "https://github.com/microsoft/multi-agent-reference-architecture/tree/ed3613b54b46b595dd223aaff8772def376a8c37",
+          "roles": [
+            "case-evidence",
+            "comparison"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Microsoft Multi-Agent Reference Architecture repository at fixed commit, Microsoft",
+          "modification_note": "Original Chinese comparison of reference-architecture building blocks, communication and governance boundaries; no source prose, code, examples, topology, repository layout or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-atlas-agt-p-06-control-ownership-models",
+          "citation_url": "/img/diagrams/agt-p-06-control-ownership-models.svg",
+          "roles": [
+            "illustration"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "original-illustration",
+          "attribution_note": "Multi-agent control ownership models, Tego Arch maintainers",
+          "modification_note": "Created as an original synchronized Draw.io/SVG pair without third-party topology, reference imagery, icons, brand visuals, signatures, watermarks or copied composition.",
           "excerpt": null,
           "quotation_reviewed": false
         }
