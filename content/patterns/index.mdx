@@ -44,6 +44,21 @@ import PatternTopicIndex from '@site/src/components/PatternTopicIndex';
 
 <PatternTopicIndex />
 
+## Agentic Architecture 模式入口
+
+下面八篇把既有控制与协作概览映射到可独立使用的设计判断；顺序按基础模式到能力扩展排列：
+
+1. [Deterministic Workflow vs Autonomous Agent](/patterns/agt-p-01)：先决定任务需要显式步骤还是自主选择下一步。
+2. [Agentic RAG](/patterns/agt-p-02)：把检索、证据选择和引用核验组织为有停止条件的循环。
+3. [Planner–Executor](/patterns/agt-p-03)：分离动态规划与执行，并明确重规划责任。
+4. [Evaluator–Optimizer](/patterns/agt-p-04)：用可判定标准、预算和终止条件约束反馈迭代。
+5. [Router 与模型驱动分发](/patterns/agt-p-05)：以集中路由选择有限专家、模型或流程。
+6. [Supervisor、Handoff 与 Agents-as-Tools](/patterns/agt-p-06)：比较监督、移交与专家调用如何分配控制权和最终回答责任。
+7. [Orchestrator–Workers 与 Fan-out/Fan-in](/patterns/agt-p-07)：明确子任务拆分、并发执行、结果收敛与冲突处理。
+8. [Durable Agent 与 Human-in-the-loop](/patterns/agt-p-08)：为跨进程任务加入持久恢复、人工审批和取消边界。
+
+A2A 连接独立 Agent 运行时之间的任务协作，MCP 连接宿主与工具、资源或数据上下文；它们解决的是互操作接口，不自动保证控制权归属、治理、失败恢复或生产安全。协议是否可用，不能替代对下面控制模式及运行边界的逐项设计。
+
 ## 智能体（Agent）控制与协作模式
 
 ### 路由器（Router）
