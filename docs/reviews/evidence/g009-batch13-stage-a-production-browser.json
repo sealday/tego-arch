@@ -1,0 +1,1072 @@
+{
+  "implementationHead": "f8fa62a1c116f1d3bca8633623ed2910af29bedc",
+  "pages": {
+    "workflow": "Verify and deploy Docusaurus to GitHub Pages",
+    "runId": 33067038136,
+    "runUrl": "https://github.com/sealday/tego-arch/actions/runs/33067038136",
+    "event": "push",
+    "headSha": "f8fa62a1c116f1d3bca8633623ed2910af29bedc",
+    "status": "completed",
+    "conclusion": "success",
+    "build": {
+      "jobId": 98499561708,
+      "status": "completed",
+      "conclusion": "success"
+    },
+    "deploy": {
+      "jobId": 98500236998,
+      "status": "completed",
+      "conclusion": "success"
+    }
+  },
+  "probes": {
+    "routes": [
+      {
+        "path": "/tego-arch/",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8",
+        "bytes": 17310,
+        "sha256": "37a400214dd5f9c574f773b8ed6bd6db5a7f7609ad612b1ecdfdf94b06d46a5b"
+      },
+      {
+        "path": "/tego-arch/styles",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8",
+        "bytes": 23851,
+        "sha256": "062251a3113c4366e244dfc44b9bec9013e6eabaa06eefec00cd87d2c3cdadf2"
+      },
+      {
+        "path": "/tego-arch/styles/sty-03",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8",
+        "bytes": 41952,
+        "sha256": "a0e8d8f70ee62433928d4b5ad9c8cd9c327d95002f6f671c0ba0688f3bdaafeb"
+      },
+      {
+        "path": "/tego-arch/styles/sty-10",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8",
+        "bytes": 48594,
+        "sha256": "f67928cb28da3dd3aa4cab0133f5c8186027698b35787eb4ee82adc97703287b"
+      },
+      {
+        "path": "/tego-arch/styles/sty-12",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8",
+        "bytes": 46875,
+        "sha256": "acc189628d31d5a16566ec497c32043a097576f735bf3578a3806a6dad463b08"
+      },
+      {
+        "path": "/tego-arch/cases",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8",
+        "bytes": 47702,
+        "sha256": "477ef8b9054e57e78a005e8ace290fc23e9412ace3fa62d38270ae3772e9b577"
+      },
+      {
+        "path": "/tego-arch/cases/micro-frontends-single-spa",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8",
+        "bytes": 62040,
+        "sha256": "8ed2d935444c5c7994adc244c9f4243c49799ebcf63f5eb91948c36f57e27e44"
+      },
+      {
+        "path": "/tego-arch/references",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8",
+        "bytes": 23533,
+        "sha256": "72d679e026a0cd0b47cd2607f384c7a197772e0624a9204483f3404634e893ff"
+      }
+    ],
+    "svg": {
+      "path": "/tego-arch/img/diagrams/sty-12-micro-frontend-commerce-runtime.svg",
+      "url": "https://sealday.github.io/tego-arch/img/diagrams/sty-12-micro-frontend-commerce-runtime.svg",
+      "status": 200,
+      "contentType": "image/svg+xml",
+      "bytes": 35407,
+      "sha256": "c5347b1bf84890cb8e72be387185f2737afefadfdb57090b4fff3d5693e156b3"
+    }
+  },
+  "collection": {
+    "browser": "Codex in-app Browser only",
+    "fresh": true,
+    "servedUrl": "https://sealday.github.io/tego-arch/styles/sty-12",
+    "build": "GitHub Pages exact Stage A head f8fa62a1c116f1d3bca8633623ed2910af29bedc; push run 33067038136; build job 98499561708; deploy job 98500236998",
+    "navigationMethod": "Relation destinations were opened by exact href direct navigation and returned with Browser back; no physical link click is claimed.",
+    "observedSvgAsset": {
+      "source": "production Browser pageAssets bundle",
+      "inventoryId": "2c296ea6-3542-4042-9233-2b0400ba1537",
+      "assetId": "faffe609e627d4f9",
+      "contentType": "image/svg+xml",
+      "bytes": 35407,
+      "sha256": "c5347b1bf84890cb8e72be387185f2737afefadfdb57090b4fff3d5693e156b3",
+      "viewBox": "0 0 2400 3600",
+      "requested": 1,
+      "downloaded": 1,
+      "failed": 0
+    },
+    "diagnosticContinuity": [
+      {
+        "scope": "desktopLight",
+        "afterSequence": 13,
+        "cursor": 133,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "desktopDark",
+        "afterSequence": 133,
+        "cursor": 216,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "mobileDark",
+        "afterSequence": 438,
+        "cursor": 524,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "mobileLight",
+        "afterSequence": 524,
+        "cursor": 610,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "whole-session terminal",
+        "afterSequence": 610,
+        "cursor": 610,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      }
+    ],
+    "discardedAttempts": [
+      {
+        "state": "mobileLight",
+        "afterSequence": 216,
+        "cursor": 438,
+        "count": 0,
+        "hasMore": false,
+        "truncated": true,
+        "disposition": "DISCARDED; replaced by the complete accepted mobileLight retry at 524 -> 610."
+      }
+    ]
+  },
+  "stateOrder": [
+    "desktopLight",
+    "desktopDark",
+    "mobileLight",
+    "mobileDark"
+  ],
+  "states": {
+    "desktopLight": {
+      "theme": "light",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "geometry": {
+        "page": {
+          "clientWidth": 1440,
+          "scrollWidth": 1440
+        },
+        "wrappers": [
+          {
+            "label": "Micro-Frontend 五种组合方式决策表，可横向滚动",
+            "clientWidth": 800,
+            "scrollWidth": 800
+          },
+          {
+            "label": "Micro-Frontend 电商运行时、发布与权威状态边界图，可横向滚动",
+            "clientWidth": 800,
+            "scrollWidth": 800
+          },
+          {
+            "label": "Micro-Frontend 构件所有权矩阵，可横向滚动",
+            "clientWidth": 800,
+            "scrollWidth": 800
+          },
+          {
+            "label": "Micro-Frontend 六类故障检测、降级与恢复表，可横向滚动",
+            "clientWidth": 800,
+            "scrollWidth": 800
+          }
+        ],
+        "svg": {
+          "loaded": true,
+          "viewBox": "0 0 2400 3600",
+          "sourceWidth": 2400,
+          "sourceHeight": 3600,
+          "naturalWidth": 100,
+          "naturalHeight": 150,
+          "renderedWidth": 800,
+          "renderedHeight": 1200,
+          "src": "https://sealday.github.io/tego-arch/assets/images/sty-12-micro-frontend-commerce-runtime-f59e777fca88537fe0a140fab619968f.svg",
+          "observedAssetBytes": 35407
+        },
+        "sources": [
+          {
+            "href": "https://martinfowler.com/articles/micro-frontends.html",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          },
+          {
+            "href": "https://single-spa.js.org/docs/microfrontends-concept/",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          },
+          {
+            "href": "https://single-spa.js.org/docs/recommended-setup/",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          },
+          {
+            "href": "https://html.spec.whatwg.org/multipage/webappapis.html#import-maps",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          },
+          {
+            "href": "https://www.w3.org/TR/SRI/",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          },
+          {
+            "href": "https://www.w3.org/TR/CSP3/",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          },
+          {
+            "href": "https://www.w3.org/TR/longtasks-1/",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          }
+        ],
+        "sty13": 0
+      },
+      "interactions": [
+        {
+          "index": 0,
+          "label": "Micro-Frontend 五种组合方式决策表，可横向滚动",
+          "key": "ArrowRight",
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 800,
+            "scrollWidth": 800,
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 800,
+            "scrollWidth": 800,
+            "scrollLeft": 0
+          },
+          "delta": 0
+        },
+        {
+          "index": 1,
+          "label": "Micro-Frontend 电商运行时、发布与权威状态边界图，可横向滚动",
+          "key": "ArrowRight",
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 800,
+            "scrollWidth": 800,
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 800,
+            "scrollWidth": 800,
+            "scrollLeft": 0
+          },
+          "delta": 0
+        },
+        {
+          "index": 2,
+          "label": "Micro-Frontend 构件所有权矩阵，可横向滚动",
+          "key": "ArrowRight",
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 800,
+            "scrollWidth": 800,
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 800,
+            "scrollWidth": 800,
+            "scrollLeft": 0
+          },
+          "delta": 0
+        },
+        {
+          "index": 3,
+          "label": "Micro-Frontend 六类故障检测、降级与恢复表，可横向滚动",
+          "key": "ArrowRight",
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 800,
+            "scrollWidth": 800,
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 800,
+            "scrollWidth": 800,
+            "scrollLeft": 0
+          },
+          "delta": 0
+        }
+      ],
+      "relations": [
+        {
+          "href": "/tego-arch/styles/sty-03",
+          "expectedH1": "垂直切片架构：按用例收拢变化边界",
+          "h1": "垂直切片架构：按用例收拢变化边界",
+          "visibleCount": 1,
+          "returnedToArticle": true
+        },
+        {
+          "href": "/tego-arch/styles/sty-10",
+          "expectedH1": "Microkernel / Plug-in Architecture：让扩展能力可替换，也让风险止步于边界",
+          "h1": "Microkernel / Plug-in Architecture：让扩展能力可替换，也让风险止步于边界",
+          "visibleCount": 1,
+          "returnedToArticle": true
+        },
+        {
+          "href": "/tego-arch/cases/micro-frontends-single-spa",
+          "expectedH1": "微前端：用垂直业务切片约束跨团队所有权",
+          "h1": "微前端：用垂直业务切片约束跨团队所有权",
+          "visibleCount": 1,
+          "returnedToArticle": true
+        }
+      ],
+      "logs": [],
+      "diagnostics": {
+        "events": [],
+        "pages": [
+          {
+            "afterSequence": 13,
+            "cursor": 133,
+            "count": 0,
+            "hasMore": false,
+            "truncated": false
+          }
+        ],
+        "hasMore": false,
+        "truncated": false
+      }
+    },
+    "desktopDark": {
+      "theme": "dark",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "geometry": {
+        "page": {
+          "clientWidth": 1440,
+          "scrollWidth": 1440
+        },
+        "wrappers": [
+          {
+            "label": "Micro-Frontend 五种组合方式决策表，可横向滚动",
+            "clientWidth": 800,
+            "scrollWidth": 800
+          },
+          {
+            "label": "Micro-Frontend 电商运行时、发布与权威状态边界图，可横向滚动",
+            "clientWidth": 800,
+            "scrollWidth": 800
+          },
+          {
+            "label": "Micro-Frontend 构件所有权矩阵，可横向滚动",
+            "clientWidth": 800,
+            "scrollWidth": 800
+          },
+          {
+            "label": "Micro-Frontend 六类故障检测、降级与恢复表，可横向滚动",
+            "clientWidth": 800,
+            "scrollWidth": 800
+          }
+        ],
+        "svg": {
+          "loaded": true,
+          "viewBox": "0 0 2400 3600",
+          "sourceWidth": 2400,
+          "sourceHeight": 3600,
+          "naturalWidth": 100,
+          "naturalHeight": 150,
+          "renderedWidth": 800,
+          "renderedHeight": 1200,
+          "src": "https://sealday.github.io/tego-arch/assets/images/sty-12-micro-frontend-commerce-runtime-f59e777fca88537fe0a140fab619968f.svg",
+          "observedAssetBytes": 35407
+        },
+        "sources": [
+          {
+            "href": "https://martinfowler.com/articles/micro-frontends.html",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          },
+          {
+            "href": "https://single-spa.js.org/docs/microfrontends-concept/",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          },
+          {
+            "href": "https://single-spa.js.org/docs/recommended-setup/",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          },
+          {
+            "href": "https://html.spec.whatwg.org/multipage/webappapis.html#import-maps",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          },
+          {
+            "href": "https://www.w3.org/TR/SRI/",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          },
+          {
+            "href": "https://www.w3.org/TR/CSP3/",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          },
+          {
+            "href": "https://www.w3.org/TR/longtasks-1/",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          }
+        ],
+        "sty13": 0
+      },
+      "interactions": [
+        {
+          "index": 0,
+          "label": "Micro-Frontend 五种组合方式决策表，可横向滚动",
+          "key": "ArrowRight",
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 800,
+            "scrollWidth": 800,
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 800,
+            "scrollWidth": 800,
+            "scrollLeft": 0
+          },
+          "delta": 0
+        },
+        {
+          "index": 1,
+          "label": "Micro-Frontend 电商运行时、发布与权威状态边界图，可横向滚动",
+          "key": "ArrowRight",
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 800,
+            "scrollWidth": 800,
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 800,
+            "scrollWidth": 800,
+            "scrollLeft": 0
+          },
+          "delta": 0
+        },
+        {
+          "index": 2,
+          "label": "Micro-Frontend 构件所有权矩阵，可横向滚动",
+          "key": "ArrowRight",
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 800,
+            "scrollWidth": 800,
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 800,
+            "scrollWidth": 800,
+            "scrollLeft": 0
+          },
+          "delta": 0
+        },
+        {
+          "index": 3,
+          "label": "Micro-Frontend 六类故障检测、降级与恢复表，可横向滚动",
+          "key": "ArrowRight",
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 800,
+            "scrollWidth": 800,
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 800,
+            "scrollWidth": 800,
+            "scrollLeft": 0
+          },
+          "delta": 0
+        }
+      ],
+      "relations": [
+        {
+          "href": "/tego-arch/styles/sty-03",
+          "expectedH1": "垂直切片架构：按用例收拢变化边界",
+          "h1": "垂直切片架构：按用例收拢变化边界",
+          "visibleCount": 1,
+          "returnedToArticle": true
+        },
+        {
+          "href": "/tego-arch/styles/sty-10",
+          "expectedH1": "Microkernel / Plug-in Architecture：让扩展能力可替换，也让风险止步于边界",
+          "h1": "Microkernel / Plug-in Architecture：让扩展能力可替换，也让风险止步于边界",
+          "visibleCount": 1,
+          "returnedToArticle": true
+        },
+        {
+          "href": "/tego-arch/cases/micro-frontends-single-spa",
+          "expectedH1": "微前端：用垂直业务切片约束跨团队所有权",
+          "h1": "微前端：用垂直业务切片约束跨团队所有权",
+          "visibleCount": 1,
+          "returnedToArticle": true
+        }
+      ],
+      "logs": [],
+      "diagnostics": {
+        "events": [],
+        "pages": [
+          {
+            "afterSequence": 133,
+            "cursor": 216,
+            "count": 0,
+            "hasMore": false,
+            "truncated": false
+          }
+        ],
+        "hasMore": false,
+        "truncated": false
+      }
+    },
+    "mobileLight": {
+      "theme": "light",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "geometry": {
+        "page": {
+          "clientWidth": 390,
+          "scrollWidth": 390
+        },
+        "wrappers": [
+          {
+            "label": "Micro-Frontend 五种组合方式决策表，可横向滚动",
+            "clientWidth": 358,
+            "scrollWidth": 358
+          },
+          {
+            "label": "Micro-Frontend 电商运行时、发布与权威状态边界图，可横向滚动",
+            "clientWidth": 358,
+            "scrollWidth": 800
+          },
+          {
+            "label": "Micro-Frontend 构件所有权矩阵，可横向滚动",
+            "clientWidth": 358,
+            "scrollWidth": 358
+          },
+          {
+            "label": "Micro-Frontend 六类故障检测、降级与恢复表，可横向滚动",
+            "clientWidth": 358,
+            "scrollWidth": 358
+          }
+        ],
+        "svg": {
+          "loaded": true,
+          "viewBox": "0 0 2400 3600",
+          "sourceWidth": 2400,
+          "sourceHeight": 3600,
+          "naturalWidth": 100,
+          "naturalHeight": 150,
+          "renderedWidth": 800,
+          "renderedHeight": 1200,
+          "src": "https://sealday.github.io/tego-arch/assets/images/sty-12-micro-frontend-commerce-runtime-f59e777fca88537fe0a140fab619968f.svg",
+          "observedAssetBytes": 35407
+        },
+        "sources": [
+          {
+            "href": "https://martinfowler.com/articles/micro-frontends.html",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          },
+          {
+            "href": "https://single-spa.js.org/docs/microfrontends-concept/",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          },
+          {
+            "href": "https://single-spa.js.org/docs/recommended-setup/",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          },
+          {
+            "href": "https://html.spec.whatwg.org/multipage/webappapis.html#import-maps",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          },
+          {
+            "href": "https://www.w3.org/TR/SRI/",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          },
+          {
+            "href": "https://www.w3.org/TR/CSP3/",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          },
+          {
+            "href": "https://www.w3.org/TR/longtasks-1/",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          }
+        ],
+        "sty13": 0
+      },
+      "interactions": [
+        {
+          "index": 0,
+          "label": "Micro-Frontend 五种组合方式决策表，可横向滚动",
+          "key": "ArrowRight",
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 358,
+            "scrollWidth": 358,
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 358,
+            "scrollWidth": 358,
+            "scrollLeft": 0
+          },
+          "delta": 0
+        },
+        {
+          "index": 1,
+          "label": "Micro-Frontend 电商运行时、发布与权威状态边界图，可横向滚动",
+          "key": "ArrowRight",
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 358,
+            "scrollWidth": 800,
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 358,
+            "scrollWidth": 800,
+            "scrollLeft": 40
+          },
+          "delta": 40
+        },
+        {
+          "index": 2,
+          "label": "Micro-Frontend 构件所有权矩阵，可横向滚动",
+          "key": "ArrowRight",
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 358,
+            "scrollWidth": 358,
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 358,
+            "scrollWidth": 358,
+            "scrollLeft": 0
+          },
+          "delta": 0
+        },
+        {
+          "index": 3,
+          "label": "Micro-Frontend 六类故障检测、降级与恢复表，可横向滚动",
+          "key": "ArrowRight",
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 358,
+            "scrollWidth": 358,
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 358,
+            "scrollWidth": 358,
+            "scrollLeft": 0
+          },
+          "delta": 0
+        }
+      ],
+      "relations": [
+        {
+          "href": "/tego-arch/styles/sty-03",
+          "expectedH1": "垂直切片架构：按用例收拢变化边界",
+          "h1": "垂直切片架构：按用例收拢变化边界",
+          "visibleCount": 1,
+          "returnedToArticle": true
+        },
+        {
+          "href": "/tego-arch/styles/sty-10",
+          "expectedH1": "Microkernel / Plug-in Architecture：让扩展能力可替换，也让风险止步于边界",
+          "h1": "Microkernel / Plug-in Architecture：让扩展能力可替换，也让风险止步于边界",
+          "visibleCount": 1,
+          "returnedToArticle": true
+        },
+        {
+          "href": "/tego-arch/cases/micro-frontends-single-spa",
+          "expectedH1": "微前端：用垂直业务切片约束跨团队所有权",
+          "h1": "微前端：用垂直业务切片约束跨团队所有权",
+          "visibleCount": 1,
+          "returnedToArticle": true
+        }
+      ],
+      "logs": [],
+      "diagnostics": {
+        "events": [],
+        "pages": [
+          {
+            "afterSequence": 524,
+            "cursor": 610,
+            "count": 0,
+            "hasMore": false,
+            "truncated": false
+          }
+        ],
+        "hasMore": false,
+        "truncated": false
+      }
+    },
+    "mobileDark": {
+      "theme": "dark",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "geometry": {
+        "page": {
+          "clientWidth": 390,
+          "scrollWidth": 390
+        },
+        "wrappers": [
+          {
+            "label": "Micro-Frontend 五种组合方式决策表，可横向滚动",
+            "clientWidth": 358,
+            "scrollWidth": 358
+          },
+          {
+            "label": "Micro-Frontend 电商运行时、发布与权威状态边界图，可横向滚动",
+            "clientWidth": 358,
+            "scrollWidth": 800
+          },
+          {
+            "label": "Micro-Frontend 构件所有权矩阵，可横向滚动",
+            "clientWidth": 358,
+            "scrollWidth": 358
+          },
+          {
+            "label": "Micro-Frontend 六类故障检测、降级与恢复表，可横向滚动",
+            "clientWidth": 358,
+            "scrollWidth": 358
+          }
+        ],
+        "svg": {
+          "loaded": true,
+          "viewBox": "0 0 2400 3600",
+          "sourceWidth": 2400,
+          "sourceHeight": 3600,
+          "naturalWidth": 100,
+          "naturalHeight": 150,
+          "renderedWidth": 800,
+          "renderedHeight": 1200,
+          "src": "https://sealday.github.io/tego-arch/assets/images/sty-12-micro-frontend-commerce-runtime-f59e777fca88537fe0a140fab619968f.svg",
+          "observedAssetBytes": 35407
+        },
+        "sources": [
+          {
+            "href": "https://martinfowler.com/articles/micro-frontends.html",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          },
+          {
+            "href": "https://single-spa.js.org/docs/microfrontends-concept/",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          },
+          {
+            "href": "https://single-spa.js.org/docs/recommended-setup/",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          },
+          {
+            "href": "https://html.spec.whatwg.org/multipage/webappapis.html#import-maps",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          },
+          {
+            "href": "https://www.w3.org/TR/SRI/",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          },
+          {
+            "href": "https://www.w3.org/TR/CSP3/",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          },
+          {
+            "href": "https://www.w3.org/TR/longtasks-1/",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          }
+        ],
+        "sty13": 0
+      },
+      "interactions": [
+        {
+          "index": 0,
+          "label": "Micro-Frontend 五种组合方式决策表，可横向滚动",
+          "key": "ArrowRight",
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 358,
+            "scrollWidth": 358,
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 358,
+            "scrollWidth": 358,
+            "scrollLeft": 0
+          },
+          "delta": 0
+        },
+        {
+          "index": 1,
+          "label": "Micro-Frontend 电商运行时、发布与权威状态边界图，可横向滚动",
+          "key": "ArrowRight",
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 358,
+            "scrollWidth": 800,
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 358,
+            "scrollWidth": 800,
+            "scrollLeft": 40
+          },
+          "delta": 40
+        },
+        {
+          "index": 2,
+          "label": "Micro-Frontend 构件所有权矩阵，可横向滚动",
+          "key": "ArrowRight",
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 358,
+            "scrollWidth": 358,
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 358,
+            "scrollWidth": 358,
+            "scrollLeft": 0
+          },
+          "delta": 0
+        },
+        {
+          "index": 3,
+          "label": "Micro-Frontend 六类故障检测、降级与恢复表，可横向滚动",
+          "key": "ArrowRight",
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 358,
+            "scrollWidth": 358,
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 358,
+            "scrollWidth": 358,
+            "scrollLeft": 0
+          },
+          "delta": 0
+        }
+      ],
+      "relations": [
+        {
+          "href": "/tego-arch/styles/sty-03",
+          "expectedH1": "垂直切片架构：按用例收拢变化边界",
+          "h1": "垂直切片架构：按用例收拢变化边界",
+          "visibleCount": 1,
+          "returnedToArticle": true
+        },
+        {
+          "href": "/tego-arch/styles/sty-10",
+          "expectedH1": "Microkernel / Plug-in Architecture：让扩展能力可替换，也让风险止步于边界",
+          "h1": "Microkernel / Plug-in Architecture：让扩展能力可替换，也让风险止步于边界",
+          "visibleCount": 1,
+          "returnedToArticle": true
+        },
+        {
+          "href": "/tego-arch/cases/micro-frontends-single-spa",
+          "expectedH1": "微前端：用垂直业务切片约束跨团队所有权",
+          "h1": "微前端：用垂直业务切片约束跨团队所有权",
+          "visibleCount": 1,
+          "returnedToArticle": true
+        }
+      ],
+      "logs": [],
+      "diagnostics": {
+        "events": [],
+        "pages": [
+          {
+            "afterSequence": 438,
+            "cursor": 524,
+            "count": 0,
+            "hasMore": false,
+            "truncated": false
+          }
+        ],
+        "hasMore": false,
+        "truncated": false
+      }
+    }
+  },
+  "functionalSummary": {
+    "status": "PASS",
+    "states": 4,
+    "wrapperInteractions": 16,
+    "relationObservations": 12,
+    "sourceObservations": 28,
+    "sty13ActionableTotal": 0,
+    "warningErrorLogs": 0,
+    "runtimeAndLogEvents": 0,
+    "diagnosticPagesTerminal": true,
+    "diagnosticsTruncated": false
+  },
+  "screenshotEvidence": {
+    "status": "PASS / ACCEPTED",
+    "attempted": 4,
+    "accepted": 4,
+    "fallbackUsed": false,
+    "storage": "Codex in-app Browser captures retained in the task conversation; no substituted surface or repository screenshot file.",
+    "captureScope": "Faithful viewport captures of the production-analysis table section reached through browser history restoration; not opening or full-page screenshots.",
+    "attempts": [
+      {
+        "state": "desktopLight",
+        "status": "CAPTURED_ACCEPTED",
+        "bytes": 160898,
+        "sha256": "fc5cb49ed49f502659450c841b100327c0a889009256129b3964897a85b86a9d",
+        "reason": "Faithful viewport capture inspected at original dimensions; content, theme, crop and typography matched the visible production-analysis table section restored by browser history."
+      },
+      {
+        "state": "desktopDark",
+        "status": "CAPTURED_ACCEPTED",
+        "bytes": 163194,
+        "sha256": "f7b37d7ae87b5fa2ce239d46a500f9ba50b09b84dc204bfb122844c8aa6827d3",
+        "reason": "Faithful viewport capture inspected at original dimensions; content, theme, crop and typography matched the visible production-analysis table section restored by browser history."
+      },
+      {
+        "state": "mobileLight",
+        "status": "CAPTURED_ACCEPTED",
+        "bytes": 38704,
+        "sha256": "10735fbe083f6d7786ac9c0a3d42a8772847061a1f670774800aca98412eec85",
+        "reason": "Faithful viewport capture inspected at original dimensions; content, theme, crop and typography matched the visible production-analysis table section restored by browser history."
+      },
+      {
+        "state": "mobileDark",
+        "status": "CAPTURED_ACCEPTED",
+        "bytes": 38233,
+        "sha256": "e5f5b9a77e2764366551e7e9a3174ba11df9b88763a94ff7720073094812f1b2",
+        "reason": "Faithful viewport capture inspected at original dimensions; content, theme, crop and typography matched the visible production-analysis table section restored by browser history."
+      }
+    ]
+  }
+}

@@ -34,6 +34,43 @@ export const SCREENSHOTS = Object.freeze([
   Object.freeze({state: 'mobileLight', bytes: 54_856, sha256: 'd3d889a7a1dd5d25cffa87d751f271ef2b0083e3ec5954099eaeb7834dcf35f2'}),
   Object.freeze({state: 'mobileDark', bytes: 54_827, sha256: '5a7bd0b6334206b1bdde52f6a072d3faff38952ac6ec6b138b06f66de1348bad'}),
 ]);
+export const STAGE_A_PUBLISHED_HEAD = 'f8fa62a1c116f1d3bca8633623ed2910af29bedc';
+export const STAGE_A_PRODUCTION_RAW_BYTES = 33_721;
+export const STAGE_A_PRODUCTION_RAW_SHA256 = 'a28bb3269f2b7545b7d77f2ec506ce5b1bd737924a5db6945481ee8ec5763560';
+export const STAGE_A_PRODUCTION_PAGES = Object.freeze({
+  workflow: 'Verify and deploy Docusaurus to GitHub Pages',
+  runId: 33067038136,
+  runUrl: 'https://github.com/sealday/tego-arch/actions/runs/33067038136',
+  event: 'push',
+  headSha: STAGE_A_PUBLISHED_HEAD,
+  status: 'completed',
+  conclusion: 'success',
+  build: Object.freeze({jobId: 98499561708, status: 'completed', conclusion: 'success'}),
+  deploy: Object.freeze({jobId: 98500236998, status: 'completed', conclusion: 'success'}),
+});
+export const STAGE_A_PRODUCTION_SCREENSHOTS = Object.freeze([
+  Object.freeze({state: 'desktopLight', bytes: 160_898, sha256: 'fc5cb49ed49f502659450c841b100327c0a889009256129b3964897a85b86a9d'}),
+  Object.freeze({state: 'desktopDark', bytes: 163_194, sha256: 'f7b37d7ae87b5fa2ce239d46a500f9ba50b09b84dc204bfb122844c8aa6827d3'}),
+  Object.freeze({state: 'mobileLight', bytes: 38_704, sha256: '10735fbe083f6d7786ac9c0a3d42a8772847061a1f670774800aca98412eec85'}),
+  Object.freeze({state: 'mobileDark', bytes: 38_233, sha256: 'e5f5b9a77e2764366551e7e9a3174ba11df9b88763a94ff7720073094812f1b2'}),
+]);
+const STAGE_A_PRODUCTION_DIAGNOSTICS = Object.freeze([
+  Object.freeze({scope: 'desktopLight', afterSequence: 13, cursor: 133, count: 0, hasMore: false, truncated: false}),
+  Object.freeze({scope: 'desktopDark', afterSequence: 133, cursor: 216, count: 0, hasMore: false, truncated: false}),
+  Object.freeze({scope: 'mobileDark', afterSequence: 438, cursor: 524, count: 0, hasMore: false, truncated: false}),
+  Object.freeze({scope: 'mobileLight', afterSequence: 524, cursor: 610, count: 0, hasMore: false, truncated: false}),
+  Object.freeze({scope: 'whole-session terminal', afterSequence: 610, cursor: 610, count: 0, hasMore: false, truncated: false}),
+]);
+const STAGE_A_PRODUCTION_ROUTES = Object.freeze([
+  Object.freeze({path: '/tego-arch/', bytes: 17_310, sha256: '37a400214dd5f9c574f773b8ed6bd6db5a7f7609ad612b1ecdfdf94b06d46a5b'}),
+  Object.freeze({path: '/tego-arch/styles', bytes: 23_851, sha256: '062251a3113c4366e244dfc44b9bec9013e6eabaa06eefec00cd87d2c3cdadf2'}),
+  Object.freeze({path: '/tego-arch/styles/sty-03', bytes: 41_952, sha256: 'a0e8d8f70ee62433928d4b5ad9c8cd9c327d95002f6f671c0ba0688f3bdaafeb'}),
+  Object.freeze({path: '/tego-arch/styles/sty-10', bytes: 48_594, sha256: 'f67928cb28da3dd3aa4cab0133f5c8186027698b35787eb4ee82adc97703287b'}),
+  Object.freeze({path: '/tego-arch/styles/sty-12', bytes: 46_875, sha256: 'acc189628d31d5a16566ec497c32043a097576f735bf3578a3806a6dad463b08'}),
+  Object.freeze({path: '/tego-arch/cases', bytes: 47_702, sha256: '477ef8b9054e57e78a005e8ace290fc23e9412ace3fa62d38270ae3772e9b577'}),
+  Object.freeze({path: '/tego-arch/cases/micro-frontends-single-spa', bytes: 62_040, sha256: '8ed2d935444c5c7994adc244c9f4243c49799ebcf63f5eb91948c36f57e27e44'}),
+  Object.freeze({path: '/tego-arch/references', bytes: 23_533, sha256: '72d679e026a0cd0b47cd2607f384c7a197772e0624a9204483f3404634e893ff'}),
+]);
 
 const BACKLOG = 'docs/content-backlog.md';
 const IMMEDIATE_REVIEW = 'docs/reviews/g009-batch12.md';
@@ -125,7 +162,8 @@ function assertReview(source = review, rawBytes = raw) {
   assert.match(checkpoint, /^- Independent architecture\/invariant review: `CLEAR \/ READY`; blockers: `0`\.$/mu);
   assert.match(checkpoint, /^- Final Stage A review judgment: `READY`\.$/mu);
   assert.match(checkpoint, /^- Scope boundary: `STAGE_A_ONLY`\.$/mu);
-  assert.match(checkpoint, /^- Deployment status: `NOT_RUN`\.$/mu);
+  assert.match(checkpoint, /^- Checkpoint phase: `IMMUTABLE_PRE_PUBLICATION`\.$/mu);
+  assert.match(checkpoint, /^- Deployment status at this checkpoint: `NOT_RUN`\.$/mu);
   assert.doesNotMatch(checkpoint, /PENDING|findings: `[1-9]|blockers: `[1-9]|SUCCESS|STAGE_B/u);
 }
 function assertDiagnostics(state, stateName) {
@@ -247,6 +285,134 @@ function assertLocalEvidence(value) {
   }
 }
 
+function assertStageAProductionReview(source = review, rawBytes = productionRaw) {
+  assert.ok(source, `${REVIEW} exists before production evidence is bound`);
+  assert.ok(rawBytes, `${PRODUCTION_RAW} is missing; record fresh production Browser evidence`);
+  assert.equal(rawBytes.length, STAGE_A_PRODUCTION_RAW_BYTES, 'exact production raw bytes');
+  assert.equal(sha256(rawBytes), STAGE_A_PRODUCTION_RAW_SHA256, 'exact production raw SHA-256');
+  const section = markdownSection(source, 'Stage A production publication');
+  assert.ok(section.includes(`- Exact published Stage A head: \`${STAGE_A_PUBLISHED_HEAD}\`.`));
+  assert.ok(section.includes(`- Exact Pages workflow/run: \`${STAGE_A_PRODUCTION_PAGES.workflow}\`; [\`${STAGE_A_PRODUCTION_PAGES.runId}\`](${STAGE_A_PRODUCTION_PAGES.runUrl}); \`headSha=${STAGE_A_PUBLISHED_HEAD}\`; \`event=push\`; \`status=completed\`; \`conclusion=success\`.`));
+  assert.ok(section.includes(`- Exact jobs: build \`${STAGE_A_PRODUCTION_PAGES.build.jobId}\` \`completed/success\`; deploy \`${STAGE_A_PRODUCTION_PAGES.deploy.jobId}\` \`completed/success\`.`));
+  assert.ok(section.includes('- Production HTTP probes: `8/8` HTML routes returned `200` with `text/html; charset=utf-8`; canonical SVG returned `200` with `image/svg+xml` and exact reviewed bytes/SHA-256.'));
+  assert.ok(section.includes(`- Production raw Browser JSON: \`${PRODUCTION_RAW}\`; bytes: \`${rawBytes.length.toLocaleString('en-US')}\`; SHA-256: \`${sha256(rawBytes)}\`.`));
+  assert.ok(section.includes('- Production functional Browser QA: `PASS`; states `4/4`; wrapper interactions `16/16`; relation observations `12/12`; source observations `28/28`; STY-13 actionable total `0`.'));
+  assert.ok(section.includes('- Production diagnostics: accepted pages complete and empty; warning/error logs `0`; Runtime/Log events `0`; terminal page `610 -> 610`; `hasMore=false`; `truncated=false`.'));
+  assert.ok(section.includes('- One initial `mobileLight` collection attempt (`216 -> 438`) returned no events but `truncated=true`; it was discarded and replaced by the complete accepted retry (`524 -> 610`).'));
+  assert.ok(section.includes('- Relation destinations were opened by exact href direct navigation and returned with Browser back; no physical link click is claimed.'));
+  assert.ok(section.includes(`- Production PageAssets bound the fingerprinted SVG to the canonical reviewed identity: \`${SVG_BYTES.toLocaleString('en-US')}\` bytes; SHA-256 \`${SVG_SHA256}\`; bundle \`1 requested / 1 downloaded / 0 failed\`.`));
+  assert.ok(section.includes('- Production screenshot evidence: `PASS / ACCEPTED`; accepted `4/4`; fallback used: `false`; captures are faithful viewport captures of the production-analysis table section reached through browser history restoration, not opening or full-page screenshots.'));
+  for (const screenshot of STAGE_A_PRODUCTION_SCREENSHOTS) assert.ok(section.includes(
+    `| \`${screenshot.state}\` | ${screenshot.bytes.toLocaleString('en-US')} | \`${screenshot.sha256}\` | \`CAPTURED_ACCEPTED\` |`,
+  ), `${screenshot.state} production screenshot review identity`);
+  assert.ok(section.includes('- Current release status: `STAGE_A_SUCCESS / STAGE_B_NOT_RUN`; STY-12 backlog status remains `pending` until Stage B closure.'));
+  assert.doesNotMatch(section, /PENDING|BLOCKED|substituted browser|Current release status: `(?:STAGE_A_NOT_RUN|STAGE_B_SUCCESS)`|Screenshot capture scope: `(?:OPENING|FULL_PAGE)`/u);
+}
+
+function assertStageAProductionEvidence(value) {
+  assert.ok(value, `${PRODUCTION_RAW} is missing; capture fresh Stage A production evidence`);
+  exactKeys(value, ['implementationHead', 'pages', 'probes', 'collection', 'stateOrder', 'states', 'functionalSummary', 'screenshotEvidence'], 'Stage A production evidence');
+  assert.equal(value.implementationHead, STAGE_A_PUBLISHED_HEAD, 'exact published Stage A head');
+  assert.deepEqual(value.pages, STAGE_A_PRODUCTION_PAGES, 'exact Pages run and job identity');
+
+  exactKeys(value.probes, ['routes', 'svg'], 'production probes');
+  assert.equal(value.probes.routes.length, STAGE_A_PRODUCTION_ROUTES.length, 'eight production HTML routes');
+  for (const [index, route] of value.probes.routes.entries()) {
+    exactKeys(route, ['path', 'status', 'contentType', 'bytes', 'sha256'], `production route ${index}`);
+    assert.deepEqual(route, {...STAGE_A_PRODUCTION_ROUTES[index], status: 200, contentType: 'text/html; charset=utf-8'}, `exact production route ${index}`);
+  }
+  exactKeys(value.probes.svg, ['path', 'url', 'status', 'contentType', 'bytes', 'sha256'], 'production SVG probe');
+  assert.deepEqual(value.probes.svg, {
+    path: '/tego-arch/img/diagrams/sty-12-micro-frontend-commerce-runtime.svg',
+    url: 'https://sealday.github.io/tego-arch/img/diagrams/sty-12-micro-frontend-commerce-runtime.svg',
+    status: 200, contentType: 'image/svg+xml', bytes: SVG_BYTES, sha256: SVG_SHA256,
+  });
+
+  exactKeys(value.collection, ['browser', 'fresh', 'servedUrl', 'build', 'navigationMethod', 'observedSvgAsset', 'diagnosticContinuity', 'discardedAttempts'], 'production collection');
+  assert.equal(value.collection.browser, 'Codex in-app Browser only');
+  assert.equal(value.collection.fresh, true);
+  assert.equal(value.collection.servedUrl, 'https://sealday.github.io/tego-arch/styles/sty-12');
+  assert.equal(value.collection.build, `GitHub Pages exact Stage A head ${STAGE_A_PUBLISHED_HEAD}; push run ${STAGE_A_PRODUCTION_PAGES.runId}; build job ${STAGE_A_PRODUCTION_PAGES.build.jobId}; deploy job ${STAGE_A_PRODUCTION_PAGES.deploy.jobId}`);
+  assert.equal(value.collection.navigationMethod, 'Relation destinations were opened by exact href direct navigation and returned with Browser back; no physical link click is claimed.');
+  exactKeys(value.collection.observedSvgAsset, ['source', 'inventoryId', 'assetId', 'contentType', 'bytes', 'sha256', 'viewBox', 'requested', 'downloaded', 'failed'], 'PageAssets SVG');
+  assert.deepEqual(value.collection.observedSvgAsset, {
+    source: 'production Browser pageAssets bundle', inventoryId: '2c296ea6-3542-4042-9233-2b0400ba1537', assetId: 'faffe609e627d4f9',
+    contentType: 'image/svg+xml', bytes: SVG_BYTES, sha256: SVG_SHA256, viewBox: '0 0 2400 3600', requested: 1, downloaded: 1, failed: 0,
+  });
+  assert.deepEqual(value.collection.diagnosticContinuity, STAGE_A_PRODUCTION_DIAGNOSTICS, 'exact accepted production diagnostic continuity');
+  assert.deepEqual(value.collection.discardedAttempts, [{
+    state: 'mobileLight', afterSequence: 216, cursor: 438, count: 0, hasMore: false, truncated: true,
+    disposition: 'DISCARDED; replaced by the complete accepted mobileLight retry at 524 -> 610.',
+  }], 'honest discarded truncated attempt');
+
+  assert.deepEqual(value.stateOrder, STATES, 'exact production state order');
+  exactKeys(value.states, STATES, 'production states');
+  const statePage = new Map(STAGE_A_PRODUCTION_DIAGNOSTICS.slice(0, 4).map(({scope, ...page}) => [scope, page]));
+  for (const stateName of STATES) {
+    const state = value.states[stateName];
+    const desktop = stateName.startsWith('desktop');
+    exactKeys(state, ['theme', 'viewport', 'geometry', 'interactions', 'relations', 'logs', 'diagnostics'], `${stateName} production state`);
+    assert.equal(state.theme, stateName.endsWith('Light') ? 'light' : 'dark');
+    assert.deepEqual(state.viewport, desktop ? {width: 1440, height: 1000} : {width: 390, height: 844});
+    exactKeys(state.geometry, ['page', 'wrappers', 'svg', 'sources', 'sty13'], `${stateName} production geometry`);
+    assert.deepEqual(state.geometry.page, desktop ? {clientWidth: 1440, scrollWidth: 1440} : {clientWidth: 390, scrollWidth: 390});
+    assert.deepEqual(state.geometry.wrappers.map(({label}) => label), WRAPPER_LABELS);
+    assert.deepEqual(state.geometry.wrappers.map(({clientWidth, scrollWidth}) => [clientWidth, scrollWidth]), desktop
+      ? [[800, 800], [800, 800], [800, 800], [800, 800]]
+      : [[358, 358], [358, 800], [358, 358], [358, 358]]);
+    for (const wrapper of state.geometry.wrappers) exactKeys(wrapper, ['label', 'clientWidth', 'scrollWidth'], `${stateName} production wrapper`);
+    assert.deepEqual(state.geometry.svg, {
+      loaded: true, viewBox: '0 0 2400 3600', sourceWidth: 2400, sourceHeight: 3600,
+      naturalWidth: 100, naturalHeight: 150, renderedWidth: 800, renderedHeight: 1200,
+      src: 'https://sealday.github.io/tego-arch/assets/images/sty-12-micro-frontend-commerce-runtime-f59e777fca88537fe0a140fab619968f.svg', observedAssetBytes: SVG_BYTES,
+    });
+    assert.deepEqual(state.geometry.sources, SOURCE_HREFS.map((href) => ({href, target: '_blank', rel: 'noopener noreferrer'})));
+    assert.equal(state.geometry.sty13, 0);
+    assert.equal(state.interactions.length, 4);
+    for (const [index, interaction] of state.interactions.entries()) {
+      exactKeys(interaction, ['index', 'label', 'key', 'before', 'after', 'delta'], `${stateName} production interaction ${index}`);
+      assert.equal(interaction.index, index);
+      assert.equal(interaction.label, WRAPPER_LABELS[index]);
+      assert.equal(interaction.key, 'ArrowRight');
+      const expectedDelta = desktop ? 0 : [0, 40, 0, 0][index];
+      assert.equal(interaction.delta, expectedDelta);
+      for (const phase of ['before', 'after']) {
+        exactKeys(interaction[phase], ['focus', 'focusVisible', 'outlineWidth', 'clientWidth', 'scrollWidth', 'scrollLeft'], `${stateName} interaction ${index} ${phase}`);
+        assert.equal(interaction[phase].focus, true);
+        assert.equal(interaction[phase].focusVisible, true);
+        assert.equal(interaction[phase].outlineWidth, '3px');
+        assert.equal(interaction[phase].clientWidth, state.geometry.wrappers[index].clientWidth);
+        assert.equal(interaction[phase].scrollWidth, state.geometry.wrappers[index].scrollWidth);
+      }
+      assert.equal(interaction.before.scrollLeft, 0);
+      assert.equal(interaction.after.scrollLeft, expectedDelta);
+    }
+    assert.deepEqual(state.relations, RELATIONS.map(([href, h1]) => ({href, expectedH1: h1, h1, visibleCount: 1, returnedToArticle: true})));
+    assert.deepEqual(state.logs, []);
+    exactKeys(state.diagnostics, ['events', 'pages', 'hasMore', 'truncated'], `${stateName} production diagnostics`);
+    assert.deepEqual(state.diagnostics, {events: [], pages: [statePage.get(stateName)], hasMore: false, truncated: false});
+  }
+  assert.deepEqual(value.functionalSummary, {
+    status: 'PASS', states: 4, wrapperInteractions: 16, relationObservations: 12, sourceObservations: 28,
+    sty13ActionableTotal: 0, warningErrorLogs: 0, runtimeAndLogEvents: 0, diagnosticPagesTerminal: true, diagnosticsTruncated: false,
+  });
+  exactKeys(value.screenshotEvidence, ['status', 'attempted', 'accepted', 'fallbackUsed', 'storage', 'captureScope', 'attempts'], 'production screenshot evidence');
+  assert.deepEqual({
+    status: value.screenshotEvidence.status, attempted: value.screenshotEvidence.attempted, accepted: value.screenshotEvidence.accepted,
+    fallbackUsed: value.screenshotEvidence.fallbackUsed, storage: value.screenshotEvidence.storage, captureScope: value.screenshotEvidence.captureScope,
+  }, {
+    status: 'PASS / ACCEPTED', attempted: 4, accepted: 4, fallbackUsed: false,
+    storage: 'Codex in-app Browser captures retained in the task conversation; no substituted surface or repository screenshot file.',
+    captureScope: 'Faithful viewport captures of the production-analysis table section reached through browser history restoration; not opening or full-page screenshots.',
+  });
+  assert.equal(value.screenshotEvidence.attempts.length, 4);
+  for (const [index, attempt] of value.screenshotEvidence.attempts.entries()) {
+    exactKeys(attempt, ['state', 'status', 'bytes', 'sha256', 'reason'], `production screenshot ${index}`);
+    assert.deepEqual({state: attempt.state, status: attempt.status, bytes: attempt.bytes, sha256: attempt.sha256}, {...STAGE_A_PRODUCTION_SCREENSHOTS[index], status: 'CAPTURED_ACCEPTED'});
+    assert.equal(attempt.reason, 'Faithful viewport capture inspected at original dimensions; content, theme, crop and typography matched the visible production-analysis table section restored by browser history.');
+  }
+}
+
 const [review, raw, immediateReview, backlog, status, manifest, documents, svgBytes] = await Promise.all([
   optional(REVIEW, 'utf8'),
   optional(LOCAL_RAW),
@@ -257,6 +423,7 @@ const [review, raw, immediateReview, backlog, status, manifest, documents, svgBy
   readContentDocuments('content'),
   required(SVG),
 ]);
+const productionRaw = await optional(PRODUCTION_RAW);
 
 test('preserves immutable Batch 12 history and exact STY-12 Stage A projection', () => {
   assertImmediateBatch12History();
@@ -292,7 +459,8 @@ test('rejects review head, verdict, pending, deployment and screenshot understat
     ['blockers: `0`.', 'blockers: `1`.'],
     ['Final Stage A review judgment: `READY`.', 'Final Stage A review judgment: `PENDING`.'],
     ['Scope boundary: `STAGE_A_ONLY`.', 'Scope boundary: `STAGE_B`.'],
-    ['Deployment status: `NOT_RUN`.', 'Deployment status: `SUCCESS`.'],
+    ['Checkpoint phase: `IMMUTABLE_PRE_PUBLICATION`.', 'Checkpoint phase: `STAGE_B`.'],
+    ['Deployment status at this checkpoint: `NOT_RUN`.', 'Deployment status at this checkpoint: `SUCCESS`.'],
     ['Screenshot evidence: `PASS / ACCEPTED`; accepted `4/4`; fallback used: `false`', 'Screenshot evidence: `BLOCKED / NOT_ACCEPTED`; accepted `0/4`; fallback used: `false`'],
   ]) {
     const mutated = review.replace(before, after);
@@ -361,4 +529,71 @@ test('locks immutable Batch 12 history against byte and baseline mutations', () 
   const baseline = currentReleaseBaseline(backlog);
   const mutated = backlog.replace(baseline, `${baseline}x`);
   assert.throws(() => assertImmediateBatch12History(immediateReview, mutated), assert.AssertionError);
+});
+
+test('requires exact-head Stage A Pages, HTTP/SVG probes and fresh production Browser evidence', () => {
+  assert.equal(productionRaw?.length, STAGE_A_PRODUCTION_RAW_BYTES, `${PRODUCTION_RAW} exact bytes`);
+  assert.equal(productionRaw && sha256(productionRaw), STAGE_A_PRODUCTION_RAW_SHA256, `${PRODUCTION_RAW} exact SHA-256`);
+  assertStageAProductionEvidence(productionRaw && JSON.parse(productionRaw));
+  assertStageAProductionReview();
+});
+
+test('rejects Stage A production identity, probe, Browser, diagnostic, interaction and screenshot mutations', {skip: !productionRaw}, () => {
+  const evidence = JSON.parse(productionRaw);
+  assertStageAProductionEvidence(evidence);
+  const mutations = [
+    ['extra root key', (copy) => copy.deployment = 'SUCCESS'],
+    ['published head', (copy) => copy.implementationHead = '0'.repeat(40)],
+    ['Pages run', (copy) => copy.pages.runId += 1],
+    ['Pages head', (copy) => copy.pages.headSha = '0'.repeat(40)],
+    ['build conclusion', (copy) => copy.pages.build.conclusion = 'failure'],
+    ['deploy job', (copy) => copy.pages.deploy.jobId += 1],
+    ['route status', (copy) => copy.probes.routes[0].status = 404],
+    ['route bytes', (copy) => copy.probes.routes[4].bytes += 1],
+    ['route SHA', (copy) => copy.probes.routes[7].sha256 = '0'.repeat(64)],
+    ['SVG identity', (copy) => copy.probes.svg.sha256 = '0'.repeat(64)],
+    ['substituted Browser', (copy) => copy.collection.browser = 'Chrome'],
+    ['physical-click overclaim', (copy) => copy.collection.navigationMethod = 'Relations were clicked.'],
+    ['PageAssets inventory', (copy) => copy.collection.observedSvgAsset.inventoryId = 'substituted'],
+    ['discarded attempt hidden', (copy) => copy.collection.discardedAttempts = []],
+    ['accepted diagnostic truncated', (copy) => copy.states.mobileLight.diagnostics.truncated = true],
+    ['diagnostic continuity', (copy) => copy.collection.diagnosticContinuity[3].cursor += 1],
+    ['missing state', (copy) => delete copy.states.mobileDark],
+    ['document overflow', (copy) => copy.states.mobileDark.geometry.page.scrollWidth = 800],
+    ['wrapper geometry', (copy) => copy.states.mobileLight.geometry.wrappers[1].scrollWidth = 799],
+    ['focus-visible', (copy) => copy.states.desktopLight.interactions[0].before.focusVisible = false],
+    ['ArrowRight delta', (copy) => copy.states.mobileDark.interactions[1].delta = 0],
+    ['relation return', (copy) => copy.states.desktopDark.relations[0].returnedToArticle = false],
+    ['source target', (copy) => copy.states.mobileDark.geometry.sources[0].target = '_self'],
+    ['STY-13 action', (copy) => copy.states.desktopLight.geometry.sty13 = 1],
+    ['runtime event', (copy) => copy.states.mobileDark.diagnostics.events.push({method: 'Runtime.exceptionThrown'})],
+    ['functional understatement', (copy) => copy.functionalSummary.status = 'PENDING'],
+    ['screenshot scope overclaim', (copy) => copy.screenshotEvidence.captureScope = 'Opening full-page screenshots.'],
+    ['screenshot fallback', (copy) => copy.screenshotEvidence.fallbackUsed = true],
+    ['screenshot bytes', (copy) => copy.screenshotEvidence.attempts[2].bytes += 1],
+  ];
+  for (const [label, mutate] of mutations) {
+    const copy = structuredClone(evidence);
+    mutate(copy);
+    assert.throws(() => assertStageAProductionEvidence(copy), assert.AssertionError, label);
+  }
+});
+
+test('rejects Stage A production review identity and screenshot-scope overclaims', {skip: !productionRaw}, () => {
+  assertStageAProductionReview();
+  for (const [before, after] of [
+    [`Exact published Stage A head: \`${STAGE_A_PUBLISHED_HEAD}\`.`, `Exact published Stage A head: \`${'0'.repeat(40)}\`.`],
+    [`[\`${STAGE_A_PRODUCTION_PAGES.runId}\`](${STAGE_A_PRODUCTION_PAGES.runUrl})`, '[`0`](https://example.invalid/run/0)'],
+    ['Production functional Browser QA: `PASS`', 'Production functional Browser QA: `PENDING`'],
+    ['One initial `mobileLight` collection attempt (`216 -> 438`) returned no events but `truncated=true`; it was discarded and replaced by the complete accepted retry (`524 -> 610`).', 'All collection attempts were complete.'],
+    ['Relation destinations were opened by exact href direct navigation and returned with Browser back; no physical link click is claimed.', 'Relations were physically clicked.'],
+    [`Production PageAssets bound the fingerprinted SVG to the canonical reviewed identity: \`${SVG_BYTES.toLocaleString('en-US')}\` bytes; SHA-256 \`${SVG_SHA256}\`; bundle \`1 requested / 1 downloaded / 0 failed\`.`, 'Production PageAssets passed.'],
+    [`| \`mobileLight\` | ${STAGE_A_PRODUCTION_SCREENSHOTS[2].bytes.toLocaleString('en-US')} | \`${STAGE_A_PRODUCTION_SCREENSHOTS[2].sha256}\` | \`CAPTURED_ACCEPTED\` |`, '| `mobileLight` | 1 | `bad` | `CAPTURED_ACCEPTED` |'],
+    ['Current release status: `STAGE_A_SUCCESS / STAGE_B_NOT_RUN`; STY-12 backlog status remains `pending` until Stage B closure.', 'Current release status: `STAGE_B_SUCCESS`; STY-12 backlog status is `complete`.'],
+    ['captures are faithful viewport captures of the production-analysis table section reached through browser history restoration, not opening or full-page screenshots.', 'Screenshot capture scope: `FULL_PAGE`.'],
+  ]) {
+    const mutated = review.replace(before, after);
+    assert.notEqual(mutated, review, `${before} mutation applies`);
+    assert.throws(() => assertStageAProductionReview(mutated), assert.AssertionError);
+  }
 });

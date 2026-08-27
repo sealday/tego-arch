@@ -62,6 +62,28 @@
 
 - Each capture was inspected at original dimensions for content, theme, crop and typography. Captures remain in the Codex task conversation; no external browser, historical capture, substituted surface or repository screenshot file is claimed.
 
+## Stage A production publication
+
+- Exact published Stage A head: `f8fa62a1c116f1d3bca8633623ed2910af29bedc`.
+- Exact Pages workflow/run: `Verify and deploy Docusaurus to GitHub Pages`; [`33067038136`](https://github.com/sealday/tego-arch/actions/runs/33067038136); `headSha=f8fa62a1c116f1d3bca8633623ed2910af29bedc`; `event=push`; `status=completed`; `conclusion=success`.
+- Exact jobs: build `98499561708` `completed/success`; deploy `98500236998` `completed/success`.
+- Production HTTP probes: `8/8` HTML routes returned `200` with `text/html; charset=utf-8`; canonical SVG returned `200` with `image/svg+xml` and exact reviewed bytes/SHA-256.
+- Production raw Browser JSON: `docs/reviews/evidence/g009-batch13-stage-a-production-browser.json`; bytes: `33,721`; SHA-256: `a28bb3269f2b7545b7d77f2ec506ce5b1bd737924a5db6945481ee8ec5763560`.
+- Production functional Browser QA: `PASS`; states `4/4`; wrapper interactions `16/16`; relation observations `12/12`; source observations `28/28`; STY-13 actionable total `0`.
+- Production diagnostics: accepted pages complete and empty; warning/error logs `0`; Runtime/Log events `0`; terminal page `610 -> 610`; `hasMore=false`; `truncated=false`.
+- One initial `mobileLight` collection attempt (`216 -> 438`) returned no events but `truncated=true`; it was discarded and replaced by the complete accepted retry (`524 -> 610`).
+- Relation destinations were opened by exact href direct navigation and returned with Browser back; no physical link click is claimed.
+- Production PageAssets bound the fingerprinted SVG to the canonical reviewed identity: `35,407` bytes; SHA-256 `c5347b1bf84890cb8e72be387185f2737afefadfdb57090b4fff3d5693e156b3`; bundle `1 requested / 1 downloaded / 0 failed`.
+- Production screenshot evidence: `PASS / ACCEPTED`; accepted `4/4`; fallback used: `false`; captures are faithful viewport captures of the production-analysis table section reached through browser history restoration, not opening or full-page screenshots.
+- Current release status: `STAGE_A_SUCCESS / STAGE_B_NOT_RUN`; STY-12 backlog status remains `pending` until Stage B closure.
+
+| State | Bytes | SHA-256 | Judgment |
+| --- | ---: | --- | --- |
+| `desktopLight` | 160,898 | `fc5cb49ed49f502659450c841b100327c0a889009256129b3964897a85b86a9d` | `CAPTURED_ACCEPTED` |
+| `desktopDark` | 163,194 | `f7b37d7ae87b5fa2ce239d46a500f9ba50b09b84dc204bfb122844c8aa6827d3` | `CAPTURED_ACCEPTED` |
+| `mobileLight` | 38,704 | `10735fbe083f6d7786ac9c0a3d42a8772847061a1f670774800aca98412eec85` | `CAPTURED_ACCEPTED` |
+| `mobileDark` | 38,233 | `e5f5b9a77e2764366551e7e9a3174ba11df9b88763a94ff7720073094812f1b2` | `CAPTURED_ACCEPTED` |
+
 ## Independent review checkpoint
 
 - Exact implementation candidate head: `d672c63a737ae39dcfa0a9a9dd365d1f378f0182`.
@@ -72,6 +94,9 @@
 - Independent architecture/invariant review: `CLEAR / READY`; blockers: `0`.
 - Final Stage A review judgment: `READY`.
 - Scope boundary: `STAGE_A_ONLY`.
-- Deployment status: `NOT_RUN`.
+- Checkpoint phase: `IMMUTABLE_PRE_PUBLICATION`.
+- Deployment status at this checkpoint: `NOT_RUN`.
+
+This checkpoint is the immutable pre-publication review record. Its `NOT_RUN` deployment status describes only the moment of that review and does not contradict the later Stage A production publication section.
 
 The code/security review initially reported two Important contract gaps: security-critical article semantics and diagnostic cursor continuity were not mutation-sensitive. Commit `f61c4cf83c1f3e97caa8abe494725db3d61305f3` added thirteen visible boundary contracts plus negative mutations, and bound the five diagnostic pages to their exact state sequence and terminal cursor. The independent re-review closed both findings with no contract weakening.
