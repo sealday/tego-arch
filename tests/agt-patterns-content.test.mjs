@@ -103,6 +103,7 @@ const agenticRagEdges = [
   ['HUMAN_CLARIFY', 'BUDGET_GATE', '已澄清并恢复'],
   ['HUMAN_CLARIFY', 'REFUSE', '超时或无法澄清'],
 ];
+const agenticRagMermaidAccTitle = 'Agentic RAG 证据充分性与安全终止循环';
 const agenticRagSourceContracts = [
   {
     id: 'src-rag-knowledge-intensive-nlp-tasks',
@@ -515,6 +516,7 @@ function parseAgenticRagMermaid(mermaid) {
   const labelsById = new Map();
   const edges = [];
   let headerSeen = false;
+  let accTitle = null;
   const nodePattern = '[A-Z][A-Z_]*(?:\\["[^"\\n]+"\\])?';
   const nodeSegment = /^([A-Z][A-Z_]*)(?:\["([^"\n]+)"\])?$/u;
   const edgeStatement = new RegExp(
@@ -527,6 +529,11 @@ function parseAgenticRagMermaid(mermaid) {
     if (!statement) continue;
     if (!headerSeen && statement === 'flowchart TB') {
       headerSeen = true;
+      continue;
+    }
+    if (statement.startsWith('accTitle:')) {
+      assert.equal(accTitle, null, 'Agentic RAG Mermaid has one accTitle declaration');
+      accTitle = statement.slice('accTitle:'.length).trim();
       continue;
     }
     assert.match(statement, edgeStatement, `unparsed Agentic RAG Mermaid: ${line}`);
@@ -554,6 +561,7 @@ function parseAgenticRagMermaid(mermaid) {
     }
   }
   assert.ok(headerSeen, 'Agentic RAG Mermaid flowchart TB header');
+  assert.equal(accTitle, agenticRagMermaidAccTitle, 'Agentic RAG Mermaid exact accessible title');
   return {
     labelsById: new Map([...labelsById].map(([id, labels]) => [id, [...labels].sort()])),
     edges,
@@ -1314,7 +1322,7 @@ test('AGT-P-01 reuses the two governed first-party taxonomy sources without a vi
 
 test('Agentic RAG Mermaid parser preserves legal chained edges', () => {
   const graph = parseAgenticRagMermaid(
-    'flowchart TB\n    FORM_QUERY["形成查询"] --> RETRIEVE["检索"] --> READ_ATTRIBUTE["读取与归因"]',
+    `flowchart TB\n    accTitle: ${agenticRagMermaidAccTitle}\n    FORM_QUERY["形成查询"] --> RETRIEVE["检索"] --> READ_ATTRIBUTE["读取与归因"]`,
   );
   assert.deepEqual(graph.edges, [
     ['FORM_QUERY', 'RETRIEVE', null],
@@ -1398,6 +1406,8 @@ flowchart TB
     ['only nested reader-visible Mermaid', source.replace(fence, `<div>\n${fence}\n</div>`)],
     ['only compliant Mermaid hidden in comment', source.replace(fence, `{/*\n${fence}\n*/}`)],
     ['only compliant Mermaid hidden in JSX', source.replace(fence, `<div hidden>\n\n${fence}\n\n</div>`)],
+    ['Mermaid accTitle removed', source.replace(`  accTitle: ${agenticRagMermaidAccTitle}\n`, '')],
+    ['Mermaid accTitle drifted', source.replace(agenticRagMermaidAccTitle, '错误图表名称')],
     ['answer bypasses sufficiency', source.replace(
       'FORM_QUERY["形成查询"] --> RETRIEVE["检索"]',
       'FORM_QUERY["形成查询"] --> ANSWER["回答"]',
