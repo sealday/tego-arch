@@ -579,15 +579,34 @@ function assertStageBProductionEvidence(value) {
     exactKeys(state, ['theme', 'viewport', 'geometry', 'interactions', 'relations', 'logs', 'diagnostics'], `${stateName} Stage B state`);
     const mobile = stateName.startsWith('mobile');
     assert.deepEqual(state.viewport, mobile ? {width: 390, height: 844} : {width: 1440, height: 1000});
+    exactKeys(state.geometry, ['page', 'wrappers', 'svg', 'sources', 'sty13'], `${stateName} Stage B geometry`);
     assert.deepEqual(state.geometry.page, mobile ? {clientWidth: 390, scrollWidth: 390} : {clientWidth: 1440, scrollWidth: 1440});
-    assert.deepEqual(state.geometry.wrappers.map(({clientWidth, scrollWidth}) => [clientWidth, scrollWidth]), mobile
+    const wrapperWidths = mobile
       ? [[358, 358], [358, 800], [358, 358], [358, 358]]
-      : [[800, 800], [800, 800], [800, 800], [800, 800]]);
-    assert.deepEqual(state.interactions.map(({delta}) => delta), mobile ? [0, 40, 0, 0] : [0, 0, 0, 0]);
-    for (const interaction of state.interactions) {
-      assert.equal(interaction.before.focus, true); assert.equal(interaction.before.focusVisible, true);
-      assert.equal(interaction.after.focus, true); assert.equal(interaction.after.focusVisible, true);
-      assert.equal(interaction.before.outlineWidth, '3px'); assert.equal(interaction.after.outlineWidth, '3px');
+      : [[800, 800], [800, 800], [800, 800], [800, 800]];
+    const expectedWrappers = WRAPPER_LABELS.map((label, index) => ({
+      label, clientWidth: wrapperWidths[index][0], scrollWidth: wrapperWidths[index][1],
+    }));
+    assert.deepEqual(state.geometry.wrappers, expectedWrappers, `${stateName} exact Stage B wrappers`);
+    const interactionDeltas = mobile ? [0, 40, 0, 0] : [0, 0, 0, 0];
+    assert.equal(state.interactions.length, WRAPPER_LABELS.length, `${stateName} exact interaction count`);
+    for (const [index, interaction] of state.interactions.entries()) {
+      exactKeys(interaction, ['index', 'label', 'key', 'before', 'after', 'delta'], `${stateName} Stage B interaction ${index}`);
+      assert.equal(interaction.index, index, `${stateName} interaction ${index} index`);
+      assert.equal(interaction.label, WRAPPER_LABELS[index], `${stateName} interaction ${index} label`);
+      assert.equal(interaction.key, 'ArrowRight', `${stateName} interaction ${index} key`);
+      exactKeys(interaction.before, ['focus', 'focusVisible', 'outlineWidth', 'clientWidth', 'scrollWidth', 'scrollLeft'], `${stateName} interaction ${index} before`);
+      exactKeys(interaction.after, ['focus', 'focusVisible', 'outlineWidth', 'clientWidth', 'scrollWidth', 'scrollLeft'], `${stateName} interaction ${index} after`);
+      const dimensions = expectedWrappers[index];
+      assert.deepEqual(interaction.before, {
+        focus: true, focusVisible: true, outlineWidth: '3px', clientWidth: dimensions.clientWidth,
+        scrollWidth: dimensions.scrollWidth, scrollLeft: 0,
+      }, `${stateName} interaction ${index} exact before geometry`);
+      assert.deepEqual(interaction.after, {
+        focus: true, focusVisible: true, outlineWidth: '3px', clientWidth: dimensions.clientWidth,
+        scrollWidth: dimensions.scrollWidth, scrollLeft: interactionDeltas[index],
+      }, `${stateName} interaction ${index} exact after geometry`);
+      assert.equal(interaction.delta, interactionDeltas[index], `${stateName} interaction ${index} delta`);
     }
     assert.deepEqual(state.relations.map(({href, expectedH1}) => [href, expectedH1]), RELATIONS);
     assert.ok(state.relations.every(({h1, expectedH1, visibleCount, returnedToArticle}) => h1 === expectedH1 && visibleCount === 1 && returnedToArticle === true));
@@ -816,6 +835,32 @@ test('rejects Stage B production identity, diagnostics, semantics, screenshot an
   for (const mutate of mutations) {
     const copy = structuredClone(evidence); mutate(copy);
     assert.throws(() => assertStageBProductionEvidence(copy), assert.AssertionError);
+  }
+});
+
+test('rejects Stage B nested geometry and interaction schema mutations', {skip: !stageBProductionRaw}, () => {
+  const evidence = JSON.parse(stageBProductionRaw);
+  const mutations = [
+    ['geometry additive field', (copy) => { copy.states.desktopLight.geometry.fabricated = true; }],
+    ['wrapper additive field', (copy) => { copy.states.desktopLight.geometry.wrappers[0].verified = true; }],
+    ['wrapper label', (copy) => { copy.states.desktopLight.geometry.wrappers[0].label = 'fabricated'; }],
+    ['interaction additive field', (copy) => { copy.states.desktopLight.interactions[0].verified = true; }],
+    ['interaction index', (copy) => { copy.states.desktopLight.interactions[0].index = 4; }],
+    ['interaction label', (copy) => { copy.states.desktopLight.interactions[0].label = 'fabricated'; }],
+    ['interaction key', (copy) => { copy.states.desktopLight.interactions[0].key = 'ArrowLeft'; }],
+    ['before additive field', (copy) => { copy.states.desktopLight.interactions[0].before.verified = true; }],
+    ['before clientWidth', (copy) => { copy.states.desktopLight.interactions[0].before.clientWidth += 1; }],
+    ['before scrollWidth', (copy) => { copy.states.desktopLight.interactions[0].before.scrollWidth += 1; }],
+    ['before scrollLeft', (copy) => { copy.states.mobileLight.interactions[1].before.scrollLeft = 1; }],
+    ['after additive field', (copy) => { copy.states.desktopLight.interactions[0].after.verified = true; }],
+    ['after clientWidth', (copy) => { copy.states.desktopLight.interactions[0].after.clientWidth += 1; }],
+    ['after scrollWidth', (copy) => { copy.states.desktopLight.interactions[0].after.scrollWidth += 1; }],
+    ['after scrollLeft', (copy) => { copy.states.mobileLight.interactions[1].after.scrollLeft += 1; }],
+  ];
+  for (const [label, mutate] of mutations) {
+    const copy = structuredClone(evidence);
+    mutate(copy);
+    assert.throws(() => assertStageBProductionEvidence(copy), assert.AssertionError, label);
   }
 });
 
