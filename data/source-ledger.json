@@ -21633,6 +21633,166 @@
       "expected_final_transport_locator": "/img/diagrams/multi-agent-research-system.svg",
       "expected_final_approved_at": "2026-08-28",
       "expected_final_approval_note": "Approved project-local original illustration after real diagrams.net source/export provenance, synchronized semantics, geometry, accessibility, deterministic pair validation and desktop/mobile browser QA on 2026-08-28."
+    },
+    {
+      "id": "src-openai-codex-fixed-repository",
+      "canonical_locator": "https://github.com/openai/codex/tree/5f49aba876922d6f2f55caa153bbb0ed1b46feba",
+      "transport_locator": "https://github.com/openai/codex/tree/5f49aba876922d6f2f55caa153bbb0ed1b46feba",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "OpenAI Codex fixed repository",
+      "author_or_org": "OpenAI",
+      "published_at": null,
+      "registered_at": "2026-08-28",
+      "checked_at": "2026-08-28",
+      "version": "Official codex repository commit 5f49aba876922d6f2f55caa153bbb0ed1b46feba dated 2026-08-27",
+      "source_kind": "official-repository",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "implementation"
+      ],
+      "license": "Apache-2.0",
+      "license_scope": "Repository material covered by the Apache-2.0 LICENSE at the fixed OpenAI Codex commit only; dependencies, services, models, linked works, trademarks and third-party materials excluded",
+      "license_evidence_url": "https://raw.githubusercontent.com/openai/codex/5f49aba876922d6f2f55caa153bbb0ed1b46feba/LICENSE",
+      "license_evidence_note": "The official OpenAI Codex repository LICENSE at commit 5f49aba876922d6f2f55caa153bbb0ed1b46feba identifies Apache License 2.0; Tego Arch uses attributed factual summary only.",
+      "license_family_id": "github:openai/codex",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Establishes the official repository identity, fixed commit and license only; it does not prove this article's complete topology, configured policy, sandbox effectiveness, production deployment or outcome.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://github.com/openai/codex/tree/5f49aba876922d6f2f55caa153bbb0ed1b46feba",
+      "expected_final_approved_at": "2026-08-28",
+      "expected_final_approval_note": "The exact pinned official GitHub repository tree returned HTTP 200 on 2026-08-28; commit identity, author date and Apache-2.0 LICENSE were independently read through the official Git transport."
+    },
+    {
+      "id": "src-openai-codex-approval-sandbox-source",
+      "canonical_locator": "https://github.com/openai/codex/blob/5f49aba876922d6f2f55caa153bbb0ed1b46feba/codex-rs/protocol/src/protocol.rs",
+      "transport_locator": "https://github.com/openai/codex/blob/5f49aba876922d6f2f55caa153bbb0ed1b46feba/codex-rs/protocol/src/protocol.rs",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Codex approval and sandbox policy source",
+      "author_or_org": "OpenAI",
+      "published_at": null,
+      "registered_at": "2026-08-28",
+      "checked_at": "2026-08-28",
+      "version": "openai/codex commit 5f49aba876922d6f2f55caa153bbb0ed1b46feba; codex-rs/protocol/src/protocol.rs SHA-256 5064011af9a7634112165973c59005559cc0ca6fff998e24757419f4e4e17a5f",
+      "source_kind": "source-code",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "implementation"
+      ],
+      "license": "Apache-2.0",
+      "license_scope": "Repository material covered by the Apache-2.0 LICENSE at the fixed OpenAI Codex commit only; dependencies, services, models, linked works, trademarks and third-party materials excluded",
+      "license_evidence_url": "https://raw.githubusercontent.com/openai/codex/5f49aba876922d6f2f55caa153bbb0ed1b46feba/LICENSE",
+      "license_evidence_note": "The official OpenAI Codex repository LICENSE at commit 5f49aba876922d6f2f55caa153bbb0ed1b46feba identifies Apache License 2.0; Tego Arch uses attributed factual summary only.",
+      "license_family_id": "github:openai/codex",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports the AskForApproval and SandboxPolicy variants present in the fixed source only; it does not establish suitable policy selection, runtime configuration, sandbox escape resistance, repository isolation, or this article's approval and recovery topology.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://github.com/openai/codex/blob/5f49aba876922d6f2f55caa153bbb0ed1b46feba/codex-rs/protocol/src/protocol.rs",
+      "expected_final_approved_at": "2026-08-28",
+      "expected_final_approval_note": "The exact pinned GitHub source file returned HTTP 200 and the official Git checkout exposed AskForApproval, GranularApprovalConfig and SandboxPolicy on 2026-08-28; the file hash and license were independently checked."
+    },
+    {
+      "id": "src-langgraph-checkpoint-base-current",
+      "canonical_locator": "https://github.com/langchain-ai/langgraph/blob/bdb8a9c7a4aa1390af225f6a5d292e5088659bd5/libs/checkpoint/langgraph/checkpoint/base/__init__.py",
+      "transport_locator": "https://github.com/langchain-ai/langgraph/blob/bdb8a9c7a4aa1390af225f6a5d292e5088659bd5/libs/checkpoint/langgraph/checkpoint/base/__init__.py",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "LangGraph checkpoint base source",
+      "author_or_org": "LangChain",
+      "published_at": null,
+      "registered_at": "2026-08-28",
+      "checked_at": "2026-07-24",
+      "version": "langchain-ai/langgraph commit bdb8a9c7a4aa1390af225f6a5d292e5088659bd5 dated 2026-08-26; checkpoint base file SHA-256 d29511015e2801630f6580353c107104d4ecc86e4bd14e15cd54e2b861a48e26",
+      "source_kind": "source-code",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "implementation"
+      ],
+      "license": "MIT",
+      "license_scope": "Repository material covered by the evidenced LICENSE only; external links and third-party assets excluded",
+      "license_evidence_url": "https://raw.githubusercontent.com/langchain-ai/langgraph/main/LICENSE",
+      "license_evidence_note": "MIT license text was retrieved from LICENSE on the repository default-branch candidate \"main\".",
+      "license_family_id": "github:langchain-ai/langgraph",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports BaseCheckpointSaver, thread_id, get_tuple, put and put_writes interfaces in the fixed source only; it does not make checkpoint contents repository truth or prove this article's recovery, testing, approval or complete topology.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://github.com/langchain-ai/langgraph/blob/bdb8a9c7a4aa1390af225f6a5d292e5088659bd5/libs/checkpoint/langgraph/checkpoint/base/__init__.py",
+      "expected_final_approved_at": "2026-08-28",
+      "expected_final_approval_note": "The exact pinned GitHub source file returned HTTP 200 and the official Git checkout exposed BaseCheckpointSaver, thread_id, get_tuple, put and put_writes on 2026-08-28; the file hash and MIT license were independently checked."
+    },
+    {
+      "id": "src-temporal-typescript-activity-heartbeat-current",
+      "canonical_locator": "https://github.com/temporalio/sdk-typescript/blob/5373d58f7d504b6b72c7ac17b33139eb5f23dbec/packages/activity/src/index.ts",
+      "transport_locator": "https://github.com/temporalio/sdk-typescript/blob/5373d58f7d504b6b72c7ac17b33139eb5f23dbec/packages/activity/src/index.ts",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Temporal TypeScript SDK activity heartbeat source",
+      "author_or_org": "Temporal Technologies",
+      "published_at": null,
+      "registered_at": "2026-08-28",
+      "checked_at": "2026-08-28",
+      "version": "temporalio/sdk-typescript commit 5373d58f7d504b6b72c7ac17b33139eb5f23dbec dated 2026-08-26; activity index file SHA-256 ce46be7d90c86008f1877e101fbcaf4f728900d04e1b248ed11e03df7b945c1e",
+      "source_kind": "source-code",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "implementation"
+      ],
+      "license": "MIT",
+      "license_scope": "The named activity index source file at commit 5373d58f7d504b6b72c7ac17b33139eb5f23dbec under the repository MIT license; dependencies, server behavior, services, examples, documentation links, trademarks and third-party materials excluded",
+      "license_evidence_url": "https://raw.githubusercontent.com/temporalio/sdk-typescript/5373d58f7d504b6b72c7ac17b33139eb5f23dbec/LICENSE",
+      "license_evidence_note": "The official repository LICENSE at the fixed commit identifies the MIT License; Tego Arch uses an attributed factual source reading and copies no implementation code or comments.",
+      "license_family_id": "github:temporalio/sdk-typescript",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports heartbeat details as a periodic Activity progress checkpoint available to the next attempt, plus the documented cooperative cancellation boundary, in the fixed source only; it does not establish idempotent external effects, guaranteed cancellation, repository recovery or this article's complete topology.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://github.com/temporalio/sdk-typescript/blob/5373d58f7d504b6b72c7ac17b33139eb5f23dbec/packages/activity/src/index.ts",
+      "expected_final_approved_at": "2026-08-28",
+      "expected_final_approval_note": "The exact pinned GitHub source file returned HTTP 200 and the official Git checkout exposed heartbeat details, next-attempt progress recovery and cooperative cancellation boundaries on 2026-08-28; the file hash and MIT license were independently checked."
+    },
+    {
+      "id": "src-atlas-long-running-coding-agent",
+      "canonical_locator": "/img/diagrams/long-running-coding-agent.svg",
+      "transport_locator": "/img/diagrams/long-running-coding-agent.svg",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Long-running coding agent control and recovery topology",
+      "author_or_org": "Tego Arch maintainers",
+      "published_at": "2026-08-28",
+      "registered_at": "2026-08-28",
+      "checked_at": "2026-08-28",
+      "version": "Original synchronized Draw.io/SVG pair authored in and exported from diagrams.net, normalized and deterministically checked on 2026-08-28",
+      "source_kind": "original-illustration",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "illustration"
+      ],
+      "license": "LicenseRef-Atlas-Original",
+      "license_scope": "The named project-authored long-running-coding-agent.svg asset only",
+      "license_evidence_url": "https://github.com/sealday/tego-arch/blob/main/static/img/diagrams/long-running-coding-agent.svg",
+      "license_evidence_note": "The project-authored Draw.io/SVG pair contains no third-party topology, reference image, icon, brand visual, signature, watermark or copied composition.",
+      "license_family_id": "/img/diagrams/long-running-coding-agent.svg",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "original-atlas",
+      "usage_boundary": "Original reference topology for bounded harness control, isolated worktree and sandbox execution, test observations, durable checkpoints, approval and recovery; illustration-only and not evidence of a customer deployment, model capability, sandbox guarantee, production scale or vendor outcome.",
+      "link_policy": null,
+      "expected_final_transport_locator": "/img/diagrams/long-running-coding-agent.svg",
+      "expected_final_approved_at": "2026-08-28",
+      "expected_final_approval_note": "Approved project-local original illustration after real diagrams.net source/export provenance, synchronized semantics, geometry, accessibility, deterministic pair validation and controller-owned desktop/mobile browser QA on 2026-08-28."
     }
   ],
   "documents": {
@@ -33750,6 +33910,108 @@
           "manifest_primary": false,
           "usage_mode": "original-illustration",
           "attribution_note": "Multi-agent research control and evidence authority topology, Tego Arch maintainers",
+          "modification_note": "Created as an original synchronized Draw.io/SVG pair for this case without third-party topology, reference imagery, icons, brand visuals, signatures, watermarks or copied composition.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/cases/long-running-coding-agent.mdx": {
+      "reviewed_at": "2026-08-28",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-anthropic-effective-harnesses-long-running-agents",
+          "citation_url": "https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents",
+          "roles": [
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Effective harnesses for long-running agents, Anthropic",
+          "modification_note": "Original Chinese summary of the reported initializer/coding-agent split, incremental progress artifacts, version history and cross-context handoff; no source prose, code, examples, prompts, diagrams, results or structure copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-anthropic-demystifying-evals-ai-agents",
+          "citation_url": "https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents",
+          "roles": [
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Demystifying evals for AI agents, Anthropic",
+          "modification_note": "Original Chinese summary of the first-party task, trial, grader, trace and outcome evaluation distinctions; no source prose, examples, tables, diagrams, images, results or structure copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-openai-codex-fixed-repository",
+          "citation_url": "https://github.com/openai/codex/tree/5f49aba876922d6f2f55caa153bbb0ed1b46feba",
+          "roles": [
+            "implementation"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "OpenAI Codex official repository at fixed commit",
+          "modification_note": "Original Chinese summary of repository identity, commit and license facts; no repository documentation, code, images, examples or structure copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-openai-codex-approval-sandbox-source",
+          "citation_url": "https://github.com/openai/codex/blob/5f49aba876922d6f2f55caa153bbb0ed1b46feba/codex-rs/protocol/src/protocol.rs",
+          "roles": [
+            "implementation"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Codex approval and sandbox policy source at fixed commit, OpenAI",
+          "modification_note": "Original Chinese source reading of AskForApproval, GranularApprovalConfig and SandboxPolicy at the fixed commit; no code, comments, tests, prompts, generated bindings or structure copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-langgraph-checkpoint-base-current",
+          "citation_url": "https://github.com/langchain-ai/langgraph/blob/bdb8a9c7a4aa1390af225f6a5d292e5088659bd5/libs/checkpoint/langgraph/checkpoint/base/__init__.py",
+          "roles": [
+            "implementation"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "LangGraph checkpoint base source at fixed commit, LangChain",
+          "modification_note": "Original Chinese source reading of BaseCheckpointSaver, thread_id, get_tuple, put and put_writes at the fixed commit; no code, comments, examples, documentation or structure copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-temporal-typescript-activity-heartbeat-current",
+          "citation_url": "https://github.com/temporalio/sdk-typescript/blob/5373d58f7d504b6b72c7ac17b33139eb5f23dbec/packages/activity/src/index.ts",
+          "roles": [
+            "implementation"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Temporal TypeScript SDK activity heartbeat source at fixed commit, Temporal Technologies",
+          "modification_note": "Original Chinese source reading of heartbeat details, next-attempt progress recovery and cooperative cancellation boundaries at the fixed commit; no code, comments, examples, documentation or structure copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-atlas-long-running-coding-agent",
+          "citation_url": "/img/diagrams/long-running-coding-agent.svg",
+          "roles": [
+            "illustration"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "original-illustration",
+          "attribution_note": "Long-running coding agent control and recovery topology, Tego Arch maintainers",
           "modification_note": "Created as an original synchronized Draw.io/SVG pair for this case without third-party topology, reference imagery, icons, brand visuals, signatures, watermarks or copied composition.",
           "excerpt": null,
           "quotation_reviewed": false

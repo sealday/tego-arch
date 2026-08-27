@@ -1,0 +1,238 @@
+---
+summary: 一套把长任务编码智能体（Agent）限制在工作树与沙箱内，并以计划账本、结构化测试观察、提交检查点、人工批准和恢复核对维持连续性的参考设计；模型上下文从不充当唯一完成记录。
+title: 长任务编码智能体：把完成状态留在上下文窗口之外
+sidebar_label: 长任务编码智能体
+slug: /cases/long-running-coding-agent
+content_type: case
+status: reviewed
+difficulty: advanced
+analyzed_at: 2026-08-28
+source_cutoff: 2026-08-28
+review_policy: quarterly-version-sensitive
+confidence: high
+series: ai-native
+catalog_order: 20
+featured: false
+source_kinds:
+  - engineering-blog
+  - official-repository
+  - source-code
+  - original-illustration
+migration_targets:
+  - agent-harness
+  - sandboxed-execution
+  - checkpoint-recovery
+  - test-feedback
+domains:
+  - software-engineering
+  - agentic-systems
+  - developer-tools
+  - application-architecture
+agent_patterns:
+  - planner-executor
+  - evaluator-optimizer
+  - human-in-the-loop
+protocols: []
+quality_attributes:
+  - reliability
+  - recoverability
+  - security
+  - auditability
+  - maintainability
+tags:
+  - 编码智能体
+  - 任务恢复
+  - 沙箱
+  - 工作树
+  - 测试反馈
+---
+
+import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableRegion/handleHorizontalArrowKey.mjs';
+
+# 长任务编码智能体：把完成状态留在上下文窗口之外
+
+长任务编码最危险的失败，不是模型忘记一句对话，而是仓库已经被改动，模型却只能从不完整上下文猜测哪些步骤成功。若完成状态只存在于上下文窗口，压缩、重启或凭据失效都会把“继续工作”变成一次没有事实依据的重演。
+
+这份参考设计把模型当作可替换的决策部件。智能体运行框架（Agent Harness）组装有界上下文与工具，智能体循环（Agent Loop）只在隔离工作树和沙箱内编辑。测试返回结构化观察，账本与 Git 版本控制系统的提交保存可恢复事实。读者可迁移的是控制、状态、批准和恢复合同，不是某一款模型的自治能力。
+
+本文由 Tego Arch 架构知识项目整理。证据来自第一方长任务实验和 OpenAI 公司的 OpenAI 编码智能体（Codex）官方仓库。另有图编排框架（LangGraph）与 Temporal 工作流平台的固定源码接缝支持局部机制。它是参考设计，不是真实客户部署；没有任何单一来源证明本文的完整拓扑。完整拓扑是 Tego Arch 原创综合。
+
+## 学习问题
+
+- 智能体运行框架、编码循环、沙箱、测试、版本控制和批准者分别拥有什么控制权？
+- 哪些状态必须写入仓库、进度账本或检查点，不能只留在模型上下文？
+- 测试失败、依赖漂移、部分提交和重启后，恢复从什么事实开始？
+- 破坏性命令、凭据与外部发布怎样与可逆仓库操作分离？
+- 何时允许降级运行，何时必须自动停止、拒绝执行或弃权？
+
+## 一页摘要
+
+**已证实事实**：第一方工程文章描述了初始化会话与后续编码会话的分工，并以进度文件、特性清单和版本历史跨上下文交接。Codex 固定提交公开了批准策略和沙箱策略；LangGraph 固定提交公开了按 `thread_id` 读写检查点的接口；Temporal 固定提交公开了活动心跳详情可供下一次尝试恢复进度的机制。
+
+这些证据分别支持交接、权限、持久化或重试（Retry）接缝，却不共同证明下图已作为一个系统部署。参考设计进一步要求：模型上下文绝不是已完成工作的唯一记录；恢复必须从仓库、检查点和进度账本的事实开始，并重新运行验证。
+
+| 问题 | 权威状态 | 控制所有者 | 明确禁止 |
+| --- | --- | --- | --- |
+| 做什么 | 任务范围、验收条件、风险与截止时间 | `Task Intake`、`Agent Harness` | 模型自行扩大任务或发布范围 |
+| 做到哪里 | `Plan / Progress Ledger`、工作树差异、测试观察 | 智能体运行框架与智能体循环 | 用对话摘要冒充已提交进度 |
+| 能否执行 | 沙箱策略、命令分类、批准决定 | `Sandbox`、`Approval Gate` | 逃逸沙箱或把拒绝当作成功 |
+| 如何恢复 | 检查点、提交、仓库状态与外部效果记录 | `Recovery / Reconcile` | 未核对事实便重放未知副作用 |
+
+关键判断是把可逆的仓库操作与外部或不可逆效果分开。工作树内修改、读取差异和运行受限测试可以由自动循环推进；危险或破坏性命令以及外部发布必须经过批准，未知外部效果在恢复时默认停止而不是重试。
+
+## 事实边界
+
+公开来源证明的是局部实现，不是通用生产保证。第一方文章支持其特定实验里的跨上下文交接；Codex 源码支持策略类型存在；LangGraph 和 Temporal 源码支持检查点或活动进度接口存在。它们不证明本站的工作树、审批、版本控制和恢复关系必然适合任意组织。
+
+| 证据层 | 可采用的事实 | 不能推出 |
+| --- | --- | --- |
+| 第一方工程文章 | 初始化会话与编码会话分工、增量工作、进度产物与版本历史 | 通用运行框架职责全集、模型质量或生产结果 |
+| 官方仓库固定提交 | Codex 是官方开源仓库，仓库在固定提交受其开源许可证约束 | 本文完整拓扑、默认安全配置或组织批准政策 |
+| 固定源码 | 批准与沙箱策略、检查点接口、活动心跳恢复接缝 | 外部副作用自动幂等、测试必然稳定或恢复必然正确 |
+| 本站原创综合 | 工作树隔离、持久账本、提交检查点、批准与核对流程 | 客户、事故、指标、容量、体验或上游保证 |
+
+**基于证据的推断**：把恢复起点放在可检查的仓库和检查点，比让模型根据摘要“接着做”更可审计。该推断仍要求项目定义提交原子性、测试可信度、凭据和外部效果查询接口；框架名称不能替代这些合同。
+
+<details className="evidence-card">
+  <summary>证据：固定版本与源码摄取边界</summary>
+
+  - **第一方工程文章：** `Effective harnesses for long-running agents`，2025-11-26 发布，2026-08-26 通过既有治理记录复核；仅支持该文报告的实验机制。
+  - **Codex 官方仓库：** 提交 `5f49aba876922d6f2f55caa153bbb0ed1b46feba`，2026-08-27；读取 `codex-rs/protocol/src/protocol.rs`。
+  - **LangGraph 官方仓库：** 提交 `bdb8a9c7a4aa1390af225f6a5d292e5088659bd5`，2026-08-26；读取 `libs/checkpoint/langgraph/checkpoint/base/__init__.py`。
+  - **Temporal 官方仓库：** 提交 `5373d58f7d504b6b72c7ac17b33139eb5f23dbec`，2026-08-26；读取 `packages/activity/src/index.ts`。
+  - **边界：** 固定提交使符号可复核，不把任一实现提升为本文完整控制面或生产结果证明。
+</details>
+
+## 架构图
+
+读图时先沿主路径看 `Harness control` 怎样把任务交给 `Isolated execution`，再看测试观察、进度账本、检查点和提交怎样进入 `Durable state`。
+
+红色批准与停止路径进入 `External authority`；恢复路径只读取持久事实，并把验证重新送回测试节点。
+
+<div className="architecture-diagram-scroll" role="region" aria-label="长任务编码智能体的运行框架、隔离执行、持久检查点、批准和恢复图，可使用左右方向键及首尾键横向滚动" tabIndex={0} onKeyDown={handleHorizontalArrowKey}>
+
+![任务由运行框架约束后进入隔离工作树和沙箱，测试、账本与提交形成检查点，风险动作经批准，恢复从持久事实重新核验](/img/diagrams/long-running-coding-agent.svg)
+
+</div>
+
+正常路径是“有界任务 → 计划检查点 → 工作树内编辑 → 沙箱命令 → 结构化测试观察 → 进度与提交检查点”。恢复路径不会直接回到编辑；`Recovery / Reconcile` 先核对工作树、账本、检查点和提交，再重新运行验证，只有结果一致才允许下一轮编码。
+
+<details className="evidence-card">
+  <summary>证据：原创图语义与发布边界</summary>
+
+  - **源文件：** `diagrams/long-running-coding-agent.drawio`。
+  - **发布文件：** `static/img/diagrams/long-running-coding-agent.svg`。
+  - **来源登记：** `src-atlas-long-running-coding-agent`，`original-illustration`。
+  - **边界：** 图由本站依据本文合同在 diagrams.net 中原创并导出；它解释控制、状态和恢复，不建立外部部署或效果事实。
+</details>
+
+## 控制权与任务流
+
+**说明性场景**：一个编码任务要求在现有仓库中修改行为并补充测试。场景只演练受支持的工作树、沙箱、测试、提交与批准机制，不代表真实客户、生产事故、耗时、通过率或部署结果。
+
+| 阶段 | 控制动作 | 持久事实 | 失败与终止 |
+| --- | --- | --- | --- |
+| 接收与计划 | 智能体运行框架绑定仓库、范围、验收和风险分类 | 账本保存计划版本、基线提交与待办 | 范围含糊或授权不足则请求澄清并停止编辑 |
+| 隔离编辑 | 智能体循环只写指定 `Isolated Worktree`，命令经 `Sandbox` | 工作树差异与命令观察可复核 | 沙箱逃逸尝试或破坏性命令拒绝执行并转批准 |
+| 测试反馈 | `Test Runner` 返回命令、退出码、失败集合与环境指纹 | 账本记录先失败再通过、测试抖动（Jitter）判定和依赖锁状态 | 超时或测试抖动进入降级运行，不伪造通过 |
+| 检查点 | 通过约定验证后更新进度并创建窄提交 | `Checkpoint Store` 与 `Version Control` 记录对应关系 | 部分提交保持未完成，禁止发布 |
+| 恢复核对 | 从仓库和检查点重建计划，核对外部效果 | 写入恢复来源、差异、验证结果和不确定项 | 未知外部效果、凭据过期或事实冲突时自动停止 |
+
+降级运行只允许继续读取仓库、缩小复现、运行确定性静态检查或生成供人工审阅的候选差异。它不允许跳过失败测试、扩大写权限、更新外部系统或把部分失败改写成成功。
+
+超时与部分失败必须保留结构化结果：哪些测试未运行、哪些命令终态未知、哪个提交缺少文件。恢复验证重新执行受影响测试，并核对 `HEAD`、工作树、锁文件和账本声明；验证未通过时，控制权不回到自动编辑。
+
+## 关键源码导读
+
+源码导读只回答三个局部问题：策略如何表示批准与沙箱，检查点如何按稳定运行身份读写，长活动怎样暴露可恢复进度。最短路径足以支持机制；它们不提供本文的业务任务模型。
+
+| 最短阅读路径 | 可验证机制 | 不能推出 |
+| --- | --- | --- |
+| Codex `protocol.rs` 的 `AskForApproval` | `UnlessTrusted`、`OnRequest`、`Granular` 与 `Never` 是不同批准条件 | 哪一种策略适合本文任务，或模型能安全自选政策 |
+| 同文件的 `SandboxPolicy` | `ReadOnly`、`WorkspaceWrite`、`ExternalSandbox` 与 `DangerFullAccess` 区分执行权限 | 工作树已自动隔离，或 `workspace-write` 阻止所有逃逸 |
+| LangGraph `BaseCheckpointSaver` | `thread_id` 是检查点主键，并提供 `get_tuple`、`put`、`put_writes` 接口 | 模型上下文等于仓库事实，或检查点内容天然正确 |
+| Temporal `activity/src/index.ts` 的 `heartbeat` | 上次心跳详情可在活动超时后的下一尝试读取，形成进度检查点 | 外部调用幂等、未知效果可安全重放或取消必然生效 |
+
+Codex 源码还明确把 `DangerFullAccess` 描述为无执行限制并要求谨慎。本文不以模式名称作安全证明：智能体运行框架必须显式选择允许的工作树、可写根、网络和批准政策，恢复流程仍要查询真实仓库与外部权威。
+
+<details className="evidence-card">
+  <summary>证据：固定源码符号与校验摘要</summary>
+
+  1. `openai/codex@5f49aba8…/codex-rs/protocol/src/protocol.rs` 的文件摘要为 `5064011af9a7634112165973c59005559cc0ca6fff998e24757419f4e4e17a5f`。
+  2. `langchain-ai/langgraph@bdb8a9c7…/libs/checkpoint/langgraph/checkpoint/base/__init__.py` 的文件摘要为 `d29511015e2801630f6580353c107104d4ecc86e4bd14e15cd54e2b861a48e26`。
+  3. `temporalio/sdk-typescript@5373d58f…/packages/activity/src/index.ts` 的文件摘要为 `ce46be7d90c86008f1877e101fbcaf4f728900d04e1b248ed11e03df7b945c1e`。
+  4. **边界：** 摘要绑定本文读取内容，不证明依赖、运行环境（Environment）、策略配置或完整参考拓扑。
+</details>
+
+## 架构决策与权衡
+
+**个人分析**：长时编码系统的首要设计目标不是让循环永远运行，而是让它可以被安全替换、暂停和核对。能在任意模型上下文丢失后从仓库事实恢复，通常比压入更多历史文本更重要。
+
+| 决策 | 获得 | 付出 | 适用边界 |
+| --- | --- | --- | --- |
+| 工作树与沙箱双重隔离 | 缩小文件和命令副作用范围 | 环境复制、缓存与依赖准备成本 | 仓库任务可在明确根目录内完成 |
+| 账本与版本控制双检查点 | 意图进度和代码事实分开核对 | 写入顺序与部分提交恢复更复杂 | 跨会话、需审计或多人接管的任务 |
+| 测试返回结构化观察 | 失败可分类、重跑和比较 | 需标准化命令、环境与抖动政策 | 验收能由确定性检查表达 |
+| 风险动作进批准门 | 外部或不可逆效果不由模型单独授权 | 等待、凭据和人工吞吐成为延迟 | 发布、删除、权限或外部写入具有高后果 |
+| 未知效果默认停止 | 避免重复发布或重复破坏 | 需要人工查询与核对接口 | 外部操作缺少稳定操作身份或结果查询 |
+
+提交不是“模型认为完成”的替身。窄提交只证明一组文件形成了可寻址版本；测试和审批仍需独立记录。反过来，进度账本也不能声称一个没有对应仓库状态的步骤已经完成。
+
+## 生产化分析
+
+生产合同应把失败变成可分类状态，并为每种状态指定遏制、降级、恢复验证和自动停止条件。下表覆盖本参考设计要求的九类失败；任何一行都不能由“再问一次模型”闭合。
+
+| 失败模式 | 检测与遏制 | 降级或恢复 | 自动停止或弃权条件 |
+| --- | --- | --- | --- |
+| 上下文丢失 | 新会话不得凭摘要认领完成；读取基线、账本、差异与提交 | 从最后一致检查点重建计划并重新运行验证 | 仓库事实与账本无法调和 |
+| 计划陈旧 | 比对计划版本、`HEAD`、需求与已修改文件 | 使旧步骤失效，重新计划剩余范围 | 需求或授权发生实质变化 |
+| 测试抖动 | 保留失败签名、环境指纹与有限重跑结果 | 标为不稳定，继续静态检查或交人工 | 无法区分回归与环境噪声 |
+| 沙箱逃逸尝试 | 路径、进程、网络或权限越界立即拒绝 | 保留命令与拒绝原因，不自动扩大权限 | 请求仍要求越过隔离边界 |
+| 破坏性命令 | 命令分类命中删除、覆写或不可恢复操作 | 转 `Approval Gate`，批准后仍缩小目标 | 目标不确定、备份和回滚不可验证 |
+| 依赖漂移 | 锁文件、工具链和环境指纹偏离检查点 | 恢复固定依赖或在新基线重跑全部验证 | 无法重建受支持环境 |
+| 部分提交 | 提交、索引、工作树和账本声明不一致 | 保留未完成状态，修复后创建新检查点 | 无法判断文件属于哪个任务步骤 |
+| 凭据过期 | 外部命令返回明确认证失败，不进入盲重试 | 暂停外部动作，保留可逆仓库工作 | 新凭据或授权未由权威系统确认 |
+| 未知外部效果后重启 | 操作已发出但没有可验证结果 | 用稳定操作身份查询；无法查询则人工核对 | 任何重复执行可能造成第二次外部效果 |
+
+观测必须覆盖计划版本、工作树标识、基线与 `HEAD`、命令策略、测试退出码和失败签名、检查点对应关系、批准状态、凭据身份以及外部操作身份。日志只能帮助解释；恢复权威仍是仓库、检查点和外部系统的查询结果。
+
+## 可迁移经验
+
+迁移时先定义事实和权限边界，再选择模型与框架。目标系统若不能稳定标识仓库基线、任务步骤、测试观察和外部操作，就不应先增加循环长度。
+
+### 可直接复用的机制
+
+1. 用基线提交、计划版本、验收命令和风险分类建立任务入口。
+2. 把编辑限制在独立工作树，把命令限制在显式沙箱政策和可写根。
+3. 将测试结果保存为结构化观察，并把账本更新与窄提交绑定为可核对检查点。
+4. 恢复时从仓库和检查点事实开始，重新运行验证后再交还编辑权。
+
+### 只能有限类比的部分
+
+1. 第一方文章的特定实验可支持进度文件和版本控制交接机制，不是任意团队的生产结论。
+2. Codex 的策略枚举可说明权限维度，不替组织选择审批者、风险等级或默认政策。
+3. LangGraph 检查点可类比运行状态持久化，但仓库、测试和审批仍需各自权威。
+4. Temporal 心跳可类比长活动进度，不使外部发布、删除或凭据刷新自动幂等。
+
+### 不应照搬的部分
+
+1. 不要把完整对话、压缩摘要或模型自报完成当作唯一检查点。
+2. 不要让编码循环自行扩大可写目录、网络、凭据或批准范围。
+3. 不要在未知外部效果后盲目重试，也不要用新任务身份掩盖旧操作。
+4. 不要把一次通过、某个仓库策略或本文拓扑外推为客户部署、生产可靠性或安全保证。
+
+最终迁移条件很具体：系统能从模型之外回答“改了什么、验证了什么、批准了什么、外部发生了什么”时，长任务循环才有恢复基础；任一答案不可验证，就应停止自动化并把控制权交给人。
+
+## 来源
+
+以下只列第一方工程材料、官方仓库与固定源码。长任务文章页面在既有治理记录中于 **2026-08-26** 健康复核；三个仓库提交在 **2026-08-28** 通过官方版本控制传输路径固定并读取。任何链接都不支持本文完整拓扑或生产结果。
+
+- [Effective harnesses for long-running agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)（`official-docs`，`method`）：支持其报告的初始化会话与编码会话、增量进度、进度产物和版本历史；不建立通用运行框架责任或生产保证。
+- [Demystifying evals for AI agents](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents)（`engineering-blog`，`method`）：支持把任务、试次、评分器、轨迹与结果分开评价；不证明测试运行器或模型评分天然正确。
+- [OpenAI Codex 固定仓库](https://github.com/openai/codex/tree/5f49aba876922d6f2f55caa153bbb0ed1b46feba)（`official-repository`，`implementation`）：支持官方仓库身份、固定提交与开源许可；不证明本文拓扑或默认政策。
+- [Codex 批准与沙箱策略源码](https://github.com/openai/codex/blob/5f49aba876922d6f2f55caa153bbb0ed1b46feba/codex-rs/protocol/src/protocol.rs)（`source-code`，`implementation`）：支持 `AskForApproval` 与 `SandboxPolicy` 接缝；不证明配置效果或沙箱无逃逸。
+- [LangGraph 检查点基类源码](https://github.com/langchain-ai/langgraph/blob/bdb8a9c7a4aa1390af225f6a5d292e5088659bd5/libs/checkpoint/langgraph/checkpoint/base/__init__.py)（`source-code`，`implementation`）：支持 `thread_id`、`get_tuple`、`put` 与 `put_writes` 接口；不证明仓库恢复正确。
+- [Temporal 活动源码](https://github.com/temporalio/sdk-typescript/blob/5373d58f7d504b6b72c7ac17b33139eb5f23dbec/packages/activity/src/index.ts)（`source-code`，`implementation`）：支持活动心跳详情在后续尝试中充当进度检查点；不证明外部效果幂等。
+- [长任务编码智能体原创拓扑](/img/diagrams/long-running-coding-agent.svg)（`original-illustration`，`illustration`）：解释本站参考设计的隔离、检查点、批准和恢复关系；不建立外部事实。
+
+这套设计的决定性边界是：模型可以建议下一步，但仓库保存代码事实，测试保存验证事实，批准者拥有高风险授权，外部系统拥有副作用事实。恢复无法从这些权威重建时，正确结果是拒绝继续，而不是生成一段更自信的计划。

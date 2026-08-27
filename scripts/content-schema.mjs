@@ -309,6 +309,7 @@ export const allowedSourceKinds = [
   'reference-architecture',
   'paper',
   'official-repository',
+  'source-code',
   'original-illustration',
 ];
 

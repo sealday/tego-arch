@@ -692,6 +692,7 @@ test('accepts governed evidence source kinds used by reference cases', async () 
           'paper',
           'engineering-blog',
           'official-repository',
+          'source-code',
           'original-illustration',
         ],
       }),
