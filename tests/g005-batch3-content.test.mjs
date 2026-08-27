@@ -116,7 +116,7 @@ const immutableFiles = new Map([
   ],
   [
     'content/cases/microsoft-multi-agent-reference-architecture.mdx',
-    '646086029ef8c3d26416f1307d150a54439658eb48c884cd040466f133d1a3b4',
+    '8d09e4113580723e27485279d68b96af04c5605c3ed7d03e87698a0926d22443',
   ],
   [
     'sidebars.ts',

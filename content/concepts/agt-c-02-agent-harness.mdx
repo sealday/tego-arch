@@ -134,6 +134,8 @@ flowchart TB
 
 [智能体监督、交接与工具化](/patterns/agt-p-06)会复用工具和控制权合同，[持久智能体与人在回路（Human-in-the-loop）](/patterns/agt-p-08)会复用暂停、批准与恢复合同；[长时编码智能体案例](/cases/long-running-coding-agent)用于检验这些责任是否在真实执行链中有对应证据。它们可以组合或拆分智能体运行框架实现，但不得让智能体循环越过权限、预算、状态和评测边界。
 
+本文属于[概念目录](/concepts)，并在[智能体架构学习路径](/paths/agentic-architecture)中为后续控制模式提供运行与治理外壳。
+
 ## 来源
 
 - [Effective harnesses for long-running agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)（`facts-summary`）：支持其长时编码实验中的初始化会话、增量工作、进度文件、版本历史和跨上下文交接事实；它明确是特定全栈开发实验的一种方案，不建立通用智能体运行框架责任全集。

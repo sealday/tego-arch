@@ -297,6 +297,8 @@ flowchart LR
 
 **个人分析**：人工介入不是耐久执行失败，而是明确的恢复分支。`needs_reconciliation`、`needs_compensation_approval`、`compensation_failed`应可查询且有所有者与服务等级协议；审批结果作为新历史事件进入工作流，而不是运维人员删除历史或修改内部状态。
 
+这组边界对应[持久智能体与人在回路（Human-in-the-loop）](/patterns/agt-p-08)：历史、检查点、结果对账、人工批准与恢复都要映射到长时智能体。Temporal 提供耐久执行机制，不替代模型评测、业务授权或目标系统幂等。
+
 ## 生产化分析
 
 生产检查应从故障动作出发，而不是只看“工作流仍在运行”。

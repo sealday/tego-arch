@@ -147,7 +147,9 @@ ReAct 展示模型将推理轨迹与面向环境的动作交错生成，并让�
 
 八种模式都复用本文词汇：[工作流与自治智能体](/patterns/agt-p-01)决定是否需要循环，[智能体检索增强生成（Agentic RAG）](/patterns/agt-p-02)用证据充分性终止检索，[规划者—执行者](/patterns/agt-p-03)分离计划与行动，[评估者—优化者（Evaluator-Optimizer）](/patterns/agt-p-04)展开评价回边，[路由与模型分派](/patterns/agt-p-05)选择执行路径，[监督、交接与工具化智能体](/patterns/agt-p-06)移动控制权，[编排者—工作者与扇出/扇入](/patterns/agt-p-07)分解并汇聚动作，[持久智能体与人在回路（Human-in-the-loop）](/patterns/agt-p-08)增加暂停、恢复和人工批准。
 
-本文也是 [智能体架构学习路径](/paths/agentic-architecture)的单智能体控制基础。模式可以增加节点和角色，但不能删除评估门、隐藏终止结果，或把代码强制的限制交给模型自行遵守。
+[生产事故响应智能体](/cases/production-incident-response-agent)把循环的观察、评估和终止合同放进只读诊断场景：证据不足或动作越权时必须弃权，而不是把模型的完成声明当作事故已解决。
+
+本文属于[概念目录](/concepts)，也是[智能体架构学习路径](/paths/agentic-architecture)的单智能体控制基础。模式可以增加节点和角色，但不能删除评估门、隐藏终止结果，或把代码强制的限制交给模型自行遵守。
 
 ## 来源
 

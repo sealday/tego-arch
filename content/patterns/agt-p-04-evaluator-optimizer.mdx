@@ -179,7 +179,7 @@ OpenAI Agents SDK 固定提交中的 `llm_as_a_judge.py` 展示了一个生成�
 
 ## 相邻模式与反模式
 
-本文依赖[智能体循环（Agent Loop）](/concepts/agt-c-03)的观察、评估与硬终止合同，也依赖[追踪、评测与护栏（guardrail）](/concepts/agt-c-06)对证据记录、质量判断和执行约束的分工。[确定性工作流与自治智能体](/patterns/agt-p-01)帮助判断是否值得引入循环；[规划者–执行者（Planner–Executor）](/patterns/agt-p-03)改变任务步骤，而本文迭代同一验收目标下的候选结果。
+本文依赖[智能体循环（Agent Loop）](/concepts/agt-c-03)的观察、评估与硬终止合同，也依赖[追踪、评测与护栏（guardrail）](/concepts/agt-c-06)对证据记录、质量判断和执行约束的分工。[确定性工作流与自治智能体](/patterns/agt-p-01)帮助判断是否值得引入循环；[智能体检索增强生成（Agentic RAG）](/patterns/agt-p-02)把证据充分性作为一种专用评估门；[规划者–执行者（Planner–Executor）](/patterns/agt-p-03)改变任务步骤，而本文迭代同一验收目标下的候选结果。
 
 [编排者–工作者与扇出/扇入](/patterns/agt-p-07)可以并行生成多个候选，但汇聚仍需同一量表版本、去重和预算合同。[持久智能体与人工介入](/patterns/agt-p-08)负责跨时等待人工复核与恢复，不能把暂停机制误当作评估正确性。多智能体部署不等于评估独立，关键是失效机制、状态与权限是否真正分离。
 
