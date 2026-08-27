@@ -7,9 +7,10 @@ import {readContentDocuments} from '../scripts/content-metadata.mjs';
 import {extractInternalLinks} from '../scripts/content-relations.mjs';
 
 export const EXPECTED_STAGE_A = Object.freeze({completed: 63, documents: 107, sources: 560});
-export const EXPECTED_STAGE_B = Object.freeze({completed: 64, documents: 107, sources: 560});
+export const EXPECTED_STAGE_B = Object.freeze({completed: 64, documents: 108, sources: 565});
 export const CURRENT_TOPIC = 'STY-11';
 export const NEXT_TOPIC = 'STY-12';
+export const FUTURE_TOPIC = 'STY-13';
 export const REVIEW = 'docs/reviews/g009-batch12.md';
 export const LOCAL_RAW = 'docs/reviews/evidence/g009-batch12-stage-a-browser.json';
 export const PRODUCTION_RAW = 'docs/reviews/evidence/g009-batch12-stage-a-production-browser.json';
@@ -137,12 +138,23 @@ const IMMEDIATE_REVIEW = 'docs/reviews/g009-batch11.md';
 const BACKLOG = 'docs/content-backlog.md';
 const IMMEDIATE_REVIEW_HASH = '9276cb7b4c6e66ac50375a4f58df8220255644afd1f45cb46c943db610c10a39';
 const IMMEDIATE_BACKLOG_SUFFIX_HASH = 'aa6c304cf11bca2472f884cba795782e03b579415b859864c5c4e5d0d60a978f';
-const STABLE_IDENTITIES = new Map([
+const HISTORICAL_REVIEW_IDENTITIES = new Map([
   [ARTICLE, [23_126, '85561b6c44acc1518f416e12cb507b6c4a2a57369c6cdda8c8df176165d2bbd6']],
   [LEDGER, [1_644_284, '0f3856dc6291e1e8f78622c08c2fa0da8af54d11cc24cbd679a3557ab920beef']],
   [DRAWIO, [47_529, '9862fcb5be62941553780b2a58751a3f9af2ba7a32dace3549cc3ca6d1daa00e']],
   [SVG, [21_881, '6a166a208e31cb1c6313cd2a21ff17ce124ab6b463821bb3b108275000fa2094']],
 ]);
+const STABLE_IDENTITIES = new Map([...HISTORICAL_REVIEW_IDENTITIES].filter(([path]) => path !== LEDGER));
+const STY11_SOURCE_IDS = Object.freeze([
+  'src-cncf-serverless-whitepaper-v1', 'src-cncf-serverless-glossary',
+  'src-aws-lambda-runtime-lifecycle', 'src-aws-lambda-invocation-retries',
+  'src-aws-lambda-concurrency', 'src-aws-lambda-pricing',
+  'src-azure-functions-scale-hosting', 'src-google-cloud-run-concurrency',
+  'src-cncf-cloudevents-102-spec', 'src-open-workflow-specification-103',
+  'src-atlas-sty11-serverless-order-fulfillment',
+]);
+const STY11_LEDGER_SLICE_BYTES = 25_366;
+const STY11_LEDGER_SLICE_SHA256 = '0982f8967bffc8a5047131a710c7b681f640ceefc0505d2c034d6e6875a03769';
 const FINAL_STAGE_A_CHECKPOINT = Object.freeze([
   `- Exact implementation candidate head: \`${CANDIDATE_HEAD}\`.`,
   `- Exact Browser evidence head: \`${EVIDENCE_HEAD}\`.`,
@@ -280,7 +292,7 @@ function assertFinalReview(source = review) {
   assert.match(source, /STY-11: `published \/ pending`/u);
   assert.match(source, /STY-12: `unpublished \/ pending \/ non-actionable`; actionable route count: `0`/u);
   assert.match(source, /This record binds the exact candidate, Browser evidence, regression-guard head and three zero-finding independent reviews as the final Stage A READY checkpoint, and now binds its exact production publication below\. It does not close the backlog or run Stage B\./u);
-  for (const [path, [bytes, hash]] of STABLE_IDENTITIES) {
+  for (const [path, [bytes, hash]] of HISTORICAL_REVIEW_IDENTITIES) {
     assert.ok(source.includes(`| \`${path}\` | ${bytes.toLocaleString('en-US')} | \`${hash}\` |`), `${path} exact identity`);
   }
   assert.ok(source.includes(`Complete immediate STY-10 review SHA-256: \`${IMMEDIATE_REVIEW_HASH}\``));
@@ -568,7 +580,21 @@ function assertStageBProductionEvidence(value) {
   });
 }
 
-const [review, raw, productionRaw, stageBProductionRaw, immediateReview, backlog, status, manifest, documents, stableBytes] = await Promise.all([
+function serializeSty11LedgerSlice(ledger) {
+  const document = ledger.documents?.[ARTICLE];
+  assert.ok(document, 'STY-11 governed ledger document exists');
+  assert.deepEqual(document.citations.map(({source_id: id}) => id), STY11_SOURCE_IDS, 'STY-11 exact ordered source IDs');
+  const sources = STY11_SOURCE_IDS.map((id) => ledger.sources.find((source) => source.id === id));
+  assert.ok(sources.every(Boolean), 'every STY-11 governed source entry exists');
+  return Buffer.from(JSON.stringify({sources, document}));
+}
+function assertSty11LedgerSliceIdentity(ledger) {
+  const slice = serializeSty11LedgerSlice(ledger);
+  assert.equal(slice.length, STY11_LEDGER_SLICE_BYTES, 'STY-11 governed ledger slice bytes');
+  assert.equal(sha256(slice), STY11_LEDGER_SLICE_SHA256, 'STY-11 governed ledger slice SHA-256');
+}
+
+const [review, raw, productionRaw, stageBProductionRaw, immediateReview, backlog, status, manifest, documents, liveLedger, stableBytes] = await Promise.all([
   optional(REVIEW, 'utf8'),
   optional(LOCAL_RAW),
   optional(PRODUCTION_RAW),
@@ -578,6 +604,7 @@ const [review, raw, productionRaw, stageBProductionRaw, immediateReview, backlog
   required('src/generated/project-status.json', 'utf8').then(JSON.parse),
   required('src/generated/topic-manifest.json', 'utf8').then(JSON.parse),
   readContentDocuments('content'),
+  required(LEDGER, 'utf8').then(JSON.parse),
   Promise.all([...STABLE_IDENTITIES.keys()].map((path) => required(path))),
 ]);
 
@@ -602,7 +629,7 @@ test('publishes the exact Stage B recovery baseline while locking immediate STY-
   }
 });
 
-test('projects exact STY-11 Stage B closure while STY-12 remains sole unpublished pending non-actionable next', () => {
+test('preserves exact STY-11 Stage B closure while the current projection publishes pending STY-12', () => {
   assert.deepEqual({
     completed: status.completed_topics,
     documents: status.content_documents,
@@ -611,13 +638,16 @@ test('projects exact STY-11 Stage B closure while STY-12 remains sole unpublishe
   const current = documents.find(({metadata}) => metadata.topic_id === CURRENT_TOPIC);
   assert.ok(current, 'STY-11 is published as a content document');
   assertStageBBacklog();
-  assert.equal(documents.some(({metadata}) => metadata.topic_id === NEXT_TOPIC), false, 'STY-12 is unpublished');
+  assert.equal(documents.some(({metadata}) => metadata.topic_id === NEXT_TOPIC), true, 'STY-12 is published');
+  assert.equal(documents.some(({metadata}) => metadata.topic_id === FUTURE_TOPIC), false, 'STY-13 is unpublished');
   assert.match(backlog, /^- \[ \] \*\*STY-12 P1｜Micro-Frontend\*\*/mu);
-  assert.equal(documents.flatMap(extractInternalLinks).includes('/styles/sty-12'), false, 'STY-12 is non-actionable');
+  assert.equal(documents.flatMap(extractInternalLinks).includes('/styles/sty-12'), true, 'STY-12 has exact published reciprocal actions');
   const manifestCurrent = manifest.topics.find(({id}) => id === CURRENT_TOPIC);
   const manifestNext = manifest.topics.find(({id}) => id === NEXT_TOPIC);
+  const manifestFuture = manifest.topics.find(({id}) => id === FUTURE_TOPIC);
   assert.deepEqual({published: manifestCurrent?.published, status: manifestCurrent?.status?.value}, {published: true, status: 'complete'});
-  assert.deepEqual({published: manifestNext?.published, status: manifestNext?.status?.value}, {published: false, status: 'pending'});
+  assert.deepEqual({published: manifestNext?.published, status: manifestNext?.status?.value}, {published: true, status: 'pending'});
+  assert.deepEqual({published: manifestFuture?.published, status: manifestFuture?.status?.value}, {published: false, status: 'pending'});
   const staleNext = backlog.replace('下一项为 STY-12', '下一项为 STY-11');
   assert.notEqual(staleNext, backlog, 'current next-topic mutation applies');
   assert.throws(() => assertStageBBacklog(staleNext), assert.AssertionError);
@@ -638,6 +668,10 @@ test('locks exact STY-11 article, ledger, Draw.io and SVG identities', () => {
     assert.equal(value.length, bytes, `${path} bytes`);
     assert.equal(sha256(value), hash, `${path} SHA-256`);
   }
+  assertSty11LedgerSliceIdentity(liveLedger);
+  const mutation = structuredClone(liveLedger);
+  mutation.sources.find(({id}) => id === STY11_SOURCE_IDS[0]).usage_boundary += ' changed';
+  assert.throws(() => assertSty11LedgerSliceIdentity(mutation), assert.AssertionError, 'STY-11 governed ledger slice mutation rejected');
 });
 
 test('binds exact Stage A evidence and final Stage B production closure', () => {

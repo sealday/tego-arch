@@ -2688,6 +2688,40 @@
       "health_checks": []
     },
     {
+      "id": "src-atlas-sty12-micro-frontend-commerce-runtime",
+      "canonical_locator": "/img/diagrams/sty-12-micro-frontend-commerce-runtime.svg",
+      "transport_locator": "/img/diagrams/sty-12-micro-frontend-commerce-runtime.svg",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Micro-Frontend 电商运行时、发布与权威状态边界图 SVG",
+      "author_or_org": "Tego Arch maintainers",
+      "published_at": "2026-08-26",
+      "registered_at": "2026-08-26",
+      "checked_at": "2026-08-26",
+      "version": "original-atlas image/svg+xml; created 2026-08-26",
+      "source_kind": "original-illustration",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "illustration"
+      ],
+      "license": "LicenseRef-Atlas-Original",
+      "license_scope": "The named project-authored sty-12-micro-frontend-commerce-runtime.svg image/svg+xml asset only",
+      "license_evidence_url": "https://github.com/sealday/tego-arch/blob/main/static/img/diagrams/sty-12-micro-frontend-commerce-runtime.svg",
+      "license_evidence_note": "The project-authored Draw.io/SVG pair uses an original topology and closed article vocabulary without third-party diagrams, reference imagery, brand visuals, signatures or watermarks.",
+      "license_family_id": "/img/diagrams/sty-12-micro-frontend-commerce-runtime.svg",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "original-atlas",
+      "usage_boundary": "Original teaching topology for independent slice pipelines, whole-manifest release control, thin browser composition, authoritative backend state and bounded recovery; illustration-only and not evidence of production outcomes.",
+      "link_policy": null,
+      "expected_final_transport_locator": "/img/diagrams/sty-12-micro-frontend-commerce-runtime.svg",
+      "expected_final_approved_at": "2026-08-26",
+      "expected_final_approval_note": "Reserved project-local original image/svg+xml identity for the Task 3 synchronized Draw.io/SVG asset and its required semantic, geometry, contrast and raster QA.",
+      "health_summary": "healthy",
+      "health_checks": []
+    },
+    {
       "id": "src-aws-0ccf50a7d52b",
       "canonical_locator": "https://aws.amazon.com/blogs/architecture/shuffle-sharding-massive-and-magical-fault-isolation/",
       "transport_locator": "https://aws.amazon.com/blogs/architecture/shuffle-sharding-massive-and-magical-fault-isolation/",
@@ -26780,6 +26814,92 @@
       ]
     },
     {
+      "id": "src-w3c-content-security-policy-3",
+      "canonical_locator": "https://www.w3.org/TR/CSP3/",
+      "transport_locator": "https://www.w3.org/TR/CSP3/",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Content Security Policy Level 3",
+      "author_or_org": "W3C",
+      "published_at": "2026-08-13",
+      "registered_at": "2026-08-26",
+      "checked_at": "2026-08-26",
+      "version": "Working Draft 13 August 2026",
+      "source_kind": "standard",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "runtime-fact"
+      ],
+      "license": "LicenseRef-Proprietary-Standard",
+      "license_scope": "The named W3C Working Draft and bibliographic facts only; normative prose, examples, diagrams, linked works, trademarks and third-party material excluded",
+      "license_evidence_url": "https://www.w3.org/copyright/document-license-2023/",
+      "license_evidence_note": "The W3C document-use license governs the named Working Draft; Tego Arch conservatively uses attributed factual reference and original summary only.",
+      "license_family_id": "https://www.w3.org/TR/CSP3/",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports browser resource and execution policy as defense in depth only; it is not a replacement for input validation, backend authorization or origin isolation.",
+      "link_policy": "floating",
+      "expected_final_transport_locator": "https://www.w3.org/TR/CSP3/",
+      "expected_final_approved_at": "2026-08-26",
+      "expected_final_approval_note": "The official W3C Working Draft transport, publication identity and defense-in-depth-only boundary were reviewed on 2026-08-26.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://www.w3.org/TR/CSP3/",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-26T11:41:39.787Z",
+          "last_success_at": "2026-08-26T11:41:39.787Z",
+          "http_status": 200,
+          "final_transport_locator": "https://www.w3.org/TR/CSP3/"
+        }
+      ]
+    },
+    {
+      "id": "src-w3c-long-tasks-api",
+      "canonical_locator": "https://www.w3.org/TR/longtasks-1/",
+      "transport_locator": "https://www.w3.org/TR/longtasks-1/",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Long Tasks API",
+      "author_or_org": "W3C",
+      "published_at": null,
+      "registered_at": "2026-08-26",
+      "checked_at": "2026-08-26",
+      "version": "Latest published specification; checked 2026-08-26",
+      "source_kind": "standard",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "runtime-fact"
+      ],
+      "license": "LicenseRef-Proprietary-Standard",
+      "license_scope": "The named W3C specification and bibliographic facts only; normative prose, examples, diagrams, linked works, trademarks and third-party material excluded",
+      "license_evidence_url": "https://www.w3.org/copyright/document-license-2023/",
+      "license_evidence_note": "The W3C document-use license governs the named specification; Tego Arch conservatively uses attributed factual reference and original summary only.",
+      "license_family_id": "https://www.w3.org/TR/longtasks-1/",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports observing tasks above the specified long-task threshold and bounded attribution only; it does not isolate the main thread or prove which business slice caused every delay.",
+      "link_policy": "floating",
+      "expected_final_transport_locator": "https://www.w3.org/TR/longtasks-1/",
+      "expected_final_approved_at": "2026-08-26",
+      "expected_final_approval_note": "The official W3C latest published specification transport and its threshold-and-bounded-attribution scope were reviewed on 2026-08-26.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://www.w3.org/TR/longtasks-1/",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-26T11:41:39.787Z",
+          "last_success_at": "2026-08-26T11:41:39.787Z",
+          "http_status": 206,
+          "final_transport_locator": "https://www.w3.org/TR/longtasks-1/"
+        }
+      ]
+    },
+    {
       "id": "src-w3c-scxml-2015",
       "canonical_locator": "https://www.w3.org/TR/2015/REC-scxml-20150901/",
       "transport_locator": "https://www.w3.org/TR/2015/REC-scxml-20150901/",
@@ -26827,6 +26947,50 @@
       ]
     },
     {
+      "id": "src-w3c-subresource-integrity",
+      "canonical_locator": "https://www.w3.org/TR/SRI/",
+      "transport_locator": "https://www.w3.org/TR/SRI/",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Subresource Integrity",
+      "author_or_org": "W3C",
+      "published_at": null,
+      "registered_at": "2026-08-26",
+      "checked_at": "2026-08-26",
+      "version": "Latest published specification; checked 2026-08-26",
+      "source_kind": "standard",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "implementation",
+        "runtime-fact"
+      ],
+      "license": "LicenseRef-Proprietary-Standard",
+      "license_scope": "The named W3C specification and bibliographic facts only; normative prose, examples, diagrams, linked works, trademarks and third-party material excluded",
+      "license_evidence_url": "https://www.w3.org/copyright/document-license-2023/",
+      "license_evidence_note": "The W3C document-use license governs the named specification; Tego Arch conservatively uses attributed factual reference and original summary only.",
+      "license_family_id": "https://www.w3.org/TR/SRI/",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports digest-based subresource response verification and failure handling only; it does not authenticate a release approver or make a manifest atomic.",
+      "link_policy": "floating",
+      "expected_final_transport_locator": "https://www.w3.org/TR/sri/",
+      "expected_final_approved_at": "2026-08-26",
+      "expected_final_approval_note": "The official W3C latest published specification redirected to the reviewed lowercase TR transport and returned a healthy response on 2026-08-26.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://www.w3.org/TR/SRI/",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-26T11:41:39.787Z",
+          "last_success_at": "2026-08-26T11:41:39.787Z",
+          "http_status": 206,
+          "final_transport_locator": "https://www.w3.org/TR/sri/"
+        }
+      ]
+    },
+    {
       "id": "src-w3c-web-services-architecture",
       "canonical_locator": "https://www.w3.org/TR/ws-arch/",
       "transport_locator": "https://www.w3.org/TR/ws-arch/",
@@ -26868,6 +27032,50 @@
           "last_success_at": "2026-08-25T12:07:24.531Z",
           "http_status": 200,
           "final_transport_locator": "https://www.w3.org/TR/ws-arch/"
+        }
+      ]
+    },
+    {
+      "id": "src-whatwg-html-import-maps",
+      "canonical_locator": "https://html.spec.whatwg.org/multipage/webappapis.html",
+      "transport_locator": "https://html.spec.whatwg.org/multipage/webappapis.html",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "HTML Standard — Import maps",
+      "author_or_org": "WHATWG",
+      "published_at": null,
+      "registered_at": "2026-08-26",
+      "checked_at": "2026-08-26",
+      "version": "Living Standard; checked 2026-08-26",
+      "source_kind": "standard",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "implementation"
+      ],
+      "license": "CC-BY-4.0",
+      "license_scope": "The named HTML Living Standard page under Creative Commons Attribution 4.0; code, examples, trademarks, linked works and third-party material excluded",
+      "license_evidence_url": "https://github.com/whatwg/html/blob/main/LICENSE",
+      "license_evidence_note": "The official WHATWG HTML repository LICENSE identifies Creative Commons Attribution 4.0 for the specification; the article provides attribution and uses an original factual summary without copying prose, examples or structure.",
+      "license_family_id": "https://html.spec.whatwg.org/multipage/webappapis.html",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "adapt-with-attribution",
+      "usage_boundary": "Supports import-map module-specifier resolution, scopes and integrity metadata only; it does not prove atomic release, rollback, team autonomy or application compatibility.",
+      "link_policy": "floating",
+      "expected_final_transport_locator": "https://html.spec.whatwg.org/multipage/webappapis.html",
+      "expected_final_approved_at": "2026-08-26",
+      "expected_final_approval_note": "The official HTML Living Standard transport and WHATWG license identity were reviewed on 2026-08-26; use is limited to attributed module-resolution facts.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://html.spec.whatwg.org/multipage/webappapis.html",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-26T11:41:39.787Z",
+          "last_success_at": "2026-08-26T11:41:39.787Z",
+          "http_status": 206,
+          "final_transport_locator": "https://html.spec.whatwg.org/multipage/webappapis.html"
         }
       ]
     }
@@ -38251,6 +38459,128 @@
           "usage_mode": "facts-summary",
           "attribution_note": "Open Workflow Specification 1.0.3 workflow schema, Open Workflow Specification contributors",
           "modification_note": "Original Chinese summary of selected vendor-neutral workflow-description responsibilities; no schema structure or examples copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/styles/sty-12-micro-frontend-architecture.mdx": {
+      "title": "Micro-Frontend：用独立交付证明运行时拆分",
+      "slug": "/styles/sty-12",
+      "reviewed_at": "2026-08-26",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-atlas-sty12-micro-frontend-commerce-runtime",
+          "citation_url": "/img/diagrams/sty-12-micro-frontend-commerce-runtime.svg",
+          "roles": [
+            "illustration"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "original-illustration",
+          "attribution_note": "Micro-Frontend 电商运行时、发布与权威状态边界图，Tego Arch maintainers",
+          "modification_note": "Reserved for the Task 3 original synchronized Draw.io/SVG pair, created from the approved article topology without third-party reference imagery, brand visuals, signatures, watermarks or copied composition.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-martinfowler-0ec749cd01b8",
+          "citation_url": "https://martinfowler.com/articles/micro-frontends.html",
+          "roles": [
+            "definition",
+            "comparison"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Cam Jackson, Micro Frontends, Martin Fowler",
+          "modification_note": "Original Chinese synthesis of the independent-delivery and vertical-business-team framing; no source prose, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-single-spa-03f49f2c5ddb",
+          "citation_url": "https://single-spa.js.org/docs/microfrontends-concept/",
+          "roles": [
+            "definition",
+            "runtime-fact"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Microfrontends Overview, single-spa maintainers",
+          "modification_note": "Original Chinese factual summary of the documented runtime-composition and shared-browser boundary only.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-single-spa-f1207fc2c485",
+          "citation_url": "https://single-spa.js.org/docs/recommended-setup/",
+          "roles": [
+            "implementation",
+            "runtime-fact"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "The Recommended Setup, single-spa maintainers",
+          "modification_note": "Original Chinese factual summary limited to import maps, public entries and selective dependency sharing.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-w3c-content-security-policy-3",
+          "citation_url": "https://www.w3.org/TR/CSP3/",
+          "roles": [
+            "runtime-fact"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Content Security Policy Level 3, W3C",
+          "modification_note": "Original Chinese factual summary limited to browser resource and execution policy as defense in depth.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-w3c-long-tasks-api",
+          "citation_url": "https://www.w3.org/TR/longtasks-1/",
+          "roles": [
+            "runtime-fact"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Long Tasks API, W3C",
+          "modification_note": "Original Chinese factual summary limited to the specified threshold and bounded attribution.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-w3c-subresource-integrity",
+          "citation_url": "https://www.w3.org/TR/SRI/",
+          "roles": [
+            "implementation",
+            "runtime-fact"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Subresource Integrity, W3C",
+          "modification_note": "Original Chinese factual summary limited to digest-based response verification and failure handling.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-whatwg-html-import-maps",
+          "citation_url": "https://html.spec.whatwg.org/multipage/webappapis.html#import-maps",
+          "roles": [
+            "definition",
+            "implementation"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "HTML Standard — Import maps, WHATWG",
+          "modification_note": "Attributed original Chinese factual summary of module-specifier resolution, scopes and integrity metadata; no normative prose, algorithms, examples or structure copied.",
           "excerpt": null,
           "quotation_reviewed": false
         }

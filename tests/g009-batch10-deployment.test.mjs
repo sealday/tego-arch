@@ -237,15 +237,16 @@ function assertStageBBacklog(source = backlog) {
 function assertStageBProjection() {
   assert.deepEqual(
     {completed: status.completed_topics, documents: status.content_documents, sources: status.governed_sources},
-    {completed: 64, documents: 107, sources: 560},
+    {completed: 64, documents: 108, sources: 565},
   );
-  assert.equal(publicLedger.sources.length, 560);
+  assert.equal(publicLedger.sources.length, 565);
   const topics = new Map(manifest.topics.map((topic) => [topic.id, topic]));
   const styles = new Map(indexes.style.map((topic) => [topic.id, topic]));
   assert.deepEqual([topics.get('STY-09')?.published, topics.get('STY-09')?.status.value, styles.get('STY-09')?.published], [true, 'complete', true]);
   assert.deepEqual([topics.get('STY-10')?.published, topics.get('STY-10')?.status.value, styles.get('STY-10')?.published], [true, 'complete', true]);
   assert.deepEqual([topics.get('STY-11')?.published, topics.get('STY-11')?.status.value, styles.get('STY-11')?.published], [true, 'complete', true]);
-  assert.deepEqual([topics.get('STY-12')?.published, topics.get('STY-12')?.status.value, styles.get('STY-12')?.published], [false, 'pending', false]);
+  assert.deepEqual([topics.get('STY-12')?.published, topics.get('STY-12')?.status.value, styles.get('STY-12')?.published], [true, 'pending', true]);
+  assert.deepEqual([topics.get('STY-13')?.published, topics.get('STY-13')?.status.value, styles.get('STY-13')?.published], [false, 'pending', false]);
 }
 function assertPendingStageBReview(source = review) {
   assert.equal(section(source, 'Stage B closure candidate'), PENDING_STAGE_B_REVIEW_LINES.join('\n'), 'exact pending Stage B section');
@@ -255,9 +256,11 @@ function assertFinalStageBReview(source = review) {
   assert.equal(section(source, 'Stage B closure candidate'), FINAL_STAGE_B_REVIEW_LINES.join('\n'), 'exact final Stage B section');
   assert.equal(source.split('## Stage B closure candidate').length - 1, 1, 'one Stage B closure section');
 }
-async function assertSty11NonActionable() {
+async function assertSty12Actionability() {
   const documents = await readContentDocuments('content');
-  for (const document of documents) assert.equal(extractInternalLinks(document).includes('/styles/sty-12'), false, `${document.file} STY-12 non-actionable`);
+  const reciprocals = new Set(['styles/sty-03-vertical-slice-architecture.mdx', 'styles/sty-10-microkernel-plugin-architecture.mdx', 'cases/micro-frontends-single-spa.mdx']);
+  for (const document of documents) assert.equal(extractInternalLinks(document).includes('/styles/sty-12'), reciprocals.has(document.file), `${document.file} exact STY-12 actionability`);
+  assert.equal(documents.flatMap(extractInternalLinks).includes('/styles/sty-13'), false, 'STY-13 non-actionable');
 }
 async function assertArtifactIdentities(source) {
   const identities = section(source, 'Artifact identities');
@@ -520,7 +523,7 @@ test('locks complete immediate STY-08 review and backlog suffix with mutation se
 test('preserves canonical STY-09 history while current STY-10 is complete and STY-11 is pending non-actionable', async () => {
   assertStageBProjection();
   assertStageBBacklog();
-  await assertSty11NonActionable();
+  await assertSty12Actionability();
 });
 
 test('binds exact STY-09 artifacts, tracked Browser semantics, and final independent review verdicts', async () => {
@@ -682,7 +685,7 @@ test('closes only STY-09 from exact Stage A production evidence and preserves co
 
 test('projects STY-09 and STY-10 complete with STY-11 unpublished/non-actionable', async () => {
   assertStageBProjection();
-  await assertSty11NonActionable();
+  await assertSty12Actionability();
 });
 
 test('rejects the superseded all-PENDING Stage B checkpoint after independent review', () => {

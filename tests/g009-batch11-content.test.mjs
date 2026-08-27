@@ -15,7 +15,7 @@ export const ROUTE = '/styles/sty-10';
 export const TOPIC_ID = 'STY-10';
 export const NEXT_TOPIC = 'STY-11';
 export const RELATED_CASE = '/cases/micro-frontends-single-spa';
-export const EXPECTED_STAGE_A = Object.freeze({completed: 64, documents: 107, sources: 560});
+export const EXPECTED_STAGE_A = Object.freeze({completed: 64, documents: 108, sources: 565});
 export const SOURCE_IDS = Object.freeze([
   'src-eclipse-plugin-architecture', 'src-osgi-core-7-lifecycle', 'src-osgi-semantic-versioning',
   'src-hashicorp-go-plugin', 'src-vscode-extension-host', 'src-atlas-sty10-microkernel-order-plugins',
@@ -28,7 +28,7 @@ export const EXACT_METADATA = Object.freeze({
   quality_attributes: ['extensibility', 'compatibility', 'security', 'reliability', 'operability', 'maintainability'],
   tags: ['架构风格', 'Microkernel', 'Plug-in Architecture', '扩展点', '能力协商', '插件隔离'],
   summary: '以订单平台宿主和进程外税费、支付、库存、通知插件说明双平面微内核：控制面治理身份、兼容、权限与激活，执行面限制调用和故障，宿主保留业务状态、提交与补偿。',
-  topic_id: 'STY-10', priority: 'P1', depends_on: ['STY-00', 'STY-04', 'STY-05'], adjacent_topics: ['STY-04', 'STY-05'], related_cases: [RELATED_CASE], related_questions: [],
+  topic_id: 'STY-10', priority: 'P1', depends_on: ['STY-00', 'STY-04', 'STY-05'], adjacent_topics: ['STY-04', 'STY-05', 'STY-12'], related_cases: [RELATED_CASE], related_questions: [],
 });
 export const EXPECTED_HEADINGS = Object.freeze(['学习问题', '一页摘要', '事实边界', '架构图', '扩展合同与运行流', '关键机制导读', '架构决策与权衡', '生产化分析', '可迁移经验', '来源']);
 export const MIGRATION_HEADINGS = Object.freeze(['可直接复用的机制', '只能有限类比的部分', '不应照搬的部分']);
@@ -63,6 +63,7 @@ export const TERMINOLOGY_SCOPES = Object.freeze([
   {match: 'ID', record: '网关加入操作 ID、幂等键、期限、短期凭证和 ，再发起本地进程间 gRPC 调用。', reason: 'STY-10 已批准八步调用流固定使用操作 ID 字段文本'},
   {match: 'deadline', record: `| ${FAILURE_ROWS[1].join(' | ')} |`, reason: 'STY-10 已批准五类故障表固定使用 deadline 检测文本'},
   {match: 'CPU', record: `| ${FAILURE_ROWS[4].join(' | ')} |`, reason: 'STY-10 已批准五类故障表固定使用 CPU 资源文本'},
+  {match: 'Shell', record: 'Micro-Frontend 架构决策比较薄 Shell 与独立业务切片；它与插件宿主都治理版本和生命周期，但同页切片共享浏览器资源，不能复用本文的进程隔离结论。', reason: 'STY-12 批次批准的可见反向链接句固定使用薄 Shell 表述'},
 ]);
 export const LIFECYCLE = Object.freeze(['验证', '预热', '灰度', '排空', '卸载']);
 export const REGION_IDS = Object.freeze(['control-plane', 'execution-plane', 'plugin-processes', 'authority-boundary']);
@@ -102,7 +103,7 @@ function exactRows(actual, expected, name) { assert.deepEqual(actual.slice(2), e
 function section(source, heading) { const result = new RegExp(`(?:^|\\n)## ${escapeRegExp(heading)}\\n([\\s\\S]*?)(?=\\n## |$)`, 'u').exec(source)?.[1]; assert.ok(result, `${heading} section`); return result; }
 function includesOrdered(source, values, label) { let at = -1; for (const value of values) { const next = source.indexOf(value, at + 1); assert.ok(next > at, `${label}: ${value}`); at = next; } }
 function terminologyDirective({match, record, reason}) { return `{/* terminology-exempt: unknown-english-term | match: ${match} | record: ${record} | reason: ${reason} */}`; }
-export function assertScopedTerminologyExceptions(source) { const exactDirectives = source.match(/terminology-exempt:\s*unknown-english-term\s*\|\s*match:/gu) ?? []; assert.equal(exactDirectives.length, TERMINOLOGY_SCOPES.length, 'exactly seven STY-10 term-and-record exceptions'); for (const scope of TERMINOLOGY_SCOPES) assert.equal(source.split(terminologyDirective(scope)).length - 1, 1, `${scope.match} exact record exception`); }
+export function assertScopedTerminologyExceptions(source) { const exactDirectives = source.match(/terminology-exempt:\s*unknown-english-term\s*\|\s*match:/gu) ?? []; assert.equal(exactDirectives.length, TERMINOLOGY_SCOPES.length, 'exactly eight current STY-10 term-and-record exceptions'); for (const scope of TERMINOLOGY_SCOPES) assert.equal(source.split(terminologyDirective(scope)).length - 1, 1, `${scope.match} exact record exception`); }
 
 export function assertExactMetadata(source) { assert.deepEqual(parseFrontMatter(source), EXACT_METADATA, 'exact STY-10 front matter'); }
 export function assertArticleHeadings(source) { const headings = findMarkdownHeadings(source); assert.deepEqual(headings.filter(({level}) => level === 2).map(({text}) => text), EXPECTED_HEADINGS, 'approved exact H2 order'); const migration = headings.find(({level, text}) => level === 2 && text === '可迁移经验'); const next = headings.find(({level, offset}) => level === 2 && offset > migration.offset); assert.deepEqual(headings.filter(({level, offset}) => level === 3 && offset > migration.offset && (!next || offset < next.offset)).map(({text}) => text), MIGRATION_HEADINGS, 'approved exact H3 order'); }
@@ -241,7 +242,7 @@ test('STY-10 source fixture rejects deletion, rights, role, primary, and boundar
 });
 
 test('STY-10 is registered with its approved specialized architecture-case headings', () => {
-  assert.deepEqual([...architectureCaseTopicIds], ['STY-08', 'STY-09', 'STY-10', 'STY-11']);
+  assert.deepEqual([...architectureCaseTopicIds], ['STY-08', 'STY-09', 'STY-10', 'STY-11', 'STY-12']);
   assert.deepEqual(knowledgeHeadingContract('style', TOPIC_ID), EXPECTED_HEADINGS.map((heading) => `## ${heading}`));
 });
 
@@ -290,6 +291,6 @@ test('STY-10 diagram inventory production mutations reject unsafe topology and v
 });
 
 test('STY-10 article locks exact metadata, semantic contracts, and wrappers', () => { const {source, body} = articleParts(file(ARTICLE)); assertExactMetadata(source); assertArticleHeadings(source); assertWrappers(source); assertOwnership(body); assertGovernance(body); assertInvocationFailureAndLifecycle(body); assertNarrativeBoundaries(body); });
-test('STY-10 terminology exceptions lock only the seven approved literal records', () => { const source = file(ARTICLE); assertScopedTerminologyExceptions(source); for (const scope of TERMINOLOGY_SCOPES) { const directive = terminologyDirective(scope); assert.throws(() => assertScopedTerminologyExceptions(replaceOnce(source, directive, '', `${scope.match} scoped exception deletion`)), assert.AssertionError, `${scope.match} scoped exception deletion rejected`); assert.throws(() => assertScopedTerminologyExceptions(replaceOnce(source, directive, directive.replace(`match: ${scope.match}`, 'match: unrelated-term'), `${scope.match} scoped exception widening`)), assert.AssertionError, `${scope.match} scoped exception widening rejected`); } });
+test('STY-10 terminology exceptions lock only the eight current literal records', () => { const source = file(ARTICLE); assertScopedTerminologyExceptions(source); for (const scope of TERMINOLOGY_SCOPES) { const directive = terminologyDirective(scope); assert.throws(() => assertScopedTerminologyExceptions(replaceOnce(source, directive, '', `${scope.match} scoped exception deletion`)), assert.AssertionError, `${scope.match} scoped exception deletion rejected`); assert.throws(() => assertScopedTerminologyExceptions(replaceOnce(source, directive, directive.replace(`match: ${scope.match}`, 'match: unrelated-term'), `${scope.match} scoped exception widening`)), assert.AssertionError, `${scope.match} scoped exception widening rejected`); } });
 test('STY-10 source governance, reciprocal relations, and Stage A projection are exact', async () => { assertSourceContracts(JSON.parse(readFileSync('data/source-ledger.json', 'utf8')), readFileSync(SOURCE_INVENTORY, 'utf8')); await assertRelationsAndStageA(); });
 test('STY-10 Draw.io/SVG diagram locks dual-plane inventory and physical source terminals', () => { const drawio = file(DRAWIO); const svg = file(SVG); assert.ok(drawio, `${DRAWIO} must exist after implementation`); assert.ok(svg, `${SVG} must exist after implementation`); assertDiagram(drawio, svg); });
