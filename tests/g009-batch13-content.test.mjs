@@ -496,6 +496,30 @@ function legendDoesNotCoverSemanticRoutes(svgSource, svg, legend) {
   assert.ok(legendSegments.every((legendSegment) => semanticEnvelopes.every((semanticSegment) => boxDistance(legendSegment, semanticSegment) > 0)), `${legend.attributes.get('data-legend-role')} legend geometry does not cover a semantic route`);
 }
 
+function assertSemanticRouteLayerStructure(svg) {
+  const semanticLayer = svg.elements.find(({name, attributes}) => name === 'g' && attributes.get('data-edge-layer') === 'semantic-routes');
+  assert.ok(semanticLayer, 'semantic route paint layer exists');
+  const children = svg.elements.filter(({parent}) => parent === semanticLayer);
+  assert.ok(children.length > 0, 'semantic-routes direct child structure has semantic paths');
+  assert.ok(children.every((element) => {
+    const primary = element.attributes.has('data-edge-id'); const segment = element.attributes.has('data-edge-segment-for');
+    const identity = primary ? element.attributes.get('data-edge-id') : element.attributes.get('data-edge-segment-for');
+    return element.name === 'path' && primary !== segment && EDGE_IDS.includes(identity);
+  }), 'semantic-routes direct child structure permits only one named semantic path');
+}
+
+function assertEdgeLabelFillOnly(svgSource, svg, label) {
+  const paintNodes = [label, ...svg.elements.filter((element) => element.name === 'tspan' && element.parent === label)];
+  for (const node of paintNodes) {
+    const stroke = (svgPresentationValue(svgSource, node, 'stroke') ?? 'none').trim().toLowerCase();
+    const strokeWidth = number(svgPresentationValue(svgSource, node, 'stroke-width') ?? '0', `${label.attributes.get('data-edge-label-for')} edge label stroke width`);
+    const paintOrder = svgPresentationValue(svgSource, node, 'paint-order')?.trim().toLowerCase();
+    assert.equal(stroke, 'none', `${label.attributes.get('data-edge-label-for')} edge label is fill-only text`);
+    assert.equal(strokeWidth, 0, `${label.attributes.get('data-edge-label-for')} edge label is fill-only text`);
+    assert.ok(paintOrder === undefined || paintOrder === 'normal', `${label.attributes.get('data-edge-label-for')} edge label is fill-only text`);
+  }
+}
+
 function assertPostSemanticLayerStructure(svgSource, svg) {
   const semanticLayer = svg.elements.find(({name, attributes}) => name === 'g' && attributes.get('data-edge-layer') === 'semantic-routes');
   assert.ok(semanticLayer, 'semantic route paint layer exists');
@@ -520,6 +544,7 @@ function assertPostSemanticLayerStructure(svgSource, svg) {
   const labelChildren = directChildren(labelLayer);
   assert.ok(labelChildren.every((element) => element.name === 'text' && element.attributes.has('data-edge-label-for')), 'post-semantic edge-label layer permits only named label text');
   assert.ok(descendants(labelLayer).every((element) => labelChildren.includes(element) || element.name === 'tspan' && labelChildren.includes(element.parent)), 'post-semantic edge-label layer permits only direct label tspans');
+  for (const label of labelChildren) assertEdgeLabelFillOnly(svgSource, svg, label);
   const legendChildren = directChildren(legendLayer);
   assert.ok(legendChildren.every((element) => element.name === 'text' && element.attributes.has('data-legend-caption-for') || element.name === 'path' && element.attributes.has('data-legend-role')), 'post-semantic legend layer permits only named caption text and paths');
   assert.ok(descendants(legendLayer).every((element) => legendChildren.includes(element) || element.name === 'tspan' && legendChildren.includes(element.parent) && element.parent.name === 'text'), 'post-semantic legend layer permits only direct legend tspans');
@@ -533,6 +558,7 @@ function segmentContainsPoint(segment, point) {
 
 function assertBridgeInventory(drawio, svgSource, svg) {
   assert.equal(svg.elements.some(({attributes}) => attributes.has('data-bridge-mask-for')), false, 'no declared bridge mask or background-color erasure');
+  assertSemanticRouteLayerStructure(svg);
   assertPostSemanticLayerStructure(svgSource, svg);
   const expected = BRIDGE_CONTRACTS.map(([owner, under, x, y]) => intersectionIdentity(owner, under, {x, y})).sort();
   const bridges = svg.elements.filter(({attributes}) => attributes.has('data-bridge-for'));
@@ -684,6 +710,12 @@ function assertGeometryMutationGuards(svgSource) {
 }
 
 function assertBridgeMutationGuards(drawioSource, svgSource) {
+  const lateSemanticCover = svgSource.replace(/(\s*<\/g>\s*\n\s*<g data-bridge-layer="explicit-crossovers")/u, '    <rect x="40" y="1120" width="2320" height="1600" fill="#F0F9FF"/>$1');
+  assert.notEqual(lateSemanticCover, svgSource, 'late semantic-route cover mutation applies');
+  assert.throws(() => assertBridgeInventory(parseDrawio(drawioSource), lateSemanticCover, parseSvg(lateSemanticCover)), /semantic-routes direct child structure/u, 'semantic-routes cannot paint a late plane-colored rectangle');
+  const strokedLabel = svgSource.replace(/(<text\b[^>]*data-edge-label-for="catalog-release")/u, '$1 stroke="#F0F9FF" stroke-width="200" paint-order="stroke"');
+  assert.notEqual(strokedLabel, svgSource, 'edge-label stroke cover mutation applies');
+  assert.throws(() => assertBridgeInventory(parseDrawio(drawioSource), strokedLabel, parseSvg(strokedLabel)), /catalog-release edge label is fill-only text/u, 'edge-label cannot paint a wide stroke cover');
   const bridgePattern = /<path\b[^>]*data-bridge-for="[^"]+"[^>]*\/>/u;
   const bridge = bridgePattern.exec(svgSource)?.[0];
   assert.ok(bridge, 'bridge mutation fixture exists');
