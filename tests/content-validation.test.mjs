@@ -682,6 +682,26 @@ test('rejects invalid source kinds', async () => {
   }
 });
 
+test('accepts governed evidence source kinds used by reference cases', async () => {
+  await withTempRoot(async (root) => {
+    await writeMdx(
+      root,
+      'reference-evidence-kinds.mdx',
+      validCaseFrontMatter('/cases/reference-evidence-kinds', {
+        source_kinds: [
+          'paper',
+          'engineering-blog',
+          'official-repository',
+          'original-illustration',
+        ],
+      }),
+    );
+
+    const result = await validateContent(root);
+    assert.deepEqual(result.errors, []);
+  });
+});
+
 test('rejects invalid migration targets', async () => {
   const invalidCases = [
     ['empty', []],

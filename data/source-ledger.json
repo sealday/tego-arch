@@ -21536,6 +21536,103 @@
       "expected_final_transport_locator": "/img/diagrams/agt-p-08-durable-agent-hitl.svg",
       "expected_final_approved_at": "2026-08-27",
       "expected_final_approval_note": "Approved project-local original illustration after real diagrams.net source/export provenance, synchronized semantics, geometry, accessibility, deterministic pair validation and desktop/mobile browser QA on 2026-08-27."
+    },
+    {
+      "id": "src-anthropic-multi-agent-research-system",
+      "canonical_locator": "https://www.anthropic.com/engineering/multi-agent-research-system",
+      "transport_locator": "https://www.anthropic.com/engineering/multi-agent-research-system",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "How we built our multi-agent research system",
+      "author_or_org": "Anthropic",
+      "published_at": "2025-06-13",
+      "registered_at": "2026-08-28",
+      "checked_at": "2026-08-28",
+      "version": "Official engineering article published 2025-06-13 and checked on 2026-08-28",
+      "source_kind": "engineering-blog",
+      "tier": "first-party",
+      "allowed_evidence_roles": [
+        "implementation",
+        "method"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named Anthropic engineering article and bibliographic facts only; prose, code, prompts, examples, diagrams, images, linked works, trademarks and third-party material excluded",
+      "license_evidence_url": "https://www.anthropic.com/engineering/multi-agent-research-system",
+      "license_evidence_note": "The official Anthropic page exposes no reusable article license; Tego Arch uses attributed factual summary without copying prose, prompts, code, examples, diagrams, images, structure or composition.",
+      "license_family_id": "https://www.anthropic.com/engineering/multi-agent-research-system",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports Anthropic's first-party description of a lead research agent coordinating parallel subagents, iterating research and passing findings to citation processing; it does not establish an industry standard, expose the complete production implementation, or prove this article's task ledger, evidence store, sufficiency gate, recovery contract or complete topology.",
+      "link_policy": "floating",
+      "expected_final_transport_locator": "https://www.anthropic.com/engineering/multi-agent-research-system",
+      "expected_final_approved_at": "2026-08-28",
+      "expected_final_approval_note": "The exact official engineering article returned the expected canonical page, title and publication date on 2026-08-28; no search result, query-decorated alias, reproduction or third-party summary is used as health evidence."
+    },
+    {
+      "id": "src-langchain-open-deep-research-multi-agent",
+      "canonical_locator": "https://github.com/langchain-ai/open_deep_research/blob/1b7d2e80db9faa586165c60e09096dbbfd483a64/src/legacy/multi_agent.py",
+      "transport_locator": "https://github.com/langchain-ai/open_deep_research/blob/1b7d2e80db9faa586165c60e09096dbbfd483a64/src/legacy/multi_agent.py",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Open Deep Research legacy multi-agent implementation",
+      "author_or_org": "LangChain",
+      "published_at": null,
+      "registered_at": "2026-08-28",
+      "checked_at": "2026-08-28",
+      "version": "Archived open_deep_research repository commit 1b7d2e80db9faa586165c60e09096dbbfd483a64 dated 2026-08-10; fixed src/legacy/multi_agent.py",
+      "source_kind": "official-repository",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "implementation"
+      ],
+      "license": "MIT",
+      "license_scope": "The named src/legacy/multi_agent.py file at commit 1b7d2e80db9faa586165c60e09096dbbfd483a64 under the repository MIT license; dependencies, linked works, runtime services, models, datasets, trademarks and third-party materials excluded",
+      "license_evidence_url": "https://raw.githubusercontent.com/langchain-ai/open_deep_research/1b7d2e80db9faa586165c60e09096dbbfd483a64/LICENSE",
+      "license_evidence_note": "The official repository LICENSE at the fixed commit identifies the MIT License; Tego Arch uses only attributed factual summary of source symbols and control seams and copies no implementation code.",
+      "license_family_id": "github:langchain-ai/open_deep_research",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports fixed implementation evidence for supervisor, researcher, Send-based fan-out, state graphs and completed-section fan-in in the explicitly legacy file. The repository is archived, the file is not treated as current recommended architecture, and it does not implement or prove this article's independent evidence store, citation verifier, authority gate, worker-output restriction, recovery contract or complete topology.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://github.com/langchain-ai/open_deep_research/blob/1b7d2e80db9faa586165c60e09096dbbfd483a64/src/legacy/multi_agent.py",
+      "expected_final_approved_at": "2026-08-28",
+      "expected_final_approval_note": "The exact pinned GitHub source file returned HTTP 200 and exposed supervisor, researcher, Send, StateGraph and completed-section seams on 2026-08-28; repository ownership, archived state, commit identity and MIT license were independently checked from official GitHub surfaces."
+    },
+    {
+      "id": "src-atlas-multi-agent-research-system",
+      "canonical_locator": "/img/diagrams/multi-agent-research-system.svg",
+      "transport_locator": "/img/diagrams/multi-agent-research-system.svg",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Multi-agent research control and evidence authority topology",
+      "author_or_org": "Tego Arch maintainers",
+      "published_at": "2026-08-28",
+      "registered_at": "2026-08-28",
+      "checked_at": "2026-08-28",
+      "version": "Original synchronized Draw.io/SVG pair authored in and exported from diagrams.net, normalized and deterministically checked on 2026-08-28",
+      "source_kind": "original-illustration",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "illustration"
+      ],
+      "license": "LicenseRef-Atlas-Original",
+      "license_scope": "The named project-authored multi-agent-research-system.svg asset only",
+      "license_evidence_url": "https://github.com/sealday/tego-arch/blob/main/static/img/diagrams/multi-agent-research-system.svg",
+      "license_evidence_note": "The project-authored Draw.io/SVG pair contains no third-party topology, reference image, icon, brand visual, signature, watermark or copied composition.",
+      "license_family_id": "/img/diagrams/multi-agent-research-system.svg",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "original-atlas",
+      "usage_boundary": "Original reference topology for bounded decomposition, parallel research, evidence authority, citation verification, recovery, abstention and human review; illustration-only and not evidence of a customer deployment, production scale, model quality, source correctness or vendor guarantee.",
+      "link_policy": null,
+      "expected_final_transport_locator": "/img/diagrams/multi-agent-research-system.svg",
+      "expected_final_approved_at": "2026-08-28",
+      "expected_final_approval_note": "Approved project-local original illustration after real diagrams.net source/export provenance, synchronized semantics, geometry, accessibility, deterministic pair validation and desktop/mobile browser QA on 2026-08-28."
     }
   ],
   "documents": {
@@ -33577,6 +33674,83 @@
           "usage_mode": "original-illustration",
           "attribution_note": "Durable agent recovery and human approval control flow, Tego Arch maintainers",
           "modification_note": "Created as an original synchronized Draw.io/SVG pair without third-party topology, reference imagery, icons, brand visuals, signatures, watermarks or copied composition.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/cases/multi-agent-research-system.mdx": {
+      "reviewed_at": "2026-08-28",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-react-reasoning-acting-language-models",
+          "citation_url": "https://arxiv.org/abs/2210.03629",
+          "roles": [
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "ReAct: Synergizing Reasoning and Acting in Language Models, Shunyu Yao et al.",
+          "modification_note": "Original Chinese summary of the paper's interleaved reasoning, action and observation mechanism; no paper prose, examples, prompts, figures, tables, results or structure copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-self-rag-retrieve-generate-critique",
+          "citation_url": "https://arxiv.org/abs/2310.11511",
+          "roles": [
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Self-RAG: Learning to Retrieve, Generate, and Critique through Self-Reflection, Akari Asai et al.",
+          "modification_note": "Original Chinese summary of the paper's on-demand retrieval and reflection-token mechanisms; no paper prose, examples, prompts, figures, tables, results or structure copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-anthropic-multi-agent-research-system",
+          "citation_url": "https://www.anthropic.com/engineering/multi-agent-research-system",
+          "roles": [
+            "implementation",
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "How we built our multi-agent research system, Anthropic",
+          "modification_note": "Original Chinese summary of Anthropic's first-party lead-agent, parallel-subagent, iterative-research and citation-processing description; no article prose, prompts, code, examples, diagrams, images, results, structure or composition copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-langchain-open-deep-research-multi-agent",
+          "citation_url": "https://github.com/langchain-ai/open_deep_research/blob/1b7d2e80db9faa586165c60e09096dbbfd483a64/src/legacy/multi_agent.py",
+          "roles": [
+            "implementation"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Open Deep Research legacy multi-agent implementation at fixed commit, LangChain",
+          "modification_note": "Original Chinese source reading of supervisor, researcher, Send, StateGraph and completed-section seams at the fixed commit; no repository code, comments, prompts, examples, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-atlas-multi-agent-research-system",
+          "citation_url": "/img/diagrams/multi-agent-research-system.svg",
+          "roles": [
+            "illustration"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "original-illustration",
+          "attribution_note": "Multi-agent research control and evidence authority topology, Tego Arch maintainers",
+          "modification_note": "Created as an original synchronized Draw.io/SVG pair for this case without third-party topology, reference imagery, icons, brand visuals, signatures, watermarks or copied composition.",
           "excerpt": null,
           "quotation_reviewed": false
         }

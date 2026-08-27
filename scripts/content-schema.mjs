@@ -307,6 +307,9 @@ export const allowedSourceKinds = [
   'classic-paper',
   'engineering-blog',
   'reference-architecture',
+  'paper',
+  'official-repository',
+  'original-illustration',
 ];
 
 export const requiredMigrationHeadings = [
