@@ -14,6 +14,7 @@ import {
 } from '../scripts/content-metadata.mjs';
 import {knowledgeTypeContracts} from '../scripts/content-schema.mjs';
 import {parseMdxVisibleCopy} from '../scripts/visible-copy.mjs';
+import {assertControlOwnershipDiagramGeometry} from '../scripts/validate-agt-p-06-control-ownership-diagram.mjs';
 
 const workflowAgentArticlePath =
   'content/patterns/agt-p-01-workflow-vs-autonomous-agent.mdx';
@@ -3523,6 +3524,7 @@ function assertControlOwnershipArticleContract(source) {
 }
 
 function assertControlOwnershipDiagramPair(drawio, svg) {
+  assertControlOwnershipDiagramGeometry(drawio, svg);
   assert.match(drawio, /<mxfile\b/u);
   assert.match(svg, /<svg\b(?=[^>]*viewBox="0 0 1200 720")(?=[^>]*role="img")(?=[^>]*aria-labelledby="agt-p-06-title agt-p-06-desc")(?![^>]*\bwidth=)(?![^>]*\bheight=)[^>]*>/u);
   assert.match(svg, /<title id="agt-p-06-title">[^<]+<\/title>/u);
@@ -3537,7 +3539,7 @@ function assertControlOwnershipDiagramPair(drawio, svg) {
   for (const [id, label] of [
     ['supervisor-region', '1 · Supervisor：保留控制'],
     ['handoff-region', '2 · Handoff：移动控制'],
-    ['tool-region', '3 · Agent as Tool：调用后返回'],
+    ['tool-region', '3 · Agent as Tool'],
   ]) {
     assert.match(drawio, new RegExp(`id="${id}"[^>]*value="${label.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&')}"`, 'u'));
     assert.match(svg, new RegExp(`data-region-id="${id}"`, 'u'));
@@ -3563,14 +3565,14 @@ function assertControlOwnershipDiagramPair(drawio, svg) {
     ['agent-as-tool', '860', '440', '280', '110', '480', '520'],
   ]) {
     assert.match(drawio, new RegExp(`id="${nodeId}"[\\s\\S]*?<mxGeometry x="${x}" y="${y}" width="${width}" height="${height}"`, 'u'));
-    // diagrams.net's drawing-bounds export preserves the half-pixel stroke
-    // alignment and the fractional cropped origin; lock the real export rather
-    // than a hand-rounded reconstruction of the source coordinates.
-    const exportedX = String(Number(x) - 18.65);
-    const exportedY = String(Number(y) - 28.5);
+    // diagrams.net's drawing-bounds export preserves authoring scale and crops
+    // nineteen units horizontally and twenty-nine vertically; lock that real
+    // export transform rather than trusting mirrored data attributes.
+    const exportedX = String(Number(x) - 19);
+    const exportedY = String(Number(y) - 29);
     assert.match(svg, new RegExp(`data-node-id="${nodeId}"[^>]*data-padding-horizontal-css="16"[^>]*data-padding-vertical-css="14"[^>]*x="${exportedX}" y="${exportedY}" width="${width}" height="${height}"`, 'u'));
     assert.match(svg, new RegExp(`data-title-for="${nodeId}"[^>]*y="${titleY}"`, 'u'));
-    assert.match(svg, new RegExp(`data-type-for="${nodeId}"[^>]*data-bottom-clearance-css="20"[^>]*y="${Number(typeY) - 28.5}"`, 'u'));
+    assert.match(svg, new RegExp(`data-type-for="${nodeId}"[^>]*data-bottom-clearance-css="20"[^>]*y="${Number(typeY) - 29}"`, 'u'));
   }
 }
 
@@ -3687,6 +3689,7 @@ test('AGT-P-06 rejects metadata and exact matrix-cell drift without rejecting le
 test('AGT-P-06 diagram pair fails closed on missing, drifted, inaccessible, or cramped assets', () => {
   const drawio = readFileSync(controlOwnershipDrawioPath, 'utf8');
   const svg = readFileSync(controlOwnershipSvgPath, 'utf8');
+  assert.doesNotThrow(() => assertControlOwnershipDiagramPair(drawio, svg));
   const mutations = [
     ['missing SVG', drawio, ''],
     ['Draw.io label drift', drawio.replace('value="Worker Agent"', 'value="Worker"'), svg],
@@ -3695,12 +3698,19 @@ test('AGT-P-06 diagram pair fails closed on missing, drifted, inaccessible, or c
     ['pair topology drift', drawio, svg.replace('data-target="worker"', 'data-target="active-agent"')],
     ['accessibility drift', drawio, svg.replace(' role="img"', '')],
     ['width drift', drawio, svg.replace('viewBox="0 0 1200 720"', 'viewBox="0 0 1199 720"')],
+    ['embedded source hash drift', drawio, svg.replace(/data-drawio-sha256="[a-f0-9]{64}"/u, `data-drawio-sha256="${'0'.repeat(64)}"`)],
     ['padding drift', drawio, svg.replace('data-padding-horizontal-css="16"', 'data-padding-horizontal-css="15"')],
     ['label clearance drift', drawio, svg.replace('data-arrow-clearance-css="16"', 'data-arrow-clearance-css="15"')],
     ['direction drift', drawio.replace('source="agent-as-tool" target="parent-agent"', 'source="parent-agent" target="agent-as-tool"'), svg],
+    ['Draw.io third-region width drift', drawio.replace('x="820" y="30" width="360" height="650"', 'x="820" y="30" width="300" height="650"'), svg],
+    ['SVG handoff path drift with data preserved', drawio, svg.replace('d="M 455 231 L 455 396.53"', 'd="M 500 231 L 500 396.53"')],
+    ['SVG third-title shift with data preserved', drawio, svg.replace('data-region-label-for="tool-region" x="846"', 'data-region-label-for="tool-region" x="1000"')],
+    ['SVG third-region width drift with data preserved', drawio, svg.replace('data-region-id="tool-region" x="801" y="1" width="360"', 'data-region-id="tool-region" x="801" y="1" width="300"')],
+    ['SVG edge-label overlap with clearance data preserved', drawio, svg.replace('data-edge-label-for="edge-handoff-move" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12" text-anchor="middle" font-size="24" textLength="234" lengthAdjust="spacingAndGlyphs" x="600"', 'data-edge-label-for="edge-handoff-move" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12" text-anchor="middle" font-size="24" textLength="234" lengthAdjust="spacingAndGlyphs" x="455"')],
   ];
   const survivors = [];
   for (const [label, drawioMutant, svgMutant] of mutations) {
+    assert.ok(drawioMutant !== drawio || svgMutant !== svg, `${label} must mutate the pair`);
     try { assertControlOwnershipDiagramPair(drawioMutant, svgMutant); survivors.push(label); } catch {}
   }
   assert.deepEqual(survivors, []);
