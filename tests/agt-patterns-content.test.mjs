@@ -162,6 +162,15 @@ const agenticRagSourceContracts = [
   },
 ];
 const plannerExecutorArticlePath = 'content/patterns/agt-p-03-planner-executor.mdx';
+const plannerExecutorSummary =
+  '把规划权与执行权分开，以有界且版本化的计划、步骤前置条件、最小权限执行、结构化观察、陈旧计划检测和重规划预算约束开放任务，并在副作用结果未知时安全停止。';
+const plannerExecutorTags = [
+  '规划者–执行者',
+  '版本化计划',
+  '重规划',
+  '最小权限',
+  '安全停止',
+];
 const plannerExecutorMermaidAccTitle = '规划者–执行者版本化计划、重规划与安全停止控制流';
 const plannerExecutorNodes = new Map([
   ['GOAL', ['智能体目标节点（Goal）']],
@@ -191,6 +200,134 @@ const plannerExecutorSourceIds = [
   'src-openai-practical-guide-building-agents',
   'src-github-27d330c0760f',
 ];
+const plannerExecutorSourceContracts = [
+  {
+    id: 'src-anthropic-building-effective-agents',
+    canonical_locator: 'https://www.anthropic.com/engineering/building-effective-agents',
+    transport_locator: 'https://www.anthropic.com/engineering/building-effective-agents',
+    expected_final_transport_locator:
+      'https://www.anthropic.com/engineering/building-effective-agents',
+    title: 'Building Effective Agents',
+    author_or_org: 'Anthropic',
+    published_at: '2024-12-19',
+    version:
+      'Official engineering article published 2024-12-19 and checked directly in a browser on 2026-08-26',
+    source_kind: 'official-docs',
+    tier: 'first-party',
+    allowed_evidence_roles: ['definition', 'method'],
+    license: 'LicenseRef-All-Rights-Reserved',
+    usage_boundary:
+      "Supports Anthropic's stated workflow/agent distinction and augmented-LLM building block; it does not establish the article's Harness/Loop ownership model or prove production outcomes.",
+    health: {
+      at: '2026-08-26T08:49:28.000Z',
+      status: 200,
+    },
+  },
+  {
+    id: 'src-openai-practical-guide-building-agents',
+    canonical_locator:
+      'https://openai.com/business/guides-and-resources/a-practical-guide-to-building-ai-agents/',
+    transport_locator:
+      'https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf?file=a-practical-guide-to-building-agents.pdf',
+    expected_final_transport_locator:
+      'https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf?file=a-practical-guide-to-building-agents.pdf',
+    title: 'A Practical Guide to Building Agents',
+    author_or_org: 'OpenAI',
+    published_at: null,
+    version: 'Official web guide and PDF edition checked 2026-08-26',
+    source_kind: 'official-docs',
+    tier: 'first-party',
+    allowed_evidence_roles: ['definition', 'method'],
+    license: 'LicenseRef-All-Rights-Reserved',
+    usage_boundary:
+      "Supports OpenAI's stated agent control, tool-selection, loop, exit-condition and deterministic-fallback boundaries; it does not prove any implementation's production reliability.",
+    health: {
+      at: '2026-08-26T08:24:01.325Z',
+      status: 200,
+    },
+  },
+  {
+    id: 'src-github-27d330c0760f',
+    canonical_locator:
+      'https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/examples/agent_patterns/deterministic.py',
+    transport_locator:
+      'https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/examples/agent_patterns/deterministic.py',
+    expected_final_transport_locator:
+      'https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/examples/agent_patterns/deterministic.py',
+    title: 'deterministic flow',
+    author_or_org: 'OpenAI',
+    published_at: null,
+    version: 'Git commit 2fa463571e76dae8ff267622f1018eaf06ffeb9f',
+    source_kind: 'source-code',
+    tier: 'primary',
+    allowed_evidence_roles: [
+      'case-evidence',
+      'comparison',
+      'definition',
+      'historical-context',
+      'implementation',
+      'learning',
+      'method',
+      'runtime-fact',
+    ],
+    license: 'MIT',
+    usage_boundary:
+      'Shows the implementation in “deterministic flow” at the recorded commit or file version; it does not alone prove runtime guarantees or deployment fitness.',
+    health: {
+      at: '2026-08-25T12:07:24.531Z',
+      status: 206,
+    },
+  },
+];
+const plannerExecutorDocumentContract = {
+  reviewed_at: '2026-08-27',
+  copyright_checks: [
+    'original-structure',
+    'quotation-boundary',
+    'attribution-complete',
+    'illustration-rights',
+  ],
+  citations: [
+    {
+      source_id: 'src-anthropic-building-effective-agents',
+      citation_url: 'https://www.anthropic.com/engineering/building-effective-agents',
+      roles: ['definition', 'method'],
+      manifest_primary: true,
+      usage_mode: 'facts-summary',
+      attribution_note: 'Building Effective Agents, Anthropic',
+      modification_note:
+        'Original Chinese synthesis of planning and orchestration boundaries; no source prose, examples, structure, taxonomy layout or diagrams copied.',
+      excerpt: null,
+      quotation_reviewed: false,
+    },
+    {
+      source_id: 'src-openai-practical-guide-building-agents',
+      citation_url:
+        'https://openai.com/business/guides-and-resources/a-practical-guide-to-building-ai-agents/',
+      roles: ['definition', 'method'],
+      manifest_primary: false,
+      usage_mode: 'facts-summary',
+      attribution_note: 'A Practical Guide to Building Agents, OpenAI',
+      modification_note:
+        'Original Chinese synthesis of agent control, tool-selection, loop, exit-condition and incremental adoption boundaries; no source prose, examples, code, structure, taxonomy layout or diagrams copied.',
+      excerpt: null,
+      quotation_reviewed: false,
+    },
+    {
+      source_id: 'src-github-27d330c0760f',
+      citation_url:
+        'https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/examples/agent_patterns/deterministic.py',
+      roles: ['implementation'],
+      manifest_primary: false,
+      usage_mode: 'facts-summary',
+      attribution_note: 'deterministic flow, OpenAI',
+      modification_note:
+        'Bounded implementation-evidence summary of the fixed code example; no code, prompt, output, example task, control structure or repository layout copied.',
+      excerpt: null,
+      quotation_reviewed: false,
+    },
+  ],
+};
 const markdownParser = unified().use(remarkParse).use(remarkGfm).use(remarkMdx);
 
 const registry = JSON.parse(
@@ -673,6 +810,8 @@ function assertPlannerExecutorContract(source) {
   assert.deepEqual(metadata.agent_patterns, ['agent-loop', 'planner-executor']);
   assert.deepEqual(metadata.protocols, []);
   assert.deepEqual(metadata.quality_attributes, ['reliability', 'safety', 'operability']);
+  assert.deepEqual(metadata.tags, plannerExecutorTags);
+  assert.equal(metadata.summary, plannerExecutorSummary);
   assert.deepEqual(metadata.depends_on, ['AGT-C-03']);
   assert.deepEqual(metadata.adjacent_topics, [
     'AGT-C-03',
@@ -730,6 +869,88 @@ function assertPlannerExecutorContract(source) {
     /实现证据[^。\n]{0,160}(?:不证明|不能证明)[^。\n]{0,100}生产/u,
     /分类[^。\n]{0,100}(?:不是|不等于)行业标准/u,
   ]) assert.match(visible, contract);
+}
+
+function assertPlannerExecutorSourceContract(ledger, health) {
+  const document = ledger.documents[plannerExecutorArticlePath];
+  assert.ok(document, `${plannerExecutorArticlePath} source document`);
+  assert.deepEqual(document, plannerExecutorDocumentContract);
+  assert.deepEqual(
+    document.citations.map(({source_id: sourceId}) => sourceId),
+    plannerExecutorSourceIds,
+  );
+
+  for (const contract of plannerExecutorSourceContracts) {
+    const source = ledger.sources.find(({id}) => id === contract.id);
+    assert.ok(source, contract.id);
+    assert.deepEqual(
+      {
+        id: source.id,
+        canonical_locator: source.canonical_locator,
+        transport_locator: source.transport_locator,
+        expected_final_transport_locator: source.expected_final_transport_locator,
+        title: source.title,
+        author_or_org: source.author_or_org,
+        published_at: source.published_at,
+        version: source.version,
+        source_kind: source.source_kind,
+        tier: source.tier,
+        allowed_evidence_roles: source.allowed_evidence_roles,
+        license: source.license,
+        usage_boundary: source.usage_boundary,
+      },
+      {
+        id: contract.id,
+        canonical_locator: contract.canonical_locator,
+        transport_locator: contract.transport_locator,
+        expected_final_transport_locator: contract.expected_final_transport_locator,
+        title: contract.title,
+        author_or_org: contract.author_or_org,
+        published_at: contract.published_at,
+        version: contract.version,
+        source_kind: contract.source_kind,
+        tier: contract.tier,
+        allowed_evidence_roles: contract.allowed_evidence_roles,
+        license: contract.license,
+        usage_boundary: contract.usage_boundary,
+      },
+      `${contract.id} governed identity and evidence boundary`,
+    );
+
+    const observation = health.results.find(({source_ids: sourceIds}) =>
+      sourceIds.includes(contract.id));
+    assert.ok(observation, `${contract.id} health observation`);
+    assert.deepEqual(
+      {
+        transport_locator: observation.transport_locator,
+        source_ids: observation.source_ids,
+        last_attempt: observation.last_attempt,
+        last_success: observation.last_success,
+        review_status: observation.review_status,
+      },
+      {
+        transport_locator: contract.transport_locator,
+        source_ids: [contract.id],
+        last_attempt: {
+          at: contract.health.at,
+          outcome: 'healthy',
+          final_transport_locator: contract.transport_locator,
+          http_status: contract.health.status,
+          login_wall_detected: false,
+          redirects: [],
+        },
+        last_success: {
+          at: contract.health.at,
+          outcome: 'healthy',
+          final_transport_locator: contract.transport_locator,
+          http_status: contract.health.status,
+          login_wall_detected: false,
+        },
+        review_status: 'healthy',
+      },
+      `${contract.id} exact current health observation`,
+    );
+  }
 }
 
 function assertPhysicalTable(body, tableNode, expectedRows, expectedColumns, label) {
@@ -1653,6 +1874,34 @@ test('AGT-P-03 publishes the exact versioned Planner–Executor contract', () =>
   assertPlannerExecutorContract(readFileSync(plannerExecutorArticlePath, 'utf8'));
 });
 
+test('AGT-P-03 rejects summary and ordered-tag metadata drift', () => {
+  const source = readFileSync(plannerExecutorArticlePath, 'utf8');
+  const metadataMutants = [
+    ['summary drift', source.replace(
+      'summary: 把规划权与执行权分开，以有界且版本化的计划、步骤前置条件、最小权限执行、结构化观察、陈旧计划检测和重规划预算约束开放任务，并在副作用结果未知时安全停止。',
+      'summary: 结构有效但完全错误的摘要。',
+    )],
+    ['tag missing', source.replace('  - 安全停止\nsummary:', 'summary:')],
+    ['tag reorder', source.replace(
+      '  - 规划者–执行者\n  - 版本化计划',
+      '  - 版本化计划\n  - 规划者–执行者',
+    )],
+    ['tag drift', source.replace('  - 最小权限\n', '  - 错误标签\n')],
+  ];
+  const survivors = [];
+  for (const [label, mutant] of metadataMutants) {
+    assert.notEqual(mutant, source, `${label} fixture must alter the article`);
+    assert.doesNotThrow(() => parseFrontMatter(mutant), `${label} remains valid front matter`);
+    try {
+      assertPlannerExecutorContract(mutant);
+      survivors.push(label);
+    } catch {
+      // Expected after the exact metadata contract is locked.
+    }
+  }
+  assert.deepEqual(survivors, []);
+});
+
 test('AGT-P-03 rejects hidden, duplicate, unnamed, and fail-open Mermaid mutations', () => {
   assert.ok(existsSync(plannerExecutorArticlePath), `Missing ${plannerExecutorArticlePath}`);
   const source = readFileSync(plannerExecutorArticlePath, 'utf8');
@@ -1712,38 +1961,122 @@ flowchart TB
 
 test('AGT-P-03 reuses governed pattern sources and bounds the deterministic example', () => {
   const ledger = JSON.parse(readFileSync('data/source-ledger.json', 'utf8'));
-  const document = ledger.documents[plannerExecutorArticlePath];
-  assert.ok(document, `${plannerExecutorArticlePath} source document`);
-  assert.deepEqual(
-    document.citations.map(({source_id: sourceId}) => sourceId),
-    plannerExecutorSourceIds,
-  );
-  assert.ok(document.citations.every(({usage_mode: usageMode}) => usageMode === 'facts-summary'));
-  assert.equal(document.citations.filter(({manifest_primary: primary}) => primary).length, 1);
-  assert.deepEqual(document.citations[0].roles, ['definition', 'method']);
-  assert.deepEqual(document.citations[1].roles, ['definition', 'method']);
-  assert.deepEqual(document.citations[2].roles, ['implementation']);
-  assert.equal(document.citations[2].manifest_primary, false);
-
-  const example = ledger.sources.find(({id}) => id === 'src-github-27d330c0760f');
-  assert.ok(example, 'fixed OpenAI deterministic-flow example');
-  assert.equal(example.version, 'Git commit 2fa463571e76dae8ff267622f1018eaf06ffeb9f');
-  assert.deepEqual(example.allowed_evidence_roles, [
-    'case-evidence',
-    'comparison',
-    'definition',
-    'historical-context',
-    'implementation',
-    'learning',
-    'method',
-    'runtime-fact',
-  ]);
-  assert.match(example.usage_boundary, /does not alone prove runtime guarantees or deployment fitness/u);
   const health = JSON.parse(readFileSync('data/source-link-health.json', 'utf8'));
-  const observation = health.results.find(({source_ids: sourceIds}) =>
-    sourceIds.includes(example.id));
-  assert.ok(observation, `${example.id} health observation`);
-  assert.equal(observation.review_status, 'healthy');
+  assertPlannerExecutorSourceContract(ledger, health);
+});
+
+test('AGT-P-03 rejects source identity, evidence, health, and document-boundary drift', () => {
+  const ledger = JSON.parse(readFileSync('data/source-ledger.json', 'utf8'));
+  const health = JSON.parse(readFileSync('data/source-link-health.json', 'utf8'));
+  const mutateSource = (sourceId, field, value) => {
+    const mutant = structuredClone(ledger);
+    const source = mutant.sources.find(({id}) => id === sourceId);
+    assert.ok(source, `${sourceId} mutation fixture`);
+    source[field] = value;
+    return mutant;
+  };
+  const mutateCitation = (sourceId, field, value) => {
+    const mutant = structuredClone(ledger);
+    const citation = mutant.documents[plannerExecutorArticlePath].citations
+      .find(({source_id: citationSourceId}) => citationSourceId === sourceId);
+    assert.ok(citation, `${sourceId} citation mutation fixture`);
+    citation[field] = value;
+    return mutant;
+  };
+  const mutations = [
+    ['Anthropic identity drift', mutateSource(
+      'src-anthropic-building-effective-agents', 'title', 'Wrong source title',
+    ), health],
+    ['OpenAI canonical URL drift', mutateSource(
+      'src-openai-practical-guide-building-agents',
+      'canonical_locator',
+      'https://example.com/wrong-guide',
+    ), health],
+    ['OpenAI transport URL drift', mutateSource(
+      'src-openai-practical-guide-building-agents',
+      'transport_locator',
+      'https://example.com/wrong-transport',
+    ), health],
+    ['OpenAI expected-final URL drift', mutateSource(
+      'src-openai-practical-guide-building-agents',
+      'expected_final_transport_locator',
+      'https://example.com/wrong-final',
+    ), health],
+    ['OpenAI tier drift', mutateSource(
+      'src-openai-practical-guide-building-agents', 'tier', 'secondary',
+    ), health],
+    ['OpenAI license drift', mutateSource(
+      'src-openai-practical-guide-building-agents', 'license', 'CC-BY-4.0',
+    ), health],
+    ['Anthropic allowed-role drift', mutateSource(
+      'src-anthropic-building-effective-agents', 'allowed_evidence_roles', ['definition'],
+    ), health],
+    ['Anthropic unsafe usage boundary', mutateSource(
+      'src-anthropic-building-effective-agents',
+      'usage_boundary',
+      'This taxonomy is the industry standard and proves production outcomes.',
+    ), health],
+    ['SDK fixed commit drift', mutateSource(
+      'src-github-27d330c0760f', 'version', 'Git commit deadbeef',
+    ), health],
+    ['citation URL drift', mutateCitation(
+      'src-openai-practical-guide-building-agents',
+      'citation_url',
+      'https://example.com/wrong-citation',
+    ), health],
+    ['citation role drift', mutateCitation(
+      'src-openai-practical-guide-building-agents', 'roles', ['definition'],
+    ), health],
+    ['citation usage-mode drift', mutateCitation(
+      'src-openai-practical-guide-building-agents', 'usage_mode', 'quotation',
+    ), health],
+    ['citation attribution drift', mutateCitation(
+      'src-openai-practical-guide-building-agents',
+      'attribution_note',
+      'Wrong attribution',
+    ), health],
+    ['unexpected attribution-required field', mutateCitation(
+      'src-openai-practical-guide-building-agents', 'attribution_required', false,
+    ), health],
+    ['citation modification boundary drift', mutateCitation(
+      'src-anthropic-building-effective-agents',
+      'modification_note',
+      'Copied source prose, examples, structure, taxonomy layout and diagrams.',
+    ), health],
+    ['document copyright drift', (() => {
+      const mutant = structuredClone(ledger);
+      mutant.documents[plannerExecutorArticlePath].copyright_checks = ['original-structure'];
+      return mutant;
+    })(), health],
+    ['document review date drift', (() => {
+      const mutant = structuredClone(ledger);
+      mutant.documents[plannerExecutorArticlePath].reviewed_at = '2026-08-26';
+      return mutant;
+    })(), health],
+    ['quotation boundary drift', mutateCitation(
+      'src-github-27d330c0760f', 'excerpt', 'Copied code excerpt',
+    ), health],
+    ['quotation review drift', mutateCitation(
+      'src-github-27d330c0760f', 'quotation_reviewed', true,
+    ), health],
+    ['health final URL drift', ledger, (() => {
+      const mutant = structuredClone(health);
+      const result = mutant.results.find(({source_ids: sourceIds}) =>
+        sourceIds.includes('src-openai-practical-guide-building-agents'));
+      result.last_attempt.final_transport_locator = 'https://example.com/wrong-final';
+      return mutant;
+    })()],
+  ];
+  const survivors = [];
+  for (const [label, ledgerMutant, healthMutant] of mutations) {
+    try {
+      assertPlannerExecutorSourceContract(ledgerMutant, healthMutant);
+      survivors.push(label);
+    } catch {
+      // Expected after every governed field and observation is locked.
+    }
+  }
+  assert.deepEqual(survivors, []);
 });
 
 test('AGT-P-02 registers four primary papers and one discovery-only survey', () => {
