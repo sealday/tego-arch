@@ -6,7 +6,7 @@ import test from 'node:test';
 
 import {findMarkdownHeadings, parseFrontMatter, readContentDocuments} from '../scripts/content-metadata.mjs';
 import {extractInternalLinks} from '../scripts/content-relations.mjs';
-import {architectureCaseTopicIds} from '../scripts/content-schema.mjs';
+import {architectureCaseTopicIds, knowledgeHeadingContract, sty13ArchitectureCaseHeadings} from '../scripts/content-schema.mjs';
 
 export const ARTICLE = 'content/styles/sty-13-space-based-architecture.mdx';
 export const DRAWIO = 'diagrams/sty-13-space-based-flight-availability.drawio';
@@ -325,7 +325,10 @@ function assertGenericHelperRejections() {
 }
 
 test('STY-13 helper fixture locks its public content contract', () => {
-  assertGenericHelperRejections(); assert.equal(architectureCaseTopicIds.has(TOPIC_ID), true, 'STY-13 uses architecture-case contract'); const fixture = fixtureArticle(); assertSpaceBasedArticle(fixture);
+  assertGenericHelperRejections(); assert.equal(architectureCaseTopicIds.has(TOPIC_ID), true, 'STY-13 uses architecture-case contract');
+  assert.deepEqual(sty13ArchitectureCaseHeadings, EXPECTED_HEADINGS.map((heading) => '## ' + heading), 'STY-13 specialized schema headings');
+  assert.equal(knowledgeHeadingContract('style', TOPIC_ID), sty13ArchitectureCaseHeadings, 'STY-13 resolves its specialized schema headings before the generic architecture-case contract');
+  const fixture = fixtureArticle(); assertSpaceBasedArticle(fixture);
   for (const key of Object.keys(EXACT_METADATA)) { assert.throws(() => assertSpaceBasedArticle(removeFrontMatterField(fixture, key)), assert.AssertionError, key + ' deletion rejected'); assert.throws(() => assertSpaceBasedArticle(changeFrontMatterField(fixture, key)), assert.AssertionError, key + ' change rejected'); }
   for (const [headers, rows] of [[COMPARISON_HEADERS, COMPARISON_ROWS], [OPERATION_HEADERS, OPERATION_ROWS], [FAILURE_HEADERS, FAILURE_ROWS]]) { const header = '| ' + headers.join(' | ') + ' |'; assert.throws(() => assertSpaceBasedArticle(replaceOnce(fixture, header, '| 错误表头 |', 'header')), assert.AssertionError, 'wrong table header rejected'); for (const row of rows) { const exact = '| ' + row.join(' | ') + ' |'; assert.throws(() => assertSpaceBasedArticle(replaceOnce(fixture, exact, '| ' + [...row.slice(0, -1), '错误的合同值'].join(' | ') + ' |', row[0])), assert.AssertionError, row[0] + ' mutation rejected'); } }
   for (const sentence of REQUIRED_SENTENCES) assert.throws(() => assertSpaceBasedArticle(replaceOnce(fixture, sentence, '错误的事实边界。', sentence)), assert.AssertionError, sentence + ' mutation rejected');
