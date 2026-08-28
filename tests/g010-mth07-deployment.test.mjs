@@ -31,8 +31,8 @@ const PROJECT_STATUS = {
   schema_version: 1,
   durable_stories: {completed: 8, total: 20, current: 'G009'},
   completed_topics: 65,
-  content_documents: 108,
-  governed_sources: 565,
+  content_documents: 109,
+  governed_sources: 573,
   sources: {
     durable_stories: 'docs/content-backlog.md',
     completed_topics: 'docs/content-backlog.md',
@@ -233,7 +233,7 @@ async function historicalReviewTreeHash() {
 
 function assertProjection() {
   assert.deepEqual(projectStatus, PROJECT_STATUS);
-  assert.equal(publicLedger.sources.length, 565);
+  assert.equal(publicLedger.sources.length, 573);
   const mth07 = manifest.topics.find(({id}) => id === 'MTH-07');
   assert.equal(mth07?.published, true);
   assert.equal(mth07?.slug, '/methods/mth-07');

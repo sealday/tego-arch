@@ -392,10 +392,15 @@ test('preserves the reviewed Task 8 source-link labels together with their URLs'
   }
 });
 
-test('uses no terminology suppressions in Task 8 content', async () => {
+test('uses only the exact STY-13 reciprocal terminology suppressions in Task 8 content', async () => {
+  const expected = new Map([['content/cases/aws-cell-shuffle-sharding.mdx', [
+    '{/* terminology-exempt: unknown-english-term | match: Cell | record: Space-Based Architecture 决策可有限类比本案例的放置、热点和故障域边界；Cell 与 Shuffle Sharding 不证明状态和处理已经共置于分区数据空间。 | reason: Task2 已批准逐字互链必须保留 Cell 标签 */}',
+    '{/* terminology-exempt: unknown-english-term | match: Shuffle Sharding | record: Space-Based Architecture 决策可有限类比本案例的放置、热点和故障域边界；Cell 与 Shuffle Sharding 不证明状态和处理已经共置于分区数据空间。 | reason: Task2 已批准逐字互链必须保留 Shuffle Sharding 标签 */}',
+  ]]]);
   for (const file of await task8Files()) {
     const source = await readFile(new URL(file, root), 'utf8');
-    assert.doesNotMatch(source, /terminology-exempt:/u, file);
+    const suppressions = source.split('\n').filter((line) => line.includes('terminology-exempt:'));
+    assert.deepEqual(suppressions, expected.get(file) ?? [], file);
   }
 });
 

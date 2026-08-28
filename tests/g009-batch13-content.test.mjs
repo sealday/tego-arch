@@ -18,7 +18,7 @@ export const ROUTE = '/styles/sty-12';
 export const TOPIC_ID = 'STY-12';
 export const NEXT_TOPIC = 'STY-13';
 export const RELATED_CASE = '/cases/micro-frontends-single-spa';
-export const EXPECTED_STAGE_A = Object.freeze({completed: 65, documents: 108, sources: 565});
+export const EXPECTED_STAGE_A = Object.freeze({completed: 65, documents: 109, sources: 573});
 export const EXPECTED_HEADINGS = Object.freeze([
   '学习问题', '一页摘要', '事实边界', '架构图', '运行时组合与发布流',
   '关键机制导读', '架构决策与权衡', '生产化分析', '可迁移经验', '来源',
@@ -896,7 +896,7 @@ test('STY-12 publication asset binds article, sources, relations, and the exact 
   const documents = await readContentDocuments(CONTENT_ROOT); const article = documents.find(({file: path}) => 'content/' + path === ARTICLE);
   assert.ok(article, 'STY-12 content document'); assert.ok(extractInternalLinks(article).includes(RELATED_CASE), 'visible related case link');
   for (const path of ['content/styles/sty-03-vertical-slice-architecture.mdx', 'content/styles/sty-10-microkernel-plugin-architecture.mdx', 'content/cases/micro-frontends-single-spa.mdx']) { const target = documents.find(({file: documentPath}) => 'content/' + documentPath === path); assert.ok(target, `${path} exists`); assert.ok(extractInternalLinks(target).includes(ROUTE), `${path} visibly reciprocates STY-12`); }
-  assert.equal(documents.flatMap(extractInternalLinks).includes('/styles/sty-13'), false, 'STY-13 remains non-actionable');
+  assert.equal(documents.flatMap(extractInternalLinks).includes('/styles/sty-13'), true, 'STY-13 has published reciprocal actions');
   const diagram = file(DRAWIO); const svg = file(SVG); assert.ok(diagram && svg, 'STY-12 diagram pair'); assertMicroFrontendDiagram(diagram, svg);
 });
 

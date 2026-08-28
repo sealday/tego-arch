@@ -477,9 +477,9 @@ test('projects the published complete STY-03 topic and exact Batch 4 counts', ()
   const styleIndexEntry = indexes.style.find(({id}) => id === STY03);
   assert.deepEqual(styleIndexEntry?.primary_sources, PROJECTED_SOURCE_URLS);
   assert.equal(projectStatus.completed_topics, 65);
-  assert.equal(projectStatus.content_documents, 108);
-  assert.equal(projectStatus.governed_sources, 565);
-  assert.equal(publicLedger.sources.length, 565);
+  assert.equal(projectStatus.content_documents, 109);
+  assert.equal(projectStatus.governed_sources, 573);
+  assert.equal(publicLedger.sources.length, 573);
 
   assert.ok(indexes.style.some(({id, published, status}) =>
     id === STY03 && published && status.value === 'complete'));

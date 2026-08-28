@@ -655,7 +655,7 @@ const [review, raw, immediateReview, backlog, status, manifest, documents, svgBy
 const productionRaw = await optional(PRODUCTION_RAW);
 const stageBProductionRaw = await optional(STAGE_B_PRODUCTION_RAW);
 
-test('preserves immutable Batch 12 history and closes only STY-12 in the Stage B projection', () => {
+test('preserves immutable Batch 12 history under the current STY-13 Stage A projection', () => {
   assertImmediateBatch12History();
   assert.deepEqual({
     completed_topics: status.completed_topics,
@@ -663,25 +663,26 @@ test('preserves immutable Batch 12 history and closes only STY-12 in the Stage B
     governed_sources: status.governed_sources,
     durable_stories: {completed: status.durable_stories.completed, total: status.durable_stories.total},
     current_goal: status.durable_stories.current,
-    next_topic: NEXT_TOPIC,
+    next_topic: 'STY-14',
   }, {
     completed_topics: 65,
-    content_documents: 108,
-    governed_sources: 565,
+    content_documents: 109,
+    governed_sources: 573,
     durable_stories: {completed: 8, total: 20},
     current_goal: 'G009',
-    next_topic: 'STY-13',
+    next_topic: 'STY-14',
   });
-  const current = manifest.topics.find(({id}) => id === CURRENT_TOPIC);
-  const next = manifest.topics.find(({id}) => id === NEXT_TOPIC);
-  assert.deepEqual({published: current?.published, status: current?.status?.value}, {published: true, status: 'complete'});
+  const current = manifest.topics.find(({id}) => id === NEXT_TOPIC);
+  const next = manifest.topics.find(({id}) => id === 'STY-14');
+  assert.deepEqual({published: current?.published, status: current?.status?.value}, {published: true, status: 'pending'});
   assert.deepEqual({published: next?.published, status: next?.status?.value}, {published: false, status: 'pending'});
-  assert.ok(documents.some(({metadata}) => metadata.topic_id === CURRENT_TOPIC), 'STY-12 content is published');
-  assert.equal(documents.some(({metadata}) => metadata.topic_id === NEXT_TOPIC), false, 'STY-13 content is unpublished');
-  assert.equal(documents.flatMap(extractInternalLinks).includes('/styles/sty-13'), false, 'STY-13 remains non-actionable');
+  assert.ok(documents.some(({metadata}) => metadata.topic_id === NEXT_TOPIC), 'STY-13 content is published');
+  assert.equal(documents.some(({metadata}) => metadata.topic_id === 'STY-14'), false, 'STY-14 content is unpublished');
+  assert.equal(documents.flatMap(extractInternalLinks).includes('/styles/sty-14'), false, 'STY-14 remains non-actionable');
   assert.ok(backlog.includes(STY12_CLOSURE_LINE), 'exact STY-12 Stage A closure evidence');
   assert.match(backlog, /^- \[ \] \*\*STY-13 P2｜Space-Based Architecture\*\*/mu);
   assert.doesNotMatch(backlog, /^- \[x\] \*\*STY-13 P2｜Space-Based Architecture\*\*/mu);
+  assert.match(backlog, /^- \[ \] \*\*STY-14 P1｜风格选择矩阵\*\*/mu);
   assert.equal(svgBytes.length, SVG_BYTES, 'reviewed STY-12 SVG exact bytes');
   assert.equal(sha256(svgBytes), SVG_SHA256, 'reviewed STY-12 SVG exact SHA-256');
 });
