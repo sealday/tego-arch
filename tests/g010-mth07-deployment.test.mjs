@@ -12,6 +12,12 @@ const EVIDENCE_PATH = 'docs/reviews/evidence/g010-mth07-stage-a-browser.json';
 const EVIDENCE_SHA256 = '43985ea2e801e888e55a2cd6f62ed690133d3fdcda7db8f03a1e91ea466fa1b0';
 const PRODUCTION_EVIDENCE_PATH = 'docs/reviews/evidence/g010-mth07-stage-a-production-browser.json';
 const PRODUCTION_EVIDENCE_SHA256 = 'e3d28a498d23aec12d6df4b32c35fa69052d1fa4ec324a2ec6c53caa34beeeb2';
+const POST_G010_G009_ARTIFACTS = new Map([
+  ['docs/reviews/g009-batch13.md', [14_502, '688c800ecafcfc3ed66529e2896d49fd247680412f9eba6c5a25da357e8ae44c']],
+  ['docs/reviews/evidence/g009-batch13-stage-a-browser.json', [17_260, 'a0de2d5ea069b2af87ad4aa4ef4696a9a22e6ff99ba96b616763262f1814ed38']],
+  ['docs/reviews/evidence/g009-batch13-stage-a-production-browser.json', [33_721, 'a28bb3269f2b7545b7d77f2ec506ce5b1bd737924a5db6945481ee8ec5763560']],
+  ['docs/reviews/evidence/g009-batch13-stage-b-production-browser.json', [47_997, '93540ff26f5d7a6fddb2ca5310a838304d04afa6994788fcf1fb8d0b4a6ff958']],
+]);
 const IMPLEMENTATION_HEAD = 'a413be060c93f7ddd20e7db5417e94f4166dc1e8';
 const PAGES = {runId: 31786075868, buildJobId: 94722157542, deployJobId: 94722766883};
 const BROWSER_BUILD_HEAD = 'f32e0cb7ae79fb92a2154c03dfe8bf7b5b203974';
@@ -31,9 +37,9 @@ const MTH07_STATUS = {
 const PROJECT_STATUS = {
   schema_version: 1,
   durable_stories: {completed: 8, total: 20, current: 'G009'},
-  completed_topics: 64,
-  content_documents: 124,
-  governed_sources: 586,
+  completed_topics: 65,
+  content_documents: 125,
+  governed_sources: 591,
   sources: {
     durable_stories: 'docs/content-backlog.md',
     completed_topics: 'docs/content-backlog.md',
@@ -192,6 +198,7 @@ function isHistoricalReviewArtifact(relative) {
     relative !== 'docs/reviews/g009-batch10.md' &&
     relative !== 'docs/reviews/g009-batch11.md' &&
     relative !== 'docs/reviews/g009-batch12.md' &&
+    !POST_G010_G009_ARTIFACTS.has(relative) &&
     !relative.startsWith('docs/reviews/evidence/g009-batch9-') &&
     !relative.startsWith('docs/reviews/evidence/g009-batch10-') &&
     !relative.startsWith('docs/reviews/evidence/g009-batch11-') &&
@@ -237,7 +244,7 @@ async function historicalReviewTreeHash() {
 
 function assertProjection() {
   assert.deepEqual(projectStatus, PROJECT_STATUS);
-  assert.equal(publicLedger.sources.length, 586);
+  assert.equal(publicLedger.sources.length, 591);
   const mth07 = manifest.topics.find(({id}) => id === 'MTH-07');
   assert.equal(mth07?.published, true);
   assert.equal(mth07?.slug, '/methods/mth-07');
@@ -804,16 +811,28 @@ test('locks the exact pre-G010 review namespace against add edit and delete muta
     'docs/reviews/evidence/g009-batch11-stage-a-browser.json',
     'docs/reviews/g009-batch12.md',
     'docs/reviews/evidence/g009-batch12-stage-a-browser.json',
+    'docs/reviews/g009-batch13.md',
+    'docs/reviews/evidence/g009-batch13-stage-a-browser.json',
+    'docs/reviews/evidence/g009-batch13-stage-a-production-browser.json',
+    'docs/reviews/evidence/g009-batch13-stage-b-production-browser.json',
     'docs/reviews/evidence/g010-mth07-stage-a-production-browser.json',
     'docs/reviews/evidence/g010-mth07-stage-b-production-browser.json',
     'docs/reviews/agentic-architecture-topic-system.md',
     'docs/reviews/evidence/agentic-architecture-topic-system-local-browser.json',
     'docs/reviews/evidence/agentic-architecture-topic-system-production-browser.json',
     'docs/reviews/evidence/agentic-architecture-topic-system-deployment.json',
-  ]) assert.equal(isHistoricalReviewArtifact(currentPath), false, `${currentPath} is excluded from pre-G010 history`);
+  ]) assert.equal(isHistoricalReviewArtifact(currentPath), false, `${currentPath} is excluded from exact pre-G010 history`);
   assert.equal(isHistoricalReviewArtifact('docs/reviews/g009-batch7.md'), true);
   const agenticNearMatch = 'docs/reviews/evidence/agentic-architecture-topic-system-fabricated.json';
   assert.equal(isHistoricalReviewArtifact(agenticNearMatch), true, `${agenticNearMatch} remains protected history`);
+  assert.equal(isHistoricalReviewArtifact('docs/reviews/evidence/g009-batch13-fabricated.json'), true, 'unallowlisted Batch 13 prefix remains historical');
+
+  for (const [currentPath, [expectedBytes, expectedSha256]] of POST_G010_G009_ARTIFACTS) {
+    const bytes = await readFile(path.join(ROOT, currentPath));
+    assert.equal(isHistoricalReviewArtifact(currentPath), false, `${currentPath} is current post-G010 G009 evidence`);
+    assert.equal(bytes.length, expectedBytes, `${currentPath} exact bytes`);
+    assert.equal(sha256(bytes), expectedSha256, `${currentPath} exact SHA-256`);
+  }
 
   const entries = await historicalReviewEntries();
   assert.equal(entries.length, 39);

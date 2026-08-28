@@ -9,7 +9,7 @@ import {extractInternalLinks} from '../scripts/content-relations.mjs';
 
 export const EXPECTED_STAGE_A = Object.freeze({completed: 62, documents: 106, sources: 550});
 export const EXPECTED_STAGE_B = Object.freeze({completed: 63, documents: 106, sources: 550});
-export const EXPECTED_CURRENT_PROJECTION = Object.freeze({completed: 64, documents: 124, sources: 586});
+export const EXPECTED_CURRENT_PROJECTION = Object.freeze({completed: 65, documents: 125, sources: 591});
 export const CURRENT_TOPIC = 'STY-10';
 export const NEXT_TOPIC = 'STY-11';
 export const LATEST_TOPIC = 'STY-12';
@@ -336,9 +336,14 @@ function currentReleaseBaseline(source) {
   assert.equal(lines.length, 1, 'one current release baseline');
   return lines[0].slice('- **当前发布基线：** '.length);
 }
+function g009Batch11HistoricalBaseline(source) {
+  const parts = currentReleaseBaseline(source).split('此前 G009 Batch 11 历史完成基线为：');
+  assert.equal(parts.length, 2, 'one exact G009 Batch 11 history marker');
+  return parts[1];
+}
 function assertImmediateHistory(reviewBytes = immediateReview, backlogSource = backlog) {
   assert.equal(sha256(reviewBytes), IMMEDIATE_REVIEW_HASH, 'complete immediate Batch 10 review bytes');
-  const baseline = currentReleaseBaseline(backlogSource);
+  const baseline = g009Batch11HistoricalBaseline(backlogSource);
   assert.ok(baseline.startsWith(CURRENT_BASELINE_PREFIX + IMMEDIATE_BACKLOG_MARKER), 'exact current Batch 11 prefix');
   const suffix = baseline.slice((CURRENT_BASELINE_PREFIX + IMMEDIATE_BACKLOG_MARKER).length);
   assert.match(suffix, /^2026-08-17 G009 Batch 10 已完成 STY-09/u);
@@ -574,7 +579,7 @@ test('locks the complete immediate STY-09 review and backlog suffix with mutatio
   for (const changedReview of [Buffer.concat([immediateReview, Buffer.from('x')]), immediateReview.subarray(0, -1)]) {
     assert.throws(() => assertImmediateHistory(changedReview), assert.AssertionError);
   }
-  const baseline = currentReleaseBaseline(backlog);
+  const baseline = g009Batch11HistoricalBaseline(backlog);
   const suffix = baseline.slice((CURRENT_BASELINE_PREFIX + IMMEDIATE_BACKLOG_MARKER).length);
   for (const changedSuffix of [`${suffix}x`, suffix.slice(0, -1)]) {
     const changedBacklog = backlog.replace(suffix, changedSuffix);
@@ -583,7 +588,7 @@ test('locks the complete immediate STY-09 review and backlog suffix with mutatio
   }
 });
 
-test('preserves exact STY-10 Stage B history while current STY-11 is complete and STY-12 remains non-actionable', () => {
+test('preserves exact STY-10 Stage B history under the current pending STY-12 projection', () => {
   assert.deepEqual({
     completed: status.completed_topics,
     documents: status.content_documents,
@@ -594,14 +599,17 @@ test('preserves exact STY-10 Stage B history while current STY-11 is complete an
   const styles = new Map(indexes.style.map((topic) => [topic.id, topic]));
   assert.deepEqual([topics.get(CURRENT_TOPIC)?.published, topics.get(CURRENT_TOPIC)?.status.value, styles.get(CURRENT_TOPIC)?.published], [true, 'complete', true]);
   assert.deepEqual([topics.get(NEXT_TOPIC)?.published, topics.get(NEXT_TOPIC)?.status.value, styles.get(NEXT_TOPIC)?.published], [true, 'complete', true]);
-  assert.deepEqual([topics.get(LATEST_TOPIC)?.published, topics.get(LATEST_TOPIC)?.status.value, styles.get(LATEST_TOPIC)?.published], [false, 'pending', false]);
+  assert.deepEqual([topics.get(LATEST_TOPIC)?.published, topics.get(LATEST_TOPIC)?.status.value, styles.get(LATEST_TOPIC)?.published], [true, 'complete', true]);
+  assert.deepEqual([topics.get('STY-13')?.published, topics.get('STY-13')?.status.value, styles.get('STY-13')?.published], [false, 'pending', false]);
   const current = documents.find(({metadata}) => metadata.topic_id === CURRENT_TOPIC);
   assert.ok(current, 'STY-10 is published as a content document');
   assertStageBBacklog();
   assert.ok(documents.some(({metadata}) => metadata.topic_id === NEXT_TOPIC), 'STY-11 is published');
-  assert.equal(documents.some(({metadata}) => metadata.topic_id === LATEST_TOPIC), false, 'STY-12 is unpublished');
-  assert.match(backlog, /^- \[ \] \*\*STY-12 P1\uff5cMicro-Frontend\*\*/mu);
-  assert.equal(documents.flatMap(extractInternalLinks).includes('/styles/sty-12'), false, 'STY-12 is non-actionable');
+  assert.equal(documents.some(({metadata}) => metadata.topic_id === LATEST_TOPIC), true, 'STY-12 is published');
+  assert.equal(documents.some(({metadata}) => metadata.topic_id === 'STY-13'), false, 'STY-13 is unpublished');
+  assert.match(backlog, /^- \[x\] \*\*STY-12 P1\uff5cMicro-Frontend\*\*/mu);
+  assert.equal(documents.flatMap(extractInternalLinks).includes('/styles/sty-12'), true, 'STY-12 has published reciprocal actions');
+  assert.equal(documents.flatMap(extractInternalLinks).includes('/styles/sty-13'), false, 'STY-13 is non-actionable');
   const staleNext = backlog.replace('下一项为 STY-11', '下一项为 STY-10');
   assert.notEqual(staleNext, backlog, 'current next-topic mutation applies');
   assert.throws(() => assertStageBBacklog(staleNext), assert.AssertionError);

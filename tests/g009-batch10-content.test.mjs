@@ -13,7 +13,7 @@ export const SVG = 'static/img/diagrams/sty-09-pipes-filters-order-processing.sv
 export const ROUTE = '/styles/sty-09';
 export const TOPIC_ID = 'STY-09';
 export const NEXT_TOPIC = 'STY-10';
-export const EXPECTED_CURRENT_PROJECTION = Object.freeze({completed: 64, documents: 124, sources: 586});
+export const EXPECTED_CURRENT_PROJECTION = Object.freeze({completed: 65, documents: 125, sources: 591});
 const CONTENT_ROOT = fileURLToPath(new URL('../content/', import.meta.url));
 const CONTENT_DOCUMENTS = (await readContentDocuments(CONTENT_ROOT)).map((document) => ({...document, file: `content/${document.file}`}));
 export const SOURCE_IDS = Object.freeze([
@@ -706,7 +706,8 @@ test('STY-09 article locks metadata, headings, wrappers, components and recovery
 
 test('STY-09 source governance, reciprocal links, and current Stage B projection are exact', () => {
   const ledger = JSON.parse(readFileSync('data/source-ledger.json', 'utf8')); assertRemoteSourceContracts(ledger, readFileSync('docs/source-license-inventory.md', 'utf8')); assertSourceLinkHealth(JSON.parse(readFileSync('data/source-link-health.json', 'utf8'))); assertRelationsAndProjection();
-  for (const source of CONTENT_DOCUMENTS) assert.equal(extractInternalLinks(source).includes('/styles/sty-12'), false, `${source.file} keeps STY-12 non-actionable`);
+  const sty12Reciprocals = new Set(['content/styles/sty-03-vertical-slice-architecture.mdx', 'content/styles/sty-10-microkernel-plugin-architecture.mdx', 'content/cases/micro-frontends-single-spa.mdx']);
+  for (const source of CONTENT_DOCUMENTS) assert.equal(extractInternalLinks(source).includes('/styles/sty-12'), sty12Reciprocals.has(source.file), `${source.file} exact STY-12 actionability`);
   const external = extractExternalLinks(CONTENT_DOCUMENTS.find(({file: path}) => path === ARTICLE)); for (const expected of Object.values(REMOTE_SOURCE_CONTRACTS)) assert.ok(external.includes(expected.canonical_locator), `article cites ${expected.canonical_locator}`);
 });
 

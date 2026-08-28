@@ -7,10 +7,10 @@ import {readContentDocuments} from '../scripts/content-metadata.mjs';
 import {extractInternalLinks} from '../scripts/content-relations.mjs';
 
 export const EXPECTED_STAGE_A = Object.freeze({completed: 63, documents: 107, sources: 560});
-export const EXPECTED_STAGE_B = Object.freeze({completed: 64, documents: 107, sources: 560});
-const CURRENT_REPOSITORY_PROJECTION = Object.freeze({completed: 64, documents: 124, sources: 586});
+export const EXPECTED_STAGE_B = Object.freeze({completed: 65, documents: 125, sources: 591});
 export const CURRENT_TOPIC = 'STY-11';
 export const NEXT_TOPIC = 'STY-12';
+export const FUTURE_TOPIC = 'STY-13';
 export const REVIEW = 'docs/reviews/g009-batch12.md';
 export const LOCAL_RAW = 'docs/reviews/evidence/g009-batch12-stage-a-browser.json';
 export const PRODUCTION_RAW = 'docs/reviews/evidence/g009-batch12-stage-a-production-browser.json';
@@ -144,9 +144,17 @@ const HISTORICAL_REVIEW_IDENTITIES = new Map([
   [DRAWIO, [47_529, '9862fcb5be62941553780b2a58751a3f9af2ba7a32dace3549cc3ca6d1daa00e']],
   [SVG, [21_881, '6a166a208e31cb1c6313cd2a21ff17ce124ab6b463821bb3b108275000fa2094']],
 ]);
-const STABLE_IDENTITIES = new Map(
-  [...HISTORICAL_REVIEW_IDENTITIES].filter(([path]) => path !== LEDGER),
-);
+const STABLE_IDENTITIES = new Map([...HISTORICAL_REVIEW_IDENTITIES].filter(([path]) => path !== LEDGER));
+const STY11_SOURCE_IDS = Object.freeze([
+  'src-cncf-serverless-whitepaper-v1', 'src-cncf-serverless-glossary',
+  'src-aws-lambda-runtime-lifecycle', 'src-aws-lambda-invocation-retries',
+  'src-aws-lambda-concurrency', 'src-aws-lambda-pricing',
+  'src-azure-functions-scale-hosting', 'src-google-cloud-run-concurrency',
+  'src-cncf-cloudevents-102-spec', 'src-open-workflow-specification-103',
+  'src-atlas-sty11-serverless-order-fulfillment',
+]);
+const STY11_LEDGER_SLICE_BYTES = 25_366;
+const STY11_LEDGER_SLICE_SHA256 = '0982f8967bffc8a5047131a710c7b681f640ceefc0505d2c034d6e6875a03769';
 const FINAL_STAGE_A_CHECKPOINT = Object.freeze([
   `- Exact implementation candidate head: \`${CANDIDATE_HEAD}\`.`,
   `- Exact Browser evidence head: \`${EVIDENCE_HEAD}\`.`,
@@ -172,7 +180,8 @@ const PENDING_STAGE_A_CHECKPOINT = Object.freeze([
 const STAGE_B_CLOSURE_BASELINE_LABEL = '- **G009 Batch 12 Stage B 当前关闭候选：** ';
 const STAGE_B_REVIEWED_HEAD = 'fabd8adc8338ecaa7dddf0baff98ad7bd68996f7';
 const STY11_CLOSURE_LINE = `- [x] **STY-11 P1｜Serverless Architecture**：执行模型、状态、并发、冷启动、成本和供应商边界。Stage A 关闭证据：2026-08-26 review，commit [\`${READY_HEAD}\`](https://github.com/sealday/tego-arch/commit/${READY_HEAD})，Pages run [\`${PRODUCTION_PAGES.runId}\`](https://github.com/sealday/tego-arch/actions/runs/${PRODUCTION_PAGES.runId})，build job \`${PRODUCTION_PAGES.buildJobId}\`、deploy job \`${PRODUCTION_PAGES.deployJobId}\`，production HTML routes \`8/8\`，live route \`/styles/sty-11\` 与 \`/img/diagrams/sty-11-serverless-order-fulfillment.svg\` 均为 HTTP 200，live SVG SHA-256 \`${PRODUCTION_SVG.sha256}\` 与 reviewed asset exact match，Stage A production Browser raw \`${PRODUCTION_RAW_BYTES.toLocaleString('en-US')}\` bytes / SHA-256 \`${PRODUCTION_RAW_SHA256}\`，functional verdict PASS；screenshot evidence BLOCKED / NOT_ACCEPTED。`;
-const CURRENT_BASELINE_PREFIX = `2026-08-26 G009 Batch 12 已完成 STY-11，Stage A 发布基线为 [\`${READY_HEAD}\`](https://github.com/sealday/tego-arch/commit/${READY_HEAD})，Pages run [\`${PRODUCTION_PAGES.runId}\`](https://github.com/sealday/tego-arch/actions/runs/${PRODUCTION_PAGES.runId})，exact \`headSha=${READY_HEAD}\`、\`event=push\`、\`status=completed\`、\`conclusion=success\`，build job \`${PRODUCTION_PAGES.buildJobId}\`、deploy job \`${PRODUCTION_PAGES.deployJobId}\`；2026-08-26 production HTTP probes \`8/8\`，live route \`/styles/sty-11\` 与 \`/img/diagrams/sty-11-serverless-order-fulfillment.svg\` 均为 HTTP \`200\`，live SVG SHA-256 \`${PRODUCTION_SVG.sha256}\` 与 reviewed asset exact match。Production Browser states \`4/4\`、wrapper interactions \`16/16\`、relation destination/H1/return \`12/12\`、exact source destinations \`40/40\`，每个状态 STY-12 actionable count \`0\` 且 diagnostics 完整为零；raw \`${PRODUCTION_RAW}\` 为 \`${PRODUCTION_RAW_BYTES.toLocaleString('en-US')}\` bytes / SHA-256 \`${PRODUCTION_RAW_SHA256}\`，Stage A production functional verdict \`PASS\`，screenshot evidence \`BLOCKED / NOT_ACCEPTED\`。Stage B local closure projection 为 64 个已完成主题、107 篇内容文档与 560 个受治理来源，持久故事进度仍为 \`8 / 20\`，当前 G009，下一项为 STY-12，STY-11 为 published/complete，STY-12 为 unpublished/pending/nonactionable；Stage B 三个独立 review slots 与 final readiness 均为 \`PENDING\`，deployment status 为 \`PENDING / NOT_RUN\`。`;
+const FINAL_RELEASE_BASELINE_PREFIX = `2026-08-26 G009 Batch 12 已完成 STY-11，Stage B 发布基线为 [\`${STAGE_B_READY_HEAD}\`](https://github.com/sealday/tego-arch/commit/${STAGE_B_READY_HEAD})，Pages run [\`${STAGE_B_PRODUCTION_PAGES.runId}\`](https://github.com/sealday/tego-arch/actions/runs/${STAGE_B_PRODUCTION_PAGES.runId})，exact \`headSha=${STAGE_B_READY_HEAD}\`、\`event=push\`、\`status=completed\`、\`conclusion=success\`，build job \`${STAGE_B_PRODUCTION_PAGES.buildJobId}\`、deploy job \`${STAGE_B_PRODUCTION_PAGES.deployJobId}\`；2026-08-26 Stage B production HTTP probes \`8/8\`，live route \`/styles/sty-11\` 与 \`/img/diagrams/sty-11-serverless-order-fulfillment.svg\` 均为 HTTP \`200\`，live SVG SHA-256 \`${PRODUCTION_SVG.sha256}\` 与 reviewed asset exact match。Production Browser states \`4/4\`、wrapper interactions \`16/16\`、relation destination/H1/return \`12/12\`、exact source destinations \`40/40\`，每个状态 STY-12 actionable count \`0\` 且 diagnostics 完整为零；raw \`${STAGE_B_PRODUCTION_RAW}\` 为 \`${STAGE_B_PRODUCTION_RAW_BYTES.toLocaleString('en-US')}\` bytes / SHA-256 \`${STAGE_B_PRODUCTION_RAW_SHA256}\`，Stage B production functional verdict \`PASS\`，screenshot evidence \`BLOCKED / NOT_ACCEPTED\`。Stage B closure projection 为 64 个已完成主题、107 篇内容文档与 560 个受治理来源，持久故事进度仍为 \`8 / 20\`，当前 G009，下一项为 STY-12，STY-11 为 published/complete，STY-12 为 unpublished/pending/nonactionable；Stage B 三个独立 review slots 与 final readiness 均为 \`READY\`，findings \`0\`，deployment status 为 \`SUCCESS\`。`;
+const IMMEDIATE_HISTORY_LABEL = '此前 G009 Batch 11 历史完成基线为：';
 const READY_STAGE_B_REVIEW_LINES = Object.freeze([
   '- Closure date: `2026-08-26`.',
   `- Exact Stage A implementation head: \`${READY_HEAD}\`.`,
@@ -238,21 +247,34 @@ function currentReleaseBaseline(source) {
   assert.equal(lines.length, 1, 'one current release baseline');
   return lines[0].slice('- **当前发布基线：** '.length);
 }
+function immediateHistoricalBaseline(source) {
+  const baseline = currentReleaseBaseline(source);
+  const marker = baseline.indexOf(IMMEDIATE_HISTORY_LABEL);
+  assert.notEqual(marker, -1, 'Batch 11 historical baseline marker');
+  return baseline.slice(marker + IMMEDIATE_HISTORY_LABEL.length);
+}
 function assertImmediateHistory(reviewBytes = immediateReview, backlogSource = backlog) {
   assert.equal(sha256(reviewBytes), IMMEDIATE_REVIEW_HASH, 'complete immediate Batch 11 review bytes');
-  const suffix = currentReleaseBaseline(backlogSource);
+  const suffix = immediateHistoricalBaseline(backlogSource);
   assert.match(suffix, /^2026-08-20 G009 Batch 11 已完成 STY-10/u);
   assert.equal(sha256(suffix), IMMEDIATE_BACKLOG_SUFFIX_HASH, 'complete immediate STY-10 backlog suffix');
+}
+function assertFinalReleaseBaseline(source = backlog) {
+  const current = currentReleaseBaseline(source);
+  const marker = '此前 G009 Batch 12 历史完成基线为：';
+  const baseline = current.includes(marker) ? current.slice(current.indexOf(marker) + marker.length) : current;
+  assert.ok(baseline.startsWith(`${FINAL_RELEASE_BASELINE_PREFIX}${IMMEDIATE_HISTORY_LABEL}`), 'Batch 12 Stage B is preserved as the immediate historical recovery baseline');
+  assertImmediateHistory(immediateReview, source);
 }
 function assertStageBBacklog(source = backlog) {
   const sty11 = source.split(/\r?\n/u).filter((line) => /^- \[[ x]\] \*\*STY-11 /u.test(line));
   const sty12 = source.split(/\r?\n/u).filter((line) => /^- \[[ x]\] \*\*STY-12 /u.test(line));
   assert.deepEqual(sty11, [STY11_CLOSURE_LINE], 'one exact checked STY-11 closure line');
   assert.equal(sty12.length, 1, 'one canonical STY-12 backlog line');
-  assert.match(sty12[0], /^- \[ \] \*\*STY-12 P1｜Micro-Frontend\*\*/u);
-  const closureBaselines = source.split(/\r?\n/u).filter((line) => line.startsWith(STAGE_B_CLOSURE_BASELINE_LABEL));
-  assert.deepEqual(closureBaselines, [`${STAGE_B_CLOSURE_BASELINE_LABEL}${CURRENT_BASELINE_PREFIX}`], 'one exact current Batch 12 closure baseline');
-  assertImmediateHistory(immediateReview, source);
+  assert.match(sty12[0], /^- \[x\] \*\*STY-12 P1｜Micro-Frontend\*\*/u);
+  const current = currentReleaseBaseline(source);
+  assert.ok(current.includes(`此前 G009 Batch 12 历史完成基线为：${FINAL_RELEASE_BASELINE_PREFIX}`), 'one exact historical Batch 12 closure baseline');
+  assertFinalReleaseBaseline(source);
 }
 function markdownSection(source, heading) {
   const marker = `## ${heading}\n\n`;
@@ -560,7 +582,21 @@ function assertStageBProductionEvidence(value) {
   });
 }
 
-const [review, raw, productionRaw, stageBProductionRaw, immediateReview, backlog, status, manifest, documents, stableBytes] = await Promise.all([
+function serializeSty11LedgerSlice(ledger) {
+  const document = ledger.documents?.[ARTICLE];
+  assert.ok(document, 'STY-11 governed ledger document exists');
+  assert.deepEqual(document.citations.map(({source_id: id}) => id), STY11_SOURCE_IDS, 'STY-11 exact ordered source IDs');
+  const sources = STY11_SOURCE_IDS.map((id) => ledger.sources.find((source) => source.id === id));
+  assert.ok(sources.every(Boolean), 'every STY-11 governed source entry exists');
+  return Buffer.from(JSON.stringify({sources, document}));
+}
+function assertSty11LedgerSliceIdentity(ledger) {
+  const slice = serializeSty11LedgerSlice(ledger);
+  assert.equal(slice.length, STY11_LEDGER_SLICE_BYTES, 'STY-11 governed ledger slice bytes');
+  assert.equal(sha256(slice), STY11_LEDGER_SLICE_SHA256, 'STY-11 governed ledger slice SHA-256');
+}
+
+const [review, raw, productionRaw, stageBProductionRaw, immediateReview, backlog, status, manifest, documents, liveLedger, stableBytes] = await Promise.all([
   optional(REVIEW, 'utf8'),
   optional(LOCAL_RAW),
   optional(PRODUCTION_RAW),
@@ -570,38 +606,50 @@ const [review, raw, productionRaw, stageBProductionRaw, immediateReview, backlog
   required('src/generated/project-status.json', 'utf8').then(JSON.parse),
   required('src/generated/topic-manifest.json', 'utf8').then(JSON.parse),
   readContentDocuments('content'),
+  required(LEDGER, 'utf8').then(JSON.parse),
   Promise.all([...STABLE_IDENTITIES.keys()].map((path) => required(path))),
 ]);
 
-test('locks the complete immediate STY-10 review and backlog suffix with mutation sensitivity', () => {
-  assertImmediateHistory();
+test('publishes the exact Stage B recovery baseline while locking immediate STY-10 history', () => {
+  assertFinalReleaseBaseline();
   for (const changedReview of [Buffer.concat([immediateReview, Buffer.from('x')]), immediateReview.subarray(0, -1)]) {
     assert.throws(() => assertImmediateHistory(changedReview), assert.AssertionError);
   }
-  const suffix = currentReleaseBaseline(backlog);
+  const suffix = immediateHistoricalBaseline(backlog);
   for (const changedSuffix of [`${suffix}x`, suffix.slice(0, -1)]) {
     const changedBacklog = backlog.replace(suffix, changedSuffix);
     assert.notEqual(changedBacklog, backlog, 'historical suffix mutation applies');
     assert.throws(() => assertImmediateHistory(immediateReview, changedBacklog), assert.AssertionError);
   }
+  for (const changedCurrent of [
+    backlog.replace(STAGE_B_READY_HEAD, READY_HEAD),
+    backlog.replace(FINAL_RELEASE_BASELINE_PREFIX, FINAL_RELEASE_BASELINE_PREFIX.replace('deployment status 为 `SUCCESS`', 'deployment status 为 `PENDING / NOT_RUN`')),
+    backlog.replace('screenshot evidence `BLOCKED / NOT_ACCEPTED`', 'screenshot evidence `PASS`'),
+  ]) {
+    assert.notEqual(changedCurrent, backlog, 'current baseline mutation applies');
+    assert.throws(() => assertFinalReleaseBaseline(changedCurrent), assert.AssertionError);
+  }
 });
 
-test('projects exact STY-11 Stage B closure while STY-12 remains sole unpublished pending non-actionable next', () => {
+test('preserves exact STY-11 Stage B closure while the current projection publishes pending STY-12', () => {
   assert.deepEqual({
     completed: status.completed_topics,
     documents: status.content_documents,
     sources: status.governed_sources,
-  }, CURRENT_REPOSITORY_PROJECTION);
+  }, EXPECTED_STAGE_B);
   const current = documents.find(({metadata}) => metadata.topic_id === CURRENT_TOPIC);
   assert.ok(current, 'STY-11 is published as a content document');
   assertStageBBacklog();
-  assert.equal(documents.some(({metadata}) => metadata.topic_id === NEXT_TOPIC), false, 'STY-12 is unpublished');
-  assert.match(backlog, /^- \[ \] \*\*STY-12 P1｜Micro-Frontend\*\*/mu);
-  assert.equal(documents.flatMap(extractInternalLinks).includes('/styles/sty-12'), false, 'STY-12 is non-actionable');
+  assert.equal(documents.some(({metadata}) => metadata.topic_id === NEXT_TOPIC), true, 'STY-12 is published');
+  assert.equal(documents.some(({metadata}) => metadata.topic_id === FUTURE_TOPIC), false, 'STY-13 is unpublished');
+  assert.match(backlog, /^- \[x\] \*\*STY-12 P1｜Micro-Frontend\*\*/mu);
+  assert.equal(documents.flatMap(extractInternalLinks).includes('/styles/sty-12'), true, 'STY-12 has exact published reciprocal actions');
   const manifestCurrent = manifest.topics.find(({id}) => id === CURRENT_TOPIC);
   const manifestNext = manifest.topics.find(({id}) => id === NEXT_TOPIC);
+  const manifestFuture = manifest.topics.find(({id}) => id === FUTURE_TOPIC);
   assert.deepEqual({published: manifestCurrent?.published, status: manifestCurrent?.status?.value}, {published: true, status: 'complete'});
-  assert.deepEqual({published: manifestNext?.published, status: manifestNext?.status?.value}, {published: false, status: 'pending'});
+  assert.deepEqual({published: manifestNext?.published, status: manifestNext?.status?.value}, {published: true, status: 'complete'});
+  assert.deepEqual({published: manifestFuture?.published, status: manifestFuture?.status?.value}, {published: false, status: 'pending'});
   const staleNext = backlog.replace('下一项为 STY-12', '下一项为 STY-11');
   assert.notEqual(staleNext, backlog, 'current next-topic mutation applies');
   assert.throws(() => assertStageBBacklog(staleNext), assert.AssertionError);
@@ -617,11 +665,15 @@ test('requires published reciprocal adjacency metadata for both STY-11 adjacent 
   }
 });
 
-test('locks exact STY-11 article, Draw.io and SVG identities', () => {
+test('locks exact STY-11 article, ledger, Draw.io and SVG identities', () => {
   for (const [[path, [bytes, hash]], value] of [...STABLE_IDENTITIES].map((entry, index) => [entry, stableBytes[index]])) {
     assert.equal(value.length, bytes, `${path} bytes`);
     assert.equal(sha256(value), hash, `${path} SHA-256`);
   }
+  assertSty11LedgerSliceIdentity(liveLedger);
+  const mutation = structuredClone(liveLedger);
+  mutation.sources.find(({id}) => id === STY11_SOURCE_IDS[0]).usage_boundary += ' changed';
+  assert.throws(() => assertSty11LedgerSliceIdentity(mutation), assert.AssertionError, 'STY-11 governed ledger slice mutation rejected');
 });
 
 test('binds exact Stage A evidence and final Stage B production closure', () => {

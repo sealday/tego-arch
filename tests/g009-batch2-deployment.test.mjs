@@ -171,6 +171,12 @@ function currentReleaseBaseline(source) {
   return lines[0];
 }
 
+function g009Batch11HistoricalBaseline(source) {
+  const parts = currentReleaseBaseline(source).split('此前 G009 Batch 11 历史完成基线为：');
+  assert.equal(parts.length, 2, 'one exact G009 Batch 11 history marker');
+  return `- **当前发布基线：** ${parts[1]}`;
+}
+
 function currentG009Batch2Baseline(source) {
   const baseline = currentReleaseBaseline(source);
   const start = baseline.indexOf(batch2HistoryMarker);
@@ -196,7 +202,7 @@ function g009Batch1AndOlderHistory(source) {
 }
 
 function assertBacklog(source) {
-  const liveBaseline = currentReleaseBaseline(source);
+  const liveBaseline = g009Batch11HistoricalBaseline(source);
   const liveParts = liveBaseline.split('此前 G009 Batch 10 历史完成基线为：');
   assert.equal(liveParts.length, 2, 'split live Batch 11 prefix from immutable Batch 10 history');
   const [livePrefix] = liveParts;
@@ -295,9 +301,9 @@ test('preserves the STY-01 closure under the current STY-10 next-topic projectio
   assert.deepEqual(status, {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
-    completed_topics: 64,
-    content_documents: 124,
-    governed_sources: 586,
+    completed_topics: 65,
+    content_documents: 125,
+    governed_sources: 591,
 
     sources: {
       durable_stories: 'docs/content-backlog.md',
@@ -306,7 +312,7 @@ test('preserves the STY-01 closure under the current STY-10 next-topic projectio
       governed_sources: 'data/source-ledger.json',
     },
   });
-  assert.equal(sourceLedger.sources.length, 586);
+  assert.equal(sourceLedger.sources.length, 591);
 
 });
 

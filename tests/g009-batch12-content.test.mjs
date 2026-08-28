@@ -11,8 +11,7 @@ export const ARTICLE = 'content/styles/sty-11-serverless-architecture.mdx';
 export const DRAWIO = 'diagrams/sty-11-serverless-order-fulfillment.drawio';
 export const SVG = 'static/img/diagrams/sty-11-serverless-order-fulfillment.svg';
 export const ROUTE = '/styles/sty-11'; export const TOPIC_ID = 'STY-11'; export const NEXT_TOPIC = 'STY-12'; export const RELATED_CASE = '/cases/cloudflare-durable-objects-workerd';
-export const EXPECTED_STAGE_A = Object.freeze({completed: 64, documents: 107, sources: 560});
-const CURRENT_REPOSITORY_PROJECTION = Object.freeze({completed: 64, documents: 124, sources: 586});
+export const EXPECTED_STAGE_A = Object.freeze({completed: 65, documents: 125, sources: 591});
 export const SOURCE_IDS = Object.freeze(['src-cncf-serverless-whitepaper-v1','src-cncf-serverless-glossary','src-aws-lambda-runtime-lifecycle','src-aws-lambda-invocation-retries','src-aws-lambda-concurrency','src-aws-lambda-pricing','src-azure-functions-scale-hosting','src-google-cloud-run-concurrency','src-cncf-cloudevents-102-spec','src-open-workflow-specification-103','src-atlas-sty11-serverless-order-fulfillment']);
 export const EXACT_METADATA = Object.freeze({title: 'Serverless Architecture：把运行责任交给平台，不把业务边界一并交出去', slug: '/styles/sty-11', content_type: 'style', status: 'reviewed', difficulty: 'advanced', analyzed_at: '2026-08-25', source_cutoff: '2026-08-25', confidence: 'high', domains: ['software-architecture', 'distributed-systems', 'platform-engineering'], agent_patterns: [], protocols: [], quality_attributes: ['scalability', 'performance', 'reliability', 'recoverability', 'operability', 'cost-efficiency'], tags: ['架构风格', 'Serverless', 'FaaS', '事件驱动', '幂等', '冷启动', '成本治理'], summary: '以订单结算与异步履约说明 Serverless：同步入口只受理，持久工作流（Workflow）保存进度，队列和三层并发预算保护下游，有界函数执行单步任务，并把冷启动、成本与供应商退出放进同一决策。', topic_id: 'STY-11', priority: 'P1', depends_on: ['STY-00', 'STY-06'], adjacent_topics: ['STY-06', 'STY-09'], related_cases: [RELATED_CASE], related_questions: []});
 export const EXPECTED_HEADINGS = Object.freeze(['学习问题','一页摘要','事实边界','架构图','控制权与任务流','关键源码导读','架构决策与权衡','生产化分析','可迁移经验','来源']);
@@ -235,14 +234,14 @@ async function assertServerlessRelationsAndStageA() {
   assert.ok(article, 'STY-11 content document');
   const links = extractInternalLinks(article);
   assert.ok(links.includes(RELATED_CASE), 'visible related case link');
-  assert.equal(links.includes('/styles/sty-12'), false, 'STY-12 remains non-actionable');
+  assert.equal(links.includes('/styles/sty-12'), false, 'STY-11 article does not gain an unrelated STY-12 link');
   for (const path of ['content/styles/sty-06-event-driven-architecture.mdx', 'content/styles/sty-09-pipes-and-filters.mdx', 'content/cases/cloudflare-durable-objects-workerd.mdx']) {
     const target = documents.find(({file}) => 'content/' + file === path);
     assert.ok(target, path + ' exists');
     assert.ok(extractInternalLinks(target).includes(ROUTE), path + ' visibly reciprocates STY-11');
   }
   const status = JSON.parse(readFileSync('src/generated/project-status.json', 'utf8'));
-  assert.deepEqual({completed: status.completed_topics, documents: status.content_documents, sources: status.governed_sources}, CURRENT_REPOSITORY_PROJECTION, 'current repository projection');
+  assert.deepEqual({completed: status.completed_topics, documents: status.content_documents, sources: status.governed_sources}, EXPECTED_STAGE_A, 'exact Stage A projection');
 }
 
 function assertServerlessDiagram(drawioSource, svgSource) {

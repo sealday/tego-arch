@@ -24,14 +24,11 @@ const topicRelations = JSON.parse(await readFile(new URL('../data/topic-relation
 const backlog = await readFile(new URL('../docs/content-backlog.md', import.meta.url), 'utf8');
 
 function currentNextTopic(source) {
-  const baselines = source
+  const rows = source
     .split(/\r?\n/u)
-    .filter((line) => line.startsWith('- **当前发布基线：**'));
-  assert.equal(baselines.length, 1, '待办 must contain one current release baseline');
-  const liveSegment = baselines[0].split('。此前 ')[0];
-  const nextTopics = [...liveSegment.matchAll(/下一项为 ([A-Z]+-\d+)/gu)];
-  assert.equal(nextTopics.length, 1, 'live baseline must contain one next topic');
-  return nextTopics[0][1];
+    .filter((line) => /^- \[ \] \*\*[A-Z]+-\d+ /u.test(line));
+  assert.ok(rows.length >= 1, '待办 must contain at least one pending topic');
+  return rows[0].match(/^- \[ \] \*\*([A-Z]+-\d+) /u)[1];
 }
 
 const commonNodes = [
@@ -510,13 +507,13 @@ test('locks the generated MOD-13 Stage B projection', () => {
     current_goal: projectStatus.durable_stories.current,
     next_topic: currentNextTopic(backlog),
   }, {
-    completed_topics: 64,
-    content_documents: 124,
-    governed_sources: 586,
+    completed_topics: 65,
+    content_documents: 125,
+    governed_sources: 591,
 
     durable_stories: {completed: 8, total: 20},
     current_goal: 'G009',
-    next_topic: 'STY-11',
+    next_topic: 'STY-13',
   });
   const topicsById = new Map(topicManifest.topics.map((topic) => [topic.id, topic]));
   assert.equal(topicsById.get('MOD-12').published, true);

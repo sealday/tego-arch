@@ -30,6 +30,7 @@ adjacent_topics:
   - STY-02
   - STY-04
   - STY-05
+  - STY-12
 related_cases:
   - /cases/micro-frontends-single-spa
 related_questions: []
@@ -144,6 +145,8 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 分层架构以技术责任提供稳定结构，但一次订单变化可能穿过多层；垂直切片把该用例的输入到输出收拢；模块化单体把多个用例纳入能力模块和显式合同。STY-02 的依赖向内规则与垂直切片互补：前者回答核心与机制的源码依赖方向，后者回答常见变化如何组织。一个 `SubmitOrder` 切片完全可以位于模块化单体的订单模块内，并在切片内部使用端口与适配器。
 
 [生产中的微前端案例](/cases/micro-frontends-single-spa)只用于比较按能力所有权、端到端交付和共享运行时之间的压力；它不是本订单场景的实现证据，也不把前端部署方式推导为垂直切片的默认拓扑。
+
+[Micro-Frontend 架构决策](/styles/sty-12)继续判断垂直业务边界何时需要浏览器运行时独立交付；本页只负责代码变化边界，不把切片自动提升为部署或故障边界。
 
 ## 来源
 

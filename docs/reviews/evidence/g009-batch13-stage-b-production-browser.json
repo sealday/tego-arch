@@ -1,0 +1,1610 @@
+{
+  "implementationHead": "8c4ac2856b85375f0b1c8f29c25670ea8e8e967f",
+  "pages": {
+    "workflow": "Verify and deploy Docusaurus to GitHub Pages",
+    "runId": 33072843112,
+    "runUrl": "https://github.com/sealday/tego-arch/actions/runs/33072843112",
+    "event": "push",
+    "headSha": "8c4ac2856b85375f0b1c8f29c25670ea8e8e967f",
+    "status": "completed",
+    "conclusion": "success",
+    "build": {
+      "jobId": 98519258993,
+      "status": "completed",
+      "conclusion": "success"
+    },
+    "deploy": {
+      "jobId": 98520089444,
+      "status": "completed",
+      "conclusion": "success"
+    }
+  },
+  "probes": {
+    "routes": [
+      {
+        "path": "/tego-arch/",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8",
+        "bytes": 17310,
+        "sha256": "e9e3610a3acf73a93bc5529076119cf04b10f5a89a43da53b5e20cf905698443"
+      },
+      {
+        "path": "/tego-arch/styles",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8",
+        "bytes": 23854,
+        "sha256": "0ca62370045e6e91d28e373d6865160829241615c46b5453218d1264ee7a855b"
+      },
+      {
+        "path": "/tego-arch/styles/sty-03",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8",
+        "bytes": 41952,
+        "sha256": "235a3fe3a23fc4ab9b6ab7a22fb81b8c6b2dc31c99d0103a07eea73eac0d7164"
+      },
+      {
+        "path": "/tego-arch/styles/sty-10",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8",
+        "bytes": 48594,
+        "sha256": "2264beaa4cb9666588da3db7d3ae3fa96f018dce86da81eca0ea3d0d37fd074a"
+      },
+      {
+        "path": "/tego-arch/styles/sty-12",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8",
+        "bytes": 46875,
+        "sha256": "c4ba329039501faf85081948dd54ddc59170d6da94769e1ee288b4c066954da3"
+      },
+      {
+        "path": "/tego-arch/cases",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8",
+        "bytes": 47702,
+        "sha256": "c6d146bd7456bb68396727371e81bc03a6c513a3acc6c61b80d8cbfeabd3d363"
+      },
+      {
+        "path": "/tego-arch/cases/micro-frontends-single-spa",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8",
+        "bytes": 62040,
+        "sha256": "5f68d60e0ac4fb8e0787ac57f2d66d698ec99641534768f06b0ad5062ff23d94"
+      },
+      {
+        "path": "/tego-arch/references",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8",
+        "bytes": 23533,
+        "sha256": "e07c213f24c3bbe4f60a663a4c820165c2c59ed2261bee65024747830b0a7c90"
+      }
+    ],
+    "svg": {
+      "path": "/tego-arch/img/diagrams/sty-12-micro-frontend-commerce-runtime.svg",
+      "url": "https://sealday.github.io/tego-arch/img/diagrams/sty-12-micro-frontend-commerce-runtime.svg",
+      "status": 200,
+      "contentType": "image/svg+xml",
+      "bytes": 35407,
+      "sha256": "c5347b1bf84890cb8e72be387185f2737afefadfdb57090b4fff3d5693e156b3",
+      "exactHeadAssetMatch": true
+    },
+    "sty13": {
+      "path": "/tego-arch/styles/sty-13",
+      "status": 404,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 9172,
+      "sha256": "9aea3db7eb1cc6966780729a89421a3b1e1e0cf60dcbc7f8edc207b930bfc2de"
+    }
+  },
+  "projectStatus": {
+    "url": "https://raw.githubusercontent.com/sealday/tego-arch/8c4ac2856b85375f0b1c8f29c25670ea8e8e967f/src/generated/project-status.json",
+    "status": 200,
+    "bytes": 415,
+    "sha256": "985dd9fe7d24f341c915c7a383577e919f326efe22526b588906ca76191dcc96",
+    "completedTopics": 65,
+    "contentDocuments": 108,
+    "governedSources": 565
+  },
+  "collection": {
+    "browser": "Codex in-app Browser only",
+    "fresh": true,
+    "session": "fresh Stage B production session; Stage A tab and evidence were not reused",
+    "servedUrl": "https://sealday.github.io/tego-arch/styles/sty-12",
+    "build": "GitHub Pages exact Stage B head 8c4ac2856b85375f0b1c8f29c25670ea8e8e967f; push run 33072843112; build job 98519258993; deploy job 98520089444",
+    "navigationMethod": "Relation destinations were opened by exact href direct navigation and returned with Browser back; no physical link click is claimed.",
+    "observedSvgAsset": {
+      "source": "production Browser pageAssets bundle",
+      "inventoryId": "f7454ef5-7dfd-4a7f-bedf-1667eaa46b2c",
+      "assetId": "faffe609e627d4f9",
+      "contentType": "image/svg+xml",
+      "bytes": 35407,
+      "sha256": "c5347b1bf84890cb8e72be387185f2737afefadfdb57090b4fff3d5693e156b3",
+      "viewBox": "0 0 2400 3600",
+      "requested": 1,
+      "downloaded": 1,
+      "failed": 0
+    },
+    "diagnosticContinuity": [
+      {
+        "scope": "desktopLight:prepare",
+        "afterSequence": 13,
+        "cursor": 26,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "desktopLight:interactions",
+        "afterSequence": 26,
+        "cursor": 26,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "desktopLight:relation0:destination",
+        "afterSequence": 26,
+        "cursor": 38,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "desktopLight:relation0:return",
+        "afterSequence": 38,
+        "cursor": 50,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "desktopLight:relation1:destination",
+        "afterSequence": 50,
+        "cursor": 62,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "desktopLight:relation1:return",
+        "afterSequence": 62,
+        "cursor": 74,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "desktopLight:relation2:destination",
+        "afterSequence": 74,
+        "cursor": 86,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "desktopLight:relation2:return",
+        "afterSequence": 86,
+        "cursor": 98,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "desktopLight:screenshot",
+        "afterSequence": 98,
+        "cursor": 98,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "desktopDark:prepare",
+        "afterSequence": 98,
+        "cursor": 110,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "desktopDark:interactions",
+        "afterSequence": 110,
+        "cursor": 110,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "desktopDark:relation0:destination",
+        "afterSequence": 110,
+        "cursor": 122,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "desktopDark:relation0:return",
+        "afterSequence": 122,
+        "cursor": 134,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "desktopDark:relation1:destination",
+        "afterSequence": 134,
+        "cursor": 146,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "desktopDark:relation1:return",
+        "afterSequence": 146,
+        "cursor": 158,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "desktopDark:relation2:destination",
+        "afterSequence": 158,
+        "cursor": 170,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "desktopDark:relation2:return",
+        "afterSequence": 170,
+        "cursor": 182,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "desktopDark:screenshot",
+        "afterSequence": 182,
+        "cursor": 182,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "mobileLight:prepare",
+        "afterSequence": 182,
+        "cursor": 195,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "mobileLight:interactions",
+        "afterSequence": 195,
+        "cursor": 195,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "mobileLight:relation0:destination",
+        "afterSequence": 195,
+        "cursor": 207,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "mobileLight:relation0:return",
+        "afterSequence": 207,
+        "cursor": 219,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "mobileLight:relation1:destination",
+        "afterSequence": 219,
+        "cursor": 231,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "mobileLight:relation1:return",
+        "afterSequence": 231,
+        "cursor": 243,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "mobileLight:relation2:destination",
+        "afterSequence": 243,
+        "cursor": 255,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "mobileLight:relation2:return",
+        "afterSequence": 255,
+        "cursor": 267,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "mobileLight:screenshot",
+        "afterSequence": 267,
+        "cursor": 267,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "mobileDark:prepare",
+        "afterSequence": 267,
+        "cursor": 281,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "mobileDark:interactions",
+        "afterSequence": 281,
+        "cursor": 281,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "mobileDark:relation0:destination",
+        "afterSequence": 281,
+        "cursor": 293,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "mobileDark:relation0:return",
+        "afterSequence": 293,
+        "cursor": 305,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "mobileDark:relation1:destination",
+        "afterSequence": 305,
+        "cursor": 317,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "mobileDark:relation1:return",
+        "afterSequence": 317,
+        "cursor": 329,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "mobileDark:relation2:destination",
+        "afterSequence": 329,
+        "cursor": 341,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "mobileDark:relation2:return",
+        "afterSequence": 341,
+        "cursor": 353,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "mobileDark:screenshot",
+        "afterSequence": 353,
+        "cursor": 353,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "whole-session terminal",
+        "afterSequence": 353,
+        "cursor": 353,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      }
+    ]
+  },
+  "stateOrder": [
+    "desktopLight",
+    "desktopDark",
+    "mobileLight",
+    "mobileDark"
+  ],
+  "states": {
+    "desktopLight": {
+      "theme": "light",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "geometry": {
+        "page": {
+          "clientWidth": 1440,
+          "scrollWidth": 1440
+        },
+        "wrappers": [
+          {
+            "label": "Micro-Frontend 五种组合方式决策表，可横向滚动",
+            "clientWidth": 800,
+            "scrollWidth": 800
+          },
+          {
+            "label": "Micro-Frontend 电商运行时、发布与权威状态边界图，可横向滚动",
+            "clientWidth": 800,
+            "scrollWidth": 800
+          },
+          {
+            "label": "Micro-Frontend 构件所有权矩阵，可横向滚动",
+            "clientWidth": 800,
+            "scrollWidth": 800
+          },
+          {
+            "label": "Micro-Frontend 六类故障检测、降级与恢复表，可横向滚动",
+            "clientWidth": 800,
+            "scrollWidth": 800
+          }
+        ],
+        "svg": {
+          "loaded": true,
+          "viewBox": "0 0 2400 3600",
+          "sourceWidth": 2400,
+          "sourceHeight": 3600,
+          "naturalWidth": 100,
+          "naturalHeight": 150,
+          "renderedWidth": 800,
+          "renderedHeight": 1200,
+          "src": "https://sealday.github.io/tego-arch/assets/images/sty-12-micro-frontend-commerce-runtime-f59e777fca88537fe0a140fab619968f.svg",
+          "observedAssetBytes": 35407
+        },
+        "sources": [
+          {
+            "href": "https://martinfowler.com/articles/micro-frontends.html",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          },
+          {
+            "href": "https://single-spa.js.org/docs/microfrontends-concept/",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          },
+          {
+            "href": "https://single-spa.js.org/docs/recommended-setup/",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          },
+          {
+            "href": "https://html.spec.whatwg.org/multipage/webappapis.html#import-maps",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          },
+          {
+            "href": "https://www.w3.org/TR/SRI/",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          },
+          {
+            "href": "https://www.w3.org/TR/CSP3/",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          },
+          {
+            "href": "https://www.w3.org/TR/longtasks-1/",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          }
+        ],
+        "sty13": 0
+      },
+      "interactions": [
+        {
+          "index": 0,
+          "label": "Micro-Frontend 五种组合方式决策表，可横向滚动",
+          "key": "ArrowRight",
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 800,
+            "scrollWidth": 800,
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 800,
+            "scrollWidth": 800,
+            "scrollLeft": 0
+          },
+          "delta": 0
+        },
+        {
+          "index": 1,
+          "label": "Micro-Frontend 电商运行时、发布与权威状态边界图，可横向滚动",
+          "key": "ArrowRight",
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 800,
+            "scrollWidth": 800,
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 800,
+            "scrollWidth": 800,
+            "scrollLeft": 0
+          },
+          "delta": 0
+        },
+        {
+          "index": 2,
+          "label": "Micro-Frontend 构件所有权矩阵，可横向滚动",
+          "key": "ArrowRight",
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 800,
+            "scrollWidth": 800,
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 800,
+            "scrollWidth": 800,
+            "scrollLeft": 0
+          },
+          "delta": 0
+        },
+        {
+          "index": 3,
+          "label": "Micro-Frontend 六类故障检测、降级与恢复表，可横向滚动",
+          "key": "ArrowRight",
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 800,
+            "scrollWidth": 800,
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 800,
+            "scrollWidth": 800,
+            "scrollLeft": 0
+          },
+          "delta": 0
+        }
+      ],
+      "relations": [
+        {
+          "href": "/tego-arch/styles/sty-03",
+          "expectedH1": "垂直切片架构：按用例收拢变化边界",
+          "h1": "垂直切片架构：按用例收拢变化边界",
+          "visibleCount": 1,
+          "returnedToArticle": true
+        },
+        {
+          "href": "/tego-arch/styles/sty-10",
+          "expectedH1": "Microkernel / Plug-in Architecture：让扩展能力可替换，也让风险止步于边界",
+          "h1": "Microkernel / Plug-in Architecture：让扩展能力可替换，也让风险止步于边界",
+          "visibleCount": 1,
+          "returnedToArticle": true
+        },
+        {
+          "href": "/tego-arch/cases/micro-frontends-single-spa",
+          "expectedH1": "微前端：用垂直业务切片约束跨团队所有权",
+          "h1": "微前端：用垂直业务切片约束跨团队所有权",
+          "visibleCount": 1,
+          "returnedToArticle": true
+        }
+      ],
+      "logs": [],
+      "diagnostics": {
+        "events": [],
+        "pages": [
+          {
+            "scope": "desktopLight:prepare",
+            "afterSequence": 13,
+            "cursor": 26,
+            "count": 0,
+            "hasMore": false,
+            "truncated": false
+          },
+          {
+            "scope": "desktopLight:interactions",
+            "afterSequence": 26,
+            "cursor": 26,
+            "count": 0,
+            "hasMore": false,
+            "truncated": false
+          },
+          {
+            "scope": "desktopLight:relation0:destination",
+            "afterSequence": 26,
+            "cursor": 38,
+            "count": 0,
+            "hasMore": false,
+            "truncated": false
+          },
+          {
+            "scope": "desktopLight:relation0:return",
+            "afterSequence": 38,
+            "cursor": 50,
+            "count": 0,
+            "hasMore": false,
+            "truncated": false
+          },
+          {
+            "scope": "desktopLight:relation1:destination",
+            "afterSequence": 50,
+            "cursor": 62,
+            "count": 0,
+            "hasMore": false,
+            "truncated": false
+          },
+          {
+            "scope": "desktopLight:relation1:return",
+            "afterSequence": 62,
+            "cursor": 74,
+            "count": 0,
+            "hasMore": false,
+            "truncated": false
+          },
+          {
+            "scope": "desktopLight:relation2:destination",
+            "afterSequence": 74,
+            "cursor": 86,
+            "count": 0,
+            "hasMore": false,
+            "truncated": false
+          },
+          {
+            "scope": "desktopLight:relation2:return",
+            "afterSequence": 86,
+            "cursor": 98,
+            "count": 0,
+            "hasMore": false,
+            "truncated": false
+          },
+          {
+            "scope": "desktopLight:screenshot",
+            "afterSequence": 98,
+            "cursor": 98,
+            "count": 0,
+            "hasMore": false,
+            "truncated": false
+          }
+        ],
+        "hasMore": false,
+        "truncated": false
+      }
+    },
+    "desktopDark": {
+      "theme": "dark",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "geometry": {
+        "page": {
+          "clientWidth": 1440,
+          "scrollWidth": 1440
+        },
+        "wrappers": [
+          {
+            "label": "Micro-Frontend 五种组合方式决策表，可横向滚动",
+            "clientWidth": 800,
+            "scrollWidth": 800
+          },
+          {
+            "label": "Micro-Frontend 电商运行时、发布与权威状态边界图，可横向滚动",
+            "clientWidth": 800,
+            "scrollWidth": 800
+          },
+          {
+            "label": "Micro-Frontend 构件所有权矩阵，可横向滚动",
+            "clientWidth": 800,
+            "scrollWidth": 800
+          },
+          {
+            "label": "Micro-Frontend 六类故障检测、降级与恢复表，可横向滚动",
+            "clientWidth": 800,
+            "scrollWidth": 800
+          }
+        ],
+        "svg": {
+          "loaded": true,
+          "viewBox": "0 0 2400 3600",
+          "sourceWidth": 2400,
+          "sourceHeight": 3600,
+          "naturalWidth": 100,
+          "naturalHeight": 150,
+          "renderedWidth": 800,
+          "renderedHeight": 1200,
+          "src": "https://sealday.github.io/tego-arch/assets/images/sty-12-micro-frontend-commerce-runtime-f59e777fca88537fe0a140fab619968f.svg",
+          "observedAssetBytes": 35407
+        },
+        "sources": [
+          {
+            "href": "https://martinfowler.com/articles/micro-frontends.html",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          },
+          {
+            "href": "https://single-spa.js.org/docs/microfrontends-concept/",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          },
+          {
+            "href": "https://single-spa.js.org/docs/recommended-setup/",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          },
+          {
+            "href": "https://html.spec.whatwg.org/multipage/webappapis.html#import-maps",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          },
+          {
+            "href": "https://www.w3.org/TR/SRI/",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          },
+          {
+            "href": "https://www.w3.org/TR/CSP3/",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          },
+          {
+            "href": "https://www.w3.org/TR/longtasks-1/",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          }
+        ],
+        "sty13": 0
+      },
+      "interactions": [
+        {
+          "index": 0,
+          "label": "Micro-Frontend 五种组合方式决策表，可横向滚动",
+          "key": "ArrowRight",
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 800,
+            "scrollWidth": 800,
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 800,
+            "scrollWidth": 800,
+            "scrollLeft": 0
+          },
+          "delta": 0
+        },
+        {
+          "index": 1,
+          "label": "Micro-Frontend 电商运行时、发布与权威状态边界图，可横向滚动",
+          "key": "ArrowRight",
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 800,
+            "scrollWidth": 800,
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 800,
+            "scrollWidth": 800,
+            "scrollLeft": 0
+          },
+          "delta": 0
+        },
+        {
+          "index": 2,
+          "label": "Micro-Frontend 构件所有权矩阵，可横向滚动",
+          "key": "ArrowRight",
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 800,
+            "scrollWidth": 800,
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 800,
+            "scrollWidth": 800,
+            "scrollLeft": 0
+          },
+          "delta": 0
+        },
+        {
+          "index": 3,
+          "label": "Micro-Frontend 六类故障检测、降级与恢复表，可横向滚动",
+          "key": "ArrowRight",
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 800,
+            "scrollWidth": 800,
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 800,
+            "scrollWidth": 800,
+            "scrollLeft": 0
+          },
+          "delta": 0
+        }
+      ],
+      "relations": [
+        {
+          "href": "/tego-arch/styles/sty-03",
+          "expectedH1": "垂直切片架构：按用例收拢变化边界",
+          "h1": "垂直切片架构：按用例收拢变化边界",
+          "visibleCount": 1,
+          "returnedToArticle": true
+        },
+        {
+          "href": "/tego-arch/styles/sty-10",
+          "expectedH1": "Microkernel / Plug-in Architecture：让扩展能力可替换，也让风险止步于边界",
+          "h1": "Microkernel / Plug-in Architecture：让扩展能力可替换，也让风险止步于边界",
+          "visibleCount": 1,
+          "returnedToArticle": true
+        },
+        {
+          "href": "/tego-arch/cases/micro-frontends-single-spa",
+          "expectedH1": "微前端：用垂直业务切片约束跨团队所有权",
+          "h1": "微前端：用垂直业务切片约束跨团队所有权",
+          "visibleCount": 1,
+          "returnedToArticle": true
+        }
+      ],
+      "logs": [],
+      "diagnostics": {
+        "events": [],
+        "pages": [
+          {
+            "scope": "desktopDark:prepare",
+            "afterSequence": 98,
+            "cursor": 110,
+            "count": 0,
+            "hasMore": false,
+            "truncated": false
+          },
+          {
+            "scope": "desktopDark:interactions",
+            "afterSequence": 110,
+            "cursor": 110,
+            "count": 0,
+            "hasMore": false,
+            "truncated": false
+          },
+          {
+            "scope": "desktopDark:relation0:destination",
+            "afterSequence": 110,
+            "cursor": 122,
+            "count": 0,
+            "hasMore": false,
+            "truncated": false
+          },
+          {
+            "scope": "desktopDark:relation0:return",
+            "afterSequence": 122,
+            "cursor": 134,
+            "count": 0,
+            "hasMore": false,
+            "truncated": false
+          },
+          {
+            "scope": "desktopDark:relation1:destination",
+            "afterSequence": 134,
+            "cursor": 146,
+            "count": 0,
+            "hasMore": false,
+            "truncated": false
+          },
+          {
+            "scope": "desktopDark:relation1:return",
+            "afterSequence": 146,
+            "cursor": 158,
+            "count": 0,
+            "hasMore": false,
+            "truncated": false
+          },
+          {
+            "scope": "desktopDark:relation2:destination",
+            "afterSequence": 158,
+            "cursor": 170,
+            "count": 0,
+            "hasMore": false,
+            "truncated": false
+          },
+          {
+            "scope": "desktopDark:relation2:return",
+            "afterSequence": 170,
+            "cursor": 182,
+            "count": 0,
+            "hasMore": false,
+            "truncated": false
+          },
+          {
+            "scope": "desktopDark:screenshot",
+            "afterSequence": 182,
+            "cursor": 182,
+            "count": 0,
+            "hasMore": false,
+            "truncated": false
+          }
+        ],
+        "hasMore": false,
+        "truncated": false
+      }
+    },
+    "mobileLight": {
+      "theme": "light",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "geometry": {
+        "page": {
+          "clientWidth": 390,
+          "scrollWidth": 390
+        },
+        "wrappers": [
+          {
+            "label": "Micro-Frontend 五种组合方式决策表，可横向滚动",
+            "clientWidth": 358,
+            "scrollWidth": 358
+          },
+          {
+            "label": "Micro-Frontend 电商运行时、发布与权威状态边界图，可横向滚动",
+            "clientWidth": 358,
+            "scrollWidth": 800
+          },
+          {
+            "label": "Micro-Frontend 构件所有权矩阵，可横向滚动",
+            "clientWidth": 358,
+            "scrollWidth": 358
+          },
+          {
+            "label": "Micro-Frontend 六类故障检测、降级与恢复表，可横向滚动",
+            "clientWidth": 358,
+            "scrollWidth": 358
+          }
+        ],
+        "svg": {
+          "loaded": true,
+          "viewBox": "0 0 2400 3600",
+          "sourceWidth": 2400,
+          "sourceHeight": 3600,
+          "naturalWidth": 100,
+          "naturalHeight": 150,
+          "renderedWidth": 800,
+          "renderedHeight": 1200,
+          "src": "https://sealday.github.io/tego-arch/assets/images/sty-12-micro-frontend-commerce-runtime-f59e777fca88537fe0a140fab619968f.svg",
+          "observedAssetBytes": 35407
+        },
+        "sources": [
+          {
+            "href": "https://martinfowler.com/articles/micro-frontends.html",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          },
+          {
+            "href": "https://single-spa.js.org/docs/microfrontends-concept/",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          },
+          {
+            "href": "https://single-spa.js.org/docs/recommended-setup/",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          },
+          {
+            "href": "https://html.spec.whatwg.org/multipage/webappapis.html#import-maps",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          },
+          {
+            "href": "https://www.w3.org/TR/SRI/",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          },
+          {
+            "href": "https://www.w3.org/TR/CSP3/",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          },
+          {
+            "href": "https://www.w3.org/TR/longtasks-1/",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          }
+        ],
+        "sty13": 0
+      },
+      "interactions": [
+        {
+          "index": 0,
+          "label": "Micro-Frontend 五种组合方式决策表，可横向滚动",
+          "key": "ArrowRight",
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 358,
+            "scrollWidth": 358,
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 358,
+            "scrollWidth": 358,
+            "scrollLeft": 0
+          },
+          "delta": 0
+        },
+        {
+          "index": 1,
+          "label": "Micro-Frontend 电商运行时、发布与权威状态边界图，可横向滚动",
+          "key": "ArrowRight",
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 358,
+            "scrollWidth": 800,
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 358,
+            "scrollWidth": 800,
+            "scrollLeft": 40
+          },
+          "delta": 40
+        },
+        {
+          "index": 2,
+          "label": "Micro-Frontend 构件所有权矩阵，可横向滚动",
+          "key": "ArrowRight",
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 358,
+            "scrollWidth": 358,
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 358,
+            "scrollWidth": 358,
+            "scrollLeft": 0
+          },
+          "delta": 0
+        },
+        {
+          "index": 3,
+          "label": "Micro-Frontend 六类故障检测、降级与恢复表，可横向滚动",
+          "key": "ArrowRight",
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 358,
+            "scrollWidth": 358,
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 358,
+            "scrollWidth": 358,
+            "scrollLeft": 0
+          },
+          "delta": 0
+        }
+      ],
+      "relations": [
+        {
+          "href": "/tego-arch/styles/sty-03",
+          "expectedH1": "垂直切片架构：按用例收拢变化边界",
+          "h1": "垂直切片架构：按用例收拢变化边界",
+          "visibleCount": 1,
+          "returnedToArticle": true
+        },
+        {
+          "href": "/tego-arch/styles/sty-10",
+          "expectedH1": "Microkernel / Plug-in Architecture：让扩展能力可替换，也让风险止步于边界",
+          "h1": "Microkernel / Plug-in Architecture：让扩展能力可替换，也让风险止步于边界",
+          "visibleCount": 1,
+          "returnedToArticle": true
+        },
+        {
+          "href": "/tego-arch/cases/micro-frontends-single-spa",
+          "expectedH1": "微前端：用垂直业务切片约束跨团队所有权",
+          "h1": "微前端：用垂直业务切片约束跨团队所有权",
+          "visibleCount": 1,
+          "returnedToArticle": true
+        }
+      ],
+      "logs": [],
+      "diagnostics": {
+        "events": [],
+        "pages": [
+          {
+            "scope": "mobileLight:prepare",
+            "afterSequence": 182,
+            "cursor": 195,
+            "count": 0,
+            "hasMore": false,
+            "truncated": false
+          },
+          {
+            "scope": "mobileLight:interactions",
+            "afterSequence": 195,
+            "cursor": 195,
+            "count": 0,
+            "hasMore": false,
+            "truncated": false
+          },
+          {
+            "scope": "mobileLight:relation0:destination",
+            "afterSequence": 195,
+            "cursor": 207,
+            "count": 0,
+            "hasMore": false,
+            "truncated": false
+          },
+          {
+            "scope": "mobileLight:relation0:return",
+            "afterSequence": 207,
+            "cursor": 219,
+            "count": 0,
+            "hasMore": false,
+            "truncated": false
+          },
+          {
+            "scope": "mobileLight:relation1:destination",
+            "afterSequence": 219,
+            "cursor": 231,
+            "count": 0,
+            "hasMore": false,
+            "truncated": false
+          },
+          {
+            "scope": "mobileLight:relation1:return",
+            "afterSequence": 231,
+            "cursor": 243,
+            "count": 0,
+            "hasMore": false,
+            "truncated": false
+          },
+          {
+            "scope": "mobileLight:relation2:destination",
+            "afterSequence": 243,
+            "cursor": 255,
+            "count": 0,
+            "hasMore": false,
+            "truncated": false
+          },
+          {
+            "scope": "mobileLight:relation2:return",
+            "afterSequence": 255,
+            "cursor": 267,
+            "count": 0,
+            "hasMore": false,
+            "truncated": false
+          },
+          {
+            "scope": "mobileLight:screenshot",
+            "afterSequence": 267,
+            "cursor": 267,
+            "count": 0,
+            "hasMore": false,
+            "truncated": false
+          }
+        ],
+        "hasMore": false,
+        "truncated": false
+      }
+    },
+    "mobileDark": {
+      "theme": "dark",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "geometry": {
+        "page": {
+          "clientWidth": 390,
+          "scrollWidth": 390
+        },
+        "wrappers": [
+          {
+            "label": "Micro-Frontend 五种组合方式决策表，可横向滚动",
+            "clientWidth": 358,
+            "scrollWidth": 358
+          },
+          {
+            "label": "Micro-Frontend 电商运行时、发布与权威状态边界图，可横向滚动",
+            "clientWidth": 358,
+            "scrollWidth": 800
+          },
+          {
+            "label": "Micro-Frontend 构件所有权矩阵，可横向滚动",
+            "clientWidth": 358,
+            "scrollWidth": 358
+          },
+          {
+            "label": "Micro-Frontend 六类故障检测、降级与恢复表，可横向滚动",
+            "clientWidth": 358,
+            "scrollWidth": 358
+          }
+        ],
+        "svg": {
+          "loaded": true,
+          "viewBox": "0 0 2400 3600",
+          "sourceWidth": 2400,
+          "sourceHeight": 3600,
+          "naturalWidth": 100,
+          "naturalHeight": 150,
+          "renderedWidth": 800,
+          "renderedHeight": 1200,
+          "src": "https://sealday.github.io/tego-arch/assets/images/sty-12-micro-frontend-commerce-runtime-f59e777fca88537fe0a140fab619968f.svg",
+          "observedAssetBytes": 35407
+        },
+        "sources": [
+          {
+            "href": "https://martinfowler.com/articles/micro-frontends.html",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          },
+          {
+            "href": "https://single-spa.js.org/docs/microfrontends-concept/",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          },
+          {
+            "href": "https://single-spa.js.org/docs/recommended-setup/",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          },
+          {
+            "href": "https://html.spec.whatwg.org/multipage/webappapis.html#import-maps",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          },
+          {
+            "href": "https://www.w3.org/TR/SRI/",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          },
+          {
+            "href": "https://www.w3.org/TR/CSP3/",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          },
+          {
+            "href": "https://www.w3.org/TR/longtasks-1/",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          }
+        ],
+        "sty13": 0
+      },
+      "interactions": [
+        {
+          "index": 0,
+          "label": "Micro-Frontend 五种组合方式决策表，可横向滚动",
+          "key": "ArrowRight",
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 358,
+            "scrollWidth": 358,
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 358,
+            "scrollWidth": 358,
+            "scrollLeft": 0
+          },
+          "delta": 0
+        },
+        {
+          "index": 1,
+          "label": "Micro-Frontend 电商运行时、发布与权威状态边界图，可横向滚动",
+          "key": "ArrowRight",
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 358,
+            "scrollWidth": 800,
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 358,
+            "scrollWidth": 800,
+            "scrollLeft": 40
+          },
+          "delta": 40
+        },
+        {
+          "index": 2,
+          "label": "Micro-Frontend 构件所有权矩阵，可横向滚动",
+          "key": "ArrowRight",
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 358,
+            "scrollWidth": 358,
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 358,
+            "scrollWidth": 358,
+            "scrollLeft": 0
+          },
+          "delta": 0
+        },
+        {
+          "index": 3,
+          "label": "Micro-Frontend 六类故障检测、降级与恢复表，可横向滚动",
+          "key": "ArrowRight",
+          "before": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 358,
+            "scrollWidth": 358,
+            "scrollLeft": 0
+          },
+          "after": {
+            "focus": true,
+            "focusVisible": true,
+            "outlineWidth": "3px",
+            "clientWidth": 358,
+            "scrollWidth": 358,
+            "scrollLeft": 0
+          },
+          "delta": 0
+        }
+      ],
+      "relations": [
+        {
+          "href": "/tego-arch/styles/sty-03",
+          "expectedH1": "垂直切片架构：按用例收拢变化边界",
+          "h1": "垂直切片架构：按用例收拢变化边界",
+          "visibleCount": 1,
+          "returnedToArticle": true
+        },
+        {
+          "href": "/tego-arch/styles/sty-10",
+          "expectedH1": "Microkernel / Plug-in Architecture：让扩展能力可替换，也让风险止步于边界",
+          "h1": "Microkernel / Plug-in Architecture：让扩展能力可替换，也让风险止步于边界",
+          "visibleCount": 1,
+          "returnedToArticle": true
+        },
+        {
+          "href": "/tego-arch/cases/micro-frontends-single-spa",
+          "expectedH1": "微前端：用垂直业务切片约束跨团队所有权",
+          "h1": "微前端：用垂直业务切片约束跨团队所有权",
+          "visibleCount": 1,
+          "returnedToArticle": true
+        }
+      ],
+      "logs": [],
+      "diagnostics": {
+        "events": [],
+        "pages": [
+          {
+            "scope": "mobileDark:prepare",
+            "afterSequence": 267,
+            "cursor": 281,
+            "count": 0,
+            "hasMore": false,
+            "truncated": false
+          },
+          {
+            "scope": "mobileDark:interactions",
+            "afterSequence": 281,
+            "cursor": 281,
+            "count": 0,
+            "hasMore": false,
+            "truncated": false
+          },
+          {
+            "scope": "mobileDark:relation0:destination",
+            "afterSequence": 281,
+            "cursor": 293,
+            "count": 0,
+            "hasMore": false,
+            "truncated": false
+          },
+          {
+            "scope": "mobileDark:relation0:return",
+            "afterSequence": 293,
+            "cursor": 305,
+            "count": 0,
+            "hasMore": false,
+            "truncated": false
+          },
+          {
+            "scope": "mobileDark:relation1:destination",
+            "afterSequence": 305,
+            "cursor": 317,
+            "count": 0,
+            "hasMore": false,
+            "truncated": false
+          },
+          {
+            "scope": "mobileDark:relation1:return",
+            "afterSequence": 317,
+            "cursor": 329,
+            "count": 0,
+            "hasMore": false,
+            "truncated": false
+          },
+          {
+            "scope": "mobileDark:relation2:destination",
+            "afterSequence": 329,
+            "cursor": 341,
+            "count": 0,
+            "hasMore": false,
+            "truncated": false
+          },
+          {
+            "scope": "mobileDark:relation2:return",
+            "afterSequence": 341,
+            "cursor": 353,
+            "count": 0,
+            "hasMore": false,
+            "truncated": false
+          },
+          {
+            "scope": "mobileDark:screenshot",
+            "afterSequence": 353,
+            "cursor": 353,
+            "count": 0,
+            "hasMore": false,
+            "truncated": false
+          }
+        ],
+        "hasMore": false,
+        "truncated": false
+      }
+    }
+  },
+  "functionalSummary": {
+    "status": "PASS",
+    "states": 4,
+    "wrapperInteractions": 16,
+    "relationObservations": 12,
+    "sourceObservations": 28,
+    "sty13ActionableTotal": 0,
+    "warningErrorLogs": 0,
+    "runtimeAndLogEvents": 0,
+    "diagnosticPages": 37,
+    "diagnosticPagesTerminal": true,
+    "diagnosticsTruncated": false
+  },
+  "screenshotEvidence": {
+    "status": "PASS / ACCEPTED",
+    "attempted": 4,
+    "accepted": 4,
+    "fallbackUsed": false,
+    "storage": "Codex in-app Browser captures retained in the task conversation; no substituted surface or repository screenshot file.",
+    "captureScope": "Faithful viewport captures of the production-analysis table section reached through browser history restoration; not opening or full-page screenshots.",
+    "attempts": [
+      {
+        "state": "desktopLight",
+        "status": "CAPTURED_ACCEPTED",
+        "bytes": 160898,
+        "sha256": "fc5cb49ed49f502659450c841b100327c0a889009256129b3964897a85b86a9d",
+        "reason": "Fresh Stage B viewport capture inspected at original dimensions; content, theme, crop and typography matched the visible production-analysis table section restored by browser history."
+      },
+      {
+        "state": "desktopDark",
+        "status": "CAPTURED_ACCEPTED",
+        "bytes": 163194,
+        "sha256": "f7b37d7ae87b5fa2ce239d46a500f9ba50b09b84dc204bfb122844c8aa6827d3",
+        "reason": "Fresh Stage B viewport capture inspected at original dimensions; content, theme, crop and typography matched the visible production-analysis table section restored by browser history."
+      },
+      {
+        "state": "mobileLight",
+        "status": "CAPTURED_ACCEPTED",
+        "bytes": 38704,
+        "sha256": "10735fbe083f6d7786ac9c0a3d42a8772847061a1f670774800aca98412eec85",
+        "reason": "Fresh Stage B viewport capture inspected at original dimensions; content, theme, crop and typography matched the visible production-analysis table section restored by browser history."
+      },
+      {
+        "state": "mobileDark",
+        "status": "CAPTURED_ACCEPTED",
+        "bytes": 38233,
+        "sha256": "e5f5b9a77e2764366551e7e9a3174ba11df9b88763a94ff7720073094812f1b2",
+        "reason": "Fresh Stage B viewport capture inspected at original dimensions; content, theme, crop and typography matched the visible production-analysis table section restored by browser history."
+      }
+    ]
+  },
+  "projection": {
+    "completedTopics": 65,
+    "contentDocuments": 108,
+    "governedSources": 565,
+    "sty12": {
+      "published": true,
+      "status": "complete"
+    },
+    "sty13": {
+      "published": false,
+      "status": "pending",
+      "actionable": false
+    }
+  }
+}

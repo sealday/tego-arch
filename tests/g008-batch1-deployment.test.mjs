@@ -105,9 +105,9 @@ test('closes exactly MOD-01 through MOD-03 without closing G008', () => {
       source: 'docs/content-backlog.md',
     });
   }
-  assert.equal(projectStatus.completed_topics, 64);
-  assert.equal(projectStatus.content_documents, 124);
-  assert.equal(projectStatus.governed_sources, 586);
+  assert.equal(projectStatus.completed_topics, 65);
+  assert.equal(projectStatus.content_documents, 125);
+  assert.equal(projectStatus.governed_sources, 591);
 
   assert.deepEqual(projectStatus.durable_stories, {
     completed: 8,

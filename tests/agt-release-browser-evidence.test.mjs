@@ -21,6 +21,25 @@ const CHANGED_CONTENT_PATHS = [
   'content/patterns/agt-p-07-orchestrator-workers-fanout-fanin.mdx',
   'content/patterns/agt-p-08-durable-agent-hitl.mdx',
 ];
+const AGENTIC_ARTICLE_PATHS = [
+  'content/cases/long-running-coding-agent.mdx',
+  'content/cases/multi-agent-research-system.mdx',
+  'content/cases/production-incident-response-agent.mdx',
+  'content/concepts/agt-c-01-agent-system-boundary.mdx',
+  'content/concepts/agt-c-02-agent-harness.mdx',
+  'content/concepts/agt-c-03-agent-loop.mdx',
+  'content/concepts/agt-c-04-context-memory-state-checkpoint.mdx',
+  'content/concepts/agt-c-05-tool-sandbox-permission-side-effect.mdx',
+  'content/concepts/agt-c-06-trace-evaluation-guardrail.mdx',
+  'content/patterns/agt-p-01-workflow-vs-autonomous-agent.mdx',
+  'content/patterns/agt-p-02-agentic-rag.mdx',
+  'content/patterns/agt-p-03-planner-executor.mdx',
+  'content/patterns/agt-p-04-evaluator-optimizer.mdx',
+  'content/patterns/agt-p-05-router-model-dispatch.mdx',
+  'content/patterns/agt-p-06-supervisor-handoff-agents-as-tools.mdx',
+  'content/patterns/agt-p-07-orchestrator-workers-fanout-fanin.mdx',
+  'content/patterns/agt-p-08-durable-agent-hitl.mdx',
+];
 const ROUTES = [
   '/concepts/agt-c-01',
   '/concepts/agt-c-02',
@@ -69,7 +88,7 @@ test('binds the complete local Browser recheck to the exact release candidate co
   const manifest = JSON.parse(await readFile(path.join(ROOT, 'src/generated/topic-manifest.json'), 'utf8'));
   const recheck = evidence.release_candidate_recheck;
   const observedTree = execFileSync('git', ['rev-parse', `${CANDIDATE}^{tree}`], {cwd: ROOT, encoding: 'utf8'}).trim();
-  const currentContentDiff = execFileSync('git', ['diff', '--name-only', CANDIDATE, '--', 'content'], {cwd: ROOT, encoding: 'utf8'}).trim();
+  const currentContentDiff = execFileSync('git', ['diff', '--name-only', CANDIDATE, '--', ...AGENTIC_ARTICLE_PATHS], {cwd: ROOT, encoding: 'utf8'}).trim();
   const changedPaths = execFileSync('git', ['diff', '--name-only', CONTENT_BASE, CANDIDATE, '--', 'content'], {cwd: ROOT, encoding: 'utf8'}).trim().split('\n').sort();
   const manifestInput = changedPaths.map((contentPath) => {
     const bytes = execFileSync('git', ['show', `${CANDIDATE}:${contentPath}`], {cwd: ROOT});

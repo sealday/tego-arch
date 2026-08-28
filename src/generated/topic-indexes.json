@@ -2379,7 +2379,8 @@
         "STY-01",
         "STY-02",
         "STY-04",
-        "STY-05"
+        "STY-05",
+        "STY-12"
       ],
       "primary_sources": [
         "https://github.com/dotnet-architecture/eShopOnWeb",
@@ -2510,23 +2511,35 @@
     {
       "id": "STY-12",
       "type": "style",
-      "title": "Micro-Frontend",
+      "title": "Micro-Frontend：用独立交付证明运行时拆分",
       "slug": "/styles/sty-12",
       "priority": "P1",
       "status": {
         "scope": "backlog-projection",
-        "value": "pending",
+        "value": "complete",
         "source": "docs/content-backlog.md"
       },
-      "dependencies": [],
-      "adjacent_topics": [],
-      "primary_sources": [],
-      "related_cases": [],
+      "dependencies": [
+        "STY-00",
+        "STY-03",
+        "STY-04"
+      ],
+      "adjacent_topics": [
+        "STY-03",
+        "STY-10"
+      ],
+      "primary_sources": [
+        "https://single-spa.js.org/docs/microfrontends-concept/"
+      ],
+      "related_cases": [
+        "/cases/micro-frontends-single-spa"
+      ],
       "related_questions": [],
-      "reviewed_at": null,
+      "reviewed_at": "2026-08-26",
       "review_policy": null,
-      "published": false,
-      "pattern_group": null
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
     },
     {
       "id": "STY-07",
@@ -2613,7 +2626,8 @@
       ],
       "adjacent_topics": [
         "STY-04",
-        "STY-05"
+        "STY-05",
+        "STY-12"
       ],
       "primary_sources": [
         "https://www.eclipse.org/articles/Article-Plug-in-architecture/plugin_architecture.html"

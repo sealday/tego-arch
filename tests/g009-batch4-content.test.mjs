@@ -325,7 +325,7 @@ test('publishes STY-03 metadata and the eleven-section style contract', () => {
   assert.equal(metadata.difficulty, 'intermediate');
   assert.equal(metadata.priority, 'P0');
   assert.deepEqual(metadata.depends_on, ['STY-00', 'STY-01']);
-  assert.deepEqual(metadata.adjacent_topics, ['STY-01', 'STY-02', 'STY-04', 'STY-05']);
+  assert.deepEqual(metadata.adjacent_topics, ['STY-01', 'STY-02', 'STY-04', 'STY-05', 'STY-12']);
   assert.deepEqual(metadata.related_cases, ['/cases/micro-frontends-single-spa']);
   assert.deepEqual(metadata.related_questions, []);
   assert.ok(Array.isArray(metadata.quality_attributes));
@@ -471,15 +471,15 @@ test('projects the published complete STY-03 topic and exact Batch 4 counts', ()
   assert.equal(topic?.slug, STY03_SLUG);
   assert.equal(topic?.status.value, 'complete');
   assert.deepEqual(topic?.dependencies, ['STY-00', 'STY-01']);
-  assert.deepEqual(topic?.adjacent_topics, ['STY-01', 'STY-02', 'STY-04', 'STY-05']);
+  assert.deepEqual(topic?.adjacent_topics, ['STY-01', 'STY-02', 'STY-04', 'STY-05', 'STY-12']);
   assert.deepEqual(topic?.related_cases, ['/cases/micro-frontends-single-spa']);
   assert.deepEqual(topic?.primary_sources, PROJECTED_SOURCE_URLS);
   const styleIndexEntry = indexes.style.find(({id}) => id === STY03);
   assert.deepEqual(styleIndexEntry?.primary_sources, PROJECTED_SOURCE_URLS);
-  assert.equal(projectStatus.completed_topics, 64);
-  assert.equal(projectStatus.content_documents, 124);
-  assert.equal(projectStatus.governed_sources, 586);
-  assert.equal(publicLedger.sources.length, 586);
+  assert.equal(projectStatus.completed_topics, 65);
+  assert.equal(projectStatus.content_documents, 125);
+  assert.equal(projectStatus.governed_sources, 591);
+  assert.equal(publicLedger.sources.length, 591);
 
   assert.ok(indexes.style.some(({id, published, status}) =>
     id === STY03 && published && status.value === 'complete'));

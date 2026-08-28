@@ -25,7 +25,7 @@ const repositoryRoot = fileURLToPath(new URL('../', import.meta.url));
 const G005_BATCH3_REVIEWED_HEAD = 'c4a76ac2dc33505b53f7b53d17c587038a871c9f';
 const G005_BATCH3_SCHEMA_PATH = 'scripts/content-schema.mjs';
 const G005_BATCH3_SCHEMA_SHA256 = '10aa4b2e17a59b57a2bfe5c13edc9abe38156a1ce26db04bbf15dd506240e8cf';
-const CURRENT_ARCHITECTURE_CASE_TOPIC_IDS = ['STY-08', 'STY-09', 'STY-10', 'STY-11'];
+const CURRENT_ARCHITECTURE_CASE_TOPIC_IDS = ['STY-08', 'STY-09', 'STY-10', 'STY-11', 'STY-12'];
 const CURRENT_ARCHITECTURE_CASE_HEADINGS = [
   '## 学习问题',
   '## 一页摘要',
@@ -41,6 +41,12 @@ const CURRENT_ARCHITECTURE_CASE_HEADINGS = [
 const CURRENT_STY10_ARCHITECTURE_CASE_HEADINGS = [
   ...CURRENT_ARCHITECTURE_CASE_HEADINGS.slice(0, 4),
   '## 扩展合同与运行流',
+  '## 关键机制导读',
+  ...CURRENT_ARCHITECTURE_CASE_HEADINGS.slice(6),
+];
+const CURRENT_STY12_ARCHITECTURE_CASE_HEADINGS = [
+  ...CURRENT_ARCHITECTURE_CASE_HEADINGS.slice(0, 4),
+  '## 运行时组合与发布流',
   '## 关键机制导读',
   ...CURRENT_ARCHITECTURE_CASE_HEADINGS.slice(6),
 ];
@@ -161,7 +167,9 @@ function assertCurrentArchitectureCaseSchema({
   for (const topicId of CURRENT_ARCHITECTURE_CASE_TOPIC_IDS) {
     const expected = topicId === 'STY-10'
       ? CURRENT_STY10_ARCHITECTURE_CASE_HEADINGS
-      : CURRENT_ARCHITECTURE_CASE_HEADINGS;
+      : topicId === 'STY-12'
+        ? CURRENT_STY12_ARCHITECTURE_CASE_HEADINGS
+        : CURRENT_ARCHITECTURE_CASE_HEADINGS;
     assert.deepEqual(headingContract('style', topicId), expected, `${topicId} current heading behavior`);
   }
   assert.notDeepEqual(headingContract('style', 'STY-07'), CURRENT_ARCHITECTURE_CASE_HEADINGS, 'STY-07 remains on the standard style contract');
