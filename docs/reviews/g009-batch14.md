@@ -76,3 +76,40 @@ Read-only scope: fact, vendor-case, evidence-based inference and original-analys
 ### Architecture / invariant
 
 Read-only scope: stable affinity key; partition-local operation boundary; unique real-time authority; external durable workflow; hotspot and rebalance controls; primary epoch and split-brain stop behavior; checkpoint/log recovery; explicit non-use conditions.
+
+## Stage A production publication
+
+- Exact published Stage A head: `3ec39e0711afc2eb4c68d45e9542f63177f956c6`.
+- Exact Pages workflow/run: `Verify and deploy Docusaurus to GitHub Pages`; [`33183143934`](https://github.com/sealday/tego-arch/actions/runs/33183143934); `headSha=3ec39e0711afc2eb4c68d45e9542f63177f956c6`; `event=push`; `status=completed`; `conclusion=success`.
+- Exact jobs: build `98889219909` `completed/success`; deploy `98890156580` `completed/success`.
+- Production HTTP probes: `9/9` HTML routes returned `200` with `text/html; charset=utf-8`; canonical SVG returned `200` with `image/svg+xml` and exact reviewed bytes/SHA-256.
+
+| Production route | Status | Content type | Bytes | SHA-256 |
+| --- | ---: | --- | ---: | --- |
+| `/tego-arch/` | `200` | `text/html; charset=utf-8` | 17,310 | `8964730a5ad1e9fea1927d2a03e066c4b384e450bfacfc658475e02a7e8a1984` |
+| `/tego-arch/styles` | `200` | `text/html; charset=utf-8` | 24,263 | `e6931ffc44f1bac9ad287ffc354e4488b7432751de3cdce48d17f6f8542ba143` |
+| `/tego-arch/styles/sty-05` | `200` | `text/html; charset=utf-8` | 40,782 | `ae9ad424ad12405787ce37181cdbc2e6769299c98f993a64395f2835c7225f9e` |
+| `/tego-arch/styles/sty-08` | `200` | `text/html; charset=utf-8` | 50,754 | `2379acb610033fcaab4246707fc4aefedac62ff30e0c973833127bf6989f0a54` |
+| `/tego-arch/styles/sty-13` | `200` | `text/html; charset=utf-8` | 48,992 | `ceb02edd3a864b0d0306e53605de709a71db02407abf00da194d01d78fdfcb3a` |
+| `/tego-arch/cases` | `200` | `text/html; charset=utf-8` | 53,503 | `5cf1364daac4d9f2e1c1cd0952cb15dc7ff936d38954e4ad01b01f37018202f8` |
+| `/tego-arch/cases/aws-cell-shuffle-sharding` | `200` | `text/html; charset=utf-8` | 55,593 | `ee80c5a7999f9f81d68d5d2d4e74093ca4ecc13daf46380c5e088c5d8bbe1aad` |
+| `/tego-arch/cases/cloudflare-durable-objects-workerd` | `200` | `text/html; charset=utf-8` | 89,265 | `5d27d31495dd124434e33e5ae34bf9b1e8c0aedde0f97170ceed76065ac7fa85` |
+| `/tego-arch/references` | `200` | `text/html; charset=utf-8` | 23,533 | `4dca33a4a2f8064ebc6e7399b4887defd7d4528aa13aa872852736a4c9288ad4` |
+
+- Canonical production SVG: `/tego-arch/img/diagrams/sty-13-space-based-flight-availability.svg`; `26,671` bytes; SHA-256 `68e15b5fe4eefd49f5870c672e125d0fa9e001b5177049d43a09d68d2deb56d7`; exact reviewed asset match.
+- Production raw Browser JSON: `docs/reviews/evidence/g009-batch14-stage-a-production-browser.json`; bytes: `45,978`; SHA-256: `99af96e80750b26f4d52a5c785e57907645f4d95464a821a333b9488a38d062b`.
+- Browser surface: `Codex in-app Browser only`; fresh collection: `true`; session: `fresh Stage A production session; local Stage A tab and evidence were not reused`; fallback used: `false`.
+- Production functional Browser QA: `PASS`; states `4/4`; wrapper interactions `16/16`; relation href/H1/return observations `16/16`; source href/target/rel observations `28/28`; STY-14 actionable total `0`.
+- Production diagnostics: `57/57` deliberately paged preparation, interaction, destination, return, screenshot and terminal pages; warning/error logs `0`; Runtime/Log events `0`; terminal `477 -> 489`; `hasMore=false`; `truncated=false`.
+- Relation destinations were opened by exact href direct navigation and returned with Browser back; no physical-click claim is made.
+- Production PageAssets bound the SVG bundle to the reviewed identity: inventory `c5902335-2bf9-4086-a018-4cf7427f3691`; asset `d18882f4aced2482`; `26,671` bytes; SHA-256 `68e15b5fe4eefd49f5870c672e125d0fa9e001b5177049d43a09d68d2deb56d7`; bundle `1 requested / 1 downloaded / 0 failed`.
+- Production screenshot evidence: `PASS / ACCEPTED`; attempted `4/4`; accepted `4/4`; fallback used: `false`; attempts are recorded honestly and no opening/full-page scope is claimed.
+
+| State | Judgment | Bytes | SHA-256 |
+| --- | --- | ---: | --- |
+| `desktopLight` | `CAPTURED_ACCEPTED` | 150,209 | `fc8b0ad6d653e334c2350ea310fa715f210365e50368dd7928eea228c91b0e21` |
+| `desktopDark` | `CAPTURED_ACCEPTED` | 152,912 | `e3195faa40063918bf6cda2b31b17271514842e94c3884ca34ff6c668143042a` |
+| `mobileLight` | `CAPTURED_ACCEPTED` | 48,808 | `288d7e292ff21e1264d642348d033e2698d1fbe026c75033884ba5b72f34361e` |
+| `mobileDark` | `CAPTURED_ACCEPTED` | 48,605 | `5a0b416073be0f3ff81bc2242ee472587ecabc5ac6756229bb0adeb779ea662e` |
+
+- Current release status: `STAGE_A_SUCCESS / STAGE_B_NOT_RUN`; STY-13 backlog status remains `pending` until Stage B closure.
