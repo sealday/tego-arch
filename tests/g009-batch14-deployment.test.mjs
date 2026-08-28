@@ -18,7 +18,13 @@ export const EXPECTED_STAGE_B = Object.freeze({completed: 66, documents: 109, so
 export const EXPECTED_BROWSER = Object.freeze({states: 4, wrappersPerState: 4, relationsPerState: 4, remoteSourcesPerState: 7, nextTopicActions: 0});
 
 export const CANDIDATE_HEAD = '17e596b23ca2e9ec37093d8bda9e6239e6af9d1f';
+export const EXPECTED_REVIEWED_HEAD = 'UNBOUND';
+export const CONTRACT_REVIEWED_HEAD = '1111111111111111111111111111111111111111';
 export const LOCAL_RAW_IDENTITY = Object.freeze({bytes: 27_953, sha256: '415ca7f78747cff78de84bc025b8a870dabca1f993e558b8a2d6dcae8354fa6d'});
+const ARTICLE_IDENTITY = Object.freeze({bytes: 20_605, sha256: '89569481e650bd5f8a0845fb3b3943e16b1c8faebdfd18be27afc00013751b03'});
+const LEDGER_IDENTITY = Object.freeze({bytes: 1_681_848, sha256: '422b0ad4e4c128618203157864efb6d16dad7059ba97567a7f8dbdf8e87bd085'});
+const DRAWIO = 'diagrams/sty-13-space-based-flight-availability.drawio';
+const DRAWIO_IDENTITY = Object.freeze({bytes: 22_184, sha256: 'cff8f280c882f0fab92004b7104f42c7fb79440e3390d7b7aa077f4205c62aeb'});
 export const STATES = Object.freeze(['desktopLight', 'desktopDark', 'mobileLight', 'mobileDark']);
 const BACKLOG = 'docs/content-backlog.md';
 const IMMEDIATE_REVIEW = 'docs/reviews/g009-batch13.md';
@@ -240,44 +246,158 @@ function assertLocalEvidence(value) {
   assertScreenshotEvidence(value.screenshotEvidence);
 }
 
-function assertReview(source = review, rawBytes = raw) {
-  assert.ok(source, `${REVIEW} is missing; prepare the factual record without inventing verdicts`);
-  assert.ok(rawBytes, `${LOCAL_RAW} exists before the review is finalized`);
-  assert.equal(rawBytes.length, LOCAL_RAW_IDENTITY.bytes, 'exact local Browser raw bytes');
-  assert.equal(sha256(rawBytes), LOCAL_RAW_IDENTITY.sha256, 'exact local Browser raw SHA-256');
-  assert.match(source, /^# G009 Batch 14 Stage A Review$/mu);
-  assert.ok(source.includes('Projection: `65 completed topics / 109 content documents / 573 governed sources`.'));
-  assert.ok(source.includes(`Exact clean implementation head: \`${CANDIDATE_HEAD}\`.`));
-  assert.ok(source.includes(`Raw Browser JSON: \`${LOCAL_RAW}\`; bytes: \`${rawBytes.length.toLocaleString('en-US')}\`; SHA-256: \`${sha256(rawBytes)}\`.`));
-  assert.ok(source.includes('- Functional Browser QA: `PASS`; states `4/4`; wrapper interactions `16/16`; relation href/H1/return observations `16/16`; source href/target/rel observations `28/28`.'));
-  assert.ok(source.includes('- Diagnostics: `57/57` deliberately paged preparation, interaction, destination, return, screenshot and terminal pages; every accepted page has `count=0`, `hasMore=false`, `truncated=false`; terminal cursor `503 -> 503`.'));
-  assert.ok(source.includes('- Screenshot evidence: `PASS / ACCEPTED`; accepted `4/4`; captures faithfully cover the production-analysis table viewport, not the opening or full page.'));
-  assert.equal(JSON.parse(rawBytes).screenshotEvidence.status, 'PASS / ACCEPTED', 'review readiness requires accepted raw screenshot evidence');
-  assert.ok(source.includes(`Complete immediate Batch 13 review SHA-256: \`${IMMEDIATE_REVIEW_IDENTITY.sha256}\`.`));
-  assert.ok(source.includes(`Complete immediate Batch 13 release-baseline SHA-256: \`${IMMEDIATE_BASELINE_IDENTITY.sha256}\`.`));
-  const checkpoint = markdownSection(source, 'Independent review checkpoint');
-  const reviewedHead = checkpoint.match(/^- Exact reviewed candidate head: `([0-9a-f]{40})`\.$/mu)?.[1];
-  assert.ok(reviewedHead, 'exact reviewed candidate head is bound');
-  assert.match(checkpoint, new RegExp('^- Independent code/spec/security review: `READY / APPROVE`; findings: `0`; exact head: `' + reviewedHead + '`\\.$', 'mu'));
-  assert.match(checkpoint, new RegExp('^- Independent content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`; exact head: `' + reviewedHead + '`\\.$', 'mu'));
-  assert.match(checkpoint, new RegExp('^- Independent architecture/invariant review: `CLEAR / READY`; blockers: `0`; exact head: `' + reviewedHead + '`\\.$', 'mu'));
-  assert.match(checkpoint, /^- Review finding totals: Critical `0`; Important `0`; Minor `0`; ⚠️ `0`\.$/mu);
-  assert.match(checkpoint, /^- Final Stage A review judgment: `READY`\.$/mu);
-  assert.match(checkpoint, /^- Scope boundary: `STAGE_A_ONLY`\.$/mu);
-  assert.match(checkpoint, /^- Deployment status at this checkpoint: `NOT_RUN`\.$/mu);
-  assert.doesNotMatch(checkpoint, /PENDING|UNBOUND|findings: `[1-9]|blockers: `[1-9]|SUCCESS|STAGE_B/u);
-  assert.doesNotMatch(source, /Screenshot capture scope: `(?:FULL_PAGE|OPENING)`|substituted browser/u);
+const REVIEW_HEADING_SCHEMA = Object.freeze([
+  [1, 'G009 Batch 14 Stage A Review'],
+  [2, 'Stage A projection'],
+  [2, 'Artifact identities'],
+  [2, 'Immutable immediate history'],
+  [2, 'Local in-app Browser QA'],
+  [2, 'Independent review checkpoint'],
+  [2, 'Review requests'],
+  [3, 'Code / spec / security'],
+  [3, 'Content / evidence / rights'],
+  [3, 'Architecture / invariant'],
+]);
+
+function readyCheckpointLines(expectedCandidateHead) {
+  return [
+    `- Exact reviewed candidate head: \`${expectedCandidateHead}\`.`,
+    `- Independent code/spec/security review: \`READY / APPROVE\`; findings: \`0\`; exact head: \`${expectedCandidateHead}\`.`,
+    `- Independent content/evidence/rights review: \`CONTENT READY\`; rights: \`PASS\`; findings: \`0\`; exact head: \`${expectedCandidateHead}\`.`,
+    `- Independent architecture/invariant review: \`CLEAR / READY\`; blockers: \`0\`; exact head: \`${expectedCandidateHead}\`.`,
+    '- Review finding totals: Critical `0`; Important `0`; Minor `0`; ⚠️ `0`.',
+    '- Final Stage A review judgment: `READY`.',
+    '- Scope boundary: `STAGE_A_ONLY`.',
+    '- Deployment status at this checkpoint: `NOT_RUN`.',
+  ];
 }
 
-function contractOnlyReadyReviewFixture() {
-  const head = '1'.repeat(40);
-  return review
-    .replace('- Exact reviewed candidate head: `UNBOUND — controller must create and bind the exact post-evidence candidate head`.', `- Exact reviewed candidate head: \`${head}\`.`)
-    .replace('- Independent code/spec/security review: `UNBOUND — controller must assign a read-only reviewer`.', `- Independent code/spec/security review: \`READY / APPROVE\`; findings: \`0\`; exact head: \`${head}\`.`)
-    .replace('- Independent content/evidence/rights review: `UNBOUND — controller must assign a different read-only reviewer`.', `- Independent content/evidence/rights review: \`CONTENT READY\`; rights: \`PASS\`; findings: \`0\`; exact head: \`${head}\`.`)
-    .replace('- Independent architecture/invariant review: `UNBOUND — controller must assign a third read-only reviewer`.', `- Independent architecture/invariant review: \`CLEAR / READY\`; blockers: \`0\`; exact head: \`${head}\`.`)
-    .replace('- Review finding totals: `UNBOUND`.', '- Review finding totals: Critical `0`; Important `0`; Minor `0`; ⚠️ `0`.')
-    .replace('- Final Stage A review judgment: `NOT_RECORDED`.', '- Final Stage A review judgment: `READY`.');
+const PLACEHOLDER_CHECKPOINT_LINES = Object.freeze([
+  '- Exact reviewed candidate head: `UNBOUND — controller must create and bind the exact post-evidence candidate head`.',
+  '- Independent code/spec/security review: `UNBOUND — controller must assign a read-only reviewer`.',
+  '- Independent content/evidence/rights review: `UNBOUND — controller must assign a different read-only reviewer`.',
+  '- Independent architecture/invariant review: `UNBOUND — controller must assign a third read-only reviewer`.',
+  '- Review finding totals: `UNBOUND`.',
+  '- Final Stage A review judgment: `NOT_RECORDED`.',
+  '- Scope boundary: `STAGE_A_ONLY`.',
+  '- Deployment status at this checkpoint: `NOT_RUN`.',
+]);
+
+function expectedReviewSource(checkpointLines, finalParagraph) {
+  const screenshotRows = SCREENSHOTS.map(({state, bytes, sha256: hash}) => `| \`${state}\` | ${bytes.toLocaleString('en-US')} | \`${hash}\` | \`CAPTURED_ACCEPTED\` |`).join('\n');
+  return `# G009 Batch 14 Stage A Review
+
+## Stage A projection
+
+- Projection: \`65 completed topics / 109 content documents / 573 governed sources\`.
+- STY-13: \`published / pending\`.
+- STY-14: \`unpublished / pending / non-actionable\`; actionable route count: \`0\`.
+- Exact clean implementation head: \`${CANDIDATE_HEAD}\`.
+- This is a factual Stage A evidence candidate only. It does not close the backlog, claim deployment, or supply any independent verdict.
+
+## Artifact identities
+
+| Artifact | Bytes | SHA-256 |
+| --- | ---: | --- |
+| \`${ARTICLE}\` | ${ARTICLE_IDENTITY.bytes.toLocaleString('en-US')} | \`${ARTICLE_IDENTITY.sha256}\` |
+| \`data/source-ledger.json\` | ${LEDGER_IDENTITY.bytes.toLocaleString('en-US')} | \`${LEDGER_IDENTITY.sha256}\` |
+| \`${DRAWIO}\` | ${DRAWIO_IDENTITY.bytes.toLocaleString('en-US')} | \`${DRAWIO_IDENTITY.sha256}\` |
+| \`${SVG}\` | ${SVG_IDENTITY.bytes.toLocaleString('en-US')} | \`${SVG_IDENTITY.sha256}\` |
+| \`${LOCAL_RAW}\` | ${LOCAL_RAW_IDENTITY.bytes.toLocaleString('en-US')} | \`${LOCAL_RAW_IDENTITY.sha256}\` |
+
+- Governed STY-13 sources: \`8\`; remote anchors per state: \`7\`; original diagram rights remain governed separately.
+- The Browser-observed SVG PageAssets bundle is an exact byte match for the reviewed SVG.
+
+## Immutable immediate history
+
+- Complete immediate Batch 13 review SHA-256: \`${IMMEDIATE_REVIEW_IDENTITY.sha256}\`.
+- Complete immediate Batch 13 local raw SHA-256: \`${IMMEDIATE_RAW_IDENTITIES[0].sha256}\`.
+- Complete immediate Batch 13 Stage A production raw SHA-256: \`${IMMEDIATE_RAW_IDENTITIES[1].sha256}\`.
+- Complete immediate Batch 13 Stage B production raw SHA-256: \`${IMMEDIATE_RAW_IDENTITIES[2].sha256}\`.
+- Complete immediate Batch 13 release-baseline SHA-256: \`${IMMEDIATE_BASELINE_IDENTITY.sha256}\`.
+- The validator freezes the complete review, all three raw artifacts, and the complete \`40,108\`-byte current release-baseline suffix; no historical literal is weakened.
+
+## Local in-app Browser QA
+
+- Exact local URL: \`http://127.0.0.1:4173/tego-arch/styles/sty-13\`.
+- Raw Browser JSON: \`${LOCAL_RAW}\`; bytes: \`${LOCAL_RAW_IDENTITY.bytes.toLocaleString('en-US')}\`; SHA-256: \`${LOCAL_RAW_IDENTITY.sha256}\`.
+- Browser surface: \`Codex in-app Browser only\`; fallback used: \`false\`.
+- Functional Browser QA: \`PASS\`; states \`4/4\`; wrapper interactions \`16/16\`; relation href/H1/return observations \`16/16\`; source href/target/rel observations \`28/28\`.
+- STY-14 actionable count: \`0\` per state.
+- Diagnostics: \`57/57\` deliberately paged preparation, interaction, destination, return, screenshot and terminal pages; every accepted page has \`count=0\`, \`hasMore=false\`, \`truncated=false\`; terminal cursor \`503 -> 503\`.
+- Screenshot evidence: \`PASS / ACCEPTED\`; accepted \`4/4\`; captures faithfully cover the production-analysis table viewport, not the opening or full page.
+
+| State | Bytes | SHA-256 | Judgment |
+| --- | ---: | --- | --- |
+${screenshotRows}
+
+- A pre-session desktop-light attempt produced an actual dark-theme capture (\`159,808\` bytes; SHA-256 \`3de550aadf15b37e8bc320d54d8d322327bc5870282faf1f49d56c47fd1bf0ea\`) before the three-state theme control had settled. It is \`BLOCKED / NOT_ACCEPTED\`, is not present in the accepted raw, and caused a fresh IAB tab and cursor session to be started.
+- The mobile light preparation exposed that the public theme control is inside the mobile navigation and cycles through system/light/dark modes. The accepted \`mobileLight:prepare\` page honestly spans the discovery/retry sequence (\`240 -> 289\`), with zero Runtime/Log events and no truncation.
+
+## Independent review checkpoint
+
+${checkpointLines.join('\n')}
+
+${finalParagraph}
+
+## Review requests
+
+### Code / spec / security
+
+Read-only scope: exact-schema validators at every nested object and array; mutation sensitivity; exact implementation/head binding; complete Batch 13 review/raw/backlog identity; unique-writer and split-brain stop contracts; substituted-browser, fabricated-deployment, diagnostic-pagination and screenshot-overclaim rejection.
+
+### Content / evidence / rights
+
+Read-only scope: fact, vendor-case, evidence-based inference and original-analysis boundaries; seven remote source identities and summary limits; eight governed identities; original Draw.io/SVG rights; screenshot scope and the rejected pre-session attempt.
+
+### Architecture / invariant
+
+Read-only scope: stable affinity key; partition-local operation boundary; unique real-time authority; external durable workflow; hotspot and rebalance controls; primary epoch and split-brain stop behavior; checkpoint/log recovery; explicit non-use conditions.
+`;
+}
+
+function assertReviewArtifacts(rawBytes = raw) {
+  assert.ok(rawBytes, `${LOCAL_RAW} exists before the review is finalized`);
+  for (const [label, bytes, identity] of [
+    [ARTICLE, Buffer.from(article), ARTICLE_IDENTITY],
+    ['data/source-ledger.json', ledgerBytes, LEDGER_IDENTITY],
+    [DRAWIO, drawioBytes, DRAWIO_IDENTITY],
+    [SVG, svgBytes, SVG_IDENTITY],
+    [LOCAL_RAW, rawBytes, LOCAL_RAW_IDENTITY],
+  ]) {
+    assert.equal(bytes.length, identity.bytes, `${label} exact bytes`);
+    assert.equal(sha256(bytes), identity.sha256, `${label} exact SHA-256`);
+  }
+  assert.equal(JSON.parse(rawBytes).screenshotEvidence.status, 'PASS / ACCEPTED', 'review readiness requires accepted raw screenshot evidence');
+}
+
+function assertReviewShape(source, checkpointLines, finalParagraph, rawBytes = raw) {
+  assert.ok(source, `${REVIEW} is missing; prepare the factual record without inventing verdicts`);
+  assertReviewArtifacts(rawBytes);
+  const headings = [...source.matchAll(/^(#{1,3}) ([^\n]+)$/gmu)].map((match) => [match[1].length, match[2]]);
+  assert.deepEqual(headings, REVIEW_HEADING_SCHEMA, 'unique exact ordered H1/H2/H3 review schema');
+  assert.equal(source, expectedReviewSource(checkpointLines, finalParagraph), 'complete review exact bytes and claims');
+  const checkpoint = markdownSection(source, 'Independent review checkpoint');
+  assert.deepEqual(checkpoint.split('\n').filter((line) => line.startsWith('- ')), checkpointLines, 'checkpoint exact controlled lines and order');
+}
+
+function assertPlaceholderReview(source = review, rawBytes = raw) {
+  assertReviewShape(source, PLACEHOLDER_CHECKPOINT_LINES, 'No independent verdict is recorded in advance. The controller must bind all three reviews to the same exact candidate head and may record the final judgment only after each review reports its own findings.', rawBytes);
+}
+
+function assertReview(source = review, expectedCandidateHead = EXPECTED_REVIEWED_HEAD, rawBytes = raw) {
+  assert.match(expectedCandidateHead, /^[0-9a-f]{40}$/u, 'explicit expected candidate head is bound');
+  const expectedLines = readyCheckpointLines(expectedCandidateHead);
+  assertReviewShape(source, expectedLines, 'All three independent zero-finding verdicts above are recorded against the same explicit expected candidate head; deployment remains outside this Stage A checkpoint.', rawBytes);
+  const checkpointLines = markdownSection(source, 'Independent review checkpoint').split('\n').filter((line) => line.startsWith('- '));
+  assert.equal(checkpointLines[0], `- Exact reviewed candidate head: \`${expectedCandidateHead}\`.`, 'checkpoint head equals explicit expected candidate head');
+  assert.equal(checkpointLines[1], `- Independent code/spec/security review: \`READY / APPROVE\`; findings: \`0\`; exact head: \`${expectedCandidateHead}\`.`, 'code verdict head equals explicit expected candidate head');
+  assert.equal(checkpointLines[2], `- Independent content/evidence/rights review: \`CONTENT READY\`; rights: \`PASS\`; findings: \`0\`; exact head: \`${expectedCandidateHead}\`.`, 'content verdict head equals explicit expected candidate head');
+  assert.equal(checkpointLines[3], `- Independent architecture/invariant review: \`CLEAR / READY\`; blockers: \`0\`; exact head: \`${expectedCandidateHead}\`.`, 'architecture verdict head equals explicit expected candidate head');
+}
+
+function contractOnlyReadyReviewFixture(expectedCandidateHead = CONTRACT_REVIEWED_HEAD) {
+  return expectedReviewSource(readyCheckpointLines(expectedCandidateHead), 'All three independent zero-finding verdicts above are recorded against the same explicit expected candidate head; deployment remains outside this Stage A checkpoint.');
 }
 
 function sampleDiagnosticPages() {
@@ -316,8 +436,8 @@ function sampleEvidence() {
   };
 }
 
-const [review, raw, backlog, article, svgBytes, immediateReview, ...immediateRaws] = await Promise.all([
-  optional(REVIEW, 'utf8'), optional(LOCAL_RAW), required(BACKLOG, 'utf8'), required(ARTICLE, 'utf8'), required(SVG), required(IMMEDIATE_REVIEW),
+const [review, raw, backlog, article, ledgerBytes, drawioBytes, svgBytes, immediateReview, ...immediateRaws] = await Promise.all([
+  optional(REVIEW, 'utf8'), optional(LOCAL_RAW), required(BACKLOG, 'utf8'), required(ARTICLE, 'utf8'), required('data/source-ledger.json'), required(DRAWIO), required(SVG), required(IMMEDIATE_REVIEW),
   ...IMMEDIATE_RAW_IDENTITIES.map(({path}) => required(path)),
 ]);
 
@@ -352,7 +472,19 @@ test('rejects valid-looking wrapper and screenshot byte-identity mutations', {sk
   }
 });
 
-test('requires three independent exact-head zero-finding review verdicts before READY', () => assertReview());
+test('requires three independent exact-head zero-finding review verdicts before READY', () => {
+  assertPlaceholderReview();
+  assert.notEqual(EXPECTED_REVIEWED_HEAD, 'UNBOUND', 'controller must bind the exact reviewed candidate head after three independent reviews');
+  assertReview(review, EXPECTED_REVIEWED_HEAD);
+});
+
+test('review contract compares all four checkpoint heads with an explicit expected candidate head', {skip: !review || !raw}, () => {
+  const fixture = contractOnlyReadyReviewFixture();
+  assertReview(fixture, CONTRACT_REVIEWED_HEAD);
+  const consistentlyWrong = fixture.replaceAll(CONTRACT_REVIEWED_HEAD, '2222222222222222222222222222222222222222');
+  assert.notEqual(consistentlyWrong, fixture, 'all four checkpoint heads were mutated together');
+  assert.throws(() => assertReview(consistentlyWrong, CONTRACT_REVIEWED_HEAD), assert.AssertionError, 'four mutually consistent but wrong heads are rejected');
+});
 
 test('exact-schema validator rejects additive and semantic Browser evidence mutations', () => {
   const valid = sampleEvidence();
@@ -405,21 +537,31 @@ test('immutable history validator rejects review, raw and backlog suffix mutatio
   assert.throws(() => assertImmediateBatch13History(immediateReview, immediateRaws, backlog.replace(baseline, `${baseline}x`)), assert.AssertionError);
 });
 
-test('contract-only review fixture rejects wrong head, nonzero findings, stale pending, fabricated deployment and screenshot overclaim', {skip: !review || !raw}, () => {
+test('contract-only review fixture closes all review sections and rejects displaced, duplicated and contradictory claims', {skip: !review || !raw}, () => {
   const contractFixture = contractOnlyReadyReviewFixture();
-  assertReview(contractFixture);
-  const contractHead = contractFixture.match(/^- Exact reviewed candidate head: `([0-9a-f]{40})`\.$/mu)?.[1];
-  assert.ok(contractHead, 'contract fixture head');
+  assertReview(contractFixture, CONTRACT_REVIEWED_HEAD);
   for (const [before, after] of [
-    [`Exact reviewed candidate head: \`${contractHead}\`.`, `Exact reviewed candidate head: \`${'0'.repeat(40)}\`.`],
+    [`Exact reviewed candidate head: \`${CONTRACT_REVIEWED_HEAD}\`.`, `Exact reviewed candidate head: \`${'0'.repeat(40)}\`.`],
     ['findings: `0`; exact head:', 'findings: `1`; exact head:'],
     ['blockers: `0`; exact head:', 'blockers: `1`; exact head:'],
     ['Final Stage A review judgment: `READY`.', 'Final Stage A review judgment: `PENDING`.'],
     ['Deployment status at this checkpoint: `NOT_RUN`.', 'Deployment status at this checkpoint: `SUCCESS`.'],
-    ['captures faithfully cover the production-analysis table viewport, not the opening or full page.', 'Screenshot capture scope: `FULL_PAGE`.'],
+    ['Browser surface: `Codex in-app Browser only`', 'Browser surface: `Chrome`'],
+    ['captures faithfully cover the production-analysis table viewport, not the opening or full page.', 'Full-page PASS.'],
+    ['Diagnostics: `57/57` deliberately paged', 'Diagnostics: `58/58` fabricated pages'],
+    [ARTICLE_IDENTITY.sha256, '0'.repeat(64)],
+    [LEDGER_IDENTITY.sha256, '1'.repeat(64)],
+    [DRAWIO_IDENTITY.sha256, '2'.repeat(64)],
+    [SVG_IDENTITY.sha256, '3'.repeat(64)],
+    [IMMEDIATE_RAW_IDENTITIES[0].sha256, '4'.repeat(64)],
+    [SCREENSHOTS[0].sha256, '5'.repeat(64)],
   ]) {
     const mutated = contractFixture.replace(before, after);
     assert.notEqual(mutated, contractFixture, `${before} mutation applies`);
-    assert.throws(() => assertReview(mutated), assert.AssertionError);
+    assert.throws(() => assertReview(mutated, CONTRACT_REVIEWED_HEAD), assert.AssertionError);
   }
+  const outsideDeploymentClaim = contractFixture.replace('## Stage A projection', 'Deployment SUCCESS\n\n## Stage A projection');
+  assert.throws(() => assertReview(outsideDeploymentClaim, CONTRACT_REVIEWED_HEAD), assert.AssertionError, 'checkpoint-external Deployment SUCCESS rejected');
+  const duplicateReadyCheckpoint = `${contractFixture}\n## Independent review checkpoint\n\n${readyCheckpointLines(CONTRACT_REVIEWED_HEAD).join('\n')}\n`;
+  assert.throws(() => assertReview(duplicateReadyCheckpoint, CONTRACT_REVIEWED_HEAD), assert.AssertionError, 'second READY checkpoint rejected');
 });
