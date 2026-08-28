@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import {spawnSync} from 'node:child_process';
+import {createHash} from 'node:crypto';
 import {mkdtempSync, readFileSync, rmSync, writeFileSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import path from 'node:path';
@@ -81,6 +82,11 @@ test('P06 exporter binds semantic IDs and exact SVG accessibility to Draw.io sou
   const outputRoot = mkdtempSync(path.join(tmpdir(), 'agt-p-06-semantic-'));
   const templatePath = 'tests/fixtures/agentic-diagrams/agt-p-06-control-ownership-models.normalized-template.svg';
   const template = readFileSync(templatePath, 'utf8');
+  assert.equal(
+    createHash('sha256').update(readFileSync(templatePath)).digest('hex'),
+    '14d1b0aea199d3117c6e4b67ece64687c1c4ad2038abefb88c9d3486be7c50d9',
+    'test independently authenticates the exact pinned template bytes',
+  );
   const baselineOutput = path.join(outputRoot, 'baseline-output.svg');
   const baseline = run(process.execPath, [
     'scripts/export-agt-p-06-control-ownership-svg.mjs',
@@ -105,8 +111,18 @@ test('P06 exporter binds semantic IDs and exact SVG accessibility to Draw.io sou
     ['description removed', template.replace('  <desc id="agt-p-06-desc">Three separated regions compare a supervisor that delegates and receives results while retaining control, a handoff that moves the active conversation to another agent, and a parent agent that calls an agent as a bounded tool and receives the result.</desc>\n', '')],
     ['description id drift', template.replace('id="agt-p-06-desc"', 'id="agt-p-06-description"')],
     ['description text drift', template.replace('Three separated regions compare a supervisor', 'Three regions vaguely show a supervisor')],
+    ['duplicate edge group ID', template.replace(
+      'data-cell-id="6bOi_dQNtrXvTcmtraYe-21"',
+      'data-cell-id="6bOi_dQNtrXvTcmtraYe-21" data-edge-group-id="edge-supervisor-delegate"',
+    )],
+    ['orphan visible path', template.replace('\n</svg>', '\n  <path d="M 10 10 L 20 20" stroke="#000000" stroke-width="2"/>\n</svg>')],
+    ['orphan visible rect', template.replace('\n</svg>', '\n  <rect x="10" y="10" width="20" height="20" fill="#000000"/>\n</svg>')],
+    ['orphan visible text', template.replace('\n</svg>', '\n  <text x="10" y="20" fill="#000000">orphan</text>\n</svg>')],
+    ['extra unbound title', template.replace('\n</svg>', '\n  <title id="extra-title">Extra title</title>\n</svg>')],
+    ['extra unbound description', template.replace('\n</svg>', '\n  <desc id="extra-desc">Extra description</desc>\n</svg>')],
   ];
   try {
+    const survivors = [];
     for (const [index, [label, mutant]] of mutations.entries()) {
       assert.notEqual(mutant, template, `${label} mutation is non-no-op`);
       const mutantPath = path.join(outputRoot, `${index}-input.svg`);
@@ -118,8 +134,14 @@ test('P06 exporter binds semantic IDs and exact SVG accessibility to Draw.io sou
         mutantPath,
         outputPath,
       ]);
-      assert.notEqual(result.status, 0, `${label} must fail closed`);
+      if (result.status === 0) survivors.push(label);
+      else assert.match(
+        result.stderr,
+        /AGT-P-06 pinned normalized-template byte SHA-256 mismatch: expected 14d1b0aea199d3117c6e4b67ece64687c1c4ad2038abefb88c9d3486be7c50d9, received [0-9a-f]{64}/u,
+        `${label} reports the independently calculated byte digest mismatch`,
+      );
     }
+    assert.deepEqual(survivors, [], 'all semantic, accessibility, and inventory mutations fail closed');
   } finally {
     rmSync(outputRoot, {recursive: true, force: true});
   }
