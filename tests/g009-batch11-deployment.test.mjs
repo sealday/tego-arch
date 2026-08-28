@@ -9,7 +9,7 @@ import {extractInternalLinks} from '../scripts/content-relations.mjs';
 
 export const EXPECTED_STAGE_A = Object.freeze({completed: 62, documents: 106, sources: 550});
 export const EXPECTED_STAGE_B = Object.freeze({completed: 63, documents: 106, sources: 550});
-export const EXPECTED_CURRENT_PROJECTION = Object.freeze({completed: 82, documents: 126, sources: 599});
+export const EXPECTED_CURRENT_PROJECTION = Object.freeze({completed: 83, documents: 126, sources: 599});
 
 export const CURRENT_TOPIC = 'STY-10';
 export const NEXT_TOPIC = 'STY-11';
@@ -601,7 +601,7 @@ test('preserves exact STY-10 Stage B history under the current pending STY-12 pr
   assert.deepEqual([topics.get(CURRENT_TOPIC)?.published, topics.get(CURRENT_TOPIC)?.status.value, styles.get(CURRENT_TOPIC)?.published], [true, 'complete', true]);
   assert.deepEqual([topics.get(NEXT_TOPIC)?.published, topics.get(NEXT_TOPIC)?.status.value, styles.get(NEXT_TOPIC)?.published], [true, 'complete', true]);
   assert.deepEqual([topics.get(LATEST_TOPIC)?.published, topics.get(LATEST_TOPIC)?.status.value, styles.get(LATEST_TOPIC)?.published], [true, 'complete', true]);
-  assert.deepEqual([topics.get('STY-13')?.published, topics.get('STY-13')?.status.value, styles.get('STY-13')?.published], [true, 'pending', true]);
+  assert.deepEqual([topics.get('STY-13')?.published, topics.get('STY-13')?.status.value, styles.get('STY-13')?.published], [true, 'complete', true]);
   assert.deepEqual([topics.get('STY-14')?.published, topics.get('STY-14')?.status.value, styles.get('STY-14')?.published], [false, 'pending', false]);
   const current = documents.find(({metadata}) => metadata.topic_id === CURRENT_TOPIC);
   assert.ok(current, 'STY-10 is published as a content document');

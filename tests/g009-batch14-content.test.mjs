@@ -466,7 +466,18 @@ async function assertRelationsAndStage() {
   const status = JSON.parse(readFileSync('src/generated/project-status.json', 'utf8')); const projection = {completed: status.completed_topics, documents: status.content_documents, sources: status.governed_sources}; const published = new RegExp('^- \\[x\\] \\*\\*' + TOPIC_ID + ' ', 'mu').test(backlog);
   if (!published) { assert.deepEqual(projection, EXPECTED_STAGE_A, 'Stage A projection while STY-13 remains pending'); return; }
   assert.deepEqual(projection, EXPECTED_STAGE_B, 'Stage B projection');
-  const review = file(STAGE_B_REVIEW); const browser = file(STAGE_B_BROWSER); assert.ok(review && browser, 'Stage B review and four-state Browser evidence exist'); const evidence = JSON.parse(browser); const headResult = spawnSync('git', ['rev-parse', 'HEAD'], {encoding: 'utf8'}); assert.equal(headResult.status, 0, headResult.stderr || 'resolve exact implementation head'); const head = headResult.stdout.trim();
+  const review = file(STAGE_B_REVIEW); const browser = file(STAGE_B_BROWSER); assert.ok(review, 'Stage B review candidate exists');
+  if (!browser) {
+    assert.equal(review.split('## Stage B closure candidate').length - 1, 1, 'one Stage B closure candidate');
+    assert.match(review, /Independent Stage B code\/spec\/security review: `PENDING`; findings: `PENDING`\./u);
+    assert.match(review, /Independent Stage B content\/evidence\/rights review: `PENDING`; rights: `PENDING`; findings: `PENDING`\./u);
+    assert.match(review, /Independent Stage B architecture\/invariant review: `PENDING`; blockers: `PENDING`\./u);
+    assert.match(review, /Final Stage B review judgment: `NOT_RECORDED`\./u);
+    assert.match(review, /Stage B deployment status: `PENDING \/ NOT_RUN`\./u);
+    assert.match(review, /Stage B production raw: `NOT_RECORDED`\./u);
+    return;
+  }
+  const evidence = JSON.parse(browser); const headResult = spawnSync('git', ['rev-parse', 'HEAD'], {encoding: 'utf8'}); assert.equal(headResult.status, 0, headResult.stderr || 'resolve exact implementation head'); const head = headResult.stdout.trim();
   assert.deepEqual(evidence.pages, {...evidence.pages, workflow: 'Verify and deploy Docusaurus to GitHub Pages', headSha: head, event: 'push', status: 'completed', conclusion: 'success'}, 'exact-head Pages deployment identity'); assert.equal(evidence.implementationHead, head, 'Browser evidence exact implementation head'); assert.deepEqual(Object.keys(evidence.states).sort(), ['desktopDark', 'desktopLight', 'mobileDark', 'mobileLight'], 'four Browser states'); assert.equal(evidence.functionalSummary.status, 'PASS', 'Browser functional QA passes'); assert.equal(evidence.functionalSummary.states, 4, 'four Browser states accepted'); assert.equal(evidence.functionalSummary.sty14ActionableTotal, 0, 'STY-14 actionable count is zero'); for (const state of Object.values(evidence.states)) assert.equal(state.geometry?.sty14, 0, 'each accepted state has zero STY-14 actions');
   assertExactHeadFinalReviews(review, head);
 }

@@ -665,7 +665,7 @@ test('preserves immutable Batch 12 history under the current STY-13 Stage A proj
     current_goal: status.durable_stories.current,
     next_topic: 'STY-14',
   }, {
-    completed_topics: 82,
+    completed_topics: 83,
     content_documents: 126,
     governed_sources: 599,
 
@@ -675,14 +675,14 @@ test('preserves immutable Batch 12 history under the current STY-13 Stage A proj
   });
   const current = manifest.topics.find(({id}) => id === NEXT_TOPIC);
   const next = manifest.topics.find(({id}) => id === 'STY-14');
-  assert.deepEqual({published: current?.published, status: current?.status?.value}, {published: true, status: 'pending'});
+  assert.deepEqual({published: current?.published, status: current?.status?.value}, {published: true, status: 'complete'});
   assert.deepEqual({published: next?.published, status: next?.status?.value}, {published: false, status: 'pending'});
   assert.ok(documents.some(({metadata}) => metadata.topic_id === NEXT_TOPIC), 'STY-13 content is published');
   assert.equal(documents.some(({metadata}) => metadata.topic_id === 'STY-14'), false, 'STY-14 content is unpublished');
   assert.equal(documents.flatMap(extractInternalLinks).includes('/styles/sty-14'), false, 'STY-14 remains non-actionable');
   assert.ok(backlog.includes(STY12_CLOSURE_LINE), 'exact STY-12 Stage A closure evidence');
-  assert.match(backlog, /^- \[ \] \*\*STY-13 P2｜Space-Based Architecture\*\*/mu);
-  assert.doesNotMatch(backlog, /^- \[x\] \*\*STY-13 P2｜Space-Based Architecture\*\*/mu);
+  assert.match(backlog, /^- \[x\] \*\*STY-13 P2｜Space-Based Architecture\*\*/mu);
+  assert.doesNotMatch(backlog, /^- \[ \] \*\*STY-13 P2｜Space-Based Architecture\*\*/mu);
   assert.match(backlog, /^- \[ \] \*\*STY-14 P1｜风格选择矩阵\*\*/mu);
   assert.equal(svgBytes.length, SVG_BYTES, 'reviewed STY-12 SVG exact bytes');
   assert.equal(sha256(svgBytes), SVG_SHA256, 'reviewed STY-12 SVG exact SHA-256');

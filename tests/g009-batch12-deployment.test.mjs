@@ -7,7 +7,7 @@ import {readContentDocuments} from '../scripts/content-metadata.mjs';
 import {extractInternalLinks} from '../scripts/content-relations.mjs';
 
 export const EXPECTED_STAGE_A = Object.freeze({completed: 63, documents: 107, sources: 560});
-export const EXPECTED_STAGE_B = Object.freeze({completed: 82, documents: 126, sources: 599});
+export const EXPECTED_STAGE_B = Object.freeze({completed: 83, documents: 126, sources: 599});
 
 export const CURRENT_TOPIC = 'STY-11';
 export const NEXT_TOPIC = 'STY-12';
@@ -650,7 +650,7 @@ test('preserves exact STY-11 Stage B closure while the current projection publis
   const manifestFuture = manifest.topics.find(({id}) => id === FUTURE_TOPIC);
   assert.deepEqual({published: manifestCurrent?.published, status: manifestCurrent?.status?.value}, {published: true, status: 'complete'});
   assert.deepEqual({published: manifestNext?.published, status: manifestNext?.status?.value}, {published: true, status: 'complete'});
-  assert.deepEqual({published: manifestFuture?.published, status: manifestFuture?.status?.value}, {published: true, status: 'pending'});
+  assert.deepEqual({published: manifestFuture?.published, status: manifestFuture?.status?.value}, {published: true, status: 'complete'});
   const staleNext = backlog.replace('下一项为 STY-12', '下一项为 STY-11');
   assert.notEqual(staleNext, backlog, 'current next-topic mutation applies');
   assert.throws(() => assertStageBBacklog(staleNext), assert.AssertionError);

@@ -113,3 +113,30 @@ Read-only scope: stable affinity key; partition-local operation boundary; unique
 | `mobileDark` | `CAPTURED_ACCEPTED` | 48,605 | `5a0b416073be0f3ff81bc2242ee472587ecabc5ac6756229bb0adeb779ea662e` |
 
 - Current release status: `STAGE_A_SUCCESS / STAGE_B_NOT_RUN`; STY-13 backlog status remains `pending` until Stage B closure.
+
+## Stage B closure candidate
+
+- Closure date: `2026-08-28`.
+- Exact reviewed local Stage A head: `18d31033309f0f85a5d609beadbe909861f7ec19`.
+- Exact Stage A implementation head: `3ec39e0711afc2eb4c68d45e9542f63177f956c6`.
+- Exact Stage A Pages run: `33183143934`; workflow: `completed / success`; build job: `98889219909`; deploy job: `98890156580`.
+- Exact Stage A evidence head: `a4965c28e5a6b8fc2a36cd4f51886ad09371b08c`.
+- Exact Stage A evidence Pages run: `33186492151`; workflow: `completed / success`; build job: `98900728461`; deploy job: `98901759842`.
+- Required production HTML routes: `9/9`; every route returned `200` with `text/html; charset=utf-8`.
+- Reviewed production SVG: HTTP `200`; MIME `image/svg+xml`; `26,671` bytes; SHA-256 `68e15b5fe4eefd49f5870c672e125d0fa9e001b5177049d43a09d68d2deb56d7`; exact reviewed byte identity: `PASS`.
+- Stage A production Browser raw: `docs/reviews/evidence/g009-batch14-stage-a-production-browser.json`; `45,978` bytes; SHA-256 `99af96e80750b26f4d52a5c785e57907645f4d95464a821a333b9488a38d062b`.
+- Functional production QA: `PASS`; states `4/4`; wrapper interactions `16/16`; relation checks `16/16`; exact source checks `28/28`; STY-14 actionable count `0`; diagnostics complete and empty.
+- Stage A production screenshot evidence: `PASS / ACCEPTED`; accepted `4/4`; fallback used: `false`.
+- Projection: `83 completed topics / 126 content documents / 599 governed sources`.
+- STY-13 target: `published / complete`.
+- STY-14 target: `unpublished / pending / non-actionable`; actionable route count: `0`; sole next topic.
+- Immediate immutable history: complete Batch 13 review SHA-256 `688c800ecafcfc3ed66529e2896d49fd247680412f9eba6c5a25da357e8ae44c`; local raw SHA-256 `a0de2d5ea069b2af87ad4aa4ef4696a9a22e6ff99ba96b616763262f1814ed38`; Stage A production raw SHA-256 `a28bb3269f2b7545b7d77f2ec506ce5b1bd737924a5db6945481ee8ec5763560`; Stage B production raw SHA-256 `93540ff26f5d7a6fddb2ca5310a838304d04afa6994788fcf1fb8d0b4a6ff958`; release-baseline SHA-256 `52c9fe9aa36e1ab9c406162c1d34f489ee439058f73f450e973fe496b35902f0`.
+- Exact Stage B candidate tree identity: `PENDING_REVIEW_HEAD`.
+- Independent Stage B code/spec/security review: `PENDING`; findings: `PENDING`.
+- Independent Stage B content/evidence/rights review: `PENDING`; rights: `PENDING`; findings: `PENDING`.
+- Independent Stage B architecture/invariant review: `PENDING`; blockers: `PENDING`.
+- Review finding totals: `NOT_RECORDED`.
+- Final Stage B review judgment: `NOT_RECORDED`.
+- Stage B scope boundary: `STAGE_B`.
+- Stage B deployment status: `PENDING / NOT_RUN`.
+- Stage B production raw: `NOT_RECORDED`.

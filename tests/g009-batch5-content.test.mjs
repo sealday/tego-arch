@@ -932,7 +932,7 @@ test('preserves the topic closure under the current STY-10 next-topic projection
   const nextStyleIndexEntry = indexes.style.find(({id}) => id === 'STY-05');
   assert.equal(nextStyleIndexEntry?.published, true);
   assert.equal(nextStyleIndexEntry?.status.value, 'complete');
-  assert.equal(projectStatus.completed_topics, 82);
+  assert.equal(projectStatus.completed_topics, 83);
   assert.equal(projectStatus.content_documents, 126);
   assert.equal(projectStatus.governed_sources, 599);
   assert.equal(publicLedger.sources.length, 599);

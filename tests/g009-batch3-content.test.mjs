@@ -41,7 +41,7 @@ test('preserves STY-02 closure under the current STY-10 next-topic projection', 
   assert.equal(topics.get('STY-03')?.status.value, 'complete');
   assert.equal(topics.get('STY-04')?.published, true);
   assert.equal(topics.get('STY-04')?.status.value, 'complete');
-  assert.equal(projectStatus.completed_topics, 82);
+  assert.equal(projectStatus.completed_topics, 83);
   assert.equal(projectStatus.content_documents, 126);
   assert.equal(projectStatus.governed_sources, 599);
   assert.equal(publicLedger.sources.length, 599);

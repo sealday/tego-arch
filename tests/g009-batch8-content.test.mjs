@@ -25,7 +25,7 @@ export const SOURCE_IDS = [
   'src-atlas-sty07-soa-microservices-order-fulfillment',
 ];
 export const ROUTE = '/styles/sty-07';
-export const EXPECTED_CURRENT_PROJECTION = Object.freeze({completed_topics: 82, content_documents: 126, governed_sources: 599});
+export const EXPECTED_CURRENT_PROJECTION = Object.freeze({completed_topics: 83, content_documents: 126, governed_sources: 599});
 
 
 export const RELATIONS = Object.freeze({
@@ -966,7 +966,7 @@ test('governs STY-07 sources, reciprocal relations, and current STY-11 next-topi
   const status = JSON.parse(readFileSync('src/generated/project-status.json', 'utf8'));
   assert.deepEqual(Object.fromEntries(Object.keys(EXPECTED_CURRENT_PROJECTION).map((key) => [key, status[key]])), EXPECTED_CURRENT_PROJECTION);
   const manifest = JSON.parse(readFileSync('src/generated/topic-manifest.json', 'utf8'));
-  for (const [id, published, topicStatus] of [[TOPIC_ID, true, 'complete'], [NEXT_TOPIC, true, 'complete'], ['STY-10', true, 'complete'], ['STY-11', true, 'complete'], ['STY-12', true, 'complete'], ['STY-13', true, 'pending'], ['STY-14', false, 'pending']]) {
+  for (const [id, published, topicStatus] of [[TOPIC_ID, true, 'complete'], [NEXT_TOPIC, true, 'complete'], ['STY-10', true, 'complete'], ['STY-11', true, 'complete'], ['STY-12', true, 'complete'], ['STY-13', true, 'complete'], ['STY-14', false, 'pending']]) {
     const topic = manifest.topics.find((entry) => entry.id === id); assert.equal(topic?.published, published, `${id} publication`); assert.equal(topic?.status.value, topicStatus, `${id} status`);
   }
 });

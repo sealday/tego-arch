@@ -27,7 +27,7 @@ export const SOURCE_IDS = [
 ];
 export const ROUTE = '/styles/sty-08';
 export const HISTORICAL_STAGE_A = Object.freeze({completed: 60, documents: 103, sources: 535});
-export const EXPECTED_CURRENT_PROJECTION = Object.freeze({completed: 82, documents: 126, sources: 599});
+export const EXPECTED_CURRENT_PROJECTION = Object.freeze({completed: 83, documents: 126, sources: 599});
 
 export const RELATIONS = Object.freeze({
   depends_on: ['STY-00', 'STY-05'],
@@ -1460,7 +1460,7 @@ test('governs STY-08 sources, reciprocal relations, and the current Stage B proj
   for (const content of documents) assert.equal(extractInternalLinks(content).includes('/styles/sty-12'), sty12Reciprocals.has(content.file), `${content.file} exact STY-12 actionability`);
   const status = JSON.parse(readFileSync('src/generated/project-status.json', 'utf8')); assert.deepEqual({completed: status.completed_topics, documents: status.content_documents, sources: status.governed_sources}, EXPECTED_CURRENT_PROJECTION);
   const manifest = JSON.parse(readFileSync('src/generated/topic-manifest.json', 'utf8'));
-  for (const [id, published, topicStatus] of [[TOPIC_ID, true, 'complete'], [NEXT_TOPIC, true, 'complete'], ['STY-10', true, 'complete'], ['STY-11', true, 'complete'], ['STY-12', true, 'complete'], ['STY-13', true, 'pending'], ['STY-14', false, 'pending']]) {
+  for (const [id, published, topicStatus] of [[TOPIC_ID, true, 'complete'], [NEXT_TOPIC, true, 'complete'], ['STY-10', true, 'complete'], ['STY-11', true, 'complete'], ['STY-12', true, 'complete'], ['STY-13', true, 'complete'], ['STY-14', false, 'pending']]) {
     const topic = manifest.topics.find((entry) => entry.id === id); assert.equal(topic?.published, published); assert.equal(topic?.status.value, topicStatus);
   }
   const changedLedger = (transform) => { const candidate = structuredClone(ledger); transform(candidate); return candidate; };

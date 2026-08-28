@@ -1574,7 +1574,7 @@ test('preserves the STY-06 closure under the current STY-10 next-topic projectio
     completed_topics: projectStatus.completed_topics,
     content_documents: projectStatus.content_documents,
     governed_sources: projectStatus.governed_sources,
-  }, {completed_topics: 82, content_documents: 126, governed_sources: 599});
+  }, {completed_topics: 83, content_documents: 126, governed_sources: 599});
   assert.equal(publicLedger.sources.length, 599);
 
 

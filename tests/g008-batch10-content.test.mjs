@@ -507,7 +507,7 @@ test('locks the generated MOD-13 Stage B projection', () => {
     current_goal: projectStatus.durable_stories.current,
     next_topic: topicManifest.topics.find(({id, published}) => id === 'STY-14' && !published)?.id,
   }, {
-    completed_topics: 82,
+    completed_topics: 83,
     content_documents: 126,
     governed_sources: 599,
 

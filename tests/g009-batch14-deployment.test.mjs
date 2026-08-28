@@ -22,6 +22,7 @@ export const EXPECTED_BROWSER = Object.freeze({states: 4, wrappersPerState: 4, r
 export const CANDIDATE_HEAD = 'f2b7b936ccd64c4748f2417937be2a61b55a3e55';
 export const EXPECTED_REVIEWED_HEAD = 'e5e339c3666b7b4c17e5c33fd7e7dd0af9103a03';
 export const CONTRACT_REVIEWED_HEAD = '1111111111111111111111111111111111111111';
+export const STAGE_A_REVIEWED_LOCAL_HEAD = '18d31033309f0f85a5d609beadbe909861f7ec19';
 export const STAGE_A_PUBLISHED_HEAD = '3ec39e0711afc2eb4c68d45e9542f63177f956c6';
 export const STAGE_A_PRODUCTION_PAGES = Object.freeze({
   workflow: 'Verify and deploy Docusaurus to GitHub Pages',
@@ -34,7 +35,20 @@ export const STAGE_A_PRODUCTION_PAGES = Object.freeze({
   build: Object.freeze({jobId: 98_889_219_909, status: 'completed', conclusion: 'success'}),
   deploy: Object.freeze({jobId: 98_890_156_580, status: 'completed', conclusion: 'success'}),
 });
+export const STAGE_A_EVIDENCE_HEAD = 'a4965c28e5a6b8fc2a36cd4f51886ad09371b08c';
+export const STAGE_A_EVIDENCE_PAGES = Object.freeze({
+  workflow: 'Verify and deploy Docusaurus to GitHub Pages',
+  runId: 33_186_492_151,
+  runUrl: 'https://github.com/sealday/tego-arch/actions/runs/33186492151',
+  event: 'push',
+  headSha: STAGE_A_EVIDENCE_HEAD,
+  status: 'completed',
+  conclusion: 'success',
+  build: Object.freeze({jobId: 98_900_728_461, status: 'completed', conclusion: 'success'}),
+  deploy: Object.freeze({jobId: 98_901_759_842, status: 'completed', conclusion: 'success'}),
+});
 export const LOCAL_RAW_IDENTITY = Object.freeze({bytes: 42_484, sha256: 'ebb10045c6ef19fd665767dba270697e552d8c1e074d219aa5ccbf972f2813c1'});
+export const PRODUCTION_RAW_IDENTITY = Object.freeze({bytes: 45_978, sha256: '99af96e80750b26f4d52a5c785e57907645f4d95464a821a333b9488a38d062b'});
 const ARTICLE_IDENTITY = Object.freeze({bytes: 20_625, sha256: '672ab04acd0c11498f25dbc8890f528c4b863c1308d7157774f01a96effe31bf'});
 const LEDGER_IDENTITY = Object.freeze({bytes: 1_681_848, sha256: '422b0ad4e4c128618203157864efb6d16dad7059ba97567a7f8dbdf8e87bd085'});
 const DRAWIO = 'diagrams/sty-13-space-based-flight-availability.drawio';
@@ -134,6 +148,40 @@ function markdownSection(source, heading) {
   const contentStart = start + marker.length;
   const end = source.indexOf('\n## ', contentStart);
   return source.slice(contentStart, end === -1 ? source.length : end).trim();
+}
+
+const STY13_CLOSURE_LINE = `- [x] **STY-13 P2｜Space-Based Architecture**：仅在找到足够一手机制与案例后启动。Stage A 关闭证据：2026-08-28 review，reviewed local commit [\`${STAGE_A_REVIEWED_LOCAL_HEAD}\`](https://github.com/sealday/tego-arch/commit/${STAGE_A_REVIEWED_LOCAL_HEAD})；implementation commit [\`${STAGE_A_PUBLISHED_HEAD}\`](https://github.com/sealday/tego-arch/commit/${STAGE_A_PUBLISHED_HEAD})，Pages run [\`${STAGE_A_PRODUCTION_PAGES.runId}\`](${STAGE_A_PRODUCTION_PAGES.runUrl})，build job \`${STAGE_A_PRODUCTION_PAGES.build.jobId}\`、deploy job \`${STAGE_A_PRODUCTION_PAGES.deploy.jobId}\`；evidence commit [\`${STAGE_A_EVIDENCE_HEAD}\`](https://github.com/sealday/tego-arch/commit/${STAGE_A_EVIDENCE_HEAD})，Pages run [\`${STAGE_A_EVIDENCE_PAGES.runId}\`](${STAGE_A_EVIDENCE_PAGES.runUrl})，build job \`${STAGE_A_EVIDENCE_PAGES.build.jobId}\`、deploy job \`${STAGE_A_EVIDENCE_PAGES.deploy.jobId}\`；production HTML routes \`9/9\`，live route \`/styles/sty-13\` 与 \`/img/diagrams/sty-13-space-based-flight-availability.svg\` 均为 HTTP 200，live SVG \`${SVG_IDENTITY.bytes.toLocaleString('en-US')}\` bytes / SHA-256 \`${SVG_IDENTITY.sha256}\` 与 reviewed asset exact match，Stage A production Browser raw \`${PRODUCTION_RAW_IDENTITY.bytes.toLocaleString('en-US')}\` bytes / SHA-256 \`${PRODUCTION_RAW_IDENTITY.sha256}\`，functional verdict PASS；screenshot evidence PASS / ACCEPTED（\`4/4\`）。`;
+
+const PENDING_STAGE_B_REVIEW_LINES = Object.freeze([
+  '- Closure date: `2026-08-28`.',
+  `- Exact reviewed local Stage A head: \`${STAGE_A_REVIEWED_LOCAL_HEAD}\`.`,
+  `- Exact Stage A implementation head: \`${STAGE_A_PUBLISHED_HEAD}\`.`,
+  `- Exact Stage A Pages run: \`${STAGE_A_PRODUCTION_PAGES.runId}\`; workflow: \`${STAGE_A_PRODUCTION_PAGES.status} / ${STAGE_A_PRODUCTION_PAGES.conclusion}\`; build job: \`${STAGE_A_PRODUCTION_PAGES.build.jobId}\`; deploy job: \`${STAGE_A_PRODUCTION_PAGES.deploy.jobId}\`.`,
+  `- Exact Stage A evidence head: \`${STAGE_A_EVIDENCE_HEAD}\`.`,
+  `- Exact Stage A evidence Pages run: \`${STAGE_A_EVIDENCE_PAGES.runId}\`; workflow: \`${STAGE_A_EVIDENCE_PAGES.status} / ${STAGE_A_EVIDENCE_PAGES.conclusion}\`; build job: \`${STAGE_A_EVIDENCE_PAGES.build.jobId}\`; deploy job: \`${STAGE_A_EVIDENCE_PAGES.deploy.jobId}\`.`,
+  '- Required production HTML routes: `9/9`; every route returned `200` with `text/html; charset=utf-8`.',
+  `- Reviewed production SVG: HTTP \`200\`; MIME \`image/svg+xml\`; \`${SVG_IDENTITY.bytes.toLocaleString('en-US')}\` bytes; SHA-256 \`${SVG_IDENTITY.sha256}\`; exact reviewed byte identity: \`PASS\`.`,
+  `- Stage A production Browser raw: \`${PRODUCTION_RAW}\`; \`${PRODUCTION_RAW_IDENTITY.bytes.toLocaleString('en-US')}\` bytes; SHA-256 \`${PRODUCTION_RAW_IDENTITY.sha256}\`.`,
+  '- Functional production QA: `PASS`; states `4/4`; wrapper interactions `16/16`; relation checks `16/16`; exact source checks `28/28`; STY-14 actionable count `0`; diagnostics complete and empty.',
+  '- Stage A production screenshot evidence: `PASS / ACCEPTED`; accepted `4/4`; fallback used: `false`.',
+  '- Projection: `83 completed topics / 126 content documents / 599 governed sources`.',
+  '- STY-13 target: `published / complete`.',
+  '- STY-14 target: `unpublished / pending / non-actionable`; actionable route count: `0`; sole next topic.',
+  `- Immediate immutable history: complete Batch 13 review SHA-256 \`${IMMEDIATE_REVIEW_IDENTITY.sha256}\`; local raw SHA-256 \`${IMMEDIATE_RAW_IDENTITIES[0].sha256}\`; Stage A production raw SHA-256 \`${IMMEDIATE_RAW_IDENTITIES[1].sha256}\`; Stage B production raw SHA-256 \`${IMMEDIATE_RAW_IDENTITIES[2].sha256}\`; release-baseline SHA-256 \`${IMMEDIATE_BASELINE_IDENTITY.sha256}\`.`,
+  '- Exact Stage B candidate tree identity: `PENDING_REVIEW_HEAD`.',
+  '- Independent Stage B code/spec/security review: `PENDING`; findings: `PENDING`.',
+  '- Independent Stage B content/evidence/rights review: `PENDING`; rights: `PENDING`; findings: `PENDING`.',
+  '- Independent Stage B architecture/invariant review: `PENDING`; blockers: `PENDING`.',
+  '- Review finding totals: `NOT_RECORDED`.',
+  '- Final Stage B review judgment: `NOT_RECORDED`.',
+  '- Stage B scope boundary: `STAGE_B`.',
+  '- Stage B deployment status: `PENDING / NOT_RUN`.',
+  '- Stage B production raw: `NOT_RECORDED`.',
+]);
+
+function assertPendingStageBCandidate(source = review) {
+  assert.equal(markdownSection(source, 'Stage B closure candidate'), PENDING_STAGE_B_REVIEW_LINES.join('\n'), 'exact pending Stage B candidate section');
+  assert.equal(source.split('## Stage B closure candidate').length - 1, 1, 'one Stage B candidate section');
 }
 
 function assertImmediateBatch13History(reviewBytes = immediateReview, rawBytes = immediateRaws, backlogSource = backlog) {
@@ -336,10 +384,18 @@ function assertStageAProductionEvidence(value) {
 
 const PRODUCTION_REVIEW_HEADING = 'Stage A production publication';
 const PRODUCTION_REVIEW_MARKER = `\n## ${PRODUCTION_REVIEW_HEADING}\n\n`;
+const STAGE_B_REVIEW_HEADING = 'Stage B closure candidate';
+const STAGE_B_REVIEW_MARKER = `\n## ${STAGE_B_REVIEW_HEADING}\n\n`;
 function reviewBeforeProductionCheckpoint(source) {
   const start = source.indexOf(PRODUCTION_REVIEW_MARKER);
   if (start === -1) return source;
   assert.equal(source.indexOf(PRODUCTION_REVIEW_MARKER, start + PRODUCTION_REVIEW_MARKER.length), -1, 'one Stage A production publication section');
+  return source.slice(0, start);
+}
+function reviewBeforeStageBCandidate(source) {
+  const start = source.indexOf(STAGE_B_REVIEW_MARKER);
+  if (start === -1) return source;
+  assert.equal(source.indexOf(STAGE_B_REVIEW_MARKER, start + STAGE_B_REVIEW_MARKER.length), -1, 'one Stage B closure candidate section');
   return source.slice(0, start);
 }
 
@@ -540,7 +596,7 @@ function assertStageAProductionReview(source = review, rawBytes = productionRaw,
   assertStageAProductionEvidence(evidence);
   assertReview(source, expectedReviewedHead);
   const baseSource = reviewBeforeProductionCheckpoint(source);
-  assert.equal(source, expectedStageAProductionReviewSource(baseSource, evidence, rawBytes), 'exact Stage A production review checkpoint');
+  assert.equal(reviewBeforeStageBCandidate(source), expectedStageAProductionReviewSource(baseSource, evidence, rawBytes), 'exact Stage A production review checkpoint');
   assert.equal(markdownSection(source, PRODUCTION_REVIEW_HEADING), expectedStageAProductionReviewSection(evidence, rawBytes), 'complete Stage A production section exact claims');
 }
 
@@ -631,14 +687,55 @@ const productionRaw = await optional(PRODUCTION_RAW);
 
 test('freezes the complete immediate Batch 13 review/raw/backlog identity', () => assertImmediateBatch13History());
 
-test('keeps the Stage A projection and STY-14 non-actionability separate from immutable history', async () => {
+test('closes only STY-13 at the exact Stage B projection and keeps STY-14 non-actionable', async () => {
   const documents = await readContentDocuments('content');
   const projectStatus = JSON.parse(await required('src/generated/project-status.json', 'utf8'));
-  assert.deepEqual({completed: projectStatus.completed_topics, documents: projectStatus.content_documents, sources: projectStatus.governed_sources}, EXPECTED_STAGE_A);
+  assert.deepEqual({
+    completed_topics: projectStatus.completed_topics,
+    content_documents: projectStatus.content_documents,
+    governed_sources: projectStatus.governed_sources,
+    durable_stories: {completed: projectStatus.durable_stories.completed, total: projectStatus.durable_stories.total},
+    current_goal: projectStatus.durable_stories.current,
+    next_topic: NEXT_TOPIC,
+  }, {
+    completed_topics: EXPECTED_STAGE_B.completed,
+    content_documents: EXPECTED_STAGE_B.documents,
+    governed_sources: EXPECTED_STAGE_B.sources,
+    durable_stories: {completed: 8, total: 20},
+    current_goal: 'G009',
+    next_topic: 'STY-14',
+  });
   assert.match(article, /^# Space-Based Architecture：让状态与处理在亲和分区相遇$/mu);
   assert.equal(documents.flatMap(extractInternalLinks).filter((href) => href === '/styles/sty-14').length, 0, 'STY-14 remains non-actionable');
+  assert.ok(backlog.includes(STY13_CLOSURE_LINE), 'exact STY-13 Stage A closure evidence');
+  assert.doesNotMatch(backlog, /^- \[ \] \*\*STY-13 P2｜Space-Based Architecture\*\*/mu);
+  assert.match(backlog, /^- \[ \] \*\*STY-14 P1｜风格选择矩阵\*\*/mu);
+  assert.doesNotMatch(backlog, /^- \[x\] \*\*STY-14 P1｜风格选择矩阵\*\*/mu);
   assert.equal(svgBytes.length, SVG_IDENTITY.bytes, 'STY-13 SVG exact bytes');
   assert.equal(sha256(svgBytes), SVG_IDENTITY.sha256, 'STY-13 SVG exact SHA-256');
+});
+
+test('records one no-verdict Stage B candidate without deployment or production raw', async () => {
+  assertPendingStageBCandidate();
+  assert.equal(await optional(STAGE_B_PRODUCTION_RAW), undefined, 'Stage B production raw must not exist before deployment');
+});
+
+test('no-verdict Stage B contract rejects premature verdict, finding, deployment and raw claims', () => {
+  assertPendingStageBCandidate();
+  for (const [before, after] of [
+    ['Exact Stage B candidate tree identity: `PENDING_REVIEW_HEAD`.', `Exact Stage B candidate tree identity: \`${'0'.repeat(40)}\`.`],
+    ['Independent Stage B code/spec/security review: `PENDING`; findings: `PENDING`.', 'Independent Stage B code/spec/security review: `READY / APPROVE`; findings: `0`.'],
+    ['Independent Stage B content/evidence/rights review: `PENDING`; rights: `PENDING`; findings: `PENDING`.', 'Independent Stage B content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `1`.'],
+    ['Independent Stage B architecture/invariant review: `PENDING`; blockers: `PENDING`.', 'Independent Stage B architecture/invariant review: `CLEAR / READY`; blockers: `1`.'],
+    ['Review finding totals: `NOT_RECORDED`.', 'Review finding totals: Critical `0`; Important `0`; Minor `0`; ⚠️ `0`.'],
+    ['Final Stage B review judgment: `NOT_RECORDED`.', 'Final Stage B review judgment: `READY`.'],
+    ['Stage B deployment status: `PENDING / NOT_RUN`.', 'Stage B deployment status: `SUCCESS`.'],
+    ['Stage B production raw: `NOT_RECORDED`.', `Stage B production raw: \`${STAGE_B_PRODUCTION_RAW}\`.`],
+  ]) {
+    const mutated = review.replace(before, after);
+    assert.notEqual(mutated, review, `${before} mutation applies`);
+    assert.throws(() => assertPendingStageBCandidate(mutated), assert.AssertionError);
+  }
 });
 
 test('requires exact-byte four-state local in-app Browser evidence', () => {
