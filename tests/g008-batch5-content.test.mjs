@@ -153,7 +153,7 @@ const expectedSelectionDecisionRule =
   '问题不清楚时返回澄清，而不是先画图。只有存在另一个仍未回答、且观察单元不同的评审问题时，才增加第二张图。';
 
 const expectedOverflowWrappers = [
-  '<div className="diagram-wrapper" role="region" aria-label="UML 选图决策流，可横向滚动" tabIndex={0} onKeyDown={handleHorizontalArrowKey}>',
+  '<div className="diagram-wrapper">',
   '<div className="table-wrapper table-wrapper--mapping" role="region" aria-label="五类 UML 图证据边界表，可横向滚动" tabIndex={0} onKeyDown={handleHorizontalArrowKey}>',
 ];
 
@@ -408,9 +408,10 @@ test('projects the current G009 counts after G008 closes', async () => {
   assert.deepEqual(status, {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
-    completed_topics: 65,
-    content_documents: 109,
-    governed_sources: 573,
+    completed_topics: 82,
+    content_documents: 126,
+    governed_sources: 599,
+
 
     sources: {
       durable_stories: 'docs/content-backlog.md',

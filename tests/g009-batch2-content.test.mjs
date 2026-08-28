@@ -123,9 +123,9 @@ function assertLayerContract(source) {
   assert.match(source, /物理层级或部署单元/u);
   assert.match(source, /subgraph DEPLOY\["单一部署单元"\]/u);
   assert.doesNotMatch(source, /表示层独立部署|应用层独立部署|领域层独立部署|基础设施层独立部署/u);
-  assert.equal((source.match(/diagram-wrapper--scroll-owner/g) ?? []).length, 3);
-  assert.equal((source.match(/tabIndex=\{0\}/g) ?? []).length, 3);
-  assert.equal((source.match(/onKeyDown=\{handleHorizontalArrowKey\}/g) ?? []).length, 3);
+  assert.equal((source.match(/diagram-wrapper--scroll-owner/g) ?? []).length, 2);
+  assert.equal((source.match(/tabIndex=\{0\}/g) ?? []).length, 2);
+  assert.equal((source.match(/onKeyDown=\{handleHorizontalArrowKey\}/g) ?? []).length, 2);
   assertInOrder(source, dimensions.map((dimension) => `| ${dimension} |`), 'dimension order');
   assert.match(source, /同一本地事务/u);
   assert.match(source, /格式错误[\s\S]*流程失败[\s\S]*业务拒绝[\s\S]*稳定错误类别/u);
@@ -168,10 +168,11 @@ test('preserves the Batch 2 STY-01 facts under the current STY-10 next-topic pro
   assert.equal(manifest.topics.find(({id}) => id === 'STY-03')?.status.value, 'complete');
   assert.equal(manifest.topics.find(({id}) => id === 'STY-04')?.published, true);
   assert.equal(manifest.topics.find(({id}) => id === 'STY-04')?.status.value, 'complete');
-  assert.equal(projectStatus.completed_topics, 65);
-  assert.equal(projectStatus.content_documents, 109);
-  assert.equal(projectStatus.governed_sources, 573);
-  assert.equal(publicLedger.sources.length, 573);
+  assert.equal(projectStatus.completed_topics, 82);
+  assert.equal(projectStatus.content_documents, 126);
+  assert.equal(projectStatus.governed_sources, 599);
+  assert.equal(publicLedger.sources.length, 599);
+
 
   assert.ok(indexes.style.some(({id, status}) => id === 'STY-01' && status.value === 'complete'));
   assert.ok(indexes.style.some(({id, status}) => id === 'STY-02' && status.value === 'complete'));

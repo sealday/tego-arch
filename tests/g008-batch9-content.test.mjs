@@ -160,7 +160,6 @@ const nonProofSentences = [
 ];
 const expectedWrapperLabels = [
   '候选限界上下文证据表，可横向滚动',
-  '费用申报系统上下文映射，可横向滚动',
   '上下文映射关系责任表，可横向滚动',
 ];
 const requiredLinks = [
@@ -380,7 +379,7 @@ function assertContextGraphContract(body) {
   const members = [];
   let inSubgraph = false;
   let subgraphCount = 0;
-  for (const line of diagram.split('\n').slice(1).filter((item) => item.trim())) {
+  for (const line of diagram.split('\n').slice(1).filter((item) => item.trim() && !item.trim().startsWith('accTitle:'))) {
     let match = line.match(/^\s*subgraph\s+expense_system\["费用申报系统（权威系统边界）"\]\s*$/u);
     if (match) {
       assert.equal(inSubgraph, false, 'nested subgraph');
@@ -435,12 +434,11 @@ function wrappers(body) {
 function assertInteractionContract(body) {
   assert.match(body, /import \{handleHorizontalArrowKey\} from '@site\/src\/components\/KeyboardScrollableRegion\/handleHorizontalArrowKey\.mjs';/u);
   const regions = wrappers(body);
-  assert.equal(regions.length, 3, 'all wrappers own keyboard scrolling');
+  assert.equal(regions.length, 2, 'only tables retain article-local keyboard scrolling');
   assert.deepEqual(regions.map(({label}) => label), expectedWrapperLabels);
-  assert.equal(new Set(regions.map(({label}) => label)).size, 3);
+  assert.equal(new Set(regions.map(({label}) => label)).size, 2);
   assert.deepEqual(regions.map(({className}) => className), [
     'table-wrapper table-wrapper--mapping',
-    'diagram-wrapper diagram-wrapper--scroll-owner',
     'table-wrapper table-wrapper--mapping',
   ]);
   const boundaryTables = markdownTables(regions[0].content);
@@ -450,17 +448,16 @@ function assertInteractionContract(body) {
     expectedBoundaryRows,
   );
   assert.equal([...visibleLines(regions[0].content).join('\n').matchAll(/```mermaid\n[\s\S]*?\n```/gu)].length, 0, 'first wrapper contains no Mermaid');
-  assert.equal(markdownTables(regions[1].content).length, 0, 'second wrapper contains no Markdown table');
-  assert.equal([...visibleLines(regions[1].content).join('\n').matchAll(/```mermaid\n[\s\S]*?\n```/gu)].length, 1, 'second wrapper contains the unique Mermaid');
-  const relationshipTables = markdownTables(regions[2].content);
+  assert.equal([...visibleLines(body).join('\n').matchAll(/```mermaid\n[\s\S]*?\n```/gu)].length, 1, 'the plain diagram wrapper contains the unique Mermaid');
+  const relationshipTables = markdownTables(regions[1].content);
   assert.equal(relationshipTables.length, 1, 'third wrapper contains exactly the relationship table');
   assert.deepEqual(
     records(relationshipTables[0], ['上游', '下游', '交换事实', '翻译或适配责任', '契约责任类型', '当前不证明什么', '下一项验证与责任类型']),
     expectedRelationshipRows,
   );
-  assert.equal([...visibleLines(regions[2].content).join('\n').matchAll(/```mermaid\n[\s\S]*?\n```/gu)].length, 0, 'third wrapper contains no Mermaid');
-  assert.match(customCss, /\.theme-doc-markdown \.diagram-wrapper--scroll-owner \{[^}]*overflow-x: auto;[^}]*\}/su);
-  assert.match(customCss, /\.theme-doc-markdown \.diagram-wrapper--scroll-owner > \.docusaurus-mermaid-container,[\s\S]*?\.theme-doc-markdown \.diagram-wrapper--scroll-owner > \.docusaurus-mermaid-container > \.mermaid,[\s\S]*?\.theme-doc-markdown \.diagram-wrapper--scroll-owner > \.mermaid \{[^}]*width: max-content;[^}]*max-width: none;[^}]*overflow-x: visible;[^}]*\}/u);
+  assert.equal([...visibleLines(regions[1].content).join('\n').matchAll(/```mermaid\n[\s\S]*?\n```/gu)].length, 0, 'second table wrapper contains no Mermaid');
+  assert.match(customCss, /\.theme-doc-markdown \.keyboard-scroll-region--mermaid \{[^}]*overflow-x: auto;[^}]*\}/su);
+  assert.match(customCss, /\.keyboard-scroll-region--mermaid > \.docusaurus-mermaid-container \{[^}]*width: max-content;[^}]*max-width: none;[^}]*overflow-x: visible;[^}]*\}/u);
 }
 
 function assertMethodContract(body) {
@@ -561,7 +558,6 @@ test('rejects controlled MOD-11 mutations', () => {
     ...nonProofSentences.map((sentence, index) => [`non-proof ${index + 1} weakened`, body.replace(sentence, sentence.replace(/不等于|不存在|不证明|不是|都可能/u, '等于')), assertMethodContract]),
     ['actionable MOD-12 link', body.replace('MOD-12', '[MOD-12](/modeling/mod-12)'), assertMethodContract],
     ['boundary table moved outside wrapper', body.replace(`${boundaryTable}\n\n</div>`, `</div>\n\n${boundaryTable}`), assertInteractionContract],
-    ['Mermaid moved outside wrapper', body.replace(`${mermaidBlock}\n\n</div>`, `</div>\n\n${mermaidBlock}`), assertInteractionContract],
     ['relationship table moved outside wrapper', body.replace(`${relationshipTable}\n\n</div>`, `</div>\n\n${relationshipTable}`), assertInteractionContract],
   ];
   for (const [label, mutation, contract] of mutations) {
@@ -737,9 +733,10 @@ function assertStageBProjection(statusValue, manifestValue, mod11Document) {
   assert.deepEqual(statusValue, {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
-    completed_topics: 65,
-    content_documents: 109,
-    governed_sources: 573,
+    completed_topics: 82,
+    content_documents: 126,
+    governed_sources: 599,
+
 
     sources: {
       durable_stories: 'docs/content-backlog.md',

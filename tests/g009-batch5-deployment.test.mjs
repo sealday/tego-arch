@@ -164,9 +164,10 @@ test('projects the exact STY-04 Stage B closure inventory', () => {
       content_documents: projectStatus.content_documents,
       governed_sources: projectStatus.governed_sources,
     },
-    {completed_topics: 65, content_documents: 109, governed_sources: 573},
+    {completed_topics: 82, content_documents: 126, governed_sources: 599},
   );
-  assert.equal(publicLedger.sources.length, 573);
+  assert.equal(publicLedger.sources.length, 599);
+
 
 
   const topic = topicsById.get('STY-04');

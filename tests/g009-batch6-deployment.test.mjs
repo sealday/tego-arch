@@ -326,9 +326,10 @@ test('preserves the exact STY-05 closure under the current STY-10 next-topic pro
       content_documents: projectStatus.content_documents,
       governed_sources: projectStatus.governed_sources,
     },
-    {completed_topics: 65, content_documents: 109, governed_sources: 573},
+    {completed_topics: 82, content_documents: 126, governed_sources: 599},
   );
-  assert.equal(publicLedger.sources.length, 573);
+  assert.equal(publicLedger.sources.length, 599);
+
 
 
   for (const projection of [topicsById.get('STY-05'), stylesById.get('STY-05')]) {

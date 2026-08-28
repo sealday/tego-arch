@@ -13,7 +13,8 @@ export const SVG = 'static/img/diagrams/sty-09-pipes-filters-order-processing.sv
 export const ROUTE = '/styles/sty-09';
 export const TOPIC_ID = 'STY-09';
 export const NEXT_TOPIC = 'STY-10';
-export const EXPECTED_CURRENT_PROJECTION = Object.freeze({completed: 65, documents: 109, sources: 573});
+export const EXPECTED_CURRENT_PROJECTION = Object.freeze({completed: 82, documents: 126, sources: 599});
+
 const CONTENT_ROOT = fileURLToPath(new URL('../content/', import.meta.url));
 const CONTENT_DOCUMENTS = (await readContentDocuments(CONTENT_ROOT)).map((document) => ({...document, file: `content/${document.file}`}));
 export const SOURCE_IDS = Object.freeze([

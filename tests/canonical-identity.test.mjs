@@ -52,7 +52,8 @@ test('keeps every self-authored ledger asset on the canonical repository', async
   const ledger = JSON.parse(await source('data/source-ledger.json'));
   const authored = ledger.sources.filter(({id}) => id.startsWith('src-atlas-'));
 
-  assert.equal(authored.length, 40);
+  assert.equal(authored.length, 46);
+
   for (const record of authored) {
     assert.equal(record.author_or_org, 'Tego Arch maintainers');
     if (record.id === 'src-atlas-mth07-fde-delivery-gates') {

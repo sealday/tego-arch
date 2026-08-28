@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 900" role="img" aria-labelledby="agt-p-08-title agt-p-08-desc" data-drawio-sha256="8ac8ae287564df9550489fc7c71401ce4cb840aff4b9319abb87ce0af20ae03e" data-raw-export-sha256="4a2baf63b47fa71f27d9b1e8085eb68256b5201915470952c310fdd806affa42">
+  <title id="agt-p-08-title">Durable agent recovery and human approval control flow</title>
+  <desc id="agt-p-08-desc">The durable control plane checkpoints execution, waits for approval, resumes through a sandbox, reconciles external business truth, recovers safely, and sends rejection, timeout, or unknown effects to a manual terminal.</desc>
+  <defs>
+    <marker id="arrow-edge-checkpoint" markerUnits="userSpaceOnUse" viewBox="0 0 16 16" markerWidth="16" markerHeight="16" refX="14" refY="8" orient="auto"><path d="M 0 0 L 16 8 L 0 16 Z" fill="#5B3FD6"/></marker>
+    <marker id="arrow-edge-approval" markerUnits="userSpaceOnUse" viewBox="0 0 16 16" markerWidth="16" markerHeight="16" refX="14" refY="8" orient="auto"><path d="M 0 0 L 16 8 L 0 16 Z" fill="#B66A00"/></marker>
+    <marker id="arrow-edge-resume" markerUnits="userSpaceOnUse" viewBox="0 0 16 16" markerWidth="16" markerHeight="16" refX="14" refY="8" orient="auto"><path d="M 0 0 L 16 8 L 0 16 Z" fill="#2365A7"/></marker>
+    <marker id="arrow-edge-reject" markerUnits="userSpaceOnUse" viewBox="0 0 16 16" markerWidth="16" markerHeight="16" refX="14" refY="8" orient="auto"><path d="M 0 0 L 16 8 L 0 16 Z" fill="#B4232C"/></marker>
+    <marker id="arrow-edge-effect" markerUnits="userSpaceOnUse" viewBox="0 0 16 16" markerWidth="16" markerHeight="16" refX="14" refY="8" orient="auto"><path d="M 0 0 L 16 8 L 0 16 Z" fill="#2365A7"/></marker>
+    <marker id="arrow-edge-reconcile" markerUnits="userSpaceOnUse" viewBox="0 0 16 16" markerWidth="16" markerHeight="16" refX="14" refY="8" orient="auto"><path d="M 0 0 L 16 8 L 0 16 Z" fill="#227A4B"/></marker>
+    <marker id="arrow-edge-recovery" markerUnits="userSpaceOnUse" viewBox="0 0 16 16" markerWidth="16" markerHeight="16" refX="14" refY="8" orient="auto"><path d="M 0 0 L 16 8 L 0 16 Z" fill="#5B3FD6"/></marker>
+    <marker id="arrow-edge-unknown" markerUnits="userSpaceOnUse" viewBox="0 0 16 16" markerWidth="16" markerHeight="16" refX="14" refY="8" orient="auto"><path d="M 0 0 L 16 8 L 0 16 Z" fill="#B4232C"/></marker>
+    <marker id="arrow-edge-complete" markerUnits="userSpaceOnUse" viewBox="0 0 16 16" markerWidth="16" markerHeight="16" refX="14" refY="8" orient="auto"><path d="M 0 0 L 16 8 L 0 16 Z" fill="#227A4B"/></marker>
+  </defs>
+  <rect data-region-id="control-plane" x="20" y="20" width="860" height="850" rx="24" fill="#F7F3FF" stroke="#6B4EFF" stroke-width="3" stroke-dasharray="10 8"/>
+  <rect data-region-id="business-plane" x="920" y="20" width="460" height="850" rx="24" fill="#F2FBF6" stroke="#227A4B" stroke-width="3" stroke-dasharray="10 8"/>
+  <g font-family="system-ui, sans-serif">
+    <text data-region-label-for="control-plane" x="48" y="62" font-size="28" font-weight="700" fill="#17202A">Durable control plane</text>
+    <text data-region-label-for="business-plane" x="948" y="62" font-size="28" font-weight="700" fill="#17202A">External business truth</text>
+    <g fill="none" stroke-linejoin="round" stroke-linecap="round" stroke-width="4">
+      <path data-edge-id="edge-checkpoint" data-source="control-store" data-target="checkpoint" d="M 350 130 L 330 130 L 330 220 L 350 220 L 350 310 L 330 310" stroke="#5B3FD6" marker-end="url(#arrow-edge-checkpoint)"/>
+      <path data-edge-id="edge-approval" data-source="checkpoint" data-target="approval-service" d="M 330 310 L 390 310" stroke="#B66A00" marker-end="url(#arrow-edge-approval)"/>
+      <path data-edge-id="edge-resume" data-source="approval-service" data-target="sandbox-tool" d="M 435 370 L 435 430 L 360 430 L 360 540 L 330 540" stroke="#2365A7" marker-end="url(#arrow-edge-resume)"/>
+      <path data-edge-id="edge-reject" data-source="approval-service" data-target="manual-terminal" d="M 690 310 L 850 310 L 850 650 L 1160 650 L 1160 700" stroke="#B4232C" stroke-dasharray="10 8" marker-end="url(#arrow-edge-reject)"/>
+      <path data-edge-id="edge-effect" data-source="sandbox-tool" data-target="authority-system" d="M 330 540 L 760 540 L 760 420 L 950 420 L 950 310 L 1010 310" stroke="#2365A7" marker-end="url(#arrow-edge-effect)"/>
+      <path data-edge-id="edge-reconcile" data-source="authority-system" data-target="reconciliation" d="M 1160 370 L 1160 440 L 760 440 L 760 540 L 690 540" stroke="#227A4B" marker-end="url(#arrow-edge-reconcile)"/>
+      <path data-edge-id="edge-recovery" data-source="reconciliation" data-target="control-store" d="M 690 510 L 740 510 L 740 130 L 650 130" stroke="#5B3FD6" stroke-dasharray="10 8" marker-end="url(#arrow-edge-recovery)"/>
+      <path data-edge-id="edge-unknown" data-source="reconciliation" data-target="manual-terminal" d="M 690 570 L 820 570 L 820 760 L 1010 760" stroke="#B4232C" stroke-dasharray="10 8" marker-end="url(#arrow-edge-unknown)"/>
+      <path data-edge-id="edge-complete" data-source="control-store" data-target="completed" d="M 605 190 L 605 210 L 810 210 L 810 650 L 540 650 L 540 700" stroke="#227A4B" marker-end="url(#arrow-edge-complete)"/>
+    </g>
+    <g fill="#FFFFFF">
+      <rect data-node-id="control-store" data-padding-horizontal-css="16" data-padding-vertical-css="14" x="350" y="70" width="300" height="120" rx="20" fill="#EDE8FF" stroke="#5B3FD6" stroke-width="3"/>
+      <rect data-node-id="checkpoint" data-padding-horizontal-css="16" data-padding-vertical-css="14" x="70" y="250" width="260" height="120" rx="20" fill="#FFFFFF" stroke="#334155" stroke-width="3"/>
+      <rect data-node-id="approval-service" data-padding-horizontal-css="16" data-padding-vertical-css="14" x="390" y="250" width="300" height="120" rx="20" fill="#FFF7E6" stroke="#B66A00" stroke-width="3"/>
+      <rect data-node-id="sandbox-tool" data-padding-horizontal-css="16" data-padding-vertical-css="14" x="70" y="480" width="260" height="120" rx="20" fill="#E8F3FF" stroke="#2365A7" stroke-width="3"/>
+      <rect data-node-id="authority-system" data-padding-horizontal-css="16" data-padding-vertical-css="14" x="1010" y="250" width="300" height="120" rx="20" fill="#E6F7ED" stroke="#227A4B" stroke-width="3"/>
+      <rect data-node-id="reconciliation" data-padding-horizontal-css="16" data-padding-vertical-css="14" x="390" y="480" width="300" height="120" rx="20" fill="#FFFFFF" stroke="#334155" stroke-width="3"/>
+      <rect data-node-id="completed" data-padding-horizontal-css="16" data-padding-vertical-css="14" x="390" y="700" width="300" height="120" rx="20" fill="#E6F7ED" stroke="#227A4B" stroke-width="3"/>
+      <rect data-node-id="manual-terminal" data-padding-horizontal-css="16" data-padding-vertical-css="14" x="1010" y="700" width="300" height="120" rx="20" fill="#FFF0F0" stroke="#B4232C" stroke-width="3"/>
+    </g>
+    <g text-anchor="middle" fill="#17202A">
+      <text data-title-for="control-store" x="500" y="115" font-size="28" font-weight="700" textLength="236" lengthAdjust="spacingAndGlyphs">Durable control store</text>
+      <text data-type-for="control-store" x="500" y="155" font-size="20" textLength="236" lengthAdjust="spacingAndGlyphs">Control state + checkpoint refs</text>
+      <text data-title-for="checkpoint" x="200" y="285" font-size="28" font-weight="700" textLength="140" lengthAdjust="spacingAndGlyphs">Checkpoint</text>
+      <text data-type-for="checkpoint" x="200" y="320" font-size="20"><tspan x="200" y="320" textLength="170" lengthAdjust="spacingAndGlyphs">Schema + version </tspan><tspan x="200" y="338" textLength="140" lengthAdjust="spacingAndGlyphs">+ operation ID</tspan></text>
+      <text data-title-for="approval-service" x="540" y="295" font-size="28" font-weight="700" textLength="236" lengthAdjust="spacingAndGlyphs">Approval required</text>
+      <text data-type-for="approval-service" x="540" y="335" font-size="20" textLength="236" lengthAdjust="spacingAndGlyphs">Context + authority + deadline</text>
+      <text data-title-for="sandbox-tool" x="200" y="525" font-size="28" font-weight="700" textLength="196" lengthAdjust="spacingAndGlyphs">Sandbox / Tool</text>
+      <text data-type-for="sandbox-tool" x="200" y="565" font-size="20" textLength="196" lengthAdjust="spacingAndGlyphs">Scoped, idempotent action</text>
+      <text data-title-for="authority-system" x="1160" y="295" font-size="28" font-weight="700" textLength="224" lengthAdjust="spacingAndGlyphs">Authority system</text>
+      <text data-type-for="authority-system" x="1160" y="335" font-size="20" textLength="230" lengthAdjust="spacingAndGlyphs">External business truth</text>
+      <text data-title-for="reconciliation" x="540" y="525" font-size="28" font-weight="700" textLength="236" lengthAdjust="spacingAndGlyphs">Result reconciliation</text>
+      <text data-type-for="reconciliation" x="540" y="565" font-size="20" textLength="220" lengthAdjust="spacingAndGlyphs">Read back before retry</text>
+      <text data-title-for="completed" x="540" y="745" font-size="28" font-weight="700" textLength="126" lengthAdjust="spacingAndGlyphs">Completed</text>
+      <text data-type-for="completed" x="540" y="785" font-size="20" textLength="236" lengthAdjust="spacingAndGlyphs">Verified durable terminal</text>
+      <text data-title-for="manual-terminal" x="1160" y="745" font-size="28" font-weight="700" textLength="210" lengthAdjust="spacingAndGlyphs">Manual terminal</text>
+      <text data-type-for="manual-terminal" x="1160" y="785" font-size="20" textLength="236" lengthAdjust="spacingAndGlyphs">Reject, timeout, or unknown</text>
+    </g>
+    <g font-weight="650" fill="#17202A" text-anchor="middle">
+      <text data-edge-label-for="edge-resume" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12" x="250" y="420.5" font-size="28" textLength="100" lengthAdjust="spacingAndGlyphs">Resume</text>
+      <text data-edge-label-for="edge-reject" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12" x="1020" y="485.5" font-size="28" textLength="160" lengthAdjust="spacingAndGlyphs">Reject / timeout</text>
+      <text data-edge-label-for="edge-reconcile" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12" x="1250" y="425.5" font-size="28" textLength="140" lengthAdjust="spacingAndGlyphs">Authoritative read</text>
+      <text data-edge-label-for="edge-recovery" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12" x="600" y="420.5" font-size="28" textLength="180" lengthAdjust="spacingAndGlyphs">Recovery / replay</text>
+      <text data-edge-label-for="edge-unknown" data-stroke-clearance-css="8" data-arrow-clearance-css="16" data-node-clearance-css="12" x="1240" y="545.5" font-size="28" textLength="120" lengthAdjust="spacingAndGlyphs">Unknown effect</text>
+    </g>
+  </g>
+</svg>

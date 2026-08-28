@@ -665,9 +665,10 @@ test('preserves immutable Batch 12 history under the current STY-13 Stage A proj
     current_goal: status.durable_stories.current,
     next_topic: 'STY-14',
   }, {
-    completed_topics: 65,
-    content_documents: 109,
-    governed_sources: 573,
+    completed_topics: 82,
+    content_documents: 126,
+    governed_sources: 599,
+
     durable_stories: {completed: 8, total: 20},
     current_goal: 'G009',
     next_topic: 'STY-14',

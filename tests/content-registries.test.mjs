@@ -368,7 +368,11 @@ test('loads the canonical registry against the complete backlog', async () => {
     parsedBacklog.topics,
   );
   assert.deepEqual(loaded.errors, []);
-  assert.equal(loaded.groupByTopicId.size, 72);
+  assert.equal(
+    loaded.groupByTopicId.size,
+    80,
+    'the canonical registry is the closed set of all current Pattern assignments',
+  );
 
   const caseSeries = await loadCaseSeriesRegistry(projectRoot);
   assert.deepEqual(caseSeries.errors, []);

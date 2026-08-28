@@ -272,9 +272,10 @@ function replaceHistoricalBatch9Literal(source, before, after) {
 function assertStageBProjection() {
   assert.deepEqual(
     {completed_topics: status.completed_topics, content_documents: status.content_documents, governed_sources: status.governed_sources},
-    {completed_topics: 65, content_documents: 109, governed_sources: 573},
+    {completed_topics: 82, content_documents: 126, governed_sources: 599},
   );
-  assert.equal(publicLedger.sources.length, 573);
+  assert.equal(publicLedger.sources.length, 599);
+
   const topics = new Map(manifest.topics.map((topic) => [topic.id, topic]));
   const styles = new Map(indexes.style.map((topic) => [topic.id, topic]));
   assert.deepEqual([topics.get('STY-08')?.published, topics.get('STY-08')?.status.value, styles.get('STY-08')?.published], [true, 'complete', true]);
@@ -303,8 +304,9 @@ const IMMEDIATE_HISTORY = new Map([
 ]);
 
 function assertProjection() {
-  assert.deepEqual({completed_topics: status.completed_topics, content_documents: status.content_documents, governed_sources: status.governed_sources}, {completed_topics: 65, content_documents: 109, governed_sources: 573});
-  assert.equal(publicLedger.sources.length, 573);
+  assert.deepEqual({completed_topics: status.completed_topics, content_documents: status.content_documents, governed_sources: status.governed_sources}, {completed_topics: 82, content_documents: 126, governed_sources: 599});
+  assert.equal(publicLedger.sources.length, 599);
+
   const topics = new Map(manifest.topics.map((topic) => [topic.id, topic]));
   const styles = new Map(indexes.style.map((topic) => [topic.id, topic]));
   assert.deepEqual([topics.get('STY-08')?.published, topics.get('STY-08')?.status.value, styles.get('STY-08')?.published], [true, 'complete', true]);

@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
+import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {readFile} from 'node:fs/promises';
+import {fileURLToPath} from 'node:url';
 import test from 'node:test';
 
 import {readContentDocuments} from '../scripts/content-metadata.mjs';
@@ -13,8 +15,8 @@ export const PRODUCTION_RAW = 'docs/reviews/evidence/g009-batch14-stage-a-produc
 export const STAGE_B_PRODUCTION_RAW = 'docs/reviews/evidence/g009-batch14-stage-b-production-browser.json';
 export const CURRENT_TOPIC = 'STY-13';
 export const NEXT_TOPIC = 'STY-14';
-export const EXPECTED_STAGE_A = Object.freeze({completed: 65, documents: 109, sources: 573});
-export const EXPECTED_STAGE_B = Object.freeze({completed: 66, documents: 109, sources: 573});
+export const EXPECTED_STAGE_A = Object.freeze({completed: 82, documents: 126, sources: 599});
+export const EXPECTED_STAGE_B = Object.freeze({completed: 83, documents: 126, sources: 599});
 export const EXPECTED_BROWSER = Object.freeze({states: 4, wrappersPerState: 4, relationsPerState: 4, remoteSourcesPerState: 7, nextTopicActions: 0});
 
 export const CANDIDATE_HEAD = 'f2b7b936ccd64c4748f2417937be2a61b55a3e55';
@@ -76,6 +78,11 @@ const SOURCE_HREFS = Object.freeze([
 
 const rootUrl = new URL('../', import.meta.url);
 const required = (path, encoding) => readFile(new URL(path, rootUrl), encoding);
+const reviewedArtifact = (path) => execFileSync(
+  'git',
+  ['show', `${EXPECTED_REVIEWED_HEAD}:${path}`],
+  {cwd: fileURLToPath(rootUrl), maxBuffer: 4 * 1024 * 1024},
+);
 async function optional(path, encoding) {
   try { return await required(path, encoding); } catch (error) { if (error?.code === 'ENOENT') return undefined; throw error; }
 }
@@ -436,7 +443,7 @@ function sampleEvidence() {
 }
 
 const [review, raw, backlog, article, ledgerBytes, drawioBytes, svgBytes, immediateReview, ...immediateRaws] = await Promise.all([
-  optional(REVIEW, 'utf8'), optional(LOCAL_RAW), required(BACKLOG, 'utf8'), required(ARTICLE, 'utf8'), required('data/source-ledger.json'), required(DRAWIO), required(SVG), required(IMMEDIATE_REVIEW),
+  optional(REVIEW, 'utf8'), optional(LOCAL_RAW), required(BACKLOG, 'utf8'), required(ARTICLE, 'utf8'), Promise.resolve(reviewedArtifact('data/source-ledger.json')), required(DRAWIO), required(SVG), required(IMMEDIATE_REVIEW),
   ...IMMEDIATE_RAW_IDENTITIES.map(({path}) => required(path)),
 ]);
 

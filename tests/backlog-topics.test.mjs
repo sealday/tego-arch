@@ -70,6 +70,8 @@ test('covers every supported topic prefix', () => {
     ['CLD', 'path', 'paths'],
     ['FE', 'path', 'paths'],
     ['EDGE', 'path', 'paths'],
+    ['AGT-C', 'concept', 'concepts'],
+    ['AGT-P', 'pattern', 'patterns'],
     ['AGT', 'path', 'paths'],
   ];
   const source = expected
@@ -216,9 +218,9 @@ test('covers the complete real backlog topic set', async () => {
   const candidateIds = new Set(candidates.map(({id}) => id));
   const result = parseBacklogTopics(source, 'docs/content-backlog.md');
 
-  assert.equal(candidates.length, 201);
-  assert.equal(candidateIds.size, 201);
-  assert.equal(result.topics.length, 201);
+  assert.equal(candidates.length, 218);
+  assert.equal(candidateIds.size, 218);
+  assert.equal(result.topics.length, 218);
   assert.deepEqual(
     new Set(result.topics.map(({id}) => id)),
     candidateIds,
@@ -235,12 +237,30 @@ test('covers the complete real backlog topic set', async () => {
     'PAT-MIG-01',
     'PAT-MIG-02',
     'PAT-MIG-03',
+    'AGT-C-01',
+    'AGT-P-08',
     'AGT-06',
     'CASE-20',
+    'CASE-23',
     'QST-10',
   ]) {
     assert.ok(candidateIds.has(id));
   }
+});
+
+test('parses Agent concept, pattern, and legacy path prefixes independently', () => {
+  const source = [
+    '- [ ] **AGT-C-01 P1｜AI Agent 系统边界**。',
+    '- [ ] **AGT-P-01 P1｜Workflow vs Agent**。',
+    '- [ ] **AGT-01 P1｜Agent 平台约束验证**。',
+  ].join('\n');
+  const result = parseBacklogTopics(source, 'docs/content-backlog.md');
+  assert.deepEqual(result.errors, []);
+  assert.deepEqual(result.topics.map(({id, type, slug}) => ({id, type, slug})), [
+    {id: 'AGT-C-01', type: 'concept', slug: '/concepts/agt-c-01'},
+    {id: 'AGT-P-01', type: 'pattern', slug: '/patterns/agt-p-01'},
+    {id: 'AGT-01', type: 'path', slug: '/paths/agt-01'},
+  ]);
 });
 
 test('parses migration Pattern topics with stable Pattern slugs', () => {

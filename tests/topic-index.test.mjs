@@ -160,7 +160,11 @@ test('canonical Pattern registry exactly matches every generated assignment and 
     .map(({id, pattern_group: patternGroup}) => [id, patternGroup])
     .sort(([left], [right]) => left.localeCompare(right, 'en'));
 
-  assert.equal(expectedAssignments.length, 72);
+  assert.equal(
+    expectedAssignments.length,
+    80,
+    'the canonical registry is the closed set of all current Pattern assignments',
+  );
   assert.deepEqual(actualManifestAssignments, expectedAssignments);
   assert.deepEqual(actualIndexAssignments, expectedAssignments);
   assert.ok(
@@ -188,7 +192,11 @@ test('canonical Pattern registry exactly matches every generated assignment and 
     generatedGroups.groups,
     indexes.pattern,
   ).flatMap(({topics}) => topics);
-  assert.equal(canonicalViews.length, 72);
+  assert.equal(
+    canonicalViews.length,
+    72,
+    'the generated Pattern component excludes the separately rendered agent-control group',
+  );
   assert.ok(canonicalViews.some(({published}) => !published));
   assert.ok(
     canonicalViews
