@@ -301,7 +301,7 @@ test('preserves the STY-01 closure under the current STY-10 next-topic projectio
   assert.deepEqual(status, {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
-    completed_topics: 65,
+    completed_topics: 82,
     content_documents: 125,
     governed_sources: 591,
 

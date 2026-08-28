@@ -665,7 +665,7 @@ test('preserves immutable Batch 12 history and closes only STY-12 in the Stage B
     current_goal: status.durable_stories.current,
     next_topic: NEXT_TOPIC,
   }, {
-    completed_topics: 65,
+    completed_topics: 82,
     content_documents: 125,
     governed_sources: 591,
     durable_stories: {completed: 8, total: 20},

@@ -54,7 +54,7 @@ const expectedReviewSections = [
 ];
 
 const expectedProjection = {
-  completed_topics: 65,
+  completed_topics: 82,
   content_documents: 125,
   governed_sources: 591,
 

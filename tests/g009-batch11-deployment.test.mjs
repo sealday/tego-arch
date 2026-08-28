@@ -9,7 +9,7 @@ import {extractInternalLinks} from '../scripts/content-relations.mjs';
 
 export const EXPECTED_STAGE_A = Object.freeze({completed: 62, documents: 106, sources: 550});
 export const EXPECTED_STAGE_B = Object.freeze({completed: 63, documents: 106, sources: 550});
-export const EXPECTED_CURRENT_PROJECTION = Object.freeze({completed: 65, documents: 125, sources: 591});
+export const EXPECTED_CURRENT_PROJECTION = Object.freeze({completed: 82, documents: 125, sources: 591});
 export const CURRENT_TOPIC = 'STY-10';
 export const NEXT_TOPIC = 'STY-11';
 export const LATEST_TOPIC = 'STY-12';

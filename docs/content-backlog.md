@@ -403,20 +403,20 @@
 
 ### Agentic Architecture 专题
 
-- [ ] **AGT-C-01 P1｜AI Agent 系统边界**。
-- [ ] **AGT-C-02 P1｜Agent Harness**。
-- [ ] **AGT-C-03 P1｜Agent Loop**。
-- [ ] **AGT-C-04 P1｜Context、Memory、State 与 Checkpoint**。
-- [ ] **AGT-C-05 P1｜Tool、Sandbox、Permission 与 Side Effect**。
-- [ ] **AGT-C-06 P1｜Trace、Evaluation 与 Guardrail**。
-- [ ] **AGT-P-01 P1｜Deterministic Workflow vs Autonomous Agent**。
-- [ ] **AGT-P-02 P1｜Agentic RAG**。
-- [ ] **AGT-P-03 P1｜Planner–Executor**。
-- [ ] **AGT-P-04 P1｜Evaluator–Optimizer**。
-- [ ] **AGT-P-05 P1｜Router 与模型驱动分发**。
-- [ ] **AGT-P-06 P1｜Supervisor、Handoff 与 Agents-as-Tools**。
-- [ ] **AGT-P-07 P1｜Orchestrator–Workers 与 Fan-out/Fan-in**。
-- [ ] **AGT-P-08 P1｜Durable Agent 与 Human-in-the-loop**。
+- [x] **AGT-C-01 P1｜AI Agent 系统边界**。生产关闭证据：release `d10547acf0b1815e6477c92684f22a9870aed7d6`，Pages run `33138211694`，`27/27` HTTP probes、`42/42` Browser states、`4/4` reciprocal navigations 与 `6/6` SVG assets 均为 `PASS`。
+- [x] **AGT-C-02 P1｜Agent Harness**。生产关闭证据：release `d10547acf0b1815e6477c92684f22a9870aed7d6`，Pages run `33138211694`，`27/27` HTTP probes、`42/42` Browser states、`4/4` reciprocal navigations 与 `6/6` SVG assets 均为 `PASS`。
+- [x] **AGT-C-03 P1｜Agent Loop**。生产关闭证据：release `d10547acf0b1815e6477c92684f22a9870aed7d6`，Pages run `33138211694`，`27/27` HTTP probes、`42/42` Browser states、`4/4` reciprocal navigations 与 `6/6` SVG assets 均为 `PASS`。
+- [x] **AGT-C-04 P1｜Context、Memory、State 与 Checkpoint**。生产关闭证据：release `d10547acf0b1815e6477c92684f22a9870aed7d6`，Pages run `33138211694`，`27/27` HTTP probes、`42/42` Browser states、`4/4` reciprocal navigations 与 `6/6` SVG assets 均为 `PASS`。
+- [x] **AGT-C-05 P1｜Tool、Sandbox、Permission 与 Side Effect**。生产关闭证据：release `d10547acf0b1815e6477c92684f22a9870aed7d6`，Pages run `33138211694`，`27/27` HTTP probes、`42/42` Browser states、`4/4` reciprocal navigations 与 `6/6` SVG assets 均为 `PASS`。
+- [x] **AGT-C-06 P1｜Trace、Evaluation 与 Guardrail**。生产关闭证据：release `d10547acf0b1815e6477c92684f22a9870aed7d6`，Pages run `33138211694`，`27/27` HTTP probes、`42/42` Browser states、`4/4` reciprocal navigations 与 `6/6` SVG assets 均为 `PASS`。
+- [x] **AGT-P-01 P1｜Deterministic Workflow vs Autonomous Agent**。生产关闭证据：release `d10547acf0b1815e6477c92684f22a9870aed7d6`，Pages run `33138211694`，`27/27` HTTP probes、`42/42` Browser states、`4/4` reciprocal navigations 与 `6/6` SVG assets 均为 `PASS`。
+- [x] **AGT-P-02 P1｜Agentic RAG**。生产关闭证据：release `d10547acf0b1815e6477c92684f22a9870aed7d6`，Pages run `33138211694`，`27/27` HTTP probes、`42/42` Browser states、`4/4` reciprocal navigations 与 `6/6` SVG assets 均为 `PASS`。
+- [x] **AGT-P-03 P1｜Planner–Executor**。生产关闭证据：release `d10547acf0b1815e6477c92684f22a9870aed7d6`，Pages run `33138211694`，`27/27` HTTP probes、`42/42` Browser states、`4/4` reciprocal navigations 与 `6/6` SVG assets 均为 `PASS`。
+- [x] **AGT-P-04 P1｜Evaluator–Optimizer**。生产关闭证据：release `d10547acf0b1815e6477c92684f22a9870aed7d6`，Pages run `33138211694`，`27/27` HTTP probes、`42/42` Browser states、`4/4` reciprocal navigations 与 `6/6` SVG assets 均为 `PASS`。
+- [x] **AGT-P-05 P1｜Router 与模型驱动分发**。生产关闭证据：release `d10547acf0b1815e6477c92684f22a9870aed7d6`，Pages run `33138211694`，`27/27` HTTP probes、`42/42` Browser states、`4/4` reciprocal navigations 与 `6/6` SVG assets 均为 `PASS`。
+- [x] **AGT-P-06 P1｜Supervisor、Handoff 与 Agents-as-Tools**。生产关闭证据：release `d10547acf0b1815e6477c92684f22a9870aed7d6`，Pages run `33138211694`，`27/27` HTTP probes、`42/42` Browser states、`4/4` reciprocal navigations 与 `6/6` SVG assets 均为 `PASS`。
+- [x] **AGT-P-07 P1｜Orchestrator–Workers 与 Fan-out/Fan-in**。生产关闭证据：release `d10547acf0b1815e6477c92684f22a9870aed7d6`，Pages run `33138211694`，`27/27` HTTP probes、`42/42` Browser states、`4/4` reciprocal navigations 与 `6/6` SVG assets 均为 `PASS`。
+- [x] **AGT-P-08 P1｜Durable Agent 与 Human-in-the-loop**。生产关闭证据：release `d10547acf0b1815e6477c92684f22a9870aed7d6`，Pages run `33138211694`，`27/27` HTTP probes、`42/42` Browser states、`4/4` reciprocal navigations 与 `6/6` SVG assets 均为 `PASS`。
 
 ## E10：真实案例候选池
 
@@ -442,9 +442,9 @@
 - [ ] **CASE-18 P2｜平台 API 与 GitOps 漂移案例**。
 - [ ] **CASE-19 P2｜多租户 Agent 沙箱与泄漏边界案例**。
 - [ ] **CASE-20 P2｜边缘断网、重连与物理安全链案例**。
-- [ ] **CASE-21 P1｜多智能体研究系统**。
-- [ ] **CASE-22 P1｜长时运行 Coding Agent**。
-- [ ] **CASE-23 P1｜生产事故响应 Agent**。
+- [x] **CASE-21 P1｜多智能体研究系统**。生产关闭证据：release `d10547acf0b1815e6477c92684f22a9870aed7d6`，Pages run `33138211694`，`27/27` HTTP probes、`42/42` Browser states、`4/4` reciprocal navigations 与 `6/6` SVG assets 均为 `PASS`。
+- [x] **CASE-22 P1｜长时运行 Coding Agent**。生产关闭证据：release `d10547acf0b1815e6477c92684f22a9870aed7d6`，Pages run `33138211694`，`27/27` HTTP probes、`42/42` Browser states、`4/4` reciprocal navigations 与 `6/6` SVG assets 均为 `PASS`。
+- [x] **CASE-23 P1｜生产事故响应 Agent**。生产关闭证据：release `d10547acf0b1815e6477c92684f22a9870aed7d6`，Pages run `33138211694`，`27/27` HTTP probes、`42/42` Browser states、`4/4` reciprocal navigations 与 `6/6` SVG assets 均为 `PASS`。
 
 案例发现来源包括：
 [CNCF Reference Architecture](https://architecture.cncf.io/)、

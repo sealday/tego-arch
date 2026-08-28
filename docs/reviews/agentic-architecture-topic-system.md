@@ -44,4 +44,13 @@
 ## Release gate
 
 - Final Task 6 judgment: `PASS`.
-- No production deployment is claimed by this document. Main integration, GitHub Pages deployment, production Browser verification, and backlog closure remain Tasks 7–8.
+
+## Production release
+
+- Production release SHA: `d10547acf0b1815e6477c92684f22a9870aed7d6`.
+- GitHub Pages run: `33138211694`; exact `headSha=d10547acf0b1815e6477c92684f22a9870aed7d6`, `event=push`, `status=completed`, `conclusion=success`.
+- Exact jobs: build `98742932478` and deploy `98743451977`, both `completed/success`.
+- Production HTTP verdict: `PASS` for `27/27` required URLs: the learning path, three category indexes, all 17 Agentic Architecture routes, and six SVG assets.
+- Production Browser verdict: `PASS`. The in-app Browser passed `42/42` route states at desktop `1200×900` and mobile `390×844`; warning/error logs `0`, document-level overflow failures `0`, representative reciprocal destination/H1/return checks `4/4`, rendered SVG checks `6/6`, and screenshot inspections `2/2`.
+- Evidence: `docs/reviews/evidence/agentic-architecture-topic-system-deployment.json` and `docs/reviews/evidence/agentic-architecture-topic-system-production-browser.json`.
+- Final publication verdict: `PASS`.
