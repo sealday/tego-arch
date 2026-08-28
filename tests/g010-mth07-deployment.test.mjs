@@ -16,8 +16,8 @@ const POST_G010_G009_ARTIFACTS = new Map([
   ['docs/reviews/evidence/g009-batch13-stage-a-browser.json', [17_260, 'a0de2d5ea069b2af87ad4aa4ef4696a9a22e6ff99ba96b616763262f1814ed38']],
   ['docs/reviews/evidence/g009-batch13-stage-a-production-browser.json', [33_721, 'a28bb3269f2b7545b7d77f2ec506ce5b1bd737924a5db6945481ee8ec5763560']],
   ['docs/reviews/evidence/g009-batch13-stage-b-production-browser.json', [47_997, '93540ff26f5d7a6fddb2ca5310a838304d04afa6994788fcf1fb8d0b4a6ff958']],
-  ['docs/reviews/g009-batch14.md', [5_902, '2fa1263590fd3dab02e38b31cd8cf4d0331b81f36f42416c36f039a3da3fc4e7']],
-  ['docs/reviews/evidence/g009-batch14-stage-a-browser.json', [42_484, 'aaa0dfcc61f3717676bd5a108cad7cfa2e5fe51baa63a5fff9ce05954b074b6b']],
+  ['docs/reviews/g009-batch14.md', [5_902, '2b2c512aa23ab5dec71807e102462c3d3c636fda90031b04b48da2e86840d4e6']],
+  ['docs/reviews/evidence/g009-batch14-stage-a-browser.json', [42_484, 'ebb10045c6ef19fd665767dba270697e552d8c1e074d219aa5ccbf972f2813c1']],
 ]);
 const IMPLEMENTATION_HEAD = 'a413be060c93f7ddd20e7db5417e94f4166dc1e8';
 const PAGES = {runId: 31786075868, buildJobId: 94722157542, deployJobId: 94722766883};

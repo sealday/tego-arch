@@ -1,5 +1,5 @@
 {
-  "candidateHead": "9bbc779b146453a70a7aea7d6e3da2edddefc6fe",
+  "candidateHead": "f2b7b936ccd64c4748f2417937be2a61b55a3e55",
   "stateOrder": [
     "desktopLight",
     "desktopDark",
@@ -10,7 +10,7 @@
     "browser": "Codex in-app Browser only",
     "fresh": true,
     "servedUrl": "http://127.0.0.1:4173/tego-arch/styles/sty-13",
-    "build": "local build from exact clean implementation head 9bbc779b146453a70a7aea7d6e3da2edddefc6fe",
+    "build": "local build from exact clean implementation head f2b7b936ccd64c4748f2417937be2a61b55a3e55",
     "navigationMethod": "Relation destinations were opened by exact href direct navigation and returned with Browser back; no physical-click claim is made.",
     "observedSvgAsset": {
       "source": "local Browser pageAssets bundle",
@@ -1451,29 +1451,29 @@
       {
         "state": "desktopLight",
         "status": "CAPTURED_ACCEPTED",
-        "bytes": 149450,
-        "sha256": "13402199be913a432d0088655ee0089f51ed188759359a77d1c5ca8e78009bad",
+        "bytes": 150209,
+        "sha256": "fc8b0ad6d653e334c2350ea310fa715f210365e50368dd7928eea228c91b0e21",
         "reason": "Fresh faithful IAB viewport capture of the production-analysis table state."
       },
       {
         "state": "desktopDark",
         "status": "CAPTURED_ACCEPTED",
-        "bytes": 152042,
-        "sha256": "260c79f24d33d8bdf8f35dbb9c275d076e8a781fea8fe6dbfffc64f83efbc68b",
+        "bytes": 152912,
+        "sha256": "e3195faa40063918bf6cda2b31b17271514842e94c3884ca34ff6c668143042a",
         "reason": "Fresh faithful IAB viewport capture of the production-analysis table state."
       },
       {
         "state": "mobileLight",
         "status": "CAPTURED_ACCEPTED",
-        "bytes": 49347,
-        "sha256": "1b1ee1ccade33baefa9810e90a1ea8b14c1c15371be05cdf0160153770b368ed",
+        "bytes": 48808,
+        "sha256": "288d7e292ff21e1264d642348d033e2698d1fbe026c75033884ba5b72f34361e",
         "reason": "Fresh faithful IAB viewport capture of the production-analysis table state."
       },
       {
         "state": "mobileDark",
         "status": "CAPTURED_ACCEPTED",
-        "bytes": 49094,
-        "sha256": "270cb5b450ca39fd354755b047e4f0d3e89eab70aac8947286a00fe9f35c41e0",
+        "bytes": 48605,
+        "sha256": "5a0b416073be0f3ff81bc2242ee472587ecabc5ac6756229bb0adeb779ea662e",
         "reason": "Fresh faithful IAB viewport capture of the production-analysis table state."
       }
     ]

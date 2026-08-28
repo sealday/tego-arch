@@ -5,18 +5,18 @@
 - Projection: `65 completed topics / 109 content documents / 573 governed sources`.
 - STY-13: `published / pending`.
 - STY-14: `unpublished / pending / non-actionable`; actionable route count: `0`.
-- Exact clean implementation head: `9bbc779b146453a70a7aea7d6e3da2edddefc6fe`.
+- Exact clean implementation head: `f2b7b936ccd64c4748f2417937be2a61b55a3e55`.
 - This is a factual Stage A evidence candidate only. It does not close the backlog, claim deployment, or supply any independent verdict.
 
 ## Artifact identities
 
 | Artifact | Bytes | SHA-256 |
 | --- | ---: | --- |
-| `content/styles/sty-13-space-based-architecture.mdx` | 20,605 | `89569481e650bd5f8a0845fb3b3943e16b1c8faebdfd18be27afc00013751b03` |
+| `content/styles/sty-13-space-based-architecture.mdx` | 20,625 | `672ab04acd0c11498f25dbc8890f528c4b863c1308d7157774f01a96effe31bf` |
 | `data/source-ledger.json` | 1,681,848 | `422b0ad4e4c128618203157864efb6d16dad7059ba97567a7f8dbdf8e87bd085` |
 | `diagrams/sty-13-space-based-flight-availability.drawio` | 22,184 | `cff8f280c882f0fab92004b7104f42c7fb79440e3390d7b7aa077f4205c62aeb` |
 | `static/img/diagrams/sty-13-space-based-flight-availability.svg` | 26,671 | `68e15b5fe4eefd49f5870c672e125d0fa9e001b5177049d43a09d68d2deb56d7` |
-| `docs/reviews/evidence/g009-batch14-stage-a-browser.json` | 42,484 | `aaa0dfcc61f3717676bd5a108cad7cfa2e5fe51baa63a5fff9ce05954b074b6b` |
+| `docs/reviews/evidence/g009-batch14-stage-a-browser.json` | 42,484 | `ebb10045c6ef19fd665767dba270697e552d8c1e074d219aa5ccbf972f2813c1` |
 
 - Governed STY-13 sources: `8`; remote anchors per state: `7`; original diagram rights remain governed separately.
 - The Browser-observed SVG PageAssets bundle is an exact byte match for the reviewed SVG.
@@ -33,7 +33,7 @@
 ## Local in-app Browser QA
 
 - Exact local URL: `http://127.0.0.1:4173/tego-arch/styles/sty-13`.
-- Raw Browser JSON: `docs/reviews/evidence/g009-batch14-stage-a-browser.json`; bytes: `42,484`; SHA-256: `aaa0dfcc61f3717676bd5a108cad7cfa2e5fe51baa63a5fff9ce05954b074b6b`.
+- Raw Browser JSON: `docs/reviews/evidence/g009-batch14-stage-a-browser.json`; bytes: `42,484`; SHA-256: `ebb10045c6ef19fd665767dba270697e552d8c1e074d219aa5ccbf972f2813c1`.
 - Browser surface: `Codex in-app Browser only`; fallback used: `false`.
 - Functional Browser QA: `PASS`; states `4/4`; wrapper interactions `16/16`; relation href/H1/return observations `16/16`; source href/target/rel observations `28/28`.
 - STY-14 actionable count: `0` per state.
@@ -42,10 +42,10 @@
 
 | State | Bytes | SHA-256 | Judgment |
 | --- | ---: | --- | --- |
-| `desktopLight` | 149,450 | `13402199be913a432d0088655ee0089f51ed188759359a77d1c5ca8e78009bad` | `CAPTURED_ACCEPTED` |
-| `desktopDark` | 152,042 | `260c79f24d33d8bdf8f35dbb9c275d076e8a781fea8fe6dbfffc64f83efbc68b` | `CAPTURED_ACCEPTED` |
-| `mobileLight` | 49,347 | `1b1ee1ccade33baefa9810e90a1ea8b14c1c15371be05cdf0160153770b368ed` | `CAPTURED_ACCEPTED` |
-| `mobileDark` | 49,094 | `270cb5b450ca39fd354755b047e4f0d3e89eab70aac8947286a00fe9f35c41e0` | `CAPTURED_ACCEPTED` |
+| `desktopLight` | 150,209 | `fc8b0ad6d653e334c2350ea310fa715f210365e50368dd7928eea228c91b0e21` | `CAPTURED_ACCEPTED` |
+| `desktopDark` | 152,912 | `e3195faa40063918bf6cda2b31b17271514842e94c3884ca34ff6c668143042a` | `CAPTURED_ACCEPTED` |
+| `mobileLight` | 48,808 | `288d7e292ff21e1264d642348d033e2698d1fbe026c75033884ba5b72f34361e` | `CAPTURED_ACCEPTED` |
+| `mobileDark` | 48,605 | `5a0b416073be0f3ff81bc2242ee472587ecabc5ac6756229bb0adeb779ea662e` | `CAPTURED_ACCEPTED` |
 
 - Fresh exact-X collection begins at diagnostic cursor `13`; no stale pre-remediation screenshot or substituted Browser evidence is present in the accepted raw.
 - Exact preparation cursor spans are desktop light `13 -> 26`, desktop dark `122 -> 134`, mobile light `230 -> 258`, and mobile dark `354 -> 381`; every preparation page has zero Runtime/Log events and no truncation.

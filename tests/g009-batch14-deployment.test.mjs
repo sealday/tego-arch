@@ -17,11 +17,11 @@ export const EXPECTED_STAGE_A = Object.freeze({completed: 65, documents: 109, so
 export const EXPECTED_STAGE_B = Object.freeze({completed: 66, documents: 109, sources: 573});
 export const EXPECTED_BROWSER = Object.freeze({states: 4, wrappersPerState: 4, relationsPerState: 4, remoteSourcesPerState: 7, nextTopicActions: 0});
 
-export const CANDIDATE_HEAD = '9bbc779b146453a70a7aea7d6e3da2edddefc6fe';
+export const CANDIDATE_HEAD = 'f2b7b936ccd64c4748f2417937be2a61b55a3e55';
 export const EXPECTED_REVIEWED_HEAD = 'UNBOUND';
 export const CONTRACT_REVIEWED_HEAD = '1111111111111111111111111111111111111111';
-export const LOCAL_RAW_IDENTITY = Object.freeze({bytes: 42_484, sha256: 'aaa0dfcc61f3717676bd5a108cad7cfa2e5fe51baa63a5fff9ce05954b074b6b'});
-const ARTICLE_IDENTITY = Object.freeze({bytes: 20_605, sha256: '89569481e650bd5f8a0845fb3b3943e16b1c8faebdfd18be27afc00013751b03'});
+export const LOCAL_RAW_IDENTITY = Object.freeze({bytes: 42_484, sha256: 'ebb10045c6ef19fd665767dba270697e552d8c1e074d219aa5ccbf972f2813c1'});
+const ARTICLE_IDENTITY = Object.freeze({bytes: 20_625, sha256: '672ab04acd0c11498f25dbc8890f528c4b863c1308d7157774f01a96effe31bf'});
 const LEDGER_IDENTITY = Object.freeze({bytes: 1_681_848, sha256: '422b0ad4e4c128618203157864efb6d16dad7059ba97567a7f8dbdf8e87bd085'});
 const DRAWIO = 'diagrams/sty-13-space-based-flight-availability.drawio';
 const DRAWIO_IDENTITY = Object.freeze({bytes: 22_184, sha256: 'cff8f280c882f0fab92004b7104f42c7fb79440e3390d7b7aa077f4205c62aeb'});
@@ -53,10 +53,10 @@ const EXPECTED_WRAPPERS = Object.freeze({
   mobileDark: Object.freeze([[358, 800, 0, 40], [358, 358, 0, 0], [358, 358, 0, 0], [358, 358, 0, 0]]),
 });
 const SCREENSHOTS = Object.freeze([
-  Object.freeze({state: 'desktopLight', bytes: 149_450, sha256: '13402199be913a432d0088655ee0089f51ed188759359a77d1c5ca8e78009bad'}),
-  Object.freeze({state: 'desktopDark', bytes: 152_042, sha256: '260c79f24d33d8bdf8f35dbb9c275d076e8a781fea8fe6dbfffc64f83efbc68b'}),
-  Object.freeze({state: 'mobileLight', bytes: 49_347, sha256: '1b1ee1ccade33baefa9810e90a1ea8b14c1c15371be05cdf0160153770b368ed'}),
-  Object.freeze({state: 'mobileDark', bytes: 49_094, sha256: '270cb5b450ca39fd354755b047e4f0d3e89eab70aac8947286a00fe9f35c41e0'}),
+  Object.freeze({state: 'desktopLight', bytes: 150_209, sha256: 'fc8b0ad6d653e334c2350ea310fa715f210365e50368dd7928eea228c91b0e21'}),
+  Object.freeze({state: 'desktopDark', bytes: 152_912, sha256: 'e3195faa40063918bf6cda2b31b17271514842e94c3884ca34ff6c668143042a'}),
+  Object.freeze({state: 'mobileLight', bytes: 48_808, sha256: '288d7e292ff21e1264d642348d033e2698d1fbe026c75033884ba5b72f34361e'}),
+  Object.freeze({state: 'mobileDark', bytes: 48_605, sha256: '5a0b416073be0f3ff81bc2242ee472587ecabc5ac6756229bb0adeb779ea662e'}),
 ]);
 const RELATIONS = Object.freeze([
   Object.freeze({href: '/tego-arch/styles/sty-05', expectedH1: '微服务：用独立部署换取自治，也承担分布式成本'}),
