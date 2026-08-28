@@ -8,6 +8,1321 @@
     "evidence_source": "controller-fresh Browser DOM measurements and screenshot inspection",
     "viewport_override_reset": true
   },
+  "release_candidate_recheck": {
+    "browser_verified_head_at_start": "a80e462b5b50aff7ae5310ece825e7a6928aff64",
+    "browser_verified_tree": "dea25c14520a9bb9d58fdb5840d0406463342979",
+    "base_url": "http://127.0.0.1:3100/tego-arch/",
+    "public_content_base": "8be068f",
+    "public_content_changed_paths": [
+      "content/concepts/agt-c-02-agent-harness.mdx",
+      "content/concepts/agt-c-03-agent-loop.mdx",
+      "content/concepts/agt-c-05-tool-sandbox-permission-side-effect.mdx",
+      "content/concepts/agt-c-06-trace-evaluation-guardrail.mdx",
+      "content/patterns/agt-p-07-orchestrator-workers-fanout-fanin.mdx",
+      "content/patterns/agt-p-08-durable-agent-hitl.mdx"
+    ],
+    "public_content_manifest_command": "git diff --name-only 8be068f a80e462 -- content | sort | while read -r path; do shasum -a 256 \"$path\"; done | shasum -a 256",
+    "public_content_manifest_sha256": "432933225918928397587b2be106918cb1cf950cbd3a6e4bb1e24f0fc0c6654e",
+    "viewports": [
+      {"name": "desktop", "width": 1440, "height": 1000},
+      {"name": "mobile", "width": 390, "height": 844}
+    ],
+    "checks_per_state": [
+      "rendered nonempty document title and expected visible H1",
+      "document client width equals scroll width",
+      "zero console warnings or errors",
+      "physical click of the visible article category link and destination URL/H1 match",
+      "direct Browser goto of the exact source URL and restored H1 match",
+      "fresh screenshot inspection for overlap, obstruction, clipping, collision, and unexpected blank regions"
+    ],
+    "states": [
+      {
+        "route": "/concepts/agt-c-01",
+        "viewport": "desktop",
+        "title": "AI 智能体（Agent）系统边界 | Tego Arch",
+        "h1": "AI 智能体系统边界",
+        "document": {
+          "client_width": 1440,
+          "scroll_width": 1440,
+          "horizontal_overflow": false
+        },
+        "scroll_regions": [
+          {
+            "kind": "drawio-svg",
+            "client_width": 800,
+            "scroll_width": 800,
+            "local_overflow": false
+          }
+        ],
+        "console": {
+          "warnings": 0,
+          "errors": 0
+        },
+        "category_link": {
+          "clicked": true,
+          "destination_url": "http://127.0.0.1:3100/tego-arch/concepts",
+          "observed_destination_h1": "基础概念",
+          "destination_match": true,
+          "restored_url": "http://127.0.0.1:3100/tego-arch/concepts/agt-c-01",
+          "observed_restored_h1": "AI 智能体系统边界",
+          "restored_match": true
+        },
+        "screenshot_inspection": {
+          "inspected": true,
+          "verdict": "PASS",
+          "evidence": "Fresh top-viewport screenshot inspected for overlap, obstruction, clipping, collision, and unexpected blank regions."
+        },
+        "verdict": "PASS"
+      },
+      {
+        "route": "/concepts/agt-c-01",
+        "viewport": "mobile",
+        "title": "AI 智能体（Agent）系统边界 | Tego Arch",
+        "h1": "AI 智能体系统边界",
+        "document": {
+          "client_width": 390,
+          "scroll_width": 390,
+          "horizontal_overflow": false
+        },
+        "scroll_regions": [
+          {
+            "kind": "drawio-svg",
+            "client_width": 358,
+            "scroll_width": 800,
+            "local_overflow": true
+          }
+        ],
+        "console": {
+          "warnings": 0,
+          "errors": 0
+        },
+        "category_link": {
+          "clicked": true,
+          "destination_url": "http://127.0.0.1:3100/tego-arch/concepts",
+          "observed_destination_h1": "基础概念",
+          "destination_match": true,
+          "restored_url": "http://127.0.0.1:3100/tego-arch/concepts/agt-c-01",
+          "observed_restored_h1": "AI 智能体系统边界",
+          "restored_match": true
+        },
+        "screenshot_inspection": {
+          "inspected": true,
+          "verdict": "PASS",
+          "evidence": "Fresh top-viewport screenshot inspected for overlap, obstruction, clipping, collision, and unexpected blank regions."
+        },
+        "verdict": "PASS"
+      },
+      {
+        "route": "/concepts/agt-c-02",
+        "viewport": "desktop",
+        "title": "智能体运行框架（Agent Harness）：约束并运行智能体循环（Agent Loop） | Tego Arch",
+        "h1": "智能体运行框架：约束并运行智能体循环",
+        "document": {
+          "client_width": 1440,
+          "scroll_width": 1440,
+          "horizontal_overflow": false
+        },
+        "scroll_regions": [
+          {
+            "kind": "mermaid",
+            "client_width": 800,
+            "scroll_width": 800,
+            "local_overflow": false
+          }
+        ],
+        "console": {
+          "warnings": 0,
+          "errors": 0
+        },
+        "category_link": {
+          "clicked": true,
+          "destination_url": "http://127.0.0.1:3100/tego-arch/concepts",
+          "observed_destination_h1": "基础概念",
+          "destination_match": true,
+          "restored_url": "http://127.0.0.1:3100/tego-arch/concepts/agt-c-02",
+          "observed_restored_h1": "智能体运行框架：约束并运行智能体循环",
+          "restored_match": true
+        },
+        "screenshot_inspection": {
+          "inspected": true,
+          "verdict": "PASS",
+          "evidence": "Fresh top-viewport screenshot inspected for overlap, obstruction, clipping, collision, and unexpected blank regions."
+        },
+        "verdict": "PASS"
+      },
+      {
+        "route": "/concepts/agt-c-02",
+        "viewport": "mobile",
+        "title": "智能体运行框架（Agent Harness）：约束并运行智能体循环（Agent Loop） | Tego Arch",
+        "h1": "智能体运行框架：约束并运行智能体循环",
+        "document": {
+          "client_width": 390,
+          "scroll_width": 390,
+          "horizontal_overflow": false
+        },
+        "scroll_regions": [
+          {
+            "kind": "mermaid",
+            "client_width": 358,
+            "scroll_width": 672,
+            "local_overflow": true
+          }
+        ],
+        "console": {
+          "warnings": 0,
+          "errors": 0
+        },
+        "category_link": {
+          "clicked": true,
+          "destination_url": "http://127.0.0.1:3100/tego-arch/concepts",
+          "observed_destination_h1": "基础概念",
+          "destination_match": true,
+          "restored_url": "http://127.0.0.1:3100/tego-arch/concepts/agt-c-02",
+          "observed_restored_h1": "智能体运行框架：约束并运行智能体循环",
+          "restored_match": true
+        },
+        "screenshot_inspection": {
+          "inspected": true,
+          "verdict": "PASS",
+          "evidence": "Fresh top-viewport screenshot inspected for overlap, obstruction, clipping, collision, and unexpected blank regions."
+        },
+        "verdict": "PASS"
+      },
+      {
+        "route": "/concepts/agt-c-03",
+        "viewport": "desktop",
+        "title": "智能体循环（Agent Loop）：计划、行动、观察、评估与终止 | Tego Arch",
+        "h1": "智能体循环：让每一步都经过观察和评估",
+        "document": {
+          "client_width": 1440,
+          "scroll_width": 1440,
+          "horizontal_overflow": false
+        },
+        "scroll_regions": [
+          {
+            "kind": "mermaid",
+            "client_width": 800,
+            "scroll_width": 800,
+            "local_overflow": false
+          }
+        ],
+        "console": {
+          "warnings": 0,
+          "errors": 0
+        },
+        "category_link": {
+          "clicked": true,
+          "destination_url": "http://127.0.0.1:3100/tego-arch/concepts",
+          "observed_destination_h1": "基础概念",
+          "destination_match": true,
+          "restored_url": "http://127.0.0.1:3100/tego-arch/concepts/agt-c-03",
+          "observed_restored_h1": "智能体循环：让每一步都经过观察和评估",
+          "restored_match": true
+        },
+        "screenshot_inspection": {
+          "inspected": true,
+          "verdict": "PASS",
+          "evidence": "Fresh top-viewport screenshot inspected for overlap, obstruction, clipping, collision, and unexpected blank regions."
+        },
+        "verdict": "PASS"
+      },
+      {
+        "route": "/concepts/agt-c-03",
+        "viewport": "mobile",
+        "title": "智能体循环（Agent Loop）：计划、行动、观察、评估与终止 | Tego Arch",
+        "h1": "智能体循环：让每一步都经过观察和评估",
+        "document": {
+          "client_width": 390,
+          "scroll_width": 390,
+          "horizontal_overflow": false
+        },
+        "scroll_regions": [
+          {
+            "kind": "mermaid",
+            "client_width": 358,
+            "scroll_width": 672,
+            "local_overflow": true
+          }
+        ],
+        "console": {
+          "warnings": 0,
+          "errors": 0
+        },
+        "category_link": {
+          "clicked": true,
+          "destination_url": "http://127.0.0.1:3100/tego-arch/concepts",
+          "observed_destination_h1": "基础概念",
+          "destination_match": true,
+          "restored_url": "http://127.0.0.1:3100/tego-arch/concepts/agt-c-03",
+          "observed_restored_h1": "智能体循环：让每一步都经过观察和评估",
+          "restored_match": true
+        },
+        "screenshot_inspection": {
+          "inspected": true,
+          "verdict": "PASS",
+          "evidence": "Fresh top-viewport screenshot inspected for overlap, obstruction, clipping, collision, and unexpected blank regions."
+        },
+        "verdict": "PASS"
+      },
+      {
+        "route": "/concepts/agt-c-04",
+        "viewport": "desktop",
+        "title": "上下文、记忆、状态与执行检查点（Checkpoint）：分开信息生命周期与恢复责任 | Tego Arch",
+        "h1": "分开上下文、记忆、状态与执行检查点",
+        "document": {
+          "client_width": 1440,
+          "scroll_width": 1440,
+          "horizontal_overflow": false
+        },
+        "scroll_regions": [],
+        "console": {
+          "warnings": 0,
+          "errors": 0
+        },
+        "category_link": {
+          "clicked": true,
+          "destination_url": "http://127.0.0.1:3100/tego-arch/concepts",
+          "observed_destination_h1": "基础概念",
+          "destination_match": true,
+          "restored_url": "http://127.0.0.1:3100/tego-arch/concepts/agt-c-04",
+          "observed_restored_h1": "分开上下文、记忆、状态与执行检查点",
+          "restored_match": true
+        },
+        "screenshot_inspection": {
+          "inspected": true,
+          "verdict": "PASS",
+          "evidence": "Fresh top-viewport screenshot inspected for overlap, obstruction, clipping, collision, and unexpected blank regions."
+        },
+        "verdict": "PASS"
+      },
+      {
+        "route": "/concepts/agt-c-04",
+        "viewport": "mobile",
+        "title": "上下文、记忆、状态与执行检查点（Checkpoint）：分开信息生命周期与恢复责任 | Tego Arch",
+        "h1": "分开上下文、记忆、状态与执行检查点",
+        "document": {
+          "client_width": 390,
+          "scroll_width": 390,
+          "horizontal_overflow": false
+        },
+        "scroll_regions": [],
+        "console": {
+          "warnings": 0,
+          "errors": 0
+        },
+        "category_link": {
+          "clicked": true,
+          "destination_url": "http://127.0.0.1:3100/tego-arch/concepts",
+          "observed_destination_h1": "基础概念",
+          "destination_match": true,
+          "restored_url": "http://127.0.0.1:3100/tego-arch/concepts/agt-c-04",
+          "observed_restored_h1": "分开上下文、记忆、状态与执行检查点",
+          "restored_match": true
+        },
+        "screenshot_inspection": {
+          "inspected": true,
+          "verdict": "PASS",
+          "evidence": "Fresh top-viewport screenshot inspected for overlap, obstruction, clipping, collision, and unexpected blank regions."
+        },
+        "verdict": "PASS"
+      },
+      {
+        "route": "/concepts/agt-c-05",
+        "viewport": "desktop",
+        "title": "工具、隔离沙箱（Sandbox）、权限与副作用：让外部效果经过授权和核验 | Tego Arch",
+        "h1": "让智能体（Agent）的外部效果经过授权和核验",
+        "document": {
+          "client_width": 1440,
+          "scroll_width": 1440,
+          "horizontal_overflow": false
+        },
+        "scroll_regions": [
+          {
+            "kind": "mermaid",
+            "client_width": 800,
+            "scroll_width": 800,
+            "local_overflow": false
+          },
+          {
+            "kind": "focusable-mapping-table",
+            "client_width": 800,
+            "scroll_width": 3118,
+            "local_overflow": true
+          }
+        ],
+        "console": {
+          "warnings": 0,
+          "errors": 0
+        },
+        "category_link": {
+          "clicked": true,
+          "destination_url": "http://127.0.0.1:3100/tego-arch/concepts",
+          "observed_destination_h1": "基础概念",
+          "destination_match": true,
+          "restored_url": "http://127.0.0.1:3100/tego-arch/concepts/agt-c-05",
+          "observed_restored_h1": "让智能体（Agent）的外部效果经过授权和核验",
+          "restored_match": true
+        },
+        "screenshot_inspection": {
+          "inspected": true,
+          "verdict": "PASS",
+          "evidence": "Fresh top-viewport screenshot inspected for overlap, obstruction, clipping, collision, and unexpected blank regions."
+        },
+        "verdict": "PASS"
+      },
+      {
+        "route": "/concepts/agt-c-05",
+        "viewport": "mobile",
+        "title": "工具、隔离沙箱（Sandbox）、权限与副作用：让外部效果经过授权和核验 | Tego Arch",
+        "h1": "让智能体（Agent）的外部效果经过授权和核验",
+        "document": {
+          "client_width": 390,
+          "scroll_width": 390,
+          "horizontal_overflow": false
+        },
+        "scroll_regions": [
+          {
+            "kind": "mermaid",
+            "client_width": 358,
+            "scroll_width": 672,
+            "local_overflow": true
+          },
+          {
+            "kind": "focusable-mapping-table",
+            "client_width": 358,
+            "scroll_width": 3118,
+            "local_overflow": true
+          }
+        ],
+        "console": {
+          "warnings": 0,
+          "errors": 0
+        },
+        "category_link": {
+          "clicked": true,
+          "destination_url": "http://127.0.0.1:3100/tego-arch/concepts",
+          "observed_destination_h1": "基础概念",
+          "destination_match": true,
+          "restored_url": "http://127.0.0.1:3100/tego-arch/concepts/agt-c-05",
+          "observed_restored_h1": "让智能体（Agent）的外部效果经过授权和核验",
+          "restored_match": true
+        },
+        "screenshot_inspection": {
+          "inspected": true,
+          "verdict": "PASS",
+          "evidence": "Fresh top-viewport screenshot inspected for overlap, obstruction, clipping, collision, and unexpected blank regions."
+        },
+        "verdict": "PASS"
+      },
+      {
+        "route": "/concepts/agt-c-06",
+        "viewport": "desktop",
+        "title": "追踪、评测与执行约束：分开证据、质量判断与政策执行 | Tego Arch",
+        "h1": "分开证据、质量判断与政策执行",
+        "document": {
+          "client_width": 1440,
+          "scroll_width": 1440,
+          "horizontal_overflow": false
+        },
+        "scroll_regions": [],
+        "console": {
+          "warnings": 0,
+          "errors": 0
+        },
+        "category_link": {
+          "clicked": true,
+          "destination_url": "http://127.0.0.1:3100/tego-arch/concepts",
+          "observed_destination_h1": "基础概念",
+          "destination_match": true,
+          "restored_url": "http://127.0.0.1:3100/tego-arch/concepts/agt-c-06",
+          "observed_restored_h1": "分开证据、质量判断与政策执行",
+          "restored_match": true
+        },
+        "screenshot_inspection": {
+          "inspected": true,
+          "verdict": "PASS",
+          "evidence": "Fresh top-viewport screenshot inspected for overlap, obstruction, clipping, collision, and unexpected blank regions."
+        },
+        "verdict": "PASS"
+      },
+      {
+        "route": "/concepts/agt-c-06",
+        "viewport": "mobile",
+        "title": "追踪、评测与执行约束：分开证据、质量判断与政策执行 | Tego Arch",
+        "h1": "分开证据、质量判断与政策执行",
+        "document": {
+          "client_width": 390,
+          "scroll_width": 390,
+          "horizontal_overflow": false
+        },
+        "scroll_regions": [],
+        "console": {
+          "warnings": 0,
+          "errors": 0
+        },
+        "category_link": {
+          "clicked": true,
+          "destination_url": "http://127.0.0.1:3100/tego-arch/concepts",
+          "observed_destination_h1": "基础概念",
+          "destination_match": true,
+          "restored_url": "http://127.0.0.1:3100/tego-arch/concepts/agt-c-06",
+          "observed_restored_h1": "分开证据、质量判断与政策执行",
+          "restored_match": true
+        },
+        "screenshot_inspection": {
+          "inspected": true,
+          "verdict": "PASS",
+          "evidence": "Fresh top-viewport screenshot inspected for overlap, obstruction, clipping, collision, and unexpected blank regions."
+        },
+        "verdict": "PASS"
+      },
+      {
+        "route": "/patterns/agt-p-01",
+        "viewport": "desktop",
+        "title": "确定性工作流（Workflow）与自治智能体（Agent） | Tego Arch",
+        "h1": "确定性工作流与自治智能体：先分配控制权，再选择自治程度",
+        "document": {
+          "client_width": 1440,
+          "scroll_width": 1440,
+          "horizontal_overflow": false
+        },
+        "scroll_regions": [],
+        "console": {
+          "warnings": 0,
+          "errors": 0
+        },
+        "category_link": {
+          "clicked": true,
+          "destination_url": "http://127.0.0.1:3100/tego-arch/patterns",
+          "observed_destination_h1": "架构模式",
+          "destination_match": true,
+          "restored_url": "http://127.0.0.1:3100/tego-arch/patterns/agt-p-01",
+          "observed_restored_h1": "确定性工作流与自治智能体：先分配控制权，再选择自治程度",
+          "restored_match": true
+        },
+        "screenshot_inspection": {
+          "inspected": true,
+          "verdict": "PASS",
+          "evidence": "Fresh top-viewport screenshot inspected for overlap, obstruction, clipping, collision, and unexpected blank regions."
+        },
+        "verdict": "PASS"
+      },
+      {
+        "route": "/patterns/agt-p-01",
+        "viewport": "mobile",
+        "title": "确定性工作流（Workflow）与自治智能体（Agent） | Tego Arch",
+        "h1": "确定性工作流与自治智能体：先分配控制权，再选择自治程度",
+        "document": {
+          "client_width": 390,
+          "scroll_width": 390,
+          "horizontal_overflow": false
+        },
+        "scroll_regions": [],
+        "console": {
+          "warnings": 0,
+          "errors": 0
+        },
+        "category_link": {
+          "clicked": true,
+          "destination_url": "http://127.0.0.1:3100/tego-arch/patterns",
+          "observed_destination_h1": "架构模式",
+          "destination_match": true,
+          "restored_url": "http://127.0.0.1:3100/tego-arch/patterns/agt-p-01",
+          "observed_restored_h1": "确定性工作流与自治智能体：先分配控制权，再选择自治程度",
+          "restored_match": true
+        },
+        "screenshot_inspection": {
+          "inspected": true,
+          "verdict": "PASS",
+          "evidence": "Fresh top-viewport screenshot inspected for overlap, obstruction, clipping, collision, and unexpected blank regions."
+        },
+        "verdict": "PASS"
+      },
+      {
+        "route": "/patterns/agt-p-02",
+        "viewport": "desktop",
+        "title": "智能体检索增强生成（Agentic RAG）：用证据充分性约束检索循环 | Tego Arch",
+        "h1": "智能体检索增强生成：证据不足就继续查，预算耗尽就拒答",
+        "document": {
+          "client_width": 1440,
+          "scroll_width": 1440,
+          "horizontal_overflow": false
+        },
+        "scroll_regions": [
+          {
+            "kind": "mermaid",
+            "client_width": 800,
+            "scroll_width": 800,
+            "local_overflow": false
+          }
+        ],
+        "console": {
+          "warnings": 0,
+          "errors": 0
+        },
+        "category_link": {
+          "clicked": true,
+          "destination_url": "http://127.0.0.1:3100/tego-arch/patterns",
+          "observed_destination_h1": "架构模式",
+          "destination_match": true,
+          "restored_url": "http://127.0.0.1:3100/tego-arch/patterns/agt-p-02",
+          "observed_restored_h1": "智能体检索增强生成：证据不足就继续查，预算耗尽就拒答",
+          "restored_match": true
+        },
+        "screenshot_inspection": {
+          "inspected": true,
+          "verdict": "PASS",
+          "evidence": "Fresh top-viewport screenshot inspected for overlap, obstruction, clipping, collision, and unexpected blank regions."
+        },
+        "verdict": "PASS"
+      },
+      {
+        "route": "/patterns/agt-p-02",
+        "viewport": "mobile",
+        "title": "智能体检索增强生成（Agentic RAG）：用证据充分性约束检索循环 | Tego Arch",
+        "h1": "智能体检索增强生成：证据不足就继续查，预算耗尽就拒答",
+        "document": {
+          "client_width": 390,
+          "scroll_width": 390,
+          "horizontal_overflow": false
+        },
+        "scroll_regions": [
+          {
+            "kind": "mermaid",
+            "client_width": 358,
+            "scroll_width": 672,
+            "local_overflow": true
+          }
+        ],
+        "console": {
+          "warnings": 0,
+          "errors": 0
+        },
+        "category_link": {
+          "clicked": true,
+          "destination_url": "http://127.0.0.1:3100/tego-arch/patterns",
+          "observed_destination_h1": "架构模式",
+          "destination_match": true,
+          "restored_url": "http://127.0.0.1:3100/tego-arch/patterns/agt-p-02",
+          "observed_restored_h1": "智能体检索增强生成：证据不足就继续查，预算耗尽就拒答",
+          "restored_match": true
+        },
+        "screenshot_inspection": {
+          "inspected": true,
+          "verdict": "PASS",
+          "evidence": "Fresh top-viewport screenshot inspected for overlap, obstruction, clipping, collision, and unexpected blank regions."
+        },
+        "verdict": "PASS"
+      },
+      {
+        "route": "/patterns/agt-p-03",
+        "viewport": "desktop",
+        "title": "规划者–执行者（Planner–Executor）：用版本化计划约束重规划 | Tego Arch",
+        "h1": "规划者–执行者：计划可以改，任务真相不能由计划改写",
+        "document": {
+          "client_width": 1440,
+          "scroll_width": 1440,
+          "horizontal_overflow": false
+        },
+        "scroll_regions": [
+          {
+            "kind": "mermaid",
+            "client_width": 800,
+            "scroll_width": 800,
+            "local_overflow": false
+          }
+        ],
+        "console": {
+          "warnings": 0,
+          "errors": 0
+        },
+        "category_link": {
+          "clicked": true,
+          "destination_url": "http://127.0.0.1:3100/tego-arch/patterns",
+          "observed_destination_h1": "架构模式",
+          "destination_match": true,
+          "restored_url": "http://127.0.0.1:3100/tego-arch/patterns/agt-p-03",
+          "observed_restored_h1": "规划者–执行者：计划可以改，任务真相不能由计划改写",
+          "restored_match": true
+        },
+        "screenshot_inspection": {
+          "inspected": true,
+          "verdict": "PASS",
+          "evidence": "Fresh top-viewport screenshot inspected for overlap, obstruction, clipping, collision, and unexpected blank regions."
+        },
+        "verdict": "PASS"
+      },
+      {
+        "route": "/patterns/agt-p-03",
+        "viewport": "mobile",
+        "title": "规划者–执行者（Planner–Executor）：用版本化计划约束重规划 | Tego Arch",
+        "h1": "规划者–执行者：计划可以改，任务真相不能由计划改写",
+        "document": {
+          "client_width": 390,
+          "scroll_width": 390,
+          "horizontal_overflow": false
+        },
+        "scroll_regions": [
+          {
+            "kind": "mermaid",
+            "client_width": 358,
+            "scroll_width": 672,
+            "local_overflow": true
+          }
+        ],
+        "console": {
+          "warnings": 0,
+          "errors": 0
+        },
+        "category_link": {
+          "clicked": true,
+          "destination_url": "http://127.0.0.1:3100/tego-arch/patterns",
+          "observed_destination_h1": "架构模式",
+          "destination_match": true,
+          "restored_url": "http://127.0.0.1:3100/tego-arch/patterns/agt-p-03",
+          "observed_restored_h1": "规划者–执行者：计划可以改，任务真相不能由计划改写",
+          "restored_match": true
+        },
+        "screenshot_inspection": {
+          "inspected": true,
+          "verdict": "PASS",
+          "evidence": "Fresh top-viewport screenshot inspected for overlap, obstruction, clipping, collision, and unexpected blank regions."
+        },
+        "verdict": "PASS"
+      },
+      {
+        "route": "/patterns/agt-p-04",
+        "viewport": "desktop",
+        "title": "评估者—优化者（Evaluator-Optimizer）：用外部量表与修订预算约束反馈循环 | Tego Arch",
+        "h1": "评估者—优化者：反馈可以改进候选，分数不能创造真相",
+        "document": {
+          "client_width": 1440,
+          "scroll_width": 1440,
+          "horizontal_overflow": false
+        },
+        "scroll_regions": [
+          {
+            "kind": "mermaid",
+            "client_width": 800,
+            "scroll_width": 800,
+            "local_overflow": false
+          }
+        ],
+        "console": {
+          "warnings": 0,
+          "errors": 0
+        },
+        "category_link": {
+          "clicked": true,
+          "destination_url": "http://127.0.0.1:3100/tego-arch/patterns",
+          "observed_destination_h1": "架构模式",
+          "destination_match": true,
+          "restored_url": "http://127.0.0.1:3100/tego-arch/patterns/agt-p-04",
+          "observed_restored_h1": "评估者—优化者：反馈可以改进候选，分数不能创造真相",
+          "restored_match": true
+        },
+        "screenshot_inspection": {
+          "inspected": true,
+          "verdict": "PASS",
+          "evidence": "Fresh top-viewport screenshot inspected for overlap, obstruction, clipping, collision, and unexpected blank regions."
+        },
+        "verdict": "PASS"
+      },
+      {
+        "route": "/patterns/agt-p-04",
+        "viewport": "mobile",
+        "title": "评估者—优化者（Evaluator-Optimizer）：用外部量表与修订预算约束反馈循环 | Tego Arch",
+        "h1": "评估者—优化者：反馈可以改进候选，分数不能创造真相",
+        "document": {
+          "client_width": 390,
+          "scroll_width": 390,
+          "horizontal_overflow": false
+        },
+        "scroll_regions": [
+          {
+            "kind": "mermaid",
+            "client_width": 358,
+            "scroll_width": 672,
+            "local_overflow": true
+          }
+        ],
+        "console": {
+          "warnings": 0,
+          "errors": 0
+        },
+        "category_link": {
+          "clicked": true,
+          "destination_url": "http://127.0.0.1:3100/tego-arch/patterns",
+          "observed_destination_h1": "架构模式",
+          "destination_match": true,
+          "restored_url": "http://127.0.0.1:3100/tego-arch/patterns/agt-p-04",
+          "observed_restored_h1": "评估者—优化者：反馈可以改进候选，分数不能创造真相",
+          "restored_match": true
+        },
+        "screenshot_inspection": {
+          "inspected": true,
+          "verdict": "PASS",
+          "evidence": "Fresh top-viewport screenshot inspected for overlap, obstruction, clipping, collision, and unexpected blank regions."
+        },
+        "verdict": "PASS"
+      },
+      {
+        "route": "/patterns/agt-p-05",
+        "viewport": "desktop",
+        "title": "路由与模型驱动分发：先过策略门，再选择唯一目的地 | Tego Arch",
+        "h1": "路由与模型驱动分发：模型可以提议去向，不能绕过策略决定执行",
+        "document": {
+          "client_width": 1440,
+          "scroll_width": 1440,
+          "horizontal_overflow": false
+        },
+        "scroll_regions": [
+          {
+            "kind": "mermaid",
+            "client_width": 800,
+            "scroll_width": 800,
+            "local_overflow": false
+          }
+        ],
+        "console": {
+          "warnings": 0,
+          "errors": 0
+        },
+        "category_link": {
+          "clicked": true,
+          "destination_url": "http://127.0.0.1:3100/tego-arch/patterns",
+          "observed_destination_h1": "架构模式",
+          "destination_match": true,
+          "restored_url": "http://127.0.0.1:3100/tego-arch/patterns/agt-p-05",
+          "observed_restored_h1": "路由与模型驱动分发：模型可以提议去向，不能绕过策略决定执行",
+          "restored_match": true
+        },
+        "screenshot_inspection": {
+          "inspected": true,
+          "verdict": "PASS",
+          "evidence": "Fresh top-viewport screenshot inspected for overlap, obstruction, clipping, collision, and unexpected blank regions."
+        },
+        "verdict": "PASS"
+      },
+      {
+        "route": "/patterns/agt-p-05",
+        "viewport": "mobile",
+        "title": "路由与模型驱动分发：先过策略门，再选择唯一目的地 | Tego Arch",
+        "h1": "路由与模型驱动分发：模型可以提议去向，不能绕过策略决定执行",
+        "document": {
+          "client_width": 390,
+          "scroll_width": 390,
+          "horizontal_overflow": false
+        },
+        "scroll_regions": [
+          {
+            "kind": "mermaid",
+            "client_width": 358,
+            "scroll_width": 672,
+            "local_overflow": true
+          }
+        ],
+        "console": {
+          "warnings": 0,
+          "errors": 0
+        },
+        "category_link": {
+          "clicked": true,
+          "destination_url": "http://127.0.0.1:3100/tego-arch/patterns",
+          "observed_destination_h1": "架构模式",
+          "destination_match": true,
+          "restored_url": "http://127.0.0.1:3100/tego-arch/patterns/agt-p-05",
+          "observed_restored_h1": "路由与模型驱动分发：模型可以提议去向，不能绕过策略决定执行",
+          "restored_match": true
+        },
+        "screenshot_inspection": {
+          "inspected": true,
+          "verdict": "PASS",
+          "evidence": "Fresh top-viewport screenshot inspected for overlap, obstruction, clipping, collision, and unexpected blank regions."
+        },
+        "verdict": "PASS"
+      },
+      {
+        "route": "/patterns/agt-p-06",
+        "viewport": "desktop",
+        "title": "智能体（Agent）的监督者（Supervisor）、移交（Handoff）与智能体作为工具（Agents as Tools）：先决定控制权归谁 | Tego Arch",
+        "h1": "监督者、移交与智能体作为工具：多智能体首先是控制权设计",
+        "document": {
+          "client_width": 1440,
+          "scroll_width": 1440,
+          "horizontal_overflow": false
+        },
+        "scroll_regions": [
+          {
+            "kind": "drawio-svg",
+            "client_width": 800,
+            "scroll_width": 800,
+            "local_overflow": false
+          }
+        ],
+        "console": {
+          "warnings": 0,
+          "errors": 0
+        },
+        "category_link": {
+          "clicked": true,
+          "destination_url": "http://127.0.0.1:3100/tego-arch/patterns",
+          "observed_destination_h1": "架构模式",
+          "destination_match": true,
+          "restored_url": "http://127.0.0.1:3100/tego-arch/patterns/agt-p-06",
+          "observed_restored_h1": "监督者、移交与智能体作为工具：多智能体首先是控制权设计",
+          "restored_match": true
+        },
+        "screenshot_inspection": {
+          "inspected": true,
+          "verdict": "PASS",
+          "evidence": "Fresh top-viewport screenshot inspected for overlap, obstruction, clipping, collision, and unexpected blank regions."
+        },
+        "verdict": "PASS"
+      },
+      {
+        "route": "/patterns/agt-p-06",
+        "viewport": "mobile",
+        "title": "智能体（Agent）的监督者（Supervisor）、移交（Handoff）与智能体作为工具（Agents as Tools）：先决定控制权归谁 | Tego Arch",
+        "h1": "监督者、移交与智能体作为工具：多智能体首先是控制权设计",
+        "document": {
+          "client_width": 390,
+          "scroll_width": 390,
+          "horizontal_overflow": false
+        },
+        "scroll_regions": [
+          {
+            "kind": "drawio-svg",
+            "client_width": 358,
+            "scroll_width": 800,
+            "local_overflow": true
+          }
+        ],
+        "console": {
+          "warnings": 0,
+          "errors": 0
+        },
+        "category_link": {
+          "clicked": true,
+          "destination_url": "http://127.0.0.1:3100/tego-arch/patterns",
+          "observed_destination_h1": "架构模式",
+          "destination_match": true,
+          "restored_url": "http://127.0.0.1:3100/tego-arch/patterns/agt-p-06",
+          "observed_restored_h1": "监督者、移交与智能体作为工具：多智能体首先是控制权设计",
+          "restored_match": true
+        },
+        "screenshot_inspection": {
+          "inspected": true,
+          "verdict": "PASS",
+          "evidence": "Fresh top-viewport screenshot inspected for overlap, obstruction, clipping, collision, and unexpected blank regions."
+        },
+        "verdict": "PASS"
+      },
+      {
+        "route": "/patterns/agt-p-07",
+        "viewport": "desktop",
+        "title": "编排者–工作者与扇出/扇入：并行不是无界广播 | Tego Arch",
+        "h1": "编排者–工作者与扇出/扇入：并行不是无界广播",
+        "document": {
+          "client_width": 1440,
+          "scroll_width": 1440,
+          "horizontal_overflow": false
+        },
+        "scroll_regions": [
+          {
+            "kind": "mermaid",
+            "client_width": 800,
+            "scroll_width": 800,
+            "local_overflow": false
+          }
+        ],
+        "console": {
+          "warnings": 0,
+          "errors": 0
+        },
+        "category_link": {
+          "clicked": true,
+          "destination_url": "http://127.0.0.1:3100/tego-arch/patterns",
+          "observed_destination_h1": "架构模式",
+          "destination_match": true,
+          "restored_url": "http://127.0.0.1:3100/tego-arch/patterns/agt-p-07",
+          "observed_restored_h1": "编排者–工作者与扇出/扇入：并行不是无界广播",
+          "restored_match": true
+        },
+        "screenshot_inspection": {
+          "inspected": true,
+          "verdict": "PASS",
+          "evidence": "Fresh top-viewport screenshot inspected for overlap, obstruction, clipping, collision, and unexpected blank regions."
+        },
+        "verdict": "PASS"
+      },
+      {
+        "route": "/patterns/agt-p-07",
+        "viewport": "mobile",
+        "title": "编排者–工作者与扇出/扇入：并行不是无界广播 | Tego Arch",
+        "h1": "编排者–工作者与扇出/扇入：并行不是无界广播",
+        "document": {
+          "client_width": 390,
+          "scroll_width": 390,
+          "horizontal_overflow": false
+        },
+        "scroll_regions": [
+          {
+            "kind": "mermaid",
+            "client_width": 358,
+            "scroll_width": 672,
+            "local_overflow": true
+          }
+        ],
+        "console": {
+          "warnings": 0,
+          "errors": 0
+        },
+        "category_link": {
+          "clicked": true,
+          "destination_url": "http://127.0.0.1:3100/tego-arch/patterns",
+          "observed_destination_h1": "架构模式",
+          "destination_match": true,
+          "restored_url": "http://127.0.0.1:3100/tego-arch/patterns/agt-p-07",
+          "observed_restored_h1": "编排者–工作者与扇出/扇入：并行不是无界广播",
+          "restored_match": true
+        },
+        "screenshot_inspection": {
+          "inspected": true,
+          "verdict": "PASS",
+          "evidence": "Fresh top-viewport screenshot inspected for overlap, obstruction, clipping, collision, and unexpected blank regions."
+        },
+        "verdict": "PASS"
+      },
+      {
+        "route": "/patterns/agt-p-08",
+        "viewport": "desktop",
+        "title": "持久智能体（Agent）与人在回路（Human-in-the-loop）：恢复控制状态，不臆测外部真相 | Tego Arch",
+        "h1": "持久智能体与人工介入：恢复控制状态，不臆测外部真相",
+        "document": {
+          "client_width": 1440,
+          "scroll_width": 1440,
+          "horizontal_overflow": false
+        },
+        "scroll_regions": [
+          {
+            "kind": "drawio-svg",
+            "client_width": 800,
+            "scroll_width": 800,
+            "local_overflow": false
+          }
+        ],
+        "console": {
+          "warnings": 0,
+          "errors": 0
+        },
+        "category_link": {
+          "clicked": true,
+          "destination_url": "http://127.0.0.1:3100/tego-arch/patterns",
+          "observed_destination_h1": "架构模式",
+          "destination_match": true,
+          "restored_url": "http://127.0.0.1:3100/tego-arch/patterns/agt-p-08",
+          "observed_restored_h1": "持久智能体与人工介入：恢复控制状态，不臆测外部真相",
+          "restored_match": true
+        },
+        "screenshot_inspection": {
+          "inspected": true,
+          "verdict": "PASS",
+          "evidence": "Fresh top-viewport screenshot inspected for overlap, obstruction, clipping, collision, and unexpected blank regions."
+        },
+        "verdict": "PASS"
+      },
+      {
+        "route": "/patterns/agt-p-08",
+        "viewport": "mobile",
+        "title": "持久智能体（Agent）与人在回路（Human-in-the-loop）：恢复控制状态，不臆测外部真相 | Tego Arch",
+        "h1": "持久智能体与人工介入：恢复控制状态，不臆测外部真相",
+        "document": {
+          "client_width": 390,
+          "scroll_width": 390,
+          "horizontal_overflow": false
+        },
+        "scroll_regions": [
+          {
+            "kind": "drawio-svg",
+            "client_width": 358,
+            "scroll_width": 800,
+            "local_overflow": true
+          }
+        ],
+        "console": {
+          "warnings": 0,
+          "errors": 0
+        },
+        "category_link": {
+          "clicked": true,
+          "destination_url": "http://127.0.0.1:3100/tego-arch/patterns",
+          "observed_destination_h1": "架构模式",
+          "destination_match": true,
+          "restored_url": "http://127.0.0.1:3100/tego-arch/patterns/agt-p-08",
+          "observed_restored_h1": "持久智能体与人工介入：恢复控制状态，不臆测外部真相",
+          "restored_match": true
+        },
+        "screenshot_inspection": {
+          "inspected": true,
+          "verdict": "PASS",
+          "evidence": "Fresh top-viewport screenshot inspected for overlap, obstruction, clipping, collision, and unexpected blank regions."
+        },
+        "verdict": "PASS"
+      },
+      {
+        "route": "/cases/multi-agent-research-system",
+        "viewport": "desktop",
+        "title": "多智能体研究系统：让证据完成度而不是工作者数量决定终止 | Tego Arch",
+        "h1": "多智能体研究系统：让证据完成度决定终止",
+        "document": {
+          "client_width": 1440,
+          "scroll_width": 1440,
+          "horizontal_overflow": false
+        },
+        "scroll_regions": [
+          {
+            "kind": "drawio-svg",
+            "client_width": 800,
+            "scroll_width": 800,
+            "local_overflow": false
+          }
+        ],
+        "console": {
+          "warnings": 0,
+          "errors": 0
+        },
+        "category_link": {
+          "clicked": true,
+          "destination_url": "http://127.0.0.1:3100/tego-arch/cases",
+          "observed_destination_h1": "案例库",
+          "destination_match": true,
+          "restored_url": "http://127.0.0.1:3100/tego-arch/cases/multi-agent-research-system",
+          "observed_restored_h1": "多智能体研究系统：让证据完成度决定终止",
+          "restored_match": true
+        },
+        "screenshot_inspection": {
+          "inspected": true,
+          "verdict": "PASS",
+          "evidence": "Fresh top-viewport screenshot inspected for overlap, obstruction, clipping, collision, and unexpected blank regions."
+        },
+        "verdict": "PASS"
+      },
+      {
+        "route": "/cases/multi-agent-research-system",
+        "viewport": "mobile",
+        "title": "多智能体研究系统：让证据完成度而不是工作者数量决定终止 | Tego Arch",
+        "h1": "多智能体研究系统：让证据完成度决定终止",
+        "document": {
+          "client_width": 390,
+          "scroll_width": 390,
+          "horizontal_overflow": false
+        },
+        "scroll_regions": [
+          {
+            "kind": "drawio-svg",
+            "client_width": 358,
+            "scroll_width": 800,
+            "local_overflow": true
+          }
+        ],
+        "console": {
+          "warnings": 0,
+          "errors": 0
+        },
+        "category_link": {
+          "clicked": true,
+          "destination_url": "http://127.0.0.1:3100/tego-arch/cases",
+          "observed_destination_h1": "案例库",
+          "destination_match": true,
+          "restored_url": "http://127.0.0.1:3100/tego-arch/cases/multi-agent-research-system",
+          "observed_restored_h1": "多智能体研究系统：让证据完成度决定终止",
+          "restored_match": true
+        },
+        "screenshot_inspection": {
+          "inspected": true,
+          "verdict": "PASS",
+          "evidence": "Fresh top-viewport screenshot inspected for overlap, obstruction, clipping, collision, and unexpected blank regions."
+        },
+        "verdict": "PASS"
+      },
+      {
+        "route": "/cases/long-running-coding-agent",
+        "viewport": "desktop",
+        "title": "长任务编码智能体：把完成状态留在上下文窗口之外 | Tego Arch",
+        "h1": "长任务编码智能体：把完成状态留在上下文窗口之外",
+        "document": {
+          "client_width": 1440,
+          "scroll_width": 1440,
+          "horizontal_overflow": false
+        },
+        "scroll_regions": [
+          {
+            "kind": "drawio-svg",
+            "client_width": 800,
+            "scroll_width": 800,
+            "local_overflow": false
+          }
+        ],
+        "console": {
+          "warnings": 0,
+          "errors": 0
+        },
+        "category_link": {
+          "clicked": true,
+          "destination_url": "http://127.0.0.1:3100/tego-arch/cases",
+          "observed_destination_h1": "案例库",
+          "destination_match": true,
+          "restored_url": "http://127.0.0.1:3100/tego-arch/cases/long-running-coding-agent",
+          "observed_restored_h1": "长任务编码智能体：把完成状态留在上下文窗口之外",
+          "restored_match": true
+        },
+        "screenshot_inspection": {
+          "inspected": true,
+          "verdict": "PASS",
+          "evidence": "Fresh top-viewport screenshot inspected for overlap, obstruction, clipping, collision, and unexpected blank regions."
+        },
+        "verdict": "PASS"
+      },
+      {
+        "route": "/cases/long-running-coding-agent",
+        "viewport": "mobile",
+        "title": "长任务编码智能体：把完成状态留在上下文窗口之外 | Tego Arch",
+        "h1": "长任务编码智能体：把完成状态留在上下文窗口之外",
+        "document": {
+          "client_width": 390,
+          "scroll_width": 390,
+          "horizontal_overflow": false
+        },
+        "scroll_regions": [
+          {
+            "kind": "drawio-svg",
+            "client_width": 358,
+            "scroll_width": 800,
+            "local_overflow": true
+          }
+        ],
+        "console": {
+          "warnings": 0,
+          "errors": 0
+        },
+        "category_link": {
+          "clicked": true,
+          "destination_url": "http://127.0.0.1:3100/tego-arch/cases",
+          "observed_destination_h1": "案例库",
+          "destination_match": true,
+          "restored_url": "http://127.0.0.1:3100/tego-arch/cases/long-running-coding-agent",
+          "observed_restored_h1": "长任务编码智能体：把完成状态留在上下文窗口之外",
+          "restored_match": true
+        },
+        "screenshot_inspection": {
+          "inspected": true,
+          "verdict": "PASS",
+          "evidence": "Fresh top-viewport screenshot inspected for overlap, obstruction, clipping, collision, and unexpected blank regions."
+        },
+        "verdict": "PASS"
+      },
+      {
+        "route": "/cases/production-incident-response-agent",
+        "viewport": "desktop",
+        "title": "生产事故响应智能体：把诊断建议与变更授权分成两条身份链 | Tego Arch",
+        "h1": "生产事故响应智能体：把诊断建议与变更授权分成两条身份链",
+        "document": {
+          "client_width": 1440,
+          "scroll_width": 1440,
+          "horizontal_overflow": false
+        },
+        "scroll_regions": [
+          {
+            "kind": "drawio-svg",
+            "client_width": 800,
+            "scroll_width": 800,
+            "local_overflow": false
+          }
+        ],
+        "console": {
+          "warnings": 0,
+          "errors": 0
+        },
+        "category_link": {
+          "clicked": true,
+          "destination_url": "http://127.0.0.1:3100/tego-arch/cases",
+          "observed_destination_h1": "案例库",
+          "destination_match": true,
+          "restored_url": "http://127.0.0.1:3100/tego-arch/cases/production-incident-response-agent",
+          "observed_restored_h1": "生产事故响应智能体：把诊断建议与变更授权分成两条身份链",
+          "restored_match": true
+        },
+        "screenshot_inspection": {
+          "inspected": true,
+          "verdict": "PASS",
+          "evidence": "Fresh top-viewport screenshot inspected for overlap, obstruction, clipping, collision, and unexpected blank regions."
+        },
+        "verdict": "PASS"
+      },
+      {
+        "route": "/cases/production-incident-response-agent",
+        "viewport": "mobile",
+        "title": "生产事故响应智能体：把诊断建议与变更授权分成两条身份链 | Tego Arch",
+        "h1": "生产事故响应智能体：把诊断建议与变更授权分成两条身份链",
+        "document": {
+          "client_width": 390,
+          "scroll_width": 390,
+          "horizontal_overflow": false
+        },
+        "scroll_regions": [
+          {
+            "kind": "drawio-svg",
+            "client_width": 358,
+            "scroll_width": 800,
+            "local_overflow": true
+          }
+        ],
+        "console": {
+          "warnings": 0,
+          "errors": 0
+        },
+        "category_link": {
+          "clicked": true,
+          "destination_url": "http://127.0.0.1:3100/tego-arch/cases",
+          "observed_destination_h1": "案例库",
+          "destination_match": true,
+          "restored_url": "http://127.0.0.1:3100/tego-arch/cases/production-incident-response-agent",
+          "observed_restored_h1": "生产事故响应智能体：把诊断建议与变更授权分成两条身份链",
+          "restored_match": true
+        },
+        "screenshot_inspection": {
+          "inspected": true,
+          "verdict": "PASS",
+          "evidence": "Fresh top-viewport screenshot inspected for overlap, obstruction, clipping, collision, and unexpected blank regions."
+        },
+        "verdict": "PASS"
+      }
+    ],
+    "summary": {
+      "routes": 17,
+      "viewport_states": 34,
+      "failures": 0,
+      "visual_inspection": "PASS"
+    },
+    "final_verify": {
+      "command": "npm run verify",
+      "completed_at_utc": "2026-08-28T02:41:38Z",
+      "exit_code": 0,
+      "npm_test": {"tests": 1440, "pass": 1440, "fail": 0},
+      "content_validation": {"documents": 124, "registered_sources": 586},
+      "terminology": {"files": 126, "registered_terms": 176, "issues": 0},
+      "content_projection": "PASS",
+      "cached_links": "PASS",
+      "review_health": "PASS",
+      "typecheck": "PASS",
+      "production_build": "PASS",
+      "evidence_file_exception": "The complete verify consumed the raw candidate recheck and final four-axis review before this result was appended; the result cannot hash or name its own containing commit without becoming self-referential."
+    },
+    "unchanged_diagram_evidence": "The six published SVG assets are byte-identical to the prior detailed Browser/geometry candidate evidence; the authenticated P06 normalized template and all focused geometry gates remain applicable.",
+    "viewport_override_reset": true,
+    "verdict": "PASS"
+  },
   "verify": {
     "command": "npm run verify",
     "started_at_utc": "2026-08-27T23:39:05Z",

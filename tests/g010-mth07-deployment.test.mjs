@@ -855,6 +855,7 @@ test('locks the exact pre-G010 review namespace against add edit and delete muta
 
   const canonicalPayload = structuredClone(agenticEvidence);
   delete canonicalPayload.verify.post_fix_final;
+  delete canonicalPayload.release_candidate_recheck;
   assert.equal(sha256(JSON.stringify(canonicalPayload)), AGENTIC_EVIDENCE_PAYLOAD_SHA256);
   const nonEvidenceDiff = execFileSync('git', [
     'diff', '--binary', AGENTIC_VERIFY_BASE, AGENTIC_VERIFIED_PARENT, '--', '.',
