@@ -30,7 +30,7 @@
 - Create `tests/search-local-config.test.mjs` — enforce dependency, configuration, scope, localization, and dictionary contracts without running a production build.
 - Create `scripts/check-search-index.mjs` — inspect an existing `build/` directory and reject missing, unhashed, empty, mis-based, or over-scoped search indexes.
 - Create `tests/search-index-build.test.mjs` — test the post-build validator with isolated synthetic build fixtures.
-- Create `docs/reviews/static-local-search.md` — record local and production browser acceptance only after every listed observation passes.
+- Create `docs/superpowers/reviews/2026-08-28-static-local-search.md` — record local and production browser acceptance only after every listed observation passes.
 
 ---
 
@@ -548,7 +548,7 @@ git commit -m "test: guard local search build artifacts"
 ### Task 3: Local production browser acceptance
 
 **Files:**
-- Create: `docs/reviews/static-local-search.md`
+- Create: `docs/superpowers/reviews/2026-08-28-static-local-search.md`
 - Modify only if an acceptance check fails: `src/search/zh-user-dict.txt` or `docusaurus.config.ts`
 
 **Interfaces:**
@@ -599,7 +599,7 @@ Expected: every check passes and no external search request is present.
 
 - [ ] **Step 4: Record the passing local evidence**
 
-Create `docs/reviews/static-local-search.md` only after Steps 2–3 pass:
+Create `docs/superpowers/reviews/2026-08-28-static-local-search.md` only after Steps 2–3 pass:
 
 ```markdown
 # Static local search review
@@ -650,7 +650,7 @@ Expected: all tests and commands pass with no whitespace errors.
 Commit:
 
 ```bash
-git add docs/reviews/static-local-search.md src/search/zh-user-dict.txt docusaurus.config.ts
+git add docs/superpowers/reviews/2026-08-28-static-local-search.md src/search/zh-user-dict.txt docusaurus.config.ts
 git commit -m "docs: record local search acceptance"
 ```
 
@@ -661,7 +661,7 @@ If neither configuration nor dictionary changed during browser QA, `git add` sim
 ### Task 4: Full verification, integration, publication, and production smoke test
 
 **Files:**
-- Modify after successful deployment: `docs/reviews/static-local-search.md`
+- Modify after successful deployment: `docs/superpowers/reviews/2026-08-28-static-local-search.md`
 
 **Interfaces:**
 - Consumes: Tasks 1–3 and the existing GitHub Pages workflow triggered by pushes to `main`.
@@ -685,7 +685,7 @@ Run:
 
 ```bash
 git diff --stat main...HEAD
-git diff main...HEAD -- package.json docusaurus.config.ts src/search/zh-user-dict.txt scripts/check-search-index.mjs tests/search-local-config.test.mjs tests/search-index-build.test.mjs docs/reviews/static-local-search.md
+git diff main...HEAD -- package.json docusaurus.config.ts src/search/zh-user-dict.txt scripts/check-search-index.mjs tests/search-local-config.test.mjs tests/search-index-build.test.mjs docs/superpowers/reviews/2026-08-28-static-local-search.md
 ```
 
 Expected: only the planned search dependency, configuration, dictionary, validator, tests, and review record appear; there is no Ask AI configuration, external API, unrelated content edit, or generated `build/` artifact.
@@ -716,7 +716,7 @@ Expected: all production checks pass on the deployed commit.
 
 - [ ] **Step 6: Append production evidence and commit the record**
 
-Append to `docs/reviews/static-local-search.md`:
+Append to `docs/superpowers/reviews/2026-08-28-static-local-search.md`:
 
 ```markdown
 ## Production verification
@@ -727,7 +727,7 @@ GitHub Pages deployment for the integrated search commit completed successfully.
 Then run:
 
 ```bash
-git add docs/reviews/static-local-search.md
+git add docs/superpowers/reviews/2026-08-28-static-local-search.md
 git commit -m "docs: record production search verification"
 npm run test
 git push origin main

@@ -206,6 +206,6 @@ test('runs terminology governance in the complete verification chain', async () 
   );
   assert.equal(
     packageJson.scripts.verify,
-    'npm run test && npm run validate:content && npm run check:terminology && npm run check:content && npm run check:links && npm run check:reviews && npm run typecheck && npm run build',
+    'npm run test && npm run validate:content && npm run check:terminology && npm run check:content && npm run check:links && npm run check:reviews && npm run typecheck && npm run build && npm run check:search-index',
   );
 });
