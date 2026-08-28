@@ -16,6 +16,8 @@ const POST_G010_G009_ARTIFACTS = new Map([
   ['docs/reviews/evidence/g009-batch13-stage-a-browser.json', [17_260, 'a0de2d5ea069b2af87ad4aa4ef4696a9a22e6ff99ba96b616763262f1814ed38']],
   ['docs/reviews/evidence/g009-batch13-stage-a-production-browser.json', [33_721, 'a28bb3269f2b7545b7d77f2ec506ce5b1bd737924a5db6945481ee8ec5763560']],
   ['docs/reviews/evidence/g009-batch13-stage-b-production-browser.json', [47_997, '93540ff26f5d7a6fddb2ca5310a838304d04afa6994788fcf1fb8d0b4a6ff958']],
+  ['docs/reviews/g009-batch14.md', [6_167, '9d566a382ffc43dc110e6a398aa03e5f3f9db47fed292c016f5b03c8cde14192']],
+  ['docs/reviews/evidence/g009-batch14-stage-a-browser.json', [27_953, '415ca7f78747cff78de84bc025b8a870dabca1f993e558b8a2d6dcae8354fa6d']],
 ]);
 const IMPLEMENTATION_HEAD = 'a413be060c93f7ddd20e7db5417e94f4166dc1e8';
 const PAGES = {runId: 31786075868, buildJobId: 94722157542, deployJobId: 94722766883};
@@ -804,6 +806,8 @@ test('locks the exact pre-G010 review namespace against add edit and delete muta
     'docs/reviews/evidence/g009-batch13-stage-a-browser.json',
     'docs/reviews/evidence/g009-batch13-stage-a-production-browser.json',
     'docs/reviews/evidence/g009-batch13-stage-b-production-browser.json',
+    'docs/reviews/g009-batch14.md',
+    'docs/reviews/evidence/g009-batch14-stage-a-browser.json',
     'docs/reviews/evidence/g010-mth07-stage-a-production-browser.json',
     'docs/reviews/evidence/g010-mth07-stage-b-production-browser.json',
   ]) assert.equal(isHistoricalReviewArtifact(currentPath), false, `${currentPath} is excluded from exact pre-G010 history`);
