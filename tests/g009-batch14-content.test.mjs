@@ -1,5 +1,4 @@
 import assert from 'node:assert/strict';
-import {spawnSync} from 'node:child_process';
 import {readFileSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import test from 'node:test';
@@ -18,6 +17,7 @@ export const NEXT_ROUTE = '/styles/sty-14';
 export const STAGE_B_REVIEW = 'docs/reviews/g009-batch14.md';
 export const STAGE_B_BROWSER = 'docs/reviews/evidence/g009-batch14-stage-b-production-browser.json';
 export const STAGE_B_PUBLISHED_HEAD = 'e04605ed2b02568289cbfc1b47b1df77e4996d68';
+export const FINAL_EVIDENCE_REVIEWED_HEAD = 'UNBOUND';
 export const STAGE_B_PRODUCTION_PAGES = Object.freeze({
   workflow: 'Verify and deploy Docusaurus to GitHub Pages',
   runId: 33_189_774_344,
@@ -445,7 +445,6 @@ function assertDiagramMutationRejections(drawioSource, svgSource) {
   assert.throws(() => assertSpaceBasedDiagram(drawioSource, replaceOnce(svgSource, '</svg>', '<rect x="510" y="570" width="180" height="55" fill="#fff"/></svg>', 'unannotated later paint mask')), /later painted occluder/u, 'unannotated later white masks rejected from actual paint');
   assert.throws(() => assertSpaceBasedDiagram(drawioSource, replaceOnce(svgSource, 'data-node-shape-for="affinity-key" x="650"', 'data-node-shape-for="affinity-key" x="651"', 'SVG node geometry drift')), /synchronized Draw.io\/SVG node geometry/u, 'SVG node geometry cannot drift from Draw.io');
 }
-const FINAL_REVIEW_TYPES = Object.freeze(['code review', 'content review', 'architecture review']);
 function markdownH2Section(source, heading) {
   const marker = `\n## ${heading}\n\n`;
   const start = source.indexOf(marker);
@@ -457,27 +456,16 @@ function markdownH2Section(source, heading) {
 }
 function assertExactHeadFinalReviews(source, head) {
   assert.match(head, /^[\da-f]{40}$/u, 'exact reviewed head is a full commit SHA');
-  const headings = [...source.matchAll(/^##\s+(code review|content review|architecture review)\s*$/gimu)];
-  assert.equal(headings.length, FINAL_REVIEW_TYPES.length, 'exactly three typed final-review sections');
-  const seen = [];
-  for (const [index, heading] of headings.entries()) {
-    const type = heading[1].toLowerCase(); const start = heading.index + heading[0].length; const end = /^##\s+/gmu.exec(source.slice(start))?.index; const section = source.slice(start, end === undefined ? source.length : start + end);
-    seen.push(type);
-    const typeFields = [...section.matchAll(/^-\s*Review type:\s*(code review|content review|architecture review)\s*$/gimu)];
-    const headFields = [...section.matchAll(/^-\s*Reviewed head:\s*([\da-f]{40})\s*$/gimu)];
-    const verdictFields = [...section.matchAll(/^-\s*Verdict:\s*([^\r\n]+?)\s*$/gimu)];
-    assert.equal(typeFields.length, 1, type + ' has exactly one structured review type');
-    assert.equal(typeFields[0]?.[1].toLowerCase(), type, type + ' section binds its own review type');
-    assert.equal(headFields.length, 1, type + ' has exactly one structured reviewed head');
-    assert.equal(headFields[0]?.[1].toLowerCase(), head, type + ' binds the exact implementation head');
-    assert.equal(verdictFields.length, 1, type + ' has exactly one structured verdict');
-    assert.equal(verdictFields[0]?.[1].trim().toUpperCase(), 'APPROVED', type + ' has an explicit affirmative APPROVED verdict');
-    assert.doesNotMatch(section, /\b(?:NOT\s+READY|NOT\s+APPROVED|FAIL(?:ED|URE)?)\b/iu, type + ' contains no negative closing verdict');
-    const mentionedHeads = section.match(/\b[\da-f]{40}\b/giu) ?? [];
-    assert.ok(mentionedHeads.length > 0 && mentionedHeads.every((value) => value.toLowerCase() === head), type + ' contains no old-head review plus new-head aside');
-    assert.equal(headings[index + 1]?.index === heading.index, false, type + ' is a distinct section');
-  }
-  assert.deepEqual([...seen].sort(), [...FINAL_REVIEW_TYPES].sort(), 'code/content/architecture reviews are each present exactly once');
+  const lines = [
+    `- Exact final evidence candidate head: \`${head}\`.`,
+    `- Independent final code/spec/security review: \`READY / APPROVE\`; findings: \`0\`; exact head: \`${head}\`.`,
+    `- Independent final content/evidence/rights review: \`CONTENT READY\`; rights: \`PASS\`; findings: \`0\`; exact head: \`${head}\`.`,
+    `- Independent final architecture/invariant review: \`CLEAR / READY\`; blockers: \`0\`; exact head: \`${head}\`.`,
+    '- Final review finding totals: Critical `0`; Important `0`; Minor `0`; ⚠️ `0`.',
+    '- Final Stage B recovery judgment: `READY`.',
+    '- Recovery baseline status: `READY_TO_BIND`.',
+  ];
+  for (const line of lines) assert.equal(source.split(line).length - 1, 1, `exact final review line: ${line}`);
 }
 async function assertRelationsAndStage() {
   const reciprocalSources = new Map(RECIPROCAL_CONTRACTS.map(([path]) => [path, readFileSync(path, 'utf8')])); assertReciprocalRelations(reciprocalSources);
@@ -502,7 +490,7 @@ async function assertRelationsAndStage() {
   const evidence = JSON.parse(browser);
   assert.deepEqual(evidence.pages, STAGE_B_PRODUCTION_PAGES, 'exact-head Pages deployment identity'); assert.equal(evidence.implementationHead, STAGE_B_PUBLISHED_HEAD, 'Browser evidence exact deployed Stage B head'); assert.deepEqual(Object.keys(evidence.states).sort(), ['desktopDark', 'desktopLight', 'mobileDark', 'mobileLight'], 'four Browser states'); assert.equal(evidence.functionalSummary.status, 'PASS', 'Browser functional QA passes'); assert.equal(evidence.functionalSummary.states, 4, 'four Browser states accepted'); assert.equal(evidence.functionalSummary.sty14ActionableTotal, 0, 'STY-14 actionable count is zero'); for (const state of Object.values(evidence.states)) assert.equal(state.sty14ActionableCount, 0, 'each accepted state has zero STY-14 actions');
   const recovery = markdownH2Section(review, 'Stage B production recovery candidate');
-  if (recovery.includes('- Final Stage B recovery judgment: `NOT_RECORDED`.')) {
+  if (FINAL_EVIDENCE_REVIEWED_HEAD === 'UNBOUND') {
     for (const literal of [
       '- Exact final evidence candidate head: `UNBOUND — controller must create and bind the exact post-production-evidence candidate head`.',
       '- Independent final code/spec/security review: `UNBOUND — controller must assign a read-only reviewer`.',
@@ -515,8 +503,7 @@ async function assertRelationsAndStage() {
     assert.doesNotMatch(recovery, /Independent final (?:code\/spec\/security|content\/evidence\/rights|architecture\/invariant) review: `(?:READY|CONTENT READY|CLEAR \/ READY)/u, 'no final verdict is fabricated before independent reviews');
     return;
   }
-  const headResult = spawnSync('git', ['rev-parse', 'HEAD'], {encoding: 'utf8'}); assert.equal(headResult.status, 0, headResult.stderr || 'resolve exact final evidence candidate head'); const head = headResult.stdout.trim();
-  assertExactHeadFinalReviews(review, head);
+  assertExactHeadFinalReviews(recovery, FINAL_EVIDENCE_REVIEWED_HEAD);
 }
 function assertReciprocalRelations(sources) {
   for (const [path, sentence] of RECIPROCAL_CONTRACTS) { const source = sources.get(path); assert.ok(source, path + ' reciprocal source'); assert.equal(source.split(sentence).length - 1, 1, path + ' exact reciprocal sentence occurs once'); }
@@ -570,14 +557,22 @@ function assertGenericHelperRejections() {
   assert.equal(segmentCrossesBox({x: 5, y: 0}, {x: 5, y: 10}, {left: 0, right: 10, top: 2, bottom: 8}), true, 'segment/box crossing detected');
   assert.equal(boxDistance(segmentEnvelope({x: 0, y: 0}, {x: 10, y: 0}, 1), {left: 20, right: 30, top: -1, bottom: 1}), 9, 'painted segment envelope distance');
 
-  const reviewedHead = 'a'.repeat(40); const oldHead = 'b'.repeat(40);
-  const reviews = FINAL_REVIEW_TYPES.map((type) => '## ' + type + '\n\n- Review type: ' + type + '\n- Reviewed head: ' + reviewedHead + '\n- Verdict: APPROVED\n\nIndependent ' + type + ' findings closed.').join('\n\n');
+  const reviewedHead = 'a'.repeat(40); const oldHead = 'b'.repeat(40); const wrongHead = 'c'.repeat(40);
+  const reviews = [
+    `- Exact final evidence candidate head: \`${reviewedHead}\`.`,
+    `- Independent final code/spec/security review: \`READY / APPROVE\`; findings: \`0\`; exact head: \`${reviewedHead}\`.`,
+    `- Independent final content/evidence/rights review: \`CONTENT READY\`; rights: \`PASS\`; findings: \`0\`; exact head: \`${reviewedHead}\`.`,
+    `- Independent final architecture/invariant review: \`CLEAR / READY\`; blockers: \`0\`; exact head: \`${reviewedHead}\`.`,
+    '- Final review finding totals: Critical `0`; Important `0`; Minor `0`; ⚠️ `0`.',
+    '- Final Stage B recovery judgment: `READY`.',
+    '- Recovery baseline status: `READY_TO_BIND`.',
+  ].join('\n');
   assertExactHeadFinalReviews(reviews, reviewedHead);
-  assert.throws(() => assertExactHeadFinalReviews(reviews.replace('- Reviewed head: ' + reviewedHead, '- Reviewed head: ' + oldHead + '\n- Implementation head: ' + reviewedHead), reviewedHead), /binds the exact implementation head|old-head review/u, 'old-head review plus new-head aside rejected');
-  assert.throws(() => assertExactHeadFinalReviews(reviews.replace('- Verdict: APPROVED', '- Verdict: NOT APPROVED'), reviewedHead), /affirmative APPROVED verdict/u, 'negative verdict rejected');
-  assert.throws(() => assertExactHeadFinalReviews('Implementation head: ' + reviewedHead + '\n' + reviews.replace('- Reviewed head: ' + reviewedHead + '\n', ''), reviewedHead), /structured reviewed head/u, 'head only elsewhere rejected');
-  assert.throws(() => assertExactHeadFinalReviews(reviews.replace('- Review type: code review\n', ''), reviewedHead), /structured review type/u, 'missing review type rejected');
-  assert.throws(() => assertExactHeadFinalReviews(reviews + '\n\n## code review\n- Review type: code review\n- Reviewed head: ' + reviewedHead + '\n- Verdict: APPROVED', reviewedHead), /exactly three typed final-review sections/u, 'duplicate reused review section rejected');
+  assert.throws(() => assertExactHeadFinalReviews(reviews.replace(`exact head: \`${reviewedHead}\`.`, `exact head: \`${oldHead}\`.\n- Implementation head: \`${reviewedHead}\`.`), reviewedHead), /exact final review line|old-head review/u, 'old-head review plus new-head aside rejected');
+  assert.throws(() => assertExactHeadFinalReviews(reviews.replaceAll(reviewedHead, wrongHead), reviewedHead), /exact final review line/u, 'mutually consistent wrong final review head rejected');
+  assert.throws(() => assertExactHeadFinalReviews(reviews.replace('`READY / APPROVE`', '`NOT APPROVED`'), reviewedHead), /exact final review line/u, 'negative verdict rejected');
+  assert.throws(() => assertExactHeadFinalReviews(reviews.replace('- Independent final content/evidence/rights review:', '- Independent final evidence/rights review:'), reviewedHead), /exact final review line/u, 'missing controlled review line rejected');
+  assert.throws(() => assertExactHeadFinalReviews(`${reviews}\n${reviews.split('\n')[1]}`, reviewedHead), /exact final review line/u, 'duplicate controlled review line rejected');
 }
 
 test('STY-13 helper fixture locks its public content contract', () => {
