@@ -3753,7 +3753,7 @@ test('AGT-P-06 source governance rejects identity, license, citation, document a
 const orchestratorWorkersArticlePath =
   'content/patterns/agt-p-07-orchestrator-workers-fanout-fanin.mdx';
 const orchestratorWorkersSummary =
-  '由编排者动态分解未知子任务，以稳定任务标识、任务账本、并发预算和隔离上下文约束三个有界工作者，再经扇入、去重与冲突解决形成完整、部分或预算耗尽终态。';
+  '由编排者动态分解未知子任务，以稳定任务标识、任务账本、并发预算和隔离上下文约束三个有界工作者；扇入后以完整或部分表达结果完整度，以正交控制状态和停止原因表达等待、取消、未知效果与真实预算耗尽。';
 const orchestratorWorkersTags = [
   '编排者–工作者',
   '扇出/扇入',
@@ -3762,7 +3762,7 @@ const orchestratorWorkersTags = [
   '冲突解决',
 ];
 const orchestratorWorkersMermaidAccTitle =
-  '编排者动态分解、三个有界工作者、扇入冲突解决与三类终止控制流';
+  '编排者动态分解、三个有界工作者、扇入冲突解决、结果完整度与真实预算耗尽停止控制流';
 const orchestratorWorkersNodes = new Map([
   ['REQUEST', ['受控任务请求']],
   ['ORCHESTRATOR', ['编排者（Orchestrator）']],
@@ -3989,6 +3989,17 @@ function assertOrchestratorWorkersArticleContract(source) {
     /Anthropic[^。\n]{0,160}并行化[^。\n]{0,160}编排者[–—-]工作者/u,
     'reader-visible copy attributes the two pattern descriptions to Anthropic',
   );
+  for (const contract of [
+    /CASE-21[^。\n]*原创参考设计[^。\n]*并行检索[^。\n]*证据合成/u,
+    /CASE-21[^。\n]*(?:不证明|不能证明)[^。\n]*(?:真实部署|生产效果)/u,
+  ]) assert.match(visible, contract);
+  for (const contract of [
+    /`complete` 和 `partial` 只表达结果完整度/u,
+    /`budget_exhausted` 只在真实预算耗尽时记录/u,
+    /`waiting_human`[^。\n]*控制状态/u,
+    /`cancelled`[^。\n]*`stop_reason`/u,
+    /`effect_unknown`[^。\n]*`stop_reason`/u,
+  ]) assert.match(source, contract);
   assert.match(
     visible,
     /Anthropic[^。\n]{0,240}(?:不是|不构成|并非)行业标准/u,
@@ -4033,6 +4044,8 @@ test('AGT-P-07 fails closed on hidden, duplicate, bypass and unbounded Mermaid m
   const mermaid = readerVisibleMermaidCodeBlocks(source)[0].value;
   const fence = `\`\`\`mermaid\n${mermaid}\n\`\`\``;
   const mutations = [
+    ['result completeness conflated with stop reason', source.replace('`complete` 和 `partial` 只表达结果完整度', '`complete`、`partial` 和预算耗尽都表达结果完整度')],
+    ['CASE-21 remains future tense', source.replace('\nCASE-21 是本站原创参考设计', '\nCASE-21 将在后续案例任务中检验')],
     ['zero Mermaid', source.replace(fence, '')],
     ['duplicate Mermaid', `${source}\n\n${fence}\n`],
     ['nested Mermaid', source.replace(fence, `<div>\n${fence}\n</div>`) ],
@@ -4109,6 +4122,7 @@ const durableAgentStates = [
   'resuming',
   'completed',
   'failed',
+  'cancelled',
   'manual terminal',
 ];
 const durableAgentLabels = [
@@ -4150,6 +4164,13 @@ function assertDurableAgentArticleContract(source) {
   const [[header, ...rows]] = stateTables.map(({rows}) => rows);
   assert.deepEqual(header, ['状态', '含义', '允许的下一步', '恢复与终止合同']);
   assert.deepEqual(rows.map(([state]) => state), durableAgentStates);
+  const rowsByState = new Map(rows.map((row) => [row[0], row]));
+  assert.equal(rowsByState.get('approval required')[2], '等待、取消、人工终态');
+  assert.equal(rowsByState.get('waiting')[2], '运行、需要批准、正在恢复、暂停、失败、取消、人工终态');
+  assert.match(rowsByState.get('failed').join(' '), /可恢复控制状态/u);
+  assert.match(rowsByState.get('failed').join(' '), /不是终态/u);
+  assert.match(rowsByState.get('cancelled').join(' '), /控制终态/u);
+  assert.match(rowsByState.get('cancelled').join(' '), /无/u);
 
   assert.match(
     source,
@@ -4305,6 +4326,9 @@ test('AGT-P-08 rejects article state, hidden, duplicate, bypass and terminal re-
     ['hidden table', source.replace('| 状态 | 含义 | 允许的下一步 | 恢复与终止合同 |', '<div hidden>\n\n| 状态 | 含义 | 允许的下一步 | 恢复与终止合同 |').replace('| manual terminal |', '| manual terminal |') + '\n\n</div>'],
     ['duplicate diagram', `${source}\n\n![重复图](/img/diagrams/agt-p-08-durable-agent-hitl.svg)\n`],
     ['responsive wrapper bypass', source.replace('className="architecture-diagram-scroll"', 'className="diagram"')],
+    ['cancelled state removed', source.replace(/^\| cancelled \|.*\n/mu, '')],
+    ['failed mislabeled terminal', source.replace('\n| failed | 控制执行确定失败且没有未知外部效果 | 正在恢复或人工终态（仅显式策略允许） | 该状态是可恢复控制状态，不是终态；', '\n| failed | 控制执行确定失败且没有未知外部效果 | 无 | 该状态是终态；')],
+    ['approval waiting path removed', source.replace('\n| approval required | 已冻结批准上下文，尚无有效决定 | 等待、取消、人工终态 |', '\n| approval required | 已冻结批准上下文，尚无有效决定 | 取消、人工终态 |')],
   ];
   const survivors = [];
   for (const [label, mutant] of mutations) {

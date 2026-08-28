@@ -774,7 +774,6 @@ test('AGT-C-01 publishes the canonical agent-system boundary and diagram pair', 
     '/cases/openai-agents-sdk',
     '/cases/kubernetes-reconciliation-loop',
   ]);
-
   const headings = findMarkdownHeadings(source)
     .filter(({level}) => level === 2)
     .map(({text}) => `## ${text}`);
@@ -939,6 +938,7 @@ function assertAgentHarnessContract(source) {
 
   const mermaid = source.match(/```mermaid\n([\s\S]*?)```/u)?.[1];
   assert.ok(mermaid, 'Mermaid layered flow');
+  assert.match(mermaid, /^flowchart TB\n\s+accTitle: 智能体运行框架六项责任与恢复升级边界$/mu);
   assert.match(mermaid, /subgraph HARNESS\["智能体运行框架"\]/u);
   assert.match(mermaid, /subgraph LOOP\["智能体循环"\]/u);
   for (const responsibility of harnessResponsibilities) {
@@ -988,6 +988,8 @@ test('AGT-C-02 contract rejects responsibility, SDK, recovery, and evidence-boun
     source.replace('### 薄 SDK 反例', '### SDK 包装'),
     source.replaceAll('副作用账本', '运行日志'),
     source.replace('模型选择的动作正确', '模型输出可用'),
+    source.replace('    accTitle: 智能体运行框架六项责任与恢复升级边界\n', ''),
+    source.replace('accTitle: 智能体运行框架六项责任与恢复升级边界', 'accTitle: 通用运行图'),
   ];
   for (const mutant of mutations) {
     assert.throws(() => assertAgentHarnessContract(mutant));
@@ -1031,6 +1033,7 @@ function parseMermaidFlowchart(mermaid, direction = 'LR') {
   const labelsById = new Map();
   const edges = [];
   let headerSeen = false;
+  let accTitle = null;
   const nodeSegmentPattern = '[A-Z][A-Z_]*(?:\\["[^"\\n]+"\\])?';
   const nodeSegment = /^([A-Z][A-Z_]*)(?:\["([^"\n]+)"\])?$/u;
   const approvedEdgeStatement = new RegExp(
@@ -1043,6 +1046,11 @@ function parseMermaidFlowchart(mermaid, direction = 'LR') {
     if (!statement) continue;
     if (!headerSeen && statement === `flowchart ${direction}`) {
       headerSeen = true;
+      continue;
+    }
+    if (statement.startsWith('accTitle:')) {
+      assert.equal(accTitle, null, 'foundation Mermaid has one accTitle');
+      accTitle = statement.slice('accTitle:'.length).trim();
       continue;
     }
 
@@ -1071,6 +1079,7 @@ function parseMermaidFlowchart(mermaid, direction = 'LR') {
   assert.ok(headerSeen, `Mermaid flowchart ${direction} header`);
 
   return {
+    accTitle,
     edges,
     labelsById: new Map(
       [...labelsById].map(([id, labels]) => [id, [...labels].sort()]),
@@ -1106,6 +1115,7 @@ function assertAgentLoopContract(source) {
   const mermaid = source.match(/```mermaid\n([\s\S]*?)```/u)?.[1];
   assert.ok(mermaid, 'Mermaid Agent Loop');
   const graph = parseMermaidFlowchart(mermaid);
+  assert.equal(graph.accTitle, '智能体循环五阶段与四类终止结果');
   for (const [id, phase, chinese] of loopPhases) {
     assert.deepEqual(graph.labelsById.get(id), [chinese], `loop phase: ${phase}`);
     assert.ok(source.includes(`\`${phase}\``), `canonical phase vocabulary: ${phase}`);
@@ -1149,6 +1159,8 @@ test('AGT-C-03 publishes the canonical five-phase Agent Loop and terminal contra
 test('AGT-C-03 rejects phase, terminal, and evaluation-bypass topology mutations', () => {
   const source = readFileSync(loopArticlePath, 'utf8');
   const mutations = [
+    source.replace('    accTitle: 智能体循环五阶段与四类终止结果\n', ''),
+    source.replace('accTitle: 智能体循环五阶段与四类终止结果', 'accTitle: 通用循环'),
     source.replace('PLAN["计划"]', 'PLAN["思考"]'),
     source.replace('TERMINATE --> SUCCESS["成功"]', 'TERMINATE --> SUCCESS["完成"]'),
     source.replace('OBSERVE --> EVALUATE', 'OBSERVE --> PLAN'),
@@ -1658,6 +1670,7 @@ function assertActionBoundaryContract(source) {
   );
   const [mermaid] = rootMermaidBlocks;
   const graph = parseMermaidFlowchart(mermaid, 'TB');
+  assert.equal(graph.accTitle, '工具动作经过策略、批准、沙箱、权威系统与结果验证的安全边界');
   assert.deepEqual(graph.labelsById, actionBoundaryNodes);
   assert.deepEqual(graph.edges.sort(), [...actionBoundaryEdges].sort());
   assert.match(mermaid, /POLICY -->\|只读 \/ 可补偿写入\| SANDBOX/u);
@@ -1801,6 +1814,8 @@ test('AGT-C-05 rejects action-matrix, authority-bypass, and approval-order mutat
     mutations.push([`deleted action row ${rowIndex + 1}`, deleteActionRow(source, rowIndex)]);
   }
   mutations.push(
+    ['accessible title removed', source.replace('    accTitle: 工具动作经过策略、批准、沙箱、权威系统与结果验证的安全边界\n', '')],
+    ['accessible title drift', source.replace('accTitle: 工具动作经过策略、批准、沙箱、权威系统与结果验证的安全边界', 'accTitle: 通用工具流')],
     ['policy bypass', source.replace('INTENT["意图"] --> POLICY["策略"]', 'INTENT["意图"] --> SANDBOX["隔离沙箱"]')],
     ['sandbox bypass', source.replace('SANDBOX --> TOOL["工具"]', 'POLICY --> TOOL["工具"]')],
     ['authority bypass', source.replace('TOOL --> AUTHORITY["权威系统"]', 'TOOL --> RESULT_VERIFICATION["结果验证"]')],
@@ -1875,6 +1890,10 @@ function assertQualityGovernanceContract(source) {
     '/cases/long-running-coding-agent',
     '/cases/production-incident-response-agent',
   ]);
+  assert.equal(
+    metadata.summary,
+    '把追踪、评测与执行约束分成证据记录、质量判断和政策强制三项独立且不可互相替代的责任，并用离线/在线评测、关联字段、故障关闭和人工升级约束模型与工具动作。',
+  );
 
   const headings = findMarkdownHeadings(source)
     .filter(({level}) => level === 2)
@@ -2033,6 +2052,7 @@ test('AGT-C-06 rejects responsibility, evaluation-mode, correlation, and bypass 
   const responsibilityHeader = '| 机制 | 唯一职责 | 输入 | 输出 | 不能替代 |';
   const modeHeader = '| 评测模式 | 触发时点 | 输入样本 | 主要用途 | 反馈路径 | 失败边界 |';
   const mutations = [
+    ['summary conflates responsibilities', source.replace('三项独立且不可互相替代的责任', '三项互斥责任')],
     ['trace judges quality', replaceQualityTableCell(source, responsibilityHeader, 0, 1, '记录证据并判断质量')],
     ['evaluation enforces policy', replaceQualityTableCell(source, responsibilityHeader, 1, 1, '将证据转为质量判断并执行约束')],
     ['guardrail only advises', replaceQualityTableCell(source, responsibilityHeader, 2, 1, '给模型提供一条约束建议')],

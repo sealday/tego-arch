@@ -11,7 +11,7 @@ import path from 'node:path';
 import test from 'node:test';
 
 const drawioPath = 'diagrams/production-incident-response-agent.drawio';
-const rawPath = '.superpowers/sdd/production-incident-response-agent.raw.svg';
+const rawPath = 'tests/fixtures/agentic-diagrams/production-incident-response-agent.diagrams-net.raw.svg';
 const publishedPath = 'static/img/diagrams/production-incident-response-agent.svg';
 const normalizerPath = 'scripts/normalize-production-incident-response-agent-svg.mjs';
 const drawio = readFileSync(drawioPath, 'utf8');

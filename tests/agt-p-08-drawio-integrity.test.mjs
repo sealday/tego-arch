@@ -16,7 +16,7 @@ import {SVG_NS, xmlText} from '../scripts/agt-p-08-diagram-model.mjs';
 import {parseXml, xmlElements} from '../.codex/skills/creating-drawio-architecture-diagrams/scripts/xml-visible-copy.mjs';
 
 const drawioPath = 'diagrams/agt-p-08-durable-agent-hitl.drawio';
-const rawPath = '.superpowers/sdd/agt-p-08-durable-agent-hitl.raw.svg';
+const rawPath = 'tests/fixtures/agentic-diagrams/agt-p-08-durable-agent-hitl.diagrams-net.raw.svg';
 const svgPath = 'static/img/diagrams/agt-p-08-durable-agent-hitl.svg';
 const normalizerPath = 'scripts/normalize-agt-p-08-drawio-svg.mjs';
 

@@ -11,6 +11,9 @@ import {handleHorizontalArrowKey} from '../src/components/KeyboardScrollableRegi
 const root = new URL('../', import.meta.url);
 const contentRoot = new URL('../content/', import.meta.url);
 const migratedMermaidTitles = new Map([
+  ['content/concepts/agt-c-02-agent-harness.mdx', ['智能体运行框架六项责任与恢复升级边界']],
+  ['content/concepts/agt-c-03-agent-loop.mdx', ['智能体循环五阶段与四类终止结果']],
+  ['content/concepts/agt-c-05-tool-sandbox-permission-side-effect.mdx', ['工具动作经过策略、批准、沙箱、权威系统与结果验证的安全边界']],
   ['content/modeling/mod-06-er-model-relationship-boundaries.mdx', ['费用申报实体关系教学模型']],
   ['content/modeling/mod-07-uml-diagram-selection-guide.mdx', ['UML 选图决策流']],
   ['content/modeling/mod-08-state-machine-modeling.mdx', ['业务意图状态机', '执行与恢复状态机']],

@@ -82,6 +82,7 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 
 ```mermaid
 flowchart TB
+    accTitle: 工具动作经过策略、批准、沙箱、权威系统与结果验证的安全边界
     INTENT["意图"] --> POLICY["策略"]
     POLICY -->|只读 / 可补偿写入| SANDBOX["隔离沙箱"]
     POLICY -->|不可逆副作用| APPROVAL["人工批准"]

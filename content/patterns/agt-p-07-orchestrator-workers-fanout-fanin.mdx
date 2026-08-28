@@ -26,7 +26,7 @@ tags:
   - 动态分解
   - 任务账本
   - 冲突解决
-summary: 由编排者动态分解未知子任务，以稳定任务标识、任务账本、并发预算和隔离上下文约束三个有界工作者，再经扇入、去重与冲突解决形成完整、部分或预算耗尽终态。
+summary: 由编排者动态分解未知子任务，以稳定任务标识、任务账本、并发预算和隔离上下文约束三个有界工作者；扇入后以完整或部分表达结果完整度，以正交控制状态和停止原因表达等待、取消、未知效果与真实预算耗尽。
 topic_id: AGT-P-07
 priority: P1
 depends_on:
@@ -124,7 +124,7 @@ Anthropic 公司的官方工程材料分别描述了并行化与编排者–工�
 
 ```mermaid
 flowchart TB
-    accTitle: 编排者动态分解、三个有界工作者、扇入冲突解决与三类终止控制流
+    accTitle: 编排者动态分解、三个有界工作者、扇入冲突解决、结果完整度与真实预算耗尽停止控制流
     REQUEST["受控任务请求"] --> ORCHESTRATOR["编排者（Orchestrator）"]
     ORCHESTRATOR -->|动态分解与登记| TASK_LEDGER["任务账本（Task ledger）"]
     TASK_LEDGER -->|待执行子任务| CONCURRENCY_BUDGET["并发与总预算门"]
@@ -146,11 +146,13 @@ flowchart TB
 
 正常路径从受控请求进入编排者。编排者先产生候选任务图，确定性控制器校验数量、依赖、权限和预算后，才把带稳定任务标识的记录写入任务账本。并发门最多核发图示的三个槽位；三名有界工作者代表并发上限，不表示生产规模建议，也不表示实际任务一定需要三个工作者。
 
-工作者完成后只把结构化结果交给扇入器。扇入器按任务账本中的必要集合和截止时间建立屏障，重复抑制随后排除重试、重复消息和迟到旧尝试。结果齐全且一致进入 `complete`；必要结果缺失、但启动前的部分结果策略允许发布时进入 `partial`，并明确缺口；预算门或冲突解决预算用尽进入 `budget exhausted`。
+工作者完成后只把结构化结果交给扇入器。扇入器按任务账本中的必要集合和截止时间建立屏障，重复抑制随后排除重试、重复消息和迟到旧尝试。`complete` 和 `partial` 只表达结果完整度：结果齐全且一致为 `complete`；必要结果缺失、但启动前的部分结果策略允许发布时为 `partial`，并明确缺口。它们不编码运行为何停止。
 
-冲突结果不由最后到达者覆盖。冲突解决器读取证据来源、版本、新鲜度和确定性验证结果；可以解决时形成带依据的单一结果，不能解决但允许部分发布时保留分歧，否则等待人工或按预算终止。图只画三个公开终态；需要人工处理的运行在本文合同中仍记录为带停止原因的 `partial`，不会伪装为完整。
+控制与停止原因使用正交字段。`waiting_human` 是控制状态，表示运行仍在等具名责任人决定，此时结果完整度可以尚未确定；`cancelled` 是 `stop_reason`，表示取消传播完成；`effect_unknown` 是 `stop_reason`，表示外部效果仍需权威对账。`budget_exhausted` 只在真实预算耗尽时记录，不能代替人工等待、取消或未知效果。任务账本分别保存 `result_completeness`、`control_state` 与 `stop_reason`，避免一个“终态”值同时承担三种含义。
 
-取消传播与图中同一控制链工作：控制器冻结任务账本、停止新槽位、取消排队与活动任务、等待有限清理，再对已确认结果执行一次扇入。取消后晚到的结果只进入审计，不改变终态。若某工作者外部写入的结果未知，控制器立即停止相关重试与后续扇出，用操作标识查询权威系统；无法判定便保持部分或预算耗尽并转人工。
+冲突结果不由最后到达者覆盖。冲突解决器读取证据来源、版本、新鲜度和确定性验证结果；可以解决时形成带依据的单一结果，不能解决但允许部分发布时保留分歧，否则把控制状态置为 `waiting_human`，或在真实解决预算耗尽时记录 `budget_exhausted`。图展示两个结果完整度节点和一个真实预算耗尽停止节点；它不把人工等待伪装成 `partial`。
+
+取消传播与图中同一控制链工作：控制器冻结任务账本、停止新槽位、取消排队与活动任务、等待有限清理，再对已确认结果执行一次扇入。取消后晚到的结果只进入审计，不改变结果完整度，并以 `cancelled` 记录停止原因。若某工作者外部写入的结果未知，控制器立即停止相关重试与后续扇出，用操作标识查询权威系统；无法判定便以 `effect_unknown` 记录停止原因并转人工，不能伪造为部分结果或预算耗尽。
 
 失败与恢复共用已经提交的任务账本：读取失败可在剩余预算内续租或重派，写入结果未知时不得自动重试；恢复只重建未确认的子任务与扇入屏障，不重置总预算，也不覆盖已经确认的外部状态。
 
@@ -196,7 +198,11 @@ Microsoft 公司固定提交的构件文档把编排器、专业智能体和注�
 
 [智能体检索增强生成（Agentic RAG）](/patterns/agt-p-02)可以把独立证据缺口转为子任务，但证据充分性仍由检索合同判断。[评估者—优化者（Evaluator-Optimizer）](/patterns/agt-p-04)可以判断汇聚候选是否符合外部量表，却不能替代任务覆盖、去重与冲突合同。[监督者、移交（Handoff）与智能体作为工具（Agents as Tools）](/patterns/agt-p-06)回答控制权和会话归谁；编排者–工作者通常由编排者保留父任务控制，但工作者仍可被实现为受限工具调用或独立进程。[持久智能体与人工介入](/patterns/agt-p-08)负责跨时等待与恢复，不会自动修复错误分解。
 
-[AWS 命令行智能体编排器案例](/cases/aws-cli-agent-orchestrator)检验工作进程分配、终端隔离、取消与恢复边界；[Microsoft 多智能体参考架构案例](/cases/microsoft-multi-agent-reference-architecture)检验中央编排、注册与治理构件。[多智能体研究系统](/cases/multi-agent-research-system)将在后续案例任务中检验并行检索和证据合成；当前保留该批准路由，不用占位文章冒充已经验证。
+[AWS 命令行智能体编排器案例](/cases/aws-cli-agent-orchestrator)检验工作进程分配、终端隔离、取消与恢复边界；[Microsoft 多智能体参考架构案例](/cases/microsoft-multi-agent-reference-architecture)检验中央编排、注册与治理构件。
+
+{/* terminology-exempt: unknown-english-term | match: CASE-21 | record: CASE-21 是本站原创参考设计，用来检验并行检索和证据合成合同；它不证明真实部署或生产效果。 | reason: backlog identity is required to make the reviewed case boundary explicit */}
+
+CASE-21 是本站原创参考设计，用来检验并行检索和证据合成合同；它不证明真实部署或生产效果。
 
 反模式包括“广播即分解”“工作者自我复制”“共享全部上下文”“结果最后写入者获胜”“多数票即真相”“父任务取消但子任务继续”和“失败即换标识重来”。这些做法分别破坏资源、隔离、状态、证据、终止和恢复责任。
 
@@ -208,7 +214,7 @@ Microsoft 公司固定提交的构件文档把编排器、专业智能体和注�
 
 安全工作者因读取超时被重派。旧尝试稍后也返回，扇入器按任务标识和尝试号只接受已经提交的新结果，旧结果进入审计而不增加覆盖度。运维工作者在截止时间前没有可归因证据；部分结果策略规定三个维度均为必要，因此此时不能标记 `complete`。
 
-安全与可靠性工作者对同一机制的故障边界给出冲突结论。冲突解决器先核对二者引用的版本，发现安全工作者使用较新的权威文档，确定性版本规则可以解决冲突；若两份同版本材料仍相互矛盾，系统保留分歧并标记 `partial` 交给人工。若解决冲突时总预算耗尽，则以 `budget exhausted` 结束，不再创建第四名工作者。
+安全与可靠性工作者对同一机制的故障边界给出冲突结论。冲突解决器先核对二者引用的版本，发现安全工作者使用较新的权威文档，确定性版本规则可以解决冲突；若两份同版本材料仍相互矛盾，系统把现有结果完整度标记为 `partial`，同时把控制状态置为 `waiting_human`，保留分歧交给人工。若解决冲突时总预算确实耗尽，则记录 `budget_exhausted` 停止原因，不再创建第四名工作者。
 
 若请求者中途取消，控制器停止新派发并向三个工作者传播取消。任何尚未完成的只读调用在有限清理期后终止；迟到结果不重启任务。这个场景只说明运行合同，不代表真实客户、指标或生产吞吐，也不证明三名工作者比一个工作者更好。
 
@@ -216,7 +222,7 @@ Microsoft 公司固定提交的构件文档把编排器、专业智能体和注�
 
 {/* terminology-exempt: unknown-english-term | reason: 审查要求来源项明确保留 Anthropic 正式机构身份 */}
 
-- Anthropic 公司：[Building Effective Agents](https://www.anthropic.com/engineering/building-effective-agents)（`facts-summary`，`definition`，`method`）：支持该公司公开区分并行化与编排者–工作者模式及其动态分解描述；不建立本文的任务账本、预算、权限、三类终态或生产保证，该分类不是行业标准。
+- Anthropic 公司：[Building Effective Agents](https://www.anthropic.com/engineering/building-effective-agents)（`facts-summary`，`definition`，`method`）：支持该公司公开区分并行化与编排者–工作者模式及其动态分解描述；不建立本文的任务账本、预算、权限、结果完整度与停止原因合同或生产保证，该分类不是行业标准。
 - [Microsoft 多智能体参考架构构件文档](https://github.com/microsoft/multi-agent-reference-architecture/blob/ed3613b54b46b595dd223aaff8772def376a8c37/docs/building-blocks/Building-Blocks.md)（`facts-summary`，`case-evidence`，`comparison`）：固定提交材料支持编排器、专业智能体和注册表的构件边界；不证明运行时行为、结果正确性或本文的汇聚合同。
 - [AWS 命令行智能体编排器固定说明文件（README）](https://github.com/awslabs/cli-agent-orchestrator/blob/bae80071a17e001380367c461b32d64bc6b54433/README.md)（`facts-summary`，`case-evidence`，`implementation`）：固定提交说明监督者–工作进程与隔离终端会话的实现形态；只作有界实现证据，不能证明生产规模、可靠性、恰好一次、冲突解决或部署适用性。
 
