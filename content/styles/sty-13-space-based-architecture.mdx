@@ -108,7 +108,7 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 
 **本站原创分析**：先检查三层之间的所有权：入口只认证、限流和解析亲和键；处理单元的主分区接受本地业务写；恢复与协调面只能通过受控协议恢复或请求分区操作。图中的同步备份不接受普通写，多航段工作流也不直接改写分区内部状态。
 
-<div role="region" aria-label="Space-Based Architecture 航班余位亲和分区、主备与恢复边界图，可横向滚动" tabIndex={0} onKeyDown={handleHorizontalArrowKey}>
+<div className="architecture-diagram-scroll" role="region" aria-label="Space-Based Architecture 航班余位亲和分区、主备与恢复边界图，可横向滚动" tabIndex={0} onKeyDown={handleHorizontalArrowKey}>
 
 ![入口按航段日期路由到唯一余位分区，主备、恢复记录和多航段工作流各守边界](/img/diagrams/sty-13-space-based-flight-availability.svg)
 

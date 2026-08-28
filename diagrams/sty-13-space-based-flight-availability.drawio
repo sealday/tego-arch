@@ -1,0 +1,113 @@
+<mxfile host="app.diagrams.net" modified="2026-08-28T00:00:00.000Z" agent="Tego Arch" version="24.7.17">
+  <diagram id="sty13-space-based" name="Space-Based Architecture">
+    <mxGraphModel dx="2400" dy="3600" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2400" pageHeight="3600" math="0" shadow="0">
+      <root>
+        <mxCell id="0"></mxCell>
+        <mxCell id="1" parent="0"></mxCell>
+        <mxCell id="entry-routing-plane" value="01  入口与路由面  /  ENTRY &amp; ROUTING" vertex="1" parent="1" style="semanticRole=region;rounded=1;whiteSpace=wrap;html=0;fillColor=#F4F7FB;strokeColor=#42677C;strokeWidth=6;fontSize=42;fontStyle=1;align=left;verticalAlign=top;spacingTop=28;spacingLeft=32;">
+          <mxGeometry x="80" y="180" width="2240" height="600" as="geometry"/>
+        </mxCell>
+        <mxCell id="affinity-partition-plane" value="02  亲和分区面  /  ONE LIVE WRITE AUTHORITY" vertex="1" parent="1" style="semanticRole=region;rounded=1;whiteSpace=wrap;html=0;fillColor=#F7F3EA;strokeColor=#85682F;strokeWidth=6;fontSize=42;fontStyle=1;align=left;verticalAlign=top;spacingTop=28;spacingLeft=32;">
+          <mxGeometry x="80" y="900" width="2240" height="1540" as="geometry"/>
+        </mxCell>
+        <mxCell id="recovery-coordination-plane" value="03  恢复与外部协调面  /  DURABLE RECOVERY &amp; WORKFLOW" vertex="1" parent="1" style="semanticRole=region;rounded=1;whiteSpace=wrap;html=0;fillColor=#F4F3F8;strokeColor=#655A80;strokeWidth=6;fontSize=42;fontStyle=1;align=left;verticalAlign=top;spacingTop=28;spacingLeft=32;">
+          <mxGeometry x="80" y="2580" width="2240" height="840" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="node-authenticated-entry" value="认证入口&#xa;AUTHENTICATE · LIMIT" vertex="1" parent="entry-routing-plane" style="semanticRole=node-shape;rounded=1;whiteSpace=wrap;html=0;fillColor=#FFFFFF;strokeColor=#31596E;strokeWidth=6;fontSize=42;fontStyle=1;">
+          <mxGeometry x="80" y="150" width="360" height="200" as="geometry"/>
+        </mxCell>
+        <mxCell id="node-affinity-key" value="亲和键&#xa;航段 + 出发日期" vertex="1" parent="entry-routing-plane" style="semanticRole=node-shape;rounded=1;whiteSpace=wrap;html=0;fillColor=#FFFFFF;strokeColor=#31596E;strokeWidth=6;fontSize=42;fontStyle=1;">
+          <mxGeometry x="570" y="150" width="360" height="200" as="geometry"/>
+        </mxCell>
+        <mxCell id="node-partition-router" value="分区路由器&#xa;OWNER DIRECTORY" vertex="1" parent="entry-routing-plane" style="semanticRole=node-shape;rounded=1;whiteSpace=wrap;html=0;fillColor=#FFFFFF;strokeColor=#31596E;strokeWidth=6;fontSize=42;fontStyle=1;">
+          <mxGeometry x="1060" y="150" width="360" height="200" as="geometry"/>
+        </mxCell>
+        <mxCell id="node-route-epoch" value="路由纪元&#xa;UNIQUE OWNER EPOCH" vertex="1" parent="entry-routing-plane" style="semanticRole=node-shape;rounded=1;whiteSpace=wrap;html=0;fillColor=#E7F1F5;strokeColor=#31596E;strokeWidth=8;fontSize=42;fontStyle=1;">
+          <mxGeometry x="1550" y="150" width="360" height="200" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="node-partition-a" value="分区 A 状态&#xa;唯一实时写权威" vertex="1" parent="affinity-partition-plane" style="semanticRole=node-shape;rounded=1;whiteSpace=wrap;html=0;fillColor=#FFF8DA;strokeColor=#8B6914;strokeWidth=8;fontSize=42;fontStyle=1;">
+          <mxGeometry x="240" y="300" width="440" height="260" as="geometry"/>
+        </mxCell>
+        <mxCell id="node-query-a" value="余位查询&#xa;LOCAL READ" vertex="1" parent="affinity-partition-plane" style="semanticRole=node-shape;rounded=1;whiteSpace=wrap;html=0;fillColor=#FFFFFF;strokeColor=#8B6914;strokeWidth=6;fontSize=42;fontStyle=1;">
+          <mxGeometry x="40" y="680" width="280" height="200" as="geometry"/>
+        </mxCell>
+        <mxCell id="node-hold-a" value="暂留&#xa;LOCAL HOLD" vertex="1" parent="affinity-partition-plane" style="semanticRole=node-shape;rounded=1;whiteSpace=wrap;html=0;fillColor=#FFFFFF;strokeColor=#8B6914;strokeWidth=6;fontSize=42;fontStyle=1;">
+          <mxGeometry x="400" y="680" width="280" height="200" as="geometry"/>
+        </mxCell>
+        <mxCell id="node-confirm-a" value="确认&#xa;LOCAL CONFIRM" vertex="1" parent="affinity-partition-plane" style="semanticRole=node-shape;rounded=1;whiteSpace=wrap;html=0;fillColor=#FFFFFF;strokeColor=#8B6914;strokeWidth=6;fontSize=42;fontStyle=1;">
+          <mxGeometry x="760" y="680" width="280" height="200" as="geometry"/>
+        </mxCell>
+        <mxCell id="node-primary-a" value="主节点 A&#xa;BUSINESS WRITE" vertex="1" parent="affinity-partition-plane" style="semanticRole=node-shape;rounded=1;whiteSpace=wrap;html=0;fillColor=#E8F4E8;strokeColor=#397047;strokeWidth=8;fontSize=42;fontStyle=1;">
+          <mxGeometry x="240" y="980" width="320" height="200" as="geometry"/>
+        </mxCell>
+        <mxCell id="node-backup-a" value="备份 A&#xa;NO BUSINESS WRITE" vertex="1" parent="affinity-partition-plane" style="semanticRole=node-shape;rounded=1;whiteSpace=wrap;html=0;fillColor=#F1F1F1;strokeColor=#656565;strokeWidth=6;dashed=1;fontSize=42;fontStyle=1;">
+          <mxGeometry x="660" y="980" width="320" height="200" as="geometry"/>
+        </mxCell>
+        <mxCell id="node-partition-b" value="分区 B 状态&#xa;独立唯一写权威" vertex="1" parent="affinity-partition-plane" style="semanticRole=node-shape;rounded=1;whiteSpace=wrap;html=0;fillColor=#FFF8DA;strokeColor=#8B6914;strokeWidth=8;fontSize=42;fontStyle=1;">
+          <mxGeometry x="1200" y="300" width="400" height="260" as="geometry"/>
+        </mxCell>
+        <mxCell id="node-primary-b" value="主节点 B&#xa;BUSINESS WRITE" vertex="1" parent="affinity-partition-plane" style="semanticRole=node-shape;rounded=1;whiteSpace=wrap;html=0;fillColor=#E8F4E8;strokeColor=#397047;strokeWidth=8;fontSize=42;fontStyle=1;">
+          <mxGeometry x="1180" y="680" width="320" height="200" as="geometry"/>
+        </mxCell>
+        <mxCell id="node-backup-b" value="备份 B&#xa;NO BUSINESS WRITE" vertex="1" parent="affinity-partition-plane" style="semanticRole=node-shape;rounded=1;whiteSpace=wrap;html=0;fillColor=#F1F1F1;strokeColor=#656565;strokeWidth=6;dashed=1;fontSize=42;fontStyle=1;">
+          <mxGeometry x="1600" y="680" width="320" height="200" as="geometry"/>
+        </mxCell>
+        <mxCell id="node-hot-partition" value="热点分区&#xa;SAME AFFINITY OWNER" vertex="1" parent="affinity-partition-plane" style="semanticRole=node-shape;rounded=1;whiteSpace=wrap;html=0;fillColor=#FDECEC;strokeColor=#A74444;strokeWidth=8;fontSize=42;fontStyle=1;">
+          <mxGeometry x="1200" y="980" width="400" height="240" as="geometry"/>
+        </mxCell>
+        <mxCell id="node-hot-queue" value="分区排队&#xa;BOUNDED QUEUE" vertex="1" parent="affinity-partition-plane" style="semanticRole=node-shape;rounded=1;whiteSpace=wrap;html=0;fillColor=#FFFFFF;strokeColor=#A74444;strokeWidth=6;fontSize=42;fontStyle=1;">
+          <mxGeometry x="1220" y="1280" width="320" height="200" as="geometry"/>
+        </mxCell>
+        <mxCell id="node-hot-limit" value="在途预算&#xa;REJECT / SHED" vertex="1" parent="affinity-partition-plane" style="semanticRole=node-shape;rounded=1;whiteSpace=wrap;html=0;fillColor=#FFFFFF;strokeColor=#A74444;strokeWidth=6;fontSize=42;fontStyle=1;">
+          <mxGeometry x="1660" y="1280" width="320" height="200" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="node-append-log" value="追加日志&#xa;RECOVERY ORDER" vertex="1" parent="recovery-coordination-plane" style="semanticRole=node-shape;rounded=1;whiteSpace=wrap;html=0;fillColor=#FFFFFF;strokeColor=#655A80;strokeWidth=6;fontSize=42;fontStyle=1;">
+          <mxGeometry x="70" y="200" width="360" height="200" as="geometry"/>
+        </mxCell>
+        <mxCell id="node-checkpoint-store" value="检查点&#xa;RESTORE BASE" vertex="1" parent="recovery-coordination-plane" style="semanticRole=node-shape;rounded=1;whiteSpace=wrap;html=0;fillColor=#FFFFFF;strokeColor=#655A80;strokeWidth=6;fontSize=42;fontStyle=1;">
+          <mxGeometry x="500" y="200" width="360" height="200" as="geometry"/>
+        </mxCell>
+        <mxCell id="node-reservation-record" value="长期记录&#xa;NOT LIVE AUTHORITY" vertex="1" parent="recovery-coordination-plane" style="semanticRole=node-shape;rounded=1;whiteSpace=wrap;html=0;fillColor=#FFFFFF;strokeColor=#655A80;strokeWidth=6;fontSize=42;fontStyle=1;">
+          <mxGeometry x="930" y="200" width="360" height="200" as="geometry"/>
+        </mxCell>
+        <mxCell id="node-itinerary-workflow" value="多航段工作流&#xa;PERSISTED STEPS" vertex="1" parent="recovery-coordination-plane" style="semanticRole=node-shape;rounded=1;whiteSpace=wrap;html=0;fillColor=#F2EAF8;strokeColor=#655A80;strokeWidth=8;fontSize=42;fontStyle=1;">
+          <mxGeometry x="1340" y="200" width="420" height="200" as="geometry"/>
+        </mxCell>
+        <mxCell id="node-derived-read-model" value="派生读模型&#xa;GLOBAL READ · STALE" vertex="1" parent="recovery-coordination-plane" style="semanticRole=node-shape;rounded=1;whiteSpace=wrap;html=0;fillColor=#FFFFFF;strokeColor=#655A80;strokeWidth=6;fontSize=42;fontStyle=1;">
+          <mxGeometry x="1800" y="200" width="360" height="200" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="legend-request-route" value="请求路由" vertex="1" parent="1" style="semanticRole=legend;rounded=0;whiteSpace=wrap;html=0;fillColor=none;strokeColor=none;fontSize=30;"><mxGeometry x="160" y="3040" width="260" height="70" as="geometry"/></mxCell>
+        <mxCell id="legend-local-command" value="本地命令" vertex="1" parent="1" style="semanticRole=legend;rounded=0;whiteSpace=wrap;html=0;fillColor=none;strokeColor=none;fontSize=30;"><mxGeometry x="850" y="3040" width="260" height="70" as="geometry"/></mxCell>
+        <mxCell id="legend-replication" value="同步复制" vertex="1" parent="1" style="semanticRole=legend;rounded=0;whiteSpace=wrap;html=0;fillColor=none;strokeColor=none;fontSize=30;"><mxGeometry x="1540" y="3040" width="260" height="70" as="geometry"/></mxCell>
+        <mxCell id="legend-persistence" value="持久恢复" vertex="1" parent="1" style="semanticRole=legend;rounded=0;whiteSpace=wrap;html=0;fillColor=none;strokeColor=none;fontSize=30;"><mxGeometry x="160" y="3140" width="260" height="70" as="geometry"/></mxCell>
+        <mxCell id="legend-coordination" value="外部协调" vertex="1" parent="1" style="semanticRole=legend;rounded=0;whiteSpace=wrap;html=0;fillColor=none;strokeColor=none;fontSize=30;"><mxGeometry x="850" y="3140" width="260" height="70" as="geometry"/></mxCell>
+        <mxCell id="legend-stop" value="停止写入" vertex="1" parent="1" style="semanticRole=legend;rounded=0;whiteSpace=wrap;html=0;fillColor=none;strokeColor=none;fontSize=30;"><mxGeometry x="1540" y="3140" width="260" height="70" as="geometry"/></mxCell>
+        <mxCell id="warning-boundary" value="非保证边界：跨分区事务、无限扩展、主备即持久、任意全局查询和脑裂自动合并均不成立" vertex="1" parent="1" style="semanticRole=warning;rounded=1;whiteSpace=wrap;html=0;fillColor=#FCE9E7;strokeColor=#A74444;strokeWidth=6;fontSize=36;fontStyle=1;"><mxGeometry x="140" y="3270" width="2120" height="100" as="geometry"/></mxCell>
+
+        <mxCell id="authenticate-request" value="认证请求" edge="1" source="node-authenticated-entry" target="node-affinity-key" parent="1" style="semanticRole=request-route;edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;strokeColor=#31596E;strokeWidth=8;dashed=0;endArrow=block;endFill=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=1;"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="585" y="430"/></Array></mxGeometry></mxCell>
+        <mxCell id="derive-affinity-key" value="航段 + 出发日期" edge="1" source="node-affinity-key" target="node-partition-router" parent="1" style="semanticRole=request-route;edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;strokeColor=#31596E;strokeWidth=8;dashed=0;endArrow=block;endFill=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=1;"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1075" y="430"/></Array></mxGeometry></mxCell>
+        <mxCell id="resolve-owner" value="解析唯一所有者" edge="1" source="node-partition-router" target="node-route-epoch" parent="1" style="semanticRole=request-route;edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;strokeColor=#31596E;strokeWidth=8;dashed=0;endArrow=block;endFill=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=1;"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1565" y="430"/></Array></mxGeometry></mxCell>
+        <mxCell id="route-partition-a" value="路由分区 A" edge="1" source="node-route-epoch" target="node-primary-a" parent="1" style="semanticRole=request-route;edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;strokeColor=#31596E;strokeWidth=8;dashed=0;endArrow=block;endFill=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;exitPerimeter=1;entryX=0.875;entryY=0;entryDx=0;entryDy=0;entryPerimeter=1;"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1720" y="820"/><mxPoint x="1150" y="820"/><mxPoint x="1150" y="1840"/><mxPoint x="600" y="1840"/></Array></mxGeometry></mxCell>
+        <mxCell id="route-partition-b" value="路由分区 B" edge="1" source="node-route-epoch" target="node-primary-b" parent="1" style="semanticRole=request-route;edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;strokeColor=#31596E;strokeWidth=8;dashed=0;endArrow=block;endFill=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;exitPerimeter=1;entryX=0;entryY=0.4;entryDx=0;entryDy=0;entryPerimeter=1;"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1810" y="860"/><mxPoint x="1140" y="860"/><mxPoint x="1140" y="1660"/></Array></mxGeometry></mxCell>
+        <mxCell id="route-hot-partition" value="热点排队" edge="1" source="node-route-epoch" target="node-hot-queue" parent="1" style="semanticRole=request-route;edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;strokeColor=#31596E;strokeWidth=8;dashed=0;endArrow=block;endFill=1;exitX=0.75;exitY=1;exitDx=0;exitDy=0;exitPerimeter=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=1;"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1900" y="880"/><mxPoint x="1200" y="880"/><mxPoint x="1200" y="2280"/></Array></mxGeometry></mxCell>
+        <mxCell id="query-local-a" value="本地查询" edge="1" source="node-query-a" target="node-partition-a" parent="1" style="semanticRole=local-command;edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;strokeColor=#8B6914;strokeWidth=8;dashed=1;dashPattern=12 8;endArrow=block;endFill=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;exitPerimeter=1;entryX=0.181818;entryY=1;entryDx=0;entryDy=0;entryPerimeter=1;"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="260" y="1520"/><mxPoint x="400" y="1520"/></Array></mxGeometry></mxCell>
+        <mxCell id="hold-local-a" value="本地暂留" edge="1" source="node-hold-a" target="node-partition-a" parent="1" style="semanticRole=local-command;edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;strokeColor=#8B6914;strokeWidth=8;dashed=1;dashPattern=12 8;endArrow=block;endFill=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;exitPerimeter=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=1;"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="620" y="1500"/><mxPoint x="540" y="1500"/></Array></mxGeometry></mxCell>
+        <mxCell id="confirm-local-a" value="本地确认" edge="1" source="node-confirm-a" target="node-partition-a" parent="1" style="semanticRole=local-command;edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;strokeColor=#8B6914;strokeWidth=8;dashed=1;dashPattern=12 8;endArrow=block;endFill=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=1;entryX=0.818182;entryY=1;entryDx=0;entryDy=0;entryPerimeter=1;"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="800" y="1680"/><mxPoint x="800" y="1520"/><mxPoint x="680" y="1520"/></Array></mxGeometry></mxCell>
+        <mxCell id="replicate-a" value="同步复制 A" edge="1" source="node-primary-a" target="node-backup-a" parent="1" style="semanticRole=replication;edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;strokeColor=#397047;strokeWidth=8;dashed=1;dashPattern=4 10;endArrow=block;endFill=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=1;"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="690" y="1980"/></Array></mxGeometry></mxCell>
+        <mxCell id="replicate-b" value="同步复制 B" edge="1" source="node-primary-b" target="node-backup-b" parent="1" style="semanticRole=replication;edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;strokeColor=#397047;strokeWidth=8;dashed=1;dashPattern=4 10;endArrow=block;endFill=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=1;"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1630" y="1680"/></Array></mxGeometry></mxCell>
+        <mxCell id="promote-backup-a" value="隔离旧主 + 新纪元" edge="1" source="node-backup-a" target="node-primary-a" parent="1" style="semanticRole=coordination;edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;strokeColor=#655A80;strokeWidth=8;dashed=1;dashPattern=16 8 4 8;endArrow=block;endFill=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;exitPerimeter=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=1;"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="900" y="2160"/><mxPoint x="480" y="2160"/></Array></mxGeometry></mxCell>
+        <mxCell id="persist-append-log" value="追加日志" edge="1" source="node-partition-a" target="node-append-log" parent="1" style="semanticRole=persistence;edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;strokeColor=#655A80;strokeWidth=8;dashed=1;dashPattern=2 10;endArrow=block;endFill=1;exitX=0;exitY=0.307692;exitDx=0;exitDy=0;exitPerimeter=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=1;"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="90" y="1280"/><mxPoint x="90" y="2680"/><mxPoint x="330" y="2680"/></Array></mxGeometry></mxCell>
+        <mxCell id="write-checkpoint" value="写检查点" edge="1" source="node-partition-a" target="node-checkpoint-store" parent="1" style="semanticRole=persistence;edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;strokeColor=#655A80;strokeWidth=8;dashed=1;dashPattern=2 10;endArrow=block;endFill=1;exitX=0;exitY=0.538462;exitDx=0;exitDy=0;exitPerimeter=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=1;"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="100" y="1340"/><mxPoint x="100" y="2700"/><mxPoint x="760" y="2700"/></Array></mxGeometry></mxCell>
+        <mxCell id="publish-reservation-record" value="确认预订记录" edge="1" source="node-partition-a" target="node-reservation-record" parent="1" style="semanticRole=persistence;edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;strokeColor=#655A80;strokeWidth=8;dashed=1;dashPattern=2 10;endArrow=block;endFill=1;exitX=0;exitY=0.769231;exitDx=0;exitDy=0;exitPerimeter=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=1;"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="110" y="1400"/><mxPoint x="110" y="2720"/><mxPoint x="1190" y="2720"/></Array></mxGeometry></mxCell>
+        <mxCell id="coordinate-partition-a" value="步骤请求 A" edge="1" source="node-itinerary-workflow" target="node-partition-a" parent="1" style="semanticRole=coordination;edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;strokeColor=#655A80;strokeWidth=8;dashed=1;dashPattern=16 8 4 8;endArrow=block;endFill=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;exitPerimeter=1;entryX=0.863636;entryY=0;entryDx=0;entryDy=0;entryPerimeter=1;"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1630" y="2520"/><mxPoint x="2280" y="2520"/><mxPoint x="2280" y="1080"/><mxPoint x="700" y="1080"/></Array></mxGeometry></mxCell>
+        <mxCell id="coordinate-partition-b" value="步骤请求 B" edge="1" source="node-itinerary-workflow" target="node-partition-b" parent="1" style="semanticRole=coordination;edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;strokeColor=#655A80;strokeWidth=8;dashed=1;dashPattern=16 8 4 8;endArrow=block;endFill=1;exitX=0.833333;exitY=0;exitDx=0;exitDy=0;exitPerimeter=1;entryX=0.95;entryY=0;entryDx=0;entryDy=0;entryPerimeter=1;"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1770" y="2540"/><mxPoint x="2300" y="2540"/><mxPoint x="2300" y="1100"/><mxPoint x="1660" y="1100"/></Array></mxGeometry></mxCell>
+        <mxCell id="publish-derived-read-model" value="发布派生读模型" edge="1" source="node-reservation-record" target="node-derived-read-model" parent="1" style="semanticRole=persistence;edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;strokeColor=#655A80;strokeWidth=8;dashed=1;dashPattern=2 10;endArrow=block;endFill=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;exitPerimeter=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=1;"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1190" y="3020"/><mxPoint x="2060" y="3020"/></Array></mxGeometry></mxCell>
+        <mxCell id="stop-split-brain-write" value="无唯一主权：停止写入" edge="1" source="node-route-epoch" target="node-primary-a" parent="1" style="semanticRole=stop;edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;strokeColor=#A74444;strokeWidth=10;dashed=1;dashPattern=20 8 4 8;endArrow=block;endFill=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=1;"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="2140" y="430"/><mxPoint x="2140" y="1810"/><mxPoint x="480" y="1810"/></Array></mxGeometry></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

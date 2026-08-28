@@ -21460,7 +21460,7 @@
       "published_at": "2026-08-28",
       "registered_at": "2026-08-28",
       "checked_at": "2026-08-28",
-      "version": "original-atlas image/svg+xml identity reserved 2026-08-28",
+      "version": "original-atlas synchronized drawio+svg published 2026-08-28",
       "source_kind": "original-illustration",
       "tier": "primary",
       "allowed_evidence_roles": [
@@ -21469,7 +21469,7 @@
       "license": "LicenseRef-Atlas-Original",
       "license_scope": "The named project-authored sty-13-space-based-flight-availability.svg image/svg+xml asset only",
       "license_evidence_url": "https://github.com/sealday/tego-arch/blob/main/static/img/diagrams/sty-13-space-based-flight-availability.svg",
-      "license_evidence_note": "Reserved for an original synchronized Draw.io/SVG topology using only approved article semantics, without third-party diagrams, reference imagery, brand visuals, signatures, watermarks or copied composition.",
+      "license_evidence_note": "Created as an original synchronized Draw.io/SVG topology using only approved article semantics, without third-party diagrams, reference imagery, brand visuals, signatures, watermarks or copied composition.",
       "license_family_id": "/img/diagrams/sty-13-space-based-flight-availability.svg",
       "license_family_grouping": "identity",
       "family_grouping_evidence_url": null,
@@ -21478,7 +21478,7 @@
       "link_policy": null,
       "expected_final_transport_locator": "/img/diagrams/sty-13-space-based-flight-availability.svg",
       "expected_final_approved_at": "2026-08-28",
-      "expected_final_approval_note": "Reserved project-local original image/svg+xml identity for the Task 3 synchronized Draw.io/SVG asset and semantic, geometry, contrast and raster QA."
+      "expected_final_approval_note": "Approved project-local original image/svg+xml identity after Task 3 pair, semantic, geometry, contrast and rendered raster QA."
     }
   ],
   "documents": {
@@ -32838,7 +32838,7 @@
           "manifest_primary": false,
           "usage_mode": "original-illustration",
           "attribution_note": "Space-Based Architecture 航班余位亲和分区、主备与恢复边界图，Tego Arch maintainers",
-          "modification_note": "Reserved for the Task 3 original synchronized Draw.io/SVG pair, created only from approved article semantics without third-party diagrams, reference imagery, logos, brand visuals, signatures, watermarks or copied composition.",
+          "modification_note": "Created as the Task 3 original synchronized Draw.io/SVG pair using only approved article semantics without third-party diagrams, reference imagery, logos, brand visuals, signatures, watermarks or copied composition.",
           "excerpt": null,
           "quotation_reviewed": false
         }
