@@ -47,6 +47,19 @@ export const STAGE_A_EVIDENCE_PAGES = Object.freeze({
   build: Object.freeze({jobId: 98_900_728_461, status: 'completed', conclusion: 'success'}),
   deploy: Object.freeze({jobId: 98_901_759_842, status: 'completed', conclusion: 'success'}),
 });
+export const STAGE_B_PUBLISHED_HEAD = 'e04605ed2b02568289cbfc1b47b1df77e4996d68';
+export const STAGE_B_PRODUCTION_PAGES = Object.freeze({
+  workflow: 'Verify and deploy Docusaurus to GitHub Pages',
+  runId: 33_189_774_344,
+  runUrl: 'https://github.com/sealday/tego-arch/actions/runs/33189774344',
+  event: 'push',
+  headSha: STAGE_B_PUBLISHED_HEAD,
+  status: 'completed',
+  conclusion: 'success',
+  build: Object.freeze({jobId: 98_911_988_885, status: 'completed', conclusion: 'success'}),
+  deploy: Object.freeze({jobId: 98_913_062_798, status: 'completed', conclusion: 'success'}),
+});
+export const FINAL_EVIDENCE_REVIEWED_HEAD = 'UNBOUND';
 export const LOCAL_RAW_IDENTITY = Object.freeze({bytes: 42_484, sha256: 'ebb10045c6ef19fd665767dba270697e552d8c1e074d219aa5ccbf972f2813c1'});
 export const PRODUCTION_RAW_IDENTITY = Object.freeze({bytes: 45_978, sha256: '99af96e80750b26f4d52a5c785e57907645f4d95464a821a333b9488a38d062b'});
 const ARTICLE_IDENTITY = Object.freeze({bytes: 20_625, sha256: '672ab04acd0c11498f25dbc8890f528c4b863c1308d7157774f01a96effe31bf'});
@@ -79,6 +92,17 @@ const PRODUCTION_ROUTES = Object.freeze([
   Object.freeze({path: '/tego-arch/cases/cloudflare-durable-objects-workerd', bytes: 89_265, sha256: '5d27d31495dd124434e33e5ae34bf9b1e8c0aedde0f97170ceed76065ac7fa85'}),
   Object.freeze({path: '/tego-arch/references', bytes: 23_533, sha256: '4dca33a4a2f8064ebc6e7399b4887defd7d4528aa13aa872852736a4c9288ad4'}),
 ]);
+const STAGE_B_PRODUCTION_ROUTES = Object.freeze([
+  Object.freeze({path: '/tego-arch/', bytes: 17_310, sha256: 'e48cc9503404f11c480a77f8a716c0ef76699c60c81ab6223100c48d33f6b4ce'}),
+  Object.freeze({path: '/tego-arch/styles', bytes: 24_266, sha256: 'ffb9b1b50d0facb2f1225db8e41fda77f859c43c9538def3ea60e5971cdd53c3'}),
+  Object.freeze({path: '/tego-arch/styles/sty-05', bytes: 40_782, sha256: '1e5b08f5596f860e21f94ad2f211a830a0c4d67bf9f11a08cee37dfdf6584e6f'}),
+  Object.freeze({path: '/tego-arch/styles/sty-08', bytes: 50_754, sha256: '7a5f16396648ff3dcd8a5921dea0f8613a4baffb07db1e07fee9cb310723265b'}),
+  Object.freeze({path: '/tego-arch/styles/sty-13', bytes: 48_992, sha256: '87fa954c7ddab0b19a5ce824f29df643caac1c7c5366f5e87a4767ce4f8f3427'}),
+  Object.freeze({path: '/tego-arch/cases', bytes: 53_503, sha256: '56d2cf05f8d768da84433beb145617a383d0465d23326eb2806bfc3babb44574'}),
+  Object.freeze({path: '/tego-arch/cases/aws-cell-shuffle-sharding', bytes: 55_593, sha256: '902aa46164fb94ad315a7ae5da34a342ca5e12fc88519492f330c854a789eebd'}),
+  Object.freeze({path: '/tego-arch/cases/cloudflare-durable-objects-workerd', bytes: 89_265, sha256: '5b007f197888e08975b590b2b17ef51728604fe375c8c55b9891b8dd42f07e26'}),
+  Object.freeze({path: '/tego-arch/references', bytes: 23_533, sha256: '16b443b8bae51971bbd2de849e7de2e75abd4b44e4f0b183e5479027efe4fc45'}),
+]);
 const PRODUCTION_SVG = Object.freeze({
   path: '/tego-arch/img/diagrams/sty-13-space-based-flight-availability.svg',
   url: 'https://sealday.github.io/tego-arch/img/diagrams/sty-13-space-based-flight-availability.svg',
@@ -86,6 +110,7 @@ const PRODUCTION_SVG = Object.freeze({
   contentType: 'image/svg+xml',
   ...SVG_IDENTITY,
 });
+const STAGE_B_PRODUCTION_SVG = Object.freeze({...PRODUCTION_SVG});
 const WRAPPER_LABELS = Object.freeze([
   'Space-Based Architecture 航班余位亲和分区、主备与恢复边界图，可横向滚动',
   'Space-Based Architecture 与四种相邻方案边界表，可横向滚动',
@@ -141,6 +166,19 @@ function currentReleaseBaseline(source) {
   assert.equal(lines.length, 1, 'one current release baseline');
   return lines[0].slice(prefix.length);
 }
+const IMMEDIATE_HISTORY_MARKER = '此前 G009 Batch 13 历史完成基线为：';
+const BATCH13_PRIOR_HISTORY_MARKER = '此前 G009 Batch 12 历史完成基线为：';
+function immediateBatch13Baseline(source) {
+  const baseline = currentReleaseBaseline(source);
+  const markerIndex = baseline.indexOf(IMMEDIATE_HISTORY_MARKER);
+  return markerIndex === -1 ? baseline : baseline.slice(markerIndex + IMMEDIATE_HISTORY_MARKER.length);
+}
+function batch13CurrentPrefix(source) {
+  const history = immediateBatch13Baseline(source);
+  const markerIndex = history.indexOf(BATCH13_PRIOR_HISTORY_MARKER);
+  assert.notEqual(markerIndex, -1, 'Batch 13 baseline contains the exact Batch 12 history marker');
+  return history.slice(0, markerIndex);
+}
 function markdownSection(source, heading) {
   const marker = `## ${heading}\n\n`;
   const start = source.indexOf(marker);
@@ -193,7 +231,7 @@ function assertImmediateBatch13History(reviewBytes = immediateReview, rawBytes =
     assert.equal(rawBytes[index].length, identity.bytes, `${identity.path} exact bytes`);
     assert.equal(sha256(rawBytes[index]), identity.sha256, `${identity.path} exact SHA-256`);
   }
-  const baseline = currentReleaseBaseline(backlogSource);
+  const baseline = immediateBatch13Baseline(backlogSource);
   assert.equal(Buffer.byteLength(baseline), IMMEDIATE_BASELINE_IDENTITY.bytes, 'complete immediate Batch 13 backlog baseline bytes');
   assert.equal(sha256(baseline), IMMEDIATE_BASELINE_IDENTITY.sha256, 'complete immediate Batch 13 backlog baseline SHA-256');
   assert.match(baseline, /^2026-08-27 G009 Batch 13 已完成 STY-12/u);
@@ -383,10 +421,58 @@ function assertStageAProductionEvidence(value) {
   assertTask5NestedEvidence(value, 'production', null);
 }
 
+function assertStageBProductionEvidence(value) {
+  assert.ok(value, `${STAGE_B_PRODUCTION_RAW} is missing; capture fresh Stage B production in-app Browser evidence`);
+  exactKeys(value, ['implementationHead', 'pages', 'probes', 'stateOrder', 'collection', 'states', 'functionalSummary', 'screenshotEvidence'], 'Stage B production evidence');
+  assert.equal(value.implementationHead, STAGE_B_PUBLISHED_HEAD, 'exact published Stage B head');
+  exactKeys(value.pages, ['workflow', 'runId', 'runUrl', 'event', 'headSha', 'status', 'conclusion', 'build', 'deploy'], 'Stage B Pages run');
+  exactKeys(value.pages.build, ['jobId', 'status', 'conclusion'], 'Stage B build job');
+  exactKeys(value.pages.deploy, ['jobId', 'status', 'conclusion'], 'Stage B deploy job');
+  assert.deepEqual(value.pages, STAGE_B_PRODUCTION_PAGES, 'exact successful Stage B Pages run and jobs');
+
+  exactKeys(value.probes, ['routes', 'svg'], 'Stage B production probes');
+  assert.ok(Array.isArray(value.probes.routes), 'Stage B production routes are an exact array');
+  assert.deepEqual(Object.keys(value.probes.routes), STAGE_B_PRODUCTION_ROUTES.map((_, index) => String(index)), 'Stage B production routes have no additive array properties');
+  assert.equal(value.probes.routes.length, STAGE_B_PRODUCTION_ROUTES.length, 'nine Stage B production HTML routes');
+  for (const [index, route] of value.probes.routes.entries()) {
+    exactKeys(route, ['path', 'status', 'contentType', 'bytes', 'sha256'], `Stage B production route ${index}`);
+    assert.deepEqual(route, {...STAGE_B_PRODUCTION_ROUTES[index], status: 200, contentType: 'text/html; charset=utf-8'}, `exact Stage B production route ${index}`);
+  }
+  exactKeys(value.probes.svg, ['path', 'url', 'status', 'contentType', 'bytes', 'sha256'], 'Stage B production SVG probe');
+  assert.deepEqual(value.probes.svg, STAGE_B_PRODUCTION_SVG, 'Stage B canonical production SVG is the exact reviewed asset');
+
+  exactKeys(value.collection, ['browser', 'fresh', 'session', 'servedUrl', 'build', 'navigationMethod', 'observedSvgAsset', 'diagnosticContinuity'], 'Stage B production collection');
+  assert.equal(value.collection.browser, 'Codex in-app Browser only', 'no substituted Stage B production browser');
+  assert.equal(value.collection.fresh, true, 'fresh Stage B production collection');
+  assert.equal(value.collection.session, 'fresh Stage B production session; Stage A and pre-deployment Stage B tabs and evidence were not reused', 'fresh Stage B production session boundary');
+  assert.equal(value.collection.servedUrl, 'https://sealday.github.io/tego-arch/styles/sty-13', 'exact Stage B production article URL');
+  assert.equal(value.collection.build, `GitHub Pages exact Stage B head ${STAGE_B_PUBLISHED_HEAD}; push run ${STAGE_B_PRODUCTION_PAGES.runId}; build job ${STAGE_B_PRODUCTION_PAGES.build.jobId}; deploy job ${STAGE_B_PRODUCTION_PAGES.deploy.jobId}`, 'exact Stage B production build identity');
+  assert.equal(value.collection.navigationMethod, 'Relation destinations were opened by exact href direct navigation and returned with Browser back; no physical-click claim is made.', 'honest Stage B production navigation method');
+  exactKeys(value.collection.observedSvgAsset, ['source', 'inventoryId', 'assetId', 'contentType', 'bytes', 'sha256', 'viewBox', 'requested', 'downloaded', 'failed'], 'Stage B production PageAssets SVG bundle');
+  assert.equal(value.collection.observedSvgAsset.source, 'production Browser pageAssets bundle', 'Stage B production PageAssets source');
+  assert.match(value.collection.observedSvgAsset.inventoryId, /^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/u, 'Stage B production PageAssets inventory ID');
+  assert.match(value.collection.observedSvgAsset.assetId, /^[0-9a-f]{16}$/u, 'Stage B production PageAssets asset ID');
+  assert.deepEqual({
+    contentType: value.collection.observedSvgAsset.contentType,
+    bytes: value.collection.observedSvgAsset.bytes,
+    sha256: value.collection.observedSvgAsset.sha256,
+    viewBox: value.collection.observedSvgAsset.viewBox,
+    requested: value.collection.observedSvgAsset.requested,
+    downloaded: value.collection.observedSvgAsset.downloaded,
+    failed: value.collection.observedSvgAsset.failed,
+  }, {
+    contentType: 'image/svg+xml', ...SVG_IDENTITY, viewBox: '0 0 2400 3600', requested: 1, downloaded: 1, failed: 0,
+  }, 'exact Stage B production PageAssets SVG bundle identity');
+
+  assertTask5NestedEvidence(value, 'Stage B production', null);
+}
+
 const PRODUCTION_REVIEW_HEADING = 'Stage A production publication';
 const PRODUCTION_REVIEW_MARKER = `\n## ${PRODUCTION_REVIEW_HEADING}\n\n`;
 const STAGE_B_REVIEW_HEADING = 'Stage B closure candidate';
 const STAGE_B_REVIEW_MARKER = `\n## ${STAGE_B_REVIEW_HEADING}\n\n`;
+const FINAL_STAGE_B_REVIEW_HEADING = 'Stage B production recovery candidate';
+const FINAL_STAGE_B_REVIEW_MARKER = `\n## ${FINAL_STAGE_B_REVIEW_HEADING}\n\n`;
 function reviewBeforeProductionCheckpoint(source) {
   const start = source.indexOf(PRODUCTION_REVIEW_MARKER);
   if (start === -1) return source;
@@ -397,6 +483,12 @@ function reviewBeforeStageBCandidate(source) {
   const start = source.indexOf(STAGE_B_REVIEW_MARKER);
   if (start === -1) return source;
   assert.equal(source.indexOf(STAGE_B_REVIEW_MARKER, start + STAGE_B_REVIEW_MARKER.length), -1, 'one Stage B closure candidate section');
+  return source.slice(0, start);
+}
+function reviewBeforeFinalStageBCandidate(source) {
+  const start = source.indexOf(FINAL_STAGE_B_REVIEW_MARKER);
+  if (start === -1) return source;
+  assert.equal(source.indexOf(FINAL_STAGE_B_REVIEW_MARKER, start + FINAL_STAGE_B_REVIEW_MARKER.length), -1, 'one Stage B production recovery candidate section');
   return source.slice(0, start);
 }
 
@@ -601,6 +693,116 @@ function assertStageAProductionReview(source = review, rawBytes = productionRaw,
   assert.equal(markdownSection(source, PRODUCTION_REVIEW_HEADING), expectedStageAProductionReviewSection(evidence, rawBytes), 'complete Stage A production section exact claims');
 }
 
+const PLACEHOLDER_FINAL_REVIEW_LINES = Object.freeze([
+  '- Exact final evidence candidate head: `UNBOUND — controller must create and bind the exact post-production-evidence candidate head`.',
+  '- Independent final code/spec/security review: `UNBOUND — controller must assign a read-only reviewer`.',
+  '- Independent final content/evidence/rights review: `UNBOUND — controller must assign a different read-only reviewer`.',
+  '- Independent final architecture/invariant review: `UNBOUND — controller must assign a third read-only reviewer`.',
+  '- Final review finding totals: `UNBOUND`.',
+  '- Final Stage B recovery judgment: `NOT_RECORDED`.',
+  '- Recovery baseline status: `NOT_UPDATED`.',
+]);
+function readyFinalReviewLines(expectedHead) {
+  assert.match(expectedHead, /^[0-9a-f]{40}$/u, 'explicit final evidence candidate head is bound');
+  return [
+    `- Exact final evidence candidate head: \`${expectedHead}\`.`,
+    `- Independent final code/spec/security review: \`READY / APPROVE\`; findings: \`0\`; exact head: \`${expectedHead}\`.`,
+    `- Independent final content/evidence/rights review: \`CONTENT READY\`; rights: \`PASS\`; findings: \`0\`; exact head: \`${expectedHead}\`.`,
+    `- Independent final architecture/invariant review: \`CLEAR / READY\`; blockers: \`0\`; exact head: \`${expectedHead}\`.`,
+    '- Final review finding totals: Critical `0`; Important `0`; Minor `0`; ⚠️ `0`.',
+    '- Final Stage B recovery judgment: `READY`.',
+    '- Recovery baseline status: `READY_TO_BIND`.',
+  ];
+}
+function expectedStageBProductionReviewSection(evidence, rawBytes, finalReviewLines) {
+  const routeRows = evidence.probes.routes.map(({path, status, contentType, bytes, sha256: hash}) => `| \`${path}\` | \`${status}\` | \`${contentType}\` | ${bytes.toLocaleString('en-US')} | \`${hash}\` |`).join('\n');
+  const screenshotRows = evidence.screenshotEvidence.attempts.map(({state, status, bytes, sha256: hash}) => `| \`${state}\` | \`${status}\` | ${bytes === null ? '`null`' : bytes.toLocaleString('en-US')} | \`${hash ?? 'null'}\` |`).join('\n');
+  const terminal = evidence.collection.diagnosticContinuity.at(-1);
+  const asset = evidence.collection.observedSvgAsset;
+  return `- Exact published Stage B head: \`${STAGE_B_PUBLISHED_HEAD}\`.
+- Exact Pages workflow/run: \`${STAGE_B_PRODUCTION_PAGES.workflow}\`; [\`${STAGE_B_PRODUCTION_PAGES.runId}\`](${STAGE_B_PRODUCTION_PAGES.runUrl}); \`headSha=${STAGE_B_PUBLISHED_HEAD}\`; \`event=push\`; \`status=completed\`; \`conclusion=success\`.
+- Exact jobs: build \`${STAGE_B_PRODUCTION_PAGES.build.jobId}\` \`completed/success\`; deploy \`${STAGE_B_PRODUCTION_PAGES.deploy.jobId}\` \`completed/success\`.
+- Stage B production HTTP probes: \`9/9\` HTML routes returned \`200\` with \`text/html; charset=utf-8\`; canonical SVG returned \`200\` with \`image/svg+xml\` and exact reviewed bytes/SHA-256.
+
+| Production route | Status | Content type | Bytes | SHA-256 |
+| --- | ---: | --- | ---: | --- |
+${routeRows}
+
+- Canonical Stage B production SVG: \`${evidence.probes.svg.path}\`; \`${evidence.probes.svg.bytes.toLocaleString('en-US')}\` bytes; SHA-256 \`${evidence.probes.svg.sha256}\`; exact reviewed asset match.
+- Stage B production raw Browser JSON: \`${STAGE_B_PRODUCTION_RAW}\`; bytes: \`${rawBytes.length.toLocaleString('en-US')}\`; SHA-256: \`${sha256(rawBytes)}\`.
+- Browser surface: \`Codex in-app Browser only\`; fresh collection: \`true\`; session: \`${evidence.collection.session}\`; fallback used: \`${evidence.screenshotEvidence.fallbackUsed}\`.
+- Stage B production functional Browser QA: \`PASS\`; states \`4/4\`; wrapper interactions \`16/16\`; relation href/H1/return observations \`16/16\`; source href/target/rel observations \`28/28\`; STY-14 actionable total \`0\`.
+- Stage B production diagnostics: \`57/57\` deliberately paged preparation, interaction, destination, return, screenshot and terminal pages; warning/error logs \`0\`; Runtime/Log events \`0\`; terminal \`${terminal.afterSequence} -> ${terminal.cursor}\`; \`hasMore=false\`; \`truncated=false\`.
+- Relation destinations were opened by exact href direct navigation and returned with Browser back; no physical-click claim is made.
+- Stage B production PageAssets bound the SVG bundle to the reviewed identity: inventory \`${asset.inventoryId}\`; asset \`${asset.assetId}\`; \`${asset.bytes.toLocaleString('en-US')}\` bytes; SHA-256 \`${asset.sha256}\`; bundle \`${asset.requested} requested / ${asset.downloaded} downloaded / ${asset.failed} failed\`.
+- Stage B production screenshot evidence: \`${evidence.screenshotEvidence.status}\`; attempted \`${evidence.screenshotEvidence.attempted}/4\`; accepted \`${evidence.screenshotEvidence.accepted}/4\`; fallback used: \`${evidence.screenshotEvidence.fallbackUsed}\`; attempts are recorded honestly and no opening/full-page scope is claimed.
+
+| State | Judgment | Bytes | SHA-256 |
+| --- | --- | ---: | --- |
+${screenshotRows}
+
+- Projection: \`83 completed topics / 126 content documents / 599 governed sources\`.
+- Current release target: STY-13 \`published / complete\`; STY-14 \`unpublished / pending / non-actionable\`; actionable route count \`0\`.
+
+### Final code / spec / security
+
+Read-only scope: exact Stage B head, run/jobs/probes, exact nested Browser schema and mutation sensitivity, raw/review byte binding, immutable Stage A/Batch 13 identities and recovery-baseline preservation.
+
+### Final content / evidence / rights
+
+Read-only scope: production evidence truthfulness, source and relation observations, original Draw.io/SVG rights, screenshot scope, and STY-14 non-actionability.
+
+### Final architecture / invariant
+
+Read-only scope: the complete STY-13 authority, affinity, split-brain, workflow, hotspot, rebalance and recovery contract at the exact published Stage B head.
+
+${finalReviewLines.join('\n')}`;
+}
+function expectedStageBProductionReviewSource(baseSource, evidence, rawBytes, finalReviewLines) {
+  return `${baseSource}\n## ${FINAL_STAGE_B_REVIEW_HEADING}\n\n${expectedStageBProductionReviewSection(evidence, rawBytes, finalReviewLines)}\n`;
+}
+function assertStageBProductionReview(source = review, rawBytes = stageBProductionRaw, expectedFinalHead = FINAL_EVIDENCE_REVIEWED_HEAD) {
+  assert.ok(source, `${REVIEW} exists before Stage B production evidence is bound`);
+  markdownSection(source, FINAL_STAGE_B_REVIEW_HEADING);
+  assert.ok(rawBytes, `${STAGE_B_PRODUCTION_RAW} is missing; record fresh Stage B production Browser evidence`);
+  const evidence = JSON.parse(rawBytes);
+  assertStageBProductionEvidence(evidence);
+  assertStageAProductionReview(source);
+  assertReadyStageBCandidate(source);
+  const finalReviewLines = expectedFinalHead === 'UNBOUND' ? PLACEHOLDER_FINAL_REVIEW_LINES : readyFinalReviewLines(expectedFinalHead);
+  const baseSource = reviewBeforeFinalStageBCandidate(source);
+  assert.equal(source, expectedStageBProductionReviewSource(baseSource, evidence, rawBytes, finalReviewLines), 'exact Stage B production recovery candidate review');
+  assert.equal(markdownSection(source, FINAL_STAGE_B_REVIEW_HEADING), expectedStageBProductionReviewSection(evidence, rawBytes, finalReviewLines), 'complete Stage B production recovery section exact claims and slots');
+}
+function finalRecoveryBaselinePrefix(evidence, rawBytes, expectedFinalHead) {
+  const screenshot = evidence.screenshotEvidence;
+  return `2026-08-28 G009 Batch 14 已完成 STY-13，Stage B 发布基线为 [\`${STAGE_B_PUBLISHED_HEAD}\`](https://github.com/sealday/tego-arch/commit/${STAGE_B_PUBLISHED_HEAD})，Pages run [\`${STAGE_B_PRODUCTION_PAGES.runId}\`](${STAGE_B_PRODUCTION_PAGES.runUrl})，exact \`headSha=${STAGE_B_PUBLISHED_HEAD}\`、\`event=push\`、\`status=completed\`、\`conclusion=success\`，build job \`${STAGE_B_PRODUCTION_PAGES.build.jobId}\`、deploy job \`${STAGE_B_PRODUCTION_PAGES.deploy.jobId}\`；2026-08-28 Stage B production HTTP probes \`9/9\`，live route \`/styles/sty-13\` 与 \`/img/diagrams/sty-13-space-based-flight-availability.svg\` 均为 HTTP \`200\`，live SVG \`${SVG_IDENTITY.bytes.toLocaleString('en-US')}\` bytes / SHA-256 \`${SVG_IDENTITY.sha256}\` 与 reviewed asset exact match。Production Browser states \`4/4\`、wrapper interactions \`16/16\`、relation destination/H1/return \`16/16\`、exact source destinations \`28/28\`，每个状态 STY-14 actionable count \`0\` 且 diagnostics \`57/57\` 完整为零；raw \`${STAGE_B_PRODUCTION_RAW}\` 为 \`${rawBytes.length.toLocaleString('en-US')}\` bytes / SHA-256 \`${sha256(rawBytes)}\`，Stage B production functional verdict \`PASS\`，screenshot evidence \`${screenshot.status}\`（attempted \`${screenshot.attempted}/4\`，accepted \`${screenshot.accepted}/4\`，fallback \`${screenshot.fallbackUsed}\`，attempts recorded honestly）。Stage B closure projection 为 83 个已完成主题、126 篇内容文档与 599 个受治理来源，持久故事进度仍为 \`8 / 20\`，当前 G009，下一项为 STY-14，STY-13 为 published/complete，STY-14 为 unpublished/pending/nonactionable；Stage B 三个独立 final review slots 均绑定 exact head \`${expectedFinalHead}\` 且 final readiness 为 \`READY\`，findings \`0\`，deployment status 为 \`SUCCESS\`。`;
+}
+function batch13CandidateLine(history) {
+  return `- **G009 Batch 13 Stage B 当前关闭候选：** ${history}`;
+}
+function batch14CandidateLine(prefix) {
+  return `- **G009 Batch 14 Stage B 当前关闭候选：** ${prefix}`;
+}
+function assertFinalRecoveryBaseline(source = backlog, rawBytes = stageBProductionRaw, expectedFinalHead = FINAL_EVIDENCE_REVIEWED_HEAD) {
+  const current = currentReleaseBaseline(source);
+  const history = immediateBatch13Baseline(source);
+  assert.equal(Buffer.byteLength(history), IMMEDIATE_BASELINE_IDENTITY.bytes, 'complete Batch 13 history suffix bytes in recovery baseline');
+  assert.equal(sha256(history), IMMEDIATE_BASELINE_IDENTITY.sha256, 'complete Batch 13 history suffix SHA-256 in recovery baseline');
+  const candidates = source.split(/\r?\n/u).filter((line) => /^- \*\*G009 Batch .* Stage B 当前关闭候选：\*\*/u.test(line));
+  if (expectedFinalHead === 'UNBOUND') {
+    assert.equal(current, history, 'current Batch 13 baseline remains untouched before final reviews are bound');
+    assert.deepEqual(candidates, [batch13CandidateLine(batch13CurrentPrefix(source))], 'no premature Batch 14 recovery candidate before final reviews');
+    return;
+  }
+  assert.ok(rawBytes, `${STAGE_B_PRODUCTION_RAW} exists before the recovery baseline is bound`);
+  const evidence = JSON.parse(rawBytes);
+  assertStageBProductionEvidence(evidence);
+  const prefix = finalRecoveryBaselinePrefix(evidence, rawBytes, expectedFinalHead);
+  assert.equal(current, `${prefix}${IMMEDIATE_HISTORY_MARKER}${history}`, 'exact current Stage B recovery baseline and history marker');
+  assert.deepEqual(candidates, [batch14CandidateLine(prefix)], 'one exact Batch 14 Stage B recovery candidate');
+}
+
 function sampleDiagnosticPages() {
   let cursor = 0;
   return [...ALL_STATE_SCOPES, 'terminal'].map((scope) => {
@@ -680,11 +882,44 @@ function sampleProductionCheckpointFixture() {
   return {evidence, rawBytes, source: expectedStageAProductionReviewSource(baseSource, evidence, rawBytes)};
 }
 
+function sampleStageBProductionEvidence() {
+  const stageA = sampleProductionEvidence();
+  return {
+    ...stageA,
+    implementationHead: STAGE_B_PUBLISHED_HEAD,
+    pages: structuredClone(STAGE_B_PRODUCTION_PAGES),
+    probes: {
+      routes: STAGE_B_PRODUCTION_ROUTES.map((route) => ({...route, status: 200, contentType: 'text/html; charset=utf-8'})),
+      svg: {...STAGE_B_PRODUCTION_SVG},
+    },
+    collection: {
+      ...stageA.collection,
+      session: 'fresh Stage B production session; Stage A and pre-deployment Stage B tabs and evidence were not reused',
+      build: `GitHub Pages exact Stage B head ${STAGE_B_PUBLISHED_HEAD}; push run ${STAGE_B_PRODUCTION_PAGES.runId}; build job ${STAGE_B_PRODUCTION_PAGES.build.jobId}; deploy job ${STAGE_B_PRODUCTION_PAGES.deploy.jobId}`,
+    },
+  };
+}
+function sampleStageBRecoveryFixture(expectedFinalHead = CONTRACT_REVIEWED_HEAD) {
+  const evidence = sampleStageBProductionEvidence();
+  const rawBytes = Buffer.from(`${JSON.stringify(evidence, null, 2)}\n`);
+  const reviewSource = expectedStageBProductionReviewSource(reviewBeforeFinalStageBCandidate(review), evidence, rawBytes, readyFinalReviewLines(expectedFinalHead));
+  const current = currentReleaseBaseline(backlog);
+  const history = immediateBatch13Baseline(backlog);
+  const prefix = finalRecoveryBaselinePrefix(evidence, rawBytes, expectedFinalHead);
+  const existingCandidate = backlog.split(/\r?\n/u).find((line) => /^- \*\*G009 Batch .* Stage B 当前关闭候选：\*\*/u.test(line));
+  assert.ok(existingCandidate, 'one existing Stage B candidate line for the recovery fixture');
+  const backlogSource = backlog
+    .replace(`- **当前发布基线：** ${current}`, `- **当前发布基线：** ${prefix}${IMMEDIATE_HISTORY_MARKER}${history}`)
+    .replace(existingCandidate, batch14CandidateLine(prefix));
+  return {evidence, rawBytes, reviewSource, backlogSource};
+}
+
 const [review, raw, backlog, article, ledgerBytes, drawioBytes, svgBytes, immediateReview, ...immediateRaws] = await Promise.all([
   optional(REVIEW, 'utf8'), optional(LOCAL_RAW), required(BACKLOG, 'utf8'), required(ARTICLE, 'utf8'), Promise.resolve(reviewedArtifact('data/source-ledger.json')), required(DRAWIO), required(SVG), required(IMMEDIATE_REVIEW),
   ...IMMEDIATE_RAW_IDENTITIES.map(({path}) => required(path)),
 ]);
 const productionRaw = await optional(PRODUCTION_RAW);
+const stageBProductionRaw = await optional(STAGE_B_PRODUCTION_RAW);
 
 test('freezes the complete immediate Batch 13 review/raw/backlog identity', () => assertImmediateBatch13History());
 
@@ -890,6 +1125,105 @@ test('production contract rejects identity, probe, Task 5 nested-schema, screens
     assert.notEqual(mutated, fixture.source, `${before} review mutation applies`);
     assert.throws(() => assertStageAProductionReview(mutated, fixture.rawBytes, CONTRACT_REVIEWED_HEAD), assert.AssertionError);
   }
+});
+
+test('requires exact-head Stage B Pages, HTTP/SVG probes and fresh production in-app Browser evidence', () => {
+  assertStageBProductionEvidence(stageBProductionRaw && JSON.parse(stageBProductionRaw));
+});
+
+test('requires the exact no-final-verdict Stage B production recovery candidate in the review', () => {
+  assertStageBProductionReview();
+});
+
+test('keeps the Batch 13 recovery baseline current until final Stage B evidence reviews are bound', () => {
+  assertFinalRecoveryBaseline();
+});
+
+test('Stage B contract rejects Stage A-schema, run, probe, freshness, diagnostic, screenshot, final-review and recovery mutations', () => {
+  const fixture = sampleStageBRecoveryFixture();
+  assertStageBProductionEvidence(fixture.evidence);
+  assertStageBProductionReview(fixture.reviewSource, fixture.rawBytes, CONTRACT_REVIEWED_HEAD);
+  assertFinalRecoveryBaseline(fixture.backlogSource, fixture.rawBytes, CONTRACT_REVIEWED_HEAD);
+  const evidenceMutations = [
+    ['root additive deployment', (copy) => { copy.deployment = 'SUCCESS'; }],
+    ['published head', (copy) => { copy.implementationHead = '0'.repeat(40); }],
+    ['Pages additive field', (copy) => { copy.pages.verified = true; }],
+    ['Pages run', (copy) => { copy.pages.runId += 1; }],
+    ['Pages head', (copy) => { copy.pages.headSha = '0'.repeat(40); }],
+    ['build conclusion', (copy) => { copy.pages.build.conclusion = 'failure'; }],
+    ['deploy job', (copy) => { copy.pages.deploy.jobId += 1; }],
+    ['probe additive field', (copy) => { copy.probes.verified = true; }],
+    ['route array additive field', (copy) => { copy.probes.routes.verified = true; }],
+    ['route status', (copy) => { copy.probes.routes[0].status = 404; }],
+    ['route bytes', (copy) => { copy.probes.routes[4].bytes += 1; }],
+    ['route SHA', (copy) => { copy.probes.routes[8].sha256 = '0'.repeat(64); }],
+    ['SVG identity', (copy) => { copy.probes.svg.sha256 = '0'.repeat(64); }],
+    ['collection additive field', (copy) => { copy.collection.verified = true; }],
+    ['substituted browser', (copy) => { copy.collection.browser = 'Chrome'; }],
+    ['stale collection', (copy) => { copy.collection.fresh = false; }],
+    ['reused Stage A session', (copy) => { copy.collection.session = 'fresh Stage A production session; local Stage A tab and evidence were not reused'; }],
+    ['wrong served URL', (copy) => { copy.collection.servedUrl = 'http://127.0.0.1:4173/tego-arch/styles/sty-13'; }],
+    ['physical-click overclaim', (copy) => { copy.collection.navigationMethod = 'Relations were physically clicked.'; }],
+    ['PageAssets additive field', (copy) => { copy.collection.observedSvgAsset.verified = true; }],
+    ['PageAssets inventory', (copy) => { copy.collection.observedSvgAsset.inventoryId = 'substituted'; }],
+    ['PageAssets asset', (copy) => { copy.collection.observedSvgAsset.assetId = 'substituted'; }],
+    ['PageAssets bytes', (copy) => { copy.collection.observedSvgAsset.bytes += 1; }],
+    ['PageAssets bundle failure', (copy) => { copy.collection.observedSvgAsset.failed = 1; }],
+    ['state additive field', (copy) => { copy.states.desktopLight.verified = true; }],
+    ['viewport', (copy) => { copy.states.mobileLight.viewport.height += 1; }],
+    ['document overflow', (copy) => { copy.states.mobileDark.documentGeometry.scrollWidth = 800; }],
+    ['wrapper geometry', (copy) => { copy.states.mobileLight.wrappers[0].scrollWidth += 1; }],
+    ['wrapper focus-visible', (copy) => { copy.states.desktopDark.wrappers[0].focusVisible = false; }],
+    ['relation H1', (copy) => { copy.states.desktopLight.relations[0].h1 = 'fabricated'; }],
+    ['relation return', (copy) => { copy.states.mobileDark.relations[3].returnedToArticle = false; }],
+    ['source target', (copy) => { copy.states.mobileLight.sources[0].target = '_self'; }],
+    ['STY-14 action', (copy) => { copy.states.desktopLight.sty14ActionableCount = 1; }],
+    ['diagnostic missing page', (copy) => { copy.collection.diagnosticContinuity.splice(2, 1); }],
+    ['diagnostic cursor discontinuity', (copy) => { copy.collection.diagnosticContinuity[2].afterSequence += 1; }],
+    ['diagnostic truncated', (copy) => { copy.states.mobileDark.diagnostics.at(-1).truncated = true; }],
+    ['functional pending', (copy) => { copy.functionalSummary.status = 'PENDING'; }],
+    ['screenshot generic pass overclaim', (copy) => { copy.screenshotEvidence.status = 'PASS'; }],
+    ['screenshot accepted overclaim', (copy) => { copy.screenshotEvidence.accepted = 4; }],
+    ['screenshot fallback', (copy) => { copy.screenshotEvidence.fallbackUsed = true; }],
+  ];
+  for (const [label, mutate] of evidenceMutations) {
+    const copy = structuredClone(fixture.evidence);
+    mutate(copy);
+    assert.throws(() => assertStageBProductionEvidence(copy), assert.AssertionError, label);
+  }
+
+  const whitespaceMutatedRaw = Buffer.concat([fixture.rawBytes, Buffer.from(' ')]);
+  assert.throws(() => assertStageBProductionReview(fixture.reviewSource, whitespaceMutatedRaw, CONTRACT_REVIEWED_HEAD), assert.AssertionError, 'Stage B review binds the exact complete raw bytes');
+  for (const [before, after] of [
+    [`Exact published Stage B head: \`${STAGE_B_PUBLISHED_HEAD}\`.`, `Exact published Stage B head: \`${'0'.repeat(40)}\`.`],
+    [`[\`${STAGE_B_PRODUCTION_PAGES.runId}\`](${STAGE_B_PRODUCTION_PAGES.runUrl})`, '[`0`](https://example.invalid/run/0)'],
+    ['Stage B production HTTP probes: `9/9`', 'Stage B production HTTP probes: `8/9`'],
+    ['Stage B production functional Browser QA: `PASS`', 'Stage B production functional Browser QA: `PENDING`'],
+    ['Stage B production diagnostics: `57/57`', 'Stage B production diagnostics: `56/57`'],
+    [`asset \`${fixture.evidence.collection.observedSvgAsset.assetId}\``, 'asset `substituted`'],
+    ['attempts are recorded honestly and no opening/full-page scope is claimed.', 'Screenshot capture scope: `FULL_PAGE`.'],
+    [`Exact final evidence candidate head: \`${CONTRACT_REVIEWED_HEAD}\`.`, `Exact final evidence candidate head: \`${'2'.repeat(40)}\`.`],
+    ['Independent final code/spec/security review: `READY / APPROVE`; findings: `0`;', 'Independent final code/spec/security review: `READY / APPROVE`; findings: `1`;'],
+    ['Independent final content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`;', 'Independent final content/evidence/rights review: `CONTENT READY`; rights: `FAIL`; findings: `1`;'],
+    ['Independent final architecture/invariant review: `CLEAR / READY`; blockers: `0`;', 'Independent final architecture/invariant review: `BLOCKED`; blockers: `1`;'],
+    ['Final review finding totals: Critical `0`; Important `0`; Minor `0`; ⚠️ `0`.', 'Final review finding totals: Critical `0`; Important `1`; Minor `0`; ⚠️ `0`.'],
+    ['Final Stage B recovery judgment: `READY`.', 'Final Stage B recovery judgment: `NOT_RECORDED`.'],
+    ['Recovery baseline status: `READY_TO_BIND`.', 'Recovery baseline status: `NOT_UPDATED`.'],
+  ]) {
+    const mutated = fixture.reviewSource.replace(before, after);
+    assert.notEqual(mutated, fixture.reviewSource, `${before} Stage B review mutation applies`);
+    assert.throws(() => assertStageBProductionReview(mutated, fixture.rawBytes, CONTRACT_REVIEWED_HEAD), assert.AssertionError);
+  }
+  const consistentlyWrongReview = fixture.reviewSource.replaceAll(CONTRACT_REVIEWED_HEAD, '2'.repeat(40));
+  assert.throws(() => assertStageBProductionReview(consistentlyWrongReview, fixture.rawBytes, CONTRACT_REVIEWED_HEAD), assert.AssertionError, 'mutually consistent wrong final review heads are rejected');
+
+  const baseline = currentReleaseBaseline(fixture.backlogSource);
+  for (const [label, mutated] of [
+    ['recovery baseline suffix mutation', fixture.backlogSource.replace(baseline, `${baseline}x`)],
+    ['recovery history marker mutation', fixture.backlogSource.replace(IMMEDIATE_HISTORY_MARKER, '此前不精确历史基线为：')],
+    ['recovery candidate head mutation', fixture.backlogSource.replaceAll(CONTRACT_REVIEWED_HEAD, '2'.repeat(40))],
+    ['recovery candidate duplication', `${fixture.backlogSource}\n${batch14CandidateLine(finalRecoveryBaselinePrefix(fixture.evidence, fixture.rawBytes, CONTRACT_REVIEWED_HEAD))}\n`],
+  ]) assert.throws(() => assertFinalRecoveryBaseline(mutated, fixture.rawBytes, CONTRACT_REVIEWED_HEAD), assert.AssertionError, label);
 });
 
 test('immutable history validator rejects review, raw and backlog suffix mutation', () => {
