@@ -1,3 +1,4 @@
+import path from 'node:path';
 import {themes as prismThemes} from 'prism-react-renderer';
 import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
@@ -28,7 +29,29 @@ const config: Config = {
   markdown: {
     mermaid: true,
   },
-  themes: ['@docusaurus/theme-mermaid'],
+  themes: [
+    '@docusaurus/theme-mermaid',
+    [
+      '@easyops-cn/docusaurus-search-local',
+      {
+        indexDocs: true,
+        indexBlog: false,
+        indexPages: false,
+        docsRouteBasePath: '/',
+        docsDir: 'content',
+        language: ['en', 'zh'],
+        hashed: 'filename',
+        searchResultLimits: 8,
+        searchResultContextMaxLength: 80,
+        explicitSearchResultPath: true,
+        fuzzyMatchingDistance: 1,
+        highlightSearchTermsOnTargetPage: false,
+        searchBarShortcutKeymap: 'mod+k',
+        searchBarPosition: 'right',
+        zhUserDictPath: path.resolve('src/search/zh-user-dict.txt'),
+      },
+    ],
+  ],
   plugins: ['./plugins/source-ledger-pages/index.mjs'],
 
   presets: [
@@ -61,6 +84,7 @@ const config: Config = {
         {to: '/questions', label: '设计题', position: 'left'},
         {to: '/paths', label: '学习路径', position: 'left'},
         {to: '/references', label: '资料库', position: 'left'},
+        {type: 'search', position: 'right'},
         {href: repositoryUrl, label: 'GitHub', position: 'right'},
       ],
     },
