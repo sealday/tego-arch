@@ -189,7 +189,9 @@ function isHistoricalReviewArtifact(relative) {
     !relative.startsWith('docs/reviews/evidence/g009-batch10-') &&
     !relative.startsWith('docs/reviews/evidence/g009-batch11-') &&
     !relative.startsWith('docs/reviews/evidence/g009-batch12-') &&
-    !relative.startsWith('docs/reviews/evidence/agentic-architecture-topic-system-') &&
+    relative !== 'docs/reviews/evidence/agentic-architecture-topic-system-local-browser.json' &&
+    relative !== 'docs/reviews/evidence/agentic-architecture-topic-system-production-browser.json' &&
+    relative !== 'docs/reviews/evidence/agentic-architecture-topic-system-deployment.json' &&
     !relative.startsWith('docs/reviews/evidence/g010-mth07-');
 }
 
@@ -803,14 +805,18 @@ test('locks the exact pre-G010 review namespace against add edit and delete muta
     'docs/reviews/evidence/agentic-architecture-topic-system-deployment.json',
   ]) assert.equal(isHistoricalReviewArtifact(currentPath), false, `${currentPath} is excluded from pre-G010 history`);
   assert.equal(isHistoricalReviewArtifact('docs/reviews/g009-batch7.md'), true);
+  const agenticNearMatch = 'docs/reviews/evidence/agentic-architecture-topic-system-fabricated.json';
+  assert.equal(isHistoricalReviewArtifact(agenticNearMatch), true, `${agenticNearMatch} remains protected history`);
 
   const entries = await historicalReviewEntries();
   assert.equal(entries.length, 39);
   assert.equal(historicalReviewEntriesHash(entries), HISTORICAL_REVIEW_TREE_HASH);
   const added = [...entries, {relative: 'docs/reviews/fabricated-history.md', bytes: Buffer.from('fabricated')}];
+  const agenticNearMatchAdded = [...entries, {relative: agenticNearMatch, bytes: Buffer.from('fabricated')}];
   const edited = entries.map((entry, index) => index === 0 ? {...entry, bytes: Buffer.concat([entry.bytes, Buffer.from(' ')])} : entry);
   const deleted = entries.slice(1);
   assert.notEqual(historicalReviewEntriesHash(added), HISTORICAL_REVIEW_TREE_HASH);
+  assert.notEqual(historicalReviewEntriesHash(agenticNearMatchAdded), HISTORICAL_REVIEW_TREE_HASH);
   assert.notEqual(historicalReviewEntriesHash(edited), HISTORICAL_REVIEW_TREE_HASH);
   assert.notEqual(historicalReviewEntriesHash(deleted), HISTORICAL_REVIEW_TREE_HASH);
 });
