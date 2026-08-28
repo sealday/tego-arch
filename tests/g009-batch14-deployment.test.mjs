@@ -17,10 +17,10 @@ export const EXPECTED_STAGE_A = Object.freeze({completed: 65, documents: 109, so
 export const EXPECTED_STAGE_B = Object.freeze({completed: 66, documents: 109, sources: 573});
 export const EXPECTED_BROWSER = Object.freeze({states: 4, wrappersPerState: 4, relationsPerState: 4, remoteSourcesPerState: 7, nextTopicActions: 0});
 
-export const CANDIDATE_HEAD = '17e596b23ca2e9ec37093d8bda9e6239e6af9d1f';
+export const CANDIDATE_HEAD = '9bbc779b146453a70a7aea7d6e3da2edddefc6fe';
 export const EXPECTED_REVIEWED_HEAD = 'UNBOUND';
 export const CONTRACT_REVIEWED_HEAD = '1111111111111111111111111111111111111111';
-export const LOCAL_RAW_IDENTITY = Object.freeze({bytes: 27_953, sha256: '415ca7f78747cff78de84bc025b8a870dabca1f993e558b8a2d6dcae8354fa6d'});
+export const LOCAL_RAW_IDENTITY = Object.freeze({bytes: 42_484, sha256: 'aaa0dfcc61f3717676bd5a108cad7cfa2e5fe51baa63a5fff9ce05954b074b6b'});
 const ARTICLE_IDENTITY = Object.freeze({bytes: 20_605, sha256: '89569481e650bd5f8a0845fb3b3943e16b1c8faebdfd18be27afc00013751b03'});
 const LEDGER_IDENTITY = Object.freeze({bytes: 1_681_848, sha256: '422b0ad4e4c128618203157864efb6d16dad7059ba97567a7f8dbdf8e87bd085'});
 const DRAWIO = 'diagrams/sty-13-space-based-flight-availability.drawio';
@@ -53,10 +53,10 @@ const EXPECTED_WRAPPERS = Object.freeze({
   mobileDark: Object.freeze([[358, 800, 0, 40], [358, 358, 0, 0], [358, 358, 0, 0], [358, 358, 0, 0]]),
 });
 const SCREENSHOTS = Object.freeze([
-  Object.freeze({state: 'desktopLight', bytes: 157_503, sha256: '68b661c5451587e6c4c078241e058482dcc1da3a9ae9f86f560ed81db36ede56'}),
-  Object.freeze({state: 'desktopDark', bytes: 159_782, sha256: 'd36c848666a3768f3427f551314d8c90b4c4523aad4ad7ba1497d45b78c433cc'}),
-  Object.freeze({state: 'mobileLight', bytes: 49_728, sha256: '4e788462bd23f4e736a53c5d393b493d3638ff36988371f83e55aeb5e6a1820e'}),
-  Object.freeze({state: 'mobileDark', bytes: 49_774, sha256: '7e71b86f5ccdb33eefe2da98a37d1089aa41cc15b44f4a8777945a614f1543e4'}),
+  Object.freeze({state: 'desktopLight', bytes: 149_450, sha256: '13402199be913a432d0088655ee0089f51ed188759359a77d1c5ca8e78009bad'}),
+  Object.freeze({state: 'desktopDark', bytes: 152_042, sha256: '260c79f24d33d8bdf8f35dbb9c275d076e8a781fea8fe6dbfffc64f83efbc68b'}),
+  Object.freeze({state: 'mobileLight', bytes: 49_347, sha256: '1b1ee1ccade33baefa9810e90a1ea8b14c1c15371be05cdf0160153770b368ed'}),
+  Object.freeze({state: 'mobileDark', bytes: 49_094, sha256: '270cb5b450ca39fd354755b047e4f0d3e89eab70aac8947286a00fe9f35c41e0'}),
 ]);
 const RELATIONS = Object.freeze([
   Object.freeze({href: '/tego-arch/styles/sty-05', expectedH1: '微服务：用独立部署换取自治，也承担分布式成本'}),
@@ -180,7 +180,7 @@ function assertLocalEvidence(value) {
   }, 'exact observed SVG identity');
   assert.equal(value.collection.diagnosticContinuity.length, ALL_STATE_SCOPES.length + 1, 'every required action plus whole-session terminal is paged');
   let previousCursor;
-  for (const [index, scope] of [...ALL_STATE_SCOPES, 'whole-session:terminal'].entries()) {
+  for (const [index, scope] of [...ALL_STATE_SCOPES, 'terminal'].entries()) {
     const page = value.collection.diagnosticContinuity[index];
     assertDiagnosticPage(page, scope, `collection diagnostic page ${index}`);
     if (previousCursor !== undefined) assert.equal(page.afterSequence, previousCursor, `collection diagnostic page ${index} continuous cursor`);
@@ -229,12 +229,11 @@ function assertLocalEvidence(value) {
     assert.equal(state.sty14ActionableCount, EXPECTED_BROWSER.nextTopicActions, `${stateName} STY-14 non-actionable`);
     assert.deepEqual(state.logs, [], `${stateName} warning/error logs`);
     assert.deepEqual(state.runtimeEvents, [], `${stateName} Runtime/Log events`);
-    exactKeys(state.diagnostics, ['pages', 'hasMore', 'truncated'], `${stateName} diagnostics`);
     const scopes = expectedScopes(stateName);
-    assert.equal(state.diagnostics.pages.length, scopes.length, `${stateName} deliberate diagnostic page count`);
-    assert.deepEqual(state.diagnostics.pages, value.collection.diagnosticContinuity.slice(offset, offset + scopes.length), `${stateName} pages bind continuous collection pages`);
-    assert.equal(state.diagnostics.hasMore, false, `${stateName} diagnostics terminal`);
-    assert.equal(state.diagnostics.truncated, false, `${stateName} diagnostics complete`);
+    assert.ok(Array.isArray(state.diagnostics), `${stateName} diagnostics exact page array`);
+    assert.deepEqual(Object.keys(state.diagnostics), scopes.map((_, index) => String(index)), `${stateName} diagnostics has no additive array properties`);
+    assert.equal(state.diagnostics.length, scopes.length, `${stateName} deliberate diagnostic page count`);
+    assert.deepEqual(state.diagnostics, value.collection.diagnosticContinuity.slice(offset, offset + scopes.length), `${stateName} pages bind continuous collection pages`);
     offset += scopes.length;
   }
   exactKeys(value.functionalSummary, ['status', 'states', 'wrapperInteractions', 'relationObservations', 'sourceObservations', 'sty14ActionableTotal', 'warningErrorLogs', 'runtimeAndLogEvents', 'diagnosticPages', 'diagnosticPagesTerminal', 'diagnosticsTruncated'], 'functional summary');
@@ -324,15 +323,15 @@ function expectedReviewSource(checkpointLines, finalParagraph) {
 - Browser surface: \`Codex in-app Browser only\`; fallback used: \`false\`.
 - Functional Browser QA: \`PASS\`; states \`4/4\`; wrapper interactions \`16/16\`; relation href/H1/return observations \`16/16\`; source href/target/rel observations \`28/28\`.
 - STY-14 actionable count: \`0\` per state.
-- Diagnostics: \`57/57\` deliberately paged preparation, interaction, destination, return, screenshot and terminal pages; every accepted page has \`count=0\`, \`hasMore=false\`, \`truncated=false\`; terminal cursor \`503 -> 503\`.
+- Diagnostics: \`57/57\` deliberately paged preparation, interaction, destination, return, screenshot and terminal pages; every accepted page has \`count=0\`, \`hasMore=false\`, \`truncated=false\`; terminal cursor \`477 -> 477\`.
 - Screenshot evidence: \`PASS / ACCEPTED\`; accepted \`4/4\`; captures faithfully cover the production-analysis table viewport, not the opening or full page.
 
 | State | Bytes | SHA-256 | Judgment |
 | --- | ---: | --- | --- |
 ${screenshotRows}
 
-- A pre-session desktop-light attempt produced an actual dark-theme capture (\`159,808\` bytes; SHA-256 \`3de550aadf15b37e8bc320d54d8d322327bc5870282faf1f49d56c47fd1bf0ea\`) before the three-state theme control had settled. It is \`BLOCKED / NOT_ACCEPTED\`, is not present in the accepted raw, and caused a fresh IAB tab and cursor session to be started.
-- The mobile light preparation exposed that the public theme control is inside the mobile navigation and cycles through system/light/dark modes. The accepted \`mobileLight:prepare\` page honestly spans the discovery/retry sequence (\`240 -> 289\`), with zero Runtime/Log events and no truncation.
+- Fresh exact-X collection begins at diagnostic cursor \`13\`; no stale pre-remediation screenshot or substituted Browser evidence is present in the accepted raw.
+- Exact preparation cursor spans are desktop light \`13 -> 26\`, desktop dark \`122 -> 134\`, mobile light \`230 -> 258\`, and mobile dark \`354 -> 381\`; every preparation page has zero Runtime/Log events and no truncation.
 
 ## Independent review checkpoint
 
@@ -402,8 +401,8 @@ function contractOnlyReadyReviewFixture(expectedCandidateHead = CONTRACT_REVIEWE
 
 function sampleDiagnosticPages() {
   let cursor = 0;
-  return [...ALL_STATE_SCOPES, 'whole-session:terminal'].map((scope) => {
-    const page = {scope, afterSequence: cursor, cursor: cursor + (scope === 'whole-session:terminal' ? 0 : 1), count: 0, hasMore: false, truncated: false};
+  return [...ALL_STATE_SCOPES, 'terminal'].map((scope) => {
+    const page = {scope, afterSequence: cursor, cursor: cursor + (scope === 'terminal' ? 0 : 1), count: 0, hasMore: false, truncated: false};
     cursor = page.cursor;
     return page;
   });
@@ -424,7 +423,7 @@ function sampleEvidence() {
       }),
       relations: RELATIONS.map((relation) => ({...relation, h1: relation.expectedH1, visibleCount: 1, returnedToArticle: true})),
       sources: SOURCE_HREFS.map((href) => ({href, target: '_blank', rel: 'noopener noreferrer'})),
-      sty14ActionableCount: 0, logs: [], runtimeEvents: [], diagnostics: {pages: statePages, hasMore: false, truncated: false},
+      sty14ActionableCount: 0, logs: [], runtimeEvents: [], diagnostics: statePages,
     }];
   }));
   return {
@@ -511,7 +510,7 @@ test('exact-schema validator rejects additive and semantic Browser evidence muta
     ['runtime event', (copy) => { copy.states.mobileDark.runtimeEvents.push({method: 'Runtime.exceptionThrown'}); }],
     ['diagnostic page additive field', (copy) => { copy.collection.diagnosticContinuity[0].verified = true; }],
     ['diagnostic hasMore', (copy) => { copy.collection.diagnosticContinuity[1].hasMore = true; }],
-    ['diagnostic truncated', (copy) => { copy.states.mobileLight.diagnostics.truncated = true; }],
+    ['diagnostic truncated', (copy) => { copy.states.mobileLight.diagnostics.at(-1).truncated = true; }],
     ['diagnostic missing action page', (copy) => { copy.collection.diagnosticContinuity.splice(3, 1); }],
     ['diagnostic cursor discontinuity', (copy) => { copy.collection.diagnosticContinuity[2].afterSequence += 1; }],
     ['functional pending', (copy) => { copy.functionalSummary.status = 'PENDING'; }],

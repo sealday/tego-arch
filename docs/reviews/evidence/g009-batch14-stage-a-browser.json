@@ -1,1 +1,1481 @@
-{"candidateHead":"17e596b23ca2e9ec37093d8bda9e6239e6af9d1f","stateOrder":["desktopLight","desktopDark","mobileLight","mobileDark"],"collection":{"browser":"Codex in-app Browser only","fresh":true,"servedUrl":"http://127.0.0.1:4173/tego-arch/styles/sty-13","build":"local build from exact clean implementation head 17e596b23ca2e9ec37093d8bda9e6239e6af9d1f","navigationMethod":"Relation destinations were opened by exact href direct navigation and returned with Browser back; no physical-click claim is made.","observedSvgAsset":{"source":"local Browser pageAssets bundle","contentType":"image/svg+xml","bytes":26671,"sha256":"68e15b5fe4eefd49f5870c672e125d0fa9e001b5177049d43a09d68d2deb56d7","viewBox":"0 0 2400 3600"},"diagnosticContinuity":[{"scope":"desktopLight:prepare","afterSequence":13,"cursor":26,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopLight:interaction0","afterSequence":26,"cursor":26,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopLight:interaction1","afterSequence":26,"cursor":26,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopLight:interaction2","afterSequence":26,"cursor":26,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopLight:interaction3","afterSequence":26,"cursor":26,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopLight:relation0:destination","afterSequence":26,"cursor":38,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopLight:relation0:return","afterSequence":38,"cursor":50,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopLight:relation1:destination","afterSequence":50,"cursor":62,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopLight:relation1:return","afterSequence":62,"cursor":74,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopLight:relation2:destination","afterSequence":74,"cursor":86,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopLight:relation2:return","afterSequence":86,"cursor":98,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopLight:relation3:destination","afterSequence":98,"cursor":110,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopLight:relation3:return","afterSequence":110,"cursor":122,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopLight:screenshot","afterSequence":122,"cursor":127,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopDark:prepare","afterSequence":127,"cursor":139,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopDark:interaction0","afterSequence":139,"cursor":139,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopDark:interaction1","afterSequence":139,"cursor":139,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopDark:interaction2","afterSequence":139,"cursor":139,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopDark:interaction3","afterSequence":139,"cursor":139,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopDark:relation0:destination","afterSequence":139,"cursor":151,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopDark:relation0:return","afterSequence":151,"cursor":163,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopDark:relation1:destination","afterSequence":163,"cursor":175,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopDark:relation1:return","afterSequence":175,"cursor":187,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopDark:relation2:destination","afterSequence":187,"cursor":199,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopDark:relation2:return","afterSequence":199,"cursor":211,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopDark:relation3:destination","afterSequence":211,"cursor":223,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopDark:relation3:return","afterSequence":223,"cursor":235,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopDark:screenshot","afterSequence":235,"cursor":240,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileLight:prepare","afterSequence":240,"cursor":289,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileLight:interaction0","afterSequence":289,"cursor":289,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileLight:interaction1","afterSequence":289,"cursor":289,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileLight:interaction2","afterSequence":289,"cursor":289,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileLight:interaction3","afterSequence":289,"cursor":289,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileLight:relation0:destination","afterSequence":289,"cursor":301,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileLight:relation0:return","afterSequence":301,"cursor":313,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileLight:relation1:destination","afterSequence":313,"cursor":325,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileLight:relation1:return","afterSequence":325,"cursor":337,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileLight:relation2:destination","afterSequence":337,"cursor":349,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileLight:relation2:return","afterSequence":349,"cursor":361,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileLight:relation3:destination","afterSequence":361,"cursor":373,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileLight:relation3:return","afterSequence":373,"cursor":385,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileLight:screenshot","afterSequence":385,"cursor":390,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileDark:prepare","afterSequence":390,"cursor":402,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileDark:interaction0","afterSequence":402,"cursor":402,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileDark:interaction1","afterSequence":402,"cursor":402,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileDark:interaction2","afterSequence":402,"cursor":402,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileDark:interaction3","afterSequence":402,"cursor":402,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileDark:relation0:destination","afterSequence":402,"cursor":414,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileDark:relation0:return","afterSequence":414,"cursor":426,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileDark:relation1:destination","afterSequence":426,"cursor":438,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileDark:relation1:return","afterSequence":438,"cursor":450,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileDark:relation2:destination","afterSequence":450,"cursor":462,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileDark:relation2:return","afterSequence":462,"cursor":474,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileDark:relation3:destination","afterSequence":474,"cursor":486,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileDark:relation3:return","afterSequence":486,"cursor":498,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileDark:screenshot","afterSequence":498,"cursor":503,"count":0,"hasMore":false,"truncated":false},{"scope":"whole-session:terminal","afterSequence":503,"cursor":503,"count":0,"hasMore":false,"truncated":false}]},"states":{"desktopLight":{"theme":"light","viewport":{"width":1440,"height":1000},"documentGeometry":{"clientWidth":1440,"scrollWidth":1440},"sources":[{"href":"https://docs.gigaspaces.com/16.2/overview/space-based-architecture.html","rel":"noopener noreferrer","target":"_blank"},{"href":"https://docs.gigaspaces.com/16.2.1/admin/the-sla-overview.html","rel":"noopener noreferrer","target":"_blank"},{"href":"https://docs.gigaspaces.com/16.2/admin/leader-election-availability-biased.html","rel":"noopener noreferrer","target":"_blank"},{"href":"https://docs.gigaspaces.com/16.2/admin/tuning-proxy-connectivity.html","rel":"noopener noreferrer","target":"_blank"},{"href":"https://docs.oracle.com/en/middleware/fusion-middleware/coherence/12.2.1.4/develop-applications/introduction-coherence.html","rel":"noopener noreferrer","target":"_blank"},{"href":"https://docs.oracle.com/middleware/1221/coherence/develop-applications/cache_back.htm","rel":"noopener noreferrer","target":"_blank"},{"href":"https://www.gigaspaces.com/case_studies/booking-and-flight-availability","rel":"noopener noreferrer","target":"_blank"}],"sty14ActionableCount":0,"wrappers":[{"label":"Space-Based Architecture 航班余位亲和分区、主备与恢复边界图，可横向滚动","clientWidth":800,"scrollWidth":800,"before":0,"after":0,"focus":true,"focusVisible":true,"outlineWidth":"3px"},{"label":"Space-Based Architecture 与四种相邻方案边界表，可横向滚动","clientWidth":800,"scrollWidth":800,"before":0,"after":0,"focus":true,"focusVisible":true,"outlineWidth":"3px"},{"label":"航班余位六类操作执行与一致性责任表，可横向滚动","clientWidth":800,"scrollWidth":800,"before":0,"after":0,"focus":true,"focusVisible":true,"outlineWidth":"3px"},{"label":"Space-Based Architecture 六类故障信号、保护动作与恢复门槛表，可横向滚动","clientWidth":800,"scrollWidth":800,"before":0,"after":0,"focus":true,"focusVisible":true,"outlineWidth":"3px"}],"relations":[{"href":"/tego-arch/styles/sty-05","expectedH1":"微服务：用独立部署换取自治，也承担分布式成本","h1":"微服务：用独立部署换取自治，也承担分布式成本","visibleCount":1,"returnedToArticle":true},{"href":"/tego-arch/styles/sty-08","expectedH1":"Actor Model：用逻辑身份、私有状态与消息隔离并发","h1":"Actor Model：用逻辑身份、私有状态与消息隔离并发","visibleCount":1,"returnedToArticle":true},{"href":"/tego-arch/cases/aws-cell-shuffle-sharding","expectedH1":"单元架构与洗牌分片：把失控智能体限制在可计算的故障半径内","h1":"单元架构与洗牌分片：把失控智能体限制在可计算的故障半径内","visibleCount":1,"returnedToArticle":true},{"href":"/tego-arch/cases/cloudflare-durable-objects-workerd","expectedH1":"把边缘协调收敛到身份寻址的状态单元","h1":"把边缘协调收敛到身份寻址的状态单元","visibleCount":1,"returnedToArticle":true}],"logs":[],"runtimeEvents":[],"diagnostics":{"pages":[{"scope":"desktopLight:prepare","afterSequence":13,"cursor":26,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopLight:interaction0","afterSequence":26,"cursor":26,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopLight:interaction1","afterSequence":26,"cursor":26,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopLight:interaction2","afterSequence":26,"cursor":26,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopLight:interaction3","afterSequence":26,"cursor":26,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopLight:relation0:destination","afterSequence":26,"cursor":38,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopLight:relation0:return","afterSequence":38,"cursor":50,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopLight:relation1:destination","afterSequence":50,"cursor":62,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopLight:relation1:return","afterSequence":62,"cursor":74,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopLight:relation2:destination","afterSequence":74,"cursor":86,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopLight:relation2:return","afterSequence":86,"cursor":98,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopLight:relation3:destination","afterSequence":98,"cursor":110,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopLight:relation3:return","afterSequence":110,"cursor":122,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopLight:screenshot","afterSequence":122,"cursor":127,"count":0,"hasMore":false,"truncated":false}],"hasMore":false,"truncated":false}},"desktopDark":{"theme":"dark","viewport":{"width":1440,"height":1000},"documentGeometry":{"clientWidth":1440,"scrollWidth":1440},"sources":[{"href":"https://docs.gigaspaces.com/16.2/overview/space-based-architecture.html","rel":"noopener noreferrer","target":"_blank"},{"href":"https://docs.gigaspaces.com/16.2.1/admin/the-sla-overview.html","rel":"noopener noreferrer","target":"_blank"},{"href":"https://docs.gigaspaces.com/16.2/admin/leader-election-availability-biased.html","rel":"noopener noreferrer","target":"_blank"},{"href":"https://docs.gigaspaces.com/16.2/admin/tuning-proxy-connectivity.html","rel":"noopener noreferrer","target":"_blank"},{"href":"https://docs.oracle.com/en/middleware/fusion-middleware/coherence/12.2.1.4/develop-applications/introduction-coherence.html","rel":"noopener noreferrer","target":"_blank"},{"href":"https://docs.oracle.com/middleware/1221/coherence/develop-applications/cache_back.htm","rel":"noopener noreferrer","target":"_blank"},{"href":"https://www.gigaspaces.com/case_studies/booking-and-flight-availability","rel":"noopener noreferrer","target":"_blank"}],"sty14ActionableCount":0,"wrappers":[{"label":"Space-Based Architecture 航班余位亲和分区、主备与恢复边界图，可横向滚动","clientWidth":800,"scrollWidth":800,"before":0,"after":0,"focus":true,"focusVisible":true,"outlineWidth":"3px"},{"label":"Space-Based Architecture 与四种相邻方案边界表，可横向滚动","clientWidth":800,"scrollWidth":800,"before":0,"after":0,"focus":true,"focusVisible":true,"outlineWidth":"3px"},{"label":"航班余位六类操作执行与一致性责任表，可横向滚动","clientWidth":800,"scrollWidth":800,"before":0,"after":0,"focus":true,"focusVisible":true,"outlineWidth":"3px"},{"label":"Space-Based Architecture 六类故障信号、保护动作与恢复门槛表，可横向滚动","clientWidth":800,"scrollWidth":800,"before":0,"after":0,"focus":true,"focusVisible":true,"outlineWidth":"3px"}],"relations":[{"href":"/tego-arch/styles/sty-05","expectedH1":"微服务：用独立部署换取自治，也承担分布式成本","h1":"微服务：用独立部署换取自治，也承担分布式成本","visibleCount":1,"returnedToArticle":true},{"href":"/tego-arch/styles/sty-08","expectedH1":"Actor Model：用逻辑身份、私有状态与消息隔离并发","h1":"Actor Model：用逻辑身份、私有状态与消息隔离并发","visibleCount":1,"returnedToArticle":true},{"href":"/tego-arch/cases/aws-cell-shuffle-sharding","expectedH1":"单元架构与洗牌分片：把失控智能体限制在可计算的故障半径内","h1":"单元架构与洗牌分片：把失控智能体限制在可计算的故障半径内","visibleCount":1,"returnedToArticle":true},{"href":"/tego-arch/cases/cloudflare-durable-objects-workerd","expectedH1":"把边缘协调收敛到身份寻址的状态单元","h1":"把边缘协调收敛到身份寻址的状态单元","visibleCount":1,"returnedToArticle":true}],"logs":[],"runtimeEvents":[],"diagnostics":{"pages":[{"scope":"desktopDark:prepare","afterSequence":127,"cursor":139,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopDark:interaction0","afterSequence":139,"cursor":139,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopDark:interaction1","afterSequence":139,"cursor":139,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopDark:interaction2","afterSequence":139,"cursor":139,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopDark:interaction3","afterSequence":139,"cursor":139,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopDark:relation0:destination","afterSequence":139,"cursor":151,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopDark:relation0:return","afterSequence":151,"cursor":163,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopDark:relation1:destination","afterSequence":163,"cursor":175,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopDark:relation1:return","afterSequence":175,"cursor":187,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopDark:relation2:destination","afterSequence":187,"cursor":199,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopDark:relation2:return","afterSequence":199,"cursor":211,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopDark:relation3:destination","afterSequence":211,"cursor":223,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopDark:relation3:return","afterSequence":223,"cursor":235,"count":0,"hasMore":false,"truncated":false},{"scope":"desktopDark:screenshot","afterSequence":235,"cursor":240,"count":0,"hasMore":false,"truncated":false}],"hasMore":false,"truncated":false}},"mobileLight":{"theme":"light","viewport":{"width":390,"height":844},"documentGeometry":{"clientWidth":390,"scrollWidth":390},"sources":[{"href":"https://docs.gigaspaces.com/16.2/overview/space-based-architecture.html","rel":"noopener noreferrer","target":"_blank"},{"href":"https://docs.gigaspaces.com/16.2.1/admin/the-sla-overview.html","rel":"noopener noreferrer","target":"_blank"},{"href":"https://docs.gigaspaces.com/16.2/admin/leader-election-availability-biased.html","rel":"noopener noreferrer","target":"_blank"},{"href":"https://docs.gigaspaces.com/16.2/admin/tuning-proxy-connectivity.html","rel":"noopener noreferrer","target":"_blank"},{"href":"https://docs.oracle.com/en/middleware/fusion-middleware/coherence/12.2.1.4/develop-applications/introduction-coherence.html","rel":"noopener noreferrer","target":"_blank"},{"href":"https://docs.oracle.com/middleware/1221/coherence/develop-applications/cache_back.htm","rel":"noopener noreferrer","target":"_blank"},{"href":"https://www.gigaspaces.com/case_studies/booking-and-flight-availability","rel":"noopener noreferrer","target":"_blank"}],"sty14ActionableCount":0,"wrappers":[{"label":"Space-Based Architecture 航班余位亲和分区、主备与恢复边界图，可横向滚动","clientWidth":358,"scrollWidth":800,"before":0,"after":40,"focus":true,"focusVisible":true,"outlineWidth":"3px"},{"label":"Space-Based Architecture 与四种相邻方案边界表，可横向滚动","clientWidth":358,"scrollWidth":358,"before":0,"after":0,"focus":true,"focusVisible":true,"outlineWidth":"3px"},{"label":"航班余位六类操作执行与一致性责任表，可横向滚动","clientWidth":358,"scrollWidth":358,"before":0,"after":0,"focus":true,"focusVisible":true,"outlineWidth":"3px"},{"label":"Space-Based Architecture 六类故障信号、保护动作与恢复门槛表，可横向滚动","clientWidth":358,"scrollWidth":358,"before":0,"after":0,"focus":true,"focusVisible":true,"outlineWidth":"3px"}],"relations":[{"href":"/tego-arch/styles/sty-05","expectedH1":"微服务：用独立部署换取自治，也承担分布式成本","h1":"微服务：用独立部署换取自治，也承担分布式成本","visibleCount":1,"returnedToArticle":true},{"href":"/tego-arch/styles/sty-08","expectedH1":"Actor Model：用逻辑身份、私有状态与消息隔离并发","h1":"Actor Model：用逻辑身份、私有状态与消息隔离并发","visibleCount":1,"returnedToArticle":true},{"href":"/tego-arch/cases/aws-cell-shuffle-sharding","expectedH1":"单元架构与洗牌分片：把失控智能体限制在可计算的故障半径内","h1":"单元架构与洗牌分片：把失控智能体限制在可计算的故障半径内","visibleCount":1,"returnedToArticle":true},{"href":"/tego-arch/cases/cloudflare-durable-objects-workerd","expectedH1":"把边缘协调收敛到身份寻址的状态单元","h1":"把边缘协调收敛到身份寻址的状态单元","visibleCount":1,"returnedToArticle":true}],"logs":[],"runtimeEvents":[],"diagnostics":{"pages":[{"scope":"mobileLight:prepare","afterSequence":240,"cursor":289,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileLight:interaction0","afterSequence":289,"cursor":289,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileLight:interaction1","afterSequence":289,"cursor":289,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileLight:interaction2","afterSequence":289,"cursor":289,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileLight:interaction3","afterSequence":289,"cursor":289,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileLight:relation0:destination","afterSequence":289,"cursor":301,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileLight:relation0:return","afterSequence":301,"cursor":313,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileLight:relation1:destination","afterSequence":313,"cursor":325,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileLight:relation1:return","afterSequence":325,"cursor":337,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileLight:relation2:destination","afterSequence":337,"cursor":349,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileLight:relation2:return","afterSequence":349,"cursor":361,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileLight:relation3:destination","afterSequence":361,"cursor":373,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileLight:relation3:return","afterSequence":373,"cursor":385,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileLight:screenshot","afterSequence":385,"cursor":390,"count":0,"hasMore":false,"truncated":false}],"hasMore":false,"truncated":false}},"mobileDark":{"theme":"dark","viewport":{"width":390,"height":844},"documentGeometry":{"clientWidth":390,"scrollWidth":390},"sources":[{"href":"https://docs.gigaspaces.com/16.2/overview/space-based-architecture.html","rel":"noopener noreferrer","target":"_blank"},{"href":"https://docs.gigaspaces.com/16.2.1/admin/the-sla-overview.html","rel":"noopener noreferrer","target":"_blank"},{"href":"https://docs.gigaspaces.com/16.2/admin/leader-election-availability-biased.html","rel":"noopener noreferrer","target":"_blank"},{"href":"https://docs.gigaspaces.com/16.2/admin/tuning-proxy-connectivity.html","rel":"noopener noreferrer","target":"_blank"},{"href":"https://docs.oracle.com/en/middleware/fusion-middleware/coherence/12.2.1.4/develop-applications/introduction-coherence.html","rel":"noopener noreferrer","target":"_blank"},{"href":"https://docs.oracle.com/middleware/1221/coherence/develop-applications/cache_back.htm","rel":"noopener noreferrer","target":"_blank"},{"href":"https://www.gigaspaces.com/case_studies/booking-and-flight-availability","rel":"noopener noreferrer","target":"_blank"}],"sty14ActionableCount":0,"wrappers":[{"label":"Space-Based Architecture 航班余位亲和分区、主备与恢复边界图，可横向滚动","clientWidth":358,"scrollWidth":800,"before":0,"after":40,"focus":true,"focusVisible":true,"outlineWidth":"3px"},{"label":"Space-Based Architecture 与四种相邻方案边界表，可横向滚动","clientWidth":358,"scrollWidth":358,"before":0,"after":0,"focus":true,"focusVisible":true,"outlineWidth":"3px"},{"label":"航班余位六类操作执行与一致性责任表，可横向滚动","clientWidth":358,"scrollWidth":358,"before":0,"after":0,"focus":true,"focusVisible":true,"outlineWidth":"3px"},{"label":"Space-Based Architecture 六类故障信号、保护动作与恢复门槛表，可横向滚动","clientWidth":358,"scrollWidth":358,"before":0,"after":0,"focus":true,"focusVisible":true,"outlineWidth":"3px"}],"relations":[{"href":"/tego-arch/styles/sty-05","expectedH1":"微服务：用独立部署换取自治，也承担分布式成本","h1":"微服务：用独立部署换取自治，也承担分布式成本","visibleCount":1,"returnedToArticle":true},{"href":"/tego-arch/styles/sty-08","expectedH1":"Actor Model：用逻辑身份、私有状态与消息隔离并发","h1":"Actor Model：用逻辑身份、私有状态与消息隔离并发","visibleCount":1,"returnedToArticle":true},{"href":"/tego-arch/cases/aws-cell-shuffle-sharding","expectedH1":"单元架构与洗牌分片：把失控智能体限制在可计算的故障半径内","h1":"单元架构与洗牌分片：把失控智能体限制在可计算的故障半径内","visibleCount":1,"returnedToArticle":true},{"href":"/tego-arch/cases/cloudflare-durable-objects-workerd","expectedH1":"把边缘协调收敛到身份寻址的状态单元","h1":"把边缘协调收敛到身份寻址的状态单元","visibleCount":1,"returnedToArticle":true}],"logs":[],"runtimeEvents":[],"diagnostics":{"pages":[{"scope":"mobileDark:prepare","afterSequence":390,"cursor":402,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileDark:interaction0","afterSequence":402,"cursor":402,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileDark:interaction1","afterSequence":402,"cursor":402,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileDark:interaction2","afterSequence":402,"cursor":402,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileDark:interaction3","afterSequence":402,"cursor":402,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileDark:relation0:destination","afterSequence":402,"cursor":414,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileDark:relation0:return","afterSequence":414,"cursor":426,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileDark:relation1:destination","afterSequence":426,"cursor":438,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileDark:relation1:return","afterSequence":438,"cursor":450,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileDark:relation2:destination","afterSequence":450,"cursor":462,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileDark:relation2:return","afterSequence":462,"cursor":474,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileDark:relation3:destination","afterSequence":474,"cursor":486,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileDark:relation3:return","afterSequence":486,"cursor":498,"count":0,"hasMore":false,"truncated":false},{"scope":"mobileDark:screenshot","afterSequence":498,"cursor":503,"count":0,"hasMore":false,"truncated":false}],"hasMore":false,"truncated":false}}},"functionalSummary":{"status":"PASS","states":4,"wrapperInteractions":16,"relationObservations":16,"sourceObservations":28,"sty14ActionableTotal":0,"warningErrorLogs":0,"runtimeAndLogEvents":0,"diagnosticPages":57,"diagnosticPagesTerminal":true,"diagnosticsTruncated":false},"screenshotEvidence":{"status":"PASS / ACCEPTED","attempted":4,"accepted":4,"fallbackUsed":false,"storage":"Codex in-app Browser captures retained in the task conversation; no substituted surface or repository screenshot file.","attempts":[{"state":"desktopLight","status":"CAPTURED_ACCEPTED","bytes":157503,"sha256":"68b661c5451587e6c4c078241e058482dcc1da3a9ae9f86f560ed81db36ede56","reason":"Fresh faithful viewport capture inspected at original dimensions; content, light theme, production-analysis crop and typography match the visible state."},{"state":"desktopDark","status":"CAPTURED_ACCEPTED","bytes":159782,"sha256":"d36c848666a3768f3427f551314d8c90b4c4523aad4ad7ba1497d45b78c433cc","reason":"Fresh faithful viewport capture inspected at original dimensions; content, dark theme, production-analysis crop and typography match the visible state."},{"state":"mobileLight","status":"CAPTURED_ACCEPTED","bytes":49728,"sha256":"4e788462bd23f4e736a53c5d393b493d3638ff36988371f83e55aeb5e6a1820e","reason":"Fresh faithful viewport capture inspected at original dimensions; content, light theme, responsive production-analysis crop and typography match the visible state."},{"state":"mobileDark","status":"CAPTURED_ACCEPTED","bytes":49774,"sha256":"7e71b86f5ccdb33eefe2da98a37d1089aa41cc15b44f4a8777945a614f1543e4","reason":"Fresh faithful viewport capture inspected at original dimensions; content, dark theme, responsive production-analysis crop and typography match the visible state."}]}}
+{
+  "candidateHead": "9bbc779b146453a70a7aea7d6e3da2edddefc6fe",
+  "stateOrder": [
+    "desktopLight",
+    "desktopDark",
+    "mobileLight",
+    "mobileDark"
+  ],
+  "collection": {
+    "browser": "Codex in-app Browser only",
+    "fresh": true,
+    "servedUrl": "http://127.0.0.1:4173/tego-arch/styles/sty-13",
+    "build": "local build from exact clean implementation head 9bbc779b146453a70a7aea7d6e3da2edddefc6fe",
+    "navigationMethod": "Relation destinations were opened by exact href direct navigation and returned with Browser back; no physical-click claim is made.",
+    "observedSvgAsset": {
+      "source": "local Browser pageAssets bundle",
+      "contentType": "image/svg+xml",
+      "bytes": 26671,
+      "sha256": "68e15b5fe4eefd49f5870c672e125d0fa9e001b5177049d43a09d68d2deb56d7",
+      "viewBox": "0 0 2400 3600"
+    },
+    "diagnosticContinuity": [
+      {
+        "scope": "desktopLight:prepare",
+        "afterSequence": 13,
+        "cursor": 26,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "desktopLight:interaction0",
+        "afterSequence": 26,
+        "cursor": 26,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "desktopLight:interaction1",
+        "afterSequence": 26,
+        "cursor": 26,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "desktopLight:interaction2",
+        "afterSequence": 26,
+        "cursor": 26,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "desktopLight:interaction3",
+        "afterSequence": 26,
+        "cursor": 26,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "desktopLight:relation0:destination",
+        "afterSequence": 26,
+        "cursor": 38,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "desktopLight:relation0:return",
+        "afterSequence": 38,
+        "cursor": 50,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "desktopLight:relation1:destination",
+        "afterSequence": 50,
+        "cursor": 62,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "desktopLight:relation1:return",
+        "afterSequence": 62,
+        "cursor": 74,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "desktopLight:relation2:destination",
+        "afterSequence": 74,
+        "cursor": 86,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "desktopLight:relation2:return",
+        "afterSequence": 86,
+        "cursor": 98,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "desktopLight:relation3:destination",
+        "afterSequence": 98,
+        "cursor": 110,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "desktopLight:relation3:return",
+        "afterSequence": 110,
+        "cursor": 122,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "desktopLight:screenshot",
+        "afterSequence": 122,
+        "cursor": 122,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "desktopDark:prepare",
+        "afterSequence": 122,
+        "cursor": 134,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "desktopDark:interaction0",
+        "afterSequence": 134,
+        "cursor": 134,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "desktopDark:interaction1",
+        "afterSequence": 134,
+        "cursor": 134,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "desktopDark:interaction2",
+        "afterSequence": 134,
+        "cursor": 134,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "desktopDark:interaction3",
+        "afterSequence": 134,
+        "cursor": 134,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "desktopDark:relation0:destination",
+        "afterSequence": 134,
+        "cursor": 146,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "desktopDark:relation0:return",
+        "afterSequence": 146,
+        "cursor": 158,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "desktopDark:relation1:destination",
+        "afterSequence": 158,
+        "cursor": 170,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "desktopDark:relation1:return",
+        "afterSequence": 170,
+        "cursor": 182,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "desktopDark:relation2:destination",
+        "afterSequence": 182,
+        "cursor": 194,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "desktopDark:relation2:return",
+        "afterSequence": 194,
+        "cursor": 206,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "desktopDark:relation3:destination",
+        "afterSequence": 206,
+        "cursor": 218,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "desktopDark:relation3:return",
+        "afterSequence": 218,
+        "cursor": 230,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "desktopDark:screenshot",
+        "afterSequence": 230,
+        "cursor": 230,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "mobileLight:prepare",
+        "afterSequence": 230,
+        "cursor": 258,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "mobileLight:interaction0",
+        "afterSequence": 258,
+        "cursor": 258,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "mobileLight:interaction1",
+        "afterSequence": 258,
+        "cursor": 258,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "mobileLight:interaction2",
+        "afterSequence": 258,
+        "cursor": 258,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "mobileLight:interaction3",
+        "afterSequence": 258,
+        "cursor": 258,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "mobileLight:relation0:destination",
+        "afterSequence": 258,
+        "cursor": 270,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "mobileLight:relation0:return",
+        "afterSequence": 270,
+        "cursor": 282,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "mobileLight:relation1:destination",
+        "afterSequence": 282,
+        "cursor": 294,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "mobileLight:relation1:return",
+        "afterSequence": 294,
+        "cursor": 306,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "mobileLight:relation2:destination",
+        "afterSequence": 306,
+        "cursor": 318,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "mobileLight:relation2:return",
+        "afterSequence": 318,
+        "cursor": 330,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "mobileLight:relation3:destination",
+        "afterSequence": 330,
+        "cursor": 342,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "mobileLight:relation3:return",
+        "afterSequence": 342,
+        "cursor": 354,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "mobileLight:screenshot",
+        "afterSequence": 354,
+        "cursor": 354,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "mobileDark:prepare",
+        "afterSequence": 354,
+        "cursor": 381,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "mobileDark:interaction0",
+        "afterSequence": 381,
+        "cursor": 381,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "mobileDark:interaction1",
+        "afterSequence": 381,
+        "cursor": 381,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "mobileDark:interaction2",
+        "afterSequence": 381,
+        "cursor": 381,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "mobileDark:interaction3",
+        "afterSequence": 381,
+        "cursor": 381,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "mobileDark:relation0:destination",
+        "afterSequence": 381,
+        "cursor": 393,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "mobileDark:relation0:return",
+        "afterSequence": 393,
+        "cursor": 405,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "mobileDark:relation1:destination",
+        "afterSequence": 405,
+        "cursor": 417,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "mobileDark:relation1:return",
+        "afterSequence": 417,
+        "cursor": 429,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "mobileDark:relation2:destination",
+        "afterSequence": 429,
+        "cursor": 441,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "mobileDark:relation2:return",
+        "afterSequence": 441,
+        "cursor": 453,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "mobileDark:relation3:destination",
+        "afterSequence": 453,
+        "cursor": 465,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "mobileDark:relation3:return",
+        "afterSequence": 465,
+        "cursor": 477,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "mobileDark:screenshot",
+        "afterSequence": 477,
+        "cursor": 477,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      },
+      {
+        "scope": "terminal",
+        "afterSequence": 477,
+        "cursor": 477,
+        "count": 0,
+        "hasMore": false,
+        "truncated": false
+      }
+    ]
+  },
+  "states": {
+    "desktopLight": {
+      "theme": "light",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "documentGeometry": {
+        "clientWidth": 1440,
+        "scrollWidth": 1440
+      },
+      "wrappers": [
+        {
+          "after": 0,
+          "before": 0,
+          "clientWidth": 800,
+          "focus": true,
+          "focusVisible": true,
+          "label": "Space-Based Architecture 航班余位亲和分区、主备与恢复边界图，可横向滚动",
+          "outlineWidth": "3px",
+          "scrollWidth": 800
+        },
+        {
+          "after": 0,
+          "before": 0,
+          "clientWidth": 800,
+          "focus": true,
+          "focusVisible": true,
+          "label": "Space-Based Architecture 与四种相邻方案边界表，可横向滚动",
+          "outlineWidth": "3px",
+          "scrollWidth": 800
+        },
+        {
+          "after": 0,
+          "before": 0,
+          "clientWidth": 800,
+          "focus": true,
+          "focusVisible": true,
+          "label": "航班余位六类操作执行与一致性责任表，可横向滚动",
+          "outlineWidth": "3px",
+          "scrollWidth": 800
+        },
+        {
+          "after": 0,
+          "before": 0,
+          "clientWidth": 800,
+          "focus": true,
+          "focusVisible": true,
+          "label": "Space-Based Architecture 六类故障信号、保护动作与恢复门槛表，可横向滚动",
+          "outlineWidth": "3px",
+          "scrollWidth": 800
+        }
+      ],
+      "relations": [
+        {
+          "href": "/tego-arch/styles/sty-05",
+          "expectedH1": "微服务：用独立部署换取自治，也承担分布式成本",
+          "h1": "微服务：用独立部署换取自治，也承担分布式成本",
+          "visibleCount": 1,
+          "returnedToArticle": true
+        },
+        {
+          "href": "/tego-arch/styles/sty-08",
+          "expectedH1": "Actor Model：用逻辑身份、私有状态与消息隔离并发",
+          "h1": "Actor Model：用逻辑身份、私有状态与消息隔离并发",
+          "visibleCount": 1,
+          "returnedToArticle": true
+        },
+        {
+          "href": "/tego-arch/cases/aws-cell-shuffle-sharding",
+          "expectedH1": "单元架构与洗牌分片：把失控智能体限制在可计算的故障半径内",
+          "h1": "单元架构与洗牌分片：把失控智能体限制在可计算的故障半径内",
+          "visibleCount": 1,
+          "returnedToArticle": true
+        },
+        {
+          "href": "/tego-arch/cases/cloudflare-durable-objects-workerd",
+          "expectedH1": "把边缘协调收敛到身份寻址的状态单元",
+          "h1": "把边缘协调收敛到身份寻址的状态单元",
+          "visibleCount": 1,
+          "returnedToArticle": true
+        }
+      ],
+      "sources": [
+        {
+          "href": "https://docs.gigaspaces.com/16.2/overview/space-based-architecture.html",
+          "target": "_blank",
+          "rel": "noopener noreferrer"
+        },
+        {
+          "href": "https://docs.gigaspaces.com/16.2.1/admin/the-sla-overview.html",
+          "target": "_blank",
+          "rel": "noopener noreferrer"
+        },
+        {
+          "href": "https://docs.gigaspaces.com/16.2/admin/leader-election-availability-biased.html",
+          "target": "_blank",
+          "rel": "noopener noreferrer"
+        },
+        {
+          "href": "https://docs.gigaspaces.com/16.2/admin/tuning-proxy-connectivity.html",
+          "target": "_blank",
+          "rel": "noopener noreferrer"
+        },
+        {
+          "href": "https://docs.oracle.com/en/middleware/fusion-middleware/coherence/12.2.1.4/develop-applications/introduction-coherence.html",
+          "target": "_blank",
+          "rel": "noopener noreferrer"
+        },
+        {
+          "href": "https://docs.oracle.com/middleware/1221/coherence/develop-applications/cache_back.htm",
+          "target": "_blank",
+          "rel": "noopener noreferrer"
+        },
+        {
+          "href": "https://www.gigaspaces.com/case_studies/booking-and-flight-availability",
+          "target": "_blank",
+          "rel": "noopener noreferrer"
+        }
+      ],
+      "sty14ActionableCount": 0,
+      "logs": [],
+      "runtimeEvents": [],
+      "diagnostics": [
+        {
+          "scope": "desktopLight:prepare",
+          "afterSequence": 13,
+          "cursor": 26,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "desktopLight:interaction0",
+          "afterSequence": 26,
+          "cursor": 26,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "desktopLight:interaction1",
+          "afterSequence": 26,
+          "cursor": 26,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "desktopLight:interaction2",
+          "afterSequence": 26,
+          "cursor": 26,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "desktopLight:interaction3",
+          "afterSequence": 26,
+          "cursor": 26,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "desktopLight:relation0:destination",
+          "afterSequence": 26,
+          "cursor": 38,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "desktopLight:relation0:return",
+          "afterSequence": 38,
+          "cursor": 50,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "desktopLight:relation1:destination",
+          "afterSequence": 50,
+          "cursor": 62,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "desktopLight:relation1:return",
+          "afterSequence": 62,
+          "cursor": 74,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "desktopLight:relation2:destination",
+          "afterSequence": 74,
+          "cursor": 86,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "desktopLight:relation2:return",
+          "afterSequence": 86,
+          "cursor": 98,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "desktopLight:relation3:destination",
+          "afterSequence": 98,
+          "cursor": 110,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "desktopLight:relation3:return",
+          "afterSequence": 110,
+          "cursor": 122,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "desktopLight:screenshot",
+          "afterSequence": 122,
+          "cursor": 122,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        }
+      ]
+    },
+    "desktopDark": {
+      "theme": "dark",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "documentGeometry": {
+        "clientWidth": 1440,
+        "scrollWidth": 1440
+      },
+      "wrappers": [
+        {
+          "after": 0,
+          "before": 0,
+          "clientWidth": 800,
+          "focus": true,
+          "focusVisible": true,
+          "label": "Space-Based Architecture 航班余位亲和分区、主备与恢复边界图，可横向滚动",
+          "outlineWidth": "3px",
+          "scrollWidth": 800
+        },
+        {
+          "after": 0,
+          "before": 0,
+          "clientWidth": 800,
+          "focus": true,
+          "focusVisible": true,
+          "label": "Space-Based Architecture 与四种相邻方案边界表，可横向滚动",
+          "outlineWidth": "3px",
+          "scrollWidth": 800
+        },
+        {
+          "after": 0,
+          "before": 0,
+          "clientWidth": 800,
+          "focus": true,
+          "focusVisible": true,
+          "label": "航班余位六类操作执行与一致性责任表，可横向滚动",
+          "outlineWidth": "3px",
+          "scrollWidth": 800
+        },
+        {
+          "after": 0,
+          "before": 0,
+          "clientWidth": 800,
+          "focus": true,
+          "focusVisible": true,
+          "label": "Space-Based Architecture 六类故障信号、保护动作与恢复门槛表，可横向滚动",
+          "outlineWidth": "3px",
+          "scrollWidth": 800
+        }
+      ],
+      "relations": [
+        {
+          "href": "/tego-arch/styles/sty-05",
+          "expectedH1": "微服务：用独立部署换取自治，也承担分布式成本",
+          "h1": "微服务：用独立部署换取自治，也承担分布式成本",
+          "visibleCount": 1,
+          "returnedToArticle": true
+        },
+        {
+          "href": "/tego-arch/styles/sty-08",
+          "expectedH1": "Actor Model：用逻辑身份、私有状态与消息隔离并发",
+          "h1": "Actor Model：用逻辑身份、私有状态与消息隔离并发",
+          "visibleCount": 1,
+          "returnedToArticle": true
+        },
+        {
+          "href": "/tego-arch/cases/aws-cell-shuffle-sharding",
+          "expectedH1": "单元架构与洗牌分片：把失控智能体限制在可计算的故障半径内",
+          "h1": "单元架构与洗牌分片：把失控智能体限制在可计算的故障半径内",
+          "visibleCount": 1,
+          "returnedToArticle": true
+        },
+        {
+          "href": "/tego-arch/cases/cloudflare-durable-objects-workerd",
+          "expectedH1": "把边缘协调收敛到身份寻址的状态单元",
+          "h1": "把边缘协调收敛到身份寻址的状态单元",
+          "visibleCount": 1,
+          "returnedToArticle": true
+        }
+      ],
+      "sources": [
+        {
+          "href": "https://docs.gigaspaces.com/16.2/overview/space-based-architecture.html",
+          "target": "_blank",
+          "rel": "noopener noreferrer"
+        },
+        {
+          "href": "https://docs.gigaspaces.com/16.2.1/admin/the-sla-overview.html",
+          "target": "_blank",
+          "rel": "noopener noreferrer"
+        },
+        {
+          "href": "https://docs.gigaspaces.com/16.2/admin/leader-election-availability-biased.html",
+          "target": "_blank",
+          "rel": "noopener noreferrer"
+        },
+        {
+          "href": "https://docs.gigaspaces.com/16.2/admin/tuning-proxy-connectivity.html",
+          "target": "_blank",
+          "rel": "noopener noreferrer"
+        },
+        {
+          "href": "https://docs.oracle.com/en/middleware/fusion-middleware/coherence/12.2.1.4/develop-applications/introduction-coherence.html",
+          "target": "_blank",
+          "rel": "noopener noreferrer"
+        },
+        {
+          "href": "https://docs.oracle.com/middleware/1221/coherence/develop-applications/cache_back.htm",
+          "target": "_blank",
+          "rel": "noopener noreferrer"
+        },
+        {
+          "href": "https://www.gigaspaces.com/case_studies/booking-and-flight-availability",
+          "target": "_blank",
+          "rel": "noopener noreferrer"
+        }
+      ],
+      "sty14ActionableCount": 0,
+      "logs": [],
+      "runtimeEvents": [],
+      "diagnostics": [
+        {
+          "scope": "desktopDark:prepare",
+          "afterSequence": 122,
+          "cursor": 134,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "desktopDark:interaction0",
+          "afterSequence": 134,
+          "cursor": 134,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "desktopDark:interaction1",
+          "afterSequence": 134,
+          "cursor": 134,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "desktopDark:interaction2",
+          "afterSequence": 134,
+          "cursor": 134,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "desktopDark:interaction3",
+          "afterSequence": 134,
+          "cursor": 134,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "desktopDark:relation0:destination",
+          "afterSequence": 134,
+          "cursor": 146,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "desktopDark:relation0:return",
+          "afterSequence": 146,
+          "cursor": 158,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "desktopDark:relation1:destination",
+          "afterSequence": 158,
+          "cursor": 170,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "desktopDark:relation1:return",
+          "afterSequence": 170,
+          "cursor": 182,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "desktopDark:relation2:destination",
+          "afterSequence": 182,
+          "cursor": 194,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "desktopDark:relation2:return",
+          "afterSequence": 194,
+          "cursor": 206,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "desktopDark:relation3:destination",
+          "afterSequence": 206,
+          "cursor": 218,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "desktopDark:relation3:return",
+          "afterSequence": 218,
+          "cursor": 230,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "desktopDark:screenshot",
+          "afterSequence": 230,
+          "cursor": 230,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        }
+      ]
+    },
+    "mobileLight": {
+      "theme": "light",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "documentGeometry": {
+        "clientWidth": 390,
+        "scrollWidth": 390
+      },
+      "wrappers": [
+        {
+          "after": 40,
+          "before": 0,
+          "clientWidth": 358,
+          "focus": true,
+          "focusVisible": true,
+          "label": "Space-Based Architecture 航班余位亲和分区、主备与恢复边界图，可横向滚动",
+          "outlineWidth": "3px",
+          "scrollWidth": 800
+        },
+        {
+          "after": 0,
+          "before": 0,
+          "clientWidth": 358,
+          "focus": true,
+          "focusVisible": true,
+          "label": "Space-Based Architecture 与四种相邻方案边界表，可横向滚动",
+          "outlineWidth": "3px",
+          "scrollWidth": 358
+        },
+        {
+          "after": 0,
+          "before": 0,
+          "clientWidth": 358,
+          "focus": true,
+          "focusVisible": true,
+          "label": "航班余位六类操作执行与一致性责任表，可横向滚动",
+          "outlineWidth": "3px",
+          "scrollWidth": 358
+        },
+        {
+          "after": 0,
+          "before": 0,
+          "clientWidth": 358,
+          "focus": true,
+          "focusVisible": true,
+          "label": "Space-Based Architecture 六类故障信号、保护动作与恢复门槛表，可横向滚动",
+          "outlineWidth": "3px",
+          "scrollWidth": 358
+        }
+      ],
+      "relations": [
+        {
+          "href": "/tego-arch/styles/sty-05",
+          "expectedH1": "微服务：用独立部署换取自治，也承担分布式成本",
+          "h1": "微服务：用独立部署换取自治，也承担分布式成本",
+          "visibleCount": 1,
+          "returnedToArticle": true
+        },
+        {
+          "href": "/tego-arch/styles/sty-08",
+          "expectedH1": "Actor Model：用逻辑身份、私有状态与消息隔离并发",
+          "h1": "Actor Model：用逻辑身份、私有状态与消息隔离并发",
+          "visibleCount": 1,
+          "returnedToArticle": true
+        },
+        {
+          "href": "/tego-arch/cases/aws-cell-shuffle-sharding",
+          "expectedH1": "单元架构与洗牌分片：把失控智能体限制在可计算的故障半径内",
+          "h1": "单元架构与洗牌分片：把失控智能体限制在可计算的故障半径内",
+          "visibleCount": 1,
+          "returnedToArticle": true
+        },
+        {
+          "href": "/tego-arch/cases/cloudflare-durable-objects-workerd",
+          "expectedH1": "把边缘协调收敛到身份寻址的状态单元",
+          "h1": "把边缘协调收敛到身份寻址的状态单元",
+          "visibleCount": 1,
+          "returnedToArticle": true
+        }
+      ],
+      "sources": [
+        {
+          "href": "https://docs.gigaspaces.com/16.2/overview/space-based-architecture.html",
+          "target": "_blank",
+          "rel": "noopener noreferrer"
+        },
+        {
+          "href": "https://docs.gigaspaces.com/16.2.1/admin/the-sla-overview.html",
+          "target": "_blank",
+          "rel": "noopener noreferrer"
+        },
+        {
+          "href": "https://docs.gigaspaces.com/16.2/admin/leader-election-availability-biased.html",
+          "target": "_blank",
+          "rel": "noopener noreferrer"
+        },
+        {
+          "href": "https://docs.gigaspaces.com/16.2/admin/tuning-proxy-connectivity.html",
+          "target": "_blank",
+          "rel": "noopener noreferrer"
+        },
+        {
+          "href": "https://docs.oracle.com/en/middleware/fusion-middleware/coherence/12.2.1.4/develop-applications/introduction-coherence.html",
+          "target": "_blank",
+          "rel": "noopener noreferrer"
+        },
+        {
+          "href": "https://docs.oracle.com/middleware/1221/coherence/develop-applications/cache_back.htm",
+          "target": "_blank",
+          "rel": "noopener noreferrer"
+        },
+        {
+          "href": "https://www.gigaspaces.com/case_studies/booking-and-flight-availability",
+          "target": "_blank",
+          "rel": "noopener noreferrer"
+        }
+      ],
+      "sty14ActionableCount": 0,
+      "logs": [],
+      "runtimeEvents": [],
+      "diagnostics": [
+        {
+          "scope": "mobileLight:prepare",
+          "afterSequence": 230,
+          "cursor": 258,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "mobileLight:interaction0",
+          "afterSequence": 258,
+          "cursor": 258,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "mobileLight:interaction1",
+          "afterSequence": 258,
+          "cursor": 258,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "mobileLight:interaction2",
+          "afterSequence": 258,
+          "cursor": 258,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "mobileLight:interaction3",
+          "afterSequence": 258,
+          "cursor": 258,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "mobileLight:relation0:destination",
+          "afterSequence": 258,
+          "cursor": 270,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "mobileLight:relation0:return",
+          "afterSequence": 270,
+          "cursor": 282,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "mobileLight:relation1:destination",
+          "afterSequence": 282,
+          "cursor": 294,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "mobileLight:relation1:return",
+          "afterSequence": 294,
+          "cursor": 306,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "mobileLight:relation2:destination",
+          "afterSequence": 306,
+          "cursor": 318,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "mobileLight:relation2:return",
+          "afterSequence": 318,
+          "cursor": 330,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "mobileLight:relation3:destination",
+          "afterSequence": 330,
+          "cursor": 342,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "mobileLight:relation3:return",
+          "afterSequence": 342,
+          "cursor": 354,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "mobileLight:screenshot",
+          "afterSequence": 354,
+          "cursor": 354,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        }
+      ]
+    },
+    "mobileDark": {
+      "theme": "dark",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "documentGeometry": {
+        "clientWidth": 390,
+        "scrollWidth": 390
+      },
+      "wrappers": [
+        {
+          "after": 40,
+          "before": 0,
+          "clientWidth": 358,
+          "focus": true,
+          "focusVisible": true,
+          "label": "Space-Based Architecture 航班余位亲和分区、主备与恢复边界图，可横向滚动",
+          "outlineWidth": "3px",
+          "scrollWidth": 800
+        },
+        {
+          "after": 0,
+          "before": 0,
+          "clientWidth": 358,
+          "focus": true,
+          "focusVisible": true,
+          "label": "Space-Based Architecture 与四种相邻方案边界表，可横向滚动",
+          "outlineWidth": "3px",
+          "scrollWidth": 358
+        },
+        {
+          "after": 0,
+          "before": 0,
+          "clientWidth": 358,
+          "focus": true,
+          "focusVisible": true,
+          "label": "航班余位六类操作执行与一致性责任表，可横向滚动",
+          "outlineWidth": "3px",
+          "scrollWidth": 358
+        },
+        {
+          "after": 0,
+          "before": 0,
+          "clientWidth": 358,
+          "focus": true,
+          "focusVisible": true,
+          "label": "Space-Based Architecture 六类故障信号、保护动作与恢复门槛表，可横向滚动",
+          "outlineWidth": "3px",
+          "scrollWidth": 358
+        }
+      ],
+      "relations": [
+        {
+          "href": "/tego-arch/styles/sty-05",
+          "expectedH1": "微服务：用独立部署换取自治，也承担分布式成本",
+          "h1": "微服务：用独立部署换取自治，也承担分布式成本",
+          "visibleCount": 1,
+          "returnedToArticle": true
+        },
+        {
+          "href": "/tego-arch/styles/sty-08",
+          "expectedH1": "Actor Model：用逻辑身份、私有状态与消息隔离并发",
+          "h1": "Actor Model：用逻辑身份、私有状态与消息隔离并发",
+          "visibleCount": 1,
+          "returnedToArticle": true
+        },
+        {
+          "href": "/tego-arch/cases/aws-cell-shuffle-sharding",
+          "expectedH1": "单元架构与洗牌分片：把失控智能体限制在可计算的故障半径内",
+          "h1": "单元架构与洗牌分片：把失控智能体限制在可计算的故障半径内",
+          "visibleCount": 1,
+          "returnedToArticle": true
+        },
+        {
+          "href": "/tego-arch/cases/cloudflare-durable-objects-workerd",
+          "expectedH1": "把边缘协调收敛到身份寻址的状态单元",
+          "h1": "把边缘协调收敛到身份寻址的状态单元",
+          "visibleCount": 1,
+          "returnedToArticle": true
+        }
+      ],
+      "sources": [
+        {
+          "href": "https://docs.gigaspaces.com/16.2/overview/space-based-architecture.html",
+          "target": "_blank",
+          "rel": "noopener noreferrer"
+        },
+        {
+          "href": "https://docs.gigaspaces.com/16.2.1/admin/the-sla-overview.html",
+          "target": "_blank",
+          "rel": "noopener noreferrer"
+        },
+        {
+          "href": "https://docs.gigaspaces.com/16.2/admin/leader-election-availability-biased.html",
+          "target": "_blank",
+          "rel": "noopener noreferrer"
+        },
+        {
+          "href": "https://docs.gigaspaces.com/16.2/admin/tuning-proxy-connectivity.html",
+          "target": "_blank",
+          "rel": "noopener noreferrer"
+        },
+        {
+          "href": "https://docs.oracle.com/en/middleware/fusion-middleware/coherence/12.2.1.4/develop-applications/introduction-coherence.html",
+          "target": "_blank",
+          "rel": "noopener noreferrer"
+        },
+        {
+          "href": "https://docs.oracle.com/middleware/1221/coherence/develop-applications/cache_back.htm",
+          "target": "_blank",
+          "rel": "noopener noreferrer"
+        },
+        {
+          "href": "https://www.gigaspaces.com/case_studies/booking-and-flight-availability",
+          "target": "_blank",
+          "rel": "noopener noreferrer"
+        }
+      ],
+      "sty14ActionableCount": 0,
+      "logs": [],
+      "runtimeEvents": [],
+      "diagnostics": [
+        {
+          "scope": "mobileDark:prepare",
+          "afterSequence": 354,
+          "cursor": 381,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "mobileDark:interaction0",
+          "afterSequence": 381,
+          "cursor": 381,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "mobileDark:interaction1",
+          "afterSequence": 381,
+          "cursor": 381,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "mobileDark:interaction2",
+          "afterSequence": 381,
+          "cursor": 381,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "mobileDark:interaction3",
+          "afterSequence": 381,
+          "cursor": 381,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "mobileDark:relation0:destination",
+          "afterSequence": 381,
+          "cursor": 393,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "mobileDark:relation0:return",
+          "afterSequence": 393,
+          "cursor": 405,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "mobileDark:relation1:destination",
+          "afterSequence": 405,
+          "cursor": 417,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "mobileDark:relation1:return",
+          "afterSequence": 417,
+          "cursor": 429,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "mobileDark:relation2:destination",
+          "afterSequence": 429,
+          "cursor": 441,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "mobileDark:relation2:return",
+          "afterSequence": 441,
+          "cursor": 453,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "mobileDark:relation3:destination",
+          "afterSequence": 453,
+          "cursor": 465,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "mobileDark:relation3:return",
+          "afterSequence": 465,
+          "cursor": 477,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        },
+        {
+          "scope": "mobileDark:screenshot",
+          "afterSequence": 477,
+          "cursor": 477,
+          "count": 0,
+          "hasMore": false,
+          "truncated": false
+        }
+      ]
+    }
+  },
+  "functionalSummary": {
+    "status": "PASS",
+    "states": 4,
+    "wrapperInteractions": 16,
+    "relationObservations": 16,
+    "sourceObservations": 28,
+    "sty14ActionableTotal": 0,
+    "warningErrorLogs": 0,
+    "runtimeAndLogEvents": 0,
+    "diagnosticPages": 57,
+    "diagnosticPagesTerminal": true,
+    "diagnosticsTruncated": false
+  },
+  "screenshotEvidence": {
+    "status": "PASS / ACCEPTED",
+    "attempted": 4,
+    "accepted": 4,
+    "fallbackUsed": false,
+    "storage": "Codex in-app Browser captures retained in the task conversation; no substituted surface or repository screenshot file.",
+    "attempts": [
+      {
+        "state": "desktopLight",
+        "status": "CAPTURED_ACCEPTED",
+        "bytes": 149450,
+        "sha256": "13402199be913a432d0088655ee0089f51ed188759359a77d1c5ca8e78009bad",
+        "reason": "Fresh faithful IAB viewport capture of the production-analysis table state."
+      },
+      {
+        "state": "desktopDark",
+        "status": "CAPTURED_ACCEPTED",
+        "bytes": 152042,
+        "sha256": "260c79f24d33d8bdf8f35dbb9c275d076e8a781fea8fe6dbfffc64f83efbc68b",
+        "reason": "Fresh faithful IAB viewport capture of the production-analysis table state."
+      },
+      {
+        "state": "mobileLight",
+        "status": "CAPTURED_ACCEPTED",
+        "bytes": 49347,
+        "sha256": "1b1ee1ccade33baefa9810e90a1ea8b14c1c15371be05cdf0160153770b368ed",
+        "reason": "Fresh faithful IAB viewport capture of the production-analysis table state."
+      },
+      {
+        "state": "mobileDark",
+        "status": "CAPTURED_ACCEPTED",
+        "bytes": 49094,
+        "sha256": "270cb5b450ca39fd354755b047e4f0d3e89eab70aac8947286a00fe9f35c41e0",
+        "reason": "Fresh faithful IAB viewport capture of the production-analysis table state."
+      }
+    ]
+  }
+}
