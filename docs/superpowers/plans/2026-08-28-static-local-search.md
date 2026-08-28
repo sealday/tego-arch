@@ -579,7 +579,7 @@ At a desktop viewport, verify all of the following:
 - `适应度函数` returns `/tego-arch/methods/mth-04`;
 - `Kubernetes` returns `/tego-arch/cases/kubernetes-reconciliation-loop`;
 - the one-character typo `Kubernete` still returns the Kubernetes reconciliation-loop case;
-- an impossible query such as `不存在的架构词xyz987` shows `没有找到任何文档`.
+- the impossible sentinel query `龘靐齉xyz987` shows `没有找到任何文档`.
 
 Expected: every check passes. If a representative term is incorrectly segmented, add only that stable term to `src/search/zh-user-dict.txt`, rerun Task 1 tests and `npm run build`, then repeat this step. Do not add custom ranking code.
 
@@ -622,7 +622,7 @@ The production build generated exactly one hashed root search index. The reposit
 | `适应度函数` | MTH-04 was returned. | PASS |
 | `Kubernetes` | The Kubernetes reconciliation-loop case was returned. | PASS |
 | `Kubernete` | The one-character typo still returned the Kubernetes reconciliation-loop case. | PASS |
-| `不存在的架构词xyz987` | The Chinese no-results message was shown. | PASS |
+| `龘靐齉xyz987` | The Chinese no-results message was shown. | PASS |
 
 ## Interaction and boundaries
 
