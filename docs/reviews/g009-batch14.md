@@ -52,16 +52,16 @@
 
 ## Independent review checkpoint
 
-- Exact reviewed candidate head: `UNBOUND — controller must create and bind the exact post-evidence candidate head`.
-- Independent code/spec/security review: `UNBOUND — controller must assign a read-only reviewer`.
-- Independent content/evidence/rights review: `UNBOUND — controller must assign a different read-only reviewer`.
-- Independent architecture/invariant review: `UNBOUND — controller must assign a third read-only reviewer`.
-- Review finding totals: `UNBOUND`.
-- Final Stage A review judgment: `NOT_RECORDED`.
+- Exact reviewed candidate head: `e5e339c3666b7b4c17e5c33fd7e7dd0af9103a03`.
+- Independent code/spec/security review: `READY / APPROVE`; findings: `0`; exact head: `e5e339c3666b7b4c17e5c33fd7e7dd0af9103a03`.
+- Independent content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`; exact head: `e5e339c3666b7b4c17e5c33fd7e7dd0af9103a03`.
+- Independent architecture/invariant review: `CLEAR / READY`; blockers: `0`; exact head: `e5e339c3666b7b4c17e5c33fd7e7dd0af9103a03`.
+- Review finding totals: Critical `0`; Important `0`; Minor `0`; ⚠️ `0`.
+- Final Stage A review judgment: `READY`.
 - Scope boundary: `STAGE_A_ONLY`.
 - Deployment status at this checkpoint: `NOT_RUN`.
 
-No independent verdict is recorded in advance. The controller must bind all three reviews to the same exact candidate head and may record the final judgment only after each review reports its own findings.
+All three independent zero-finding verdicts above are recorded against the same explicit expected candidate head; deployment remains outside this Stage A checkpoint.
 
 ## Review requests
 

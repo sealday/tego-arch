@@ -18,7 +18,7 @@ export const EXPECTED_STAGE_B = Object.freeze({completed: 66, documents: 109, so
 export const EXPECTED_BROWSER = Object.freeze({states: 4, wrappersPerState: 4, relationsPerState: 4, remoteSourcesPerState: 7, nextTopicActions: 0});
 
 export const CANDIDATE_HEAD = 'f2b7b936ccd64c4748f2417937be2a61b55a3e55';
-export const EXPECTED_REVIEWED_HEAD = 'UNBOUND';
+export const EXPECTED_REVIEWED_HEAD = 'e5e339c3666b7b4c17e5c33fd7e7dd0af9103a03';
 export const CONTRACT_REVIEWED_HEAD = '1111111111111111111111111111111111111111';
 export const LOCAL_RAW_IDENTITY = Object.freeze({bytes: 42_484, sha256: 'ebb10045c6ef19fd665767dba270697e552d8c1e074d219aa5ccbf972f2813c1'});
 const ARTICLE_IDENTITY = Object.freeze({bytes: 20_625, sha256: '672ab04acd0c11498f25dbc8890f528c4b863c1308d7157774f01a96effe31bf'});
@@ -472,7 +472,6 @@ test('rejects valid-looking wrapper and screenshot byte-identity mutations', {sk
 });
 
 test('requires three independent exact-head zero-finding review verdicts before READY', () => {
-  assertPlaceholderReview();
   assert.notEqual(EXPECTED_REVIEWED_HEAD, 'UNBOUND', 'controller must bind the exact reviewed candidate head after three independent reviews');
   assertReview(review, EXPECTED_REVIEWED_HEAD);
 });
