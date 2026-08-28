@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {readdir, readFile} from 'node:fs/promises';
 import path from 'node:path';
@@ -16,6 +17,12 @@ const PAGES = {runId: 31786075868, buildJobId: 94722157542, deployJobId: 9472276
 const BROWSER_BUILD_HEAD = 'f32e0cb7ae79fb92a2154c03dfe8bf7b5b203974';
 const REVIEWED_HEAD = '4c5c9f99148a32998ee03bd8f97b3db2ca29d500';
 const HISTORICAL_REVIEW_TREE_HASH = '675a88450c587b392cccc75bfeced523d32acc6bd78830de545586a308a85bff';
+const AGENTIC_LOCAL_EVIDENCE_PATH = 'docs/reviews/evidence/agentic-architecture-topic-system-local-browser.json';
+const AGENTIC_VERIFY_BASE = '3d4b758b69e6fc6668371c2dd433f292cbec9313';
+const AGENTIC_VERIFIED_PARENT = '35897dff27dc0576d640e494c54e05e9a92db135';
+const AGENTIC_NON_EVIDENCE_DIFF_SHA256 = 'e99d5d64a86ceb454738e24e54b9b954c15449953b4344bf091af747c11cb869';
+const AGENTIC_EVIDENCE_PAYLOAD_SHA256 = 'e446d2d36542ffc0e690d26aed6e5c402e3ad2275f2e2d976a0da2329cbe97c6';
+const AGENTIC_POST_RECORD_VALIDATION_COMMAND = `node --test tests/g010-mth07-deployment.test.mjs tests/agt-topic-system-integration.test.mjs && git diff --check ${AGENTIC_VERIFY_BASE} ${AGENTIC_VERIFIED_PARENT}`;
 const MTH07_STATUS = {
   scope: 'content-lifecycle',
   value: 'reviewed',
@@ -819,6 +826,52 @@ test('locks the exact pre-G010 review namespace against add edit and delete muta
   assert.notEqual(historicalReviewEntriesHash(agenticNearMatchAdded), HISTORICAL_REVIEW_TREE_HASH);
   assert.notEqual(historicalReviewEntriesHash(edited), HISTORICAL_REVIEW_TREE_HASH);
   assert.notEqual(historicalReviewEntriesHash(deleted), HISTORICAL_REVIEW_TREE_HASH);
+
+  const agenticEvidence = JSON.parse(await readFile(path.join(ROOT, AGENTIC_LOCAL_EVIDENCE_PATH), 'utf8'));
+  const finalVerify = agenticEvidence.verify.post_fix_final;
+  assert.deepEqual({...finalVerify, provenance: undefined}, {
+    command: 'npm run verify',
+    started_at_utc: '2026-08-28T00:33:12Z',
+    ended_at_utc: '2026-08-28T00:34:42Z',
+    exit_code: 0,
+    npm_test: {tests: 1433, pass: 1433, fail: 0},
+    content_validation: {documents: 124, registered_sources: 586},
+    terminology: {files: 126, registered_terms: 176, issues: 0},
+    content_projection: 'PASS',
+    cached_links: 'PASS',
+    review_health: 'PASS',
+    typecheck: 'PASS',
+    production_build: 'PASS',
+    provenance: undefined,
+  });
+  assert.equal(finalVerify.provenance.head_at_verify_start, AGENTIC_VERIFY_BASE);
+  assert.deepEqual(finalVerify.provenance.verified_non_evidence_paths, ['tests/g010-mth07-deployment.test.mjs']);
+  assert.equal(finalVerify.provenance.non_evidence_diff_sha256, AGENTIC_NON_EVIDENCE_DIFF_SHA256);
+  assert.equal(finalVerify.provenance.evidence_payload_sha256_excluding_this_record, AGENTIC_EVIDENCE_PAYLOAD_SHA256);
+  assert.match(finalVerify.provenance.evidence_file_exception, /cannot name its own containing commit without becoming self-referential/u);
+  assert.equal(finalVerify.provenance.post_record_validation_command, AGENTIC_POST_RECORD_VALIDATION_COMMAND);
+  assert.equal(finalVerify.provenance.containing_commit_validation, 'The containing corrective commit is intentionally not self-named. After creating it, validate the committed patch with git diff --check HEAD^ HEAD and confirm the tracked worktree is clean with git status --short; record the observed commit and results in the local release report.');
+  assert.doesNotMatch(finalVerify.provenance.post_record_validation_command, /\.superpowers|git diff --check\s*$/u);
+
+  const canonicalPayload = structuredClone(agenticEvidence);
+  delete canonicalPayload.verify.post_fix_final;
+  assert.equal(sha256(JSON.stringify(canonicalPayload)), AGENTIC_EVIDENCE_PAYLOAD_SHA256);
+  const nonEvidenceDiff = execFileSync('git', [
+    'diff', '--binary', AGENTIC_VERIFY_BASE, AGENTIC_VERIFIED_PARENT, '--', '.',
+    `:(exclude)${AGENTIC_LOCAL_EVIDENCE_PATH}`,
+  ], {cwd: ROOT});
+  assert.equal(sha256(nonEvidenceDiff), AGENTIC_NON_EVIDENCE_DIFF_SHA256);
+  const nonEvidencePaths = execFileSync('git', [
+    'diff', '--name-only', AGENTIC_VERIFY_BASE, AGENTIC_VERIFIED_PARENT, '--', '.',
+    `:(exclude)${AGENTIC_LOCAL_EVIDENCE_PATH}`,
+  ], {cwd: ROOT, encoding: 'utf8'}).trim().split('\n');
+  assert.deepEqual(nonEvidencePaths, finalVerify.provenance.verified_non_evidence_paths);
+  for (const referencedPath of [
+    'tests/g010-mth07-deployment.test.mjs',
+    'tests/agt-topic-system-integration.test.mjs',
+  ]) {
+    assert.doesNotThrow(() => execFileSync('git', ['cat-file', '-e', `${AGENTIC_VERIFIED_PARENT}:${referencedPath}`], {cwd: ROOT}));
+  }
 });
 
 test('rejects Browser evidence mutations and weakened stale or fabricated Stage A review claims', async () => {

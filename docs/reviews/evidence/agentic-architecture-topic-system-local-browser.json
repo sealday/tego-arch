@@ -64,7 +64,8 @@
         "non_evidence_diff_sha256": "e99d5d64a86ceb454738e24e54b9b954c15449953b4344bf091af747c11cb869",
         "evidence_payload_sha256_excluding_this_record": "e446d2d36542ffc0e690d26aed6e5c402e3ad2275f2e2d976a0da2329cbe97c6",
         "evidence_file_exception": "The full verify read the complete tracked Browser evidence payload before this post-fix result was appended. This result cannot name its own containing commit without becoming self-referential; the base head, exact non-evidence diff hash, and payload hash excluding this record bind the verified candidate reproducibly.",
-        "post_record_validation_command": "node .superpowers/sdd/validate-release-task-5-final-evidence.mjs && node --test tests/g010-mth07-deployment.test.mjs tests/agt-topic-system-integration.test.mjs && git diff --check"
+        "post_record_validation_command": "node --test tests/g010-mth07-deployment.test.mjs tests/agt-topic-system-integration.test.mjs && git diff --check 3d4b758b69e6fc6668371c2dd433f292cbec9313 35897dff27dc0576d640e494c54e05e9a92db135",
+        "containing_commit_validation": "The containing corrective commit is intentionally not self-named. After creating it, validate the committed patch with git diff --check HEAD^ HEAD and confirm the tracked worktree is clean with git status --short; record the observed commit and results in the local release report."
       }
     }
   },
