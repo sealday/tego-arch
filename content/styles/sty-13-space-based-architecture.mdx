@@ -88,7 +88,9 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 
 ## 事实边界
 
-**已证实事实**：[Space-Based Architecture](https://docs.gigaspaces.com/16.2/overview/space-based-architecture.html)及其配套版本化文档把该风格与处理单元、分区空间、数据亲和及主备联系起来；相关页面分别说明部署、主权和重路由。[Introduction to Coherence](https://docs.oracle.com/en/middleware/fusion-middleware/coherence/12.2.1.4/develop-applications/introduction-coherence.html)只说明分区数据与再平衡；[Implementing Storage and Backing Maps](https://docs.oracle.com/middleware/1221/coherence/develop-applications/cache_back.htm)独立说明备份/存储、后备映射与外部持久存储机制。这里只作厂商机制摘要，不外推业务正确性、线性扩展或可用性。
+**已证实事实**：[Space-Based Architecture](https://docs.gigaspaces.com/16.2/overview/space-based-architecture.html)及其配套版本化文档把该风格与处理单元、分区空间、数据亲和及主备联系起来；相关页面分别说明部署、主权和重路由。
+
+[Introduction to Coherence](https://docs.oracle.com/en/middleware/fusion-middleware/coherence/12.2.1.4/develop-applications/introduction-coherence.html)只说明分区数据与再平衡；[Implementing Storage and Backing Maps](https://docs.oracle.com/middleware/1221/coherence/develop-applications/cache_back.htm)独立说明备份/存储、后备映射与外部持久存储机制。这里只作厂商机制摘要，不外推业务正确性、线性扩展或可用性。
 
 **厂商案例陈述**：[Booking and Flight Availability](https://www.gigaspaces.com/case_studies/booking-and-flight-availability)表明该厂商发布了预订与航班余位客户案例，因此航班余位是厂商公开陈述过的应用背景。本文不采用其中的性能或商业数字，也不把该页面当作原创航班拓扑、状态权威选择、工作流或故障停止动作的证据。
 
@@ -150,7 +152,15 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 
 ## 关键机制导读
 
-这里按机制而非产品菜单阅读来源。定义页用于理解分区处理单元与数据亲和；服务等级协议页只用于部署和主备控制；脑裂页只用于唯一主权裁决；代理连接页只用于客户端重新发现。[Introduction to Coherence](https://docs.oracle.com/en/middleware/fusion-middleware/coherence/12.2.1.4/develop-applications/introduction-coherence.html)只用于交叉验证分区数据与再平衡；[Implementing Storage and Backing Maps](https://docs.oracle.com/middleware/1221/coherence/develop-applications/cache_back.htm)独立用于检查备份/存储、后备映射与外部持久存储边界。不证明本文采用了对应产品，也不证明原创航班设计或普遍性能。
+这里按机制而非产品菜单阅读来源。
+
+- 定义页用于理解分区处理单元与数据亲和。
+- 服务等级协议页只用于部署和主备控制。
+- 脑裂页只用于唯一主权裁决。
+- 代理连接页只用于客户端重新发现。
+- [Introduction to Coherence](https://docs.oracle.com/en/middleware/fusion-middleware/coherence/12.2.1.4/develop-applications/introduction-coherence.html)只用于交叉验证分区数据与再平衡；[Implementing Storage and Backing Maps](https://docs.oracle.com/middleware/1221/coherence/develop-applications/cache_back.htm)独立用于检查备份/存储、后备映射与外部持久存储边界。
+
+不证明本文采用了对应产品，也不证明原创航班设计或普遍性能。
 
 <details className="evidence-card">
   <summary>证据：定义、部署、主权与重路由的最短路径</summary>
