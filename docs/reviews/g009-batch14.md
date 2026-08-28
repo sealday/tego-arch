@@ -140,3 +140,61 @@ Read-only scope: stable affinity key; partition-local operation boundary; unique
 - Stage B scope boundary: `STAGE_B`.
 - Stage B deployment status: `PENDING / NOT_RUN`.
 - Stage B production raw: `NOT_RECORDED`.
+
+## Stage B production recovery candidate
+
+- Exact published Stage B head: `e04605ed2b02568289cbfc1b47b1df77e4996d68`.
+- Exact Pages workflow/run: `Verify and deploy Docusaurus to GitHub Pages`; [`33189774344`](https://github.com/sealday/tego-arch/actions/runs/33189774344); `headSha=e04605ed2b02568289cbfc1b47b1df77e4996d68`; `event=push`; `status=completed`; `conclusion=success`.
+- Exact jobs: build `98911988885` `completed/success`; deploy `98913062798` `completed/success`.
+- Stage B production HTTP probes: `9/9` HTML routes returned `200` with `text/html; charset=utf-8`; canonical SVG returned `200` with `image/svg+xml` and exact reviewed bytes/SHA-256.
+
+| Production route | Status | Content type | Bytes | SHA-256 |
+| --- | ---: | --- | ---: | --- |
+| `/tego-arch/` | `200` | `text/html; charset=utf-8` | 17,310 | `e48cc9503404f11c480a77f8a716c0ef76699c60c81ab6223100c48d33f6b4ce` |
+| `/tego-arch/styles` | `200` | `text/html; charset=utf-8` | 24,266 | `ffb9b1b50d0facb2f1225db8e41fda77f859c43c9538def3ea60e5971cdd53c3` |
+| `/tego-arch/styles/sty-05` | `200` | `text/html; charset=utf-8` | 40,782 | `1e5b08f5596f860e21f94ad2f211a830a0c4d67bf9f11a08cee37dfdf6584e6f` |
+| `/tego-arch/styles/sty-08` | `200` | `text/html; charset=utf-8` | 50,754 | `7a5f16396648ff3dcd8a5921dea0f8613a4baffb07db1e07fee9cb310723265b` |
+| `/tego-arch/styles/sty-13` | `200` | `text/html; charset=utf-8` | 48,992 | `87fa954c7ddab0b19a5ce824f29df643caac1c7c5366f5e87a4767ce4f8f3427` |
+| `/tego-arch/cases` | `200` | `text/html; charset=utf-8` | 53,503 | `56d2cf05f8d768da84433beb145617a383d0465d23326eb2806bfc3babb44574` |
+| `/tego-arch/cases/aws-cell-shuffle-sharding` | `200` | `text/html; charset=utf-8` | 55,593 | `902aa46164fb94ad315a7ae5da34a342ca5e12fc88519492f330c854a789eebd` |
+| `/tego-arch/cases/cloudflare-durable-objects-workerd` | `200` | `text/html; charset=utf-8` | 89,265 | `5b007f197888e08975b590b2b17ef51728604fe375c8c55b9891b8dd42f07e26` |
+| `/tego-arch/references` | `200` | `text/html; charset=utf-8` | 23,533 | `16b443b8bae51971bbd2de849e7de2e75abd4b44e4f0b183e5479027efe4fc45` |
+
+- Canonical Stage B production SVG: `/tego-arch/img/diagrams/sty-13-space-based-flight-availability.svg`; `26,671` bytes; SHA-256 `68e15b5fe4eefd49f5870c672e125d0fa9e001b5177049d43a09d68d2deb56d7`; exact reviewed asset match.
+- Stage B production raw Browser JSON: `docs/reviews/evidence/g009-batch14-stage-b-production-browser.json`; bytes: `46,000`; SHA-256: `ba4565dae285e7c65386e0f2e8cebfb339301bdff6e48d1d6c9aaed3f1bacde4`.
+- Browser surface: `Codex in-app Browser only`; fresh collection: `true`; session: `fresh Stage B production session; Stage A and pre-deployment Stage B tabs and evidence were not reused`; fallback used: `false`.
+- Stage B production functional Browser QA: `PASS`; states `4/4`; wrapper interactions `16/16`; relation href/H1/return observations `16/16`; source href/target/rel observations `28/28`; STY-14 actionable total `0`.
+- Stage B production diagnostics: `57/57` deliberately paged preparation, interaction, destination, return, screenshot and terminal pages; warning/error logs `0`; Runtime/Log events `0`; terminal `476 -> 488`; `hasMore=false`; `truncated=false`.
+- Relation destinations were opened by exact href direct navigation and returned with Browser back; no physical-click claim is made.
+- Stage B production PageAssets bound the SVG bundle to the reviewed identity: inventory `fe34debc-2d32-4427-aae3-2d331dce2b0d`; asset `d18882f4aced2482`; `26,671` bytes; SHA-256 `68e15b5fe4eefd49f5870c672e125d0fa9e001b5177049d43a09d68d2deb56d7`; bundle `1 requested / 1 downloaded / 0 failed`.
+- Stage B production screenshot evidence: `PASS / ACCEPTED`; attempted `4/4`; accepted `4/4`; fallback used: `false`; attempts are recorded honestly and no opening/full-page scope is claimed.
+
+| State | Judgment | Bytes | SHA-256 |
+| --- | --- | ---: | --- |
+| `desktopLight` | `CAPTURED_ACCEPTED` | 150,209 | `fc8b0ad6d653e334c2350ea310fa715f210365e50368dd7928eea228c91b0e21` |
+| `desktopDark` | `CAPTURED_ACCEPTED` | 152,912 | `e3195faa40063918bf6cda2b31b17271514842e94c3884ca34ff6c668143042a` |
+| `mobileLight` | `CAPTURED_ACCEPTED` | 48,808 | `288d7e292ff21e1264d642348d033e2698d1fbe026c75033884ba5b72f34361e` |
+| `mobileDark` | `CAPTURED_ACCEPTED` | 48,605 | `5a0b416073be0f3ff81bc2242ee472587ecabc5ac6756229bb0adeb779ea662e` |
+
+- Projection: `83 completed topics / 126 content documents / 599 governed sources`.
+- Current release target: STY-13 `published / complete`; STY-14 `unpublished / pending / non-actionable`; actionable route count `0`.
+
+### Final code / spec / security
+
+Read-only scope: exact Stage B head, run/jobs/probes, exact nested Browser schema and mutation sensitivity, raw/review byte binding, immutable Stage A/Batch 13 identities and recovery-baseline preservation.
+
+### Final content / evidence / rights
+
+Read-only scope: production evidence truthfulness, source and relation observations, original Draw.io/SVG rights, screenshot scope, and STY-14 non-actionability.
+
+### Final architecture / invariant
+
+Read-only scope: the complete STY-13 authority, affinity, split-brain, workflow, hotspot, rebalance and recovery contract at the exact published Stage B head.
+
+- Exact final evidence candidate head: `UNBOUND — controller must create and bind the exact post-production-evidence candidate head`.
+- Independent final code/spec/security review: `UNBOUND — controller must assign a read-only reviewer`.
+- Independent final content/evidence/rights review: `UNBOUND — controller must assign a different read-only reviewer`.
+- Independent final architecture/invariant review: `UNBOUND — controller must assign a third read-only reviewer`.
+- Final review finding totals: `UNBOUND`.
+- Final Stage B recovery judgment: `NOT_RECORDED`.
+- Recovery baseline status: `NOT_UPDATED`.

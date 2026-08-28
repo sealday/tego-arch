@@ -152,6 +152,14 @@ const reviewedArtifact = (path) => execFileSync(
   ['show', `${EXPECTED_REVIEWED_HEAD}:${path}`],
   {cwd: fileURLToPath(rootUrl), maxBuffer: 4 * 1024 * 1024},
 );
+const historicalArtifact = (head, path, encoding) => execFileSync(
+  'git',
+  ['show', `${head}:${path}`],
+  {cwd: fileURLToPath(rootUrl), encoding, maxBuffer: 4 * 1024 * 1024, stdio: ['ignore', 'pipe', 'pipe']},
+);
+function optionalHistoricalArtifact(head, path, encoding) {
+  try { return historicalArtifact(head, path, encoding); } catch (error) { if (error?.status === 128) return undefined; throw error; }
+}
 async function optional(path, encoding) {
   try { return await required(path, encoding); } catch (error) { if (error?.code === 'ENOENT') return undefined; throw error; }
 }
@@ -951,9 +959,10 @@ test('closes only STY-13 at the exact Stage B projection and keeps STY-14 non-ac
   assert.equal(sha256(svgBytes), SVG_IDENTITY.sha256, 'STY-13 SVG exact SHA-256');
 });
 
-test('binds one exact-head zero-finding Stage B READY checkpoint without deployment or production raw', async () => {
-  assertReadyStageBCandidate();
-  assert.equal(await optional(STAGE_B_PRODUCTION_RAW), undefined, 'Stage B production raw must not exist before deployment');
+test('binds the exact historical Stage B READY checkpoint without deployment or production raw', () => {
+  const historicalReview = historicalArtifact(STAGE_B_PUBLISHED_HEAD, REVIEW, 'utf8');
+  assertReadyStageBCandidate(historicalReview);
+  assert.equal(optionalHistoricalArtifact(STAGE_B_PUBLISHED_HEAD, STAGE_B_PRODUCTION_RAW), undefined, 'exact Stage B READY tree must not contain production raw before deployment');
 });
 
 test('Stage B READY contract rejects wrong heads, weakened verdicts, findings, deployment and raw claims', () => {

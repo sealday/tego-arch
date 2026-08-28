@@ -17,6 +17,18 @@ export const NEXT_TOPIC = 'STY-14';
 export const NEXT_ROUTE = '/styles/sty-14';
 export const STAGE_B_REVIEW = 'docs/reviews/g009-batch14.md';
 export const STAGE_B_BROWSER = 'docs/reviews/evidence/g009-batch14-stage-b-production-browser.json';
+export const STAGE_B_PUBLISHED_HEAD = 'e04605ed2b02568289cbfc1b47b1df77e4996d68';
+export const STAGE_B_PRODUCTION_PAGES = Object.freeze({
+  workflow: 'Verify and deploy Docusaurus to GitHub Pages',
+  runId: 33_189_774_344,
+  runUrl: 'https://github.com/sealday/tego-arch/actions/runs/33189774344',
+  event: 'push',
+  headSha: STAGE_B_PUBLISHED_HEAD,
+  status: 'completed',
+  conclusion: 'success',
+  build: Object.freeze({jobId: 98_911_988_885, status: 'completed', conclusion: 'success'}),
+  deploy: Object.freeze({jobId: 98_913_062_798, status: 'completed', conclusion: 'success'}),
+});
 export const RELATED_CASES = Object.freeze(['/cases/aws-cell-shuffle-sharding', '/cases/cloudflare-durable-objects-workerd']);
 export const RECIPROCAL_CONTRACTS = Object.freeze([
   ['content/styles/sty-05-microservices.mdx', '[Space-Based Architecture 决策](/styles/sty-13)继续判断微服务何时需要把状态与处理按亲和键共置；它不取消服务所有权，也不把跨分区协调变回本地事务。'],
@@ -434,6 +446,15 @@ function assertDiagramMutationRejections(drawioSource, svgSource) {
   assert.throws(() => assertSpaceBasedDiagram(drawioSource, replaceOnce(svgSource, 'data-node-shape-for="affinity-key" x="650"', 'data-node-shape-for="affinity-key" x="651"', 'SVG node geometry drift')), /synchronized Draw.io\/SVG node geometry/u, 'SVG node geometry cannot drift from Draw.io');
 }
 const FINAL_REVIEW_TYPES = Object.freeze(['code review', 'content review', 'architecture review']);
+function markdownH2Section(source, heading) {
+  const marker = `\n## ${heading}\n\n`;
+  const start = source.indexOf(marker);
+  assert.notEqual(start, -1, `${heading} section exists`);
+  assert.equal(source.indexOf(marker, start + marker.length), -1, `one ${heading} section`);
+  const contentStart = start + marker.length;
+  const end = source.indexOf('\n## ', contentStart);
+  return source.slice(contentStart, end === -1 ? source.length : end).trim();
+}
 function assertExactHeadFinalReviews(source, head) {
   assert.match(head, /^[\da-f]{40}$/u, 'exact reviewed head is a full commit SHA');
   const headings = [...source.matchAll(/^##\s+(code review|content review|architecture review)\s*$/gimu)];
@@ -478,8 +499,23 @@ async function assertRelationsAndStage() {
     assert.match(review, /Stage B production raw: `NOT_RECORDED`\./u);
     return;
   }
-  const evidence = JSON.parse(browser); const headResult = spawnSync('git', ['rev-parse', 'HEAD'], {encoding: 'utf8'}); assert.equal(headResult.status, 0, headResult.stderr || 'resolve exact implementation head'); const head = headResult.stdout.trim();
-  assert.deepEqual(evidence.pages, {...evidence.pages, workflow: 'Verify and deploy Docusaurus to GitHub Pages', headSha: head, event: 'push', status: 'completed', conclusion: 'success'}, 'exact-head Pages deployment identity'); assert.equal(evidence.implementationHead, head, 'Browser evidence exact implementation head'); assert.deepEqual(Object.keys(evidence.states).sort(), ['desktopDark', 'desktopLight', 'mobileDark', 'mobileLight'], 'four Browser states'); assert.equal(evidence.functionalSummary.status, 'PASS', 'Browser functional QA passes'); assert.equal(evidence.functionalSummary.states, 4, 'four Browser states accepted'); assert.equal(evidence.functionalSummary.sty14ActionableTotal, 0, 'STY-14 actionable count is zero'); for (const state of Object.values(evidence.states)) assert.equal(state.geometry?.sty14, 0, 'each accepted state has zero STY-14 actions');
+  const evidence = JSON.parse(browser);
+  assert.deepEqual(evidence.pages, STAGE_B_PRODUCTION_PAGES, 'exact-head Pages deployment identity'); assert.equal(evidence.implementationHead, STAGE_B_PUBLISHED_HEAD, 'Browser evidence exact deployed Stage B head'); assert.deepEqual(Object.keys(evidence.states).sort(), ['desktopDark', 'desktopLight', 'mobileDark', 'mobileLight'], 'four Browser states'); assert.equal(evidence.functionalSummary.status, 'PASS', 'Browser functional QA passes'); assert.equal(evidence.functionalSummary.states, 4, 'four Browser states accepted'); assert.equal(evidence.functionalSummary.sty14ActionableTotal, 0, 'STY-14 actionable count is zero'); for (const state of Object.values(evidence.states)) assert.equal(state.sty14ActionableCount, 0, 'each accepted state has zero STY-14 actions');
+  const recovery = markdownH2Section(review, 'Stage B production recovery candidate');
+  if (recovery.includes('- Final Stage B recovery judgment: `NOT_RECORDED`.')) {
+    for (const literal of [
+      '- Exact final evidence candidate head: `UNBOUND — controller must create and bind the exact post-production-evidence candidate head`.',
+      '- Independent final code/spec/security review: `UNBOUND — controller must assign a read-only reviewer`.',
+      '- Independent final content/evidence/rights review: `UNBOUND — controller must assign a different read-only reviewer`.',
+      '- Independent final architecture/invariant review: `UNBOUND — controller must assign a third read-only reviewer`.',
+      '- Final review finding totals: `UNBOUND`.',
+      '- Final Stage B recovery judgment: `NOT_RECORDED`.',
+      '- Recovery baseline status: `NOT_UPDATED`.',
+    ]) assert.equal(recovery.split(literal).length - 1, 1, `exact no-final-verdict recovery slot: ${literal}`);
+    assert.doesNotMatch(recovery, /Independent final (?:code\/spec\/security|content\/evidence\/rights|architecture\/invariant) review: `(?:READY|CONTENT READY|CLEAR \/ READY)/u, 'no final verdict is fabricated before independent reviews');
+    return;
+  }
+  const headResult = spawnSync('git', ['rev-parse', 'HEAD'], {encoding: 'utf8'}); assert.equal(headResult.status, 0, headResult.stderr || 'resolve exact final evidence candidate head'); const head = headResult.stdout.trim();
   assertExactHeadFinalReviews(review, head);
 }
 function assertReciprocalRelations(sources) {
