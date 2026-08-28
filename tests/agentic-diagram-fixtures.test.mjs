@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {spawnSync} from 'node:child_process';
-import {mkdtempSync, readFileSync, rmSync} from 'node:fs';
+import {mkdtempSync, readFileSync, rmSync, writeFileSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
@@ -72,6 +72,54 @@ test('P06 uses a tracked pinned deterministic exporter when no authenticated raw
       assert.equal(run('git', ['ls-files', '--error-unmatch', trackedPath]).status, 0, `${trackedPath} must be tracked`);
     }
     assertRegenerates(process.cwd(), contract, path.join(outputRoot, 'p06.svg'));
+  } finally {
+    rmSync(outputRoot, {recursive: true, force: true});
+  }
+});
+
+test('P06 exporter binds semantic IDs and exact SVG accessibility to Draw.io source values', () => {
+  const outputRoot = mkdtempSync(path.join(tmpdir(), 'agt-p-06-semantic-'));
+  const templatePath = 'tests/fixtures/agentic-diagrams/agt-p-06-control-ownership-models.normalized-template.svg';
+  const template = readFileSync(templatePath, 'utf8');
+  const baselineOutput = path.join(outputRoot, 'baseline-output.svg');
+  const baseline = run(process.execPath, [
+    'scripts/export-agt-p-06-control-ownership-svg.mjs',
+    'diagrams/agt-p-06-control-ownership-models.drawio',
+    templatePath,
+    baselineOutput,
+  ]);
+  assert.equal(baseline.status, 0, baseline.stderr || baseline.stdout);
+  assert.equal(readFileSync(baselineOutput, 'utf8'), template, 'baseline export stays byte-identical');
+  const swap = (source, left, right) => source.replaceAll(left, '__P06_SWAP__')
+    .replaceAll(right, left).replaceAll('__P06_SWAP__', right);
+  const mutations = [
+    ['node semantic swap', swap(template, '>Supervisor<', '>Worker Agent<')],
+    ['edge semantic swap', swap(template, '>反复委派<', '>结构化结果返回<')],
+    ['role removed', template.replace(' role="img"', '')],
+    ['role drift', template.replace('role="img"', 'role="group"')],
+    ['aria removed', template.replace(' aria-labelledby="agt-p-06-title agt-p-06-desc"', '')],
+    ['aria drift', template.replace('aria-labelledby="agt-p-06-title agt-p-06-desc"', 'aria-labelledby="agt-p-06-desc agt-p-06-title"')],
+    ['title removed', template.replace('  <title id="agt-p-06-title">Supervisor, Handoff, and Agent-as-Tool control ownership models</title>\n', '')],
+    ['title id removed', template.replace(' id="agt-p-06-title"', '')],
+    ['title text drift', template.replace('Supervisor, Handoff, and Agent-as-Tool control ownership models', 'Generic agent diagram')],
+    ['description removed', template.replace('  <desc id="agt-p-06-desc">Three separated regions compare a supervisor that delegates and receives results while retaining control, a handoff that moves the active conversation to another agent, and a parent agent that calls an agent as a bounded tool and receives the result.</desc>\n', '')],
+    ['description id drift', template.replace('id="agt-p-06-desc"', 'id="agt-p-06-description"')],
+    ['description text drift', template.replace('Three separated regions compare a supervisor', 'Three regions vaguely show a supervisor')],
+  ];
+  try {
+    for (const [index, [label, mutant]] of mutations.entries()) {
+      assert.notEqual(mutant, template, `${label} mutation is non-no-op`);
+      const mutantPath = path.join(outputRoot, `${index}-input.svg`);
+      const outputPath = path.join(outputRoot, `${index}-output.svg`);
+      writeFileSync(mutantPath, mutant);
+      const result = run(process.execPath, [
+        'scripts/export-agt-p-06-control-ownership-svg.mjs',
+        'diagrams/agt-p-06-control-ownership-models.drawio',
+        mutantPath,
+        outputPath,
+      ]);
+      assert.notEqual(result.status, 0, `${label} must fail closed`);
+    }
   } finally {
     rmSync(outputRoot, {recursive: true, force: true});
   }

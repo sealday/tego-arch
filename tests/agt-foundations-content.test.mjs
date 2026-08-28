@@ -956,6 +956,11 @@ function assertAgentHarnessContract(source) {
   assert.match(source, /上下文预算[\s\S]*工具预算[\s\S]*智能体运行框架/u);
   assert.match(source, /工具调用真正执行之前[\s\S]*权限与沙箱/u);
   assert.match(source, /副作用账本[\s\S]*恢复时[\s\S]*不盲目重试/u);
+  assert.match(
+    source,
+    /长时编码智能体案例[^。\n]*说明性参考链路[^。\n]*可审计责任边界[^。\n]*不证明真实部署或生产效果/u,
+  );
+  assert.doesNotMatch(source, /真实执行链/u);
 
   const evidenceRows = markdownTableRows(
     source,
@@ -988,6 +993,7 @@ test('AGT-C-02 contract rejects responsibility, SDK, recovery, and evidence-boun
     source.replace('### 薄 SDK 反例', '### SDK 包装'),
     source.replaceAll('副作用账本', '运行日志'),
     source.replace('模型选择的动作正确', '模型输出可用'),
+    source.replace('说明性参考链路', '真实执行链'),
     source.replace('    accTitle: 智能体运行框架六项责任与恢复升级边界\n', ''),
     source.replace('accTitle: 智能体运行框架六项责任与恢复升级边界', 'accTitle: 通用运行图'),
   ];

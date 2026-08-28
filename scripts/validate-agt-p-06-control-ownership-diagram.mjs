@@ -6,6 +6,7 @@ import {fileURLToPath} from 'node:url';
 import {
   parseXml,
   xmlElements,
+  xmlTextContent,
 } from '../.codex/skills/creating-drawio-architecture-diagrams/scripts/xml-visible-copy.mjs';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
@@ -23,16 +24,23 @@ const REGION_CONTRACTS = [
   ['handoff-region', '2 · Handoff：移动控制'],
   ['tool-region', '3 · Agent as Tool'],
 ];
-const NODE_IDS = [
-  'supervisor', 'worker', 'handoff', 'active-agent', 'parent-agent', 'agent-as-tool',
+const NODE_CONTRACTS = [
+  ['supervisor', 'Supervisor', '全局控制与停止'],
+  ['worker', 'Worker Agent', '受限子任务'],
+  ['handoff', 'Handoff', '原会话所有者'],
+  ['active-agent', 'Active Agent', '新会话所有者'],
+  ['parent-agent', 'Parent Agent', '保留任务与会话'],
+  ['agent-as-tool', 'Agent as Tool', '有界专家调用'],
 ];
 const EDGE_CONTRACTS = [
-  ['edge-supervisor-delegate', 'supervisor', 'worker'],
-  ['edge-worker-return', 'worker', 'supervisor'],
-  ['edge-handoff-move', 'handoff', 'active-agent'],
-  ['edge-parent-call', 'parent-agent', 'agent-as-tool'],
-  ['edge-tool-return', 'agent-as-tool', 'parent-agent'],
+  ['edge-supervisor-delegate', 'supervisor', 'worker', '反复委派'],
+  ['edge-worker-return', 'worker', 'supervisor', '结构化结果返回'],
+  ['edge-handoff-move', 'handoff', 'active-agent', '当前会话与控制权移动'],
+  ['edge-parent-call', 'parent-agent', 'agent-as-tool', '调用有界子任务'],
+  ['edge-tool-return', 'agent-as-tool', 'parent-agent', '结果返回 Parent'],
 ];
+const ACCESSIBLE_TITLE = 'Supervisor, Handoff, and Agent-as-Tool control ownership models';
+const ACCESSIBLE_DESCRIPTION = 'Three separated regions compare a supervisor that delegates and receives results while retaining control, a handoff that moves the active conversation to another agent, and a parent agent that calls an agent as a bounded tool and receives the result.';
 
 const fail = (message) => { throw new Error(`AGT-P-06 diagram contract: ${message}`); };
 const number = (value, label) => {
@@ -118,6 +126,14 @@ const intervalDistance = (startA, endA, startB, endB) => (
 export function assertControlOwnershipDiagramGeometry(drawio, svg) {
   const drawioRoot = parseXml(drawio, '<agt-p-06.drawio>').root;
   const svgRoot = parseXml(svg, '<agt-p-06.svg>').root;
+  if (attr(svgRoot, 'role', 'svg root') !== 'img') fail('svg root role must be img');
+  if (attr(svgRoot, 'aria-labelledby', 'svg root') !== 'agt-p-06-title agt-p-06-desc') {
+    fail('svg root aria-labelledby must name the exact title and description IDs');
+  }
+  const accessibleTitle = byAttr(svgRoot, 'title', 'id', 'agt-p-06-title', SVG_NS);
+  const accessibleDescription = byAttr(svgRoot, 'desc', 'id', 'agt-p-06-desc', SVG_NS);
+  if (xmlTextContent(accessibleTitle) !== ACCESSIBLE_TITLE) fail('accessible title text drift');
+  if (xmlTextContent(accessibleDescription) !== ACCESSIBLE_DESCRIPTION) fail('accessible description text drift');
   if (attr(svgRoot, 'data-drawio-sha256', 'svg root') !== sha256(drawio)) {
     fail('embedded Draw.io SHA-256 does not match source bytes');
   }
@@ -133,6 +149,9 @@ export function assertControlOwnershipDiagramGeometry(drawio, svg) {
     drawioBoxes.set(id, source);
 
     const labelText = byAttr(svgRoot, 'text', 'data-region-label-for', id, SVG_NS);
+    if (xmlTextContent(labelText) !== attr(source.cell, 'value', id)) {
+      fail(`${id} SVG label is not bound to its Draw.io value`);
+    }
     const bounds = textBox(labelText);
     min(css(bounds.font), 15, `${id} title font`);
     const innerLeft = source.x + published.stroke / 2;
@@ -143,15 +162,26 @@ export function assertControlOwnershipDiagramGeometry(drawio, svg) {
     min(css(bounds.top - innerTop), 12, `${id} title top clearance`);
   }
 
-  for (const id of NODE_IDS) {
+  for (const [id, expectedTitle, expectedType] of NODE_CONTRACTS) {
     const source = geometryForCell(drawioRoot, id);
+    if (attr(source.cell, 'value', id) !== expectedTitle) fail(`${id} Draw.io title drift`);
+    const typeCell = byAttr(drawioRoot, 'mxCell', 'id', `${id}-type`, '');
+    if (attr(typeCell, 'value', `${id}-type`) !== expectedType) fail(`${id} Draw.io type drift`);
     const published = svgBox(svgRoot, 'data-node-id', id);
     for (const key of ['x', 'y']) close(published[key], source[key] * EXPORT_TRANSFORM.scale + EXPORT_TRANSFORM[key], `${id}.${key}`);
     for (const key of ['width', 'height']) close(published[key], source[key] * EXPORT_TRANSFORM.scale, `${id}.${key}`);
     drawioBoxes.set(id, source);
 
-    const title = textBox(byAttr(svgRoot, 'text', 'data-title-for', id, SVG_NS));
-    const type = textBox(byAttr(svgRoot, 'text', 'data-type-for', id, SVG_NS), {translated: true});
+    const titleElement = byAttr(svgRoot, 'text', 'data-title-for', id, SVG_NS);
+    const typeElement = byAttr(svgRoot, 'text', 'data-type-for', id, SVG_NS);
+    if (xmlTextContent(titleElement) !== attr(source.cell, 'value', id)) {
+      fail(`${id} SVG title is not bound to its Draw.io value`);
+    }
+    if (xmlTextContent(typeElement) !== attr(typeCell, 'value', `${id}-type`)) {
+      fail(`${id} SVG type is not bound to its Draw.io value`);
+    }
+    const title = textBox(titleElement);
+    const type = textBox(typeElement, {translated: true});
     min(css(title.font), 15, `${id} title font`);
     min(css(type.font), 10, `${id} type font`);
     min(css(type.y - title.y), 22, `${id} title/type baseline gap`);
@@ -164,8 +194,9 @@ export function assertControlOwnershipDiagramGeometry(drawio, svg) {
     min(css(source.y + source.height - published.stroke / 2 - type.bottom), 14, `${id} type bottom clearance`);
   }
 
-  for (const [id, sourceId, targetId] of EDGE_CONTRACTS) {
+  for (const [id, sourceId, targetId, expectedLabel] of EDGE_CONTRACTS) {
     const edge = byAttr(drawioRoot, 'mxCell', 'id', id, '');
+    if (attr(edge, 'value', id) !== expectedLabel) fail(`${id} Draw.io label drift`);
     if (attr(edge, 'source', id) !== sourceId || attr(edge, 'target', id) !== targetId) {
       fail(`${id} endpoint identity drift`);
     }
@@ -202,7 +233,11 @@ export function assertControlOwnershipDiagramGeometry(drawio, svg) {
     if (Math.sign(apexY - startY) !== direction || Math.sign(apexY - terminalY) !== direction) {
       fail(`${id} arrow direction disagrees with Draw.io ports`);
     }
-    const label = textBox(byAttr(svgRoot, 'text', 'data-edge-label-for', id, SVG_NS), {translated: true});
+    const labelElement = byAttr(svgRoot, 'text', 'data-edge-label-for', id, SVG_NS);
+    if (xmlTextContent(labelElement) !== attr(edge, 'value', id)) {
+      fail(`${id} SVG label is not bound to its Draw.io value`);
+    }
+    const label = textBox(labelElement, {translated: true});
     min(css(label.font), 15, `${id} label font`);
     const strokeDistance = pointIntervalDistance(
       startX + EXPORTED_GROUP_TRANSLATE.x,

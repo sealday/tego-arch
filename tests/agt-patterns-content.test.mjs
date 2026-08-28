@@ -14,6 +14,7 @@ import {
   parseFrontMatter,
 } from '../scripts/content-metadata.mjs';
 import {knowledgeTypeContracts} from '../scripts/content-schema.mjs';
+import {extractInternalLinks} from '../scripts/content-relations.mjs';
 import {parseMdxVisibleCopy} from '../scripts/visible-copy.mjs';
 import {assertControlOwnershipDiagramGeometry} from '../scripts/validate-agt-p-06-control-ownership-diagram.mjs';
 import {assertDurableAgentDiagramGeometry} from '../scripts/validate-agt-p-08-durable-agent-diagram.mjs';
@@ -4000,6 +4001,17 @@ function assertOrchestratorWorkersArticleContract(source) {
     /`cancelled`[^。\n]*`stop_reason`/u,
     /`effect_unknown`[^。\n]*`stop_reason`/u,
   ]) assert.match(source, contract);
+  assert.equal(
+    extractInternalLinks({body: extractMarkdownBody(source)})
+      .filter((route) => route === '/cases/multi-agent-research-system').length,
+    1,
+    'CASE-21 has one reader-visible route to the published case',
+  );
+  assert.match(
+    source,
+    /\[CASE-21 多智能体研究系统\]\(\/cases\/multi-agent-research-system\)是本站原创参考设计，用来检验并行检索和证据合成合同；它不证明真实部署或生产效果。/u,
+  );
+  assert.doesNotMatch(source, /三类终态|部分终态|Mermaid 终态标签/u);
   assert.match(
     visible,
     /Anthropic[^。\n]{0,240}(?:不是|不构成|并非)行业标准/u,
@@ -4045,7 +4057,27 @@ test('AGT-P-07 fails closed on hidden, duplicate, bypass and unbounded Mermaid m
   const fence = `\`\`\`mermaid\n${mermaid}\n\`\`\``;
   const mutations = [
     ['result completeness conflated with stop reason', source.replace('`complete` 和 `partial` 只表达结果完整度', '`complete`、`partial` 和预算耗尽都表达结果完整度')],
-    ['CASE-21 remains future tense', source.replace('\nCASE-21 是本站原创参考设计', '\nCASE-21 将在后续案例任务中检验')],
+    ['CASE-21 remains future tense', source.replace(
+      '\n[CASE-21 多智能体研究系统](/cases/multi-agent-research-system)是本站原创参考设计',
+      '\n[CASE-21 多智能体研究系统](/cases/multi-agent-research-system)将在后续案例任务中检验',
+    )],
+    ['CASE-21 visible route removed', source.replace('[CASE-21 多智能体研究系统](/cases/multi-agent-research-system)', 'CASE-21 多智能体研究系统')],
+    ['CASE-21 route hidden in comment', source.replace(
+      '[CASE-21 多智能体研究系统](/cases/multi-agent-research-system)是本站原创参考设计，用来检验并行检索和证据合成合同；它不证明真实部署或生产效果。',
+      '{/* [CASE-21 多智能体研究系统](/cases/multi-agent-research-system)是本站原创参考设计，用来检验并行检索和证据合成合同；它不证明真实部署或生产效果。 */}',
+    )],
+    ['CASE-21 route hidden in code', source.replace(
+      '[CASE-21 多智能体研究系统](/cases/multi-agent-research-system)是本站原创参考设计，用来检验并行检索和证据合成合同；它不证明真实部署或生产效果。',
+      '`[CASE-21 多智能体研究系统](/cases/multi-agent-research-system)是本站原创参考设计，用来检验并行检索和证据合成合同；它不证明真实部署或生产效果。`',
+    )],
+    ['CASE-21 route moved to frontmatter', source.replace(
+      'related_questions: []',
+      'related_questions: []\nreview_decoy: "[CASE-21 多智能体研究系统](/cases/multi-agent-research-system)是本站原创参考设计，用来检验并行检索和证据合成合同；它不证明真实部署或生产效果。"',
+    ).replace(
+      '\n[CASE-21 多智能体研究系统](/cases/multi-agent-research-system)是本站原创参考设计，用来检验并行检索和证据合成合同；它不证明真实部署或生产效果。',
+      '',
+    )],
+    ['legacy terminal language returns', source.replace('结果完整度与停止原因合同', '三类终态合同')],
     ['zero Mermaid', source.replace(fence, '')],
     ['duplicate Mermaid', `${source}\n\n${fence}\n`],
     ['nested Mermaid', source.replace(fence, `<div>\n${fence}\n</div>`) ],
@@ -4165,8 +4197,19 @@ function assertDurableAgentArticleContract(source) {
   assert.deepEqual(header, ['状态', '含义', '允许的下一步', '恢复与终止合同']);
   assert.deepEqual(rows.map(([state]) => state), durableAgentStates);
   const rowsByState = new Map(rows.map((row) => [row[0], row]));
+  const cancellableStates = ['running', 'waiting', 'approval required', 'paused', 'resuming', 'failed'];
+  const actualCancellableStates = rows
+    .filter((row) => row[2].split('、').includes('取消'))
+    .map(([state]) => state);
+  assert.deepEqual(actualCancellableStates, cancellableStates, 'cancellable state set is exact');
+  const missingCancellation = cancellableStates.filter((state) =>
+    !rowsByState.get(state)[2].split('、').includes('取消'));
+  assert.deepEqual(missingCancellation, [], 'every non-terminal durable state can transition to cancelled');
   assert.equal(rowsByState.get('approval required')[2], '等待、取消、人工终态');
   assert.equal(rowsByState.get('waiting')[2], '运行、需要批准、正在恢复、暂停、失败、取消、人工终态');
+  assert.equal(rowsByState.get('completed')[2], '无');
+  assert.equal(rowsByState.get('cancelled')[2], '无');
+  assert.equal(rowsByState.get('manual terminal')[2], '无自动下一步');
   assert.match(rowsByState.get('failed').join(' '), /可恢复控制状态/u);
   assert.match(rowsByState.get('failed').join(' '), /不是终态/u);
   assert.match(rowsByState.get('cancelled').join(' '), /控制终态/u);
@@ -4327,8 +4370,15 @@ test('AGT-P-08 rejects article state, hidden, duplicate, bypass and terminal re-
     ['duplicate diagram', `${source}\n\n![重复图](/img/diagrams/agt-p-08-durable-agent-hitl.svg)\n`],
     ['responsive wrapper bypass', source.replace('className="architecture-diagram-scroll"', 'className="diagram"')],
     ['cancelled state removed', source.replace(/^\| cancelled \|.*\n/mu, '')],
-    ['failed mislabeled terminal', source.replace('\n| failed | 控制执行确定失败且没有未知外部效果 | 正在恢复或人工终态（仅显式策略允许） | 该状态是可恢复控制状态，不是终态；', '\n| failed | 控制执行确定失败且没有未知外部效果 | 无 | 该状态是终态；')],
+    ['failed mislabeled terminal', source.replace('\n| failed | 控制执行确定失败且没有未知外部效果 | 正在恢复、取消、人工终态（仅显式策略允许） | 该状态是可恢复控制状态，不是终态；', '\n| failed | 控制执行确定失败且没有未知外部效果 | 无 | 该状态是终态；')],
     ['approval waiting path removed', source.replace('\n| approval required | 已冻结批准上下文，尚无有效决定 | 等待、取消、人工终态 |', '\n| approval required | 已冻结批准上下文，尚无有效决定 | 取消、人工终态 |')],
+    ...['running', 'waiting', 'approval required', 'paused', 'resuming', 'failed'].map((state) => {
+      const line = source.split(/\r?\n/u).find((candidate) => candidate.startsWith(`| ${state} |`));
+      assert.ok(line, `${state} state row mutation fixture`);
+      const withoutCancellation = line.replace('、取消', '').replace('取消、', '');
+      assert.notEqual(withoutCancellation, line, `${state} cancellation mutation changes row`);
+      return [`${state} cancellation removed`, source.replace(`\n${line}`, `\n${withoutCancellation}`)];
+    }),
   ];
   const survivors = [];
   for (const [label, mutant] of mutations) {

@@ -70,7 +70,7 @@ related_questions: []
 
 {/* terminology-exempt: unknown-english-term | reason: 审查要求读者可见正文明确保留 Anthropic 正式机构身份 */}
 
-Anthropic 公司的官方工程材料分别描述了并行化与编排者–工作者：前者适合可独立拆开的已知子任务，后者由中央模型动态拆分任务并综合结果；这只是该公司的模式描述，不是行业标准。本文的任务账本、并发门、三类终态、取消与副作用恢复是面向生产控制的原创架构综合。
+Anthropic 公司的官方工程材料分别描述了并行化与编排者–工作者：前者适合可独立拆开的已知子任务，后者由中央模型动态拆分任务并综合结果；这只是该公司的模式描述，不是行业标准。本文的任务账本、并发门、结果完整度、停止原因、取消与副作用恢复是面向生产控制的原创架构综合。
 
 ## 约束与驱动力
 
@@ -93,7 +93,7 @@ Anthropic 公司的官方工程材料分别描述了并行化与编排者–工�
 
 | 架构平面 | 责任所有者 | 显式合同 |
 | --- | --- | --- |
-| 交互 | 请求者与人类责任人 | 声明目标、最低完整度、截止时间、风险和允许的部分终态；接收结果、缺口和停止原因 |
+| 交互 | 请求者与人类责任人 | 声明目标、最低完整度、截止时间、风险和允许的部分结果；接收结果、缺口和停止原因 |
 | 控制 | 确定性运行控制器与编排者 | 控制器执行预算、权限和终止；编排者只能在边界内提议分解与调度 |
 | 知识与上下文 | 上下文装配层 | 按子任务提供最小输入与证据版本，隔离其他工作者草稿和不必要秘密 |
 | 状态与记忆 | 任务账本、结果存储与权威业务系统 | 保存任务图、租约、尝试、消耗、结果、取消、冲突决议与最终状态 |
@@ -116,11 +116,11 @@ Anthropic 公司的官方工程材料分别描述了并行化与编排者–工�
 
 {/* terminology-exempt: unknown-english-term | match: Conflict resolver | record: 冲突解决器（Conflict resolver） | reason: P07 精确 Mermaid 节点标签按任务合同保留英文名称 */}
 
-{/* terminology-exempt: unknown-english-term | match: complete | record: 完整（complete） | reason: P07 精确 Mermaid 终态标签按任务合同保留英文状态名 */}
+{/* terminology-exempt: unknown-english-term | match: complete | record: 完整（complete） | reason: P07 精确 Mermaid 结果完整度标签按任务合同保留英文名称 */}
 
-{/* terminology-exempt: unknown-english-term | match: partial | record: 部分（partial） | reason: P07 精确 Mermaid 终态标签按任务合同保留英文状态名 */}
+{/* terminology-exempt: unknown-english-term | match: partial | record: 部分（partial） | reason: P07 精确 Mermaid 结果完整度标签按任务合同保留英文名称 */}
 
-{/* terminology-exempt: unknown-english-term | match: budget exhausted | record: 预算耗尽（budget exhausted） | reason: P07 精确 Mermaid 终态标签按任务合同保留英文状态名 */}
+{/* terminology-exempt: unknown-english-term | match: budget exhausted | record: 预算耗尽（budget exhausted） | reason: P07 精确 Mermaid 真实预算耗尽停止原因按任务合同保留英文名称 */}
 
 ```mermaid
 flowchart TB
@@ -200,9 +200,9 @@ Microsoft 公司固定提交的构件文档把编排器、专业智能体和注�
 
 [AWS 命令行智能体编排器案例](/cases/aws-cli-agent-orchestrator)检验工作进程分配、终端隔离、取消与恢复边界；[Microsoft 多智能体参考架构案例](/cases/microsoft-multi-agent-reference-architecture)检验中央编排、注册与治理构件。
 
-{/* terminology-exempt: unknown-english-term | match: CASE-21 | record: CASE-21 是本站原创参考设计，用来检验并行检索和证据合成合同；它不证明真实部署或生产效果。 | reason: backlog identity is required to make the reviewed case boundary explicit */}
+{/* terminology-exempt: unknown-english-term | match: CASE-21 | record: CASE-21 多智能体研究系统是本站原创参考设计，用来检验并行检索和证据合成合同；它不证明真实部署或生产效果。 | reason: backlog identity is required to make the reviewed case boundary explicit */}
 
-CASE-21 是本站原创参考设计，用来检验并行检索和证据合成合同；它不证明真实部署或生产效果。
+[CASE-21 多智能体研究系统](/cases/multi-agent-research-system)是本站原创参考设计，用来检验并行检索和证据合成合同；它不证明真实部署或生产效果。
 
 反模式包括“广播即分解”“工作者自我复制”“共享全部上下文”“结果最后写入者获胜”“多数票即真相”“父任务取消但子任务继续”和“失败即换标识重来”。这些做法分别破坏资源、隔离、状态、证据、终止和恢复责任。
 
