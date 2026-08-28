@@ -18,6 +18,13 @@ export const NEXT_ROUTE = '/styles/sty-14';
 export const STAGE_B_REVIEW = 'docs/reviews/g009-batch14.md';
 export const STAGE_B_BROWSER = 'docs/reviews/evidence/g009-batch14-stage-b-production-browser.json';
 export const RELATED_CASES = Object.freeze(['/cases/aws-cell-shuffle-sharding', '/cases/cloudflare-durable-objects-workerd']);
+export const RECIPROCAL_CONTRACTS = Object.freeze([
+  ['content/styles/sty-05-microservices.mdx', '[Space-Based Architecture 决策](/styles/sty-13)继续判断微服务何时需要把状态与处理按亲和键共置；它不取消服务所有权，也不把跨分区协调变回本地事务。'],
+  ['content/styles/sty-08-actor-model.mdx', '[Space-Based Architecture 决策](/styles/sty-13)比较分区处理单元与 Actor 的状态所有权；两者都收敛本地决定，但亲和分区、主备数据网格与邮箱语义不能互换。'],
+  ['content/cases/aws-cell-shuffle-sharding.mdx', '[Space-Based Architecture 决策](/styles/sty-13)可有限类比本案例的放置、热点和故障域边界；Cell 与 Shuffle Sharding 不证明状态和处理已经共置于分区数据空间。'],
+  ['content/cases/cloudflare-durable-objects-workerd.mdx', '[Space-Based Architecture 决策](/styles/sty-13)可有限类比按稳定标识路由到状态所有者；Durable Objects 不证明分区数据网格、同步主备或跨对象事务。'],
+]);
+export const ADJACENT_CONTRACT_FILES = Object.freeze(['content/styles/sty-05-microservices.mdx', 'content/styles/sty-08-actor-model.mdx']);
 export const EXPECTED_STAGE_A = Object.freeze({completed: 65, documents: 109, sources: 573});
 export const EXPECTED_STAGE_B = Object.freeze({completed: 66, documents: 109, sources: 573});
 export const EXPECTED_HEADINGS = Object.freeze(['学习问题', '一页摘要', '事实边界', '架构图', '亲和分区与预订流', '关键机制导读', '架构决策与权衡', '生产化分析', '可迁移经验', '来源']);
@@ -34,7 +41,7 @@ export const EXACT_METADATA = Object.freeze({
   domains: ['software-architecture', 'distributed-systems', 'data-intensive-systems'], agent_patterns: [], protocols: [],
   quality_attributes: ['scalability', 'performance', 'availability', 'consistency', 'recoverability', 'operability'],
   tags: ['架构风格', 'Space-Based Architecture', '数据亲和', '分区处理', '内存数据网格', '热点治理'],
-  summary: '以航班余位与报价说明 Space-Based Architecture：入口按航段与日期路由到唯一分区所有者，状态与处理共置，主备只处理受控切换，日志与检查点负责恢复，多航段行程由外部持久工作流（Workflow）协调。',
+  summary: '以航班余位与报价说明 Space-Based Architecture：入口按航段与日期路由到唯一分区所有者，状态与处理共置，主备只处理受控切换，日志与检查点负责恢复，多航段行程由外部持久工作流协调。',
   topic_id: TOPIC_ID, priority: 'P2', depends_on: ['STY-00', 'STY-05', 'STY-08'], adjacent_topics: ['STY-05', 'STY-08'], related_cases: RELATED_CASES, related_questions: [],
 });
 export const SOURCE_IDS = Object.freeze(['src-gigaspaces-sba-overview', 'src-gigaspaces-processing-unit-sla', 'src-gigaspaces-split-brain-resolution', 'src-gigaspaces-proxy-connectivity', 'src-oracle-coherence-partitioned-cache', 'src-oracle-coherence-backing-maps', 'src-gigaspaces-flight-availability-case', 'src-atlas-sty13-space-based-flight-availability']);
@@ -46,6 +53,15 @@ export const REMOTE_SOURCE_CONTRACTS = Object.freeze([
   ['src-oracle-coherence-partitioned-cache', 'https://docs.oracle.com/en/middleware/fusion-middleware/coherence/12.2.1.4/develop-applications/introduction-coherence.html', 'Introduction to Coherence', 'Oracle', null, 'Coherence 12.2.1.4; checked 2026-08-28', 'official-docs', 'primary', 'LicenseRef-All-Rights-Reserved', 'facts-and-short-quotation', 'Supports only Coherence partitioned data, backup and rebalancing mechanisms as a narrow comparison; it does not prove the original flight design or general performance.'],
   ['src-oracle-coherence-backing-maps', 'https://docs.oracle.com/middleware/1221/coherence/develop-applications/cache_back.htm', 'Implementing Storage and Backing Maps', 'Oracle', null, 'Coherence 12.2.1; checked 2026-08-28', 'official-docs', 'primary', 'LicenseRef-All-Rights-Reserved', 'facts-and-short-quotation', 'Supports only Coherence backing-map and persistent-store mechanisms as a narrow recovery comparison; it does not prove the original flight design or general performance.'],
   ['src-gigaspaces-flight-availability-case', 'https://www.gigaspaces.com/case_studies/booking-and-flight-availability', 'Booking and Flight Availability', 'GigaSpaces', null, 'live customer case; checked 2026-08-28', 'vendor-reference-architecture', 'first-party', 'LicenseRef-All-Rights-Reserved', 'vendor-claims-separated', 'Supports only the vendor claim that a booking and flight-availability customer case was published; it does not prove the original flight design or general performance.'],
+]);
+export const REMOTE_CITATION_NOTES = Object.freeze([
+  ['src-gigaspaces-sba-overview', 'Space-Based Architecture, GigaSpaces, XAP 16.2', 'Original Chinese factual summary limited to the documented definition, Processing Unit, partition-local service, data-affinity and primary-backup mechanisms; no source prose, structure or diagrams copied.'],
+  ['src-gigaspaces-processing-unit-sla', 'Defining the SLA for Your Processing Unit, GigaSpaces, XAP 16.2.1', 'Original Chinese factual summary limited to documented Processing Unit deployment, SLA and primary-backup control mechanisms; no source prose, structure or diagrams copied.'],
+  ['src-gigaspaces-split-brain-resolution', 'Availability Biased — Split Brain and Primary Resolution, GigaSpaces, XAP 16.2', 'Original Chinese factual summary limited to documented split-brain and primary-resolution mechanisms; no source prose, structure or diagrams copied.'],
+  ['src-gigaspaces-proxy-connectivity', 'Proxy Connectivity, GigaSpaces, XAP 16.2', 'Original Chinese factual summary limited to documented proxy connectivity, discovery and rerouting mechanisms; no source prose, structure or diagrams copied.'],
+  ['src-oracle-coherence-partitioned-cache', 'Introduction to Coherence, Oracle, Coherence 12.2.1.4', 'Original Chinese factual summary limited to documented Coherence partitioned-data, backup and rebalancing mechanisms as a narrow comparison; no source prose, structure or diagrams copied.'],
+  ['src-oracle-coherence-backing-maps', 'Implementing Storage and Backing Maps, Oracle, Coherence 12.2.1', 'Original Chinese factual summary limited to documented Coherence backing-map and persistent-store mechanisms as a narrow comparison; no source prose, structure or diagrams copied.'],
+  ['src-gigaspaces-flight-availability-case', 'Booking and Flight Availability, GigaSpaces customer case', 'Original Chinese vendor-claim-labeled summary limited to the existence of the published customer case; no metrics, customer quotations, source structure, logos, brand visuals or diagrams copied.'],
 ]);
 export const ORIGINAL_SOURCE_CONTRACT = Object.freeze(['src-atlas-sty13-space-based-flight-availability', '/img/diagrams/sty-13-space-based-flight-availability.svg', 'Space-Based Architecture 航班余位亲和分区、主备与恢复边界图 SVG', 'Tego Arch maintainers', '2026-08-28', 'original-atlas image/svg+xml identity reserved 2026-08-28', 'original-illustration', 'primary', 'LicenseRef-Atlas-Original', 'original-atlas', 'Original teaching topology for affinity routing, partition-local authority, primary-backup control, durable recovery and external itinerary coordination; illustration-only and not evidence of production outcomes.']);
 const SOURCE_CONTRACT_FIELDS = Object.freeze(['id', 'canonical_locator', 'title', 'author_or_org', 'published_at', 'version', 'source_kind', 'tier', 'license', 'copyright_policy', 'usage_boundary']);
@@ -99,7 +115,8 @@ export const EPISTEMIC_CONTRACTS = Object.freeze([
   '**本站原创分析**：空间内状态是实时余位写权威；长期记录不得形成第二个同步可写权威。',
   '**本站原创分析**：先检查三层之间的所有权：入口只认证、限流和解析亲和键；',
   '**本站原创分析**：下面的说明性场景沿一笔请求追踪控制权。这八步均为本站设计，',
-  '**本站原创分析**：图的结论不是“节点越多越快”，而是所有权可证明时才写。',
+  '**本站原创分析**：图的结论不是“节点越多越快”，而是所有权可证明时才写。备份只有在隔离旧主、校验进度并进入新纪元后才能提升。无法确认唯一主分区时暂停写入，不能让双主继续售卖后再自动合并。',
+  '**本站原创分析**：增加无关节点不会消除热门航班形成的热点分区。先用入口排队、每分区在途预算、租户公平限流与只读派生模型保护写路径；只有业务语义允许时才能拆分亲和键，且拆分不能产生两个可独立售卖同一余位的权威。',
 ]);
 export const REGION_IDS = Object.freeze(['ingress-routing', 'partition-runtime', 'recovery-and-durability', 'external-coordination']);
 export const NODE_IDS = Object.freeze(['booking-gateway', 'affinity-router', 'flight-date-key', 'primary-partition', 'backup-partition', 'availability-state', 'partition-service', 'replication-stream', 'checkpoint-log', 'recovery-controller', 'itinerary-workflow', 'derived-read-model']);
@@ -249,16 +266,17 @@ function assertSpaceBasedArticle(source) {
   for (const statement of EPISTEMIC_CONTRACTS) assert.ok(visibleBody.includes(statement), 'explicit epistemic label: ' + statement);
 }
 function assertSpaceBasedSources(ledger) {
-  const document = ledger.documents?.[ARTICLE]; assert.ok(document, 'STY-13 governed source document'); assert.deepEqual(document.citations.map(({source_id}) => source_id), SOURCE_IDS, 'exact ordered STY-13 citations');
+  const document = ledger.documents?.[ARTICLE]; assert.ok(document, 'STY-13 governed source document'); assert.equal(document.reviewed_at, '2026-08-28', 'exact STY-13 source review date'); assert.deepEqual(document.copyright_checks, ['original-structure', 'quotation-boundary', 'attribution-complete', 'illustration-rights'], 'exact STY-13 copyright checks'); assert.deepEqual(document.citations.map(({source_id}) => source_id), SOURCE_IDS, 'exact ordered STY-13 citations');
   const sourceById = new Map(ledger.sources.map((source) => [source.id, source]));
   const citationById = new Map(document.citations.map((citation) => [citation.source_id, citation]));
+  const notesById = new Map(REMOTE_CITATION_NOTES.map(([id, attribution_note, modification_note]) => [id, {attribution_note, modification_note}]));
   for (const [index, contract] of REMOTE_SOURCE_CONTRACTS.entries()) {
     const expected = Object.fromEntries(SOURCE_CONTRACT_FIELDS.map((field, fieldIndex) => [field, contract[fieldIndex]])); const source = sourceById.get(expected.id); const citation = citationById.get(expected.id);
     assert.ok(source && citation, expected.id + ' governed remote source and citation');
     assert.deepEqual(Object.fromEntries(SOURCE_CONTRACT_FIELDS.map((field) => [field, source[field]])), expected, expected.id + ' exact remote identity, provenance, rights and usage boundary');
     assert.equal(source.transport_locator, expected.canonical_locator, expected.id + ' exact transport locator'); assert.equal(source.registered_at, '2026-08-28', expected.id + ' registration date'); assert.equal(source.checked_at, '2026-08-28', expected.id + ' check date');
     assert.equal(citation.citation_url, expected.canonical_locator, expected.id + ' exact citation locator'); assert.deepEqual(citation.roles, source.allowed_evidence_roles, expected.id + ' citation roles stay within source contract');
-    assert.equal(citation.usage_mode, 'facts-summary', expected.id + ' remote citation uses facts-summary'); assert.equal(citation.manifest_primary, index === 0, expected.id + ' exact primary selection'); assert.ok(citation.attribution_note && citation.modification_note, expected.id + ' attribution and modification notes'); assert.equal(citation.excerpt, null); assert.equal(citation.quotation_reviewed, false);
+    assert.equal(citation.usage_mode, 'facts-summary', expected.id + ' remote citation uses facts-summary'); assert.equal(citation.manifest_primary, index === 0, expected.id + ' exact primary selection'); assert.deepEqual({attribution_note: citation.attribution_note, modification_note: citation.modification_note}, notesById.get(expected.id), expected.id + ' exact attribution and modification notes'); assert.equal(citation.excerpt, null); assert.equal(citation.quotation_reviewed, false);
   }
   const originalExpected = {...Object.fromEntries(SOURCE_CONTRACT_FIELDS.map((field, index) => [field, ORIGINAL_SOURCE_CONTRACT[index]])), ...ORIGINAL_RIGHTS_CONTRACT};
   const original = sourceById.get(originalExpected.id); const originalCitation = citationById.get(originalExpected.id); assert.ok(original && originalCitation, 'STY-13 governed original illustration and citation'); assert.deepEqual(original, originalExpected, 'exact original illustration identity and rights contract');
@@ -304,6 +322,7 @@ function assertExactHeadFinalReviews(source, head) {
   assert.deepEqual([...seen].sort(), [...FINAL_REVIEW_TYPES].sort(), 'code/content/architecture reviews are each present exactly once');
 }
 async function assertRelationsAndStage() {
+  const reciprocalSources = new Map(RECIPROCAL_CONTRACTS.map(([path]) => [path, readFileSync(path, 'utf8')])); assertReciprocalRelations(reciprocalSources);
   const documents = await readContentDocuments(CONTENT_ROOT); const article = documents.find(({file: path}) => 'content/' + path === ARTICLE); assert.ok(article, 'STY-13 content document'); const links = extractInternalLinks(article);
   for (const related of RELATED_CASES) assert.ok(links.includes(related), 'visible related case: ' + related); assert.equal(links.includes(NEXT_ROUTE), false, 'STY-14 remains non-actionable from STY-13'); assert.equal(documents.flatMap(extractInternalLinks).filter((link) => link === NEXT_ROUTE).length, 0, 'STY-14 actionable route count is zero');
   const backlog = readFileSync('docs/content-backlog.md', 'utf8'); assert.match(backlog, new RegExp('^- \\[ \\] \\*\\*' + NEXT_TOPIC + ' P1', 'mu'), 'STY-14 is pending');
@@ -314,10 +333,14 @@ async function assertRelationsAndStage() {
   assert.deepEqual(evidence.pages, {...evidence.pages, workflow: 'Verify and deploy Docusaurus to GitHub Pages', headSha: head, event: 'push', status: 'completed', conclusion: 'success'}, 'exact-head Pages deployment identity'); assert.equal(evidence.implementationHead, head, 'Browser evidence exact implementation head'); assert.deepEqual(Object.keys(evidence.states).sort(), ['desktopDark', 'desktopLight', 'mobileDark', 'mobileLight'], 'four Browser states'); assert.equal(evidence.functionalSummary.status, 'PASS', 'Browser functional QA passes'); assert.equal(evidence.functionalSummary.states, 4, 'four Browser states accepted'); assert.equal(evidence.functionalSummary.sty14ActionableTotal, 0, 'STY-14 actionable count is zero'); for (const state of Object.values(evidence.states)) assert.equal(state.geometry?.sty14, 0, 'each accepted state has zero STY-14 actions');
   assertExactHeadFinalReviews(review, head);
 }
+function assertReciprocalRelations(sources) {
+  for (const [path, sentence] of RECIPROCAL_CONTRACTS) { const source = sources.get(path); assert.ok(source, path + ' reciprocal source'); assert.equal(source.split(sentence).length - 1, 1, path + ' exact reciprocal sentence occurs once'); }
+  for (const path of ADJACENT_CONTRACT_FILES) { const metadata = parseFrontMatter(sources.get(path)); assert.equal(metadata.adjacent_topics.filter((topic) => topic === TOPIC_ID).length, 1, path + ' adjacent_topics contains STY-13 exactly once'); assert.equal(metadata.adjacent_topics.includes(NEXT_TOPIC), false, path + ' adjacent_topics excludes STY-14'); }
+}
 function fixtureArticle() {
   const sections = EXPECTED_HEADINGS.map((heading) => '## ' + heading + (heading === '可迁移经验' ? '\n### ' + MIGRATION_HEADINGS.join('\n### ') : '')).join('\n'); const rows = (items) => items.map((row) => '| ' + row.join(' | ') + ' |').join('\n');
-  const labeledAuthority = REQUIRED_SENTENCES.map((sentence) => sentence === REQUIRED_SENTENCES[2] ? '**本站原创分析**：' + sentence : sentence);
-  return '---\n' + frontMatterFixture(EXACT_METADATA) + '\n---\n' + sections + '\n' + WRAPPERS.map((label) => '<div role="region" aria-label="' + label + '" tabIndex={0} onKeyDown={handleHorizontalArrowKey}>').join('\n') + '\n| ' + COMPARISON_HEADERS.join(' | ') + ' |\n| --- | --- | --- | --- | --- |\n' + rows(COMPARISON_ROWS) + '\n\n| ' + OPERATION_HEADERS.join(' | ') + ' |\n| --- | --- | --- | --- |\n' + rows(OPERATION_ROWS) + '\n\n| ' + FAILURE_HEADERS.join(' | ') + ' |\n| --- | --- | --- | --- |\n' + rows(FAILURE_ROWS) + '\n' + labeledAuthority.join('\n') + '\n' + EPISTEMIC_CONTRACTS.slice(1).join('\n');
+  const labeledBoundaries = REQUIRED_SENTENCES.map((sentence) => sentence === REQUIRED_SENTENCES[2] ? EPISTEMIC_CONTRACTS[0] : sentence === REQUIRED_SENTENCES[4] ? EPISTEMIC_CONTRACTS[3] : sentence === REQUIRED_SENTENCES[6] ? EPISTEMIC_CONTRACTS[4] : sentence);
+  return '---\n' + frontMatterFixture(EXACT_METADATA) + '\n---\n' + sections + '\n' + WRAPPERS.map((label) => '<div role="region" aria-label="' + label + '" tabIndex={0} onKeyDown={handleHorizontalArrowKey}>').join('\n') + '\n| ' + COMPARISON_HEADERS.join(' | ') + ' |\n| --- | --- | --- | --- | --- |\n' + rows(COMPARISON_ROWS) + '\n\n| ' + OPERATION_HEADERS.join(' | ') + ' |\n| --- | --- | --- | --- |\n' + rows(OPERATION_ROWS) + '\n\n| ' + FAILURE_HEADERS.join(' | ') + ' |\n| --- | --- | --- | --- |\n' + rows(FAILURE_ROWS) + '\n' + labeledBoundaries.join('\n') + '\n' + EPISTEMIC_CONTRACTS.slice(1, 3).join('\n');
 }
 function assertGenericHelperRejections() {
   assert.throws(() => parsePathPoints('M 0 0 L'), assert.AssertionError, 'missing path coordinate rejected');
@@ -384,10 +407,26 @@ test('STY-13 helper fixture locks its public content contract', () => {
   const ledger = JSON.parse(readFileSync('data/source-ledger.json', 'utf8')); assertSpaceBasedSources(ledger);
   const mutate = (callback) => { const copy = structuredClone(ledger); callback(copy); return copy; };
   for (const [id] of REMOTE_SOURCE_CONTRACTS) for (const field of [...SOURCE_CONTRACT_FIELDS.slice(1), 'transport_locator', 'registered_at', 'checked_at']) assert.throws(() => assertSpaceBasedSources(mutate((copy) => { copy.sources.find((source) => source.id === id)[field] = field === 'published_at' ? '2026-08-27' : 'mutated'; })), assert.AssertionError, id + ' ' + field + ' mutation rejected');
+  for (const [id] of REMOTE_CITATION_NOTES) for (const field of ['attribution_note', 'modification_note']) assert.throws(() => assertSpaceBasedSources(mutate((copy) => { copy.documents[ARTICLE].citations.find((citation) => citation.source_id === id)[field] = 'mutated'; })), assert.AssertionError, id + ' ' + field + ' mutation rejected');
+  assert.throws(() => assertSpaceBasedSources(mutate((copy) => { copy.documents[ARTICLE].reviewed_at = '2026-08-27'; })), /exact STY-13 source review date/u, 'wrong document review date rejected');
+  assert.throws(() => assertSpaceBasedSources(mutate((copy) => { copy.documents[ARTICLE].copyright_checks.pop(); })), /exact STY-13 copyright checks/u, 'incomplete copyright checks rejected');
   const originalId = ORIGINAL_SOURCE_CONTRACT[0];
   for (const field of [...SOURCE_CONTRACT_FIELDS.slice(1), ...Object.keys(ORIGINAL_RIGHTS_CONTRACT)]) assert.throws(() => assertSpaceBasedSources(mutate((copy) => { const source = copy.sources.find((item) => item.id === originalId); source[field] = Array.isArray(source[field]) ? ['mutated'] : source[field] === null ? 'mutated' : typeof source[field] === 'boolean' ? !source[field] : 'mutated'; })), assert.AssertionError, originalId + ' ' + field + ' mutation rejected');
   assert.throws(() => assertSpaceBasedSources(mutate((copy) => { copy.documents[ARTICLE].citations[0].usage_mode = 'original-illustration'; })), /remote citation uses facts-summary/u, 'remote source cannot masquerade as an original illustration');
   assert.throws(() => assertSpaceBasedSources(mutate((copy) => { copy.documents[ARTICLE].citations.at(-1).usage_mode = 'facts-summary'; })), /exact original illustration citation contract/u, 'original illustration cannot use facts-summary');
+
+  const reciprocalSources = new Map(RECIPROCAL_CONTRACTS.map(([path]) => [path, readFileSync(path, 'utf8')])); assertReciprocalRelations(reciprocalSources);
+  const mutateReciprocal = (path, change) => { const copy = new Map(reciprocalSources); copy.set(path, change(copy.get(path))); return copy; };
+  for (const [path, sentence] of RECIPROCAL_CONTRACTS) {
+    assert.throws(() => assertReciprocalRelations(mutateReciprocal(path, (source) => replaceOnce(source, sentence, '', path + ' deletion'))), /exact reciprocal sentence occurs once/u, path + ' reciprocal deletion rejected');
+    assert.throws(() => assertReciprocalRelations(mutateReciprocal(path, (source) => replaceOnce(source, sentence, sentence.replace('决策', '决斥'), path + ' typo'))), /exact reciprocal sentence occurs once/u, path + ' reciprocal typo rejected');
+    assert.throws(() => assertReciprocalRelations(mutateReciprocal(path, (source) => source + '\n' + sentence + '\n')), /exact reciprocal sentence occurs once/u, path + ' reciprocal duplicate rejected');
+  }
+  for (const path of ADJACENT_CONTRACT_FILES) {
+    assert.throws(() => assertReciprocalRelations(mutateReciprocal(path, (source) => replaceOnce(source, '  - STY-13\n', '', path + ' adjacent deletion'))), /contains STY-13 exactly once/u, path + ' missing STY-13 adjacency rejected');
+    assert.throws(() => assertReciprocalRelations(mutateReciprocal(path, (source) => replaceOnce(source, '  - STY-13\n', '  - STY-13\n  - STY-13\n', path + ' adjacent duplicate'))), /contains STY-13 exactly once/u, path + ' duplicate STY-13 adjacency rejected');
+    assert.throws(() => assertReciprocalRelations(mutateReciprocal(path, (source) => replaceOnce(source, '  - STY-13\n', '  - STY-13\n  - STY-14\n', path + ' STY-14 adjacency'))), /excludes STY-14/u, path + ' STY-14 adjacency rejected');
+  }
 });
 test('STY-13 article, governed sources, relations and Stage A projection satisfy Task 2', async () => {
   const source = file(ARTICLE); assert.ok(source, ARTICLE + ' must exist after implementation'); assertSpaceBasedArticle(source); assertSpaceBasedSources(JSON.parse(readFileSync('data/source-ledger.json', 'utf8'))); await assertRelationsAndStage();

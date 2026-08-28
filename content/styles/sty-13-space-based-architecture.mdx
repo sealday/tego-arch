@@ -27,7 +27,8 @@ tags:
   - 分区处理
   - 内存数据网格
   - 热点治理
-summary: 以航班余位与报价说明 Space-Based Architecture：入口按航段与日期路由到唯一分区所有者，状态与处理共置，主备只处理受控切换，日志与检查点负责恢复，多航段行程由外部持久工作流（Workflow）协调。
+# terminology-exempt: first-use-required | match: 工作流 | record: 以航班余位与报价说明 Space-Based Architecture：入口按航段与日期路由到唯一分区所有者，状态与处理共置，主备只处理受控切换，日志与检查点负责恢复，多航段行程由外部持久工作流协调。 | reason: STY-13 Task1 已批准 frontmatter summary 与既有工作流首次引入合同冲突
+summary: 以航班余位与报价说明 Space-Based Architecture：入口按航段与日期路由到唯一分区所有者，状态与处理共置，主备只处理受控切换，日志与检查点负责恢复，多航段行程由外部持久工作流协调。
 topic_id: STY-13
 priority: P2
 depends_on:
@@ -57,7 +58,7 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 ## 学习问题
 
 - Space-Based Architecture 移除什么共享协调瓶颈，普通数据库分区或读缓存何时已经足够？
-- 亲和路由、处理单元、实时状态、同步备份、恢复记录与外部工作流各拥有什么？
+- 亲和路由、处理单元、实时状态、同步备份、恢复记录与外部工作流（Workflow）各拥有什么？
 - 查询、暂留、确认和释放怎样留在一个分区，多航段行程又怎样避免伪造全局事务？
 - 热点、主节点失败、脑裂、再平衡、内存压力与恢复失败分别如何停止？
 - 哪些结论来自厂商文档，哪些是本站针对航班场景的原创分析？

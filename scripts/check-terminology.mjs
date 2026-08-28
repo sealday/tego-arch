@@ -413,12 +413,17 @@ const inspectUnknownEnglish = (record, registry) => {
   ));
 };
 
-const classifySuppression = ({raw, file, line, exclusive}) => {
-  const matchedRecord = raw.match(
-    /^(?:<!--\s*|\{\/\*\s*)terminology-exempt:\s*([^|\s]+)\s*\|\s*match:\s*([^|]+?)\s*\|\s*record:\s*(.*?)\s*\|\s*reason:\s*(.*?)\s*(?:-->|\*\/\})$/u,
+const classifySuppression = ({raw, file, line, exclusive, requireExact = false}) => {
+  const trimmed = raw.trim();
+  const directive = trimmed.startsWith('#')
+    ? trimmed.replace(/^#\s*/u, '')
+    : trimmed.match(/^<!--\s*([\s\S]*?)\s*-->$/u)?.[1]
+      ?? trimmed.match(/^\{\/\*\s*([\s\S]*?)\s*\*\/\}$/u)?.[1];
+  const matchedRecord = directive?.match(
+    /^terminology-exempt:\s*([^|\s]+)\s*\|\s*match:\s*([^|]+?)\s*\|\s*record:\s*(.*?)\s*\|\s*reason:\s*(.*?)$/u,
   );
-  const legacy = raw.match(
-    /^(?:<!--\s*|\{\/\*\s*)terminology-exempt:\s*([^|\s]+)\s*\|\s*reason:\s*(.*?)\s*(?:-->|\*\/\})$/u,
+  const legacy = directive?.match(
+    /^terminology-exempt:\s*([^|\s]+)\s*\|\s*reason:\s*(.*?)$/u,
   );
   const ruleId = matchedRecord?.[1] ?? legacy?.[1];
   const exactText = matchedRecord?.[2]?.trim();
@@ -427,6 +432,7 @@ const classifySuppression = ({raw, file, line, exclusive}) => {
   if (
     !exclusive
     || (!matchedRecord && !legacy)
+    || (requireExact && !matchedRecord)
     || !suppressibleRules.has(ruleId)
     || (matchedRecord && exactText === '')
     || (matchedRecord && recordText === '')
@@ -435,7 +441,7 @@ const classifySuppression = ({raw, file, line, exclusive}) => {
   ) {
     return {file, line, valid: false, matched: raw};
   }
-  return {file, line, valid: true, ruleId, exactText, recordText, matched: raw};
+  return {file, line, valid: true, ruleId, exactText, recordText, matched: raw, requireNextScalar: requireExact};
 };
 
 const parseSuppressions = (fileEntry) => {
@@ -449,6 +455,7 @@ const parseSuppressions = (fileEntry) => {
       line: comment.line,
       exclusive: !comment.excerpt.includes('\n')
         && sourceLines[comment.line - 1]?.trim() === comment.excerpt,
+      requireExact: comment.kind === 'front-matter-comment',
     }));
   const consecutiveLines = new Set();
   for (let index = 1; index < suppressions.length; index += 1) {
@@ -476,11 +483,14 @@ const applySuppressions = (fileEntry, recordIssues) => {
       ));
       continue;
     }
-    const targetRecord = suppression.recordText === undefined
-      ? fileEntry.records.find((record) => record.line > suppression.line)
-      : fileEntry.records.find((record) => (
-        record.line > suppression.line && record.text === suppression.recordText
-      ));
+    const nextRecord = fileEntry.records.find((record) => record.line > suppression.line);
+    const targetRecord = suppression.requireNextScalar
+      ? nextRecord?.kind === 'front-matter' && nextRecord.text === suppression.recordText ? nextRecord : undefined
+      : suppression.recordText === undefined
+        ? nextRecord
+        : fileEntry.records.find((record) => (
+          record.line > suppression.line && record.text === suppression.recordText
+        ));
     const targetIndex = recordIssues.findIndex((candidate) => (
       candidate.ruleId === suppression.ruleId
       && (suppression.exactText === undefined || candidate.matched === suppression.exactText)
