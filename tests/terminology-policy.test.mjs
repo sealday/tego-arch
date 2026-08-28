@@ -83,11 +83,6 @@ const terms = [
     order: 40,
   },
 ];
-const workflowTerm = {
-  id: 'workflow', canonical_zh: '工作流', english: 'Workflow', acronym: null, kind: 'translated-term',
-  first_use: '工作流（Workflow）', subsequent_use: ['工作流'], allowed_aliases: [], forbidden_aliases: ['Workflow'],
-  note: '测试固定元数据与正文首次引入的边界。', order: 50,
-};
 
 const withFixture = async (files, callback, registryTerms = terms) => {
   const root = await mkdtemp(path.join(tmpdir(), 'terminology-policy-'));
@@ -577,33 +572,6 @@ test('binds an exact-match suppression to one exact record and current file', as
   const changedRecord = await checkFixture(`${directive}\n插件 ID 与内存。`);
   assert.ok(changedRecord.issues.some(({ruleId}) => ruleId === 'invalid-suppression'), 'changed exact record invalidates the suppression');
   assert.ok(changedRecord.issues.some(({ruleId, matched}) => ruleId === 'unknown-english-term' && matched === 'ID'), 'changed record keeps the exact term governed');
-});
-
-test('binds parser-confirmed front matter suppression to one exact next visible scalar', async () => {
-  const summary = '固定合同由外部工作流协调。';
-  const directive = `# terminology-exempt: first-use-required | match: 工作流 | record: ${summary} | reason: 已批准元数据值与既有术语首次引入合同冲突`;
-  const document = (line, value = summary, body = '正文以工作流（Workflow）说明步骤。') => `---\ntitle: 纯中文标题\n${line}\nsummary: ${value}\n---\n\n${body}`;
-  const accepted = await withFixture({'content/example.mdx': document(directive)}, (root) => checkTerminology({root, paths: ['content/example.mdx']}), [...terms, workflowTerm]);
-  assert.deepEqual(accepted.issues, []);
-
-  for (const [label, source] of [
-    ['non-exclusive', `---\ntitle: 纯中文标题\nsummary: ${summary} ${directive}\n---\n\n正文以工作流（Workflow）说明步骤。`],
-    ['legacy without exact match and record', document('# terminology-exempt: first-use-required | reason: 已批准元数据冲突')],
-    ['wrong record', document(directive.replace(summary, '另一条固定摘要。'))],
-    ['not next visible scalar', `---\n${directive}\ntitle: 纯中文标题\nsummary: ${summary}\n---\n\n正文以工作流（Workflow）说明步骤。`],
-    ['wrong match', document(directive.replace('match: 工作流', 'match: 不存在'))],
-    ['unknown rule', document(directive.replace('first-use-required', 'unknown-rule'))],
-    ['empty match', document(directive.replace('match: 工作流', 'match: '))],
-    ['no hit', document(directive, '纯中文固定摘要。', '纯中文正文。')],
-    ['ordinary body heading', `---\ntitle: 纯中文标题\nsummary: ${summary}\n---\n\n# terminology-exempt: first-use-required | match: 工作流 | record: 正文以工作流（Workflow）说明步骤。 | reason: 正文标题不是 YAML 注释\n正文以工作流（Workflow）说明步骤。`],
-    ['string forgery', `---\ntitle: 纯中文标题\nsummary: "${summary} # terminology-exempt: first-use-required | match: 工作流 | record: ${summary} | reason: 字符串伪造"\n---\n\n正文以工作流（Workflow）说明步骤。`],
-    ['block scalar forgery', `---\ntitle: 纯中文标题\nsummary: |\n  ${summary}\n  # terminology-exempt: first-use-required | match: 工作流 | record: ${summary} | reason: 块字符串伪造\n---\n\n正文以工作流（Workflow）说明步骤。`],
-    ['consecutive bulk', `---\ntitle: 纯中文标题\n${directive}\n${directive}\nsummary: ${summary}\n---\n\n正文以工作流（Workflow）说明步骤。`],
-  ]) {
-    const result = await withFixture({'content/example.mdx': source}, (root) => checkTerminology({root, paths: ['content/example.mdx']}), [...terms, workflowTerm]);
-    assert.ok(result.issues.length > 0, label + ' front matter suppression rejected');
-    if (!['non-exclusive', 'ordinary body heading', 'string forgery', 'block scalar forgery'].includes(label)) assert.ok(result.issues.some(({ruleId}) => ruleId === 'invalid-suppression'), label + ' reports invalid suppression');
-  }
 });
 
 test('rejects generic and consecutive bulk suppression directives', async () => {

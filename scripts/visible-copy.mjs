@@ -507,7 +507,7 @@ const visibleFrontMatterFields = ['title', 'sidebar_label', 'summary'];
 const parseFrontMatterRegion = (source, relativePath) => {
   const lines = source.split('\n');
   const bomLength = source.startsWith('\uFEFF') ? 1 : 0;
-  if (!source.startsWith('---', bomLength)) return {endOffset: 0, records: [], comments: []};
+  if (!source.startsWith('---', bomLength)) return {endOffset: 0, records: []};
 
   let parsed;
   try {
@@ -538,13 +538,6 @@ const parseFrontMatterRegion = (source, relativePath) => {
     : afterClosing + (closingSuffix.startsWith('\n') ? 1 : 0);
   const endLine = source.slice(0, endOffset).split('\n').length;
   const metadata = parsed.data;
-  const comments = lines.flatMap((line, index) => (
-    index > 0
-      && index < endLine - 1
-      && /^#\s*terminology-exempt:/u.test(line)
-      ? [{file: relativePath, line: index + 1, text: line.trim().replace(/^#\s*/u, ''), excerpt: line.trim(), kind: 'front-matter-comment'}]
-      : []
-  ));
 
   const records = [];
   for (const field of visibleFrontMatterFields) {
@@ -575,7 +568,7 @@ const parseFrontMatterRegion = (source, relativePath) => {
       kind: 'front-matter',
     });
   }
-  return {endOffset, records, comments};
+  return {endOffset, records};
 };
 
 const sourceExcerpt = (source, line) => source.split('\n')[line - 1]?.trim() ?? '';
@@ -657,7 +650,6 @@ export const parseMdxVisibleCopy = (
     frontMatterRegion.endOffset,
     {probeInstrumentation},
   );
-  comments.unshift(...frontMatterRegion.comments);
   const ast = parseMdxAst(normalized, relativePath);
   comments.push(...collectMdxCommentExpressions(ast, source, relativePath));
   const definitions = new Map();
