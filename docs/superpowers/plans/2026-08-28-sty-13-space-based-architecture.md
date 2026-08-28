@@ -92,7 +92,7 @@ export const EXACT_METADATA = Object.freeze({
   agent_patterns: [], protocols: [],
   quality_attributes: ['scalability', 'performance', 'availability', 'consistency', 'recoverability', 'operability'],
   tags: ['架构风格', 'Space-Based Architecture', '数据亲和', '分区处理', '内存数据网格', '热点治理'],
-  summary: '以航班余位与报价说明 Space-Based Architecture：入口按航段与日期路由到唯一分区所有者，状态与处理共置，主备只处理受控切换，日志与检查点负责恢复，多航段行程由外部持久工作流协调。',
+  summary: '以航班余位与报价说明 Space-Based Architecture：入口按航段与日期路由到唯一分区所有者，状态与处理共置，主备只处理受控切换，日志与检查点负责恢复，多航段行程由外部持久工作流（Workflow）协调。',
   topic_id: TOPIC_ID, priority: 'P2', depends_on: ['STY-00', 'STY-05', 'STY-08'],
   adjacent_topics: ['STY-05', 'STY-08'], related_cases: RELATED_CASES, related_questions: [],
 });
@@ -194,6 +194,8 @@ git commit -m "test(g009): define STY-13 space-based contract"
 - [ ] **Step 1: Add exact frontmatter and section skeleton**
 
 Create the article using `EXACT_METADATA`, then use this exact visible order:
+
+Frontmatter `summary` 是读者顺序首个“工作流”术语，使用 registry 规定的 first-use 形式“工作流（Workflow）”；正文后续保持中文“工作流”。
 
 ```mdx
 import SourceLedger from '@site/src/components/SourceLedger';
