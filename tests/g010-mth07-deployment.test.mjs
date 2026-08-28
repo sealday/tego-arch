@@ -180,6 +180,7 @@ function section(source, heading) {
 function isHistoricalReviewArtifact(relative) {
   return relative.startsWith('docs/reviews/') &&
     relative !== REVIEW_PATH &&
+    relative !== 'docs/reviews/agentic-architecture-topic-system.md' &&
     relative !== 'docs/reviews/g009-batch9.md' &&
     relative !== 'docs/reviews/g009-batch10.md' &&
     relative !== 'docs/reviews/g009-batch11.md' &&
@@ -188,6 +189,7 @@ function isHistoricalReviewArtifact(relative) {
     !relative.startsWith('docs/reviews/evidence/g009-batch10-') &&
     !relative.startsWith('docs/reviews/evidence/g009-batch11-') &&
     !relative.startsWith('docs/reviews/evidence/g009-batch12-') &&
+    !relative.startsWith('docs/reviews/evidence/agentic-architecture-topic-system-') &&
     !relative.startsWith('docs/reviews/evidence/g010-mth07-');
 }
 
@@ -795,7 +797,11 @@ test('locks the exact pre-G010 review namespace against add edit and delete muta
     'docs/reviews/evidence/g009-batch12-stage-a-browser.json',
     'docs/reviews/evidence/g010-mth07-stage-a-production-browser.json',
     'docs/reviews/evidence/g010-mth07-stage-b-production-browser.json',
-  ]) assert.equal(isHistoricalReviewArtifact(currentPath), false, `${currentPath} is current G010 evidence`);
+    'docs/reviews/agentic-architecture-topic-system.md',
+    'docs/reviews/evidence/agentic-architecture-topic-system-local-browser.json',
+    'docs/reviews/evidence/agentic-architecture-topic-system-production-browser.json',
+    'docs/reviews/evidence/agentic-architecture-topic-system-deployment.json',
+  ]) assert.equal(isHistoricalReviewArtifact(currentPath), false, `${currentPath} is excluded from pre-G010 history`);
   assert.equal(isHistoricalReviewArtifact('docs/reviews/g009-batch7.md'), true);
 
   const entries = await historicalReviewEntries();

@@ -1,0 +1,3127 @@
+{
+  "schema_version": 1,
+  "commit": "0ee1ed9aa79b7a28de543b58af0c014b9f7f7b80",
+  "verified_content_commit": "0ee1ed9aa79b7a28de543b58af0c014b9f7f7b80",
+  "base_url": "http://127.0.0.1:3100/tego-arch/",
+  "browser": {
+    "product": "Codex in-app Browser",
+    "evidence_source": "controller-fresh Browser DOM measurements and screenshot inspection",
+    "viewport_override_reset": true
+  },
+  "verify": {
+    "command": "npm run verify",
+    "started_at_utc": "2026-08-27T23:39:05Z",
+    "ended_at_utc": "2026-08-27T23:40:33Z",
+    "exit_code": 0,
+    "npm_test": {
+      "tests": 1433,
+      "pass": 1433,
+      "fail": 0
+    },
+    "content_validation": {
+      "documents": 124,
+      "registered_sources": 586
+    },
+    "terminology": {
+      "files": 126,
+      "registered_terms": 176,
+      "issues": 0
+    },
+    "content_projection": "PASS",
+    "cached_links": "PASS",
+    "review_health": "PASS",
+    "typecheck": "PASS",
+    "production_build": "PASS"
+  },
+  "viewports": [
+    {
+      "name": "desktop",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "name": "mobile",
+      "width": 390,
+      "height": 844
+    }
+  ],
+  "routes": [
+    {
+      "path": "/concepts/agt-c-01",
+      "states": [
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 1000,
+          "url": "http://127.0.0.1:3100/tego-arch/concepts/agt-c-01",
+          "load": {
+            "successful": true,
+            "evidence": "Browser goto plus rendered main/title/H1 and absence of browser error page"
+          },
+          "document_title": "AI 智能体（Agent）系统边界 | Tego Arch",
+          "visible_h1": "AI 智能体系统边界",
+          "console": {
+            "warnings": 0,
+            "errors": 0
+          },
+          "document": {
+            "client_width": 1440,
+            "scroll_width": 1440,
+            "horizontal_overflow": false
+          },
+          "table_owners": [
+            {
+              "id": "table-1",
+              "kind": "ordinary-table",
+              "client_width": 800,
+              "scroll_width": 800,
+              "local_overflow": false
+            },
+            {
+              "id": "table-2",
+              "kind": "ordinary-table",
+              "client_width": 800,
+              "scroll_width": 800,
+              "local_overflow": false
+            }
+          ],
+          "scroll_owners": [
+            {
+              "id": "drawio",
+              "kind": "drawio-svg",
+              "client_width": 800,
+              "scroll_width": 800,
+              "local_overflow": false,
+              "focus": {
+                "visible": true,
+                "outline": "solid 3px, offset 4px"
+              }
+            }
+          ],
+          "representative_internal_link_focus": {
+            "visible": true,
+            "outline": "solid 3px, offset 3px"
+          },
+          "internal_link_navigation": {
+            "clicked": true,
+            "destination_url": "http://127.0.0.1:3100/tego-arch/concepts",
+            "expected_destination_h1": "基础概念",
+            "observed_destination_h1": "基础概念",
+            "destination_url_h1_match": true,
+            "return_method": "direct Browser goto exact source URL",
+            "restored_url": "http://127.0.0.1:3100/tego-arch/concepts/agt-c-01",
+            "restored_h1": "AI 智能体系统边界",
+            "restored_url_h1_match": true
+          },
+          "visual_inspection": {
+            "inspected": true,
+            "verdict": "PASS",
+            "evidence": "Every route was freshly screenshot-inspected at both 1440x1000 and 390x844. H1 and introductory hierarchy were readable; breadcrumb, desktop navigation/mobile header, article content, and controls did not overlap or obstruct one another; no unexpected clipping, collision, or blank region was visible. The six Draw.io routes were additionally inspected at desktop and at mobile Home/End horizontal states; labels, nodes, boundaries, connectors, and arrowheads remained readable, with only expected local horizontal viewport cropping."
+          },
+          "verdict": "PASS"
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "url": "http://127.0.0.1:3100/tego-arch/concepts/agt-c-01",
+          "load": {
+            "successful": true,
+            "evidence": "Browser goto plus rendered main/title/H1 and absence of browser error page"
+          },
+          "document_title": "AI 智能体（Agent）系统边界 | Tego Arch",
+          "visible_h1": "AI 智能体系统边界",
+          "console": {
+            "warnings": 0,
+            "errors": 0
+          },
+          "document": {
+            "client_width": 390,
+            "scroll_width": 390,
+            "horizontal_overflow": false
+          },
+          "table_owners": [
+            {
+              "id": "table-1",
+              "kind": "ordinary-table",
+              "client_width": 358,
+              "scroll_width": 358,
+              "local_overflow": false
+            },
+            {
+              "id": "table-2",
+              "kind": "ordinary-table",
+              "client_width": 358,
+              "scroll_width": 358,
+              "local_overflow": false
+            }
+          ],
+          "scroll_owners": [
+            {
+              "id": "drawio",
+              "kind": "drawio-svg",
+              "client_width": 358,
+              "scroll_width": 800,
+              "local_overflow": true,
+              "focus": {
+                "visible": true,
+                "outline": "solid 3px, offset 4px"
+              },
+              "keyboard": {
+                "home_scroll_left": 0,
+                "end_scroll_left": 442,
+                "arrow_right_scroll_left": 40,
+                "arrow_left_scroll_left": 0,
+                "page_y_before": 2153,
+                "page_y_after": 2153,
+                "page_y_unchanged": true
+              }
+            }
+          ],
+          "representative_internal_link_focus": {
+            "visible": true,
+            "outline": "solid 3px, offset 3px"
+          },
+          "internal_link_navigation": {
+            "clicked": true,
+            "destination_url": "http://127.0.0.1:3100/tego-arch/concepts",
+            "expected_destination_h1": "基础概念",
+            "observed_destination_h1": "基础概念",
+            "destination_url_h1_match": true,
+            "return_method": "direct Browser goto exact source URL",
+            "restored_url": "http://127.0.0.1:3100/tego-arch/concepts/agt-c-01",
+            "restored_h1": "AI 智能体系统边界",
+            "restored_url_h1_match": true
+          },
+          "visual_inspection": {
+            "inspected": true,
+            "verdict": "PASS",
+            "evidence": "Every route was freshly screenshot-inspected at both 1440x1000 and 390x844. H1 and introductory hierarchy were readable; breadcrumb, desktop navigation/mobile header, article content, and controls did not overlap or obstruct one another; no unexpected clipping, collision, or blank region was visible. The six Draw.io routes were additionally inspected at desktop and at mobile Home/End horizontal states; labels, nodes, boundaries, connectors, and arrowheads remained readable, with only expected local horizontal viewport cropping."
+          },
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "path": "/concepts/agt-c-02",
+      "states": [
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 1000,
+          "url": "http://127.0.0.1:3100/tego-arch/concepts/agt-c-02",
+          "load": {
+            "successful": true,
+            "evidence": "Browser goto plus rendered main/title/H1 and absence of browser error page"
+          },
+          "document_title": "智能体运行框架（Agent Harness）：约束并运行智能体循环（Agent Loop） | Tego Arch",
+          "visible_h1": "智能体运行框架：约束并运行智能体循环",
+          "console": {
+            "warnings": 0,
+            "errors": 0
+          },
+          "document": {
+            "client_width": 1440,
+            "scroll_width": 1440,
+            "horizontal_overflow": false
+          },
+          "table_owners": [
+            {
+              "id": "table-1",
+              "kind": "ordinary-table",
+              "client_width": 800,
+              "scroll_width": 800,
+              "local_overflow": false
+            },
+            {
+              "id": "table-2",
+              "kind": "ordinary-table",
+              "client_width": 800,
+              "scroll_width": 800,
+              "local_overflow": false
+            }
+          ],
+          "scroll_owners": [
+            {
+              "id": "mermaid",
+              "kind": "mermaid",
+              "client_width": 800,
+              "scroll_width": 800,
+              "rendered_svg_width": 672,
+              "local_overflow": false,
+              "focus": {
+                "visible": true,
+                "outline": "solid 3px, offset 4px"
+              }
+            }
+          ],
+          "representative_internal_link_focus": {
+            "visible": true,
+            "outline": "solid 3px, offset 3px"
+          },
+          "internal_link_navigation": {
+            "clicked": true,
+            "destination_url": "http://127.0.0.1:3100/tego-arch/concepts",
+            "expected_destination_h1": "基础概念",
+            "observed_destination_h1": "基础概念",
+            "destination_url_h1_match": true,
+            "return_method": "direct Browser goto exact source URL",
+            "restored_url": "http://127.0.0.1:3100/tego-arch/concepts/agt-c-02",
+            "restored_h1": "智能体运行框架：约束并运行智能体循环",
+            "restored_url_h1_match": true
+          },
+          "visual_inspection": {
+            "inspected": true,
+            "verdict": "PASS",
+            "evidence": "Every route was freshly screenshot-inspected at both 1440x1000 and 390x844. H1 and introductory hierarchy were readable; breadcrumb, desktop navigation/mobile header, article content, and controls did not overlap or obstruct one another; no unexpected clipping, collision, or blank region was visible. The six Draw.io routes were additionally inspected at desktop and at mobile Home/End horizontal states; labels, nodes, boundaries, connectors, and arrowheads remained readable, with only expected local horizontal viewport cropping."
+          },
+          "verdict": "PASS"
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "url": "http://127.0.0.1:3100/tego-arch/concepts/agt-c-02",
+          "load": {
+            "successful": true,
+            "evidence": "Browser goto plus rendered main/title/H1 and absence of browser error page"
+          },
+          "document_title": "智能体运行框架（Agent Harness）：约束并运行智能体循环（Agent Loop） | Tego Arch",
+          "visible_h1": "智能体运行框架：约束并运行智能体循环",
+          "console": {
+            "warnings": 0,
+            "errors": 0
+          },
+          "document": {
+            "client_width": 390,
+            "scroll_width": 390,
+            "horizontal_overflow": false
+          },
+          "table_owners": [
+            {
+              "id": "table-1",
+              "kind": "ordinary-table",
+              "client_width": 358,
+              "scroll_width": 358,
+              "local_overflow": false
+            },
+            {
+              "id": "table-2",
+              "kind": "ordinary-table",
+              "client_width": 358,
+              "scroll_width": 358,
+              "local_overflow": false
+            }
+          ],
+          "scroll_owners": [
+            {
+              "id": "mermaid",
+              "kind": "mermaid",
+              "client_width": 358,
+              "scroll_width": 672,
+              "rendered_svg_width": 672,
+              "local_overflow": true,
+              "focus": {
+                "visible": true,
+                "outline": "solid 3px, offset 4px"
+              },
+              "keyboard": {
+                "home_scroll_left": 0,
+                "end_scroll_left": 314,
+                "arrow_right_scroll_left": 40,
+                "arrow_left_scroll_left": 0,
+                "page_y_before": 2128.5,
+                "page_y_after": 2128.5,
+                "page_y_unchanged": true
+              }
+            }
+          ],
+          "representative_internal_link_focus": {
+            "visible": true,
+            "outline": "solid 3px, offset 3px"
+          },
+          "internal_link_navigation": {
+            "clicked": true,
+            "destination_url": "http://127.0.0.1:3100/tego-arch/concepts",
+            "expected_destination_h1": "基础概念",
+            "observed_destination_h1": "基础概念",
+            "destination_url_h1_match": true,
+            "return_method": "direct Browser goto exact source URL",
+            "restored_url": "http://127.0.0.1:3100/tego-arch/concepts/agt-c-02",
+            "restored_h1": "智能体运行框架：约束并运行智能体循环",
+            "restored_url_h1_match": true
+          },
+          "visual_inspection": {
+            "inspected": true,
+            "verdict": "PASS",
+            "evidence": "Every route was freshly screenshot-inspected at both 1440x1000 and 390x844. H1 and introductory hierarchy were readable; breadcrumb, desktop navigation/mobile header, article content, and controls did not overlap or obstruct one another; no unexpected clipping, collision, or blank region was visible. The six Draw.io routes were additionally inspected at desktop and at mobile Home/End horizontal states; labels, nodes, boundaries, connectors, and arrowheads remained readable, with only expected local horizontal viewport cropping."
+          },
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "path": "/concepts/agt-c-03",
+      "states": [
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 1000,
+          "url": "http://127.0.0.1:3100/tego-arch/concepts/agt-c-03",
+          "load": {
+            "successful": true,
+            "evidence": "Browser goto plus rendered main/title/H1 and absence of browser error page"
+          },
+          "document_title": "智能体循环（Agent Loop）：计划、行动、观察、评估与终止 | Tego Arch",
+          "visible_h1": "智能体循环：让每一步都经过观察和评估",
+          "console": {
+            "warnings": 0,
+            "errors": 0
+          },
+          "document": {
+            "client_width": 1440,
+            "scroll_width": 1440,
+            "horizontal_overflow": false
+          },
+          "table_owners": [
+            {
+              "id": "table-1",
+              "kind": "ordinary-table",
+              "client_width": 800,
+              "scroll_width": 800,
+              "local_overflow": false
+            }
+          ],
+          "scroll_owners": [
+            {
+              "id": "mermaid",
+              "kind": "mermaid",
+              "client_width": 800,
+              "scroll_width": 800,
+              "rendered_svg_width": 672,
+              "local_overflow": false,
+              "focus": {
+                "visible": true,
+                "outline": "solid 3px, offset 4px"
+              }
+            }
+          ],
+          "representative_internal_link_focus": {
+            "visible": true,
+            "outline": "solid 3px, offset 3px"
+          },
+          "internal_link_navigation": {
+            "clicked": true,
+            "destination_url": "http://127.0.0.1:3100/tego-arch/concepts",
+            "expected_destination_h1": "基础概念",
+            "observed_destination_h1": "基础概念",
+            "destination_url_h1_match": true,
+            "return_method": "direct Browser goto exact source URL",
+            "restored_url": "http://127.0.0.1:3100/tego-arch/concepts/agt-c-03",
+            "restored_h1": "智能体循环：让每一步都经过观察和评估",
+            "restored_url_h1_match": true
+          },
+          "visual_inspection": {
+            "inspected": true,
+            "verdict": "PASS",
+            "evidence": "Every route was freshly screenshot-inspected at both 1440x1000 and 390x844. H1 and introductory hierarchy were readable; breadcrumb, desktop navigation/mobile header, article content, and controls did not overlap or obstruct one another; no unexpected clipping, collision, or blank region was visible. The six Draw.io routes were additionally inspected at desktop and at mobile Home/End horizontal states; labels, nodes, boundaries, connectors, and arrowheads remained readable, with only expected local horizontal viewport cropping."
+          },
+          "verdict": "PASS"
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "url": "http://127.0.0.1:3100/tego-arch/concepts/agt-c-03",
+          "load": {
+            "successful": true,
+            "evidence": "Browser goto plus rendered main/title/H1 and absence of browser error page"
+          },
+          "document_title": "智能体循环（Agent Loop）：计划、行动、观察、评估与终止 | Tego Arch",
+          "visible_h1": "智能体循环：让每一步都经过观察和评估",
+          "console": {
+            "warnings": 0,
+            "errors": 0
+          },
+          "document": {
+            "client_width": 390,
+            "scroll_width": 390,
+            "horizontal_overflow": false
+          },
+          "table_owners": [
+            {
+              "id": "table-1",
+              "kind": "ordinary-table",
+              "client_width": 358,
+              "scroll_width": 358,
+              "local_overflow": false
+            }
+          ],
+          "scroll_owners": [
+            {
+              "id": "mermaid",
+              "kind": "mermaid",
+              "client_width": 358,
+              "scroll_width": 672,
+              "rendered_svg_width": 672,
+              "local_overflow": true,
+              "focus": {
+                "visible": true,
+                "outline": "solid 3px, offset 4px"
+              },
+              "keyboard": {
+                "home_scroll_left": 0,
+                "end_scroll_left": 314,
+                "arrow_right_scroll_left": 40,
+                "arrow_left_scroll_left": 0,
+                "page_y_before": 1947.5,
+                "page_y_after": 1947.5,
+                "page_y_unchanged": true
+              }
+            }
+          ],
+          "representative_internal_link_focus": {
+            "visible": true,
+            "outline": "solid 3px, offset 3px"
+          },
+          "internal_link_navigation": {
+            "clicked": true,
+            "destination_url": "http://127.0.0.1:3100/tego-arch/concepts",
+            "expected_destination_h1": "基础概念",
+            "observed_destination_h1": "基础概念",
+            "destination_url_h1_match": true,
+            "return_method": "direct Browser goto exact source URL",
+            "restored_url": "http://127.0.0.1:3100/tego-arch/concepts/agt-c-03",
+            "restored_h1": "智能体循环：让每一步都经过观察和评估",
+            "restored_url_h1_match": true
+          },
+          "visual_inspection": {
+            "inspected": true,
+            "verdict": "PASS",
+            "evidence": "Every route was freshly screenshot-inspected at both 1440x1000 and 390x844. H1 and introductory hierarchy were readable; breadcrumb, desktop navigation/mobile header, article content, and controls did not overlap or obstruct one another; no unexpected clipping, collision, or blank region was visible. The six Draw.io routes were additionally inspected at desktop and at mobile Home/End horizontal states; labels, nodes, boundaries, connectors, and arrowheads remained readable, with only expected local horizontal viewport cropping."
+          },
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "path": "/concepts/agt-c-04",
+      "states": [
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 1000,
+          "url": "http://127.0.0.1:3100/tego-arch/concepts/agt-c-04",
+          "load": {
+            "successful": true,
+            "evidence": "Browser goto plus rendered main/title/H1 and absence of browser error page"
+          },
+          "document_title": "上下文、记忆、状态与执行检查点（Checkpoint）：分开信息生命周期与恢复责任 | Tego Arch",
+          "visible_h1": "分开上下文、记忆、状态与执行检查点",
+          "console": {
+            "warnings": 0,
+            "errors": 0
+          },
+          "document": {
+            "client_width": 1440,
+            "scroll_width": 1440,
+            "horizontal_overflow": false
+          },
+          "table_owners": [
+            {
+              "id": "table-1",
+              "kind": "ordinary-table",
+              "client_width": 800,
+              "scroll_width": 800,
+              "local_overflow": false
+            }
+          ],
+          "scroll_owners": [],
+          "representative_internal_link_focus": {
+            "visible": true,
+            "outline": "solid 3px, offset 3px"
+          },
+          "internal_link_navigation": {
+            "clicked": true,
+            "destination_url": "http://127.0.0.1:3100/tego-arch/concepts",
+            "expected_destination_h1": "基础概念",
+            "observed_destination_h1": "基础概念",
+            "destination_url_h1_match": true,
+            "return_method": "direct Browser goto exact source URL",
+            "restored_url": "http://127.0.0.1:3100/tego-arch/concepts/agt-c-04",
+            "restored_h1": "分开上下文、记忆、状态与执行检查点",
+            "restored_url_h1_match": true
+          },
+          "visual_inspection": {
+            "inspected": true,
+            "verdict": "PASS",
+            "evidence": "Every route was freshly screenshot-inspected at both 1440x1000 and 390x844. H1 and introductory hierarchy were readable; breadcrumb, desktop navigation/mobile header, article content, and controls did not overlap or obstruct one another; no unexpected clipping, collision, or blank region was visible. The six Draw.io routes were additionally inspected at desktop and at mobile Home/End horizontal states; labels, nodes, boundaries, connectors, and arrowheads remained readable, with only expected local horizontal viewport cropping."
+          },
+          "verdict": "PASS"
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "url": "http://127.0.0.1:3100/tego-arch/concepts/agt-c-04",
+          "load": {
+            "successful": true,
+            "evidence": "Browser goto plus rendered main/title/H1 and absence of browser error page"
+          },
+          "document_title": "上下文、记忆、状态与执行检查点（Checkpoint）：分开信息生命周期与恢复责任 | Tego Arch",
+          "visible_h1": "分开上下文、记忆、状态与执行检查点",
+          "console": {
+            "warnings": 0,
+            "errors": 0
+          },
+          "document": {
+            "client_width": 390,
+            "scroll_width": 390,
+            "horizontal_overflow": false
+          },
+          "table_owners": [
+            {
+              "id": "table-1",
+              "kind": "ordinary-table",
+              "client_width": 358,
+              "scroll_width": 358,
+              "local_overflow": false
+            }
+          ],
+          "scroll_owners": [],
+          "representative_internal_link_focus": {
+            "visible": true,
+            "outline": "solid 3px, offset 3px"
+          },
+          "internal_link_navigation": {
+            "clicked": true,
+            "destination_url": "http://127.0.0.1:3100/tego-arch/concepts",
+            "expected_destination_h1": "基础概念",
+            "observed_destination_h1": "基础概念",
+            "destination_url_h1_match": true,
+            "return_method": "direct Browser goto exact source URL",
+            "restored_url": "http://127.0.0.1:3100/tego-arch/concepts/agt-c-04",
+            "restored_h1": "分开上下文、记忆、状态与执行检查点",
+            "restored_url_h1_match": true
+          },
+          "visual_inspection": {
+            "inspected": true,
+            "verdict": "PASS",
+            "evidence": "Every route was freshly screenshot-inspected at both 1440x1000 and 390x844. H1 and introductory hierarchy were readable; breadcrumb, desktop navigation/mobile header, article content, and controls did not overlap or obstruct one another; no unexpected clipping, collision, or blank region was visible. The six Draw.io routes were additionally inspected at desktop and at mobile Home/End horizontal states; labels, nodes, boundaries, connectors, and arrowheads remained readable, with only expected local horizontal viewport cropping."
+          },
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "path": "/concepts/agt-c-05",
+      "states": [
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 1000,
+          "url": "http://127.0.0.1:3100/tego-arch/concepts/agt-c-05",
+          "load": {
+            "successful": true,
+            "evidence": "Browser goto plus rendered main/title/H1 and absence of browser error page"
+          },
+          "document_title": "工具、隔离沙箱（Sandbox）、权限与副作用：让外部效果经过授权和核验 | Tego Arch",
+          "visible_h1": "让智能体（Agent）的外部效果经过授权和核验",
+          "console": {
+            "warnings": 0,
+            "errors": 0
+          },
+          "document": {
+            "client_width": 1440,
+            "scroll_width": 1440,
+            "horizontal_overflow": false
+          },
+          "table_owners": [
+            {
+              "id": "mapping-table",
+              "kind": "focusable-mapping-table",
+              "client_width": 800,
+              "scroll_width": 3118,
+              "local_overflow": true,
+              "focus": {
+                "visible": true,
+                "outline": "solid 3px, offset 3px"
+              }
+            }
+          ],
+          "scroll_owners": [
+            {
+              "id": "mermaid",
+              "kind": "mermaid",
+              "client_width": 800,
+              "scroll_width": 800,
+              "rendered_svg_width": 672,
+              "local_overflow": false,
+              "focus": {
+                "visible": true,
+                "outline": "solid 3px, offset 4px"
+              }
+            }
+          ],
+          "representative_internal_link_focus": {
+            "visible": true,
+            "outline": "solid 3px, offset 3px"
+          },
+          "internal_link_navigation": {
+            "clicked": true,
+            "destination_url": "http://127.0.0.1:3100/tego-arch/concepts",
+            "expected_destination_h1": "基础概念",
+            "observed_destination_h1": "基础概念",
+            "destination_url_h1_match": true,
+            "return_method": "direct Browser goto exact source URL",
+            "restored_url": "http://127.0.0.1:3100/tego-arch/concepts/agt-c-05",
+            "restored_h1": "让智能体（Agent）的外部效果经过授权和核验",
+            "restored_url_h1_match": true
+          },
+          "visual_inspection": {
+            "inspected": true,
+            "verdict": "PASS",
+            "evidence": "Every route was freshly screenshot-inspected at both 1440x1000 and 390x844. H1 and introductory hierarchy were readable; breadcrumb, desktop navigation/mobile header, article content, and controls did not overlap or obstruct one another; no unexpected clipping, collision, or blank region was visible. The six Draw.io routes were additionally inspected at desktop and at mobile Home/End horizontal states; labels, nodes, boundaries, connectors, and arrowheads remained readable, with only expected local horizontal viewport cropping."
+          },
+          "verdict": "PASS"
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "url": "http://127.0.0.1:3100/tego-arch/concepts/agt-c-05",
+          "load": {
+            "successful": true,
+            "evidence": "Browser goto plus rendered main/title/H1 and absence of browser error page"
+          },
+          "document_title": "工具、隔离沙箱（Sandbox）、权限与副作用：让外部效果经过授权和核验 | Tego Arch",
+          "visible_h1": "让智能体（Agent）的外部效果经过授权和核验",
+          "console": {
+            "warnings": 0,
+            "errors": 0
+          },
+          "document": {
+            "client_width": 390,
+            "scroll_width": 390,
+            "horizontal_overflow": false
+          },
+          "table_owners": [
+            {
+              "id": "mapping-table",
+              "kind": "focusable-mapping-table",
+              "client_width": 358,
+              "scroll_width": 3118,
+              "local_overflow": true,
+              "focus": {
+                "visible": true,
+                "outline": "solid 3px, offset 3px"
+              },
+              "rendered_table_width": 3117.672,
+              "keyboard": {
+                "home_scroll_left": 0,
+                "end_scroll_left": 2759.5,
+                "arrow_right_scroll_left": 40,
+                "arrow_left_scroll_left": 0,
+                "page_y_before": 3751.5,
+                "page_y_after": 3751.5,
+                "page_y_unchanged": true
+              }
+            }
+          ],
+          "scroll_owners": [
+            {
+              "id": "mermaid",
+              "kind": "mermaid",
+              "client_width": 358,
+              "scroll_width": 672,
+              "rendered_svg_width": 672,
+              "local_overflow": true,
+              "focus": {
+                "visible": true,
+                "outline": "solid 3px, offset 4px"
+              },
+              "keyboard": {
+                "home_scroll_left": 0,
+                "end_scroll_left": 314,
+                "arrow_right_scroll_left": 40,
+                "arrow_left_scroll_left": 0,
+                "page_y_before": 2684,
+                "page_y_after": 2684,
+                "page_y_unchanged": true
+              }
+            }
+          ],
+          "representative_internal_link_focus": {
+            "visible": true,
+            "outline": "solid 3px, offset 3px"
+          },
+          "internal_link_navigation": {
+            "clicked": true,
+            "destination_url": "http://127.0.0.1:3100/tego-arch/concepts",
+            "expected_destination_h1": "基础概念",
+            "observed_destination_h1": "基础概念",
+            "destination_url_h1_match": true,
+            "return_method": "direct Browser goto exact source URL",
+            "restored_url": "http://127.0.0.1:3100/tego-arch/concepts/agt-c-05",
+            "restored_h1": "让智能体（Agent）的外部效果经过授权和核验",
+            "restored_url_h1_match": true
+          },
+          "visual_inspection": {
+            "inspected": true,
+            "verdict": "PASS",
+            "evidence": "Every route was freshly screenshot-inspected at both 1440x1000 and 390x844. H1 and introductory hierarchy were readable; breadcrumb, desktop navigation/mobile header, article content, and controls did not overlap or obstruct one another; no unexpected clipping, collision, or blank region was visible. The six Draw.io routes were additionally inspected at desktop and at mobile Home/End horizontal states; labels, nodes, boundaries, connectors, and arrowheads remained readable, with only expected local horizontal viewport cropping."
+          },
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "path": "/concepts/agt-c-06",
+      "states": [
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 1000,
+          "url": "http://127.0.0.1:3100/tego-arch/concepts/agt-c-06",
+          "load": {
+            "successful": true,
+            "evidence": "Browser goto plus rendered main/title/H1 and absence of browser error page"
+          },
+          "document_title": "追踪、评测与执行约束：分开证据、质量判断与政策执行 | Tego Arch",
+          "visible_h1": "分开证据、质量判断与政策执行",
+          "console": {
+            "warnings": 0,
+            "errors": 0
+          },
+          "document": {
+            "client_width": 1440,
+            "scroll_width": 1440,
+            "horizontal_overflow": false
+          },
+          "table_owners": [
+            {
+              "id": "table-1",
+              "kind": "ordinary-table",
+              "client_width": 800,
+              "scroll_width": 800,
+              "local_overflow": false
+            },
+            {
+              "id": "table-2",
+              "kind": "ordinary-table",
+              "client_width": 800,
+              "scroll_width": 800,
+              "local_overflow": false
+            },
+            {
+              "id": "table-3",
+              "kind": "ordinary-table",
+              "client_width": 800,
+              "scroll_width": 800,
+              "local_overflow": false
+            }
+          ],
+          "scroll_owners": [],
+          "representative_internal_link_focus": {
+            "visible": true,
+            "outline": "solid 3px, offset 3px"
+          },
+          "internal_link_navigation": {
+            "clicked": true,
+            "destination_url": "http://127.0.0.1:3100/tego-arch/concepts",
+            "expected_destination_h1": "基础概念",
+            "observed_destination_h1": "基础概念",
+            "destination_url_h1_match": true,
+            "return_method": "direct Browser goto exact source URL",
+            "restored_url": "http://127.0.0.1:3100/tego-arch/concepts/agt-c-06",
+            "restored_h1": "分开证据、质量判断与政策执行",
+            "restored_url_h1_match": true
+          },
+          "visual_inspection": {
+            "inspected": true,
+            "verdict": "PASS",
+            "evidence": "Every route was freshly screenshot-inspected at both 1440x1000 and 390x844. H1 and introductory hierarchy were readable; breadcrumb, desktop navigation/mobile header, article content, and controls did not overlap or obstruct one another; no unexpected clipping, collision, or blank region was visible. The six Draw.io routes were additionally inspected at desktop and at mobile Home/End horizontal states; labels, nodes, boundaries, connectors, and arrowheads remained readable, with only expected local horizontal viewport cropping."
+          },
+          "verdict": "PASS"
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "url": "http://127.0.0.1:3100/tego-arch/concepts/agt-c-06",
+          "load": {
+            "successful": true,
+            "evidence": "Browser goto plus rendered main/title/H1 and absence of browser error page"
+          },
+          "document_title": "追踪、评测与执行约束：分开证据、质量判断与政策执行 | Tego Arch",
+          "visible_h1": "分开证据、质量判断与政策执行",
+          "console": {
+            "warnings": 0,
+            "errors": 0
+          },
+          "document": {
+            "client_width": 390,
+            "scroll_width": 390,
+            "horizontal_overflow": false
+          },
+          "table_owners": [
+            {
+              "id": "table-1",
+              "kind": "ordinary-table",
+              "client_width": 358,
+              "scroll_width": 358,
+              "local_overflow": false
+            },
+            {
+              "id": "table-2",
+              "kind": "ordinary-table",
+              "client_width": 358,
+              "scroll_width": 358,
+              "local_overflow": false
+            },
+            {
+              "id": "table-3",
+              "kind": "ordinary-table",
+              "client_width": 358,
+              "scroll_width": 358,
+              "local_overflow": false
+            }
+          ],
+          "scroll_owners": [],
+          "representative_internal_link_focus": {
+            "visible": true,
+            "outline": "solid 3px, offset 3px"
+          },
+          "internal_link_navigation": {
+            "clicked": true,
+            "destination_url": "http://127.0.0.1:3100/tego-arch/concepts",
+            "expected_destination_h1": "基础概念",
+            "observed_destination_h1": "基础概念",
+            "destination_url_h1_match": true,
+            "return_method": "direct Browser goto exact source URL",
+            "restored_url": "http://127.0.0.1:3100/tego-arch/concepts/agt-c-06",
+            "restored_h1": "分开证据、质量判断与政策执行",
+            "restored_url_h1_match": true
+          },
+          "visual_inspection": {
+            "inspected": true,
+            "verdict": "PASS",
+            "evidence": "Every route was freshly screenshot-inspected at both 1440x1000 and 390x844. H1 and introductory hierarchy were readable; breadcrumb, desktop navigation/mobile header, article content, and controls did not overlap or obstruct one another; no unexpected clipping, collision, or blank region was visible. The six Draw.io routes were additionally inspected at desktop and at mobile Home/End horizontal states; labels, nodes, boundaries, connectors, and arrowheads remained readable, with only expected local horizontal viewport cropping."
+          },
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "path": "/patterns/agt-p-01",
+      "states": [
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 1000,
+          "url": "http://127.0.0.1:3100/tego-arch/patterns/agt-p-01",
+          "load": {
+            "successful": true,
+            "evidence": "Browser goto plus rendered main/title/H1 and absence of browser error page"
+          },
+          "document_title": "确定性工作流（Workflow）与自治智能体（Agent） | Tego Arch",
+          "visible_h1": "确定性工作流与自治智能体：先分配控制权，再选择自治程度",
+          "console": {
+            "warnings": 0,
+            "errors": 0
+          },
+          "document": {
+            "client_width": 1440,
+            "scroll_width": 1440,
+            "horizontal_overflow": false
+          },
+          "table_owners": [
+            {
+              "id": "table-1",
+              "kind": "ordinary-table",
+              "client_width": 800,
+              "scroll_width": 800,
+              "local_overflow": false
+            },
+            {
+              "id": "table-2",
+              "kind": "ordinary-table",
+              "client_width": 800,
+              "scroll_width": 800,
+              "local_overflow": false
+            }
+          ],
+          "scroll_owners": [],
+          "representative_internal_link_focus": {
+            "visible": true,
+            "outline": "solid 3px, offset 3px"
+          },
+          "internal_link_navigation": {
+            "clicked": true,
+            "destination_url": "http://127.0.0.1:3100/tego-arch/patterns",
+            "expected_destination_h1": "架构模式",
+            "observed_destination_h1": "架构模式",
+            "destination_url_h1_match": true,
+            "return_method": "direct Browser goto exact source URL",
+            "restored_url": "http://127.0.0.1:3100/tego-arch/patterns/agt-p-01",
+            "restored_h1": "确定性工作流与自治智能体：先分配控制权，再选择自治程度",
+            "restored_url_h1_match": true
+          },
+          "visual_inspection": {
+            "inspected": true,
+            "verdict": "PASS",
+            "evidence": "Every route was freshly screenshot-inspected at both 1440x1000 and 390x844. H1 and introductory hierarchy were readable; breadcrumb, desktop navigation/mobile header, article content, and controls did not overlap or obstruct one another; no unexpected clipping, collision, or blank region was visible. The six Draw.io routes were additionally inspected at desktop and at mobile Home/End horizontal states; labels, nodes, boundaries, connectors, and arrowheads remained readable, with only expected local horizontal viewport cropping."
+          },
+          "verdict": "PASS"
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "url": "http://127.0.0.1:3100/tego-arch/patterns/agt-p-01",
+          "load": {
+            "successful": true,
+            "evidence": "Browser goto plus rendered main/title/H1 and absence of browser error page"
+          },
+          "document_title": "确定性工作流（Workflow）与自治智能体（Agent） | Tego Arch",
+          "visible_h1": "确定性工作流与自治智能体：先分配控制权，再选择自治程度",
+          "console": {
+            "warnings": 0,
+            "errors": 0
+          },
+          "document": {
+            "client_width": 390,
+            "scroll_width": 390,
+            "horizontal_overflow": false
+          },
+          "table_owners": [
+            {
+              "id": "table-1",
+              "kind": "ordinary-table",
+              "client_width": 358,
+              "scroll_width": 358,
+              "local_overflow": false
+            },
+            {
+              "id": "table-2",
+              "kind": "ordinary-table",
+              "client_width": 358,
+              "scroll_width": 358,
+              "local_overflow": false
+            }
+          ],
+          "scroll_owners": [],
+          "representative_internal_link_focus": {
+            "visible": true,
+            "outline": "solid 3px, offset 3px"
+          },
+          "internal_link_navigation": {
+            "clicked": true,
+            "destination_url": "http://127.0.0.1:3100/tego-arch/patterns",
+            "expected_destination_h1": "架构模式",
+            "observed_destination_h1": "架构模式",
+            "destination_url_h1_match": true,
+            "return_method": "direct Browser goto exact source URL",
+            "restored_url": "http://127.0.0.1:3100/tego-arch/patterns/agt-p-01",
+            "restored_h1": "确定性工作流与自治智能体：先分配控制权，再选择自治程度",
+            "restored_url_h1_match": true
+          },
+          "visual_inspection": {
+            "inspected": true,
+            "verdict": "PASS",
+            "evidence": "Every route was freshly screenshot-inspected at both 1440x1000 and 390x844. H1 and introductory hierarchy were readable; breadcrumb, desktop navigation/mobile header, article content, and controls did not overlap or obstruct one another; no unexpected clipping, collision, or blank region was visible. The six Draw.io routes were additionally inspected at desktop and at mobile Home/End horizontal states; labels, nodes, boundaries, connectors, and arrowheads remained readable, with only expected local horizontal viewport cropping."
+          },
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "path": "/patterns/agt-p-02",
+      "states": [
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 1000,
+          "url": "http://127.0.0.1:3100/tego-arch/patterns/agt-p-02",
+          "load": {
+            "successful": true,
+            "evidence": "Browser goto plus rendered main/title/H1 and absence of browser error page"
+          },
+          "document_title": "智能体检索增强生成（Agentic RAG）：用证据充分性约束检索循环 | Tego Arch",
+          "visible_h1": "智能体检索增强生成：证据不足就继续查，预算耗尽就拒答",
+          "console": {
+            "warnings": 0,
+            "errors": 0
+          },
+          "document": {
+            "client_width": 1440,
+            "scroll_width": 1440,
+            "horizontal_overflow": false
+          },
+          "table_owners": [
+            {
+              "id": "table-1",
+              "kind": "ordinary-table",
+              "client_width": 800,
+              "scroll_width": 800,
+              "local_overflow": false
+            },
+            {
+              "id": "table-2",
+              "kind": "ordinary-table",
+              "client_width": 800,
+              "scroll_width": 800,
+              "local_overflow": false
+            }
+          ],
+          "scroll_owners": [
+            {
+              "id": "mermaid",
+              "kind": "mermaid",
+              "client_width": 800,
+              "scroll_width": 800,
+              "rendered_svg_width": 672,
+              "local_overflow": false,
+              "focus": {
+                "visible": true,
+                "outline": "solid 3px, offset 4px"
+              }
+            }
+          ],
+          "representative_internal_link_focus": {
+            "visible": true,
+            "outline": "solid 3px, offset 3px"
+          },
+          "internal_link_navigation": {
+            "clicked": true,
+            "destination_url": "http://127.0.0.1:3100/tego-arch/patterns",
+            "expected_destination_h1": "架构模式",
+            "observed_destination_h1": "架构模式",
+            "destination_url_h1_match": true,
+            "return_method": "direct Browser goto exact source URL",
+            "restored_url": "http://127.0.0.1:3100/tego-arch/patterns/agt-p-02",
+            "restored_h1": "智能体检索增强生成：证据不足就继续查，预算耗尽就拒答",
+            "restored_url_h1_match": true
+          },
+          "visual_inspection": {
+            "inspected": true,
+            "verdict": "PASS",
+            "evidence": "Every route was freshly screenshot-inspected at both 1440x1000 and 390x844. H1 and introductory hierarchy were readable; breadcrumb, desktop navigation/mobile header, article content, and controls did not overlap or obstruct one another; no unexpected clipping, collision, or blank region was visible. The six Draw.io routes were additionally inspected at desktop and at mobile Home/End horizontal states; labels, nodes, boundaries, connectors, and arrowheads remained readable, with only expected local horizontal viewport cropping."
+          },
+          "verdict": "PASS"
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "url": "http://127.0.0.1:3100/tego-arch/patterns/agt-p-02",
+          "load": {
+            "successful": true,
+            "evidence": "Browser goto plus rendered main/title/H1 and absence of browser error page"
+          },
+          "document_title": "智能体检索增强生成（Agentic RAG）：用证据充分性约束检索循环 | Tego Arch",
+          "visible_h1": "智能体检索增强生成：证据不足就继续查，预算耗尽就拒答",
+          "console": {
+            "warnings": 0,
+            "errors": 0
+          },
+          "document": {
+            "client_width": 390,
+            "scroll_width": 390,
+            "horizontal_overflow": false
+          },
+          "table_owners": [
+            {
+              "id": "table-1",
+              "kind": "ordinary-table",
+              "client_width": 358,
+              "scroll_width": 358,
+              "local_overflow": false
+            },
+            {
+              "id": "table-2",
+              "kind": "ordinary-table",
+              "client_width": 358,
+              "scroll_width": 358,
+              "local_overflow": false
+            }
+          ],
+          "scroll_owners": [
+            {
+              "id": "mermaid",
+              "kind": "mermaid",
+              "client_width": 358,
+              "scroll_width": 672,
+              "rendered_svg_width": 672,
+              "local_overflow": true,
+              "focus": {
+                "visible": true,
+                "outline": "solid 3px, offset 4px"
+              },
+              "keyboard": {
+                "home_scroll_left": 0,
+                "end_scroll_left": 314,
+                "arrow_right_scroll_left": 40,
+                "arrow_left_scroll_left": 0,
+                "page_y_before": 4948,
+                "page_y_after": 4948,
+                "page_y_unchanged": true
+              }
+            }
+          ],
+          "representative_internal_link_focus": {
+            "visible": true,
+            "outline": "solid 3px, offset 3px"
+          },
+          "internal_link_navigation": {
+            "clicked": true,
+            "destination_url": "http://127.0.0.1:3100/tego-arch/patterns",
+            "expected_destination_h1": "架构模式",
+            "observed_destination_h1": "架构模式",
+            "destination_url_h1_match": true,
+            "return_method": "direct Browser goto exact source URL",
+            "restored_url": "http://127.0.0.1:3100/tego-arch/patterns/agt-p-02",
+            "restored_h1": "智能体检索增强生成：证据不足就继续查，预算耗尽就拒答",
+            "restored_url_h1_match": true
+          },
+          "visual_inspection": {
+            "inspected": true,
+            "verdict": "PASS",
+            "evidence": "Every route was freshly screenshot-inspected at both 1440x1000 and 390x844. H1 and introductory hierarchy were readable; breadcrumb, desktop navigation/mobile header, article content, and controls did not overlap or obstruct one another; no unexpected clipping, collision, or blank region was visible. The six Draw.io routes were additionally inspected at desktop and at mobile Home/End horizontal states; labels, nodes, boundaries, connectors, and arrowheads remained readable, with only expected local horizontal viewport cropping."
+          },
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "path": "/patterns/agt-p-03",
+      "states": [
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 1000,
+          "url": "http://127.0.0.1:3100/tego-arch/patterns/agt-p-03",
+          "load": {
+            "successful": true,
+            "evidence": "Browser goto plus rendered main/title/H1 and absence of browser error page"
+          },
+          "document_title": "规划者–执行者（Planner–Executor）：用版本化计划约束重规划 | Tego Arch",
+          "visible_h1": "规划者–执行者：计划可以改，任务真相不能由计划改写",
+          "console": {
+            "warnings": 0,
+            "errors": 0
+          },
+          "document": {
+            "client_width": 1440,
+            "scroll_width": 1440,
+            "horizontal_overflow": false
+          },
+          "table_owners": [
+            {
+              "id": "table-1",
+              "kind": "ordinary-table",
+              "client_width": 800,
+              "scroll_width": 800,
+              "local_overflow": false
+            }
+          ],
+          "scroll_owners": [
+            {
+              "id": "mermaid",
+              "kind": "mermaid",
+              "client_width": 800,
+              "scroll_width": 800,
+              "rendered_svg_width": 672,
+              "local_overflow": false,
+              "focus": {
+                "visible": true,
+                "outline": "solid 3px, offset 4px"
+              }
+            }
+          ],
+          "representative_internal_link_focus": {
+            "visible": true,
+            "outline": "solid 3px, offset 3px"
+          },
+          "internal_link_navigation": {
+            "clicked": true,
+            "destination_url": "http://127.0.0.1:3100/tego-arch/patterns",
+            "expected_destination_h1": "架构模式",
+            "observed_destination_h1": "架构模式",
+            "destination_url_h1_match": true,
+            "return_method": "direct Browser goto exact source URL",
+            "restored_url": "http://127.0.0.1:3100/tego-arch/patterns/agt-p-03",
+            "restored_h1": "规划者–执行者：计划可以改，任务真相不能由计划改写",
+            "restored_url_h1_match": true
+          },
+          "visual_inspection": {
+            "inspected": true,
+            "verdict": "PASS",
+            "evidence": "Every route was freshly screenshot-inspected at both 1440x1000 and 390x844. H1 and introductory hierarchy were readable; breadcrumb, desktop navigation/mobile header, article content, and controls did not overlap or obstruct one another; no unexpected clipping, collision, or blank region was visible. The six Draw.io routes were additionally inspected at desktop and at mobile Home/End horizontal states; labels, nodes, boundaries, connectors, and arrowheads remained readable, with only expected local horizontal viewport cropping."
+          },
+          "verdict": "PASS"
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "url": "http://127.0.0.1:3100/tego-arch/patterns/agt-p-03",
+          "load": {
+            "successful": true,
+            "evidence": "Browser goto plus rendered main/title/H1 and absence of browser error page"
+          },
+          "document_title": "规划者–执行者（Planner–Executor）：用版本化计划约束重规划 | Tego Arch",
+          "visible_h1": "规划者–执行者：计划可以改，任务真相不能由计划改写",
+          "console": {
+            "warnings": 0,
+            "errors": 0
+          },
+          "document": {
+            "client_width": 390,
+            "scroll_width": 390,
+            "horizontal_overflow": false
+          },
+          "table_owners": [
+            {
+              "id": "table-1",
+              "kind": "ordinary-table",
+              "client_width": 358,
+              "scroll_width": 358,
+              "local_overflow": false
+            }
+          ],
+          "scroll_owners": [
+            {
+              "id": "mermaid",
+              "kind": "mermaid",
+              "client_width": 358,
+              "scroll_width": 672,
+              "rendered_svg_width": 672,
+              "local_overflow": true,
+              "focus": {
+                "visible": true,
+                "outline": "solid 3px, offset 4px"
+              },
+              "keyboard": {
+                "home_scroll_left": 0,
+                "end_scroll_left": 314,
+                "arrow_right_scroll_left": 40,
+                "arrow_left_scroll_left": 0,
+                "page_y_before": 5248.5,
+                "page_y_after": 5248.5,
+                "page_y_unchanged": true
+              }
+            }
+          ],
+          "representative_internal_link_focus": {
+            "visible": true,
+            "outline": "solid 3px, offset 3px"
+          },
+          "internal_link_navigation": {
+            "clicked": true,
+            "destination_url": "http://127.0.0.1:3100/tego-arch/patterns",
+            "expected_destination_h1": "架构模式",
+            "observed_destination_h1": "架构模式",
+            "destination_url_h1_match": true,
+            "return_method": "direct Browser goto exact source URL",
+            "restored_url": "http://127.0.0.1:3100/tego-arch/patterns/agt-p-03",
+            "restored_h1": "规划者–执行者：计划可以改，任务真相不能由计划改写",
+            "restored_url_h1_match": true
+          },
+          "visual_inspection": {
+            "inspected": true,
+            "verdict": "PASS",
+            "evidence": "Every route was freshly screenshot-inspected at both 1440x1000 and 390x844. H1 and introductory hierarchy were readable; breadcrumb, desktop navigation/mobile header, article content, and controls did not overlap or obstruct one another; no unexpected clipping, collision, or blank region was visible. The six Draw.io routes were additionally inspected at desktop and at mobile Home/End horizontal states; labels, nodes, boundaries, connectors, and arrowheads remained readable, with only expected local horizontal viewport cropping."
+          },
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "path": "/patterns/agt-p-04",
+      "states": [
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 1000,
+          "url": "http://127.0.0.1:3100/tego-arch/patterns/agt-p-04",
+          "load": {
+            "successful": true,
+            "evidence": "Browser goto plus rendered main/title/H1 and absence of browser error page"
+          },
+          "document_title": "评估者—优化者（Evaluator-Optimizer）：用外部量表与修订预算约束反馈循环 | Tego Arch",
+          "visible_h1": "评估者—优化者：反馈可以改进候选，分数不能创造真相",
+          "console": {
+            "warnings": 0,
+            "errors": 0
+          },
+          "document": {
+            "client_width": 1440,
+            "scroll_width": 1440,
+            "horizontal_overflow": false
+          },
+          "table_owners": [
+            {
+              "id": "table-1",
+              "kind": "ordinary-table",
+              "client_width": 800,
+              "scroll_width": 800,
+              "local_overflow": false
+            }
+          ],
+          "scroll_owners": [
+            {
+              "id": "mermaid",
+              "kind": "mermaid",
+              "client_width": 800,
+              "scroll_width": 800,
+              "rendered_svg_width": 672,
+              "local_overflow": false,
+              "focus": {
+                "visible": true,
+                "outline": "solid 3px, offset 4px"
+              }
+            }
+          ],
+          "representative_internal_link_focus": {
+            "visible": true,
+            "outline": "solid 3px, offset 3px"
+          },
+          "internal_link_navigation": {
+            "clicked": true,
+            "destination_url": "http://127.0.0.1:3100/tego-arch/patterns",
+            "expected_destination_h1": "架构模式",
+            "observed_destination_h1": "架构模式",
+            "destination_url_h1_match": true,
+            "return_method": "direct Browser goto exact source URL",
+            "restored_url": "http://127.0.0.1:3100/tego-arch/patterns/agt-p-04",
+            "restored_h1": "评估者—优化者：反馈可以改进候选，分数不能创造真相",
+            "restored_url_h1_match": true
+          },
+          "visual_inspection": {
+            "inspected": true,
+            "verdict": "PASS",
+            "evidence": "Every route was freshly screenshot-inspected at both 1440x1000 and 390x844. H1 and introductory hierarchy were readable; breadcrumb, desktop navigation/mobile header, article content, and controls did not overlap or obstruct one another; no unexpected clipping, collision, or blank region was visible. The six Draw.io routes were additionally inspected at desktop and at mobile Home/End horizontal states; labels, nodes, boundaries, connectors, and arrowheads remained readable, with only expected local horizontal viewport cropping."
+          },
+          "verdict": "PASS"
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "url": "http://127.0.0.1:3100/tego-arch/patterns/agt-p-04",
+          "load": {
+            "successful": true,
+            "evidence": "Browser goto plus rendered main/title/H1 and absence of browser error page"
+          },
+          "document_title": "评估者—优化者（Evaluator-Optimizer）：用外部量表与修订预算约束反馈循环 | Tego Arch",
+          "visible_h1": "评估者—优化者：反馈可以改进候选，分数不能创造真相",
+          "console": {
+            "warnings": 0,
+            "errors": 0
+          },
+          "document": {
+            "client_width": 390,
+            "scroll_width": 390,
+            "horizontal_overflow": false
+          },
+          "table_owners": [
+            {
+              "id": "table-1",
+              "kind": "ordinary-table",
+              "client_width": 358,
+              "scroll_width": 358,
+              "local_overflow": false
+            }
+          ],
+          "scroll_owners": [
+            {
+              "id": "mermaid",
+              "kind": "mermaid",
+              "client_width": 358,
+              "scroll_width": 672,
+              "rendered_svg_width": 672,
+              "local_overflow": true,
+              "focus": {
+                "visible": true,
+                "outline": "solid 3px, offset 4px"
+              },
+              "keyboard": {
+                "home_scroll_left": 0,
+                "end_scroll_left": 314,
+                "arrow_right_scroll_left": 40,
+                "arrow_left_scroll_left": 0,
+                "page_y_before": 4740,
+                "page_y_after": 4740,
+                "page_y_unchanged": true
+              }
+            }
+          ],
+          "representative_internal_link_focus": {
+            "visible": true,
+            "outline": "solid 3px, offset 3px"
+          },
+          "internal_link_navigation": {
+            "clicked": true,
+            "destination_url": "http://127.0.0.1:3100/tego-arch/patterns",
+            "expected_destination_h1": "架构模式",
+            "observed_destination_h1": "架构模式",
+            "destination_url_h1_match": true,
+            "return_method": "direct Browser goto exact source URL",
+            "restored_url": "http://127.0.0.1:3100/tego-arch/patterns/agt-p-04",
+            "restored_h1": "评估者—优化者：反馈可以改进候选，分数不能创造真相",
+            "restored_url_h1_match": true
+          },
+          "visual_inspection": {
+            "inspected": true,
+            "verdict": "PASS",
+            "evidence": "Every route was freshly screenshot-inspected at both 1440x1000 and 390x844. H1 and introductory hierarchy were readable; breadcrumb, desktop navigation/mobile header, article content, and controls did not overlap or obstruct one another; no unexpected clipping, collision, or blank region was visible. The six Draw.io routes were additionally inspected at desktop and at mobile Home/End horizontal states; labels, nodes, boundaries, connectors, and arrowheads remained readable, with only expected local horizontal viewport cropping."
+          },
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "path": "/patterns/agt-p-05",
+      "states": [
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 1000,
+          "url": "http://127.0.0.1:3100/tego-arch/patterns/agt-p-05",
+          "load": {
+            "successful": true,
+            "evidence": "Browser goto plus rendered main/title/H1 and absence of browser error page"
+          },
+          "document_title": "路由与模型驱动分发：先过策略门，再选择唯一目的地 | Tego Arch",
+          "visible_h1": "路由与模型驱动分发：模型可以提议去向，不能绕过策略决定执行",
+          "console": {
+            "warnings": 0,
+            "errors": 0
+          },
+          "document": {
+            "client_width": 1440,
+            "scroll_width": 1440,
+            "horizontal_overflow": false
+          },
+          "table_owners": [
+            {
+              "id": "table-1",
+              "kind": "ordinary-table",
+              "client_width": 800,
+              "scroll_width": 800,
+              "local_overflow": false
+            }
+          ],
+          "scroll_owners": [
+            {
+              "id": "mermaid",
+              "kind": "mermaid",
+              "client_width": 800,
+              "scroll_width": 800,
+              "rendered_svg_width": 672,
+              "local_overflow": false,
+              "focus": {
+                "visible": true,
+                "outline": "solid 3px, offset 4px"
+              }
+            }
+          ],
+          "representative_internal_link_focus": {
+            "visible": true,
+            "outline": "solid 3px, offset 3px"
+          },
+          "internal_link_navigation": {
+            "clicked": true,
+            "destination_url": "http://127.0.0.1:3100/tego-arch/patterns",
+            "expected_destination_h1": "架构模式",
+            "observed_destination_h1": "架构模式",
+            "destination_url_h1_match": true,
+            "return_method": "direct Browser goto exact source URL",
+            "restored_url": "http://127.0.0.1:3100/tego-arch/patterns/agt-p-05",
+            "restored_h1": "路由与模型驱动分发：模型可以提议去向，不能绕过策略决定执行",
+            "restored_url_h1_match": true
+          },
+          "visual_inspection": {
+            "inspected": true,
+            "verdict": "PASS",
+            "evidence": "Every route was freshly screenshot-inspected at both 1440x1000 and 390x844. H1 and introductory hierarchy were readable; breadcrumb, desktop navigation/mobile header, article content, and controls did not overlap or obstruct one another; no unexpected clipping, collision, or blank region was visible. The six Draw.io routes were additionally inspected at desktop and at mobile Home/End horizontal states; labels, nodes, boundaries, connectors, and arrowheads remained readable, with only expected local horizontal viewport cropping."
+          },
+          "verdict": "PASS"
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "url": "http://127.0.0.1:3100/tego-arch/patterns/agt-p-05",
+          "load": {
+            "successful": true,
+            "evidence": "Browser goto plus rendered main/title/H1 and absence of browser error page"
+          },
+          "document_title": "路由与模型驱动分发：先过策略门，再选择唯一目的地 | Tego Arch",
+          "visible_h1": "路由与模型驱动分发：模型可以提议去向，不能绕过策略决定执行",
+          "console": {
+            "warnings": 0,
+            "errors": 0
+          },
+          "document": {
+            "client_width": 390,
+            "scroll_width": 390,
+            "horizontal_overflow": false
+          },
+          "table_owners": [
+            {
+              "id": "table-1",
+              "kind": "ordinary-table",
+              "client_width": 358,
+              "scroll_width": 358,
+              "local_overflow": false
+            }
+          ],
+          "scroll_owners": [
+            {
+              "id": "mermaid",
+              "kind": "mermaid",
+              "client_width": 358,
+              "scroll_width": 672,
+              "rendered_svg_width": 672,
+              "local_overflow": true,
+              "focus": {
+                "visible": true,
+                "outline": "solid 3px, offset 4px"
+              },
+              "keyboard": {
+                "home_scroll_left": 0,
+                "end_scroll_left": 314,
+                "arrow_right_scroll_left": 40,
+                "arrow_left_scroll_left": 0,
+                "page_y_before": 4757.5,
+                "page_y_after": 4757.5,
+                "page_y_unchanged": true
+              }
+            }
+          ],
+          "representative_internal_link_focus": {
+            "visible": true,
+            "outline": "solid 3px, offset 3px"
+          },
+          "internal_link_navigation": {
+            "clicked": true,
+            "destination_url": "http://127.0.0.1:3100/tego-arch/patterns",
+            "expected_destination_h1": "架构模式",
+            "observed_destination_h1": "架构模式",
+            "destination_url_h1_match": true,
+            "return_method": "direct Browser goto exact source URL",
+            "restored_url": "http://127.0.0.1:3100/tego-arch/patterns/agt-p-05",
+            "restored_h1": "路由与模型驱动分发：模型可以提议去向，不能绕过策略决定执行",
+            "restored_url_h1_match": true
+          },
+          "visual_inspection": {
+            "inspected": true,
+            "verdict": "PASS",
+            "evidence": "Every route was freshly screenshot-inspected at both 1440x1000 and 390x844. H1 and introductory hierarchy were readable; breadcrumb, desktop navigation/mobile header, article content, and controls did not overlap or obstruct one another; no unexpected clipping, collision, or blank region was visible. The six Draw.io routes were additionally inspected at desktop and at mobile Home/End horizontal states; labels, nodes, boundaries, connectors, and arrowheads remained readable, with only expected local horizontal viewport cropping."
+          },
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "path": "/patterns/agt-p-06",
+      "states": [
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 1000,
+          "url": "http://127.0.0.1:3100/tego-arch/patterns/agt-p-06",
+          "load": {
+            "successful": true,
+            "evidence": "Browser goto plus rendered main/title/H1 and absence of browser error page"
+          },
+          "document_title": "智能体（Agent）的监督者（Supervisor）、移交（Handoff）与智能体作为工具（Agents as Tools）：先决定控制权归谁 | Tego Arch",
+          "visible_h1": "监督者、移交与智能体作为工具：多智能体首先是控制权设计",
+          "console": {
+            "warnings": 0,
+            "errors": 0
+          },
+          "document": {
+            "client_width": 1440,
+            "scroll_width": 1440,
+            "horizontal_overflow": false
+          },
+          "table_owners": [
+            {
+              "id": "table-1",
+              "kind": "ordinary-table",
+              "client_width": 800,
+              "scroll_width": 800,
+              "local_overflow": false
+            }
+          ],
+          "scroll_owners": [
+            {
+              "id": "drawio",
+              "kind": "drawio-svg",
+              "client_width": 800,
+              "scroll_width": 800,
+              "local_overflow": false,
+              "focus": {
+                "visible": true,
+                "outline": "solid 3px, offset 4px"
+              }
+            }
+          ],
+          "representative_internal_link_focus": {
+            "visible": true,
+            "outline": "solid 3px, offset 3px"
+          },
+          "internal_link_navigation": {
+            "clicked": true,
+            "destination_url": "http://127.0.0.1:3100/tego-arch/patterns",
+            "expected_destination_h1": "架构模式",
+            "observed_destination_h1": "架构模式",
+            "destination_url_h1_match": true,
+            "return_method": "direct Browser goto exact source URL",
+            "restored_url": "http://127.0.0.1:3100/tego-arch/patterns/agt-p-06",
+            "restored_h1": "监督者、移交与智能体作为工具：多智能体首先是控制权设计",
+            "restored_url_h1_match": true
+          },
+          "visual_inspection": {
+            "inspected": true,
+            "verdict": "PASS",
+            "evidence": "Every route was freshly screenshot-inspected at both 1440x1000 and 390x844. H1 and introductory hierarchy were readable; breadcrumb, desktop navigation/mobile header, article content, and controls did not overlap or obstruct one another; no unexpected clipping, collision, or blank region was visible. The six Draw.io routes were additionally inspected at desktop and at mobile Home/End horizontal states; labels, nodes, boundaries, connectors, and arrowheads remained readable, with only expected local horizontal viewport cropping."
+          },
+          "verdict": "PASS"
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "url": "http://127.0.0.1:3100/tego-arch/patterns/agt-p-06",
+          "load": {
+            "successful": true,
+            "evidence": "Browser goto plus rendered main/title/H1 and absence of browser error page"
+          },
+          "document_title": "智能体（Agent）的监督者（Supervisor）、移交（Handoff）与智能体作为工具（Agents as Tools）：先决定控制权归谁 | Tego Arch",
+          "visible_h1": "监督者、移交与智能体作为工具：多智能体首先是控制权设计",
+          "console": {
+            "warnings": 0,
+            "errors": 0
+          },
+          "document": {
+            "client_width": 390,
+            "scroll_width": 390,
+            "horizontal_overflow": false
+          },
+          "table_owners": [
+            {
+              "id": "table-1",
+              "kind": "ordinary-table",
+              "client_width": 358,
+              "scroll_width": 358,
+              "local_overflow": false
+            }
+          ],
+          "scroll_owners": [
+            {
+              "id": "drawio",
+              "kind": "drawio-svg",
+              "client_width": 358,
+              "scroll_width": 800,
+              "local_overflow": true,
+              "focus": {
+                "visible": true,
+                "outline": "solid 3px, offset 4px"
+              },
+              "keyboard": {
+                "home_scroll_left": 0,
+                "end_scroll_left": 442,
+                "arrow_right_scroll_left": 40,
+                "arrow_left_scroll_left": 0,
+                "page_y_before": 4349,
+                "page_y_after": 4349,
+                "page_y_unchanged": true
+              }
+            }
+          ],
+          "representative_internal_link_focus": {
+            "visible": true,
+            "outline": "solid 3px, offset 3px"
+          },
+          "internal_link_navigation": {
+            "clicked": true,
+            "destination_url": "http://127.0.0.1:3100/tego-arch/patterns",
+            "expected_destination_h1": "架构模式",
+            "observed_destination_h1": "架构模式",
+            "destination_url_h1_match": true,
+            "return_method": "direct Browser goto exact source URL",
+            "restored_url": "http://127.0.0.1:3100/tego-arch/patterns/agt-p-06",
+            "restored_h1": "监督者、移交与智能体作为工具：多智能体首先是控制权设计",
+            "restored_url_h1_match": true
+          },
+          "visual_inspection": {
+            "inspected": true,
+            "verdict": "PASS",
+            "evidence": "Every route was freshly screenshot-inspected at both 1440x1000 and 390x844. H1 and introductory hierarchy were readable; breadcrumb, desktop navigation/mobile header, article content, and controls did not overlap or obstruct one another; no unexpected clipping, collision, or blank region was visible. The six Draw.io routes were additionally inspected at desktop and at mobile Home/End horizontal states; labels, nodes, boundaries, connectors, and arrowheads remained readable, with only expected local horizontal viewport cropping."
+          },
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "path": "/patterns/agt-p-07",
+      "states": [
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 1000,
+          "url": "http://127.0.0.1:3100/tego-arch/patterns/agt-p-07",
+          "load": {
+            "successful": true,
+            "evidence": "Browser goto plus rendered main/title/H1 and absence of browser error page"
+          },
+          "document_title": "编排者–工作者与扇出/扇入：并行不是无界广播 | Tego Arch",
+          "visible_h1": "编排者–工作者与扇出/扇入：并行不是无界广播",
+          "console": {
+            "warnings": 0,
+            "errors": 0
+          },
+          "document": {
+            "client_width": 1440,
+            "scroll_width": 1440,
+            "horizontal_overflow": false
+          },
+          "table_owners": [
+            {
+              "id": "table-1",
+              "kind": "ordinary-table",
+              "client_width": 800,
+              "scroll_width": 800,
+              "local_overflow": false
+            }
+          ],
+          "scroll_owners": [
+            {
+              "id": "mermaid",
+              "kind": "mermaid",
+              "client_width": 800,
+              "scroll_width": 800,
+              "rendered_svg_width": 672,
+              "local_overflow": false,
+              "focus": {
+                "visible": true,
+                "outline": "solid 3px, offset 4px"
+              }
+            }
+          ],
+          "representative_internal_link_focus": {
+            "visible": true,
+            "outline": "solid 3px, offset 3px"
+          },
+          "internal_link_navigation": {
+            "clicked": true,
+            "destination_url": "http://127.0.0.1:3100/tego-arch/patterns",
+            "expected_destination_h1": "架构模式",
+            "observed_destination_h1": "架构模式",
+            "destination_url_h1_match": true,
+            "return_method": "direct Browser goto exact source URL",
+            "restored_url": "http://127.0.0.1:3100/tego-arch/patterns/agt-p-07",
+            "restored_h1": "编排者–工作者与扇出/扇入：并行不是无界广播",
+            "restored_url_h1_match": true
+          },
+          "visual_inspection": {
+            "inspected": true,
+            "verdict": "PASS",
+            "evidence": "Every route was freshly screenshot-inspected at both 1440x1000 and 390x844. H1 and introductory hierarchy were readable; breadcrumb, desktop navigation/mobile header, article content, and controls did not overlap or obstruct one another; no unexpected clipping, collision, or blank region was visible. The six Draw.io routes were additionally inspected at desktop and at mobile Home/End horizontal states; labels, nodes, boundaries, connectors, and arrowheads remained readable, with only expected local horizontal viewport cropping."
+          },
+          "verdict": "PASS"
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "url": "http://127.0.0.1:3100/tego-arch/patterns/agt-p-07",
+          "load": {
+            "successful": true,
+            "evidence": "Browser goto plus rendered main/title/H1 and absence of browser error page"
+          },
+          "document_title": "编排者–工作者与扇出/扇入：并行不是无界广播 | Tego Arch",
+          "visible_h1": "编排者–工作者与扇出/扇入：并行不是无界广播",
+          "console": {
+            "warnings": 0,
+            "errors": 0
+          },
+          "document": {
+            "client_width": 390,
+            "scroll_width": 390,
+            "horizontal_overflow": false
+          },
+          "table_owners": [
+            {
+              "id": "table-1",
+              "kind": "ordinary-table",
+              "client_width": 358,
+              "scroll_width": 358,
+              "local_overflow": false
+            }
+          ],
+          "scroll_owners": [
+            {
+              "id": "mermaid",
+              "kind": "mermaid",
+              "client_width": 358,
+              "scroll_width": 672,
+              "rendered_svg_width": 672,
+              "local_overflow": true,
+              "focus": {
+                "visible": true,
+                "outline": "solid 3px, offset 4px"
+              },
+              "keyboard": {
+                "home_scroll_left": 0,
+                "end_scroll_left": 314,
+                "arrow_right_scroll_left": 40,
+                "arrow_left_scroll_left": 0,
+                "page_y_before": 5417,
+                "page_y_after": 5417,
+                "page_y_unchanged": true
+              }
+            }
+          ],
+          "representative_internal_link_focus": {
+            "visible": true,
+            "outline": "solid 3px, offset 3px"
+          },
+          "internal_link_navigation": {
+            "clicked": true,
+            "destination_url": "http://127.0.0.1:3100/tego-arch/patterns",
+            "expected_destination_h1": "架构模式",
+            "observed_destination_h1": "架构模式",
+            "destination_url_h1_match": true,
+            "return_method": "direct Browser goto exact source URL",
+            "restored_url": "http://127.0.0.1:3100/tego-arch/patterns/agt-p-07",
+            "restored_h1": "编排者–工作者与扇出/扇入：并行不是无界广播",
+            "restored_url_h1_match": true
+          },
+          "visual_inspection": {
+            "inspected": true,
+            "verdict": "PASS",
+            "evidence": "Every route was freshly screenshot-inspected at both 1440x1000 and 390x844. H1 and introductory hierarchy were readable; breadcrumb, desktop navigation/mobile header, article content, and controls did not overlap or obstruct one another; no unexpected clipping, collision, or blank region was visible. The six Draw.io routes were additionally inspected at desktop and at mobile Home/End horizontal states; labels, nodes, boundaries, connectors, and arrowheads remained readable, with only expected local horizontal viewport cropping."
+          },
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "path": "/patterns/agt-p-08",
+      "states": [
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 1000,
+          "url": "http://127.0.0.1:3100/tego-arch/patterns/agt-p-08",
+          "load": {
+            "successful": true,
+            "evidence": "Browser goto plus rendered main/title/H1 and absence of browser error page"
+          },
+          "document_title": "持久智能体（Agent）与人在回路（Human-in-the-loop）：恢复控制状态，不臆测外部真相 | Tego Arch",
+          "visible_h1": "持久智能体与人工介入：恢复控制状态，不臆测外部真相",
+          "console": {
+            "warnings": 0,
+            "errors": 0
+          },
+          "document": {
+            "client_width": 1440,
+            "scroll_width": 1440,
+            "horizontal_overflow": false
+          },
+          "table_owners": [
+            {
+              "id": "table-1",
+              "kind": "ordinary-table",
+              "client_width": 800,
+              "scroll_width": 800,
+              "local_overflow": false
+            },
+            {
+              "id": "table-2",
+              "kind": "ordinary-table",
+              "client_width": 800,
+              "scroll_width": 800,
+              "local_overflow": false
+            }
+          ],
+          "scroll_owners": [
+            {
+              "id": "drawio",
+              "kind": "drawio-svg",
+              "client_width": 800,
+              "scroll_width": 800,
+              "local_overflow": false,
+              "focus": {
+                "visible": true,
+                "outline": "solid 3px, offset 4px"
+              }
+            }
+          ],
+          "representative_internal_link_focus": {
+            "visible": true,
+            "outline": "solid 3px, offset 3px"
+          },
+          "internal_link_navigation": {
+            "clicked": true,
+            "destination_url": "http://127.0.0.1:3100/tego-arch/patterns",
+            "expected_destination_h1": "架构模式",
+            "observed_destination_h1": "架构模式",
+            "destination_url_h1_match": true,
+            "return_method": "direct Browser goto exact source URL",
+            "restored_url": "http://127.0.0.1:3100/tego-arch/patterns/agt-p-08",
+            "restored_h1": "持久智能体与人工介入：恢复控制状态，不臆测外部真相",
+            "restored_url_h1_match": true
+          },
+          "visual_inspection": {
+            "inspected": true,
+            "verdict": "PASS",
+            "evidence": "Every route was freshly screenshot-inspected at both 1440x1000 and 390x844. H1 and introductory hierarchy were readable; breadcrumb, desktop navigation/mobile header, article content, and controls did not overlap or obstruct one another; no unexpected clipping, collision, or blank region was visible. The six Draw.io routes were additionally inspected at desktop and at mobile Home/End horizontal states; labels, nodes, boundaries, connectors, and arrowheads remained readable, with only expected local horizontal viewport cropping."
+          },
+          "verdict": "PASS"
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "url": "http://127.0.0.1:3100/tego-arch/patterns/agt-p-08",
+          "load": {
+            "successful": true,
+            "evidence": "Browser goto plus rendered main/title/H1 and absence of browser error page"
+          },
+          "document_title": "持久智能体（Agent）与人在回路（Human-in-the-loop）：恢复控制状态，不臆测外部真相 | Tego Arch",
+          "visible_h1": "持久智能体与人工介入：恢复控制状态，不臆测外部真相",
+          "console": {
+            "warnings": 0,
+            "errors": 0
+          },
+          "document": {
+            "client_width": 390,
+            "scroll_width": 390,
+            "horizontal_overflow": false
+          },
+          "table_owners": [
+            {
+              "id": "table-1",
+              "kind": "ordinary-table",
+              "client_width": 358,
+              "scroll_width": 358,
+              "local_overflow": false
+            },
+            {
+              "id": "table-2",
+              "kind": "ordinary-table",
+              "client_width": 358,
+              "scroll_width": 358,
+              "local_overflow": false
+            }
+          ],
+          "scroll_owners": [
+            {
+              "id": "drawio",
+              "kind": "drawio-svg",
+              "client_width": 358,
+              "scroll_width": 800,
+              "local_overflow": true,
+              "focus": {
+                "visible": true,
+                "outline": "solid 3px, offset 4px"
+              },
+              "keyboard": {
+                "home_scroll_left": 0,
+                "end_scroll_left": 442,
+                "arrow_right_scroll_left": 40,
+                "arrow_left_scroll_left": 0,
+                "page_y_before": 5766,
+                "page_y_after": 5766,
+                "page_y_unchanged": true
+              }
+            }
+          ],
+          "representative_internal_link_focus": {
+            "visible": true,
+            "outline": "solid 3px, offset 3px"
+          },
+          "internal_link_navigation": {
+            "clicked": true,
+            "destination_url": "http://127.0.0.1:3100/tego-arch/patterns",
+            "expected_destination_h1": "架构模式",
+            "observed_destination_h1": "架构模式",
+            "destination_url_h1_match": true,
+            "return_method": "direct Browser goto exact source URL",
+            "restored_url": "http://127.0.0.1:3100/tego-arch/patterns/agt-p-08",
+            "restored_h1": "持久智能体与人工介入：恢复控制状态，不臆测外部真相",
+            "restored_url_h1_match": true
+          },
+          "visual_inspection": {
+            "inspected": true,
+            "verdict": "PASS",
+            "evidence": "Every route was freshly screenshot-inspected at both 1440x1000 and 390x844. H1 and introductory hierarchy were readable; breadcrumb, desktop navigation/mobile header, article content, and controls did not overlap or obstruct one another; no unexpected clipping, collision, or blank region was visible. The six Draw.io routes were additionally inspected at desktop and at mobile Home/End horizontal states; labels, nodes, boundaries, connectors, and arrowheads remained readable, with only expected local horizontal viewport cropping."
+          },
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "path": "/cases/multi-agent-research-system",
+      "states": [
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 1000,
+          "url": "http://127.0.0.1:3100/tego-arch/cases/multi-agent-research-system",
+          "load": {
+            "successful": true,
+            "evidence": "Browser goto plus rendered main/title/H1 and absence of browser error page"
+          },
+          "document_title": "多智能体研究系统：让证据完成度而不是工作者数量决定终止 | Tego Arch",
+          "visible_h1": "多智能体研究系统：让证据完成度决定终止",
+          "console": {
+            "warnings": 0,
+            "errors": 0
+          },
+          "document": {
+            "client_width": 1440,
+            "scroll_width": 1440,
+            "horizontal_overflow": false
+          },
+          "table_owners": [
+            {
+              "id": "table-1",
+              "kind": "ordinary-table",
+              "client_width": 800,
+              "scroll_width": 800,
+              "local_overflow": false
+            },
+            {
+              "id": "table-2",
+              "kind": "ordinary-table",
+              "client_width": 800,
+              "scroll_width": 800,
+              "local_overflow": false
+            },
+            {
+              "id": "table-3",
+              "kind": "ordinary-table",
+              "client_width": 800,
+              "scroll_width": 800,
+              "local_overflow": false
+            },
+            {
+              "id": "table-4",
+              "kind": "ordinary-table",
+              "client_width": 800,
+              "scroll_width": 800,
+              "local_overflow": false
+            },
+            {
+              "id": "table-5",
+              "kind": "ordinary-table",
+              "client_width": 800,
+              "scroll_width": 800,
+              "local_overflow": false
+            },
+            {
+              "id": "table-6",
+              "kind": "ordinary-table",
+              "client_width": 800,
+              "scroll_width": 800,
+              "local_overflow": false
+            }
+          ],
+          "scroll_owners": [
+            {
+              "id": "drawio",
+              "kind": "drawio-svg",
+              "client_width": 800,
+              "scroll_width": 800,
+              "local_overflow": false,
+              "focus": {
+                "visible": true,
+                "outline": "solid 3px, offset 4px"
+              }
+            }
+          ],
+          "representative_internal_link_focus": {
+            "visible": true,
+            "outline": "solid 3px, offset 3px"
+          },
+          "internal_link_navigation": {
+            "clicked": true,
+            "destination_url": "http://127.0.0.1:3100/tego-arch/cases",
+            "expected_destination_h1": "案例库",
+            "observed_destination_h1": "案例库",
+            "destination_url_h1_match": true,
+            "return_method": "direct Browser goto exact source URL",
+            "restored_url": "http://127.0.0.1:3100/tego-arch/cases/multi-agent-research-system",
+            "restored_h1": "多智能体研究系统：让证据完成度决定终止",
+            "restored_url_h1_match": true
+          },
+          "visual_inspection": {
+            "inspected": true,
+            "verdict": "PASS",
+            "evidence": "Every route was freshly screenshot-inspected at both 1440x1000 and 390x844. H1 and introductory hierarchy were readable; breadcrumb, desktop navigation/mobile header, article content, and controls did not overlap or obstruct one another; no unexpected clipping, collision, or blank region was visible. The six Draw.io routes were additionally inspected at desktop and at mobile Home/End horizontal states; labels, nodes, boundaries, connectors, and arrowheads remained readable, with only expected local horizontal viewport cropping."
+          },
+          "verdict": "PASS"
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "url": "http://127.0.0.1:3100/tego-arch/cases/multi-agent-research-system",
+          "load": {
+            "successful": true,
+            "evidence": "Browser goto plus rendered main/title/H1 and absence of browser error page"
+          },
+          "document_title": "多智能体研究系统：让证据完成度而不是工作者数量决定终止 | Tego Arch",
+          "visible_h1": "多智能体研究系统：让证据完成度决定终止",
+          "console": {
+            "warnings": 0,
+            "errors": 0
+          },
+          "document": {
+            "client_width": 390,
+            "scroll_width": 390,
+            "horizontal_overflow": false
+          },
+          "table_owners": [
+            {
+              "id": "table-1",
+              "kind": "ordinary-table",
+              "client_width": 358,
+              "scroll_width": 358,
+              "local_overflow": false
+            },
+            {
+              "id": "table-2",
+              "kind": "ordinary-table",
+              "client_width": 358,
+              "scroll_width": 358,
+              "local_overflow": false
+            },
+            {
+              "id": "table-3",
+              "kind": "ordinary-table",
+              "client_width": 358,
+              "scroll_width": 358,
+              "local_overflow": false
+            },
+            {
+              "id": "table-4",
+              "kind": "ordinary-table",
+              "client_width": 358,
+              "scroll_width": 358,
+              "local_overflow": false
+            },
+            {
+              "id": "table-5",
+              "kind": "ordinary-table",
+              "client_width": 358,
+              "scroll_width": 358,
+              "local_overflow": false
+            },
+            {
+              "id": "table-6",
+              "kind": "ordinary-table",
+              "client_width": 358,
+              "scroll_width": 358,
+              "local_overflow": false
+            }
+          ],
+          "scroll_owners": [
+            {
+              "id": "drawio",
+              "kind": "drawio-svg",
+              "client_width": 358,
+              "scroll_width": 800,
+              "local_overflow": true,
+              "focus": {
+                "visible": true,
+                "outline": "solid 3px, offset 4px"
+              },
+              "keyboard": {
+                "home_scroll_left": 0,
+                "end_scroll_left": 442,
+                "arrow_right_scroll_left": 40,
+                "arrow_left_scroll_left": 0,
+                "page_y_before": 5441.5,
+                "page_y_after": 5441.5,
+                "page_y_unchanged": true
+              }
+            }
+          ],
+          "representative_internal_link_focus": {
+            "visible": true,
+            "outline": "solid 3px, offset 3px"
+          },
+          "internal_link_navigation": {
+            "clicked": true,
+            "destination_url": "http://127.0.0.1:3100/tego-arch/cases",
+            "expected_destination_h1": "案例库",
+            "observed_destination_h1": "案例库",
+            "destination_url_h1_match": true,
+            "return_method": "direct Browser goto exact source URL",
+            "restored_url": "http://127.0.0.1:3100/tego-arch/cases/multi-agent-research-system",
+            "restored_h1": "多智能体研究系统：让证据完成度决定终止",
+            "restored_url_h1_match": true
+          },
+          "visual_inspection": {
+            "inspected": true,
+            "verdict": "PASS",
+            "evidence": "Every route was freshly screenshot-inspected at both 1440x1000 and 390x844. H1 and introductory hierarchy were readable; breadcrumb, desktop navigation/mobile header, article content, and controls did not overlap or obstruct one another; no unexpected clipping, collision, or blank region was visible. The six Draw.io routes were additionally inspected at desktop and at mobile Home/End horizontal states; labels, nodes, boundaries, connectors, and arrowheads remained readable, with only expected local horizontal viewport cropping."
+          },
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "path": "/cases/long-running-coding-agent",
+      "states": [
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 1000,
+          "url": "http://127.0.0.1:3100/tego-arch/cases/long-running-coding-agent",
+          "load": {
+            "successful": true,
+            "evidence": "Browser goto plus rendered main/title/H1 and absence of browser error page"
+          },
+          "document_title": "长任务编码智能体：把完成状态留在上下文窗口之外 | Tego Arch",
+          "visible_h1": "长任务编码智能体：把完成状态留在上下文窗口之外",
+          "console": {
+            "warnings": 0,
+            "errors": 0
+          },
+          "document": {
+            "client_width": 1440,
+            "scroll_width": 1440,
+            "horizontal_overflow": false
+          },
+          "table_owners": [
+            {
+              "id": "table-1",
+              "kind": "ordinary-table",
+              "client_width": 800,
+              "scroll_width": 800,
+              "local_overflow": false
+            },
+            {
+              "id": "table-2",
+              "kind": "ordinary-table",
+              "client_width": 800,
+              "scroll_width": 800,
+              "local_overflow": false
+            },
+            {
+              "id": "table-3",
+              "kind": "ordinary-table",
+              "client_width": 800,
+              "scroll_width": 800,
+              "local_overflow": false
+            },
+            {
+              "id": "table-4",
+              "kind": "ordinary-table",
+              "client_width": 800,
+              "scroll_width": 800,
+              "local_overflow": false
+            },
+            {
+              "id": "table-5",
+              "kind": "ordinary-table",
+              "client_width": 800,
+              "scroll_width": 800,
+              "local_overflow": false
+            },
+            {
+              "id": "table-6",
+              "kind": "ordinary-table",
+              "client_width": 800,
+              "scroll_width": 800,
+              "local_overflow": false
+            }
+          ],
+          "scroll_owners": [
+            {
+              "id": "drawio",
+              "kind": "drawio-svg",
+              "client_width": 800,
+              "scroll_width": 800,
+              "local_overflow": false,
+              "focus": {
+                "visible": true,
+                "outline": "solid 3px, offset 4px"
+              }
+            }
+          ],
+          "representative_internal_link_focus": {
+            "visible": true,
+            "outline": "solid 3px, offset 3px"
+          },
+          "internal_link_navigation": {
+            "clicked": true,
+            "destination_url": "http://127.0.0.1:3100/tego-arch/cases",
+            "expected_destination_h1": "案例库",
+            "observed_destination_h1": "案例库",
+            "destination_url_h1_match": true,
+            "return_method": "direct Browser goto exact source URL",
+            "restored_url": "http://127.0.0.1:3100/tego-arch/cases/long-running-coding-agent",
+            "restored_h1": "长任务编码智能体：把完成状态留在上下文窗口之外",
+            "restored_url_h1_match": true
+          },
+          "visual_inspection": {
+            "inspected": true,
+            "verdict": "PASS",
+            "evidence": "Every route was freshly screenshot-inspected at both 1440x1000 and 390x844. H1 and introductory hierarchy were readable; breadcrumb, desktop navigation/mobile header, article content, and controls did not overlap or obstruct one another; no unexpected clipping, collision, or blank region was visible. The six Draw.io routes were additionally inspected at desktop and at mobile Home/End horizontal states; labels, nodes, boundaries, connectors, and arrowheads remained readable, with only expected local horizontal viewport cropping."
+          },
+          "verdict": "PASS"
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "url": "http://127.0.0.1:3100/tego-arch/cases/long-running-coding-agent",
+          "load": {
+            "successful": true,
+            "evidence": "Browser goto plus rendered main/title/H1 and absence of browser error page"
+          },
+          "document_title": "长任务编码智能体：把完成状态留在上下文窗口之外 | Tego Arch",
+          "visible_h1": "长任务编码智能体：把完成状态留在上下文窗口之外",
+          "console": {
+            "warnings": 0,
+            "errors": 0
+          },
+          "document": {
+            "client_width": 390,
+            "scroll_width": 390,
+            "horizontal_overflow": false
+          },
+          "table_owners": [
+            {
+              "id": "table-1",
+              "kind": "ordinary-table",
+              "client_width": 358,
+              "scroll_width": 358,
+              "local_overflow": false
+            },
+            {
+              "id": "table-2",
+              "kind": "ordinary-table",
+              "client_width": 358,
+              "scroll_width": 358,
+              "local_overflow": false
+            },
+            {
+              "id": "table-3",
+              "kind": "ordinary-table",
+              "client_width": 358,
+              "scroll_width": 358,
+              "local_overflow": false
+            },
+            {
+              "id": "table-4",
+              "kind": "ordinary-table",
+              "client_width": 358,
+              "scroll_width": 358,
+              "local_overflow": false
+            },
+            {
+              "id": "table-5",
+              "kind": "ordinary-table",
+              "client_width": 358,
+              "scroll_width": 358,
+              "local_overflow": false
+            },
+            {
+              "id": "table-6",
+              "kind": "ordinary-table",
+              "client_width": 358,
+              "scroll_width": 358,
+              "local_overflow": false
+            }
+          ],
+          "scroll_owners": [
+            {
+              "id": "drawio",
+              "kind": "drawio-svg",
+              "client_width": 358,
+              "scroll_width": 800,
+              "local_overflow": true,
+              "focus": {
+                "visible": true,
+                "outline": "solid 3px, offset 4px"
+              },
+              "keyboard": {
+                "home_scroll_left": 0,
+                "end_scroll_left": 442,
+                "arrow_right_scroll_left": 40,
+                "arrow_left_scroll_left": 0,
+                "page_y_before": 4880.5,
+                "page_y_after": 4880.5,
+                "page_y_unchanged": true
+              }
+            }
+          ],
+          "representative_internal_link_focus": {
+            "visible": true,
+            "outline": "solid 3px, offset 3px"
+          },
+          "internal_link_navigation": {
+            "clicked": true,
+            "destination_url": "http://127.0.0.1:3100/tego-arch/cases",
+            "expected_destination_h1": "案例库",
+            "observed_destination_h1": "案例库",
+            "destination_url_h1_match": true,
+            "return_method": "direct Browser goto exact source URL",
+            "restored_url": "http://127.0.0.1:3100/tego-arch/cases/long-running-coding-agent",
+            "restored_h1": "长任务编码智能体：把完成状态留在上下文窗口之外",
+            "restored_url_h1_match": true
+          },
+          "visual_inspection": {
+            "inspected": true,
+            "verdict": "PASS",
+            "evidence": "Every route was freshly screenshot-inspected at both 1440x1000 and 390x844. H1 and introductory hierarchy were readable; breadcrumb, desktop navigation/mobile header, article content, and controls did not overlap or obstruct one another; no unexpected clipping, collision, or blank region was visible. The six Draw.io routes were additionally inspected at desktop and at mobile Home/End horizontal states; labels, nodes, boundaries, connectors, and arrowheads remained readable, with only expected local horizontal viewport cropping."
+          },
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "path": "/cases/production-incident-response-agent",
+      "states": [
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 1000,
+          "url": "http://127.0.0.1:3100/tego-arch/cases/production-incident-response-agent",
+          "load": {
+            "successful": true,
+            "evidence": "Browser goto plus rendered main/title/H1 and absence of browser error page"
+          },
+          "document_title": "生产事故响应智能体：把诊断建议与变更授权分成两条身份链 | Tego Arch",
+          "visible_h1": "生产事故响应智能体：把诊断建议与变更授权分成两条身份链",
+          "console": {
+            "warnings": 0,
+            "errors": 0
+          },
+          "document": {
+            "client_width": 1440,
+            "scroll_width": 1440,
+            "horizontal_overflow": false
+          },
+          "table_owners": [
+            {
+              "id": "table-1",
+              "kind": "ordinary-table",
+              "client_width": 800,
+              "scroll_width": 800,
+              "local_overflow": false
+            },
+            {
+              "id": "table-2",
+              "kind": "ordinary-table",
+              "client_width": 800,
+              "scroll_width": 800,
+              "local_overflow": false
+            },
+            {
+              "id": "table-3",
+              "kind": "ordinary-table",
+              "client_width": 800,
+              "scroll_width": 800,
+              "local_overflow": false
+            },
+            {
+              "id": "table-4",
+              "kind": "ordinary-table",
+              "client_width": 800,
+              "scroll_width": 800,
+              "local_overflow": false
+            },
+            {
+              "id": "table-5",
+              "kind": "ordinary-table",
+              "client_width": 800,
+              "scroll_width": 800,
+              "local_overflow": false
+            },
+            {
+              "id": "table-6",
+              "kind": "ordinary-table",
+              "client_width": 800,
+              "scroll_width": 800,
+              "local_overflow": false
+            }
+          ],
+          "scroll_owners": [
+            {
+              "id": "drawio",
+              "kind": "drawio-svg",
+              "client_width": 800,
+              "scroll_width": 800,
+              "local_overflow": false,
+              "focus": {
+                "visible": true,
+                "outline": "solid 3px, offset 4px"
+              }
+            }
+          ],
+          "representative_internal_link_focus": {
+            "visible": true,
+            "outline": "solid 3px, offset 3px"
+          },
+          "internal_link_navigation": {
+            "clicked": true,
+            "destination_url": "http://127.0.0.1:3100/tego-arch/cases",
+            "expected_destination_h1": "案例库",
+            "observed_destination_h1": "案例库",
+            "destination_url_h1_match": true,
+            "return_method": "direct Browser goto exact source URL",
+            "restored_url": "http://127.0.0.1:3100/tego-arch/cases/production-incident-response-agent",
+            "restored_h1": "生产事故响应智能体：把诊断建议与变更授权分成两条身份链",
+            "restored_url_h1_match": true
+          },
+          "visual_inspection": {
+            "inspected": true,
+            "verdict": "PASS",
+            "evidence": "Every route was freshly screenshot-inspected at both 1440x1000 and 390x844. H1 and introductory hierarchy were readable; breadcrumb, desktop navigation/mobile header, article content, and controls did not overlap or obstruct one another; no unexpected clipping, collision, or blank region was visible. The six Draw.io routes were additionally inspected at desktop and at mobile Home/End horizontal states; labels, nodes, boundaries, connectors, and arrowheads remained readable, with only expected local horizontal viewport cropping."
+          },
+          "verdict": "PASS"
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "url": "http://127.0.0.1:3100/tego-arch/cases/production-incident-response-agent",
+          "load": {
+            "successful": true,
+            "evidence": "Browser goto plus rendered main/title/H1 and absence of browser error page"
+          },
+          "document_title": "生产事故响应智能体：把诊断建议与变更授权分成两条身份链 | Tego Arch",
+          "visible_h1": "生产事故响应智能体：把诊断建议与变更授权分成两条身份链",
+          "console": {
+            "warnings": 0,
+            "errors": 0
+          },
+          "document": {
+            "client_width": 390,
+            "scroll_width": 390,
+            "horizontal_overflow": false
+          },
+          "table_owners": [
+            {
+              "id": "table-1",
+              "kind": "ordinary-table",
+              "client_width": 358,
+              "scroll_width": 358,
+              "local_overflow": false
+            },
+            {
+              "id": "table-2",
+              "kind": "ordinary-table",
+              "client_width": 358,
+              "scroll_width": 358,
+              "local_overflow": false
+            },
+            {
+              "id": "table-3",
+              "kind": "ordinary-table",
+              "client_width": 358,
+              "scroll_width": 358,
+              "local_overflow": false
+            },
+            {
+              "id": "table-4",
+              "kind": "ordinary-table",
+              "client_width": 358,
+              "scroll_width": 358,
+              "local_overflow": false
+            },
+            {
+              "id": "table-5",
+              "kind": "ordinary-table",
+              "client_width": 358,
+              "scroll_width": 358,
+              "local_overflow": false
+            },
+            {
+              "id": "table-6",
+              "kind": "ordinary-table",
+              "client_width": 358,
+              "scroll_width": 358,
+              "local_overflow": false
+            }
+          ],
+          "scroll_owners": [
+            {
+              "id": "drawio",
+              "kind": "drawio-svg",
+              "client_width": 358,
+              "scroll_width": 800,
+              "local_overflow": true,
+              "focus": {
+                "visible": true,
+                "outline": "solid 3px, offset 4px"
+              },
+              "keyboard": {
+                "home_scroll_left": 0,
+                "end_scroll_left": 442,
+                "arrow_right_scroll_left": 40,
+                "arrow_left_scroll_left": 0,
+                "page_y_before": 5428.5,
+                "page_y_after": 5428.5,
+                "page_y_unchanged": true
+              }
+            }
+          ],
+          "representative_internal_link_focus": {
+            "visible": true,
+            "outline": "solid 3px, offset 3px"
+          },
+          "internal_link_navigation": {
+            "clicked": true,
+            "destination_url": "http://127.0.0.1:3100/tego-arch/cases",
+            "expected_destination_h1": "案例库",
+            "observed_destination_h1": "案例库",
+            "destination_url_h1_match": true,
+            "return_method": "direct Browser goto exact source URL",
+            "restored_url": "http://127.0.0.1:3100/tego-arch/cases/production-incident-response-agent",
+            "restored_h1": "生产事故响应智能体：把诊断建议与变更授权分成两条身份链",
+            "restored_url_h1_match": true
+          },
+          "visual_inspection": {
+            "inspected": true,
+            "verdict": "PASS",
+            "evidence": "Every route was freshly screenshot-inspected at both 1440x1000 and 390x844. H1 and introductory hierarchy were readable; breadcrumb, desktop navigation/mobile header, article content, and controls did not overlap or obstruct one another; no unexpected clipping, collision, or blank region was visible. The six Draw.io routes were additionally inspected at desktop and at mobile Home/End horizontal states; labels, nodes, boundaries, connectors, and arrowheads remained readable, with only expected local horizontal viewport cropping."
+          },
+          "verdict": "PASS"
+        }
+      ]
+    }
+  ],
+  "diagrams": [
+    {
+      "path": "/concepts/agt-c-01",
+      "view_box": "0 0 1200 900",
+      "desktop_image": {
+        "width": 800,
+        "height": 600
+      },
+      "scale": 0.6666666666666666,
+      "named_node_measurements": {
+        "measurement_source": "browser getBBox evidence recorded by the dedicated Foundations review and revalidated by the named geometry contract",
+        "baseline_gap_px": 24,
+        "minimum_horizontal_clearance_px": 16.4,
+        "minimum_vertical_clearance_px": 14.2
+      },
+      "edge_labels": {
+        "applicable": false,
+        "reason": "short connectors deliberately have no edge labels"
+      },
+      "mobile": {
+        "wrapper_client_width": 358,
+        "wrapper_scroll_width": 800,
+        "document_client_width": 390,
+        "document_scroll_width": 390
+      },
+      "visual": "PASS; desktop and mobile left/right Browser screenshots show readable labels, boundaries, arrows, and no collisions",
+      "asset_url": "http://127.0.0.1:3100/tego-arch/img/diagrams/agt-c-01-agent-system-boundary.svg",
+      "desktop_wrapper": {
+        "client_width": 800,
+        "scroll_width": 800
+      },
+      "mobile_visual_states": [
+        {
+          "position": "left",
+          "scroll_left": 0,
+          "inspected": true,
+          "verdict": "PASS"
+        },
+        {
+          "position": "middle",
+          "scroll_left": 240,
+          "inspected": true,
+          "verdict": "PASS",
+          "evidence": "PASS: middle-state screenshots show readable labels/nodes/connectors, no collision, and no document overflow"
+        },
+        {
+          "position": "right",
+          "scroll_left": 442,
+          "inspected": true,
+          "verdict": "PASS"
+        }
+      ],
+      "thresholds_px": {
+        "measurement_source": "docs/superpowers/plans/2026-08-26-agentic-architecture-foundations.md and tests/agt-foundations-content.test.mjs",
+        "node_horizontal": 16,
+        "node_vertical": 14,
+        "title_type_baseline_gap": 22,
+        "node_bottom": 14,
+        "edge_label": null
+      }
+    },
+    {
+      "path": "/patterns/agt-p-06",
+      "view_box": "0 0 1200 720",
+      "desktop_image": {
+        "width": 800,
+        "height": 480
+      },
+      "scale": 0.6666666666666666,
+      "named_node_measurements": {
+        "measurement_source": "named validator suite",
+        "baseline_gap_px": 26.667,
+        "minimum_bottom_clearance_px": 16,
+        "minimum_horizontal_clearance_px": 40.333
+      },
+      "edge_label_clearance_px": {
+        "measurement_source": "named validator suite",
+        "stroke_min": 14,
+        "stroke_max": 20.667,
+        "arrow_min": 45.687,
+        "arrow_max": 74.033,
+        "node_min": 25.333,
+        "node_max": 48.667
+      },
+      "mobile": {
+        "wrapper_client_width": 358,
+        "wrapper_scroll_width": 800,
+        "document_client_width": 390,
+        "document_scroll_width": 390
+      },
+      "visual": "PASS",
+      "asset_url": "http://127.0.0.1:3100/tego-arch/img/diagrams/agt-p-06-control-ownership-models.svg",
+      "desktop_wrapper": {
+        "client_width": 800,
+        "scroll_width": 800
+      },
+      "mobile_visual_states": [
+        {
+          "position": "left",
+          "scroll_left": 0,
+          "inspected": true,
+          "verdict": "PASS"
+        },
+        {
+          "position": "middle",
+          "scroll_left": 240,
+          "inspected": true,
+          "verdict": "PASS",
+          "evidence": "PASS: middle-state screenshots show readable labels/nodes/connectors, no collision, and no document overflow"
+        },
+        {
+          "position": "right",
+          "scroll_left": 442,
+          "inspected": true,
+          "verdict": "PASS"
+        }
+      ],
+      "thresholds_px": {
+        "measurement_source": "scripts/validate-agt-p-06-control-ownership-diagram.mjs",
+        "region_title": 12,
+        "node_caption_bottom": 14,
+        "edge_stroke": 8,
+        "edge_arrow": 16,
+        "edge_node": 12
+      }
+    },
+    {
+      "path": "/patterns/agt-p-08",
+      "view_box": "0 0 1400 900",
+      "desktop_image": {
+        "width": 800,
+        "height": 514.281
+      },
+      "scale": 0.5714285714285714,
+      "named_node_measurements": {
+        "measurement_source": "named validator suite recomputation",
+        "baseline_gap_min_px": 24.114285714285707,
+        "minimum_horizontal_clearance_px": 17.428571428571427,
+        "minimum_bottom_clearance_px": 14.571428571428571
+      },
+      "edge_label_clearance_px": {
+        "measurement_source": "named validator suite recomputation",
+        "stroke_min": 10.285714285714285,
+        "arrow_min": 46.979943614704524,
+        "node_min": 14.457142857142863,
+        "boundary_min": 10.571428571428571
+      },
+      "mobile": {
+        "wrapper_client_width": 358,
+        "wrapper_scroll_width": 800,
+        "document_client_width": 390,
+        "document_scroll_width": 390
+      },
+      "visual": "PASS",
+      "asset_url": "http://127.0.0.1:3100/tego-arch/img/diagrams/agt-p-08-durable-agent-hitl.svg",
+      "desktop_wrapper": {
+        "client_width": 800,
+        "scroll_width": 800
+      },
+      "mobile_visual_states": [
+        {
+          "position": "left",
+          "scroll_left": 0,
+          "inspected": true,
+          "verdict": "PASS"
+        },
+        {
+          "position": "middle",
+          "scroll_left": 240,
+          "inspected": true,
+          "verdict": "PASS",
+          "evidence": "PASS: middle-state screenshots show readable labels/nodes/connectors, no collision, and no document overflow"
+        },
+        {
+          "position": "right",
+          "scroll_left": 442,
+          "inspected": true,
+          "verdict": "PASS"
+        }
+      ],
+      "thresholds_px": {
+        "measurement_source": "scripts/validate-agt-p-08-durable-agent-diagram.mjs",
+        "node_caption_bottom": 14,
+        "edge_stroke": 8,
+        "edge_arrow": 16,
+        "edge_node": 12,
+        "edge_boundary": 8
+      }
+    },
+    {
+      "path": "/cases/multi-agent-research-system",
+      "view_box": "0 0 1764 1894",
+      "desktop_image": {
+        "width": 800,
+        "height": 858.953
+      },
+      "scale": 0.45351473922902497,
+      "named_node_measurements": {
+        "measurement_source": "tests/agt-multi-agent-research-geometry.test.mjs",
+        "baseline_gap_px": 24.9433,
+        "minimum_top_clearance_px": 17.8231,
+        "minimum_bottom_clearance_px": 20.1361,
+        "minimum_horizontal_clearance_px": 27.7515
+      },
+      "edge_label_clearance_px": {
+        "measurement_source": "tests/agt-multi-agent-research-geometry.test.mjs",
+        "connector_min": 8.6168,
+        "arrow_min": 24.4399,
+        "node_min": 15.1474
+      },
+      "mobile": {
+        "wrapper_client_width": 358,
+        "wrapper_scroll_width": 800,
+        "document_client_width": 390,
+        "document_scroll_width": 390
+      },
+      "visual": "PASS",
+      "asset_url": "http://127.0.0.1:3100/tego-arch/img/diagrams/multi-agent-research-system.svg",
+      "desktop_wrapper": {
+        "client_width": 800,
+        "scroll_width": 800
+      },
+      "mobile_visual_states": [
+        {
+          "position": "left",
+          "scroll_left": 0,
+          "inspected": true,
+          "verdict": "PASS"
+        },
+        {
+          "position": "middle",
+          "scroll_left": 240,
+          "inspected": true,
+          "verdict": "PASS",
+          "evidence": "PASS: middle-state screenshots show readable labels/nodes/connectors, no collision, and no document overflow"
+        },
+        {
+          "position": "right",
+          "scroll_left": 442,
+          "inspected": true,
+          "verdict": "PASS"
+        }
+      ],
+      "thresholds_px": {
+        "measurement_source": "tests/agt-multi-agent-research-geometry.test.mjs",
+        "node_top_bottom": 14,
+        "node_horizontal": 16,
+        "title_type_baseline_gap": 22,
+        "edge_connector": 8,
+        "edge_arrow": 16,
+        "edge_node": 12
+      }
+    },
+    {
+      "path": "/cases/long-running-coding-agent",
+      "view_box": "0 0 1764 2464",
+      "desktop_image": {
+        "width": 800,
+        "height": 1117.453
+      },
+      "scale": 0.45351473922902497,
+      "named_node_measurements": {
+        "measurement_source": "tests/agt-long-running-coding-agent-geometry.test.mjs",
+        "baseline_gap_px": 24.9433,
+        "minimum_top_clearance_px": 17.8231,
+        "minimum_bottom_clearance_px": 20.1361,
+        "minimum_horizontal_clearance_px": 29.0236
+      },
+      "edge_label_clearance_px": {
+        "measurement_source": "tests/agt-long-running-coding-agent-geometry.test.mjs",
+        "connector_min": 8.61678,
+        "arrow_min": 24.439884,
+        "node_min": 15.147392,
+        "boundary_min": 10.566893
+      },
+      "boundary_title_clearance_px": {
+        "connector_min": 29.430079,
+        "arrow_min": 55.918367,
+        "node_min": 15.328798
+      },
+      "mobile": {
+        "wrapper_client_width": 358,
+        "wrapper_scroll_width": 800,
+        "document_client_width": 390,
+        "document_scroll_width": 390
+      },
+      "visual": "PASS",
+      "asset_url": "http://127.0.0.1:3100/tego-arch/img/diagrams/long-running-coding-agent.svg",
+      "desktop_wrapper": {
+        "client_width": 800,
+        "scroll_width": 800
+      },
+      "mobile_visual_states": [
+        {
+          "position": "left",
+          "scroll_left": 0,
+          "inspected": true,
+          "verdict": "PASS"
+        },
+        {
+          "position": "middle",
+          "scroll_left": 240,
+          "inspected": true,
+          "verdict": "PASS",
+          "evidence": "PASS: middle-state screenshots show readable labels/nodes/connectors, no collision, and no document overflow"
+        },
+        {
+          "position": "right",
+          "scroll_left": 442,
+          "inspected": true,
+          "verdict": "PASS"
+        }
+      ],
+      "thresholds_px": {
+        "measurement_source": "tests/agt-long-running-coding-agent-geometry.test.mjs",
+        "node_top_bottom": 14,
+        "node_horizontal": 16,
+        "title_type_baseline_gap": 22,
+        "edge_connector": 8,
+        "edge_arrow": 16,
+        "edge_node": 12,
+        "edge_boundary": 8
+      }
+    },
+    {
+      "path": "/cases/production-incident-response-agent",
+      "view_box": "0 0 2326 3846",
+      "desktop_image": {
+        "width": 800,
+        "height": 1322.781
+      },
+      "scale": 0.34393809114359414,
+      "named_node_measurements": {
+        "measurement_source": "tests/agt-production-incident-response-agent-geometry.test.mjs",
+        "baseline_gap_px": 23.903697,
+        "minimum_top_clearance_px": 17.059329,
+        "minimum_bottom_clearance_px": 21.564918,
+        "minimum_horizontal_clearance_px": 58.651075
+      },
+      "edge_label_clearance_px": {
+        "measurement_source": "tests/agt-production-incident-response-agent-geometry.test.mjs",
+        "connector_min": 9.16595,
+        "arrow_min": 19.71174,
+        "node_min": 13.99828,
+        "boundary_min": 14.81131
+      },
+      "boundary_title_clearance_px": {
+        "connector_min": 42.963371,
+        "arrow_min": 42.130363,
+        "node_min": 16.88736,
+        "boundary_min": 25.150869
+      },
+      "mobile": {
+        "wrapper_client_width": 358,
+        "wrapper_scroll_width": 800,
+        "document_client_width": 390,
+        "document_scroll_width": 390
+      },
+      "visual": "PASS",
+      "asset_url": "http://127.0.0.1:3100/tego-arch/img/diagrams/production-incident-response-agent.svg",
+      "desktop_wrapper": {
+        "client_width": 800,
+        "scroll_width": 800
+      },
+      "mobile_visual_states": [
+        {
+          "position": "left",
+          "scroll_left": 0,
+          "inspected": true,
+          "verdict": "PASS"
+        },
+        {
+          "position": "middle",
+          "scroll_left": 240,
+          "inspected": true,
+          "verdict": "PASS",
+          "evidence": "PASS: middle-state screenshots show readable labels/nodes/connectors, no collision, and no document overflow"
+        },
+        {
+          "position": "right",
+          "scroll_left": 442,
+          "inspected": true,
+          "verdict": "PASS"
+        }
+      ],
+      "thresholds_px": {
+        "measurement_source": "tests/agt-production-incident-response-agent-geometry.test.mjs",
+        "node_top_bottom": 14,
+        "node_horizontal": 16,
+        "title_type_baseline_gap": 22,
+        "edge_connector": 8,
+        "edge_arrow": 16,
+        "edge_node": 12,
+        "edge_boundary": 8
+      }
+    }
+  ],
+  "focused_geometry_commands": {
+    "executed": [
+      "node --test tests/agt-foundations-content.test.mjs",
+      "node scripts/validate-agt-p-06-control-ownership-diagram.mjs diagrams/agt-p-06-control-ownership-models.drawio static/img/diagrams/agt-p-06-control-ownership-models.svg",
+      "node scripts/validate-agt-p-08-durable-agent-diagram.mjs diagrams/agt-p-08-durable-agent-hitl.drawio static/img/diagrams/agt-p-08-durable-agent-hitl.svg",
+      "node --test tests/agt-multi-agent-research-geometry.test.mjs",
+      "node --test tests/agt-long-running-coding-agent-geometry.test.mjs",
+      "node --test tests/agt-production-incident-response-agent-geometry.test.mjs"
+    ],
+    "exit_code": 0,
+    "result": "PASS"
+  },
+  "console": {
+    "desktop_warning_error_total": 0,
+    "mobile_warning_error_total": 0
+  },
+  "inventory": {
+    "routes": 17,
+    "viewport_states": 34,
+    "diagrams": 6,
+    "scroll_owners_each_viewport": 15
+  },
+  "verdict": "PASS"
+}
