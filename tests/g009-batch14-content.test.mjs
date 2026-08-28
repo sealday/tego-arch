@@ -1,15 +1,11 @@
 import assert from 'node:assert/strict';
-import {spawnSync} from 'node:child_process';
-import {mkdtempSync, readFileSync, rmSync, writeFileSync} from 'node:fs';
+import {readFileSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
-import {tmpdir} from 'node:os';
-import {join} from 'node:path';
 import test from 'node:test';
 
 import {findMarkdownHeadings, parseFrontMatter, readContentDocuments} from '../scripts/content-metadata.mjs';
 import {extractInternalLinks} from '../scripts/content-relations.mjs';
 import {architectureCaseTopicIds} from '../scripts/content-schema.mjs';
-import {runBridgeFeasibilitySearch} from '../scripts/sty12-bridge-feasibility.mjs';
 
 export const ARTICLE = 'content/styles/sty-13-space-based-architecture.mdx';
 export const DRAWIO = 'diagrams/sty-13-space-based-flight-availability.drawio';
@@ -17,16 +13,11 @@ export const SVG = 'static/img/diagrams/sty-13-space-based-flight-availability.s
 export const ROUTE = '/styles/sty-13';
 export const TOPIC_ID = 'STY-13';
 export const NEXT_TOPIC = 'STY-14';
-export const RELATED_CASES = Object.freeze([
-  '/cases/aws-cell-shuffle-sharding',
-  '/cases/cloudflare-durable-objects-workerd',
-]);
+export const NEXT_ROUTE = '/styles/sty-14';
+export const RELATED_CASES = Object.freeze(['/cases/aws-cell-shuffle-sharding', '/cases/cloudflare-durable-objects-workerd']);
 export const EXPECTED_STAGE_A = Object.freeze({completed: 65, documents: 109, sources: 573});
 export const EXPECTED_STAGE_B = Object.freeze({completed: 66, documents: 109, sources: 573});
-export const EXPECTED_HEADINGS = Object.freeze([
-  '学习问题', '一页摘要', '事实边界', '架构图', '亲和分区与预订流',
-  '关键机制导读', '架构决策与权衡', '生产化分析', '可迁移经验', '来源',
-]);
+export const EXPECTED_HEADINGS = Object.freeze(['学习问题', '一页摘要', '事实边界', '架构图', '亲和分区与预订流', '关键机制导读', '架构决策与权衡', '生产化分析', '可迁移经验', '来源']);
 export const MIGRATION_HEADINGS = Object.freeze(['可直接复用的机制', '只能有限类比的部分', '不应照搬的部分']);
 export const WRAPPERS = Object.freeze([
   'Space-Based Architecture 航班余位亲和分区、主备与恢复边界图，可横向滚动',
@@ -35,27 +26,18 @@ export const WRAPPERS = Object.freeze([
   'Space-Based Architecture 六类故障信号、保护动作与恢复门槛表，可横向滚动',
 ]);
 export const EXACT_METADATA = Object.freeze({
-  title: 'Space-Based Architecture：让状态与处理在亲和分区相遇',
-  slug: ROUTE, content_type: 'style', status: 'reviewed', difficulty: 'advanced',
+  title: 'Space-Based Architecture：让状态与处理在亲和分区相遇', slug: ROUTE, content_type: 'style', status: 'reviewed', difficulty: 'advanced',
   analyzed_at: '2026-08-28', source_cutoff: '2026-08-28', confidence: 'high',
-  domains: ['software-architecture', 'distributed-systems', 'data-intensive-systems'],
-  agent_patterns: [], protocols: [],
+  domains: ['software-architecture', 'distributed-systems', 'data-intensive-systems'], agent_patterns: [], protocols: [],
   quality_attributes: ['scalability', 'performance', 'availability', 'consistency', 'recoverability', 'operability'],
   tags: ['架构风格', 'Space-Based Architecture', '数据亲和', '分区处理', '内存数据网格', '热点治理'],
   summary: '以航班余位与报价说明 Space-Based Architecture：入口按航段与日期路由到唯一分区所有者，状态与处理共置，主备只处理受控切换，日志与检查点负责恢复，多航段行程由外部持久工作流协调。',
-  topic_id: TOPIC_ID, priority: 'P2', depends_on: ['STY-00', 'STY-05', 'STY-08'],
-  adjacent_topics: ['STY-05', 'STY-08'], related_cases: RELATED_CASES, related_questions: [],
+  topic_id: TOPIC_ID, priority: 'P2', depends_on: ['STY-00', 'STY-05', 'STY-08'], adjacent_topics: ['STY-05', 'STY-08'], related_cases: RELATED_CASES, related_questions: [],
 });
-export const SOURCE_IDS = Object.freeze([
-  'src-gigaspaces-sba-overview',
-  'src-gigaspaces-processing-unit-sla',
-  'src-gigaspaces-split-brain-resolution',
-  'src-gigaspaces-proxy-connectivity',
-  'src-oracle-coherence-partitioned-cache',
-  'src-oracle-coherence-backing-maps',
-  'src-gigaspaces-flight-availability-case',
-  'src-atlas-sty13-space-based-flight-availability',
-]);
+export const SOURCE_IDS = Object.freeze(['src-gigaspaces-sba-overview', 'src-gigaspaces-processing-unit-sla', 'src-gigaspaces-split-brain-resolution', 'src-gigaspaces-proxy-connectivity', 'src-oracle-coherence-partitioned-cache', 'src-oracle-coherence-backing-maps', 'src-gigaspaces-flight-availability-case', 'src-atlas-sty13-space-based-flight-availability']);
+export const COMPARISON_HEADERS = Object.freeze(['方案', '状态与处理', '实时权威', '跨分区协调', '采用边界']);
+export const OPERATION_HEADERS = Object.freeze(['操作', '执行者', '一致性责任', '合同']);
+export const FAILURE_HEADERS = Object.freeze(['故障', '信号', '保护动作', '恢复门槛']);
 export const COMPARISON_ROWS = Object.freeze([
   ['Space-Based Architecture', '状态与处理按亲和键共置', '分区内运行状态', '外部工作流', '热点、内存与恢复复杂度可控'],
   ['普通数据库分区', '数据按键分布，应用可远程处理', '数据库', '数据库事务或应用协调', '数据库已经满足延迟与容量目标'],
@@ -89,846 +71,82 @@ export const REQUIRED_SENTENCES = Object.freeze([
   '增加无关节点不会消除热门航班形成的热点分区。',
   '若普通数据库分区或读缓存已满足延迟与容量目标，不应引入专用空间运行时。',
 ]);
-export const REGION_IDS = Object.freeze(['release-control-plane', 'browser-runtime-plane', 'authority-business-plane']);
-export const BROWSER_OWNED_EDGE_IDS = Object.freeze([
-  'route-control', 'activate-catalog', 'activate-cart', 'activate-checkout', 'activate-account',
-  'share-runtime-catalog', 'share-runtime-cart', 'share-runtime-checkout', 'share-runtime-account',
-  'load-failure',
-]);
-export const BRIDGE_CONTRACTS = Object.freeze([
-  ['share-runtime-catalog', 'cart-query', 760, 2320],
-  ['share-runtime-account', 'checkout-read-cart', 1500, 2320],
-  ['share-runtime-account', 'return-cart-version', 1580, 2320],
-  ['share-runtime-account', 'return-order-id', 1660, 2320],
-  ['share-runtime-account', 'checkout-submit-order', 1740, 2320],
-  ['activate-account', 'load-failure', 1680, 1920],
-]);
-export const BRIDGE_GEOMETRY = Object.freeze({
-  'share-runtime-catalog|cart-query|760|2320': Object.freeze({arcDirection: -1, controlOffset: 24, underOffsets: [-24, 24]}),
-  'share-runtime-account|checkout-read-cart|1500|2320': Object.freeze({arcDirection: -1, controlOffset: 24, underOffsets: [-24, 24]}),
-  'share-runtime-account|return-cart-version|1580|2320': Object.freeze({arcDirection: -1, controlOffset: 24, underOffsets: [-24, 24]}),
-  'share-runtime-account|return-order-id|1660|2320': Object.freeze({arcDirection: -1, controlOffset: 24, underOffsets: [-24, 24]}),
-  'share-runtime-account|checkout-submit-order|1740|2320': Object.freeze({arcDirection: -1, controlOffset: 24, underOffsets: [-24, 24]}),
-  'activate-account|load-failure|1680|1920': Object.freeze({arcDirection: 1, controlOffset: 24, underOffsets: [-10, 24]}),
-});
-export const EDGE_LABEL_REGIONS = Object.freeze({
-  'catalog-release': 'release-control-plane', 'cart-release': 'release-control-plane',
-  'checkout-release': 'release-control-plane', 'account-release': 'release-control-plane',
-  'store-artifacts': 'release-control-plane', 'validate-candidate': 'release-control-plane',
-  'publish-manifest': 'release-control-plane', 'resolve-manifest': 'release-control-plane',
-  'promote-manifest': 'browser-runtime-plane', 'route-control': 'browser-runtime-plane',
-  'activate-catalog': 'browser-runtime-plane', 'activate-cart': 'browser-runtime-plane',
-  'activate-checkout': 'browser-runtime-plane', 'activate-account': 'browser-runtime-plane',
-  'share-runtime-catalog': 'browser-runtime-plane', 'share-runtime-cart': 'browser-runtime-plane',
-  'share-runtime-checkout': 'browser-runtime-plane', 'share-runtime-account': 'browser-runtime-plane',
-  'checkout-read-cart': 'browser-runtime-plane', 'checkout-submit-order': 'browser-runtime-plane',
-  'catalog-query': 'browser-runtime-plane', 'cart-query': 'browser-runtime-plane',
-  'account-query': 'browser-runtime-plane', 'load-failure': 'browser-runtime-plane',
-  'rollback-manifest': 'browser-runtime-plane', 'return-catalog': 'authority-business-plane',
-  'return-cart-version': 'authority-business-plane', 'return-order-id': 'authority-business-plane',
-  'return-account': 'authority-business-plane',
-});
-export const NODE_IDS = Object.freeze([
-  'catalog-pipeline', 'cart-pipeline', 'checkout-pipeline', 'account-pipeline',
-  'immutable-artifacts', 'compatibility-gate', 'versioned-manifest', 'atomic-promotion',
-  'shell', 'top-router', 'catalog-slice', 'cart-slice', 'checkout-slice', 'account-slice',
-  'shared-runtime', 'slice-fallback', 'catalog-api', 'cart-api', 'order-api', 'account-api',
-]);
-export const LEGEND_ROLES = Object.freeze(['release', 'resolve', 'business', 'recovery']);
-export const EDGE_IDS = Object.freeze([
-  'catalog-release', 'cart-release', 'checkout-release', 'account-release',
-  'store-artifacts', 'validate-candidate', 'publish-manifest', 'promote-manifest',
-  'resolve-manifest', 'route-control', 'activate-catalog', 'activate-cart',
-  'activate-checkout', 'activate-account', 'share-runtime-catalog', 'share-runtime-cart',
-  'share-runtime-checkout', 'share-runtime-account', 'checkout-read-cart',
-  'checkout-submit-order', 'catalog-query', 'cart-query', 'account-query',
-  'load-failure', 'rollback-manifest', 'return-catalog', 'return-cart-version',
-  'return-order-id', 'return-account',
-]);
+export const REGION_IDS = Object.freeze(['ingress-routing', 'partition-runtime', 'recovery-and-durability', 'external-coordination']);
+export const NODE_IDS = Object.freeze(['booking-gateway', 'affinity-router', 'flight-date-key', 'primary-partition', 'backup-partition', 'availability-state', 'partition-service', 'replication-stream', 'checkpoint-log', 'recovery-controller', 'itinerary-workflow', 'derived-read-model']);
 export const EDGE_CONTRACTS = Object.freeze([
-  ['catalog-release', 'catalog-pipeline', 'immutable-artifacts', 'release', '商品制品'],
-  ['cart-release', 'cart-pipeline', 'immutable-artifacts', 'release', '购物车制品'],
-  ['checkout-release', 'checkout-pipeline', 'immutable-artifacts', 'release', '结算制品'],
-  ['account-release', 'account-pipeline', 'immutable-artifacts', 'release', '账户制品'],
-  ['store-artifacts', 'immutable-artifacts', 'compatibility-gate', 'release', '存储不可变制品'],
-  ['validate-candidate', 'compatibility-gate', 'versioned-manifest', 'release', '验证候选组合'],
-  ['publish-manifest', 'versioned-manifest', 'atomic-promotion', 'release', '生成完整清单'],
-  ['promote-manifest', 'atomic-promotion', 'shell', 'release', '原子提升'],
-  ['resolve-manifest', 'versioned-manifest', 'shell', 'resolve', '解析批准清单'],
-  ['route-control', 'shell', 'top-router', 'resolve', '匹配顶层路由'],
-  ['activate-catalog', 'top-router', 'catalog-slice', 'resolve', '挂载商品'],
-  ['activate-cart', 'top-router', 'cart-slice', 'resolve', '挂载购物车'],
-  ['activate-checkout', 'top-router', 'checkout-slice', 'resolve', '挂载结算'],
-  ['activate-account', 'top-router', 'account-slice', 'resolve', '挂载账户'],
-  ['share-runtime-catalog', 'shared-runtime', 'catalog-slice', 'resolve', '共享商品运行时'],
-  ['share-runtime-cart', 'shared-runtime', 'cart-slice', 'resolve', '共享购物车运行时'],
-  ['share-runtime-checkout', 'shared-runtime', 'checkout-slice', 'resolve', '共享结算运行时'],
-  ['share-runtime-account', 'shared-runtime', 'account-slice', 'resolve', '共享账户运行时'],
-  ['checkout-read-cart', 'checkout-slice', 'cart-api', 'business', '购物车 ID + 预期版本'],
-  ['checkout-submit-order', 'checkout-slice', 'order-api', 'business', '购物车 ID + 幂等键'],
-  ['catalog-query', 'catalog-slice', 'catalog-api', 'business', '查询商品'],
-  ['cart-query', 'cart-slice', 'cart-api', 'business', '查询购物车'],
-  ['account-query', 'account-slice', 'account-api', 'business', '查询账户'],
-  ['load-failure', 'checkout-slice', 'slice-fallback', 'recovery', '加载失败'],
-  ['rollback-manifest', 'slice-fallback', 'atomic-promotion', 'recovery', '回退完整清单'],
-  ['return-catalog', 'catalog-api', 'catalog-slice', 'business', '返回商品事实'],
-  ['return-cart-version', 'cart-api', 'checkout-slice', 'business', '返回带版本购物车'],
-  ['return-order-id', 'order-api', 'checkout-slice', 'business', '返回订单 ID'],
-  ['return-account', 'account-api', 'account-slice', 'business', '返回账户事实'],
+  ['route-affinity', 'booking-gateway', 'affinity-router', 'route', '航段 + 日期'], ['select-owner', 'affinity-router', 'flight-date-key', 'route', '亲和键'], ['dispatch-owner', 'flight-date-key', 'primary-partition', 'route', '唯一所有者'], ['local-operation', 'primary-partition', 'partition-service', 'local', '本地原子操作'], ['read-write-state', 'partition-service', 'availability-state', 'local', '余位、暂留、版本'], ['replicate-backup', 'primary-partition', 'backup-partition', 'replication', '同步复制'], ['persist-recovery', 'primary-partition', 'checkpoint-log', 'durability', '日志与检查点'], ['recover-owner', 'checkpoint-log', 'recovery-controller', 'recovery', '验证纪元与日志位置'], ['restore-write', 'recovery-controller', 'primary-partition', 'recovery', '恢复写入'], ['coordinate-itinerary', 'booking-gateway', 'itinerary-workflow', 'workflow', '多航段请求'], ['workflow-steps', 'itinerary-workflow', 'partition-service', 'workflow', '暂留、确认、补偿'], ['publish-statistics', 'availability-state', 'derived-read-model', 'derived', '带版本事件'],
 ]);
-export const NOTE_COPY = Object.freeze({
-  'authority-note': '稳定 ID 跨切片；业务真相留在后端',
-  'isolation-warning': '非隔离边界：主线程、DOM、全局 CSS、同源存储与网络会话',
-  'auth-warning': '切片已挂载 ≠ 已获业务权限',
-});
-export const ARTICLE_BOUNDARY_CONTRACTS = Object.freeze([
-  ['backend authority', '购物车和订单真相留在权威后端', '购物车和订单真相留在浏览器'],
-  ['stable identifiers', '切片之间只交换稳定标识、预期版本和幂等键', '切片之间广播完整可变对象'],
-  ['minimal sharing', '共享应用外壳只传最小只读会话上下文和购物车稳定标识', '共享应用外壳广播完整可变购物车对象'],
-  ['no mutable shared domain state', '领域模型与可变业务状态不进入公共层', '领域模型与可变业务状态进入公共层'],
-  ['complete atomic manifest', '候选发布以整份清单原子提升或回滚', '候选发布逐项提升或回滚'],
-  ['no latest resolution', '生产 Shell 不解析漂移的 latest，也不拼接未知组合', '生产 Shell 解析漂移的 latest 并拼接未知组合'],
-  ['slice-scoped degradation', '错误边界可以限制槽位影响', '错误边界只能触发整页故障'],
-  ['per-request authorization', '订单后端逐请求验证会话、租户、资源权限和业务不变量', '订单后端相信浏览器挂载状态'],
-  ['mount is not authorization', '切片挂载成功只说明界面生命周期完成，不代表后端授权通过', '切片挂载成功即可证明后端授权通过'],
-  ['same-page non-isolation', '同一主线程、DOM、全局 CSS、同源存储和网络会话不构成安全沙箱', '同页切片构成安全沙箱'],
-  ['frontend rollback cannot undo effects', '不能撤销已经发生的订单、支付或库存效果', '可以撤销已经发生的订单、支付或库存效果'],
-  ['non-adoption signal', '若否，保持模块化前端单体', '若否，仍采用浏览器运行时组合'],
-  ['exit signal', '触发后应合并切片、收窄公共层或退回模块化单体', '触发后应继续增加组合层'],
-]);
+export const EDGE_IDS = Object.freeze(EDGE_CONTRACTS.map(([id]) => id));
 
 const CONTENT_ROOT = fileURLToPath(new URL('../content/', import.meta.url));
 function file(path) { try { return readFileSync(path, 'utf8'); } catch (error) { if (error?.code === 'ENOENT') return undefined; throw error; } }
-function escapeRegExp(value) { return value.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&'); }
-function articleParts(source) { assert.ok(source, `${ARTICLE} must exist after implementation`); const close = source.indexOf('\n---', 3); assert.ok(close >= 0, 'front matter closes'); return {body: source.slice(close + 4)}; }
+function escapeRegExp(value) { return value.replace(/[.*+?^\$\{\}()|[\]\\]/gu, '\\$&'); }
+function articleParts(source) { assert.ok(source, ARTICLE + ' must exist after implementation'); const close = source.indexOf('\n---', 3); assert.ok(close >= 0, 'front matter closes'); return {body: source.slice(close + 4)}; }
 function visibleArticleBody(body) { return body.replace(/\{\/\*[\s\S]*?\*\/\}/gu, ''); }
-function exactWrapper(label) { return `<div role="region" aria-label="${label}" tabIndex={0} onKeyDown={handleHorizontalArrowKey}>`; }
-function replaceOnce(source, oldValue, newValue, label) { const changed = source.replace(oldValue, newValue); assert.notEqual(changed, source, `${label} mutation applies`); return changed; }
-function frontMatterFixture(metadata) { return Object.entries(metadata).flatMap(([key, value]) => Array.isArray(value) ? value.length ? [`${key}:`, ...value.map((item) => `  - ${item}`)] : [`${key}: []`] : [`${key}: ${value}`]).join('\n'); }
-function removeFrontMatterField(source, key) { return source.replace(new RegExp(`^${escapeRegExp(key)}:.*(?:\\r?\\n  - [^\\r\\n]+)*(?:\\r?\\n|$)`, 'mu'), ''); }
-function changeFrontMatterField(source, key) { const value = EXACT_METADATA[key]; return Array.isArray(value) && value.length ? replaceOnce(source, `  - ${value[0]}`, '  - changed', `${key} changed`) : replaceOnce(source, `${key}: ${Array.isArray(value) ? '[]' : value}`, `${key}: changed`, `${key} changed`); }
+function replaceOnce(source, oldValue, newValue, label) { const changed = source.replace(oldValue, newValue); assert.notEqual(changed, source, label + ' mutation applies'); return changed; }
+function frontMatterFixture(metadata) { return Object.entries(metadata).flatMap(([key, value]) => Array.isArray(value) ? value.length ? [key + ':', ...value.map((item) => '  - ' + item)] : [key + ': []'] : [key + ': ' + value]).join('\n'); }
+function removeFrontMatterField(source, key) { return source.replace(new RegExp('^' + escapeRegExp(key) + ':.*(?:\\r?\\n  - [^\\r\\n]+)*(?:\\r?\\n|$)', 'mu'), ''); }
 export function markdownTables(body) { const tables = []; const lines = body.split(/\r?\n/u); for (let index = 0; index < lines.length; index += 1) { if (!lines[index].startsWith('|')) continue; const rows = []; while (index < lines.length && lines[index].startsWith('|')) { rows.push(lines[index].slice(1, -1).split('|').map((cell) => cell.trim())); index += 1; } if (rows.length >= 3 && rows[1].every((cell) => /^:?-{3,}:?$/u.test(cell))) tables.push(rows); } return tables; }
-function table(body, header) { const found = markdownTables(body).find((candidate) => JSON.stringify(candidate[0]) === JSON.stringify(header)); assert.ok(found, `table ${header.join(' | ')}`); return found; }
-function exactRows(actual, expected, name) { assert.deepEqual(actual.slice(2), expected, `${name} exact ordered rows`); }
+function table(body, header) { const found = markdownTables(body).find((candidate) => JSON.stringify(candidate[0]) === JSON.stringify(header)); assert.ok(found, 'table ' + header.join(' | ')); return found; }
+function exactRows(actual, expected, name) { assert.deepEqual(actual.slice(2), expected, name + ' exact ordered rows'); }
 function attributes(tag) { return new Map([...tag.matchAll(/([:\w-]+)\s*=\s*(?:"([^"]*)"|'([^']*)')/gu)].map(([, key, double, single]) => [key, double ?? single])); }
 function decodeXmlText(value) { return value.replace(/&(?:#(\d+)|#x([\da-f]+)|amp|lt|gt|quot|apos);/giu, (entity, decimal, hex) => decimal ? String.fromCodePoint(Number(decimal)) : hex ? String.fromCodePoint(Number.parseInt(hex, 16)) : ({'&amp;': '&', '&lt;': '<', '&gt;': '>', '&quot;': '"', '&apos;': "'"})[entity] ?? entity); }
-export function parseDrawio(source) { const cells = [...source.matchAll(/<mxCell\b[^>]*(?:\/>|>[\s\S]*?<\/mxCell>)/gu)].map(([raw]) => { const open = /^<mxCell\b[^>]*>/u.exec(raw)?.[0] ?? raw; const geometry = /<mxGeometry\b([^>]*)/u.exec(raw)?.[1] ?? ''; const array = /<Array\s+as="points"[^>]*>([\s\S]*?)<\/Array>/u.exec(raw); const points = array ? [...array[1].matchAll(/<mxPoint\b([^>]*)/gu)].map(([, point]) => attributes(`<mxPoint ${point}>`)) : []; return {raw, attributes: attributes(open), geometry: attributes(`<mxGeometry ${geometry}>`), points, hasPointsArray: Boolean(array), misplacedPoints: [...raw.matchAll(/<mxPoint\b/g)].length - points.length, label: decodeXmlText(attributes(open).get('value') ?? '')}; }); return {cells, nodes: cells.filter(({attributes: item}) => item.get('vertex') === '1'), edges: cells.filter(({attributes: item}) => item.get('edge') === '1')}; }
-export function parseSvg(source) { const elements = []; const stack = []; for (const match of source.matchAll(/<\/?([A-Za-z][\w:.-]*)\b([^>]*)>/gu)) { const closing = match[0].startsWith('</'); if (closing) { const element = stack.pop(); assert.equal(element?.name, match[1], `balanced SVG element ${match[1]}`); element.closeIndex = match.index; continue; } const element = {name: match[1], attributes: attributes(match[2]), parent: stack.at(-1) ?? null, index: elements.length, sourceIndex: match.index, openEnd: match.index + match[0].length, closeIndex: match.index + match[0].length}; elements.push(element); if (!match[0].endsWith('/>')) stack.push(element); } assert.equal(stack.length, 0, 'balanced SVG tree'); return {elements, nodes: elements.filter(({attributes: item}) => item.has('data-node-id')), edges: elements.filter(({name, attributes: item}) => name === 'path' && item.has('data-edge-id'))}; }
-export function assertFlattenedSvg(elements) { for (const element of elements) assert.equal(element.attributes.has('transform'), false, `flattened SVG geometry: <${element.name}> has no transform`); }
-function number(value, label) { const result = Number.parseFloat(value); assert.ok(Number.isFinite(result), label); return result; }
-function numericBounds(attributesMap, label) { const result = Object.fromEntries(['x', 'y', 'width', 'height'].map((key) => [key, number(attributesMap.get(key), `${label} ${key}`)])); assert.ok(result.width >= 0 && result.height >= 0, `${label} nonnegative size`); return {...result, left: result.x, top: result.y, right: result.x + result.width, bottom: result.y + result.height}; }
-export function parsePathPoints(data) { assert.doesNotMatch(data ?? '', /[CQSAZ]/iu, 'connector path uses only M/L/H/V'); const tokens = data.match(/[A-Za-z]|-?(?:\d+(?:\.\d*)?|\.\d+)/gu) ?? []; const points = []; let cursor = 0; let command; let current = {x: 0, y: 0}; while (cursor < tokens.length) { if (/^[A-Za-z]$/u.test(tokens[cursor])) command = tokens[cursor++]; const relative = command === command?.toLowerCase(); const take = () => number(tokens[cursor++], 'path coordinate'); if (command?.toUpperCase() === 'M' || command?.toUpperCase() === 'L') { const x = take(); const y = take(); current = {x: relative ? current.x + x : x, y: relative ? current.y + y : y}; points.push(current); if (command?.toUpperCase() === 'M') command = relative ? 'l' : 'L'; } else if (command?.toUpperCase() === 'H') { const x = take(); current = {x: relative ? current.x + x : x, y: current.y}; points.push(current); } else if (command?.toUpperCase() === 'V') { const y = take(); current = {x: current.x, y: relative ? current.y + y : y}; points.push(current); } else assert.fail(`unsupported path command ${command}`); } assert.ok(points.length >= 2, 'visible connector path'); return points; }
+export function parseDrawio(source) { const cells = [...source.matchAll(/<mxCell\b[^>]*(?:\/>|>[\s\S]*?<\/mxCell>)/gu)].map(([raw]) => { const open = /^<mxCell\b[^>]*>/u.exec(raw)?.[0] ?? raw; return {attributes: attributes(open), label: decodeXmlText(attributes(open).get('value') ?? '')}; }); return {nodes: cells.filter(({attributes: item}) => item.get('vertex') === '1'), edges: cells.filter(({attributes: item}) => item.get('edge') === '1')}; }
+export function parseSvg(source) { const elements = []; const stack = []; for (const match of source.matchAll(/<\/?([A-Za-z][\w:.-]*)\b([^>]*)>/gu)) { if (match[0].startsWith('</')) { const element = stack.pop(); assert.equal(element?.name, match[1], 'balanced SVG element ' + match[1]); continue; } const element = {name: match[1], attributes: attributes(match[2]), parent: stack.at(-1) ?? null}; elements.push(element); if (!match[0].endsWith('/>')) stack.push(element); } assert.equal(stack.length, 0, 'balanced SVG tree'); return {elements, nodes: elements.filter(({attributes: item}) => item.has('data-node-id')), edges: elements.filter(({name, attributes: item}) => name === 'path' && item.has('data-edge-id'))}; }
+export function assertFlattenedSvg(elements) { for (const element of elements) assert.equal(element.attributes.has('transform'), false, 'flattened SVG geometry: <' + element.name + '> has no transform'); }
 function styleMap(value = '') { return new Map(value.split(';').filter(Boolean).map((item) => item.split(/=(.*)/su).map((part) => part.trim()))); }
-function cssDeclarations(source = '') { const result = new Map(); for (const declaration of source.split(';').map((item) => item.trim()).filter(Boolean)) { const split = declaration.indexOf(':'); if (split < 0) continue; const property = declaration.slice(0, split).trim().toLowerCase(); const raw = declaration.slice(split + 1).trim(); result.set(property, {value: raw.replace(/\s*!important\s*$/iu, '').trim(), important: /\s*!important\s*$/iu.test(raw)}); } return result; }
-function selectorSpecificity(selector) { return [(selector.match(/#[\w-]+/gu) ?? []).length, (selector.match(/\.[\w-]+|\[[^\]]+\]|:(?!:)[\w-]+/gu) ?? []).length, (selector.match(/(?:^|[\s>+~])([A-Za-z][\w-]*)/gu) ?? []).length]; }
-function compareSpecificity(left, right) { return left[0] - right[0] || left[1] - right[1] || left[2] - right[2]; }
-function styleRules(source) { const rules = []; let order = 0; for (const [, sheet] of source.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/gu)) for (const [, selectors, declarations] of sheet.replace(/\/\*[\s\S]*?\*\//gu, '').matchAll(/([^{}]+)\{([^{}]*)\}/gu)) for (const selector of selectors.split(',').map((item) => item.trim()).filter(Boolean)) rules.push({selector, declarations: cssDeclarations(declarations), specificity: selectorSpecificity(selector), order: order++}); return rules; }
-function simpleSelectorMatches(element, selector) { const simple = selector.trim(); if (!simple || /[+~>\s]/u.test(simple)) return false; if (simple.includes(':root') && element.parent) return false; const id = simple.match(/#([\w-]+)/u)?.[1]; const tag = simple.match(/^[A-Za-z][\w-]*/u)?.[0]; const classes = [...simple.matchAll(/\.([\w-]+)/gu)].map((match) => match[1]); const selectors = [...simple.matchAll(/\[([\w:-]+)(?:\s*=\s*["']?([^\]"']+)["']?)?\]/gu)]; return (!tag || element.name === tag) && (!id || element.attributes.get('id') === id) && classes.every((name) => (element.attributes.get('class') ?? '').split(/\s+/u).includes(name)) && selectors.every(([, key, value]) => element.attributes.has(key) && (value === undefined || element.attributes.get(key) === value.trim())); }
-function selectorMatches(element, selector) { const parts = selector.trim().replace(/\s*>\s*/gu, ' > ').split(/\s+/u).filter(Boolean); let candidate = element; let cursor = parts.length - 1; if (!simpleSelectorMatches(candidate, parts[cursor])) return false; cursor -= 1; while (cursor >= 0) { if (parts[cursor] === '>') { candidate = candidate.parent; if (!candidate || cursor === 0 || !simpleSelectorMatches(candidate, parts[cursor - 1])) return false; cursor -= 2; } else { candidate = candidate.parent; while (candidate && !simpleSelectorMatches(candidate, parts[cursor])) candidate = candidate.parent; if (!candidate) return false; cursor -= 1; } } return true; }
-function ownSvgPresentationValue(source, element, property) { let winner = element.attributes.has(property) ? {tier: 0, specificity: [0, 0, 0], order: -1, value: element.attributes.get(property)} : null; for (const rule of styleRules(source)) { const declaration = rule.declarations.get(property); if (!declaration || !selectorMatches(element, rule.selector)) continue; const candidate = {tier: declaration.important ? 3 : 1, specificity: rule.specificity, order: rule.order, value: declaration.value}; if (!winner || candidate.tier > winner.tier || candidate.tier === winner.tier && (compareSpecificity(candidate.specificity, winner.specificity) > 0 || compareSpecificity(candidate.specificity, winner.specificity) === 0 && candidate.order > winner.order)) winner = candidate; } const inline = cssDeclarations(element.attributes.get('style')).get(property); if (inline) { const candidate = {tier: inline.important ? 4 : 2, specificity: [1, 0, 0], order: Number.MAX_SAFE_INTEGER, value: inline.value}; if (!winner || candidate.tier >= winner.tier) winner = candidate; } return winner?.value; }
-const INHERITED_SVG_PROPERTIES = new Set(['color', 'fill', 'fill-opacity', 'font-family', 'font-size', 'font-style', 'font-weight', 'marker-end', 'marker-mid', 'marker-start', 'stroke', 'stroke-dasharray', 'stroke-linecap', 'stroke-linejoin', 'stroke-opacity', 'stroke-width', 'text-anchor', 'visibility']);
-export function svgPresentationValue(source, element, property) { const own = ownSvgPresentationValue(source, element, property); if (own !== undefined && !['inherit', 'unset'].includes(own)) return own === 'initial' ? undefined : own; if ((own === 'inherit' || own === 'unset' && INHERITED_SVG_PROPERTIES.has(property) || own === undefined && INHERITED_SVG_PROPERTIES.has(property)) && element.parent) return svgPresentationValue(source, element.parent, property); return undefined; }
-function absoluteDrawioBounds(node, nodeById) { const box = numericBounds(node.geometry, node.attributes.get('id')); const parent = nodeById.get(node.attributes.get('parent')); if (!parent || styleMap(parent.attributes.get('style')).get('semanticRole') !== 'region') return box; const parentBox = numericBounds(parent.geometry, parent.attributes.get('id')); return {...box, x: box.x + parentBox.x, y: box.y + parentBox.y, left: box.left + parentBox.x, right: box.right + parentBox.x, top: box.top + parentBox.y, bottom: box.bottom + parentBox.y}; }
-function terminalPoint(node, edge, side, nodeById) { const box = absoluteDrawioBounds(node, nodeById); const style = styleMap(edge.attributes.get('style')); for (const key of [`${side}X`, `${side}Y`, `${side}Dx`, `${side}Dy`, `${side}Perimeter`]) assert.ok(style.has(key), `${edge.attributes.get('id')} ${key}`); assert.equal(style.get(`${side}Dx`), '0', 'terminal dx'); assert.equal(style.get(`${side}Dy`), '0', 'terminal dy'); assert.equal(style.get(`${side}Perimeter`), '1', 'terminal perimeter'); const x = number(style.get(`${side}X`), 'normalized terminal x'); const y = number(style.get(`${side}Y`), 'normalized terminal y'); assert.ok(x >= 0 && x <= 1 && y >= 0 && y <= 1 && (x === 0 || x === 1 || y === 0 || y === 1), 'normalized terminal on perimeter'); return {x: box.x + box.width * x, y: box.y + box.height * y}; }
-export function drawioRoute(edge, nodeById) { const source = nodeById.get(edge.attributes.get('source')); const target = nodeById.get(edge.attributes.get('target')); assert.ok(source && target, `${edge.attributes.get('id')} real terminals`); assert.ok(edge.hasPointsArray, `${edge.attributes.get('id')} waypoint array`); assert.ok(edge.points.length > 0, `${edge.attributes.get('id')} explicit waypoint`); assert.equal(edge.misplacedPoints, 0, `${edge.attributes.get('id')} points only in waypoint array`); assert.equal(edge.points.some((point) => ['sourcePoint', 'targetPoint'].includes(point.get('as'))), false, `${edge.attributes.get('id')} no fallback points`); return [terminalPoint(source, edge, 'exit', nodeById), ...edge.points.map((point) => ({x: number(point.get('x'), 'waypoint x'), y: number(point.get('y'), 'waypoint y')})), terminalPoint(target, edge, 'entry', nodeById)]; }
+function cssDeclarations(source = '') { return new Map(source.split(';').map((item) => item.trim()).filter(Boolean).map((item) => { const index = item.indexOf(':'); return [item.slice(0, index).trim(), item.slice(index + 1).trim()]; })); }
+export function svgPresentationValue(source, element, property) { const inline = cssDeclarations(element.attributes.get('style')).get(property); if (inline !== undefined) return inline; if (element.attributes.has(property)) return element.attributes.get(property); for (const [, selector, declarations] of source.matchAll(/([^{}]+)\{([^{}]*)\}/gu)) if (selector.split(',').map((item) => item.trim()).includes(element.name)) return cssDeclarations(declarations).get(property); return undefined; }
+export function parsePathPoints(data) { assert.doesNotMatch(data ?? '', /[CQSAZ]/iu, 'connector path uses only M/L/H/V'); const tokens = data.match(/[A-Za-z]|-?(?:\d+(?:\.\d*)?|\.\d+)/gu) ?? []; const points = []; let cursor = 0; let command; let current = {x: 0, y: 0}; while (cursor < tokens.length) { if (/^[A-Za-z]$/u.test(tokens[cursor])) command = tokens[cursor++]; const take = () => Number.parseFloat(tokens[cursor++]); if (command?.toUpperCase() === 'M' || command?.toUpperCase() === 'L') { current = {x: take(), y: take()}; points.push(current); if (command?.toUpperCase() === 'M') command = 'L'; } else if (command?.toUpperCase() === 'H') { current = {x: take(), y: current.y}; points.push(current); } else if (command?.toUpperCase() === 'V') { current = {x: current.x, y: take()}; points.push(current); } else assert.fail('unsupported path command ' + command); } assert.ok(points.length >= 2 && points.every(({x, y}) => Number.isFinite(x) && Number.isFinite(y)), 'visible connector path'); return points; }
 export function glyphBox({x, y, text, fontSize, anchor = 'start'}) { const width = [...text].reduce((total, character) => total + (/^[\u0000-\u00ff]$/u.test(character) ? .64 : 1), 0) * fontSize; const left = anchor === 'middle' ? x - width / 2 : anchor === 'end' ? x - width : x; return {left, right: left + width, top: y - fontSize * .82, bottom: y + fontSize * .22}; }
-export function alphaCompose(backdrop, foreground) { const alpha = foreground.alpha + backdrop.alpha * (1 - foreground.alpha); if (alpha === 0) return {red: 0, green: 0, blue: 0, alpha: 0}; return {red: (foreground.red * foreground.alpha + backdrop.red * backdrop.alpha * (1 - foreground.alpha)) / alpha, green: (foreground.green * foreground.alpha + backdrop.green * backdrop.alpha * (1 - foreground.alpha)) / alpha, blue: (foreground.blue * foreground.alpha + backdrop.blue * backdrop.alpha * (1 - foreground.alpha)) / alpha, alpha}; }
-function close(left, right, label) { assert.ok(Math.abs(left - right) < .01, `${label}: ${left} !== ${right}`); }
-export function markerEnvelope(endpoint, previous, {width, height, refX, refY, viewBox = [0, 0, width, height], pathBounds = {left: viewBox[0], top: viewBox[1], right: viewBox[0] + viewBox[2], bottom: viewBox[1] + viewBox[3]}, preserveAspectRatio = 'xMidYMid meet'}) { const dx = endpoint.x - previous.x; const dy = endpoint.y - previous.y; const length = Math.hypot(dx, dy); assert.ok(length > 0, 'marker terminal direction'); const [, , viewWidth, viewHeight] = viewBox; assert.ok(viewWidth > 0 && viewHeight > 0 && width > 0 && height > 0, 'positive marker viewport and viewBox'); const unit = {x: dx / length, y: dy / length}; const normal = {x: -unit.y, y: unit.x}; const [scaleX, scaleY] = preserveAspectRatio === 'none' ? [width / viewWidth, height / viewHeight] : (assert.equal(preserveAspectRatio, 'xMidYMid meet', 'supported marker preserveAspectRatio'), close(width / viewWidth, height / viewHeight, 'meet marker aspect ratio'), [width / viewWidth, height / viewHeight]); const points = [[pathBounds.left, pathBounds.top], [pathBounds.right, pathBounds.top], [pathBounds.right, pathBounds.bottom], [pathBounds.left, pathBounds.bottom]].map(([x, y]) => ({x: endpoint.x + unit.x * (x - refX) * scaleX + normal.x * (y - refY) * scaleY, y: endpoint.y + unit.y * (x - refX) * scaleX + normal.y * (y - refY) * scaleY})); return {left: Math.min(...points.map(({x}) => x)), right: Math.max(...points.map(({x}) => x)), top: Math.min(...points.map(({y}) => y)), bottom: Math.max(...points.map(({y}) => y))}; }
-function assertExactDuplicateFreeIds(actual, expected, label) { assert.equal(new Set(actual).size, actual.length, `${label} identities are duplicate-free`); assert.deepEqual([...actual].sort(), [...expected].sort(), `${label} exact identity set`); }
-
-function hiddenDrawioCell(cell) {
-  const style = styleMap(cell.attributes.get('style'));
-  return cell.attributes.get('visible') === '0' || style.get('visible') === '0' || style.get('opacity') === '0';
-}
-
-function hiddenSvgElement(source, element) {
-  const opacity = number(svgPresentationValue(source, element, 'opacity') ?? '1', 'SVG opacity');
-  const paintIsTransparent = (value) => value === undefined || /^(?:none|transparent)$/iu.test(value.trim()) || /^rgba\([^)]*,\s*0(?:\.0+)?\s*\)$/iu.test(value.trim()) || /^hsla\([^)]*,\s*0(?:\.0+)?\s*\)$/iu.test(value.trim()) || /^#[\da-f]{6}00$/iu.test(value.trim()) || /^#[\da-f]{3}0$/iu.test(value.trim());
-  const painted = (property) => !paintIsTransparent(svgPresentationValue(source, element, property)) && number(svgPresentationValue(source, element, `${property}-opacity`) ?? '1', `${property} opacity`) * opacity > 0;
-  const hasVisiblePaint = element.name === 'path' && element.attributes.has('data-edge-id')
-    ? painted('stroke') && number(svgPresentationValue(source, element, 'stroke-width') ?? '1', 'stroke width') > 0
-    : painted('fill') || painted('stroke') && number(svgPresentationValue(source, element, 'stroke-width') ?? '1', 'stroke width') > 0;
-  return element.attributes.get('aria-hidden') === 'true'
-    || svgPresentationValue(source, element, 'display') === 'none'
-    || ['hidden', 'collapse'].includes(svgPresentationValue(source, element, 'visibility'))
-    || opacity === 0
-    || !hasVisiblePaint;
-}
-
-function logicalDrawioNodeId(value) { return value?.replace(/^node-/u, ''); }
-function assertRoutesClose(actual, expected, label) { assert.equal(actual.length, expected.length, `${label} point count`); for (let index = 0; index < actual.length; index += 1) { assert.ok(Math.abs(actual[index].x - expected[index].x) <= .01, `${label} point ${index} x`); assert.ok(Math.abs(actual[index].y - expected[index].y) <= .01, `${label} point ${index} y`); } }
-function elementText(source, element) { return decodeXmlText(source.slice(element.openEnd, element.closeIndex).replace(/<[^>]+>/gu, '').trim()); }
-
-function positiveCollinearOverlap(leftStart, leftEnd, rightStart, rightEnd) {
-  if (leftStart.x === leftEnd.x && rightStart.x === rightEnd.x && leftStart.x === rightStart.x) return Math.min(Math.max(leftStart.y, leftEnd.y), Math.max(rightStart.y, rightEnd.y)) - Math.max(Math.min(leftStart.y, leftEnd.y), Math.min(rightStart.y, rightEnd.y));
-  if (leftStart.y === leftEnd.y && rightStart.y === rightEnd.y && leftStart.y === rightStart.y) return Math.min(Math.max(leftStart.x, leftEnd.x), Math.max(rightStart.x, rightEnd.x)) - Math.max(Math.min(leftStart.x, leftEnd.x), Math.min(rightStart.x, rightEnd.x));
-  return 0;
-}
-
-function perpendicularIntersection(leftStart, leftEnd, rightStart, rightEnd) {
-  const leftVertical = leftStart.x === leftEnd.x; const rightVertical = rightStart.x === rightEnd.x;
-  if (leftVertical === rightVertical) return undefined;
-  const vertical = leftVertical ? [leftStart, leftEnd] : [rightStart, rightEnd];
-  const horizontal = leftVertical ? [rightStart, rightEnd] : [leftStart, leftEnd];
-  const point = {x: vertical[0].x, y: horizontal[0].y};
-  return point.y >= Math.min(vertical[0].y, vertical[1].y) && point.y <= Math.max(vertical[0].y, vertical[1].y)
-    && point.x >= Math.min(horizontal[0].x, horizontal[1].x) && point.x <= Math.max(horizontal[0].x, horizontal[1].x) ? point : undefined;
-}
-
-function intersectionIdentity(leftId, rightId, point) {
-  const [first, second] = [leftId, rightId].sort();
-  return `${first}|${second}|${point.x}|${point.y}`;
-}
-
-function edgePathElements(svg, id) {
-  const primary = svg.edges.find(({attributes}) => attributes.get('data-edge-id') === id);
-  assert.ok(primary, `${id} primary semantic path`);
-  const segments = svg.elements.filter(({name, attributes: item}) => name === 'path' && item.get('data-edge-segment-for') === id)
-    .sort((left, right) => number(left.attributes.get('data-segment-order'), `${id} segment order`) - number(right.attributes.get('data-segment-order'), `${id} segment order`));
-  assert.deepEqual(segments.map(({attributes: item}) => number(item.get('data-segment-order'), `${id} segment order`)), segments.map((_, index) => index + 2), `${id} contiguous additional segment order`);
-  return [primary, ...segments];
-}
-
-function logicalSvgRoute(svg, id) {
-  return edgePathElements(svg, id).flatMap((path, index) => {
-    const points = parsePathPoints(path.attributes.get('d'));
-    return index === 0 ? points : points;
-  });
-}
-
-function semanticSegments(svg) {
-  return svg.edges.flatMap((edge) => {
-    const id = edge.attributes.get('data-edge-id');
-    return edgePathElements(svg, id).flatMap((path) => {
-      const points = parsePathPoints(path.attributes.get('d'));
-      return points.slice(1).map((end, index) => ({
-        id, source: edge.attributes.get('data-source'), target: edge.attributes.get('data-target'),
-        start: points[index], end,
-      }));
-    });
-  });
-}
-
-function sharedEndpointIntersection(left, right, point) {
-  const endpoint = (segment) => [segment.start, segment.end].some((candidate) => candidate.x === point.x && candidate.y === point.y);
-  return endpoint(left) && endpoint(right) && [left.source, left.target].some((nodeId) => [right.source, right.target].includes(nodeId));
-}
-
-function expandedBox(box, amount) { return {left: box.left - amount, right: box.right + amount, top: box.top - amount, bottom: box.bottom + amount}; }
-function boxDistance(left, right) { const dx = Math.max(0, left.left - right.right, right.left - left.right); const dy = Math.max(0, left.top - right.bottom, right.top - left.bottom); return Math.hypot(dx, dy); }
-function segmentEnvelope(start, end, halfStroke) { return expandedBox({left: Math.min(start.x, end.x), right: Math.max(start.x, end.x), top: Math.min(start.y, end.y), bottom: Math.max(start.y, end.y)}, halfStroke); }
-function boundsAttribute(element, attribute, label) { const values = element.attributes.get(attribute).split(/\s+/u); return numericBounds(new Map(['x', 'y', 'width', 'height'].map((key, index) => [key, values[index]])), label); }
-
-function markerPathBounds(svg, marker) {
-  const child = marker && svg.elements.find((element) => element.parent === marker && element.name === 'path');
-  assert.ok(child, `${marker?.attributes.get('id')} marker path`);
-  const coordinates = [...(child.attributes.get('d') ?? '').matchAll(/-?(?:\d+(?:\.\d*)?|\.\d+)/gu)].map(([value]) => Number(value));
-  assert.ok(coordinates.length >= 4 && coordinates.length % 2 === 0, `${marker.attributes.get('id')} marker coordinate pairs`);
-  const points = Array.from({length: coordinates.length / 2}, (_, index) => ({x: coordinates[index * 2], y: coordinates[index * 2 + 1]}));
-  return {left: Math.min(...points.map(({x}) => x)), right: Math.max(...points.map(({x}) => x)), top: Math.min(...points.map(({y}) => y)), bottom: Math.max(...points.map(({y}) => y))};
-}
-
-function transformedMarkerBox(svgSource, svg, edge) {
-  const markerId = /url\(#([^)]+)\)/u.exec(svgPresentationValue(svgSource, edge, 'marker-end') ?? '')?.[1];
-  const marker = svg.elements.find((element) => element.name === 'marker' && element.attributes.get('id') === markerId);
-  assert.ok(marker, `${edge.attributes.get('data-edge-id')} marker definition`);
-  const points = parsePathPoints(edge.attributes.get('d')); const endpoint = points.at(-1); const previous = points.at(-2);
-  const strokeWidth = number(svgPresentationValue(svgSource, edge, 'stroke-width'), `${edge.attributes.get('data-edge-id')} stroke width`);
-  const units = marker.attributes.get('markerUnits') ?? 'strokeWidth'; const unitScale = units === 'strokeWidth' ? strokeWidth : (assert.equal(units, 'userSpaceOnUse', 'supported marker units'), 1);
-  const viewBox = (marker.attributes.get('viewBox') ?? '').split(/\s+/u).map(Number); assert.equal(viewBox.length, 4, `${markerId} marker viewBox`);
-  return markerEnvelope(endpoint, previous, {
-    width: number(marker.attributes.get('markerWidth'), `${markerId} width`) * unitScale,
-    height: number(marker.attributes.get('markerHeight'), `${markerId} height`) * unitScale,
-    refX: number(marker.attributes.get('refX'), `${markerId} refX`), refY: number(marker.attributes.get('refY'), `${markerId} refY`),
-    viewBox, pathBounds: markerPathBounds(svg, marker), preserveAspectRatio: marker.attributes.get('preserveAspectRatio') ?? 'xMidYMid meet',
-  });
-}
-
-function segmentCrossesBox(start, end, box) {
-  if (start.x === end.x) return start.x > box.left && start.x < box.right && Math.max(Math.min(start.y, end.y), box.top) < Math.min(Math.max(start.y, end.y), box.bottom);
-  if (start.y === end.y) return start.y > box.top && start.y < box.bottom && Math.max(Math.min(start.x, end.x), box.left) < Math.min(Math.max(start.x, end.x), box.right);
-  assert.fail('semantic connectors must remain orthogonal');
-}
-
-function svgRegionBounds(svg) {
-  return new Map(svg.elements.filter(({attributes}) => attributes.has('data-region-bounds')).map((region) => {
-    const values = region.attributes.get('data-region-bounds').split(/\s+/u);
-    return [region.attributes.get('data-region-id'), numericBounds(new Map(['x', 'y', 'width', 'height'].map((key, index) => [key, values[index]])), region.attributes.get('data-region-id'))];
-  }));
-}
-
-function assertVerticalRegionStack(drawio, svg) {
-  const svgBounds = svgRegionBounds(svg);
-  const drawioBounds = new Map(drawio.nodes.filter(({attributes}) => styleMap(attributes.get('style')).get('semanticRole') === 'region').map((region) => [region.attributes.get('id'), numericBounds(region.geometry, region.attributes.get('id'))]));
-  assert.deepEqual([...svgBounds].sort((left, right) => left[1].top - right[1].top).map(([id]) => id), REGION_IDS, 'SVG regions exact vertical release/browser/authority order');
-  assert.deepEqual([...drawioBounds].sort((left, right) => left[1].top - right[1].top).map(([id]) => id), REGION_IDS, 'Draw.io regions exact vertical release/browser/authority order');
-  for (const id of REGION_IDS) assert.deepEqual(drawioBounds.get(id), svgBounds.get(id), `${id} synchronized Draw.io/SVG bounds`);
-  for (let index = 1; index < REGION_IDS.length; index += 1) {
-    const previous = svgBounds.get(REGION_IDS[index - 1]); const current = svgBounds.get(REGION_IDS[index]);
-    assert.ok(previous.bottom < current.top, `${REGION_IDS[index - 1]} ends above ${REGION_IDS[index]}`);
-    assert.deepEqual([current.left, current.right], [previous.left, previous.right], `${REGION_IDS[index]} shares the vertical stack width`);
-  }
-}
-
-function assertBrowserOwnedRouteContainment(svg) {
-  const browser = svgRegionBounds(svg).get('browser-runtime-plane');
-  const authority = svgRegionBounds(svg).get('authority-business-plane');
-  for (const id of BROWSER_OWNED_EDGE_IDS) {
-    const edge = svg.edges.find(({attributes}) => attributes.get('data-edge-id') === id);
-    assert.ok(edge, `${id} browser-owned route`);
-    for (const point of parsePathPoints(edge.attributes.get('d'))) {
-      assert.ok(point.x >= browser.left && point.x <= browser.right && point.y >= browser.top && point.y <= browser.bottom, `${id} stays inside browser plane`);
-      assert.equal(point.x > authority.left && point.x < authority.right && point.y > authority.top && point.y < authority.bottom, false, `${id} never traverses authoritative plane`);
-    }
-  }
-}
-
-function assertRenderedGeometry(svgSource, svg) {
-  const scale = 800 / 2400;
-  const nodeMetrics = [];
-  const edgeLabelMetrics = [];
-  const regionBounds = svgRegionBounds(svg);
-  const nodeBounds = new Map();
-  for (const node of svg.nodes) {
-    const id = node.attributes.get('data-node-id'); const shape = svg.elements.find((element) => element.parent === node && element.attributes.get('data-node-shape-for') === id);
-    assert.ok(shape && shape.name === 'rect', `${id} actual node rectangle`);
-    const box = numericBounds(shape.attributes, id); const halfStroke = number(svgPresentationValue(svgSource, shape, 'stroke-width'), `${id} stroke width`) / 2;
-    nodeBounds.set(id, expandedBox(box, halfStroke));
-    const region = regionBounds.get(node.parent.attributes.get('data-region-id'));
-    const regionClearance = Math.min(box.left - region.left, region.right - box.right, box.top - region.top, region.bottom - box.bottom) * scale;
-    assert.ok(regionClearance >= 12, `${id} >= 12px node-to-region clearance`);
-    const title = svg.elements.find((element) => element.parent === node && element.attributes.get('data-node-title-for') === id);
-    const type = svg.elements.find((element) => element.parent === node && element.attributes.get('data-node-type-for') === id);
-    assert.ok(title && type, `${id} title/type pair`);
-    const titleFont = number(svgPresentationValue(svgSource, title, 'font-size'), `${id} title font`);
-    const typeFont = number(svgPresentationValue(svgSource, type, 'font-size'), `${id} type font`);
-    assert.ok(titleFont * scale >= 15 && typeFont * scale >= 10, `${id} rendered fonts >= 15px / 10px`);
-    const titleBox = glyphBox({x: number(title.attributes.get('x'), `${id} title x`), y: number(title.attributes.get('y'), `${id} title y`), text: elementText(svgSource, title), fontSize: titleFont, anchor: title.attributes.get('text-anchor')});
-    const typeBox = glyphBox({x: number(type.attributes.get('x'), `${id} type x`), y: number(type.attributes.get('y'), `${id} type y`), text: elementText(svgSource, type), fontSize: typeFont, anchor: type.attributes.get('text-anchor')});
-    const horizontalTitlePadding = Math.min(titleBox.left - box.left, box.right - titleBox.right) * scale;
-    const titleTopPadding = (titleBox.top - box.top) * scale;
-    const baselineGap = (number(type.attributes.get('y'), `${id} type baseline`) - number(title.attributes.get('y'), `${id} title baseline`)) * scale;
-    const textBottomClearance = (box.bottom - typeBox.bottom) * scale;
-    assert.ok(horizontalTitlePadding >= 16, `${id} >= 16px horizontal title padding`);
-    assert.ok(titleTopPadding >= 14, `${id} >= 14px title top padding`);
-    assert.ok(baselineGap >= 22, `${id} >= 22px title/type baseline gap`);
-    assert.ok(textBottomClearance >= 14, `${id} >= 14px text bottom clearance`);
-    nodeMetrics.push({id, regionClearance, horizontalTitlePadding, titleTopPadding, baselineGap, textBottomClearance});
-  }
-  const segments = semanticSegments(svg).map((segment) => {
-    const edge = svg.edges.find(({attributes}) => attributes.get('data-edge-id') === segment.id);
-    const halfStroke = number(svgPresentationValue(svgSource, edge, 'stroke-width'), `${segment.id} stroke width`) / 2;
-    return {...segment, envelope: segmentEnvelope(segment.start, segment.end, halfStroke)};
-  });
-  for (const segment of segments) for (const [id, box] of nodeBounds) if (![segment.source, segment.target].includes(id)) assert.equal(segmentCrossesBox(segment.start, segment.end, box), false, `${segment.id} does not cross unrelated ${id}`);
-  for (let left = 0; left < segments.length; left += 1) for (let right = left + 1; right < segments.length; right += 1) if (segments[left].id !== segments[right].id) {
-    assert.ok(positiveCollinearOverlap(segments[left].start, segments[left].end, segments[right].start, segments[right].end) <= 0, `${segments[left].id}/${segments[right].id} no positive collinear overlap`);
-  }
-  const glyphBounds = (element, label) => {
-    const runs = svg.elements.filter((candidate) => candidate.parent === element && candidate.name === 'tspan');
-    const boxes = (runs.length ? runs : [element]).map((run, index) => glyphBox({x: number(run.attributes.get('x') ?? element.attributes.get('x'), `${label} run ${index} x`), y: number(run.attributes.get('y') ?? element.attributes.get('y'), `${label} run ${index} y`), text: elementText(svgSource, run), fontSize: number(svgPresentationValue(svgSource, run, 'font-size') ?? svgPresentationValue(svgSource, element, 'font-size'), `${label} run ${index} font`), anchor: run.attributes.get('text-anchor') ?? element.attributes.get('text-anchor')}));
-    return {left: Math.min(...boxes.map(({left}) => left)), right: Math.max(...boxes.map(({right}) => right)), top: Math.min(...boxes.map(({top}) => top)), bottom: Math.max(...boxes.map(({bottom}) => bottom))};
-  };
-  const protectedText = svg.elements.filter((element) => element.name === 'text' && ['data-node-title-for', 'data-node-type-for', 'data-region-label-for', 'data-note-text-for'].some((attribute) => element.attributes.has(attribute)));
-  for (const textElement of protectedText) {
-    const identity = ['data-node-title-for', 'data-node-type-for', 'data-region-label-for', 'data-note-text-for'].map((attribute) => textElement.attributes.get(attribute)).find(Boolean);
-    const box = glyphBounds(textElement, identity);
-    for (const segment of segments) assert.ok(boxDistance(box, segment.envelope) * scale >= 8, `${segment.id} clears protected text ${identity} by 8px`);
-  }
-  const regionLabels = new Map(svg.elements.filter((element) => element.name === 'text' && element.attributes.has('data-region-label-for')).map((element) => [element.attributes.get('data-region-label-for'), glyphBounds(element, element.attributes.get('data-region-label-for'))]));
-  const noteBoxes = svg.elements.filter(({attributes}) => attributes.has('data-note-id')).map((group) => { const id = group.attributes.get('data-note-id'); const shape = svg.elements.find((element) => element.parent === group && element.name === 'rect'); assert.ok(shape, `${id} note rectangle`); return [id, expandedBox(numericBounds(shape.attributes, id), number(svgPresentationValue(svgSource, shape, 'stroke-width'), `${id} stroke width`) / 2)]; });
-  for (const [id, noteBox] of noteBoxes) {
-    for (const [nodeId, nodeBox] of nodeBounds) assert.ok(boxDistance(noteBox, nodeBox) > 0, `${id} does not overlap ${nodeId}`);
-    for (const [regionId, labelBox] of regionLabels) assert.ok(boxDistance(noteBox, labelBox) > 0, `${id} does not overlap region label ${regionId}`);
-  }
-  for (let left = 0; left < noteBoxes.length; left += 1) for (let right = left + 1; right < noteBoxes.length; right += 1) assert.ok(boxDistance(noteBoxes[left][1], noteBoxes[right][1]) > 0, `${noteBoxes[left][0]}/${noteBoxes[right][0]} notes do not overlap`);
-  for (const [regionId, labelBox] of regionLabels) for (const [nodeId, nodeBox] of nodeBounds) assert.ok(boxDistance(labelBox, nodeBox) > 0, `${regionId} label does not overlap ${nodeId}`);
-
-  const labelElements = svg.elements.filter((element) => element.name === 'text' && element.attributes.has('data-edge-label-for'));
-  assertExactDuplicateFreeIds(labelElements.map(({attributes}) => attributes.get('data-edge-label-for')), EDGE_IDS, 'SVG edge labels');
-  assertExactDuplicateFreeIds(Object.keys(EDGE_LABEL_REGIONS), EDGE_IDS, 'edge label region contracts');
-  const labelBoxes = new Map(labelElements.map((element) => [element.attributes.get('data-edge-label-for'), glyphBounds(element, `${element.attributes.get('data-edge-label-for')} edge label`)]));
-  for (let left = 0; left < labelElements.length; left += 1) for (let right = left + 1; right < labelElements.length; right += 1) {
-    const leftId = labelElements[left].attributes.get('data-edge-label-for'); const rightId = labelElements[right].attributes.get('data-edge-label-for');
-    assert.ok(boxDistance(labelBoxes.get(leftId), labelBoxes.get(rightId)) * scale >= 6, `${leftId}/${rightId} edge labels have >= 6px separation`);
-  }
-  for (const [id, box] of labelBoxes) {
-    const regionId = EDGE_LABEL_REGIONS[id]; const region = regionBounds.get(regionId);
-    const boundaryClearance = Math.min(box.left - region.left, region.right - box.right, box.top - region.top, region.bottom - box.bottom) * scale;
-    assert.ok(boundaryClearance >= 12, `${id} label remains inside ${regionId} with >= 12px boundary clearance`);
-  }
-  const markerBoxes = svg.edges.map((edge) => {
-    const id = edge.attributes.get('data-edge-id'); const markerPaths = edgePathElements(svg, id).filter((path) => path.attributes.has('marker-end'));
-    assert.equal(markerPaths.length, 1, `${id} exactly one terminal marker across split segments`);
-    return [id, transformedMarkerBox(svgSource, svg, markerPaths[0])];
-  });
-  for (const labelElement of labelElements) {
-    const id = labelElement.attributes.get('data-edge-label-for'); const labelBox = glyphBounds(labelElement, `${id} edge label`);
-    assert.ok(number(svgPresentationValue(svgSource, labelElement, 'font-size'), `${id} label font`) * scale >= 15, `${id} rendered label font >= 15px`);
-    const ownSegments = segments.filter(({id: edgeId}) => edgeId === id);
-    const otherSegments = segments.filter(({id: edgeId}) => edgeId !== id);
-    assert.ok(ownSegments.length > 0, `${id} own semantic route segments`);
-    const ownStrokeDistance = Math.min(...ownSegments.map(({envelope}) => boxDistance(labelBox, envelope)));
-    const [nearestOtherStrokeId, nearestOtherStrokeDistance] = otherSegments.map(({id: edgeId, envelope}) => [edgeId, boxDistance(labelBox, envelope)]).sort((left, right) => left[1] - right[1])[0];
-    const [nearestMarkerId, markerDistance] = markerBoxes.map(([edgeId, box]) => [edgeId, boxDistance(labelBox, box)]).sort((left, right) => left[1] - right[1])[0];
-    const [nearestNodeId, nodeDistance] = [...nodeBounds].map(([nodeId, box]) => [nodeId, boxDistance(labelBox, box)]).sort((left, right) => left[1] - right[1])[0];
-    const ownStrokeClearance = ownStrokeDistance * scale; const nearestOtherStrokeClearance = nearestOtherStrokeDistance * scale;
-    const markerClearance = markerDistance * scale; const nodeClearance = nodeDistance * scale;
-    assert.ok(ownStrokeClearance >= 8, `${id} own-route visible glyph-to-stroke clearance ${ownStrokeClearance}px >= 8px`);
-    assert.ok(ownStrokeClearance <= 24, `${id} own-route association gap ${ownStrokeClearance}px <= 24px`);
-    assert.ok(ownStrokeDistance < nearestOtherStrokeDistance, `${id} own route is the unambiguous nearest semantic stroke (${ownStrokeClearance}px < ${nearestOtherStrokeClearance}px from ${nearestOtherStrokeId})`);
-    assert.ok(markerClearance >= 16, `${id} visible glyph-to-marker clearance ${markerClearance}px >= 16px (nearest ${nearestMarkerId})`);
-    assert.ok(nodeClearance >= 12, `${id} visible glyph-to-node clearance ${nodeClearance}px >= 12px (nearest ${nearestNodeId})`);
-    edgeLabelMetrics.push({id, ownStrokeClearance, nearestOtherStrokeClearance, nearestOtherStrokeId, markerClearance, nodeClearance, nearestMarkerId, nearestNodeId});
-  }
-  assert.ok(svg.edges.every((edge) => edge.index > Math.max(...svg.nodes.map(({index}) => index))), 'semantic routes paint after nodes; no later node mask can erase a route');
-  const rolePatterns = new Map();
-  for (const role of LEGEND_ROLES) { const representative = svg.edges.find(({attributes}) => attributes.get('data-edge-role') === role); assert.ok(representative, `${role} representative edge`); const markerPath = edgePathElements(svg, representative.attributes.get('data-edge-id')).find((path) => path.attributes.has('marker-end')); rolePatterns.set(role, `${representative.attributes.get('stroke-dasharray') ?? 'solid'}|${markerPath?.attributes.get('marker-end')}`); }
-  assert.equal(new Set(rolePatterns.values()).size, LEGEND_ROLES.length, 'line patterns and markers encode all roles without color');
-  for (const role of LEGEND_ROLES) { const caption = svg.elements.find(({attributes}) => attributes.get('data-legend-caption-for') === role); const marker = svg.elements.find(({attributes}) => attributes.get('data-legend-role') === role); const captionFont = number(svgPresentationValue(svgSource, caption, 'font-size'), `${role} caption font`); assert.ok(captionFont * scale >= 10, `${role} rendered legend caption >= 10px`); const captionBox = glyphBox({x: number(caption.attributes.get('x'), `${role} caption x`), y: number(caption.attributes.get('y'), `${role} caption y`), text: elementText(svgSource, caption), fontSize: captionFont, anchor: caption.attributes.get('text-anchor')}); const path = parsePathPoints(marker.attributes.get('d')); const markerBox = transformedMarkerBox(svgSource, svg, {...marker, attributes: new Map([...marker.attributes, ['marker-end', marker.attributes.get('marker-end')]])}); const swatchSegments = path.slice(1).map((end, index) => segmentEnvelope(path[index], end, number(svgPresentationValue(svgSource, marker, 'stroke-width'), `${role} legend stroke width`) / 2)); assert.ok(boxDistance(captionBox, markerBox) * scale >= 16, `${role} caption-to-marker clearance >= 16px`); assert.ok(Math.min(...swatchSegments.map((box) => boxDistance(captionBox, box))) * scale >= 8, `${role} caption-to-swatch clearance >= 8px`); }
-  if (process.env.STY12_GEOMETRY_REPORT === '1') console.log(`STY12_GEOMETRY ${JSON.stringify({nodeMetrics, edgeLabelMetrics})}`);
-}
-
-function parseBridgeArc(data, label) {
-  const match = /^M\s*(-?(?:\d+(?:\.\d*)?|\.\d+))\s+(-?(?:\d+(?:\.\d*)?|\.\d+))\s+L\s*(-?(?:\d+(?:\.\d*)?|\.\d+))\s+(-?(?:\d+(?:\.\d*)?|\.\d+))\s+Q\s*(-?(?:\d+(?:\.\d*)?|\.\d+))\s+(-?(?:\d+(?:\.\d*)?|\.\d+))\s+(-?(?:\d+(?:\.\d*)?|\.\d+))\s+(-?(?:\d+(?:\.\d*)?|\.\d+))\s+L\s*(-?(?:\d+(?:\.\d*)?|\.\d+))\s+(-?(?:\d+(?:\.\d*)?|\.\d+))$/u.exec(data ?? '');
-  assert.ok(match, `${label} actual M/L/Q/L bridge arc geometry`);
-  const values = match.slice(1).map(Number); assert.ok(values.every(Number.isFinite), `${label} finite arc geometry`);
-  return {start: {x: values[0], y: values[1]}, shoulder: {x: values[2], y: values[3]}, control: {x: values[4], y: values[5]}, curveEnd: {x: values[6], y: values[7]}, end: {x: values[8], y: values[9]}};
-}
-
-function bridgeGeometryKey(owner, under, x, y) { return `${owner}|${under}|${x}|${y}`; }
-
-function quadraticPoint({shoulder, control, curveEnd}, t) {
-  const inverse = 1 - t;
-  return {
-    x: inverse * inverse * shoulder.x + 2 * inverse * t * control.x + t * t * curveEnd.x,
-    y: inverse * inverse * shoulder.y + 2 * inverse * t * control.y + t * t * curveEnd.y,
-  };
-}
-
-function pointToBoxDistance(point, box) {
-  return Math.hypot(Math.max(0, box.left - point.x, point.x - box.right), Math.max(0, box.top - point.y, point.y - box.bottom));
-}
-
-function sampledArcUnderClearance(arc, underSegments, ownerStrokeWidth, underStrokeWidth) {
-  const underEnvelopes = underSegments.map(({start, end}) => segmentEnvelope(start, end, underStrokeWidth / 2));
-  const centerlineToUnderStroke = Math.min(...Array.from({length: 257}, (_, index) => {
-    const point = quadraticPoint(arc, index / 256);
-    return Math.min(...underEnvelopes.map((envelope) => pointToBoxDistance(point, envelope)));
-  }));
-  return {centerlineToUnderStroke, paintedStrokeToUnderStroke: centerlineToUnderStroke - ownerStrokeWidth / 2};
-}
-
-function underSvgAncestor(element, predicate) {
-  for (let current = element.parent; current; current = current.parent) if (predicate(current)) return true;
-  return false;
-}
-
-function legendDoesNotCoverSemanticRoutes(svgSource, svg, legend) {
-  const legendSegments = parsePathPoints(legend.attributes.get('d')).slice(1).map((end, index, points) => segmentEnvelope(points[index], end, number(svgPresentationValue(svgSource, legend, 'stroke-width'), `${legend.attributes.get('data-legend-role')} legend stroke width`) / 2));
-  const semanticEnvelopes = semanticSegments(svg).map((segment) => segmentEnvelope(segment.start, segment.end, number(svgPresentationValue(svgSource, svg.edges.find(({attributes}) => attributes.get('data-edge-id') === segment.id), 'stroke-width'), `${segment.id} semantic stroke width`) / 2));
-  assert.ok(legendSegments.every((legendSegment) => semanticEnvelopes.every((semanticSegment) => boxDistance(legendSegment, semanticSegment) > 0)), `${legend.attributes.get('data-legend-role')} legend geometry does not cover a semantic route`);
-}
-
-function assertSemanticRouteLayerStructure(svg) {
-  const semanticLayer = svg.elements.find(({name, attributes}) => name === 'g' && attributes.get('data-edge-layer') === 'semantic-routes');
-  assert.ok(semanticLayer, 'semantic route paint layer exists');
-  const children = svg.elements.filter(({parent}) => parent === semanticLayer);
-  assert.ok(children.length > 0, 'semantic-routes direct child structure has semantic paths');
-  assert.ok(children.every((element) => {
-    const primary = element.attributes.has('data-edge-id'); const segment = element.attributes.has('data-edge-segment-for');
-    const identity = primary ? element.attributes.get('data-edge-id') : element.attributes.get('data-edge-segment-for');
-    return element.name === 'path' && primary !== segment && EDGE_IDS.includes(identity);
-  }), 'semantic-routes direct child structure permits only one named semantic path');
-}
-
-function assertEdgeLabelFillOnly(svgSource, svg, label) {
-  const paintNodes = [label, ...svg.elements.filter((element) => element.name === 'tspan' && element.parent === label)];
-  for (const node of paintNodes) {
-    const stroke = (svgPresentationValue(svgSource, node, 'stroke') ?? 'none').trim().toLowerCase();
-    const strokeWidth = number(svgPresentationValue(svgSource, node, 'stroke-width') ?? '0', `${label.attributes.get('data-edge-label-for')} edge label stroke width`);
-    const paintOrder = svgPresentationValue(svgSource, node, 'paint-order')?.trim().toLowerCase();
-    assert.equal(stroke, 'none', `${label.attributes.get('data-edge-label-for')} edge label is fill-only text`);
-    assert.equal(strokeWidth, 0, `${label.attributes.get('data-edge-label-for')} edge label is fill-only text`);
-    assert.ok(paintOrder === undefined || paintOrder === 'normal', `${label.attributes.get('data-edge-label-for')} edge label is fill-only text`);
-  }
-}
-
-function assertPostSemanticLayerStructure(svgSource, svg) {
-  const semanticLayer = svg.elements.find(({name, attributes}) => name === 'g' && attributes.get('data-edge-layer') === 'semantic-routes');
-  assert.ok(semanticLayer, 'semantic route paint layer exists');
-  const layerContract = [
-    ['data-bridge-layer', 'explicit-crossovers'], ['data-edge-label-layer', 'reserved-label-lanes'], ['data-legend-layer', 'relationship-semantics'],
-  ];
-  const layers = svg.elements.filter((element) => element.parent === semanticLayer.parent && element.sourceIndex > semanticLayer.closeIndex);
-  assert.equal(layers.length, layerContract.length, 'post-semantic layer structure has exactly three known layers');
-  for (const [index, [attribute, value]] of layerContract.entries()) {
-    const layer = layers[index];
-    assert.equal(layer.name, 'g', `post-semantic layer structure ${index + 1} is a group`);
-    assert.equal(layer.attributes.get(attribute), value, `post-semantic layer structure ${index + 1} identity`);
-    for (const [otherAttribute] of layerContract.filter(([candidate]) => candidate !== attribute)) assert.equal(layer.attributes.has(otherAttribute), false, `post-semantic layer structure ${index + 1} has no second layer identity`);
-  }
-  const directChildren = (layer) => svg.elements.filter(({parent}) => parent === layer);
-  const descendants = (layer) => svg.elements.filter((element) => underSvgAncestor(element, (ancestor) => ancestor === layer));
-  const [bridgeLayer, labelLayer, legendLayer] = layers;
-  const bridgeChildren = directChildren(bridgeLayer);
-  assert.equal(bridgeChildren.length, 6, 'post-semantic bridge layer has exactly six paths');
-  assert.ok(bridgeChildren.every((element) => element.name === 'path' && element.attributes.has('data-bridge-for')), 'post-semantic bridge layer permits only explicit bridge paths');
-  assert.ok(descendants(bridgeLayer).every((element) => bridgeChildren.includes(element)), 'post-semantic bridge layer has no nested structure');
-  const labelChildren = directChildren(labelLayer);
-  assert.ok(labelChildren.every((element) => element.name === 'text' && element.attributes.has('data-edge-label-for')), 'post-semantic edge-label layer permits only named label text');
-  assert.ok(descendants(labelLayer).every((element) => labelChildren.includes(element) || element.name === 'tspan' && labelChildren.includes(element.parent)), 'post-semantic edge-label layer permits only direct label tspans');
-  for (const label of labelChildren) assertEdgeLabelFillOnly(svgSource, svg, label);
-  const legendChildren = directChildren(legendLayer);
-  assert.ok(legendChildren.every((element) => element.name === 'text' && element.attributes.has('data-legend-caption-for') || element.name === 'path' && element.attributes.has('data-legend-role')), 'post-semantic legend layer permits only named caption text and paths');
-  assert.ok(descendants(legendLayer).every((element) => legendChildren.includes(element) || element.name === 'tspan' && legendChildren.includes(element.parent) && element.parent.name === 'text'), 'post-semantic legend layer permits only direct legend tspans');
-  for (const legend of legendChildren.filter(({attributes}) => attributes.has('data-legend-role'))) legendDoesNotCoverSemanticRoutes(svgSource, svg, legend);
-}
-
-function segmentContainsPoint(segment, point) {
-  return point.x >= Math.min(segment.start.x, segment.end.x) && point.x <= Math.max(segment.start.x, segment.end.x)
-    && point.y >= Math.min(segment.start.y, segment.end.y) && point.y <= Math.max(segment.start.y, segment.end.y);
-}
-
-function assertBridgeInventory(drawio, svgSource, svg) {
-  assert.equal(svg.elements.some(({attributes}) => attributes.has('data-bridge-mask-for')), false, 'no declared bridge mask or background-color erasure');
-  assertSemanticRouteLayerStructure(svg);
-  assertPostSemanticLayerStructure(svgSource, svg);
-  const expected = BRIDGE_CONTRACTS.map(([owner, under, x, y]) => intersectionIdentity(owner, under, {x, y})).sort();
-  const bridges = svg.elements.filter(({attributes}) => attributes.has('data-bridge-for'));
-  assert.equal(bridges.length, BRIDGE_CONTRACTS.length, 'exact justified minimal bridge budget');
-  const actual = [];
-  const drawnSegments = semanticSegments(svg);
-  for (const bridge of bridges) {
-    const bridgeFor = bridge.attributes.get('data-bridge-for'); const crosses = bridge.attributes.get('data-crosses-edge');
-    const coordinates = (bridge.attributes.get('data-bridge-at') ?? '').split(/\s+/u).map(Number);
-    assert.equal(coordinates.length, 2, `${bridge.attributes.get('id')} exact bridge coordinates`);
-    assert.ok(coordinates.every(Number.isFinite), `${bridge.attributes.get('id')} finite bridge coordinates`);
-    const point = {x: coordinates[0], y: coordinates[1]}; const key = intersectionIdentity(bridgeFor, crosses, point); actual.push(key);
-    assert.ok(expected.includes(key), `${key} belongs to the fixed resolve-fanout/business-boundary allowlist`);
-    assert.equal(bridge.attributes.get('id'), `bridge-${bridgeFor}-over-${crosses}-at-${point.x}-${point.y}`, `${key} stable bridge identity`);
-    const geometry = BRIDGE_GEOMETRY[bridgeGeometryKey(bridgeFor, crosses, point.x, point.y)];
-    assert.ok(geometry, `${key} exact bridge geometry contract`);
-    assert.equal(number(bridge.attributes.get('data-bridge-size'), `${key} bridge size`), geometry.controlOffset, `${key} synchronized bridge control size`);
-    assert.equal(hiddenSvgElement(svgSource, bridge), false, `${key} visible bridge glyph`);
-    const owner = svg.edges.find(({attributes}) => attributes.get('data-edge-id') === bridgeFor);
-    assert.equal(owner?.attributes.get('data-edge-role'), 'resolve', `${key} owner is resolve fanout`);
-    const expectedUnderRole = bridgeFor === 'activate-account' ? 'recovery' : 'business';
-    assert.equal(svg.edges.find(({attributes}) => attributes.get('data-edge-id') === crosses)?.attributes.get('data-edge-role'), expectedUnderRole, `${key} under-route has the explicitly allowlisted ${expectedUnderRole} role`);
-    assert.equal(svgPresentationValue(svgSource, bridge, 'stroke'), svgPresentationValue(svgSource, owner, 'stroke'), `${key} arc stroke matches owner`);
-    assert.equal(number(svgPresentationValue(svgSource, bridge, 'stroke-width'), `${key} arc stroke width`), number(svgPresentationValue(svgSource, owner, 'stroke-width'), `${key} owner stroke width`), `${key} arc stroke width matches owner`);
-    assert.equal(svgPresentationValue(svgSource, bridge, 'stroke-dasharray'), svgPresentationValue(svgSource, owner, 'stroke-dasharray'), `${key} arc dash style matches owner`);
-    const drawioOwner = drawio.edges.find(({attributes}) => attributes.get('id') === bridgeFor); const drawioStyle = styleMap(drawioOwner?.attributes.get('style'));
-    assert.equal(drawioStyle.get('dashed'), '1', `${key} Draw.io owner is dashed`);
-    assert.equal(drawioStyle.get('dashPattern'), svgPresentationValue(svgSource, bridge, 'stroke-dasharray'), `${key} Draw.io/SVG bridge dash sync`);
-    const arc = parseBridgeArc(bridge.attributes.get('d'), key);
-    assert.deepEqual(arc, {start: {x: point.x - 18, y: point.y}, shoulder: {x: point.x - 12, y: point.y}, control: {x: point.x, y: point.y + geometry.arcDirection * geometry.controlOffset}, curveEnd: {x: point.x + 12, y: point.y}, end: {x: point.x + 18, y: point.y}}, `${key} exact visible quadratic arc geometry`);
-    const actualArcCenter = quadraticPoint(arc, .5);
-    assert.deepEqual(actualArcCenter, {x: point.x, y: point.y + geometry.arcDirection * geometry.controlOffset / 2}, `${key} actual quadratic center is half the control offset`);
-    const ownerSegments = drawnSegments.filter(({id}) => id === bridgeFor); const underSegments = drawnSegments.filter(({id}) => id === crosses);
-    const clearance = sampledArcUnderClearance(arc, underSegments, number(svgPresentationValue(svgSource, bridge, 'stroke-width'), `${key} arc stroke width`), number(svgPresentationValue(svgSource, svg.edges.find(({attributes}) => attributes.get('data-edge-id') === crosses), 'stroke-width'), `${key} under stroke width`));
-    assert.ok(clearance.centerlineToUnderStroke >= 7, `${key} sampled arc centerline clears the under-route rendered stroke envelope by ${clearance.centerlineToUnderStroke} >= 7`);
-    assert.ok(clearance.paintedStrokeToUnderStroke > 0, `${key} rendered arc stroke physically clears the under-route rendered stroke envelope by ${clearance.paintedStrokeToUnderStroke}`);
-    assert.ok(ownerSegments.some((segment) => segment.start.x === point.x - 18 && segment.start.y === point.y || segment.end.x === point.x - 18 && segment.end.y === point.y), `${key} owner route ends at left arc terminal`);
-    assert.ok(ownerSegments.some((segment) => segment.start.x === point.x + 18 && segment.start.y === point.y || segment.end.x === point.x + 18 && segment.end.y === point.y), `${key} owner route resumes at right arc terminal`);
-    assert.equal(ownerSegments.some((segment) => segmentContainsPoint(segment, point)), false, `${key} owner straight stroke is replaced by the arc`);
-    for (const offset of geometry.underOffsets) assert.ok(underSegments.some((segment) => segment.start.x === point.x && segment.start.y === point.y + offset || segment.end.x === point.x && segment.end.y === point.y + offset), `${key} under-route has the exact physical gap terminal ${offset}`);
-    assert.equal(underSegments.some((segment) => segmentContainsPoint(segment, point)), false, `${key} under-route has a real unpainted gap`);
-  }
-  assert.deepEqual(actual.sort(), expected, 'exact allowlisted bridge topology and coordinate budget');
-  for (let left = 0; left < drawnSegments.length; left += 1) for (let right = left + 1; right < drawnSegments.length; right += 1) {
-    if (drawnSegments[left].id === drawnSegments[right].id) continue;
-    const point = perpendicularIntersection(drawnSegments[left].start, drawnSegments[left].end, drawnSegments[right].start, drawnSegments[right].end);
-    assert.ok(!point || sharedEndpointIntersection(drawnSegments[left], drawnSegments[right], point), `${intersectionIdentity(drawnSegments[left].id, drawnSegments[right].id, point ?? {x: 'none', y: 'none'})} no naked rendered intersection`);
-  }
-  const bridgedRouteIds = new Set(bridges.map(({attributes}) => attributes.get('data-bridge-for')));
-  const drawioJumpIds = new Set(drawio.edges.filter((edge) => EDGE_IDS.includes(edge.attributes.get('id')) && styleMap(edge.attributes.get('style')).get('jumpStyle') === 'arc').map(({attributes}) => attributes.get('id')));
-  assert.deepEqual([...drawioJumpIds].sort(), [...bridgedRouteIds].sort(), 'Draw.io jump routes exactly match SVG bridge owners');
-  for (const edge of drawio.edges.filter(({attributes}) => drawioJumpIds.has(attributes.get('id')))) assert.equal(styleMap(edge.attributes.get('style')).get('jumpSize'), '24', `${edge.attributes.get('id')} Draw.io/SVG bridge size sync`);
-}
-
-function assertEdgeInventory(drawio, svg, svgSource) {
-  assert.equal(EDGE_CONTRACTS.length, EDGE_IDS.length, 'one endpoint/role contract per edge identity');
-  assertExactDuplicateFreeIds(EDGE_CONTRACTS.map(([id]) => id), EDGE_IDS, 'edge contracts');
-  const drawioEdges = drawio.edges.filter(({attributes}) => EDGE_IDS.includes(attributes.get('id')));
-  assertExactDuplicateFreeIds(drawioEdges.map(({attributes}) => attributes.get('id')), EDGE_IDS, 'Draw.io semantic edges');
-  assertExactDuplicateFreeIds(svg.edges.map(({attributes}) => attributes.get('data-edge-id')), EDGE_IDS, 'SVG semantic edges');
-  const drawioById = new Map(drawioEdges.map((edge) => [edge.attributes.get('id'), edge]));
-  const svgById = new Map(svg.edges.map((edge) => [edge.attributes.get('data-edge-id'), edge]));
-  const svgLabels = svg.elements.filter((element) => element.name === 'text' && element.attributes.has('data-edge-label-for'));
-  assertExactDuplicateFreeIds(svgLabels.map(({attributes}) => attributes.get('data-edge-label-for')), EDGE_IDS, 'SVG visible edge labels');
-  const svgLabelById = new Map(svgLabels.map((element) => [element.attributes.get('data-edge-label-for'), element]));
-  const nodeById = new Map(drawio.nodes.map((node) => [node.attributes.get('id'), node]));
-  for (const [id, source, target, role, label] of EDGE_CONTRACTS) {
-    const drawioEdge = drawioById.get(id); const svgEdge = svgById.get(id);
-    assert.ok(drawioEdge && svgEdge, `${id} paired edge`);
-    assert.equal(hiddenDrawioCell(drawioEdge), false, `${id} Draw.io edge visible`);
-    assert.equal(hiddenSvgElement(svgSource, svgEdge), false, `${id} SVG edge visible`);
-    assert.deepEqual([
-      logicalDrawioNodeId(drawioEdge.attributes.get('source')),
-      logicalDrawioNodeId(drawioEdge.attributes.get('target')),
-      styleMap(drawioEdge.attributes.get('style')).get('semanticRole'), drawioEdge.label,
-    ], [source, target, role, label], `${id} Draw.io endpoint/role/label contract`);
-    assert.deepEqual([
-      svgEdge.attributes.get('data-source'), svgEdge.attributes.get('data-target'),
-      svgEdge.attributes.get('data-edge-role'),
-    ], [source, target, role], `${id} SVG endpoint/role contract`);
-    const svgLabel = svgLabelById.get(id); assert.ok(svgLabel && !hiddenSvgElement(svgSource, svgLabel), `${id} visible SVG label`);
-    assert.equal(elementText(svgSource, svgLabel), label, `${id} exact visible SVG label text`);
-    const svgPaths = edgePathElements(svg, id);
-    for (const [index, path] of svgPaths.entries()) {
-      assert.equal(hiddenSvgElement(svgSource, path), false, `${id} visible SVG route segment ${index + 1}`);
-      assert.equal(svgPresentationValue(svgSource, path, 'stroke'), svgPresentationValue(svgSource, svgEdge, 'stroke'), `${id} split segment ${index + 1} stroke sync`);
-      assert.equal(svgPresentationValue(svgSource, path, 'stroke-width'), svgPresentationValue(svgSource, svgEdge, 'stroke-width'), `${id} split segment ${index + 1} stroke-width sync`);
-      assert.equal(svgPresentationValue(svgSource, path, 'stroke-dasharray'), svgPresentationValue(svgSource, svgEdge, 'stroke-dasharray'), `${id} split segment ${index + 1} dash sync`);
-    }
-    const drawioRoutePoints = drawioRoute(drawioEdge, nodeById);
-    const svgRoutePoints = logicalSvgRoute(svg, id);
-    assertRoutesClose(svgRoutePoints, drawioRoutePoints, `${id} synchronized orthogonal route`);
-  }
-}
-
-function assertLegendGeometry(drawio, svg) {
-  const nodeById = new Map(drawio.nodes.map((node) => [node.attributes.get('id'), node]));
-  const terminalIds = LEGEND_ROLES.flatMap((role) => [`legend-terminal-${role}-start`, `legend-terminal-${role}-end`]);
-  assertExactDuplicateFreeIds(drawio.nodes.filter(({attributes}) => styleMap(attributes.get('style')).get('semanticRole') === 'legend-terminal').map(({attributes}) => attributes.get('id')), terminalIds, 'Draw.io legend terminals');
-  for (const role of LEGEND_ROLES) {
-    const edge = drawio.edges.find(({attributes}) => attributes.get('id') === `legend-edge-${role}`);
-    const swatch = svg.elements.find(({attributes}) => attributes.get('data-legend-role') === role);
-    assert.ok(edge && swatch, `${role} synchronized legend swatch`);
-    assert.equal(edge.attributes.get('source'), `legend-terminal-${role}-start`, `${role} standalone legend source`);
-    assert.equal(edge.attributes.get('target'), `legend-terminal-${role}-end`, `${role} standalone legend target`);
-    assert.notEqual(edge.attributes.get('source'), edge.attributes.get('target'), `${role} legend is not a self-loop`);
-    assert.equal(styleMap(edge.attributes.get('style')).get('semanticRole'), role, `${role} Draw.io legend role`);
-    assertRoutesClose(drawioRoute(edge, nodeById), parsePathPoints(swatch.attributes.get('d')), `${role} synchronized legend geometry`);
-  }
-}
-
-function assertHiddenRouteMutationGuards(svgSource) {
-  const mutations = [
-    ['stroke none', (source) => source.replace(/(<path\b[^>]*data-edge-id="catalog-release"[^>]*\bstroke=")[^"]+/u, '$1none')],
-    ['transparent stroke', (source) => source.replace(/(<path\b[^>]*data-edge-id="catalog-release"[^>]*\bstroke=")[^"]+/u, '$1transparent')],
-    ['zero stroke width', (source) => source.replace(/(<path\b[^>]*data-edge-id="catalog-release"[^>]*\bstroke-width=")[^"]+/u, '$10')],
-    ['zero stroke opacity', (source) => source.replace(/(<path\b[^>]*data-edge-id="catalog-release")/u, '$1 stroke-opacity="0"')],
-    ['inherited zero stroke opacity', (source) => source.replace(/(<g\b[^>]*data-edge-layer="semantic-routes")/u, '$1 stroke-opacity="0"')],
-  ];
-  for (const [label, mutate] of mutations) {
-    const changed = mutate(svgSource); assert.notEqual(changed, svgSource, `${label} mutation applies`);
-    const parsed = parseSvg(changed); const edge = parsed.edges.find(({attributes}) => attributes.get('data-edge-id') === 'catalog-release');
-    assert.equal(hiddenSvgElement(changed, edge), true, `${label} hides semantic route`);
-  }
-}
-
-function assertDirectRegionChildren(drawio, svg) {
-  const drawioRegionIds = new Set(REGION_IDS);
-  for (const node of drawio.nodes.filter(({attributes}) => styleMap(attributes.get('style')).get('semanticRole') === 'node-shape')) {
-    assert.ok(drawioRegionIds.has(node.attributes.get('parent')), `${node.attributes.get('id')} direct Draw.io region child`);
-  }
-  for (const node of svg.nodes) {
-    assert.ok(node.parent?.attributes.has('data-region-id'), `${node.attributes.get('data-node-id')} direct SVG region child`);
-    assert.ok(REGION_IDS.includes(node.parent.attributes.get('data-region-id')), `${node.attributes.get('data-node-id')} declared SVG region`);
-  }
-}
-
-function assertGeometryMutationGuards(svgSource) {
-  const labelMoved = svgSource.replace(/<text\b[^>]*data-edge-label-for="store-artifacts"[^>]*>/u, (tag) => tag.replace(/\bx="[^"]+"/u, 'x="1800"').replace(/\by="[^"]+"/u, 'y="1000"'));
-  assert.notEqual(labelMoved, svgSource, 'edge-label association mutation applies');
-  assert.throws(() => assertRenderedGeometry(labelMoved, parseSvg(labelMoved)), /store-artifacts own-route association gap|store-artifacts own route is the unambiguous nearest/u, 'far label rejected by its own semantic route association');
-
-  const routeEscaped = svgSource.replace(/<path\b[^>]*data-edge-id="share-runtime-cart"[^>]*>/u, (tag) => {
-    const points = parsePathPoints(attributes(tag).get('d')); const start = points[0]; const end = points.at(-1);
-    return tag.replace(/\bd="[^"]+"/u, `d="M ${start.x} ${start.y} L ${start.x} 3000 L ${end.x} 3000 L ${end.x} ${end.y}"`);
-  });
-  assert.notEqual(routeEscaped, svgSource, 'browser-route containment mutation applies');
-  assert.throws(() => assertBrowserOwnedRouteContainment(parseSvg(routeEscaped)), /share-runtime-cart stays inside browser plane/u, 'browser-owned route cannot detour through authority');
-}
-
-function assertBridgeMutationGuards(drawioSource, svgSource) {
-  const lateSemanticCover = svgSource.replace(/(\s*<\/g>\s*\n\s*<g data-bridge-layer="explicit-crossovers")/u, '    <rect x="40" y="1120" width="2320" height="1600" fill="#F0F9FF"/>$1');
-  assert.notEqual(lateSemanticCover, svgSource, 'late semantic-route cover mutation applies');
-  assert.throws(() => assertBridgeInventory(parseDrawio(drawioSource), lateSemanticCover, parseSvg(lateSemanticCover)), /semantic-routes direct child structure/u, 'semantic-routes cannot paint a late plane-colored rectangle');
-  const strokedLabel = svgSource.replace(/(<text\b[^>]*data-edge-label-for="catalog-release")/u, '$1 stroke="#F0F9FF" stroke-width="200" paint-order="stroke"');
-  assert.notEqual(strokedLabel, svgSource, 'edge-label stroke cover mutation applies');
-  assert.throws(() => assertBridgeInventory(parseDrawio(drawioSource), strokedLabel, parseSvg(strokedLabel)), /catalog-release edge label is fill-only text/u, 'edge-label cannot paint a wide stroke cover');
-  const bridgePattern = /<path\b[^>]*data-bridge-for="[^"]+"[^>]*\/>/u;
-  const bridge = bridgePattern.exec(svgSource)?.[0];
-  assert.ok(bridge, 'bridge mutation fixture exists');
-  const removed = svgSource.replace(bridge, '');
-  assert.throws(() => assertBridgeInventory(parseDrawio(drawioSource), removed, parseSvg(removed)), /post-semantic bridge layer has exactly six paths|exact justified minimal bridge budget|exact allowlisted bridge topology/u, 'removed bridge exposes a naked intersection');
-  const misidentified = svgSource.replace(bridge, bridge.replace(/data-crosses-edge="[^"]+"/u, 'data-crosses-edge="catalog-release"'));
-  assert.throws(() => assertBridgeInventory(parseDrawio(drawioSource), misidentified, parseSvg(misidentified)), /fixed resolve-fanout\/business-boundary allowlist|exact allowlisted bridge topology|stable bridge identity/u, 'misidentified bridge cannot satisfy another crossing');
-  const hidden = svgSource.replace(bridge, bridge.replace(/\bstroke="[^"]+"/u, 'stroke="none"'));
-  assert.throws(() => assertBridgeInventory(parseDrawio(drawioSource), hidden, parseSvg(hidden)), /visible bridge glyph/u, 'hidden bridge glyph rejected');
-  const malformedArc = svgSource.replace(bridge, bridge.replace(/\bd="[^"]+"/u, 'd="M 0 0 L 1 1"'));
-  assert.throws(() => assertBridgeInventory(parseDrawio(drawioSource), malformedArc, parseSvg(malformedArc)), /actual M\/L\/Q\/L bridge arc geometry/u, 'metadata cannot substitute for actual bridge geometry');
-  const extendedToArcCenter = svgSource.replace(/(<path\b[^>]*data-edge-id="cart-query"[^>]*\bd="[^"]*)L 760 2296/u, '$1L 760 2320');
-  assert.notEqual(extendedToArcCenter, svgSource, 'under-route extension-to-arc-center mutation applies');
-  assert.throws(() => assertBridgeInventory(parseDrawio(drawioSource), extendedToArcCenter, parseSvg(extendedToArcCenter)), /sampled arc centerline clears the under-route rendered stroke envelope/u, 'semantic route cannot extend into the bridge arc center');
-  const postSemanticPaintProbes = [
-    ['plane background path', '    <path d="M 40 1120 L 2360 1120 L 2360 2720 L 40 2720 Z" fill="#F0F9FF"/>'],
-    ['inherited white-stroke group/path', '    <g stroke="#FFFFFF" stroke-width="24"><path d="M 742 2320 L 778 2320" fill="none"/></g>'],
-    ['white-fill rectangle', '    <rect x="742" y="2310" width="36" height="20" fill="#FFFFFF"/>'],
-    ['late definition and use', '    <defs><rect id="late-cover" x="742" y="2310" width="36" height="20" fill="#FFFFFF"/></defs><use href="#late-cover"/>'],
-  ];
-  for (const [label, paint] of postSemanticPaintProbes) {
-    const mutated = svgSource.replace(/(\s*<g data-bridge-layer="explicit-crossovers")/u, `${paint}$1`);
-    assert.notEqual(mutated, svgSource, `${label} post-semantic paint mutation applies`);
-    assert.throws(() => assertBridgeInventory(parseDrawio(drawioSource), mutated, parseSvg(mutated)), /post-semantic layer structure/u, `${label} cannot cover semantic routes`);
-  }
-}
-
-function assertBridgeSearchMutationGuards(svgSource) {
-  const probes = [
-    ['owner corridor', svgSource.replace(/(<path\b[^>]*data-edge-id="activate-account"[^>]*\bd="[^"]*)L 1365 1920/u, '$1L 1365 1918'), /activate-account fixed owner corridor/u],
-    ['translated owner corridor', svgSource.replace(/(<path\b[^>]*data-edge-id="activate-account"[^>]*\bd=")([^"]+)(")/u, (whole, prefix, route, suffix) => `${prefix}${route.replaceAll('1365', '1360')}${suffix}`), /activate-account fixed owner corridor/u],
-    ['first bridge allowlist', svgSource.replace(/data-bridge-for="share-runtime-catalog"/u, 'data-bridge-for="share-runtime-cart"'), /first five bridge allowlist/u],
-    ['semantic endpoint contract', svgSource.replace(/(<path\b[^>]*data-edge-id="catalog-release"[^>]*data-source=")[^"]+/u, '$1cart-pipeline'), /semantic endpoint contract/u],
-  ];
-  for (const [label, mutated, expected] of probes) {
-    assert.notEqual(mutated, svgSource, `${label} bridge-search mutation applies`);
-    assert.throws(() => runBridgeFeasibilitySearch(mutated), expected, `${label} mutation makes the bridge-search command fail`);
-    const directory = mkdtempSync(join(tmpdir(), 'sty12-bridge-search-'));
-    try {
-      const fixture = join(directory, `${label.replace(/\s+/gu, '-')}.svg`);
-      writeFileSync(fixture, mutated);
-      const result = spawnSync(process.execPath, ['scripts/sty12-bridge-feasibility.mjs', '--svg', fixture], {cwd: process.cwd(), encoding: 'utf8'});
-      assert.notEqual(result.status, 0, `${label} mutated bridge-search CLI exits nonzero`);
-      assert.match(result.stderr, expected, `${label} mutated bridge-search CLI reports its violated parsed constraint`);
-    } finally { rmSync(directory, {recursive: true, force: true}); }
-  }
-}
-
-function assertMicroFrontendArticle(source) {
-  const {body} = articleParts(source);
-  const visibleBody = visibleArticleBody(body);
-  assert.deepEqual(parseFrontMatter(source), EXACT_METADATA, 'exact STY-12 front matter');
-  const headings = findMarkdownHeadings(source);
-  assert.deepEqual(headings.filter(({level}) => level === 2).map(({text}) => text), EXPECTED_HEADINGS, 'exact H2 order');
-  const migration = headings.find(({level, text}) => level === 2 && text === '可迁移经验');
-  const next = headings.find(({level, offset}) => level === 2 && offset > migration.offset);
-  assert.deepEqual(headings.filter(({level, offset}) => level === 3 && offset > migration.offset && (!next || offset < next.offset)).map(({text}) => text), MIGRATION_HEADINGS, 'exact migration H3 order');
-  for (const label of WRAPPERS) assert.match(source, new RegExp('<div\\b(?=[^>]*role="region")(?=[^>]*aria-label="' + escapeRegExp(label) + '")(?=[^>]*tabIndex=\\{0\\})(?=[^>]*onKeyDown=\\{handleHorizontalArrowKey\\})[^>]*>', 'u'), label + ' keyboard scroll wrapper');
-  assert.equal((source.match(/role="region"/gu) ?? []).length, 4, 'exactly four wrappers');
-  exactRows(table(body, ['组合方式', '适用条件', '组合时机', '隔离成本', '停止采用信号']), COMPOSITION_ROWS, 'composition table');
-  exactRows(table(body, ['构件', '拥有', '明确不拥有']), OWNER_ROWS, 'ownership table');
-  exactRows(table(body, ['故障', '检测', '自动响应', '停止条件', '最终责任人']), FAILURE_ROWS, 'failure table');
-  for (const [label, required] of ARTICLE_BOUNDARY_CONTRACTS) assert.ok(visibleBody.includes(required), `${label} visible semantic boundary`);
-}
-
-function assertMicroFrontendSources(ledger) {
-  const document = ledger.documents?.[ARTICLE];
-  assert.ok(document, 'STY-12 governed source document');
-  assert.deepEqual(document.citations.map(({source_id}) => source_id), SOURCE_IDS, 'exact ordered source citations');
-  for (const id of SOURCE_IDS) assert.ok(ledger.sources.some((source) => source.id === id), `${id} governed source`);
-  assert.deepEqual(document.citations.filter(({manifest_primary}) => manifest_primary).map(({source_id}) => source_id), ['src-single-spa-03f49f2c5ddb'], 'single-spa is sole primary');
-}
-
-function assertMicroFrontendSourcePolicy(ledger) {
-  const source = ledger.sources.find(({id}) => id === 'src-whatwg-html-import-maps');
-  assert.ok(source, 'WHATWG import-map source');
-  assert.deepEqual({canonical_locator: source.canonical_locator, transport_locator: source.transport_locator, license: source.license, copyright_policy: source.copyright_policy}, {
-    canonical_locator: 'https://html.spec.whatwg.org/multipage/webappapis.html',
-    transport_locator: 'https://html.spec.whatwg.org/multipage/webappapis.html',
-    license: 'CC-BY-4.0',
-    copyright_policy: 'adapt-with-attribution',
-  }, 'WHATWG fragment-free locator and schema-compatible license policy');
-  const citations = ledger.documents?.[ARTICLE]?.citations;
-  assert.ok(citations, 'STY-12 governed citations');
-  const citation = citations.find(({source_id}) => source_id === source.id);
-  assert.equal(citation?.citation_url, 'https://html.spec.whatwg.org/multipage/webappapis.html#import-maps', 'article citation retains the import-map fragment');
-  assert.ok(citations.every(({excerpt, quotation_reviewed}) => excerpt === null && quotation_reviewed === false), 'STY-12 uses no quotation excerpts');
-}
-
-function assertMicroFrontendDiagram(drawioSource, svgSource) {
-  const drawio = parseDrawio(drawioSource); const svg = parseSvg(svgSource); assertFlattenedSvg(svg.elements);
-  const root = svg.elements.find(({name}) => name === 'svg');
-  assert.equal(root?.attributes.get('viewBox'), '0 0 2400 3600', 'exact 2400 × 3600 viewBox');
-  assert.equal(root?.attributes.has('height'), false, 'no fixed rendered SVG height');
-  assert.equal(root?.attributes.get('width'), '100%', 'exact responsive SVG root width');
-  assert.equal(root?.attributes.get('role'), 'img', 'accessible SVG role');
-  assert.equal(root?.attributes.get('aria-labelledby'), 'sty12-title sty12-desc', 'accessible SVG labelling');
-  assert.match(svgSource, /<title id="sty12-title">Micro-Frontend 电商运行时、发布与权威状态边界<\/title>/u);
-  assert.match(svgSource, /<desc id="sty12-desc">四条独立流水线生成不可变制品，兼容门禁产生完整版本化清单并原子提升；薄 Shell 在共享浏览器环境加载商品、购物车、结算和账户切片，稳定标识连接权威后端，失败只降级对应槽位并可回退整份清单。<\/desc>/u);
-  assert.doesNotMatch(svgSource, /<(?:foreignObject|image|script)\b|@font-face|Logo|logo|watermark|水印/iu, 'no embedded HTML, image, script, external font, logo, or watermark');
-  assertExactDuplicateFreeIds(drawio.nodes.filter(({attributes}) => styleMap(attributes.get('style')).get('semanticRole') === 'region').map(({attributes}) => attributes.get('id')), REGION_IDS, 'Draw.io regions');
-  assertExactDuplicateFreeIds(svg.elements.filter(({attributes}) => attributes.has('data-region-id')).map(({attributes}) => attributes.get('data-region-id')), REGION_IDS, 'SVG regions');
-  assertExactDuplicateFreeIds(drawio.nodes.filter(({attributes}) => styleMap(attributes.get('style')).get('semanticRole') === 'node-shape').map(({attributes}) => attributes.get('id').replace(/^node-/u, '')), NODE_IDS, 'Draw.io nodes');
-  assertExactDuplicateFreeIds(svg.nodes.map(({attributes}) => attributes.get('data-node-id')), NODE_IDS, 'SVG nodes');
-  assertExactDuplicateFreeIds(drawio.edges.filter(({attributes}) => attributes.get('id')?.startsWith('legend-edge-')).map(({attributes}) => attributes.get('id')), LEGEND_ROLES.map((role) => `legend-edge-${role}`), 'Draw.io legend edges');
-  assertExactDuplicateFreeIds(svg.elements.filter(({attributes}) => attributes.has('data-legend-role')).map(({attributes}) => attributes.get('data-legend-role')), LEGEND_ROLES, 'SVG legend roles');
-  assertLegendGeometry(drawio, svg);
-  const drawioNotes = drawio.nodes.filter(({attributes}) => attributes.get('id')?.startsWith('note-text-'));
-  const svgNotes = svg.elements.filter(({attributes}) => attributes.has('data-note-text-for'));
-  assertExactDuplicateFreeIds(drawioNotes.map(({attributes}) => attributes.get('id').replace(/^note-text-/u, '')), Object.keys(NOTE_COPY), 'Draw.io notes');
-  assertExactDuplicateFreeIds(svgNotes.map(({attributes}) => attributes.get('data-note-text-for')), Object.keys(NOTE_COPY), 'SVG notes');
-  for (const [id, copy] of Object.entries(NOTE_COPY)) { assert.equal(drawioNotes.find(({attributes}) => attributes.get('id') === `note-text-${id}`)?.label, copy, `${id} exact Draw.io note`); const svgNote = svgNotes.find(({attributes}) => attributes.get('data-note-text-for') === id); assert.ok(svgNote && !hiddenSvgElement(svgSource, svgNote), `${id} visible SVG note`); assert.equal(elementText(svgSource, svgNote), copy, `${id} exact visible SVG note`); }
-  assertHiddenRouteMutationGuards(svgSource);
-  assertDirectRegionChildren(drawio, svg);
-  assertVerticalRegionStack(drawio, svg);
-  assertBrowserOwnedRouteContainment(svg);
-  assertEdgeInventory(drawio, svg, svgSource);
-  assertBridgeInventory(drawio, svgSource, svg);
-  assertRenderedGeometry(svgSource, svg);
-  assertGeometryMutationGuards(svgSource);
-  assertBridgeMutationGuards(drawioSource, svgSource);
-}
-
-function fixtureArticle() {
-  const sections = EXPECTED_HEADINGS.map((heading) => '## ' + heading + (heading === '可迁移经验' ? '\n### ' + MIGRATION_HEADINGS.join('\n### ') : '')).join('\n');
-  const rows = (items) => items.map((row) => '| ' + row.join(' | ') + ' |').join('\n');
-  return `---\n${frontMatterFixture(EXACT_METADATA)}\n---\n${sections}\n${WRAPPERS.map(exactWrapper).join('\n')}\n| 组合方式 | 适用条件 | 组合时机 | 隔离成本 | 停止采用信号 |\n| --- | --- | --- | --- | --- |\n${rows(COMPOSITION_ROWS)}\n\n| 构件 | 拥有 | 明确不拥有 |\n| --- | --- | --- |\n${rows(OWNER_ROWS)}\n\n| 故障 | 检测 | 自动响应 | 停止条件 | 最终责任人 |\n| --- | --- | --- | --- | --- |\n${rows(FAILURE_ROWS)}\n${ARTICLE_BOUNDARY_CONTRACTS.map(([, required]) => required).join('\n')}`;
-}
-
-function assertGenericHelperRejections() {
-  assert.throws(() => parsePathPoints('M 0 0 L'), assert.AssertionError, 'missing path coordinate rejected');
-  const nodes = new Map([
-    ['left', {attributes: new Map([['id', 'left']]), geometry: new Map([['x', '0'], ['y', '0'], ['width', '100'], ['height', '100']])}],
-    ['right', {attributes: new Map([['id', 'right']]), geometry: new Map([['x', '300'], ['y', '0'], ['width', '100'], ['height', '100']])}],
-  ]);
-  const misplaced = '<mxCell id="edge" edge="1" source="left" target="right" style="exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=1;"><mxGeometry relative="1" as="geometry"><mxPoint x="200" y="50"/></mxGeometry></mxCell>';
-  assert.throws(() => drawioRoute(parseDrawio(misplaced).edges[0], nodes), assert.AssertionError, 'waypoint outside Array is rejected');
-}
-
-function findExactRows(body, expected, name) {
-  const found = markdownTables(body).find((candidate) => JSON.stringify(candidate.slice(2)) === JSON.stringify(expected));
-  assert.ok(found, `${name} exact ordered rows`);
-}
+export function alphaCompose(backdrop, foreground) { const alpha = foreground.alpha + backdrop.alpha * (1 - foreground.alpha); return alpha === 0 ? {red: 0, green: 0, blue: 0, alpha: 0} : {red: (foreground.red * foreground.alpha + backdrop.red * backdrop.alpha * (1 - foreground.alpha)) / alpha, green: (foreground.green * foreground.alpha + backdrop.green * backdrop.alpha * (1 - foreground.alpha)) / alpha, blue: (foreground.blue * foreground.alpha + backdrop.blue * backdrop.alpha * (1 - foreground.alpha)) / alpha, alpha}; }
+export function markerEnvelope(endpoint, previous, {width, height, refX, refY}) { const dx = endpoint.x - previous.x; const dy = endpoint.y - previous.y; const length = Math.hypot(dx, dy); assert.ok(length > 0 && width > 0 && height > 0, 'positive marker geometry'); const ux = dx / length; const uy = dy / length; const nx = -uy; const ny = ux; const points = [[-refX, -refY], [width - refX, -refY], [width - refX, height - refY], [-refX, height - refY]].map(([x, y]) => ({x: endpoint.x + ux * x + nx * y, y: endpoint.y + uy * x + ny * y})); return {left: Math.min(...points.map(({x}) => x)), right: Math.max(...points.map(({x}) => x)), top: Math.min(...points.map(({y}) => y)), bottom: Math.max(...points.map(({y}) => y))}; }
+function exactIds(actual, expected, label) { assert.equal(new Set(actual).size, actual.length, label + ' duplicate-free'); assert.deepEqual([...actual].sort(), [...expected].sort(), label + ' exact identities'); }
 
 function assertSpaceBasedArticle(source) {
-  const {body} = articleParts(source);
-  const visibleBody = visibleArticleBody(body);
-  assert.deepEqual(parseFrontMatter(source), EXACT_METADATA, 'exact STY-13 front matter');
-  const headings = findMarkdownHeadings(source);
-  assert.deepEqual(headings.filter(({level}) => level === 2).map(({text}) => text), EXPECTED_HEADINGS, 'exact H2 order');
-  const migration = headings.find(({level, text}) => level === 2 && text === '可迁移经验');
-  const next = headings.find(({level, offset}) => level === 2 && offset > migration.offset);
+  const {body} = articleParts(source); const visibleBody = visibleArticleBody(body); assert.deepEqual(parseFrontMatter(source), EXACT_METADATA, 'exact STY-13 front matter');
+  const headings = findMarkdownHeadings(source); assert.deepEqual(headings.filter(({level}) => level === 2).map(({text}) => text), EXPECTED_HEADINGS, 'exact H2 order');
+  const migration = headings.find(({level, text}) => level === 2 && text === '可迁移经验'); const next = headings.find(({level, offset}) => level === 2 && offset > migration.offset);
   assert.deepEqual(headings.filter(({level, offset}) => level === 3 && offset > migration.offset && (!next || offset < next.offset)).map(({text}) => text), MIGRATION_HEADINGS, 'exact migration H3 order');
-  for (const label of WRAPPERS) assert.match(source, new RegExp('<div\\b(?=[^>]*role="region")(?=[^>]*aria-label="' + escapeRegExp(label) + '")(?=[^>]*tabIndex=\\{0\\})(?=[^>]*onKeyDown=\\{handleHorizontalArrowKey\\})[^>]*>', 'u'), `${label} keyboard scroll wrapper`);
+  for (const label of WRAPPERS) assert.match(source, new RegExp('<div\\b(?=[^>]*role="region")(?=[^>]*aria-label="' + escapeRegExp(label) + '")(?=[^>]*tabIndex=\\{0\\})(?=[^>]*onKeyDown=\\{handleHorizontalArrowKey\\})[^>]*>', 'u'), label + ' keyboard wrapper');
   assert.equal((source.match(/role="region"/gu) ?? []).length, 4, 'exactly four wrappers');
-  findExactRows(body, COMPARISON_ROWS, 'comparison table');
-  findExactRows(body, OPERATION_ROWS, 'operation table');
-  findExactRows(body, FAILURE_ROWS, 'failure table');
-  for (const sentence of REQUIRED_SENTENCES) assert.ok(visibleBody.includes(sentence), `visible required sentence: ${sentence}`);
+  exactRows(table(body, COMPARISON_HEADERS), COMPARISON_ROWS, 'comparison table'); exactRows(table(body, OPERATION_HEADERS), OPERATION_ROWS, 'operation table'); exactRows(table(body, FAILURE_HEADERS), FAILURE_ROWS, 'failure table');
+  for (const sentence of REQUIRED_SENTENCES) assert.ok(visibleBody.includes(sentence), 'visible boundary: ' + sentence);
 }
-
-function spaceBasedFixture() {
-  const sections = EXPECTED_HEADINGS.map((heading) => '## ' + heading + (heading === '可迁移经验' ? '\n### ' + MIGRATION_HEADINGS.join('\n### ') : '')).join('\n');
-  const rows = (items) => items.map((row) => '| ' + row.join(' | ') + ' |').join('\n');
-  return `---\n${frontMatterFixture(EXACT_METADATA)}\n---\n${sections}\n${WRAPPERS.map(exactWrapper).join('\n')}\n| 方案 | 状态与处理 | 实时权威 | 跨分区协调 | 采用边界 |\n| --- | --- | --- | --- | --- |\n${rows(COMPARISON_ROWS)}\n\n| 操作 | 执行者 | 一致性责任 | 合同 |\n| --- | --- | --- | --- |\n${rows(OPERATION_ROWS)}\n\n| 故障 | 信号 | 保护动作 | 恢复门槛 |\n| --- | --- | --- | --- |\n${rows(FAILURE_ROWS)}\n${REQUIRED_SENTENCES.join('\n')}`;
+function assertSpaceBasedSources(ledger) {
+  const document = ledger.documents?.[ARTICLE]; assert.ok(document, 'STY-13 governed source document'); assert.deepEqual(document.citations.map(({source_id}) => source_id), SOURCE_IDS, 'exact ordered STY-13 citations');
+  for (const id of SOURCE_IDS) { const source = ledger.sources.find((item) => item.id === id); assert.ok(source, id + ' governed source'); for (const field of ['canonical_locator', 'transport_locator', 'title', 'license', 'copyright_policy', 'usage_boundary']) assert.ok(source[field], id + ' ' + field); }
+  assert.ok(document.citations.every(({citation_url, roles, usage_mode, attribution_note, modification_note, excerpt, quotation_reviewed}) => citation_url && roles.length > 0 && usage_mode === 'facts-summary' && attribution_note && modification_note && excerpt === null && quotation_reviewed === false), 'STY-13 source governance');
+  assert.equal(document.citations.filter(({manifest_primary}) => manifest_primary).length, 1, 'STY-13 has one primary source');
 }
+function assertSpaceBasedDiagram(drawioSource, svgSource) {
+  assert.ok(drawioSource && svgSource, 'STY-13 Draw.io and SVG assets exist'); const drawio = parseDrawio(drawioSource); const svg = parseSvg(svgSource); assertFlattenedSvg(svg.elements);
+  const root = svg.elements.find(({name}) => name === 'svg'); assert.equal(root?.attributes.get('role'), 'img', 'accessible SVG role'); assert.equal(root?.attributes.get('aria-labelledby'), 'sty13-title sty13-desc', 'STY-13 SVG labelling');
+  assert.match(svgSource, /<title id="sty13-title">Space-Based Architecture 航班余位亲和分区、主备与恢复边界<\/title>/u); assert.match(svgSource, /<desc id="sty13-desc">入口按航段与日期选择唯一分区所有者；分区内服务本地处理余位与暂留，主备复制，日志与检查点恢复，多航段由外部持久工作流协调。<\/desc>/u);
+  exactIds(drawio.nodes.filter(({attributes}) => styleMap(attributes.get('style')).get('semanticRole') === 'region').map(({attributes}) => attributes.get('id')), REGION_IDS, 'Draw.io regions'); exactIds(svg.elements.filter(({attributes}) => attributes.has('data-region-id')).map(({attributes}) => attributes.get('data-region-id')), REGION_IDS, 'SVG regions');
+  exactIds(drawio.nodes.filter(({attributes}) => styleMap(attributes.get('style')).get('semanticRole') === 'node-shape').map(({attributes}) => attributes.get('id').replace(/^node-/u, '')), NODE_IDS, 'Draw.io nodes'); exactIds(svg.nodes.map(({attributes}) => attributes.get('data-node-id')), NODE_IDS, 'SVG nodes');
+  exactIds(drawio.edges.map(({attributes}) => attributes.get('id')), EDGE_IDS, 'Draw.io edges'); exactIds(svg.edges.map(({attributes}) => attributes.get('data-edge-id')), EDGE_IDS, 'SVG edges');
+  const drawioById = new Map(drawio.edges.map((edge) => [edge.attributes.get('id'), edge])); const svgById = new Map(svg.edges.map((edge) => [edge.attributes.get('data-edge-id'), edge]));
+  for (const [id, source, target, role, label] of EDGE_CONTRACTS) { const edge = drawioById.get(id); assert.equal(edge.attributes.get('source'), 'node-' + source, id + ' Draw.io source'); assert.equal(edge.attributes.get('target'), 'node-' + target, id + ' Draw.io target'); assert.equal(styleMap(edge.attributes.get('style')).get('semanticRole'), role, id + ' Draw.io role'); assert.equal(edge.label, label, id + ' Draw.io label'); const svgEdge = svgById.get(id); assert.equal(svgEdge.attributes.get('data-source'), source, id + ' SVG source'); assert.equal(svgEdge.attributes.get('data-target'), target, id + ' SVG target'); assert.equal(svgEdge.attributes.get('data-role'), role, id + ' SVG role'); assert.equal(svgEdge.attributes.get('data-label'), label, id + ' SVG label'); }
+}
+async function assertRelationsAndStage() {
+  const documents = await readContentDocuments(CONTENT_ROOT); const article = documents.find(({file: path}) => 'content/' + path === ARTICLE); assert.ok(article, 'STY-13 content document'); const links = extractInternalLinks(article);
+  for (const related of RELATED_CASES) assert.ok(links.includes(related), 'visible related case: ' + related); assert.equal(links.includes(NEXT_ROUTE), false, 'STY-14 remains non-actionable from STY-13'); assert.equal(documents.flatMap(extractInternalLinks).filter((link) => link === NEXT_ROUTE).length, 0, 'STY-14 actionable route count is zero');
+  const backlog = readFileSync('docs/content-backlog.md', 'utf8'); assert.match(backlog, new RegExp('^- \\[ \\] \\*\\*' + NEXT_TOPIC + ' P1', 'mu'), 'STY-14 is pending');
+  const status = JSON.parse(readFileSync('src/generated/project-status.json', 'utf8')); const projection = {completed: status.completed_topics, documents: status.content_documents, sources: status.governed_sources}; const published = new RegExp('^- \\[x\\] \\*\\*' + TOPIC_ID + ' ', 'mu').test(backlog); assert.deepEqual(projection, published ? EXPECTED_STAGE_B : EXPECTED_STAGE_A, published ? 'Stage B projection' : 'Stage A projection');
+}
+function fixtureArticle() {
+  const sections = EXPECTED_HEADINGS.map((heading) => '## ' + heading + (heading === '可迁移经验' ? '\n### ' + MIGRATION_HEADINGS.join('\n### ') : '')).join('\n'); const rows = (items) => items.map((row) => '| ' + row.join(' | ') + ' |').join('\n');
+  return '---\n' + frontMatterFixture(EXACT_METADATA) + '\n---\n' + sections + '\n' + WRAPPERS.map((label) => '<div role="region" aria-label="' + label + '" tabIndex={0} onKeyDown={handleHorizontalArrowKey}>').join('\n') + '\n| ' + COMPARISON_HEADERS.join(' | ') + ' |\n| --- | --- | --- | --- | --- |\n' + rows(COMPARISON_ROWS) + '\n\n| ' + OPERATION_HEADERS.join(' | ') + ' |\n| --- | --- | --- | --- |\n' + rows(OPERATION_ROWS) + '\n\n| ' + FAILURE_HEADERS.join(' | ') + ' |\n| --- | --- | --- | --- |\n' + rows(FAILURE_ROWS) + '\n' + REQUIRED_SENTENCES.join('\n');
+}
+function assertGenericHelperRejections() { assert.throws(() => parsePathPoints('M 0 0 L'), assert.AssertionError, 'missing path coordinate rejected'); assert.deepEqual(parsePathPoints('M 0 0 H 10 V 5'), [{x: 0, y: 0}, {x: 10, y: 0}, {x: 10, y: 5}], 'orthogonal route parsing'); const cssFixture = 'path { stroke: #123456; }'; assert.equal(svgPresentationValue(cssFixture, parseSvg('<svg><path/></svg>').elements[1], 'stroke'), '#123456', 'CSS cascade helper'); assert.ok(markerEnvelope({x: 10, y: 0}, {x: 0, y: 0}, {width: 2, height: 2, refX: 1, refY: 1}).right > 10, 'marker helper'); }
 
 test('STY-13 helper fixture locks its public content contract', () => {
-  assertGenericHelperRejections();
-  assert.equal(architectureCaseTopicIds.has(TOPIC_ID), true, 'STY-13 uses the architecture-case heading contract');
-  const fixture = spaceBasedFixture(); assertSpaceBasedArticle(fixture);
-  for (const key of Object.keys(EXACT_METADATA)) assert.throws(() => assertSpaceBasedArticle(removeFrontMatterField(fixture, key)), assert.AssertionError, `${key} deletion rejected`);
-  for (const group of [COMPARISON_ROWS, OPERATION_ROWS, FAILURE_ROWS]) for (const row of group) { const exact = '| ' + row.join(' | ') + ' |'; assert.throws(() => assertSpaceBasedArticle(replaceOnce(fixture, exact, '| ' + [...row.slice(0, -1), '错误的合同值'].join(' | ') + ' |', `${row[0]} mutation`)), assert.AssertionError, `${row[0]} change rejected`); }
-  for (const sentence of REQUIRED_SENTENCES) assert.throws(() => assertSpaceBasedArticle(replaceOnce(fixture, sentence, '错误的事实边界。', sentence)), assert.AssertionError, `${sentence} mutation rejected`);
+  assertGenericHelperRejections(); assert.equal(architectureCaseTopicIds.has(TOPIC_ID), true, 'STY-13 uses architecture-case contract'); const fixture = fixtureArticle(); assertSpaceBasedArticle(fixture);
+  for (const key of Object.keys(EXACT_METADATA)) assert.throws(() => assertSpaceBasedArticle(removeFrontMatterField(fixture, key)), assert.AssertionError, key + ' deletion rejected');
+  for (const [headers, rows] of [[COMPARISON_HEADERS, COMPARISON_ROWS], [OPERATION_HEADERS, OPERATION_ROWS], [FAILURE_HEADERS, FAILURE_ROWS]]) { const header = '| ' + headers.join(' | ') + ' |'; assert.throws(() => assertSpaceBasedArticle(replaceOnce(fixture, header, '| 错误表头 |', 'header')), assert.AssertionError, 'wrong table header rejected'); for (const row of rows) { const exact = '| ' + row.join(' | ') + ' |'; assert.throws(() => assertSpaceBasedArticle(replaceOnce(fixture, exact, '| ' + [...row.slice(0, -1), '错误的合同值'].join(' | ') + ' |', row[0])), assert.AssertionError, row[0] + ' mutation rejected'); } }
+  for (const sentence of REQUIRED_SENTENCES) assert.throws(() => assertSpaceBasedArticle(replaceOnce(fixture, sentence, '错误的事实边界。', sentence)), assert.AssertionError, sentence + ' mutation rejected');
 });
-
-test('STY-13 publication contract remains RED until the article exists', () => {
-  const source = file(ARTICLE);
-  assert.ok(source, `${ARTICLE} must exist after implementation`);
-  assertSpaceBasedArticle(source);
+test('STY-13 publication contract remains RED until the article exists', async () => {
+  const source = file(ARTICLE); assert.ok(source, ARTICLE + ' must exist after implementation'); assertSpaceBasedArticle(source); assertSpaceBasedSources(JSON.parse(readFileSync('data/source-ledger.json', 'utf8'))); assertSpaceBasedDiagram(file(DRAWIO), file(SVG)); await assertRelationsAndStage();
 });
