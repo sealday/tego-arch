@@ -191,10 +191,10 @@ Read-only scope: production evidence truthfulness, source and relation observati
 
 Read-only scope: the complete STY-13 authority, affinity, split-brain, workflow, hotspot, rebalance and recovery contract at the exact published Stage B head.
 
-- Exact final evidence candidate head: `UNBOUND — controller must create and bind the exact post-production-evidence candidate head`.
-- Independent final code/spec/security review: `UNBOUND — controller must assign a read-only reviewer`.
-- Independent final content/evidence/rights review: `UNBOUND — controller must assign a different read-only reviewer`.
-- Independent final architecture/invariant review: `UNBOUND — controller must assign a third read-only reviewer`.
-- Final review finding totals: `UNBOUND`.
-- Final Stage B recovery judgment: `NOT_RECORDED`.
-- Recovery baseline status: `NOT_UPDATED`.
+- Exact final evidence candidate head: `d07c44cf362d0f45531d4b67f01e64d0e81556cf`.
+- Independent final code/spec/security review: `READY / APPROVE`; findings: `0`; exact head: `d07c44cf362d0f45531d4b67f01e64d0e81556cf`.
+- Independent final content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`; exact head: `d07c44cf362d0f45531d4b67f01e64d0e81556cf`.
+- Independent final architecture/invariant review: `CLEAR / READY`; blockers: `0`; exact head: `d07c44cf362d0f45531d4b67f01e64d0e81556cf`.
+- Final review finding totals: Critical `0`; Important `0`; Minor `0`; ⚠️ `0`.
+- Final Stage B recovery judgment: `READY`.
+- Recovery baseline status: `READY_TO_BIND`.

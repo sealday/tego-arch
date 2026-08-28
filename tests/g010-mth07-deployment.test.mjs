@@ -17,7 +17,7 @@ const POST_G010_G009_ARTIFACTS = new Map([
   ['docs/reviews/evidence/g009-batch13-stage-a-browser.json', [17_260, 'a0de2d5ea069b2af87ad4aa4ef4696a9a22e6ff99ba96b616763262f1814ed38']],
   ['docs/reviews/evidence/g009-batch13-stage-a-production-browser.json', [33_721, 'a28bb3269f2b7545b7d77f2ec506ce5b1bd737924a5db6945481ee8ec5763560']],
   ['docs/reviews/evidence/g009-batch13-stage-b-production-browser.json', [47_997, '93540ff26f5d7a6fddb2ca5310a838304d04afa6994788fcf1fb8d0b4a6ff958']],
-  ['docs/reviews/g009-batch14.md', [19_030, 'f0d75ccdd9010950f7fe17e653ea73ac32808a30fccb3730167ec51b3c9c2292']],
+  ['docs/reviews/g009-batch14.md', [19_102, '4670db791ce9d8bd51c6bf904d1c357fd2fe4759761ba09a871eca47a103e4d4']],
   ['docs/reviews/evidence/g009-batch14-stage-a-browser.json', [42_484, 'ebb10045c6ef19fd665767dba270697e552d8c1e074d219aa5ccbf972f2813c1']],
   ['docs/reviews/evidence/g009-batch14-stage-a-production-browser.json', [45_978, '99af96e80750b26f4d52a5c785e57907645f4d95464a821a333b9488a38d062b']],
   ['docs/reviews/evidence/g009-batch14-stage-b-production-browser.json', [46_000, 'ba4565dae285e7c65386e0f2e8cebfb339301bdff6e48d1d6c9aaed3f1bacde4']],

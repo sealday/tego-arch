@@ -59,7 +59,7 @@ export const STAGE_B_PRODUCTION_PAGES = Object.freeze({
   build: Object.freeze({jobId: 98_911_988_885, status: 'completed', conclusion: 'success'}),
   deploy: Object.freeze({jobId: 98_913_062_798, status: 'completed', conclusion: 'success'}),
 });
-export const FINAL_EVIDENCE_REVIEWED_HEAD = 'UNBOUND';
+export const FINAL_EVIDENCE_REVIEWED_HEAD = 'd07c44cf362d0f45531d4b67f01e64d0e81556cf';
 export const LOCAL_RAW_IDENTITY = Object.freeze({bytes: 42_484, sha256: 'ebb10045c6ef19fd665767dba270697e552d8c1e074d219aa5ccbf972f2813c1'});
 export const PRODUCTION_RAW_IDENTITY = Object.freeze({bytes: 45_978, sha256: '99af96e80750b26f4d52a5c785e57907645f4d95464a821a333b9488a38d062b'});
 const ARTICLE_IDENTITY = Object.freeze({bytes: 20_625, sha256: '672ab04acd0c11498f25dbc8890f528c4b863c1308d7157774f01a96effe31bf'});

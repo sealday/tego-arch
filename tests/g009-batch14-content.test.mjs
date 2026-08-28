@@ -17,7 +17,7 @@ export const NEXT_ROUTE = '/styles/sty-14';
 export const STAGE_B_REVIEW = 'docs/reviews/g009-batch14.md';
 export const STAGE_B_BROWSER = 'docs/reviews/evidence/g009-batch14-stage-b-production-browser.json';
 export const STAGE_B_PUBLISHED_HEAD = 'e04605ed2b02568289cbfc1b47b1df77e4996d68';
-export const FINAL_EVIDENCE_REVIEWED_HEAD = 'UNBOUND';
+export const FINAL_EVIDENCE_REVIEWED_HEAD = 'd07c44cf362d0f45531d4b67f01e64d0e81556cf';
 export const STAGE_B_PRODUCTION_PAGES = Object.freeze({
   workflow: 'Verify and deploy Docusaurus to GitHub Pages',
   runId: 33_189_774_344,
