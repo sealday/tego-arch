@@ -469,10 +469,11 @@ async function assertRelationsAndStage() {
   const review = file(STAGE_B_REVIEW); const browser = file(STAGE_B_BROWSER); assert.ok(review, 'Stage B review candidate exists');
   if (!browser) {
     assert.equal(review.split('## Stage B closure candidate').length - 1, 1, 'one Stage B closure candidate');
-    assert.match(review, /Independent Stage B code\/spec\/security review: `PENDING`; findings: `PENDING`\./u);
-    assert.match(review, /Independent Stage B content\/evidence\/rights review: `PENDING`; rights: `PENDING`; findings: `PENDING`\./u);
-    assert.match(review, /Independent Stage B architecture\/invariant review: `PENDING`; blockers: `PENDING`\./u);
-    assert.match(review, /Final Stage B review judgment: `NOT_RECORDED`\./u);
+    assert.match(review, /Independent Stage B code\/spec\/security review: `READY \/ APPROVE`; findings: `0`; exact head: `[\da-f]{40}`\./u);
+    assert.match(review, /Independent Stage B content\/evidence\/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`; exact head: `[\da-f]{40}`\./u);
+    assert.match(review, /Independent Stage B architecture\/invariant review: `CLEAR \/ READY`; blockers: `0`; exact head: `[\da-f]{40}`\./u);
+    assert.match(review, /Review finding totals: Critical `0`; Important `0`; Minor `0`; ⚠️ `0`\./u);
+    assert.match(review, /Final Stage B review judgment: `READY`\./u);
     assert.match(review, /Stage B deployment status: `PENDING \/ NOT_RUN`\./u);
     assert.match(review, /Stage B production raw: `NOT_RECORDED`\./u);
     return;

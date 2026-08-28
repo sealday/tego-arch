@@ -131,12 +131,12 @@ Read-only scope: stable affinity key; partition-local operation boundary; unique
 - STY-13 target: `published / complete`.
 - STY-14 target: `unpublished / pending / non-actionable`; actionable route count: `0`; sole next topic.
 - Immediate immutable history: complete Batch 13 review SHA-256 `688c800ecafcfc3ed66529e2896d49fd247680412f9eba6c5a25da357e8ae44c`; local raw SHA-256 `a0de2d5ea069b2af87ad4aa4ef4696a9a22e6ff99ba96b616763262f1814ed38`; Stage A production raw SHA-256 `a28bb3269f2b7545b7d77f2ec506ce5b1bd737924a5db6945481ee8ec5763560`; Stage B production raw SHA-256 `93540ff26f5d7a6fddb2ca5310a838304d04afa6994788fcf1fb8d0b4a6ff958`; release-baseline SHA-256 `52c9fe9aa36e1ab9c406162c1d34f489ee439058f73f450e973fe496b35902f0`.
-- Exact Stage B candidate tree identity: `PENDING_REVIEW_HEAD`.
-- Independent Stage B code/spec/security review: `PENDING`; findings: `PENDING`.
-- Independent Stage B content/evidence/rights review: `PENDING`; rights: `PENDING`; findings: `PENDING`.
-- Independent Stage B architecture/invariant review: `PENDING`; blockers: `PENDING`.
-- Review finding totals: `NOT_RECORDED`.
-- Final Stage B review judgment: `NOT_RECORDED`.
+- Exact Stage B candidate tree identity: `999d24b0262bcbe583a0a807835c3e81f1b0960d`.
+- Independent Stage B code/spec/security review: `READY / APPROVE`; findings: `0`; exact head: `999d24b0262bcbe583a0a807835c3e81f1b0960d`.
+- Independent Stage B content/evidence/rights review: `CONTENT READY`; rights: `PASS`; findings: `0`; exact head: `999d24b0262bcbe583a0a807835c3e81f1b0960d`.
+- Independent Stage B architecture/invariant review: `CLEAR / READY`; blockers: `0`; exact head: `999d24b0262bcbe583a0a807835c3e81f1b0960d`.
+- Review finding totals: Critical `0`; Important `0`; Minor `0`; ⚠️ `0`.
+- Final Stage B review judgment: `READY`.
 - Stage B scope boundary: `STAGE_B`.
 - Stage B deployment status: `PENDING / NOT_RUN`.
 - Stage B production raw: `NOT_RECORDED`.
