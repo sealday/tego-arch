@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {spawnSync} from 'node:child_process';
 import {readFileSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import test from 'node:test';
@@ -14,6 +15,8 @@ export const ROUTE = '/styles/sty-13';
 export const TOPIC_ID = 'STY-13';
 export const NEXT_TOPIC = 'STY-14';
 export const NEXT_ROUTE = '/styles/sty-14';
+export const STAGE_B_REVIEW = 'docs/reviews/g009-batch14.md';
+export const STAGE_B_BROWSER = 'docs/reviews/evidence/g009-batch14-stage-b-production-browser.json';
 export const RELATED_CASES = Object.freeze(['/cases/aws-cell-shuffle-sharding', '/cases/cloudflare-durable-objects-workerd']);
 export const EXPECTED_STAGE_A = Object.freeze({completed: 65, documents: 109, sources: 573});
 export const EXPECTED_STAGE_B = Object.freeze({completed: 66, documents: 109, sources: 573});
@@ -133,7 +136,12 @@ async function assertRelationsAndStage() {
   const documents = await readContentDocuments(CONTENT_ROOT); const article = documents.find(({file: path}) => 'content/' + path === ARTICLE); assert.ok(article, 'STY-13 content document'); const links = extractInternalLinks(article);
   for (const related of RELATED_CASES) assert.ok(links.includes(related), 'visible related case: ' + related); assert.equal(links.includes(NEXT_ROUTE), false, 'STY-14 remains non-actionable from STY-13'); assert.equal(documents.flatMap(extractInternalLinks).filter((link) => link === NEXT_ROUTE).length, 0, 'STY-14 actionable route count is zero');
   const backlog = readFileSync('docs/content-backlog.md', 'utf8'); assert.match(backlog, new RegExp('^- \\[ \\] \\*\\*' + NEXT_TOPIC + ' P1', 'mu'), 'STY-14 is pending');
-  const status = JSON.parse(readFileSync('src/generated/project-status.json', 'utf8')); const projection = {completed: status.completed_topics, documents: status.content_documents, sources: status.governed_sources}; const published = new RegExp('^- \\[x\\] \\*\\*' + TOPIC_ID + ' ', 'mu').test(backlog); assert.deepEqual(projection, published ? EXPECTED_STAGE_B : EXPECTED_STAGE_A, published ? 'Stage B projection' : 'Stage A projection');
+  const status = JSON.parse(readFileSync('src/generated/project-status.json', 'utf8')); const projection = {completed: status.completed_topics, documents: status.content_documents, sources: status.governed_sources}; const published = new RegExp('^- \\[x\\] \\*\\*' + TOPIC_ID + ' ', 'mu').test(backlog);
+  if (!published) { assert.deepEqual(projection, EXPECTED_STAGE_A, 'Stage A projection while STY-13 remains pending'); return; }
+  assert.deepEqual(projection, EXPECTED_STAGE_B, 'Stage B projection');
+  const review = file(STAGE_B_REVIEW); const browser = file(STAGE_B_BROWSER); assert.ok(review && browser, 'Stage B review and four-state Browser evidence exist'); const evidence = JSON.parse(browser); const head = spawnSync('git', ['rev-parse', 'HEAD'], {encoding: 'utf8'}).stdout.trim();
+  assert.deepEqual(evidence.pages, {...evidence.pages, workflow: 'Verify and deploy Docusaurus to GitHub Pages', headSha: head, event: 'push', status: 'completed', conclusion: 'success'}, 'exact-head Pages deployment identity'); assert.equal(evidence.implementationHead, head, 'Browser evidence exact implementation head'); assert.deepEqual(Object.keys(evidence.states).sort(), ['desktopDark', 'desktopLight', 'mobileDark', 'mobileLight'], 'four Browser states'); assert.equal(evidence.functionalSummary.status, 'PASS', 'Browser functional QA passes'); assert.equal(evidence.functionalSummary.states, 4, 'four Browser states accepted'); assert.equal(evidence.functionalSummary.sty14ActionableTotal, 0, 'STY-14 actionable count is zero'); for (const state of Object.values(evidence.states)) assert.equal(state.geometry?.sty14, 0, 'each accepted state has zero STY-14 actions');
+  for (const closing of ['code review', 'content review', 'architecture review']) assert.match(review, new RegExp(closing + '[\\s\\S]{0,200}(?:READY|APPROVE|PASS|CLEAR)', 'iu'), closing + ' final review closed'); assert.match(review, new RegExp(head, 'u'), 'review binds exact head');
 }
 function fixtureArticle() {
   const sections = EXPECTED_HEADINGS.map((heading) => '## ' + heading + (heading === '可迁移经验' ? '\n### ' + MIGRATION_HEADINGS.join('\n### ') : '')).join('\n'); const rows = (items) => items.map((row) => '| ' + row.join(' | ') + ' |').join('\n');
