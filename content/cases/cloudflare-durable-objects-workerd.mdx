@@ -356,6 +356,8 @@ flowchart TB
 - 不要把告警当恰好一次调度器。它至少执行一次、只有有限自动重试，外部效果需要稳定幂等键、回执、对账与人工升级。
 - 不要用`workerd`解释 Cloudflare 生产全球放置、迁移、复制或存储控制平面。它是开源本地运行时与 Cloudflare Workers 引擎，固定源码明确仍是单运行时实例的对象模型。
 
+[Space-Based Architecture 决策](/styles/sty-13)可有限类比按稳定标识路由到状态所有者；Durable Objects 不证明分区数据网格、同步主备或跨对象事务。
+
 ## 来源
 
 **Cloudflare Durable Objects 官方文档（已证实事实，访问与截断日期2026-07-22）**

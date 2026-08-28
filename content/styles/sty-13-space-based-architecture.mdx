@@ -1,0 +1,268 @@
+---
+title: Space-Based Architecture：让状态与处理在亲和分区相遇
+slug: /styles/sty-13
+content_type: style
+status: reviewed
+difficulty: advanced
+analyzed_at: 2026-08-28
+source_cutoff: 2026-08-28
+confidence: high
+domains:
+  - software-architecture
+  - distributed-systems
+  - data-intensive-systems
+agent_patterns: []
+protocols: []
+quality_attributes:
+  - scalability
+  - performance
+  - availability
+  - consistency
+  - recoverability
+  - operability
+tags:
+  - 架构风格
+  - Space-Based Architecture
+  - 数据亲和
+  - 分区处理
+  - 内存数据网格
+  - 热点治理
+summary: 以航班余位与报价说明 Space-Based Architecture：入口按航段与日期路由到唯一分区所有者，状态与处理共置，主备只处理受控切换，日志与检查点负责恢复，多航段行程由外部持久工作流协调。
+topic_id: STY-13
+priority: P2
+depends_on:
+  - STY-00
+  - STY-05
+  - STY-08
+adjacent_topics:
+  - STY-05
+  - STY-08
+related_cases:
+  - /cases/aws-cell-shuffle-sharding
+  - /cases/cloudflare-durable-objects-workerd
+related_questions: []
+---
+
+import SourceLedger from '@site/src/components/SourceLedger';
+import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableRegion/handleHorizontalArrowKey.mjs';
+
+# Space-Based Architecture：让状态与处理在亲和分区相遇
+
+航班开售会把查询与扣减压向热门航段。若服务实例远程争用同一数据库行，增加实例只会增加协调者；Space-Based Architecture 试图改变的正是这条写入路径。[风格目录](/styles)提供其他边界组织方式。
+
+本文用一个原创航班余位与报价拓扑解释采用条件：稳定亲和键把请求、状态、处理与写入所有权送到同一分区。Space-Based Architecture 不是数据库前加一层读缓存。
+
+证据范围截至 2026-08-28。厂商文档只支持具名窄机制；航班案例只证明厂商发布过该场景，不证明本文设计已投产或具有普遍性能。
+
+## 学习问题
+
+- Space-Based Architecture 移除什么共享协调瓶颈，普通数据库分区或读缓存何时已经足够？
+- 亲和路由、处理单元、实时状态、同步备份、恢复记录与外部工作流（Workflow）各拥有什么？
+- 查询、暂留、确认和释放怎样留在一个分区，多航段行程又怎样避免伪造全局事务？
+- 热点、主节点失败、脑裂、再平衡、内存压力与恢复失败分别如何停止？
+- 哪些结论来自厂商文档，哪些是本站针对航班场景的原创分析？
+
+决定性机制不是“数据在内存”，而是稳定亲和键、唯一分区所有者和本地权威写入同时成立。远程拉取状态处理或数据库同步并发写都会保留共享协调瓶颈。
+
+## 一页摘要
+
+**本站原创分析**：亲和键采用“航段 + 出发日期”，例如 `SHA–PEK + 2026-09-18`。航段与出发日期共同形成亲和键，余位状态与处理该状态的服务位于同一分区。
+
+空间内状态是实时余位写权威；长期记录不得形成第二个同步可写权威。日志、检查点与长期记录负责恢复、审计和长期事实，派生读模型负责跨航段搜索与统计；它们都不能绕过当前分区所有者接受余位写入。
+
+先用下表判断相邻方案是否已经满足目标。若问题只是读放大，读缓存通常更简单；若数据库分区已经给出足够的写吞吐、事务与恢复能力，专用空间运行时带来的内存、主备和操作复杂度没有必要。
+
+<div role="region" aria-label="Space-Based Architecture 与四种相邻方案边界表，可横向滚动" tabIndex={0} onKeyDown={handleHorizontalArrowKey}>
+
+| 方案 | 状态与处理 | 实时权威 | 跨分区协调 | 采用边界 |
+| --- | --- | --- | --- | --- |
+| Space-Based Architecture | 状态与处理按亲和键共置 | 分区内运行状态 | 外部工作流 | 热点、内存与恢复复杂度可控 |
+| 普通数据库分区 | 数据按键分布，应用可远程处理 | 数据库 | 数据库事务或应用协调 | 数据库已经满足延迟与容量目标 |
+| 读缓存 | 副本加速读取，写入仍回权威库 | 数据库 | 数据库或应用 | 写瓶颈不是主要问题 |
+| Actor Model | 逻辑身份拥有私有状态并串行处理消息 | Actor 持久模型 | 消息与工作流 | 按实体身份而非数据分区建模更自然 |
+| 单元架构 | 按租户或请求集合限制故障半径 | 单元内各自系统 | 单元外控制面 | 首要目标是隔离而非数据处理亲和 |
+
+</div>
+
+若普通数据库分区或读缓存已满足延迟与容量目标，不应引入专用空间运行时。
+
+## 事实边界
+
+**已证实事实**：GigaSpaces XAP 16.2 文档把 Space-Based Architecture 与 Processing Unit、分区空间、数据亲和及主备联系起来；相关文档分别说明部署、主权和重路由。Oracle Coherence 12.2.1 系列文档说明分区数据、备份、再平衡和可选持久后端。这里只作厂商机制摘要，不外推业务正确性、线性扩展或可用性。
+
+**厂商案例陈述**：GigaSpaces 发布了预订与航班余位客户案例，因此航班余位是厂商公开陈述过的应用背景。本文不采用其中的性能或商业数字，也不把该页面当作原创航班拓扑、状态权威选择、工作流或故障停止动作的证据。
+
+**本站原创分析**：亲和键、唯一实时余位权威、多航段持久工作流、热点预算和停止动作属于本文方案，不是厂商配置教程。只有固定产品版本并通过负载、故障和恢复演练后，能力才成为生产合同。
+
+<details className="evidence-card">
+  <summary>证据：固定版本、来源分工与许可边界</summary>
+
+- **GigaSpaces：** XAP 16.2 与 16.2.1 页面，2026-08-28 核查；仅作原创事实摘要。
+- **Oracle：** Coherence 12.2.1.4 与 12.2.1 页面，2026-08-28 核查；仅交叉验证分区与持久后端窄机制。
+- **案例：** GigaSpaces 当前预订与航班余位客户案例页；只证明厂商发布该案例陈述。
+- **许可边界：** 外部页面按 `LicenseRef-All-Rights-Reserved` 治理，不复制文字、代码、图、品牌标志或品牌视觉；原创图身份按 `LicenseRef-Atlas-Original` 登记。
+
+</details>
+
+## 架构图
+
+先检查三层之间的所有权：入口只认证、限流和解析亲和键；处理单元的主分区接受本地业务写；恢复与协调面只能通过受控协议恢复或请求分区操作。图中的同步备份不接受普通写，多航段工作流也不直接改写分区内部状态。
+
+<div role="region" aria-label="Space-Based Architecture 航班余位亲和分区、主备与恢复边界图，可横向滚动" tabIndex={0} onKeyDown={handleHorizontalArrowKey}>
+
+![入口按航段日期路由到唯一余位分区，主备、恢复记录和多航段工作流各守边界](/img/diagrams/sty-13-space-based-flight-availability.svg)
+
+</div>
+
+**本站原创分析**：图的结论不是“节点越多越快”，而是所有权可证明时才写。备份只有在隔离旧主、校验进度并进入新纪元后才能提升。无法确认唯一主分区时暂停写入，不能让双主继续售卖后再自动合并。
+
+## 亲和分区与预订流
+
+下面的说明性场景沿一笔请求追踪控制权。每一步都要能回答“谁拥有当前判断”，否则超时重试（Retry）会把未知结果误写成第二次业务动作。
+
+1. 入口认证调用方并规范化航段、出发日期和请求幂等键。
+2. 路由目录按当前纪元把请求送到唯一分区所有者。
+3. 查询在本地读取余位与价格规则，返回带版本结果。
+4. 暂留在一个本地原子操作中校验余位、版本、期限和重复请求。
+5. 多航段工作流保存每个分区的步骤标识、暂留令牌和补偿状态。
+6. 确认只接受匹配行程、暂留令牌、幂等键、状态版本和期限的请求。
+7. 响应丢失时按原幂等键查询权威结果，不创建第二次扣减。
+8. 处理单元恢复时验证分区纪元、检查点和日志位置后才接受写入。
+
+单航段暂留与确认保持分区本地，多航段行程由外部持久工作流协调。释放也必须回到原暂留所在分区；调用超时后先查询权威结果，不能假定释放成功。
+
+这张表回答六类操作由谁执行、谁判定一致性。应保留的边界是：全局读可以派生，最新余位写判断不能派生。
+
+<div role="region" aria-label="航班余位六类操作执行与一致性责任表，可横向滚动" tabIndex={0} onKeyDown={handleHorizontalArrowKey}>
+
+| 操作 | 执行者 | 一致性责任 | 合同 |
+| --- | --- | --- | --- |
+| 余位查询 | 亲和分区本地服务 | 分区状态版本 | 可返回带版本结果，不能直接证明后续可售 |
+| 暂留 | 亲和分区所有者 | 余位、期限、幂等键 | 本地原子判断并写入暂留 |
+| 确认 | 原暂留所在分区 | 暂留令牌、版本、期限 | 重复请求返回同一权威结果 |
+| 释放 | 原暂留所在分区 | 暂留状态与幂等键 | 超时后查询，不假定释放成功 |
+| 多航段协调 | 外部持久工作流 | 步骤、期限、补偿与人工终态 | 不直接写分区，不宣称全局 ACID |
+| 全局统计 | 派生读模型或批处理 | 更新时间与来源版本 | 不得处理最新余位写判断 |
+
+</div>
+
+**基于证据的推断**：路由透明只降低调用方对物理拓扑的感知，不消除网络、所有权变化或再平衡。客户端遇到旧路由应重新解析当前纪元，而不是无限重试旧主地址。
+
+## 关键机制导读
+
+这里按机制而非产品菜单阅读来源。GigaSpaces 的定义页用于理解分区处理单元与数据亲和；服务等级协议页只用于部署和主备控制；脑裂页只用于唯一主权裁决；代理连接页只用于客户端重新发现。Oracle 文档只用于交叉检查分区、备份、再平衡与后备映射，不证明本文采用了 Coherence，也不证明原创航班设计或普遍性能。
+
+<details className="evidence-card">
+  <summary>证据：定义、部署、主权与重路由的最短路径</summary>
+
+- [Space-Based Architecture](https://docs.gigaspaces.com/16.2/overview/space-based-architecture.html)：Processing Unit、分区空间、亲和和主备的厂商定义范围。
+- [Defining the SLA for Your Processing Unit](https://docs.gigaspaces.com/16.2.1/admin/the-sla-overview.html)：处理单元部署与服务等级控制范围。
+- [Availability Biased — Split Brain and Primary Resolution](https://docs.gigaspaces.com/16.2/admin/leader-election-availability-biased.html)：脑裂与主节点裁决范围。
+- [Proxy Connectivity](https://docs.gigaspaces.com/16.2/admin/tuning-proxy-connectivity.html)：代理连接与重路由范围。
+
+**边界：** 这些页面支持具名机制，不证明本站原创航班设计、业务正确性、线性扩展或一般性能。
+
+</details>
+
+<details className="evidence-card">
+  <summary>证据：独立的分区与持久后端交叉检查</summary>
+
+- [Introduction to Coherence](https://docs.oracle.com/en/middleware/fusion-middleware/coherence/12.2.1.4/develop-applications/introduction-coherence.html)：分区数据、备份和再平衡的 Coherence 文档范围。
+- [Implementing Storage and Backing Maps](https://docs.oracle.com/middleware/1221/coherence/develop-applications/cache_back.htm)：后备映射与外部存储的文档范围。
+
+**边界：** Coherence 文档不定义本文的 Space-Based Architecture，不证明本站原创航班设计，也不证明一般性能或两个产品的语义等价。
+
+</details>
+
+## 架构决策与权衡
+
+**本站原创分析**：先确认问题是突发权威写入争用，而不是普通读放大。若低延迟与容量目标没有测量基线，保留普通数据库；若数据库分区已经满足目标，也保留数据库。
+
+接着验证亲和键能否稳定表达所有权，以及大多数权威写入是否能在一个分区完成。亲和键持续变化、热门键无法隔离或主路径依赖跨分区同步一致性，都说明风格与业务边界不匹配。
+
+团队还必须接受空间内状态成为实时运行权威，并移除数据库同步双写。数据库可以保存已确认预订和审计事实，但不能在空间活跃时绕过当前分区所有者扣减余位。
+
+最后比较收益与代价：同步主备、分区纪元、内存容量、再平衡、日志与检查点、恢复演练和专用平台操作都是持续成本。同步备份不等于持久日志、异地灾备、零数据丢失或跨分区事务。
+
+## 生产化分析
+
+**说明性演练**：先判断故障要停止什么，再决定怎样恢复。下表把信号、保护动作和恢复门槛绑定，防止主权或状态不明时继续售卖。
+
+<div role="region" aria-label="Space-Based Architecture 六类故障信号、保护动作与恢复门槛表，可横向滚动" tabIndex={0} onKeyDown={handleHorizontalArrowKey}>
+
+| 故障 | 信号 | 保护动作 | 恢复门槛 |
+| --- | --- | --- | --- |
+| 热点分区 | 在途量、队列时长、拒绝率 | 排队、限流、隔离读模型 | 只有业务语义允许才拆亲和键 |
+| 主节点失败 | 心跳、复制进度、纪元 | 隔离旧主并确认唯一主权 | 新主完成状态校验后恢复写 |
+| 网络分区与脑裂 | 同分区出现多个主权候选 | 暂停写入；查询标注陈旧度 | 选择权威分支并重建副本 |
+| 再平衡 | 迁移流量、延迟、内存峰值 | 限速、暂停或回滚迁移 | 业务延迟和容量水位恢复 |
+| 内存压力 | 主备、索引、暂留与迁移水位 | 拒绝新暂留并保护权威写 | 容量回落且索引状态完整 |
+| 恢复失败 | 日志损坏、检查点过旧、重放超时 | 保持隔离或只读 | 纪元、版本与日志位置全部验证 |
+
+</div>
+
+**本站原创分析**：增加无关节点不会消除热门航班形成的热点分区。先用入口排队、每分区在途预算、租户公平限流与只读派生模型保护写路径；只有业务语义允许时才能拆分亲和键，且拆分不能产生两个可独立售卖同一余位的权威。
+
+主故障后，备份提升先隔离旧主、确认唯一主权、校验状态并发布新纪元。写入是否幸存无法证明时保持未知，调用方复用原幂等键查询。
+
+脑裂期间若继续查询，必须显示数据时点与允许陈旧度。网络恢复后先隔离分支、选择权威历史并重建副本；禁止自动合并两个都接受过余位扣减的历史。
+
+再平衡会消耗网络、中央处理器与内存，必须设置并发、速率、延迟、暂停和回滚门槛。容量预算还要包含主备、索引、暂留、幂等记录、日志缓冲和迁移峰值。
+
+恢复先读取受认可检查点，再按确定顺序重放日志并重建索引。无法验证分区、纪元、状态版本与日志位置时保持隔离或只读，不能从长期数据库猜测当前余位后直接恢复写入。
+
+## 可迁移经验
+
+迁移从一个边界清晰、热点可测且大多数写入能留在单分区的业务切片开始。先固定亲和键、运行权威、幂等合同和停止条件，再演练主故障、脑裂、再平衡、内存压力与冷启动；不要先购买平台再寻找问题。
+
+### 可直接复用的机制
+
+- 用稳定业务键把权威状态、执行与唯一所有权共置，入口只做认证、预算和路由。
+- 为路由与分区所有权设置纪元；迟到请求携带旧纪元时拒绝写入并重新解析。
+- 把单分区原子操作与跨分区持久工作流分开，工作流保存步骤、令牌、期限、补偿与人工终态。
+- 用幂等键查询未知结果；用检查点、追加日志和恢复游标证明重建位置。
+- 为热点、主故障、脑裂、迁移和内存水位设置可执行的停止动作与恢复门槛。
+
+### 只能有限类比的部分
+
+[STY-05 微服务](/styles/sty-05)提供服务所有权和独立部署边界，[STY-08 Actor Model](/styles/sty-08)提供逻辑身份与私有状态的比较；两者都可能承载或邻接分区处理，但不自动提供亲和数据网格、同步主备或跨分区工作流。
+
+[Cell 与 Shuffle Sharding 案例](/cases/aws-cell-shuffle-sharding)可类比放置、热点隔离和故障域。
+
+[Cloudflare 持久对象（Durable Objects）案例](/cases/cloudflare-durable-objects-workerd)可类比按稳定标识路由到状态所有者。两者都不证明空间内状态处理共置或本文的主备、持久化与事务边界。
+
+产品机制只在记录版本内成立；选型时须重验分区、复制、持久化、重路由、故障裁决与容量限制。
+
+### 不应照搬的部分
+
+- 不要把所有数据放进内存，或在数据库前增加缓存后就宣称采用 Space-Based Architecture。
+- 不要让空间与传统数据库保持两个同步可写余位权威，也不要让任意副本接受业务写。
+- 不要把多航段预订、全局扫描或跨分区约束伪装为单分区事务。
+- 不要在没有纪元、唯一主权和状态校验时提升备份，或让双主继续售卖后自动合并。
+- 不要把同步主备写成持久化、异地灾备、零数据丢失或无限横向扩展。
+- 不要把厂商案例的性能、可用性、成本或商业结果外推为本站复现或架构风格的普遍效果。
+
+最终采用条件很窄：稳定亲和键能够表达业务所有权，大多数权威写入保持单分区本地，团队接受唯一空间写权威并具备恢复与停止能力。任何一项不成立，都应退回更简单、可证明的数据库、缓存、Actor 或单元方案。
+
+## 来源
+
+**GigaSpaces 官方机制文档（已证实事实）**
+
+- [Space-Based Architecture](https://docs.gigaspaces.com/16.2/overview/space-based-architecture.html)：只支持风格定义、Processing Unit、分区本地处理、数据亲和与主备概述。
+- [Defining the SLA for Your Processing Unit](https://docs.gigaspaces.com/16.2.1/admin/the-sla-overview.html)：只支持处理单元部署与服务等级协议控制机制。
+- [Availability Biased — Split Brain and Primary Resolution](https://docs.gigaspaces.com/16.2/admin/leader-election-availability-biased.html)：只支持具名脑裂与主节点裁决机制。
+- [Proxy Connectivity](https://docs.gigaspaces.com/16.2/admin/tuning-proxy-connectivity.html)：只支持代理连接与重新发现机制。
+
+**Oracle Coherence 官方机制文档（已证实事实）**
+
+- [Introduction to Coherence](https://docs.oracle.com/en/middleware/fusion-middleware/coherence/12.2.1.4/develop-applications/introduction-coherence.html)：只交叉验证 Coherence 分区数据、备份与再平衡机制。
+- [Implementing Storage and Backing Maps](https://docs.oracle.com/middleware/1221/coherence/develop-applications/cache_back.htm)：只交叉验证后备映射与外部持久存储边界。
+
+**厂商案例与原创图**
+
+- [Booking and Flight Availability](https://www.gigaspaces.com/case_studies/booking-and-flight-availability)（厂商案例陈述）：只证明 GigaSpaces 发布过该航班余位客户案例背景；不采用其指标，不证明原创设计或一般性能。
+- 航班余位亲和分区、主备与恢复边界图由 Tego Arch 架构知识项目维护者原创，未复用厂商图、品牌标志、品牌视觉、签名、水印或第三方构图；图仅用于教学，不是生产效果证据。
+
+所有外部来源均只作保守的原创事实摘要，没有直接引文或改编。
+
+<SourceLedger />

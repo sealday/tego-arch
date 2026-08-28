@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-26T11:41:39.787Z",
+  "generated_at": "2026-08-28T08:44:36.623Z",
   "results": [
     {
       "transport_locator": "https://a2a-protocol.org/latest/",
@@ -106943,6 +106943,223 @@
           "at": "2026-08-25T12:07:24.531Z",
           "outcome": "healthy",
           "final_transport_locator": "https://www2.eecs.berkeley.edu/Pubs/TechRpts/2015/EECS-2015-206.html",
+          "http_status": 206,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://docs.gigaspaces.com/16.2.1/admin/the-sla-overview.html",
+      "source_ids": [
+        "src-gigaspaces-processing-unit-sla"
+      ],
+      "last_attempt": {
+        "at": "2026-08-28T08:44:36.623Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://docs.gigaspaces.com/16.2.1/admin/the-sla-overview.html",
+        "http_status": 206,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-28T08:44:36.623Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://docs.gigaspaces.com/16.2.1/admin/the-sla-overview.html",
+        "http_status": 206,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-08-28T08:44:36.623Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://docs.gigaspaces.com/16.2.1/admin/the-sla-overview.html",
+          "http_status": 206,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://docs.gigaspaces.com/16.2/admin/leader-election-availability-biased.html",
+      "source_ids": [
+        "src-gigaspaces-split-brain-resolution"
+      ],
+      "last_attempt": {
+        "at": "2026-08-28T08:44:36.623Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://docs.gigaspaces.com/16.2/admin/leader-election-availability-biased.html",
+        "http_status": 206,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-28T08:44:36.623Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://docs.gigaspaces.com/16.2/admin/leader-election-availability-biased.html",
+        "http_status": 206,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-08-28T08:44:36.623Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://docs.gigaspaces.com/16.2/admin/leader-election-availability-biased.html",
+          "http_status": 206,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://docs.gigaspaces.com/16.2/admin/tuning-proxy-connectivity.html",
+      "source_ids": [
+        "src-gigaspaces-proxy-connectivity"
+      ],
+      "last_attempt": {
+        "at": "2026-08-28T08:44:36.623Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://docs.gigaspaces.com/16.2/admin/tuning-proxy-connectivity.html",
+        "http_status": 206,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-28T08:44:36.623Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://docs.gigaspaces.com/16.2/admin/tuning-proxy-connectivity.html",
+        "http_status": 206,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-08-28T08:44:36.623Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://docs.gigaspaces.com/16.2/admin/tuning-proxy-connectivity.html",
+          "http_status": 206,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://docs.gigaspaces.com/16.2/overview/space-based-architecture.html",
+      "source_ids": [
+        "src-gigaspaces-sba-overview"
+      ],
+      "last_attempt": {
+        "at": "2026-08-28T08:44:36.623Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://docs.gigaspaces.com/16.2/overview/space-based-architecture.html",
+        "http_status": 206,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-28T08:44:36.623Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://docs.gigaspaces.com/16.2/overview/space-based-architecture.html",
+        "http_status": 206,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-08-28T08:44:36.623Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://docs.gigaspaces.com/16.2/overview/space-based-architecture.html",
+          "http_status": 206,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://docs.oracle.com/en/middleware/fusion-middleware/coherence/12.2.1.4/develop-applications/introduction-coherence.html",
+      "source_ids": [
+        "src-oracle-coherence-partitioned-cache"
+      ],
+      "last_attempt": {
+        "at": "2026-08-28T08:44:36.623Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://docs.oracle.com/en/middleware/fusion-middleware/coherence/12.2.1.4/develop-applications/introduction-coherence.html",
+        "http_status": 200,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-28T08:44:36.623Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://docs.oracle.com/en/middleware/fusion-middleware/coherence/12.2.1.4/develop-applications/introduction-coherence.html",
+        "http_status": 200,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-08-28T08:44:36.623Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://docs.oracle.com/en/middleware/fusion-middleware/coherence/12.2.1.4/develop-applications/introduction-coherence.html",
+          "http_status": 200,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://docs.oracle.com/middleware/1221/coherence/develop-applications/cache_back.htm",
+      "source_ids": [
+        "src-oracle-coherence-backing-maps"
+      ],
+      "last_attempt": {
+        "at": "2026-08-28T08:44:36.623Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://docs.oracle.com/middleware/1221/coherence/develop-applications/cache_back.htm",
+        "http_status": 200,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-28T08:44:36.623Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://docs.oracle.com/middleware/1221/coherence/develop-applications/cache_back.htm",
+        "http_status": 200,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-08-28T08:44:36.623Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://docs.oracle.com/middleware/1221/coherence/develop-applications/cache_back.htm",
+          "http_status": 200,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://www.gigaspaces.com/case_studies/booking-and-flight-availability",
+      "source_ids": [
+        "src-gigaspaces-flight-availability-case"
+      ],
+      "last_attempt": {
+        "at": "2026-08-28T08:44:36.623Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www.gigaspaces.com/case_studies/booking-and-flight-availability",
+        "http_status": 206,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-28T08:44:36.623Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www.gigaspaces.com/case_studies/booking-and-flight-availability",
+        "http_status": 206,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-08-28T08:44:36.623Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://www.gigaspaces.com/case_studies/booking-and-flight-availability",
           "http_status": 206,
           "login_wall_detected": false
         }

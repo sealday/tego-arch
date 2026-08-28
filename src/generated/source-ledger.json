@@ -2722,6 +2722,40 @@
       "health_checks": []
     },
     {
+      "id": "src-atlas-sty13-space-based-flight-availability",
+      "canonical_locator": "/img/diagrams/sty-13-space-based-flight-availability.svg",
+      "transport_locator": "/img/diagrams/sty-13-space-based-flight-availability.svg",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Space-Based Architecture 航班余位亲和分区、主备与恢复边界图 SVG",
+      "author_or_org": "Tego Arch maintainers",
+      "published_at": "2026-08-28",
+      "registered_at": "2026-08-28",
+      "checked_at": "2026-08-28",
+      "version": "original-atlas image/svg+xml identity reserved 2026-08-28",
+      "source_kind": "original-illustration",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "illustration"
+      ],
+      "license": "LicenseRef-Atlas-Original",
+      "license_scope": "The named project-authored sty-13-space-based-flight-availability.svg image/svg+xml asset only",
+      "license_evidence_url": "https://github.com/sealday/tego-arch/blob/main/static/img/diagrams/sty-13-space-based-flight-availability.svg",
+      "license_evidence_note": "Reserved for an original synchronized Draw.io/SVG topology using only approved article semantics, without third-party diagrams, reference imagery, brand visuals, signatures, watermarks or copied composition.",
+      "license_family_id": "/img/diagrams/sty-13-space-based-flight-availability.svg",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "original-atlas",
+      "usage_boundary": "Original teaching topology for affinity routing, partition-local authority, primary-backup control, durable recovery and external itinerary coordination; illustration-only and not evidence of production outcomes.",
+      "link_policy": null,
+      "expected_final_transport_locator": "/img/diagrams/sty-13-space-based-flight-availability.svg",
+      "expected_final_approved_at": "2026-08-28",
+      "expected_final_approval_note": "Reserved project-local original image/svg+xml identity for the Task 3 synchronized Draw.io/SVG asset and semantic, geometry, contrast and raster QA.",
+      "health_summary": "healthy",
+      "health_checks": []
+    },
+    {
       "id": "src-aws-0ccf50a7d52b",
       "canonical_locator": "https://aws.amazon.com/blogs/architecture/shuffle-sharding-massive-and-magical-fault-isolation/",
       "transport_locator": "https://aws.amazon.com/blogs/architecture/shuffle-sharding-massive-and-magical-fault-isolation/",
@@ -10050,6 +10084,226 @@
           "last_success_at": "2026-08-25T12:07:24.531Z",
           "http_status": 206,
           "final_transport_locator": "https://martinfowler.com/articles/201701-event-driven.html"
+        }
+      ]
+    },
+    {
+      "id": "src-gigaspaces-flight-availability-case",
+      "canonical_locator": "https://www.gigaspaces.com/case_studies/booking-and-flight-availability",
+      "transport_locator": "https://www.gigaspaces.com/case_studies/booking-and-flight-availability",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Booking and Flight Availability",
+      "author_or_org": "GigaSpaces",
+      "published_at": null,
+      "registered_at": "2026-08-28",
+      "checked_at": "2026-08-28",
+      "version": "live customer case; checked 2026-08-28",
+      "source_kind": "vendor-reference-architecture",
+      "tier": "first-party",
+      "allowed_evidence_roles": [
+        "case-evidence"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named GigaSpaces customer case page only; quoted customer material, linked works, diagrams, logos, trademarks and third-party material excluded",
+      "license_evidence_url": null,
+      "license_evidence_note": "No reusable license notice was established for the named customer case page; Tego Arch retains only the link, attribution and a vendor-claim-labeled original factual summary.",
+      "license_family_id": "https://www.gigaspaces.com/case_studies/booking-and-flight-availability",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "vendor-claims-separated",
+      "usage_boundary": "Supports only the vendor claim that a booking and flight-availability customer case was published; it does not prove the original flight design or general performance.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://www.gigaspaces.com/case_studies/booking-and-flight-availability",
+      "expected_final_approved_at": "2026-08-28",
+      "expected_final_approval_note": "Direct vendor HTTPS transport and vendor-claim-only boundary reviewed on 2026-08-28.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://www.gigaspaces.com/case_studies/booking-and-flight-availability",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-28T08:44:36.623Z",
+          "last_success_at": "2026-08-28T08:44:36.623Z",
+          "http_status": 206,
+          "final_transport_locator": "https://www.gigaspaces.com/case_studies/booking-and-flight-availability"
+        }
+      ]
+    },
+    {
+      "id": "src-gigaspaces-processing-unit-sla",
+      "canonical_locator": "https://docs.gigaspaces.com/16.2.1/admin/the-sla-overview.html",
+      "transport_locator": "https://docs.gigaspaces.com/16.2.1/admin/the-sla-overview.html",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Defining the SLA for Your Processing Unit",
+      "author_or_org": "GigaSpaces",
+      "published_at": null,
+      "registered_at": "2026-08-28",
+      "checked_at": "2026-08-28",
+      "version": "XAP 16.2.1; checked 2026-08-28",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "implementation",
+        "runtime-fact"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named GigaSpaces XAP 16.2.1 documentation page only; linked works, code, diagrams, trademarks and third-party material excluded",
+      "license_evidence_url": null,
+      "license_evidence_note": "No reusable license notice was established for the named documentation page; Tego Arch retains only the link, attribution and an original factual summary.",
+      "license_family_id": "https://docs.gigaspaces.com/16.2.1/admin/the-sla-overview.html",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports only the documented Processing Unit SLA, deployment and primary-backup control mechanisms; it does not prove the original flight design or general performance.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://docs.gigaspaces.com/16.2.1/admin/the-sla-overview.html",
+      "expected_final_approved_at": "2026-08-28",
+      "expected_final_approval_note": "Direct official HTTPS transport and narrow mechanism boundary reviewed on 2026-08-28.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://docs.gigaspaces.com/16.2.1/admin/the-sla-overview.html",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-28T08:44:36.623Z",
+          "last_success_at": "2026-08-28T08:44:36.623Z",
+          "http_status": 206,
+          "final_transport_locator": "https://docs.gigaspaces.com/16.2.1/admin/the-sla-overview.html"
+        }
+      ]
+    },
+    {
+      "id": "src-gigaspaces-proxy-connectivity",
+      "canonical_locator": "https://docs.gigaspaces.com/16.2/admin/tuning-proxy-connectivity.html",
+      "transport_locator": "https://docs.gigaspaces.com/16.2/admin/tuning-proxy-connectivity.html",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Proxy Connectivity",
+      "author_or_org": "GigaSpaces",
+      "published_at": null,
+      "registered_at": "2026-08-28",
+      "checked_at": "2026-08-28",
+      "version": "XAP 16.2; checked 2026-08-28",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "implementation",
+        "runtime-fact"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named GigaSpaces XAP 16.2 documentation page only; linked works, code, diagrams, trademarks and third-party material excluded",
+      "license_evidence_url": null,
+      "license_evidence_note": "No reusable license notice was established for the named documentation page; Tego Arch retains only the link, attribution and an original factual summary.",
+      "license_family_id": "https://docs.gigaspaces.com/16.2/admin/tuning-proxy-connectivity.html",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports only the documented proxy connectivity, discovery and rerouting mechanism; it does not prove the original flight design or general performance.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://docs.gigaspaces.com/16.2/admin/tuning-proxy-connectivity.html",
+      "expected_final_approved_at": "2026-08-28",
+      "expected_final_approval_note": "Direct official HTTPS transport and narrow mechanism boundary reviewed on 2026-08-28.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://docs.gigaspaces.com/16.2/admin/tuning-proxy-connectivity.html",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-28T08:44:36.623Z",
+          "last_success_at": "2026-08-28T08:44:36.623Z",
+          "http_status": 206,
+          "final_transport_locator": "https://docs.gigaspaces.com/16.2/admin/tuning-proxy-connectivity.html"
+        }
+      ]
+    },
+    {
+      "id": "src-gigaspaces-sba-overview",
+      "canonical_locator": "https://docs.gigaspaces.com/16.2/overview/space-based-architecture.html",
+      "transport_locator": "https://docs.gigaspaces.com/16.2/overview/space-based-architecture.html",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Space-Based Architecture",
+      "author_or_org": "GigaSpaces",
+      "published_at": null,
+      "registered_at": "2026-08-28",
+      "checked_at": "2026-08-28",
+      "version": "XAP 16.2; checked 2026-08-28",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "implementation",
+        "runtime-fact"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named GigaSpaces XAP 16.2 documentation page only; linked works, code, diagrams, trademarks and third-party material excluded",
+      "license_evidence_url": null,
+      "license_evidence_note": "No reusable license notice was established for the named documentation page; Tego Arch retains only the link, attribution and an original factual summary.",
+      "license_family_id": "https://docs.gigaspaces.com/16.2/overview/space-based-architecture.html",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports only the documented Space-Based Architecture definition, Processing Unit, partition-local service, data-affinity and primary-backup mechanisms; it does not prove the original flight design or general performance.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://docs.gigaspaces.com/16.2/overview/space-based-architecture.html",
+      "expected_final_approved_at": "2026-08-28",
+      "expected_final_approval_note": "Direct official HTTPS transport and narrow mechanism boundary reviewed on 2026-08-28.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://docs.gigaspaces.com/16.2/overview/space-based-architecture.html",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-28T08:44:36.623Z",
+          "last_success_at": "2026-08-28T08:44:36.623Z",
+          "http_status": 206,
+          "final_transport_locator": "https://docs.gigaspaces.com/16.2/overview/space-based-architecture.html"
+        }
+      ]
+    },
+    {
+      "id": "src-gigaspaces-split-brain-resolution",
+      "canonical_locator": "https://docs.gigaspaces.com/16.2/admin/leader-election-availability-biased.html",
+      "transport_locator": "https://docs.gigaspaces.com/16.2/admin/leader-election-availability-biased.html",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Availability Biased — Split Brain and Primary Resolution",
+      "author_or_org": "GigaSpaces",
+      "published_at": null,
+      "registered_at": "2026-08-28",
+      "checked_at": "2026-08-28",
+      "version": "XAP 16.2; checked 2026-08-28",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "implementation",
+        "runtime-fact"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named GigaSpaces XAP 16.2 documentation page only; linked works, code, diagrams, trademarks and third-party material excluded",
+      "license_evidence_url": null,
+      "license_evidence_note": "No reusable license notice was established for the named documentation page; Tego Arch retains only the link, attribution and an original factual summary.",
+      "license_family_id": "https://docs.gigaspaces.com/16.2/admin/leader-election-availability-biased.html",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports only the documented split-brain detection and primary-resolution mechanism; it does not prove the original flight design or general performance.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://docs.gigaspaces.com/16.2/admin/leader-election-availability-biased.html",
+      "expected_final_approved_at": "2026-08-28",
+      "expected_final_approval_note": "Direct official HTTPS transport and narrow mechanism boundary reviewed on 2026-08-28.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://docs.gigaspaces.com/16.2/admin/leader-election-availability-biased.html",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-28T08:44:36.623Z",
+          "last_success_at": "2026-08-28T08:44:36.623Z",
+          "http_status": 206,
+          "final_transport_locator": "https://docs.gigaspaces.com/16.2/admin/leader-election-availability-biased.html"
         }
       ]
     },
@@ -24280,6 +24534,96 @@
           "last_success_at": "2026-08-25T12:07:24.531Z",
           "http_status": 206,
           "final_transport_locator": "https://opentelemetry.io/docs/concepts/observability-primer/"
+        }
+      ]
+    },
+    {
+      "id": "src-oracle-coherence-backing-maps",
+      "canonical_locator": "https://docs.oracle.com/middleware/1221/coherence/develop-applications/cache_back.htm",
+      "transport_locator": "https://docs.oracle.com/middleware/1221/coherence/develop-applications/cache_back.htm",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Implementing Storage and Backing Maps",
+      "author_or_org": "Oracle",
+      "published_at": null,
+      "registered_at": "2026-08-28",
+      "checked_at": "2026-08-28",
+      "version": "Coherence 12.2.1; checked 2026-08-28",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "comparison",
+        "implementation",
+        "runtime-fact"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named Oracle Coherence 12.2.1 documentation page only; linked works, code, diagrams, trademarks and third-party material excluded",
+      "license_evidence_url": null,
+      "license_evidence_note": "No reusable license notice was established for the named documentation page; Tego Arch retains only the link, attribution and an original factual summary.",
+      "license_family_id": "https://docs.oracle.com/middleware/1221/coherence/develop-applications/cache_back.htm",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports only Coherence backing-map and persistent-store mechanisms as a narrow recovery comparison; it does not prove the original flight design or general performance.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://docs.oracle.com/middleware/1221/coherence/develop-applications/cache_back.htm",
+      "expected_final_approved_at": "2026-08-28",
+      "expected_final_approval_note": "Official versioned HTTPS identity and narrow mechanism boundary reviewed on 2026-08-28.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://docs.oracle.com/middleware/1221/coherence/develop-applications/cache_back.htm",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-28T08:44:36.623Z",
+          "last_success_at": "2026-08-28T08:44:36.623Z",
+          "http_status": 200,
+          "final_transport_locator": "https://docs.oracle.com/middleware/1221/coherence/develop-applications/cache_back.htm"
+        }
+      ]
+    },
+    {
+      "id": "src-oracle-coherence-partitioned-cache",
+      "canonical_locator": "https://docs.oracle.com/en/middleware/fusion-middleware/coherence/12.2.1.4/develop-applications/introduction-coherence.html",
+      "transport_locator": "https://docs.oracle.com/en/middleware/fusion-middleware/coherence/12.2.1.4/develop-applications/introduction-coherence.html",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Introduction to Coherence",
+      "author_or_org": "Oracle",
+      "published_at": null,
+      "registered_at": "2026-08-28",
+      "checked_at": "2026-08-28",
+      "version": "Coherence 12.2.1.4; checked 2026-08-28",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "comparison",
+        "implementation",
+        "runtime-fact"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named Oracle Coherence 12.2.1.4 documentation page only; linked works, code, diagrams, trademarks and third-party material excluded",
+      "license_evidence_url": null,
+      "license_evidence_note": "No reusable license notice was established for the named documentation page; Tego Arch retains only the link, attribution and an original factual summary.",
+      "license_family_id": "https://docs.oracle.com/en/middleware/fusion-middleware/coherence/12.2.1.4/develop-applications/introduction-coherence.html",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports only Coherence partitioned data, backup and rebalancing mechanisms as a narrow comparison; it does not prove the original flight design or general performance.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://docs.oracle.com/en/middleware/fusion-middleware/coherence/12.2.1.4/develop-applications/introduction-coherence.html",
+      "expected_final_approved_at": "2026-08-28",
+      "expected_final_approval_note": "Official versioned HTTPS identity and narrow mechanism boundary reviewed on 2026-08-28.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://docs.oracle.com/en/middleware/fusion-middleware/coherence/12.2.1.4/develop-applications/introduction-coherence.html",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-28T08:44:36.623Z",
+          "last_success_at": "2026-08-28T08:44:36.623Z",
+          "http_status": 200,
+          "final_transport_locator": "https://docs.oracle.com/en/middleware/fusion-middleware/coherence/12.2.1.4/develop-applications/introduction-coherence.html"
         }
       ]
     },
@@ -38581,6 +38925,132 @@
           "usage_mode": "facts-summary",
           "attribution_note": "HTML Standard — Import maps, WHATWG",
           "modification_note": "Attributed original Chinese factual summary of module-specifier resolution, scopes and integrity metadata; no normative prose, algorithms, examples or structure copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/styles/sty-13-space-based-architecture.mdx": {
+      "title": "Space-Based Architecture：让状态与处理在亲和分区相遇",
+      "slug": "/styles/sty-13",
+      "reviewed_at": "2026-08-28",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-atlas-sty13-space-based-flight-availability",
+          "citation_url": "/img/diagrams/sty-13-space-based-flight-availability.svg",
+          "roles": [
+            "illustration"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Space-Based Architecture 航班余位亲和分区、主备与恢复边界图，Tego Arch maintainers",
+          "modification_note": "Reserved for the Task 3 original synchronized Draw.io/SVG pair, created only from approved article semantics without third-party diagrams, reference imagery, logos, brand visuals, signatures, watermarks or copied composition.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-gigaspaces-flight-availability-case",
+          "citation_url": "https://www.gigaspaces.com/case_studies/booking-and-flight-availability",
+          "roles": [
+            "case-evidence"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Booking and Flight Availability, GigaSpaces customer case",
+          "modification_note": "Original Chinese vendor-claim-labeled summary limited to the existence of the published customer case; no metrics, customer quotations, source structure, logos, brand visuals or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-gigaspaces-processing-unit-sla",
+          "citation_url": "https://docs.gigaspaces.com/16.2.1/admin/the-sla-overview.html",
+          "roles": [
+            "implementation",
+            "runtime-fact"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Defining the SLA for Your Processing Unit, GigaSpaces, XAP 16.2.1",
+          "modification_note": "Original Chinese factual summary limited to documented Processing Unit deployment, SLA and primary-backup control mechanisms; no source prose, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-gigaspaces-proxy-connectivity",
+          "citation_url": "https://docs.gigaspaces.com/16.2/admin/tuning-proxy-connectivity.html",
+          "roles": [
+            "implementation",
+            "runtime-fact"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Proxy Connectivity, GigaSpaces, XAP 16.2",
+          "modification_note": "Original Chinese factual summary limited to documented proxy connectivity, discovery and rerouting mechanisms; no source prose, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-gigaspaces-sba-overview",
+          "citation_url": "https://docs.gigaspaces.com/16.2/overview/space-based-architecture.html",
+          "roles": [
+            "definition",
+            "implementation",
+            "runtime-fact"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Space-Based Architecture, GigaSpaces, XAP 16.2",
+          "modification_note": "Original Chinese factual summary limited to the documented definition, Processing Unit, partition-local service, data-affinity and primary-backup mechanisms; no source prose, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-gigaspaces-split-brain-resolution",
+          "citation_url": "https://docs.gigaspaces.com/16.2/admin/leader-election-availability-biased.html",
+          "roles": [
+            "implementation",
+            "runtime-fact"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Availability Biased — Split Brain and Primary Resolution, GigaSpaces, XAP 16.2",
+          "modification_note": "Original Chinese factual summary limited to documented split-brain and primary-resolution mechanisms; no source prose, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-oracle-coherence-backing-maps",
+          "citation_url": "https://docs.oracle.com/middleware/1221/coherence/develop-applications/cache_back.htm",
+          "roles": [
+            "comparison",
+            "implementation",
+            "runtime-fact"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Implementing Storage and Backing Maps, Oracle, Coherence 12.2.1",
+          "modification_note": "Original Chinese factual summary limited to documented Coherence backing-map and persistent-store mechanisms as a narrow comparison; no source prose, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-oracle-coherence-partitioned-cache",
+          "citation_url": "https://docs.oracle.com/en/middleware/fusion-middleware/coherence/12.2.1.4/develop-applications/introduction-coherence.html",
+          "roles": [
+            "comparison",
+            "implementation",
+            "runtime-fact"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Introduction to Coherence, Oracle, Coherence 12.2.1.4",
+          "modification_note": "Original Chinese factual summary limited to documented Coherence partitioned-data, backup and rebalancing mechanisms as a narrow comparison; no source prose, structure or diagrams copied.",
           "excerpt": null,
           "quotation_reviewed": false
         }

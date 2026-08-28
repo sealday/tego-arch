@@ -2215,7 +2215,8 @@
         "STY-07",
         "STY-08",
         "STY-09",
-        "STY-10"
+        "STY-10",
+        "STY-13"
       ],
       "primary_sources": [
         "https://martinfowler.com/articles/microservices.html"
@@ -2353,7 +2354,8 @@
       "adjacent_topics": [
         "STY-05",
         "STY-06",
-        "STY-07"
+        "STY-07",
+        "STY-13"
       ],
       "primary_sources": [
         "https://www.ijcai.org/Proceedings/73/Papers/027B.pdf"
@@ -2496,7 +2498,7 @@
     {
       "id": "STY-13",
       "type": "style",
-      "title": "Space-Based Architecture",
+      "title": "Space-Based Architecture：让状态与处理在亲和分区相遇",
       "slug": "/styles/sty-13",
       "priority": "P2",
       "status": {
@@ -2504,15 +2506,28 @@
         "value": "pending",
         "source": "docs/content-backlog.md"
       },
-      "dependencies": [],
-      "adjacent_topics": [],
-      "primary_sources": [],
-      "related_cases": [],
+      "dependencies": [
+        "STY-00",
+        "STY-05",
+        "STY-08"
+      ],
+      "adjacent_topics": [
+        "STY-05",
+        "STY-08"
+      ],
+      "primary_sources": [
+        "https://docs.gigaspaces.com/16.2/overview/space-based-architecture.html"
+      ],
+      "related_cases": [
+        "/cases/aws-cell-shuffle-sharding",
+        "/cases/cloudflare-durable-objects-workerd"
+      ],
       "related_questions": [],
-      "reviewed_at": null,
+      "reviewed_at": "2026-08-28",
       "review_policy": null,
-      "published": false,
-      "pattern_group": null
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
     }
   ],
   "pattern": [
