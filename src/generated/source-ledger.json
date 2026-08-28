@@ -38948,7 +38948,7 @@
             "illustration"
           ],
           "manifest_primary": false,
-          "usage_mode": "facts-summary",
+          "usage_mode": "original-illustration",
           "attribution_note": "Space-Based Architecture 航班余位亲和分区、主备与恢复边界图，Tego Arch maintainers",
           "modification_note": "Reserved for the Task 3 original synchronized Draw.io/SVG pair, created only from approved article semantics without third-party diagrams, reference imagery, logos, brand visuals, signatures, watermarks or copied composition.",
           "excerpt": null,

@@ -27,7 +27,7 @@ tags:
   - 分区处理
   - 内存数据网格
   - 热点治理
-summary: 以航班余位与报价说明 Space-Based Architecture：入口按航段与日期路由到唯一分区所有者，状态与处理共置，主备只处理受控切换，日志与检查点负责恢复，多航段行程由外部持久工作流协调。
+summary: 以航班余位与报价说明 Space-Based Architecture：入口按航段与日期路由到唯一分区所有者，状态与处理共置，主备只处理受控切换，日志与检查点负责恢复，多航段行程由外部持久工作流（Workflow）协调。
 topic_id: STY-13
 priority: P2
 depends_on:
@@ -50,14 +50,14 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 
 航班开售会把查询与扣减压向热门航段。若服务实例远程争用同一数据库行，增加实例只会增加协调者；Space-Based Architecture 试图改变的正是这条写入路径。[风格目录](/styles)提供其他边界组织方式。
 
-本文用一个原创航班余位与报价拓扑解释采用条件：稳定亲和键把请求、状态、处理与写入所有权送到同一分区。Space-Based Architecture 不是数据库前加一层读缓存。
+本文用原创航班余位与报价拓扑解释采用条件：稳定亲和键把请求、状态、处理与写入所有权送到同一分区。Space-Based Architecture 不是数据库前加一层读缓存。
 
 证据范围截至 2026-08-28。厂商文档只支持具名窄机制；航班案例只证明厂商发布过该场景，不证明本文设计已投产或具有普遍性能。
 
 ## 学习问题
 
 - Space-Based Architecture 移除什么共享协调瓶颈，普通数据库分区或读缓存何时已经足够？
-- 亲和路由、处理单元、实时状态、同步备份、恢复记录与外部工作流（Workflow）各拥有什么？
+- 亲和路由、处理单元、实时状态、同步备份、恢复记录与外部工作流各拥有什么？
 - 查询、暂留、确认和释放怎样留在一个分区，多航段行程又怎样避免伪造全局事务？
 - 热点、主节点失败、脑裂、再平衡、内存压力与恢复失败分别如何停止？
 - 哪些结论来自厂商文档，哪些是本站针对航班场景的原创分析？
@@ -68,7 +68,7 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 
 **本站原创分析**：亲和键采用“航段 + 出发日期”，例如 `SHA–PEK + 2026-09-18`。航段与出发日期共同形成亲和键，余位状态与处理该状态的服务位于同一分区。
 
-空间内状态是实时余位写权威；长期记录不得形成第二个同步可写权威。日志、检查点与长期记录负责恢复、审计和长期事实，派生读模型负责跨航段搜索与统计；它们都不能绕过当前分区所有者接受余位写入。
+**本站原创分析**：空间内状态是实时余位写权威；长期记录不得形成第二个同步可写权威。日志、检查点与长期记录负责恢复、审计和长期事实，派生读模型负责跨航段搜索与统计；它们都不能绕过当前分区所有者接受余位写入。
 
 先用下表判断相邻方案是否已经满足目标。若问题只是读放大，读缓存通常更简单；若数据库分区已经给出足够的写吞吐、事务与恢复能力，专用空间运行时带来的内存、主备和操作复杂度没有必要。
 
@@ -88,25 +88,25 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 
 ## 事实边界
 
-**已证实事实**：GigaSpaces XAP 16.2 文档把 Space-Based Architecture 与 Processing Unit、分区空间、数据亲和及主备联系起来；相关文档分别说明部署、主权和重路由。Oracle Coherence 12.2.1 系列文档说明分区数据、备份、再平衡和可选持久后端。这里只作厂商机制摘要，不外推业务正确性、线性扩展或可用性。
+**已证实事实**：[Space-Based Architecture](https://docs.gigaspaces.com/16.2/overview/space-based-architecture.html)及其配套版本化文档把该风格与处理单元、分区空间、数据亲和及主备联系起来；相关页面分别说明部署、主权和重路由。[Introduction to Coherence](https://docs.oracle.com/en/middleware/fusion-middleware/coherence/12.2.1.4/develop-applications/introduction-coherence.html)及配套版本化文档说明分区数据、备份、再平衡和可选持久后端。这里只作厂商机制摘要，不外推业务正确性、线性扩展或可用性。
 
-**厂商案例陈述**：GigaSpaces 发布了预订与航班余位客户案例，因此航班余位是厂商公开陈述过的应用背景。本文不采用其中的性能或商业数字，也不把该页面当作原创航班拓扑、状态权威选择、工作流或故障停止动作的证据。
+**厂商案例陈述**：[Booking and Flight Availability](https://www.gigaspaces.com/case_studies/booking-and-flight-availability)表明该厂商发布了预订与航班余位客户案例，因此航班余位是厂商公开陈述过的应用背景。本文不采用其中的性能或商业数字，也不把该页面当作原创航班拓扑、状态权威选择、工作流或故障停止动作的证据。
 
 **本站原创分析**：亲和键、唯一实时余位权威、多航段持久工作流、热点预算和停止动作属于本文方案，不是厂商配置教程。只有固定产品版本并通过负载、故障和恢复演练后，能力才成为生产合同。
 
 <details className="evidence-card">
   <summary>证据：固定版本、来源分工与许可边界</summary>
 
-- **GigaSpaces：** XAP 16.2 与 16.2.1 页面，2026-08-28 核查；仅作原创事实摘要。
-- **Oracle：** Coherence 12.2.1.4 与 12.2.1 页面，2026-08-28 核查；仅交叉验证分区与持久后端窄机制。
-- **案例：** GigaSpaces 当前预订与航班余位客户案例页；只证明厂商发布该案例陈述。
+- **定义方机制页：** 16.2 与 16.2.1 页面，2026-08-28 核查；仅作原创事实摘要。
+- **交叉验证机制页：** 12.2.1.4 与 12.2.1 页面，2026-08-28 核查；仅交叉验证分区与持久后端窄机制。
+- **案例：** 预订与航班余位客户案例页；只证明厂商发布该案例陈述。
 - **许可边界：** 外部页面按 `LicenseRef-All-Rights-Reserved` 治理，不复制文字、代码、图、品牌标志或品牌视觉；原创图身份按 `LicenseRef-Atlas-Original` 登记。
 
 </details>
 
 ## 架构图
 
-先检查三层之间的所有权：入口只认证、限流和解析亲和键；处理单元的主分区接受本地业务写；恢复与协调面只能通过受控协议恢复或请求分区操作。图中的同步备份不接受普通写，多航段工作流也不直接改写分区内部状态。
+**本站原创分析**：先检查三层之间的所有权：入口只认证、限流和解析亲和键；处理单元的主分区接受本地业务写；恢复与协调面只能通过受控协议恢复或请求分区操作。图中的同步备份不接受普通写，多航段工作流也不直接改写分区内部状态。
 
 <div role="region" aria-label="Space-Based Architecture 航班余位亲和分区、主备与恢复边界图，可横向滚动" tabIndex={0} onKeyDown={handleHorizontalArrowKey}>
 
@@ -118,7 +118,7 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 
 ## 亲和分区与预订流
 
-下面的说明性场景沿一笔请求追踪控制权。每一步都要能回答“谁拥有当前判断”，否则超时重试（Retry）会把未知结果误写成第二次业务动作。
+**本站原创分析**：下面的说明性场景沿一笔请求追踪控制权。这八步均为本站设计，用于检查每一步“谁拥有当前判断”；否则超时重试（Retry）会把未知结果误写成第二次业务动作。
 
 1. 入口认证调用方并规范化航段、出发日期和请求幂等键。
 2. 路由目录按当前纪元把请求送到唯一分区所有者。
@@ -150,12 +150,12 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 
 ## 关键机制导读
 
-这里按机制而非产品菜单阅读来源。GigaSpaces 的定义页用于理解分区处理单元与数据亲和；服务等级协议页只用于部署和主备控制；脑裂页只用于唯一主权裁决；代理连接页只用于客户端重新发现。Oracle 文档只用于交叉检查分区、备份、再平衡与后备映射，不证明本文采用了 Coherence，也不证明原创航班设计或普遍性能。
+这里按机制而非产品菜单阅读来源。定义页用于理解分区处理单元与数据亲和；服务等级协议页只用于部署和主备控制；脑裂页只用于唯一主权裁决；代理连接页只用于客户端重新发现。交叉验证文档只用于检查分区、备份、再平衡与后备映射，不证明本文采用了对应产品，也不证明原创航班设计或普遍性能。
 
 <details className="evidence-card">
   <summary>证据：定义、部署、主权与重路由的最短路径</summary>
 
-- [Space-Based Architecture](https://docs.gigaspaces.com/16.2/overview/space-based-architecture.html)：Processing Unit、分区空间、亲和和主备的厂商定义范围。
+- [Space-Based Architecture](https://docs.gigaspaces.com/16.2/overview/space-based-architecture.html)：处理单元、分区空间、亲和和主备的厂商定义范围。
 - [Defining the SLA for Your Processing Unit](https://docs.gigaspaces.com/16.2.1/admin/the-sla-overview.html)：处理单元部署与服务等级控制范围。
 - [Availability Biased — Split Brain and Primary Resolution](https://docs.gigaspaces.com/16.2/admin/leader-election-availability-biased.html)：脑裂与主节点裁决范围。
 - [Proxy Connectivity](https://docs.gigaspaces.com/16.2/admin/tuning-proxy-connectivity.html)：代理连接与重路由范围。
@@ -167,10 +167,10 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 <details className="evidence-card">
   <summary>证据：独立的分区与持久后端交叉检查</summary>
 
-- [Introduction to Coherence](https://docs.oracle.com/en/middleware/fusion-middleware/coherence/12.2.1.4/develop-applications/introduction-coherence.html)：分区数据、备份和再平衡的 Coherence 文档范围。
+- [Introduction to Coherence](https://docs.oracle.com/en/middleware/fusion-middleware/coherence/12.2.1.4/develop-applications/introduction-coherence.html)：分区数据、备份和再平衡的文档范围。
 - [Implementing Storage and Backing Maps](https://docs.oracle.com/middleware/1221/coherence/develop-applications/cache_back.htm)：后备映射与外部存储的文档范围。
 
-**边界：** Coherence 文档不定义本文的 Space-Based Architecture，不证明本站原创航班设计，也不证明一般性能或两个产品的语义等价。
+**边界：** 这些交叉验证文档不定义本文的 Space-Based Architecture，不证明本站原创航班设计，也不证明一般性能或两个产品的语义等价。
 
 </details>
 
@@ -227,7 +227,7 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 
 [STY-05 微服务](/styles/sty-05)提供服务所有权和独立部署边界，[STY-08 Actor Model](/styles/sty-08)提供逻辑身份与私有状态的比较；两者都可能承载或邻接分区处理，但不自动提供亲和数据网格、同步主备或跨分区工作流。
 
-[Cell 与 Shuffle Sharding 案例](/cases/aws-cell-shuffle-sharding)可类比放置、热点隔离和故障域。
+[单元与洗牌分片案例](/cases/aws-cell-shuffle-sharding)可类比放置、热点隔离和故障域。
 
 [Cloudflare 持久对象（Durable Objects）案例](/cases/cloudflare-durable-objects-workerd)可类比按稳定标识路由到状态所有者。两者都不证明空间内状态处理共置或本文的主备、持久化与事务边界。
 
@@ -246,21 +246,21 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 
 ## 来源
 
-**GigaSpaces 官方机制文档（已证实事实）**
+**定义方官方机制文档（已证实事实）**
 
-- [Space-Based Architecture](https://docs.gigaspaces.com/16.2/overview/space-based-architecture.html)：只支持风格定义、Processing Unit、分区本地处理、数据亲和与主备概述。
+- [Space-Based Architecture](https://docs.gigaspaces.com/16.2/overview/space-based-architecture.html)：只支持风格定义、处理单元、分区本地处理、数据亲和与主备概述。
 - [Defining the SLA for Your Processing Unit](https://docs.gigaspaces.com/16.2.1/admin/the-sla-overview.html)：只支持处理单元部署与服务等级协议控制机制。
 - [Availability Biased — Split Brain and Primary Resolution](https://docs.gigaspaces.com/16.2/admin/leader-election-availability-biased.html)：只支持具名脑裂与主节点裁决机制。
 - [Proxy Connectivity](https://docs.gigaspaces.com/16.2/admin/tuning-proxy-connectivity.html)：只支持代理连接与重新发现机制。
 
-**Oracle Coherence 官方机制文档（已证实事实）**
+**交叉验证方官方机制文档（已证实事实）**
 
-- [Introduction to Coherence](https://docs.oracle.com/en/middleware/fusion-middleware/coherence/12.2.1.4/develop-applications/introduction-coherence.html)：只交叉验证 Coherence 分区数据、备份与再平衡机制。
+- [Introduction to Coherence](https://docs.oracle.com/en/middleware/fusion-middleware/coherence/12.2.1.4/develop-applications/introduction-coherence.html)：只交叉验证分区数据、备份与再平衡机制。
 - [Implementing Storage and Backing Maps](https://docs.oracle.com/middleware/1221/coherence/develop-applications/cache_back.htm)：只交叉验证后备映射与外部持久存储边界。
 
 **厂商案例与原创图**
 
-- [Booking and Flight Availability](https://www.gigaspaces.com/case_studies/booking-and-flight-availability)（厂商案例陈述）：只证明 GigaSpaces 发布过该航班余位客户案例背景；不采用其指标，不证明原创设计或一般性能。
+- [Booking and Flight Availability](https://www.gigaspaces.com/case_studies/booking-and-flight-availability)（厂商案例陈述）：只证明该厂商发布过航班余位客户案例背景；不采用其指标，不证明原创设计或一般性能。
 - 航班余位亲和分区、主备与恢复边界图由 Tego Arch 架构知识项目维护者原创，未复用厂商图、品牌标志、品牌视觉、签名、水印或第三方构图；图仅用于教学，不是生产效果证据。
 
 所有外部来源均只作保守的原创事实摘要，没有直接引文或改编。

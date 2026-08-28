@@ -34,10 +34,31 @@ export const EXACT_METADATA = Object.freeze({
   domains: ['software-architecture', 'distributed-systems', 'data-intensive-systems'], agent_patterns: [], protocols: [],
   quality_attributes: ['scalability', 'performance', 'availability', 'consistency', 'recoverability', 'operability'],
   tags: ['架构风格', 'Space-Based Architecture', '数据亲和', '分区处理', '内存数据网格', '热点治理'],
-  summary: '以航班余位与报价说明 Space-Based Architecture：入口按航段与日期路由到唯一分区所有者，状态与处理共置，主备只处理受控切换，日志与检查点负责恢复，多航段行程由外部持久工作流协调。',
+  summary: '以航班余位与报价说明 Space-Based Architecture：入口按航段与日期路由到唯一分区所有者，状态与处理共置，主备只处理受控切换，日志与检查点负责恢复，多航段行程由外部持久工作流（Workflow）协调。',
   topic_id: TOPIC_ID, priority: 'P2', depends_on: ['STY-00', 'STY-05', 'STY-08'], adjacent_topics: ['STY-05', 'STY-08'], related_cases: RELATED_CASES, related_questions: [],
 });
 export const SOURCE_IDS = Object.freeze(['src-gigaspaces-sba-overview', 'src-gigaspaces-processing-unit-sla', 'src-gigaspaces-split-brain-resolution', 'src-gigaspaces-proxy-connectivity', 'src-oracle-coherence-partitioned-cache', 'src-oracle-coherence-backing-maps', 'src-gigaspaces-flight-availability-case', 'src-atlas-sty13-space-based-flight-availability']);
+export const REMOTE_SOURCE_CONTRACTS = Object.freeze([
+  ['src-gigaspaces-sba-overview', 'https://docs.gigaspaces.com/16.2/overview/space-based-architecture.html', 'Space-Based Architecture', 'GigaSpaces', null, 'XAP 16.2; checked 2026-08-28', 'official-docs', 'primary', 'LicenseRef-All-Rights-Reserved', 'facts-and-short-quotation', 'Supports only the documented Space-Based Architecture definition, Processing Unit, partition-local service, data-affinity and primary-backup mechanisms; it does not prove the original flight design or general performance.'],
+  ['src-gigaspaces-processing-unit-sla', 'https://docs.gigaspaces.com/16.2.1/admin/the-sla-overview.html', 'Defining the SLA for Your Processing Unit', 'GigaSpaces', null, 'XAP 16.2.1; checked 2026-08-28', 'official-docs', 'primary', 'LicenseRef-All-Rights-Reserved', 'facts-and-short-quotation', 'Supports only the documented Processing Unit SLA, deployment and primary-backup control mechanisms; it does not prove the original flight design or general performance.'],
+  ['src-gigaspaces-split-brain-resolution', 'https://docs.gigaspaces.com/16.2/admin/leader-election-availability-biased.html', 'Availability Biased — Split Brain and Primary Resolution', 'GigaSpaces', null, 'XAP 16.2; checked 2026-08-28', 'official-docs', 'primary', 'LicenseRef-All-Rights-Reserved', 'facts-and-short-quotation', 'Supports only the documented split-brain detection and primary-resolution mechanism; it does not prove the original flight design or general performance.'],
+  ['src-gigaspaces-proxy-connectivity', 'https://docs.gigaspaces.com/16.2/admin/tuning-proxy-connectivity.html', 'Proxy Connectivity', 'GigaSpaces', null, 'XAP 16.2; checked 2026-08-28', 'official-docs', 'primary', 'LicenseRef-All-Rights-Reserved', 'facts-and-short-quotation', 'Supports only the documented proxy connectivity, discovery and rerouting mechanism; it does not prove the original flight design or general performance.'],
+  ['src-oracle-coherence-partitioned-cache', 'https://docs.oracle.com/en/middleware/fusion-middleware/coherence/12.2.1.4/develop-applications/introduction-coherence.html', 'Introduction to Coherence', 'Oracle', null, 'Coherence 12.2.1.4; checked 2026-08-28', 'official-docs', 'primary', 'LicenseRef-All-Rights-Reserved', 'facts-and-short-quotation', 'Supports only Coherence partitioned data, backup and rebalancing mechanisms as a narrow comparison; it does not prove the original flight design or general performance.'],
+  ['src-oracle-coherence-backing-maps', 'https://docs.oracle.com/middleware/1221/coherence/develop-applications/cache_back.htm', 'Implementing Storage and Backing Maps', 'Oracle', null, 'Coherence 12.2.1; checked 2026-08-28', 'official-docs', 'primary', 'LicenseRef-All-Rights-Reserved', 'facts-and-short-quotation', 'Supports only Coherence backing-map and persistent-store mechanisms as a narrow recovery comparison; it does not prove the original flight design or general performance.'],
+  ['src-gigaspaces-flight-availability-case', 'https://www.gigaspaces.com/case_studies/booking-and-flight-availability', 'Booking and Flight Availability', 'GigaSpaces', null, 'live customer case; checked 2026-08-28', 'vendor-reference-architecture', 'first-party', 'LicenseRef-All-Rights-Reserved', 'vendor-claims-separated', 'Supports only the vendor claim that a booking and flight-availability customer case was published; it does not prove the original flight design or general performance.'],
+]);
+export const ORIGINAL_SOURCE_CONTRACT = Object.freeze(['src-atlas-sty13-space-based-flight-availability', '/img/diagrams/sty-13-space-based-flight-availability.svg', 'Space-Based Architecture 航班余位亲和分区、主备与恢复边界图 SVG', 'Tego Arch maintainers', '2026-08-28', 'original-atlas image/svg+xml identity reserved 2026-08-28', 'original-illustration', 'primary', 'LicenseRef-Atlas-Original', 'original-atlas', 'Original teaching topology for affinity routing, partition-local authority, primary-backup control, durable recovery and external itinerary coordination; illustration-only and not evidence of production outcomes.']);
+const SOURCE_CONTRACT_FIELDS = Object.freeze(['id', 'canonical_locator', 'title', 'author_or_org', 'published_at', 'version', 'source_kind', 'tier', 'license', 'copyright_policy', 'usage_boundary']);
+const ORIGINAL_RIGHTS_CONTRACT = Object.freeze({
+  transport_locator: '/img/diagrams/sty-13-space-based-flight-availability.svg', query_insensitive: false, locator_aliases: [], tombstone: null,
+  registered_at: '2026-08-28', checked_at: '2026-08-28', allowed_evidence_roles: ['illustration'],
+  license_scope: 'The named project-authored sty-13-space-based-flight-availability.svg image/svg+xml asset only',
+  license_evidence_url: 'https://github.com/sealday/tego-arch/blob/main/static/img/diagrams/sty-13-space-based-flight-availability.svg',
+  license_evidence_note: 'Reserved for an original synchronized Draw.io/SVG topology using only approved article semantics, without third-party diagrams, reference imagery, brand visuals, signatures, watermarks or copied composition.',
+  license_family_id: '/img/diagrams/sty-13-space-based-flight-availability.svg', license_family_grouping: 'identity', family_grouping_evidence_url: null, link_policy: null,
+  expected_final_transport_locator: '/img/diagrams/sty-13-space-based-flight-availability.svg', expected_final_approved_at: '2026-08-28',
+  expected_final_approval_note: 'Reserved project-local original image/svg+xml identity for the Task 3 synchronized Draw.io/SVG asset and semantic, geometry, contrast and raster QA.',
+});
 export const COMPARISON_HEADERS = Object.freeze(['方案', '状态与处理', '实时权威', '跨分区协调', '采用边界']);
 export const OPERATION_HEADERS = Object.freeze(['操作', '执行者', '一致性责任', '合同']);
 export const FAILURE_HEADERS = Object.freeze(['故障', '信号', '保护动作', '恢复门槛']);
@@ -73,6 +94,12 @@ export const REQUIRED_SENTENCES = Object.freeze([
   '同步备份不等于持久日志、异地灾备、零数据丢失或跨分区事务。',
   '增加无关节点不会消除热门航班形成的热点分区。',
   '若普通数据库分区或读缓存已满足延迟与容量目标，不应引入专用空间运行时。',
+]);
+export const EPISTEMIC_CONTRACTS = Object.freeze([
+  '**本站原创分析**：空间内状态是实时余位写权威；长期记录不得形成第二个同步可写权威。',
+  '**本站原创分析**：先检查三层之间的所有权：入口只认证、限流和解析亲和键；',
+  '**本站原创分析**：下面的说明性场景沿一笔请求追踪控制权。这八步均为本站设计，',
+  '**本站原创分析**：图的结论不是“节点越多越快”，而是所有权可证明时才写。',
 ]);
 export const REGION_IDS = Object.freeze(['ingress-routing', 'partition-runtime', 'recovery-and-durability', 'external-coordination']);
 export const NODE_IDS = Object.freeze(['booking-gateway', 'affinity-router', 'flight-date-key', 'primary-partition', 'backup-partition', 'availability-state', 'partition-service', 'replication-stream', 'checkpoint-log', 'recovery-controller', 'itinerary-workflow', 'derived-read-model']);
@@ -216,13 +243,31 @@ function assertSpaceBasedArticle(source) {
   assert.deepEqual(headings.filter(({level, offset}) => level === 3 && offset > migration.offset && (!next || offset < next.offset)).map(({text}) => text), MIGRATION_HEADINGS, 'exact migration H3 order');
   for (const label of WRAPPERS) assert.match(source, new RegExp('<div\\b(?=[^>]*role="region")(?=[^>]*aria-label="' + escapeRegExp(label) + '")(?=[^>]*tabIndex=\\{0\\})(?=[^>]*onKeyDown=\\{handleHorizontalArrowKey\\})[^>]*>', 'u'), label + ' keyboard wrapper');
   assert.equal((source.match(/role="region"/gu) ?? []).length, 4, 'exactly four wrappers');
+  assert.equal(markdownTables(body).length, 3, 'exactly three STY-13 Markdown tables');
   exactRows(table(body, COMPARISON_HEADERS), COMPARISON_ROWS, 'comparison table'); exactRows(table(body, OPERATION_HEADERS), OPERATION_ROWS, 'operation table'); exactRows(table(body, FAILURE_HEADERS), FAILURE_ROWS, 'failure table');
   for (const sentence of REQUIRED_SENTENCES) assert.ok(visibleBody.includes(sentence), 'visible boundary: ' + sentence);
+  for (const statement of EPISTEMIC_CONTRACTS) assert.ok(visibleBody.includes(statement), 'explicit epistemic label: ' + statement);
 }
 function assertSpaceBasedSources(ledger) {
   const document = ledger.documents?.[ARTICLE]; assert.ok(document, 'STY-13 governed source document'); assert.deepEqual(document.citations.map(({source_id}) => source_id), SOURCE_IDS, 'exact ordered STY-13 citations');
-  for (const id of SOURCE_IDS) { const source = ledger.sources.find((item) => item.id === id); assert.ok(source, id + ' governed source'); for (const field of ['canonical_locator', 'transport_locator', 'title', 'license', 'copyright_policy', 'usage_boundary']) assert.ok(source[field], id + ' ' + field); }
-  assert.ok(document.citations.every(({citation_url, roles, usage_mode, attribution_note, modification_note, excerpt, quotation_reviewed}) => citation_url && roles.length > 0 && usage_mode === 'facts-summary' && attribution_note && modification_note && excerpt === null && quotation_reviewed === false), 'STY-13 source governance');
+  const sourceById = new Map(ledger.sources.map((source) => [source.id, source]));
+  const citationById = new Map(document.citations.map((citation) => [citation.source_id, citation]));
+  for (const [index, contract] of REMOTE_SOURCE_CONTRACTS.entries()) {
+    const expected = Object.fromEntries(SOURCE_CONTRACT_FIELDS.map((field, fieldIndex) => [field, contract[fieldIndex]])); const source = sourceById.get(expected.id); const citation = citationById.get(expected.id);
+    assert.ok(source && citation, expected.id + ' governed remote source and citation');
+    assert.deepEqual(Object.fromEntries(SOURCE_CONTRACT_FIELDS.map((field) => [field, source[field]])), expected, expected.id + ' exact remote identity, provenance, rights and usage boundary');
+    assert.equal(source.transport_locator, expected.canonical_locator, expected.id + ' exact transport locator'); assert.equal(source.registered_at, '2026-08-28', expected.id + ' registration date'); assert.equal(source.checked_at, '2026-08-28', expected.id + ' check date');
+    assert.equal(citation.citation_url, expected.canonical_locator, expected.id + ' exact citation locator'); assert.deepEqual(citation.roles, source.allowed_evidence_roles, expected.id + ' citation roles stay within source contract');
+    assert.equal(citation.usage_mode, 'facts-summary', expected.id + ' remote citation uses facts-summary'); assert.equal(citation.manifest_primary, index === 0, expected.id + ' exact primary selection'); assert.ok(citation.attribution_note && citation.modification_note, expected.id + ' attribution and modification notes'); assert.equal(citation.excerpt, null); assert.equal(citation.quotation_reviewed, false);
+  }
+  const originalExpected = {...Object.fromEntries(SOURCE_CONTRACT_FIELDS.map((field, index) => [field, ORIGINAL_SOURCE_CONTRACT[index]])), ...ORIGINAL_RIGHTS_CONTRACT};
+  const original = sourceById.get(originalExpected.id); const originalCitation = citationById.get(originalExpected.id); assert.ok(original && originalCitation, 'STY-13 governed original illustration and citation'); assert.deepEqual(original, originalExpected, 'exact original illustration identity and rights contract');
+  assert.deepEqual(originalCitation, {
+    source_id: originalExpected.id, citation_url: originalExpected.canonical_locator, roles: ['illustration'], manifest_primary: false, usage_mode: 'original-illustration',
+    attribution_note: 'Space-Based Architecture 航班余位亲和分区、主备与恢复边界图，Tego Arch maintainers',
+    modification_note: 'Reserved for the Task 3 original synchronized Draw.io/SVG pair, created only from approved article semantics without third-party diagrams, reference imagery, logos, brand visuals, signatures, watermarks or copied composition.',
+    excerpt: null, quotation_reviewed: false,
+  }, 'exact original illustration citation contract');
   assert.equal(document.citations.filter(({manifest_primary}) => manifest_primary).length, 1, 'STY-13 has one primary source');
 }
 function assertSpaceBasedDiagram(drawioSource, svgSource) {
@@ -271,7 +316,8 @@ async function assertRelationsAndStage() {
 }
 function fixtureArticle() {
   const sections = EXPECTED_HEADINGS.map((heading) => '## ' + heading + (heading === '可迁移经验' ? '\n### ' + MIGRATION_HEADINGS.join('\n### ') : '')).join('\n'); const rows = (items) => items.map((row) => '| ' + row.join(' | ') + ' |').join('\n');
-  return '---\n' + frontMatterFixture(EXACT_METADATA) + '\n---\n' + sections + '\n' + WRAPPERS.map((label) => '<div role="region" aria-label="' + label + '" tabIndex={0} onKeyDown={handleHorizontalArrowKey}>').join('\n') + '\n| ' + COMPARISON_HEADERS.join(' | ') + ' |\n| --- | --- | --- | --- | --- |\n' + rows(COMPARISON_ROWS) + '\n\n| ' + OPERATION_HEADERS.join(' | ') + ' |\n| --- | --- | --- | --- |\n' + rows(OPERATION_ROWS) + '\n\n| ' + FAILURE_HEADERS.join(' | ') + ' |\n| --- | --- | --- | --- |\n' + rows(FAILURE_ROWS) + '\n' + REQUIRED_SENTENCES.join('\n');
+  const labeledAuthority = REQUIRED_SENTENCES.map((sentence) => sentence === REQUIRED_SENTENCES[2] ? '**本站原创分析**：' + sentence : sentence);
+  return '---\n' + frontMatterFixture(EXACT_METADATA) + '\n---\n' + sections + '\n' + WRAPPERS.map((label) => '<div role="region" aria-label="' + label + '" tabIndex={0} onKeyDown={handleHorizontalArrowKey}>').join('\n') + '\n| ' + COMPARISON_HEADERS.join(' | ') + ' |\n| --- | --- | --- | --- | --- |\n' + rows(COMPARISON_ROWS) + '\n\n| ' + OPERATION_HEADERS.join(' | ') + ' |\n| --- | --- | --- | --- |\n' + rows(OPERATION_ROWS) + '\n\n| ' + FAILURE_HEADERS.join(' | ') + ' |\n| --- | --- | --- | --- |\n' + rows(FAILURE_ROWS) + '\n' + labeledAuthority.join('\n') + '\n' + EPISTEMIC_CONTRACTS.slice(1).join('\n');
 }
 function assertGenericHelperRejections() {
   assert.throws(() => parsePathPoints('M 0 0 L'), assert.AssertionError, 'missing path coordinate rejected');
@@ -331,8 +377,21 @@ test('STY-13 helper fixture locks its public content contract', () => {
   const fixture = fixtureArticle(); assertSpaceBasedArticle(fixture);
   for (const key of Object.keys(EXACT_METADATA)) { assert.throws(() => assertSpaceBasedArticle(removeFrontMatterField(fixture, key)), assert.AssertionError, key + ' deletion rejected'); assert.throws(() => assertSpaceBasedArticle(changeFrontMatterField(fixture, key)), assert.AssertionError, key + ' change rejected'); }
   for (const [headers, rows] of [[COMPARISON_HEADERS, COMPARISON_ROWS], [OPERATION_HEADERS, OPERATION_ROWS], [FAILURE_HEADERS, FAILURE_ROWS]]) { const header = '| ' + headers.join(' | ') + ' |'; assert.throws(() => assertSpaceBasedArticle(replaceOnce(fixture, header, '| 错误表头 |', 'header')), assert.AssertionError, 'wrong table header rejected'); for (const row of rows) { const exact = '| ' + row.join(' | ') + ' |'; assert.throws(() => assertSpaceBasedArticle(replaceOnce(fixture, exact, '| ' + [...row.slice(0, -1), '错误的合同值'].join(' | ') + ' |', row[0])), assert.AssertionError, row[0] + ' mutation rejected'); } }
+  assert.throws(() => assertSpaceBasedArticle(fixture + '\n| 第四张 | 表 |\n| --- | --- |\n| 不允许 | 出现 |\n'), /exactly three STY-13 Markdown tables/u, 'fourth Markdown table rejected');
   for (const sentence of REQUIRED_SENTENCES) assert.throws(() => assertSpaceBasedArticle(replaceOnce(fixture, sentence, '错误的事实边界。', sentence)), assert.AssertionError, sentence + ' mutation rejected');
+  for (const statement of EPISTEMIC_CONTRACTS) assert.throws(() => assertSpaceBasedArticle(replaceOnce(fixture, statement, statement.replace('**本站原创分析**：', '**说明性场景**：'), statement)), assert.AssertionError, statement + ' label mutation rejected');
+
+  const ledger = JSON.parse(readFileSync('data/source-ledger.json', 'utf8')); assertSpaceBasedSources(ledger);
+  const mutate = (callback) => { const copy = structuredClone(ledger); callback(copy); return copy; };
+  for (const [id] of REMOTE_SOURCE_CONTRACTS) for (const field of [...SOURCE_CONTRACT_FIELDS.slice(1), 'transport_locator', 'registered_at', 'checked_at']) assert.throws(() => assertSpaceBasedSources(mutate((copy) => { copy.sources.find((source) => source.id === id)[field] = field === 'published_at' ? '2026-08-27' : 'mutated'; })), assert.AssertionError, id + ' ' + field + ' mutation rejected');
+  const originalId = ORIGINAL_SOURCE_CONTRACT[0];
+  for (const field of [...SOURCE_CONTRACT_FIELDS.slice(1), ...Object.keys(ORIGINAL_RIGHTS_CONTRACT)]) assert.throws(() => assertSpaceBasedSources(mutate((copy) => { const source = copy.sources.find((item) => item.id === originalId); source[field] = Array.isArray(source[field]) ? ['mutated'] : source[field] === null ? 'mutated' : typeof source[field] === 'boolean' ? !source[field] : 'mutated'; })), assert.AssertionError, originalId + ' ' + field + ' mutation rejected');
+  assert.throws(() => assertSpaceBasedSources(mutate((copy) => { copy.documents[ARTICLE].citations[0].usage_mode = 'original-illustration'; })), /remote citation uses facts-summary/u, 'remote source cannot masquerade as an original illustration');
+  assert.throws(() => assertSpaceBasedSources(mutate((copy) => { copy.documents[ARTICLE].citations.at(-1).usage_mode = 'facts-summary'; })), /exact original illustration citation contract/u, 'original illustration cannot use facts-summary');
 });
-test('STY-13 publication contract remains RED until the article exists', async () => {
-  const source = file(ARTICLE); assert.ok(source, ARTICLE + ' must exist after implementation'); assertSpaceBasedArticle(source); assertSpaceBasedSources(JSON.parse(readFileSync('data/source-ledger.json', 'utf8'))); assertSpaceBasedDiagram(file(DRAWIO), file(SVG)); await assertRelationsAndStage();
+test('STY-13 article, governed sources, relations and Stage A projection satisfy Task 2', async () => {
+  const source = file(ARTICLE); assert.ok(source, ARTICLE + ' must exist after implementation'); assertSpaceBasedArticle(source); assertSpaceBasedSources(JSON.parse(readFileSync('data/source-ledger.json', 'utf8'))); await assertRelationsAndStage();
+});
+test('STY-13 diagram contract remains RED until Task 3', () => {
+  assertSpaceBasedDiagram(file(DRAWIO), file(SVG));
 });
