@@ -5,11 +5,12 @@
 **Result:** PASS
 
 **Final-fix verification date:** 2026-09-01
-**Tested commit:** `eeca8467c0eeb0cf48140ff8ef14e28dce043a2e`
+**Tested commit:** `75a887bd4ee237bfb92d9f66c80d29b343ac097f`
+**Complete gate:** `npm run verify` passed 1,358/1,358 tests at 2026-09-01T16:42:28+08:00, followed by content, terminology, generation, link, review, typecheck, production build, postbuild compatibility synchronization, and search-index validation.
 
 ## Build baseline
 
-The production build generated exactly one hashed root search index. At the tested commit, `npm run check:search-index` recorded `search-index-4f12b711.json`: 6,964,847 raw bytes, 1,778,978 gzip bytes, 2,760 indexed document entries, and 108 unique URLs.
+The production build generated exactly one hashed root search index. At the tested corrective commit, `npm run check:search-index` recorded `search-index-4f12b711.json`: 6,964,847 raw bytes, 1,778,978 gzip bytes, 2,760 indexed document entries, and 108 unique URLs. The same gate verified the synchronized compatibility marker, the standard `noindex,follow` robots directive, Lunr deserialization, and worker-compatible document fields.
 
 The pinned plugin's filename hash follows its indexed content and plugin-version inputs; it does not independently include the Jieba dictionary bytes. Dictionary-only changes therefore require a clean deployment plus an explicit cache-invalidation and production-index check.
 
