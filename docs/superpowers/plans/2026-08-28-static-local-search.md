@@ -6,6 +6,8 @@
 
 **Architecture:** Configure `@easyops-cn/docusaurus-search-local` as a Docusaurus theme so production builds extract only docs-plugin content from `content/` and emit a hashed Lunr index. Keep Chinese segmentation vocabulary in a focused UTF-8 Jieba dictionary, and add a repository-owned post-build validator so a missing, unscoped, or incorrectly based index blocks release.
 
+**Final-review amendment:** Empty input does not execute a search, while the pinned plugin may preload its same-origin static index on focus or hover. A base-path-independent `static/search/index.html` fallback preserves query/hash with relative replacement navigation. Postbuild synchronization then derives the deployed `search/index.html` from the real `search.html` and canonicalizes the visible URL with `history.replaceState`, so trailing-slash direct, reload, and new-tab requests render results even when a static server gives the same-named directory precedence. The plugin filename hash follows indexed content/version inputs but does not independently include dictionary bytes, so dictionary-only changes require a clean deployment and cache-invalidation check.
+
 **Tech Stack:** Docusaurus 3.10.2, React 19, `@easyops-cn/docusaurus-search-local` 0.55.3, Lunr, `@node-rs/jieba`, Node.js 24 test runner, GitHub Pages
 
 ## Global Constraints
@@ -29,6 +31,9 @@
 - Create `src/search/zh-user-dict.txt` — own only stable Chinese architecture segmentation terms.
 - Create `tests/search-local-config.test.mjs` — enforce dependency, configuration, scope, localization, and dictionary contracts without running a production build.
 - Create `scripts/check-search-index.mjs` — inspect an existing `build/` directory and reject missing, unhashed, empty, mis-based, or over-scoped search indexes.
+- Create `static/search/index.html` — preserve query/hash when compatibility requests to `/search/` are redirected to canonical `/search` without hard-coding the deployment base path.
+- Create `scripts/sync-search-route-compat.mjs` — after Docusaurus builds `search.html`, copy its real page into `search/index.html` with base-independent canonical-path and fragment preservation.
+- Create `tests/search-route-compat.test.mjs` — lock the redirect, noindex, fallback-link, base-path, and query/hash contract.
 - Create `tests/search-index-build.test.mjs` — test the post-build validator with isolated synthetic build fixtures.
 - Create `docs/superpowers/reviews/2026-08-28-static-local-search.md` — record local and production browser acceptance only after every listed observation passes.
 
@@ -572,7 +577,7 @@ At a desktop viewport, verify all of the following:
 - the search control is on the right side of the navbar before the GitHub link;
 - `⌘K` on macOS or `Ctrl+K` elsewhere focuses the search input;
 - arrow keys change the active result and Enter opens it;
-- the complete results action opens the plugin route `/tego-arch/search/?q=<query>`;
+- the complete results action may open the plugin route `/tego-arch/search/?q=<query>`, whose compatibility page replace-navigates to `/tego-arch/search?q=<query>` while preserving query and hash;
 - `微前端` returns `/tego-arch/styles/sty-12` or `/tego-arch/cases/micro-frontends-single-spa` in the first three results;
 - `限界上下文` returns `/tego-arch/modeling/mod-11` in the first three results;
 - `CQRS` returns `/tego-arch/principles/pr-11` in the first three results;
@@ -592,6 +597,8 @@ Verify:
 - the modal fits a mobile viewport without horizontal overflow;
 - active result, highlights, input border, and text remain legible in light and dark themes;
 - result and index requests remain under `/tego-arch/`;
+- empty input executes no search, while focus or hover may preload the same-origin static index;
+- direct access, reload, and new-tab navigation through `/tego-arch/search/?q=CQRS#...` preserve query/hash and reach the canonical no-trailing-slash results route;
 - no request is sent to Algolia, Typesense, an Ask AI endpoint, or any other search service;
 - blocking the search-index request leaves article content and ordinary navigation usable; the search may remain unavailable because the pinned plugin exposes no index-load failure UI callback, and the first release deliberately does not fork its search components.
 
@@ -685,7 +692,7 @@ Run:
 
 ```bash
 git diff --stat main...HEAD
-git diff main...HEAD -- package.json docusaurus.config.ts src/search/zh-user-dict.txt scripts/check-search-index.mjs tests/search-local-config.test.mjs tests/search-index-build.test.mjs docs/superpowers/reviews/2026-08-28-static-local-search.md
+git diff main...HEAD -- package.json package-lock.json docusaurus.config.ts src/search/zh-user-dict.txt static/search/index.html scripts/check-search-index.mjs scripts/sync-search-route-compat.mjs tests/search-local-config.test.mjs tests/search-index-build.test.mjs tests/search-route-compat.test.mjs tests/workflow-configuration.test.mjs docs/superpowers/specs/2026-08-28-static-local-search-design.md docs/superpowers/plans/2026-08-28-static-local-search.md docs/superpowers/reviews/2026-08-28-static-local-search.md
 ```
 
 Expected: only the planned search dependency, configuration, dictionary, validator, tests, and review record appear; there is no Ask AI configuration, external API, unrelated content edit, or generated `build/` artifact.
@@ -710,6 +717,7 @@ Open `https://sealday.github.io/tego-arch/` and repeat these checks against prod
 - `⌘K / Ctrl+K`, arrow keys, Enter, and the full results page work;
 - mobile and dark-mode layouts remain usable;
 - search index and result links retain `/tego-arch/`;
+- trailing-slash results URLs work on direct access, reload, and new-tab navigation and preserve query/hash;
 - no external search or Ask AI network request appears.
 
 Expected: all production checks pass on the deployed commit.
@@ -746,4 +754,6 @@ Expected: the review update is committed, the full repository test suite passes,
 - Representative Chinese and English queries meet their result expectations locally and in production.
 - No external search, telemetry, Ask AI endpoint, account, or secret is introduced.
 - Search-index failure blocks release, while browser index-fetch failure does not break ordinary reading.
+- Empty input performs no search; focus/hover preloading remains same-origin and is accepted to reduce first-query latency.
+- Both canonical `/search` and compatibility `/search/` build artifacts support direct, reload, and new-tab navigation without changing global `trailingSlash: false`.
 - `npm run verify` and the GitHub Pages build/deploy workflow pass on the integrated commit.

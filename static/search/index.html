@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="zh-Hans">
+  <head>
+    <meta charset="utf-8">
+    <meta name="robots" content="noindex,follow">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>正在打开搜索</title>
+  </head>
+  <body>
+    <p><a id="search-link" href="../search">正在打开搜索…</a></p>
+    <script>
+      const target = new URL('../search', window.location.href);
+      target.search = window.location.search;
+      target.hash = window.location.hash;
+      document.getElementById('search-link').href = target.href;
+      window.location.replace(target.href);
+    </script>
+  </body>
+</html>

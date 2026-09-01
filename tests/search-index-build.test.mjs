@@ -1,13 +1,21 @@
 import assert from 'node:assert/strict';
-import {mkdtemp, rm, writeFile} from 'node:fs/promises';
+import {execFile} from 'node:child_process';
+import {mkdtemp, mkdir, rm, writeFile} from 'node:fs/promises';
 import {createRequire} from 'node:module';
+import {fileURLToPath} from 'node:url';
 import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
+import {promisify} from 'node:util';
 
 import {inspectSearchBuild} from '../scripts/check-search-index.mjs';
 
 const require = createRequire(import.meta.url);
+const execFileAsync = promisify(execFile);
+const checkerPath = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  '../scripts/check-search-index.mjs',
+);
 const pluginPackagePath = require.resolve(
   '@easyops-cn/docusaurus-search-local/package.json',
 );
@@ -30,6 +38,22 @@ const makeIndex = (urls) => [
   },
 ];
 
+const writeSearchRoutes = async (directory) => {
+  await mkdir(path.join(directory, 'search'), {recursive: true});
+  await Promise.all([
+    writeFile(path.join(directory, 'search.html'), '<!doctype html>'),
+    writeFile(path.join(directory, 'search', 'index.html'), '<!doctype html>'),
+  ]);
+};
+
+const writeValidBuild = async (directory, filename = 'search-index-1a2b3c4d.json') => {
+  await writeSearchRoutes(directory);
+  await writeFile(
+    path.join(directory, filename),
+    JSON.stringify(makeIndex(requiredUrls)),
+  );
+};
+
 const withBuild = async (callback) => {
   const directory = await mkdtemp(path.join(os.tmpdir(), 'tego-search-'));
   try {
@@ -41,10 +65,7 @@ const withBuild = async (callback) => {
 
 test('accepts one hashed, scoped, non-empty search index', async () => {
   await withBuild(async (directory) => {
-    await writeFile(
-      path.join(directory, 'search-index-1a2b3c4d.json'),
-      JSON.stringify(makeIndex(requiredUrls)),
-    );
+    await writeValidBuild(directory);
     const report = await inspectSearchBuild(directory);
 
     assert.equal(report.filename, 'search-index-1a2b3c4d.json');
@@ -57,19 +78,21 @@ test('accepts one hashed, scoped, non-empty search index', async () => {
 
 test('rejects an unhashed index and missing representative docs', async () => {
   await withBuild(async (directory) => {
+    await writeSearchRoutes(directory);
     await writeFile(
       path.join(directory, 'search-index.json'),
       JSON.stringify(makeIndex(['/tego-arch/styles/sty-12'])),
     );
     await assert.rejects(
       inspectSearchBuild(directory),
-      /expected exactly one hashed search index/u,
+      /expected the search index artifact to use an 8-character lowercase hex hash/u,
     );
   });
 });
 
 test('rejects generated source-ledger pages in the docs index', async () => {
   await withBuild(async (directory) => {
+    await writeSearchRoutes(directory);
     await writeFile(
       path.join(directory, 'search-index-deadbeef.json'),
       JSON.stringify(makeIndex([
@@ -80,6 +103,116 @@ test('rejects generated source-ledger pages in the docs index', async () => {
     await assert.rejects(
       inspectSearchBuild(directory),
       /forbidden indexed URL/u,
+    );
+  });
+});
+
+test('requires both canonical and trailing-slash search route artifacts', async () => {
+  await withBuild(async (directory) => {
+    await writeFile(
+      path.join(directory, 'search-index-1a2b3c4d.json'),
+      JSON.stringify(makeIndex(requiredUrls)),
+    );
+    await assert.rejects(inspectSearchBuild(directory), /missing build artifact: search\.html/u);
+
+    await writeFile(path.join(directory, 'search.html'), '<!doctype html>');
+    await assert.rejects(
+      inspectSearchBuild(directory),
+      /missing build artifact: search\/index\.html/u,
+    );
+  });
+});
+
+test('rejects a valid hashed index that omits a required URL', async () => {
+  await withBuild(async (directory) => {
+    await writeSearchRoutes(directory);
+    await writeFile(
+      path.join(directory, 'search-index-1a2b3c4d.json'),
+      JSON.stringify(makeIndex(requiredUrls.slice(1))),
+    );
+    await assert.rejects(inspectSearchBuild(directory), /required indexed URL is missing/u);
+  });
+});
+
+test('rejects invalid JSON and a non-array root', async () => {
+  await withBuild(async (directory) => {
+    await writeSearchRoutes(directory);
+    const filename = path.join(directory, 'search-index-1a2b3c4d.json');
+    await writeFile(filename, '{');
+    await assert.rejects(inspectSearchBuild(directory), /not valid JSON/u);
+    await writeFile(filename, JSON.stringify({documents: []}));
+    await assert.rejects(inspectSearchBuild(directory), /root must be a non-empty array/u);
+  });
+});
+
+test('rejects malformed partitions and missing document URLs', async () => {
+  await withBuild(async (directory) => {
+    await writeSearchRoutes(directory);
+    const filename = path.join(directory, 'search-index-1a2b3c4d.json');
+    for (const payload of [
+      [{documents: requiredUrls.map((u) => ({u}))}],
+      [{documents: 'not-an-array', index: {}}],
+      [{documents: [{t: 'missing URL'}], index: {}}],
+      [{documents: [{u: ''}], index: {}}],
+    ]) {
+      await writeFile(filename, JSON.stringify(payload));
+      await assert.rejects(
+        inspectSearchBuild(directory),
+        /partition|document URL/u,
+      );
+    }
+  });
+});
+
+test('rejects invalid, out-of-base, and policy-bypass document URLs', async () => {
+  await withBuild(async (directory) => {
+    await writeSearchRoutes(directory);
+    const filename = path.join(directory, 'search-index-1a2b3c4d.json');
+    for (const invalidUrl of [
+      'https://example.com/tego-arch/styles/sty-12',
+      '/other/styles/sty-12',
+      '/tego-arch/styles/sty-12?next=/tego-arch/references/primary',
+      '/tego-arch/styles/sty-12#fragment',
+      '/tego-arch/styles\\sty-12',
+      '/tego-arch//references/primary',
+      '/tego-arch/styles/../references/primary',
+      '/tego-arch/references/%70rimary',
+    ]) {
+      await writeFile(
+        filename,
+        JSON.stringify(makeIndex([...requiredUrls, invalidUrl])),
+      );
+      await assert.rejects(inspectSearchBuild(directory), /indexed URL/u);
+    }
+  });
+});
+
+test('rejects every extra root search-index artifact', async () => {
+  await withBuild(async (directory) => {
+    await writeValidBuild(directory);
+    for (const extra of ['search-index.json', 'search-index-deadbeef.json', 'search-index-stale.json']) {
+      await writeFile(path.join(directory, extra), '[]');
+      await assert.rejects(
+        inspectSearchBuild(directory),
+        /expected exactly one search index artifact/u,
+      );
+      await rm(path.join(directory, extra));
+    }
+  });
+});
+
+test('CLI reports validation failures on stderr and exits nonzero', async () => {
+  await withBuild(async (directory) => {
+    await writeSearchRoutes(directory);
+    await writeFile(path.join(directory, 'search-index-1a2b3c4d.json'), '{');
+    await assert.rejects(
+      execFileAsync(process.execPath, [checkerPath, directory]),
+      (error) => {
+        assert.notEqual(error.code, 0);
+        assert.match(error.stderr, /^search-index-check: search index is not valid JSON:/u);
+        assert.equal(error.stdout, '');
+        return true;
+      },
     );
   });
 });

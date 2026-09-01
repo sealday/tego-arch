@@ -23,13 +23,30 @@ export async function inspectSearchBuild(
   policy = defaultSearchPolicy,
 ) {
   const entries = await readdir(buildDir);
-  const indexFiles = entries.filter((name) =>
+  for (const artifact of ['search.html', path.join('search', 'index.html')]) {
+    try {
+      await readFile(path.join(buildDir, artifact));
+    } catch (error) {
+      if (error?.code === 'ENOENT') {
+        throw new Error(`missing build artifact: ${artifact}`);
+      }
+      throw error;
+    }
+  }
+
+  const searchIndexArtifacts = entries.filter((name) =>
+    /^search-index.*\.json$/u.test(name),
+  );
+  if (searchIndexArtifacts.length !== 1) {
+    throw new Error(
+      `expected exactly one search index artifact, found ${searchIndexArtifacts.length}`,
+    );
+  }
+  const indexFiles = searchIndexArtifacts.filter((name) =>
     /^search-index-[0-9a-f]{8}\.json$/u.test(name),
   );
   if (indexFiles.length !== 1) {
-    throw new Error(
-      `expected exactly one hashed search index, found ${indexFiles.length}`,
-    );
+    throw new Error('expected the search index artifact to use an 8-character lowercase hex hash');
   }
 
   const filename = indexFiles[0];
@@ -40,32 +57,76 @@ export async function inspectSearchBuild(
   } catch (error) {
     throw new Error(`search index is not valid JSON: ${error.message}`);
   }
-  if (!Array.isArray(payload)) {
-    throw new Error('search index root must be an array');
+  if (!Array.isArray(payload) || payload.length === 0) {
+    throw new Error('search index root must be a non-empty array');
   }
 
-  const documents = payload.flatMap((part) =>
-    Array.isArray(part?.documents) ? part.documents : [],
-  );
+  for (const [partitionIndex, partition] of payload.entries()) {
+    if (!partition || !Array.isArray(partition.documents)) {
+      throw new Error(`search index partition ${partitionIndex} must contain a documents array`);
+    }
+    if (
+      partition.index === null ||
+      typeof partition.index !== 'object' ||
+      Array.isArray(partition.index)
+    ) {
+      throw new Error(`search index partition ${partitionIndex} must contain an index object`);
+    }
+  }
+
+  const documents = payload.flatMap((partition) => partition.documents);
   if (documents.length === 0) {
     throw new Error('search index contains no documents');
   }
-  const urls = [...new Set(documents.map(({u}) => u).filter(Boolean))].sort();
-  const invalidBaseUrl = urls.find((url) => !url.startsWith(policy.baseUrl));
-  if (invalidBaseUrl) {
-    throw new Error(`indexed URL has invalid baseUrl: ${invalidBaseUrl}`);
-  }
-  for (const requiredUrl of policy.requiredUrls) {
-    if (!urls.includes(requiredUrl)) {
-      throw new Error(`required indexed URL is missing: ${requiredUrl}`);
+
+  const canonicalUrls = documents.map((document, documentIndex) => {
+    const url = document?.u;
+    if (typeof url !== 'string' || url.length === 0) {
+      throw new Error(`indexed document URL ${documentIndex} must be a non-empty string`);
     }
-  }
+    if (
+      !url.startsWith('/') ||
+      url.includes('\\') ||
+      url.includes('?') ||
+      url.includes('#') ||
+      url.includes('%') ||
+      /\/{2,}/u.test(url)
+    ) {
+      throw new Error(`indexed URL is not a canonical absolute path: ${url}`);
+    }
+
+    let parsed;
+    try {
+      parsed = new URL(url, 'https://search-index.invalid');
+    } catch {
+      throw new Error(`indexed URL is invalid: ${url}`);
+    }
+    if (
+      parsed.origin !== 'https://search-index.invalid' ||
+      parsed.pathname !== url ||
+      parsed.search !== '' ||
+      parsed.hash !== ''
+    ) {
+      throw new Error(`indexed URL is not canonical or same-origin: ${url}`);
+    }
+    if (!parsed.pathname.startsWith(policy.baseUrl)) {
+      throw new Error(`indexed URL has invalid baseUrl: ${url}`);
+    }
+    return parsed.pathname;
+  });
+  const urls = [...new Set(canonicalUrls)].sort();
+
   for (const prefix of policy.forbiddenUrlPrefixes) {
     const forbidden = urls.find(
       (url) => url === prefix || url.startsWith(`${prefix}/`),
     );
     if (forbidden) {
       throw new Error(`forbidden indexed URL: ${forbidden}`);
+    }
+  }
+  for (const requiredUrl of policy.requiredUrls) {
+    if (!urls.includes(requiredUrl)) {
+      throw new Error(`required indexed URL is missing: ${requiredUrl}`);
     }
   }
 
