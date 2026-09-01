@@ -59,7 +59,7 @@ test('redirect is relative to any deployment base and preserves query and hash',
   }
 });
 
-test('postbuild compatibility artifact preserves the initial hash until a real search edit', async () => {
+test('postbuild search artifacts preserve the initial hash until a real search edit', async () => {
   const directory = await mkdtemp(path.join(os.tmpdir(), 'tego-search-route-'));
   try {
     await mkdir(path.join(directory, 'search'));
@@ -72,21 +72,23 @@ test('postbuild compatibility artifact preserves the initial hash until a real s
     );
     await syncSearchRouteCompatibility(directory);
 
+    const canonical = await readFile(path.join(directory, 'search.html'), 'utf8');
     const compatible = await readFile(path.join(directory, 'search', 'index.html'), 'utf8');
-    assert.match(compatible, /<title>Search results<\/title>/u);
-    assert.match(compatible, /CQRS results/u);
+    assert.equal(canonical, compatible);
+    assert.match(canonical, /<title>Search results<\/title>/u);
+    assert.match(canonical, /CQRS results/u);
     assert.equal(
-      compatible.match(/<meta name="robots" content="noindex,follow">/gu)?.length,
+      canonical.match(/<meta name="robots" content="noindex,follow">/gu)?.length,
       1,
     );
-    assert.doesNotMatch(compatible, /content="index,follow"/u);
-    const script = compatible.match(
+    assert.doesNotMatch(canonical, /content="index,follow"/u);
+    const script = canonical.match(
       /<script data-search-route-compat>(?<source>[\s\S]*?)<\/script>/u,
     )?.groups.source;
     assert.ok(script);
 
     let replacement;
-    const location = new URL('https://example.test/tego-arch/search/?q=CQRS#result');
+    const location = new URL('https://example.test/tego-arch/search?q=CQRS#result');
     const history = {
       replaceState(_state, _unused, value) {
         replacement = String(value);
@@ -97,7 +99,6 @@ test('postbuild compatibility artifact preserves the initial hash until a real s
       },
     };
     const listeners = new Map();
-    let queuedTask;
     vm.runInNewContext(script, {
       URL,
       window: {
@@ -116,10 +117,6 @@ test('postbuild compatibility artifact preserves the initial hash until a real s
           assert.equal(removedCapture, addedCapture);
           listeners.delete(type);
         },
-        setTimeout(handler, delay) {
-          assert.equal(delay, 0);
-          queuedTask = handler;
-        },
       },
     });
     assert.equal(replacement, 'https://example.test/tego-arch/search?q=CQRS#result');
@@ -129,9 +126,6 @@ test('postbuild compatibility artifact preserves the initial hash until a real s
 
     history.replaceState(null, '', 'https://example.test/tego-arch/search?q=CQRS');
     assert.equal(replacement, 'https://example.test/tego-arch/search?q=CQRS#result');
-
-    listeners.get('load')?.handler();
-    queuedTask?.();
 
     history.replaceState(null, '', 'https://example.test/tego-arch/search?q=CQRS');
     assert.equal(replacement, 'https://example.test/tego-arch/search?q=CQRS#result');
@@ -150,6 +144,53 @@ test('postbuild compatibility artifact preserves the initial hash until a real s
 
     history.replaceState(null, '', 'https://example.test/tego-arch/search?q=CQRS');
     assert.equal(replacement, 'https://example.test/tego-arch/search?q=CQRS');
+  } finally {
+    await rm(directory, {recursive: true, force: true});
+  }
+});
+
+test('postbuild compatibility script skips transient guards without an initial hash', async () => {
+  const directory = await mkdtemp(path.join(os.tmpdir(), 'tego-search-route-'));
+  try {
+    await mkdir(path.join(directory, 'search'));
+    await writeFile(
+      path.join(directory, 'search.html'),
+      '<!doctype html><html><head><title>Search results</title></head><body></body></html>',
+    );
+    const {syncSearchRouteCompatibility} = await import(
+      '../scripts/sync-search-route-compat.mjs'
+    );
+    await syncSearchRouteCompatibility(directory);
+    const compatible = await readFile(path.join(directory, 'search', 'index.html'), 'utf8');
+    const script = compatible.match(
+      /<script data-search-route-compat>(?<source>[\s\S]*?)<\/script>/u,
+    )?.groups.source;
+    assert.ok(script);
+
+    const location = new URL('https://example.test/tego-arch/search?q=CQRS');
+    let listenerCount = 0;
+    const history = {
+      replaceState(_state, _unused, value) {
+        const next = new URL(String(value));
+        location.pathname = next.pathname;
+        location.search = next.search;
+        location.hash = next.hash;
+      },
+    };
+    const nativeReplaceState = history.replaceState;
+    vm.runInNewContext(script, {
+      URL,
+      window: {
+        location,
+        history,
+        addEventListener() {
+          listenerCount += 1;
+        },
+        removeEventListener() {},
+      },
+    });
+    assert.equal(history.replaceState, nativeReplaceState);
+    assert.equal(listenerCount, 0);
   } finally {
     await rm(directory, {recursive: true, force: true});
   }

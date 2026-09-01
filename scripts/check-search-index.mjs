@@ -31,13 +31,11 @@ export async function inspectSearchBuild(
   policy = defaultSearchPolicy,
 ) {
   const entries = await readdir(buildDir);
-  let compatibilityPage;
+  const searchPages = new Map();
   for (const artifact of ['search.html', path.join('search', 'index.html')]) {
     try {
       const contents = await readFile(path.join(buildDir, artifact), 'utf8');
-      if (artifact === path.join('search', 'index.html')) {
-        compatibilityPage = contents;
-      }
+      searchPages.set(artifact, contents);
     } catch (error) {
       if (error?.code === 'ENOENT') {
         throw new Error(`missing build artifact: ${artifact}`);
@@ -45,11 +43,16 @@ export async function inspectSearchBuild(
       throw error;
     }
   }
-  if (
-    !compatibilityPage.includes('data-search-route-compat') ||
-    !compatibilityPage.includes('<meta name="robots" content="noindex,follow">')
-  ) {
-    throw new Error('search/index.html is not the synchronized compatibility page');
+  for (const [artifact, contents] of searchPages) {
+    if (
+      !contents.includes('data-search-route-compat') ||
+      !contents.includes('<meta name="robots" content="noindex,follow">')
+    ) {
+      const pageKind = artifact === 'search.html'
+        ? 'search page'
+        : 'compatibility page';
+      throw new Error(`${artifact} is not the synchronized ${pageKind}`);
+    }
   }
 
   const searchIndexArtifacts = entries.filter((name) =>

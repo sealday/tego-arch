@@ -46,14 +46,13 @@ const serializedLunrIndex = () => ({
   pipeline: [],
 });
 
+const synchronizedSearchPage = '<!doctype html><html><head><meta name="robots" content="noindex,follow"><script data-search-route-compat></script></head></html>';
+
 const writeSearchRoutes = async (directory) => {
   await mkdir(path.join(directory, 'search'), {recursive: true});
   await Promise.all([
-    writeFile(path.join(directory, 'search.html'), '<!doctype html>'),
-    writeFile(
-      path.join(directory, 'search', 'index.html'),
-      '<!doctype html><html><head><meta name="robots" content="noindex,follow"><script data-search-route-compat></script></head></html>',
-    ),
+    writeFile(path.join(directory, 'search.html'), synchronizedSearchPage),
+    writeFile(path.join(directory, 'search', 'index.html'), synchronizedSearchPage),
   ]);
 };
 
@@ -137,7 +136,7 @@ test('requires both canonical and trailing-slash search route artifacts', async 
 test('rejects an unsynchronized static search fallback', async () => {
   await withBuild(async (directory) => {
     await mkdir(path.join(directory, 'search'), {recursive: true});
-    await writeFile(path.join(directory, 'search.html'), '<!doctype html>');
+    await writeFile(path.join(directory, 'search.html'), synchronizedSearchPage);
     await writeFile(
       path.join(directory, 'search', 'index.html'),
       '<!doctype html><meta name="robots" content="noindex,follow"><script>window.location.replace("../search")</script>',
@@ -149,6 +148,21 @@ test('rejects an unsynchronized static search fallback', async () => {
     await assert.rejects(
       inspectSearchBuild(directory),
       /search\/index\.html is not the synchronized compatibility page/u,
+    );
+  });
+});
+
+test('rejects an unsynchronized canonical search page', async () => {
+  await withBuild(async (directory) => {
+    await writeSearchRoutes(directory);
+    await writeFile(path.join(directory, 'search.html'), '<!doctype html>');
+    await writeFile(
+      path.join(directory, 'search-index-1a2b3c4d.json'),
+      JSON.stringify(makeIndex(requiredUrls)),
+    );
+    await assert.rejects(
+      inspectSearchBuild(directory),
+      /search\.html is not the synchronized search page/u,
     );
   });
 });
