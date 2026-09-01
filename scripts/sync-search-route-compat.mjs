@@ -7,17 +7,24 @@ const canonicalizeScript = `<script data-search-route-compat>
       const preservedHash = target.hash;
       target.pathname = target.pathname.replace(/\\/+$/u, '');
       const nativeReplaceState = window.history.replaceState.bind(window.history);
-      window.history.replaceState = (state, unused, url) => {
+      const protectedReplaceState = (state, unused, url) => {
         if (!preservedHash || url == null) {
           return nativeReplaceState(state, unused, url);
         }
         const next = new URL(String(url), window.location.href);
         if (next.pathname === target.pathname && !next.hash) {
           next.hash = preservedHash;
-          window.history.replaceState = nativeReplaceState;
         }
         return nativeReplaceState(state, unused, next.href);
       };
+      window.history.replaceState = protectedReplaceState;
+      window.addEventListener('load', () => {
+        window.setTimeout(() => {
+          if (window.history.replaceState === protectedReplaceState) {
+            window.history.replaceState = nativeReplaceState;
+          }
+        }, 0);
+      }, {once: true});
       nativeReplaceState(null, '', target.href);
     </script>`;
 

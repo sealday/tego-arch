@@ -59,7 +59,7 @@ test('redirect is relative to any deployment base and preserves query and hash',
   }
 });
 
-test('postbuild compatibility artifact serves the real search page at the canonical URL', async () => {
+test('postbuild compatibility artifact preserves the initial hash throughout hydration', async () => {
   const directory = await mkdtemp(path.join(os.tmpdir(), 'tego-search-route-'));
   try {
     await mkdir(path.join(directory, 'search'));
@@ -96,19 +96,36 @@ test('postbuild compatibility artifact serves the real search page at the canoni
         location.hash = next.hash;
       },
     };
+    let loadHandler;
+    let queuedTask;
     vm.runInNewContext(script, {
       URL,
       window: {
         location,
         history,
-        addEventListener() {},
-        setTimeout() {},
+        addEventListener(type, handler, options) {
+          assert.equal(type, 'load');
+          assert.equal(options?.once, true);
+          loadHandler = handler;
+        },
+        setTimeout(handler, delay) {
+          assert.equal(delay, 0);
+          queuedTask = handler;
+        },
       },
     });
     assert.equal(replacement, 'https://example.test/tego-arch/search?q=CQRS#result');
 
     history.replaceState(null, '', 'https://example.test/tego-arch/search?q=CQRS');
     assert.equal(replacement, 'https://example.test/tego-arch/search?q=CQRS#result');
+
+    history.replaceState(null, '', 'https://example.test/tego-arch/search?q=CQRS');
+    assert.equal(replacement, 'https://example.test/tego-arch/search?q=CQRS#result');
+
+    assert.equal(typeof loadHandler, 'function');
+    loadHandler();
+    assert.equal(typeof queuedTask, 'function');
+    queuedTask();
 
     history.replaceState(null, '', 'https://example.test/tego-arch/search?q=CQRS');
     assert.equal(replacement, 'https://example.test/tego-arch/search?q=CQRS');
