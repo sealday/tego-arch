@@ -18,13 +18,16 @@ const canonicalizeScript = `<script data-search-route-compat>
         return nativeReplaceState(state, unused, next.href);
       };
       window.history.replaceState = protectedReplaceState;
-      window.addEventListener('load', () => {
-        window.setTimeout(() => {
-          if (window.history.replaceState === protectedReplaceState) {
-            window.history.replaceState = nativeReplaceState;
-          }
-        }, 0);
-      }, {once: true});
+      const restoreOptions = {capture: true};
+      const restoreReplaceState = () => {
+        if (window.history.replaceState === protectedReplaceState) {
+          window.history.replaceState = nativeReplaceState;
+        }
+        window.removeEventListener('input', restoreReplaceState, restoreOptions);
+        window.removeEventListener('change', restoreReplaceState, restoreOptions);
+      };
+      window.addEventListener('input', restoreReplaceState, restoreOptions);
+      window.addEventListener('change', restoreReplaceState, restoreOptions);
       nativeReplaceState(null, '', target.href);
     </script>`;
 

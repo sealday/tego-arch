@@ -59,7 +59,7 @@ test('redirect is relative to any deployment base and preserves query and hash',
   }
 });
 
-test('postbuild compatibility artifact preserves the initial hash throughout hydration', async () => {
+test('postbuild compatibility artifact preserves the initial hash until a real search edit', async () => {
   const directory = await mkdtemp(path.join(os.tmpdir(), 'tego-search-route-'));
   try {
     await mkdir(path.join(directory, 'search'));
@@ -96,7 +96,7 @@ test('postbuild compatibility artifact preserves the initial hash throughout hyd
         location.hash = next.hash;
       },
     };
-    let loadHandler;
+    const listeners = new Map();
     let queuedTask;
     vm.runInNewContext(script, {
       URL,
@@ -104,9 +104,17 @@ test('postbuild compatibility artifact preserves the initial hash throughout hyd
         location,
         history,
         addEventListener(type, handler, options) {
-          assert.equal(type, 'load');
-          assert.equal(options?.once, true);
-          loadHandler = handler;
+          listeners.set(type, {handler, options});
+        },
+        removeEventListener(type, handler, options) {
+          const listener = listeners.get(type);
+          assert.equal(listener?.handler, handler);
+          const addedCapture = typeof listener.options === 'boolean'
+            ? listener.options
+            : listener.options?.capture;
+          const removedCapture = typeof options === 'boolean' ? options : options?.capture;
+          assert.equal(removedCapture, addedCapture);
+          listeners.delete(type);
         },
         setTimeout(handler, delay) {
           assert.equal(delay, 0);
@@ -122,10 +130,23 @@ test('postbuild compatibility artifact preserves the initial hash throughout hyd
     history.replaceState(null, '', 'https://example.test/tego-arch/search?q=CQRS');
     assert.equal(replacement, 'https://example.test/tego-arch/search?q=CQRS#result');
 
-    assert.equal(typeof loadHandler, 'function');
-    loadHandler();
-    assert.equal(typeof queuedTask, 'function');
-    queuedTask();
+    listeners.get('load')?.handler();
+    queuedTask?.();
+
+    history.replaceState(null, '', 'https://example.test/tego-arch/search?q=CQRS');
+    assert.equal(replacement, 'https://example.test/tego-arch/search?q=CQRS#result');
+
+    history.replaceState(null, '', 'https://example.test/tego-arch/search?q=CQRS');
+    assert.equal(replacement, 'https://example.test/tego-arch/search?q=CQRS#result');
+
+    for (const type of ['input', 'change']) {
+      assert.equal(listeners.get(type)?.options?.capture, true);
+    }
+    const restoreHandler = listeners.get('input').handler;
+    assert.equal(listeners.get('change').handler, restoreHandler);
+    restoreHandler();
+    assert.equal(listeners.has('input'), false);
+    assert.equal(listeners.has('change'), false);
 
     history.replaceState(null, '', 'https://example.test/tego-arch/search?q=CQRS');
     assert.equal(replacement, 'https://example.test/tego-arch/search?q=CQRS');
