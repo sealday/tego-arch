@@ -17,6 +17,20 @@ The production build generated exactly one hashed root search index. At the test
 
 After integration with the latest main content, the same validator recorded `search-index-4185441b.json`: 8,602,832 raw bytes, 2,201,697 gzip bytes, 3,215 indexed document entries, and 126 unique URLs.
 
+## Production release
+
+**Released commit:** `0f8bb4ea8a2d04597ddf26ca1ceef289f0675593`
+**GitHub Pages run:** [33491807997](https://github.com/sealday/tego-arch/actions/runs/33491807997), completed successfully at 2026-09-01T09:25:50Z after the 1,509/1,509 repository gate, production build, compatibility synchronization, index validation, artifact upload, and Pages deployment.
+
+Production HTTP probes returned 200 for both `/tego-arch/search/?q=CQRS` and `/tego-arch/search?q=CQRS`, and the 8,602,832-byte `search-index-4185441b.json` was available from the site origin. Fresh in-app Browser verification at 2026-09-01T17:28:13+08:00 confirmed all of the following:
+
+- direct `/tego-arch/search/?q=CQRS#result` canonicalized to `/tego-arch/search?q=CQRS#result` and returned PR-11 results;
+- reloading that canonical URL retained `#result` and the PR-11 results;
+- a separate direct/new-tab request retained `#new-tab` and returned PR-11 results;
+- the deployed page exposed the standard `noindex,follow` robots directive;
+- editing the query to `限界上下文` removed the initial fragment at the user-input boundary and returned MOD-11 content;
+- the final production tab reported no console warnings or errors.
+
 The pinned plugin's filename hash follows its indexed content and plugin-version inputs; it does not independently include the Jieba dictionary bytes. Dictionary-only changes therefore require a clean deployment plus an explicit cache-invalidation and production-index check.
 
 ## Query acceptance
