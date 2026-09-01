@@ -15,6 +15,7 @@ const PRODUCTION_EVIDENCE_PATH = 'docs/reviews/evidence/g010-mth07-stage-a-produ
 const PRODUCTION_EVIDENCE_SHA256 = 'e3d28a498d23aec12d6df4b32c35fa69052d1fa4ec324a2ec6c53caa34beeeb2';
 const STAGE_A_EVIDENCE_HEAD = '00da8b412394e89bf823c7899816026b78c71b74';
 const STAGE_A_EVIDENCE_PAGES = {runId: 31789773345, buildJobId: 94733828768, deployJobId: 94734436104};
+const STAGE_B_REVIEWED_HEAD = '033c451ace1a94a4bc9876542ed16d2ebd6ada6e';
 const IMMEDIATE_REVIEW_IDENTITY = {bytes: 12_277, sha256: 'aedb1c6087af2dc77b06fceb87ab3a1a75efe591683a5c8168b672d9469678ed'};
 const IMMEDIATE_BACKLOG_IDENTITY = {bytes: 124_126, sha256: '22ee07d1a166e568c45c44b2b8d00d74e291c907aae8e7fe0cd3cf045ce73b46'};
 const IMMEDIATE_BACKLOG_SUFFIX_MARKER = '- [x] **MTH-06 P1｜从需求到演进的闭环**';
@@ -262,10 +263,10 @@ function expectedStageBCandidateSection() {
     '- Exact Stage A production HTTP evidence: HTML routes `8/8` and SVG asset `1/1` returned `200`; functional Browser verdict `PASS`; screenshot evidence `BLOCKED / NOT_ACCEPTED`.',
     '- Canonical Stage B projection: `84` completed topics / `126` content documents / `599` governed sources.',
     '- MTH-07: `published / complete`; exact status object: `{"scope":"backlog-projection","value":"complete","source":"docs/content-backlog.md"}`.',
-    '- Independent Stage B code/spec/security review: `PENDING`; findings: `NOT_REVIEWED`; exact head: `NOT_REVIEWED`.',
-    '- Independent Stage B content/evidence/rights review: `PENDING`; rights: `NOT_REVIEWED`; findings: `NOT_REVIEWED`; exact head: `NOT_REVIEWED`.',
-    '- Independent Stage B architecture/invariant review: `PENDING`; blockers: `NOT_REVIEWED`; exact head: `NOT_REVIEWED`.',
-    '- Final Stage B review judgment: `PENDING`.',
+    `- Independent Stage B code/spec/security review: \`READY / APPROVE\`; findings: \`0\`; blockers: \`0\`; exact head: \`${STAGE_B_REVIEWED_HEAD}\`.`,
+    `- Independent Stage B content/evidence/rights review: \`CONTENT READY\`; rights: \`PASS\`; findings: \`0\`; blockers: \`0\`; exact head: \`${STAGE_B_REVIEWED_HEAD}\`.`,
+    `- Independent Stage B architecture/invariant review: \`CLEAR / READY\`; findings: \`0\`; blockers: \`0\`; exact head: \`${STAGE_B_REVIEWED_HEAD}\`.`,
+    '- Final Stage B review judgment: `READY`.',
     '- Stage B scope boundary: `STAGE_B`.',
     '- Stage B deployment status: `PENDING / NOT_RUN`.',
     '- Stage B production raw: `NOT_RECORDED`.',
@@ -832,7 +833,11 @@ test('closes only MTH-07 while hash-locking the complete immediate review and ba
     ['Stage A date', '2026-08-14', '2026-08-15'],
     ['HTTP evidence', 'HTML routes `8/8`', 'HTML routes `7/8`'],
     ['projection', '`84` completed topics', '`83` completed topics'],
-    ['premature code verdict', 'code/spec/security review: `PENDING`', 'code/spec/security review: `READY / APPROVE`'],
+    ['stale reviewed head', STAGE_B_REVIEWED_HEAD, '0'.repeat(40)],
+    ['nonzero code findings', 'code/spec/security review: `READY / APPROVE`; findings: `0`', 'code/spec/security review: `READY / APPROVE`; findings: `1`'],
+    ['failed content rights', 'rights: `PASS`', 'rights: `FAIL`'],
+    ['architecture blocker', 'architecture/invariant review: `CLEAR / READY`; findings: `0`; blockers: `0`', 'architecture/invariant review: `CLEAR / READY`; findings: `0`; blockers: `1`'],
+    ['stale final verdict', 'Final Stage B review judgment: `READY`', 'Final Stage B review judgment: `PENDING`'],
     ['premature deployment', 'deployment status: `PENDING / NOT_RUN`', 'deployment status: `SUCCESS`'],
   ]) {
     if (label === 'closure checkbox') {
