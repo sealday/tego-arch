@@ -48,6 +48,14 @@ test('configures Chinese-first static docs search without external AI', async ()
     /zhUserDictPath:\s*path\.resolve\('src\/search\/zh-user-dict\.txt'\)/u,
   );
   assert.doesNotMatch(config, /askAi\s*:/u);
+  assert.equal(
+    packageJson.scripts.deploy,
+    'npm run verify && docusaurus deploy --skip-build',
+  );
+  assert.equal(
+    packageJson.scripts.postbuild,
+    'node scripts/sync-search-route-compat.mjs build',
+  );
 });
 
 test('keeps a focused and valid Jieba architecture dictionary', async () => {

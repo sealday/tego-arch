@@ -38,11 +38,22 @@ const makeIndex = (urls) => [
   },
 ];
 
+const serializedLunrIndex = () => ({
+  version: '2.3.9',
+  fields: ['t'],
+  fieldVectors: [],
+  invertedIndex: [],
+  pipeline: [],
+});
+
 const writeSearchRoutes = async (directory) => {
   await mkdir(path.join(directory, 'search'), {recursive: true});
   await Promise.all([
     writeFile(path.join(directory, 'search.html'), '<!doctype html>'),
-    writeFile(path.join(directory, 'search', 'index.html'), '<!doctype html>'),
+    writeFile(
+      path.join(directory, 'search', 'index.html'),
+      '<!doctype html><html><head><meta name="robots" content="noindex,follow"><script data-search-route-compat></script></head></html>',
+    ),
   ]);
 };
 
@@ -123,6 +134,25 @@ test('requires both canonical and trailing-slash search route artifacts', async 
   });
 });
 
+test('rejects an unsynchronized static search fallback', async () => {
+  await withBuild(async (directory) => {
+    await mkdir(path.join(directory, 'search'), {recursive: true});
+    await writeFile(path.join(directory, 'search.html'), '<!doctype html>');
+    await writeFile(
+      path.join(directory, 'search', 'index.html'),
+      '<!doctype html><meta name="robots" content="noindex,follow"><script>window.location.replace("../search")</script>',
+    );
+    await writeFile(
+      path.join(directory, 'search-index-1a2b3c4d.json'),
+      JSON.stringify(makeIndex(requiredUrls)),
+    );
+    await assert.rejects(
+      inspectSearchBuild(directory),
+      /search\/index\.html is not the synchronized compatibility page/u,
+    );
+  });
+});
+
 test('rejects a valid hashed index that omits a required URL', async () => {
   await withBuild(async (directory) => {
     await writeSearchRoutes(directory);
@@ -158,9 +188,62 @@ test('rejects malformed partitions and missing document URLs', async () => {
       await writeFile(filename, JSON.stringify(payload));
       await assert.rejects(
         inspectSearchBuild(directory),
-        /partition|document URL/u,
+        /partition|indexed document/u,
       );
     }
+  });
+});
+
+test('rejects a serialized partition index that Lunr cannot load', async () => {
+  await withBuild(async (directory) => {
+    await writeSearchRoutes(directory);
+    const payload = makeIndex(requiredUrls);
+    payload[0].index = {version: '2.3.9'};
+    await writeFile(
+      path.join(directory, 'search-index-1a2b3c4d.json'),
+      JSON.stringify(payload),
+    );
+    await assert.rejects(
+      inspectSearchBuild(directory),
+      /partition 0 contains an invalid Lunr index/u,
+    );
+  });
+});
+
+test('requires worker-compatible i, t, and u document fields', async () => {
+  await withBuild(async (directory) => {
+    await writeSearchRoutes(directory);
+    const filename = path.join(directory, 'search-index-1a2b3c4d.json');
+    for (const invalidDocument of [
+      {t: 'missing id', u: requiredUrls[0]},
+      {i: '1', t: 'string id', u: requiredUrls[0]},
+      {i: 1, u: requiredUrls[0]},
+      {i: 1, t: 42, u: requiredUrls[0]},
+      {i: 1, t: 'missing URL'},
+      {i: 1, t: 'numeric URL', u: 42},
+    ]) {
+      const payload = makeIndex(requiredUrls);
+      payload[0].documents[0] = invalidDocument;
+      await writeFile(filename, JSON.stringify(payload));
+      await assert.rejects(
+        inspectSearchBuild(directory),
+        /indexed document 0 must contain compatible i, t, and u fields/u,
+      );
+    }
+  });
+});
+
+test('accepts a legitimate empty partition with a loadable Lunr index', async () => {
+  await withBuild(async (directory) => {
+    await writeSearchRoutes(directory);
+    const payload = makeIndex(requiredUrls);
+    payload.push({documents: [], index: serializedLunrIndex()});
+    await writeFile(
+      path.join(directory, 'search-index-1a2b3c4d.json'),
+      JSON.stringify(payload),
+    );
+    const report = await inspectSearchBuild(directory);
+    assert.equal(report.documentCount, requiredUrls.length);
   });
 });
 

@@ -1,7 +1,15 @@
 import {readFile, readdir} from 'node:fs/promises';
+import {createRequire} from 'node:module';
 import path from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {gzipSync} from 'node:zlib';
+
+const require = createRequire(import.meta.url);
+const pluginPackagePath = require.resolve(
+  '@easyops-cn/docusaurus-search-local/package.json',
+);
+const pluginRequire = createRequire(pluginPackagePath);
+const lunr = pluginRequire('lunr');
 
 export const defaultSearchPolicy = Object.freeze({
   baseUrl: '/tego-arch/',
@@ -23,15 +31,25 @@ export async function inspectSearchBuild(
   policy = defaultSearchPolicy,
 ) {
   const entries = await readdir(buildDir);
+  let compatibilityPage;
   for (const artifact of ['search.html', path.join('search', 'index.html')]) {
     try {
-      await readFile(path.join(buildDir, artifact));
+      const contents = await readFile(path.join(buildDir, artifact), 'utf8');
+      if (artifact === path.join('search', 'index.html')) {
+        compatibilityPage = contents;
+      }
     } catch (error) {
       if (error?.code === 'ENOENT') {
         throw new Error(`missing build artifact: ${artifact}`);
       }
       throw error;
     }
+  }
+  if (
+    !compatibilityPage.includes('data-search-route-compat') ||
+    !compatibilityPage.includes('<meta name="robots" content="noindex,follow">')
+  ) {
+    throw new Error('search/index.html is not the synchronized compatibility page');
   }
 
   const searchIndexArtifacts = entries.filter((name) =>
@@ -72,6 +90,13 @@ export async function inspectSearchBuild(
     ) {
       throw new Error(`search index partition ${partitionIndex} must contain an index object`);
     }
+    try {
+      lunr.Index.load(partition.index);
+    } catch (error) {
+      throw new Error(
+        `search index partition ${partitionIndex} contains an invalid Lunr index: ${error.message}`,
+      );
+    }
   }
 
   const documents = payload.flatMap((partition) => partition.documents);
@@ -81,8 +106,17 @@ export async function inspectSearchBuild(
 
   const canonicalUrls = documents.map((document, documentIndex) => {
     const url = document?.u;
-    if (typeof url !== 'string' || url.length === 0) {
-      throw new Error(`indexed document URL ${documentIndex} must be a non-empty string`);
+    if (
+      !document ||
+      !Number.isSafeInteger(document.i) ||
+      document.i < 0 ||
+      typeof document.t !== 'string' ||
+      typeof url !== 'string' ||
+      url.length === 0
+    ) {
+      throw new Error(
+        `indexed document ${documentIndex} must contain compatible i, t, and u fields (document URL required)`,
+      );
     }
     if (
       !url.startsWith('/') ||

@@ -65,7 +65,7 @@ test('postbuild compatibility artifact serves the real search page at the canoni
     await mkdir(path.join(directory, 'search'));
     await writeFile(
       path.join(directory, 'search.html'),
-      '<!doctype html><html><head><title>Search results</title></head><body><div id="__docusaurus">CQRS results</div></body></html>',
+      '<!doctype html><html><head><meta name="robots" content="index,follow"><title>Search results</title></head><body><div id="__docusaurus">CQRS results</div></body></html>',
     );
     const {syncSearchRouteCompatibility} = await import(
       '../scripts/sync-search-route-compat.mjs'
@@ -75,6 +75,11 @@ test('postbuild compatibility artifact serves the real search page at the canoni
     const compatible = await readFile(path.join(directory, 'search', 'index.html'), 'utf8');
     assert.match(compatible, /<title>Search results<\/title>/u);
     assert.match(compatible, /CQRS results/u);
+    assert.equal(
+      compatible.match(/<meta name="robots" content="noindex,follow">/gu)?.length,
+      1,
+    );
+    assert.doesNotMatch(compatible, /content="index,follow"/u);
     const script = compatible.match(
       /<script data-search-route-compat>(?<source>[\s\S]*?)<\/script>/u,
     )?.groups.source;
@@ -104,6 +109,9 @@ test('postbuild compatibility artifact serves the real search page at the canoni
 
     history.replaceState(null, '', 'https://example.test/tego-arch/search?q=CQRS');
     assert.equal(replacement, 'https://example.test/tego-arch/search?q=CQRS#result');
+
+    history.replaceState(null, '', 'https://example.test/tego-arch/search?q=CQRS');
+    assert.equal(replacement, 'https://example.test/tego-arch/search?q=CQRS');
   } finally {
     await rm(directory, {recursive: true, force: true});
   }

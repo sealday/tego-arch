@@ -14,11 +14,14 @@ const canonicalizeScript = `<script data-search-route-compat>
         const next = new URL(String(url), window.location.href);
         if (next.pathname === target.pathname && !next.hash) {
           next.hash = preservedHash;
+          window.history.replaceState = nativeReplaceState;
         }
         return nativeReplaceState(state, unused, next.href);
       };
-      window.history.replaceState(null, '', target.href);
+      nativeReplaceState(null, '', target.href);
     </script>`;
+
+const robotsDirective = '<meta name="robots" content="noindex,follow">';
 
 export async function syncSearchRouteCompatibility(buildDir) {
   const canonicalPage = path.join(buildDir, 'search.html');
@@ -28,7 +31,14 @@ export async function syncSearchRouteCompatibility(buildDir) {
     throw new Error('canonical search page has no <head> element');
   }
 
-  const compatible = source.replace('<head>', `<head>${canonicalizeScript}`);
+  const normalizedSource = source.replace(
+    /<meta\b(?=[^>]*\bname=["']robots["'])[^>]*>/giu,
+    '',
+  );
+  const compatible = normalizedSource.replace(
+    '<head>',
+    `<head>${robotsDirective}${canonicalizeScript}`,
+  );
   await mkdir(path.dirname(compatibilityPage), {recursive: true});
   await writeFile(compatibilityPage, compatible);
 }
