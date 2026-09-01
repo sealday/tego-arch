@@ -1,0 +1,233 @@
+{
+  "schemaVersion": 1,
+  "releaseSha": "d10547acf0b1815e6477c92684f22a9870aed7d6",
+  "workflow": {
+    "path": ".github/workflows/deploy.yml",
+    "name": "Verify and deploy Docusaurus to GitHub Pages",
+    "runId": 33138211694,
+    "runUrl": "https://github.com/sealday/tego-arch/actions/runs/33138211694",
+    "headSha": "d10547acf0b1815e6477c92684f22a9870aed7d6",
+    "event": "push",
+    "status": "completed",
+    "conclusion": "success",
+    "createdAt": "2026-08-28T03:12:23Z",
+    "updatedAt": "2026-08-28T03:16:21Z",
+    "jobs": {
+      "build": {
+        "name": "build",
+        "jobId": 98742932478,
+        "url": "https://github.com/sealday/tego-arch/actions/runs/33138211694/job/98742932478",
+        "status": "completed",
+        "conclusion": "success",
+        "startedAt": "2026-08-28T03:12:27Z",
+        "completedAt": "2026-08-28T03:16:05Z"
+      },
+      "deploy": {
+        "name": "deploy",
+        "jobId": 98743451977,
+        "url": "https://github.com/sealday/tego-arch/actions/runs/33138211694/job/98743451977",
+        "status": "completed",
+        "conclusion": "success",
+        "startedAt": "2026-08-28T03:16:10Z",
+        "completedAt": "2026-08-28T03:16:20Z"
+      }
+    }
+  },
+  "httpProbes": [
+    {
+      "path": "/paths/agentic-architecture",
+      "url": "https://sealday.github.io/tego-arch/paths/agentic-architecture",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "verdict": "PASS"
+    },
+    {
+      "path": "/concepts",
+      "url": "https://sealday.github.io/tego-arch/concepts",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "verdict": "PASS"
+    },
+    {
+      "path": "/patterns",
+      "url": "https://sealday.github.io/tego-arch/patterns",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "verdict": "PASS"
+    },
+    {
+      "path": "/cases",
+      "url": "https://sealday.github.io/tego-arch/cases",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "verdict": "PASS"
+    },
+    {
+      "path": "/concepts/agt-c-01",
+      "url": "https://sealday.github.io/tego-arch/concepts/agt-c-01",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "verdict": "PASS"
+    },
+    {
+      "path": "/concepts/agt-c-02",
+      "url": "https://sealday.github.io/tego-arch/concepts/agt-c-02",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "verdict": "PASS"
+    },
+    {
+      "path": "/concepts/agt-c-03",
+      "url": "https://sealday.github.io/tego-arch/concepts/agt-c-03",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "verdict": "PASS"
+    },
+    {
+      "path": "/concepts/agt-c-04",
+      "url": "https://sealday.github.io/tego-arch/concepts/agt-c-04",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "verdict": "PASS"
+    },
+    {
+      "path": "/concepts/agt-c-05",
+      "url": "https://sealday.github.io/tego-arch/concepts/agt-c-05",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "verdict": "PASS"
+    },
+    {
+      "path": "/concepts/agt-c-06",
+      "url": "https://sealday.github.io/tego-arch/concepts/agt-c-06",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "verdict": "PASS"
+    },
+    {
+      "path": "/patterns/agt-p-01",
+      "url": "https://sealday.github.io/tego-arch/patterns/agt-p-01",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "verdict": "PASS"
+    },
+    {
+      "path": "/patterns/agt-p-02",
+      "url": "https://sealday.github.io/tego-arch/patterns/agt-p-02",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "verdict": "PASS"
+    },
+    {
+      "path": "/patterns/agt-p-03",
+      "url": "https://sealday.github.io/tego-arch/patterns/agt-p-03",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "verdict": "PASS"
+    },
+    {
+      "path": "/patterns/agt-p-04",
+      "url": "https://sealday.github.io/tego-arch/patterns/agt-p-04",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "verdict": "PASS"
+    },
+    {
+      "path": "/patterns/agt-p-05",
+      "url": "https://sealday.github.io/tego-arch/patterns/agt-p-05",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "verdict": "PASS"
+    },
+    {
+      "path": "/patterns/agt-p-06",
+      "url": "https://sealday.github.io/tego-arch/patterns/agt-p-06",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "verdict": "PASS"
+    },
+    {
+      "path": "/patterns/agt-p-07",
+      "url": "https://sealday.github.io/tego-arch/patterns/agt-p-07",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "verdict": "PASS"
+    },
+    {
+      "path": "/patterns/agt-p-08",
+      "url": "https://sealday.github.io/tego-arch/patterns/agt-p-08",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "verdict": "PASS"
+    },
+    {
+      "path": "/cases/multi-agent-research-system",
+      "url": "https://sealday.github.io/tego-arch/cases/multi-agent-research-system",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "verdict": "PASS"
+    },
+    {
+      "path": "/cases/long-running-coding-agent",
+      "url": "https://sealday.github.io/tego-arch/cases/long-running-coding-agent",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "verdict": "PASS"
+    },
+    {
+      "path": "/cases/production-incident-response-agent",
+      "url": "https://sealday.github.io/tego-arch/cases/production-incident-response-agent",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "verdict": "PASS"
+    },
+    {
+      "path": "/img/diagrams/agt-c-01-agent-system-boundary.svg",
+      "url": "https://sealday.github.io/tego-arch/img/diagrams/agt-c-01-agent-system-boundary.svg",
+      "status": 200,
+      "contentType": "image/svg+xml",
+      "verdict": "PASS"
+    },
+    {
+      "path": "/img/diagrams/agt-p-06-control-ownership-models.svg",
+      "url": "https://sealday.github.io/tego-arch/img/diagrams/agt-p-06-control-ownership-models.svg",
+      "status": 200,
+      "contentType": "image/svg+xml",
+      "verdict": "PASS"
+    },
+    {
+      "path": "/img/diagrams/agt-p-08-durable-agent-hitl.svg",
+      "url": "https://sealday.github.io/tego-arch/img/diagrams/agt-p-08-durable-agent-hitl.svg",
+      "status": 200,
+      "contentType": "image/svg+xml",
+      "verdict": "PASS"
+    },
+    {
+      "path": "/img/diagrams/multi-agent-research-system.svg",
+      "url": "https://sealday.github.io/tego-arch/img/diagrams/multi-agent-research-system.svg",
+      "status": 200,
+      "contentType": "image/svg+xml",
+      "verdict": "PASS"
+    },
+    {
+      "path": "/img/diagrams/long-running-coding-agent.svg",
+      "url": "https://sealday.github.io/tego-arch/img/diagrams/long-running-coding-agent.svg",
+      "status": 200,
+      "contentType": "image/svg+xml",
+      "verdict": "PASS"
+    },
+    {
+      "path": "/img/diagrams/production-incident-response-agent.svg",
+      "url": "https://sealday.github.io/tego-arch/img/diagrams/production-incident-response-agent.svg",
+      "status": 200,
+      "contentType": "image/svg+xml",
+      "verdict": "PASS"
+    }
+  ],
+  "summary": {
+    "required": 27,
+    "passed": 27,
+    "failed": 0,
+    "verdict": "PASS"
+  }
+}

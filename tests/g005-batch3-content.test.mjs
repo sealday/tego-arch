@@ -25,7 +25,8 @@ const repositoryRoot = fileURLToPath(new URL('../', import.meta.url));
 const G005_BATCH3_REVIEWED_HEAD = 'c4a76ac2dc33505b53f7b53d17c587038a871c9f';
 const G005_BATCH3_SCHEMA_PATH = 'scripts/content-schema.mjs';
 const G005_BATCH3_SCHEMA_SHA256 = '10aa4b2e17a59b57a2bfe5c13edc9abe38156a1ce26db04bbf15dd506240e8cf';
-const CURRENT_ARCHITECTURE_CASE_TOPIC_IDS = ['STY-08', 'STY-09', 'STY-10', 'STY-11', 'STY-12'];
+const G005_HISTORICAL_CONTENT_HEAD = 'd15aa17a21075217e485be684a84ade9371b5be3';
+const CURRENT_ARCHITECTURE_CASE_TOPIC_IDS = ['STY-08', 'STY-09', 'STY-10', 'STY-11', 'STY-12', 'STY-13'];
 const CURRENT_ARCHITECTURE_CASE_HEADINGS = [
   '## 学习问题',
   '## 一页摘要',
@@ -47,6 +48,12 @@ const CURRENT_STY10_ARCHITECTURE_CASE_HEADINGS = [
 const CURRENT_STY12_ARCHITECTURE_CASE_HEADINGS = [
   ...CURRENT_ARCHITECTURE_CASE_HEADINGS.slice(0, 4),
   '## 运行时组合与发布流',
+  '## 关键机制导读',
+  ...CURRENT_ARCHITECTURE_CASE_HEADINGS.slice(6),
+];
+const CURRENT_STY13_ARCHITECTURE_CASE_HEADINGS = [
+  ...CURRENT_ARCHITECTURE_CASE_HEADINGS.slice(0, 4),
+  '## 亲和分区与预订流',
   '## 关键机制导读',
   ...CURRENT_ARCHITECTURE_CASE_HEADINGS.slice(6),
 ];
@@ -169,7 +176,9 @@ function assertCurrentArchitectureCaseSchema({
       ? CURRENT_STY10_ARCHITECTURE_CASE_HEADINGS
       : topicId === 'STY-12'
         ? CURRENT_STY12_ARCHITECTURE_CASE_HEADINGS
-        : CURRENT_ARCHITECTURE_CASE_HEADINGS;
+        : topicId === 'STY-13'
+          ? CURRENT_STY13_ARCHITECTURE_CASE_HEADINGS
+          : CURRENT_ARCHITECTURE_CASE_HEADINGS;
     assert.deepEqual(headingContract('style', topicId), expected, `${topicId} current heading behavior`);
   }
   assert.notDeepEqual(headingContract('style', 'STY-07'), CURRENT_ARCHITECTURE_CASE_HEADINGS, 'STY-07 remains on the standard style contract');
@@ -584,9 +593,9 @@ test('preserves cases QA-01 and the historical G005 sidebar', async () => {
   );
 
   for (const [file, expectedHash] of immutableFiles) {
-    const bytes = await readFile(new URL(`../${file}`, import.meta.url));
+    const bytes = readGitObject(G005_HISTORICAL_CONTENT_HEAD, file);
     const actualHash = createHash('sha256').update(bytes).digest('hex');
-    assert.equal(actualHash, expectedHash, file);
+    assert.equal(actualHash, expectedHash, `${G005_HISTORICAL_CONTENT_HEAD}:${file}`);
   }
 });
 

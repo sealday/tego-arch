@@ -256,6 +256,37 @@
       "presentation": {}
     },
     {
+      "id": "AGT-C-01",
+      "type": "concept",
+      "title": "AI 智能体（Agent）系统边界",
+      "slug": "/concepts/agt-c-01",
+      "priority": "P1",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "complete",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [],
+      "adjacent_topics": [
+        "AGT-C-02",
+        "AGT-C-03",
+        "AGT-P-01"
+      ],
+      "primary_sources": [
+        "https://www.anthropic.com/engineering/building-effective-agents"
+      ],
+      "related_cases": [
+        "/cases/kubernetes-reconciliation-loop",
+        "/cases/openai-agents-sdk"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-08-26",
+      "review_policy": null,
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
+    },
+    {
       "id": "DST-07",
       "type": "concept",
       "title": "一致性哈希与虚拟节点",
@@ -319,6 +350,167 @@
       "pattern_group": null
     },
     {
+      "id": "AGT-C-02",
+      "type": "concept",
+      "title": "智能体运行框架（Agent Harness）：约束并运行智能体循环（Agent Loop）",
+      "slug": "/concepts/agt-c-02",
+      "priority": "P1",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "complete",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "AGT-C-01"
+      ],
+      "adjacent_topics": [
+        "AGT-C-01",
+        "AGT-C-03",
+        "AGT-C-04",
+        "AGT-C-05",
+        "AGT-C-06",
+        "AGT-P-06",
+        "AGT-P-08"
+      ],
+      "primary_sources": [
+        "https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents"
+      ],
+      "related_cases": [
+        "/cases/long-running-coding-agent"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-08-26",
+      "review_policy": null,
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
+    },
+    {
+      "id": "AGT-C-03",
+      "type": "concept",
+      "title": "智能体循环（Agent Loop）：计划、行动、观察、评估与终止",
+      "slug": "/concepts/agt-c-03",
+      "priority": "P1",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "complete",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "AGT-C-01",
+        "AGT-C-02"
+      ],
+      "adjacent_topics": [
+        "AGT-C-01",
+        "AGT-C-02",
+        "AGT-C-04",
+        "AGT-C-05",
+        "AGT-C-06",
+        "AGT-P-01",
+        "AGT-P-02",
+        "AGT-P-03",
+        "AGT-P-04",
+        "AGT-P-05",
+        "AGT-P-06",
+        "AGT-P-07",
+        "AGT-P-08"
+      ],
+      "primary_sources": [
+        "https://arxiv.org/abs/2210.03629"
+      ],
+      "related_cases": [
+        "/cases/long-running-coding-agent",
+        "/cases/multi-agent-research-system",
+        "/cases/production-incident-response-agent"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-08-26",
+      "review_policy": null,
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
+    },
+    {
+      "id": "AGT-C-04",
+      "type": "concept",
+      "title": "上下文、记忆、状态与执行检查点（Checkpoint）：分开信息生命周期与恢复责任",
+      "slug": "/concepts/agt-c-04",
+      "priority": "P1",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "complete",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "AGT-C-01",
+        "AGT-C-02",
+        "AGT-C-03"
+      ],
+      "adjacent_topics": [
+        "AGT-C-02",
+        "AGT-C-03",
+        "AGT-C-05",
+        "AGT-C-06",
+        "AGT-P-02",
+        "AGT-P-06",
+        "AGT-P-07",
+        "AGT-P-08"
+      ],
+      "primary_sources": [
+        "https://docs.langchain.com/oss/python/langgraph/persistence"
+      ],
+      "related_cases": [
+        "/cases/long-running-coding-agent",
+        "/cases/multi-agent-research-system",
+        "/cases/production-incident-response-agent"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-08-26",
+      "review_policy": null,
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
+    },
+    {
+      "id": "AGT-C-05",
+      "type": "concept",
+      "title": "工具、隔离沙箱（Sandbox）、权限与副作用：让外部效果经过授权和核验",
+      "slug": "/concepts/agt-c-05",
+      "priority": "P1",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "complete",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "AGT-C-01",
+        "AGT-C-02",
+        "AGT-C-03"
+      ],
+      "adjacent_topics": [
+        "AGT-C-02",
+        "AGT-C-03",
+        "AGT-C-04",
+        "AGT-C-06",
+        "AGT-P-08",
+        "PR-09",
+        "PR-10"
+      ],
+      "primary_sources": [
+        "https://modelcontextprotocol.io/specification/2025-06-18/architecture"
+      ],
+      "related_cases": [
+        "/cases/long-running-coding-agent",
+        "/cases/production-incident-response-agent"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-08-26",
+      "review_policy": null,
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
+    },
+    {
       "id": "FND-05",
       "type": "concept",
       "title": "架构债与演进式设计",
@@ -347,6 +539,50 @@
       "related_questions": [],
       "reviewed_at": "2026-07-24",
       "review_policy": "quarterly-version-sensitive",
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
+    },
+    {
+      "id": "AGT-C-06",
+      "type": "concept",
+      "title": "追踪、评测与执行约束：分开证据、质量判断与政策执行",
+      "slug": "/concepts/agt-c-06",
+      "priority": "P1",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "complete",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "AGT-C-01",
+        "AGT-C-02",
+        "AGT-C-03",
+        "AGT-C-04",
+        "AGT-C-05"
+      ],
+      "adjacent_topics": [
+        "AGT-C-02",
+        "AGT-C-03",
+        "AGT-C-04",
+        "AGT-C-05",
+        "AGT-P-02",
+        "AGT-P-04",
+        "AGT-P-08",
+        "QA-08",
+        "PR-07"
+      ],
+      "primary_sources": [
+        "https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents"
+      ],
+      "related_cases": [
+        "/cases/long-running-coding-agent",
+        "/cases/multi-agent-research-system",
+        "/cases/production-incident-response-agent"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-08-26",
+      "review_policy": null,
       "published": true,
       "pattern_group": null,
       "presentation": {}
@@ -626,7 +862,8 @@
         "PR-09",
         "PR-10",
         "PR-16",
-        "QA-01"
+        "QA-01",
+        "AGT-C-06"
       ],
       "primary_sources": [
         "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_mitigate_interaction_failure_graceful_degradation.html"
@@ -659,7 +896,8 @@
         "PR-04",
         "PR-07",
         "PR-10",
-        "PR-16"
+        "PR-16",
+        "AGT-C-05"
       ],
       "primary_sources": [
         "https://web.mit.edu/Saltzer/www/publications/protection/"
@@ -694,7 +932,8 @@
         "PR-09",
         "PR-11",
         "PR-16",
-        "MOD-08"
+        "MOD-08",
+        "AGT-C-05"
       ],
       "primary_sources": [
         "https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-APIs/"
@@ -1244,7 +1483,8 @@
         "QA-04",
         "QA-05",
         "QA-09",
-        "QA-10"
+        "QA-10",
+        "AGT-C-06"
       ],
       "primary_sources": [
         "https://opentelemetry.io/docs/concepts/observability-primer/"
@@ -2215,7 +2455,8 @@
         "STY-07",
         "STY-08",
         "STY-09",
-        "STY-10"
+        "STY-10",
+        "STY-13"
       ],
       "primary_sources": [
         "https://martinfowler.com/articles/microservices.html"
@@ -2353,7 +2594,8 @@
       "adjacent_topics": [
         "STY-05",
         "STY-06",
-        "STY-07"
+        "STY-07",
+        "STY-13"
       ],
       "primary_sources": [
         "https://www.ijcai.org/Proceedings/73/Papers/027B.pdf"
@@ -2496,23 +2738,36 @@
     {
       "id": "STY-13",
       "type": "style",
-      "title": "Space-Based Architecture",
+      "title": "Space-Based Architecture：让状态与处理在亲和分区相遇",
       "slug": "/styles/sty-13",
       "priority": "P2",
       "status": {
         "scope": "backlog-projection",
-        "value": "pending",
+        "value": "complete",
         "source": "docs/content-backlog.md"
       },
-      "dependencies": [],
-      "adjacent_topics": [],
-      "primary_sources": [],
-      "related_cases": [],
+      "dependencies": [
+        "STY-00",
+        "STY-05",
+        "STY-08"
+      ],
+      "adjacent_topics": [
+        "STY-05",
+        "STY-08"
+      ],
+      "primary_sources": [
+        "https://docs.gigaspaces.com/16.2/overview/space-based-architecture.html"
+      ],
+      "related_cases": [
+        "/cases/aws-cell-shuffle-sharding",
+        "/cases/cloudflare-durable-objects-workerd"
+      ],
       "related_questions": [],
-      "reviewed_at": null,
+      "reviewed_at": "2026-08-28",
       "review_policy": null,
-      "published": false,
-      "pattern_group": null
+      "published": true,
+      "pattern_group": null,
+      "presentation": {}
     }
   ],
   "pattern": [
@@ -3953,6 +4208,320 @@
       "pattern_group": "reliability"
     },
     {
+      "id": "AGT-P-01",
+      "type": "pattern",
+      "title": "确定性工作流（Workflow）与自治智能体（Agent）",
+      "slug": "/patterns/agt-p-01",
+      "priority": "P1",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "complete",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "AGT-C-01",
+        "AGT-C-03"
+      ],
+      "adjacent_topics": [
+        "AGT-C-01",
+        "AGT-C-03",
+        "AGT-P-02",
+        "AGT-P-03",
+        "AGT-P-04",
+        "AGT-P-05",
+        "AGT-P-06",
+        "AGT-P-07",
+        "AGT-P-08"
+      ],
+      "primary_sources": [
+        "https://www.anthropic.com/engineering/building-effective-agents"
+      ],
+      "related_cases": [
+        "/cases/long-running-coding-agent",
+        "/cases/multi-agent-research-system",
+        "/cases/production-incident-response-agent"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-08-26",
+      "review_policy": null,
+      "published": true,
+      "pattern_group": "agent-control",
+      "presentation": {}
+    },
+    {
+      "id": "AGT-P-03",
+      "type": "pattern",
+      "title": "规划者–执行者（Planner–Executor）：用版本化计划约束重规划",
+      "slug": "/patterns/agt-p-03",
+      "priority": "P1",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "complete",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "AGT-C-03"
+      ],
+      "adjacent_topics": [
+        "AGT-C-03",
+        "AGT-P-01",
+        "AGT-P-04",
+        "AGT-P-05",
+        "AGT-P-07",
+        "AGT-P-08"
+      ],
+      "primary_sources": [
+        "https://www.anthropic.com/engineering/building-effective-agents"
+      ],
+      "related_cases": [
+        "/cases/long-running-coding-agent",
+        "/cases/production-incident-response-agent"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-08-26",
+      "review_policy": null,
+      "published": true,
+      "pattern_group": "agent-control",
+      "presentation": {}
+    },
+    {
+      "id": "AGT-P-05",
+      "type": "pattern",
+      "title": "路由与模型驱动分发：先过策略门，再选择唯一目的地",
+      "slug": "/patterns/agt-p-05",
+      "priority": "P1",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "complete",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "AGT-C-03"
+      ],
+      "adjacent_topics": [
+        "AGT-C-03",
+        "AGT-P-01",
+        "AGT-P-03",
+        "AGT-P-06",
+        "AGT-P-07"
+      ],
+      "primary_sources": [
+        "https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/examples/agent_patterns/routing.py"
+      ],
+      "related_cases": [
+        "/cases/kong-ai-gateway-routing-resilience",
+        "/cases/new-api-channel-pool-routing"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-08-26",
+      "review_policy": null,
+      "published": true,
+      "pattern_group": "agent-control",
+      "presentation": {}
+    },
+    {
+      "id": "AGT-P-06",
+      "type": "pattern",
+      "title": "智能体（Agent）的监督者（Supervisor）、移交（Handoff）与智能体作为工具（Agents as Tools）：先决定控制权归谁",
+      "slug": "/patterns/agt-p-06",
+      "priority": "P1",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "complete",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "AGT-C-02",
+        "AGT-C-03",
+        "AGT-C-04"
+      ],
+      "adjacent_topics": [
+        "AGT-C-02",
+        "AGT-C-03",
+        "AGT-C-04",
+        "AGT-P-01",
+        "AGT-P-05",
+        "AGT-P-07",
+        "AGT-P-08"
+      ],
+      "primary_sources": [
+        "https://github.com/langchain-ai/langgraph-supervisor-py/blob/88859b34017ac3569bbd4a3092c7e77593a0a960/README.md",
+        "https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/docs/multi_agent.md"
+      ],
+      "related_cases": [
+        "/cases/google-adk-a2a",
+        "/cases/langgraph-supervisor",
+        "/cases/microsoft-multi-agent-reference-architecture",
+        "/cases/openai-agents-sdk"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-08-26",
+      "review_policy": null,
+      "published": true,
+      "pattern_group": "agent-control",
+      "presentation": {}
+    },
+    {
+      "id": "AGT-P-07",
+      "type": "pattern",
+      "title": "编排者–工作者与扇出/扇入：并行不是无界广播",
+      "slug": "/patterns/agt-p-07",
+      "priority": "P1",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "complete",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "AGT-C-03",
+        "AGT-C-04"
+      ],
+      "adjacent_topics": [
+        "AGT-C-03",
+        "AGT-C-04",
+        "AGT-P-01",
+        "AGT-P-02",
+        "AGT-P-03",
+        "AGT-P-04",
+        "AGT-P-05",
+        "AGT-P-06",
+        "AGT-P-08"
+      ],
+      "primary_sources": [
+        "https://www.anthropic.com/engineering/building-effective-agents"
+      ],
+      "related_cases": [
+        "/cases/aws-cli-agent-orchestrator",
+        "/cases/microsoft-multi-agent-reference-architecture",
+        "/cases/multi-agent-research-system"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-08-26",
+      "review_policy": null,
+      "published": true,
+      "pattern_group": "agent-control",
+      "presentation": {}
+    },
+    {
+      "id": "AGT-P-02",
+      "type": "pattern",
+      "title": "智能体检索增强生成（Agentic RAG）：用证据充分性约束检索循环",
+      "slug": "/patterns/agt-p-02",
+      "priority": "P1",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "complete",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "AGT-C-03",
+        "AGT-C-04",
+        "AGT-C-06"
+      ],
+      "adjacent_topics": [
+        "AGT-C-03",
+        "AGT-C-04",
+        "AGT-C-06",
+        "AGT-P-01",
+        "AGT-P-04",
+        "AGT-P-07"
+      ],
+      "primary_sources": [
+        "https://arxiv.org/abs/2005.11401"
+      ],
+      "related_cases": [
+        "/cases/multi-agent-research-system"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-08-26",
+      "review_policy": null,
+      "published": true,
+      "pattern_group": "agent-control",
+      "presentation": {}
+    },
+    {
+      "id": "AGT-P-04",
+      "type": "pattern",
+      "title": "评估者—优化者（Evaluator-Optimizer）：用外部量表与修订预算约束反馈循环",
+      "slug": "/patterns/agt-p-04",
+      "priority": "P1",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "complete",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "AGT-C-03",
+        "AGT-C-06"
+      ],
+      "adjacent_topics": [
+        "AGT-C-03",
+        "AGT-C-06",
+        "AGT-P-01",
+        "AGT-P-02",
+        "AGT-P-03",
+        "AGT-P-07",
+        "AGT-P-08"
+      ],
+      "primary_sources": [
+        "https://www.anthropic.com/engineering/building-effective-agents"
+      ],
+      "related_cases": [
+        "/cases/long-running-coding-agent",
+        "/cases/multi-agent-research-system"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-08-26",
+      "review_policy": null,
+      "published": true,
+      "pattern_group": "agent-control",
+      "presentation": {}
+    },
+    {
+      "id": "AGT-P-08",
+      "type": "pattern",
+      "title": "持久智能体（Agent）与人在回路（Human-in-the-loop）：恢复控制状态，不臆测外部真相",
+      "slug": "/patterns/agt-p-08",
+      "priority": "P1",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "complete",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [
+        "AGT-C-02",
+        "AGT-C-04",
+        "AGT-C-05",
+        "AGT-C-06"
+      ],
+      "adjacent_topics": [
+        "AGT-C-02",
+        "AGT-C-03",
+        "AGT-C-04",
+        "AGT-C-05",
+        "AGT-C-06",
+        "AGT-P-01",
+        "AGT-P-03",
+        "AGT-P-04",
+        "AGT-P-06",
+        "AGT-P-07"
+      ],
+      "primary_sources": [
+        "https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents",
+        "https://www.anthropic.com/engineering/managed-agents"
+      ],
+      "related_cases": [
+        "/cases/openai-agents-sdk",
+        "/cases/temporal-saga-durable-execution"
+      ],
+      "related_questions": [],
+      "reviewed_at": "2026-08-27",
+      "review_policy": null,
+      "published": true,
+      "pattern_group": "agent-control",
+      "presentation": {}
+    },
+    {
       "id": "ANTI-09",
       "type": "pattern",
       "title": "Optional/Partial Object 与非法状态可表示",
@@ -4341,6 +4910,69 @@
       "status": {
         "scope": "backlog-projection",
         "value": "pending",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [],
+      "adjacent_topics": [],
+      "primary_sources": [],
+      "related_cases": [],
+      "related_questions": [],
+      "reviewed_at": null,
+      "review_policy": null,
+      "published": false,
+      "pattern_group": null
+    },
+    {
+      "id": "CASE-21",
+      "type": "case",
+      "title": "多智能体研究系统",
+      "slug": "/cases/case-21",
+      "priority": "P1",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "complete",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [],
+      "adjacent_topics": [],
+      "primary_sources": [],
+      "related_cases": [],
+      "related_questions": [],
+      "reviewed_at": null,
+      "review_policy": null,
+      "published": false,
+      "pattern_group": null
+    },
+    {
+      "id": "CASE-22",
+      "type": "case",
+      "title": "长时运行 Coding Agent",
+      "slug": "/cases/case-22",
+      "priority": "P1",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "complete",
+        "source": "docs/content-backlog.md"
+      },
+      "dependencies": [],
+      "adjacent_topics": [],
+      "primary_sources": [],
+      "related_cases": [],
+      "related_questions": [],
+      "reviewed_at": null,
+      "review_policy": null,
+      "published": false,
+      "pattern_group": null
+    },
+    {
+      "id": "CASE-23",
+      "type": "case",
+      "title": "生产事故响应 Agent",
+      "slug": "/cases/case-23",
+      "priority": "P1",
+      "status": {
+        "scope": "backlog-projection",
+        "value": "complete",
         "source": "docs/content-backlog.md"
       },
       "dependencies": [],
@@ -5263,6 +5895,64 @@
       }
     },
     {
+      "id": "DOC-CASE-LONG-RUNNING-CODING-AGENT",
+      "type": "case",
+      "title": "长任务编码智能体：把完成状态留在上下文窗口之外",
+      "slug": "/cases/long-running-coding-agent",
+      "priority": null,
+      "status": {
+        "scope": "content-lifecycle",
+        "value": "reviewed",
+        "source": "content/cases/long-running-coding-agent.mdx"
+      },
+      "dependencies": [],
+      "adjacent_topics": [],
+      "primary_sources": [
+        "https://github.com/langchain-ai/langgraph/blob/bdb8a9c7a4aa1390af225f6a5d292e5088659bd5/libs/checkpoint/langgraph/checkpoint/base/__init__.py",
+        "https://github.com/openai/codex/blob/5f49aba876922d6f2f55caa153bbb0ed1b46feba/codex-rs/protocol/src/protocol.rs",
+        "https://github.com/openai/codex/tree/5f49aba876922d6f2f55caa153bbb0ed1b46feba",
+        "https://github.com/temporalio/sdk-typescript/blob/5373d58f7d504b6b72c7ac17b33139eb5f23dbec/packages/activity/src/index.ts",
+        "https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents",
+        "https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents"
+      ],
+      "related_cases": [],
+      "related_questions": [],
+      "reviewed_at": "2026-08-28",
+      "review_policy": "quarterly-version-sensitive",
+      "published": true,
+      "pattern_group": null,
+      "presentation": {
+        "case_catalog": {
+          "title": "长任务编码智能体：把完成状态留在上下文窗口之外",
+          "slug": "/cases/long-running-coding-agent",
+          "summary": "一套把长任务编码智能体（Agent）限制在工作树与沙箱内，并以计划账本、结构化测试观察、提交检查点、人工批准和恢复核对维持连续性的参考设计；模型上下文从不充当唯一完成记录。",
+          "difficulty": "advanced",
+          "series": "ai-native",
+          "catalog_order": 20,
+          "featured": false,
+          "source_kinds": [
+            "engineering-blog",
+            "official-repository",
+            "source-code",
+            "original-illustration"
+          ],
+          "migration_targets": [
+            "agent-harness",
+            "sandboxed-execution",
+            "checkpoint-recovery",
+            "test-feedback"
+          ],
+          "tags": [
+            "编码智能体",
+            "任务恢复",
+            "沙箱",
+            "工作树",
+            "测试反馈"
+          ]
+        }
+      }
+    },
+    {
       "id": "DOC-CASE-MICRO-FRONTENDS-SINGLE-SPA",
       "type": "case",
       "title": "single-spa 微前端框架：用垂直业务切片约束跨团队所有权",
@@ -5391,6 +6081,61 @@
             "参考架构",
             "企业治理",
             "受控自治"
+          ]
+        }
+      }
+    },
+    {
+      "id": "DOC-CASE-MULTI-AGENT-RESEARCH-SYSTEM",
+      "type": "case",
+      "title": "多智能体研究系统：让证据完成度而不是工作者数量决定终止",
+      "slug": "/cases/multi-agent-research-system",
+      "priority": null,
+      "status": {
+        "scope": "content-lifecycle",
+        "value": "reviewed",
+        "source": "content/cases/multi-agent-research-system.mdx"
+      },
+      "dependencies": [],
+      "adjacent_topics": [],
+      "primary_sources": [
+        "https://arxiv.org/abs/2210.03629",
+        "https://arxiv.org/abs/2310.11511",
+        "https://github.com/langchain-ai/open_deep_research/blob/1b7d2e80db9faa586165c60e09096dbbfd483a64/src/legacy/multi_agent.py",
+        "https://www.anthropic.com/engineering/multi-agent-research-system"
+      ],
+      "related_cases": [],
+      "related_questions": [],
+      "reviewed_at": "2026-08-28",
+      "review_policy": "quarterly-version-sensitive",
+      "published": true,
+      "pattern_group": null,
+      "presentation": {
+        "case_catalog": {
+          "title": "多智能体研究系统：让证据完成度而不是工作者数量决定终止",
+          "slug": "/cases/multi-agent-research-system",
+          "summary": "一套以任务账本、隔离研究工作者、证据身份、覆盖与冲突门、引文核验和人工终止构成的多智能体（Agent）研究参考设计；工作者只提交证据记录，编排器保留任务完成与最终答案控制权。",
+          "difficulty": "advanced",
+          "series": "ai-native",
+          "catalog_order": 19,
+          "featured": false,
+          "source_kinds": [
+            "paper",
+            "engineering-blog",
+            "official-repository",
+            "original-illustration"
+          ],
+          "migration_targets": [
+            "task-decomposition",
+            "evidence-sufficiency",
+            "fan-out-fan-in"
+          ],
+          "tags": [
+            "多智能体研究",
+            "任务分解",
+            "证据充分性",
+            "引文核验",
+            "有界检索"
           ]
         }
       }
@@ -5532,6 +6277,64 @@
             "Agents SDK",
             "控制权",
             "多智能体编排"
+          ]
+        }
+      }
+    },
+    {
+      "id": "DOC-CASE-PRODUCTION-INCIDENT-RESPONSE-AGENT",
+      "type": "case",
+      "title": "生产事故响应智能体：把诊断建议与变更授权分成两条身份链",
+      "slug": "/cases/production-incident-response-agent",
+      "priority": null,
+      "status": {
+        "scope": "content-lifecycle",
+        "value": "reviewed",
+        "source": "content/cases/production-incident-response-agent.mdx"
+      },
+      "dependencies": [],
+      "adjacent_topics": [],
+      "primary_sources": [
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html",
+        "https://docs.temporal.io/activity-definition",
+        "https://sre.google/books/",
+        "https://sre.google/sre-book/managing-incidents/",
+        "https://sre.google/sre-book/monitoring-distributed-systems/",
+        "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10"
+      ],
+      "related_cases": [],
+      "related_questions": [],
+      "reviewed_at": "2026-08-28",
+      "review_policy": "quarterly-version-sensitive",
+      "published": true,
+      "pattern_group": null,
+      "presentation": {
+        "case_catalog": {
+          "title": "生产事故响应智能体：把诊断建议与变更授权分成两条身份链",
+          "slug": "/cases/production-incident-response-agent",
+          "summary": "一套以只读诊断、版本化假设、人工最终授权、窄幅幂等变更和独立恢复验证约束生产事故响应智能体（Agent）的说明性参考设计；结合亚马逊云服务（Amazon Web Services，AWS）、Temporal 工作流平台、Kong AI Gateway 人工智能网关、重试（Retry）、应用程序编程接口（Application Programming Interface，API）、超文本传输协议（Hypertext Transfer Protocol，HTTP）与路由器（Router）机制，但诊断身份永远不能借道成为生产写入身份。",
+          "difficulty": "advanced",
+          "series": "ai-native",
+          "catalog_order": 21,
+          "featured": false,
+          "source_kinds": [
+            "textbook",
+            "standard",
+            "official-docs",
+            "original-illustration"
+          ],
+          "migration_targets": [
+            "read-only-diagnosis",
+            "hypothesis-evaluation",
+            "human-approval",
+            "recovery-verification"
+          ],
+          "tags": [
+            "事故响应",
+            "只读诊断",
+            "人工批准",
+            "幂等变更",
+            "恢复验证"
           ]
         }
       }

@@ -30,7 +30,7 @@
 - Create `tests/g009-batch14-deployment.test.mjs` — Stage A/Stage B exact-head evidence, projection, Browser and immutable-history contracts.
 - Create `docs/reviews/g009-batch14.md` and Stage A/Stage B Browser JSON files — truthful review and production evidence.
 - Modify `scripts/content-schema.mjs` — register STY-13 in the exact architecture-case heading contract.
-- Modify `data/source-ledger.json`, `data/source-link-health.json`, `data/source-copyright-review.json` — seven official remote sources and one original SVG provenance record.
+- Modify `data/source-ledger.json` and `data/source-link-health.json` — seven official remote sources, one original SVG provenance record, and the repository's document/citation copyright-review fields. This repository has no separate `data/source-copyright-review.json` registry.
 - Modify `data/terminology.json` only when a named checker failure proves an executable first-use contract is missing.
 - Modify `content/styles/sty-05-microservices.mdx`, `content/styles/sty-08-actor-model.mdx`, `content/cases/aws-cell-shuffle-sharding.mdx`, `content/cases/cloudflare-durable-objects-workerd.mdx` — precise reciprocal STY-13 links.
 - Modify generated files under `src/generated/` only via `npm run generate:content`.
@@ -92,7 +92,7 @@ export const EXACT_METADATA = Object.freeze({
   agent_patterns: [], protocols: [],
   quality_attributes: ['scalability', 'performance', 'availability', 'consistency', 'recoverability', 'operability'],
   tags: ['架构风格', 'Space-Based Architecture', '数据亲和', '分区处理', '内存数据网格', '热点治理'],
-  summary: '以航班余位与报价说明 Space-Based Architecture：入口按航段与日期路由到唯一分区所有者，状态与处理共置，主备只处理受控切换，日志与检查点负责恢复，多航段行程由外部持久工作流协调。',
+  summary: '以航班余位与报价说明 Space-Based Architecture：入口按航段与日期路由到唯一分区所有者，状态与处理共置，主备只处理受控切换，日志与检查点负责恢复，多航段行程由外部持久工作流（Workflow）协调。',
   topic_id: TOPIC_ID, priority: 'P2', depends_on: ['STY-00', 'STY-05', 'STY-08'],
   adjacent_topics: ['STY-05', 'STY-08'], related_cases: RELATED_CASES, related_questions: [],
 });
@@ -179,7 +179,6 @@ git commit -m "test(g009): define STY-13 space-based contract"
 - Create: `content/styles/sty-13-space-based-architecture.mdx`
 - Modify: `data/source-ledger.json`
 - Modify: `data/source-link-health.json`
-- Modify: `data/source-copyright-review.json`
 - Modify only after a named checker failure: `data/terminology.json`
 - Modify: `content/styles/sty-05-microservices.mdx`
 - Modify: `content/styles/sty-08-actor-model.mdx`
@@ -194,6 +193,8 @@ git commit -m "test(g009): define STY-13 space-based contract"
 - [ ] **Step 1: Add exact frontmatter and section skeleton**
 
 Create the article using `EXACT_METADATA`, then use this exact visible order:
+
+Frontmatter `summary` 是读者顺序首个“工作流”术语，使用 registry 规定的 first-use 形式“工作流（Workflow）”；正文后续保持中文“工作流”。
 
 ```mdx
 import SourceLedger from '@site/src/components/SourceLedger';
@@ -293,7 +294,7 @@ npm run check:terminology
 Expected: article, sources, tables and relations pass; only missing Draw.io/SVG assertions remain RED; terminology reports `0 issues`.
 
 ```bash
-git add content/styles/sty-13-space-based-architecture.mdx content/styles/sty-05-microservices.mdx content/styles/sty-08-actor-model.mdx content/cases/aws-cell-shuffle-sharding.mdx content/cases/cloudflare-durable-objects-workerd.mdx data/source-ledger.json data/source-link-health.json data/source-copyright-review.json data/terminology.json tests/g009-batch14-content.test.mjs
+git add content/styles/sty-13-space-based-architecture.mdx content/styles/sty-05-microservices.mdx content/styles/sty-08-actor-model.mdx content/cases/aws-cell-shuffle-sharding.mdx content/cases/cloudflare-durable-objects-workerd.mdx data/source-ledger.json data/source-link-health.json data/terminology.json tests/g009-batch14-content.test.mjs
 git commit -m "docs: add STY-13 space-based decision guide"
 ```
 
@@ -306,7 +307,6 @@ git commit -m "docs: add STY-13 space-based decision guide"
 - Create: `static/img/diagrams/sty-13-space-based-flight-availability.svg`
 - Modify: `content/styles/sty-13-space-based-architecture.mdx`
 - Modify: `data/source-ledger.json`
-- Modify: `data/source-copyright-review.json`
 - Test: `tests/g009-batch14-content.test.mjs`
 
 **Interfaces:**
@@ -381,7 +381,7 @@ Expected: pair validation PASS; focused tests PASS; density visual-balance stric
 - [ ] **Step 4: Commit the publication asset**
 
 ```bash
-git add diagrams/sty-13-space-based-flight-availability.drawio static/img/diagrams/sty-13-space-based-flight-availability.svg content/styles/sty-13-space-based-architecture.mdx tests/g009-batch14-content.test.mjs data/source-ledger.json data/source-copyright-review.json
+git add diagrams/sty-13-space-based-flight-availability.drawio static/img/diagrams/sty-13-space-based-flight-availability.svg content/styles/sty-13-space-based-architecture.mdx tests/g009-batch14-content.test.mjs data/source-ledger.json
 git commit -m "docs: illustrate STY-13 affinity partitions"
 ```
 

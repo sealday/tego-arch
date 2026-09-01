@@ -248,9 +248,10 @@ test('preserves the Batch 1 closure under the current STY-10 next-topic projecti
   assert.deepEqual(status, {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
-    completed_topics: 65,
-    content_documents: 108,
-    governed_sources: 565,
+    completed_topics: 83,
+    content_documents: 126,
+    governed_sources: 599,
+
 
     sources: {
       durable_stories: 'docs/content-backlog.md',

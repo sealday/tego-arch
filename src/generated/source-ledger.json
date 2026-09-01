@@ -792,6 +792,49 @@
       ]
     },
     {
+      "id": "src-agentic-rag-survey",
+      "canonical_locator": "https://arxiv.org/abs/2501.09136",
+      "transport_locator": "https://arxiv.org/abs/2501.09136",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Agentic Retrieval-Augmented Generation: A Survey on Agentic RAG",
+      "author_or_org": "Aditi Singh et al.",
+      "published_at": "2026-04-01",
+      "registered_at": "2026-08-27",
+      "checked_at": "2026-08-27",
+      "version": "arXiv:2501.09136v4 survey revision dated 2026-04-01",
+      "source_kind": "paper",
+      "tier": "discovery",
+      "allowed_evidence_roles": [
+        "discovery"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The Agentic RAG survey at arXiv:2501.09136v4 for bibliographic facts, taxonomy and discovery only; frameworks, linked papers, figures, tables, examples, trademarks and third-party materials excluded",
+      "license_evidence_url": "https://arxiv.org/abs/2501.09136",
+      "license_evidence_note": "The arXiv v4 record links only the arXiv non-exclusive distribution license, which does not grant downstream reuse rights; Tego Arch uses attributed discovery summary and copies no survey prose, taxonomy table, figure, example or layout.",
+      "license_family_id": "https://arxiv.org/abs/2501.09136",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports Agentic RAG taxonomy and discovery only; it does not replace the original papers or support the article's core architecture, effectiveness, evaluation, security, or production claims.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://arxiv.org/abs/2501.09136",
+      "expected_final_approved_at": "2026-08-27",
+      "expected_final_approval_note": "The exact arXiv abstract page returned HTTP 206 to a bounded ranged request and exposed the v4 title, five authors, revision date, taxonomy-focused abstract and non-exclusive distribution license link on 2026-08-27.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://arxiv.org/abs/2501.09136",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-26T18:19:10.000Z",
+          "last_success_at": "2026-08-26T18:19:10.000Z",
+          "http_status": 206,
+          "final_transport_locator": "https://arxiv.org/abs/2501.09136"
+        }
+      ]
+    },
+    {
       "id": "src-aigateway-6541e9f9f8fa",
       "canonical_locator": "https://aigateway.envoyproxy.io/docs/getting-started/",
       "transport_locator": "https://aigateway.envoyproxy.io/docs/getting-started/",
@@ -976,6 +1019,268 @@
           "last_success_at": "2026-08-25T12:07:24.531Z",
           "http_status": 206,
           "final_transport_locator": "https://raw.githubusercontent.com/akka/akka/v2.10.21/akka-docs/src/main/paradox/general/message-delivery-reliability.md"
+        }
+      ]
+    },
+    {
+      "id": "src-anthropic-building-effective-agents",
+      "canonical_locator": "https://www.anthropic.com/engineering/building-effective-agents",
+      "transport_locator": "https://www.anthropic.com/engineering/building-effective-agents",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Building Effective Agents",
+      "author_or_org": "Anthropic",
+      "published_at": "2024-12-19",
+      "registered_at": "2026-08-26",
+      "checked_at": "2026-08-26",
+      "version": "Official engineering article published 2024-12-19 and checked directly in a browser on 2026-08-26",
+      "source_kind": "official-docs",
+      "tier": "first-party",
+      "allowed_evidence_roles": [
+        "definition",
+        "method"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named Anthropic engineering article and bibliographic facts only; prose, examples, diagrams, linked works, trademarks and third-party material excluded",
+      "license_evidence_url": "https://www.anthropic.com/engineering/building-effective-agents",
+      "license_evidence_note": "The official page exposes no reusable page license; Tego Arch uses attributed factual summary without copying prose, examples, structure or diagrams.",
+      "license_family_id": "https://www.anthropic.com/engineering/building-effective-agents",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports Anthropic's stated workflow/agent distinction and augmented-LLM building block; it does not establish the article's Harness/Loop ownership model or prove production outcomes.",
+      "link_policy": "floating",
+      "expected_final_transport_locator": "https://www.anthropic.com/engineering/building-effective-agents",
+      "expected_final_approved_at": "2026-08-26",
+      "expected_final_approval_note": "The exact canonical article returned HTTP 200 and exposed the expected title and workflow/agent distinction in a real browser on 2026-08-26; no non-equivalent companion page is used as health evidence.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://www.anthropic.com/engineering/building-effective-agents",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-26T08:49:28.000Z",
+          "last_success_at": "2026-08-26T08:49:28.000Z",
+          "http_status": 200,
+          "final_transport_locator": "https://www.anthropic.com/engineering/building-effective-agents"
+        }
+      ]
+    },
+    {
+      "id": "src-anthropic-demystifying-evals-ai-agents",
+      "canonical_locator": "https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents",
+      "transport_locator": "https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Demystifying evals for AI agents",
+      "author_or_org": "Anthropic",
+      "published_at": "2026-01-09",
+      "registered_at": "2026-08-26",
+      "checked_at": "2026-08-26",
+      "version": "Current official engineering article retrieved and checked on 2026-08-26",
+      "source_kind": "engineering-blog",
+      "tier": "first-party",
+      "allowed_evidence_roles": [
+        "definition",
+        "method"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named Anthropic engineering article and bibliographic facts only; prose, examples, diagrams, images, linked works, trademarks and third-party material excluded",
+      "license_evidence_url": "https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents",
+      "license_evidence_note": "The official Anthropic page exposes no reusable article license; Tego Arch uses attributed factual summary without copying prose, examples, tables, images, structure or diagrams.",
+      "license_family_id": "https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports Anthropic's definitions of tasks, trials, graders, traces or trajectories, outcomes and evaluation harnesses, plus its reported grader-selection and human-calibration guidance; it does not guarantee evaluator accuracy, production quality, or the article's Trace/Evaluation/Guardrail responsibility model.",
+      "link_policy": "floating",
+      "expected_final_transport_locator": "https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents",
+      "expected_final_approved_at": "2026-08-26",
+      "expected_final_approval_note": "The exact official engineering article exposed the expected title and evaluation terminology when retrieved on 2026-08-26; related Anthropic eval pages are not substituted as health transports.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-26T13:19:25.000Z",
+          "last_success_at": "2026-08-26T13:19:25.000Z",
+          "http_status": 200,
+          "final_transport_locator": "https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents"
+        }
+      ]
+    },
+    {
+      "id": "src-anthropic-effective-harnesses-long-running-agents",
+      "canonical_locator": "https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents",
+      "transport_locator": "https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Effective harnesses for long-running agents",
+      "author_or_org": "Anthropic",
+      "published_at": "2025-11-26",
+      "registered_at": "2026-08-26",
+      "checked_at": "2026-08-26",
+      "version": "Official engineering article published 2025-11-26 and checked directly in a browser on 2026-08-26",
+      "source_kind": "official-docs",
+      "tier": "first-party",
+      "allowed_evidence_roles": [
+        "method"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named Anthropic engineering article and bibliographic facts only; prose, code, examples, diagrams, linked works, trademarks and third-party material excluded",
+      "license_evidence_url": "https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents",
+      "license_evidence_note": "The official page exposes no reusable page license; Tego Arch uses attributed factual summary without copying prose, code, examples, structure or diagrams.",
+      "license_family_id": "https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports the reported initializer/coding-agent split, incremental work, progress artifacts, version history and cross-context handoff in Anthropic's long-running coding experiment only; it does not establish a universal Harness responsibility model, generalize beyond the experiment, or prove production outcomes.",
+      "link_policy": "floating",
+      "expected_final_transport_locator": "https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents",
+      "expected_final_approved_at": "2026-08-26",
+      "expected_final_approval_note": "The exact canonical engineering article returned HTTP 200 and exposed the expected title and publication date in a real browser on 2026-08-26; no query-decorated result, quickstart, index or companion page is used as health evidence.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-26T09:35:44.000Z",
+          "last_success_at": "2026-08-26T09:35:44.000Z",
+          "http_status": 200,
+          "final_transport_locator": "https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents"
+        }
+      ]
+    },
+    {
+      "id": "src-anthropic-harness-design-long-running-apps",
+      "canonical_locator": "https://www.anthropic.com/engineering/harness-design-long-running-apps",
+      "transport_locator": "https://www.anthropic.com/engineering/harness-design-long-running-apps",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Harness design for long-running application development",
+      "author_or_org": "Anthropic",
+      "published_at": "2026-03-24",
+      "registered_at": "2026-08-26",
+      "checked_at": "2026-08-26",
+      "version": "Official engineering article published 2026-03-24 and checked directly in a browser on 2026-08-26",
+      "source_kind": "official-docs",
+      "tier": "first-party",
+      "allowed_evidence_roles": [
+        "method"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named Anthropic engineering article and bibliographic facts only; prose, code, prompts, examples, diagrams, linked works, trademarks and third-party material excluded",
+      "license_evidence_url": "https://www.anthropic.com/engineering/harness-design-long-running-apps",
+      "license_evidence_note": "The official page exposes no reusable page license; Tego Arch uses attributed factual summary without copying prose, code, prompts, examples, structure or diagrams.",
+      "license_family_id": "https://www.anthropic.com/engineering/harness-design-long-running-apps",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports the reported planner/generator/evaluator experiments, structured file handoffs, context reset versus compaction distinction, and removal of stale harness assumptions for newer models only; it does not make the roles, costs, quality observations or model behavior universal.",
+      "link_policy": "floating",
+      "expected_final_transport_locator": "https://www.anthropic.com/engineering/harness-design-long-running-apps",
+      "expected_final_approved_at": "2026-08-26",
+      "expected_final_approval_note": "The exact canonical engineering article returned HTTP 200 and exposed the expected title and publication date in a real browser on 2026-08-26; no engineering index or earlier harness article is used as health evidence.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://www.anthropic.com/engineering/harness-design-long-running-apps",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-26T09:35:44.000Z",
+          "last_success_at": "2026-08-26T09:35:44.000Z",
+          "http_status": 200,
+          "final_transport_locator": "https://www.anthropic.com/engineering/harness-design-long-running-apps"
+        }
+      ]
+    },
+    {
+      "id": "src-anthropic-managed-agents",
+      "canonical_locator": "https://www.anthropic.com/engineering/managed-agents",
+      "transport_locator": "https://www.anthropic.com/engineering/managed-agents",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Scaling Managed Agents: Decoupling the brain from the hands",
+      "author_or_org": "Anthropic",
+      "published_at": "2026-04-08",
+      "registered_at": "2026-08-26",
+      "checked_at": "2026-08-26",
+      "version": "Official engineering article published 2026-04-08 and checked directly in a browser on 2026-08-26",
+      "source_kind": "official-docs",
+      "tier": "first-party",
+      "allowed_evidence_roles": [
+        "implementation",
+        "method"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named Anthropic engineering article and bibliographic facts only; prose, code, interfaces, examples, diagrams, metrics, linked works, trademarks and third-party material excluded",
+      "license_evidence_url": "https://www.anthropic.com/engineering/managed-agents",
+      "license_evidence_note": "The official page exposes no reusable page license; Tego Arch uses attributed factual summary without copying prose, code, interface notation, examples, structure, diagrams or performance figures.",
+      "license_family_id": "https://www.anthropic.com/engineering/managed-agents",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports Anthropic's reported Managed Agents design separating a durable session log, harness and sandbox, plus rebuilding a failed harness from the external log; it does not establish a vendor-neutral architecture, support copied interfaces or metrics, or prove every deployment reliable or secure.",
+      "link_policy": "floating",
+      "expected_final_transport_locator": "https://www.anthropic.com/engineering/managed-agents",
+      "expected_final_approved_at": "2026-08-26",
+      "expected_final_approval_note": "The exact canonical engineering article returned HTTP 200 and exposed the expected title and publication date in a real browser on 2026-08-26; the Managed Agents documentation and engineering index are related but are not substituted as health transports.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://www.anthropic.com/engineering/managed-agents",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-26T09:35:44.000Z",
+          "last_success_at": "2026-08-26T09:35:44.000Z",
+          "http_status": 200,
+          "final_transport_locator": "https://www.anthropic.com/engineering/managed-agents"
+        }
+      ]
+    },
+    {
+      "id": "src-anthropic-multi-agent-research-system",
+      "canonical_locator": "https://www.anthropic.com/engineering/multi-agent-research-system",
+      "transport_locator": "https://www.anthropic.com/engineering/multi-agent-research-system",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "How we built our multi-agent research system",
+      "author_or_org": "Anthropic",
+      "published_at": "2025-06-13",
+      "registered_at": "2026-08-28",
+      "checked_at": "2026-08-28",
+      "version": "Official engineering article published 2025-06-13 and checked on 2026-08-28",
+      "source_kind": "engineering-blog",
+      "tier": "first-party",
+      "allowed_evidence_roles": [
+        "implementation",
+        "method"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named Anthropic engineering article and bibliographic facts only; prose, code, prompts, examples, diagrams, images, linked works, trademarks and third-party material excluded",
+      "license_evidence_url": "https://www.anthropic.com/engineering/multi-agent-research-system",
+      "license_evidence_note": "The official Anthropic page exposes no reusable article license; Tego Arch uses attributed factual summary without copying prose, prompts, code, examples, diagrams, images, structure or composition.",
+      "license_family_id": "https://www.anthropic.com/engineering/multi-agent-research-system",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports Anthropic's first-party description of a lead research agent coordinating parallel subagents, iterating research and passing findings to citation processing; it does not establish an industry standard, expose the complete production implementation, or prove this article's task ledger, evidence store, sufficiency gate, recovery contract or complete topology.",
+      "link_policy": "floating",
+      "expected_final_transport_locator": "https://www.anthropic.com/engineering/multi-agent-research-system",
+      "expected_final_approved_at": "2026-08-28",
+      "expected_final_approval_note": "The exact official engineering article returned the expected canonical page, title and publication date on 2026-08-28; no search result, query-decorated alias, reproduction or third-party summary is used as health evidence.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://www.anthropic.com/engineering/multi-agent-research-system",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-27T17:08:30.000Z",
+          "last_success_at": "2026-08-27T17:08:30.000Z",
+          "http_status": 200,
+          "final_transport_locator": "https://www.anthropic.com/engineering/multi-agent-research-system"
         }
       ]
     },
@@ -1498,6 +1803,108 @@
       "health_checks": []
     },
     {
+      "id": "src-atlas-agt-c-01-agent-system-boundary",
+      "canonical_locator": "/img/diagrams/agt-c-01-agent-system-boundary.svg",
+      "transport_locator": "/img/diagrams/agt-c-01-agent-system-boundary.svg",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Agent system boundary reference architecture",
+      "author_or_org": "Tego Arch maintainers",
+      "published_at": "2026-08-26",
+      "registered_at": "2026-08-26",
+      "checked_at": "2026-08-26",
+      "version": "Original synchronized Draw.io/SVG pair authored and deterministically checked on 2026-08-26",
+      "source_kind": "original-illustration",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "illustration"
+      ],
+      "license": "LicenseRef-Atlas-Original",
+      "license_scope": "The named project-authored agt-c-01-agent-system-boundary.svg asset only",
+      "license_evidence_url": "https://github.com/sealday/tego-arch/blob/main/static/img/diagrams/agt-c-01-agent-system-boundary.svg",
+      "license_evidence_note": "The project-authored Draw.io/SVG pair contains no third-party topology, reference image, icon, brand visual, signature, watermark or copied composition.",
+      "license_family_id": "/img/diagrams/agt-c-01-agent-system-boundary.svg",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "original-atlas",
+      "usage_boundary": "Original teaching architecture for the Model/Augmented LLM/Workflow/Agent boundary, Harness containment of Loop, capability edges and cross-cutting state/governance foundation; illustration-only and not evidence of a production implementation.",
+      "link_policy": null,
+      "expected_final_transport_locator": "/img/diagrams/agt-c-01-agent-system-boundary.svg",
+      "expected_final_approved_at": "2026-08-26",
+      "expected_final_approval_note": "Approved project-local original illustration after synchronized Draw.io/SVG semantic and deterministic pair validation on 2026-08-26.",
+      "health_summary": "healthy",
+      "health_checks": []
+    },
+    {
+      "id": "src-atlas-agt-p-06-control-ownership-models",
+      "canonical_locator": "/img/diagrams/agt-p-06-control-ownership-models.svg",
+      "transport_locator": "/img/diagrams/agt-p-06-control-ownership-models.svg",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Multi-agent control ownership models",
+      "author_or_org": "Tego Arch maintainers",
+      "published_at": "2026-08-27",
+      "registered_at": "2026-08-27",
+      "checked_at": "2026-08-27",
+      "version": "Original synchronized Draw.io/SVG pair authored, exported and deterministically checked on 2026-08-27",
+      "source_kind": "original-illustration",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "illustration"
+      ],
+      "license": "LicenseRef-Atlas-Original",
+      "license_scope": "The named project-authored agt-p-06-control-ownership-models.svg asset only",
+      "license_evidence_url": "https://github.com/sealday/tego-arch/blob/main/static/img/diagrams/agt-p-06-control-ownership-models.svg",
+      "license_evidence_note": "The project-authored Draw.io/SVG pair contains no third-party topology, reference image, icon, brand visual, signature, watermark or copied composition.",
+      "license_family_id": "/img/diagrams/agt-p-06-control-ownership-models.svg",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "original-atlas",
+      "usage_boundary": "Original comparison of Supervisor, Handoff and Agent-as-Tool control, conversation ownership and return semantics; illustration-only and not evidence of protocol conformance, authorization, reliability, governance or production outcomes.",
+      "link_policy": null,
+      "expected_final_transport_locator": "/img/diagrams/agt-p-06-control-ownership-models.svg",
+      "expected_final_approved_at": "2026-08-27",
+      "expected_final_approval_note": "Approved project-local original illustration after synchronized Draw.io/SVG semantic, geometry, accessibility and deterministic pair validation on 2026-08-27.",
+      "health_summary": "healthy",
+      "health_checks": []
+    },
+    {
+      "id": "src-atlas-agt-p-08-durable-agent-hitl",
+      "canonical_locator": "/img/diagrams/agt-p-08-durable-agent-hitl.svg",
+      "transport_locator": "/img/diagrams/agt-p-08-durable-agent-hitl.svg",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Durable agent recovery and human approval control flow",
+      "author_or_org": "Tego Arch maintainers",
+      "published_at": "2026-08-27",
+      "registered_at": "2026-08-27",
+      "checked_at": "2026-08-27",
+      "version": "Original synchronized Draw.io/SVG pair authored in and exported from diagrams.net, normalized and deterministically checked on 2026-08-27",
+      "source_kind": "original-illustration",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "illustration"
+      ],
+      "license": "LicenseRef-Atlas-Original",
+      "license_scope": "The named project-authored agt-p-08-durable-agent-hitl.svg asset only",
+      "license_evidence_url": "https://github.com/sealday/tego-arch/blob/main/static/img/diagrams/agt-p-08-durable-agent-hitl.svg",
+      "license_evidence_note": "The project-authored Draw.io/SVG pair contains no third-party topology, reference image, icon, brand visual, signature, watermark or copied composition.",
+      "license_family_id": "/img/diagrams/agt-p-08-durable-agent-hitl.svg",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "original-atlas",
+      "usage_boundary": "Original durable-agent control-state, approval, recovery, reconciliation, rejection and manual-terminal topology; illustration-only and not evidence of protocol conformance, authorization, reliability, governance or production outcomes.",
+      "link_policy": null,
+      "expected_final_transport_locator": "/img/diagrams/agt-p-08-durable-agent-hitl.svg",
+      "expected_final_approved_at": "2026-08-27",
+      "expected_final_approval_note": "Approved project-local original illustration after real diagrams.net source/export provenance, synchronized semantics, geometry, accessibility, deterministic pair validation and desktop/mobile browser QA on 2026-08-27.",
+      "health_summary": "healthy",
+      "health_checks": []
+    },
+    {
       "id": "src-atlas-five-control-gates-a335f1f23d4a",
       "canonical_locator": "/img/illustrations/microsoft-multi-agent-reference-architecture-five-control-gates.png",
       "transport_locator": "/img/illustrations/microsoft-multi-agent-reference-architecture-five-control-gates.png",
@@ -1804,6 +2211,40 @@
       "health_checks": []
     },
     {
+      "id": "src-atlas-long-running-coding-agent",
+      "canonical_locator": "/img/diagrams/long-running-coding-agent.svg",
+      "transport_locator": "/img/diagrams/long-running-coding-agent.svg",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Long-running coding agent control and recovery topology",
+      "author_or_org": "Tego Arch maintainers",
+      "published_at": "2026-08-28",
+      "registered_at": "2026-08-28",
+      "checked_at": "2026-08-28",
+      "version": "Original synchronized Draw.io/SVG pair authored in and exported from diagrams.net, normalized and deterministically checked on 2026-08-28",
+      "source_kind": "original-illustration",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "illustration"
+      ],
+      "license": "LicenseRef-Atlas-Original",
+      "license_scope": "The named project-authored long-running-coding-agent.svg asset only",
+      "license_evidence_url": "https://github.com/sealday/tego-arch/blob/main/static/img/diagrams/long-running-coding-agent.svg",
+      "license_evidence_note": "The project-authored Draw.io/SVG pair contains no third-party topology, reference image, icon, brand visual, signature, watermark or copied composition.",
+      "license_family_id": "/img/diagrams/long-running-coding-agent.svg",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "original-atlas",
+      "usage_boundary": "Original reference topology for bounded harness control, isolated worktree and sandbox execution, test observations, durable checkpoints, approval and recovery; illustration-only and not evidence of a customer deployment, model capability, sandbox guarantee, production scale or vendor outcome.",
+      "link_policy": null,
+      "expected_final_transport_locator": "/img/diagrams/long-running-coding-agent.svg",
+      "expected_final_approved_at": "2026-08-28",
+      "expected_final_approval_note": "Approved project-local original illustration after real diagrams.net source/export provenance, synchronized semantics, geometry, accessibility, deterministic pair validation and controller-owned desktop/mobile browser QA on 2026-08-28.",
+      "health_summary": "healthy",
+      "health_checks": []
+    },
+    {
       "id": "src-atlas-mod03-c4-component",
       "canonical_locator": "/img/diagrams/mod-03-c4-component.svg",
       "transport_locator": "/img/diagrams/mod-03-c4-component.svg",
@@ -1940,6 +2381,40 @@
       "health_checks": []
     },
     {
+      "id": "src-atlas-multi-agent-research-system",
+      "canonical_locator": "/img/diagrams/multi-agent-research-system.svg",
+      "transport_locator": "/img/diagrams/multi-agent-research-system.svg",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Multi-agent research control and evidence authority topology",
+      "author_or_org": "Tego Arch maintainers",
+      "published_at": "2026-08-28",
+      "registered_at": "2026-08-28",
+      "checked_at": "2026-08-28",
+      "version": "Original synchronized Draw.io/SVG pair authored in and exported from diagrams.net, normalized and deterministically checked on 2026-08-28",
+      "source_kind": "original-illustration",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "illustration"
+      ],
+      "license": "LicenseRef-Atlas-Original",
+      "license_scope": "The named project-authored multi-agent-research-system.svg asset only",
+      "license_evidence_url": "https://github.com/sealday/tego-arch/blob/main/static/img/diagrams/multi-agent-research-system.svg",
+      "license_evidence_note": "The project-authored Draw.io/SVG pair contains no third-party topology, reference image, icon, brand visual, signature, watermark or copied composition.",
+      "license_family_id": "/img/diagrams/multi-agent-research-system.svg",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "original-atlas",
+      "usage_boundary": "Original reference topology for bounded decomposition, parallel research, evidence authority, citation verification, recovery, abstention and human review; illustration-only and not evidence of a customer deployment, production scale, model quality, source correctness or vendor guarantee.",
+      "link_policy": null,
+      "expected_final_transport_locator": "/img/diagrams/multi-agent-research-system.svg",
+      "expected_final_approved_at": "2026-08-28",
+      "expected_final_approval_note": "Approved project-local original illustration after real diagrams.net source/export provenance, synchronized semantics, geometry, accessibility, deterministic pair validation and desktop/mobile browser QA on 2026-08-28.",
+      "health_summary": "healthy",
+      "health_checks": []
+    },
+    {
       "id": "src-atlas-pr15-conway-feedback-loop",
       "canonical_locator": "/img/diagrams/pr-15-conway-feedback-loop.svg",
       "transport_locator": "/img/diagrams/pr-15-conway-feedback-loop.svg",
@@ -2004,6 +2479,40 @@
       "expected_final_transport_locator": "/img/diagrams/pr-17-classification-boundaries.svg",
       "expected_final_approved_at": "2026-07-29",
       "expected_final_approval_note": "Approved project-local original illustration locator for the named PR-17 SVG.",
+      "health_summary": "healthy",
+      "health_checks": []
+    },
+    {
+      "id": "src-atlas-production-incident-response-agent",
+      "canonical_locator": "/img/diagrams/production-incident-response-agent.svg",
+      "transport_locator": "/img/diagrams/production-incident-response-agent.svg",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Production incident response agent authority and recovery topology",
+      "author_or_org": "Tego Arch maintainers",
+      "published_at": "2026-08-28",
+      "registered_at": "2026-08-28",
+      "checked_at": "2026-08-28",
+      "version": "Original synchronized Draw.io/SVG pair authored in and exported from diagrams.net, normalized and deterministically checked on 2026-08-28",
+      "source_kind": "original-illustration",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "illustration"
+      ],
+      "license": "LicenseRef-Atlas-Original",
+      "license_scope": "The named project-authored production-incident-response-agent.svg asset only",
+      "license_evidence_url": "https://github.com/sealday/tego-arch/blob/main/static/img/diagrams/production-incident-response-agent.svg",
+      "license_evidence_note": "The project-authored Draw.io/SVG pair contains no third-party topology, reference image, icon, brand visual, signature, watermark or copied composition.",
+      "license_family_id": "/img/diagrams/production-incident-response-agent.svg",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "original-atlas",
+      "usage_boundary": "Original illustrative reference topology for read-only diagnosis, versioned hypotheses, human command, narrow idempotent change, service authority, recovery verification, rollback and manual control; illustration-only and not evidence of a customer deployment, real incident, model accuracy, production reliability or source implementation.",
+      "link_policy": null,
+      "expected_final_transport_locator": "/img/diagrams/production-incident-response-agent.svg",
+      "expected_final_approved_at": "2026-08-28",
+      "expected_final_approval_note": "Approved project-local original illustration after real diagrams.net source/export provenance, synchronized semantics, geometry, accessibility, deterministic pair validation and controller-owned desktop/mobile browser QA on 2026-08-28.",
       "health_summary": "healthy",
       "health_checks": []
     },
@@ -2722,6 +3231,40 @@
       "health_checks": []
     },
     {
+      "id": "src-atlas-sty13-space-based-flight-availability",
+      "canonical_locator": "/img/diagrams/sty-13-space-based-flight-availability.svg",
+      "transport_locator": "/img/diagrams/sty-13-space-based-flight-availability.svg",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Space-Based Architecture 航班余位亲和分区、主备与恢复边界图 SVG",
+      "author_or_org": "Tego Arch maintainers",
+      "published_at": "2026-08-28",
+      "registered_at": "2026-08-28",
+      "checked_at": "2026-08-28",
+      "version": "original-atlas synchronized drawio+svg published 2026-08-28",
+      "source_kind": "original-illustration",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "illustration"
+      ],
+      "license": "LicenseRef-Atlas-Original",
+      "license_scope": "The named project-authored sty-13-space-based-flight-availability.svg image/svg+xml asset only",
+      "license_evidence_url": "https://github.com/sealday/tego-arch/blob/main/static/img/diagrams/sty-13-space-based-flight-availability.svg",
+      "license_evidence_note": "Created as an original synchronized Draw.io/SVG topology using only approved article semantics, without third-party diagrams, reference imagery, brand visuals, signatures, watermarks or copied composition.",
+      "license_family_id": "/img/diagrams/sty-13-space-based-flight-availability.svg",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "original-atlas",
+      "usage_boundary": "Original teaching topology for affinity routing, partition-local authority, primary-backup control, durable recovery and external itinerary coordination; illustration-only and not evidence of production outcomes.",
+      "link_policy": null,
+      "expected_final_transport_locator": "/img/diagrams/sty-13-space-based-flight-availability.svg",
+      "expected_final_approved_at": "2026-08-28",
+      "expected_final_approval_note": "Approved project-local original image/svg+xml identity after Task 3 pair, semantic, geometry, contrast and rendered raster QA.",
+      "health_summary": "healthy",
+      "health_checks": []
+    },
+    {
       "id": "src-aws-0ccf50a7d52b",
       "canonical_locator": "https://aws.amazon.com/blogs/architecture/shuffle-sharding-massive-and-magical-fault-isolation/",
       "transport_locator": "https://aws.amazon.com/blogs/architecture/shuffle-sharding-massive-and-magical-fault-isolation/",
@@ -2918,6 +3461,50 @@
           "last_success_at": "2026-08-25T12:07:24.531Z",
           "http_status": 206,
           "final_transport_locator": "https://docs.aws.amazon.com/prescriptive-guidance/latest/hexagonal-architectures/overview.html"
+        }
+      ]
+    },
+    {
+      "id": "src-aws-iam-security-best-practices",
+      "canonical_locator": "https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html",
+      "transport_locator": "https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Security best practices in IAM",
+      "author_or_org": "Amazon Web Services",
+      "published_at": null,
+      "registered_at": "2026-08-28",
+      "checked_at": "2026-08-28",
+      "version": "Current AWS IAM User Guide page checked 2026-08-28",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "implementation",
+        "method"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named AWS IAM User Guide page and bibliographic facts only; prose, code, diagrams, screenshots, service marks, linked works and third-party material excluded",
+      "license_evidence_url": "https://aws.amazon.com/terms/",
+      "license_evidence_note": "AWS Site Terms reserve rights outside expressly stated permissions; Tego Arch uses attribution, a direct link and original factual summary only.",
+      "license_family_id": "https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports granting only permissions required for a task and restricting actions, resources and conditions; it does not prove a concrete policy is least privilege, prevent credential misuse, or implement this article's separate diagnostic and change identities.",
+      "link_policy": "floating",
+      "expected_final_transport_locator": "https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html",
+      "expected_final_approved_at": "2026-08-28",
+      "expected_final_approval_note": "The exact official AWS IAM User Guide page returned the security-best-practices page and least-privilege guidance on 2026-08-28; no search result, mirror or third-party summary is used as health evidence.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-27T21:07:05.703Z",
+          "last_success_at": "2026-08-27T21:07:05.703Z",
+          "http_status": 206,
+          "final_transport_locator": "https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html"
         }
       ]
     },
@@ -9818,6 +10405,49 @@
       ]
     },
     {
+      "id": "src-flare-active-retrieval-augmented-generation",
+      "canonical_locator": "https://arxiv.org/abs/2305.06983",
+      "transport_locator": "https://arxiv.org/abs/2305.06983",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Active Retrieval Augmented Generation",
+      "author_or_org": "Zhengbao Jiang et al.",
+      "published_at": "2023-10-22",
+      "registered_at": "2026-08-27",
+      "checked_at": "2026-08-27",
+      "version": "arXiv:2305.06983v2, EMNLP 2023 revision dated 2023-10-22",
+      "source_kind": "paper",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "method"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The FLARE paper at arXiv:2305.06983v2 for bibliographic facts and factual summary only; code, datasets, benchmarks, linked works, trademarks and third-party materials excluded",
+      "license_evidence_url": "https://arxiv.org/abs/2305.06983",
+      "license_evidence_note": "The arXiv v2 record links only the arXiv non-exclusive distribution license, which does not grant downstream reuse rights; Tego Arch uses attributed factual summary and copies no paper prose, figure, table, example or experimental layout.",
+      "license_family_id": "https://arxiv.org/abs/2305.06983",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports FLARE as the named paper's active-retrieval method that anticipates future content and uses low-confidence tokens to trigger retrieval; it does not establish a universal evidence-sufficiency evaluator, source-governance policy, or production stopping guarantee.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://arxiv.org/abs/2305.06983",
+      "expected_final_approved_at": "2026-08-27",
+      "expected_final_approval_note": "The exact arXiv abstract page returned HTTP 206 to a bounded ranged request and exposed the v2 title, authors, revision date, abstract, EMNLP note and non-exclusive distribution license link on 2026-08-27.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://arxiv.org/abs/2305.06983",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-26T18:19:10.000Z",
+          "last_success_at": "2026-08-26T18:19:10.000Z",
+          "http_status": 206,
+          "final_transport_locator": "https://arxiv.org/abs/2305.06983"
+        }
+      ]
+    },
+    {
       "query_insensitive": false,
       "locator_aliases": [],
       "tombstone": null,
@@ -10050,6 +10680,226 @@
           "last_success_at": "2026-08-25T12:07:24.531Z",
           "http_status": 206,
           "final_transport_locator": "https://martinfowler.com/articles/201701-event-driven.html"
+        }
+      ]
+    },
+    {
+      "id": "src-gigaspaces-flight-availability-case",
+      "canonical_locator": "https://www.gigaspaces.com/case_studies/booking-and-flight-availability",
+      "transport_locator": "https://www.gigaspaces.com/case_studies/booking-and-flight-availability",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Booking and Flight Availability",
+      "author_or_org": "GigaSpaces",
+      "published_at": null,
+      "registered_at": "2026-08-28",
+      "checked_at": "2026-08-28",
+      "version": "live customer case; checked 2026-08-28",
+      "source_kind": "vendor-reference-architecture",
+      "tier": "first-party",
+      "allowed_evidence_roles": [
+        "case-evidence"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named GigaSpaces customer case page only; quoted customer material, linked works, diagrams, logos, trademarks and third-party material excluded",
+      "license_evidence_url": null,
+      "license_evidence_note": "No reusable license notice was established for the named customer case page; Tego Arch retains only the link, attribution and a vendor-claim-labeled original factual summary.",
+      "license_family_id": "https://www.gigaspaces.com/case_studies/booking-and-flight-availability",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "vendor-claims-separated",
+      "usage_boundary": "Supports only the vendor claim that a booking and flight-availability customer case was published; it does not prove the original flight design or general performance.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://www.gigaspaces.com/case_studies/booking-and-flight-availability",
+      "expected_final_approved_at": "2026-08-28",
+      "expected_final_approval_note": "Direct vendor HTTPS transport and vendor-claim-only boundary reviewed on 2026-08-28.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://www.gigaspaces.com/case_studies/booking-and-flight-availability",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-28T08:44:36.623Z",
+          "last_success_at": "2026-08-28T08:44:36.623Z",
+          "http_status": 206,
+          "final_transport_locator": "https://www.gigaspaces.com/case_studies/booking-and-flight-availability"
+        }
+      ]
+    },
+    {
+      "id": "src-gigaspaces-processing-unit-sla",
+      "canonical_locator": "https://docs.gigaspaces.com/16.2.1/admin/the-sla-overview.html",
+      "transport_locator": "https://docs.gigaspaces.com/16.2.1/admin/the-sla-overview.html",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Defining the SLA for Your Processing Unit",
+      "author_or_org": "GigaSpaces",
+      "published_at": null,
+      "registered_at": "2026-08-28",
+      "checked_at": "2026-08-28",
+      "version": "XAP 16.2.1; checked 2026-08-28",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "implementation",
+        "runtime-fact"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named GigaSpaces XAP 16.2.1 documentation page only; linked works, code, diagrams, trademarks and third-party material excluded",
+      "license_evidence_url": null,
+      "license_evidence_note": "No reusable license notice was established for the named documentation page; Tego Arch retains only the link, attribution and an original factual summary.",
+      "license_family_id": "https://docs.gigaspaces.com/16.2.1/admin/the-sla-overview.html",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports only the documented Processing Unit SLA, deployment and primary-backup control mechanisms; it does not prove the original flight design or general performance.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://docs.gigaspaces.com/16.2.1/admin/the-sla-overview.html",
+      "expected_final_approved_at": "2026-08-28",
+      "expected_final_approval_note": "Direct official HTTPS transport and narrow mechanism boundary reviewed on 2026-08-28.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://docs.gigaspaces.com/16.2.1/admin/the-sla-overview.html",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-28T08:44:36.623Z",
+          "last_success_at": "2026-08-28T08:44:36.623Z",
+          "http_status": 206,
+          "final_transport_locator": "https://docs.gigaspaces.com/16.2.1/admin/the-sla-overview.html"
+        }
+      ]
+    },
+    {
+      "id": "src-gigaspaces-proxy-connectivity",
+      "canonical_locator": "https://docs.gigaspaces.com/16.2/admin/tuning-proxy-connectivity.html",
+      "transport_locator": "https://docs.gigaspaces.com/16.2/admin/tuning-proxy-connectivity.html",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Proxy Connectivity",
+      "author_or_org": "GigaSpaces",
+      "published_at": null,
+      "registered_at": "2026-08-28",
+      "checked_at": "2026-08-28",
+      "version": "XAP 16.2; checked 2026-08-28",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "implementation",
+        "runtime-fact"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named GigaSpaces XAP 16.2 documentation page only; linked works, code, diagrams, trademarks and third-party material excluded",
+      "license_evidence_url": null,
+      "license_evidence_note": "No reusable license notice was established for the named documentation page; Tego Arch retains only the link, attribution and an original factual summary.",
+      "license_family_id": "https://docs.gigaspaces.com/16.2/admin/tuning-proxy-connectivity.html",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports only the documented proxy connectivity, discovery and rerouting mechanism; it does not prove the original flight design or general performance.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://docs.gigaspaces.com/16.2/admin/tuning-proxy-connectivity.html",
+      "expected_final_approved_at": "2026-08-28",
+      "expected_final_approval_note": "Direct official HTTPS transport and narrow mechanism boundary reviewed on 2026-08-28.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://docs.gigaspaces.com/16.2/admin/tuning-proxy-connectivity.html",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-28T08:44:36.623Z",
+          "last_success_at": "2026-08-28T08:44:36.623Z",
+          "http_status": 206,
+          "final_transport_locator": "https://docs.gigaspaces.com/16.2/admin/tuning-proxy-connectivity.html"
+        }
+      ]
+    },
+    {
+      "id": "src-gigaspaces-sba-overview",
+      "canonical_locator": "https://docs.gigaspaces.com/16.2/overview/space-based-architecture.html",
+      "transport_locator": "https://docs.gigaspaces.com/16.2/overview/space-based-architecture.html",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Space-Based Architecture",
+      "author_or_org": "GigaSpaces",
+      "published_at": null,
+      "registered_at": "2026-08-28",
+      "checked_at": "2026-08-28",
+      "version": "XAP 16.2; checked 2026-08-28",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "implementation",
+        "runtime-fact"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named GigaSpaces XAP 16.2 documentation page only; linked works, code, diagrams, trademarks and third-party material excluded",
+      "license_evidence_url": null,
+      "license_evidence_note": "No reusable license notice was established for the named documentation page; Tego Arch retains only the link, attribution and an original factual summary.",
+      "license_family_id": "https://docs.gigaspaces.com/16.2/overview/space-based-architecture.html",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports only the documented Space-Based Architecture definition, Processing Unit, partition-local service, data-affinity and primary-backup mechanisms; it does not prove the original flight design or general performance.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://docs.gigaspaces.com/16.2/overview/space-based-architecture.html",
+      "expected_final_approved_at": "2026-08-28",
+      "expected_final_approval_note": "Direct official HTTPS transport and narrow mechanism boundary reviewed on 2026-08-28.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://docs.gigaspaces.com/16.2/overview/space-based-architecture.html",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-28T08:44:36.623Z",
+          "last_success_at": "2026-08-28T08:44:36.623Z",
+          "http_status": 206,
+          "final_transport_locator": "https://docs.gigaspaces.com/16.2/overview/space-based-architecture.html"
+        }
+      ]
+    },
+    {
+      "id": "src-gigaspaces-split-brain-resolution",
+      "canonical_locator": "https://docs.gigaspaces.com/16.2/admin/leader-election-availability-biased.html",
+      "transport_locator": "https://docs.gigaspaces.com/16.2/admin/leader-election-availability-biased.html",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Availability Biased — Split Brain and Primary Resolution",
+      "author_or_org": "GigaSpaces",
+      "published_at": null,
+      "registered_at": "2026-08-28",
+      "checked_at": "2026-08-28",
+      "version": "XAP 16.2; checked 2026-08-28",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "implementation",
+        "runtime-fact"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named GigaSpaces XAP 16.2 documentation page only; linked works, code, diagrams, trademarks and third-party material excluded",
+      "license_evidence_url": null,
+      "license_evidence_note": "No reusable license notice was established for the named documentation page; Tego Arch retains only the link, attribution and an original factual summary.",
+      "license_family_id": "https://docs.gigaspaces.com/16.2/admin/leader-election-availability-biased.html",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports only the documented split-brain detection and primary-resolution mechanism; it does not prove the original flight design or general performance.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://docs.gigaspaces.com/16.2/admin/leader-election-availability-biased.html",
+      "expected_final_approved_at": "2026-08-28",
+      "expected_final_approval_note": "Direct official HTTPS transport and narrow mechanism boundary reviewed on 2026-08-28.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://docs.gigaspaces.com/16.2/admin/leader-election-availability-biased.html",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-28T08:44:36.623Z",
+          "last_success_at": "2026-08-28T08:44:36.623Z",
+          "http_status": 206,
+          "final_transport_locator": "https://docs.gigaspaces.com/16.2/admin/leader-election-availability-biased.html"
         }
       ]
     },
@@ -11664,7 +12514,7 @@
       "query_insensitive": false,
       "locator_aliases": [],
       "tombstone": null,
-      "title": "service/channelselect.go",
+      "title": "service/channel_select.go",
       "author_or_org": "QuantumNous / New API maintainers",
       "published_at": null,
       "registered_at": "2026-07-24",
@@ -11690,7 +12540,7 @@
       "license_family_grouping": "identity",
       "family_grouping_evidence_url": null,
       "copyright_policy": "facts-and-short-quotation",
-      "usage_boundary": "Shows the implementation in “service/channelselect.go” at the recorded commit or file version; it does not alone prove runtime guarantees or deployment fitness.",
+      "usage_boundary": "Shows the implementation in “service/channel_select.go” at the recorded commit or file version; it does not alone prove runtime guarantees or deployment fitness.",
       "link_policy": "stable",
       "expected_final_transport_locator": "https://github.com/QuantumNous/new-api/blob/1721144221ec5c94dd87891a7ae1bee228e7bb63/service/channel_select.go",
       "expected_final_approved_at": "2026-07-24",
@@ -13025,6 +13875,9 @@
       "locator_aliases": [],
       "tombstone": null,
       "title": "Building Blocks",
+      "citation_titles": [
+        "Microsoft 多智能体参考架构构件文档"
+      ],
       "author_or_org": "Microsoft",
       "published_at": null,
       "registered_at": "2026-07-24",
@@ -19787,6 +20640,9 @@
       "locator_aliases": [],
       "tombstone": null,
       "title": "README.md",
+      "citation_titles": [
+        "AWS 命令行智能体编排器固定说明文件（README）"
+      ],
       "author_or_org": "Amazon Web Services",
       "published_at": null,
       "registered_at": "2026-07-24",
@@ -20201,6 +21057,50 @@
           "last_success_at": "2026-08-25T12:07:24.531Z",
           "http_status": 200,
           "final_transport_locator": "https://docs.cloud.google.com/architecture/framework/performance-optimization/elasticity?hl=es"
+        }
+      ]
+    },
+    {
+      "id": "src-google-sre-books",
+      "canonical_locator": "https://sre.google/books/",
+      "transport_locator": "https://sre.google/books/",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Google SRE Books",
+      "author_or_org": "Google",
+      "published_at": null,
+      "registered_at": "2026-08-28",
+      "checked_at": "2026-08-28",
+      "version": "Official SRE Books landing page checked 2026-08-28; Site Reliability Engineering online edition copyright 2017 Google and O'Reilly",
+      "source_kind": "textbook",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "learning",
+        "method"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named Google SRE Books landing page and bibliographic facts only; book chapters, prose, diagrams, images, marks, linked works and third-party material excluded",
+      "license_evidence_url": "https://sre.google/books/",
+      "license_evidence_note": "The official landing page identifies the SRE books and editors but exposes no reusable license for the landing page; Tego Arch uses attributed bibliographic facts only. Separately linked online book chapters carry their own CC BY-NC-ND 4.0 notices and source records.",
+      "license_family_id": "https://sre.google/books/",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Establishes the official Google SRE textbook collection, online Site Reliability Engineering entry and editors; it does not support this article's incident-response-agent topology, authorization design, production deployment, metrics or outcomes.",
+      "link_policy": "floating",
+      "expected_final_transport_locator": "https://sre.google/books/",
+      "expected_final_approved_at": "2026-08-28",
+      "expected_final_approval_note": "The exact official Google SRE Books page returned the SRE Books title, Site Reliability Engineering entry, online-book link and editor names on 2026-08-28; no search result, mirror or third-party bookseller is used as health evidence.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://sre.google/books/",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-27T21:07:05.703Z",
+          "last_success_at": "2026-08-27T21:07:05.703Z",
+          "http_status": 206,
+          "final_transport_locator": "https://sre.google/books/"
         }
       ]
     },
@@ -21611,6 +22511,92 @@
           "last_success_at": "2026-08-25T12:07:24.531Z",
           "http_status": 206,
           "final_transport_locator": "https://kubernetes.io/docs/reference/using-api/server-side-apply/"
+        }
+      ]
+    },
+    {
+      "id": "src-langchain-open-deep-research-multi-agent",
+      "canonical_locator": "https://github.com/langchain-ai/open_deep_research/blob/1b7d2e80db9faa586165c60e09096dbbfd483a64/src/legacy/multi_agent.py",
+      "transport_locator": "https://github.com/langchain-ai/open_deep_research/blob/1b7d2e80db9faa586165c60e09096dbbfd483a64/src/legacy/multi_agent.py",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Open Deep Research legacy multi-agent implementation",
+      "author_or_org": "LangChain",
+      "published_at": null,
+      "registered_at": "2026-08-28",
+      "checked_at": "2026-08-28",
+      "version": "Archived open_deep_research repository commit 1b7d2e80db9faa586165c60e09096dbbfd483a64 dated 2026-08-10; fixed src/legacy/multi_agent.py",
+      "source_kind": "official-repository",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "implementation"
+      ],
+      "license": "MIT",
+      "license_scope": "The named src/legacy/multi_agent.py file at commit 1b7d2e80db9faa586165c60e09096dbbfd483a64 under the repository MIT license; dependencies, linked works, runtime services, models, datasets, trademarks and third-party materials excluded",
+      "license_evidence_url": "https://raw.githubusercontent.com/langchain-ai/open_deep_research/1b7d2e80db9faa586165c60e09096dbbfd483a64/LICENSE",
+      "license_evidence_note": "The official repository LICENSE at the fixed commit identifies the MIT License; Tego Arch uses only attributed factual summary of source symbols and control seams and copies no implementation code.",
+      "license_family_id": "github:langchain-ai/open_deep_research",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports fixed implementation evidence for supervisor, researcher, Send-based fan-out, state graphs and completed-section fan-in in the explicitly legacy file. The repository is archived, the file is not treated as current recommended architecture, and it does not implement or prove this article's independent evidence store, citation verifier, authority gate, worker-output restriction, recovery contract or complete topology.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://github.com/langchain-ai/open_deep_research/blob/1b7d2e80db9faa586165c60e09096dbbfd483a64/src/legacy/multi_agent.py",
+      "expected_final_approved_at": "2026-08-28",
+      "expected_final_approval_note": "The exact pinned GitHub source file returned HTTP 200 and exposed supervisor, researcher, Send, StateGraph and completed-section seams on 2026-08-28; repository ownership, archived state, commit identity and MIT license were independently checked from official GitHub surfaces.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://github.com/langchain-ai/open_deep_research/blob/1b7d2e80db9faa586165c60e09096dbbfd483a64/src/legacy/multi_agent.py",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-27T17:08:30.000Z",
+          "last_success_at": "2026-08-27T17:08:30.000Z",
+          "http_status": 200,
+          "final_transport_locator": "https://github.com/langchain-ai/open_deep_research/blob/1b7d2e80db9faa586165c60e09096dbbfd483a64/src/legacy/multi_agent.py"
+        }
+      ]
+    },
+    {
+      "id": "src-langgraph-checkpoint-base-current",
+      "canonical_locator": "https://github.com/langchain-ai/langgraph/blob/bdb8a9c7a4aa1390af225f6a5d292e5088659bd5/libs/checkpoint/langgraph/checkpoint/base/__init__.py",
+      "transport_locator": "https://github.com/langchain-ai/langgraph/blob/bdb8a9c7a4aa1390af225f6a5d292e5088659bd5/libs/checkpoint/langgraph/checkpoint/base/__init__.py",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "LangGraph checkpoint base source",
+      "author_or_org": "LangChain",
+      "published_at": null,
+      "registered_at": "2026-08-28",
+      "checked_at": "2026-08-28",
+      "version": "langchain-ai/langgraph commit bdb8a9c7a4aa1390af225f6a5d292e5088659bd5 dated 2026-08-26; checkpoint base file SHA-256 d29511015e2801630f6580353c107104d4ecc86e4bd14e15cd54e2b861a48e26",
+      "source_kind": "source-code",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "implementation"
+      ],
+      "license": "MIT",
+      "license_scope": "Repository material covered by the evidenced LICENSE only; external links and third-party assets excluded",
+      "license_evidence_url": "https://raw.githubusercontent.com/langchain-ai/langgraph/main/LICENSE",
+      "license_evidence_note": "MIT license text was retrieved from LICENSE on the repository default-branch candidate \"main\".",
+      "license_family_id": "github:langchain-ai/langgraph",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports BaseCheckpointSaver, thread_id, get_tuple, put and put_writes interfaces in the fixed source only; it does not make checkpoint contents repository truth or prove this article's recovery, testing, approval or complete topology.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://github.com/langchain-ai/langgraph/blob/bdb8a9c7a4aa1390af225f6a5d292e5088659bd5/libs/checkpoint/langgraph/checkpoint/base/__init__.py",
+      "expected_final_approved_at": "2026-08-28",
+      "expected_final_approval_note": "The exact pinned GitHub source file returned HTTP 200 and the official Git checkout exposed BaseCheckpointSaver, thread_id, get_tuple, put and put_writes on 2026-08-28; the file hash and MIT license were independently checked.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://github.com/langchain-ai/langgraph/blob/bdb8a9c7a4aa1390af225f6a5d292e5088659bd5/libs/checkpoint/langgraph/checkpoint/base/__init__.py",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-28T06:20:00.000Z",
+          "last_success_at": "2026-08-28T06:20:00.000Z",
+          "http_status": 200,
+          "final_transport_locator": "https://github.com/langchain-ai/langgraph/blob/bdb8a9c7a4aa1390af225f6a5d292e5088659bd5/libs/checkpoint/langgraph/checkpoint/base/__init__.py"
         }
       ]
     },
@@ -24192,6 +25178,136 @@
       ]
     },
     {
+      "id": "src-openai-codex-approval-sandbox-source",
+      "canonical_locator": "https://github.com/openai/codex/blob/5f49aba876922d6f2f55caa153bbb0ed1b46feba/codex-rs/protocol/src/protocol.rs",
+      "transport_locator": "https://github.com/openai/codex/blob/5f49aba876922d6f2f55caa153bbb0ed1b46feba/codex-rs/protocol/src/protocol.rs",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Codex approval and sandbox policy source",
+      "author_or_org": "OpenAI",
+      "published_at": null,
+      "registered_at": "2026-08-28",
+      "checked_at": "2026-08-28",
+      "version": "openai/codex commit 5f49aba876922d6f2f55caa153bbb0ed1b46feba; codex-rs/protocol/src/protocol.rs SHA-256 5064011af9a7634112165973c59005559cc0ca6fff998e24757419f4e4e17a5f",
+      "source_kind": "source-code",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "implementation"
+      ],
+      "license": "Apache-2.0",
+      "license_scope": "Repository material covered by the Apache-2.0 LICENSE at the fixed OpenAI Codex commit only; dependencies, services, models, linked works, trademarks and third-party materials excluded",
+      "license_evidence_url": "https://raw.githubusercontent.com/openai/codex/5f49aba876922d6f2f55caa153bbb0ed1b46feba/LICENSE",
+      "license_evidence_note": "The official OpenAI Codex repository LICENSE at commit 5f49aba876922d6f2f55caa153bbb0ed1b46feba identifies Apache License 2.0; Tego Arch uses attributed factual summary only.",
+      "license_family_id": "github:openai/codex",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports the AskForApproval and SandboxPolicy variants present in the fixed source only; it does not establish suitable policy selection, runtime configuration, sandbox escape resistance, repository isolation, or this article's approval and recovery topology.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://github.com/openai/codex/blob/5f49aba876922d6f2f55caa153bbb0ed1b46feba/codex-rs/protocol/src/protocol.rs",
+      "expected_final_approved_at": "2026-08-28",
+      "expected_final_approval_note": "The exact pinned GitHub source file returned HTTP 200 and the official Git checkout exposed AskForApproval, GranularApprovalConfig and SandboxPolicy on 2026-08-28; the file hash and license were independently checked.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://github.com/openai/codex/blob/5f49aba876922d6f2f55caa153bbb0ed1b46feba/codex-rs/protocol/src/protocol.rs",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-28T06:20:00.000Z",
+          "last_success_at": "2026-08-28T06:20:00.000Z",
+          "http_status": 200,
+          "final_transport_locator": "https://github.com/openai/codex/blob/5f49aba876922d6f2f55caa153bbb0ed1b46feba/codex-rs/protocol/src/protocol.rs"
+        }
+      ]
+    },
+    {
+      "id": "src-openai-codex-fixed-repository",
+      "canonical_locator": "https://github.com/openai/codex/tree/5f49aba876922d6f2f55caa153bbb0ed1b46feba",
+      "transport_locator": "https://github.com/openai/codex/tree/5f49aba876922d6f2f55caa153bbb0ed1b46feba",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "OpenAI Codex fixed repository",
+      "author_or_org": "OpenAI",
+      "published_at": null,
+      "registered_at": "2026-08-28",
+      "checked_at": "2026-08-28",
+      "version": "Official codex repository commit 5f49aba876922d6f2f55caa153bbb0ed1b46feba dated 2026-08-27",
+      "source_kind": "official-repository",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "implementation"
+      ],
+      "license": "Apache-2.0",
+      "license_scope": "Repository material covered by the Apache-2.0 LICENSE at the fixed OpenAI Codex commit only; dependencies, services, models, linked works, trademarks and third-party materials excluded",
+      "license_evidence_url": "https://raw.githubusercontent.com/openai/codex/5f49aba876922d6f2f55caa153bbb0ed1b46feba/LICENSE",
+      "license_evidence_note": "The official OpenAI Codex repository LICENSE at commit 5f49aba876922d6f2f55caa153bbb0ed1b46feba identifies Apache License 2.0; Tego Arch uses attributed factual summary only.",
+      "license_family_id": "github:openai/codex",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Establishes the official repository identity, fixed commit and license only; it does not prove this article's complete topology, configured policy, sandbox effectiveness, production deployment or outcome.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://github.com/openai/codex/tree/5f49aba876922d6f2f55caa153bbb0ed1b46feba",
+      "expected_final_approved_at": "2026-08-28",
+      "expected_final_approval_note": "The exact pinned official GitHub repository tree returned HTTP 200 on 2026-08-28; commit identity, author date and Apache-2.0 LICENSE were independently read through the official Git transport.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://github.com/openai/codex/tree/5f49aba876922d6f2f55caa153bbb0ed1b46feba",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-28T06:20:00.000Z",
+          "last_success_at": "2026-08-28T06:20:00.000Z",
+          "http_status": 200,
+          "final_transport_locator": "https://github.com/openai/codex/tree/5f49aba876922d6f2f55caa153bbb0ed1b46feba"
+        }
+      ]
+    },
+    {
+      "id": "src-openai-practical-guide-building-agents",
+      "canonical_locator": "https://openai.com/business/guides-and-resources/a-practical-guide-to-building-ai-agents/",
+      "transport_locator": "https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf?file=a-practical-guide-to-building-agents.pdf",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "A Practical Guide to Building Agents",
+      "author_or_org": "OpenAI",
+      "published_at": null,
+      "registered_at": "2026-08-26",
+      "checked_at": "2026-08-26",
+      "version": "Official web guide and PDF edition checked 2026-08-26",
+      "source_kind": "official-docs",
+      "tier": "first-party",
+      "allowed_evidence_roles": [
+        "definition",
+        "method"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named OpenAI guide and bibliographic facts only; prose, examples, diagrams, code, linked works, trademarks and third-party material excluded",
+      "license_evidence_url": "https://openai.com/business/guides-and-resources/a-practical-guide-to-building-ai-agents/",
+      "license_evidence_note": "The official guide exposes no reusable page license for this record; Tego Arch uses attributed factual summary without copying prose, examples, code, structure or diagrams.",
+      "license_family_id": "https://openai.com/business/guides-and-resources/a-practical-guide-to-building-ai-agents/",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports OpenAI's stated agent control, tool-selection, loop, exit-condition and deterministic-fallback boundaries; it does not prove any implementation's production reliability.",
+      "link_policy": "floating",
+      "expected_final_transport_locator": "https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf?file=a-practical-guide-to-building-agents.pdf",
+      "expected_final_approved_at": "2026-08-26",
+      "expected_final_approval_note": "The official OpenAI PDF transport returned HTTP 200 on 2026-08-26 and is the same named guide as the canonical web edition; definition/method scope and conservative rights boundary were reviewed.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf?file=a-practical-guide-to-building-agents.pdf",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-26T08:24:01.325Z",
+          "last_success_at": "2026-08-26T08:24:01.325Z",
+          "http_status": 200,
+          "final_transport_locator": "https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf?file=a-practical-guide-to-building-agents.pdf"
+        }
+      ]
+    },
+    {
       "id": "src-opengitops-principles-v1",
       "canonical_locator": "https://opengitops.dev/",
       "transport_locator": "https://raw.githubusercontent.com/open-gitops/documents/d36cde829c6ef2c7e5cab662ab98a7173a591a49/PRINCIPLES.md",
@@ -24233,6 +25349,50 @@
           "last_success_at": "2026-08-25T12:07:24.531Z",
           "http_status": 206,
           "final_transport_locator": "https://raw.githubusercontent.com/open-gitops/documents/d36cde829c6ef2c7e5cab662ab98a7173a591a49/PRINCIPLES.md"
+        }
+      ]
+    },
+    {
+      "id": "src-opentelemetry-genai-agent-semconv",
+      "canonical_locator": "https://github.com/open-telemetry/semantic-conventions-genai/blob/56d6b11a02129319bf371083fa134b7ce989c976/docs/gen-ai/gen-ai-agent-spans.md",
+      "transport_locator": "https://github.com/open-telemetry/semantic-conventions-genai/blob/56d6b11a02129319bf371083fa134b7ce989c976/docs/gen-ai/gen-ai-agent-spans.md",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Semantic Conventions for GenAI agent and framework spans",
+      "author_or_org": "OpenTelemetry Authors",
+      "published_at": null,
+      "registered_at": "2026-08-26",
+      "checked_at": "2026-08-26",
+      "version": "semantic-conventions-genai commit 56d6b11a02129319bf371083fa134b7ce989c976 checked on 2026-08-26; document status Development",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "implementation"
+      ],
+      "license": "Apache-2.0",
+      "license_scope": "The named documentation file at semantic-conventions-genai commit 56d6b11a02129319bf371083fa134b7ce989c976 under the repository Apache-2.0 license; linked works, trademarks and third-party materials excluded",
+      "license_evidence_url": "https://github.com/open-telemetry/semantic-conventions-genai/blob/56d6b11a02129319bf371083fa134b7ce989c976/LICENSE",
+      "license_evidence_note": "The official OpenTelemetry semantic-conventions-genai repository LICENSE at the cited commit identifies Apache License 2.0; Tego Arch uses only an original factual summary of the named development-status conventions.",
+      "license_family_id": "github:open-telemetry/semantic-conventions-genai",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports the development-status GenAI agent, workflow, planning and tool span names and documented attributes at the pinned commit; it does not guarantee instrumentation completeness, correct trace correlation, policy enforcement, evaluator quality or production safety.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://github.com/open-telemetry/semantic-conventions-genai/blob/56d6b11a02129319bf371083fa134b7ce989c976/docs/gen-ai/gen-ai-agent-spans.md",
+      "expected_final_approved_at": "2026-08-26",
+      "expected_final_approval_note": "The exact pinned GitHub documentation file returned HTTP 200 and exposed the expected title, Development status and generated semantic-convention tables on 2026-08-26.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://github.com/open-telemetry/semantic-conventions-genai/blob/56d6b11a02129319bf371083fa134b7ce989c976/docs/gen-ai/gen-ai-agent-spans.md",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-26T13:19:25.000Z",
+          "last_success_at": "2026-08-26T13:19:25.000Z",
+          "http_status": 200,
+          "final_transport_locator": "https://github.com/open-telemetry/semantic-conventions-genai/blob/56d6b11a02129319bf371083fa134b7ce989c976/docs/gen-ai/gen-ai-agent-spans.md"
         }
       ]
     },
@@ -24280,6 +25440,96 @@
           "last_success_at": "2026-08-25T12:07:24.531Z",
           "http_status": 206,
           "final_transport_locator": "https://opentelemetry.io/docs/concepts/observability-primer/"
+        }
+      ]
+    },
+    {
+      "id": "src-oracle-coherence-backing-maps",
+      "canonical_locator": "https://docs.oracle.com/middleware/1221/coherence/develop-applications/cache_back.htm",
+      "transport_locator": "https://docs.oracle.com/middleware/1221/coherence/develop-applications/cache_back.htm",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Implementing Storage and Backing Maps",
+      "author_or_org": "Oracle",
+      "published_at": null,
+      "registered_at": "2026-08-28",
+      "checked_at": "2026-08-28",
+      "version": "Coherence 12.2.1; checked 2026-08-28",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "comparison",
+        "implementation",
+        "runtime-fact"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named Oracle Coherence 12.2.1 documentation page only; linked works, code, diagrams, trademarks and third-party material excluded",
+      "license_evidence_url": null,
+      "license_evidence_note": "No reusable license notice was established for the named documentation page; Tego Arch retains only the link, attribution and an original factual summary.",
+      "license_family_id": "https://docs.oracle.com/middleware/1221/coherence/develop-applications/cache_back.htm",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Independently supports only Coherence backup/storage, backing-map and persistent-store mechanisms as a narrow recovery comparison; it does not prove the original flight design or general performance.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://docs.oracle.com/middleware/1221/coherence/develop-applications/cache_back.htm",
+      "expected_final_approved_at": "2026-08-28",
+      "expected_final_approval_note": "Official versioned HTTPS identity and narrow mechanism boundary reviewed on 2026-08-28.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://docs.oracle.com/middleware/1221/coherence/develop-applications/cache_back.htm",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-28T08:44:36.623Z",
+          "last_success_at": "2026-08-28T08:44:36.623Z",
+          "http_status": 200,
+          "final_transport_locator": "https://docs.oracle.com/middleware/1221/coherence/develop-applications/cache_back.htm"
+        }
+      ]
+    },
+    {
+      "id": "src-oracle-coherence-partitioned-cache",
+      "canonical_locator": "https://docs.oracle.com/en/middleware/fusion-middleware/coherence/12.2.1.4/develop-applications/introduction-coherence.html",
+      "transport_locator": "https://docs.oracle.com/en/middleware/fusion-middleware/coherence/12.2.1.4/develop-applications/introduction-coherence.html",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Introduction to Coherence",
+      "author_or_org": "Oracle",
+      "published_at": null,
+      "registered_at": "2026-08-28",
+      "checked_at": "2026-08-28",
+      "version": "Coherence 12.2.1.4; checked 2026-08-28",
+      "source_kind": "official-docs",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "comparison",
+        "implementation",
+        "runtime-fact"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The named Oracle Coherence 12.2.1.4 documentation page only; linked works, code, diagrams, trademarks and third-party material excluded",
+      "license_evidence_url": null,
+      "license_evidence_note": "No reusable license notice was established for the named documentation page; Tego Arch retains only the link, attribution and an original factual summary.",
+      "license_family_id": "https://docs.oracle.com/en/middleware/fusion-middleware/coherence/12.2.1.4/develop-applications/introduction-coherence.html",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports only Coherence partitioned-data and rebalancing mechanisms as a narrow comparison; it does not support backup or storage claims and does not prove the original flight design or general performance.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://docs.oracle.com/en/middleware/fusion-middleware/coherence/12.2.1.4/develop-applications/introduction-coherence.html",
+      "expected_final_approved_at": "2026-08-28",
+      "expected_final_approval_note": "Official versioned HTTPS identity and narrow mechanism boundary reviewed on 2026-08-28.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://docs.oracle.com/en/middleware/fusion-middleware/coherence/12.2.1.4/develop-applications/introduction-coherence.html",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-28T08:44:36.623Z",
+          "last_success_at": "2026-08-28T08:44:36.623Z",
+          "http_status": 200,
+          "final_transport_locator": "https://docs.oracle.com/en/middleware/fusion-middleware/coherence/12.2.1.4/develop-applications/introduction-coherence.html"
         }
       ]
     },
@@ -24737,6 +25987,94 @@
           "last_success_at": "2026-08-25T12:07:24.531Z",
           "http_status": 200,
           "final_transport_locator": "https://media.pragprog.com/titles/tpp20/dry.pdf"
+        }
+      ]
+    },
+    {
+      "id": "src-rag-knowledge-intensive-nlp-tasks",
+      "canonical_locator": "https://arxiv.org/abs/2005.11401",
+      "transport_locator": "https://arxiv.org/abs/2005.11401",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks",
+      "author_or_org": "Patrick Lewis et al.",
+      "published_at": "2021-04-12",
+      "registered_at": "2026-08-27",
+      "checked_at": "2026-08-27",
+      "version": "arXiv:2005.11401v4, NeurIPS 2020 paper revision dated 2021-04-12",
+      "source_kind": "paper",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "method"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "license_scope": "The RAG paper at arXiv:2005.11401v4 for bibliographic facts and factual summary only; code, datasets, benchmarks, linked works, trademarks and third-party materials excluded",
+      "license_evidence_url": "https://arxiv.org/abs/2005.11401",
+      "license_evidence_note": "The arXiv v4 record links only the arXiv non-exclusive distribution license, which does not grant downstream reuse rights; Tego Arch uses attributed factual summary and copies no paper prose, figure, table, example or experimental layout.",
+      "license_family_id": "https://arxiv.org/abs/2005.11401",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports the named paper's combination of parametric and non-parametric memory for retrieval-augmented generation and its two RAG formulations; it does not establish an Agentic RAG loop, evidence-sufficiency dimensions, safety controls, or production outcomes.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://arxiv.org/abs/2005.11401",
+      "expected_final_approved_at": "2026-08-27",
+      "expected_final_approval_note": "The exact arXiv abstract page returned HTTP 206 to a bounded ranged request and exposed the v4 title, authors, revision date, abstract, NeurIPS note and non-exclusive distribution license link on 2026-08-27.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://arxiv.org/abs/2005.11401",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-26T18:19:10.000Z",
+          "last_success_at": "2026-08-26T18:19:10.000Z",
+          "http_status": 206,
+          "final_transport_locator": "https://arxiv.org/abs/2005.11401"
+        }
+      ]
+    },
+    {
+      "id": "src-react-reasoning-acting-language-models",
+      "canonical_locator": "https://arxiv.org/abs/2210.03629",
+      "transport_locator": "https://arxiv.org/abs/2210.03629",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "ReAct: Synergizing Reasoning and Acting in Language Models",
+      "author_or_org": "Shunyu Yao et al.",
+      "published_at": "2023-03-10",
+      "registered_at": "2026-08-26",
+      "checked_at": "2026-08-26",
+      "version": "arXiv:2210.03629v3, ICLR 2023 camera-ready revision dated 2023-03-10",
+      "source_kind": "paper",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "definition",
+        "method"
+      ],
+      "license": "CC-BY-4.0",
+      "license_scope": "The ReAct paper at arXiv:2210.03629v3; project-site code, datasets, benchmarks, linked works, trademarks and third-party materials excluded",
+      "license_evidence_url": "https://arxiv.org/abs/2210.03629",
+      "license_evidence_note": "The arXiv v3 record links this paper to the Creative Commons Attribution 4.0 International license; Tego Arch uses attributed factual summary and no copied paper figure, table, example or prose.",
+      "license_family_id": "https://arxiv.org/abs/2210.03629",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "adapt-with-attribution",
+      "usage_boundary": "Supports ReAct as an interleaved reasoning/action prompting and interaction pattern evaluated in the named paper; it does not establish the article's canonical five-phase loop, code-enforced controls, or production runtime guarantees.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://arxiv.org/abs/2210.03629",
+      "expected_final_approved_at": "2026-08-26",
+      "expected_final_approval_note": "The exact arXiv abstract page returned HTTP 200 and exposed the v3 title, authors, revision date, abstract, ICLR camera-ready note and CC BY 4.0 license link on 2026-08-26.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://arxiv.org/abs/2210.03629",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-26T11:09:57.957Z",
+          "last_success_at": "2026-08-26T11:09:57.957Z",
+          "http_status": 206,
+          "final_transport_locator": "https://arxiv.org/abs/2210.03629"
         }
       ]
     },
@@ -25893,6 +27231,49 @@
       ]
     },
     {
+      "id": "src-self-rag-retrieve-generate-critique",
+      "canonical_locator": "https://arxiv.org/abs/2310.11511",
+      "transport_locator": "https://arxiv.org/abs/2310.11511",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Self-RAG: Learning to Retrieve, Generate, and Critique through Self-Reflection",
+      "author_or_org": "Akari Asai et al.",
+      "published_at": "2023-10-17",
+      "registered_at": "2026-08-27",
+      "checked_at": "2026-08-27",
+      "version": "arXiv:2310.11511v1 dated 2023-10-17",
+      "source_kind": "paper",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "method"
+      ],
+      "license": "CC-BY-4.0",
+      "license_scope": "The Self-RAG paper at arXiv:2310.11511v1 under CC BY 4.0; code, datasets, benchmarks, linked works, trademarks and third-party materials excluded",
+      "license_evidence_url": "https://arxiv.org/abs/2310.11511",
+      "license_evidence_note": "The arXiv v1 record links the paper to Creative Commons Attribution 4.0 International; Tego Arch uses attributed factual summary and copies no paper prose, figure, table, example or experimental layout.",
+      "license_family_id": "https://arxiv.org/abs/2310.11511",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "adapt-with-attribution",
+      "usage_boundary": "Supports the named paper's on-demand retrieval and reflection-token method for critiquing retrieved passages and generations; it does not prove model self-evaluation is factual truth or establish the article's five-dimensional gate and production isolation boundary.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://arxiv.org/abs/2310.11511",
+      "expected_final_approved_at": "2026-08-27",
+      "expected_final_approval_note": "The exact arXiv abstract page returned HTTP 206 to a bounded ranged request and exposed the v1 title, authors, submission date, abstract and CC BY 4.0 license link on 2026-08-27.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://arxiv.org/abs/2310.11511",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-26T18:19:10.000Z",
+          "last_success_at": "2026-08-26T18:19:10.000Z",
+          "http_status": 206,
+          "final_transport_locator": "https://arxiv.org/abs/2310.11511"
+        }
+      ]
+    },
+    {
       "id": "src-single-spa-03f49f2c5ddb",
       "canonical_locator": "https://single-spa.js.org/docs/microfrontends-concept/",
       "transport_locator": "https://single-spa.js.org/docs/microfrontends-concept/",
@@ -26720,6 +28101,49 @@
           "last_success_at": "2026-08-25T12:07:24.531Z",
           "http_status": 200,
           "final_transport_locator": "https://landing.teamtopologies.com/organization-dynamics-with-team-topologies"
+        }
+      ]
+    },
+    {
+      "id": "src-temporal-typescript-activity-heartbeat-current",
+      "canonical_locator": "https://github.com/temporalio/sdk-typescript/blob/5373d58f7d504b6b72c7ac17b33139eb5f23dbec/packages/activity/src/index.ts",
+      "transport_locator": "https://github.com/temporalio/sdk-typescript/blob/5373d58f7d504b6b72c7ac17b33139eb5f23dbec/packages/activity/src/index.ts",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Temporal TypeScript SDK activity heartbeat source",
+      "author_or_org": "Temporal Technologies",
+      "published_at": null,
+      "registered_at": "2026-08-28",
+      "checked_at": "2026-08-28",
+      "version": "temporalio/sdk-typescript commit 5373d58f7d504b6b72c7ac17b33139eb5f23dbec dated 2026-08-26; activity index file SHA-256 ce46be7d90c86008f1877e101fbcaf4f728900d04e1b248ed11e03df7b945c1e",
+      "source_kind": "source-code",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "implementation"
+      ],
+      "license": "MIT",
+      "license_scope": "The named activity index source file at commit 5373d58f7d504b6b72c7ac17b33139eb5f23dbec under the repository MIT license; dependencies, server behavior, services, examples, documentation links, trademarks and third-party materials excluded",
+      "license_evidence_url": "https://raw.githubusercontent.com/temporalio/sdk-typescript/5373d58f7d504b6b72c7ac17b33139eb5f23dbec/LICENSE",
+      "license_evidence_note": "The official repository LICENSE at the fixed commit identifies the MIT License; Tego Arch uses an attributed factual source reading and copies no implementation code or comments.",
+      "license_family_id": "github:temporalio/sdk-typescript",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports heartbeat details as a periodic Activity progress checkpoint available to the next attempt, plus the documented cooperative cancellation boundary, in the fixed source only; it does not establish idempotent external effects, guaranteed cancellation, repository recovery or this article's complete topology.",
+      "link_policy": "stable",
+      "expected_final_transport_locator": "https://github.com/temporalio/sdk-typescript/blob/5373d58f7d504b6b72c7ac17b33139eb5f23dbec/packages/activity/src/index.ts",
+      "expected_final_approved_at": "2026-08-28",
+      "expected_final_approval_note": "The exact pinned GitHub source file returned HTTP 200 and the official Git checkout exposed heartbeat details, next-attempt progress recovery and cooperative cancellation boundaries on 2026-08-28; the file hash and MIT license were independently checked.",
+      "health_summary": "healthy",
+      "health_checks": [
+        {
+          "transport_locator": "https://github.com/temporalio/sdk-typescript/blob/5373d58f7d504b6b72c7ac17b33139eb5f23dbec/packages/activity/src/index.ts",
+          "status": "healthy",
+          "last_attempt_at": "2026-08-28T06:20:00.000Z",
+          "last_success_at": "2026-08-28T06:20:00.000Z",
+          "http_status": 200,
+          "final_transport_locator": "https://github.com/temporalio/sdk-typescript/blob/5373d58f7d504b6b72c7ac17b33139eb5f23dbec/packages/activity/src/index.ts"
         }
       ]
     },
@@ -30564,6 +31988,110 @@
         }
       ]
     },
+    "content/cases/long-running-coding-agent.mdx": {
+      "title": "长任务编码智能体：把完成状态留在上下文窗口之外",
+      "slug": "/cases/long-running-coding-agent",
+      "reviewed_at": "2026-08-28",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-anthropic-demystifying-evals-ai-agents",
+          "citation_url": "https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents",
+          "roles": [
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Demystifying evals for AI agents, Anthropic",
+          "modification_note": "Original Chinese summary of the first-party task, trial, grader, trace and outcome evaluation distinctions; no source prose, examples, tables, diagrams, images, results or structure copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-anthropic-effective-harnesses-long-running-agents",
+          "citation_url": "https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents",
+          "roles": [
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Effective harnesses for long-running agents, Anthropic",
+          "modification_note": "Original Chinese summary of the reported initializer/coding-agent split, incremental progress artifacts, version history and cross-context handoff; no source prose, code, examples, prompts, diagrams, results or structure copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-atlas-long-running-coding-agent",
+          "citation_url": "/img/diagrams/long-running-coding-agent.svg",
+          "roles": [
+            "illustration"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "original-illustration",
+          "attribution_note": "Long-running coding agent control and recovery topology, Tego Arch maintainers",
+          "modification_note": "Created as an original synchronized Draw.io/SVG pair for this case without third-party topology, reference imagery, icons, brand visuals, signatures, watermarks or copied composition.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-langgraph-checkpoint-base-current",
+          "citation_url": "https://github.com/langchain-ai/langgraph/blob/bdb8a9c7a4aa1390af225f6a5d292e5088659bd5/libs/checkpoint/langgraph/checkpoint/base/__init__.py",
+          "roles": [
+            "implementation"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "LangGraph checkpoint base source at fixed commit, LangChain",
+          "modification_note": "Original Chinese source reading of BaseCheckpointSaver, thread_id, get_tuple, put and put_writes at the fixed commit; no code, comments, examples, documentation or structure copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-openai-codex-approval-sandbox-source",
+          "citation_url": "https://github.com/openai/codex/blob/5f49aba876922d6f2f55caa153bbb0ed1b46feba/codex-rs/protocol/src/protocol.rs",
+          "roles": [
+            "implementation"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Codex approval and sandbox policy source at fixed commit, OpenAI",
+          "modification_note": "Original Chinese source reading of AskForApproval, GranularApprovalConfig and SandboxPolicy at the fixed commit; no code, comments, tests, prompts, generated bindings or structure copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-openai-codex-fixed-repository",
+          "citation_url": "https://github.com/openai/codex/tree/5f49aba876922d6f2f55caa153bbb0ed1b46feba",
+          "roles": [
+            "implementation"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "OpenAI Codex official repository at fixed commit",
+          "modification_note": "Original Chinese summary of repository identity, commit and license facts; no repository documentation, code, images, examples or structure copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-temporal-typescript-activity-heartbeat-current",
+          "citation_url": "https://github.com/temporalio/sdk-typescript/blob/5373d58f7d504b6b72c7ac17b33139eb5f23dbec/packages/activity/src/index.ts",
+          "roles": [
+            "implementation"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Temporal TypeScript SDK activity heartbeat source at fixed commit, Temporal Technologies",
+          "modification_note": "Original Chinese source reading of heartbeat details, next-attempt progress recovery and cooperative cancellation boundaries at the fixed commit; no code, comments, examples, documentation or structure copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
     "content/cases/micro-frontends-single-spa.mdx": {
       "title": "single-spa 微前端框架：用垂直业务切片约束跨团队所有权",
       "slug": "/cases/micro-frontends-single-spa",
@@ -31032,6 +32560,85 @@
         }
       ]
     },
+    "content/cases/multi-agent-research-system.mdx": {
+      "title": "多智能体研究系统：让证据完成度而不是工作者数量决定终止",
+      "slug": "/cases/multi-agent-research-system",
+      "reviewed_at": "2026-08-28",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-anthropic-multi-agent-research-system",
+          "citation_url": "https://www.anthropic.com/engineering/multi-agent-research-system",
+          "roles": [
+            "implementation",
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "How we built our multi-agent research system, Anthropic",
+          "modification_note": "Original Chinese summary of Anthropic's first-party lead-agent, parallel-subagent, iterative-research and citation-processing description; no article prose, prompts, code, examples, diagrams, images, results, structure or composition copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-atlas-multi-agent-research-system",
+          "citation_url": "/img/diagrams/multi-agent-research-system.svg",
+          "roles": [
+            "illustration"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "original-illustration",
+          "attribution_note": "Multi-agent research control and evidence authority topology, Tego Arch maintainers",
+          "modification_note": "Created as an original synchronized Draw.io/SVG pair for this case without third-party topology, reference imagery, icons, brand visuals, signatures, watermarks or copied composition.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-langchain-open-deep-research-multi-agent",
+          "citation_url": "https://github.com/langchain-ai/open_deep_research/blob/1b7d2e80db9faa586165c60e09096dbbfd483a64/src/legacy/multi_agent.py",
+          "roles": [
+            "implementation"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Open Deep Research legacy multi-agent implementation at fixed commit, LangChain",
+          "modification_note": "Original Chinese source reading of supervisor, researcher, Send, StateGraph and completed-section seams at the fixed commit; no repository code, comments, prompts, examples, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-react-reasoning-acting-language-models",
+          "citation_url": "https://arxiv.org/abs/2210.03629",
+          "roles": [
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "ReAct: Synergizing Reasoning and Acting in Language Models, Shunyu Yao et al.",
+          "modification_note": "Original Chinese summary of the paper's interleaved reasoning, action and observation mechanism; no paper prose, examples, prompts, figures, tables, results or structure copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-self-rag-retrieve-generate-critique",
+          "citation_url": "https://arxiv.org/abs/2310.11511",
+          "roles": [
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Self-RAG: Learning to Retrieve, Generate, and Critique through Self-Reflection, Akari Asai et al.",
+          "modification_note": "Original Chinese summary of the paper's on-demand retrieval and reflection-token mechanisms; no paper prose, examples, prompts, figures, tables, results or structure copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
     "content/cases/new-api-channel-pool-routing.mdx": {
       "title": "New API 模型网关：用通道池路由分解能力、层级与故障隔离",
       "slug": "/cases/new-api-channel-pool-routing",
@@ -31090,7 +32697,7 @@
           ],
           "manifest_primary": true,
           "usage_mode": "facts-summary",
-          "attribution_note": "service/channelselect.go, QuantumNous / New API maintainers",
+          "attribution_note": "service/channel_select.go, QuantumNous / New API maintainers",
           "modification_note": null,
           "excerpt": null,
           "quotation_reviewed": false
@@ -31651,6 +33258,123 @@
           "usage_mode": "facts-summary",
           "attribution_note": "OpenAI Agents SDK：Multi-agent, OpenAI",
           "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/cases/production-incident-response-agent.mdx": {
+      "title": "生产事故响应智能体：把诊断建议与变更授权分成两条身份链",
+      "slug": "/cases/production-incident-response-agent",
+      "reviewed_at": "2026-08-28",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-atlas-production-incident-response-agent",
+          "citation_url": "/img/diagrams/production-incident-response-agent.svg",
+          "roles": [
+            "illustration"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "original-illustration",
+          "attribution_note": "Production incident response agent authority and recovery topology, Tego Arch maintainers",
+          "modification_note": "Created as an original synchronized Draw.io/SVG pair for this illustrative case without third-party topology, reference imagery, icons, brand visuals, signatures, watermarks or copied composition.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-aws-iam-security-best-practices",
+          "citation_url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html",
+          "roles": [
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Security best practices in IAM, Amazon Web Services",
+          "modification_note": "Original Chinese summary of task-scoped actions, resources and conditions for least-privilege permissions; no source prose, policy examples, screenshots, diagrams or structure copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-developer-164d57c518cb",
+          "citation_url": "https://developer.konghq.com/ai-gateway/monitor-ai-llm-metrics/",
+          "roles": [
+            "implementation"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Monitor AI LLM metrics, Kong Inc.",
+          "modification_note": "Original Chinese summary of the documented monitoring-metrics interface as a limited observability seam; no source prose, configuration, screenshots, diagrams, examples or structure copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-docs-7e6ec8bd95c9",
+          "citation_url": "https://docs.temporal.io/activity-definition",
+          "roles": [
+            "implementation"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Activity Definition, Temporal Technologies",
+          "modification_note": "Original Chinese summary of documented failure-prone activities, automatic retries and the recommendation that activities be idempotent; no source prose, code, examples, diagrams or structure copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-google-sre-books",
+          "citation_url": "https://sre.google/books/",
+          "roles": [
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Google SRE Books, Google",
+          "modification_note": "Original Chinese bibliographic summary of the official SRE textbook collection, online Site Reliability Engineering entry and editors; no source prose, book text, diagrams, images, examples, structure or composition copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-nist-ai-rmf-1-0",
+          "citation_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "roles": [
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Artificial Intelligence Risk Management Framework (AI RMF 1.0), Elham Tabassi / NIST",
+          "modification_note": "Original Chinese summary of the voluntary risk-governance, measurement, monitoring and human-oversight boundary; no framework prose, tables, figures, profiles or structure copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-sre-managing-incidents",
+          "citation_url": "https://sre.google/sre-book/managing-incidents/",
+          "roles": [
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Chapter 14 - Managing Incidents, Andrew Stribblehill / Google SRE Book",
+          "modification_note": "Original Chinese summary of documented incident command, recursive responsibility separation, designated operational work and live incident state; no chapter prose, examples, scenario, lists, diagrams, tables or structure copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-sre-monitoring-distributed-systems",
+          "citation_url": "https://sre.google/sre-book/monitoring-distributed-systems/",
+          "roles": [
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Chapter 6 - Monitoring Distributed Systems, Rob Ewaschuk / Google SRE Book",
+          "modification_note": "Original Chinese summary of documented monitoring, alerting, black-box symptoms and white-box internal signals; no chapter prose, examples, lists, diagrams, tables or structure copied.",
           "excerpt": null,
           "quotation_reviewed": false
         }
@@ -32522,6 +34246,370 @@
           "usage_mode": "facts-summary",
           "attribution_note": "SECURITY.md, Yjs maintainers",
           "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/concepts/agt-c-01-agent-system-boundary.mdx": {
+      "title": "AI 智能体（Agent）系统边界",
+      "slug": "/concepts/agt-c-01",
+      "reviewed_at": "2026-08-26",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-anthropic-building-effective-agents",
+          "citation_url": "https://www.anthropic.com/engineering/building-effective-agents",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Building Effective Agents, Anthropic",
+          "modification_note": "Original Chinese synthesis of the workflow/agent and augmented-LLM boundaries; no source prose, structure, examples or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-atlas-agt-c-01-agent-system-boundary",
+          "citation_url": "/img/diagrams/agt-c-01-agent-system-boundary.svg",
+          "roles": [
+            "illustration"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "original-illustration",
+          "attribution_note": "Agent system boundary reference architecture, Tego Arch maintainers",
+          "modification_note": "Created as an original synchronized Draw.io/SVG pair without third-party topology, reference imagery, icons, brand visuals, signatures, watermarks or copied composition.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-openai-practical-guide-building-agents",
+          "citation_url": "https://openai.com/business/guides-and-resources/a-practical-guide-to-building-ai-agents/",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "A Practical Guide to Building Agents, OpenAI",
+          "modification_note": "Original Chinese synthesis of agent control, tool-selection, loop, exit-condition and deterministic-fallback boundaries; no source prose, structure, examples, code or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/concepts/agt-c-02-agent-harness.mdx": {
+      "title": "智能体运行框架（Agent Harness）：约束并运行智能体循环（Agent Loop）",
+      "slug": "/concepts/agt-c-02",
+      "reviewed_at": "2026-08-26",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-anthropic-effective-harnesses-long-running-agents",
+          "citation_url": "https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents",
+          "roles": [
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Effective harnesses for long-running agents, Anthropic",
+          "modification_note": "Original Chinese summary of the reported initializer/coding-agent split, incremental progress and cross-context artifacts; no source prose, code, examples, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-anthropic-harness-design-long-running-apps",
+          "citation_url": "https://www.anthropic.com/engineering/harness-design-long-running-apps",
+          "roles": [
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Harness design for long-running application development, Anthropic",
+          "modification_note": "Original Chinese summary of the reported role separation, structured handoff, context management and harness-reduction experiments; no source prose, code, prompts, examples, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-anthropic-managed-agents",
+          "citation_url": "https://www.anthropic.com/engineering/managed-agents",
+          "roles": [
+            "implementation",
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Scaling Managed Agents: Decoupling the brain from the hands, Anthropic",
+          "modification_note": "Original Chinese summary of the reported durable-session, harness and sandbox separation and crash-recovery design; no source prose, code, interface notation, examples, metrics, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/concepts/agt-c-03-agent-loop.mdx": {
+      "title": "智能体循环（Agent Loop）：计划、行动、观察、评估与终止",
+      "slug": "/concepts/agt-c-03",
+      "reviewed_at": "2026-08-26",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-anthropic-building-effective-agents",
+          "citation_url": "https://www.anthropic.com/engineering/building-effective-agents",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Building Effective Agents, Anthropic",
+          "modification_note": "Original Chinese summary of the workflow/agent control distinction; no source prose, structure, example or diagram copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-react-reasoning-acting-language-models",
+          "citation_url": "https://arxiv.org/abs/2210.03629",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "ReAct: Synergizing Reasoning and Acting in Language Models, Shunyu Yao et al.",
+          "modification_note": "Original Chinese summary of interleaved reasoning/action and environment interaction; no paper prose, example, table, figure, benchmark structure or visual layout copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/concepts/agt-c-04-context-memory-state-checkpoint.mdx": {
+      "title": "上下文、记忆、状态与执行检查点（Checkpoint）：分开信息生命周期与恢复责任",
+      "slug": "/concepts/agt-c-04",
+      "reviewed_at": "2026-08-26",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-docs-7dd57631bd24",
+          "citation_url": "https://docs.langchain.com/oss/python/langgraph/interrupts",
+          "roles": [
+            "runtime-fact"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Interrupts, LangChain",
+          "modification_note": "Original Chinese summary of documented pause, checkpoint-backed resume, node re-execution and idempotency behavior; no source prose, code, examples, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-docs-8050933565ee",
+          "citation_url": "https://docs.langchain.com/oss/python/langgraph/fault-tolerance",
+          "roles": [
+            "runtime-fact"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Fault tolerance, LangChain",
+          "modification_note": "Original Chinese summary of documented retry, timeout and error-handler behavior; no source prose, code, examples, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-docs-99e58642fe77",
+          "citation_url": "https://docs.langchain.com/oss/python/langgraph/persistence",
+          "roles": [
+            "runtime-fact"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Persistence, LangChain",
+          "modification_note": "Original Chinese summary of documented checkpointer, graph-state snapshot, store and recovery behavior; no source prose, code, examples, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/concepts/agt-c-05-tool-sandbox-permission-side-effect.mdx": {
+      "title": "工具、隔离沙箱（Sandbox）、权限与副作用：让外部效果经过授权和核验",
+      "slug": "/concepts/agt-c-05",
+      "reviewed_at": "2026-08-26",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-aws-making-retries-safe-idempotent-apis-2020",
+          "citation_url": "https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-APIs/",
+          "roles": [
+            "implementation",
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Making retries safe with idempotent APIs, Malcolm Featonby / Amazon Web Services",
+          "modification_note": "Original Chinese factual summary of caller-provided request identity and semantic-equivalence boundaries; no source prose, examples, diagrams, code or structure copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-github-3c46e2b98a84",
+          "citation_url": "https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/docs/tools.md",
+          "roles": [
+            "implementation",
+            "runtime-fact"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Tools / Agents as tools, OpenAI",
+          "modification_note": "Original Chinese summary of the documented function-tool schema and invocation shape at the pinned commit; no prose, code, examples, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-github-bc8615c2a73c",
+          "citation_url": "https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/docs/guardrails.md",
+          "roles": [
+            "implementation",
+            "runtime-fact"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Guardrails, OpenAI",
+          "modification_note": "Original Chinese summary of documented input, output and function-tool guardrail scope at the pinned commit; no prose, code, examples, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-modelcontextprotocol-6a01ecb9df48",
+          "citation_url": "https://modelcontextprotocol.io/specification/2025-06-18/architecture",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "MCP Architecture（2025-06-18 版）, Model Context Protocol maintainers",
+          "modification_note": "Original Chinese summary of the host-client-server and capability-negotiation architecture; no specification prose, message examples, diagrams, structure or visual layout copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-nist-ai-rmf-1-0",
+          "citation_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "roles": [
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Artificial Intelligence Risk Management Framework (AI RMF 1.0), Elham Tabassi / National Institute of Standards and Technology",
+          "modification_note": "Original Chinese factual summary of risk, monitoring, human-oversight, recovery and decommissioning mechanisms; no source prose, figures, tables or framework structure copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-nist-sp-800-160-v1r1-2022",
+          "citation_url": "https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "NIST SP 800-160 Vol. 1 Rev. 1, Engineering Trustworthy Secure Systems",
+          "modification_note": "Original Chinese factual summary of lifecycle systems-security engineering, verification and risk treatment; no source prose, figures, tables or structure copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-saltzer-schroeder-protection-1975",
+          "citation_url": "https://web.mit.edu/Saltzer/www/publications/protection/",
+          "roles": [
+            "definition",
+            "historical-context"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "The Protection of Information in Computer Systems, Jerome H. Saltzer and Michael D. Schroeder",
+          "modification_note": "Original Chinese factual summary of fail-safe defaults and least privilege; no source prose, examples, figures, table, structure or scan copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/concepts/agt-c-06-trace-evaluation-guardrail.mdx": {
+      "title": "追踪、评测与执行约束：分开证据、质量判断与政策执行",
+      "slug": "/concepts/agt-c-06",
+      "reviewed_at": "2026-08-26",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-anthropic-demystifying-evals-ai-agents",
+          "citation_url": "https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Demystifying evals for AI agents, Anthropic",
+          "modification_note": "Original Chinese factual summary of the article's evaluation vocabulary, grader selection and human-calibration guidance; no source prose, examples, tables, images, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-nist-ai-rmf-1-0",
+          "citation_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "roles": [
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Artificial Intelligence Risk Management Framework (AI RMF 1.0), Elham Tabassi / National Institute of Standards and Technology",
+          "modification_note": "Original Chinese factual summary of risk, monitoring, evaluation and human-oversight mechanisms; no source prose, figures, tables or framework structure copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-opentelemetry-genai-agent-semconv",
+          "citation_url": "https://github.com/open-telemetry/semantic-conventions-genai/blob/56d6b11a02129319bf371083fa134b7ce989c976/docs/gen-ai/gen-ai-agent-spans.md",
+          "roles": [
+            "definition",
+            "implementation"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Semantic Conventions for GenAI agent and framework spans, OpenTelemetry Authors",
+          "modification_note": "Original Chinese factual summary of development-status span names and related attributes at the pinned commit; no generated tables, prose, examples, source model or document structure copied.",
           "excerpt": null,
           "quotation_reviewed": false
         }
@@ -35020,6 +37108,544 @@
           "usage_mode": "original-illustration",
           "attribution_note": "Software architecture learning roadmap illustration — Tego Arch maintainers, Tego Arch maintainers",
           "modification_note": "Drawn for this atlas to show the six-stage learning sequence and four specialist branches.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/patterns/agt-p-01-workflow-vs-autonomous-agent.mdx": {
+      "title": "确定性工作流（Workflow）与自治智能体（Agent）",
+      "slug": "/patterns/agt-p-01",
+      "reviewed_at": "2026-08-27",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-anthropic-building-effective-agents",
+          "citation_url": "https://www.anthropic.com/engineering/building-effective-agents",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Building Effective Agents, Anthropic",
+          "modification_note": "Original Chinese synthesis of the workflow/agent boundary and incremental-complexity guidance; no source prose, examples, structure, taxonomy layout or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-openai-practical-guide-building-agents",
+          "citation_url": "https://openai.com/business/guides-and-resources/a-practical-guide-to-building-ai-agents/",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "A Practical Guide to Building Agents, OpenAI",
+          "modification_note": "Original Chinese synthesis of agent control, tool-selection, loop, exit-condition and deterministic-fallback boundaries; no source prose, examples, code, structure, taxonomy layout or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/patterns/agt-p-02-agentic-rag.mdx": {
+      "title": "智能体检索增强生成（Agentic RAG）：用证据充分性约束检索循环",
+      "slug": "/patterns/agt-p-02",
+      "reviewed_at": "2026-08-27",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-agentic-rag-survey",
+          "citation_url": "https://arxiv.org/abs/2501.09136",
+          "roles": [
+            "discovery"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Agentic Retrieval-Augmented Generation: A Survey on Agentic RAG, Aditi Singh et al.",
+          "modification_note": "Original Chinese discovery-only note on the survey's taxonomy scope; no survey prose, taxonomy table, figure, example, framework comparison or layout copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-flare-active-retrieval-augmented-generation",
+          "citation_url": "https://arxiv.org/abs/2305.06983",
+          "roles": [
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Active Retrieval Augmented Generation, Zhengbao Jiang et al.",
+          "modification_note": "Original Chinese summary of FLARE active-retrieval timing and query formation; no paper prose, figure, table, example, benchmark structure or experimental layout copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-rag-knowledge-intensive-nlp-tasks",
+          "citation_url": "https://arxiv.org/abs/2005.11401",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks, Patrick Lewis et al.",
+          "modification_note": "Original Chinese summary of parametric/non-parametric memory and the two named RAG formulations; no paper prose, figure, table, example, benchmark structure or experimental layout copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-react-reasoning-acting-language-models",
+          "citation_url": "https://arxiv.org/abs/2210.03629",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "ReAct: Synergizing Reasoning and Acting in Language Models, Shunyu Yao et al.",
+          "modification_note": "Original Chinese summary of interleaved reasoning/action and environment interaction; no paper prose, example, table, figure, benchmark structure or visual layout copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-self-rag-retrieve-generate-critique",
+          "citation_url": "https://arxiv.org/abs/2310.11511",
+          "roles": [
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Self-RAG: Learning to Retrieve, Generate, and Critique through Self-Reflection, Akari Asai et al.",
+          "modification_note": "Original Chinese summary of on-demand retrieval and reflection-token critique; no paper prose, figure, table, example, benchmark structure or experimental layout copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/patterns/agt-p-03-planner-executor.mdx": {
+      "title": "规划者–执行者（Planner–Executor）：用版本化计划约束重规划",
+      "slug": "/patterns/agt-p-03",
+      "reviewed_at": "2026-08-27",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-anthropic-building-effective-agents",
+          "citation_url": "https://www.anthropic.com/engineering/building-effective-agents",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Building Effective Agents, Anthropic",
+          "modification_note": "Original Chinese synthesis of planning and orchestration boundaries; no source prose, examples, structure, taxonomy layout or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-github-27d330c0760f",
+          "citation_url": "https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/examples/agent_patterns/deterministic.py",
+          "roles": [
+            "implementation"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "deterministic flow, OpenAI",
+          "modification_note": "Bounded implementation-evidence summary of the fixed code example; no code, prompt, output, example task, control structure or repository layout copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-openai-practical-guide-building-agents",
+          "citation_url": "https://openai.com/business/guides-and-resources/a-practical-guide-to-building-ai-agents/",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "A Practical Guide to Building Agents, OpenAI",
+          "modification_note": "Original Chinese synthesis of agent control, tool-selection, loop, exit-condition and incremental adoption boundaries; no source prose, examples, code, structure, taxonomy layout or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/patterns/agt-p-04-evaluator-optimizer.mdx": {
+      "title": "评估者—优化者（Evaluator-Optimizer）：用外部量表与修订预算约束反馈循环",
+      "slug": "/patterns/agt-p-04",
+      "reviewed_at": "2026-08-27",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-anthropic-building-effective-agents",
+          "citation_url": "https://www.anthropic.com/engineering/building-effective-agents",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Building Effective Agents, Anthropic",
+          "modification_note": "Original Chinese synthesis of the evaluator–optimizer feedback-loop boundary; no source prose, examples, structure, taxonomy layout or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-anthropic-demystifying-evals-ai-agents",
+          "citation_url": "https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Demystifying evals for AI agents, Anthropic",
+          "modification_note": "Original Chinese synthesis of evaluation vocabulary, grader selection and human-calibration boundaries; no source prose, examples, tables, images, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-github-0e9e961ee207",
+          "citation_url": "https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/examples/agent_patterns/llm_as_a_judge.py",
+          "roles": [
+            "implementation"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "LLM-as-a-judge, OpenAI",
+          "modification_note": "Bounded implementation-evidence summary of the fixed code example; no code, prompt, output, example task, control structure or repository layout copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/patterns/agt-p-05-router-model-dispatch.mdx": {
+      "title": "路由与模型驱动分发：先过策略门，再选择唯一目的地",
+      "slug": "/patterns/agt-p-05",
+      "reviewed_at": "2026-08-27",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-github-199e95b0a693",
+          "citation_url": "https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/examples/agent_patterns/routing.py",
+          "roles": [
+            "implementation"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Handoff routing, OpenAI",
+          "modification_note": "Bounded implementation-evidence summary of the fixed routing example; no code, prompt, output, example task, control structure or repository layout copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-github-32ae2040f2fa",
+          "citation_url": "https://github.com/QuantumNous/new-api/blob/1721144221ec5c94dd87891a7ae1bee228e7bb63/service/channel_select.go",
+          "roles": [
+            "case-evidence",
+            "comparison"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "service/channel_select.go, QuantumNous / New API maintainers",
+          "modification_note": "Original Chinese comparison of channel selection with task-control routing; no source code, examples, control structure, repository layout or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-github-ee60ab199780",
+          "citation_url": "https://github.com/Kong/developer.konghq.com/blob/f144a33379d5b599efaacf92642a2f9b41018fd6/app/ai-gateway/load-balancing.md",
+          "roles": [
+            "case-evidence",
+            "comparison"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "AI Gateway load-balancing documentation source, Kong Inc.",
+          "modification_note": "Original Chinese comparison of traffic-selection mechanics with task-control routing; no source prose, examples, tables, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/patterns/agt-p-06-supervisor-handoff-agents-as-tools.mdx": {
+      "title": "智能体（Agent）的监督者（Supervisor）、移交（Handoff）与智能体作为工具（Agents as Tools）：先决定控制权归谁",
+      "slug": "/patterns/agt-p-06",
+      "reviewed_at": "2026-08-27",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-atlas-agt-p-06-control-ownership-models",
+          "citation_url": "/img/diagrams/agt-p-06-control-ownership-models.svg",
+          "roles": [
+            "illustration"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "original-illustration",
+          "attribution_note": "Multi-agent control ownership models, Tego Arch maintainers",
+          "modification_note": "Created as an original synchronized Draw.io/SVG pair without third-party topology, reference imagery, icons, brand visuals, signatures, watermarks or copied composition.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-github-70740975c052",
+          "citation_url": "https://github.com/microsoft/multi-agent-reference-architecture/tree/ed3613b54b46b595dd223aaff8772def376a8c37",
+          "roles": [
+            "case-evidence",
+            "comparison"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Microsoft Multi-Agent Reference Architecture repository at fixed commit, Microsoft",
+          "modification_note": "Original Chinese comparison of reference-architecture building blocks, communication and governance boundaries; no source prose, code, examples, topology, repository layout or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-github-bb9d33890d3e",
+          "citation_url": "https://github.com/a2aproject/A2A/blob/af112d9491c1fd4b2a568ac65755af4a62790490/docs/specification.md",
+          "roles": [
+            "definition",
+            "comparison"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "A2A specification at fixed commit, A2A Project",
+          "modification_note": "Original Chinese explanation of protocol interoperability boundaries; no specification prose, examples, schemas, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-github-ef3d4ce19335",
+          "citation_url": "https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/docs/multi_agent.md",
+          "roles": [
+            "implementation",
+            "comparison"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Multi-agent patterns documentation at fixed commit, OpenAI",
+          "modification_note": "Original Chinese comparison of manager-style agents-as-tools and handoff control ownership; no source prose, code, examples, structure, taxonomy layout or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-github-f832ac155523",
+          "citation_url": "https://github.com/langchain-ai/langgraph-supervisor-py/blob/88859b34017ac3569bbd4a3092c7e77593a0a960/README.md",
+          "roles": [
+            "implementation",
+            "comparison"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "langgraph-supervisor-py README at fixed commit, LangChain",
+          "modification_note": "Bounded implementation-evidence summary of supervisor delegation and return semantics; no source prose, code, examples, topology, repository layout or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/patterns/agt-p-07-orchestrator-workers-fanout-fanin.mdx": {
+      "title": "编排者–工作者与扇出/扇入：并行不是无界广播",
+      "slug": "/patterns/agt-p-07",
+      "reviewed_at": "2026-08-27",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-anthropic-building-effective-agents",
+          "citation_url": "https://www.anthropic.com/engineering/building-effective-agents",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Building Effective Agents, Anthropic",
+          "modification_note": "Original Chinese synthesis of parallelization and orchestrator–workers boundaries; no source prose, examples, structure, taxonomy layout or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-github-4d3dfe89f2a4",
+          "citation_url": "https://github.com/microsoft/multi-agent-reference-architecture/blob/ed3613b54b46b595dd223aaff8772def376a8c37/docs/building-blocks/Building-Blocks.md",
+          "roles": [
+            "case-evidence",
+            "comparison"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Building Blocks at fixed commit, Microsoft",
+          "modification_note": "Original Chinese comparison with the reference architecture orchestrator and specialist-agent boundary; no source prose, examples, tables, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-github-fe00e370c994",
+          "citation_url": "https://github.com/awslabs/cli-agent-orchestrator/blob/bae80071a17e001380367c461b32d64bc6b54433/README.md",
+          "roles": [
+            "case-evidence",
+            "implementation"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "CLI Agent Orchestrator README at fixed commit, Amazon Web Services",
+          "modification_note": "Bounded implementation-evidence summary of supervisor–worker assignment and isolated terminal sessions; no source prose, code, examples, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/patterns/agt-p-08-durable-agent-hitl.mdx": {
+      "title": "持久智能体（Agent）与人在回路（Human-in-the-loop）：恢复控制状态，不臆测外部真相",
+      "slug": "/patterns/agt-p-08",
+      "reviewed_at": "2026-08-27",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-anthropic-effective-harnesses-long-running-agents",
+          "citation_url": "https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents",
+          "roles": [
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Effective harnesses for long-running agents, Anthropic",
+          "modification_note": "Original Chinese synthesis of structured progress artifacts and cross-context long-running task boundaries; no source prose, examples, code, prompts, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-anthropic-managed-agents",
+          "citation_url": "https://www.anthropic.com/engineering/managed-agents",
+          "roles": [
+            "implementation",
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Scaling Managed Agents: Decoupling the brain from the hands, Anthropic",
+          "modification_note": "Original Chinese synthesis of durable-session log, harness, sandbox and crash-rebuild boundaries; no source prose, code, interfaces, examples, metrics, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-atlas-agt-p-08-durable-agent-hitl",
+          "citation_url": "/img/diagrams/agt-p-08-durable-agent-hitl.svg",
+          "roles": [
+            "illustration"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "original-illustration",
+          "attribution_note": "Durable agent recovery and human approval control flow, Tego Arch maintainers",
+          "modification_note": "Created as an original synchronized Draw.io/SVG pair without third-party topology, reference imagery, icons, brand visuals, signatures, watermarks or copied composition.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-docs-7dd57631bd24",
+          "citation_url": "https://docs.langchain.com/oss/python/langgraph/interrupts",
+          "roles": [
+            "runtime-fact"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Interrupts, LangChain",
+          "modification_note": "Original Chinese summary of documented pause, checkpoint-backed resume, node re-execution and idempotency guidance; no source prose, code, examples, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-docs-99e58642fe77",
+          "citation_url": "https://docs.langchain.com/oss/python/langgraph/persistence",
+          "roles": [
+            "runtime-fact"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Persistence, LangChain",
+          "modification_note": "Original Chinese summary of documented checkpointer, graph-state snapshot and recovery behavior; no source prose, code, examples, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-docs-abd3e18c34a9",
+          "citation_url": "https://docs.temporal.io/workflows",
+          "roles": [
+            "runtime-fact"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Temporal Workflow, Temporal Technologies",
+          "modification_note": "Original Chinese summary of documented workflow-state and replay behavior; no source prose, code, examples, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-docs-f58d7138ba8f",
+          "citation_url": "https://docs.temporal.io/encyclopedia/event-history",
+          "roles": [
+            "runtime-fact"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Temporal Event History, Temporal Technologies",
+          "modification_note": "Original Chinese summary of documented event-history state-reconstruction behavior; no source prose, code, examples, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-github-06f3f1f4928e",
+          "citation_url": "https://github.com/openai/openai-agents-python/blob/2fa463571e76dae8ff267622f1018eaf06ffeb9f/docs/human_in_the_loop.md",
+          "roles": [
+            "implementation"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Human-in-the-loop documentation at fixed commit, OpenAI",
+          "modification_note": "Original Chinese summary of tool-approval, interrupted-state and resume interface behavior at the fixed commit; no source prose, code, examples, structure or diagrams copied.",
           "excerpt": null,
           "quotation_reviewed": false
         }
@@ -38581,6 +41207,132 @@
           "usage_mode": "facts-summary",
           "attribution_note": "HTML Standard — Import maps, WHATWG",
           "modification_note": "Attributed original Chinese factual summary of module-specifier resolution, scopes and integrity metadata; no normative prose, algorithms, examples or structure copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/styles/sty-13-space-based-architecture.mdx": {
+      "title": "Space-Based Architecture：让状态与处理在亲和分区相遇",
+      "slug": "/styles/sty-13",
+      "reviewed_at": "2026-08-28",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-atlas-sty13-space-based-flight-availability",
+          "citation_url": "/img/diagrams/sty-13-space-based-flight-availability.svg",
+          "roles": [
+            "illustration"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "original-illustration",
+          "attribution_note": "Space-Based Architecture 航班余位亲和分区、主备与恢复边界图，Tego Arch maintainers",
+          "modification_note": "Created as the Task 3 original synchronized Draw.io/SVG pair using only approved article semantics without third-party diagrams, reference imagery, logos, brand visuals, signatures, watermarks or copied composition.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-gigaspaces-flight-availability-case",
+          "citation_url": "https://www.gigaspaces.com/case_studies/booking-and-flight-availability",
+          "roles": [
+            "case-evidence"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Booking and Flight Availability, GigaSpaces customer case",
+          "modification_note": "Original Chinese vendor-claim-labeled summary limited to the existence of the published customer case; no metrics, customer quotations, source structure, logos, brand visuals or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-gigaspaces-processing-unit-sla",
+          "citation_url": "https://docs.gigaspaces.com/16.2.1/admin/the-sla-overview.html",
+          "roles": [
+            "implementation",
+            "runtime-fact"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Defining the SLA for Your Processing Unit, GigaSpaces, XAP 16.2.1",
+          "modification_note": "Original Chinese factual summary limited to documented Processing Unit deployment, SLA and primary-backup control mechanisms; no source prose, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-gigaspaces-proxy-connectivity",
+          "citation_url": "https://docs.gigaspaces.com/16.2/admin/tuning-proxy-connectivity.html",
+          "roles": [
+            "implementation",
+            "runtime-fact"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Proxy Connectivity, GigaSpaces, XAP 16.2",
+          "modification_note": "Original Chinese factual summary limited to documented proxy connectivity, discovery and rerouting mechanisms; no source prose, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-gigaspaces-sba-overview",
+          "citation_url": "https://docs.gigaspaces.com/16.2/overview/space-based-architecture.html",
+          "roles": [
+            "definition",
+            "implementation",
+            "runtime-fact"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Space-Based Architecture, GigaSpaces, XAP 16.2",
+          "modification_note": "Original Chinese factual summary limited to the documented definition, Processing Unit, partition-local service, data-affinity and primary-backup mechanisms; no source prose, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-gigaspaces-split-brain-resolution",
+          "citation_url": "https://docs.gigaspaces.com/16.2/admin/leader-election-availability-biased.html",
+          "roles": [
+            "implementation",
+            "runtime-fact"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Availability Biased — Split Brain and Primary Resolution, GigaSpaces, XAP 16.2",
+          "modification_note": "Original Chinese factual summary limited to documented split-brain and primary-resolution mechanisms; no source prose, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-oracle-coherence-backing-maps",
+          "citation_url": "https://docs.oracle.com/middleware/1221/coherence/develop-applications/cache_back.htm",
+          "roles": [
+            "comparison",
+            "implementation",
+            "runtime-fact"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Implementing Storage and Backing Maps, Oracle, Coherence 12.2.1",
+          "modification_note": "Original Chinese factual summary independently limited to documented Coherence backup/storage, backing-map and persistent-store mechanisms as a narrow recovery comparison; no source prose, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-oracle-coherence-partitioned-cache",
+          "citation_url": "https://docs.oracle.com/en/middleware/fusion-middleware/coherence/12.2.1.4/develop-applications/introduction-coherence.html",
+          "roles": [
+            "comparison",
+            "implementation",
+            "runtime-fact"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Introduction to Coherence, Oracle, Coherence 12.2.1.4",
+          "modification_note": "Original Chinese factual summary limited to documented Coherence partitioned-data and rebalancing mechanisms as a narrow comparison; no backup/storage claim and no source prose, structure or diagrams copied.",
           "excerpt": null,
           "quotation_reviewed": false
         }

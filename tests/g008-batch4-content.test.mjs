@@ -198,7 +198,7 @@ test('makes every MOD-06 overflow region explicitly keyboard-scrollable', () => 
   );
   assert.equal(
     [...body.matchAll(/onKeyDown=\{handleHorizontalArrowKey\}/gu)].length,
-    3,
+    2,
   );
 });
 

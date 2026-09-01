@@ -78,10 +78,11 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 
 封闭层默认只允许紧邻向下依赖。领域层依赖基础设施层公开的稳定数据访问能力合同，但不能接收其数据结构、对象关系映射类型、连接配置或厂商类型。
 
-<div className="diagram-wrapper diagram-wrapper--scroll-owner" role="region" aria-label="单一部署单元内的封闭层与只读查询例外，可横向滚动" tabIndex={0} onKeyDown={handleHorizontalArrowKey}>
+<div className="diagram-wrapper">
 
 ```mermaid
 flowchart TD
+  accTitle: 单一部署单元内的封闭层与只读查询例外
   subgraph DEPLOY["单一部署单元"]
     PRESENTATION["表示层"] --> APPLICATION["应用层"]
     APPLICATION --> DOMAIN["领域层"]

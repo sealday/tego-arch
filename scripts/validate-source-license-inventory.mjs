@@ -382,7 +382,8 @@ export function validateSourceLicenseInventory(markdown, candidateUrls) {
 
 /**
  * The source ledger is the runtime authority. The inventory remains a migration
- * audit snapshot, so fields represented in both artifacts must not drift.
+ * audit snapshot, so copyright fields must not drift and later runtime reviews
+ * may only move checked_at forward from the snapshot date.
  */
 export function validateInventoryLedgerConsistency(
   inventoryEntries,
@@ -453,7 +454,6 @@ export function validateInventoryLedgerConsistency(
     for (const source of familySources) {
       const sharedFields = [
         ['author_or_org', entry.author_or_org, source.author_or_org],
-        ['checked_at', entry.checked_at, source.checked_at],
         ['license', entry.exact_license, source.license],
         ['license_evidence_url', entry.license_evidence_url, source.license_evidence_url],
         ['license_evidence_note', entry.license_evidence_note, source.license_evidence_note],
@@ -471,6 +471,17 @@ export function validateInventoryLedgerConsistency(
         if (inventoryValue === ledgerValue) continue;
         errors.push(
           `runtime source ledger is authoritative: family "${source.license_family_id}" field "${field}" differs from the migration inventory snapshot`,
+        );
+      }
+      const snapshotCheckedAt = Date.parse(`${entry.checked_at}T00:00:00Z`);
+      const ledgerCheckedAt = Date.parse(`${source.checked_at}T00:00:00Z`);
+      if (
+        !Number.isFinite(snapshotCheckedAt) ||
+        !Number.isFinite(ledgerCheckedAt) ||
+        ledgerCheckedAt < snapshotCheckedAt
+      ) {
+        errors.push(
+          `runtime source ledger is authoritative: family "${source.license_family_id}" field "checked_at" predates the migration inventory snapshot`,
         );
       }
     }

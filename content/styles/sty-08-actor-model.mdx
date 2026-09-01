@@ -34,6 +34,7 @@ adjacent_topics:
   - STY-05
   - STY-06
   - STY-07
+  - STY-13
 related_cases:
   - /cases/erlang-otp-supervision-tree
 related_questions: []
@@ -233,6 +234,8 @@ Actor 不等于线程。Actor 不等于普通消息消费者。Actor 不等于�
 [STY-07 面向服务架构](/styles/sty-07)强调企业能力、稳定合同与跨所有权治理；Actor 的逻辑实体尺度通常更细。三种关系都只是准确邻接，不表示排他选择或演进阶梯。
 
 [Erlang/OTP 失败恢复案例](/cases/erlang-otp-supervision-tree)展示重启策略、强度预算和向上升级的具体实现。它支持“局部恢复权必须有边界”的比较，不证明所有 Actor 运行时使用相同监督层级，也不替订单业务恢复、对账或补偿。
+
+[Space-Based Architecture 决策](/styles/sty-13)比较分区处理单元与 Actor 的状态所有权；两者都收敛本地决定，但亲和分区、主备数据网格与邮箱语义不能互换。
 
 ## 来源
 

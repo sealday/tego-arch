@@ -73,17 +73,20 @@ test('catalog coverage is the discovered published case set', () => {
   );
 });
 
-test('preserves the legacy 18-case slug and order projection', async () => {
+test('preserves the legacy 18-case prefix and appends the three reference cases', async () => {
   const [catalog, legacyOrder] = await Promise.all([
     readFile(new URL('../src/generated/case-catalog.json', import.meta.url), 'utf8')
       .then(JSON.parse),
     readFile(new URL('./fixtures/legacy-case-order.json', import.meta.url), 'utf8')
       .then(JSON.parse),
   ]);
-  assert.deepEqual(
-    catalog.map(({slug, catalog_order}) => ({slug, catalog_order})),
-    legacyOrder,
-  );
+  const projected = catalog.map(({slug, catalog_order}) => ({slug, catalog_order}));
+  assert.deepEqual(projected.slice(0, legacyOrder.length), legacyOrder);
+  assert.deepEqual(projected.slice(legacyOrder.length), [
+    {slug: '/cases/multi-agent-research-system', catalog_order: 19},
+    {slug: '/cases/long-running-coding-agent', catalog_order: 20},
+    {slug: '/cases/production-incident-response-agent', catalog_order: 21},
+  ]);
 });
 
 const validCaseBody = [

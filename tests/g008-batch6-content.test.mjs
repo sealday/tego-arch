@@ -171,20 +171,6 @@ const expectedSourceUsageBoundaries = [
 
 const expectedWrappers = [
   `<div
-  className="diagram-wrapper"
-  role="region"
-  aria-label="业务意图状态机，可横向滚动"
-  tabIndex={0}
-  onKeyDown={handleHorizontalArrowKey}
->`,
-  `<div
-  className="diagram-wrapper"
-  role="region"
-  aria-label="执行与恢复状态机，可横向滚动"
-  tabIndex={0}
-  onKeyDown={handleHorizontalArrowKey}
->`,
-  `<div
   className="table-wrapper table-wrapper--mapping"
   role="region"
   aria-label="业务与执行状态转换映射表，可横向滚动"
@@ -207,7 +193,7 @@ function stateDiagrams(body) {
 }
 
 function parseStateDiagram(graph) {
-  const [header, ...lines] = graph.split('\n').filter((line) => line.trim() !== '');
+  const [header, ...lines] = graph.split('\n').filter((line) => line.trim() !== '' && !line.trim().startsWith('accTitle:'));
   assert.equal(header, 'stateDiagram-v2', '状态 diagram header');
 
   const declarations = [];

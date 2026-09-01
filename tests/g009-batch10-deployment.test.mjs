@@ -237,16 +237,18 @@ function assertStageBBacklog(source = backlog) {
 function assertStageBProjection() {
   assert.deepEqual(
     {completed: status.completed_topics, documents: status.content_documents, sources: status.governed_sources},
-    {completed: 65, documents: 108, sources: 565},
+    {completed: 83, documents: 126, sources: 599},
   );
-  assert.equal(publicLedger.sources.length, 565);
+  assert.equal(publicLedger.sources.length, 599);
+
   const topics = new Map(manifest.topics.map((topic) => [topic.id, topic]));
   const styles = new Map(indexes.style.map((topic) => [topic.id, topic]));
   assert.deepEqual([topics.get('STY-09')?.published, topics.get('STY-09')?.status.value, styles.get('STY-09')?.published], [true, 'complete', true]);
   assert.deepEqual([topics.get('STY-10')?.published, topics.get('STY-10')?.status.value, styles.get('STY-10')?.published], [true, 'complete', true]);
   assert.deepEqual([topics.get('STY-11')?.published, topics.get('STY-11')?.status.value, styles.get('STY-11')?.published], [true, 'complete', true]);
   assert.deepEqual([topics.get('STY-12')?.published, topics.get('STY-12')?.status.value, styles.get('STY-12')?.published], [true, 'complete', true]);
-  assert.deepEqual([topics.get('STY-13')?.published, topics.get('STY-13')?.status.value, styles.get('STY-13')?.published], [false, 'pending', false]);
+  assert.deepEqual([topics.get('STY-13')?.published, topics.get('STY-13')?.status.value, styles.get('STY-13')?.published], [true, 'complete', true]);
+  assert.deepEqual([topics.get('STY-14')?.published, topics.get('STY-14')?.status.value, styles.get('STY-14')?.published], [false, 'pending', false]);
 }
 function assertPendingStageBReview(source = review) {
   assert.equal(section(source, 'Stage B closure candidate'), PENDING_STAGE_B_REVIEW_LINES.join('\n'), 'exact pending Stage B section');
@@ -260,7 +262,7 @@ async function assertSty12Actionability() {
   const documents = await readContentDocuments('content');
   const reciprocals = new Set(['styles/sty-03-vertical-slice-architecture.mdx', 'styles/sty-10-microkernel-plugin-architecture.mdx', 'cases/micro-frontends-single-spa.mdx']);
   for (const document of documents) assert.equal(extractInternalLinks(document).includes('/styles/sty-12'), reciprocals.has(document.file), `${document.file} exact STY-12 actionability`);
-  assert.equal(documents.flatMap(extractInternalLinks).includes('/styles/sty-13'), false, 'STY-13 non-actionable');
+  assert.equal(documents.flatMap(extractInternalLinks).includes('/styles/sty-13'), true, 'STY-13 has published reciprocal actions');
 }
 async function assertArtifactIdentities(source) {
   const identities = section(source, 'Artifact identities');

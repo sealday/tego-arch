@@ -234,6 +234,12 @@ function assertReadyStageBCandidate(source = review) {
   assert.equal(source.split('## Stage B closure candidate').length - 1, 1, 'one Stage B candidate section');
 }
 const FINAL_BASELINE_PREFIX = `2026-08-27 G009 Batch 13 已完成 STY-12，Stage B 发布基线为 [\`${STAGE_B_PUBLISHED_HEAD}\`](https://github.com/sealday/tego-arch/commit/${STAGE_B_PUBLISHED_HEAD})，Pages run [\`${STAGE_B_PRODUCTION_PAGES.runId}\`](${STAGE_B_PRODUCTION_PAGES.runUrl})，exact \`headSha=${STAGE_B_PUBLISHED_HEAD}\`、\`event=push\`、\`status=completed\`、\`conclusion=success\`，build job \`${STAGE_B_PRODUCTION_PAGES.build.jobId}\`、deploy job \`${STAGE_B_PRODUCTION_PAGES.deploy.jobId}\`；2026-08-27 Stage B production HTTP probes \`8/8\`，live route \`/styles/sty-12\` 与 \`/img/diagrams/sty-12-micro-frontend-commerce-runtime.svg\` 均为 HTTP \`200\`，live SVG SHA-256 \`${SVG_SHA256}\` 与 reviewed asset exact match。Production Browser states \`4/4\`、wrapper interactions \`16/16\`、relation destination/H1/return \`12/12\`、exact source destinations \`28/28\`，每个状态 STY-13 actionable count \`0\` 且 diagnostics \`37/37\` 完整为零；raw \`${STAGE_B_PRODUCTION_RAW}\` 为 \`${STAGE_B_PRODUCTION_RAW_BYTES.toLocaleString('en-US')}\` bytes / SHA-256 \`${STAGE_B_PRODUCTION_RAW_SHA256}\`，Stage B production functional verdict \`PASS\`，screenshot evidence \`PASS / ACCEPTED\`（\`4/4\`，fallback \`false\`，production-analysis table-section viewport scope）。Stage B closure projection 为 65 个已完成主题、108 篇内容文档与 565 个受治理来源，持久故事进度仍为 \`8 / 20\`，当前 G009，下一项为 STY-13，STY-12 为 published/complete，STY-13 为 unpublished/pending/nonactionable；Stage B 三个独立 review slots 与 final readiness 均为 \`READY\`，findings \`0\`，deployment status 为 \`SUCCESS\`。`;
+const BATCH13_HISTORY_MARKER = '此前 G009 Batch 13 历史完成基线为：';
+function historicalBatch13Baseline(source) {
+  const current = currentReleaseBaseline(source);
+  assert.equal(current.split(BATCH13_HISTORY_MARKER).length - 1, 1, 'one exact Batch 13 history marker');
+  return current.slice(current.indexOf(BATCH13_HISTORY_MARKER) + BATCH13_HISTORY_MARKER.length);
+}
 function assertFinalStageBReview(source = review, rawBytes = stageBProductionRaw) {
   assertReadyStageBCandidate(source);
   assert.equal(rawBytes?.length, STAGE_B_PRODUCTION_RAW_BYTES, 'exact Stage B raw bytes');
@@ -254,14 +260,13 @@ function assertFinalStageBReview(source = review, rawBytes = stageBProductionRaw
   assert.doesNotMatch(section, /PENDING|NOT_RUN|BLOCKED|FULL_PAGE|OPENING|physically clicked/u);
 }
 function assertFinalRecoveryBaseline(source = backlog) {
-  const baseline = currentReleaseBaseline(source);
+  const baseline = historicalBatch13Baseline(source);
   const marker = '此前 G009 Batch 12 历史完成基线为：';
-  assert.ok(baseline.startsWith(`${FINAL_BASELINE_PREFIX}${marker}`), 'exact current Stage B recovery baseline prefix');
+  assert.ok(baseline.startsWith(`${FINAL_BASELINE_PREFIX}${marker}`), 'exact historical Batch 13 Stage B recovery baseline prefix');
   const history = baseline.slice((FINAL_BASELINE_PREFIX + marker).length);
   assert.equal(Buffer.byteLength(history), IMMEDIATE_BASELINE_BYTES, 'complete Batch 12 history suffix bytes');
   assert.equal(sha256(history), IMMEDIATE_BASELINE_HASH, 'complete Batch 12 history suffix SHA-256');
-  const candidates = source.split(/\r?\n/u).filter((line) => /^- \*\*G009 Batch .* Stage B 当前关闭候选：\*\*/u.test(line));
-  assert.deepEqual(candidates, [`- **G009 Batch 13 Stage B 当前关闭候选：** ${FINAL_BASELINE_PREFIX}`]);
+  assert.equal(baseline.split(FINAL_BASELINE_PREFIX).length - 1, 1, 'one exact historical Batch 13 Stage B prefix');
 }
 function assertReview(source = review, rawBytes = raw) {
   assert.ok(source, `${REVIEW} is missing; record real reviews only after Browser evidence exists`);
@@ -655,7 +660,7 @@ const [review, raw, immediateReview, backlog, status, manifest, documents, svgBy
 const productionRaw = await optional(PRODUCTION_RAW);
 const stageBProductionRaw = await optional(STAGE_B_PRODUCTION_RAW);
 
-test('preserves immutable Batch 12 history and closes only STY-12 in the Stage B projection', () => {
+test('preserves immutable Batch 12 history under the current STY-13 Stage A projection', () => {
   assertImmediateBatch12History();
   assert.deepEqual({
     completed_topics: status.completed_topics,
@@ -663,25 +668,27 @@ test('preserves immutable Batch 12 history and closes only STY-12 in the Stage B
     governed_sources: status.governed_sources,
     durable_stories: {completed: status.durable_stories.completed, total: status.durable_stories.total},
     current_goal: status.durable_stories.current,
-    next_topic: NEXT_TOPIC,
+    next_topic: 'STY-14',
   }, {
-    completed_topics: 65,
-    content_documents: 108,
-    governed_sources: 565,
+    completed_topics: 83,
+    content_documents: 126,
+    governed_sources: 599,
+
     durable_stories: {completed: 8, total: 20},
     current_goal: 'G009',
-    next_topic: 'STY-13',
+    next_topic: 'STY-14',
   });
-  const current = manifest.topics.find(({id}) => id === CURRENT_TOPIC);
-  const next = manifest.topics.find(({id}) => id === NEXT_TOPIC);
+  const current = manifest.topics.find(({id}) => id === NEXT_TOPIC);
+  const next = manifest.topics.find(({id}) => id === 'STY-14');
   assert.deepEqual({published: current?.published, status: current?.status?.value}, {published: true, status: 'complete'});
   assert.deepEqual({published: next?.published, status: next?.status?.value}, {published: false, status: 'pending'});
-  assert.ok(documents.some(({metadata}) => metadata.topic_id === CURRENT_TOPIC), 'STY-12 content is published');
-  assert.equal(documents.some(({metadata}) => metadata.topic_id === NEXT_TOPIC), false, 'STY-13 content is unpublished');
-  assert.equal(documents.flatMap(extractInternalLinks).includes('/styles/sty-13'), false, 'STY-13 remains non-actionable');
+  assert.ok(documents.some(({metadata}) => metadata.topic_id === NEXT_TOPIC), 'STY-13 content is published');
+  assert.equal(documents.some(({metadata}) => metadata.topic_id === 'STY-14'), false, 'STY-14 content is unpublished');
+  assert.equal(documents.flatMap(extractInternalLinks).includes('/styles/sty-14'), false, 'STY-14 remains non-actionable');
   assert.ok(backlog.includes(STY12_CLOSURE_LINE), 'exact STY-12 Stage A closure evidence');
-  assert.match(backlog, /^- \[ \] \*\*STY-13 P2｜Space-Based Architecture\*\*/mu);
-  assert.doesNotMatch(backlog, /^- \[x\] \*\*STY-13 P2｜Space-Based Architecture\*\*/mu);
+  assert.match(backlog, /^- \[x\] \*\*STY-13 P2｜Space-Based Architecture\*\*/mu);
+  assert.doesNotMatch(backlog, /^- \[ \] \*\*STY-13 P2｜Space-Based Architecture\*\*/mu);
+  assert.match(backlog, /^- \[ \] \*\*STY-14 P1｜风格选择矩阵\*\*/mu);
   assert.equal(svgBytes.length, SVG_BYTES, 'reviewed STY-12 SVG exact bytes');
   assert.equal(sha256(svgBytes), SVG_SHA256, 'reviewed STY-12 SVG exact SHA-256');
 });

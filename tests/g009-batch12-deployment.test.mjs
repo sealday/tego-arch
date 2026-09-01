@@ -7,7 +7,8 @@ import {readContentDocuments} from '../scripts/content-metadata.mjs';
 import {extractInternalLinks} from '../scripts/content-relations.mjs';
 
 export const EXPECTED_STAGE_A = Object.freeze({completed: 63, documents: 107, sources: 560});
-export const EXPECTED_STAGE_B = Object.freeze({completed: 65, documents: 108, sources: 565});
+export const EXPECTED_STAGE_B = Object.freeze({completed: 83, documents: 126, sources: 599});
+
 export const CURRENT_TOPIC = 'STY-11';
 export const NEXT_TOPIC = 'STY-12';
 export const FUTURE_TOPIC = 'STY-13';
@@ -641,7 +642,7 @@ test('preserves exact STY-11 Stage B closure while the current projection publis
   assert.ok(current, 'STY-11 is published as a content document');
   assertStageBBacklog();
   assert.equal(documents.some(({metadata}) => metadata.topic_id === NEXT_TOPIC), true, 'STY-12 is published');
-  assert.equal(documents.some(({metadata}) => metadata.topic_id === FUTURE_TOPIC), false, 'STY-13 is unpublished');
+  assert.equal(documents.some(({metadata}) => metadata.topic_id === FUTURE_TOPIC), true, 'STY-13 is published');
   assert.match(backlog, /^- \[x\] \*\*STY-12 P1｜Micro-Frontend\*\*/mu);
   assert.equal(documents.flatMap(extractInternalLinks).includes('/styles/sty-12'), true, 'STY-12 has exact published reciprocal actions');
   const manifestCurrent = manifest.topics.find(({id}) => id === CURRENT_TOPIC);
@@ -649,7 +650,7 @@ test('preserves exact STY-11 Stage B closure while the current projection publis
   const manifestFuture = manifest.topics.find(({id}) => id === FUTURE_TOPIC);
   assert.deepEqual({published: manifestCurrent?.published, status: manifestCurrent?.status?.value}, {published: true, status: 'complete'});
   assert.deepEqual({published: manifestNext?.published, status: manifestNext?.status?.value}, {published: true, status: 'complete'});
-  assert.deepEqual({published: manifestFuture?.published, status: manifestFuture?.status?.value}, {published: false, status: 'pending'});
+  assert.deepEqual({published: manifestFuture?.published, status: manifestFuture?.status?.value}, {published: true, status: 'complete'});
   const staleNext = backlog.replace('下一项为 STY-12', '下一项为 STY-11');
   assert.notEqual(staleNext, backlog, 'current next-topic mutation applies');
   assert.throws(() => assertStageBBacklog(staleNext), assert.AssertionError);

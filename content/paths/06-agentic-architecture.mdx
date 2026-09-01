@@ -32,6 +32,8 @@ tags:
   - 权限
 ---
 
+import Link from '@docusaurus/Link';
+
 # 自主式架构专项
 
 ## 为什么学
@@ -51,11 +53,57 @@ tags:
 
 ## 推荐学习顺序
 
-1. 先用单智能体与确定性代码描述任务的最小控制面。
-2. 比较管理者、移交与监督者如何移动下一步控制权。
-3. 分开标注运行状态、业务事实、长期记忆与恢复检查点。
-4. 为工具副作用设置权限、审批、隔离、评估和人工接管边界。
-5. 最后判断智能体间协议或模型上下文协议是否对应真实的跨运行时或工具接入需求。
+1. 先界定系统中哪些责任属于模型、增强型大语言模型（Augmented LLM）、工作流与智能体。
+2. 再为单智能体明确运行外壳、循环、状态、工具权限与评测责任。
+3. 依据下一步控制权选择确定性工作流、规划、评估或路由模式。
+4. 只有检索、跨智能体协作或长时恢复成为真实需求时，才引入相应扩展模式。
+5. 最后用参考设计验证正常路径、失败路径、停止条件与最终责任人。
+
+## 系统边界
+
+- [AI Agent 系统边界](/concepts/agt-c-01)：先判断需求究竟需要模型调用、增强型大语言模型、确定性工作流还是会自行决定下一步的智能体；边界没有说清前，不进入多智能体设计。
+
+## 单 Agent 基础
+
+- 智能体运行框架（[Agent Harness](/concepts/agt-c-02)）：检查谁提供运行时、工具接入、上下文装配、预算和生命周期控制，避免把模型能力误当成完整系统。
+- 智能体循环（[Agent Loop](/concepts/agt-c-03)）：明确循环的观察、决策、行动与终止责任，先证明单智能体的控制闭环可解释。
+- [Context、Memory、State 与 Checkpoint](/concepts/agt-c-04)：为短期输入、长期记忆、业务事实和恢复位置分别指定所有者，再决定哪些状态能够重放。
+- [Tool、Sandbox、Permission 与 Side Effect](/concepts/agt-c-05)：在允许写入、执行或调用外部系统前，落实最小权限、隔离、审批与副作用边界。
+- [Trace、Evaluation 与 Guardrail](/concepts/agt-c-06)：把可观测证据、质量判定和运行时约束分层，确认它们各自能阻止或只能发现什么问题。
+
+## 控制模式
+
+- [Deterministic Workflow vs Autonomous Agent](/patterns/agt-p-01)：先比较显式步骤与自主决策，选择满足任务变化度的最低自治级别。
+- 规划者–执行者（[Planner–Executor](/patterns/agt-p-03)）：当任务需要动态分解时，检查计划、执行、重规划和停止是否由可指认的控制者承担。
+- [Evaluator–Optimizer](/patterns/agt-p-04)：只有产出可以按明确标准反复改进时才引入反馈循环，并预先设定预算与终止条件。
+- [Router 与模型驱动分发](/patterns/agt-p-05)：当输入可以分类到有限专家或流程时，用集中分发保留清晰控制面，而不是默认升级为多智能体。
+
+## 能力扩展
+
+- 智能体检索增强生成（[Agentic RAG](/patterns/agt-p-02)）：在检索需要迭代选源、改写查询和核验证据时引入运行循环，同时保留引用与停止边界。
+- [Supervisor、Handoff 与 Agents-as-Tools](/patterns/agt-p-06)：比较集中监督、控制权转交和主智能体调用专家三种责任结构，避免只按框架术语选型。
+- [Orchestrator–Workers 与 Fan-out/Fan-in](/patterns/agt-p-07)：当子任务确实可以独立并行时，指定拆分、并发、收敛、冲突处理和最终验收责任。
+- [Durable Agent 与 Human-in-the-loop](/patterns/agt-p-08)：当任务跨越进程或等待人工决定时，先定义持久状态、恢复语义、审批和取消权限。
+
+## 生产验证
+
+- [多智能体研究系统](/cases/multi-agent-research-system)：验证问题分解、并行检索、证据合成与引用核验如何形成一条可审查的只读研究链路。
+- [长时运行 Coding Agent](/cases/long-running-coding-agent)：验证运行外壳、沙箱、检查点、测试反馈和恢复如何约束持续修改代码的任务。
+- [生产事故响应 Agent](/cases/production-incident-response-agent)：验证只读诊断、人工批准、受控变更与恢复确认如何分隔，尤其关注终止权限。
+
+## 按任务选择分支
+
+### 可控自动化
+
+**进入条件：** 任务边界有限，而且控制路径可以持续保持显式。**必读：** <Link to="/patterns/agt-p-01">确定性控制与自主决策</Link>、<Link to="/patterns/agt-p-05">集中分发</Link>、<Link to="/patterns/agt-p-04">质量反馈循环</Link>。**停止或跳过：** 如果确定性控制已经满足变化、质量和恢复要求，到此停止；除非任务证明需要动态协作或跨进程恢复，否则跳过多智能体与持久智能体材料。
+
+### 知识型智能体
+
+**进入条件：** 任务需要迭代检索、选择证据并核验引用。**必读：** 先完成 <Link to="/concepts/agt-c-03">运行循环</Link>、<Link to="/concepts/agt-c-04">上下文、记忆、状态与恢复位置</Link>、<Link to="/concepts/agt-c-06">追踪、评测与在线约束</Link>，再阅读 <Link to="/patterns/agt-p-02">迭代检索模式</Link>，并用<Link to="/cases/multi-agent-research-system">多智能体研究系统</Link>验证证据链。**停止或跳过：** 当证据合成和引用核验已经有界时停止；系统保持只读时，跳过副作用与长时执行主题。
+
+### 有副作用的长时智能体
+
+**进入条件：** 任务会跨进程持续运行，或会产生外部可见的修改。**必读：** 依次检查 <Link to="/concepts/agt-c-05">工具执行、隔离、权限与副作用</Link>、<Link to="/patterns/agt-p-08">持久恢复与人工介入</Link>，再用<Link to="/cases/long-running-coding-agent">长时运行编码智能体</Link>和<Link to="/cases/production-incident-response-agent">生产事故响应智能体</Link>验证边界。**停止或跳过：** 如果权限、检查点、恢复、审批或最终终止权无法明确归属，就停止自动化并转为人工控制；不能用更高自治级别绕过这些缺口。
 
 ## 必读起点
 

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-26T11:41:39.787Z",
+  "generated_at": "2026-08-28T08:44:36.623Z",
   "results": [
     {
       "transport_locator": "https://a2a-protocol.org/latest/",
@@ -4185,6 +4185,275 @@
       "review_status": "healthy"
     },
     {
+      "transport_locator": "https://html.spec.whatwg.org/multipage/webappapis.html",
+      "source_ids": [
+        "src-whatwg-html-import-maps"
+      ],
+      "last_attempt": {
+        "at": "2026-08-26T11:41:39.787Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://html.spec.whatwg.org/multipage/webappapis.html",
+        "http_status": 206,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-26T11:41:39.787Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://html.spec.whatwg.org/multipage/webappapis.html",
+        "http_status": 206,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-08-26T11:41:39.787Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://html.spec.whatwg.org/multipage/webappapis.html",
+          "http_status": 206,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://www.w3.org/TR/CSP3/",
+      "source_ids": [
+        "src-w3c-content-security-policy-3"
+      ],
+      "last_attempt": {
+        "at": "2026-08-26T11:41:39.787Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www.w3.org/TR/CSP3/",
+        "http_status": 200,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-26T11:41:39.787Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www.w3.org/TR/CSP3/",
+        "http_status": 200,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-08-26T11:41:39.787Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://www.w3.org/TR/CSP3/",
+          "http_status": 200,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://www.w3.org/TR/longtasks-1/",
+      "source_ids": [
+        "src-w3c-long-tasks-api"
+      ],
+      "last_attempt": {
+        "at": "2026-08-26T11:41:39.787Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www.w3.org/TR/longtasks-1/",
+        "http_status": 206,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-26T11:41:39.787Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www.w3.org/TR/longtasks-1/",
+        "http_status": 206,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-08-26T11:41:39.787Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://www.w3.org/TR/longtasks-1/",
+          "http_status": 206,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://www.w3.org/TR/SRI/",
+      "source_ids": [
+        "src-w3c-subresource-integrity"
+      ],
+      "last_attempt": {
+        "at": "2026-08-26T11:41:39.787Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www.w3.org/TR/sri/",
+        "http_status": 206,
+        "login_wall_detected": false,
+        "redirects": [
+          {
+            "status": 301,
+            "from": "https://www.w3.org/TR/SRI/",
+            "to": "https://www.w3.org/TR/sri/"
+          }
+        ]
+      },
+      "last_success": {
+        "at": "2026-08-26T11:41:39.787Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www.w3.org/TR/sri/",
+        "http_status": 206,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-08-26T11:41:39.787Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://www.w3.org/TR/sri/",
+          "http_status": 206,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://arxiv.org/abs/2005.11401",
+      "source_ids": ["src-rag-knowledge-intensive-nlp-tasks"],
+      "last_attempt": {
+        "at": "2026-08-26T18:19:10.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://arxiv.org/abs/2005.11401",
+        "http_status": 206,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-26T18:19:10.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://arxiv.org/abs/2005.11401",
+        "http_status": 206,
+        "login_wall_detected": false
+      },
+      "attempt_history": [{
+        "at": "2026-08-26T18:19:10.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://arxiv.org/abs/2005.11401",
+        "http_status": 206,
+        "login_wall_detected": false
+      }],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://arxiv.org/abs/2210.03629",
+      "source_ids": [
+        "src-react-reasoning-acting-language-models"
+      ],
+      "last_attempt": {
+        "at": "2026-08-26T11:09:57.957Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://arxiv.org/abs/2210.03629",
+        "http_status": 206,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-26T11:09:57.957Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://arxiv.org/abs/2210.03629",
+        "http_status": 206,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-08-26T11:09:57.957Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://arxiv.org/abs/2210.03629",
+          "http_status": 206,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://arxiv.org/abs/2305.06983",
+      "source_ids": ["src-flare-active-retrieval-augmented-generation"],
+      "last_attempt": {
+        "at": "2026-08-26T18:19:10.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://arxiv.org/abs/2305.06983",
+        "http_status": 206,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-26T18:19:10.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://arxiv.org/abs/2305.06983",
+        "http_status": 206,
+        "login_wall_detected": false
+      },
+      "attempt_history": [{
+        "at": "2026-08-26T18:19:10.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://arxiv.org/abs/2305.06983",
+        "http_status": 206,
+        "login_wall_detected": false
+      }],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://arxiv.org/abs/2310.11511",
+      "source_ids": ["src-self-rag-retrieve-generate-critique"],
+      "last_attempt": {
+        "at": "2026-08-26T18:19:10.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://arxiv.org/abs/2310.11511",
+        "http_status": 206,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-26T18:19:10.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://arxiv.org/abs/2310.11511",
+        "http_status": 206,
+        "login_wall_detected": false
+      },
+      "attempt_history": [{
+        "at": "2026-08-26T18:19:10.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://arxiv.org/abs/2310.11511",
+        "http_status": 206,
+        "login_wall_detected": false
+      }],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://arxiv.org/abs/2501.09136",
+      "source_ids": ["src-agentic-rag-survey"],
+      "last_attempt": {
+        "at": "2026-08-26T18:19:10.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://arxiv.org/abs/2501.09136",
+        "http_status": 206,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-26T18:19:10.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://arxiv.org/abs/2501.09136",
+        "http_status": 206,
+        "login_wall_detected": false
+      },
+      "attempt_history": [{
+        "at": "2026-08-26T18:19:10.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://arxiv.org/abs/2501.09136",
+        "http_status": 206,
+        "login_wall_detected": false
+      }],
+      "review_status": "healthy"
+    },
+    {
       "transport_locator": "https://aws.amazon.com/blogs/architecture/shuffle-sharding-massive-and-magical-fault-isolation/",
       "source_ids": [
         "src-aws-0ccf50a7d52b"
@@ -6592,6 +6861,37 @@
           "at": "2026-08-25T12:07:24.531Z",
           "outcome": "healthy",
           "final_transport_locator": "https://c4model.com/diagrams/notation",
+          "http_status": 200,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf?file=a-practical-guide-to-building-agents.pdf",
+      "source_ids": [
+        "src-openai-practical-guide-building-agents"
+      ],
+      "last_attempt": {
+        "at": "2026-08-26T08:24:01.325Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf?file=a-practical-guide-to-building-agents.pdf",
+        "http_status": 200,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-26T08:24:01.325Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf?file=a-practical-guide-to-building-agents.pdf",
+        "http_status": 200,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-08-26T08:24:01.325Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf?file=a-practical-guide-to-building-agents.pdf",
           "http_status": 200,
           "login_wall_detected": false
         }
@@ -16889,6 +17189,37 @@
           "at": "2026-08-25T12:07:24.531Z",
           "outcome": "healthy",
           "final_transport_locator": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html",
+          "http_status": 206,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html",
+      "source_ids": [
+        "src-aws-iam-security-best-practices"
+      ],
+      "last_attempt": {
+        "at": "2026-08-27T21:07:05.703Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html",
+        "http_status": 206,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-27T21:07:05.703Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html",
+        "http_status": 206,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-08-27T21:07:05.703Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html",
           "http_status": 206,
           "login_wall_detected": false
         }
@@ -58052,6 +58383,37 @@
       "review_status": "healthy"
     },
     {
+      "transport_locator": "https://github.com/langchain-ai/open_deep_research/blob/1b7d2e80db9faa586165c60e09096dbbfd483a64/src/legacy/multi_agent.py",
+      "source_ids": [
+        "src-langchain-open-deep-research-multi-agent"
+      ],
+      "last_attempt": {
+        "at": "2026-08-27T17:08:30.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://github.com/langchain-ai/open_deep_research/blob/1b7d2e80db9faa586165c60e09096dbbfd483a64/src/legacy/multi_agent.py",
+        "http_status": 200,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-27T17:08:30.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://github.com/langchain-ai/open_deep_research/blob/1b7d2e80db9faa586165c60e09096dbbfd483a64/src/legacy/multi_agent.py",
+        "http_status": 200,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-08-27T17:08:30.000Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://github.com/langchain-ai/open_deep_research/blob/1b7d2e80db9faa586165c60e09096dbbfd483a64/src/legacy/multi_agent.py",
+          "http_status": 200,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
       "transport_locator": "https://github.com/mehdihadeli/awesome-software-architecture",
       "source_ids": [
         "src-github-432a30aa96cb"
@@ -61934,6 +62296,37 @@
           "outcome": "healthy",
           "final_transport_locator": "https://github.com/modelcontextprotocol/modelcontextprotocol/tree/46fa5192d4969f51ecea9896f7211a67d147f803",
           "http_status": 206,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://github.com/open-telemetry/semantic-conventions-genai/blob/56d6b11a02129319bf371083fa134b7ce989c976/docs/gen-ai/gen-ai-agent-spans.md",
+      "source_ids": [
+        "src-opentelemetry-genai-agent-semconv"
+      ],
+      "last_attempt": {
+        "at": "2026-08-26T13:19:25.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://github.com/open-telemetry/semantic-conventions-genai/blob/56d6b11a02129319bf371083fa134b7ce989c976/docs/gen-ai/gen-ai-agent-spans.md",
+        "http_status": 200,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-26T13:19:25.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://github.com/open-telemetry/semantic-conventions-genai/blob/56d6b11a02129319bf371083fa134b7ce989c976/docs/gen-ai/gen-ai-agent-spans.md",
+        "http_status": 200,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-08-26T13:19:25.000Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://github.com/open-telemetry/semantic-conventions-genai/blob/56d6b11a02129319bf371083fa134b7ce989c976/docs/gen-ai/gen-ai-agent-spans.md",
+          "http_status": 200,
           "login_wall_detected": false
         }
       ],
@@ -80254,37 +80647,6 @@
       "review_status": "healthy"
     },
     {
-      "transport_locator": "https://html.spec.whatwg.org/multipage/webappapis.html",
-      "source_ids": [
-        "src-whatwg-html-import-maps"
-      ],
-      "last_attempt": {
-        "at": "2026-08-26T11:41:39.787Z",
-        "outcome": "healthy",
-        "final_transport_locator": "https://html.spec.whatwg.org/multipage/webappapis.html",
-        "http_status": 206,
-        "login_wall_detected": false,
-        "redirects": []
-      },
-      "last_success": {
-        "at": "2026-08-26T11:41:39.787Z",
-        "outcome": "healthy",
-        "final_transport_locator": "https://html.spec.whatwg.org/multipage/webappapis.html",
-        "http_status": 206,
-        "login_wall_detected": false
-      },
-      "attempt_history": [
-        {
-          "at": "2026-08-26T11:41:39.787Z",
-          "outcome": "healthy",
-          "final_transport_locator": "https://html.spec.whatwg.org/multipage/webappapis.html",
-          "http_status": 206,
-          "login_wall_detected": false
-        }
-      ],
-      "review_status": "healthy"
-    },
-    {
       "transport_locator": "https://ieeexplore.ieee.org/document/5388187/",
       "source_ids": [
         "src-ibm-structured-design-1974"
@@ -97908,6 +98270,37 @@
       "review_status": "healthy"
     },
     {
+      "transport_locator": "https://sre.google/books/",
+      "source_ids": [
+        "src-google-sre-books"
+      ],
+      "last_attempt": {
+        "at": "2026-08-27T21:07:05.703Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://sre.google/books/",
+        "http_status": 206,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-27T21:07:05.703Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://sre.google/books/",
+        "http_status": 206,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-08-27T21:07:05.703Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://sre.google/books/",
+          "http_status": 206,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
       "transport_locator": "https://sre.google/sre-book/addressing-cascading-failures/",
       "source_ids": [
         "src-sre-addressing-cascading-failures"
@@ -99672,6 +100065,192 @@
           "at": "2026-08-25T12:07:24.531Z",
           "outcome": "healthy",
           "final_transport_locator": "https://web.mit.edu/Saltzer/www/publications/protection/",
+          "http_status": 200,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://www.anthropic.com/engineering/building-effective-agents",
+      "source_ids": [
+        "src-anthropic-building-effective-agents"
+      ],
+      "last_attempt": {
+        "at": "2026-08-26T08:49:28.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www.anthropic.com/engineering/building-effective-agents",
+        "http_status": 200,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-26T08:49:28.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www.anthropic.com/engineering/building-effective-agents",
+        "http_status": 200,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-08-26T08:49:28.000Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://www.anthropic.com/engineering/building-effective-agents",
+          "http_status": 200,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents",
+      "source_ids": [
+        "src-anthropic-demystifying-evals-ai-agents"
+      ],
+      "last_attempt": {
+        "at": "2026-08-26T13:19:25.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents",
+        "http_status": 200,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-26T13:19:25.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents",
+        "http_status": 200,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-08-26T13:19:25.000Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents",
+          "http_status": 200,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents",
+      "source_ids": [
+        "src-anthropic-effective-harnesses-long-running-agents"
+      ],
+      "last_attempt": {
+        "at": "2026-08-26T09:35:44.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents",
+        "http_status": 200,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-26T09:35:44.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents",
+        "http_status": 200,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-08-26T09:35:44.000Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents",
+          "http_status": 200,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://www.anthropic.com/engineering/harness-design-long-running-apps",
+      "source_ids": [
+        "src-anthropic-harness-design-long-running-apps"
+      ],
+      "last_attempt": {
+        "at": "2026-08-26T09:35:44.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www.anthropic.com/engineering/harness-design-long-running-apps",
+        "http_status": 200,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-26T09:35:44.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www.anthropic.com/engineering/harness-design-long-running-apps",
+        "http_status": 200,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-08-26T09:35:44.000Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://www.anthropic.com/engineering/harness-design-long-running-apps",
+          "http_status": 200,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://www.anthropic.com/engineering/managed-agents",
+      "source_ids": [
+        "src-anthropic-managed-agents"
+      ],
+      "last_attempt": {
+        "at": "2026-08-26T09:35:44.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www.anthropic.com/engineering/managed-agents",
+        "http_status": 200,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-26T09:35:44.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www.anthropic.com/engineering/managed-agents",
+        "http_status": 200,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-08-26T09:35:44.000Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://www.anthropic.com/engineering/managed-agents",
+          "http_status": 200,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://www.anthropic.com/engineering/multi-agent-research-system",
+      "source_ids": [
+        "src-anthropic-multi-agent-research-system"
+      ],
+      "last_attempt": {
+        "at": "2026-08-27T17:08:30.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www.anthropic.com/engineering/multi-agent-research-system",
+        "http_status": 200,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-27T17:08:30.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www.anthropic.com/engineering/multi-agent-research-system",
+        "http_status": 200,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-08-27T17:08:30.000Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://www.anthropic.com/engineering/multi-agent-research-system",
           "http_status": 200,
           "login_wall_detected": false
         }
@@ -106607,105 +107186,6 @@
       "review_status": "healthy"
     },
     {
-      "transport_locator": "https://www.w3.org/TR/CSP3/",
-      "source_ids": [
-        "src-w3c-content-security-policy-3"
-      ],
-      "last_attempt": {
-        "at": "2026-08-26T11:41:39.787Z",
-        "outcome": "healthy",
-        "final_transport_locator": "https://www.w3.org/TR/CSP3/",
-        "http_status": 200,
-        "login_wall_detected": false,
-        "redirects": []
-      },
-      "last_success": {
-        "at": "2026-08-26T11:41:39.787Z",
-        "outcome": "healthy",
-        "final_transport_locator": "https://www.w3.org/TR/CSP3/",
-        "http_status": 200,
-        "login_wall_detected": false
-      },
-      "attempt_history": [
-        {
-          "at": "2026-08-26T11:41:39.787Z",
-          "outcome": "healthy",
-          "final_transport_locator": "https://www.w3.org/TR/CSP3/",
-          "http_status": 200,
-          "login_wall_detected": false
-        }
-      ],
-      "review_status": "healthy"
-    },
-    {
-      "transport_locator": "https://www.w3.org/TR/longtasks-1/",
-      "source_ids": [
-        "src-w3c-long-tasks-api"
-      ],
-      "last_attempt": {
-        "at": "2026-08-26T11:41:39.787Z",
-        "outcome": "healthy",
-        "final_transport_locator": "https://www.w3.org/TR/longtasks-1/",
-        "http_status": 206,
-        "login_wall_detected": false,
-        "redirects": []
-      },
-      "last_success": {
-        "at": "2026-08-26T11:41:39.787Z",
-        "outcome": "healthy",
-        "final_transport_locator": "https://www.w3.org/TR/longtasks-1/",
-        "http_status": 206,
-        "login_wall_detected": false
-      },
-      "attempt_history": [
-        {
-          "at": "2026-08-26T11:41:39.787Z",
-          "outcome": "healthy",
-          "final_transport_locator": "https://www.w3.org/TR/longtasks-1/",
-          "http_status": 206,
-          "login_wall_detected": false
-        }
-      ],
-      "review_status": "healthy"
-    },
-    {
-      "transport_locator": "https://www.w3.org/TR/SRI/",
-      "source_ids": [
-        "src-w3c-subresource-integrity"
-      ],
-      "last_attempt": {
-        "at": "2026-08-26T11:41:39.787Z",
-        "outcome": "healthy",
-        "final_transport_locator": "https://www.w3.org/TR/sri/",
-        "http_status": 206,
-        "login_wall_detected": false,
-        "redirects": [
-          {
-            "status": 301,
-            "from": "https://www.w3.org/TR/SRI/",
-            "to": "https://www.w3.org/TR/sri/"
-          }
-        ]
-      },
-      "last_success": {
-        "at": "2026-08-26T11:41:39.787Z",
-        "outcome": "healthy",
-        "final_transport_locator": "https://www.w3.org/TR/sri/",
-        "http_status": 206,
-        "login_wall_detected": false
-      },
-      "attempt_history": [
-        {
-          "at": "2026-08-26T11:41:39.787Z",
-          "outcome": "healthy",
-          "final_transport_locator": "https://www.w3.org/TR/sri/",
-          "http_status": 206,
-          "login_wall_detected": false
-        }
-      ],
-      "review_status": "healthy"
-    },
-    {
       "transport_locator": "https://www.w3.org/TR/ws-arch/",
       "source_ids": [
         "src-w3c-web-services-architecture"
@@ -106943,6 +107423,347 @@
           "at": "2026-08-25T12:07:24.531Z",
           "outcome": "healthy",
           "final_transport_locator": "https://www2.eecs.berkeley.edu/Pubs/TechRpts/2015/EECS-2015-206.html",
+          "http_status": 206,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://github.com/openai/codex/tree/5f49aba876922d6f2f55caa153bbb0ed1b46feba",
+      "source_ids": [
+        "src-openai-codex-fixed-repository"
+      ],
+      "last_attempt": {
+        "at": "2026-08-28T06:20:00.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://github.com/openai/codex/tree/5f49aba876922d6f2f55caa153bbb0ed1b46feba",
+        "http_status": 200,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-28T06:20:00.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://github.com/openai/codex/tree/5f49aba876922d6f2f55caa153bbb0ed1b46feba",
+        "http_status": 200,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-08-28T06:20:00.000Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://github.com/openai/codex/tree/5f49aba876922d6f2f55caa153bbb0ed1b46feba",
+          "http_status": 200,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://github.com/openai/codex/blob/5f49aba876922d6f2f55caa153bbb0ed1b46feba/codex-rs/protocol/src/protocol.rs",
+      "source_ids": [
+        "src-openai-codex-approval-sandbox-source"
+      ],
+      "last_attempt": {
+        "at": "2026-08-28T06:20:00.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://github.com/openai/codex/blob/5f49aba876922d6f2f55caa153bbb0ed1b46feba/codex-rs/protocol/src/protocol.rs",
+        "http_status": 200,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-28T06:20:00.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://github.com/openai/codex/blob/5f49aba876922d6f2f55caa153bbb0ed1b46feba/codex-rs/protocol/src/protocol.rs",
+        "http_status": 200,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-08-28T06:20:00.000Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://github.com/openai/codex/blob/5f49aba876922d6f2f55caa153bbb0ed1b46feba/codex-rs/protocol/src/protocol.rs",
+          "http_status": 200,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://github.com/langchain-ai/langgraph/blob/bdb8a9c7a4aa1390af225f6a5d292e5088659bd5/libs/checkpoint/langgraph/checkpoint/base/__init__.py",
+      "source_ids": [
+        "src-langgraph-checkpoint-base-current"
+      ],
+      "last_attempt": {
+        "at": "2026-08-28T06:20:00.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://github.com/langchain-ai/langgraph/blob/bdb8a9c7a4aa1390af225f6a5d292e5088659bd5/libs/checkpoint/langgraph/checkpoint/base/__init__.py",
+        "http_status": 200,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-28T06:20:00.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://github.com/langchain-ai/langgraph/blob/bdb8a9c7a4aa1390af225f6a5d292e5088659bd5/libs/checkpoint/langgraph/checkpoint/base/__init__.py",
+        "http_status": 200,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-08-28T06:20:00.000Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://github.com/langchain-ai/langgraph/blob/bdb8a9c7a4aa1390af225f6a5d292e5088659bd5/libs/checkpoint/langgraph/checkpoint/base/__init__.py",
+          "http_status": 200,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://github.com/temporalio/sdk-typescript/blob/5373d58f7d504b6b72c7ac17b33139eb5f23dbec/packages/activity/src/index.ts",
+      "source_ids": [
+        "src-temporal-typescript-activity-heartbeat-current"
+      ],
+      "last_attempt": {
+        "at": "2026-08-28T06:20:00.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://github.com/temporalio/sdk-typescript/blob/5373d58f7d504b6b72c7ac17b33139eb5f23dbec/packages/activity/src/index.ts",
+        "http_status": 200,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-28T06:20:00.000Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://github.com/temporalio/sdk-typescript/blob/5373d58f7d504b6b72c7ac17b33139eb5f23dbec/packages/activity/src/index.ts",
+        "http_status": 200,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-08-28T06:20:00.000Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://github.com/temporalio/sdk-typescript/blob/5373d58f7d504b6b72c7ac17b33139eb5f23dbec/packages/activity/src/index.ts",
+          "http_status": 200,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://docs.gigaspaces.com/16.2.1/admin/the-sla-overview.html",
+      "source_ids": [
+        "src-gigaspaces-processing-unit-sla"
+      ],
+      "last_attempt": {
+        "at": "2026-08-28T08:44:36.623Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://docs.gigaspaces.com/16.2.1/admin/the-sla-overview.html",
+        "http_status": 206,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-28T08:44:36.623Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://docs.gigaspaces.com/16.2.1/admin/the-sla-overview.html",
+        "http_status": 206,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-08-28T08:44:36.623Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://docs.gigaspaces.com/16.2.1/admin/the-sla-overview.html",
+          "http_status": 206,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://docs.gigaspaces.com/16.2/admin/leader-election-availability-biased.html",
+      "source_ids": [
+        "src-gigaspaces-split-brain-resolution"
+      ],
+      "last_attempt": {
+        "at": "2026-08-28T08:44:36.623Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://docs.gigaspaces.com/16.2/admin/leader-election-availability-biased.html",
+        "http_status": 206,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-28T08:44:36.623Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://docs.gigaspaces.com/16.2/admin/leader-election-availability-biased.html",
+        "http_status": 206,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-08-28T08:44:36.623Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://docs.gigaspaces.com/16.2/admin/leader-election-availability-biased.html",
+          "http_status": 206,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://docs.gigaspaces.com/16.2/admin/tuning-proxy-connectivity.html",
+      "source_ids": [
+        "src-gigaspaces-proxy-connectivity"
+      ],
+      "last_attempt": {
+        "at": "2026-08-28T08:44:36.623Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://docs.gigaspaces.com/16.2/admin/tuning-proxy-connectivity.html",
+        "http_status": 206,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-28T08:44:36.623Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://docs.gigaspaces.com/16.2/admin/tuning-proxy-connectivity.html",
+        "http_status": 206,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-08-28T08:44:36.623Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://docs.gigaspaces.com/16.2/admin/tuning-proxy-connectivity.html",
+          "http_status": 206,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://docs.gigaspaces.com/16.2/overview/space-based-architecture.html",
+      "source_ids": [
+        "src-gigaspaces-sba-overview"
+      ],
+      "last_attempt": {
+        "at": "2026-08-28T08:44:36.623Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://docs.gigaspaces.com/16.2/overview/space-based-architecture.html",
+        "http_status": 206,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-28T08:44:36.623Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://docs.gigaspaces.com/16.2/overview/space-based-architecture.html",
+        "http_status": 206,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-08-28T08:44:36.623Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://docs.gigaspaces.com/16.2/overview/space-based-architecture.html",
+          "http_status": 206,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://docs.oracle.com/en/middleware/fusion-middleware/coherence/12.2.1.4/develop-applications/introduction-coherence.html",
+      "source_ids": [
+        "src-oracle-coherence-partitioned-cache"
+      ],
+      "last_attempt": {
+        "at": "2026-08-28T08:44:36.623Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://docs.oracle.com/en/middleware/fusion-middleware/coherence/12.2.1.4/develop-applications/introduction-coherence.html",
+        "http_status": 200,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-28T08:44:36.623Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://docs.oracle.com/en/middleware/fusion-middleware/coherence/12.2.1.4/develop-applications/introduction-coherence.html",
+        "http_status": 200,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-08-28T08:44:36.623Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://docs.oracle.com/en/middleware/fusion-middleware/coherence/12.2.1.4/develop-applications/introduction-coherence.html",
+          "http_status": 200,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://docs.oracle.com/middleware/1221/coherence/develop-applications/cache_back.htm",
+      "source_ids": [
+        "src-oracle-coherence-backing-maps"
+      ],
+      "last_attempt": {
+        "at": "2026-08-28T08:44:36.623Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://docs.oracle.com/middleware/1221/coherence/develop-applications/cache_back.htm",
+        "http_status": 200,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-28T08:44:36.623Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://docs.oracle.com/middleware/1221/coherence/develop-applications/cache_back.htm",
+        "http_status": 200,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-08-28T08:44:36.623Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://docs.oracle.com/middleware/1221/coherence/develop-applications/cache_back.htm",
+          "http_status": 200,
+          "login_wall_detected": false
+        }
+      ],
+      "review_status": "healthy"
+    },
+    {
+      "transport_locator": "https://www.gigaspaces.com/case_studies/booking-and-flight-availability",
+      "source_ids": [
+        "src-gigaspaces-flight-availability-case"
+      ],
+      "last_attempt": {
+        "at": "2026-08-28T08:44:36.623Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www.gigaspaces.com/case_studies/booking-and-flight-availability",
+        "http_status": 206,
+        "login_wall_detected": false,
+        "redirects": []
+      },
+      "last_success": {
+        "at": "2026-08-28T08:44:36.623Z",
+        "outcome": "healthy",
+        "final_transport_locator": "https://www.gigaspaces.com/case_studies/booking-and-flight-availability",
+        "http_status": 206,
+        "login_wall_detected": false
+      },
+      "attempt_history": [
+        {
+          "at": "2026-08-28T08:44:36.623Z",
+          "outcome": "healthy",
+          "final_transport_locator": "https://www.gigaspaces.com/case_studies/booking-and-flight-availability",
           "http_status": 206,
           "login_wall_detected": false
         }

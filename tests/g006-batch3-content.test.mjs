@@ -38,7 +38,7 @@ const relationships = new Map([
   }],
   ['QA-08', {
     dependsOn: ['QA-00', 'QA-02', 'QA-04'],
-    adjacent: ['QA-02', 'QA-04', 'QA-05', 'QA-09', 'QA-10'],
+    adjacent: ['QA-02', 'QA-04', 'QA-05', 'QA-09', 'QA-10', 'AGT-C-06'],
     cases: ['/cases/aws-cell-shuffle-sharding', '/cases/openai-agents-sdk'],
   }],
   ['QA-09', {
@@ -198,7 +198,9 @@ test('reciprocal relationships', () => {
   for (const [id, relation] of relationships) {
     const links = new Set(extractInternalLinks(requiredDocument(id)));
     for (const adjacent of relation.adjacent) {
-      const adjacentSlug = expected.get(adjacent)?.[1] ?? topicsById.get(adjacent)?.slug;
+      const adjacentSlug = expected.get(adjacent)?.[1]
+        ?? documentsById.get(adjacent)?.metadata.slug
+        ?? topicsById.get(adjacent)?.slug;
       assert.ok(links.has(adjacentSlug), `${id} must visibly link ${adjacent}`);
       const reverse = new Set(extractInternalLinks(requiredDocument(adjacent)));
       assert.ok(reverse.has(expected.get(id)[1]), `${adjacent} must visibly link ${id}`);

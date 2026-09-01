@@ -5,6 +5,7 @@ import test from 'node:test';
 import {
   assertCaseCatalog,
   assertCaseSeriesRegistry,
+  caseSourceKinds,
   caseCatalog,
   caseSeries,
   featuredCases,
@@ -12,6 +13,7 @@ import {
   seriesLabels,
   sourceKindLabels,
 } from '../src/data/caseCatalog.ts';
+import {allowedSourceKinds} from '../scripts/content-schema.mjs';
 import {
   collectFilterOptions,
   filterCases,
@@ -74,21 +76,21 @@ const noFilters = {
 };
 
 test('derives the current featured and second-collection views from generated data', () => {
-  assert.equal(caseCatalog.length, 18);
+  assert.equal(caseCatalog.length, 21);
   assert.equal(featuredCases.length, 5);
   assert.deepEqual(
     featuredCases.map(({catalog_order}) => catalog_order),
     [1, 2, 3, 4, 5],
   );
-  assert.equal(secondCollectionCases.length, 13);
+  assert.equal(secondCollectionCases.length, 16);
   assert.deepEqual(
     secondCollectionCases.map(({catalog_order}) => catalog_order),
-    [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+    [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21],
   );
   assert.deepEqual(
     groupCasesBySeries(caseCatalog).map(({series, cases}) => [series, cases.length]),
     [
-      ['ai-native', 5],
+      ['ai-native', 8],
       ['agent-platform-gateway', 3],
       ['classic-distributed', 5],
       ['frontend-architecture', 2],
@@ -233,12 +235,19 @@ test('runtime-validates the generated case-series registry exactly', () => {
 });
 
 test('provides the shared Chinese source-kind labels for catalog consumers', () => {
+  assert.deepEqual(caseSourceKinds, allowedSourceKinds);
   assert.deepEqual(sourceKindLabels, {
     'official-docs': '官方文档',
     'open-source-project': '开源项目',
     'classic-paper': '经典论文',
     'engineering-blog': '工程博客',
     'reference-architecture': '参考架构',
+    paper: '论文',
+    standard: '标准',
+    textbook: '教材',
+    'official-repository': '官方仓库',
+    'source-code': '源码',
+    'original-illustration': '本站原创插图',
   });
 });
 
@@ -272,6 +281,13 @@ test('rejects prototype-inherited names as generated catalog series', () => {
       series,
     );
   }
+});
+
+test('rejects source kinds outside the canonical governed vocabulary', () => {
+  assert.throws(
+    () => assertCaseCatalog([{...fixture[0], source_kinds: ['unknown-source-kind']}]),
+    /unknown source kind/,
+  );
 });
 
 test('groups a complete fixture in fixed series order and omits empty groups', () => {

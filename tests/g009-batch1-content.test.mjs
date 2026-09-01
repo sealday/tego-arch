@@ -149,6 +149,7 @@ const expectedScenarioJudgments = [
   ],
 ];
 const expectedMermaid = `flowchart TD
+  accTitle: 架构风格比较决策流程
   scenarios[质量属性场景] --> profiles[候选架构剖面]
   profiles --> constraints[硬约束检查]
   constraints --> compare[机制与证据比较]
@@ -161,13 +162,6 @@ const expectedRegionContracts = [
     className: 'table-wrapper table-wrapper--mapping',
     role: 'region',
     'aria-label': '候选架构剖面八维表，可横向滚动',
-    tabIndex: '0',
-    onKeyDown: 'handleHorizontalArrowKey',
-  },
-  {
-    className: 'diagram-wrapper diagram-wrapper--scroll-owner',
-    role: 'region',
-    'aria-label': '架构风格比较决策流程，可横向滚动',
     tabIndex: '0',
     onKeyDown: 'handleHorizontalArrowKey',
   },
@@ -446,11 +440,11 @@ test('locks the Mermaid recovery loop and accessible local overflow owners', () 
   for (const label of flowLabels) assert.match(document.source, new RegExp(label, 'u'));
   assert.match(document.source, /证据足够.*-->\|否\|.*原型、测量或故障演练/su);
   assert.match(document.source, /validate --> compare/u);
-  assert.equal((document.source.match(/role="region"/gmu) ?? []).length, 3);
-  assert.equal((document.source.match(/tabIndex=\{0\}/gmu) ?? []).length, 3);
+  assert.equal((document.source.match(/role="region"/gmu) ?? []).length, 2);
+  assert.equal((document.source.match(/tabIndex=\{0\}/gmu) ?? []).length, 2);
   assert.equal(
     (document.source.match(/onKeyDown=\{handleHorizontalArrowKey\}/gmu) ?? []).length,
-    3,
+    2,
   );
   const region = {scrollWidth: 900, clientWidth: 360, scrollLeft: 0};
   let prevented = false;
@@ -504,13 +498,6 @@ test('rejects reviewed method-contract mutations', async (t) => {
       source: document.source.replace(
         '| 报表消费者隔离与恢复 | 候选二',
         '| 报表消费者隔离与恢复 | 候选一',
-      ),
-    },
-    {
-      name: 'remove scroll-owner class',
-      source: document.source.replace(
-        'diagram-wrapper diagram-wrapper--scroll-owner',
-        'diagram-wrapper',
       ),
     },
     {
@@ -603,9 +590,10 @@ test('preserves the STY-00 closure under the current STY-10 next-topic projectio
   assert.deepEqual(projectStatus, {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
-    completed_topics: 65,
-    content_documents: 108,
-    governed_sources: 565,
+    completed_topics: 83,
+    content_documents: 126,
+    governed_sources: 599,
+
 
     sources: {
       durable_stories: 'docs/content-backlog.md',
@@ -620,6 +608,7 @@ test('preserves the STY-00 closure under the current STY-10 next-topic projectio
     id === 'STY-03' && published === true && status.value === 'complete'));
   assert.ok(indexes.style.some(({id, published, status}) =>
     id === 'STY-04' && published === true && status.value === 'complete'));
-  assert.equal(publicLedger.sources.length, 565);
+  assert.equal(publicLedger.sources.length, 599);
+
 
 });

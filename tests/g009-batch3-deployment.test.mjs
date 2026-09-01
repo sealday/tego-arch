@@ -338,9 +338,10 @@ test('preserves STY-02 closure under the current STY-10 next-topic projection', 
   assert.deepEqual(status, {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
-    completed_topics: 65,
-    content_documents: 108,
-    governed_sources: 565,
+    completed_topics: 83,
+    content_documents: 126,
+    governed_sources: 599,
+
 
     sources: {
       durable_stories: 'docs/content-backlog.md',
@@ -349,7 +350,8 @@ test('preserves STY-02 closure under the current STY-10 next-topic projection', 
       governed_sources: 'data/source-ledger.json',
     },
   });
-  assert.equal(sourceLedger.sources.length, 565);
+  assert.equal(sourceLedger.sources.length, 599);
+
 
   assert.ok(indexes.style.some(({id, published, status: topicStatus}) =>
     id === 'STY-02' && published === true && topicStatus.value === 'complete'));

@@ -222,7 +222,7 @@ test('preserves the complete pre-Task-8 literal and external-URL contract', asyn
     contracts[file] = protectedContract(await readFile(new URL(file, root), 'utf8'), file);
   }
   const digest = createHash('sha256').update(JSON.stringify(contracts)).digest('hex');
-  assert.equal(digest, 'a1189c7ed1c933ece5a33a901ada71455e4bbb80fcddcdc498a0a71422ee03b6');
+  assert.equal(digest, '292baa412f44072f5c583227f4c6867a682c6df3aa5df2395440e5516c6cc308');
 });
 
 test('preserves the complete pre-Task-8 JSX structure contract', async () => {
@@ -233,7 +233,7 @@ test('preserves the complete pre-Task-8 JSX structure contract', async () => {
     structures[file] = jsxStructure(ast);
   }
   const digest = createHash('sha256').update(JSON.stringify(structures)).digest('hex');
-  assert.equal(digest, '957ca8b793ca974388e1528530a35b4e291e27cb149800a5b1544c37a574031a');
+  assert.equal(digest, '08902d9f73c4c6346d4e15a508fa11af2eeec09c6fe2a7f7368a47797b42da56');
 });
 
 test('preserves the complete pre-Task-8 MDX module contract', async () => {
@@ -244,7 +244,7 @@ test('preserves the complete pre-Task-8 MDX module contract', async () => {
     structures[file] = mdxModuleStructure(ast);
   }
   const digest = createHash('sha256').update(JSON.stringify(structures)).digest('hex');
-  assert.equal(digest, 'b68184a3fb7b6d17efe640df880b41be9e777f5d3426b8173d0af5b5aafa767f');
+  assert.equal(digest, '4a38059b3b93ea6b3190ec93868dd04d0243de8b604155d5b1ec65d13014e71d');
 });
 
 test('preserves official product identity in every reviewed Task 8 case title', async () => {
@@ -392,10 +392,15 @@ test('preserves the reviewed Task 8 source-link labels together with their URLs'
   }
 });
 
-test('uses no terminology suppressions in Task 8 content', async () => {
+test('uses only the exact STY-13 reciprocal terminology suppressions in Task 8 content', async () => {
+  const expected = new Map([['content/cases/aws-cell-shuffle-sharding.mdx', [
+    '{/* terminology-exempt: unknown-english-term | match: Cell | record: Space-Based Architecture 决策可有限类比本案例的放置、热点和故障域边界；Cell 与 Shuffle Sharding 不证明状态和处理已经共置于分区数据空间。 | reason: Task2 已批准逐字互链必须保留 Cell 标签 */}',
+    '{/* terminology-exempt: unknown-english-term | match: Shuffle Sharding | record: Space-Based Architecture 决策可有限类比本案例的放置、热点和故障域边界；Cell 与 Shuffle Sharding 不证明状态和处理已经共置于分区数据空间。 | reason: Task2 已批准逐字互链必须保留 Shuffle Sharding 标签 */}',
+  ]]]);
   for (const file of await task8Files()) {
     const source = await readFile(new URL(file, root), 'utf8');
-    assert.doesNotMatch(source, /terminology-exempt:/u, file);
+    const suppressions = source.split('\n').filter((line) => line.includes('terminology-exempt:'));
+    assert.deepEqual(suppressions, expected.get(file) ?? [], file);
   }
 });
 
