@@ -5102,9 +5102,9 @@
       "slug": "/methods/mth-07",
       "priority": "P1",
       "status": {
-        "scope": "content-lifecycle",
-        "value": "reviewed",
-        "source": "content/methods/mth-07-fde-enterprise-ai-delivery.mdx"
+        "scope": "backlog-projection",
+        "value": "complete",
+        "source": "docs/content-backlog.md"
       },
       "dependencies": [
         "MTH-01",

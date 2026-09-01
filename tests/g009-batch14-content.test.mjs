@@ -38,7 +38,7 @@ export const RECIPROCAL_CONTRACTS = Object.freeze([
 ]);
 export const ADJACENT_CONTRACT_FILES = Object.freeze(['content/styles/sty-05-microservices.mdx', 'content/styles/sty-08-actor-model.mdx']);
 export const EXPECTED_STAGE_A = Object.freeze({completed: 82, documents: 126, sources: 599});
-export const EXPECTED_STAGE_B = Object.freeze({completed: 83, documents: 126, sources: 599});
+export const EXPECTED_STAGE_B = Object.freeze({completed: 84, documents: 126, sources: 599});
 export const EXPECTED_HEADINGS = Object.freeze(['学习问题', '一页摘要', '事实边界', '架构图', '亲和分区与预订流', '关键机制导读', '架构决策与权衡', '生产化分析', '可迁移经验', '来源']);
 export const MIGRATION_HEADINGS = Object.freeze(['可直接复用的机制', '只能有限类比的部分', '不应照搬的部分']);
 export const WRAPPERS = Object.freeze([

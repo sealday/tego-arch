@@ -8,10 +8,17 @@ import {fileURLToPath} from 'node:url';
 
 const ROOT = fileURLToPath(new URL('../', import.meta.url));
 const REVIEW_PATH = 'docs/reviews/g010-mth07.md';
+const BACKLOG_PATH = 'docs/content-backlog.md';
 const EVIDENCE_PATH = 'docs/reviews/evidence/g010-mth07-stage-a-browser.json';
 const EVIDENCE_SHA256 = '43985ea2e801e888e55a2cd6f62ed690133d3fdcda7db8f03a1e91ea466fa1b0';
 const PRODUCTION_EVIDENCE_PATH = 'docs/reviews/evidence/g010-mth07-stage-a-production-browser.json';
 const PRODUCTION_EVIDENCE_SHA256 = 'e3d28a498d23aec12d6df4b32c35fa69052d1fa4ec324a2ec6c53caa34beeeb2';
+const STAGE_A_EVIDENCE_HEAD = '00da8b412394e89bf823c7899816026b78c71b74';
+const STAGE_A_EVIDENCE_PAGES = {runId: 31789773345, buildJobId: 94733828768, deployJobId: 94734436104};
+const IMMEDIATE_REVIEW_IDENTITY = {bytes: 12_277, sha256: 'aedb1c6087af2dc77b06fceb87ab3a1a75efe591683a5c8168b672d9469678ed'};
+const IMMEDIATE_BACKLOG_IDENTITY = {bytes: 124_126, sha256: '22ee07d1a166e568c45c44b2b8d00d74e291c907aae8e7fe0cd3cf045ce73b46'};
+const IMMEDIATE_BACKLOG_SUFFIX_MARKER = '- [x] **MTH-06 P1｜从需求到演进的闭环**';
+const IMMEDIATE_BACKLOG_SUFFIX_IDENTITY = {bytes: 50_001, sha256: 'cd0697a1a5a45337baa7e0da3c4ddcc5baefb870fe0684bf8c7f9925c9eabb01'};
 const POST_G010_G009_ARTIFACTS = new Map([
   ['docs/reviews/g009-batch13.md', [14_502, '688c800ecafcfc3ed66529e2896d49fd247680412f9eba6c5a25da357e8ae44c']],
   ['docs/reviews/evidence/g009-batch13-stage-a-browser.json', [17_260, 'a0de2d5ea069b2af87ad4aa4ef4696a9a22e6ff99ba96b616763262f1814ed38']],
@@ -24,6 +31,7 @@ const POST_G010_G009_ARTIFACTS = new Map([
 ]);
 const IMPLEMENTATION_HEAD = 'a413be060c93f7ddd20e7db5417e94f4166dc1e8';
 const PAGES = {runId: 31786075868, buildJobId: 94722157542, deployJobId: 94722766883};
+const MTH07_CLOSURE_LINE = `- [x] **MTH-07 P1｜企业 AI 前线部署：从 POC 到可复制系统的交付门禁**：Stage A implementation commit [\`${IMPLEMENTATION_HEAD}\`](https://github.com/sealday/tego-arch/commit/${IMPLEMENTATION_HEAD}) 由 Pages run [\`${PAGES.runId}\`](https://github.com/sealday/tego-arch/actions/runs/${PAGES.runId}) 成功部署；2026-08-14 evidence commit [\`${STAGE_A_EVIDENCE_HEAD}\`](https://github.com/sealday/tego-arch/commit/${STAGE_A_EVIDENCE_HEAD}) 由 Pages run [\`${STAGE_A_EVIDENCE_PAGES.runId}\`](https://github.com/sealday/tego-arch/actions/runs/${STAGE_A_EVIDENCE_PAGES.runId}) 以 exact head、\`completed / success\` 部署，build job \`${STAGE_A_EVIDENCE_PAGES.buildJobId}\`、deploy job \`${STAGE_A_EVIDENCE_PAGES.deployJobId}\`；production HTTP HTML routes \`8/8\` 与 SVG asset \`1/1\` 均为 HTTP \`200\`，functional Browser verdict \`PASS\`，screenshot evidence \`BLOCKED / NOT_ACCEPTED\`。`;
 const BROWSER_BUILD_HEAD = 'f32e0cb7ae79fb92a2154c03dfe8bf7b5b203974';
 const REVIEWED_HEAD = '4c5c9f99148a32998ee03bd8f97b3db2ca29d500';
 const HISTORICAL_REVIEW_TREE_HASH = '675a88450c587b392cccc75bfeced523d32acc6bd78830de545586a308a85bff';
@@ -33,15 +41,20 @@ const AGENTIC_VERIFIED_PARENT = '35897dff27dc0576d640e494c54e05e9a92db135';
 const AGENTIC_NON_EVIDENCE_DIFF_SHA256 = 'e99d5d64a86ceb454738e24e54b9b954c15449953b4344bf091af747c11cb869';
 const AGENTIC_EVIDENCE_PAYLOAD_SHA256 = 'e446d2d36542ffc0e690d26aed6e5c402e3ad2275f2e2d976a0da2329cbe97c6';
 const AGENTIC_POST_RECORD_VALIDATION_COMMAND = `node --test tests/g010-mth07-deployment.test.mjs tests/agt-topic-system-integration.test.mjs && git diff --check ${AGENTIC_VERIFY_BASE} ${AGENTIC_VERIFIED_PARENT}`;
-const MTH07_STATUS = {
+const STAGE_A_MTH07_STATUS = {
   scope: 'content-lifecycle',
   value: 'reviewed',
   source: 'content/methods/mth-07-fde-enterprise-ai-delivery.mdx',
 };
+const MTH07_STATUS = {
+  scope: 'backlog-projection',
+  value: 'complete',
+  source: BACKLOG_PATH,
+};
 const PROJECT_STATUS = {
   schema_version: 1,
   durable_stories: {completed: 8, total: 20, current: 'G009'},
-  completed_topics: 83,
+  completed_topics: 84,
   content_documents: 126,
   governed_sources: 599,
 
@@ -91,6 +104,7 @@ const PRODUCTION_SVG = {
 };
 const PRODUCTION_SVG_SRC = 'https://sealday.github.io/tego-arch/assets/images/mth-07-fde-enterprise-ai-delivery-gates-4cc0de890d42a0daf96c9eb73139d892.svg';
 const REVIEW_H2 = ['Candidate identity', 'Stage A projection', 'Local in-app Browser QA', 'Independent review checkpoint', 'Production Stage A evidence'];
+const STAGE_B_REVIEW_HEADING = 'Stage B closure candidate';
 const PRE_VERDICT_SECTION_SHA256 = new Map([
   ['Candidate identity', '5f2acd3a0da3deea6ced6eba26cb39ace264b78e4f5e399bac3b1a005e655de1'],
   ['Stage A projection', 'e228e91b90d08ba53c6b000fb45f9469a75a68d745d38e7c22a3ebf2ce8dca5f'],
@@ -195,6 +209,75 @@ function section(source, heading) {
   return source.slice(matches[0].index + matches[0][0].length, next?.index ?? source.length).trim();
 }
 
+function reviewBeforeStageB(source) {
+  const marker = `\n## ${STAGE_B_REVIEW_HEADING}\n`;
+  const start = source.indexOf(marker);
+  assert.notEqual(start, -1, `review must contain ${STAGE_B_REVIEW_HEADING}`);
+  assert.equal(source.indexOf(marker, start + marker.length), -1, `review must contain one ${STAGE_B_REVIEW_HEADING}`);
+  return source.slice(0, start);
+}
+
+function backlogWithoutMth07(source) {
+  const exact = `${MTH07_CLOSURE_LINE}\n`;
+  assert.equal(source.split(exact).length - 1, 1, 'backlog contains one exact MTH-07 closure line');
+  assert.equal((source.match(/^[-*+]\s+\[[ xX]\]\s+\*\*MTH-07\b/gmu) ?? []).length, 1, 'backlog contains one MTH-07 checkbox');
+  return source.replace(exact, '');
+}
+
+function immediateBacklogSuffix(source) {
+  const start = source.indexOf(IMMEDIATE_BACKLOG_SUFFIX_MARKER);
+  assert.notEqual(start, -1, 'complete immediate pre-Stage-B backlog suffix marker');
+  return source.slice(start);
+}
+
+function replaceStageB(source, before, after) {
+  const marker = `\n## ${STAGE_B_REVIEW_HEADING}\n`;
+  const start = source.indexOf(marker);
+  assert.notEqual(start, -1, `review must contain ${STAGE_B_REVIEW_HEADING}`);
+  const prefix = source.slice(0, start + marker.length);
+  const body = source.slice(start + marker.length);
+  const mutated = body.replace(before, after);
+  assert.notEqual(mutated, body, `Stage B mutation must apply: ${before}`);
+  return `${prefix}${mutated}`;
+}
+
+function assertImmediateStageBHistory(reviewSource = review, backlogSource = backlog) {
+  const previousReview = Buffer.from(reviewBeforeStageB(reviewSource));
+  assert.equal(previousReview.length, IMMEDIATE_REVIEW_IDENTITY.bytes, 'complete immediate review bytes');
+  assert.equal(sha256(previousReview), IMMEDIATE_REVIEW_IDENTITY.sha256, 'complete immediate review SHA-256');
+  const previousBacklog = Buffer.from(backlogWithoutMth07(backlogSource));
+  assert.equal(previousBacklog.length, IMMEDIATE_BACKLOG_IDENTITY.bytes, 'complete immediate backlog bytes');
+  assert.equal(sha256(previousBacklog), IMMEDIATE_BACKLOG_IDENTITY.sha256, 'complete immediate backlog SHA-256; only MTH-07 may change');
+  const previousBacklogSuffix = Buffer.from(immediateBacklogSuffix(previousBacklog.toString('utf8')));
+  assert.equal(previousBacklogSuffix.length, IMMEDIATE_BACKLOG_SUFFIX_IDENTITY.bytes, 'complete immediate backlog suffix bytes');
+  assert.equal(sha256(previousBacklogSuffix), IMMEDIATE_BACKLOG_SUFFIX_IDENTITY.sha256, 'complete immediate backlog suffix SHA-256');
+}
+
+function expectedStageBCandidateSection() {
+  return [
+    `- Complete immediate pre-Stage-B review: ${IMMEDIATE_REVIEW_IDENTITY.bytes.toLocaleString('en-US')} bytes; SHA-256 \`${IMMEDIATE_REVIEW_IDENTITY.sha256}\`.`,
+    `- Complete immediate pre-Stage-B backlog suffix: ${IMMEDIATE_BACKLOG_SUFFIX_IDENTITY.bytes.toLocaleString('en-US')} bytes; SHA-256 \`${IMMEDIATE_BACKLOG_SUFFIX_IDENTITY.sha256}\`.`,
+    `- Exact Stage A implementation head: \`${IMPLEMENTATION_HEAD}\`; Pages run \`${PAGES.runId}\`; build job \`${PAGES.buildJobId}\`; deploy job \`${PAGES.deployJobId}\`; \`completed / success\`.`,
+    `- Exact Stage A evidence head: \`${STAGE_A_EVIDENCE_HEAD}\`; Pages run \`${STAGE_A_EVIDENCE_PAGES.runId}\`; build job \`${STAGE_A_EVIDENCE_PAGES.buildJobId}\`; deploy job \`${STAGE_A_EVIDENCE_PAGES.deployJobId}\`; 2026-08-14; \`completed / success\`.`,
+    '- Exact Stage A production HTTP evidence: HTML routes `8/8` and SVG asset `1/1` returned `200`; functional Browser verdict `PASS`; screenshot evidence `BLOCKED / NOT_ACCEPTED`.',
+    '- Canonical Stage B projection: `84` completed topics / `126` content documents / `599` governed sources.',
+    '- MTH-07: `published / complete`; exact status object: `{"scope":"backlog-projection","value":"complete","source":"docs/content-backlog.md"}`.',
+    '- Independent Stage B code/spec/security review: `PENDING`; findings: `NOT_REVIEWED`; exact head: `NOT_REVIEWED`.',
+    '- Independent Stage B content/evidence/rights review: `PENDING`; rights: `NOT_REVIEWED`; findings: `NOT_REVIEWED`; exact head: `NOT_REVIEWED`.',
+    '- Independent Stage B architecture/invariant review: `PENDING`; blockers: `NOT_REVIEWED`; exact head: `NOT_REVIEWED`.',
+    '- Final Stage B review judgment: `PENDING`.',
+    '- Stage B scope boundary: `STAGE_B`.',
+    '- Stage B deployment status: `PENDING / NOT_RUN`.',
+    '- Stage B production raw: `NOT_RECORDED`.',
+    '- Screenshot boundary: no Stage B screenshot or independent visual-review PASS is claimed.',
+  ].join('\n');
+}
+
+function assertStageBCandidate(source = review) {
+  assert.equal(section(source, STAGE_B_REVIEW_HEADING), expectedStageBCandidateSection(), 'exact Stage B closure candidate');
+  assertImmediateStageBHistory(source, backlog);
+}
+
 function isHistoricalReviewArtifact(relative) {
   return relative.startsWith('docs/reviews/') &&
     relative !== REVIEW_PATH &&
@@ -258,7 +341,7 @@ function assertProjection() {
   const methodIndex = indexes.method.find(({id}) => id === 'MTH-07');
   assert.equal(methodIndex?.published, true);
   assert.deepEqual(methodIndex?.status, MTH07_STATUS);
-  assert.equal(/\bMTH-07\b/u.test(backlog), false, 'MTH-07 remains absent from the Stage A backlog');
+  assert.equal(backlog.split(`${MTH07_CLOSURE_LINE}\n`).length - 1, 1, 'MTH-07 has one exact Stage B closure line');
 }
 
 function assertBrowserEvidence(actual) {
@@ -614,7 +697,7 @@ function assertBrowserReviewClosedWorld(browser) {
 
 async function assertReview(source) {
   assert.match(source, /^# G010 MTH-07 Stage A Review$/mu);
-  assert.deepEqual([...source.matchAll(/^## ([^\n]+)$/gmu)].map((match) => match[1]), REVIEW_H2, 'current review H2 sequence');
+  assert.deepEqual([...source.matchAll(/^## ([^\n]+)$/gmu)].map((match) => match[1]), [...REVIEW_H2, STAGE_B_REVIEW_HEADING], 'current review H2 sequence');
   const firstH2 = source.indexOf('\n## ');
   assert.notEqual(firstH2, -1, 'current review has sections');
   assert.equal(source.slice('# G010 MTH-07 Stage A Review'.length, firstH2).trim(), '', 'no claim-bearing preamble');
@@ -641,7 +724,7 @@ async function assertReview(source) {
   const projection = section(source, 'Stage A projection');
   assert.match(projection, /60 completed topics \/ 103 content documents \/ 533 governed sources/u);
   assert.match(projection, /MTH-07: `published \/ reviewed`; route: `\/methods\/mth-07`/u);
-  assert.ok(projection.includes(`Exact status object: \`${JSON.stringify(MTH07_STATUS)}\`.`));
+  assert.ok(projection.includes(`Exact status object: \`${JSON.stringify(STAGE_A_MTH07_STATUS)}\`.`));
   assert.ok(projection.includes('MTH-07 is absent from `docs/content-backlog.md`; completed topics remain `60`.'));
   for (const [artifact, [bytes, hash]] of GENERATED_ARTIFACTS) {
     assert.match(
@@ -728,6 +811,38 @@ test('preserves exact MTH-07 history under current totals without publishing a f
   assertProjection();
   const publishedRoutes = new Set(manifest.topics.filter(({published}) => published).map(({slug}) => slug));
   assert.equal(publishedRoutes.has('/methods/mth-07'), true);
+});
+
+test('closes only MTH-07 while hash-locking the complete immediate review and backlog suffix', () => {
+  assertStageBCandidate();
+  assertProjection();
+
+  const priorReview = reviewBeforeStageB(review);
+  for (const [label, reviewSource, backlogSource] of [
+    ['review edit', `${priorReview}x\n## ${STAGE_B_REVIEW_HEADING}\n\n${expectedStageBCandidateSection()}\n`, backlog],
+    ['backlog prefix edit', review, backlog.replace('# 软件架构内容内化长期 Backlog', '# 被篡改的 Backlog')],
+    ['backlog suffix edit', review, `${backlog}x`],
+    ['backlog suffix delete', review, backlog.slice(0, -1)],
+  ]) assert.throws(() => assertImmediateStageBHistory(reviewSource, backlogSource), {name: 'AssertionError'}, label);
+
+  for (const [label, before, after] of [
+    ['closure checkbox', '- [x] **MTH-07', '- [ ] **MTH-07'],
+    ['Stage A evidence head', STAGE_A_EVIDENCE_HEAD, '0'.repeat(40)],
+    ['Stage A evidence run', String(STAGE_A_EVIDENCE_PAGES.runId), String(STAGE_A_EVIDENCE_PAGES.runId + 1)],
+    ['Stage A date', '2026-08-14', '2026-08-15'],
+    ['HTTP evidence', 'HTML routes `8/8`', 'HTML routes `7/8`'],
+    ['projection', '`84` completed topics', '`83` completed topics'],
+    ['premature code verdict', 'code/spec/security review: `PENDING`', 'code/spec/security review: `READY / APPROVE`'],
+    ['premature deployment', 'deployment status: `PENDING / NOT_RUN`', 'deployment status: `SUCCESS`'],
+  ]) {
+    if (label === 'closure checkbox') {
+      const mutated = backlog.replace(before, after);
+      assert.throws(() => backlogWithoutMth07(mutated), {name: 'AssertionError'}, label);
+      continue;
+    }
+    const mutated = replaceStageB(review, before, after);
+    assert.throws(() => assertStageBCandidate(mutated), {name: 'AssertionError'}, label);
+  }
 });
 
 test('binds exact candidate artifacts, raw four-state Browser semantics, and final independent review slots', async () => {

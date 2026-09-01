@@ -27,7 +27,7 @@ export const SOURCE_IDS = [
 ];
 export const ROUTE = '/styles/sty-08';
 export const HISTORICAL_STAGE_A = Object.freeze({completed: 60, documents: 103, sources: 535});
-export const EXPECTED_CURRENT_PROJECTION = Object.freeze({completed: 83, documents: 126, sources: 599});
+export const EXPECTED_CURRENT_PROJECTION = Object.freeze({completed: 84, documents: 126, sources: 599});
 
 export const RELATIONS = Object.freeze({
   depends_on: ['STY-00', 'STY-05'],

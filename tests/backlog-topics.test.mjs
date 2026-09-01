@@ -218,9 +218,9 @@ test('covers the complete real backlog topic set', async () => {
   const candidateIds = new Set(candidates.map(({id}) => id));
   const result = parseBacklogTopics(source, 'docs/content-backlog.md');
 
-  assert.equal(candidates.length, 218);
-  assert.equal(candidateIds.size, 218);
-  assert.equal(result.topics.length, 218);
+  assert.equal(candidates.length, 219);
+  assert.equal(candidateIds.size, 219);
+  assert.equal(result.topics.length, 219);
   assert.deepEqual(
     new Set(result.topics.map(({id}) => id)),
     candidateIds,

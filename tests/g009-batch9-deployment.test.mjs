@@ -272,7 +272,7 @@ function replaceHistoricalBatch9Literal(source, before, after) {
 function assertStageBProjection() {
   assert.deepEqual(
     {completed_topics: status.completed_topics, content_documents: status.content_documents, governed_sources: status.governed_sources},
-    {completed_topics: 83, content_documents: 126, governed_sources: 599},
+    {completed_topics: 84, content_documents: 126, governed_sources: 599},
   );
   assert.equal(publicLedger.sources.length, 599);
 
@@ -304,7 +304,7 @@ const IMMEDIATE_HISTORY = new Map([
 ]);
 
 function assertProjection() {
-  assert.deepEqual({completed_topics: status.completed_topics, content_documents: status.content_documents, governed_sources: status.governed_sources}, {completed_topics: 83, content_documents: 126, governed_sources: 599});
+  assert.deepEqual({completed_topics: status.completed_topics, content_documents: status.content_documents, governed_sources: status.governed_sources}, {completed_topics: 84, content_documents: 126, governed_sources: 599});
   assert.equal(publicLedger.sources.length, 599);
 
   const topics = new Map(manifest.topics.map((topic) => [topic.id, topic]));

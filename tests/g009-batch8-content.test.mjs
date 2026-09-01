@@ -25,7 +25,7 @@ export const SOURCE_IDS = [
   'src-atlas-sty07-soa-microservices-order-fulfillment',
 ];
 export const ROUTE = '/styles/sty-07';
-export const EXPECTED_CURRENT_PROJECTION = Object.freeze({completed_topics: 83, content_documents: 126, governed_sources: 599});
+export const EXPECTED_CURRENT_PROJECTION = Object.freeze({completed_topics: 84, content_documents: 126, governed_sources: 599});
 
 
 export const RELATIONS = Object.freeze({

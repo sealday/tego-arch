@@ -16,7 +16,7 @@ export const STAGE_B_PRODUCTION_RAW = 'docs/reviews/evidence/g009-batch14-stage-
 export const CURRENT_TOPIC = 'STY-13';
 export const NEXT_TOPIC = 'STY-14';
 export const EXPECTED_STAGE_A = Object.freeze({completed: 82, documents: 126, sources: 599});
-export const EXPECTED_STAGE_B = Object.freeze({completed: 83, documents: 126, sources: 599});
+export const EXPECTED_STAGE_B = Object.freeze({completed: 84, documents: 126, sources: 599});
 export const EXPECTED_BROWSER = Object.freeze({states: 4, wrappersPerState: 4, relationsPerState: 4, remoteSourcesPerState: 7, nextTopicActions: 0});
 
 export const CANDIDATE_HEAD = 'f2b7b936ccd64c4748f2417937be2a61b55a3e55';

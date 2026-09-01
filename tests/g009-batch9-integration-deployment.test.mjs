@@ -160,7 +160,7 @@ function assertKeys(value, expected, label) {
 function assertCombinedProjection(statusValue = status, manifestValue = manifest, indexesValue = indexes, ledgerValue = publicLedger) {
   assert.deepEqual(
     {completed: statusValue.completed_topics, documents: statusValue.content_documents, sources: statusValue.governed_sources},
-    {completed: 83, documents: 126, sources: 599},
+    {completed: 84, documents: 126, sources: 599},
   );
   assert.equal(ledgerValue.sources.length, 599);
 
@@ -174,7 +174,7 @@ function assertCombinedProjection(statusValue = status, manifestValue = manifest
   assert.deepEqual([topics.get('STY-12')?.published, topics.get('STY-12')?.status, styles.get('STY-12')?.published], [true, {scope: 'backlog-projection', value: 'complete', source: 'docs/content-backlog.md'}, true]);
   assert.deepEqual([topics.get('STY-13')?.published, topics.get('STY-13')?.status, styles.get('STY-13')?.published], [true, {scope: 'backlog-projection', value: 'complete', source: 'docs/content-backlog.md'}, true]);
   assert.deepEqual([topics.get('STY-14')?.published, topics.get('STY-14')?.status, styles.get('STY-14')?.published], [false, {scope: 'backlog-projection', value: 'pending', source: 'docs/content-backlog.md'}, false]);
-  assert.deepEqual([topics.get('MTH-07')?.published, topics.get('MTH-07')?.status, methods.get('MTH-07')?.published], [true, {scope: 'content-lifecycle', value: 'reviewed', source: 'content/methods/mth-07-fde-enterprise-ai-delivery.mdx'}, true]);
+  assert.deepEqual([topics.get('MTH-07')?.published, topics.get('MTH-07')?.status, methods.get('MTH-07')?.published], [true, {scope: 'backlog-projection', value: 'complete', source: 'docs/content-backlog.md'}, true]);
 }
 
 function assertBrowserEvidence(evidence) {

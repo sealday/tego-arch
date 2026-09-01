@@ -237,7 +237,7 @@ function assertStageBBacklog(source = backlog) {
 function assertStageBProjection() {
   assert.deepEqual(
     {completed: status.completed_topics, documents: status.content_documents, sources: status.governed_sources},
-    {completed: 83, documents: 126, sources: 599},
+    {completed: 84, documents: 126, sources: 599},
   );
   assert.equal(publicLedger.sources.length, 599);
 
