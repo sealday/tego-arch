@@ -164,8 +164,8 @@ test('STY-14 deployment helpers are GREEN for the current baseline and mutation-
   assert.throws(() => assertPendingStageAReview(review.replace('`STAGE_A_ONLY`', '`STAGE_B`')), /exact PENDING Stage A review contract/u, 'wrong scope rejected');
 });
 
-test('STY-14 production Stage A review binds exact-head independent READY verdicts without deployment', () => {
-  assertReadyStageAReview(optionalText(REVIEW));
+test('STY-14 production Stage A review binds exact-head independent READY verdicts and production evidence', () => {
+  assertProductionStageAReview(optionalText(REVIEW));
 });
 
 const verdictMutations = [
@@ -216,6 +216,10 @@ test('STY-14 production Stage A projection advances only documents and original-
 
 test('STY-14 Stage A tracks raw local Browser evidence', () => {
   assert.ok(optionalText(LOCAL_BROWSER), 'raw local Browser evidence exists');
+});
+
+test('STY-14 Stage A tracks fresh exact-head production Browser evidence', () => {
+  assert.ok(optionalText('docs/reviews/evidence/g009-batch15-stage-a-production-browser.json'), 'raw production Browser evidence exists');
 });
 
 const STATE_CONTRACTS = [
@@ -337,6 +341,121 @@ for (const [label, mutate] of [
   const changed = structuredClone(raw); mutate(changed.buildProvenance);
   assert.notDeepEqual(changed, raw, 'mutation changes provenance');
   assert.throws(() => assertLocalBrowser(changed), /exact Browser build provenance/u);
+});
+
+const PRODUCTION_BROWSER = 'docs/reviews/evidence/g009-batch15-stage-a-production-browser.json';
+const PRODUCTION_BYTES = 37303;
+const PRODUCTION_SHA256 = '28967cff0dad4941577ddb62c3c063b4228cd71647dcc0841face601be54feb0';
+const PRODUCTION_OBJECT_SHA256 = 'e77bac6d6885b41cd39874eb022389a5a80572b8466ec5735970b1eb13490894';
+const PRODUCTION_URL = 'https://sealday.github.io/tego-arch';
+const IMPLEMENTATION_SHA = 'ea452848ac0b77b4271c465a3643799abd17d863';
+const PRODUCTION_LINES = [
+  '- Implementation push: `ea452848ac0b77b4271c465a3643799abd17d863`; fast-forward from `23a0afc5af16bc85f1f8991fde1f53ecf5118e81`; exact merge-base, behind `0`, ahead `13`, tracked clean, merge commits `0`, remote unchanged after review.',
+  '- Pages workflow: `Verify and deploy Docusaurus to GitHub Pages`; `.github/workflows/deploy.yml`; event `push`; headSha `ea452848ac0b77b4271c465a3643799abd17d863`; run `34134613000`; `completed / success`; created/started `2026-09-07T14:44:31Z`; updated `2026-09-07T14:49:19Z`.',
+  '- Build job: `101782500593`; `completed / success`; `2026-09-07T14:45:10Z` → `2026-09-07T14:49:02Z`. Deploy job: `101783809244`; `completed / success`; `2026-09-07T14:49:07Z` → `2026-09-07T14:49:18Z`.',
+  '- Production probes: `8/8 HTTP 200`; `/`, `/styles`, `/styles/sty-14`, `/styles/sty-04`, `/styles/sty-05`, `/styles/sty-06`, `/references` are `text/html; charset=utf-8`; STY-14 SVG is `image/svg+xml`, `9959` bytes, SHA-256 `d2032346802f2e722c39c0c5d8772816ff1233a4c96883d0d38e415129e27de5`, matching reviewed and Browser-decoded bytes.',
+  '- Raw production artifact: `docs/reviews/evidence/g009-batch15-stage-a-production-browser.json`; bytes `37303`; SHA-256 `28967cff0dad4941577ddb62c3c063b4228cd71647dcc0841face601be54feb0`; captured `2026-09-07T14:56:11.391Z`.',
+  '- Production functional judgment: `SUCCESS / PASS`; `4/4 states`; `12/12 wrapper focus-visible 3px / ArrowRight checks`; `12/12 exact relation href/H1/return checks`; `24/24 source anchors`; SVG loaded; STY-15 actionable total `0`; console and complete CDP diagnostics empty, continuous cursor chain `22→151→390→513→780`.',
+  '- Production screenshot evidence: `BLOCKED / NOT_ACCEPTED`; attempts `4/4`; accepted `0/4`. Desktop-light full-page output had duplicate/incomplete stitching; other captures were viewport-only. No trustworthy durable full-article artifact was retained; functional PASS is not visual acceptance.',
+  '- Production collection boundary: fresh Codex in-app Browser / CUA tab after exact-head deployment; exact-href navigation plus Browser back, no physical relation click claim; sources are observed/resolved anchors, not external loads. Theme-selection retries and continuous diagnostics are disclosed in raw evidence; viewport/theme instrumentation was restored and task tabs closed.',
+  '- Stage A only: STY-14 remains `published / pending`, projection `84/127/600`; STY-15 absent and non-actionable. Stage B was not performed. The evidence commit own Pages run is recorded only in the ignored task report to avoid recursive evidence commits.',
+];
+function productionReviewFixture() {
+  return readyReviewFixture().replace('- Deployment status: `NOT_RUN`.', '- Deployment status: `SUCCESS / functional PASS; screenshots BLOCKED / NOT_ACCEPTED`.') + '\n## Production Stage A evidence\n\n' + PRODUCTION_LINES.join('\n') + '\n';
+}
+export function assertProductionStageAReview(source) {
+  assert.equal(source, productionReviewFixture(), 'exact production review: no missing displaced duplicate or additive claims');
+}
+export function assertProductionBrowser(raw) {
+  exactKeys(raw, ['schemaVersion', 'tool', 'baseUrl', 'capturedAt', 'publication', 'http', 'collection', 'svgAsset', 'states'], 'production root');
+  assert.equal(raw.baseUrl, PRODUCTION_URL);
+  assert.equal(raw.publication.implementationSha, IMPLEMENTATION_SHA);
+  assert.equal(raw.publication.headSha, IMPLEMENTATION_SHA);
+  assert.equal(raw.publication.event, 'push');
+  assert.equal(raw.publication.status, 'completed');
+  assert.equal(raw.publication.conclusion, 'success');
+  assert.deepEqual(raw.publication.jobs.map(({name, status, conclusion}) => ({name, status, conclusion})), ['build', 'deploy'].map((name) => ({name, status: 'completed', conclusion: 'success'})));
+  assert.deepEqual(raw.http.routes.map(({route}) => route), ['/', '/styles', '/styles/sty-14', '/styles/sty-04', '/styles/sty-05', '/styles/sty-06', '/references', '/img/diagrams/sty-14-architecture-choice-matrix.svg']);
+  for (const route of raw.http.routes) {
+    assert.equal(route.status, 200);
+    assert.equal(route.url, PRODUCTION_URL + route.route);
+    assert.equal(route.contentType, route.route.endsWith('.svg') ? 'image/svg+xml' : 'text/html; charset=utf-8');
+    assert.ok(Date.parse(route.observedAt) > Date.parse(raw.publication.updatedAt), 'probe follows deployment');
+  }
+  const bytes = readFileSync('static/img/diagrams/sty-14-architecture-choice-matrix.svg');
+  assert.deepEqual(raw.svgAsset, {bytes: bytes.length, sha256: sha256(bytes), viewBox: '0 0 1600 2200'});
+  assert.equal(raw.http.routes.at(-1).sha256, raw.svgAsset.sha256);
+  assert.equal(raw.http.routes.at(-1).bytes, raw.svgAsset.bytes);
+  assert.deepEqual(raw.collection.order, ['desktopLight', 'desktopDark', 'mobileDark', 'mobileLight']);
+  exactKeys(raw.states, raw.collection.order, 'four production states');
+  let cursor = 22;
+  for (const name of raw.collection.order) {
+    const state = raw.states[name], desktop = name.startsWith('desktop'), theme = name.endsWith('Light') ? 'light' : 'dark';
+    assert.equal(state.theme, theme);
+    assert.deepEqual(state.viewport, {width: desktop ? 1440 : 390, height: desktop ? 1000 : 844});
+    assert.deepEqual(state.page, {clientWidth: state.viewport.width, scrollWidth: state.viewport.width});
+    assert.equal(state.url, PRODUCTION_URL + '/styles/sty-14');
+    assert.equal(state.h1, TITLE);
+    assert.deepEqual(state.wrappers.map(({label}) => label), WRAPPER_LABELS);
+    assert.equal(state.interactions.length, 3);
+    for (const [i, interaction] of state.interactions.entries()) {
+      assert.equal(interaction.label, WRAPPER_LABELS[i]);
+      assert.equal(interaction.focused, true); assert.equal(interaction.focusVisible, true);
+      assert.equal(interaction.outlineWidth, '3px'); assert.equal(interaction.outlineStyle, 'solid');
+      assert.equal(interaction.key, 'ArrowRight'); assert.equal(interaction.before, 0);
+      assert.equal(interaction.after, desktop && i === 0 ? 0 : 40);
+    }
+    assert.deepEqual(state.relationChecks, RELATION_CONTRACTS.map(([id, , h1]) => ({href: '/tego-arch/styles/sty-' + id, method: RELATION_METHOD, destination: {url: PRODUCTION_URL + '/styles/sty-' + id, h1, returnHref: '/tego-arch/styles/sty-14'}, returned: {url: PRODUCTION_URL + '/styles/sty-14', h1: TITLE, theme}})));
+    assert.deepEqual(state.sources, SOURCE_CONTRACTS.map(([text, href]) => ({text, href, destination: href, rel: 'noopener noreferrer', target: '_blank'})));
+    assert.equal(state.sty15ActionableCount, 0); assert.deepEqual(state.logs, []);
+    assert.deepEqual(state.diagnostics.events, []); assert.equal(state.diagnostics.hasMore, false); assert.equal(state.diagnostics.truncated, false);
+    assert.equal(state.diagnostics.afterSequence, cursor); cursor = state.diagnostics.cursor;
+    assert.equal(state.screenshot.status, 'BLOCKED'); assert.equal(state.screenshot.acceptance, 'NOT_ACCEPTED'); assert.equal(state.screenshot.artifact, null);
+  }
+  // Immutable serialization identity locks every observation, including fields beyond the semantic checks.
+  // It is a fixed reviewed constant, never derived from the artifact under test.
+  assert.equal(sha256(JSON.stringify(raw)), PRODUCTION_OBJECT_SHA256, 'exact production observation identity');
+}
+test('STY-14 production raw bytes and all semantic observations are bound', () => {
+  const bytes = readFileSync(PRODUCTION_BROWSER);
+  assert.equal(bytes.length, PRODUCTION_BYTES); assert.equal(sha256(bytes), PRODUCTION_SHA256);
+  assertProductionBrowser(JSON.parse(bytes));
+});
+function observationNodes(value, path = []) {
+  return [[path, value], ...(value && typeof value === 'object' ? Object.entries(value).flatMap(([key, child]) => observationNodes(child, [...path, key])) : [])];
+}
+function mutationTarget(raw, path) {
+  return path.slice(0, -1).reduce((value, key) => value[key], raw);
+}
+test('STY-14 production rejects changed, deleted and additive fields at every raw node', () => {
+  const raw = JSON.parse(readFileSync(PRODUCTION_BROWSER)); assertProductionBrowser(raw);
+  let mutations = 0;
+  for (const [path, value] of observationNodes(raw)) {
+    if (path.length) {
+      const changed = structuredClone(raw), target = mutationTarget(changed, path), key = path.at(-1);
+      target[key] = value === null ? 'fabricated' : typeof value === 'boolean' ? !value : typeof value === 'number' ? value + 1 : typeof value === 'string' ? value + '-fabricated' : Array.isArray(value) ? [...value, 'fabricated'] : {...value, fabricated: true};
+      assert.notDeepEqual(changed, raw, 'mutation applies at ' + path.join('.'));
+      assert.throws(() => assertProductionBrowser(changed), {name: 'AssertionError'}, path.join('.')); mutations++;
+      const deleted = structuredClone(raw); delete mutationTarget(deleted, path)[key];
+      assert.throws(() => assertProductionBrowser(deleted), undefined, 'deleted ' + path.join('.')); mutations++;
+    }
+    if (value && typeof value === 'object' && !Array.isArray(value)) {
+      const added = structuredClone(raw), node = path.reduce((current, key) => current[key], added);
+      node.fabricatedClaim = 'SUCCESS';
+      assert.throws(() => assertProductionBrowser(added), {name: 'AssertionError'}, 'additive ' + path.join('.')); mutations++;
+    }
+  }
+  assert.ok(mutations > 1500, 'strong mutation coverage across run/job/route/SVG/state/wrapper/relation/source/diagnostic/screenshot nodes');
+});
+test('STY-14 production review rejects every changed line and displaced/additive sections', () => {
+  const source = productionReviewFixture(); assertProductionStageAReview(source);
+  for (const line of source.split('\n').filter(Boolean)) {
+    assert.throws(() => assertProductionStageAReview(source.replace(line, line + ' fabricated')), /exact production review/u);
+    const displaced = source.replace(line + '\n', '') + '\n' + line + '\n';
+    assert.notEqual(displaced, source, 'displacement mutation applies');
+    assert.throws(() => assertProductionStageAReview(displaced), /exact production review/u);
+  }
+  assert.throws(() => assertProductionStageAReview(source + '\n## Extra\nSUCCESS\n'), /exact production review/u);
 });
 
 const browserMutations = [
