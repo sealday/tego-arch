@@ -45,7 +45,7 @@ const EXPECTED_METADATA = {
   topic_id: TOPIC_ID,
   priority: 'P0',
   depends_on: ['STY-00', 'STY-04'],
-  adjacent_topics: ['STY-03', 'STY-04', 'STY-06', 'STY-07', 'STY-08', 'STY-09', 'STY-10', 'STY-13'],
+  adjacent_topics: ['STY-03', 'STY-04', 'STY-06', 'STY-07', 'STY-08', 'STY-09', 'STY-10', 'STY-13', 'STY-14'],
   related_cases: ['/cases/micro-frontends-single-spa'],
   related_questions: [],
 };
@@ -98,7 +98,7 @@ const MIXED_AFFIRMATIVE_VIOLATIONS = [
 
 const ILLUSTRATION_SOURCE_ID = 'src-atlas-sty05-microservices-order-saga';
 const ILLUSTRATION_URL = '/img/diagrams/sty-05-microservices-order-saga.svg';
-const ADJACENT_TOPICS = ['STY-03', 'STY-04', 'STY-06', 'STY-07', 'STY-08', 'STY-09', 'STY-10', 'STY-13'];
+const ADJACENT_TOPICS = ['STY-03', 'STY-04', 'STY-06', 'STY-07', 'STY-08', 'STY-09', 'STY-10', 'STY-13', 'STY-14'];
 const ADJACENT_ROUTES = ['/styles/sty-03', '/styles/sty-04', '/styles/sty-07', '/styles/sty-08', '/styles/sty-10', '/styles/sty-13'];
 const SERVICE_KEYS = ['order', 'inventory', 'payment', 'notification'];
 const SERVICE_CHILDREN = new Map([
@@ -1154,15 +1154,16 @@ test('preserves the STY-05 closure under the current STY-10 next-topic projectio
   assert.equal(indexes.style.find(({id}) => id === TOPIC_ID)?.published, true);
   assert.equal(indexes.style.find(({id}) => id === 'STY-06')?.published, true);
   assert.equal(projectStatus.completed_topics, 84);
-  assert.equal(projectStatus.content_documents, 126);
-  assert.equal(projectStatus.governed_sources, 599);
-  assert.equal(publicLedger.sources.length, 599);
+  assert.equal(projectStatus.content_documents, 127);
+  assert.equal(projectStatus.governed_sources, 600);
+  assert.equal(publicLedger.sources.length, 600);
 
 
   const publishedRoutes = manifest.topics.filter(({published}) => published).map(({slug}) => slug);
   assert.ok(publishedRoutes.includes(ROUTE));
   assert.equal(publishedRoutes.includes('/styles/sty-06'), true);
   const sty06Reciprocals = new Set([
+    'styles/sty-14-architecture-choice-matrix.mdx',
     'styles/sty-04-modular-monolith.mdx',
     'styles/sty-05-microservices.mdx',
     'principles/pr-11-cqs-cqrs-read-write-separation.mdx',

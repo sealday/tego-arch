@@ -80,8 +80,8 @@ const expectedAssets = [
 
 const expectedProjection = {
   completed_topics: 84,
-  content_documents: 126,
-  governed_sources: 599,
+  content_documents: 127,
+  governed_sources: 600,
 
 
   durable_stories: {completed: 8, total: 20},

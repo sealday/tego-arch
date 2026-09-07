@@ -3265,6 +3265,43 @@
       "health_checks": []
     },
     {
+      "id": "src-atlas-sty14-architecture-choice-matrix",
+      "canonical_locator": "/img/diagrams/sty-14-architecture-choice-matrix.svg",
+      "transport_locator": "/img/diagrams/sty-14-architecture-choice-matrix.svg",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "架构风格选择矩阵：部署边界与交互方式双轴图 SVG",
+      "citation_titles": [
+        "架构风格选择矩阵双轴图"
+      ],
+      "author_or_org": "Tego Arch maintainers",
+      "published_at": "2026-09-07",
+      "registered_at": "2026-09-07",
+      "checked_at": "2026-09-07",
+      "version": "original-atlas synchronized drawio+svg published 2026-09-07",
+      "source_kind": "original-illustration",
+      "tier": "primary",
+      "allowed_evidence_roles": [
+        "illustration"
+      ],
+      "license": "LicenseRef-Atlas-Original",
+      "license_scope": "The named project-authored sty-14-architecture-choice-matrix.svg image/svg+xml asset only",
+      "license_evidence_url": "https://github.com/sealday/tego-arch/blob/main/static/img/diagrams/sty-14-architecture-choice-matrix.svg",
+      "license_evidence_note": "Created as an original synchronized Draw.io/SVG teaching diagram without third-party diagrams, reference imagery, logos, brand visuals, signatures, watermarks or copied composition.",
+      "license_family_id": "/img/diagrams/sty-14-architecture-choice-matrix.svg",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "copyright_policy": "original-atlas",
+      "usage_boundary": "Original teaching illustration for the independent deployment-boundary and interaction axes; illustration-only and not evidence of production outcomes.",
+      "link_policy": null,
+      "expected_final_transport_locator": "/img/diagrams/sty-14-architecture-choice-matrix.svg",
+      "expected_final_approved_at": "2026-09-07",
+      "expected_final_approval_note": "Approved project-local original image/svg+xml identity after synchronized Draw.io/SVG semantic, geometry, contrast and rendered-raster QA.",
+      "health_summary": "healthy",
+      "health_checks": []
+    },
+    {
       "id": "src-aws-0ccf50a7d52b",
       "canonical_locator": "https://aws.amazon.com/blogs/architecture/shuffle-sharding-massive-and-magical-fault-isolation/",
       "transport_locator": "https://aws.amazon.com/blogs/architecture/shuffle-sharding-massive-and-magical-fault-isolation/",
@@ -41333,6 +41370,123 @@
           "usage_mode": "facts-summary",
           "attribution_note": "Introduction to Coherence, Oracle, Coherence 12.2.1.4",
           "modification_note": "Original Chinese factual summary limited to documented Coherence partitioned-data and rebalancing mechanisms as a narrow comparison; no backup/storage claim and no source prose, structure or diagrams copied.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
+    "content/styles/sty-14-architecture-choice-matrix.mdx": {
+      "title": "架构风格选择矩阵：边界、交互与演进触发器",
+      "slug": "/styles/sty-14",
+      "reviewed_at": "2026-09-07",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-atlas-sty14-architecture-choice-matrix",
+          "citation_url": "/img/diagrams/sty-14-architecture-choice-matrix.svg",
+          "roles": [
+            "illustration"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "original-illustration",
+          "attribution_note": "架构风格选择矩阵双轴图，Tego Arch maintainers",
+          "modification_note": "Created as an original Draw.io/SVG pair from the approved STY-14 design without third-party diagrams, reference imagery, logos, brand visuals, signatures, watermarks or copied composition.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-fowler-monolith-first",
+          "citation_url": "https://martinfowler.com/bliki/MonolithFirst.html",
+          "roles": [
+            "comparison",
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Monolith First, Martin Fowler",
+          "modification_note": "Supports a bounded starting heuristic only; it does not support the complete two-axis choice matrix.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-fowler-what-do-you-mean-event-driven",
+          "citation_url": "https://martinfowler.com/articles/201701-event-driven.html",
+          "roles": [
+            "comparison",
+            "definition",
+            "method",
+            "runtime-fact"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "What do you mean by “Event-Driven”?, Martin Fowler",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-lewis-fowler-microservices",
+          "citation_url": "https://martinfowler.com/articles/microservices.html",
+          "roles": [
+            "comparison",
+            "definition",
+            "runtime-fact"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Microservices, James Lewis and Martin Fowler",
+          "modification_note": null,
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-microsoft-event-driven-architecture-style",
+          "citation_url": "https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/event-driven",
+          "roles": [
+            "comparison",
+            "definition",
+            "method",
+            "runtime-fact"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Event-driven architecture style, Microsoft Azure Architecture Center",
+          "modification_note": "Original Chinese synthesis; Azure product-specific recommendations and universal outcomes excluded.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-microsoft-microservices-architecture-style",
+          "citation_url": "https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/microservices",
+          "roles": [
+            "comparison",
+            "definition",
+            "runtime-fact"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Microservices architecture style, Microsoft Azure Architecture Center",
+          "modification_note": "Original Chinese synthesis; Azure-specific choices and universal outcome claims excluded.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-spring-modulith-fundamentals",
+          "citation_url": "https://docs.spring.io/spring-modulith/reference/fundamentals.html",
+          "roles": [
+            "definition",
+            "implementation",
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Fundamentals, Spring Modulith reference documentation 2.1.0",
+          "modification_note": null,
           "excerpt": null,
           "quotation_reviewed": false
         }

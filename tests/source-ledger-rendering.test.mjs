@@ -268,7 +268,7 @@ test('keeps every source and evidence field in the complete sorted model', async
     ({sources}) => sources,
   );
 
-  assert.equal(cards.length, 599);
+  assert.equal(cards.length, 600);
 
 
   assert.deepEqual(
@@ -281,7 +281,7 @@ test('keeps every source and evidence field in the complete sorted model', async
       cards.filter((card) => card.tier === tier).length,
     ]),
     [
-      ['primary', 531],
+      ['primary', 532],
       ['first-party', 52],
 
 
@@ -308,10 +308,10 @@ test('keeps every source and evidence field in the complete sorted model', async
       ['textbook', 8],
       ['independent-blog', 14],
       ['community-index', 7],
-      ['original-illustration', 46],
+      ['original-illustration', 47],
     ],
   );
-  assert.equal(new Set(cards.map(({id}) => id)).size, 599);
+  assert.equal(new Set(cards.map(({id}) => id)).size, 600);
 
 
   for (const card of cards) {

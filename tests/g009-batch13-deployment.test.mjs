@@ -671,8 +671,8 @@ test('preserves immutable Batch 12 history under the current STY-13 Stage A proj
     next_topic: 'STY-14',
   }, {
     completed_topics: 84,
-    content_documents: 126,
-    governed_sources: 599,
+    content_documents: 127,
+    governed_sources: 600,
 
     durable_stories: {completed: 8, total: 20},
     current_goal: 'G009',
@@ -681,10 +681,10 @@ test('preserves immutable Batch 12 history under the current STY-13 Stage A proj
   const current = manifest.topics.find(({id}) => id === NEXT_TOPIC);
   const next = manifest.topics.find(({id}) => id === 'STY-14');
   assert.deepEqual({published: current?.published, status: current?.status?.value}, {published: true, status: 'complete'});
-  assert.deepEqual({published: next?.published, status: next?.status?.value}, {published: false, status: 'pending'});
+  assert.deepEqual({published: next?.published, status: next?.status?.value}, {published: true, status: 'pending'});
   assert.ok(documents.some(({metadata}) => metadata.topic_id === NEXT_TOPIC), 'STY-13 content is published');
-  assert.equal(documents.some(({metadata}) => metadata.topic_id === 'STY-14'), false, 'STY-14 content is unpublished');
-  assert.equal(documents.flatMap(extractInternalLinks).includes('/styles/sty-14'), false, 'STY-14 remains non-actionable');
+  assert.equal(documents.some(({metadata}) => metadata.topic_id === 'STY-14'), true, 'current STY-14 Stage A content is published');
+  assert.equal(documents.flatMap(extractInternalLinks).includes('/styles/sty-14'), true, 'current STY-14 Stage A is actionable');
   assert.ok(backlog.includes(STY12_CLOSURE_LINE), 'exact STY-12 Stage A closure evidence');
   assert.match(backlog, /^- \[x\] \*\*STY-13 P2｜Space-Based Architecture\*\*/mu);
   assert.doesNotMatch(backlog, /^- \[ \] \*\*STY-13 P2｜Space-Based Architecture\*\*/mu);

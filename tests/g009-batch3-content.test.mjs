@@ -42,9 +42,9 @@ test('preserves STY-02 closure under the current STY-10 next-topic projection', 
   assert.equal(topics.get('STY-04')?.published, true);
   assert.equal(topics.get('STY-04')?.status.value, 'complete');
   assert.equal(projectStatus.completed_topics, 84);
-  assert.equal(projectStatus.content_documents, 126);
-  assert.equal(projectStatus.governed_sources, 599);
-  assert.equal(publicLedger.sources.length, 599);
+  assert.equal(projectStatus.content_documents, 127);
+  assert.equal(projectStatus.governed_sources, 600);
+  assert.equal(publicLedger.sources.length, 600);
 
 
   assert.ok(indexes.style.some(({id, status}) => id === 'STY-02' && status.value === 'complete'));

@@ -1,0 +1,866 @@
+{
+  "schemaVersion": 1,
+  "tool": "Codex in-app Browser / CUA CDP",
+  "baseUrl": "http://localhost:3100/tego-arch",
+  "capturedAt": "2026-09-07T14:01:05.707Z",
+  "buildProvenance": {
+    "baseHead": "463f1dec2ae0b35eedcf6fef2933f11ad60d74f8",
+    "kind": "working-tree candidate after canonical generation; not a committed or deployed head",
+    "inputFiles": 285,
+    "inputSha256": "23a9c36837a7e2fa29d1efeaf7cd2c2b3797e4f7269d838a66fda2a106092245",
+    "scriptUrls": [
+      "http://localhost:3100/tego-arch/assets/js/runtime~main.a15b5364.js",
+      "http://localhost:3100/tego-arch/assets/js/main.ce66ac75.js"
+    ]
+  },
+  "collection": {
+    "tabId": "2",
+    "diagnosticMethods": [
+      "Runtime.exceptionThrown",
+      "Log.entryAdded"
+    ],
+    "consoleLevels": [
+      "warn",
+      "error"
+    ],
+    "keyboardMethod": "CUA Tab then DOM focus and CUA Right; browser-reported focus-visible and computed outline; no synthetic key event",
+    "relationMethod": "exact-href navigation and Browser back; no physical click claimed",
+    "sourceMethod": "actual article anchors and browser-resolved destinations; no external page loading claim",
+    "initialAttempt": "A preliminary tab spanning rebuild recorded React recoverable hydration error #418 at 2026-09-07T13:57:08.264Z. A stale closure initially read that old tab log while inspecting tab 2. Accepted observations use fixed tab 2 and its native logs; the prior error was not hidden or relabeled as passing."
+  },
+  "svgAsset": {
+    "bytes": 9959,
+    "sha256": "d2032346802f2e722c39c0c5d8772816ff1233a4c96883d0d38e415129e27de5",
+    "viewBox": "0 0 1600 2200"
+  },
+  "states": {
+    "desktopLight": {
+      "url": "http://localhost:3100/tego-arch/styles/sty-14",
+      "h1": "架构风格选择矩阵：边界、交互与演进触发器",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "theme": "light",
+      "page": {
+        "clientWidth": 1440,
+        "scrollWidth": 1440
+      },
+      "wrappers": [
+        {
+          "label": "架构风格选择矩阵双轴图，可横向滚动",
+          "className": "architecture-diagram-scroll",
+          "role": "region",
+          "tabIndex": 0,
+          "clientWidth": 800,
+          "scrollWidth": 800
+        },
+        {
+          "label": "三类压力与四种结构决策矩阵，可横向滚动",
+          "className": "table-wrapper table-wrapper--mapping",
+          "role": "region",
+          "tabIndex": 0,
+          "clientWidth": 800,
+          "scrollWidth": 1527
+        },
+        {
+          "label": "演进动作、观察窗口与回滚路径表，可横向滚动",
+          "className": "table-wrapper table-wrapper--mapping",
+          "role": "region",
+          "tabIndex": 0,
+          "clientWidth": 800,
+          "scrollWidth": 1406
+        }
+      ],
+      "svg": [
+        {
+          "srcKind": "data:image/svg+xml;base64",
+          "encodedLength": 13280,
+          "complete": true,
+          "naturalWidth": 109,
+          "naturalHeight": 150,
+          "width": 800,
+          "height": 1100
+        }
+      ],
+      "relations": [
+        {
+          "text": "STY-04 模块化单体",
+          "href": "/tego-arch/styles/sty-04",
+          "destination": "http://localhost:3100/tego-arch/styles/sty-04"
+        },
+        {
+          "text": "STY-05 微服务",
+          "href": "/tego-arch/styles/sty-05",
+          "destination": "http://localhost:3100/tego-arch/styles/sty-05"
+        },
+        {
+          "text": "STY-06 事件驱动架构",
+          "href": "/tego-arch/styles/sty-06",
+          "destination": "http://localhost:3100/tego-arch/styles/sty-06"
+        }
+      ],
+      "sources": [
+        {
+          "text": "Monolith First",
+          "href": "https://martinfowler.com/bliki/MonolithFirst.html",
+          "destination": "https://martinfowler.com/bliki/MonolithFirst.html",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "text": "Spring Modulith Fundamentals",
+          "href": "https://docs.spring.io/spring-modulith/reference/fundamentals.html",
+          "destination": "https://docs.spring.io/spring-modulith/reference/fundamentals.html",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "text": "Microservices",
+          "href": "https://martinfowler.com/articles/microservices.html",
+          "destination": "https://martinfowler.com/articles/microservices.html",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "text": "Microservices architecture style",
+          "href": "https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/microservices",
+          "destination": "https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/microservices",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "text": "What do you mean by “Event-Driven”?",
+          "href": "https://martinfowler.com/articles/201701-event-driven.html",
+          "destination": "https://martinfowler.com/articles/201701-event-driven.html",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "text": "Event-driven architecture style",
+          "href": "https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/event-driven",
+          "destination": "https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/event-driven",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        }
+      ],
+      "sty15ActionableCount": 0,
+      "interactions": [
+        {
+          "label": "架构风格选择矩阵双轴图，可横向滚动",
+          "key": "ArrowRight",
+          "before": 0,
+          "after": 0,
+          "focused": true,
+          "focusVisible": true,
+          "outlineWidth": "3px",
+          "outlineStyle": "solid",
+          "outlineColor": "rgb(159, 63, 49)"
+        },
+        {
+          "label": "三类压力与四种结构决策矩阵，可横向滚动",
+          "key": "ArrowRight",
+          "before": 0,
+          "after": 40,
+          "focused": true,
+          "focusVisible": true,
+          "outlineWidth": "3px",
+          "outlineStyle": "solid",
+          "outlineColor": "rgb(159, 63, 49)"
+        },
+        {
+          "label": "演进动作、观察窗口与回滚路径表，可横向滚动",
+          "key": "ArrowRight",
+          "before": 0,
+          "after": 40,
+          "focused": true,
+          "focusVisible": true,
+          "outlineWidth": "3px",
+          "outlineStyle": "solid",
+          "outlineColor": "rgb(159, 63, 49)"
+        }
+      ],
+      "relationChecks": [
+        {
+          "href": "/tego-arch/styles/sty-04",
+          "method": "exact-href navigation and Browser back; no physical click claimed",
+          "destination": {
+            "url": "http://localhost:3100/tego-arch/styles/sty-04",
+            "h1": "模块化单体：在一个部署单元内保护业务边界",
+            "returnHref": "/tego-arch/styles/sty-14"
+          },
+          "returned": {
+            "url": "http://localhost:3100/tego-arch/styles/sty-14",
+            "h1": "架构风格选择矩阵：边界、交互与演进触发器",
+            "theme": "light"
+          }
+        },
+        {
+          "href": "/tego-arch/styles/sty-05",
+          "method": "exact-href navigation and Browser back; no physical click claimed",
+          "destination": {
+            "url": "http://localhost:3100/tego-arch/styles/sty-05",
+            "h1": "微服务：用独立部署换取自治，也承担分布式成本",
+            "returnHref": "/tego-arch/styles/sty-14"
+          },
+          "returned": {
+            "url": "http://localhost:3100/tego-arch/styles/sty-14",
+            "h1": "架构风格选择矩阵：边界、交互与演进触发器",
+            "theme": "light"
+          }
+        },
+        {
+          "href": "/tego-arch/styles/sty-06",
+          "method": "exact-href navigation and Browser back; no physical click claimed",
+          "destination": {
+            "url": "http://localhost:3100/tego-arch/styles/sty-06",
+            "h1": "事件驱动架构：先分清事件携带什么，再决定状态放在哪里",
+            "returnHref": "/tego-arch/styles/sty-14"
+          },
+          "returned": {
+            "url": "http://localhost:3100/tego-arch/styles/sty-14",
+            "h1": "架构风格选择矩阵：边界、交互与演进触发器",
+            "theme": "light"
+          }
+        }
+      ],
+      "logs": [],
+      "diagnostics": {
+        "afterSequence": 347,
+        "cursor": 480,
+        "events": [],
+        "hasMore": false,
+        "truncated": false
+      },
+      "screenshot": {
+        "attempted": true,
+        "bytes": 177567,
+        "artifact": null,
+        "status": "BLOCKED",
+        "acceptance": "NOT_ACCEPTED",
+        "reason": "Viewport screenshot rendered in tool output only; no durable full-article screenshot artifact was retained."
+      }
+    },
+    "desktopDark": {
+      "url": "http://localhost:3100/tego-arch/styles/sty-14",
+      "h1": "架构风格选择矩阵：边界、交互与演进触发器",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "theme": "dark",
+      "page": {
+        "clientWidth": 1440,
+        "scrollWidth": 1440
+      },
+      "wrappers": [
+        {
+          "label": "架构风格选择矩阵双轴图，可横向滚动",
+          "className": "architecture-diagram-scroll",
+          "role": "region",
+          "tabIndex": 0,
+          "clientWidth": 800,
+          "scrollWidth": 800
+        },
+        {
+          "label": "三类压力与四种结构决策矩阵，可横向滚动",
+          "className": "table-wrapper table-wrapper--mapping",
+          "role": "region",
+          "tabIndex": 0,
+          "clientWidth": 800,
+          "scrollWidth": 1527
+        },
+        {
+          "label": "演进动作、观察窗口与回滚路径表，可横向滚动",
+          "className": "table-wrapper table-wrapper--mapping",
+          "role": "region",
+          "tabIndex": 0,
+          "clientWidth": 800,
+          "scrollWidth": 1406
+        }
+      ],
+      "svg": [
+        {
+          "srcKind": "data:image/svg+xml;base64",
+          "encodedLength": 13280,
+          "complete": true,
+          "naturalWidth": 109,
+          "naturalHeight": 150,
+          "width": 800,
+          "height": 1100
+        }
+      ],
+      "relations": [
+        {
+          "text": "STY-04 模块化单体",
+          "href": "/tego-arch/styles/sty-04",
+          "destination": "http://localhost:3100/tego-arch/styles/sty-04"
+        },
+        {
+          "text": "STY-05 微服务",
+          "href": "/tego-arch/styles/sty-05",
+          "destination": "http://localhost:3100/tego-arch/styles/sty-05"
+        },
+        {
+          "text": "STY-06 事件驱动架构",
+          "href": "/tego-arch/styles/sty-06",
+          "destination": "http://localhost:3100/tego-arch/styles/sty-06"
+        }
+      ],
+      "sources": [
+        {
+          "text": "Monolith First",
+          "href": "https://martinfowler.com/bliki/MonolithFirst.html",
+          "destination": "https://martinfowler.com/bliki/MonolithFirst.html",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "text": "Spring Modulith Fundamentals",
+          "href": "https://docs.spring.io/spring-modulith/reference/fundamentals.html",
+          "destination": "https://docs.spring.io/spring-modulith/reference/fundamentals.html",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "text": "Microservices",
+          "href": "https://martinfowler.com/articles/microservices.html",
+          "destination": "https://martinfowler.com/articles/microservices.html",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "text": "Microservices architecture style",
+          "href": "https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/microservices",
+          "destination": "https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/microservices",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "text": "What do you mean by “Event-Driven”?",
+          "href": "https://martinfowler.com/articles/201701-event-driven.html",
+          "destination": "https://martinfowler.com/articles/201701-event-driven.html",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "text": "Event-driven architecture style",
+          "href": "https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/event-driven",
+          "destination": "https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/event-driven",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        }
+      ],
+      "sty15ActionableCount": 0,
+      "interactions": [
+        {
+          "label": "架构风格选择矩阵双轴图，可横向滚动",
+          "key": "ArrowRight",
+          "before": 0,
+          "after": 0,
+          "focused": true,
+          "focusVisible": true,
+          "outlineWidth": "3px",
+          "outlineStyle": "solid",
+          "outlineColor": "rgb(227, 144, 125)"
+        },
+        {
+          "label": "三类压力与四种结构决策矩阵，可横向滚动",
+          "key": "ArrowRight",
+          "before": 0,
+          "after": 40,
+          "focused": true,
+          "focusVisible": true,
+          "outlineWidth": "3px",
+          "outlineStyle": "solid",
+          "outlineColor": "rgba(227, 144, 125, 0.62)"
+        },
+        {
+          "label": "演进动作、观察窗口与回滚路径表，可横向滚动",
+          "key": "ArrowRight",
+          "before": 0,
+          "after": 40,
+          "focused": true,
+          "focusVisible": true,
+          "outlineWidth": "3px",
+          "outlineStyle": "solid",
+          "outlineColor": "rgba(227, 144, 125, 0.62)"
+        }
+      ],
+      "relationChecks": [
+        {
+          "href": "/tego-arch/styles/sty-04",
+          "method": "exact-href navigation and Browser back; no physical click claimed",
+          "destination": {
+            "url": "http://localhost:3100/tego-arch/styles/sty-04",
+            "h1": "模块化单体：在一个部署单元内保护业务边界",
+            "returnHref": "/tego-arch/styles/sty-14"
+          },
+          "returned": {
+            "url": "http://localhost:3100/tego-arch/styles/sty-14",
+            "h1": "架构风格选择矩阵：边界、交互与演进触发器",
+            "theme": "dark"
+          }
+        },
+        {
+          "href": "/tego-arch/styles/sty-05",
+          "method": "exact-href navigation and Browser back; no physical click claimed",
+          "destination": {
+            "url": "http://localhost:3100/tego-arch/styles/sty-05",
+            "h1": "微服务：用独立部署换取自治，也承担分布式成本",
+            "returnHref": "/tego-arch/styles/sty-14"
+          },
+          "returned": {
+            "url": "http://localhost:3100/tego-arch/styles/sty-14",
+            "h1": "架构风格选择矩阵：边界、交互与演进触发器",
+            "theme": "dark"
+          }
+        },
+        {
+          "href": "/tego-arch/styles/sty-06",
+          "method": "exact-href navigation and Browser back; no physical click claimed",
+          "destination": {
+            "url": "http://localhost:3100/tego-arch/styles/sty-06",
+            "h1": "事件驱动架构：先分清事件携带什么，再决定状态放在哪里",
+            "returnHref": "/tego-arch/styles/sty-14"
+          },
+          "returned": {
+            "url": "http://localhost:3100/tego-arch/styles/sty-14",
+            "h1": "架构风格选择矩阵：边界、交互与演进触发器",
+            "theme": "dark"
+          }
+        }
+      ],
+      "logs": [],
+      "diagnostics": {
+        "afterSequence": 480,
+        "cursor": 595,
+        "events": [],
+        "hasMore": false,
+        "truncated": false
+      },
+      "screenshot": {
+        "attempted": true,
+        "bytes": 179003,
+        "artifact": null,
+        "status": "BLOCKED",
+        "acceptance": "NOT_ACCEPTED",
+        "reason": "Viewport screenshot rendered in tool output only; no durable full-article screenshot artifact was retained."
+      }
+    },
+    "mobileLight": {
+      "url": "http://localhost:3100/tego-arch/styles/sty-14",
+      "h1": "架构风格选择矩阵：边界、交互与演进触发器",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "theme": "light",
+      "page": {
+        "clientWidth": 390,
+        "scrollWidth": 390
+      },
+      "wrappers": [
+        {
+          "label": "架构风格选择矩阵双轴图，可横向滚动",
+          "className": "architecture-diagram-scroll",
+          "role": "region",
+          "tabIndex": 0,
+          "clientWidth": 358,
+          "scrollWidth": 800
+        },
+        {
+          "label": "三类压力与四种结构决策矩阵，可横向滚动",
+          "className": "table-wrapper table-wrapper--mapping",
+          "role": "region",
+          "tabIndex": 0,
+          "clientWidth": 358,
+          "scrollWidth": 1527
+        },
+        {
+          "label": "演进动作、观察窗口与回滚路径表，可横向滚动",
+          "className": "table-wrapper table-wrapper--mapping",
+          "role": "region",
+          "tabIndex": 0,
+          "clientWidth": 358,
+          "scrollWidth": 1406
+        }
+      ],
+      "svg": [
+        {
+          "srcKind": "data:image/svg+xml;base64",
+          "encodedLength": 13280,
+          "complete": true,
+          "naturalWidth": 109,
+          "naturalHeight": 150,
+          "width": 800,
+          "height": 1100
+        }
+      ],
+      "relations": [
+        {
+          "text": "STY-04 模块化单体",
+          "href": "/tego-arch/styles/sty-04",
+          "destination": "http://localhost:3100/tego-arch/styles/sty-04"
+        },
+        {
+          "text": "STY-05 微服务",
+          "href": "/tego-arch/styles/sty-05",
+          "destination": "http://localhost:3100/tego-arch/styles/sty-05"
+        },
+        {
+          "text": "STY-06 事件驱动架构",
+          "href": "/tego-arch/styles/sty-06",
+          "destination": "http://localhost:3100/tego-arch/styles/sty-06"
+        }
+      ],
+      "sources": [
+        {
+          "text": "Monolith First",
+          "href": "https://martinfowler.com/bliki/MonolithFirst.html",
+          "destination": "https://martinfowler.com/bliki/MonolithFirst.html",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "text": "Spring Modulith Fundamentals",
+          "href": "https://docs.spring.io/spring-modulith/reference/fundamentals.html",
+          "destination": "https://docs.spring.io/spring-modulith/reference/fundamentals.html",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "text": "Microservices",
+          "href": "https://martinfowler.com/articles/microservices.html",
+          "destination": "https://martinfowler.com/articles/microservices.html",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "text": "Microservices architecture style",
+          "href": "https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/microservices",
+          "destination": "https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/microservices",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "text": "What do you mean by “Event-Driven”?",
+          "href": "https://martinfowler.com/articles/201701-event-driven.html",
+          "destination": "https://martinfowler.com/articles/201701-event-driven.html",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "text": "Event-driven architecture style",
+          "href": "https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/event-driven",
+          "destination": "https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/event-driven",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        }
+      ],
+      "sty15ActionableCount": 0,
+      "interactions": [
+        {
+          "label": "架构风格选择矩阵双轴图，可横向滚动",
+          "key": "ArrowRight",
+          "before": 0,
+          "after": 40,
+          "focused": true,
+          "focusVisible": true,
+          "outlineWidth": "3px",
+          "outlineStyle": "solid",
+          "outlineColor": "rgb(159, 63, 49)"
+        },
+        {
+          "label": "三类压力与四种结构决策矩阵，可横向滚动",
+          "key": "ArrowRight",
+          "before": 0,
+          "after": 40,
+          "focused": true,
+          "focusVisible": true,
+          "outlineWidth": "3px",
+          "outlineStyle": "solid",
+          "outlineColor": "rgb(159, 63, 49)"
+        },
+        {
+          "label": "演进动作、观察窗口与回滚路径表，可横向滚动",
+          "key": "ArrowRight",
+          "before": 0,
+          "after": 40,
+          "focused": true,
+          "focusVisible": true,
+          "outlineWidth": "3px",
+          "outlineStyle": "solid",
+          "outlineColor": "rgb(159, 63, 49)"
+        }
+      ],
+      "relationChecks": [
+        {
+          "href": "/tego-arch/styles/sty-04",
+          "method": "exact-href navigation and Browser back; no physical click claimed",
+          "destination": {
+            "url": "http://localhost:3100/tego-arch/styles/sty-04",
+            "h1": "模块化单体：在一个部署单元内保护业务边界",
+            "returnHref": "/tego-arch/styles/sty-14"
+          },
+          "returned": {
+            "url": "http://localhost:3100/tego-arch/styles/sty-14",
+            "h1": "架构风格选择矩阵：边界、交互与演进触发器",
+            "theme": "light"
+          }
+        },
+        {
+          "href": "/tego-arch/styles/sty-05",
+          "method": "exact-href navigation and Browser back; no physical click claimed",
+          "destination": {
+            "url": "http://localhost:3100/tego-arch/styles/sty-05",
+            "h1": "微服务：用独立部署换取自治，也承担分布式成本",
+            "returnHref": "/tego-arch/styles/sty-14"
+          },
+          "returned": {
+            "url": "http://localhost:3100/tego-arch/styles/sty-14",
+            "h1": "架构风格选择矩阵：边界、交互与演进触发器",
+            "theme": "light"
+          }
+        },
+        {
+          "href": "/tego-arch/styles/sty-06",
+          "method": "exact-href navigation and Browser back; no physical click claimed",
+          "destination": {
+            "url": "http://localhost:3100/tego-arch/styles/sty-06",
+            "h1": "事件驱动架构：先分清事件携带什么，再决定状态放在哪里",
+            "returnHref": "/tego-arch/styles/sty-14"
+          },
+          "returned": {
+            "url": "http://localhost:3100/tego-arch/styles/sty-14",
+            "h1": "架构风格选择矩阵：边界、交互与演进触发器",
+            "theme": "light"
+          }
+        }
+      ],
+      "logs": [],
+      "diagnostics": {
+        "afterSequence": 595,
+        "cursor": 716,
+        "events": [],
+        "hasMore": false,
+        "truncated": false
+      },
+      "screenshot": {
+        "attempted": true,
+        "bytes": 59905,
+        "artifact": null,
+        "status": "BLOCKED",
+        "acceptance": "NOT_ACCEPTED",
+        "reason": "Viewport screenshot rendered in tool output only; no durable full-article screenshot artifact was retained."
+      }
+    },
+    "mobileDark": {
+      "url": "http://localhost:3100/tego-arch/styles/sty-14",
+      "h1": "架构风格选择矩阵：边界、交互与演进触发器",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "theme": "dark",
+      "page": {
+        "clientWidth": 390,
+        "scrollWidth": 390
+      },
+      "wrappers": [
+        {
+          "label": "架构风格选择矩阵双轴图，可横向滚动",
+          "className": "architecture-diagram-scroll",
+          "role": "region",
+          "tabIndex": 0,
+          "clientWidth": 358,
+          "scrollWidth": 800
+        },
+        {
+          "label": "三类压力与四种结构决策矩阵，可横向滚动",
+          "className": "table-wrapper table-wrapper--mapping",
+          "role": "region",
+          "tabIndex": 0,
+          "clientWidth": 358,
+          "scrollWidth": 1527
+        },
+        {
+          "label": "演进动作、观察窗口与回滚路径表，可横向滚动",
+          "className": "table-wrapper table-wrapper--mapping",
+          "role": "region",
+          "tabIndex": 0,
+          "clientWidth": 358,
+          "scrollWidth": 1406
+        }
+      ],
+      "svg": [
+        {
+          "srcKind": "data:image/svg+xml;base64",
+          "encodedLength": 13280,
+          "complete": true,
+          "naturalWidth": 109,
+          "naturalHeight": 150,
+          "width": 800,
+          "height": 1100
+        }
+      ],
+      "relations": [
+        {
+          "text": "STY-04 模块化单体",
+          "href": "/tego-arch/styles/sty-04",
+          "destination": "http://localhost:3100/tego-arch/styles/sty-04"
+        },
+        {
+          "text": "STY-05 微服务",
+          "href": "/tego-arch/styles/sty-05",
+          "destination": "http://localhost:3100/tego-arch/styles/sty-05"
+        },
+        {
+          "text": "STY-06 事件驱动架构",
+          "href": "/tego-arch/styles/sty-06",
+          "destination": "http://localhost:3100/tego-arch/styles/sty-06"
+        }
+      ],
+      "sources": [
+        {
+          "text": "Monolith First",
+          "href": "https://martinfowler.com/bliki/MonolithFirst.html",
+          "destination": "https://martinfowler.com/bliki/MonolithFirst.html",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "text": "Spring Modulith Fundamentals",
+          "href": "https://docs.spring.io/spring-modulith/reference/fundamentals.html",
+          "destination": "https://docs.spring.io/spring-modulith/reference/fundamentals.html",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "text": "Microservices",
+          "href": "https://martinfowler.com/articles/microservices.html",
+          "destination": "https://martinfowler.com/articles/microservices.html",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "text": "Microservices architecture style",
+          "href": "https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/microservices",
+          "destination": "https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/microservices",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "text": "What do you mean by “Event-Driven”?",
+          "href": "https://martinfowler.com/articles/201701-event-driven.html",
+          "destination": "https://martinfowler.com/articles/201701-event-driven.html",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "text": "Event-driven architecture style",
+          "href": "https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/event-driven",
+          "destination": "https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/event-driven",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        }
+      ],
+      "sty15ActionableCount": 0,
+      "interactions": [
+        {
+          "label": "架构风格选择矩阵双轴图，可横向滚动",
+          "key": "ArrowRight",
+          "before": 0,
+          "after": 40,
+          "focused": true,
+          "focusVisible": true,
+          "outlineWidth": "3px",
+          "outlineStyle": "solid",
+          "outlineColor": "rgb(227, 144, 125)"
+        },
+        {
+          "label": "三类压力与四种结构决策矩阵，可横向滚动",
+          "key": "ArrowRight",
+          "before": 0,
+          "after": 40,
+          "focused": true,
+          "focusVisible": true,
+          "outlineWidth": "3px",
+          "outlineStyle": "solid",
+          "outlineColor": "rgba(227, 144, 125, 0.62)"
+        },
+        {
+          "label": "演进动作、观察窗口与回滚路径表，可横向滚动",
+          "key": "ArrowRight",
+          "before": 0,
+          "after": 40,
+          "focused": true,
+          "focusVisible": true,
+          "outlineWidth": "3px",
+          "outlineStyle": "solid",
+          "outlineColor": "rgba(227, 144, 125, 0.62)"
+        }
+      ],
+      "relationChecks": [
+        {
+          "href": "/tego-arch/styles/sty-04",
+          "method": "exact-href navigation and Browser back; no physical click claimed",
+          "destination": {
+            "url": "http://localhost:3100/tego-arch/styles/sty-04",
+            "h1": "模块化单体：在一个部署单元内保护业务边界",
+            "returnHref": "/tego-arch/styles/sty-14"
+          },
+          "returned": {
+            "url": "http://localhost:3100/tego-arch/styles/sty-14",
+            "h1": "架构风格选择矩阵：边界、交互与演进触发器",
+            "theme": "dark"
+          }
+        },
+        {
+          "href": "/tego-arch/styles/sty-05",
+          "method": "exact-href navigation and Browser back; no physical click claimed",
+          "destination": {
+            "url": "http://localhost:3100/tego-arch/styles/sty-05",
+            "h1": "微服务：用独立部署换取自治，也承担分布式成本",
+            "returnHref": "/tego-arch/styles/sty-14"
+          },
+          "returned": {
+            "url": "http://localhost:3100/tego-arch/styles/sty-14",
+            "h1": "架构风格选择矩阵：边界、交互与演进触发器",
+            "theme": "dark"
+          }
+        },
+        {
+          "href": "/tego-arch/styles/sty-06",
+          "method": "exact-href navigation and Browser back; no physical click claimed",
+          "destination": {
+            "url": "http://localhost:3100/tego-arch/styles/sty-06",
+            "h1": "事件驱动架构：先分清事件携带什么，再决定状态放在哪里",
+            "returnHref": "/tego-arch/styles/sty-14"
+          },
+          "returned": {
+            "url": "http://localhost:3100/tego-arch/styles/sty-14",
+            "h1": "架构风格选择矩阵：边界、交互与演进触发器",
+            "theme": "dark"
+          }
+        }
+      ],
+      "logs": [],
+      "diagnostics": {
+        "afterSequence": 716,
+        "cursor": 826,
+        "events": [],
+        "hasMore": false,
+        "truncated": false
+      },
+      "screenshot": {
+        "attempted": true,
+        "bytes": 58585,
+        "artifact": null,
+        "status": "BLOCKED",
+        "acceptance": "NOT_ACCEPTED",
+        "reason": "Viewport screenshot rendered in tool output only; no durable full-article screenshot artifact was retained."
+      }
+    }
+  }
+}

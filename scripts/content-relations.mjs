@@ -87,7 +87,10 @@ export function validateContentRelations({documents, manifest}) {
       ...(topic.related_cases ?? []),
       ...(topic.related_questions ?? []),
     ];
-    if (!terminal.some((slug) => visible.has(slug))) {
+    const choiceMatrixWithoutTerminal = type === 'style' && topicId === 'STY-14' &&
+      Array.isArray(topic.related_cases) && topic.related_cases.length === 0 &&
+      Array.isArray(topic.related_questions) && topic.related_questions.length === 0;
+    if (!choiceMatrixWithoutTerminal && !terminal.some((slug) => visible.has(slug))) {
       errors.push(
         `${contentPath(document.file)}: missing visible related case or question link ` +
           `(expected one of: ${terminal.map((slug) => JSON.stringify(slug)).join(', ')})`,

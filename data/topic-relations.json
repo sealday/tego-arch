@@ -1,8 +1,1 @@
-{
-  "STY-14": {
-    "dependencies": ["STY-04", "STY-05", "STY-06"],
-    "adjacent_topics": [],
-    "related_cases": [],
-    "related_questions": []
-  }
-}
+{}

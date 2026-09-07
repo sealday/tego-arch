@@ -38,7 +38,7 @@ export const RECIPROCAL_CONTRACTS = Object.freeze([
 ]);
 export const ADJACENT_CONTRACT_FILES = Object.freeze(['content/styles/sty-05-microservices.mdx', 'content/styles/sty-08-actor-model.mdx']);
 export const EXPECTED_STAGE_A = Object.freeze({completed: 82, documents: 126, sources: 599});
-export const EXPECTED_STAGE_B = Object.freeze({completed: 84, documents: 126, sources: 599});
+export const EXPECTED_STAGE_B = Object.freeze({completed: 84, documents: 127, sources: 600});
 export const EXPECTED_HEADINGS = Object.freeze(['学习问题', '一页摘要', '事实边界', '架构图', '亲和分区与预订流', '关键机制导读', '架构决策与权衡', '生产化分析', '可迁移经验', '来源']);
 export const MIGRATION_HEADINGS = Object.freeze(['可直接复用的机制', '只能有限类比的部分', '不应照搬的部分']);
 export const WRAPPERS = Object.freeze([
@@ -470,7 +470,7 @@ function assertExactHeadFinalReviews(source, head) {
 async function assertRelationsAndStage() {
   const reciprocalSources = new Map(RECIPROCAL_CONTRACTS.map(([path]) => [path, readFileSync(path, 'utf8')])); assertReciprocalRelations(reciprocalSources);
   const documents = await readContentDocuments(CONTENT_ROOT); const article = documents.find(({file: path}) => 'content/' + path === ARTICLE); assert.ok(article, 'STY-13 content document'); const links = extractInternalLinks(article);
-  for (const related of RELATED_CASES) assert.ok(links.includes(related), 'visible related case: ' + related); assert.equal(links.includes(NEXT_ROUTE), false, 'STY-14 remains non-actionable from STY-13'); assert.equal(documents.flatMap(extractInternalLinks).filter((link) => link === NEXT_ROUTE).length, 0, 'STY-14 actionable route count is zero');
+  for (const related of RELATED_CASES) assert.ok(links.includes(related), 'visible related case: ' + related); assert.equal(links.includes(NEXT_ROUTE), false, 'STY-14 remains non-actionable from STY-13'); assert.equal(documents.flatMap(extractInternalLinks).filter((link) => link === NEXT_ROUTE).length, 4, 'current STY-14 has exactly four scoped inbound routes');
   const backlog = readFileSync('docs/content-backlog.md', 'utf8'); assert.match(backlog, new RegExp('^- \\[ \\] \\*\\*' + NEXT_TOPIC + ' P1', 'mu'), 'STY-14 is pending');
   const status = JSON.parse(readFileSync('src/generated/project-status.json', 'utf8')); const projection = {completed: status.completed_topics, documents: status.content_documents, sources: status.governed_sources}; const published = new RegExp('^- \\[x\\] \\*\\*' + TOPIC_ID + ' ', 'mu').test(backlog);
   if (!published) { assert.deepEqual(projection, EXPECTED_STAGE_A, 'Stage A projection while STY-13 remains pending'); return; }
@@ -507,7 +507,7 @@ async function assertRelationsAndStage() {
 }
 function assertReciprocalRelations(sources) {
   for (const [path, sentence] of RECIPROCAL_CONTRACTS) { const source = sources.get(path); assert.ok(source, path + ' reciprocal source'); assert.equal(source.split(sentence).length - 1, 1, path + ' exact reciprocal sentence occurs once'); }
-  for (const path of ADJACENT_CONTRACT_FILES) { const metadata = parseFrontMatter(sources.get(path)); assert.equal(metadata.adjacent_topics.filter((topic) => topic === TOPIC_ID).length, 1, path + ' adjacent_topics contains STY-13 exactly once'); assert.equal(metadata.adjacent_topics.includes(NEXT_TOPIC), false, path + ' adjacent_topics excludes STY-14'); }
+  for (const path of ADJACENT_CONTRACT_FILES) { const metadata = parseFrontMatter(sources.get(path)); assert.equal(metadata.adjacent_topics.filter((topic) => topic === TOPIC_ID).length, 1, path + ' adjacent_topics contains STY-13 exactly once'); assert.equal(metadata.adjacent_topics.filter((id) => id === NEXT_TOPIC).length, path === 'content/styles/sty-05-microservices.mdx' ? 1 : 0, path + ' exact current STY-14 adjacency count'); }
 }
 function fixtureArticle() {
   const sections = EXPECTED_HEADINGS.map((heading) => '## ' + heading + (heading === '可迁移经验' ? '\n### ' + MIGRATION_HEADINGS.join('\n### ') : '')).join('\n'); const rows = (items) => items.map((row) => '| ' + row.join(' | ') + ' |').join('\n');
@@ -607,7 +607,7 @@ test('STY-13 helper fixture locks its public content contract', () => {
   for (const path of ADJACENT_CONTRACT_FILES) {
     assert.throws(() => assertReciprocalRelations(mutateReciprocal(path, (source) => replaceOnce(source, '  - STY-13\n', '', path + ' adjacent deletion'))), /contains STY-13 exactly once/u, path + ' missing STY-13 adjacency rejected');
     assert.throws(() => assertReciprocalRelations(mutateReciprocal(path, (source) => replaceOnce(source, '  - STY-13\n', '  - STY-13\n  - STY-13\n', path + ' adjacent duplicate'))), /contains STY-13 exactly once/u, path + ' duplicate STY-13 adjacency rejected');
-    assert.throws(() => assertReciprocalRelations(mutateReciprocal(path, (source) => replaceOnce(source, '  - STY-13\n', '  - STY-13\n  - STY-14\n', path + ' STY-14 adjacency'))), /excludes STY-14/u, path + ' STY-14 adjacency rejected');
+    assert.throws(() => assertReciprocalRelations(mutateReciprocal(path, (source) => replaceOnce(source, '  - STY-13\n', '  - STY-13\n  - STY-14\n', path + ' STY-14 adjacency'))), /exact current STY-14 adjacency count/u, path + ' additional STY-14 adjacency rejected');
   }
 });
 test('STY-13 article, governed sources, relations and Stage A projection satisfy Task 2', async () => {

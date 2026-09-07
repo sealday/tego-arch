@@ -249,8 +249,8 @@ test('preserves the Batch 1 closure under the current STY-10 next-topic projecti
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
     completed_topics: 84,
-    content_documents: 126,
-    governed_sources: 599,
+    content_documents: 127,
+    governed_sources: 600,
 
 
     sources: {

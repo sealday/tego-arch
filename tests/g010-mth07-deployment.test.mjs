@@ -60,8 +60,8 @@ const PROJECT_STATUS = {
   schema_version: 1,
   durable_stories: {completed: 8, total: 20, current: 'G009'},
   completed_topics: 84,
-  content_documents: 126,
-  governed_sources: 599,
+  content_documents: 127,
+  governed_sources: 600,
 
   sources: {
     durable_stories: 'docs/content-backlog.md',
@@ -334,6 +334,8 @@ function assertStageBProductionReview(source = review) {
 
 function isHistoricalReviewArtifact(relative) {
   return relative.startsWith('docs/reviews/') &&
+    relative !== 'docs/reviews/g009-batch15.md' &&
+    relative !== 'docs/reviews/evidence/g009-batch15-stage-a-browser.json' &&
     relative !== REVIEW_PATH &&
     relative !== 'docs/reviews/agentic-architecture-topic-system.md' &&
     relative !== 'docs/reviews/g009-batch9.md' &&
@@ -386,7 +388,7 @@ async function historicalReviewTreeHash() {
 
 function assertProjection() {
   assert.deepEqual(projectStatus, PROJECT_STATUS);
-  assert.equal(publicLedger.sources.length, 599);
+  assert.equal(publicLedger.sources.length, 600);
 
   const mth07 = manifest.topics.find(({id}) => id === 'MTH-07');
   assert.equal(mth07?.published, true);
@@ -1030,6 +1032,8 @@ test('rejects displaced duplicated or contradictory current-review claims', asyn
 
 test('locks the exact pre-G010 review namespace against add edit and delete mutations', async () => {
   for (const currentPath of [
+    'docs/reviews/g009-batch15.md',
+    'docs/reviews/evidence/g009-batch15-stage-a-browser.json',
     REVIEW_PATH,
     EVIDENCE_PATH,
     'docs/reviews/g009-batch10.md',
@@ -1054,6 +1058,7 @@ test('locks the exact pre-G010 review namespace against add edit and delete muta
     'docs/reviews/evidence/agentic-architecture-topic-system-deployment.json',
   ]) assert.equal(isHistoricalReviewArtifact(currentPath), false, `${currentPath} is excluded from exact pre-G010 history`);
   assert.equal(isHistoricalReviewArtifact('docs/reviews/g009-batch7.md'), true);
+  assert.equal(isHistoricalReviewArtifact('docs/reviews/evidence/g009-batch15-fabricated.json'), true, 'unallowlisted Batch 15 prefix remains protected history');
   const agenticNearMatch = 'docs/reviews/evidence/agentic-architecture-topic-system-fabricated.json';
   assert.equal(isHistoricalReviewArtifact(agenticNearMatch), true, `${agenticNearMatch} remains protected history`);
   assert.equal(isHistoricalReviewArtifact('docs/reviews/evidence/g009-batch13-fabricated.json'), true, 'unallowlisted Batch 13 prefix remains historical');

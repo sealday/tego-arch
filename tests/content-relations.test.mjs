@@ -46,6 +46,18 @@ const validDocument = {
   ].join('\n'),
 };
 
+test('only STY-14 style permits explicitly empty terminal arrays, without bypassing parent or adjacency', () => {
+  const topic = {id: 'STY-14', type: 'style', published: true, adjacent_topics: [], related_cases: [], related_questions: []};
+  const document = {file: 'styles/sty-14.mdx', metadata: {content_type: 'style', topic_id: 'STY-14'}, body: '[风格](/styles)'};
+  const check = (entry = topic, doc = document) => validateContentRelations({documents: [doc], manifest: {topics: [entry]}}).errors;
+  assert.deepEqual(check(), []);
+  for (const id of ['STY-13', 'STY-15']) assert.match(check({...topic, id}, {...document, metadata: {...document.metadata, topic_id: id}}).join('\n'), /missing visible related/u);
+  assert.match(check(topic, {...document, metadata: {...document.metadata, content_type: 'concept'}, body: '[概念](/concepts)'}).join('\n'), /missing visible related/u);
+  assert.match(check({...topic, related_cases: ['/cases/example']}).join('\n'), /missing visible related/u);
+  assert.match(check({...topic, related_cases: undefined}).join('\n'), /missing visible related/u);
+  assert.match(check(topic, {...document, body: ''}).join('\n'), /missing visible parent/u);
+});
+
 test('accepts visible parent, adjacent, and terminal links', () => {
   assert.deepEqual(
     validateContentRelations({documents: [validDocument], manifest}).errors,

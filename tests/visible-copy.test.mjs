@@ -341,7 +341,7 @@ test('extracts all current summary fields with exact source lines', async () => 
     summaries.push(summary);
   }
 
-  assert.equal(summaries.length, 103);
+  assert.equal(summaries.length, 104);
 
 });
 

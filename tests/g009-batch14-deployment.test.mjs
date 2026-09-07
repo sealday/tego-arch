@@ -16,7 +16,7 @@ export const STAGE_B_PRODUCTION_RAW = 'docs/reviews/evidence/g009-batch14-stage-
 export const CURRENT_TOPIC = 'STY-13';
 export const NEXT_TOPIC = 'STY-14';
 export const EXPECTED_STAGE_A = Object.freeze({completed: 82, documents: 126, sources: 599});
-export const EXPECTED_STAGE_B = Object.freeze({completed: 84, documents: 126, sources: 599});
+export const EXPECTED_STAGE_B = Object.freeze({completed: 84, documents: 127, sources: 600});
 export const EXPECTED_BROWSER = Object.freeze({states: 4, wrappersPerState: 4, relationsPerState: 4, remoteSourcesPerState: 7, nextTopicActions: 0});
 
 export const CANDIDATE_HEAD = 'f2b7b936ccd64c4748f2417937be2a61b55a3e55';
@@ -931,7 +931,7 @@ const stageBProductionRaw = await optional(STAGE_B_PRODUCTION_RAW);
 
 test('freezes the complete immediate Batch 13 review/raw/backlog identity', () => assertImmediateBatch13History());
 
-test('closes only STY-13 at the exact Stage B projection and keeps STY-14 non-actionable', async () => {
+test('preserves STY-13 closure while current STY-14 is published and pending', async () => {
   const documents = await readContentDocuments('content');
   const projectStatus = JSON.parse(await required('src/generated/project-status.json', 'utf8'));
   assert.deepEqual({
@@ -950,7 +950,7 @@ test('closes only STY-13 at the exact Stage B projection and keeps STY-14 non-ac
     next_topic: 'STY-14',
   });
   assert.match(article, /^# Space-Based Architecture：让状态与处理在亲和分区相遇$/mu);
-  assert.equal(documents.flatMap(extractInternalLinks).filter((href) => href === '/styles/sty-14').length, 0, 'STY-14 remains non-actionable');
+  assert.equal(documents.flatMap(extractInternalLinks).filter((href) => href === '/styles/sty-14').length, 4, 'current STY-14 has exactly four scoped inbound routes');
   assert.ok(backlog.includes(STY13_CLOSURE_LINE), 'exact STY-13 Stage A closure evidence');
   assert.doesNotMatch(backlog, /^- \[ \] \*\*STY-13 P2｜Space-Based Architecture\*\*/mu);
   assert.match(backlog, /^- \[ \] \*\*STY-14 P1｜风格选择矩阵\*\*/mu);
