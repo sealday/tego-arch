@@ -6,8 +6,19 @@
   "buildProvenance": {
     "baseHead": "463f1dec2ae0b35eedcf6fef2933f11ad60d74f8",
     "kind": "working-tree candidate after canonical generation; not a committed or deployed head",
-    "inputFiles": 285,
-    "inputSha256": "23a9c36837a7e2fa29d1efeaf7cd2c2b3797e4f7269d838a66fda2a106092245",
+    "inputFiles": 286,
+    "inputSha256": "76c94055d82ab1460f1a6f93f21245b3e4adf1bd11ac9f21b57535fe2091d610",
+    "inputIdentityCorrection": {
+      "reason": "Added previously omitted sidebars.ts to the input identity; no new Browser observations were performed.",
+      "previousInputFiles": 285,
+      "previousInputSha256": "23a9c36837a7e2fa29d1efeaf7cd2c2b3797e4f7269d838a66fda2a106092245",
+      "addedInput": "sidebars.ts",
+      "addedInputSha256": "d3a60c5e67a717544a2993953b66a9665befa348827d001a71a376cacf95382c",
+      "verifiedUnchangedAt": [
+        "463f1dec2ae0b35eedcf6fef2933f11ad60d74f8",
+        "eb723b4de6c5d9ef27072d6dbf797c9e7fe13156"
+      ]
+    },
     "scriptUrls": [
       "http://localhost:3100/tego-arch/assets/js/runtime~main.a15b5364.js",
       "http://localhost:3100/tego-arch/assets/js/main.ce66ac75.js"

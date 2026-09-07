@@ -8,16 +8,23 @@ import {extractInternalLinks} from '../scripts/content-relations.mjs';
 
 export const REVIEW = 'docs/reviews/g009-batch15.md';
 export const LOCAL_BROWSER = 'docs/reviews/evidence/g009-batch15-stage-a-browser.json';
-const LOCAL_BROWSER_BYTES = 31736;
-const LOCAL_BROWSER_SHA256 = '7090136f07c2042a52c783c83ae70c757492c834a203d22a2271e1cb9df70eab';
+const LOCAL_BROWSER_BYTES = 32300;
+const LOCAL_BROWSER_SHA256 = 'b27cf34181529dfbcaf6eccd533d65fd0db5f8552b1dd08def0fbd95150c4609';
 const BASE_URL = 'http://localhost:3100/tego-arch';
 const TITLE = '架构风格选择矩阵：边界、交互与演进触发器';
-const BUILD_INPUTS = ['content', 'data', 'src', 'static', 'scripts', 'plugins', 'docusaurus.config.ts', 'package.json', 'package-lock.json'];
-const INPUT_SHA256 = '23a9c36837a7e2fa29d1efeaf7cd2c2b3797e4f7269d838a66fda2a106092245';
+const BUILD_INPUTS = ['content', 'data', 'src', 'static', 'scripts', 'plugins', 'docusaurus.config.ts', 'sidebars.ts', 'package.json', 'package-lock.json'];
+const INPUT_SHA256 = '76c94055d82ab1460f1a6f93f21245b3e4adf1bd11ac9f21b57535fe2091d610';
+const INPUT_CORRECTION = {
+  reason: 'Added previously omitted sidebars.ts to the input identity; no new Browser observations were performed.',
+  previousInputFiles: 285, previousInputSha256: '23a9c36837a7e2fa29d1efeaf7cd2c2b3797e4f7269d838a66fda2a106092245',
+  addedInput: 'sidebars.ts', addedInputSha256: 'd3a60c5e67a717544a2993953b66a9665befa348827d001a71a376cacf95382c',
+  verifiedUnchangedAt: ['463f1dec2ae0b35eedcf6fef2933f11ad60d74f8', 'eb723b4de6c5d9ef27072d6dbf797c9e7fe13156'],
+};
 const sha256 = (bytes) => createHash('sha256').update(bytes).digest('hex');
 const LOCAL_REVIEW_LINES = [
   `- Raw Browser artifact: \`${LOCAL_BROWSER}\`; bytes \`${LOCAL_BROWSER_BYTES}\`; SHA-256 \`${LOCAL_BROWSER_SHA256}\`.`,
-  `- Browser build input identity: \`285 files / ${INPUT_SHA256}\`; base head \`463f1dec2ae0b35eedcf6fef2933f11ad60d74f8\`; working-tree candidate, not a deployed head.`,
+  `- Browser build input identity: \`286 files / ${INPUT_SHA256}\`; base head \`463f1dec2ae0b35eedcf6fef2933f11ad60d74f8\`; working-tree candidate, not a deployed head.`,
+  '- Input identity correction: added previously omitted `sidebars.ts`; its bytes are unchanged between the base head, observed-candidate commit `eb723b4de6c5d9ef27072d6dbf797c9e7fe13156`, and this correction. No new Browser observations were performed; original capture time, measurements and screenshot limitations remain unchanged.',
   '- Functional observations: `4/4 states`; `12/12 wrapper checks`; `12/12 relation href/H1/return checks`; `24/24 source anchors`; STY-15 actionable total `0`; console warnings/errors and complete CDP diagnostics empty.',
   '- Screenshot evidence: `BLOCKED / NOT_ACCEPTED`; attempts `4/4`; accepted `0/4`; viewport images were inspected in tool output, but no durable full-article screenshot artifact was retained.',
   '- Collection boundary: Codex in-app Browser / CUA only; actual Tab/Right keyboard input with DOM focus; exact-href relation navigation plus Browser back, not physical clicks; source destinations are resolved anchors, not remote-page probes. Preliminary tab/log-scope observations remain disclosed in raw collection notes.',
@@ -187,7 +194,7 @@ export function assertLocalBrowser(raw) {
   assert.equal(raw.capturedAt, '2026-09-07T14:01:05.707Z');
   assert.deepEqual(raw.buildProvenance, {
     baseHead: '463f1dec2ae0b35eedcf6fef2933f11ad60d74f8', kind: 'working-tree candidate after canonical generation; not a committed or deployed head',
-    inputFiles: 285, inputSha256: INPUT_SHA256,
+    inputFiles: 286, inputSha256: INPUT_SHA256, inputIdentityCorrection: INPUT_CORRECTION,
     scriptUrls: [`${BASE_URL}/assets/js/runtime~main.a15b5364.js`, `${BASE_URL}/assets/js/main.ce66ac75.js`],
   }, 'exact Browser build provenance');
   assert.deepEqual(raw.collection, {
@@ -220,14 +227,61 @@ export function assertLocalBrowser(raw) {
   }
 }
 
+function currentBuildInputPaths() {
+  return execFileSync('git', ['ls-files', '-z', ...BUILD_INPUTS], {encoding: 'utf8'}).split('\0').filter(Boolean).sort();
+}
+
+function assertBuildInputBinding(provenance, paths = currentBuildInputPaths(), readInput = readFileSync) {
+  assert.equal(paths.length, provenance.inputFiles, 'exact build input file count');
+  assert.equal(sha256(paths.map((path) => `${path}\0${sha256(readInput(path))}\n`).join('')), provenance.inputSha256, 'raw observations bind the current candidate build inputs');
+}
+
 test('STY-14 local Browser contract binds exact raw bytes and current build inputs', () => {
   const bytes = readFileSync(LOCAL_BROWSER);
   assert.equal(bytes.length, LOCAL_BROWSER_BYTES, 'exact raw bytes');
   assert.equal(sha256(bytes), LOCAL_BROWSER_SHA256, 'exact raw SHA-256');
   assertLocalBrowser(JSON.parse(bytes));
-  const paths = execFileSync('git', ['ls-files', '-z', ...BUILD_INPUTS], {encoding: 'utf8'}).split('\0').filter(Boolean).sort();
-  assert.equal(paths.length, 285, 'exact build input file count');
-  assert.equal(sha256(paths.map((path) => `${path}\0${sha256(readFileSync(path))}\n`).join('')), INPUT_SHA256, 'raw observations bind the current candidate build inputs');
+  assertBuildInputBinding(JSON.parse(bytes).buildProvenance);
+});
+
+for (const [label, mutate] of [
+  ['changed sidebars.ts', (files) => files.set('sidebars.ts', Buffer.from('export default {atlasSidebar: []};\n'))],
+  ['deleted sidebars.ts', (files) => files.delete('sidebars.ts')],
+]) test(`STY-14 build input binding rejects ${label}`, () => {
+  const provenance = JSON.parse(readFileSync(LOCAL_BROWSER)).buildProvenance;
+  const paths = currentBuildInputPaths();
+  const files = new Map([...new Set([...paths, 'sidebars.ts'])].map((path) => [path, readFileSync(path)]));
+  const readInput = (path) => {
+    assert.ok(files.has(path), `missing build input: ${path}`);
+    return files.get(path);
+  };
+  assertBuildInputBinding(provenance, paths, readInput);
+  const before = new Map(files); mutate(files);
+  assert.notDeepEqual(files, before, 'mutation changes actual input bytes or availability');
+  assert.throws(() => assertBuildInputBinding(provenance, paths, readInput), /current candidate build inputs|missing build input/u);
+});
+
+for (const [label, mutate] of [
+  ['omitted sidebars.ts', (paths) => paths.filter((path) => path !== 'sidebars.ts')],
+  ['added source input', (paths) => [...paths, 'src/new-build-input.ts'].sort()],
+  ['same-count replaced source input', (paths) => paths.map((path) => path === 'src/package.json' ? 'src/new-build-input.ts' : path).sort()],
+]) test(`STY-14 build input binding rejects ${label}`, () => {
+  const provenance = JSON.parse(readFileSync(LOCAL_BROWSER)).buildProvenance;
+  const paths = currentBuildInputPaths(); assertBuildInputBinding(provenance, paths);
+  const changed = mutate(paths);
+  assert.notDeepEqual(changed, paths, 'mutation changes selected build input membership');
+  assert.throws(() => assertBuildInputBinding(provenance, changed, (path) => path === 'src/new-build-input.ts' ? Buffer.from('export default {};\n') : readFileSync(path)), /build input file count|current candidate build inputs/u);
+});
+
+for (const [label, mutate] of [
+  ['stale input count', (p) => { p.inputFiles = 285; }],
+  ['stale input digest', (p) => { p.inputSha256 = INPUT_CORRECTION.previousInputSha256; }],
+  ['missing correction disclosure', (p) => { delete p.inputIdentityCorrection; }],
+]) test(`STY-14 raw Browser provenance rejects ${label}`, () => {
+  const raw = JSON.parse(readFileSync(LOCAL_BROWSER)); assertLocalBrowser(raw);
+  const changed = structuredClone(raw); mutate(changed.buildProvenance);
+  assert.notDeepEqual(changed, raw, 'mutation changes provenance');
+  assert.throws(() => assertLocalBrowser(changed), /exact Browser build provenance/u);
 });
 
 const browserMutations = [
