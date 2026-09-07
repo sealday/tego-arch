@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import test from 'node:test';
+import {readContentDocuments} from '../scripts/content-metadata.mjs';
+import {extractInternalLinks} from '../scripts/content-relations.mjs';
 
 export const REVIEW = 'docs/reviews/g009-batch15.md';
 export const TOPIC_ID = 'STY-14';
@@ -62,7 +64,8 @@ export function assertCurrentBaseline(status, manifest) {
   assert.equal(manifest.topics.some(({id}) => id === NEXT_TOPIC), false, 'STY-15 is absent from the canonical projection');
 }
 
-export function assertStageAProjection(status, manifest) {
+export function assertStageAProjection(status, manifest, documents = []) {
+  assert.equal(documents.flatMap(extractInternalLinks).includes('/styles/sty-15'), false, 'STY-15 remains non-actionable across all content Markdown/MDX/HTML links');
   const topic = manifest.topics.find(({id}) => id === TOPIC_ID); assert.ok(topic, 'STY-14 Stage A topic record exists');
   assert.equal(topic.published, true, 'STY-14 Stage A projection is absent until the article is generated');
   const selected = Object.fromEntries(Object.keys(EXPECTED_STAGE_A_TOPIC).map((key) => [key, topic[key]]));
@@ -117,6 +120,16 @@ test('STY-14 production Stage A review exists with only honest PENDING evidence 
   assertPendingStageAReview(optionalText(REVIEW));
 });
 
-test('STY-14 production Stage A projection advances only documents and original-source count', () => {
-  assertStageAProjection(projectStatus, manifest);
+for (const [format, body] of [
+  ['Markdown', '[下一篇](/styles/sty-15#next)'],
+  ['MDX', '<Link to="/styles/sty-15/">下一篇</Link>'],
+  ['HTML', '<a href="/styles/sty-15?from=sty14">下一篇</a>'],
+]) test(`STY-14 deployment helper rejects actionable STY-15 ${format} links anywhere`, () => {
+  const baseline = currentBaselineFixture(); const projected = stageAFixture(baseline.status, baseline.manifest);
+  assertStageAProjection(projected.status, projected.manifest, [{file: 'other.mdx', body: '待规划的下一篇。'}]);
+  assert.throws(() => assertStageAProjection(projected.status, projected.manifest, [{file: 'other.mdx', body}]), /STY-15.*non-actionable/u);
+});
+
+test('STY-14 production Stage A projection advances only documents and original-source count', async () => {
+  assertStageAProjection(projectStatus, manifest, await readContentDocuments('content'));
 });
