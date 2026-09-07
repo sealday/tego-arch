@@ -63,6 +63,23 @@ export const PENDING_STAGE_A_LINES = Object.freeze([
   '- Deployment status: `NOT_RUN`.',
 ]);
 
+export const STAGE_A_REVIEWED_HEAD = '1b5ab36d4fd7fb660f7a3df90c2e564d95e331cb';
+const READY_STAGE_A_LINES = [
+  ...PENDING_STAGE_A_LINES.slice(0, 4),
+  `- Reviewed implementation/evidence head: \`${STAGE_A_REVIEWED_HEAD}\`.`,
+  '- Code/spec/security review: `READY / APPROVE / findings 0`.',
+  '- Content/evidence/rights review: `CONTENT READY / rights PASS / findings 0`.',
+  '- Architecture/invariant review: `CLEAR / READY / blockers 0`.',
+  '- Final Stage A judgment: `READY`.',
+  '- Deployment status: `NOT_RUN`.',
+];
+const INDEPENDENT_REVIEW_LINES = [
+  `- Code/spec/security: exact head \`${STAGE_A_REVIEWED_HEAD}\`; reviewed range \`6a6ebe3..1b5ab36\`; verdict \`READY / APPROVE / findings 0\`; Critical/Important/Minor \`0/0/0\`; \`352\` targeted tests and full repository/gates passed.`,
+  `- Content/evidence/rights: exact head \`${STAGE_A_REVIEWED_HEAD}\`; verdict \`CONTENT READY / rights PASS / findings 0\`; \`391\` targeted tests passed; no new Browser observations performed.`,
+  `- Architecture/invariants: exact head \`${STAGE_A_REVIEWED_HEAD}\`; verdict \`CLEAR / READY / blockers 0\`; \`1804/1804\` repository tests passed; no new Browser observations performed; production still requires fresh four-state verification.`,
+  '- Binding boundary: these three independent read-only verdicts review the candidate and existing evidence, not a deployment. Task 5 performs no new Browser collection or deployment; screenshot evidence remains `BLOCKED / NOT_ACCEPTED`; deployment remains `NOT_RUN`.',
+];
+
 const optionalText = (path) => {
   try { return readFileSync(path, 'utf8'); } catch (error) { if (error?.code === 'ENOENT') return undefined; throw error; }
 };
@@ -110,6 +127,12 @@ export function assertPendingStageAReview(source) {
 function pendingReviewFixture() {
   return `# G009 Batch 15 — STY-14 Architecture Style Choice Matrix Review\n\n## Stage A candidate\n\n${PENDING_STAGE_A_LINES.join('\n')}\n\n## Local Browser evidence\n\n${LOCAL_REVIEW_LINES.join('\n')}\n`;
 }
+function readyReviewFixture() {
+  return `# G009 Batch 15 — STY-14 Architecture Style Choice Matrix Review\n\n## Stage A candidate\n\n${READY_STAGE_A_LINES.join('\n')}\n\n## Independent Stage A reviews\n\n${INDEPENDENT_REVIEW_LINES.join('\n')}\n\n## Local Browser evidence\n\n${LOCAL_REVIEW_LINES.join('\n')}\n`;
+}
+export function assertReadyStageAReview(source) {
+  assert.equal(source, readyReviewFixture(), 'exact READY Stage A review binds reviewed head, independent verdicts and honest evidence boundaries without displaced/additive claims');
+}
 function stageAFixture(status, manifest) {
   const projectedStatus = structuredClone(status); projectedStatus.completed_topics = EXPECTED_STAGE_A_PROJECTION.completed; projectedStatus.content_documents = EXPECTED_STAGE_A_PROJECTION.documents; projectedStatus.governed_sources = EXPECTED_STAGE_A_PROJECTION.sources;
   const projectedManifest = structuredClone(manifest); const index = projectedManifest.topics.findIndex(({id}) => id === TOPIC_ID); assert.notEqual(index, -1, 'fixture starts from canonical STY-14 projection'); projectedManifest.topics[index] = {...projectedManifest.topics[index], ...structuredClone(EXPECTED_STAGE_A_TOPIC)};
@@ -141,8 +164,40 @@ test('STY-14 deployment helpers are GREEN for the current baseline and mutation-
   assert.throws(() => assertPendingStageAReview(review.replace('`STAGE_A_ONLY`', '`STAGE_B`')), /exact PENDING Stage A review contract/u, 'wrong scope rejected');
 });
 
-test('STY-14 production Stage A review exists with only honest PENDING evidence slots', () => {
-  assertPendingStageAReview(optionalText(REVIEW));
+test('STY-14 production Stage A review binds exact-head independent READY verdicts without deployment', () => {
+  assertReadyStageAReview(optionalText(REVIEW));
+});
+
+const verdictMutations = [
+  ['wrong candidate head', (s) => s.replace(STAGE_A_REVIEWED_HEAD, '0'.repeat(40))],
+  ['wrong code reviewed head', (s) => s.replace(`Code/spec/security: exact head \`${STAGE_A_REVIEWED_HEAD}`, `Code/spec/security: exact head \`${'0'.repeat(40)}`)],
+  ['wrong content reviewed head', (s) => s.replace(`Content/evidence/rights: exact head \`${STAGE_A_REVIEWED_HEAD}`, `Content/evidence/rights: exact head \`${'0'.repeat(40)}`)],
+  ['wrong architecture reviewed head', (s) => s.replace(`Architecture/invariants: exact head \`${STAGE_A_REVIEWED_HEAD}`, `Architecture/invariants: exact head \`${'0'.repeat(40)}`)],
+  ['weakened code verdict', (s) => s.replaceAll('READY / APPROVE / findings 0', 'READY / findings 0')],
+  ['weakened content verdict', (s) => s.replaceAll('CONTENT READY / rights PASS / findings 0', 'CONTENT READY / rights PASS')],
+  ['weakened architecture verdict', (s) => s.replaceAll('CLEAR / READY / blockers 0', 'READY / blockers 0')],
+  ['rights failure', (s) => s.replaceAll('rights PASS', 'rights FAIL')],
+  ['nonzero findings', (s) => s.replaceAll('findings 0', 'findings 1')],
+  ['nonzero blockers', (s) => s.replaceAll('blockers 0', 'blockers 1')],
+  ['stale code PENDING', (s) => s.replace('`READY / APPROVE / findings 0`', '`PENDING`')],
+  ['stale content PENDING', (s) => s.replace('`CONTENT READY / rights PASS / findings 0`', '`PENDING`')],
+  ['stale architecture PENDING', (s) => s.replace('`CLEAR / READY / blockers 0`', '`PENDING`')],
+  ['stale final PENDING', (s) => s.replace('Final Stage A judgment: `READY`', 'Final Stage A judgment: `PENDING`')],
+  ['fabricated deployment success', (s) => s.replaceAll('`NOT_RUN`', '`SUCCESS`')],
+  ['fabricated accepted screenshot', (s) => s.replaceAll('`BLOCKED / NOT_ACCEPTED`', '`PASS / ACCEPTED`')],
+  ['fabricated new Browser collection', (s) => s.replace('Task 5 performs no new Browser collection or deployment', 'Task 5 performed new Browser collection and deployment')],
+  ['displaced candidate verdict', (s) => s.replace(`${READY_STAGE_A_LINES[5]}\n`, '') + `\n${READY_STAGE_A_LINES[5]}\n`],
+  ['displaced independent verdict', (s) => s.replace(`${INDEPENDENT_REVIEW_LINES[0]}\n`, '') + `\n${INDEPENDENT_REVIEW_LINES[0]}\n`],
+  ['additive duplicate verdict', (s) => `${s}\n${READY_STAGE_A_LINES[5]}\n`],
+  ['additive preamble deployment', (s) => `Deployment: SUCCESS\n${s}`],
+  ['additive candidate deployment', (s) => s.replace('## Stage A candidate\n', '## Stage A candidate\n\nDeployment: SUCCESS\n')],
+  ['additive independent claim', (s) => s.replace('## Independent Stage A reviews\n', '## Independent Stage A reviews\n\nAll screenshots accepted.\n')],
+  ['additive extra section', (s) => `${s}\n## Deployment\n\nSUCCESS\n`],
+];
+for (const [label, mutate] of verdictMutations) test(`STY-14 Stage A verdict binding rejects ${label}`, () => {
+  const source = readyReviewFixture(); assertReadyStageAReview(source);
+  const changed = mutate(source); assert.notEqual(changed, source, 'mutation changes the actual review');
+  assert.throws(() => assertReadyStageAReview(changed), /exact READY Stage A review/u);
 });
 
 for (const [format, body] of [

@@ -6,11 +6,19 @@
 - STY-14 lifecycle: `published / pending`.
 - STY-15 lifecycle: `absent / unpublished / pending / non-actionable`.
 - Projection: `84 completed topics / 127 content documents / 600 governed sources`.
-- Code/spec/security review: `PENDING`.
-- Content/evidence/rights review: `PENDING`.
-- Architecture/invariant review: `PENDING`.
-- Final Stage A judgment: `PENDING`.
+- Reviewed implementation/evidence head: `1b5ab36d4fd7fb660f7a3df90c2e564d95e331cb`.
+- Code/spec/security review: `READY / APPROVE / findings 0`.
+- Content/evidence/rights review: `CONTENT READY / rights PASS / findings 0`.
+- Architecture/invariant review: `CLEAR / READY / blockers 0`.
+- Final Stage A judgment: `READY`.
 - Deployment status: `NOT_RUN`.
+
+## Independent Stage A reviews
+
+- Code/spec/security: exact head `1b5ab36d4fd7fb660f7a3df90c2e564d95e331cb`; reviewed range `6a6ebe3..1b5ab36`; verdict `READY / APPROVE / findings 0`; Critical/Important/Minor `0/0/0`; `352` targeted tests and full repository/gates passed.
+- Content/evidence/rights: exact head `1b5ab36d4fd7fb660f7a3df90c2e564d95e331cb`; verdict `CONTENT READY / rights PASS / findings 0`; `391` targeted tests passed; no new Browser observations performed.
+- Architecture/invariants: exact head `1b5ab36d4fd7fb660f7a3df90c2e564d95e331cb`; verdict `CLEAR / READY / blockers 0`; `1804/1804` repository tests passed; no new Browser observations performed; production still requires fresh four-state verification.
+- Binding boundary: these three independent read-only verdicts review the candidate and existing evidence, not a deployment. Task 5 performs no new Browser collection or deployment; screenshot evidence remains `BLOCKED / NOT_ACCEPTED`; deployment remains `NOT_RUN`.
 
 ## Local Browser evidence
 
