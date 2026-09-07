@@ -44,13 +44,13 @@ const STAGE_B_LINES = [
   '- Canonical Stage B projection: `85 completed topics / 127 content documents / 600 governed sources`; durable stories remain `8/20`, current `G009`.',
   '- STY-14 lifecycle: `published / complete`; exact status `{"scope":"backlog-projection","value":"complete","source":"docs/content-backlog.md"}`.',
   '- STY-15 lifecycle: `absent / unpublished / non-actionable`; no new topic is created.',
-  '- Independent Stage B code/spec/security review: `PENDING`.',
-  '- Independent Stage B content/evidence/rights review: `PENDING`.',
-  '- Independent Stage B architecture/invariant review: `PENDING`.',
-  '- Final Stage B review judgment: `PENDING`.',
+  '- Independent Stage B code/spec/security review: exact candidate head `0cbf5f77c77ae6cca1868ce7279d5057fbc25512`; verdict `READY / APPROVE / findings 0`; Critical/Important/Minor `0/0/0`; full repository and all gates passed.',
+  '- Independent Stage B content/evidence/rights review: exact candidate head `0cbf5f77c77ae6cca1868ce7279d5057fbc25512`; verdict `CONTENT READY / rights PASS / findings 0`; Critical/Important/Minor `0/0/0`; targeted tests `324/324` passed.',
+  '- Independent Stage B architecture/invariant review: exact candidate head `0cbf5f77c77ae6cca1868ce7279d5057fbc25512`; verdict `CLEAR / READY / blockers 0`; Critical/Important/Minor `0/0/0`; targeted tests `360/360` passed.',
+  '- Final Stage B review judgment: `READY`; all three independent verdicts bind the same exact candidate, not a deployment.',
   '- Stage B deployment status: `PENDING / NOT_RUN`.',
   '- Stage B production raw: `NOT_RECORDED`.',
-  '- Completion boundary: this is the local closure candidate for independent exact-head review, not a reviewed or deployed Stage B release. G009 finalization remains pending those gates; no new Browser collection, screenshot acceptance or production PASS is claimed.',
+  '- Completion boundary: the exact Stage B candidate passed three independent reviews; deployment remains `PENDING / NOT_RUN`. G009 finalization still requires fresh exact-head Pages and production Browser verification; screenshots remain `BLOCKED / NOT_ACCEPTED`; no production PASS is claimed.',
 ];
 const IMMEDIATE_IDENTITIES = new Map([
   ['docs/content-backlog.md', [124996, '16d9c4013c0df279e1f809ba2fe3dfc35ed2f596f84011feb776de591230d674']],
@@ -102,7 +102,7 @@ function assertStageBBacklog(source) {
   assertImmediateHistory(source);
 }
 function assertStageBReview(source) {
-  assert.equal(source, productionReviewFixture() + STAGE_B_MARKER + '\n' + STAGE_B_LINES.join('\n') + '\n', 'exact Stage B candidate review preserves Stage A bytes and PENDING review/deployment slots');
+  assert.equal(source, productionReviewFixture() + STAGE_B_MARKER + '\n' + STAGE_B_LINES.join('\n') + '\n', 'exact Stage B review preserves Stage A bytes and binds independent verdicts and deployment state');
 }
 function assertStageBProjection(status, manifest, documents = []) {
   assert.deepEqual(projection(status), EXPECTED_STAGE_B_PROJECTION, 'exact generated Stage B 85/127/600 projection');
@@ -119,9 +119,27 @@ test('STY-14 Stage B candidate requires exactly one evidence-bound backlog closu
 test('STY-14 Stage B candidate requires the actual complete generator projection', async () => {
   assertStageBProjection(projectStatus, manifest, await readContentDocuments('content'));
 });
-test('STY-14 Stage B candidate requires PENDING independent reviews and deployment', () => {
+test('STY-14 Stage B candidate requires exact independent READY reviews and pending deployment', () => {
   assertStageBReview(readFileSync(REVIEW, 'utf8'));
   assert.equal(optionalText('docs/reviews/evidence/g009-batch15-stage-b-production-browser.json'), undefined, 'no premature Stage B production raw');
+});
+test('STY-14 Stage B verdicts reject wrong head, weakened verdict, rights failure and pending review', () => {
+  const source = productionReviewFixture() + STAGE_B_MARKER + '\n' + STAGE_B_LINES.join('\n') + '\n';
+  assertStageBReview(source);
+  for (const [before, after] of [
+    ['0cbf5f77c77ae6cca1868ce7279d5057fbc25512', '215908786dde13e7fb19c752ba61b3bfb340a89b'],
+    ['verdict `READY / APPROVE / findings 0`', 'verdict `READY / findings 0`'],
+    ['verdict `CONTENT READY / rights PASS / findings 0`', 'verdict `CONTENT READY / rights FAIL / findings 0`'],
+    ['verdict `CLEAR / READY / blockers 0`', 'verdict `READY / blockers 0`'],
+    ['Final Stage B review judgment: `READY`', 'Final Stage B review judgment: `PENDING`'],
+    ['Critical/Important/Minor `0/0/0`; targeted tests `324/324`', 'Critical/Important/Minor `0/1/0`; targeted tests `324/324`'],
+    ['Stage B deployment status: `PENDING / NOT_RUN`', 'Stage B deployment status: `SUCCESS / PASS`'],
+  ]) {
+    const marker = source.indexOf(STAGE_B_MARKER);
+    const changed = source.slice(0, marker) + source.slice(marker).replace(before, after);
+    assert.notEqual(changed, source, 'Stage B verdict mutation applies');
+    assert.throws(() => assertStageBReview(changed), assert.AssertionError);
+  }
 });
 test('STY-14 Stage B backlog and review reject changed, deleted, displaced and additive claims', () => {
   const previous = execFileSync('git', ['show', `${STAGE_A_EVIDENCE_HEAD}:docs/content-backlog.md`], {encoding: 'utf8'});

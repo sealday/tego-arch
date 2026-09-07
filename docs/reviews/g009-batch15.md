@@ -51,10 +51,10 @@
 - Canonical Stage B projection: `85 completed topics / 127 content documents / 600 governed sources`; durable stories remain `8/20`, current `G009`.
 - STY-14 lifecycle: `published / complete`; exact status `{"scope":"backlog-projection","value":"complete","source":"docs/content-backlog.md"}`.
 - STY-15 lifecycle: `absent / unpublished / non-actionable`; no new topic is created.
-- Independent Stage B code/spec/security review: `PENDING`.
-- Independent Stage B content/evidence/rights review: `PENDING`.
-- Independent Stage B architecture/invariant review: `PENDING`.
-- Final Stage B review judgment: `PENDING`.
+- Independent Stage B code/spec/security review: exact candidate head `0cbf5f77c77ae6cca1868ce7279d5057fbc25512`; verdict `READY / APPROVE / findings 0`; Critical/Important/Minor `0/0/0`; full repository and all gates passed.
+- Independent Stage B content/evidence/rights review: exact candidate head `0cbf5f77c77ae6cca1868ce7279d5057fbc25512`; verdict `CONTENT READY / rights PASS / findings 0`; Critical/Important/Minor `0/0/0`; targeted tests `324/324` passed.
+- Independent Stage B architecture/invariant review: exact candidate head `0cbf5f77c77ae6cca1868ce7279d5057fbc25512`; verdict `CLEAR / READY / blockers 0`; Critical/Important/Minor `0/0/0`; targeted tests `360/360` passed.
+- Final Stage B review judgment: `READY`; all three independent verdicts bind the same exact candidate, not a deployment.
 - Stage B deployment status: `PENDING / NOT_RUN`.
 - Stage B production raw: `NOT_RECORDED`.
-- Completion boundary: this is the local closure candidate for independent exact-head review, not a reviewed or deployed Stage B release. G009 finalization remains pending those gates; no new Browser collection, screenshot acceptance or production PASS is claimed.
+- Completion boundary: the exact Stage B candidate passed three independent reviews; deployment remains `PENDING / NOT_RUN`. G009 finalization still requires fresh exact-head Pages and production Browser verification; screenshots remain `BLOCKED / NOT_ACCEPTED`; no production PASS is claimed.
