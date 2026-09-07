@@ -271,7 +271,7 @@ function readerContract(source) {
   catch (error) { assert.fail(`valid closed MDX required: ${error.message}`); }
   const characters = parsed.normalized.split('');
   const mask = (start, end) => { for (let i = start; i < end; i += 1) if (characters[i] !== '\n') characters[i] = ' '; };
-  const wrappers = []; const images = []; const links = []; const definitions = new Map(); const excluded = new Set();
+  const wrappers = []; const images = []; const links = []; const definitions = new Map(); const excluded = new Set(); const summaries = new Set();
   const walk = (node, owner) => {
     const start = node.position?.start.offset; const end = node.position?.end.offset;
     if (['code', 'inlineCode', 'mdxjsEsm', 'definition'].includes(node.type)) {
@@ -302,10 +302,15 @@ function readerContract(source) {
       }
       if (node.name === 'details') {
         assert.deepEqual(attrs, {className: 'evidence-card'}, 'evidence card is closed and has no rendering overrides');
-        assert.equal(node.children.filter((child) => child.name === 'summary').length, 1, 'one evidence summary');
+        const summaryNodes = node.children.filter((child) => child.name === 'summary');
+        assert.equal(summaryNodes.length, 1, 'one evidence summary');
+        // Closed evidence bodies cannot supply narrative contracts, but their
+        // always-visible summaries still participate in global semantic checks.
+        summaries.add(summaryNodes[0]);
+        walk(summaryNodes[0], owner);
         excluded.add(node); mask(start, end); return;
       }
-      assert.ok(['div', 'span', 'p', 'a', 'img', 'Link'].includes(node.name), `visible MDX unsupported component: ${node.name}`);
+      assert.ok(['div', 'span', 'p', 'a', 'img', 'Link'].includes(node.name) || node.name === 'summary' && summaries.has(node), `visible MDX unsupported component: ${node.name}`);
       assert.ok(!Object.hasOwn(attrs, 'style'), 'visible MDX inline styles require explicit review');
       for (const [name, value] of Object.entries(attrs)) {
         assert.ok(['className', 'role', 'aria-label', 'tabIndex', 'onKeyDown', 'href', 'to', 'src', 'alt', 'title'].includes(name), `visible MDX unsupported attribute: ${name}`);
@@ -338,23 +343,25 @@ function readerContract(source) {
     return (node.children ?? []).map(render).join('');
   };
   const blocks = [];
-  const collect = (node, parent) => {
+  const collect = (node, parent, target = blocks) => {
     if (excluded.has(node)) return;
     const isBlock = ['paragraph', 'heading'].includes(node.type) || node.type === 'mdxJsxFlowElement' && !(node.children ?? []).some((child) => child.type === 'paragraph' || child.type === 'mdxJsxFlowElement');
     if (isBlock) {
-      blocks.push({text: render(node).replace(/\s+/gu, ' ').trim(), start: node.position.start.offset, heading: node.type === 'heading' ? node.depth : undefined, listItem: parent?.type === 'listItem'});
+      target.push({text: render(node).replace(/\s+/gu, ' ').trim(), start: node.position.start.offset, heading: node.type === 'heading' ? node.depth : undefined, listItem: parent?.type === 'listItem'});
       return;
     }
-    for (const child of node.children ?? []) collect(child, node);
+    for (const child of node.children ?? []) collect(child, node, target);
   };
   collect(parsed.ast);
+  const summaryBlocks = [];
+  for (const summary of summaries) collect(summary, undefined, summaryBlocks);
   const visible = characters.join('');
-  return {visible, blocks, wrappers, images, links: links.map((link) => typeof link === 'string' ? link : definitions.get(link.reference))};
+  return {visible, blocks, summaryBlocks, wrappers, images, links: links.map((link) => typeof link === 'string' ? link : definitions.get(link.reference))};
 }
 export function assertChoiceContract(source) {
   assert.ok(source, `${ARTICLE} must exist after implementation`);
   assert.deepEqual(parseFrontMatter(source), EXACT_METADATA, 'exact STY-14 front matter');
-  const {visible, blocks, wrappers, images, links} = readerContract(source);
+  const {visible, blocks, summaryBlocks, wrappers, images, links} = readerContract(source);
   const headings = blocks.filter(({heading}) => heading === 2);
   assert.deepEqual(headings.map(({text}) => text), EXPECTED_H2, 'exact visible STY-14 H2 order');
   assert.equal(source.split("import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableRegion/handleHorizontalArrowKey.mjs';").length - 1, 1, 'exact repository ArrowRight handler import');
@@ -376,11 +383,14 @@ export function assertChoiceContract(source) {
     assert.deepEqual(entries, PRESSURE_DETAILS[pressure], `${pressure} exact evidence/trigger/action/stop/owner contract`);
   }
   const compact = (text) => text.replace(/\s/gu, '');
-  const rendered = blocks.map(({text}) => compact(text)).join('\n');
-  const statements = blocks.flatMap(({text}) => text.split(/(?<=[。！？])/u)).map(compact).filter(Boolean);
+  const globalBlocks = [...blocks, ...summaryBlocks];
+  const rendered = globalBlocks.map(({text}) => compact(text)).join('\n');
+  const statementsOf = (items) => items.flatMap(({text}) => text.split(/(?<=[。！？])/u)).map(compact).filter(Boolean);
+  const narrativeStatements = statementsOf(blocks);
+  const statements = statementsOf(globalBlocks);
   for (const phrase of FORBIDDEN) assert.equal(rendered.includes(compact(phrase)), false, `forbidden choice claim: ${phrase}`);
   for (const sentence of REQUIRED_SENTENCES) {
-    assert.equal(statements.filter((text) => text === compact(sentence)).length, 1, `one affirmative visible boundary: ${sentence}`);
+    assert.equal(narrativeStatements.filter((text) => text === compact(sentence)).length, 1, `one affirmative visible boundary: ${sentence}`);
     const polaritySkeleton = (value) => value.replace(/并非|不是|不|非|未|无需|无须|没|\s/gu, (token) => token === '不是' ? '是' : '');
     assert.equal(statements.filter((text) => polaritySkeleton(text) === polaritySkeleton(sentence)).length, 1, `no duplicate or opposing visible boundary: ${sentence}`);
   }
@@ -1324,6 +1334,33 @@ for (const [label, mutate] of [
 
 test('STY-14 content helper permits evidence cards and the governed source component', () => {
   assertChoiceContract(`${articleFixture()}\n<details className="evidence-card">\n<summary>证据：起点启发</summary>\n\n[Monolith First](https://martinfowler.com/bliki/MonolithFirst.html) 仅支持起点启发。\n\n</details>\n\n<SourceLedger />\n`);
+});
+
+for (const [label, summary] of [
+  ['opposing boundary', '服务边界和交互方式不是两条独立的决策轴。'],
+  ['duplicate affirmative boundary', REQUIRED_SENTENCES[0]],
+  ['rendered negated boundary', `并非\n**${REQUIRED_SENTENCES[0]}**`],
+]) test(`STY-14 production evidence summary rejects ${label}`, () => {
+  const source = readFileSync(ARTICLE, 'utf8');
+  assertChoiceContract(source);
+  const mutation = replaceOnce(source, '<summary>证据：模块边界与自治服务的支持范围</summary>', `<summary>${summary}</summary>`, label);
+  assert.notEqual(mutation, source, `${label} summary mutation applies`);
+  assert.throws(() => assertChoiceContract(mutation), (error) => error instanceof assert.AssertionError && error.message.split('\n')[0] === `no duplicate or opposing visible boundary: ${REQUIRED_SENTENCES[0]}`, `${label} rejected by the global boundary guard with main narrative intact`);
+});
+
+test('STY-14 production evidence summary rejects rendered forbidden claims', () => {
+  const source = readFileSync(ARTICLE, 'utf8');
+  assertChoiceContract(source);
+  const mutation = replaceOnce(source, '<summary>证据：模块边界与自治服务的支持范围</summary>', '<summary>三种架构**按总分**选择。</summary>', 'forbidden summary');
+  assert.notEqual(mutation, source, 'forbidden summary mutation applies');
+  assert.throws(() => assertChoiceContract(mutation), (error) => error instanceof assert.AssertionError && error.message.split('\n')[0] === 'forbidden choice claim: 三种架构按总分选择');
+});
+
+test('STY-14 production evidence summary cannot supply a main-narrative boundary', () => {
+  const source = readFileSync(ARTICLE, 'utf8');
+  const withoutBoundary = replaceOnce(source, REQUIRED_SENTENCES[0], '', 'remove main-narrative boundary');
+  const mutation = replaceOnce(withoutBoundary, '<summary>证据：模块边界与自治服务的支持范围</summary>', `<summary>${REQUIRED_SENTENCES[0]}</summary>`, 'summary-only boundary');
+  assert.throws(() => assertChoiceContract(mutation), (error) => error instanceof assert.AssertionError && error.message.split('\n')[0] === `one affirmative visible boundary: ${REQUIRED_SENTENCES[0]}`);
 });
 
 test('STY-14 content helper rejects a consequential boundary supplied only inside an evidence card', () => {
