@@ -25,7 +25,7 @@ export const SOURCE_IDS = [
   'src-atlas-sty07-soa-microservices-order-fulfillment',
 ];
 export const ROUTE = '/styles/sty-07';
-export const EXPECTED_CURRENT_PROJECTION = Object.freeze({completed_topics: 84, content_documents: 127, governed_sources: 600});
+export const EXPECTED_CURRENT_PROJECTION = Object.freeze({completed_topics: 85, content_documents: 127, governed_sources: 600});
 
 
 export const RELATIONS = Object.freeze({
@@ -919,7 +919,7 @@ test('locks exact eight-row comparison and seven-row failure responsibilities', 
   await mutation(source, (candidate) => candidate.replace(/结果未知[^。；]*不盲目[^。；]*(重复支付|预留|补偿)/u, '结果未知时盲目重试'), assertFailureTable, 'unknown result blind retry');
 });
 
-test('governs STY-07 sources, reciprocal relations, and current STY-11 next-topic projection', async () => {
+test('governs STY-07 sources, reciprocal relations, and current STY-14 complete projection', async () => {
   const ledger = JSON.parse(readFileSync('data/source-ledger.json', 'utf8'));
   const inventorySource = readFileSync('docs/source-license-inventory.md', 'utf8');
   assertRemoteSourceContracts(ledger, inventorySource);
@@ -966,7 +966,7 @@ test('governs STY-07 sources, reciprocal relations, and current STY-11 next-topi
   const status = JSON.parse(readFileSync('src/generated/project-status.json', 'utf8'));
   assert.deepEqual(Object.fromEntries(Object.keys(EXPECTED_CURRENT_PROJECTION).map((key) => [key, status[key]])), EXPECTED_CURRENT_PROJECTION);
   const manifest = JSON.parse(readFileSync('src/generated/topic-manifest.json', 'utf8'));
-  for (const [id, published, topicStatus] of [[TOPIC_ID, true, 'complete'], [NEXT_TOPIC, true, 'complete'], ['STY-10', true, 'complete'], ['STY-11', true, 'complete'], ['STY-12', true, 'complete'], ['STY-13', true, 'complete'], ['STY-14', true, 'pending']]) {
+  for (const [id, published, topicStatus] of [[TOPIC_ID, true, 'complete'], [NEXT_TOPIC, true, 'complete'], ['STY-10', true, 'complete'], ['STY-11', true, 'complete'], ['STY-12', true, 'complete'], ['STY-13', true, 'complete'], ['STY-14', true, 'complete']]) {
     const topic = manifest.topics.find((entry) => entry.id === id); assert.equal(topic?.published, published, `${id} publication`); assert.equal(topic?.status.value, topicStatus, `${id} status`);
   }
 });

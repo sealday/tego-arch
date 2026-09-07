@@ -79,7 +79,7 @@ const expectedAssets = [
 ];
 
 const expectedProjection = {
-  completed_topics: 84,
+  completed_topics: 85,
   content_documents: 127,
   governed_sources: 600,
 

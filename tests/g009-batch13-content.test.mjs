@@ -18,7 +18,7 @@ export const ROUTE = '/styles/sty-12';
 export const TOPIC_ID = 'STY-12';
 export const NEXT_TOPIC = 'STY-13';
 export const RELATED_CASE = '/cases/micro-frontends-single-spa';
-export const EXPECTED_STAGE_A = Object.freeze({completed: 84, documents: 127, sources: 600});
+export const EXPECTED_STAGE_A = Object.freeze({completed: 85, documents: 127, sources: 600});
 
 export const EXPECTED_HEADINGS = Object.freeze([
   '学习问题', '一页摘要', '事实边界', '架构图', '运行时组合与发布流',
@@ -927,6 +927,6 @@ test('STY-12 bounded bridge search proves the five-to-six bridge transition', ()
   assert.deepEqual(report.sixBridge, {candidates: 108, feasible: 24, witness: {laneX: 1680, lowerShelfY: 1944, upperStartY: 1902, sampledCenterlineToUnderEnvelope: 8.5, allowlistedBridge: {owner: 'activate-account', under: 'load-failure', at: {x: 1680, y: 1920}, sampleMinimum: 7}}}, 'sixth allowlisted recovery bridge makes the bounded witness feasible');
 });
 
-test('STY-12 Task 4 Stage A projection remains RED until generated artifacts are refreshed', () => {
+test('STY-12 history and current canonical projection remain consistent', () => {
   const status = JSON.parse(readFileSync('src/generated/project-status.json', 'utf8')); assert.deepEqual({completed: status.completed_topics, documents: status.content_documents, sources: status.governed_sources}, EXPECTED_STAGE_A, 'exact Stage A projection');
 });

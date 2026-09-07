@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
-import {readFileSync} from 'node:fs';
+import {readFileSync, readdirSync} from 'node:fs';
 import test from 'node:test';
 import {readContentDocuments} from '../scripts/content-metadata.mjs';
 import {extractInternalLinks} from '../scripts/content-relations.mjs';
@@ -31,6 +31,163 @@ const LOCAL_REVIEW_LINES = [
 ];
 export const TOPIC_ID = 'STY-14';
 export const NEXT_TOPIC = 'STY-15';
+const STAGE_A_EVIDENCE_HEAD = '215908786dde13e7fb19c752ba61b3bfb340a89b';
+const STAGE_B_MARKER = '\n## Stage B closure candidate\n';
+const PREVIOUS_BACKLOG_ROW = '- [ ] **STY-14 P1｜风格选择矩阵**：用三个相同业务场景比较 Modular Monolith、Microservices 与 Event-Driven。';
+const STY14_CLOSURE_ROW = '- [x] **STY-14 P1｜风格选择矩阵**：用三个相同业务场景比较 Modular Monolith、Microservices 与 Event-Driven。2026-09-07 Stage A implementation commit `ea452848ac0b77b4271c465a3643799abd17d863`，Pages run `34134613000`，build job `101782500593`、deploy job `101783809244`；evidence commit `215908786dde13e7fb19c752ba61b3bfb340a89b`，Pages run `34136330002`，build job `101788065505`、deploy job `101789152187`，两次均为 exact-head `push / completed / success`。Production HTML routes `7/7` 与 SVG asset `1/1` 为 HTTP `200`，functional Browser `SUCCESS / PASS`（states `4/4`、wrappers `12/12`、relation href/H1/return `12/12`、source anchors `24/24`、STY-15 actionable `0`、完整 diagnostics 零）；screenshot evidence `BLOCKED / NOT_ACCEPTED`（accepted `0/4`）。仅 Stage B 本地关闭候选；独立 code/content-rights/architecture reviews `PENDING`，Stage B deployment `PENDING / NOT_RUN`，不声称 Stage B 生产完成。';
+const STAGE_B_LINES = [
+  '- Scope: `STAGE_B_CANDIDATE_ONLY`; only the STY-14 backlog row changes; the published recovery baseline and all preceding evidence bytes remain unchanged.',
+  '- Stage A implementation head: `ea452848ac0b77b4271c465a3643799abd17d863`; Pages run `34134613000`; build job `101782500593`; deploy job `101783809244`; `push / completed / success`; `2026-09-07T14:44:31Z` → `2026-09-07T14:49:19Z`.',
+  '- Stage A evidence head: `215908786dde13e7fb19c752ba61b3bfb340a89b`; Pages run `34136330002`; build job `101788065505`; deploy job `101789152187`; `push / completed / success`; `2026-09-07T15:04:01Z` → `2026-09-07T15:08:02Z`.',
+  '- Stage A production evidence: `2026-09-07`; HTML routes `7/7` and SVG asset `1/1`, HTTP `200`; functional Browser `SUCCESS / PASS`; states `4/4`, wrappers `12/12`, exact relation href/H1/return `12/12`, source anchors `24/24`, STY-15 actionable `0`, complete diagnostics empty; screenshots `BLOCKED / NOT_ACCEPTED`, accepted `0/4`.',
+  '- Immediate history: complete backlog `124996 bytes / 16d9c4013c0df279e1f809ba2fe3dfc35ed2f596f84011feb776de591230d674`; complete release suffix `41918 bytes / 13358d8a29848f9b873225cab669be9e5f2f0f1533245eb12cd591e8b6bc2237`; Stage A review `5767 bytes / 8b649f83c8a3d37af2c29eb47c5ea476a9f48685323b14f57a603db6e5f76eb0`; all `75` prior review/evidence files locked by tree SHA-256 `7fe265f26e05f02cdd66ad4805e5f8a1944fe1da4bc3b49871cc53fb5ee966df`.',
+  '- Canonical Stage B projection: `85 completed topics / 127 content documents / 600 governed sources`; durable stories remain `8/20`, current `G009`.',
+  '- STY-14 lifecycle: `published / complete`; exact status `{"scope":"backlog-projection","value":"complete","source":"docs/content-backlog.md"}`.',
+  '- STY-15 lifecycle: `absent / unpublished / non-actionable`; no new topic is created.',
+  '- Independent Stage B code/spec/security review: `PENDING`.',
+  '- Independent Stage B content/evidence/rights review: `PENDING`.',
+  '- Independent Stage B architecture/invariant review: `PENDING`.',
+  '- Final Stage B review judgment: `PENDING`.',
+  '- Stage B deployment status: `PENDING / NOT_RUN`.',
+  '- Stage B production raw: `NOT_RECORDED`.',
+  '- Completion boundary: this is the local closure candidate for independent exact-head review, not a reviewed or deployed Stage B release. G009 finalization remains pending those gates; no new Browser collection, screenshot acceptance or production PASS is claimed.',
+];
+const IMMEDIATE_IDENTITIES = new Map([
+  ['docs/content-backlog.md', [124996, '16d9c4013c0df279e1f809ba2fe3dfc35ed2f596f84011feb776de591230d674']],
+  ['backlog release suffix', [41918, '13358d8a29848f9b873225cab669be9e5f2f0f1533245eb12cd591e8b6bc2237']],
+  ['docs/reviews/g009-batch14.md', [19102, '4670db791ce9d8bd51c6bf904d1c357fd2fe4759761ba09a871eca47a103e4d4']],
+  ['docs/reviews/g010-mth07.md', [18240, '3d11a2f00e64ce0edb77886ea95656375591422bb881b9bec43e05592bb8caff']],
+  [REVIEW, [5767, '8b649f83c8a3d37af2c29eb47c5ea476a9f48685323b14f57a603db6e5f76eb0']],
+  [LOCAL_BROWSER, [32300, LOCAL_BROWSER_SHA256]],
+  ['docs/reviews/evidence/g009-batch15-stage-a-production-browser.json', [37303, '28967cff0dad4941577ddb62c3c063b4228cd71647dcc0841face601be54feb0']],
+]);
+
+function reviewBeforeStageB(source) {
+  const start = source.indexOf(STAGE_B_MARKER);
+  return start < 0 ? source : source.slice(0, start);
+}
+function reviewFiles(directory = 'docs/reviews') {
+  return readdirSync(directory, {withFileTypes: true}).flatMap((entry) => {
+    const path = `${directory}/${entry.name}`;
+    return entry.isDirectory() ? reviewFiles(path) : [path];
+  }).sort();
+}
+function immediateHistoryFiles() {
+  const files = new Map(reviewFiles().map((path) => [path, readFileSync(path)]));
+  files.set(REVIEW, Buffer.from(reviewBeforeStageB(files.get(REVIEW).toString())));
+  return files;
+}
+function assertImmediateHistory(backlog, files = immediateHistoryFiles()) {
+  const suffix = backlog.match(/^- \*\*当前发布基线：\*\* (.+)$/mu)?.[1];
+  assert.ok(suffix, 'complete immediately previous release suffix exists');
+  const previousBacklog = backlog.replace(STY14_CLOSURE_ROW, PREVIOUS_BACKLOG_ROW);
+  const identities = new Map([...files, ['docs/content-backlog.md', Buffer.from(previousBacklog)], ['backlog release suffix', Buffer.from(suffix)]]);
+  for (const [path, [length, digest]] of IMMEDIATE_IDENTITIES) {
+    const bytes = identities.get(path);
+    assert.ok(bytes, `immediate history exists: ${path}`);
+    assert.equal(bytes.length, length, `immediate history byte length: ${path}`);
+    assert.equal(sha256(bytes), digest, `immediate history SHA-256: ${path}`);
+  }
+  assert.equal(files.size, 75, 'complete historical review/evidence membership');
+  assert.equal(sha256([...files.keys()].sort().map((path) => `${path}\0${sha256(files.get(path))}\n`).join('')), '7fe265f26e05f02cdd66ad4805e5f8a1944fe1da4bc3b49871cc53fb5ee966df', 'complete historical review/evidence tree SHA-256');
+}
+
+test('STY-14 locks the complete immediate backlog suffix and every preceding review/evidence byte', () => {
+  assertImmediateHistory(readFileSync('docs/content-backlog.md', 'utf8'));
+});
+
+function assertStageBBacklog(source) {
+  assert.equal(source.split(STY14_CLOSURE_ROW + '\n').length - 1, 1, 'one exact checked STY-14 row binds Stage A evidence and pending Stage B gates');
+  assert.equal((source.match(/^- \[[ xX]\] \*\*STY-14\b/gmu) ?? []).length, 1, 'exactly one STY-14 checkbox');
+  assertImmediateHistory(source);
+}
+function assertStageBReview(source) {
+  assert.equal(source, productionReviewFixture() + STAGE_B_MARKER + '\n' + STAGE_B_LINES.join('\n') + '\n', 'exact Stage B candidate review preserves Stage A bytes and PENDING review/deployment slots');
+}
+function assertStageBProjection(status, manifest, documents = []) {
+  assert.deepEqual(projection(status), EXPECTED_STAGE_B_PROJECTION, 'exact generated Stage B 85/127/600 projection');
+  assert.deepEqual(status.durable_stories, {completed: 8, total: 20, current: 'G009'}, 'durable story closure is not authorized at this candidate checkpoint');
+  const topic = manifest.topics.find(({id}) => id === TOPIC_ID);
+  assert.ok(topic, 'STY-14 Stage B topic exists');
+  assert.deepEqual(Object.fromEntries(Object.keys(EXPECTED_STAGE_A_TOPIC).map((key) => [key, topic[key]])), {...EXPECTED_STAGE_A_TOPIC, status: {...EXPECTED_STAGE_A_TOPIC.status, value: 'complete'}}, 'exact STY-14 published complete projection');
+  assert.equal(manifest.topics.some(({id}) => id === NEXT_TOPIC), false, 'STY-15 stays absent');
+  assert.equal(documents.flatMap(extractInternalLinks).includes('/styles/sty-15'), false, 'STY-15 stays non-actionable');
+}
+test('STY-14 Stage B candidate requires exactly one evidence-bound backlog closure', () => {
+  assertStageBBacklog(readFileSync('docs/content-backlog.md', 'utf8'));
+});
+test('STY-14 Stage B candidate requires the actual complete generator projection', async () => {
+  assertStageBProjection(projectStatus, manifest, await readContentDocuments('content'));
+});
+test('STY-14 Stage B candidate requires PENDING independent reviews and deployment', () => {
+  assertStageBReview(readFileSync(REVIEW, 'utf8'));
+  assert.equal(optionalText('docs/reviews/evidence/g009-batch15-stage-b-production-browser.json'), undefined, 'no premature Stage B production raw');
+});
+test('STY-14 Stage B backlog and review reject changed, deleted, displaced and additive claims', () => {
+  const previous = execFileSync('git', ['show', `${STAGE_A_EVIDENCE_HEAD}:docs/content-backlog.md`], {encoding: 'utf8'});
+  const backlog = previous.replace(PREVIOUS_BACKLOG_ROW, STY14_CLOSURE_ROW);
+  const review = productionReviewFixture() + STAGE_B_MARKER + '\n' + STAGE_B_LINES.join('\n') + '\n';
+  assertStageBBacklog(backlog); assertStageBReview(review);
+  for (const token of STY14_CLOSURE_ROW.split(/(?<=。|；|，|`)/u).filter(Boolean)) {
+    for (const replacement of [token + 'fabricated', '']) {
+      const changed = backlog.replace(STY14_CLOSURE_ROW, STY14_CLOSURE_ROW.replace(token, replacement));
+      assert.notEqual(changed, backlog, 'closure mutation applies');
+      assert.throws(() => assertStageBBacklog(changed), assert.AssertionError);
+    }
+  }
+  for (const changed of [backlog + STY14_CLOSURE_ROW + '\n', backlog.replace('- [ ] **OPS-04', '- [x] **OPS-04'), backlog.replace(STY14_CLOSURE_ROW + '\n', '') + STY14_CLOSURE_ROW + '\n']) {
+    assert.notEqual(changed, backlog, 'only-one-row mutation applies');
+    assert.throws(() => assertStageBBacklog(changed), assert.AssertionError);
+  }
+  for (const line of STAGE_B_LINES) for (const changed of [review.replace(line, line + 'fabricated'), review.replace(line + '\n', ''), review.replace(line + '\n', '') + '\n' + line + '\n', review + line + '\n']) {
+    assert.notEqual(changed, review, 'Stage B review mutation applies');
+    assert.throws(() => assertStageBReview(changed), assert.AssertionError);
+  }
+});
+test('STY-14 Stage B projection rejects stale counts, lifecycle, source identity and fabricated STY-15', () => {
+  const stage = stageAFixture(projectStatus, manifest);
+  stage.status.completed_topics = 85;
+  stage.manifest.topics.find(({id}) => id === TOPIC_ID).status.value = 'complete';
+  assertStageBProjection(stage.status, stage.manifest);
+  for (const mutate of [
+    (copy) => { copy.status.completed_topics = 84; },
+    (copy) => { copy.status.content_documents--; },
+    (copy) => { copy.status.governed_sources++; },
+    (copy) => { copy.status.durable_stories.completed++; },
+    (copy) => { copy.manifest.topics.find(({id}) => id === TOPIC_ID).status.value = 'pending'; },
+    (copy) => { copy.manifest.topics.find(({id}) => id === TOPIC_ID).published = false; },
+    (copy) => { copy.manifest.topics.find(({id}) => id === TOPIC_ID).primary_sources = []; },
+    (copy) => { copy.manifest.topics.push({id: NEXT_TOPIC}); },
+  ]) {
+    const changed = structuredClone(stage); mutate(changed);
+    assert.notDeepEqual(changed, stage, 'projection mutation applies');
+    assert.throws(() => assertStageBProjection(changed.status, changed.manifest), assert.AssertionError);
+  }
+  for (const body of ['[Next](/styles/sty-15)', '<Link to="/styles/sty-15">Next</Link>', '<a href="/styles/sty-15">Next</a>']) {
+    assert.throws(() => assertStageBProjection(stage.status, stage.manifest, [{file: 'other.mdx', body}]), /non-actionable/u);
+  }
+});
+test('STY-14 immediate history rejects non-no-op add/edit/delete mutations', () => {
+  const backlog = readFileSync('docs/content-backlog.md', 'utf8');
+  const files = immediateHistoryFiles(); assertImmediateHistory(backlog, files);
+  for (const [path, bytes] of files) {
+    for (const mutated of [Buffer.concat([bytes, Buffer.from('x')]), Buffer.from(bytes.map((byte, index) => index === 0 ? byte ^ 1 : byte)), bytes.subarray(1)]) {
+      assert.notDeepEqual(mutated, bytes, `${path} bytes mutation applies`);
+      const changed = new Map(files); changed.set(path, mutated);
+      assert.throws(() => assertImmediateHistory(backlog, changed), assert.AssertionError, path);
+    }
+    const deleted = new Map(files); deleted.delete(path);
+    assert.notDeepEqual(deleted, files, 'file deletion applies');
+    assert.throws(() => assertImmediateHistory(backlog, deleted), assert.AssertionError, path);
+  }
+  const added = new Map(files); added.set('docs/reviews/fabricated.md', Buffer.from('PASS'));
+  assert.notDeepEqual(added, files, 'file addition applies');
+  assert.throws(() => assertImmediateHistory(backlog, added), assert.AssertionError);
+  for (const changed of [backlog + 'x', backlog.replace('2026-08-28 G009 Batch 14', '2026-08-29 G009 Batch 14'), backlog.replace('2026-08-28 G009 Batch 14', '')]) {
+    assert.notEqual(changed, backlog, 'backlog suffix mutation applies');
+    assert.throws(() => assertImmediateHistory(changed, files), assert.AssertionError);
+  }
+});
 export const EXPECTED_CURRENT_PROJECTION = Object.freeze({completed: 84, documents: 126, sources: 599});
 export const EXPECTED_STAGE_A_PROJECTION = Object.freeze({completed: 84, documents: 127, sources: 600});
 export const EXPECTED_STAGE_B_PROJECTION = Object.freeze({completed: 85, documents: 127, sources: 600});
@@ -93,7 +250,7 @@ function projection(status) {
 function h2Sections(source) {
   return [...source.matchAll(/^## (?<heading>.+)$/gmu)].map((match, index, matches) => {
     const start = match.index + match[0].length;
-    const next = [...source.matchAll(/^## .+$/gmu)].find((candidate) => candidate.index > match.index);
+    const next = matches[index + 1];
     return [match.groups.heading, source.slice(start, next?.index ?? source.length).trim()];
   });
 }
@@ -165,7 +322,7 @@ test('STY-14 deployment helpers are GREEN for the current baseline and mutation-
 });
 
 test('STY-14 production Stage A review binds exact-head independent READY verdicts and production evidence', () => {
-  assertProductionStageAReview(optionalText(REVIEW));
+  assertProductionStageAReview(reviewBeforeStageB(optionalText(REVIEW)));
 });
 
 const verdictMutations = [
@@ -210,8 +367,8 @@ for (const [format, body] of [
   assert.throws(() => assertStageAProjection(projected.status, projected.manifest, [{file: 'other.mdx', body}]), /STY-15.*non-actionable/u);
 });
 
-test('STY-14 production Stage A projection advances only documents and original-source count', async () => {
-  assertStageAProjection(projectStatus, manifest, await readContentDocuments('content'));
+test('STY-14 immutable Stage A projection advanced only documents and original-source count', () => {
+  assertStageAProjection(JSON.parse(stageAInput('src/generated/project-status.json')), JSON.parse(stageAInput('src/generated/topic-manifest.json')));
 });
 
 test('STY-14 Stage A tracks raw local Browser evidence', () => {
@@ -286,16 +443,47 @@ export function assertLocalBrowser(raw) {
   }
 }
 
-function currentBuildInputPaths() {
-  return execFileSync('git', ['ls-files', '-z', ...BUILD_INPUTS], {encoding: 'utf8'}).split('\0').filter(Boolean).sort();
+function stageABuildInputPaths() {
+  return execFileSync('git', ['ls-tree', '-r', '--name-only', '-z', STAGE_A_EVIDENCE_HEAD, '--', ...BUILD_INPUTS], {encoding: 'utf8'}).split('\0').filter(Boolean).sort();
 }
 
-function assertBuildInputBinding(provenance, paths = currentBuildInputPaths(), readInput = readFileSync) {
+const stageAInputCache = new Map();
+function stageAInput(path) {
+  if (!stageAInputCache.has(path)) stageAInputCache.set(path, execFileSync('git', ['show', `${STAGE_A_EVIDENCE_HEAD}:${path}`], {maxBuffer: 16 * 1024 * 1024}));
+  return stageAInputCache.get(path);
+}
+function assertBuildInputBinding(provenance, paths = stageABuildInputPaths(), readInput = stageAInput) {
   assert.equal(paths.length, provenance.inputFiles, 'exact build input file count');
-  assert.equal(sha256(paths.map((path) => `${path}\0${sha256(readInput(path))}\n`).join('')), provenance.inputSha256, 'raw observations bind the current candidate build inputs');
+  assert.equal(sha256(paths.map((path) => `${path}\0${sha256(readInput(path))}\n`).join('')), provenance.inputSha256, 'raw observations bind the immutable Stage A build inputs');
 }
 
-test('STY-14 local Browser contract binds exact raw bytes and current build inputs', () => {
+function assertCurrentBuildBoundary(files) {
+  const paths = stageABuildInputPaths();
+  assert.deepEqual([...files.keys()].sort(), paths, 'Stage B preserves complete Stage A build input membership');
+  assert.deepEqual(paths.filter((path) => sha256(files.get(path)) !== sha256(stageAInput(path))), [
+    'src/generated/project-status.json', 'src/generated/topic-indexes.json', 'src/generated/topic-manifest.json',
+  ], 'only the three canonical lifecycle projections differ from the observed Stage A inputs');
+}
+test('STY-14 candidate changes only canonical lifecycle inputs and never rebinds old Browser raw to live inputs', () => {
+  const paths = execFileSync('git', ['ls-files', '--cached', '--others', '--exclude-standard', '-z', ...BUILD_INPUTS], {encoding: 'utf8'}).split('\0').filter(Boolean).sort();
+  const files = new Map(paths.map((path) => [path, readFileSync(path)]));
+  assertCurrentBuildBoundary(files);
+  const provenance = JSON.parse(readFileSync(LOCAL_BROWSER)).buildProvenance;
+  assertBuildInputBinding(provenance);
+  assert.throws(() => assertBuildInputBinding(provenance, paths, (path) => files.get(path)), /immutable Stage A build inputs/u, 'Stage B generated bytes cannot be relabeled as the Stage A observed input identity');
+  for (const mutate of [
+    (copy) => copy.set('sidebars.ts', Buffer.from('changed')),
+    (copy) => copy.delete('sidebars.ts'),
+    (copy) => copy.set('src/fabricated.ts', Buffer.from('added')),
+    (copy) => copy.set('src/generated/project-status.json', stageAInput('src/generated/project-status.json')),
+  ]) {
+    const changed = new Map(files); mutate(changed);
+    assert.notDeepEqual(changed, files, 'build boundary mutation applies');
+    assert.throws(() => assertCurrentBuildBoundary(changed), assert.AssertionError);
+  }
+});
+
+test('STY-14 local Browser contract binds exact raw bytes and immutable Stage A build inputs', () => {
   const bytes = readFileSync(LOCAL_BROWSER);
   assert.equal(bytes.length, LOCAL_BROWSER_BYTES, 'exact raw bytes');
   assert.equal(sha256(bytes), LOCAL_BROWSER_SHA256, 'exact raw SHA-256');
@@ -308,8 +496,8 @@ for (const [label, mutate] of [
   ['deleted sidebars.ts', (files) => files.delete('sidebars.ts')],
 ]) test(`STY-14 build input binding rejects ${label}`, () => {
   const provenance = JSON.parse(readFileSync(LOCAL_BROWSER)).buildProvenance;
-  const paths = currentBuildInputPaths();
-  const files = new Map([...new Set([...paths, 'sidebars.ts'])].map((path) => [path, readFileSync(path)]));
+  const paths = stageABuildInputPaths();
+  const files = new Map([...new Set([...paths, 'sidebars.ts'])].map((path) => [path, stageAInput(path)]));
   const readInput = (path) => {
     assert.ok(files.has(path), `missing build input: ${path}`);
     return files.get(path);
@@ -317,7 +505,7 @@ for (const [label, mutate] of [
   assertBuildInputBinding(provenance, paths, readInput);
   const before = new Map(files); mutate(files);
   assert.notDeepEqual(files, before, 'mutation changes actual input bytes or availability');
-  assert.throws(() => assertBuildInputBinding(provenance, paths, readInput), /current candidate build inputs|missing build input/u);
+  assert.throws(() => assertBuildInputBinding(provenance, paths, readInput), /immutable Stage A build inputs|missing build input/u);
 });
 
 for (const [label, mutate] of [
@@ -326,10 +514,10 @@ for (const [label, mutate] of [
   ['same-count replaced source input', (paths) => paths.map((path) => path === 'src/package.json' ? 'src/new-build-input.ts' : path).sort()],
 ]) test(`STY-14 build input binding rejects ${label}`, () => {
   const provenance = JSON.parse(readFileSync(LOCAL_BROWSER)).buildProvenance;
-  const paths = currentBuildInputPaths(); assertBuildInputBinding(provenance, paths);
+  const paths = stageABuildInputPaths(); assertBuildInputBinding(provenance, paths);
   const changed = mutate(paths);
   assert.notDeepEqual(changed, paths, 'mutation changes selected build input membership');
-  assert.throws(() => assertBuildInputBinding(provenance, changed, (path) => path === 'src/new-build-input.ts' ? Buffer.from('export default {};\n') : readFileSync(path)), /build input file count|current candidate build inputs/u);
+  assert.throws(() => assertBuildInputBinding(provenance, changed, (path) => path === 'src/new-build-input.ts' ? Buffer.from('export default {};\n') : stageAInput(path)), /build input file count|immutable Stage A build inputs/u);
 });
 
 for (const [label, mutate] of [

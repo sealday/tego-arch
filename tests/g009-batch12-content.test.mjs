@@ -11,7 +11,7 @@ export const ARTICLE = 'content/styles/sty-11-serverless-architecture.mdx';
 export const DRAWIO = 'diagrams/sty-11-serverless-order-fulfillment.drawio';
 export const SVG = 'static/img/diagrams/sty-11-serverless-order-fulfillment.svg';
 export const ROUTE = '/styles/sty-11'; export const TOPIC_ID = 'STY-11'; export const NEXT_TOPIC = 'STY-12'; export const RELATED_CASE = '/cases/cloudflare-durable-objects-workerd';
-export const EXPECTED_STAGE_A = Object.freeze({completed: 84, documents: 127, sources: 600});
+export const EXPECTED_STAGE_A = Object.freeze({completed: 85, documents: 127, sources: 600});
 
 export const SOURCE_IDS = Object.freeze(['src-cncf-serverless-whitepaper-v1','src-cncf-serverless-glossary','src-aws-lambda-runtime-lifecycle','src-aws-lambda-invocation-retries','src-aws-lambda-concurrency','src-aws-lambda-pricing','src-azure-functions-scale-hosting','src-google-cloud-run-concurrency','src-cncf-cloudevents-102-spec','src-open-workflow-specification-103','src-atlas-sty11-serverless-order-fulfillment']);
 export const EXACT_METADATA = Object.freeze({title: 'Serverless Architecture：把运行责任交给平台，不把业务边界一并交出去', slug: '/styles/sty-11', content_type: 'style', status: 'reviewed', difficulty: 'advanced', analyzed_at: '2026-08-25', source_cutoff: '2026-08-25', confidence: 'high', domains: ['software-architecture', 'distributed-systems', 'platform-engineering'], agent_patterns: [], protocols: [], quality_attributes: ['scalability', 'performance', 'reliability', 'recoverability', 'operability', 'cost-efficiency'], tags: ['架构风格', 'Serverless', 'FaaS', '事件驱动', '幂等', '冷启动', '成本治理'], summary: '以订单结算与异步履约说明 Serverless：同步入口只受理，持久工作流（Workflow）保存进度，队列和三层并发预算保护下游，有界函数执行单步任务，并把冷启动、成本与供应商退出放进同一决策。', topic_id: 'STY-11', priority: 'P1', depends_on: ['STY-00', 'STY-06'], adjacent_topics: ['STY-06', 'STY-09'], related_cases: [RELATED_CASE], related_questions: []});
@@ -530,7 +530,7 @@ test('STY-11 Draw.io/SVG diagram satisfies synchronized inventory and mutation c
   assertServerlessDiagram(diagram, svg); assertDiagramMutationRejected(diagram, svg);
 });
 
-test('STY-11 implementation remains RED until its article, sources, relations, diagram, and projection exist', async () => {
+test('STY-11 article, sources, relations, diagram and current projection satisfy their contracts', async () => {
   const source = file(ARTICLE); assert.ok(source, ARTICLE + ' must exist after implementation');
   assertServerlessArticle(source);
   const ledger = JSON.parse(readFileSync('data/source-ledger.json', 'utf8')); assertServerlessSources(ledger);

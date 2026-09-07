@@ -227,7 +227,7 @@ test('rejects closure mutations accepted by the former weak predicates', async (
   }
 });
 
-test('preserves the Batch 1 closure under the current STY-10 next-topic projection', async () => {
+test('preserves the Batch 1 closure under the current STY-14 complete projection', async () => {
   const [backlog, manifest, status] = await Promise.all([
     readFile(new URL('../docs/content-backlog.md', import.meta.url), 'utf8'),
     readFile(new URL('../src/generated/topic-manifest.json', import.meta.url), 'utf8').then(JSON.parse),
@@ -248,7 +248,7 @@ test('preserves the Batch 1 closure under the current STY-10 next-topic projecti
   assert.deepEqual(status, {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
-    completed_topics: 84,
+    completed_topics: 85,
     content_documents: 127,
     governed_sources: 600,
 

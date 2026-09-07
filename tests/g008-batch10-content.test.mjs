@@ -505,16 +505,16 @@ test('locks the generated MOD-13 Stage B projection', () => {
       total: projectStatus.durable_stories.total,
     },
     current_goal: projectStatus.durable_stories.current,
-    next_topic: topicManifest.topics.find(({id, status}) => id === 'STY-14' && status.value === 'pending')?.id,
+    next_pending_style: topicManifest.topics.find(({type, status}) => type === 'style' && status.value === 'pending')?.id,
   }, {
-    completed_topics: 84,
+    completed_topics: 85,
     content_documents: 127,
     governed_sources: 600,
 
 
     durable_stories: {completed: 8, total: 20},
     current_goal: 'G009',
-    next_topic: 'STY-14',
+    next_pending_style: undefined,
   });
   const topicsById = new Map(topicManifest.topics.map((topic) => [topic.id, topic]));
   assert.equal(topicsById.get('MOD-12').published, true);

@@ -59,7 +59,7 @@ const MTH07_STATUS = {
 const PROJECT_STATUS = {
   schema_version: 1,
   durable_stories: {completed: 8, total: 20, current: 'G009'},
-  completed_topics: 84,
+  completed_topics: 85,
   content_documents: 127,
   governed_sources: 600,
 
@@ -239,7 +239,10 @@ function backlogWithoutMth07(source) {
   const exact = `${MTH07_CLOSURE_LINE}\n`;
   assert.equal(source.split(exact).length - 1, 1, 'backlog contains one exact MTH-07 closure line');
   assert.equal((source.match(/^[-*+]\s+\[[ xX]\]\s+\*\*MTH-07\b/gmu) ?? []).length, 1, 'backlog contains one MTH-07 checkbox');
-  return source.replace(exact, '');
+  const laterRows = source.split('\n').filter((line) => line.startsWith('- [x] **STY-14 '));
+  assert.equal(laterRows.length, 1, 'one exact later STY-14 closure row before historical normalization');
+  assert.equal(sha256(laterRows[0]), '31b50b12ee22560f5727251b93143c7adfcdd780eca0a3cdc35143f7341d928d', 'later STY-14 closure full-line SHA-256');
+  return source.replace(exact, '').replace(laterRows[0], '- [ ] **STY-14 P1｜风格选择矩阵**：用三个相同业务场景比较 Modular Monolith、Microservices 与 Event-Driven。');
 }
 
 function immediateBacklogSuffix(source) {
@@ -909,6 +912,23 @@ test('preserves exact MTH-07 history under current totals without publishing a f
   assertProjection();
   const publishedRoutes = new Set(manifest.topics.filter(({published}) => published).map(({slug}) => slug));
   assert.equal(publishedRoutes.has('/methods/mth-07'), true);
+});
+
+test('G010 preserves its original backlog hash through only the exact later STY-14 closure', () => {
+  assertImmediateStageBHistory(review, backlog);
+  const row = backlog.split('\n').find((line) => line.startsWith('- [x] **STY-14 '));
+  assert.ok(row, 'current exact STY-14 closure exists');
+  for (const [label, changed] of [
+    ['edit', backlog.replace(row, row.replace('34134613000', '34134613001'))],
+    ['delete', backlog.replace(row + '\n', '')],
+    ['duplicate', backlog + row + '\n'],
+    ['additive claim', backlog.replace(row, row + ' Stage B SUCCESS')],
+    ['near-match topic', backlog.replace(row, row.replace('STY-14 P1', 'STY-140 P1'))],
+    ['near-match checkbox', backlog.replace(row, row.replace('[x]', '[X]'))],
+  ]) {
+    assert.notEqual(changed, backlog, `${label} mutation applies`);
+    assert.throws(() => assertImmediateStageBHistory(review, changed), assert.AssertionError, label);
+  }
 });
 
 test('closes only MTH-07 while hash-locking the complete immediate review and backlog suffix', () => {

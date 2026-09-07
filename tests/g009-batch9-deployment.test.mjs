@@ -272,7 +272,7 @@ function replaceHistoricalBatch9Literal(source, before, after) {
 function assertStageBProjection() {
   assert.deepEqual(
     {completed_topics: status.completed_topics, content_documents: status.content_documents, governed_sources: status.governed_sources},
-    {completed_topics: 84, content_documents: 127, governed_sources: 600},
+    {completed_topics: 85, content_documents: 127, governed_sources: 600},
   );
   assert.equal(publicLedger.sources.length, 600);
 
@@ -284,7 +284,7 @@ function assertStageBProjection() {
   assert.deepEqual([topics.get('STY-11')?.published, topics.get('STY-11')?.status.value, styles.get('STY-11')?.published], [true, 'complete', true]);
   assert.deepEqual([topics.get('STY-12')?.published, topics.get('STY-12')?.status.value, styles.get('STY-12')?.published], [true, 'complete', true]);
   assert.deepEqual([topics.get('STY-13')?.published, topics.get('STY-13')?.status.value, styles.get('STY-13')?.published], [true, 'complete', true]);
-  assert.deepEqual([topics.get('STY-14')?.published, topics.get('STY-14')?.status.value, styles.get('STY-14')?.published], [true, 'pending', true]);
+  assert.deepEqual([topics.get('STY-14')?.published, topics.get('STY-14')?.status.value, styles.get('STY-14')?.published], [true, 'complete', true]);
 }
 
 const [review, browserBytes, productionBrowserBytes, stageBProductionBrowserBytes, immediateReviewBytes, immediateStageARawBytes, immediateStageAProductionRawBytes, immediateStageBProductionRawBytes, backlog, status, manifest, indexes, publicLedger] = await Promise.all([
@@ -304,7 +304,7 @@ const IMMEDIATE_HISTORY = new Map([
 ]);
 
 function assertProjection() {
-  assert.deepEqual({completed_topics: status.completed_topics, content_documents: status.content_documents, governed_sources: status.governed_sources}, {completed_topics: 84, content_documents: 127, governed_sources: 600});
+  assert.deepEqual({completed_topics: status.completed_topics, content_documents: status.content_documents, governed_sources: status.governed_sources}, {completed_topics: 85, content_documents: 127, governed_sources: 600});
   assert.equal(publicLedger.sources.length, 600);
 
   const topics = new Map(manifest.topics.map((topic) => [topic.id, topic]));
@@ -315,7 +315,7 @@ function assertProjection() {
   assert.deepEqual([topics.get('STY-11')?.published, topics.get('STY-11')?.status.value, styles.get('STY-11')?.published], [true, 'complete', true]);
   assert.deepEqual([topics.get('STY-12')?.published, topics.get('STY-12')?.status.value, styles.get('STY-12')?.published], [true, 'complete', true]);
   assert.deepEqual([topics.get('STY-13')?.published, topics.get('STY-13')?.status.value, styles.get('STY-13')?.published], [true, 'complete', true]);
-  assert.deepEqual([topics.get('STY-14')?.published, topics.get('STY-14')?.status.value, styles.get('STY-14')?.published], [true, 'pending', true]);
+  assert.deepEqual([topics.get('STY-14')?.published, topics.get('STY-14')?.status.value, styles.get('STY-14')?.published], [true, 'complete', true]);
 }
 
 async function assertSty12Actionability() {
@@ -504,7 +504,7 @@ test('preserves the complete immediate STY-07 backlog suffix and Batch 8 review 
   for (const mutated of [`${suffix}x`, suffix.slice(0, -1)]) assert.notEqual(sha256(mutated), IMMEDIATE_BACKLOG_SUFFIX_HASH);
 });
 
-test('preserves canonical STY-08 Stage A history while current projection leaves STY-10 published/pending and STY-11 non-actionable', async () => {
+test('preserves canonical STY-08 Stage A history while current projection completes STY-14 without creating STY-15', async () => {
   assertProjection();
   await assertSty12Actionability();
 });

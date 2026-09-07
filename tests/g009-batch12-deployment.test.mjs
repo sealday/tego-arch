@@ -7,7 +7,7 @@ import {readContentDocuments} from '../scripts/content-metadata.mjs';
 import {extractInternalLinks} from '../scripts/content-relations.mjs';
 
 export const EXPECTED_STAGE_A = Object.freeze({completed: 63, documents: 107, sources: 560});
-export const EXPECTED_STAGE_B = Object.freeze({completed: 84, documents: 127, sources: 600});
+export const EXPECTED_STAGE_B = Object.freeze({completed: 85, documents: 127, sources: 600});
 
 export const CURRENT_TOPIC = 'STY-11';
 export const NEXT_TOPIC = 'STY-12';
@@ -632,7 +632,7 @@ test('publishes the exact Stage B recovery baseline while locking immediate STY-
   }
 });
 
-test('preserves exact STY-11 Stage B closure while the current projection publishes pending STY-12', () => {
+test('preserves exact STY-11 Stage B closure while the current projection completes STY-14', () => {
   assert.deepEqual({
     completed: status.completed_topics,
     documents: status.content_documents,

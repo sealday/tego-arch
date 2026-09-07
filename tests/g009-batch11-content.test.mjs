@@ -15,7 +15,7 @@ export const ROUTE = '/styles/sty-10';
 export const TOPIC_ID = 'STY-10';
 export const NEXT_TOPIC = 'STY-11';
 export const RELATED_CASE = '/cases/micro-frontends-single-spa';
-export const EXPECTED_STAGE_A = Object.freeze({completed: 84, documents: 127, sources: 600});
+export const EXPECTED_STAGE_A = Object.freeze({completed: 85, documents: 127, sources: 600});
 
 export const SOURCE_IDS = Object.freeze([
   'src-eclipse-plugin-architecture', 'src-osgi-core-7-lifecycle', 'src-osgi-semantic-versioning',
@@ -293,5 +293,5 @@ test('STY-10 diagram inventory production mutations reject unsafe topology and v
 
 test('STY-10 article locks exact metadata, semantic contracts, and wrappers', () => { const {source, body} = articleParts(file(ARTICLE)); assertExactMetadata(source); assertArticleHeadings(source); assertWrappers(source); assertOwnership(body); assertGovernance(body); assertInvocationFailureAndLifecycle(body); assertNarrativeBoundaries(body); });
 test('STY-10 terminology exceptions lock only the eight current literal records', () => { const source = file(ARTICLE); assertScopedTerminologyExceptions(source); for (const scope of TERMINOLOGY_SCOPES) { const directive = terminologyDirective(scope); assert.throws(() => assertScopedTerminologyExceptions(replaceOnce(source, directive, '', `${scope.match} scoped exception deletion`)), assert.AssertionError, `${scope.match} scoped exception deletion rejected`); assert.throws(() => assertScopedTerminologyExceptions(replaceOnce(source, directive, directive.replace(`match: ${scope.match}`, 'match: unrelated-term'), `${scope.match} scoped exception widening`)), assert.AssertionError, `${scope.match} scoped exception widening rejected`); } });
-test('STY-10 source governance, reciprocal relations, and Stage A projection are exact', async () => { assertSourceContracts(JSON.parse(readFileSync('data/source-ledger.json', 'utf8')), readFileSync(SOURCE_INVENTORY, 'utf8')); await assertRelationsAndStageA(); });
+test('STY-10 source governance, reciprocal relations, and current projection are exact', async () => { assertSourceContracts(JSON.parse(readFileSync('data/source-ledger.json', 'utf8')), readFileSync(SOURCE_INVENTORY, 'utf8')); await assertRelationsAndStageA(); });
 test('STY-10 Draw.io/SVG diagram locks dual-plane inventory and physical source terminals', () => { const drawio = file(DRAWIO); const svg = file(SVG); assert.ok(drawio, `${DRAWIO} must exist after implementation`); assert.ok(svg, `${SVG} must exist after implementation`); assertDiagram(drawio, svg); });

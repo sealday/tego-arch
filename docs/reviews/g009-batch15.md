@@ -40,3 +40,21 @@
 - Production screenshot evidence: `BLOCKED / NOT_ACCEPTED`; attempts `4/4`; accepted `0/4`. Desktop-light full-page output had duplicate/incomplete stitching; other captures were viewport-only. No trustworthy durable full-article artifact was retained; functional PASS is not visual acceptance.
 - Production collection boundary: fresh Codex in-app Browser / CUA tab after exact-head deployment; exact-href navigation plus Browser back, no physical relation click claim; sources are observed/resolved anchors, not external loads. Theme-selection retries and continuous diagnostics are disclosed in raw evidence; viewport/theme instrumentation was restored and task tabs closed.
 - Stage A only: STY-14 remains `published / pending`, projection `84/127/600`; STY-15 absent and non-actionable. Stage B was not performed. The evidence commit own Pages run is recorded only in the ignored task report to avoid recursive evidence commits.
+
+## Stage B closure candidate
+
+- Scope: `STAGE_B_CANDIDATE_ONLY`; only the STY-14 backlog row changes; the published recovery baseline and all preceding evidence bytes remain unchanged.
+- Stage A implementation head: `ea452848ac0b77b4271c465a3643799abd17d863`; Pages run `34134613000`; build job `101782500593`; deploy job `101783809244`; `push / completed / success`; `2026-09-07T14:44:31Z` → `2026-09-07T14:49:19Z`.
+- Stage A evidence head: `215908786dde13e7fb19c752ba61b3bfb340a89b`; Pages run `34136330002`; build job `101788065505`; deploy job `101789152187`; `push / completed / success`; `2026-09-07T15:04:01Z` → `2026-09-07T15:08:02Z`.
+- Stage A production evidence: `2026-09-07`; HTML routes `7/7` and SVG asset `1/1`, HTTP `200`; functional Browser `SUCCESS / PASS`; states `4/4`, wrappers `12/12`, exact relation href/H1/return `12/12`, source anchors `24/24`, STY-15 actionable `0`, complete diagnostics empty; screenshots `BLOCKED / NOT_ACCEPTED`, accepted `0/4`.
+- Immediate history: complete backlog `124996 bytes / 16d9c4013c0df279e1f809ba2fe3dfc35ed2f596f84011feb776de591230d674`; complete release suffix `41918 bytes / 13358d8a29848f9b873225cab669be9e5f2f0f1533245eb12cd591e8b6bc2237`; Stage A review `5767 bytes / 8b649f83c8a3d37af2c29eb47c5ea476a9f48685323b14f57a603db6e5f76eb0`; all `75` prior review/evidence files locked by tree SHA-256 `7fe265f26e05f02cdd66ad4805e5f8a1944fe1da4bc3b49871cc53fb5ee966df`.
+- Canonical Stage B projection: `85 completed topics / 127 content documents / 600 governed sources`; durable stories remain `8/20`, current `G009`.
+- STY-14 lifecycle: `published / complete`; exact status `{"scope":"backlog-projection","value":"complete","source":"docs/content-backlog.md"}`.
+- STY-15 lifecycle: `absent / unpublished / non-actionable`; no new topic is created.
+- Independent Stage B code/spec/security review: `PENDING`.
+- Independent Stage B content/evidence/rights review: `PENDING`.
+- Independent Stage B architecture/invariant review: `PENDING`.
+- Final Stage B review judgment: `PENDING`.
+- Stage B deployment status: `PENDING / NOT_RUN`.
+- Stage B production raw: `NOT_RECORDED`.
+- Completion boundary: this is the local closure candidate for independent exact-head review, not a reviewed or deployed Stage B release. G009 finalization remains pending those gates; no new Browser collection, screenshot acceptance or production PASS is claimed.

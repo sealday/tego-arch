@@ -194,7 +194,7 @@ function assertStageBClosure(source = review, backlogSource = backlog) {
 }
 
 function assertProjection() {
-  assert.deepEqual({completed_topics: status.completed_topics, content_documents: status.content_documents, governed_sources: status.governed_sources}, {completed_topics: 84, content_documents: 127, governed_sources: 600});
+  assert.deepEqual({completed_topics: status.completed_topics, content_documents: status.content_documents, governed_sources: status.governed_sources}, {completed_topics: 85, content_documents: 127, governed_sources: 600});
   assert.equal(publicLedger.sources.length, 600);
 
 
@@ -207,7 +207,7 @@ function assertProjection() {
   assert.deepEqual([topics.get('STY-11')?.published, topics.get('STY-11')?.status.value, styles.get('STY-11')?.published], [true, 'complete', true]);
   assert.deepEqual([topics.get('STY-12')?.published, topics.get('STY-12')?.status.value, styles.get('STY-12')?.published], [true, 'complete', true]);
   assert.deepEqual([topics.get('STY-13')?.published, topics.get('STY-13')?.status.value, styles.get('STY-13')?.published], [true, 'complete', true]);
-  assert.deepEqual([topics.get('STY-14')?.published, topics.get('STY-14')?.status.value, styles.get('STY-14')?.published], [true, 'pending', true]);
+  assert.deepEqual([topics.get('STY-14')?.published, topics.get('STY-14')?.status.value, styles.get('STY-14')?.published], [true, 'complete', true]);
   assert.deepEqual(SOURCE_IDS.filter((id) => publicLedger.sources.some((source) => source.id === id)), SOURCE_IDS);
 }
 
@@ -372,7 +372,7 @@ async function assertReview(source) {
   assert.ok(qa.includes(`Raw Browser JSON: \`${RAW_BROWSER}\`, SHA-256 \`${sha256(browserBytes)}\`.`));
 }
 
-test('preserves the exact STY-07 Stage B closure record while the current projection advances to STY-10', assertProjection);
+test('preserves the exact STY-07 Stage B closure record while the current projection advances to STY-14 complete', assertProjection);
 test('binds exact artifacts, raw Browser bytes, and final independent review verdicts', async () => { assertBrowser(browser); await assertReview(review); });
 test('binds the complete tracked raw Browser bytes to one fixed SHA-256', () => {
   assert.equal(sha256(browserBytes), RAW_BROWSER_HASH);
@@ -458,12 +458,12 @@ test('preserves the complete immediate STY-06 backlog suffix and Batch 7 review'
   assert.notEqual(sha256(`${line.slice(line.indexOf(marker) + marker.length)}x`), IMMEDIATE_BACKLOG_SUFFIX_HASH);
 });
 
-test('preserves the STY-07 closure record while current generation projects STY-10 complete and STY-11 pending at 63/106/550', () => {
+test('preserves the STY-07 closure record while current generation projects STY-14 complete at 85/127/600', () => {
   assert.deepEqual({
     completed_topics: status.completed_topics,
     content_documents: status.content_documents,
     governed_sources: status.governed_sources,
-  }, {completed_topics: 84, content_documents: 127, governed_sources: 600});
+  }, {completed_topics: 85, content_documents: 127, governed_sources: 600});
   assert.equal(publicLedger.sources.length, 600);
 
 
@@ -476,7 +476,7 @@ test('preserves the STY-07 closure record while current generation projects STY-
   assert.deepEqual([topics.get('STY-11')?.published, topics.get('STY-11')?.status.value, styles.get('STY-11')?.published], [true, 'complete', true]);
   assert.deepEqual([topics.get('STY-12')?.published, topics.get('STY-12')?.status.value, styles.get('STY-12')?.published], [true, 'complete', true]);
   assert.deepEqual([topics.get('STY-13')?.published, topics.get('STY-13')?.status.value, styles.get('STY-13')?.published], [true, 'complete', true]);
-  assert.deepEqual([topics.get('STY-14')?.published, topics.get('STY-14')?.status.value, styles.get('STY-14')?.published], [true, 'pending', true]);
+  assert.deepEqual([topics.get('STY-14')?.published, topics.get('STY-14')?.status.value, styles.get('STY-14')?.published], [true, 'complete', true]);
   assertStageBClosure();
 });
 
