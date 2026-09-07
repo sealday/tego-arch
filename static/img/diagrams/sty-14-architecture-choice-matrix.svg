@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 2200" role="img" aria-labelledby="sty14-title sty14-desc" data-illustration-id="src-atlas-sty14-architecture-choice-matrix" data-original-illustration="true" font-family="PingFang SC, Microsoft YaHei, sans-serif">
+<title id="sty14-title">架构风格选择矩阵：部署边界与交互方式</title>
+<desc id="sty14-desc">四个象限展示模块化单体与微服务如何分别采用同步或事件驱动交互，三类压力只提供评估入口，不形成升级路线。</desc>
+<rect data-canvas="true" x="0" y="0" width="1600" height="2200" fill="#FFFFFF" opacity="1"/>
+<defs>
+<marker id="evaluation-arrow" data-marker-role="pressure-evaluation" markerUnits="userSpaceOnUse" markerWidth="27.854101966249686" markerHeight="27.854101966249686" viewBox="0 0 27.854101966249686 27.854101966249686" refX="27.854" refY="13.927050983124843" orient="auto" preserveAspectRatio="none">
+<path d="M 24.5 13.927050983124843 L 1.5 2.4270509831248424 L 1.5 25.427050983124843 Z" fill="#526577" stroke="#526577" stroke-width="3" stroke-linejoin="miter"/>
+</marker>
+</defs>
+<g data-axis-id="axis-deployment" data-label="部署与数据所有权边界">
+<line x1="180" y1="280" x2="1500" y2="280" stroke="#233747" stroke-width="2"/>
+<text x="480" y="240" font-size="30" fill="#233747" stroke="none" >部署与数据所有权边界</text>
+</g>
+<g data-axis-id="axis-interaction" data-label="同步与事件驱动交互">
+<line x1="110" y1="650" x2="110" y2="1950" stroke="#233747" stroke-width="2"/>
+<text x="180" y="2020" font-size="30" fill="#233747" stroke="none" >同步与事件驱动交互</text>
+</g>
+<g data-capability-id="capability-submit-order" data-label="提交订单">
+<rect x="80" y="60" width="260" height="100" fill="#F1F5F7" stroke="#233747" stroke-width="2"/>
+<text x="210" y="120" font-size="30" fill="#233747" stroke="none" text-anchor="middle">提交订单</text>
+</g>
+<g data-capability-id="capability-reserve-inventory" data-label="预留库存">
+<rect x="380" y="60" width="260" height="100" fill="#F1F5F7" stroke="#233747" stroke-width="2"/>
+<text x="510" y="120" font-size="30" fill="#233747" stroke="none" text-anchor="middle">预留库存</text>
+</g>
+<g data-capability-id="capability-record-payment-intent" data-label="登记支付意图">
+<rect x="680" y="60" width="260" height="100" fill="#F1F5F7" stroke="#233747" stroke-width="2"/>
+<text x="810" y="120" font-size="30" fill="#233747" stroke="none" text-anchor="middle">登记支付意图</text>
+</g>
+<g data-capability-id="capability-confirm-fulfillment" data-label="确认履约">
+<rect x="980" y="60" width="260" height="100" fill="#F1F5F7" stroke="#233747" stroke-width="2"/>
+<text x="1110" y="120" font-size="30" fill="#233747" stroke="none" text-anchor="middle">确认履约</text>
+</g>
+<g data-capability-id="capability-send-notification" data-label="发送通知">
+<rect x="1280" y="60" width="260" height="100" fill="#F1F5F7" stroke="#233747" stroke-width="2"/>
+<text x="1410" y="120" font-size="30" fill="#233747" stroke="none" text-anchor="middle">发送通知</text>
+</g>
+<g data-quadrant-id="quadrant-monolith-sync" data-label="模块化单体＋同步交互">
+<rect x="180" y="650" width="600" height="400" fill="#EDF3F8" stroke="#233747" stroke-width="2"/>
+<text x="220" y="720" font-size="30" fill="#233747" stroke="none" text-anchor="start">模块化单体＋同步交互</text>
+<text x="220" y="800" font-size="30" fill="#233747" stroke="none" data-text-role="control">控制：模块 API 同步调用</text>
+<text x="220" y="880" font-size="30" fill="#233747" stroke="none" data-text-role="state">状态：唯一写入责任与本地事务</text>
+<text x="220" y="960" font-size="30" fill="#233747" stroke="none" data-text-role="cost">运行代价：模块耦合与联动发布</text>
+</g>
+<g data-quadrant-id="quadrant-monolith-event" data-label="模块化单体＋事件驱动">
+<rect x="180" y="1550" width="600" height="400" fill="#F1F6EE" stroke="#233747" stroke-width="2"/>
+<text x="220" y="1620" font-size="30" fill="#233747" stroke="none" text-anchor="start">模块化单体＋事件驱动</text>
+<text x="220" y="1700" font-size="30" fill="#233747" stroke="none" data-text-role="control">控制：事务性发布与单体内消费</text>
+<text x="220" y="1780" font-size="30" fill="#233747" stroke="none" data-text-role="state">状态：本地权威与派生状态</text>
+<text x="220" y="1860" font-size="30" fill="#233747" stroke="none" data-text-role="cost">运行代价：重复交付与积压恢复</text>
+</g>
+<g data-quadrant-id="quadrant-microservices-sync" data-label="微服务＋同步交互">
+<rect x="900" y="650" width="600" height="400" fill="#EDF3F8" stroke="#233747" stroke-width="2"/>
+<text x="940" y="720" font-size="30" fill="#233747" stroke="none" text-anchor="start">微服务＋同步交互</text>
+<text x="940" y="800" font-size="30" fill="#233747" stroke="none" data-text-role="control">控制：跨服务同步调用</text>
+<text x="940" y="880" font-size="30" fill="#233747" stroke="none" data-text-role="state">状态：服务独立数据权威</text>
+<text x="940" y="960" font-size="30" fill="#233747" stroke="none" data-text-role="cost">运行代价：超时与远程未知结果</text>
+</g>
+<g data-quadrant-id="quadrant-microservices-event" data-label="微服务＋事件驱动">
+<rect x="900" y="1550" width="600" height="400" fill="#F1F6EE" stroke="#233747" stroke-width="2"/>
+<text x="940" y="1620" font-size="30" fill="#233747" stroke="none" text-anchor="start">微服务＋事件驱动</text>
+<text x="940" y="1700" font-size="30" fill="#233747" stroke="none" data-text-role="control">控制：跨服务事件传播</text>
+<text x="940" y="1780" font-size="30" fill="#233747" stroke="none" data-text-role="state">状态：生产者权威与消费者派生状态</text>
+<text x="940" y="1860" font-size="30" fill="#233747" stroke="none" data-text-role="cost">运行代价：重放、补偿与合同演进</text>
+</g>
+<g data-pressure-id="pressure-growth" data-label="业务增长">
+<rect x="600" y="350" width="400" height="100" fill="#FFF4E5" stroke="#233747" stroke-width="2"/>
+<text x="800" y="410" font-size="30" fill="#233747" stroke="none" text-anchor="middle">业务增长</text>
+</g>
+<g data-pressure-id="pressure-failure" data-label="局部故障">
+<rect x="180" y="1250" width="600" height="100" fill="#FFF4E5" stroke="#233747" stroke-width="2"/>
+<text x="480" y="1310" font-size="30" fill="#233747" stroke="none" text-anchor="middle">局部故障</text>
+</g>
+<g data-pressure-id="pressure-teams" data-label="团队独立交付">
+<rect x="900" y="1250" width="600" height="100" fill="#FFF4E5" stroke="#233747" stroke-width="2"/>
+<text x="1200" y="1310" font-size="30" fill="#233747" stroke="none" text-anchor="middle">团队独立交付</text>
+</g>
+<g data-edge-id="evaluation-growth-monolith" data-edge-role="pressure-evaluation" data-source-id="pressure-growth" data-target-id="quadrant-monolith-sync">
+<path d="M 600 400 L 450 400 L 450 650" fill="none" stroke="#526577" stroke-width="3" stroke-dasharray="6 4" marker-end="url(#evaluation-arrow)"/>
+<text x="180" y="345" font-size="30" fill="#233747" stroke="none" >评估候选（可保持现状）</text>
+</g>
+<g data-edge-id="evaluation-growth-services" data-edge-role="pressure-evaluation" data-source-id="pressure-growth" data-target-id="quadrant-microservices-sync">
+<path d="M 1000 400 L 1230 400 L 1230 650" fill="none" stroke="#526577" stroke-width="3" stroke-dasharray="6 4" marker-end="url(#evaluation-arrow)"/>
+<text x="1080" y="345" font-size="30" fill="#233747" stroke="none" >评估候选（可保持现状）</text>
+</g>
+<g data-edge-id="evaluation-failure-sync" data-edge-role="pressure-evaluation" data-source-id="pressure-failure" data-target-id="quadrant-monolith-sync">
+<path d="M 220 1250 L 220 1150 L 220 1050" fill="none" stroke="#526577" stroke-width="3" stroke-dasharray="6 4" marker-end="url(#evaluation-arrow)"/>
+<text x="280" y="1170" font-size="30" fill="#233747" stroke="none" >评估候选（可保持现状）</text>
+</g>
+<g data-edge-id="evaluation-failure-event" data-edge-role="pressure-evaluation" data-source-id="pressure-failure" data-target-id="quadrant-monolith-event">
+<path d="M 220 1350 L 220 1450 L 220 1550" fill="none" stroke="#526577" stroke-width="3" stroke-dasharray="6 4" marker-end="url(#evaluation-arrow)"/>
+<text x="280" y="1470" font-size="30" fill="#233747" stroke="none" >评估候选（可保持现状）</text>
+</g>
+<g data-edge-id="evaluation-teams-sync" data-edge-role="pressure-evaluation" data-source-id="pressure-teams" data-target-id="quadrant-microservices-sync">
+<path d="M 1460 1250 L 1460 1150 L 1460 1050" fill="none" stroke="#526577" stroke-width="3" stroke-dasharray="6 4" marker-end="url(#evaluation-arrow)"/>
+<text x="1030" y="1170" font-size="30" fill="#233747" stroke="none" >评估候选（可保持现状）</text>
+</g>
+<g data-edge-id="evaluation-teams-event" data-edge-role="pressure-evaluation" data-source-id="pressure-teams" data-target-id="quadrant-microservices-event">
+<path d="M 1460 1350 L 1460 1450 L 1460 1550" fill="none" stroke="#526577" stroke-width="3" stroke-dasharray="6 4" marker-end="url(#evaluation-arrow)"/>
+<text x="1030" y="1470" font-size="30" fill="#233747" stroke="none" >评估候选（可保持现状）</text>
+</g>
+<g data-legend-id="legend-evaluation">
+<path d="M 180 2060 L 250 2060 L 330 2060" fill="none" stroke="#526577" stroke-width="3" stroke-dasharray="6 4" marker-end="url(#evaluation-arrow)"/>
+<text x="380" y="2070" font-size="30" fill="#233747" stroke="none" >虚线箭头：评估候选，可保持现状</text>
+</g>
+<g data-legend-id="legend-axis">
+<path d="M 180 2140 L 250 2140 L 330 2140" fill="none" stroke="#233747" stroke-width="2"/>
+<text x="380" y="2150" font-size="30" fill="#233747" stroke="none" >实线无箭头：独立决策轴，不表示升级</text>
+</g>
+</svg>

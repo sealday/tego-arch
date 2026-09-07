@@ -396,14 +396,24 @@ function assertVisibleSvg(root) {
     assert.equal(element.namespace, 'http://www.w3.org/2000/svg', 'visible SVG namespace');
     assert.ok(['svg', 'g', 'rect', 'text', 'tspan', 'title', 'desc', 'line', 'path', 'defs', 'marker'].includes(name), `visible SVG unsupported shape/connector: ${name}`);
     for (const [attribute, value] of attrs) {
-      assert.ok(!['class', 'style', 'transform', 'clip-path', 'mask', 'filter', 'hidden'].includes(attribute) && !attribute.startsWith('on'), `visible SVG unsupported presentation: ${attribute}`);
-      if (attribute.startsWith('marker-')) assert.ok(attribute === 'marker-end' && ['path', 'line'].includes(name) && edges.has(owner), 'evaluation connector owns its directed marker');
+      assert.ok(!['class', 'style', 'clip-path', 'mask', 'filter', 'hidden'].includes(attribute) && !attribute.startsWith('on'), `visible SVG unsupported presentation: ${attribute}`);
+      if(attribute==='transform') assert.equal(name,'text','visible transforms only on measured text');
+      if (attribute.startsWith('marker-')) assert.ok(attribute === 'marker-end' && ['path', 'line'].includes(name) && (edges.has(owner)||owner==='legend-evaluation'), 'evaluation connector owns its directed marker');
       if (attribute.endsWith('opacity')) assert.ok(Number(value) > 0 && Number(value) <= 1, `visible SVG positive ${attribute}`);
       if (attribute === 'font-size' || attribute === 'stroke-width') assert.ok(Number(value) > 0, `visible SVG positive inherited ${attribute}`);
     }
     const state = svgPresentationState(element, parentState);
     assert.ok(state.display !== 'none' && !['hidden', 'collapse'].includes(state.visibility) && Number(state.opacity) > 0 && attrs.get('aria-hidden') !== 'true', 'visible SVG subtree cannot be hidden');
     if (name === 'title' || name === 'desc') return;
+    if(attrs.has('data-legend-id')) {
+      const id=attrs.get('data-legend-id');assert.ok(['legend-evaluation','legend-axis'].includes(id),'visible classified legend');
+      const expected=id==='legend-evaluation'?'虚线箭头：评估候选，可保持现状':'实线无箭头：独立决策轴，不表示升级';
+      assert.equal(element.children.filter(n=>n.localName==='text').map(xmlTextContent).join(''),expected,'visible exact legend text');
+      assert.equal(element.children.length,2,'legend owns one swatch and one label');
+      assert.ok(element.children.some(n=>['line','path'].includes(n.localName)),'visible actual legend swatch');
+      // Full paint, cascade, geometry and marker parity is required by Task 2.
+      return;
+    }
     if (name === 'defs') assert.ok(element.children.every((child) => child.localName === 'marker'), 'evaluation marker definitions contain only markers');
     if (name === 'marker') {
       assert.equal(parentName, 'defs', 'evaluation marker lives in defs');
@@ -519,7 +529,10 @@ export function assertChoiceDiagram(drawioSource, svgSource) {
     const svg = xmlElements(svgSource, 'g').find(({attributes}) => [...attributes.values()].includes(id)); assert.equal(svg?.attributes.get('data-label'), label, `${id} exact SVG label`);
   }
   assert.equal(semanticDrawioCells(drawioSource, 'maturity-arrow').length, 0, 'no Draw.io maturity arrow');
-  const drawioEdges = xmlElements(drawioSource, 'mxCell').filter(({attributes}) => attributes.get('edge') === '1').map(({attributes}) => {
+  const drawioEdges = xmlElements(drawioSource, 'mxCell').filter(({attributes}) => attributes.get('edge') === '1').filter(({attributes})=>{
+    if(styleMap(attributes.get('style')).get('semanticRole')!=='legend-swatch')return true;
+    assert.ok(['legend-evaluation-swatch','legend-axis-swatch'].includes(attributes.get('id')),'only approved legend connectors');return false;
+  }).map(({attributes}) => {
     const style = styleMap(attributes.get('style'));
     const edge = {id: attributes.get('id'), role: style.get('semanticRole'), source: attributes.get('source'), target: attributes.get('target'), label: attributes.get('value')};
     assert.equal(edge.role, 'pressure-evaluation', 'Draw.io connector role rejects maturity/upgrade routes');
@@ -591,6 +604,363 @@ function governanceFixture(base) {
   ledger.documents[ARTICLE] = structuredClone(DOCUMENT_RECORD);
   return ledger;
 }
+
+// Geometry fixture is deliberately independent of the published files. Neither
+// renderer nor validator may use metadata route/bounds as geometry evidence.
+export function choiceGeometryFixture() {
+  const escape = (s) => s.replaceAll('&', '&amp;').replaceAll('"', '&quot;');
+  const font = 'PingFang SC, Microsoft YaHei, sans-serif';
+  const ink = '#233747'; const edgeInk = '#526577';
+  const arrowSize=20, arrowStroke=3, rawArrowLength=arrowSize+arrowStroke;
+  const arrowFootprint=rawArrowLength+arrowStroke/2+arrowStroke*Math.sqrt(5)/2;
+  const arrowCenter=arrowFootprint/2, arrowBase=arrowStroke*(Math.sqrt(5)+1)/4;
+  const arrowRef=arrowStroke/2+rawArrowLength+arrowStroke*1.118;
+  const nodes = [
+    ...CAPABILITY_LABELS.map(([id, label], i) => ({id, label, role: 'capability', x: 80 + i * 300, y: 60, w: 260, h: 100, fill: '#F1F5F7'})),
+    ...QUADRANT_LABELS.map(([id, label], i) => ({id, label, role: 'quadrant', x: i < 2 ? 180 : 900, y: i % 2 ? 1550 : 650, w: 600, h: 400, fill: i % 2 ? '#F1F6EE' : '#EDF3F8', details: QUADRANT_DETAILS[i]})),
+    {id: PRESSURE_IDS[0], label: PRESSURES[0], role: 'pressure', x: 600, y: 350, w: 400, h: 100, fill: '#FFF4E5'},
+    {id: PRESSURE_IDS[1], label: PRESSURES[1], role: 'pressure', x: 180, y: 1250, w: 600, h: 100, fill: '#FFF4E5'},
+    {id: PRESSURE_IDS[2], label: PRESSURES[2], role: 'pressure', x: 900, y: 1250, w: 600, h: 100, fill: '#FFF4E5'},
+  ];
+  const routes = [
+    {id: 'evaluation-growth-monolith', source: PRESSURE_IDS[0], target: QUADRANT_IDS[0], ports: [0, .5, .45, 0], points: [[450, 400]], label: [180, 345]},
+    {id: 'evaluation-growth-services', source: PRESSURE_IDS[0], target: QUADRANT_IDS[2], ports: [1, .5, .55, 0], points: [[1230, 400]], label: [1080, 345]},
+    {id: 'evaluation-failure-sync', source: PRESSURE_IDS[1], target: QUADRANT_IDS[0], ports: [1/15, 0, 1/15, 1], points: [[220, 1150]], label: [280, 1170]},
+    {id: 'evaluation-failure-event', source: PRESSURE_IDS[1], target: QUADRANT_IDS[1], ports: [1/15, 1, 1/15, 0], points: [[220, 1450]], label: [280, 1470]},
+    {id: 'evaluation-teams-sync', source: PRESSURE_IDS[2], target: QUADRANT_IDS[2], ports: [14/15, 0, 14/15, 1], points: [[1460, 1150]], label: [1030, 1170]},
+    {id: 'evaluation-teams-event', source: PRESSURE_IDS[2], target: QUADRANT_IDS[3], ports: [14/15, 1, 14/15, 0], points: [[1460, 1450]], label: [1030, 1470]},
+  ];
+  const geo = (x,y,w,h,extra='') => `<mxGeometry x="${x}" y="${y}" width="${w}" height="${h}" as="geometry"${extra}/>`;
+  const text = (label,x,y,extra='') => `<text x="${x}" y="${y}" font-size="30" fill="${ink}" stroke="none" ${extra}>${label}</text>`;
+  let drawio = `<mxfile host="app.diagrams.net"><diagram id="sty14-choice-matrix" name="独立决策轴"><mxGraphModel pageWidth="1600" pageHeight="2200"><root><mxCell id="0"/><mxCell id="1" parent="0"/><mxCell id="canvas" parent="1" value="" vertex="1" style="semanticRole=canvas;fillColor=#FFFFFF;opacity=100;strokeColor=none;">${geo(0,0,1600,2200)}</mxCell>`;
+  let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 2200" role="img" aria-labelledby="sty14-title sty14-desc" data-illustration-id="${ORIGINAL_SOURCE_ID}" data-original-illustration="true" font-family="${font}"><title id="sty14-title">架构风格选择矩阵：部署边界与交互方式</title><desc id="sty14-desc">四个象限展示模块化单体与微服务如何分别采用同步或事件驱动交互，三类压力只提供评估入口，不形成升级路线。</desc><rect data-canvas="true" x="0" y="0" width="1600" height="2200" fill="#FFFFFF" opacity="1"/><defs><marker id="evaluation-arrow" data-marker-role="pressure-evaluation" markerUnits="userSpaceOnUse" markerWidth="${arrowFootprint}" markerHeight="${arrowFootprint}" viewBox="0 0 ${arrowFootprint} ${arrowFootprint}" refX="${arrowRef}" refY="${arrowCenter}" orient="auto" preserveAspectRatio="none"><path d="M ${arrowStroke/2+rawArrowLength} ${arrowCenter} L ${arrowStroke/2} ${arrowBase} L ${arrowStroke/2} ${arrowBase+rawArrowLength} Z" fill="${edgeInk}" stroke="${edgeInk}" stroke-width="3" stroke-linejoin="miter"/></marker></defs>`;
+  for (const [i,[id,label]] of AXES.entries()) {
+    const [x,y,w,h] = i ? [110,650,0,1300] : [180,280,1320,0];
+    const tx=i?180:480,ty=i?2020:240;
+    drawio += `<mxCell id="${id}" parent="1" value="${label}" vertex="1" style="semanticRole=axis;text;fillColor=none;strokeColor=none;fontColor=${ink};fontFamily=${font};fontSize=30;align=left;verticalAlign=top;spacing=0;">${geo(tx,ty-30,660,40)}</mxCell><mxCell id="${id}-stroke" parent="1" value="" vertex="1" style="semanticRole=axis-stroke;shape=line;direction=${i?'south':'east'};strokeColor=${ink};strokeWidth=2;startArrow=none;endArrow=none;">${geo(x,y,w,h)}</mxCell>`;
+    svg += `<g data-axis-id="${id}" data-label="${label}"><line x1="${x}" y1="${y}" x2="${x+w}" y2="${y+h}" stroke="${ink}" stroke-width="2"/>${text(label,tx,ty)}</g>`;
+  }
+  for (const n of nodes) {
+    const titleY = n.y + (n.details ? 70 : 60);
+    const titleX = n.details ? n.x + 40 : n.x + n.w/2;
+    const align = n.details ? 'left' : 'center';
+    drawio += `<mxCell id="${n.id}" parent="1" value="${n.label}" vertex="1" style="semanticRole=${n.role};rounded=0;fillColor=${n.fill};strokeColor=${ink};strokeWidth=2;fontColor=${ink};fontFamily=${font};fontSize=30;align=${align};verticalAlign=top;spacingTop=${titleY-n.y-30};spacingLeft=40;">${geo(n.x,n.y,n.w,n.h)}</mxCell>`;
+    svg += `<g data-${n.role}-id="${n.id}" data-label="${n.label}"><rect x="${n.x}" y="${n.y}" width="${n.w}" height="${n.h}" fill="${n.fill}" stroke="${ink}" stroke-width="2"/>${text(n.label,titleX,titleY,`text-anchor="${n.details?'start':'middle'}"`)}`;
+    for (const [j,label] of (n.details ?? []).entries()) {
+      const role = ['control','state','cost'][j]; const yy = 150+j*80;
+      drawio += `<mxCell id="${n.id}-${role}" parent="${n.id}" value="${escape(label)}" vertex="1" style="semanticRole=quadrant-detail;detailRole=${role};text;fillColor=none;strokeColor=none;fontColor=${ink};fontFamily=${font};fontSize=30;align=left;verticalAlign=top;">${geo(40,yy-30,520,40)}</mxCell>`;
+      svg += text(label,n.x+40,n.y+yy,`data-text-role="${role}"`);
+    }
+    svg += '</g>';
+  }
+  for (const r of routes) {
+    const source = nodes.find(n=>n.id===r.source), target = nodes.find(n=>n.id===r.target);
+    const [ex,ey,ix,iy] = r.ports;
+    const points = [[source.x+source.w*ex,source.y+source.h*ey],...r.points,[target.x+target.w*ix,target.y+target.h*iy]];
+    const d = points.map(([x,y],i)=>`${i?'L':'M'} ${x} ${y}`).join(' ');
+    const mid=polylineMidpoint(points.map(([x,y])=>({x,y})));
+    const ports = `exitX=${ex};exitY=${ey};entryX=${ix};entryY=${iy};exitDx=0;exitDy=0;entryDx=0;entryDy=0;exitPerimeter=1;entryPerimeter=1;`;
+    drawio += `<mxCell id="${r.id}" parent="1" source="${r.source}" target="${r.target}" value="${EVALUATION_LABEL}" edge="1" style="semanticRole=pressure-evaluation;edgeStyle=none;rounded=0;dashed=1;dashPattern=6 4;fixDash=1;strokeColor=${edgeInk};strokeWidth=3;endArrow=block;endSize=20;endFill=1;startArrow=none;fontColor=${ink};fontFamily=${font};fontSize=30;align=left;verticalAlign=top;spacing=0;${ports}"><mxGeometry x="0" y="0" relative="1" as="geometry"><Array as="points">${r.points.map(([x,y])=>`<mxPoint x="${x}" y="${y}"/>`).join('')}</Array><mxPoint x="${r.label[0]-mid.x}" y="${r.label[1]-30-mid.y}" as="offset"/></mxGeometry></mxCell>`;
+    svg += `<g data-edge-id="${r.id}" data-edge-role="pressure-evaluation" data-source-id="${r.source}" data-target-id="${r.target}"><path d="${d}" fill="none" stroke="${edgeInk}" stroke-width="3" stroke-dasharray="6 4" marker-end="url(#evaluation-arrow)"/>${text(EVALUATION_LABEL,...r.label)}</g>`;
+  }
+  // Legend reuses the real evaluation marker; solid axes have no arrowhead.
+  for(const [id,label,yy] of [['legend-evaluation','虚线箭头：评估候选，可保持现状',2060],['legend-axis','实线无箭头：独立决策轴，不表示升级',2140]]) {
+    drawio += `<mxCell id="${id}" parent="1" value="${label}" vertex="1" style="semanticRole=legend;text;fillColor=none;strokeColor=none;align=left;verticalAlign=top;spacing=0;fontSize=30;fontColor=${ink};fontFamily=${font};">${geo(380,yy-20,1050,40)}</mxCell>`;
+    for(const [side,xx] of [['source',180],['target',330]])drawio+=`<mxCell id="${id}-${side}" parent="1" value="" vertex="1" style="semanticRole=legend-anchor;fillColor=none;strokeColor=none;">${geo(xx,yy,0,0)}</mxCell>`;
+    drawio += `<mxCell id="${id}-swatch" parent="1" value="" source="${id}-source" target="${id}-target" edge="1" style="semanticRole=legend-swatch;edgeStyle=none;strokeColor=${id==='legend-evaluation'?edgeInk:ink};strokeWidth=${id==='legend-evaluation'?3:2};dashed=${id==='legend-evaluation'?1:0};dashPattern=${id==='legend-evaluation'?'6 4':'none'};fixDash=1;endArrow=${id==='legend-evaluation'?'block':'none'};startArrow=none;endSize=20;endFill=1;exitX=0;exitY=0;entryX=0;entryY=0;exitDx=0;exitDy=0;entryDx=0;entryDy=0;exitPerimeter=1;entryPerimeter=1;"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="250" y="${yy}"/></Array></mxGeometry></mxCell>`;
+  }
+  svg += `<g data-legend-id="legend-evaluation"><path d="M 180 2060 L 250 2060 L 330 2060" fill="none" stroke="${edgeInk}" stroke-width="3" stroke-dasharray="6 4" marker-end="url(#evaluation-arrow)"/>${text('虚线箭头：评估候选，可保持现状',380,2070)}</g><g data-legend-id="legend-axis"><path d="M 180 2140 L 250 2140 L 330 2140" fill="none" stroke="${ink}" stroke-width="2"/>${text('实线无箭头：独立决策轴，不表示升级',380,2150)}</g></svg>`;
+  return {drawio: drawio+'</root></mxGraphModel></diagram></mxfile>', svg};
+}
+
+const numeric = (value, label) => { assert.ok(value !== undefined && value !== '', `${label} exists`); const n=Number(String(value).replace(/px$/u,'')); assert.ok(Number.isFinite(n),`${label} finite`); return n; };
+const box = (x,y,w,h) => ({left:x,top:y,right:x+w,bottom:y+h});
+const expand = (b,n) => ({left:b.left-n,top:b.top-n,right:b.right+n,bottom:b.bottom+n});
+const distance = (a,b) => Math.hypot(Math.max(0,a.left-b.right,b.left-a.right),Math.max(0,a.top-b.bottom,b.top-a.bottom));
+const overlap = (a,b) => Math.min(a.right,b.right)>Math.max(a.left,b.left) && Math.min(a.bottom,b.bottom)>Math.max(a.top,b.top);
+const boundsOf = points => ({left:Math.min(...points.map(p=>p.x)),right:Math.max(...points.map(p=>p.x)),top:Math.min(...points.map(p=>p.y)),bottom:Math.max(...points.map(p=>p.y))});
+const pointsOf = b => [{x:b.left,y:b.top},{x:b.right,y:b.top},{x:b.right,y:b.bottom},{x:b.left,y:b.bottom}];
+function polylineMidpoint(points) {
+  const lengths=points.slice(1).map((p,i)=>Math.hypot(p.x-points[i].x,p.y-points[i].y));let left=lengths.reduce((a,b)=>a+b,0)/2;
+  for(let i=0;i<lengths.length;i++){if(left<=lengths[i])return {x:points[i].x+(points[i+1].x-points[i].x)*left/lengths[i],y:points[i].y+(points[i+1].y-points[i].y)*left/lengths[i]};left-=lengths[i];}assert.fail('nonempty midpoint route');
+}
+function near(actual,expected,label) { assert.ok(Math.abs(actual-expected)<.001,`${label}: ${actual} ≈ ${expected}`); }
+function sameBox(a,b,label) { for(const key of ['left','top','right','bottom']) near(a[key],b[key],`${label} ${key}`); }
+function geometryTree(source) {
+  const root=xmlRoot(source), all=[];
+  const walk=(n,parent)=>{n.parent=parent; n.order=all.length; all.push(n); for(const c of n.children) walk(c,n);}; walk(root);
+  return {root,all};
+}
+function declarations(source='') {
+  const out=new Map();
+  for(const item of source.split(';').filter(s=>s.trim())) {
+    const colon=item.indexOf(':'); assert.ok(colon>0,'supported CSS declaration');
+    const raw=item.slice(colon+1).trim(); out.set(item.slice(0,colon).trim(),{value:raw.replace(/\s*!important$/u,'').trim(),important:/!important$/u.test(raw)});
+  } return out;
+}
+// A deliberately bounded static CSS cascade: presentation attributes, stylesheet
+// tag/id/class selectors, descendant/child combinators, inline style, importance,
+// specificity, source order and inheritance. Unsupported CSS fails closed.
+function cascade(tree) {
+  const rules=[];
+  for(const n of tree.all.filter(n=>n.localName==='style')) {
+    const sheet=xmlTextContent(n).replace(/\/\*[\s\S]*?\*\//gu,'');
+    assert.equal(sheet.replace(/[^{}]+\{[^{}]*\}/gu,'').trim(),'','no conditional/dynamic CSS');
+    assert.doesNotMatch(sheet,/@/u,'no conditional/dynamic CSS');
+    for(const m of sheet.matchAll(/([^{}]+)\{([^{}]*)\}/gu)) for(const sel of m[1].split(',')) {
+      const selector=sel.trim(); assert.match(selector,/^[\w.#* >-]+$/u,'supported static CSS selector');
+      rules.push({selector,decl:declarations(m[2]),score:(selector.match(/#/gu)?.length??0)*100+(selector.match(/\./gu)?.length??0)*10+(selector.match(/(?:^|[ >])\w/gu)?.length??0)});
+    }
+  }
+  const simple=(n,s)=>n && (!/^\w/u.test(s)||s.match(/^[\w-]+/u)[0]===n.localName) && [...s.matchAll(/([.#])([\w-]+)/gu)].every(([,kind,value])=>kind==='#'?n.attributes.get('id')===value:(n.attributes.get('class')??'').split(/\s+/u).includes(value));
+  const match=(n,sel)=>{const parts=sel.replace(/\s*>\s*/gu,' > ').split(/\s+/u); let i=parts.length-1,p=n;if(!simple(p,parts[i--]))return false;while(i>=0){if(parts[i]==='>'){p=p.parent;i--;if(!simple(p,parts[i--]))return false;}else{p=p.parent;while(p&&!simple(p,parts[i]))p=p.parent;if(!p)return false;i--;}}return true;};
+  const inherited=new Set(['fill','stroke','stroke-width','stroke-dasharray','font-size','font-family','font-weight','text-anchor','visibility','marker-end','fill-opacity','stroke-opacity']);
+  const defaults={'fill':'black','stroke':'none','stroke-width':'1','font-size':'16','font-weight':'normal','text-anchor':'start','opacity':'1','fill-opacity':'1','stroke-opacity':'1','visibility':'visible','display':'inline','stroke-dasharray':'none','marker-end':'none'};
+  const get=(n,key)=>{
+    let winner=n.attributes.has(key)?{rank:0,score:0,order:-1,value:n.attributes.get(key)}:null;
+    const add=(candidate)=>{if(!winner||candidate.rank>winner.rank||candidate.rank===winner.rank&&(candidate.score>winner.score||candidate.score===winner.score&&candidate.order>=winner.order))winner=candidate;};
+    rules.forEach((r,i)=>{const d=r.decl.get(key);if(d&&match(n,r.selector))add({rank:d.important?3:1,score:r.score,order:i,value:d.value});});
+    const inline=declarations(n.attributes.get('style')).get(key);if(inline)add({rank:inline.important?4:2,score:1000,order:rules.length,value:inline.value});
+    const value=winner?.value;
+    if(value==='inherit'||value===undefined&&inherited.has(key)||value==='unset'&&inherited.has(key))return n.parent?get(n.parent,key):defaults[key];
+    const effective=value===undefined||value==='initial'||value==='unset'?defaults[key]:value;
+    return ['font-size','stroke-width'].includes(key)&&/^-?[\d.]+px$/u.test(effective??'')?effective.slice(0,-2):effective;
+  }; return get;
+}
+function pathPoints(d,closed=false) {
+  assert.match(d??'',closed?/^M(?:\s*[-\d.]+\s+[-\d.]+)(?:\s+L\s+[-\d.]+\s+[-\d.]+)+\s+Z$/u:/^M(?:\s*[-\d.]+\s+[-\d.]+)(?:\s+L\s+[-\d.]+\s+[-\d.]+)+$/u,'actual supported M/L path');
+  return [...d.matchAll(/[ML]\s+([-\d.]+)\s+([-\d.]+)/gu)].map(([,x,y])=>({x:numeric(x,'path x'),y:numeric(y,'path y')}));
+}
+function transformPoint(p,element) {
+  for(let n=element;n;n=n.parent) {
+    const source=n.attributes.get('transform')??'';const ops=[...source.matchAll(/(translate|rotate|scale|matrix)\(([^)]+)\)/gu)];
+    assert.equal(source.replace(/(translate|rotate|scale|matrix)\([^)]+\)/gu,'').trim(),'','supported actual transform');
+    for(const [,op,raw] of ops.reverse()) {
+      const a=raw.trim().split(/[ ,]+/u).map(x=>numeric(x,'transform'));
+      if(op==='translate') {assert.ok(a.length===1||a.length===2);p={x:p.x+a[0],y:p.y+(a[1]??0)};}
+      if(op==='scale') {assert.ok(a.length===1||a.length===2);p={x:p.x*a[0],y:p.y*(a[1]??a[0])};}
+      if(op==='rotate') {assert.ok(a.length===1||a.length===3);const r=a[0]*Math.PI/180,x=p.x-(a[1]??0),y=p.y-(a[2]??0);p={x:x*Math.cos(r)-y*Math.sin(r)+(a[1]??0),y:x*Math.sin(r)+y*Math.cos(r)+(a[2]??0)};}
+      if(op==='matrix') {assert.equal(a.length,6);p={x:p.x*a[0]+p.y*a[2]+a[4],y:p.x*a[1]+p.y*a[3]+a[5]};}
+    }
+  }return p;
+}
+function glyphBounds(n,css) {
+  assert.equal(n.children.length,0,'geometry text is one real text run');
+  const font=numeric(css(n,'font-size'),'effective text font');const text=xmlTextContent(n).trim();
+  const width=[...text].reduce((sum,c)=>sum+(/[\u0000-\u00ff]/u.test(c)?.64:1),0)*font;
+  const x=numeric(n.attributes.get('x'),'text x'),y=numeric(n.attributes.get('y'),'text baseline');
+  const anchor=css(n,'text-anchor');assert.ok(['start','middle','end'].includes(anchor));
+  const b=box(x-(anchor==='middle'?width/2:anchor==='end'?width:0),y-font*.82,width,font*1.04);
+  return boundsOf(pointsOf(b).map(p=>transformPoint(p,n)));
+}
+function rectBounds(n) {return box(...['x','y','width','height'].map(k=>numeric(n.attributes.get(k),`${n.localName} ${k}`)));}
+function drawioBounds(n,byId) {
+  const g=n.children.find(n=>n.localName==='mxGeometry');assert.ok(g,'real Draw.io geometry');let b=rectBounds(g);
+  const parent=byId.get(n.attributes.get('parent'));
+  if(parent&&parent.children.some(n=>n.localName==='mxGeometry')){const p=drawioBounds(parent,byId);b={left:b.left+p.left,right:b.right+p.left,top:b.top+p.top,bottom:b.bottom+p.top};}return b;
+}
+function actualDrawioRoute(edge,byId) {
+  const style=styleMap(edge.attributes.get('style'));assert.equal(style.has('dataRoute'),false,'no self reported route');
+  assert.equal(style.get('edgeStyle'),'none','explicit unrouted waypoints');
+  const port=(name,side)=>{
+    const n=byId.get(edge.attributes.get(name));assert.ok(n,'real terminal node');const b=drawioBounds(n,byId);
+    const x=numeric(style.get(side+'X'),'port x'),y=numeric(style.get(side+'Y'),'port y');
+    assert.ok(x>=0&&x<=1&&y>=0&&y<=1&&(x===0||x===1||y===0||y===1),'terminal lies on perimeter');
+    for(const suffix of ['Dx','Dy'])assert.equal(style.get(side+suffix),'0','no implicit terminal offset');assert.equal(style.get(side+'Perimeter'),'1','explicit perimeter');
+    return {x:b.left+(b.right-b.left)*x,y:b.top+(b.bottom-b.top)*y};
+  };
+  const geometry=edge.children.find(n=>n.localName==='mxGeometry');assert.ok(geometry,'edge mxGeometry');
+  const arrays=geometry.children.filter(n=>n.localName==='Array'&&n.attributes.get('as')==='points');assert.equal(arrays.length,1,'one real points array');
+  assert.ok(arrays[0].children.length,'explicit waypoints');
+  assert.ok(geometry.children.every(n=>n===arrays[0]||n.localName==='mxPoint'&&n.attributes.get('as')==='offset'),'no dangling fallback or misplaced point');
+  return [port('source','exit'),...arrays[0].children.map(n=>{assert.equal(n.localName,'mxPoint');assert.equal(n.attributes.has('as'),false,'only real waypoints');return {x:numeric(n.attributes.get('x'),'waypoint x'),y:numeric(n.attributes.get('y'),'waypoint y')};}),port('target','entry')];
+}
+function markerBounds(path,points,tree,css) {
+  const id=/^url\(#([\w-]+)\)$/u.exec(css(path,'marker-end'))?.[1];assert.ok(id,'actual referenced marker');
+  const marker=tree.all.find(n=>n.localName==='marker'&&n.attributes.get('id')===id);assert.ok(marker,'resolved marker');
+  const a=marker.attributes,sw=numeric(css(path,'stroke-width'),'marker edge stroke'),units=a.get('markerUnits')??'strokeWidth';
+  assert.ok(['userSpaceOnUse','strokeWidth'].includes(units));const unit=units==='strokeWidth'?sw:1;
+  const view=(a.get('viewBox')??'').split(/\s+/u).map(Number);assert.equal(view.length,4);assert.ok(view[2]>0&&view[3]>0);
+  const sx=numeric(a.get('markerWidth'),'marker width')*unit/view[2],sy=numeric(a.get('markerHeight'),'marker height')*unit/view[3];near(sx,sy,'marker meet aspect ratio');assert.equal(a.get('orient'),'auto');
+  assert.equal(a.get('preserveAspectRatio'),'none');
+  const refX=numeric(a.get('refX'),'refX'),refY=numeric(a.get('refY'),'refY');
+  assert.equal(marker.children.length,1,'single painted marker path');const shape=marker.children[0];assert.equal(shape.localName,'path');
+  const actual=pathPoints(shape.attributes.get('d'),true);assert.equal(css(shape,'fill'),css(path,'stroke'),'effective marker fill parity');assert.equal(css(shape,'stroke'),css(path,'stroke'),'real block marker outline');
+  near(numeric(css(shape,'stroke-width'),'marker stroke'),sw,'marker stroke parity');assert.equal(css(shape,'stroke-linejoin'),'miter','real block marker miter');
+  assert.equal(css(shape,'stroke-opacity'),'1','actual marker stroke opacity');assert.equal(css(shape,'fill-opacity'),'1','actual marker fill opacity');
+  // mxMarker.createArrow(2): size plus stroke, 1.118-stroke tip inset,
+  // and the actual miter-expanded triangular footprint, not a generic icon.
+  const rawLength=20+sw, radius=sw/2, footprint=rawLength+radius+sw*Math.sqrt(5)/2, center=footprint/2, base=sw*(Math.sqrt(5)+1)/4;
+  const expected=[{x:radius+rawLength,y:center},{x:radius,y:base},{x:radius,y:base+rawLength}];
+  assert.equal(actual.length,3,'real block marker topology');actual.forEach((p,i)=>{near(p.x,expected[i].x,'real marker path x');near(p.y,expected[i].y,'real marker path y');});
+  [unit,sx,sy,refX,refY,view[2],view[3]].forEach((n,i)=>near(n,[1,1,1,radius+rawLength+sw*1.118,center,footprint,footprint][i],'marker viewport/units/reference parity'));
+  const end=points.at(-1),previous=points.at(-2),angle=Math.atan2(end.y-previous.y,end.x-previous.x);
+  return boundsOf([{x:footprint,y:center},{x:0,y:0},{x:0,y:footprint}].map(p=>({x:end.x+(p.x-refX)*sx*Math.cos(angle)-(p.y-refY)*sy*Math.sin(angle),y:end.y+(p.x-refX)*sx*Math.sin(angle)+(p.y-refY)*sy*Math.cos(angle)})));
+}
+
+export function assertChoiceGeometry(drawioSource, svgSource) {
+  assert.ok(drawioSource&&svgSource,'STY-14 production geometry pair exists');
+  const draw=geometryTree(drawioSource),svg=geometryTree(svgSource),css=cascade(svg);
+  const cells=draw.all.filter(n=>n.localName==='mxCell'),byId=new Map(cells.map(n=>[n.attributes.get('id'),n]));
+  assert.equal(byId.size,cells.length,'unique real Draw.io cell IDs');
+  const view=(svg.root.attributes.get('viewBox')??'').split(/\s+/u).map(Number);assert.deepEqual(view,[0,0,1600,2200],'opaque 800px design canvas');const scale=800/view[2];
+  const painted=svg.all.filter(n=>['text','rect','path','line'].includes(n.localName)&&!function(){for(let p=n.parent;p;p=p.parent)if(p.localName==='defs')return true;return false;}());
+  const canvas=painted.find(n=>n.attributes.get('data-canvas')==='true');assert.equal(painted[0],canvas,'opaque canvas must be first in paint order');sameBox(rectBounds(canvas),box(...view),'real canvas bounds');
+  assert.equal(css(canvas,'fill'),'#FFFFFF','effective opaque canvas');
+  for(const n of svg.all) {
+    for(const attr of ['clip-path','mask','filter'])assert.equal(n.attributes.has(attr),false,'no unmeasured hidden geometry');
+    for(let p=n;p;p=p.parent){assert.notEqual(css(p,'display'),'none','effective display');assert.equal(css(p,'visibility'),'visible','effective visibility');assert.equal(numeric(css(p,'opacity'),'opacity'),1,'no invisible/transparent paint');}
+    if(n.localName==='text') {assert.ok(numeric(css(n,'font-size'),'effective font')*scale>=15,'text >= 15 CSS px');assert.equal(css(n,'stroke'),'none','fill-only text, no later halo occluder');assert.match(css(n,'fill'),/^#[0-9A-Fa-f]{6}$/u,'painted text');assert.equal(css(n,'fill-opacity'),'1','text paint opacity');}
+  }
+  const groups=svg.all.filter(n=>n.localName==='g'),nodeBoxes=[],textBoxes=[],nodeMetrics=[];
+  const textNodes=painted.filter(n=>n.localName==='text');for(const n of textNodes) textBoxes.push({n,b:glyphBounds(n,css)});
+  for(const g of groups.filter(n=>[...n.attributes.keys()].some(k=>/^data-(quadrant|pressure|capability)-id$/u.test(k)))) {
+    const [key,id]=[...g.attributes].find(([k])=>/^data-(quadrant|pressure|capability)-id$/u.test(k));const role=key.split('-')[1],cell=byId.get(id);assert.ok(cell,'real matching Draw.io node');const style=styleMap(cell.attributes.get('style'));
+    const rects=g.children.filter(n=>n.localName==='rect');assert.equal(rects.length,1,'one real node shape');const rect=rects[0],raw=rectBounds(rect),sw=numeric(css(rect,'stroke-width'),'node stroke');
+    sameBox(raw,drawioBounds(cell,byId),`${id} actual node geometry parity`);assert.equal(style.get('semanticRole'),role,'node role parity');assert.equal(style.get('rounded'),'0','node shape parity');assert.equal(rect.attributes.get('rx')??'0','0','square node parity');
+    for(const [a,b] of [['fillColor','fill'],['strokeColor','stroke'],['strokeWidth','stroke-width']])assert.equal(style.get(a),css(rect,b),`${id} effective shape ${b} parity`);
+    nodeBoxes.push({id,n:rect,b:expand(raw,sw/2)});
+    const texts=g.children.filter(n=>n.localName==='text');assert.equal(xmlTextContent(texts[0]),cell.attributes.get('value'),'actual title parity');
+    const baselines=[];
+    for(const t of texts) {
+      const detail=t.attributes.get('data-text-role');const d=detail?byId.get(id+'-'+detail):cell;assert.ok(d,'matching Draw.io text');const ds=styleMap(d.attributes.get('style'));
+      assert.equal(d.attributes.get('value'),xmlTextContent(t),'actual node text parity');for(const [a,b] of [['fontSize','font-size'],['fontFamily','font-family'],['fontColor','fill']])assert.equal(ds.get(a),css(t,b),`effective node ${b} parity`);
+      const db=drawioBounds(d,byId),fs=numeric(ds.get('fontSize'),'source font');
+      const actualX=detail?db.left:ds.get('align')==='center'?(db.left+db.right)/2:db.left+numeric(ds.get('spacingLeft'),'source title left padding');
+      const actualY=db.top+fs+(detail?0:numeric(ds.get('spacingTop'),'source title top padding'));
+      const origin=transformPoint({x:numeric(t.attributes.get('x'),'SVG label x'),y:numeric(t.attributes.get('y'),'SVG label baseline')},t);
+      near(actualX,origin.x,'actual Draw.io node label x');near(actualY,origin.y,'actual Draw.io node label baseline');
+      const b=glyphBounds(t,css),horizontal=Math.min(b.left-raw.left-sw/2,raw.right-sw/2-b.right)*scale,vertical=Math.min(b.top-raw.top-sw/2,raw.bottom-sw/2-b.bottom)*scale;
+      assert.ok(horizontal>=16,`${id} horizontal padding ${horizontal} >=16 CSS px`);assert.ok(vertical>=14,`${id} vertical padding ${vertical} >=14 CSS px`);
+      baselines.push(numeric(t.attributes.get('y'),'baseline')*scale);
+      nodeMetrics.push({id,role:detail??'title',baseline:baselines.at(-1),horizontal,vertical,bottom:(raw.bottom-sw/2-b.bottom)*scale});
+    }
+    for(let i=1;i<baselines.length;i++)assert.ok(baselines[i]-baselines[i-1]>=22,'title/type baseline >=22 CSS px');
+  }
+  const boundaries=svg.all.filter(n=>n.localName==='line'&&n.parent?.attributes.has('data-axis-id')).map(n=>({n,b:expand(boundsOf([{x:numeric(n.attributes.get('x1'),'axis x'),y:numeric(n.attributes.get('y1'),'axis y')},{x:numeric(n.attributes.get('x2'),'axis x'),y:numeric(n.attributes.get('y2'),'axis y')}]),numeric(css(n,'stroke-width'),'axis stroke')/2)}));
+  for(const {n,b} of boundaries) {
+    const id=n.parent.attributes.get('data-axis-id'),cell=byId.get(id+'-stroke');assert.ok(cell,'actual axis stroke source');
+    const ds=styleMap(cell.attributes.get('style'));assert.equal(ds.get('shape'),'line','axis line shape');sameBox(drawioBounds(cell,byId),expand(b,-numeric(css(n,'stroke-width'),'axis stroke')/2),'axis actual bounds parity');
+    for(const [a,k] of [['strokeColor','stroke'],['strokeWidth','stroke-width']])assert.equal(ds.get(a),css(n,k),'axis effective style parity');assert.equal(css(n,'marker-end'),'none','axis has no maturity arrow');
+    const text=n.parent.children.find(n=>n.localName==='text'),label=byId.get(id),lb=drawioBounds(label,byId);near(lb.left,numeric(text.attributes.get('x'),'axis label x'),'axis label bounds');near(lb.top+30,numeric(text.attributes.get('y'),'axis label y'),'axis label bounds');
+  }
+  const edges=[];
+  for(const g of groups.filter(n=>n.attributes.has('data-edge-id')||n.attributes.has('data-legend-id'))) {
+    const id=g.attributes.get('data-edge-id')??g.attributes.get('data-legend-id'),legend=g.attributes.has('data-legend-id');
+    const path=g.children.find(n=>['path','line'].includes(n.localName));assert.ok(path,'real route or legend swatch');
+    const points=path.localName==='path'?pathPoints(path.attributes.get('d')).map(p=>transformPoint(p,path)):[{x:numeric(path.attributes.get('x1'),'line x'),y:numeric(path.attributes.get('y1'),'line y')},{x:numeric(path.attributes.get('x2'),'line x'),y:numeric(path.attributes.get('y2'),'line y')}];
+    const sw=numeric(css(path,'stroke-width'),'route stroke');assert.equal(css(path,'stroke-opacity'),'1','effective route paint opacity');const segments=points.slice(1).map((p,i)=>{const s=points[i];assert.ok((s.x===p.x||s.y===p.y)&&(s.x!==p.x||s.y!==p.y),'nonzero orthogonal business route');return {a:s,z:p,b:expand(boundsOf([s,p]),sw/2)};});
+    const label=g.children.find(n=>n.localName==='text');assert.ok(label,'real route label');const b=glyphBounds(label,css);
+    const marker=css(path,'marker-end')==='none'?null:markerBounds(path,points,svg,css);
+    const cell=byId.get(id);assert.ok(cell,'matching actual Draw.io route/legend');const style=styleMap(cell.attributes.get('style'));
+    assert.equal(xmlTextContent(label),cell.attributes.get('value'),'actual route/legend label parity');
+    for(const [a,k] of [['fontSize','font-size'],['fontFamily','font-family'],['fontColor','fill']])assert.equal(style.get(a),css(label,k),'route/legend text style parity');
+    if(!legend) {
+      const actual=actualDrawioRoute(cell,byId);assert.equal(actual.length,points.length,`${id} waypoint count parity`);actual.forEach((p,i)=>{near(p.x,points[i].x,`${id} actual route x`);near(p.y,points[i].y,`${id} actual route y`);});
+      assert.equal(style.get('strokeColor'),css(path,'stroke'),'effective route stroke parity');assert.equal(style.get('strokeWidth'),css(path,'stroke-width'),'effective route width parity');assert.equal(style.get('dashPattern'),css(path,'stroke-dasharray'),'effective route dash parity');assert.equal(style.get('fixDash'),'1','absolute dash units');assert.equal(style.get('endSize'),'20','actual marker size parity');assert.equal(style.get('endArrow'),'block','actual marker shape parity');assert.ok(marker,'directed evaluation marker');
+      const geometry=cell.children.find(n=>n.localName==='mxGeometry'),offset=geometry.children.find(n=>n.attributes.get('as')==='offset');assert.ok(offset,'real label offset');assert.deepEqual(['x','y','relative'].map(k=>geometry.attributes.get(k)),['0','0','1'],'label at midpoint plus actual offset');
+      const midpoint=polylineMidpoint(points),origin=transformPoint({x:numeric(label.attributes.get('x'),'label x'),y:numeric(label.attributes.get('y'),'label y')},label);near(midpoint.x+numeric(offset.attributes.get('x'),'label offset x'),origin.x,'actual Draw.io route label x');near(midpoint.y+numeric(offset.attributes.get('y'),'label offset y')+30,origin.y,'actual Draw.io route label baseline');
+    } else {
+      const swatch=byId.get(id+'-swatch');assert.ok(swatch,'real Draw.io legend swatch');const ds=styleMap(swatch.attributes.get('style'));assert.equal(swatch.attributes.get('edge'),'1','real legend connector');assert.deepEqual(actualDrawioRoute(swatch,byId),points,'real legend terminal and waypoint parity');
+      for(const [a,k] of [['strokeColor','stroke'],['strokeWidth','stroke-width'],['dashPattern','stroke-dasharray']])assert.equal(ds.get(a),css(path,k),'legend effective swatch parity');assert.equal(ds.get('endArrow'),marker?'block':'none','legend marker parity');
+      const lb=drawioBounds(cell,byId);near(lb.left,numeric(label.attributes.get('x'),'legend label x'),'legend label bounds');near(lb.top+30,numeric(label.attributes.get('y'),'legend label y'),'legend label bounds');
+    }
+    const ownStroke=Math.min(...segments.map(s=>distance(b,s.b)))*scale;assert.ok(ownStroke>=8,`${id} own stroke ${ownStroke} >=8 CSS px`);
+    const ownMarker=marker?distance(b,marker)*scale:Infinity;assert.ok(ownMarker>=16,`${id} own marker ${ownMarker} >=16 CSS px`);
+    const boundary=Math.min(...nodeBoxes.map(n=>distance(b,n.b)),...boundaries.map(n=>distance(b,n.b)))*scale;assert.ok(boundary>=12,`${id} node/boundary ${boundary} >=12 CSS px`);
+    edges.push({id,n:path,label,b,points,segments,marker,legend,ownStroke,ownMarker,boundary});
+  }
+  assert.equal(edges.filter(e=>e.legend).length,2,'two color-independent real legend entries');
+  for(const e of edges) {
+    for(const other of edges.filter(o=>o!==e)) {
+      assert.ok(Math.min(...other.segments.map(s=>distance(e.b,s.b)))*scale>=8,`${e.id} foreign stroke clearance`);
+      if(other.marker)assert.ok(distance(e.b,other.marker)*scale>=12,`${e.id} foreign marker >=12 CSS px`);
+      if(!e.legend&&!other.legend)for(const s of e.segments)for(const t of other.segments){
+        const shared=s.a.x===s.z.x&&t.a.x===t.z.x&&s.a.x===t.a.x?Math.min(Math.max(s.a.y,s.z.y),Math.max(t.a.y,t.z.y))-Math.max(Math.min(s.a.y,s.z.y),Math.min(t.a.y,t.z.y)):s.a.y===s.z.y&&t.a.y===t.z.y&&s.a.y===t.a.y?Math.min(Math.max(s.a.x,s.z.x),Math.max(t.a.x,t.z.x))-Math.max(Math.min(s.a.x,s.z.x),Math.min(t.a.x,t.z.x)):0;assert.ok(shared<=0,'no shared collinear business-route segment');
+      }
+    }
+    for(const s of e.segments)for(const n of nodeBoxes)assert.equal(overlap(boundsOf([s.a,s.z]),n.b),false,'route does not cross node');
+  }
+  // Paint-order check uses real painted envelopes, including all unclassified
+  // later rectangles. No opaque label mask may erase an earlier connector.
+  for(const n of painted) {
+    let b;if(n.localName==='rect')b=expand(rectBounds(n),css(n,'stroke')==='none'?0:numeric(css(n,'stroke-width'),'paint width')/2);else if(n.localName==='text')b=glyphBounds(n,css);else continue;
+    for(const e of edges.filter(e=>e.n.order<n.order&&n!==e.label)) {
+      assert.ok(e.segments.every(s=>!overlap(b,s.b)),`${e.id} later painted ${n.localName} cannot occlude route`);
+      if(e.marker)assert.equal(overlap(b,e.marker),false,'later painted shape cannot occlude real marker');
+    }
+    if(n.localName==='rect'&&css(n,'fill')!=='none')for(const t of textBoxes.filter(t=>t.n.order<n.order))assert.equal(overlap(b,t.b),false,'later opaque shape cannot occlude text');
+  }
+  for(const {n,b} of textBoxes) {
+    assert.ok(b.left>=0&&b.top>=0&&b.right<=view[2]&&b.bottom<=view[3],'no text crop');
+    for(const edge of edges)assert.ok(edge.segments.every(s=>distance(b,s.b)*scale>=8),`all text clears business/legend strokes: ${xmlTextContent(n)}`);
+    for(const axis of boundaries)assert.ok(distance(b,axis.b)*scale>=12,'all text clears axis strokes');
+    for(const other of textBoxes.filter(t=>t.n!==n))assert.equal(overlap(b,other.b),false,'no foreign text overlap');
+  }
+  return {scale,nodeMetrics,edges:edges.map(({id,ownStroke,ownMarker,boundary})=>({id,ownStroke,ownMarker,boundary})),minFont:Math.min(...textNodes.map(n=>numeric(css(n,'font-size'),'font')*scale))};
+}
+
+test('STY-14 diagram geometry accepts a real branching layout fixture', () => {
+  const pair = choiceGeometryFixture(); assertChoiceGeometry(pair.drawio, pair.svg);
+});
+for (const [label, mutate] of [
+  ['font cascade', p=>({...p,svg:p.svg.replace('font-size="30"','font-size="30" style="font-size:4px"')})],
+  ['inherited important font', p=>({...p,svg:p.svg.replace('</svg>','<style>text { font-size: 4px !important; }</style></svg>')})],
+  ['transformed label collision', p=>({...p,svg:p.svg.replace('x="180" y="345"','x="180" y="345" transform="translate(200 55)"')})],
+  ['own stroke clearance', p=>({...p,svg:p.svg.replace('x="280" y="1170"','x="225" y="1170"')})],
+  ['own marker clearance', p=>({...p,svg:p.svg.replace('x="280" y="1170"','x="230" y="1080"')})],
+  ['boundary clearance', p=>({...p,svg:p.svg.replace('x="280" y="1170"','x="280" y="1230"')})],
+  ['marker refX', p=>({...p,svg:p.svg.replace(/refX="[^"]+"/u,'refX="-100"')})],
+  ['marker units', p=>({...p,svg:p.svg.replace('markerUnits="userSpaceOnUse"','markerUnits="strokeWidth"')})],
+  ['marker path footprint', p=>({...p,svg:p.svg.replace(/<path d="M 24.5 [^"]+"/u,'<path d="M 0 -100 L 20 8 L 0 100 Z"')})],
+  ['terminal port drift', p=>({...p,drawio:p.drawio.replace('exitY=0.5;','exitY=0.6;')})],
+  ['waypoint drift', p=>({...p,drawio:p.drawio.replace('<mxPoint x="450" y="400"/>','<mxPoint x="480" y="400"/>')})],
+  ['self reported route', p=>({...p,drawio:p.drawio.replace('edgeStyle=none;','dataRoute=600,400 450,400 450,650;edgeStyle=none;')})],
+  ['dangling fallback point', p=>({...p,drawio:p.drawio.replace('<Array as="points">','<mxPoint as="sourcePoint" x="600" y="400"/><Array as="points">')})],
+  ['node geometry drift', p=>({...p,drawio:p.drawio.replace('x="180" y="650" width="600"','x="190" y="650" width="600"')})],
+  ['shape drift', p=>({...p,drawio:p.drawio.replace('rounded=0;fillColor=','rounded=1;fillColor=')})],
+  ['effective dash drift', p=>({...p,svg:p.svg.replace('stroke-dasharray="6 4"','stroke-dasharray="6 4" style="stroke-dasharray:2 2"')})],
+  ['effective fill drift', p=>({...p,svg:p.svg.replace('fill="#F1F5F7"','fill="#F1F5F7" style="fill:#FFFFFF"')})],
+  ['later opaque node', p=>({...p,svg:p.svg.replace('</svg>','<rect x="200" y="1100" width="700" height="100" fill="#FFFFFF"/></svg>')})],
+  ['later label halo', p=>({...p,svg:p.svg.replace('x="280" y="1170"','x="280" y="1170" style="stroke:white;stroke-width:200;paint-order:stroke fill"')})],
+  ['late canvas', p=>({...p,svg:p.svg.replace(/(<rect data-canvas[^>]+\/>)/u,'').replace('</svg>','<rect data-canvas="true" x="0" y="0" width="1600" height="2200" fill="#FFFFFF" opacity="1"/></svg>')})],
+  ['legend displacement', p=>({...p,svg:p.svg.replace('x="380" y="2070"','x="320" y="2060"')})],
+  ['shared collinear route', p=>({...p,svg:p.svg.replace('M 1000 400 L 1230 400 L 1230 650','M 600 400 L 450 400 L 450 650')})],
+]) test(`STY-14 diagram geometry independently rejects ${label}`,()=>{
+  const pair=choiceGeometryFixture(); assertChoiceGeometry(pair.drawio,pair.svg);
+  const bad=mutate(pair); assert.notDeepEqual(bad,pair,`${label} applies`);
+  assert.throws(()=>assertChoiceGeometry(bad.drawio,bad.svg),assert.AssertionError,label);
+});
+
+test('STY-14 production diagram satisfies geometry parity and paint order',()=>{
+  assertChoiceGeometry(optionalText(DRAWIO),optionalText(SVG));
+});
+
+for(const [label,mutate] of [
+  ['Drawio title padding drift',p=>({...p,drawio:p.drawio.replace('spacingTop=40;','spacingTop=10;')})],
+  ['Drawio detail bounds drift',p=>({...p,drawio:p.drawio.replace('x="40" y="120"','x="50" y="120"')})],
+  ['Drawio label offset drift',p=>({...p,drawio:p.drawio.replace(/(<mxPoint x=")[^"]+(" y="[^"]+" as="offset")/u,'$1999$2')})],
+  ['axis geometry drift',p=>({...p,svg:p.svg.replace('x2="1500" y2="280"','x2="1480" y2="280"')})],
+  ['marker stroke opacity',p=>({...p,svg:p.svg.replace('stroke-linejoin="miter"','stroke-linejoin="miter" stroke-opacity="0"')})],
+  ['foreign text overlap',p=>({...p,svg:p.svg.replace('x="280" y="1470"','x="280" y="1170"')})],
+])test(`STY-14 diagram parity independently rejects ${label}`,()=>{const p=choiceGeometryFixture();assertChoiceGeometry(p.drawio,p.svg);const bad=mutate(p);assert.notDeepEqual(bad,p);assert.throws(()=>assertChoiceGeometry(bad.drawio,bad.svg),assert.AssertionError);});
+
+test('STY-14 diagram geometry resolves equivalent important cascade and text transforms',()=>{
+  const p=choiceGeometryFixture();
+  const styled=p.svg.replace('</svg>','<style>text { fill: #233747; } g > text { font-size: 30px !important; }</style></svg>');
+  assertChoiceGeometry(p.drawio,styled);
+  const translated=p.svg.replace('x="280" y="1170"','x="0" y="0" transform="translate(280 1170)"');
+  assertChoiceGeometry(p.drawio,translated);
+});
+test('STY-14 diagram legend arrows use real Drawio connector edges',()=>{
+  const pair=choiceGeometryFixture();
+  const cells=xmlElements(pair.drawio,'mxCell');
+  for(const id of ['legend-evaluation','legend-axis'])assert.equal(cells.find(n=>n.attributes.get('id')===id+'-swatch').attributes.get('edge'),'1','markers are rendered by connectors, not line vertices');
+});
+for(const [label,mutate] of [
+  ['transformed node envelope',p=>({...p,svg:p.svg.replace('<g data-capability-id=','<g transform="translate(500 0)" data-capability-id=')})],
+  ['effective route stroke opacity',p=>({...p,svg:p.svg.replace('stroke-width="3" stroke-dasharray="6 4"','stroke-width="3" stroke-opacity="0" stroke-dasharray="6 4"')})],
+])test(`STY-14 diagram geometry rejects ${label}`,()=>{const p=choiceGeometryFixture();const bad=mutate(p);assert.notDeepEqual(bad,p);assert.throws(()=>assertChoiceGeometry(bad.drawio,bad.svg),assert.AssertionError);});
 
 const ledger = JSON.parse(readFileSync('data/source-ledger.json', 'utf8'));
 

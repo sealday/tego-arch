@@ -1,0 +1,177 @@
+<mxfile host="app.diagrams.net">
+<diagram id="sty14-choice-matrix" name="独立决策轴">
+<mxGraphModel pageWidth="1600" pageHeight="2200">
+<root>
+<mxCell id="0"/>
+<mxCell id="1" parent="0"/>
+<mxCell id="canvas" parent="1" value="" vertex="1" style="semanticRole=canvas;fillColor=#FFFFFF;opacity=100;strokeColor=none;">
+<mxGeometry x="0" y="0" width="1600" height="2200" as="geometry"/>
+</mxCell>
+<mxCell id="axis-deployment" parent="1" value="部署与数据所有权边界" vertex="1" style="semanticRole=axis;text;fillColor=none;strokeColor=none;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=left;verticalAlign=top;spacing=0;">
+<mxGeometry x="480" y="210" width="660" height="40" as="geometry"/>
+</mxCell>
+<mxCell id="axis-deployment-stroke" parent="1" value="" vertex="1" style="semanticRole=axis-stroke;shape=line;direction=east;strokeColor=#233747;strokeWidth=2;startArrow=none;endArrow=none;">
+<mxGeometry x="180" y="280" width="1320" height="0" as="geometry"/>
+</mxCell>
+<mxCell id="axis-interaction" parent="1" value="同步与事件驱动交互" vertex="1" style="semanticRole=axis;text;fillColor=none;strokeColor=none;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=left;verticalAlign=top;spacing=0;">
+<mxGeometry x="180" y="1990" width="660" height="40" as="geometry"/>
+</mxCell>
+<mxCell id="axis-interaction-stroke" parent="1" value="" vertex="1" style="semanticRole=axis-stroke;shape=line;direction=south;strokeColor=#233747;strokeWidth=2;startArrow=none;endArrow=none;">
+<mxGeometry x="110" y="650" width="0" height="1300" as="geometry"/>
+</mxCell>
+<mxCell id="capability-submit-order" parent="1" value="提交订单" vertex="1" style="semanticRole=capability;rounded=0;fillColor=#F1F5F7;strokeColor=#233747;strokeWidth=2;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=center;verticalAlign=top;spacingTop=30;spacingLeft=40;">
+<mxGeometry x="80" y="60" width="260" height="100" as="geometry"/>
+</mxCell>
+<mxCell id="capability-reserve-inventory" parent="1" value="预留库存" vertex="1" style="semanticRole=capability;rounded=0;fillColor=#F1F5F7;strokeColor=#233747;strokeWidth=2;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=center;verticalAlign=top;spacingTop=30;spacingLeft=40;">
+<mxGeometry x="380" y="60" width="260" height="100" as="geometry"/>
+</mxCell>
+<mxCell id="capability-record-payment-intent" parent="1" value="登记支付意图" vertex="1" style="semanticRole=capability;rounded=0;fillColor=#F1F5F7;strokeColor=#233747;strokeWidth=2;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=center;verticalAlign=top;spacingTop=30;spacingLeft=40;">
+<mxGeometry x="680" y="60" width="260" height="100" as="geometry"/>
+</mxCell>
+<mxCell id="capability-confirm-fulfillment" parent="1" value="确认履约" vertex="1" style="semanticRole=capability;rounded=0;fillColor=#F1F5F7;strokeColor=#233747;strokeWidth=2;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=center;verticalAlign=top;spacingTop=30;spacingLeft=40;">
+<mxGeometry x="980" y="60" width="260" height="100" as="geometry"/>
+</mxCell>
+<mxCell id="capability-send-notification" parent="1" value="发送通知" vertex="1" style="semanticRole=capability;rounded=0;fillColor=#F1F5F7;strokeColor=#233747;strokeWidth=2;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=center;verticalAlign=top;spacingTop=30;spacingLeft=40;">
+<mxGeometry x="1280" y="60" width="260" height="100" as="geometry"/>
+</mxCell>
+<mxCell id="quadrant-monolith-sync" parent="1" value="模块化单体＋同步交互" vertex="1" style="semanticRole=quadrant;rounded=0;fillColor=#EDF3F8;strokeColor=#233747;strokeWidth=2;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=left;verticalAlign=top;spacingTop=40;spacingLeft=40;">
+<mxGeometry x="180" y="650" width="600" height="400" as="geometry"/>
+</mxCell>
+<mxCell id="quadrant-monolith-sync-control" parent="quadrant-monolith-sync" value="控制：模块 API 同步调用" vertex="1" style="semanticRole=quadrant-detail;detailRole=control;text;fillColor=none;strokeColor=none;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=left;verticalAlign=top;">
+<mxGeometry x="40" y="120" width="520" height="40" as="geometry"/>
+</mxCell>
+<mxCell id="quadrant-monolith-sync-state" parent="quadrant-monolith-sync" value="状态：唯一写入责任与本地事务" vertex="1" style="semanticRole=quadrant-detail;detailRole=state;text;fillColor=none;strokeColor=none;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=left;verticalAlign=top;">
+<mxGeometry x="40" y="200" width="520" height="40" as="geometry"/>
+</mxCell>
+<mxCell id="quadrant-monolith-sync-cost" parent="quadrant-monolith-sync" value="运行代价：模块耦合与联动发布" vertex="1" style="semanticRole=quadrant-detail;detailRole=cost;text;fillColor=none;strokeColor=none;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=left;verticalAlign=top;">
+<mxGeometry x="40" y="280" width="520" height="40" as="geometry"/>
+</mxCell>
+<mxCell id="quadrant-monolith-event" parent="1" value="模块化单体＋事件驱动" vertex="1" style="semanticRole=quadrant;rounded=0;fillColor=#F1F6EE;strokeColor=#233747;strokeWidth=2;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=left;verticalAlign=top;spacingTop=40;spacingLeft=40;">
+<mxGeometry x="180" y="1550" width="600" height="400" as="geometry"/>
+</mxCell>
+<mxCell id="quadrant-monolith-event-control" parent="quadrant-monolith-event" value="控制：事务性发布与单体内消费" vertex="1" style="semanticRole=quadrant-detail;detailRole=control;text;fillColor=none;strokeColor=none;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=left;verticalAlign=top;">
+<mxGeometry x="40" y="120" width="520" height="40" as="geometry"/>
+</mxCell>
+<mxCell id="quadrant-monolith-event-state" parent="quadrant-monolith-event" value="状态：本地权威与派生状态" vertex="1" style="semanticRole=quadrant-detail;detailRole=state;text;fillColor=none;strokeColor=none;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=left;verticalAlign=top;">
+<mxGeometry x="40" y="200" width="520" height="40" as="geometry"/>
+</mxCell>
+<mxCell id="quadrant-monolith-event-cost" parent="quadrant-monolith-event" value="运行代价：重复交付与积压恢复" vertex="1" style="semanticRole=quadrant-detail;detailRole=cost;text;fillColor=none;strokeColor=none;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=left;verticalAlign=top;">
+<mxGeometry x="40" y="280" width="520" height="40" as="geometry"/>
+</mxCell>
+<mxCell id="quadrant-microservices-sync" parent="1" value="微服务＋同步交互" vertex="1" style="semanticRole=quadrant;rounded=0;fillColor=#EDF3F8;strokeColor=#233747;strokeWidth=2;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=left;verticalAlign=top;spacingTop=40;spacingLeft=40;">
+<mxGeometry x="900" y="650" width="600" height="400" as="geometry"/>
+</mxCell>
+<mxCell id="quadrant-microservices-sync-control" parent="quadrant-microservices-sync" value="控制：跨服务同步调用" vertex="1" style="semanticRole=quadrant-detail;detailRole=control;text;fillColor=none;strokeColor=none;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=left;verticalAlign=top;">
+<mxGeometry x="40" y="120" width="520" height="40" as="geometry"/>
+</mxCell>
+<mxCell id="quadrant-microservices-sync-state" parent="quadrant-microservices-sync" value="状态：服务独立数据权威" vertex="1" style="semanticRole=quadrant-detail;detailRole=state;text;fillColor=none;strokeColor=none;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=left;verticalAlign=top;">
+<mxGeometry x="40" y="200" width="520" height="40" as="geometry"/>
+</mxCell>
+<mxCell id="quadrant-microservices-sync-cost" parent="quadrant-microservices-sync" value="运行代价：超时与远程未知结果" vertex="1" style="semanticRole=quadrant-detail;detailRole=cost;text;fillColor=none;strokeColor=none;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=left;verticalAlign=top;">
+<mxGeometry x="40" y="280" width="520" height="40" as="geometry"/>
+</mxCell>
+<mxCell id="quadrant-microservices-event" parent="1" value="微服务＋事件驱动" vertex="1" style="semanticRole=quadrant;rounded=0;fillColor=#F1F6EE;strokeColor=#233747;strokeWidth=2;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=left;verticalAlign=top;spacingTop=40;spacingLeft=40;">
+<mxGeometry x="900" y="1550" width="600" height="400" as="geometry"/>
+</mxCell>
+<mxCell id="quadrant-microservices-event-control" parent="quadrant-microservices-event" value="控制：跨服务事件传播" vertex="1" style="semanticRole=quadrant-detail;detailRole=control;text;fillColor=none;strokeColor=none;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=left;verticalAlign=top;">
+<mxGeometry x="40" y="120" width="520" height="40" as="geometry"/>
+</mxCell>
+<mxCell id="quadrant-microservices-event-state" parent="quadrant-microservices-event" value="状态：生产者权威与消费者派生状态" vertex="1" style="semanticRole=quadrant-detail;detailRole=state;text;fillColor=none;strokeColor=none;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=left;verticalAlign=top;">
+<mxGeometry x="40" y="200" width="520" height="40" as="geometry"/>
+</mxCell>
+<mxCell id="quadrant-microservices-event-cost" parent="quadrant-microservices-event" value="运行代价：重放、补偿与合同演进" vertex="1" style="semanticRole=quadrant-detail;detailRole=cost;text;fillColor=none;strokeColor=none;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=left;verticalAlign=top;">
+<mxGeometry x="40" y="280" width="520" height="40" as="geometry"/>
+</mxCell>
+<mxCell id="pressure-growth" parent="1" value="业务增长" vertex="1" style="semanticRole=pressure;rounded=0;fillColor=#FFF4E5;strokeColor=#233747;strokeWidth=2;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=center;verticalAlign=top;spacingTop=30;spacingLeft=40;">
+<mxGeometry x="600" y="350" width="400" height="100" as="geometry"/>
+</mxCell>
+<mxCell id="pressure-failure" parent="1" value="局部故障" vertex="1" style="semanticRole=pressure;rounded=0;fillColor=#FFF4E5;strokeColor=#233747;strokeWidth=2;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=center;verticalAlign=top;spacingTop=30;spacingLeft=40;">
+<mxGeometry x="180" y="1250" width="600" height="100" as="geometry"/>
+</mxCell>
+<mxCell id="pressure-teams" parent="1" value="团队独立交付" vertex="1" style="semanticRole=pressure;rounded=0;fillColor=#FFF4E5;strokeColor=#233747;strokeWidth=2;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=center;verticalAlign=top;spacingTop=30;spacingLeft=40;">
+<mxGeometry x="900" y="1250" width="600" height="100" as="geometry"/>
+</mxCell>
+<mxCell id="evaluation-growth-monolith" parent="1" source="pressure-growth" target="quadrant-monolith-sync" value="评估候选（可保持现状）" edge="1" style="semanticRole=pressure-evaluation;edgeStyle=none;rounded=0;dashed=1;dashPattern=6 4;fixDash=1;strokeColor=#526577;strokeWidth=3;endArrow=block;endSize=20;endFill=1;startArrow=none;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=left;verticalAlign=top;spacing=0;exitX=0;exitY=0.5;entryX=0.45;entryY=0;exitDx=0;exitDy=0;entryDx=0;entryDy=0;exitPerimeter=1;entryPerimeter=1;">
+<mxGeometry x="0" y="0" relative="1" as="geometry">
+<Array as="points">
+<mxPoint x="450" y="400"/>
+</Array>
+<mxPoint x="-270" y="-135" as="offset"/>
+</mxGeometry>
+</mxCell>
+<mxCell id="evaluation-growth-services" parent="1" source="pressure-growth" target="quadrant-microservices-sync" value="评估候选（可保持现状）" edge="1" style="semanticRole=pressure-evaluation;edgeStyle=none;rounded=0;dashed=1;dashPattern=6 4;fixDash=1;strokeColor=#526577;strokeWidth=3;endArrow=block;endSize=20;endFill=1;startArrow=none;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=left;verticalAlign=top;spacing=0;exitX=1;exitY=0.5;entryX=0.55;entryY=0;exitDx=0;exitDy=0;entryDx=0;entryDy=0;exitPerimeter=1;entryPerimeter=1;">
+<mxGeometry x="0" y="0" relative="1" as="geometry">
+<Array as="points">
+<mxPoint x="1230" y="400"/>
+</Array>
+<mxPoint x="-150" y="-95" as="offset"/>
+</mxGeometry>
+</mxCell>
+<mxCell id="evaluation-failure-sync" parent="1" source="pressure-failure" target="quadrant-monolith-sync" value="评估候选（可保持现状）" edge="1" style="semanticRole=pressure-evaluation;edgeStyle=none;rounded=0;dashed=1;dashPattern=6 4;fixDash=1;strokeColor=#526577;strokeWidth=3;endArrow=block;endSize=20;endFill=1;startArrow=none;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=left;verticalAlign=top;spacing=0;exitX=0.06666666666666667;exitY=0;entryX=0.06666666666666667;entryY=1;exitDx=0;exitDy=0;entryDx=0;entryDy=0;exitPerimeter=1;entryPerimeter=1;">
+<mxGeometry x="0" y="0" relative="1" as="geometry">
+<Array as="points">
+<mxPoint x="220" y="1150"/>
+</Array>
+<mxPoint x="60" y="-10" as="offset"/>
+</mxGeometry>
+</mxCell>
+<mxCell id="evaluation-failure-event" parent="1" source="pressure-failure" target="quadrant-monolith-event" value="评估候选（可保持现状）" edge="1" style="semanticRole=pressure-evaluation;edgeStyle=none;rounded=0;dashed=1;dashPattern=6 4;fixDash=1;strokeColor=#526577;strokeWidth=3;endArrow=block;endSize=20;endFill=1;startArrow=none;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=left;verticalAlign=top;spacing=0;exitX=0.06666666666666667;exitY=1;entryX=0.06666666666666667;entryY=0;exitDx=0;exitDy=0;entryDx=0;entryDy=0;exitPerimeter=1;entryPerimeter=1;">
+<mxGeometry x="0" y="0" relative="1" as="geometry">
+<Array as="points">
+<mxPoint x="220" y="1450"/>
+</Array>
+<mxPoint x="60" y="-10" as="offset"/>
+</mxGeometry>
+</mxCell>
+<mxCell id="evaluation-teams-sync" parent="1" source="pressure-teams" target="quadrant-microservices-sync" value="评估候选（可保持现状）" edge="1" style="semanticRole=pressure-evaluation;edgeStyle=none;rounded=0;dashed=1;dashPattern=6 4;fixDash=1;strokeColor=#526577;strokeWidth=3;endArrow=block;endSize=20;endFill=1;startArrow=none;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=left;verticalAlign=top;spacing=0;exitX=0.9333333333333333;exitY=0;entryX=0.9333333333333333;entryY=1;exitDx=0;exitDy=0;entryDx=0;entryDy=0;exitPerimeter=1;entryPerimeter=1;">
+<mxGeometry x="0" y="0" relative="1" as="geometry">
+<Array as="points">
+<mxPoint x="1460" y="1150"/>
+</Array>
+<mxPoint x="-430" y="-10" as="offset"/>
+</mxGeometry>
+</mxCell>
+<mxCell id="evaluation-teams-event" parent="1" source="pressure-teams" target="quadrant-microservices-event" value="评估候选（可保持现状）" edge="1" style="semanticRole=pressure-evaluation;edgeStyle=none;rounded=0;dashed=1;dashPattern=6 4;fixDash=1;strokeColor=#526577;strokeWidth=3;endArrow=block;endSize=20;endFill=1;startArrow=none;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=left;verticalAlign=top;spacing=0;exitX=0.9333333333333333;exitY=1;entryX=0.9333333333333333;entryY=0;exitDx=0;exitDy=0;entryDx=0;entryDy=0;exitPerimeter=1;entryPerimeter=1;">
+<mxGeometry x="0" y="0" relative="1" as="geometry">
+<Array as="points">
+<mxPoint x="1460" y="1450"/>
+</Array>
+<mxPoint x="-430" y="-10" as="offset"/>
+</mxGeometry>
+</mxCell>
+<mxCell id="legend-evaluation" parent="1" value="虚线箭头：评估候选，可保持现状" vertex="1" style="semanticRole=legend;text;fillColor=none;strokeColor=none;align=left;verticalAlign=top;spacing=0;fontSize=30;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;">
+<mxGeometry x="380" y="2040" width="1050" height="40" as="geometry"/>
+</mxCell>
+<mxCell id="legend-evaluation-source" parent="1" value="" vertex="1" style="semanticRole=legend-anchor;fillColor=none;strokeColor=none;">
+<mxGeometry x="180" y="2060" width="0" height="0" as="geometry"/>
+</mxCell>
+<mxCell id="legend-evaluation-target" parent="1" value="" vertex="1" style="semanticRole=legend-anchor;fillColor=none;strokeColor=none;">
+<mxGeometry x="330" y="2060" width="0" height="0" as="geometry"/>
+</mxCell>
+<mxCell id="legend-evaluation-swatch" parent="1" value="" source="legend-evaluation-source" target="legend-evaluation-target" edge="1" style="semanticRole=legend-swatch;edgeStyle=none;strokeColor=#526577;strokeWidth=3;dashed=1;dashPattern=6 4;fixDash=1;endArrow=block;startArrow=none;endSize=20;endFill=1;exitX=0;exitY=0;entryX=0;entryY=0;exitDx=0;exitDy=0;entryDx=0;entryDy=0;exitPerimeter=1;entryPerimeter=1;">
+<mxGeometry relative="1" as="geometry">
+<Array as="points">
+<mxPoint x="250" y="2060"/>
+</Array>
+</mxGeometry>
+</mxCell>
+<mxCell id="legend-axis" parent="1" value="实线无箭头：独立决策轴，不表示升级" vertex="1" style="semanticRole=legend;text;fillColor=none;strokeColor=none;align=left;verticalAlign=top;spacing=0;fontSize=30;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;">
+<mxGeometry x="380" y="2120" width="1050" height="40" as="geometry"/>
+</mxCell>
+<mxCell id="legend-axis-source" parent="1" value="" vertex="1" style="semanticRole=legend-anchor;fillColor=none;strokeColor=none;">
+<mxGeometry x="180" y="2140" width="0" height="0" as="geometry"/>
+</mxCell>
+<mxCell id="legend-axis-target" parent="1" value="" vertex="1" style="semanticRole=legend-anchor;fillColor=none;strokeColor=none;">
+<mxGeometry x="330" y="2140" width="0" height="0" as="geometry"/>
+</mxCell>
+<mxCell id="legend-axis-swatch" parent="1" value="" source="legend-axis-source" target="legend-axis-target" edge="1" style="semanticRole=legend-swatch;edgeStyle=none;strokeColor=#233747;strokeWidth=2;dashed=0;dashPattern=none;fixDash=1;endArrow=none;startArrow=none;endSize=20;endFill=1;exitX=0;exitY=0;entryX=0;entryY=0;exitDx=0;exitDy=0;entryDx=0;entryDy=0;exitPerimeter=1;entryPerimeter=1;">
+<mxGeometry relative="1" as="geometry">
+<Array as="points">
+<mxPoint x="250" y="2140"/>
+</Array>
+</mxGeometry>
+</mxCell>
+</root>
+</mxGraphModel>
+</diagram>
+</mxfile>
