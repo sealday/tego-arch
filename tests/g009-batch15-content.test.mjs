@@ -512,6 +512,9 @@ function assertVisibleSvg(root) {
 
 export function assertChoiceDiagram(drawioSource, svgSource) {
   assert.ok(drawioSource, `${DRAWIO} must exist after implementation`); assert.ok(svgSource, `${SVG} must exist after implementation`);
+  const svgTree=geometryTree(svgSource);
+  assertStaticTextLayout(svgTree,cascade(svgTree));
+  assertDrawioPresentation(xmlElements(drawioSource, 'mxCell'));
   const visibleSvg = assertVisibleSvg(xmlRoot(svgSource));
   const drawioCanvas = semanticDrawioCells(drawioSource, 'canvas'); assert.equal(drawioCanvas.length, 1, 'one Draw.io opaque canvas');
   assert.deepEqual([styleMap(drawioCanvas[0].attributes.get('style')).get('fillColor'), styleMap(drawioCanvas[0].attributes.get('style')).get('opacity')], ['#FFFFFF', '100'], 'Draw.io canvas is opaque');
@@ -586,7 +589,7 @@ function diagramFixture() {
   const details = QUADRANT_IDS.flatMap((id, index) => QUADRANT_DETAILS[index].map((label, offset) => ({id: `${id}-${detailRoles[offset]}`, parent: id, role: detailRoles[offset], label})));
   const routes = PRESSURE_IDS.flatMap((source, index) => [QUADRANT_IDS[index], QUADRANT_IDS[(index + 2) % 4]].map((target, offset) => ({id: `evaluation-${index}-${offset}`, source, target})));
   const drawioDetails = details.map(({id, parent, role, label}) => `<mxCell id="${id}" parent="${parent}" value="${label}" vertex="1" style="semanticRole=quadrant-detail;detailRole=${role};"/>`).join('');
-  const drawioEdges = routes.map(({id, source, target}) => `<mxCell id="${id}" source="${source}" target="${target}" value="${EVALUATION_LABEL}" edge="1" style="semanticRole=pressure-evaluation;dashed=1;endArrow=block;"/>`).join('');
+  const drawioEdges = routes.map(({id, source, target}) => `<mxCell id="${id}" source="${source}" target="${target}" value="${EVALUATION_LABEL}" edge="1" style="semanticRole=pressure-evaluation;dashed=1;endArrow=block;endSize=20;endFill=1;startArrow=none;startFill=1;"/>`).join('');
   let expandedSvg = svg;
   for (const [index, id] of QUADRANT_IDS.entries()) {
     const label = QUADRANT_LABELS[index][1];
@@ -714,8 +717,8 @@ function cascade(tree) {
   }
   const simple=(n,s)=>n && (!/^\w/u.test(s)||s.match(/^[\w-]+/u)[0]===n.localName) && [...s.matchAll(/([.#])([\w-]+)/gu)].every(([,kind,value])=>kind==='#'?n.attributes.get('id')===value:(n.attributes.get('class')??'').split(/\s+/u).includes(value));
   const match=(n,sel)=>{const parts=sel.replace(/\s*>\s*/gu,' > ').split(/\s+/u); let i=parts.length-1,p=n;if(!simple(p,parts[i--]))return false;while(i>=0){if(parts[i]==='>'){p=p.parent;i--;if(!simple(p,parts[i--]))return false;}else{p=p.parent;while(p&&!simple(p,parts[i]))p=p.parent;if(!p)return false;i--;}}return true;};
-  const inherited=new Set(['fill','stroke','stroke-width','stroke-dasharray','font-size','font-family','font-weight','text-anchor','visibility','marker-end','fill-opacity','stroke-opacity']);
-  const defaults={'fill':'black','stroke':'none','stroke-width':'1','font-size':'16','font-weight':'normal','text-anchor':'start','opacity':'1','fill-opacity':'1','stroke-opacity':'1','visibility':'visible','display':'inline','stroke-dasharray':'none','marker-end':'none'};
+  const inherited=new Set(['fill','stroke','stroke-width','stroke-dasharray','font-size','font-family','font-weight','text-anchor','visibility','marker-start','marker-mid','marker-end','fill-opacity','stroke-opacity']);
+  const defaults={'fill':'black','stroke':'none','stroke-width':'1','font-size':'16','font-weight':'normal','text-anchor':'start','opacity':'1','fill-opacity':'1','stroke-opacity':'1','visibility':'visible','display':'inline','stroke-dasharray':'none','marker-start':'none','marker-mid':'none','marker-end':'none'};
   const get=(n,key)=>{
     let winner=n.attributes.has(key)?{rank:0,score:0,order:-1,value:n.attributes.get(key)}:null;
     const add=(candidate)=>{if(!winner||candidate.rank>winner.rank||candidate.rank===winner.rank&&(candidate.score>winner.score||candidate.score===winner.score&&candidate.order>=winner.order))winner=candidate;};
@@ -752,6 +755,52 @@ function glyphBounds(n,css) {
   const anchor=css(n,'text-anchor');assert.ok(['start','middle','end'].includes(anchor));
   const b=box(x-(anchor==='middle'?width/2:anchor==='end'?width:0),y-font*.82,width,font*1.04);
   return boundsOf(pointsOf(b).map(p=>transformPoint(p,n)));
+}
+// This contract measures a deliberately small rendering language, not arbitrary
+// SVG text layout. Translation preserves glyph size; all other transforms and
+// character-position adjustments must be reviewed before they can be measured.
+function assertStaticTextLayout(tree, css) {
+  for (const n of tree.all) {
+    assert.equal(css(n,'marker-start'),'none','SVG start marker parity');
+    assert.equal(css(n,'marker-mid'),'none','SVG middle marker parity');
+    const transform=n.attributes.get('transform');
+    if (transform !== undefined) {
+      assert.equal(n.localName,'text','visible transforms only on measured text');
+      assert.match(transform,/^(?:\s*translate\(\s*-?[\d.]+(?:[ ,]+-?[\d.]+)?\s*\)\s*)+$/u,'supported text transform is translation only');
+      transformPoint({x:0,y:0},n);
+    }
+    assert.equal(css(n,'transform'),transform,'unsupported CSS text transform');
+    if (!['text','tspan'].includes(n.localName)) continue;
+    for (const key of ['dx','dy','rotate','textLength','lengthAdjust','writing-mode','baseline-shift','dominant-baseline','alignment-baseline']) {
+      assert.equal(n.attributes.has(key),false,`unsupported text positioning: ${key}`);
+      assert.equal(css(n,key),undefined,`unsupported text positioning: ${key}`);
+    }
+  }
+}
+function assertDrawioPresentation(cells) {
+  for (const cell of cells) {
+    const style=styleMap(cell.attributes.get('style')),role=style.get('semanticRole');
+    // mxCell visibility propagates to descendants. Checking every cell also
+    // catches hidden/collapsed semantic parents and hidden root layers.
+    assert.equal(cell.attributes.get('visible')??'1','1','Draw.io effective visibility');
+    assert.equal(cell.attributes.get('collapsed')??'0','0','Draw.io effective visibility');
+    for (const key of ['opacity','fillOpacity','strokeOpacity','textOpacity'])
+      assert.equal(style.get(key)??'100','100',`Draw.io effective ${key} parity`);
+    assert.equal(style.get('noLabel')??'0','0','Draw.io effective label visibility');
+    if (['canvas','quadrant','pressure','capability','legend-anchor'].includes(role)) {
+      assert.equal(style.get('shape')??(style.has('text')?'text':'rectangle'),'rectangle','Draw.io effective rectangle shape parity');
+      assert.equal(style.has('ellipse')||style.has('rhombus'),false,'Draw.io effective rectangle shape parity');
+      assert.equal(style.get('rounded')??'0','0','Draw.io square rectangle shape parity');
+      assert.equal(style.get('perimeter')??'rectanglePerimeter','rectanglePerimeter','Draw.io rectangle terminal perimeter parity');
+      assert.equal(style.get('rotation')??'0','0','Draw.io unrotated rectangle perimeter parity');
+    }
+    if (cell.attributes.get('edge')==='1'||role==='axis-stroke') {
+      const evaluation=role==='pressure-evaluation'||cell.attributes.get('id')==='legend-evaluation-swatch';
+      for (const [key,value,fallback] of [['startArrow','none','none'],['startFill','1','1'],['endArrow',evaluation?'block':'none','none'],['endFill','1','1']])
+        assert.equal(style.get(key)??fallback,value,`Draw.io ${key} parity`);
+      if (evaluation||role==='legend-swatch') assert.equal(style.get('endSize'),'20','Draw.io endSize parity');
+    }
+  }
 }
 function rectBounds(n) {return box(...['x','y','width','height'].map(k=>numeric(n.attributes.get(k),`${n.localName} ${k}`)));}
 function drawioBounds(n,byId) {
@@ -802,6 +851,8 @@ export function assertChoiceGeometry(drawioSource, svgSource) {
   assert.ok(drawioSource&&svgSource,'STY-14 production geometry pair exists');
   const draw=geometryTree(drawioSource),svg=geometryTree(svgSource),css=cascade(svg);
   const cells=draw.all.filter(n=>n.localName==='mxCell'),byId=new Map(cells.map(n=>[n.attributes.get('id'),n]));
+  assertStaticTextLayout(svg,css);
+  assertDrawioPresentation(cells);
   assert.equal(byId.size,cells.length,'unique real Draw.io cell IDs');
   const view=(svg.root.attributes.get('viewBox')??'').split(/\s+/u).map(Number);assert.deepEqual(view,[0,0,1600,2200],'opaque 800px design canvas');const scale=800/view[2];
   const painted=svg.all.filter(n=>['text','rect','path','line'].includes(n.localName)&&!function(){for(let p=n.parent;p;p=p.parent)if(p.localName==='defs')return true;return false;}());
@@ -881,15 +932,34 @@ export function assertChoiceGeometry(drawioSource, svgSource) {
     }
     for(const s of e.segments)for(const n of nodeBoxes)assert.equal(overlap(boundsOf([s.a,s.z]),n.b),false,'route does not cross node');
   }
-  // Paint-order check uses real painted envelopes, including all unclassified
-  // later rectangles. No opaque label mask may erase an earlier connector.
+  // Conservatively measure every supported painted primitive in paint order.
+  // Filled M/L paths use their envelope; strokes use per-segment envelopes so
+  // empty space inside an open multi-segment connector is not an occluder.
   for(const n of painted) {
-    let b;if(n.localName==='rect')b=expand(rectBounds(n),css(n,'stroke')==='none'?0:numeric(css(n,'stroke-width'),'paint width')/2);else if(n.localName==='text')b=glyphBounds(n,css);else continue;
-    for(const e of edges.filter(e=>e.n.order<n.order&&n!==e.label)) {
-      assert.ok(e.segments.every(s=>!overlap(b,s.b)),`${e.id} later painted ${n.localName} cannot occlude route`);
-      if(e.marker)assert.equal(overlap(b,e.marker),false,'later painted shape cannot occlude real marker');
+    const envelopes=[];
+    if(n.localName==='rect')envelopes.push(expand(rectBounds(n),css(n,'stroke')==='none'?0:numeric(css(n,'stroke-width'),'paint width')/2));
+    else if(n.localName==='text')envelopes.push(glyphBounds(n,css));
+    else {
+      const closed=n.localName==='path'&&/Z\s*$/u.test(n.attributes.get('d'));
+      const points=n.localName==='path'?pathPoints(n.attributes.get('d'),closed):[{x:numeric(n.attributes.get('x1'),'paint x'),y:numeric(n.attributes.get('y1'),'paint y')},{x:numeric(n.attributes.get('x2'),'paint x'),y:numeric(n.attributes.get('y2'),'paint y')}];
+      if(n.localName==='path'&&css(n,'fill')!=='none')envelopes.push(boundsOf(points));
+      if(css(n,'stroke')!=='none') {
+        if(closed)points.push(points[0]);
+        const radius=numeric(css(n,'stroke-width'),'paint width')/2;
+        envelopes.push(...points.slice(1).map((p,i)=>expand(boundsOf([points[i],p]),radius)));
+      }
     }
-    if(n.localName==='rect'&&css(n,'fill')!=='none')for(const t of textBoxes.filter(t=>t.n.order<n.order))assert.equal(overlap(b,t.b),false,'later opaque shape cannot occlude text');
+    for(const b of envelopes) {
+      for(const e of edges.filter(e=>e.n.order<n.order&&n!==e.label)) {
+        assert.ok(e.segments.every(s=>!overlap(b,s.b)),`${e.id} later painted ${n.localName} cannot occlude route`);
+        if(e.marker)assert.equal(overlap(b,e.marker),false,'later painted shape cannot occlude real marker');
+      }
+      for(const t of textBoxes.filter(t=>t.n.order<n.order))assert.equal(overlap(b,t.b),false,`later painted ${n.localName} cannot occlude text`);
+      // A node owns its text; real business edges are allowed to meet their
+      // terminals. Unclassified paint has neither exemption.
+      if(!edges.some(e=>e.n===n))for(const node of nodeBoxes.filter(node=>node.n.order<n.order&&node.n.parent!==n.parent))
+        assert.equal(overlap(b,node.b),false,`later painted ${n.localName} cannot occlude node`);
+    }
   }
   for(const {n,b} of textBoxes) {
     assert.ok(b.left>=0&&b.top>=0&&b.right<=view[2]&&b.bottom<=view[3],'no text crop');
@@ -925,7 +995,6 @@ for (const [label, mutate] of [
   ['later label halo', p=>({...p,svg:p.svg.replace('x="280" y="1170"','x="280" y="1170" style="stroke:white;stroke-width:200;paint-order:stroke fill"')})],
   ['late canvas', p=>({...p,svg:p.svg.replace(/(<rect data-canvas[^>]+\/>)/u,'').replace('</svg>','<rect data-canvas="true" x="0" y="0" width="1600" height="2200" fill="#FFFFFF" opacity="1"/></svg>')})],
   ['legend displacement', p=>({...p,svg:p.svg.replace('x="380" y="2070"','x="320" y="2060"')})],
-  ['shared collinear route', p=>({...p,svg:p.svg.replace('M 1000 400 L 1230 400 L 1230 650','M 600 400 L 450 400 L 450 650')})],
 ]) test(`STY-14 diagram geometry independently rejects ${label}`,()=>{
   const pair=choiceGeometryFixture(); assertChoiceGeometry(pair.drawio,pair.svg);
   const bad=mutate(pair); assert.notDeepEqual(bad,pair,`${label} applies`);
@@ -963,6 +1032,79 @@ for(const [label,mutate] of [
 ])test(`STY-14 diagram geometry rejects ${label}`,()=>{const p=choiceGeometryFixture();const bad=mutate(p);assert.notDeepEqual(bad,p);assert.throws(()=>assertChoiceGeometry(bad.drawio,bad.svg),assert.AssertionError);});
 
 const ledger = JSON.parse(readFileSync('data/source-ledger.json', 'utf8'));
+
+for (const [label, attribute, diagnostic] of [
+  ['origin-preserving scale', 'transform="translate(180 345) scale(0.1) translate(-180 -345)"', /supported text transform is translation only/u],
+  ['dx displacement', 'dx="1000"', /unsupported text positioning: dx/u],
+  ['dy displacement', 'dy="1000"', /unsupported text positioning: dy/u],
+  ['rotation', 'transform="rotate(90 180 345)"', /supported text transform is translation only/u],
+]) for (const [helper, check] of [['geometry', assertChoiceGeometry], ['semantic', assertChoiceDiagram]]) {
+  test(`STY-14 diagram review ${helper} rejects ${label}`, () => {
+    const p = choiceGeometryFixture(); check(p.drawio, p.svg);
+    const svg = replaceOnce(p.svg, 'x="180" y="345"', `x="180" y="345" ${attribute}`, label);
+    assert.throws(() => check(p.drawio, svg), diagnostic);
+  });
+}
+
+const mutateDrawioCell = (source, id, mutate) => replaceOnce(source,
+  source.match(new RegExp(`<mxCell id="${id}"[^>]*>`))[0],
+  mutate(source.match(new RegExp(`<mxCell id="${id}"[^>]*>`))[0]), id);
+for (const [label, id, mutate, diagnostic] of [
+  ['node opacity', 'pressure-growth', s=>s.replace('semanticRole=pressure;', 'semanticRole=pressure;opacity=0;'), /Draw.io effective opacity parity/u],
+  ['node ellipse', 'pressure-growth', s=>s.replace('rounded=0;', 'rounded=0;shape=ellipse;'), /Draw.io effective rectangle shape parity/u],
+  ['node named text shape', 'pressure-growth', s=>s.replace('rounded=0;', 'rounded=0;text;'), /Draw.io effective rectangle shape parity/u],
+  ['node custom perimeter', 'pressure-growth', s=>s.replace('rounded=0;', 'rounded=0;perimeter=ellipsePerimeter;'), /Draw.io rectangle terminal perimeter parity/u],
+  ['node visibility', 'pressure-growth', s=>s.replace('vertex="1"', 'vertex="1" visible="0"'), /Draw.io effective visibility/u],
+  ['node fill opacity', 'pressure-growth', s=>s.replace('rounded=0;', 'rounded=0;fillOpacity=0;'), /Draw.io effective fillOpacity parity/u],
+  ['edge start arrow', 'evaluation-growth-monolith', s=>s.replace('startArrow=none;', 'startArrow=block;'), /Draw.io startArrow parity/u],
+  ['edge start fill', 'evaluation-growth-monolith', s=>s.replace('startArrow=none;', 'startArrow=none;startFill=0;'), /Draw.io startFill parity/u],
+  ['edge end fill', 'evaluation-growth-monolith', s=>s.replace('endFill=1;', 'endFill=0;'), /Draw.io endFill parity/u],
+  ['legend end size', 'legend-evaluation-swatch', s=>s.replace('endSize=20;', 'endSize=2;'), /Draw.io endSize parity/u],
+  ['legend start arrow', 'legend-axis-swatch', s=>s.replace('startArrow=none;', 'startArrow=block;'), /Draw.io startArrow parity/u],
+]) for (const [helper, check] of [['geometry', assertChoiceGeometry], ['semantic', assertChoiceDiagram]]) {
+  test(`STY-14 diagram review ${helper} rejects ${label}`, () => {
+    const p=choiceGeometryFixture(); check(p.drawio,p.svg);
+    const drawio=mutateDrawioCell(p.drawio,id,mutate);
+    assert.throws(()=>check(drawio,p.svg),diagnostic);
+  });
+}
+
+for(const [label,mutate] of [
+  ['start marker attribute',s=>s.replace('stroke-dasharray="6 4"','stroke-dasharray="6 4" marker-start="url(#evaluation-arrow)"')],
+  ['inherited start marker',s=>s.replace('<g data-edge-id=','<g marker-start="url(#evaluation-arrow)" data-edge-id=')],
+  ['start marker cascade',s=>s.replace('</svg>','<style>path { marker-start: url(#evaluation-arrow); }</style></svg>')],
+])test(`STY-14 diagram review geometry rejects ${label}`,()=>{
+  const p=choiceGeometryFixture();const svg=mutate(p.svg);assert.notEqual(svg,p.svg);
+  assert.throws(()=>assertChoiceGeometry(p.drawio,svg),/SVG start marker parity/u);
+});
+
+for (const [label, paint, diagnostic] of [
+  ['closed path over text', '<path d="M 180 310 L 540 310 L 540 355 L 180 355 Z" fill="#FFFFFF"/>', /later painted path cannot occlude text/u],
+  ['closed path over node', '<path d="M 580 360 L 620 360 L 620 390 L 580 390 Z" fill="#FFFFFF"/>', /later painted path cannot occlude node/u],
+  ['closed path over route', '<path d="M 430 480 L 470 480 L 470 520 L 430 520 Z" fill="#FFFFFF"/>', /later painted path cannot occlude route/u],
+  ['line over text', '<line x1="180" y1="330" x2="510" y2="330" stroke="#FFFFFF" stroke-width="40"/>', /later painted line cannot occlude text/u],
+  ['line over node', '<line x1="600" y1="360" x2="600" y2="375" stroke="#FFFFFF" stroke-width="40"/>', /later painted line cannot occlude node/u],
+  ['line over route', '<line x1="430" y1="500" x2="470" y2="500" stroke="#FFFFFF" stroke-width="40"/>', /later painted line cannot occlude route/u],
+]) test(`STY-14 diagram review rejects ${label}`,()=>{
+  const p=choiceGeometryFixture();assertChoiceGeometry(p.drawio,p.svg);
+  const svg=replaceOnce(p.svg,'</svg>',paint+'</svg>',label);
+  assert.throws(()=>assertChoiceGeometry(p.drawio,svg),diagnostic);
+});
+
+test('STY-14 diagram review rejects synchronized partial collinear overlap by the route diagnostic',()=>{
+  const p=choiceGeometryFixture();assertChoiceGeometry(p.drawio,p.svg);
+  // Add a detour on the second route: only x=450, y=500..550 overlaps
+  // the first route's x=450, y=400..650 segment. Endpoints stay unchanged.
+  const points=[{x:1000,y:400},{x:1230,y:400},{x:1230,y:500},{x:450,y:500},{x:450,y:550},{x:1230,y:550},{x:1230,y:650}];
+  const route=points.map((p,i)=>`${i?'L':'M'} ${p.x} ${p.y}`).join(' ');
+  const midpoint=polylineMidpoint(points);
+  const old=p.drawio.match(/<mxCell id="evaluation-growth-services"[\s\S]*?<\/mxCell>/u)[0];
+  const changed=old.replace(/<Array as="points">[\s\S]*?<\/Array>/u,`<Array as="points">${points.slice(1,-1).map(p=>`<mxPoint x="${p.x}" y="${p.y}"/>`).join('')}</Array>`)
+    .replace(/<mxPoint x="[^"]+" y="[^"]+" as="offset"\/>/u,`<mxPoint x="${1080-midpoint.x}" y="${315-midpoint.y}" as="offset"/>`);
+  const drawio=replaceOnce(p.drawio,old,changed,'synchronized waypoints and label offset');
+  const svg=replaceOnce(p.svg,'M 1000 400 L 1230 400 L 1230 650',route,'partial shared route');
+  assert.throws(()=>assertChoiceGeometry(drawio,svg),/no shared collinear business-route segment/u);
+});
 
 test('STY-14 content helper fixture is GREEN and rejects semantic contradictions', () => {
   const fixture = articleFixture(); assertChoiceContract(fixture);
