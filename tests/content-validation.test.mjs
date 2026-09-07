@@ -1497,6 +1497,50 @@ test('accepts the exact ten-heading architecture-case contract only for register
   assert.notStrictEqual(knowledgeHeadingContract('style', 'STY-07'), architectureCaseHeadings);
 });
 
+const sty14ChoiceHeadings = [
+  '## 为什么三选一是错误问题', '## 固定订单履约范围与比较规则',
+  '## 第一轴：部署与数据所有权边界', '## 第二轴：同步与事件驱动交互',
+  '## 压力一：业务增长', '## 压力二：局部故障', '## 压力三：团队独立交付',
+  '## 迁移触发器与停止条件', '## 决策矩阵与评审问题', '## 来源',
+];
+
+test('STY-14 style alone accepts the exact choice headings with empty related evidence', async () => {
+  assert.deepEqual(knowledgeHeadingContract('style', 'STY-14'), sty14ChoiceHeadings);
+  await withTempRoot(async (root) => {
+    await writeMdx(root, 'styles/sty-14.mdx', validKnowledgeFrontMatter('style', {
+      topic_id: 'STY-14', slug: '/styles/sty-14', related_cases: [], related_questions: [],
+    }), sty14ChoiceHeadings.join('\n\n'));
+    assert.deepEqual((await validateContent(root)).errors, []);
+  });
+});
+
+test('STY-14 choice contract rejects reordered headings and invented related evidence', async () => {
+  for (const [label, headings, overrides, diagnostic] of [
+    ['reordered', [sty14ChoiceHeadings[1], sty14ChoiceHeadings[0], ...sty14ChoiceHeadings.slice(2)], {}, /H2 sequence/u],
+    ['case', sty14ChoiceHeadings, {related_cases: ['/cases/example']}, /STY-14 requires empty related_cases and related_questions/u],
+    ['question', sty14ChoiceHeadings, {related_questions: ['/questions/example']}, /STY-14 requires empty related_cases and related_questions/u],
+  ]) await withTempRoot(async (root) => {
+    await writeMdx(root, 'styles/sty-14.mdx', validKnowledgeFrontMatter('style', {
+      topic_id: 'STY-14', slug: '/styles/sty-14', related_cases: [], related_questions: [], ...overrides,
+    }), headings.join('\n\n'));
+    assert.match((await validateContent(root)).errors.join('\n'), diagnostic, label);
+  });
+});
+
+test('STY-14 choice exception does not leak to neighboring topics or another content type', async () => {
+  for (const [type, topic] of [['style', 'STY-13'], ['style', 'STY-15'], ['concept', 'STY-14']]) {
+    assert.notDeepEqual(knowledgeHeadingContract(type, topic), sty14ChoiceHeadings);
+    await withTempRoot(async (root) => {
+      await writeMdx(root, 'neighbor.mdx', validKnowledgeFrontMatter(type, {
+        topic_id: topic, slug: '/neighbor', related_cases: [], related_questions: [],
+      }), sty14ChoiceHeadings.join('\n\n'));
+      const errors = (await validateContent(root)).errors.join('\n');
+      assert.match(errors, /requires at least one related case or question/u);
+      assert.match(errors, /H2 sequence/u);
+    });
+  }
+});
+
 test('rejects missing, reordered, duplicate, and malformed migration headings for architecture-case styles', async () => {
   const validBody = [
     ...architectureCaseHeadings.slice(0, -1),

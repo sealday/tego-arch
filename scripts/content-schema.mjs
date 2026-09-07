@@ -264,7 +264,23 @@ export const mth07MethodHeadings = [
   '## 来源',
 ];
 
+export const sty14ChoiceHeadings = [
+  '## 为什么三选一是错误问题',
+  '## 固定订单履约范围与比较规则',
+  '## 第一轴：部署与数据所有权边界',
+  '## 第二轴：同步与事件驱动交互',
+  '## 压力一：业务增长',
+  '## 压力二：局部故障',
+  '## 压力三：团队独立交付',
+  '## 迁移触发器与停止条件',
+  '## 决策矩阵与评审问题',
+  '## 来源',
+];
+
 export function knowledgeHeadingContract(type, topicId) {
+  if (type === 'style' && topicId === 'STY-14') {
+    return sty14ChoiceHeadings;
+  }
   if (type === 'method' && topicId === 'MTH-07') {
     return mth07MethodHeadings;
   }

@@ -17,23 +17,23 @@
 </g>
 <g data-capability-id="capability-submit-order" data-label="提交订单">
 <rect x="80" y="60" width="260" height="100" fill="#F1F5F7" stroke="#233747" stroke-width="2"/>
-<text x="210" y="120" font-size="30" fill="#233747" stroke="none" text-anchor="middle">提交订单</text>
+<text x="210" y="121" font-size="30" fill="#233747" stroke="none" text-anchor="middle">提交订单</text>
 </g>
 <g data-capability-id="capability-reserve-inventory" data-label="预留库存">
 <rect x="380" y="60" width="260" height="100" fill="#F1F5F7" stroke="#233747" stroke-width="2"/>
-<text x="510" y="120" font-size="30" fill="#233747" stroke="none" text-anchor="middle">预留库存</text>
+<text x="510" y="121" font-size="30" fill="#233747" stroke="none" text-anchor="middle">预留库存</text>
 </g>
 <g data-capability-id="capability-record-payment-intent" data-label="登记支付意图">
 <rect x="680" y="60" width="260" height="100" fill="#F1F5F7" stroke="#233747" stroke-width="2"/>
-<text x="810" y="120" font-size="30" fill="#233747" stroke="none" text-anchor="middle">登记支付意图</text>
+<text x="810" y="121" font-size="30" fill="#233747" stroke="none" text-anchor="middle">登记支付意图</text>
 </g>
 <g data-capability-id="capability-confirm-fulfillment" data-label="确认履约">
 <rect x="980" y="60" width="260" height="100" fill="#F1F5F7" stroke="#233747" stroke-width="2"/>
-<text x="1110" y="120" font-size="30" fill="#233747" stroke="none" text-anchor="middle">确认履约</text>
+<text x="1110" y="121" font-size="30" fill="#233747" stroke="none" text-anchor="middle">确认履约</text>
 </g>
 <g data-capability-id="capability-send-notification" data-label="发送通知">
 <rect x="1280" y="60" width="260" height="100" fill="#F1F5F7" stroke="#233747" stroke-width="2"/>
-<text x="1410" y="120" font-size="30" fill="#233747" stroke="none" text-anchor="middle">发送通知</text>
+<text x="1410" y="121" font-size="30" fill="#233747" stroke="none" text-anchor="middle">发送通知</text>
 </g>
 <g data-quadrant-id="quadrant-monolith-sync" data-label="模块化单体＋同步交互">
 <rect x="180" y="650" width="600" height="400" fill="#EDF3F8" stroke="#233747" stroke-width="2"/>
@@ -65,15 +65,15 @@
 </g>
 <g data-pressure-id="pressure-growth" data-label="业务增长">
 <rect x="600" y="350" width="400" height="100" fill="#FFF4E5" stroke="#233747" stroke-width="2"/>
-<text x="800" y="410" font-size="30" fill="#233747" stroke="none" text-anchor="middle">业务增长</text>
+<text x="800" y="411" font-size="30" fill="#233747" stroke="none" text-anchor="middle">业务增长</text>
 </g>
 <g data-pressure-id="pressure-failure" data-label="局部故障">
 <rect x="180" y="1250" width="600" height="100" fill="#FFF4E5" stroke="#233747" stroke-width="2"/>
-<text x="480" y="1310" font-size="30" fill="#233747" stroke="none" text-anchor="middle">局部故障</text>
+<text x="480" y="1311" font-size="30" fill="#233747" stroke="none" text-anchor="middle">局部故障</text>
 </g>
 <g data-pressure-id="pressure-teams" data-label="团队独立交付">
 <rect x="900" y="1250" width="600" height="100" fill="#FFF4E5" stroke="#233747" stroke-width="2"/>
-<text x="1200" y="1310" font-size="30" fill="#233747" stroke="none" text-anchor="middle">团队独立交付</text>
+<text x="1200" y="1311" font-size="30" fill="#233747" stroke="none" text-anchor="middle">团队独立交付</text>
 </g>
 <g data-edge-id="evaluation-growth-monolith" data-edge-role="pressure-evaluation" data-source-id="pressure-growth" data-target-id="quadrant-monolith-sync">
 <path d="M 600 400 L 450 400 L 450 650" fill="none" stroke="#526577" stroke-width="3" stroke-dasharray="6 4" marker-end="url(#evaluation-arrow)"/>

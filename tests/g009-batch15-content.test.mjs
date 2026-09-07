@@ -6,6 +6,7 @@ import test from 'node:test';
 import {parseFrontMatter} from '../scripts/content-metadata.mjs';
 import {parseMdxVisibleCopy} from '../scripts/visible-copy.mjs';
 import {extractInternalLinks} from '../scripts/content-relations.mjs';
+import {parseSourceLedger} from '../scripts/source-ledger.mjs';
 import {parseXml, xmlElements as parsedXmlElements, xmlTextContent, svgPresentationState} from '../.codex/skills/creating-drawio-architecture-diagrams/scripts/xml-visible-copy.mjs';
 import {handleHorizontalArrowKey} from '../src/components/KeyboardScrollableRegion/handleHorizontalArrowKey.mjs';
 
@@ -220,7 +221,7 @@ export const ORIGINAL_SOURCE = Object.freeze({
   family_grouping_evidence_url: null,
   copyright_policy: 'original-atlas',
   usage_boundary: 'Original teaching illustration for the independent deployment-boundary and interaction axes; illustration-only and not evidence of production outcomes.',
-  link_policy: 'project-local',
+  link_policy: null,
   expected_final_transport_locator: '/img/diagrams/sty-14-architecture-choice-matrix.svg',
   expected_final_approved_at: '2026-09-07',
   expected_final_approval_note: 'Approved project-local original image/svg+xml identity after synchronized Draw.io/SVG semantic, geometry, contrast and rendered-raster QA.',
@@ -294,6 +295,16 @@ function readerContract(source) {
         attrs[attr.name] = attr.value;
       }
       if (Object.hasOwn(attrs, 'hidden') || attrs['aria-hidden'] === 'true') { excluded.add(node); mask(start, end); return; }
+      if (node.name === 'SourceLedger') {
+        assert.deepEqual(attrs, {}, 'governed source component has no overrides');
+        assert.equal(node.children.length, 0, 'governed source component is self-closing');
+        excluded.add(node); mask(start, end); return;
+      }
+      if (node.name === 'details') {
+        assert.deepEqual(attrs, {className: 'evidence-card'}, 'evidence card is closed and has no rendering overrides');
+        assert.equal(node.children.filter((child) => child.name === 'summary').length, 1, 'one evidence summary');
+        excluded.add(node); mask(start, end); return;
+      }
       assert.ok(['div', 'span', 'p', 'a', 'img', 'Link'].includes(node.name), `visible MDX unsupported component: ${node.name}`);
       assert.ok(!Object.hasOwn(attrs, 'style'), 'visible MDX inline styles require explicit review');
       for (const [name, value] of Object.entries(attrs)) {
@@ -561,6 +572,7 @@ function recordHash(value) { return createHash('sha256').update(stableJson(value
 export function assertChoiceGovernance(ledger) {
   const records = new Map(ledger.sources.map((source) => [source.id, source]));
   for (const id of REUSED_SOURCES) { assert.ok(records.has(id), `${id} reused source exists`); assert.equal(recordHash(records.get(id)), REUSED_SOURCE_HASHES[id], `${id} exact pre-existing source identity`); }
+  assert.equal(recordHash(ledger.sources.filter(({id}) => id !== ORIGINAL_SOURCE_ID)), 'c639d769cb20a8dc70b8a4a6c7a460c99100b4f111fba13e29fed09cd57fa8cf', 'all pre-existing source records unchanged; no new remote identity');
   const document = ledger.documents?.[ARTICLE]; assert.ok(document, 'STY-14 governed source document record must exist after implementation');
   assert.deepEqual(document, DOCUMENT_RECORD, 'exact STY-14 document citation and rights contract');
   assert.deepEqual(document.citations.map(({source_id}) => source_id), [...REUSED_SOURCES, ORIGINAL_SOURCE_ID], 'exact reused sources plus one original illustration');
@@ -644,7 +656,7 @@ export function choiceGeometryFixture() {
     svg += `<g data-axis-id="${id}" data-label="${label}"><line x1="${x}" y1="${y}" x2="${x+w}" y2="${y+h}" stroke="${ink}" stroke-width="2"/>${text(label,tx,ty)}</g>`;
   }
   for (const n of nodes) {
-    const titleY = n.y + (n.details ? 70 : 60);
+    const titleY = n.y + (n.details ? 70 : 61);
     const titleX = n.details ? n.x + 40 : n.x + n.w/2;
     const align = n.details ? 'left' : 'center';
     drawio += `<mxCell id="${n.id}" parent="1" value="${n.label}" vertex="1" style="semanticRole=${n.role};rounded=0;fillColor=${n.fill};strokeColor=${ink};strokeWidth=2;fontColor=${ink};fontFamily=${font};fontSize=30;align=${align};verticalAlign=top;spacingTop=${titleY-n.y-30};spacingLeft=40;">${geo(n.x,n.y,n.w,n.h)}</mxCell>`;
@@ -881,6 +893,14 @@ export function assertChoiceGeometry(drawioSource, svgSource) {
       const actualY=db.top+fs+(detail?0:numeric(ds.get('spacingTop'),'source title top padding'));
       const origin=transformPoint({x:numeric(t.attributes.get('x'),'SVG label x'),y:numeric(t.attributes.get('y'),'SVG label baseline')},t);
       near(actualX,origin.x,'actual Draw.io node label x');near(actualY,origin.y,'actual Draw.io node label baseline');
+      // In-app Chromium, 800/1600 scale, PingFang/YaHei fallback: rendered text
+      // bounds extend 16 CSS px above / 5 below a 15px font's baseline. The
+      // older generic .82-em ascent estimate missed a real 13.5px top gap.
+      // This calibration supplements (not replaces) fresh browser measurements.
+      const renderedTop = (origin.y - fs * 16/15 - raw.top - sw/2) * scale;
+      const renderedBottom = (raw.bottom - sw/2 - origin.y - fs/3) * scale;
+      assert.ok(renderedTop >= 14, `${id} renderer-calibrated top padding ${renderedTop} >=14 CSS px`);
+      assert.ok(renderedBottom >= 14, `${id} renderer-calibrated bottom padding ${renderedBottom} >=14 CSS px`);
       const b=glyphBounds(t,css),horizontal=Math.min(b.left-raw.left-sw/2,raw.right-sw/2-b.right)*scale,vertical=Math.min(b.top-raw.top-sw/2,raw.bottom-sw/2-b.bottom)*scale;
       assert.ok(horizontal>=16,`${id} horizontal padding ${horizontal} >=16 CSS px`);assert.ok(vertical>=14,`${id} vertical padding ${vertical} >=14 CSS px`);
       baselines.push(numeric(t.attributes.get('y'),'baseline')*scale);
@@ -969,6 +989,27 @@ export function assertChoiceGeometry(drawioSource, svgSource) {
   }
   return {scale,nodeMetrics,edges:edges.map(({id,ownStroke,ownMarker,boundary})=>({id,ownStroke,ownMarker,boundary})),minFont:Math.min(...textNodes.map(n=>numeric(css(n,'font-size'),'font')*scale))};
 }
+
+test('STY-14 diagram renderer-calibrated short-node padding rejects the observed 13.5px regression', () => {
+  const fixture = choiceGeometryFixture();
+  const regression = {
+    drawio: fixture.drawio.replaceAll('spacingTop=31;', 'spacingTop=30;'),
+    svg: fixture.svg.replace(/(<text\b[^>]* y=")(121|411|1311)(")/gu, (_, before, y, after) => `${before}${Number(y)-1}${after}`),
+  };
+  assert.notDeepEqual(regression, fixture, 'browser-calibrated baseline regression applies');
+  assertChoiceGeometry(fixture.drawio, fixture.svg);
+  assert.throws(() => assertChoiceGeometry(regression.drawio, regression.svg), /renderer-calibrated top padding 13\.5 >=14 CSS px/u);
+});
+
+test('STY-14 diagram renderer-calibrated bottom padding rejects an over-shifted baseline', () => {
+  const fixture = choiceGeometryFixture();
+  const mutation = {
+    drawio: fixture.drawio.replaceAll('spacingTop=31;', 'spacingTop=32;'),
+    svg: fixture.svg.replace(/(<text\b[^>]* y=")(121|411|1311)(")/gu, (_, before, y, after) => `${before}${Number(y)+1}${after}`),
+  };
+  assert.notDeepEqual(mutation, fixture, 'bottom-clearance mutation applies');
+  assert.throws(() => assertChoiceGeometry(mutation.drawio, mutation.svg), /renderer-calibrated bottom padding 13\.5 >=14 CSS px/u);
+});
 
 test('STY-14 diagram geometry accepts a real branching layout fixture', () => {
   const pair = choiceGeometryFixture(); assertChoiceGeometry(pair.drawio, pair.svg);
@@ -1263,4 +1304,57 @@ test('STY-14 production Draw.io and SVG satisfy the semantic diagram contract', 
 
 test('STY-14 production source document and original illustration satisfy governance', () => {
   assertChoiceGovernance(ledger);
+});
+
+test('STY-14 original source fixture satisfies the real ledger local-policy contract', () => {
+  const fixture = governanceFixture(ledger);
+  assert.deepEqual(parseSourceLedger(fixture).errors, []);
+  fixture.sources.find(({id}) => id === ORIGINAL_SOURCE_ID).link_policy = 'project-local';
+  assert.match(parseSourceLedger(fixture).errors.join('\n'), /local source link_policy must be null/u);
+});
+
+for (const [label, mutate] of [
+  ['new remote identity', (fixture) => fixture.sources.push({...fixture.sources[0], id: 'src-unapproved-remote'})],
+  ['unrelated existing source change', (fixture) => { fixture.sources[0].title += ' changed'; }],
+]) test(`STY-14 governance helper rejects ${label}`, () => {
+  const fixture = governanceFixture(ledger); assertChoiceGovernance(fixture);
+  mutate(fixture);
+  assert.throws(() => assertChoiceGovernance(fixture), /all pre-existing source records unchanged/u);
+});
+
+test('STY-14 content helper permits evidence cards and the governed source component', () => {
+  assertChoiceContract(`${articleFixture()}\n<details className="evidence-card">\n<summary>证据：起点启发</summary>\n\n[Monolith First](https://martinfowler.com/bliki/MonolithFirst.html) 仅支持起点启发。\n\n</details>\n\n<SourceLedger />\n`);
+});
+
+test('STY-14 content helper rejects a consequential boundary supplied only inside an evidence card', () => {
+  const fixture = articleFixture();
+  const mutation = replaceOnce(fixture, REQUIRED_SENTENCES[6], `<details className="evidence-card">\n<summary>证据：支付</summary>\n\n${REQUIRED_SENTENCES[6]}\n\n</details>`, 'hidden payment boundary');
+  assert.throws(() => assertChoiceContract(mutation), /one affirmative visible boundary/u);
+});
+
+const ORIGINAL_LICENSE_ROW = '| /img/diagrams/sty-14-architecture-choice-matrix.svg | /img/diagrams/sty-14-architecture-choice-matrix.svg | Tego Arch maintainers | https://github.com/sealday/tego-arch/blob/main/static/img/diagrams/sty-14-architecture-choice-matrix.svg | Created as an original synchronized Draw.io/SVG teaching diagram without third-party diagrams, reference imagery, logos, brand visuals, signatures, watermarks or copied composition. | 2026-09-07 | LicenseRef-Atlas-Original | The named project-authored sty-14-architecture-choice-matrix.svg image/svg+xml asset only | Original illustration use only with Tego Arch attribution and creation note | identity | not-applicable |';
+
+test('STY-14 production original illustration has one exact license inventory row', () => {
+  const rows = readFileSync('docs/source-license-inventory.md', 'utf8').split('\n').filter((line) => line.startsWith('| /img/diagrams/sty-14-architecture-choice-matrix.svg |'));
+  assert.deepEqual(rows, [ORIGINAL_LICENSE_ROW]);
+});
+
+for (const [file, boundary] of [
+  ['sty-04-modular-monolith.mdx', '一个部署边界下的模块、事务与拆分条件'],
+  ['sty-05-microservices.mdx', '独立部署、数据所有权和分布式运行成本'],
+  ['sty-06-event-driven-architecture.mdx', '事件通知、状态携带、状态转移与事件溯源的差异'],
+]) test(`STY-14 production reciprocal comparison link in ${file}`, () => {
+  const source = readFileSync(`content/styles/${file}`, 'utf8');
+  const section = source.split('## 对比案例\n')[1]?.split('\n## ')[0];
+  assert.ok(section, 'comparison section exists');
+  const paragraph = section.split(/\n\s*\n/u).find((item) => item.includes('[STY-14 架构风格选择矩阵](/styles/sty-14)'));
+  assert.ok(paragraph?.includes(boundary), 'visible reciprocal link explains its comparison boundary');
+  assert.doesNotMatch(paragraph, /<|\{\/\*/u, 'reciprocal paragraph is ordinary visible Markdown');
+});
+
+test('STY-14 production parent and article have visible reciprocal navigation', () => {
+  assert.match(readFileSync('content/styles/index.mdx', 'utf8'), /\[STY-14 架构风格选择矩阵\]\(\/styles\/sty-14\)/u);
+  const source = optionalText(ARTICLE); assert.ok(source, 'article must exist');
+  const {links} = readerContract(source);
+  for (const route of ['/styles', '/styles/sty-00', '/styles/sty-04', '/styles/sty-05', '/styles/sty-06']) assert.ok(links.includes(route), `visible article navigation to ${route}`);
 });

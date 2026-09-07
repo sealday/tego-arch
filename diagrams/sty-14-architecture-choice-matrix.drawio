@@ -19,19 +19,19 @@
 <mxCell id="axis-interaction-stroke" parent="1" value="" vertex="1" style="semanticRole=axis-stroke;shape=line;direction=south;strokeColor=#233747;strokeWidth=2;startArrow=none;endArrow=none;">
 <mxGeometry x="110" y="650" width="0" height="1300" as="geometry"/>
 </mxCell>
-<mxCell id="capability-submit-order" parent="1" value="提交订单" vertex="1" style="semanticRole=capability;rounded=0;fillColor=#F1F5F7;strokeColor=#233747;strokeWidth=2;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=center;verticalAlign=top;spacingTop=30;spacingLeft=40;">
+<mxCell id="capability-submit-order" parent="1" value="提交订单" vertex="1" style="semanticRole=capability;rounded=0;fillColor=#F1F5F7;strokeColor=#233747;strokeWidth=2;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=center;verticalAlign=top;spacingTop=31;spacingLeft=40;">
 <mxGeometry x="80" y="60" width="260" height="100" as="geometry"/>
 </mxCell>
-<mxCell id="capability-reserve-inventory" parent="1" value="预留库存" vertex="1" style="semanticRole=capability;rounded=0;fillColor=#F1F5F7;strokeColor=#233747;strokeWidth=2;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=center;verticalAlign=top;spacingTop=30;spacingLeft=40;">
+<mxCell id="capability-reserve-inventory" parent="1" value="预留库存" vertex="1" style="semanticRole=capability;rounded=0;fillColor=#F1F5F7;strokeColor=#233747;strokeWidth=2;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=center;verticalAlign=top;spacingTop=31;spacingLeft=40;">
 <mxGeometry x="380" y="60" width="260" height="100" as="geometry"/>
 </mxCell>
-<mxCell id="capability-record-payment-intent" parent="1" value="登记支付意图" vertex="1" style="semanticRole=capability;rounded=0;fillColor=#F1F5F7;strokeColor=#233747;strokeWidth=2;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=center;verticalAlign=top;spacingTop=30;spacingLeft=40;">
+<mxCell id="capability-record-payment-intent" parent="1" value="登记支付意图" vertex="1" style="semanticRole=capability;rounded=0;fillColor=#F1F5F7;strokeColor=#233747;strokeWidth=2;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=center;verticalAlign=top;spacingTop=31;spacingLeft=40;">
 <mxGeometry x="680" y="60" width="260" height="100" as="geometry"/>
 </mxCell>
-<mxCell id="capability-confirm-fulfillment" parent="1" value="确认履约" vertex="1" style="semanticRole=capability;rounded=0;fillColor=#F1F5F7;strokeColor=#233747;strokeWidth=2;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=center;verticalAlign=top;spacingTop=30;spacingLeft=40;">
+<mxCell id="capability-confirm-fulfillment" parent="1" value="确认履约" vertex="1" style="semanticRole=capability;rounded=0;fillColor=#F1F5F7;strokeColor=#233747;strokeWidth=2;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=center;verticalAlign=top;spacingTop=31;spacingLeft=40;">
 <mxGeometry x="980" y="60" width="260" height="100" as="geometry"/>
 </mxCell>
-<mxCell id="capability-send-notification" parent="1" value="发送通知" vertex="1" style="semanticRole=capability;rounded=0;fillColor=#F1F5F7;strokeColor=#233747;strokeWidth=2;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=center;verticalAlign=top;spacingTop=30;spacingLeft=40;">
+<mxCell id="capability-send-notification" parent="1" value="发送通知" vertex="1" style="semanticRole=capability;rounded=0;fillColor=#F1F5F7;strokeColor=#233747;strokeWidth=2;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=center;verticalAlign=top;spacingTop=31;spacingLeft=40;">
 <mxGeometry x="1280" y="60" width="260" height="100" as="geometry"/>
 </mxCell>
 <mxCell id="quadrant-monolith-sync" parent="1" value="模块化单体＋同步交互" vertex="1" style="semanticRole=quadrant;rounded=0;fillColor=#EDF3F8;strokeColor=#233747;strokeWidth=2;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=left;verticalAlign=top;spacingTop=40;spacingLeft=40;">
@@ -82,13 +82,13 @@
 <mxCell id="quadrant-microservices-event-cost" parent="quadrant-microservices-event" value="运行代价：重放、补偿与合同演进" vertex="1" style="semanticRole=quadrant-detail;detailRole=cost;text;fillColor=none;strokeColor=none;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=left;verticalAlign=top;">
 <mxGeometry x="40" y="280" width="520" height="40" as="geometry"/>
 </mxCell>
-<mxCell id="pressure-growth" parent="1" value="业务增长" vertex="1" style="semanticRole=pressure;rounded=0;fillColor=#FFF4E5;strokeColor=#233747;strokeWidth=2;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=center;verticalAlign=top;spacingTop=30;spacingLeft=40;">
+<mxCell id="pressure-growth" parent="1" value="业务增长" vertex="1" style="semanticRole=pressure;rounded=0;fillColor=#FFF4E5;strokeColor=#233747;strokeWidth=2;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=center;verticalAlign=top;spacingTop=31;spacingLeft=40;">
 <mxGeometry x="600" y="350" width="400" height="100" as="geometry"/>
 </mxCell>
-<mxCell id="pressure-failure" parent="1" value="局部故障" vertex="1" style="semanticRole=pressure;rounded=0;fillColor=#FFF4E5;strokeColor=#233747;strokeWidth=2;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=center;verticalAlign=top;spacingTop=30;spacingLeft=40;">
+<mxCell id="pressure-failure" parent="1" value="局部故障" vertex="1" style="semanticRole=pressure;rounded=0;fillColor=#FFF4E5;strokeColor=#233747;strokeWidth=2;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=center;verticalAlign=top;spacingTop=31;spacingLeft=40;">
 <mxGeometry x="180" y="1250" width="600" height="100" as="geometry"/>
 </mxCell>
-<mxCell id="pressure-teams" parent="1" value="团队独立交付" vertex="1" style="semanticRole=pressure;rounded=0;fillColor=#FFF4E5;strokeColor=#233747;strokeWidth=2;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=center;verticalAlign=top;spacingTop=30;spacingLeft=40;">
+<mxCell id="pressure-teams" parent="1" value="团队独立交付" vertex="1" style="semanticRole=pressure;rounded=0;fillColor=#FFF4E5;strokeColor=#233747;strokeWidth=2;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=center;verticalAlign=top;spacingTop=31;spacingLeft=40;">
 <mxGeometry x="900" y="1250" width="600" height="100" as="geometry"/>
 </mxCell>
 <mxCell id="evaluation-growth-monolith" parent="1" source="pressure-growth" target="quadrant-monolith-sync" value="评估候选（可保持现状）" edge="1" style="semanticRole=pressure-evaluation;edgeStyle=none;rounded=0;dashed=1;dashPattern=6 4;fixDash=1;strokeColor=#526577;strokeWidth=3;endArrow=block;endSize=20;endFill=1;startArrow=none;fontColor=#233747;fontFamily=PingFang SC, Microsoft YaHei, sans-serif;fontSize=30;align=left;verticalAlign=top;spacing=0;exitX=0;exitY=0.5;entryX=0.45;entryY=0;exitDx=0;exitDy=0;entryDx=0;entryDy=0;exitPerimeter=1;entryPerimeter=1;">

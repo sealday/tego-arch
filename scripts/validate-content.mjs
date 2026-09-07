@@ -414,12 +414,17 @@ export async function validateContent(
         }
       }
 
+      const isStyleChoiceMatrix = type === 'style' && metadata.topic_id === 'STY-14';
       if (
         Array.isArray(relatedCases) &&
-        Array.isArray(relatedQuestions) &&
-        relatedCases.length + relatedQuestions.length === 0
+        Array.isArray(relatedQuestions)
       ) {
-        errors.push(`${file}: ${type} requires at least one related case or question`);
+        const relatedCount = relatedCases.length + relatedQuestions.length;
+        if (isStyleChoiceMatrix && relatedCount !== 0) {
+          errors.push(`${file}: STY-14 requires empty related_cases and related_questions`);
+        } else if (!isStyleChoiceMatrix && relatedCount === 0) {
+          errors.push(`${file}: ${type} requires at least one related case or question`);
+        }
       }
 
       validateOrderedH2Contract(

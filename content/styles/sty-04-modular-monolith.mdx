@@ -162,6 +162,8 @@ import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableR
 
 ## 对比案例
 
+[STY-14 架构风格选择矩阵](/styles/sty-14)把本文一个部署边界下的模块、事务与拆分条件放进同一订单履约范围，分别判断业务增长、局部故障与团队交付压力；模块化边界不预设必须拆成服务。
+
 第一张表回答三种常被混用的拓扑究竟约束什么。普通分层单体按技术责任组织代码；模块化单体在单一部署内增加业务合同与数据所有权；微服务增加独立运行边界，也同时引入网络和分布式运维成本。
 
 <div className="table-wrapper table-wrapper--mapping diagram-wrapper--scroll-owner" role="region" aria-label="普通分层单体、模块化单体与微服务比较表，可横向滚动" tabIndex={0} onKeyDown={handleHorizontalArrowKey}>
