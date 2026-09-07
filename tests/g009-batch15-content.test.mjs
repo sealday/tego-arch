@@ -3,7 +3,7 @@ import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import test from 'node:test';
 
-import {findMarkdownHeadings, parseFrontMatter} from '../scripts/content-metadata.mjs';
+import {parseFrontMatter} from '../scripts/content-metadata.mjs';
 import {parseMdxVisibleCopy} from '../scripts/visible-copy.mjs';
 import {extractInternalLinks} from '../scripts/content-relations.mjs';
 import {parseXml, xmlElements as parsedXmlElements, xmlTextContent, svgPresentationState} from '../.codex/skills/creating-drawio-architecture-diagrams/scripts/xml-visible-copy.mjs';
@@ -177,6 +177,13 @@ export const AXES = Object.freeze([
   ['axis-deployment', '部署与数据所有权边界'],
   ['axis-interaction', '同步与事件驱动交互'],
 ]);
+export const EVALUATION_LABEL = '评估候选（可保持现状）';
+export const QUADRANT_DETAILS = Object.freeze([
+  ['控制：模块 API 同步调用', '状态：唯一写入责任与本地事务', '运行代价：模块耦合与联动发布'],
+  ['控制：事务性发布与单体内消费', '状态：本地权威与派生状态', '运行代价：重复交付与积压恢复'],
+  ['控制：跨服务同步调用', '状态：服务独立数据权威', '运行代价：超时与远程未知结果'],
+  ['控制：跨服务事件传播', '状态：生产者权威与消费者派生状态', '运行代价：重放、补偿与合同演进'],
+]);
 
 const REUSED_SOURCE_HASHES = Object.freeze({
   'src-fowler-monolith-first': 'a1469a64437c532cf937e4a21437260c29a761c52257d8f7cc17f2c0e06a616b',
@@ -252,7 +259,9 @@ function markdownTables(source) {
   }
   return tables;
 }
-// Parse first, then mask non-reader content by AST offsets. This intentionally accepts
+// Parse first, then mask non-reader content by AST offsets for table containment.
+// Semantic assertions use rendered AST blocks, never the masked source's lines.
+// This intentionally accepts
 // a narrow, static MDX subset: unknown components, spreads and dynamic rendering fail
 // closed rather than allowing assertions to be satisfied by source-only strings.
 function readerContract(source) {
@@ -261,15 +270,17 @@ function readerContract(source) {
   catch (error) { assert.fail(`valid closed MDX required: ${error.message}`); }
   const characters = parsed.normalized.split('');
   const mask = (start, end) => { for (let i = start; i < end; i += 1) if (characters[i] !== '\n') characters[i] = ' '; };
-  const wrappers = []; const images = []; const links = []; const definitions = new Map();
+  const wrappers = []; const images = []; const links = []; const definitions = new Map(); const excluded = new Set();
   const walk = (node, owner) => {
     const start = node.position?.start.offset; const end = node.position?.end.offset;
     if (['code', 'inlineCode', 'mdxjsEsm', 'definition'].includes(node.type)) {
       if (node.type === 'definition') definitions.set(node.identifier, node.url);
+      if (node.type !== 'inlineCode') excluded.add(node);
       mask(start, end); return;
     }
     if (['mdxFlowExpression', 'mdxTextExpression'].includes(node.type)) {
       assert.match(node.value.trim(), /^(?:\/\*[\s\S]*?\*\/\s*)*$/u, 'visible MDX cannot depend on a dynamic expression');
+      excluded.add(node);
       mask(start, end); return;
     }
     if (node.type === 'link') links.push(node.url);
@@ -282,7 +293,7 @@ function readerContract(source) {
         assert.ok(!Object.hasOwn(attrs, attr.name), 'visible MDX attributes are duplicate-free');
         attrs[attr.name] = attr.value;
       }
-      if (Object.hasOwn(attrs, 'hidden') || attrs['aria-hidden'] === 'true') { mask(start, end); return; }
+      if (Object.hasOwn(attrs, 'hidden') || attrs['aria-hidden'] === 'true') { excluded.add(node); mask(start, end); return; }
       assert.ok(['div', 'span', 'p', 'a', 'img', 'Link'].includes(node.name), `visible MDX unsupported component: ${node.name}`);
       assert.ok(!Object.hasOwn(attrs, 'style'), 'visible MDX inline styles require explicit review');
       for (const [name, value] of Object.entries(attrs)) {
@@ -309,24 +320,32 @@ function readerContract(source) {
     for (const child of node.children ?? []) walk(child, owner);
   };
   walk(parsed.ast);
+  const render = (node) => {
+    if (excluded.has(node) || ['image', 'imageReference'].includes(node.type)) return '';
+    if (node.type === 'text' || node.type === 'inlineCode') return node.value;
+    if (node.type === 'break') return ' ';
+    return (node.children ?? []).map(render).join('');
+  };
+  const blocks = [];
+  const collect = (node) => {
+    if (excluded.has(node)) return;
+    const isBlock = ['paragraph', 'heading'].includes(node.type) || node.type === 'mdxJsxFlowElement' && !(node.children ?? []).some((child) => child.type === 'paragraph' || child.type === 'mdxJsxFlowElement');
+    if (isBlock) {
+      blocks.push({text: render(node).replace(/\s+/gu, ' ').trim(), start: node.position.start.offset, heading: node.type === 'heading' ? node.depth : undefined});
+      return;
+    }
+    for (const child of node.children ?? []) collect(child);
+  };
+  collect(parsed.ast);
   const visible = characters.join('');
-  return {visible, wrappers, images, links: links.map((link) => typeof link === 'string' ? link : definitions.get(link.reference))};
+  return {visible, blocks, wrappers, images, links: links.map((link) => typeof link === 'string' ? link : definitions.get(link.reference))};
 }
-function h2Section(source, heading) {
-  const match = [...source.matchAll(/^## (?<heading>.+)$/gmu)].find(({groups}) => groups.heading === heading);
-  assert.ok(match, `${heading} section exists`);
-  const start = match.index + match[0].length; const rest = source.slice(start); const end = rest.search(/^## /mu);
-  return rest.slice(0, end === -1 ? rest.length : end);
-}
-function pressureEntries(section) {
-  return section.split(/\r?\n/u).flatMap((line) => { const match = line.match(/^- \*\*(?<label>[^：]+)：\*\*\s*(?<value>.+)$/u); return match ? [[match.groups.label, match.groups.value]] : []; });
-}
-
 export function assertChoiceContract(source) {
   assert.ok(source, `${ARTICLE} must exist after implementation`);
   assert.deepEqual(parseFrontMatter(source), EXACT_METADATA, 'exact STY-14 front matter');
-  const {visible, wrappers, images, links} = readerContract(source);
-  assert.deepEqual(findMarkdownHeadings(visible).filter(({level}) => level === 2).map(({text}) => text), EXPECTED_H2, 'exact visible STY-14 H2 order');
+  const {visible, blocks, wrappers, images, links} = readerContract(source);
+  const headings = blocks.filter(({heading}) => heading === 2);
+  assert.deepEqual(headings.map(({text}) => text), EXPECTED_H2, 'exact visible STY-14 H2 order');
   assert.equal(source.split("import {handleHorizontalArrowKey} from '@site/src/components/KeyboardScrollableRegion/handleHorizontalArrowKey.mjs';").length - 1, 1, 'exact repository ArrowRight handler import');
   assert.deepEqual(wrappers.map(({attributes}) => attributes), WRAPPERS, 'exact three distinct visible keyboard-scroll wrapper contracts');
   assert.equal(new Set(WRAPPERS.map((item) => item['aria-label'])).size, WRAPPERS.length, 'approved wrapper labels are distinct');
@@ -336,19 +355,22 @@ export function assertChoiceContract(source) {
   assert.deepEqual(tables[1], [ACTION_HEADERS, ACTION_HEADERS.map(() => '---'), ...ACTION_ROWS], 'exact five-column reversible action table');
   for (const [index, wrapper] of wrappers.entries()) assert.deepEqual(markdownTables(visible.slice(wrapper.start, wrapper.end)), index === 0 ? [] : [tables[index - 1]], `wrapper ${index} owns only its approved visible table`);
   for (const pressure of PRESSURES) {
-    const section = h2Section(visible, `压力${['一', '二', '三'][PRESSURES.indexOf(pressure)]}：${pressure}`);
-    assert.equal(section.split(CAPABILITY_SCOPE).length - 1, 1, `${pressure} uses the exact shared capability scope once`);
-    assert.equal(section.split('\n').filter((line) => line.trim() === CAPABILITY_SCOPE).length, 1, `${pressure} affirmative visible capability scope`);
-    assert.deepEqual(pressureEntries(section), PRESSURE_DETAILS[pressure], `${pressure} exact evidence/trigger/action/stop/owner contract`);
+    const index = headings.findIndex(({text}) => text === `压力${['一', '二', '三'][PRESSURES.indexOf(pressure)]}：${pressure}`);
+    const section = blocks.filter(({start}) => start > headings[index].start && start < headings[index + 1].start).map(({text}) => text);
+    assert.equal(section.filter((text) => text === CAPABILITY_SCOPE).length, 1, `${pressure} affirmative visible capability scope`);
+    const entries = section.filter((text) => !text.startsWith('固定能力范围：')).map((text) => text.split(/：\s*/u));
+    assert.deepEqual(entries, PRESSURE_DETAILS[pressure], `${pressure} exact evidence/trigger/action/stop/owner contract`);
   }
-  for (const phrase of FORBIDDEN) assert.equal(visible.includes(phrase), false, `forbidden choice claim: ${phrase}`);
+  const compact = (text) => text.replace(/\s/gu, '');
+  const rendered = blocks.map(({text}) => compact(text)).join('\n');
+  const statements = blocks.flatMap(({text}) => text.split(/(?<=[。！？])/u)).map(compact).filter(Boolean);
+  for (const phrase of FORBIDDEN) assert.equal(rendered.includes(compact(phrase)), false, `forbidden choice claim: ${phrase}`);
   for (const sentence of REQUIRED_SENTENCES) {
-    assert.equal(visible.split(sentence).length - 1, 1, `one exact visible boundary: ${sentence}`);
-    assert.equal(visible.split('\n').filter((line) => line.trim() === sentence).length, 1, `one standalone affirmative visible boundary: ${sentence}`);
+    assert.equal(statements.filter((text) => text === compact(sentence)).length, 1, `one affirmative visible boundary: ${sentence}`);
     const polaritySkeleton = (value) => value.replace(/并非|不是|不|非|未|无需|无须|没|\s/gu, (token) => token === '不是' ? '是' : '');
-    assert.equal(visible.split('\n').filter((line) => polaritySkeleton(line) === polaritySkeleton(sentence)).length, 1, `no duplicate or opposing visible boundary: ${sentence}`);
+    assert.equal(statements.filter((text) => polaritySkeleton(text) === polaritySkeleton(sentence)).length, 1, `no duplicate or opposing visible boundary: ${sentence}`);
   }
-  assert.doesNotMatch(visible, /Event-Driven[^。\n]*(?:互斥|只能三选一)|(?:成熟度|最终形态)[^。\n]*(?:单体|微服务|事件驱动)|(?:性能|可用性|团队效率)[^。\n]*(?:天然|必然|保证)/iu, 'no mutual-exclusion, maturity-ladder, or universal-outcome claim');
+  assert.doesNotMatch(rendered, /Event-Driven[^。\n]*(?:互斥|只能三选一)|(?:成熟度|最终形态)[^。\n]*(?:单体|微服务|事件驱动)|(?:性能|可用性|团队效率)[^。\n]*(?:天然|必然|保证)/iu, 'no mutual-exclusion, maturity-ladder, or universal-outcome claim');
   const destinations = [...links, ...extractInternalLinks({body: source})];
   assert.equal(destinations.some((href) => typeof href === 'string' && href.split(/[?#]/u)[0].replace(/\/+$/u, '') === '/styles/sty-15'), false, 'STY-15 remains non-actionable across Markdown/MDX/HTML links');
 }
@@ -364,21 +386,29 @@ function semanticDrawioCells(source, role) { return xmlElements(source, 'mxCell'
 function assertVisibleSvg(root) {
   // Deliberately static, flattened SVG. Task 2 owns layout/raster QA, but must not
   // weaken this paint/text/connector inventory or satisfy it with data-label alone.
-  const groups = new Map(); const axisLines = new Map();
+  const groups = new Map(); const axisLines = new Map(); const edges = new Map(); const markers = new Map();
   const labels = new Map([...AXES, ...QUADRANT_LABELS, ...PRESSURE_IDS.map((id, index) => [id, PRESSURES[index]]), ...CAPABILITY_LABELS]);
-  const visit = (element, parentState, owner) => {
+  const visit = (element, parentState, owner, markerOwner, parentName) => {
     const {localName: name, attributes: attrs} = element;
     assert.equal(element.namespace, 'http://www.w3.org/2000/svg', 'visible SVG namespace');
-    assert.ok(['svg', 'g', 'rect', 'text', 'tspan', 'title', 'desc', 'line'].includes(name), `visible SVG unsupported shape/connector: ${name}`);
+    assert.ok(['svg', 'g', 'rect', 'text', 'tspan', 'title', 'desc', 'line', 'path', 'defs', 'marker'].includes(name), `visible SVG unsupported shape/connector: ${name}`);
     for (const [attribute, value] of attrs) {
       assert.ok(!['class', 'style', 'transform', 'clip-path', 'mask', 'filter', 'hidden'].includes(attribute) && !attribute.startsWith('on'), `visible SVG unsupported presentation: ${attribute}`);
-      assert.ok(!attribute.startsWith('marker-'), 'connector arrows are not part of the independent-axis diagram');
+      if (attribute.startsWith('marker-')) assert.ok(attribute === 'marker-end' && ['path', 'line'].includes(name) && edges.has(owner), 'evaluation connector owns its directed marker');
       if (attribute.endsWith('opacity')) assert.ok(Number(value) > 0 && Number(value) <= 1, `visible SVG positive ${attribute}`);
       if (attribute === 'font-size' || attribute === 'stroke-width') assert.ok(Number(value) > 0, `visible SVG positive inherited ${attribute}`);
     }
     const state = svgPresentationState(element, parentState);
     assert.ok(state.display !== 'none' && !['hidden', 'collapse'].includes(state.visibility) && Number(state.opacity) > 0 && attrs.get('aria-hidden') !== 'true', 'visible SVG subtree cannot be hidden');
     if (name === 'title' || name === 'desc') return;
+    if (name === 'defs') assert.ok(element.children.every((child) => child.localName === 'marker'), 'evaluation marker definitions contain only markers');
+    if (name === 'marker') {
+      assert.equal(parentName, 'defs', 'evaluation marker lives in defs');
+      markerOwner = attrs.get('id'); assert.ok(markerOwner && !markers.has(markerOwner), 'evaluation marker has a unique ID');
+      assert.equal(attrs.get('data-marker-role'), 'pressure-evaluation', 'marker expresses evaluation, not maturity/upgrade');
+      assert.ok(Number(attrs.get('markerWidth')) > 0 && Number(attrs.get('markerHeight')) > 0, 'visible evaluation marker dimensions');
+      markers.set(markerOwner, {paths: 0});
+    }
     const semanticIds = [...attrs].filter(([key]) => /^data-(?:axis|quadrant|pressure|capability)-id$/u.test(key));
     if (semanticIds.length) {
       assert.equal(name, 'g', 'visible semantic owner must be a group');
@@ -388,8 +418,17 @@ function assertVisibleSvg(root) {
       assert.ok(!groups.has(owner), 'visible semantic group IDs are unique');
       groups.set(owner, {text: [], shapes: 0});
     }
+    if (attrs.has('data-edge-id')) {
+      assert.equal(name, 'g', 'evaluation connector group');
+      assert.equal(owner, undefined, 'evaluation connector cannot nest inside a semantic region');
+      owner = attrs.get('data-edge-id'); assert.ok(owner && !edges.has(owner), 'evaluation connector IDs are unique');
+      const role = attrs.get('data-edge-role'); const source = attrs.get('data-source-id'); const target = attrs.get('data-target-id');
+      assert.equal(role, 'pressure-evaluation', 'connector role rejects maturity/upgrade routes');
+      assert.ok(PRESSURE_IDS.includes(source) && QUADRANT_IDS.includes(target), 'evaluation connector endpoints must be pressure → candidate region, not an upgrade chain');
+      edges.set(owner, {id: owner, role, source, target, texts: [], paths: [], markers: []});
+    }
     const positivePaint = (paint) => /^#[\da-f]{6}$/iu.test(state[paint]) || ['black', 'white'].includes(state[paint]);
-    if (['rect', 'text', 'tspan', 'line'].includes(name)) {
+    if (['rect', 'text', 'tspan', 'line', 'path'].includes(name)) {
       assert.ok(positivePaint('fill') || positivePaint('stroke'), `visible ${name} must have supported opaque paint`);
       if (attrs.has('font-size')) assert.ok(Number(attrs.get('font-size')) > 0, 'visible text font size is positive');
       if (attrs.has('stroke-width')) assert.ok(Number(attrs.get('stroke-width')) > 0, 'visible shape stroke width is positive');
@@ -397,14 +436,16 @@ function assertVisibleSvg(root) {
     if (name === 'text') {
       assert.ok(owner, 'visible text belongs to an approved semantic group');
       const text = xmlTextContent(element).trim(); assert.ok(text, `${owner} visible text is nonblank`);
-      groups.get(owner).text.push(text);
+      for (const phrase of FORBIDDEN) assert.ok(!text.replace(/\s/gu, '').includes(phrase.replace(/\s/gu, '')), 'visible diagram text rejects maturity/upgrade and forbidden claims');
+      if (edges.has(owner)) edges.get(owner).texts.push(text);
+      else groups.get(owner).text.push({role: attrs.get('data-text-role') ?? 'title', text});
     }
     if (name === 'rect') {
       assert.ok(Number(attrs.get('width')) > 0 && Number(attrs.get('height')) > 0, 'visible shape has positive dimensions');
       assert.ok(owner || attrs.get('data-canvas') === 'true', 'visible shape belongs to a semantic group or canvas');
       if (owner) groups.get(owner).shapes += 1;
     }
-    if (name === 'line') {
+    if (name === 'line' && !edges.has(owner)) {
       assert.ok(AXES.some(([id]) => id === owner), 'connector is owned by a semantic axis, not an upgrade route');
       assert.ok(positivePaint('stroke'), 'visible axis connector has opaque stroke');
       const [x1, y1, x2, y2] = ['x1', 'y1', 'x2', 'y2'].map((key) => Number(attrs.get(key)));
@@ -412,20 +453,53 @@ function assertVisibleSvg(root) {
       assert.ok(owner === 'axis-deployment' ? y1 === y2 && x1 !== x2 : x1 === x2 && y1 !== y2, 'connector is a nonzero independent horizontal/vertical axis');
       axisLines.set(owner, (axisLines.get(owner) ?? 0) + 1);
     }
-    for (const child of element.children) visit(child, state, owner);
+    if (name === 'path' || name === 'line' && edges.has(owner)) {
+      assert.ok(markerOwner || edges.has(owner), 'visible connector must have evaluation ownership; unclassified upgrade route rejected');
+      if (name === 'path') {
+        const d = attrs.get('d') ?? ''; const numbers = d.match(/-?\d+(?:\.\d+)?/gu)?.map(Number) ?? [];
+        assert.ok(/^\s*M[\d\s.,+\-MLHVCSQTAZmlhvcsqtaz]*$/u.test(d) && numbers.length >= 4 && new Set(numbers).size > 1, 'visible connector/marker has nonempty actual path geometry');
+      }
+      if (markerOwner) {
+        assert.ok(!owner && name === 'path' && positivePaint('fill') && /Z\s*$/iu.test(attrs.get('d') ?? ''), 'visible evaluation marker is an actual closed painted shape');
+        markers.get(markerOwner).paths += 1;
+      } else {
+        assert.ok(positivePaint('stroke'), 'visible evaluation connector has opaque stroke');
+        assert.ok((attrs.get('stroke-dasharray') ?? '').split(/[ ,]+/u).map(Number).filter((number) => number > 0).length >= 2, 'evaluation connector uses a visible dashed line classification');
+        const markerId = /^url\(#([\w-]+)\)$/u.exec(attrs.get('marker-end') ?? '')?.[1];
+        assert.ok(markerId, 'evaluation connector has an actual referenced marker');
+        edges.get(owner).paths.push(element); edges.get(owner).markers.push(markerId);
+      }
+    }
+    for (const child of element.children) visit(child, state, owner, markerOwner, name);
   };
   visit(root);
   exactIds([...groups.keys()], [...labels.keys()], 'visible SVG semantic groups');
   for (const [id, label] of labels) {
-    assert.deepEqual(groups.get(id).text, [label], `${id} exact visible text (not data-label)`);
+    const texts = groups.get(id).text;
+    assert.deepEqual(texts.filter(({role}) => role === 'title').map(({text}) => text), [label], `${id} exact visible title (not data-label)`);
+    const details = texts.filter(({role}) => role !== 'title');
+    if (QUADRANT_IDS.includes(id)) {
+      exactIds(details.map(({role}) => role), ['control', 'state', 'cost'], `${id} visible quadrant explanation roles`);
+      for (const {role, text} of details) assert.ok(text.startsWith({control: '控制：', state: '状态：', cost: '运行代价：'}[role]) && text.length > {control: 3, state: 3, cost: 5}[role], `${id} visible nonempty quadrant ${role} explanation`);
+    } else assert.equal(details.length, 0, `${id} no unclassified visible text`);
     assert.ok(groups.get(id).shapes > 0 || axisLines.get(id) === 1, `${id} visible shape or axis connector`);
   }
-  assert.deepEqual([...axisLines].sort(), AXES.map(([id]) => [id, 1]).sort(), 'exact two visible axis connectors; no maturity path');
+  assert.deepEqual([...axisLines].sort(), AXES.map(([id]) => [id, 1]).sort(), 'two visible independent axes alongside pressure evaluation connectors');
+  for (const edge of edges.values()) {
+    assert.deepEqual(edge.texts, [EVALUATION_LABEL], `${edge.id} visible evaluation label rejects upgrade wording`);
+    assert.equal(edge.paths.length, 1, `${edge.id} one real visible evaluation connector`);
+    for (const id of edge.markers) assert.equal(markers.get(id)?.paths, 1, `${edge.id} resolves one real visible evaluation marker`);
+  }
+  for (const pressure of PRESSURE_IDS) assert.ok(new Set([...edges.values()].filter(({source}) => source === pressure).map(({target}) => target)).size >= 2, `${pressure} evaluation branches to multiple candidate regions, not one forward-only path`);
+  return {
+    edges: [...edges.values()].map(({id, role, source, target, texts}) => ({id, role, source, target, label: texts[0]})).sort((a, b) => a.id.localeCompare(b.id)),
+    details: QUADRANT_IDS.flatMap((parent) => groups.get(parent).text.filter(({role}) => role !== 'title').map(({role, text}) => ({parent, role, label: text}))).sort((a, b) => `${a.parent}/${a.role}`.localeCompare(`${b.parent}/${b.role}`)),
+  };
 }
 
 export function assertChoiceDiagram(drawioSource, svgSource) {
   assert.ok(drawioSource, `${DRAWIO} must exist after implementation`); assert.ok(svgSource, `${SVG} must exist after implementation`);
-  assertVisibleSvg(xmlRoot(svgSource));
+  const visibleSvg = assertVisibleSvg(xmlRoot(svgSource));
   const drawioCanvas = semanticDrawioCells(drawioSource, 'canvas'); assert.equal(drawioCanvas.length, 1, 'one Draw.io opaque canvas');
   assert.deepEqual([styleMap(drawioCanvas[0].attributes.get('style')).get('fillColor'), styleMap(drawioCanvas[0].attributes.get('style')).get('opacity')], ['#FFFFFF', '100'], 'Draw.io canvas is opaque');
   const svgCanvas = xmlElements(svgSource, 'rect').filter(({attributes}) => attributes.get('data-canvas') === 'true'); assert.equal(svgCanvas.length, 1, 'one SVG opaque canvas');
@@ -442,7 +516,18 @@ export function assertChoiceDiagram(drawioSource, svgSource) {
     const svg = xmlElements(svgSource, 'g').find(({attributes}) => [...attributes.values()].includes(id)); assert.equal(svg?.attributes.get('data-label'), label, `${id} exact SVG label`);
   }
   assert.equal(semanticDrawioCells(drawioSource, 'maturity-arrow').length, 0, 'no Draw.io maturity arrow');
-  assert.equal(xmlElements(drawioSource, 'mxCell').filter(({attributes}) => attributes.get('edge') === '1').length, 0, 'no Draw.io upgrade connectors, including edges without maturity metadata');
+  const drawioEdges = xmlElements(drawioSource, 'mxCell').filter(({attributes}) => attributes.get('edge') === '1').map(({attributes}) => {
+    const style = styleMap(attributes.get('style'));
+    const edge = {id: attributes.get('id'), role: style.get('semanticRole'), source: attributes.get('source'), target: attributes.get('target'), label: attributes.get('value')};
+    assert.equal(edge.role, 'pressure-evaluation', 'Draw.io connector role rejects maturity/upgrade routes');
+    assert.ok(PRESSURE_IDS.includes(edge.source) && QUADRANT_IDS.includes(edge.target), 'Draw.io evaluation connector endpoints reject upgrade chains');
+    assert.equal(edge.label, EVALUATION_LABEL, 'Draw.io evaluation label rejects upgrade wording');
+    assert.deepEqual([style.get('dashed'), style.get('endArrow')], ['1', 'block'], 'Draw.io evaluation connector has matching dashed/marker classification');
+    return edge;
+  }).sort((a, b) => a.id.localeCompare(b.id));
+  assert.deepEqual(drawioEdges, visibleSvg.edges, 'Draw.io/SVG evaluation connector semantic parity');
+  const drawioDetails = semanticDrawioCells(drawioSource, 'quadrant-detail').map(({attributes}) => ({parent: attributes.get('parent'), role: styleMap(attributes.get('style')).get('detailRole'), label: attributes.get('value')})).sort((a, b) => `${a.parent}/${a.role}`.localeCompare(`${b.parent}/${b.role}`));
+  assert.deepEqual(drawioDetails, visibleSvg.details, 'Draw.io/SVG quadrant explanation semantic parity');
   assert.equal(xmlElements(svgSource, 'path').some(({attributes}) => attributes.get('data-edge-role') === 'maturity-arrow'), false, 'no SVG maturity arrow');
   assert.doesNotMatch(`${drawioSource}\n${svgSource}`, /(?:单体|Monolith)\s*(?:→|-->|到)\s*(?:微服务|Microservices)\s*(?:→|-->|到)\s*(?:事件驱动|Event-Driven)|成熟度阶梯/iu, 'diagram has no maturity-ladder semantics');
   const svgRoot = xmlElements(svgSource, 'svg')[0]?.attributes; assert.ok(svgRoot, 'SVG root');
@@ -481,7 +566,19 @@ function diagramFixture() {
   const drawio = `<mxGraphModel><root><mxCell id="canvas" value="" vertex="1" style="semanticRole=canvas;fillColor=#FFFFFF;opacity=100;"/>${AXES.map(([id, label]) => cell(id, label, 'axis')).join('')}${QUADRANT_LABELS.map(([id, label]) => cell(id, label, 'quadrant')).join('')}${PRESSURE_IDS.map((id, index) => cell(id, PRESSURES[index], 'pressure')).join('')}${CAPABILITY_LABELS.map(([id, label]) => cell(id, label, 'capability')).join('')}</root></mxGraphModel>`;
   const group = (attribute, id, label) => `<g ${attribute}="${id}" data-label="${label}"><rect x="20" y="20" width="200" height="80" fill="#FFFFFF" stroke="#111111"/><text x="30" y="50" fill="#111111">${label}</text></g>`;
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="sty14-title sty14-desc" data-illustration-id="${ORIGINAL_SOURCE_ID}" data-original-illustration="true"><title id="sty14-title">架构风格选择矩阵：部署边界与交互方式</title><desc id="sty14-desc">四个象限展示模块化单体与微服务如何分别采用同步或事件驱动交互，三类压力只提供评估入口，不形成升级路线。</desc><rect data-canvas="true" x="0" y="0" width="1200" height="900" fill="#FFFFFF" opacity="1"/>${AXES.map(([id, label], index) => group('data-axis-id', id, label).replace('</g>', `<line x1="${index ? 600 : 0}" y1="${index ? 0 : 450}" x2="${index ? 600 : 1200}" y2="${index ? 900 : 450}" stroke="#111111"/></g>`)).join('')}${QUADRANT_LABELS.map(([id, label]) => group('data-quadrant-id', id, label)).join('')}${PRESSURE_IDS.map((id, index) => group('data-pressure-id', id, PRESSURES[index])).join('')}${CAPABILITY_LABELS.map(([id, label]) => group('data-capability-id', id, label)).join('')}</svg>`;
-  return {drawio, svg};
+  const detailRoles = ['control', 'state', 'cost'];
+  const details = QUADRANT_IDS.flatMap((id, index) => QUADRANT_DETAILS[index].map((label, offset) => ({id: `${id}-${detailRoles[offset]}`, parent: id, role: detailRoles[offset], label})));
+  const routes = PRESSURE_IDS.flatMap((source, index) => [QUADRANT_IDS[index], QUADRANT_IDS[(index + 2) % 4]].map((target, offset) => ({id: `evaluation-${index}-${offset}`, source, target})));
+  const drawioDetails = details.map(({id, parent, role, label}) => `<mxCell id="${id}" parent="${parent}" value="${label}" vertex="1" style="semanticRole=quadrant-detail;detailRole=${role};"/>`).join('');
+  const drawioEdges = routes.map(({id, source, target}) => `<mxCell id="${id}" source="${source}" target="${target}" value="${EVALUATION_LABEL}" edge="1" style="semanticRole=pressure-evaluation;dashed=1;endArrow=block;"/>`).join('');
+  let expandedSvg = svg;
+  for (const [index, id] of QUADRANT_IDS.entries()) {
+    const label = QUADRANT_LABELS[index][1];
+    expandedSvg = expandedSvg.replace(`>${label}</text>`, `>${label}</text>${details.filter((detail) => detail.parent === id).map(({role, label: text}) => `<text data-text-role="${role}" x="30" y="70" fill="#111111">${text}</text>`).join('')}`);
+  }
+  const marker = '<defs><marker id="evaluation-arrow" data-marker-role="pressure-evaluation" markerWidth="10" markerHeight="10" refX="10" refY="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 Z" fill="#111111"/></marker></defs>';
+  const svgEdges = routes.map(({id, source, target}) => `<g data-edge-id="${id}" data-edge-role="pressure-evaluation" data-source-id="${source}" data-target-id="${target}"><path d="M 20 100 L 120 200" fill="none" stroke="#111111" stroke-dasharray="6 4" marker-end="url(#evaluation-arrow)"/><text x="30" y="150" fill="#111111">${EVALUATION_LABEL}</text></g>`).join('');
+  return {drawio: drawio.replace('</root>', `${drawioDetails}${drawioEdges}</root>`), svg: expandedSvg.replace('</svg>', `${marker}${svgEdges}</svg>`)};
 }
 function governanceFixture(base) {
   const ledger = structuredClone(base);
@@ -517,6 +614,25 @@ test('STY-14 content helper fixture is GREEN and rejects semantic contradictions
   const region = {scrollWidth: 900, clientWidth: 360, scrollLeft: 0}; let prevented = false;
   handleHorizontalArrowKey({key: 'ArrowRight', currentTarget: region, target: region, preventDefault() { prevented = true; }});
   assert.deepEqual({scrollLeft: region.scrollLeft, prevented}, {scrollLeft: 40, prevented: true}, 'repository ArrowRight handler scrolls the focused region by 40px');
+});
+
+test('STY-14 content helper permits rendered Markdown emphasis links and soft wraps', () => {
+  const fixture = articleFixture();
+  const formatted = fixture.replace(REQUIRED_SENTENCES[0], '**服务边界**和[交互方式](/styles/sty-06)是两条\n独立的决策轴。');
+  assert.notEqual(formatted, fixture, 'normal Markdown fixture change applies');
+  assertChoiceContract(formatted);
+});
+
+for (const [label, prose, diagnostic] of [
+  ['soft-line negation', `并非\n${REQUIRED_SENTENCES[0]}`, /affirmative|opposing/u],
+  ['bold scoring', '三种架构**按总分**选择。', /forbidden choice claim: 三种架构按总分选择/u],
+  ['bold exactly-once', '事件可以保证 **exactly-once** 业务效果。', /forbidden choice claim: 事件可以保证 exactly-once 业务效果/u],
+  ['bold opposing copula', '服务边界和交互方式**不是**两条独立的决策轴。', /opposing/u],
+]) test(`STY-14 content helper rejects rendered ${label}`, () => {
+  const fixture = articleFixture();
+  const mutation = label === 'soft-line negation' ? replaceOnce(fixture, REQUIRED_SENTENCES[0], prose, label) : `${fixture}\n\n${prose}\n`;
+  assert.notEqual(mutation, fixture, `${label} applies`);
+  assert.throws(() => assertChoiceContract(mutation), diagnostic);
 });
 
 for (const [label, mutate] of [
@@ -562,6 +678,28 @@ for (const [label, mutate] of [
   const fixture = diagramFixture(); assertChoiceDiagram(fixture.drawio, fixture.svg);
   const mutation = mutate(fixture.svg); assert.notEqual(mutation, fixture.svg, `${label} mutation applies`);
   assert.throws(() => assertChoiceDiagram(fixture.drawio, mutation), /visible|connector/u, label);
+});
+
+test('STY-14 diagram helper permits branching evaluation markers and quadrant explanations', () => {
+  const fixture = diagramFixture(); assertChoiceDiagram(fixture.drawio, fixture.svg);
+  assert.equal(xmlElements(fixture.svg, 'marker').length, 1, 'positive fixture has a real marker');
+  assert.equal(xmlElements(fixture.drawio, 'mxCell').filter(({attributes}) => attributes.get('edge') === '1').length, 6, 'positive fixture has six real Draw.io evaluation edges');
+});
+
+for (const [label, mutate] of [
+  ['maturity role', ({drawio, svg}) => ({drawio, svg: svg.replace('data-edge-role="pressure-evaluation"', 'data-edge-role="maturity-arrow"')})],
+  ['upgrade endpoints disguised as evaluation', ({drawio, svg}) => ({drawio: drawio.replace('source="pressure-growth"', 'source="quadrant-monolith-sync"'), svg: svg.replace('data-source-id="pressure-growth"', 'data-source-id="quadrant-monolith-sync"')})],
+  ['upgrade label disguised as evaluation', ({drawio, svg}) => ({drawio: drawio.replace(`value="${EVALUATION_LABEL}"`, 'value="升级到微服务"'), svg: svg.replace(`>${EVALUATION_LABEL}</text>`, '>升级到微服务</text>')})],
+  ['missing visible route', ({drawio, svg}) => ({drawio, svg: svg.replace('<path d="M 20 100 L 120 200" fill="none" stroke="#111111" stroke-dasharray="6 4" marker-end="url(#evaluation-arrow)"/>', '')})],
+  ['unresolved marker', ({drawio, svg}) => ({drawio, svg: svg.replace('marker-end="url(#evaluation-arrow)"', 'marker-end="url(#missing-arrow)"')})],
+  ['hidden marker', ({drawio, svg}) => ({drawio, svg: svg.replace('<marker ', '<marker display="none" ')})],
+  ['hidden route label', ({drawio, svg}) => ({drawio, svg: svg.replace(`>${EVALUATION_LABEL}</text>`, `><tspan display="none">${EVALUATION_LABEL}</tspan></text>`)})],
+  ['contradictory quadrant detail', ({drawio, svg}) => ({drawio, svg: svg.replace(QUADRANT_DETAILS[0][0], '微服务是模块化单体的下一成熟阶段')})],
+  ['Drawio SVG endpoint drift', ({drawio, svg}) => ({drawio: drawio.replace('target="quadrant-monolith-sync"', 'target="quadrant-monolith-event"'), svg})],
+]) test(`STY-14 diagram helper independently rejects ${label}`, () => {
+  const fixture = diagramFixture(); assertChoiceDiagram(fixture.drawio, fixture.svg);
+  const mutation = mutate(fixture); assert.notDeepEqual(mutation, fixture, `${label} mutation applies`);
+  assert.throws(() => assertChoiceDiagram(mutation.drawio, mutation.svg), /maturity|upgrade|evaluation|connector|visible|quadrant|parity/u, label);
 });
 
 test('STY-14 diagram helper fixture is GREEN and rejects missing semantics or maturity arrows', () => {
