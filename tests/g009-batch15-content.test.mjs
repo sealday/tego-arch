@@ -327,14 +327,14 @@ function readerContract(source) {
     return (node.children ?? []).map(render).join('');
   };
   const blocks = [];
-  const collect = (node) => {
+  const collect = (node, parent) => {
     if (excluded.has(node)) return;
     const isBlock = ['paragraph', 'heading'].includes(node.type) || node.type === 'mdxJsxFlowElement' && !(node.children ?? []).some((child) => child.type === 'paragraph' || child.type === 'mdxJsxFlowElement');
     if (isBlock) {
-      blocks.push({text: render(node).replace(/\s+/gu, ' ').trim(), start: node.position.start.offset, heading: node.type === 'heading' ? node.depth : undefined});
+      blocks.push({text: render(node).replace(/\s+/gu, ' ').trim(), start: node.position.start.offset, heading: node.type === 'heading' ? node.depth : undefined, listItem: parent?.type === 'listItem'});
       return;
     }
-    for (const child of node.children ?? []) collect(child);
+    for (const child of node.children ?? []) collect(child, node);
   };
   collect(parsed.ast);
   const visible = characters.join('');
@@ -356,9 +356,12 @@ export function assertChoiceContract(source) {
   for (const [index, wrapper] of wrappers.entries()) assert.deepEqual(markdownTables(visible.slice(wrapper.start, wrapper.end)), index === 0 ? [] : [tables[index - 1]], `wrapper ${index} owns only its approved visible table`);
   for (const pressure of PRESSURES) {
     const index = headings.findIndex(({text}) => text === `压力${['一', '二', '三'][PRESSURES.indexOf(pressure)]}：${pressure}`);
-    const section = blocks.filter(({start}) => start > headings[index].start && start < headings[index + 1].start).map(({text}) => text);
-    assert.equal(section.filter((text) => text === CAPABILITY_SCOPE).length, 1, `${pressure} affirmative visible capability scope`);
-    const entries = section.filter((text) => !text.startsWith('固定能力范围：')).map((text) => text.split(/：\s*/u));
+    const section = blocks.filter(({start}) => start > headings[index].start && start < headings[index + 1].start);
+    assert.equal(section.filter(({text}) => text === CAPABILITY_SCOPE).length, 1, `${pressure} affirmative visible capability scope`);
+    const labels = PRESSURE_DETAILS[pressure].map(([label]) => label);
+    // Only explicitly labeled list entries are the six-item contract. Narrative
+    // paragraphs and subheadings remain in blocks for the global semantic scan.
+    const entries = section.filter(({text, listItem}) => listItem && labels.some((label) => text.startsWith(`${label}：`))).map(({text}) => text.split(/：\s*/u));
     assert.deepEqual(entries, PRESSURE_DETAILS[pressure], `${pressure} exact evidence/trigger/action/stop/owner contract`);
   }
   const compact = (text) => text.replace(/\s/gu, '');
@@ -621,6 +624,18 @@ test('STY-14 content helper permits rendered Markdown emphasis links and soft wr
   const formatted = fixture.replace(REQUIRED_SENTENCES[0], '**服务边界**和[交互方式](/styles/sty-06)是两条\n独立的决策轴。');
   assert.notEqual(formatted, fixture, 'normal Markdown fixture change applies');
   assertChoiceContract(formatted);
+});
+
+test('STY-14 content helper permits pressure explanation paragraphs and H3 alongside six contract entries', () => {
+  const fixture = articleFixture();
+  const expanded = replaceOnce(fixture, '## 压力二：局部故障', '### 增长证据如何解释\n\n先观察热点是否集中在同一模块，再比较容量治理的收益与拆分后的运行成本。\n\n## 压力二：局部故障', 'pressure narrative');
+  assertChoiceContract(expanded);
+});
+
+test('STY-14 content helper rejects contradictions in ordinary pressure explanation paragraphs', () => {
+  const fixture = articleFixture();
+  const mutation = replaceOnce(fixture, '## 压力二：局部故障', '### 增长证据如何解释\n\n三种架构**按总分**选择。\n\n## 压力二：局部故障', 'pressure narrative contradiction');
+  assert.throws(() => assertChoiceContract(mutation), /forbidden choice claim: 三种架构按总分选择/u);
 });
 
 for (const [label, prose, diagnostic] of [
