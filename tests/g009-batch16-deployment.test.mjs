@@ -5,6 +5,7 @@ import {readFileSync, readdirSync} from 'node:fs';
 import test from 'node:test';
 import {readContentDocuments} from '../scripts/content-metadata.mjs';
 import {extractInternalLinks} from '../scripts/content-relations.mjs';
+import {parseMdxVisibleCopy} from '../scripts/visible-copy.mjs';
 import {BASELINE, ARTICLE, ROUTE, SVG, EXACT_METADATA, ORIGINAL_SOURCE_CONTRACT, WRAPPER_LABELS, SOURCE_ANCHORS, gitBaseline, optionalText, mutation, assertNoDDD02, readerContract} from './g009-batch16-content.test.mjs';
 
 export const REVIEW = 'docs/reviews/g009-batch16.md';
@@ -58,6 +59,36 @@ const project = (s) => ({completed: s.completed_topics, documents: s.content_doc
 const exactKeys = (v, keys, label) => { assert.ok(v && typeof v === 'object', label); assert.deepEqual(Object.keys(v).sort(), [...keys].sort(), label); };
 const topic = (manifest, id) => { const found = manifest.topics.filter((t) => t.id === id); assert.equal(found.length, 1, `one canonical ${id}`); return found[0]; };
 
+function visibleLinkDestinations(document) {
+  const destinations = new Set(extractInternalLinks(document));
+  const {ast} = parseMdxVisibleCopy(document.body ?? '', document.file ?? 'projection-document.mdx', {includeAst: true});
+  const definitions = new Map();
+  const collectDefinitions = (node) => {
+    if (node.type === 'definition') definitions.set(node.identifier, node.url);
+    for (const child of node.children ?? []) collectDefinitions(child);
+  };
+  collectDefinitions(ast);
+  const visit = (node, hidden = false) => {
+    if (['code', 'inlineCode', 'mdxjsEsm', 'definition'].includes(node.type)) return;
+    if (node.type.startsWith('mdxJsx')) {
+      const attributes = new Map((node.attributes ?? []).filter(({type}) => type === 'mdxJsxAttribute').map(({name, value}) => [name, value]));
+      hidden ||= attributes.has('hidden') || attributes.get('aria-hidden') === 'true';
+      if (!hidden) for (const name of ['href', 'to']) {
+        const value = attributes.get(name);
+        if (typeof value === 'string') destinations.add(value);
+      }
+    }
+    if (!hidden && node.type === 'link') destinations.add(node.url);
+    if (!hidden && node.type === 'linkReference') {
+      const destination = definitions.get(node.identifier);
+      if (destination) destinations.add(destination);
+    }
+    for (const child of node.children ?? []) visit(child, hidden);
+  };
+  visit(ast);
+  return [...destinations];
+}
+
 export function assertProjection(status, manifest, stage, documents = []) {
   assert.ok(LIFECYCLES[stage], 'known lifecycle stage');
   const current = topic(manifest, 'DDD-01');
@@ -71,7 +102,7 @@ export function assertProjection(status, manifest, stage, documents = []) {
   assert.deepEqual(topic(manifest, 'DDD-02'), topic(baseline, 'DDD-02'), 'existing DDD-02 planned identity stays byte-equivalent and unpublished');
   assert.equal(documents.some((d) => d.metadata?.topic_id === 'DDD-02'), false, 'no fabricated DDD-02 document');
   for (const d of documents) {
-    const links = d.metadata?.topic_id === 'DDD-01' ? readerContract(d.body ?? '').links.map((link) => link.href) : extractInternalLinks(d.body ?? '');
+    const links = d.metadata?.topic_id === 'DDD-01' ? readerContract(d.body ?? '').links.map((link) => link.href) : visibleLinkDestinations(d);
     assertNoDDD02(links, d.metadata?.slug ?? ROUTE);
   }
 }
@@ -358,6 +389,23 @@ for (const stage of ['A','B']) {
     const f = projectionFixture(stage), documents = [{metadata: {topic_id: 'DDD-01'}, body: '[下一篇](ddd-02?view=full#next)'}];
     assertProjection(f.status, f.manifest, stage, [{...documents[0], body: '[当前页](?view=full#next)'}]);
     assert.throws(() => assertProjection(f.status, f.manifest, stage, documents), /DDD-02 must remain non-actionable/u);
+  });
+  for (const [kind, body] of [
+    ['Markdown absolute path', '[下一篇](/patterns/ddd-02?view=full#next)'],
+    ['HTML absolute URL', '<a href="https://tego-arch.invalid/patterns/ddd-02?view=full#next">下一篇</a>'],
+    ['MDX absolute path', '<Link to="/patterns/ddd-02?view=full#next">下一篇</Link>'],
+    ['Markdown relative traversal', '[下一篇](../patterns/ddd-02?view=full#next)'],
+    ['Markdown reference', '[下一篇][ddd02]\n\n[ddd02]: ../patterns/ddd-02?view=full#next'],
+  ]) for (const [identity, metadata] of [
+    ['non-DDD-01 topic', {topic_id: 'STY-14', slug: '/styles/sty-14'}],
+    ['document without topic_id', {slug: '/styles/sty-14'}],
+  ]) test(`DDD-01 Stage ${stage} rejects ${kind} from ${identity}`, () => {
+    const f = projectionFixture(stage), safe = '[当前页](?view=full#next)', changed = mutation(safe, safe, body);
+    assertProjection(f.status, f.manifest, stage, [{file: 'content/styles/projection-fixture.mdx', metadata, body: safe}]);
+    assert.throws(
+      () => assertProjection(f.status, f.manifest, stage, [{file: 'content/styles/projection-fixture.mdx', metadata, body: changed}]),
+      /DDD-02 must remain non-actionable/u,
+    );
   });
   for(const [label,change] of [
     ['lifecycle drift',(f)=>{topic(f.manifest,'DDD-01').status.value=stage==='A'?'complete':'pending';}],
