@@ -2,6 +2,139 @@
   "schema_version": 1,
   "sources": [
     {
+      "id": "src-evans-ddd-reference",
+      "canonical_locator": "https://www.domainlanguage.com/ddd/reference/",
+      "transport_locator": "https://www.domainlanguage.com/ddd/reference/",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "DDD Reference",
+      "author_or_org": "Eric Evans",
+      "published_at": null,
+      "source_kind": "official-docs",
+      "allowed_evidence_roles": [
+        "definition",
+        "method"
+      ],
+      "license": "CC-BY-4.0",
+      "copyright_policy": "adapt-with-attribution",
+      "usage_boundary": "Supports DDD definitions, subdomains, ubiquitous language, bounded contexts, Context Maps and relationship patterns only; does not validate the illustrative scenario or its five candidate boundaries.",
+      "license_scope": "The DDD Reference text explicitly identified as CC BY 4.0 on the named landing page only; the separately listed CC BY 3.0 Original Summaries, the full 2004 book, cover art, trademarks, linked works and third-party assets excluded.",
+      "license_evidence_url": "https://www.domainlanguage.com/ddd/reference/",
+      "license_evidence_note": "The official DDD Reference landing page credits Eric Evans and explicitly licenses DDD Reference under Creative Commons Attribution 4.0 International; its separate Original Summaries section is CC BY 3.0 and is outside this record.",
+      "version": "Living DDD Reference landing page checked 2026-09-08; linked reference PDF dated March 2015",
+      "registered_at": "2026-09-08",
+      "checked_at": "2026-09-08",
+      "tier": "primary",
+      "license_family_id": "https://www.domainlanguage.com/ddd/reference/",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "link_policy": "floating",
+      "expected_final_transport_locator": "https://www.domainlanguage.com/ddd/reference/",
+      "expected_final_approved_at": "2026-09-08",
+      "expected_final_approval_note": "Observed direct official HTTPS page identity with HTTP 200 on 2026-09-08."
+    },
+    {
+      "id": "src-fowler-ubiquitous-language",
+      "canonical_locator": "https://martinfowler.com/bliki/UbiquitousLanguage.html",
+      "transport_locator": "https://martinfowler.com/bliki/UbiquitousLanguage.html",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Ubiquitous Language",
+      "author_or_org": "Martin Fowler",
+      "published_at": "2006-10-31",
+      "source_kind": "independent-blog",
+      "allowed_evidence_roles": [
+        "definition",
+        "method"
+      ],
+      "license": "LicenseRef-All-Rights-Reserved",
+      "copyright_policy": "facts-and-short-quotation",
+      "usage_boundary": "Supports context-local language and its evolution only; does not establish a company-wide dictionary or approve the illustrative boundaries.",
+      "license_scope": "Factual summary of the named Martin Fowler page only; copied prose, the embedded Eric Evans quotation, diagrams, examples, linked works, trademarks and third-party assets excluded.",
+      "license_evidence_url": "https://martinfowler.com/bliki/UbiquitousLanguage.html",
+      "license_evidence_note": "Martin Fowler's Ubiquitous Language at https://martinfowler.com/bliki/UbiquitousLanguage.html displays a Martin Fowler copyright footer with no open reuse grant observed on 2026-09-08; Tego Arch uses attributed factual summary without copying the embedded Eric Evans quotation.",
+      "version": "Published 2006-10-31; living page checked 2026-09-08",
+      "registered_at": "2026-09-08",
+      "checked_at": "2026-09-08",
+      "tier": "primary",
+      "license_family_id": "https://martinfowler.com/bliki/UbiquitousLanguage.html",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "link_policy": "floating",
+      "expected_final_transport_locator": "https://martinfowler.com/bliki/UbiquitousLanguage.html",
+      "expected_final_approved_at": "2026-09-08",
+      "expected_final_approval_note": "Observed direct official HTTPS page identity with HTTP 200 on 2026-09-08."
+    },
+    {
+      "id": "src-microsoft-domain-analysis",
+      "canonical_locator": "https://learn.microsoft.com/azure/architecture/microservices/model/domain-analysis",
+      "transport_locator": "https://learn.microsoft.com/azure/architecture/microservices/model/domain-analysis",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "Use domain analysis to model microservices",
+      "citation_titles": [
+        "Domain analysis"
+      ],
+      "author_or_org": "Microsoft",
+      "published_at": null,
+      "source_kind": "official-docs",
+      "allowed_evidence_roles": [
+        "method"
+      ],
+      "license": "CC-BY-4.0",
+      "copyright_policy": "adapt-with-attribution",
+      "usage_boundary": "Supports strategic analysis before service identification and iterative boundary analysis only; does not prove that bounded contexts equal microservices or approve the five illustrative boundaries.",
+      "license_scope": "The named Azure Architecture Center domain-analysis documentation text covered by the official architecture-center LICENSE only; code, diagrams, screenshots, logos, marks, linked works and third-party assets excluded.",
+      "license_evidence_url": "https://github.com/microsoftdocs/architecture-center/blob/main/LICENSE",
+      "license_evidence_note": "The Microsoft Learn page's Edit link identifies MicrosoftDocs/architecture-center docs/microservices/model/domain-analysis.md; that official repository LICENSE was checked on 2026-09-08 and declares Creative Commons Attribution 4.0 International for its documentation.",
+      "version": "Living Azure Architecture Center page checked 2026-09-08; HTML updated_at 2026-05-30T05:05:00Z; not an immutable page version",
+      "expected_final_transport_locator": "https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis",
+      "registered_at": "2026-09-08",
+      "checked_at": "2026-09-08",
+      "tier": "primary",
+      "license_family_id": "https://learn.microsoft.com/azure/architecture/microservices/model/domain-analysis",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "link_policy": "floating",
+      "expected_final_approved_at": "2026-09-08",
+      "expected_final_approval_note": "Observed HTTP 302 from the registered locale-free identity to the same official /en-us/ domain-analysis page, then HTTP 200 text/html on 2026-09-08."
+    },
+    {
+      "id": "src-atlas-ddd01-strategic-context-map",
+      "canonical_locator": "/img/diagrams/ddd-01-strategic-ddd-context-map.svg",
+      "transport_locator": "/img/diagrams/ddd-01-strategic-ddd-context-map.svg",
+      "query_insensitive": false,
+      "locator_aliases": [],
+      "tombstone": null,
+      "title": "战略 DDD Context Map：候选上下文、事实所有权与翻译责任 SVG",
+      "author_or_org": "Tego Arch maintainers",
+      "published_at": null,
+      "source_kind": "original-illustration",
+      "allowed_evidence_roles": [
+        "illustration"
+      ],
+      "license": "LicenseRef-Atlas-Original",
+      "copyright_policy": "original-atlas",
+      "usage_boundary": "Original illustrative Context Map only; not evidence of a real company, production outcome, service topology or approved business boundaries.",
+      "license_scope": "The named project-authored ddd-01-strategic-ddd-context-map.svg image/svg+xml asset only",
+      "license_evidence_url": "https://github.com/sealday/tego-arch/blob/main/static/img/diagrams/ddd-01-strategic-ddd-context-map.svg",
+      "license_evidence_note": "Reserved for the project-authored synchronized Draw.io/SVG teaching diagram under the approved DDD-01 design; original illustration only, with no third-party diagram, reference image, logo, brand visual, signature, watermark or copied composition permitted. Asset creation and visual QA remain pending Task 3.",
+      "version": "Original illustration identity registered 2026-09-08; asset creation pending Task 3",
+      "link_policy": null,
+      "registered_at": "2026-09-08",
+      "checked_at": "2026-09-08",
+      "tier": "primary",
+      "license_family_id": "/img/diagrams/ddd-01-strategic-ddd-context-map.svg",
+      "license_family_grouping": "identity",
+      "family_grouping_evidence_url": null,
+      "expected_final_transport_locator": "/img/diagrams/ddd-01-strategic-ddd-context-map.svg",
+      "expected_final_approved_at": "2026-09-08",
+      "expected_final_approval_note": "Approved local original illustration identity only; asset creation and rendered QA remain pending Task 3."
+    },
+    {
       "id": "src-atlas-sty14-architecture-choice-matrix",
       "canonical_locator": "/img/diagrams/sty-14-architecture-choice-matrix.svg",
       "transport_locator": "/img/diagrams/sty-14-architecture-choice-matrix.svg",
@@ -22356,6 +22489,115 @@
     }
   ],
   "documents": {
+    "content/patterns/ddd-01-strategic-ddd-overview.mdx": {
+      "reviewed_at": "2026-09-08",
+      "copyright_checks": [
+        "original-structure",
+        "quotation-boundary",
+        "attribution-complete",
+        "illustration-rights"
+      ],
+      "citations": [
+        {
+          "source_id": "src-docs-8fb33e125d2a",
+          "citation_url": "https://martinfowler.com/bliki/BoundedContext.html",
+          "roles": [
+            "definition",
+            "method",
+            "learning"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Bounded Context, Martin Fowler",
+          "modification_note": "Supports the language/model boundary and explicit Context Map relationship summary; it does not approve this article’s candidate boundaries, services, teams or runtime design.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-docs-1ad75d39a251",
+          "citation_url": "https://github.com/ddd-crew/context-mapping/tree/970c1ff3a61f7aa8b61b789b697c05bc585f614d",
+          "roles": [
+            "definition",
+            "method",
+            "comparison"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Context Mapping, DDD Crew",
+          "modification_note": "Supports small question-specific Context Maps, U/D roles and the existence of relationship patterns; it does not license copying the cheat sheet or Miro board and does not select patterns for this article.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-docs-ac85a74ed0b2",
+          "citation_url": "https://contextmapper.org/docs/anticorruption-layer/",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Anti-Corruption Layer, Context Mapper",
+          "modification_note": "Supports ACL as a downstream translation and isolation role; it does not prove a production ACL implementation, bank OHS/PL, protocol or deployment boundary.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-evans-ddd-reference",
+          "citation_url": "https://www.domainlanguage.com/ddd/reference/",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": true,
+          "usage_mode": "facts-summary",
+          "attribution_note": "DDD Reference, Eric Evans",
+          "modification_note": "Supports DDD definitions, subdomains, ubiquitous language, bounded contexts, Context Maps and relationship patterns only; does not validate the illustrative scenario or its five candidate boundaries.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-fowler-ubiquitous-language",
+          "citation_url": "https://martinfowler.com/bliki/UbiquitousLanguage.html",
+          "roles": [
+            "definition",
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Ubiquitous Language, Martin Fowler",
+          "modification_note": "Supports context-local language and its evolution only; does not establish a company-wide dictionary or approve the illustrative boundaries.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-microsoft-domain-analysis",
+          "citation_url": "https://learn.microsoft.com/azure/architecture/microservices/model/domain-analysis",
+          "roles": [
+            "method"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "facts-summary",
+          "attribution_note": "Use domain analysis to model microservices, Microsoft",
+          "modification_note": "Supports strategic analysis before service identification and iterative boundary analysis only; does not prove that bounded contexts equal microservices or approve the five illustrative boundaries.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        },
+        {
+          "source_id": "src-atlas-ddd01-strategic-context-map",
+          "citation_url": "/img/diagrams/ddd-01-strategic-ddd-context-map.svg",
+          "roles": [
+            "illustration"
+          ],
+          "manifest_primary": false,
+          "usage_mode": "original-illustration",
+          "attribution_note": "战略 DDD Context Map：候选上下文、事实所有权与翻译责任 SVG, Tego Arch maintainers",
+          "modification_note": "Original illustrative Context Map only; not evidence of a real company, production outcome, service topology or approved business boundaries.",
+          "excerpt": null,
+          "quotation_reviewed": false
+        }
+      ]
+    },
     "content/styles/sty-14-architecture-choice-matrix.mdx": {
       "reviewed_at": "2026-09-07",
       "copyright_checks": [

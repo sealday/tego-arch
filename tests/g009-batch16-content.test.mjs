@@ -298,6 +298,8 @@ export function assertGovernance(ledger, inventory, health) {
   }
   assert.ok(health?.results, 'remote health observations provided');
   const oldHealth = JSON.parse(gitBaseline('data/source-link-health.json'));
+  assert.deepEqual(health.superseded_results, oldHealth.superseded_results, 'historical health archives unchanged');
+  assert.equal(health.results.length, oldHealth.results.length + NEW_REMOTE_SOURCES.length, 'only three new remote health entries');
   for (const entry of oldHealth.results) assert.deepEqual(health.results.find((h) => h.transport_locator === entry.transport_locator), entry, 'historical health transport and observations unchanged');
   for (const {id} of NEW_REMOTE_SOURCES) {
     const s = records.get(id), matches = health.results.filter((h) => h.source_ids.includes(id)); assert.equal(matches.length, 1, 'one new transport health record');
@@ -449,6 +451,32 @@ for (const [label, field, before, after] of [
   ['opaque boundary', 'svg', '<g data-semantic-id="system-boundary"><rect', '<g data-semantic-id="system-boundary" opacity="0"><rect'],
 ]) test(`DDD-01 diagram rejects ${label}`, () => { const f = diagramFixture(); assertDiagramContract(f.drawio, f.svg); f[field] = mutation(f[field], before, after); assert.throws(() => assertDiagramContract(f.drawio, f.svg), assert.AssertionError); });
 test('DDD-01 governance helper fixture and actual ledger parser are GREEN', () => { const f = governanceFixture(); assertGovernance(f.ledger, f.inventory, f.health); });
+for (const id of REUSED_SOURCES) {
+  test(`DDD-01 governance preserves exact record bytes for ${id}`, () => {
+    const recordBytes = (text) => {
+      const start = text.indexOf(`    {\n      "id": "${id}"`);
+      assert.notEqual(start, -1);
+      const end = text.indexOf('\n    }', start);
+      assert.notEqual(end, -1);
+      return text.slice(start, end + '\n    }'.length);
+    };
+    assert.equal(recordBytes(readFileSync('data/source-ledger.json', 'utf8')), recordBytes(gitBaseline('data/source-ledger.json').toString()));
+  });
+  for (const field of ['canonical_locator', 'transport_locator', 'version', 'license', 'allowed_evidence_roles', 'usage_boundary', 'expected_final_transport_locator']) {
+    test(`DDD-01 governance rejects reused ${id} ${field} drift`, () => {
+      const f = governanceFixture(); assertGovernance(f.ledger, f.inventory, f.health);
+      const source = f.ledger.sources.find((s) => s.id === id);
+      source[field] = Array.isArray(source[field]) ? [...source[field], 'runtime-fact'] : source[field] + '-drift';
+      assert.throws(() => assertGovernance(f.ledger, f.inventory, f.health), assert.AssertionError);
+    });
+  }
+  test(`DDD-01 governance rejects reused ${id} health transport drift`, () => {
+    const f = governanceFixture(); assertGovernance(f.ledger, f.inventory, f.health);
+    const entry = f.health.results.find((h) => h.source_ids.includes(id));
+    assert.ok(entry); entry.transport_locator += '/drift';
+    assert.throws(() => assertGovernance(f.ledger, f.inventory, f.health), assert.AssertionError);
+  });
+}
 for (const [label, change] of [
   ['identity duplication', (f) => f.ledger.sources.push({...f.ledger.sources.at(-2)})],
   ['remote URL drift', (f) => { f.ledger.sources.at(-2).canonical_locator += '/fake'; }],
@@ -461,6 +489,8 @@ for (const [label, change] of [
   ['license row drift', (f) => { f.inventory = mutation(f.inventory, 'CC-BY-4.0', 'CC0-1.0'); }],
   ['health transport drift', (f) => { f.health.results.at(-1).transport_locator += '/fake'; }],
   ['historical source edit', (f) => { f.ledger.sources[0].version += '-fake'; }],
+  ['historical health archive edit', (f) => { f.health.superseded_results = []; }],
+  ['unrelated new health entry', (f) => { f.health.results.push(structuredClone(f.health.results.at(-1))); }],
 ]) test(`DDD-01 governance rejects ${label}`, () => { const f = governanceFixture(); assertGovernance(f.ledger, f.inventory, f.health); const before = structuredClone(f); change(f); assert.notDeepEqual(f, before); assert.throws(() => assertGovernance(f.ledger, f.inventory, f.health), assert.AssertionError); });
 test('DDD-01 reciprocal helper is GREEN and rejects reciprocal loss', () => { const a = articleFixture(), s = '[战略 DDD](/patterns/ddd-01)', i = '<PatternTopicIndex />'; assertRelations(a, s, i); assert.throws(() => assertRelations(a, mutation(s, ROUTE, '/patterns'), i), assert.AssertionError); });
 

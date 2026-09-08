@@ -118,7 +118,7 @@ test('records every official-license family found by the systematic ARR audit', 
   const corrected = inventory.entries
     .map((entry) => [entry, expectedLicense(entry.source_family)])
     .filter(([, expected]) => expected !== null);
-  assert.equal(corrected.length, 124);
+  assert.equal(corrected.length, 125);
   for (const [entry, expected] of corrected) {
     assert.equal(entry.exact_license, expected, entry.source_family);
   }
@@ -146,8 +146,8 @@ test('preserves frozen Microsoft Learn CC-BY families while keeping the reviewed
   const sources = ledger.sources.filter((source) =>
     source.license_family_id.startsWith('https://learn.microsoft.com/'));
 
-  assert.equal(rows.length, 9);
-  assert.equal(sources.length, 14);
+  assert.equal(rows.length, 10);
+  assert.equal(sources.length, 15);
   const azureFunctions = sources.find(({id}) => id === 'src-azure-functions-scale-hosting');
   assert.deepEqual({
     license: azureFunctions?.license,
