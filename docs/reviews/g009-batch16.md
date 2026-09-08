@@ -89,7 +89,7 @@ architecture/invariants: head 6cb0ccea77edbe6bf70d0360188b48d025cd14eb; CLEAR / 
 
 ## Browser evidence
 
-Browser raw: docs/reviews/evidence/g009-batch16-stage-b-production-browser.json; bytes 19892; SHA-256 6bfa26dcb97fba005daa27605db7bd92f216dc6b32daf7c7316bd8d748ca47da.
+Browser raw: docs/reviews/evidence/g009-batch16-stage-b-production-browser.json; bytes 19846; SHA-256 716c48e64b63ded161a9fd97e080e4032f4dbfcef311fcf45e8ea8ec84547481.
 
 <details className="evidence-card">
 <summary>Stage B 生产浏览器观测与诚实边界</summary>
@@ -98,7 +98,7 @@ Fresh HTTP probes 于 exact-head 部署完成后执行：5/5 HTML routes 与 1/1
 
 四态有效观测为 desktop-dark 2026-09-08T15:22:04.435Z、desktop-light 2026-09-08T15:22:56.171Z、mobile-light 2026-09-08T15:23:06.041Z、mobile-dark 2026-09-08T15:23:21.095Z；desktop-light 仅采用 15:22:56.171Z 的有效重跑，不采用更早的错误 dark 观测。桌面/移动页面均无文档级横向溢出，三个包装器与真实键盘增量分别符合 0/40/40 与 40/40/40，焦点、focus-visible 与 3px 轮廓全部成立。
 
-关联验证采用 exact observed href 的 direct goto，不声称物理点击：STY-14 目标 H1、回链标签/地址、返回后的 DDD-01 H1 与 dark 主题精确。一次 session-wide source audit 记录 7/7 锚点的 text/href/target/rel；没有独立 source-audit 时间戳，因此 raw 明确记录 unknown 且不声称远端来源页面被加载。DDD-02 actionable count 为 0。
+关联验证采用 exact observed href 的 direct goto，不声称物理点击：STY-14 目标 H1、回链标签/地址、返回后的 DDD-01 H1 与 dark 主题精确。一次 session-wide source audit 在 2026-09-08T15:23:43.138Z 记录 7/7 锚点的 text/href/target/rel，且不声称远端来源页面被加载。DDD-02 actionable count 为 0。
 
 Runtime.consoleAPICalled、Runtime.exceptionThrown 与 Log.entryAdded 使用同一完整 session-wide 22→206 游标窗口，events 为空、hasMore=false、truncated=false；native tab.dev.logs({limit:1000}) 为空且该接口没有 cursor。仅 mobile-dark 在 2026-09-08T15:24:01.601Z 尝试全页截图，返回 transient 707150 bytes 但未持久化；其余三态未尝试。截图接受仍为 0/4、BLOCKED / NOT_ACCEPTED。
 

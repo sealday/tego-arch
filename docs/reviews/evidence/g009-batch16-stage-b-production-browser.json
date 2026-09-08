@@ -115,8 +115,7 @@
   },
   "sourceAudit": {
     "scope": "one fresh session-wide source-anchor audit",
-    "observedAt": null,
-    "reason": "no independent source-audit timestamp was captured",
+    "observedAt": "2026-09-08T15:23:43.138Z",
     "fields": [
       "text",
       "href",
