@@ -51,17 +51,19 @@ Browser raw: docs/reviews/evidence/g009-batch16-stage-a-production-browser.json;
 
 ## Stage B candidate
 
-Scope: STAGE_B_PENDING.
+Scope: STAGE_B_READY.
 
 DDD-01 lifecycle: published / complete.
 
 DDD-02 topic: planned / unpublished / pending; document: absent / non-actionable.
 
-Final judgment: PENDING.
+Final judgment: READY.
 
 Deployment: NOT_RUN.
 
 Screenshot evidence: BLOCKED / NOT_ACCEPTED; accepted 0/4; functional PASS is not visual acceptance.
+
+Reviewed head: 6cb0ccea77edbe6bf70d0360188b48d025cd14eb.
 
 Stage A reviewed candidate: 3777405c02c64b75de38a33d9709cac5a29bcedf.
 
@@ -77,11 +79,11 @@ Canonical Stage B projection: 86 completed topics / 128 content documents / 604 
 
 ## Independent reviews
 
-code/spec/security: PENDING.
+code/spec/security: head 6cb0ccea77edbe6bf70d0360188b48d025cd14eb; READY / APPROVE / findings 0.
 
-content/evidence/rights: PENDING.
+content/evidence/rights: head 6cb0ccea77edbe6bf70d0360188b48d025cd14eb; CONTENT READY / rights PASS / findings 0.
 
-architecture/invariants: PENDING.
+architecture/invariants: head 6cb0ccea77edbe6bf70d0360188b48d025cd14eb; CLEAR / READY / blockers 0.
 
 ## Browser evidence
 
