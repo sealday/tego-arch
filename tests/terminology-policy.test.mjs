@@ -137,7 +137,7 @@ test('limits the default terminology governance gate to reader-facing entry poin
 
 test('default terminology checks cover all repository reader-facing entry points', async () => {
   const result = await checkTerminology({root: repositoryRoot});
-  assert.equal(result.checkedFiles.length, 129);
+  assert.equal(result.checkedFiles.length, 130);
 
   assert.deepEqual(result.issues, []);
 });
@@ -150,7 +150,7 @@ test('no-argument CLI checks the repository default terminology scope', () => {
   );
   assert.equal(run.status, 0, run.stdout || run.stderr);
   assert.equal(run.stderr, '');
-  assert.match(run.stdout, /checked 129 files with 182 registered terms; 0 issues/u);
+  assert.match(run.stdout, /checked 130 files with 186 registered terms; 0 issues/u);
 
 
 });
@@ -455,6 +455,56 @@ test('tracks first use per file and follows front matter then body reader order'
   assert.deepEqual(result.issues.map(({file, line, ruleId, matched}) => ({file, line, ruleId, matched})), [
     {file: 'content/a.mdx', line: 2, ruleId: 'first-use-required', matched: 'API'},
   ]);
+});
+
+test('pure Chinese title and matching H1 neither require nor introduce English first use', async () => {
+  const title = '应用程序编程接口指南';
+  const heading = `---\ntitle: ${title}\n---\n# ${title}\n\n`;
+  assert.deepEqual((await checkFixture(heading + '应用程序编程接口（Application Programming Interface，API）建立契约。\n\nAPI 保持稳定。')).issues, []);
+  for (const body of ['API 建立契约。', '应用程序编程接口建立契约。']) {
+    const issues = (await checkFixture(heading + body)).issues;
+    assert.deepEqual(issues.map(({line, ruleId}) => ({line, ruleId})), [{line: 6, ruleId: 'first-use-required'}]);
+  }
+});
+
+test('DDD Chinese title never licenses a bare body acronym or a duplicate bilingual introduction', async () => {
+  const registry = JSON.parse(await readFile(path.join(repositoryRoot, 'data/terminology.json')));
+  const ddd = registry.terms.find(({id}) => id === 'domain-driven-design');
+  const heading = '---\ntitle: 战略领域驱动设计总览：从语言冲突到限界上下文\n---\n# 战略领域驱动设计总览：从语言冲突到限界上下文\n\n';
+  for (const [body, count] of [['DDD 用于战略分析。', 1], ['领域驱动设计（Domain-Driven Design，DDD）先分析语言。\n\nDDD 保留边界。', 0], ['领域驱动设计（Domain-Driven Design，DDD）先分析语言。\n\n领域驱动设计（Domain-Driven Design，DDD）保留边界。', 1]]) {
+    const result = await withFixture({'content/example.mdx': heading + body}, (root) => checkTerminology({root, paths: ['content']}), [ddd]);
+    assert.equal(result.issues.length, count);
+  }
+});
+
+const dddRelationTerms = [
+  ['customer-supplier', '客户—供应方', 'Customer/Supplier', 'C/S', 2150],
+  ['open-host-service', '开放主机服务', 'Open Host Service', 'OHS', 2160],
+  ['published-language', '发布语言', 'Published Language', 'PL', 2170],
+  ['anti-corruption-layer', '防腐层', 'Anti-Corruption Layer', 'ACL', 2180],
+];
+test('governs four exact DDD relationship concepts without registering generic direction words', async () => {
+  const registry = JSON.parse(await readFile(path.join(repositoryRoot, 'data/terminology.json')));
+  for (const [id, canonical_zh, english, acronym, order] of dddRelationTerms) {
+    const term = registry.terms.find((entry) => entry.id === id);
+    assert.ok(term, id);
+    assert.deepEqual(Object.fromEntries(['canonical_zh','english','acronym','kind','first_use','subsequent_use','allowed_aliases','forbidden_aliases','order'].map(key => [key, term[key]])), {canonical_zh,english,acronym,kind:'acronym',first_use:canonical_zh+'（'+english+'，'+acronym+'）',subsequent_use:[canonical_zh,acronym],allowed_aliases:[],forbidden_aliases:[english],order});
+    assert.match(term.note, /关系|模型|契约|翻译/u);
+  }
+  assert.equal(registry.terms.some((term) => ['上游','下游'].includes(term.canonical_zh)), false);
+});
+
+test('Chinese title rule never waives English headings, another H1, summary or another file', async () => {
+  for (const title of ['API 指南', '应用程序编程接口 API 指南', 'Application Programming Interface 指南']) {
+    const issues = (await checkFixture(`---\ntitle: ${title}\n---\n# ${title}\n\n应用程序编程接口（Application Programming Interface，API）建立契约。`)).issues;
+    assert.ok(issues.some(({line}) => line === 2));
+    assert.ok(issues.some(({line}) => line === 4));
+  }
+  for (const source of ['---\ntitle: 中文标题\n---\n# 应用程序编程接口指南', '---\ntitle: 应用程序编程接口指南\nsummary: 应用程序编程接口建立契约\n---', '# 应用程序编程接口指南']) {
+    assert.ok((await checkFixture(source)).issues.some(({ruleId}) => ruleId === 'first-use-required'));
+  }
+  const result = await withFixture({'content/a.mdx': '---\ntitle: 应用程序编程接口指南\n---\n应用程序编程接口（Application Programming Interface，API）建立契约。', 'content/b.mdx': 'API 建立契约。'}, (root) => checkTerminology({root, paths: ['content']}));
+  assert.deepEqual(result.issues.map(({file, ruleId}) => ({file, ruleId})), [{file: 'content/b.mdx', ruleId: 'first-use-required'}]);
 });
 
 test('checks Mermaid labels in source order without treating diagram identifiers as prose', async () => {

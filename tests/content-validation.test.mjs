@@ -1504,6 +1504,37 @@ const sty14ChoiceHeadings = [
   '## 迁移触发器与停止条件', '## 决策矩阵与评审问题', '## 来源',
 ];
 
+const ddd01Metadata = {topic_id: 'DDD-01', slug: '/patterns/ddd-01', depends_on: [], adjacent_topics: ['STY-14'], related_cases: [], related_questions: []};
+const ddd01Body = [...requiredCaseHeadings.slice(0, -1), ...requiredMigrationHeadings, ...requiredCaseHeadings.slice(-1)];
+test('DDD-01 pattern alone accepts the exact strategic article and empty relation contract', async () => {
+  assert.deepEqual(knowledgeHeadingContract('pattern', 'DDD-01'), requiredCaseHeadings);
+  await withTempRoot(async (root) => {
+    await writeMdx(root, 'patterns/ddd-01.mdx', validKnowledgeFrontMatter('pattern', ddd01Metadata), ddd01Body.join('\n\n'));
+    assert.deepEqual((await validateContent(root)).errors, []);
+  });
+});
+test('DDD-01 strategic exception rejects relation drift and heading drift', async () => {
+  for (const overrides of [{depends_on: ['STY-14']}, {adjacent_topics: []}, {adjacent_topics: ['STY-14', 'STY-04']}, {related_cases: ['/cases/example']}, {related_questions: ['/questions/example']}, {related_questions: undefined}]) {
+    await withTempRoot(async (root) => {
+      await writeMdx(root, 'patterns/ddd-01.mdx', validKnowledgeFrontMatter('pattern', {...ddd01Metadata, ...overrides}), ddd01Body.join('\n\n'));
+      assert.match((await validateContent(root)).errors.join('\n'), /DDD-01 requires exact strategic relations/u);
+    });
+  }
+  for (const body of [ddd01Body.filter((h) => h !== requiredMigrationHeadings[0]), [ddd01Body[1], ddd01Body[0], ...ddd01Body.slice(2)]]) await withTempRoot(async (root) => {
+    await writeMdx(root, 'patterns/ddd-01.mdx', validKnowledgeFrontMatter('pattern', ddd01Metadata), body.join('\n\n'));
+    assert.match((await validateContent(root)).errors.join('\n'), /H[23] sequence/u);
+  });
+});
+test('DDD-01 strategic exception never leaks to DDD-02, another pattern or non-pattern DDD-01', async () => {
+  for (const [type, id] of [['pattern', 'DDD-02'], ['pattern', 'AGT-P-01'], ['concept', 'DDD-01']]) await withTempRoot(async (root) => {
+    assert.notDeepEqual(knowledgeHeadingContract(type, id), requiredCaseHeadings);
+    await writeMdx(root, 'neighbor.mdx', validKnowledgeFrontMatter(type, {...ddd01Metadata, topic_id: id}), ddd01Body.join('\n\n'));
+    const errors = (await validateContent(root)).errors.join('\n');
+    assert.match(errors, /requires at least one related case or question/u);
+    assert.match(errors, /H2 sequence/u);
+  });
+});
+
 test('STY-14 style alone accepts the exact choice headings with empty related evidence', async () => {
   assert.deepEqual(knowledgeHeadingContract('style', 'STY-14'), sty14ChoiceHeadings);
   await withTempRoot(async (root) => {

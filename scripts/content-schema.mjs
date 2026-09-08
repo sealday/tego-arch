@@ -278,6 +278,9 @@ export const sty14ChoiceHeadings = [
 ];
 
 export function knowledgeHeadingContract(type, topicId) {
+  if (type === 'pattern' && topicId === 'DDD-01') {
+    return architectureCaseHeadings;
+  }
   if (type === 'style' && topicId === 'STY-14') {
     return sty14ChoiceHeadings;
   }
@@ -318,6 +321,16 @@ export function knowledgeHeadingContract(type, topicId) {
     return mod13ModelingHeadings;
   }
   return knowledgeTypeContracts[type];
+}
+
+// This introductory pattern intentionally has no fabricated prerequisite or
+// terminal evidence. Keep the exact approved adjacency, never a type-wide waiver.
+export function hasDdd01StrategicRelations(type, topicId, metadata) {
+  return type === 'pattern' && topicId === 'DDD-01' &&
+    ['depends_on', 'related_cases', 'related_questions'].every((key) =>
+      Array.isArray(metadata[key]) && metadata[key].length === 0) &&
+    Array.isArray(metadata.adjacent_topics) && metadata.adjacent_topics.length === 1 &&
+    metadata.adjacent_topics[0] === 'STY-14';
 }
 
 export const qualityAttributeScenarioHeadings = [

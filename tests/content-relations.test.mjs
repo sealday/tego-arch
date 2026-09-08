@@ -65,6 +65,21 @@ test('accepts visible parent, adjacent, and terminal links', () => {
   );
 });
 
+test('DDD-01 exact strategic relations retain parent, adjacent and reciprocal checks', () => {
+  const topic = {id: 'DDD-01', type: 'pattern', slug: '/patterns/ddd-01', published: true, dependencies: [], adjacent_topics: ['STY-14'], related_cases: [], related_questions: []};
+  const style = {id: 'STY-14', type: 'style', slug: '/styles/sty-14', published: true, adjacent_topics: ['DDD-01'], related_cases: [], related_questions: []};
+  const document = {file: 'patterns/ddd-01.mdx', metadata: {content_type: 'pattern', topic_id: 'DDD-01'}, body: '[模式](/patterns)\n[风格](/styles/sty-14)'};
+  const reciprocal = {file: 'styles/sty-14.mdx', metadata: {content_type: 'style', topic_id: 'STY-14'}, body: '[风格](/styles)\n[战略](/patterns/ddd-01)'};
+  const check = (entry = topic, doc = document, reverse = reciprocal) => validateContentRelations({documents: [doc, reverse], manifest: {topics: [entry, style]}}).errors.join('\n');
+  assert.equal(check(), '');
+  assert.match(check(topic, {...document, body: '[风格](/styles/sty-14)'}), /missing visible parent/u);
+  assert.match(check(topic, {...document, body: '[模式](/patterns)'}), /missing visible adjacent/u);
+  assert.match(check(topic, document, {...reciprocal, body: '[风格](/styles)'}), /missing visible adjacent/u);
+  for (const override of [{dependencies: ['STY-14']}, {dependencies: undefined}, {adjacent_topics: []}, {related_cases: ['/cases/example']}, {related_questions: undefined}]) assert.match(check({...topic, ...override}), /missing visible related/u);
+  for (const id of ['DDD-02', 'AGT-P-01']) assert.match(check({...topic, id}, {...document, metadata: {...document.metadata, topic_id: id}}), /missing visible related/u);
+  assert.match(check(topic, {...document, metadata: {...document.metadata, content_type: 'concept'}}), /missing visible related/u);
+});
+
 test('extracts and normalizes visible Markdown and JSX internal links', () => {
   assert.deepEqual(
     extractInternalLinks({

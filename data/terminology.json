@@ -3011,6 +3011,58 @@
       "forbidden_aliases": [],
       "note": "保留事务性质的通行缩写；STY-13 仅用它明确拒绝把多分区工作流伪装为全局事务。",
       "order": 2140
+    },
+    {
+      "id": "customer-supplier",
+      "canonical_zh": "客户—供应方",
+      "english": "Customer/Supplier",
+      "acronym": "C/S",
+      "kind": "acronym",
+      "first_use": "客户—供应方（Customer/Supplier，C/S）",
+      "subsequent_use": ["客户—供应方", "C/S"],
+      "allowed_aliases": [],
+      "forbidden_aliases": ["Customer/Supplier"],
+      "note": "下游优先级进入上游计划的协作关系，不是任意调用方向。",
+      "order": 2150
+    },
+    {
+      "id": "open-host-service",
+      "canonical_zh": "开放主机服务",
+      "english": "Open Host Service",
+      "acronym": "OHS",
+      "kind": "acronym",
+      "first_use": "开放主机服务（Open Host Service，OHS）",
+      "subsequent_use": ["开放主机服务", "OHS"],
+      "allowed_aliases": [],
+      "forbidden_aliases": ["Open Host Service"],
+      "note": "上游向多个消费者提供稳定集成入口的关系模式，契约由上游维护。",
+      "order": 2160
+    },
+    {
+      "id": "published-language",
+      "canonical_zh": "发布语言",
+      "english": "Published Language",
+      "acronym": "PL",
+      "kind": "acronym",
+      "first_use": "发布语言（Published Language，PL）",
+      "subsequent_use": ["发布语言", "PL"],
+      "allowed_aliases": [],
+      "forbidden_aliases": ["Published Language"],
+      "note": "跨模型交换事实时共同理解的公开语言，不能代替事实所有权契约。",
+      "order": 2170
+    },
+    {
+      "id": "anti-corruption-layer",
+      "canonical_zh": "防腐层",
+      "english": "Anti-Corruption Layer",
+      "acronym": "ACL",
+      "kind": "acronym",
+      "first_use": "防腐层（Anti-Corruption Layer，ACL）",
+      "subsequent_use": ["防腐层", "ACL"],
+      "allowed_aliases": [],
+      "forbidden_aliases": ["Anti-Corruption Layer"],
+      "note": "由下游承担外部模型翻译与隔离责任，不能视为无主的通用适配标签。",
+      "order": 2180
     }
   ]
 }

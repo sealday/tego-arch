@@ -22,6 +22,7 @@ import {
   closingPrincipleTopicIds,
   knowledgeContentTypes,
   knowledgeHeadingContract,
+  hasDdd01StrategicRelations,
   knowledgeRequiredFields,
   knowledgeTypeContracts,
   qualityAttributeScenarioHeadings,
@@ -415,6 +416,10 @@ export async function validateContent(
       }
 
       const isStyleChoiceMatrix = type === 'style' && metadata.topic_id === 'STY-14';
+      const isDdd01 = type === 'pattern' && metadata.topic_id === 'DDD-01';
+      if (isDdd01 && !hasDdd01StrategicRelations(type, metadata.topic_id, metadata)) {
+        errors.push(`${file}: DDD-01 requires exact strategic relations: empty depends_on, related_cases, related_questions and adjacent_topics [STY-14]`);
+      }
       if (
         Array.isArray(relatedCases) &&
         Array.isArray(relatedQuestions)
@@ -422,7 +427,7 @@ export async function validateContent(
         const relatedCount = relatedCases.length + relatedQuestions.length;
         if (isStyleChoiceMatrix && relatedCount !== 0) {
           errors.push(`${file}: STY-14 requires empty related_cases and related_questions`);
-        } else if (!isStyleChoiceMatrix && relatedCount === 0) {
+        } else if (!isStyleChoiceMatrix && !isDdd01 && relatedCount === 0) {
           errors.push(`${file}: ${type} requires at least one related case or question`);
         }
       }
@@ -434,7 +439,7 @@ export async function validateContent(
         errors,
       );
 
-      if (type === 'principle' && closingPrincipleTopicIds.has(metadata.topic_id)) {
+      if (isDdd01 || (type === 'principle' && closingPrincipleTopicIds.has(metadata.topic_id))) {
         validateSectionH3Contract(
           file,
           headings,

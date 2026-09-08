@@ -10,6 +10,8 @@
 
 ## Global Constraints
 
+- User decision (2026-09-08): exact Chinese title `战略领域驱动设计总览：从语言冲突到限界上下文`; Chinese-only title and matching H1 do not introduce English terminology. The first actual body explanation uses `领域驱动设计（Domain-Driven Design，DDD）`, and later uses Chinese or introduced DDD. No title exemption.
+
 - Canonical route: `/patterns/ddd-01`; article path: `content/patterns/ddd-01-strategic-ddd-overview.mdx`.
 - Fixed scenario contexts: sales order, inventory promise, payment settlement, fulfillment delivery, and customer support.
 - The scenario is explicitly illustrative; it never claims a real company, incident, metric, benchmark, organization, or production result.

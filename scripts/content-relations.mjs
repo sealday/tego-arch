@@ -1,4 +1,5 @@
 import {visibleMdxLines} from './source-ledger.mjs';
+import {hasDdd01StrategicRelations} from './content-schema.mjs';
 
 const parentByType = new Map([
   ['concept', '/concepts'],
@@ -90,7 +91,10 @@ export function validateContentRelations({documents, manifest}) {
     const choiceMatrixWithoutTerminal = type === 'style' && topicId === 'STY-14' &&
       Array.isArray(topic.related_cases) && topic.related_cases.length === 0 &&
       Array.isArray(topic.related_questions) && topic.related_questions.length === 0;
-    if (!choiceMatrixWithoutTerminal && !terminal.some((slug) => visible.has(slug))) {
+    const strategicOverviewWithoutTerminal = hasDdd01StrategicRelations(type, topicId, {
+      ...topic, depends_on: topic.dependencies,
+    });
+    if (!choiceMatrixWithoutTerminal && !strategicOverviewWithoutTerminal && !terminal.some((slug) => visible.has(slug))) {
       errors.push(
         `${contentPath(document.file)}: missing visible related case or question link ` +
           `(expected one of: ${terminal.map((slug) => JSON.stringify(slug)).join(', ')})`,

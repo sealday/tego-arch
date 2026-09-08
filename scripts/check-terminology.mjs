@@ -126,11 +126,18 @@ const collectMarkdownRecords = (source, relativePath, sources) => {
   const outsideQuotes = (record) => !quoteLines.some(
     ([start, end]) => record.line >= start && record.line <= end,
   );
+  const title = parsed.frontMatter.find((record) => record.field === 'title');
+  const pureChineseTitle = title && /^[\p{Script=Han}\p{Number}\p{Punctuation}\p{Separator}\s]+$/u.test(title.text);
+  const matchingH1Lines = new Set();
+  if (pureChineseTitle) visitAst(parsed.ast, (node) => {
+    if (node.type === 'heading' && node.depth === 1) matchingH1Lines.add(node.position.start.line);
+  });
   return {
     records: [
       ...parsed.frontMatter,
       ...parsed.blocks.filter(outsideQuotes),
-    ],
+    ].map((record) => ({...record, chineseTitleOnly: Boolean(pureChineseTitle && record.text === title.text &&
+      ((record.kind === 'front-matter' && record.field === 'title') || matchingH1Lines.has(record.line)))})),
     suppressionComments: parsed.comments,
   };
 };
@@ -522,7 +529,10 @@ export async function checkTerminology({root, paths = defaultPaths}) {
       if (record.kind === 'mermaid' && record.structural) continue;
       const inspected = [
         ...inspectBareAliases(record, registry),
-        ...inspectFirstUse(record, registry, introduced),
+        // A Chinese-only publication title is a label, not an English term
+        // introduction. Its matching H1 follows the same rule; body/summary,
+        // other headings and any title containing Latin letters remain strict.
+        ...(record.chineseTitleOnly ? [] : inspectFirstUse(record, registry, introduced)),
         ...inspectUnknownEnglish(record, registry),
       ];
       for (const candidate of inspected) candidate._recordIndex = record.recordIndex;

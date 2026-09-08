@@ -15,13 +15,13 @@ export const ROUTE = '/patterns/ddd-01';
 export const DRAWIO = 'diagrams/ddd-01-strategic-ddd-context-map.drawio';
 export const SVG = 'static/img/diagrams/ddd-01-strategic-ddd-context-map.svg';
 export const ORIGINAL_SOURCE_ID = 'src-atlas-ddd01-strategic-context-map';
-export const EXACT_METADATA = Object.freeze({title: '战略 DDD 总览：从语言冲突到限界上下文', slug: '/patterns/ddd-01', content_type: 'pattern', status: 'reviewed', difficulty: 'advanced', topic_id: 'DDD-01', priority: 'P0', depends_on: [], adjacent_topics: ['STY-14'], related_cases: [], related_questions: []});
+export const EXACT_METADATA = Object.freeze({title: '战略领域驱动设计总览：从语言冲突到限界上下文', slug: '/patterns/ddd-01', content_type: 'pattern', status: 'reviewed', difficulty: 'advanced', topic_id: 'DDD-01', priority: 'P0', depends_on: [], adjacent_topics: ['STY-14'], related_cases: [], related_questions: []});
 export const EXPECTED_H2 = Object.freeze(['学习问题', '一页摘要', '事实边界', '架构图', '控制权与任务流', '关键源码导读', '架构决策与权衡', '生产化分析', '可迁移经验', '来源']);
 export const EXPECTED_H3 = Object.freeze(['可直接复用的机制', '只能有限类比的部分', '不应照搬的部分']);
 export const CONTEXTS = Object.freeze(['销售订单', '库存承诺', '支付结算', '履约配送', '客户支持']);
 export const CONTEXT_HEADERS = Object.freeze(['上下文', '本地术语', '主要不变量', '权威事实', '变化来源', '边界反证']);
 export const RELATION_HEADERS = Object.freeze(['上游', '下游', '交换事实', '关系模式', '契约所有者', '翻译位置', '失败影响', '反证或重画条件']);
-export const WRAPPER_LABELS = Object.freeze(['战略 DDD Context Map，可横向滚动', '五个候选限界上下文契约表，可横向滚动', 'Context Map 关系契约表，可横向滚动']);
+export const WRAPPER_LABELS = Object.freeze(['战略上下文映射，可横向滚动', '五个候选限界上下文契约表，可横向滚动', '上下文映射关系契约表，可横向滚动']);
 export const WRAPPERS = Object.freeze(WRAPPER_LABELS.map((label, i) => ({className: i === 0 ? 'architecture-diagram-scroll' : 'table-wrapper table-wrapper--mapping', role: 'region', 'aria-label': label, tabIndex: '0', onKeyDown: 'handleHorizontalArrowKey'})));
 export const FORBIDDEN_EQUIVALENCES = Object.freeze(['微服务', '团队', '代码仓库', '数据库', '部署单元']);
 export const DDD02_ACTIONABLE_PATTERNS = Object.freeze([/(?:^|\/)patterns\/ddd-02(?:[/?#]|$)/iu, /(?:^|\/)ddd-02[^/]*\.mdx?(?:[?#]|$)/iu]);
@@ -44,31 +44,31 @@ export const REQUIRED_SENTENCES = Object.freeze([
   '若所谓核心子域没有独特规则、没有持续领域投入，也不能解释竞争差异，就应重新分类。',
   '子域分类不由技术难度、代码数量或服务数量决定，分类变化不自动要求立即改变部署边界。',
   '未知外部支付结果必须由支付结算查询权威状态或进入明确的人工终态，销售订单不能猜测成功。',
-  'Customer/Supplier 仅用于下游优先级真实进入上游计划的协作关系，不能作为任意调用箭头的标签。',
-  'Open Host Service 与 Published Language 用于上游向多个消费者提供稳定集成入口和公开语言。',
-  'Anti-Corruption Layer 标在承担翻译责任的下游或外部适配边界，不能与 Customer/Supplier 无依据地叠加。',
+  '客户—供应方仅用于下游优先级真实进入上游计划的协作关系，不能作为任意调用箭头的标签。',
+  '开放主机服务与发布语言用于上游向多个消费者提供稳定集成入口和公开语言。',
+  '防腐层标在承担翻译责任的下游或外部适配边界，不能与客户—供应方无依据地叠加。',
   '组合视图只提供用途受限的读取模型，不表示共享数据库、共享领域对象或写入权转移。',
   '客户支持把取消、退款、库存释放或补救命令交回相应事实所有者。',
   '若同一术语仍有互斥含义、不变量需要跨边界同步写入、多个上下文争夺同一权威事实，就应重访语言与所有权。',
-  '若下游只能复制上游模型、边界总是联动发布、ACL 翻译失败无人处理，就应允许合并、拆分或重画边界。',
-  'Context Map 记录协作关系与模型代价，关系模式不是传输协议。',
+  '若下游只能复制上游模型、边界总是联动发布、防腐层翻译失败无人处理，就应允许合并、拆分或重画边界。',
+  '上下文映射记录协作关系与模型代价，关系模式不是传输协议。',
 ]);
 
 // Semantic IDs are an authoring interface, not a claim that a particular company uses these boundaries.
 export const NODES = Object.freeze([
   ['context-sales-order', '销售订单'], ['context-inventory-promise', '库存承诺'], ['context-payment-settlement', '支付结算'], ['context-fulfillment-delivery', '履约配送'], ['context-customer-support', '客户支持'],
   ['support-view', '只读组合视图'], ['external-payment-provider', '外部支付提供方'], ['system-boundary', '订单履约系统边界'], ['external-system-boundary', '外部支付系统边界'],
-  ['payment-acl', '支付结算内部 ACL'], ['legend', 'U：上游；D：下游；C/S：Customer/Supplier；OHS：Open Host Service；PL：Published Language；ACL：Anti-Corruption Layer；关系模式不是传输协议'], ['failure-boundary', '未知支付结果：查询支付事实所有者或人工终态；组合视图失败不转移写入权'],
+  ['payment-acl', '支付结算内部防腐层'], ['legend', '上游（U）；下游（D）；客户—供应方（Customer/Supplier，C/S）；开放主机服务（Open Host Service，OHS）；发布语言（Published Language，PL）；防腐层（Anti-Corruption Layer，ACL）；关系模式不是传输协议'], ['failure-boundary', '未知支付结果：查询支付事实所有者或人工终态；组合视图失败不转移写入权'],
 ]);
 export const RELATIONS = Object.freeze([
-  ['inventory-sales', 'context-inventory-promise', 'context-sales-order', '库存承诺', '销售订单', '预留或拒绝', 'Customer/Supplier', '库存承诺', '销售订单本地语言适配', '不能猜测库存已预留', '下游优先级不再进入上游计划就重选关系'],
-  ['payment-sales', 'context-payment-settlement', 'context-sales-order', '支付结算', '销售订单', '资金确认或未知结果', 'Customer/Supplier', '支付结算', '销售订单本地语言适配', '未知结果回到支付结算查询', '销售订单拥有支付终态就重画边界'],
-  ['sales-fulfillment', 'context-sales-order', 'context-fulfillment-delivery', '销售订单', '履约配送', '已接受商业承诺', 'OHS + PL', '销售订单', '履约配送入口', '等待确认事实而非重判订单', '消费方被迫复制内部模型就重画边界'],
-  ['provider-payment', 'external-payment-provider', 'context-payment-settlement', '外部支付提供方', '支付结算', '外部授权扣款退款结果', 'ACL', '外部支付提供方', '支付结算内部 ACL', '查询权威状态或人工终态', 'ACL 无所有者就停止集成'],
-  ['sales-view', 'context-sales-order', 'support-view', '销售订单', '只读组合视图', '商业订单状态', 'OHS + PL', '销售订单', '组合视图投影器', '展示陈旧但不能写订单', '投影获得写入权就重画边界'],
-  ['payment-view', 'context-payment-settlement', 'support-view', '支付结算', '只读组合视图', '资金动作状态', 'OHS + PL', '支付结算', '组合视图投影器', '不能把陈旧投影当作资金终态', '投影决定退款就重画边界'],
-  ['fulfillment-view', 'context-fulfillment-delivery', 'support-view', '履约配送', '只读组合视图', '配送任务状态', 'OHS + PL', '履约配送', '组合视图投影器', '不能把陈旧投影当作交付事实', '投影决定交付就重画边界'],
-  ['view-support', 'support-view', 'context-customer-support', '只读组合视图', '客户支持', '面向补救的只读组合事实', 'Published Language', '各事实所有者', '客户支持读取入口', '补救命令仍交回事实所有者', '形成共享领域对象就重画边界'],
+  ['inventory-sales', 'context-inventory-promise', 'context-sales-order', '库存承诺', '销售订单', '预留或拒绝', '客户—供应方', '库存承诺', '销售订单本地语言适配', '不能猜测库存已预留', '下游优先级不再进入上游计划就重选关系'],
+  ['payment-sales', 'context-payment-settlement', 'context-sales-order', '支付结算', '销售订单', '资金确认或未知结果', '客户—供应方', '支付结算', '销售订单本地语言适配', '未知结果回到支付结算查询', '销售订单拥有支付终态就重画边界'],
+  ['sales-fulfillment', 'context-sales-order', 'context-fulfillment-delivery', '销售订单', '履约配送', '已接受商业承诺', '开放主机服务＋发布语言', '销售订单', '履约配送入口', '等待确认事实而非重判订单', '消费方被迫复制内部模型就重画边界'],
+  ['provider-payment', 'external-payment-provider', 'context-payment-settlement', '外部支付提供方', '支付结算', '外部授权扣款退款结果', '防腐层', '外部支付提供方', '支付结算内部防腐层', '查询权威状态或人工终态', '防腐层无所有者就停止集成'],
+  ['sales-view', 'context-sales-order', 'support-view', '销售订单', '只读组合视图', '商业订单状态', '开放主机服务＋发布语言', '销售订单', '组合视图投影器', '展示陈旧但不能写订单', '投影获得写入权就重画边界'],
+  ['payment-view', 'context-payment-settlement', 'support-view', '支付结算', '只读组合视图', '资金动作状态', '开放主机服务＋发布语言', '支付结算', '组合视图投影器', '不能把陈旧投影当作资金终态', '投影决定退款就重画边界'],
+  ['fulfillment-view', 'context-fulfillment-delivery', 'support-view', '履约配送', '只读组合视图', '配送任务状态', '开放主机服务＋发布语言', '履约配送', '组合视图投影器', '不能把陈旧投影当作交付事实', '投影决定交付就重画边界'],
+  ['view-support', 'support-view', 'context-customer-support', '只读组合视图', '客户支持', '面向补救的只读组合事实', '发布语言', '各事实所有者', '客户支持读取入口', '补救命令仍交回事实所有者', '形成共享领域对象就重画边界'],
 ]);
 export const RELATION_ROWS = Object.freeze(RELATIONS.map((r) => r.slice(3)));
 export const REUSED_SOURCES = Object.freeze(['src-docs-8fb33e125d2a', 'src-docs-1ad75d39a251', 'src-docs-ac85a74ed0b2']);
@@ -202,7 +202,7 @@ export function assertRelations(article, sty14, index) {
 const attr = (n, key) => n.attributes.get(key);
 const styleMap = (s = '') => Object.fromEntries(s.split(';').filter(Boolean).map((v) => v.split(/=(.*)/su)));
 function xml(source, label) { assert.ok(source, `${label} must exist`); try { return parseXml(source).root; } catch (e) { assert.fail(`${label} valid XML: ${e.message}`); } }
-const edgeLabel = (r) => `U → D；${r[5]}；${r[6]}；翻译：${r[8]}；失败：${r[9]}`;
+const edgeLabel = (r) => `上游 → 下游；${r[5]}；${r[6]}；翻译：${r[8]}；失败：${r[9]}`;
 export function assertDiagramContract(drawio, svg) {
   const dr = xml(drawio, DRAWIO), sr = xml(svg, SVG);
   assert.equal(xmlElements(dr, 'mxGraphModel').length + Number(dr.localName === 'mxGraphModel'), 1, 'one uncompressed graph');
@@ -577,10 +577,10 @@ test('DDD-01 diagram helper accepts effective inherited paint and local override
 });
 for (const [label, field, before, after] of [
   ['missing context', 'svg', 'data-semantic-id="context-sales-order"', 'data-semantic-id="fake"'],
-  ['reversed U/D', 'svg', 'U → D', 'D → U'],
-  ['fake relationship', 'drawio', 'Customer/Supplier', 'HTTP'],
-  ['illegal pattern stack', 'svg', 'Customer/Supplier', 'Customer/Supplier + OHS'],
-  ['lost ACL owner', 'svg', '支付结算内部 ACL', '无所有者 ACL'],
+  ['reversed U/D', 'svg', '上游 → 下游', '下游 → 上游'],
+  ['fake relationship', 'drawio', '客户—供应方', 'HTTP'],
+  ['illegal pattern stack', 'svg', '客户—供应方', '客户—供应方 + 开放主机服务'],
+  ['lost ACL owner', 'svg', '支付结算内部防腐层', '无所有者防腐层'],
   ['terminal loss', 'drawio', 'source="context-inventory-promise"', 'source="fake"'],
   ['waypoint drift', 'drawio', 'x="550" y="80"', 'x="551" y="80"'],
   ['hidden text', 'svg', '<text ', '<text visibility="hidden" '],
@@ -643,6 +643,13 @@ for (const [label, change] of [
 test('DDD-01 reciprocal helper is GREEN and rejects reciprocal loss', () => { const a = articleFixture(), s = '[战略 DDD](/patterns/ddd-01)', i = '<PatternTopicIndex />'; assertRelations(a, s, i); assert.throws(() => assertRelations(a, mutation(s, ROUTE, '/patterns'), i), assert.AssertionError); });
 
 test('DDD-01 production article satisfies reader contract', () => assertArticleContract(optionalText(ARTICLE)));
+
+test('DDD-01 original source anchor preserves its canonical path and safe new-window attributes', () => {
+  const source = optionalText(ARTICLE);
+  const check = (text) => assert.match(text, /<Link to="\/img\/diagrams\/ddd-01-strategic-ddd-context-map\.svg" target="_blank" rel="noopener noreferrer">原创上下文映射矢量图<\/Link>/u, 'canonical safe original-source anchor, not a bundled Markdown asset link');
+  check(source);
+  for (const [before, after] of [['to="/img/diagrams/', 'to="/assets/files/'], ['rel="noopener noreferrer"', 'rel=""'], ['target="_blank"', 'target="_self"']]) assert.throws(() => check(mutation(source, before, after)), assert.AssertionError);
+});
 test('DDD-01 production diagram satisfies semantic and endpoint parity', () => assertDiagramContract(optionalText(DRAWIO), optionalText(SVG)));
 test('DDD-01 production diagram has measured 800px geometry', () => assertDiagramGeometry(optionalText(DRAWIO), optionalText(SVG)));
 for(const [name,before,after] of [
