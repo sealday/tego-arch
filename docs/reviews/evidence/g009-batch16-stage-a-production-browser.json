@@ -7,23 +7,31 @@
     "reviewedHead": "3777405c02c64b75de38a33d9709cac5a29bcedf",
     "implementationSha": "997e4b136b40cab3b96ff033c77830752b16b5dc",
     "headSha": "997e4b136b40cab3b96ff033c77830752b16b5dc",
+    "workflowName": "Verify and deploy Docusaurus to GitHub Pages",
+    "workflowPath": ".github/workflows/deploy.yml",
     "runId": 34232044270,
     "event": "push",
     "status": "completed",
     "conclusion": "success",
+    "createdAt": "2026-09-08T13:27:09Z",
+    "startedAt": "2026-09-08T13:27:09Z",
     "updatedAt": "2026-09-08T13:30:58Z",
     "jobs": [
       {
         "name": "build",
         "id": 102080344661,
         "status": "completed",
-        "conclusion": "success"
+        "conclusion": "success",
+        "startedAt": "2026-09-08T13:27:14Z",
+        "completedAt": "2026-09-08T13:30:33Z"
       },
       {
         "name": "deploy",
         "id": 102081529119,
         "status": "completed",
-        "conclusion": "success"
+        "conclusion": "success",
+        "startedAt": "2026-09-08T13:30:38Z",
+        "completedAt": "2026-09-08T13:30:51Z"
       }
     ]
   },
@@ -86,6 +94,20 @@
   "svgAsset": {
     "bytes": 13806,
     "sha256": "bcf229ac78b2efd0c9cf7f2b3cd36935337c710669bba4276dcfab855540d4bc"
+  },
+  "sessionDiagnostics": {
+    "scope": "one continuous production Browser session spanning all four states, relation/source audits, and final log read",
+    "methods": [
+      "Runtime.consoleAPICalled",
+      "Runtime.exceptionThrown",
+      "Log.entryAdded"
+    ],
+    "afterSequence": 22,
+    "cursor": 182,
+    "events": [],
+    "hasMore": false,
+    "truncated": false,
+    "nativeLogs": []
   },
   "states": {
     "desktopLight": {
@@ -235,29 +257,13 @@
         }
       ],
       "ddd02ActionableCount": 0,
-      "logs": [],
+      "logs": {
+        "scope": "session-wide",
+        "ref": "productionSession"
+      },
       "diagnostics": {
-        "runtimeAndLog": {
-          "methods": [
-            "Runtime.exceptionThrown",
-            "Log.entryAdded"
-          ],
-          "afterSequence": 22,
-          "cursor": 182,
-          "events": [],
-          "hasMore": false,
-          "truncated": false
-        },
-        "console": {
-          "methods": [
-            "Runtime.consoleAPICalled"
-          ],
-          "afterSequence": 22,
-          "cursor": 182,
-          "events": [],
-          "hasMore": false,
-          "truncated": false
-        }
+        "scope": "session-wide",
+        "ref": "productionSession"
       },
       "screenshot": {
         "attempted": false,
@@ -414,29 +420,13 @@
         }
       ],
       "ddd02ActionableCount": 0,
-      "logs": [],
+      "logs": {
+        "scope": "session-wide",
+        "ref": "productionSession"
+      },
       "diagnostics": {
-        "runtimeAndLog": {
-          "methods": [
-            "Runtime.exceptionThrown",
-            "Log.entryAdded"
-          ],
-          "afterSequence": 22,
-          "cursor": 182,
-          "events": [],
-          "hasMore": false,
-          "truncated": false
-        },
-        "console": {
-          "methods": [
-            "Runtime.consoleAPICalled"
-          ],
-          "afterSequence": 22,
-          "cursor": 182,
-          "events": [],
-          "hasMore": false,
-          "truncated": false
-        }
+        "scope": "session-wide",
+        "ref": "productionSession"
       },
       "screenshot": {
         "attempted": false,
@@ -593,29 +583,13 @@
         }
       ],
       "ddd02ActionableCount": 0,
-      "logs": [],
+      "logs": {
+        "scope": "session-wide",
+        "ref": "productionSession"
+      },
       "diagnostics": {
-        "runtimeAndLog": {
-          "methods": [
-            "Runtime.exceptionThrown",
-            "Log.entryAdded"
-          ],
-          "afterSequence": 22,
-          "cursor": 182,
-          "events": [],
-          "hasMore": false,
-          "truncated": false
-        },
-        "console": {
-          "methods": [
-            "Runtime.consoleAPICalled"
-          ],
-          "afterSequence": 22,
-          "cursor": 182,
-          "events": [],
-          "hasMore": false,
-          "truncated": false
-        }
+        "scope": "session-wide",
+        "ref": "productionSession"
       },
       "screenshot": {
         "attempted": true,
@@ -773,29 +747,13 @@
         }
       ],
       "ddd02ActionableCount": 0,
-      "logs": [],
+      "logs": {
+        "scope": "session-wide",
+        "ref": "productionSession"
+      },
       "diagnostics": {
-        "runtimeAndLog": {
-          "methods": [
-            "Runtime.exceptionThrown",
-            "Log.entryAdded"
-          ],
-          "afterSequence": 22,
-          "cursor": 182,
-          "events": [],
-          "hasMore": false,
-          "truncated": false
-        },
-        "console": {
-          "methods": [
-            "Runtime.consoleAPICalled"
-          ],
-          "afterSequence": 22,
-          "cursor": 182,
-          "events": [],
-          "hasMore": false,
-          "truncated": false
-        }
+        "scope": "session-wide",
+        "ref": "productionSession"
       },
       "screenshot": {
         "attempted": false,
@@ -807,4 +765,3 @@
     }
   }
 }
-
