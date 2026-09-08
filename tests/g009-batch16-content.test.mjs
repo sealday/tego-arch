@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
 import {readFileSync} from 'node:fs';
+import {createHash} from 'node:crypto';
 import test from 'node:test';
 import {parseFrontMatter} from '../scripts/content-metadata.mjs';
 import {parseMdxVisibleCopy} from '../scripts/visible-copy.mjs';
@@ -255,7 +256,8 @@ export function assertDiagramContract(drawio, svg) {
     assert.ok(st.strokeColor && st.strokeColor !== 'none' && Number(st.strokeWidth) > 0 && Number(st.opacity ?? 100) > 0, 'real painted Draw.io connector');
     const geo = c.children.find((n) => n.localName === 'mxGeometry'); assert.ok(geo, 'connector geometry');
     for (const key of ['exitX', 'exitY', 'entryX', 'entryY']) assert.ok(st[key] !== undefined && Number(st[key]) >= 0 && Number(st[key]) <= 1, 'explicit terminal ports');
-    const points = xmlElements(geo, 'mxPoint').map((n) => [Number(attr(n, 'x')), Number(attr(n, 'y'))]); assert.ok(points.length > 0 && points.flat().every(Number.isFinite), 'real waypoints');
+    const waypointArray = geo.children.find((n) => n.localName === 'Array' && attr(n, 'as') === 'points');
+    const points = xmlElements(waypointArray ?? geo, 'mxPoint').filter((n) => attr(n, 'as') !== 'offset').map((n) => [Number(attr(n, 'x')), Number(attr(n, 'y'))]); assert.ok(points.length > 0 && points.flat().every(Number.isFinite), 'real waypoints');
     const start = bounds(byId.get(source)), end = bounds(byId.get(target));
     const route = [[start[0] + start[2] * Number(st.exitX), start[1] + start[3] * Number(st.exitY)], ...points, [end[0] + end[2] * Number(st.entryX), end[1] + end[3] * Number(st.entryY)]];
     const paths = xmlElements(g, 'path'); assert.equal(paths.length, 1, 'one actual connector path');
@@ -265,6 +267,83 @@ export function assertDiagramContract(drawio, svg) {
     assert.ok(Number(attr(marker, 'markerWidth')) > 0 && Number(attr(marker, 'markerHeight')) > 0);
     assert.ok(xmlElements(marker, 'path').some((p) => /Z$/u.test(attr(p, 'd') ?? '') && paints(p, 'fill')), 'effective painted closed arrowhead');
   }
+}
+
+// Conservative Noto Sans SC advance envelope, calibrated against native font
+// metrics in Task 3. It deliberately overestimates ink, never trusts authored
+// data-bounds, and remains separate from the semantic fixture's toy geometry.
+export const diagramTextWidth = (text, size) => [...text].reduce((sum, ch) => sum + size * (/[^\x00-\x7f]/u.test(ch) ? 1 : /[MW@]/u.test(ch) ? 1 : /[mw]/u.test(ch) ? .9 : /[A-Z]/u.test(ch) ? .8 : /[il.,:;'!| ]/u.test(ch) ? .4 : /[\/-]/u.test(ch) ? .5 : /[a-z0-9]/u.test(ch) ? .65 : 1), 0);
+export function assertDiagramGeometry(drawio, svg) {
+  const root = xml(svg, SVG), a = (n, k) => attr(n, k), number = (n, k) => Number(a(n, k));
+  assert.equal(a(root, 'data-drawio-sha256'), createHash('sha256').update(drawio).digest('hex'), 'byte-bound exact Draw.io source');
+  assert.deepEqual(a(root, 'viewBox').split(' ').map(Number), [0, 0, 800, 2260], 'authored 800px geometry');
+  assert.equal(a(root, 'width'), undefined); assert.equal(a(root, 'height'), undefined);
+  assert.equal(a(root, 'fill'), 'none', 'transparent root');
+  assert.equal(root.children.some((n) => n.localName === 'rect'), false, 'no opaque root background');
+  const groups = xmlElements(root, 'g'), ids = groups.map((g) => a(g, 'data-semantic-id'));
+  assert.deepEqual(ids, ['system-boundary', 'external-system-boundary', ...RELATIONS.map(([id]) => id), ...NODES.filter(([id]) => !id.endsWith('system-boundary')).map(([id]) => id)], 'boundary → connector/label → node paint order');
+  const rect = (r) => [number(r, 'x'), number(r, 'y'), number(r, 'x') + number(r, 'width'), number(r, 'y') + number(r, 'height')];
+  const inflate = (b, d) => [b[0]-d,b[1]-d,b[2]+d,b[3]+d];
+  const separation = (b, c) => Math.hypot(Math.max(c[0]-b[2],b[0]-c[2],0), Math.max(c[1]-b[3],b[1]-c[3],0));
+  const textBoxes = (g) => xmlElements(g, 'tspan').map((t) => {
+    const size = number(t, 'font-size'), x = number(t, 'x'), y = number(t, 'y');
+    assert.ok(size >= 15, 'body/edge font at least 15 CSSpx');
+    assert.ok(a(t, 'textLength') === undefined && a(t, 'transform') === undefined, 'no compressed or transformed text');
+    return {box: [x,y-size,x+diagramTextWidth(xmlTextContent(t),size),y+size*.25], baseline:y};
+  });
+  const nodes = groups.filter((g) => NODES.some(([id]) => id === a(g,'data-semantic-id'))).map((g) => {
+    const id = a(g,'data-semantic-id'), r = xmlElements(g,'rect')[0], b = rect(r), half = number(r,'stroke-width')/2, lines = textBoxes(g);
+    assert.ok(lines.length, 'measured visible node lines');
+    const pad = lines.map(({box:t}) => [t[0]-b[0]-half,b[2]-half-t[2],t[1]-b[1]-half,b[3]-half-t[3]]);
+    for(const p of pad) assert.ok(p[0]>=16 && p[1]>=16 && p[2]>=14 && p[3]>=14, `node padding: ${id} ${p}`);
+    for(let i=1;i<lines.length;i++) assert.ok(lines[i].baseline-lines[i-1].baseline>=22,'node baseline gap >=22 CSSpx');
+    return {id,box:inflate(b,half),lines,padding:pad};
+  });
+  const edges = groups.filter((g) => RELATIONS.some(([id]) => id === a(g,'data-semantic-id'))).map((g) => {
+    const id=a(g,'data-semantic-id'), p=xmlElements(g,'path')[0], nums=a(p,'d').match(/-?\d+(?:\.\d+)?/gu).map(Number), points=[];
+    for(let i=0;i<nums.length;i+=2) points.push([nums[i],nums[i+1]]);
+    const segments=points.slice(1).map((end,i)=>{const start=points[i];assert.ok(start[0]===end[0]||start[1]===end[1],'orthogonal route');assert.notDeepEqual(start,end,'nonzero segment');return inflate([Math.min(start[0],end[0]),Math.min(start[1],end[1]),Math.max(start[0],end[0]),Math.max(start[1],end[1])],number(p,'stroke-width')/2);});
+    const marker=xmlElements(root,'marker').find(m=>`url(#${a(m,'id')})`===a(p,'marker-end'));
+    assert.ok(marker,'measurable referenced marker');
+    assert.equal(a(marker,'markerUnits'),'userSpaceOnUse');assert.equal(a(marker,'viewBox'),'0 0 12 12');assert.equal(a(marker,'refX'),'12');assert.equal(a(marker,'refY'),'6');assert.equal(a(marker,'markerWidth'),'12');assert.equal(a(marker,'markerHeight'),'12');assert.equal(a(marker,'orient'),'auto');
+    const end=points.at(-1),prev=points.at(-2),dx=Math.sign(end[0]-prev[0]),dy=Math.sign(end[1]-prev[1]);
+    const arrow=dx ? [end[0]-Math.max(dx,0)*12,end[1]-6,end[0]-Math.min(dx,0)*12,end[1]+6] : [end[0]-6,end[1]-Math.max(dy,0)*12,end[0]+6,end[1]-Math.min(dy,0)*12];
+    const lines=textBoxes(g); assert.ok(lines.length,'edge label visible');
+    for(let i=1;i<lines.length;i++)assert.ok(lines[i].baseline-lines[i-1].baseline>=22,'edge baseline gap >=22 CSSpx');
+    return {id,segments,arrow,lines,source:a(g,'data-source-id'),target:a(g,'data-target-id')};
+  });
+  const allLines=[...nodes,...edges].flatMap(x=>x.lines.map(l=>({...l,id:x.id})));
+  for(const {box:b} of allLines) assert.ok(b[0]>=0&&b[1]>=0&&b[2]<=800&&b[3]<=2260,'no clipped label');
+  const metrics=[];
+  for(const e of edges){
+    let stroke=Infinity,arrow=Infinity,node=Infinity;
+    for(const l of e.lines){
+      for(const route of edges) { for(const s of route.segments) stroke=Math.min(stroke,separation(l.box,s)); arrow=Math.min(arrow,separation(l.box,route.arrow)); }
+      for(const n of nodes.filter(n=>!n.id.endsWith('system-boundary')))node=Math.min(node,separation(l.box,n.box));
+    }
+    assert.ok(stroke>=8,`label/stroke clearance ${e.id}: ${stroke}`);assert.ok(arrow>=16,`label/arrow clearance ${e.id}: ${arrow}`);assert.ok(node>=12,`label/node clearance ${e.id}: ${node}`);
+    for(const s of e.segments){
+      for(const n of nodes.filter(n=>!n.id.endsWith('system-boundary')&&![e.source,e.target].includes(n.id)))assert.ok(separation(s,n.box)>=12,`connector/node clearance ${e.id}/${n.id}`);
+      for(const l of allLines)assert.ok(separation(s,l.box)>=8,`connector over text ${e.id}/${l.id}`);
+    }
+    metrics.push({id:e.id,stroke,arrow,node});
+  }
+  for(let i=0;i<edges.length;i++)for(let j=i+1;j<edges.length;j++)for(const s of edges[i].segments)for(const t of edges[j].segments)assert.ok(separation(s,t)>=8,`connector route overlap ${edges[i].id}/${edges[j].id}`);
+  const sourceCells=new Map(xmlElements(xml(drawio,DRAWIO),'mxCell').map(c=>[a(c,'id'),c]));
+  for(const g of groups){
+    const c=sourceCells.get(a(g,'data-semantic-id')),layout=JSON.parse(a(c,'data-label-layout')),ts=xmlElements(g,'tspan');
+    assert.deepEqual(ts.map(t=>[number(t,'x'),number(t,'y'),number(t,'font-size'),xmlTextContent(t)]),layout.lines.map((s,i)=>[layout.x,layout.y+i*24,layout.size,s]),'Draw.io/SVG exact label-layout parity');
+    if(a(c,'edge')==='1'){
+      const nums=a(xmlElements(g,'path')[0],'d').match(/-?\d+(?:\.\d+)?/gu).map(Number),points=[];
+      for(let i=0;i<nums.length;i+=2)points.push([nums[i],nums[i+1]]);
+      const lengths=points.slice(1).map((p,i)=>Math.hypot(p[0]-points[i][0],p[1]-points[i][1]));let remain=lengths.reduce((s,n)=>s+n,0)/2,mid;
+      for(let i=0;i<lengths.length;i++){if(remain<=lengths[i]){mid=[points[i][0]+(points[i+1][0]-points[i][0])*remain/lengths[i],points[i][1]+(points[i+1][1]-points[i][1])*remain/lengths[i]];break;}remain-=lengths[i];}
+      const offset=xmlElements(c,'mxPoint').find(p=>a(p,'as')==='offset'),width=Number(styleMap(a(c,'style')).labelWidth);
+      assert.ok(offset,'native Draw.io label offset');
+      assert.deepEqual([number(offset,'x'),number(offset,'y')],[layout.x+width/2-mid[0],layout.y-15+layout.lines.length*24/2-mid[1]],'native label center follows authored lane');
+    }
+  }
+  return {scale:1,nodes:nodes.map(({id,padding,lines})=>({id,padding,baselines:lines.map(l=>l.baseline)})),labels:metrics};
 }
 
 export function assertGovernance(ledger, inventory, health) {
@@ -496,6 +575,29 @@ test('DDD-01 reciprocal helper is GREEN and rejects reciprocal loss', () => { co
 
 test('DDD-01 production article satisfies reader contract', () => assertArticleContract(optionalText(ARTICLE)));
 test('DDD-01 production diagram satisfies semantic and endpoint parity', () => assertDiagramContract(optionalText(DRAWIO), optionalText(SVG)));
+test('DDD-01 production diagram has measured 800px geometry', () => assertDiagramGeometry(optionalText(DRAWIO), optionalText(SVG)));
+for(const [name,before,after] of [
+  ['swapped context','data-semantic-id="context-sales-order"','data-semantic-id="context-inventory-promise"'],
+  ['opaque background','fill="none" data-illustration-id','fill="#ffffff" data-illustration-id'],
+  ['narrow padding','x="84" y="592"','x="61" y="592"'],
+  ['line over text','M 160 550 L 160 270 L 385 270 L 385 550','M 160 550 L 160 324 L 385 324 L 385 550'],
+  ['line over node','M 160 550 L 160 270 L 385 270 L 385 550','M 160 550 L 160 592 L 385 592 L 385 550'],
+  ['line over route','M 160 550 L 160 270 L 385 270 L 385 550','M 160 550 L 160 250 L 475 250 L 475 550'],
+  ['marker footprint drift','markerWidth="12"','markerWidth="30"'],
+  ['narrow baseline','y="348" font-size="15"','y="335" font-size="15"'],
+])test(`DDD-01 authored geometry rejects ${name}`,()=>{
+  const d=optionalText(DRAWIO),s=optionalText(SVG);assertDiagramGeometry(d,s);
+  assert.throws(()=>assertDiagramGeometry(d,mutation(s,before,after)),assert.AssertionError);
+});
+test('DDD-01 authored pair rejects exact source byte drift',()=>{const d=optionalText(DRAWIO),s=optionalText(SVG);assertDiagramGeometry(d,s);assert.throws(()=>assertDiagramGeometry(d+'\n',s),/byte-bound/u);});
+for(const [name,change] of [
+  ['native label offset drift',d=>mutation(d,/x="([^"]+)" y="([^"]+)" as="offset"/u,'x="0" y="0" as="offset"')],
+  ['source label layout drift',d=>mutation(d,'&quot;x&quot;:184','&quot;x&quot;:185')],
+])test(`DDD-01 authored layout rejects ${name} after rebind`,()=>{
+  const d=optionalText(DRAWIO),s=optionalText(SVG);assertDiagramGeometry(d,s);const changed=change(d);
+  const rebound=s.replace(/data-drawio-sha256="[a-f0-9]{64}"/u,`data-drawio-sha256="${createHash('sha256').update(changed).digest('hex')}"`);
+  assert.throws(()=>assertDiagramGeometry(changed,rebound),assert.AssertionError);
+});
 test('DDD-01 production governance closes seven identities and license/health records', () => assertGovernance(JSON.parse(readFileSync('data/source-ledger.json')), optionalText('docs/source-license-inventory.md'), JSON.parse(readFileSync('data/source-link-health.json'))));
 test('DDD-01 production reciprocal links and Pattern navigation exist', () => assertRelations(optionalText(ARTICLE), optionalText('content/styles/sty-14-architecture-choice-matrix.mdx'), optionalText('content/patterns/index.mdx')));
 }
