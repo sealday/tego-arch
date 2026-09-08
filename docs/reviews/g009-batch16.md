@@ -6,7 +6,7 @@ Scope: STAGE_A_PENDING.
 
 DDD-01 lifecycle: published / pending.
 
-DDD-02 lifecycle: planned / unpublished / pending / non-actionable.
+DDD-02 topic: planned / unpublished / pending; document: absent / non-actionable.
 
 Final judgment: PENDING.
 

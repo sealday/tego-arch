@@ -121,8 +121,8 @@
       "usage_boundary": "Original illustrative Context Map only; not evidence of a real company, production outcome, service topology or approved business boundaries.",
       "license_scope": "The named project-authored ddd-01-strategic-ddd-context-map.svg image/svg+xml asset only",
       "license_evidence_url": "https://github.com/sealday/tego-arch/blob/main/static/img/diagrams/ddd-01-strategic-ddd-context-map.svg",
-      "license_evidence_note": "Reserved for the project-authored synchronized Draw.io/SVG teaching diagram under the approved DDD-01 design; original illustration only, with no third-party diagram, reference image, logo, brand visual, signature, watermark or copied composition permitted. Asset creation and visual QA remain pending Task 3.",
-      "version": "Original illustration identity registered 2026-09-08; asset creation pending Task 3",
+      "license_evidence_note": "Project-authored synchronized Draw.io/SVG teaching diagram created for DDD-01; original illustration only, with no third-party diagram, reference image, logo, brand visual, signature, watermark or copied composition. Draw.io/SVG synchronization and 800px light/dark artwork QA are complete; full-page screenshot evidence remains BLOCKED / NOT_ACCEPTED.",
+      "version": "Original illustration created 2026-09-08; synchronized Draw.io/SVG and 800px light/dark artwork QA complete",
       "link_policy": null,
       "registered_at": "2026-09-08",
       "checked_at": "2026-09-08",
@@ -132,7 +132,7 @@
       "family_grouping_evidence_url": null,
       "expected_final_transport_locator": "/img/diagrams/ddd-01-strategic-ddd-context-map.svg",
       "expected_final_approved_at": "2026-09-08",
-      "expected_final_approval_note": "Approved local original illustration identity only; asset creation and rendered QA remain pending Task 3."
+      "expected_final_approval_note": "Approved local original illustration; synchronized Draw.io/SVG creation and 800px light/dark artwork QA complete. Full-page screenshot evidence remains BLOCKED / NOT_ACCEPTED."
     },
     {
       "id": "src-atlas-sty14-architecture-choice-matrix",
