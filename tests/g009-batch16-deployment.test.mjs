@@ -37,7 +37,7 @@ export function assertProjection(status, manifest, stage, documents = []) {
   const baseline = JSON.parse(gitBaseline('src/generated/topic-manifest.json'));
   assert.deepEqual(topic(manifest, 'DDD-02'), topic(baseline, 'DDD-02'), 'existing DDD-02 planned identity stays byte-equivalent and unpublished');
   assert.equal(documents.some((d) => d.metadata?.topic_id === 'DDD-02'), false, 'no fabricated DDD-02 document');
-  for (const d of documents) assertNoDDD02(readerContract(d.body ?? '').links.map((l) => l.href));
+  for (const d of documents) assertNoDDD02(readerContract(d.body ?? '').links.map((l) => l.href), d.metadata?.slug ?? ROUTE);
 }
 export const assertStageAProjection = (status, manifest, documents) => assertProjection(status, manifest, 'A', documents);
 export const assertStageBProjection = (status, manifest, documents) => assertProjection(status, manifest, 'B', documents);
@@ -180,6 +180,11 @@ if (process.argv[1]?.endsWith('g009-batch16-deployment.test.mjs')) {
 test('DDD-01 immutable production baseline is 85/127/600 and both DDD topics planned', () => { const status = JSON.parse(gitBaseline('src/generated/project-status.json')), manifest = JSON.parse(gitBaseline('src/generated/topic-manifest.json')); assert.deepEqual(project(status),EXPECTED_CURRENT_PROJECTION); for(const id of ['DDD-01','DDD-02']) {assert.equal(topic(manifest,id).published,false);assert.equal(topic(manifest,id).status.value,'pending');} });
 for (const stage of ['A','B']) {
   test(`DDD-01 Stage ${stage} projection fixture is GREEN`, () => {const f=projectionFixture(stage); assertProjection(f.status,f.manifest,stage);});
+  test(`DDD-01 Stage ${stage} rejects relative DDD-02 document link`, () => {
+    const f = projectionFixture(stage), documents = [{metadata: {topic_id: 'DDD-01'}, body: '[下一篇](ddd-02?view=full#next)'}];
+    assertProjection(f.status, f.manifest, stage, [{...documents[0], body: '[当前页](?view=full#next)'}]);
+    assert.throws(() => assertProjection(f.status, f.manifest, stage, documents), /DDD-02 must remain non-actionable/u);
+  });
   for(const [label,change] of [
     ['lifecycle drift',(f)=>{topic(f.manifest,'DDD-01').status.value=stage==='A'?'complete':'pending';}],
     ['stale counts',(f)=>{f.status.content_documents=127;}],

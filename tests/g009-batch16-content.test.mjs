@@ -95,12 +95,12 @@ const compact = (text) => text.replace(/\s/gu, '');
 
 export function readerContract(source) {
   const parsed = parseMdxVisibleCopy(source, ARTICLE, {includeAst: true});
-  const chars = parsed.normalized.split(''), blocks = [], wrappers = [], images = [], links = [], definitions = new Map(), excluded = new Set();
+  const chars = parsed.normalized.split(''), blocks = [], wrappers = [], images = [], links = [], definitions = new Map(), excluded = new Set(), evidenceNodes = new Set();
   const mask = (n) => { for (let i = n.position.start.offset; i < n.position.end.offset; i++) if (chars[i] !== '\n') chars[i] = ' '; };
   const literal = (n) => excluded.has(n) ? '' : ['text'].includes(n.type) ? n.value : ['inlineCode', 'code', 'mdxFlowExpression', 'mdxTextExpression'].includes(n.type) ? '' : (n.children ?? []).map(literal).join('');
   const walk = (n, owner, evidence = false) => {
-    if (['code', 'inlineCode', 'mdxjsEsm', 'definition'].includes(n.type)) { if (n.type === 'definition') definitions.set(n.identifier, n.url); mask(n); return; }
-    if (['mdxFlowExpression', 'mdxTextExpression'].includes(n.type)) { assert.match(n.value.trim(), /^(?:\/\*[\s\S]*?\*\/\s*)*$/u, 'dynamic narrative rejected'); mask(n); return; }
+    if (['code', 'inlineCode', 'mdxjsEsm', 'definition'].includes(n.type)) { if (n.type === 'definition') definitions.set(n.identifier, n.url); excluded.add(n); mask(n); return; }
+    if (['mdxFlowExpression', 'mdxTextExpression'].includes(n.type)) { assert.match(n.value.trim(), /^(?:\/\*[\s\S]*?\*\/\s*)*$/u, 'dynamic narrative rejected'); excluded.add(n); mask(n); return; }
     if (n.type.startsWith('mdxJsx')) {
       const attrs = {};
       for (const a of n.attributes) { assert.equal(a.type, 'mdxJsxAttribute'); assert.ok(!Object.hasOwn(attrs, a.name), 'no duplicate attrs'); attrs[a.name] = typeof a.value === 'object' && a.value !== null ? a.value.value : a.value; }
@@ -111,24 +111,45 @@ export function readerContract(source) {
       if (n.name === 'details') { assert.deepEqual(attrs, {className: 'evidence-card'}); mask(n); evidence = true; }
       if (attrs.className) assert.ok(['evidence-card', ...WRAPPERS.map((w) => w.className)].includes(attrs.className), 'known visible class');
       if (attrs.role === 'region') { assert.equal(n.name, 'div'); assert.equal(owner, undefined); owner = wrappers.length; wrappers.push({attributes: attrs, start: n.position.start.offset, end: n.position.end.offset}); }
-      if (attrs.href || attrs.to) links.push({label: literal(n), href: attrs.href ?? attrs.to, evidence});
+      if (attrs.href || attrs.to) links.push({node: n, href: attrs.href ?? attrs.to, evidence});
       if (n.name === 'img') images.push({url: attrs.src, owner, evidence});
     }
-    if (n.type === 'link') links.push({label: literal(n), href: n.url, evidence});
-    if (n.type === 'linkReference') links.push({label: literal(n), reference: n.identifier, evidence});
+    if (n.type === 'link') links.push({node: n, href: n.url, evidence});
+    if (n.type === 'linkReference') links.push({node: n, reference: n.identifier, evidence});
     if (n.type === 'image') images.push({url: n.url, owner, evidence});
-    if (['paragraph', 'heading'].includes(n.type)) blocks.push({node: n, heading: n.type === 'heading' ? n.depth : null, start: n.position.start.offset, evidence});
+    if (evidence) evidenceNodes.add(n);
     for (const child of n.children ?? []) walk(child, owner, evidence);
   };
   walk(parsed.ast);
-  return {visible: chars.join(''), blocks: blocks.map(({node,...b}) => ({...b,text:literal(node)})), wrappers, images, links: links.map((l) => ({...l, href: l.href ?? definitions.get(l.reference)}))};
+  // Collect each visible text leaf once, including direct JSX text. Block boundaries
+  // separate statements, while emphasis, spans and soft wraps preserve inline text.
+  let current;
+  const flush = () => { if (current?.text.trim()) blocks.push(current); current = undefined; };
+  const collect = (n, heading = null) => {
+    if (excluded.has(n)) return;
+    const boundary = ['paragraph', 'heading', 'mdxJsxFlowElement'].includes(n.type);
+    if (boundary) flush();
+    if (n.type === 'heading') heading = n.depth;
+    if (n.type === 'text') {
+      current ??= {text: '', heading, start: n.position.start.offset, evidence: evidenceNodes.has(n)};
+      current.text += n.value;
+    }
+    for (const child of n.children ?? []) collect(child, heading);
+    if (boundary) flush();
+  };
+  collect(parsed.ast); flush();
+  // Resolve labels only after every descendant's visibility has been classified.
+  return {visible: chars.join(''), blocks, wrappers, images, links: links.map(({node, ...l}) => ({...l, label: literal(node), href: l.href ?? definitions.get(l.reference)}))};
 }
-export function assertNoDDD02(value) {
+export function assertNoDDD02(value, baseRoute = ROUTE) {
   const visit = (v) => {
     if (typeof v === 'string') {
       // Callers pass actual link destinations, not prose mentions of the planned topic.
       let decoded = v; try { decoded = decodeURIComponent(v); } catch { /* Invalid URL is not a valid escape hatch. */ }
-      for (const pattern of DDD02_ACTIONABLE_PATTERNS) assert.doesNotMatch(decoded.replaceAll('\\', '/'), pattern, 'DDD-02 must remain non-actionable');
+      let destination;
+      try { destination = new URL(decoded.replaceAll('\\', '/'), new URL(baseRoute, 'https://tego-arch.invalid')).pathname; }
+      catch { assert.fail('link destination must resolve against the page route'); }
+      for (const pattern of DDD02_ACTIONABLE_PATTERNS) assert.doesNotMatch(destination, pattern, 'DDD-02 must remain non-actionable');
     } else if (Array.isArray(v)) v.forEach(visit);
     else if (v && typeof v === 'object') Object.values(v).forEach(visit);
   }; visit(value);
@@ -171,7 +192,7 @@ export function assertRelations(article, sty14, index) {
   // The registry-backed Pattern index already supplies publication navigation.
   assert.ok(destinations(sty14).includes(ROUTE), 'visible STY-14 reciprocal link');
   assert.ok(index.includes('<PatternTopicIndex />') || destinations(index).includes(ROUTE), 'existing dynamic Pattern registry or direct index navigation');
-  assertNoDDD02([...destinations(article), ...destinations(sty14), ...destinations(index)]);
+  for (const [source, base] of [[article, ROUTE], [sty14, '/styles/sty-14'], [index, '/patterns']]) assertNoDDD02(destinations(source), base);
 }
 
 const attr = (n, key) => n.attributes.get(key);
@@ -187,11 +208,21 @@ export function assertDiagramContract(drawio, svg) {
   exactSet(groups.map((g) => attr(g, 'data-semantic-id')), [...NODES.map(([id]) => id), ...RELATIONS.map(([id]) => id)], 'SVG semantic inventory');
   assert.equal(attr(sr, 'role'), 'img'); assert.equal(attr(sr, 'data-illustration-id'), ORIGINAL_SOURCE_ID);
   assert.ok(xmlElements(sr, 'title').some((n) => xmlTextContent(n).trim())); assert.ok(xmlElements(sr, 'desc').some((n) => xmlTextContent(n).trim()));
+  const states = new Map();
+  const opacity = (value) => Number(String(value).replace(/%$/u, '')) / (String(value).endsWith('%') ? 100 : 1);
+  const paints = (n, kind) => {
+    const state = states.get(n), color = state[kind];
+    return color && !['none', 'transparent'].includes(color) && opacity(state[`${kind}-opacity`]) > 0 && (kind !== 'stroke' || Number(state['stroke-width']) > 0);
+  };
   const inspect = (n, inherited) => {
     assert.ok(['svg', 'g', 'defs', 'marker', 'path', 'line', 'rect', 'text', 'tspan', 'title', 'desc'].includes(n.localName), 'static safe SVG elements');
     for (const [key] of n.attributes) assert.ok(!['style', 'class', 'transform', 'clip-path', 'mask', 'filter', 'hidden'].includes(key) && !key.startsWith('on'), 'no hidden presentation override');
     const state = svgPresentationState(n, inherited);
-    assert.ok(state.display !== 'none' && !['hidden', 'collapse'].includes(state.visibility) && Number(state.opacity) > 0 && attr(n, 'aria-hidden') !== 'true', 'effective visible SVG');
+    const width = attr(n, 'stroke-width')?.trim().toLowerCase();
+    assert.ok(!['revert', 'revert-layer'].includes(width), 'known stroke width cascade');
+    state['stroke-width'] = !width || ['inherit', 'unset'].includes(width) ? inherited?.['stroke-width'] ?? '1' : width === 'initial' ? '1' : width;
+    states.set(n, state);
+    assert.ok(state.display !== 'none' && !['hidden', 'collapse'].includes(state.visibility) && opacity(state.opacity) > 0 && attr(n, 'aria-hidden') !== 'true', 'effective visible SVG');
     if (['text', 'tspan'].includes(n.localName)) assert.ok(state.fill !== 'none' && state.fill !== 'transparent' && Number(state['fill-opacity'] ?? 1) > 0 && Number(state['font-size'] ?? 16) >= 12, 'effective readable text');
     for (const child of n.children) inspect(child, state);
   }; inspect(sr);
@@ -203,7 +234,10 @@ export function assertDiagramContract(drawio, svg) {
     assert.equal(xmlElements(g, 'text').map(xmlTextContent).join(''), label, 'visible SVG text, not metadata');
     const rects = xmlElements(g, 'rect'); assert.equal(rects.length, 1, 'one real node/boundary rect');
     assert.deepEqual(['x', 'y', 'width', 'height'].map((k) => Number(attr(rects[0], k))), bounds(c), 'source/SVG node geometry parity');
-    if (id.endsWith('system-boundary') || id === 'system-boundary') assert.equal(attr(rects[0], 'fill'), 'none', 'transparent system boundaries');
+    if (id.endsWith('system-boundary') || id === 'system-boundary') {
+      assert.equal(states.get(rects[0]).fill, 'none', 'transparent system boundaries');
+      assert.ok(paints(rects[0], 'stroke'), 'effective painted boundary stroke');
+    } else assert.ok(paints(rects[0], 'stroke') || paints(rects[0], 'fill'), 'effective painted node');
   }
   const markers = new Map(xmlElements(sr, 'marker').map((m) => [attr(m, 'id'), m]));
   for (const r of RELATIONS) {
@@ -220,10 +254,10 @@ export function assertDiagramContract(drawio, svg) {
     const route = [[start[0] + start[2] * Number(st.exitX), start[1] + start[3] * Number(st.exitY)], ...points, [end[0] + end[2] * Number(st.entryX), end[1] + end[3] * Number(st.entryY)]];
     const paths = xmlElements(g, 'path'); assert.equal(paths.length, 1, 'one actual connector path');
     assert.equal(attr(paths[0], 'd'), route.map(([x, y], i) => `${i ? 'L' : 'M'} ${x} ${y}`).join(' '), 'Draw.io/SVG terminal and waypoint parity');
-    assert.ok(attr(paths[0], 'stroke') && attr(paths[0], 'stroke') !== 'none' && Number(attr(paths[0], 'stroke-width')) > 0, 'visible connector stroke');
+    assert.ok(paints(paths[0], 'stroke'), 'effective visible connector stroke');
     const markerId = /^url\(#([\w-]+)\)$/u.exec(attr(paths[0], 'marker-end') ?? '')?.[1], marker = markers.get(markerId); assert.ok(marker, 'real referenced arrow marker');
     assert.ok(Number(attr(marker, 'markerWidth')) > 0 && Number(attr(marker, 'markerHeight')) > 0);
-    assert.ok(xmlElements(marker, 'path').some((p) => /Z$/u.test(attr(p, 'd') ?? '') && /^#[0-9a-f]{6}$/iu.test(attr(p, 'fill') ?? '')), 'painted closed arrowhead');
+    assert.ok(xmlElements(marker, 'path').some((p) => /Z$/u.test(attr(p, 'd') ?? '') && /^#[0-9a-f]{6}$/iu.test(states.get(p).fill) && paints(p, 'fill')), 'effective painted closed arrowhead');
   }
 }
 
@@ -298,6 +332,36 @@ export function governanceFixture() {
 
 if (process.argv[1]?.endsWith('g009-batch16-content.test.mjs')) {
 test('DDD-01 article helper fixture is GREEN', () => assertArticleContract(articleFixture()));
+test('DDD-01 article helper accepts multiline emphasis softwrap and JSX visible narrative', () => {
+  const source = articleFixture();
+  assertArticleContract(mutation(source, REQUIRED_SENTENCES[2], '<p>子域属于**问题空间**，\n限界上下文是模型适用边界。</p>'));
+  assertArticleContract(mutation(source, REQUIRED_SENTENCES[2], '<div>子域属于<span>问题空间</span>，限界上下文是模型适用边界。</div>'));
+});
+for (const tag of ['p', 'div', 'span', 'summary']) test(`DDD-01 article rejects JSX direct ${tag} equivalence`, () => {
+  const source = articleFixture(), changed = source + `\n\n<${tag}>限界上下文就是微服务。</${tag}>\n`;
+  assertArticleContract(source); assert.notEqual(changed, source);
+  assert.throws(() => assertArticleContract(changed), /no context equivalence/u);
+});
+test('DDD-01 article rejects JSX split inline equivalence', () => {
+  const source = articleFixture(), changed = source + '\n\n<div>限界<span>上下文</span>就是微服务。</div>\n';
+  assertArticleContract(source); assert.notEqual(changed, source);
+  assert.throws(() => assertArticleContract(changed), /no context equivalence/u);
+});
+for (const kind of ['markdown', 'reference', 'HTML', 'MDX']) test(`DDD-01 article rejects hidden source label ${kind}`, () => {
+  const source = articleFixture(), [label, href] = SOURCE_ANCHORS[0], hidden = `<span hidden>${label}</span>`;
+  const replacement = kind === 'markdown' ? `[${hidden}](${href})` : kind === 'reference' ? `[${hidden}][hidden-source]\n\n[hidden-source]: ${href}` : kind === 'HTML' ? `<a href="${href}">${hidden}</a>` : `<Link to="${href}">${hidden}</Link>`;
+  const changed = mutation(source, `[${label}](${href})`, replacement);
+  assertArticleContract(source);
+  assert.throws(() => assertArticleContract(changed), /visible source anchor/u);
+});
+test('DDD-01 article helper accepts query and hash on the current page', () => {
+  assertArticleContract(articleFixture() + '\n\n[查询](?topic=ddd-02)\n\n[锚点](#ddd-02)\n');
+});
+for (const href of ['ddd-02', './ddd-02', 'ddd-02?view=full', 'ddd-02#next', './draft/../ddd-02?view=full#next', '%64dd-02']) test(`DDD-01 article rejects relative DDD-02 ${href}`, () => {
+  const source = articleFixture(), changed = source + `\n\n[下一篇](${href})\n`;
+  assertArticleContract(source); assert.notEqual(changed, source);
+  assert.throws(() => assertArticleContract(changed), /DDD-02 must remain non-actionable/u);
+});
 for (const [label, change] of [
   ['hidden narrative', (s) => mutation(s, REQUIRED_SENTENCES[2], `<span hidden>${REQUIRED_SENTENCES[2]}</span>`)],
   ['inline hidden definition', (s) => mutation(s, '子域属于问题空间', '<span hidden>子域属于问题空间</span>')],
@@ -320,6 +384,15 @@ for (const [label, change] of [
   ['DDD-02 reference', (s) => s + '\n[下一篇][next]\n\n[next]: /patterns/ddd-02'],
 ]) test(`DDD-01 article rejects ${label}`, () => { const source = articleFixture(); assertArticleContract(source); const changed = change(source); assert.notEqual(changed, source); assert.throws(() => assertArticleContract(changed), assert.AssertionError); });
 test('DDD-01 diagram helper fixture is GREEN', () => { const f = diagramFixture(); assertDiagramContract(f.drawio, f.svg); });
+test('DDD-01 diagram helper accepts effective inherited paint and local overrides', () => {
+  const f = diagramFixture();
+  f.svg = mutation(f.svg, '<g data-semantic-id="inventory-sales"', '<g stroke="#111111" stroke-width="2" stroke-opacity="50%" data-semantic-id="inventory-sales"');
+  f.svg = mutation(f.svg, 'stroke="#111111" stroke-width="2" marker-end=', 'marker-end=');
+  f.svg = mutation(f.svg, '<marker id="arrow"', '<marker fill="#111111" fill-opacity="50%" id="arrow"');
+  f.svg = mutation(f.svg, 'd="M 0 0 L 10 5 L 0 10 Z" fill="#111111"', 'd="M 0 0 L 10 5 L 0 10 Z"');
+  f.svg = mutation(f.svg, '<defs>', '<defs fill-opacity="0">');
+  assertDiagramContract(f.drawio, f.svg);
+});
 for (const [label, field, before, after] of [
   ['missing context', 'svg', 'data-semantic-id="context-sales-order"', 'data-semantic-id="fake"'],
   ['reversed U/D', 'svg', 'U → D', 'D → U'],
@@ -331,6 +404,15 @@ for (const [label, field, before, after] of [
   ['hidden text', 'svg', '<text ', '<text visibility="hidden" '],
   ['marker loss', 'svg', 'marker-end="url(#arrow)"', 'marker-end="none"'],
   ['unpainted connector', 'svg', 'stroke-width="2"', 'stroke-width="0"'],
+  ['effective connector stroke opacity', 'svg', 'stroke-width="2"', 'stroke-width="2" stroke-opacity="0"'],
+  ['effective connector inherited stroke opacity', 'svg', '<g data-semantic-id="inventory-sales"', '<g stroke-opacity="0" data-semantic-id="inventory-sales"'],
+  ['effective connector transparent stroke', 'svg', 'stroke-width="2"', 'stroke-width="2" stroke-opacity="0%"'],
+  ['effective boundary missing stroke', 'svg', '<g data-semantic-id="system-boundary"><rect', '<g data-semantic-id="system-boundary"><rect stroke-opacity="0"'],
+  ['effective boundary stroke none', 'svg', '<g data-semantic-id="system-boundary"><rect x="600" y="620" width="400" height="160" fill="none" stroke="#111111"', '<g data-semantic-id="system-boundary"><rect x="600" y="620" width="400" height="160" fill="none" stroke="none"'],
+  ['effective boundary inherited stroke opacity', 'svg', '<g data-semantic-id="system-boundary">', '<g data-semantic-id="system-boundary" stroke-opacity="0">'],
+  ['effective marker fill opacity', 'svg', '<marker id="arrow"', '<marker fill-opacity="0" id="arrow"'],
+  ['effective marker path fill opacity', 'svg', 'd="M 0 0 L 10 5 L 0 10 Z"', 'fill-opacity="0" d="M 0 0 L 10 5 L 0 10 Z"'],
+  ['effective marker inherited fill opacity', 'svg', '<defs>', '<defs fill-opacity="0">'],
   ['zero Draw.io opacity', 'drawio', 'opacity=100', 'opacity=0'],
   ['opaque boundary', 'svg', '<g data-semantic-id="system-boundary"><rect', '<g data-semantic-id="system-boundary" opacity="0"><rect'],
 ]) test(`DDD-01 diagram rejects ${label}`, () => { const f = diagramFixture(); assertDiagramContract(f.drawio, f.svg); f[field] = mutation(f[field], before, after); assert.throws(() => assertDiagramContract(f.drawio, f.svg), assert.AssertionError); });
