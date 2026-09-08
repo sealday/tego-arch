@@ -3,7 +3,7 @@ import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import {readFileSync, readdirSync} from 'node:fs';
 import test from 'node:test';
-import {BASELINE, ARTICLE, ROUTE, SVG, EXACT_METADATA, WRAPPER_LABELS, SOURCE_ANCHORS, gitBaseline, optionalText, mutation, assertNoDDD02, readerContract} from './g009-batch16-content.test.mjs';
+import {BASELINE, ARTICLE, ROUTE, SVG, EXACT_METADATA, ORIGINAL_SOURCE_CONTRACT, WRAPPER_LABELS, SOURCE_ANCHORS, gitBaseline, optionalText, mutation, assertNoDDD02, readerContract} from './g009-batch16-content.test.mjs';
 
 export const REVIEW = 'docs/reviews/g009-batch16.md';
 export const LOCAL_BROWSER = 'docs/reviews/evidence/g009-batch16-stage-a-browser.json';
@@ -21,7 +21,17 @@ export const HTTP_ROUTES = Object.freeze(['/', '/patterns', '/patterns/ddd-01', 
 export const RELATION_METHOD = 'exact-href navigation and Browser back; no physical click claimed';
 export const REVIEW_ROLES = Object.freeze(['code/spec/security', 'content/evidence/rights', 'architecture/invariants']);
 export const BUILD_INPUTS = Object.freeze(['content', 'data', 'src', 'static', 'scripts', 'plugins', 'docusaurus.config.ts', 'sidebars.ts', 'package.json', 'package-lock.json']);
+export const OBSERVED_BUILD_COMMIT = '6cdb62fb2013cb28178c77484aac948bd4862067';
+const APPROVED_RIGHTS_FIELDS = Object.freeze(['license_evidence_note', 'version', 'expected_final_approval_note']);
+const APPROVED_RIGHTS_PATHS = new Set(['data/source-ledger.json', 'src/generated/source-ledger.json']);
 const hash = (bytes) => createHash('sha256').update(bytes).digest('hex');
+let observedBuildPathsCache;
+const observedBuildBytesCache = new Map();
+const observedBuildPaths = () => observedBuildPathsCache ??= execFileSync('git', ['ls-tree','-r','--name-only','-z',OBSERVED_BUILD_COMMIT,'--',...BUILD_INPUTS], {encoding:'utf8'}).split('\0').filter(Boolean).sort();
+const observedBuildInput = (path) => {
+  if (!observedBuildBytesCache.has(path)) observedBuildBytesCache.set(path, execFileSync('git',['show',`${OBSERVED_BUILD_COMMIT}:${path}`],{maxBuffer:20*1024*1024}));
+  return observedBuildBytesCache.get(path);
+};
 const project = (s) => ({completed: s.completed_topics, documents: s.content_documents, sources: s.governed_sources});
 const exactKeys = (v, keys, label) => { assert.ok(v && typeof v === 'object', label); assert.deepEqual(Object.keys(v).sort(), [...keys].sort(), label); };
 const topic = (manifest, id) => { const found = manifest.topics.filter((t) => t.id === id); assert.equal(found.length, 1, `one canonical ${id}`); return found[0]; };
@@ -97,7 +107,10 @@ export function assertReview(source, {stage = 'A', phase = 'pending', reviewedHe
     required.push(`Browser raw: ${browserIdentity.path}; bytes ${browserIdentity.bytes}; SHA-256 ${browserIdentity.sha256}.`);
   }
   const isBinding = (s) => /^Browser raw: docs\/reviews\/evidence\/g009-batch16-stage-[ab]-(?:production-)?browser\.json; bytes [1-9]\d*; SHA-256 [0-9a-f]{64}\.$/u.test(s) || /^Local build: [0-9a-f]{40}; files [1-9]\d*; SHA-256 [0-9a-f]{64}\.$/u.test(s);
-  for (const block of r.blocks.filter((b) => b.evidence)) assert.doesNotMatch(block.text, /(?:Deployment|Final judgment|code\/spec\/security|content\/evidence\/rights|architecture\/invariants):/u, 'governed review claims cannot be displaced into evidence cards');
+  for (const block of r.blocks.filter((b) => b.evidence)) {
+    assert.doesNotMatch(block.text, /(?:Deployment|Final judgment|code\/spec\/security|content\/evidence\/rights|architecture\/invariants|Screenshot evidence):/u, 'governed review claims cannot be displaced into evidence cards');
+    assert.doesNotMatch(block.text, /(?:accepted\s+(?!0\/4)\d+\/4|(?:visual|full-page|全文页面|全页截图)[^\n。]*(?:PASS|(?<!NOT_)ACCEPTED|已接受|通过))/iu, 'evidence cards cannot inflate screenshot or visual acceptance');
+  }
   const bindings = sentences.filter(isBinding); assert.equal(new Set(bindings.map((s) => s.split(';')[0])).size, bindings.length, 'one independent binding per artifact');
   assert.deepEqual(sentences.filter((s) => !headings.includes(s) && s !== 'G009 Batch 16' && (!isBinding(s) || required.includes(s))), required, 'exact review claims, no additive/displaced success');
 }
@@ -172,6 +185,28 @@ export function currentBuildIdentity(paths = execFileSync('git', ['ls-files','--
   assert.ok(paths.includes('sidebars.ts'), 'complete build inputs include sidebars.ts');
   return {inputFiles: paths.length, inputSha256: hash(paths.map((path) => `${path}\0${hash(readInput(path))}\n`).join(''))};
 }
+export function assertBuildDerivation(rawBuild, {
+  currentPaths = execFileSync('git', ['ls-files','--cached','--others','--exclude-standard','-z',...BUILD_INPUTS], {encoding:'utf8'}).split('\0').filter(Boolean).sort(),
+  observedPaths = observedBuildPaths(),
+  currentRead = (path) => readFileSync(path),
+  observedRead = observedBuildInput,
+} = {}) {
+  assert.deepEqual(currentPaths, observedPaths, 'no build-input membership drift since the observed candidate');
+  assert.deepEqual(currentBuildIdentity(observedPaths, observedRead), {inputFiles:rawBuild.inputFiles,inputSha256:rawBuild.inputSha256}, 'recorded digest reproducibly derives from the observed candidate tree');
+  for (const path of currentPaths) {
+    const currentBytes = currentRead(path), observedBytes = observedRead(path);
+    if (!APPROVED_RIGHTS_PATHS.has(path)) { assert.deepEqual(currentBytes, observedBytes, `unapproved build-input drift: ${path}`); continue; }
+    const current = JSON.parse(currentBytes.toString()), observed = JSON.parse(observedBytes.toString());
+    const currentRecord = current.sources.find((s) => s.id === 'src-atlas-ddd01-strategic-context-map');
+    const observedRecord = observed.sources.find((s) => s.id === 'src-atlas-ddd01-strategic-context-map');
+    assert.ok(currentRecord && observedRecord, `DDD-01 original rights record exists in ${path}`);
+    for (const field of APPROVED_RIGHTS_FIELDS) assert.equal(currentRecord[field], ORIGINAL_SOURCE_CONTRACT[field], `approved ${field} completion in ${path}`);
+    const normalized = structuredClone(current);
+    const normalizedRecord = normalized.sources.find((s) => s.id === 'src-atlas-ddd01-strategic-context-map');
+    for (const field of APPROVED_RIGHTS_FIELDS) normalizedRecord[field] = observedRecord[field];
+    assert.deepEqual(normalized, observed, `only approved original-rights completion fields may differ in ${path}`);
+  }
+}
 export function assertRecordedBrowserArtifact(path, review, {local = false, rawSource, svgBytes} = {}) {
   const source = rawSource ?? optionalText(path); assert.ok(source, `${path} raw Browser evidence must exist`);
   assert.ok(review, 'independent review evidence binding exists');
@@ -234,13 +269,15 @@ test('DDD-01 history helper rejects material add/edit/delete and suffix modifica
   assert.throws(()=>assertHistoricalArtifacts(files,mutation(backlog,'当前发布基线：','伪造发布基线：')),assert.AssertionError);
 });
 test('DDD-01 backlog helper keeps Stage A pending and requires bound Stage B closure',()=>{const base=gitBaseline('docs/content-backlog.md').toString();assertBacklog(base,'A');const evidence={reviewedHead:'a'.repeat(40),implementationSha:'b'.repeat(40),runId:123};const closed=mutation(base,PENDING_BACKLOG_ROW,PENDING_BACKLOG_ROW.replace('- [ ]','- [x]')+` Stage A ${evidence.reviewedHead} ${evidence.implementationSha} ${evidence.runId}`);assertBacklog(closed,'B',evidence);assert.throws(()=>assertBacklog(closed,'A'),assert.AssertionError);assert.throws(()=>assertBacklog(base,'B',evidence),assert.AssertionError);});
-for(const stage of ['A','B']) for(const phase of ['pending','ready','published']) test(`DDD-01 Stage ${stage} ${phase} review helper and mutations`,()=>{const f=browserFixture();const options={stage,phase,reviewedHead:'b'.repeat(40),publication:f.raw.publication,browserIdentity:{path:stage==='A'?STAGE_A_BROWSER:STAGE_B_BROWSER,bytes:123,sha256:'c'.repeat(64)}};const s=reviewFixture(options);assertReview(s,options);for(const [before,after] of [['DDD-01 lifecycle: published','DDD-01 lifecycle: unpublished'],['Screenshot evidence: BLOCKED / NOT_ACCEPTED','Screenshot evidence: PASS / ACCEPTED'],['DDD-02 topic: planned / unpublished / pending; document: absent / non-actionable.','DDD-02 topic: published / complete; document: present / actionable.']])assert.throws(()=>assertReview(mutation(s,before,after),options),assert.AssertionError);assert.throws(()=>assertReview(s+'\n\nSUCCESS: fabricated.\n',options),assert.AssertionError);for(const claim of ['Deployment: SUCCESS / functional PASS.','code/spec/security: READY / APPROVE / findings 0.','Final judgment: READY.']){const displaced=s.replace('## Publication',`<details className="evidence-card">\n<summary>证据</summary>\n\n${claim}\n\n</details>\n\n## Publication`);assert.notEqual(displaced,s);assert.throws(()=>assertReview(displaced,options),assert.AssertionError);}});
+for(const stage of ['A','B']) for(const phase of ['pending','ready','published']) test(`DDD-01 Stage ${stage} ${phase} review helper and mutations`,()=>{const f=browserFixture();const options={stage,phase,reviewedHead:'b'.repeat(40),publication:f.raw.publication,browserIdentity:{path:stage==='A'?STAGE_A_BROWSER:STAGE_B_BROWSER,bytes:123,sha256:'c'.repeat(64)}};const s=reviewFixture(options);assertReview(s,options);for(const [before,after] of [['DDD-01 lifecycle: published','DDD-01 lifecycle: unpublished'],['Screenshot evidence: BLOCKED / NOT_ACCEPTED','Screenshot evidence: PASS / ACCEPTED'],['DDD-02 topic: planned / unpublished / pending; document: absent / non-actionable.','DDD-02 topic: published / complete; document: present / actionable.']])assert.throws(()=>assertReview(mutation(s,before,after),options),assert.AssertionError);assert.throws(()=>assertReview(s+'\n\nSUCCESS: fabricated.\n',options),assert.AssertionError);for(const claim of ['Deployment: SUCCESS / functional PASS.','code/spec/security: READY / APPROVE / findings 0.','Final judgment: READY.','Screenshot evidence: PASS / ACCEPTED; accepted 4/4.','全文页面截图已接受并通过。','full-page visual PASS.']){const displaced=s.replace('## Publication',`<details className="evidence-card">\n<summary>证据</summary>\n\n${claim}\n\n</details>\n\n## Publication`);assert.notEqual(displaced,s);assert.throws(()=>assertReview(displaced,options),assert.AssertionError);}});
 test('DDD-01 Stage A production gate allows honest prepublish states and rejects state/deployment bypasses',()=>{const pending=reviewFixture(),ready=reviewFixture({stage:'A',phase:'ready',reviewedHead:'b'.repeat(40)});assertStageAProductionGate(pending,{rawSource:undefined});assertStageAProductionGate(ready,{rawSource:undefined});assert.throws(()=>assertStageAProductionGate(mutation(pending,'Final judgment: PENDING.','Final judgment: READY.'),{rawSource:undefined}),assert.AssertionError);assert.throws(()=>assertStageAProductionGate(mutation(pending,'Deployment: NOT_RUN.','Deployment: SUCCESS / functional PASS.'),{rawSource:undefined}),assert.AssertionError);assert.throws(()=>assertStageAProductionGate(pending,{rawSource:JSON.stringify(browserFixture().raw)}),assert.AssertionError);});
 test('DDD-01 Stage A production gate retains exact published raw and deployment constraints',()=>{const f=browserFixture(),rawSource=JSON.stringify(f.raw),browserIdentity={path:STAGE_A_BROWSER,bytes:Buffer.byteLength(rawSource),sha256:hash(rawSource)},review=reviewFixture({stage:'A',phase:'published',reviewedHead:f.raw.publication.reviewedHead,publication:f.raw.publication,browserIdentity});assertStageAProductionGate(review,{rawSource,svgBytes:f.options.svgBytes});const failed=structuredClone(f.raw);failed.publication.jobs[1].conclusion='failure';assert.throws(()=>assertStageAProductionGate(review,{rawSource:JSON.stringify(failed),svgBytes:f.options.svgBytes}),assert.AssertionError);assert.throws(()=>assertStageAProductionGate(mutation(review,'Deployment: SUCCESS / functional PASS.','Deployment: UNKNOWN.'),{rawSource,svgBytes:f.options.svgBytes}),assert.AssertionError);});
 test('DDD-01 Browser helper accepts independent identity-bound four-state evidence fixture',()=>{const f=browserFixture();assertBrowserEvidence(f.raw,f.options);const rawBytes=Buffer.from(JSON.stringify(f.raw));assertBrowserEvidence(f.raw,{...f.options,rawBytes,rawIdentity:{bytes:rawBytes.length,sha256:hash(rawBytes)}});});
 test('DDD-01 recorded Browser helper rejects changed bytes against independent review binding',()=>{const f=browserFixture(),rawSource=JSON.stringify(f.raw),review=`Pages: ${f.options.expectedHead};\nBrowser raw: ${STAGE_A_BROWSER}; bytes ${Buffer.byteLength(rawSource)}; SHA-256 ${hash(rawSource)}.`;assertRecordedBrowserArtifact(STAGE_A_BROWSER,review,{rawSource,svgBytes:f.options.svgBytes});assert.throws(()=>assertRecordedBrowserArtifact(STAGE_A_BROWSER,review,{rawSource:rawSource+' ',svgBytes:f.options.svgBytes}),assert.AssertionError);});
 test('DDD-01 local Browser helper binds build inputs without pretending deployment happened',()=>{const f=browserFixture();delete f.raw.publication;delete f.raw.http;f.raw.build={baseHead:'b'.repeat(40),inputFiles:290,inputSha256:'c'.repeat(64)};const options={...f.options,baseUrl:PRODUCTION_URL,expectedBuild:structuredClone(f.raw.build)};assertLocalBrowserEvidence(f.raw,options);f.raw.build.inputFiles++;assert.throws(()=>assertLocalBrowserEvidence(f.raw,options),assert.AssertionError);});
-test('DDD-01 recorded observation preserves its independently bound build identity after later review metadata changes',()=>{const raw=JSON.parse(readFileSync(LOCAL_BROWSER));assert.deepEqual(raw.build,{baseHead:'e499588ab97cc116435fa3fa4cfc6b307dc7576a',inputFiles:288,inputSha256:'239e1575ba779dc9d4896696075bba34a7f6b628c8b8e840b662cd4024c44c48'});const current=currentBuildIdentity();assert.equal(current.inputFiles,288);assert.match(current.inputSha256,/^[0-9a-f]{64}$/u);assert.notEqual(current.inputSha256,raw.build.inputSha256,'later rights/review metadata changes do not rewrite the prior observation identity');assert.notEqual(execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),raw.build.baseHead,'observation base is not the post-commit HEAD');const paths=execFileSync('git',['ls-files','--cached','--others','--exclude-standard','-z',...BUILD_INPUTS],{encoding:'utf8'}).split('\0').filter(Boolean).sort();assert.throws(()=>currentBuildIdentity(paths.filter((p)=>p!=='sidebars.ts')),/sidebars\.ts/u);assert.notDeepEqual(currentBuildIdentity(paths,(p)=>p==='sidebars.ts'?Buffer.from('stale'):readFileSync(p)),current);});
+test('DDD-01 recorded observation is reproducible and current build derives only through approved rights completion',()=>{const raw=JSON.parse(readFileSync(LOCAL_BROWSER));assert.deepEqual(raw.build,{baseHead:'e499588ab97cc116435fa3fa4cfc6b307dc7576a',inputFiles:288,inputSha256:'239e1575ba779dc9d4896696075bba34a7f6b628c8b8e840b662cd4024c44c48'});assertBuildDerivation(raw.build);assert.notEqual(execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),raw.build.baseHead,'observation base is not the post-commit HEAD');});
+for(const path of ['content/patterns/ddd-01-strategic-ddd-overview.mdx','sidebars.ts','content/styles/sty-14-architecture-choice-matrix.mdx','scripts/content-relations.mjs']) test(`DDD-01 build derivation rejects later drift in ${path}`,()=>{const raw=JSON.parse(readFileSync(LOCAL_BROWSER));assertBuildDerivation(raw.build);assert.throws(()=>assertBuildDerivation(raw.build,{currentRead:(p)=>p===path?Buffer.concat([readFileSync(p),Buffer.from('\nDRIFT')]):readFileSync(p)}),assert.AssertionError);});
+test('DDD-01 build derivation rejects unapproved source-ledger drift',()=>{const raw=JSON.parse(readFileSync(LOCAL_BROWSER));assertBuildDerivation(raw.build);assert.throws(()=>assertBuildDerivation(raw.build,{currentRead:(p)=>p==='data/source-ledger.json'?Buffer.from(readFileSync(p,'utf8').replace('Original illustrative Context Map only','Changed usage boundary')):readFileSync(p)}),assert.AssertionError);});
 for(const [label,change] of [
   ['wrong head',(r)=>{r.publication.headSha='f'.repeat(40);}],['failed deploy job',(r)=>{r.publication.jobs[1].conclusion='failure';}],['stale HTTP',(r)=>{r.http[0].observedAt='2026-09-08T00:00:00Z';}],['HTTP failure',(r)=>{r.http[0].status=404;}],['SVG byte drift',(r)=>{r.svgAsset.bytes++;}],['additive observation',(r)=>{r.fabricated='PASS';}],
 ])test(`DDD-01 Browser rejects ${label}`,()=>{const f=browserFixture();assertBrowserEvidence(f.raw,f.options);const before=structuredClone(f.raw);change(f.raw);assert.notDeepEqual(f.raw,before);assert.throws(()=>assertBrowserEvidence(f.raw,f.options),assert.AssertionError);});
