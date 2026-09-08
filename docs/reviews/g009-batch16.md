@@ -2,7 +2,7 @@
 
 ## Stage A candidate
 
-Scope: STAGE_A_READY.
+Scope: STAGE_A_PUBLISHED.
 
 DDD-01 lifecycle: published / pending.
 
@@ -10,7 +10,7 @@ DDD-02 topic: planned / unpublished / pending; document: absent / non-actionable
 
 Final judgment: READY.
 
-Deployment: NOT_RUN.
+Deployment: SUCCESS / functional PASS.
 
 Screenshot evidence: BLOCKED / NOT_ACCEPTED; accepted 0/4; functional PASS is not visual acceptance.
 
@@ -44,3 +44,7 @@ H1、STY-14 直达目标 H1、回链与返回状态均精确；每态 7 个来�
 </details>
 
 ## Publication
+
+Pages: 997e4b136b40cab3b96ff033c77830752b16b5dc; run 34232044270; build 102080344661; deploy 102081529119; push / completed / success.
+
+Browser raw: docs/reviews/evidence/g009-batch16-stage-a-production-browser.json; bytes 27090; SHA-256 4f3f4104304f5f79ab366951ee2e168a96f2a0a59379d8ac0ccd307a50088c60.

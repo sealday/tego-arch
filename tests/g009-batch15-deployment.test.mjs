@@ -89,7 +89,8 @@ function immediateHistoryFiles() {
 function isImmediateHistoricalPath(path) {
   return path !== STAGE_B_BROWSER &&
     path !== 'docs/reviews/g009-batch16.md' &&
-    path !== 'docs/reviews/evidence/g009-batch16-stage-a-browser.json';
+    path !== 'docs/reviews/evidence/g009-batch16-stage-a-browser.json' &&
+    path !== 'docs/reviews/evidence/g009-batch16-stage-a-production-browser.json';
 }
 test('STY-14 immediate history excludes only the exact newly bound Stage B raw path', () => {
   assert.equal(isImmediateHistoricalPath(STAGE_B_BROWSER), false);
@@ -97,6 +98,13 @@ test('STY-14 immediate history excludes only the exact newly bound Stage B raw p
     assert.equal(isImmediateHistoricalPath(path), true, 'near matches retain historical membership protection');
     const files = immediateHistoryFiles(); files.set(path, Buffer.from('fabricated'));
     assert.throws(() => assertImmediateHistory(readFileSync('docs/content-backlog.md', 'utf8'), files), assert.AssertionError);
+  }
+});
+test('STY-14 immediate history excludes only the exact DDD-01 Stage A production raw path', () => {
+  const current = 'docs/reviews/evidence/g009-batch16-stage-a-production-browser.json';
+  assert.equal(isImmediateHistoricalPath(current), false);
+  for (const path of [current.replace('.json', '-fabricated.json'), current + '.bak', current.replace('stage-a', 'stage-c')]) {
+    assert.equal(isImmediateHistoricalPath(path), true, 'DDD-01 production near matches retain historical membership protection');
   }
 });
 function assertImmediateHistory(backlog, files = immediateHistoryFiles()) {
