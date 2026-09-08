@@ -671,8 +671,8 @@ test('preserves immutable Batch 12 history under the current STY-14 complete pro
     next_topic: 'STY-14',
   }, {
     completed_topics: 85,
-    content_documents: 127,
-    governed_sources: 600,
+    content_documents: 128,
+    governed_sources: 604,
 
     durable_stories: {completed: 8, total: 20},
     current_goal: 'G009',

@@ -38,7 +38,7 @@ export const RECIPROCAL_CONTRACTS = Object.freeze([
 ]);
 export const ADJACENT_CONTRACT_FILES = Object.freeze(['content/styles/sty-05-microservices.mdx', 'content/styles/sty-08-actor-model.mdx']);
 export const EXPECTED_STAGE_A = Object.freeze({completed: 82, documents: 126, sources: 599});
-export const EXPECTED_STAGE_B = Object.freeze({completed: 85, documents: 127, sources: 600});
+export const EXPECTED_STAGE_B = Object.freeze({completed: 85, documents: 128, sources: 604});
 export const EXPECTED_HEADINGS = Object.freeze(['学习问题', '一页摘要', '事实边界', '架构图', '亲和分区与预订流', '关键机制导读', '架构决策与权衡', '生产化分析', '可迁移经验', '来源']);
 export const MIGRATION_HEADINGS = Object.freeze(['可直接复用的机制', '只能有限类比的部分', '不应照搬的部分']);
 export const WRAPPERS = Object.freeze([
@@ -470,7 +470,7 @@ function assertExactHeadFinalReviews(source, head) {
 async function assertRelationsAndStage() {
   const reciprocalSources = new Map(RECIPROCAL_CONTRACTS.map(([path]) => [path, readFileSync(path, 'utf8')])); assertReciprocalRelations(reciprocalSources);
   const documents = await readContentDocuments(CONTENT_ROOT); const article = documents.find(({file: path}) => 'content/' + path === ARTICLE); assert.ok(article, 'STY-13 content document'); const links = extractInternalLinks(article);
-  for (const related of RELATED_CASES) assert.ok(links.includes(related), 'visible related case: ' + related); assert.equal(links.includes(NEXT_ROUTE), false, 'STY-14 remains non-actionable from STY-13'); assert.equal(documents.flatMap(extractInternalLinks).filter((link) => link === NEXT_ROUTE).length, 4, 'current STY-14 has exactly four scoped inbound routes');
+  for (const related of RELATED_CASES) assert.ok(links.includes(related), 'visible related case: ' + related); assert.equal(links.includes(NEXT_ROUTE), false, 'STY-14 remains non-actionable from STY-13'); assert.equal(documents.flatMap(extractInternalLinks).filter((link) => link === NEXT_ROUTE).length, 5, 'current STY-14 has exactly five scoped inbound routes after DDD-01 reciprocity');
   const backlog = readFileSync('docs/content-backlog.md', 'utf8'); assert.match(backlog, new RegExp('^- \\[x\\] \\*\\*' + NEXT_TOPIC + ' P1', 'mu'), 'current STY-14 is complete');
   const status = JSON.parse(readFileSync('src/generated/project-status.json', 'utf8')); const projection = {completed: status.completed_topics, documents: status.content_documents, sources: status.governed_sources}; const published = new RegExp('^- \\[x\\] \\*\\*' + TOPIC_ID + ' ', 'mu').test(backlog);
   if (!published) { assert.deepEqual(projection, EXPECTED_STAGE_A, 'Stage A projection while STY-13 remains pending'); return; }

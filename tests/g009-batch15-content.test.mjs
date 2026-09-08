@@ -67,7 +67,7 @@ export const EXACT_METADATA = Object.freeze({
   topic_id: TOPIC_ID,
   priority: 'P1',
   depends_on: ['STY-00', 'STY-04', 'STY-05', 'STY-06'],
-  adjacent_topics: ['STY-04', 'STY-05', 'STY-06'],
+  adjacent_topics: ['STY-04', 'STY-05', 'STY-06', 'DDD-01'],
   related_cases: [],
   related_questions: [],
 });
@@ -582,7 +582,8 @@ function recordHash(value) { return createHash('sha256').update(stableJson(value
 export function assertChoiceGovernance(ledger) {
   const records = new Map(ledger.sources.map((source) => [source.id, source]));
   for (const id of REUSED_SOURCES) { assert.ok(records.has(id), `${id} reused source exists`); assert.equal(recordHash(records.get(id)), REUSED_SOURCE_HASHES[id], `${id} exact pre-existing source identity`); }
-  assert.equal(recordHash(ledger.sources.filter(({id}) => id !== ORIGINAL_SOURCE_ID)), 'c639d769cb20a8dc70b8a4a6c7a460c99100b4f111fba13e29fed09cd57fa8cf', 'all pre-existing source records unchanged; no new remote identity');
+  const laterDDD01Sources = new Set(['src-evans-ddd-reference', 'src-fowler-ubiquitous-language', 'src-microsoft-domain-analysis', 'src-atlas-ddd01-strategic-context-map']);
+  assert.equal(recordHash(ledger.sources.filter(({id}) => id !== ORIGINAL_SOURCE_ID && !laterDDD01Sources.has(id))), 'c639d769cb20a8dc70b8a4a6c7a460c99100b4f111fba13e29fed09cd57fa8cf', 'all pre-existing source records unchanged; later DDD-01 identities are scoped out');
   const document = ledger.documents?.[ARTICLE]; assert.ok(document, 'STY-14 governed source document record must exist after implementation');
   assert.deepEqual(document, DOCUMENT_RECORD, 'exact STY-14 document citation and rights contract');
   assert.deepEqual(document.citations.map(({source_id}) => source_id), [...REUSED_SOURCES, ORIGINAL_SOURCE_ID], 'exact reused sources plus one original illustration');
@@ -1325,7 +1326,7 @@ test('STY-14 original source fixture satisfies the real ledger local-policy cont
 
 for (const [label, mutate] of [
   ['new remote identity', (fixture) => fixture.sources.push({...fixture.sources[0], id: 'src-unapproved-remote'})],
-  ['unrelated existing source change', (fixture) => { fixture.sources[0].title += ' changed'; }],
+  ['unrelated existing source change', (fixture) => { fixture.sources.find(({id}) => id === 'src-docs-8fb33e125d2a').title += ' changed'; }],
 ]) test(`STY-14 governance helper rejects ${label}`, () => {
   const fixture = governanceFixture(ledger); assertChoiceGovernance(fixture);
   mutate(fixture);

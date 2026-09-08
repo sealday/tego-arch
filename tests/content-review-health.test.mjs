@@ -285,8 +285,8 @@ test('serializes deterministic JSON and complete Markdown sections', () => {
 test('loads non-empty canonical review inputs through generator plumbing', async () => {
   const inputs = await loadContentReviewInputs(projectRoot);
   assert.deepEqual(inputs.errors, []);
-  assert.equal(inputs.documents.length, 127);
-  assert.equal(inputs.ledger.sources.length, 600);
+  assert.equal(inputs.documents.length, 128);
+  assert.equal(inputs.ledger.sources.length, 604);
 
 
   assert.equal(

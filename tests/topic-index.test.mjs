@@ -207,7 +207,7 @@ test('canonical Pattern registry exactly matches every generated assignment and 
     canonicalViews
       .filter(({published}) => published)
       .map(({id, internalHref}) => [id, internalHref]),
-    [['REL-02', '/patterns/rel-02']],
+    [['DDD-01', '/patterns/ddd-01'], ['REL-02', '/patterns/rel-02']],
   );
 });
 

@@ -591,8 +591,8 @@ test('preserves the STY-00 closure under the current STY-14 complete projection'
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
     completed_topics: 85,
-    content_documents: 127,
-    governed_sources: 600,
+    content_documents: 128,
+    governed_sources: 604,
 
 
     sources: {
@@ -608,7 +608,7 @@ test('preserves the STY-00 closure under the current STY-14 complete projection'
     id === 'STY-03' && published === true && status.value === 'complete'));
   assert.ok(indexes.style.some(({id, published, status}) =>
     id === 'STY-04' && published === true && status.value === 'complete'));
-  assert.equal(publicLedger.sources.length, 600);
+  assert.equal(publicLedger.sources.length, 604);
 
 
 });

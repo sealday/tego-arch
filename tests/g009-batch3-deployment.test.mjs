@@ -339,8 +339,8 @@ test('preserves STY-02 closure under the current STY-14 complete projection', as
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
     completed_topics: 85,
-    content_documents: 127,
-    governed_sources: 600,
+    content_documents: 128,
+    governed_sources: 604,
 
 
     sources: {
@@ -350,7 +350,7 @@ test('preserves STY-02 closure under the current STY-14 complete projection', as
       governed_sources: 'data/source-ledger.json',
     },
   });
-  assert.equal(sourceLedger.sources.length, 600);
+  assert.equal(sourceLedger.sources.length, 604);
 
 
   assert.ok(indexes.style.some(({id, published, status: topicStatus}) =>

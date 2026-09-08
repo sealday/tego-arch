@@ -2733,7 +2733,8 @@
       "adjacent_topics": [
         "STY-04",
         "STY-05",
-        "STY-06"
+        "STY-06",
+        "DDD-01"
       ],
       "primary_sources": [
         "https://martinfowler.com/bliki/MonolithFirst.html"
@@ -2827,7 +2828,7 @@
     {
       "id": "DDD-01",
       "type": "pattern",
-      "title": "战略 DDD 总览",
+      "title": "战略领域驱动设计总览：从语言冲突到限界上下文",
       "slug": "/patterns/ddd-01",
       "priority": "P0",
       "status": {
@@ -2836,14 +2837,19 @@
         "source": "docs/content-backlog.md"
       },
       "dependencies": [],
-      "adjacent_topics": [],
-      "primary_sources": [],
+      "adjacent_topics": [
+        "STY-14"
+      ],
+      "primary_sources": [
+        "https://www.domainlanguage.com/ddd/reference/"
+      ],
       "related_cases": [],
       "related_questions": [],
-      "reviewed_at": null,
+      "reviewed_at": "2026-09-08",
       "review_policy": null,
-      "published": false,
-      "pattern_group": "general-design"
+      "published": true,
+      "pattern_group": "general-design",
+      "presentation": {}
     },
     {
       "id": "DDD-02",

@@ -1154,9 +1154,9 @@ test('preserves the STY-05 closure under the current STY-14 complete projection'
   assert.equal(indexes.style.find(({id}) => id === TOPIC_ID)?.published, true);
   assert.equal(indexes.style.find(({id}) => id === 'STY-06')?.published, true);
   assert.equal(projectStatus.completed_topics, 85);
-  assert.equal(projectStatus.content_documents, 127);
-  assert.equal(projectStatus.governed_sources, 600);
-  assert.equal(publicLedger.sources.length, 600);
+  assert.equal(projectStatus.content_documents, 128);
+  assert.equal(projectStatus.governed_sources, 604);
+  assert.equal(publicLedger.sources.length, 604);
 
 
   const publishedRoutes = manifest.topics.filter(({published}) => published).map(({slug}) => slug);

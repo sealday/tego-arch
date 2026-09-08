@@ -77,8 +77,8 @@ function assertProjection() {
     completed_topics: status.completed_topics,
     content_documents: status.content_documents,
     governed_sources: status.governed_sources,
-  }, {completed_topics: 85, content_documents: 127, governed_sources: 600});
-  assert.equal(publicLedger.sources.length, 600);
+  }, {completed_topics: 85, content_documents: 128, governed_sources: 604});
+  assert.equal(publicLedger.sources.length, 604);
 
 
   const sty06 = manifest.topics.find(({id}) => id === 'STY-06');
@@ -356,7 +356,7 @@ test('preserves STY-06 Stage B history under the current STY-14 complete project
     completed_topics: status.completed_topics,
     content_documents: status.content_documents,
     governed_sources: status.governed_sources,
-  }, {completed_topics: 85, content_documents: 127, governed_sources: 600});
+  }, {completed_topics: 85, content_documents: 128, governed_sources: 604});
 
 
   const sty06 = manifest.topics.find(({id}) => id === 'STY-06');

@@ -60,8 +60,8 @@ const PROJECT_STATUS = {
   schema_version: 1,
   durable_stories: {completed: 8, total: 20, current: 'G009'},
   completed_topics: 85,
-  content_documents: 127,
-  governed_sources: 600,
+  content_documents: 128,
+  governed_sources: 604,
 
   sources: {
     durable_stories: 'docs/content-backlog.md',
@@ -337,6 +337,8 @@ function assertStageBProductionReview(source = review) {
 
 function isHistoricalReviewArtifact(relative) {
   return relative.startsWith('docs/reviews/') &&
+    relative !== 'docs/reviews/g009-batch16.md' &&
+    relative !== 'docs/reviews/evidence/g009-batch16-stage-a-browser.json' &&
     relative !== 'docs/reviews/g009-batch15.md' &&
     relative !== 'docs/reviews/evidence/g009-batch15-stage-a-browser.json' &&
     relative !== 'docs/reviews/evidence/g009-batch15-stage-a-production-browser.json' &&
@@ -393,7 +395,7 @@ async function historicalReviewTreeHash() {
 
 function assertProjection() {
   assert.deepEqual(projectStatus, PROJECT_STATUS);
-  assert.equal(publicLedger.sources.length, 600);
+  assert.equal(publicLedger.sources.length, 604);
 
   const mth07 = manifest.topics.find(({id}) => id === 'MTH-07');
   assert.equal(mth07?.published, true);
@@ -1058,6 +1060,8 @@ test('locks the exact pre-G010 review namespace against add edit and delete muta
     'docs/reviews/evidence/g009-batch15-stage-a-browser.json',
     'docs/reviews/evidence/g009-batch15-stage-a-production-browser.json',
     'docs/reviews/evidence/g009-batch15-stage-b-production-browser.json',
+    'docs/reviews/g009-batch16.md',
+    'docs/reviews/evidence/g009-batch16-stage-a-browser.json',
     REVIEW_PATH,
     EVIDENCE_PATH,
     'docs/reviews/g009-batch10.md',

@@ -87,7 +87,9 @@ function immediateHistoryFiles() {
   return files;
 }
 function isImmediateHistoricalPath(path) {
-  return path !== STAGE_B_BROWSER;
+  return path !== STAGE_B_BROWSER &&
+    path !== 'docs/reviews/g009-batch16.md' &&
+    path !== 'docs/reviews/evidence/g009-batch16-stage-a-browser.json';
 }
 test('STY-14 immediate history excludes only the exact newly bound Stage B raw path', () => {
   assert.equal(isImmediateHistoricalPath(STAGE_B_BROWSER), false);
@@ -129,7 +131,7 @@ function assertStageBProjection(status, manifest, documents = []) {
   assert.deepEqual(status.durable_stories, {completed: 8, total: 20, current: 'G009'}, 'durable story closure is not authorized at this candidate checkpoint');
   const topic = manifest.topics.find(({id}) => id === TOPIC_ID);
   assert.ok(topic, 'STY-14 Stage B topic exists');
-  assert.deepEqual(Object.fromEntries(Object.keys(EXPECTED_STAGE_A_TOPIC).map((key) => [key, topic[key]])), {...EXPECTED_STAGE_A_TOPIC, status: {...EXPECTED_STAGE_A_TOPIC.status, value: 'complete'}}, 'exact STY-14 published complete projection');
+  assert.deepEqual(Object.fromEntries(Object.keys(EXPECTED_STAGE_A_TOPIC).map((key) => [key, topic[key]])), {...EXPECTED_STAGE_A_TOPIC, adjacent_topics: [...EXPECTED_STAGE_A_TOPIC.adjacent_topics, 'DDD-01'], status: {...EXPECTED_STAGE_A_TOPIC.status, value: 'complete'}}, 'exact STY-14 published complete projection');
   assert.equal(manifest.topics.some(({id}) => id === NEXT_TOPIC), false, 'STY-15 stays absent');
   assert.equal(documents.flatMap(extractInternalLinks).includes('/styles/sty-15'), false, 'STY-15 stays non-actionable');
 }
@@ -187,7 +189,10 @@ test('STY-14 Stage B backlog and review reject changed, deleted, displaced and a
 test('STY-14 Stage B projection rejects stale counts, lifecycle, source identity and fabricated STY-15', () => {
   const stage = stageAFixture(projectStatus, manifest);
   stage.status.completed_topics = 85;
+  stage.status.content_documents = 128;
+  stage.status.governed_sources = 604;
   stage.manifest.topics.find(({id}) => id === TOPIC_ID).status.value = 'complete';
+  stage.manifest.topics.find(({id}) => id === TOPIC_ID).adjacent_topics.push('DDD-01');
   assertStageBProjection(stage.status, stage.manifest);
   for (const mutate of [
     (copy) => { copy.status.completed_topics = 84; },
@@ -230,7 +235,7 @@ test('STY-14 immediate history rejects non-no-op add/edit/delete mutations', () 
 });
 export const EXPECTED_CURRENT_PROJECTION = Object.freeze({completed: 84, documents: 126, sources: 599});
 export const EXPECTED_STAGE_A_PROJECTION = Object.freeze({completed: 84, documents: 127, sources: 600});
-export const EXPECTED_STAGE_B_PROJECTION = Object.freeze({completed: 85, documents: 127, sources: 600});
+export const EXPECTED_STAGE_B_PROJECTION = Object.freeze({completed: 85, documents: 128, sources: 604});
 
 export const EXPECTED_STAGE_A_TOPIC = Object.freeze({
   id: TOPIC_ID,
@@ -499,10 +504,10 @@ function assertBuildInputBinding(provenance, paths = stageABuildInputPaths(), re
 
 function assertCurrentBuildBoundary(files) {
   const paths = stageABuildInputPaths();
-  assert.deepEqual([...files.keys()].sort(), paths, 'Stage B preserves complete Stage A build input membership');
+  assert.deepEqual([...files.keys()].sort(), [...paths, 'content/patterns/ddd-01-strategic-ddd-overview.mdx', 'static/img/diagrams/ddd-01-strategic-ddd-context-map.svg'].sort(), 'current tree adds only the two DDD-01 build inputs');
   assert.deepEqual(paths.filter((path) => sha256(files.get(path)) !== sha256(stageAInput(path))), [
-    'src/generated/project-status.json', 'src/generated/topic-indexes.json', 'src/generated/topic-manifest.json',
-  ], 'only the three canonical lifecycle projections differ from the observed Stage A inputs');
+    'content/modeling/mod-11-ddd-context-map.mdx', 'content/styles/sty-14-architecture-choice-matrix.mdx', 'data/source-ledger.json', 'data/source-link-health.json', 'data/terminology.json', 'scripts/check-terminology.mjs', 'scripts/content-relations.mjs', 'scripts/content-schema.mjs', 'scripts/validate-content.mjs', 'src/generated/project-status.json', 'src/generated/source-ledger.json', 'src/generated/topic-indexes.json', 'src/generated/topic-manifest.json',
+  ], 'only reviewed post-STY-14 and DDD-01 build inputs differ from the observed Stage A inputs');
 }
 test('STY-14 candidate changes only canonical lifecycle inputs and never rebinds old Browser raw to live inputs', () => {
   const paths = execFileSync('git', ['ls-files', '--cached', '--others', '--exclude-standard', '-z', ...BUILD_INPUTS], {encoding: 'utf8'}).split('\0').filter(Boolean).sort();
@@ -510,7 +515,7 @@ test('STY-14 candidate changes only canonical lifecycle inputs and never rebinds
   assertCurrentBuildBoundary(files);
   const provenance = JSON.parse(readFileSync(LOCAL_BROWSER)).buildProvenance;
   assertBuildInputBinding(provenance);
-  assert.throws(() => assertBuildInputBinding(provenance, paths, (path) => files.get(path)), /immutable Stage A build inputs/u, 'Stage B generated bytes cannot be relabeled as the Stage A observed input identity');
+  assert.throws(() => assertBuildInputBinding(provenance, paths, (path) => files.get(path)), /build input file count|immutable Stage A build inputs/u, 'Stage B generated bytes cannot be relabeled as the Stage A observed input identity');
   for (const mutate of [
     (copy) => copy.set('sidebars.ts', Buffer.from('changed')),
     (copy) => copy.delete('sidebars.ts'),

@@ -85,6 +85,7 @@ export const SOURCE_ANCHORS = Object.freeze([
   ['DDD Reference', 'https://www.domainlanguage.com/ddd/reference/'],
   ['Ubiquitous Language', 'https://martinfowler.com/bliki/UbiquitousLanguage.html'],
   ['Domain analysis', 'https://learn.microsoft.com/azure/architecture/microservices/model/domain-analysis'],
+  ['原创上下文映射矢量图', '/img/diagrams/ddd-01-strategic-ddd-context-map.svg'],
 ]);
 const baselineBytes = new Map();
 export const gitBaseline = (path) => { if (!baselineBytes.has(path)) baselineBytes.set(path, execFileSync('git', ['show', `${BASELINE}:${path}`], {maxBuffer: 32 * 1024 * 1024})); return Buffer.from(baselineBytes.get(path)); };

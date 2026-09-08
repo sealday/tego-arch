@@ -1,0 +1,737 @@
+{
+  "schemaVersion": 1,
+  "tool": "Codex in-app Browser / CUA",
+  "baseUrl": "http://localhost:3100/tego-arch",
+  "capturedAt": "2026-09-08T19:34:01+08:00",
+  "build": {
+    "baseHead": "e499588ab97cc116435fa3fa4cfc6b307dc7576a",
+    "inputFiles": 288,
+    "inputSha256": "239e1575ba779dc9d4896696075bba34a7f6b628c8b8e840b662cd4024c44c48"
+  },
+  "svgAsset": {
+    "bytes": 13806,
+    "sha256": "bcf229ac78b2efd0c9cf7f2b3cd36935337c710669bba4276dcfab855540d4bc"
+  },
+  "states": {
+    "desktopLight": {
+      "url": "http://localhost:3100/tego-arch/patterns/ddd-01",
+      "h1": "战略领域驱动设计总览：从语言冲突到限界上下文",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "theme": "light",
+      "page": {
+        "clientWidth": 1440,
+        "scrollWidth": 1440
+      },
+      "wrappers": [
+        {
+          "label": "战略上下文映射，可横向滚动",
+          "role": "region",
+          "tabIndex": 0,
+          "clientWidth": 800,
+          "scrollWidth": 800
+        },
+        {
+          "label": "五个候选限界上下文契约表，可横向滚动",
+          "role": "region",
+          "tabIndex": 0,
+          "clientWidth": 800,
+          "scrollWidth": 1447
+        },
+        {
+          "label": "上下文映射关系契约表，可横向滚动",
+          "role": "region",
+          "tabIndex": 0,
+          "clientWidth": 800,
+          "scrollWidth": 1529
+        }
+      ],
+      "interactions": [
+        {
+          "label": "战略上下文映射，可横向滚动",
+          "key": "ArrowRight",
+          "before": 0,
+          "after": 0,
+          "focused": true,
+          "focusVisible": true,
+          "outlineWidth": "3px",
+          "outlineStyle": "solid",
+          "method": "actual Tab/ArrowRight input; no synthetic event"
+        },
+        {
+          "label": "五个候选限界上下文契约表，可横向滚动",
+          "key": "ArrowRight",
+          "before": 0,
+          "after": 40,
+          "focused": true,
+          "focusVisible": true,
+          "outlineWidth": "3px",
+          "outlineStyle": "solid",
+          "method": "actual Tab/ArrowRight input; no synthetic event"
+        },
+        {
+          "label": "上下文映射关系契约表，可横向滚动",
+          "key": "ArrowRight",
+          "before": 0,
+          "after": 40,
+          "focused": true,
+          "focusVisible": true,
+          "outlineWidth": "3px",
+          "outlineStyle": "solid",
+          "method": "actual Tab/ArrowRight input; no synthetic event"
+        }
+      ],
+      "svg": {
+        "complete": true,
+        "naturalWidth": 53,
+        "naturalHeight": 150,
+        "width": 800,
+        "height": 2260,
+        "bytes": 13806,
+        "sha256": "bcf229ac78b2efd0c9cf7f2b3cd36935337c710669bba4276dcfab855540d4bc"
+      },
+      "relations": [
+        {
+          "href": "/tego-arch/styles/sty-14",
+          "method": "exact-href navigation and Browser back; no physical click claimed",
+          "destination": {
+            "url": "http://localhost:3100/tego-arch/styles/sty-14",
+            "h1": "架构风格选择矩阵：边界、交互与演进触发器",
+            "returnHref": "/tego-arch/patterns/ddd-01"
+          },
+          "returned": {
+            "url": "http://localhost:3100/tego-arch/patterns/ddd-01",
+            "h1": "战略领域驱动设计总览：从语言冲突到限界上下文",
+            "theme": "light"
+          }
+        }
+      ],
+      "sources": [
+        {
+          "text": "Bounded Context",
+          "href": "https://martinfowler.com/bliki/BoundedContext.html",
+          "destination": "https://martinfowler.com/bliki/BoundedContext.html",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "text": "Context Mapping",
+          "href": "https://github.com/ddd-crew/context-mapping/tree/970c1ff3a61f7aa8b61b789b697c05bc585f614d",
+          "destination": "https://github.com/ddd-crew/context-mapping/tree/970c1ff3a61f7aa8b61b789b697c05bc585f614d",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "text": "Anti-Corruption Layer",
+          "href": "https://contextmapper.org/docs/anticorruption-layer/",
+          "destination": "https://contextmapper.org/docs/anticorruption-layer/",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "text": "DDD Reference",
+          "href": "https://www.domainlanguage.com/ddd/reference/",
+          "destination": "https://www.domainlanguage.com/ddd/reference/",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "text": "Ubiquitous Language",
+          "href": "https://martinfowler.com/bliki/UbiquitousLanguage.html",
+          "destination": "https://martinfowler.com/bliki/UbiquitousLanguage.html",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "text": "Domain analysis",
+          "href": "https://learn.microsoft.com/azure/architecture/microservices/model/domain-analysis",
+          "destination": "https://learn.microsoft.com/azure/architecture/microservices/model/domain-analysis",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "text": "原创上下文映射矢量图",
+          "href": "/img/diagrams/ddd-01-strategic-ddd-context-map.svg",
+          "destination": "/img/diagrams/ddd-01-strategic-ddd-context-map.svg",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        }
+      ],
+      "ddd02ActionableCount": 0,
+      "logs": [],
+      "diagnostics": {
+        "runtimeAndLog": {
+          "methods": [
+            "Runtime.exceptionThrown",
+            "Log.entryAdded"
+          ],
+          "afterSequence": 157,
+          "cursor": 181,
+          "events": [],
+          "hasMore": false,
+          "truncated": false
+        },
+        "console": {
+          "methods": [
+            "Runtime.consoleAPICalled"
+          ],
+          "afterSequence": 157,
+          "cursor": 191,
+          "events": [],
+          "hasMore": false,
+          "truncated": false
+        }
+      },
+      "screenshot": {
+        "attempted": true,
+        "bytes": 427000,
+        "status": "BLOCKED",
+        "acceptance": "NOT_ACCEPTED",
+        "artifact": null,
+        "reason": "fullPage capture returned bytes in the Browser session but could not be persisted as a durable artifact"
+      }
+    },
+    "desktopDark": {
+      "url": "http://localhost:3100/tego-arch/patterns/ddd-01",
+      "h1": "战略领域驱动设计总览：从语言冲突到限界上下文",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "theme": "dark",
+      "page": {
+        "clientWidth": 1440,
+        "scrollWidth": 1440
+      },
+      "wrappers": [
+        {
+          "label": "战略上下文映射，可横向滚动",
+          "role": "region",
+          "tabIndex": 0,
+          "clientWidth": 800,
+          "scrollWidth": 800
+        },
+        {
+          "label": "五个候选限界上下文契约表，可横向滚动",
+          "role": "region",
+          "tabIndex": 0,
+          "clientWidth": 800,
+          "scrollWidth": 1447
+        },
+        {
+          "label": "上下文映射关系契约表，可横向滚动",
+          "role": "region",
+          "tabIndex": 0,
+          "clientWidth": 800,
+          "scrollWidth": 1529
+        }
+      ],
+      "interactions": [
+        {
+          "label": "战略上下文映射，可横向滚动",
+          "key": "ArrowRight",
+          "before": 0,
+          "after": 0,
+          "focused": true,
+          "focusVisible": true,
+          "outlineWidth": "3px",
+          "outlineStyle": "solid",
+          "method": "actual Tab/ArrowRight input; no synthetic event"
+        },
+        {
+          "label": "五个候选限界上下文契约表，可横向滚动",
+          "key": "ArrowRight",
+          "before": 0,
+          "after": 40,
+          "focused": true,
+          "focusVisible": true,
+          "outlineWidth": "3px",
+          "outlineStyle": "solid",
+          "method": "actual Tab/ArrowRight input; no synthetic event"
+        },
+        {
+          "label": "上下文映射关系契约表，可横向滚动",
+          "key": "ArrowRight",
+          "before": 0,
+          "after": 40,
+          "focused": true,
+          "focusVisible": true,
+          "outlineWidth": "3px",
+          "outlineStyle": "solid",
+          "method": "actual Tab/ArrowRight input; no synthetic event"
+        }
+      ],
+      "svg": {
+        "complete": true,
+        "naturalWidth": 53,
+        "naturalHeight": 150,
+        "width": 800,
+        "height": 2260,
+        "bytes": 13806,
+        "sha256": "bcf229ac78b2efd0c9cf7f2b3cd36935337c710669bba4276dcfab855540d4bc"
+      },
+      "relations": [
+        {
+          "href": "/tego-arch/styles/sty-14",
+          "method": "exact-href navigation and Browser back; no physical click claimed",
+          "destination": {
+            "url": "http://localhost:3100/tego-arch/styles/sty-14",
+            "h1": "架构风格选择矩阵：边界、交互与演进触发器",
+            "returnHref": "/tego-arch/patterns/ddd-01"
+          },
+          "returned": {
+            "url": "http://localhost:3100/tego-arch/patterns/ddd-01",
+            "h1": "战略领域驱动设计总览：从语言冲突到限界上下文",
+            "theme": "dark"
+          }
+        }
+      ],
+      "sources": [
+        {
+          "text": "Bounded Context",
+          "href": "https://martinfowler.com/bliki/BoundedContext.html",
+          "destination": "https://martinfowler.com/bliki/BoundedContext.html",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "text": "Context Mapping",
+          "href": "https://github.com/ddd-crew/context-mapping/tree/970c1ff3a61f7aa8b61b789b697c05bc585f614d",
+          "destination": "https://github.com/ddd-crew/context-mapping/tree/970c1ff3a61f7aa8b61b789b697c05bc585f614d",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "text": "Anti-Corruption Layer",
+          "href": "https://contextmapper.org/docs/anticorruption-layer/",
+          "destination": "https://contextmapper.org/docs/anticorruption-layer/",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "text": "DDD Reference",
+          "href": "https://www.domainlanguage.com/ddd/reference/",
+          "destination": "https://www.domainlanguage.com/ddd/reference/",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "text": "Ubiquitous Language",
+          "href": "https://martinfowler.com/bliki/UbiquitousLanguage.html",
+          "destination": "https://martinfowler.com/bliki/UbiquitousLanguage.html",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "text": "Domain analysis",
+          "href": "https://learn.microsoft.com/azure/architecture/microservices/model/domain-analysis",
+          "destination": "https://learn.microsoft.com/azure/architecture/microservices/model/domain-analysis",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "text": "原创上下文映射矢量图",
+          "href": "/img/diagrams/ddd-01-strategic-ddd-context-map.svg",
+          "destination": "/img/diagrams/ddd-01-strategic-ddd-context-map.svg",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        }
+      ],
+      "ddd02ActionableCount": 0,
+      "logs": [],
+      "diagnostics": {
+        "runtimeAndLog": {
+          "methods": [
+            "Runtime.exceptionThrown",
+            "Log.entryAdded"
+          ],
+          "afterSequence": 157,
+          "cursor": 181,
+          "events": [],
+          "hasMore": false,
+          "truncated": false
+        },
+        "console": {
+          "methods": [
+            "Runtime.consoleAPICalled"
+          ],
+          "afterSequence": 157,
+          "cursor": 191,
+          "events": [],
+          "hasMore": false,
+          "truncated": false
+        }
+      },
+      "screenshot": {
+        "attempted": true,
+        "bytes": 427000,
+        "status": "BLOCKED",
+        "acceptance": "NOT_ACCEPTED",
+        "artifact": null,
+        "reason": "fullPage capture returned bytes in the Browser session but could not be persisted as a durable artifact"
+      }
+    },
+    "mobileDark": {
+      "url": "http://localhost:3100/tego-arch/patterns/ddd-01",
+      "h1": "战略领域驱动设计总览：从语言冲突到限界上下文",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "theme": "dark",
+      "page": {
+        "clientWidth": 390,
+        "scrollWidth": 390
+      },
+      "wrappers": [
+        {
+          "label": "战略上下文映射，可横向滚动",
+          "role": "region",
+          "tabIndex": 0,
+          "clientWidth": 358,
+          "scrollWidth": 800
+        },
+        {
+          "label": "五个候选限界上下文契约表，可横向滚动",
+          "role": "region",
+          "tabIndex": 0,
+          "clientWidth": 358,
+          "scrollWidth": 1447
+        },
+        {
+          "label": "上下文映射关系契约表，可横向滚动",
+          "role": "region",
+          "tabIndex": 0,
+          "clientWidth": 358,
+          "scrollWidth": 1529
+        }
+      ],
+      "interactions": [
+        {
+          "label": "战略上下文映射，可横向滚动",
+          "key": "ArrowRight",
+          "before": 0,
+          "after": 40,
+          "focused": true,
+          "focusVisible": true,
+          "outlineWidth": "3px",
+          "outlineStyle": "solid",
+          "method": "actual Tab/ArrowRight input; no synthetic event"
+        },
+        {
+          "label": "五个候选限界上下文契约表，可横向滚动",
+          "key": "ArrowRight",
+          "before": 0,
+          "after": 40,
+          "focused": true,
+          "focusVisible": true,
+          "outlineWidth": "3px",
+          "outlineStyle": "solid",
+          "method": "actual Tab/ArrowRight input; no synthetic event"
+        },
+        {
+          "label": "上下文映射关系契约表，可横向滚动",
+          "key": "ArrowRight",
+          "before": 0,
+          "after": 40,
+          "focused": true,
+          "focusVisible": true,
+          "outlineWidth": "3px",
+          "outlineStyle": "solid",
+          "method": "actual Tab/ArrowRight input; no synthetic event"
+        }
+      ],
+      "svg": {
+        "complete": true,
+        "naturalWidth": 53,
+        "naturalHeight": 150,
+        "width": 800,
+        "height": 2260,
+        "bytes": 13806,
+        "sha256": "bcf229ac78b2efd0c9cf7f2b3cd36935337c710669bba4276dcfab855540d4bc"
+      },
+      "relations": [
+        {
+          "href": "/tego-arch/styles/sty-14",
+          "method": "exact-href navigation and Browser back; no physical click claimed",
+          "destination": {
+            "url": "http://localhost:3100/tego-arch/styles/sty-14",
+            "h1": "架构风格选择矩阵：边界、交互与演进触发器",
+            "returnHref": "/tego-arch/patterns/ddd-01"
+          },
+          "returned": {
+            "url": "http://localhost:3100/tego-arch/patterns/ddd-01",
+            "h1": "战略领域驱动设计总览：从语言冲突到限界上下文",
+            "theme": "dark"
+          }
+        }
+      ],
+      "sources": [
+        {
+          "text": "Bounded Context",
+          "href": "https://martinfowler.com/bliki/BoundedContext.html",
+          "destination": "https://martinfowler.com/bliki/BoundedContext.html",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "text": "Context Mapping",
+          "href": "https://github.com/ddd-crew/context-mapping/tree/970c1ff3a61f7aa8b61b789b697c05bc585f614d",
+          "destination": "https://github.com/ddd-crew/context-mapping/tree/970c1ff3a61f7aa8b61b789b697c05bc585f614d",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "text": "Anti-Corruption Layer",
+          "href": "https://contextmapper.org/docs/anticorruption-layer/",
+          "destination": "https://contextmapper.org/docs/anticorruption-layer/",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "text": "DDD Reference",
+          "href": "https://www.domainlanguage.com/ddd/reference/",
+          "destination": "https://www.domainlanguage.com/ddd/reference/",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "text": "Ubiquitous Language",
+          "href": "https://martinfowler.com/bliki/UbiquitousLanguage.html",
+          "destination": "https://martinfowler.com/bliki/UbiquitousLanguage.html",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "text": "Domain analysis",
+          "href": "https://learn.microsoft.com/azure/architecture/microservices/model/domain-analysis",
+          "destination": "https://learn.microsoft.com/azure/architecture/microservices/model/domain-analysis",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "text": "原创上下文映射矢量图",
+          "href": "/img/diagrams/ddd-01-strategic-ddd-context-map.svg",
+          "destination": "/img/diagrams/ddd-01-strategic-ddd-context-map.svg",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        }
+      ],
+      "ddd02ActionableCount": 0,
+      "logs": [],
+      "diagnostics": {
+        "runtimeAndLog": {
+          "methods": [
+            "Runtime.exceptionThrown",
+            "Log.entryAdded"
+          ],
+          "afterSequence": 157,
+          "cursor": 181,
+          "events": [],
+          "hasMore": false,
+          "truncated": false
+        },
+        "console": {
+          "methods": [
+            "Runtime.consoleAPICalled"
+          ],
+          "afterSequence": 157,
+          "cursor": 191,
+          "events": [],
+          "hasMore": false,
+          "truncated": false
+        }
+      },
+      "screenshot": {
+        "attempted": true,
+        "bytes": 427000,
+        "status": "BLOCKED",
+        "acceptance": "NOT_ACCEPTED",
+        "artifact": null,
+        "reason": "fullPage capture returned bytes in the Browser session but could not be persisted as a durable artifact"
+      }
+    },
+    "mobileLight": {
+      "url": "http://localhost:3100/tego-arch/patterns/ddd-01",
+      "h1": "战略领域驱动设计总览：从语言冲突到限界上下文",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "theme": "light",
+      "page": {
+        "clientWidth": 390,
+        "scrollWidth": 390
+      },
+      "wrappers": [
+        {
+          "label": "战略上下文映射，可横向滚动",
+          "role": "region",
+          "tabIndex": 0,
+          "clientWidth": 358,
+          "scrollWidth": 800
+        },
+        {
+          "label": "五个候选限界上下文契约表，可横向滚动",
+          "role": "region",
+          "tabIndex": 0,
+          "clientWidth": 358,
+          "scrollWidth": 1447
+        },
+        {
+          "label": "上下文映射关系契约表，可横向滚动",
+          "role": "region",
+          "tabIndex": 0,
+          "clientWidth": 358,
+          "scrollWidth": 1529
+        }
+      ],
+      "interactions": [
+        {
+          "label": "战略上下文映射，可横向滚动",
+          "key": "ArrowRight",
+          "before": 0,
+          "after": 40,
+          "focused": true,
+          "focusVisible": true,
+          "outlineWidth": "3px",
+          "outlineStyle": "solid",
+          "method": "actual Tab/ArrowRight input; no synthetic event"
+        },
+        {
+          "label": "五个候选限界上下文契约表，可横向滚动",
+          "key": "ArrowRight",
+          "before": 0,
+          "after": 40,
+          "focused": true,
+          "focusVisible": true,
+          "outlineWidth": "3px",
+          "outlineStyle": "solid",
+          "method": "actual Tab/ArrowRight input; no synthetic event"
+        },
+        {
+          "label": "上下文映射关系契约表，可横向滚动",
+          "key": "ArrowRight",
+          "before": 0,
+          "after": 40,
+          "focused": true,
+          "focusVisible": true,
+          "outlineWidth": "3px",
+          "outlineStyle": "solid",
+          "method": "actual Tab/ArrowRight input; no synthetic event"
+        }
+      ],
+      "svg": {
+        "complete": true,
+        "naturalWidth": 53,
+        "naturalHeight": 150,
+        "width": 800,
+        "height": 2260,
+        "bytes": 13806,
+        "sha256": "bcf229ac78b2efd0c9cf7f2b3cd36935337c710669bba4276dcfab855540d4bc"
+      },
+      "relations": [
+        {
+          "href": "/tego-arch/styles/sty-14",
+          "method": "exact-href navigation and Browser back; no physical click claimed",
+          "destination": {
+            "url": "http://localhost:3100/tego-arch/styles/sty-14",
+            "h1": "架构风格选择矩阵：边界、交互与演进触发器",
+            "returnHref": "/tego-arch/patterns/ddd-01"
+          },
+          "returned": {
+            "url": "http://localhost:3100/tego-arch/patterns/ddd-01",
+            "h1": "战略领域驱动设计总览：从语言冲突到限界上下文",
+            "theme": "light"
+          }
+        }
+      ],
+      "sources": [
+        {
+          "text": "Bounded Context",
+          "href": "https://martinfowler.com/bliki/BoundedContext.html",
+          "destination": "https://martinfowler.com/bliki/BoundedContext.html",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "text": "Context Mapping",
+          "href": "https://github.com/ddd-crew/context-mapping/tree/970c1ff3a61f7aa8b61b789b697c05bc585f614d",
+          "destination": "https://github.com/ddd-crew/context-mapping/tree/970c1ff3a61f7aa8b61b789b697c05bc585f614d",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "text": "Anti-Corruption Layer",
+          "href": "https://contextmapper.org/docs/anticorruption-layer/",
+          "destination": "https://contextmapper.org/docs/anticorruption-layer/",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "text": "DDD Reference",
+          "href": "https://www.domainlanguage.com/ddd/reference/",
+          "destination": "https://www.domainlanguage.com/ddd/reference/",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "text": "Ubiquitous Language",
+          "href": "https://martinfowler.com/bliki/UbiquitousLanguage.html",
+          "destination": "https://martinfowler.com/bliki/UbiquitousLanguage.html",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "text": "Domain analysis",
+          "href": "https://learn.microsoft.com/azure/architecture/microservices/model/domain-analysis",
+          "destination": "https://learn.microsoft.com/azure/architecture/microservices/model/domain-analysis",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "text": "原创上下文映射矢量图",
+          "href": "/img/diagrams/ddd-01-strategic-ddd-context-map.svg",
+          "destination": "/img/diagrams/ddd-01-strategic-ddd-context-map.svg",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        }
+      ],
+      "ddd02ActionableCount": 0,
+      "logs": [],
+      "diagnostics": {
+        "runtimeAndLog": {
+          "methods": [
+            "Runtime.exceptionThrown",
+            "Log.entryAdded"
+          ],
+          "afterSequence": 157,
+          "cursor": 181,
+          "events": [],
+          "hasMore": false,
+          "truncated": false
+        },
+        "console": {
+          "methods": [
+            "Runtime.consoleAPICalled"
+          ],
+          "afterSequence": 157,
+          "cursor": 191,
+          "events": [],
+          "hasMore": false,
+          "truncated": false
+        }
+      },
+      "screenshot": {
+        "attempted": true,
+        "bytes": 427000,
+        "status": "BLOCKED",
+        "acceptance": "NOT_ACCEPTED",
+        "artifact": null,
+        "reason": "fullPage capture returned bytes in the Browser session but could not be persisted as a durable artifact"
+      }
+    }
+  }
+}
