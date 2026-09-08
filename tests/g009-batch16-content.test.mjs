@@ -106,7 +106,10 @@ export function readerContract(source) {
       for (const a of n.attributes) { assert.equal(a.type, 'mdxJsxAttribute'); assert.ok(!Object.hasOwn(attrs, a.name), 'no duplicate attrs'); attrs[a.name] = typeof a.value === 'object' && a.value !== null ? a.value.value : a.value; }
       if (Object.hasOwn(attrs, 'hidden') || attrs['aria-hidden'] === 'true') { excluded.add(n); mask(n); return; }
       assert.ok(!Object.hasOwn(attrs, 'style'), 'inline hiding/styles require review');
-      if (['SourceLedger', 'PatternTopicIndex'].includes(n.name)) { assert.deepEqual(attrs, {}); mask(n); return; }
+      if (['SourceLedger', 'PatternTopicIndex'].includes(n.name)) {
+        assert.deepEqual(attrs, {}); assert.equal(n.children?.length ?? 0, 0, 'non-rendered component must be childless');
+        excluded.add(n); mask(n); return;
+      }
       assert.ok(['div', 'span', 'p', 'a', 'Link', 'img', 'details', 'summary'].includes(n.name), 'known static MDX element');
       if (n.name === 'details') { assert.deepEqual(attrs, {className: 'evidence-card'}); mask(n); evidence = true; }
       if (attrs.className) assert.ok(['evidence-card', ...WRAPPERS.map((w) => w.className)].includes(attrs.className), 'known visible class');
@@ -212,7 +215,10 @@ export function assertDiagramContract(drawio, svg) {
   const opacity = (value) => Number(String(value).replace(/%$/u, '')) / (String(value).endsWith('%') ? 100 : 1);
   const paints = (n, kind) => {
     const state = states.get(n), color = state[kind];
-    return color && !['none', 'transparent'].includes(color) && opacity(state[`${kind}-opacity`]) > 0 && (kind !== 'stroke' || Number(state['stroke-width']) > 0);
+    // Bounded static authoring contract: only demonstrably opaque literal colors.
+    // Functional/alpha colors and unresolved paint servers need an explicit future
+    // parser extension, never a permissive non-"none" visibility assumption.
+    return /^(?:#[0-9a-f]{3}|#[0-9a-f]{6}|black|white)$/iu.test(color ?? '') && opacity(state[`${kind}-opacity`]) > 0 && (kind !== 'stroke' || Number(state['stroke-width']) > 0);
   };
   const inspect = (n, inherited) => {
     assert.ok(['svg', 'g', 'defs', 'marker', 'path', 'line', 'rect', 'text', 'tspan', 'title', 'desc'].includes(n.localName), 'static safe SVG elements');
@@ -223,7 +229,7 @@ export function assertDiagramContract(drawio, svg) {
     state['stroke-width'] = !width || ['inherit', 'unset'].includes(width) ? inherited?.['stroke-width'] ?? '1' : width === 'initial' ? '1' : width;
     states.set(n, state);
     assert.ok(state.display !== 'none' && !['hidden', 'collapse'].includes(state.visibility) && opacity(state.opacity) > 0 && attr(n, 'aria-hidden') !== 'true', 'effective visible SVG');
-    if (['text', 'tspan'].includes(n.localName)) assert.ok(state.fill !== 'none' && state.fill !== 'transparent' && Number(state['fill-opacity'] ?? 1) > 0 && Number(state['font-size'] ?? 16) >= 12, 'effective readable text');
+    if (['text', 'tspan'].includes(n.localName)) assert.ok(paints(n, 'fill') && Number(state['font-size'] ?? 16) >= 12, 'effective readable text');
     for (const child of n.children) inspect(child, state);
   }; inspect(sr);
   const bounds = (c) => { const g = c.children.find((n) => n.localName === 'mxGeometry'); assert.ok(g, 'real mxGeometry'); const a = ['x', 'y', 'width', 'height'].map((k) => Number(attr(g, k))); assert.ok(a.every(Number.isFinite) && a[2] > 0 && a[3] > 0, 'positive node geometry'); return a; };
@@ -257,7 +263,7 @@ export function assertDiagramContract(drawio, svg) {
     assert.ok(paints(paths[0], 'stroke'), 'effective visible connector stroke');
     const markerId = /^url\(#([\w-]+)\)$/u.exec(attr(paths[0], 'marker-end') ?? '')?.[1], marker = markers.get(markerId); assert.ok(marker, 'real referenced arrow marker');
     assert.ok(Number(attr(marker, 'markerWidth')) > 0 && Number(attr(marker, 'markerHeight')) > 0);
-    assert.ok(xmlElements(marker, 'path').some((p) => /Z$/u.test(attr(p, 'd') ?? '') && /^#[0-9a-f]{6}$/iu.test(states.get(p).fill) && paints(p, 'fill')), 'effective painted closed arrowhead');
+    assert.ok(xmlElements(marker, 'path').some((p) => /Z$/u.test(attr(p, 'd') ?? '') && paints(p, 'fill')), 'effective painted closed arrowhead');
   }
 }
 
@@ -332,6 +338,14 @@ export function governanceFixture() {
 
 if (process.argv[1]?.endsWith('g009-batch16-content.test.mjs')) {
 test('DDD-01 article helper fixture is GREEN', () => assertArticleContract(articleFixture()));
+for (const name of ['SourceLedger', 'PatternTopicIndex']) {
+  test(`DDD-01 article helper accepts childless ${name}`, () => assertArticleContract(articleFixture() + `\n\n<${name} />\n`));
+  test(`DDD-01 article rejects non-rendered ${name} children`, () => {
+    const source = articleFixture(), changed = mutation(source, REQUIRED_SENTENCES[2], `<${name}>\n\n${REQUIRED_SENTENCES[2]}\n\n</${name}>`);
+    assertArticleContract(source);
+    assert.throws(() => assertArticleContract(changed), /component must be childless/u);
+  });
+}
 test('DDD-01 article helper accepts multiline emphasis softwrap and JSX visible narrative', () => {
   const source = articleFixture();
   assertArticleContract(mutation(source, REQUIRED_SENTENCES[2], '<p>子域属于**问题空间**，\n限界上下文是模型适用边界。</p>'));
@@ -384,6 +398,24 @@ for (const [label, change] of [
   ['DDD-02 reference', (s) => s + '\n[下一篇][next]\n\n[next]: /patterns/ddd-02'],
 ]) test(`DDD-01 article rejects ${label}`, () => { const source = articleFixture(); assertArticleContract(source); const changed = change(source); assert.notEqual(changed, source); assert.throws(() => assertArticleContract(changed), assert.AssertionError); });
 test('DDD-01 diagram helper fixture is GREEN', () => { const f = diagramFixture(); assertDiagramContract(f.drawio, f.svg); });
+for (const color of ['rgba(0,0,0,0)', 'hsla(0,0%,0%,0)', 'rgb(0 0 0 / 0%)', 'hsl(0 0% 0% / 0)', '#0000', '#00000000']) {
+  for (const [target, before, after] of [
+    ['connector', 'stroke="#111111" stroke-width="2" marker-end=', `stroke="${color}" stroke-width="2" marker-end=`],
+    ['boundary', '<g data-semantic-id="system-boundary"><rect x="600" y="620" width="400" height="160" fill="none" stroke="#111111"', `<g data-semantic-id="system-boundary"><rect x="600" y="620" width="400" height="160" fill="none" stroke="${color}"`],
+    ['marker', 'd="M 0 0 L 10 5 L 0 10 Z" fill="#111111"', `d="M 0 0 L 10 5 L 0 10 Z" fill="${color}"`],
+    ['text', '<text x="120" y="140" fill="#111111"', `<text x="120" y="140" fill="${color}"`],
+  ]) test(`DDD-01 diagram rejects color alpha ${target} ${color}`, () => {
+    const f = diagramFixture(); assertDiagramContract(f.drawio, f.svg);
+    f.svg = mutation(f.svg, before, after);
+    assert.throws(() => assertDiagramContract(f.drawio, f.svg), /effective/u);
+  });
+}
+test('DDD-01 diagram helper accepts supported opaque colors consistently', () => {
+  for (const color of ['#123', '#123456', 'black', 'white']) {
+    const f = diagramFixture(); f.svg = f.svg.replaceAll('#111111', color);
+    assertDiagramContract(f.drawio, f.svg);
+  }
+});
 test('DDD-01 diagram helper accepts effective inherited paint and local overrides', () => {
   const f = diagramFixture();
   f.svg = mutation(f.svg, '<g data-semantic-id="inventory-sales"', '<g stroke="#111111" stroke-width="2" stroke-opacity="50%" data-semantic-id="inventory-sales"');
