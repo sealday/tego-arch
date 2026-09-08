@@ -51,15 +51,15 @@ Browser raw: docs/reviews/evidence/g009-batch16-stage-a-production-browser.json;
 
 ## Stage B candidate
 
-Scope: STAGE_B_READY.
+Scope: STAGE_B_SUCCESS.
 
 DDD-01 lifecycle: published / complete.
 
 DDD-02 topic: planned / unpublished / pending; document: absent / non-actionable.
 
-Final judgment: READY.
+Final judgment: SUCCESS.
 
-Deployment: NOT_RUN.
+Deployment: SUCCESS / functional PASS.
 
 Screenshot evidence: BLOCKED / NOT_ACCEPTED; accepted 0/4; functional PASS is not visual acceptance.
 
@@ -77,6 +77,8 @@ Immediate history: backlog 125843 bytes / SHA-256 e10f90626844f71c74d129d3636c8c
 
 Canonical Stage B projection: 86 completed topics / 128 content documents / 604 governed sources; durable stories remain 8/20, current G009; next pending DDD-02.
 
+Completion boundary: DDD-01 is complete; DDD-02 and the remaining DDD topics are not complete; current G009 is not complete.
+
 ## Independent reviews
 
 code/spec/security: head 6cb0ccea77edbe6bf70d0360188b48d025cd14eb; READY / APPROVE / findings 0.
@@ -87,8 +89,21 @@ architecture/invariants: head 6cb0ccea77edbe6bf70d0360188b48d025cd14eb; CLEAR / 
 
 ## Browser evidence
 
-Stage B production Browser raw: ABSENT / NOT_CAPTURED.
+Browser raw: docs/reviews/evidence/g009-batch16-stage-b-production-browser.json; bytes 19892; SHA-256 6bfa26dcb97fba005daa27605db7bd92f216dc6b32daf7c7316bd8d748ca47da.
+
+<details className="evidence-card">
+<summary>Stage B 生产浏览器观测与诚实边界</summary>
+
+Fresh HTTP probes 于 exact-head 部署完成后执行：5/5 HTML routes 与 1/1 SVG asset 均为 200；线上 SVG 为 13806 bytes / SHA-256 bcf229ac78b2efd0c9cf7f2b3cd36935337c710669bba4276dcfab855540d4bc，与 reviewed asset 一致。
+
+四态有效观测为 desktop-dark 2026-09-08T15:22:04.435Z、desktop-light 2026-09-08T15:22:56.171Z、mobile-light 2026-09-08T15:23:06.041Z、mobile-dark 2026-09-08T15:23:21.095Z；desktop-light 仅采用 15:22:56.171Z 的有效重跑，不采用更早的错误 dark 观测。桌面/移动页面均无文档级横向溢出，三个包装器与真实键盘增量分别符合 0/40/40 与 40/40/40，焦点、focus-visible 与 3px 轮廓全部成立。
+
+关联验证采用 exact observed href 的 direct goto，不声称物理点击：STY-14 目标 H1、回链标签/地址、返回后的 DDD-01 H1 与 dark 主题精确。一次 session-wide source audit 记录 7/7 锚点的 text/href/target/rel；没有独立 source-audit 时间戳，因此 raw 明确记录 unknown 且不声称远端来源页面被加载。DDD-02 actionable count 为 0。
+
+Runtime.consoleAPICalled、Runtime.exceptionThrown 与 Log.entryAdded 使用同一完整 session-wide 22→206 游标窗口，events 为空、hasMore=false、truncated=false；native tab.dev.logs({limit:1000}) 为空且该接口没有 cursor。仅 mobile-dark 在 2026-09-08T15:24:01.601Z 尝试全页截图，返回 transient 707150 bytes 但未持久化；其余三态未尝试。截图接受仍为 0/4、BLOCKED / NOT_ACCEPTED。
+
+</details>
 
 ## Publication
 
-Stage B publication: PENDING / NOT_RUN.
+Pages: 26c485e0069217f6bf6fc4c3b947db85cc78ee17; run 34243634133; build 102119874998; deploy 102121399179; push / completed / success; updated 2026-09-08T15:20:22Z.

@@ -34,6 +34,7 @@ export const NEXT_TOPIC = 'STY-15';
 const STAGE_A_EVIDENCE_HEAD = '215908786dde13e7fb19c752ba61b3bfb340a89b';
 const STAGE_B_MARKER = '\n## Stage B closure candidate\n';
 const STAGE_B_BROWSER = 'docs/reviews/evidence/g009-batch15-stage-b-production-browser.json';
+const DDD01_STAGE_B_BROWSER = 'docs/reviews/evidence/g009-batch16-stage-b-production-browser.json';
 const PREVIOUS_BACKLOG_ROW = '- [ ] **STY-14 P1｜风格选择矩阵**：用三个相同业务场景比较 Modular Monolith、Microservices 与 Event-Driven。';
 const STY14_CLOSURE_ROW = '- [x] **STY-14 P1｜风格选择矩阵**：用三个相同业务场景比较 Modular Monolith、Microservices 与 Event-Driven。2026-09-07 Stage A implementation commit `ea452848ac0b77b4271c465a3643799abd17d863`，Pages run `34134613000`，build job `101782500593`、deploy job `101783809244`；evidence commit `215908786dde13e7fb19c752ba61b3bfb340a89b`，Pages run `34136330002`，build job `101788065505`、deploy job `101789152187`，两次均为 exact-head `push / completed / success`。Production HTML routes `7/7` 与 SVG asset `1/1` 为 HTTP `200`，functional Browser `SUCCESS / PASS`（states `4/4`、wrappers `12/12`、relation href/H1/return `12/12`、source anchors `24/24`、STY-15 actionable `0`、完整 diagnostics 零）；screenshot evidence `BLOCKED / NOT_ACCEPTED`（accepted `0/4`）。仅 Stage B 本地关闭候选；独立 code/content-rights/architecture reviews `PENDING`，Stage B deployment `PENDING / NOT_RUN`，不声称 Stage B 生产完成。';
 const DDD01_PENDING_ROW = '- [ ] **DDD-01 P0｜战略 DDD 总览**：子域、统一语言、Bounded Context 和 Context Map。';
@@ -90,6 +91,7 @@ function immediateHistoryFiles() {
 }
 function isImmediateHistoricalPath(path) {
   return path !== STAGE_B_BROWSER &&
+    path !== DDD01_STAGE_B_BROWSER &&
     path !== 'docs/reviews/g009-batch16.md' &&
     path !== 'docs/reviews/evidence/g009-batch16-stage-a-browser.json' &&
     path !== 'docs/reviews/evidence/g009-batch16-stage-a-production-browser.json';
@@ -98,6 +100,14 @@ test('STY-14 immediate history excludes only the exact newly bound Stage B raw p
   assert.equal(isImmediateHistoricalPath(STAGE_B_BROWSER), false);
   for (const path of [STAGE_B_BROWSER.replace('.json', '-fabricated.json'), STAGE_B_BROWSER + '.bak', STAGE_B_BROWSER.replace('stage-b', 'stage-c')]) {
     assert.equal(isImmediateHistoricalPath(path), true, 'near matches retain historical membership protection');
+    const files = immediateHistoryFiles(); files.set(path, Buffer.from('fabricated'));
+    assert.throws(() => assertImmediateHistory(readFileSync('docs/content-backlog.md', 'utf8'), files), assert.AssertionError);
+  }
+});
+test('STY-14 immediate history excludes only the exact DDD-01 Stage B production raw path', () => {
+  assert.equal(isImmediateHistoricalPath(DDD01_STAGE_B_BROWSER), false);
+  for (const path of [DDD01_STAGE_B_BROWSER.replace('.json', '-fabricated.json'), DDD01_STAGE_B_BROWSER + '.bak', DDD01_STAGE_B_BROWSER.replace('stage-b', 'stage-c')]) {
+    assert.equal(isImmediateHistoricalPath(path), true, 'DDD-01 Stage B production near matches retain historical membership protection');
     const files = immediateHistoryFiles(); files.set(path, Buffer.from('fabricated'));
     assert.throws(() => assertImmediateHistory(readFileSync('docs/content-backlog.md', 'utf8'), files), assert.AssertionError);
   }

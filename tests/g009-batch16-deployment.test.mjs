@@ -27,6 +27,30 @@ export const STAGE_A_IMPLEMENTATION_HEAD = '997e4b136b40cab3b96ff033c77830752b16
 export const STAGE_A_PUBLICATION = Object.freeze({workflowName:'Verify and deploy Docusaurus to GitHub Pages',workflowPath:'.github/workflows/deploy.yml',createdAt:'2026-09-08T13:27:09Z',startedAt:'2026-09-08T13:27:09Z',updatedAt:'2026-09-08T13:30:58Z',runId:34232044270,build:{id:102080344661,startedAt:'2026-09-08T13:27:14Z',completedAt:'2026-09-08T13:30:33Z'},deploy:{id:102081529119,startedAt:'2026-09-08T13:30:38Z',completedAt:'2026-09-08T13:30:51Z'}});
 export const STAGE_A_EVIDENCE_HEAD = 'c99db5b12aa5da7c4d2929837c2f3735db59c2c7';
 export const STAGE_A_EVIDENCE_PUBLICATION = Object.freeze({runId:34236534834,buildId:102095575933,deployId:102097366248,completedAt:'2026-09-08T14:15:19Z'});
+export const STAGE_B_REVIEWED_HEAD = '6cb0ccea77edbe6bf70d0360188b48d025cd14eb';
+export const STAGE_B_IMPLEMENTATION_HEAD = '26c485e0069217f6bf6fc4c3b947db85cc78ee17';
+export const STAGE_B_PUBLICATION = Object.freeze({workflowName:'Verify and deploy Docusaurus to GitHub Pages',workflowPath:'.github/workflows/deploy.yml',createdAt:'2026-09-08T15:16:00Z',startedAt:'2026-09-08T15:16:00Z',updatedAt:'2026-09-08T15:20:22Z',runId:34243634133,build:{id:102119874998,startedAt:'2026-09-08T15:16:03Z',completedAt:'2026-09-08T15:20:05Z'},deploy:{id:102121399179,startedAt:'2026-09-08T15:20:11Z',completedAt:'2026-09-08T15:20:19Z'}});
+export const STAGE_B_STATE_OBSERVED_AT = Object.freeze({desktopLight:'2026-09-08T15:22:56.171Z',desktopDark:'2026-09-08T15:22:04.435Z',mobileDark:'2026-09-08T15:23:21.095Z',mobileLight:'2026-09-08T15:23:06.041Z'});
+export const STAGE_B_RELATION_METHOD = 'direct goto using exact observed href and reciprocal return href; no physical click claimed';
+export const STAGE_B_SOURCE_ANCHORS = Object.freeze([
+  ['DDD Reference', 'https://www.domainlanguage.com/ddd/reference/'],
+  ['Bounded Context', 'https://martinfowler.com/bliki/BoundedContext.html'],
+  ['Ubiquitous Language', 'https://martinfowler.com/bliki/UbiquitousLanguage.html'],
+  ['Context Mapping', 'https://github.com/ddd-crew/context-mapping/tree/970c1ff3a61f7aa8b61b789b697c05bc585f614d'],
+  ['Anti-Corruption Layer', 'https://contextmapper.org/docs/anticorruption-layer/'],
+  ['Domain analysis', 'https://learn.microsoft.com/azure/architecture/microservices/model/domain-analysis'],
+  ['原创上下文映射矢量图', '/tego-arch/img/diagrams/ddd-01-strategic-ddd-context-map.svg'],
+]);
+export const STAGE_B_CAPTURED_AT = '2026-09-08T15:33:00.754Z';
+export const STAGE_B_HTTP = Object.freeze([
+  {route:'/',url:'https://sealday.github.io/tego-arch/',status:200,contentType:'text/html; charset=utf-8',observedAt:'2026-09-08T15:27:51.012Z',bytes:17978,sha256:'d921d9013b648c1b440d805c495a4e9af566c27e89d00121b535937d213a33f5'},
+  {route:'/patterns',url:'https://sealday.github.io/tego-arch/patterns',status:200,contentType:'text/html; charset=utf-8',observedAt:'2026-09-08T15:27:51.550Z',bytes:42081,sha256:'7c585b450f8304d0ccc5a3735cb499b712490bbd334f0cd9d6b53b14c5cdcb3d'},
+  {route:'/patterns/ddd-01',url:'https://sealday.github.io/tego-arch/patterns/ddd-01',status:200,contentType:'text/html; charset=utf-8',observedAt:'2026-09-08T15:27:51.854Z',bytes:43904,sha256:'23a022ee403a5b78b60e3fabb5973acfb8450a19b3415d1c670f2081772c49a5'},
+  {route:'/styles/sty-14',url:'https://sealday.github.io/tego-arch/styles/sty-14',status:200,contentType:'text/html; charset=utf-8',observedAt:'2026-09-08T15:27:52.182Z',bytes:59898,sha256:'d0d30583e1b57e32663865533ab02041210484a4f3d4fe73ef98d7519e727e17'},
+  {route:'/references',url:'https://sealday.github.io/tego-arch/references',status:200,contentType:'text/html; charset=utf-8',observedAt:'2026-09-08T15:27:52.507Z',bytes:24201,sha256:'5442764ba1354ff272c5577d886d3708cd2f19621c3b659bc4b881858c07038b'},
+  {route:'/img/diagrams/ddd-01-strategic-ddd-context-map.svg',url:'https://sealday.github.io/tego-arch/img/diagrams/ddd-01-strategic-ddd-context-map.svg',status:200,contentType:'image/svg+xml',observedAt:'2026-09-08T15:27:52.812Z',bytes:13806,sha256:'bcf229ac78b2efd0c9cf7f2b3cd36935337c710669bba4276dcfab855540d4bc'},
+]);
+export const STAGE_B_SESSION_DIAGNOSTICS = Object.freeze({scope:'one continuous production Browser session spanning all four states, relation/source audits, screenshot attempt, and final log read',methods:['Runtime.consoleAPICalled','Runtime.exceptionThrown','Log.entryAdded'],startCursor:22,endCursor:206,events:[],hasMore:false,truncated:false,nativeLogs:{method:'tab.dev.logs({limit:1000})',cursorAvailable:false,events:[]}});
 export const REVIEW_ROLES = Object.freeze(['code/spec/security', 'content/evidence/rights', 'architecture/invariants']);
 export const BUILD_INPUTS = Object.freeze(['content', 'data', 'src', 'static', 'scripts', 'plugins', 'docusaurus.config.ts', 'sidebars.ts', 'package.json', 'package-lock.json']);
 export const OBSERVED_BUILD_COMMIT = '6cdb62fb2013cb28178c77484aac948bd4862067';
@@ -205,27 +229,35 @@ export function reviewFixture(options = {}) {
   return `## Stage ${stage} candidate\n\n${lines.slice(0, phase === 'pending' ? 6 : 7).join('\n\n')}\n\n## Independent reviews\n\n${lines.slice(phase === 'pending' ? 6 : 7, phase === 'pending' ? 9 : 10).join('\n\n')}\n\n## Browser evidence\n\n## Publication\n\n${phase === 'published' ? lines.slice(10).join('\n\n') : ''}\n`;
 }
 
-function stageBSection({phase = 'pending', reviewedHead} = {}) {
-  assert.ok(['pending','ready'].includes(phase), 'Stage B verdict candidate is pending or ready before deployment');
-  if (phase === 'ready') assert.match(reviewedHead ?? '', /^[0-9a-f]{40}$/u, 'Stage B reviews bind an exact candidate');
-  const verdict = phase === 'pending' ? 'PENDING' : 'READY';
+function stageBSection({phase = 'pending', reviewedHead, publication, browserIdentity} = {}) {
+  assert.ok(['pending','ready','published'].includes(phase), 'known Stage B lifecycle phase');
+  if (phase !== 'pending') assert.match(reviewedHead ?? '', /^[0-9a-f]{40}$/u, 'Stage B reviews bind an exact candidate');
+  if (phase === 'published') assert.ok(publication && browserIdentity, 'published Stage B binds exact deployment and Browser identities');
+  const verdict = phase === 'pending' ? 'PENDING' : phase === 'ready' ? 'READY' : 'SUCCESS';
   const lines = [
     `Scope: STAGE_B_${verdict}.`,
     'DDD-01 lifecycle: published / complete.',
     'DDD-02 topic: planned / unpublished / pending; document: absent / non-actionable.',
     `Final judgment: ${verdict}.`,
-    'Deployment: NOT_RUN.',
+    `Deployment: ${phase === 'published' ? 'SUCCESS / functional PASS' : 'NOT_RUN'}.`,
     'Screenshot evidence: BLOCKED / NOT_ACCEPTED; accepted 0/4; functional PASS is not visual acceptance.',
-    ...(phase === 'ready' ? [`Reviewed head: ${reviewedHead}.`] : []),
+    ...(phase !== 'pending' ? [`Reviewed head: ${reviewedHead}.`] : []),
     `Stage A reviewed candidate: ${STAGE_A_REVIEWED_HEAD}.`,
     `Stage A implementation: ${STAGE_A_IMPLEMENTATION_HEAD}; Pages run ${STAGE_A_PUBLICATION.runId}; build ${STAGE_A_PUBLICATION.build.id}; deploy ${STAGE_A_PUBLICATION.deploy.id}; push / completed / success.`,
     `Stage A evidence: ${STAGE_A_EVIDENCE_HEAD}; Pages run ${STAGE_A_EVIDENCE_PUBLICATION.runId}; build ${STAGE_A_EVIDENCE_PUBLICATION.buildId}; deploy ${STAGE_A_EVIDENCE_PUBLICATION.deployId}; push / completed / success; completed ${STAGE_A_EVIDENCE_PUBLICATION.completedAt}.`,
     'Stage A production: HTML routes 5/5 and SVG asset 1/1 returned HTTP 200; functional states 4/4; wrappers 12/12; relation href/H1/return 4/4; source anchors 28/28; DDD-02 actionable 0; complete diagnostics empty.',
     'Immediate history: backlog 125843 bytes / SHA-256 e10f90626844f71c74d129d3636c8cdc700f7fb27dbd27642aa4e49118a6931f; prefix 104699 / fa2891d13b84b7c74b879bd33a902a9ff4a46e65e0bd40a7d2e550b35da058a7; suffix 21044 / 68d9bf868e0926e320df5c6782e23daa05b5a783ccdfdf23db311c9be488e6be; pre-Stage-B review/evidence tree 79 files / cf04e449c739d97e2fe53dfdb9e9f2ff960f18bfdef5ecd5abfd529b67b5da5f.',
     'Canonical Stage B projection: 86 completed topics / 128 content documents / 604 governed sources; durable stories remain 8/20, current G009; next pending DDD-02.',
+    ...(phase === 'published' ? ['Completion boundary: DDD-01 is complete; DDD-02 and the remaining DDD topics are not complete; current G009 is not complete.'] : []),
   ];
   const reviews = REVIEW_ROLES.map((role) => `${role}: ${phase === 'pending' ? 'PENDING' : `head ${reviewedHead}; ${role === 'content/evidence/rights' ? 'CONTENT READY / rights PASS / findings 0' : role === 'architecture/invariants' ? 'CLEAR / READY / blockers 0' : 'READY / APPROVE / findings 0'}`}.`);
-  return `${STAGE_B_MARKER}\n${lines.join('\n\n')}\n\n## Independent reviews\n\n${reviews.join('\n\n')}\n\n## Browser evidence\n\nStage B production Browser raw: ABSENT / NOT_CAPTURED.\n\n## Publication\n\nStage B publication: PENDING / NOT_RUN.\n`;
+  const browser = phase === 'published'
+    ? `Browser raw: ${browserIdentity.path}; bytes ${browserIdentity.bytes}; SHA-256 ${browserIdentity.sha256}.\n\n<details className="evidence-card">\n<summary>Stage B 生产浏览器观测与诚实边界</summary>\n\nFresh HTTP probes 于 exact-head 部署完成后执行：5/5 HTML routes 与 1/1 SVG asset 均为 200；线上 SVG 为 13806 bytes / SHA-256 bcf229ac78b2efd0c9cf7f2b3cd36935337c710669bba4276dcfab855540d4bc，与 reviewed asset 一致。\n\n四态有效观测为 desktop-dark 2026-09-08T15:22:04.435Z、desktop-light 2026-09-08T15:22:56.171Z、mobile-light 2026-09-08T15:23:06.041Z、mobile-dark 2026-09-08T15:23:21.095Z；desktop-light 仅采用 15:22:56.171Z 的有效重跑，不采用更早的错误 dark 观测。桌面/移动页面均无文档级横向溢出，三个包装器与真实键盘增量分别符合 0/40/40 与 40/40/40，焦点、focus-visible 与 3px 轮廓全部成立。\n\n关联验证采用 exact observed href 的 direct goto，不声称物理点击：STY-14 目标 H1、回链标签/地址、返回后的 DDD-01 H1 与 dark 主题精确。一次 session-wide source audit 记录 7/7 锚点的 text/href/target/rel；没有独立 source-audit 时间戳，因此 raw 明确记录 unknown 且不声称远端来源页面被加载。DDD-02 actionable count 为 0。\n\nRuntime.consoleAPICalled、Runtime.exceptionThrown 与 Log.entryAdded 使用同一完整 session-wide 22→206 游标窗口，events 为空、hasMore=false、truncated=false；native tab.dev.logs({limit:1000}) 为空且该接口没有 cursor。仅 mobile-dark 在 2026-09-08T15:24:01.601Z 尝试全页截图，返回 transient 707150 bytes 但未持久化；其余三态未尝试。截图接受仍为 0/4、BLOCKED / NOT_ACCEPTED。\n\n</details>`
+    : 'Stage B production Browser raw: ABSENT / NOT_CAPTURED.';
+  const publicationLine = phase === 'published'
+    ? `Pages: ${publication.headSha}; run ${publication.runId}; build ${publication.jobs[0].id}; deploy ${publication.jobs[1].id}; push / completed / success; updated ${publication.updatedAt}.`
+    : 'Stage B publication: PENDING / NOT_RUN.';
+  return `${STAGE_B_MARKER}\n${lines.join('\n\n')}\n\n## Independent reviews\n\n${reviews.join('\n\n')}\n\n## Browser evidence\n\n${browser}\n\n## Publication\n\n${publicationLine}\n`;
 }
 export function assertStageBCandidate(source, options = {}) {
   assert.ok(source, 'DDD-01 Stage B review exists');
@@ -236,10 +268,11 @@ export function assertStageBCandidate(source, options = {}) {
 
 // No actual run, head, hash or observation is invented here. Tasks 4–7 pass the independently
 // recorded reviewed identity into these semantic validators, then freeze the resulting raw bytes.
-export function assertBrowserEvidence(raw, {baseUrl = PRODUCTION_URL, expectedHead, expectedBuild, local = false, svgBytes, rawIdentity, rawBytes} = {}) {
+export function assertBrowserEvidence(raw, {baseUrl = PRODUCTION_URL, expectedHead, expectedBuild, expectedPublication, expectedHttp, expectedSessionDiagnostics, expectedStateObservedAt, local = false, svgBytes, rawIdentity, rawBytes} = {}) {
   assert.ok(raw, 'DDD-01 raw Browser evidence must exist');
-  exactKeys(raw, local ? ['schemaVersion', 'tool', 'baseUrl', 'capturedAt', 'build', 'svgAsset', 'states'] : ['schemaVersion', 'tool', 'baseUrl', 'capturedAt', 'publication', 'http', 'svgAsset', 'sessionDiagnostics', 'states'], 'Browser root schema');
-  assert.equal(raw.schemaVersion, 1); assert.equal(raw.tool, 'Codex in-app Browser / CUA'); assert.equal(raw.baseUrl, baseUrl);
+  const stageB = !local && raw.schemaVersion === 2;
+  exactKeys(raw, local ? ['schemaVersion', 'tool', 'baseUrl', 'capturedAt', 'build', 'svgAsset', 'states'] : ['schemaVersion', 'tool', 'baseUrl', 'capturedAt', 'publication', 'http', 'svgAsset', 'sessionDiagnostics', ...(stageB ? ['sourceAudit','relationAudit'] : []), 'states'], 'Browser root schema');
+  assert.ok(raw.schemaVersion === 1 || stageB, 'known Browser evidence schema'); assert.equal(raw.tool, 'Codex in-app Browser / CUA'); assert.equal(raw.baseUrl, baseUrl);
   if (local) {
     assert.ok(expectedBuild, 'independently bound local build inputs');
     exactKeys(raw.build, ['baseHead', 'inputFiles', 'inputSha256'], 'local build schema');
@@ -255,9 +288,16 @@ export function assertBrowserEvidence(raw, {baseUrl = PRODUCTION_URL, expectedHe
   assert.deepEqual(p.jobs.map((j) => j.name), ['build', 'deploy']);
   for (const job of p.jobs) { exactKeys(job, ['name', 'id', 'status', 'conclusion', 'startedAt', 'completedAt'], 'job schema'); assert.ok(Number.isSafeInteger(job.id) && job.id > 0); assert.equal(job.status, 'completed'); assert.equal(job.conclusion, 'success'); assert.ok(Date.parse(job.startedAt) >= Date.parse(p.startedAt)); assert.ok(Date.parse(job.completedAt) <= Date.parse(p.updatedAt)); }
   assert.notEqual(p.jobs[0].id, p.jobs[1].id); assert.ok(Date.parse(raw.capturedAt) > Date.parse(p.updatedAt), 'fresh Browser after exact-head deployment');
-  assert.deepEqual(raw.sessionDiagnostics, {scope:'one continuous production Browser session spanning all four states, relation/source audits, and final log read',methods:['Runtime.consoleAPICalled','Runtime.exceptionThrown','Log.entryAdded'],afterSequence:22,cursor:182,events:[],hasMore:false,truncated:false,nativeLogs:[]}, 'honest session-wide diagnostics; no fabricated per-state cursors');
+  if (expectedPublication) assert.deepEqual(p, expectedPublication, 'production publication is independently literal-bound');
+  const expectedDiagnostics = expectedSessionDiagnostics ?? {scope:'one continuous production Browser session spanning all four states, relation/source audits, and final log read',methods:['Runtime.consoleAPICalled','Runtime.exceptionThrown','Log.entryAdded'],afterSequence:22,cursor:182,events:[],hasMore:false,truncated:false,nativeLogs:[]};
+  assert.deepEqual(raw.sessionDiagnostics, expectedDiagnostics, 'honest session-wide diagnostics; no fabricated per-state cursors');
+  if (stageB) {
+    assert.deepEqual(raw.sourceAudit, {scope:'one fresh session-wide source-anchor audit',observedAt:null,reason:'no independent source-audit timestamp was captured',fields:['text','href','target','rel'],destinationLoadsClaimed:false,anchors:STAGE_B_SOURCE_ANCHORS.map(([text,href]) => ({text,href,target:'_blank',rel:'noopener noreferrer'}))}, 'source audit records only fields actually observed');
+    assert.deepEqual(raw.relationAudit, {scope:'one fresh session-wide reciprocal relation audit',method:STAGE_B_RELATION_METHOD,link:{label:'STY-14 架构风格选择矩阵',href:'/tego-arch/styles/sty-14'},destination:{observedAt:'2026-09-08T15:23:43.951Z',url:baseUrl+'/styles/sty-14',h1:'架构风格选择矩阵：边界、交互与演进触发器',reciprocalLabel:'战略领域建模总览',returnHref:'/tego-arch/patterns/ddd-01'},returned:{observedAt:'2026-09-08T15:23:44.105Z',url:baseUrl+ROUTE,h1:EXACT_METADATA.title,theme:'dark'}}, 'fresh direct-goto relation audit');
+  }
   assert.deepEqual(raw.http.map((h) => h.route), HTTP_ROUTES);
   for (const h of raw.http) { exactKeys(h, ['route', 'url', 'status', 'contentType', 'observedAt', 'bytes', 'sha256'], 'HTTP schema'); assert.equal(h.url, baseUrl + h.route); assert.equal(h.status, 200); assert.equal(h.contentType, h.route.endsWith('.svg') ? 'image/svg+xml' : 'text/html; charset=utf-8'); assert.ok(h.bytes > 0); assert.match(h.sha256, /^[0-9a-f]{64}$/u); assert.ok(Date.parse(h.observedAt) > Date.parse(p.updatedAt) && Date.parse(h.observedAt) <= Date.parse(raw.capturedAt)); }
+  if (expectedHttp) assert.deepEqual(raw.http, expectedHttp, 'fresh HTTP probe fields are independently literal-bound');
   }
   assert.ok(svgBytes?.length, 'independent reviewed SVG bytes');
   const svgIdentity = {bytes: svgBytes.length, sha256: hash(svgBytes)};
@@ -266,19 +306,26 @@ export function assertBrowserEvidence(raw, {baseUrl = PRODUCTION_URL, expectedHe
   exactKeys(raw.states, STATE_CONTRACTS.map(([id]) => id), 'four states');
   for (const [id,width,height,theme] of STATE_CONTRACTS) {
     const s = raw.states[id];
-    exactKeys(s, ['url', 'h1', 'viewport', 'theme', 'page', 'wrappers', 'interactions', 'svg', 'relations', 'sources', 'ddd02ActionableCount', 'logs', 'diagnostics', 'screenshot'], 'state schema');
+    exactKeys(s, ['url', 'h1', 'viewport', 'theme', ...(stageB ? ['observedAt'] : []), 'page', 'wrappers', 'interactions', 'svg', 'relations', 'sources', 'ddd02ActionableCount', 'logs', 'diagnostics', 'screenshot'], 'state schema');
     assert.equal(s.url, baseUrl + ROUTE); assert.equal(s.h1, EXACT_METADATA.title); assert.deepEqual(s.viewport, {width,height}); assert.equal(s.theme, theme); assert.deepEqual(s.page, {clientWidth: width, scrollWidth: width});
+    if (stageB) { assert.equal(s.observedAt, expectedStateObservedAt?.[id], `fresh ${id} observation time`); assert.ok(Date.parse(s.observedAt) > Date.parse(raw.publication.updatedAt) && Date.parse(s.observedAt) <= Date.parse(raw.capturedAt)); }
     assert.equal(s.wrappers.length, 3); assert.equal(s.interactions.length, 3);
     const expectedWrapperWidth = width === 1440 ? 800 : 358;
     const expectedScrollWidths = [800, 1447, 1529];
     for (const [i,w] of s.wrappers.entries()) {
       exactKeys(w, ['label','role','tabIndex','clientWidth','scrollWidth'], 'wrapper schema'); assert.equal(w.label, WRAPPER_LABELS[i]); assert.equal(w.role, 'region'); assert.equal(w.tabIndex, 0); assert.equal(w.clientWidth, expectedWrapperWidth); assert.equal(w.scrollWidth, expectedScrollWidths[i]);
-      const action = s.interactions[i]; exactKeys(action, ['label','key','before','after','focused','focusVisible','outlineWidth','outlineStyle','method'], 'keyboard observation schema');
+      const action = s.interactions[i]; exactKeys(action, ['label','key','before','after',...(stageB ? ['delta'] : []),'focused','focusVisible','outlineWidth','outlineStyle','method'], 'keyboard observation schema');
       assert.equal(action.label, w.label); assert.equal(action.method, 'actual Tab/ArrowRight input; no synthetic event'); assert.equal(action.key, 'ArrowRight'); assert.equal(action.before, 0); assert.equal(action.after, w.scrollWidth > w.clientWidth ? 40 : 0); assert.equal(action.focused, true); assert.equal(action.focusVisible, true); assert.equal(action.outlineWidth, '3px'); assert.equal(action.outlineStyle, 'solid');
+      if (stageB) assert.equal(action.delta, action.after - action.before, 'recorded keyboard delta matches measured positions');
     }
-    exactKeys(s.svg, ['complete','naturalWidth','naturalHeight','width','height','bytes','sha256'], 'loaded SVG schema'); assert.equal(s.svg.complete, true); assert.deepEqual({naturalWidth:s.svg.naturalWidth,naturalHeight:s.svg.naturalHeight,width:s.svg.width,height:s.svg.height}, {naturalWidth:53,naturalHeight:150,width:800,height:2260}, 'exact natural and rendered SVG geometry'); assert.deepEqual({bytes:s.svg.bytes,sha256:s.svg.sha256}, svgIdentity);
-    assert.deepEqual(s.relations, [{href:'/tego-arch/styles/sty-14',method:RELATION_METHOD,destination:{url:baseUrl+'/styles/sty-14',h1:'架构风格选择矩阵：边界、交互与演进触发器',returnHref:'/tego-arch/patterns/ddd-01'},returned:{url:baseUrl+ROUTE,h1:EXACT_METADATA.title,theme}}], 'actual adjacent href/H1/return chain');
-    assert.deepEqual(s.sources, SOURCE_ANCHORS.map(([text,href]) => ({text,href,destination:href,rel:'noopener noreferrer',target:'_blank'})), 'six governed remote anchors');
+    exactKeys(s.svg, ['complete','naturalWidth','naturalHeight','width','height',...(stageB ? ['src'] : []),'bytes','sha256'], 'loaded SVG schema'); assert.equal(s.svg.complete, true); assert.deepEqual({naturalWidth:s.svg.naturalWidth,naturalHeight:s.svg.naturalHeight,width:s.svg.width,height:s.svg.height}, {naturalWidth:53,naturalHeight:150,width:800,height:2260}, 'exact natural and rendered SVG geometry'); assert.deepEqual({bytes:s.svg.bytes,sha256:s.svg.sha256}, svgIdentity);
+    if (stageB) assert.equal(s.svg.src, '/tego-arch/assets/images/ddd-01-strategic-ddd-context-map-f9a13852879d6922b8ad8e31cdfdeee1.svg', 'fresh deployed SVG src');
+    const expectedRelation = stageB
+      ? {scope:'session-wide',ref:'relationAudit'}
+      : [{href:'/tego-arch/styles/sty-14',method:RELATION_METHOD,destination:{url:baseUrl+'/styles/sty-14',h1:'架构风格选择矩阵：边界、交互与演进触发器',returnHref:'/tego-arch/patterns/ddd-01'},returned:{url:baseUrl+ROUTE,h1:EXACT_METADATA.title,theme}}];
+    assert.deepEqual(s.relations, expectedRelation, 'actual adjacent href/H1/return chain');
+    const expectedSources = stageB ? {scope:'session-wide',ref:'sourceAudit'} : SOURCE_ANCHORS.map(([text,href]) => ({text,href,destination:href,rel:'noopener noreferrer',target:'_blank'}));
+    assert.deepEqual(s.sources, expectedSources, 'governed source anchors');
     assert.equal(s.ddd02ActionableCount, 0);
     if (local) {
       assert.deepEqual(s.logs, []);
@@ -288,9 +335,13 @@ export function assertBrowserEvidence(raw, {baseUrl = PRODUCTION_URL, expectedHe
       assert.deepEqual(s.logs, {scope:'session-wide',ref:'productionSession'});
       assert.deepEqual(s.diagnostics, {scope:'session-wide',ref:'productionSession'}, 'state honestly references the one observed production diagnostic window');
     }
-    const screenshot = id === 'mobileDark'
-      ? {attempted:true,bytes:local?427000:707150,status:'BLOCKED',acceptance:'NOT_ACCEPTED',artifact:null,reason:'fullPage capture returned bytes in the Browser session but could not be persisted as a durable artifact'}
-      : {attempted:false,status:'BLOCKED',acceptance:'NOT_ACCEPTED',artifact:null,reason:'fullPage capture was not attempted in this state'};
+    const screenshot = stageB
+      ? id === 'mobileDark'
+        ? {attempted:true,observedAt:'2026-09-08T15:24:01.601Z',bytes:707150,persisted:false,status:'BLOCKED',acceptance:'NOT_ACCEPTED',artifact:null,reason:'fullPage capture returned transient bytes in the Browser session but could not be persisted as a durable artifact'}
+        : {attempted:false,observedAt:null,bytes:null,persisted:false,status:'BLOCKED',acceptance:'NOT_ACCEPTED',artifact:null,reason:'fullPage capture was not attempted in this state'}
+      : id === 'mobileDark'
+        ? {attempted:true,bytes:local?427000:707150,status:'BLOCKED',acceptance:'NOT_ACCEPTED',artifact:null,reason:'fullPage capture returned bytes in the Browser session but could not be persisted as a durable artifact'}
+        : {attempted:false,status:'BLOCKED',acceptance:'NOT_ACCEPTED',artifact:null,reason:'fullPage capture was not attempted in this state'};
     assert.deepEqual(s.screenshot, screenshot, 'one mobile-dark attempt only; no functional-to-visual promotion');
   }
   if (rawIdentity || rawBytes) { assert.ok(rawIdentity && rawBytes, 'raw bytes and independent frozen identity supplied together'); assert.equal(rawBytes.length, rawIdentity.bytes); assert.equal(hash(rawBytes), rawIdentity.sha256); assert.deepEqual(JSON.parse(rawBytes), raw, 'semantic object is exact raw artifact'); }
@@ -373,6 +424,54 @@ export function assertStageAProductionGate(review, options = {}) {
   assertReview(review, {stage:'A',phase:'published',reviewedHead:STAGE_A_REVIEWED_HEAD,publication:raw.publication,browserIdentity:{path:STAGE_A_BROWSER,bytes:Number(binding[1]),sha256:binding[2]}});
   return assertRecordedBrowserArtifact(STAGE_A_BROWSER, review, {rawSource,svgBytes});
 }
+function stageBPublication() {
+  return {reviewedHead:STAGE_B_REVIEWED_HEAD,implementationSha:STAGE_B_IMPLEMENTATION_HEAD,headSha:STAGE_B_IMPLEMENTATION_HEAD,workflowName:STAGE_B_PUBLICATION.workflowName,workflowPath:STAGE_B_PUBLICATION.workflowPath,runId:STAGE_B_PUBLICATION.runId,event:'push',status:'completed',conclusion:'success',createdAt:STAGE_B_PUBLICATION.createdAt,startedAt:STAGE_B_PUBLICATION.startedAt,updatedAt:STAGE_B_PUBLICATION.updatedAt,jobs:[{name:'build',id:STAGE_B_PUBLICATION.build.id,status:'completed',conclusion:'success',startedAt:STAGE_B_PUBLICATION.build.startedAt,completedAt:STAGE_B_PUBLICATION.build.completedAt},{name:'deploy',id:STAGE_B_PUBLICATION.deploy.id,status:'completed',conclusion:'success',startedAt:STAGE_B_PUBLICATION.deploy.startedAt,completedAt:STAGE_B_PUBLICATION.deploy.completedAt}]};
+}
+export function stageBProductionFixture(svgBytes = readFileSync(SVG)) {
+  const svgAsset={bytes:svgBytes.length,sha256:hash(svgBytes)}, publication=stageBPublication(), baseUrl=PRODUCTION_URL;
+  const sourceAudit={scope:'one fresh session-wide source-anchor audit',observedAt:null,reason:'no independent source-audit timestamp was captured',fields:['text','href','target','rel'],destinationLoadsClaimed:false,anchors:STAGE_B_SOURCE_ANCHORS.map(([text,href]) => ({text,href,target:'_blank',rel:'noopener noreferrer'}))};
+  const relationAudit={scope:'one fresh session-wide reciprocal relation audit',method:STAGE_B_RELATION_METHOD,link:{label:'STY-14 架构风格选择矩阵',href:'/tego-arch/styles/sty-14'},destination:{observedAt:'2026-09-08T15:23:43.951Z',url:baseUrl+'/styles/sty-14',h1:'架构风格选择矩阵：边界、交互与演进触发器',reciprocalLabel:'战略领域建模总览',returnHref:'/tego-arch/patterns/ddd-01'},returned:{observedAt:'2026-09-08T15:23:44.105Z',url:baseUrl+ROUTE,h1:EXACT_METADATA.title,theme:'dark'}};
+  const raw={schemaVersion:2,tool:'Codex in-app Browser / CUA',baseUrl,capturedAt:STAGE_B_CAPTURED_AT,publication,http:structuredClone(STAGE_B_HTTP),svgAsset,sessionDiagnostics:structuredClone(STAGE_B_SESSION_DIAGNOSTICS),sourceAudit,relationAudit,states:{}};
+  for (const [id,width,height,theme] of STATE_CONTRACTS) {
+    const attempted=id==='mobileDark';
+    raw.states[id]={url:baseUrl+ROUTE,h1:EXACT_METADATA.title,viewport:{width,height},theme,observedAt:STAGE_B_STATE_OBSERVED_AT[id],page:{clientWidth:width,scrollWidth:width},wrappers:WRAPPER_LABELS.map((label,j)=>({label,role:'region',tabIndex:0,clientWidth:width===1440?800:358,scrollWidth:[800,1447,1529][j]})),interactions:WRAPPER_LABELS.map((label,j)=>{const after=width===1440&&j===0?0:40;return {label,key:'ArrowRight',before:0,after,delta:after,focused:true,focusVisible:true,outlineWidth:'3px',outlineStyle:'solid',method:'actual Tab/ArrowRight input; no synthetic event'};}),svg:{complete:true,naturalWidth:53,naturalHeight:150,width:800,height:2260,src:'/tego-arch/assets/images/ddd-01-strategic-ddd-context-map-f9a13852879d6922b8ad8e31cdfdeee1.svg',...svgAsset},relations:{scope:'session-wide',ref:'relationAudit'},sources:{scope:'session-wide',ref:'sourceAudit'},ddd02ActionableCount:0,logs:{scope:'session-wide',ref:'productionSession'},diagnostics:{scope:'session-wide',ref:'productionSession'},screenshot:attempted?{attempted:true,observedAt:'2026-09-08T15:24:01.601Z',bytes:707150,persisted:false,status:'BLOCKED',acceptance:'NOT_ACCEPTED',artifact:null,reason:'fullPage capture returned transient bytes in the Browser session but could not be persisted as a durable artifact'}:{attempted:false,observedAt:null,bytes:null,persisted:false,status:'BLOCKED',acceptance:'NOT_ACCEPTED',artifact:null,reason:'fullPage capture was not attempted in this state'}};
+  }
+  const rawSource=JSON.stringify(raw,null,2)+'\n', browserIdentity={path:STAGE_B_BROWSER,bytes:Buffer.byteLength(rawSource),sha256:hash(rawSource)};
+  const expectedPrefix=execFileSync('git',['show',`${IMMEDIATE_BASE}:${REVIEW}`],{encoding:'utf8'});
+  const review=expectedPrefix+stageBSection({phase:'published',reviewedHead:STAGE_B_REVIEWED_HEAD,publication,browserIdentity});
+  const browserOptions={expectedHead:STAGE_B_IMPLEMENTATION_HEAD,expectedPublication:publication,expectedHttp:structuredClone(STAGE_B_HTTP),expectedSessionDiagnostics:structuredClone(STAGE_B_SESSION_DIAGNOSTICS),expectedStateObservedAt:STAGE_B_STATE_OBSERVED_AT,svgBytes,rawBytes:Buffer.from(rawSource),rawIdentity:{bytes:browserIdentity.bytes,sha256:browserIdentity.sha256}};
+  return {raw,rawSource,review,publication,browserIdentity,browserOptions,svgBytes};
+}
+export function assertStageBProductionGate(review, {rawSource = optionalText(STAGE_B_BROWSER), svgBytes = readFileSync(SVG)} = {}) {
+  assert.ok(rawSource, 'published Stage B requires production raw');
+  const expected=stageBProductionFixture(svgBytes);
+  assert.equal(rawSource, expected.rawSource, 'Stage B raw bytes match the independently literal-bound production observation');
+  assertStageBCandidate(review,{phase:'published',reviewedHead:STAGE_B_REVIEWED_HEAD,publication:expected.publication,browserIdentity:expected.browserIdentity});
+  return assertBrowserEvidence(JSON.parse(rawSource),expected.browserOptions);
+}
+function rawFieldMutations(value,path=[]) {
+  if (Array.isArray(value)) return value.length ? value.flatMap((entry,index)=>rawFieldMutations(entry,[...path,index])) : [{path,replacement:['fabricated']}];
+  if (value && typeof value==='object') {
+    const entries=Object.entries(value);
+    return entries.length ? entries.flatMap(([key,entry])=>rawFieldMutations(entry,[...path,key])) : [{path,replacement:{fabricated:true}}];
+  }
+  const replacement=value===null?'fabricated':typeof value==='boolean'?!value:typeof value==='number'?value+1:`${value}__mutated__`;
+  return [{path,replacement}];
+}
+function replaceAtPath(value,path,replacement) {
+  const copy=structuredClone(value); let target=copy;
+  for (const key of path.slice(0,-1)) target=target[key];
+  target[path.at(-1)]=replacement;
+  return copy;
+}
+export function assertAllRawFieldMutationsRejected(raw, options) {
+  const rawBytes=Buffer.from(JSON.stringify(raw,null,2)+'\n'), rawIdentity={bytes:rawBytes.length,sha256:hash(rawBytes)};
+  for (const {path,replacement} of rawFieldMutations(raw)) {
+    const changed=replaceAtPath(raw,path,replacement);
+    assert.notDeepEqual(changed,raw,`non-no-op raw mutation at ${path.join('.')}`);
+    assert.throws(()=>assertBrowserEvidence(changed,{...options,rawBytes,rawIdentity}),assert.AssertionError,`raw mutation rejected at ${path.join('.')}`);
+  }
+}
 export function browserFixture() {
   const expectedHead = STAGE_A_IMPLEMENTATION_HEAD, svgBytes = Buffer.from('<svg>fixture, not observed production</svg>'), svgAsset = {bytes:svgBytes.length,sha256:hash(svgBytes)}, baseUrl = PRODUCTION_URL;
   const publication={reviewedHead:STAGE_A_REVIEWED_HEAD,implementationSha:expectedHead,headSha:expectedHead,workflowName:STAGE_A_PUBLICATION.workflowName,workflowPath:STAGE_A_PUBLICATION.workflowPath,runId:STAGE_A_PUBLICATION.runId,event:'push',status:'completed',conclusion:'success',createdAt:STAGE_A_PUBLICATION.createdAt,startedAt:STAGE_A_PUBLICATION.startedAt,updatedAt:STAGE_A_PUBLICATION.updatedAt,jobs:[{name:'build',id:STAGE_A_PUBLICATION.build.id,status:'completed',conclusion:'success',startedAt:STAGE_A_PUBLICATION.build.startedAt,completedAt:STAGE_A_PUBLICATION.build.completedAt},{name:'deploy',id:STAGE_A_PUBLICATION.deploy.id,status:'completed',conclusion:'success',startedAt:STAGE_A_PUBLICATION.deploy.startedAt,completedAt:STAGE_A_PUBLICATION.deploy.completedAt}]};
@@ -454,7 +553,15 @@ for(const [state] of STATE_CONTRACTS) for(const [label,change] of [
 ]) test(`DDD-01 Browser ${state} rejects ${label}`,()=>{const f=browserFixture();assertBrowserEvidence(f.raw,f.options);const before=structuredClone(f.raw);change(f.raw.states[state]);assert.notDeepEqual(f.raw,before);assert.throws(()=>assertBrowserEvidence(f.raw,f.options),assert.AssertionError);});
 test('DDD-01 production generated publication reaches Stage B published/complete while DDD-02 stays absent and non-actionable',async()=>assertStageBProjection(JSON.parse(readFileSync('src/generated/project-status.json')),JSON.parse(readFileSync('src/generated/topic-manifest.json')),await readContentDocuments('content')));
 test('DDD-01 production backlog closes exactly one row with complete Stage A evidence',()=>assertBacklog(readFileSync('docs/content-backlog.md','utf8'),'B'));
-test('DDD-01 production review preserves Stage A and binds three exact-head Stage B READY reviews without deployment',()=>{const review=optionalText(REVIEW);assertStageAProductionGate(review);assertStageBCandidate(review,{phase:'ready',reviewedHead:'6cb0ccea77edbe6bf70d0360188b48d025cd14eb'});});
+test('DDD-01 production review preserves Stage A and binds final exact-head Stage B SUCCESS/PASS evidence',()=>{const review=optionalText(REVIEW);assertStageAProductionGate(review);assertStageBProductionGate(review);});
 test('DDD-01 production local Browser evidence is independently bound and semantic',()=>assertRecordedBrowserArtifact(LOCAL_BROWSER,optionalText(REVIEW),{local:true}));
-test('DDD-01 Stage B candidate has no production Browser raw before deployment',()=>assert.equal(optionalText(STAGE_B_BROWSER),undefined));
+test('DDD-01 Stage B production raw is fresh, exact and independently bound',()=>assertStageBProductionGate(optionalText(REVIEW)));
+test('DDD-01 Stage B final gate binds exact SUCCESS/PASS review, publication and raw identities',()=>{
+  const fixture=stageBProductionFixture();
+  assertStageBProductionGate(fixture.review,{rawSource:fixture.rawSource,svgBytes:fixture.svgBytes});
+});
+test('DDD-01 Stage B final Browser contract rejects every non-no-op raw field mutation',()=>{
+  const fixture=stageBProductionFixture();
+  assertAllRawFieldMutationsRejected(fixture.raw,fixture.browserOptions);
+});
 }

@@ -346,6 +346,7 @@ function isHistoricalReviewArtifact(relative) {
     relative !== 'docs/reviews/g009-batch16.md' &&
     relative !== 'docs/reviews/evidence/g009-batch16-stage-a-browser.json' &&
     relative !== 'docs/reviews/evidence/g009-batch16-stage-a-production-browser.json' &&
+    relative !== 'docs/reviews/evidence/g009-batch16-stage-b-production-browser.json' &&
     relative !== 'docs/reviews/g009-batch15.md' &&
     relative !== 'docs/reviews/evidence/g009-batch15-stage-a-browser.json' &&
     relative !== 'docs/reviews/evidence/g009-batch15-stage-a-production-browser.json' &&
@@ -1070,6 +1071,7 @@ test('locks the exact pre-G010 review namespace against add edit and delete muta
     'docs/reviews/g009-batch16.md',
     'docs/reviews/evidence/g009-batch16-stage-a-browser.json',
     'docs/reviews/evidence/g009-batch16-stage-a-production-browser.json',
+    'docs/reviews/evidence/g009-batch16-stage-b-production-browser.json',
     REVIEW_PATH,
     EVIDENCE_PATH,
     'docs/reviews/g009-batch10.md',
@@ -1098,6 +1100,7 @@ test('locks the exact pre-G010 review namespace against add edit and delete muta
   assert.equal(isHistoricalReviewArtifact('docs/reviews/evidence/g009-batch15-stage-a-production-browser-fabricated.json'), true, 'production near-match remains protected history');
   assert.equal(isHistoricalReviewArtifact('docs/reviews/evidence/g009-batch15-stage-b-production-browser-fabricated.json'), true, 'Stage B production near-match remains protected history');
   assert.equal(isHistoricalReviewArtifact('docs/reviews/evidence/g009-batch16-stage-a-production-browser-fabricated.json'), true, 'DDD-01 production near-match remains protected history');
+  assert.equal(isHistoricalReviewArtifact('docs/reviews/evidence/g009-batch16-stage-b-production-browser-fabricated.json'), true, 'DDD-01 Stage B production near-match remains protected history');
   const agenticNearMatch = 'docs/reviews/evidence/agentic-architecture-topic-system-fabricated.json';
   assert.equal(isHistoricalReviewArtifact(agenticNearMatch), true, `${agenticNearMatch} remains protected history`);
   assert.equal(isHistoricalReviewArtifact('docs/reviews/evidence/g009-batch13-fabricated.json'), true, 'unallowlisted Batch 13 prefix remains historical');
