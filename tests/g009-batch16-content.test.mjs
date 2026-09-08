@@ -236,9 +236,9 @@ export function assertDiagramContract(drawio, svg) {
   const bounds = (c) => { const g = c.children.find((n) => n.localName === 'mxGeometry'); assert.ok(g, 'real mxGeometry'); const a = ['x', 'y', 'width', 'height'].map((k) => Number(attr(g, k))); assert.ok(a.every(Number.isFinite) && a[2] > 0 && a[3] > 0, 'positive node geometry'); return a; };
   for (const [id, label] of NODES) {
     const c = byId.get(id), g = owners.get(id), style = styleMap(attr(c, 'style'));
-    assert.equal(attr(c, 'vertex'), '1'); assert.equal(attr(c, 'value'), label, 'Draw.io label');
+    assert.equal(attr(c, 'vertex'), '1'); assert.equal(attr(c, 'value').replaceAll('\n', ''), label, 'Draw.io label (native line breaks only)');
     assert.ok(style.fontColor && style.fontColor !== 'none' && Number(style.opacity ?? 100) > 0, 'effective Draw.io paint');
-    assert.equal(xmlElements(g, 'text').map(xmlTextContent).join(''), label, 'visible SVG text, not metadata');
+    assert.equal(xmlElements(g, 'text').map(xmlTextContent).join('').replaceAll('\n', ''), label, 'visible SVG text, not metadata');
     const rects = xmlElements(g, 'rect'); assert.equal(rects.length, 1, 'one real node/boundary rect');
     assert.deepEqual(['x', 'y', 'width', 'height'].map((k) => Number(attr(rects[0], k))), bounds(c), 'source/SVG node geometry parity');
     if (id.endsWith('system-boundary') || id === 'system-boundary') {
@@ -251,7 +251,7 @@ export function assertDiagramContract(drawio, svg) {
     const [id, source, target] = r, c = byId.get(id), g = owners.get(id), st = styleMap(attr(c, 'style'));
     assert.equal(attr(c, 'edge'), '1'); assert.equal(attr(c, 'source'), source); assert.equal(attr(c, 'target'), target);
     assert.equal(attr(g, 'data-source-id'), source); assert.equal(attr(g, 'data-target-id'), target);
-    assert.equal(attr(c, 'value'), edgeLabel(r)); assert.equal(xmlElements(g, 'text').map(xmlTextContent).join(''), edgeLabel(r), 'direction fact pattern translation failure visible');
+    assert.equal(attr(c, 'value').replaceAll('\n', ''), edgeLabel(r)); assert.equal(xmlElements(g, 'text').map(xmlTextContent).join('').replaceAll('\n', ''), edgeLabel(r), 'direction fact pattern translation failure visible');
     assert.equal(st.endArrow, 'block'); assert.equal(st.startArrow, 'none'); assert.equal(st.endFill, '1');
     assert.ok(st.strokeColor && st.strokeColor !== 'none' && Number(st.strokeWidth) > 0 && Number(st.opacity ?? 100) > 0, 'real painted Draw.io connector');
     const geo = c.children.find((n) => n.localName === 'mxGeometry'); assert.ok(geo, 'connector geometry');
@@ -261,6 +261,12 @@ export function assertDiagramContract(drawio, svg) {
     const start = bounds(byId.get(source)), end = bounds(byId.get(target));
     const route = [[start[0] + start[2] * Number(st.exitX), start[1] + start[3] * Number(st.exitY)], ...points, [end[0] + end[2] * Number(st.entryX), end[1] + end[3] * Number(st.entryY)]];
     const paths = xmlElements(g, 'path'); assert.equal(paths.length, 1, 'one actual connector path');
+    // Draw.io's native filled block shortens the painted route by endSize +
+    // strokeWidth + 1.118 * strokeWidth, leaving its stroked tip at the port.
+    if (st.convertToSvg === '1') {
+      const last = route.at(-1), prev = route.at(-2), cut = Number(st.endSize) + Number(st.strokeWidth) * 2.118;
+      route[route.length - 1] = last.map((v, i) => Number((v - Math.sign(v - prev[i]) * cut).toFixed(2)));
+    }
     assert.equal(attr(paths[0], 'd'), route.map(([x, y], i) => `${i ? 'L' : 'M'} ${x} ${y}`).join(' '), 'Draw.io/SVG terminal and waypoint parity');
     assert.ok(paints(paths[0], 'stroke'), 'effective visible connector stroke');
     const markerId = /^url\(#([\w-]+)\)$/u.exec(attr(paths[0], 'marker-end') ?? '')?.[1], marker = markers.get(markerId); assert.ok(marker, 'real referenced arrow marker');
@@ -275,12 +281,23 @@ export function assertDiagramContract(drawio, svg) {
 export const diagramTextWidth = (text, size) => [...text].reduce((sum, ch) => sum + size * (/[^\x00-\x7f]/u.test(ch) ? 1 : /[MW@]/u.test(ch) ? 1 : /[mw]/u.test(ch) ? .9 : /[A-Z]/u.test(ch) ? .8 : /[il.,:;'!| ]/u.test(ch) ? .4 : /[\/-]/u.test(ch) ? .5 : /[a-z0-9]/u.test(ch) ? .65 : 1), 0);
 export function assertDiagramGeometry(drawio, svg) {
   const root = xml(svg, SVG), a = (n, k) => attr(n, k), number = (n, k) => Number(a(n, k));
+  assertDiagramContract(drawio, svg);
   assert.equal(a(root, 'data-drawio-sha256'), createHash('sha256').update(drawio).digest('hex'), 'byte-bound exact Draw.io source');
   assert.deepEqual(a(root, 'viewBox').split(' ').map(Number), [0, 0, 800, 2260], 'authored 800px geometry');
   assert.equal(a(root, 'width'), undefined); assert.equal(a(root, 'height'), undefined);
   assert.equal(a(root, 'fill'), 'none', 'transparent root');
   assert.equal(root.children.some((n) => n.localName === 'rect'), false, 'no opaque root background');
   const groups = xmlElements(root, 'g'), ids = groups.map((g) => a(g, 'data-semantic-id'));
+  const effective = new Map();
+  const inspectStyle = (n, parent = {}) => {
+    const state = svgPresentationState(n, parent);
+    for (const [key, initial] of Object.entries({'stroke-width':'1','stroke-dasharray':'none','font-family':'serif','font-size':'16','font-weight':'normal','font-style':'normal','text-decoration':'none','text-anchor':'start','stroke-miterlimit':'4','stroke-linejoin':'miter','stroke-linecap':'butt'})) {
+      const v = a(n,key);
+      state[key] = !v || ['inherit','unset'].includes(v) ? parent[key] ?? initial : v === 'initial' ? initial : v;
+    }
+    effective.set(n,state);for(const child of n.children)inspectStyle(child,state);
+  };inspectStyle(root);
+  const painted = (n,kind) => {const s=effective.get(n);return !['none','transparent'].includes(s[kind]) && Number(s[`${kind}-opacity`]??1)>0 && (kind!=='stroke'||Number(s['stroke-width'])>0);};
   assert.deepEqual(ids, ['system-boundary', 'external-system-boundary', ...RELATIONS.map(([id]) => id), ...NODES.filter(([id]) => !id.endsWith('system-boundary')).map(([id]) => id)], 'boundary → connector/label → node paint order');
   const rect = (r) => [number(r, 'x'), number(r, 'y'), number(r, 'x') + number(r, 'width'), number(r, 'y') + number(r, 'height')];
   const inflate = (b, d) => [b[0]-d,b[1]-d,b[2]+d,b[3]+d];
@@ -292,56 +309,108 @@ export function assertDiagramGeometry(drawio, svg) {
     return {box: [x,y-size,x+diagramTextWidth(xmlTextContent(t),size),y+size*.25], baseline:y};
   });
   const nodes = groups.filter((g) => NODES.some(([id]) => id === a(g,'data-semantic-id'))).map((g) => {
-    const id = a(g,'data-semantic-id'), r = xmlElements(g,'rect')[0], b = rect(r), half = number(r,'stroke-width')/2, lines = textBoxes(g);
+    const id = a(g,'data-semantic-id'), r = xmlElements(g,'rect')[0], b = rect(r), half = Number(effective.get(r)['stroke-width'])/2, lines = textBoxes(g);
     assert.ok(lines.length, 'measured visible node lines');
     const pad = lines.map(({box:t}) => [t[0]-b[0]-half,b[2]-half-t[2],t[1]-b[1]-half,b[3]-half-t[3]]);
     for(const p of pad) assert.ok(p[0]>=16 && p[1]>=16 && p[2]>=14 && p[3]>=14, `node padding: ${id} ${p}`);
     for(let i=1;i<lines.length;i++) assert.ok(lines[i].baseline-lines[i-1].baseline>=22,'node baseline gap >=22 CSSpx');
-    return {id,box:inflate(b,half),lines,padding:pad};
+    const border=[[b[0],b[1],b[2],b[1]],[b[0],b[3],b[2],b[3]],[b[0],b[1],b[0],b[3]],[b[2],b[1],b[2],b[3]]].map(s=>inflate(s,half));
+    return {id,box:inflate(b,half),border,lines,padding:pad};
   });
   const edges = groups.filter((g) => RELATIONS.some(([id]) => id === a(g,'data-semantic-id'))).map((g) => {
     const id=a(g,'data-semantic-id'), p=xmlElements(g,'path')[0], nums=a(p,'d').match(/-?\d+(?:\.\d+)?/gu).map(Number), points=[];
     for(let i=0;i<nums.length;i+=2) points.push([nums[i],nums[i+1]]);
-    const segments=points.slice(1).map((end,i)=>{const start=points[i];assert.ok(start[0]===end[0]||start[1]===end[1],'orthogonal route');assert.notDeepEqual(start,end,'nonzero segment');return inflate([Math.min(start[0],end[0]),Math.min(start[1],end[1]),Math.max(start[0],end[0]),Math.max(start[1],end[1])],number(p,'stroke-width')/2);});
+    const segments=points.slice(1).map((end,i)=>{const start=points[i];assert.ok(start[0]===end[0]||start[1]===end[1],'orthogonal route');assert.notDeepEqual(start,end,'nonzero segment');return inflate([Math.min(start[0],end[0]),Math.min(start[1],end[1]),Math.max(start[0],end[0]),Math.max(start[1],end[1])],Number(effective.get(p)['stroke-width'])/2);});
     const marker=xmlElements(root,'marker').find(m=>`url(#${a(m,'id')})`===a(p,'marker-end'));
     assert.ok(marker,'measurable referenced marker');
-    assert.equal(a(marker,'markerUnits'),'userSpaceOnUse');assert.equal(a(marker,'viewBox'),'0 0 12 12');assert.equal(a(marker,'refX'),'12');assert.equal(a(marker,'refY'),'6');assert.equal(a(marker,'markerWidth'),'12');assert.equal(a(marker,'markerHeight'),'12');assert.equal(a(marker,'orient'),'auto');
+    assert.equal(a(marker,'markerUnits'),'userSpaceOnUse');assert.equal(a(marker,'viewBox'),'-2 -10 20 20');assert.equal(a(marker,'refX'),'0');assert.equal(a(marker,'refY'),'0');assert.equal(a(marker,'markerWidth'),'20');assert.equal(a(marker,'markerHeight'),'20');assert.equal(a(marker,'orient'),'auto');
+    const markerPath=xmlElements(marker,'path')[0];assert.equal(a(markerPath,'d'),'M 14 0 L 0 7 L 0 -7 Z','native block marker geometry');
     const end=points.at(-1),prev=points.at(-2),dx=Math.sign(end[0]-prev[0]),dy=Math.sign(end[1]-prev[1]);
-    const arrow=dx ? [end[0]-Math.max(dx,0)*12,end[1]-6,end[0]-Math.min(dx,0)*12,end[1]+6] : [end[0]-6,end[1]-Math.max(dy,0)*12,end[0]+6,end[1]-Math.min(dy,0)*12];
+    // Includes the actual stroked block's miter tip (2.236px) and wing envelope.
+    const arrow=inflate(dx ? [end[0]+Math.min(dx,0)*14,end[1]-7,end[0]+Math.max(dx,0)*14,end[1]+7] : [end[0]-7,end[1]+Math.min(dy,0)*14,end[0]+7,end[1]+Math.max(dy,0)*14],2.24);
     const lines=textBoxes(g); assert.ok(lines.length,'edge label visible');
     for(let i=1;i<lines.length;i++)assert.ok(lines[i].baseline-lines[i-1].baseline>=22,'edge baseline gap >=22 CSSpx');
-    return {id,segments,arrow,lines,source:a(g,'data-source-id'),target:a(g,'data-target-id')};
+    // Every painted rectangle counts, not just the first or the known label
+    // card. Include strokes and inherited paint; invisible selection bounds do
+    // not count. This protects against additional/expanded opaque backplates.
+    const plates=xmlElements(g,'rect').filter(r=>painted(r,'fill')||painted(r,'stroke')).map(r=>({box:inflate(rect(r),painted(r,'stroke')?Number(effective.get(r)['stroke-width'])/2:0)}));
+    return {id,segments,arrow,lines,plates,source:a(g,'data-source-id'),target:a(g,'data-target-id')};
   });
   const allLines=[...nodes,...edges].flatMap(x=>x.lines.map(l=>({...l,id:x.id})));
-  for(const {box:b} of allLines) assert.ok(b[0]>=0&&b[1]>=0&&b[2]<=800&&b[3]<=2260,'no clipped label');
+  for(const {box:b} of [...allLines,...edges.flatMap(e=>e.plates)]) assert.ok(b[0]>=0&&b[1]>=0&&b[2]<=800&&b[3]<=2260,'no clipped visible label/plate');
   const metrics=[];
   for(const e of edges){
     let stroke=Infinity,arrow=Infinity,node=Infinity;
-    for(const l of e.lines){
+    for(const l of [...e.lines,...e.plates]){
       for(const route of edges) { for(const s of route.segments) stroke=Math.min(stroke,separation(l.box,s)); arrow=Math.min(arrow,separation(l.box,route.arrow)); }
       for(const n of nodes.filter(n=>!n.id.endsWith('system-boundary')))node=Math.min(node,separation(l.box,n.box));
+      for(const n of nodes.filter(n=>n.id.endsWith('system-boundary')))for(const side of n.border){stroke=Math.min(stroke,separation(l.box,side));node=Math.min(node,separation(l.box,side));}
     }
     assert.ok(stroke>=8,`label/stroke clearance ${e.id}: ${stroke}`);assert.ok(arrow>=16,`label/arrow clearance ${e.id}: ${arrow}`);assert.ok(node>=12,`label/node clearance ${e.id}: ${node}`);
     for(const s of e.segments){
       for(const n of nodes.filter(n=>!n.id.endsWith('system-boundary')&&![e.source,e.target].includes(n.id)))assert.ok(separation(s,n.box)>=12,`connector/node clearance ${e.id}/${n.id}`);
       for(const l of allLines)assert.ok(separation(s,l.box)>=8,`connector over text ${e.id}/${l.id}`);
+      for(const label of edges)for(const plate of label.plates)assert.ok(separation(s,plate.box)>=8,`painted label plate occludes connector ${e.id}/${label.id}`);
     }
     metrics.push({id:e.id,stroke,arrow,node});
   }
   for(let i=0;i<edges.length;i++)for(let j=i+1;j<edges.length;j++)for(const s of edges[i].segments)for(const t of edges[j].segments)assert.ok(separation(s,t)>=8,`connector route overlap ${edges[i].id}/${edges[j].id}`);
   const sourceCells=new Map(xmlElements(xml(drawio,DRAWIO),'mxCell').map(c=>[a(c,'id'),c]));
   for(const g of groups){
-    const c=sourceCells.get(a(g,'data-semantic-id')),layout=JSON.parse(a(c,'data-label-layout')),ts=xmlElements(g,'tspan');
-    assert.deepEqual(ts.map(t=>[number(t,'x'),number(t,'y'),number(t,'font-size'),xmlTextContent(t)]),layout.lines.map((s,i)=>[layout.x,layout.y+i*24,layout.size,s]),'Draw.io/SVG exact label-layout parity');
-    if(a(c,'edge')==='1'){
-      const nums=a(xmlElements(g,'path')[0],'d').match(/-?\d+(?:\.\d+)?/gu).map(Number),points=[];
-      for(let i=0;i<nums.length;i+=2)points.push([nums[i],nums[i+1]]);
-      const lengths=points.slice(1).map((p,i)=>Math.hypot(p[0]-points[i][0],p[1]-points[i][1]));let remain=lengths.reduce((s,n)=>s+n,0)/2,mid;
-      for(let i=0;i<lengths.length;i++){if(remain<=lengths[i]){mid=[points[i][0]+(points[i+1][0]-points[i][0])*remain/lengths[i],points[i][1]+(points[i+1][1]-points[i][1])*remain/lengths[i]];break;}remain-=lengths[i];}
-      const offset=xmlElements(c,'mxPoint').find(p=>a(p,'as')==='offset'),width=Number(styleMap(a(c,'style')).labelWidth);
-      assert.ok(offset,'native Draw.io label offset');
-      assert.deepEqual([number(offset,'x'),number(offset,'y')],[layout.x+width/2-mid[0],layout.y-15+layout.lines.length*24/2-mid[1]],'native label center follows authored lane');
+    const id=a(g,'data-semantic-id'),c=sourceCells.get(id),st=styleMap(a(c,'style')),ts=xmlElements(g,'tspan'),edge=a(c,'edge')==='1',geo=xmlElements(c,'mxGeometry')[0];
+    const commonStyle=['fontFamily','fontColor','fontSize','html','whiteSpace','rounded','arcSize','strokeColor','strokeWidth','fillColor','align','verticalAlign','spacingLeft','spacingTop','shape','convertToSvg','fontStyle','spacing','spacingRight','spacingBottom','opacity','textOpacity','strokeOpacity','fillOpacity'];
+    const nativeKeys=new Set([...commonStyle,...(edge?['labelBackgroundColor','labelBorderColor','labelWidth','endArrow','startArrow','endFill','endSize','exitX','exitY','entryX','entryY','labelPadding']:['absoluteArcSize','dashed','dashPattern'])]);
+    for(const key of Object.keys(st))assert.ok(nativeKeys.has(key),`unmodeled native style ${key}: ${id}`);
+    assert.equal(a(c,'data-label-layout'),undefined,'native properties, no self-reported layout');
+    assert.equal(st.fontFamily,'Noto Sans SC','measured font required for the conservative ink envelope');
+    for(const [key,value] of Object.entries({html:'0',whiteSpace:'nowrap',convertToSvg:'1',align:'left',verticalAlign:'top',spacing:'0',fontStyle:'0',shape:edge?'connector':'rectangle'}))assert.equal(st[key],value,`native ${key}: ${id}`);
+    assert.equal(st.lineHeight,undefined,'unsupported lineHeight cannot certify spacing');
+    const size=Number(st.fontSize),step=Math.round(size*1.2),sourceLines=a(c,'value').split('\n');
+    const lines=sourceLines.map((text,i)=>({text,i})).filter(l=>l.text);
+    assert.equal(ts.length,lines.length,'native newline count, including blank-line spacing');
+    let x,y;
+    if(edge){
+      const r=RELATIONS.find(([key])=>key===id),sgeo=xmlElements(sourceCells.get(r[1]),'mxGeometry')[0],tgeo=xmlElements(sourceCells.get(r[2]),'mxGeometry')[0];
+      const port=(n,prefix)=>[number(n,'x')+number(n,'width')*Number(st[`${prefix}X`]),number(n,'y')+number(n,'height')*Number(st[`${prefix}Y`])];
+      const points=[port(sgeo,'exit'),...xmlElements(geo,'mxPoint').filter(p=>a(p,'as')!=='offset').map(p=>[number(p,'x'),number(p,'y')]),port(tgeo,'entry')];
+      const lengths=points.slice(1).map((p,i)=>Math.hypot(p[0]-points[i][0],p[1]-points[i][1]));
+      // mxGraphView.getPoint rounds arclength, not the final coordinates.
+      const distance=Math.round((number(geo,'x')/2+.5)*lengths.reduce((s,n)=>s+n,0));let consumed=0,i=0;
+      while(distance>=Math.round(consumed+lengths[i])&&i<lengths.length-1)consumed+=lengths[i++];
+      assert.equal(number(geo,'y'),0,'no perpendicular label drift');assert.equal(a(geo,'relative'),'1');
+      const offset=xmlElements(c,'mxPoint').find(p=>a(p,'as')==='offset');assert.ok(offset,'native label offset');
+      const mid=points[i].map((v,j)=>v+(points[i+1][j]-v)*(distance-consumed)/lengths[i]);
+      x=mid[0]+number(offset,'x')+Number(st.spacingLeft);y=mid[1]+number(offset,'y')+Number(st.spacingTop)+5+size-1;
+      const path=xmlElements(g,'path')[0],ps=effective.get(path),marker=xmlElements(root,'marker')[0],mp=xmlElements(marker,'path')[0],ms=effective.get(mp);
+      assert.equal(st.rounded,'0','native unrounded route');
+      assert.equal(Number(st.endSize)+Number(st.strokeWidth),14,'native block marker size including stroke');
+      for(const shape of [ps,ms]){assert.equal(shape.stroke,st.strokeColor,'effective native stroke color');assert.equal(Number(shape['stroke-width']),Number(st.strokeWidth),'effective native stroke width');assert.equal(shape['stroke-linejoin'],'miter','native stroke join');assert.equal(shape['stroke-linecap'],'butt','native stroke cap');}
+      assert.equal(ms.fill,st.strokeColor,'native filled marker color');assert.equal(ms['stroke-miterlimit'],'10','native marker miter');
+      assert.equal(ps['stroke-dasharray'],st.dashed==='1'?st.dashPattern.split(' ').map(n=>Number(n)*Number(st.strokeWidth)).join(' '):'none','native route dash');
+      assert.equal(Number(st.labelPadding),7,'native visible label padding');
+      const plate=xmlElements(g,'rect')[0];assert.ok(plate,'native painted text background');
+      assert.equal(effective.get(plate).fill,st.labelBackgroundColor,'native plate fill');assert.equal(effective.get(plate).stroke,st.labelBorderColor??'none','native plate border');
+      // Native plain SVG export uses its text getBBox plus labelPadding and
+      // integer expansion. These Noto Sans SC rows are all CJK-width dominated.
+      const maxWidth=Math.max(...lines.map(l=>diagramTextWidth(l.text,size)));
+      assert.deepEqual(rect(plate),[Math.floor(x-8),Math.floor(y-20),Math.floor(x-8)+Math.ceil(maxWidth+16),Math.floor(y-20)+(sourceLines.length-1)*step+29],'native exported label plate geometry');
+      assert.ok(Number(st.labelWidth)>=maxWidth,'native label lane width');
+    } else {
+      x=number(geo,'x')+Number(st.spacingLeft);y=number(geo,'y')+Number(st.spacingTop)+5+size-1;
+      const shape=xmlElements(g,'rect')[0],ss=effective.get(shape);
+      assert.equal(ss.stroke,st.strokeColor,'native node stroke');assert.equal(Number(ss['stroke-width']),Number(st.strokeWidth),'native node stroke width');assert.equal(ss.fill,st.fillColor,'native node fill');
+      assert.equal(ss['stroke-dasharray'],st.dashed==='1'?st.dashPattern.split(' ').map(n=>Number(n)*Number(st.strokeWidth)).join(' '):'none','native boundary dash');
+      assert.equal(Number(a(shape,'rx')??0),st.rounded==='1'?Number(st.arcSize)/2:0,'native absolute corner radius');assert.equal(st.absoluteArcSize,'1');
+      assert.equal(st.spacingRight,'24');assert.equal(st.spacingBottom,'14');
     }
+    for(const [i,t] of ts.entries()){
+      const actual=effective.get(t);
+      assert.equal(actual['font-family'],st.fontFamily,'effective native font family');assert.equal(Number(actual['font-size']),size,'effective native font size');
+      assert.equal(actual['font-weight'],'normal');assert.equal(actual['font-style'],'normal');assert.equal(actual['text-decoration'],'none');assert.equal(actual['text-anchor'],'start','effective left alignment');assert.equal(actual.fill,st.fontColor,'native text color');assert.equal(actual.stroke,'none','no unmatched text halo');
+      assert.deepEqual([number(t,'x'),number(t,'y'),xmlTextContent(t)],[Number(x.toFixed(2)),Number((y+lines[i].i*step).toFixed(2)),lines[i].text],'native source ↔ SVG line position and content');
+    }
+    for(const key of ['opacity','textOpacity','strokeOpacity','fillOpacity'])assert.equal(Number(st[key]??100),100,`native ${key}`);
+    for(const n of [g,...xmlElements(g,'text'),...ts,...xmlElements(g,'rect'),...xmlElements(g,'path')])for(const key of ['opacity','fill-opacity','stroke-opacity'])assert.equal(Number(effective.get(n)[key]??1),1,`effective ${key} parity`);
   }
   return {scale:1,nodes:nodes.map(({id,padding,lines})=>({id,padding,baselines:lines.map(l=>l.baseline)})),labels:metrics};
 }
@@ -580,11 +649,21 @@ for(const [name,before,after] of [
   ['swapped context','data-semantic-id="context-sales-order"','data-semantic-id="context-inventory-promise"'],
   ['opaque background','fill="none" data-illustration-id','fill="#ffffff" data-illustration-id'],
   ['narrow padding','x="84" y="592"','x="61" y="592"'],
-  ['line over text','M 160 550 L 160 270 L 385 270 L 385 550','M 160 550 L 160 324 L 385 324 L 385 550'],
-  ['line over node','M 160 550 L 160 270 L 385 270 L 385 550','M 160 550 L 160 592 L 385 592 L 385 550'],
-  ['line over route','M 160 550 L 160 270 L 385 270 L 385 550','M 160 550 L 160 250 L 475 250 L 475 550'],
-  ['marker footprint drift','markerWidth="12"','markerWidth="30"'],
-  ['narrow baseline','y="348" font-size="15"','y="335" font-size="15"'],
+  ['line over text','M 160 550 L 160 270 L 385 270 L 385 533.76','M 160 550 L 160 324 L 385 324 L 385 533.76'],
+  ['line over node','M 160 550 L 160 270 L 385 270 L 385 533.76','M 160 550 L 160 592 L 385 592 L 385 533.76'],
+  ['line over route','M 160 550 L 160 270 L 385 270 L 385 533.76','M 160 550 L 160 250 L 475 250 L 475 533.76'],
+  ['marker footprint drift','markerWidth="20"','markerWidth="30"'],
+  ['opaque label plate erases connector','x="176" y="304" width="196"','x="159" y="304" width="213"'],
+  ['opaque plate near stroke','x="176" y="304" width="196"','x="167" y="304" width="205"'],
+  ['opaque plate near arrow','x="486" y="1506" width="241"','x="484" y="1506" width="243"'],
+  ['opaque plate near node','x="486" y="1506" width="241" height="173"','x="486" y="1499" width="241" height="180"'],
+  ['additional opaque plate hides earlier route','data-semantic-id="view-support" data-source-id="support-view" data-target-id="context-customer-support">','data-semantic-id="view-support" data-source-id="support-view" data-target-id="context-customer-support"><rect x="158" y="300" width="8" height="200" fill="#ffffff"/>'],
+  ['inherited painted plate hides route','data-semantic-id="inventory-sales" data-source-id="context-inventory-promise" data-target-id="context-sales-order">','data-semantic-id="inventory-sales" data-source-id="context-inventory-promise" data-target-id="context-sales-order" fill="#ffffff"><rect x="158" y="300" width="8" height="200"/>'],
+  ['outlined plate clearance uses stroke','x="176" y="304" width="196" height="209" fill="#f3f6fb" stroke="none" stroke-width="0"','x="176" y="304" width="196" height="209" fill="#f3f6fb" stroke="#71839b" stroke-width="20"'],
+  ['narrow baseline','y="360" font-size="15"','y="335" font-size="15"'],
+  ['effective inherited font weight','font-weight="normal"','font-weight="bold"'],
+  ['effective tspan font family','<tspan x="64" y="232"','<tspan font-family="serif" x="64" y="232"'],
+  ['effective marker stroke width','d="M 14 0 L 0 7 L 0 -7 Z" fill="#71839b" stroke="#71839b" stroke-width="2"','d="M 14 0 L 0 7 L 0 -7 Z" fill="#71839b" stroke="#71839b" stroke-width="3"'],
 ])test(`DDD-01 authored geometry rejects ${name}`,()=>{
   const d=optionalText(DRAWIO),s=optionalText(SVG);assertDiagramGeometry(d,s);
   assert.throws(()=>assertDiagramGeometry(d,mutation(s,before,after)),assert.AssertionError);
@@ -592,7 +671,24 @@ for(const [name,before,after] of [
 test('DDD-01 authored pair rejects exact source byte drift',()=>{const d=optionalText(DRAWIO),s=optionalText(SVG);assertDiagramGeometry(d,s);assert.throws(()=>assertDiagramGeometry(d+'\n',s),/byte-bound/u);});
 for(const [name,change] of [
   ['native label offset drift',d=>mutation(d,/x="([^"]+)" y="([^"]+)" as="offset"/u,'x="0" y="0" as="offset"')],
-  ['source label layout drift',d=>mutation(d,'&quot;x&quot;:184','&quot;x&quot;:185')],
+  ['native source line break loss',d=>mutation(d,'&#xa;&#xa;','')],
+  ['native source compact baseline',d=>mutation(d,'&#xa;&#xa;','&#xa;')],
+  ['native edge alignment drift',d=>mutation(d,'labelBackgroundColor=#f3f6fb;align=left','labelBackgroundColor=#f3f6fb;align=center')],
+  ['native vertical alignment drift',d=>mutation(d,'verticalAlign=top','verticalAlign=middle')],
+  ['native font size drift',d=>mutation(d,'fontSize=15','fontSize=16')],
+  ['native font family drift',d=>mutation(d,'fontFamily=Noto Sans SC','fontFamily=serif')],
+  ['native font style drift',d=>mutation(d,'fontStyle=0','fontStyle=1')],
+  ['native text color drift',d=>mutation(d,'fontColor=#172b4d','fontColor=#ffffff')],
+  ['native spacing drift',d=>mutation(d,'spacingLeft=24','spacingLeft=25')],
+  ['native label padding drift',d=>mutation(d,'labelPadding=7','labelPadding=8')],
+  ['native marker size drift',d=>mutation(d,'endSize=12','endSize=20')],
+  ['native dashed style drift',d=>mutation(d,'dashPattern=4 3','dashPattern=3 3')],
+  ['native node fill drift',d=>mutation(d,'fillColor=#edf3fa','fillColor=#ffffff')],
+  ['native node corner drift',d=>mutation(d,'absoluteArcSize=1','absoluteArcSize=0')],
+  ['native unsupported lineHeight',d=>mutation(d,'fontStyle=0;','fontStyle=0;lineHeight=1.6;')],
+  ['native unmodeled rotation',d=>mutation(d,'fontStyle=0;','fontStyle=0;rotation=45;')],
+  ['native rounded route drift',d=>mutation(d,'entryY=0;rounded=0;shape=connector','entryY=0;rounded=1;shape=connector')],
+  ['native connector width drift',d=>mutation(d,'endSize=12;strokeColor=#71839b;strokeWidth=2','endSize=12;strokeColor=#71839b;strokeWidth=20')],
 ])test(`DDD-01 authored layout rejects ${name} after rebind`,()=>{
   const d=optionalText(DRAWIO),s=optionalText(SVG);assertDiagramGeometry(d,s);const changed=change(d);
   const rebound=s.replace(/data-drawio-sha256="[a-f0-9]{64}"/u,`data-drawio-sha256="${createHash('sha256').update(changed).digest('hex')}"`);
