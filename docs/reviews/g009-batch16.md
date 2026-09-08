@@ -48,3 +48,45 @@ H1、STY-14 直达目标 H1、回链与返回状态均精确；每态 7 个来�
 Pages: 997e4b136b40cab3b96ff033c77830752b16b5dc; run 34232044270; build 102080344661; deploy 102081529119; push / completed / success.
 
 Browser raw: docs/reviews/evidence/g009-batch16-stage-a-production-browser.json; bytes 26360; SHA-256 02cbe7d366b73941c17ab239a5d93616b7e89565247d52767385e31193dba120.
+
+## Stage B candidate
+
+Scope: STAGE_B_PENDING.
+
+DDD-01 lifecycle: published / complete.
+
+DDD-02 topic: planned / unpublished / pending; document: absent / non-actionable.
+
+Final judgment: PENDING.
+
+Deployment: NOT_RUN.
+
+Screenshot evidence: BLOCKED / NOT_ACCEPTED; accepted 0/4; functional PASS is not visual acceptance.
+
+Stage A reviewed candidate: 3777405c02c64b75de38a33d9709cac5a29bcedf.
+
+Stage A implementation: 997e4b136b40cab3b96ff033c77830752b16b5dc; Pages run 34232044270; build 102080344661; deploy 102081529119; push / completed / success.
+
+Stage A evidence: c99db5b12aa5da7c4d2929837c2f3735db59c2c7; Pages run 34236534834; build 102095575933; deploy 102097366248; push / completed / success; completed 2026-09-08T14:15:19Z.
+
+Stage A production: HTML routes 5/5 and SVG asset 1/1 returned HTTP 200; functional states 4/4; wrappers 12/12; relation href/H1/return 4/4; source anchors 28/28; DDD-02 actionable 0; complete diagnostics empty.
+
+Immediate history: backlog 125843 bytes / SHA-256 e10f90626844f71c74d129d3636c8cdc700f7fb27dbd27642aa4e49118a6931f; prefix 104699 / fa2891d13b84b7c74b879bd33a902a9ff4a46e65e0bd40a7d2e550b35da058a7; suffix 21044 / 68d9bf868e0926e320df5c6782e23daa05b5a783ccdfdf23db311c9be488e6be; pre-Stage-B review/evidence tree 79 files / cf04e449c739d97e2fe53dfdb9e9f2ff960f18bfdef5ecd5abfd529b67b5da5f.
+
+Canonical Stage B projection: 86 completed topics / 128 content documents / 604 governed sources; durable stories remain 8/20, current G009; next pending DDD-02.
+
+## Independent reviews
+
+code/spec/security: PENDING.
+
+content/evidence/rights: PENDING.
+
+architecture/invariants: PENDING.
+
+## Browser evidence
+
+Stage B production Browser raw: ABSENT / NOT_CAPTURED.
+
+## Publication
+
+Stage B publication: PENDING / NOT_RUN.

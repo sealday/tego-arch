@@ -3,6 +3,8 @@ import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import {readFileSync, readdirSync} from 'node:fs';
 import test from 'node:test';
+import {readContentDocuments} from '../scripts/content-metadata.mjs';
+import {extractInternalLinks} from '../scripts/content-relations.mjs';
 import {BASELINE, ARTICLE, ROUTE, SVG, EXACT_METADATA, ORIGINAL_SOURCE_CONTRACT, WRAPPER_LABELS, SOURCE_ANCHORS, gitBaseline, optionalText, mutation, assertNoDDD02, readerContract} from './g009-batch16-content.test.mjs';
 
 export const REVIEW = 'docs/reviews/g009-batch16.md';
@@ -22,12 +24,29 @@ export const RELATION_METHOD = 'exact-href navigation and Browser back; no physi
 export const STAGE_A_REVIEWED_HEAD = '3777405c02c64b75de38a33d9709cac5a29bcedf';
 export const STAGE_A_IMPLEMENTATION_HEAD = '997e4b136b40cab3b96ff033c77830752b16b5dc';
 export const STAGE_A_PUBLICATION = Object.freeze({workflowName:'Verify and deploy Docusaurus to GitHub Pages',workflowPath:'.github/workflows/deploy.yml',createdAt:'2026-09-08T13:27:09Z',startedAt:'2026-09-08T13:27:09Z',updatedAt:'2026-09-08T13:30:58Z',runId:34232044270,build:{id:102080344661,startedAt:'2026-09-08T13:27:14Z',completedAt:'2026-09-08T13:30:33Z'},deploy:{id:102081529119,startedAt:'2026-09-08T13:30:38Z',completedAt:'2026-09-08T13:30:51Z'}});
+export const STAGE_A_EVIDENCE_HEAD = 'c99db5b12aa5da7c4d2929837c2f3735db59c2c7';
+export const STAGE_A_EVIDENCE_PUBLICATION = Object.freeze({runId:34236534834,buildId:102095575933,deployId:102097366248,completedAt:'2026-09-08T14:15:19Z'});
 export const REVIEW_ROLES = Object.freeze(['code/spec/security', 'content/evidence/rights', 'architecture/invariants']);
 export const BUILD_INPUTS = Object.freeze(['content', 'data', 'src', 'static', 'scripts', 'plugins', 'docusaurus.config.ts', 'sidebars.ts', 'package.json', 'package-lock.json']);
 export const OBSERVED_BUILD_COMMIT = '6cdb62fb2013cb28178c77484aac948bd4862067';
 const APPROVED_RIGHTS_FIELDS = Object.freeze(['license_evidence_note', 'version', 'expected_final_approval_note']);
 const APPROVED_RIGHTS_PATHS = new Set(['data/source-ledger.json', 'src/generated/source-ledger.json']);
+const APPROVED_STAGE_B_PROJECTION_PATHS = new Set(['src/generated/project-status.json','src/generated/topic-indexes.json','src/generated/topic-manifest.json']);
 const hash = (bytes) => createHash('sha256').update(bytes).digest('hex');
+const STAGE_B_MARKER = '\n## Stage B candidate\n';
+const IMMEDIATE_BASE = STAGE_A_EVIDENCE_HEAD;
+const CLOSED_BACKLOG_ROW = `${PENDING_BACKLOG_ROW.replace('- [ ]', '- [x]')}2026-09-08 Stage A reviewed candidate \`${STAGE_A_REVIEWED_HEAD}\`；implementation commit \`${STAGE_A_IMPLEMENTATION_HEAD}\`，Pages run \`${STAGE_A_PUBLICATION.runId}\`，build job \`${STAGE_A_PUBLICATION.build.id}\`、deploy job \`${STAGE_A_PUBLICATION.deploy.id}\`；evidence commit \`${STAGE_A_EVIDENCE_HEAD}\`，Pages run \`${STAGE_A_EVIDENCE_PUBLICATION.runId}\`，build job \`${STAGE_A_EVIDENCE_PUBLICATION.buildId}\`、deploy job \`${STAGE_A_EVIDENCE_PUBLICATION.deployId}\`，两次均为 exact-head \`push / completed / success\`。Production HTML routes \`5/5\` 与 SVG asset \`1/1\` 为 HTTP \`200\`，functional Browser \`SUCCESS / PASS\`（states \`4/4\`、wrappers \`12/12\`、relation href/H1/return \`4/4\`、source anchors \`28/28\`、DDD-02 actionable \`0\`、完整 diagnostics 零）；screenshot evidence \`BLOCKED / NOT_ACCEPTED\`（accepted \`0/4\`）。仅 Stage B 本地关闭候选；独立 code/content-rights/architecture reviews \`PENDING\`，Stage B deployment \`PENDING / NOT_RUN\`，不声称 Stage B 生产完成。`;
+const IMMEDIATE_IDENTITIES = new Map([
+  ['docs/content-backlog.md', [125843, 'e10f90626844f71c74d129d3636c8cdc700f7fb27dbd27642aa4e49118a6931f']],
+  ['backlog prefix', [104699, 'fa2891d13b84b7c74b879bd33a902a9ff4a46e65e0bd40a7d2e550b35da058a7']],
+  ['backlog suffix', [21044, '68d9bf868e0926e320df5c6782e23daa05b5a783ccdfdf23db311c9be488e6be']],
+  ['docs/reviews/g009-batch15.md', [11792, '63c4328df5af4da9874fe5ae9254932688e7d716bcad335f82f8907c3cf8d8c4']],
+  ['docs/reviews/g010-mth07.md', [18240, '3d11a2f00e64ce0edb77886ea95656375591422bb881b9bec43e05592bb8caff']],
+  [REVIEW, [2809, '5bb7feb826623b55bd8f27c5a104b971b186bded62f2c7c5179f9044a106e2ff']],
+  [LOCAL_BROWSER, [24566, 'a5ab2380c428f462d8a7125fec59ed770360e767f052b4c8a67132a24d528901']],
+  [STAGE_A_BROWSER, [26360, '02cbe7d366b73941c17ab239a5d93616b7e89565247d52767385e31193dba120']],
+]);
+const IMMEDIATE_TREE = Object.freeze({files:79,sha256:'cf04e449c739d97e2fe53dfdb9e9f2ff960f18bfdef5ecd5abfd529b67b5da5f'});
 let observedBuildPathsCache;
 const observedBuildBytesCache = new Map();
 const observedBuildPaths = () => observedBuildPathsCache ??= execFileSync('git', ['ls-tree','-r','--name-only','-z',OBSERVED_BUILD_COMMIT,'--',...BUILD_INPUTS], {encoding:'utf8'}).split('\0').filter(Boolean).sort();
@@ -51,7 +70,10 @@ export function assertProjection(status, manifest, stage, documents = []) {
   const baseline = JSON.parse(gitBaseline('src/generated/topic-manifest.json'));
   assert.deepEqual(topic(manifest, 'DDD-02'), topic(baseline, 'DDD-02'), 'existing DDD-02 planned identity stays byte-equivalent and unpublished');
   assert.equal(documents.some((d) => d.metadata?.topic_id === 'DDD-02'), false, 'no fabricated DDD-02 document');
-  for (const d of documents) assertNoDDD02(readerContract(d.body ?? '').links.map((l) => l.href), d.metadata?.slug ?? ROUTE);
+  for (const d of documents) {
+    const links = d.metadata?.topic_id === 'DDD-01' ? readerContract(d.body ?? '').links.map((link) => link.href) : extractInternalLinks(d.body ?? '');
+    assertNoDDD02(links, d.metadata?.slug ?? ROUTE);
+  }
 }
 export const assertStageAProjection = (status, manifest, documents) => assertProjection(status, manifest, 'A', documents);
 export const assertStageBProjection = (status, manifest, documents) => assertProjection(status, manifest, 'B', documents);
@@ -66,6 +88,31 @@ export function projectionFixture(stage = 'A') {
 const allowedNewHistory = new Set([REVIEW, LOCAL_BROWSER, STAGE_A_BROWSER, STAGE_B_BROWSER]);
 const baselineHistoryPaths = () => execFileSync('git', ['ls-tree', '-r', '--name-only', BASELINE, 'docs/reviews'], {encoding: 'utf8'}).trim().split('\n');
 function reviewFiles(dir = 'docs/reviews') { return readdirSync(dir, {withFileTypes: true}).flatMap((e) => e.isDirectory() ? reviewFiles(`${dir}/${e.name}`) : [`${dir}/${e.name}`]).sort(); }
+const immediateHistoryPaths = () => execFileSync('git', ['ls-tree','-r','--name-only',IMMEDIATE_BASE,'docs/reviews'], {encoding:'utf8'}).trim().split('\n').sort();
+const reviewBeforeStageB = (source) => { const start = source.indexOf(STAGE_B_MARKER); return start < 0 ? source : source.slice(0, start); };
+function isImmediateHistoricalPath(path) { return path !== STAGE_B_BROWSER; }
+function immediateHistoryFiles() {
+  const files = new Map(reviewFiles().filter(isImmediateHistoricalPath).map((path) => [path, readFileSync(path)]));
+  files.set(REVIEW, Buffer.from(reviewBeforeStageB(files.get(REVIEW).toString())));
+  return files;
+}
+export function assertImmediateHistory(backlog, files = immediateHistoryFiles()) {
+  const rows = backlog.split('\n').filter((line) => /^- \[[ xX]\] \*\*DDD-01\b/u.test(line));
+  assert.equal(rows.length, 1, 'one DDD-01 row can be normalized to immediate history');
+  assert.ok(rows[0] === PENDING_BACKLOG_ROW || rows[0] === CLOSED_BACKLOG_ROW, 'only the exact Stage B closure row may differ from immediate backlog');
+  const previousBacklog = Buffer.from(backlog.replace(rows[0], PENDING_BACKLOG_ROW));
+  const pending = Buffer.from(PENDING_BACKLOG_ROW), split = previousBacklog.indexOf(pending);
+  assert.ok(split >= 0, 'immediate backlog split row exists');
+  const identities = new Map([...files, ['docs/content-backlog.md', previousBacklog], ['backlog prefix', previousBacklog.subarray(0, split)], ['backlog suffix', previousBacklog.subarray(split + pending.length)]]);
+  for (const [path,[bytes,digest]] of IMMEDIATE_IDENTITIES) {
+    const actual = identities.get(path); assert.ok(actual, `immediate history exists: ${path}`);
+    assert.equal(actual.length, bytes, `immediate history bytes: ${path}`);
+    assert.equal(hash(actual), digest, `immediate history SHA-256: ${path}`);
+  }
+  assert.deepEqual([...files.keys()].sort(), immediateHistoryPaths(), 'complete pre-Stage-B review/evidence membership');
+  assert.equal(files.size, IMMEDIATE_TREE.files, 'complete pre-Stage-B review/evidence file count');
+  assert.equal(hash([...files.keys()].sort().map((path) => `${path}\0${hash(files.get(path))}\n`).join('')), IMMEDIATE_TREE.sha256, 'complete pre-Stage-B review/evidence tree SHA-256');
+}
 export function historyFixture() { return new Map(baselineHistoryPaths().map((p) => [p, gitBaseline(p)])); }
 export function assertHistoricalArtifacts(files, backlog) {
   const expected = baselineHistoryPaths();
@@ -83,9 +130,8 @@ export function assertBacklog(source, stage, evidence = null) {
   const rows = source.split('\n').filter((l) => /^- \[[ xX]\] \*\*DDD-01\b/u.test(l)); assert.equal(rows.length, 1, 'one DDD-01 checkbox');
   if (stage === 'A') assert.equal(rows[0], PENDING_BACKLOG_ROW, 'Stage A keeps exact pending row');
   else {
-    assert.ok(evidence?.reviewedHead && evidence?.implementationSha && evidence?.runId, 'Stage B closure requires exact Stage A evidence identities');
-    assert.ok(rows[0].startsWith(PENDING_BACKLOG_ROW.replace('- [ ]', '- [x]')), 'only DDD-01 checkbox closes');
-    for (const value of [evidence.reviewedHead, evidence.implementationSha, String(evidence.runId)]) assert.ok(rows[0].includes(value), 'closure binds Stage A evidence');
+    assert.equal(rows[0], CLOSED_BACKLOG_ROW, 'Stage B closure binds every exact Stage A identity and honest evidence boundary');
+    assertImmediateHistory(source);
   }
 }
 
@@ -126,6 +172,34 @@ export function reviewFixture(options = {}) {
     ...(phase !== 'published' ? [] : [`Pages: ${publication.headSha}; run ${publication.runId}; build ${publication.jobs[0].id}; deploy ${publication.jobs[1].id}; push / completed / success.`, `Browser raw: ${browserIdentity.path}; bytes ${browserIdentity.bytes}; SHA-256 ${browserIdentity.sha256}.`]),
   ];
   return `## Stage ${stage} candidate\n\n${lines.slice(0, phase === 'pending' ? 6 : 7).join('\n\n')}\n\n## Independent reviews\n\n${lines.slice(phase === 'pending' ? 6 : 7, phase === 'pending' ? 9 : 10).join('\n\n')}\n\n## Browser evidence\n\n## Publication\n\n${phase === 'published' ? lines.slice(10).join('\n\n') : ''}\n`;
+}
+
+function stageBSection({phase = 'pending', reviewedHead} = {}) {
+  assert.ok(['pending','ready'].includes(phase), 'Stage B verdict candidate is pending or ready before deployment');
+  if (phase === 'ready') assert.match(reviewedHead ?? '', /^[0-9a-f]{40}$/u, 'Stage B reviews bind an exact candidate');
+  const verdict = phase === 'pending' ? 'PENDING' : 'READY';
+  const lines = [
+    `Scope: STAGE_B_${verdict}.`,
+    'DDD-01 lifecycle: published / complete.',
+    'DDD-02 topic: planned / unpublished / pending; document: absent / non-actionable.',
+    `Final judgment: ${verdict}.`,
+    'Deployment: NOT_RUN.',
+    'Screenshot evidence: BLOCKED / NOT_ACCEPTED; accepted 0/4; functional PASS is not visual acceptance.',
+    `Stage A reviewed candidate: ${STAGE_A_REVIEWED_HEAD}.`,
+    `Stage A implementation: ${STAGE_A_IMPLEMENTATION_HEAD}; Pages run ${STAGE_A_PUBLICATION.runId}; build ${STAGE_A_PUBLICATION.build.id}; deploy ${STAGE_A_PUBLICATION.deploy.id}; push / completed / success.`,
+    `Stage A evidence: ${STAGE_A_EVIDENCE_HEAD}; Pages run ${STAGE_A_EVIDENCE_PUBLICATION.runId}; build ${STAGE_A_EVIDENCE_PUBLICATION.buildId}; deploy ${STAGE_A_EVIDENCE_PUBLICATION.deployId}; push / completed / success; completed ${STAGE_A_EVIDENCE_PUBLICATION.completedAt}.`,
+    'Stage A production: HTML routes 5/5 and SVG asset 1/1 returned HTTP 200; functional states 4/4; wrappers 12/12; relation href/H1/return 4/4; source anchors 28/28; DDD-02 actionable 0; complete diagnostics empty.',
+    'Immediate history: backlog 125843 bytes / SHA-256 e10f90626844f71c74d129d3636c8cdc700f7fb27dbd27642aa4e49118a6931f; prefix 104699 / fa2891d13b84b7c74b879bd33a902a9ff4a46e65e0bd40a7d2e550b35da058a7; suffix 21044 / 68d9bf868e0926e320df5c6782e23daa05b5a783ccdfdf23db311c9be488e6be; pre-Stage-B review/evidence tree 79 files / cf04e449c739d97e2fe53dfdb9e9f2ff960f18bfdef5ecd5abfd529b67b5da5f.',
+    'Canonical Stage B projection: 86 completed topics / 128 content documents / 604 governed sources; durable stories remain 8/20, current G009; next pending DDD-02.',
+  ];
+  const reviews = REVIEW_ROLES.map((role) => `${role}: ${phase === 'pending' ? 'PENDING' : `head ${reviewedHead}; ${role === 'content/evidence/rights' ? 'CONTENT READY / rights PASS / findings 0' : role === 'architecture/invariants' ? 'CLEAR / READY / blockers 0' : 'READY / APPROVE / findings 0'}`}.`);
+  return `${STAGE_B_MARKER}\n${lines.join('\n\n')}\n\n## Independent reviews\n\n${reviews.join('\n\n')}\n\n## Browser evidence\n\nStage B production Browser raw: ABSENT / NOT_CAPTURED.\n\n## Publication\n\nStage B publication: PENDING / NOT_RUN.\n`;
+}
+export function assertStageBCandidate(source, options = {}) {
+  assert.ok(source, 'DDD-01 Stage B review exists');
+  const prefix = reviewBeforeStageB(source), expectedPrefix = execFileSync('git',['show',`${IMMEDIATE_BASE}:${REVIEW}`],{encoding:'utf8'});
+  assert.equal(prefix, expectedPrefix, 'complete Stage A review bytes remain unchanged');
+  assert.equal(source, expectedPrefix + stageBSection(options), 'exact Stage B review state and review slots');
 }
 
 // No actual run, head, hash or observation is invented here. Tasks 4–7 pass the independently
@@ -204,6 +278,22 @@ export function assertBuildDerivation(rawBuild, {
   assert.deepEqual(currentBuildIdentity(observedPaths, observedRead), {inputFiles:rawBuild.inputFiles,inputSha256:rawBuild.inputSha256}, 'recorded digest reproducibly derives from the observed candidate tree');
   for (const path of currentPaths) {
     const currentBytes = currentRead(path), observedBytes = observedRead(path);
+    if (APPROVED_STAGE_B_PROJECTION_PATHS.has(path)) {
+      const current = JSON.parse(currentBytes.toString()), observed = JSON.parse(observedBytes.toString()), normalized = structuredClone(current);
+      if (path === 'src/generated/project-status.json') {
+        assert.equal(current.completed_topics, EXPECTED_STAGE_B_PROJECTION.completed, 'only exact DDD-01 closure advances completed topics');
+        normalized.completed_topics = observed.completed_topics;
+      } else {
+        const currentTopics = path.endsWith('topic-indexes.json') ? Object.values(current).flatMap((entries) => entries) : current.topics;
+        const normalizedTopics = path.endsWith('topic-indexes.json') ? Object.values(normalized).flatMap((entries) => entries) : normalized.topics;
+        const found = currentTopics.filter((entry) => entry.id === 'DDD-01');
+        assert.equal(found.length, 1, `one exact DDD-01 current record in ${path}`);
+        assert.equal(found[0].status.value, 'complete', `only exact DDD-01 lifecycle closes in ${path}`);
+        normalizedTopics.find((entry) => entry.id === 'DDD-01').status.value = 'pending';
+      }
+      assert.deepEqual(normalized, observed, `only the exact generated DDD-01 Stage B closure delta may differ in ${path}`);
+      continue;
+    }
     if (!APPROVED_RIGHTS_PATHS.has(path)) { assert.deepEqual(currentBytes, observedBytes, `unapproved build-input drift: ${path}`); continue; }
     const current = JSON.parse(currentBytes.toString()), observed = JSON.parse(observedBytes.toString());
     const currentRecord = current.sources.find((s) => s.id === 'src-atlas-ddd01-strategic-context-map');
@@ -230,6 +320,7 @@ export function assertStageAProductionGate(review, options = {}) {
   const rawSource = Object.hasOwn(options, 'rawSource') ? options.rawSource : optionalText(STAGE_A_BROWSER);
   const {svgBytes} = options;
   assert.ok(review, 'Stage A review exists before production evidence is required');
+  review = reviewBeforeStageB(review);
   const judgment = /^Final judgment: ([A-Z]+)\.$/mu.exec(review)?.[1];
   const deployment = /^Deployment: ([^\n]+)\.$/mu.exec(review)?.[1];
   if (deployment === 'NOT_RUN') {
@@ -282,7 +373,20 @@ test('DDD-01 history helper rejects material add/edit/delete and suffix modifica
   for(const change of [(f)=>{const p=[...f.keys()][0];f.set(p,Buffer.concat([f.get(p),Buffer.from('fabricated')]));},(f)=>f.delete([...f.keys()][0]),(f)=>f.set('docs/reviews/evidence/g009-batch16-stage-c-fabricated.json',Buffer.from('fake'))]){const f=new Map(files);change(f);assert.notDeepEqual(f,files);assert.throws(()=>assertHistoricalArtifacts(f,backlog),assert.AssertionError);}
   assert.throws(()=>assertHistoricalArtifacts(files,mutation(backlog,'当前发布基线：','伪造发布基线：')),assert.AssertionError);
 });
-test('DDD-01 backlog helper keeps Stage A pending and requires bound Stage B closure',()=>{const base=gitBaseline('docs/content-backlog.md').toString();assertBacklog(base,'A');const evidence={reviewedHead:'a'.repeat(40),implementationSha:'b'.repeat(40),runId:123};const closed=mutation(base,PENDING_BACKLOG_ROW,PENDING_BACKLOG_ROW.replace('- [ ]','- [x]')+` Stage A ${evidence.reviewedHead} ${evidence.implementationSha} ${evidence.runId}`);assertBacklog(closed,'B',evidence);assert.throws(()=>assertBacklog(closed,'A'),assert.AssertionError);assert.throws(()=>assertBacklog(base,'B',evidence),assert.AssertionError);});
+test('DDD-01 immediate Stage A history locks backlog split, named artifacts, and complete tree',()=>assertImmediateHistory(readFileSync('docs/content-backlog.md','utf8')));
+test('DDD-01 immediate history rejects non-no-op add, edit, delete, membership, prefix and suffix mutations',()=>{
+  const backlog=readFileSync('docs/content-backlog.md','utf8'),files=immediateHistoryFiles();assertImmediateHistory(backlog,files);
+  const first=[...files.keys()][0];
+  for(const change of [
+    (copy)=>copy.set(first,Buffer.concat([copy.get(first),Buffer.from('x')])),
+    (copy)=>copy.delete(first),
+    (copy)=>copy.set(STAGE_B_BROWSER.replace('.json','-fabricated.json'),Buffer.from('fabricated')),
+  ]){const copy=new Map(files);change(copy);assert.notDeepEqual(copy,files);assert.throws(()=>assertImmediateHistory(backlog,copy),assert.AssertionError);}
+  for(const [before,after] of [['# 软件架构内容内化长期 Backlog','# 伪造 Backlog'],[NEXT_BACKLOG_ROW,NEXT_BACKLOG_ROW+' fabricated']]){const changed=mutation(backlog,before,after);assert.notEqual(changed,backlog);assert.throws(()=>assertImmediateHistory(changed,files),assert.AssertionError);}
+  for(const near of [STAGE_B_BROWSER+'.bak',STAGE_B_BROWSER.replace('stage-b','stage-c')]){assert.equal(isImmediateHistoricalPath(near),true);const copy=new Map(files);copy.set(near,Buffer.from('fabricated'));assert.throws(()=>assertImmediateHistory(backlog,copy),assert.AssertionError);}
+});
+test('DDD-01 backlog helper keeps Stage A pending and requires the exact all-field Stage B closure',()=>{const base=execFileSync('git',['show',`${IMMEDIATE_BASE}:docs/content-backlog.md`],{encoding:'utf8'});assertBacklog(base,'A');const closed=mutation(base,PENDING_BACKLOG_ROW,CLOSED_BACKLOG_ROW);assertBacklog(closed,'B');assert.throws(()=>assertBacklog(closed,'A'),assert.AssertionError);assert.throws(()=>assertBacklog(base,'B'),assert.AssertionError);for(const [before,after] of [[STAGE_A_IMPLEMENTATION_HEAD,'0'.repeat(40)],[STAGE_A_EVIDENCE_HEAD,'1'.repeat(40)],[String(STAGE_A_PUBLICATION.runId),'1'],['HTTP `200`','HTTP `404`'],['functional Browser `SUCCESS / PASS`','functional Browser `FAIL`'],['BLOCKED / NOT_ACCEPTED','PASS / ACCEPTED'],['PENDING / NOT_RUN','SUCCESS']]){const changed=mutation(closed,before,after);assert.notEqual(changed,closed);assert.throws(()=>assertBacklog(changed,'B'),assert.AssertionError);}});
+test('DDD-01 Stage B review helper prepares PENDING slots and exact-head READY slots without deployment',()=>{const prefix=execFileSync('git',['show',`${IMMEDIATE_BASE}:${REVIEW}`],{encoding:'utf8'}),pending=prefix+stageBSection(),head='a'.repeat(40),ready=prefix+stageBSection({phase:'ready',reviewedHead:head});assertStageBCandidate(pending);assertStageBCandidate(ready,{phase:'ready',reviewedHead:head});for(const [before,after] of [['DDD-01 lifecycle: published / complete.','DDD-01 lifecycle: published / pending.'],['code/spec/security: PENDING.','code/spec/security: READY.'],['Deployment: NOT_RUN.','Deployment: SUCCESS.'],['BLOCKED / NOT_ACCEPTED','PASS / ACCEPTED'],['DDD-02 topic: planned / unpublished / pending; document: absent / non-actionable.','DDD-02 topic: published / complete; document: present / actionable.']]){const changed=mutation(pending,before,after);assert.notEqual(changed,pending);assert.throws(()=>assertStageBCandidate(changed),assert.AssertionError);}});
 for(const stage of ['A','B']) for(const phase of ['pending','ready','published']) test(`DDD-01 Stage ${stage} ${phase} review helper and mutations`,()=>{const f=browserFixture();const options={stage,phase,reviewedHead:'b'.repeat(40),publication:f.raw.publication,browserIdentity:{path:stage==='A'?STAGE_A_BROWSER:STAGE_B_BROWSER,bytes:123,sha256:'c'.repeat(64)}};const s=reviewFixture(options);assertReview(s,options);for(const [before,after] of [['DDD-01 lifecycle: published','DDD-01 lifecycle: unpublished'],['Screenshot evidence: BLOCKED / NOT_ACCEPTED','Screenshot evidence: PASS / ACCEPTED'],['DDD-02 topic: planned / unpublished / pending; document: absent / non-actionable.','DDD-02 topic: published / complete; document: present / actionable.']])assert.throws(()=>assertReview(mutation(s,before,after),options),assert.AssertionError);assert.throws(()=>assertReview(s+'\n\nSUCCESS: fabricated.\n',options),assert.AssertionError);for(const claim of ['Deployment: SUCCESS / functional PASS.','code/spec/security: READY / APPROVE / findings 0.','Final judgment: READY.','Screenshot evidence: PASS / ACCEPTED; accepted 4/4.','全文页面截图已接受并通过。','full-page visual PASS.']){const displaced=s.replace('## Publication',`<details className="evidence-card">\n<summary>证据</summary>\n\n${claim}\n\n</details>\n\n## Publication`);assert.notEqual(displaced,s);assert.throws(()=>assertReview(displaced,options),assert.AssertionError);}});
 test('DDD-01 Stage A production gate allows honest prepublish states and rejects state/deployment bypasses',()=>{const pending=reviewFixture(),ready=reviewFixture({stage:'A',phase:'ready',reviewedHead:'b'.repeat(40)});assertStageAProductionGate(pending,{rawSource:undefined});assertStageAProductionGate(ready,{rawSource:undefined});assert.throws(()=>assertStageAProductionGate(mutation(pending,'Final judgment: PENDING.','Final judgment: READY.'),{rawSource:undefined}),assert.AssertionError);assert.throws(()=>assertStageAProductionGate(mutation(pending,'Deployment: NOT_RUN.','Deployment: SUCCESS / functional PASS.'),{rawSource:undefined}),assert.AssertionError);assert.throws(()=>assertStageAProductionGate(pending,{rawSource:JSON.stringify(browserFixture().raw)}),assert.AssertionError);});
 test('DDD-01 Stage A production gate retains exact published raw and deployment constraints',()=>{const f=browserFixture(),rawSource=JSON.stringify(f.raw),browserIdentity={path:STAGE_A_BROWSER,bytes:Buffer.byteLength(rawSource),sha256:hash(rawSource)},review=reviewFixture({stage:'A',phase:'published',reviewedHead:f.raw.publication.reviewedHead,publication:f.raw.publication,browserIdentity});assertStageAProductionGate(review,{rawSource,svgBytes:f.options.svgBytes});const failed=structuredClone(f.raw);failed.publication.jobs[1].conclusion='failure';assert.throws(()=>assertStageAProductionGate(review,{rawSource:JSON.stringify(failed),svgBytes:f.options.svgBytes}),assert.AssertionError);assert.throws(()=>assertStageAProductionGate(mutation(review,'Deployment: SUCCESS / functional PASS.','Deployment: UNKNOWN.'),{rawSource,svgBytes:f.options.svgBytes}),assert.AssertionError);});
@@ -299,8 +403,9 @@ for(const [label,change] of [
 for(const [state] of STATE_CONTRACTS) for(const [label,change] of [
   ['wrong viewport',(s)=>{s.viewport.width++;}],['wrong theme',(s)=>{s.theme=s.theme==='light'?'dark':'light';}],['overflow',(s)=>{s.page.scrollWidth++;}],['wrapper width off by 1px',(s)=>{s.wrappers[0].clientWidth++;}],['wrapper scroll width off by 1px',(s)=>{s.wrappers[1].scrollWidth++;}],['false no-overflow table',(s)=>{s.wrappers[1].scrollWidth=s.wrappers[1].clientWidth;s.interactions[1].after=0;}],['lost focus',(s)=>{s.interactions[0].focused=false;}],['thin outline',(s)=>{s.interactions[0].outlineWidth='1px';}],['no scroll',(s)=>{s.interactions[1].after=0;}],['missing wrapper',(s)=>{s.wrappers.pop();}],['duplicate wrapper',(s)=>{s.wrappers[1]=structuredClone(s.wrappers[0]);}],['swapped wrapper',(s)=>{[s.wrappers[0],s.wrappers[1]]=[s.wrappers[1],s.wrappers[0]];}],['SVG rendered width off by 1px',(s)=>{s.svg.width=799;}],['SVG natural width off by 1px',(s)=>{s.svg.naturalWidth=52;}],['SVG wrong rendered ratio',(s)=>{s.svg.height=2259;}],['lost reciprocal',(s)=>{s.relations[0].destination.returnHref='/patterns';}],['false source destination',(s)=>{s.sources[0].destination='https://example.com/fake';}],['false source target',(s)=>{s.sources[0].target='_self';}],['fabricated DDD-02',(s)=>{s.ddd02ActionableCount=1;}],['diagnostic reference drift',(s)=>{s.diagnostics.ref='fabricated';}],['log reference drift',(s)=>{s.logs.ref='fabricated';}],['unloaded SVG',(s)=>{s.svg.complete=false;}],['stale SVG',(s)=>{s.svg.sha256='0'.repeat(64);}],['visual PASS inflation',(s)=>{s.screenshot.status='PASS';s.screenshot.acceptance='ACCEPTED';}],['copied screenshot attempt',(s)=>{if(!s.screenshot.attempted){s.screenshot={...s.screenshot,attempted:true,bytes:707150,reason:'fullPage capture returned bytes in the Browser session but could not be persisted as a durable artifact'};}else{s.screenshot={attempted:false,status:'BLOCKED',acceptance:'NOT_ACCEPTED',artifact:null,reason:'fullPage capture was not attempted in this state'};}}],
 ]) test(`DDD-01 Browser ${state} rejects ${label}`,()=>{const f=browserFixture();assertBrowserEvidence(f.raw,f.options);const before=structuredClone(f.raw);change(f.raw.states[state]);assert.notDeepEqual(f.raw,before);assert.throws(()=>assertBrowserEvidence(f.raw,f.options),assert.AssertionError);});
-test('DDD-01 production generated publication reaches Stage A published/pending',()=>assertStageAProjection(JSON.parse(readFileSync('src/generated/project-status.json')),JSON.parse(readFileSync('src/generated/topic-manifest.json'))));
-test('DDD-01 production review binds exact-head independent verdicts and published evidence',()=>assertStageAProductionGate(optionalText(REVIEW)));
+test('DDD-01 production generated publication reaches Stage B published/complete while DDD-02 stays absent and non-actionable',async()=>assertStageBProjection(JSON.parse(readFileSync('src/generated/project-status.json')),JSON.parse(readFileSync('src/generated/topic-manifest.json')),await readContentDocuments('content')));
+test('DDD-01 production backlog closes exactly one row with complete Stage A evidence',()=>assertBacklog(readFileSync('docs/content-backlog.md','utf8'),'B'));
+test('DDD-01 production review preserves Stage A and prepares Stage B PENDING review slots',()=>{const review=optionalText(REVIEW);assertStageAProductionGate(review);assertStageBCandidate(review);});
 test('DDD-01 production local Browser evidence is independently bound and semantic',()=>assertRecordedBrowserArtifact(LOCAL_BROWSER,optionalText(REVIEW),{local:true}));
-test('DDD-01 production Stage A gate requires Browser evidence only after publication',()=>assertStageAProductionGate(optionalText(REVIEW)));
+test('DDD-01 Stage B candidate has no production Browser raw before deployment',()=>assert.equal(optionalText(STAGE_B_BROWSER),undefined));
 }

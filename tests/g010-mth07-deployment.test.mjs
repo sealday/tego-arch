@@ -37,6 +37,8 @@ const POST_G010_G009_ARTIFACTS = new Map([
 const IMPLEMENTATION_HEAD = 'a413be060c93f7ddd20e7db5417e94f4166dc1e8';
 const PAGES = {runId: 31786075868, buildJobId: 94722157542, deployJobId: 94722766883};
 const MTH07_CLOSURE_LINE = `- [x] **MTH-07 P1｜企业 AI 前线部署：从 POC 到可复制系统的交付门禁**：Stage A implementation commit [\`${IMPLEMENTATION_HEAD}\`](https://github.com/sealday/tego-arch/commit/${IMPLEMENTATION_HEAD}) 由 Pages run [\`${PAGES.runId}\`](https://github.com/sealday/tego-arch/actions/runs/${PAGES.runId}) 成功部署；2026-08-14 evidence commit [\`${STAGE_A_EVIDENCE_HEAD}\`](https://github.com/sealday/tego-arch/commit/${STAGE_A_EVIDENCE_HEAD}) 由 Pages run [\`${STAGE_A_EVIDENCE_PAGES.runId}\`](https://github.com/sealday/tego-arch/actions/runs/${STAGE_A_EVIDENCE_PAGES.runId}) 以 exact head、\`completed / success\` 部署，build job \`${STAGE_A_EVIDENCE_PAGES.buildJobId}\`、deploy job \`${STAGE_A_EVIDENCE_PAGES.deployJobId}\`；production HTTP HTML routes \`8/8\` 与 SVG asset \`1/1\` 均为 HTTP \`200\`，functional Browser verdict \`PASS\`，screenshot evidence \`BLOCKED / NOT_ACCEPTED\`。`;
+const DDD01_PENDING_ROW = '- [ ] **DDD-01 P0｜战略 DDD 总览**：子域、统一语言、Bounded Context 和 Context Map。';
+const DDD01_CLOSURE_ROW = '- [x] **DDD-01 P0｜战略 DDD 总览**：子域、统一语言、Bounded Context 和 Context Map。2026-09-08 Stage A reviewed candidate `3777405c02c64b75de38a33d9709cac5a29bcedf`；implementation commit `997e4b136b40cab3b96ff033c77830752b16b5dc`，Pages run `34232044270`，build job `102080344661`、deploy job `102081529119`；evidence commit `c99db5b12aa5da7c4d2929837c2f3735db59c2c7`，Pages run `34236534834`，build job `102095575933`、deploy job `102097366248`，两次均为 exact-head `push / completed / success`。Production HTML routes `5/5` 与 SVG asset `1/1` 为 HTTP `200`，functional Browser `SUCCESS / PASS`（states `4/4`、wrappers `12/12`、relation href/H1/return `4/4`、source anchors `28/28`、DDD-02 actionable `0`、完整 diagnostics 零）；screenshot evidence `BLOCKED / NOT_ACCEPTED`（accepted `0/4`）。仅 Stage B 本地关闭候选；独立 code/content-rights/architecture reviews `PENDING`，Stage B deployment `PENDING / NOT_RUN`，不声称 Stage B 生产完成。';
 const BROWSER_BUILD_HEAD = 'f32e0cb7ae79fb92a2154c03dfe8bf7b5b203974';
 const REVIEWED_HEAD = '4c5c9f99148a32998ee03bd8f97b3db2ca29d500';
 const HISTORICAL_REVIEW_TREE_HASH = '675a88450c587b392cccc75bfeced523d32acc6bd78830de545586a308a85bff';
@@ -59,7 +61,7 @@ const MTH07_STATUS = {
 const PROJECT_STATUS = {
   schema_version: 1,
   durable_stories: {completed: 8, total: 20, current: 'G009'},
-  completed_topics: 85,
+  completed_topics: 86,
   content_documents: 128,
   governed_sources: 604,
 
@@ -236,6 +238,10 @@ function reviewBeforeStageB(source) {
 }
 
 function backlogWithoutMth07(source) {
+  const ddd01Rows = source.split('\n').filter((line) => /^- \[[ xX]\] \*\*DDD-01\b/u.test(line));
+  assert.equal(ddd01Rows.length, 1, 'one DDD-01 row before exact current/live normalization');
+  assert.ok(ddd01Rows[0] === DDD01_PENDING_ROW || ddd01Rows[0] === DDD01_CLOSURE_ROW, 'only the c99-bound exact DDD-01 closure row may differ');
+  source = source.replace(ddd01Rows[0], DDD01_PENDING_ROW);
   const exact = `${MTH07_CLOSURE_LINE}\n`;
   assert.equal(source.split(exact).length - 1, 1, 'backlog contains one exact MTH-07 closure line');
   assert.equal((source.match(/^[-*+]\s+\[[ xX]\]\s+\*\*MTH-07\b/gmu) ?? []).length, 1, 'backlog contains one MTH-07 checkbox');

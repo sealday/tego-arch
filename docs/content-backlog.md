@@ -256,7 +256,7 @@
 
 ### DDD 与企业应用
 
-- [ ] **DDD-01 P0｜战略 DDD 总览**：子域、统一语言、Bounded Context 和 Context Map。
+- [x] **DDD-01 P0｜战略 DDD 总览**：子域、统一语言、Bounded Context 和 Context Map。2026-09-08 Stage A reviewed candidate `3777405c02c64b75de38a33d9709cac5a29bcedf`；implementation commit `997e4b136b40cab3b96ff033c77830752b16b5dc`，Pages run `34232044270`，build job `102080344661`、deploy job `102081529119`；evidence commit `c99db5b12aa5da7c4d2929837c2f3735db59c2c7`，Pages run `34236534834`，build job `102095575933`、deploy job `102097366248`，两次均为 exact-head `push / completed / success`。Production HTML routes `5/5` 与 SVG asset `1/1` 为 HTTP `200`，functional Browser `SUCCESS / PASS`（states `4/4`、wrappers `12/12`、relation href/H1/return `4/4`、source anchors `28/28`、DDD-02 actionable `0`、完整 diagnostics 零）；screenshot evidence `BLOCKED / NOT_ACCEPTED`（accepted `0/4`）。仅 Stage B 本地关闭候选；独立 code/content-rights/architecture reviews `PENDING`，Stage B deployment `PENDING / NOT_RUN`，不声称 Stage B 生产完成。
 - [ ] **DDD-02 P0｜聚合与一致性边界**：事务、并发、引用和跨聚合流程。
 - [ ] **DDD-03 P0｜Entity、Value Object 与 Domain Primitive**。
 - [ ] **DDD-04 P0｜Domain Service、Application Service 与 Infrastructure Service**。

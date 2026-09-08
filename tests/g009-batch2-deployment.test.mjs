@@ -281,7 +281,7 @@ test('rejects review and historical-baseline contradictions', async (t) => {
   }
 });
 
-test('preserves the STY-01 closure under the current STY-14 complete projection', async () => {
+test('preserves the STY-01 closure under current DDD-01 complete projection', async () => {
   const [backlog, manifest, status, sourceLedger] = await Promise.all([
     readFile(new URL('../docs/content-backlog.md', import.meta.url), 'utf8'),
     readFile(new URL('../src/generated/topic-manifest.json', import.meta.url), 'utf8').then(JSON.parse),
@@ -301,7 +301,7 @@ test('preserves the STY-01 closure under the current STY-14 complete projection'
   assert.deepEqual(status, {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
-    completed_topics: 85,
+    completed_topics: 86,
     content_documents: 128,
     governed_sources: 604,
 

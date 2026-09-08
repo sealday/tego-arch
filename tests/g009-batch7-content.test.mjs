@@ -1569,12 +1569,12 @@ test('locks reciprocal visible links and includes actionable STY-07', () => {
   }
 });
 
-test('preserves the STY-06 closure under the current STY-14 complete projection', () => {
+test('preserves the STY-06 closure under current DDD-01 complete projection', () => {
   assert.deepEqual({
     completed_topics: projectStatus.completed_topics,
     content_documents: projectStatus.content_documents,
     governed_sources: projectStatus.governed_sources,
-  }, {completed_topics: 85, content_documents: 128, governed_sources: 604});
+  }, {completed_topics: 86, content_documents: 128, governed_sources: 604});
   assert.equal(publicLedger.sources.length, 604);
 
 

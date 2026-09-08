@@ -25,7 +25,7 @@ export const SOURCE_IDS = [
   'src-atlas-sty07-soa-microservices-order-fulfillment',
 ];
 export const ROUTE = '/styles/sty-07';
-export const EXPECTED_CURRENT_PROJECTION = Object.freeze({completed_topics: 85, content_documents: 128, governed_sources: 604});
+export const EXPECTED_CURRENT_PROJECTION = Object.freeze({completed_topics: 86, content_documents: 128, governed_sources: 604});
 
 
 export const RELATIONS = Object.freeze({
@@ -919,7 +919,7 @@ test('locks exact eight-row comparison and seven-row failure responsibilities', 
   await mutation(source, (candidate) => candidate.replace(/结果未知[^。；]*不盲目[^。；]*(重复支付|预留|补偿)/u, '结果未知时盲目重试'), assertFailureTable, 'unknown result blind retry');
 });
 
-test('governs STY-07 sources, reciprocal relations, and current STY-14 complete projection', async () => {
+test('governs STY-07 sources, reciprocal relations, and current DDD-01 complete projection', async () => {
   const ledger = JSON.parse(readFileSync('data/source-ledger.json', 'utf8'));
   const inventorySource = readFileSync('docs/source-license-inventory.md', 'utf8');
   assertRemoteSourceContracts(ledger, inventorySource);

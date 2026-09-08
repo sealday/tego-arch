@@ -36,6 +36,8 @@ const STAGE_B_MARKER = '\n## Stage B closure candidate\n';
 const STAGE_B_BROWSER = 'docs/reviews/evidence/g009-batch15-stage-b-production-browser.json';
 const PREVIOUS_BACKLOG_ROW = '- [ ] **STY-14 P1｜风格选择矩阵**：用三个相同业务场景比较 Modular Monolith、Microservices 与 Event-Driven。';
 const STY14_CLOSURE_ROW = '- [x] **STY-14 P1｜风格选择矩阵**：用三个相同业务场景比较 Modular Monolith、Microservices 与 Event-Driven。2026-09-07 Stage A implementation commit `ea452848ac0b77b4271c465a3643799abd17d863`，Pages run `34134613000`，build job `101782500593`、deploy job `101783809244`；evidence commit `215908786dde13e7fb19c752ba61b3bfb340a89b`，Pages run `34136330002`，build job `101788065505`、deploy job `101789152187`，两次均为 exact-head `push / completed / success`。Production HTML routes `7/7` 与 SVG asset `1/1` 为 HTTP `200`，functional Browser `SUCCESS / PASS`（states `4/4`、wrappers `12/12`、relation href/H1/return `12/12`、source anchors `24/24`、STY-15 actionable `0`、完整 diagnostics 零）；screenshot evidence `BLOCKED / NOT_ACCEPTED`（accepted `0/4`）。仅 Stage B 本地关闭候选；独立 code/content-rights/architecture reviews `PENDING`，Stage B deployment `PENDING / NOT_RUN`，不声称 Stage B 生产完成。';
+const DDD01_PENDING_ROW = '- [ ] **DDD-01 P0｜战略 DDD 总览**：子域、统一语言、Bounded Context 和 Context Map。';
+const DDD01_CLOSURE_ROW = '- [x] **DDD-01 P0｜战略 DDD 总览**：子域、统一语言、Bounded Context 和 Context Map。2026-09-08 Stage A reviewed candidate `3777405c02c64b75de38a33d9709cac5a29bcedf`；implementation commit `997e4b136b40cab3b96ff033c77830752b16b5dc`，Pages run `34232044270`，build job `102080344661`、deploy job `102081529119`；evidence commit `c99db5b12aa5da7c4d2929837c2f3735db59c2c7`，Pages run `34236534834`，build job `102095575933`、deploy job `102097366248`，两次均为 exact-head `push / completed / success`。Production HTML routes `5/5` 与 SVG asset `1/1` 为 HTTP `200`，functional Browser `SUCCESS / PASS`（states `4/4`、wrappers `12/12`、relation href/H1/return `4/4`、source anchors `28/28`、DDD-02 actionable `0`、完整 diagnostics 零）；screenshot evidence `BLOCKED / NOT_ACCEPTED`（accepted `0/4`）。仅 Stage B 本地关闭候选；独立 code/content-rights/architecture reviews `PENDING`，Stage B deployment `PENDING / NOT_RUN`，不声称 Stage B 生产完成。';
 const STAGE_B_LINES = [
   '- Scope: `STAGE_B_FINAL`; STY-14 and the G009 architecture-style batch are closed; the published recovery baseline and all preceding evidence bytes remain unchanged.',
   '- Stage A implementation head: `ea452848ac0b77b4271c465a3643799abd17d863`; Pages run `34134613000`; build job `101782500593`; deploy job `101783809244`; `push / completed / success`; `2026-09-07T14:44:31Z` → `2026-09-07T14:49:19Z`.',
@@ -110,7 +112,10 @@ test('STY-14 immediate history excludes only the exact DDD-01 Stage A production
 function assertImmediateHistory(backlog, files = immediateHistoryFiles()) {
   const suffix = backlog.match(/^- \*\*当前发布基线：\*\* (.+)$/mu)?.[1];
   assert.ok(suffix, 'complete immediately previous release suffix exists');
-  const previousBacklog = backlog.replace(STY14_CLOSURE_ROW, PREVIOUS_BACKLOG_ROW);
+  const ddd01Rows = backlog.split('\n').filter((line) => /^- \[[ xX]\] \*\*DDD-01\b/u.test(line));
+  assert.equal(ddd01Rows.length, 1, 'one DDD-01 row before exact current/live normalization');
+  assert.ok(ddd01Rows[0] === DDD01_PENDING_ROW || ddd01Rows[0] === DDD01_CLOSURE_ROW, 'only the c99-bound exact DDD-01 closure row may differ');
+  const previousBacklog = backlog.replace(ddd01Rows[0], DDD01_PENDING_ROW).replace(STY14_CLOSURE_ROW, PREVIOUS_BACKLOG_ROW);
   const identities = new Map([...files, ['docs/content-backlog.md', Buffer.from(previousBacklog)], ['backlog release suffix', Buffer.from(suffix)]]);
   for (const [path, [length, digest]] of IMMEDIATE_IDENTITIES) {
     const bytes = identities.get(path);
@@ -196,7 +201,7 @@ test('STY-14 Stage B backlog and review reject changed, deleted, displaced and a
 });
 test('STY-14 Stage B projection rejects stale counts, lifecycle, source identity and fabricated STY-15', () => {
   const stage = stageAFixture(projectStatus, manifest);
-  stage.status.completed_topics = 85;
+  stage.status.completed_topics = 86;
   stage.status.content_documents = 128;
   stage.status.governed_sources = 604;
   stage.manifest.topics.find(({id}) => id === TOPIC_ID).status.value = 'complete';
@@ -243,7 +248,7 @@ test('STY-14 immediate history rejects non-no-op add/edit/delete mutations', () 
 });
 export const EXPECTED_CURRENT_PROJECTION = Object.freeze({completed: 84, documents: 126, sources: 599});
 export const EXPECTED_STAGE_A_PROJECTION = Object.freeze({completed: 84, documents: 127, sources: 600});
-export const EXPECTED_STAGE_B_PROJECTION = Object.freeze({completed: 85, documents: 128, sources: 604});
+export const EXPECTED_STAGE_B_PROJECTION = Object.freeze({completed: 86, documents: 128, sources: 604});
 
 export const EXPECTED_STAGE_A_TOPIC = Object.freeze({
   id: TOPIC_ID,

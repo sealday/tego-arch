@@ -54,7 +54,7 @@ const expectedReviewSections = [
 ];
 
 const expectedProjection = {
-  completed_topics: 85,
+  completed_topics: 86,
   content_documents: 128,
   governed_sources: 604,
 
@@ -316,7 +316,7 @@ test('rejects reordered extra or contradictory review content', () => {
   }
 });
 
-test('preserves G008 Batch 11 closure under the current STY-14 complete projection', () => {
+test('preserves G008 Batch 11 closure under current DDD-01 complete projection', () => {
   assertBacklog(backlog);
   assertGeneratedState(manifest, projectStatus);
 });

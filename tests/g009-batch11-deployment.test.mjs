@@ -9,7 +9,7 @@ import {extractInternalLinks} from '../scripts/content-relations.mjs';
 
 export const EXPECTED_STAGE_A = Object.freeze({completed: 62, documents: 106, sources: 550});
 export const EXPECTED_STAGE_B = Object.freeze({completed: 63, documents: 106, sources: 550});
-export const EXPECTED_CURRENT_PROJECTION = Object.freeze({completed: 85, documents: 128, sources: 604});
+export const EXPECTED_CURRENT_PROJECTION = Object.freeze({completed: 86, documents: 128, sources: 604});
 
 export const CURRENT_TOPIC = 'STY-10';
 export const NEXT_TOPIC = 'STY-11';
@@ -589,7 +589,7 @@ test('locks the complete immediate STY-09 review and backlog suffix with mutatio
   }
 });
 
-test('preserves exact STY-10 Stage B history under the current STY-14 complete projection', () => {
+test('preserves exact STY-10 Stage B history under current DDD-01 complete projection', () => {
   assert.deepEqual({
     completed: status.completed_topics,
     documents: status.content_documents,

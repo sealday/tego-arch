@@ -77,7 +77,7 @@ function assertProjection() {
     completed_topics: status.completed_topics,
     content_documents: status.content_documents,
     governed_sources: status.governed_sources,
-  }, {completed_topics: 85, content_documents: 128, governed_sources: 604});
+  }, {completed_topics: 86, content_documents: 128, governed_sources: 604});
   assert.equal(publicLedger.sources.length, 604);
 
 
@@ -239,7 +239,7 @@ async function assertArtifactIdentities(source) {
   ]) assert.ok(identities.includes(row), row);
 }
 
-test('preserves the exact STY-06 closure under the current STY-14 complete projection', () => {
+test('preserves the exact STY-06 closure under current DDD-01 complete projection', () => {
   assertProjection();
   assert.equal(manifest.topics.filter(({published}) => published).some(({slug}) => slug === '/styles/sty-07'), true);
 });
@@ -351,12 +351,12 @@ test('rejects weakened or fabricated STY-06 production evidence', () => {
   }
 });
 
-test('preserves STY-06 Stage B history under the current STY-14 complete projection', () => {
+test('preserves STY-06 Stage B history under current DDD-01 complete projection', () => {
   assert.deepEqual({
     completed_topics: status.completed_topics,
     content_documents: status.content_documents,
     governed_sources: status.governed_sources,
-  }, {completed_topics: 85, content_documents: 128, governed_sources: 604});
+  }, {completed_topics: 86, content_documents: 128, governed_sources: 604});
 
 
   const sty06 = manifest.topics.find(({id}) => id === 'STY-06');

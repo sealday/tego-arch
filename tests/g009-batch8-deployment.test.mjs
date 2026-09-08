@@ -194,7 +194,7 @@ function assertStageBClosure(source = review, backlogSource = backlog) {
 }
 
 function assertProjection() {
-  assert.deepEqual({completed_topics: status.completed_topics, content_documents: status.content_documents, governed_sources: status.governed_sources}, {completed_topics: 85, content_documents: 128, governed_sources: 604});
+  assert.deepEqual({completed_topics: status.completed_topics, content_documents: status.content_documents, governed_sources: status.governed_sources}, {completed_topics: 86, content_documents: 128, governed_sources: 604});
   assert.equal(publicLedger.sources.length, 604);
 
 
@@ -463,7 +463,7 @@ test('preserves the STY-07 closure record while current generation projects STY-
     completed_topics: status.completed_topics,
     content_documents: status.content_documents,
     governed_sources: status.governed_sources,
-  }, {completed_topics: 85, content_documents: 128, governed_sources: 604});
+  }, {completed_topics: 86, content_documents: 128, governed_sources: 604});
   assert.equal(publicLedger.sources.length, 604);
 
 

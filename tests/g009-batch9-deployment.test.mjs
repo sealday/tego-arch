@@ -272,7 +272,7 @@ function replaceHistoricalBatch9Literal(source, before, after) {
 function assertStageBProjection() {
   assert.deepEqual(
     {completed_topics: status.completed_topics, content_documents: status.content_documents, governed_sources: status.governed_sources},
-    {completed_topics: 85, content_documents: 128, governed_sources: 604},
+    {completed_topics: 86, content_documents: 128, governed_sources: 604},
   );
   assert.equal(publicLedger.sources.length, 604);
 
@@ -304,7 +304,7 @@ const IMMEDIATE_HISTORY = new Map([
 ]);
 
 function assertProjection() {
-  assert.deepEqual({completed_topics: status.completed_topics, content_documents: status.content_documents, governed_sources: status.governed_sources}, {completed_topics: 85, content_documents: 128, governed_sources: 604});
+  assert.deepEqual({completed_topics: status.completed_topics, content_documents: status.content_documents, governed_sources: status.governed_sources}, {completed_topics: 86, content_documents: 128, governed_sources: 604});
   assert.equal(publicLedger.sources.length, 604);
 
   const topics = new Map(manifest.topics.map((topic) => [topic.id, topic]));
@@ -504,7 +504,7 @@ test('preserves the complete immediate STY-07 backlog suffix and Batch 8 review 
   for (const mutated of [`${suffix}x`, suffix.slice(0, -1)]) assert.notEqual(sha256(mutated), IMMEDIATE_BACKLOG_SUFFIX_HASH);
 });
 
-test('preserves canonical STY-08 Stage A history while current projection completes STY-14 without creating STY-15', async () => {
+test('preserves canonical STY-08 Stage A history while current projection completes DDD-01 without creating STY-15', async () => {
   assertProjection();
   await assertSty12Actionability();
 });

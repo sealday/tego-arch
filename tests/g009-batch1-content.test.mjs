@@ -580,7 +580,7 @@ const [manifest, projectStatus, indexes, publicLedger] = await Promise.all([
   readFile(new URL('../src/generated/source-ledger.json', import.meta.url), 'utf8').then(JSON.parse),
 ]);
 
-test('preserves the STY-00 closure under the current STY-14 complete projection', () => {
+test('preserves the STY-00 closure under current DDD-01 complete projection', () => {
   const topic = manifest.topics.find(({id}) => id === 'STY-00');
   assert.equal(topic.published, true);
   assert.equal(topic.status.value, 'complete');
@@ -590,7 +590,7 @@ test('preserves the STY-00 closure under the current STY-14 complete projection'
   assert.deepEqual(projectStatus, {
     schema_version: 1,
     durable_stories: {completed: 8, total: 20, current: 'G009'},
-    completed_topics: 85,
+    completed_topics: 86,
     content_documents: 128,
     governed_sources: 604,
 

@@ -237,7 +237,7 @@ function assertStageBBacklog(source = backlog) {
 function assertStageBProjection() {
   assert.deepEqual(
     {completed: status.completed_topics, documents: status.content_documents, sources: status.governed_sources},
-    {completed: 85, documents: 128, sources: 604},
+    {completed: 86, documents: 128, sources: 604},
   );
   assert.equal(publicLedger.sources.length, 604);
 
@@ -522,7 +522,7 @@ test('locks complete immediate STY-08 review and backlog suffix with mutation se
   assert.throws(() => assertStageBBacklog(staleCurrentNext), assert.AssertionError);
 });
 
-test('preserves canonical STY-09 history while current STY-14 is complete and STY-15 stays absent', async () => {
+test('preserves canonical STY-09 history while current DDD-01 is complete and DDD-02 stays absent', async () => {
   assertStageBProjection();
   assertStageBBacklog();
   await assertSty12Actionability();

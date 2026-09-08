@@ -660,7 +660,7 @@ const [review, raw, immediateReview, backlog, status, manifest, documents, svgBy
 const productionRaw = await optional(PRODUCTION_RAW);
 const stageBProductionRaw = await optional(STAGE_B_PRODUCTION_RAW);
 
-test('preserves immutable Batch 12 history under the current STY-14 complete projection', () => {
+test('preserves immutable Batch 12 history under current DDD-01 complete projection', () => {
   assertImmediateBatch12History();
   assert.deepEqual({
     completed_topics: status.completed_topics,
@@ -670,7 +670,7 @@ test('preserves immutable Batch 12 history under the current STY-14 complete pro
     current_goal: status.durable_stories.current,
     next_topic: 'STY-14',
   }, {
-    completed_topics: 85,
+    completed_topics: 86,
     content_documents: 128,
     governed_sources: 604,
 
