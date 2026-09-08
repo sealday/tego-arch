@@ -2,25 +2,27 @@
 
 ## Stage A candidate
 
-Scope: STAGE_A_PENDING.
+Scope: STAGE_A_READY.
 
 DDD-01 lifecycle: published / pending.
 
 DDD-02 topic: planned / unpublished / pending; document: absent / non-actionable.
 
-Final judgment: PENDING.
+Final judgment: READY.
 
 Deployment: NOT_RUN.
 
 Screenshot evidence: BLOCKED / NOT_ACCEPTED; accepted 0/4; functional PASS is not visual acceptance.
 
+Reviewed head: 3777405c02c64b75de38a33d9709cac5a29bcedf.
+
 ## Independent reviews
 
-code/spec/security: PENDING.
+code/spec/security: head 3777405c02c64b75de38a33d9709cac5a29bcedf; READY / APPROVE / findings 0.
 
-content/evidence/rights: PENDING.
+content/evidence/rights: head 3777405c02c64b75de38a33d9709cac5a29bcedf; CONTENT READY / rights PASS / findings 0.
 
-architecture/invariants: PENDING.
+architecture/invariants: head 3777405c02c64b75de38a33d9709cac5a29bcedf; CLEAR / READY / blockers 0.
 
 ## Browser evidence
 
