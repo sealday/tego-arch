@@ -185,12 +185,11 @@
         }
       },
       "screenshot": {
-        "attempted": true,
-        "bytes": 427000,
+        "attempted": false,
         "status": "BLOCKED",
         "acceptance": "NOT_ACCEPTED",
         "artifact": null,
-        "reason": "fullPage capture returned bytes in the Browser session but could not be persisted as a durable artifact"
+        "reason": "fullPage capture was not attempted in this state"
       }
     },
     "desktopDark": {
@@ -365,12 +364,11 @@
         }
       },
       "screenshot": {
-        "attempted": true,
-        "bytes": 427000,
+        "attempted": false,
         "status": "BLOCKED",
         "acceptance": "NOT_ACCEPTED",
         "artifact": null,
-        "reason": "fullPage capture returned bytes in the Browser session but could not be persisted as a durable artifact"
+        "reason": "fullPage capture was not attempted in this state"
       }
     },
     "mobileDark": {
@@ -725,12 +723,11 @@
         }
       },
       "screenshot": {
-        "attempted": true,
-        "bytes": 427000,
+        "attempted": false,
         "status": "BLOCKED",
         "acceptance": "NOT_ACCEPTED",
         "artifact": null,
-        "reason": "fullPage capture returned bytes in the Browser session but could not be persisted as a durable artifact"
+        "reason": "fullPage capture was not attempted in this state"
       }
     }
   }

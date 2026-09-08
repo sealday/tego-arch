@@ -24,7 +24,7 @@ architecture/invariants: PENDING.
 
 ## Browser evidence
 
-Browser raw: docs/reviews/evidence/g009-batch16-stage-a-browser.json; bytes 24803; SHA-256 9cbac4362f9f9346598a64244bb00dd862fbe33fb294600bc4811310cfd0dd01.
+Browser raw: docs/reviews/evidence/g009-batch16-stage-a-browser.json; bytes 24566; SHA-256 a5ab2380c428f462d8a7125fec59ed770360e767f052b4c8a67132a24d528901.
 
 Local build: e499588ab97cc116435fa3fa4cfc6b307dc7576a; files 288; SHA-256 239e1575ba779dc9d4896696075bba34a7f6b628c8b8e840b662cd4024c44c48.
 
@@ -37,7 +37,7 @@ Local build: e499588ab97cc116435fa3fa4cfc6b307dc7576a; files 288; SHA-256 239e15
 
 H1、STY-14 直达目标 H1、回链与返回状态均精确；每态 7 个来源锚点的 href/target/rel 完整，DDD-02 actionable count 为 0。原生日志为空；Runtime.exceptionThrown 与 Log.entryAdded 的完整空游标为 157→181，Runtime.consoleAPICalled 的完整空游标为 157→191。
 
-全页截图尝试返回约 427000 bytes，但无法持久化为可复核文件；因此视觉证据保持 BLOCKED / NOT_ACCEPTED，artifact 为 null，不把功能通过提升为截图通过。
+仅在 mobile-dark 状态进行过一次全页截图尝试，返回约 427000 bytes，但无法持久化为可复核文件；desktop-light、desktop-dark 与 mobile-light 均未尝试截图。因此接受结果仍为 0/4，视觉证据保持 BLOCKED / NOT_ACCEPTED，artifact 为 null，不把功能通过提升为截图通过。
 
 </details>
 
